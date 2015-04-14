@@ -1,0 +1,11 @@
+= form_tag icon_gallery_path, :method => :post do
+  %table#signup.centered
+    %tr
+      %th.centered
+        Add Icon to Gallery
+    %tr
+      %td
+        = select_tag(:icon_id, options_from_collection_for_select(current_user.icons, :id, :url), {})
+    %tr
+      %td.centered
+        = submit_tag "Create"

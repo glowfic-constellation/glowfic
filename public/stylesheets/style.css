@@ -15,7 +15,7 @@ body { margin: 0 0 0 0; font-family: Helvetica, sans-serif; color: #101010; }
 #header a { color: #eae9e9; text-decoration: none; }
 
 /* Side Navigation Bar */
-#sidebar { width: 135px; background-color: #3e384f; color: #cbcbcb; vertical-align: top; text-align: center; }
+#sidebar { width: 135px; background-color: #3e384f; color: #eae9e9; vertical-align: top; text-align: center; }
 #sidebar ul { font-size: 14px; padding-left:20px; text-align:left; margin-top:10px; }
 #sidebar li { margin-bottom: 3px; }
 #sidebar h4 { margin: 10px; }
@@ -34,6 +34,7 @@ a .empty-avatar { color: #AAAABB; }
 
 /* Generic Helpers */
 h2 { margin: 5px; margin-top: 0px; color: #111111; }
+h3 { margin-top: 25px; margin-bottom: 0px; color: #111111; }
 .padding-10 { padding: 10px; }
 .padding-top-3 { padding-top: 3px; }
 .centered { text-align: center; }

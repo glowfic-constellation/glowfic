@@ -27,9 +27,10 @@
                 %li Account Settings
                 %li Inbox
                 %li Notifications
-                %li= link_to "Icons", icons_path
-                %li= link_to "Characters", characters_path
                 %li= link_to "Templates", templates_path
+                %li= link_to "Characters", characters_path
+                %li= link_to "Icons", icons_path
+                %li= link_to "Galleries", galleries_path
               = link_to logout_path, :method => :delete do
                 = button_tag "Log out"
             - else

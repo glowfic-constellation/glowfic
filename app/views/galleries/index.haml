@@ -1,0 +1,13 @@
+%h2 Your Galleries
+= link_to "Add Gallery", new_gallery_path
+%br
+- current_user.galleries.each do |gallery|
+  %h3
+    = gallery.name
+    = surround '(', ')' do
+      = link_to 'x', gallery_path(gallery), :method => :delete
+  = link_to "Add icon", add_gallery_path(gallery)
+  %br
+  - gallery.icons.each do |icon|
+    = link_to icon_path(icon) do
+      = image_tag icon.url 

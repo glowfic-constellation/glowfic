@@ -6,6 +6,11 @@ Rails.application.routes.draw do
   resources :users
   resources :icons
   resources :templates
-  resources :galleries
+  resources :galleries do
+    member do
+      get :add
+      post :icon
+    end
+  end
   resources :characters
 end

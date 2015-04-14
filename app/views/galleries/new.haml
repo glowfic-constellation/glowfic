@@ -1,0 +1,11 @@
+= form_for @gallery, :url => galleries_path, :method => :post do |f|
+  %table#signup.centered
+    %tr
+      %th.centered
+        New Gallery
+    %tr
+      %td
+        = f.text_field :name, :placeholder => "Gallery Name", :class => 'text'
+    %tr
+      %td.centered
+        = submit_tag "Create"
