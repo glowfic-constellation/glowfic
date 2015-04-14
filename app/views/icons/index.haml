@@ -3,4 +3,5 @@
 %br
 %br
 - @icons.each do |icon|
-  = image_tag icon.url 
+  = link_to icon_path(icon) do
+    = image_tag icon.url 

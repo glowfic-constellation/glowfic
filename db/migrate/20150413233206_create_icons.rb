@@ -3,7 +3,6 @@ class CreateIcons < ActiveRecord::Migration
     create_table :icons do |t|
       t.integer :user_id, :null => false
       t.string :url, :null => false
-      t.boolean :default, :default => false
       t.timestamps
     end
   end

@@ -3,6 +3,9 @@ class User < ActiveRecord::Base
   attr_protected :crypted
 
   has_many :icons
+  has_many :characters
+  has_many :galleries
+  has_many :templates
 
   validates_presence_of :username
   validates_uniqueness_of :username

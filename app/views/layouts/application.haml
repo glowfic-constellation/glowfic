@@ -10,12 +10,8 @@
   %body
     %table#wrapper
       %tr
-        %td#topbar{:colspan=>2}
-      %tr
-        %td#topbar2{:colspan=>2}
-      %tr
         %td#header{:colspan=>2}
-          Glowfic Forums
+          =link_to "Glowfic Forums", root_path
       %tr
         %td#sidebar
           .padding-top-3
@@ -31,6 +27,9 @@
                 %li Account Settings
                 %li Inbox
                 %li Notifications
+                %li= link_to "Icons", icons_path
+                %li= link_to "Characters", characters_path
+                %li= link_to "Templates", templates_path
               = link_to logout_path, :method => :delete do
                 = button_tag "Log out"
             - else

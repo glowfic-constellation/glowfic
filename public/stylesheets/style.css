@@ -1,28 +1,26 @@
 body, html { height: 100%; }
-body { margin: 0 0 0 0; font-family: Helvetica, sans-serif; color: #111111; }
+body { margin: 0 0 0 0; font-family: Helvetica, sans-serif; color: #101010; }
 
 /* Main Layout */
 #wrapper { margin: 0px; border-spacing: 0px; height: 100%; width: 100%; }
-#content { background-color: #FFFFFF; vertical-align: top; text-align: left; }
-#topbar { height: 6px; background-color: #222299; }
-#topbar2 { height: 2px; background-color: #FFFFFF; }
+#content { background-color: #e5dfd1; vertical-align: top; text-align: left; font-size: 16px; line-height: 20px; }
 #header {
     padding: 10px 0px;
-    background-color: #DDDDFA;
+    background-color: #3f7055;
     font-weight: bold;
-    font-size: 24px;
+    font-size: 26px;
     text-align: center;
-    border-bottom: 4px #222299 solid;
     height: 30px;
 }
+#header a { color: #eae9e9; text-decoration: none; }
 
 /* Side Navigation Bar */
-#sidebar { width: 135px; background-color: #EEEEFF; vertical-align: top; border-right: 2px #222299 solid; text-align: center; }
+#sidebar { width: 135px; background-color: #3e384f; color: #cbcbcb; vertical-align: top; text-align: center; }
 #sidebar ul { font-size: 14px; padding-left:20px; text-align:left; margin-top:10px; }
 #sidebar li { margin-bottom: 3px; }
 #sidebar h4 { margin: 10px; }
 #sidebar .text-input { width: 90%; border: 1px #222222 solid; margin: 0px auto 10px auto; display: block; height: 15px; }
-#sidebar a { color: #2222BB; font-weight: bold; text-decoration: none; font-size: 14px; }
+#sidebar a { color: #FFFFFF; font-weight: bold; text-decoration: none; font-size: 14px; }
 .empty-avatar { 
     width: 100px; 
     height: 100px; 
@@ -41,3 +39,4 @@ h2 { margin: 5px; margin-top: 0px; color: #111111; }
 .centered { text-align: center; }
 .error { background-color:#FFDDDD; border:1px black solid; padding: 10px; text-align: center; margin-bottom: 5px; }
 .success { background-color:#DDFFDD; border:1px black solid; padding: 10px; text-align: center; margin-bottom: 5px; }
+#signup select { height: 20px; width: 300px; border: 1px #111111 solid; padding: 5px; border-radius: 0px; }

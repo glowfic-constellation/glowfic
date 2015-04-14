@@ -5,4 +5,7 @@ Rails.application.routes.draw do
 
   resources :users
   resources :icons
+  resources :templates
+  resources :galleries
+  resources :characters
 end
