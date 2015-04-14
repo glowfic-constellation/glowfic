@@ -4,11 +4,17 @@ class SessionsController < ApplicationController
 
   def create
     user = User.find_by_username(params[:username])
-    if user && user.authenticate(params[:password])
+
+    if !user
+      flash[:error] = "That username does not exist."
+    elsif user.authenticate(params[:password])
+      flash[:success] = "You are now logged in as #{user.username}. Welcome back!"
       session[:user_id] = user.id
       @current_user = user
-      redirect_to root_url
+    else
+      flash[:error] = "You have entered an incorrect password."
     end
+    redirect_to root_url
   end
 
   def destroy

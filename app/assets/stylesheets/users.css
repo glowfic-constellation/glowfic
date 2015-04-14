@@ -1,0 +1,3 @@
+#signup { border-spacing: 5px; width: 300px; }
+#signup input.text { height: 20px; width: 300px; border: 1px #111111 solid; padding: 5px; }
+#signup th { background-color: #DDDDFA; padding: 10px 0px; border: 1px #111111 solid; } 

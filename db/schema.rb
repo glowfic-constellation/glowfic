@@ -11,11 +11,20 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20150413062555) do
+ActiveRecord::Schema.define(:version => 20150413233206) do
+
+  create_table "icons", :force => true do |t|
+    t.integer  "user_id",                       :null => false
+    t.string   "url",                           :null => false
+    t.boolean  "default",    :default => false
+    t.datetime "created_at",                    :null => false
+    t.datetime "updated_at",                    :null => false
+  end
 
   create_table "users", :force => true do |t|
     t.string   "username",   :null => false
     t.string   "crypted",    :null => false
+    t.string   "avatar"
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false
   end

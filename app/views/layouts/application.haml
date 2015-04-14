@@ -4,32 +4,51 @@
     %title Glowfic
     %meta{ :charset => "utf-8" }
     %link{ :href => "/stylesheets/style.css", :rel => "stylesheet", :type => "test/css", :media => "all" }
+    = stylesheet_link_tag 'application'
     = csrf_meta_tag
     = javascript_include_tag 'application'
   %body
     %table#wrapper
+      %tr
+        %td#topbar{:colspan=>2}
+      %tr
+        %td#topbar2{:colspan=>2}
       %tr
         %td#header{:colspan=>2}
           Glowfic Forums
       %tr
         %td#sidebar
           .padding-top-3
-            = image_tag "https://pbs.twimg.com/profile_images/482603626/avatar.png"
-            %b Marri
-            %ul
-              %li Account Settings
-              %li Inbox
-              %li Notifications
             - if logged_in?
-              = link_to "Log out", logout_path, :method => :delete
+              = link_to icons_path do
+                - if current_user.avatar
+                  = image_tag current_user.avatar
+                  %br
+                - else
+                  .empty-avatar Icon
+              %b= current_user.username
+              %ul
+                %li Account Settings
+                %li Inbox
+                %li Notifications
+              = link_to logout_path, :method => :delete do
+                = button_tag "Log out"
             - else
+              %h4 Log In
               = form_tag login_path, :method => :post do
-                = text_field_tag :username
-                %br
-                = password_field_tag :password
-                %br
+                = text_field_tag :username, params[:username], :class => "text-input", :placeholder => "Username"
+                = password_field_tag :password, params[:password], :class => "text-input", :placeholder => "Password"
                 = submit_tag "Log in"
+                %br
+                %br
+                = link_to "Sign up", new_user_path
 
         %td#content
           .padding-10
+            - if flash[:error].present?
+              .error
+                = flash[:error]
+            - if flash[:success].present?
+              .success
+                = flash[:success]
             = yield

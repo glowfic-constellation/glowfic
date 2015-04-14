@@ -1,52 +1,43 @@
-body, html {
-    height: 100%;
-    background-color: #EEEEFF;
-}
+body, html { height: 100%; }
+body { margin: 0 0 0 0; font-family: Helvetica, sans-serif; color: #111111; }
 
-body {
-    margin: 0 0 0 0;
-    font-family: Helvetica, sans-serif;
-}
-
+/* Main Layout */
+#wrapper { margin: 0px; border-spacing: 0px; height: 100%; width: 100%; }
+#content { background-color: #FFFFFF; vertical-align: top; text-align: left; }
+#topbar { height: 6px; background-color: #222299; }
+#topbar2 { height: 2px; background-color: #FFFFFF; }
 #header {
     padding: 10px 0px;
     background-color: #DDDDFA;
     font-weight: bold;
     font-size: 24px;
-    color: #000077;
     text-align: center;
-    border-bottom: 1px #4444AA solid;
+    border-bottom: 4px #222299 solid;
     height: 30px;
 }
 
-#wrapper {
-    margin: 0px;
-    border-spacing: 0px;
-    height: 100%;
-    width: 100%;
-}
-
-#sidebar {
-    width: 135px;
-    background-color: #EEEEFF;
-    vertical-align: top;
-    border-right: 1px #4444AA solid;
-    text-align: center;
-}
-
-#sidebar ul {
-    font-size: 14px;
-    padding-left:20px;
-    text-align:left;
-    margin-top:10px;
-}
-
+/* Side Navigation Bar */
+#sidebar { width: 135px; background-color: #EEEEFF; vertical-align: top; border-right: 2px #222299 solid; text-align: center; }
+#sidebar ul { font-size: 14px; padding-left:20px; text-align:left; margin-top:10px; }
 #sidebar li { margin-bottom: 3px; }
-
-#content {
-    background-color: #FFFFFF;
-    vertical-align: top;
+#sidebar h4 { margin: 10px; }
+#sidebar .text-input { width: 90%; border: 1px #222222 solid; margin: 0px auto 10px auto; display: block; height: 15px; }
+#sidebar a { color: #2222BB; font-weight: bold; text-decoration: none; font-size: 14px; }
+.empty-avatar { 
+    width: 100px; 
+    height: 100px; 
+    background-color: #DDDDEE; 
+    border: 1px #777788 solid; 
+    margin: 0px auto 10px auto; 
+    font-size: 32px; 
+    line-height: 105px; 
 }
+a .empty-avatar { color: #AAAABB; }
 
+/* Generic Helpers */
+h2 { margin: 5px; margin-top: 0px; color: #111111; }
 .padding-10 { padding: 10px; }
 .padding-top-3 { padding-top: 3px; }
+.centered { text-align: center; }
+.error { background-color:#FFDDDD; border:1px black solid; padding: 10px; text-align: center; margin-bottom: 5px; }
+.success { background-color:#DDFFDD; border:1px black solid; padding: 10px; text-align: center; margin-bottom: 5px; }

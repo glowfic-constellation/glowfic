@@ -1,0 +1,6 @@
+%h2 Your Icons
+= link_to "Add Icon", new_icon_path
+%br
+%br
+- @icons.each do |icon|
+  = image_tag icon.url 

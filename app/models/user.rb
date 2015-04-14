@@ -2,6 +2,8 @@ class User < ActiveRecord::Base
   attr_accessor :password
   attr_protected :crypted
 
+  has_many :icons
+
   validates_presence_of :username
   validates_uniqueness_of :username
   validates_length_of :username, :in => 2..80, :allow_blank => true

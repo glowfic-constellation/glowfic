@@ -1,0 +1,11 @@
+= form_for @icon, :url => icons_path, :method => :post do |f|
+  %table#signup.centered
+    %tr
+      %th.centered
+        Add Icons
+    %tr
+      %td
+        = f.text_field :url, :placeholder => "URL", :class => 'text'
+    %tr
+      %td.centered
+        = submit_tag "Add Icon"
