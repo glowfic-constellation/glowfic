@@ -1,0 +1,14 @@
+= form_for @character, :url => characters_path, :method => :post do |f|
+  %table#signup.centered
+    %tr
+      %th.centered
+        New Character
+    %tr
+      %td
+        = f.text_field :name, :placeholder => "Character Name", :class => 'text'
+    %tr
+      %td
+        = f.collection_select(:template_id, current_user.templates, :id, :name, {:include_blank => '-- Choose Template --'}, {:class => 'text'})
+    %tr
+      %td.centered
+        = submit_tag "Create"

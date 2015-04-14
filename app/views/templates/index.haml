@@ -1,0 +1,9 @@
+%h2 Your Templates
+= link_to "Add Template", new_template_path
+%br
+%br
+- @templates.each do |template|
+  = link_to template.name, template_path(template)
+  = ' | '
+  = link_to 'x', template_path(template), :method => :delete
+  %br

@@ -1,0 +1,12 @@
+%h2 Your Characters
+= link_to "Add Character", new_character_path
+%br
+%br
+- @characters.each do |character|
+  = link_to character.name, character_path(character)
+  - if character.template
+    = surround '(', ')' do
+      = link_to character.template.name, template_path(character.template)
+  \|
+  = link_to 'x', character_path(character), :method => :delete
+  %br
