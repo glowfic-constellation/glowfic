@@ -13,7 +13,7 @@
         %td#header{:colspan=>2}
           =link_to "Glowfic Forums", root_path
       %tr
-        %td#sidebar
+        %td#sidebar{:rowspan=>2}
           .padding-top-3
             - if logged_in?
               = link_to icons_path do
@@ -42,13 +42,13 @@
                 %br
                 %br
                 = link_to "Sign up", new_user_path
-
+        - if flash[:error].present?
+          %td.error= flash[:error]
+        - elsif flash[:success].present?
+          %td.success= flash[:success]
+        - else
+          %td.navigation Navbar
+      %tr
         %td#content
-          .padding-10
-            - if flash[:error].present?
-              .error
-                = flash[:error]
-            - if flash[:success].present?
-              .success
-                = flash[:success]
+          .padding-20
             = yield

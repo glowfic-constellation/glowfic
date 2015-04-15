@@ -35,9 +35,10 @@ a .empty-avatar { color: #AAAABB; }
 /* Generic Helpers */
 h2 { margin: 5px; margin-top: 0px; color: #111111; }
 h3 { margin-top: 25px; margin-bottom: 0px; color: #111111; }
-.padding-10 { padding: 10px; }
+.padding-20 { padding: 20px; }
 .padding-top-3 { padding-top: 3px; }
 .centered { text-align: center; }
-.error { background-color:#FFDDDD; border:1px black solid; padding: 10px; text-align: center; margin-bottom: 5px; }
-.success { background-color:#DDFFDD; border:1px black solid; padding: 10px; text-align: center; margin-bottom: 5px; }
+.error { background-color: #FFDDDD; height: 30px; padding: 5px 15px; }
+.success { background-color: #DDEEDD; height: 30px; padding: 5px 15px; }
+.navigation { background-color: #B9B6AD; height: 30px; padding: 5px 15px; }
 #signup select { height: 20px; width: 300px; border: 1px #111111 solid; padding: 5px; border-radius: 0px; }
