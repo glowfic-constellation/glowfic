@@ -27,11 +27,29 @@ h2 { margin: 5px; margin-top: 0px; color: #111111; }
 h3 { margin-top: 25px; margin-bottom: 0px; color: #111111; }
 .padding-20 { padding: 20px; }
 .padding-top-3 { padding-top: 3px; }
+.height-75 { height: 75px; }
 .centered { text-align: center; }
+.float-right { float: right; }
 .error { background-color: #FFDDDD; height: 30px; padding: 5px 20px; }
 .success { background-color: #DDEEDD; height: 30px; padding: 5px 20px; }
 .navigation { background-color: #B9B6AD; height: 30px; padding: 5px 20px; }
 .navigation-mini { background-color: #B9B6AD; height: 30px; padding: 5px 2px; width: 5px; }
+
+/* Content tables */
+#content table { width: 100%; margin: 0px auto; border-spacing: 0px; font-size: 14px; }
+#content th { background-color:#8B8687; color:#eee; padding:15px; font-size:18px; font-weight:normal; }
+#content td.even { background-color: #E3E3E3; }
+#content td.odd { background-color: #D8D8D8; }
+#content td.green { background-color: #B0BBA9; }
+#content td.dark { background-color: #8B8687; }
+#content td.bg { background-color: #e5dfd1; }
+#content td.beige { background-color: #B9B6AD; }
+#content td.spacer { height: 2px; }
+#content td.label { height: 10px; }
+#content td.icon-holder { width:100px; padding: 15px; vertical-align: middle; text-align: center; }
+#content td.post { vertical-align: top; padding: 20px; }
+#content td .gallery { padding: 10px; }
+#content td .gallery img { margin: 5px; }
 
 /* TEMP */
 #signup select { height: 20px; width: 300px; border: 1px #111111 solid; padding: 5px; border-radius: 0px; }

@@ -1,35 +1,23 @@
-%table{:style=>"width:100%;margin:0px auto;border-spacing: 0px;font-size:14px;"}
+%table
   %tr
-    %th{:colspan=>2,:style=>"background-color:#8B8687;color:#eee;padding:15px;font-size:18px;font-weight:normal;"} 
+    %th{ :colspan => 2 }
       Title of the thing here
-      .float-right{:style=>"float:right"} Page: 1, 2, 3 ... 7
+      .float-right Page: 1, 2, 3 ... 7
   %tr
-    %td{:colspan=>2,:style=>"background-color:#e5dfd1;height:2px;"}
+    %td.bg.spacer{ :colspan => 2 }
+  - ['http://v.dreamwidth.org/8063783/2291446', 'http://v.dreamwidth.org/6227310/2024455', 'http://v.dreamwidth.org/5691284/1965181'].each do |img|
+    %tr
+      %td.green.icon-holder
+        = image_tag img
+      %td.post{ :rowspan=>4, :class=>cycle('even', 'odd') } Tiny words! Such tiny words, goodness, look at them.
+    %tr
+      %td.dark.label
+    %tr
+      %td.beige.height-75
+    %tr
+      %td.dark.spacer
+    %tr
+      %td.bg.spacer{ :colspan => 2 }
   %tr
-    %td{:style=>"background-color:#B0BBA9;width:100px;padding: 15px; vertical-align: middle; text-align: center;"}
-      = image_tag 'http://v.dreamwidth.org/8063783/2291446'
-    %td{:rowspan=>4,:style=>"vertical-align:top;background-color:#E3E3E3;padding:20px;"} Tiny words! Such tiny words, goodness, look at them.
-  %tr
-    %td{:style=>"background-color:#8B8687;height:10px;"}
-  %tr
-    %td{:style=>"background-color:#B9B6AD;height:75px;"}
-  %tr
-    %td{:style=>"background-color:#8B8687;height:2px;"}
-  %tr
-    %td{:colspan=>2,:style=>"background-color:#e5dfd1;height:2px;"}
-  %tr
-    %td{:style=>"background-color:#B0BBA9;width:100px;padding: 15px; vertical-align: middle; text-align: center;"}
-      = image_tag 'http://v.dreamwidth.org/7969534/2236063'
-    %td{:rowspan=>4,:style=>"vertical-align:top;background-color:#D8D8D8;padding:20px;"} Tiny words! Such tiny words, goodness, look at them.
-  %tr
-    %td{:style=>"background-color:#8B8687;height:10px;"}
-  %tr
-    %td{:style=>"background-color:#B9B6AD;height:75px;"}
-  %tr
-    %td{:style=>"background-color:#8B8687;height:2px;"}
-  %tr
-    %td{:colspan=>2,:style=>"background-color:#e5dfd1;height:2px;"}
-  %tr
-    %th{:colspan=>2,:style=>"background-color:#8B8687;color:#eee;padding:15px;font-size:18px;font-weight:normal;"} 
-      .float-right{:style=>"float:right"} Page: 1, 2, 3 ... 7
-
+    %th{ :colspan => 2 }
+      .float-right Page: 1, 2, 3 ... 7

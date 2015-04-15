@@ -1,13 +1,18 @@
 %h2 Your Galleries
 = link_to "Add Gallery", new_gallery_path
 %br
-- current_user.galleries.each do |gallery|
-  %h3
-    = gallery.name
-    = surround '(', ')' do
-      = link_to 'x', gallery_path(gallery), :method => :delete
-  = link_to "Add icon", add_gallery_path(gallery)
-  %br
-  - gallery.icons.each do |icon|
-    = link_to icon_path(icon) do
-      = image_tag icon.url 
+%table
+  - current_user.galleries.each do |gallery|
+    %tr
+      %th.padding-10
+        = gallery.name
+        = surround '(', ')' do
+          = link_to 'x', gallery_path(gallery), :method => :delete
+        = link_to "Add icon", add_gallery_path(gallery)
+        .float-right{:id => gallery.id, :onclick=>"$('#gallery'+$(this).attr('id')).toggle();$(this).html($(this).html() == '-' ? '+' : '-');",:style=>'cursor: pointer;width:20px; text-align: center;'} -
+    %tr
+      %td.green{:style=>"height:5px;"}
+        .gallery{:id => 'gallery'+gallery.id.to_s }
+          - (gallery.icons * 15).each do |icon|
+            = link_to icon_path(icon) do
+              = image_tag icon.url
