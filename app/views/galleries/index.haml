@@ -13,6 +13,6 @@
     %tr
       %td.green{:style=>"height:5px;"}
         .gallery{:id => 'gallery'+gallery.id.to_s }
-          - (gallery.icons * 15).each do |icon|
+          - gallery.icons.each do |icon|
             = link_to icon_path(icon) do
               = image_tag icon.url
