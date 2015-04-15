@@ -9,10 +9,10 @@ body { margin: 0 0 0 0; font-family: Helvetica, sans-serif; color: #101010; }
     background-color: #3f7055;
     font-weight: bold;
     font-size: 26px;
-    text-align: center;
+    text-align: right;
     height: 30px;
 }
-#header a { color: #eae9e9; text-decoration: none; }
+#header a { color: #eae9e9; text-decoration: none; margin-right: 20px; }
 
 /* Side Navigation Bar */
 #sidebar { width: 135px; background-color: #3e384f; color: #eae9e9; vertical-align: top; text-align: center; }
@@ -21,6 +21,20 @@ body { margin: 0 0 0 0; font-family: Helvetica, sans-serif; color: #101010; }
 #sidebar h4 { margin: 10px; }
 #sidebar .text-input { width: 90%; border: 1px #222222 solid; margin: 0px auto 10px auto; display: block; height: 15px; }
 #sidebar a { color: #FFFFFF; font-weight: bold; text-decoration: none; font-size: 14px; }
+
+/* Generic Helpers */
+h2 { margin: 5px; margin-top: 0px; color: #111111; }
+h3 { margin-top: 25px; margin-bottom: 0px; color: #111111; }
+.padding-20 { padding: 20px; }
+.padding-top-3 { padding-top: 3px; }
+.centered { text-align: center; }
+.error { background-color: #FFDDDD; height: 30px; padding: 5px 20px; }
+.success { background-color: #DDEEDD; height: 30px; padding: 5px 20px; }
+.navigation { background-color: #B9B6AD; height: 30px; padding: 5px 20px; }
+.navigation-mini { background-color: #B9B6AD; height: 30px; padding: 5px 2px; width: 5px; }
+
+/* TEMP */
+#signup select { height: 20px; width: 300px; border: 1px #111111 solid; padding: 5px; border-radius: 0px; }
 .empty-avatar { 
     width: 100px; 
     height: 100px; 
@@ -31,14 +45,3 @@ body { margin: 0 0 0 0; font-family: Helvetica, sans-serif; color: #101010; }
     line-height: 105px; 
 }
 a .empty-avatar { color: #AAAABB; }
-
-/* Generic Helpers */
-h2 { margin: 5px; margin-top: 0px; color: #111111; }
-h3 { margin-top: 25px; margin-bottom: 0px; color: #111111; }
-.padding-20 { padding: 20px; }
-.padding-top-3 { padding-top: 3px; }
-.centered { text-align: center; }
-.error { background-color: #FFDDDD; height: 30px; padding: 5px 15px; }
-.success { background-color: #DDEEDD; height: 30px; padding: 5px 15px; }
-.navigation { background-color: #B9B6AD; height: 30px; padding: 5px 15px; }
-#signup select { height: 20px; width: 300px; border: 1px #111111 solid; padding: 5px; border-radius: 0px; }

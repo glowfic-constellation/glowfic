@@ -1,4 +1,5 @@
 class IconsController < ApplicationController
+  before_filter :login_required
   before_filter :find_icon, :only => [:show, :destroy]
 
   def index

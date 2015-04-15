@@ -10,10 +10,12 @@
   %body
     %table#wrapper
       %tr
-        %td#header{:colspan=>2}
-          =link_to "Glowfic Forums", root_path
+        %td#header{:colspan=>3}
+          =link_to root_path do
+            = image_tag '/images/logo.png'
       %tr
-        %td#sidebar{:rowspan=>2}
+        %td.navigation-mini
+        %td#sidebar{:rowspan=>2 + flash.keys.size}
           .padding-top-3
             - if logged_in?
               = link_to icons_path do
@@ -42,13 +44,13 @@
                 %br
                 %br
                 = link_to "Sign up", new_user_path
-        - if flash[:error].present?
-          %td.error= flash[:error]
-        - elsif flash[:success].present?
-          %td.success= flash[:success]
-        - else
-          %td.navigation Navbar
-      %tr
-        %td#content
-          .padding-20
-            = yield
+        %td.navigation Navbar
+      <tr>
+      %td#content{:rowspan => 1 + flash.keys.size }
+      - flash.keys.each do |key|
+        %td{:class=>key}= flash[key]
+        </tr><tr>
+      %td#content
+        .padding-20
+          = yield
+      </tr>

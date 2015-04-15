@@ -1,4 +1,5 @@
 class TemplatesController < ApplicationController
+  before_filter :login_required
   before_filter :find_template, :only => [:show, :destroy]
 
   def index

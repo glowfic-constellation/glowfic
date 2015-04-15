@@ -12,4 +12,11 @@ class ApplicationController < ActionController::Base
     session[:user_id].present?
   end
   helper_method :logged_in?
+
+  def login_required
+    unless logged_in?
+      flash[:error] = "You must be logged in to view that page."
+      redirect_to root_path
+    end
+  end
 end

@@ -1,4 +1,5 @@
 class GalleriesController < ApplicationController
+  before_filter :login_required
   before_filter :find_gallery, :only => [:add, :icon, :destroy]
 
   def index
