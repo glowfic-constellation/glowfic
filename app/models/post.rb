@@ -9,7 +9,7 @@ class Post < ActiveRecord::Base
   has_many :replies, inverse_of: :post, dependent: :destroy
   has_many :post_viewers
 
-  attr_accessible :board, :board_id, :subject, :privacy, :post_viewer_ids
+  attr_accessible :board, :board_id, :subject, :privacy, :post_viewer_ids, :updated_at
   attr_accessor :post_viewer_ids
 
   validates_presence_of :board, :subject
