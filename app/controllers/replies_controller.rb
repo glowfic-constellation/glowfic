@@ -8,10 +8,11 @@ class RepliesController < ApplicationController
     reply.user = current_user
     if reply.save
       flash[:success] = "Posted!"
+      redirect_to reply_link(reply)
     else
       flash[:error] = "Problems. "+reply.errors.full_messages.to_s
+      redirect_to post_path(reply.post)
     end
-    redirect_to post_path(reply.post, anchor: "reply-#{reply.id}")
   end
 
   def edit
@@ -23,7 +24,7 @@ class RepliesController < ApplicationController
   def update
     @reply.update_attributes(params[:reply])
     flash[:success] = "Post updated"
-    redirect_to post_path(@reply.post, anchor: "reply-#{@reply.id}")
+    redirect_to reply_link(@reply)
   end
 
   def destroy
@@ -53,5 +54,14 @@ class RepliesController < ApplicationController
 
     gon.current_user = current_user.gon_attributes
     gon.character_path = character_user_path(current_user)
+  end
+
+  def reply_link(reply)
+    per = per_page > 0 ? per_page : reply.post.replies.count
+    array = reply.post.replies.select(:id).map(&:id)
+    hash = Hash[array.map.with_index.to_a]
+    reply_index = hash[reply.id]
+    page = (reply_index / per) + 1
+    post_path(reply.post, anchor: "reply-#{reply.id}", page: page)
   end
 end
