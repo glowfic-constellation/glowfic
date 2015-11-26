@@ -23,7 +23,6 @@ Finicky Tidiness
 Characters
 - How does it handle posts with a character after that character is deleted? Ditto icons?
 - Add ability to tag a character with continuities, and if posting in a restricted continuity, filter to that continuity.
-- List view for characters/index
 
 Questions
 - Where do things go in a post? Character name and screenname, poster, timestamp, edit/delete buttons
@@ -43,7 +42,6 @@ Must Dos
 - Edit icons
 - Handle multiple characters with the same name (via screennames? Something else?)
 - user/show page
-- Post visibility (public, private, access list)
 - Continuity index handler
 
 V2
