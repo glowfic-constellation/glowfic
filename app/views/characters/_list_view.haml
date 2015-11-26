@@ -1,4 +1,4 @@
-- current_user.templates.order('name asc').each do |template|  
+- @user.templates.order('name asc').each do |template|  
   %tr
     %td.beige.padding-10{colspan: 3}
       %b Template: #{template.name}
@@ -17,11 +17,11 @@
         = link_to character.name, character_path(character)
       %td{class: klass, style:'width:33%'}= character.template_name
       %td{class: klass, style:'width:33%'}= character.screenname
-- unless current_user.characters.where(template_id: nil).count.zero?
+- unless @user.characters.where(template_id: nil).count.zero?
   %tr
     %td.beige.padding-10{colspan: 3}
       %b No Template
-- current_user.characters.where(template_id: nil).order('name asc').each do |character|
+- @user.characters.where(template_id: nil).order('name asc').each do |character|
   - klass = cycle('even', 'odd')
   %tr
     %td.padding-5.left-align{class: klass}

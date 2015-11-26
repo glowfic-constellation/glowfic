@@ -1,0 +1,6 @@
+- if @user.avatar
+  = icon_tag @user.avatar
+  %br
+%b= @user.username
+%br
+= link_to "#{@user.username}'s characters", user_characters_path(@user)

@@ -4,7 +4,16 @@ class CharactersController < ApplicationController
   before_filter :require_own_character, :only => [:edit, :update, :destroy, :icon]
 
   def index
-    @characters = current_user.characters.order('name asc')
+    @user = current_user
+    if params[:user_id]
+      @user = User.find_by_id(params[:user_id])
+      unless @user
+        flash[:error] = "User could not be found."
+        redirect_to users_path
+      end
+    end
+
+    @characters = @user.characters.order('name asc')
   end
 
   def new

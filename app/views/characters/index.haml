@@ -1,17 +1,22 @@
 %table
   %tr
     %th{colspan: 3}
-      Your Characters
-      = link_to new_character_path do
-        .character-new-select
-          + New Character
-      = link_to characters_path(params: {view: 'icons'}) do
+      - if @user.id == current_user.id
+        Your
+      - else
+        = @user.username + "'s"
+      Characters
+      - if @user.id == current_user.id
+        = link_to new_character_path do
+          .character-new-select
+            + New Character
+      = link_to url_for(view: 'icons') do
         .character-view-select
-          = image_tag 'http://www.omarrivas.com/images/Icon-grid.png', class:'character-icon-select'
+          = image_tag '/images/grid.png', class:'character-icon-select'
           Icons
-      = link_to characters_path(params: {view: 'list'}) do
+      = link_to url_for(view: 'list') do
         .character-view-select
-          = image_tag 'http://www.admissions.msstate.edu/sites/www.admissions.msstate.edu/themes/admissions/img/iconmonstr-bulleted-list-icon-256_white.png?s=1', class:'character-list-select', alt: ''
+          = image_tag '/images/list.png', class:'character-list-select', alt: ''
           List
   - if params[:view] == 'list'
     = render partial: 'list_view'
