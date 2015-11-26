@@ -62,6 +62,9 @@ class RepliesController < ApplicationController
     hash = Hash[array.map.with_index.to_a]
     reply_index = hash[reply.id]
     page = (reply_index / per) + 1
-    post_path(reply.post, anchor: "reply-#{reply.id}", page: page)
+    dict = {anchor: "reply-#{reply.id}"}
+    dict['page'] = page if page > 1
+    dict['per_page'] = params[:per_page] if params[:per_page]
+    post_path(reply.post, dict)
   end
 end
