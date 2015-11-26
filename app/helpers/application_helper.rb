@@ -13,6 +13,11 @@ module ApplicationHelper
     time_string.html_safe
   end
 
+  def pretty_time(time)
+    return unless time
+    time.strftime("%b %d, %Y ") + time.hour.to_s + time.strftime(":%M %p")
+  end
+
   def path_for(obj, path)
     send (path + '_path') % obj.class.to_s.downcase, obj
   end

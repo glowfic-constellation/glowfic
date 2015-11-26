@@ -26,10 +26,6 @@ class Post < ActiveRecord::Base
     (post_viewers.map(&:user_id) + [user_id]).include?(user.id)
   end
 
-  def pretty_updated_at
-    updated_at.strftime("%b %d, %Y ") + updated_at.hour.to_s + updated_at.strftime(":%M %p")
-  end
-
   def self.privacy_settings
     { 'Public'      => PRIVACY_PUBLIC,
       'Access List' => PRIVACY_LIST,

@@ -1,6 +1,16 @@
 class UsersController < ApplicationController
   before_filter :signup_prep, :only => :new
-  before_filter :login_required, :except => [:new, :create, :username]
+  before_filter :login_required, :except => [:index, :show, :new, :create, :username]
+
+  def index
+  end
+
+  def show
+    unless @user = User.find_by_id(params[:id])
+      flash[:error] = "User could not be found."
+      redirect_to users_path and return
+    end
+  end
 
   def new
     @user = User.new

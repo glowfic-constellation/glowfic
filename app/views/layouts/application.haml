@@ -50,6 +50,8 @@
           = link_to 'Recently Updated', posts_path
           |
           = link_to 'Search', search_posts_path
+          |
+          = link_to 'Glowficcers', users_path
       <tr>
       %td#content-sidebar{:rowspan => 1 + flash.keys.size}
       - flash.keys.each do |key|
