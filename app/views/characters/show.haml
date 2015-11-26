@@ -1,0 +1,28 @@
+- if @character.icon
+  = icon_tag @character.icon
+%br
+%b= @character.screenname
+%br
+= @character.name
+- if @character.template
+  = surround '(', ')' do
+    = link_to @character.template.name, template_path(@character.template)
+- if logged_in? && current_user.id == @character.user_id
+  %br
+  = link_to 'Edit character', edit_character_path(@character)
+%br
+%br
+- if @character.recent_posts.present?
+  %table
+    %tr
+      %th{colspan: 3} Recent Threads
+    %tr
+      %th.sub Thread
+      %th.sub Continuity
+      %th.sub Last Updated
+    - @character.recent_posts.each do |post|
+      %tr
+        - klass = cycle('even', 'odd')
+        %td.padding-10{class: klass}= link_to post.subject, post_path(post)
+        %td.padding-10{class: klass}= post.board.name
+        %td.padding-10{class: klass}= post.updated_at.strftime("%b %d, %Y ") + post.updated_at.hour.to_s + post.updated_at.strftime(":%M %p")

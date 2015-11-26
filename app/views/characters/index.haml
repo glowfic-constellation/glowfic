@@ -1,12 +1,19 @@
-%h2 Your Characters
-= link_to "Add Character", new_character_path
-%br
-%br
-- @characters.each do |character|
-  = link_to character.name, character_path(character)
-  - if character.template
-    = surround '(', ')' do
-      = link_to character.template.name, template_path(character.template)
-  \|
-  = link_to 'x', character_path(character), :method => :delete
-  %br
+%table
+  %tr
+    %th{colspan: 3}
+      Your Characters
+      = link_to new_character_path do
+        .character-new-select
+          + New Character
+      = link_to characters_path(params: {view: 'icons'}) do
+        .character-view-select
+          = image_tag 'http://www.omarrivas.com/images/Icon-grid.png', class:'character-icon-select'
+          Icons
+      = link_to characters_path(params: {view: 'list'}) do
+        .character-view-select
+          = image_tag 'http://www.admissions.msstate.edu/sites/www.admissions.msstate.edu/themes/admissions/img/iconmonstr-bulleted-list-icon-256_white.png?s=1', class:'character-list-select', alt: ''
+          List
+  - if params[:view] == 'list'
+    = render partial: 'list_view'
+  - else
+    = render partial: 'icon_view'

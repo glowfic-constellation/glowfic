@@ -1,15 +1,20 @@
 class User < ActiveRecord::Base
-  attr_accessor :password
+  MIN_USERNAME_LEN = 3
+  MAX_USERNAME_LEN = 80
+
+  attr_accessor :password, :password_confirmation
   attr_protected :crypted
 
   has_many :icons
+  belongs_to :avatar, :class_name => Icon
   has_many :characters
   has_many :galleries
   has_many :templates
+  belongs_to :active_character, :class_name => Character
 
   validates_presence_of :username
   validates_uniqueness_of :username
-  validates_length_of :username, :in => 2..80, :allow_blank => true
+  validates_length_of :username, :in => MIN_USERNAME_LEN..MAX_USERNAME_LEN, :allow_blank => true
   validates_length_of :password, :in => 6..25, :on => :create
   validates_confirmation_of :password, :on => :create
   validate :password_present
@@ -17,8 +22,31 @@ class User < ActiveRecord::Base
   before_save :encrypt_password
   after_save :clear_password
 
+  def messages
+    [] # TODO
+  end
+
   def authenticate(password)
     crypted == crypted_password(password)
+  end
+
+  def avatar=(val)
+    write_attribute(:avatar_id, val.id) and return if val.is_a?(Icon)
+    self.avatar_id = nil and return unless val.present?
+    self.avatar.update_attributes(url: val) and return if self.avatar # TODO nope make new or update existing
+    self.avatar_id = Icon.create(user: self, url: val, keyword: 'Avatar').id
+  end
+
+  def gon_attributes
+    { 
+      :username => username, 
+      :active_character_id => active_character_id, 
+      :avatar => { :id => avatar.try(:id), :url => avatar.try(:url) },
+    }
+  end
+
+  def writes_in?(continuity)
+    continuity.open_to?(self)
   end
 
   private

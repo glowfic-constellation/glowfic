@@ -1,0 +1,5 @@
+%table
+  = render partial: @view
+  - if current_user.messages.empty?
+    %tr
+      %td.centered.odd.padding-10 — No messages yet —

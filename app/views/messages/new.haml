@@ -1,0 +1,9 @@
+%table
+  %tr
+    %th{colspan: 3}
+      New Message!
+      = link_to new_message_path do
+        .character-new-select + Write Message
+  - if current_user.messages.empty?
+    %tr
+      %td.centered.odd.padding-10 — You have no messages yet —

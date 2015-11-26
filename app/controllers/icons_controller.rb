@@ -1,6 +1,6 @@
 class IconsController < ApplicationController
   before_filter :login_required
-  before_filter :find_icon, :only => [:show, :destroy]
+  before_filter :find_icon, :only => [:show, :destroy, :avatar]
 
   def index
     @icons = current_user.icons
@@ -17,7 +17,7 @@ class IconsController < ApplicationController
       flash[:success] = "Icon saved successfully."
       redirect_to icons_path
     else
-      flash[:error] = "Your icon could not be saved."
+      flash.now[:error] = "Your icon could not be saved."
       render :action => :new
     end
   end
@@ -29,6 +29,15 @@ class IconsController < ApplicationController
     @icon.destroy
     flash[:success] = "Icon deleted successfully."
     redirect_to icons_path
+  end
+
+  def avatar
+    if current_user.update_attributes(avatar: @icon)
+      flash[:success] = "Avatar has been set!"
+    else
+      flash[:error] = "Something went wrong."
+    end
+    redirect_to icon_path(@icon)
   end
 
   private

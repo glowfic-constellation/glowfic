@@ -1,0 +1,25 @@
+.gallery-box { cursor: pointer; width: 20px; text-align: center; }
+.gallery-icon { min-height: 140px; display: inline-block; text-align: center; line-height: 14px; margin-bottom: 10px; position: relative; float: left; width: 130px; word-wrap: break-word; }
+.gallery-title { height: 5px; }
+.gallery-delete { position: absolute; top: 0px; right: 8px; width: 10px; background-color: #e5dfd1; border: 1px #C00 solid; color: #C00; padding: 3px; cursor: pointer; }
+.gallery-delete a { color: #C00; }
+#gallery { z-index: 4; }
+
+.character-view-select a { color: white; }
+.character-view-select {
+    display:inline-block;
+    background-color:#B9B6AD;
+    font-size:18px;
+    margin:0px;
+    margin-left:5px;
+    background-image:none;
+    border:0px;
+    color:white;
+    padding: 4px 12px;
+    border-radius:5px;
+    float:right;
+    cursor:pointer;
+}
+.character-list-select {width:20px;height:17px;display:inline;margin:0px;padding:0px;top:2px;position:relative;}
+.character-icon-select { width: 15px; height: 15px; display: inline; margin: 0px; padding: 0px; top: 2px; position: relative; }
+.character-new-select {display:inline-block;background-color:#3f7055;font-size:18px;margin:0px;margin-left:5px;background-image:none;border:0px;color:white;padding: 4px 12px;border-radius:5px;}

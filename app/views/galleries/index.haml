@@ -7,12 +7,18 @@
       %th.padding-10
         = gallery.name
         = surround '(', ')' do
-          = link_to 'x', gallery_path(gallery), :method => :delete
-        = link_to "Add icon", add_gallery_path(gallery)
-        .float-right{:id => gallery.id, :onclick=>"$('#gallery'+$(this).attr('id')).toggle();$(this).html($(this).html() == '-' ? '+' : '-');",:style=>'cursor: pointer;width:20px; text-align: center;'} -
+          = link_to 'x', gallery_path(gallery), :method => :delete, confirm: 'Are you sure you want to delete this gallery?'
+        = link_to 'Add icon', add_gallery_path(gallery)
+        .gallery-box.float-right{id: gallery.id} -
     %tr
-      %td.green{:style=>"height:5px;"}
-        .gallery{:id => 'gallery'+gallery.id.to_s }
-          - gallery.icons.each do |icon|
-            = link_to icon_path(icon) do
-              = image_tag icon.url
+      %td.green.gallery-title
+        .gallery{id: 'gallery'+gallery.id.to_s}
+          - gallery.icons.order('keyword asc').each do |icon|
+            .gallery-icon{ id: 'icon'+icon.id.to_s }
+              = link_to icon_path(icon) do
+                = icon_tag icon
+                %br
+                = icon.keyword
+              .gallery-delete{ id: icon.id, gallery: gallery.id } X
+          - if gallery.icons.empty?
+            .centered — No icons yet —

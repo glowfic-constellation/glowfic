@@ -5,5 +5,6 @@ class CreateTemplates < ActiveRecord::Migration
       t.string :name
       t.timestamps
     end
+    add_index :templates, :user_id
   end
 end

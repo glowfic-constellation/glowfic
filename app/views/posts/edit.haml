@@ -1,0 +1,7 @@
+%table
+  %tr
+    %th{colspan: 2}
+      Edit post
+  %tr
+    %td.bg.spacer{ :colspan => 2 }
+  = render partial: 'write_post', locals: { post: @post, url: post_path(@post), method: :put }

@@ -1,0 +1,17 @@
+%tr
+  %td.green.left-align
+    .gallery
+      - @characters.each do |character|
+        .gallery-icon
+          = link_to character_path(character) do
+            - if character.icon
+              = icon_tag character.icon
+              %br
+            - else
+              <div class='icon' style='display:inline-block;background:#B0BBA9;border:1px #555 solid;'>&nbsp;</div>
+              %br
+            = character.name
+          .gallery-delete{ id: character.id }
+            = link_to 'X', character_path(character), :method => :delete, confirm: 'Are you sure you want to delete '+character.name+'?'
+      - if @characters.empty?
+        .centered — No characters yet —

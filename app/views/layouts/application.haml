@@ -3,10 +3,11 @@
   %head
     %title Glowfic
     %meta{ :charset => "utf-8" }
-    %link{ :href => "/stylesheets/style.css", :rel => "stylesheet", :type => "test/css", :media => "all" }
+    %link{ :href => "/stylesheets/style.css", :rel => "stylesheet", :type => "text/css", :media => "screen" }
+    %link{ :href => "/stylesheets/chosen.css", :rel => "stylesheet", :type => "text/css", :media => "screen" }
     = stylesheet_link_tag 'application'
     = csrf_meta_tag
-    = javascript_include_tag 'application'
+    = include_gon
   %body
     %table#wrapper
       %tr
@@ -14,43 +15,54 @@
           =link_to root_path do
             = image_tag '/images/logo.png'
       %tr
-        %td.navigation-mini
+        %td.navigation-sidebar
         %td#sidebar{:rowspan=>2 + flash.keys.size}
           .padding-top-3
             - if logged_in?
-              = link_to icons_path do
-                - if current_user.avatar
-                  = image_tag current_user.avatar
+              - if current_user.avatar
+                = link_to icons_path do
+                  = image_tag current_user.avatar.url, class: 'icon'
                   %br
-                - else
-                  .empty-avatar Icon
               %b= current_user.username
               %ul
-                %li Account Settings
-                %li Inbox
+                %li= link_to 'Account', edit_user_path(current_user)
+                %li= link_to 'Inbox', messages_path
                 %li Notifications
                 %li= link_to "Templates", templates_path
                 %li= link_to "Characters", characters_path
                 %li= link_to "Icons", icons_path
                 %li= link_to "Galleries", galleries_path
+                %li= link_to "Post", new_post_path
               = link_to logout_path, :method => :delete do
-                = button_tag "Log out"
+                = button_tag "Log out", class: 'button'
             - else
               %h4 Log In
               = form_tag login_path, :method => :post do
-                = text_field_tag :username, params[:username], :class => "text-input", :placeholder => "Username"
-                = password_field_tag :password, params[:password], :class => "text-input", :placeholder => "Password"
-                = submit_tag "Log in"
+                = text_field_tag :username, params[:username], placeholder: "Username"
+                = password_field_tag :password, params[:password], placeholder: "Password"
+                = submit_tag "Log in", class: 'button'
                 %br
                 %br
                 = link_to "Sign up", new_user_path
-        %td.navigation Navbar
+        %td.navigation
+          = link_to 'Boards', boards_path
+          |
+          = link_to 'Recently Updated', posts_path
+          |
+          = link_to 'Search', search_posts_path
       <tr>
-      %td#content{:rowspan => 1 + flash.keys.size }
+      %td#content-sidebar{:rowspan => 1 + flash.keys.size}
       - flash.keys.each do |key|
         %td{:class=>key}= flash[key]
         </tr><tr>
+      - if false # current_user.messages.present?
+        %td{class: 'inbox'} You have new messages in your inbox.
+        </tr><tr>
       %td#content
-        .padding-20
+        .padding-20.relative
           = yield
       </tr>
+
+  = javascript_include_tag 'application'
+  - (@javascripts || []).each do |javascript|
+    = javascript_include_tag javascript

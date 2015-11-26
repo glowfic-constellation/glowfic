@@ -1,8 +1,9 @@
 class GalleriesController < ApplicationController
   before_filter :login_required
-  before_filter :find_gallery, :only => [:add, :icon, :destroy]
+  before_filter :find_gallery, :only => [:add, :icon, :destroy, :remove, :show]
 
   def index
+    use_javascript('galleries/index')
   end
 
   def new
@@ -16,12 +17,17 @@ class GalleriesController < ApplicationController
       flash[:success] = "Gallery saved successfully."
       redirect_to galleries_path
     else
-      flash[:error] = "Your gallery could not be saved."
+      flash.now[:error] = "Your gallery could not be saved."
       render :action => :new
     end
   end
 
   def add
+    use_javascript('galleries/add')
+  end
+
+  def show
+    render json: @gallery.icons
   end
 
   def icon
@@ -35,6 +41,12 @@ class GalleriesController < ApplicationController
     @gallery.destroy
     flash[:success] = "Gallery deleted successfully."
     redirect_to galleries_path
+  end
+
+  def remove
+    icon = Icon.find(params[:icon_id])
+    @gallery.icons.delete(icon)
+    render json: {}
   end
 
   private

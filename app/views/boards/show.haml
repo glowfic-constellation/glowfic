@@ -1,0 +1,21 @@
+%table
+  %tr
+    %th{ colspan: 2 }
+      = @board.name
+      - if logged_in? && @board.open_to?(current_user)
+        = link_to new_post_path params: {board_id: @board.id} do
+          .character-new-select
+            + New Post
+  %tr
+    %th.sub Name
+    %th.sub Last Updated
+  - @board.posts.order('created_at desc').each do |post|
+    %tr
+      - klass = cycle('even','odd')
+      %td.padding-10{class: klass}= link_to post.subject, post_path(post)
+      %td.padding-10{class: klass}= post.updated_at.strftime("%b %d, %Y ") + post.updated_at.hour.to_s + post.updated_at.strftime(":%M %p")
+  - if @board.posts.empty?
+    %tr
+      %td.centered.padding-10{ class: cycle('even','odd'), colspan: 2 } — No posts yet —
+  %tr
+    %td.bg.spacer{ colspan: 2 }

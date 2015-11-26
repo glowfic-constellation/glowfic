@@ -1,0 +1,21 @@
+- content_for :form do
+  = form_for post, :url => url, :method => method, :html => { :id => 'post_form' } do |f|
+    = f.label :board_id, 'Continuity:'
+    = f.select :board_id, options_from_collection_for_select(Board.select {|b| current_user.writes_in?(b) }, :id, :name, @post.board_id)
+    %br
+    = f.label :privacy, 'Privacy:'
+    = f.select :privacy, options_from_collection_for_select(Post.privacy_settings.to_a, :second, :first, post.privacy)
+    #access_list{style: ('display: none' unless post.privacy == Post::PRIVACY_LIST)}
+      = f.label :post_viewer_ids, '&#8627; Who can view this post? '.html_safe
+      = f.select :post_viewer_ids, options_from_collection_for_select(User.all - [current_user], :id, :username, post.post_viewer_ids || post.post_viewers.map(&:user_id)), {}, {multiple: true}
+    %hr
+    = f.label :subject, 'Subject:'
+    = f.text_field :subject, placeholder: 'Subject'
+    %br
+    = f.text_area :content
+    = f.hidden_field :character_id, id: 'reply_character_id'
+    = f.hidden_field :icon_id, id: 'reply_icon_id'
+    = submit_tag (method == :put ? 'Save' : "Post"), class: 'button'
+    = submit_tag "Preview", class: 'button', id: 'preview_button'
+
+= render partial: 'editor', locals: {item: @post}

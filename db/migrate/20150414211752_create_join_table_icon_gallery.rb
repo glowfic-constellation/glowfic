@@ -4,6 +4,8 @@ class CreateJoinTableIconGallery < ActiveRecord::Migration
       t.integer :icon_id
       t.integer :gallery_id
     end
+    add_index :galleries_icons, :icon_id
+    add_index :galleries_icons, :gallery_id
   end
 
   def down

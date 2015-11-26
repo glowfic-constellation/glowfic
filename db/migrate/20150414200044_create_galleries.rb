@@ -6,5 +6,6 @@ class CreateGalleries < ActiveRecord::Migration
       t.integer :cover_icon_id
       t.timestamps
     end
+    add_index :galleries, :user_id
   end
 end

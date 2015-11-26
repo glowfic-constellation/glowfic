@@ -1,0 +1,19 @@
+%table
+  %tr
+    %th.padding-10
+      = title
+      = surround '(', ')' do
+        = link_to 'x', template_path(template), :method => :delete, confirm: 'Are you sure you want to delete this template?'
+      .gallery-box.float-right{id: template.id} -
+  %tr
+    %td.green
+      .gallery
+        - template.characters.each do |character|
+          .gallery-icon
+            = link_to character_path(character) do
+              - if character.icon
+                = icon_tag character.icon
+                %br
+              = character.name
+        - if template.characters.empty?
+          .centered — No characters yet —

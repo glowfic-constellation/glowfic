@@ -1,0 +1,31 @@
+%tr
+  %td
+    = f.text_field :name, :placeholder => "Character Name", :class => 'text'
+%tr
+  %td
+    = f.text_field :template_name, :placeholder => "Template Nickname", :class => 'text'
+%tr
+  %td
+    = f.text_field :screenname, :placeholder => "Screen Name", :class => 'text'
+- if current_user.templates.present?
+  %tr
+    %td.left-align
+      = f.collection_select(:template_id, current_user.templates, :id, :name, {:include_blank => '— Choose Template —'}, {:class => 'text'})
+- if current_user.galleries.present?
+  %tr.left-align
+    %td= f.collection_select(:gallery_id, current_user.galleries, :id, :name, {:include_blank => '— Choose Gallery —'}, {:class => 'text'})
+%tr
+  %td.centered
+    = submit_tag "Save", class: 'button'
+
+#selected-gallery{style: ('display: none;' unless @character.gallery) }
+  %b Image Gallery
+  %br
+  Pick Default Icon (Optional):
+  %br
+  .gallery
+    - if @character.gallery
+      - @character.gallery.icons.order('keyword asc').each do |icon|
+        - klass = 'character-icon'
+        - klass += ' default-icon' if icon == @character.default_icon
+        = icon_tag icon, class: klass, id: icon.id

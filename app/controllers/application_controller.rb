@@ -1,5 +1,6 @@
 class ApplicationController < ActionController::Base
   protect_from_forgery with: :exception
+  after_filter :store_location
 
   protected
 
@@ -18,5 +19,26 @@ class ApplicationController < ActionController::Base
       flash[:error] = "You must be logged in to view that page."
       redirect_to root_path
     end
+  end
+
+  def use_javascript(js)
+    @javascripts ||= []
+    @javascripts << js
+  end
+
+  def page
+    @page ||= (params[:page] || 1).to_i
+  end
+  helper_method :page
+
+  def per_page
+    @per_page ||= (params[:per_page] || current_user.try(:per_page) || 25).to_i
+  end
+  helper_method :per_page
+
+  def store_location
+    return unless request.get?
+    return if request.xhr?
+    session[:previous_url] = request.fullpath
   end
 end

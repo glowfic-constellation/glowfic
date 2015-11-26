@@ -1,0 +1,50 @@
+To Do
+
+Images
+- keyboard control: pick icon by typing its keyword (have a selectable keyword below the icon?)
+- when changing avatar or icon keyword, provide option to back-update all posts
+
+User Settings
+- ability to remove avatar, with back-update option
+
+UI
+- where do I display usernames for characters
+- separate character picker / display names for characters
+- how does characters/index visually display which view is selected?
+
+Finicky Tidiness
+- clean up the css >_<
+- clean up the javascript
+- flash.now vs flash
+- Move gon and json stuff to presenters
+- display error messages as a neatly bulleted list
+- Anything Javascript should be doable non-javascript (set default icon for character)
+
+Characters
+- How does it handle posts with a character after that character is deleted? Ditto icons?
+- Add ability to tag a character with continuities, and if posting in a restricted continuity, filter to that continuity.
+- List view for characters/index
+
+Questions
+- Where do things go in a post? Character name and screenname, poster, timestamp, edit/delete buttons
+- Do I need a 'picker' name for characters given that I have a screenname? Ideal: Name (screenname)?
+
+Admin
+- CRUD for admin status
+
+Scraper
+- Strip 'Edited at' text
+- Handle internal links (see Milliways Lurks)
+- Handle threading...somehow...?
+
+Must Dos
+- Store sessions in the database
+- Fix pagination display on posts/search
+- Edit icons
+- Handle multiple characters with the same name (via screennames? Something else?)
+- user/show page
+- Post visibility (public, private, access list)
+- Continuity index handler
+
+V2
+- tags for post (ex: setting)

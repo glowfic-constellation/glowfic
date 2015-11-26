@@ -1,0 +1,20 @@
+%tr
+  %td.menu.beige
+    .green.icon-holder
+      .relative= icon_tag reply.icon
+    .dark.label.centered= reply.character.try(:name) || reply.user.username
+    .beige.expander
+      .padding-10
+        = link_to reply.user.username, user_path(reply.user)
+        %br
+        = post_time(reply.created_at)
+        - if reply.user == current_user && reply.id.present?
+          %br
+          = link_to 'Edit', path_for(reply, 'edit_%s')
+          |
+          = link_to 'Delete', path_for(reply, '%s'), method: :delete, confirm: 'Are you sure? This will delete this post AND any post that follows it!'
+    %td.post.even{rowspan: 2, class: cycle('even', 'odd')}= reply.content.gsub("\n","<br>").html_safe
+  %tr
+    %td.dark.spacer
+%tr
+  %td.bg.spacer{ :colspan => 2 }

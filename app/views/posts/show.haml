@@ -1,0 +1,20 @@
+%table
+  %tr
+    %th{colspan: 2}= @post.subject
+  %tr
+    %td.bg.spacer{colspan: 2}
+  = render partial: 'replies/single', locals: {reply: @post}
+  - if @replies.present?
+    %tr
+      = render partial: 'paginator', locals: { paginated: @replies, path: :post_path }
+  %tr
+    %td.bg.spacer{colspan: 2}
+  - @replies.each do |reply|
+    = render partial: 'replies/single', locals: {reply: reply}
+  - if @replies.present?
+    %tr
+      = render partial: 'paginator', locals: { paginated: @replies, path: :post_path }
+  %tr
+    %td.bg.spacer{colspan: 2}
+  - if logged_in? && current_user.writes_in?(@post.board)
+    = render partial: 'write_reply', locals: { reply: @reply, url: replies_path, method: :post }

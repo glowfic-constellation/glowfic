@@ -1,0 +1,33 @@
+%tr
+  %td.menu.beige
+    .green.icon-holder
+      #current-icon-holder
+        - if item.icon
+          = icon_tag item.icon, id: 'current-icon', pointer: item.character.try(:multi_icons?)
+        - elsif item.character.nil? && current_user.avatar
+          = icon_tag current_user.avatar, id: 'current-icon'
+        #icon-overlay
+    .dark.label.centered
+      %span#char-name= item.character.try(:name) || current_user.username
+      - unless current_user.characters.empty?
+        = image_tag '/images/swap.png', :id => 'swap-icon', :alt => ">"
+        #character-selector.dark.left-align
+          %b Choose Character
+          = select_tag :active_character, 
+          option_groups_from_collection_for_select(@templates, :ordered_characters, :name, :id, :selector_name, @character.try(:id)),
+          { :include_blank => true, :prompt => current_user.username }
+          %br
+    .beige.expander
+  %td.post{rowspan: 2, class: cycle('even', 'odd')}
+    #gallery.green
+      - if item.character && item.character.gallery
+        - item.character.gallery.icons.order('keyword ASC').each do |icon|
+          .gallery-icon
+            = icon_tag icon, id: icon.id
+            %br
+            = icon.keyword
+    = yield :form
+%tr
+  %td.dark.spacer
+%tr
+  %td.bg.spacer{colspan: 2}

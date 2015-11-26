@@ -1,20 +1,28 @@
 = form_for @user, :url => users_path, :method => :post do |f|
   %table#signup.centered
     %tr
-      %th.centered
-        Sign Up
+      %th.centered{:colspan=>3} Sign Up
+    %tr#username
+      %td.alert
+      %td.entry= f.text_field :username, :placeholder => "Username", :class => 'text'
+      %td.messages
+    %tr#password
+      %td.alert
+      %td.entry= f.password_field :password, :placeholder => "Password", :class => 'text', :value => (params[:user]||{})[:password]
+      %td.messages
+    %tr#conf
+      %td.alert
+      %td.entry= f.password_field :password_confirmation, :placeholder => "Confirm Password", :class => 'text', :value => (params[:user]||{})[:password_confirmation]
+      %td.messages
+    %tr#secret
+      %td.alert
+      %td.entry= text_field_tag :secret, params[:secret], :placeholder => "Secret", :class => 'text'
+      %td.messages
+    %tr
+      %td.centered{colspan: 3}= submit_tag "Sign up", class: 'button'
     %tr
       %td
-        = f.text_field :username, :placeholder => "Username", :class => 'text'
-    %tr
+        .width-15
       %td
-        = f.password_field :password, :placeholder => "Password", :class => 'text'
-    %tr
       %td
-        = f.password_field :password_confirmation, :placeholder => "Confirm Password", :class => 'text'
-    %tr
-      %td
-        = text_field_tag :secret, params[:secret], :placeholder => "Secret", :class => 'text'
-    %tr
-      %td.centered
-        = submit_tag "Sign up"
+        .width-15

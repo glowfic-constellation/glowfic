@@ -1,0 +1,12 @@
+= form_for @board, :url => boards_path, :method => :post do |f|
+  %table#signup.centered
+    %tr
+      %th.centered Create Continuity
+    %tr
+      %td= f.text_field :name, :placeholder => "Continuity Name", :class => 'text'
+    %tr
+      %td.left-align
+        Coauthor:
+        = f.select :coauthor_id, options_from_collection_for_select(@users, :id, :username), include_blank: '— Open to Anyone —'
+    %tr
+      %td.centered= submit_tag "Create Continuity", class: 'button'

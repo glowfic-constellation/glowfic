@@ -3,7 +3,5 @@
 %br
 %br
 - @templates.each do |template|
-  = link_to template.name, template_path(template)
-  = ' | '
-  = link_to 'x', template_path(template), :method => :delete
+  = render partial: 'single', locals: {title: link_to(template.name, template_path(template)), template: template}
   %br

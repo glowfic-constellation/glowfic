@@ -1,0 +1,8 @@
+= link_to 'Back', character_path(@character)
+
+= form_for @character, :url => character_path(@character), :method => :put do |f|
+  %table#signup.centered
+    %tr
+      %th.centered{ colspan: 2 }= @character.name
+    = render partial: 'editor', locals: {f: f}
+    

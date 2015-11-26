@@ -1,0 +1,35 @@
+= form_for current_user, :url => user_path(current_user), :method => :put do |f|
+  %table#signup.centered
+    %tr
+      %th.centered{colspan: 3} Account Settings
+    %tr#username
+      %td.alert
+      %td.entry= f.text_field :username, :placeholder => "Username", :class => 'text'
+      %td.messages
+    %tr.left-align
+      %td.alert
+      %td.entry
+        Posts per page:
+        = f.select(:per_page, per_page_options(current_user.per_page))
+      %td.messages
+    %tr
+      %td.centered{colspan: 3}= submit_tag "Save", class: 'button'
+
+= form_for current_user, :url => password_user_path(current_user), :method => :put do |f|
+  %table#signup.centered
+    %tr
+      %th.centered{:colspan=>3} Change Password
+    %tr#password
+      %td.alert
+      %td.entry= password_field_tag :old_password, params[:old_password], :placeholder => "Old Password", :class => 'text'
+      %td.messages
+    %tr#password
+      %td.alert
+      %td.entry= f.password_field :password, :placeholder => "New Password", :class => 'text', :value => (params[:user]||{})[:password]
+      %td.messages
+    %tr#conf
+      %td.alert
+      %td.entry= f.password_field :password_confirmation, :placeholder => "Confirm Password", :class => 'text', :value => (params[:user]||{})[:password_confirmation]
+      %td.messages
+    %tr
+      %td.centered{colspan: 3}= submit_tag "Save", class: 'button'

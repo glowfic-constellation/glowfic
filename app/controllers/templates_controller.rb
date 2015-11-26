@@ -15,9 +15,9 @@ class TemplatesController < ApplicationController
     @template.user = current_user
     if @template.save
       flash[:success] = "Template saved successfully."
-      redirect_to templates_path
+      redirect_to template_path(@template)
     else
-      flash[:error] = "Your template could not be saved."
+      flash.now[:error] = "Your template could not be saved."
       render :action => :new
     end
   end
@@ -29,6 +29,11 @@ class TemplatesController < ApplicationController
   end
 
   def destroy
+    if @template.user_id != current_user.id
+      flash[:error] = "That is not your template."
+      redirect_to templates_path and return
+    end
+
     @template.destroy
     flash[:success] = "Template deleted successfully."
     redirect_to templates_path
@@ -37,15 +42,8 @@ class TemplatesController < ApplicationController
   private
 
   def find_template
-    @template = Template.find_by_id(params[:id])
-
-    unless @template
+    unless @template = Template.find_by_id(params[:id])
       flash[:error] = "Template could not be found."
-      redirect_to templates_path and return
-    end
-
-    if @template.user_id != current_user.id
-      flash[:error] = "That is not your template."
       redirect_to templates_path and return
     end
   end

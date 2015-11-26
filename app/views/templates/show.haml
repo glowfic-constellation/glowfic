@@ -1,0 +1,6 @@
+%h2= 'Template: ' + @template.name
+%br
+= link_to '+ Create new template instance', new_character_path(template_id: @template.id)
+%br
+%br
+= render partial: 'single', locals: {title: 'Characters', template: @template}

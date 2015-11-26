@@ -1,0 +1,12 @@
+- content_for :form do
+  = form_for reply, :url => url, :method => method, :html => {:id => 'post_form'} do |f|
+    %b Reply
+    %br
+    = f.hidden_field :post_id
+    = f.text_area :content
+    = f.hidden_field :character_id, value: reply.character_id || params[:character_id] || current_user.active_character.try(:id)
+    = f.hidden_field :icon_id, value: reply.icon_id || params[:icon_id] || current_user.active_character.try(:icon).try(:id) || current_user.avatar.try(:id)
+    = submit_tag "Post", class: 'button'
+    = submit_tag "Preview", class: 'button', id: 'preview_button'
+
+= render partial: 'posts/editor', locals: {item: reply}

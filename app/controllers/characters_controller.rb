@@ -1,13 +1,16 @@
 class CharactersController < ApplicationController
-  before_filter :login_required
-  before_filter :find_character, :only => [:show, :destroy]
+  before_filter :login_required, :except => :show
+  before_filter :find_character, :only => [:show, :edit, :update, :destroy, :icon]
+  before_filter :require_own_character, :only => [:edit, :update, :destroy, :icon]
 
   def index
-    @characters = current_user.characters
+    @characters = current_user.characters.order('name asc')
   end
 
   def new
-    @character = Character.new
+    use_javascript('characters')
+    gon.character_id = ''
+    @character = Character.new(template_id: params[:template_id])
   end
 
   def create
@@ -15,9 +18,11 @@ class CharactersController < ApplicationController
     @character.user = current_user
     if @character.save
       flash[:success] = "Character saved successfully."
-      redirect_to characters_path
+      redirect_to character_path(@character)
     else
-      flash[:error] = "Your character could not be saved."
+      use_javascript('characters')
+      gon.character_id = ''
+      flash.now[:error] = "Your character could not be saved."
       render :action => :new
     end
   end
@@ -25,7 +30,27 @@ class CharactersController < ApplicationController
   def show
   end
 
+  def edit
+    use_javascript('characters')
+    gon.character_id = @character.id
+  end
+
   def update
+    if @character.update_attributes(params[:character])
+      flash[:success] = "Character saved successfully."
+      redirect_to character_path(@character)
+    else
+      use_javascript('characters')
+      gon.character_id = @character.id
+      flash.now[:error] = "Your character could not be saved."
+      render :action => :edit
+    end
+  end
+
+  def icon
+    icon = Icon.find_by_id(params[:icon_id])
+    @character.update_attributes(default_icon: icon) if icon
+    render :json => {}
   end
 
   def destroy
@@ -43,7 +68,9 @@ class CharactersController < ApplicationController
       flash[:error] = "Character could not be found."
       redirect_to characters_path and return
     end
+  end
 
+  def require_own_character
     if @character.user_id != current_user.id
       flash[:error] = "That is not your character."
       redirect_to characters_path and return
