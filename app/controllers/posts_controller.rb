@@ -55,25 +55,10 @@ class PostsController < ApplicationController
     elsif params[:reply]
       @written = Reply.new(params[:reply])
       @post = @written.post
-      @url = replies_path
-      @method = :post
+      @url = params[:reply_id] ? reply_path(params[:reply_id]) : replies_path
+      @method = params[:reply_id] ? :put : :post
     end
     @written.user = current_user
-    # if params[:reply]
-    #   reply = Reply.new(params[:reply])
-    #   @post = reply.post
-    # elsif params[:post_id]
-    #   @post = Post.find_by_id(params[:post_id])
-    #   @post.assign_attributes(params[:post])
-    #   @url = post_path(@post)
-    #   @method = :put
-    # else
-    #   @post = Post.new(params[:post])
-    #   @post.user = current_user
-    #   @post.replies[0].user ||= current_user
-    #   @url = posts_path
-    #   @method = :post
-    # end
 
     use_javascript('posts')
   end
