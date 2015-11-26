@@ -1,5 +1,5 @@
 %tr
-  %th{colspan: 3}
+  %th{colspan: 5}
     = params[:view] == 'outbox' ? 'Outbox' : 'Inbox'
     = link_to messages_path params: {view: 'outbox'} do
       .character-view-select Outbox &raquo;

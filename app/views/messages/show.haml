@@ -1,0 +1,22 @@
+%table
+  %tr
+    %th{colspan: 2}= @message.subject
+  %tr
+    %td.bg.spacer{colspan: 2}
+  %tr
+    %td.menu.beige
+      .green.icon-holder
+        .relative= icon_tag @message.sender.avatar
+      .dark.label.centered= link_to @message.sender.username, user_path(@message.sender)
+      .beige.expander
+        .padding-10
+          To:
+          = link_to @message.recipient.username, user_path(@message.recipient)
+          %br
+          = post_time(@message.created_at)
+      %td.post.even{rowspan: 2, class: cycle('even', 'odd')}= @message.message.gsub("\n","<br>").html_safe
+    %tr
+      %td.dark.spacer
+  %tr
+    %td.bg.spacer{ :colspan => 2 }
+

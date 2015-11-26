@@ -36,6 +36,7 @@ h3 { margin-top: 25px; margin-bottom: 0px; color: #111111; }
 .relative { position: relative; }
 .hidden { display: none; }
 .pointer { cursor: pointer; }
+.bold { font-weight: bold; }
 .error { background-color: #FFDDDD; height: 30px; padding: 5px 20px; }
 .success { background-color: #DDEEDD; height: 30px; padding: 5px 20px; }
 .inbox { background-color: #DDDDEE; height: 30px; padding: 5px 20px; }
@@ -105,3 +106,5 @@ button, input.button {
 
 }
 .chosen-container { margin-top: 5px; margin-bottom: 5px; }
+
+#message_form textarea { width: 500px; height: 100px; }

@@ -10,6 +10,8 @@ class User < ActiveRecord::Base
   has_many :characters
   has_many :galleries
   has_many :templates
+  has_many :sent_messages, :class_name => Message, :foreign_key => 'sender_id'
+  has_many :messages, :foreign_key => 'recipient_id'
   belongs_to :active_character, :class_name => Character
 
   validates_presence_of :username
@@ -21,10 +23,6 @@ class User < ActiveRecord::Base
 
   before_save :encrypt_password
   after_save :clear_password
-
-  def messages
-    [] # TODO
-  end
 
   def authenticate(password)
     crypted == crypted_password(password)

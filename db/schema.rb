@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20150704060600) do
+ActiveRecord::Schema.define(:version => 20151125201254) do
 
   create_table "audits", :force => true do |t|
     t.integer  "auditable_id"
@@ -58,6 +58,16 @@ ActiveRecord::Schema.define(:version => 20150704060600) do
   add_index "characters", ["template_id"], :name => "index_characters_on_template_id"
   add_index "characters", ["user_id"], :name => "index_characters_on_user_id"
 
+  create_table "continuity_memberships", :force => true do |t|
+    t.integer  "board_id",     :null => false
+    t.integer  "character_id", :null => false
+    t.datetime "created_at",   :null => false
+    t.datetime "updated_at",   :null => false
+  end
+
+  add_index "continuity_memberships", ["board_id"], :name => "index_continuity_memberships_on_board_id"
+  add_index "continuity_memberships", ["character_id"], :name => "index_continuity_memberships_on_character_id"
+
   create_table "galleries", :force => true do |t|
     t.integer  "user_id",       :null => false
     t.string   "name",          :null => false
@@ -86,6 +96,24 @@ ActiveRecord::Schema.define(:version => 20150704060600) do
 
   add_index "icons", ["keyword"], :name => "index_icons_on_keyword"
   add_index "icons", ["user_id"], :name => "index_icons_on_user_id"
+
+  create_table "messages", :force => true do |t|
+    t.integer  "sender_id",                         :null => false
+    t.integer  "recipient_id",                      :null => false
+    t.string   "subject"
+    t.text     "message"
+    t.boolean  "unread",         :default => true
+    t.boolean  "visible_inbox",  :default => true
+    t.boolean  "visible_outbox", :default => true
+    t.boolean  "marked_inbox",   :default => false
+    t.boolean  "marked_outbox",  :default => false
+    t.datetime "read_at"
+    t.datetime "created_at",                        :null => false
+    t.datetime "updated_at",                        :null => false
+  end
+
+  add_index "messages", ["recipient_id", "unread"], :name => "index_messages_on_recipient_id_and_unread"
+  add_index "messages", ["sender_id"], :name => "index_messages_on_sender_id"
 
   create_table "post_viewers", :force => true do |t|
     t.integer  "post_id",    :null => false

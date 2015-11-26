@@ -1,5 +1,34 @@
-%table
-  = render partial: @view
-  - if current_user.messages.empty?
-    %tr
-      %td.centered.odd.padding-10 — No messages yet —
+= form_tag mark_messages_path, :method => :post do
+  %table
+    = render partial: @view
+    - if @messages.empty?
+      %tr
+        %td.centered.odd.padding-10 — No messages yet —
+    - else
+      %tr
+        %th.sub.width-15
+        %th.sub Subject
+        %th.sub= @view == 'inbox' ? 'Sender' : 'Recipient'
+        %th.sub Sent
+        %th.sub.width-15
+      - @messages.each do |message|
+        %tr
+          - klass = cycle('even', 'odd')
+          - klass += ' bold' if @view == 'inbox' and message.unread?
+          %td.padding-10{class: klass}
+            - if message.send('marked_'+@view+'?')
+              = image_tag "/images/asterisk.png"
+          %td.padding-10{class: klass}= link_to message.subject, message_path(message)
+          %td.padding-10{class: klass}
+            - if @view == 'inbox'
+              = link_to message.sender.username, user_path(message.sender)
+            - else
+              = link_to message.recipient.username, user_path(message.recipient)
+          %td.padding-10{class: klass}= pretty_time(message.created_at)
+          %td.padding-10{class: klass}= check_box_tag :"marked_ids[]", message.id
+      %tr
+        %td.right-align.padding-10{colspan: 5, class: cycle('even', 'odd')}
+          - if @view == 'inbox'
+            = submit_tag "Mark Read / Unread", class: 'button'
+          = submit_tag "Mark / Unmark Important", class: 'button'
+          = submit_tag "Delete", class: 'button', confirm: "Are you sure you want to delete these messages?"

@@ -5,7 +5,9 @@ Rails.application.routes.draw do
 
   resources :templates
   resources :boards
-  resources :messages
+  resources :messages, except: :edit do
+    collection { post :mark }
+  end
   resources :replies do
     collection do
       post :preview

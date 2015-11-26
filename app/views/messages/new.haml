@@ -1,9 +1,17 @@
-%table
-  %tr
-    %th{colspan: 3}
-      New Message!
-      = link_to new_message_path do
-        .character-new-select + Write Message
-  - if current_user.messages.empty?
+
+= form_for @message, :url => messages_path, :method => :post, :html => { :id => 'message_form' } do |f|
+  %table
     %tr
-      %td.centered.odd.padding-10 — You have no messages yet —
+      %th{colspan: 2} Compose New Message
+    %tr
+      %th.sub.padding-10.width-150 Recipient
+      %td.even.padding-10= f.select :recipient_id, options_from_collection_for_select(User.all - [current_user], :id, :username, @message.recipient_id)
+    %tr
+      %th.sub.padding-10 Subject
+      %td.even.padding-10= f.text_field :subject, placeholder: 'Subject'
+    %tr
+      %th.sub.padding-10.vtop Message
+      %td.even.padding-10= f.text_area :message
+    %tr
+      %th.sub.padding-10
+      %td.even.padding-10= f.submit "Send", class: 'button'

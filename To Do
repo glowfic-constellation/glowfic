@@ -3,6 +3,8 @@ To Do
 Images
 - keyboard control: pick icon by typing its keyword (have a selectable keyword below the icon?)
 - when changing avatar or icon keyword, provide option to back-update all posts
+- Attribution
+- Omg gallery/icon UI
 
 User Settings
 - ability to remove avatar, with back-update option
@@ -23,6 +25,8 @@ Finicky Tidiness
 Characters
 - How does it handle posts with a character after that character is deleted? Ditto icons?
 - Add ability to tag a character with continuities, and if posting in a restricted continuity, filter to that continuity.
+- PB
+- World
 
 Questions
 - Where do things go in a post? Character name and screenname, poster, timestamp, edit/delete buttons

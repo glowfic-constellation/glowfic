@@ -16,7 +16,7 @@
             = image_tag '/images/logo.png'
       %tr
         %td.navigation-sidebar
-        %td#sidebar{:rowspan=>2 + flash.keys.size}
+        %td#sidebar{:rowspan=>rowspan + 1}
           .padding-top-3
             - if logged_in?
               - if current_user.avatar
@@ -53,13 +53,20 @@
           |
           = link_to 'Glowficcers', users_path
       <tr>
-      %td#content-sidebar{:rowspan => 1 + flash.keys.size}
+      %td#content-sidebar{:rowspan => rowspan}
       - flash.keys.each do |key|
         %td{:class=>key}= flash[key]
         </tr><tr>
-      - if false # current_user.messages.present?
-        %td{class: 'inbox'} You have new messages in your inbox.
-        </tr><tr>
+      - if logged_in?
+        - messages = current_user.messages.select(&:unread?)
+        - if messages.present?
+          - messages.each do |message|
+            %td{class: 'inbox'}
+              New message from
+              = link_to message.sender.username, user_path(message.sender)
+              &nbsp;- &nbsp;
+              = link_to message.subject, message_path(message)
+            </tr><tr>
       %td#content
         .padding-20.relative
           = yield
