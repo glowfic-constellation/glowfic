@@ -23,7 +23,6 @@ class Character < ActiveRecord::Base
   end
 
   def selector_name
-    return name if template_name.blank? && screenname.blank?
-    name + ' (' + (template_name.present? ? template_name : screenname) + ')'
+    [name, template_name, screenname].compact.join(' | ')
   end
 end
