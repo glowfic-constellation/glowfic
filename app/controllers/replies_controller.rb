@@ -11,7 +11,7 @@ class RepliesController < ApplicationController
     else
       flash[:error] = "Problems. "+reply.errors.full_messages.to_s
     end
-    redirect_to post_path(reply.post)
+    redirect_to post_path(reply.post, anchor: "reply-#{reply.id}")
   end
 
   def edit
@@ -23,7 +23,7 @@ class RepliesController < ApplicationController
   def update
     @reply.update_attributes(params[:reply])
     flash[:success] = "Post updated"
-    redirect_to post_path(@reply.post)
+    redirect_to post_path(@reply.post, anchor: "reply-#{@reply.id}")
   end
 
   def destroy

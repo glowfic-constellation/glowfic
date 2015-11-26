@@ -1,6 +1,7 @@
 %tr
   %td.menu.beige
     .green.icon-holder
+      <a name="reply-#{reply.id}"></a>
       .relative= icon_tag reply.icon
     .dark.label.centered= reply.character.try(:name) || reply.user.username
     .beige.expander
