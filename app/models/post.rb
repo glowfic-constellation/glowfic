@@ -26,6 +26,10 @@ class Post < ActiveRecord::Base
     (post_viewers.map(&:user_id) + [user_id]).include?(user.id)
   end
 
+  def last_post
+    replies.order('id desc').limit(1).first || self
+  end
+
   def self.privacy_settings
     { 'Public'      => PRIVACY_PUBLIC,
       'Access List' => PRIVACY_LIST,
