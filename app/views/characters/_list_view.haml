@@ -2,6 +2,10 @@
   %tr
     %td.beige.padding-10{colspan: 3}
       %b Template: #{template.name}
+  - if template.characters.empty?
+    %tr
+      %td.centered.padding-5{class: cycle('even', 'odd'), colspan: 3} — No characters yet —
+    - next
   %tr
     - klass = cycle('even', 'odd')
     %td.padding-5{class: klass}
