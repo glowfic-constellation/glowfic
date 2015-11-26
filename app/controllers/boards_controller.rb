@@ -32,6 +32,10 @@ class BoardsController < ApplicationController
       flash[:error] = "Continuity could not be found."
       redirect_to boards_path and return
     end
+
+    @posts = @board.posts.order('id desc').select do |post|
+      post.visible_to?(current_user)
+    end
   end
 
   private

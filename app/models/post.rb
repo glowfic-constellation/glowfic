@@ -21,6 +21,7 @@ class Post < ActiveRecord::Base
 
   def visible_to?(user)
     return true if privacy == PRIVACY_PUBLIC
+    return false unless user
     return user.id == user_id if privacy == PRIVACY_PRIVATE
     (post_viewers.map(&:user_id) + [user_id]).include?(user.id)
   end
