@@ -25,7 +25,7 @@ class CharactersController < ApplicationController
     @character = Character.new(params[:character].merge(user: current_user))
 
     if @character.template_id == 0
-      template = Template.new(user: current_user, name: params[:character][:template_name])
+      template = Template.new(user: current_user, name: params[:new_template_name])
       unless template.valid? && @character.valid?
         flash.now[:error] = "Your character could not be saved."
         render :action => :new and return

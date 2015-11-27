@@ -11,7 +11,7 @@
   %td.left-align
     = f.collection_select(:template_id, @templates, :id, :name, {:include_blank => '— Choose Template —'}, {:class => 'text'})
 %tr#create_template{style: ('display: none;' unless params[:character].try(:[], :template_id) == "0")}
-  %td.left-align= f.text_field :template_name, :placeholder => "Template Name", :class => 'text'
+  %td.left-align= text_field_tag :new_template_name, params[:new_template_name], :placeholder => "Template Name", :class => 'text'
 - if current_user.galleries.present?
   %tr.left-align
     %td= f.collection_select(:gallery_id, current_user.galleries, :id, :name, {:include_blank => '— Choose Gallery —'}, {:class => 'text'})
