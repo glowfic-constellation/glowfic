@@ -5,6 +5,9 @@ class Post < ActiveRecord::Base
   PRIVACY_PRIVATE = 1
   PRIVACY_LIST = 2
 
+  STATUS_ACTIVE = 0
+  STATUS_COMPLETE = 1
+
   belongs_to :board
   has_many :replies, inverse_of: :post, dependent: :destroy
   has_many :post_viewers

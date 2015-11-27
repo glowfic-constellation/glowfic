@@ -8,10 +8,6 @@ $(document).ready(function() {
     width: '100%',
     disable_search_threshold: 20,
   });
-  $(".character-view-select").click(function() {
-    $(".character-view-select").css('border','0px').css('padding-top','5px').css('padding-bottom','5px');
-    $(this).css('border','2px black solid').css('padding-top','3px').css('padding-bottom','3px');
-  });
 
   bindIcons();
 

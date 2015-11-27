@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20151125201254) do
+ActiveRecord::Schema.define(:version => 20151127033352) do
 
   create_table "audits", :force => true do |t|
     t.integer  "auditable_id"
@@ -136,6 +136,7 @@ ActiveRecord::Schema.define(:version => 20151125201254) do
     t.integer  "privacy",      :default => 0, :null => false
     t.datetime "created_at",                  :null => false
     t.datetime "updated_at",                  :null => false
+    t.integer  "status"
   end
 
   add_index "posts", ["board_id"], :name => "index_posts_on_board_id"

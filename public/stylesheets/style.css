@@ -86,7 +86,7 @@ h3 { margin-top: 25px; margin-bottom: 0px; color: #111111; }
 #gallery img { cursor: pointer; }
 #gallery { display: none; position: absolute; top: 0px; left: 0px; min-height: 101px; padding: 15px; margin: 0px; }
 #icon-overlay { background-color: #000000; height: 100px; width: 100px; position: absolute; top: 0px; opacity: 0.4; display: none; cursor: pointer; }
-img.default-icon { border: 5px #3F7055 solid; }
+img.default-icon { border: 10px #3F7055 solid; width:80px; height:80px; }
 
 input, textarea, button { 
     font-size: 13px;

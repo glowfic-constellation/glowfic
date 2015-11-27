@@ -16,6 +16,5 @@
 !/log/.keep
 /tmp
 
-public/images/temp/*
 .sass-cache/*
 *~
