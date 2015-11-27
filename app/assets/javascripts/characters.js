@@ -11,6 +11,14 @@ $(document).ready(function() {
 
   bindIcons();
 
+  $("#character_template_id").change(function () {
+    if ($(this).val() != "0") {
+      $("#create_template").hide();
+    } else {
+      $("#create_template").show();
+    }
+  });
+
   $("#character_gallery_id").change(function() {
     $("#character_default_icon_id").val('');
     var gallery_id = $(this).val();

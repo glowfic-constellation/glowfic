@@ -2,6 +2,7 @@ class CharactersController < ApplicationController
   before_filter :login_required, :except => :show
   before_filter :find_character, :only => [:show, :edit, :update, :destroy, :icon]
   before_filter :require_own_character, :only => [:edit, :update, :destroy, :icon]
+  before_filter :build_editor, :only => [:new, :create, :edit, :update]
 
   def index
     @user = current_user
@@ -17,20 +18,35 @@ class CharactersController < ApplicationController
   end
 
   def new
-    use_javascript('characters')
-    gon.character_id = ''
     @character = Character.new(template_id: params[:template_id])
   end
 
   def create
-    @character = Character.new(params[:character])
-    @character.user = current_user
-    if @character.save
+    @character = Character.new(params[:character].merge(user: current_user))
+
+    if @character.template_id == 0
+      template = Template.new(user: current_user, name: params[:character][:template_name])
+      unless template.valid? && @character.valid?
+        flash.now[:error] = "Your character could not be saved."
+        render :action => :new and return
+      end
+      success = Character.transaction do
+        template.save
+        @character.template = template
+        @character.save
+      end
+      if success
+        flash[:success] = "Character saved successfully."
+        redirect_to character_path(@character)
+      else
+        @character.template_id = 0
+        flash.now[:error] = "Your character could not be saved."
+        render :action => :new
+      end
+    elsif @character.save
       flash[:success] = "Character saved successfully."
       redirect_to character_path(@character)
     else
-      use_javascript('characters')
-      gon.character_id = ''
       flash.now[:error] = "Your character could not be saved."
       render :action => :new
     end
@@ -84,5 +100,13 @@ class CharactersController < ApplicationController
       flash[:error] = "That is not your character."
       redirect_to characters_path and return
     end
+  end
+
+  def build_editor
+    faked = Struct.new(:name, :id)
+    new_template = faked.new('— Create New Template —', 0)
+    @templates = current_user.templates + [new_template]
+    use_javascript('characters')
+    gon.character_id = @character.try(:id) || ''
   end
 end
