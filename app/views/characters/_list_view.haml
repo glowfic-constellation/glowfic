@@ -1,10 +1,10 @@
 - @user.templates.order('name asc').each do |template|  
   %tr
-    %td.beige.padding-10{colspan: 4}
+    %td.beige.padding-10{colspan: 5}
       %b Template: #{template.name}
   - if template.characters.empty?
     %tr
-      %td.centered.padding-5{class: cycle('even', 'odd'), colspan: 4} — No characters yet —
+      %td.centered.padding-5{class: cycle('even', 'odd'), colspan: 5} — No characters yet —
     - next
   %tr
     - klass = cycle('even', 'odd')
@@ -16,23 +16,38 @@
       %b Screenname
     %td.padding-5{class: klass}
       %b PB
+    %td.padding-5{class: klass}
   - template.characters.order('name asc').each do |character|
     - klass = cycle('even', 'odd')
     %tr
       %td.padding-5.left-align{class: klass}
         = link_to character.name, character_path(character)
-      %td{class: klass, style:'width:25%'}= character.template_name
-      %td{class: klass, style:'width:25%'}= character.screenname
+      %td{class: klass, style:'width:20%'}= character.template_name
+      %td{class: klass, style:'width:20%'}= character.screenname
       %td{class: klass, style:'width:25%'}= character.pb
+      %td.width-70.right-align{class: klass}
+        - if @user.id == current_user.id
+          = link_to edit_character_path(character) do
+            = image_tag "/images/pencil.png"
+          = link_to character_path(character), :method => :delete, confirm: 'Are you sure you want to delete '+character.name+'?' do
+            = image_tag "/images/cross.png"
+          &nbsp;
 - unless @user.characters.where(template_id: nil).count.zero?
   %tr
-    %td.beige.padding-10{colspan: 4}
+    %td.beige.padding-10{colspan: 5}
       %b No Template
 - @user.characters.where(template_id: nil).order('name asc').each do |character|
   - klass = cycle('even', 'odd')
   %tr
     %td.padding-5.left-align{class: klass}
       = link_to character.name, character_path(character)
-    %td{class: klass, style:'width:25%'}= character.template_name
-    %td{class: klass, style:'width:25%'}= character.screenname
+    %td{class: klass, style:'width:20%'}= character.template_name
+    %td{class: klass, style:'width:20%'}= character.screenname
     %td{class: klass, style:'width:25%'}= character.pb
+    %td.width-70.right-align{class: klass}
+      - if @user.id == current_user.id
+        = link_to edit_character_path(character) do
+          = image_tag "/images/pencil.png"
+        = link_to character_path(character), :method => :delete, confirm: 'Are you sure you want to delete '+character.name+'?' do
+          = image_tag "/images/cross.png"
+        &nbsp;
