@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20151127181237) do
+ActiveRecord::Schema.define(:version => 20151127183038) do
 
   create_table "audits", :force => true do |t|
     t.integer  "auditable_id"
@@ -55,7 +55,6 @@ ActiveRecord::Schema.define(:version => 20151127181237) do
     t.string   "pb"
   end
 
-  add_index "characters", ["screenname"], :name => "index_characters_on_screenname", :unique => true
   add_index "characters", ["template_id"], :name => "index_characters_on_template_id"
   add_index "characters", ["user_id"], :name => "index_characters_on_user_id"
 

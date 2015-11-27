@@ -6,7 +6,6 @@ class Character < ActiveRecord::Base
   has_many :replies
 
   validates_presence_of :name, :user
-  validates :screenname, uniqueness: true, allow_blank: true
 
   nilify_blanks
 
