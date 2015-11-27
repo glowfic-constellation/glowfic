@@ -33,7 +33,7 @@ class MessagesController < ApplicationController
 
     if @message.save
       flash[:success] = "Message sent!"
-      redirect_to messages_path(view: 'outbox')
+      redirect_to messages_path(view: 'inbox')
     else
       flash.now[:error] = @message.errors.full_messages.to_s
       use_javascript('messages')

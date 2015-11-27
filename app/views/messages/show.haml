@@ -11,5 +11,6 @@
   %table
     %tr
       %th{colspan: 2} Full Message Thread
-    - Message.where(thread_id: @message.thread_id).order('id desc').each do |message|
+    - Message.where(thread_id: @message.thread_id).order('id asc').each do |message|
+      - next if message.id == @message.id
       = render partial: 'single', locals: {message: message}
