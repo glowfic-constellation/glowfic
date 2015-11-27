@@ -5,8 +5,6 @@
   &raquo;
   %b Edit
 
-= link_to 'Back', character_path(@character)
-
 = form_for @character, :url => character_path(@character), :method => :put do |f|
   %table#signup.centered
     %tr
