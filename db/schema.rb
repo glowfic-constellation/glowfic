@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20151127033352) do
+ActiveRecord::Schema.define(:version => 20151127181237) do
 
   create_table "audits", :force => true do |t|
     t.integer  "auditable_id"
@@ -52,6 +52,7 @@ ActiveRecord::Schema.define(:version => 20151127033352) do
     t.integer  "default_icon_id"
     t.datetime "created_at",      :null => false
     t.datetime "updated_at",      :null => false
+    t.string   "pb"
   end
 
   add_index "characters", ["screenname"], :name => "index_characters_on_screenname", :unique => true

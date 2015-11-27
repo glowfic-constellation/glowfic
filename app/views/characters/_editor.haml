@@ -16,6 +16,9 @@
   %tr.left-align
     %td= f.collection_select(:gallery_id, current_user.galleries, :id, :name, {:include_blank => '— Choose Gallery —'}, {:class => 'text'})
 %tr
+  %td
+    = f.text_field :pb, :placeholder => "Played By", :class => 'text'
+%tr
   %td.centered
     = submit_tag "Save", class: 'button'
 
