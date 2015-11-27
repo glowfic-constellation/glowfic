@@ -15,6 +15,7 @@ class CharactersController < ApplicationController
     end
 
     @characters = @user.characters.order('name asc')
+    session[:view] = params[:view] if params[:view].present?
   end
 
   def new
