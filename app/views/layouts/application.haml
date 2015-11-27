@@ -44,8 +44,8 @@
                 %br
                 = link_to "Sign up", new_user_path
         %td.navigation
-          - if content_for?(:header)
-            = content_for :header
+          - if content_for?(:breadcrumbs)
+            = content_for :breadcrumbs
             |
           = link_to 'Boards', boards_path
           |

@@ -1,4 +1,4 @@
-- content_for :header do
+- content_for :breadcrumbs do
   = link_to @message.box(current_user).capitalize, messages_path(view: @message.box(current_user))
   &raquo;
   %b= @message.subject
