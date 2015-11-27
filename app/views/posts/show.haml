@@ -1,3 +1,10 @@
+- content_for :header do
+  = link_to "Boards", boards_path
+  &raquo;
+  = link_to @post.board.name, board_path(@post.board)
+  &raquo;
+  %b= @post.subject
+
 %table
   %tr
     %th{colspan: 2}= @post.subject

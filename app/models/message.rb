@@ -15,6 +15,10 @@ class Message < ActiveRecord::Base
     @subject ||= "Re: " + (parent.subject.starts_with?('Re: ') ? parent.subject[4..-1] : parent.subject)
   end
 
+  def box(user)
+    @box ||= (sender_id == user.id ? 'outbox' : 'inbox')
+  end
+
   private
 
   def set_thread_id

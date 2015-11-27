@@ -1,3 +1,10 @@
+- content_for :header do
+  = link_to "Characters", characters_path
+  &raquo;
+  = link_to @character.name, character_path(@character)
+  &raquo;
+  %b Edit
+
 = link_to 'Back', character_path(@character)
 
 = form_for @character, :url => character_path(@character), :method => :put do |f|

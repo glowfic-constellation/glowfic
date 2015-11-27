@@ -1,3 +1,8 @@
+- content_for :header do
+  = link_to @message.box(current_user).capitalize, messages_path(view: @message.box(current_user))
+  &raquo;
+  %b= @message.subject
+
 %table
   %tr
     %th{colspan: 2}= @message.subject

@@ -1,3 +1,8 @@
+- content_for :header do
+  = link_to "Boards", boards_path
+  &raquo;
+  %b= @board.name
+
 %table
   %tr
     %th{ colspan: 2 }

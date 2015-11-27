@@ -44,6 +44,9 @@
                 %br
                 = link_to "Sign up", new_user_path
         %td.navigation
+          - if content_for?(:header)
+            = content_for :header
+            |
           = link_to 'Boards', boards_path
           |
           = link_to 'Recently Updated', posts_path

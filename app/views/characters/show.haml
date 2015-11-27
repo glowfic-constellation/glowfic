@@ -1,3 +1,8 @@
+- content_for :header do
+  = link_to "Characters", characters_path
+  &raquo;
+  %b= @character.name
+
 - if @character.icon
   = icon_tag @character.icon
   %br
