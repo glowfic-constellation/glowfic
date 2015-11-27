@@ -1,11 +1,16 @@
 
 = form_for @message, :url => messages_path, :method => :post, :html => { :id => 'message_form' } do |f|
+  = hidden_field_tag :parent_id, @message.parent_id
   %table
     %tr
       %th{colspan: 2} Compose New Message
     %tr
       %th.sub.padding-10.width-150 Recipient
-      %td.even.padding-10= f.select :recipient_id, options_from_collection_for_select(User.all - [current_user], :id, :username, @message.recipient_id)
+      %td.even.padding-10
+        - if @message.parent
+          = link_to @message.parent.sender.username, user_path(@message.parent.sender)
+        - else
+          = f.select :recipient_id, options_from_collection_for_select(User.all - [current_user], :id, :username, @message.recipient_id)
     %tr
       %th.sub.padding-10 Subject
       %td.even.padding-10= f.text_field :subject, placeholder: 'Subject'

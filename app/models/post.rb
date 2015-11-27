@@ -27,7 +27,7 @@ class Post < ActiveRecord::Base
   end
 
   def last_post
-    replies.order('id desc').limit(1).first || self
+    replies.order('updated_at desc').limit(1).first || self
   end
 
   def self.privacy_settings

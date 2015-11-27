@@ -3,6 +3,8 @@ class CreateMessages < ActiveRecord::Migration
     create_table :messages do |t|
       t.integer :sender_id, :null => false
       t.integer :recipient_id, :null => false
+      t.integer :parent_id
+      t.integer :thread_id
       t.string :subject
       t.text :message
       t.boolean :unread, :default => true
@@ -15,5 +17,6 @@ class CreateMessages < ActiveRecord::Migration
     end
     add_index :messages, :sender_id
     add_index :messages, [:recipient_id, :unread]
+    add_index :messages, :thread_id
   end
 end

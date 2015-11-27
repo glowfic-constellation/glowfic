@@ -14,10 +14,22 @@ class MessagesController < ApplicationController
   def new
     use_javascript('messages')
     @message = Message.new
+    if params[:reply_id].present?
+      @message.parent = Message.find_by_id(params[:reply_id])
+      @message.parent = nil unless @message.parent.visible_to?(current_user)
+      @message.subject = @message.subject_from_parent
+    end
   end
 
   def create
     @message = Message.new(params[:message].merge(sender: current_user))
+
+    if params[:parent_id].present?
+      @message.parent = Message.find_by_id(params[:parent_id])
+      @message.parent = nil unless @message.parent.visible_to?(current_user)
+      @message.recipient = @message.parent.sender
+      @message.thread_id = @message.parent.thread_id || @message.parent.id
+    end
 
     if @message.save
       flash[:success] = "Message sent!"

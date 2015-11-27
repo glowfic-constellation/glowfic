@@ -100,6 +100,8 @@ ActiveRecord::Schema.define(:version => 20151125201254) do
   create_table "messages", :force => true do |t|
     t.integer  "sender_id",                         :null => false
     t.integer  "recipient_id",                      :null => false
+    t.integer  "parent_id"
+    t.integer  "thread_id"
     t.string   "subject"
     t.text     "message"
     t.boolean  "unread",         :default => true

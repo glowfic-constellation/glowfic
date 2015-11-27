@@ -1,22 +1,15 @@
 %table
   %tr
     %th{colspan: 2}= @message.subject
-  %tr
-    %td.bg.spacer{colspan: 2}
-  %tr
-    %td.menu.beige
-      .green.icon-holder
-        .relative= icon_tag @message.sender.avatar
-      .dark.label.centered= link_to @message.sender.username, user_path(@message.sender)
-      .beige.expander
-        .padding-10
-          To:
-          = link_to @message.recipient.username, user_path(@message.recipient)
-          %br
-          = post_time(@message.created_at)
-      %td.post.even{rowspan: 2, class: cycle('even', 'odd')}= @message.message.gsub("\n","<br>").html_safe
-    %tr
-      %td.dark.spacer
-  %tr
-    %td.bg.spacer{ :colspan => 2 }
+  = render partial: 'single', locals: {message: @message}
 
+.right-align{style: "margin: 5px;"}
+  = link_to new_message_path(reply_id: @message.id) do
+    .character-new-select Reply &raquo;
+
+- if @message.thread_id
+  %table
+    %tr
+      %th{colspan: 2} Full Message Thread
+    - Message.where(thread_id: @message.thread_id).order('id desc').each do |message|
+      = render partial: 'single', locals: {message: message}
