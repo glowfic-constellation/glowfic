@@ -4,7 +4,7 @@ class PostsController < ApplicationController
   before_filter :build_template_groups, :only => [:new, :show, :edit, :preview]
 
   def index
-    @posts = Post.order('updated_at desc').limit(25)
+    @posts = Post.order('updated_at desc').limit(25).includes(:board)
   end
 
   def new

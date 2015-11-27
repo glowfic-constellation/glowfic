@@ -9,6 +9,7 @@
     %th.sub Posts
     %th.sub Last Updated
   - @posts.each do |post|
+    - next unless post.visible_to?(current_user)
     %tr
       - klass = cycle('even', 'odd')
       %td.padding-10{class: klass}
