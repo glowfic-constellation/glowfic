@@ -9,13 +9,13 @@ module ApplicationHelper
 
   def post_time(time)
     time ||= Time.now
-    time_string = time.hour.to_s + time.strftime(":%M %p") + '<br>' + time.strftime("%b %d %Y")
+    time_string = (time.hour % 12).to_s + time.strftime(":%M %p") + '<br>' + time.strftime("%b %d %Y")
     time_string.html_safe
   end
 
   def pretty_time(time)
     return unless time
-    time.strftime("%b %d, %Y ") + time.hour.to_s + time.strftime(":%M %p")
+    time.strftime("%b %d, %Y ") + (time.hour % 12).to_s + time.strftime(":%M %p")
   end
 
   def path_for(obj, path)
