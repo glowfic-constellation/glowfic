@@ -62,3 +62,7 @@
         = link_to character_path(character), :method => :delete, confirm: 'Are you sure you want to delete '+character.name+'?' do
           = image_tag "/images/cross.png"
         &nbsp;
+
+- unless @user.characters.exists?
+  %tr
+    %td.centered.padding-10{class: cycle('even', 'odd'), colspan: 5} — No characters yet —
