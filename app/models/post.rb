@@ -9,10 +9,11 @@ class Post < ActiveRecord::Base
   STATUS_COMPLETE = 1
 
   belongs_to :board
+  belongs_to :section, class_name: BoardSection
   has_many :replies, inverse_of: :post, dependent: :destroy
   has_many :post_viewers
 
-  attr_accessible :board, :board_id, :subject, :privacy, :post_viewer_ids, :updated_at
+  attr_accessible :board, :board_id, :subject, :privacy, :post_viewer_ids
   attr_accessor :post_viewer_ids
 
   validates_presence_of :board, :subject

@@ -2,7 +2,7 @@
 = link_to "Add Gallery", new_gallery_path
 %br
 %table
-  - current_user.galleries.each do |gallery|
+  - current_user.galleries.order('name asc').each do |gallery|
     %tr
       %th.padding-10
         = gallery.name
@@ -13,12 +13,13 @@
     %tr
       %td.green.gallery-title
         .gallery{id: 'gallery'+gallery.id.to_s}
-          - gallery.icons.order('keyword asc').each do |icon|
+          - icons = gallery.icons.order('keyword asc')
+          - icons.each do |icon|
             .gallery-icon{ id: 'icon'+icon.id.to_s }
               = link_to icon_path(icon) do
                 = icon_tag icon
                 %br
                 = icon.keyword
               .gallery-delete{ id: icon.id, gallery: gallery.id } X
-          - if gallery.icons.empty?
+          - if icons.empty?
             .centered — No icons yet —

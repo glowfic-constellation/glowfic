@@ -1,5 +1,5 @@
 %tr
-  %td.menu.beige
+  %td.menu.beige{rowspan: 2}
     .green.icon-holder
       <a name="reply-#{reply.id}"></a>
       .relative= icon_tag reply.icon
@@ -14,8 +14,15 @@
           = link_to 'Edit', path_for(reply, 'edit_%s')
           |
           = link_to 'Delete', path_for(reply, '%s'), method: :delete, confirm: 'Are you sure? This will delete this post AND any post that follows it!'
-    %td.post.even{rowspan: 2, class: cycle('even', 'odd')}= reply.content.gsub("\n","<br>").html_safe
+    - klass = cycle('even', 'odd')
+    %td.post.even{class: klass}= reply.content.gsub("\n","<br>").html_safe
+  %tr
+    %td.label.right-align{class: klass}
+      - if @threaded && reply.is_a?(Reply) && params[:thread_id].blank?
+        = link_to post_path(reply.post_id, thread_id: reply.thread_id) do
+          .character-new-select View Thread &raquo;
   %tr
     %td.dark.spacer
+    %td.spacer{class: klass}
 %tr
   %td.bg.spacer{ :colspan => 2 }

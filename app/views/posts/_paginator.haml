@@ -1,7 +1,7 @@
 %th.sub.paginator{colspan: 2}
   %table
     %tr
-      %td.left-align.width-200 Total: #{paginated.total_entries}
+      %td.left-align.width-200 Total#{' Threads' if @threaded && params[:thread_id].blank?}: #{paginated.total_entries}
       %td.centered
         .pagination
           - if per_page > 0 && paginated.total_entries > per_page

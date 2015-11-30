@@ -5,6 +5,7 @@ Images
 - when changing avatar or icon keyword, provide option to back-update all posts
 - Attribution
 - Omg gallery/icon UI
+- Large galleries break the layout (?!)
 
 User Settings
 - ability to remove avatar, with back-update option
@@ -36,9 +37,7 @@ Admin
 - CRUD for admin status
 
 Scraper
-- Strip 'Edited at' text
 - Handle internal links (see Milliways Lurks)
-- Handle threading...somehow...?
 
 Must Dos
 - Store sessions in the database

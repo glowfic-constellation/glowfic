@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20151127183038) do
+ActiveRecord::Schema.define(:version => 20151127210938) do
 
   create_table "audits", :force => true do |t|
     t.integer  "auditable_id"
@@ -33,6 +33,15 @@ ActiveRecord::Schema.define(:version => 20151127183038) do
   add_index "audits", ["auditable_id", "auditable_type"], :name => "auditable_index"
   add_index "audits", ["created_at"], :name => "index_audits_on_created_at"
   add_index "audits", ["user_id", "user_type"], :name => "user_index"
+
+  create_table "board_sections", :force => true do |t|
+    t.integer  "board_id",                     :null => false
+    t.string   "name",                         :null => false
+    t.integer  "status",        :default => 0, :null => false
+    t.integer  "section_order",                :null => false
+    t.datetime "created_at",                   :null => false
+    t.datetime "updated_at",                   :null => false
+  end
 
   create_table "boards", :force => true do |t|
     t.string   "name",        :null => false
@@ -87,11 +96,12 @@ ActiveRecord::Schema.define(:version => 20151127183038) do
   add_index "galleries_icons", ["icon_id"], :name => "index_galleries_icons_on_icon_id"
 
   create_table "icons", :force => true do |t|
-    t.integer  "user_id",    :null => false
-    t.string   "url",        :null => false
-    t.string   "keyword",    :null => false
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
+    t.integer  "user_id",     :null => false
+    t.string   "url",         :null => false
+    t.string   "keyword",     :null => false
+    t.datetime "created_at",  :null => false
+    t.datetime "updated_at",  :null => false
+    t.string   "attribution"
   end
 
   add_index "icons", ["keyword"], :name => "index_icons_on_keyword"
@@ -127,16 +137,18 @@ ActiveRecord::Schema.define(:version => 20151127183038) do
   add_index "post_viewers", ["post_id"], :name => "index_post_viewers_on_post_id"
 
   create_table "posts", :force => true do |t|
-    t.integer  "board_id",                    :null => false
-    t.integer  "user_id",                     :null => false
-    t.string   "subject",                     :null => false
-    t.text     "content",                     :null => false
+    t.integer  "board_id",                     :null => false
+    t.integer  "user_id",                      :null => false
+    t.string   "subject",                      :null => false
+    t.text     "content",                      :null => false
     t.integer  "character_id"
     t.integer  "icon_id"
-    t.integer  "privacy",      :default => 0, :null => false
-    t.datetime "created_at",                  :null => false
-    t.datetime "updated_at",                  :null => false
+    t.integer  "privacy",       :default => 0, :null => false
+    t.datetime "created_at",                   :null => false
+    t.datetime "updated_at",                   :null => false
     t.integer  "status"
+    t.integer  "section_id"
+    t.integer  "section_order"
   end
 
   add_index "posts", ["board_id"], :name => "index_posts_on_board_id"

@@ -57,17 +57,34 @@ class CharactersController < ApplicationController
   end
 
   def edit
-    use_javascript('characters')
-    gon.character_id = @character.id
   end
 
   def update
-    if @character.update_attributes(params[:character])
+    @character.assign_attributes(params[:character])
+
+    if @character.template_id == 0
+      template = Template.new(user: current_user, name: params[:new_template_name])
+      unless template.valid? && @character.valid?
+        flash.now[:error] = "Your character could not be saved."
+        render :action => :edit and return
+      end
+      success = Character.transaction do
+        template.save
+        @character.template = template
+        @character.save
+      end
+      if success
+        flash[:success] = "Character saved successfully."
+        redirect_to character_path(@character)
+      else
+        @character.template_id = 0
+        flash.now[:error] = "Your character could not be saved."
+        render :action => :edit
+      end
+    elsif @character.save
       flash[:success] = "Character saved successfully."
       redirect_to character_path(@character)
     else
-      use_javascript('characters')
-      gon.character_id = @character.id
       flash.now[:error] = "Your character could not be saved."
       render :action => :edit
     end

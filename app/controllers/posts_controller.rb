@@ -33,14 +33,26 @@ class PostsController < ApplicationController
   end
 
   def show
-    @reply = Reply.new(post: @post, character: current_user.active_character, icon: current_user.active_character.try(:icon)) if logged_in?
-    per = per_page > 0 ? per_page : @post.replies.count
-    @replies = @post.replies.order('id asc').paginate(page: page, per_page: per)
-    use_javascript('paginator')
+    @threaded = false
+    replies = if @post.replies.where('thread_id is not null').count > 1
+      @threaded = true
+      if params[:thread_id].present?
+        @replies = @post.replies.where(thread_id: params[:thread_id])
+      else
+        @post.replies.where('id = thread_id')
+      end
+    else
+      @post.replies
+    end
+
+    per = per_page > 0 ? per_page : replies.count
+    @replies = replies.order('id asc').paginate(page: page, per_page: per)
     redirect_to post_path(@post, page: @replies.total_pages, per_page: per) and return if page > @replies.total_pages
+    use_javascript('paginator')
 
     if logged_in?
       use_javascript('posts') 
+      @reply = Reply.new(post: @post, character: current_user.active_character, icon: current_user.active_character.try(:icon))
       @character = current_user.active_character
       @image = @character ? @character.icon : current_user.avatar
     end

@@ -7,7 +7,11 @@
 
 %table
   %tr
-    %th{colspan: 2}= @post.subject
+    %th{colspan: 2}
+      = @post.subject
+      - if params[:thread_id].present?
+        = link_to post_path(@post) do
+          .character-view-select &laquo; Thread Index
   %tr
     %td.bg.spacer{colspan: 2}
   = render partial: 'replies/single', locals: {reply: @post}

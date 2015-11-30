@@ -1,5 +1,6 @@
 class Board < ActiveRecord::Base
   has_many :posts
+  has_many :board_sections
   belongs_to :creator, class_name: User
   belongs_to :coauthor, class_name: User
 

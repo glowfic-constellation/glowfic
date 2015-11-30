@@ -6,7 +6,7 @@ module Writable
     belongs_to :icon
     belongs_to :user
 
-    attr_accessible :character, :character_id, :user, :user_id, :icon, :icon_id, :content
+    attr_accessible :character, :character_id, :user, :user_id, :icon, :icon_id, :content, :created_at, :updated_at
 
     validates_presence_of :user, :content
     validate :character_ownership, :icon_ownership

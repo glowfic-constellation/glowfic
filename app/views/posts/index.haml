@@ -1,6 +1,6 @@
 %table
   %tr
-    %th{colspan: 7} Most Recently Updated Threads
+    %th{colspan: 6} Most Recently Updated Threads
   %tr
     %th.sub.width-15
     %th.sub Thread
@@ -17,7 +17,7 @@
           = image_tag "/images/accept.png", title: "Thread Complete"
       %td.padding-10{class: klass}= link_to post.subject, post_path(post)
       %td.padding-10.width-150{class: klass}= link_to post.board.name, board_path(post.board)
-      %td.padding-10.width-150{class: klass}= post.user.username
+      %td.padding-10.width-150{class: klass}= link_to post.user.username, user_path(post.user)
       %td.padding-10.width-70{class: klass}= post.replies.count + 1
       %td.padding-10.width-300{class: klass}
         = pretty_time(post.updated_at)
@@ -25,4 +25,4 @@
         = link_to post.last_post.user.username, user_path(post.last_post.user)
   - if @posts.empty?
     %tr
-      %td.centered.padding-10{ class: cycle('even','odd'), colspan: 4 } — No posts yet —
+      %td.centered.padding-10{ class: cycle('even','odd'), colspan: 6 } — No posts yet —
