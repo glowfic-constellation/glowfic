@@ -108,3 +108,4 @@ button, input.button {
 .chosen-container { margin-top: 5px; margin-bottom: 5px; }
 
 #message_form textarea { width: 500px; height: 100px; }
+#content th.character-group-name { background-color: #a3a1a0; padding: 10px 25px; color: black; font-size: 15px; font-weight: bold; }

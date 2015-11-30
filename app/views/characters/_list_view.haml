@@ -4,8 +4,6 @@
   - if @group.characters.where(template_id: nil).exists?
     = render partial: 'list_section', locals: {name: "No Template", characters: @group.characters.where(template_id: nil).order('name asc')}
 - elsif @user.character_groups.exists?
-  %tr
-    %td.bg.spacer{colspan: 5}
   - @user.character_groups.order('id asc').each do |group|
     %tr
       %th.character-group-name{colspan: 5}= group.name
