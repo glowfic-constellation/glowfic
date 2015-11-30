@@ -1,5 +1,5 @@
 - if @group
-  - @group.characters.map(&:template).uniq.each do |template|
+  - @group.characters.map(&:template).uniq.sort_by(&:name).each do |template|
     - next unless template
     = render partial: 'list_section', locals: {name: "Template: #{template.name}", characters: template.characters}
   - if @group.characters.where(template_id: nil).exists?
@@ -9,8 +9,8 @@
     %td.bg.spacer{colspan: 5}
   - @user.character_groups.order('id asc').each do |group|
     %tr
-      %th{colspan: 5}= group.name
-    - group.characters.map(&:template).uniq.each do |template|
+      %th.character-group-name{colspan: 5}= group.name
+    - group.characters.map(&:template).uniq.sort_by(&:name).each do |template|
       - next unless template
       = render partial: 'list_section', locals: {name: "Template: #{template.name}", characters: template.characters}
     - if group.characters.where(template_id: nil).exists?
@@ -18,7 +18,7 @@
   - if @user.characters.where(character_group_id: nil).exists?
     %tr
       %th{colspan: 5} Ungrouped Characters
-    - @user.characters.where(character_group_id: nil).map(&:template).uniq.each do |template|
+    - @user.characters.where(character_group_id: nil).map(&:template).uniq.sort_by(&:name).each do |template|
       - next unless template
       = render partial: 'list_section', locals: {name: "Template: #{template.name}", characters: template.characters}
     = render partial: 'list_section', locals: {name: "No Template", characters: @user.characters.where(character_group_id: nil).where(template_id: nil).order('name asc')}
