@@ -1,6 +1,6 @@
 class GalleriesController < ApplicationController
   before_filter :login_required
-  before_filter :find_gallery, :only => [:add, :icon, :destroy, :remove, :show]
+  before_filter :find_gallery, :only => [:add, :icon, :destroy, :remove, :show, :edit, :update]
 
   def index
     use_javascript('galleries/index')
@@ -28,6 +28,19 @@ class GalleriesController < ApplicationController
 
   def show
     render json: @gallery.icons
+  end
+
+  def edit
+  end
+
+  def update
+    if @gallery.update_attributes(params[:gallery])
+      flash[:success] = "Gallery saved."
+      redirect_to galleries_path
+    else
+      flash.now[:error] = "Gallery could not be saved."
+      render action: :edit
+    end
   end
 
   def icon
