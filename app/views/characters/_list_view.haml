@@ -2,7 +2,8 @@
   - @group.characters.map(&:template).uniq.each do |template|
     - next unless template
     = render partial: 'list_section', locals: {name: "Template: #{template.name}", characters: template.characters}
-  = render partial: 'list_section', locals: {name: "No Template", characters: @group.characters.where(template_id: nil).order('name asc')}
+  - if @group.characters.where(template_id: nil).exists?
+    = render partial: 'list_section', locals: {name: "No Template", characters: @group.characters.where(template_id: nil).order('name asc')}
 - elsif @user.character_groups.exists?
   %tr
     %td.bg.spacer{colspan: 5}
