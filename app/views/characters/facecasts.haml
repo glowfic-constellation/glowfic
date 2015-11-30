@@ -1,6 +1,11 @@
 %table
   %tr
-    %th{colspan: 3} Facecasts
+    %th{colspan: 4} Facecasts
+  %tr
+    %th.sub Facecast
+    %th.sub Type
+    %th.sub Name
+    %th.sub Writer
   - @pbs.keys.sort.each do |pb|
     - characters = @pbs[pb].uniq
     - characters.each do |character|
@@ -8,4 +13,9 @@
         - klass = cycle('even','odd')
         %td.padding-5{class: klass}= pb
         %td.padding-5{class: klass}= character.class
-        %td.padding-5{class: klass}= character.name
+        %td.padding-5{class: klass}
+          - if character.is_a? Character
+            = link_to character.name, character_path(character)
+          - else
+            = link_to character.name, template_path(character)
+        %td.padding-5{class: klass}= link_to character.user.username, user_path(character.user)
