@@ -32,7 +32,7 @@ class Character < ActiveRecord::Base
   private
 
   def valid_template
-    return unless template_id.zero?
+    return unless template_id == 0
     @template = Template.new(user: user, name: new_template_name)
     return if @template.valid?
     @template.errors.messages.each do |k, v|
@@ -41,7 +41,7 @@ class Character < ActiveRecord::Base
   end
 
   def valid_group
-    return unless character_group_id.zero?
+    return unless character_group_id == 0
     @group = CharacterGroup.new(user: user, name: group_name)
     return if @group.valid?
     @group.errors.messages.each do |k, v|
