@@ -123,7 +123,7 @@ class CharactersController < ApplicationController
   def build_editor
     faked = Struct.new(:name, :id)
     new_template = faked.new('— Create New Template —', 0)
-    @templates = current_user.templates + [new_template]
+    @templates = current_user.templates.order('name asc') + [new_template]
     use_javascript('characters')
     gon.character_id = @character.try(:id) || ''
   end
