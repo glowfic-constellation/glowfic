@@ -23,6 +23,7 @@ Rails.application.routes.draw do
     member do
       post :icon
     end
+    collection { get :facecasts }
   end
   resources :icons do
     member do

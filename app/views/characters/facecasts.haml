@@ -1,0 +1,11 @@
+%table
+  %tr
+    %th{colspan: 3} Facecasts
+  - @pbs.keys.sort.each do |pb|
+    - characters = @pbs[pb].uniq
+    - characters.each do |character|
+      %tr
+        - klass = cycle('even','odd')
+        %td.padding-5{class: klass}= pb
+        %td.padding-5{class: klass}= character.class
+        %td.padding-5{class: klass}= character.name

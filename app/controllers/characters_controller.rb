@@ -67,6 +67,16 @@ class CharactersController < ApplicationController
     redirect_to characters_path
   end
 
+  def facecasts
+    chars = Character.where('pb is not null')
+    @pbs = {}
+    chars.each do |character|
+      @pbs[character.pb] ||= []
+      @pbs[character.pb] << character unless character.template
+      @pbs[character.pb] << character.template if character.template
+    end
+  end
+
   private
 
   def find_character
