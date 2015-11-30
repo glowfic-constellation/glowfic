@@ -11,10 +11,15 @@
   %td.left-align
     = f.collection_select(:template_id, @templates, :id, :name, {:include_blank => '— Choose Template —'}, {:class => 'text'})
 %tr#create_template{style: ('display: none;' unless params[:character].try(:[], :template_id) == "0")}
-  %td.left-align= text_field_tag :new_template_name, params[:new_template_name], :placeholder => "Template Name", :class => 'text'
+  %td.left-align= f.text_field :new_template_name, :placeholder => "Template Name", :class => 'text'
 - if current_user.galleries.present?
   %tr.left-align
     %td= f.collection_select(:gallery_id, current_user.galleries.order('name asc'), :id, :name, {:include_blank => '— Choose Gallery —'}, {:class => 'text'})
+%tr
+  %td.left-align
+    = f.collection_select(:character_group_id, @groups, :id, :name, {:include_blank => '— Choose Group —'}, {:class => 'text'})
+%tr#create_group{style: ('display: none;' unless params[:character].try(:[], :character_group_id) == "0")}
+  %td.left-align= f.text_field :group_name, :placeholder => "Group Name", :class => 'text'
 %tr
   %td
     = f.text_field :pb, :placeholder => "Played By", :class => 'text'

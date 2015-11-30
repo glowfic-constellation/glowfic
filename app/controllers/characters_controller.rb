@@ -1,6 +1,7 @@
 class CharactersController < ApplicationController
   before_filter :login_required, :except => :show
   before_filter :find_character, :only => [:show, :edit, :update, :destroy, :icon]
+  before_filter :find_group, :only => :index
   before_filter :require_own_character, :only => [:edit, :update, :destroy, :icon]
   before_filter :build_editor, :only => [:new, :create, :edit, :update]
 
@@ -25,26 +26,8 @@ class CharactersController < ApplicationController
   def create
     @character = Character.new(params[:character].merge(user: current_user))
 
-    if @character.template_id == 0
-      template = Template.new(user: current_user, name: params[:new_template_name])
-      unless template.valid? && @character.valid?
-        flash.now[:error] = "Your character could not be saved."
-        render :action => :new and return
-      end
-      success = Character.transaction do
-        template.save
-        @character.template = template
-        @character.save
-      end
-      if success
-        flash[:success] = "Character saved successfully."
-        redirect_to character_path(@character)
-      else
-        @character.template_id = 0
-        flash.now[:error] = "Your character could not be saved."
-        render :action => :new
-      end
-    elsif @character.save
+    if @character.valid?
+      save_character_with_extras
       flash[:success] = "Character saved successfully."
       redirect_to character_path(@character)
     else
@@ -62,26 +45,8 @@ class CharactersController < ApplicationController
   def update
     @character.assign_attributes(params[:character])
 
-    if @character.template_id == 0
-      template = Template.new(user: current_user, name: params[:new_template_name])
-      unless template.valid? && @character.valid?
-        flash.now[:error] = "Your character could not be saved."
-        render :action => :edit and return
-      end
-      success = Character.transaction do
-        template.save
-        @character.template = template
-        @character.save
-      end
-      if success
-        flash[:success] = "Character saved successfully."
-        redirect_to character_path(@character)
-      else
-        @character.template_id = 0
-        flash.now[:error] = "Your character could not be saved."
-        render :action => :edit
-      end
-    elsif @character.save
+    if @character.valid?
+      save_character_with_extras
       flash[:success] = "Character saved successfully."
       redirect_to character_path(@character)
     else
@@ -113,6 +78,11 @@ class CharactersController < ApplicationController
     end
   end
 
+  def find_group
+    return unless params[:group_id].present?
+    @group = CharacterGroup.find_by_id(params[:group_id])
+  end
+
   def require_own_character
     if @character.user_id != current_user.id
       flash[:error] = "That is not your character."
@@ -124,7 +94,23 @@ class CharactersController < ApplicationController
     faked = Struct.new(:name, :id)
     new_template = faked.new('— Create New Template —', 0)
     @templates = current_user.templates.order('name asc') + [new_template]
+    new_group = faked.new('— Create New Group —', 0)
+    @groups = current_user.character_groups.order('name asc') + [new_group]
     use_javascript('characters')
     gon.character_id = @character.try(:id) || ''
+  end
+
+  def save_character_with_extras
+    Character.transaction do
+      if template = @character.instance_variable_get('@template')
+        template.save
+        @character.template = template
+      end
+      if group = @character.instance_variable_get('@group')
+        group.save
+        @character.character_group = group
+      end
+      @character.save
+    end
   end
 end

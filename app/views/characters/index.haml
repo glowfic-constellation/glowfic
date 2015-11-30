@@ -1,13 +1,17 @@
 %table
   %tr
     %th{colspan: 5}
-      - if @user.id == current_user.id
-        Your
+      - if @group
+        Character Group:
+        = @group.name
       - else
-        = @user.username + "'s"
-      Characters
+        - if @user.id == current_user.id
+          Your
+        - else
+          = @user.username + "'s"
+        Characters
       - if @user.id == current_user.id
-        = link_to new_character_path do
+        = link_to new_character_path(character_group_id: @group.try(:id)) do
           .character-new-select
             + New Character
       = link_to url_for(view: 'icons') do

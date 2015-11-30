@@ -9,6 +9,11 @@ $(document).ready(function() {
     disable_search_threshold: 10,
   });
 
+  $("#character_character_group_id").chosen({
+    width: '100%',
+    disable_search_threshold: 10,
+  });
+
   bindIcons();
 
   $("#character_template_id").change(function () {
@@ -16,6 +21,14 @@ $(document).ready(function() {
       $("#create_template").hide();
     } else {
       $("#create_template").show();
+    }
+  });
+
+  $("#character_character_group_id").change(function () {
+    if ($(this).val() != "0") {
+      $("#create_group").hide();
+    } else {
+      $("#create_group").show();
     }
   });
 

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20151127210938) do
+ActiveRecord::Schema.define(:version => 20151130050434) do
 
   create_table "audits", :force => true do |t|
     t.integer  "auditable_id"
@@ -51,19 +51,26 @@ ActiveRecord::Schema.define(:version => 20151127210938) do
     t.datetime "updated_at",  :null => false
   end
 
+  create_table "character_groups", :force => true do |t|
+    t.integer "user_id", :null => false
+    t.string  "name",    :null => false
+  end
+
   create_table "characters", :force => true do |t|
-    t.integer  "user_id",         :null => false
-    t.string   "name",            :null => false
+    t.integer  "user_id",            :null => false
+    t.string   "name",               :null => false
     t.string   "template_name"
     t.string   "screenname"
     t.integer  "gallery_id"
     t.integer  "template_id"
     t.integer  "default_icon_id"
-    t.datetime "created_at",      :null => false
-    t.datetime "updated_at",      :null => false
+    t.datetime "created_at",         :null => false
+    t.datetime "updated_at",         :null => false
     t.string   "pb"
+    t.integer  "character_group_id"
   end
 
+  add_index "characters", ["character_group_id"], :name => "index_characters_on_character_group_id"
   add_index "characters", ["template_id"], :name => "index_characters_on_template_id"
   add_index "characters", ["user_id"], :name => "index_characters_on_user_id"
 
