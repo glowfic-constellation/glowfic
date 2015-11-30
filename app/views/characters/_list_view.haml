@@ -13,6 +13,13 @@
       - next unless template
       = render partial: 'list_section', locals: {name: "Template: #{template.name}", characters: template.characters}
     = render partial: 'list_section', locals: {name: "No Template", characters: group.characters.where(template_id: nil).order('name asc')}
+  - if @user.characters.where(character_group_id: nil).exists?
+    %tr
+      %th{colspan: 5} Ungrouped Characters
+    - @user.characters.where(character_group_id: nil).map(&:template).uniq.each do |template|
+      - next unless template
+      = render partial: 'list_section', locals: {name: "Template: #{template.name}", characters: template.characters}
+    = render partial: 'list_section', locals: {name: "No Template", characters: @user.characters.where(character_group_id: nil).where(template_id: nil).order('name asc')}
 
 - elsif @user.characters.exists?
   - @user.templates.order('name asc').each do |template|  
