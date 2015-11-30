@@ -6,7 +6,7 @@ $(document).ready(function() {
 
   $("#character_gallery_id").chosen({
     width: '100%',
-    disable_search_threshold: 20,
+    disable_search_threshold: 10,
   });
 
   bindIcons();

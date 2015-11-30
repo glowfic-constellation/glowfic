@@ -14,7 +14,7 @@
   %td.left-align= text_field_tag :new_template_name, params[:new_template_name], :placeholder => "Template Name", :class => 'text'
 - if current_user.galleries.present?
   %tr.left-align
-    %td= f.collection_select(:gallery_id, current_user.galleries, :id, :name, {:include_blank => '— Choose Gallery —'}, {:class => 'text'})
+    %td= f.collection_select(:gallery_id, current_user.galleries.order('name asc'), :id, :name, {:include_blank => '— Choose Gallery —'}, {:class => 'text'})
 %tr
   %td
     = f.text_field :pb, :placeholder => "Played By", :class => 'text'
