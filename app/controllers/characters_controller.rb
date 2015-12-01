@@ -70,10 +70,18 @@ class CharactersController < ApplicationController
   def facecasts
     chars = Character.where('pb is not null')
     @pbs = {}
-    chars.each do |character|
-      @pbs[character.pb] ||= []
-      @pbs[character.pb] << character unless character.template
-      @pbs[character.pb] << character.template if character.template
+
+    if params[:sort] == "name"
+      chars.each do |character|
+        key = character.template || character
+        @pbs[key] = character.pb
+      end
+    else
+      chars.each do |character|
+        @pbs[character.pb] ||= []
+        @pbs[character.pb] << character unless character.template
+        @pbs[character.pb] << character.template if character.template
+      end
     end
   end
 
