@@ -1,5 +1,12 @@
 body, html { height: 100%; }
-body { margin: 0 0 0 0; font-family: Helvetica, sans-serif; color: #101010; }
+body {
+    margin: 0 0 0 0;
+    font-family: Helvetica, sans-serif;
+    color: #101010;
+    background-image: url('/images/bg.png');
+    background-repeat: repeat-y;
+    background-color: #e5dfd1;
+}
 a { text-decoration: none; }
 
 /* Main Layout */
