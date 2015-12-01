@@ -9,17 +9,18 @@
   - if params[:sort] == "name"
     - characters = @pbs.keys.sort_by{ |char| char.name }
     - characters.each do |character|
-      - pb = @pbs[character]
-      %tr
-        - klass = cycle('even','odd')
-        %td.padding-5{class: klass}= pb
-        %td.padding-5{class: klass}= character.class
-        %td.padding-5{class: klass}
-          - if character.is_a? Character
-            = link_to character.name, character_path(character)
-          - else
-            = link_to character.name, template_path(character)
-        %td.padding-5{class: klass}= link_to character.user.username, user_path(character.user)
+      - pbs = @pbs[character].uniq
+      - pbs.each do |pb|
+        %tr
+          - klass = cycle('even','odd')
+          %td.padding-5{class: klass}= pb
+          %td.padding-5{class: klass}= character.class
+          %td.padding-5{class: klass}
+            - if character.is_a? Character
+              = link_to character.name, character_path(character)
+            - else
+              = link_to character.name, template_path(character)
+          %td.padding-5{class: klass}= link_to character.user.username, user_path(character.user)
   - else
     - @pbs.keys.sort.each do |pb|
       - characters = @pbs[pb].uniq

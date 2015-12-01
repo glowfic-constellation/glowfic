@@ -74,7 +74,8 @@ class CharactersController < ApplicationController
     if params[:sort] == "name"
       chars.each do |character|
         key = character.template || character
-        @pbs[key] = character.pb
+        @pbs[key] ||= []
+        @pbs[key] << character.pb
       end
     else
       chars.each do |character|
