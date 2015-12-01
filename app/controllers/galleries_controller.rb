@@ -44,9 +44,13 @@ class GalleriesController < ApplicationController
   end
 
   def icon
-    icon = Icon.find(params[:icon_id])
-    @gallery.icons << icon
-    flash[:success] = "Icon added to gallery successfully."
+    icon_ids = params[:image_ids].split(',').map(&:to_i).reject(&:zero?)
+    icons = Icon.where(id: icon_ids)
+    icons.each do |icon|
+      next unless icon.user_id == current_user.id
+      @gallery.icons << icon
+    end
+    flash[:success] = "Icons added to gallery successfully."
     redirect_to galleries_path
   end
 

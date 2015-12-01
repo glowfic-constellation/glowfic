@@ -1,12 +1,10 @@
-= form_tag icon_gallery_path(@gallery), :method => :post do
-  %table#signup.centered
-    %tr
-      %th.centered
-        Add Icon to Gallery
-    %tr
-      %td
-        = select_tag(:icon_id, options_from_collection_for_select(current_user.icons - @gallery.icons, :id, :keyword), {})
-    %tr
-      %td.centered
-        = submit_tag "Add to Gallery", class: 'button'
+%h2 Add Icons to Gallery
+%br
+Click icons to select, then press Add Icons to Gallery at the bottom.
+%br
+- (current_user.icons - @gallery.icons).first(10).each do |icon|
+  = icon_tag icon, class: 'add-gallery-icon', :'data-id' => icon.id
 
+= form_tag icon_gallery_path(@gallery), method: :post, id: 'add-gallery-icons' do
+  = hidden_field_tag :image_ids
+  = submit_tag "Add Icons to Gallery", class: 'button'
