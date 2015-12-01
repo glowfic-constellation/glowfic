@@ -1,6 +1,11 @@
 %tr
   %td.beige.padding-10{colspan: 5}
-    %b= name
+    - if name.is_a? ActiveRecord::Base::Template
+      %b
+        Template:
+        = link_to name.name, template_path(name)
+    - else
+      %b= name
 - if characters.empty?
   %tr
     %td.centered.padding-5{class: cycle('even', 'odd'), colspan: 5} — No characters yet —

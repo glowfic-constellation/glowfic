@@ -3,5 +3,6 @@
 - if @template.user_id == current_user.id
     = link_to '+ Create new template instance', new_character_path(template_id: @template.id)
     %br
+    = link_to 'Edit template', edit_template_path(@template)
 %br
 = render partial: 'single', locals: {title: 'Characters', template: @template}

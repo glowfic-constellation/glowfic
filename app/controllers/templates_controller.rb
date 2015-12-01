@@ -1,6 +1,7 @@
 class TemplatesController < ApplicationController
   before_filter :login_required
-  before_filter :find_template, :only => [:show, :destroy]
+  before_filter :find_template, :only => [:show, :destroy, :edit, :update]
+  before_filter :require_own_template, :only => [:edit, :update, :destroy]
 
   def index
     @templates = current_user.templates
@@ -25,14 +26,20 @@ class TemplatesController < ApplicationController
   def show
   end
 
+  def edit
+  end
+
   def update
+    if @template.update_attributes(params[:template])
+      flash[:success] = "Template saved successfully."
+      redirect_to template_path(@template)
+    else
+      flash.now[:error] = "Your template could not be saved."
+      render :action => :edit
+    end
   end
 
   def destroy
-    if @template.user_id != current_user.id
-      flash[:error] = "That is not your template."
-      redirect_to templates_path and return
-    end
 
     @template.destroy
     flash[:success] = "Template deleted successfully."
@@ -46,5 +53,11 @@ class TemplatesController < ApplicationController
       flash[:error] = "Template could not be found."
       redirect_to templates_path and return
     end
+  end
+
+  def require_own_template
+    return true if @template.user_id == current_user.id
+    flash[:error] = "That is not your template."
+    redirect_to templates_path
   end
 end

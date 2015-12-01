@@ -1,6 +1,6 @@
 - if @group
   - @group.characters.map(&:template).uniq.compact.sort_by(&:name).each do |template|
-    = render partial: 'list_section', locals: {name: "Template: #{template.name}", characters: template.characters}
+    = render partial: 'list_section', locals: {name: template, characters: template.characters}
   - if @group.characters.where(template_id: nil).exists?
     = render partial: 'list_section', locals: {name: "No Template", characters: @group.characters.where(template_id: nil).order('name asc')}
 - elsif @user.character_groups.exists?
@@ -8,7 +8,7 @@
     %tr
       %th.character-group-name{colspan: 5}= group.name
     - group.characters.map(&:template).uniq.compact.sort_by(&:name).each do |template|
-      = render partial: 'list_section', locals: {name: "Template: #{template.name}", characters: template.characters}
+      = render partial: 'list_section', locals: {name: template, characters: template.characters}
     - if group.characters.where(template_id: nil).exists?
       = render partial: 'list_section', locals: {name: "No Template", characters: group.characters.where(template_id: nil).order('name asc')}
   - if @user.characters.where(character_group_id: nil).exists?
@@ -16,12 +16,12 @@
       %th{colspan: 5} Ungrouped Characters
     - @user.characters.where(character_group_id: nil).map(&:template).uniq.compact.sort_by(&:name).each do |template|
       - next if template.characters.where('character_group_id is not null').exists?
-      = render partial: 'list_section', locals: {name: "Template: #{template.name}", characters: template.characters}
+      = render partial: 'list_section', locals: {name: template, characters: template.characters}
     = render partial: 'list_section', locals: {name: "No Template", characters: @user.characters.where(character_group_id: nil).where(template_id: nil).order('name asc')}
 
 - elsif @user.characters.exists?
   - @user.templates.order('name asc').each do |template|  
-    = render partial: 'list_section', locals: {name: "Template: #{template.name}", characters: template.characters}
+    = render partial: 'list_section', locals: {name: template, characters: template.characters}
 
   - unless @user.characters.where(template_id: nil).count.zero?
     = render partial: 'list_section', locals: {name: "No Template", characters: @user.characters.where(template_id: nil).order('name asc')}

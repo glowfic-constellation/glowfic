@@ -1,0 +1,11 @@
+= form_for @template, :url => template_path(@template), :method => :put do |f|
+  %table#signup.centered
+    %tr
+      %th.centered
+        Edit Template
+    %tr
+      %td
+        = f.text_field :name, :placeholder => "Template Name", :class => 'text'
+    %tr
+      %td.centered
+        = submit_tag "Save", class: 'button'
