@@ -1,15 +1,16 @@
 To Do
 
 On the plane
-- 'add icon to gallery' is multi select
 - 'add icon' page is multi row
+- improve icon view for characters page
+- improve character groups in full generality
+- image attribution
 
 Images
 - keyboard control: pick icon by typing its keyword (have a selectable keyword below the icon?)
 - when changing avatar or icon keyword, provide option to back-update all posts
 - Attribution
 - Omg gallery/icon UI
-- Large galleries break the layout (?!)
 
 User Settings
 - ability to remove avatar, with back-update option
@@ -53,3 +54,6 @@ Must Dos
 
 V2
 - tags for post (ex: setting)
+
+Forum: https://github.com/rubysherpas/forem/blob/e6273a8f15fb6573a743c7a71284a184647988fa/app/models/forem/concerns/viewable.rb
+Auth: https://github.com/plataformatec/devise

@@ -1,5 +1,10 @@
 = icon_tag @icon
-%br
-= link_to "Make avatar", avatar_icon_path(@icon), method: :post
-%br
-= link_to "Delete icon", icon_path(@icon), method: :delete, confirm: 'Are you sure you want to delete this icon?'
+- if @icon.credit
+  %br
+  Credit:
+  = @icon.credit
+- if @icon.user_id == current_user.id
+  %br
+  = link_to "Make avatar", avatar_icon_path(@icon), method: :post
+  %br
+  = link_to "Delete icon", icon_path(@icon), method: :delete, confirm: 'Are you sure you want to delete this icon?'
