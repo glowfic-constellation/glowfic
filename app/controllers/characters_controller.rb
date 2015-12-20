@@ -1,5 +1,5 @@
 class CharactersController < ApplicationController
-  before_filter :login_required, :except => :show
+  before_filter :login_required, :except => [:show, :facecasts]
   before_filter :find_character, :only => [:show, :edit, :update, :destroy, :icon]
   before_filter :find_group, :only => :index
   before_filter :require_own_character, :only => [:edit, :update, :destroy, :icon]
