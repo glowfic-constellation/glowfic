@@ -1,23 +1,36 @@
 class IconsController < ApplicationController
   before_filter :login_required
   before_filter :find_icon, :only => [:show, :destroy, :avatar]
+  before_filter :require_own_icon, :only => [:destroy, :avatar]
 
   def index
     @icons = current_user.icons
   end
 
   def new
-    @icon = Icon.new
+    use_javascript('icons')
   end
 
   def create
-    @icon = Icon.new(params[:icon])
-    @icon.user = current_user
-    if @icon.save
-      flash[:success] = "Icon saved successfully."
+    icons = []
+    params[:icons].each do |icon|
+      next if icon.values.all?(&:blank?)
+      icon = Icon.new(icon)
+      icon.user = current_user
+      unless icon.valid?
+        flash.now[:error] = "Your icons could not be saved."
+        use_javascript('icons')
+        render :action => :new and return
+      end
+      icons << icon
+    end
+
+    if icons.all?(&:save)
+      flash[:success] = "Icons saved successfully."
       redirect_to icons_path
     else
-      flash.now[:error] = "Your icon could not be saved."
+      flash.now[:error] = "Your icons could not be saved."
+      use_javascript('icons')
       render :action => :new
     end
   end
@@ -49,7 +62,9 @@ class IconsController < ApplicationController
       flash[:error] = "Icon could not be found."
       redirect_to icons_path and return
     end
+  end
 
+  def require_own_icon
     if @icon.user_id != current_user.id
       flash[:error] = "That is not your icon."
       redirect_to icons_path and return

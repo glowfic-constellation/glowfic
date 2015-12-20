@@ -1,8 +1,12 @@
 %tr
   %td.menu.beige{rowspan: 2}
     .green.icon-holder
-      <a name="reply-#{reply.id}"></a>
-      .relative= icon_tag reply.icon
+      - if reply.is_a? Reply
+        <a name="reply-#{reply.id}"></a>
+      .relative
+        - if reply.icon
+          = link_to icon_path(reply.icon) do
+            = icon_tag reply.icon
     .dark.label.centered= reply.character.try(:name) || reply.user.username
     .beige.expander
       .padding-10
