@@ -1,7 +1,7 @@
 class IconsController < ApplicationController
-  before_filter :login_required
-  before_filter :find_icon, :only => [:show, :destroy, :avatar]
-  before_filter :require_own_icon, :only => [:destroy, :avatar]
+  before_filter :login_required, :except => :show
+  before_filter :find_icon, :only => [:show, :edit, :update, :destroy, :avatar]
+  before_filter :require_own_icon, :only => [:edit, :update, :destroy, :avatar]
 
   def index
     @icons = current_user.icons
@@ -36,6 +36,19 @@ class IconsController < ApplicationController
   end
 
   def show
+  end
+
+  def edit
+  end
+
+  def update
+    if @icon.update_attributes(params[:icon])
+      flash[:success] = "Icon updated"
+      redirect_to icon_path(@icon)
+    else
+      flash.now[:error] = "Something went wrong."
+      render :action => :edit
+    end
   end
 
   def destroy

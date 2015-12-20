@@ -4,6 +4,7 @@ class Icon < ActiveRecord::Base
   has_and_belongs_to_many :galleries
 
   validates_presence_of :url, :user, :keyword
+  nilify_blanks
 
   def to_json
     { id: id, url: url, keyword: keyword }

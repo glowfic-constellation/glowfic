@@ -10,4 +10,6 @@ Keyword:
   %br
   = link_to "Make avatar", avatar_icon_path(@icon), method: :post
   %br
+  = link_to "Edit icon", edit_icon_path(@icon)
+  %br
   = link_to "Delete icon", icon_path(@icon), method: :delete, confirm: 'Are you sure you want to delete this icon?'
