@@ -6,7 +6,7 @@ Keyword:
   %br
   Credit:
   = @icon.credit
-- if @icon.user_id == current_user.id
+- if @icon.user_id == current_user.try(:id)
   %br
   = link_to "Make avatar", avatar_icon_path(@icon), method: :post
   %br
