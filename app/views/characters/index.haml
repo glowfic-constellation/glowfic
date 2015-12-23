@@ -5,12 +5,12 @@
         Character Group:
         = @group.name
       - else
-        - if @user.id == current_user.id
+        - if @user.id == current_user.try(:id)
           Your
         - else
           = @user.username + "'s"
         Characters
-      - if @user.id == current_user.id
+      - if @user.id == current_user.try(:id)
         = link_to new_character_path(character_group_id: @group.try(:id)) do
           .character-new-select
             + New Character

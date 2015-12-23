@@ -30,7 +30,7 @@
       %td{class: klass, style:'width:20%'}= character.screenname
       %td{class: klass, style:'width:25%'}= character.pb
       %td.width-70.right-align{class: klass}
-        - if @user.id == current_user.id
+        - if @user.id == current_user.try(:id)
           = link_to edit_character_path(character) do
             = image_tag "/images/pencil.png"
           = link_to character_path(character), :method => :delete, confirm: 'Are you sure you want to delete '+character.name+'?' do

@@ -5,6 +5,7 @@ v1
 - post history
 - Store sessions in the database
 - Fix pagination display on posts/search
+- have page numbers on thread pages like recently discovered or continuities
 
 v2
 - improve icon view for characters page
@@ -26,7 +27,6 @@ UI
 Finicky Tidiness
 - clean up the css >_<
 - clean up the javascript
-- flash.now vs flash
 - Move gon and json stuff to presenters
 - display error messages as a neatly bulleted list
 - Anything Javascript should be doable non-javascript (set default icon for character)
@@ -48,6 +48,7 @@ Scraper
 
 V2
 - tags for post (ex: setting)
+- upload icons https://devcenter.heroku.com/articles/s3
 
 Forum: https://github.com/rubysherpas/forem/blob/e6273a8f15fb6573a743c7a71284a184647988fa/app/models/forem/concerns/viewable.rb
 Auth: https://github.com/plataformatec/devise

@@ -1,11 +1,12 @@
 class CharactersController < ApplicationController
-  before_filter :login_required, :except => [:show, :facecasts]
+  before_filter :login_required, :except => [:index, :show, :facecasts]
   before_filter :find_character, :only => [:show, :edit, :update, :destroy, :icon]
   before_filter :find_group, :only => :index
   before_filter :require_own_character, :only => [:edit, :update, :destroy, :icon]
   before_filter :build_editor, :only => [:new, :create, :edit, :update]
 
   def index
+    login_required unless params[:user_id].present?
     @user = current_user
     if params[:user_id]
       @user = User.find_by_id(params[:user_id])
@@ -17,6 +18,7 @@ class CharactersController < ApplicationController
 
     @characters = @user.characters.order('name asc')
     session[:view] = params[:view] if params[:view].present?
+    use_javascript('resizer')
   end
 
   def new

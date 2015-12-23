@@ -59,7 +59,7 @@ h3 { margin-top: 25px; margin-bottom: 0px; color: #111111; }
 #content td.even { background-color: #E3E3E3; }
 #content td.odd { background-color: #D8D8D8; }
 #content td.menu { vertical-align: top; width: 100px; padding: 0px; }
-#content .icon-holder { width: 100px; padding: 15px; vertical-align: middle; text-align: center; height: 100px; position: relative; }
+#content .icon-holder { min-width: 100px; padding: 15px; vertical-align: middle; text-align: center; height: 100px; position: relative; }
 #content .spacer { height: 2px; }
 #content .label { min-height: 20px; padding: 4px; position: relative; }
 #content .bg { background-color: #e5dfd1; }
