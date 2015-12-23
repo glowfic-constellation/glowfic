@@ -9,11 +9,13 @@ Rails.application.routes.draw do
     collection { post :mark }
   end
   resources :replies do
+    member { get :history }
     collection do
       post :preview
     end
   end
   resources :posts do
+    member { get :history }
     collection do
       post :preview
       get :search

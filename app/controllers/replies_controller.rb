@@ -1,7 +1,7 @@
 class RepliesController < ApplicationController
-  before_filter :login_required
+  before_filter :login_required, except: :history
   before_filter :build_template_groups, only: :edit
-  before_filter :find_reply, only: [:edit, :update, :destroy]
+  before_filter :find_reply, only: [:history, :edit, :update, :destroy]
 
   def create
     reply = Reply.new(params[:reply])
@@ -13,6 +13,9 @@ class RepliesController < ApplicationController
       flash[:error] = "Problems. "+reply.errors.full_messages.to_s
       redirect_to post_path(reply.post)
     end
+  end
+
+  def history
   end
 
   def edit
