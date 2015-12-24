@@ -1,6 +1,7 @@
 class PostsController < ApplicationController
-  before_filter :login_required, :except => [:index, :show]
-  before_filter :find_post, :only => [:show, :edit, :update, :destroy]
+  before_filter :login_required, :except => [:index, :show, :history]
+  before_filter :find_post, :only => [:show, :history, :edit, :update, :destroy]
+  before_filter :require_own_post, only: [:edit, :update, :destroy]
   before_filter :build_template_groups, :only => [:new, :show, :edit, :preview]
 
   def index
@@ -56,6 +57,9 @@ class PostsController < ApplicationController
       @character = current_user.active_character
       @image = @character ? @character.icon : current_user.avatar
     end
+  end
+
+  def history
   end
 
   def preview
@@ -127,6 +131,13 @@ class PostsController < ApplicationController
     unless @post.visible_to?(current_user)
       flash[:error] = "You do not have permission to view this post."
       redirect_to boards_path and return
+    end
+  end
+
+  def require_own_post
+    unless @post.user_id == current_user.id
+      flash[:error] = "This is not your post."
+      redirect_to post_path(@post)
     end
   end
 

@@ -22,7 +22,7 @@
   %td.post.even{class: klass}= reply.content.gsub("\n","<br>").html_safe
 %tr
   %td.footer{class: klass}
-    - if reply.audits.count > 1 && reply.is_a?(Reply)
+    - if reply.audits.count > 1
       Last updated:
       = pretty_time reply.updated_at
       |
