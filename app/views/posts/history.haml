@@ -1,0 +1,28 @@
+- content_for :breadcrumbs do
+  = link_to "Boards", boards_path
+  &raquo;
+  = link_to @post.board.name, board_path(@post.board)
+  &raquo;
+  = link_to @post.subject, post_path(@post)
+  &raquo;
+  %b History
+
+%table
+  %tr
+    %th{colspan: 2}
+      Edit History (Oldest to Newest)
+  %tr
+    %td.bg.spacer{ colspan: 2 }
+  - audit = @post.audits.first
+  - cur = Post.new(audit.audited_changes)
+  - cur.created_at = audit.created_at
+  %tr
+    %th.sub{colspan: 2}= cur.subject
+  = render partial: 'replies/single', locals: { reply: cur }
+  - @post.audits.where(action: 'update').each do |audit|
+    - attrs = Hash[audit.audited_changes.map {|k, v| [k, v[1]] }]
+    - cur.assign_attributes(attrs)
+    - cur.created_at = audit.created_at
+    %tr
+      %th.sub{colspan: 2}= cur.subject
+    = render partial: 'replies/single', locals: { reply: cur }

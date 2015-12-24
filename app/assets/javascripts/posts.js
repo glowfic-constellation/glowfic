@@ -89,17 +89,19 @@ $(document).ready(function() {
         if (!$("#current-icon").length) { $("#current-icon-holder").append("<img id='current-icon' class='icon' />"); }
         $("#current-icon").show().attr('src', resp['default']['url']);
         $("#reply_icon_id").val(resp['default']['id']);
-        $("#gallery").html('');
+        $("#gallery").html('<table id="gallery-table"><tbody></tbody></table>');
         var len = resp['gallery'].length;
         if(len > 1) {
           bindIcon();
           $("#current-icon").addClass('pointer');
         }
         for (var i = 0; i < len; i++) {
+          if(i % 6 == 0) { $("#gallery-table tbody").append('<tr>'); }
           var img_id = resp['gallery'][i]['id'];
           var img_url = resp['gallery'][i]['url'];
           var img_key = resp['gallery'][i]['keyword'];
-          $("#gallery").append("<div class='gallery-icon'><img src='" + img_url + "' id='" + img_id + "' class='icon' /><br />"+img_key+"</div> ");
+          $("#gallery-table tbody").append("<td class='vtop centered'><div class='gallery-icon'><img src='" + img_url + "' id='" + img_id + "' class='icon' /><br />"+img_key+"</div></td>");
+          if(i % 6 == 5) { $("#gallery-table tbody").append('</tr>'); }
         }
         bindGallery();
       }

@@ -21,11 +21,18 @@
   %td.post{rowspan: 2, class: cycle('even', 'odd')}
     #gallery.green
       - if item.character && item.character.gallery
-        - item.character.gallery.icons.order('keyword ASC').each do |icon|
-          .gallery-icon
-            = icon_tag icon, id: icon.id
-            %br
-            = icon.keyword
+        %table
+          - icons = item.character.gallery.icons.order('keyword ASC')
+          - icons.each_with_index do |icon, index|
+            - if index % 6 == 0
+              <tr>
+            %td.centered.vtop
+              .gallery-icon
+                = icon_tag icon, id: icon.id
+                %br>
+                = icon.keyword
+            - if index % 6 == 5 || icon == icons.last
+              </tr>
     = yield :form
 %tr
   %td.dark.spacer
