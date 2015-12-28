@@ -13,11 +13,21 @@
     %table#wrapper
       %tr
         %td#header{:colspan=>3}
-          - if browser.mobile? && logged_in?
-            %div{style: 'margin-left:5px;float:left;'}
-              = current_user.username
-              = link_to logout_path, :method => :delete do
-                = button_tag "Log out", class: 'button'
+          - if browser.mobile?
+            .centered{style: 'margin-left:5px;float:left;'}
+              - if logged_in?
+                = current_user.username
+                = link_to logout_path, :method => :delete do
+                  = button_tag "Log out", class: 'button'
+              - else
+                = form_tag login_path, :method => :post do
+                  = text_field_tag :username, params[:username], placeholder: "Username"
+                  %br
+                  = password_field_tag :password, params[:password], placeholder: "Password"
+                  %br
+                  = submit_tag "Log in", class: 'button'
+                  %br
+                  = link_to "Sign up", new_user_path
           =link_to root_path do
             = image_tag '/images/logo.png'
       %tr
@@ -61,10 +71,9 @@
           = link_to 'Search', search_posts_path
           |
           = link_to 'Glowficcers', users_path
-          - if browser.mobile?
-            - if logged_in?
-              |
-              = link_to 'Account', edit_user_path(current_user)
+          - if browser.mobile? && logged_in?
+            |
+            = link_to 'Account', edit_user_path(current_user)
             |
             = link_to 'Inbox', messages_path
             |
