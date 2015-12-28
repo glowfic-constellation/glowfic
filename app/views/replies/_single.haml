@@ -7,7 +7,11 @@
         - if reply.icon
           = link_to icon_path(reply.icon) do
             = icon_tag reply.icon
-    .dark.label.centered= reply.character.try(:name) || reply.user.username
+    .dark.label.centered
+      - if reply.character
+        = link_to reply.character.name, character_path(reply.character)
+      - else
+        = link_to reply.user.username, user_path(reply.user)
     .beige.expander
       .padding-10
         = link_to reply.user.username, user_path(reply.user)

@@ -8,24 +8,44 @@ class IconsController < ApplicationController
   end
 
   def new
-    use_javascript('icons')
+    setup_new_icons
   end
 
   def create
+    icons = params[:icons].reject { |icon| icon.values.all?(&:blank?) }
+    if icons.empty?
+      flash.now[:error] = "You have to enter something."
+      setup_new_icons
+      render :action => :new and return
+    end
+
+
+
     icons = []
-    params[:icons].each do |icon|
-      next if icon.values.all?(&:blank?)
+    failed = false
+    @icons = params[:icons].reject { |icon| icon.values.all?(&:blank?) }
+    @icons.each_with_index do |icon, index|
       icon = Icon.new(icon)
       icon.user = current_user
       unless icon.valid?
-        flash.now[:error] = "Your icons could not be saved."
-        use_javascript('icons')
-        render :action => :new and return
+        flash.now[:error] ||= {}
+        flash.now[:error][:array] ||= []
+        flash.now[:error][:array] += icon.errors.full_messages.map{|m| "Icon "+(index+1).to_s+": "+m.downcase}
+        failed = true and next
       end
       icons << icon
     end
 
-    if icons.all?(&:save)
+    if failed
+      use_javascript('icons')
+      flash.now[:error][:message] = "Your icons could not be saved."
+      render :action => :new and return
+    elsif icons.empty?
+      @icons = []
+      flash.now[:error] = "Your icons could not be saved."
+      use_javascript('icons')
+      render :action => :new
+    elsif icons.all?(&:save)
       flash[:success] = "Icons saved successfully."
       redirect_to icons_path
     else
@@ -82,5 +102,10 @@ class IconsController < ApplicationController
       flash[:error] = "That is not your icon."
       redirect_to icons_path and return
     end
+  end
+
+  def setup_new_icons
+    use_javascript('icons')
+    @icons = []
   end
 end

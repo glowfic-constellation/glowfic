@@ -32,7 +32,8 @@ class ApplicationController < ActionController::Base
   helper_method :page
 
   def per_page
-    @per_page ||= (params[:per_page] || current_user.try(:per_page) || 25).to_i
+    default = browser.mobile? ? -1 : 25
+    @per_page ||= (params[:per_page] || current_user.try(:per_page) || default).to_i
   end
   helper_method :per_page
 

@@ -2,11 +2,10 @@ To Do
 
 v1
 - where do I display usernames for characters?
-- post history
-- Store sessions in the database
 - Fix pagination display on posts/search
 - have page numbers on thread pages like recently discovered or continuities
 - editing a reply sends you to the first page of the thread
+- icon selection: have a dropdown of keywords and have a No Image option
 
 v2
 - improve icon view for characters page
