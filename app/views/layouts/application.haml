@@ -62,8 +62,9 @@
           |
           = link_to 'Glowficcers', users_path
           - if browser.mobile?
-            |
-            = link_to 'Account', edit_user_path(current_user)
+            - if logged_in?
+              |
+              = link_to 'Account', edit_user_path(current_user)
             |
             = link_to 'Inbox', messages_path
             |
