@@ -18,7 +18,6 @@ class CharactersController < ApplicationController
 
     @characters = @user.characters.order('name asc')
     session[:view] = params[:view] if params[:view].present?
-    use_javascript('resizer')
   end
 
   def new

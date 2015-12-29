@@ -4,7 +4,6 @@ class GalleriesController < ApplicationController
 
   def index
     use_javascript('galleries/index')
-    use_javascript('resizer')
   end
 
   def new

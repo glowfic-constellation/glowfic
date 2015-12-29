@@ -5,7 +5,6 @@ class TemplatesController < ApplicationController
 
   def index
     @templates = current_user.templates
-    use_javascript('resizer')
   end
 
   def new
