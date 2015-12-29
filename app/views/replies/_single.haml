@@ -17,8 +17,13 @@
         = link_to reply.user.username, user_path(reply.user)
         %br
         = post_time(reply.created_at)
+        %br
+        - if reply.is_a?(Reply)
+          = link_to 'Link', post_path(reply.post, reply_id: reply.id)
+        - else
+          = link_to 'Link', post_path(reply)
         - if reply.user == current_user && reply.id.present?
-          %br
+          |
           = link_to 'Edit', path_for(reply, 'edit_%s')
           |
           = link_to 'Delete', path_for(reply, '%s'), method: :delete, confirm: 'Are you sure? This will delete this post AND any post that follows it!'

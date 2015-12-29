@@ -6,11 +6,13 @@ v1
 - have page numbers on thread pages like recently discovered or continuities
 - editing a reply sends you to the first page of the thread
 - icon selection: have a dropdown of keywords and have a No Image option
+- unread posts view
 
 v2
 - improve icon view for characters page
 - improve character groups in full generality
 - handle weird facecast cases (ex: Sylvi)
+- multiple user layouts
 
 Images
 - keyboard control: pick icon by typing its keyword (have a selectable keyword below the icon?)
