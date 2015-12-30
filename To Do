@@ -1,30 +1,41 @@
 To Do
 
-v1
-- where do I display usernames for characters?
+v1 (I want this done before release)
 - Fix pagination display on posts/search
-- have page numbers on thread pages like recently discovered or continuities
-- editing a reply sends you to the first page of the thread
-- icon selection: have a dropdown of keywords and have a No Image option
-- unread posts view
+- Unread Posts filter for logged in users
+- Icon picker should include a No Image option
+- Icon picker should have a dropdown with searchable keywords as well as the clickable icons
+- When displaying a list of posts, each post should include links to its pages
+- UI for posts: include character username, poster moiety
+- Page for logged in users to see threads where they might owe tags
+- Being able to lock posts within public continuities (MWF, Sandboxes, etc) to specific authors, continuity-style
+- Being able to delete multiple icons at once
+- More complete profile pages, for users or characters or really whatever.
+- Restricting what you can post, since right now I just let basically anything through and this is Not Safe, and then providing a list of allowed markup from the post form.
 
-v2
-- improve icon view for characters page
-- improve character groups in full generality
-- handle weird facecast cases (ex: Sylvi)
-- multiple user layouts
+v1.1 (I want this done before release but it comes last because $)
+- Upgrade the database so I can run the scraper
+- Upload icons https://devcenter.heroku.com/articles/s3
+- Email users (optional thread notifications, password reset)
 
-Images
-- keyboard control: pick icon by typing its keyword (have a selectable keyword below the icon?)
-- when changing avatar or icon keyword, provide option to back-update all posts
-- Omg gallery/icon UI
-
-User Settings
-- ability to remove avatar, with back-update option
-
-UI
-- separate character picker / display names for characters
-- how does characters/index visually display which view is selected?
+v2 (I can release without this but I want them)
+- Improve icon view for characters page
+- Improve character groups in full generality
+    - Characters can be in multiple groups
+    - Templates can be in multiple groups
+    - Can choose which if any groups display on characters/index by default
+    - Character/show displays all groups
+- Handle weird facecast cases (ex: Sylvi)
+- Allow users to select different layouts
+- Email verification
+- When changing or removing avatar, provide option to back-update all posts to use the new avatar
+- Improve the gallery/icon UI in full generality
+- UI for characters/index should somehow indicate which view is selected
+- Add ability to tag a character with continuities, and if posting in a restricted continuity, filter to that continuity.
+- CRUD for admin status
+- Report Post option
+- Tags for posts
+- Being able to lock threads to specific authors or to specific visibilities, same as posts
 
 Finicky Tidiness
 - clean up the css >_<
@@ -33,24 +44,8 @@ Finicky Tidiness
 - display error messages as a neatly bulleted list
 - Anything Javascript should be doable non-javascript (set default icon for character)
 
-Characters
-- How does it handle posts with a character after that character is deleted? Ditto icons?
-- Add ability to tag a character with continuities, and if posting in a restricted continuity, filter to that continuity.
-- World (character groups?)
-
-Questions
-- Where do things go in a post? Character name and screenname, poster, timestamp, edit/delete buttons
-- Do I need a 'picker' name for characters given that I have a screenname? Ideal: Name (screenname)?
-
-Admin
-- CRUD for admin status
-
 Scraper
 - Handle internal links (see Milliways Lurks)
-
-V2
-- tags for post (ex: setting)
-- upload icons https://devcenter.heroku.com/articles/s3
 
 Forum: https://github.com/rubysherpas/forem/blob/e6273a8f15fb6573a743c7a71284a184647988fa/app/models/forem/concerns/viewable.rb
 Auth: https://github.com/plataformatec/devise
