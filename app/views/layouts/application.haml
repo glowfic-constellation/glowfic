@@ -1,7 +1,7 @@
 !!!
 %html
   %head
-    %title Glowfic
+    %title= @page_title ? @page_title + " | Glowfic" : "Glowfic"
     %meta{ :charset => "utf-8" }
     <meta name="viewport" content="width=device-width">
     %link{ :href => "/stylesheets/style.css", :rel => "stylesheet", :type => "text/css", :media => "screen" }

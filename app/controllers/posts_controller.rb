@@ -145,6 +145,8 @@ class PostsController < ApplicationController
       flash[:error] = "You do not have permission to view this post."
       redirect_to boards_path and return
     end
+
+    @page_title = @post.subject
   end
 
   def require_own_post
