@@ -24,7 +24,6 @@ class TemplatesController < ApplicationController
   end
 
   def show
-    use_javascript('resizer')
   end
 
   def edit
