@@ -13,6 +13,7 @@ v1 (I want this done before release)
 - More complete profile pages, for users or characters or really whatever.
 - Restricting what you can post, since right now I just let basically anything through and this is Not Safe, and then providing a list of allowed markup from the post form.
 - Users can set their time zone
+- More page titles
 
 v1.1 (I want this done before release but it comes last because $)
 - Upgrade the database so I can run the scraper
