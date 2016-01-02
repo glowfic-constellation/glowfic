@@ -18,9 +18,9 @@
         %br
         = post_time(reply.created_at)
         %br
-        - if reply.is_a?(Reply)
+        - if reply.is_a?(Reply) && reply.id.present?
           = link_to 'Link', post_path(reply.post, reply_id: reply.id)
-        - else
+        - elsif reply.id.present?
           = link_to 'Link', post_path(reply)
         - if reply.user == current_user && reply.id.present?
           |
