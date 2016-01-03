@@ -42,8 +42,8 @@ class PostsController < ApplicationController
       reply_index = hash[reply_id]
       cur_page = (reply_index / per) + 1
       dict = {anchor: "reply-#{reply_id}"}
-      dict['per_page'] = params[:per_page] if params[:per_page]
-      dict['page'] = cur_page if cur_page > 1
+      dict[:per_page] = params[:per_page] if params[:per_page]
+      dict[:page] = cur_page if cur_page > 1
       redirect_to(:action => :show, **dict) and return
     end
 
