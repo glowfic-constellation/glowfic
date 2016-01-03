@@ -9,11 +9,11 @@ class Character < ActiveRecord::Base
   has_and_belongs_to_many :galleries
 
   validates_presence_of :name, :user
-  validate :valid_template, :valid_group
+  validate :valid_template
 
   after_save :update_galleries
 
-  attr_accessor :new_template_name, :group_name, :gallery_ids
+  attr_accessor :new_template_name, :gallery_ids
 
   nilify_blanks
 
@@ -44,15 +44,6 @@ class Character < ActiveRecord::Base
     return if @template.valid?
     @template.errors.messages.each do |k, v|
       v.each { |val| errors.add('template '+k.to_s, val) }
-    end
-  end
-
-  def valid_group
-    return unless character_group_id == 0
-    @group = CharacterGroup.new(user: user, name: group_name)
-    return if @group.valid?
-    @group.errors.messages.each do |k, v|
-      v.each { |val| errors.add('group '+k.to_s, val) }
     end
   end
 

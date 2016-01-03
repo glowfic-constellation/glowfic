@@ -126,10 +126,6 @@ class CharactersController < ApplicationController
         template.save
         @character.template = template
       end
-      if group = @character.instance_variable_get('@group')
-        group.save
-        @character.character_group = group
-      end
       @character.save
     end
   end
