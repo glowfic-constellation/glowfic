@@ -3,10 +3,10 @@ class BoardsController < ApplicationController
   before_filter :set_available_cowriters, :only => :new
 
   def index
+    @page_title = "Continuities"
   end
 
   def new
-    use_javascript('boards')
     @board = Board.new
   end
 
@@ -20,13 +20,13 @@ class BoardsController < ApplicationController
     else
       flash.now[:error] = "Continuity could not be created."
       set_available_cowriters
-      use_javascript('boards')
       render :action => :new
     end
   end
 
   def show
     @board = Board.find_by_id(params[:id])
+    @page_title = @board.name
 
     unless @board
       flash[:error] = "Continuity could not be found."
@@ -41,6 +41,8 @@ class BoardsController < ApplicationController
   private
 
   def set_available_cowriters
+    @page_title = "New Continuity"
     @users = User.order(:username) - [current_user]
+    use_javascript('boards')
   end
 end

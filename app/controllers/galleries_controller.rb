@@ -4,10 +4,12 @@ class GalleriesController < ApplicationController
 
   def index
     use_javascript('galleries/index')
+    @page_title = "Galleries"
   end
 
   def new
     @gallery = Gallery.new
+    @page_title = "New Gallery"
   end
 
   def create
@@ -18,12 +20,16 @@ class GalleriesController < ApplicationController
       redirect_to galleries_path
     else
       flash.now[:error] = "Your gallery could not be saved."
+      @page_title = "New Gallery"
       render :action => :new
     end
   end
 
   def add
     use_javascript('galleries/add')
+    icons = (current_user.icons - @gallery.icons).sort { |i| i.id }
+    @unassigned = icons.select { |i| i.galleries.empty? }
+    @assigned = icons - @unassigned
   end
 
   def show

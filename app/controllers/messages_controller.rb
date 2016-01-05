@@ -4,9 +4,11 @@ class MessagesController < ApplicationController
   def index
     if params[:view] == 'outbox'
       @view = 'outbox'
+      @page_title = "Outbox"
       @messages = current_user.sent_messages.where(visible_outbox: true).order('id desc')
     else
       @view = 'inbox'
+      @page_title = "Inbox"
       @messages = current_user.messages.where(visible_inbox: true).order('id desc')
     end
   end
@@ -14,6 +16,7 @@ class MessagesController < ApplicationController
   def new
     use_javascript('messages')
     @message = Message.new
+    @page_title = "Compose Message"
     if params[:reply_id].present?
       @message.parent = Message.find_by_id(params[:reply_id])
       @message.parent = nil unless @message.parent.visible_to?(current_user)
@@ -43,6 +46,7 @@ class MessagesController < ApplicationController
 
   def show
     @message = Message.find_by_id(params[:id])
+    @page_title = @message.subject
     unless @message
       flash[:error] = "Message could not be found."
       redirect_to messages_path(view: 'inbox') and return

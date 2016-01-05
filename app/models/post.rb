@@ -30,6 +30,14 @@ class Post < ActiveRecord::Base
     (post_viewers.map(&:user_id) + [user_id]).include?(user.id)
   end
 
+  def authors
+    @authors ||= User.where(id: author_ids).to_a
+  end
+
+  def author_ids
+    @author_ids ||= (replies.select(:user_id).group(:user_id).map(&:user_id) + [user_id]).uniq
+  end
+
   def last_post
     replies.order('updated_at desc').limit(1).first || self
   end

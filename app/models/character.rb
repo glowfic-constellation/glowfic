@@ -4,6 +4,7 @@ class Character < ActiveRecord::Base
   belongs_to :gallery
   belongs_to :default_icon, class_name: Icon
   has_many :replies
+  has_many :posts
   belongs_to :character_group
 
   validates_presence_of :name, :user
@@ -22,7 +23,10 @@ class Character < ActiveRecord::Base
   end
 
   def recent_posts(limit=25)
-    @recent ||= Post.where(id: replies.group(:post_id).select(:post_id)).order('updated_at desc').limit(limit)
+    return @recent unless @recent.nil?
+    reply_ids =  replies.group(:post_id).select(:post_id).limit(limit).map(&:post_id)
+    post_ids = posts.select(:id).limit(limit).map(&:id)
+    @recent ||= Post.where(id: (post_ids + reply_ids).uniq).order('updated_at desc').limit(limit)
   end
 
   def selector_name

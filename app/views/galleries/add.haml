@@ -2,7 +2,13 @@
 %br
 Click icons to select, then press Add Icons to Gallery at the bottom.
 %br
-- (current_user.icons - @gallery.icons).each do |icon|
+
+%h4 Galleryless Icons
+- @unassigned.each do |icon|
+  = icon_tag icon, class: 'add-gallery-icon', :'data-id' => icon.id
+
+%h4 Icons in Other Galleries
+- @assigned.each do |icon|
   = icon_tag icon, class: 'add-gallery-icon', :'data-id' => icon.id
 
 = form_tag icon_gallery_path(@gallery), method: :post, id: 'add-gallery-icons' do
