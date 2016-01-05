@@ -118,3 +118,7 @@ button, input.button {
 
 #message_form textarea { width: 500px; height: 100px; }
 #content th.subber { background-color: #a3a1a0; padding: 10px 25px; color: black; font-size: 15px; font-weight: bold; }
+
+#content a { color: #3F7055; }
+#content a:visited { color: #224833; }
+#content a:hover { color: #fcfefd; }
