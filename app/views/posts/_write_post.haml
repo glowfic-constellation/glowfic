@@ -15,7 +15,7 @@
     = f.text_area :content
     = f.hidden_field :character_id, id: 'reply_character_id'
     = f.hidden_field :icon_id, id: 'reply_icon_id'
-    = submit_tag (method == :put ? 'Save' : "Post"), class: 'button'
-    = submit_tag "Preview", class: 'button', id: 'preview_button'
+    = submit_tag (method == :put ? 'Save' : "Post"), class: 'button', id: 'submit_button', disable_with: 'Saving...'
+    = submit_tag "Preview", class: 'button', id: 'preview_button', disable_with: 'Loading...'
 
 = render partial: 'editor', locals: {item: @post}

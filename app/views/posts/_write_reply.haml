@@ -8,7 +8,7 @@
     = f.hidden_field :icon_id, value: reply.icon_id || params[:icon_id] || ((current_user.active_character.try(:icon).try(:id) || current_user.avatar.try(:id)) unless reply.id)
     - if params[:per_page]
       = hidden_field_tag :per_page, params[:per_page]
-    = submit_tag (method == :put ? 'Save' : "Post"), class: 'button'
-    = submit_tag "Preview", class: 'button', id: 'preview_button'
+    = submit_tag (method == :put ? 'Save' : "Post"), class: 'button', id: 'submit_button', disable_with: 'Saving...'
+    = submit_tag "Preview", class: 'button', id: 'preview_button', disable_with: 'Loading...'
 
 = render partial: 'posts/editor', locals: {item: reply}
