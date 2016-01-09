@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20151130050434) do
+ActiveRecord::Schema.define(:version => 20160108230631) do
 
   create_table "audits", :force => true do |t|
     t.integer  "auditable_id"
@@ -68,6 +68,7 @@ ActiveRecord::Schema.define(:version => 20151130050434) do
     t.datetime "updated_at",         :null => false
     t.string   "pb"
     t.integer  "character_group_id"
+    t.string   "setting"
   end
 
   add_index "characters", ["character_group_id"], :name => "index_characters_on_character_group_id"
@@ -103,12 +104,12 @@ ActiveRecord::Schema.define(:version => 20151130050434) do
   add_index "galleries_icons", ["icon_id"], :name => "index_galleries_icons_on_icon_id"
 
   create_table "icons", :force => true do |t|
-    t.integer  "user_id",     :null => false
-    t.string   "url",         :null => false
-    t.string   "keyword",     :null => false
-    t.datetime "created_at",  :null => false
-    t.datetime "updated_at",  :null => false
-    t.string   "attribution"
+    t.integer  "user_id",    :null => false
+    t.string   "url",        :null => false
+    t.string   "keyword",    :null => false
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+    t.string   "credit"
   end
 
   add_index "icons", ["keyword"], :name => "index_icons_on_keyword"
@@ -181,12 +182,14 @@ ActiveRecord::Schema.define(:version => 20151130050434) do
   add_index "replies", ["user_id"], :name => "index_replies_on_user_id"
 
   create_table "templates", :force => true do |t|
-    t.integer  "user_id",    :null => false
+    t.integer  "user_id",            :null => false
     t.string   "name"
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
+    t.datetime "created_at",         :null => false
+    t.datetime "updated_at",         :null => false
+    t.integer  "character_group_id"
   end
 
+  add_index "templates", ["character_group_id"], :name => "index_templates_on_character_group_id"
   add_index "templates", ["user_id"], :name => "index_templates_on_user_id"
 
   create_table "users", :force => true do |t|

@@ -8,6 +8,9 @@
   %td
     = f.text_field :screenname, :placeholder => "Screen Name", :class => 'text'
 %tr
+  %td
+    = f.text_field :setting, :placeholder => "Setting", :class => 'text'
+%tr
   %td.left-align
     = f.collection_select(:template_id, @templates, :id, :name, {:include_blank => '— Choose Template —'}, {:class => 'text'})
 %tr#create_template{style: ('display: none;' unless params[:character].try(:[], :template_id) == "0")}
@@ -38,4 +41,3 @@
         - klass = 'character-icon'
         - klass += ' default-icon' if icon == @character.default_icon
         = icon_tag icon, class: klass, id: icon.id
-    / <div class='icon' style='cursor:pointer;left:-4px;width:98px;height:98px;display:inline-block;background:#B0BBA9;border:1px #555 solid;position:relative;top:-41px;line-height:80px;font-size:50px;text-align:center;'> + </div>

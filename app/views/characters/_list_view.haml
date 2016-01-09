@@ -6,7 +6,7 @@
 - elsif @user.character_groups.exists?
   - @user.character_groups.order('id asc').each do |group|
     %tr
-      %th.subber{colspan: 5}
+      %th.subber{colspan: 6}
         Group:
         = group.name
     - group.characters.map(&:template).uniq.compact.sort_by(&:name).each do |template|
@@ -15,7 +15,7 @@
       = render partial: 'list_section', locals: {name: "No Template", characters: group.characters.where(template_id: nil).order('name asc')}
   - if @user.characters.where(character_group_id: nil).exists?
     %tr
-      %th{colspan: 5} Ungrouped Characters
+      %th{colspan: 6} Ungrouped Characters
     - @user.characters.where(character_group_id: nil).map(&:template).uniq.compact.sort_by(&:name).each do |template|
       - next if template.characters.where('character_group_id is not null').exists?
       = render partial: 'list_section', locals: {name: template, characters: template.characters}
@@ -29,4 +29,4 @@
     = render partial: 'list_section', locals: {name: "No Template", characters: @user.characters.where(template_id: nil).order('name asc')}
 - else
   %tr
-    %td.centered.padding-10{class: cycle('even', 'odd'), colspan: 5} — No characters yet —
+    %td.centered.padding-10{class: cycle('even', 'odd'), colspan: 6} — No characters yet —
