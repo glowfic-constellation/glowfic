@@ -7,14 +7,12 @@ v1 (I want this done before release)
 - Icon picker should have a dropdown with searchable keywords as well as the clickable icons
 - When displaying a list of posts, each post should include links to its pages
 - UI for posts: include character username, poster moiety
-- Page for logged in users to see threads where they might owe tags
 - Being able to lock posts within public continuities (MWF, Sandboxes, etc) to specific authors, continuity-style
 - Being able to delete multiple icons at once
 - More complete profile pages, for users or characters or really whatever.
 - Restricting what you can post, since right now I just let basically anything through and this is Not Safe, and then providing a list of allowed markup from the post form.
 - Users can set their time zone
 - More page titles
-- Validate icon URLs
 - Bug: changing characters can reset page somehow?
 
 v1.1 (I want this done before release but it comes last because $)
@@ -40,6 +38,8 @@ v2 (I can release without this but I want them)
 - Report Post option
 - Tags for posts
 - Being able to lock threads to specific authors or to specific visibilities, same as posts
+- Expensive thing: store most recently updated post id on post, then use includes when you want it
+- Expensive thing: cache users-by-post somewhere, or even posts-by-user, or both
 
 Finicky Tidiness
 - clean up the css >_<
