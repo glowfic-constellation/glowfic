@@ -31,7 +31,9 @@ class Post < ActiveRecord::Base
   end
 
   def authors
-    @authors ||= User.where(id: author_ids).to_a
+    return @authors if @authors
+    return @authors = [user] if author_ids.count == 1
+    @authors = User.where(id: author_ids).to_a
   end
 
   def author_ids

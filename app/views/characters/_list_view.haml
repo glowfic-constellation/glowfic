@@ -3,6 +3,8 @@
     = render partial: 'list_section', locals: {name: template, characters: template.characters}
   - if @group.characters.where(template_id: nil).exists?
     = render partial: 'list_section', locals: {name: "No Template", characters: @group.characters.where(template_id: nil).order('name asc')}
+- elsif @template
+  = render partial: 'characters/list_section', locals: {name: @template, characters: @template.characters}
 - elsif @user.character_groups.exists?
   - @user.character_groups.order('id asc').each do |group|
     %tr

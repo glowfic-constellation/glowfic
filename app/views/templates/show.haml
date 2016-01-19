@@ -1,8 +1,28 @@
-%h2= 'Template: ' + @template.name
-%br
-- if @template.user_id == current_user.id
-    = link_to '+ Create new template instance', new_character_path(template_id: @template.id)
-    %br
-    = link_to 'Edit template', edit_template_path(@template)
-%br
-= render partial: 'single', locals: {title: 'Characters', template: @template}
+%table
+  %tr
+    %th{colspan: 6}
+      Template: #{@template.name}
+      - if @template.user_id == current_user.try(:id)
+        = link_to new_character_path(template_id: @template.id) do
+          .character-new-select
+            + New Instance
+        = link_to edit_template_path(@template) do
+          .character-new-select{style: 'background-color:#EA8A40'}
+            = image_tag '/images/pencil.png'
+            Edit Template
+        / = link_to edit_template_path(@template) do
+        /  .character-new-select{style: 'background-color:#990000'}
+        /    = image_tag '/images/pencil.png'
+        /    Multi Character Edit
+      = link_to url_for(view: 'icons') do
+        .character-view-select
+          = image_tag '/images/grid.png', class:'character-icon-select'
+          Icons
+      = link_to url_for(view: 'list') do
+        .character-view-select
+          = image_tag '/images/list.png', class:'character-list-select', alt: ''
+          List
+  - if session[:view] == 'list'
+    = render partial: 'characters/list_view'
+  - else
+    = render partial: 'characters/icon_view'
