@@ -33,9 +33,9 @@ class BoardsController < ApplicationController
       redirect_to boards_path and return
     end
 
-    @posts = @board.posts.order('id desc').select do |post|
+    @posts = @board.posts.order('updated_at desc').select do |post|
       post.visible_to?(current_user)
-    end
+    end.first(25)
   end
 
   private
