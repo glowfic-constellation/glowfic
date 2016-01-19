@@ -4,3 +4,8 @@
 %b= @user.username
 %br
 = link_to "#{@user.username}'s characters", user_characters_path(@user)
+%br
+%br
+- content_for :posts_title do
+  #{@user.username}'s Recent Posts
+= render partial: 'posts/list', locals: {posts: @posts}

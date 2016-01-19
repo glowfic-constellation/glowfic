@@ -3,15 +3,17 @@
   &raquo;
   %b= @board.name
 
-%table
-  %tr
-    %th{colspan: 5}
-      = @board.name
-      - if logged_in? && @board.open_to?(current_user)
-        = link_to new_post_path params: {board_id: @board.id} do
-          .character-new-select
-            + New Post
-  - if @board.id == 1
+- content_for :posts_title do
+  = @board.name
+  - if logged_in? && @board.open_to?(current_user)
+    = link_to new_post_path params: {board_id: @board.id} do
+      .character-new-select
+        + New Post
+
+- if @board.id == 1
+  %table
+    %tr
+      %th{colspan: 6}= content_for :posts_title
     - @board.board_sections.order('section_order asc').each do |section|
       %tr
         %th.sub{colspan: 5}
@@ -32,29 +34,5 @@
           %td.padding-10{class: klass}
             = link_to post.subject, post_path(post)
           %td.padding-10{class: klass}= post.updated_at.strftime("%b %d, %Y ") + post.updated_at.hour.to_s + post.updated_at.strftime(":%M %p")
-  - else
-    %tr
-      %th.sub.width-15
-      %th.sub Thread
-      %th.sub Author
-      %th.sub Posts
-      %th.sub Last Updated
-    - @posts.each do |post|
-      - next unless post.visible_to?(current_user)
-      %tr
-        - klass = cycle('even', 'odd')
-        %td.padding-10{class: klass}
-          - if post.status == Post::STATUS_COMPLETE
-            = image_tag "/images/accept.png", title: "Thread Complete"
-        %td.padding-10{class: klass}= link_to post.subject, post_path(post)
-        %td.padding-10.width-150{class: klass}= link_to post.user.username, user_path(post.user)
-        %td.padding-10.width-70{class: klass}= post.replies.count + 1
-        %td.padding-10.width-300{class: klass}
-          = pretty_time(post.updated_at)
-          by
-          = link_to post.last_post.user.username, user_path(post.last_post.user)
-    - if @posts.empty?
-      %tr
-        %td.centered.padding-10{ class: cycle('even','odd'), colspan: 6 } — No posts yet —
-    %tr
-      %td.bg.spacer{colspan: 5}
+- else
+  = render partial: 'posts/list', locals: {posts: @posts, hide_continuity: true}
