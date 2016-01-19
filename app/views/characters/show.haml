@@ -12,6 +12,9 @@
 - if @character.template
   = surround '(', ')' do
     = link_to @character.template.name, template_path(@character.template)
+- if @character.template_name
+  %br
+  Nickname: #{@character.template_name}
 - if @character.pb
   %br
   Played by:
