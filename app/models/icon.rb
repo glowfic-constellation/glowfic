@@ -7,7 +7,7 @@ class Icon < ActiveRecord::Base
   validate :url_is_url
   nilify_blanks
 
-  def to_json
+  def as_json
     { id: id, url: url, keyword: keyword }
   end
 

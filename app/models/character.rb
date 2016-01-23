@@ -18,10 +18,6 @@ class Character < ActiveRecord::Base
     default_icon || gallery.try(:default_icon)
   end
 
-  def multi_icons?
-    gallery.present? && gallery.icons.count > 1
-  end
-
   def recent_posts(limit=25)
     return @recent unless @recent.nil?
     reply_ids =  replies.group(:post_id).select(:post_id).limit(limit).map(&:post_id)

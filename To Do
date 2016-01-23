@@ -14,6 +14,7 @@ v1 (I want this done before release)
 - Users can set their time zone
 - More page titles
 - Bug: changing characters can reset page somehow?
+- Bug: deleting a template assigned to characters causes the characters to go missing
 
 v1.1 (I want this done before release but it comes last because $)
 - Upgrade the database so I can run the scraper

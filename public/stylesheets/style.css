@@ -44,6 +44,7 @@ h3 { margin-top: 25px; margin-bottom: 0px; color: #111111; }
 .relative { position: relative; }
 .hidden { display: none; }
 .pointer { cursor: pointer; }
+.clear { clear: both: }
 .bold { font-weight: bold; }
 .error { background-color: #FFDDDD; height: 30px; padding: 5px 20px; }
 .error ul { margin: 0px; margin-top: 5px; }
@@ -89,13 +90,9 @@ h3 { margin-top: 25px; margin-bottom: 0px; color: #111111; }
 /* TEMP */
 #signup select { height: 20px; width: 300px; border: 1px #111111 solid; padding: 5px; border-radius: 0px; }
 #swap-icon { width: 14px;  height: 14px; position: relative; top: 1px; cursor: pointer; }
-#post_content, #reply_content { width: 100%;height: 130px; }
 .post p { margin: 0px; }
 .icon-holder .icon { margin: 0px; }
 .icon { position: relative; width: 100px; height: 100px; margin: 5px; }
-#gallery img { cursor: pointer; }
-#gallery { display: none; position: absolute; top: 0px; left: 0px; min-height: 101px; padding: 15px; margin: 0px; }
-#icon-overlay { background-color: #000000; height: 100px; width: 100px; position: absolute; top: 0px; opacity: 0.4; display: none; cursor: pointer; }
 img.default-icon { border: 10px #3F7055 solid; width:80px; height:80px; }
 
 input, textarea, button { 
@@ -133,12 +130,3 @@ button, input.button {
 .even { background-color: #E3E3E3; }
 .odd { background-color: #D8D8D8; }
 .subber { background-color: #a3a1a0; }
-.post-container { overflow: auto; }
-.post-edit-box { float: right; margin-left: 10px; margin-bottom: 5px; padding: 5px; }
-.post-info-box { text-align: center; padding: 0px; float: left; margin-right: 10px; margin-bottom: 5px; width: 150px; }
-.post-icon { padding: 0px; background-color: #B0BBA9; }
-.post-icon img { margin-top: 10px; margin-right: 10px; margin-left: 10px; }
-.post-character { background-color: #8B8687; padding: 4px; }
-.post-screenname { background-color: #a3a1a0; padding: 4px; }
-.post-author { padding: 5px; background-color: #B9B6AD; }
-.post-header { width: 100%; background-color: #8B8687; color: #eeeeee; padding: 0px; font-size: 18px; margin-right: 10px; }

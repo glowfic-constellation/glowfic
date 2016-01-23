@@ -1,7 +1,3 @@
-%table
-  %tr
-    %th{colspan: 2}
-      Edit post
-  %tr
-    %td.bg.spacer{ colspan: 2 }
-  = render partial: 'posts/write_reply', locals: { reply: @reply, url: reply_path(@reply), method: :put }
+.post-header
+  .padding-15 Edit post
+= render partial: 'posts/write_reply', locals: { reply: @reply, url: reply_path(@reply), method: :put }

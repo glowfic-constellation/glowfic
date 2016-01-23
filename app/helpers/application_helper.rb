@@ -7,6 +7,12 @@ module ApplicationHelper
     image_tag icon.url, {alt: icon.keyword, title: icon.keyword, class: klass}.merge(**args)
   end
 
+  def no_icon_tag(**args)
+    klass = 'icon'
+    klass += ' pointer' if args.delete(:pointer)
+    image_tag "/images/no-icon.png", {class: klass, alt:'No Icon', title: 'No Icon'}.merge(**args)
+  end
+
   def post_time(time)
     time ||= Time.now
     time_string = (time.hour % 12).to_s + time.strftime(":%M %p") + '<br>' + time.strftime("%b %d %Y")

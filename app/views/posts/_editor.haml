@@ -1,39 +1,41 @@
 - klass = cycle('even', 'odd')
-.padding-10{class: klass}
-  .post-info-box{style:'background-color:red;'}
-    #current-icon-holder
+#post-editor.padding-10{class: klass}
+  .post-info-box
+    #current-icon-holder.post-icon
       - if item.icon
-        = icon_tag item.icon, id: 'current-icon', pointer: item.character.try(:multi_icons?)
+        = icon_tag item.icon, id: 'current-icon', pointer: item.has_icons?
       - elsif item.character.nil? && current_user.avatar
-        = icon_tag current_user.avatar, id: 'current-icon'
+        = icon_tag current_user.avatar, id: 'current-icon', pointer: item.user.avatar_id?
+      - else
+        = no_icon_tag id: 'current-icon', pointer: item.has_icons?
       #icon-overlay
-    .dark.label.centered
-      %span#char-name= item.character.try(:name) || current_user.username
-      - unless current_user.characters.empty?
+    .post-character{class: ('hidden' unless item.character)}= item.character.try(:name)
+    .post-screenname{class: ('hidden' unless item.character)}= item.character.try(:screenname)
+    #post-author-spacer.dark.spacer{class: ('hidden' if item.character)}
+    .post-author
+      = item.user.username
+      - if current_user.characters.present?
         = image_tag '/images/swap.png', :id => 'swap-icon', :alt => ">"
-        #character-selector.dark.left-align
+        #character-selector.beige
           %b Choose Character
           = select_tag :active_character, 
           option_groups_from_collection_for_select(@templates, :ordered_characters, :name, :id, :selector_name, @character.try(:id)),
           { :include_blank => true, :prompt => current_user.username }
           %br
-    .beige.expander
   #gallery.green
-    - if item.character && item.character.gallery
+    - if item.character.try(:gallery)
       - icons = item.character.gallery.icons.order('keyword ASC')
       - icons.each_with_index do |icon, index|
         .gallery-icon
           = icon_tag icon, id: icon.id
           %br>
           = icon.keyword
+    - elsif item.character.nil? && item.user.avatar
+      .gallery-icon
+        = icon_tag item.user.avatar, id: item.user.avatar.id, pointer: true
+        %br> Avatar
+    .gallery-icon
+      = no_icon_tag id: '', pointer: true
+      %br> No Icon
   = yield :form
-
-- if false
-  %tr
-    %td.menu.beige
-      .green.icon-holder
-      = yield :form
-  %tr
-    %td.dark.spacer
-  %tr
-    %td.bg.spacer{colspan: 2}
+  .clear &nbsp;

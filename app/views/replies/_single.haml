@@ -1,6 +1,8 @@
 - klass = cycle('even', 'odd')
 
 .post-container{class: klass}
+  - if reply.is_a?(Reply) && reply.id.present?
+    <a name="reply-#{reply.id}"></a>
   .padding-10
     .post-info-box
       - if reply.icon
@@ -18,7 +20,7 @@
         = link_to reply.user.username, user_path(reply.user)
     .post-edit-box
       - if reply.is_a?(Reply) && reply.id.present?
-        = link_to post_path(reply.post, reply_id: reply.id) do
+        = link_to post_path(reply.post, per_page: 'all', anchor: "reply-#{reply.id}") do
           = image_tag "/images/link.png"
       - elsif reply.id.present?
         = link_to post_path(reply) do
@@ -32,10 +34,11 @@
   %div{style:'padding:0px;clear:both'}
     .right-align{style: 'width:100%; font-size: 14px;'}> 
       .padding-5>
-        Posted #{pretty_time(reply.created_at)}
-        - if reply.audits.count > 1
-          | Updated #{pretty_time(reply.updated_at) + ' |'}
-          = link_to 'See History', path_for(reply, 'history_%s')
+        - if reply.id
+          Posted #{pretty_time(reply.created_at)}
+          - if reply.audits.count > 1
+            | Updated #{pretty_time(reply.updated_at) + ' |'}
+            = link_to 'See History', path_for(reply, 'history_%s')
 
 - unless true
   %tr

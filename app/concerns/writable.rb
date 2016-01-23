@@ -11,6 +11,12 @@ module Writable
     validates_presence_of :user, :content
     validate :character_ownership, :icon_ownership
 
+    def has_icons?
+      return user.avatar_id? unless character
+      return false unless character.gallery
+      return character.gallery.icons.present?
+    end
+
     private
 
     def character_ownership
