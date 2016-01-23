@@ -14,6 +14,7 @@ v1 (I want this done before release)
 - Users can set their time zone
 - More page titles
 - Bug: changing characters can reset page somehow?
+- Bug: deleting a template assigned to characters causes the characters to go missing
 
 v1.1 (I want this done before release but it comes last because $)
 - Upgrade the database so I can run the scraper
@@ -40,6 +41,7 @@ v2 (I can release without this but I want them)
 - Being able to lock threads to specific authors or to specific visibilities, same as posts
 - Expensive thing: store most recently updated post id on post, then use includes when you want it
 - Expensive thing: cache users-by-post somewhere, or even posts-by-user, or both
+- This is probably really hard to implement, but it would be super neat if, when you have a thread open and there's a new post, then the page updates automatically and optionally does a notification if you're in another tab/window. Built-in tag/update notifications.
 
 Finicky Tidiness
 - clean up the css >_<

@@ -76,9 +76,7 @@ class UsersController < ApplicationController
   def character
     character = Character.find_by_id(params[:character_id])
     current_user.update_attributes(:active_character => character)
-
-    render :json => {} and return unless character.try(:gallery)
-    render :json => { :gallery => character.gallery.icons.order("keyword ASC").map(&:to_json), :default => character.icon.try(:to_json) }
+    render :json => CharacterPresenter.new(character)
   end
 
   private

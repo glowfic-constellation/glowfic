@@ -26,9 +26,10 @@ a { text-decoration: none; }
 /* Generic Helpers */
 h2 { margin: 5px; margin-top: 0px; color: #111111; }
 h3 { margin-top: 25px; margin-bottom: 0px; color: #111111; }
-.padding-20 { padding: 20px; }
-.padding-10 { padding: 10px !important; }
 .padding-5 { padding: 5px 10px; }
+.padding-10 { padding: 10px !important; }
+.padding-15 { padding: 15px; }
+.padding-20 { padding: 20px; }
 .padding-top-3 { padding-top: 3px; }
 .width-15 { width: 15px; }
 .width-70 { width: 70px; }
@@ -43,6 +44,7 @@ h3 { margin-top: 25px; margin-bottom: 0px; color: #111111; }
 .relative { position: relative; }
 .hidden { display: none; }
 .pointer { cursor: pointer; }
+.clear { clear: both: }
 .bold { font-weight: bold; }
 .error { background-color: #FFDDDD; height: 30px; padding: 5px 20px; }
 .error ul { margin: 0px; margin-top: 5px; }
@@ -88,13 +90,9 @@ h3 { margin-top: 25px; margin-bottom: 0px; color: #111111; }
 /* TEMP */
 #signup select { height: 20px; width: 300px; border: 1px #111111 solid; padding: 5px; border-radius: 0px; }
 #swap-icon { width: 14px;  height: 14px; position: relative; top: 1px; cursor: pointer; }
-#post_content, #reply_content { width: 100%;height: 130px; }
 .post p { margin: 0px; }
 .icon-holder .icon { margin: 0px; }
 .icon { position: relative; width: 100px; height: 100px; margin: 5px; }
-#gallery img { cursor: pointer; }
-#gallery { display: none; position: absolute; top: 0px; left: 0px; min-height: 101px; padding: 15px; margin: 0px; }
-#icon-overlay { background-color: #000000; height: 100px; width: 100px; position: absolute; top: 0px; opacity: 0.4; display: none; cursor: pointer; }
 img.default-icon { border: 10px #3F7055 solid; width:80px; height:80px; }
 
 input, textarea, button { 
@@ -122,3 +120,13 @@ button, input.button {
 #content a { color: #3F7055; }
 #content a:visited { color: #28503a; }
 #content a:hover { color: #fcfefd; }
+
+/* Displaying forum threads */
+#content .bg { background-color: #e5dfd1; }
+#content .beige { background-color: #B9B6AD; }
+#content .green { background-color: #B0BBA9; }
+#content .dark { background-color: #8B8687; }
+
+.even { background-color: #E3E3E3; }
+.odd { background-color: #D8D8D8; }
+.subber { background-color: #a3a1a0; }

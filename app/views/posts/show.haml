@@ -5,27 +5,38 @@
   &raquo;
   %b= @post.subject
 
-%table
-  %tr
-    %th{colspan: 2}
-      = @post.subject
-      - if params[:thread_id].present?
-        = link_to post_path(@post) do
-          .character-view-select &laquo; Thread Index
-  %tr
-    %td.bg.spacer{colspan: 2}
-  = render partial: 'replies/single', locals: {reply: @post}
-  - if @replies.present?
+.post-header
+  .padding-15= @post.subject
+= render partial: 'replies/single', locals: {reply: @post}
+/ TODO paginator
+- @replies.each do |reply|
+  = render partial: 'replies/single', locals: {reply: reply}
+/ TODO paginator
+- if logged_in? && current_user.writes_in?(@post.board)
+  = render partial: 'write_reply', locals: { reply: @reply, url: replies_path, method: :post }
+
+- unless true
+  %table
     %tr
-      = render partial: 'paginator', locals: { paginated: @replies, path: :post_path }
-  %tr
-    %td.bg.spacer{colspan: 2}
-  - @replies.each do |reply|
-    = render partial: 'replies/single', locals: {reply: reply}
-  - if @replies.present?
+      %th{colspan: 2}
+        = @post.subject
+        - if params[:thread_id].present?
+          = link_to post_path(@post) do
+            .character-view-select &laquo; Thread Index
     %tr
-      = render partial: 'paginator', locals: { paginated: @replies, path: :post_path }
-  %tr
-    %td.bg.spacer{colspan: 2}
-  - if logged_in? && current_user.writes_in?(@post.board)
-    = render partial: 'write_reply', locals: { reply: @reply, url: replies_path, method: :post }
+      %td.bg.spacer{colspan: 2}
+    = render partial: 'replies/single', locals: {reply: @post}
+    - if @replies.present?
+      %tr
+        = render partial: 'paginator', locals: { paginated: @replies, path: :post_path }
+    %tr
+      %td.bg.spacer{colspan: 2}
+    - @replies.each do |reply|
+      = render partial: 'replies/single', locals: {reply: reply}
+    - if @replies.present?
+      %tr
+        = render partial: 'paginator', locals: { paginated: @replies, path: :post_path }
+    %tr
+      %td.bg.spacer{colspan: 2}
+    - if logged_in? && current_user.writes_in?(@post.board)
+      = render partial: 'write_reply', locals: { reply: @reply, url: replies_path, method: :post }

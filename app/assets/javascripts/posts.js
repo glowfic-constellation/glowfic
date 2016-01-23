@@ -20,6 +20,13 @@ $(document).ready(function() {
     width: '100%',
   });
 
+  $(".post-screenname").each(function (index) {
+    if($(this).height() > 20) {
+      $(this).css('font-size', "14px");
+      if($(this).height() > 20 ) { $(this).css('font-size', "12px"); };
+    }
+  });
+
   $("#post_privacy").change(function() {
     if($(this).val() == 2) { // TODO don't hardcode, should be PRIVACY_ACCESS
       $("#access_list").show();
@@ -50,11 +57,7 @@ $(document).ready(function() {
     return true;
   });
 
-  if ($("#current-icon").length) {
-    if (gon.current_user.active_character_id != null && $(".gallery-icon").length > 1) {
-     bindIcon(); 
-    }
-  }
+  bindIcon(); // TODO not if character or user with no icons
   bindGallery();
 
   $("#swap-icon").click(function () {
@@ -66,55 +69,49 @@ $(document).ready(function() {
     var id = $(this).val();
     $("#reply_character_id").val(id);
 
-    // Set name in name label
-    var name = $('#active_character :selected').text();
-    if (id == '') {
-      name = gon.current_user.username;
-    }
-    $("#char-name").text(name);
-
     // Handle page interactions
     $("#character-selector").hide();
     $("#current-icon-holder").unbind();
-    $("#current-icon").css({
-      'background-image':'url("/images/loading.gif")',
-      'background-position':'40px',
-      'background-size':'25%',
-      'background-repeat':'no-repeat',
-    });
+
+    // Handle special case where just setting to your base account
+    if (id == '') {
+      $("#post-editor .post-character").hide();
+      $("#post-editor .post-screenname").hide();
+      $("#post-editor #post-author-spacer").show();
+      var url = gon.current_user.avatar.url;
+      if(url != null) {
+        var aid = gon.current_user.avatar.id;
+        $("#current-icon").attr('src', url).addClass('pointer');
+        $("#reply_icon_id").val(aid);
+        $("#gallery").html("");
+        $("#gallery").append("<div class='gallery-icon'><img src='" + url + "' id='" + aid + "' class='icon' /><br />Avatar</div>");
+        bindIcon();
+        bindGallery();
+      }
+    }
 
     $.post(gon.character_path, {'character_id':id}, function (resp) {
-      if (id == '') {
-        url = gon.current_user.avatar.url;
-        if (url != null) {
-          if (!$("#current-icon").length) { $("#current-icon-holder").append("<img id='current-icon' class='icon' />"); }
-          $("#current-icon").show().attr('src', url).removeClass('pointer'); 
-          $("#reply_icon_id").val(gon.current_user.avatar.id);
-        } else {
-          $("#current-icon").remove()
-        }
-      } else if (resp['default'] == undefined) {
-        $("#current-icon").hide();
+      if(id == '') { return; }
+      $("#post-editor #post-author-spacer").hide();
+      $("#post-editor .post-character").show().html(resp['name']);
+      $("#post-editor .post-screenname").show().html(resp['screenname']);
+      if (resp['default'] == undefined) {
+        $("#current-icon").attr('src', '/images/no-icon.png').removeClass('pointer');
         $("#reply_icon_id").val('');
       } else {
-        if (!$("#current-icon").length) { $("#current-icon-holder").append("<img id='current-icon' class='icon' />"); }
-        $("#current-icon").show().attr('src', resp['default']['url']);
+        $("#current-icon").attr('src', resp['default']['url']).addClass('pointer');
         $("#reply_icon_id").val(resp['default']['id']);
-        $("#gallery").html('<table id="gallery-table"><tbody></tbody></table>');
+        $("#gallery").html("");
         var len = resp['gallery'].length;
-        if(len > 1) {
-          bindIcon();
-          $("#current-icon").addClass('pointer');
-        }
         for (var i = 0; i < len; i++) {
-          if(i % 6 == 0) { $("#gallery-table tbody").append('<tr>'); }
           var img_id = resp['gallery'][i]['id'];
           var img_url = resp['gallery'][i]['url'];
           var img_key = resp['gallery'][i]['keyword'];
-          $("#gallery-table tbody").append("<td class='vtop centered'><div class='gallery-icon'><img src='" + img_url + "' id='" + img_id + "' class='icon' /><br />"+img_key+"</div></td>");
-          if(i % 6 == 5) { $("#gallery-table tbody").append('</tr>'); }
+          $("#gallery").append("<div class='gallery-icon'><img src='" + img_url + "' id='" + img_id + "' class='icon' /><br />"+img_key+"</div>");
         }
+        $("#gallery").append("<div class='gallery-icon'><img src='/images/no-icon.png' id='' class='icon' /><br />No Icon</div>");
         bindGallery();
+        bindIcon();
       }
     });
   });
@@ -150,9 +147,10 @@ $(document).ready(function() {
 
 bindGallery = function() {
   $("#gallery img").click(function() {
+    id = $(this).attr('id');
+    $("#reply_icon_id").val(id);
     $('#icon-overlay').hide();
     $('#gallery').hide();
-    $("#reply_icon_id").val($(this).attr('id'));
     $("#current-icon").attr('src', $(this).attr('src'));
     $("#current-icon").attr('title', $(this).attr('title'));
     $("#current-icon").attr('alt', $(this).attr('alt'));

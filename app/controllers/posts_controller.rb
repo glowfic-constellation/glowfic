@@ -23,7 +23,8 @@ class PostsController < ApplicationController
 
   def new
     use_javascript('posts')
-    @post = Post.new(character: current_user.active_character)
+    @post = Post.new(character: current_user.active_character, user: current_user)
+    #@post.character = nil
     @post.board_id = params[:board_id]
     @character = current_user.active_character
     @image = @character ? @character.icon : current_user.avatar
@@ -79,7 +80,10 @@ class PostsController < ApplicationController
 
     if logged_in?
       use_javascript('posts') 
-      @reply = Reply.new(post: @post, character: current_user.active_character, icon: current_user.active_character.try(:icon))
+      @reply = Reply.new(post: @post, 
+        character: current_user.active_character,
+        user: current_user, 
+        icon: current_user.active_character.try(:icon))
       @character = current_user.active_character
       @image = @character ? @character.icon : current_user.avatar
     end

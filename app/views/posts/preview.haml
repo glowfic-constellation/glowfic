@@ -1,12 +1,7 @@
-%table
-  %tr
-    %th{ :colspan => 2 }= @post.subject
-  %tr
-    %td.bg.spacer{ :colspan => 2 }
-  = render partial: 'replies/single', locals: {reply: @written, show_edit: false}
-  - if @written.is_a?(Reply)
-    = render partial: 'write_reply', locals: { reply: @written, url: @url, method: @method }
-  - else
-    = render partial: 'write_post', locals: { post: @post, url: @url, method: @method }
-  %tr
-    %th{ :colspan => 2 }
+.post-header
+  .padding-15= @post.subject
+= render partial: 'replies/single', locals: {reply: @written, show_edit: false}
+- if @written.is_a?(Reply)
+  = render partial: 'write_reply', locals: { reply: @written, url: @url, method: @method }
+- else
+  = render partial: 'write_post', locals: { post: @post, url: @url, method: @method }
