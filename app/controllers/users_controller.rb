@@ -45,6 +45,7 @@ class UsersController < ApplicationController
   end
 
   def update
+    params[:user][:per_page] = -1 if params[:user].try(:[], :per_page) == 'all'
     if current_user.update_attributes(params[:user])
       flash[:success] = "Changes saved successfully."
     else
