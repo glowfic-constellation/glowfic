@@ -10,7 +10,7 @@
         = no_icon_tag id: 'current-icon', pointer: item.has_icons?
       #icon-overlay
     .post-character{class: ('hidden' unless item.character)}= item.character.try(:name)
-    .post-screenname{class: ('hidden' unless item.character)}= item.character.try(:screenname)
+    .post-screenname{class: ('hidden' unless item.character.try(:screenname))}= item.character.try(:screenname)
     #post-author-spacer.dark.spacer{class: ('hidden' if item.character)}
     .post-author
       = item.user.username
