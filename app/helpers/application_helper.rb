@@ -30,8 +30,9 @@ module ApplicationHelper
 
   def per_page_options(default=nil)
     options = [1,10,25,50,100,250,500]
-    options = Hash[*(options * 2).sort].merge({'All' => -1})
+    options = Hash[*(options * 2).sort].merge({'All' => 'all'})
     default ||= per_page
+    default = 'all' if default == -1
     options_for_select(options, default)
   end
 end

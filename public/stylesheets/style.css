@@ -58,7 +58,7 @@ h3 { margin-top: 25px; margin-bottom: 0px; color: #111111; }
 #content table { width: 100%; margin: 0px auto; border-spacing: 0px; font-size: 14px; }
 #content th { background-color:#8B8687; color:#eee; padding:15px; font-size:18px; font-weight: normal; }
 #content th a { color: white; }
-#content th.sub { background-color: #B9B6AD; padding: 10px; font-size: 16px; color: #3E384F; }
+#content .sub { background-color: #B9B6AD; padding: 10px; font-size: 16px; color: #3E384F; }
 #content td.even { background-color: #E3E3E3; }
 #content td.odd { background-color: #D8D8D8; }
 #content td.menu { vertical-align: top; width: 100px; padding: 0px; }

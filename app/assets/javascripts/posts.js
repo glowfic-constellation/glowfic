@@ -57,8 +57,10 @@ $(document).ready(function() {
     return true;
   });
 
-  bindIcon(); // TODO not if character or user with no icons
-  bindGallery();
+  if($(".gallery-icon").length > 1) {
+    bindIcon();
+    bindGallery();
+  }
 
   $("#swap-icon").click(function () {
     $('#character-selector').toggle();
@@ -85,6 +87,7 @@ $(document).ready(function() {
         $("#reply_icon_id").val(aid);
         $("#gallery").html("");
         $("#gallery").append("<div class='gallery-icon'><img src='" + url + "' id='" + aid + "' class='icon' /><br />Avatar</div>");
+        $("#gallery").append("<div class='gallery-icon'><img src='/images/no-icon.png' id='' class='icon' /><br />No Icon</div>");
         bindIcon();
         bindGallery();
       }
@@ -94,7 +97,11 @@ $(document).ready(function() {
       if(id == '') { return; }
       $("#post-editor #post-author-spacer").hide();
       $("#post-editor .post-character").show().html(resp['name']);
-      $("#post-editor .post-screenname").show().html(resp['screenname']);
+      if(resp['screenname'] == undefined) {
+        $("#post-editor .post-screenname").hide();
+      } else {
+        $("#post-editor .post-screenname").show().html(resp['screenname']);
+      }
       if (resp['default'] == undefined) {
         $("#current-icon").attr('src', '/images/no-icon.png').removeClass('pointer');
         $("#reply_icon_id").val('');
