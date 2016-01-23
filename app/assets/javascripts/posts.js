@@ -161,6 +161,7 @@ bindGallery = function() {
 
 bindIcon = function() {
   $('#current-icon-holder').click(function() {
+    alert('HI');
     $('#icon-overlay').toggle();
     $('#gallery').toggle();
   });

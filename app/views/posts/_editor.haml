@@ -1,12 +1,12 @@
-%tr
-  %td.menu.beige
-    .green.icon-holder
-      #current-icon-holder
-        - if item.icon
-          = icon_tag item.icon, id: 'current-icon', pointer: item.character.try(:multi_icons?)
-        - elsif item.character.nil? && current_user.avatar
-          = icon_tag current_user.avatar, id: 'current-icon'
-        #icon-overlay
+- klass = cycle('even', 'odd')
+.padding-10{class: klass}
+  .post-info-box{style:'background-color:red;'}
+    #current-icon-holder
+      - if item.icon
+        = icon_tag item.icon, id: 'current-icon', pointer: item.character.try(:multi_icons?)
+      - elsif item.character.nil? && current_user.avatar
+        = icon_tag current_user.avatar, id: 'current-icon'
+      #icon-overlay
     .dark.label.centered
       %span#char-name= item.character.try(:name) || current_user.username
       - unless current_user.characters.empty?
@@ -18,23 +18,22 @@
           { :include_blank => true, :prompt => current_user.username }
           %br
     .beige.expander
-  %td.post{rowspan: 2, class: cycle('even', 'odd')}
-    #gallery.green
-      - if item.character && item.character.gallery
-        %table
-          - icons = item.character.gallery.icons.order('keyword ASC')
-          - icons.each_with_index do |icon, index|
-            - if index % 6 == 0
-              <tr>
-            %td.centered.vtop
-              .gallery-icon
-                = icon_tag icon, id: icon.id
-                %br>
-                = icon.keyword
-            - if index % 6 == 5 || icon == icons.last
-              </tr>
-    = yield :form
-%tr
-  %td.dark.spacer
-%tr
-  %td.bg.spacer{colspan: 2}
+  #gallery.green
+    - if item.character && item.character.gallery
+      - icons = item.character.gallery.icons.order('keyword ASC')
+      - icons.each_with_index do |icon, index|
+        .gallery-icon
+          = icon_tag icon, id: icon.id
+          %br>
+          = icon.keyword
+  = yield :form
+
+- if false
+  %tr
+    %td.menu.beige
+      .green.icon-holder
+      = yield :form
+  %tr
+    %td.dark.spacer
+  %tr
+    %td.bg.spacer{colspan: 2}
