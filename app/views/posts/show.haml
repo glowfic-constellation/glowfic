@@ -8,10 +8,12 @@
 .post-header
   .padding-15= @post.subject
 = render partial: 'replies/single', locals: {reply: @post}
-= render partial: 'paginator', locals: { paginated: @replies, path: :post_path }
+- if @replies.present?
+  = render partial: 'paginator', locals: { paginated: @replies, path: :post_path }
 - @replies.each do |reply|
   = render partial: 'replies/single', locals: {reply: reply}
-= render partial: 'paginator', locals: { paginated: @replies, path: :post_path }
+- if @replies.present?
+  = render partial: 'paginator', locals: { paginated: @replies, path: :post_path }
 - if logged_in? && current_user.writes_in?(@post.board)
   = render partial: 'write_reply', locals: { reply: @reply, url: replies_path, method: :post }
 
@@ -23,20 +25,3 @@
         - if params[:thread_id].present?
           = link_to post_path(@post) do
             .character-view-select &laquo; Thread Index
-    %tr
-      %td.bg.spacer{colspan: 2}
-    = render partial: 'replies/single', locals: {reply: @post}
-    - if @replies.present?
-      %tr
-        = render partial: 'paginator', locals: { paginated: @replies, path: :post_path }
-    %tr
-      %td.bg.spacer{colspan: 2}
-    - @replies.each do |reply|
-      = render partial: 'replies/single', locals: {reply: reply}
-    - if @replies.present?
-      %tr
-        = render partial: 'paginator', locals: { paginated: @replies, path: :post_path }
-    %tr
-      %td.bg.spacer{colspan: 2}
-    - if logged_in? && current_user.writes_in?(@post.board)
-      = render partial: 'write_reply', locals: { reply: @reply, url: replies_path, method: :post }
