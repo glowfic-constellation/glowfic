@@ -144,8 +144,6 @@ class PostsController < ApplicationController
     @search_results = @search_results.where(board_id: params[:board_id]) if params[:board_id].present?
     @search_results = @search_results.where(user_id: params[:author_id]) if params[:author_id].present?
     @search_results = @search_results.paginate(page: page, per_page: per_page > 0 ? per_page : 25)
-    @rowspan = [per_page, @search_results.count].min + 1
-    @rowspan += 1 if @search_results.count == 1 # pad for sizing
   end
 
   private
