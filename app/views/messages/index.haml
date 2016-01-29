@@ -15,19 +15,19 @@
         %tr
           - klass = cycle('even', 'odd')
           - klass += ' bold' if @view == 'inbox' and message.unread?
-          %td.padding-10{class: klass}
+          %td{class: klass, style:"padding-left:5px;"}
             - if message.send('marked_'+@view+'?')
               = image_tag "/images/asterisk.png"
-          %td.padding-10{class: klass}= link_to message.subject, message_path(message)
-          %td.padding-10{class: klass}
+          %td{class: klass}= link_to message.subject, message_path(message)
+          %td{class: klass}
             - if @view == 'inbox'
               = link_to message.sender.username, user_path(message.sender)
             - else
               = link_to message.recipient.username, user_path(message.recipient)
-          %td.padding-10{class: klass}= pretty_time(message.created_at)
-          %td.padding-10{class: klass}= check_box_tag :"marked_ids[]", message.id
+          %td{class: klass}= pretty_time(message.created_at)
+          %td{class: klass}= check_box_tag :"marked_ids[]", message.id
       %tr
-        %td.right-align.padding-10{colspan: 5, class: cycle('even', 'odd')}
+        %td.right-align.padding-5{colspan: 5, class: cycle('even', 'odd')}
           - if @view == 'inbox'
             = submit_tag "Mark Read / Unread", class: 'button'
           = submit_tag "Mark / Unmark Important", class: 'button'

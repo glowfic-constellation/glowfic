@@ -7,8 +7,8 @@ class Icon < ActiveRecord::Base
   validate :url_is_url
   nilify_blanks
 
-  def as_json
-    { id: id, url: url, keyword: keyword }
+  def as_json(options={})
+    super({only: [:id, :url, :keyword]}.reverse_merge(options))
   end
 
   private

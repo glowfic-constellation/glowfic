@@ -1,12 +1,10 @@
 To Do
 
 v1 (I want this done before release)
-- Fix pagination display on posts/search
 - Unread Posts filter for logged in users
-- Icon picker should include a No Image option
 - Icon picker should have a dropdown with searchable keywords as well as the clickable icons
 - When displaying a list of posts, each post should include links to its pages
-- UI for posts: include character username, poster moiety
+- UI for posts: include poster moiety
 - Being able to lock posts within public continuities (MWF, Sandboxes, etc) to specific authors, continuity-style
 - Being able to delete multiple icons at once
 - More complete profile pages, for users or characters or really whatever.
@@ -14,7 +12,6 @@ v1 (I want this done before release)
 - Users can set their time zone
 - More page titles
 - Bug: changing characters can reset page somehow?
-- Bug: deleting a template assigned to characters causes the characters to go missing
 
 v1.1 (I want this done before release but it comes last because $)
 - Upgrade the database so I can run the scraper

@@ -30,7 +30,7 @@
           = image_tag "/images/pencil.png"
         = link_to path_for(reply, '%s'), method: :delete, confirm: 'Are you sure? This will delete this post AND any post that follows it!' do
           = image_tag "/images/cross.png"
-    = reply.content.gsub("\n","<br>").html_safe
+    = sanitize(reply.content.gsub("\n","<br>")).html_safe
   %div{style:'padding:0px;clear:both'}
     .right-align{style: 'width:100%; font-size: 14px;'}> 
       .padding-5>

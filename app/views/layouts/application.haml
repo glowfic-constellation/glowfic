@@ -73,6 +73,9 @@
           = link_to 'Search', search_posts_path
           |
           = link_to 'Glowficcers', users_path
+          - if logged_in?
+            |
+            = link_to 'Tags Owed', owed_posts_path
           - if browser.mobile? && logged_in?
             |
             = link_to 'Account', edit_user_path(current_user)

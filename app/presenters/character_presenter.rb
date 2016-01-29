@@ -6,7 +6,6 @@ class CharacterPresenter
   end
 
   def as_json(*args, **kwargs)
-    Rails.logger.info(character)
     return {} unless character
     icons = character.gallery ? character.gallery.icons.order("keyword ASC").map(&:as_json) : []
     { gallery: icons,

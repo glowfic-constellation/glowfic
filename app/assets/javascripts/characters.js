@@ -44,9 +44,9 @@ $(document).ready(function() {
       $("#selected-gallery .gallery").html('');
       $("#selected-gallery").show();
       for(var i = 0; i < resp.length; i++) {
-        var url = resp[i]['icon']['url'];
-        var keyword = resp[i]['icon']['keyword'];
-        var id = resp[i]['icon']['id'];
+        var url = resp[i]['url'];
+        var keyword = resp[i]['keyword'];
+        var id = resp[i]['id'];
         $("#selected-gallery .gallery").append('<img src="'+url+'" alt="'+keyword+'" title="'+keyword+'" class="icon character-icon" id="'+id+'" />');  
       }
       bindIcons();
