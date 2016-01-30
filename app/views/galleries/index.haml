@@ -3,4 +3,4 @@
 %br
 %table
   - current_user.galleries.order('name asc').each do |gallery|
-    = render partial: 'single_gallery', locals: {gallery: gallery}
+    = render partial: 'single_gallery', locals: {gallery: @gallery}
