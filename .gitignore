@@ -18,3 +18,8 @@
 
 .sass-cache/*
 *~
+
+#ignore rbenv setup
+.ruby-version
+
+config/database.yml
