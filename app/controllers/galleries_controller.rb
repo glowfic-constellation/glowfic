@@ -41,7 +41,6 @@ class GalleriesController < ApplicationController
   end
 
   def edit
-    @gallery = Gallery.find_by_id(params[:id])
   end
 
   def update
