@@ -1,6 +1,6 @@
 class GalleriesController < ApplicationController
-  before_filter :login_required
-  before_filter :find_gallery, :only => [:add, :icon, :destroy, :remove, :show, :edit, :update]
+  before_filter :login_required, except: :show
+  before_filter :find_gallery, only: [:add, :icon, :destroy, :remove, :edit, :update]
 
   def index
     use_javascript('galleries/index')
@@ -33,7 +33,11 @@ class GalleriesController < ApplicationController
   end
 
   def show
-    render json: @gallery.icons
+    @gallery = Gallery.find_by_id(params[:id])
+    respond_to do |format|
+      format.json { render json: @gallery.icons }
+      format.html { render show: @gallery }
+    end
   end
 
   def edit
