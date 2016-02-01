@@ -11,8 +11,6 @@ module Writable
     validates_presence_of :user, :content
     validate :character_ownership, :icon_ownership
 
-    before_save :clean_html
-
     def has_icons?
       return user.avatar_id? unless character
       return false unless character.gallery
@@ -31,10 +29,6 @@ module Writable
       return true unless icon
       return true if icon.user_id == user_id
       errors.add(:icon, "must be yours")
-    end
-
-    def clean_html
-      self.content = Nokogiri::HTML.parse(self.content).at('body').inner_html
     end
   end
 end
