@@ -48,6 +48,10 @@ class User < ActiveRecord::Base
     continuity.open_to?(self)
   end
 
+  def admin?
+    id == 1
+  end
+
   private
 
   def password_present

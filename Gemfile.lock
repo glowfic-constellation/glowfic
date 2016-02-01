@@ -67,8 +67,14 @@ GEM
       compass (~> 1.0.0)
       sass-rails (< 5.1)
       sprockets (< 2.13)
+    diff-lcs (1.2.5)
     erubis (2.7.0)
     execjs (2.5.2)
+    factory_girl (4.5.0)
+      activesupport (>= 3.0.0)
+    factory_girl_rails (4.5.0)
+      factory_girl (~> 4.5.0)
+      railties (>= 3.0.0)
     ffi (1.9.10)
     gon (5.2.3)
       actionpack (>= 2.3.0)
@@ -140,6 +146,23 @@ GEM
     rdoc (3.12.2)
       json (~> 1.4)
     request_store (1.1.0)
+    rspec-core (3.4.2)
+      rspec-support (~> 3.4.0)
+    rspec-expectations (3.4.0)
+      diff-lcs (>= 1.2.0, < 2.0)
+      rspec-support (~> 3.4.0)
+    rspec-mocks (3.4.1)
+      diff-lcs (>= 1.2.0, < 2.0)
+      rspec-support (~> 3.4.0)
+    rspec-rails (3.4.1)
+      actionpack (>= 3.0, < 4.3)
+      activesupport (>= 3.0, < 4.3)
+      railties (>= 3.0, < 4.3)
+      rspec-core (~> 3.4.0)
+      rspec-expectations (~> 3.4.0)
+      rspec-mocks (~> 3.4.0)
+      rspec-support (~> 3.4.0)
+    rspec-support (3.4.1)
     sass (3.4.13)
     sass-rails (3.2.6)
       railties (~> 3.2.0)
@@ -171,16 +194,20 @@ DEPENDENCIES
   byebug
   chosen-rails
   coffee-rails
+  factory_girl_rails
   gon
   haml
   haml-rails
   httparty
   jquery-rails
+  json (= 1.8.2)
   nilify_blanks
   nokogiri
   pg
   rails (= 3.2.21)
   rails_12factor
+  rake (= 10.4.2)
+  rspec-rails
   sass-rails
   seed_dump (= 0.5.3)
   uglifier

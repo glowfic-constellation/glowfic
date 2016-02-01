@@ -1,7 +1,7 @@
 class PostsController < ApplicationController
   before_filter :login_required, :except => [:index, :show, :history]
   before_filter :find_post, :only => [:show, :history, :edit, :update, :destroy]
-  before_filter :require_own_post, only: [:edit, :update, :destroy]
+  before_filter :require_permission, only: [:edit, :update, :destroy]
   before_filter :build_template_groups, :only => [:new, :show, :edit, :preview]
 
   def index
@@ -24,7 +24,6 @@ class PostsController < ApplicationController
   def new
     use_javascript('posts')
     @post = Post.new(character: current_user.active_character, user: current_user)
-    #@post.character = nil
     @post.board_id = params[:board_id]
     @character = current_user.active_character
     @image = @character ? @character.icon : current_user.avatar
@@ -164,9 +163,9 @@ class PostsController < ApplicationController
     @page_title = @post.subject
   end
 
-  def require_own_post
-    unless @post.user_id == current_user.id
-      flash[:error] = "This is not your post."
+  def require_permission
+    unless @reply.editable_by?(current_user)
+      flash[:error] = "You do not have permission to modify this post."
       redirect_to post_path(@post)
     end
   end

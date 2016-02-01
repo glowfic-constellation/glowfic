@@ -17,6 +17,11 @@ module Writable
       return character.gallery.icons.present?
     end
 
+    def editable_by?(editor)
+      return false unless editor
+      editor.id == user_id || editor.admin?
+    end
+
     private
 
     def character_ownership

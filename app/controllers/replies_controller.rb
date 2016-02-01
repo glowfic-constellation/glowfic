@@ -2,6 +2,7 @@ class RepliesController < ApplicationController
   before_filter :login_required, except: :history
   before_filter :build_template_groups, only: :edit
   before_filter :find_reply, only: [:history, :edit, :update, :destroy]
+  before_filter :require_permission, only: [:edit, :update, :destroy]
 
   def create
     reply = Reply.new(params[:reply])
@@ -44,6 +45,13 @@ class RepliesController < ApplicationController
     unless @reply
       flash[:error] = "Post could not be found."
       redirect_to boards_path and return
+    end
+  end
+
+  def require_permission
+    unless @reply.editable_by?(current_user)
+      flash[:error] = "You do not have permission to modify this post."
+      redirect_to post_path(@reply.post)
     end
   end
 

@@ -25,7 +25,7 @@
       - elsif reply.id.present?
         = link_to post_path(reply) do
           = image_tag "/images/link.png"
-      - if reply.user == current_user && reply.id.present?
+      - if reply.id.present? && reply.editable_by?(current_user)
         = link_to path_for(reply, 'edit_%s') do
           = image_tag "/images/pencil.png"
         = link_to path_for(reply, '%s'), method: :delete, confirm: 'Are you sure? This will delete this post AND any post that follows it!' do

@@ -24,6 +24,10 @@ group :assets do
   gem 'uglifier'
 end
 
-group :development do
+group :development, :test do
   gem 'byebug'
+  gem 'rspec-rails'
+  gem 'factory_girl_rails'
+  gem 'json', '1.8.2'
+  gem 'rake', '10.4.2'
 end
