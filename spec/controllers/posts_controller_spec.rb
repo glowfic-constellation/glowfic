@@ -22,7 +22,7 @@ RSpec.describe PostsController do
       expect(ids_fetched).not_to include(oldest.id)
     end
 
-    it "only fetches most recent threads based on updated_at not id" do
+    it "only fetches most recent threads based on updated_at" do
       26.times do create(:post) end
       oldest = Post.order('id asc').first
       next_oldest = Post.order('id asc').second

@@ -12,6 +12,7 @@ v1 (I want this done before release)
 - Users can set their time zone
 - More page titles
 - Bug: changing characters can reset page somehow?
+- Bug: When I try to delete an icon from a gallery, the page doesn't update automatically to reflect this.
 
 v1.1 (I want this done before release but it comes last because $)
 - Upgrade the database so I can run the scraper
@@ -19,6 +20,7 @@ v1.1 (I want this done before release but it comes last because $)
 - Email users (optional thread notifications, password reset)
 
 v2 (I can release without this but I want them)
+- Caching so server doesn't rerender
 - Improve icon view for characters page
 - Improve character groups in full generality
     - Characters can be in multiple groups

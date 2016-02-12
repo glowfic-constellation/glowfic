@@ -13,7 +13,7 @@
     .gallery{id: "gallery#{gallery.id.to_s}"}
       - icons = gallery.icons.order('keyword asc')
       - icons.each do |icon|
-        .gallery-icon{ id: "icon#{gallery.id.to_s}"}
+        .gallery-icon{ id: "icon#{icon.id.to_s}"}
           = link_to icon_path(icon) do
             = icon_tag icon
             %br

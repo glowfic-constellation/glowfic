@@ -36,7 +36,10 @@ class GalleriesController < ApplicationController
     @gallery = Gallery.find_by_id(params[:id])
     respond_to do |format|
       format.json { render json: @gallery.icons }
-      format.html { render show: @gallery }
+      format.html do
+        use_javascript('galleries/index')
+        render show: @gallery
+      end
     end
   end
 
