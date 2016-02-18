@@ -15,7 +15,6 @@ v1 (I want this done before release)
 - Bug: When I try to delete an icon from a gallery, the page doesn't update automatically to reflect this.
 
 v1.1 (I want this done before release but it comes last because $)
-- Upgrade the database so I can run the scraper
 - Upload icons https://devcenter.heroku.com/articles/s3
 - Email users (optional thread notifications, password reset)
 
@@ -55,3 +54,4 @@ Scraper
 
 Forum: https://github.com/rubysherpas/forem/blob/e6273a8f15fb6573a743c7a71284a184647988fa/app/models/forem/concerns/viewable.rb
 Auth: https://github.com/plataformatec/devise
+Caching: http://guides.rubyonrails.org/caching_with_rails.html
