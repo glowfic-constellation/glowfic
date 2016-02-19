@@ -106,7 +106,7 @@ class PostsController < ApplicationController
         icon: current_user.active_character.try(:icon))
       @character = current_user.active_character
       @image = @character ? @character.icon : current_user.avatar
-      @post.mark_read(current_user) unless post.board.ignored_by?(current_user)
+      @post.mark_read(current_user) unless @post.board.ignored_by?(current_user)
     end
   end
 
