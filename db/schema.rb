@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20160108230631) do
+ActiveRecord::Schema.define(:version => 20160218041751) do
 
   create_table "audits", :force => true do |t|
     t.integer  "auditable_id"
@@ -42,6 +42,18 @@ ActiveRecord::Schema.define(:version => 20160108230631) do
     t.datetime "created_at",                   :null => false
     t.datetime "updated_at",                   :null => false
   end
+
+  create_table "board_views", :force => true do |t|
+    t.integer  "board_id",                          :null => false
+    t.integer  "user_id",                           :null => false
+    t.boolean  "ignored",        :default => false
+    t.boolean  "notify_message", :default => false
+    t.boolean  "notify_email",   :default => false
+    t.datetime "created_at",                        :null => false
+    t.datetime "updated_at",                        :null => false
+  end
+
+  add_index "board_views", ["user_id", "board_id"], :name => "index_board_views_on_user_id_and_board_id"
 
   create_table "boards", :force => true do |t|
     t.string   "name",        :null => false
@@ -143,6 +155,18 @@ ActiveRecord::Schema.define(:version => 20160108230631) do
   end
 
   add_index "post_viewers", ["post_id"], :name => "index_post_viewers_on_post_id"
+
+  create_table "post_views", :force => true do |t|
+    t.integer  "post_id",                           :null => false
+    t.integer  "user_id",                           :null => false
+    t.boolean  "ignored",        :default => false
+    t.boolean  "notify_message", :default => false
+    t.boolean  "notify_email",   :default => false
+    t.datetime "created_at",                        :null => false
+    t.datetime "updated_at",                        :null => false
+  end
+
+  add_index "post_views", ["user_id", "post_id"], :name => "index_post_views_on_user_id_and_post_id"
 
   create_table "posts", :force => true do |t|
     t.integer  "board_id",                     :null => false

@@ -4,7 +4,7 @@ Rails.application.routes.draw do
   match '/logout' => 'sessions#destroy', :as => :logout, :via => :delete
 
   resources :templates
-  resources :boards
+  resources :boards do collection { post :mark } end
   resources :messages, except: :edit do
     collection { post :mark }
   end
@@ -18,8 +18,10 @@ Rails.application.routes.draw do
     member { get :history }
     collection do
       post :preview
+      post :mark
       get :search
       get :owed
+      get :unread
     end
   end
   resources :characters do

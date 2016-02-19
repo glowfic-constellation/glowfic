@@ -19,6 +19,27 @@ class PostsController < ApplicationController
   end
 
   def unread
+    @posts = Post.joins("LEFT JOIN post_views ON post_views.post_id = posts.id")
+    @posts = @posts.joins("LEFT JOIN board_views on board_views.board_id = posts.board_id")
+    @posts = @posts.where("post_views.user_id IS NULL OR (post_views.user_id = ? AND post_views.updated_at < posts.updated_at AND post_views.ignored = '0')", current_user.id)
+    @posts = @posts.where("board_views.user_id IS NULL OR (board_views.user_id = ? AND board_views.updated_at < posts.updated_at AND post_views.ignored = '0')", current_user.id)
+    @posts = @posts.order('updated_at desc').includes(:board)
+    @page_title = "Unread Threads"
+  end
+
+  def mark    
+    posts = Post.where(id: params[:marked_ids])
+    posts.select! do |post|
+      post.visible_to?(current_user)
+    end
+    if params[:commit] == "Mark Read"
+      posts.each { |post| post.mark_read(current_user) }
+      flash[:success] = posts.count.to_s + " posts marked as read."
+    else
+      posts.each { |post| post.ignore(current_user) }
+      flash[:success] = posts.count.to_s + " posts hidden from this page."
+    end
+    redirect_to unread_posts_path
   end
 
   def new
@@ -85,6 +106,7 @@ class PostsController < ApplicationController
         icon: current_user.active_character.try(:icon))
       @character = current_user.active_character
       @image = @character ? @character.icon : current_user.avatar
+      @post.mark_read(current_user) unless post.board.ignored_by?(current_user)
     end
   end
 

@@ -1,4 +1,6 @@
 class Board < ActiveRecord::Base
+  include Viewable
+
   has_many :posts
   has_many :board_sections
   belongs_to :creator, class_name: User

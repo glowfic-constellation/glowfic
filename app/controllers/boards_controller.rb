@@ -38,6 +38,18 @@ class BoardsController < ApplicationController
     end.first(25)
   end
 
+  def mark    
+    board = Board.find(params[:board_id])
+    if params[:commit] == "Mark Read"
+      board.mark_read(current_user)
+      flash[:success] = "#{board.name} marked as read."
+    else
+      board.ignore(current_user)
+      flash[:success] = "#{board.name} hidden from this page."
+    end
+    redirect_to unread_posts_path
+  end
+
   private
 
   def set_available_cowriters

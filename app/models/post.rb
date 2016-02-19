@@ -1,5 +1,6 @@
 class Post < ActiveRecord::Base
   include Writable
+  include Viewable
 
   PRIVACY_PUBLIC = 0
   PRIVACY_PRIVATE = 1

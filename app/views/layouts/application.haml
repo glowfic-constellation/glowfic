@@ -75,6 +75,8 @@
           = link_to 'Glowficcers', users_path
           - if logged_in?
             |
+            = link_to 'Unread', unread_posts_path
+            |
             = link_to 'Tags Owed', owed_posts_path
           - if browser.mobile? && logged_in?
             |

@@ -1,7 +1,6 @@
 To Do
 
 v1 (I want this done before release)
-- Unread Posts filter for logged in users
 - Icon picker should have a dropdown with searchable keywords as well as the clickable icons
 - When displaying a list of posts, each post should include links to its pages
 - UI for posts: include poster moiety
@@ -12,7 +11,6 @@ v1 (I want this done before release)
 - Users can set their time zone
 - More page titles
 - Bug: changing characters can reset page somehow?
-- Bug: When I try to delete an icon from a gallery, the page doesn't update automatically to reflect this.
 
 v1.1 (I want this done before release but it comes last because $)
 - Upload icons https://devcenter.heroku.com/articles/s3
@@ -20,6 +18,7 @@ v1.1 (I want this done before release but it comes last because $)
 
 v2 (I can release without this but I want them)
 - Caching so server doesn't rerender
+- Unread page uses post list partial
 - Improve icon view for characters page
 - Improve character groups in full generality
     - Characters can be in multiple groups
@@ -51,6 +50,10 @@ Finicky Tidiness
 
 Scraper
 - Handle internal links (see Milliways Lurks)
+
+Tests
+- Write them
+- Fix weird error http://stackoverflow.com/questions/17936340/unresolved-specs-during-gemspecification-reset
 
 Forum: https://github.com/rubysherpas/forem/blob/e6273a8f15fb6573a743c7a71284a184647988fa/app/models/forem/concerns/viewable.rb
 Auth: https://github.com/plataformatec/devise
