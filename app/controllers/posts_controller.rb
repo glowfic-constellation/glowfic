@@ -186,7 +186,7 @@ class PostsController < ApplicationController
   end
 
   def require_permission
-    unless @reply.editable_by?(current_user)
+    unless @post.editable_by?(current_user)
       flash[:error] = "You do not have permission to modify this post."
       redirect_to post_path(@post)
     end
