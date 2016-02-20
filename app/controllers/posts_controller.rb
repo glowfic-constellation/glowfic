@@ -1,7 +1,7 @@
 class PostsController < ApplicationController
   before_filter :login_required, :except => [:index, :show, :history]
   before_filter :find_post, :only => [:show, :history, :edit, :update, :destroy]
-  before_filter :require_permission, only: [:edit, :update, :destroy]
+  before_filter :require_permission, only: [:edit, :destroy]
   before_filter :build_template_groups, :only => [:new, :show, :edit, :preview]
 
   def index
@@ -130,6 +130,14 @@ class PostsController < ApplicationController
   end
 
   def update
+    if params[:unread].present?
+      @post.views.where(user_id: current_user.id).destroy_all
+      flash[:success] = "Post has been marked as unread"
+      redirect_to board_path(@post.board) and return
+    end
+
+    require_permission
+
     @post.update_attributes(params[:post])
     @post.board ||= Board.find(3)
     if @post.save
