@@ -20,6 +20,9 @@ module Glowfic
     config.time_zone = 'Eastern Time (US & Canada)'
     config.active_record.default_timezone = :local
     config.action_view.sanitized_allowed_tags = Glowfic::ALLOWED_TAGS
+    config.after_initialize do
+      ActionView::Base.sanitized_allowed_attributes << 'style'
+    end
 
     # The default locale is :en and all translations from config/locales/*.rb,yml are auto loaded.
     # config.i18n.load_path += Dir[Rails.root.join('my', 'locales', '*.{rb,yml}').to_s]
