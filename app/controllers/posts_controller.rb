@@ -68,19 +68,6 @@ class PostsController < ApplicationController
   end
 
   def show
-    reply_id = params[:reply_id].to_i
-    if reply_id > 0
-      per = per_page > 0 ? per_page : @post.replies.count
-      array = @post.replies.select(:id).map(&:id)
-      hash = Hash[array.map.with_index.to_a]
-      reply_index = hash[reply_id]
-      cur_page = (reply_index / per) + 1
-      dict = {anchor: "reply-#{reply_id}"}
-      dict[:per_page] = params[:per_page] if params[:per_page]
-      dict[:page] = cur_page if cur_page > 1
-      redirect_to(:action => :show, **dict) and return
-    end
-
     @threaded = false
     replies = if @post.replies.where('thread_id is not null').count > 1
       @threaded = true
@@ -106,7 +93,13 @@ class PostsController < ApplicationController
         icon: current_user.active_character.try(:icon))
       @character = current_user.active_character
       @image = @character ? @character.icon : current_user.avatar
-      @post.mark_read(current_user) unless @post.board.ignored_by?(current_user)
+
+      at_time = if @replies.empty?
+        @post.updated_at
+      else
+        @replies.map(&:updated_at).max
+      end
+      @post.mark_read(current_user, at_time) unless @post.board.ignored_by?(current_user)
     end
   end
 
