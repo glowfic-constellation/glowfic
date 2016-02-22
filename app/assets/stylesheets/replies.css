@@ -53,3 +53,12 @@
 #post_content, #reply_content { height: 130px; width: 100%; display: block; }
 #post-form-wrapper { margin-left: 160px; margin-right: 10px; }
 #post-editor { position: relative; }
+
+@media (max-width: 600px) {
+    .post-info-box { float: none; width: 100%; display: inline-block; }
+    .post-icon { float: left; margin-right: 0; margin-bottom: 5px; }
+    .post-info-text { float: left; margin-right: 10px; margin-bottom: 5px; }
+    .post-character { }
+    .post-screenname { }
+    .post-author { }
+}
