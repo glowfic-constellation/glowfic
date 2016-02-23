@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20160218041751) do
+ActiveRecord::Schema.define(:version => 20160222042730) do
 
   create_table "audits", :force => true do |t|
     t.integer  "auditable_id"
@@ -73,7 +73,6 @@ ActiveRecord::Schema.define(:version => 20160218041751) do
     t.string   "name",               :null => false
     t.string   "template_name"
     t.string   "screenname"
-    t.integer  "gallery_id"
     t.integer  "template_id"
     t.integer  "default_icon_id"
     t.datetime "created_at",         :null => false
@@ -86,6 +85,14 @@ ActiveRecord::Schema.define(:version => 20160218041751) do
   add_index "characters", ["character_group_id"], :name => "index_characters_on_character_group_id"
   add_index "characters", ["template_id"], :name => "index_characters_on_template_id"
   add_index "characters", ["user_id"], :name => "index_characters_on_user_id"
+
+  create_table "characters_galleries", :force => true do |t|
+    t.integer "character_id", :null => false
+    t.integer "gallery_id",   :null => false
+  end
+
+  add_index "characters_galleries", ["character_id"], :name => "index_characters_galleries_on_character_id"
+  add_index "characters_galleries", ["gallery_id"], :name => "index_characters_galleries_on_gallery_id"
 
   create_table "continuity_memberships", :force => true do |t|
     t.integer  "board_id",     :null => false

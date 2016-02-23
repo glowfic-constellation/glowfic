@@ -17,7 +17,10 @@
   %td.left-align= f.text_field :new_template_name, :placeholder => "Template Name", :class => 'text'
 - if current_user.galleries.present?
   %tr.left-align
-    %td= f.collection_select(:gallery_id, current_user.galleries.order('name asc'), :id, :name, {:include_blank => '— Choose Gallery —'}, {:class => 'text'})
+    %td
+      = f.collection_select(:gallery_ids, 
+                             current_user.galleries.order('name asc'), 
+                             :id, :name, {}, {:class => 'text', multiple: true})
 %tr
   %td.left-align
     = f.collection_select(:character_group_id, @groups, :id, :name, {:include_blank => '— Choose Group —'}, {:class => 'text'})
@@ -30,7 +33,7 @@
   %td.centered
     = submit_tag "Save", class: 'button'
 
-#selected-gallery{style: ('display: none;' unless @character.gallery) }
+#selected-gallery
   %b Image Gallery
   %br
   Pick Default Icon (Optional):
@@ -38,6 +41,12 @@
   .gallery
     - if @character.gallery
       - @character.gallery.icons.order('keyword asc').each do |icon|
+        - klass = 'character-icon'
+        - klass += ' default-icon' if icon == @character.default_icon
+        = icon_tag icon, class: klass, id: icon.id
+    - else
+      - current_user.icons.order('keyword asc').each do |icon|
+        - next if icon.galleries.present?
         - klass = 'character-icon'
         - klass += ' default-icon' if icon == @character.default_icon
         = icon_tag icon, class: klass, id: icon.id

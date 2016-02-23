@@ -1,16 +1,49 @@
-%h2 Add Icons to Gallery
+= form_tag icon_gallery_path(id: @gallery.try(:id) || 0), method: :post do
+  %table#icon-table{style:"width:100%;"}
+    %tr
+      %th{colspan: 4} Add New Icons to Gallery
+    %tr
+      %th.sub URL
+      %th.sub Keyword
+      %th.sub Credit
+      %th.sub
+    - len = @icons.empty? ? 1 : @icons.size
+    - len.times do |i|
+      - klass = cycle('even', 'odd')
+      %tr.icon-row
+        %td.padding-5{class: klass}
+          = text_field_tag "icons[][url]", @icons[i].try(:[], :url), :placeholder => "URL", :class => 'text'
+        %td.padding-5{class: klass}
+          = text_field_tag "icons[][keyword]", @icons[i].try(:[], :keyword), :placeholder => "Keyword", :class => 'text'
+        %td.padding-5{class: klass}
+          = text_field_tag "icons[][credit]", @icons[i].try(:[], :credit), :placeholder => "Credit", :class => 'text'
+        %td.right-align.icon-buttons{class: klass}
+          = image_tag "/images/add.png", class: "icon-row-add"
+          = image_tag "/images/minus.png", class: "icon-row-rem"
+    %tr.submit-row
+      %td.centered{colspan: 4, class: cycle('even', 'odd')}
+        = submit_tag "Add New Icons", class: 'button'
 %br
-Click icons to select, then press Add Icons to Gallery at the bottom.
-%br
-
-%h4 Galleryless Icons
-- @unassigned.each do |icon|
-  = icon_tag icon, class: 'add-gallery-icon', :'data-id' => icon.id
-
-%h4 Icons in Other Galleries
-- @assigned.each do |icon|
-  = icon_tag icon, class: 'add-gallery-icon', :'data-id' => icon.id
-
-= form_tag icon_gallery_path(@gallery), method: :post, id: 'add-gallery-icons' do
-  = hidden_field_tag :image_ids
-  = submit_tag "Add Icons to Gallery", class: 'button'
+- if @gallery
+  %table
+    %tr
+      %th.centered Add Existing Icons to Gallery
+    %tr
+      %th.subber.centered Click icons to select, then press Add Icons to Gallery at the bottom.
+    %tr
+      %th.sub Galleryless Icons
+    %tr
+      %td.even.padding-5
+        - @unassigned.each do |icon|
+          = icon_tag icon, class: 'add-gallery-icon', :'data-id' => icon.id
+    %tr
+      %th.sub Icons in Other Galleries
+    %tr
+      %td.even.padding-5
+        - @assigned.each do |icon|
+          = icon_tag icon, class: 'add-gallery-icon', :'data-id' => icon.id
+    %tr
+      %td.odd.centered.padding-5
+        = form_tag icon_gallery_path(@gallery), method: :post, id: 'add-gallery-icons' do
+          = hidden_field_tag :image_ids
+        = submit_tag "Add Icons to Gallery", class: 'button'

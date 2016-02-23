@@ -24,13 +24,18 @@
             { :include_blank => true, :prompt => current_user.username }
             %br
   #gallery.green
-    - if item.character.try(:gallery)
-      - icons = item.character.gallery.icons.order('keyword ASC')
+    - if item.character.try(:galleries).try(:present?)
+      - icons = item.character.galleries.map(&:icons).flatten.uniq.sort_by{|i| i.keyword}
       - icons.each_with_index do |icon, index|
         .gallery-icon
           = icon_tag icon, id: icon.id
           %br>
           = icon.keyword
+    - elsif item.character.try(:icon)
+      .gallery-icon
+        = icon_tag item.character.icon, id: item.character.icon.id
+        %br>
+        = item.character.icon.keyword
     - elsif item.character.nil? && item.user.avatar
       .gallery-icon
         = icon_tag item.user.avatar, id: item.user.avatar.id, pointer: true

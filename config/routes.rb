@@ -30,7 +30,7 @@ Rails.application.routes.draw do
     end
     collection { get :facecasts }
   end
-  resources :icons do
+  resources :icons, except: :index do
     member do
       post :avatar
     end
@@ -49,7 +49,6 @@ Rails.application.routes.draw do
     member do
       get :add
       post :icon
-      delete :remove
     end
   end
 end

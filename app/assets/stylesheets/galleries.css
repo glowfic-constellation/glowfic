@@ -1,8 +1,11 @@
 .gallery-box { cursor: pointer; width: 20px; text-align: center; }
 .gallery-icon { min-height: 130px; display: inline-block; text-align: center; line-height: 14px; margin-bottom: 10px; position: relative; width: 130px; word-wrap: break-word; vertical-align: top; }
 .gallery-title { height: 5px; }
-.gallery-delete { position: absolute; top: 0px; right: 8px; width: 10px; background-color: #e5dfd1; border: 1px #C00 solid; color: #C00; padding: 3px; cursor: pointer; }
-.gallery-delete a { color: #C00; }
+.gallery-delete, .gallery-select { position: absolute; top: 0px; right: 8px; cursor: pointer; }
+.gallery-delete { width: 10px; background-color: #e5dfd1; border: 1px #C00 solid; color: #C00; padding: 3px; }
+#content .gallery-delete a { color: #C00; }
+.gallery-select { width: 20px; height: 20px; border: 0px; padding: 0px; background-color: transparent; }
+.gallery-select input { height: 20px; width: 20px; }
 #gallery { z-index: 4; }
 
 .character-view-select a { color: white; }

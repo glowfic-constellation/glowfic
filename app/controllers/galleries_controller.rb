@@ -1,10 +1,10 @@
 class GalleriesController < ApplicationController
   before_filter :login_required, except: :show
-  before_filter :find_gallery, only: [:add, :icon, :destroy, :remove, :edit, :update]
+  before_filter :find_gallery, only: [:destroy, :remove, :edit, :update]
 
   def index
     use_javascript('galleries/index')
-    @page_title = "Galleries"
+    @page_title = "Your Galleries"
   end
 
   def new
@@ -26,14 +26,17 @@ class GalleriesController < ApplicationController
   end
 
   def add
+    find_gallery if params[:id] != '0'
     use_javascript('galleries/add')
-    icons = (current_user.icons - @gallery.icons).sort { |i| i.id }
+    setup_new_icons
+    icons = (current_user.icons - (@gallery.try(:icons) || [])).sort { |i| i.id }
     @unassigned = icons.select { |i| i.galleries.empty? }
     @assigned = icons - @unassigned
   end
 
   def show
     @gallery = Gallery.find_by_id(params[:id])
+    @page_title = @gallery.name + " (Gallery)"
     respond_to do |format|
       format.json { render json: @gallery.icons }
       format.html do
@@ -57,26 +60,72 @@ class GalleriesController < ApplicationController
   end
 
   def icon
-    icon_ids = params[:image_ids].split(',').map(&:to_i).reject(&:zero?)
-    icons = Icon.where(id: icon_ids)
-    icons.each do |icon|
-      next unless icon.user_id == current_user.id
-      @gallery.icons << icon
+    find_gallery if params[:id] != '0'
+
+    if params[:image_ids].present?
+      unless @gallery # gallery required for adding icons from other galleries
+        flash[:error] = "Gallery could not be found."
+        redirect_to galleries_path and return
+      end
+
+      icon_ids = params[:image_ids].split(',').map(&:to_i).reject(&:zero?)  
+      icons = Icon.where(id: icon_ids)  
+      icons.each do |icon|  
+        next unless icon.user_id == current_user.id  
+        @gallery.icons << icon
+      end
+      flash[:success] = "Icons added to gallery successfully."
+      redirect_to galleries_path and return
     end
-    flash[:success] = "Icons added to gallery successfully."
-    redirect_to galleries_path
+
+    icons = (params[:icons] || []).reject { |icon| icon.values.all?(&:blank?) }
+    if icons.empty?
+      flash.now[:error] = "You have to enter something."
+      setup_new_icons
+      render :action => :add and return
+    end
+
+    icons = []
+    failed = false
+    @icons = params[:icons].reject { |icon| icon.values.all?(&:blank?) }
+    @icons.each_with_index do |icon, index|
+      icon = Icon.new(icon)
+      icon.user = current_user
+      unless icon.valid?
+        flash.now[:error] ||= {}
+        flash.now[:error][:array] ||= []
+        flash.now[:error][:array] += icon.errors.full_messages.map{|m| "Icon "+(index+1).to_s+": "+m.downcase}
+        failed = true and next
+      end
+      icons << icon
+    end
+
+    if failed
+      use_javascript('icons')
+      flash.now[:error][:message] = "Your icons could not be saved."
+      render :action => :add and return
+    elsif icons.empty?
+      @icons = []
+      flash.now[:error] = "Your icons could not be saved."
+      use_javascript('icons')
+      render :action => :add
+    elsif icons.all?(&:save)
+      if @gallery
+        icons.each do |icon| @gallery.icons << icon end
+      end
+      flash[:success] = "Icons saved successfully."
+      redirect_to galleries_path
+    else
+      flash.now[:error] = "Your icons could not be saved."
+      use_javascript('icons')
+      render :action => :add
+    end
   end
 
   def destroy
     @gallery.destroy
     flash[:success] = "Gallery deleted successfully."
     redirect_to galleries_path
-  end
-
-  def remove
-    icon = Icon.find(params[:icon_id])
-    @gallery.icons.delete(icon)
-    render json: {}
   end
 
   private
@@ -93,5 +142,10 @@ class GalleriesController < ApplicationController
       flash[:error] = "That is not your gallery."
       redirect_to galleries_path and return
     end
+  end
+
+  def setup_new_icons
+    use_javascript('icons')
+    @icons = []
   end
 end

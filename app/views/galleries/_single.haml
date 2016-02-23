@@ -1,0 +1,32 @@
+%tr
+  %th.padding-10{class: (klass if defined? klass)}
+    = link_to gallery.name, gallery_path(gallery)
+    - if gallery.user == current_user
+      = link_to add_gallery_path(gallery) do
+        .link-box.green + Add Icons
+      = link_to edit_gallery_path(gallery) do
+        .link-box.blue
+          = image_tag "/images/pencil.png"
+          Edit Gallery
+      = link_to gallery_path(gallery), method: :delete, confirm: 'Are you sure you want to delete this gallery?' do
+        .link-box.red x Delete Gallery
+    .gallery-box.float-right{id: gallery.id} -
+%tr
+  %td.green.gallery-title
+    .gallery{id: "gallery#{gallery.id.to_s}"}
+      = form_tag icons_path do
+        - icons = gallery.icons.order('keyword asc')
+        - icons.each do |icon|
+          .gallery-icon
+            = link_to icon_path(icon) do
+              = icon_tag icon
+              %br
+              = icon.keyword
+            .gallery-select= check_box_tag :"marked_ids[]", icon.id
+        - if icons.empty?
+          .centered — No icons yet —
+        - else
+          .clear.centered
+            = hidden_field_tag :gallery_id, gallery.id
+            = submit_tag "- Remove selected icons from gallery"
+            = submit_tag "x Delete selected icons permanently", confirm: "Are you sure? These icons will be gone from the site!"

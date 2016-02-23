@@ -10,10 +10,6 @@
           .character-new-select{style: 'background-color:#EA8A40'}
             = image_tag '/images/pencil.png'
             Edit Template
-        / = link_to edit_template_path(@template) do
-        /  .character-new-select{style: 'background-color:#990000'}
-        /    = image_tag '/images/pencil.png'
-        /    Multi Character Edit
       = link_to url_for(view: 'icons') do
         .character-view-select
           = image_tag '/images/grid.png', class:'character-icon-select'

@@ -7,7 +7,15 @@ class CharacterPresenter
 
   def as_json(*args, **kwargs)
     return {} unless character
-    icons = character.gallery ? character.gallery.icons.order("keyword ASC").map(&:as_json) : []
+
+    icons = if character.galleries.present?
+      character.galleries.map(&:icons).flatten.uniq.sort_by{|i| i.keyword}.map(&:as_json) 
+    elsif character.icon
+      [character.icon.as_json]
+    else
+      []
+    end
+
     { gallery: icons,
       default: character.icon.try(:as_json),
       name: character.name,

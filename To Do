@@ -12,6 +12,7 @@ v1 (I want this done before release)
 - More page titles
 - Bug: changing characters can reset page somehow?
 - Bug: still goes to page 1 when you post
+- Bugs: CSS is broken in a bunch of places post normalize.css, this should be cleaned up
 
 v1.1 (I want this done before release but it comes last because $)
 - Upload icons https://devcenter.heroku.com/articles/s3

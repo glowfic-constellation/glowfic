@@ -4,9 +4,10 @@ $(document).ready(function() {
     disable_search_threshold: 10,
   });
 
-  $("#character_gallery_id").chosen({
+  $("#character_gallery_ids").chosen({
     width: '100%',
     disable_search_threshold: 10,
+    placeholder_text_multiple: 'Default Gallery'
   });
 
   $("#character_character_group_id").chosen({

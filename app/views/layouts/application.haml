@@ -39,16 +39,14 @@
             .padding-top-3
               - if logged_in?
                 - if current_user.avatar
-                  = link_to icons_path do
-                    = image_tag current_user.avatar.url, class: 'icon'
-                    %br
+                  = image_tag current_user.avatar.url, class: 'icon'
+                  %br
                 %b= current_user.username
                 %ul
                   %li= link_to 'Account', edit_user_path(current_user)
                   %li= link_to 'Inbox', messages_path
                   %li= link_to "Templates", templates_path
                   %li= link_to "Characters", characters_path
-                  %li= link_to "Icons", icons_path
                   %li= link_to "Galleries", galleries_path
                   %li= link_to "Post", new_post_path
                 = link_to logout_path, :method => :delete do
