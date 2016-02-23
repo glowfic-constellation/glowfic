@@ -48,7 +48,7 @@
 .post-character { background-color: #8B8687; padding: 4px; position: relative; }
 .post-screenname { background-color: #a3a1a0; padding: 4px; overflow-wrap: break-word; word-wrap: break-word; }
 .post-author { padding: 5px; background-color: #B9B6AD; position: relative; }
-.post-header { width: 100%; background-color: #8B8687; color: #eeeeee; padding: 0px; font-size: 18px; margin-right: 10px; display: inline-block; padding: 15px; }
+.post-header { width: 100%; background-color: #8B8687; color: #eeeeee; padding: 0px; font-size: 18px; margin-right: 10px; display: inline-block; }
 #post-icon-filler { width: 100px; height: 100px; display: inline-block; background-color: #8B8687; }
 #post_content, #reply_content { height: 130px; width: 100%; display: block; }
 #post-form-wrapper { margin-left: 160px; margin-right: 10px; }

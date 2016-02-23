@@ -6,13 +6,14 @@
   %b= @post.subject
 
 .post-header
-  = @post.subject
-  - if logged_in?
-    .character-new-select{style: 'visibility: hidden;'} &nbsp;
-    = link_to post_path(@post, unread: true), :method => :put do
-      .character-view-select
-        = image_tag '/images/book_open.png', class:'character-icon-select'
-        Mark Unread
+  .padding-15.inline-block
+    = @post.subject
+    - if logged_in?
+      .character-new-select{style: 'visibility: hidden;'} &nbsp;
+      = link_to post_path(@post, unread: true), :method => :put do
+        .character-view-select
+          = image_tag '/images/book_open.png', class:'character-icon-select'
+          Mark Unread
 = render partial: 'replies/single', locals: {reply: @post}
 - if @replies.present?
   = render partial: 'paginator', locals: { paginated: @replies, path: :post_path }
