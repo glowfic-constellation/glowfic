@@ -86,12 +86,28 @@ class PostsController < ApplicationController
     use_javascript('paginator')
 
     if logged_in?
-      use_javascript('posts') 
+      use_javascript('posts')
+      
+      active_char = current_user.active_character
+      user_last_reply = @replies.where(user_id: current_user.id).last
+      if user_last_reply
+        user_last_char = Character.find_by_id(user_last_reply.character_id)
+        if (user_last_char)
+          active_char = user_last_char
+        end
+      else
+        if @post.user_id == current_user.id
+          user_last_char = Character.find_by_id(@post.character_id)
+          if (user_last_char)
+            active_char = user_last_char
+          end
+        end
+      end
       @reply = Reply.new(post: @post, 
-        character: current_user.active_character,
+        character: active_char,
         user: current_user, 
-        icon: current_user.active_character.try(:icon))
-      @character = current_user.active_character
+        icon: active_char.try(:icon))
+      @character = active_char
       @image = @character ? @character.icon : current_user.avatar
 
       at_time = if @replies.empty?
