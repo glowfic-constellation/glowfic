@@ -7,10 +7,11 @@ v1 (I want this done before release)
 - Being able to lock posts within public continuities (MWF, Sandboxes, etc) to specific authors, continuity-style
 - Being able to delete multiple icons at once
 - More complete profile pages, for users or characters or really whatever.
-- Restricting what you can post, since right now I just let basically anything through and this is Not Safe, and then providing a list of allowed markup from the post form.
+- List the allowed markup (<b>, <i>, etc) somewhere in the post editor
 - Users can set their time zone
 - More page titles
 - Bug: changing characters can reset page somehow?
+- Bug: still goes to page 1 when you post
 
 v1.1 (I want this done before release but it comes last because $)
 - Upload icons https://devcenter.heroku.com/articles/s3
