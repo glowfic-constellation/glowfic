@@ -6,7 +6,7 @@
   %b= @post.subject
 
 .post-header
-  .padding-15.inline-block
+  .padding-15{style: 'overflow: auto;'}
     = @post.subject
     - if logged_in?
       .character-new-select{style: 'visibility: hidden;'} &nbsp;
