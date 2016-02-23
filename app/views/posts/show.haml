@@ -7,9 +7,8 @@
 
 .post-header
   .padding-15{style: 'overflow: auto;'}
-    = @post.subject
+    %span#post-title{style: 'line-height:28px;'}= @post.subject
     - if logged_in?
-      .character-new-select{style: 'visibility: hidden;'} &nbsp;
       = link_to post_path(@post, unread: true), :method => :put do
         .character-view-select
           = image_tag '/images/book_open.png', class:'character-icon-select'
