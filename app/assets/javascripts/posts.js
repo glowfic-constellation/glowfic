@@ -64,6 +64,11 @@ $(document).ready(function() {
 
   $("#swap-icon").click(function () {
     $('#character-selector').toggle();
+    $('html, body').scrollTop($("#post-editor").offset().top);
+  });
+
+  $("#active_character_chosen").click(function () {
+    $('html, body').scrollTop($("#post-editor").offset().top);
   });
 
   $("#active_character").change(function() { 
@@ -168,5 +173,6 @@ bindIcon = function() {
   $('#current-icon-holder').click(function() {
     $('#icon-overlay').toggle();
     $('#gallery').toggle();
+    $('html, body').scrollTop($("#post-editor").offset().top);
   });
 }
