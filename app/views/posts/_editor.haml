@@ -28,14 +28,14 @@
       - icons = item.character.galleries.map(&:icons).flatten.uniq.sort_by{|i| i.keyword}
       - icons.each_with_index do |icon, index|
         .gallery-icon
-          = icon_tag icon, id: icon.id
+          = icon_tag icon, id: icon.id, pointer: true
           %br>
           = icon.keyword
-    - elsif item.character.try(:icon)
+    - elsif item.character.try(:default_icon)
       .gallery-icon
-        = icon_tag item.character.icon, id: item.character.icon.id
+        = icon_tag item.character.default_icon, id: item.character.default_icon.id, pointer: true
         %br>
-        = item.character.icon.keyword
+        = item.character.default_icon.keyword
     - elsif item.character.nil? && item.user.avatar
       .gallery-icon
         = icon_tag item.user.avatar, id: item.user.avatar.id, pointer: true

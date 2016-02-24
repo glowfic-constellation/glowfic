@@ -13,7 +13,7 @@ module Writable
 
     def has_icons?
       return user.avatar_id? unless character
-      return true if character.icon
+      return true if character.default_icon
       return false unless character.gallery
       return character.gallery.icons.present?
     end
