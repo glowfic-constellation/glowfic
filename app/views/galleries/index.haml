@@ -1,6 +1,40 @@
-%h2 Your Galleries
-= link_to "Add Gallery", new_gallery_path
-%br
 %table
-  - current_user.galleries.order('name asc').each do |gallery|
-    = render partial: 'single_gallery', locals: {gallery: gallery}
+  %tr
+    %th.padding-10
+      - if @user.id == current_user.id
+        Your Galleries
+        = link_to new_gallery_path do
+          .link-box.green + New Gallery
+      - else
+        = @user.username + "'s Galleries"
+  %tr
+    %th.padding-10.subber
+      Galleryless icons
+      - if @user.id == current_user.id
+        = link_to add_gallery_path(id: 0) do
+          .link-box.green
+            + Add Icons
+      .gallery-box.float-right{id: 0} -
+  - if @user.id == current_user.id
+    %tr
+      %th.sub Unsorted icons without a gallery will appear here. They can still be individually assigned to a character with no galleries.
+  %tr
+    %td.green.gallery-title
+      .gallery
+        = form_tag icons_path do
+          - icons = @user.icons.where(has_gallery: false).order('keyword asc')
+          - icons.each do |icon|
+            .gallery-icon{ id: "icon#{icon.id.to_s}"}
+              = link_to icon_path(icon) do
+                = icon_tag icon
+                %br
+                = icon.keyword
+              - if @user.id == current_user.id
+                .gallery-select= check_box_tag :"marked_ids[]", icon.id
+          - if icons.empty?
+            .centered — Miscellaneous icons go here! Unsorted, NPCs, one-shots, etc. —
+          - elsif @user.id == current_user.id
+            .clear.centered
+              = submit_tag "x Delete selected icons permanently", confirm: "Are you sure? These icons will be gone from the site!"
+  - @user.galleries.order('name asc').each do |gallery|
+    = render partial: 'single', locals: {gallery: gallery, klass: 'subber'}

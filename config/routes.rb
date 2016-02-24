@@ -30,13 +30,14 @@ Rails.application.routes.draw do
     end
     collection { get :facecasts }
   end
-  resources :icons do
+  resources :icons, except: :index do
     member do
       post :avatar
     end
   end
   resources :users do
     resources :characters, only: :index
+    resources :galleries, only: :index
     collection do
       post :username
     end
@@ -49,7 +50,6 @@ Rails.application.routes.draw do
     member do
       get :add
       post :icon
-      delete :remove
     end
   end
 end

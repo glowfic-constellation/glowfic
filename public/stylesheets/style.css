@@ -127,7 +127,23 @@ button, input.button {
 #content .beige { background-color: #B9B6AD; }
 #content .green { background-color: #B0BBA9; }
 #content .dark { background-color: #8B8687; }
+#content .even { background-color: #E3E3E3; }
+#content .odd { background-color: #D8D8D8; }
+#content .subber { background-color: #a3a1a0; }
 
-.even { background-color: #E3E3E3; }
-.odd { background-color: #D8D8D8; }
-.subber { background-color: #a3a1a0; }
+/* UI Links */
+#content .link-box {
+  display: inline-block;
+  font-size: 18px;
+  margin: 0px;
+  margin-left: 5px;
+  background-image: none;
+  border: 0px;
+  color: white;
+  padding: 4px 12px;
+  border-radius: 5px;
+  font-weight: normal;
+}
+#content .link-box.green { background-color: #3f7055; }
+#content .link-box.red { background-color: #880000; }
+#content .link-box.blue { background-color: #4455AA;}
