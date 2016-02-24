@@ -19,6 +19,7 @@
 
 require 'factory_girl_rails'
 require 'rails_helper'
+require 'support/spec_test_helper'
 
 RSpec.configure do |config|
   # rspec-expectations config goes here. You can use an alternate
@@ -45,6 +46,7 @@ RSpec.configure do |config|
   end
 
   config.include FactoryGirl::Syntax::Methods
+  config.include SpecTestHelper, :type => :controller
 
 
 # The settings below are suggested to provide a good initial experience
