@@ -9,6 +9,7 @@ class CreateJoinTableCharacterGallery < ActiveRecord::Migration
 
     Character.all.each do |character|
       next unless character.gallery_id.present?
+      next unless character.gallery.present?
       character.galleries << character.gallery
     end
     remove_column :characters, :gallery_id
