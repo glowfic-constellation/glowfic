@@ -9,7 +9,11 @@ class RepliesController < ApplicationController
     reply.user = current_user
     if reply.save
       flash[:success] = "Posted!"
-      redirect_to reply_link(reply)
+      cur_per = params[:per_page] || per_page
+      last_page = 1
+      last_page = reply.post.replies.paginate(page: 1, per_page: cur_per).total_pages if cur_per.to_i > 0
+      dict = {anchor: "reply-#{reply.id}", per_page: cur_per, page: last_page}
+      redirect_to post_path(reply.post, dict)
     else
       flash[:error] = "Problems. "+reply.errors.full_messages.to_s
       redirect_to post_path(reply.post)
