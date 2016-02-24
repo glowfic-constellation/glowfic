@@ -83,13 +83,10 @@ class GalleriesController < ApplicationController
 
       icon_ids = params[:image_ids].split(',').map(&:to_i).reject(&:zero?)  
       icons = Icon.where(id: icon_ids)
-      update_ids = [] 
       icons.each do |icon|  
         next unless icon.user_id == current_user.id  
         @gallery.icons << icon
-        update_ids << icon.id unless icon.has_gallery?
       end
-      Icon.where(id: update_ids).update_all(has_gallery: true)
       flash[:success] = "Icons added to gallery successfully."
       redirect_to galleries_path and return
     end
