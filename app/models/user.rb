@@ -52,6 +52,10 @@ class User < ActiveRecord::Base
     id == 1
   end
 
+  def galleryless_icons
+    icons.where(has_gallery: false)
+  end
+
   private
 
   def password_present

@@ -11,12 +11,14 @@ class Character < ActiveRecord::Base
   validates_presence_of :name, :user
   validate :valid_template, :valid_group
 
+  after_save :update_galleries
+
   attr_accessor :new_template_name, :group_name, :gallery_ids
 
   nilify_blanks
 
   def icon
-    default_icon || gallery.try(:default_icon)
+    @icon ||= default_icon || galleries.detect(&:default_icon).try(:default_icon)
   end
 
   def recent_posts(limit=25)
@@ -47,6 +49,18 @@ class Character < ActiveRecord::Base
     return if @group.valid?
     @group.errors.messages.each do |k, v|
       v.each { |val| errors.add('group '+k.to_s, val) }
+    end
+  end
+
+  def update_galleries
+    return unless gallery_ids
+
+    updated_ids = (gallery_ids - [""]).map(&:to_i)
+    existing_ids = galleries.map(&:id)
+
+    CharactersGallery.where(character_id: id, gallery_id: (existing_ids - updated_ids)).destroy_all
+    (updated_ids - existing_ids).each do |new_id|
+      CharactersGallery.create(character_id: id, gallery_id: new_id)
     end
   end
 end

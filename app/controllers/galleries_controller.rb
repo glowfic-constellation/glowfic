@@ -5,6 +5,11 @@ class GalleriesController < ApplicationController
   def index
     use_javascript('galleries/index')
     @page_title = "Your Galleries"
+    @user = current_user
+    if params[:user_id].present?
+      @user = User.find_by_id(params[:user_id]) || current_user
+      @page_title = @user.username + "'s Galleries"
+    end
   end
 
   def new
@@ -30,16 +35,24 @@ class GalleriesController < ApplicationController
     use_javascript('galleries/add')
     setup_new_icons
     icons = (current_user.icons - (@gallery.try(:icons) || [])).sort { |i| i.id }
-    @unassigned = icons.select { |i| i.galleries.empty? }
-    @assigned = icons - @unassigned
+    @unassigned = icons.reject(&:has_gallery?)
+    @assigned = icons.select(&:has_gallery?)
+    @page_title = "Add Icons"
   end
 
   def show
-    @gallery = Gallery.find_by_id(params[:id])
-    @page_title = @gallery.name + " (Gallery)"
     respond_to do |format|
-      format.json { render json: @gallery.icons }
+      format.json do
+        if params[:id].to_i.zero?
+          render json: {icons: current_user.galleryless_icons}
+        else
+          @gallery = Gallery.find_by_id(params[:id])
+          render json: {name: @gallery.name, icons: @gallery.icons} 
+        end
+      end
       format.html do
+        @gallery = Gallery.find_by_id(params[:id])
+        @page_title = @gallery.name + " (Gallery)"
         use_javascript('galleries/index')
         render show: @gallery
       end
@@ -69,11 +82,14 @@ class GalleriesController < ApplicationController
       end
 
       icon_ids = params[:image_ids].split(',').map(&:to_i).reject(&:zero?)  
-      icons = Icon.where(id: icon_ids)  
+      icons = Icon.where(id: icon_ids)
+      update_ids = [] 
       icons.each do |icon|  
         next unless icon.user_id == current_user.id  
         @gallery.icons << icon
+        update_ids << icon.id unless icon.has_gallery?
       end
+      Icon.where(id: update_ids).update_all(has_gallery: true)
       flash[:success] = "Icons added to gallery successfully."
       redirect_to galleries_path and return
     end

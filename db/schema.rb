@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20160222042730) do
+ActiveRecord::Schema.define(:version => 20160223065123) do
 
   create_table "audits", :force => true do |t|
     t.integer  "auditable_id"
@@ -123,14 +123,16 @@ ActiveRecord::Schema.define(:version => 20160222042730) do
   add_index "galleries_icons", ["icon_id"], :name => "index_galleries_icons_on_icon_id"
 
   create_table "icons", :force => true do |t|
-    t.integer  "user_id",    :null => false
-    t.string   "url",        :null => false
-    t.string   "keyword",    :null => false
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
+    t.integer  "user_id",                        :null => false
+    t.string   "url",                            :null => false
+    t.string   "keyword",                        :null => false
+    t.datetime "created_at",                     :null => false
+    t.datetime "updated_at",                     :null => false
     t.string   "credit"
+    t.boolean  "has_gallery", :default => false
   end
 
+  add_index "icons", ["has_gallery"], :name => "index_icons_on_has_gallery"
   add_index "icons", ["keyword"], :name => "index_icons_on_keyword"
   add_index "icons", ["user_id"], :name => "index_icons_on_user_id"
 

@@ -22,10 +22,13 @@ class IconsController < ApplicationController
         redirect_to galleries_path and return
       end
 
+      update_ids = []
       icons.each do |icon|  
         next unless icon.user_id == current_user.id  
         gallery.icons.delete(icon)
+        update_ids << icon.id if icon.galleries.empty?
       end
+      Icon.where(id: update_ids).update_all(has_gallery: false)
       flash[:success] = "Icons removed from gallery."
       redirect_to gallery_path(gallery) and return
     end

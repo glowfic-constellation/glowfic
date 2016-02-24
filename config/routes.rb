@@ -37,6 +37,7 @@ Rails.application.routes.draw do
   end
   resources :users do
     resources :characters, only: :index
+    resources :galleries, only: :index
     collection do
       post :username
     end
