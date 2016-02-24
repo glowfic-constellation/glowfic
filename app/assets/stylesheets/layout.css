@@ -1,3 +1,6 @@
-#sidebar .button {
+#sidebar .button, #header .button {
   color: #000000;
 }
+
+#header a { color: #FFFFFF; font-weight: bold; text-decoration: none; font-size: 14px; }
+

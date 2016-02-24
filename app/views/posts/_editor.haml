@@ -9,19 +9,20 @@
       - else
         = no_icon_tag id: 'current-icon', pointer: item.has_icons?
       #icon-overlay
-    .post-character{class: ('hidden' unless item.character)}= item.character.try(:name)
-    .post-screenname{class: ('hidden' unless item.character.try(:screenname))}= item.character.try(:screenname)
-    #post-author-spacer.dark.spacer{class: ('hidden' if item.character)}
-    .post-author
-      = item.user.username
-      - if current_user.characters.present?
-        = image_tag '/images/swap.png', :id => 'swap-icon', :alt => ">"
-        #character-selector.beige
-          %b Choose Character
-          = select_tag :active_character, 
-          option_groups_from_collection_for_select(@templates, :ordered_characters, :name, :id, :selector_name, @character.try(:id)),
-          { :include_blank => true, :prompt => current_user.username }
-          %br
+    .post-info-text
+      .post-character{class: ('hidden' unless item.character)}= item.character.try(:name)
+      .post-screenname{class: ('hidden' unless item.character.try(:screenname))}= item.character.try(:screenname)
+      #post-author-spacer.dark.spacer{class: ('hidden' if item.character)}
+      .post-author
+        = item.user.username
+        - if current_user.characters.present?
+          = image_tag '/images/swap.png', :id => 'swap-icon', :alt => ">"
+          #character-selector.beige
+            %b Choose Character
+            = select_tag :active_character, 
+            option_groups_from_collection_for_select(@templates, :ordered_characters, :name, :id, :selector_name, @character.try(:id)),
+            { :include_blank => true, :prompt => current_user.username }
+            %br
   #gallery.green
     - if item.character.try(:gallery)
       - icons = item.character.gallery.icons.order('keyword ASC')

@@ -6,7 +6,10 @@ class CharactersController < ApplicationController
   before_filter :build_editor, :only => [:new, :create, :edit, :update]
 
   def index
-    login_required unless params[:user_id].present?
+    if not params[:user_id].present?
+      login_required
+      return
+    end
     @user = current_user
     if params[:user_id]
       @user = User.find_by_id(params[:user_id])
