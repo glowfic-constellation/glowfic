@@ -5,6 +5,8 @@
 %br
 = link_to "#{@user.username}'s characters", user_characters_path(@user)
 %br
+= link_to "#{@user.username}'s galleries", user_galleries_path(@user)
+%br
 %br
 - content_for :posts_title do
   #{@user.username}'s Recent Posts

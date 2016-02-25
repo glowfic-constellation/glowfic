@@ -25,4 +25,12 @@
 %br
 %br
 - if @character.recent_posts.present?
-  = render partial: 'posts/list', locals: {posts: @character.recent_posts, title: 'Recent Threads' }
+  - content_for :posts_title do 'Recent Threads' end
+  = render partial: 'posts/list', locals: {posts: @character.recent_posts }
+%br
+- if @character.galleries.present?
+  %table
+    %tr
+      %th Galleries
+    - @character.galleries.each do |gallery|
+      = render partial: 'galleries/single', locals: {gallery: gallery, klass: 'subber', skip_forms: true}
