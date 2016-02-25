@@ -48,7 +48,7 @@ class Post < ActiveRecord::Base
   def last_character_for(user)
     ordered_replies = replies.where(user_id: user.id).order('id asc')
     if ordered_replies.present?
-      return replies.last.character
+      return ordered_replies.last.character
     elsif self.user == user
       return self.character
     end
