@@ -45,6 +45,15 @@ class Post < ActiveRecord::Base
     replies.order('updated_at desc').limit(1).first || self
   end
 
+  def last_character_for(user)
+    ordered_replies = replies.where(user_id: user.id).order('id asc')
+    if ordered_replies.present?
+      return replies.last.character
+    elsif self.user == user
+      return self.character
+    end
+  end
+
   def self.privacy_settings
     { 'Public'      => PRIVACY_PUBLIC,
       'Access List' => PRIVACY_LIST,

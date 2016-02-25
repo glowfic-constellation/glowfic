@@ -14,6 +14,7 @@ v1 (I want this done before release)
 - Bug: CSS is broken in a bunch of places post normalize.css, this should be cleaned up
 - Jumpy: maybe just have it go up instead of down for long pages? Problem: chosen.js :/
 - Word count
+- Multi icon editor for galleries/edit
 
 v1.1 (I want this done before release but it comes last because $)
 - Upload icons https://devcenter.heroku.com/articles/s3

@@ -88,21 +88,7 @@ class PostsController < ApplicationController
     if logged_in?
       use_javascript('posts')
       
-      active_char = current_user.active_character
-      user_last_reply = @replies.where(user_id: current_user.id).last
-      if user_last_reply
-        user_last_char = Character.find_by_id(user_last_reply.character_id)
-        if (user_last_char)
-          active_char = user_last_char
-        end
-      else
-        if @post.user_id == current_user.id
-          user_last_char = Character.find_by_id(@post.character_id)
-          if (user_last_char)
-            active_char = user_last_char
-          end
-        end
-      end
+      active_char = @post.last_character_for(current_user) || current_user.active_character
       @reply = Reply.new(post: @post, 
         character: active_char,
         user: current_user, 
