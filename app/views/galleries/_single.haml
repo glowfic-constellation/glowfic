@@ -22,11 +22,11 @@
               = icon_tag icon
               %br
               = icon.keyword
-            - if gallery.user_id == current_user.id and not defined? skip_forms
+            - if not current_user.nil? and gallery.user_id == current_user.id and not defined? skip_forms
               .gallery-select= check_box_tag :"marked_ids[]", icon.id
         - if icons.empty?
           .centered — No icons yet —
-        - elsif gallery.user_id == current_user.id and not defined? skip_forms
+        - elsif not current_user.nil? and gallery.user_id == current_user.id and not defined? skip_forms
           .clear.centered
             = hidden_field_tag :gallery_id, gallery.id
             = submit_tag "- Remove selected icons from gallery"
