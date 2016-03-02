@@ -33,6 +33,6 @@
               = image_tag "/images/book_open.png", title: "Thread In Progress"
           %td.padding-10{class: klass}
             = link_to post.subject, post_path(post)
-          %td.padding-10{class: klass}= post.updated_at.strftime("%b %d, %Y ") + post.updated_at.hour.to_s + post.updated_at.strftime(":%M %p")
+          %td.padding-10{class: klass}= pretty_time(post.updated_at)
 - else
   = render partial: 'posts/list', locals: {posts: @posts, hide_continuity: true}
