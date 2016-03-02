@@ -21,7 +21,7 @@ module ApplicationHelper
 
   def pretty_time(time)
     return unless time
-    time.strftime("%b %d, %Y ") + (time.hour % 12).to_s + time.strftime(":%M %p")
+    time.strftime("%b %d, %Y ") + (time.hour % 12 == 0 ? 12 : time.hour % 12).to_s + time.strftime(":%M %p")
   end
 
   def path_for(obj, path)
