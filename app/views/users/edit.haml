@@ -1,35 +1,32 @@
 = form_for current_user, :url => user_path(current_user), :method => :put do |f|
-  %table#signup.centered
+  %table.form-table
     %tr
-      %th.centered{colspan: 3} Account Settings
-    %tr#username
-      %td.alert
-      %td.entry= f.text_field :username, :placeholder => "Username", :class => 'text'
-      %td.messages
-    %tr.left-align
-      %td.alert
-      %td.entry
-        Posts per page:
-        = f.select(:per_page, per_page_options(current_user.per_page))
-      %td.messages
+      %th.centered{colspan: 2} Account Settings
     %tr
-      %td.centered{colspan: 3}= submit_tag "Save", class: 'button'
+      %th.sub Username
+      %td.even= f.text_field :username, placeholder: "Username", class: 'text'
+    %tr
+      %th.sub Paging
+      %td.odd= f.select(:per_page, per_page_options(current_user.per_page))
+    %tr
+      %th.sub Time zone
+      %td.even= f.select(:timezone, timezone_options(current_user.timezone))
+    %tr
+      %th.centered.subber{colspan: 2}= submit_tag "Save", class: 'button'
 
+%br
 = form_for current_user, :url => password_user_path(current_user), :method => :put do |f|
-  %table#signup.centered
+  %table.form-table
     %tr
-      %th.centered{:colspan=>3} Change Password
-    %tr#password
-      %td.alert
-      %td.entry= password_field_tag :old_password, params[:old_password], :placeholder => "Old Password", :class => 'text'
-      %td.messages
-    %tr#password
-      %td.alert
-      %td.entry= f.password_field :password, :placeholder => "New Password", :class => 'text', :value => (params[:user]||{})[:password]
-      %td.messages
-    %tr#conf
-      %td.alert
-      %td.entry= f.password_field :password_confirmation, :placeholder => "Confirm Password", :class => 'text', :value => (params[:user]||{})[:password_confirmation]
-      %td.messages
+      %th.centered{colspan: 2} Change Password
     %tr
-      %td.centered{colspan: 3}= submit_tag "Save", class: 'button'
+      %th.sub Old
+      %td.even= password_field_tag :old_password, params[:old_password], :placeholder => "Old Password", :class => 'text'
+    %tr
+      %th.sub New
+      %td.odd= f.password_field :password, :placeholder => "New Password", :class => 'text', :value => (params[:user]||{})[:password]
+    %tr
+      %th.sub Confirm
+      %td.even= f.password_field :password_confirmation, :placeholder => "Confirm Password", :class => 'text', :value => (params[:user]||{})[:password_confirmation]
+    %tr
+      %th.centered.subber{colspan: 2}= submit_tag "Save", class: 'button'

@@ -147,3 +147,8 @@ button, input.button {
 #content .link-box.green { background-color: #3f7055; }
 #content .link-box.red { background-color: #880000; }
 #content .link-box.blue { background-color: #4455AA;}
+
+/* Form tables */
+#content table.form-table { text-align: center; width: 400px; margin: 0px; border-spacing: 0px; }
+#content table.form-table td { text-align: left; padding: 5px; }
+#content table.form-table td input { width: 250px; }

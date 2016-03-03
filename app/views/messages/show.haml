@@ -3,18 +3,17 @@
   &raquo;
   %b= @message.subject
 
-%table
-  %tr
-    %th{colspan: 2}= @message.subject
-  = render partial: 'single', locals: {message: @message}
-
+.post-header
+  .padding-15{style: 'overflow: auto;'}
+    %span{style: 'line-height:28px;'}= @message.subject
+= render partial: 'single', locals: {message: @message}
 .right-align{style: "margin: 5px;"}
   = link_to new_message_path(reply_id: @message.id) do
     .character-new-select Reply &raquo;
 
 - if @message.thread_id
-  %table
-    %tr
-      %th{colspan: 2} Full Message Thread
-    - Message.where(thread_id: @message.thread_id).order('id asc').each do |message|
-      = render partial: 'single', locals: {message: message}
+  .post-header
+    .padding-15{style: 'overflow: auto;'}
+      %span{style: 'line-height:28px;'} Full Message Thread
+  - Message.where(thread_id: @message.thread_id).order('id asc').each do |message|
+    = render partial: 'single', locals: {message: message}

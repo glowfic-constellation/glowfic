@@ -24,6 +24,8 @@ $(document).ready(function() {
     width: '70px',
     disable_search_threshold: 20,
   })
+
+  $("#user_timezone").chosen({width: '250px'});
 });
 
 validateUsername = function() {

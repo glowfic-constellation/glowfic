@@ -13,15 +13,10 @@ module ApplicationHelper
     image_tag "/images/no-icon.png", {class: klass, alt:'No Icon', title: 'No Icon'}.merge(**args)
   end
 
-  def post_time(time)
-    time ||= Time.now
-    time_string = (time.hour % 12).to_s + time.strftime(":%M %p") + '<br>' + time.strftime("%b %d %Y")
-    time_string.html_safe
-  end
-
   def pretty_time(time)
     return unless time
-    time.strftime("%b %d, %Y ") + (time.hour % 12 == 0 ? 12 : time.hour % 12).to_s + time.strftime(":%M %p")
+    zone = ActiveSupport::TimeZone.new(current_user.try(:timezone) || 'Eastern Time (US & Canada)')
+    time.in_time_zone(zone).strftime("%b %d, %Y %l:%M %p")
   end
 
   def path_for(obj, path)
@@ -34,5 +29,11 @@ module ApplicationHelper
     default ||= per_page
     default = 'all' if default == -1
     options_for_select(options, default)
+  end
+
+  def timezone_options(default=nil)
+    default ||= 'Eastern Time (US & Canada)'
+    zones = ActiveSupport::TimeZone.all()
+    options_from_collection_for_select(zones, :name, :to_s, selected=default)
   end
 end
