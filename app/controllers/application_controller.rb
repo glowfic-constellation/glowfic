@@ -1,5 +1,6 @@
 class ApplicationController < ActionController::Base
   protect_from_forgery with: :exception
+  around_filter :set_timezone
   after_filter :store_location
 
   protected
@@ -49,5 +50,11 @@ class ApplicationController < ActionController::Base
     return unless request.get?
     return if request.xhr?
     session[:previous_url] = request.fullpath
+  end
+
+  def set_timezone(&block)
+    return yield unless logged_in?
+    return yield unless current_user.timezone
+    Time.use_zone(current_user.timezone, &block)
   end
 end

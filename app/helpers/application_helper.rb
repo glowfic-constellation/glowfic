@@ -15,8 +15,7 @@ module ApplicationHelper
 
   def pretty_time(time)
     return unless time
-    zone = ActiveSupport::TimeZone.new(current_user.try(:timezone) || 'Eastern Time (US & Canada)')
-    time.in_time_zone(zone).strftime("%b %d, %Y %l:%M %p")
+    time.strftime("%b %d, %Y %l:%M %p")
   end
 
   def path_for(obj, path)
