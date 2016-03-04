@@ -8,7 +8,7 @@
       %td.even= f.text_field :name, placeholder: "Gallery Name", class: 'text'
     %tr
       %th.subber{colspan: 2} Edit Icons
-    - @gallery.icons.each do |icon|
+    - @gallery.icons.order('keyword asc').each do |icon|
       = f.fields_for "icons_attributes[]", icon do |i|
         %tr
           %td.green.centered{colspan: 2}
