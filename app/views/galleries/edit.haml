@@ -14,14 +14,17 @@
           %td.green.centered{rowspan: 3}
             = icon_tag icon
             = i.hidden_field :id
-          %th.sub URL
-          %td{class: cycle('even','odd')}= i.text_field :url, :placeholder => "URL", :class => 'text'
+          - klass = cycle('even','odd')
+          %td.centered{class: klass} URL
+          %td{class: klass}= i.text_field :url, :placeholder => "URL", :class => 'text'
         %tr
-          %th.sub Keyword
-          %td{class: cycle('even','odd')}= i.text_field :keyword, :placeholder => "Keyword", :class => 'text'
+          - klass = cycle('even','odd')
+          %td.centered{class: klass} Keyword
+          %td{class: klass}= i.text_field :keyword, :placeholder => "Keyword", :class => 'text'
         %tr
-          %th.sub Credit
-          %td{class: cycle('even','odd')}= i.text_field :credit, :placeholder => "Credit", :class => 'text'
+          - klass = cycle('even','odd')
+          %td.centered{class: klass} Credit
+          %td{class: klass}= i.text_field :credit, :placeholder => "Credit", :class => 'text'
         %tr
           %td.spacer.subber{colspan:3}
     %tr
