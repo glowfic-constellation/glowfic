@@ -1,11 +1,28 @@
 = form_for @gallery, :url => gallery_path(@gallery), :method => :put do |f|
-  %table#signup.centered
+  %table.form-table
     %tr
-      %th.centered
+      %th.centered{colspan: 2}
         Edit Gallery
     %tr
-      %td
-        = f.text_field :name, :placeholder => "Gallery Name", :class => 'text'
+      %th.sub Name
+      %td.even= f.text_field :name, placeholder: "Gallery Name", class: 'text'
     %tr
-      %td.centered
+      %th.subber{colspan: 2} Edit Icons
+    - @gallery.icons.each do |icon|
+      = f.fields_for "icons_attributes[]", icon do |i|
+        %tr
+          %td.green.centered{colspan: 2}
+            = icon_tag icon
+            = i.hidden_field :id
+        %tr
+          %th.sub URL
+          %td.even= i.text_field :url, :placeholder => "URL", :class => 'text'
+        %tr
+          %th.sub Keyword
+          %td.odd= i.text_field :keyword, :placeholder => "Keyword", :class => 'text'
+        %tr
+          %th.sub Credit
+          %td.even= i.text_field :credit, :placeholder => "Credit", :class => 'text'
+    %tr
+      %th.subber{colspan: 2}
         = submit_tag "Save", class: 'button'

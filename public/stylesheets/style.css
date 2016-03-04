@@ -37,7 +37,7 @@ h3 { margin-top: 25px; margin-bottom: 0px; color: #111111; }
 .width-200 { width: 200px; }
 .width-300 { width: 300px; }
 .inline-block { display: inline-block; }
-.centered { text-align: center; }
+.centered { text-align: center !important; }
 .left-align { text-align: left; }
 .right-align { text-align: right; }
 .float-right { float: right; }

@@ -4,6 +4,8 @@ class Gallery < ActiveRecord::Base
   has_and_belongs_to_many :icons, after_add: :set_has_gallery, after_remove: :unset_has_gallery
   has_and_belongs_to_many :characters
 
+  accepts_nested_attributes_for :icons
+
   validates_presence_of :user, :name
 
   def default_icon
