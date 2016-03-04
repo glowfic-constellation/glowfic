@@ -13,7 +13,7 @@ class PostsController < ApplicationController
     posts_started = Post.where(user_id: current_user.id).select(:id).group(:id).map(&:id)
     posts_in = Reply.where(user_id: current_user.id).select(:post_id).group(:post_id).map(&:post_id)
     ids = posts_in + posts_started
-    @posts = Post.where(id: ids.uniq).order('updated_at desc').limit(25).includes(:board)
+    @posts = Post.where(id: ids.uniq).where("board_id != 4").order('updated_at desc').limit(25).includes(:board)
     @posts.reject! { |post| post.last_post.user_id == current_user.id }
     @page_title = "Threads Awaiting Tag"
   end
