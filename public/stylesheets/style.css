@@ -152,3 +152,4 @@ button, input.button {
 #content table.form-table { text-align: center; width: 400px; margin: 0px; border-spacing: 0px; }
 #content table.form-table td { text-align: left; padding: 5px; }
 #content table.form-table td input { width: 250px; }
+#content table.form-table td.spacer { height: 2px; padding: 0px; }
