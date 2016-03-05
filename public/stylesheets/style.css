@@ -52,7 +52,7 @@ button, input.button {
 .right-align { text-align: right; }
 .hidden { display: none; }
 .float-right { float: right; }
-.clear { clear: both: }
+.clear { clear: both; }
 .pointer { cursor: pointer; }
 .vtop { vertical-align: top; }
 .bold { font-weight: bold; }
