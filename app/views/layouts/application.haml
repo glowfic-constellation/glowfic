@@ -15,8 +15,11 @@
     #header
       - if logged_in?
         #user-info
-          = image_tag current_user.avatar.url, class: 'icon'
-          %br
+          - if current_user.avatar
+            = image_tag current_user.avatar.url, class: 'icon'
+            %br
+          - else
+            .no-img
           = current_user.username
       #logo
         = link_to root_path do

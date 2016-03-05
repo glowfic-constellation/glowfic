@@ -1,6 +1,7 @@
 /* Header Menus */
 #header { background-color: #b9b6ad; color: #eae9e9; vertical-align: top; text-align: left; overflow: auto; position: relative; }
 #header #user-info { float: left; text-align: center; background-color: #3e384f; padding: 0.5em; font-weight: bold; font-size: 16px; }
+#header #user-info .no-img { height: 100px; width: 100px; margin: 5px; display: block; padding: 0px; }
 #header #user-info img { margin: 5px; width: 100px; height: 100px; }
 #header #logo { text-align: right; background-color: #3f7055; padding: 0.5em; }
 #header #logo img { padding: 0.5em 0.5em 0 0; }
