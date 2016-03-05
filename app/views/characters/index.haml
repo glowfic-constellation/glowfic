@@ -12,15 +12,14 @@
         Characters
       - if @user.id == current_user.try(:id)
         = link_to new_character_path(character_group_id: @group.try(:id)) do
-          .character-new-select
-            + New Character
+          .link-box.green + New Character
       = link_to url_for(view: 'icons') do
-        .character-view-select
-          = image_tag '/images/grid.png', class:'character-icon-select'
+        .view-button
+          = image_tag '/images/grid.png', class: 'icon-view', alt: ''
           Icons
       = link_to url_for(view: 'list') do
-        .character-view-select
-          = image_tag '/images/list.png', class:'character-list-select', alt: ''
+        .view-button
+          = image_tag '/images/list.png', class: 'list-view', alt: ''
           List
   - if session[:view] == 'list'
     = render partial: 'list_view'

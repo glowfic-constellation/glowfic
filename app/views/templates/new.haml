@@ -1,11 +1,9 @@
 = form_for @template, :url => templates_path, :method => :post do |f|
-  %table#signup.centered
+  %table.form-table
     %tr
-      %th.centered
-        New Template
+      %th.centered{colspan: 2} New Template
     %tr
-      %td
-        = f.text_field :name, :placeholder => "Template Name", :class => 'text'
+      %th.sub Template Name
+      %td.even= f.text_field :name, placeholder: "Template Name", class: 'text'
     %tr
-      %td.centered
-        = submit_tag "Create", class: 'button'
+      %th.subber{colspan: 2}= submit_tag "Create", class: 'button'

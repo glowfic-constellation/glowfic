@@ -1,6 +1,0 @@
-table#signup { border-spacing: 5px; width: 300px; margin: 0px; }
-table#signup input.text { width: 278px; }
-table#signup th { padding: 10px 0px; } 
-table#signup td.alert, table#signup td.messages { width: 15px; position: relative; color: #DD4444; }
-table#signup td.messages { vertical-align: top; }
-table#signup td.messages div { position: absolute; white-space: nowrap; padding: 6px; }

@@ -1,28 +1,39 @@
-.gallery-box { cursor: pointer; width: 20px; text-align: center; }
-.gallery-icon { min-height: 130px; display: inline-block; text-align: center; line-height: 14px; margin-bottom: 10px; position: relative; width: 130px; word-wrap: break-word; vertical-align: top; }
-.gallery-title { height: 5px; }
-.gallery-delete, .gallery-select { position: absolute; top: 0px; right: 8px; cursor: pointer; }
-.gallery-delete { width: 10px; background-color: #e5dfd1; border: 1px #C00 solid; color: #C00; padding: 3px; }
-#content .gallery-delete a { color: #C00; }
-.gallery-select { width: 20px; height: 20px; border: 0px; padding: 0px; background-color: transparent; }
-.gallery-select input { height: 20px; width: 20px; }
-#gallery { z-index: 4; }
+.gallery-box { cursor: pointer; width: 20px; text-align: center; } /* The + / - symbol to minimize a gallery */
+.gallery-title { height: 5px; } /* So that when a gallery is minimized there is spacing */
+img.selected-icon { border: 10px #3F7055 solid; width: 80px; height: 80px; }
+table.form-table .icon { vertical-align: middle; }
 
-.character-view-select a { color: white; }
-.character-view-select {
-    display:inline-block;
-    background-color:#B9B6AD;
-    font-size:18px;
-    margin:0px;
-    margin-left:5px;
-    background-image:none;
-    border:0px;
-    color:white;
-    padding: 4px 12px;
-    border-radius:5px;
-    float:right;
-    cursor:pointer;
+/* Basic gallery and gallery icon formatting */
+.gallery { padding: 10px; }
+.gallery img { margin: 5px; }
+.gallery-icon {
+    min-height: 130px;
+    display: inline-block;
+    text-align: center;
+    line-height: 14px;
+    margin-bottom: 10px; 
+    position: relative;
+    width: 130px;
+    word-wrap: break-word;
+    vertical-align: top;
 }
-.character-list-select {width:20px;height:17px;display:inline;margin:0px;padding:0px;top:2px;position:relative;}
-.character-icon-select { width: 15px; height: 15px; display: inline; margin: 0px; padding: 0px; top: 2px; position: relative; }
-.character-new-select {display:inline-block;background-color:#3f7055;font-size:18px;margin:0px;margin-left:5px;background-image:none;border:0px;color:white;padding: 4px 12px;border-radius:5px;}
+.gallery-no-icon {
+    width: 100px;
+    height: 100px;
+    border: 1px #666666 solid;
+    margin: 5px;
+    display: inline-block;
+}
+
+/* Tiny buttons that hover over icons to allow deleting or selecting a checkbox for editing */
+.delete-button, .select-button { position: absolute; top: 0px; right: 8px; cursor: pointer; }
+.delete-button { width: 10px; background-color: #e5dfd1; border: 1px #C00 solid; color: #C00; padding: 3px; }
+.delete-button a, .delete-button a:visited, .delete-button a:hover { color: #CC0000; }
+.select-button { width: 20px; height: 20px; border: 0px; padding: 0px; background-color: transparent; }
+.select-button input { height: 20px; width: 20px; margin: 0px; }
+
+/* The table in galleries/add to add multiple icons at once */
+table#icon-table { margin: 0px; text-align: center; }
+table#icon-table td { padding: 0px; }
+table#icon-table td.icon-buttons { width: 40px; padding: 0px 5px 0px 0px; }
+table#icon-table td.icon-buttons img { display: inline-block; }

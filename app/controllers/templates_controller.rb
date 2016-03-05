@@ -1,10 +1,16 @@
 class TemplatesController < ApplicationController
-  before_filter :login_required
+  before_filter :login_required, except: :index
   before_filter :find_template, :only => [:show, :destroy, :edit, :update]
   before_filter :require_own_template, :only => [:edit, :update, :destroy]
 
   def index
-    @templates = current_user.templates
+    @page_title = "Your Templates"
+    @user = current_user
+    if params[:user_id].present?
+      @user = User.find_by_id(params[:user_id]) || current_user
+      @page_title = @user.username + "'s Templates"
+    end
+    @templates = @user.templates
   end
 
   def new

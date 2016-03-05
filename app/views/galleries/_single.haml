@@ -23,7 +23,7 @@
               %br
               = icon.keyword
             - if gallery.user_id == current_user.try(:id) and not defined? skip_forms
-              .gallery-select= check_box_tag :"marked_ids[]", icon.id
+              .select-button= check_box_tag :"marked_ids[]", icon.id
         - if icons.empty?
           .centered — No icons yet —
         - elsif gallery.user_id == current_user.try(:id) and not defined? skip_forms

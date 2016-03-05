@@ -4,16 +4,16 @@
   %b= @message.subject
 
 .post-header
-  .padding-15{style: 'overflow: auto;'}
-    %span{style: 'line-height:28px;'}= @message.subject
+  .padding-15
+    %span= @message.subject
 = render partial: 'single', locals: {message: @message}
-.right-align{style: "margin: 5px;"}
+.right-align.margin-5
   = link_to new_message_path(reply_id: @message.id) do
-    .character-new-select Reply &raquo;
+    .link-box.green Reply &raquo;
 
 - if @message.thread_id
   .post-header
-    .padding-15{style: 'overflow: auto;'}
-      %span{style: 'line-height:28px;'} Full Message Thread
+    .padding-15
+      %span Full Message Thread
   - Message.where(thread_id: @message.thread_id).order('id asc').each do |message|
     = render partial: 'single', locals: {message: message}

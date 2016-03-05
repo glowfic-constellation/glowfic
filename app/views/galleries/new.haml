@@ -1,11 +1,9 @@
-= form_for @gallery, :url => galleries_path, :method => :post do |f|
-  %table#signup.centered
+= form_for @gallery, url: galleries_path, method: :post do |f|
+  %table.form-table
     %tr
-      %th.centered
-        New Gallery
+      %th.centered{colspan: 2}New Gallery
     %tr
-      %td
-        = f.text_field :name, :placeholder => "Gallery Name", :class => 'text'
+      %th.sub Name
+      %td.even= f.text_field :name, placeholder: "Gallery Name", class: 'text'
     %tr
-      %td.centered
-        = submit_tag "Create", class: 'button'
+      %th.subber{colspan: 2}= submit_tag "Create", class: 'button'

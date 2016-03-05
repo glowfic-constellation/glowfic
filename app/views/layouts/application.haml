@@ -4,121 +4,72 @@
     %title= (Rails.env.development? ? 'DEV: ' : '') + (@page_title ? @page_title + " | Glowfic Constellation" : "Glowfic Constellation")
     %meta{ :charset => "utf-8" }
     <meta name="viewport" content="width=device-width">
+    = stylesheet_link_tag 'application'
     %link{ :href => "/stylesheets/style.css", :rel => "stylesheet", :type => "text/css", :media => "screen" }
     %link{ :href => "/stylesheets/chosen.css", :rel => "stylesheet", :type => "text/css", :media => "screen" }
     <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
-    = stylesheet_link_tag 'application'
     = csrf_meta_tag
     = include_gon
   %body
-    %table#wrapper
-      %tr
-        %td#header{:colspan=>3}
-          - if browser.mobile?
-            .centered{style: 'margin-left:5px;float:left;'}
-              - if logged_in?
-                = current_user.username
-                = link_to logout_path, :method => :delete do
-                  = button_tag "Log out", class: 'button'
-              - else
-                = form_tag login_path, :method => :post do
-                  = text_field_tag :username, params[:username], placeholder: "Username"
-                  %br
-                  = password_field_tag :password, params[:password], placeholder: "Password"
-                  %br
-                  = submit_tag "Log in", class: 'button'
-                  %br
-                  = link_to "Sign up", new_user_path
-          =link_to root_path do
-            = image_tag '/images/logo.png'
-      %tr
-        - unless browser.mobile?
-          %td.navigation-sidebar
-          %td#sidebar{:rowspan=>rowspan + 1}
-            .padding-top-3
-              - if logged_in?
-                - if current_user.avatar
-                  = image_tag current_user.avatar.url, class: 'icon'
-                  %br
-                %b= current_user.username
-                %ul
-                  %li= link_to 'Account', edit_user_path(current_user)
-                  %li= link_to 'Inbox', messages_path
-                  %li= link_to "Templates", templates_path
-                  %li= link_to "Characters", characters_path
-                  %li= link_to "Galleries", galleries_path
-                  %li= link_to "Post", new_post_path
-                = link_to logout_path, :method => :delete do
-                  = button_tag "Log out", class: 'button'
-              - else
-                %h4 Log In
-                = form_tag login_path, :method => :post do
-                  = text_field_tag :username, params[:username], placeholder: "Username"
-                  = password_field_tag :password, params[:password], placeholder: "Password"
-                  = submit_tag "Log in", class: 'button'
-                  %br
-                  %br
-                  = link_to "Sign up", new_user_path
-        %td.navigation
-          - if content_for?(:breadcrumbs) and !browser.mobile?
-            = content_for :breadcrumbs
-            |
-          = link_to 'Boards', boards_path
-          |
-          = link_to 'Recently Updated', posts_path
-          |
-          = link_to 'Search', search_posts_path
-          |
-          = link_to 'Glowficcers', users_path
-          - if logged_in?
-            |
-            = link_to 'Unread', unread_posts_path
-            |
-            = link_to 'Tags Owed', owed_posts_path
-          - if browser.mobile? && logged_in?
-            |
-            = link_to 'Account', edit_user_path(current_user)
-            |
-            = link_to 'Inbox', messages_path
-            |
-            = link_to "Templates", templates_path
-            |
-            = link_to "Characters", characters_path
-            |
-            = link_to "Icons", icons_path
-            |
-            = link_to "Galleries", galleries_path
-            |
-            = link_to "Post", new_post_path
-      <tr>
-      - unless browser.mobile?
-        %td#content-sidebar{:rowspan => rowspan}
-      - if flash[:error].is_a?(Hash)
-        %td{class: 'error'}
-          = flash[:error][:message]
-          %ul
-            - flash[:error][:array].each do |error|
-              %li= error
-        - flash.delete(:error)
-        </tr><tr>
-      - flash.keys.each do |key|
-        %td{:class=>key}= flash[key]
-        </tr><tr>
+    #header
       - if logged_in?
-        - messages = current_user.messages.select(&:unread?)
-        - if messages.present?
-          - messages.each do |message|
-            %td{class: 'inbox'}
-              New message from
-              = link_to message.sender.username, user_path(message.sender)
-              &nbsp;- &nbsp;
-              = link_to message.subject, message_path(message)
-            </tr><tr>
-      %td#content
-        .padding-20.relative
-          = yield
-      </tr>
+        #user-info
+          = image_tag current_user.avatar.url, class: 'icon'
+          %br
+          = current_user.username
+      #logo
+        = link_to root_path do
+          = image_tag '/images/logo.png', alt: 'Glowfic Constellation'
+      #nav-top
+        - if logged_in?
+          %ul
+            %li= link_to 'Account', edit_user_path(current_user)
+            %li= link_to 'Inbox', messages_path
+            %li= link_to "Templates", templates_path
+            %li= link_to "Characters", characters_path
+            %li= link_to "Galleries", galleries_path
+            %li= link_to "Post", new_post_path
+          = link_to logout_path, method: :delete do
+            = button_tag "Log out", class: 'button'
+        - else
+          = form_tag login_path, method: :post do
+            = text_field_tag :username, params[:username], placeholder: "Username"
+            = password_field_tag :password, params[:password], placeholder: "Password"
+            = check_box_tag :remember_me
+            Remember Me
+            = submit_tag "Log in", class: 'button'
+            = link_to "Sign up", new_user_path
+      #nav-bottom
+        %ul
+          %li= link_to 'Boards', boards_path
+          %li= link_to 'Recently Updated', posts_path
+          %li= link_to 'Search', search_posts_path
+          %li= link_to 'Glowficcers', users_path
+          - if logged_in?
+            %li= link_to 'Unread', unread_posts_path
+            %li= link_to 'Tags Owed', owed_posts_path
+    - if content_for?(:breadcrumbs) and !browser.mobile?
+      .flash.subber= content_for :breadcrumbs
+    - if flash[:error].is_a?(Hash)
+      .flash.error
+        = flash[:error][:message]
+        %ul
+          - flash[:error][:array].each do |error|
+            %li= error
+      - flash.delete(:error)
+    - flash.keys.each do |key|
+      .flash{:class=>key}= flash[key]
+    - if logged_in?
+      - messages = current_user.messages.select(&:unread?)
+      - if messages.present?
+        - messages.each do |message|
+          .flash.inbox
+            New message from
+            = link_to message.sender.username, user_path(message.sender)
+            &nbsp;- &nbsp;
+            = link_to message.subject, message_path(message)
+    #content= yield
 
   = javascript_include_tag 'application'
   - (@javascripts || []).each do |javascript|

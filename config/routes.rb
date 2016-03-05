@@ -30,13 +30,14 @@ Rails.application.routes.draw do
     end
     collection { get :facecasts }
   end
-  resources :icons, except: :index do
+  resources :icons, except: [:index, :new] do
     member do
       post :avatar
     end
   end
   resources :users do
     resources :characters, only: :index
+    resources :templates, only: :index
     resources :galleries, only: :index
     collection do
       post :username

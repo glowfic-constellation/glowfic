@@ -10,6 +10,6 @@
           %b To:
           = link_to(message.recipient.username, user_path(message.recipient))
     = sanitize(message.message.gsub("\n","<br/>")).html_safe
-  %div{style:'padding:0px;clear:both'}
-    .right-align{style: 'width:100%; font-size: 14px;'}> 
+  .post-footer
+    .right-align> 
       .padding-5> Sent #{pretty_time(message.created_at)}

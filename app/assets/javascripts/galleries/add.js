@@ -1,8 +1,8 @@
 image_ids = []
 $(document).ready( function() {
   $(".add-gallery-icon").click(function() {
-    $(this).toggleClass('default-icon');
-    if ($(this).hasClass('default-icon')) {
+    $(this).toggleClass('selected-icon');
+    if ($(this).hasClass('selected-icon')) {
       image_ids.push(this.dataset['id']);
     } else {
       image_ids.pop(this.dataset['id']);

@@ -1,41 +1,38 @@
 %tr
-  %td
-    = f.text_field :name, :placeholder => "Character Name", :class => 'text'
+  %th.sub Name
+  %td{class: cycle('even', 'odd')}= f.text_field :name, placeholder: "Character Name", class: 'text'
 %tr
-  %td
-    = f.text_field :template_name, :placeholder => "Template Nickname", :class => 'text'
+  %th.sub Nickname
+  %td{class: cycle('even', 'odd')}= f.text_field :template_name, placeholder: "Template Nickname", class: 'text'
 %tr
-  %td
-    = f.text_field :screenname, :placeholder => "Screen Name", :class => 'text'
+  %th.sub Screenname
+  %td{class: cycle('even', 'odd')}= f.text_field :screenname, placeholder: "Screen Name", class: 'text'
 %tr
-  %td
-    = f.text_field :setting, :placeholder => "Setting", :class => 'text'
+  %th.sub Setting
+  %td{class: cycle('even', 'odd')}= f.text_field :setting, placeholder: "Setting", class: 'text'
 %tr
-  %td.left-align
-    = f.collection_select(:template_id, @templates, :id, :name, {:include_blank => '— Choose Template —'}, {:class => 'text'})
-%tr#create_template{style: ('display: none;' unless params[:character].try(:[], :template_id) == "0")}
-  %td.left-align= f.text_field :new_template_name, :placeholder => "Template Name", :class => 'text'
+  - klass = cycle('even', 'odd')
+  %th.sub Template
+  %td{class: klass}= f.collection_select :template_id, @templates, :id, :name, {include_blank: '— Choose Template —'}, {class: 'text'}
+%tr#create_template{class: ('hidden' unless params[:character].try(:[], :template_id) == "0")}
+  %th.sub &#8627; Name
+  %td{class: klass}= f.text_field :new_template_name, placeholder: "Template Name", class: 'text'
 - if current_user.galleries.present?
-  %tr.left-align
-    %td
+  %tr
+    %th.sub Galleries
+    %td{class: cycle('even', 'odd')}
       = f.collection_select(:gallery_ids, 
-                             current_user.galleries.order('name asc'), 
-                             :id, :name, {selected: @character.galleries.map(&:id)}, {:class => 'text', multiple: true})
+      current_user.galleries.order('name asc'), 
+      :id, :name, {selected: @character.galleries.map(&:id)}, {:class => 'text', multiple: true})
 %tr
-  %td.left-align
-    = f.collection_select(:character_group_id, @groups, :id, :name, {:include_blank => '— Choose Group —'}, {:class => 'text'})
-%tr#create_group{style: ('display: none;' unless params[:character].try(:[], :character_group_id) == "0")}
-  %td.left-align= f.text_field :group_name, :placeholder => "Group Name", :class => 'text'
+  %th.sub Played By
+  %td{class: cycle('even', 'odd')}= f.text_field :pb, placeholder: "Played By", class: 'text'
 %tr
-  %td
-    = f.text_field :pb, :placeholder => "Played By", :class => 'text'
-%tr
-  %td.centered
-    = submit_tag "Save", class: 'button'
+  %th.centered.subber{colspan: 2}= submit_tag "Save", class: 'button'
 
 #selected-gallery
   %b Images
-  %br
+  %br 
   Pick Default Icon (Optional):
   %br
   .gallery
@@ -47,11 +44,12 @@
           %br
           - gallery.icons.order('keyword asc').each do |icon|
             - klass = 'character-icon'
-            - klass += ' default-icon' if icon == @character.default_icon
+            - klass += ' selected-icon' if icon == @character.default_icon
             = icon_tag icon, class: klass, id: icon.id
     - else
-      - current_user.icons.order('keyword asc').each do |icon|
-        - next if icon.galleries.present?
-        - klass = 'character-icon'
-        - klass += ' default-icon' if icon == @character.default_icon
-        = icon_tag icon, class: klass, id: icon.id
+      #gallery0{:'data-id' => 0}
+        - current_user.icons.where(has_gallery: false).order('keyword asc').each do |icon|
+          - next if icon.galleries.present?
+          - klass = 'character-icon'
+          - klass += ' selected-icon' if icon == @character.default_icon
+          = icon_tag icon, class: klass, id: icon.id

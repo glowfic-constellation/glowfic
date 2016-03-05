@@ -1,6 +1,70 @@
-#sidebar .button, #header .button {
-  color: #000000;
+/* Header Menus */
+#header { background-color: #b9b6ad; color: #eae9e9; vertical-align: top; text-align: left; overflow: auto; position: relative; }
+#header #user-info { float: left; text-align: center; background-color: #3e384f; padding: 0.5em; font-weight: bold; font-size: 16px; }
+#header #user-info img { margin: 5px; width: 100px; height: 100px; }
+#header #logo { text-align: right; background-color: #3f7055; padding: 0.5em; }
+#header #logo img { padding: 0.5em 0.5em 0 0; }
+#header #nav-top { padding: 0.5em; background-color: #3e384f; }
+#header #nav-top button, #header #nav-top .button { color: #444444; font-size: 13px; margin-right: 10px; }
+#header #nav-top input { margin: 0px 0px 0px 10px; }
+#header #nav-top #remember_me { vertical-align: middle; }
+#header ul { font-size: 14px; padding: 0; text-align:left; margin: 0.5em; display: inline; }
+#header li { display: inline; padding: 0 0.5em; }
+#header li a, #header a { color: #FEFEFE; font-weight: bold; font-size: 16px; }
+#header li a:hover { color: #8B8687; }
+#header #nav-bottom { color: #101010; text-align: left; padding: 0.5em; background-color: #B9B6AD; }
+#header #nav-bottom a { font-weight: normal; }
+
+/* Main Content */
+#content { padding: 20px; font-size: 16px; line-height: 20px; text-align: left; position: relative; }
+
+/* Flash Displays */
+.flash { padding: 10px 20px; }
+.flash.error { background-color: #FFDDDD; }
+.flash.error ul { margin: 0px; margin-top: 5px; }
+.flash.success { background-color: #DDEEDD; }
+.flash.inbox { background-color: #DDDDEE; }
+
+/* List Tables */
+#content table { width: 100%; }
+#content th { background-color: #8B8687; color: #EEEEEE; padding: 15px; font-size: 18px; font-weight: normal; }
+#content .sub { padding: 10px; font-size: 16px; color: #3E384F; }
+#content th.subber { padding: 10px 25px; color: black; font-size: 15px; font-weight: bold; }
+#content th.subber a, .subber a:visited { color: #FFFFFF; }
+#content th.subber input { margin: 0px; }
+#content th.subber .link-box { font-size: 15px; }
+#content td { font-size: 14px; }
+
+/* Form Tables */
+#content table.form-table { text-align: center; width: 400px; margin: 0px; border-spacing: 0px; }
+#content table.form-table td { text-align: left; padding: 5px; }
+#content table.form-table td input { 
+    margin: 0px;
+    width: 100%;
+    -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+    -moz-box-sizing: border-box;    /* Firefox, other Gecko */
+    box-sizing: border-box;         /* Opera/IE 8+ */
 }
+#content table.form-table td.spacer { height: 2px; padding: 0px; }
 
-#header a { color: #FFFFFF; font-weight: bold; text-decoration: none; font-size: 14px; }
+/* Buttons like List View or Outbox View in top right of page */
+.view-button {
+    display: inline-block;
+    background-color: #B9B6AD;
+    font-size: 18px;
+    margin: 0px;
+    margin-left: 5px;
+    background-image: none;
+    border: 0px;
+    color: #FFFFFF;
+    padding: 4px 12px;
+    border-radius: 5px;
+    float: right;
+    cursor: pointer;
+}
+.view-button a { color: white; }
+.view-button .list-view { width: 20px; height: 17px; display: inline; margin: 0px; padding: 0px; top: 2px; position: relative; }
+.view-button .icon-view { width: 15px; height: 15px; display: inline; margin: 0px; padding: 0px; top: 2px; position: relative; }
 
+/* Not yet deserving of its own CSS file */
+#message_form textarea { height: 100px; }

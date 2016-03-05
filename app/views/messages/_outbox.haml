@@ -2,6 +2,6 @@
   %th{colspan: 5}
     Outbox
     = link_to messages_path params: {view: 'inbox'} do
-      .character-view-select &laquo; Inbox
+      .view-button &laquo; Inbox
     = link_to new_message_path do
-      .character-new-select + Write Message
+      .link-box.green + Write Message

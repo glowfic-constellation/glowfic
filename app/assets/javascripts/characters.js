@@ -84,9 +84,9 @@ $(document).ready(function() {
 
 function bindIcons() {
   $(".character-icon").click(function() {
-    if($(this).hasClass('default-icon')) { return; }
-    $(".default-icon").removeClass('default-icon');
-    $(this).addClass('default-icon');
+    if($(this).hasClass('selected-icon')) { return; }
+    $(".selected-icon").removeClass('selected-icon');
+    $(this).addClass('selected-icon');
     var id = $(this).attr('id');
 
     if (gon.character_id) {

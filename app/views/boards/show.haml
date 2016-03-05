@@ -7,8 +7,7 @@
   = @board.name
   - if logged_in? && @board.open_to?(current_user)
     = link_to new_post_path params: {board_id: @board.id} do
-      .character-new-select
-        + New Post
+      .link-box.green + New Post
 
 - if @board.id == 1
   %table

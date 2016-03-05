@@ -1,7 +1,7 @@
 class IconsController < ApplicationController
-  before_filter :login_required, :except => :show
-  before_filter :find_icon, :only => [:show, :edit, :update, :destroy, :avatar]
-  before_filter :require_own_icon, :only => [:edit, :update, :destroy, :avatar]
+  before_filter :login_required, except: :show
+  before_filter :find_icon, except: :create
+  before_filter :require_own_icon, only: [:edit, :update, :destroy, :avatar]
 
   def create
     # ignore the name. this removes icons from galleries or deletes them outright, in batches.

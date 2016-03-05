@@ -20,7 +20,7 @@
       %th.sub Unsorted icons without a gallery will appear here. They can still be individually assigned to a character with no galleries.
   %tr
     %td.green.gallery-title
-      .gallery
+      .gallery{id: "gallery0"}
         = form_tag icons_path do
           - icons = @user.icons.where(has_gallery: false).order('keyword asc')
           - icons.each do |icon|
@@ -30,7 +30,7 @@
                 %br
                 = icon.keyword
               - if @user.id == current_user.id
-                .gallery-select= check_box_tag :"marked_ids[]", icon.id
+                .select-button= check_box_tag :"marked_ids[]", icon.id
           - if icons.empty?
             .centered — No icons yet —
           - elsif @user.id == current_user.id

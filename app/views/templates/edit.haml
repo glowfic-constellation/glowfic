@@ -1,11 +1,9 @@
 = form_for @template, :url => template_path(@template), :method => :put do |f|
-  %table#signup.centered
+  %table.form-table
     %tr
-      %th.centered
-        Edit Template
+      %th.centered{colspan: 2} Edit Template
     %tr
-      %td
-        = f.text_field :name, :placeholder => "Template Name", :class => 'text'
+      %th.sub Template Name
+      %td.even= f.text_field :name, placeholder: "Template Name", class: 'text'
     %tr
-      %td.centered
-        = submit_tag "Save", class: 'button'
+      %th.subber{colspan: 2}= submit_tag "Save", class: 'button'

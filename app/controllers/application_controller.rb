@@ -1,5 +1,6 @@
 class ApplicationController < ActionController::Base
   protect_from_forgery with: :exception
+  before_filter :check_permanent_user
   around_filter :set_timezone
   after_filter :store_location
 
@@ -56,5 +57,10 @@ class ApplicationController < ActionController::Base
     return yield unless logged_in?
     return yield unless current_user.timezone
     Time.use_zone(current_user.timezone, &block)
+  end
+
+  def check_permanent_user
+    return if logged_in?
+    session[:user_id] = cookies.signed[:user_id] if cookies.signed[:user_id].present?
   end
 end

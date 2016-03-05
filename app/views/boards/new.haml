@@ -1,12 +1,12 @@
-= form_for @board, :url => boards_path, :method => :post do |f|
-  %table#signup.centered
+= form_for @board, url: boards_path, method: :post do |f|
+  %table.form-table
     %tr
-      %th.centered Create Continuity
+      %th.centered{colspan: 2} Create Continuity
     %tr
-      %td= f.text_field :name, :placeholder => "Continuity Name", :class => 'text'
+      %th.sub Name
+      %td.even= f.text_field :name, placeholder: "Continuity Name", class: 'text'
     %tr
-      %td.left-align
-        Coauthor:
-        = f.select :coauthor_id, options_from_collection_for_select(@users, :id, :username), include_blank: '— Open to Anyone —'
+      %th.sub Coauthor
+      %td.odd= f.select :coauthor_id, options_from_collection_for_select(@users, :id, :username), include_blank: '— Open to Anyone —'
     %tr
-      %td.centered= submit_tag "Create Continuity", class: 'button'
+      %th.centered.subber{colspan: 2}= submit_tag "Create Continuity", class: 'button'

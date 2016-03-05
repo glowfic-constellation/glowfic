@@ -6,12 +6,12 @@
   %b= @post.subject
 
 .post-header
-  .padding-15{style: 'overflow: auto;'}
-    %span#post-title{style: 'line-height:28px;'}= @post.subject
+  .padding-15
+    %span#post-title= @post.subject
     - if logged_in?
       = link_to post_path(@post, unread: true), :method => :put do
-        .character-view-select
-          = image_tag '/images/book_open.png', class:'character-icon-select'
+        .view-button
+          = image_tag '/images/book_open.png', class:'icon-view'
           Mark Unread
 = render partial: 'replies/single', locals: {reply: @post}
 - if @replies.present?
@@ -23,11 +23,11 @@
 - if logged_in? && current_user.writes_in?(@post.board)
   = render partial: 'write_reply', locals: { reply: @reply, url: replies_path, method: :post }
 
-- unless true
+- unless true # threaded
   %table
     %tr
       %th{colspan: 2}
         = @post.subject
         - if params[:thread_id].present?
           = link_to post_path(@post) do
-            .character-view-select &laquo; Thread Index
+            .link-box.green &laquo; Thread Index

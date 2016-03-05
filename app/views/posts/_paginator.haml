@@ -1,20 +1,20 @@
 .paginator.sub.centered
-  .left-align{style: 'float:left;display:inline-block;padding:10px;'} Total#{' Threads' if @threaded && params[:thread_id].blank?}: #{paginated.total_entries}
-  .right-align.float-right{style: 'padding:2px;padding-right:10px;display:inline-block'}
+  .left-align Total#{' Threads' if @threaded && params[:thread_id].blank?}: #{paginated.total_entries}
+  .right-align
     - if paginated.klass == Reply
       Posts Per Page:
       = select_tag :per_page, per_page_options, class: 'per-page'
-  .pagination{style: 'padding:5px;display:inline-block;'}
+  .pagination
     - if per_page > 0 && paginated.total_entries > per_page
-      %span.first-last
+      %span
         - if page == 1
           %span.disabled &laquo; First
         - else
           = link_to '&laquo; First'.html_safe, send(path, params.except(:page))
       = will_paginate paginated, container: false
-      %span.first-last
+      %span
         - if page == paginated.total_pages
           %span.disabled Last &raquo;
         - else
           = link_to 'Last &raquo;'.html_safe, send(path, params.merge(:page => paginated.total_pages))
-  %div{style:'clear:both'}
+  .clear

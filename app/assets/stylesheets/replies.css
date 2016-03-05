@@ -13,6 +13,7 @@
 #current-icon-holder { position: relative; }
 
 /* Character selector */
+#swap-icon { width: 14px;  height: 14px; position: relative; top: 1px; cursor: pointer; }
 #character-selector {
     position: absolute;
     top: 0px;
@@ -26,7 +27,7 @@
 #character-selector h4 { margin-bottom: 0px; margin-top:0px; }
 
 /* Icon selector */
-#gallery { display: none; position: absolute; top: 10px; left: 160px; min-height: 101px; padding: 10px; margin: 0px; }
+#gallery { display: none; position: absolute; top: 10px; left: 160px; min-height: 101px; padding: 10px; margin: 0px; z-index: 4; }
 #gallery img { cursor: pointer; }
 #gallery .gallery-icon {
     min-height: 130px;
@@ -39,16 +40,23 @@
     word-wrap: break-word;
     display: inline-block;
 }
+.icon-holder .icon { margin: 0px; }
+.icon { position: relative; width: 100px; height: 100px; margin: 5px; }
 
 .post-container { overflow: auto; }
 .post-edit-box { float: right; margin-left: 10px; margin-bottom: 5px; padding: 5px; }
 .post-info-box { text-align: center; padding: 0px; float: left; margin-right: 10px; margin-bottom: 5px; width: 150px; overflow: visible; }
 .post-icon { padding: 0px; background-color: #B0BBA9; }
 .post-icon img, .post-icon div { margin-top: 10px; margin-right: 10px; margin-left: 10px; }
+.post-icon img { margin-bottom: 10px; vertical-align: middle; }
 .post-character { background-color: #8B8687; padding: 4px; position: relative; }
 .post-screenname { background-color: #a3a1a0; padding: 4px; overflow-wrap: break-word; word-wrap: break-word; }
 .post-author { padding: 5px; background-color: #B9B6AD; position: relative; }
 .post-header { width: 100%; background-color: #8B8687; color: #eeeeee; padding: 0px; font-size: 18px; margin-right: 10px; display: inline-block; }
+.post-header span { line-height: 28px; }
+.post-header div { overflow: auto; }
+.post-footer { padding: 0px; clear: both; }
+.post-footer .right-align { width: 100%; font-size: 14px; }
 #post-icon-filler { width: 100px; height: 100px; display: inline-block; background-color: #8B8687; }
 #post_content, #reply_content { height: 130px; width: 100%; display: block; }
 #post-form-wrapper { margin-left: 160px; margin-right: 10px; }
@@ -62,3 +70,15 @@
     .post-screenname { }
     .post-author { }
 }
+
+/* Pagination */
+.pagination { font-size: 14px; padding: 5px; display: inline-block; }
+.pagination .current { font-weight: bold; font-style: normal; background: #3f7055; }
+.pagination a, .pagination .current, .pagination .disabled { display: inline-block; padding: 5px 10px; }
+.pagination .disabled { color: #101010; text-align: left; }
+.pagination a { color: #EEEEEE; }
+.pagination a:hover { background-color: #B9B6AD; }
+.paginator .left-align { float: left; display: inline-block; padding: 10px; }
+.paginator .right-align { padding: 2px; padding-right: 10px; display: inline-block; float: right; }
+.paginator .right-align a { color: black; }
+.paginator { color: black; }

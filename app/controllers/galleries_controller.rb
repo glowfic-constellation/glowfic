@@ -67,7 +67,9 @@ class GalleriesController < ApplicationController
       flash[:success] = "Gallery saved."
       redirect_to gallery_path(@gallery)
     else
-      flash.now[:error] = "Gallery could not be saved."
+      flash.now[:error] = {}
+      flash.now[:error][:message] = "Gallery could not be saved."
+      flash.now[:error][:array] = @gallery.errors.full_messages
       render action: :edit
     end
   end

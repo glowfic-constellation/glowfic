@@ -26,4 +26,6 @@ function fixButtons() {
   $(".icon-row-rem").first().hide();
   bindAdd();
   bindRem();
+  $("#icon-table tr.icon-row:odd td").removeClass('even').addClass("odd");
+  $("#icon-table tr.icon-row:even td").removeClass('odd').addClass("even");
 }

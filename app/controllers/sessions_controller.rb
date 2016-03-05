@@ -11,6 +11,7 @@ class SessionsController < ApplicationController
     elsif user.authenticate(params[:password])
       flash[:success] = "You are now logged in as #{user.username}. Welcome back!"
       session[:user_id] = user.id
+      cookies.permanent.signed[:user_id] = user.id if params[:remember_me].present?
       @current_user = user
     else
       flash[:error] = "You have entered an incorrect password."
@@ -21,6 +22,7 @@ class SessionsController < ApplicationController
   def destroy
     url = session[:previous_url] || root_url
     reset_session
+    cookies.delete(:user_id)
     @current_user = nil
     flash[:success] = "You have been logged out."
     redirect_to url
