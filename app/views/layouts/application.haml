@@ -38,12 +38,15 @@
               = button_tag "Log out", class: 'button'
           - else
             = form_tag login_path, method: :post do
-              = text_field_tag :username, params[:username], placeholder: "Username"
-              = password_field_tag :password, params[:password], placeholder: "Password"
-              = check_box_tag :remember_me
-              Remember Me
-              = submit_tag "Log in", class: 'button'
-              = link_to "Sign up", new_user_path
+              #header-forms
+                = text_field_tag :username, params[:username], placeholder: "Username"
+                = password_field_tag :password, params[:password], placeholder: "Password"
+              #header-remember
+                = check_box_tag :remember_me
+                Remember Me
+              #header-buttons
+                = submit_tag "Log in", class: 'button'
+                = link_to "Sign up", new_user_path
       #header-collapse
       #nav-bottom
         %ul

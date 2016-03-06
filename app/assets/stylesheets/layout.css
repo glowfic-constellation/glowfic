@@ -19,11 +19,19 @@
 #header #nav-bottom ul { margin-left: 1em; }
 #header #nav-bottom a { font-weight: normal; }
 #header #header-collaspe { display: none; }
+
+#header #header-forms, #header #header-remember, #header #header-buttons { display: inline; }
+
+@media (max-width: 700px) {
+  #header #button-break { display: block; clear: both; }
+  #header #header-buttons { display: block; }
+}
 @media (max-width: 600px) {
   #header { background-color: #3e384f; }
   #header #nav-bottom { overflow: hidden; }
   #header #nav-bottom ul { display: inline-block; margin: 0; }
   #header #header-collapse { clear: both; }
+  #header #header-remember, #header #header-forms { display: block; }
 }
 @media (max-width: 500px) {
   #header #header-logout:before { content: '\a'; white-space: pre; }
