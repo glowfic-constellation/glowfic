@@ -7,12 +7,14 @@ module Viewable
     def mark_read(user, at_time=nil)
       view = view_for(user)
       return true if view.ignored
-      if at_time.present? && !view.new_record?
+      if view.new_record?
+        view.updated_at = at_time
+        view.save
+      else
+        return view.touch unless at_time.present?
         return true if at_time <= view.updated_at
-        return view.update_attributes(updated_at: at_time)
+        view.update_attributes(updated_at: at_time)
       end
-      return view.save if view.new_record?
-      view.touch
     end
 
     def ignore(user)
