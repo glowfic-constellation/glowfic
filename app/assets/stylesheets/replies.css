@@ -70,9 +70,8 @@ select.per-page { margin-top: 5px; margin-bottom: 5px; }
     .post-info-box { float: none; width: 100%; display: inline-block; }
     .post-icon { float: left; margin-right: 0; margin-bottom: 5px; }
     .post-info-text { float: left; margin-right: 10px; margin-bottom: 5px; }
-    .post-character { }
-    .post-screenname { }
-    .post-author { }
+    #post-form-wrapper { margin-left: 0px; }
+    #character-selector { left: 0px; }
 }
 
 /* Pagination */
