@@ -54,13 +54,15 @@
 .post-author { padding: 5px; background-color: #B9B6AD; position: relative; }
 .post-header { width: 100%; background-color: #8B8687; color: #eeeeee; padding: 0px; font-size: 18px; margin-right: 10px; display: inline-block; }
 .post-header span { line-height: 28px; }
-.post-header div { overflow: auto; }
+.post-subheader { width: 100%; background-color: #a3a1a0; font-size: 15px; margin-right: 10px; display: inline-block; }
+.post-subheader span { line-height: 14px; }
 .post-footer { padding: 0px; clear: both; }
 .post-footer .right-align { width: 100%; font-size: 14px; }
 #post-icon-filler { width: 100px; height: 100px; display: inline-block; background-color: #8B8687; }
 #post_content, #reply_content { height: 130px; width: 100%; display: block; }
 #post-form-wrapper { margin-left: 160px; margin-right: 10px; }
 #post-editor { position: relative; }
+.details { display: inline; font-size: 12px; font-style: italic; }
 
 @media (max-width: 600px) {
     .post-info-box { float: none; width: 100%; display: inline-block; }

@@ -12,6 +12,10 @@
     = f.label :subject, 'Subject:'
     = f.text_field :subject, placeholder: 'Subject'
     %br
+    = f.label :description, 'Description:'
+    = f.text_field :description, placeholder: 'Description'
+    .details (Optional: describe the thread's setting and major players, e.g. A Bell and Vorkosigans in Chronicle)
+    %br
     #post-form-wrapper
       = f.text_area :content
       = f.hidden_field :character_id, id: 'reply_character_id'

@@ -24,6 +24,11 @@
             .view-button
               = image_tag '/images/book.png', class:'icon-view'
               Mark Complete
+- if @post.description
+  .post-subheader
+    .padding-10
+      %span= sanitize(@post.description, tags: %w(a), attributes: %w(href)).html_safe
+
 = render partial: 'replies/single', locals: {reply: @post}
 - if @replies.present?
   = render partial: 'paginator', locals: { paginated: @replies, path: :post_path }
