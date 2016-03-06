@@ -1,20 +1,36 @@
 /* Header Menus */
-#header { background-color: #b9b6ad; color: #eae9e9; vertical-align: top; text-align: left; overflow: auto; position: relative; }
+#header { background-color: #B9B6AD; color: #eae9e9; vertical-align: top; text-align: left; position: relative; overflow: hidden; }
 #header #user-info { float: left; text-align: center; background-color: #3e384f; padding: 0.5em; font-weight: bold; font-size: 16px; }
 #header #user-info .no-img { height: 100px; width: 100px; margin: 5px; display: block; padding: 0px; }
 #header #user-info img { margin: 5px; width: 100px; height: 100px; }
-#header #logo { text-align: right; background-color: #3f7055; padding: 0.5em; }
+#header #header-right { overflow: hidden; }
+#header #logo { text-align: right; background-color: #3f7055; padding: 0.5em; overflow: hidden; }
 #header #logo img { padding: 0.5em 0.5em 0 0; }
-#header #nav-top { padding: 0.5em; background-color: #3e384f; }
+#header #nav-top { padding: 0.5em; background-color: #3e384f; padding-left: 1em; padding-right: 1em; overflow: hidden; }
 #header #nav-top button, #header #nav-top .button { color: #444444; font-size: 13px; margin-right: 10px; }
 #header #nav-top input { margin: 0px 0px 0px 10px; }
 #header #nav-top #remember_me { vertical-align: middle; }
-#header ul { font-size: 14px; padding: 0; text-align:left; margin: 0.5em; display: inline; }
-#header li { display: inline; padding: 0 0.5em; }
+#header ul { font-size: 16px; padding: 0; text-align:left; padding-right: 0.5em; display: inline; vertical-align: middle; }
+#header li { display: inline; padding: 0; white-space: nowrap; }
+#header li { margin-right: 1em; }
 #header li a, #header a { color: #FEFEFE; font-weight: bold; font-size: 16px; }
 #header li a:hover { color: #8B8687; }
-#header #nav-bottom { color: #101010; text-align: left; padding: 0.5em; background-color: #B9B6AD; }
+#header #nav-bottom { color: #101010; text-align: left; padding: 0.5em 1em; background-color: #B9B6AD; }
+#header #nav-bottom ul { margin-left: 1em; }
 #header #nav-bottom a { font-weight: normal; }
+#header #header-collaspe { display: none; }
+@media (max-width: 600px) {
+  #header { background-color: #3e384f; }
+  #header #nav-bottom { overflow: hidden; }
+  #header #nav-bottom ul { display: inline-block; margin: 0; }
+  #header #header-collapse { clear: both; }
+}
+@media (max-width: 500px) {
+  #header #header-logout:before { content: '\a'; white-space: pre; }
+}
+@media (max-width: 400px) {
+  #header #user-info img { display: none; }
+}
 
 /* Main Content */
 #content { padding: 20px; font-size: 16px; line-height: 20px; text-align: left; position: relative; }
