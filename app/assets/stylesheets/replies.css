@@ -52,7 +52,7 @@
 .post-character { background-color: #8B8687; padding: 4px; position: relative; }
 .post-screenname { background-color: #a3a1a0; padding: 4px; overflow-wrap: break-word; word-wrap: break-word; }
 .post-author { padding: 5px; background-color: #B9B6AD; position: relative; }
-.post-header { width: 100%; background-color: #8B8687; color: #eeeeee; padding: 0px; font-size: 18px; margin-right: 10px; display: inline-block; }
+.post-header { width: 100%; background-color: #8B8687; color: #eeeeee; padding: 0px; font-size: 18px; display: inline-block; }
 .post-header > div { overflow: hidden; }
 .post-header span { line-height: 28px; }
 .post-subheader { width: 100%; background-color: #a3a1a0; font-size: 15px; margin-right: 10px; display: inline-block; }
