@@ -35,4 +35,13 @@ module ApplicationHelper
     zones = ActiveSupport::TimeZone.all()
     options_from_collection_for_select(zones, :name, :to_s, selected=default)
   end
+
+  def post_or_reply_link(reply)
+    return unless reply.id.present?
+    if reply.is_a?(Reply)
+      post_path(reply.post, per_page: 'all', anchor: "reply-#{reply.id}")
+    else
+      post_path(reply)
+    end
+  end
 end

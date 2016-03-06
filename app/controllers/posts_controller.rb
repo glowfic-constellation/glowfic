@@ -81,7 +81,7 @@ class PostsController < ApplicationController
     end
 
     per = per_page > 0 ? per_page : replies.count
-    @replies = replies.order('id asc').paginate(page: page, per_page: per)
+    @replies = replies.includes(:user).order('id asc').paginate(page: page, per_page: per)
     redirect_to post_path(@post, page: @replies.total_pages, per_page: per) and return if page > @replies.total_pages
     use_javascript('paginator')
 
@@ -136,6 +136,20 @@ class PostsController < ApplicationController
       @post.views.where(user_id: current_user.id).destroy_all
       flash[:success] = "Post has been marked as unread"
       redirect_to board_path(@post.board) and return
+    end
+
+    status = "complete"
+    if params[:completed].present?
+      if params[:completed] == "true" && !@post.completed?
+        @post.status = Post::STATUS_COMPLETE
+        @post.save
+      elsif params[:completed] == "false" && @post.completed?
+        @post.status = Post::STATUS_ACTIVE
+        @post.save
+        status = "in progress"
+      end
+      flash[:success] = "Post has been marked #{status}."
+      redirect_to post_path(@post) and return
     end
 
     require_permission

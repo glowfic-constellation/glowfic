@@ -55,6 +55,7 @@ button, input.button {
 .clear { clear: both; }
 .pointer { cursor: pointer; }
 .vtop { vertical-align: top; }
+.vmid { vertical-align: middle; }
 .bold { font-weight: bold; }
 .auto { overflow: auto; }
 

@@ -1,6 +1,8 @@
 %tr
   - klass = cycle('even', 'odd')
-  %td.padding-10{class: klass}= '' # will be icons for completed
+  %td.padding-10{class: klass}
+    - if post.completed?
+      = image_tag "/images/book.png", class: 'vmid', title: "Thread Complete"
   %td.padding-10{class: klass}= link_to post.subject, post_path(post)
   - unless hide_continuity
     %td.padding-10{class: klass}= link_to post.board.name, board_path(post.board)

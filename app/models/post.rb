@@ -28,7 +28,7 @@ class Post < ActiveRecord::Base
     return true if privacy == PRIVACY_PUBLIC
     return false unless user
     return user.id == user_id if privacy == PRIVACY_PRIVATE
-    (post_viewers.map(&:user_id) + [user_id]).include?(user.id)
+    @visible ||= (post_viewers.map(&:user_id) + [user_id]).include?(user.id)
   end
 
   def authors
@@ -42,16 +42,28 @@ class Post < ActiveRecord::Base
   end
 
   def last_post
-    replies.order('updated_at desc').limit(1).first || self
+    @last_post ||= (replies.order('updated_at desc').limit(1).first || self)
   end
 
   def last_character_for(user)
     ordered_replies = replies.where(user_id: user.id).order('id asc')
     if ordered_replies.present?
-      return ordered_replies.last.character
+      ordered_replies.last.character
     elsif self.user == user
-      return self.character
+      self.character
     end
+  end
+
+  def first_unread_for(user)
+    return @first_unread if @first_unread
+    viewed_at = last_read(user) || board.last_read(user)
+    return @first_unread = self unless viewed_at
+    return unless replies.present?
+    @first_unread ||= replies.order('updated_at asc').detect { |reply| viewed_at < reply.updated_at }
+  end
+
+  def completed?
+    status == STATUS_COMPLETE
   end
 
   def self.privacy_settings

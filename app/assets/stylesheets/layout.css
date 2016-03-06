@@ -35,6 +35,7 @@
 #content th.subber input { margin: 0px; }
 #content th.subber .link-box { font-size: 15px; }
 #content td { font-size: 14px; }
+#content td.icon-box { padding: 10px 0px 10px 10px; }
 
 /* Form Tables */
 #content table.form-table { text-align: center; width: 400px; margin: 0px; border-spacing: 0px; }

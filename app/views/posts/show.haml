@@ -13,6 +13,17 @@
         .view-button
           = image_tag '/images/book_open.png', class:'icon-view'
           Mark Unread
+      - if @post.user_id == current_user.id
+        - if @post.completed?
+          = link_to post_path(@post, completed: false), :method => :put do
+            .view-button
+              = image_tag '/images/book_open.png', class:'icon-view'
+              Mark Not Complete
+        - else
+          = link_to post_path(@post, completed: true), :method => :put do
+            .view-button
+              = image_tag '/images/book.png', class:'icon-view'
+              Mark Complete
 = render partial: 'replies/single', locals: {reply: @post}
 - if @replies.present?
   = render partial: 'paginator', locals: { paginated: @replies, path: :post_path }

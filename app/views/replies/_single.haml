@@ -20,11 +20,8 @@
         .post-author
           = link_to reply.user.username, user_path(reply.user)
     .post-edit-box
-      - if reply.is_a?(Reply) && reply.id.present?
-        = link_to post_path(reply.post, per_page: 'all', anchor: "reply-#{reply.id}") do
-          = image_tag "/images/link.png"
-      - elsif reply.id.present?
-        = link_to post_path(reply) do
+      - if reply.id.present?
+        = link_to post_or_reply_link(reply) do
           = image_tag "/images/link.png"
       - if reply.id.present? && reply.editable_by?(current_user)
         = link_to path_for(reply, 'edit_%s') do
