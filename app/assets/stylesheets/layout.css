@@ -34,6 +34,12 @@
 
 /* Main Content */
 #content { padding: 20px; font-size: 16px; line-height: 20px; text-align: left; position: relative; }
+@media (max-width: 600px) {
+  #content { padding-left: 10px; padding-right: 10px; }
+}
+@media (max-width: 500px) {
+  #content { padding-left: 5px; padding-right: 5px; }
+}
 
 /* Flash Displays */
 .flash { padding: 10px 20px; }
