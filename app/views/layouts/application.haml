@@ -21,28 +21,33 @@
           - else
             .no-img
           = current_user.username
-      #logo
-        = link_to root_path do
-          = image_tag '/images/logo.png', alt: 'Glowfic Constellation'
-      #nav-top
-        - if logged_in?
-          %ul
-            %li= link_to 'Account', edit_user_path(current_user)
-            %li= link_to 'Inbox', messages_path
-            %li= link_to "Templates", templates_path
-            %li= link_to "Characters", characters_path
-            %li= link_to "Galleries", galleries_path
-            %li= link_to "Post", new_post_path
-          = link_to logout_path, method: :delete do
-            = button_tag "Log out", class: 'button'
-        - else
-          = form_tag login_path, method: :post do
-            = text_field_tag :username, params[:username], placeholder: "Username"
-            = password_field_tag :password, params[:password], placeholder: "Password"
-            = check_box_tag :remember_me
-            Remember Me
-            = submit_tag "Log in", class: 'button'
-            = link_to "Sign up", new_user_path
+      #header-right
+        #logo
+          = link_to root_path do
+            = image_tag '/images/logo.png', alt: 'Glowfic Constellation'
+        #nav-top
+          - if logged_in?
+            %ul
+              %li= link_to 'Account', edit_user_path(current_user)
+              %li= link_to 'Inbox', messages_path
+              %li= link_to "Templates", templates_path
+              %li= link_to "Characters", characters_path
+              %li= link_to "Galleries", galleries_path
+              %li= link_to "Post", new_post_path
+            = link_to logout_path, method: :delete, id: :"header-logout" do
+              = button_tag "Log out", class: 'button'
+          - else
+            = form_tag login_path, method: :post do
+              #header-forms
+                = text_field_tag :username, params[:username], placeholder: "Username"
+                = password_field_tag :password, params[:password], placeholder: "Password"
+              #header-remember
+                = check_box_tag :remember_me
+                Remember Me
+              #header-buttons
+                = submit_tag "Log in", class: 'button'
+                = link_to "Sign up", new_user_path
+      #header-collapse
       #nav-bottom
         %ul
           %li= link_to 'Boards', boards_path
