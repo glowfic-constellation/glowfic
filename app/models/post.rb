@@ -51,6 +51,8 @@ class Post < ActiveRecord::Base
       ordered_replies.last.character
     elsif self.user == user
       self.character
+    else
+      user.active_character
     end
   end
 

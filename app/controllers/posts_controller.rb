@@ -88,7 +88,7 @@ class PostsController < ApplicationController
     if logged_in?
       use_javascript('posts')
       
-      active_char = @post.last_character_for(current_user) || current_user.active_character
+      active_char = @post.last_character_for(current_user)
       @reply = Reply.new(post: @post, 
         character: active_char,
         user: current_user, 
