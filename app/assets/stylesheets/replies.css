@@ -44,10 +44,10 @@
 .icon { position: relative; width: 100px; height: 100px; margin: 5px; }
 
 /* Main post headers */
-.post-header { width: 100%; background-color: #8B8687; color: #eeeeee; padding: 0px; font-size: 18px; margin-right: 10px; display: inline-block; }
+.post-header { width: 100%; background-color: #8B8687; color: #eeeeee; padding: 0px; font-size: 18px; }
 .post-header > div { overflow: hidden; }
 .post-header span { line-height: 28px; }
-.post-subheader { width: 100%; background-color: #a3a1a0; font-size: 15px; margin-right: 10px; display: inline-block; }
+.post-subheader { width: 100%; background-color: #a3a1a0; font-size: 15px; }
 .post-subheader span { line-height: 14px; }
 .post-expander { min-height: 5px; background-color: #B0BBA9; padding: 0px; }
 .post-expander .info { padding: 5px; text-align: center; font-size: 14px; cursor: pointer; }
@@ -74,9 +74,8 @@ select.per-page { margin-top: 5px; margin-bottom: 5px; }
     .post-info-box { float: none; width: 100%; display: inline-block; }
     .post-icon { float: left; margin-right: 0; margin-bottom: 5px; }
     .post-info-text { float: left; margin-right: 10px; margin-bottom: 5px; }
-    .post-character { }
-    .post-screenname { }
-    .post-author { }
+    #post-form-wrapper { margin-left: 0px; }
+    #character-selector { left: 0px; }
 }
 
 /* Pagination */
