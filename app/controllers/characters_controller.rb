@@ -25,7 +25,7 @@ class CharactersController < ApplicationController
   end
 
   def create
-    @character = Character.new(params[:character].merge(user: current_user))
+    @character = Character.new((params[:character] || {}).merge(user: current_user))
 
     if @character.valid?
       save_character_with_extras
@@ -56,16 +56,16 @@ class CharactersController < ApplicationController
     end
   end
 
-  def icon
-    icon = Icon.find_by_id(params[:icon_id])
-    @character.update_attributes(default_icon: icon) if icon
-    render :json => {}
-  end
-
   def destroy
     @character.destroy
     flash[:success] = "Character deleted successfully."
     redirect_to characters_path
+  end
+
+  def icon
+    icon = Icon.find_by_id(params[:icon_id])
+    @character.update_attributes(default_icon: icon) if icon
+    render :json => {}
   end
 
   def facecasts
