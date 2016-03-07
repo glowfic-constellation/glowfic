@@ -35,6 +35,11 @@ $(document).ready(function() {
     }
   });
 
+  $(".post-expander").click(function() {
+    $(".post-expander .info").remove();
+    $(".post-expander .hidden").show();
+  });
+
   $("#submit_button").click(function() {
     $("#preview_button").removeAttr('data-disable-with').attr('disabled', 'disabled');
     return true;

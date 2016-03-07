@@ -29,7 +29,13 @@
     .padding-10
       %span= sanitize(@post.description, tags: %w(a), attributes: %w(href)).html_safe
 
-= render partial: 'replies/single', locals: {reply: @post}
+- if page == 1
+  = render partial: 'replies/single', locals: {reply: @post}
+- else
+  .post-expander
+    .info + Show First Post
+    .hidden
+      = render partial: 'replies/single', locals: {reply: @post}
 - if @replies.present?
   = render partial: 'paginator', locals: { paginated: @replies, path: :post_path }
 - @replies.each do |reply|
