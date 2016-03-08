@@ -81,7 +81,7 @@ class PostsController < ApplicationController
     end
 
     per = per_page > 0 ? per_page : replies.count
-    @replies = replies.includes(:user).includes(:character).includes(:post).includes(:icon).order('id asc').paginate(page: page, per_page: per)
+    @replies = replies.includes(:user, :character, :post, :icon).order('id asc').paginate(page: page, per_page: per)
     redirect_to post_path(@post, page: @replies.total_pages, per_page: per) and return if page > @replies.total_pages
     use_javascript('paginator')
 
