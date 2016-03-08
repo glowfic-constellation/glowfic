@@ -1,65 +1,8 @@
-To Do
+Issues can now be found in the [issue tracker](https://bitbucket.org/Czynski/glowfic/issues?status=new&status=open).
 
-v1 (I want this done before release)
-- Icon picker should have a dropdown with searchable keywords as well as the clickable icons
-- When displaying a list of posts, each post should include links to its pages
-- UI for posts: include poster moiety
-- Being able to lock posts within public continuities (MWF, Sandboxes, etc) to specific authors, continuity-style
-- Being able to delete multiple icons at once
-- More complete profile pages, for users or characters or really whatever.
-- List the allowed markup (<b>, <i>, etc) somewhere in the post editor
-- Users can set their time zone
-- More page titles
-- Bug: changing characters can reset page somehow?
-- Bug: CSS is broken in a bunch of places post normalize.css, this should be cleaned up
-- Jumpy: maybe just have it go up instead of down for long pages? Problem: chosen.js :/
-- Word count
-- Multi icon editor for galleries/edit
-
-v1.1 (I want this done before release but it comes last because $)
-- Upload icons https://devcenter.heroku.com/articles/s3
-- Email users (optional thread notifications, password reset)
-
-v2 (I can release without this but I want them)
-- Caching so server doesn't rerender
-- Unread page uses post list partial
-- Improve icon view for characters page
-- Improve character groups in full generality
-    - Characters can be in multiple groups
-    - Templates can be in multiple groups
-    - Can choose which if any groups display on characters/index by default
-    - Character/show displays all groups
-- Handle weird facecast cases (ex: Sylvi)
-- Allow users to select different layouts
-- Email verification
-- When changing or removing avatar, provide option to back-update all posts to use the new avatar
-- Improve the gallery/icon UI in full generality
-- UI for characters/index should somehow indicate which view is selected
-- Add ability to tag a character with continuities, and if posting in a restricted continuity, filter to that continuity.
-- CRUD for admin status
-- Report Post option
-- Tags for posts
-- Being able to lock threads to specific authors or to specific visibilities, same as posts
-- Expensive thing: store most recently updated post id on post, then use includes when you want it
-- Expensive thing: cache users-by-post somewhere, or even posts-by-user, or both
-- This is probably really hard to implement, but it would be super neat if, when you have a thread open and there's a new post, then the page updates automatically and optionally does a notification if you're in another tab/window. Built-in tag/update notifications.
-- Next and Previous Thread In Continuity buttons
-
-Finicky Tidiness
-- clean up the css >_<
-- clean up the javascript
-- Move gon and json stuff to presenters
-- display error messages as a neatly bulleted list
-- Anything Javascript should be doable non-javascript (set default icon for character)
-
-Scraper
-- Handle internal links (see Milliways Lurks)
-
-Tests
-- Write them
-- Fix weird error http://stackoverflow.com/questions/17936340/unresolved-specs-during-gemspecification-reset
-
-Forum: https://github.com/rubysherpas/forem/blob/e6273a8f15fb6573a743c7a71284a184647988fa/app/models/forem/concerns/viewable.rb
-Auth: https://github.com/plataformatec/devise
-Caching: http://guides.rubyonrails.org/caching_with_rails.html
-More auth: https://www.railstutorial.org/book/log_in_log_out
+Notes
+=====
+Forum: [Link](https://github.com/rubysherpas/forem/blob/e6273a8f15fb6573a743c7a71284a184647988fa/app/models/forem/concerns/viewable.rb)  
+Auth: [Link](https://github.com/plataformatec/devise)  
+Caching: [Link](http://guides.rubyonrails.org/caching_with_rails.html)  
+More auth: [Link](https://www.railstutorial.org/book/log_in_log_out)  
