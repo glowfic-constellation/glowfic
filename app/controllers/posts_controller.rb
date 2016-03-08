@@ -14,7 +14,7 @@ class PostsController < ApplicationController
     posts_in = Reply.where(user_id: current_user.id).select(:post_id).group(:post_id).map(&:post_id)
     ids = posts_in + posts_started
     @posts = Post.where(id: ids.uniq).where("board_id != 4").order('updated_at desc').limit(25).includes(:board)
-    @posts.reject! { |post| post.last_post.user_id == current_user.id }
+    @posts.reject! { |post| post.completed? || post.last_post.user_id == current_user.id }
     @page_title = "Threads Awaiting Tag"
   end
 
@@ -81,7 +81,7 @@ class PostsController < ApplicationController
     end
 
     per = per_page > 0 ? per_page : replies.count
-    @replies = replies.includes(:user).order('id asc').paginate(page: page, per_page: per)
+    @replies = replies.includes(:user).includes(:character).includes(:post).includes(:icon).order('id asc').paginate(page: page, per_page: per)
     redirect_to post_path(@post, page: @replies.total_pages, per_page: per) and return if page > @replies.total_pages
     use_javascript('paginator')
 
