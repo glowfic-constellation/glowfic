@@ -57,7 +57,7 @@
           - if logged_in?
             %li= link_to 'Unread', unread_posts_path
             %li= link_to 'Tags Owed', owed_posts_path
-    - if content_for?(:breadcrumbs) and !browser.mobile?
+    - if content_for?(:breadcrumbs)
       .flash.subber= content_for :breadcrumbs
     - if flash[:error].is_a?(Hash)
       .flash.error
