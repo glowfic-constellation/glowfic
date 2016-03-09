@@ -1,5 +1,5 @@
 class BoardsController < ApplicationController
-  before_filter :login_required, :only => :new
+  before_filter :login_required, :only => [:new, :create, :mark]
   before_filter :set_available_cowriters, :only => :new
 
   def index
@@ -26,19 +26,18 @@ class BoardsController < ApplicationController
 
   def show
     @board = Board.find_by_id(params[:id])
-    @page_title = @board.name
-
     unless @board
       flash[:error] = "Continuity could not be found."
       redirect_to boards_path and return
     end
 
+    @page_title = @board.name
     @posts = @board.posts.order('updated_at desc').select do |post|
       post.visible_to?(current_user)
     end.first(25)
   end
 
-  def mark    
+  def mark
     board = Board.find(params[:board_id])
     if params[:commit] == "Mark Read"
       board.mark_read(current_user)
