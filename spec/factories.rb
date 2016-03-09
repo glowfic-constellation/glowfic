@@ -19,4 +19,9 @@ FactoryGirl.define do
     content "test content"
     subject "test subject"
   end
+
+  factory :gallery do
+    user
+    name "test gallery"
+  end
 end

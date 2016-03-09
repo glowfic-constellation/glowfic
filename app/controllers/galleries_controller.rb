@@ -1,6 +1,6 @@
 class GalleriesController < ApplicationController
   before_filter :login_required, except: :show
-  before_filter :find_gallery, only: [:destroy, :remove, :edit, :update]
+  before_filter :find_gallery, only: [:destroy, :edit, :update]
 
   def index
     use_javascript('galleries/index')
