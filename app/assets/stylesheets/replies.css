@@ -40,6 +40,9 @@
     word-wrap: break-word;
     display: inline-block;
 }
+@media (max-width: 700px) {
+    #gallery { left: 0px; }
+}
 .icon-holder .icon { margin: 0px; }
 .icon { position: relative; width: 100px; height: 100px; margin: 5px; }
 
