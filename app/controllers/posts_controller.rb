@@ -22,7 +22,7 @@ class PostsController < ApplicationController
     @posts = Post.joins("LEFT JOIN post_views ON post_views.post_id = posts.id AND post_views.user_id = #{current_user.id}")
     @posts = @posts.joins("LEFT JOIN board_views on board_views.board_id = posts.board_id AND board_views.user_id = #{current_user.id}")
     @posts = @posts.where("post_views.user_id IS NULL OR (post_views.updated_at < posts.updated_at AND post_views.ignored = '0')")
-    @posts = @posts.where("board_views.user_id IS NULL OR (board_views.updated_at < posts.updated_at AND post_views.ignored = '0')")
+    @posts = @posts.where("board_views.user_id IS NULL OR (board_views.updated_at < posts.updated_at AND board_views.ignored = '0')")
     @posts = @posts.order('updated_at desc').includes(:board)
     @page_title = "Unread Threads"
   end

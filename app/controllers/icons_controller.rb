@@ -72,18 +72,16 @@ class IconsController < ApplicationController
   private
 
   def find_icon
-    @icon = Icon.find_by_id(params[:id])
-
-    unless @icon
+    unless @icon = Icon.find_by_id(params[:id])
       flash[:error] = "Icon could not be found."
-      redirect_to galleries_path and return
+      redirect_to galleries_path
     end
   end
 
   def require_own_icon
     if @icon.user_id != current_user.id
       flash[:error] = "That is not your icon."
-      redirect_to galleries_path and return
+      redirect_to galleries_path
     end
   end
 end
