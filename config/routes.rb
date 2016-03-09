@@ -8,11 +8,8 @@ Rails.application.routes.draw do
   resources :messages, except: :edit do
     collection { post :mark }
   end
-  resources :replies do
+  resources :replies, except: [:index, :new, :show] do
     member { get :history }
-    collection do
-      post :preview
-    end
   end
   resources :posts do
     member { get :history }
