@@ -8,12 +8,6 @@ RSpec.describe UsersController do
   end
 
   describe "GET new" do
-    it "requires login" do
-      get :new
-      expect(response.status).to eq(302)
-      expect(flash[:error]).to eq("You must be logged in to view that page.")
-    end
-
     it "has more tests" do
       skip
     end

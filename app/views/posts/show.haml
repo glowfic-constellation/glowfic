@@ -24,6 +24,16 @@
             .view-button
               = image_tag '/images/book.png', class:'icon-view'
               Mark Complete
+- if @prev_post || @next_post
+  .post-navheader
+    .padding-10
+      - if @next_post
+        = link_to post_path(@next_post) do
+          .view-button Next Post &raquo;
+      - if @prev_post
+        = link_to post_path(@prev_post) do
+          .view-button.float-none &laquo; Previous Post
+      .clear
 - if @post.description.present?
   .post-subheader
     .padding-10

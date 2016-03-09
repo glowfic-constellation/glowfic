@@ -85,6 +85,9 @@ class PostsController < ApplicationController
     redirect_to post_path(@post, page: @replies.total_pages, per_page: per) and return if page > @replies.total_pages
     use_javascript('paginator')
 
+    @next_post = Post.where(board_id: @post.board_id).where("id > #{@post.id}").order('id asc').limit(1).first
+    @prev_post = Post.where(board_id: @post.board_id).where("id < #{@post.id}").order('id desc').limit(1).first
+
     if logged_in?
       use_javascript('posts')
       
