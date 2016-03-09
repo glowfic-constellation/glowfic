@@ -24,4 +24,10 @@ FactoryGirl.define do
     user
     name "test gallery"
   end
+
+  factory :icon do
+    user
+    url "http://www.fakeicon.com"
+    keyword "totally fake"
+  end
 end

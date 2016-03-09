@@ -184,7 +184,7 @@ RSpec.describe GalleriesController do
       expect(response.status).to eq(302)
       expect(response.redirect_url).to eq(galleries_url)
       expect(flash[:success]).to eq("Gallery deleted successfully.")
-      expect(Gallery.find_by_id(gallery)).to be_nil
+      expect(Gallery.find_by_id(gallery.id)).to be_nil
     end
   end
 
