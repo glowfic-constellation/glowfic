@@ -7,7 +7,12 @@
       %td.green.centered{colspan: 2}= icon_tag @icon
     %tr
       %th.sub URL
-      %td.even= f.text_field :url, :placeholder => "URL", :class => 'text'
+      %td.even
+        - if @icon.uploaded?
+          = image_tag "/images/accept.png", class: 'vmid'
+          Uploaded to site
+        - else
+          = f.text_field :url, :placeholder => "URL", :class => 'text'
     %tr
       %th.sub Keyword
       %td.odd= f.text_field :keyword, :placeholder => "Keyword", :class => 'text'
