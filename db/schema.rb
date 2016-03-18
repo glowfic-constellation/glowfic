@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20160306053517) do
+ActiveRecord::Schema.define(:version => 20160318021845) do
 
   create_table "audits", :force => true do |t|
     t.integer  "auditable_id"
@@ -134,6 +134,7 @@ ActiveRecord::Schema.define(:version => 20160306053517) do
 
   add_index "icons", ["has_gallery"], :name => "index_icons_on_has_gallery"
   add_index "icons", ["keyword"], :name => "index_icons_on_keyword"
+  add_index "icons", ["url"], :name => "index_icons_on_url"
   add_index "icons", ["user_id"], :name => "index_icons_on_user_id"
 
   create_table "messages", :force => true do |t|
