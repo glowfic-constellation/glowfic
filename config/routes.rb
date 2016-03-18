@@ -14,6 +14,7 @@ Rails.application.routes.draw do
   resources :posts do
     member { get :history }
     collection do
+      post :preview
       post :mark
       get :search
       get :owed

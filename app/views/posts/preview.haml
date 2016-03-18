@@ -4,4 +4,7 @@
   .post-subheader
     .padding-15= sanitize(@post.description, tags: %w(a), attributes: %w(href)).html_safe
 = render partial: 'replies/single', locals: {reply: @written, show_edit: false}
-= render partial: 'write_post', locals: { post: @post, url: @url, method: @method }
+- if @written.is_a?(Reply)
+  = render partial: 'write_reply', locals: { reply: @written, url: @url, method: @method }
+- else
+  = render partial: 'write_post', locals: { post: @post, url: @url, method: @method }
