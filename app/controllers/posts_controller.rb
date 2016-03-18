@@ -2,7 +2,7 @@ class PostsController < ApplicationController
   before_filter :login_required, :except => [:index, :show, :history]
   before_filter :find_post, :only => [:show, :history, :edit, :update, :destroy]
   before_filter :require_permission, only: [:edit, :destroy]
-  before_filter :build_template_groups, :only => [:new, :show, :edit, :preview]
+  before_filter :build_template_groups, :only => [:new, :show, :edit]
 
   def index
     @posts = Post.order('updated_at desc').limit(25).includes(:board)
@@ -52,18 +52,23 @@ class PostsController < ApplicationController
   end
 
   def create
-    @post = Post.new(params[:post].merge(user: current_user))
-
-    if @post.save
-      flash[:success] = "You have successfully posted."
-      redirect_to post_path(@post)
+    if params[:button_preview]
+      preview
+      render :action => 'preview'
     else
-      flash.now[:error] = @post.errors.full_messages.to_s
-      @image = @post.icon
-      @character = @post.character
-      use_javascript('posts')
-      build_template_groups
-      render :action => :new
+      @post = Post.new(params[:post].merge(user: current_user))
+
+      if @post.save
+        flash[:success] = "You have successfully posted."
+        redirect_to post_path(@post)
+      else
+        flash.now[:error] = @post.errors.full_messages.to_s
+        @image = @post.icon
+        @character = @post.character
+        use_javascript('posts')
+        build_template_groups
+        render :action => :new
+      end
     end
   end
 
@@ -112,17 +117,12 @@ class PostsController < ApplicationController
   end
 
   def preview
-    if params[:post]
-      @written = Post.new(params[:post])
-      @post = @written
-      @url = params[:post_id] ? post_path(params[:post_id]) : posts_path
-      @method = params[:post_id] ? :put : :post
-    elsif params[:reply]
-      @written = Reply.new(params[:reply])
-      @post = @written.post
-      @url = params[:reply_id] ? reply_path(params[:reply_id]) : replies_path
-      @method = params[:reply_id] ? :put : :post
-    end
+    build_template_groups
+    
+    @written = Post.new(params[:post])
+    @post = @written
+    @url = params[:post_id] ? post_path(params[:post_id]) : posts_path
+    @method = params[:post_id] ? :put : :post
     @written.user = current_user
 
     use_javascript('posts')
@@ -135,40 +135,45 @@ class PostsController < ApplicationController
   end
 
   def update
-    if params[:unread].present?
-      @post.views.where(user_id: current_user.id).destroy_all
-      flash[:success] = "Post has been marked as unread"
-      redirect_to board_path(@post.board) and return
-    end
-
-    status = "complete"
-    if params[:completed].present?
-      if params[:completed] == "true" && !@post.completed?
-        @post.status = Post::STATUS_COMPLETE
-        @post.save
-      elsif params[:completed] == "false" && @post.completed?
-        @post.status = Post::STATUS_ACTIVE
-        @post.save
-        status = "in progress"
-      end
-      flash[:success] = "Post has been marked #{status}."
-      redirect_to post_path(@post) and return
-    end
-
-    require_permission
-
-    @post.update_attributes(params[:post])
-    @post.board ||= Board.find(3)
-    if @post.save
-      flash[:success] = "Your post has been updated."
-      redirect_to post_path(@post)
+    if params[:button_preview]
+      preview
+      render :action => 'preview'
     else
-      flash.now[:error] = @post.errors.full_messages
-      @image = @post.replies[0].icon
-      @character = @post.replies[0].character
-      use_javascript('posts')
-      build_template_groups
-      render :action => :new
+      if params[:unread].present?
+        @post.views.where(user_id: current_user.id).destroy_all
+        flash[:success] = "Post has been marked as unread"
+        redirect_to board_path(@post.board) and return
+      end
+
+      status = "complete"
+      if params[:completed].present?
+        if params[:completed] == "true" && !@post.completed?
+          @post.status = Post::STATUS_COMPLETE
+          @post.save
+        elsif params[:completed] == "false" && @post.completed?
+          @post.status = Post::STATUS_ACTIVE
+          @post.save
+          status = "in progress"
+        end
+        flash[:success] = "Post has been marked #{status}."
+        redirect_to post_path(@post) and return
+      end
+
+      require_permission
+
+      @post.update_attributes(params[:post])
+      @post.board ||= Board.find(3)
+      if @post.save
+        flash[:success] = "Your post has been updated."
+        redirect_to post_path(@post)
+      else
+        flash.now[:error] = @post.errors.full_messages
+        @image = @post.replies[0].icon
+        @character = @post.replies[0].character
+        use_javascript('posts')
+        build_template_groups
+        render :action => :new
+      end
     end
   end
 
