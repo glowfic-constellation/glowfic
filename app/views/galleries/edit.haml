@@ -16,7 +16,12 @@
             = i.hidden_field :id
           - klass = cycle('even','odd')
           %td.centered{class: klass} URL
-          %td{class: klass}= i.text_field :url, :placeholder => "URL", :class => 'text'
+          %td{class: klass}
+            - if icon.uploaded?
+              = image_tag "/images/accept.png", class: 'vmid'
+              Uploaded to site
+            - else
+              = i.text_field :url, :placeholder => "URL", :class => 'text'
         %tr
           - klass = cycle('even','odd')
           %td.centered{class: klass} Keyword

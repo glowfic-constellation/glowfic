@@ -29,5 +29,9 @@ FactoryGirl.define do
     user
     url "http://www.fakeicon.com"
     keyword "totally fake"
+
+    factory :uploaded_icon do
+      url { "http://glowfic-constellation.s3.amazonaws.com/users/#{user.id}/icons/nonsense-fakeimg.png" }
+    end
   end
 end

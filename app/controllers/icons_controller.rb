@@ -49,7 +49,9 @@ class IconsController < ApplicationController
       flash[:success] = "Icon updated."
       redirect_to icon_path(@icon)
     else
-      flash.now[:error] = "Something went wrong."
+      flash.now[:error] = {}
+      flash.now[:error][:message] = "Your icon could not be saved due to the following problems:"
+      flash.now[:error][:array] = @icon.errors.full_messages
       render :action => :edit
     end
   end

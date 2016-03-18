@@ -1,6 +1,8 @@
 class GalleriesController < ApplicationController
   before_filter :login_required, except: :show
   before_filter :find_gallery, only: [:destroy, :edit, :update]
+  before_filter :set_s3_url, only: [:add, :icon]
+  before_filter :setup_new_icons, only: [:add, :icon]
 
   def index
     use_javascript('galleries/index')
@@ -32,8 +34,6 @@ class GalleriesController < ApplicationController
 
   def add
     find_gallery if params[:id] != '0'
-    use_javascript('galleries/add')
-    setup_new_icons
     icons = (current_user.icons - (@gallery.try(:icons) || [])).sort { |i| i.id }
     @unassigned = icons.reject(&:has_gallery?)
     @assigned = icons.select(&:has_gallery?)
@@ -96,7 +96,6 @@ class GalleriesController < ApplicationController
     icons = (params[:icons] || []).reject { |icon| icon.values.all?(&:blank?) }
     if icons.empty?
       flash.now[:error] = "You have to enter something."
-      setup_new_icons
       render :action => :add and return
     end
 
@@ -104,9 +103,10 @@ class GalleriesController < ApplicationController
     failed = false
     @icons = params[:icons].reject { |icon| icon.values.all?(&:blank?) }
     @icons.each_with_index do |icon, index|
-      icon = Icon.new(icon)
+      icon = Icon.new(icon.except('file'))
       icon.user = current_user
       unless icon.valid?
+        @icons[index]['url'] = '' if icon.errors.messages[:url] && icon.errors.messages[:url].include?('has already been taken')
         flash.now[:error] ||= {}
         flash.now[:error][:array] ||= []
         flash.now[:error][:array] += icon.errors.full_messages.map{|m| "Icon "+(index+1).to_s+": "+m.downcase}
@@ -116,13 +116,11 @@ class GalleriesController < ApplicationController
     end
 
     if failed
-      use_javascript('icons')
       flash.now[:error][:message] = "Your icons could not be saved."
       render :action => :add and return
     elsif icons.empty?
       @icons = []
       flash.now[:error] = "Your icons could not be saved."
-      use_javascript('icons')
       render :action => :add
     elsif icons.all?(&:save)
       if @gallery
@@ -132,7 +130,6 @@ class GalleriesController < ApplicationController
       redirect_to galleries_path
     else
       flash.now[:error] = "Your icons could not be saved."
-      use_javascript('icons')
       render :action => :add
     end
   end
@@ -160,7 +157,11 @@ class GalleriesController < ApplicationController
   end
 
   def setup_new_icons
-    use_javascript('icons')
+    use_javascript('galleries/add')
     @icons = []
+  end
+
+  def set_s3_url
+    @s3_direct_post = S3_BUCKET.presigned_post(key: "users/#{current_user.id}/icons/#{SecureRandom.uuid}_${filename}", success_action_status: '201', acl: 'public-read', content_type_starts_with: 'image/')
   end
 end
