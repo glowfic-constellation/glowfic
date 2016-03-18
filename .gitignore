@@ -19,5 +19,6 @@
 .sass-cache/*
 *~
 
-# Ignore rbenv setup
+# Ignore env files
 .ruby-version
+.env

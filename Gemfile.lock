@@ -33,6 +33,12 @@ GEM
     audited-activerecord (3.0.0)
       activerecord (~> 3.0)
       audited (= 3.0.0)
+    aws-sdk (2.2.26)
+      aws-sdk-resources (= 2.2.26)
+    aws-sdk-core (2.2.26)
+      jmespath (~> 1.0)
+    aws-sdk-resources (2.2.26)
+      aws-sdk-core (= 2.2.26)
     browser (1.0.1)
     builder (3.0.4)
     byebug (4.0.5)
@@ -93,6 +99,7 @@ GEM
       json (~> 1.8)
       multi_xml (>= 0.5.2)
     i18n (0.7.0)
+    jmespath (1.1.3)
     journey (1.0.4)
     jquery-rails (3.1.2)
       railties (>= 3.0, < 5.0)
@@ -190,6 +197,7 @@ PLATFORMS
 
 DEPENDENCIES
   audited-activerecord (~> 3.0)
+  aws-sdk (~> 2)
   browser
   byebug
   chosen-rails
