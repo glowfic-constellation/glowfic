@@ -47,6 +47,7 @@ $(document).ready(function() {
 
   $("#preview_button").click(function() {
     $("#submit_button").removeAttr('data-disable-with').attr('disabled', 'disabled');
+    
     action = $("#post_form").attr('action');
     if(action != "/posts" && action != "/replies") { 
       if(action.startsWith("/posts")) {
@@ -57,8 +58,7 @@ $(document).ready(function() {
         $("<input>").attr("type", "hidden").attr("name", "reply_id").val(reply_id).appendTo('#post_form');
       }
     }
-    $("#post_form").attr('action', '/posts/preview');
-    $("input[name=_method]").val('post');
+    
     return true;
   });
 
