@@ -27,9 +27,12 @@ Rails.application.routes.draw do
     end
     collection { get :facecasts }
   end
-  resources :icons, except: [:index, :new] do
+  resources :icons, except: [:index, :new, :create] do
     member do
       post :avatar
+    end
+    collection do
+      delete :delete_multiple
     end
   end
   resources :users do

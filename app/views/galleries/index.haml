@@ -21,7 +21,7 @@
   %tr
     %td.green.gallery-title
       .gallery{id: "gallery0"}
-        = form_tag icons_path do
+        = form_tag delete_multiple_icons_path, method: :delete do
           - icons = @user.icons.where(has_gallery: false).order('keyword asc')
           - icons.each do |icon|
             .gallery-icon{ id: "icon#{icon.id.to_s}"}

@@ -1,17 +1,16 @@
 class IconsController < ApplicationController
   before_filter :login_required, except: :show
-  before_filter :find_icon, except: :create
+  before_filter :find_icon, except: :delete_multiple
   before_filter :require_own_icon, only: [:edit, :update, :destroy, :avatar]
-
-  def create
-    # ignore the name. this removes icons from galleries or deletes them outright, in batches.
+  
+  def delete_multiple
     icon_ids = (params[:marked_ids] || []).map(&:to_i).reject(&:zero?)
     if icon_ids.empty? or (icons = Icon.where(id: icon_ids)).empty?
       flash[:error] = "No icons selected."
       redirect_to galleries_path and return
     end
-
-    if params[:commit] == '- Remove selected icons from gallery'
+    
+    if params[:button_icon_gallery_delete]
       gallery = Gallery.find_by_id(params[:gallery_id])
       unless gallery
         flash[:error] = "Gallery could not be found."
@@ -28,14 +27,14 @@ class IconsController < ApplicationController
       end
       flash[:success] = "Icons removed from gallery."
       redirect_to gallery_path(gallery) and return
-    end
-
-    icons.each do |icon|
-      next unless icon.user_id == current_user.id
-      icon.destroy
-    end
-    flash[:success] = "Icons deleted."
+    else
+      icons.each do |icon|
+        next unless icon.user_id == current_user.id
+        icon.destroy
+      end
+      flash[:success] = "Icons deleted."
       redirect_to galleries_path and return
+    end
   end
 
   def show
