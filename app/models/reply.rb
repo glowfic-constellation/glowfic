@@ -17,6 +17,13 @@ class Reply < ActiveRecord::Base
     @skip_post_update = val
   end
 
+  def post_page(per=25)
+    per_page = per > 0 ? per : post.replies.count
+    index = post.replies.order('id asc').to_a.index(self)
+    return 1 unless index.present?
+    (index / per_page) + 1
+  end
+
   private
 
   def update_post_timestamp

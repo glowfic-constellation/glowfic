@@ -24,6 +24,10 @@
             .view-button
               = image_tag '/images/book.png', class:'icon-view'
               Mark Complete
+- if @post.description.present?
+  .post-subheader
+    .padding-10
+      %span= sanitize(@post.description, tags: %w(a), attributes: %w(href)).html_safe
 - if @prev_post || @next_post
   .post-navheader
     .padding-10
@@ -34,10 +38,6 @@
         = link_to post_path(@prev_post) do
           .view-button.float-none &laquo; Previous Post
       .clear
-- if @post.description.present?
-  .post-subheader
-    .padding-10
-      %span= sanitize(@post.description, tags: %w(a), attributes: %w(href)).html_safe
 
 - if page == 1
   = render partial: 'replies/single', locals: {reply: @post}
@@ -47,13 +47,13 @@
     .hidden
       = render partial: 'replies/single', locals: {reply: @post}
 - if @replies.present?
-  = render partial: 'paginator', locals: { paginated: @replies, path: :post_path }
+  = render partial: 'posts/paginator', locals: { paginated: @replies, path: :post_path }
 - @replies.each do |reply|
   = render partial: 'replies/single', locals: {reply: reply}
 - if @replies.present?
-  = render partial: 'paginator', locals: { paginated: @replies, path: :post_path }
+  = render partial: 'posts/paginator', locals: { paginated: @replies, path: :post_path }
 - if logged_in? && current_user.writes_in?(@post.board)
-  = render partial: 'write_reply', locals: { reply: @reply, url: replies_path, method: :post }
+  = render partial: 'posts/write_reply', locals: { reply: @reply, url: replies_path, method: :post }
 
 - unless true # threaded
   %table
