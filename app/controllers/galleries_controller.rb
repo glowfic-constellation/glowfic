@@ -33,11 +33,6 @@ class GalleriesController < ApplicationController
   end
 
   def add
-    find_gallery if params[:id] != '0'
-    icons = (current_user.icons - (@gallery.try(:icons) || [])).sort { |i| i.id }
-    @unassigned = icons.reject(&:has_gallery?)
-    @assigned = icons.select(&:has_gallery?)
-    @page_title = "Add Icons"
   end
 
   def show
@@ -159,6 +154,9 @@ class GalleriesController < ApplicationController
   def setup_new_icons
     use_javascript('galleries/add')
     @icons = []
+    find_gallery if params[:id] != '0'
+    @unassigned = current_user.icons.where(has_gallery: false).order('keyword asc')
+    @page_title = "Add Icons"
   end
 
   def set_s3_url

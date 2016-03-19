@@ -52,6 +52,7 @@
     %tr
       %th.sub Icons in Other Galleries
     - current_user.galleries.each do |gallery|
+      - next if gallery.id == @gallery.try(:id)
       %tr
         %td.padding-5{class: cycle('even', 'odd')}
           %b= gallery.name
