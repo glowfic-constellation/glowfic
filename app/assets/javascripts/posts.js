@@ -47,18 +47,6 @@ $(document).ready(function() {
 
   $("#preview_button").click(function() {
     $("#submit_button").removeAttr('data-disable-with').attr('disabled', 'disabled');
-    
-    action = $("#post_form").attr('action');
-    if(action != "/posts" && action != "/replies") { 
-      if(action.startsWith("/posts")) {
-        var post_id = action.substring(7);
-        $("<input>").attr("type", "hidden").attr("name", "post_id").val(post_id).appendTo('#post_form');
-      } else {
-        var reply_id = action.substring(9);
-        $("<input>").attr("type", "hidden").attr("name", "reply_id").val(reply_id).appendTo('#post_form');
-      }
-    }
-    
     return true;
   });
 

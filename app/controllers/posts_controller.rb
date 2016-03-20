@@ -53,6 +53,8 @@ class PostsController < ApplicationController
 
   def create
     if params[:button_preview]
+      @url = posts_path
+      @method = :post
       preview
       render :action => 'preview'
     else
@@ -121,8 +123,6 @@ class PostsController < ApplicationController
     
     @written = Post.new(params[:post])
     @post = @written
-    @url = params[:post_id] ? post_path(params[:post_id]) : posts_path
-    @method = params[:post_id] ? :put : :post
     @written.user = current_user
 
     use_javascript('posts')
@@ -136,6 +136,8 @@ class PostsController < ApplicationController
 
   def update
     if params[:button_preview]
+      @url = post_path(params[:id])
+      @method = :put
       preview
       render :action => 'preview'
     else

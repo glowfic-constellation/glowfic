@@ -6,6 +6,8 @@ class RepliesController < ApplicationController
 
   def create
     if params[:button_preview]
+      @url = replies_path
+      @method = :post
       preview
       render :action => 'preview'
     else
@@ -30,8 +32,6 @@ class RepliesController < ApplicationController
     
     @written = Reply.new(params[:reply])
     @post = @written.post
-    @url = params[:reply_id] ? reply_path(params[:reply_id]) : replies_path
-    @method = params[:reply_id] ? :put : :post
     @written.user = current_user
 
     use_javascript('posts')
@@ -48,6 +48,8 @@ class RepliesController < ApplicationController
 
   def update
     if params[:button_preview]
+      @url = reply_path(params[:id])
+      @method = :put
       preview
       render :action => 'preview'
     else
