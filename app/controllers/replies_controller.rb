@@ -1,23 +1,40 @@
 class RepliesController < ApplicationController
   before_filter :login_required, except: :history
-  before_filter :build_template_groups, only: :edit
+  before_filter :build_template_groups, only: [:edit]
   before_filter :find_reply, only: [:history, :edit, :update, :destroy]
   before_filter :require_permission, only: [:edit, :update, :destroy]
 
   def create
-    reply = Reply.new(params[:reply])
-    reply.user = current_user
-    if reply.save
-      flash[:success] = "Posted!"
-      cur_per = params[:per_page] || per_page
-      last_page = 1
-      last_page = reply.post.replies.paginate(page: 1, per_page: cur_per).total_pages if cur_per.to_i > 0
-      dict = {anchor: "reply-#{reply.id}", per_page: cur_per, page: last_page}
-      redirect_to post_path(reply.post, dict)
+    if params[:button_preview]
+      @url = replies_path
+      @method = :post
+      preview
+      render :action => 'preview'
     else
-      flash[:error] = "Problems. "+reply.errors.full_messages.to_s
-      redirect_to post_path(reply.post)
+      reply = Reply.new(params[:reply])
+      reply.user = current_user
+      if reply.save
+        flash[:success] = "Posted!"
+        cur_per = params[:per_page] || per_page
+        last_page = 1
+        last_page = reply.post.replies.paginate(page: 1, per_page: cur_per).total_pages if cur_per.to_i > 0
+        dict = {anchor: "reply-#{reply.id}", per_page: cur_per, page: last_page}
+        redirect_to post_path(reply.post, dict)
+      else
+        flash[:error] = "Problems. "+reply.errors.full_messages.to_s
+        redirect_to post_path(reply.post)
+      end
     end
+  end
+  
+  def preview
+    build_template_groups
+    
+    @written = Reply.new(params[:reply])
+    @post = @written.post
+    @written.user = current_user
+
+    use_javascript('posts')
   end
 
   def history
@@ -30,9 +47,16 @@ class RepliesController < ApplicationController
   end
 
   def update
-    @reply.update_attributes(params[:reply])
-    flash[:success] = "Post updated"
-    redirect_to reply_link(@reply)
+    if params[:button_preview]
+      @url = reply_path(params[:id])
+      @method = :put
+      preview
+      render :action => 'preview'
+    else
+      @reply.update_attributes(params[:reply])
+      flash[:success] = "Post updated"
+      redirect_to reply_link(@reply)
+    end
   end
 
   def destroy
