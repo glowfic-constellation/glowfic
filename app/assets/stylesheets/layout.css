@@ -94,6 +94,7 @@
     float: right;
     cursor: pointer;
 }
+.view-button.selected { background-color: #9E9C93; }
 .view-button a { color: white; }
 .view-button .list-view { width: 20px; height: 17px; display: inline; margin: 0px; padding: 0px; top: 2px; position: relative; }
 .view-button .icon-view { width: 15px; height: 15px; display: inline; margin: 0px; padding: 0px; top: 2px; position: relative; }
