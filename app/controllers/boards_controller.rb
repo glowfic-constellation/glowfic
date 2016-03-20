@@ -18,7 +18,9 @@ class BoardsController < ApplicationController
       flash[:success] = "Continuity created!"
       redirect_to boards_path
     else
-      flash.now[:error] = "Continuity could not be created."
+      flash.now[:error] = {}
+      flash.now[:error][:message] = "Continuity could not be created."
+      flash.now[:error][:array] = @board.errors.full_messages
       set_available_cowriters
       render :action => :new
     end
@@ -38,13 +40,20 @@ class BoardsController < ApplicationController
   end
 
   def mark
-    board = Board.find(params[:board_id])
+    board = Board.find_by_id(params[:board_id])
+    unless board
+      flash[:error] = "Continuity could not be found."
+      redirect_to unread_posts_path and return
+    end
+
     if params[:commit] == "Mark Read"
       board.mark_read(current_user)
       flash[:success] = "#{board.name} marked as read."
-    else
+    elsif params[:commit] == "Hide from Unread"
       board.ignore(current_user)
       flash[:success] = "#{board.name} hidden from this page."
+    else
+      flash[:error] = "Please choose a valid action."
     end
     redirect_to unread_posts_path
   end
