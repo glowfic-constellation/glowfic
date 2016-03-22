@@ -74,6 +74,9 @@ GEM
       sass-rails (< 5.1)
       sprockets (< 2.13)
     diff-lcs (1.2.5)
+    dotenv (2.0.1)
+    dotenv-rails (2.0.1)
+      dotenv (= 2.0.1)
     erubis (2.7.0)
     execjs (2.5.2)
     factory_girl (4.5.0)
@@ -202,6 +205,7 @@ DEPENDENCIES
   byebug
   chosen-rails
   coffee-rails
+  dotenv-rails
   factory_girl_rails
   gon
   haml
