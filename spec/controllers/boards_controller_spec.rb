@@ -107,15 +107,15 @@ RSpec.describe BoardsController do
   end
 
   describe "GET edit" do
-    skip
+    skip "edit is not yet implemented"
   end
 
   describe "PUT update" do
-    skip
+    skip "update is not yet implemented"
   end
 
   describe "DELETE destroy" do
-    skip
+    skip "destroy is not yet implemented"
   end
 
   describe "POST mark" do
