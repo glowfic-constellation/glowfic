@@ -1,5 +1,5 @@
 class RepliesController < WritableController
-  before_filter :login_required, except: :history
+  before_filter :login_required, except: [:show, :history]
   before_filter :build_template_groups, only: [:show, :edit]
   before_filter :find_reply, only: [:show, :history, :edit, :update, :destroy]
   before_filter :require_permission, only: [:edit, :update, :destroy]
