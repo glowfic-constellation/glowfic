@@ -1,7 +1,7 @@
-class RepliesController < ApplicationController
+class RepliesController < WritableController
   before_filter :login_required, except: :history
-  before_filter :build_template_groups, only: [:edit]
-  before_filter :find_reply, only: [:history, :edit, :update, :destroy]
+  before_filter :build_template_groups, only: [:show, :edit]
+  before_filter :find_reply, only: [:show, :history, :edit, :update, :destroy]
   before_filter :require_permission, only: [:edit, :update, :destroy]
 
   def create
@@ -15,11 +15,7 @@ class RepliesController < ApplicationController
       reply.user = current_user
       if reply.save
         flash[:success] = "Posted!"
-        cur_per = params[:per_page] || per_page
-        last_page = 1
-        last_page = reply.post.replies.paginate(page: 1, per_page: cur_per).total_pages if cur_per.to_i > 0
-        dict = {anchor: "reply-#{reply.id}", per_page: cur_per, page: last_page}
-        redirect_to post_path(reply.post, dict)
+        redirect_to reply_path(reply, anchor: "reply-#{reply.id}")
       else
         flash[:error] = "Problems. "+reply.errors.full_messages.to_s
         redirect_to post_path(reply.post)
@@ -35,6 +31,12 @@ class RepliesController < ApplicationController
     @written.user = current_user
 
     use_javascript('posts')
+  end
+
+  def show
+    @post = @reply.post
+    current_page = params[:page] || @reply.post_page(per_page)
+    show_post(current_page)
   end
 
   def history
@@ -55,7 +57,7 @@ class RepliesController < ApplicationController
     else
       @reply.update_attributes(params[:reply])
       flash[:success] = "Post updated"
-      redirect_to reply_link(@reply)
+      redirect_to reply_path(@reply, anchor: "reply-#{@reply.id}")
     end
   end
 
@@ -81,29 +83,5 @@ class RepliesController < ApplicationController
       flash[:error] = "You do not have permission to modify this post."
       redirect_to post_path(@reply.post)
     end
-  end
-
-  def build_template_groups
-    return unless logged_in?
-
-    templates = current_user.templates.sort_by(&:name)
-    faked = Struct.new(:name, :id, :ordered_characters)
-    templateless = faked.new('Templateless', nil, current_user.characters.where(:template_id => nil).to_a)
-    @templates = templates + [templateless]
-
-    gon.current_user = current_user.gon_attributes
-    gon.character_path = character_user_path(current_user)
-  end
-
-  def reply_link(reply)
-    per = per_page > 0 ? per_page : reply.post.replies.count
-    array = reply.post.replies.select(:id).map(&:id)
-    hash = Hash[array.map.with_index.to_a]
-    reply_index = hash[reply.id]
-    page = (reply_index / per) + 1
-    dict = {anchor: "reply-#{reply.id}"}
-    dict['page'] = page if page > 1
-    dict['per_page'] = params[:per_page] if params[:per_page]
-    post_path(reply.post, dict)
   end
 end
