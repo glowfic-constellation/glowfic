@@ -10,7 +10,7 @@ class IconsController < ApplicationController
       redirect_to galleries_path and return
     end
     
-    if params[:button_icon_gallery_delete]
+    if params[:icons_delete]
       gallery = Gallery.find_by_id(params[:gallery_id])
       unless gallery
         flash[:error] = "Gallery could not be found."
@@ -27,14 +27,14 @@ class IconsController < ApplicationController
       end
       flash[:success] = "Icons removed from gallery."
       redirect_to gallery_path(gallery) and return
-    else
-      icons.each do |icon|
-        next unless icon.user_id == current_user.id
-        icon.destroy
-      end
-      flash[:success] = "Icons deleted."
-      redirect_to galleries_path and return
     end
+    
+    icons.each do |icon|
+      next unless icon.user_id == current_user.id
+      icon.destroy
+    end
+    flash[:success] = "Icons deleted."
+    redirect_to galleries_path and return
   end
 
   def show
