@@ -39,7 +39,7 @@ module ApplicationHelper
   def post_or_reply_link(reply)
     return unless reply.id.present?
     if reply.is_a?(Reply)
-      post_path(reply.post, per_page: 'all', anchor: "reply-#{reply.id}")
+      reply_path(reply, anchor: "reply-#{reply.id}")
     else
       post_path(reply)
     end
