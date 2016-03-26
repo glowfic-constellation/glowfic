@@ -1,0 +1,30 @@
+%div{style: 'width: 500px; margin: 0px auto; background-color: #8B8687; color: #eeeeee; padding: 0px; font-size: 18px;'}
+  %div{style: 'padding: 15px; overflow: hidden;'}
+    %span{style: 'line-height: 28px;'} New reply
+
+%div{style: 'width: 500px; margin: 0px auto; background-color: #E3E3E3;'}
+  %div{style: 'padding: 10px; text-align: left;'}
+    #{@reply.post.subject} has a new reply!
+    = link_to 'See it here.', post_url(@reply.post, host: 'vast-journey-9935.herokuapp.com')
+    %br
+    %br
+    This is totally a test email. No actual response has been posted. Do not pass Go, do not collect glowfic posts.
+
+%div{style: 'background-color: #D8D8D8; overflow: auto; width: 500px; margin: 0px auto;'}
+  %div{style: 'padding: 10px; text-align: left;'}
+    %div{style: 'text-align: center; padding: 0px; float: left; margin-right: 10px; margin-bottom: 5px; width: 150px; overflow: visible;'}
+      - if @reply.icon
+        %div{style: 'padding: 0px; background-color: #B0BBA9;'}
+          = link_to icon_path(@reply.icon) do
+            = icon_tag @reply.icon, style: 'margin: 10px; vertical-align: middle; position: relative; max-height: 100px; max-width: 100px;'
+      - if @reply.character
+        %div{style: 'background-color: #8B8687; padding: 4px; position: relative;'}
+          = link_to @reply.character.name, character_path(@reply.character)
+        - if @reply.character.screenname
+          %div{style: 'background-color: #a3a1a0; padding: 4px; overflow-wrap: break-word; word-wrap: break-word;'}
+            = @reply.character.screenname
+      - else
+        %div{style: 'height: 2px; background-color: #8B8687;'}
+      %div{style: 'padding: 5px; background-color: #B9B6AD; position: relative;'}
+        = link_to @reply.user.username, user_path(@reply.user)
+    = sanitize(@reply.content.gsub("\n","<br/>")).html_safe

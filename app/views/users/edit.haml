@@ -6,11 +6,14 @@
       %th.sub Username
       %td.even= f.text_field :username, placeholder: "Username", class: 'text'
     %tr
+      %th.sub Email
+      %td.odd= f.text_field :email, placeholder: "Email address", class: 'text'
+    %tr
       %th.sub Paging
-      %td.odd= f.select(:per_page, per_page_options(current_user.per_page))
+      %td.even= f.select(:per_page, per_page_options(current_user.per_page))
     %tr
       %th.sub Time zone
-      %td.even= f.select(:timezone, timezone_options(current_user.timezone))
+      %td.odd= f.select(:timezone, timezone_options(current_user.timezone))
     %tr
       %th.centered.subber{colspan: 2}= submit_tag "Save", class: 'button'
 
