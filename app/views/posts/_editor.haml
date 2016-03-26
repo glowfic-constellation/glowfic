@@ -25,12 +25,24 @@
             %br
   #gallery.green
     - if item.character.try(:galleries).try(:present?)
-      - icons = item.character.galleries.map(&:icons).flatten.uniq.sort_by{|i| i.keyword}
-      - icons.each_with_index do |icon, index|
-        .gallery-icon
-          = icon_tag icon, id: icon.id, pointer: true
-          %br>
-          = icon.keyword
+      - if current_user.icon_picker_grouping
+        - galleries = item.character.galleries.includes(:icons).order('name asc')
+        - galleries.each_with_index do |gallery, gallery_index|
+          .gallery-group
+            .gallery-name= gallery.name
+            - gallery_icons = gallery.icons.uniq.sort_by{|i| i.keyword}
+            - gallery_icons.each_with_index do |icon, icon_index|
+              .gallery-icon
+                = icon_tag icon, id: icon.id, pointer: true
+                %br>
+                = icon.keyword
+      - else
+        - icons = item.character.galleries.map(&:icons).flatten.uniq.sort_by{|i| i.keyword}
+        - icons.each_with_index do |icon, index|
+          .gallery-icon
+            = icon_tag icon, id: icon.id, pointer: true
+            %br>
+            = icon.keyword
     - elsif item.character.try(:default_icon)
       .gallery-icon
         = icon_tag item.character.default_icon, id: item.character.default_icon.id, pointer: true
@@ -40,8 +52,15 @@
       .gallery-icon
         = icon_tag item.user.avatar, id: item.user.avatar.id, pointer: true
         %br> Avatar
-    .gallery-icon
-      = no_icon_tag id: '', pointer: true
-      %br> No Icon
+    - if current_user.icon_picker_grouping
+      .gallery-group
+        .gallery-name Miscellaneous
+        .gallery-icon
+          = no_icon_tag id: '', pointer: true
+          %br> No Icon
+    - else
+      .gallery-icon
+        = no_icon_tag id: '', pointer: true
+        %br> No Icon
   = yield :form
   .clear &nbsp;

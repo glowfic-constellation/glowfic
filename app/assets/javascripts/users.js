@@ -26,6 +26,11 @@ $(document).ready(function() {
   })
 
   $("#user_timezone").chosen({width: '250px'});
+  
+  $("#user_icon_picker_grouping").chosen({
+    width: '250px',
+    disable_search_threshold: 20
+  })
 });
 
 validateUsername = function() {

@@ -77,7 +77,7 @@ class UsersController < ApplicationController
   def character
     character = Character.find_by_id(params[:character_id])
     current_user.update_attributes(:active_character => character)
-    render :json => CharacterPresenter.new(character)
+    render :json => CharacterPresenter.new(character, current_user)
   end
 
   private

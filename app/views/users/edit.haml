@@ -12,6 +12,9 @@
       %th.sub Time zone
       %td.even= f.select(:timezone, timezone_options(current_user.timezone))
     %tr
+      %th.sub Icon picker icon display
+      %td.odd= f.select(:icon_picker_grouping, icon_picker_grouping_options(current_user.icon_picker_grouping))
+    %tr
       %th.centered.subber{colspan: 2}= submit_tag "Save", class: 'button'
 
 %br

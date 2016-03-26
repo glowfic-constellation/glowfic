@@ -105,18 +105,51 @@ $(document).ready(function() {
         $("#reply_icon_id").val('');
       } else {
         $("#current-icon").attr('src', resp['default']['url']).addClass('pointer');
+        $("#current-icon").attr('title', resp['default']['keyword']);
+        $("#current-icon").attr('alt', resp['default']['keyword']);
+        
         $("#reply_icon_id").val(resp['default']['id']);
         $("#gallery").html("");
-        var len = resp['gallery'].length;
-        for (var i = 0; i < len; i++) {
-          var img_id = resp['gallery'][i]['id'];
-          var img_url = resp['gallery'][i]['url'];
-          var img_key = resp['gallery'][i]['keyword'];
-          $("#gallery").append("<div class='gallery-icon'><img src='" + img_url + "' id='" + img_id + "' class='icon' /><br />"+img_key+"</div>");
+        
+        var galleries = resp['galleries'];
+        var len = galleries.length;
+        var galleryNames = len > 1 || "name" in galleries[0];
+        if (len >= 1) {
+          for (var i=0; i<len; i++) {
+            var gallery = galleries[i];
+            if (!("icons" in gallery)) continue;
+            
+            var icons = gallery["icons"];
+            
+            var appendStr = "";
+            if (galleryNames)
+              appendStr += "<div class='gallery-group'><div class='gallery-name'>" + ("name" in gallery ? gallery["name"] : "Unnamed Gallery") + "</div>";
+            
+            for (var x=0; x<icons.length; x++) {
+              var icon = icons[x];
+              var img_id = icon["id"];
+              var img_url = icon["url"];
+              var img_key = icon["keyword"];
+              appendStr += "<div class='gallery-icon'>"
+                + "<img src='" + img_url + "' id='" + img_id + "' alt='" + img_key + "' title='" + img_key + "' class='icon' />"
+                + "<br />" + img_key
+                + "</div>";
+            }
+            
+            if (galleryNames)
+              appendStr += "</div>";
+            $("#gallery").append(appendStr);
+          }
+          var appendStr = "";
+          if (galleryNames)
+            appendStr += "<div class='gallery-group'><div class='gallery-name'>Miscellaneous</div>";
+          appendStr += "<div class='gallery-icon'><img src='/images/no-icon.png' id='' alt='No Icon' title='No Icon' class='icon' /><br />No Icon</div>"
+          if (galleryNames)
+            appendStr  += "</div>";
+          $("#gallery").append(appendStr);
+          bindGallery();
+          bindIcon();
         }
-        $("#gallery").append("<div class='gallery-icon'><img src='/images/no-icon.png' id='' class='icon' /><br />No Icon</div>");
-        bindGallery();
-        bindIcon();
       }
     });
   });
