@@ -9,8 +9,8 @@ class Post < ActiveRecord::Base
   STATUS_ACTIVE = 0
   STATUS_COMPLETE = 1
 
-  belongs_to :board
-  belongs_to :section, class_name: BoardSection
+  belongs_to :board, inverse_of: :posts
+  belongs_to :section, class_name: BoardSection, inverse_of: :posts
   has_many :replies, inverse_of: :post, dependent: :destroy
   has_many :post_viewers
 

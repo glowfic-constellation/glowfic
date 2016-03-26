@@ -1,5 +1,5 @@
 class Template < ActiveRecord::Base
-  belongs_to :user
+  belongs_to :user, inverse_of: :templates
   has_many :characters
 
   validates_presence_of :name

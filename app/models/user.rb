@@ -6,13 +6,13 @@ class User < ActiveRecord::Base
   attr_protected :crypted
 
   has_many :icons
-  belongs_to :avatar, :class_name => Icon
   has_many :characters
   has_many :galleries
   has_many :character_groups
   has_many :templates
   has_many :sent_messages, :class_name => Message, :foreign_key => 'sender_id'
   has_many :messages, :foreign_key => 'recipient_id'
+  belongs_to :avatar, :class_name => Icon
   belongs_to :active_character, :class_name => Character
 
   validates_presence_of :username
