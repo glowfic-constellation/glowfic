@@ -35,8 +35,9 @@ class RepliesController < WritableController
 
   def show
     @post = @reply.post
-    current_page = params[:page] || @reply.post_page(per_page)
-    show_post(current_page)
+    @page_title = @post.subject
+    params[:page] ||= @reply.post_page(per_page)
+    show_post(params[:page])
   end
 
   def history
