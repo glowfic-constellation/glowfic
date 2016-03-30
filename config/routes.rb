@@ -4,6 +4,7 @@ Rails.application.routes.draw do
   match '/logout' => 'sessions#destroy', :as => :logout, :via => :delete
 
   resources :templates
+  resources :credits, only: :index
   resources :boards do collection { post :mark } end
   resources :messages, except: :edit do
     collection { post :mark }
