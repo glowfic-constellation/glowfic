@@ -7,7 +7,7 @@
 
 .post-header
   .padding-15
-    %span#post-title= @post.subject
+    %span#post-title= link_to @post.subject, post_path(@post)
     - if logged_in?
       = link_to post_path(@post, unread: true), :method => :put do
         .view-button
