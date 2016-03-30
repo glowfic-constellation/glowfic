@@ -1,9 +1,9 @@
 require "spec_helper"
 
 RSpec.describe IconsController do
-  describe "POST create" do
+  describe "DELETE delete_multiple" do
     it "requires login" do
-      post :create
+      delete :delete_multiple
       expect(response.status).to eq(302)
       expect(flash[:error]).to eq("You must be logged in to view that page.")
     end
