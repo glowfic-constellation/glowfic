@@ -63,9 +63,10 @@ class RepliesController < WritableController
   end
 
   def destroy
+    to_page = @reply.post_page(per_page) # get index before destroying
     @reply.destroy
     flash[:success] = "Post deleted."
-    redirect_to post_path(@reply.post)
+    redirect_to post_path(@reply.post, page: to_page)
   end
 
   private
