@@ -22,7 +22,7 @@ module Glowfic
 
     config.action_view.sanitized_allowed_tags = Glowfic::ALLOWED_TAGS
     config.after_initialize do
-      ActionView::Base.sanitized_allowed_attributes << ['style', 'target']
+      ActionView::Base.sanitized_allowed_attributes += ['style', 'target']
     end
     config.middleware.use Rack::Pratchett
 
