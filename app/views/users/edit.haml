@@ -9,11 +9,16 @@
       %th.sub Email
       %td.odd= f.text_field :email, placeholder: "Email address", class: 'text'
     %tr
+      %th.sub Notifications
+      %td.even
+        = f.check_box :email_notifications, class: 'width-15 vmid'
+        Email about new tags
+    %tr
       %th.sub Paging
-      %td.even= f.select(:per_page, per_page_options(current_user.per_page))
+      %td.odd= f.select(:per_page, per_page_options(current_user.per_page))
     %tr
       %th.sub Time zone
-      %td.odd= f.select(:timezone, timezone_options(current_user.timezone))
+      %td.even= f.select(:timezone, timezone_options(current_user.timezone))
     %tr
       %th.centered.subber{colspan: 2}= submit_tag "Save", class: 'button'
 

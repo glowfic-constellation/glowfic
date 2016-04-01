@@ -8,7 +8,6 @@ class UserMailer < ActionMailer::Base
     @subject = reply.user.username + " posted a new reply in the thread " + reply.post.subject
     @reply = reply
     @user = user
-    mail(to: 'xxstealthestarsxx@gmail.com', subject: @subject, content_type: "text/html")
-    # mail(to: 'peahenironybath@gmail.com', subject: @subject, content_type: "text/html")
+    mail(to: user.email, subject: @subject)
   end
 end

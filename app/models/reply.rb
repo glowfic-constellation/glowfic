@@ -36,10 +36,16 @@ class Reply < ActiveRecord::Base
   end
 
   def notify_other_authors
+    return if (previous_reply || post).user_id == user_id
     post.authors.each do |author|
       next if author.id == user_id
       next unless author.email.present?
+      next unless author.email_notifications?
       UserMailer.post_has_new_reply(author, self).deliver
     end
+  end
+
+  def previous_reply
+    @prev ||= post.replies.where('id < ?', id).order('id desc').limit(1).first
   end
 end

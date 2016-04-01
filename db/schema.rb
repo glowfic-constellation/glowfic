@@ -237,6 +237,7 @@ ActiveRecord::Schema.define(:version => 20160322032647) do
     t.datetime "updated_at",                          :null => false
     t.string   "timezone"
     t.string   "email"
+    t.boolean  "email_notifications"
   end
 
   add_index "users", ["email"], :name => "index_users_on_email", :unique => true
