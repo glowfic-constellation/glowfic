@@ -9,17 +9,19 @@ class RepliesController < WritableController
       @url = replies_path
       @method = :post
       preview
-      render :action => 'preview'
+      render :action => 'preview' and return
+    end
+
+    reply = Reply.new(params[:reply])
+    reply.user = current_user
+    if reply.save
+      flash[:success] = "Posted!"
+      redirect_to reply_path(reply, anchor: "reply-#{reply.id}")
     else
-      reply = Reply.new(params[:reply])
-      reply.user = current_user
-      if reply.save
-        flash[:success] = "Posted!"
-        redirect_to reply_path(reply, anchor: "reply-#{reply.id}")
-      else
-        flash[:error] = "Problems. "+reply.errors.full_messages.to_s
-        redirect_to post_path(reply.post)
-      end
+      flash[:error] = {}
+      flash[:error][:message] = "Your post could not be saved because of the following problems:"
+      flash[:error][:array] = reply.errors.full_messages
+      redirect_to post_path(reply.post)
     end
   end
   

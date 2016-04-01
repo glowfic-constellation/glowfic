@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20160318021845) do
+ActiveRecord::Schema.define(:version => 20160322032647) do
 
   create_table "audits", :force => true do |t|
     t.integer  "auditable_id"
@@ -236,8 +236,11 @@ ActiveRecord::Schema.define(:version => 20160318021845) do
     t.datetime "created_at",                          :null => false
     t.datetime "updated_at",                          :null => false
     t.string   "timezone"
+    t.string   "email"
+    t.boolean  "email_notifications"
   end
 
+  add_index "users", ["email"], :name => "index_users_on_email", :unique => true
   add_index "users", ["username"], :name => "index_users_on_username", :unique => true
 
 end
