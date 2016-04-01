@@ -24,6 +24,7 @@
             { :include_blank => true, :prompt => current_user.username }
             %br
   #gallery.green
+    - avatar_only = false
     - if item.character.try(:galleries).try(:present?)
       - if current_user.icon_picker_grouping
         - galleries = item.character.galleries.includes(:icons).order('name asc')
@@ -49,10 +50,11 @@
         %br>
         = item.character.default_icon.keyword
     - elsif item.character.nil? && item.user.avatar
+      - avatar_only = true
       .gallery-icon
         = icon_tag item.user.avatar, id: item.user.avatar.id, pointer: true
         %br> Avatar
-    - if current_user.icon_picker_grouping
+    - if current_user.icon_picker_grouping && !avatar_only
       .gallery-group
         .gallery-name Miscellaneous
         .gallery-icon
