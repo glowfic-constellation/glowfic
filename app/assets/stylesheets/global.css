@@ -42,7 +42,7 @@ button, input.button {
 .padding-10 { padding: 10px; }
 .padding-15 { padding: 15px; }
 .padding-left-5 { padding-left: 5px; }
-.width-15 { width: 15px; }
+.width-15 { width: 15px !important; }
 .width-70 { width: 70px; }
 .width-150 { width: 150px; }
 .width-300 { width: 300px; }

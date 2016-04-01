@@ -1,7 +1,7 @@
 class BoardsController < ApplicationController
   before_filter :login_required, only: [:new, :create, :mark]
   before_filter :set_available_cowriters, only: [:new, :edit]
-  before_filter :find_board, only: [:show, :mark, :edit, :update, :destroy]
+  before_filter :find_board, only: [:show, :edit, :update, :destroy]
   before_filter :require_permission, only: [:edit, :update, :destroy]
 
   def index
@@ -56,6 +56,11 @@ class BoardsController < ApplicationController
   end
 
   def mark
+    unless board = Board.find_by_id(params[:board_id])
+      flash[:error] = "Continuity could not be found."
+      redirect_to unread_posts_path and return
+    end
+
     if params[:commit] == "Mark Read"
       board.mark_read(current_user)
       flash[:success] = "#{board.name} marked as read."

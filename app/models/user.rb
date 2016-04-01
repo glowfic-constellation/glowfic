@@ -17,6 +17,7 @@ class User < ActiveRecord::Base
 
   validates_presence_of :username
   validates_uniqueness_of :username
+  validates_uniqueness_of :email, allow_blank: true
   validates_length_of :username, :in => MIN_USERNAME_LEN..MAX_USERNAME_LEN, :allow_blank => true
   validates_length_of :password, :in => 6..25, :on => :create
   validates_confirmation_of :password, :on => :create

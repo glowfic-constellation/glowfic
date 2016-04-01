@@ -35,7 +35,9 @@ class UsersController < ApplicationController
       redirect_to root_url
     else
       signup_prep
-      flash.now[:error] = "There was a problem completing your sign up."
+      flash.now[:error] = {}
+      flash.now[:error][:message] = "There was a problem completing your sign up."
+      flash.now[:error][:array] = @user.errors.full_messages
       render :action => "new"
     end
   end
