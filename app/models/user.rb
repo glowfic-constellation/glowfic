@@ -26,6 +26,8 @@ class User < ActiveRecord::Base
   before_save :encrypt_password
   after_save :clear_password
 
+  nilify_blanks
+
   def authenticate(password)
     crypted == crypted_password(password)
   end
