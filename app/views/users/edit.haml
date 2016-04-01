@@ -6,6 +6,14 @@
       %th.sub Username
       %td.even= f.text_field :username, placeholder: "Username", class: 'text'
     %tr
+      %th.sub Email
+      %td.odd= f.text_field :email, placeholder: "Email address", class: 'text'
+    %tr
+      %th.sub Notifications
+      %td.even
+        = f.check_box :email_notifications, class: 'width-15 vmid'
+        Email about new tags
+    %tr
       %th.sub Paging
       %td.odd= f.select(:per_page, per_page_options(current_user.per_page))
     %tr

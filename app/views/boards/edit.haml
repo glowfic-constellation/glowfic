@@ -1,0 +1,5 @@
+= form_for @board, url: board_path(@board), method: :put do |f|
+  %table.form-table
+    %tr
+      %th.centered{colspan: 2} Edit Continuity
+    = render partial: 'editor', locals: {f: f}

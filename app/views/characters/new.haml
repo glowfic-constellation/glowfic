@@ -1,4 +1,4 @@
-= form_for @character, :url => characters_path, :method => :post do |f|
+= form_for @character, url: characters_path, method: :post do |f|
   = f.hidden_field :default_icon_id
   %table.form-table
     %tr

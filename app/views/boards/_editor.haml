@@ -1,0 +1,8 @@
+%tr
+  %th.sub Name
+  %td.even= f.text_field :name, placeholder: "Continuity Name", class: 'text'
+%tr
+  %th.sub Coauthor
+  %td.odd= f.select :coauthor_id, options_from_collection_for_select(@users, :id, :username, @board.coauthor_id), include_blank: '— Open to Anyone —'
+%tr
+  %th.centered.subber{colspan: 2}= submit_tag "Save", class: 'button'

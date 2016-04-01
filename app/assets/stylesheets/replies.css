@@ -53,6 +53,8 @@
 
 /* Main post headers */
 .post-header { width: 100%; background-color: #8B8687; color: #eeeeee; padding: 0px; font-size: 18px; }
+.post-header span a { color: #eeeeee; }
+.post-header span a:hover { color: #dddddd; }
 .post-header > div { overflow: hidden; }
 .post-header span { line-height: 28px; }
 .post-subheader { width: 100%; background-color: #a3a1a0; font-size: 15px; }

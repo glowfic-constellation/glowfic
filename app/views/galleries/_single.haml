@@ -14,7 +14,7 @@
 %tr
   %td.green.gallery-title
     .gallery{id: "gallery#{gallery.id.to_s}"}
-      = form_tag icons_path do
+      = form_tag delete_multiple_icons_path, method: :delete do
         - icons = gallery.icons.order('keyword asc')
         - icons.each do |icon|
           .gallery-icon
@@ -29,5 +29,5 @@
         - elsif gallery.user_id == current_user.try(:id) and not defined? skip_forms
           .clear.centered
             = hidden_field_tag :gallery_id, gallery.id
-            = submit_tag "- Remove selected icons from gallery"
+            = submit_tag "- Remove selected icons from gallery", name: 'gallery_delete'
             = submit_tag "x Delete selected icons permanently", confirm: "Are you sure? These icons will be gone from the site!"

@@ -10,11 +10,11 @@
         - if page == 1
           %span.disabled &laquo; First
         - else
-          = link_to '&laquo; First'.html_safe, send(path, params.except(:page))
+          = link_to '&laquo; First'.html_safe, send(path, params.except(:page, :controller).merge(id: @post.id))
       = will_paginate paginated, container: false
       %span
         - if page == paginated.total_pages
           %span.disabled Last &raquo;
         - else
-          = link_to 'Last &raquo;'.html_safe, send(path, params.merge(:page => paginated.total_pages))
+          = link_to 'Last &raquo;'.html_safe, send(path, params.except(:controller).merge(:page => paginated.total_pages, id: @post.id))
   .clear

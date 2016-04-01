@@ -9,17 +9,19 @@ class RepliesController < WritableController
       @url = replies_path
       @method = :post
       preview
-      render :action => 'preview'
+      render :action => 'preview' and return
+    end
+
+    reply = Reply.new(params[:reply])
+    reply.user = current_user
+    if reply.save
+      flash[:success] = "Posted!"
+      redirect_to reply_path(reply, anchor: "reply-#{reply.id}")
     else
-      reply = Reply.new(params[:reply])
-      reply.user = current_user
-      if reply.save
-        flash[:success] = "Posted!"
-        redirect_to reply_path(reply, anchor: "reply-#{reply.id}")
-      else
-        flash[:error] = "Problems. "+reply.errors.full_messages.to_s
-        redirect_to post_path(reply.post)
-      end
+      flash[:error] = {}
+      flash[:error][:message] = "Your post could not be saved because of the following problems:"
+      flash[:error][:array] = reply.errors.full_messages
+      redirect_to post_path(reply.post)
     end
   end
   
@@ -35,8 +37,9 @@ class RepliesController < WritableController
 
   def show
     @post = @reply.post
-    current_page = params[:page] || @reply.post_page(per_page)
-    show_post(current_page)
+    @page_title = @post.subject
+    params[:page] ||= @reply.post_page(per_page)
+    show_post(params[:page])
   end
 
   def history
@@ -62,9 +65,10 @@ class RepliesController < WritableController
   end
 
   def destroy
+    to_page = @reply.post_page(per_page) # get index before destroying
     @reply.destroy
     flash[:success] = "Post deleted."
-    redirect_to post_path(@reply.post)
+    redirect_to post_path(@reply.post, page: to_page)
   end
 
   private
