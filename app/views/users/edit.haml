@@ -20,8 +20,10 @@
       %th.sub Time zone
       %td.even= f.select(:timezone, timezone_options(current_user.timezone))
     %tr
-      %th.sub Icon picker icon display
-      %td.odd= f.select(:icon_picker_grouping, icon_picker_grouping_options(current_user.icon_picker_grouping))
+      %th.sub Split icon picker
+      %td.odd
+        = f.check_box :icon_picker_grouping, class: 'width-15 vmid'
+        Group the icon picker by gallery
     %tr
       %th.centered.subber{colspan: 2}= submit_tag "Save", class: 'button'
 

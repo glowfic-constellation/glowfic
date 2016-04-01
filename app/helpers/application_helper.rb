@@ -27,19 +27,19 @@ module ApplicationHelper
     options = Hash[*(options * 2).sort].merge({'All' => 'all'})
     default ||= per_page
     default = 'all' if default == -1
-    options_for_select(options, selected=default)
+    options_for_select(options, default)
   end
 
   def timezone_options(default=nil)
     default ||= 'Eastern Time (US & Canada)'
     zones = ActiveSupport::TimeZone.all()
-    options_from_collection_for_select(zones, :name, :to_s, selected=default)
+    options_from_collection_for_select(zones, :name, :to_s, default)
   end
   
   def icon_picker_grouping_options(default=nil)
     default ||= false
     options = {"Separate by gallery" => true, "Don't separate" => false}
-    options_for_select(options, selected=default)
+    options_for_select(options, default)
   end
 
   def post_or_reply_link(reply)
