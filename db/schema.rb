@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20160322032647) do
+ActiveRecord::Schema.define(:version => 20160326210104) do
 
   create_table "audits", :force => true do |t|
     t.integer  "auditable_id"
@@ -228,16 +228,17 @@ ActiveRecord::Schema.define(:version => 20160322032647) do
   add_index "templates", ["user_id"], :name => "index_templates_on_user_id"
 
   create_table "users", :force => true do |t|
-    t.string   "username",                            :null => false
-    t.string   "crypted",                             :null => false
+    t.string   "username",                               :null => false
+    t.string   "crypted",                                :null => false
     t.integer  "avatar_id"
     t.integer  "active_character_id"
-    t.integer  "per_page",            :default => 25
-    t.datetime "created_at",                          :null => false
-    t.datetime "updated_at",                          :null => false
+    t.integer  "per_page",             :default => 25
+    t.datetime "created_at",                             :null => false
+    t.datetime "updated_at",                             :null => false
     t.string   "timezone"
     t.string   "email"
     t.boolean  "email_notifications"
+    t.boolean  "icon_picker_grouping", :default => true
   end
 
   add_index "users", ["email"], :name => "index_users_on_email", :unique => true

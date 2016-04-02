@@ -24,22 +24,35 @@
             { :include_blank => true, :prompt => current_user.username }
             %br
   #gallery.green
-    - if item.character.try(:galleries).try(:present?)
-      - icons = item.character.galleries.map(&:icons).flatten.uniq.sort_by{|i| i.keyword}
-      - icons.each_with_index do |icon, index|
+    - if item.character.nil?
+      - if current_user.avatar
         .gallery-icon
-          = icon_tag icon, id: icon.id, pointer: true
-          %br>
-          = icon.keyword
-    - elsif item.character.try(:default_icon)
+          = icon_tag current_user.avatar, id: current_user.avatar.id, pointer: true
+          %br> Avatar
+    - elsif item.character.galleries.present?
+      - if current_user.icon_picker_grouping && item.character.galleries.count > 1
+        - galleries = item.character.galleries.includes(:icons).order('name asc')
+        - galleries.each do |gallery|
+          .gallery-group
+            .gallery-name= gallery.name
+            - gallery_icons = gallery.icons.uniq.sort_by{|i| i.keyword}
+            - gallery_icons.each do |icon, icon_index|
+              .gallery-icon
+                = icon_tag icon, id: icon.id, pointer: true
+                %br>
+                = icon.keyword
+      - else
+        - icons = item.character.galleries.map(&:icons).flatten.uniq.sort_by{|i| i.keyword}
+        - icons.each do |icon|
+          .gallery-icon
+            = icon_tag icon, id: icon.id, pointer: true
+            %br>
+            = icon.keyword
+    - elsif item.character.default_icon.present?
       .gallery-icon
         = icon_tag item.character.default_icon, id: item.character.default_icon.id, pointer: true
         %br>
         = item.character.default_icon.keyword
-    - elsif item.character.nil? && item.user.avatar
-      .gallery-icon
-        = icon_tag item.user.avatar, id: item.user.avatar.id, pointer: true
-        %br> Avatar
     .gallery-icon
       = no_icon_tag id: '', pointer: true
       %br> No Icon
