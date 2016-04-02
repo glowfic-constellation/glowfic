@@ -33,7 +33,7 @@ module ApplicationHelper
   def timezone_options(default=nil)
     default ||= 'Eastern Time (US & Canada)'
     zones = ActiveSupport::TimeZone.all()
-    options_from_collection_for_select(zones, :name, :to_s, selected=default)
+    options_from_collection_for_select(zones, :name, :to_s, default)
   end
 
   def post_or_reply_link(reply)
