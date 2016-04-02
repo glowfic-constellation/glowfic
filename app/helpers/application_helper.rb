@@ -35,12 +35,6 @@ module ApplicationHelper
     zones = ActiveSupport::TimeZone.all()
     options_from_collection_for_select(zones, :name, :to_s, default)
   end
-  
-  def icon_picker_grouping_options(default=nil)
-    default ||= false
-    options = {"Separate by gallery" => true, "Don't separate" => false}
-    options_for_select(options, default)
-  end
 
   def post_or_reply_link(reply)
     return unless reply.id.present?

@@ -92,7 +92,10 @@ $(document).ready(function() {
     }
 
     $.post(gon.character_path, {'character_id':id}, function (resp) {
+      // If setting active character to none, work was done above
       if(id == '') { return; }
+
+      // Display the correct name/screenname fields
       $("#post-editor #post-author-spacer").hide();
       $("#post-editor .post-character").show().html(resp['name']);
       if(resp['screenname'] == undefined) {
@@ -100,60 +103,46 @@ $(document).ready(function() {
       } else {
         $("#post-editor .post-screenname").show().html(resp['screenname']);
       }
+
+      // Display no icon if no default set
       if (resp['default'] == undefined) {
         $("#current-icon").attr('src', '/images/no-icon.png').removeClass('pointer');
         $("#reply_icon_id").val('');
+        return
+      }
+
+      // Display default icon
+      $("#current-icon").attr('src', resp['default']['url']).addClass('pointer');
+      $("#current-icon").attr('title', resp['default']['keyword']);
+      $("#current-icon").attr('alt', resp['default']['keyword']);
+      $("#reply_icon_id").val(resp['default']['id']);
+
+      // Calculate new galleries
+      $("#gallery").html("");
+      var galleries = resp['galleries'];
+      if (galleries.length == 0) { return; }
+
+      // Display single gallery
+      if (galleries.length == 1) {
+        var gallery = galleries[0];
+        $("#gallery").append(galleryString(gallery, false));
+
+      // Display multiple galleries
       } else {
-        $("#current-icon").attr('src', resp['default']['url']).addClass('pointer');
-        $("#current-icon").attr('title', resp['default']['keyword']);
-        $("#current-icon").attr('alt', resp['default']['keyword']);
-        
-        $("#reply_icon_id").val(resp['default']['id']);
-        $("#gallery").html("");
-        
-        var galleries = resp['galleries'];
-        var len = galleries.length;
-        var galleryNames = len > 1 || "name" in galleries[0];
-        if (len >= 1) {
-          for (var i=0; i<len; i++) {
-            var gallery = galleries[i];
-            if (!("icons" in gallery)) continue;
-            
-            var icons = gallery["icons"];
-            
-            var appendStr = "";
-            if (galleryNames)
-              appendStr += "<div class='gallery-group'><div class='gallery-name'>" + ("name" in gallery ? gallery["name"] : "Unnamed Gallery") + "</div>";
-            
-            for (var x=0; x<icons.length; x++) {
-              var icon = icons[x];
-              var img_id = icon["id"];
-              var img_url = icon["url"];
-              var img_key = icon["keyword"];
-              appendStr += "<div class='gallery-icon'>"
-                + "<img src='" + img_url + "' id='" + img_id + "' alt='" + img_key + "' title='" + img_key + "' class='icon' />"
-                + "<br />" + img_key
-                + "</div>";
-            }
-            
-            if (galleryNames)
-              appendStr += "</div>";
-            $("#gallery").append(appendStr);
-          }
-          var appendStr = "";
-          if (galleryNames)
-            appendStr += "<div class='gallery-group'><div class='gallery-name'>Miscellaneous</div>";
-          appendStr += "<div class='gallery-icon'><img src='/images/no-icon.png' id='' alt='No Icon' title='No Icon' class='icon' /><br />No Icon</div>"
-          if (galleryNames)
-            appendStr  += "</div>";
-          $("#gallery").append(appendStr);
-          bindGallery();
-          bindIcon();
+        for(var i=0; i<galleries.length; i++) {
+          var gallery = galleries[i];
+          $("#gallery").append(galleryString(gallery, true));
         }
       }
+
+      // Both single and multiple galleries need these
+      $("#gallery").append("<div class='gallery-icon'><img src='/images/no-icon.png' id='' alt='No Icon' title='No Icon' class='icon' /><br />No Icon</div>");
+      bindGallery();
+      bindIcon();
     });
   });
 
+  // Hides selectors when you hit the escape key
   $(document).bind("keydown", function(e){ 
     e = e || window.event;
     var charCode = e.which || e.keyCode;
@@ -164,6 +153,7 @@ $(document).ready(function() {
     }
   });
 
+  // Hides selectors when you click outside them
   $(document).click(function(e) {
     var target = e.target;
 
@@ -201,4 +191,29 @@ bindIcon = function() {
     $('#gallery').toggle();
     $('html, body').scrollTop($("#post-editor").offset().top);
   });
+};
+
+galleryString = function(gallery, multiGallery) {
+  var iconsString = "";
+  var icons = gallery["icons"];
+
+  for (var i=0; i<icons.length; i++) {
+    iconsString += iconString(icons[i]);
+  }
+
+  if(!multiGallery) { return iconsString; }
+
+  var nameString = "<div class='gallery-name'>" + gallery['name'] + "</div>"
+  return "<div class='gallery-group'>" + nameString + iconsString + "</div>"
+};
+
+iconString = function(icon) {
+  var img_id = icon["id"];
+  var img_url = icon["url"];
+  var img_key = icon["keyword"];
+
+  return "<div class='gallery-icon'>"
+    + "<img src='" + img_url + "' id='" + img_id + "' alt='" + img_key + "' title='" + img_key + "' class='icon' />"
+    + "<br />" + img_key
+    + "</div>";
 }
