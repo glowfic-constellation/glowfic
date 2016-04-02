@@ -5,7 +5,7 @@ class UserMailer < ActionMailer::Base
   layout 'mailer'
 
   def post_has_new_reply(user, reply)
-    @subject = reply.user.username + " posted a new reply in the thread " + reply.post.subject
+    @subject = "New reply in the thread " + reply.post.subject
     @reply = reply
     @user = user
     mail(to: user.email, subject: @subject)
