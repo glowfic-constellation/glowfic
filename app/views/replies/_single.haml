@@ -3,7 +3,7 @@
 .post-container{class: klass}
   - if reply.is_a?(Reply) && reply.id.present?
     <a name="reply-#{reply.id}"></a>
-  - if reply.id.present? && logged_in?
+  - if reply.id.present? && logged_in? && !@unread.nil?
     - if reply.id == @unread.id && reply.class == @unread.class
       <a name="unread"></a>
   .padding-10

@@ -34,7 +34,8 @@ class WritableController < ApplicationController
         cur_page = @post.replies.paginate(per_page: per, page: 1).total_pages
       elsif cur_page == 'unread'
         if logged_in?
-          cur_page = @unread.post_page(per)
+          cur_page = @unread.try(:post_page, per)
+          self.page = cur_page = 1 if @unread.nil?
         else
           flash.now[:error] = "You must be logged in to view unread posts."
           self.page = cur_page = 1
