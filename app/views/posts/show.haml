@@ -56,7 +56,7 @@
           .view-button.float-none &laquo; Previous Post
       .clear
 
-- if page == 1
+- if page.to_i == 1
   = render partial: 'replies/single', locals: {reply: @post}
 - else
   .post-expander
