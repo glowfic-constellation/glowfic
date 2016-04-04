@@ -26,10 +26,29 @@ class WritableController < ApplicationController
       @post.replies
     end
 
-    per = per_page > 0 ? per_page : replies.count
-    cur_page ||= page
+    @unread = @post.first_unread_for(current_user) if logged_in?
+    if per_page > 0
+      per = per_page
+      cur_page ||= page
+      if cur_page == 'last'
+        cur_page = @post.replies.paginate(per_page: per, page: 1).total_pages
+      elsif cur_page == 'unread'
+        if logged_in?
+          cur_page = @unread.post_page(per)
+        else
+          flash.now[:error] = "You must be logged in to view unread posts."
+          self.page = cur_page = 1
+        end
+      else
+        cur_page = cur_page.to_i
+      end
+    else
+      per = replies.count
+      self.page = cur_page = 1
+    end
+
     @replies = replies.includes(:user, :character, :post, :icon).order('id asc').paginate(page: cur_page, per_page: per)
-    redirect_to post_path(@post, page: @replies.total_pages, per_page: per) and return if page > @replies.total_pages
+    redirect_to post_path(@post, page: @replies.total_pages, per_page: per) and return if cur_page > @replies.total_pages
     use_javascript('paginator')
 
     @next_post = Post.where(board_id: @post.board_id).where("id > #{@post.id}").order('id asc').limit(1).first

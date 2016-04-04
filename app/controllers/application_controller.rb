@@ -29,9 +29,13 @@ class ApplicationController < ActionController::Base
   end
 
   def page
-    @page ||= (params[:page] || 1).to_i
+    @page ||= params[:page] || 1
   end
   helper_method :page
+
+  def page=(val)
+    @page = val
+  end
 
   def per_page
     default = browser.mobile? ? -1 : 25
