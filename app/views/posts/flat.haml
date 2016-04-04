@@ -1,0 +1,55 @@
+!!!
+%html
+  %head
+    %title @post.subject | Glowfic Constellation
+    %meta{ :charset => "utf-8" }
+    <meta name="viewport" content="width=device-width">
+    = stylesheet_link_tag 'application'
+    <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  %body
+    #content
+      .post-header
+        .padding-15
+          %span#post-title= @post.subject
+      - if @post.description.present?
+        .post-subheader
+          .padding-10
+            %span= sanitize(@post.description, tags: %w(a), attributes: %w(href)).html_safe
+      .post-container{class: 'odd'}
+        .padding-10
+          .post-info-box
+            - if @post.icon
+              .post-icon= icon_tag @post.icon
+            .post-info-text
+              - if @post.character
+                .post-character= @post.character.name
+                - if @post.character.screenname
+                  .post-screenname= @post.character.screenname
+              - else
+                .dark.spacer
+              .post-author= @post.user.username
+          = sanitize(@post.content.gsub("\n","<br/>")).html_safe
+        .post-footer
+          .right-align>
+            .padding-5> Posted #{pretty_time(@post.created_at)}
+      - replies = @post.replies.includes(:user, :character, :post, :icon).order('id asc')
+      - replies.each do |reply|
+        - klass = cycle('even', 'odd')
+        .post-container{class: klass}
+          .padding-10
+            .post-info-box
+              - if reply.icon
+                .post-icon= icon_tag reply.icon
+              .post-info-text
+                - if reply.character
+                  .post-character= reply.character.name
+                  - if reply.character.screenname
+                    .post-screenname= reply.character.screenname
+                - else
+                  .dark.spacer
+                .post-author= reply.user.username
+            = sanitize(reply.content.gsub("\n","<br/>")).html_safe
+          .post-footer
+            .right-align>
+              .padding-5> Posted #{pretty_time(reply.created_at)}

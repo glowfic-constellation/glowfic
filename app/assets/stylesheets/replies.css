@@ -102,3 +102,18 @@ select.per-page { margin-top: 5px; margin-bottom: 5px; }
 .paginator .right-align { padding: 2px; padding-right: 10px; display: inline-block; float: right; }
 .paginator .right-align a { color: black; }
 .paginator { color: black; }
+
+/* Post dropdown menu */
+#post-menu-box {
+    text-align: left;
+    position: absolute;
+    top: 78px;
+    right: 20px;
+    z-index: 99;
+    background-color: #8B8687;
+    border-top: 1px solid #a3a1a0;
+}
+#post-menu-box div { padding: 10px 20px 10px 20px; border-bottom: 1px solid #a3a1a0; }
+#post-menu-box a { color: #EEEEEE; }
+#post-menu-box img { margin-right: 3px; vertical-align: middle; margin-bottom: 4px; }
+#post-menu-box a:hover div { background-color: #B0BBA9; }
