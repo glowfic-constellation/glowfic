@@ -8,22 +8,39 @@
 .post-header
   .padding-15
     %span#post-title= link_to @post.subject, post_path(@post)
-    - if logged_in?
-      = link_to post_path(@post, unread: true), :method => :put do
-        .view-button
-          = image_tag '/images/book_open.png', class:'icon-view'
-          Mark Unread
-      - if @post.user_id == current_user.id
-        - if @post.completed?
-          = link_to post_path(@post, completed: false), :method => :put do
-            .view-button
-              = image_tag '/images/book_open.png', class:'icon-view'
-              Mark Not Complete
-        - else
-          = link_to post_path(@post, completed: true), :method => :put do
-            .view-button
-              = image_tag '/images/book.png', class:'icon-view'
-              Mark Complete
+    .view-button#post-menu
+      = image_tag '/images/menu.png', class: 'icon-view'
+#post-menu-box.hidden
+  / TODO Throne3d is writing an ePub downloader
+  /= link_to post_path(@post, completed: false), method: :put do
+  /  %div
+  /    = image_tag '/images/book_go.png'
+  /    Download as ePub
+  = link_to post_path(@post, view: 'flat') do
+    %div
+      = image_tag '/images/page_world.png'
+      View Flat HTML
+  - if logged_in?
+    - if @post.user_id == current_user.id
+      - if @post.completed?
+        = link_to post_path(@post, completed: false), method: :put do
+          %div
+            = image_tag '/images/book_open.png'
+            Mark Not Complete
+      - else
+        = link_to post_path(@post, completed: true), method: :put do
+          %div
+            = image_tag '/images/book.png'
+            Mark Complete
+    = link_to post_path(@post, unread: true), method: :put do
+      %div
+        = image_tag '/images/eye.png', class: 'vmid', style: 'margin-bottom: 3px;'
+        Mark Unread
+    / TODO need more dynos before I can create this feature
+    /= link_to users_path do
+    /  %div
+    /    = image_tag '/images/bell_add.png'
+    /    Turn on notifications
 - if @post.description.present?
   .post-subheader
     .padding-10

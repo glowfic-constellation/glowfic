@@ -27,6 +27,11 @@ $(document).ready(function() {
     }
   });
 
+  $("#post-menu").click(function() { 
+    $(this).toggleClass('selected');
+    $("#post-menu-box").toggle();
+  });
+
   $("#post_privacy").change(function() {
     if($(this).val() == 2) { // TODO don't hardcode, should be PRIVACY_ACCESS
       $("#access_list").show();
@@ -150,6 +155,8 @@ $(document).ready(function() {
       $('#icon-overlay').hide();
       $('#gallery').hide();
       $('#character-selector').hide();
+      $('#post-menu-box').hide();
+      $('#post-menu').removeClass('selected');
     }
   });
 
@@ -169,6 +176,12 @@ $(document).ready(function() {
       !$(target).is('#swap-icon') && 
       !$(target).parents().is('#character-selector')) {
         $('#character-selector').hide();
+    }
+
+    if (!$(target).is('#post-menu-box') && !$(target).parents().is('#post-menu-box')
+      && !$(target).is('#post-menu') && !$(target).parents().is('#post-menu')) {
+      $('#post-menu-box').hide();
+      $('#post-menu').removeClass('selected');
     }
   });
 });

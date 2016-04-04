@@ -75,6 +75,7 @@ class PostsController < WritableController
   end
 
   def show
+    render action: :flat, layout: false and return if params[:view] == 'flat'
     show_post
   end
 
