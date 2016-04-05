@@ -89,6 +89,8 @@ select.per-page { margin-top: 5px; margin-bottom: 5px; }
     .post-info-text { float: left; margin-right: 10px; margin-bottom: 5px; }
     #post-form-wrapper { margin-left: 0px; }
     #character-selector { left: 0px; }
+    .post-character { background-color: #B9B6AD; }
+    .post-author { background-color: #8B8687; }
 }
 
 /* Pagination */
@@ -104,11 +106,12 @@ select.per-page { margin-top: 5px; margin-bottom: 5px; }
 .paginator { color: black; }
 
 /* Post dropdown menu */
+#post-menu-holder { position: relative; }
 #post-menu-box {
     text-align: left;
     position: absolute;
-    top: 78px;
-    right: 20px;
+    top: 0px;
+    right: 0px;
     z-index: 99;
     background-color: #8B8687;
     border-top: 1px solid #a3a1a0;
