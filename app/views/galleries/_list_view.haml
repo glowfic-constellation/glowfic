@@ -1,9 +1,14 @@
 %tr
+  %th.sub Name
+  %th.sub.width-150.centered # of Icons
+  %th.sub.width-70
+%tr
   %td.padding-5.odd
     - if @user.id == current_user.try(:id)
       = link_to '[Galleryless]', gallery_path(id: 0)
     - else
       = link_to '[Galleryless]', user_gallery_path(id: 0, user_id: @user.id)
+  %td.width-150.padding-5.centered.odd= @user.icons.where(has_gallery: false).count
   %td.width-70.padding-5.right-align.odd
     - if @user.id == current_user.try(:id)
       = link_to add_gallery_path(id: 0), title: "Add Icons" do
@@ -12,6 +17,7 @@
   %tr
     - klass = cycle('even', 'odd')
     %td.padding-5{class: klass}= link_to gallery.name, gallery_path(gallery)
+    %td.width-150.padding-5.centered{class: klass}= gallery.icons.count
     %td.width-70.right-align{class: klass}
       - if @user.id == current_user.try(:id)
         = link_to add_gallery_path(gallery), title: "Add Icons" do
