@@ -25,7 +25,7 @@ class GalleriesController < ApplicationController
     @gallery.user = current_user
     if @gallery.save
       flash[:success] = "Gallery saved successfully."
-      redirect_to galleries_path
+      redirect_to gallery_path(@gallery)
     else
       flash.now[:error] = "Your gallery could not be saved."
       @page_title = "New Gallery"
@@ -99,7 +99,7 @@ class GalleriesController < ApplicationController
         @gallery.icons << icon
       end
       flash[:success] = "Icons added to gallery successfully."
-      redirect_to galleries_path and return
+      redirect_to gallery_path(@gallery) and return
     end
 
     icons = (params[:icons] || []).reject { |icon| icon.values.all?(&:blank?) }
@@ -132,10 +132,11 @@ class GalleriesController < ApplicationController
       flash.now[:error] = "Your icons could not be saved."
       render :action => :add
     elsif icons.all?(&:save)
+      flash[:success] = "Icons saved successfully."
       if @gallery
         icons.each do |icon| @gallery.icons << icon end
+        redirect_to gallery_path(@gallery) and return
       end
-      flash[:success] = "Icons saved successfully."
       redirect_to galleries_path
     else
       flash.now[:error] = "Your icons could not be saved."
