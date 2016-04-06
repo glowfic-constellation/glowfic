@@ -1,0 +1,32 @@
+%tr
+  %th.padding-10.subber
+    - if params[:user_id].present?
+      = link_to 'Galleryless icons', user_gallery_path(id: 0, user_id: @user.id)
+    - else
+      = link_to 'Galleryless icons', gallery_path(id: 0)
+    - if @user.id == current_user.id
+      = link_to add_gallery_path(id: 0) do
+        .link-box.green
+          + Add Icons
+    .gallery-box.float-right{id: 0} -
+- if @user.id == current_user.id
+  %tr
+    %th.sub Unsorted icons without a gallery will appear here. They can still be individually assigned to a character with no galleries.
+%tr
+  %td.green.gallery-title
+    .gallery{id: "gallery0"}
+      = form_tag delete_multiple_icons_path, method: :delete do
+        - icons = @user.icons.where(has_gallery: false).order('keyword asc')
+        - icons.each do |icon|
+          .gallery-icon{ id: "icon#{icon.id.to_s}"}
+            = link_to icon_path(icon) do
+              = icon_tag icon
+              %br
+              = icon.keyword
+            - if @user.id == current_user.id
+              .select-button= check_box_tag :"marked_ids[]", icon.id
+        - if icons.empty?
+          .centered — No icons yet —
+        - elsif @user.id == current_user.id
+          .clear.centered
+            = submit_tag "x Delete selected icons permanently", confirm: "Are you sure? These icons will be gone from the site!"
