@@ -37,7 +37,7 @@ Rails.application.routes.draw do
   resources :users do
     resources :characters, only: :index
     resources :templates, only: :index
-    resources :galleries, only: :index
+    resources :galleries, only: [:index, :show]
     collection do
       post :username
     end

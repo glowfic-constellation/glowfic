@@ -1,2 +1,19 @@
 %table
-  = render partial: 'single', locals: {gallery: @gallery}
+  - if @gallery
+    = render partial: 'single', locals: {gallery: @gallery}
+    - content_for :breadcrumbs do
+      - if @user.id == current_user.try(:id)
+        = link_to "Galleries", galleries_path
+      - else
+        = link_to "#{@user.username}'s Galleries", user_galleries_path(@user)
+      &raquo;
+      %b= @gallery.name
+  - else
+    = render partial: 'galleryless'
+    - content_for :breadcrumbs do
+      - if @user.id == current_user.try(:id)
+        = link_to "Galleries", galleries_path
+      - else
+        = link_to "#{@user.username}'s Galleries", user_galleries_path(@user)
+      &raquo;
+      %b= 'Galleryless Icons'

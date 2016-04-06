@@ -12,6 +12,7 @@ class GalleriesController < ApplicationController
       @user = User.find_by_id(params[:user_id]) || current_user
       @page_title = @user.username + "'s Galleries"
     end
+    session[:gallery_view] = params[:view] if params[:view].present?
   end
 
   def new
@@ -46,10 +47,23 @@ class GalleriesController < ApplicationController
         end
       end
       format.html do
+        if params[:id].to_s == '0' # avoids casting nils to 0
+          if params[:user_id].present?
+            @user = User.find_by_id(params[:user_id])
+          else
+            return if login_required
+            @user = current_user
+          end
+          @page_title = 'Galleryless Icons'
+          use_javascript('galleries/index')
+          render :show and return
+        end
+
         @gallery = Gallery.find_by_id(params[:id])
+        @user = @gallery.user
         @page_title = @gallery.name + " (Gallery)"
         use_javascript('galleries/index')
-        render show: @gallery
+        render :show
       end
     end
   end
