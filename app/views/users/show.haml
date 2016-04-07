@@ -1,11 +1,12 @@
 - if @user.avatar
-  = icon_tag @user.avatar
-  %br
-%b= @user.username
+  .user-avatar
+    = link_to icon_path(@user.avatar) do
+      = icon_tag @user.avatar
+%b.username= @user.username
 %br
-= link_to "#{@user.username}'s characters", user_characters_path(@user)
+= link_to "#{@user.username}'s characters", user_characters_path(@user), class: 'user-characters'
 %br
-= link_to "#{@user.username}'s galleries", user_galleries_path(@user)
+= link_to "#{@user.username}'s galleries", user_galleries_path(@user), class: 'user-galleries'
 %br
 %br
 - content_for :posts_title do

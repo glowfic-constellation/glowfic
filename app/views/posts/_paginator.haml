@@ -1,22 +1,24 @@
-.paginator.sub.centered
-  .left-align Total#{' Threads' if @threaded && params[:thread_id].blank?}: #{paginated.total_entries}
+.paginator.centered{class: ('sub' unless defined?(no_sub) and no_sub)}
+  .left-align
+    Total#{' Threads' if @threaded && params[:thread_id].blank?}: 
+    %span.reply-count=paginated.total_entries
   .right-align
     - if paginated.klass == Reply
       Posts Per Page:
       = select_tag :per_page, per_page_options, class: 'per-page'
   .pagination
     - if per_page > 0 && paginated.total_entries > per_page
-      - args = params.except(:controller).merge(page: paginated.total_pages)
+      - args = params.except(:controller)
       - args.merge(id: @post.id) if @post
       %span
         - if page == 1
-          %span.disabled &laquo; First
+          %span.disabled.first_page &laquo; First
         - else
-          = link_to '&laquo; First'.html_safe, send(path, args.except(:page))
+          = link_to '&laquo; First'.html_safe, send(path, args.except(:page)), class: 'first_page'
       = will_paginate paginated, container: false
       %span
         - if page == paginated.total_pages
-          %span.disabled Last &raquo;
+          %span.disabled.last_page Last &raquo;
         - else
-          = link_to 'Last &raquo;'.html_safe, send(path, args)
+          = link_to 'Last &raquo;'.html_safe, send(path, args.merge(page: paginated.total_pages)), class: 'last_page'
   .clear

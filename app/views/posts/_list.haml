@@ -1,19 +1,21 @@
 %table
-  %tr
-    %th{colspan: 6}= content_for :posts_title
-  %tr
-    %th.sub.width-15
-    %th.sub Thread
-    - unless defined? hide_continuity
-      %th.sub Continuity
-    %th.sub Authors
-    %th.sub Replies
-    %th.sub Last Updated
-  - posts.each do |post|
-    - next unless post.visible_to?(current_user)
-    = render partial: 'posts/list_item', locals: {post: post, hide_continuity: defined?(hide_continuity)}
-  - if posts.empty?
+  %thead
     %tr
-      %td.centered.padding-10{ class: cycle('even','odd'), colspan: 6 } — No posts yet —
-- if @posts.total_pages > 1
+      %th{colspan: 6}= content_for :posts_title
+    %tr
+      %th.sub.width-15
+      %th.sub Thread
+      - unless defined? hide_continuity
+        %th.sub Continuity
+      %th.sub Authors
+      %th.sub Replies
+      %th.sub Last Updated
+  %tbody
+    - posts.each do |post|
+      - next unless post.visible_to?(current_user)
+      = render partial: 'posts/list_item', locals: {post: post, hide_continuity: defined?(hide_continuity)}
+    - if posts.empty?
+      %tr
+        %td.centered.padding-10.no-posts{ class: cycle('even','odd'), colspan: 6 } — No posts yet —
+- if posts.total_pages > 1
   = render partial: 'posts/paginator', locals: { paginated: @posts, path: :posts_path }

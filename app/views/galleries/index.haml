@@ -1,20 +1,21 @@
 %table
-  %tr
-    %th.padding-10{colspan: 3}
-      - if @user.id == current_user.id
-        Your Galleries
-        = link_to new_gallery_path do
-          .link-box.green + New Gallery
-      - else
-        = @user.username + "'s Galleries"
-      = link_to url_for(view: 'icons') do
-        .view-button{class: (:selected unless session[:gallery_view] == 'list')}
-          = image_tag '/images/grid.png', class: 'icon-view', alt: ''
-          Icons
-      = link_to url_for(view: 'list') do
-        .view-button{class: (:selected if session[:gallery_view] == 'list')}
-          = image_tag '/images/list.png', class: 'list-view', alt: ''
-          List
+  %thead
+    %tr
+      %th.padding-10{colspan: 3}
+        - if @user.id == current_user.id
+          Your Galleries
+          = link_to new_gallery_path, class: 'gallery-new' do
+            .link-box.green + New Gallery
+        - else
+          = @user.username + "'s Galleries"
+        = link_to url_for(view: 'icons'), class: 'icon-view' do
+          .view-button{class: (:selected unless session[:gallery_view] == 'list')}
+            = image_tag '/images/grid.png', class: 'icon-view', alt: ''
+            Icons
+        = link_to url_for(view: 'list'), class: 'list-view' do
+          .view-button{class: (:selected if session[:gallery_view] == 'list')}
+            = image_tag '/images/list.png', class: 'list-view', alt: ''
+            List
   - if session[:gallery_view] == 'list'
     = render partial: 'list_view'
   - else

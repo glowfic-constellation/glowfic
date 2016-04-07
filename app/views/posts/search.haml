@@ -1,37 +1,43 @@
 %table
-  %tr
-    %th.width-150
-      Search
-      - if @search_results
-        = '- '+@search_results.total_entries.to_s+' results'
-    %th
-      - if @search_results
-        = render partial: 'paginator', locals: {paginated: @search_results, path: :search_posts_path}
-  %tr
-    %td.width-300.vtop
-      = form_tag search_posts_path, :method => :get do
-        %table#signup
-          %tr
-            %td.width-70 Continuity
-            %td= select_tag :board_id, options_from_collection_for_select(Board.all, :id, :name, params[:board_id]), {class: 'chosen-select', prompt: '— Choose Continuity —'}
-          %tr
-            %td Author
-            %td= select_tag :author_id, options_from_collection_for_select(User.all, :id, :username, params[:author_id]), {class: 'chosen-select', prompt: '— Choose Author —'}
-          %tr
-            %td.centered{colspan: 2}= submit_tag "Search", class: 'button'
-      %td
-        - if @search_results.present?
-          %table
-            %th.sub Thread
-            %th.sub Continuity
-            %th.sub Last Updated
-            - @search_results.each do |post|
-              %tr
-                - klass = cycle('even', 'odd')
-                %td.padding-10{class: klass}= link_to post.subject, post_path(post)
-                %td.padding-10{class: klass}= post.board.name
-                %td.padding-10{class: klass}= post.updated_at.strftime("%b %d, %Y ") + post.updated_at.hour.to_s + post.updated_at.strftime(":%M %p")
-  - if @search_results
+  %thead
     %tr
       %th.width-150
-      %th= render partial: 'paginator', locals: {paginated: @search_results, path: :search_posts_path}
+        Search
+        - if @search_results
+          = '- '+@search_results.total_entries.to_s+' results'
+      %th
+        - if @search_results
+          = render partial: 'paginator', locals: {paginated: @search_results, path: :search_posts_path, no_sub: true}
+  %tbody
+    %tr
+      %td.width-300.padding-10.vtop.dark
+        = form_tag search_posts_path, :method => :get do
+          %table#signup
+            %tr
+              %td.width-70 Continuity
+              %td= select_tag :board_id, options_from_collection_for_select(Board.all, :id, :name, params[:board_id]), {class: 'chosen-select', prompt: '— Choose Continuity —'}
+            %tr
+              %td Author
+              %td= select_tag :author_id, options_from_collection_for_select(User.all, :id, :username, params[:author_id]), {class: 'chosen-select', prompt: '— Choose Author —'}
+            %tr
+              %td.centered{colspan: 2}= submit_tag "Search", class: 'button'
+        %td
+          - if @search_results.present?
+            %table
+              %thead
+                %tr
+                  %th.sub Thread
+                  %th.sub Continuity
+                  %th.sub Last Updated
+              %tbody
+                - @search_results.each do |post|
+                  %tr
+                    - klass = cycle('even', 'odd')
+                    %td.padding-10.post-subject{class: klass}= link_to post.subject, post_path(post)
+                    %td.padding-10.post-board{class: klass}= post.board.name
+                    %td.padding-10.post-time{class: klass}= post.updated_at.strftime("%b %d, %Y ") + post.updated_at.hour.to_s + post.updated_at.strftime(":%M %p")
+  - if @search_results && @search_results.length >= 10
+    %tfoot
+      %tr
+        %th.width-150
+        %th= render partial: 'paginator', locals: {paginated: @search_results, path: :search_posts_path, no_sub: true}
