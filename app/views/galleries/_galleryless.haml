@@ -8,7 +8,7 @@
       = link_to add_gallery_path(id: 0), class: 'gallery-add' do
         .link-box.green
           + Add Icons
-    .gallery-box.float-right{id: 0, class: 'gallery-minmax'} -
+    .gallery-box.float-right.gallery-minmax{id: 0} -
 - if @user.id == current_user.id
   %tr.gallery-subheader
     %th.sub Unsorted icons without a gallery will appear here. They can still be individually assigned to a character with no galleries.

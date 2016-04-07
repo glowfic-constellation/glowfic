@@ -14,10 +14,10 @@
     - Board.all.each do |board|
       %tr
         - klass = cycle('even','odd')
-        %td.padding-10{class: [klass, 'board-title']}= link_to board.name, board_path(board)
-        %td.padding-10{class: [klass, 'board-authors']}
+        %td.padding-10.board-title{class: klass}= link_to board.name, board_path(board)
+        %td.padding-10.board-authors{class: klass}
           - if board.coauthor_id
             = board.writers.map { |u| link_to u.username, user_path(u) }.join(', ').html_safe
           - else
             Anyone
-        %td.padding-10{class: [klass, 'board-time']}= pretty_time(board.posts.limit(1).order('updated_at desc').first.try(:updated_at))
+        %td.padding-10.board-time{class: klass}= pretty_time(board.posts.limit(1).order('updated_at desc').first.try(:updated_at))
