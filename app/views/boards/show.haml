@@ -19,27 +19,29 @@
 
 - if @board.id == 1
   %table
-    %tr
-      %th{colspan: 6}= content_for :posts_title
-    - @board.board_sections.order('section_order asc').each do |section|
+    %thead
       %tr
-        %th.sub{colspan: 5}
-          - if section.status == Post::STATUS_COMPLETE
-            = image_tag "/images/book_purple.png", title: "Section Complete"
-          - else
-            = image_tag "/images/book_open_purple.png", title: "Section In Progress"
-          &nbsp;
-          = section.section_order.to_s + ". " + section.name
-      - section.posts.order('section_order asc').each do |post|
+        %th{colspan: 6}= content_for :posts_title
+    %tbody
+      - @board.board_sections.order('section_order asc').each do |section|
         %tr
-          - klass = cycle('even','odd')
-          %td.padding-10{class: klass}
-            - if post.status == Post::STATUS_COMPLETE
-              = image_tag "/images/book.png", title: "Thread Complete"
+          %th.sub{colspan: 5}
+            - if section.status == Post::STATUS_COMPLETE
+              = image_tag "/images/book_purple.png", title: "Section Complete"
             - else
-              = image_tag "/images/book_open.png", title: "Thread In Progress"
-          %td.padding-10{class: klass}
-            = link_to post.subject, post_path(post)
-          %td.padding-10{class: klass}= pretty_time(post.updated_at)
+              = image_tag "/images/book_open_purple.png", title: "Section In Progress"
+            &nbsp;
+            = section.section_order.to_s + ". " + section.name
+        - section.posts.order('section_order asc').each do |post|
+          %tr
+            - klass = cycle('even','odd')
+            %td.padding-10{class: klass}
+              - if post.status == Post::STATUS_COMPLETE
+                = image_tag "/images/book.png", title: "Thread Complete"
+              - else
+                = image_tag "/images/book_open.png", title: "Thread In Progress"
+            %td.padding-10{class: klass}
+              = link_to post.subject, post_path(post)
+            %td.padding-10{class: klass}= pretty_time(post.updated_at)
 - else
   = render partial: 'posts/list', locals: {posts: @posts, hide_continuity: true}

@@ -3,27 +3,26 @@
   %th.sub.width-150.centered # of Icons
   %th.sub.width-70
 %tr
-  %td.padding-5.odd
+  %td.padding-5.odd.gallery-name
     - if @user.id == current_user.try(:id)
       = link_to '[Galleryless]', gallery_path(id: 0)
     - else
       = link_to '[Galleryless]', user_gallery_path(id: 0, user_id: @user.id)
-  %td.width-150.padding-5.centered.odd= @user.icons.where(has_gallery: false).count
-  %td.width-70.padding-5.right-align.odd
+  %td.width-150.padding-5.centered.odd.gallery-icon-count= @user.icons.where(has_gallery: false).count
+  %td.width-70.padding-5.right-align.odd.gallery-buttons
     - if @user.id == current_user.try(:id)
-      = link_to add_gallery_path(id: 0), title: "Add Icons" do
+      = link_to add_gallery_path(id: 0), title: "Add Icons", class: 'gallery-add' do
         = image_tag "/images/add.png"
 - @user.galleries.order('name asc').each do |gallery|
   %tr
     - klass = cycle('even', 'odd')
-    %td.padding-5{class: klass}= link_to gallery.name, gallery_path(gallery)
-    %td.width-150.padding-5.centered{class: klass}= gallery.icons.count
-    %td.width-70.right-align{class: klass}
+    %td.padding-5.gallery-name{class: klass}= link_to gallery.name, gallery_path(gallery)
+    %td.width-150.padding-5.centered.gallery-icon-count{class: klass}= gallery.icons.count
+    %td.width-70.padding-5.right-align.gallery-buttons{class: klass}
       - if @user.id == current_user.try(:id)
-        = link_to add_gallery_path(gallery), title: "Add Icons" do
+        = link_to add_gallery_path(gallery), title: "Add Icons", class: 'gallery-add' do
           = image_tag "/images/add.png"
-        = link_to edit_gallery_path(gallery), title: "Edit Gallery" do
+        = link_to edit_gallery_path(gallery), title: "Edit Gallery", class: 'gallery-edit' do
           = image_tag "/images/pencil.png"
-        = link_to gallery_path(gallery), title: "Delete Gallery", method: :delete, confirm: 'Are you sure you want to delete '+gallery.name+'?' do
+        = link_to gallery_path(gallery), title: "Delete Gallery", method: :delete, confirm: "Are you sure you want to delete #{gallery.name}?", class: 'gallery-delete' do
           = image_tag "/images/cross.png"
-        &nbsp;

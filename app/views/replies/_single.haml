@@ -1,6 +1,6 @@
 - klass = cycle('even', 'odd')
 
-.post-container{class: klass}
+.post-container{class: [klass, reply.is_a?(Post) ? 'post-post' : (reply.is_a?(Reply) ? 'post-reply' : '')]}
   - if reply.is_a?(Reply) && reply.id.present?
     <a name="reply-#{reply.id}"></a>
   - if reply.id.present? && logged_in? && !@unread.nil?
@@ -31,17 +31,21 @@
           = image_tag "/images/pencil.png"
         = link_to path_for(reply, '%s'), method: :delete, confirm: 'Are you sure? This will delete this post AND any post that follows it!' do
           = image_tag "/images/cross.png"
-    = sanitize(reply.content.gsub("\n","<br/>")).html_safe
+    .post-content
+      = sanitize(reply.content.gsub("\n","<br/>")).html_safe
   .post-footer
     .right-align>
       .padding-5>
         - if reply.created_at
-          Posted #{pretty_time(reply.created_at)}
+          = precede 'Posted ' do
+            %span.post-posted=pretty_time(reply.created_at)
         - if reply.id.present?
           - if reply.is_a?(Reply)
             - if reply.created_at != reply.updated_at
-              | Updated #{pretty_time(reply.updated_at) + ' |'}
-              = link_to 'See History', path_for(reply, 'history_%s')
+              = surround ' | Updated ', ' | ' do
+                %span.post-updated=pretty_time(reply.updated_at)
+              = link_to 'See History', path_for(reply, 'history_%s'), class: 'post-history'
           - elsif reply.audits.count > 1
-            | Updated #{pretty_time(reply.updated_at) + ' |'}
-            = link_to 'See History', path_for(reply, 'history_%s')
+            = surround ' | Updated ', ' | ' do
+              %span.post-updated=pretty_time(reply.updated_at)
+            = link_to 'See History', path_for(reply, 'history_%s'), class: 'post-history'

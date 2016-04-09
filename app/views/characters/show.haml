@@ -14,26 +14,29 @@
   &raquo;
   %b= @character.name
 
-- if @character.icon
-  = icon_tag @character.icon
-  %br
-%b= @character.screenname
-%br
-= @character.name
-- if @character.template
-  = surround '(', ')' do
-    = link_to @character.template.name, template_path(@character.template)
-- if @character.template_name
-  %br
-  Nickname: #{@character.template_name}
-- if @character.pb
-  %br
-  Played by:
-  = @character.pb
-- if logged_in? && current_user.id == @character.user_id
-  %br
-  = link_to 'Edit character', edit_character_path(@character)
-%br
+.character-info
+  - if @character.icon
+    .character-icon
+      = link_to icon_path(@character.icon) do
+        = icon_tag @character.icon
+  - if @character.screenname
+    %b.character-screenname= @character.screenname
+    %br
+  %span.character-name= @character.name
+  - if @character.template
+    = surround '(', ')' do
+      = link_to @character.template.name, template_path(@character.template), class: 'character-template'
+  - if @character.template_name
+    %br
+    = precede 'Nickname: ' do
+      %span.character-template-nickname=@character.template_name
+  - if @character.pb
+    %br
+    =precede 'Played by: ' do
+      %span.character-pb= @character.pb
+  - if logged_in? && current_user.id == @character.user_id
+    %br
+    = link_to 'Edit character', edit_character_path(@character), class: 'character-edit'
 %br
 - if @posts.present?
   - content_for :posts_title do 'Recent Threads' end
@@ -41,7 +44,9 @@
 %br
 - if @character.galleries.present?
   %table
-    %tr
-      %th Galleries
-    - @character.galleries.each do |gallery|
-      = render partial: 'galleries/single', locals: {gallery: gallery, klass: 'subber', skip_forms: true}
+    %thead
+      %tr
+        %th Galleries
+    %tbody
+      - @character.galleries.each do |gallery|
+        = render partial: 'galleries/single', locals: {gallery: gallery, klass: 'subber', skip_forms: true}

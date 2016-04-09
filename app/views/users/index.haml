@@ -1,11 +1,13 @@
 %table
-  %tr
-    %th{colspan: 2} Glowficcers
-  %tr
-    %th.sub Name
-    %th.sub Date Joined
-  - User.order('username asc').each do |user|
+  %thead
     %tr
-      - klass = cycle('even','odd')
-      %td.padding-10{class: klass}= link_to user.username, user_path(user)
-      %td.padding-10{class: klass}= pretty_time(user.created_at)
+      %th{colspan: 2} Glowficcers
+    %tr
+      %th.sub Name
+      %th.sub Date Joined
+  %tbody
+    - User.order('username asc').each do |user|
+      %tr
+        - klass = cycle('even','odd')
+        %td.padding-10.username{class: klass}= link_to user.username, user_path(user)
+        %td.padding-10.user-date{class: klass}= pretty_time(user.created_at)
