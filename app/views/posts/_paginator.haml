@@ -6,15 +6,17 @@
       = select_tag :per_page, per_page_options, class: 'per-page'
   .pagination
     - if per_page > 0 && paginated.total_entries > per_page
+      - args = params.except(:controller).merge(page: paginated.total_pages)
+      - args.merge(id: @post.id) if @post
       %span
         - if page == 1
           %span.disabled &laquo; First
         - else
-          = link_to '&laquo; First'.html_safe, send(path, params.except(:page, :controller).merge(id: @post.id))
+          = link_to '&laquo; First'.html_safe, send(path, args.except(:page))
       = will_paginate paginated, container: false
       %span
         - if page == paginated.total_pages
           %span.disabled Last &raquo;
         - else
-          = link_to 'Last &raquo;'.html_safe, send(path, params.except(:controller).merge(:page => paginated.total_pages, id: @post.id))
+          = link_to 'Last &raquo;'.html_safe, send(path, args)
   .clear

@@ -35,7 +35,7 @@
   = link_to 'Edit character', edit_character_path(@character)
 %br
 %br
-- if @character.recent_posts.present?
+- if @posts.present?
   - content_for :posts_title do 'Recent Threads' end
   = render partial: 'posts/list', locals: {posts: @character.recent_posts }
 %br

@@ -38,6 +38,7 @@ class CharactersController < ApplicationController
   end
 
   def show
+    @posts = @character.recent_posts(25, page)
   end
 
   def edit
