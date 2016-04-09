@@ -13,8 +13,9 @@ class PostsController < WritableController
     posts_started = Post.where(user_id: current_user.id).select(:id).group(:id).map(&:id)
     posts_in = Reply.where(user_id: current_user.id).select(:post_id).group(:post_id).map(&:post_id)
     ids = posts_in + posts_started
-    @posts = Post.where(id: ids.uniq).where("board_id != 4").order('updated_at desc').includes(:board).paginate(page: page, per_page: 25)
-    @posts.reject! { |post| post.completed? || post.last_post.user_id == current_user.id }  # TODO
+    @posts = Post.where(id: ids.uniq).where("board_id != 4").where('status != 1').order('updated_at desc') # TODO don't hardcode 1
+    @posts = @posts.includes(:board).paginate(page: page, per_page: 25)
+    @posts.reject! { |post| post.last_post.user_id == current_user.id }
     @page_title = "Threads Awaiting Tag"
   end
 
@@ -152,10 +153,10 @@ class PostsController < WritableController
   def search
     return unless params[:commit].present?
 
-    @search_results = Post.order('updated_at desc').limit(25)
+    @search_results = Post.order('updated_at desc')
     @search_results = @search_results.where(board_id: params[:board_id]) if params[:board_id].present?
     @search_results = @search_results.where(user_id: params[:author_id]) if params[:author_id].present?
-    @search_results = @search_results.paginate(page: page, per_page: per_page > 0 ? per_page : 25)
+    @search_results = @search_results.paginate(page: page, per_page: 25)
   end
 
   private

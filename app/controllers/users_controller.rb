@@ -10,8 +10,8 @@ class UsersController < ApplicationController
       flash[:error] = "User could not be found."
       redirect_to users_path and return
     end
-    post_ids = Post.where(user_id: @user.id).order('updated_at desc').limit(25).select(:id).map(&:id)
-    reply_ids = Reply.where(user_id: @user.id).group(:post_id).limit(25).select("post_id, max(updated_at)").map(&:post_id)
+    post_ids = Post.where(user_id: @user.id).order('updated_at desc').select(:id).map(&:id)
+    reply_ids = Reply.where(user_id: @user.id).group(:post_id).select("post_id, max(updated_at)").map(&:post_id)
     ids = (post_ids + reply_ids).uniq
     @posts = Post.where(id: ids).order('updated_at desc').includes(:board).includes(:user).paginate(per_page: 25, page: page)
   end

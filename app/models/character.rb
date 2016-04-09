@@ -23,8 +23,8 @@ class Character < ActiveRecord::Base
 
   def recent_posts(limit=25, page=1)
     return @recent unless @recent.nil?
-    reply_ids =  replies.group(:post_id).select(:post_id).limit(limit).map(&:post_id)
-    post_ids = posts.select(:id).limit(limit).map(&:id)
+    reply_ids =  replies.group(:post_id).select(:post_id).map(&:post_id)
+    post_ids = posts.select(:id).map(&:id)
     @recent ||= Post.where(id: (post_ids + reply_ids).uniq).order('updated_at desc').paginate(per_page: limit, page: page)
   end
 
