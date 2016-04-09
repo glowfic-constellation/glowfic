@@ -5,7 +5,7 @@ class PostsController < WritableController
   before_filter :build_template_groups, :only => [:new, :show, :edit]
 
   def index
-    @posts = Post.order('updated_at desc').limit(25).includes(:board)
+    @posts = Post.order('updated_at desc').includes(:board).paginate(page: page, per_page: 25)
     @page_title = "Recent Threads"
   end
 
@@ -13,8 +13,8 @@ class PostsController < WritableController
     posts_started = Post.where(user_id: current_user.id).select(:id).group(:id).map(&:id)
     posts_in = Reply.where(user_id: current_user.id).select(:post_id).group(:post_id).map(&:post_id)
     ids = posts_in + posts_started
-    @posts = Post.where(id: ids.uniq).where("board_id != 4").order('updated_at desc').limit(25).includes(:board)
-    @posts.reject! { |post| post.completed? || post.last_post.user_id == current_user.id }
+    @posts = Post.where(id: ids.uniq).where("board_id != 4").order('updated_at desc').includes(:board).paginate(page: page, per_page: 25)
+    @posts.reject! { |post| post.completed? || post.last_post.user_id == current_user.id }  # TODO
     @page_title = "Threads Awaiting Tag"
   end
 
