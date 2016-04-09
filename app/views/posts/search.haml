@@ -7,7 +7,7 @@
           = '- '+@search_results.total_entries.to_s+' results'
       %th
         - if @search_results
-          = render partial: 'paginator', locals: {paginated: @search_results, path: :search_posts_path, no_sub: true}
+          = render partial: 'paginator', locals: {paginated: @search_results, path: :search_posts_path}
   %tbody
     %tr
       %td.width-300.padding-10.vtop.dark
