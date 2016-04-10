@@ -1,0 +1,19 @@
+%table
+  %thead
+    %tr
+      %th{colspan: 6} Daily Report
+    - 1.upto(7) do |num_days|
+      - day = num_days.days.ago
+      - posts = Post.where(updated_at: day.beginning_of_day .. day.end_of_day).includes(:board, :user, :last_user)
+      - if posts.present?
+        %tr
+          %th.subber{colspan: 6}= day.strftime("%b %d, %Y")
+        %tr
+          %th.sub.width-15
+          %th.sub Thread
+          %th.sub Continuity
+          %th.sub Authors
+          %th.sub Replies
+          %th.sub Last Updated
+        - posts.each do |post|
+          = render partial: 'posts/list_item', locals: {post: post, hide_continuity: false}

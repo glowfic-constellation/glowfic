@@ -1,0 +1,19 @@
+%table
+  %thead
+    %tr
+      %th{colspan: 6} Monthly Report
+    - 1.upto(1.month.ago.end_of_month.day) do |num_days|
+      - day = 1.month.ago.end_of_month - (num_days - 1).days
+      - posts = Post.where(updated_at: day.beginning_of_day .. day.end_of_day)
+      - if posts.present?
+        %tr
+          %th.subber{colspan: 6}= day.strftime("%b %d, %Y")
+        %tr
+          %th.sub.width-15
+          %th.sub Thread
+          %th.sub Continuity
+          %th.sub Authors
+          %th.sub Replies
+          %th.sub Last Updated
+        - posts.each do |post|
+          = render partial: 'posts/list_item', locals: {post: post, hide_continuity: false}

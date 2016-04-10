@@ -5,6 +5,7 @@ Rails.application.routes.draw do
 
   resources :templates
   resources :boards do collection { post :mark } end
+  resources :reports, only: [:index, :show]
   resources :messages, except: :edit do
     collection { post :mark }
   end
