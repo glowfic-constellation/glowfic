@@ -1,10 +1,11 @@
 class GalleriesController < ApplicationController
-  before_filter :login_required, except: :show
+  before_filter :login_required, except: [:index, :show]
   before_filter :find_gallery, only: [:destroy, :edit, :update]
   before_filter :set_s3_url, only: [:add, :icon]
   before_filter :setup_new_icons, only: [:add, :icon]
 
   def index
+    (return if login_required) unless params[:user_id].present?
     use_javascript('galleries/index')
     @page_title = "Your Galleries"
     @user = current_user
