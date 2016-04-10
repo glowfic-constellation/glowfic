@@ -21,14 +21,14 @@
           %tr
             - klass = cycle('even', 'odd')
             - linked = post.replies.where(created_at: day.beginning_of_day .. day.end_of_day).order('created_at asc').first || post
-            %td.padding-10.post-completed{class: [klass, (post.completed? ? 'post-complete' : 'post-incomplete')]}
+            %td.padding-5.post-completed{class: [klass, (post.completed? ? 'post-complete' : 'post-incomplete')]}
               - if post.completed?
                 = image_tag "/images/book.png", class: 'vmid', title: "Thread Complete"
-            %td.padding-10{class: klass}= link_to post.subject, post_or_reply_link(linked)
-            %td.padding-10.post-board{class: klass}= link_to post.board.name, board_path(post.board)
-            %td.padding-10{class: klass}
+            %td.padding-5{class: klass}= link_to post.subject, post_or_reply_link(linked)
+            %td.padding-5.post-board{class: klass}= link_to post.board.name, board_path(post.board)
+            %td.padding-5{class: klass}
               - if post.description.present?
                 = sanitize(post.description, tags: %w(a), attributes: %w(href)).html_safe
-            %td.padding-10{class: klass}= post.authors.map { |author| link_to fun_name(author), user_path(author) }.join(', ').html_safe
-            %td.padding-10.width-70.post-replies{class: klass}= post.replies.count
-            %td.padding-10{class: klass}= linked.last_updated.strftime("%l:%M %p")
+            %td.padding-5{class: klass}= post.authors.map { |author| link_to fun_name(author), user_path(author) }.join(', ').html_safe
+            %td.padding-5.width-70.post-replies{class: klass}= post.replies.count
+            %td.padding-5{class: klass}= linked.last_updated.strftime("%l:%M %p")
