@@ -4,6 +4,12 @@
       = icon_tag @user.avatar
 %b.username= @user.username
 %br
+- if @user.moiety
+  %b Moiety:
+  = color_block(@user)
+  - if @user.moiety_name.present?
+    %span{style: 'font-weight: bold; color:#' + @user.moiety}= @user.moiety_name
+  %br
 = link_to "#{@user.username}'s characters", user_characters_path(@user), class: 'user-characters'
 %br
 = link_to "#{@user.username}'s galleries", user_galleries_path(@user), class: 'user-galleries'

@@ -14,14 +14,14 @@
         = link_to new_character_path(character_group_id: @group.try(:id)) do
           .link-box.green + New Character
       = link_to url_for(view: 'icons') do
-        .view-button{class: (:selected unless session[:view] == 'list')}
+        .view-button{class: (:selected unless page_view == 'list')}
           = image_tag '/images/grid.png', class: 'icon-view', alt: ''
           Icons
       = link_to url_for(view: 'list') do
-        .view-button{class: (:selected if session[:view] == 'list')}
+        .view-button{class: (:selected if page_view == 'list')}
           = image_tag '/images/list.png', class: 'list-view', alt: ''
           List
-  - if session[:view] == 'list'
+  - if page_view == 'list'
     = render partial: 'list_view'
   - else
     = render partial: 'icon_view'

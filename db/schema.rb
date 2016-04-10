@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20160410060405) do
+ActiveRecord::Schema.define(:version => 20160410170309) do
 
   create_table "audits", :force => true do |t|
     t.integer  "auditable_id"
@@ -243,6 +243,9 @@ ActiveRecord::Schema.define(:version => 20160410060405) do
     t.boolean  "email_notifications"
     t.boolean  "icon_picker_grouping", :default => true
     t.string   "moiety"
+    t.string   "layout"
+    t.string   "moiety_name"
+    t.string   "default_view"
   end
 
   add_index "users", ["email"], :name => "index_users_on_email", :unique => true

@@ -12,7 +12,6 @@ class GalleriesController < ApplicationController
       @user = User.find_by_id(params[:user_id]) || current_user
       @page_title = @user.username + "'s Galleries"
     end
-    session[:gallery_view] = params[:view] if params[:view].present?
   end
 
   def new

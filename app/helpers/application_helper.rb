@@ -25,7 +25,7 @@ module ApplicationHelper
 
   def color_block(user)
     return unless user.moiety
-    content_tag :span, '█', style: 'color: #' + user.moiety
+    content_tag :span, '⬤', style: 'color: #' + user.moiety
   end
 
   def path_for(obj, path)

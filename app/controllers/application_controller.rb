@@ -45,6 +45,16 @@ class ApplicationController < ActionController::Base
   end
   helper_method :per_page
 
+  def page_view
+    return @view if @view
+    if logged_in?
+      @view = params[:view] || current_user.default_view
+    else
+      @view = session[:view] = params[:view] || session[:view] || 'icon'
+    end
+  end
+  helper_method :page_view
+
   def rowspan
     messages = current_user.messages.select(&:unread?).size if logged_in?
     @span ||= 1 + flash.keys.size + (messages || 0)

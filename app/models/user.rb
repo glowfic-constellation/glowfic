@@ -60,6 +60,10 @@ class User < ActiveRecord::Base
     icons.where(has_gallery: false)
   end
 
+  def default_view
+    super || 'icon'
+  end
+
   private
 
   def password_present
