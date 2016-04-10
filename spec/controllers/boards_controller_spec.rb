@@ -93,17 +93,6 @@ RSpec.describe BoardsController do
       get :show, id: board.id
       expect(assigns(:posts)).to eq(assigns(:posts).sort_by(&:updated_at).reverse)
     end
-
-    it "does not fetch posts the user cannot see" do
-      board = create(:board)
-      post = create(:post, board: board, privacy: Post::PRIVACY_PRIVATE)
-      user = create(:user)
-      expect(post).not_to be_visible_to(user)
-
-      login_as(user)
-      get :show, id: board.id
-      expect(assigns(:posts)).not_to include(post)
-    end
   end
 
   describe "GET edit" do

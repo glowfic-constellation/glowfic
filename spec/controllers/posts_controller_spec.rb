@@ -7,11 +7,11 @@ RSpec.describe PostsController do
       expect(response.status).to eq(200)
     end
 
-    it "only fetches 25 threads" do
+    it "paginates" do
       26.times do create(:post) end
       get :index
-      num_posts_fetched = controller.instance_variable_get('@posts').count
-      expect(num_posts_fetched).to eq(25)
+      num_posts_fetched = controller.instance_variable_get('@posts').total_pages
+      expect(num_posts_fetched).to eq(2)
     end
 
     it "only fetches most recent threads" do

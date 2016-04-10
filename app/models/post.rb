@@ -11,15 +11,19 @@ class Post < ActiveRecord::Base
 
   belongs_to :board, inverse_of: :posts
   belongs_to :section, class_name: BoardSection, inverse_of: :posts
+  belongs_to :last_user, class_name: User
+  belongs_to :last_reply, class_name: Reply
   has_many :replies, inverse_of: :post, dependent: :destroy
   has_many :post_viewers
 
   attr_accessible :board, :board_id, :subject, :privacy, :post_viewer_ids, :description
   attr_accessor :post_viewer_ids
+  attr_writer :skip_edited
 
   validates_presence_of :board, :subject
 
   after_save :update_access_list
+  before_save :update_edited_at
 
   audited
   has_associated_audits
@@ -74,6 +78,10 @@ class Post < ActiveRecord::Base
       'Private'     => PRIVACY_PRIVATE }
   end
 
+  def last_updated
+    edited_at
+  end
+
   private
 
   def update_access_list
@@ -87,5 +95,10 @@ class Post < ActiveRecord::Base
     (updated_ids - existing_ids).each do |new_id|
       PostViewer.create(post_id: id, user_id: new_id)
     end
+  end
+
+  def update_edited_at
+    return if @skip_edited
+    self.edited_at = Time.now
   end
 end

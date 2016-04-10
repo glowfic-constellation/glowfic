@@ -28,4 +28,4 @@
   %td.padding-10.post-time{class: klass}
     = pretty_time(post.updated_at)
     by
-    = link_to post.last_post.user.username, user_path(post.last_post.user)
+    = link_to post.last_user.username, user_path(post.last_user)

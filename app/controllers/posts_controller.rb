@@ -13,8 +13,8 @@ class PostsController < WritableController
     posts_started = Post.where(user_id: current_user.id).select(:id).group(:id).map(&:id)
     posts_in = Reply.where(user_id: current_user.id).select(:post_id).group(:post_id).map(&:post_id)
     ids = posts_in + posts_started
-    @posts = Post.where(id: ids.uniq).where("board_id != 4").where('status != 1').order('updated_at desc') # TODO don't hardcode 1
-    @posts = @posts.includes(:board).paginate(page: page, per_page: 25)
+    @posts = Post.where(id: ids.uniq).where("board_id != 4").where('status != 1').order('updated_at desc') # TODO don't hardcode things
+    @posts = @posts.where('last_user_id != ?', current_user.id).includes(:board).paginate(page: page, per_page: 25)
     @posts.reject! { |post| post.last_post.user_id == current_user.id }
     @page_title = "Threads Awaiting Tag"
   end
@@ -59,7 +59,8 @@ class PostsController < WritableController
       preview
       render :action => 'preview'
     else
-      @post = Post.new(params[:post].merge(user: current_user))
+      @post = Post.new(params[:post])
+      @post.user = @post.last_user = current_user
 
       if @post.save
         flash[:success] = "You have successfully posted."

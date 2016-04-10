@@ -25,10 +25,18 @@ class Reply < ActiveRecord::Base
     (index / per_page) + 1
   end
 
+  def last_updated
+    updated_at
+  end
+
   private
 
   def update_post_timestamp
-    post.update_attributes(updated_at: updated_at) unless skip_post_update
+    return if skip_post_update
+    post.skip_edited = true
+    post.last_user = user
+    post.last_reply = self
+    post.save
   end
 
   def destroy_subsequent_replies

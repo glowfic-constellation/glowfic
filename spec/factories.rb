@@ -34,4 +34,10 @@ FactoryGirl.define do
       url { "http://glowfic-constellation.s3.amazonaws.com/users/#{user.id}/icons/nonsense-fakeimg.png" }
     end
   end
+
+  factory :reply do
+    user
+    post
+    content "test content"
+  end
 end

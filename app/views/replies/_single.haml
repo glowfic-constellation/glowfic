@@ -39,13 +39,7 @@
         - if reply.created_at
           = precede 'Posted ' do
             %span.post-posted=pretty_time(reply.created_at)
-        - if reply.id.present?
-          - if reply.is_a?(Reply)
-            - if reply.created_at != reply.updated_at
-              = surround ' | Updated ', ' | ' do
-                %span.post-updated=pretty_time(reply.updated_at)
-              = link_to 'See History', path_for(reply, 'history_%s'), class: 'post-history'
-          - elsif reply.audits.count > 1
-            = surround ' | Updated ', ' | ' do
-              %span.post-updated=pretty_time(reply.updated_at)
-            = link_to 'See History', path_for(reply, 'history_%s'), class: 'post-history'
+        - if reply.id.present? && reply.created_at.to_i != reply.last_updated.to_i
+          = surround ' | Updated ', ' | ' do
+            %span.post-updated=pretty_time(reply.last_updated)
+          = link_to 'See History', path_for(reply, 'history_%s'), class: 'post-history'
