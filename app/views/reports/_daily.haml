@@ -2,7 +2,7 @@
   %thead
     %tr
       %th{colspan: 6} Daily Report
-    - 1.upto(7) do |num_days|
+    - 0.upto(7) do |num_days|
       - day = num_days.days.ago
       - posts = Post.where(updated_at: day.beginning_of_day .. day.end_of_day).includes(:board, :user, :last_user)
       - if posts.present?
