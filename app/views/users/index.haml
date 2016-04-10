@@ -9,5 +9,5 @@
     - User.order('username asc').each do |user|
       %tr
         - klass = cycle('even','odd')
-        %td.padding-10.username{class: klass}= link_to user.username, user_path(user)
+        %td.padding-10.username{class: klass}= link_to fun_name(user), user_path(user)
         %td.padding-10.user-date{class: klass}= pretty_time(user.created_at)

@@ -6,6 +6,7 @@ class User < ActiveRecord::Base
     3 => '8040BF',
     5 => 'A0A0A0',
     8 => '0080FF',
+    9 => 'FFFFFF',
     12 => 'd5732a',
     15 => 'FF91BF',
     16 => 'FF8000',
@@ -14,6 +15,7 @@ class User < ActiveRecord::Base
     24 => 'ff5c5c',
     25 => '728C00',
     27 => '6960EC',
+    30 => '000080',
     31 => '860018',
     33 => '006000',
   }
