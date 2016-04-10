@@ -7,8 +7,15 @@ class User < ActiveRecord::Base
     5 => 'A0A0A0',
     8 => '0080FF',
     12 => 'd5732a',
+    15 => 'FF91BF',
     16 => 'FF8000',
+    19 => '000000',
     20 => '62371F',
+    24 => 'ff5c5c',
+    25 => '728C00',
+    27 => '6960EC',
+    31 => '860018'
+    33 => '006000',
   }
 
   attr_accessor :password, :password_confirmation
