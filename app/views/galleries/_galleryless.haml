@@ -4,12 +4,12 @@
       = link_to 'Galleryless icons', user_gallery_path(id: 0, user_id: @user.id), class: 'gallery-title'
     - else
       = link_to 'Galleryless icons', gallery_path(id: 0), class: 'gallery-title'
-    - if @user.id == current_user.id
+    - if @user.id == current_user.try(:id)
       = link_to add_gallery_path(id: 0), class: 'gallery-add' do
         .link-box.green
           + Add Icons
     .gallery-box.float-right.gallery-minmax{id: 0} -
-- if @user.id == current_user.id
+- if @user.id == current_user.try(:id)
   %tr.gallery-subheader
     %th.sub Unsorted icons without a gallery will appear here. They can still be individually assigned to a character with no galleries.
 %tr.gallery-icons
@@ -23,10 +23,10 @@
               = icon_tag icon
               %br
               %span.icon-keyword= icon.keyword
-            - if @user.id == current_user.id
+            - if @user.id == current_user.try(:id)
               .select-button= check_box_tag :"marked_ids[]", icon.id
         - if icons.empty?
           .centered.no-icons — No icons yet —
-        - elsif @user.id == current_user.id
+        - elsif @user.id == current_user.try(:id)
           .clear.centered.icons-remove
             = submit_tag "x Delete selected icons permanently", confirm: "Are you sure? These icons will be gone from the site!"
