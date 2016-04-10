@@ -19,10 +19,13 @@ module ApplicationHelper
   end
 
   def fun_name(user)
-    moiety_color = User::MOIETIES[user.id]
-    return user.username unless moiety_color
-    color_block = content_tag :span, '█', style: 'color: #' + moiety_color
-    color_block + ' ' + user.username
+    return user.username unless user.moiety
+    color_block(user) + ' ' + user.username
+  end
+
+  def color_block(user)
+    return unless user.moiety
+    content_tag :span, '█', style: 'color: #' + user.moiety
   end
 
   def path_for(obj, path)

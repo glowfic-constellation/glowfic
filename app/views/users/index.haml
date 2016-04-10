@@ -1,13 +1,15 @@
 %table
   %thead
     %tr
-      %th{colspan: 2} Glowficcers
+      %th{colspan: 3} Glowficcers
     %tr
       %th.sub Name
+      %th.width-70.sub.centered Moiety
       %th.sub Date Joined
   %tbody
     - User.order('username asc').each do |user|
       %tr
         - klass = cycle('even','odd')
-        %td.padding-10.username{class: klass}= link_to fun_name(user), user_path(user)
+        %td.padding-10.username{class: klass}= link_to user.username, user_path(user)
+        %td.padding-10.user-moiety.centered.width-70{class: klass}= color_block(user)
         %td.padding-10.user-date{class: klass}= pretty_time(user.created_at)

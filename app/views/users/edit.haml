@@ -25,6 +25,11 @@
         = f.check_box :icon_picker_grouping, class: 'width-15 vmid'
         Group the icon picker by gallery
     %tr
+      %th.sub Moiety
+      %td.even
+        \#
+        = f.text_field :moiety, placeholder: "Hex code", class: 'text', style: 'width: 80px;'
+    %tr
       %th.centered.subber{colspan: 2}= submit_tag "Save", class: 'button'
 
 %br
