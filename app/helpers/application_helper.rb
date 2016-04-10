@@ -18,6 +18,13 @@ module ApplicationHelper
     time.strftime("%b %d, %Y %l:%M %p")
   end
 
+  def fun_name(user)
+    moiety_color = User::MOIETIES[user.id]
+    return user.username unless moiety_color
+    color_block = content_tag :span, '█', style: 'color: #' + moiety_color
+    color_block + ' ' + user.username
+  end
+
   def path_for(obj, path)
     send (path + '_path') % obj.class.to_s.downcase, obj
   end

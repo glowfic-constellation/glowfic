@@ -6,6 +6,7 @@
       - day = num_days.days.ago
       - posts = Post.where(updated_at: day.beginning_of_day .. day.end_of_day).includes(:board, :user, :last_user)
       - if posts.present?
+        - posts = posts.sort_by{ |p| p.replies.where(created_at: day.beginning_of_day .. day.end_of_day).order('created_at asc').first.try(:created_at) || p.edited_at }
         %tr
           %th.subber{colspan: 6}= day.strftime("%b %d, %Y")
         %tr
@@ -16,4 +17,4 @@
           %th.sub Replies
           %th.sub Last Updated
         - posts.each do |post|
-          = render partial: 'posts/list_item', locals: {post: post, hide_continuity: false}
+          = render partial: 'posts/list_item', locals: {post: post, hide_continuity: false, moiety: true}

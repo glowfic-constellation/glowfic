@@ -1,6 +1,15 @@
 class User < ActiveRecord::Base
   MIN_USERNAME_LEN = 3
   MAX_USERNAME_LEN = 80
+  MOIETIES = {
+    1 => 'AA0000',
+    3 => '8040BF',
+    5 => 'A0A0A0',
+    8 => '0080FF',
+    12 => 'd5732a',
+    16 => 'FF8000',
+    20 => '62371F',
+  }
 
   attr_accessor :password, :password_confirmation
   attr_protected :crypted
