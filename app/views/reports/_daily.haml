@@ -31,4 +31,4 @@
                 = sanitize(post.description, tags: %w(a), attributes: %w(href)).html_safe
             %td.padding-10{class: klass}= post.authors.map { |author| link_to fun_name(author), user_path(author) }.join(', ').html_safe
             %td.padding-10.width-70.post-replies{class: klass}= post.replies.count
-            %td.padding-10{class: klass}= pretty_time(linked.last_updated)
+            %td.padding-10{class: klass}= linked.last_updated.strftime("%l:%M %p")
