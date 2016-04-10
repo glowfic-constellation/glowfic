@@ -20,7 +20,7 @@ module ApplicationHelper
 
   def fun_name(user)
     return user.username unless user.moiety
-    color_block(user) + ' ' + user.username
+    content_tag :span, user.username, style: 'font-weight: bold; color: #' + user.moiety
   end
 
   def color_block(user)
