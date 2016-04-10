@@ -23,7 +23,6 @@ class Post < ActiveRecord::Base
   validates_presence_of :board, :subject
 
   after_save :update_access_list
-  before_save :update_edited_at
 
   audited
   has_associated_audits
@@ -97,8 +96,11 @@ class Post < ActiveRecord::Base
     end
   end
 
-  def update_edited_at
-    return if @skip_edited
-    self.edited_at = Time.now
+  def timestamp_attributes_for_update
+    # Makes Rails treat edited_at as a timestamp identical to updated_at
+    # unless the @skip_edited flag is set. Be VERY CAREFUL editing this!
+    defaults = super
+    return defaults if @skip_edited
+    defaults + [:edited_at]
   end
 end

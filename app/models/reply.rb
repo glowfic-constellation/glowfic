@@ -36,6 +36,7 @@ class Reply < ActiveRecord::Base
     post.skip_edited = true
     post.last_user = user
     post.last_reply = self
+    post.updated_at = updated_at
     post.save
   end
 
