@@ -9,7 +9,7 @@
   .pagination
     - if paginated.total_entries > paginated.per_page
       - args = params.except(:controller)
-      - args.merge(id: @post.id) if @post
+      - args = args.merge(id: @post.id) if @post.present?
       %span
         - if page == 1
           %span.disabled.first_page &laquo; First
