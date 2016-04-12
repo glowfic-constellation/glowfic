@@ -8,3 +8,4 @@ plugins:
   - link
 custom_undo_redo_levels: 10
 setup: tinyMCESetup
+content_css: /stylesheets/tinymce.css
