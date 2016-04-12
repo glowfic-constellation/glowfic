@@ -188,6 +188,8 @@ GEM
     thor (0.19.1)
     tilt (1.4.1)
     timecop (0.8.1)
+    tinymce-rails (4.3.8)
+      railties (>= 3.1.1)
     treetop (1.4.15)
       polyglot
       polyglot (>= 0.3.1)
@@ -226,6 +228,7 @@ DEPENDENCIES
   sass-rails
   seed_dump (= 0.5.3)
   timecop
+  tinymce-rails
   uglifier
   will_paginate (~> 3.0.6)
 

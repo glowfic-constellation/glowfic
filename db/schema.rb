@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20160410170309) do
+ActiveRecord::Schema.define(:version => 20160412035353) do
 
   create_table "audits", :force => true do |t|
     t.integer  "auditable_id"
@@ -219,6 +219,19 @@ ActiveRecord::Schema.define(:version => 20160410170309) do
   add_index "replies", ["thread_id"], :name => "index_replies_on_thread_id"
   add_index "replies", ["user_id"], :name => "index_replies_on_user_id"
 
+  create_table "reply_drafts", :force => true do |t|
+    t.integer  "post_id",      :null => false
+    t.integer  "user_id",      :null => false
+    t.text     "content"
+    t.integer  "character_id"
+    t.integer  "icon_id"
+    t.integer  "thread_id"
+    t.datetime "created_at",   :null => false
+    t.datetime "updated_at",   :null => false
+  end
+
+  add_index "reply_drafts", ["post_id", "user_id"], :name => "index_reply_drafts_on_post_id_and_user_id"
+
   create_table "templates", :force => true do |t|
     t.integer  "user_id",            :null => false
     t.string   "name"
@@ -231,13 +244,13 @@ ActiveRecord::Schema.define(:version => 20160410170309) do
   add_index "templates", ["user_id"], :name => "index_templates_on_user_id"
 
   create_table "users", :force => true do |t|
-    t.string   "username",                               :null => false
-    t.string   "crypted",                                :null => false
+    t.string   "username",                                :null => false
+    t.string   "crypted",                                 :null => false
     t.integer  "avatar_id"
     t.integer  "active_character_id"
     t.integer  "per_page",             :default => 25
-    t.datetime "created_at",                             :null => false
-    t.datetime "updated_at",                             :null => false
+    t.datetime "created_at",                              :null => false
+    t.datetime "updated_at",                              :null => false
     t.string   "timezone"
     t.string   "email"
     t.boolean  "email_notifications"
@@ -246,6 +259,7 @@ ActiveRecord::Schema.define(:version => 20160410170309) do
     t.string   "layout"
     t.string   "moiety_name"
     t.string   "default_view"
+    t.string   "default_editor",       :default => "rtf"
   end
 
   add_index "users", ["email"], :name => "index_users_on_email", :unique => true

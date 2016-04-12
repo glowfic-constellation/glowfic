@@ -6,7 +6,7 @@ class Reply < ActiveRecord::Base
   validates_presence_of :post
   audited associated_with: :post
 
-  after_create :notify_other_authors
+  after_create :notify_other_authors, :destroy_draft
   after_save :update_post_timestamp
   after_destroy :destroy_subsequent_replies
 
@@ -42,6 +42,10 @@ class Reply < ActiveRecord::Base
 
   def destroy_subsequent_replies
     Reply.where('id > ?', id).where(post_id: post_id).delete_all
+  end
+
+  def destroy_draft
+    ReplyDraft.draft_for(post_id, user_id).try(:destroy)
   end
 
   def notify_other_authors

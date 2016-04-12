@@ -64,7 +64,8 @@ class WritableController < ApplicationController
       use_javascript('posts')
       
       active_char = @post.last_character_for(current_user)
-      @reply = Reply.new(post: @post, 
+      @reply = ReplyDraft.draft_reply_for(@post, current_user) || Reply.new(
+        post: @post,
         character: active_char,
         user: current_user, 
         icon: active_char.try(:icon))

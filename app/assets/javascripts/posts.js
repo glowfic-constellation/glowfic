@@ -32,6 +32,18 @@ $(document).ready(function() {
     $("#post-menu-box").toggle();
   });
 
+  $('.view-button').click(function() {
+    if(this.id == 'rtf') {
+      $("#html").removeClass('selected');
+      $(this).addClass('selected');
+      tinyMCE.activeEditor.show();
+    } else {
+      $("#rtf").removeClass('selected');
+      $(this).addClass('selected');
+      tinyMCE.activeEditor.hide();
+    };
+  });
+
   $("#post_privacy").change(function() {
     if($(this).val() == 2) { // TODO don't hardcode, should be PRIVACY_ACCESS
       $("#access_list").show();
@@ -47,11 +59,19 @@ $(document).ready(function() {
 
   $("#submit_button").click(function() {
     $("#preview_button").removeAttr('data-disable-with').attr('disabled', 'disabled');
+    $("#draft_button").removeAttr('data-disable-with').attr('disabled', 'disabled');
     return true;
   });
 
   $("#preview_button").click(function() {
     $("#submit_button").removeAttr('data-disable-with').attr('disabled', 'disabled');
+    $("#draft_button").removeAttr('data-disable-with').attr('disabled', 'disabled');
+    return true;
+  });
+
+  $("#draft_button").click(function() {
+    $("#submit_button").removeAttr('data-disable-with').attr('disabled', 'disabled');
+    $("#preview_button").removeAttr('data-disable-with').attr('disabled', 'disabled');
     return true;
   });
 
@@ -229,4 +249,12 @@ iconString = function(icon) {
     + "<img src='" + img_url + "' id='" + img_id + "' alt='" + img_key + "' title='" + img_key + "' class='icon' />"
     + "<br />" + img_key
     + "</div>";
+}
+
+tinyMCESetup = function(ed) {
+  ed.on('init', function(args) {
+    if($("#html").hasClass('selected') == true){
+      tinyMCE.activeEditor.hide();
+    };
+  });
 }

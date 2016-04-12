@@ -28,6 +28,9 @@
       %th.sub Default View
       %td.odd= f.select(:default_view, options_for_select({Icon: 'icon', List: 'list'}, current_user.default_view))
     %tr
+      %th.sub Default Editor
+      %td.odd= f.select(:default_editor, options_for_select({'Rich Text' => 'rtf', HTML: 'html'}, current_user.default_editor))
+    %tr
       %th.sub Moiety Hex
       %td.even
         \#

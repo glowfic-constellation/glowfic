@@ -9,6 +9,8 @@
       = f.label :post_viewer_ids, '&#8627; Who can view this post? '.html_safe
       = f.select :post_viewer_ids, options_from_collection_for_select(User.all - [current_user], :id, :username, post.post_viewer_ids || post.post_viewers.map(&:user_id)), {}, {multiple: true}
     %hr
+    .view-button#rtf{class: ('selected' if current_user.default_editor == 'rtf')} Rich Text
+    .view-button#html{class: ('selected' if current_user.default_editor == 'html')} HTML
     = f.label :subject, 'Subject:'
     = f.text_field :subject, placeholder: 'Subject'
     %br
@@ -17,7 +19,8 @@
     .details (Optional: describe the thread's setting and major players, e.g. A Bell and Vorkosigans in Chronicle)
     %br
     #post-form-wrapper
-      = f.text_area :content
+      = f.text_area :content, class: 'tinymce'
+      = tinymce
       = f.hidden_field :character_id, id: 'reply_character_id'
       = f.hidden_field :icon_id, id: 'reply_icon_id'
       = submit_tag (method == :put ? 'Save' : "Post"), class: 'button', id: 'submit_button', disable_with: 'Saving...'

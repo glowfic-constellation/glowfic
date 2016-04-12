@@ -12,6 +12,25 @@ class RepliesController < WritableController
       render :action => 'preview' and return
     end
 
+    if params[:button_draft]
+      if draft = ReplyDraft.draft_for(params[:reply][:post_id], current_user.id)
+        draft.assign_attributes(params[:reply])
+      else
+        draft = ReplyDraft.new(params[:reply])
+        draft.user = current_user
+      end
+
+      if draft.save
+        flash[:success] = "Draft saved!"
+      else
+        flash[:error] = {}
+        flash[:error][:message] = "Your draft could not be saved because of the following problems:"
+        flash[:error][:array] = draft.errors.full_messages
+      end
+      redirect_to post_path(draft.post) and return
+    end
+
+
     reply = Reply.new(params[:reply])
     reply.user = current_user
     if reply.save

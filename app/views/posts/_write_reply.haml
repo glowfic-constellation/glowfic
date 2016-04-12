@@ -1,6 +1,9 @@
 - content_for :form do
   = form_for reply, :url => url, :method => method, :html => {:id => 'post_form'} do |f|
     %b Reply
+    .view-button#rtf{class: ('selected' if current_user.default_editor == 'rtf')} Rich Text
+    .view-button#html{class: ('selected' if current_user.default_editor == 'html')} HTML
+    %br
     %br
     = f.hidden_field :post_id
     = f.hidden_field :character_id, value: reply.character_id || params[:character_id] || (current_user.active_character.try(:id) unless reply.id)
@@ -8,8 +11,11 @@
     - if params[:per_page]
       = hidden_field_tag :per_page, params[:per_page]
     #post-form-wrapper
-      = f.text_area :content
+      = f.text_area :content, class: 'tinymce'
+      = tinymce
       = submit_tag (method == :put ? 'Save' : "Post"), class: 'button', id: 'submit_button', disable_with: 'Saving...'
       = submit_tag "Preview", class: 'button', id: 'preview_button', disable_with: 'Loading...', name: 'button_preview'
+      - if method == :post
+        = submit_tag "Save Draft", class: 'button', id: 'draft_button', disable_with: 'Saving...', name: 'button_draft'
 
 = render partial: 'posts/editor', locals: {item: reply}

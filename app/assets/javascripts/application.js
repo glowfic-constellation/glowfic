@@ -15,6 +15,7 @@
 //= require chosen-jquery
 //= require jquery.ui.widget
 //= require z.jquery.fileupload
+//= require tinymce-jquery
 
 $(document).ready(function() {
   $(".chosen-select").chosen({

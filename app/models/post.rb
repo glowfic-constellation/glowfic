@@ -15,6 +15,7 @@ class Post < ActiveRecord::Base
   belongs_to :last_reply, class_name: Reply
   has_many :replies, inverse_of: :post, dependent: :destroy
   has_many :post_viewers
+  has_many :reply_drafts
 
   attr_accessible :board, :board_id, :subject, :privacy, :post_viewer_ids, :description
   attr_accessor :post_viewer_ids

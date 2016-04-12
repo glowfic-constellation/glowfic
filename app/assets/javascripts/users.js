@@ -30,6 +30,11 @@ $(document).ready(function() {
     disable_search_threshold: 20,
   });
 
+  $("#user_default_editor").chosen({
+    width: '100px',
+    disable_search_threshold: 20,
+  });
+
   $("#user_timezone").chosen({width: '250px'});
 });
 

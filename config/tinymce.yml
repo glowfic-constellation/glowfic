@@ -1,0 +1,10 @@
+menubar: false
+statusbar: false
+toolbar:
+  - bold italic underline strikethrough | link image | blockquote hr bullist numlist | undo redo
+plugins:
+  - image
+  - hr
+  - link
+custom_undo_redo_levels: 10
+setup: tinyMCESetup
