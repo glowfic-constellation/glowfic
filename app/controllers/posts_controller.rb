@@ -53,26 +53,28 @@ class PostsController < WritableController
   end
 
   def create
+    gon.original_content = params[:post][:content]
+
     if params[:button_preview]
       @url = posts_path
       @method = :post
       preview
-      render :action => 'preview'
-    else
-      @post = Post.new(params[:post])
-      @post.user = @post.last_user = current_user
+      render :action => 'preview' and return
+    end
 
-      if @post.save
-        flash[:success] = "You have successfully posted."
-        redirect_to post_path(@post)
-      else
-        flash.now[:error] = @post.errors.full_messages.to_s
-        @image = @post.icon
-        @character = @post.character
-        use_javascript('posts')
-        build_template_groups
-        render :action => :new
-      end
+    @post = Post.new(params[:post])
+    @post.user = @post.last_user = current_user
+
+    if @post.save
+      flash[:success] = "You have successfully posted."
+      redirect_to post_path(@post)
+    else
+      flash.now[:error] = @post.errors.full_messages.to_s
+      @image = @post.icon
+      @character = @post.character
+      use_javascript('posts')
+      build_template_groups
+      render :action => :new
     end
   end
 

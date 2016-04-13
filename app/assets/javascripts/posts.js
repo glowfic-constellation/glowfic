@@ -36,11 +36,13 @@ $(document).ready(function() {
     if(this.id == 'rtf') {
       $("#html").removeClass('selected');
       $(this).addClass('selected');
-      tinyMCE.activeEditor.show();
+      tinyMCE.execCommand('mceAddEditor', true, 'post_content');
+      tinyMCE.execCommand('mceAddEditor', true, 'reply_content');
     } else {
       $("#rtf").removeClass('selected');
       $(this).addClass('selected');
-      tinyMCE.activeEditor.hide();
+      tinyMCE.execCommand('mceRemoveEditor', false, 'post_content');
+      tinyMCE.execCommand('mceRemoveEditor', false, 'reply_content');
     };
   });
 
@@ -253,8 +255,10 @@ iconString = function(icon) {
 
 tinyMCESetup = function(ed) {
   ed.on('init', function(args) {
-    if($("#html").hasClass('selected') == true){
-      tinyMCE.activeEditor.hide();
+    if($("#html").hasClass('selected') == true) {
+      tinyMCE.execCommand('mceRemoveEditor', false, 'post_content');
+      tinyMCE.execCommand('mceRemoveEditor', false, 'reply_content');
+      $(".tinymce").val(gon.original_content);
     };
   });
 }

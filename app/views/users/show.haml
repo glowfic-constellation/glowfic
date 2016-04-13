@@ -17,4 +17,4 @@
 %br
 - content_for :posts_title do
   #{@user.username}'s Recent Posts
-= render partial: 'posts/list', locals: {posts: @posts}
+= render partial: 'posts/list', locals: {posts: @posts, path: :user_path}

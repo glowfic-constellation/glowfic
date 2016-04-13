@@ -120,3 +120,6 @@ select.per-page { margin-top: 5px; margin-bottom: 5px; }
 #post-menu-box a { color: #EEEEEE; }
 #post-menu-box img { margin-right: 3px; vertical-align: middle; margin-bottom: 4px; }
 #post-menu-box a:hover div { background-color: #B0BBA9; }
+
+/* Deal with RTF */
+.post-content > p:first-child { margin-top: 0px !important; }

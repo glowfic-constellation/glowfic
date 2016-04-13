@@ -18,4 +18,4 @@
       %tr
         %td.centered.padding-10.no-posts{ class: cycle('even','odd'), colspan: 6 } — No posts yet —
 - if posts.total_pages > 1
-  = render partial: 'posts/paginator', locals: { paginated: @posts, path: :posts_path }
+  = render partial: 'posts/paginator', locals: { paginated: @posts, path: defined?(path) ? path : :posts_path }

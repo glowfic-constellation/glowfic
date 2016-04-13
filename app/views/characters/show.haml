@@ -40,7 +40,7 @@
 %br
 - if @posts.present?
   - content_for :posts_title do 'Recent Threads' end
-  = render partial: 'posts/list', locals: {posts: @character.recent_posts }
+  = render partial: 'posts/list', locals: {posts: @character.recent_posts, path: :character_path}
 %br
 - if @character.galleries.present?
   %table

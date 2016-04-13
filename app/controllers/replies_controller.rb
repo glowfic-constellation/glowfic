@@ -5,6 +5,8 @@ class RepliesController < WritableController
   before_filter :require_permission, only: [:edit, :update, :destroy]
 
   def create
+    gon.original_content = params[:reply][:content]
+
     if params[:button_preview]
       @url = replies_path
       @method = :post
