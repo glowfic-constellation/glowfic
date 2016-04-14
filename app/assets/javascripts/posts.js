@@ -259,6 +259,10 @@ tinyMCESetup = function(ed) {
       tinyMCE.execCommand('mceRemoveEditor', false, 'post_content');
       tinyMCE.execCommand('mceRemoveEditor', false, 'reply_content');
       $(".tinymce").val(gon.original_content);
+    } else {
+      var rawContent = tinymce.activeEditor.getContent({format: 'raw'});
+      var content = tinymce.activeEditor.getContent();
+      if (rawContent == '<p>&nbsp;<br></p>' && content == '') { tinymce.activeEditor.setContent(''); }
     };
   });
 }
