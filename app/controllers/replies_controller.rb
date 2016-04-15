@@ -70,9 +70,11 @@ class RepliesController < WritableController
     @character = @reply.character
     @image = @reply.icon
     use_javascript('posts')
+    gon.original_content = @reply.content
   end
 
   def update
+    gon.original_content = params[:reply][:content]
     if params[:button_preview]
       @url = reply_path(params[:id])
       @method = :put

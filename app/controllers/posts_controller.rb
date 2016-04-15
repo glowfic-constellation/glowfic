@@ -100,9 +100,12 @@ class PostsController < WritableController
     use_javascript('posts')
     @image = @post.icon
     @character = @post.character
+    gon.original_content = @post.content
   end
 
   def update
+    gon.original_content = params[:post][:content]
+
     if params[:button_preview]
       @url = post_path(params[:id])
       @method = :put
