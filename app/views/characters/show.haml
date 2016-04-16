@@ -40,7 +40,7 @@
 %br
 - if @posts.present?
   - content_for :posts_title do 'Recent Threads' end
-  = render partial: 'posts/list', locals: {posts: @character.recent_posts, path: :character_path}
+  = render partial: 'posts/list', locals: {posts: @character.recent_posts.includes(:board, :user, :last_user), path: :character_path}
 %br
 - if @character.galleries.present?
   %table
@@ -48,5 +48,5 @@
       %tr
         %th Galleries
     %tbody
-      - @character.galleries.each do |gallery|
+      - @character.galleries.includes(:user).each do |gallery|
         = render partial: 'galleries/single', locals: {gallery: gallery, klass: 'subber', skip_forms: true}

@@ -4,7 +4,7 @@ class WritableController < ApplicationController
   def build_template_groups
     return unless logged_in?
 
-    templates = current_user.templates.sort_by(&:name)
+    templates = current_user.templates.includes(:characters).sort_by(&:name)
     faked = Struct.new(:name, :id, :ordered_characters)
     templateless = faked.new('Templateless', nil, current_user.characters.where(:template_id => nil).to_a)
     @templates = templates + [templateless]
@@ -53,7 +53,7 @@ class WritableController < ApplicationController
       self.page = cur_page = 1
     end
 
-    @replies = replies.includes(:user, :character, :post, :icon).order('id asc').paginate(page: cur_page, per_page: per)
+    @replies = replies.includes(:user, :character, :icon).order('id asc').paginate(page: cur_page, per_page: per)
     redirect_to post_path(@post, page: @replies.total_pages, per_page: per) and return if cur_page > @replies.total_pages
     use_javascript('paginator')
 

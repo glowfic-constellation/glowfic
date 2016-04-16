@@ -5,7 +5,7 @@ class PostsController < WritableController
   before_filter :build_template_groups, :only => [:new, :show, :edit]
 
   def index
-    @posts = Post.order('updated_at desc').includes(:board).paginate(page: page, per_page: 25)
+    @posts = Post.order('updated_at desc').includes(:board, :user, :last_user).paginate(page: page, per_page: 25)
     @page_title = "Recent Threads"
   end
 
@@ -159,7 +159,7 @@ class PostsController < WritableController
   def search
     return unless params[:commit].present?
 
-    @search_results = Post.order('updated_at desc')
+    @search_results = Post.order('updated_at desc').includes(:board)
     @search_results = @search_results.where(board_id: params[:board_id]) if params[:board_id].present?
     @search_results = @search_results.where(user_id: params[:author_id]) if params[:author_id].present?
     @search_results = @search_results.paginate(page: page, per_page: 25)

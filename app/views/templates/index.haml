@@ -18,5 +18,5 @@
       - else
         = @user.username + "'s Templates"
 
-- @templates.order('name asc').each do |template|
+- @templates.includes(:characters).order('name asc').each do |template|
   = render partial: 'single', locals: {title: link_to(template.name, template_path(template)), template: template}
