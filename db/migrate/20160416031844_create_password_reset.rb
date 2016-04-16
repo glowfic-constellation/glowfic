@@ -7,6 +7,6 @@ class CreatePasswordReset < ActiveRecord::Migration
       t.timestamps
     end
     add_index :password_resets, :auth_token, unique: true
-    add_index :password_resets, [:user, :created_at]
+    add_index :password_resets, [:user_id, :created_at]
   end
 end
