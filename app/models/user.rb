@@ -4,6 +4,7 @@ class User < ActiveRecord::Base
 
   attr_accessor :password, :password_confirmation
   attr_protected :crypted
+  attr_writer :validate_password
 
   has_many :icons
   has_many :characters
@@ -12,19 +13,20 @@ class User < ActiveRecord::Base
   has_many :templates
   has_many :sent_messages, :class_name => Message, :foreign_key => 'sender_id'
   has_many :messages, :foreign_key => 'recipient_id'
+  has_many :password_resets
   belongs_to :avatar, :class_name => Icon
   belongs_to :active_character, :class_name => Character
 
-  validates_presence_of :username
+  validates_presence_of :username, :crypted
   validates_uniqueness_of :username
   validates_uniqueness_of :email, allow_blank: true
   validates_length_of :username, :in => MIN_USERNAME_LEN..MAX_USERNAME_LEN, :allow_blank => true
-  validates_length_of :password, :in => 6..25, :on => :create
   validates_length_of :moiety, in: 3..6, allow_blank: true
-  validates_confirmation_of :password, :on => :create
-  validate :password_present
+  validates_length_of :password, :in => 6..25, if: :validate_password?
+  validates_confirmation_of :password, if: :validate_password?
+  validates_presence_of :password, :password_confirmation, if: :validate_password?
 
-  before_save :encrypt_password
+  before_validation :encrypt_password
   after_save :clear_password
 
   nilify_blanks
@@ -66,11 +68,6 @@ class User < ActiveRecord::Base
 
   private
 
-  def password_present
-    return true if password.present? || crypted.present?
-    errors.add(:password, "can't be blank")
-  end
-
   def encrypt_password
     self.crypted = crypted_password(password) if password.present?
   end
@@ -88,5 +85,9 @@ class User < ActiveRecord::Base
   def clear_password
     self.password = nil
     self.password_confirmation = nil
+  end
+
+  def validate_password?
+    !!@validate_password
   end
 end

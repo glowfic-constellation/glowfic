@@ -22,6 +22,7 @@ class UsersController < ApplicationController
 
   def create
     @user = User.new(params[:user])
+    @user.validate_password = true
     
     if params[:secret] != "ALLHAILTHECOIN"
       flash.now[:error] = "This is in beta. Please come back later."
@@ -62,11 +63,14 @@ class UsersController < ApplicationController
       render action: :edit and return
     end
     
+    current_user.validate_password = true
     if current_user.update_attributes(params[:user])
       flash[:success] = "Changes saved successfully."
       redirect_to edit_user_path(current_user)
     else
-      flash.now[:error] = "There was a problem with your changes."
+      flash.now[:error] = {}
+      flash.now[:error][:message] = "There was a problem with your changes."
+      flash.now[:error][:array] = current_user.errors.full_messages
       render action: :edit
     end
   end

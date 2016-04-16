@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20160412035353) do
+ActiveRecord::Schema.define(:version => 20160416031844) do
 
   create_table "audits", :force => true do |t|
     t.integer  "auditable_id"
@@ -156,6 +156,16 @@ ActiveRecord::Schema.define(:version => 20160412035353) do
 
   add_index "messages", ["recipient_id", "unread"], :name => "index_messages_on_recipient_id_and_unread"
   add_index "messages", ["sender_id"], :name => "index_messages_on_sender_id"
+
+  create_table "password_resets", :force => true do |t|
+    t.integer  "user_id",                       :null => false
+    t.string   "auth_token",                    :null => false
+    t.boolean  "used",       :default => false
+    t.datetime "created_at",                    :null => false
+    t.datetime "updated_at",                    :null => false
+  end
+
+  add_index "password_resets", ["auth_token"], :name => "index_password_resets_on_auth_token", :unique => true
 
   create_table "post_viewers", :force => true do |t|
     t.integer  "post_id",    :null => false
