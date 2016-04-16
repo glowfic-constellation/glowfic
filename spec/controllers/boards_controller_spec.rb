@@ -29,7 +29,7 @@ RSpec.describe BoardsController do
       get :new
 
       expect(assigns(:users).count).to eq(3)
-      expect(assigns(:users).map(&:id)).to eq(others.map(&:id))
+      expect(assigns(:users).map(&:id).sort).to eq(others.map(&:id).sort)
     end
   end
 
@@ -45,7 +45,19 @@ RSpec.describe BoardsController do
       post :create
       expect(response.status).to eq(200)
       expect(flash[:error][:message]).to eq("Continuity could not be created.")
+      expect(flash[:error][:array]).to be_present
       expect(response).to render_template('new')
+    end
+
+    it "sets the correct cowriters on failure" do
+      user = create(:user)
+      others = 3.times.collect do create(:user) end
+
+      login_as(user)
+      post :create
+
+      expect(assigns(:users).count).to eq(3)
+      expect(assigns(:users).map(&:id).sort).to eq(others.map(&:id).sort)
     end
 
     it "successfully makes a board" do
@@ -96,15 +108,138 @@ RSpec.describe BoardsController do
   end
 
   describe "GET edit" do
-    skip "edit is not yet implemented"
+    it "requires login" do
+      get :edit, id: -1
+      expect(response).to redirect_to(root_url)
+      expect(flash[:error]).to eq("You must be logged in to view that page.")
+    end
+
+    it "requires valid board" do
+      login
+      get :edit, id: -1
+      expect(response).to redirect_to(boards_url)
+      expect(flash[:error]).to eq("Continuity could not be found.")
+    end
+
+    it "requires board permission" do
+      user = create(:user)
+      login_as(user)
+      board = create(:board)
+      expect(board).not_to be_editable_by(user)
+      get :edit, id: board.id
+      expect(response).to redirect_to(board_url(board))
+      expect(flash[:error]).to eq("You do not have permission to edit that continuity.")
+    end
+
+    it "succeeds with valid board" do
+      board = create(:board)
+      login_as(board.creator)
+      get :edit, id: board.id
+      expect(response.status).to eq(200)
+    end
+
+    it "sets the correct cowriters" do
+      user = create(:user)
+      others = 3.times.collect do create(:user) end
+      board = create(:board, creator: user)
+
+      login_as(user)
+      get :edit, id: board.id
+
+      expect(assigns(:users).count).to eq(3)
+      expect(assigns(:users).map(&:id).sort).to eq(others.map(&:id).sort)
+    end
   end
 
   describe "PUT update" do
-    skip "update is not yet implemented"
+    it "requires login" do
+      put :update, id: -1
+      expect(response).to redirect_to(root_url)
+      expect(flash[:error]).to eq("You must be logged in to view that page.")
+    end
+
+    it "requires valid board" do
+      login
+      put :update, id: -1
+      expect(response).to redirect_to(boards_url)
+      expect(flash[:error]).to eq("Continuity could not be found.")
+    end
+
+    it "requires board permission" do
+      user = create(:user)
+      login_as(user)
+      board = create(:board)
+      expect(board).not_to be_editable_by(user)
+      put :update, id: board.id
+      expect(response).to redirect_to(board_url(board))
+      expect(flash[:error]).to eq("You do not have permission to edit that continuity.")
+    end
+
+    it "requires valid params" do
+      user = create(:user)
+      board = create(:board, creator: user)
+      login_as(user)
+      put :update, id: board.id, board: {name: ''}
+      expect(response).to render_template('edit')
+      expect(flash[:error][:message]).to eq("Continuity could not be created.")
+      expect(flash[:error][:array]).to be_present
+    end
+
+    it "sets the correct cowriters on failure" do
+      user = create(:user)
+      others = 3.times.collect do create(:user) end
+      board = create(:board, creator: user)
+
+      login_as(user)
+      put :update, id: board.id, board: {name: ''}
+
+      expect(assigns(:users).count).to eq(3)
+      expect(assigns(:users).map(&:id).sort).to eq(others.map(&:id).sort)
+    end
+
+    it "succeeds" do
+      user = create(:user)
+      board = create(:board, creator: user)
+      name = board.name
+      login_as(user)
+      put :update, id: board.id, board: {name: name + 'edit'}
+      expect(response).to redirect_to(board_url(board))
+      expect(flash[:success]).to eq("Continuity saved!")
+      expect(board.reload.name).to eq(name + 'edit')
+    end
   end
 
   describe "DELETE destroy" do
-    skip "destroy is not yet implemented"
+    it "requires login" do
+      delete :destroy, id: -1
+      expect(response).to redirect_to(root_url)
+      expect(flash[:error]).to eq("You must be logged in to view that page.")
+    end
+
+    it "requires valid board" do
+      login
+      delete :destroy, id: -1
+      expect(response).to redirect_to(boards_url)
+      expect(flash[:error]).to eq("Continuity could not be found.")
+    end
+
+    it "requires board permission" do
+      user = create(:user)
+      login_as(user)
+      board = create(:board)
+      expect(board).not_to be_editable_by(user)
+      delete :destroy, id: board.id
+      expect(response).to redirect_to(board_url(board))
+      expect(flash[:error]).to eq("You do not have permission to edit that continuity.")
+    end
+
+    it "succeeds" do
+      board = create(:board)
+      login_as(board.creator)
+      delete :destroy, id: board.id
+      expect(response).to redirect_to(boards_url)
+      expect(flash[:success]).to eq("Continuity deleted.")
+    end
   end
 
   describe "POST mark" do

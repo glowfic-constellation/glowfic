@@ -1,5 +1,5 @@
 class BoardsController < ApplicationController
-  before_filter :login_required, only: [:new, :create, :mark]
+  before_filter :login_required, only: [:new, :create, :edit, :update, :destroy, :mark]
   before_filter :set_available_cowriters, only: [:new, :edit]
   before_filter :find_board, only: [:show, :edit, :update, :destroy]
   before_filter :require_permission, only: [:edit, :update, :destroy]
@@ -53,6 +53,12 @@ class BoardsController < ApplicationController
     end
   end
 
+  def destroy
+    @board.destroy
+    flash[:success] = "Continuity deleted."
+    redirect_to boards_path
+  end
+
   def mark
     unless board = Board.find_by_id(params[:board_id])
       flash[:error] = "Continuity could not be found."
@@ -69,12 +75,6 @@ class BoardsController < ApplicationController
       flash[:error] = "Please choose a valid action."
     end
     redirect_to unread_posts_path
-  end
-
-  def destroy
-    @board.destroy
-    flash[:success] = "Continuity deleted."
-    redirect_to boards_path
   end
 
   private
