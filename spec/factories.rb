@@ -6,6 +6,10 @@ FactoryGirl.define do
   factory :user, aliases: [:creator] do
     username
     password "password"
+
+    factory :user_with_email do
+      email "fake@faker.com"
+    end
   end
 
   factory :board do
@@ -49,5 +53,15 @@ FactoryGirl.define do
   factory :template do
     user
     name 'test template'
+  end
+
+  factory :password_reset do
+    user
+    factory :expired_password_reset do
+      created_at { 3.days.ago }
+    end
+    factory :used_password_reset do
+      used true
+    end
   end
 end

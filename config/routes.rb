@@ -4,6 +4,7 @@ Rails.application.routes.draw do
   match '/logout' => 'sessions#destroy', :as => :logout, :via => :delete
 
   resources :templates
+  resources :password_resets, only: [:new, :create, :show, :update]
   resources :boards do collection { post :mark } end
   resources :reports, only: [:index, :show]
   resources :messages, except: :edit do

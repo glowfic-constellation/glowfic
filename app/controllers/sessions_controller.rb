@@ -8,6 +8,8 @@ class SessionsController < ApplicationController
 
     if !user
       flash[:error] = "That username does not exist."
+    elsif user.password_resets.active.unused.exists?
+      flash[:error] = "The password for this account has been reset. Please check your email."
     elsif user.authenticate(params[:password])
       flash[:success] = "You are now logged in as #{user.username}. Welcome back!"
       session[:user_id] = user.id

@@ -1,5 +1,5 @@
 class UserMailer < ActionMailer::Base
-  default from: ENV['GMAIL_USERNAME']
+  default from: "Glowfic Constellation <#{ENV['GMAIL_USERNAME']}>"
   helper :application
   helper :mailer
   layout 'mailer'
@@ -9,5 +9,11 @@ class UserMailer < ActionMailer::Base
     @reply = reply
     @user = user
     mail(to: user.email, subject: @subject)
+  end
+
+  def password_reset_link(password_reset)
+    @subject = "Password Reset Link"
+    @password_reset = password_reset
+    mail(to: password_reset.user.email, subject: @subject)
   end
 end
