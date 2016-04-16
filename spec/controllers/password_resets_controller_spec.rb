@@ -68,6 +68,7 @@ RSpec.describe PasswordResetsController do
     end
 
     it "sends password reset" do
+      ActionMailer::Base.deliveries.clear
       user = create(:user_with_email)
       post :create, username: user.username, email: user.email
       expect(response).to redirect_to(new_password_reset_url)

@@ -2,6 +2,7 @@ class PasswordReset < ActiveRecord::Base
   belongs_to :user, inverse_of: :password_resets
 
   validates_presence_of :user, :auth_token
+  validates_uniqueness_of :auth_token
 
   before_validation :generate_auth_token
 
@@ -19,5 +20,8 @@ class PasswordReset < ActiveRecord::Base
     return unless user
     id_hash = Digest::SHA1.hexdigest(user.id.to_s)[0..5]
     self.auth_token = SecureRandom.urlsafe_base64 + id_hash
+    while self.class.where(auth_token: self.auth_token).exists?
+      self.auth_token = SecureRandom.urlsafe_base64 + id_hash
+    end
   end
 end
