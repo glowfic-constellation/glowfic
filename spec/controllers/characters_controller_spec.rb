@@ -8,6 +8,12 @@ RSpec.describe CharactersController do
       expect(flash[:error]).to eq("You must be logged in to view that page.")
     end
 
+    it "requires valid id" do
+      get :index, user_id: -1
+      expect(response).to redirect_to(users_url)
+      expect(flash[:error]).to eq("User could not be found.")
+    end
+
     it "succeeds with an id" do
       user = create(:user)
       get :index, user_id: user.id
@@ -25,6 +31,23 @@ RSpec.describe CharactersController do
       login
       get :index, user_id: user.id
       expect(response.status).to eq(200)
+    end
+
+    it "sets user's characters" do
+      user = create(:user)
+      characters = 4.times.collect do create(:character, user: user) end
+      create(:character)
+      login_as(user)
+      get :index
+      expect(assigns(:characters).count).to eq(4)
+    end
+
+    it "sets other user's characters" do
+      user = create(:user)
+      characters = 4.times.collect do create(:character, user: user) end
+      create(:character)
+      get :index, user_id: user.id
+      expect(assigns(:characters).count).to eq(4)
     end
 
     it "does something with character groups" do
@@ -46,7 +69,17 @@ RSpec.describe CharactersController do
     end
 
     it "sets correct variables" do
-      skip
+      user = create(:user)
+      templates = 2.times.collect do create(:template, user: user) end
+      names = ['— Create New Template —'] + templates.map(&:name)
+      create(:template)
+
+      login_as(user)
+      get :new
+
+      expect(controller.gon.character_id).to eq('')
+      expect(assigns(:templates).count).to eq(3)
+      expect(assigns(:templates).map(&:name)).to eq(names.sort)
     end
   end
 

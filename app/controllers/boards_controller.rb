@@ -1,5 +1,5 @@
 class BoardsController < ApplicationController
-  before_filter :login_required, only: [:new, :create, :edit, :update, :destroy, :mark]
+  before_filter :login_required, except: [:index, :show]
   before_filter :set_available_cowriters, only: [:new, :edit]
   before_filter :find_board, only: [:show, :edit, :update, :destroy]
   before_filter :require_permission, only: [:edit, :update, :destroy]

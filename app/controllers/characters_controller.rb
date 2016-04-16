@@ -12,12 +12,11 @@ class CharactersController < ApplicationController
       @user = User.find_by_id(params[:user_id])
       unless @user
         flash[:error] = "User could not be found."
-        redirect_to users_path
+        redirect_to users_path and return
       end
     end
 
     @characters = @user.characters.order('name asc')
-    session[:view] = params[:view] if params[:view].present?
   end
 
   def new

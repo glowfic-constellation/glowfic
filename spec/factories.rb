@@ -40,4 +40,14 @@ FactoryGirl.define do
     post
     content "test content"
   end
+
+  factory :character do
+    user
+    name 'test character'
+  end
+
+  factory :template do
+    user
+    name 'test template'
+  end
 end

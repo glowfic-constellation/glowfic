@@ -32,7 +32,6 @@ class TemplatesController < ApplicationController
   def show
     @user = @template.user
     @characters = @template.characters
-    session[:view] = params[:view] if params[:view].present?
   end
 
   def edit

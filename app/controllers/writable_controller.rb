@@ -71,6 +71,7 @@ class WritableController < ApplicationController
         icon: active_char.try(:icon))
       @character = active_char
       @image = @character ? @character.icon : current_user.avatar
+      gon.original_content = @reply.content
 
       at_time = (@replies.map(&:updated_at) + [@post.edited_at]).max
       @post.mark_read(current_user, at_time) unless @post.board.ignored_by?(current_user)
