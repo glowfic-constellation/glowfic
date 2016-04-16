@@ -20,5 +20,5 @@
     = render partial: 'list_view'
   - else
     = render partial: 'galleryless'
-    - @user.galleries.order('name asc').each do |gallery|
+    - @user.galleries.includes(:user).order('name asc').each do |gallery|
       = render partial: 'single', locals: {gallery: gallery, klass: 'subber'}

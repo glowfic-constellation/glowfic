@@ -18,7 +18,7 @@
   - if @user.characters.where(character_group_id: nil).exists?
     %tr
       %th{colspan: 6} Ungrouped Characters
-    - @user.characters.where(character_group_id: nil).map(&:template).uniq.compact.sort_by(&:name).each do |template|
+    - @user.characters.where(character_group_id: nil).includes(:template).map(&:template).uniq.compact.sort_by(&:name).each do |template|
       - next if template.characters.where('character_group_id is not null').exists?
       = render partial: 'list_section', locals: {name: template, characters: template.characters}
     = render partial: 'list_section', locals: {name: "No Template", characters: @user.characters.where(character_group_id: nil).where(template_id: nil).order('name asc')}

@@ -10,7 +10,7 @@
       %th.sub Replies
       %th.sub Last Updated
       %th.sub
-    - @posts.each do |post|
+    - @posts.includes(:user, :last_user).each do |post|
       - next unless post.visible_to?(current_user)
       %tr
         - klass = cycle('even', 'odd')
@@ -27,7 +27,7 @@
         %td.padding-10{class: klass}
           = pretty_time(post.updated_at)
           by
-          = link_to post.last_post.user.username, user_path(post.last_post.user)
+          = link_to post.last_user.username, user_path(post.last_user)
         %td{class: klass}= check_box_tag :"marked_ids[]", post.id
     - if @posts.empty?
       %tr
