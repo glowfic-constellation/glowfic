@@ -26,7 +26,7 @@ class Icon < ActiveRecord::Base
   private
 
   def url_is_url
-    return true if url.starts_with?('http')
+    return true if url.to_s.starts_with?('http')
     errors.add(:url, "must be an actual fully qualified url (http://www.example.com)")
   end
 

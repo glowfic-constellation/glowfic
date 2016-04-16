@@ -59,6 +59,6 @@ class Reply < ActiveRecord::Base
   end
 
   def previous_reply
-    @prev ||= post.replies.where('id < ?', id).order('id desc').limit(1).first
+    @prev ||= post.replies.where('id < ?', id).order('id desc').first
   end
 end
