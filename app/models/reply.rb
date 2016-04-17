@@ -10,6 +10,13 @@ class Reply < ActiveRecord::Base
   after_save :update_post_timestamp
   after_destroy :destroy_subsequent_replies
 
+  def skip_notify
+    @skip_notify
+  end
+  def skip_notify=(val)
+    @skip_notify = val
+  end
+  
   def skip_post_update
     @skip_post_update
   end
@@ -49,6 +56,7 @@ class Reply < ActiveRecord::Base
   end
 
   def notify_other_authors
+    return if skip_notify
     return if (previous_reply || post).user_id == user_id
     post.authors.each do |author|
       next if author.id == user_id
