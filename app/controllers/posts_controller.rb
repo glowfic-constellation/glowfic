@@ -104,7 +104,7 @@ class PostsController < WritableController
   end
 
   def update
-    gon.original_content = params[:post][:content]
+    gon.original_content = params[:post][:content] if params[:post]
 
     if params[:button_preview]
       @url = post_path(params[:id])
