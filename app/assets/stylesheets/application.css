@@ -11,7 +11,11 @@
  * file per style scope.
  *
  *= require normalize
- *= require_tree .
+ *= require global
+ *= require characters
+ *= require galleries
+ *= require layout
+ *= require replies
  *= require_self
  *= require chosen
  */
