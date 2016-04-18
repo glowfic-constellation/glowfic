@@ -9,7 +9,7 @@ class Reply < ActiveRecord::Base
   after_create :notify_other_authors, :destroy_draft
   after_save :update_post_timestamp
   after_destroy :destroy_subsequent_replies
-  
+
   attr_accessor :skip_notify, :skip_post_update
 
   def post_page(per=25)
