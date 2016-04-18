@@ -1,0 +1,15 @@
+.post-container .post-icon {
+    display: none;
+}
+#gallery .gallery-icon {
+    min-height: 50px;
+}
+#post-editor img#current-icon, #gallery img {
+    max-width: 20px;
+    max-height: 20px;
+}
+#icon-overlay {
+    max-width: 20px;
+    max-height: 20px;
+    left: 55px;
+}

@@ -39,6 +39,11 @@
       %th.sub Moiety Name
       %td.even= f.text_field :moiety_name, placeholder: "Moiety", class: 'text'
     %tr
+      %th.sub Layout
+      %td.odd= f.select(:layout,
+                        options_for_select({Default: nil, Dark: 'dark', Iconless: 'iconless'},
+                        current_user.layout))
+    %tr
       %th.centered.subber{colspan: 2}= submit_tag "Save", class: 'button'
 
 %br

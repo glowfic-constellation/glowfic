@@ -5,6 +5,8 @@
     %meta{ :charset => "utf-8" }
     <meta name="viewport" content="width=device-width">
     = stylesheet_link_tag 'application'
+    - if current_user.try(:layout).present?
+      = stylesheet_link_tag current_user.layout
     %link{ :href => "/stylesheets/chosen.css", :rel => "stylesheet", :type => "text/css", :media => "screen" }
     <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
