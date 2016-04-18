@@ -9,21 +9,8 @@ class Reply < ActiveRecord::Base
   after_create :notify_other_authors, :destroy_draft
   after_save :update_post_timestamp
   after_destroy :destroy_subsequent_replies
-
-  def skip_notify
-    @skip_notify
-  end
-  def skip_notify=(val)
-    @skip_notify = val
-  end
   
-  def skip_post_update
-    @skip_post_update
-  end
-
-  def skip_post_update=(val)
-    @skip_post_update = val
-  end
+  attr_accessor :skip_notify, :skip_post_update
 
   def post_page(per=25)
     per_page = per > 0 ? per : post.replies.count
