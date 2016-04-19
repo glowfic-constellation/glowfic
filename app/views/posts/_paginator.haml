@@ -15,7 +15,7 @@
           %span.disabled.first_page &laquo; First
         - else
           = link_to '&laquo; First'.html_safe, send(path, args.except(:page)), class: 'first_page'
-      = will_paginate paginated, container: false
+      = will_paginate paginated, container: false, params: @paginate_params || {}
       %span
         - if page.to_s == paginated.total_pages.to_s
           %span.disabled.last_page Last &raquo;

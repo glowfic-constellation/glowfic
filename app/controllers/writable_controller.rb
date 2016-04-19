@@ -54,6 +54,7 @@ class WritableController < ApplicationController
     end
 
     @replies = replies.includes(:user, :character, :icon).order('id asc').paginate(page: cur_page, per_page: per)
+    @paginate_params = {controller: 'posts', action: 'show', id: @post.id}
     redirect_to post_path(@post, page: @replies.total_pages, per_page: per) and return if cur_page > @replies.total_pages
     use_javascript('paginator')
 
