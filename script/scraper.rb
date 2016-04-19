@@ -73,6 +73,7 @@ def make_reply(name, url, content, post, time, icon_title, ac, kc, thread_id=nil
     created_at: time, 
     updated_at: time)
   reply.skip_post_update = true
+  reply.skip_notify = true
   reply.save!
   reply
 end
@@ -143,6 +144,7 @@ def import_subthread(sublink, post, ac, kc, thread_id=nil)
       thread_id = reply.id
       reply.thread_id = thread_id
       reply.skip_post_update = true
+      reply.skip_notify = true
       reply.save!
     end
   end
