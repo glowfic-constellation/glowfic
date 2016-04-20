@@ -15,7 +15,6 @@ class PostsController < WritableController
     ids = posts_in + posts_started
     @posts = Post.where(id: ids.uniq).where("board_id != 4").where('status != 1').order('updated_at desc') # TODO don't hardcode things
     @posts = @posts.where('last_user_id != ?', current_user.id).includes(:board).paginate(page: page, per_page: 25)
-    @posts.reject! { |post| post.last_post.user_id == current_user.id }
     @page_title = "Threads Awaiting Tag"
   end
 
