@@ -101,7 +101,8 @@ select.per-page { margin-top: 5px; margin-bottom: 5px; }
 .pagination a, .pagination .current, .pagination .disabled { display: inline-block; padding: 5px 10px; }
 .pagination .disabled { color: #101010; text-align: left; }
 .pagination a { color: #EEEEEE; }
-.pagination a:hover { background-color: #B9B6AD; }
+.pagination a:hover { background-color: #a3a1a0; }
+.pagination a:visited { color: #8B8687; }
 .paginator .left-align { float: left; display: inline-block; padding: 10px; }
 .paginator .right-align { padding: 2px; padding-right: 10px; display: inline-block; float: right; }
 .paginator .right-align a { color: black; }

@@ -11,7 +11,7 @@
       - args = params.except(:controller)
       - args = args.merge(id: @post.id) if @post.present?
       %span
-        - if page == 1
+        - if page.to_i == 1
           %span.disabled.first_page &laquo; First
         - else
           = link_to '&laquo; First'.html_safe, send(path, args.except(:page)), class: 'first_page'
