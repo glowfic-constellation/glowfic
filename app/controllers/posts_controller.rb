@@ -1,5 +1,5 @@
 class PostsController < WritableController
-  before_filter :login_required, :except => [:index, :show, :history]
+  before_filter :login_required, :except => [:index, :show, :history, :search]
   before_filter :find_post, :only => [:show, :history, :edit, :update, :destroy]
   before_filter :require_permission, only: [:edit, :destroy]
   before_filter :build_template_groups, :only => [:new, :show, :edit]
@@ -16,6 +16,7 @@ class PostsController < WritableController
     @posts = Post.where(id: ids.uniq).where("board_id != 4").where('status != 1').order('updated_at desc') # TODO don't hardcode things
     @posts = @posts.where('last_user_id != ?', current_user.id).includes(:board).paginate(page: page, per_page: 25)
     @page_title = "Threads Awaiting Tag"
+    @show_unread = true
   end
 
   def unread

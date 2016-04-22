@@ -20,7 +20,9 @@
             \...
             - (total_pages-2).upto(total_pages) do |index|
               = link_to (index), post_path(post, page: index)
-
+    - if logged_in? && @show_unread
+      = link_to post_path(post, page: 'unread', anchor: 'unread') do
+        = image_tag "/images/link.png", class: 'vmid', title: 'First Unread'
   - unless hide_continuity
     %td.padding-10.post-board{class: klass}= link_to post.board.name, board_path(post.board)
   %td.padding-10.post-authors{class: klass}= post.authors.map { |author| link_to author.username, user_path(author) }.join(', ').html_safe
