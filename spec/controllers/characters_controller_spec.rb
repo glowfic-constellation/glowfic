@@ -39,7 +39,7 @@ RSpec.describe CharactersController do
       create(:character)
       login_as(user)
       get :index
-      expect(assigns(:characters).count).to eq(4)
+      expect(assigns(:characters)).to match_array(characters)
     end
 
     it "sets other user's characters" do
@@ -47,7 +47,7 @@ RSpec.describe CharactersController do
       characters = 4.times.collect do create(:character, user: user) end
       create(:character)
       get :index, user_id: user.id
-      expect(assigns(:characters).count).to eq(4)
+      expect(assigns(:characters)).to match_array(characters)
     end
 
     it "does something with character groups" do
@@ -78,8 +78,7 @@ RSpec.describe CharactersController do
       get :new
 
       expect(controller.gon.character_id).to eq('')
-      expect(assigns(:templates).count).to eq(3)
-      expect(assigns(:templates).map(&:name)).to eq(names.sort)
+      expect(assigns(:templates).map(&:name)).to match_array(names)
     end
   end
 
@@ -118,8 +117,17 @@ RSpec.describe CharactersController do
       expect(assigns(:character).user_id).to eq(user_id)
     end
 
-    it "sets correct variables" do
-      skip
+    it "sets correct variables when invalid" do
+      user = create(:user)
+      templates = 2.times.collect do create(:template, user: user) end
+      names = ['— Create New Template —'] + templates.map(&:name)
+      create(:template)
+
+      login_as(user)
+      post :create, character: {}
+
+      expect(controller.gon.character_id).to eq('')
+      expect(assigns(:templates).map(&:name)).to match_array(names)
     end
   end
 

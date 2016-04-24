@@ -24,12 +24,9 @@ RSpec.describe BoardsController do
     it "sets the correct cowriters" do
       user = create(:user)
       others = 3.times.collect do create(:user) end
-
       login_as(user)
       get :new
-
-      expect(assigns(:users).count).to eq(3)
-      expect(assigns(:users).map(&:id).sort).to eq(others.map(&:id).sort)
+      expect(assigns(:users)).to match_array(others)
     end
   end
 
@@ -52,12 +49,9 @@ RSpec.describe BoardsController do
     it "sets the correct cowriters on failure" do
       user = create(:user)
       others = 3.times.collect do create(:user) end
-
       login_as(user)
       post :create
-
-      expect(assigns(:users).count).to eq(3)
-      expect(assigns(:users).map(&:id).sort).to eq(others.map(&:id).sort)
+      expect(assigns(:users)).to match_array(others)
     end
 
     it "successfully makes a board" do
@@ -142,12 +136,9 @@ RSpec.describe BoardsController do
       user = create(:user)
       others = 3.times.collect do create(:user) end
       board = create(:board, creator: user)
-
       login_as(user)
       get :edit, id: board.id
-
-      expect(assigns(:users).count).to eq(3)
-      expect(assigns(:users).map(&:id).sort).to eq(others.map(&:id).sort)
+      expect(assigns(:users)).to match_array(others)
     end
   end
 
@@ -189,12 +180,9 @@ RSpec.describe BoardsController do
       user = create(:user)
       others = 3.times.collect do create(:user) end
       board = create(:board, creator: user)
-
       login_as(user)
       put :update, id: board.id, board: {name: ''}
-
-      expect(assigns(:users).count).to eq(3)
-      expect(assigns(:users).map(&:id).sort).to eq(others.map(&:id).sort)
+      expect(assigns(:users)).to match_array(others)
     end
 
     it "succeeds" do
