@@ -75,4 +75,12 @@ Glowfic::Application.configure do
 
   # Use default logging formatter so that PID and timestamp are not suppressed.
   config.log_formatter = ::Logger::Formatter.new
+
+  # use ExceptionNotification to email Marri stack traces
+  Rails.application.config.middleware.use ExceptionNotification::Rack,
+  :email => {
+    :email_prefix => "[Glowfic Constellation Error] ",
+    :sender_address => %{"Glowfic Constellation" <glowfic.constellation@gmail.com>},
+    :exception_recipients => %w{glowfic.constellation@gmail.com}
+  }
 end
