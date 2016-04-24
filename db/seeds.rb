@@ -3,10 +3,15 @@
 # Do not hesitate to tweak this to your needs
 
 puts "Seeding database..."
-marri = User.create(username: 'Marri', password: 'nikari', avatar: 'https://pbs.twimg.com/profile_images/482603626/avatar.png')
-alicorn = User.create(username: 'Alicorn', password: 'alicorn', avatar: 'https://33.media.tumblr.com/avatar_ddf517a261d8_64.png')
-kappa = User.create(username: 'Kappa', password: 'pythbox', avatar: 'http://i.imgur.com/OJSBRcp.jpg')
+marri = User.create(username: 'Marri', password: 'nikari', avatar_id: 1)
+alicorn = User.create(username: 'Alicorn', password: 'alicorn', avatar_id: 2)
+kappa = User.create(username: 'Kappa', password: 'pythbox', avatar_id: 3)
 aestrix = User.create(username: 'Aestrix', password: 'aestrix')
+
+Icon.create([
+  { :user_id => 1, :url => "https://pbs.twimg.com/profile_images/482603626/avatar.png", :keyword => "avatar" },
+  { :user_id => 2, :url => "https://33.media.tumblr.com/avatar_ddf517a261d8_64.png", :keyword => "avatar" },
+  { :user_id => 3, :url => "http://i.imgur.com/OJSBRcp.jpg", :keyword => "avatar" }])
 
 Board.create(name: 'Effulgence', creator: alicorn, coauthor: kappa)
 Board.create(name: 'Incandescence', creator: alicorn, coauthor: aestrix)

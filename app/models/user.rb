@@ -35,13 +35,6 @@ class User < ActiveRecord::Base
     crypted == crypted_password(password)
   end
 
-  def avatar=(val)
-    write_attribute(:avatar_id, val.id) and return if val.is_a?(Icon)
-    self.avatar_id = nil and return unless val.present?
-    self.avatar.update_attributes(url: val) and return if self.avatar # TODO nope make new or update existing
-    self.avatar_id = Icon.create(user: self, url: val, keyword: 'Avatar').id
-  end
-
   def gon_attributes
     { 
       :username => username, 
