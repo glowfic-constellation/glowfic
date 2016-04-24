@@ -6,7 +6,7 @@ class Reply < ActiveRecord::Base
   validates_presence_of :post
   audited associated_with: :post
 
-  after_create :notify_other_authors, :destroy_draft
+  after_create :notify_other_authors, :destroy_draft, :update_active_char
   after_save :update_post_timestamp
   after_destroy :destroy_subsequent_replies
 
@@ -32,6 +32,10 @@ class Reply < ActiveRecord::Base
     post.last_reply = self
     post.updated_at = updated_at
     post.save
+  end
+
+  def update_active_char
+    user.update_attributes(:active_character => character)
   end
 
   def destroy_subsequent_replies

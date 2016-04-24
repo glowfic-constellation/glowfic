@@ -27,6 +27,14 @@ $(document).ready(function() {
     }
   });
 
+  // Hack to deal with Firefox's "helpful" caching of form values on soft refresh
+  var nameInSelect = $("#active_character").children("optgroup").children(':selected').text().split(" | ")[0];
+  var nameInUI = $("#post-editor .post-character").text();
+  if (nameInUI != nameInSelect) {
+    var characterId = $("#reply_character_id").val();
+    getAndSetCharacterData(characterId);
+  };
+
   $("#post-menu").click(function() { 
     $(this).toggleClass('selected');
     $("#post-menu-box").toggle();
@@ -95,78 +103,7 @@ $(document).ready(function() {
     // Set the ID
     var id = $(this).val();
     $("#reply_character_id").val(id);
-
-    // Handle page interactions
-    $("#character-selector").hide();
-    $("#current-icon-holder").unbind();
-
-    // Handle special case where just setting to your base account
-    if (id == '') {
-      $("#post-editor .post-character").hide();
-      $("#post-editor .post-screenname").hide();
-      $("#post-editor #post-author-spacer").show();
-      var url = gon.current_user.avatar.url;
-      if(url != null) {
-        var aid = gon.current_user.avatar.id;
-        $("#current-icon").attr('src', url).addClass('pointer');
-        $("#reply_icon_id").val(aid);
-        $("#gallery").html("");
-        $("#gallery").append("<div class='gallery-icon'><img src='" + url + "' id='" + aid + "' class='icon' /><br />Avatar</div>");
-        $("#gallery").append("<div class='gallery-icon'><img src='/images/no-icon.png' id='' class='icon' /><br />No Icon</div>");
-        bindIcon();
-        bindGallery();
-      }
-    }
-
-    $.post(gon.character_path, {'character_id':id}, function (resp) {
-      // If setting active character to none, work was done above
-      if(id == '') { return; }
-
-      // Display the correct name/screenname fields
-      $("#post-editor #post-author-spacer").hide();
-      $("#post-editor .post-character").show().html(resp['name']);
-      if(resp['screenname'] == undefined) {
-        $("#post-editor .post-screenname").hide();
-      } else {
-        $("#post-editor .post-screenname").show().html(resp['screenname']);
-      }
-
-      // Display no icon if no default set
-      if (resp['default'] == undefined) {
-        $("#current-icon").attr('src', '/images/no-icon.png').removeClass('pointer');
-        $("#reply_icon_id").val('');
-        return
-      }
-
-      // Display default icon
-      $("#current-icon").attr('src', resp['default']['url']).addClass('pointer');
-      $("#current-icon").attr('title', resp['default']['keyword']);
-      $("#current-icon").attr('alt', resp['default']['keyword']);
-      $("#reply_icon_id").val(resp['default']['id']);
-
-      // Calculate new galleries
-      $("#gallery").html("");
-      var galleries = resp['galleries'];
-      if (galleries.length == 0) { return; }
-
-      // Display single gallery
-      if (galleries.length == 1) {
-        var gallery = galleries[0];
-        $("#gallery").append(galleryString(gallery, false));
-
-      // Display multiple galleries
-      } else {
-        for(var i=0; i<galleries.length; i++) {
-          var gallery = galleries[i];
-          $("#gallery").append(galleryString(gallery, true));
-        }
-      }
-
-      // Both single and multiple galleries need these
-      $("#gallery").append("<div class='gallery-icon'><img src='/images/no-icon.png' id='' alt='No Icon' title='No Icon' class='icon' /><br />No Icon</div>");
-      bindGallery();
-      bindIcon();
-    });
+    getAndSetCharacterData(id);
   });
 
   // Hides selectors when you hit the escape key
@@ -251,7 +188,7 @@ iconString = function(icon) {
     + "<img src='" + img_url + "' id='" + img_id + "' alt='" + img_key + "' title='" + img_key + "' class='icon' />"
     + "<br />" + img_key
     + "</div>";
-}
+};
 
 tinyMCESetup = function(ed) {
   ed.on('init', function(args) {
@@ -265,4 +202,76 @@ tinyMCESetup = function(ed) {
       if (rawContent == '<p>&nbsp;<br></p>' && content == '') { tinymce.activeEditor.setContent(''); }
     };
   });
-}
+};
+
+getAndSetCharacterData = function(characterId) {
+  // Handle page interactions
+  $("#character-selector").hide();
+  $("#current-icon-holder").unbind();
+
+  // Handle special case where just setting to your base account
+  if (characterId == '') {
+    $("#post-editor .post-character").hide();
+    $("#post-editor .post-screenname").hide();
+    $("#post-editor #post-author-spacer").show();
+    var url = gon.current_user.avatar.url;
+    if(url != null) {
+      var aid = gon.current_user.avatar.id;
+      $("#current-icon").attr('src', url).addClass('pointer');
+      $("#reply_icon_id").val(aid);
+      $("#gallery").html("");
+      $("#gallery").append("<div class='gallery-icon'><img src='" + url + "' id='" + aid + "' class='icon' /><br />Avatar</div>");
+      $("#gallery").append("<div class='gallery-icon'><img src='/images/no-icon.png' id='' class='icon' /><br />No Icon</div>");
+      bindIcon();
+      bindGallery();
+    }
+    return // Don't need to load data from server (TODO combine with below?)
+  }
+
+  $.post(gon.character_path, {'character_id':characterId}, function (resp) {
+    // Display the correct name/screenname fields
+    $("#post-editor #post-author-spacer").hide();
+    $("#post-editor .post-character").show().html(resp['name']);
+    if(resp['screenname'] == undefined) {
+      $("#post-editor .post-screenname").hide();
+    } else {
+      $("#post-editor .post-screenname").show().html(resp['screenname']);
+    }
+
+    // Display no icon if no default set
+    if (resp['default'] == undefined) {
+      $("#current-icon").attr('src', '/images/no-icon.png').removeClass('pointer');
+      $("#reply_icon_id").val('');
+      return
+    }
+
+    // Display default icon
+    $("#current-icon").attr('src', resp['default']['url']).addClass('pointer');
+    $("#current-icon").attr('title', resp['default']['keyword']);
+    $("#current-icon").attr('alt', resp['default']['keyword']);
+    $("#reply_icon_id").val(resp['default']['id']);
+
+    // Calculate new galleries
+    $("#gallery").html("");
+    var galleries = resp['galleries'];
+    if (galleries.length == 0) { return; }
+
+    // Display single gallery
+    if (galleries.length == 1) {
+      var gallery = galleries[0];
+      $("#gallery").append(galleryString(gallery, false));
+
+    // Display multiple galleries
+    } else {
+      for(var i=0; i<galleries.length; i++) {
+        var gallery = galleries[i];
+        $("#gallery").append(galleryString(gallery, true));
+      }
+    }
+
+    // Both single and multiple galleries need these
+    $("#gallery").append("<div class='gallery-icon'><img src='/images/no-icon.png' id='' alt='No Icon' title='No Icon' class='icon' /><br />No Icon</div>");
+    bindGallery();
+    bindIcon();
+  });
+};
