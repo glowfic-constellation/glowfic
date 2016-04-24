@@ -81,6 +81,7 @@ class RepliesController < WritableController
       preview
       render :action => 'preview'
     else
+      @reply.skip_post_update = true unless @reply.post.last_reply_id = @reply.id
       @reply.update_attributes(params[:reply])
       flash[:success] = "Post updated"
       redirect_to reply_path(@reply, anchor: "reply-#{@reply.id}")
