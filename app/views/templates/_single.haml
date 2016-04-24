@@ -1,6 +1,6 @@
 %table
   %tr
-    %th.subber.padding-10
+    %th.subber.padding-10{colspan: 6}
       = title
       - if template.user_id == current_user.try(:id)
         = link_to new_character_path(template_id: template.id) do
@@ -11,5 +11,9 @@
             Edit Template
         = link_to template_path(template), :method => :delete, confirm: 'Are you sure you want to delete this template?' do
           .link-box.red x Delete Template
+      - if page_view == 'list'
+        - @template = template
+        = render partial: 'characters/list_view'
+      - else
         - @characters = template.characters
         = render partial: 'characters/icon_view'
