@@ -4,9 +4,8 @@
       %th{colspan: 8} Daily Report
     - 0.upto(7) do |num_days|
       - day = num_days.days.ago
-      - posts = Post.where(updated_at: day.beginning_of_day .. day.end_of_day).includes(:board, :user, :last_user)
+      - posts = posts_for(day)
       - if posts.present?
-        - posts = posts.sort_by{ |p| p.replies.where(created_at: day.beginning_of_day .. day.end_of_day).order('created_at asc').first.try(:created_at) || p.edited_at }.reverse
         %tr
           %th.subber{colspan: 8}= day.strftime("%b %d, %Y")
         %tr
@@ -22,8 +21,7 @@
           %tr
             - klass = cycle('even', 'odd')
             - replies_today = post.replies.where(created_at: day.beginning_of_day .. day.end_of_day)
-            - linked = replies_today.order('created_at asc').first
-            - linked = post if linked.nil? || post.created_at.to_date == day.to_date
+            - linked = linked_for(day, post, replies_today)
             %td.padding-5.post-completed{class: [klass, (post.completed? ? 'post-complete' : 'post-incomplete')]}
               - if post.completed?
                 = image_tag "/images/book.png", class: 'vmid', title: "Thread Complete"
