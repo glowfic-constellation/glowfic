@@ -52,6 +52,7 @@ class RepliesController < WritableController
     @written = Reply.new(params[:reply])
     @post = @written.post
     @written.user = current_user
+    @character = @written.character
 
     use_javascript('posts')
   end

@@ -92,6 +92,7 @@ class PostsController < WritableController
     @written = Post.new(params[:post])
     @post = @written
     @written.user = current_user
+    @character = @post.character
 
     use_javascript('posts')
   end
