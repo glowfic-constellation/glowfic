@@ -10,6 +10,10 @@ FactoryGirl.define do
     factory :user_with_email do
       email "fake@faker.com"
     end
+
+    factory :admin_user do
+      id 1
+    end
   end
 
   factory :board do
@@ -63,5 +67,12 @@ FactoryGirl.define do
     factory :used_password_reset do
       used true
     end
+  end
+
+  factory :tag do
+    sequence :name do |n|
+      "Tag#{n}"
+    end
+    user
   end
 end

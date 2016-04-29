@@ -178,7 +178,6 @@ ActiveRecord::Schema.define(:version => 20160704224416) do
 
   create_table "post_tags", :force => true do |t|
     t.integer  "post_id",                       :null => false
-    t.integer  "user_id",                       :null => false
     t.integer  "tag_id",                        :null => false
     t.boolean  "suggested",  :default => false
     t.datetime "created_at",                    :null => false

@@ -52,7 +52,10 @@ Rails.application.routes.draw do
   resources :boards do collection { post :mark } end
   resources :board_sections, except: :index
   resources :posts do
-    member { get :history }
+    member do
+      get :history
+      get :stats
+    end
     collection do
       post :mark
       get :search
@@ -65,6 +68,7 @@ Rails.application.routes.draw do
   resources :replies, except: [:index, :new] do
     member { get :history }
   end
+  resources :tags
 
   # Miscellaneous
   resources :reports, only: [:index, :show]

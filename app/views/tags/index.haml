@@ -1,0 +1,25 @@
+%table
+  %thead
+    %tr
+      %th{colspan: 3}
+        Tags
+        - if logged_in?
+          = link_to new_tag_path do
+            .link-box.green + New Tag
+  %tbody
+    %tr
+      %th.sub Tag
+      %th.sub Posts
+      %th.sub
+    - Tag.all.each do |tag|
+      - klass = cycle('even', 'odd')
+      %tr
+        %td{class: klass}= link_to tag.name, tag_path(tag)
+        %td{class: klass}= tag.posts.count
+        %td.width-70.right-align{class: klass}
+          - if tag.editable_by?(current_user)
+            = link_to edit_tag_path(tag) do
+              = image_tag "/images/pencil.png"
+            = link_to tag_path(tag), method: :delete, confirm: 'Are you sure you want to delete '+tag.name+'?' do
+              = image_tag "/images/cross.png"
+            &nbsp;

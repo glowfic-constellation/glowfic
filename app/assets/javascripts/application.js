@@ -16,6 +16,7 @@
 //= require jquery.ui.widget
 //= require z.jquery.fileupload
 //= require tinymce-jquery
+//= require select2
 
 $(document).ready(function() {
   $(".chosen-select").chosen({

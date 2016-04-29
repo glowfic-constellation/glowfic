@@ -11,6 +11,9 @@
     #access_list{class: ('hidden' unless post.privacy == Post::PRIVACY_LIST)}
       = f.label :post_viewer_ids, '&#8627; Who can view this post? '.html_safe
       = f.select :post_viewer_ids, options_from_collection_for_select(User.all - [current_user], :id, :username, post.post_viewer_ids || post.post_viewers.map(&:user_id)), {}, {multiple: true}
+    %br
+    = f.label :tag_ids, 'Tags:'
+    = f.select :tag_ids, options_from_collection_for_select(@tags, :id, :name, @post.tag_ids || @post.post_tags.map(&:tag_id)), {}, {multiple: true, style:'width:300px;'}
     %hr
     .view-button#rtf{class: ('selected' if current_user.default_editor == 'rtf')} Rich Text
     .view-button#html{class: ('selected' if current_user.default_editor == 'html')} HTML

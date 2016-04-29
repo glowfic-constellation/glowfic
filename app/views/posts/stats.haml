@@ -1,0 +1,34 @@
+- content_for :breadcrumbs do
+  = link_to "Continuities", boards_path
+  &raquo;
+  = link_to @post.board.name, board_path(@post.board)
+  &raquo;
+  = link_to @post.subject, post_path(@post)
+  &raquo;
+  %b Stats
+
+%table#stats
+  %thead
+    %tr
+      %th{colspan: 2}
+        Stats:
+        = link_to @post.subject, post_path(@post)
+  %tbody
+    %tr
+      %td.sub.width-150 Authors
+      %td.padding-5.even= @post.authors.map { |author| link_to author.username, user_path(author) }.join(', ').html_safe
+    %tr
+      %td.sub.width-150 Setting
+      %td.padding-5.odd (Coming Soon)
+    %tr
+      %td.sub.width-150.vtop Characters
+      %td.padding-5.even
+        - if @post.characters.count > 2
+          %ul
+            - @post.characters.each do |character|
+              %li= link_to character.name, character_path(character)
+        - else
+          = @post.characters.map { |character| link_to character.name, character_path(character) }.join(', ').html_safe
+    %tr
+      %td.sub.width-150 Tags
+      %td.padding-5.odd= @post.post_tags.includes(:tag).map { |tag| link_to tag.tag.name, tag_path(tag.tag) }.join(', ').html_safe
