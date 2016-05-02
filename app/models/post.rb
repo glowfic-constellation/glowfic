@@ -65,7 +65,7 @@ class Post < ActiveRecord::Base
     viewed_at = last_read(user) || board.last_read(user)
     return @first_unread = self unless viewed_at
     return unless replies.present?
-    @first_unread ||= replies.order('updated_at asc').detect { |reply| viewed_at < reply.updated_at }
+    @first_unread ||= replies.order('created_at asc').detect { |reply| viewed_at < reply.created_at }
   end
 
   def completed?
