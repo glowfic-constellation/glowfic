@@ -63,8 +63,8 @@ $(document).ready(function() {
   });
 
   $(".post-expander").click(function() {
-    $(".post-expander .info").remove();
-    $(".post-expander .hidden").show();
+    $(this).children(".info").remove();
+    $(this).children(".hidden").show();
   });
 
   $("#submit_button").click(function() {

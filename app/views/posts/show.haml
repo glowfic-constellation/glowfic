@@ -71,7 +71,13 @@
 - if @replies.present?
   = render partial: 'posts/paginator', locals: { paginated: @replies, path: :post_path }
 - if logged_in? && current_user.writes_in?(@post.board)
-  = render partial: 'posts/write_reply', locals: { reply: @reply, url: replies_path, method: :post }
+  - if @post.authors.include?(current_user)
+    = render partial: 'posts/write_reply', locals: { reply: @reply, url: replies_path, method: :post }
+  - else
+    .post-expander
+      .info + Join Thread
+      .hidden
+        = render partial: 'posts/write_reply', locals: { reply: @reply, url: replies_path, method: :post }
 
 .centered.margin-10= link_to 'Back to Top', '#'
 
