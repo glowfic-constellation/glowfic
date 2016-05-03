@@ -18,10 +18,13 @@
               %td= select_tag :board_id, options_from_collection_for_select(Board.all, :id, :name, params[:board_id]), {class: 'chosen-select', prompt: '— Choose Continuity —'}
             %tr
               %td Author
-              %td= select_tag :author_id, options_from_collection_for_select(User.all, :id, :username, params[:author_id]), {class: 'chosen-select', prompt: '— Choose Author —'}
+              %td= select_tag :author_id, options_from_collection_for_select(User.order('username'), :id, :username, params[:author_id]), {class: 'chosen-select', prompt: '— Choose Author —'}
+            %tr
+              %td Character
+              %td= select_tag :character_id, options_from_collection_for_select(Character.order('name'), :id, :selector_name, params[:character_id]), {class: 'chosen-select', prompt: '— Choose Character —'}
             %tr
               %td.centered{colspan: 2}= submit_tag "Search", class: 'button'
-        %td
+        %td.vtop
           - if @search_results.present?
             %table
               %thead
@@ -36,7 +39,7 @@
                     %td.padding-10.post-subject{class: klass}= link_to post.subject, post_path(post)
                     %td.padding-10.post-board{class: klass}= post.board.name
                     %td.padding-10.post-time{class: klass}= post.updated_at.strftime("%b %d, %Y ") + post.updated_at.hour.to_s + post.updated_at.strftime(":%M %p")
-  - if @search_results && @search_results.length >= 10
+  - if @search_results && @search_results.total_pages > 1
     %tfoot
       %tr
         %th.width-150
