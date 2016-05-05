@@ -108,7 +108,7 @@ function bindFileInput(elem) {
       fail: function(e, data) {
         submitButton.prop('disabled', false);
         var response = data.response().jqXHR
-        $.post('/bugs', {'response_status':response.status, 'response_body': response.responseText});
+        $.post('/bugs', {'response_status':response.status, 'response_body': response.responseText, 'response_text': response.statusText});
         alert("Upload failed, Marri has been notified.");
       },
     });
