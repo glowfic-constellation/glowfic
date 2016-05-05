@@ -39,8 +39,9 @@ class GalleriesController < ApplicationController
   def show
     respond_to do |format|
       format.json do
-        if params[:id].to_i.zero?
-          render json: {icons: current_user.galleryless_icons}
+        if params[:id].to_s == '0' # avoids casting nils to 0
+          user = params[:user_id].present? ? User.find_by_id(params[:user_id]) : current_user
+          render json: {icons: user.try(:galleryless_icons) || []}
         else
           @gallery = Gallery.find_by_id(params[:id])
           render json: {name: @gallery.name, icons: @gallery.icons} 
