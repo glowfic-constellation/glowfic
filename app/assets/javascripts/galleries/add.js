@@ -107,7 +107,9 @@ function bindFileInput(elem) {
       },
       fail: function(e, data) {
         submitButton.prop('disabled', false);
-        alert("Upload failed, please tell Marri.");
+        var response = data.response().jqXHR
+        $.post('/bugs', {'response_status':response.status, 'response_body': response.responseText});
+        alert("Upload failed, Marri has been notified.");
       },
     });
 };

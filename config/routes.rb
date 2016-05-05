@@ -7,6 +7,7 @@ Rails.application.routes.draw do
   resources :password_resets, only: [:new, :create, :show, :update]
   resources :boards do collection { post :mark } end
   resources :reports, only: [:index, :show]
+  resources :bugs, only: :create
   resources :messages, except: :edit do
     collection { post :mark }
   end

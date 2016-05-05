@@ -42,5 +42,8 @@ class Icon < ActiveRecord::Base
     return unless check.exists?
     self.url = url_was
     errors.add(:url, 'has already been taken')
-  end  
+  end
+
+  class UploadError < Exception
+  end
 end
