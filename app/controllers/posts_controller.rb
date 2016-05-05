@@ -24,7 +24,8 @@ class PostsController < WritableController
     @posts = @posts.joins("LEFT JOIN board_views on board_views.board_id = posts.board_id AND board_views.user_id = #{current_user.id}")
     @posts = @posts.where("post_views.user_id IS NULL OR (date_trunc('second', post_views.updated_at) < date_trunc('second', posts.updated_at) AND post_views.ignored = '0')")
     @posts = @posts.where("board_views.user_id IS NULL OR (date_trunc('second', board_views.updated_at) < date_trunc('second', posts.updated_at) AND board_views.ignored = '0')")
-    @posts = @posts.order('updated_at desc').includes(:board)
+    @posts = @posts.order('updated_at desc').includes(:board, :user, :last_user)
+    @opened_ids = PostView.where(user_id: current_user.id).select(:post_id).map(&:post_id)
     @page_title = "Unread Threads"
   end
 

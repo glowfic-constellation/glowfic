@@ -10,7 +10,7 @@
       %th.sub Replies
       %th.sub Last Updated
       %th.sub
-    - @posts.includes(:user, :last_user).each do |post|
+    - @posts.each do |post|
       - next unless post.visible_to?(current_user)
       %tr
         - klass = cycle('even', 'odd')
@@ -19,8 +19,9 @@
             = image_tag "/images/book.png", class: 'vmid', title: "Thread Complete"
         %td.padding-10.padding-left-5{class: klass}
           = link_to post.subject, post_path(post)
-          = link_to post_path(post, page: 'unread', anchor: 'unread') do
-            = image_tag "/images/link.png", class: 'vmid', title: 'First Unread'
+          - if @opened_ids.include?(post.id)
+            = link_to post_path(post, page: 'unread', anchor: 'unread') do
+              = image_tag "/images/link.png", class: 'vmid', title: 'First Unread'
         %td.padding-10{class: klass}= link_to post.board.name, board_path(post.board)
         %td.padding-10{class: klass}= post.authors.map { |author| link_to author.username, user_path(author) }.join(', ').html_safe
         %td.padding-10.width-70{class: klass}= post.replies.count
