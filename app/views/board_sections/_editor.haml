@@ -1,0 +1,8 @@
+%tr
+  %th.sub Board
+  %th.odd= f.select :board_id, options_from_collection_for_select(Board.all, :id, :name, @board_section.board_id)
+%tr
+  %th.sub Name
+  %td.even= f.text_field :name, placeholder: "Section Name", class: 'text'
+%tr
+  %th.centered.subber{colspan: 2}= submit_tag "Save", class: 'button'

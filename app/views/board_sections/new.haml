@@ -1,0 +1,5 @@
+= form_for @board_section, url: board_sections_path, method: :post do |f|
+  %table.form-table
+    %tr
+      %th.centered{colspan: 2}= "Create #{@board.try(:name)} Section"
+    = render partial: 'editor', locals: {f: f}

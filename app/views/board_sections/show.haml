@@ -1,0 +1,16 @@
+- content_for :breadcrumbs do
+  = link_to "Boards", boards_path
+  &raquo;
+  = link_to @board_section.board.name, board_path(@board_section.board)
+  &raquo;
+  %b= @board_section.name
+
+.post-header
+  .padding-15
+    %span#post-title= @board_section.name
+    #saveconf.float-right.hidden
+      = image_tag '/images/accept.png', title: 'Saved', class: 'vmid', alt: ''
+      Saved
+%ul#sortable
+  - @board_section.posts.order('section_order asc').each do |post|
+    %li{class: cycle('even', 'odd'), id: "post-#{post.id}"}= post.subject

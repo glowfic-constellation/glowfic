@@ -101,3 +101,9 @@
 
 /* Not yet deserving of its own CSS file */
 #message_form textarea { height: 100px; }
+
+/* Board sections */
+ul#sortable { list-style-type: none; margin: 0; padding: 0; width: 100%; }
+ul#sortable li { padding: 10px; height: 1em; cursor: pointer; }
+html>body ul#sortable li { height: 1em; }
+ul#sortable li.placeholder { border: 2px black dotted; height: 1em; }
