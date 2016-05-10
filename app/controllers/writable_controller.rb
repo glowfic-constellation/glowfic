@@ -46,7 +46,7 @@ class WritableController < ApplicationController
           self.page = cur_page = 1
         end
       else
-        cur_page = cur_page.to_i
+        self.page = cur_page = cur_page.to_i
       end
     else
       per = replies.count
