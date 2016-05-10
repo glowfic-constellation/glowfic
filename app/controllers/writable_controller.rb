@@ -39,7 +39,7 @@ class WritableController < ApplicationController
           elsif @unread.class == Post
             self.page = cur_page = 1
           else
-            cur_page = @unread.post_page(per)
+            self.page = cur_page = @unread.post_page(per)
           end
         else
           flash.now[:error] = "You must be logged in to view unread posts."
