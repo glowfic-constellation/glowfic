@@ -8,6 +8,7 @@ class WritableController < ApplicationController
     faked = Struct.new(:name, :id, :ordered_characters)
     templateless = faked.new('Templateless', nil, current_user.characters.where(:template_id => nil).to_a)
     @templates = templates + [templateless]
+    @templates.reject! {|template| template.ordered_characters.empty? }
 
     gon.current_user = current_user.gon_attributes
     gon.character_path = character_user_path(current_user)
