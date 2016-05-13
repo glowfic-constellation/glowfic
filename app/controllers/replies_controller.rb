@@ -29,7 +29,7 @@ class RepliesController < WritableController
         flash[:error][:message] = "Your draft could not be saved because of the following problems:"
         flash[:error][:array] = draft.errors.full_messages
       end
-      redirect_to post_path(draft.post) and return
+      redirect_to post_path(draft.post, page: :last) and return
     end
 
 
