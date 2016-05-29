@@ -70,7 +70,7 @@ class WritableController < ApplicationController
         character: active_char,
         user: current_user, 
         icon: active_char.try(:icon))
-      @character = active_char
+      @character = @reply.character
       @image = @character ? @character.icon : current_user.avatar
       gon.original_content = @reply.content
 
