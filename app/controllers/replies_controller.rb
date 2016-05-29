@@ -1,7 +1,7 @@
 class RepliesController < WritableController
   before_filter :login_required, except: [:show, :history]
-  before_filter :build_template_groups, only: [:show, :edit]
   before_filter :find_reply, only: [:show, :history, :edit, :update, :destroy]
+  before_filter :build_template_groups, only: [:show, :edit]
   before_filter :require_permission, only: [:edit, :update, :destroy]
 
   def create
@@ -58,7 +58,6 @@ class RepliesController < WritableController
   end
 
   def show
-    @post = @reply.post
     @page_title = @post.subject
     params[:page] ||= @reply.post_page(per_page)
     show_post(params[:page])
@@ -105,6 +104,8 @@ class RepliesController < WritableController
       flash[:error] = "Post could not be found."
       redirect_to boards_path and return
     end
+    
+    @post = @reply.post
   end
 
   def require_permission
