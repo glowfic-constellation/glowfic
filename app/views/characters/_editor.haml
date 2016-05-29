@@ -36,7 +36,7 @@
   Pick Default Icon (Optional):
   %br
   .gallery
-    - galleries = @character.galleries.present? ? @character.galleries.order('name asc') : [Struct.new(:id, :name, :icons).new(0, 'Galleryless', current_user.icons.where(has_gallery: false).order('keyword asc'))].reject {|gallery| gallery.icons.empty?}
+    - galleries = @character.galleries.present? ? @character.galleries.order('name asc') : [Struct.new(:id, :name, :icons).new(0, 'Galleryless', current_user.icons.where(has_gallery: false).order('keyword asc'))]
     - if galleries.present?
       - galleries.each do |gallery|
         %div{id: "gallery#{gallery.id}", :'data-id' => gallery.id }
