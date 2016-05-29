@@ -51,16 +51,7 @@ $(document).ready(function() {
 
       // if no more galleries are left, display galleryless icons
       if (gallery_ids == '') {
-        $.get('/galleries/0', function (resp) {
-          $("#selected-gallery .gallery").html("<div id='gallery0' data-id='0'></div>");
-          for(var i = 0; i < resp['icons'].length; i++) {
-            var url = resp['icons'][i]['url'];
-            var keyword = resp['icons'][i]['keyword'];
-            var id = resp['icons'][i]['id'];
-            $("#selected-gallery .gallery #gallery0").append('<img src="'+url+'" alt="'+keyword+'" title="'+keyword+'" class="icon character-icon" id="'+id+'" />');  
-          }
-          bindIcons();
-        });
+        displayGallery('0');
       }
       return;
     }
@@ -69,18 +60,29 @@ $(document).ready(function() {
     gallery_ids = new_gallery_ids;
     $(".gallery #gallery0").remove();
 
-    $.get('/galleries/'+new_id, function (resp) {
-      $("#selected-gallery .gallery").append("<div id='gallery"+new_id+"' data-id='"+new_id+"'><br><b>"+resp['name']+"</b><br></div>");
-      for(var i = 0; i < resp['icons'].length; i++) {
-        var url = resp['icons'][i]['url'];
-        var keyword = resp['icons'][i]['keyword'];
-        var id = resp['icons'][i]['id'];
-        $("#selected-gallery .gallery #gallery"+new_id).append('<img src="'+url+'" alt="'+keyword+'" title="'+keyword+'" class="icon character-icon" id="'+id+'" />');  
-      }
-      bindIcons();
-    });
+    displayGallery(new_id);
   });
 });
+
+function displayGallery(new_id){
+  $.get('/galleries/'+new_id, function (resp) {
+    html_string = "<div id='gallery"+new_id+"' data-id='"+new_id+"'><br /><b class='gallery-name'>"+resp['name']+"</b><br /><div class='gallery-icons'>";
+    for(var i = 0; i < resp['icons'].length; i++) {
+      var url = resp['icons'][i]['url'];
+      var keyword = resp['icons'][i]['keyword'];
+      var id = resp['icons'][i]['id'];
+      html_string += '<img src="'+url+'" alt="'+keyword+'" title="'+keyword+'" class="icon character-icon" id="'+id+'" />';
+    }
+    html_string += "</div>";
+    $("#selected-gallery .gallery").append(html_string);
+    $(".gallery > div").sort(function(a,b){ 
+      aid = $("b.gallery-name", a).text().trim();
+      bid = $("b.gallery-name", b).text().trim();
+      return (aid > bid ? 1 : (aid < bid ? -1 : 0)) 
+    }).each(function(){ $(this).detach(); $(".gallery").append(this); }); //Sorts the galleries alphabetically by b.gallery-name's content
+    bindIcons();
+  });
+}
 
 function bindIcons() {
   $(".character-icon").click(function() {

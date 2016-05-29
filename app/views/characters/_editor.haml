@@ -41,10 +41,11 @@
       - galleries.each do |gallery|
         %div{id: "gallery#{gallery.id}", :'data-id' => gallery.id }
           %br
-          %b= gallery.name
+          %b.gallery-name= gallery.name
           %br
-          - gallery.icons.order('keyword asc').each do |icon|
-            - next if gallery.id == 0 and icon.galleries.present?
-            - klass = 'character-icon'
-            - klass += ' selected-icon' if icon == @character.default_icon
-            = icon_tag icon, class: klass, id: icon.id
+          .gallery-icons
+            - gallery.icons.order('keyword asc').each do |icon|
+              - next if gallery.id == 0 and icon.galleries.present?
+              - klass = 'icon character-icon'
+              - klass += ' selected-icon' if icon == @character.default_icon
+              = icon_tag icon, class: klass, id: icon.id
