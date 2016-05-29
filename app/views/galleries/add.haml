@@ -4,7 +4,7 @@
   data: { 'form-data' => (@s3_direct_post.fields), url: @s3_direct_post.url, host: URI.parse(@s3_direct_post.url).host } do
   %table#icon-table
     %tr
-      %th{colspan: 5} Add New Icons to Gallery
+      %th{colspan: 5} Add New Icons to Gallery: #{@gallery.try(:name) || 'Galleryless'}
     %tr
       %th.sub URL
       %th.sub File
