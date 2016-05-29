@@ -25,7 +25,7 @@ class Post < ActiveRecord::Base
 
   after_save :update_access_list
 
-  audited
+  audited except: [:last_reply_id, :last_user_id, :edited_at]
   has_associated_audits
 
   def visible_to?(user)

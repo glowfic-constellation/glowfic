@@ -25,7 +25,7 @@
     .post-edit-box
       - if reply.id.present?
         = link_to post_or_reply_link(reply) do
-          = image_tag "/images/link.png"
+          = image_tag "/images/link.png", title: 'Permalink', alt: 'Permalink'
       - if reply.id.present? && reply.editable_by?(current_user)
         = link_to path_for(reply, 'edit_%s') do
           = image_tag "/images/pencil.png"
