@@ -6,15 +6,15 @@ class WritableController < ApplicationController
 
     templates = current_user.templates.includes(:characters).sort_by(&:name)
     faked = Struct.new(:name, :id, :ordered_characters)
-    templateless = faked.new('Templateless', nil, current_user.characters.where(:template_id => nil).to_a)
+    templateless = faked.new('Templateless', nil, current_user.characters.where(:template_id => nil).to_a.sort_by(&:name))
     @templates = templates + [templateless]
     
     if @post
       uniq_chars_ids = @post.replies.where(user_id: current_user.id).select(:character_id).group(:character_id).map(&:character_id).uniq
       uniq_chars_ids << @post.character_id if @post.user_id == current_user.id
       uniq_chars = Character.where(id: uniq_chars_ids.compact).to_a
-      threadchars = faked.new('Thread characters', nil, uniq_chars)
-      @templates << threadchars
+      threadchars = faked.new('Thread characters', nil, uniq_chars.sort_by(&:name))
+      @templates.insert(0, threadchars)
     end
 
     gon.current_user = current_user.gon_attributes
