@@ -1,4 +1,10 @@
 $(document).ready(function() {
+  var selectd;
+  $("#active_character option[selected]").each(function(){
+    if (!selectd) selectd = this;
+    $(this).prop("selected", false);
+  });
+  $(selectd).prop("selected", true);
   $("#post_board_id").chosen({
     width: '200px',
     disable_search_threshold: 20,
