@@ -68,9 +68,11 @@
   = render partial: 'posts/paginator', locals: { paginated: @replies, path: :post_path }
 - @replies.each do |reply|
   = render partial: 'replies/single', locals: {reply: reply}
+- if @post.completed? && @replies.last.id == @post.replies.order('id desc').first.id
+  .post-ender Here Ends This Thread
 - if @replies.present?
   = render partial: 'posts/paginator', locals: { paginated: @replies, path: :post_path }
-- if logged_in? && current_user.writes_in?(@post.board)
+- if logged_in? && !@post.completed? && current_user.writes_in?(@post.board)
   - if @post.authors.include?(current_user)
     = render partial: 'posts/write_reply', locals: { reply: @reply, url: replies_path, method: :post }
   - else

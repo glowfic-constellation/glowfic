@@ -64,6 +64,7 @@
 .post-navheader .view-button { background-color: #a3a1a0; }
 .post-expander { min-height: 5px; background-color: #B0BBA9; padding: 0px; }
 .post-expander .info { padding: 5px; text-align: center; font-size: 14px; cursor: pointer; }
+.post-ender { min-height: 5px; padding: 5px; background-color: #3e384f; color: #FEFEFE; font-size: 16px; font-weight: bold; text-align: center; }
 
 .post-container { overflow: auto; }
 .post-edit-box { float: right; margin-left: 10px; margin-bottom: 5px; padding: 5px; }
