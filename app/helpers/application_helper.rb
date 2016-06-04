@@ -46,6 +46,11 @@ module ApplicationHelper
     options_from_collection_for_select(zones, :name, :to_s, default)
   end
 
+  def layout_options(default=nil)
+    layouts = {Default: nil, Dark: 'dark', Iconless: 'iconless', Starry: 'starry'}
+    options_for_select(layouts, default)
+  end
+
   def post_or_reply_link(reply)
     return unless reply.id.present?
     if reply.is_a?(Reply)

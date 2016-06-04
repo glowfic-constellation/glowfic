@@ -1,0 +1,24 @@
+#header { background-image: url("http://i.imgur.com/ONTDjJ3.jpg"); background-position: right top; }
+#header a, #header li a { color: #ffffff; }
+#header a:hover, #header li a:hover { color: #ddddff; }
+#logo, #nav-bottom { background-color: transparent !important; }
+#user-info, #nav-top { background-color: rgba(58, 51, 94, 0.8) !important; }
+
+body { background-color: #cdcad9; }
+
+#content th, .post-header { background-color: #403766; }
+#content .sub, .post-navheader { background-color: #b5adbf; }
+#content th.subber, .subber, .post-subheader { background-color: #777393; }
+.post-expander { background-color: #9692a8; }
+
+.post-icon { background-color: #a19da7; }
+.post-character { background-color: #89868b; }
+.post-screenname { background-color: #a19da7; }
+.post-author { background-color: #afadb9; }
+
+a { color: #424681; }
+a:hover { color: #ffffff; }
+a:visited { color: #171a54; }
+
+.flash.success { background-color: #ddddff; }
+.pagination .current { background-color: #8383a6; }
