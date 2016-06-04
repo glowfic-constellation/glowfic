@@ -23,16 +23,21 @@
         View Flat HTML
     - if logged_in?
       - if @post.user_id == current_user.id
-        - if @post.completed?
-          = link_to post_path(@post, completed: false), method: :put do
-            %div
-              = image_tag '/images/book_open.png'
-              Mark Not Complete
-        - else
-          = link_to post_path(@post, completed: true), method: :put do
+        - unless @post.completed?
+          = link_to post_path(@post, status: 'complete'), method: :put do
             %div
               = image_tag '/images/book.png'
               Mark Complete
+        - unless @post.on_hiatus?
+          = link_to post_path(@post, status: 'hiatus'), method: :put do
+            %div
+              = image_tag '/images/hourglass.png'
+              Put On Hiatus
+        - unless @post.active?
+          = link_to post_path(@post, status: 'active'), method: :put do
+            %div
+              = image_tag '/images/book_open.png'
+              Mark In Progress
       = link_to post_path(@post, unread: true), method: :put do
         %div
           = image_tag '/images/eye.png', class: 'vmid', style: 'margin-bottom: 3px;'
