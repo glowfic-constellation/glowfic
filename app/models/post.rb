@@ -8,6 +8,7 @@ class Post < ActiveRecord::Base
 
   STATUS_ACTIVE = 0
   STATUS_COMPLETE = 1
+  STATUS_HIATUS = 2
 
   belongs_to :board, inverse_of: :posts
   belongs_to :section, class_name: BoardSection, inverse_of: :posts
@@ -25,7 +26,7 @@ class Post < ActiveRecord::Base
 
   after_save :update_access_list
 
-  audited except: [:last_reply_id, :last_user_id, :edited_at]
+  audited except: [:last_reply_id, :last_user_id, :edited_at, :tagged_at]
   has_associated_audits
 
   def visible_to?(user)
@@ -43,10 +44,6 @@ class Post < ActiveRecord::Base
 
   def author_ids
     @author_ids ||= (replies.select(:user_id).group(:user_id).map(&:user_id) + [user_id]).uniq
-  end
-
-  def last_post
-    @last_post ||= (replies.order('updated_at desc').limit(1).first || self)
   end
 
   def last_character_for(user)
@@ -72,6 +69,14 @@ class Post < ActiveRecord::Base
     status == STATUS_COMPLETE
   end
 
+  def on_hiatus?
+    status == STATUS_HIATUS
+  end
+
+  def active?
+    status == STATUS_ACTIVE
+  end
+
   def self.privacy_settings
     { 'Public'      => PRIVACY_PUBLIC,
       'Access List' => PRIVACY_LIST,
@@ -80,6 +85,15 @@ class Post < ActiveRecord::Base
 
   def last_updated
     edited_at
+  end
+
+  def read_time_for(viewing_replies)
+    return self.edited_at if viewing_replies.empty?
+
+    most_recent = viewing_replies.max_by(&:id)
+    most_recent_id = replies.select(:id).order('id desc').first.id
+    return most_recent.updated_at if most_recent.id == most_recent_id
+    most_recent.created_at
   end
 
   private
@@ -99,9 +113,16 @@ class Post < ActiveRecord::Base
 
   def timestamp_attributes_for_update
     # Makes Rails treat edited_at as a timestamp identical to updated_at
-    # unless the @skip_edited flag is set. Be VERY CAREFUL editing this!
-    defaults = super
-    return defaults if @skip_edited
-    defaults + [:edited_at]
+    # unless the @skip_edited flag is set. Also uses tagged_at if there
+    # are no replies yet.
+    # Be VERY CAREFUL editing this!
+    timestamps = super
+    timestamps << :tagged_at if replies.empty?
+    timestamps << :edited_at unless @skip_edited
+    timestamps
+  end
+
+  def timestamp_attributes_for_create
+    super + [:tagged_at]
   end
 end

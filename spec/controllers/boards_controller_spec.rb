@@ -95,9 +95,9 @@ RSpec.describe BoardsController do
 
     it "orders the posts by updated_at" do
       board = create(:board)
-      3.times do create(:post, board: board, updated_at: Time.now + rand(5..30).hours) end
+      3.times do create(:post, board: board, tagged_at: Time.now + rand(5..30).hours) end
       get :show, id: board.id
-      expect(assigns(:posts)).to eq(assigns(:posts).sort_by(&:updated_at).reverse)
+      expect(assigns(:posts)).to eq(assigns(:posts).sort_by(&:tagged_at).reverse)
     end
   end
 

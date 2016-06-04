@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20160416031844) do
+ActiveRecord::Schema.define(:version => 20160604181644) do
 
   create_table "audits", :force => true do |t|
     t.integer  "auditable_id"
@@ -167,6 +167,18 @@ ActiveRecord::Schema.define(:version => 20160416031844) do
 
   add_index "password_resets", ["auth_token"], :name => "index_password_resets_on_auth_token", :unique => true
 
+  create_table "post_tags", :force => true do |t|
+    t.integer  "post_id",                       :null => false
+    t.integer  "user_id",                       :null => false
+    t.integer  "tag_id",                        :null => false
+    t.boolean  "suggested",  :default => false
+    t.datetime "created_at",                    :null => false
+    t.datetime "updated_at",                    :null => false
+  end
+
+  add_index "post_tags", ["post_id"], :name => "index_post_tags_on_post_id"
+  add_index "post_tags", ["tag_id"], :name => "index_post_tags_on_tag_id"
+
   create_table "post_viewers", :force => true do |t|
     t.integer  "post_id",    :null => false
     t.integer  "user_id",    :null => false
@@ -205,6 +217,7 @@ ActiveRecord::Schema.define(:version => 20160416031844) do
     t.integer  "last_user_id"
     t.integer  "last_reply_id"
     t.datetime "edited_at"
+    t.datetime "tagged_at"
   end
 
   add_index "posts", ["board_id"], :name => "index_posts_on_board_id"
@@ -241,6 +254,15 @@ ActiveRecord::Schema.define(:version => 20160416031844) do
   end
 
   add_index "reply_drafts", ["post_id", "user_id"], :name => "index_reply_drafts_on_post_id_and_user_id"
+
+  create_table "tags", :force => true do |t|
+    t.integer  "user_id",    :null => false
+    t.string   "name",       :null => false
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
+  add_index "tags", ["name"], :name => "index_tags_on_name"
 
   create_table "templates", :force => true do |t|
     t.integer  "user_id",            :null => false

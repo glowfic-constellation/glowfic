@@ -6,8 +6,8 @@ class Reply < ActiveRecord::Base
   validates_presence_of :post
   audited associated_with: :post
 
-  after_create :notify_other_authors, :destroy_draft, :update_active_char
-  after_save :update_post_timestamp
+  after_create :notify_other_authors, :destroy_draft, :update_active_char, :update_post
+  after_update :update_post
   after_destroy :destroy_subsequent_replies, :update_last_reply
 
   attr_accessor :skip_notify, :skip_post_update
@@ -25,13 +25,15 @@ class Reply < ActiveRecord::Base
 
   private
 
-  def update_post_timestamp
+  def update_post
     return if skip_post_update
     post.skip_edited = true
     post.last_user = user
     post.last_reply = self
-    post.updated_at = updated_at
+    post.tagged_at = updated_at
+    post.status = Post::STATUS_ACTIVE if post.on_hiatus?
     post.save
+    post.skip_edited = false
   end
 
   def update_active_char
@@ -47,7 +49,7 @@ class Reply < ActiveRecord::Base
     post.skip_edited = true
     post.last_user = previous_reply.user
     post.last_reply = previous_reply
-    post.updated_at = previous_reply.updated_at
+    post.tagged_at = previous_reply.updated_at
     post.save
   end
 

@@ -25,8 +25,8 @@
       current_user.galleries.order('name asc'), 
       :id, :name, {selected: @character.galleries.map(&:id)}, {:class => 'text', multiple: true})
 %tr
-  %th.sub Played By
-  %td{class: cycle('even', 'odd')}= f.text_field :pb, placeholder: "Played By", class: 'text'
+  %th.sub Facecast
+  %td{class: cycle('even', 'odd')}= f.text_field :pb, placeholder: "Facecast", class: 'text'
 %tr
   %th.centered.subber{colspan: 2}= submit_tag "Save", class: 'button'
 
