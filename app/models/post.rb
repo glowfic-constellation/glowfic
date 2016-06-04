@@ -8,6 +8,7 @@ class Post < ActiveRecord::Base
 
   STATUS_ACTIVE = 0
   STATUS_COMPLETE = 1
+  STATUS_HIATUS = 2
 
   belongs_to :board, inverse_of: :posts
   belongs_to :section, class_name: BoardSection, inverse_of: :posts
