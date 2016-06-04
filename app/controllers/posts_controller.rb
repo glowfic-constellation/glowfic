@@ -106,10 +106,10 @@ class PostsController < WritableController
 
   def update
     mark_unread and return if params[:unread].present?
+    change_status and return if params[:status].present?
 
     require_permission
     preview(:put, post_path(params[:id])) and return if params[:button_preview].present?
-    change_status and return if params[:status].present?
 
     gon.original_content = params[:post][:content] if params[:post]
     @post.assign_attributes(params[:post])
@@ -134,6 +134,11 @@ class PostsController < WritableController
   end
 
   def change_status
+    unless @post.metadata_editable_by?(current_user)
+      flash[:error] = "You do not have permission to modify this post."
+      redirect_to post_path(@post)
+    end
+
     begin
       new_status = Post.const_get('STATUS_'+params[:status].upcase)
     rescue NameError

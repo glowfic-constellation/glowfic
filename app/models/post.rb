@@ -96,6 +96,12 @@ class Post < ActiveRecord::Base
     most_recent.created_at
   end
 
+  def metadata_editable_by?(user)
+    return false unless user
+    return true if user.admin?
+    author_ids.include?(user.id)
+  end
+
   private
 
   def update_access_list
