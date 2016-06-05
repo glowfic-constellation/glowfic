@@ -4,7 +4,7 @@
       %th{colspan: 6} Monthly Report
     - 1.upto(1.month.ago.end_of_month.day) do |num_days|
       - day = 1.month.ago.end_of_month - (num_days - 1).days
-      - posts = Post.where(updated_at: day.beginning_of_day .. day.end_of_day)
+      - posts = Post.where(tagged_at: day.beginning_of_day .. day.end_of_day)
       - if posts.present?
         %tr
           %th.subber{colspan: 6}= day.strftime("%b %d, %Y")

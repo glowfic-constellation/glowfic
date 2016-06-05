@@ -25,7 +25,7 @@ class Character < ActiveRecord::Base
     return @recent unless @recent.nil?
     reply_ids =  replies.group(:post_id).select(:post_id).map(&:post_id)
     post_ids = posts.select(:id).map(&:id)
-    @recent ||= Post.where(id: (post_ids + reply_ids).uniq).order('updated_at desc').paginate(per_page: limit, page: page)
+    @recent ||= Post.where(id: (post_ids + reply_ids).uniq).order('tagged_at desc').paginate(per_page: limit, page: page)
   end
 
   def selector_name

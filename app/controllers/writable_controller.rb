@@ -6,8 +6,16 @@ class WritableController < ApplicationController
 
     templates = current_user.templates.includes(:characters).sort_by(&:name)
     faked = Struct.new(:name, :id, :ordered_characters)
-    templateless = faked.new('Templateless', nil, current_user.characters.where(:template_id => nil).to_a)
+    templateless = faked.new('Templateless', nil, current_user.characters.where(:template_id => nil).to_a.sort_by(&:name))
     @templates = templates + [templateless]
+    
+    if @post
+      uniq_chars_ids = @post.replies.where(user_id: current_user.id).select(:character_id).group(:character_id).map(&:character_id).uniq
+      uniq_chars_ids << @post.character_id if @post.user_id == current_user.id
+      uniq_chars = Character.where(id: uniq_chars_ids.compact).to_a
+      threadchars = faked.new('Thread characters', nil, uniq_chars.sort_by(&:name))
+      @templates.insert(0, threadchars)
+    end
 
     gon.current_user = current_user.gon_attributes
     gon.character_path = character_user_path(current_user)
@@ -31,7 +39,7 @@ class WritableController < ApplicationController
       per = per_page
       cur_page ||= page
       if cur_page == 'last'
-        cur_page = @post.replies.paginate(per_page: per, page: 1).total_pages
+        self.page = cur_page = @post.replies.paginate(per_page: per, page: 1).total_pages
       elsif cur_page == 'unread'
         if logged_in?
           if @unread.nil?
@@ -70,12 +78,11 @@ class WritableController < ApplicationController
         character: active_char,
         user: current_user, 
         icon: active_char.try(:icon))
-      @character = active_char
+      @character = @reply.character
       @image = @character ? @character.icon : current_user.avatar
       gon.original_content = @reply.content
 
-      at_time = (@replies.map(&:updated_at) + [@post.edited_at]).max
-      @post.mark_read(current_user, at_time) unless @post.board.ignored_by?(current_user)
+      @post.mark_read(current_user, @post.read_time_for(@replies)) unless @post.board.ignored_by?(current_user)
     end
 
     render 'posts/show'

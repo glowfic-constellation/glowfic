@@ -26,7 +26,7 @@
         %td.padding-10{class: klass}= post.authors.map { |author| link_to author.username, user_path(author) }.join(', ').html_safe
         %td.padding-10.width-70{class: klass}= post.replies.count
         %td.padding-10{class: klass}
-          = pretty_time(post.updated_at)
+          = pretty_time(post.tagged_at)
           by
           = link_to post.last_user.username, user_path(post.last_user)
         %td{class: klass}= check_box_tag :"marked_ids[]", post.id

@@ -18,7 +18,7 @@ class ReportsController < ApplicationController
   end
 
   def posts_for(day)
-    posts = Post.where(updated_at: day.beginning_of_day .. day.end_of_day).includes(:board, :user, :last_user)
+    posts = Post.where(tagged_at: day.beginning_of_day .. day.end_of_day).includes(:board, :user, :last_user)
     return unless posts.present?
     return posts.sort_by do |post|
       linked = linked_for(day, post)

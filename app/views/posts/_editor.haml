@@ -16,7 +16,7 @@
       .post-author
         = item.user.username
         - if current_user.characters.present?
-          = image_tag '/images/swap.png', :id => 'swap-icon', :alt => ">"
+          = image_tag ((current_user.layout == 'starrydark' or current_user.layout == 'starry' or current_user.layout == 'starrylight') ? '/images/swapgray.png' : '/images/swap.png'), :id => 'swap-icon', :alt => ">"
           #character-selector.beige
             %b Choose Character
             = select_tag :active_character, 

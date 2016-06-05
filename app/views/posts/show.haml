@@ -9,7 +9,7 @@
   .padding-15
     %span#post-title= link_to @post.subject, post_path(@post)
     .view-button#post-menu
-      = image_tag '/images/menu.png', class: 'icon-view'
+      = image_tag ((current_user.layout == 'starrydark' or current_user.layout == 'starry' or current_user.layout == 'starrylight') ? '/images/menugray.png' : '/images/menu.png'), class: 'icon-view'
 #post-menu-holder
   #post-menu-box.hidden
     / TODO Throne3d is writing an ePub downloader
@@ -22,17 +22,22 @@
         = image_tag '/images/page_world.png'
         View Flat HTML
     - if logged_in?
-      - if @post.user_id == current_user.id
-        - if @post.completed?
-          = link_to post_path(@post, completed: false), method: :put do
-            %div
-              = image_tag '/images/book_open.png'
-              Mark Not Complete
-        - else
-          = link_to post_path(@post, completed: true), method: :put do
+      - if @post.metadata_editable_by?(current_user)
+        - unless @post.completed?
+          = link_to post_path(@post, status: 'complete'), method: :put do
             %div
               = image_tag '/images/book.png'
               Mark Complete
+        - unless @post.on_hiatus?
+          = link_to post_path(@post, status: 'hiatus'), method: :put do
+            %div
+              = image_tag '/images/hourglass.png'
+              Put On Hiatus
+        - unless @post.active?
+          = link_to post_path(@post, status: 'active'), method: :put do
+            %div
+              = image_tag '/images/book_open.png'
+              Mark In Progress
       = link_to post_path(@post, unread: true), method: :put do
         %div
           = image_tag '/images/eye.png', class: 'vmid', style: 'margin-bottom: 3px;'
@@ -68,9 +73,11 @@
   = render partial: 'posts/paginator', locals: { paginated: @replies, path: :post_path }
 - @replies.each do |reply|
   = render partial: 'replies/single', locals: {reply: reply}
+- if @post.completed? && @replies.last.id == @post.replies.order('id desc').first.id
+  .post-ender Here Ends This Thread
 - if @replies.present?
   = render partial: 'posts/paginator', locals: { paginated: @replies, path: :post_path }
-- if logged_in? && current_user.writes_in?(@post.board)
+- if logged_in? && !@post.completed? && current_user.writes_in?(@post.board)
   - if @post.authors.include?(current_user)
     = render partial: 'posts/write_reply', locals: { reply: @reply, url: replies_path, method: :post }
   - else

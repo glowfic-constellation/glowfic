@@ -1,0 +1,54 @@
+﻿#header { background-image: url("/images/starry.jpg"); background-position: right top; }
+#logo, #nav-bottom { background-color: transparent !important; }
+#header #user-info, #header #nav-top { background-color: rgba(5, 5, 15, 0.9); }
+
+#content .sub { color: #f3f3f3; }
+#content .sub, .post-navheader, #content .subber, .subber { background-color: #182152; }
+#content .beige { background-color: #484357; color: #DADADA; }
+#content .beige a, #content th a, .post-header a { color: #B5AFCB; }
+#content .beige a:visited, #content th a:visited, .post-header a:visited { color: #9C9AA4; }
+
+#post-menu-box { border-top: 1px solid rgba(128,128,128,0.5); }
+#post-menu-box div { border-bottom: 1px solid rgba(128,128,128,0.5); }
+#post-menu-box a { color: inherit; }
+
+.post-navheader .view-button, .view-button.selected, .view-button, #content .link-box.green, #content .link-box.blue, #content .link-box.red { background-color: #463c65; }
+#post-editor .green { background-color: #484357; color: #DADADA; }
+.post-subheader { background-color: #484357; color: #F3F3F3; }
+
+.subber, .subber a, .subber a:visited { color: #9c9aa4; }
+.subber b { color: #F3F3F3; }
+.post-expander { background-color: #9692a8; }
+
+.post-icon, .post-author { background-color: #0E0B1E; }
+.post-character, .post-screenname, .post-author { font-weight: bold; }
+#character-selector { font-weight: normal; }
+.post-screenname { color: #9c9aa4; }
+.post-character, .post-character a, .post-character a:visited, .post-author, .post-author a, .post-author a:visited { color: #F3F3F3; }
+
+.pagination .current { background-color: #484357; }
+.pagination a { color: #F3F3F3; }
+.pagination a:visited { color: #9c9aa4; }
+.pagination .disabled { color: #58546b; }
+
+#content .beige .chosen-container, #content .beige .chosen-container a, .chosen-container, .chosen-container a { color: #444; }
+
+body { background-color: #211e2f; color: #DADADA; }
+#content th.subber { color: #DADADA; }
+
+#content .sub, .post-navheader, #content .subber, .subber { background-color: #131937; }
+#content th, .post-header { background-color: #0d0b1e; }
+.post-character, .post-screenname { background-color: #111842; }
+
+#post-menu-box { background-color: #191919; }
+#post-menu-box a:hover div { background-color: #252525; }
+
+#post-menu-box, #content .even, #content .odd { color: #DADADA; }
+#content .even { background-color: #31323b; }
+#content .odd, .post-expander { background-color: #25262e; }
+
+#content .green { background-color: #323232; }
+
+a { color: #B5AFCB; }
+a:visited { color: #9C9AA4; }
+.flash.success, .flash.error { background-color: #484357; color: #DADADA; }

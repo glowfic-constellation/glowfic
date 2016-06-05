@@ -5,7 +5,7 @@ class PostsController < WritableController
   before_filter :build_template_groups, :only => [:new, :show, :edit]
 
   def index
-    @posts = Post.order('updated_at desc').includes(:board, :user, :last_user).paginate(page: page, per_page: 25)
+    @posts = Post.order('tagged_at desc').includes(:board, :user, :last_user).paginate(page: page, per_page: 25)
     @page_title = "Recent Threads"
   end
 
@@ -13,7 +13,7 @@ class PostsController < WritableController
     posts_started = Post.where(user_id: current_user.id).select(:id).group(:id).map(&:id)
     posts_in = Reply.where(user_id: current_user.id).select(:post_id).group(:post_id).map(&:post_id)
     ids = posts_in + posts_started
-    @posts = Post.where(id: ids.uniq).where("board_id != 4").where('status != 1').order('updated_at desc') # TODO don't hardcode things
+    @posts = Post.where(id: ids.uniq).where("board_id != 4").where('status != 1').order('tagged_at desc') # TODO don't hardcode things
     @posts = @posts.where('last_user_id != ?', current_user.id).includes(:board).paginate(page: page, per_page: 25)
     @page_title = "Threads Awaiting Tag"
     @show_unread = true
@@ -22,9 +22,9 @@ class PostsController < WritableController
   def unread
     @posts = Post.joins("LEFT JOIN post_views ON post_views.post_id = posts.id AND post_views.user_id = #{current_user.id}")
     @posts = @posts.joins("LEFT JOIN board_views on board_views.board_id = posts.board_id AND board_views.user_id = #{current_user.id}")
-    @posts = @posts.where("post_views.user_id IS NULL OR (date_trunc('second', post_views.updated_at) < date_trunc('second', posts.updated_at) AND post_views.ignored = '0')")
-    @posts = @posts.where("board_views.user_id IS NULL OR (date_trunc('second', board_views.updated_at) < date_trunc('second', posts.updated_at) AND board_views.ignored = '0')")
-    @posts = @posts.order('updated_at desc').includes(:board, :user, :last_user)
+    @posts = @posts.where("post_views.user_id IS NULL OR (date_trunc('second', post_views.updated_at) < date_trunc('second', posts.tagged_at) AND post_views.ignored = '0')")
+    @posts = @posts.where("board_views.user_id IS NULL OR (date_trunc('second', board_views.updated_at) < date_trunc('second', posts.tagged_at) AND board_views.ignored = '0')")
+    @posts = @posts.order('tagged_at desc').includes(:board, :user, :last_user)
     @opened_ids = PostView.where(user_id: current_user.id).select(:post_id).map(&:post_id)
     @page_title = "Unread Threads"
   end
@@ -56,12 +56,7 @@ class PostsController < WritableController
   def create
     gon.original_content = params[:post][:content]
 
-    if params[:button_preview]
-      @url = posts_path
-      @method = :post
-      preview
-      render :action => 'preview' and return
-    end
+    preview(:post, posts_path) and return if params[:button_preview].present?
 
     @post = Post.new(params[:post])
     @post.user = @post.last_user = current_user
@@ -87,15 +82,19 @@ class PostsController < WritableController
   def history
   end
 
-  def preview
+  def preview(method, path)
     build_template_groups
     
     @written = Post.new(params[:post])
     @post = @written
     @written.user = current_user
     @character = @post.character
+    @url = path
+    @method = method
 
     use_javascript('posts')
+    gon.original_content = params[:post][:content] if params[:post]
+    render action: 'preview'
   end
 
   def edit
@@ -106,50 +105,50 @@ class PostsController < WritableController
   end
 
   def update
+    mark_unread and return if params[:unread].present?
+    change_status and return if params[:status].present?
+
+    require_permission
+    preview(:put, post_path(params[:id])) and return if params[:button_preview].present?
+
     gon.original_content = params[:post][:content] if params[:post]
-
-    if params[:button_preview]
-      @url = post_path(params[:id])
-      @method = :put
-      preview
-      render :action => 'preview'
+    @post.assign_attributes(params[:post])
+    @post.board ||= Board.find(3)
+    if @post.save
+      flash[:success] = "Your post has been updated."
+      redirect_to post_path(@post)
     else
-      if params[:unread].present?
-        @post.views.where(user_id: current_user.id).destroy_all
-        flash[:success] = "Post has been marked as unread"
-        redirect_to board_path(@post.board) and return
-      end
-
-      status = "complete"
-      if params[:completed].present?
-        if params[:completed] == "true" && !@post.completed?
-          @post.status = Post::STATUS_COMPLETE
-          @post.save
-        elsif params[:completed] == "false" && @post.completed?
-          @post.status = Post::STATUS_ACTIVE
-          @post.save
-          status = "in progress"
-        end
-        flash[:success] = "Post has been marked #{status}."
-        redirect_to post_path(@post) and return
-      end
-
-      require_permission
-
-      @post.update_attributes(params[:post])
-      @post.board ||= Board.find(3)
-      if @post.save
-        flash[:success] = "Your post has been updated."
-        redirect_to post_path(@post)
-      else
-        flash.now[:error] = @post.errors.full_messages
-        @image = @post.replies[0].icon
-        @character = @post.replies[0].character
-        use_javascript('posts')
-        build_template_groups
-        render :action => :new
-      end
+      flash.now[:error] = @post.errors.full_messages
+      @image = @post.replies[0].icon
+      @character = @post.replies[0].character
+      use_javascript('posts')
+      build_template_groups
+      render :action => :new
     end
+  end
+
+  def mark_unread
+    @post.views.where(user_id: current_user.id).destroy_all
+    flash[:success] = "Post has been marked as unread"
+    redirect_to board_path(@post.board)
+  end
+
+  def change_status
+    unless @post.metadata_editable_by?(current_user)
+      flash[:error] = "You do not have permission to modify this post."
+      redirect_to post_path(@post)
+    end
+
+    begin
+      new_status = Post.const_get('STATUS_'+params[:status].upcase)
+    rescue NameError
+      flash[:error] = "Invalid status selected."
+    else
+      @post.status = new_status
+      @post.save
+      flash[:success] = "Post has been marked #{params[:status]}."
+    end
+    redirect_to post_path(@post)
   end
 
   def destroy
@@ -161,7 +160,7 @@ class PostsController < WritableController
   def search
     return unless params[:commit].present?
 
-    @search_results = Post.order('updated_at desc').includes(:board)
+    @search_results = Post.order('tagged_at desc').includes(:board)
     @search_results = @search_results.where(board_id: params[:board_id]) if params[:board_id].present?
     if params[:author_id].present?
       post_ids = Reply.where(user_id: params[:author_id]).select(:post_id).map(&:post_id).uniq

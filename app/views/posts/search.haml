@@ -38,7 +38,7 @@
                     - klass = cycle('even', 'odd')
                     %td.padding-10.post-subject{class: klass}= link_to post.subject, post_path(post)
                     %td.padding-10.post-board{class: klass}= post.board.name
-                    %td.padding-10.post-time{class: klass}= post.updated_at.strftime("%b %d, %Y ") + post.updated_at.hour.to_s + post.updated_at.strftime(":%M %p")
+                    %td.padding-10.post-time{class: klass}= post.tagged_at.strftime("%b %d, %Y ") + post.tagged_at.hour.to_s + post.tagged_at.strftime(":%M %p")
   - if @search_results && @search_results.total_pages > 1
     %tfoot
       %tr
