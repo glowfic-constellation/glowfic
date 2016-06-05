@@ -9,7 +9,7 @@
   .padding-15
     %span#post-title= link_to @post.subject, post_path(@post)
     .view-button#post-menu
-      = image_tag '/images/menu.png', class: 'icon-view'
+      = image_tag ((current_user.layout == 'starrydark' or current_user.layout == 'starry' or current_user.layout == 'starrylight') ? '/images/menugray.png' : '/images/menu.png'), class: 'icon-view'
 #post-menu-holder
   #post-menu-box.hidden
     / TODO Throne3d is writing an ePub downloader
