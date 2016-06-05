@@ -36,7 +36,7 @@ $(document).ready(function() {
   });
 
   $("#user_layout").chosen({
-    width: '100px',
+    width: '150px',
     disable_search_threshold: 20,
   });
 
