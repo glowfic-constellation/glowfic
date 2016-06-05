@@ -47,7 +47,7 @@ module ApplicationHelper
   end
 
   def layout_options(default=nil)
-    layouts = {Default: nil, Dark: 'dark', Iconless: 'iconless', Starry: 'starry', :"Starry Dark" => :'starrydark'}
+    layouts = {Default: nil, Dark: 'dark', Iconless: 'iconless', Starry: 'starry', :"Starry Dark" => 'starrydark', :"Starry Light" => 'starrylight'}
     options_for_select(layouts, default)
   end
 
