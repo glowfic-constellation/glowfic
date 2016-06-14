@@ -23,6 +23,6 @@ class Board < ActiveRecord::Base
 
   def editable_by?(user)
     return true if user.admin?
-    creator_id == user.id
+    writer_ids.include?(user.id)
   end
 end
