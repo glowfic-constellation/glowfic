@@ -39,7 +39,7 @@ class User < ActiveRecord::Base
     { 
       :username => username, 
       :active_character_id => active_character_id, 
-      :avatar => { :id => avatar.try(:id), :url => avatar.try(:url) },
+      :avatar => avatar.try(:as_json),
     }
   end
 

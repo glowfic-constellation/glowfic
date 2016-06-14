@@ -42,24 +42,11 @@ $(document).ready(function() {
   };
 
   $("#icon_dropdown").change(function() {
-    var id = $(this).val();
-    $("#reply_icon_id").val(id);
-    $('#icon-overlay').hide();
-    $('#gallery').hide();
+    handleIconDropdown(this);
+  });
 
-    // Handle No Icon case
-    if (id == "") {
-      $("#current-icon").attr('src', "/images/no-icon.png");
-      $("#current-icon").attr('title', "No Icon");
-      $("#current-icon").attr('alt', "");
-      return;
-    }
-
-    // Fetch info about icons from the gallery
-    var img = $("#"+id);
-    $("#current-icon").attr('src', img.attr('src'));
-    $("#current-icon").attr('title', img.attr('title'));
-    $("#current-icon").attr('alt', img.attr('alt'));
+  $("#icon_dropdown").keyup(function() {
+    handleIconDropdown(this);
   });
 
   $("#post-menu").click(function() { 
@@ -212,6 +199,7 @@ iconString = function(icon) {
   var img_url = icon["url"];
   var img_key = icon["keyword"];
 
+  $("#icon_dropdown").append('<option value="'+img_id+'">'+img_key+'</option>');
   return "<div class='gallery-icon'>"
     + "<img src='" + img_url + "' id='" + img_id + "' alt='" + img_key + "' title='" + img_key + "' class='icon' />"
     + "<br />" + img_key
@@ -236,6 +224,7 @@ getAndSetCharacterData = function(characterId) {
   // Handle page interactions
   $("#character-selector").hide();
   $("#current-icon-holder").unbind();
+  $("#icon_dropdown").empty().append('<option value="">No Icon</option>');
 
   // Handle special case where just setting to your base account
   if (characterId == '') {
@@ -253,6 +242,7 @@ getAndSetCharacterData = function(characterId) {
       $("#gallery").append("<div class='gallery-icon'><img src='/images/no-icon.png' id='' class='icon' /><br />No Icon</div>");
       bindIcon();
       bindGallery();
+      $("#icon_dropdown").append('<option value="'+aid+'">'+gon.current_user.avatar.keyword+'</option>');
     }
     return // Don't need to load data from server (TODO combine with below?)
   }
@@ -280,7 +270,6 @@ getAndSetCharacterData = function(characterId) {
     $("#current-icon").attr('title', resp['default']['keyword']);
     $("#current-icon").attr('alt', resp['default']['keyword']);
     $("#reply_icon_id").val(resp['default']['id']);
-    $("#icon_dropdown").val(resp['default']['id']);
 
     // Calculate new galleries
     $("#gallery").html("");
@@ -304,5 +293,27 @@ getAndSetCharacterData = function(characterId) {
     $("#gallery").append("<div class='gallery-icon'><img src='/images/no-icon.png' id='' alt='No Icon' title='No Icon' class='icon' /><br />No Icon</div>");
     bindGallery();
     bindIcon();
+    $("#icon_dropdown").val(resp['default']['id']);
   });
+};
+
+handleIconDropdown = function(select) {
+  var id = $(select).val();
+  $("#reply_icon_id").val(id);
+  $('#icon-overlay').hide();
+  $('#gallery').hide();
+
+  // Handle No Icon case
+  if (id == "") {
+    $("#current-icon").attr('src', "/images/no-icon.png");
+    $("#current-icon").attr('title', "No Icon");
+    $("#current-icon").attr('alt', "");
+    return;
+  }
+
+  // Fetch info about icons from the gallery
+  var img = $("#"+id);
+  $("#current-icon").attr('src', img.attr('src'));
+  $("#current-icon").attr('title', img.attr('title'));
+  $("#current-icon").attr('alt', img.attr('alt'));
 };
