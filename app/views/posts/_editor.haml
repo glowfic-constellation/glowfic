@@ -11,7 +11,7 @@
       #icon-overlay
     #current-icon-dropdown.post-icon
       - if item.character
-        = select_tag :icon_dropdown, options_for_select(item.character.icons.map{|i| [i.keyword, i.id]}, item.icon.try(:id)), prompt: "No Icon"
+        = select_tag :icon_dropdown, options_for_select(item.character.icons.sort_by(&:keyword).map{|i| [i.keyword, i.id]}, item.icon.try(:id)), prompt: "No Icon"
       - elsif current_user.avatar
         = select_tag :icon_dropdown, options_for_select([[current_user.avatar.keyword, current_user.avatar.id]], current_user.avatar.id), prompt: "No Icon"
     .post-info-text
