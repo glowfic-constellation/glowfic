@@ -41,6 +41,27 @@ $(document).ready(function() {
     getAndSetCharacterData(characterId);
   };
 
+  $("#icon_dropdown").change(function() {
+    var id = $(this).val();
+    $("#reply_icon_id").val(id);
+    $('#icon-overlay').hide();
+    $('#gallery').hide();
+
+    // Handle No Icon case
+    if (id == "") {
+      $("#current-icon").attr('src', "/images/no-icon.png");
+      $("#current-icon").attr('title', "No Icon");
+      $("#current-icon").attr('alt', "");
+      return;
+    }
+
+    // Fetch info about icons from the gallery
+    var img = $("#"+id);
+    $("#current-icon").attr('src', img.attr('src'));
+    $("#current-icon").attr('title', img.attr('title'));
+    $("#current-icon").attr('alt', img.attr('alt'));
+  });
+
   $("#post-menu").click(function() { 
     $(this).toggleClass('selected');
     $("#post-menu-box").toggle();
@@ -155,6 +176,7 @@ bindGallery = function() {
   $("#gallery img").click(function() {
     id = $(this).attr('id');
     $("#reply_icon_id").val(id);
+    $("#icon_dropdown").val(id);
     $('#icon-overlay').hide();
     $('#gallery').hide();
     $("#current-icon").attr('src', $(this).attr('src'));
@@ -225,6 +247,7 @@ getAndSetCharacterData = function(characterId) {
       var aid = gon.current_user.avatar.id;
       $("#current-icon").attr('src', url).addClass('pointer');
       $("#reply_icon_id").val(aid);
+      $("#icon_dropdown").val(aid);
       $("#gallery").html("");
       $("#gallery").append("<div class='gallery-icon'><img src='" + url + "' id='" + aid + "' class='icon' /><br />Avatar</div>");
       $("#gallery").append("<div class='gallery-icon'><img src='/images/no-icon.png' id='' class='icon' /><br />No Icon</div>");
@@ -248,6 +271,7 @@ getAndSetCharacterData = function(characterId) {
     if (resp['default'] == undefined) {
       $("#current-icon").attr('src', '/images/no-icon.png').removeClass('pointer');
       $("#reply_icon_id").val('');
+      $("#icon_dropdown").val('');
       return
     }
 
@@ -256,6 +280,7 @@ getAndSetCharacterData = function(characterId) {
     $("#current-icon").attr('title', resp['default']['keyword']);
     $("#current-icon").attr('alt', resp['default']['keyword']);
     $("#reply_icon_id").val(resp['default']['id']);
+    $("#icon_dropdown").val(resp['default']['id']);
 
     // Calculate new galleries
     $("#gallery").html("");

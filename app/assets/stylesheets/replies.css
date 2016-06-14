@@ -11,6 +11,7 @@
     cursor: pointer;
 }
 #current-icon-holder { position: relative; }
+#current-icon-dropdown select { width: 100px; margin-bottom: 10px; }
 
 /* Character selector */
 #swap-icon { width: 14px;  height: 14px; position: relative; top: 1px; cursor: pointer; }
