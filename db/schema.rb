@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20160604181644) do
+ActiveRecord::Schema.define(:version => 20160615094301) do
 
   create_table "audits", :force => true do |t|
     t.integer  "auditable_id"
@@ -204,7 +204,7 @@ ActiveRecord::Schema.define(:version => 20160604181644) do
     t.integer  "board_id",                     :null => false
     t.integer  "user_id",                      :null => false
     t.string   "subject",                      :null => false
-    t.text     "content",                      :null => false
+    t.text     "content"
     t.integer  "character_id"
     t.integer  "icon_id"
     t.integer  "privacy",       :default => 0, :null => false
@@ -228,7 +228,7 @@ ActiveRecord::Schema.define(:version => 20160604181644) do
   create_table "replies", :force => true do |t|
     t.integer  "post_id",      :null => false
     t.integer  "user_id",      :null => false
-    t.text     "content",      :null => false
+    t.text     "content"
     t.integer  "character_id"
     t.integer  "icon_id"
     t.integer  "thread_id"
