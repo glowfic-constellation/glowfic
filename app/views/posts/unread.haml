@@ -30,7 +30,7 @@
           - if @opened_ids.include?(post.id)
             = Reply.where(post_id: post.id).where('created_at > ?', post.last_read(current_user)).count
           - else
-            = post.replies.count + 1
+            = post.replies.count
         %td.padding-10{class: klass}
           = pretty_time(post.tagged_at)
           by
