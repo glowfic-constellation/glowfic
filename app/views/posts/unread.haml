@@ -1,13 +1,14 @@
 = form_tag mark_posts_path, :method => :post do
   %table
     %tr
-      %th{colspan: 7} Unread Posts
+      %th{colspan: 8} Unread Posts
     %tr
       %th.sub.width-15
       %th.sub Thread
       %th.sub Continuity
       %th.sub Authors
       %th.sub Replies
+      %th.sub # Unread
       %th.sub Last Updated
       %th.sub
     - @posts.each do |post|
@@ -25,6 +26,11 @@
         %td.padding-10{class: klass}= link_to post.board.name, board_path(post.board)
         %td.padding-10{class: klass}= post.authors.map { |author| link_to author.username, user_path(author) }.join(', ').html_safe
         %td.padding-10.width-70{class: klass}= post.replies.count
+        %td.padding-10.width-70{class: klass}
+          - if @opened_ids.include?(post.id)
+            = Reply.where(post_id: post.id).where('created_at > ?', post.last_read(current_user)).count
+          - else
+            = post.replies.count + 1
         %td.padding-10{class: klass}
           = pretty_time(post.tagged_at)
           by
@@ -32,10 +38,10 @@
         %td{class: klass}= check_box_tag :"marked_ids[]", post.id
     - if @posts.empty?
       %tr
-        %td.centered.padding-10{ class: cycle('even','odd'), colspan: 6 } — No posts yet —
+        %td.centered.padding-10{ class: cycle('even','odd'), colspan: 8 } — No posts yet —
     - else
       %tr
-        %td.right-align.padding-5{colspan: 7, class: cycle('even', 'odd')}
+        %td.right-align.padding-5{colspan: 8, class: cycle('even', 'odd')}
           = submit_tag "Hide from Unread", class: 'button'
           = submit_tag "Mark Read", class: 'button'
 %br
