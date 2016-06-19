@@ -1,10 +1,15 @@
 $(document).ready(function() {
+  // TODO fix hack
+  // Hack because having In Thread characters as a group in addition to Template groups
+  // duplicates characters in the dropdown, and therefore multiple options are selected
   var selectd;
   $("#active_character option[selected]").each(function(){
     if (!selectd) selectd = this;
     $(this).prop("selected", false);
   });
   $(selectd).prop("selected", true);
+
+  // Adding Chosen UI to relevant selects
   $("#post_board_id").chosen({
     width: '200px',
     disable_search_threshold: 20,
@@ -26,6 +31,8 @@ $(document).ready(function() {
     width: '100%',
   });
 
+  // TODO fix hack
+  // Resizes screennames to be slightly smaller if they're long for UI reasons
   $(".post-screenname").each(function (index) {
     if($(this).height() > 20) {
       $(this).css('font-size', "14px");
@@ -36,17 +43,24 @@ $(document).ready(function() {
   // Hack to deal with Firefox's "helpful" caching of form values on soft refresh
   var nameInSelect = $("#active_character").children("optgroup").children(':selected').text().split(" | ")[0];
   var nameInUI = $("#post-editor .post-character").text();
+  var iconInUI = $("#current-icon").attr('src');
+  var iconId = $("#reply_icon_id").val();
+  var iconInForm = $("#"+iconId).attr('src');
   if (nameInUI != nameInSelect) {
     var characterId = $("#reply_character_id").val();
     getAndSetCharacterData(characterId);
+    setIconFromId(iconId); // Reset icon in case above changed it
+  } else if (iconInUI != iconInForm) {
+    setIconFromId(iconId); // Handle the case where just the icon was cached
   };
 
+  // Bind both change() and keyup() in the icon keyword dropdown because Firefox doesn't
+  // respect up/down key selections in a dropdown as a valid change() trigger
   $("#icon_dropdown").change(function() {
-    handleIconDropdown(this);
+    setIconFromId($(this).val());
   });
-
   $("#icon_dropdown").keyup(function() {
-    handleIconDropdown(this);
+    setIconFromId($(this).val());
   });
 
   $("#post-menu").click(function() { 
@@ -162,13 +176,7 @@ $(document).ready(function() {
 bindGallery = function() {
   $("#gallery img").click(function() {
     id = $(this).attr('id');
-    $("#reply_icon_id").val(id);
-    $("#icon_dropdown").val(id);
-    $('#icon-overlay').hide();
-    $('#gallery').hide();
-    $("#current-icon").attr('src', $(this).attr('src'));
-    $("#current-icon").attr('title', $(this).attr('title'));
-    $("#current-icon").attr('alt', $(this).attr('alt'));
+    setIconFromId(id, $(this));
   });
 };
 
@@ -211,11 +219,11 @@ tinyMCESetup = function(ed) {
     if($("#html").hasClass('selected') == true) {
       tinyMCE.execCommand('mceRemoveEditor', false, 'post_content');
       tinyMCE.execCommand('mceRemoveEditor', false, 'reply_content');
-      $(".tinymce").val(gon.original_content);
+      $(".tinymce").val(gon.original_content); // TODO fix hack
     } else {
       var rawContent = tinymce.activeEditor.getContent({format: 'raw'});
       var content = tinymce.activeEditor.getContent();
-      if (rawContent == '<p>&nbsp;<br></p>' && content == '') { tinymce.activeEditor.setContent(''); }
+      if (rawContent == '<p>&nbsp;<br></p>' && content == '') { tinymce.activeEditor.setContent(''); } // TODO fix hack
     };
   });
 };
@@ -230,20 +238,23 @@ getAndSetCharacterData = function(characterId) {
   if (characterId == '') {
     $("#post-editor .post-character").hide();
     $("#post-editor .post-screenname").hide();
-    $("#post-editor #post-author-spacer").show();
+
     var url = gon.current_user.avatar.url;
     if(url != null) {
       var aid = gon.current_user.avatar.id;
-      $("#current-icon").attr('src', url).addClass('pointer');
-      $("#reply_icon_id").val(aid);
-      $("#icon_dropdown").val(aid);
+      var keyword = gon.current_user.avatar.keyword;
+      $("#icon_dropdown").append('<option value="'+aid+'">'+keyword+'</option>');
       $("#gallery").html("");
       $("#gallery").append("<div class='gallery-icon'><img src='" + url + "' id='" + aid + "' class='icon' /><br />Avatar</div>");
       $("#gallery").append("<div class='gallery-icon'><img src='/images/no-icon.png' id='' class='icon' /><br />No Icon</div>");
       bindIcon();
       bindGallery();
-      $("#icon_dropdown").append('<option value="'+aid+'">'+gon.current_user.avatar.keyword+'</option>');
+      setIcon(aid, url, keyword, keyword);
+      $("#post-editor #post-author-spacer").show();
+    } else {
+      $("#post-editor #post-author-spacer").hide();
     }
+
     return // Don't need to load data from server (TODO combine with below?)
   }
 
@@ -259,61 +270,55 @@ getAndSetCharacterData = function(characterId) {
 
     // Display no icon if no default set
     if (resp['default'] == undefined) {
-      $("#current-icon").attr('src', '/images/no-icon.png').removeClass('pointer');
-      $("#reply_icon_id").val('');
-      $("#icon_dropdown").val('');
-      return
+      $("#current-icon").removeClass('pointer');
+      setIcon('');
+      return;
     }
 
     // Display default icon
-    $("#current-icon").attr('src', resp['default']['url']).addClass('pointer');
-    $("#current-icon").attr('title', resp['default']['keyword']);
-    $("#current-icon").attr('alt', resp['default']['keyword']);
-    $("#reply_icon_id").val(resp['default']['id']);
+    $("#current-icon").addClass('pointer');
 
     // Calculate new galleries
     $("#gallery").html("");
     var galleries = resp['galleries'];
-    if (galleries.length == 0) { return; }
-
-    // Display single gallery
-    if (galleries.length == 1) {
-      var gallery = galleries[0];
-      $("#gallery").append(galleryString(gallery, false));
-
-    // Display multiple galleries
-    } else {
-      for(var i=0; i<galleries.length; i++) {
-        var gallery = galleries[i];
-        $("#gallery").append(galleryString(gallery, true));
-      }
+    var multiGallery = galleries.length > 1;
+    for(var i=0; i<galleries.length; i++) {
+      var gallery = galleries[i];
+      $("#gallery").append(galleryString(gallery, multiGallery));
     }
 
-    // Both single and multiple galleries need these
     $("#gallery").append("<div class='gallery-icon'><img src='/images/no-icon.png' id='' alt='No Icon' title='No Icon' class='icon' /><br />No Icon</div>");
     bindGallery();
     bindIcon();
-    $("#icon_dropdown").val(resp['default']['id']);
+    setIcon(resp['default']['id'], resp['default']['url'], resp['default']['keyword'], resp['default']['keyword']);
   });
 };
 
-handleIconDropdown = function(select) {
-  var id = $(select).val();
-  $("#reply_icon_id").val(id);
+setIconFromId = function(id, img) {
+  // Assumes the #gallery div is populated with icons with the correct values
+  if (id == "") return setIcon(id);
+  if (typeof(img) === 'undefined') img = $("#"+id);
+  setIcon(id, img.attr('src'), img.attr('title'), img.attr('alt'));
+};
+
+setIcon = function(id, url, title, alt) {
+  // Handle No Icon case
+  if (id == "") {
+    url = "/images/no-icon.png";
+    title = "No Icon";
+    alt = "";
+  }
+
+  // Hide icon UI elements
   $('#icon-overlay').hide();
   $('#gallery').hide();
 
-  // Handle No Icon case
-  if (id == "") {
-    $("#current-icon").attr('src', "/images/no-icon.png");
-    $("#current-icon").attr('title', "No Icon");
-    $("#current-icon").attr('alt', "");
-    return;
-  }
+  // Set necessary form values
+  $("#reply_icon_id").val(id);
+  $("#icon_dropdown").val(id);
 
-  // Fetch info about icons from the gallery
-  var img = $("#"+id);
-  $("#current-icon").attr('src', img.attr('src'));
-  $("#current-icon").attr('title', img.attr('title'));
-  $("#current-icon").attr('alt', img.attr('alt'));
+  // Set current icon UI elements
+  $("#current-icon").attr('src', url);
+  $("#current-icon").attr('title', title);
+  $("#current-icon").attr('alt', alt);
 };
