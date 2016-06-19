@@ -1,7 +1,10 @@
 = form_tag mark_posts_path, :method => :post do
   %table
     %tr
-      %th{colspan: 8} Unread Posts
+      %th{colspan: 8}
+        Unread Posts
+        = link_to hidden_posts_path  do
+          .view-button Hidden &raquo;
     %tr
       %th.sub.width-15
       %th.sub Thread
