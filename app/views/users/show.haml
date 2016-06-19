@@ -18,6 +18,10 @@
 %br
 = link_to "#{@user.username}'s galleries", user_galleries_path(@user), class: 'user-galleries'
 %br
+= link_to "#{@user.username}'s posts", search_posts_path(author_id: @user.id, commit: 'Search'), class: 'user-posts'
+%br
+= link_to "#{@user.username}'s completed posts", search_posts_path(author_id: @user.id, commit: 'Search', completed: true), class: 'user-completed-posts'
+%br
 %br
 - content_for :posts_title do
   #{@user.username}'s Recent Posts

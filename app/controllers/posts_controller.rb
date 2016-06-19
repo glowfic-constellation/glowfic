@@ -193,6 +193,9 @@ class PostsController < WritableController
       where = Post.where(character_id: params[:character_id]).where(id: post_ids).where_values.reduce(:or)
       @search_results = @search_results.where(where)
     end
+    if params[:completed].present?
+      @search_results = @search_results.where(status: Post::STATUS_COMPLETE)
+    end
 
     @search_results = @search_results.paginate(page: page, per_page: 25)
   end
