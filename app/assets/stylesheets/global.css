@@ -1,7 +1,178 @@
 body, html { height: 100%; }
+@font-face {
+    font-family: 'texgyreheros';
+    src: url('fonts/texgyreheroes/texgyreheros-regular-webfont.woff') format('woff'),
+         url('fonts/texgyreheroes/texgyreheros-regular-webfont.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'texgyreheros';
+    src: url('fonts/texgyreheroes/texgyreheros-bold-webfont.woff') format('woff'),
+         url('fonts/texgyreheroes/texgyreheros-bold-webfont.ttf') format('truetype');
+    font-weight: bold;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'texgyreheros';
+    src: url('fonts/texgyreheroes/texgyreheros-italic-webfont.woff') format('woff'),
+         url('fonts/texgyreheroes/texgyreheros-italic-webfont.ttf') format('truetype');
+    font-weight: normal;
+    font-style: italic;
+}
+@font-face {
+    font-family: 'texgyreheros';
+    src: url('fonts/texgyreheroes/texgyreheros-bolditalic-webfont.woff') format('woff'),
+         url('fonts/texgyreheroes/texgyreheros-bolditalic-webfont.ttf') format('truetype');
+    font-weight: bold;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'amble';
+    src: url('fonts/amble/Amble-Regular-webfont.woff') format('woff'),
+         url('fonts/amble/Amble-Regular-webfont.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'amble';
+    src: url('fonts/amble/Amble-Bold-webfont.woff') format('woff'),
+         url('fonts/amble/Amble-Bold-webfont.ttf') format('truetype');
+    font-weight: bold;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'amble';
+    src: url('fonts/amble/Amble-Italic-webfont.woff') format('woff'),
+         url('fonts/amble/Amble-Italic-webfont.ttf') format('truetype');
+    font-weight: normal;
+    font-style: italic;
+}
+@font-face {
+    font-family: 'amble';
+    src: url('fonts/amble/Amble-BoldItalic-webfont.woff') format('woff'),
+         url('fonts/amble/Amble-BoldItalic-webfont.ttf') format('truetype');
+    font-weight: bold;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'clearsans';
+    src: url('fonts/clearsans/ClearSans-Regular-webfont.woff') format('woff'),
+         url('fonts/clearsans/ClearSans-Regular-webfont.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'clearsans';
+    src: url('fonts/clearsans/ClearSans-Bold-webfont.woff') format('woff'),
+         url('fonts/clearsans/ClearSans-Bold-webfont.ttf') format('truetype');
+    font-weight: bold;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'clearsans';
+    src: url('fonts/clearsans/ClearSans-Italic-webfont.woff') format('woff'),
+         url('fonts/clearsans/ClearSans-Italic-webfont.ttf') format('truetype');
+    font-weight: normal;
+    font-style: italic;
+}
+@font-face {
+    font-family: 'clearsans';
+    src: url('fonts/clearsans/ClearSans-BoldItalic-webfont.woff') format('woff'),
+         url('fonts/clearsans/ClearSans-BoldItalic-webfont.ttf') format('truetype');
+    font-weight: bold;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'notosans';
+    src: url('fonts/notosans/NotoSans-Regular-webfont.woff') format('woff'),
+         url('fonts/notosans/NotoSans-Regular-webfont.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'notosans';
+    src: url('fonts/notosans/NotoSans-Bold-webfont.woff') format('woff'),
+         url('fonts/notosans/NotoSans-Bold-webfont.ttf') format('truetype');
+    font-weight: bold;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'notosans';
+    src: url('fonts/notosans/NotoSans-Italic-webfont.woff') format('woff'),
+         url('fonts/notosans/NotoSans-Italic-webfont.ttf') format('truetype');
+    font-weight: normal;
+    font-style: italic;
+}
+@font-face {
+    font-family: 'notosans';
+    src: url('fonts/notosans/NotoSans-BoldItalic-webfont.woff') format('woff'),
+         url('fonts/notosans/NotoSans-BoldItalic-webfont.ttf') format('truetype');
+    font-weight: bold;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'share';
+    src: url('fonts/share/Share-Regular-webfont.woff') format('woff'),
+         url('fonts/share/Share-Regular-webfont.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'share';
+    src: url('fonts/share/Share-Bold-webfont.woff') format('woff'),
+         url('fonts/share/Share-Bold-webfont.ttf') format('truetype');
+    font-weight: bold;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'share';
+    src: url('fonts/share/Share-Italic-webfont.woff') format('woff'),
+         url('fonts/share/Share-Italic-webfont.ttf') format('truetype');
+    font-weight: normal;
+    font-style: italic;
+}
+@font-face {
+    font-family: 'share';
+    src: url('fonts/share/Share-BoldItalic-webfont.woff') format('woff'),
+         url('fonts/share/Share-BoldItalic-webfont.ttf') format('truetype');
+    font-weight: bold;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'sourcesanspro';
+    src: url('fonts/sourcesanspro/SourceSansPro-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'sourcesanspro';
+    src: url('fonts/sourcesanspro/SourceSansPro-Bold.ttf') format('truetype');
+    font-weight: bold;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'sourcesanspro';
+    src: url('fonts/sourcesanspro/SourceSansPro-Italic.ttf') format('truetype');
+    font-weight: normal;
+    font-style: italic;
+}
+@font-face {
+    font-family: 'sourcesanspro';
+    src: url('fonts/sourcesanspro/SourceSansPro-BoldItalic.ttf') format('truetype');
+    font-weight: bold;
+    font-style: italic;
+}
+
+
 body {
     margin: 0 0 0 0;
-    font-family: Helvetica, Verdana, sans-serif;
+    font-family: 'sourcesanspro', Helvetica, Verdana, sans-serif;
     color: #101010;
     background-color: #e5dfd1;
 }
