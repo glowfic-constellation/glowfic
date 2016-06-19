@@ -35,7 +35,7 @@ module ApplicationHelper
   def per_page_options(default=nil)
     default ||= per_page
     options = [10,25,50,100,250,500]
-    options << default if default.present? && default == default.to_i && !options.include?(default)
+    options << default unless default.nil? || default.zero? || options.include?(default)
     options = Hash[*(options * 2).sort].merge({'All' => 'all'})
     default = 'all' if default == -1
     options_for_select(options, default)
