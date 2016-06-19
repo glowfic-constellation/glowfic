@@ -5,4 +5,4 @@
   = submit_tag "Hide from Unread", class: 'button'
   = submit_tag "Mark Read", class: 'button'
 
-= render partial: 'posts/list', locals: {posts: @posts, path: :unread_path, many_form_path: mark_posts_path, many_form_method: :post, many_mark_continuity_path: mark_boards_path}
+= render partial: 'posts/list', locals: {posts: @posts, path: :unread_path, many_form_path: mark_posts_path, many_form_method: :post, many_mark_continuity_path: mark_boards_path, show_unread_count: true}

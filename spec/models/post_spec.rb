@@ -54,6 +54,11 @@ RSpec.describe Post do
     expect(post.edited_at).to eq(old_edited_at)
   end
 
+  it "should allow blank content" do
+    post = create(:post, content: nil)
+    expect(post.id).not_to be_nil
+  end
+
   describe "#edited_at" do
     it "should update when a field is changed" do
       post = create(:post)

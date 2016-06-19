@@ -3,6 +3,8 @@
     = link_to icon_path(@user.avatar) do
       = icon_tag @user.avatar
 %b.username= @user.username
+= surround '(', ')' do
+  = link_to "Send Message", new_message_path(recipient_id: @user.id)
 %br
 - if @user.moiety
   %b Moiety:

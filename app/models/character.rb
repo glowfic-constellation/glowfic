@@ -21,6 +21,10 @@ class Character < ActiveRecord::Base
     @icon ||= default_icon || galleries.detect(&:default_icon).try(:default_icon)
   end
 
+  def icons
+    @icons ||= galleries.map(&:icons).flatten.uniq_by(&:id)
+  end
+
   def recent_posts(limit=25, page=1)
     return @recent unless @recent.nil?
     reply_ids =  replies.group(:post_id).select(:post_id).map(&:post_id)

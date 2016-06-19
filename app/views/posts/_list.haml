@@ -1,5 +1,5 @@
 - content_for :posts_table do
-  - col_count = (5 + (defined?(hide_continuity) ? 0 : 1) + (defined?(many_form_path) ? 1 : 0))
+  - col_count = (5 + (defined?(show_unread_count) ? 1 : 0) + (defined?(hide_continuity) ? 0 : 1) + (defined?(many_form_path) ? 1 : 0))
   %table
     %thead
       %tr
@@ -11,13 +11,15 @@
           %th.sub Continuity
         %th.sub Authors
         %th.sub Replies
+        - if defined? show_unread_count
+          %th.sub # Unread
         %th.sub Last Updated
         - if defined? many_form_path and many_form_path
           %th.sub
     %tbody
       - posts.each do |post|
         - next unless post.visible_to?(current_user)
-        = render partial: 'posts/list_item', locals: {post: post, hide_continuity: defined?(hide_continuity), many_form: defined?(many_form_path)}
+        = render partial: 'posts/list_item', locals: {post: post, hide_continuity: defined?(hide_continuity), many_form: defined?(many_form_path), show_unread_count: defined?(show_unread_count)}
       - if posts.empty?
         %tr
           %td.centered.padding-10.no-posts{ class: cycle('even','odd'), colspan: col_count } — No posts yet —

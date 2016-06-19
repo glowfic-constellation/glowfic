@@ -30,7 +30,11 @@ characters.each do |username|
   end
 
   unless character = Character.where(screenname: username).first
-    character = Character.create!(user: user, name: name, gallery: gallery, screenname: username)
+    character = Character.create!(user: user, name: name, screenname: username)
+  end
+
+  unless CharactersGallery.where(gallery_id: gallery.id, character_id: character.id).exists?
+    CharactersGallery.create(character_id: character.id, gallery_id: gallery.id)
   end
 
   response = HTTParty.get("http://#{url_name}.dreamwidth.org/icons")
@@ -40,8 +44,11 @@ characters.each do |username|
     image = icon.at_css('.icon-image img')
     image_url = image.attribute('src').value.strip
     image_keyword = image.attribute('title').value.strip
-    unless Icon.where(url: image_url).exists?
+    icon = Icon.where(url: image_url).first
+    if icon.nil?
       gallery.icons << Icon.create!(user: user, url: image_url, keyword: image_keyword)
+    elsif !icon.galleries.include?(gallery)
+      gallery.icons << icon
     end
   end
 end
