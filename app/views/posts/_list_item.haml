@@ -33,3 +33,5 @@
     = pretty_time(post.tagged_at)
     by
     = link_to post.last_user.username, user_path(post.last_user)
+  - if many_form
+    %td{class: klass}= check_box_tag :"marked_ids[]", post.id

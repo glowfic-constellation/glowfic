@@ -1,21 +1,49 @@
-%table
-  %thead
-    %tr
-      %th{colspan: 6}= content_for :posts_title
-    %tr
-      %th.sub.width-15
-      %th.sub Thread
-      - unless defined? hide_continuity
-        %th.sub Continuity
-      %th.sub Authors
-      %th.sub Replies
-      %th.sub Last Updated
-  %tbody
-    - posts.each do |post|
-      - next unless post.visible_to?(current_user)
-      = render partial: 'posts/list_item', locals: {post: post, hide_continuity: defined?(hide_continuity)}
-    - if posts.empty?
+- content_for :posts_table do
+  - col_count = (5 + (defined?(hide_continuity) ? 0 : 1) + (defined?(many_form_path) ? 1 : 0))
+  %table
+    %thead
       %tr
-        %td.centered.padding-10.no-posts{ class: cycle('even','odd'), colspan: 6 } — No posts yet —
-- if posts.total_pages > 1
-  = render partial: 'posts/paginator', locals: { paginated: @posts, path: defined?(path) ? path : :posts_path }
+        %th{colspan: col_count}= content_for :posts_title
+      %tr
+        %th.sub.width-15
+        %th.sub Thread
+        - unless defined? hide_continuity
+          %th.sub Continuity
+        %th.sub Authors
+        %th.sub Replies
+        %th.sub Last Updated
+        - if defined? many_form_path and many_form_path
+          %th.sub
+    %tbody
+      - posts.each do |post|
+        - next unless post.visible_to?(current_user)
+        = render partial: 'posts/list_item', locals: {post: post, hide_continuity: defined?(hide_continuity), many_form: defined?(many_form_path)}
+      - if posts.empty?
+        %tr
+          %td.centered.padding-10.no-posts{ class: cycle('even','odd'), colspan: col_count } — No posts yet —
+      - elsif defined?(many_form_path) and content_for?(:many_submit_tags)
+        %tr
+          %td.right-align.padding-5{colspan: col_count, class: cycle('even', 'odd')}
+            = content_for :many_submit_tags
+  - if posts.total_pages > 1
+    = render partial: 'posts/paginator', locals: { paginated: @posts, path: defined?(path) ? path : :posts_path }
+
+- if defined? many_form_path and many_form_path
+  = form_tag many_form_path, :method => (defined? many_form_method ? many_form_method : :post) do
+    = content_for :posts_table
+  - if defined? many_mark_continuity_path and many_mark_continuity_path
+    %br
+    = form_tag many_mark_continuity_path, :method => :post do
+      %table.float-left.form-table
+        %tr
+          %th Mark Entire Continuity
+        %tr
+          %td.even.padding-5.centered
+            = select_tag :board_id, 
+                         options_from_collection_for_select(Board.all, :id, :name, params[:board_id]), 
+                         {class: 'chosen-select', prompt: '— Choose Continuity —'}
+        %tr
+          %th.subber
+            = content_for :many_submit_tags
+- else
+  = content_for :posts_table
