@@ -48,9 +48,11 @@ $(document).ready(function() {
   var iconInForm = $("#"+iconId).attr('src');
   if (nameInUI != nameInSelect) {
     var characterId = $("#reply_character_id").val();
+    console.log("Resetting character because it's wrong. UI: "+nameInUI+" Select: "+nameInSelect);
     getAndSetCharacterData(characterId);
     setIconFromId(iconId); // Reset icon in case above changed it
   } else if (iconInUI != iconInForm) {
+    console.log("Resetting image because it's wrong. UI: "+iconInUI+" Select: "+iconInForm);
     setIconFromId(iconId); // Handle the case where just the icon was cached
   };
 
