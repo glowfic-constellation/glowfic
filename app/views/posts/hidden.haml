@@ -20,7 +20,7 @@
       %tr
         %td.padding-10{class: cycle('even', 'odd')}
           = link_to view.post.subject, post_path(view.post)
-          .float-right= check_box_tag :"unhide_posts[]", view.post_id, class: 'no-margin'
+          .float-right= check_box_tag :"unhide_posts[]", view.post_id, params[:unhide_posts].try(:include?, view.post_id.to_s), class: 'no-margin'
     - if @hidden_postviews.empty?
       %td.padding-10.centered{class: cycle('even', 'odd')} — No posts hidden —
     - if @hidden_postviews.present? || @hidden_boardviews.present?
