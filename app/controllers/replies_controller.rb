@@ -106,6 +106,10 @@ class RepliesController < WritableController
     end
     
     @post = @reply.post
+    unless @post.visible_to?(current_user)
+      flash[:error] = "You do not have permission to view this post."
+      redirect_to boards_path and return
+    end
   end
 
   def require_permission
