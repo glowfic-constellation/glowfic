@@ -41,12 +41,12 @@ $(document).ready(function() {
   });
 
   // Hack to deal with Firefox's "helpful" caching of form values on soft refresh
-  var nameInSelect = $("#active_character").children("optgroup").children(':selected').text().split(" | ")[0];
+  var nameInSelect = $("#active_character").children("optgroup").children(':selected').text();
   var nameInUI = $("#post-editor .post-character").text();
   var iconInUI = $("#current-icon").attr('src');
   var iconId = $("#reply_icon_id").val();
   var iconInForm = $("#"+iconId).attr('src');
-  if (nameInUI != nameInSelect) {
+  if (!nameInSelect.startsWith(nameInUI)) {
     var characterId = $("#reply_character_id").val();
     getAndSetCharacterData(characterId);
     setIconFromId(iconId); // Reset icon in case above changed it

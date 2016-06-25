@@ -33,19 +33,5 @@
 - if defined? many_form_path and many_form_path
   = form_tag many_form_path, :method => (defined? many_form_method ? many_form_method : :post) do
     = content_for :posts_table
-  - if defined? many_mark_continuity_path and many_mark_continuity_path
-    %br
-    = form_tag many_mark_continuity_path, :method => :post do
-      %table.float-left.form-table
-        %tr
-          %th Mark Entire Continuity
-        %tr
-          %td.even.padding-5.centered
-            = select_tag :board_id, 
-                         options_from_collection_for_select(Board.all, :id, :name, params[:board_id]), 
-                         {class: 'chosen-select', prompt: '— Choose Continuity —'}
-        %tr
-          %th.subber
-            = content_for :many_submit_tags
 - else
   = content_for :posts_table

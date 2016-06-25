@@ -44,6 +44,27 @@ class PostsController < WritableController
     redirect_to unread_posts_path
   end
 
+  def hidden
+    @hidden_boardviews = BoardView.where(user_id: current_user.id).where(ignored: true).includes(:board)
+    @hidden_postviews = PostView.where(user_id: current_user.id).where(ignored: true).includes(:post)
+  end
+
+  def unhide
+    if params[:unhide_boards].present?
+      board_ids = params[:unhide_boards].map(&:to_i).compact.uniq
+      views_to_update = BoardView.where(user_id: current_user.id).where(board_id: board_ids)
+      views_to_update.each do |view| view.update_attributes(ignored: false) end
+    end
+
+    if params[:unhide_posts].present?
+      post_ids = params[:unhide_posts].map(&:to_i).compact.uniq
+      views_to_update = PostView.where(user_id: current_user.id).where(post_id: post_ids)
+      views_to_update.each do |view| view.update_attributes(ignored: false) end
+    end
+
+    redirect_to hidden_posts_path
+  end
+
   def new
     use_javascript('posts')
     @post = Post.new(character: current_user.active_character, user: current_user)
@@ -171,6 +192,9 @@ class PostsController < WritableController
       post_ids = Reply.where(character_id: params[:character_id]).select(:post_id).map(&:post_id).uniq
       where = Post.where(character_id: params[:character_id]).where(id: post_ids).where_values.reduce(:or)
       @search_results = @search_results.where(where)
+    end
+    if params[:completed].present?
+      @search_results = @search_results.where(status: Post::STATUS_COMPLETE)
     end
 
     @search_results = @search_results.paginate(page: page, per_page: 25)

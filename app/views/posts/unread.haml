@@ -1,8 +1,24 @@
 - content_for :posts_title do
   Unread Posts
+  = link_to hidden_posts_path do
+    .view-button Hidden &raquo;
 
 - content_for :many_submit_tags do
   = submit_tag "Hide from Unread", class: 'button'
   = submit_tag "Mark Read", class: 'button'
 
-= render partial: 'posts/list', locals: {posts: @posts, path: :unread_path, many_form_path: mark_posts_path, many_form_method: :post, many_mark_continuity_path: mark_boards_path, show_unread_count: true}
+= render partial: 'posts/list', locals: {posts: @posts, path: :unread_path, many_form_path: mark_posts_path, many_form_method: :post, show_unread_count: true}
+%br
+= form_tag mark_boards_path, :method => :post do
+  %table.float-left.form-table
+    %tr
+      %th Mark Entire Continuity
+    %tr
+      %td.even.padding-5.centered
+        = select_tag :board_id, 
+                     options_from_collection_for_select(Board.all, :id, :name, params[:board_id]), 
+                     {class: 'chosen-select', prompt: '— Choose Continuity —'}
+    %tr
+      %th.subber
+        = submit_tag "Hide from Unread", class: 'button'
+        = submit_tag "Mark Read", class: 'button'
