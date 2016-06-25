@@ -1,0 +1,27 @@
+/* Original doc CSS overlaps with monochrome, TODO confirm with Timepoof */
+body { background-color: #E0E0E0; }
+.flash.success { background-color: #ECECEC; }
+.pagination a:visited { color: #3A3A3A; }
+.post-navheader { background-color: #BDBDBD; }
+#content .link-box.blue { background-color: #545A79; }
+#content .link-box.red { background-color: #503636; }
+.post-character { background-color: #929292; }
+.post-screenname { background-color: #A5A5A5; }
+.post-author { background-color: #BBBBBB; }
+#content .sub { background-color: #BDBDBD; }
+
+/* CSS sent to me via Hangouts */
+#header #logo { background-color: #434D73; }
+#header #nav-top, #header #user-info { background-color: #212135; }
+.post-expander { background-color: #A4B0BD; }
+.pagination .current { background: #718EB9; }
+.post-icon, #content .green { background-color: #A9B4BB; }
+a { color: #3F5970; }
+a:visited { color: #284150; }
+#content .subber, .subber { background-color: #A3A8A9; }
+#content .link-box.green { background-color: #3F5370; }
+.post-edit-box img { width: 1em; height: 1em; }
+#header, #header #nav-bottom { background-color: #ADB5B9; }
+.post-character a, .post-character a:visited { color: #B3D3FF; }
+.post-footer { color: #717171; }
+#content .odd, #content .even { background-color: #F3F3F3; border-top: solid 1px #aaa; }

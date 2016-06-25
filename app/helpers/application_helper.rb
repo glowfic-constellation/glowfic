@@ -55,7 +55,8 @@ module ApplicationHelper
       Starry: 'starry',
       :"Starry Dark" => 'starrydark',
       :"Starry Light" => 'starrylight',
-      Monochrome: 'monochrome'
+      Monochrome: 'monochrome',
+      :"Milky River" => 'river',
     }
     options_for_select(layouts, default)
   end
