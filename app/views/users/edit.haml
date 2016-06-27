@@ -25,18 +25,18 @@
         = f.check_box :icon_picker_grouping, class: 'width-15 vmid'
         Group the icon picker by gallery
     %tr
-      %th.sub Default View
+      %th.sub Default view
       %td.even= f.select(:default_view, options_for_select({Icon: 'icon', List: 'list'}, current_user.default_view))
     %tr
-      %th.sub Default Editor
+      %th.sub Default editor
       %td.odd= f.select(:default_editor, options_for_select({'Rich Text' => 'rtf', HTML: 'html'}, current_user.default_editor))
     %tr
-      %th.sub Moiety Hex
+      %th.sub Moiety hex
       %td.even
         \#
         = f.text_field :moiety, placeholder: "Hex code", class: 'text', style: 'width: 80px;', maxlength: 6
     %tr
-      %th.sub Moiety Name
+      %th.sub Moiety name
       %td.even= f.text_field :moiety_name, placeholder: "Moiety", class: 'text'
     %tr
       %th.sub Layout
