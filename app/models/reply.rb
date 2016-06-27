@@ -51,7 +51,7 @@ class Reply < ActiveRecord::Base
     post.skip_edited = true
     post.last_reply = post.replies.order('id desc').first
     post.last_user = (post.last_reply or post).user
-    post.tagged_at = (post.last_reply or post).tagged_at
+    post.tagged_at = (post.last_reply or post).updated_at
     post.save
   end
 
