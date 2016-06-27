@@ -48,9 +48,9 @@ class Reply < ActiveRecord::Base
   def update_last_reply
     return if skip_post_update
     post.skip_edited = true
-    post.last_user = previous_reply.user
-    post.last_reply = previous_reply
-    post.tagged_at = previous_reply.updated_at
+    post.last_reply = post.replies.last
+    post.last_user = post.last_reply.user
+    post.tagged_at = post.last_reply.updated_at
     post.save
   end
 
