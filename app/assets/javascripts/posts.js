@@ -71,11 +71,13 @@ $(document).ready(function() {
   $('.view-button').click(function() {
     if(this.id == 'rtf') {
       $("#html").removeClass('selected');
+      $("#editor_mode").val('rtf')
       $(this).addClass('selected');
       tinyMCE.execCommand('mceAddEditor', true, 'post_content');
       tinyMCE.execCommand('mceAddEditor', true, 'reply_content');
     } else if (this.id == 'html') {
       $("#rtf").removeClass('selected');
+      $("#editor_mode").val('html')
       $(this).addClass('selected');
       tinyMCE.execCommand('mceRemoveEditor', false, 'post_content');
       tinyMCE.execCommand('mceRemoveEditor', false, 'reply_content');
