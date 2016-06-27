@@ -1,25 +1,29 @@
-- content_for :posts_table do
-  - col_count = (5 + (defined?(show_unread_count) ? 1 : 0) + (defined?(hide_continuity) ? 0 : 1) + (defined?(many_form_path) ? 1 : 0))
-  %table
-    %thead
-      %tr
-        %th{colspan: col_count}= content_for :posts_title
-      %tr
-        %th.sub.width-15
-        %th.sub Thread
-        - unless defined? hide_continuity
-          %th.sub Continuity
-        %th.sub Authors
-        %th.sub Replies
-        - if defined? show_unread_count
-          %th.sub # Unread
-        %th.sub Last Updated
-        - if defined? many_form_path and many_form_path
-          %th.sub
+- col_count = 5
+- col_count += 1 if !local_assigns[:hide_continuity] # Include continuity name
+- col_count += 1 if local_assigns[:show_unread_count] # Include # Unread
+- col_count += 1 if local_assigns.has_key? :check_box_name  # Include form check box tags
+- post_args = local_assigns.except(:posts, :list)
+
+%table
+  %thead
+    %tr
+      %th{colspan: col_count}= content_for :posts_title
+    %tr
+      %th.sub.width-15
+      %th.sub Thread
+      - unless defined? hide_continuity
+        %th.sub Continuity
+      %th.sub Authors
+      %th.sub Replies
+      - if defined? show_unread_count
+        %th.sub # Unread
+      %th.sub Last Updated
+      - if defined? check_box_name
+        %th.sub
     %tbody
       - posts.each do |post|
         - next unless post.visible_to?(current_user)
-        = render partial: 'posts/list_item', locals: {post: post, hide_continuity: defined?(hide_continuity), many_form: defined?(many_form_path), show_unread_count: defined?(show_unread_count)}
+        = render partial: 'posts/list_item', locals: {post: post}.merge(post_args)
       - if posts.empty?
         %tr
           %td.centered.padding-10.no-posts{ class: cycle('even','odd'), colspan: col_count } — No posts yet —

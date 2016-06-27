@@ -27,6 +27,7 @@ class PostsController < WritableController
     @posts = @posts.order('tagged_at desc').includes(:board, :user, :last_user).paginate(per_page: 25, page: page)
     @opened_ids = PostView.where(user_id: current_user.id).select(:post_id).map(&:post_id)
     @page_title = "Unread Threads"
+    @show_unread = @conditional_unread = true
   end
 
   def mark    
