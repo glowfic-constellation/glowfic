@@ -47,6 +47,7 @@ class Reply < ActiveRecord::Base
 
   def update_last_reply
     return if skip_post_update
+    return unless post.replies.where('id > ?', id).empty? #return unless last reply
     post.skip_edited = true
     post.last_reply = post.replies.last
     post.last_user = post.last_reply.user
