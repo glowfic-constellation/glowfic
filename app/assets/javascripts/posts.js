@@ -74,7 +74,7 @@ $(document).ready(function() {
       $(this).addClass('selected');
       tinyMCE.execCommand('mceAddEditor', true, 'post_content');
       tinyMCE.execCommand('mceAddEditor', true, 'reply_content');
-    } else {
+    } else if (this.id == 'html') {
       $("#rtf").removeClass('selected');
       $(this).addClass('selected');
       tinyMCE.execCommand('mceRemoveEditor', false, 'post_content');
