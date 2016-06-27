@@ -49,9 +49,9 @@ class Reply < ActiveRecord::Base
     return if skip_post_update
     return unless post.replies.where('id > ?', id).empty? #return unless last reply
     post.skip_edited = true
-    post.last_reply = post.replies.last
-    post.last_user = post.last_reply.user
-    post.tagged_at = post.last_reply.updated_at
+    post.last_reply = post.replies.order('id desc').first
+    post.last_user = (post.last_reply or post).user
+    post.tagged_at = (post.last_reply or post).tagged_at
     post.save
   end
 
