@@ -15,7 +15,9 @@ module ApplicationHelper
 
   def pretty_time(time)
     return unless time
-    time.strftime("%b %d, %Y %l:%M %p")
+    time_display = "%b %d, %Y %l:%M %p"
+    time_display = current_user.time_display if current_user
+    time.strftime(time_display)
   end
 
   def fun_name(user)
@@ -59,6 +61,21 @@ module ApplicationHelper
       :"Milky River" => 'river',
     }
     options_for_select(layouts, default)
+  end
+  
+  def time_display_options(default=nil)
+    now = Time.now
+    time_thing = Time.new(2016, 12, 25, 21, 34)
+    time_display_list = ["%b %d, %Y %l:%M %p", "%b %d, %Y %H:%M",
+      "%d %b %Y %l:%M %p", "%d %b %Y %H:%M",
+      "%m-%d-%Y %l:%M %p", "%m-%d-%Y %H:%M",
+      "%d-%m-%Y %l:%M %p", "%d-%m-%Y %H:%M",
+      "%Y-%m-%d %l:%M %p", "%Y-%m-%d %H:%M"]
+    time_displays = {}
+    time_display_list.each do |time_display|
+      time_displays[time_thing.strftime(time_display)] = time_display
+    end
+    options_for_select(time_displays, default)
   end
 
   def post_or_reply_link(reply)

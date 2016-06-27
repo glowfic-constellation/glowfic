@@ -42,6 +42,9 @@
       %th.sub Layout
       %td.odd= f.select :layout, layout_options(current_user.layout)
     %tr
+      %th.sub Time display
+      %td.even= f.select :time_display, time_display_options(current_user.time_display)
+    %tr
       %th.centered.subber{colspan: 2}= submit_tag "Save", class: 'button'
 
 %br

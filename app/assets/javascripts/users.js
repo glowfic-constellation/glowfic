@@ -41,6 +41,11 @@ $(document).ready(function() {
   });
 
   $("#user_timezone").chosen({width: '250px'});
+  
+  $("#user_time_display").chosen({
+    width: '200px',
+    disable_search_threshold: 20
+  });
 });
 
 validateUsername = function() {
