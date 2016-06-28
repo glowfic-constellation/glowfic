@@ -90,7 +90,7 @@ class RepliesController < WritableController
 
   def destroy
     to_page = @reply.post_page(per_page) # get index before destroying
-    @reply.destroy
+    @reply.destroy # to destroy subsequent ones, do @reply.destroy_subsequent_replies
     flash[:success] = "Post deleted."
     redirect_to post_path(@reply.post, page: to_page)
   end
