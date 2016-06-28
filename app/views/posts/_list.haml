@@ -11,14 +11,14 @@
     %tr
       %th.sub.width-15
       %th.sub Thread
-      - unless defined? hide_continuity
+      - unless local_assigns[:hide_continuity]
         %th.sub Continuity
       %th.sub Authors
       %th.sub Replies
-      - if defined? show_unread_count
+      - if local_assigns[:show_unread_count]
         %th.sub # Unread
       %th.sub Last Updated
-      - if defined? check_box_name
+      - if local_assigns[:check_box_name]
         %th.sub
     %tbody
       - posts.each do |post|
@@ -27,15 +27,5 @@
       - if posts.empty?
         %tr
           %td.centered.padding-10.no-posts{ class: cycle('even','odd'), colspan: col_count } — No posts yet —
-      - elsif defined?(many_form_path) and content_for?(:many_submit_tags)
-        %tr
-          %td.right-align.padding-5{colspan: col_count, class: cycle('even', 'odd')}
-            = content_for :many_submit_tags
   - if posts.total_pages > 1
-    = render partial: 'posts/paginator', locals: { paginated: @posts, path: defined?(path) ? path : :posts_path }
-
-- if defined? many_form_path and many_form_path
-  = form_tag many_form_path, :method => (defined? many_form_method ? many_form_method : :post) do
-    = content_for :posts_table
-- else
-  = content_for :posts_table
+    = render partial: 'posts/paginator', locals: { paginated: @posts, path: local_assigns[:path] ? path : :posts_path }
