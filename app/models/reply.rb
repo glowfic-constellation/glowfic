@@ -8,7 +8,7 @@ class Reply < ActiveRecord::Base
 
   after_create :notify_other_authors, :destroy_draft, :update_active_char, :update_post
   after_update :update_post
-  after_destroy :destroy_subsequent_replies, :update_last_reply
+  after_destroy :update_last_reply
 
   attr_accessor :skip_notify, :skip_post_update
 
@@ -42,14 +42,16 @@ class Reply < ActiveRecord::Base
 
   def destroy_subsequent_replies
     Reply.where('id > ?', id).where(post_id: post_id).delete_all
+    self.update_last_reply
   end
 
   def update_last_reply
     return if skip_post_update
+    return unless post.replies.where('id >= ?', id).empty? # return unless needs to update last reply (this is destroyed, this is the last reply)
     post.skip_edited = true
-    post.last_user = previous_reply.user
     post.last_reply = previous_reply
-    post.tagged_at = previous_reply.updated_at
+    post.last_user = (previous_reply || post).user
+    post.tagged_at = (previous_reply || post).last_updated
     post.save
   end
 
