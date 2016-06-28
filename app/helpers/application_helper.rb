@@ -62,7 +62,7 @@ module ApplicationHelper
   end
   
   def time_display_options(default=nil)
-    time_thing = Time.new(2016, 12, 25, 21, 34) # Test time: "2016-12-25 21:34" (for unambiguous display purposes)
+    time_thing = Time.new(2016, 12, 25, 21, 34) # Example time: "2016-12-25 21:34" (for unambiguous display purposes)
     time_display_list = ["%b %d, %Y %l:%M %p", "%b %d, %Y %H:%M",
       "%d %b %Y %l:%M %p", "%d %b %Y %H:%M",
       "%m-%d-%Y %l:%M %p", "%m-%d-%Y %H:%M",
