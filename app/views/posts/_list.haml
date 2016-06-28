@@ -20,12 +20,12 @@
       %th.sub Last Updated
       - if local_assigns[:check_box_name]
         %th.sub
-    %tbody
-      - posts.each do |post|
-        - next unless post.visible_to?(current_user)
-        = render partial: 'posts/list_item', locals: {post: post}.merge(post_args)
-      - if posts.empty?
-        %tr
-          %td.centered.padding-10.no-posts{ class: cycle('even','odd'), colspan: col_count } — No posts yet —
-  - if posts.total_pages > 1
-    = render partial: 'posts/paginator', locals: { paginated: @posts, path: local_assigns[:path] ? path : :posts_path }
+  %tbody
+    - posts.each do |post|
+      - next unless post.visible_to?(current_user)
+      = render partial: 'posts/list_item', locals: {post: post}.merge(post_args)
+    - if posts.empty?
+      %tr
+        %td.centered.padding-10.no-posts{ class: cycle('even','odd'), colspan: col_count } — No posts yet —
+- if posts.total_pages > 1
+  = render partial: 'posts/paginator', locals: { paginated: @posts, path: local_assigns[:path] ? path : :posts_path }
