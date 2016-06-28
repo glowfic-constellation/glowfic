@@ -90,7 +90,7 @@ class RepliesController < WritableController
 
   def destroy
     to_page = @reply.post_page(per_page) # get index before destroying
-    @reply.destroy
+    @reply.destroy # to destroy subsequent ones, do @reply.destroy_subsequent_replies
     flash[:success] = "Post deleted."
     redirect_to post_path(@reply.post, page: to_page)
   end
@@ -106,6 +106,10 @@ class RepliesController < WritableController
     end
     
     @post = @reply.post
+    unless @post.visible_to?(current_user)
+      flash[:error] = "You do not have permission to view this post."
+      redirect_to boards_path and return
+    end
   end
 
   def require_permission

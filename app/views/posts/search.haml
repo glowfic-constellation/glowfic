@@ -23,6 +23,11 @@
               %td Character
               %td= select_tag :character_id, options_from_collection_for_select(Character.order('name'), :id, :selector_name, params[:character_id]), {class: 'chosen-select', prompt: '— Choose Character —'}
             %tr
+              %td Completed
+              %td.padding-5
+                = check_box_tag :completed, true, params[:completed].present?, {class: 'vmid no-margin', style: 'margin-bottom: 3px;'}
+                = label_tag :completed, "Completed Only"
+            %tr
               %td.centered{colspan: 2}= submit_tag "Search", class: 'button'
         %td.vtop
           - if @search_results.present?

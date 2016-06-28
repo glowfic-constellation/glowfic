@@ -1,0 +1,28 @@
+= form_tag unhide_posts_path, method: :post do
+  %table
+    %tr
+      %th{colspan: 7}
+        Hidden from Unread
+        = link_to unread_posts_path  do
+          .view-button Unread &raquo;
+    %tr
+      %th.subber{colspan: 7} Continuities
+    - @hidden_boardviews.each do |view|
+      %tr
+        - klass = cycle('even, odd')
+        %td.padding-10{class: klass}
+        %td.padding-10{class: klass, colspan: 5}
+          = link_to view.board.name, board_path(view.board)
+        %td{class: klass}= check_box_tag :"unhide_boards[]", view.board_id, params[:unhide_boards].try(:include?, view.board_id.to_s), class: 'no-margin'
+    - if @hidden_boardviews.empty?
+      %td.padding-10.centered{class: cycle('even', 'odd'), colspan: 7} — No continuities hidden —
+    %tr
+      %th.subber{colspan: 7} Posts
+    - @hidden_postviews.each do |view|
+      = render partial: 'posts/list_item', locals: {post: view.post, check_box_name: 'unhide_posts[]'}
+    - if @hidden_postviews.empty?
+      %td.padding-10.centered{class: cycle('even', 'odd'), colspan: 7} — No posts hidden —
+    - if @hidden_postviews.present? || @hidden_boardviews.present?
+      %tr
+        %td.right-align.padding-5{class: cycle('even', 'odd'), colspan: 7}
+          = submit_tag "Show in Unread", class: 'button'

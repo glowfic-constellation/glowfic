@@ -21,6 +21,8 @@ Rails.application.routes.draw do
       get :search
       get :owed
       get :unread
+      get :hidden
+      post :unhide
     end
   end
   resources :characters do

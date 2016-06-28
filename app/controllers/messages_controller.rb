@@ -16,6 +16,7 @@ class MessagesController < ApplicationController
   def new
     use_javascript('messages')
     @message = Message.new
+    @message.recipient = User.find_by_id(params[:recipient_id])
     @page_title = "Compose Message"
     if params[:reply_id].present?
       @message.parent = Message.find_by_id(params[:reply_id])

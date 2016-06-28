@@ -33,9 +33,10 @@ module ApplicationHelper
   end
 
   def per_page_options(default=nil)
-    options = [1,10,25,50,100,250,500]
-    options = Hash[*(options * 2).sort].merge({'All' => 'all'})
     default ||= per_page
+    options = [10,25,50,100,250,500]
+    options << default unless default.nil? || default.zero? || options.include?(default)
+    options = Hash[*(options * 2).sort].merge({'All' => 'all'})
     default = 'all' if default == -1
     options_for_select(options, default)
   end
@@ -47,7 +48,16 @@ module ApplicationHelper
   end
 
   def layout_options(default=nil)
-    layouts = {Default: nil, Dark: 'dark', Iconless: 'iconless', Starry: 'starry', :"Starry Dark" => 'starrydark', :"Starry Light" => 'starrylight'}
+    layouts = {
+      Default: nil,
+      Dark: 'dark',
+      Iconless: 'iconless',
+      Starry: 'starry',
+      :"Starry Dark" => 'starrydark',
+      :"Starry Light" => 'starrylight',
+      Monochrome: 'monochrome',
+      :"Milky River" => 'river',
+    }
     options_for_select(layouts, default)
   end
 

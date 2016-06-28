@@ -32,7 +32,7 @@
       %span.character-template-nickname=@character.template_name
   - if @character.pb
     %br
-    =precede 'Played by: ' do
+    = precede 'Facecast: ' do
       %span.character-pb= @character.pb
   - if logged_in? && current_user.id == @character.user_id
     %br
