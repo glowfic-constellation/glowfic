@@ -32,7 +32,7 @@
         = link_to path_for(reply, '%s'), method: :delete, confirm: 'Are you sure? This will delete this post AND any post that follows it!' do
           = image_tag "/images/cross.png"
     .post-content
-      = sanitize((reply.content.include?("<p>") or reply.content[/<br *\/?>/]) ? reply.content : reply.content.gsub("\n","<br/>")).html_safe
+      = sanitize((reply.content.include?("<p>") || reply.content[/<br ?\/?>/]) ? reply.content : reply.content.gsub("\n","<br/>")).html_safe
   .post-footer
     .right-align>
       .padding-5>
