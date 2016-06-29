@@ -20,4 +20,4 @@
         %div{style: 'height: 2px; background-color: #8B8687;'}
       %div{style: 'padding: 5px; background-color: #B9B6AD; position: relative;'}
         = @reply.user.username
-    = sanitize(@reply.content.include?("<p>") ? @reply.content : @reply.content.gsub("\n","<br/>")).html_safe
+    = sanitize((@reply.content.include?("<p>") || @reply.content[/<br ?\/?>/]) ? @reply.content : @reply.content.gsub("\n","<br/>")).html_safe
