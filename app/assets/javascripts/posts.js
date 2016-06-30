@@ -15,6 +15,11 @@ $(document).ready(function() {
     disable_search_threshold: 20,
   });
 
+  $("#post_section_id").chosen({
+    width: '200px',
+    disable_search_threshold: 20,
+  });
+
   $("#post_privacy").chosen({
     width: '200px',
     disable_search_threshold: 20,

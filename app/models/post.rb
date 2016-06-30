@@ -18,7 +18,7 @@ class Post < ActiveRecord::Base
   has_many :post_viewers
   has_many :reply_drafts
 
-  attr_accessible :board, :board_id, :subject, :privacy, :post_viewer_ids, :description
+  attr_accessible :board, :board_id, :subject, :privacy, :post_viewer_ids, :description, :section_id
   attr_accessor :post_viewer_ids
   attr_writer :skip_edited
 
