@@ -69,7 +69,7 @@ class BoardSectionsController < ApplicationController
 
   def require_permission
     board = @board_section.try(:board) || Board.find_by_id(params[:board_id])
-    if board && !@board_section.board.editable_by?(current_user)
+    if board && !board.editable_by?(current_user)
       flash[:error] = "You do not have permission to edit this continuity."
       redirect_to boards_path and return
     end
