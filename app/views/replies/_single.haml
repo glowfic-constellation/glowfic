@@ -29,7 +29,7 @@
       - if reply.id.present? && reply.editable_by?(current_user)
         = link_to path_for(reply, 'edit_%s') do
           = image_tag "/images/pencil.png"
-        = link_to path_for(reply, '%s'), method: :delete, confirm: 'Are you sure you wish to delete this reply?' do
+        = link_to path_for(reply, '%s'), method: :delete, confirm: "Are you sure you wish to delete this #{reply.is_a?(Reply) ? 'reply' : 'post'}?" do
           = image_tag "/images/cross.png"
     .post-content
       = sanitize((reply.content.include?("<p>") || reply.content[/<br ?\/?>/]) ? reply.content : reply.content.gsub("\n","<br/>")).html_safe
