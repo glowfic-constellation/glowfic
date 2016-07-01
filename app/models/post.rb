@@ -24,6 +24,7 @@ class Post < ActiveRecord::Base
 
   validates_presence_of :board, :subject
 
+  before_save :autofill_order
   after_save :update_access_list
 
   audited except: [:last_reply_id, :last_user_id, :edited_at, :tagged_at, :section_id, :section_order]
@@ -130,5 +131,13 @@ class Post < ActiveRecord::Base
 
   def timestamp_attributes_for_create
     super + [:tagged_at]
+  end
+
+  def autofill_order
+    return unless section_id_changed?
+    return unless section.present?
+    previous_section = Post.where(section_id: section_id).select(:section_order).order('section_order desc').first.try(:section_order)
+    previous_section ||= -1
+    self.section_order = previous_section + 1
   end
 end

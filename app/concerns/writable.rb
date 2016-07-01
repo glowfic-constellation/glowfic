@@ -26,12 +26,14 @@ module Writable
     private
 
     def character_ownership
+      return true unless character_id_changed?
       return true unless character
       return true if character.user_id == user_id
       errors.add(:character, "must be yours")
     end
 
     def icon_ownership
+      return true unless icon_id_changed?
       return true unless icon
       return true if icon.user_id == user_id
       errors.add(:icon, "must be yours")

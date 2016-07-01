@@ -37,6 +37,8 @@ class BoardsController < ApplicationController
 
   def edit
     @page_title = "Edit Continuity"
+    gon.ajax_path = '/board_sections'
+    use_javascript('board_sections')
   end
 
   def update
