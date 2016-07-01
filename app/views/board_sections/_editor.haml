@@ -1,0 +1,12 @@
+%tr
+  %th.sub Continuity
+  %td.odd
+    - if @board_section.posts.present?
+      = @board_section.board.name
+    - else
+      = f.select :board_id, options_from_collection_for_select(Board.all, :id, :name, @board_section.board_id), {}, class: 'chosen-select'
+%tr
+  %th.sub Name
+  %td.even= f.text_field :name, placeholder: "Section Name", class: 'text'
+%tr
+  %th.centered.subber{colspan: 2}= submit_tag "Save", class: 'button'

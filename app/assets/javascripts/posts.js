@@ -15,6 +15,11 @@ $(document).ready(function() {
     disable_search_threshold: 20,
   });
 
+  $("#post_section_id").chosen({
+    width: '200px',
+    disable_search_threshold: 20,
+  });
+
   $("#post_privacy").chosen({
     width: '200px',
     disable_search_threshold: 20,
@@ -56,12 +61,11 @@ $(document).ready(function() {
 
   // Bind both change() and keyup() in the icon keyword dropdown because Firefox doesn't
   // respect up/down key selections in a dropdown as a valid change() trigger
-  $("#icon_dropdown").change(function() {
-    setIconFromId($(this).val());
-  });
-  $("#icon_dropdown").keyup(function() {
-    setIconFromId($(this).val());
-  });
+  $("#icon_dropdown").change(function() { setIconFromId($(this).val()); });
+  $("#icon_dropdown").keyup(function() { setIconFromId($(this).val()); });
+
+  if ($("#post_section_id").val() == '') { setSections(); }
+  $("#post_board_id").change(function() { setSections(); });
 
   $("#post-menu").click(function() { 
     $(this).toggleClass('selected');
@@ -323,4 +327,21 @@ setIcon = function(id, url, title, alt) {
   $("#current-icon").attr('src', url);
   $("#current-icon").attr('title', title);
   $("#current-icon").attr('alt', alt);
+};
+
+setSections = function() {
+  var board_id = $("#post_board_id").val();
+  $.get("/boards/"+board_id, {}, function(resp) {
+    if (resp.length > 0) {
+      $("#section").show();
+      $("#post_section_id").empty().append('<option value="">— Choose Section —</option>');
+      for(var i = 0; i < resp.length; i++) {
+        $("#post_section_id").append('<option value="'+resp[i][0]+'">'+resp[i][1]+'</option>');
+      }
+      $("#post_section_id").trigger("chosen:updated");
+    } else {
+      $("#post_section_id").val("");
+      $("#section").hide();
+    }
+  });
 };

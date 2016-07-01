@@ -1,5 +1,5 @@
 - content_for :breadcrumbs do
-  = link_to "Boards", boards_path
+  = link_to "Continuities", boards_path
   &raquo;
   %b= @board.name
 
@@ -43,5 +43,37 @@
             %td.padding-10{class: klass}
               = link_to post.subject, post_path(post)
             %td.padding-10{class: klass}= pretty_time(post.tagged_at)
+- elsif @board.board_sections.exists?
+  %table
+    %thead
+      %tr
+        %th{colspan: 6}= content_for :posts_title
+    %tbody
+      - @board.board_sections.order('section_order').each do |section|
+        %tr
+          %th.subber{colspan: 6}= link_to section.name, board_section_path(section)
+        - if section.posts.present?
+          %tr
+            %th.sub.width-15
+            %th.sub Thread
+            %th.sub Authors
+            %th.sub Replies
+            %th.sub.width-250 Last Updated
+          - section.posts.order('section_order').each do |post|
+            = render partial: 'posts/list_item', locals: {post: post, hide_continuity: true}
+        - else
+          %tr
+            %td.centered.padding-10.no-posts{ class: cycle('even','odd'), colspan: 6 } — No posts yet —
+      - if @board.posts.where(section_id: nil).exists?
+        %tr
+          %th.subber{colspan: 6} Unsorted
+        %tr
+          %th.sub.width-15
+          %th.sub Thread
+          %th.sub Authors
+          %th.sub Replies
+          %th.sub.width-250 Last Updated
+        - @board.posts.where(section_id: nil).order('updated_at desc').each do |post|
+          = render partial: 'posts/list_item', locals: {post: post, hide_continuity: true}
 - else
   = render partial: 'posts/list', locals: {posts: @posts, hide_continuity: true, path: :board_path}

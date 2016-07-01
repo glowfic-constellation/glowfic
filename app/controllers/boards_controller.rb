@@ -31,12 +31,21 @@ class BoardsController < ApplicationController
   end
 
   def show
-    @page_title = @board.name
-    @posts = @board.posts.includes(:user, :last_user).order('tagged_at desc').paginate(per_page: 25, page: page)
+    respond_to do |format|
+      format.json do
+        render json: @board.board_sections.map { |s| [s.id, s.name] }
+      end
+      format.html do
+        @page_title = @board.name
+        @posts = @board.posts.includes(:user, :last_user).order('tagged_at desc').paginate(per_page: 25, page: page)
+      end
+    end
   end
 
   def edit
     @page_title = "Edit Continuity"
+    gon.ajax_path = '/board_sections'
+    use_javascript('board_sections')
   end
 
   def update

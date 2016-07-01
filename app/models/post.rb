@@ -18,15 +18,17 @@ class Post < ActiveRecord::Base
   has_many :post_viewers
   has_many :reply_drafts
 
-  attr_accessible :board, :board_id, :subject, :privacy, :post_viewer_ids, :description
+  attr_accessible :board, :board_id, :subject, :privacy, :post_viewer_ids, :description, :section_id
   attr_accessor :post_viewer_ids
   attr_writer :skip_edited
 
   validates_presence_of :board, :subject
 
+  before_save :autofill_order
   after_save :update_access_list
+  after_destroy :reorder_others
 
-  audited except: [:last_reply_id, :last_user_id, :edited_at, :tagged_at]
+  audited except: [:last_reply_id, :last_user_id, :edited_at, :tagged_at, :section_id, :section_order]
   has_associated_audits
 
   def visible_to?(user)
@@ -130,5 +132,23 @@ class Post < ActiveRecord::Base
 
   def timestamp_attributes_for_create
     super + [:tagged_at]
+  end
+
+  def autofill_order
+    return unless section_id_changed?
+    return unless section_id.present?
+    previous_section = Post.where(section_id: section_id).select(:section_order).order('section_order desc').first.try(:section_order)
+    previous_section ||= -1
+    self.section_order = previous_section + 1
+  end
+
+  def reorder_others
+    return unless section_id.present?
+    other_posts = Post.where(section_id: section_id).order('section_order asc')
+    return unless other_posts.present?
+    other_posts.each_with_index do |post, index|
+      post.section_order = index
+      post.save
+    end
   end
 end

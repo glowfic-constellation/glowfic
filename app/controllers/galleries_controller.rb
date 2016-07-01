@@ -64,7 +64,6 @@ class GalleriesController < ApplicationController
         @user = @gallery.user
         @page_title = @gallery.name + " (Gallery)"
         use_javascript('galleries/index')
-        render :show
       end
     end
   end

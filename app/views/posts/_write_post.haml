@@ -3,6 +3,9 @@
     = f.label :board_id, 'Continuity:'
     = f.select :board_id, options_from_collection_for_select(Board.select {|b| current_user.writes_in?(b) }, :id, :name, @post.board_id)
     %br
+    #section{class: ('hidden' unless @post.board && @post.board.board_sections.exists?)}
+      = f.label :section_id, 'Continuity section:'
+      = f.select :section_id, options_from_collection_for_select(BoardSection.where(board_id: @post.board_id), :id, :name, @post.section_id), include_blank: '— Choose Section —'
     = f.label :privacy, 'Privacy:'
     = f.select :privacy, options_from_collection_for_select(Post.privacy_settings.to_a, :second, :first, post.privacy)
     #access_list{class: ('hidden' unless post.privacy == Post::PRIVACY_LIST)}

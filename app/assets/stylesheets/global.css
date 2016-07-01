@@ -48,6 +48,7 @@ button, input.button {
 .width-15 { width: 15px !important; }
 .width-70 { width: 70px; }
 .width-150 { width: 150px; }
+.width-250 { width: 250px; }
 .width-300 { width: 300px; }
 .spacer { height: 2px; }
 .centered { text-align: center !important; }

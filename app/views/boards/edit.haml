@@ -1,5 +1,38 @@
+- content_for :breadcrumbs do
+  = link_to "Continuities", boards_path
+  &raquo;
+  = link_to @board.name, board_path(@board)
+  &raquo;
+  %b Edit
+
 = form_for @board, url: board_path(@board), method: :put do |f|
   %table.form-table
     %tr
       %th.centered{colspan: 2} Edit Continuity
     = render partial: 'editor', locals: {f: f}
+
+%br
+%br
+.post-header
+  .padding-15
+    Sections
+    = link_to new_board_section_path params: {board_id: @board.id} do
+      .link-box.green + New Section
+    #saveconf.float-right.hidden{style: 'padding-top: 4px;'}
+      = image_tag '/images/accept.png', title: 'Saved', class: 'vmid', alt: ''
+      Saved
+%table#section-table
+  - @board.board_sections.order('section_order asc').each do |section|
+    %tr{id: "section-#{section.section_order}", data: {section: section.id}}
+      %td.padding-5{class: cycle('even', 'odd')}
+        = link_to section.name, board_section_path(section)
+        .float-right
+          = image_tag "/images/arrow_up.png", class: "section-up pointer", data: {order: section.section_order}
+          = image_tag "/images/arrow_down.png", class: "section-down pointer", data: {order: section.section_order}
+          = link_to edit_board_section_path(section) do
+            = image_tag "/images/pencil.png"
+          = link_to board_section_path(section), :method => :delete, confirm: 'Are you sure you want to delete '+section.name+'?' do
+            = image_tag "/images/cross.png"
+  - if @board.board_sections.empty?
+    %tr
+      %td.centered.padding-10{ class: cycle('even','odd'), colspan: 6 } — No sections yet —
