@@ -52,14 +52,27 @@
       - @board.board_sections.order('section_order').each do |section|
         %tr
           %th.subber{colspan: 6}= link_to section.name, board_section_path(section)
-        - section.posts.order('section_order').each do |post|
-          = render partial: 'posts/list_item', locals: {post: post, hide_continuity: true}
-        - if section.posts.empty?
+        - if section.posts.present?
+          %tr
+            %th.sub.width-15
+            %th.sub Thread
+            %th.sub Authors
+            %th.sub Replies
+            %th.sub.width-250 Last Updated
+          - section.posts.order('section_order').each do |post|
+            = render partial: 'posts/list_item', locals: {post: post, hide_continuity: true}
+        - else
           %tr
             %td.centered.padding-10.no-posts{ class: cycle('even','odd'), colspan: 6 } — No posts yet —
       - if @board.posts.where(section_id: nil).exists?
         %tr
           %th.subber{colspan: 6} Unsorted
+        %tr
+          %th.sub.width-15
+          %th.sub Thread
+          %th.sub Authors
+          %th.sub Replies
+          %th.sub.width-250 Last Updated
         - @board.posts.where(section_id: nil).order('updated_at desc').each do |post|
           = render partial: 'posts/list_item', locals: {post: post, hide_continuity: true}
 - else
