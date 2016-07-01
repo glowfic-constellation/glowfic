@@ -54,6 +54,9 @@
           %th.subber{colspan: 6}= link_to section.name, board_section_path(section)
         - section.posts.order('section_order').each do |post|
           = render partial: 'posts/list_item', locals: {post: post, hide_continuity: true}
+        - if section.posts.empty?
+          %tr
+            %td.centered.padding-10.no-posts{ class: cycle('even','odd'), colspan: 6 } — No posts yet —
       - if @board.posts.where(section_id: nil).exists?
         %tr
           %th.subber{colspan: 6} Unsorted

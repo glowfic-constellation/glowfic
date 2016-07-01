@@ -26,6 +26,7 @@ class Post < ActiveRecord::Base
 
   before_save :autofill_order
   after_save :update_access_list
+  after_destroy :reorder_others
 
   audited except: [:last_reply_id, :last_user_id, :edited_at, :tagged_at, :section_id, :section_order]
   has_associated_audits
@@ -135,9 +136,19 @@ class Post < ActiveRecord::Base
 
   def autofill_order
     return unless section_id_changed?
-    return unless section.present?
+    return unless section_id.present?
     previous_section = Post.where(section_id: section_id).select(:section_order).order('section_order desc').first.try(:section_order)
     previous_section ||= -1
     self.section_order = previous_section + 1
+  end
+
+  def reorder_others
+    return unless section_id.present?
+    other_posts = Post.where(section_id: section_id).order('section_order asc')
+    return unless other_posts.present?
+    other_posts.each_with_index do |post, index|
+      post.section_order = index
+      post.save
+    end
   end
 end

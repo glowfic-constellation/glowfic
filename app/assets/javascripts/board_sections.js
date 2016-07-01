@@ -10,7 +10,7 @@ $(document).ready( function() {
   $(".section-down").click(function() {
     var old_order = parseInt($(this).attr('data-order'));
     var new_order = old_order + 1;
-    if (document.getElementById("section-"+new_order) == null) { console.log("blah"); return false; }
+    if (document.getElementById("section-"+new_order) == null) { return false; }
     switchRows(old_order, new_order);
     return false;
   });
@@ -32,11 +32,10 @@ function switchRows(old_order, new_order) {
   $("#section-table tr:odd td").removeClass('even').addClass("odd");
   $("#section-table tr:even td").removeClass('odd').addClass("even");
 
-  var json = {changes: {}};
+  var json = {changes: {}, commit: 'reorder'};
   json['changes'][this_row.attr('data-section')] = new_order;
   json['changes'][that_row.attr('data-section')] = old_order;
-  json['commit'] = 'reorder';
   $.post(gon.ajax_path, json, function (resp) {
-    $("#saveconf").fadeIn().delay(3000).fadeOut();
+    $("#saveconf").show().delay(2000).fadeOut();
   });
 };

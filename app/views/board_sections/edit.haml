@@ -10,7 +10,7 @@
 = form_for @board_section, url: board_section_path(@board_section), method: :put do |f|
   %table.form-table
     %tr
-      %th.centered{colspan: 2}= "Edit #{@board.try(:name)} Section"
+      %th.centered{colspan: 2}= "Edit #{@board_section.name}"
     = render partial: 'editor', locals: {f: f}
 
 - if @board_section.posts.present?
@@ -19,7 +19,7 @@
   .post-header
     .padding-15 
       Posts
-      #saveconf.float-right.hidden{style: 'padding-top: 4px;'}
+      #saveconf.float-right.hidden
         = image_tag '/images/accept.png', title: 'Saved', class: 'vmid', alt: ''
         Saved
   %table#section-table
