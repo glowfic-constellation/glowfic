@@ -10,6 +10,7 @@ class BoardsController < ApplicationController
 
   def new
     @board = Board.new
+    @board.creator = current_user
     @page_title = "New Continuity"
   end
 

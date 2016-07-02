@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20160627210836) do
+ActiveRecord::Schema.define(:version => 20160702213101) do
 
   create_table "audits", :force => true do |t|
     t.integer  "auditable_id"
@@ -33,6 +33,16 @@ ActiveRecord::Schema.define(:version => 20160627210836) do
   add_index "audits", ["auditable_id", "auditable_type"], :name => "auditable_index"
   add_index "audits", ["created_at"], :name => "index_audits_on_created_at"
   add_index "audits", ["user_id", "user_type"], :name => "user_index"
+
+  create_table "board_authors", :force => true do |t|
+    t.integer  "user_id",    :null => false
+    t.integer  "board_id",   :null => false
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
+  add_index "board_authors", ["board_id"], :name => "index_board_authors_on_board_id"
+  add_index "board_authors", ["user_id"], :name => "index_board_authors_on_user_id"
 
   create_table "board_sections", :force => true do |t|
     t.integer  "board_id",                     :null => false
@@ -56,11 +66,10 @@ ActiveRecord::Schema.define(:version => 20160627210836) do
   add_index "board_views", ["user_id", "board_id"], :name => "index_board_views_on_user_id_and_board_id"
 
   create_table "boards", :force => true do |t|
-    t.string   "name",        :null => false
-    t.integer  "creator_id",  :null => false
-    t.integer  "coauthor_id"
-    t.datetime "created_at",  :null => false
-    t.datetime "updated_at",  :null => false
+    t.string   "name",       :null => false
+    t.integer  "creator_id", :null => false
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
   end
 
   create_table "character_groups", :force => true do |t|
