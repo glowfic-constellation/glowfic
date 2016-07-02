@@ -2,7 +2,16 @@
   %th.sub Name
   %td.even= f.text_field :name, placeholder: "Continuity Name", class: 'text'
 %tr
-  %th.sub Coauthor
-  %td.odd= f.select :coauthor_id, options_from_collection_for_select(@users, :id, :username, @board.coauthor_id), include_blank: '— Open to Anyone —'
+  %th.sub Creator
+  %td.odd= @board.creator.username
+%tr
+  %th.sub Coauthors
+  %td.even
+    = f.collection_select(:coauthor_ids, 
+                          User.where('id != ?', @board.creator_id), 
+                          :id, 
+                          :username, 
+                          {selected: @board.coauthors.map(&:id)}, 
+                          {class: 'text', multiple: true})
 %tr
   %th.centered.subber{colspan: 2}= submit_tag "Save", class: 'button'
