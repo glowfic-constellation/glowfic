@@ -33,8 +33,9 @@
 
 #content .beige .chosen-container, #content .beige .chosen-container a, .chosen-container, .chosen-container a { color: #444; }
 
-body, #post-form-wrapper textarea { background-color: #211e2f; color: #DADADA; }
+body { background-color: #211e2f; color: #DADADA; }
 #content th.subber { color: #DADADA; }
+#post-form-wrapper textarea { background-color: #4d4b5b; color: #DADADA; }
 
 #content .sub, .post-navheader, #content .subber, .subber { background-color: #131937; }
 #content th, .post-header { background-color: #0d0b1e; }
