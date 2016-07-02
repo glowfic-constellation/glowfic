@@ -22,6 +22,7 @@ class Board < ActiveRecord::Base
   end
 
   def editable_by?(user)
+    return false unless user
     return true if user.admin?
     writer_ids.include?(user.id)
   end
