@@ -67,11 +67,6 @@ $(document).ready(function() {
   if ($("#post_section_id").val() == '') { setSections(); }
   $("#post_board_id").change(function() { setSections(); });
 
-  $("#post-menu").click(function() { 
-    $(this).toggleClass('selected');
-    $("#post-menu-box").toggle();
-  });
-
   $('.view-button').click(function() {
     if(this.id == 'rtf') {
       $("#html").removeClass('selected');
@@ -148,8 +143,6 @@ $(document).ready(function() {
       $('#icon-overlay').hide();
       $('#gallery').hide();
       $('#character-selector').hide();
-      $('#post-menu-box').hide();
-      $('#post-menu').removeClass('selected');
     }
   });
 
@@ -169,12 +162,6 @@ $(document).ready(function() {
       !$(target).is('#swap-icon') && 
       !$(target).parents().is('#character-selector')) {
         $('#character-selector').hide();
-    }
-
-    if (!$(target).is('#post-menu-box') && !$(target).parents().is('#post-menu-box')
-      && !$(target).is('#post-menu') && !$(target).parents().is('#post-menu')) {
-      $('#post-menu-box').hide();
-      $('#post-menu').removeClass('selected');
     }
   });
 });
