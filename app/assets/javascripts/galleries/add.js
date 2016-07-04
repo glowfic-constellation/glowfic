@@ -108,8 +108,13 @@ function bindFileInput(elem) {
       fail: function(e, data) {
         submitButton.prop('disabled', false);
         var response = data.response().jqXHR
-        $.post('/bugs', {'response_status':response.status, 'response_body': response.responseText, 'response_text': response.statusText});
-        alert("Upload failed, Marri has been notified.");
+        var policyExpired = response.responseText.includes("Invalid according to Policy: Policy expired.");
+        $.post('/bugs', {'response_status':response.status, 'response_body': response.responseText, 'response_text': response.statusText, expired: policyExpired});
+        if (policyExpired) {
+          alert("Your upload permissions appear to have expired. Please refresh the page and try again.");
+        } else {
+          alert("Upload failed, Marri has been notified.");
+        }
       },
     });
 };
