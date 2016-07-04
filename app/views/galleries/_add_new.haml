@@ -23,7 +23,7 @@
       %tr.icon-row{data: {index: i}}
         %td.padding-5{class: klass}
           - url = @icons[i].try(:[], :url)
-          - if url && url.starts_with?('http://glowfic-constellation.s3.amazonaws.com/')
+          - if url && url.starts_with?('https://d1anwqy6ci9o1i.cloudfront.net/')
             %span.conf
               = image_tag "/images/accept.png", class: 'vmid'
               Uploaded #{@icons[i][:file]}

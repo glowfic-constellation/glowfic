@@ -15,16 +15,12 @@ class Icon < ActiveRecord::Base
   end
 
   def uploaded?
-    url.to_s.starts_with?('http://glowfic-constellation.s3.amazonaws.com/') || url.to_s.starts_with?('https://d1anwqy6ci9o1i.cloudfront.net/')
+    url.to_s.starts_with?('https://d1anwqy6ci9o1i.cloudfront.net/')
   end
 
   def s3_key
     return unless uploaded?
-    if url.to_s.starts_with?('http://glowfic-constellation.s3.amazonaws.com/')
-      url[url.index('com/')+4..-1]
-    else
-      url[url.index('net/')+4..-1]
-    end
+    url[url.index('net/')+4..-1]
   end
 
   private
