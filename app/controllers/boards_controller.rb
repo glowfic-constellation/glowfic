@@ -37,8 +37,10 @@ class BoardsController < ApplicationController
         render json: @board.board_sections.map { |s| [s.id, s.name] }
       end
       format.html do
+        order = 'section_order asc, tagged_at asc'
+        order = 'tagged_at desc' if @board.open_to_anyone?
         @page_title = @board.name
-        @posts = @board.posts.includes(:user, :last_user).order('tagged_at desc').paginate(per_page: 25, page: page)
+        @posts = @board.posts.includes(:user, :last_user).order(order).paginate(per_page: 25, page: page)
       end
     end
   end
