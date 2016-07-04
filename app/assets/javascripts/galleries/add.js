@@ -96,7 +96,7 @@ function bindFileInput(elem) {
 
         // extract key and generate URL from response
         var key   = $(data.jqXHR.responseXML).find("Key").text();
-        var url   = 'http://' + form.data('host') + '/' + key;
+        var url   = 'https://d1anwqy6ci9o1i.cloudfront.net/' + key;
 
         // create hidden field
         var urlInput = $("#icons_"+iconIndex+"_url");
