@@ -82,11 +82,11 @@ module ApplicationHelper
   end
   
   def sanitize_post_description(desc)
-    sanitize(desc, tags: %w(a), attributes: %w(href))
+    Sanitize.fragment(desc, elements: ['a'], attributes: {'a' => ['href']})
   end
   
   def sanitize_post_content(content, do_linebreaks=true)
     content = (content.include?("<p>") || content[/<br ?\/?>/]) ? content : content.gsub("\n","<br/>") if do_linebreaks
-    sanitize(content)
+    Sanitize.fragment(content, Glowfic::POST_CONTENT_SANITIZER)
   end
 end
