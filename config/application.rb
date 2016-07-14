@@ -7,7 +7,7 @@ require 'rails/all'
 Bundler.require(*Rails.groups)
 
 module Glowfic
-  ALLOWED_TAGS = ["b", "i", "u", "sub", "sup", "del", "hr", "p", "br", "div", "span", "pre", "code", "h1", "h2", "h3", "h4", "h5", "h6", "ul", "ol", "li", "dl", "dt", "dd", "a", "img", "blockquote", "table", "td", "th", "tr", "strike", "strong", "em", "big", "small", "font"]
+  ALLOWED_TAGS = ["b", "i", "u", "sub", "sup", "del", "hr", "p", "br", "div", "span", "pre", "code", "h1", "h2", "h3", "h4", "h5", "h6", "ul", "ol", "li", "dl", "dt", "dd", "a", "img", "blockquote", "table", "td", "th", "tr", "strike", "s", "strong", "em", "big", "small", "font"]
 
   class Application < Rails::Application
     config.assets.enabled = true
