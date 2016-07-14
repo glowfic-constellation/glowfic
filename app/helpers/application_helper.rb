@@ -85,7 +85,8 @@ module ApplicationHelper
     sanitize(desc, tags: %w(a), attributes: %w(href))
   end
   
-  def sanitize_post_content(content)
-    sanitize((content.include?("<p>") || content[/<br ?\/?>/]) ? content : content.gsub("\n","<br/>"))
+  def sanitize_post_content(content, do_linebreaks=true)
+    content = (content.include?("<p>") || content[/<br ?\/?>/]) ? content : content.gsub("\n","<br/>") if do_linebreaks
+    sanitize(content)
   end
 end
