@@ -22,6 +22,7 @@ gem 'sass-rails'
 gem 'seed_dump', '0.5.3'
 gem 'tinymce-rails'
 gem 'will_paginate', '~> 3.0.6'
+gem 'sanitize'
 
 group :assets do
   gem 'coffee-rails'
