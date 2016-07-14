@@ -80,4 +80,12 @@ module ApplicationHelper
       post_path(reply)
     end
   end
+  
+  def sanitize_post_description(desc)
+    sanitize(desc, tags: %w(a), attributes: %w(href))
+  end
+  
+  def sanitize_post_content(content)
+    sanitize((content.include?("<p>") || content[/<br ?\/?>/]) ? content : content.gsub("\n","<br/>"))
+  end
 end
