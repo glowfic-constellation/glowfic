@@ -52,7 +52,7 @@ class User < ActiveRecord::Base
   end
 
   def galleryless_icons
-    icons.where(has_gallery: false)
+    icons.where(has_gallery: false).sort_by{|i| i.keyword.downcase }
   end
 
   def default_view

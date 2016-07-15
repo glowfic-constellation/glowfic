@@ -28,7 +28,7 @@
         %td.padding-5{class: cycle('even', 'odd')}
           %b= gallery.name
           %br
-          - gallery.icons.order('keyword asc').each do |icon|
+          - gallery.icons.sort_by{|i| i.keyword.downcase }.each do |icon|
             = icon_tag icon, class: 'add-gallery-icon', :'data-id' => icon.id
     %tr
       %td.subber.centered.padding-5
