@@ -69,8 +69,8 @@ button, input.button {
 #content .beige { background-color: #B9B6AD; }
 #content .green { background-color: #B0BBA9; }
 #content .dark { background-color: #8B8687; }
-#content .even { background-color: #E3E3E3; }
-#content .odd { background-color: #D8D8D8; }
+#content .even { background-color: #E3E3E3; padding: 5px; }
+#content .odd { background-color: #D8D8D8; padding: 5px; }
 #content .subber, .subber { background-color: #a3a1a0; }
 #content .sub { background-color: #B9B6AD; }
 

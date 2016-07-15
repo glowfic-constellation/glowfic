@@ -1,8 +1,9 @@
 class PostsController < WritableController
-  before_filter :login_required, :except => [:index, :show, :history, :search]
-  before_filter :find_post, :only => [:show, :history, :edit, :update, :destroy]
+  before_filter :login_required, except: [:index, :show, :history, :search, :stats]
+  before_filter :find_post, only: [:show, :history, :stats, :edit, :update, :destroy]
   before_filter :require_permission, only: [:edit, :destroy]
-  before_filter :build_template_groups, :only => [:new, :show, :edit]
+  before_filter :build_template_groups, only: [:new, :show, :edit]
+  before_filter :build_tags, only: [:new, :edit]
 
   def index
     @posts = Post.order('tagged_at desc').includes(:board, :user, :last_user).paginate(page: page, per_page: 25)
@@ -84,15 +85,25 @@ class PostsController < WritableController
     @post = Post.new(params[:post])
     @post.user = @post.last_user = current_user
 
+    # create new tags iff post is valid
+    if @post.valid? && @post.tag_ids.present?
+      tags = @post.tag_ids.select { |id| id.to_i.zero? }.reject(&:blank?).compact.uniq
+      @post.tag_ids -= tags
+      @post.tag_ids += tags.map { |tag| Tag.create(user: current_user, name: tag).id }
+    end
+
     if @post.save
       flash[:success] = "You have successfully posted."
       redirect_to post_path(@post)
     else
-      flash.now[:error] = @post.errors.full_messages.to_s
+      flash.now[:error] = {}
+      flash.now[:error][:array] = @post.errors.full_messages
+      flash.now[:error][:message] = "Your post could not be saved because of the following problems:"
       @image = @post.icon
       @character = @post.character
       use_javascript('posts')
       build_template_groups
+      build_tags
       render :action => :new
     end
   end
@@ -103,6 +114,9 @@ class PostsController < WritableController
   end
 
   def history
+  end
+
+  def stats
   end
 
   def preview(method, path)
@@ -137,15 +151,26 @@ class PostsController < WritableController
     gon.original_content = params[:post][:content] if params[:post]
     @post.assign_attributes(params[:post])
     @post.board ||= Board.find(3)
+
+    # create new tags iff post is valid
+    if @post.valid? && @post.tag_ids.present?
+      tags = @post.tag_ids.select { |id| id.to_i.zero? }.reject(&:blank?).compact.uniq
+      @post.tag_ids -= tags
+      @post.tag_ids += tags.map { |tag| Tag.create(user: current_user, name: tag).id }
+    end
+
     if @post.save
       flash[:success] = "Your post has been updated."
       redirect_to post_path(@post)
     else
-      flash.now[:error] = @post.errors.full_messages
-      @image = @post.replies[0].icon
-      @character = @post.replies[0].character
+      flash.now[:error] = {}
+      flash.now[:error][:array] = @post.errors.full_messages
+      flash.now[:error][:message] = "Your post could not be saved because of the following problems:"
+      @image = @post.icon
+      @character = @post.character
       use_javascript('posts')
       build_template_groups
+      build_tags
       render :action => :new
     end
   end
@@ -237,5 +262,14 @@ class PostsController < WritableController
       end
     end
     render json: {}
+  end
+
+  def build_tags
+    @tags = Tag.all
+    if @post.try(:tag_ids)
+      new_tags = @post.tag_ids.reject { |t| t.blank? || !t.to_i.zero? }
+      faked = Struct.new(:name, :id)
+      @tags += new_tags.map { |t| faked.new(t, t) }
+    end
   end
 end

@@ -17,15 +17,17 @@ class Post < ActiveRecord::Base
   has_many :replies, inverse_of: :post, dependent: :destroy
   has_many :post_viewers
   has_many :reply_drafts
+  has_many :post_tags, inverse_of: :post, dependent: :destroy
+  has_many :tags, through: :post_tags
 
-  attr_accessible :board, :board_id, :subject, :privacy, :post_viewer_ids, :description, :section_id
-  attr_accessor :post_viewer_ids
+  attr_accessible :board, :board_id, :subject, :privacy, :post_viewer_ids, :description, :section_id, :tag_ids
+  attr_accessor :post_viewer_ids, :tag_ids
   attr_writer :skip_edited
 
   validates_presence_of :board, :subject
 
   before_save :autofill_order
-  after_save :update_access_list
+  after_save :update_access_list, :update_tag_list
   after_destroy :reorder_others
 
   audited except: [:last_reply_id, :last_user_id, :edited_at, :tagged_at, :section_id, :section_order]
@@ -104,6 +106,10 @@ class Post < ActiveRecord::Base
     author_ids.include?(user.id)
   end
 
+  def characters
+    @chars ||= Character.where(id: ([character_id] + replies.select(:character_id).group(:character_id).map(&:character_id)).compact).sort_by(&:name)
+  end
+
   private
 
   def update_access_list
@@ -116,6 +122,19 @@ class Post < ActiveRecord::Base
     PostViewer.where(post_id: id, user_id: (existing_ids - updated_ids)).destroy_all
     (updated_ids - existing_ids).each do |new_id|
       PostViewer.create(post_id: id, user_id: new_id)
+    end
+  end
+
+  def update_tag_list
+    return unless tag_ids.present?
+
+    updated_ids = (tag_ids - [""]).reject{|id| id.to_i.zero?}.map(&:to_i).uniq.compact
+    return unless updated_ids.present?
+    existing_ids = post_tags.map(&:tag_id)
+
+    PostTag.where(post_id: id, tag_id: (existing_ids - updated_ids)).destroy_all
+    (updated_ids - existing_ids).each do |new_id|
+      PostTag.create(post_id: id, tag_id: new_id)
     end
   end
 

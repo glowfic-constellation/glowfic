@@ -18,4 +18,5 @@
  *= require replies
  *= require_self
  *= require chosen
+ *= require select2
  */

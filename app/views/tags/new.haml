@@ -1,0 +1,10 @@
+- content_for :breadcrumbs do
+  = link_to "Tags", tags_path
+  &raquo;
+  %b New Tag
+
+= form_for @tag, url: tags_path, method: :post do |f|
+  %table.form-table
+    %tr
+      %th.centered{colspan: 2} Create Tag
+    = render partial: 'editor', locals: {f: f}

@@ -31,6 +31,16 @@ $(document).ready(function() {
     placeholder_text_multiple: 'Choose user(s) to view this post'
   });
 
+  $("#post_tag_ids").select2({
+    tags: true,
+    tokenSeparators: [','],
+    placeholder: 'Comma-separated values',
+    ajax: {
+      delay: 100,
+      url: '/tags',
+    },
+  })
+
   $("#active_character").chosen({
     disable_search_threshold: 10,
     width: '100%',
