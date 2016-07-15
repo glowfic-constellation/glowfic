@@ -84,7 +84,15 @@ function bindFileInput(elem) {
       dataType:         'XML',  // S3 returns XML if success_action_status is set to 201
       replaceFileInput: false,
       add: function (e, data) {
-        formData["Content-Type"] = data.files[0].type; 
+        var fileType = data.files[0].type;
+        if (!fileType.startsWith('image/')) {
+          alert("You must upload files with an image filetype such as .png or .jpg - please retry with a valid file.");
+          return;
+        } else if (fileType === 'image/tiff') {
+          alert("Unfortunately, .tiff files are only supported by Safari - please retry with a valid file.");
+          return
+        }
+        formData["Content-Type"] = fileType;
         data.formData = formData;
         data.submit();
       },
