@@ -29,14 +29,12 @@ class IconsController < ApplicationController
       redirect_to gallery_path(gallery) and return
     end
 
-    gallery_id = nil
     icons.each do |icon|
       next unless icon.user_id == current_user.id
-      gallery_id ||= icon.gallery_id
       icon.destroy
     end
     flash[:success] = "Icons deleted."
-    redirect_to gallery_path(id: gallery_guess || 0)
+    redirect_to gallery_path(id: params[:gallery_id] || 0)
   end
 
   def show
