@@ -164,7 +164,7 @@ class PostsController < WritableController
       use_javascript('posts')
       build_template_groups
       build_tags
-      render :action => :new
+      render :action => :edit
     end
   end
 
