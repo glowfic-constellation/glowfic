@@ -1,5 +1,5 @@
 class TemplatesController < ApplicationController
-  before_filter :login_required, except: :index
+  before_filter :login_required, except: [:index, :show]
   before_filter :find_template, :only => [:show, :destroy, :edit, :update]
   before_filter :require_own_template, :only => [:edit, :update, :destroy]
 
