@@ -150,17 +150,9 @@ class CharactersController < ApplicationController
       flash.now[:error] = "Template must be your own."
       return
     end
-    if character.galleries.present?
-      bad_gallery_found = false
-      character.galleries = character.galleries.reject do |gallery|
-        if gallery.user_id != current_user.id
-          bad_gallery_found = true
-        end
-      end
-      if bad_gallery_found
-        flash.now[:error] = "Galleries must be your own."
-        return
-      end
+    if character.galleries.present? && character.galleries.detect {|g| g.user_id != current_user.id}
+      flash.now[:error] = "Galleries must be your own."
+      return
     end
     if character.default_icon.present? && character.default_icon.user_id != current_user.id
       character.default_icon = nil
