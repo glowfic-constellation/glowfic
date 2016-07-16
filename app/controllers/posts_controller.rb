@@ -117,6 +117,7 @@ class PostsController < WritableController
 
   def preview(method, path)
     build_template_groups
+    build_tags
     
     @written = Post.new(params[:post])
     @post = @written
