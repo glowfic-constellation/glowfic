@@ -6,6 +6,8 @@
       = image_tag "/images/book.png", class: 'vmid', title: "Thread Complete"
     - if post.on_hiatus?
       = image_tag "/images/hourglass.png", class: 'vmid', title: "Thread On Hiatus"
+    - if post.content_warnings.present?
+      = image_tag "/images/exclamation.png", class: 'vmid', title: "Thread Has Content Warnings", alt: '!'
   %td.padding-10.post-subject{class: klass}
     = link_to post.subject, post_path(post)
     - if !@show_unread && (!logged_in? || per_page > 0)
