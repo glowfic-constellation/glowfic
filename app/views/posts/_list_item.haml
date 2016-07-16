@@ -27,7 +27,7 @@
     - if logged_in? && @show_unread
       - if !@conditional_unread || @opened_ids.include?(post.id)
         = link_to post_path(post, page: 'unread', anchor: 'unread') do
-          = image_tag "/images/link.png", class: 'vmid', title: 'First Unread'
+          = image_tag "/images/page_white_go.png", class: 'vmid', title: 'First Unread'
   - unless local_assigns[:hide_continuity]
     %td.post-board{class: klass}= link_to post.board.name, board_path(post.board)
   %td.post-authors{class: klass}= post.authors.map { |author| link_to author.username, user_path(author) }.join(', ').html_safe
