@@ -11,6 +11,7 @@
  * file per style scope.
  *
  *= require normalize
+ *= require select2
  *= require global
  *= require characters
  *= require galleries
@@ -18,5 +19,4 @@
  *= require replies
  *= require_self
  *= require chosen
- *= require select2
  */

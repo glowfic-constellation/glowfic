@@ -1,0 +1,2 @@
+class ContentWarning < Tag
+end

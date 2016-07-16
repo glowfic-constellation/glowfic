@@ -19,9 +19,11 @@ class Post < ActiveRecord::Base
   has_many :reply_drafts
   has_many :post_tags, inverse_of: :post, dependent: :destroy
   has_many :tags, through: :post_tags
+  has_many :settings, through: :post_tags, source: :setting
+  has_many :content_warnings, through: :post_tags, source: :content_warning
 
-  attr_accessible :board, :board_id, :subject, :privacy, :post_viewer_ids, :description, :section_id, :tag_ids
-  attr_accessor :post_viewer_ids, :tag_ids
+  attr_accessible :board, :board_id, :subject, :privacy, :post_viewer_ids, :description, :section_id, :tag_ids, :warning_ids, :setting_ids
+  attr_accessor :post_viewer_ids, :tag_ids, :warning_ids, :setting_ids
   attr_writer :skip_edited
 
   validates_presence_of :board, :subject
@@ -36,6 +38,7 @@ class Post < ActiveRecord::Base
   def visible_to?(user)
     return true if privacy == PRIVACY_PUBLIC
     return false unless user
+    return true if user.admin?
     return user.id == user_id if privacy == PRIVACY_PRIVATE
     @visible ||= (post_viewers.map(&:user_id) + [user_id]).include?(user.id)
   end
@@ -126,10 +129,9 @@ class Post < ActiveRecord::Base
   end
 
   def update_tag_list
-    return unless tag_ids.present?
+    return unless tag_ids.present? || setting_ids.present? || warning_ids.present?
 
-    updated_ids = (tag_ids - [""]).reject{|id| id.to_i.zero?}.map(&:to_i).uniq.compact
-    return unless updated_ids.present?
+    updated_ids = (tag_ids + setting_ids + warning_ids - ['']).map(&:to_i).reject(&:zero?).uniq.compact
     existing_ids = post_tags.map(&:tag_id)
 
     PostTag.where(post_id: id, tag_id: (existing_ids - updated_ids)).destroy_all
