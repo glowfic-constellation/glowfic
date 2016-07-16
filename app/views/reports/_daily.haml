@@ -29,7 +29,7 @@
             %td.padding-5.post-board{class: klass}= link_to post.board.name, board_path(post.board)
             %td.padding-5{class: klass}
               - if post.description.present?
-                = sanitize(post.description, tags: %w(a), attributes: %w(href)).html_safe
+                = sanitize_post_description(post.description).html_safe
             %td.padding-5{class: klass}= post.authors.map { |author| link_to fun_name(author), user_path(author) }.join(', ').html_safe
             %td.padding-5.width-70.post-replies{class: klass}= post.replies.count
             %td.padding-5.width-70.post-replies{class: klass}= replies_today.count

@@ -80,4 +80,13 @@ module ApplicationHelper
       post_path(reply)
     end
   end
+  
+  def sanitize_post_description(desc)
+    Sanitize.fragment(desc, elements: ['a'], attributes: {'a' => ['href']})
+  end
+  
+  def sanitize_post_content(content)
+    content = (content.include?("<p>") || content[/<br ?\/?>/]) ? content : content.gsub("\n","<br/>")
+    Sanitize.fragment(content, Glowfic::POST_CONTENT_SANITIZER)
+  end
 end

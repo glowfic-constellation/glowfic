@@ -57,7 +57,7 @@
 - if @post.description.present?
   .post-subheader
     .padding-10
-      %span= sanitize(@post.description, tags: %w(a), attributes: %w(href)).html_safe
+      %span= sanitize_post_description(@post.description).html_safe
 - if @prev_post || @next_post
   .post-navheader
     .padding-10
