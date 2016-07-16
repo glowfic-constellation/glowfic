@@ -143,7 +143,7 @@ class CharactersController < ApplicationController
   end
   
   def verify_character_foreigns(character)
-    # template_id and gallery_ids
+    # template_id, gallery_ids and default_icon_id
     return unless character.present?
     if character.template.present? && character.template.user_id != current_user.id
       character.template = nil
