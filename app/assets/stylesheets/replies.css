@@ -133,3 +133,7 @@ select.per-page { margin-top: 5px; margin-bottom: 5px; }
 /* Deal with ULs displaying weirdly around the post info box */
 .post-content ul, .post-content ol { list-style-position: inside; padding-left: 30px; }
 .post-content ul ul, .post-content ul ol, .post-content ol ul, .post-content ol ol { overflow: auto; }
+
+
+/* Handle post tables */
+.post-completed { text-align: center; width: 40px; }

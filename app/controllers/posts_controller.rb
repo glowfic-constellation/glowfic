@@ -6,7 +6,8 @@ class PostsController < WritableController
   before_filter :build_tags, only: [:new, :edit]
 
   def index
-    @posts = Post.order('tagged_at desc').includes(:board, :user, :last_user).paginate(page: page, per_page: 25)
+    @posts = Post.order('tagged_at desc').includes(:board, :user, :last_user).where('board_id != 4')
+    @posts = @posts.paginate(page: page, per_page: 25)
     @page_title = "Recent Threads"
   end
 
