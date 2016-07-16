@@ -32,6 +32,10 @@ class TemplatesController < ApplicationController
   def show
     @user = @template.user
     @characters = @template.characters
+    character_ids = @characters.map(&:id)
+    post_ids = Reply.where(character_id: character_ids).select(:post_id).map(&:post_id).uniq
+    where = Post.where(character_id: character_ids).where(id: post_ids).where_values.reduce(:or)
+    @posts = Post.where(where).paginate(per_page: 25, page: page)
   end
 
   def edit
