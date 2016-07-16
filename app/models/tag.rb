@@ -8,8 +8,6 @@ class Tag < ActiveRecord::Base
   validates_presence_of :user, :name
 
   def editable_by?(user)
-    return false unless user
-    return true if user.admin?
-    user.id == user_id
+    user.try(:admin?)
   end
 end
