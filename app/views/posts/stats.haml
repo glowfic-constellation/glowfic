@@ -29,9 +29,11 @@
               %li= link_to character.name, character_path(character)
         - else
           = @post.characters.map { |character| link_to character.name, character_path(character) }.join(', ').html_safe
-    %tr
-      %td.sub.width-150 Content Warnings
-      %td.padding-5.odd= @post.content_warnings.map { |tag| link_to tag.name, tag_path(tag) }.join(', ').html_safe
-    %tr
-      %td.sub.width-150 Tags
-      %td.padding-5.even= @post.tags.where(type: nil).map { |tag| link_to tag.name, tag_path(tag) }.join(', ').html_safe
+    - if @post.content_warnings.present?
+      %tr
+        %td.sub.width-150 Content Warnings
+        %td.padding-5.odd= @post.content_warnings.map { |tag| link_to tag.name, tag_path(tag) }.join(', ').html_safe
+    - if tags = @post.tags.where(type: nil).present?
+      %tr
+        %td.sub.width-150 Tags
+        %td.padding-5.even= tags.map { |tag| link_to tag.name, tag_path(tag) }.join(', ').html_safe
