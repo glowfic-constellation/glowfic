@@ -1,7 +1,7 @@
 class BoardSectionsController < ApplicationController
   before_filter :login_required, except: :show
   before_filter :find_section, except: [:new, :create]
-  before_filter :require_permission, except: :show
+  before_filter :require_permission, except: [:show, :update]
 
   def new
     @board_section = BoardSection.new(board_id: params[:board_id])
@@ -40,7 +40,11 @@ class BoardSectionsController < ApplicationController
   end
 
   def update
-    if @board_section.update_attributes(params[:board_section])
+    @board_section.assign_attributes(params[:board_section])
+    require_permission
+    return if performed?
+    if @board_section.valid?
+      @board_section.save
       flash[:success] = "#{@board_section.name} has been successfully updated."
       redirect_to board_section_path(@board_section)
     else
