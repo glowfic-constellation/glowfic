@@ -117,7 +117,6 @@ class PostsController < WritableController
 
   def preview(method, path)
     build_template_groups
-    build_tags
     
     @written = Post.new(params[:post])
     @post = @written
@@ -125,6 +124,8 @@ class PostsController < WritableController
     @character = @post.character
     @url = path
     @method = method
+
+    build_tags
 
     use_javascript('posts')
     gon.original_content = params[:post][:content] if params[:post]
