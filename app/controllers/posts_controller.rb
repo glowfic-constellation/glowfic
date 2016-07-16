@@ -95,11 +95,7 @@ class PostsController < WritableController
       flash.now[:error] = {}
       flash.now[:error][:array] = @post.errors.full_messages
       flash.now[:error][:message] = "Your post could not be saved because of the following problems:"
-      @image = @post.icon
-      @character = @post.character
-      use_javascript('posts')
-      build_template_groups
-      build_tags
+      editor_setup
       render :action => :new
     end
   end
@@ -116,18 +112,14 @@ class PostsController < WritableController
   end
 
   def preview(method, path)
-    build_template_groups
-    
     @written = Post.new(params[:post])
     @post = @written
     @written.user = current_user
-    @character = @post.character
     @url = path
     @method = method
 
-    build_tags
+    editor_setup
 
-    use_javascript('posts')
     gon.original_content = params[:post][:content] if params[:post]
     render action: 'preview'
   end
@@ -159,11 +151,7 @@ class PostsController < WritableController
       flash.now[:error] = {}
       flash.now[:error][:array] = @post.errors.full_messages
       flash.now[:error][:message] = "Your post could not be saved because of the following problems:"
-      @image = @post.icon
-      @character = @post.character
-      use_javascript('posts')
-      build_template_groups
-      build_tags
+      editor_setup
       render :action => :edit
     end
   end
@@ -298,5 +286,13 @@ class PostsController < WritableController
       @post.tag_ids -= tags
       @post.tag_ids += tags.map { |tag| Tag.create(user: current_user, name: tag).id }
     end
+  end
+
+  def editor_setup(post=@post)
+    @image = @post.icon
+    @character = @post.character
+    use_javascript('posts')
+    build_template_groups
+    build_tags
   end
 end
