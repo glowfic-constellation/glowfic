@@ -19,7 +19,7 @@
       %td.padding-5.even= @post.authors.map { |author| link_to author.username, user_path(author) }.join(', ').html_safe
     %tr
       %td.sub.width-150 Setting
-      %td.padding-5.odd (Coming Soon)
+      %td.padding-5.odd= @post.settings.map { |tag| link_to tag.name, tag_path(tag) }.join(', ').html_safe
     %tr
       %td.sub.width-150.vtop Characters
       %td.padding-5.even
@@ -30,5 +30,8 @@
         - else
           = @post.characters.map { |character| link_to character.name, character_path(character) }.join(', ').html_safe
     %tr
+      %td.sub.width-150 Content Warnings
+      %td.padding-5.odd= @post.content_warnings.map { |tag| link_to tag.name, tag_path(tag) }.join(', ').html_safe
+    %tr
       %td.sub.width-150 Tags
-      %td.padding-5.odd= @post.post_tags.includes(:tag).map { |tag| link_to tag.tag.name, tag_path(tag.tag) }.join(', ').html_safe
+      %td.padding-5.even= @post.tags.where(type: nil).map { |tag| link_to tag.name, tag_path(tag) }.join(', ').html_safe

@@ -85,12 +85,7 @@ class PostsController < WritableController
     @post = Post.new(params[:post])
     @post.user = @post.last_user = current_user
 
-    # create new tags iff post is valid
-    if @post.valid? && @post.tag_ids.present?
-      tags = @post.tag_ids.select { |id| id.to_i.zero? }.reject(&:blank?).compact.uniq
-      @post.tag_ids -= tags
-      @post.tag_ids += tags.map { |tag| Tag.create(user: current_user, name: tag).id }
-    end
+    create_new_tags if @post.valid?
 
     if @post.save
       flash[:success] = "You have successfully posted."
@@ -152,12 +147,7 @@ class PostsController < WritableController
     @post.assign_attributes(params[:post])
     @post.board ||= Board.find(3)
 
-    # create new tags iff post is valid
-    if @post.valid? && @post.tag_ids.present?
-      tags = @post.tag_ids.select { |id| id.to_i.zero? }.reject(&:blank?).compact.uniq
-      @post.tag_ids -= tags
-      @post.tag_ids += tags.map { |tag| Tag.create(user: current_user, name: tag).id }
-    end
+    create_new_tags if @post.valid?
 
     if @post.save
       flash[:success] = "Your post has been updated."
@@ -210,6 +200,7 @@ class PostsController < WritableController
 
     @search_results = Post.order('tagged_at desc').includes(:board)
     @search_results = @search_results.where(board_id: params[:board_id]) if params[:board_id].present?
+    @search_results = @search_results.where(id: Setting.find(params[:setting_id]).post_tags.map(&:post_id)) if params[:setting_id].present?
     if params[:author_id].present?
       post_ids = Reply.where(user_id: params[:author_id]).select(:post_id).map(&:post_id).uniq
       where = Post.where(user_id: params[:author_id]).where(id: post_ids).where_values.reduce(:or)
@@ -265,11 +256,44 @@ class PostsController < WritableController
   end
 
   def build_tags
-    @tags = Tag.all
+    @settings = Setting.all
+    @warnings = ContentWarning.all
+    @tags = Tag.where(type: nil)
+    faked = Struct.new(:name, :id)
+
+    if @post.try(:setting_ids)
+      new_tags = @post.setting_ids.reject { |t| t.blank? || !t.to_i.zero? }
+      @settings += new_tags.map { |t| faked.new(t, t) }
+    end
+
+    if @post.try(:warning_ids)
+      new_tags = @post.warning_ids.reject { |t| t.blank? || !t.to_i.zero? }
+      @warnings += new_tags.map { |t| faked.new(t, t) }
+    end
+
     if @post.try(:tag_ids)
       new_tags = @post.tag_ids.reject { |t| t.blank? || !t.to_i.zero? }
-      faked = Struct.new(:name, :id)
       @tags += new_tags.map { |t| faked.new(t, t) }
+    end
+  end
+
+  def create_new_tags
+    if @post.setting_ids.present?
+      tags = @post.setting_ids.select { |id| id.to_i.zero? }.reject(&:blank?).compact.uniq
+      @post.setting_ids -= tags
+      @post.setting_ids += tags.map { |tag| Setting.create(user: current_user, name: tag).id }
+    end
+
+    if @post.warning_ids.present?
+      tags = @post.warning_ids.select { |id| id.to_i.zero? }.reject(&:blank?).compact.uniq
+      @post.warning_ids -= tags
+      @post.warning_ids += tags.map { |tag| ContentWarning.create(user: current_user, name: tag).id }
+    end
+
+    if @post.tag_ids.present?
+      tags = @post.tag_ids.select { |id| id.to_i.zero? }.reject(&:blank?).compact.uniq
+      @post.tag_ids -= tags
+      @post.tag_ids += tags.map { |tag| Tag.create(user: current_user, name: tag).id }
     end
   end
 end

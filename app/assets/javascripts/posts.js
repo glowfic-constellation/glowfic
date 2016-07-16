@@ -34,12 +34,50 @@ $(document).ready(function() {
   $("#post_tag_ids").select2({
     tags: true,
     tokenSeparators: [','],
-    placeholder: 'Comma-separated values',
+    placeholder: 'Enter tag(s) separated by commas',
     ajax: {
-      delay: 100,
+      delay: 200,
       url: '/tags',
+      dataType: 'json',
+      data: function(term, page) {
+        return { q: term['term'] };
+      },
     },
-  })
+  });
+
+  $("#post_setting_ids").select2({
+    tags: true,
+    tokenSeparators: [','],
+    placeholder: 'Enter setting(s) separated by commas',
+    ajax: {
+      delay: 200,
+      url: '/tags',
+      dataType: 'json',
+      data: function(term, page) {
+        return {
+          q: term['term'],
+          t: 'setting',
+        };
+      },
+    },
+  });
+
+  $("#post_warning_ids").select2({
+    tags: true,
+    tokenSeparators: [','],
+    placeholder: 'Enter warning(s) separated by commas',
+    ajax: {
+      delay: 200,
+      url: '/tags',
+      dataType: 'json',
+      data: function(term, page) {
+        return {
+          q: term['term'],
+          t: 'warning',
+        };
+      },
+    },
+  });
 
   $("#active_character").chosen({
     disable_search_threshold: 10,
