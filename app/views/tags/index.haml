@@ -9,12 +9,14 @@
   %tbody
     %tr
       %th.sub Tag
+      %th.sub Type
       %th.sub Posts
       %th.sub
     - Tag.all.each do |tag|
       - klass = cycle('even', 'odd')
       %tr
         %td{class: klass}= link_to tag.name, tag_path(tag)
+        %td{class: klass}= (tag.type || 'Tag').titlecase
         %td{class: klass}= tag.posts.count
         %td.width-70.right-align{class: klass}
           - if tag.editable_by?(current_user)
