@@ -25,6 +25,10 @@ class CharactersController < ApplicationController
 
   def create
     @character = Character.new((params[:character] || {}).merge(user: current_user))
+    unless verify_character_foreigns(@character)
+      render :action => :new
+      return
+    end
 
     if @character.valid?
       save_character_with_extras
@@ -45,6 +49,10 @@ class CharactersController < ApplicationController
 
   def update
     @character.assign_attributes(params[:character])
+    unless verify_character_foreigns(@character)
+      render :action => :edit
+      return
+    end
 
     if @character.valid?
       save_character_with_extras
@@ -64,7 +72,7 @@ class CharactersController < ApplicationController
 
   def icon
     icon = Icon.find_by_id(params[:icon_id])
-    @character.update_attributes(default_icon: icon) if icon
+    @character.update_attributes(default_icon: icon) if icon && icon.user_id == current_user.id
     render :json => {}
   end
 
@@ -132,5 +140,33 @@ class CharactersController < ApplicationController
       end
       @character.save
     end
+  end
+  
+  def verify_character_foreigns(character)
+    # template_id and gallery_ids
+    return unless character.present?
+    if character.template.present? && character.template.user_id != current_user.id
+      character.template = nil
+      flash.now[:error] = "Template must be your own."
+      return
+    end
+    if character.galleries.present?
+      bad_gallery_found = false
+      character.galleries = character.galleries.reject do |gallery|
+        if gallery.user_id != current_user.id
+          bad_gallery_found = true
+        end
+      end
+      if bad_gallery_found
+        flash.now[:error] = "Galleries must be your own."
+        return
+      end
+    end
+    if character.default_icon.present? && character.default_icon.user_id != current_user.id
+      character.default_icon = nil
+      flash.now[:error] = "Default icon must be your own."
+      return
+    end
+    character
   end
 end
