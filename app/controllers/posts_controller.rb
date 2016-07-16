@@ -125,6 +125,8 @@ class PostsController < WritableController
     @url = path
     @method = method
 
+    build_tags
+
     use_javascript('posts')
     gon.original_content = params[:post][:content] if params[:post]
     render action: 'preview'
