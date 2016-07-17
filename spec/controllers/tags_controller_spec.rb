@@ -2,15 +2,62 @@ require "spec_helper"
 
 RSpec.describe TagsController do
   describe "GET index" do
-    it "does not require login" do
-      get :index
-      expect(response.status).to eq(200)
+    describe ".html" do
+      it "does not require login" do
+        get :index
+        expect(response.status).to eq(200)
+      end
+
+      it "succeeds when logged in" do
+        login
+        get :index
+        expect(response.status).to eq(200)
+      end
     end
 
-    it "succeeds when logged in" do
-      login
-      get :index
-      expect(response.status).to eq(200)
+    describe ".json" do
+      shared_examples_for "index.json" do
+        it "should support tag search" do
+          tag = create(:tag)
+          get :index, format: :json, q: tag.name
+          expect(response.status).to eq(200)
+          expect(response.json).to have_key('results')
+          expect(response.json['results']).to contain_exactly(tag.as_json.stringify_keys)
+        end
+
+        it "should suuport setting search" do
+          tag = create(:setting)
+          get :index, format: :json, q: tag.name, t: 'setting'
+          expect(response.status).to eq(200)
+          expect(response.json).to have_key('results')
+          expect(response.json['results']).to contain_exactly(tag.as_json.stringify_keys)
+        end
+
+        it "should support content warning search" do
+          tag = create(:content_warning)
+          get :index, format: :json, q: tag.name, t: 'warning'
+          expect(response.status).to eq(200)
+          expect(response.json).to have_key('results')
+          expect(response.json['results']).to contain_exactly(tag.as_json.stringify_keys)
+        end
+
+        it "should handle invalid input" do
+          get :index, format: :json, t: 'b'
+          expect(response.status).to eq(200)
+          json = JSON.parse(response.body)
+          expect(json).to have_key('results')
+          expect(json['results']).to be_empty
+        end
+      end
+
+      context "when logged in" do
+        before(:each) { login }
+        it_behaves_like "index.json"
+      end
+
+      context "when logged out" do
+        it_behaves_like "index.json"
+      end
     end
   end
 

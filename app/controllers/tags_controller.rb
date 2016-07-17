@@ -6,14 +6,7 @@ class TagsController < ApplicationController
   def index
     respond_to do |format|
       format.json do
-        tags = if params[:t].blank?
-          Tag.where("name LIKE ?", params[:q].to_s + '%').where(type: nil).map{|t| {id: t.id, text: t.name} }
-        elsif params[:t] == 'setting'
-          Setting.where("name LIKE ?", params[:q].to_s + '%').map{|t| {id: t.id, text: t.name} }
-        elsif params[:t] == 'warning'
-          ContentWarning.where("name LIKE ?", params[:q].to_s + '%').map{|t| {id: t.id, text: t.name} }
-        else [] end
-        render json: {results: tags}
+        render json: {results: TagService.search(params[:t], params[:q])}
       end
       format.html do
         @page_title = "Tags"
