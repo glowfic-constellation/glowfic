@@ -23,10 +23,7 @@ class TagsController < ApplicationController
     @tag = Tag.new(params[:tag])
     @tag.user = current_user
 
-    unless @tag.save
-      flash.now[:error] = {}
-      flash.now[:error][:message] = "Tag could not be created."
-      flash.now[:error][:array] = @tag.errors.full_messages
+    unless save_model(@tag)
       @page_title = "New Tag"
       render action: :new and return
     end
@@ -36,7 +33,7 @@ class TagsController < ApplicationController
   end
 
   def show
-    @posts = @tag.posts.paginate(per_page: 25, page: 1)
+    @posts = @tag.posts.paginate(per_page: 25, page: page)
     @page_title = "#{@tag.name}"
   end
 
@@ -45,10 +42,8 @@ class TagsController < ApplicationController
   end
 
   def update
-    unless @tag.update_attributes(params[:tag])
-      flash.now[:error] = {}
-      flash.now[:error][:message] = "Tag could not be saved."
-      flash.now[:error][:array] = @tag.errors.full_messages
+    @tag.assign_attributes(params[:tag])
+    unless save_model(@tag)
       @page_title = "Edit Tag #{@tag.name}"
       render action: :edit and return
     end

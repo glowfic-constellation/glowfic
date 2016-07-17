@@ -78,4 +78,14 @@ class ApplicationController < ActionController::Base
     return if logged_in?
     session[:user_id] = cookies.signed[:user_id] if cookies.signed[:user_id].present?
   end
+
+  def save_model(model)
+    unless model.save
+      flash.now[:error] = {}
+      flash.now[:error][:message] = model.class.to_s + ' could not be saved because of the following problems:'
+      flash.now[:error][:array] = model.errors.full_messages
+      return false
+    end
+    true
+  end
 end

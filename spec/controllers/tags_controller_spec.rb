@@ -3,7 +3,7 @@ require "spec_helper"
 RSpec.describe TagsController do
   describe "GET index" do
     describe ".html" do
-      it "does not require login" do
+      it "succeeds when logged out" do
         get :index
         expect(response.status).to eq(200)
       end
@@ -86,7 +86,7 @@ RSpec.describe TagsController do
       login
       post :create
       expect(response.status).to eq(200)
-      expect(flash[:error][:message]).to eq("Tag could not be created.")
+      expect(flash[:error][:message]).to eq("Tag could not be saved because of the following problems:")
     end
 
     it "creates a tag" do
@@ -143,13 +143,6 @@ RSpec.describe TagsController do
       expect(flash[:error]).to eq("You do not have permission to edit this tag.")
     end
 
-    it "allows creator to edit the tag" do
-      tag = create(:tag)
-      login_as(tag.user)
-      get :edit, id: tag.id
-      expect(response.status).to eq(200)
-    end
-
     it "allows admin to edit the tag" do
       tag = create(:tag)
       login_as(create(:admin_user))
@@ -182,20 +175,10 @@ RSpec.describe TagsController do
 
     it "requires valid params" do
       tag = create(:tag)
-      login_as(tag.user)
+      login_as(create(:admin_user))
       put :update, id: tag.id, tag: {name: nil}
       expect(response.status).to eq(200)
-      expect(flash[:error][:message]).to eq("Tag could not be saved.")
-    end
-
-    it "allows creator to update the tag" do
-      tag = create(:tag)
-      name = tag.name + 'Edited'
-      login_as(tag.user)
-      put :update, id: tag.id, tag: {name: name}
-      expect(response).to redirect_to(tag_url(tag))
-      expect(flash[:success]).to eq("Tag saved!")
-      expect(tag.reload.name).to eq(name)
+      expect(flash[:error][:message]).to eq("Tag could not be saved because of the following problems:")
     end
 
     it "allows admin to update the tag" do
@@ -229,14 +212,6 @@ RSpec.describe TagsController do
       delete :destroy, id: tag.id
       expect(response).to redirect_to(tag_url(tag))
       expect(flash[:error]).to eq("You do not have permission to edit this tag.")
-    end
-
-    it "allows creator to destroy the tag" do
-      tag = create(:tag)
-      login_as(tag.user)
-      delete :destroy, id: tag.id
-      expect(response).to redirect_to(tags_path)
-      expect(flash[:success]).to eq("Tag deleted.")
     end
 
     it "allows admin to destroy the tag" do
