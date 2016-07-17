@@ -1,69 +1,16 @@
 # frozen_string_literal: true
-class IndexesController < ApplicationController
-  before_action :login_required, except: [:index, :show]
-  before_action :find_index, except: [:index, :new, :create]
-  before_action :permission_required, except: [:index, :new, :create, :show]
-
+class IndexesController < CrudController
   def index
-    @page_title = "Indexes"
+    super
     @indexes = Index.order('id asc').paginate(per_page: 25, page: page)
   end
 
-  def new
-    @page_title = "New Index"
-    @index = Index.new(user: current_user)
-  end
-
-  def create
-    @index = Index.new(index_params)
-    @index.user = current_user
-
-    begin
-      @index.save!
-    rescue ActiveRecord::RecordInvalid
-      flash.now[:error] = {
-        message: "Index could not be created.",
-        array: @index.errors.full_messages
-      }
-      @page_title = 'New Index'
-      render :new
-    else
-      flash[:success] = "Index created!"
-      redirect_to index_path(@index) and return
-    end
-  end
-
   def show
-    unless @index.visible_to?(current_user)
-      flash[:error] = "You do not have permission to view this index."
-      redirect_to indexes_path and return
-    end
-
-    @page_title = @index.name.to_s
+    super
     @sectionless = @index.posts.where(index_posts: {index_section_id: nil})
     @sectionless = @sectionless.ordered_by_index
     @sectionless = posts_from_relation(@sectionless, with_pagination: false, select: ', index_posts.description as index_description')
     @sectionless = @sectionless.select { |p| p.visible_to?(current_user) }
-  end
-
-  def edit
-    @page_title = "Edit Index: #{@index.name}"
-  end
-
-  def update
-    begin
-      @index.update!(index_params)
-    rescue ActiveRecord::RecordInvalid
-      flash.now[:error] = {
-        message: "Index could not be saved because of the following problems:",
-        array: @index.errors.full_messages
-      }
-      @page_title = "Edit Index: #{@index.name}"
-      render :edit
-    else
-      flash[:success] = "Index saved!"
-      redirect_to index_path(@index)
-    end
   end
 
   def destroy
@@ -83,21 +30,15 @@ class IndexesController < ApplicationController
 
   private
 
-  def find_index
-    unless (@index = Index.find_by_id(params[:id]))
-      flash[:error] = "Index could not be found."
-      redirect_to indexes_path
-    end
-  end
-
-  def permission_required
-    unless @index.editable_by?(current_user)
-      flash[:error] = "You do not have permission to edit this index."
-      redirect_to index_path(@index)
-    end
+  def model_params
+    params.fetch(:index, {}).permit(:name, :description, :privacy, :open_to_anyone)
   end
 
   def index_params
     params.fetch(:index, {}).permit(:name, :description, :privacy, :authors_locked)
+  end
+
+  def set_params(new_index)
+    new_index.user = current_user
   end
 end
