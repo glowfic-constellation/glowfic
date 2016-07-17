@@ -10,4 +10,8 @@ class Tag < ActiveRecord::Base
   def editable_by?(user)
     user.try(:admin?)
   end
+
+  def as_json(*args, **kwargs)
+    {id: self.id, text: self.name}
+  end
 end

@@ -74,5 +74,13 @@ FactoryGirl.define do
       "Tag#{n}"
     end
     user
+
+    factory :setting do
+      type 'Setting'
+    end
+
+    factory :content_warning do
+      type 'ContentWarning'
+    end
   end
 end
