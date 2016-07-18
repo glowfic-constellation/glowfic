@@ -2,7 +2,13 @@ require "spec_helper"
 
 RSpec.describe BoardsController do
   describe "GET index" do
-    it "does not require login" do
+    it "succeeds when logged out" do
+      get :index
+      expect(response.status).to eq(200)
+    end
+
+    it "succeeds when logged in" do
+      login
       get :index
       expect(response.status).to eq(200)
     end
