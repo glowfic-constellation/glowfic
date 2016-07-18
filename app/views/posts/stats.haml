@@ -16,13 +16,13 @@
   %tbody
     %tr
       %td.sub.width-150 Authors
-      %td.padding-5.even= @post.authors.map { |author| link_to author.username, user_path(author) }.join(', ').html_safe
+      %td.even= @post.authors.map { |author| link_to author.username, user_path(author) }.join(', ').html_safe
     %tr
       %td.sub.width-150 Setting
-      %td.padding-5.odd= @post.settings.map { |tag| link_to tag.name, tag_path(tag) }.join(', ').html_safe
+      %td.odd= @post.settings.map { |tag| link_to tag.name, tag_path(tag) }.join(', ').html_safe
     %tr
       %td.sub.width-150.vtop Characters
-      %td.padding-5.even
+      %td.even
         - if @post.characters.count > 2
           %ul
             - @post.characters.each do |character|
@@ -32,8 +32,11 @@
     - if @post.content_warnings.present?
       %tr
         %td.sub.width-150 Content Warnings
-        %td.padding-5.odd= @post.content_warnings.map { |tag| link_to tag.name, tag_path(tag) }.join(', ').html_safe
+        %td{class: cycle('odd', 'even')}= @post.content_warnings.map { |tag| link_to tag.name, tag_path(tag) }.join(', ').html_safe
     - if (tags = @post.tags.where(type: nil)).present?
       %tr
         %td.sub.width-150 Tags
-        %td.padding-5.even= tags.map { |tag| link_to tag.name, tag_path(tag) }.join(', ').html_safe
+        %td{class: cycle('odd', 'even')}= tags.map { |tag| link_to tag.name, tag_path(tag) }.join(', ').html_safe
+    %tr
+      %td.sub.width-150 Word Count
+      %td{class: cycle('odd', 'even')}= @post.word_count + @post.replies.map(&:word_count).inject(&:+).to_i

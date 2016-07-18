@@ -23,6 +23,10 @@ module Writable
       editor.id == user_id || editor.admin?
     end
 
+    def word_count
+      content.split.size
+    end
+
     private
 
     def character_ownership
