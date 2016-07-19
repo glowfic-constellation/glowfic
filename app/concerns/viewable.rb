@@ -2,7 +2,7 @@ module Viewable
   extend ActiveSupport::Concern
 
   included do
-    has_many :views, class_name: self.name + 'View'
+    has_many :views, class_name: self.name + 'View', dependent: :destroy
 
     def mark_read(user, at_time=nil)
       view = view_for(user)

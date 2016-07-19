@@ -59,6 +59,18 @@ RSpec.describe Post do
     expect(post.id).not_to be_nil
   end
 
+  describe "#destroy" do
+    it "should delete views" do
+      post = create(:post)
+      user = create(:user)
+      expect(PostView.count).to be_zero
+      post.mark_read(user)
+      expect(PostView.count).not_to be_zero
+      post.destroy
+      expect(PostView.count).to be_zero
+    end
+  end
+
   describe "#edited_at" do
     it "should update when a field is changed" do
       post = create(:post)
