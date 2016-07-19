@@ -9,12 +9,16 @@ class BoardSection < ActiveRecord::Base
   before_create :autofill_order
   after_destroy :clear_post_values, :reorder_others
 
+  def subject
+    name
+  end
+
   private
 
   def autofill_order
-    previous_section = BoardSection.where(board_id: board_id).select(:section_order).order('section_order desc').first.try(:section_order)
-    previous_section ||= -1
-    self.section_order = previous_section + 1
+    previous_section = BoardSection.where(board_id: board_id).select(:section_order).order('section_order desc').first.try(:section_order) || -1
+    previous_post = Post.where(board_id: board_id).where(section_id: nil).select(:section_order).order('section_order desc').first.try(:section_order) || -1
+    self.section_order = [previous_section, previous_post].max + 1
   end
 
   def clear_post_values

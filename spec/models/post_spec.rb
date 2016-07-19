@@ -104,4 +104,68 @@ RSpec.describe Post do
       expect(post.edited_at).to eq(post.created_at)
     end
   end
+
+  describe "#section_order" do
+    it "should be set on create" do
+      board = create(:board)
+      5.times do |i|
+        post = create(:post, board: board)
+        expect(post.section_order).to eq(i)
+      end
+    end
+
+    it "should be set in its section on create" do
+      board = create(:board)
+      section = create(:board_section, board: board)
+      5.times do |i|
+        post = create(:post, board: board, section_id: section.id)
+        expect(post.section_order).to eq(i)
+      end
+    end
+
+    it "should handle mix and match section/no section creates" do
+      board = create(:board)
+      section = create(:board_section, board: board)
+      expect(section.section_order).to eq(0)
+      5.times do |i|
+        post = create(:post, board: board, section_id: section.id)
+        expect(post.section_order).to eq(i)
+      end
+      post = create(:post, board: board)
+      expect(post.section_order).to eq(1)
+      post = create(:post, board: board)
+      expect(post.section_order).to eq(2)
+      post = create(:post, board: board, section_id: section.id)
+      expect(post.section_order).to eq(5)
+      section = create(:board_section, board: board)
+      expect(section.section_order).to eq(3)
+      post = create(:post, board: board)
+      expect(post.section_order).to eq(4)
+    end
+
+    it "should update when section is changed" do
+      board = create(:board)
+      section = create(:board_section, board: board)
+      post = create(:post, board: board, section_id: section.id)
+      expect(post.section_order).to eq(0)
+      post = create(:post, board: board, section_id: section.id)
+      expect(post.section_order).to eq(1)
+      section = create(:board_section, board: board)
+      post.section_id = section.id
+      post.save
+      post.reload
+      expect(post.section_order).to eq(0)
+    end
+
+    it "should not increment on non-section update" do
+      board = create(:board)
+      post = create(:post, board: board)
+      expect(post.section_order).to eq(0)
+      create(:post, board: board)
+      create(:post, board: board)
+      post.update_attributes(content: 'new content')
+      post.reload
+      expect(post.section_order).to eq(0)
+    end
+  end
 end
