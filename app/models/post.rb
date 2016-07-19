@@ -5,6 +5,7 @@ class Post < ActiveRecord::Base
   PRIVACY_PUBLIC = 0
   PRIVACY_PRIVATE = 1
   PRIVACY_LIST = 2
+  PRIVACY_REGISTERED = 3
 
   STATUS_ACTIVE = 0
   STATUS_COMPLETE = 1
@@ -38,6 +39,7 @@ class Post < ActiveRecord::Base
   def visible_to?(user)
     return true if privacy == PRIVACY_PUBLIC
     return false unless user
+    return true if privacy == PRIVACY_REGISTERED
     return true if user.admin?
     return user.id == user_id if privacy == PRIVACY_PRIVATE
     @visible ||= (post_viewers.map(&:user_id) + [user_id]).include?(user.id)
@@ -85,9 +87,10 @@ class Post < ActiveRecord::Base
   end
 
   def self.privacy_settings
-    { 'Public'      => PRIVACY_PUBLIC,
-      'Access List' => PRIVACY_LIST,
-      'Private'     => PRIVACY_PRIVATE }
+    { 'Public'              => PRIVACY_PUBLIC,
+      'Constellation Users' => PRIVACY_REGISTERED,
+      'Access List'         => PRIVACY_LIST,
+      'Private'             => PRIVACY_PRIVATE }
   end
 
   def last_updated
