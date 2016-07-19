@@ -6,9 +6,8 @@ FactoryGirl.define do
   factory :user, aliases: [:creator] do
     username
     password "password"
-
-    factory :user_with_email do
-      email "fake@faker.com"
+    sequence :email do |n|
+      "fake#{n}@faker.com"
     end
 
     factory :admin_user do
