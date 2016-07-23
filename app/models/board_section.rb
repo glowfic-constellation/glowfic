@@ -9,10 +9,6 @@ class BoardSection < ActiveRecord::Base
   before_create :autofill_order
   after_destroy :clear_post_values, :reorder_others
 
-  def subject
-    name
-  end
-
   private
 
   def autofill_order
