@@ -18,6 +18,7 @@ def make_missing_character(name)
   gallery = Gallery.create!(user: user, name: name)
   character = Character.create!(user: user, name: name, screenname: name)
   CharactersGallery.create(character_id: character.id, gallery_id: gallery.id)
+  character
 end
 
 def make_icon(url, user, keyword, character)
