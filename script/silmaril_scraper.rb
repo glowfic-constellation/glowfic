@@ -173,6 +173,7 @@ main_list.each do |section|
     next if url.include?('vast-journey')
 
     title = link.content
+    next if Post.where(board_id: 18).where(subject: title).exists?
     title = title[0..-2] if is_active = link.content.strip.last == '+'
     import_flat_thread(url, board_section, index, title.strip, is_active)
   end
