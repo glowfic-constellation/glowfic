@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20160719012330) do
+ActiveRecord::Schema.define(:version => 20160723172304) do
 
   create_table "audits", :force => true do |t|
     t.integer  "auditable_id"
@@ -66,10 +66,11 @@ ActiveRecord::Schema.define(:version => 20160719012330) do
   add_index "board_views", ["user_id", "board_id"], :name => "index_board_views_on_user_id_and_board_id"
 
   create_table "boards", :force => true do |t|
-    t.string   "name",       :null => false
-    t.integer  "creator_id", :null => false
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
+    t.string   "name",        :null => false
+    t.integer  "creator_id",  :null => false
+    t.datetime "created_at",  :null => false
+    t.datetime "updated_at",  :null => false
+    t.text     "description"
   end
 
   create_table "character_groups", :force => true do |t|

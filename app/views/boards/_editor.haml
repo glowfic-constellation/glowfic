@@ -14,4 +14,7 @@
                           {selected: @board.coauthors.map(&:id)}, 
                           {class: 'text', multiple: true})
 %tr
+  %th.sub.vtop Description
+  %td.odd= f.text_area :description
+%tr
   %th.centered.subber{colspan: 2}= submit_tag "Save", class: 'button'
