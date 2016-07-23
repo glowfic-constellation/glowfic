@@ -16,7 +16,7 @@ def make_missing_character(name)
 
   user = User.find_by_id(id)
   gallery = Gallery.create!(user: user, name: name)
-  character = Character.create!(user: user, name: name, gallery: gallery, screenname: name)
+  character = Character.create!(user: user, name: name, screenname: name)
   CharactersGallery.create(character_id: character.id, gallery_id: gallery.id)
 end
 
@@ -40,7 +40,7 @@ def make_icon(url, user, keyword, character)
 end
 
 lintamande_id = Rails.env.production? ? 34 : 12
-COLLECTIONS={'lintamande'=>lintamande_id,'alicornucopia'=>2}
+COLLECTIONS={'lintamande'=>lintamande_id,'alicornucopia'=>2, 'pythbox'=>3}
 def make_character(name)
   character = nil
   user = nil
