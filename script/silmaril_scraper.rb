@@ -30,6 +30,10 @@ def make_icon(url, user, keyword, character)
     icon_title = 'Default' if icon_title.blank? && keyword.include?("(Default)")
     if character
       gallery = character.galleries.first
+      if gallery.nil?
+        gallery = Gallery.create!(user: user, name: character.name)
+        CharactersGallery.create(character_id: character.id, gallery_id: gallery.id)
+      end
       gallery.icons << Icon.create!(user: character.user, url: url, keyword: icon_title)
       icon = Icon.find_by_url(url)
     else
