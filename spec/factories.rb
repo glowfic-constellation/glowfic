@@ -20,6 +20,11 @@ FactoryGirl.define do
     name "test board"
   end
 
+  factory :board_section do
+    name "TestSection"
+    board
+  end
+
   factory :post do
     user
     board

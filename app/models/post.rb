@@ -23,7 +23,7 @@ class Post < ActiveRecord::Base
   has_many :settings, through: :post_tags, source: :setting
   has_many :content_warnings, through: :post_tags, source: :content_warning
 
-  attr_accessible :board, :board_id, :subject, :privacy, :post_viewer_ids, :description, :section_id, :tag_ids, :warning_ids, :setting_ids
+  attr_accessible :board, :board_id, :subject, :privacy, :post_viewer_ids, :description, :section_id, :tag_ids, :warning_ids, :setting_ids, :section_order
   attr_accessor :post_viewer_ids, :tag_ids, :warning_ids, :setting_ids
   attr_writer :skip_edited
 
@@ -160,11 +160,15 @@ class Post < ActiveRecord::Base
   end
 
   def autofill_order
-    return unless section_id_changed?
-    return unless section_id.present?
-    previous_section = Post.where(section_id: section_id).select(:section_order).order('section_order desc').first.try(:section_order)
-    previous_section ||= -1
-    self.section_order = previous_section + 1
+    return unless new_record? || section_id_changed?
+    previous = Post.where(section_id: section_id).select(:section_order).order('section_order desc').first.try(:section_order) || -1
+
+    if section_id.nil?
+      previous_in_board = BoardSection.where(board_id: board_id).select(:section_order).order('section_order desc').first.try(:section_order) || -1
+      previous = [previous, previous_in_board].max
+    end
+
+    self.section_order = previous + 1
   end
 
   def reorder_others

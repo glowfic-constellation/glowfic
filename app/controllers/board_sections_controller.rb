@@ -76,9 +76,14 @@ class BoardSectionsController < ApplicationController
   end
 
   def reorder_sections
+    valid_types = ['Post', 'BoardSection']
+    render json: {} and return if params[:changes].any? { |key, el| !(valid_types.include?(el[:type])) }
+
     BoardSection.transaction do
-      params[:changes].each do |section_id, section_order|
-        section = BoardSection.where(id: section_id).first
+      params[:changes].each do |section_id, change_info|
+        section_order = change_info[:order]
+        section_type = change_info[:type]
+        section = section_type.constantize.find_by_id(section_id)
         next unless section
         section.update_attributes(section_order: section_order)
       end
