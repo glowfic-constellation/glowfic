@@ -28,6 +28,13 @@ module ApplicationHelper
     content_tag :span, '⬤', style: 'cursor: default; color: #' + user.moiety, title: user.moiety_name
   end
 
+  def unread_img
+    return '/images/note_go.png' unless current_user
+    return '/images/note_go.png' unless current_user.layout
+    return '/images/note_go.png' unless current_user.layout.include?('dark')
+    '/images/bullet_go.png'
+  end
+
   def path_for(obj, path)
     send (path + '_path') % obj.class.to_s.downcase, obj
   end
