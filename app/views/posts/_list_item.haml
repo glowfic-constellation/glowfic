@@ -7,7 +7,7 @@
     - if post.on_hiatus?
       = image_tag "/images/hourglass.png", class: 'vmid', title: "Thread On Hiatus"
     - if post.content_warnings.present?
-      = image_tag "/images/exclamation.png", class: 'vmid', title: "Content Warning: " + post.content_warnings.map(&:name).join, alt: '!'
+      = image_tag "/images/exclamation.png", class: 'vmid', title: "Content Warning: " + post.content_warnings.map(&:name).join(', '), alt: '!'
   %td.post-subject{class: klass}
     = link_to post.subject, post_path(post)
     - if !@show_unread && (!logged_in? || per_page > 0)
