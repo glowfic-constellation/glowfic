@@ -83,7 +83,7 @@ class BoardSectionsController < ApplicationController
       params[:changes].each do |section_id, change_info|
         section_order = change_info[:order]
         section_type = change_info[:type]
-        section = section_type.constantize.find_by_id(id: section_id)
+        section = section_type.constantize.find_by_id(section_id)
         next unless section
         section.update_attributes(section_order: section_order)
       end
