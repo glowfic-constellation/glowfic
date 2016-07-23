@@ -119,7 +119,8 @@ class Post < ActiveRecord::Base
   private
 
   def update_access_list
-    return unless privacy == PRIVACY_LIST
+    return unless privacy_changed?
+    PostViewer.where(post_id: id).destroy_all and return unless privacy == PRIVACY_LIST
     return unless post_viewer_ids
 
     updated_ids = (post_viewer_ids - [""]).map(&:to_i)
