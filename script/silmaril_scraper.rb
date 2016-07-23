@@ -103,6 +103,7 @@ def post_from_url(url, section, index, title, active=false)
   post = Post.new
   post.character = character
   post.user = user
+  post.last_user_id = user.id
   post.board_id = 18
   post.subject = title
   post.content = strip_content(main_content)
