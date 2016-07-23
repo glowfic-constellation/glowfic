@@ -15,7 +15,7 @@ module Writable
       return user.avatar_id? unless character
       return true if character.default_icon
       return false unless character.gallery
-      return character.gallery.icons.present?
+      return character.galleries.map(&:icons).present?
     end
 
     def editable_by?(editor)
