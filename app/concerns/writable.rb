@@ -14,7 +14,7 @@ module Writable
     def has_icons?
       return user.avatar_id? unless character
       return true if character.default_icon
-      return false unless character.gallery
+      return false unless character.galleries.present?
       return character.galleries.map(&:icons).present?
     end
 
