@@ -25,7 +25,7 @@ module ApplicationHelper
 
   def color_block(user)
     return unless user.moiety
-    content_tag :span, '⬤', style: 'cursor: default; color: #' + user.moiety, title: user.moiety_name
+    content_tag :span, '█', style: 'cursor: default; color: #' + user.moiety, title: user.moiety_name
   end
 
   def unread_img
