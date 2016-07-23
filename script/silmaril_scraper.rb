@@ -103,7 +103,7 @@ def post_from_url(url, section, index, title, active=false)
   post = Post.new
   post.character = character
   post.user = user
-  post.board = Board.find(11)
+  post.board_id = 18
   post.subject = title
   post.content = strip_content(main_content)
   post.created_at = post.updated_at = created_at
@@ -166,7 +166,7 @@ main_list.each do |section|
   links = section.children.css('li')
   section_active = true
   section_status = section_active ? 0 : 1
-  board_section = BoardSection.where(board_id: 11).where(name: section_title).first || BoardSection.create!(board_id: 11, name: section_title, status: section_status)
+  board_section = BoardSection.where(board_id: 18).where(name: section_title).first || BoardSection.create!(board_id: 18, name: section_title, status: section_status)
   links.each_with_index do |link, index|
     url = link.at_css('a').attribute('href').value
     next if url.include?('vast-journey')
