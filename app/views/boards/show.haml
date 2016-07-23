@@ -58,12 +58,14 @@
       %tr{colspan: 6, style: 'height: 20px;'}
       - @board_items.each do |item|
         - if item.is_a?(Post)
+          - next unless item.visible_to?(current_user)
           = render partial: 'posts/list_item', locals: {post: item, hide_continuity: true}
         - else
           %tr
             %th.subber{colspan: 6}= link_to item.name, board_section_path(item)
           - if item.posts.present?
             - item.posts.order('section_order').each do |post|
+              - next unless post.visible_to?(current_user)
               = render partial: 'posts/list_item', locals: {post: post, hide_continuity: true}
           - else
             %tr
