@@ -56,7 +56,7 @@
         %th.sub Replies
         %th.sub.width-250 Last Updated
       %tr{colspan: 6, style: 'height: 20px;'}
-      - @board_items.each do |item|
+      - @board_items.each_with_index do |item, index|
         - if item.is_a?(Post)
           - next unless item.visible_to?(current_user)
           = render partial: 'posts/list_item', locals: {post: item, hide_continuity: true}
@@ -70,6 +70,7 @@
           - else
             %tr
               %td.centered.padding-10.no-posts{ class: cycle('even','odd'), colspan: 6 } — No posts yet —
-        %tr{colspan: 6, style: 'height: 20px;'}
+        - unless item.is_a?(Post) && @board_items[index + 1].is_a?(Post)
+          %tr{colspan: 6, style: 'height: 20px;'}
 - else
   = render partial: 'posts/list', locals: {posts: @posts, hide_continuity: true, path: :board_path}
