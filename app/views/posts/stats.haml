@@ -2,6 +2,9 @@
   = link_to "Continuities", boards_path
   &raquo;
   = link_to @post.board.name, board_path(@post.board)
+  - if @post.section
+    &raquo;
+    = link_to @post.section.name, board_section_path(@post.section)
   &raquo;
   = link_to @post.subject, post_path(@post)
   &raquo;

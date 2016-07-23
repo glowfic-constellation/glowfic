@@ -16,8 +16,8 @@ class Post < ActiveRecord::Base
   belongs_to :last_user, class_name: User
   belongs_to :last_reply, class_name: Reply
   has_many :replies, inverse_of: :post, dependent: :destroy
-  has_many :post_viewers
-  has_many :reply_drafts
+  has_many :post_viewers, dependent: :destroy
+  has_many :reply_drafts, dependent: :destroy
   has_many :post_tags, inverse_of: :post, dependent: :destroy
   has_many :tags, through: :post_tags
   has_many :settings, through: :post_tags, source: :setting
