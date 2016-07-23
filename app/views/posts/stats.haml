@@ -17,12 +17,13 @@
     %tr
       %td.sub.width-150 Authors
       %td.even= @post.authors.map { |author| link_to author.username, user_path(author) }.join(', ').html_safe
-    %tr
-      %td.sub.width-150 Setting
-      %td.odd= @post.settings.map { |tag| link_to tag.name, tag_path(tag) }.join(', ').html_safe
+    - if @post.settings.present?
+      %tr
+        %td.sub.width-150 Setting
+        %td{class: cycle('odd', 'even')}= @post.settings.map { |tag| link_to tag.name, tag_path(tag) }.join(', ').html_safe
     %tr
       %td.sub.width-150.vtop Characters
-      %td.even
+      %td{class: cycle('odd', 'even')}
         - if @post.characters.count > 2
           %ul
             - @post.characters.each do |character|
@@ -40,3 +41,25 @@
     %tr
       %td.sub.width-150 Word Count
       %td{class: cycle('odd', 'even')}= @post.word_count + @post.replies.map(&:word_count).inject(&:+).to_i
+    %tr
+      %td.sub.width-150 Audience
+      %td{class: cycle('odd', 'even')}
+        - case @post.privacy
+        - when Post::PRIVACY_PUBLIC
+          = image_tag "/images/world.png", class: 'vmid', title: "Public"
+          Public
+        - when Post::PRIVACY_REGISTERED
+          = image_tag "/images/star.png", class: 'vmid', title: "Constellation Users"
+          Constellation Users
+        - when Post::PRIVACY_LIST
+          = image_tag "/images/group.png", class: 'vmid', title: "Access list"
+          Access List -
+          - @post.post_viewers.each_with_index do |viewer, i|
+            - if i < @post.post_viewers.count - 1
+              = succeed ',' do
+                = link_to viewer.user.username, user_path(viewer.user)
+            - else
+              = link_to viewer.user.username, user_path(viewer.user)
+        - else
+          = image_tag "/images/lock.png", class: 'vmid', title: "Private"
+          Private
