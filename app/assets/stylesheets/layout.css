@@ -70,7 +70,7 @@
 /* Form Tables */
 #content table.form-table { text-align: center; width: 400px; margin: 0px; border-spacing: 0px; }
 #content table.form-table td { text-align: left; padding: 5px; }
-#content table.form-table td input { 
+#content table.form-table td input, table#icon-table td input { 
     margin: 0px;
     width: 100%;
     -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
