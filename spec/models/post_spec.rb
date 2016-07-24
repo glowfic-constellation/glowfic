@@ -157,6 +157,19 @@ RSpec.describe Post do
       expect(post.section_order).to eq(0)
     end
 
+    it "should update when board is changed" do
+      board = create(:board)
+      create(:post, board: board)
+      create(:post, board: board)
+      post = create(:post, board: board)
+      expect(post.section_order).to eq(2)
+      board = create(:board)
+      post.board = board
+      post.save
+      post.reload
+      expect(post.section_order).to eq(0)
+    end
+
     it "should not increment on non-section update" do
       board = create(:board)
       post = create(:post, board: board)

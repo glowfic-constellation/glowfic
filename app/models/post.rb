@@ -160,8 +160,8 @@ class Post < ActiveRecord::Base
   end
 
   def autofill_order
-    return unless new_record? || section_id_changed?
-    previous = Post.where(section_id: section_id).select(:section_order).order('section_order desc').first.try(:section_order) || -1
+    return unless new_record? || section_id_changed? || board_id_changed?
+    previous = Post.where(board_id: board_id).where(section_id: section_id).select(:section_order).order('section_order desc').first.try(:section_order) || -1
 
     if section_id.nil?
       previous_in_board = BoardSection.where(board_id: board_id).select(:section_order).order('section_order desc').first.try(:section_order) || -1
