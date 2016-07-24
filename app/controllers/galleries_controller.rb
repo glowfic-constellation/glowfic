@@ -167,7 +167,11 @@ class GalleriesController < ApplicationController
   end
 
   def setup_new_icons
-    use_javascript('galleries/add')
+    if params[:type] == "existing"
+      use_javascript('galleries/add_existing')
+    else
+      use_javascript('galleries/add_new')
+    end  
     @icons = []
     find_gallery if params[:id] != '0'
     @unassigned = current_user.galleryless_icons
