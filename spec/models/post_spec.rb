@@ -109,48 +109,48 @@ RSpec.describe Post do
     it "should be set on create" do
       board = create(:board)
       5.times do |i|
-        post = create(:post, board: board)
+        post = create(:post, board_id: board.id)
         expect(post.section_order).to eq(i)
       end
     end
 
     it "should be set in its section on create" do
       board = create(:board)
-      section = create(:board_section, board: board)
+      section = create(:board_section, board_id: board.id)
       5.times do |i|
-        post = create(:post, board: board, section_id: section.id)
+        post = create(:post, board_id: board.id, section_id: section.id)
         expect(post.section_order).to eq(i)
       end
     end
 
     it "should handle mix and match section/no section creates" do
       board = create(:board)
-      section = create(:board_section, board: board)
+      section = create(:board_section, board_id: board.id)
       expect(section.section_order).to eq(0)
       5.times do |i|
-        post = create(:post, board: board, section_id: section.id)
+        post = create(:post, board_id: board.id, section_id: section.id)
         expect(post.section_order).to eq(i)
       end
-      post = create(:post, board: board)
+      post = create(:post, board_id: board.id)
       expect(post.section_order).to eq(1)
-      post = create(:post, board: board)
+      post = create(:post, board_id: board.id)
       expect(post.section_order).to eq(2)
-      post = create(:post, board: board, section_id: section.id)
+      post = create(:post, board_id: board.id, section_id: section.id)
       expect(post.section_order).to eq(5)
-      section = create(:board_section, board: board)
+      section = create(:board_section, board_id: board.id)
       expect(section.section_order).to eq(3)
-      post = create(:post, board: board)
+      post = create(:post, board_id: board.id)
       expect(post.section_order).to eq(4)
     end
 
     it "should update when section is changed" do
       board = create(:board)
-      section = create(:board_section, board: board)
-      post = create(:post, board: board, section_id: section.id)
+      section = create(:board_section, board_id: board.id)
+      post = create(:post, board_id: board.id, section_id: section.id)
       expect(post.section_order).to eq(0)
-      post = create(:post, board: board, section_id: section.id)
+      post = create(:post, board_id: board.id, section_id: section.id)
       expect(post.section_order).to eq(1)
-      section = create(:board_section, board: board)
+      section = create(:board_section, board_id: board.id)
       post.section_id = section.id
       post.save
       post.reload
@@ -159,9 +159,9 @@ RSpec.describe Post do
 
     it "should update when board is changed" do
       board = create(:board)
-      create(:post, board: board)
-      create(:post, board: board)
-      post = create(:post, board: board)
+      create(:post, board_id: board.id)
+      create(:post, board_id: board.id)
+      post = create(:post, board_id: board.id)
       expect(post.section_order).to eq(2)
       board = create(:board)
       post.board = board
@@ -172,10 +172,10 @@ RSpec.describe Post do
 
     it "should not increment on non-section update" do
       board = create(:board)
-      post = create(:post, board: board)
+      post = create(:post, board_id: board.id)
       expect(post.section_order).to eq(0)
-      create(:post, board: board)
-      create(:post, board: board)
+      create(:post, board_id: board.id)
+      create(:post, board_id: board.id)
       post.update_attributes(content: 'new content')
       post.reload
       expect(post.section_order).to eq(0)
@@ -183,13 +183,13 @@ RSpec.describe Post do
 
     it "should reorder upon deletion" do
       board = create(:board)
-      post0 = create(:post, board: board)
+      post0 = create(:post, board_id: board.id)
       expect(post0.section_order).to eq(0)
-      post1 = create(:post, board: board)
+      post1 = create(:post, board_id: board.id)
       expect(post1.section_order).to eq(1)
-      post2 = create(:post, board: board)
+      post2 = create(:post, board_id: board.id)
       expect(post2.section_order).to eq(2)
-      post3 = create(:post, board: board)
+      post3 = create(:post, board_id: board.id)
       expect(post3.section_order).to eq(3)
       post1.destroy
       expect(post0.reload.section_order).to eq(0)
@@ -199,13 +199,13 @@ RSpec.describe Post do
 
     it "should reorder upon board change" do
       board = create(:board)
-      post0 = create(:post, board: board)
+      post0 = create(:post, board_id: board.id)
       expect(post0.section_order).to eq(0)
-      post1 = create(:post, board: board)
+      post1 = create(:post, board_id: board.id)
       expect(post1.section_order).to eq(1)
-      post2 = create(:post, board: board)
+      post2 = create(:post, board_id: board.id)
       expect(post2.section_order).to eq(2)
-      post3 = create(:post, board: board)
+      post3 = create(:post, board_id: board.id)
       expect(post3.section_order).to eq(3)
       post1.board = create(:board)
       post1.save

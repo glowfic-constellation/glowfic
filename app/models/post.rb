@@ -1,6 +1,7 @@
 class Post < ActiveRecord::Base
   include Writable
   include Viewable
+  include Orderable
 
   PRIVACY_PUBLIC = 0
   PRIVACY_PRIVATE = 1
@@ -29,10 +30,7 @@ class Post < ActiveRecord::Base
 
   validates_presence_of :board, :subject
 
-  before_save :autofill_order
   after_save :update_access_list, :update_tag_list
-  after_update :reorder_others
-  after_destroy :reorder_others
 
   audited except: [:last_reply_id, :last_user_id, :edited_at, :tagged_at, :section_id, :section_order]
   has_associated_audits
@@ -160,28 +158,7 @@ class Post < ActiveRecord::Base
     super + [:tagged_at]
   end
 
-  def autofill_order
-    return unless new_record? || section_id_changed? || board_id_changed?
-    previous = Post.where(board_id: board_id).where(section_id: section_id).select(:section_order).order('section_order desc').first.try(:section_order) || -1
-
-    if section_id.nil?
-      previous_in_board = BoardSection.where(board_id: board_id).select(:section_order).order('section_order desc').first.try(:section_order) || -1
-      previous = [previous, previous_in_board].max
-    end
-
-    self.section_order = previous + 1
-  end
-
-  def reorder_others
-    return unless destroyed? || board_id_changed? || section_id_changed?
-
-    other_posts = Post.where(board_id: board_id_was).where(section_id: section_id_was).order('section_order asc')
-    return unless other_posts.present?
-
-    other_posts.each_with_index do |post, index|
-      next if post.section_order == index
-      post.section_order = index
-      post.save
-    end
+  def ordered_attributes
+    [:section_id, :board_id]
   end
 end

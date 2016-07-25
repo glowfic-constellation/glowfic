@@ -36,6 +36,13 @@ class Board < ActiveRecord::Base
     writer_ids.include?(user.id)
   end
 
+  def ordered_items
+    return @items unless @items.nil?
+    @items = posts.where(section_id: nil).to_a
+    @items += board_sections.to_a
+    @items.sort_by!{ |i| i.section_order }
+  end
+
   private
 
   def update_author_list
