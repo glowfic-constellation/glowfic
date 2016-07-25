@@ -31,6 +31,7 @@ class Post < ActiveRecord::Base
 
   before_save :autofill_order
   after_save :update_access_list, :update_tag_list
+  after_update :reorder_others
   after_destroy :reorder_others
 
   audited except: [:last_reply_id, :last_user_id, :edited_at, :tagged_at, :section_id, :section_order]
@@ -172,10 +173,13 @@ class Post < ActiveRecord::Base
   end
 
   def reorder_others
-    return unless section_id.present?
-    other_posts = Post.where(section_id: section_id).order('section_order asc')
+    return unless destroyed? || board_id_changed? || section_id_changed?
+
+    other_posts = Post.where(board_id: board_id_was).where(section_id: section_id_was).order('section_order asc')
     return unless other_posts.present?
+
     other_posts.each_with_index do |post, index|
+      next if post.section_order == index
       post.section_order = index
       post.save
     end

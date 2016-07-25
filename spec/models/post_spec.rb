@@ -180,5 +180,38 @@ RSpec.describe Post do
       post.reload
       expect(post.section_order).to eq(0)
     end
+
+    it "should reorder upon deletion" do
+      board = create(:board)
+      post0 = create(:post, board: board)
+      expect(post0.section_order).to eq(0)
+      post1 = create(:post, board: board)
+      expect(post1.section_order).to eq(1)
+      post2 = create(:post, board: board)
+      expect(post2.section_order).to eq(2)
+      post3 = create(:post, board: board)
+      expect(post3.section_order).to eq(3)
+      post1.destroy
+      expect(post0.reload.section_order).to eq(0)
+      expect(post2.reload.section_order).to eq(1)
+      expect(post3.reload.section_order).to eq(2)
+    end
+
+    it "should reorder upon board change" do
+      board = create(:board)
+      post0 = create(:post, board: board)
+      expect(post0.section_order).to eq(0)
+      post1 = create(:post, board: board)
+      expect(post1.section_order).to eq(1)
+      post2 = create(:post, board: board)
+      expect(post2.section_order).to eq(2)
+      post3 = create(:post, board: board)
+      expect(post3.section_order).to eq(3)
+      post1.board = create(:board)
+      post1.save
+      expect(post0.reload.section_order).to eq(0)
+      expect(post2.reload.section_order).to eq(1)
+      expect(post3.reload.section_order).to eq(2)
+    end
   end
 end
