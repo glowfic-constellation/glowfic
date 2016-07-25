@@ -13,6 +13,8 @@ Keyword:
   = link_to "Edit icon", edit_icon_path(@icon)
   %br
   = link_to "Delete icon", icon_path(@icon), method: :delete, confirm: 'Are you sure you want to delete this icon?'
+  %br
+  = link_to "Replace icon with another icon", replace_icon_path(@icon)
 
 - if @icon.galleries.present?
   %br
