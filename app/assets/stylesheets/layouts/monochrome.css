@@ -1,7 +1,7 @@
 body { background-color: #E0E0E0; }
 #header #logo { background-color: #757575; }
 #header #user-info, #header #nav-top { background-color: #4A4A4A; }
-.flash.success { background-color: #ECECEC; }
+.flash.success, .flash.inbox { background-color: #ECECEC; }
 a { color: #6F6F6F; }
 a:visited { color: #484848; }
 .pagination .current { background: #616161; }
