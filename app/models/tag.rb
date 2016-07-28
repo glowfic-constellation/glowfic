@@ -6,6 +6,7 @@ class Tag < ActiveRecord::Base
   has_many :characters, through: :character_tags
 
   validates_presence_of :user, :name
+  validates :name, uniqueness: { scope: :type }
 
   def editable_by?(user)
     user.try(:admin?)

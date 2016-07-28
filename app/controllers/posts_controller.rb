@@ -288,18 +288,27 @@ class PostsController < WritableController
     if @post.setting_ids.present?
       tags = @post.setting_ids.select { |id| id.to_i.zero? }.reject(&:blank?).compact.uniq
       @post.setting_ids -= tags
+      existing_tags = Setting.where(name: tags)
+      @post.setting_ids += existing_tags.map(&:id)
+      tags -= existing_tags.map(&:name)
       @post.setting_ids += tags.map { |tag| Setting.create(user: current_user, name: tag).id }
     end
 
     if @post.warning_ids.present?
       tags = @post.warning_ids.select { |id| id.to_i.zero? }.reject(&:blank?).compact.uniq
       @post.warning_ids -= tags
+      existing_tags = ContentWarning.where(name: tags)
+      @post.warning_ids += existing_tags.map(&:id)
+      tags -= existing_tags.map(&:name)
       @post.warning_ids += tags.map { |tag| ContentWarning.create(user: current_user, name: tag).id }
     end
 
     if @post.tag_ids.present?
       tags = @post.tag_ids.select { |id| id.to_i.zero? }.reject(&:blank?).compact.uniq
       @post.tag_ids -= tags
+      existing_tags = Tag.where(name: tags, type: nil)
+      @post.tag_ids += existing_tags.map(&:id)
+      tags -= existing_tags.map(&:name)
       @post.tag_ids += tags.map { |tag| Tag.create(user: current_user, name: tag).id }
     end
   end
