@@ -1,3 +1,5 @@
+require 'will_paginate/array'
+
 class PostsController < WritableController
   before_filter :login_required, except: [:index, :show, :history, :search, :stats]
   before_filter :find_post, only: [:show, :history, :stats, :edit, :update, :destroy]
@@ -26,7 +28,9 @@ class PostsController < WritableController
     @posts = @posts.joins("LEFT JOIN board_views on board_views.board_id = posts.board_id AND board_views.user_id = #{current_user.id}")
     @posts = @posts.where("post_views.user_id IS NULL OR (date_trunc('second', post_views.updated_at) < date_trunc('second', posts.tagged_at) AND post_views.ignored = '0')")
     @posts = @posts.where("board_views.user_id IS NULL OR (date_trunc('second', board_views.updated_at) < date_trunc('second', posts.tagged_at) AND board_views.ignored = '0')")
-    @posts = @posts.order('tagged_at desc').includes(:board, :user, :last_user).paginate(per_page: 25, page: page)
+    @posts = @posts.order('tagged_at desc').includes(:board, :user, :last_user)
+    @posts = @posts.select { |p| p.visible_to?(current_user) }
+    @posts = @posts.paginate(per_page: 25, page: page)
     @opened_ids = PostView.where(user_id: current_user.id).select(:post_id).map(&:post_id)
     @page_title = "Unread Threads"
     @show_unread = @conditional_unread = true

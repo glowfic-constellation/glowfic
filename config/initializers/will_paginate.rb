@@ -1,4 +1,10 @@
 module WillPaginate
+  class Collection
+    def klass
+      first.class
+    end
+  end
+
   module ActionView
     protected
     class LinkRenderer < ViewHelpers::LinkRenderer
