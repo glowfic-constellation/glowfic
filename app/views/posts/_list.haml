@@ -4,6 +4,8 @@
 - col_count += 1 if local_assigns.has_key? :check_box_name  # Include form check box tags
 - post_args = local_assigns.except(:posts, :list)
 
+%span{style: 'font-size: 10px; position: absolute; top: 2px; right: 20px;'}= pretty_time(DateTime.now)
+
 %table
   %thead
     %tr
