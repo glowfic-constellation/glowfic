@@ -52,4 +52,4 @@ body { background-color: #211e2f; color: #DADADA; }
 
 a { color: #B5AFCB; }
 a:visited { color: #9C9AA4; }
-.flash.success, .flash.error { background-color: #484357; color: #DADADA; }
+.flash.success, .flash.error, .flash.inbox { background-color: #484357; color: #DADADA; }
