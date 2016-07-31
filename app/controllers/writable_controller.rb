@@ -84,7 +84,6 @@ class WritableController < ApplicationController
         user: current_user, 
         icon: active_char.try(:icon))
       @character = @reply.character
-      @image = @character ? @character.icon : current_user.avatar
       gon.original_content = @reply.content
 
       @post.mark_read(current_user, @post.read_time_for(@replies)) unless @post.board.ignored_by?(current_user)
