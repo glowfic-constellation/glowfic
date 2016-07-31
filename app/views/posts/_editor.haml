@@ -25,7 +25,7 @@
           #character-selector.beige
             %b Choose Character
             = select_tag :active_character, 
-            option_groups_from_collection_for_select(@templates, :ordered_characters, :name, :id, :selector_name, @character.try(:id)),
+            option_groups_from_collection_for_select(@templates, :ordered_characters, :name, :id, :selector_name, item.character.try(:id)),
             { :include_blank => true, :prompt => current_user.username }
             %br
   #gallery.green

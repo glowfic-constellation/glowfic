@@ -72,8 +72,7 @@ class PostsController < WritableController
     use_javascript('posts')
     @post = Post.new(character: current_user.active_character, user: current_user)
     @post.board_id = params[:board_id]
-    @character = current_user.active_character
-    image = @character ? @character.icon : current_user.avatar
+    image = current_user.active_character.try(:icon) || current_user.avatar
     @post.icon_id = image.try(:id)
   end
 
@@ -126,7 +125,6 @@ class PostsController < WritableController
 
   def edit
     use_javascript('posts')
-    @character = @post.character
     gon.original_content = @post.content
   end
 
@@ -288,7 +286,6 @@ class PostsController < WritableController
   end
 
   def editor_setup(post=@post)
-    @character = @post.character
     use_javascript('posts')
     build_template_groups
     build_tags

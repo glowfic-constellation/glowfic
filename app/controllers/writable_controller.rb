@@ -83,7 +83,6 @@ class WritableController < ApplicationController
         character: active_char,
         user: current_user, 
         icon: active_char.try(:icon))
-      @character = @reply.character
       gon.original_content = @reply.content
 
       @post.mark_read(current_user, @post.read_time_for(@replies)) unless @post.board.ignored_by?(current_user)
