@@ -86,12 +86,6 @@ class PostsController < WritableController
     @post = Post.new(params[:post])
     @post.user = @post.last_user = current_user
 
-    unless verify_post_foreigns(@post)
-      editor_setup
-      render :action => :new
-      return
-    end
-
     create_new_tags if @post.valid?
 
     if @post.save
@@ -146,12 +140,6 @@ class PostsController < WritableController
     gon.original_content = params[:post][:content] if params[:post]
     @post.assign_attributes(params[:post])
     @post.board ||= Board.find(3)
-
-    unless verify_post_foreigns(@post)
-      editor_setup
-      render :action => :edit
-      return
-    end
 
     create_new_tags if @post.valid?
 
