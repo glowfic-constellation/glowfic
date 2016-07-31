@@ -1,10 +1,7 @@
 - content_for :breadcrumbs do
   = link_to "Continuities", boards_path
   &raquo;
-  - if @post.board
-    = link_to @post.board.name, board_path(@post.board)
-  - else
-    Unknown Board
+  = link_to @post.board.name, board_path(@post.board)
   - if @post.section
     &raquo;
     = link_to @post.section.name, board_section_path(@post.section)
