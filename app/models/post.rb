@@ -27,7 +27,7 @@ class Post < ActiveRecord::Base
   attr_writer :skip_edited
 
   validates_presence_of :board, :subject
-  validate :valid_board, :valid_boardsection
+  validate :valid_board, :valid_board_section
 
   before_save :autofill_order
   after_save :update_access_list, :update_tag_list
@@ -117,12 +117,12 @@ class Post < ActiveRecord::Base
   private
 
   def valid_board
-    if !board.open_to?(user)
+    unless board.open_to?(user)
       errors.add(:board, "is invalid – you must be able to write in it")
     end
   end
 
-  def valid_boardsection
+  def valid_board_section
     if section.present? && section.board_id != board_id
       errors.add(:section, "must be in the post's board")
     end
