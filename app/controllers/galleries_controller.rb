@@ -41,7 +41,7 @@ class GalleriesController < ApplicationController
       format.json do
         if params[:id].to_s == '0' # avoids casting nils to 0
           user = params[:user_id].present? ? User.find_by_id(params[:user_id]) : current_user
-          render json: {name: 'Galleryless', icons: user.try(:galleryless_icons).try(:order, 'keyword asc') || []}
+          render json: {name: 'Galleryless', icons: user.try(:galleryless_icons).try(:sort_by){|i| i.keyword.downcase} || []}
         else
           @gallery = Gallery.find_by_id(params[:id])
           render json: {name: @gallery.name, icons: @gallery.icons.sort_by{|i| i.keyword.downcase }} 
