@@ -4,7 +4,7 @@
     .view-button Hidden &raquo;
 
 = form_tag mark_posts_path, :method => :post do
-  = render partial: 'posts/list', locals: {posts: @posts, show_unread_count: true, check_box_name: 'marked_ids[]'}
+  = render partial: 'posts/list', locals: {posts: @posts, show_unread_count: true, check_box_name: 'marked_ids[]', path: :unread_posts_path}
   - unless @posts.empty?
     %table
       %tr

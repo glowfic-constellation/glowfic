@@ -1,6 +1,6 @@
 /* Original doc CSS overlaps with monochrome, TODO confirm with Timepoof */
 body { background-color: #E0E0E0; }
-.flash.success { background-color: #ECECEC; }
+.flash.success, .flash.inbox { background-color: #ECECEC; }
 .pagination a:visited { color: #3A3A3A; }
 .post-navheader { background-color: #BDBDBD; }
 #content .link-box.blue { background-color: #545A79; }

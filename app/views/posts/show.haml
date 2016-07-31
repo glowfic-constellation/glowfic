@@ -1,7 +1,10 @@
 - content_for :breadcrumbs do
-  = link_to "Boards", boards_path
+  = link_to "Continuities", boards_path
   &raquo;
   = link_to @post.board.name, board_path(@post.board)
+  - if @post.section
+    &raquo;
+    = link_to @post.section.name, board_section_path(@post.section)
   &raquo;
   %b= @post.subject
 
@@ -21,6 +24,10 @@
       %div
         = image_tag '/images/page_world.png'
         View Flat HTML
+    = link_to stats_post_path(@post) do
+      %div
+        = image_tag '/images/chart_bar.png'
+        View Stats
     - if logged_in?
       - if @post.metadata_editable_by?(current_user)
         - unless @post.completed?
@@ -50,7 +57,7 @@
 - if @post.description.present?
   .post-subheader
     .padding-10
-      %span= sanitize(@post.description, tags: %w(a), attributes: %w(href)).html_safe
+      %span= sanitize_post_description(@post.description).html_safe
 - if @prev_post || @next_post
   .post-navheader
     .padding-10
@@ -75,6 +82,8 @@
   = render partial: 'replies/single', locals: {reply: reply}
 - if @post.completed? && (@replies.empty? || (@replies.last.id == @post.replies.order('id desc').first.id))
   .post-ender Here Ends This Thread
+- if @post.on_hiatus? && (@replies.empty? || (@replies.last.id == @post.replies.order('id desc').first.id))
+  .post-ender This Thread Is On Hiatus
 - if @replies.present?
   = render partial: 'posts/paginator', locals: { paginated: @replies, path: :post_path }
 - if logged_in? && !@post.completed? && current_user.writes_in?(@post.board)

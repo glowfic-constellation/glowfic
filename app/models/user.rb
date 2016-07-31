@@ -18,6 +18,7 @@ class User < ActiveRecord::Base
   belongs_to :active_character, :class_name => Character
 
   validates_presence_of :username, :crypted
+  validates_presence_of :email, on: :create
   validates_uniqueness_of :username
   validates_uniqueness_of :email, allow_blank: true
   validates_length_of :username, :in => MIN_USERNAME_LEN..MAX_USERNAME_LEN, :allow_blank => true
@@ -52,7 +53,7 @@ class User < ActiveRecord::Base
   end
 
   def galleryless_icons
-    icons.where(has_gallery: false)
+    icons.where(has_gallery: false).sort_by{|i| i.keyword.downcase }
   end
 
   def default_view

@@ -3,11 +3,23 @@
     = f.label :board_id, 'Continuity:'
     = f.select :board_id, options_from_collection_for_select(Board.select {|b| current_user.writes_in?(b) }, :id, :name, @post.board_id)
     %br
+    #section{class: ('hidden' unless @post.board && @post.board.board_sections.exists?)}
+      = f.label :section_id, 'Continuity section:'
+      = f.select :section_id, options_from_collection_for_select(BoardSection.where(board_id: @post.board_id), :id, :name, @post.section_id), include_blank: '— Choose Section —'
     = f.label :privacy, 'Privacy:'
     = f.select :privacy, options_from_collection_for_select(Post.privacy_settings.to_a, :second, :first, post.privacy)
     #access_list{class: ('hidden' unless post.privacy == Post::PRIVACY_LIST)}
       = f.label :post_viewer_ids, '&#8627; Who can view this post? '.html_safe
       = f.select :post_viewer_ids, options_from_collection_for_select(User.all - [current_user], :id, :username, post.post_viewer_ids || post.post_viewers.map(&:user_id)), {}, {multiple: true}
+    %br
+    = f.label :setting_ids, 'Setting:'
+    = f.select :setting_ids, options_from_collection_for_select(@settings, :id, :name, @post.setting_ids || @post.settings.map(&:id)), {}, {multiple: true}
+    %br
+    = f.label :warning_ids, 'Content Warnings:'
+    = f.select :warning_ids, options_from_collection_for_select(@warnings, :id, :name, @post.warning_ids || @post.content_warnings.map(&:id)), {}, {multiple: true}
+    %br
+    = f.label :tag_ids, 'Tags:'
+    = f.select :tag_ids, options_from_collection_for_select(@tags, :id, :name, @post.tag_ids || @post.post_tags.map(&:tag_id)), {}, {multiple: true}
     %hr
     .view-button#rtf{class: ('selected' if current_user.default_editor == 'rtf')} Rich Text
     .view-button#html{class: ('selected' if current_user.default_editor == 'html')} HTML

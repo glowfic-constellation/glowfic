@@ -44,9 +44,11 @@ button, input.button {
 .padding-10 { padding: 10px; }
 .padding-15 { padding: 15px; }
 .padding-left-5 { padding-left: 5px; }
+.padding-right-10 { padding-right: 10px; }
 .width-15 { width: 15px !important; }
 .width-70 { width: 70px; }
 .width-150 { width: 150px; }
+.width-250 { width: 250px; }
 .width-300 { width: 300px; }
 .spacer { height: 2px; }
 .centered { text-align: center !important; }
@@ -67,8 +69,8 @@ button, input.button {
 #content .beige { background-color: #B9B6AD; }
 #content .green { background-color: #B0BBA9; }
 #content .dark { background-color: #8B8687; }
-#content .even { background-color: #E3E3E3; }
-#content .odd { background-color: #D8D8D8; }
+#content .even { background-color: #E3E3E3; padding: 5px; }
+#content .odd { background-color: #D8D8D8; padding: 5px; }
 #content .subber, .subber { background-color: #a3a1a0; }
 #content .sub { background-color: #B9B6AD; }
 

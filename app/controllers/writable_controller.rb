@@ -49,6 +49,11 @@ class WritableController < ApplicationController
           else
             self.page = cur_page = @unread.post_page(per)
           end
+          if params[:ru].to_i == 1
+            args = {page: cur_page}
+            args[:anchor] = "reply-#{@unread.id}" if @unread.class == Reply
+            redirect_to post_path(@post, args) and return
+          end
         else
           flash.now[:error] = "You must be logged in to view unread posts."
           self.page = cur_page = 1
@@ -66,8 +71,10 @@ class WritableController < ApplicationController
     redirect_to post_path(@post, page: @replies.total_pages, per_page: per) and return if cur_page > @replies.total_pages
     use_javascript('paginator')
 
-    @next_post = Post.where(board_id: @post.board_id).where("id > #{@post.id}").order('id asc').limit(1).first
-    @prev_post = Post.where(board_id: @post.board_id).where("id < #{@post.id}").order('id desc').limit(1).first
+    unless @post.board.open_to_anyone?
+      @next_post = Post.where(board_id: @post.board_id).where(section_id: @post.section_id).where(section_order: @post.section_order + 1).first
+      @prev_post = Post.where(board_id: @post.board_id).where(section_id: @post.section_id).where(section_order: @post.section_order - 1).first
+    end
 
     if logged_in?
       use_javascript('posts')
@@ -83,6 +90,17 @@ class WritableController < ApplicationController
       gon.original_content = @reply.content
 
       @post.mark_read(current_user, @post.read_time_for(@replies)) unless @post.board.ignored_by?(current_user)
+    end
+
+    if @post.content_warnings.size > 1
+      flash.now[:error] = {}
+      flash.now[:error][:image] = "/images/exclamation.png"
+      flash.now[:error][:message] = "This post has the following content warnings:"
+      flash.now[:error][:array] = @post.content_warnings.map(&:name)
+    elsif @post.content_warnings.size == 1
+      flash.now[:error] = {}
+      flash.now[:error][:image] = "/images/exclamation.png"
+      flash.now[:error][:message] = "This post has the following content warning: " + @post.content_warnings.first.name
     end
 
     render 'posts/show'

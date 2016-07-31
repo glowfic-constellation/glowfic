@@ -54,7 +54,7 @@
       #header-collapse
       #nav-bottom
         %ul
-          %li= link_to 'Boards', boards_path
+          %li= link_to 'Continuities', boards_path
           %li= link_to 'Recently Updated', posts_path
           %li= link_to 'Search', search_posts_path
           %li= link_to 'Glowficcers', users_path
@@ -67,10 +67,13 @@
       .flash.subber= content_for :breadcrumbs
     - if flash[:error].is_a?(Hash)
       .flash.error
+        - if flash[:error].has_key? :image
+          = image_tag flash[:error][:image], class: 'vmid'
         = flash[:error][:message]
-        %ul
-          - flash[:error][:array].each do |error|
-            %li= error
+        - if flash[:error].has_key? :array
+          %ul
+            - flash[:error][:array].each do |error|
+              %li= error
       - flash.delete(:error)
     - flash.keys.each do |key|
       .flash{:class=>key}= flash[key]

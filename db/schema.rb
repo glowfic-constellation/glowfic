@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20160615094301) do
+ActiveRecord::Schema.define(:version => 20160731040017) do
 
   create_table "audits", :force => true do |t|
     t.integer  "auditable_id"
@@ -33,6 +33,17 @@ ActiveRecord::Schema.define(:version => 20160615094301) do
   add_index "audits", ["auditable_id", "auditable_type"], :name => "auditable_index"
   add_index "audits", ["created_at"], :name => "index_audits_on_created_at"
   add_index "audits", ["user_id", "user_type"], :name => "user_index"
+
+  create_table "board_authors", :force => true do |t|
+    t.integer  "user_id",                       :null => false
+    t.integer  "board_id",                      :null => false
+    t.datetime "created_at",                    :null => false
+    t.datetime "updated_at",                    :null => false
+    t.boolean  "cameo",      :default => false
+  end
+
+  add_index "board_authors", ["board_id"], :name => "index_board_authors_on_board_id"
+  add_index "board_authors", ["user_id"], :name => "index_board_authors_on_user_id"
 
   create_table "board_sections", :force => true do |t|
     t.integer  "board_id",                     :null => false
@@ -58,15 +69,25 @@ ActiveRecord::Schema.define(:version => 20160615094301) do
   create_table "boards", :force => true do |t|
     t.string   "name",        :null => false
     t.integer  "creator_id",  :null => false
-    t.integer  "coauthor_id"
     t.datetime "created_at",  :null => false
     t.datetime "updated_at",  :null => false
+    t.text     "description"
   end
 
   create_table "character_groups", :force => true do |t|
     t.integer "user_id", :null => false
     t.string  "name",    :null => false
   end
+
+  create_table "character_tags", :force => true do |t|
+    t.integer  "character_id", :null => false
+    t.integer  "tag_id",       :null => false
+    t.datetime "created_at",   :null => false
+    t.datetime "updated_at",   :null => false
+  end
+
+  add_index "character_tags", ["character_id"], :name => "index_character_tags_on_character_id"
+  add_index "character_tags", ["tag_id"], :name => "index_character_tags_on_tag_id"
 
   create_table "characters", :force => true do |t|
     t.integer  "user_id",            :null => false
@@ -260,9 +281,11 @@ ActiveRecord::Schema.define(:version => 20160615094301) do
     t.string   "name",       :null => false
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false
+    t.string   "type"
   end
 
   add_index "tags", ["name"], :name => "index_tags_on_name"
+  add_index "tags", ["type"], :name => "index_tags_on_type"
 
   create_table "templates", :force => true do |t|
     t.integer  "user_id",            :null => false
@@ -276,13 +299,13 @@ ActiveRecord::Schema.define(:version => 20160615094301) do
   add_index "templates", ["user_id"], :name => "index_templates_on_user_id"
 
   create_table "users", :force => true do |t|
-    t.string   "username",                                :null => false
-    t.string   "crypted",                                 :null => false
+    t.string   "username",                                               :null => false
+    t.string   "crypted",                                                :null => false
     t.integer  "avatar_id"
     t.integer  "active_character_id"
     t.integer  "per_page",             :default => 25
-    t.datetime "created_at",                              :null => false
-    t.datetime "updated_at",                              :null => false
+    t.datetime "created_at",                                             :null => false
+    t.datetime "updated_at",                                             :null => false
     t.string   "timezone"
     t.string   "email"
     t.boolean  "email_notifications"
@@ -292,6 +315,7 @@ ActiveRecord::Schema.define(:version => 20160615094301) do
     t.string   "moiety_name"
     t.string   "default_view"
     t.string   "default_editor",       :default => "rtf"
+    t.string   "time_display",         :default => "%b %d, %Y %l:%M %p"
   end
 
   add_index "users", ["email"], :name => "index_users_on_email", :unique => true

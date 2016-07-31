@@ -10,10 +10,13 @@
           .view-button
             = image_tag '/images/grid.png', class: 'icon-view', alt: ''
             Add Existing Icons &raquo;
+  %table
+    %tr
+      %th.subber.width-150.centered Upload Files
+      %td.odd= file_field_tag "icons[][file]", id: "icon_files", multiple: true
   %table#icon-table
     %tr
       %th.sub URL
-      %th.sub File
       %th.sub Keyword
       %th.sub Credit
       %th.sub
@@ -23,19 +26,17 @@
       %tr.icon-row{data: {index: i}}
         %td.padding-5{class: klass}
           - url = @icons[i].try(:[], :url)
-          - if url && url.starts_with?('http://glowfic-constellation.s3.amazonaws.com/')
+          - if url && url.starts_with?('https://d1anwqy6ci9o1i.cloudfront.net/')
             %span.conf
               = image_tag "/images/accept.png", class: 'vmid'
               Uploaded #{@icons[i][:file]}
-            = text_field_tag "icons[][url]", url, placeholder: "URL", class: 'text hidden', id: "icons_#{i}_url"
+            = text_field_tag "icons[][url]", url, placeholder: "URL", class: 'hidden', id: "icons_#{i}_url"
           - else
-            = text_field_tag "icons[][url]", url, placeholder: "URL", class: 'text', id: "icons_#{i}_url"
+            = text_field_tag "icons[][url]", url, placeholder: "URL", id: "icons_#{i}_url"
         %td.padding-5{class: klass}
-          = file_field_tag "icons[][file]", data: {index: i}, id: "icons_#{i}_file"
+          = text_field_tag "icons[][keyword]", @icons[i].try(:[], :keyword), placeholder: "Keyword"
         %td.padding-5{class: klass}
-          = text_field_tag "icons[][keyword]", @icons[i].try(:[], :keyword), placeholder: "Keyword", class: 'text'
-        %td.padding-5{class: klass}
-          = text_field_tag "icons[][credit]", @icons[i].try(:[], :credit), placeholder: "Credit", class: 'text'
+          = text_field_tag "icons[][credit]", @icons[i].try(:[], :credit), placeholder: "Credit"
         %td.right-align.icon-buttons{class: klass}
           = image_tag "/images/add.png", class: "icon-row-add"
           = image_tag "/images/minus.png", class: "icon-row-rem"

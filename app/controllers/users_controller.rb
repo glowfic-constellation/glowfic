@@ -44,7 +44,7 @@ class UsersController < ApplicationController
   end
 
   def edit
-    use_javascript('users')
+    use_javascript('users/edit')
   end
 
   def update
@@ -88,7 +88,7 @@ class UsersController < ApplicationController
   private
 
   def signup_prep
-    use_javascript('users')
+    use_javascript('users/new')
     gon.max = User::MAX_USERNAME_LEN
     gon.min = User::MIN_USERNAME_LEN
   end

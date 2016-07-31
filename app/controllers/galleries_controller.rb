@@ -44,7 +44,7 @@ class GalleriesController < ApplicationController
           render json: {name: 'Galleryless', icons: user.try(:galleryless_icons).try(:order, 'keyword asc') || []}
         else
           @gallery = Gallery.find_by_id(params[:id])
-          render json: {name: @gallery.name, icons: @gallery.icons.order('keyword asc')} 
+          render json: {name: @gallery.name, icons: @gallery.icons.sort_by{|i| i.keyword.downcase }} 
         end
       end
       format.html do
@@ -64,7 +64,6 @@ class GalleriesController < ApplicationController
         @user = @gallery.user
         @page_title = @gallery.name + " (Gallery)"
         use_javascript('galleries/index')
-        render :show
       end
     end
   end
@@ -138,7 +137,7 @@ class GalleriesController < ApplicationController
         icons.each do |icon| @gallery.icons << icon end
         redirect_to gallery_path(@gallery) and return
       end
-      redirect_to galleries_path
+      redirect_to gallery_path(id: 0)
     else
       flash.now[:error] = "Your icons could not be saved."
       render :action => :add
@@ -168,10 +167,14 @@ class GalleriesController < ApplicationController
   end
 
   def setup_new_icons
-    use_javascript('galleries/add')
+    if params[:type] == "existing"
+      use_javascript('galleries/add_existing')
+    else
+      use_javascript('galleries/add_new')
+    end  
     @icons = []
     find_gallery if params[:id] != '0'
-    @unassigned = current_user.icons.where(has_gallery: false).order('keyword asc')
+    @unassigned = current_user.galleryless_icons
     @page_title = "Add Icons"
   end
 

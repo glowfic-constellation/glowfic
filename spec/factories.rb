@@ -6,15 +6,23 @@ FactoryGirl.define do
   factory :user, aliases: [:creator] do
     username
     password "password"
+    sequence :email do |n|
+      "fake#{n}@faker.com"
+    end
 
-    factory :user_with_email do
-      email "fake@faker.com"
+    factory :admin_user do
+      id 1
     end
   end
 
   factory :board do
     creator
     name "test board"
+  end
+
+  factory :board_section do
+    name "TestSection"
+    board
   end
 
   factory :post do
@@ -35,7 +43,7 @@ FactoryGirl.define do
     keyword "totally fake"
 
     factory :uploaded_icon do
-      url { "http://glowfic-constellation.s3.amazonaws.com/users/#{user.id}/icons/nonsense-fakeimg.png" }
+      url { "https://d1anwqy6ci9o1i.cloudfront.net/users/#{user.id}/icons/nonsense-fakeimg.png" }
     end
   end
 
@@ -62,6 +70,21 @@ FactoryGirl.define do
     end
     factory :used_password_reset do
       used true
+    end
+  end
+
+  factory :tag do
+    sequence :name do |n|
+      "Tag#{n}"
+    end
+    user
+
+    factory :setting do
+      type 'Setting'
+    end
+
+    factory :content_warning do
+      type 'ContentWarning'
     end
   end
 end

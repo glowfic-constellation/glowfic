@@ -99,3 +99,12 @@ RSpec.configure do |config|
   Kernel.srand config.seed
 =end
 end
+
+# Monkey patches the controller response objects to return JSON
+module ActionController
+  class TestResponse
+    def json
+      @json ||= JSON.parse(self.body)
+    end
+  end
+end

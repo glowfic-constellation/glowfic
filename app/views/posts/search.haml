@@ -23,6 +23,9 @@
               %td Character
               %td= select_tag :character_id, options_from_collection_for_select(Character.order('name'), :id, :selector_name, params[:character_id]), {class: 'chosen-select', prompt: '— Choose Character —'}
             %tr
+              %td Setting
+              %td= select_tag :setting_id, options_from_collection_for_select(Setting.order('name'), :id, :name, params[:setting_id]), {class: 'chosen-select', prompt: '— Choose Setting —'}
+            %tr
               %td Completed
               %td.padding-5
                 = check_box_tag :completed, true, params[:completed].present?, {class: 'vmid no-margin', style: 'margin-bottom: 3px;'}

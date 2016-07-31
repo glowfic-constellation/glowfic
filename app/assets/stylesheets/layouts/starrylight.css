@@ -38,7 +38,7 @@ body { background-color: #b0afb7; }
 a { color: #666284; }
 a:visited { color: #484357; }
 
-.flash.success, .flash.error { background-color: #9692a8; }
+.flash.success, .flash.error, .flash.inbox { background-color: #9692a8; }
 .pagination .current { background-color: #9692a8; }
 .pagination a { color: #F3F3F3; }
 .pagination a:visited { color: #c6c6e5; }

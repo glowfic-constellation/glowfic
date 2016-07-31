@@ -1,0 +1,16 @@
+- content_for :breadcrumbs do
+  = link_to "Tags", tags_path
+  &raquo;
+  %b= @tag.name
+
+- content_for :posts_title do
+  Posts Tagged: #{@tag.name}
+  - if @tag.editable_by?(current_user)
+    = link_to edit_tag_path(@tag) do
+      .link-box.blue
+        = image_tag '/images/pencil.png'
+        Edit
+    = link_to tag_path(@tag), method: :delete, confirm: 'Are you sure you want to delete this tag?' do
+      .link-box.red x Delete
+
+= render partial: 'posts/list', locals: {posts: @posts}

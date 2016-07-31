@@ -1,12 +1,13 @@
 class Character < ActiveRecord::Base
   belongs_to :user
   belongs_to :template
-  belongs_to :gallery
   belongs_to :default_icon, class_name: Icon
   belongs_to :character_group
   has_many :replies
   has_many :posts
   has_and_belongs_to_many :galleries
+  has_many :character_tags, inverse_of: :character, dependent: :destroy
+  has_many :tags, through: :character_tags
 
   validates_presence_of :name, :user
   validate :valid_template, :valid_group

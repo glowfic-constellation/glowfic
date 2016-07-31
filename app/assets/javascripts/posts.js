@@ -15,6 +15,11 @@ $(document).ready(function() {
     disable_search_threshold: 20,
   });
 
+  $("#post_section_id").chosen({
+    width: '200px',
+    disable_search_threshold: 20,
+  });
+
   $("#post_privacy").chosen({
     width: '200px',
     disable_search_threshold: 20,
@@ -24,6 +29,54 @@ $(document).ready(function() {
     width: '200px',
     disable_search_threshold: 20,
     placeholder_text_multiple: 'Choose user(s) to view this post'
+  });
+
+  $("#post_tag_ids").select2({
+    tags: true,
+    tokenSeparators: [','],
+    placeholder: 'Enter tag(s) separated by commas',
+    ajax: {
+      delay: 200,
+      url: '/tags',
+      dataType: 'json',
+      data: function(term, page) {
+        return { q: term['term'] };
+      },
+    },
+  });
+
+  $("#post_setting_ids").select2({
+    tags: true,
+    tokenSeparators: [','],
+    placeholder: 'Enter setting(s) separated by commas',
+    ajax: {
+      delay: 200,
+      url: '/tags',
+      dataType: 'json',
+      data: function(term, page) {
+        return {
+          q: term['term'],
+          t: 'setting',
+        };
+      },
+    },
+  });
+
+  $("#post_warning_ids").select2({
+    tags: true,
+    tokenSeparators: [','],
+    placeholder: 'Enter warning(s) separated by commas',
+    ajax: {
+      delay: 200,
+      url: '/tags',
+      dataType: 'json',
+      data: function(term, page) {
+        return {
+          q: term['term'],
+          t: 'warning',
+        };
+      },
+    },
   });
 
   $("#active_character").chosen({
@@ -56,17 +109,11 @@ $(document).ready(function() {
 
   // Bind both change() and keyup() in the icon keyword dropdown because Firefox doesn't
   // respect up/down key selections in a dropdown as a valid change() trigger
-  $("#icon_dropdown").change(function() {
-    setIconFromId($(this).val());
-  });
-  $("#icon_dropdown").keyup(function() {
-    setIconFromId($(this).val());
-  });
+  $("#icon_dropdown").change(function() { setIconFromId($(this).val()); });
+  $("#icon_dropdown").keyup(function() { setIconFromId($(this).val()); });
 
-  $("#post-menu").click(function() { 
-    $(this).toggleClass('selected');
-    $("#post-menu-box").toggle();
-  });
+  if ($("#post_section_id").val() == '') { setSections(); }
+  $("#post_board_id").change(function() { setSections(); });
 
   $('.view-button').click(function() {
     if(this.id == 'rtf') {
@@ -144,8 +191,6 @@ $(document).ready(function() {
       $('#icon-overlay').hide();
       $('#gallery').hide();
       $('#character-selector').hide();
-      $('#post-menu-box').hide();
-      $('#post-menu').removeClass('selected');
     }
   });
 
@@ -165,12 +210,6 @@ $(document).ready(function() {
       !$(target).is('#swap-icon') && 
       !$(target).parents().is('#character-selector')) {
         $('#character-selector').hide();
-    }
-
-    if (!$(target).is('#post-menu-box') && !$(target).parents().is('#post-menu-box')
-      && !$(target).is('#post-menu') && !$(target).parents().is('#post-menu')) {
-      $('#post-menu-box').hide();
-      $('#post-menu').removeClass('selected');
     }
   });
 });
@@ -323,4 +362,21 @@ setIcon = function(id, url, title, alt) {
   $("#current-icon").attr('src', url);
   $("#current-icon").attr('title', title);
   $("#current-icon").attr('alt', alt);
+};
+
+setSections = function() {
+  var board_id = $("#post_board_id").val();
+  $.get("/boards/"+board_id, {}, function(resp) {
+    if (resp.length > 0) {
+      $("#section").show();
+      $("#post_section_id").empty().append('<option value="">— Choose Section —</option>');
+      for(var i = 0; i < resp.length; i++) {
+        $("#post_section_id").append('<option value="'+resp[i][0]+'">'+resp[i][1]+'</option>');
+      }
+      $("#post_section_id").trigger("chosen:updated");
+    } else {
+      $("#post_section_id").val("");
+      $("#section").hide();
+    }
+  });
 };
