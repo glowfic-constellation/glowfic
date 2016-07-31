@@ -23,6 +23,7 @@ class Board < ActiveRecord::Base
 
   def open_to?(user)
     return true if open_to_anyone?
+    return true if creator_id == user.id
     board_authors.select(&:user_id).map(&:user_id).include?(user.id)
   end
 
