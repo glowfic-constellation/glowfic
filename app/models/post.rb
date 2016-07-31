@@ -115,13 +115,13 @@ class Post < ActiveRecord::Base
   end
 
   private
-  
+
   def valid_board
-    if !board.open_to?(current_user)
+    if !board.open_to?(user)
       errors.add(:board, "is invalid – you must be able to write in it")
     end
   end
-  
+
   def valid_boardsection
     if section.present? && section.board_id != board_id
       errors.add(:section, "must be in the post's board")
