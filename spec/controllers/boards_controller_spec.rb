@@ -26,14 +26,6 @@ RSpec.describe BoardsController do
       get :new
       expect(response.status).to eq(200)
     end
-
-    it "sets the correct cowriters" do
-      user = create(:user)
-      others = 3.times.collect do create(:user) end
-      login_as(user)
-      get :new
-      expect(assigns(:users)).to match_array(others)
-    end
   end
 
   describe "POST create" do
@@ -50,14 +42,6 @@ RSpec.describe BoardsController do
       expect(flash[:error][:message]).to eq("Continuity could not be created.")
       expect(flash[:error][:array]).to be_present
       expect(response).to render_template('new')
-    end
-
-    it "sets the correct cowriters on failure" do
-      user = create(:user)
-      others = 3.times.collect do create(:user) end
-      login_as(user)
-      post :create
-      expect(assigns(:users)).to match_array(others)
     end
 
     it "successfully makes a board" do
@@ -137,15 +121,6 @@ RSpec.describe BoardsController do
       get :edit, id: board.id
       expect(response.status).to eq(200)
     end
-
-    it "sets the correct cowriters" do
-      user = create(:user)
-      others = 3.times.collect do create(:user) end
-      board = create(:board, creator: user)
-      login_as(user)
-      get :edit, id: board.id
-      expect(assigns(:users)).to match_array(others)
-    end
   end
 
   describe "PUT update" do
@@ -180,15 +155,6 @@ RSpec.describe BoardsController do
       expect(response).to render_template('edit')
       expect(flash[:error][:message]).to eq("Continuity could not be created.")
       expect(flash[:error][:array]).to be_present
-    end
-
-    it "sets the correct cowriters on failure" do
-      user = create(:user)
-      others = 3.times.collect do create(:user) end
-      board = create(:board, creator: user)
-      login_as(user)
-      put :update, id: board.id, board: {name: ''}
-      expect(assigns(:users)).to match_array(others)
     end
 
     it "succeeds" do

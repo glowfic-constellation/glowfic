@@ -4,26 +4,26 @@ class Board < ActiveRecord::Base
   has_many :posts
   has_many :board_sections
   has_many :board_authors
-  has_many :coauthors, class_name: User, through: :board_authors, source: :user
   belongs_to :creator, class_name: User
+  has_many :coauthors, class_name: User, through: :board_authors, source: :user do
+    def cameos
+      merge(BoardAuthor.cameo)
+    end
+  end
 
   validates_presence_of :name, :creator
 
   after_save :update_author_list
 
-  attr_accessor :coauthor_ids
-
-  def writer_ids
-    @ids ||= board_authors.select(&:user_id).map(&:user_id) + [creator_id]
-  end
+  attr_accessor :coauthor_ids, :cameo_ids
 
   def writers
-    @writers ||= User.find(writer_ids)
+    @writers ||= coauthors + [creator]
   end
 
   def open_to?(user)
     return true if open_to_anyone?
-    writer_ids.include?(user.id)
+    board_authors.select(&:user_id).map(&:user_id).include?(user.id)
   end
 
   def open_to_anyone?
@@ -33,7 +33,8 @@ class Board < ActiveRecord::Base
   def editable_by?(user)
     return false unless user
     return true if user.admin?
-    writer_ids.include?(user.id)
+    return true if creator_id == user.id
+    coauthors.select(&:id).map(&:id).include?(user.id)
   end
 
   def ordered_items
@@ -46,14 +47,23 @@ class Board < ActiveRecord::Base
   private
 
   def update_author_list
-    return unless coauthor_ids.present?
+    coauthor_ids = self.coauthor_ids || []
+    cameo_ids = self.cameo_ids || []
 
     updated_ids = (coauthor_ids.uniq - [""]).map(&:to_i)
-    existing_ids = board_authors.map(&:user_id)
+    existing_ids = coauthors.map(&:id)
 
     BoardAuthor.where(board_id: id, user_id: (existing_ids - updated_ids)).destroy_all
     (updated_ids - existing_ids).each do |new_id|
       BoardAuthor.create(board_id: id, user_id: new_id)
+    end
+
+    updated_ids = (cameo_ids.uniq - [""]).map(&:to_i)
+    existing_ids = coauthors.cameos.map(&:id)
+
+    BoardAuthor.where(board_id: id, user_id: (existing_ids - updated_ids)).destroy_all
+    (updated_ids - existing_ids).each do |new_id|
+      BoardAuthor.create(board_id: id, user_id: new_id, cameo: true)
     end
   end
 end

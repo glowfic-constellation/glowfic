@@ -7,14 +7,13 @@
 %tr
   %th.sub Coauthors
   %td.even
-    = f.collection_select(:coauthor_ids, 
-                          User.where('id != ?', @board.creator_id), 
-                          :id, 
-                          :username, 
-                          {selected: @board.coauthors.map(&:id)}, 
-                          {class: 'text', multiple: true})
+    = f.collection_select(:coauthor_ids, @authors, :id, :username, {selected: @board.coauthors.map(&:id)}, {multiple: true})
+%tr
+  %th.sub Coauthors
+  %td.odd
+    = f.collection_select(:cameo_ids, @cameos, :id, :username, {selected: @board.coauthors.cameos.map(&:id)}, {multiple: true})
 %tr
   %th.sub.vtop Description
-  %td.odd= f.text_area :description
+  %td.even= f.text_area :description
 %tr
   %th.centered.subber{colspan: 2}= submit_tag "Save", class: 'button'

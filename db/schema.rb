@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20160723172304) do
+ActiveRecord::Schema.define(:version => 20160731040017) do
 
   create_table "audits", :force => true do |t|
     t.integer  "auditable_id"
@@ -35,10 +35,11 @@ ActiveRecord::Schema.define(:version => 20160723172304) do
   add_index "audits", ["user_id", "user_type"], :name => "user_index"
 
   create_table "board_authors", :force => true do |t|
-    t.integer  "user_id",    :null => false
-    t.integer  "board_id",   :null => false
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
+    t.integer  "user_id",                       :null => false
+    t.integer  "board_id",                      :null => false
+    t.datetime "created_at",                    :null => false
+    t.datetime "updated_at",                    :null => false
+    t.boolean  "cameo",      :default => false
   end
 
   add_index "board_authors", ["board_id"], :name => "index_board_authors_on_board_id"
@@ -189,6 +190,7 @@ ActiveRecord::Schema.define(:version => 20160723172304) do
 
   create_table "post_tags", :force => true do |t|
     t.integer  "post_id",                       :null => false
+    t.integer  "user_id",                       :null => false
     t.integer  "tag_id",                        :null => false
     t.boolean  "suggested",  :default => false
     t.datetime "created_at",                    :null => false
