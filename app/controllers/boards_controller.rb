@@ -1,7 +1,7 @@
 class BoardsController < ApplicationController
   before_filter :login_required, except: [:index, :show]
-  before_filter :set_available_cowriters, only: [:new, :edit]
   before_filter :find_board, only: [:show, :edit, :update, :destroy]
+  before_filter :set_available_cowriters, only: [:new, :edit]
   before_filter :require_permission, only: [:edit, :update, :destroy]
 
   def index
@@ -96,7 +96,16 @@ class BoardsController < ApplicationController
   private
 
   def set_available_cowriters
-    @users = User.order(:username) - [current_user]
+    @authors = @cameos = User.order(:username)
+    if @board
+      @authors -= @board.coauthors.cameos
+      @cameos -= @board.coauthors
+      @authors -= [@board.creator]
+      @cameos -= [@board.creator]
+    else
+      @authors -= [current_user]
+      @cameos -= [current_user]
+    end
     use_javascript('boards')
   end
 
