@@ -2,8 +2,8 @@ class PostsController < WritableController
   before_filter :login_required, except: [:index, :show, :history, :search, :stats]
   before_filter :find_post, only: [:show, :history, :stats, :edit, :update, :destroy]
   before_filter :require_permission, only: [:edit, :destroy]
-  before_filter :build_template_groups, only: [:new, :show, :edit]
-  before_filter :build_tags, only: [:new, :edit]
+  before_filter :build_template_groups, only: [:show]
+  before_filter :editor_setup, only: [:new, :edit]
 
   def index
     @posts = Post.order('tagged_at desc').includes(:board, :user, :last_user).where('board_id != 4')
@@ -69,7 +69,6 @@ class PostsController < WritableController
   end
 
   def new
-    use_javascript('posts')
     @post = Post.new(character: current_user.active_character, user: current_user)
     @post.board_id = params[:board_id]
     image = current_user.active_character.try(:icon) || current_user.avatar
@@ -124,7 +123,6 @@ class PostsController < WritableController
   end
 
   def edit
-    use_javascript('posts')
     gon.original_content = @post.content
   end
 
@@ -285,7 +283,7 @@ class PostsController < WritableController
     end
   end
 
-  def editor_setup(post=@post)
+  def editor_setup
     use_javascript('posts')
     build_template_groups
     build_tags
