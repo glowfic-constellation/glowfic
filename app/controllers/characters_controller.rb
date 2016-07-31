@@ -25,10 +25,6 @@ class CharactersController < ApplicationController
 
   def create
     @character = Character.new((params[:character] || {}).merge(user: current_user))
-    unless verify_character_foreigns(@character)
-      render :action => :new
-      return
-    end
 
     if @character.valid?
       save_character_with_extras
@@ -49,10 +45,6 @@ class CharactersController < ApplicationController
 
   def update
     @character.assign_attributes(params[:character])
-    unless verify_character_foreigns(@character)
-      render :action => :edit
-      return
-    end
 
     if @character.valid?
       save_character_with_extras
@@ -140,25 +132,5 @@ class CharactersController < ApplicationController
       end
       @character.save
     end
-  end
-  
-  def verify_character_foreigns(character)
-    # template_id, gallery_ids and default_icon_id
-    return unless character.present?
-    if character.template.present? && character.template.user_id != current_user.id
-      character.template = nil
-      flash.now[:error] = "Template must be your own."
-      return
-    end
-    if character.galleries.present? && character.galleries.detect {|g| g.user_id != current_user.id}
-      flash.now[:error] = "Galleries must be your own."
-      return
-    end
-    if character.default_icon.present? && character.default_icon.user_id != current_user.id
-      character.default_icon = nil
-      flash.now[:error] = "Default icon must be your own."
-      return
-    end
-    character
   end
 end
