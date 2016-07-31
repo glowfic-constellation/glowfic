@@ -293,20 +293,4 @@ class PostsController < WritableController
     build_template_groups
     build_tags
   end
-
-  def verify_post_foreigns(post=@post)
-    # do a check for board_id, section_id
-    return unless post.present?
-    if post.board.present? && !post.board.open_to?(current_user)
-      post.board = nil
-      flash.now[:error] = "You do not have permission to write in that board."
-      return
-    end
-    if post.section.present? && post.section.board_id != post.board_id
-      post.section = nil
-      flash.now[:error] = "Post's board section must be in the post's board"
-      return
-    end
-    post
-  end
 end
