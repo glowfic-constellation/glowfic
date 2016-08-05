@@ -34,7 +34,7 @@ class BoardsController < ApplicationController
   def show
     respond_to do |format|
       format.json do
-        render json: @board.board_sections.map { |s| [s.id, s.name] }
+        render json: @board.board_sections.order('section_order asc').map { |s| [s.id, s.name] }
       end
       format.html do
         order = 'section_order asc, tagged_at asc'
