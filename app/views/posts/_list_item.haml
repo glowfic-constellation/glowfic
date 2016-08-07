@@ -15,10 +15,12 @@
       - if total_pages > 1
         = surround '[', ']' do
           - if total_pages <= 6
+            - params = {}
             - total_pages.times do |index|
-              = link_to (index + 1), post_path(post, page: index + 1)
+              - params[:page] = index + 1 unless index == 0
+              = link_to (index + 1), post_path(post, params)
           - else
-            = link_to 1, post_path(post, page: 1)
+            = link_to 1, post_path(post)
             = link_to 2, post_path(post, page: 2)
             = link_to 3, post_path(post, page: 3)
             \...
