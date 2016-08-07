@@ -250,7 +250,7 @@ iconString = function(icon) {
 
   $("#icon_dropdown").append('<option value="'+img_id+'">'+img_key+'</option>');
   return "<div class='gallery-icon'>"
-    + "<img src='" + img_url + "' id='" + img_id + "' alt='" + img_key + "' title='" + img_key + "' class='icon' />"
+    + $("<div>").append($("<img>").attr({src: img_url, id: img_id, alt: img_key, title: img_key, 'class': 'icon'})).html() //<div> used so we can get the innerHTML
     + "<br />" + img_key
     + "</div>";
 };
@@ -286,7 +286,8 @@ getAndSetCharacterData = function(characterId) {
       var keyword = gon.current_user.avatar.keyword;
       $("#icon_dropdown").append('<option value="'+aid+'">'+keyword+'</option>');
       $("#gallery").html("");
-      $("#gallery").append("<div class='gallery-icon'><img src='" + url + "' id='" + aid + "' class='icon' /><br />Avatar</div>");
+      avatar_icon = $("<div>").attr('class', 'gallery-icon').append($("<img>").attr({src: url, id: aid, 'class': 'icon'})).append("<br />Avatar");
+      $("#gallery").append(avatar_icon);
       $("#gallery").append("<div class='gallery-icon'><img src='/images/no-icon.png' id='' class='icon' /><br />No Icon</div>");
       bindIcon();
       bindGallery();
