@@ -92,17 +92,20 @@ class WritableController < ApplicationController
       @post.mark_read(current_user, @post.read_time_for(@replies)) unless @post.board.ignored_by?(current_user)
     end
 
-    if @post.content_warnings.size > 1
-      flash.now[:error] = {}
-      flash.now[:error][:image] = "/images/exclamation.png"
-      flash.now[:error][:message] = "This post has the following content warnings:"
-      flash.now[:error][:array] = @post.content_warnings.map(&:name)
-    elsif @post.content_warnings.size == 1
-      flash.now[:error] = {}
-      flash.now[:error][:image] = "/images/exclamation.png"
-      flash.now[:error][:message] = "This post has the following content warning: " + @post.content_warnings.first.name
-    end
+    @warnings = @post.content_warnings if display_warnings?
 
     render 'posts/show'
+  end
+
+  def display_warnings?
+    return false if session[:ignore_warnings]
+
+    if params[:ignore_warnings].present?
+      session[:ignore_warnings] = true unless current_user
+      return false
+    end
+
+    return true unless current_user
+    @post.show_warnings_for?(current_user)
   end
 end

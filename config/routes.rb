@@ -57,6 +57,7 @@ Rails.application.routes.draw do
     member do
       get :history
       get :stats
+      post :warnings
     end
     collection do
       post :mark

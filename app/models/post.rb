@@ -73,6 +73,14 @@ class Post < ActiveRecord::Base
     @first_unread ||= replies.order('created_at asc').detect { |reply| viewed_at < reply.created_at }
   end
 
+  def hide_warnings_for(user)
+    view_for(user).update_attributes(warnings_hidden: true)
+  end
+
+  def show_warnings_for?(user)
+    !(view_for(user).try(:warnings_hidden))
+  end
+
   def completed?
     status == STATUS_COMPLETE
   end
