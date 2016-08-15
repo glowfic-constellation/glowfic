@@ -82,8 +82,6 @@ class PostsController < WritableController
   end
 
   def create
-    reorder_sections and return if params[:commit] == "reorder"
-
     gon.original_content = params[:post][:content]
     preview(:post, posts_path) and return if params[:button_preview].present?
 
@@ -248,18 +246,6 @@ class PostsController < WritableController
       flash[:error] = "You do not have permission to modify this post."
       redirect_to post_path(@post)
     end
-  end
-
-  def reorder_sections
-    Post.transaction do
-      params[:changes].each do |post_id, section_order|
-        post = Post.where(id: post_id).first
-        next unless post
-        post.section_order = section_order
-        post.save
-      end
-    end
-    render json: {}
   end
 
   def build_tags
