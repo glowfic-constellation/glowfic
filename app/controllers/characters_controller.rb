@@ -20,6 +20,7 @@ class CharactersController < ApplicationController
   end
 
   def new
+    @page_title = "New Character"
     @character = Character.new(template_id: params[:template_id])
   end
 
@@ -31,16 +32,19 @@ class CharactersController < ApplicationController
       flash[:success] = "Character saved successfully."
       redirect_to character_path(@character)
     else
+      @page_title = "New Character"
       flash.now[:error] = "Your character could not be saved."
       render :action => :new
     end
   end
 
   def show
+    @page_title = @character.name
     @posts = @character.recent_posts(25, page)
   end
 
   def edit
+    @page_title = "Edit Character: " + @character.name
   end
 
   def update
@@ -52,6 +56,7 @@ class CharactersController < ApplicationController
       redirect_to character_path(@character)
     else
       flash.now[:error] = "Your character could not be saved."
+      @page_title = "Edit Character: " + @character.name
       render :action => :edit
     end
   end
@@ -69,6 +74,7 @@ class CharactersController < ApplicationController
   end
 
   def facecasts
+    @page_title = 'Facecasts'
     chars = Character.where('pb is not null')
     @pbs = {}
 
