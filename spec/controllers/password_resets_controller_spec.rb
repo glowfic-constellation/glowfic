@@ -44,7 +44,7 @@ RSpec.describe PasswordResetsController do
     end
 
     it "handles email match but not username" do
-      user = create(:user_with_email)
+      user = create(:user)
       post :create, username: 'fake_username', email: user.email
       expect(response).to render_template('new')
       expect(flash[:error]).to eq("Account could not be found.")
@@ -58,7 +58,7 @@ RSpec.describe PasswordResetsController do
     end
 
     it "resends link if reset already present" do
-      user = create(:user_with_email)
+      user = create(:user)
       reset = create(:password_reset, user: user)
       expect(PasswordReset.count).to eq(1)
       post :create, username: user.username, email: user.email
@@ -69,7 +69,7 @@ RSpec.describe PasswordResetsController do
 
     it "sends password reset" do
       ActionMailer::Base.deliveries.clear
-      user = create(:user_with_email)
+      user = create(:user)
       post :create, username: user.username, email: user.email
       expect(response).to redirect_to(new_password_reset_url)
       expect(flash[:success]).to eq("A password reset link has been emailed to you.")

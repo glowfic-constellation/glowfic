@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20160716055457) do
+ActiveRecord::Schema.define(:version => 20160813025151) do
 
   create_table "audits", :force => true do |t|
     t.integer  "auditable_id"
@@ -35,10 +35,11 @@ ActiveRecord::Schema.define(:version => 20160716055457) do
   add_index "audits", ["user_id", "user_type"], :name => "user_index"
 
   create_table "board_authors", :force => true do |t|
-    t.integer  "user_id",    :null => false
-    t.integer  "board_id",   :null => false
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
+    t.integer  "user_id",                       :null => false
+    t.integer  "board_id",                      :null => false
+    t.datetime "created_at",                    :null => false
+    t.datetime "updated_at",                    :null => false
+    t.boolean  "cameo",      :default => false
   end
 
   add_index "board_authors", ["board_id"], :name => "index_board_authors_on_board_id"
@@ -61,15 +62,17 @@ ActiveRecord::Schema.define(:version => 20160716055457) do
     t.boolean  "notify_email",   :default => false
     t.datetime "created_at",                        :null => false
     t.datetime "updated_at",                        :null => false
+    t.datetime "read_at"
   end
 
   add_index "board_views", ["user_id", "board_id"], :name => "index_board_views_on_user_id_and_board_id"
 
   create_table "boards", :force => true do |t|
-    t.string   "name",       :null => false
-    t.integer  "creator_id", :null => false
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
+    t.string   "name",        :null => false
+    t.integer  "creator_id",  :null => false
+    t.datetime "created_at",  :null => false
+    t.datetime "updated_at",  :null => false
+    t.text     "description"
   end
 
   create_table "character_groups", :force => true do |t|
@@ -112,16 +115,6 @@ ActiveRecord::Schema.define(:version => 20160716055457) do
 
   add_index "characters_galleries", ["character_id"], :name => "index_characters_galleries_on_character_id"
   add_index "characters_galleries", ["gallery_id"], :name => "index_characters_galleries_on_gallery_id"
-
-  create_table "continuity_memberships", :force => true do |t|
-    t.integer  "board_id",     :null => false
-    t.integer  "character_id", :null => false
-    t.datetime "created_at",   :null => false
-    t.datetime "updated_at",   :null => false
-  end
-
-  add_index "continuity_memberships", ["board_id"], :name => "index_continuity_memberships_on_board_id"
-  add_index "continuity_memberships", ["character_id"], :name => "index_continuity_memberships_on_character_id"
 
   create_table "galleries", :force => true do |t|
     t.integer  "user_id",       :null => false
@@ -175,6 +168,7 @@ ActiveRecord::Schema.define(:version => 20160716055457) do
 
   add_index "messages", ["recipient_id", "unread"], :name => "index_messages_on_recipient_id_and_unread"
   add_index "messages", ["sender_id"], :name => "index_messages_on_sender_id"
+  add_index "messages", ["thread_id"], :name => "index_messages_on_thread_id"
 
   create_table "password_resets", :force => true do |t|
     t.integer  "user_id",                       :null => false
@@ -185,6 +179,7 @@ ActiveRecord::Schema.define(:version => 20160716055457) do
   end
 
   add_index "password_resets", ["auth_token"], :name => "index_password_resets_on_auth_token", :unique => true
+  add_index "password_resets", ["user_id", "created_at"], :name => "index_password_resets_on_user_id_and_created_at"
 
   create_table "post_tags", :force => true do |t|
     t.integer  "post_id",                       :null => false
@@ -207,13 +202,15 @@ ActiveRecord::Schema.define(:version => 20160716055457) do
   add_index "post_viewers", ["post_id"], :name => "index_post_viewers_on_post_id"
 
   create_table "post_views", :force => true do |t|
-    t.integer  "post_id",                           :null => false
-    t.integer  "user_id",                           :null => false
-    t.boolean  "ignored",        :default => false
-    t.boolean  "notify_message", :default => false
-    t.boolean  "notify_email",   :default => false
-    t.datetime "created_at",                        :null => false
-    t.datetime "updated_at",                        :null => false
+    t.integer  "post_id",                            :null => false
+    t.integer  "user_id",                            :null => false
+    t.boolean  "ignored",         :default => false
+    t.boolean  "notify_message",  :default => false
+    t.boolean  "notify_email",    :default => false
+    t.datetime "created_at",                         :null => false
+    t.datetime "updated_at",                         :null => false
+    t.datetime "read_at"
+    t.boolean  "warnings_hidden", :default => false
   end
 
   add_index "post_views", ["user_id", "post_id"], :name => "index_post_views_on_user_id_and_post_id"
@@ -228,7 +225,7 @@ ActiveRecord::Schema.define(:version => 20160716055457) do
     t.integer  "privacy",       :default => 0, :null => false
     t.datetime "created_at",                   :null => false
     t.datetime "updated_at",                   :null => false
-    t.integer  "status"
+    t.integer  "status",        :default => 0
     t.integer  "section_id"
     t.integer  "section_order"
     t.string   "description"
@@ -285,14 +282,12 @@ ActiveRecord::Schema.define(:version => 20160716055457) do
   add_index "tags", ["type"], :name => "index_tags_on_type"
 
   create_table "templates", :force => true do |t|
-    t.integer  "user_id",            :null => false
+    t.integer  "user_id",    :null => false
     t.string   "name"
-    t.datetime "created_at",         :null => false
-    t.datetime "updated_at",         :null => false
-    t.integer  "character_group_id"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
   end
 
-  add_index "templates", ["character_group_id"], :name => "index_templates_on_character_group_id"
   add_index "templates", ["user_id"], :name => "index_templates_on_user_id"
 
   create_table "users", :force => true do |t|

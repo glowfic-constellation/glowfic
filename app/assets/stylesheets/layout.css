@@ -70,7 +70,7 @@
 /* Form Tables */
 #content table.form-table { text-align: center; width: 400px; margin: 0px; border-spacing: 0px; }
 #content table.form-table td { text-align: left; padding: 5px; }
-#content table.form-table td input { 
+#content table.form-table td input, table#icon-table td input { 
     margin: 0px;
     width: 100%;
     -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
@@ -100,10 +100,13 @@
 .view-button .icon-view { width: 15px; height: 15px; display: inline; margin: 0px; padding: 0px; top: 2px; position: relative; }
 
 /* Not yet deserving of its own CSS file */
-#message_form textarea { height: 100px; }
+#message_form textarea, .edit_board textarea, .new_board textarea { height: 100px; }
 #stats ul { margin-top: 0px; margin-bottom: 0px; padding-left: 15px; }
 .select2-container { margin: 3px 0px; width: 300px !important; }
 .select2, .select2-dropdown { font-size: 13px !important; }
 .select2 input { height: 20px; margin: 0px; }
 .select2 ul { padding: 0px; }
 .field_with_errors { display: inline-block; } /* Keeps forms from whitespacing weirdly when errors present */
+input.checkbox { height: 12px; margin: 0px; } /* Keeps unread table from padding excessively for the checkboxes */
+#signup th.sub { width: 90px; }
+td.continuity-spacer { height: 20px; }

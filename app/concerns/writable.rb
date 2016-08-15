@@ -14,13 +14,17 @@ module Writable
     def has_icons?
       return user.avatar_id? unless character
       return true if character.default_icon
-      return false unless character.gallery
-      return character.gallery.icons.present?
+      return false unless character.galleries.present?
+      return character.galleries.map(&:icons).present?
     end
 
     def editable_by?(editor)
       return false unless editor
       editor.id == user_id || editor.admin?
+    end
+
+    def word_count
+      content.split.size
     end
 
     private

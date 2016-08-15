@@ -36,6 +36,8 @@ Rails.application.routes.draw do
   resources :icons, except: [:index, :new, :create] do
     member do
       post :avatar
+      get :replace
+      post :do_replace
     end
     collection do
       delete :delete_multiple
@@ -55,6 +57,7 @@ Rails.application.routes.draw do
     member do
       get :history
       get :stats
+      post :warnings
     end
     collection do
       post :mark

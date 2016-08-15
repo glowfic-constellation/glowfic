@@ -1,10 +1,12 @@
 class Post < ActiveRecord::Base
   include Writable
   include Viewable
+  include Orderable
 
   PRIVACY_PUBLIC = 0
   PRIVACY_PRIVATE = 1
   PRIVACY_LIST = 2
+  PRIVACY_REGISTERED = 3
 
   STATUS_ACTIVE = 0
   STATUS_COMPLETE = 1
@@ -15,23 +17,21 @@ class Post < ActiveRecord::Base
   belongs_to :last_user, class_name: User
   belongs_to :last_reply, class_name: Reply
   has_many :replies, inverse_of: :post, dependent: :destroy
-  has_many :post_viewers
-  has_many :reply_drafts
+  has_many :post_viewers, dependent: :destroy
+  has_many :reply_drafts, dependent: :destroy
   has_many :post_tags, inverse_of: :post, dependent: :destroy
   has_many :tags, through: :post_tags
   has_many :settings, through: :post_tags, source: :setting
   has_many :content_warnings, through: :post_tags, source: :content_warning
 
-  attr_accessible :board, :board_id, :subject, :privacy, :post_viewer_ids, :description, :section_id, :tag_ids, :warning_ids, :setting_ids
+  attr_accessible :board, :board_id, :subject, :privacy, :post_viewer_ids, :description, :section_id, :tag_ids, :warning_ids, :setting_ids, :section_order
   attr_accessor :post_viewer_ids, :tag_ids, :warning_ids, :setting_ids
   attr_writer :skip_edited
 
   validates_presence_of :board, :subject
   validate :valid_board, :valid_board_section
 
-  before_save :autofill_order
   after_save :update_access_list, :update_tag_list
-  after_destroy :reorder_others
 
   audited except: [:last_reply_id, :last_user_id, :edited_at, :tagged_at, :section_id, :section_order]
   has_associated_audits
@@ -39,6 +39,7 @@ class Post < ActiveRecord::Base
   def visible_to?(user)
     return true if privacy == PRIVACY_PUBLIC
     return false unless user
+    return true if privacy == PRIVACY_REGISTERED
     return true if user.admin?
     return user.id == user_id if privacy == PRIVACY_PRIVATE
     @visible ||= (post_viewers.map(&:user_id) + [user_id]).include?(user.id)
@@ -73,6 +74,14 @@ class Post < ActiveRecord::Base
     @first_unread ||= replies.order('created_at asc').detect { |reply| viewed_at < reply.created_at }
   end
 
+  def hide_warnings_for(user)
+    view_for(user).update_attributes(warnings_hidden: true)
+  end
+
+  def show_warnings_for?(user)
+    !(view_for(user).try(:warnings_hidden))
+  end
+
   def completed?
     status == STATUS_COMPLETE
   end
@@ -86,9 +95,10 @@ class Post < ActiveRecord::Base
   end
 
   def self.privacy_settings
-    { 'Public'      => PRIVACY_PUBLIC,
-      'Access List' => PRIVACY_LIST,
-      'Private'     => PRIVACY_PRIVATE }
+    { 'Public'              => PRIVACY_PUBLIC,
+      'Constellation Users' => PRIVACY_REGISTERED,
+      'Access List'         => PRIVACY_LIST,
+      'Private'             => PRIVACY_PRIVATE }
   end
 
   def last_updated
@@ -130,7 +140,8 @@ class Post < ActiveRecord::Base
   end
 
   def update_access_list
-    return unless privacy == PRIVACY_LIST
+    return unless privacy_changed?
+    PostViewer.where(post_id: id).destroy_all and return unless privacy == PRIVACY_LIST
     return unless post_viewer_ids
 
     updated_ids = (post_viewer_ids - [""]).map(&:to_i)
@@ -169,21 +180,7 @@ class Post < ActiveRecord::Base
     super + [:tagged_at]
   end
 
-  def autofill_order
-    return unless section_id_changed?
-    return unless section_id.present?
-    previous_section = Post.where(section_id: section_id).select(:section_order).order('section_order desc').first.try(:section_order)
-    previous_section ||= -1
-    self.section_order = previous_section + 1
-  end
-
-  def reorder_others
-    return unless section_id.present?
-    other_posts = Post.where(section_id: section_id).order('section_order asc')
-    return unless other_posts.present?
-    other_posts.each_with_index do |post, index|
-      post.section_order = index
-      post.save
-    end
+  def ordered_attributes
+    [:section_id, :board_id]
   end
 end

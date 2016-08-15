@@ -1,7 +1,6 @@
 class Character < ActiveRecord::Base
   belongs_to :user
   belongs_to :template
-  belongs_to :gallery
   belongs_to :default_icon, class_name: Icon
   belongs_to :character_group
   has_many :replies

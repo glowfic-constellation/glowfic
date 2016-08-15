@@ -1,32 +1,23 @@
-= form_for @user, :url => users_path, :method => :post do |f|
-  %table#signup.centered
+= form_for @user, url: users_path, method: :post do |f|
+  %table#signup.form-table
+    %thead
+      %tr
+        %th{colspan: 2} Sign Up
+    %tbody
+      %tr#username
+        %th.sub.vtop Username
+        %td.even= f.text_field :username, placeholder: "Username"
+      %tr#email
+        %th.sub.vtop Email
+        %td.odd= f.text_field :email, placeholder: "Email address"
+      %tr#password
+        %th.sub.vtop Password
+        %td.even= f.password_field :password, placeholder: "Password"
+      %tr#conf
+        %th.sub.vtop Confirm
+        %td.odd= f.password_field :password_confirmation, placeholder: "Confirm Password"
+      %tr#secret
+        %th.sub.vtop Secret
+        %td.even= text_field_tag :secret, params[:secret], placeholder: "Secret"
     %tr
-      %th.centered{:colspan=>3} Sign Up
-    %tr#username
-      %td.alert
-      %td.entry= f.text_field :username, :placeholder => "Username", :class => 'text'
-      %td.messages
-    %tr#email
-      %td.alert
-      %td.entry= f.text_field :email, placeholder: "Email address (optional)", class: 'text'
-      %td.messages
-    %tr#password
-      %td.alert
-      %td.entry= f.password_field :password, :placeholder => "Password", :class => 'text', :value => (params[:user]||{})[:password]
-      %td.messages
-    %tr#conf
-      %td.alert
-      %td.entry= f.password_field :password_confirmation, :placeholder => "Confirm Password", :class => 'text', :value => (params[:user]||{})[:password_confirmation]
-      %td.messages
-    %tr#secret
-      %td.alert
-      %td.entry= text_field_tag :secret, params[:secret], :placeholder => "Secret", :class => 'text'
-      %td.messages
-    %tr
-      %td.centered{colspan: 3}= submit_tag "Sign up", class: 'button'
-    %tr
-      %td
-        .width-15
-      %td
-      %td
-        .width-15
+      %th.subber{colspan: 2}= submit_tag "Sign Up", class: 'button'

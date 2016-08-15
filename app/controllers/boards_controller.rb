@@ -1,7 +1,7 @@
 class BoardsController < ApplicationController
   before_filter :login_required, except: [:index, :show]
-  before_filter :set_available_cowriters, only: [:new, :edit]
   before_filter :find_board, only: [:show, :edit, :update, :destroy]
+  before_filter :set_available_cowriters, only: [:new, :edit]
   before_filter :require_permission, only: [:edit, :update, :destroy]
 
   def index
@@ -20,15 +20,15 @@ class BoardsController < ApplicationController
 
     if @board.save
       flash[:success] = "Continuity created!"
-      redirect_to boards_path
-    else
-      flash.now[:error] = {}
-      flash.now[:error][:message] = "Continuity could not be created."
-      flash.now[:error][:array] = @board.errors.full_messages
-      @page_title = "New Continuity"
-      set_available_cowriters
-      render :action => :new
+      redirect_to boards_path and return
     end
+
+    flash.now[:error] = {}
+    flash.now[:error][:message] = "Continuity could not be created."
+    flash.now[:error][:array] = @board.errors.full_messages
+    @page_title = "New Continuity"
+    set_available_cowriters
+    render :action => :new
   end
 
   def show
@@ -41,6 +41,8 @@ class BoardsController < ApplicationController
         order = 'tagged_at desc' if @board.open_to_anyone?
         @page_title = @board.name
         @posts = @board.posts.includes(:user, :last_user).order(order).paginate(per_page: 25, page: page)
+        @board_items = @board.board_sections + @board.posts.where(section_id: nil)
+        @board_items.sort_by! { |item| item.section_order.to_i }
       end
     end
   end
@@ -49,6 +51,8 @@ class BoardsController < ApplicationController
     @page_title = "Edit Continuity"
     gon.ajax_path = '/board_sections'
     use_javascript('board_sections')
+    @board_items = @board.board_sections + @board.posts.where(section_id: nil)
+    @board_items.sort_by! { |item| item.section_order.to_i }
   end
 
   def update
@@ -92,7 +96,16 @@ class BoardsController < ApplicationController
   private
 
   def set_available_cowriters
-    @users = User.order(:username) - [current_user]
+    @authors = @cameos = User.order(:username)
+    if @board
+      @authors -= @board.coauthors.cameos
+      @cameos -= @board.coauthors
+      @authors -= [@board.creator]
+      @cameos -= [@board.creator]
+    else
+      @authors -= [current_user]
+      @cameos -= [current_user]
+    end
     use_javascript('boards')
   end
 

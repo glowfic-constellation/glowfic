@@ -33,8 +33,14 @@ function switchRows(old_order, new_order) {
   $("#section-table tr:even td").removeClass('odd').addClass("even");
 
   var json = {changes: {}, commit: 'reorder'};
-  json['changes'][this_row.attr('data-section')] = new_order;
-  json['changes'][that_row.attr('data-section')] = old_order;
+  json['changes'][this_row.attr('data-section')] = {
+    type: this_row.attr('data-type'),
+    order: new_order,
+  };
+  json['changes'][that_row.attr('data-section')] = {
+    type: that_row.attr('data-type'),
+    order: old_order,
+  };
   $.post(gon.ajax_path, json, function (resp) {
     $("#saveconf").show().delay(2000).fadeOut();
   });

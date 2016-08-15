@@ -6,9 +6,8 @@ FactoryGirl.define do
   factory :user, aliases: [:creator] do
     username
     password "password"
-
-    factory :user_with_email do
-      email "fake@faker.com"
+    sequence :email do |n|
+      "fake#{n}@faker.com"
     end
 
     factory :admin_user do
@@ -19,6 +18,11 @@ FactoryGirl.define do
   factory :board do
     creator
     name "test board"
+  end
+
+  factory :board_section do
+    name "TestSection"
+    board
   end
 
   factory :post do
@@ -74,5 +78,13 @@ FactoryGirl.define do
       "Tag#{n}"
     end
     user
+
+    factory :setting do
+      type 'Setting'
+    end
+
+    factory :content_warning do
+      type 'ContentWarning'
+    end
   end
 end

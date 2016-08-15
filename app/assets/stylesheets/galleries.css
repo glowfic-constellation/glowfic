@@ -33,7 +33,6 @@ table.form-table .icon { vertical-align: middle; }
 .select-button input { height: 20px; width: 20px; margin: 0px; }
 
 /* The table in galleries/add to add multiple icons at once */
-table#icon-table { margin: 0px; text-align: center; }
-table#icon-table td { padding: 0px; }
-table#icon-table td.icon-buttons { width: 40px; padding: 0px 5px 0px 0px; }
-table#icon-table td.icon-buttons img { display: inline-block; }
+#content table#icon-table { margin: 0px; text-align: center; }
+#content table#icon-table td.icon-buttons { width: 40px; padding: 0px 5px 0px 0px; }
+#content table#icon-table td.icon-buttons img { display: inline-block; }
