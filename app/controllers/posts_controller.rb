@@ -1,8 +1,8 @@
 require 'will_paginate/array'
 
 class PostsController < WritableController
-  before_filter :login_required, except: [:index, :show, :history, :search, :stats]
-  before_filter :find_post, only: [:show, :history, :stats, :edit, :update, :destroy]
+  before_filter :login_required, except: [:index, :show, :history, :warnings, :search, :stats]
+  before_filter :find_post, only: [:show, :history, :stats, :warnings, :edit, :update, :destroy]
   before_filter :require_permission, only: [:edit, :destroy]
   before_filter :build_template_groups, only: [:new, :show, :edit]
   before_filter :build_tags, only: [:new, :edit]
@@ -26,8 +26,8 @@ class PostsController < WritableController
   def unread
     @posts = Post.joins("LEFT JOIN post_views ON post_views.post_id = posts.id AND post_views.user_id = #{current_user.id}")
     @posts = @posts.joins("LEFT JOIN board_views on board_views.board_id = posts.board_id AND board_views.user_id = #{current_user.id}")
-    @posts = @posts.where("post_views.user_id IS NULL OR (date_trunc('second', post_views.updated_at) < date_trunc('second', posts.tagged_at) AND post_views.ignored = '0')")
-    @posts = @posts.where("board_views.user_id IS NULL OR (date_trunc('second', board_views.updated_at) < date_trunc('second', posts.tagged_at) AND board_views.ignored = '0')")
+    @posts = @posts.where("post_views.user_id IS NULL OR (date_trunc('second', post_views.read_at) < date_trunc('second', posts.tagged_at) AND post_views.ignored = '0')")
+    @posts = @posts.where("board_views.user_id IS NULL OR (date_trunc('second', board_views.read_at) < date_trunc('second', posts.tagged_at) AND board_views.ignored = '0')")
     @posts = @posts.order('tagged_at desc').includes(:board, :user, :last_user)
     @posts = @posts.select { |p| p.visible_to?(current_user) }
     @posts = @posts.paginate(per_page: 25, page: page)
@@ -223,6 +223,17 @@ class PostsController < WritableController
     end
 
     @search_results = @search_results.paginate(page: page, per_page: 25)
+  end
+
+  def warnings
+    if logged_in?
+      @post.hide_warnings_for(current_user)
+      flash[:success] = "Content warnings have been hidden for this thread. Proceed at your own risk."
+    else
+      session[:ignore_warnings] = true
+      flash[:success] = "All content warnings have been hidden. Proceed at your own risk."
+    end
+    redirect_to post_path(@post)
   end
 
   private

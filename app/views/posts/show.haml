@@ -8,6 +8,21 @@
   &raquo;
   %b= @post.subject
 
+- if @warnings.present?
+  - content_for :flashes do
+    .flash.error
+      - if logged_in?
+        = link_to warnings_post_path(@post), method: :post do
+          .link-box.red.float-right Dismiss for this post
+      - else
+        = link_to warnings_post_path(@post), method: :post, confirm: 'Are you sure? You will not see content warnings again until you restart your browser!' do
+          .link-box.red.float-right Dismiss all content warnings
+      = image_tag "/images/exclamation.png", class: 'vmid'
+      This post has the following content warnings:
+      %ul
+        - @warnings.each do |warning|
+          %li= link_to warning.name, tag_path(warning)
+
 .post-header
   .padding-15
     %span#post-title= link_to @post.subject, post_path(@post)

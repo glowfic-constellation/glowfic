@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20160731040017) do
+ActiveRecord::Schema.define(:version => 20160813025151) do
 
   create_table "audits", :force => true do |t|
     t.integer  "auditable_id"
@@ -62,6 +62,7 @@ ActiveRecord::Schema.define(:version => 20160731040017) do
     t.boolean  "notify_email",   :default => false
     t.datetime "created_at",                        :null => false
     t.datetime "updated_at",                        :null => false
+    t.datetime "read_at"
   end
 
   add_index "board_views", ["user_id", "board_id"], :name => "index_board_views_on_user_id_and_board_id"
@@ -201,13 +202,15 @@ ActiveRecord::Schema.define(:version => 20160731040017) do
   add_index "post_viewers", ["post_id"], :name => "index_post_viewers_on_post_id"
 
   create_table "post_views", :force => true do |t|
-    t.integer  "post_id",                           :null => false
-    t.integer  "user_id",                           :null => false
-    t.boolean  "ignored",        :default => false
-    t.boolean  "notify_message", :default => false
-    t.boolean  "notify_email",   :default => false
-    t.datetime "created_at",                        :null => false
-    t.datetime "updated_at",                        :null => false
+    t.integer  "post_id",                            :null => false
+    t.integer  "user_id",                            :null => false
+    t.boolean  "ignored",         :default => false
+    t.boolean  "notify_message",  :default => false
+    t.boolean  "notify_email",    :default => false
+    t.datetime "created_at",                         :null => false
+    t.datetime "updated_at",                         :null => false
+    t.datetime "read_at"
+    t.boolean  "warnings_hidden", :default => false
   end
 
   add_index "post_views", ["user_id", "post_id"], :name => "index_post_views_on_user_id_and_post_id"

@@ -77,6 +77,8 @@
       - flash.delete(:error)
     - flash.keys.each do |key|
       .flash{:class=>key}= flash[key]
+    - if content_for?(:flashes)
+      = content_for :flashes
     - if logged_in?
       - messages = current_user.messages.select(&:unread?)
       - if messages.present?
