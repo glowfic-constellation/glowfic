@@ -23,7 +23,6 @@
 # Ignore env files
 .ruby-version
 .env
-Gemfile.lock
 .byebug_history
 tmux-client-*
 tmux-server-*
