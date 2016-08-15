@@ -36,7 +36,6 @@ class BoardSectionsController < ApplicationController
   def edit
     @page_title = 'Edit ' + @board_section.name
     use_javascript('board_sections')
-    gon.ajax_path = '/posts'
   end
 
   def update
