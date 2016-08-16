@@ -231,7 +231,7 @@ class PostsController < WritableController
       session[:ignore_warnings] = true
       flash[:success] = "All content warnings have been hidden. Proceed at your own risk."
     end
-    redirect_to post_path(@post)
+    redirect_to post_path(@post, page: page, per_page: per_page)
   end
 
   private

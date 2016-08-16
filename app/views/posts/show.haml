@@ -12,10 +12,10 @@
   - content_for :flashes do
     .flash.error
       - if logged_in?
-        = link_to warnings_post_path(@post), method: :post do
+        = link_to warnings_post_path(@post, page: page, per_page: per_page), method: :post do
           .link-box.red.float-right Dismiss for this post
       - else
-        = link_to warnings_post_path(@post), method: :post, confirm: 'Are you sure? You will not see content warnings again until you restart your browser!' do
+        = link_to warnings_post_path(@post, page: page, per_page: per_page), method: :post, confirm: 'Are you sure? You will not see content warnings again until you restart your browser!' do
           .link-box.red.float-right Dismiss all content warnings
       = image_tag "/images/exclamation.png", class: 'vmid'
       This post has the following content warnings:
