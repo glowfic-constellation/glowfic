@@ -78,6 +78,10 @@ class BoardSectionsController < ApplicationController
     valid_types = ['Post', 'BoardSection']
     render json: {} and return if params[:changes].any? { |key, el| !(valid_types.include?(el[:type])) }
 
+    if params[:changes].any? { |key, el| el[:order].nil? }
+      ExceptionNotifier.notify_exception(Exception.new, data: params)
+    end
+
     BoardSection.transaction do
       params[:changes].each do |section_id, change_info|
         section_order = change_info[:order]

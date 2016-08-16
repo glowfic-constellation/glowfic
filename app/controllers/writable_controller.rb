@@ -72,8 +72,12 @@ class WritableController < ApplicationController
     use_javascript('paginator')
 
     unless @post.board.open_to_anyone?
-      @next_post = Post.where(board_id: @post.board_id).where(section_id: @post.section_id).where(section_order: @post.section_order + 1).first
-      @prev_post = Post.where(board_id: @post.board_id).where(section_id: @post.section_id).where(section_order: @post.section_order - 1).first
+      if @post.section_order.nil?
+        ExceptionNotifier.notify_exception(Exception.new, data: {id: @post.id, board: @post.board_id, section: @post.section_id})
+      else
+        @next_post = Post.where(board_id: @post.board_id).where(section_id: @post.section_id).where(section_order: @post.section_order + 1).first
+        @prev_post = Post.where(board_id: @post.board_id).where(section_id: @post.section_id).where(section_order: @post.section_order - 1).first
+      end
     end
 
     if logged_in?
