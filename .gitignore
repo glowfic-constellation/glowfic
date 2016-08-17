@@ -26,3 +26,6 @@
 .byebug_history
 tmux-client-*
 tmux-server-*
+
+# Ignore simplecov reports; generate locally as desired.
+coverage/*

@@ -17,6 +17,9 @@
 #
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 
+require 'simplecov'
+SimpleCov.start 'rails'
+
 require 'factory_girl_rails'
 require 'rails_helper'
 require 'support/spec_test_helper'
