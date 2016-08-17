@@ -1,7 +1,7 @@
 class Post < ActiveRecord::Base
   include Writable
   include Viewable
-  include Orderable
+  include PostOrderable
 
   PRIVACY_PUBLIC = 0
   PRIVACY_PRIVATE = 1
