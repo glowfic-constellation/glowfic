@@ -110,6 +110,7 @@ GEM
     pg (0.18.4)
     pkg-config (1.1.7)
     polyglot (0.3.5)
+    puma (3.6.0)
     rack (1.4.7)
     rack-cache (1.6.1)
       rack (>= 0.4)
@@ -217,6 +218,7 @@ DEPENDENCIES
   nilify_blanks
   nokogiri
   pg
+  puma
   rack-pratchett
   rails (= 3.2.21)
   rails_12factor
