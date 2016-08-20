@@ -17,8 +17,11 @@
 #
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 
-require 'simplecov'
-SimpleCov.start 'rails'
+# Don't calculate coverage when running single tests
+unless ARGV.any? { |arg| arg[0] != '-' }
+  require 'simplecov'
+  SimpleCov.start 'rails'
+end
 
 require 'factory_girl_rails'
 require 'rails_helper'

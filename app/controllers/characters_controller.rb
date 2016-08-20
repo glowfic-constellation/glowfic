@@ -96,9 +96,7 @@ class CharactersController < ApplicationController
   private
 
   def find_character
-    @character = Character.find_by_id(params[:id])
-
-    unless @character
+    unless @character = Character.find_by_id(params[:id])
       flash[:error] = "Character could not be found."
       redirect_to characters_path and return
     end
@@ -111,7 +109,7 @@ class CharactersController < ApplicationController
 
   def require_own_character
     if @character.user_id != current_user.id
-      flash[:error] = "That is not your character."
+      flash[:error] = "You do not have permission to edit that character."
       redirect_to characters_path and return
     end
   end

@@ -3,7 +3,7 @@ FactoryGirl.define do
     "JohnDoe#{n}"
   end
 
-  factory :user, aliases: [:creator] do
+  factory :user, aliases: [:creator, :sender, :recipient] do
     username
     password "password"
     sequence :email do |n|
@@ -56,6 +56,9 @@ FactoryGirl.define do
   factory :character do
     user
     name 'test character'
+    factory :template_character do
+      template
+    end
   end
 
   factory :template do
@@ -85,6 +88,14 @@ FactoryGirl.define do
 
     factory :content_warning do
       type 'ContentWarning'
+    end
+  end
+
+  factory :message do
+    sender
+    recipient
+    sequence :subject do |n|
+      "Message#{n}"
     end
   end
 end

@@ -57,7 +57,16 @@ RSpec.describe PasswordResetsController do
       expect(flash[:error]).to eq("Account could not be found.")
     end
 
+    it "handles failed save" do
+      user = create(:user)
+      expect_any_instance_of(PasswordReset).to receive(:generate_auth_token).and_return(nil)
+      post :create, username: user.username, email: user.email
+      expect(response).to render_template('new')
+      expect(flash[:error]).to eq("Password reset could not be saved.")
+    end
+
     it "resends link if reset already present" do
+      ActionMailer::Base.deliveries.clear
       user = create(:user)
       reset = create(:password_reset, user: user)
       expect(PasswordReset.count).to eq(1)
