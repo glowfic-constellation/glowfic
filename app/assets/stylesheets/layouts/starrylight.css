@@ -21,6 +21,7 @@ body { background-color: #b0afb7; }
 .post-navheader .view-button, .view-button.selected, .view-button, .link-box.green, .link-box.blue, .link-box.red { background-color: #584b81; }
 .green { background-color: #d8d8d8; }
 #post-editor .green { background-color: #9692a8; color: #DADADA; }
+#post-editor #current-icon-dropdown.green { color: #111111; }
 .post-subheader { background-color: #9692a8; color: #F3F3F3; }
 
 .subber, .subber a, .subber a:visited { color: #c6c6e5; }
