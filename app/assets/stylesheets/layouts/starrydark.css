@@ -20,7 +20,7 @@
 .subber b { color: #F3F3F3; }
 .post-expander { background-color: #9692a8; }
 
-.post-icon, .post-author { background-color: #0E0B1E; }
+.post-icon, #current-icon-dropdown, .post-author { background-color: #0E0B1E; }
 .post-character, .post-screenname, .post-author { font-weight: bold; }
 #character-selector { font-weight: normal; }
 .post-screenname { color: #9c9aa4; }
