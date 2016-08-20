@@ -78,6 +78,7 @@ body {
 .post-icon, #current-icon-dropdown {
   background-color: #444D3F;
 }
+#current-icon-dropdown { color: #111111; }
 .post-expander {
   background-color: #6F7769;
 }
