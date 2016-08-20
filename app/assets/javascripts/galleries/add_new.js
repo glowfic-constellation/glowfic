@@ -1,8 +1,6 @@
 $(document).ready( function() {
   fixButtons();
   bindFileInput($("#icon_files"));
-  bugsData = {};
-  $.post('/bugs', bugsData);
 });
 
 function fixButtons() {
