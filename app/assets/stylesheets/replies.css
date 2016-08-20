@@ -71,7 +71,8 @@
 #content > .post-container { padding: 0px; }
 .post-edit-box { float: right; margin-left: 10px; margin-bottom: 5px; padding: 5px; }
 .post-info-box { text-align: center; padding: 0px; float: left; margin-right: 10px; margin-bottom: 5px; width: 150px; overflow: visible; }
-.post-icon { padding: 0px; background-color: #B0BBA9; height: 120px; }
+.post-icon, #current-icon-dropdown { background-color: #B0BBA9; }
+.post-icon { padding: 0px; height: 120px; }
 .post-icon img, .post-icon div { margin-top: 10px; margin-right: 10px; margin-left: 10px; }
 .post-icon img { margin-bottom: 10px; vertical-align: middle; }
 .post-character { background-color: #8B8687; padding: 4px; position: relative; }
