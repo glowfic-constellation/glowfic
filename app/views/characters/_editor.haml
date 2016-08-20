@@ -48,8 +48,7 @@
             = icon_tag icon, class: klass, id: icon.id
     - else
       #gallery0{:'data-id' => 0}
-        - current_user.galleryless_icons.each do |icon|
-          - next if icon.galleries.present?
+        - current_user.galleryless_icons.each do |icon|\
           - klass = 'character-icon'
           - klass += ' selected-icon' if icon == @character.default_icon
           = icon_tag icon, class: klass, id: icon.id
