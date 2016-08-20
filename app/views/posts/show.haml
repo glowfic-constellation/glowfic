@@ -93,8 +93,7 @@
       = render partial: 'replies/single', locals: {reply: @post}
 - if @replies.present?
   = render partial: 'posts/paginator', locals: { paginated: @replies, path: :post_path }
-- @replies.each do |reply|
-  = render partial: 'replies/single', locals: {reply: reply}
+= render partial: 'replies/single', collection: @replies
 - if @post.completed? && (@replies.empty? || (@replies.last.id == @post.replies.order('id desc').first.id))
   .post-ender Here Ends This Thread
 - if @post.on_hiatus? && (@replies.empty? || (@replies.last.id == @post.replies.order('id desc').first.id))
