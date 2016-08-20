@@ -15,7 +15,7 @@ body { background-color: #E0E0E0; }
 #header #nav-top, #header #user-info { background-color: #212135; }
 .post-expander { background-color: #A4B0BD; }
 .pagination .current { background: #718EB9; }
-.post-icon, .green { background-color: #A9B4BB; }
+.post-icon, #current-icon-dropdown, .green { background-color: #A9B4BB; }
 a { color: #3F5970; }
 a:visited { color: #284150; }
 #content .subber, .subber { background-color: #A3A8A9; }

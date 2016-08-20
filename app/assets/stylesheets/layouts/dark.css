@@ -75,7 +75,7 @@ body {
 .character-view-select {
   background-color: #666460;
 }
-.post-icon {
+.post-icon, #current-icon-dropdown {
   background-color: #444D3F;
 }
 .post-expander {

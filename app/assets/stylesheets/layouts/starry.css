@@ -27,7 +27,7 @@ body { background-color: #6c697c; }
 .subber b { color: #F3F3F3; }
 .post-expander { background-color: #9692a8; }
 
-.post-icon, .post-author { background-color: #13132F; }
+.post-icon, #current-icon-dropdown, .post-author { background-color: #13132F; }
 .post-character, .post-screenname, .post-author { font-weight: bold; }
 #character-selector { font-weight: normal; }
 .post-character, .post-screenname { background-color: #484357; }
