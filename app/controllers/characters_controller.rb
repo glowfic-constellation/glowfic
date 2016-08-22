@@ -7,13 +7,11 @@ class CharactersController < ApplicationController
 
   def index
     (return if login_required) unless params[:user_id].present?
-    @user = current_user
-    if params[:user_id]
-      @user = User.find_by_id(params[:user_id])
-      unless @user
-        flash[:error] = "User could not be found."
-        redirect_to users_path and return
-      end
+
+    @user = current_user || User.find_by_id(params[:user_id])
+    unless @user
+      flash[:error] = "User could not be found."
+      redirect_to users_path and return
     end
 
     @characters = @user.characters.order('name asc')

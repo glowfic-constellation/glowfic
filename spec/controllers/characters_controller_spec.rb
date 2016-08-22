@@ -77,6 +77,7 @@ RSpec.describe CharactersController do
       login_as(user)
       get :new
 
+      expect(assigns(:page_title)).to eq("New Character")
       expect(controller.gon.character_id).to eq('')
       expect(assigns(:templates).map(&:name)).to match_array(names)
     end
@@ -115,6 +116,15 @@ RSpec.describe CharactersController do
       expect(Character.count).to eq(1)
       expect(assigns(:character).name).to eq(test_name)
       expect(assigns(:character).user_id).to eq(user_id)
+    end
+
+    it "creates new templates when specified" do
+      expect(Template.count).to eq(0)
+      login
+      post :create, character: {template_id: 0, new_template_name: 'TemplateTest', name: 'Test'}
+      expect(Template.count).to eq(1)
+      expect(Template.first.name).to eq('TemplateTest')
+      expect(assigns(:character).template_id).to eq(Template.first.id)
     end
 
     it "sets correct variables when invalid" do
@@ -168,6 +178,42 @@ RSpec.describe CharactersController do
       expect(response).to redirect_to(root_url)
       expect(flash[:error]).to eq("You must be logged in to view that page.")
     end
+
+    it "requires valid character id" do
+      login
+      get :edit, id: -1
+      expect(response).to redirect_to(characters_url)
+      expect(flash[:error]).to eq("Character could not be found.")
+    end
+
+    it "requires character with permissions" do
+      login
+      get :edit, id: create(:character).id
+      expect(response).to redirect_to(characters_url)
+      expect(flash[:error]).to eq("You do not have permission to edit that character.")
+    end
+
+    it "succeeds when logged in" do
+      character = create(:character)
+      login_as(character.user)
+      get :edit, id: character.id
+      expect(response.status).to eq(200)
+    end
+
+    it "sets correct variables" do
+      user = create(:user)
+      character = create(:character, user: user)
+      templates = 2.times.collect do create(:template, user: user) end
+      names = ['— Create New Template —'] + templates.map(&:name)
+      create(:template)
+
+      login_as(user)
+      get :edit, id: character.id
+
+      expect(assigns(:page_title)).to eq("Edit Character: #{character.name}")
+      expect(controller.gon.character_id).to eq(character.id)
+      expect(assigns(:templates).map(&:name)).to match_array(names)
+    end
   end
 
   describe "PUT update" do
@@ -175,6 +221,73 @@ RSpec.describe CharactersController do
       put :update, id: -1
       expect(response).to redirect_to(root_url)
       expect(flash[:error]).to eq("You must be logged in to view that page.")
+    end
+
+    it "requires valid character id" do
+      login
+      put :update, id: -1
+      expect(response).to redirect_to(characters_url)
+      expect(flash[:error]).to eq("Character could not be found.")
+    end
+
+    it "requires character with permissions" do
+      login
+      put :update, id: create(:character).id
+      expect(response).to redirect_to(characters_url)
+      expect(flash[:error]).to eq("You do not have permission to edit that character.")
+    end
+
+    it "fails with invalid params" do
+      character = create(:character)
+      login_as(character.user)
+      put :update, id: character.id, character: {name: ''}
+      expect(response.status).to eq(200)
+      expect(flash[:error]).to eq("Your character could not be saved.")
+    end
+
+    it "fails with invalid template params" do
+      character = create(:character)
+      login_as(character.user)
+      new_name = character.name + 'aaa'
+      put :update, id: character.id, character: {template_id: 0, new_template_name: '', name: new_name}
+      expect(response.status).to eq(200)
+      expect(flash[:error]).to eq("Your character could not be saved.")
+      expect(character.reload.name).not_to eq(new_name)
+    end
+
+    it "succeeds when valid" do
+      character = create(:character)
+      login_as(character.user)
+      new_name = character.name + 'aaa'
+      put :update, id: character.id, character: {name: new_name}
+
+      expect(response).to redirect_to(assigns(:character))
+      expect(flash[:success]).to eq("Character saved successfully.")
+      character.reload
+      expect(character.name).to eq(new_name)
+    end
+
+    it "creates new templates when specified" do
+      expect(Template.count).to eq(0)
+      character = create(:character)
+      login_as(character.user)
+      put :update, id: character.id, character: {template_id: 0, new_template_name: 'Test'}
+      expect(Template.count).to eq(1)
+      expect(Template.first.name).to eq('Test')
+      expect(character.reload.template_id).to eq(Template.first.id)
+    end
+
+    it "sets correct variables when invalid" do
+      user = create(:user)
+      templates = 2.times.collect do create(:template, user: user) end
+      names = ['— Create New Template —'] + templates.map(&:name)
+      create(:template)
+
+      login_as(user)
+      post :create, character: {}
+
+      expect(controller.gon.character_id).to eq('')
+      expect(assigns(:templates).map(&:name)).to match_array(names)
     end
   end
 
