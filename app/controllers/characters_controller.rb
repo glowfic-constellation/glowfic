@@ -73,7 +73,7 @@ class CharactersController < ApplicationController
 
   def facecasts
     @page_title = 'Facecasts'
-    chars = Character.where('pb is not null')
+    chars = Character.where('pb is not null').includes(:user, :template)
     @pbs = {}
 
     if params[:sort] == "name"
