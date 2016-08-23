@@ -111,6 +111,9 @@ select.per-page { margin-top: 5px; margin-bottom: 5px; }
 .paginator .right-align { padding: 2px; padding-right: 10px; display: inline-block; float: right; }
 .paginator .right-align a { color: black; }
 .paginator { color: black; }
+@media (max-width: 400px) {
+  #content .sub.paginator { padding: 0px; }
+}
 
 /* Post dropdown menu */
 #post-menu-holder { position: relative; }

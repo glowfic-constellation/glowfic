@@ -1,11 +1,12 @@
 .paginator.centered.sub
-  .left-align
-    Total#{' Threads' if @threaded && params[:thread_id].blank?}: 
-    %span.reply-count=paginated.total_entries
-  .right-align
-    - if paginated.klass == Reply
-      Posts Per Page:
-      = select_tag :per_page, per_page_options, class: 'per-page'
+  - unless browser.device.mobile?
+    .left-align
+      Total#{' Threads' if @threaded && params[:thread_id].blank?}:
+      %span.reply-count=paginated.total_entries
+    .right-align
+      - if paginated.klass == Reply
+        Posts Per Page:
+        = select_tag :per_page, per_page_options, class: 'per-page'
   .pagination
     - if paginated.total_entries > paginated.per_page
       - args = params.except(:controller)
@@ -15,7 +16,7 @@
           %span.disabled.first_page &laquo; First
         - else
           = link_to '&laquo; First'.html_safe, send(path, args.except(:page)), class: 'first_page'
-      = will_paginate paginated, container: false, params: @paginate_params || {}
+      = will_paginate paginated, container: false, params: @paginate_params || {}, page_links: !browser.device.mobile?
       %span
         - if page.to_s == paginated.total_pages.to_s
           %span.disabled.last_page Last &raquo;

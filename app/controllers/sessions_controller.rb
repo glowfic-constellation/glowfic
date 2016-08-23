@@ -3,6 +3,9 @@ class SessionsController < ApplicationController
     redirect_to boards_path and return if logged_in?
   end
 
+  def new
+  end
+
   def create
     user = User.find_by_username(params[:username])
 
