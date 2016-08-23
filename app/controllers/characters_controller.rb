@@ -8,7 +8,7 @@ class CharactersController < ApplicationController
   def index
     (return if login_required) unless params[:user_id].present?
 
-    @user = current_user || User.find_by_id(params[:user_id])
+    @user = User.find_by_id(params[:user_id]) || current_user
     unless @user
       flash[:error] = "User could not be found."
       redirect_to users_path and return
