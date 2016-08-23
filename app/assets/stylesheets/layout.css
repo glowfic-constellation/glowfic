@@ -44,7 +44,6 @@
   #header #header-links a, #header #header-links span { vertical-align: middle; font-size: 14px; }
   #header #logo { text-align: left; }
   #header #logo img { padding-bottom: 2px; padding-top: 2px; height: 20px; float: right; }
-  #header #nav-top { display: none; }
   #content table.form-table { width: 100%; }
 }
 
