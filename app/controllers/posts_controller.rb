@@ -173,7 +173,7 @@ class PostsController < WritableController
   def mark_unread
     @post.views.where(user_id: current_user.id).destroy_all
     flash[:success] = "Post has been marked as unread"
-    redirect_to board_path(@post.board)
+    redirect_to unread_posts_path
   end
 
   def change_status
