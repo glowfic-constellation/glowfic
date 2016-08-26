@@ -96,8 +96,10 @@ class IconsController < ApplicationController
   end
 
   def destroy
+    gallery = @icon.galleries.first if @icon.galleries.count == 1
     @icon.destroy
     flash[:success] = "Icon deleted successfully."
+    redirect_to gallery_path(gallery) and return if gallery
     redirect_to galleries_path
   end
 
