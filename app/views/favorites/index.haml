@@ -1,0 +1,3 @@
+- content_for :posts_title do
+  Your Favorites
+= render partial: 'posts/list', locals: {posts: @posts, show_unread_count: true}

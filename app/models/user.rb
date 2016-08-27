@@ -14,6 +14,8 @@ class User < ActiveRecord::Base
   has_many :sent_messages, :class_name => Message, :foreign_key => 'sender_id'
   has_many :messages, :foreign_key => 'recipient_id'
   has_many :password_resets
+  has_many :favorites
+  has_many :favoriteds, as: :favorite, class_name: Favorite
   belongs_to :avatar, :class_name => Icon
   belongs_to :active_character, :class_name => Character
 

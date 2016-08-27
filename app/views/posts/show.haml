@@ -44,6 +44,20 @@
         = image_tag '/images/chart_bar.png'
         View Stats
     - if logged_in?
+      = link_to post_path(@post, unread: true), method: :put do
+        %div
+          = image_tag '/images/eye.png', class: 'vmid', style: 'margin-bottom: 3px;'
+          Mark Unread
+      - if fav = Favorite.between(current_user, @post)
+        = link_to favorite_path(fav), method: :delete do
+          %div
+            = image_tag '/images/heart_delete.png', class: 'vmid', style: 'margin-bottom: 3px;'
+            Unfavorite
+      - else
+        = link_to favorites_path(post_id: @post.id), method: :post do
+          %div
+            = image_tag '/images/heart_add.png', class: 'vmid', style: 'margin-bottom: 3px;'
+            Favorite
       - if @post.metadata_editable_by?(current_user)
         - unless @post.completed?
           = link_to post_path(@post, status: 'complete'), method: :put do
@@ -65,10 +79,6 @@
             %div
               = image_tag '/images/book_grey.png'
               Mark Abandoned
-      = link_to post_path(@post, unread: true), method: :put do
-        %div
-          = image_tag '/images/eye.png', class: 'vmid', style: 'margin-bottom: 3px;'
-          Mark Unread
       / TODO need more dynos before I can create this feature
       /= link_to users_path do
       /  %div

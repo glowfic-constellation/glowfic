@@ -79,4 +79,5 @@ Rails.application.routes.draw do
   # Miscellaneous
   resources :reports, only: [:index, :show]
   resources :bugs, only: :create
+  resources :favorites, only: [:index, :create, :destroy]
 end

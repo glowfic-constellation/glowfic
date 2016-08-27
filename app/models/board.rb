@@ -6,6 +6,7 @@ class Board < ActiveRecord::Base
   has_many :posts
   has_many :board_sections
   has_many :board_authors
+  has_many :favorites, as: :favorite, dependent: :destroy
   belongs_to :creator, class_name: User
   has_many :coauthors, class_name: User, through: :board_authors, source: :user do
     def cameos

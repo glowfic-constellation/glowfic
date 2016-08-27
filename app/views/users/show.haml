@@ -1,28 +1,49 @@
-- if @user.avatar
-  .user-avatar
-    = link_to icon_path(@user.avatar) do
-      = icon_tag @user.avatar
-%b.username= @user.username
-= surround '(', ')' do
-  = link_to "Send Message", new_message_path(recipient_id: @user.id)
-%br
-- if @user.moiety
-  %b Moiety:
-  = color_block(@user)
-  - if @user.moiety_name.present?
-    %span{style: 'font-weight: bold; color:#' + @user.moiety}= @user.moiety_name
-  %br
-= link_to "#{@user.username}'s characters", user_characters_path(@user), class: 'user-characters'
-%br
-= link_to "#{@user.username}'s templates", user_templates_path(@user), class: 'user-templates'
-%br
-= link_to "#{@user.username}'s galleries", user_galleries_path(@user), class: 'user-galleries'
-%br
-= link_to "#{@user.username}'s posts", search_posts_path(author_id: @user.id, commit: 'Search'), class: 'user-posts'
-%br
-= link_to "#{@user.username}'s completed posts", search_posts_path(author_id: @user.id, commit: 'Search', completed: true), class: 'user-completed-posts'
-%br
-%br
+%table{style: 'width:200px; float: left;'}
+  %thead
+    %tr
+      %th.centered= @user.username
+  %tbody
+    - if @user.avatar
+      %tr
+        %td.green.centered= icon_tag @user.avatar
+    %tr
+      %td.centered{class: cycle('even', 'odd')}
+        = link_to new_message_path(recipient_id: @user.id) do
+          = image_tag '/images/email.png', class: 'vmid'
+          Send Message
+    %tr
+      %td.centered{class: cycle('even', 'odd')}
+        = link_to user_characters_path(@user) do
+          = image_tag '/images/group.png', class: 'vmid'
+          Characters
+    %tr
+      %td.centered{class: cycle('even', 'odd')}
+        = link_to user_galleries_path(@user) do
+          = image_tag '/images/photos.png', class: 'vmid'
+          Galleries
+    %tr
+      %td.centered{class: cycle('even', 'odd')}
+        = link_to search_posts_path(author_id: @user.id, commit: 'Search') do
+          = image_tag '/images/book_open.png', class: 'vmid'
+          All Posts
+    %tr
+      %td.centered{class: cycle('even', 'odd')}
+        = link_to search_posts_path(author_id: @user.id, commit: 'Search', completed: true) do
+          = image_tag '/images/book.png', class: 'vmid'
+          Completed Posts
+    - unless @user.id == current_user.try(:id)
+      %tr
+        %td.centered{class: cycle('even', 'odd')}
+          - if fav = Favorite.between(current_user, @user)
+            = link_to favorite_path(fav), method: :delete do
+              = image_tag '/images/heart_delete.png', class: 'vmid'
+              Unfavorite
+          - else
+            = link_to favorites_path(user_id: @user.id), method: :post do
+              = image_tag '/images/heart_add.png', class: 'vmid'
+              Favorite
+
+
 - content_for :posts_title do
   #{@user.username}'s Recent Posts
-= render partial: 'posts/list', locals: {posts: @posts, path: :user_path}
+= render partial: 'posts/list', locals: {posts: @posts, path: :user_path, style: 'width: calc(100% - 200px); float:left;'}
