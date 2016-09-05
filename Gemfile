@@ -27,6 +27,7 @@ gem 'sanitize'
 
 group :production do
   gem 'puma'
+  gem 'rack-cors'
   gem 'rails_12factor'
 end
 
