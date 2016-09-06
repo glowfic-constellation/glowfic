@@ -38,7 +38,7 @@ class CharactersController < ApplicationController
 
   def show
     @page_title = @character.name
-    @posts = @character.recent_posts(25, page)
+    @posts = @character.recent_posts(25, page).includes(:board, :user, :last_user, :content_warnings)
   end
 
   def edit
