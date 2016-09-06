@@ -43,7 +43,7 @@ class TagsController < ApplicationController
   end
 
   def show
-    @posts = @tag.posts.paginate(per_page: 25, page: 1)
+    @posts = @tag.posts.includes(:board, :user, :last_user, :content_warnings).paginate(per_page: 25, page: page)
     @page_title = "#{@tag.name}"
   end
 

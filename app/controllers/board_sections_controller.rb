@@ -30,7 +30,7 @@ class BoardSectionsController < ApplicationController
 
   def show
     @page_title = @board_section.name
-    @posts = @board_section.posts.order('section_order asc').paginate(per_page: 25, page: page)
+    @posts = @board_section.posts.includes(:user, :last_user, :content_warnings).order('section_order asc').paginate(per_page: 25, page: page)
   end
 
   def edit
