@@ -86,7 +86,7 @@ class Post < ActiveRecord::Base
   end
 
   def on_hiatus?
-    status == STATUS_HIATUS
+    status == STATUS_HIATUS || (active? && tagged_at < 1.month.ago)
   end
 
   def active?
