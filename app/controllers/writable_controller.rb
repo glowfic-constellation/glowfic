@@ -62,7 +62,7 @@ class WritableController < ApplicationController
         self.page = cur_page = cur_page.to_i
       end
     else
-      per = replies.count
+      per = replies.count > 5000 ? (@per_page = 1000) : replies.count
       self.page = cur_page = 1
     end
 
