@@ -35,7 +35,7 @@
     /  %div
     /    = image_tag '/images/book_go.png'
     /    Download as ePub
-    = link_to post_path(@post, view: 'flat') do
+    = link_to post_path(@post, view: 'flat'), rel: 'nofollow noindex' do
       %div
         = image_tag '/images/page_world.png'
         View Flat HTML
