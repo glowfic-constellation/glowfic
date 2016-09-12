@@ -65,7 +65,7 @@ class RepliesController < WritableController
     canon_params = {}
     canon_params[:per_page] = per_page unless per_page == 25
     canon_params[:page] = params[:page] unless params[:page] == 1
-    @meta_canonical = post_path(@post, canon_params)
+    @meta_canonical = post_url(@post, canon_params)
     
     show_post(params[:page])
   end
