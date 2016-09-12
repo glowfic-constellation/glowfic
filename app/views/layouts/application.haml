@@ -4,6 +4,8 @@
     %title= (Rails.env.development? ? 'DEV: ' : '') + (@page_title ? @page_title + " | Glowfic Constellation" : "Glowfic Constellation")
     %meta{ :charset => "utf-8" }
     <meta name="viewport" content="width=device-width">
+    - if @meta_canonical.present?
+      %link{:rel => 'canonical', :href => @meta_canonical}
     = stylesheet_link_tag 'application'
     - if current_user.try(:layout).present?
       = stylesheet_link_tag "layouts/#{current_user.layout}"
