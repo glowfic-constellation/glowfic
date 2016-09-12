@@ -61,13 +61,11 @@ class RepliesController < WritableController
     @page_title = @post.subject
     params[:page] ||= @reply.post_page(per_page)
     
-    unless logged_in?
-      # show <link rel="canonical"> for scrapers and such; assume they won't be logged in so only display when not
-      canon_params = {}
-      canon_params[:per_page] = per_page unless per_page == 25
-      canon_params[:page] = params[:page] unless params[:page] == 1
-      @meta_canonical = post_path(@post, canon_params)
-    end
+    # show <link rel="canonical"> – for SEO stuff
+    canon_params = {}
+    canon_params[:per_page] = per_page unless per_page == 25
+    canon_params[:page] = params[:page] unless params[:page] == 1
+    @meta_canonical = post_path(@post, canon_params)
     
     show_post(params[:page])
   end
