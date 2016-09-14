@@ -93,7 +93,7 @@
           .flash.inbox
             New message from
             = link_to message.sender.username, user_path(message.sender)
-            &nbsp;- &nbsp;
+            &ndash;
             = link_to message.unempty_subject, message_path(message)
     #content= yield
 
