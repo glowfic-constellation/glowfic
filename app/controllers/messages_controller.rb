@@ -50,7 +50,7 @@ class MessagesController < ApplicationController
 
   def show
     @message = Message.find_by_id(params[:id])
-    @page_title = @message.subject
+    @page_title = @message.unempty_subject
     unless @message
       flash[:error] = "Message could not be found."
       redirect_to messages_path(view: 'inbox') and return

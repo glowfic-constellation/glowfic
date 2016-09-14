@@ -10,6 +10,14 @@ class Message < ActiveRecord::Base
   def visible_to?(user)
     [sender_id, recipient_id].include?(user.id)
   end
+  
+  def unempty_subject
+    if subject.blank?
+      '(no title)'
+    else
+      subject
+    end
+  end
 
   def subject_from_parent
     @subject ||= "Re: " + (parent.subject.starts_with?('Re: ') ? parent.subject[4..-1] : parent.subject)
