@@ -5,7 +5,7 @@ class RepliesController < WritableController
   before_filter :require_permission, only: [:edit, :update, :destroy]
 
   def create
-    gon.original_content = params[:reply][:content]
+    gon.original_content = params[:reply].try(:[], :content)
 
     if params[:button_preview]
       @url = replies_path
@@ -42,19 +42,9 @@ class RepliesController < WritableController
       flash[:error] = {}
       flash[:error][:message] = "Your post could not be saved because of the following problems:"
       flash[:error][:array] = reply.errors.full_messages
+      redirect_to posts_path and return unless reply.post
       redirect_to post_path(reply.post)
     end
-  end
-  
-  def preview
-    build_template_groups
-    
-    @written = Reply.new(params[:reply])
-    @post = @written.post
-    @written.user = current_user
-    @character = @written.character
-
-    use_javascript('posts')
   end
 
   def show
@@ -124,5 +114,16 @@ class RepliesController < WritableController
       flash[:error] = "You do not have permission to modify this post."
       redirect_to post_path(@reply.post)
     end
+  end
+
+  def preview
+    build_template_groups
+
+    @written = Reply.new(params[:reply])
+    @post = @written.post
+    @written.user = current_user
+    @character = @written.character
+
+    use_javascript('posts')
   end
 end
