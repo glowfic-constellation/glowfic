@@ -9,7 +9,7 @@ module WillPaginate
     protected
     class LinkRenderer < ViewHelpers::LinkRenderer
       def container_attributes
-        super.except(:first_label, :last_label, :summary_label)
+        super.except(:first_label, :last_label, :summary_label, :mobile_view)
       end
 
       protected
@@ -40,7 +40,9 @@ module WillPaginate
         tag(:span, @options[:summary_label] % [ current_page, @collection.total_pages ], :class => "summary")
       end
 
+      alias_method :_pagination, :pagination
       def pagination
+        return _pagination unless @options[:mobile_view]
         [:first_page, :previous_page, :summary, :next_page, :last_page]
       end
     end
