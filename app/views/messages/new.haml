@@ -9,7 +9,7 @@
         - if @message.parent
           = link_to @message.parent.sender.username, user_path(@message.parent.sender)
         - else
-          = f.select :recipient_id, options_from_collection_for_select(User.all - [current_user], :id, :username, @message.recipient_id)
+          = f.select :recipient_id, options_from_collection_for_select(User.order('username asc').all - [current_user], :id, :username, @message.recipient_id)
     %tr
       %th.sub.padding-10 Subject
       %td.odd.padding-10= f.text_field :subject, placeholder: 'Subject'
