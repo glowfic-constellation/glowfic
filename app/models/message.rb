@@ -12,11 +12,8 @@ class Message < ActiveRecord::Base
   end
   
   def unempty_subject
-    if subject.blank?
-      '(no title)'
-    else
-      subject
-    end
+    return '(no title)' if subject.blank?
+    subject
   end
 
   def subject_from_parent
