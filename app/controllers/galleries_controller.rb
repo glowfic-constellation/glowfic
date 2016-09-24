@@ -179,6 +179,11 @@ class GalleriesController < ApplicationController
   end
 
   def set_s3_url
-    @s3_direct_post = S3_BUCKET.presigned_post(key: "users/#{current_user.id}/icons/#{SecureRandom.uuid}_${filename}", success_action_status: '201', acl: 'public-read', content_type_starts_with: 'image/')
+    @s3_direct_post = S3_BUCKET.presigned_post(
+      key: "users/#{current_user.id}/icons/#{SecureRandom.uuid}_${filename}",
+      success_action_status: '201',
+      acl: 'public-read',
+      content_type_starts_with: 'image/',
+      cache_control: 'public, max-age=31536000')
   end
 end
