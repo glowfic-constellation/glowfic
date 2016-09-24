@@ -24,6 +24,11 @@ $(document).ready(function() {
     disable_search_threshold: 20,
   });
 
+  $(".post-expander").click(function() {
+    $(this).children(".info").remove();
+    $(this).children(".hidden").show();
+  });
+
   // Dropdown menu code
   if ($("#post-menu").length > 0) {
     $("#post-menu").click(function() {
