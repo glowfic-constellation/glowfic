@@ -11,15 +11,5 @@
     - if paginated.total_entries > paginated.per_page
       - args = params.except(:controller)
       - args = args.merge(id: @post.id) if @post.present?
-      %span
-        - if page.to_i == 1
-          %span.disabled.first_page &laquo; First
-        - else
-          = link_to '&laquo; First'.html_safe, send(path, args.except(:page)), class: 'first_page'
-      = will_paginate paginated, container: false, params: @paginate_params || {}, page_links: !browser.device.mobile?
-      %span
-        - if page.to_s == paginated.total_pages.to_s
-          %span.disabled.last_page Last &raquo;
-        - else
-          = link_to 'Last &raquo;'.html_safe, send(path, args.merge(page: paginated.total_pages)), class: 'last_page'
+      = will_paginate( paginated, container: false, params: @paginate_params || {}, first_label: "&laquo; First", last_label: "Last &raquo", summary_label: "%d of %d")
   .clear

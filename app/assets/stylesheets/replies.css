@@ -113,7 +113,10 @@ select.per-page { margin-top: 5px; margin-bottom: 5px; }
 .paginator { color: black; }
 @media (max-width: 400px) {
   #content .sub.paginator { padding: 0px; }
+  .pagination a, .pagination .current, .pagination .disabled { padding: 5px; }
+  .pagination .summary { padding-left: 5px; padding-right: 5px; }
 }
+.pagination .summary { padding-left: 10px; padding-right: 10px; }
 
 /* Post dropdown menu */
 #post-menu-holder { position: relative; }

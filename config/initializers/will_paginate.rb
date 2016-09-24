@@ -8,8 +8,14 @@ module WillPaginate
   module ActionView
     protected
     class LinkRenderer < ViewHelpers::LinkRenderer
+      def container_attributes
+        super.except(:first_label, :last_label, :summary_label)
+      end
+
       protected
+
       alias_method :_add_current_page_param, :add_current_page_param
+
       def add_current_page_param(url_params, page)
         # don't include a :page param at all if on the first page,
         # so that we properly show the links as visited.
@@ -20,7 +26,23 @@ module WillPaginate
 
         _add_current_page_param(url_params, page)
       end
+
+      def first_page
+        num = @collection.current_page > 1 && 1
+        previous_or_next_page(num, @options[:first_label], "first_page")
+      end
+
+      def last_page
+        previous_or_next_page(total_pages, @options[:last_label], "last_page")
+      end
+
+      def summary
+        tag(:span, @options[:summary_label] % [ current_page, @collection.total_pages ], :class => "summary")
+      end
+
+      def pagination
+        [:first_page, :previous_page, :summary, :next_page, :last_page]
+      end
     end
   end
 end
-
