@@ -117,6 +117,7 @@
 .select2 input { height: 20px; margin: 0px; }
 .select2 ul { padding: 0px; }
 .field_with_errors { display: inline-block; } /* Keeps forms from whitespacing weirdly when errors present */
-input.checkbox { height: 12px; margin: 0px; } /* Keeps unread table from padding excessively for the checkboxes */
+input.checkbox { height: 12px; margin: 0px; vertical-align: middle; } /* Keeps unread table from padding excessively for the checkboxes */
 #signup th.sub { width: 90px; }
+#content table.form-table input[type='checkbox'] { margin: 0 1px; height: 18px; width: 18px; vertical-align: middle; }
 td.continuity-spacer { height: 20px; }

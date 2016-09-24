@@ -10,6 +10,9 @@
       %tr#password
         %th.sub.vtop Password
         %td.odd= password_field_tag :password, params[:password], placeholder: "Password"
+      %tr#remember-me
+        %th.sub.vtop Remember me
+        %td.even= check_box_tag :remember_me
     %tr
       %th.subber{colspan: 2}= submit_tag "Sign In", class: 'button'
   %br
