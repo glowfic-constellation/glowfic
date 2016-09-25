@@ -1262,21 +1262,21 @@ CREATE INDEX auditable_index ON audits USING btree (auditable_id, auditable_type
 -- Name: idx_fts_post_content; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
-CREATE INDEX idx_fts_post_content ON posts USING gin (to_tsvector('english'::regconfig, content));
+CREATE INDEX idx_fts_post_content ON posts USING gin (to_tsvector('english'::regconfig, COALESCE(content, ''::text)));
 
 
 --
 -- Name: idx_fts_post_subject; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
-CREATE INDEX idx_fts_post_subject ON posts USING gin (to_tsvector('english'::regconfig, (subject)::text));
+CREATE INDEX idx_fts_post_subject ON posts USING gin (to_tsvector('english'::regconfig, COALESCE((subject)::text, ''::text)));
 
 
 --
 -- Name: idx_fts_reply_content; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
-CREATE INDEX idx_fts_reply_content ON replies USING gin (to_tsvector('english'::regconfig, content));
+CREATE INDEX idx_fts_reply_content ON replies USING gin (to_tsvector('english'::regconfig, COALESCE(content, ''::text)));
 
 
 --
