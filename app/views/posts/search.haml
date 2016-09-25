@@ -29,11 +29,6 @@
               %td Content
               %td= text_field_tag :subj_content, params[:subj_content], style: 'width: 100%; margin: 5px 0px; box-sizing: border-box;'
             %tr
-              %td
-              %td{style: 'font-size: 12px;'}
-                * Fair warning - this is
-                %i slow
-            %tr
               %td Completed
               %td.padding-5
                 = check_box_tag :completed, true, params[:completed].present?, {class: 'vmid no-margin', style: 'margin-bottom: 3px;'}
