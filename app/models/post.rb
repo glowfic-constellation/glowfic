@@ -2,6 +2,7 @@ class Post < ActiveRecord::Base
   include Writable
   include Viewable
   include PostOrderable
+  include PgSearch
 
   PRIVACY_PUBLIC = 0
   PRIVACY_PRIVATE = 1
@@ -34,6 +35,15 @@ class Post < ActiveRecord::Base
 
   audited except: [:last_reply_id, :last_user_id, :edited_at, :tagged_at, :section_id, :section_order]
   has_associated_audits
+
+  pg_search_scope(
+    :search,
+    against: %i(
+      subject
+      content
+    ),
+    using: {tsearch: { dictionary: "english" } }
+  )
 
   def visible_to?(user)
     return true if privacy == PRIVACY_PUBLIC
