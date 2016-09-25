@@ -1,5 +1,6 @@
 class Reply < ActiveRecord::Base
   include Writable
+  include PgSearch
 
   belongs_to :post, inverse_of: :replies
   attr_accessible :post, :post_id, :thread_id
@@ -11,6 +12,13 @@ class Reply < ActiveRecord::Base
   after_destroy :update_last_reply
 
   attr_accessor :skip_notify, :skip_post_update
+
+  pg_search_scope(
+    :search,
+    against: %i(sanitized_content),
+    using: {tsearch: { dictionary: "english" } }
+  )
+  multisearchable against: [:sanitized_content]
 
   def post_page(per=25)
     per_page = per > 0 ? per : post.replies.count

@@ -26,6 +26,14 @@
               %td Setting
               %td= select_tag :setting_id, options_from_collection_for_select(Setting.order('name'), :id, :name, params[:setting_id]), {class: 'chosen-select', prompt: '— Choose Setting —'}
             %tr
+              %td Content
+              %td= text_field_tag :subj_content, params[:subj_content], style: 'width: 100%; margin: 5px 0px; box-sizing: border-box;'
+            %tr
+              %td
+              %td{style: 'font-size: 12px;'} 
+                * Fair warning - this is
+                %i slow
+            %tr
               %td Completed
               %td.padding-5
                 = check_box_tag :completed, true, params[:completed].present?, {class: 'vmid no-margin', style: 'margin-bottom: 3px;'}
@@ -47,6 +55,15 @@
                     %td.padding-10.post-subject{class: klass}= link_to post.subject, post_path(post)
                     %td.padding-10.post-board{class: klass}= post.board.name
                     %td.padding-10.post-time{class: klass}= post.tagged_at.strftime("%b %d, %Y ") + post.tagged_at.hour.to_s + post.tagged_at.strftime(":%M %p")
+                  - if @replies.has_key?(post.id)
+                    %tr
+                      %td.padding-5{class: klass, colspan: 3}
+                        - @replies[post.id].each do |reply|
+                          %li
+                            = excerpt(reply.content, params[:subj_content], radius: 10)
+                            = link_to reply_path(reply, anchor: "reply-#{reply.id}") do
+                              = image_tag "/images/link.png", class: 'vmid', title: 'Permalink'
+
   - if @search_results && @search_results.total_pages > 1
     %tfoot
       %tr

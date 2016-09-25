@@ -110,6 +110,10 @@ GEM
     nokogumbo (1.4.9)
       nokogiri
     pg (0.18.4)
+    pg_search (1.0.6)
+      activerecord (>= 3.1)
+      activesupport (>= 3.1)
+      arel
     pkg-config (1.1.7)
     polyglot (0.3.5)
     puma (3.6.0)
@@ -225,6 +229,7 @@ DEPENDENCIES
   nilify_blanks
   nokogiri
   pg
+  pg_search
   puma
   rack-cors
   rack-pratchett
