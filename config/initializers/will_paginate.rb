@@ -33,7 +33,8 @@ module WillPaginate
       end
 
       def last_page
-        previous_or_next_page(total_pages, @options[:last_label], "last_page")
+        num = @collection.current_page < total_pages && @collection.current_page
+        previous_or_next_page(num, @options[:last_label], "last_page")
       end
 
       def summary
