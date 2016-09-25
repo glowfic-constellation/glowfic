@@ -55,7 +55,7 @@
                       %td.padding-5{class: klass, colspan: 3}
                         - @replies[post.id].each do |reply|
                           %li
-                            = excerpt(reply.content, params[:subj_content], radius: 10) || '(exact string not found)'
+                            = excerpt(strip_tags(reply.content), params[:subj_content], radius: 10) || '(exact string not found)'
                             = link_to reply_path(reply, anchor: "reply-#{reply.id}") do
                               = image_tag "/images/link.png", class: 'vmid', title: 'Permalink'
 
