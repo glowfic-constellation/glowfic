@@ -15,10 +15,9 @@ class Reply < ActiveRecord::Base
 
   pg_search_scope(
     :search,
-    against: %i(sanitized_content),
+    against: %i(content),
     using: {tsearch: { dictionary: "english" } }
   )
-  multisearchable against: [:sanitized_content]
 
   def post_page(per=25)
     per_page = per > 0 ? per : post.replies.count

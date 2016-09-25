@@ -221,21 +221,10 @@ class PostsController < WritableController
       @search_results = @search_results.where(status: Post::STATUS_COMPLETE)
     end
     if params[:subj_content].present?
-      multisearch_results = PgSearch.multisearch(params[:subj_content]).includes(:searchable)
-      post_ids = []
-      @replies = Hash.new([])
-      multisearch_results.each do |result|
-        if result.searchable_type == Post.to_s
-          post_ids << result.searchable_id
-        else
-          @replies[result.searchable.post_id] += [result.searchable]
-          post_ids << result.searchable.post_id
-        end
-      end
-      # post_results = Post.search(params[:subj_content]).map(&:id)
-      # reply_results = Reply.search(params[:subj_content])
-      # @replies = reply_results.inject(Hash.new([])) { |hash, r| hash[r.post_id] += [r]; hash }
-      @search_results = @search_results.where(id: post_ids.uniq)
+      post_results = Post.search(params[:subj_content]).map(&:id)
+      reply_results = Reply.search(params[:subj_content])
+      @replies = reply_results.inject(Hash.new([])) { |hash, r| hash[r.post_id] += [r]; hash }
+      @search_results = @search_results.where(id: (post_results + @replies.keys).uniq)
     end
 
     @search_results = @search_results.paginate(page: page, per_page: 25)

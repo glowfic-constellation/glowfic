@@ -30,7 +30,7 @@
               %td= text_field_tag :subj_content, params[:subj_content], style: 'width: 100%; margin: 5px 0px; box-sizing: border-box;'
             %tr
               %td
-              %td{style: 'font-size: 12px;'} 
+              %td{style: 'font-size: 12px;'}
                 * Fair warning - this is
                 %i slow
             %tr
@@ -55,12 +55,12 @@
                     %td.padding-10.post-subject{class: klass}= link_to post.subject, post_path(post)
                     %td.padding-10.post-board{class: klass}= post.board.name
                     %td.padding-10.post-time{class: klass}= post.tagged_at.strftime("%b %d, %Y ") + post.tagged_at.hour.to_s + post.tagged_at.strftime(":%M %p")
-                  - if @replies.has_key?(post.id)
+                  - if @replies && @replies.has_key?(post.id)
                     %tr
                       %td.padding-5{class: klass, colspan: 3}
                         - @replies[post.id].each do |reply|
                           %li
-                            = excerpt(reply.content, params[:subj_content], radius: 10)
+                            = excerpt(reply.content, params[:subj_content], radius: 10) || '(exact string not found)'
                             = link_to reply_path(reply, anchor: "reply-#{reply.id}") do
                               = image_tag "/images/link.png", class: 'vmid', title: 'Permalink'
 

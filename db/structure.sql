@@ -544,39 +544,6 @@ ALTER SEQUENCE password_resets_id_seq OWNED BY password_resets.id;
 
 
 --
--- Name: pg_search_documents; Type: TABLE; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE TABLE pg_search_documents (
-    id integer NOT NULL,
-    content text,
-    searchable_id integer,
-    searchable_type character varying(255),
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
-);
-
-
---
--- Name: pg_search_documents_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE pg_search_documents_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: pg_search_documents_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE pg_search_documents_id_seq OWNED BY pg_search_documents.id;
-
-
---
 -- Name: post_tags; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -1026,13 +993,6 @@ ALTER TABLE ONLY password_resets ALTER COLUMN id SET DEFAULT nextval('password_r
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY pg_search_documents ALTER COLUMN id SET DEFAULT nextval('pg_search_documents_id_seq'::regclass);
-
-
---
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
---
-
 ALTER TABLE ONLY post_tags ALTER COLUMN id SET DEFAULT nextval('post_tags_id_seq'::regclass);
 
 
@@ -1213,14 +1173,6 @@ ALTER TABLE ONLY password_resets
 
 
 --
--- Name: pg_search_documents_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
---
-
-ALTER TABLE ONLY pg_search_documents
-    ADD CONSTRAINT pg_search_documents_pkey PRIMARY KEY (id);
-
-
---
 -- Name: post_tags_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -1307,10 +1259,24 @@ CREATE INDEX auditable_index ON audits USING btree (auditable_id, auditable_type
 
 
 --
--- Name: idx_fts_search; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: idx_fts_post_content; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
-CREATE INDEX idx_fts_search ON pg_search_documents USING gin (to_tsvector('english'::regconfig, content));
+CREATE INDEX idx_fts_post_content ON posts USING gin (to_tsvector('english'::regconfig, content));
+
+
+--
+-- Name: idx_fts_post_subject; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX idx_fts_post_subject ON posts USING gin (to_tsvector('english'::regconfig, (subject)::text));
+
+
+--
+-- Name: idx_fts_reply_content; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX idx_fts_reply_content ON replies USING gin (to_tsvector('english'::regconfig, content));
 
 
 --

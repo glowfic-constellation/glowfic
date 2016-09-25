@@ -46,7 +46,7 @@ module Glowfic
     # config.i18n.default_locale = :de
 
     # We cannot use the default Rails schema because we are using pg_search with
-    # Postgres ts_vector columns
+    # Postgres indexes using GIN and tsvector transformations.
     config.active_record.schema_format = :sql
   end
 end

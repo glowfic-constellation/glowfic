@@ -27,10 +27,6 @@ module Writable
       content.split.size
     end
 
-    def sanitized_content
-      ActionView::Base.full_sanitizer.sanitize(content).gsub(/[^\w ]/, ' ').squeeze(" ")
-    end
-
     private
 
     def character_ownership

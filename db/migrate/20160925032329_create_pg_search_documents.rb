@@ -1,20 +1,13 @@
 class CreatePgSearchDocuments < ActiveRecord::Migration
   def self.up
-    say_with_time("Creating table for pg_search multisearch") do
-      create_table :pg_search_documents do |t|
-        t.text :content
-        t.belongs_to :searchable, :polymorphic => true, :index => true
-        t.timestamps null: false
-      end
-      execute "CREATE INDEX idx_fts_search ON pg_search_documents USING gin(to_tsvector('english', content))"
-      PgSearch::Multisearch.rebuild(Post)
-      PgSearch::Multisearch.rebuild(Reply)
-    end
+    execute "CREATE INDEX idx_fts_post_content ON posts USING gin(to_tsvector('english', content))"
+    execute "CREATE INDEX idx_fts_post_subject ON posts USING gin(to_tsvector('english', subject))"
+    execute "CREATE INDEX idx_fts_reply_content ON replies USING gin(to_tsvector('english', content))"
   end
 
   def self.down
-    say_with_time("Dropping table for pg_search multisearch") do
-      drop_table :pg_search_documents
-    end
+    execute "DROP INDEX idx_fts_post_content"
+    execute "DROP INDEX idx_fts_post_subject"
+    execute "DROP INDEX idx_fts_reply_content"
   end
 end

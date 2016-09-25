@@ -40,11 +40,10 @@ class Post < ActiveRecord::Base
     :search,
     against: %i(
       subject
-      sanitized_content
+      content
     ),
     using: {tsearch: { dictionary: "english" } }
   )
-  multisearchable against: [:sanitized_content]
 
   def visible_to?(user)
     return true if privacy == PRIVACY_PUBLIC
