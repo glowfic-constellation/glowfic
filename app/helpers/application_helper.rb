@@ -69,12 +69,14 @@ module ApplicationHelper
   end
   
   def time_display_options(default=nil)
-    time_thing = Time.new(2016, 12, 25, 21, 34) # Example time: "2016-12-25 21:34" (for unambiguous display purposes)
-    time_display_list = ["%b %d, %Y %l:%M %p", "%b %d, %Y %H:%M",
-      "%d %b %Y %l:%M %p", "%d %b %Y %H:%M",
-      "%m-%d-%Y %l:%M %p", "%m-%d-%Y %H:%M",
-      "%d-%m-%Y %l:%M %p", "%d-%m-%Y %H:%M",
-      "%Y-%m-%d %l:%M %p", "%Y-%m-%d %H:%M"]
+    time_thing = Time.new(2016, 12, 25, 21, 34, 56) # Example time: "2016-12-25 21:34:56" (for unambiguous display purposes)
+    time_display_list = [
+      "%b %d, %Y %l:%M %p", "%b %d, %Y %H:%M", "%b %d, %Y %l:%M:%S %p", "%b %d, %Y %H:%M:%S",
+      "%d %b %Y %l:%M %p", "%d %b %Y %H:%M", "%d %b %Y %l:%M:%S %p", "%d %b %Y %H:%M:%S",
+      "%m-%d-%Y %l:%M %p", "%m-%d-%Y %H:%M", "%m-%d-%Y %l:%M:%S %p", "%m-%d-%Y %H:%M:%S",
+      "%d-%m-%Y %l:%M %p", "%d-%m-%Y %H:%M", "%d-%m-%Y %l:%M:%S %p", "%d-%m-%Y %H:%M:%S",
+      "%Y-%m-%d %l:%M %p", "%Y-%m-%d %H:%M", "%Y-%m-%d %l:%M:%S %p", "%Y-%m-%d %H:%M:%S"
+    ]
     time_displays = Hash[time_display_list.map { |v| [time_thing.strftime(v), v] }]
     options_for_select(time_displays, default)
   end
