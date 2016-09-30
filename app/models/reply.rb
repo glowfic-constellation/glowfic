@@ -60,6 +60,7 @@ class Reply < ActiveRecord::Base
     post.last_user = (previous_reply || post).user
     post.tagged_at = (previous_reply || post).last_updated
     post.save
+    post.skip_edited = false
   end
 
   def destroy_draft
