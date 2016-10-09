@@ -75,11 +75,6 @@ function displayGallery(new_id){
     }
     html_string += "</div>";
     $("#selected-gallery .gallery").append(html_string);
-    $(".gallery > div").sort(function(a,b){ 
-      aid = $("b.gallery-name", a).text().trim();
-      bid = $("b.gallery-name", b).text().trim();
-      return (aid > bid ? 1 : (aid < bid ? -1 : 0)) 
-    }).each(function(){ $(this).detach(); $(".gallery").append(this); }); //Sorts the galleries alphabetically by b.gallery-name's content
     bindIcons();
   });
 }
