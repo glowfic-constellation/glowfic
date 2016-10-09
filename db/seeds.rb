@@ -9042,6 +9042,10 @@ Icon.create([
 
 
 
+Icon.where(id: GalleriesIcon.group(:id, :icon_id).map(&:icon_id).uniq, has_gallery: false).update_all(has_gallery: true)
+
+
+
 Template.create([
   { :user_id => 1, :name => "Alli", :created_at => "2015-11-30 05:10:08", :updated_at => "2015-11-30 05:10:08" },
   { :user_id => 1, :name => "Emma", :created_at => "2015-11-30 05:10:08", :updated_at => "2015-11-30 05:10:08" },
