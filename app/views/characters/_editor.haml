@@ -36,7 +36,7 @@
   Pick Default Icon (Optional):
   %br
   .gallery
-    - galleries = @character.galleries.present? ? @character.galleries.ordered : [Struct.new(:id, :name, :icons).new(0, 'Galleryless', current_user.galleryless_icons)]
+    - galleries = @character.galleries.present? ? @character.galleries.ordered : [Struct.new(:id, :name, :icons).new(0, 'Galleryless', current_user.galleryless_icons || [])]
     - if galleries.present?
       - galleries.each do |gallery|
         %div{id: "gallery#{gallery.id}", :'data-id' => gallery.id }
