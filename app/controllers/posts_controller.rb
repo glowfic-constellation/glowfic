@@ -155,6 +155,9 @@ class PostsController < WritableController
 
     create_new_tags if @post.valid?
 
+    edited_attrs = %w(subject content icon_id character_id)
+    @post.skip_edited = true unless edited_attrs.any?{ |edit| @post.send(edit + "_changed?")}
+
     if @post.save
       flash[:success] = "Your post has been updated."
       redirect_to post_path(@post)
@@ -260,7 +263,7 @@ class PostsController < WritableController
   end
 
   def require_permission
-    unless @post.editable_by?(current_user)
+    unless @post.editable_by?(current_user) || @post.metadata_editable_by?(current_user)
       flash[:error] = "You do not have permission to modify this post."
       redirect_to post_path(@post)
     end
