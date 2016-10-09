@@ -37,7 +37,7 @@
   %br
   .gallery
     - if @character.galleries.present?
-      - @character.galleries.each do |gallery|
+      - @character.galleries.ordered.each do |gallery|
         %div{id: "gallery#{gallery.id}", :'data-id' => gallery.id }
           %br
           %b= gallery.name

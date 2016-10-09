@@ -23,6 +23,8 @@ class CharactersController < ApplicationController
   end
 
   def create
+    reorder_galleries and return if params[:commit] == "reorder"
+
     @character = Character.new((params[:character] || {}).merge(user: current_user))
 
     if @character.valid?
@@ -39,6 +41,7 @@ class CharactersController < ApplicationController
   def show
     @page_title = @character.name
     @posts = @character.recent_posts(25, page).includes(:board, :user, :last_user, :content_warnings)
+    use_javascript('characters/show') if @character.user_id == current_user.try(:id)
   end
 
   def edit
@@ -118,7 +121,7 @@ class CharactersController < ApplicationController
     @templates = current_user.templates.order('name asc') + [new_template]
     new_group = faked.new('— Create New Group —', 0)
     @groups = current_user.character_groups.order('name asc') + [new_group]
-    use_javascript('characters')
+    use_javascript('characters/editor')
     gon.character_id = @character.try(:id) || ''
   end
 
@@ -134,5 +137,17 @@ class CharactersController < ApplicationController
       end
       @character.save
     end
+  end
+
+  def reorder_galleries
+    CharactersGallery.transaction do
+      params[:changes].each do |id, order|
+        cg = CharactersGallery.find_by_id(id)
+        next unless cg
+        cg.section_order = order
+        cg.save
+      end
+    end
+    render json: {}
   end
 end
