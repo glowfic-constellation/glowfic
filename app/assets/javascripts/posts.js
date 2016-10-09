@@ -139,11 +139,6 @@ $(document).ready(function() {
     }
   });
 
-  $(".post-expander").click(function() {
-    $(this).children(".info").remove();
-    $(this).children(".hidden").show();
-  });
-
   $("#submit_button").click(function() {
     $("#preview_button").removeAttr('data-disable-with').attr('disabled', 'disabled');
     $("#draft_button").removeAttr('data-disable-with').attr('disabled', 'disabled');

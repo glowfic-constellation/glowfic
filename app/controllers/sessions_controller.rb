@@ -22,6 +22,7 @@ class SessionsController < ApplicationController
       session[:user_id] = user.id
       cookies.permanent.signed[:user_id] = user.id if params[:remember_me].present?
       @current_user = user
+      redirect_to boards_path and return if session[:previous_url] == '/login'
     else
       flash[:error] = "You have entered an incorrect password."
     end

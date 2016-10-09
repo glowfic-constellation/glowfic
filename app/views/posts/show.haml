@@ -96,6 +96,16 @@
 = render partial: 'replies/single', collection: @replies
 - if @post.completed? && (@replies.empty? || (@replies.last.id == @post.replies.order('id desc').first.id))
   .post-ender Here Ends This Thread
+  - if @prev_post || @next_post
+    .post-navheader
+      .padding-10
+        - if @next_post
+          = link_to post_path(@next_post) do
+            .view-button Next Post &raquo;
+        - if @prev_post
+          = link_to post_path(@prev_post) do
+            .view-button.float-none &laquo; Previous Post
+        .clear
 - if @post.on_hiatus? && (@replies.empty? || (@replies.last.id == @post.replies.order('id desc').first.id))
   .post-ender This Thread Is On Hiatus
 - if @replies.present?

@@ -16,6 +16,7 @@ class WritableController < ApplicationController
       threadchars = faked.new('Thread characters', nil, uniq_chars.sort_by(&:name))
       @templates.insert(0, threadchars)
     end
+    @templates.reject! {|template| template.ordered_characters.empty? }
 
     gon.current_user = current_user.gon_attributes
     gon.character_path = character_user_path(current_user)

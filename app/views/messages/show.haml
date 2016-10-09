@@ -1,11 +1,11 @@
 - content_for :breadcrumbs do
   = link_to @message.box(current_user).capitalize, messages_path(view: @message.box(current_user))
   &raquo;
-  %b= @message.subject
+  %b= @message.unempty_subject
 
 .post-header
   .padding-15
-    %span= @message.subject
+    %span= @message.unempty_subject
 = render partial: 'single', locals: {message: @message}
 .right-align.margin-5
   = link_to new_message_path(reply_id: @message.id) do

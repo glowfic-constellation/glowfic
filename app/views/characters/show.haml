@@ -42,11 +42,11 @@
   - content_for :posts_title do 'Recent Threads' end
   = render partial: 'posts/list', locals: {posts: @posts, path: :character_path}
 %br
-- if @character.galleries.present?
+- if @character.galleries.ordered.present?
   %table
     %thead
       %tr
         %th Galleries
     %tbody
-      - @character.galleries.includes(:user).each do |gallery|
-        = render partial: 'galleries/single', locals: {gallery: gallery, klass: 'subber', skip_forms: true}
+      - @character.galleries.ordered.each do |gallery|
+        = render partial: 'galleries/single', locals: {gallery: gallery, klass: 'subber', skip_forms: true, section: gallery.character_gallery_for(@character)}

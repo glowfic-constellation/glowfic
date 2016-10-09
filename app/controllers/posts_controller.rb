@@ -220,6 +220,12 @@ class PostsController < WritableController
     if params[:completed].present?
       @search_results = @search_results.where(status: Post::STATUS_COMPLETE)
     end
+    if params[:subj_content].present?
+      post_results = Post.search(params[:subj_content]).map(&:id)
+      reply_results = Reply.search(params[:subj_content])
+      @replies = reply_results.inject(Hash.new([])) { |hash, r| hash[r.post_id] += [r]; hash }
+      @search_results = @search_results.where(id: (post_results + @replies.keys).uniq)
+    end
 
     @search_results = @search_results.paginate(page: page, per_page: 25)
   end
