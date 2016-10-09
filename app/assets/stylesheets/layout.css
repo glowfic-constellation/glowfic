@@ -21,6 +21,7 @@
 #header #header-collaspe { display: none; }
 
 #header #header-forms, #header #header-remember, #header #header-buttons { display: inline; }
+#header #header-links { display: none; }
 
 @media (max-width: 700px) {
   #header #button-break { display: block; clear: both; }
@@ -38,15 +39,21 @@
 }
 @media (max-width: 400px) {
   #header #user-info img { display: none; }
+  #header #header-forms, #header #header-remember, #header #header-buttons { display: none; }
+  #header #header-links { display: inline-block; height: 20px; }
+  #header #header-links a, #header #header-links span { vertical-align: middle; font-size: 14px; }
+  #header #logo { text-align: left; }
+  #header #logo img { padding-bottom: 2px; padding-top: 2px; height: 20px; float: right; }
+  #content table.form-table { width: 100%; }
 }
 
 /* Main Content */
 #content { padding: 20px; font-size: 16px; line-height: 20px; text-align: left; position: relative; }
 @media (max-width: 600px) {
-  #content { padding-left: 10px; padding-right: 10px; }
+  #content { padding: 10px; }
 }
 @media (max-width: 500px) {
-  #content { padding-left: 5px; padding-right: 5px; }
+  #content { padding: 5px; }
 }
 
 /* Flash Displays */
@@ -78,6 +85,9 @@
     box-sizing: border-box;         /* Opera/IE 8+ */
 }
 #content table.form-table td.spacer { height: 2px; padding: 0px; }
+@media (max-width: 400px) {
+  #content table.form-table { width: 100%; }
+}
 
 /* Buttons like List View or Outbox View in top right of page */
 .view-button {

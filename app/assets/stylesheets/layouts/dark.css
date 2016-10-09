@@ -49,7 +49,7 @@ body {
 #content .odd {
   background-color: #474747;
 }
-#content .green {
+.green {
   background-color: #444D3F;
 }
 #content .subber, .subber {
@@ -75,9 +75,10 @@ body {
 .character-view-select {
   background-color: #666460;
 }
-.post-icon {
+.post-icon, #current-icon-dropdown {
   background-color: #444D3F;
 }
+#current-icon-dropdown { color: #111111; }
 .post-expander {
   background-color: #6F7769;
 }
@@ -104,4 +105,4 @@ body {
 .view-button.selected { 
   background-color: #6A6A6A;
 }
-#content .link-box { color: #DDDDDD; }
+.link-box { color: #DDDDDD; }

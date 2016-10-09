@@ -10,6 +10,11 @@ class TemplatesController < ApplicationController
       @user = User.find_by_id(params[:user_id]) || current_user
       @page_title = @user.username + "'s Templates"
     end
+
+    unless @user
+      flash[:error] = "User could not be found."
+      redirect_to users_path and return
+    end
     @templates = @user.templates
   end
 

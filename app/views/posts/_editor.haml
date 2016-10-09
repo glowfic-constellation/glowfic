@@ -9,7 +9,7 @@
       - else
         = no_icon_tag id: 'current-icon', pointer: item.has_icons?
       #icon-overlay
-    #current-icon-dropdown.post-icon
+    #current-icon-dropdown
       - if item.character
         = select_tag :icon_dropdown, options_for_select(item.character.icons.sort_by{|i| i.keyword.downcase }.map{|i| [i.keyword, i.id]}, item.icon.try(:id)), prompt: "No Icon"
       - elsif current_user.avatar

@@ -8,6 +8,21 @@
   &raquo;
   %b= @post.subject
 
+- if @warnings.present?
+  - content_for :flashes do
+    .flash.error
+      - if logged_in?
+        = link_to warnings_post_path(@post, page: page, per_page: per_page), method: :post do
+          .link-box.red.float-right Dismiss for this post
+      - else
+        = link_to warnings_post_path(@post, page: page, per_page: per_page), method: :post, confirm: 'Are you sure? You will not see content warnings again until you restart your browser!' do
+          .link-box.red.float-right Dismiss all content warnings
+      = image_tag "/images/exclamation.png", class: 'vmid'
+      This post has the following content warnings:
+      %ul
+        - @warnings.each do |warning|
+          %li= link_to warning.name, tag_path(warning)
+
 .post-header
   .padding-15
     %span#post-title= link_to @post.subject, post_path(@post)
@@ -20,7 +35,7 @@
     /  %div
     /    = image_tag '/images/book_go.png'
     /    Download as ePub
-    = link_to post_path(@post, view: 'flat') do
+    = link_to post_path(@post, view: 'flat'), rel: 'nofollow noindex' do
       %div
         = image_tag '/images/page_world.png'
         View Flat HTML
@@ -78,8 +93,7 @@
       = render partial: 'replies/single', locals: {reply: @post}
 - if @replies.present?
   = render partial: 'posts/paginator', locals: { paginated: @replies, path: :post_path }
-- @replies.each do |reply|
-  = render partial: 'replies/single', locals: {reply: reply}
+= render partial: 'replies/single', collection: @replies
 - if @post.completed? && (@replies.empty? || (@replies.last.id == @post.replies.order('id desc').first.id))
   .post-ender Here Ends This Thread
 - if @post.on_hiatus? && (@replies.empty? || (@replies.last.id == @post.replies.order('id desc').first.id))

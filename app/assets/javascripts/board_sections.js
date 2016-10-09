@@ -41,7 +41,7 @@ function switchRows(old_order, new_order) {
     type: that_row.attr('data-type'),
     order: old_order,
   };
-  $.post(gon.ajax_path, json, function (resp) {
+  $.post('/board_sections', json, function (resp) {
     $("#saveconf").show().delay(2000).fadeOut();
   });
 };

@@ -12,7 +12,7 @@
 #post-menu-box div { border-bottom: 1px solid rgba(128,128,128,0.5); }
 #post-menu-box a { color: inherit; }
 
-.post-navheader .view-button, .view-button.selected, .view-button, #content .link-box.green, #content .link-box.blue, #content .link-box.red { background-color: #463c65; }
+.post-navheader .view-button, .view-button.selected, .view-button, .link-box.green, .link-box.blue, .link-box.red { background-color: #463c65; }
 #post-editor .green { background-color: #484357; color: #DADADA; }
 .post-subheader { background-color: #484357; color: #F3F3F3; }
 
@@ -20,7 +20,8 @@
 .subber b { color: #F3F3F3; }
 .post-expander { background-color: #9692a8; }
 
-.post-icon, .post-author { background-color: #0E0B1E; }
+.post-icon, #current-icon-dropdown, .post-author { background-color: #0E0B1E; }
+#current-icon-dropdown { color: #111111; }
 .post-character, .post-screenname, .post-author { font-weight: bold; }
 #character-selector { font-weight: normal; }
 .post-screenname { color: #9c9aa4; }
@@ -48,7 +49,7 @@ body { background-color: #211e2f; color: #DADADA; }
 #content .even { background-color: #31323b; }
 #content .odd, .post-expander { background-color: #25262e; }
 
-#content .green { background-color: #323232; }
+.green { background-color: #323232; }
 
 a { color: #B5AFCB; }
 a:visited { color: #9C9AA4; }

@@ -1,7 +1,7 @@
 class Post < ActiveRecord::Base
   include Writable
   include Viewable
-  include Orderable
+  include PostOrderable
 
   PRIVACY_PUBLIC = 0
   PRIVACY_PRIVATE = 1
@@ -73,12 +73,20 @@ class Post < ActiveRecord::Base
     @first_unread ||= replies.order('created_at asc').detect { |reply| viewed_at < reply.created_at }
   end
 
+  def hide_warnings_for(user)
+    view_for(user).update_attributes(warnings_hidden: true)
+  end
+
+  def show_warnings_for?(user)
+    !(view_for(user).try(:warnings_hidden))
+  end
+
   def completed?
     status == STATUS_COMPLETE
   end
 
   def on_hiatus?
-    status == STATUS_HIATUS
+    status == STATUS_HIATUS || (active? && tagged_at < 1.month.ago)
   end
 
   def active?

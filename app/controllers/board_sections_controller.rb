@@ -30,13 +30,12 @@ class BoardSectionsController < ApplicationController
 
   def show
     @page_title = @board_section.name
-    @posts = @board_section.posts.order('section_order asc').paginate(per_page: 25, page: page)
+    @posts = @board_section.posts.includes(:user, :last_user, :content_warnings).order('section_order asc').paginate(per_page: 25, page: page)
   end
 
   def edit
     @page_title = 'Edit ' + @board_section.name
     use_javascript('board_sections')
-    gon.ajax_path = '/posts'
   end
 
   def update
@@ -78,6 +77,10 @@ class BoardSectionsController < ApplicationController
   def reorder_sections
     valid_types = ['Post', 'BoardSection']
     render json: {} and return if params[:changes].any? { |key, el| !(valid_types.include?(el[:type])) }
+
+    if params[:changes].any? { |key, el| el[:order].nil? }
+      ExceptionNotifier.notify_exception(Exception.new, data: params)
+    end
 
     BoardSection.transaction do
       params[:changes].each do |section_id, change_info|

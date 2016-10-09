@@ -112,12 +112,12 @@ function bindFileInput(fileInput) {
           'file_name': data.files[0].name,
           'file_type': data.files[0].type,
         };
-        $.post('/bugs', bugsData);
         if (policyExpired) {
           alert("Your upload permissions appear to have expired. Please refresh the page and try again.");
         } else if (badFiletype) {
           alert("You must upload files with an image filetype such as .png or .jpg - please retry with a valid file.");
         } else {
+          $.post('/bugs', bugsData);
           alert("Upload of " + data.files[0].name + " failed, Marri has been notified.");
         }
       },

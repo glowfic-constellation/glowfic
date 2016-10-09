@@ -1,4 +1,5 @@
 - klass = cycle('even', 'odd')
+- reply = local_assigns[:single] if local_assigns[:reply].nil?
 
 .post-container{class: [klass, reply.is_a?(Post) ? 'post-post' : (reply.is_a?(Reply) ? 'post-reply' : '')]}
   - if reply.is_a?(Reply) && reply.id.present?

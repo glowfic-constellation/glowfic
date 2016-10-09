@@ -4,6 +4,8 @@
     %title= (Rails.env.development? ? 'DEV: ' : '') + (@page_title ? @page_title + " | Glowfic Constellation" : "Glowfic Constellation")
     %meta{ :charset => "utf-8" }
     <meta name="viewport" content="width=device-width">
+    - if @meta_canonical.present?
+      %link{:rel => 'canonical', :href => @meta_canonical}
     = stylesheet_link_tag 'application'
     - if current_user.try(:layout).present?
       = stylesheet_link_tag "layouts/#{current_user.layout}"
@@ -25,6 +27,11 @@
             #username= current_user.username
       #header-right
         #logo
+          - unless logged_in?
+            #header-links
+              = link_to "Login", login_path
+              %span &nbsp;|&nbsp;
+              = link_to "Sign up", new_user_path
           = link_to root_path do
             = image_tag '/images/logo.png', alt: 'Glowfic Constellation'
         #nav-top
@@ -77,6 +84,8 @@
       - flash.delete(:error)
     - flash.keys.each do |key|
       .flash{:class=>key}= flash[key]
+    - if content_for?(:flashes)
+      = content_for :flashes
     - if logged_in?
       - messages = current_user.messages.select(&:unread?)
       - if messages.present?

@@ -7,19 +7,18 @@ class CharactersController < ApplicationController
 
   def index
     (return if login_required) unless params[:user_id].present?
-    @user = current_user
-    if params[:user_id]
-      @user = User.find_by_id(params[:user_id])
-      unless @user
-        flash[:error] = "User could not be found."
-        redirect_to users_path and return
-      end
+
+    @user = User.find_by_id(params[:user_id]) || current_user
+    unless @user
+      flash[:error] = "User could not be found."
+      redirect_to users_path and return
     end
 
     @characters = @user.characters.order('name asc')
   end
 
   def new
+    @page_title = "New Character"
     @character = Character.new(template_id: params[:template_id])
   end
 
@@ -31,16 +30,19 @@ class CharactersController < ApplicationController
       flash[:success] = "Character saved successfully."
       redirect_to character_path(@character)
     else
+      @page_title = "New Character"
       flash.now[:error] = "Your character could not be saved."
       render :action => :new
     end
   end
 
   def show
-    @posts = @character.recent_posts(25, page)
+    @page_title = @character.name
+    @posts = @character.recent_posts(25, page).includes(:board, :user, :last_user, :content_warnings)
   end
 
   def edit
+    @page_title = "Edit Character: " + @character.name
   end
 
   def update
@@ -52,6 +54,7 @@ class CharactersController < ApplicationController
       redirect_to character_path(@character)
     else
       flash.now[:error] = "Your character could not be saved."
+      @page_title = "Edit Character: " + @character.name
       render :action => :edit
     end
   end
@@ -69,7 +72,8 @@ class CharactersController < ApplicationController
   end
 
   def facecasts
-    chars = Character.where('pb is not null')
+    @page_title = 'Facecasts'
+    chars = Character.where('pb is not null').includes(:user, :template)
     @pbs = {}
 
     if params[:sort] == "name"
@@ -90,9 +94,7 @@ class CharactersController < ApplicationController
   private
 
   def find_character
-    @character = Character.find_by_id(params[:id])
-
-    unless @character
+    unless @character = Character.find_by_id(params[:id])
       flash[:error] = "Character could not be found."
       redirect_to characters_path and return
     end
@@ -105,7 +107,7 @@ class CharactersController < ApplicationController
 
   def require_own_character
     if @character.user_id != current_user.id
-      flash[:error] = "That is not your character."
+      flash[:error] = "You do not have permission to edit that character."
       redirect_to characters_path and return
     end
   end

@@ -2,6 +2,7 @@ Rails.application.routes.draw do
   root :to => 'sessions#index'
 
   # Accounts
+  match '/login' => 'sessions#new', :as => :login, :via => :get
   match '/login' => 'sessions#create', :as => :login, :via => :post
   match '/logout' => 'sessions#destroy', :as => :logout, :via => :delete
   resources :users do
@@ -57,6 +58,7 @@ Rails.application.routes.draw do
     member do
       get :history
       get :stats
+      post :warnings
     end
     collection do
       post :mark

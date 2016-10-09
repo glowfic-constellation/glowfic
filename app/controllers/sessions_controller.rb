@@ -1,6 +1,13 @@
 class SessionsController < ApplicationController
+  before_filter :logout_required, only: [:new, :create]
+  before_filter :login_required, only: [:destroy]
+
   def index
     redirect_to boards_path and return if logged_in?
+  end
+
+  def new
+    @page_title = "Sign In"
   end
 
   def create
@@ -28,5 +35,14 @@ class SessionsController < ApplicationController
     @current_user = nil
     flash[:success] = "You have been logged out."
     redirect_to url
+  end
+
+  private
+
+  def logout_required
+    if logged_in?
+      flash[:error] = "You are already logged in."
+      redirect_to boards_path
+    end
   end
 end

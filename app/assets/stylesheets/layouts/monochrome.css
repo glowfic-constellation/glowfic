@@ -7,12 +7,12 @@ a:visited { color: #484848; }
 .pagination .current { background: #616161; }
 .pagination a:visited { color: #3A3A3A; }
 .post-expander { background-color: #A0A0A0; }
-.post-icon { background-color: #BDBDBD; }
+.post-icon, #current-icon-dropdown { background-color: #BDBDBD; }
 .post-navheader { background-color: #BDBDBD; }
-#content .green { background-color: #BDBDBD; }
-#content .link-box.green { background-color: #5A5A5A; }
-#content .link-box.blue { background-color: #545A79; }
-#content .link-box.red { background-color: #503636; }
+.green { background-color: #BDBDBD; }
+.link-box.green { background-color: #5A5A5A; }
+.link-box.blue { background-color: #545A79; }
+.link-box.red { background-color: #503636; }
 #content .subber, .subber { background-color: #ADADAD; }
 .post-character { background-color: #929292; }
 .post-screenname { background-color: #A5A5A5; }

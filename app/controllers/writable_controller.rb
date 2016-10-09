@@ -62,7 +62,7 @@ class WritableController < ApplicationController
         self.page = cur_page = cur_page.to_i
       end
     else
-      per = replies.count
+      per = replies.count > 5000 ? (@per_page = 1000) : replies.count
       self.page = cur_page = 1
     end
 
@@ -72,8 +72,12 @@ class WritableController < ApplicationController
     use_javascript('paginator')
 
     unless @post.board.open_to_anyone?
-      @next_post = Post.where(board_id: @post.board_id).where(section_id: @post.section_id).where(section_order: @post.section_order + 1).first
-      @prev_post = Post.where(board_id: @post.board_id).where(section_id: @post.section_id).where(section_order: @post.section_order - 1).first
+      if @post.section_order.nil?
+        ExceptionNotifier.notify_exception(Exception.new, data: {id: @post.id, board: @post.board_id, section: @post.section_id})
+      else
+        @next_post = Post.where(board_id: @post.board_id).where(section_id: @post.section_id).where(section_order: @post.section_order + 1).first
+        @prev_post = Post.where(board_id: @post.board_id).where(section_id: @post.section_id).where(section_order: @post.section_order - 1).first
+      end
     end
 
     if logged_in?
@@ -92,17 +96,20 @@ class WritableController < ApplicationController
       @post.mark_read(current_user, @post.read_time_for(@replies)) unless @post.board.ignored_by?(current_user)
     end
 
-    if @post.content_warnings.size > 1
-      flash.now[:error] = {}
-      flash.now[:error][:image] = "/images/exclamation.png"
-      flash.now[:error][:message] = "This post has the following content warnings:"
-      flash.now[:error][:array] = @post.content_warnings.map(&:name)
-    elsif @post.content_warnings.size == 1
-      flash.now[:error] = {}
-      flash.now[:error][:image] = "/images/exclamation.png"
-      flash.now[:error][:message] = "This post has the following content warning: " + @post.content_warnings.first.name
-    end
+    @warnings = @post.content_warnings if display_warnings?
 
     render 'posts/show'
+  end
+
+  def display_warnings?
+    return false if session[:ignore_warnings]
+
+    if params[:ignore_warnings].present?
+      session[:ignore_warnings] = true unless current_user
+      return false
+    end
+
+    return true unless current_user
+    @post.show_warnings_for?(current_user)
   end
 end

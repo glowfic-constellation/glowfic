@@ -213,5 +213,45 @@ RSpec.describe Post do
       expect(post2.reload.section_order).to eq(1)
       expect(post3.reload.section_order).to eq(2)
     end
+
+    it "should autofill correctly upon board change" do
+      board = create(:board)
+      board2 = create(:board)
+      post0 = create(:post, board_id: board.id)
+      post1 = create(:post, board_id: board.id)
+      post2 = create(:post, board_id: board2.id)
+      expect(post0.section_order).to eq(0)
+      expect(post1.section_order).to eq(1)
+      expect(post2.section_order).to eq(0)
+
+      post2.board_id = board.id
+      post2.skip_edited = true
+      post2.save
+
+      expect(post0.section_order).to eq(0)
+      expect(post1.section_order).to eq(1)
+      expect(post2.section_order).to eq(2)
+    end
+
+    it "should autofill correctly upon board change with mix" do
+      board = create(:board)
+      board2 = create(:board)
+
+      section1 = create(:board_section, board_id: board.id)
+      post = create(:post, board_id: board.id)
+      section2 = create(:board_section, board_id: board.id)
+
+      expect(section1.section_order).to eq(0)
+      expect(post.section_order).to eq(1)
+      expect(section2.section_order).to eq(2)
+
+      post.board_id = board2.id
+      post.skip_edited = true
+      post.save
+
+      expect(post.reload.section_order).to eq(0)
+      expect(section1.reload.section_order).to eq(0)
+      expect(section2.reload.section_order).to eq(1)
+    end
   end
 end

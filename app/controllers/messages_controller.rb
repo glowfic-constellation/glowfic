@@ -20,8 +20,11 @@ class MessagesController < ApplicationController
     @page_title = "Compose Message"
     if params[:reply_id].present?
       @message.parent = Message.find_by_id(params[:reply_id])
-      @message.parent = nil unless @message.parent.visible_to?(current_user)
-      @message.subject = @message.subject_from_parent
+      if @message.parent.visible_to?(current_user)
+        @message.subject = @message.subject_from_parent
+      else
+        @message.parent = nil
+      end
     end
   end
 
@@ -63,35 +66,36 @@ class MessagesController < ApplicationController
     end
   end
 
-  def update
-  end
-
   def mark
-    messages = Message.where(id: params[:marked_ids])
-    box = 'inbox'
-    messages.select! do |message|
+    box = nil
+    messages = Message.where(id: params[:marked_ids]).select do |message|
       message.visible_to?(current_user)
     end
-    flash[:success] = "Messages updated"
+
     if params[:commit] == "Mark Read / Unread"
       messages.each do |message|
-        box = message.sender_id == current_user.id ? 'outbox' : 'inbox'
+        box ||= message.box(current_user)
         message.update_attributes(unread: !message.unread?)
       end
     elsif params[:commit] == "Mark / Unmark Important"
       messages.each do |message|
-        box = message.sender_id == current_user.id ? 'outbox' : 'inbox'
+        box ||= message.box(current_user)
         box_attr = "marked_#{box}"
         message.update_attributes(box_attr => !message.send(box_attr+'?'))
       end
     elsif params[:commit] == "Delete"
       messages.each do |message|
-        box = message.sender_id == current_user.id ? 'outbox' : 'inbox'
+        box ||= message.box(current_user)
         box_attr = "visible_#{box}"
         message.update_attributes(box_attr => false, unread: false)
       end
+    else
+      flash[:error] = "Could not perform unknown action."
+      redirect_to messages_path and return
     end
-    redirect_to messages_path(view: box)
+
+    flash[:success] = "Messages updated"
+    redirect_to messages_path(view: box || 'inbox')
   end
 
   def destroy

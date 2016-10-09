@@ -18,8 +18,8 @@ body { background-color: #b0afb7; }
 #content .even { background-color: #E3E3E3; }
 #content .odd { background-color: #D8D8D8; }
 
-.post-navheader .view-button, .view-button.selected, .view-button, #content .link-box.green, #content .link-box.blue, #content .link-box.red { background-color: #584b81; }
-#content .green { background-color: #d8d8d8; }
+.post-navheader .view-button, .view-button.selected, .view-button, .link-box.green, .link-box.blue, .link-box.red { background-color: #584b81; }
+.green { background-color: #d8d8d8; }
 #post-editor .green { background-color: #9692a8; color: #DADADA; }
 .post-subheader { background-color: #9692a8; color: #F3F3F3; }
 
@@ -27,7 +27,7 @@ body { background-color: #b0afb7; }
 .subber b { color: #F3F3F3; }
 .post-expander { background-color: #D8D8D8; }
 
-.post-icon { background-color: #9498ac; }
+.post-icon, #current-icon-dropdown { background-color: #9498ac; }
 .post-author { background-color: #42416e; }
 .post-character, .post-screenname, .post-author { font-weight: normal; }
 #character-selector { font-weight: normal; }
