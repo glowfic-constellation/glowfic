@@ -36,7 +36,7 @@
           %br> Avatar
     - elsif item.character.galleries.present?
       - if current_user.icon_picker_grouping && item.character.galleries.count > 1
-        - galleries = item.character.galleries.includes(:icons).order('name asc')
+        - galleries = item.character.galleries.includes(:icons).ordered
         - galleries.each do |gallery|
           .gallery-group
             .gallery-name= gallery.name

@@ -1,7 +1,9 @@
-%tr.gallery-header
+- attrs = {}
+- attrs = {id: "section-#{section.section_order}", data: {section: section.id}} if local_assigns[:section]
+%tr.gallery-header{**attrs}
   %th.padding-10{class: (klass if defined? klass)}
     = link_to gallery.name, gallery_path(gallery), class: 'gallery-title'
-    - if gallery.user == current_user and not defined? skip_forms
+    - if gallery.user_id == current_user.try(:id) and not defined? skip_forms
       = link_to add_gallery_path(gallery), class: 'gallery-add' do
         .link-box.green + Add Icons
       = link_to edit_gallery_path(gallery), class: 'gallery-edit' do
@@ -11,7 +13,12 @@
       = link_to gallery_path(gallery), method: :delete, confirm: 'Are you sure you want to delete this gallery?', class: 'gallery-delete' do
         .link-box.red x Delete Gallery
     .gallery-box.float-right.gallery-minmax{id: gallery.id} -
-%tr.gallery-icons
+    - if local_assigns[:section]
+      .float-right
+        = image_tag "/images/arrow_up.png", class: "section-up pointer", data: {order: section.section_order}
+        = image_tag "/images/arrow_down.png", class: "section-down pointer", data: {order: section.section_order}
+- attrs = {id: "section-gallery-#{section.section_order}"} if attrs[:id]
+%tr.gallery-icons{**attrs}
   %td.green
     .gallery{id: "gallery#{gallery.id.to_s}"}
       = form_tag delete_multiple_icons_path, method: :delete do
