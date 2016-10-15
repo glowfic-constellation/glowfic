@@ -16,7 +16,7 @@
       - else
         = image_tag unread_img, style: 'visibility: hidden'
     = link_to post.subject, post_path(post)
-    - if !@show_unread && (!logged_in? || per_page > 0)
+    - if !@show_unread && @opened_ids.nil? && (!logged_in? || per_page > 0)
       - total_pages = (replies_count.to_f / per_page).ceil
       - if total_pages > 1
         = surround '[', ']' do
