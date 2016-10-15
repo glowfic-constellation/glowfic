@@ -248,7 +248,7 @@ iconString = function(icon) {
   var img_url = icon["url"];
   var img_key = icon["keyword"];
 
-  if (icon['add_dropdown'] != false) $("#icon_dropdown").append($("<option>").attr({value: img_id}).append(img_key));
+  if (!icon['skip_dropdown']) $("#icon_dropdown").append($("<option>").attr({value: img_id}).append(img_key));
   var icon_img = $("<img>").attr({src: img_url, id: img_id, alt: img_key, title: img_key, 'class': 'icon'});
   return $("<div>").attr('class', 'gallery-icon').append(icon_img).append("<br />").append(img_key)[0].outerHTML;
 };
@@ -284,7 +284,7 @@ getAndSetCharacterData = function(characterId) {
       var keyword = gon.current_user.avatar.keyword;
       $("#gallery").html("");
       $("#gallery").append(iconString({id: aid, url: url, keyword: keyword}));
-      $("#gallery").append(iconString({id: '', url: '/images/no-icon.png', keyword: 'No Icon', add_dropdown: false}));
+      $("#gallery").append(iconString({id: '', url: '/images/no-icon.png', keyword: 'No Icon', skip_dropdown: true}));
       bindIcon();
       bindGallery();
       setIcon(aid, url, keyword, keyword);
@@ -325,7 +325,7 @@ getAndSetCharacterData = function(characterId) {
       $("#gallery").append(galleryString(gallery, multiGallery));
     }
 
-    $("#gallery").append(iconString({id: '', url: '/images/no-icon.png', keyword: 'No Icon', add_dropdown: false}));
+    $("#gallery").append(iconString({id: '', url: '/images/no-icon.png', keyword: 'No Icon', skip_dropdown: true}));
     bindGallery();
     bindIcon();
     setIcon(resp['default']['id'], resp['default']['url'], resp['default']['keyword'], resp['default']['keyword']);
