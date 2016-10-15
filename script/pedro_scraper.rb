@@ -48,10 +48,10 @@ def make_icon(url, user, keyword, character)
   icon
 end
 
-lintamande_id = (User.where('lower(username) = ?', 'lintamande').first || User.create!(username: 'lintamande', password: 'lintamande', email: 'dummy5@example.com')).id
-pedro_id = (User.where('lower(username) = ?', 'pedro').first || User.create!(username: 'Pedro', password: 'pedro', email: 'dummy6@example.com')).id
-alicorn_id = (User.where('lower(username) = ?', 'alicorn').first).id
-kappa_id = (User.where('lower(username) = ?', 'kappa').first).id
+lintamande_id = User.where('lower(username) = ?', 'lintamande').first.id
+pedro_id = User.where('lower(username) = ?', 'pedro').first.id
+alicorn_id = User.where('lower(username) = ?', 'alicorn').first.id
+kappa_id = User.where('lower(username) = ?', 'kappa').first.id
 ids = {lintamande: lintamande_id, pedro: pedro_id, alicorn: alicorn_id, kappa: kappa_id}
 p ids
 COLLECTIONS={'lintamande'=>lintamande_id,'alicornucopia'=>alicorn_id, 'pythbox'=>kappa_id, 'peterxy'=>pedro_id, 'peterverse'=>pedro_id}
