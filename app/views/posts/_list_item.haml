@@ -9,6 +9,12 @@
     - if post.content_warnings.present?
       = image_tag "/images/exclamation.png", class: 'vmid', title: "Content Warning: " + post.content_warnings.map(&:name).join(', '), alt: '!'
   %td.post-subject{class: klass}
+    - unless @opened_ids.nil?
+      - if @opened_ids.include?(post.id)
+        = link_to post_path(post, page: 'unread', anchor: 'unread') do
+          = image_tag unread_img, class: 'vmid', title: 'First Unread'
+      - else
+        = image_tag unread_img, style: 'visibility: hidden'
     = link_to post.subject, post_path(post)
     - if !@show_unread && (!logged_in? || per_page > 0)
       - total_pages = (replies_count.to_f / per_page).ceil
@@ -27,9 +33,8 @@
             - (total_pages-2).upto(total_pages) do |index|
               = link_to (index), post_path(post, page: index)
     - if logged_in? && @show_unread
-      - if !@conditional_unread || @opened_ids.include?(post.id)
-        = link_to post_path(post, page: 'unread', anchor: 'unread') do
-          = image_tag unread_img, class: 'vmid', title: 'First Unread'
+      = link_to post_path(post, page: 'unread', anchor: 'unread') do
+        = image_tag unread_img, class: 'vmid', title: 'First Unread'
   - unless local_assigns[:hide_continuity]
     %td.post-board{class: klass}= link_to post.board.name, board_path(post.board)
   %td.post-authors{class: klass}= post.authors.map { |author| link_to author.username, user_path(author) }.join(', ').html_safe

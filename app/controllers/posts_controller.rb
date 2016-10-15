@@ -34,7 +34,6 @@ class PostsController < WritableController
     @posts = @posts.select { |p|  @opened_ids.include?(p.id) } if params[:started] == 'true'
     @posts = @posts.paginate(per_page: 25, page: page)
     @page_title = params[:started] == 'true' ? "Opened Threads" : "Unread Threads"
-    @show_unread = @conditional_unread = true
   end
 
   def mark    
