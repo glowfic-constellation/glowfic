@@ -32,6 +32,9 @@
           = image_tag "/images/pencil.png"
         = link_to path_for(reply, '%s'), method: :delete, confirm: "Are you sure you wish to delete this #{reply.class.to_s.downcase}?" do
           = image_tag "/images/cross.png"
+      - if reply.id.present? && reply.is_a?(Reply) && logged_in?
+        = link_to post_path(@post, unread: true, at_id: reply.id), method: :put do
+          = image_tag '/images/eye.png', title: 'Mark Unread Here', alt: 'Eye'
     .post-content
       = sanitize_post_content(reply.content).html_safe
   .post-footer

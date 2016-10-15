@@ -174,6 +174,20 @@ class PostsController < WritableController
   end
 
   def mark_unread
+    if params[:at_id].present?
+      reply = Reply.find(params[:at_id])
+      if reply && reply.post == @post
+        board_read = @post.board.last_read(current_user)
+        if board_read && board_read > reply.created_at
+          flash[:error] = "You have marked this continuity read more recently than that reply was written; it will not appear in your Unread posts."
+          Message.create(recipient_id: 1, sender_id: 1, subject: 'Unread at failure', message: "#{current_user.username} tried to mark post #{@post.id} unread at reply #{reply.id}")
+        else
+          @post.mark_read(current_user, reply.created_at, true)
+        end
+      end
+      return redirect_to unread_posts_path
+    end
+
     @post.views.where(user_id: current_user.id).destroy_all
     flash[:success] = "Post has been marked as unread"
     redirect_to unread_posts_path

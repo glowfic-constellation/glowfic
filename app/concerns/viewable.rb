@@ -4,7 +4,7 @@ module Viewable
   included do
     has_many :views, class_name: self.name + 'View', dependent: :destroy
 
-    def mark_read(user, at_time=nil)
+    def mark_read(user, at_time=nil, force=false)
       view = view_for(user)
       return true if view.ignored
 
@@ -14,7 +14,7 @@ module Viewable
       end
 
       return view.update_attributes(read_at: Time.now) unless at_time.present?
-      return true if at_time <= view.read_at
+      return true if at_time <= view.read_at && !force
       view.update_attributes(read_at: at_time)
     end
 
