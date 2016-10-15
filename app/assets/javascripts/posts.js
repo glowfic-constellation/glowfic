@@ -283,8 +283,7 @@ getAndSetCharacterData = function(characterId) {
       var aid = gon.current_user.avatar.id;
       var keyword = gon.current_user.avatar.keyword;
       $("#gallery").html("");
-      avatar_icon = $("<div>").attr('class', 'gallery-icon').append($("<img>").attr({src: url, id: aid, 'class': 'icon'})).append("<br />Avatar");
-      $("#gallery").append(avatar_icon);
+      $("#gallery").append(iconString({id: aid, url: url, keyword: keyword}));
       $("#gallery").append(iconString({id: '', url: '/images/no-icon.png', keyword: 'No Icon', skip_dropdown: true}));
       bindIcon();
       bindGallery();
