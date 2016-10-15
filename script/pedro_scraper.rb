@@ -14,7 +14,7 @@ end
 def make_missing_character(name)
   id = prompt("User for "+name)
 
-  user = User.find_by_username(id)
+  user = User.where('lower(username) = ?', id).first || User.where(id: id).first
   gallery = Gallery.create!(user: user, name: name)
   character = Character.create!(user: user, name: name, screenname: name)
   CharactersGallery.create(character_id: character.id, gallery_id: gallery.id)
@@ -26,7 +26,7 @@ def make_icon(url, user, keyword, character)
   host_url = url.gsub(/https?:\/\//, "")
   http_url = 'http://' + host_url
   https_url = 'https://' + host_url
-  icon = Icon.find_by_url(http_url) ||  Icon.find_by_url(https_url)
+  icon = Icon.find_by_url(http_url) || Icon.find_by_url(https_url)
   if url && !icon
     end_index = keyword.index("(Default)").to_i - 1
     start_index = (keyword.index(':') || -1) + 1
@@ -48,9 +48,13 @@ def make_icon(url, user, keyword, character)
   icon
 end
 
-lintamande_id = Rails.env.production? ? 34 : 12
-pedro_id = Rails.env.production? ? 24 : 11
-COLLECTIONS={'lintamande'=>lintamande_id,'alicornucopia'=>2, 'pythbox'=>3, 'peterxy'=>pedro_id, 'peterverse'=>pedro_id}
+lintamande_id = (User.where('lower(username) = ?', 'lintamande').first || User.create!(username: 'lintamande', password: 'lintamande', email: 'dummy5@example.com')).id
+pedro_id = (User.where('lower(username) = ?', 'pedro').first || User.create!(username: 'Pedro', password: 'pedro', email: 'dummy6@example.com')).id
+alicorn_id = (User.where('lower(username) = ?', 'alicorn').first).id
+kappa_id = (User.where('lower(username) = ?', 'kappa').first).id
+ids = {lintamande: lintamande_id, pedro: pedro_id, alicorn: alicorn_id, kappa: kappa_id}
+p ids
+COLLECTIONS={'lintamande'=>lintamande_id,'alicornucopia'=>alicorn_id, 'pythbox'=>kappa_id, 'peterxy'=>pedro_id, 'peterverse'=>pedro_id}
 def make_character(name)
   character = nil
   user = nil
@@ -101,11 +105,12 @@ end
 def post_from_url(url, title, active=false)
   response = HTTParty.get(url)
   html_doc = Nokogiri::HTML(response.body)
-  puts "Importing thread '#{title}'"
+  post_title = html_doc.at_css('.entry .entry-title').text.strip
+  puts "Importing thread '#{post_title}'"
 
   poster = html_doc.at_css('.entry-poster b').inner_html
   post_url = html_doc.at_css('.entry .userpic img').try(:attribute, 'src').try(:value)
-  post_title = html_doc.at_css('.entry .userpic img').try(:attribute, 'title').try(:value)
+  img_title = html_doc.at_css('.entry .userpic img').try(:attribute, 'title').try(:value)
   created_at = html_doc.at_css('.entry .datetime').text
   main_content = html_doc.at_css('.entry-content').inner_html
   character, user = make_character(poster)
@@ -115,12 +120,12 @@ def post_from_url(url, title, active=false)
   post.user = user
   post.last_user_id = user.id
   post.board_id = Rails.env.production? ? 3 : 5
-  post.subject = title
+  post.subject = post_title
   post.content = strip_content(main_content)
   post.created_at = post.updated_at = created_at
   post.status = active ? Post::STATUS_ACTIVE : Post::STATUS_COMPLETE
 
-  icon = make_icon(post_url, post.user, post_title, character)
+  icon = make_icon(post_url, post.user, img_title, character)
   post.icon = icon
 
   post.save!
@@ -128,7 +133,9 @@ def post_from_url(url, title, active=false)
 end
 
 def import_flat_thread(url, title, active)
-  url = url + (if url.include?('?') then '&view=flat' else '?view=flat' end)
+  url = url + (if url.include?('?') then '&view=flat' else '?view=flat' end) unless url.include?('view=flat')
+  url = url + '&style=site' unless url.include?('style=site')
+  p url
   post, html_doc = post_from_url(url, title, active)
 
   reply = comments_from_doc(post, html_doc)
