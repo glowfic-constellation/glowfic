@@ -2,6 +2,8 @@
   - if @character.user_id == current_user.try(:id)
     = link_to "Characters", characters_path
   - else
+    = link_to "#{@character.user.username}", user_path(@character.user)
+    &raquo;
     = link_to "#{@character.user.username}'s Characters", user_characters_path(@character.user)
   - if @character.template
     &raquo;

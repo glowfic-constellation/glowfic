@@ -5,6 +5,8 @@
       - if @user.id == current_user.try(:id)
         = link_to "Galleries", galleries_path
       - else
+        = link_to "#{@user.username}", user_path(@user)
+        &raquo;
         = link_to "#{@user.username}'s Galleries", user_galleries_path(@user)
       &raquo;
       %b= @gallery.name
@@ -14,6 +16,8 @@
       - if @user.id == current_user.try(:id)
         = link_to "Galleries", galleries_path
       - else
+        = link_to "#{@user.username}", user_path(@user)
+        &raquo;
         = link_to "#{@user.username}'s Galleries", user_galleries_path(@user)
       &raquo;
       %b= 'Galleryless Icons'
