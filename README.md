@@ -50,7 +50,7 @@ process for rbenv has not yet been documented in more depth.
 If you have not yet set up PostgreSQL, ensure you have it installed with (on
 Ubuntu) `sudo apt install postgresql`. Then run `sudo -u postgres psql` and
 create a user account – `create user <USERNAME> createdb createuser password 
-'<PASSWORD>'` should do this, replacing the appropriate parts. Then, either
+'<PASSWORD>';` should do this, replacing the appropriate parts. Then, either
 alter the `config/database.yml` file to have the appropriate username and
 password (ensure not to check this in if you commit something), or
 alternatively create a file in your home directory named `.pgpass`
@@ -79,4 +79,4 @@ copy of the Constellation.
 
 To run tests, go to the root of the directory (the 'glowfic' folder) and
 execute the command `rake`, which will go through the
-'[respec](http://rspec.info/)' tests.
+'[rspec](http://rspec.info/)' tests.
