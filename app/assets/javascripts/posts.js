@@ -243,11 +243,9 @@ iconString = function(icon) {
   var img_url = icon["url"];
   var img_key = icon["keyword"];
 
-  $("#icon_dropdown").append('<option value="'+img_id+'">'+img_key+'</option>');
-  return "<div class='gallery-icon'>"
-    + "<img src='" + img_url + "' id='" + img_id + "' alt='" + img_key + "' title='" + img_key + "' class='icon' />"
-    + "<br />" + img_key
-    + "</div>";
+  if (!icon['skip_dropdown']) $("#icon_dropdown").append($("<option>").attr({value: img_id}).append(img_key));
+  var icon_img = $("<img>").attr({src: img_url, id: img_id, alt: img_key, title: img_key, 'class': 'icon'});
+  return $("<div>").attr('class', 'gallery-icon').append(icon_img).append("<br />").append(img_key)[0].outerHTML;
 };
 
 tinyMCESetup = function(ed) {
@@ -279,10 +277,9 @@ getAndSetCharacterData = function(characterId) {
     if(url != null) {
       var aid = gon.current_user.avatar.id;
       var keyword = gon.current_user.avatar.keyword;
-      $("#icon_dropdown").append('<option value="'+aid+'">'+keyword+'</option>');
       $("#gallery").html("");
-      $("#gallery").append("<div class='gallery-icon'><img src='" + url + "' id='" + aid + "' class='icon' /><br />Avatar</div>");
-      $("#gallery").append("<div class='gallery-icon'><img src='/images/no-icon.png' id='' class='icon' /><br />No Icon</div>");
+      $("#gallery").append(iconString({id: aid, url: url, keyword: keyword}));
+      $("#gallery").append(iconString({id: '', url: '/images/no-icon.png', keyword: 'No Icon', skip_dropdown: true}));
       bindIcon();
       bindGallery();
       setIcon(aid, url, keyword, keyword);
@@ -323,7 +320,7 @@ getAndSetCharacterData = function(characterId) {
       $("#gallery").append(galleryString(gallery, multiGallery));
     }
 
-    $("#gallery").append("<div class='gallery-icon'><img src='/images/no-icon.png' id='' alt='No Icon' title='No Icon' class='icon' /><br />No Icon</div>");
+    $("#gallery").append(iconString({id: '', url: '/images/no-icon.png', keyword: 'No Icon', skip_dropdown: true}));
     bindGallery();
     bindIcon();
     setIcon(resp['default']['id'], resp['default']['url'], resp['default']['keyword'], resp['default']['keyword']);
