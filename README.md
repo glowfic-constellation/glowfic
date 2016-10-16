@@ -66,8 +66,9 @@ on Ubuntu).
 #### Setting up the database
 
 Once you've taken these steps, you should be able to go into the 'glowfic'
-folder and execute `rake db:create db:migrate db:seed`, which will set up the
-database and add some sample information, though no posts will be created.
+folder and execute `rake db:create`, `rake db:migrate`, `rake db:seed`,
+which will set up the database and add some sample information, though no
+posts will be created.
 
 #### Executing the server
 
