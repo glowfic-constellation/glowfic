@@ -52,8 +52,6 @@ lintamande_id = User.where('lower(username) = ?', 'lintamande').first.id
 pedro_id = User.where('lower(username) = ?', 'pedro').first.id
 alicorn_id = User.where('lower(username) = ?', 'alicorn').first.id
 kappa_id = User.where('lower(username) = ?', 'kappa').first.id
-ids = {lintamande: lintamande_id, pedro: pedro_id, alicorn: alicorn_id, kappa: kappa_id}
-p ids
 COLLECTIONS={'lintamande'=>lintamande_id,'alicornucopia'=>alicorn_id, 'pythbox'=>kappa_id, 'peterxy'=>pedro_id, 'peterverse'=>pedro_id}
 def make_character(name)
   character = nil
@@ -132,13 +130,17 @@ def post_from_url(url, title, active=false)
   return post, html_doc
 end
 
-def import_flat_thread(url, title, active)
+def import_flat_thread(url, title, active, old_post)
   url = url + (if url.include?('?') then '&view=flat' else '?view=flat' end) unless url.include?('view=flat')
   url = url + '&style=site' unless url.include?('style=site')
-  p url
-  post, html_doc = post_from_url(url, title, active)
+  post, html_doc = if old_post
+                     puts "Re-importing thread '#{title}'"
+                     [old_post, Nokogiri::HTML(HTTParty.get(url).body)]
+                   else
+                     post_from_url(url, title, active)
+                   end
 
-  reply = comments_from_doc(post, html_doc)
+  reply = comments_from_doc(post, html_doc) unless old_post
   unless (links = html_doc.at_css('.page-links')).nil?
     links.css('a').each do |link|
       url = link.attribute('href').value
@@ -173,14 +175,16 @@ main_list.each do |section|
   next if url == 'http://glowfic.dreamwidth.org/36602.html?view=flat' # Requested to skip Unbitwise
 
   # Skip already imported
-  next if Post.where(subject: section_title).exists?
+  old_post = Post.where(subject: section_title).first
+  next if old_post && old_post.replies.count != 25
 
   # restrict to specified section if provided
   section_index += 1
   next if section_number > 0 && section_index != section_number
+  next if [34, 35].include?(section_number) # Skip Kappa's for now because of duplicate icons
 
   # import thread transactionally
   Post.transaction do
-    import_flat_thread(url, section_title, true)
+    import_flat_thread(url, section_title, true, old_post)
   end
 end
