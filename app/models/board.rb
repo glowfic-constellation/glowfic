@@ -14,6 +14,7 @@ class Board < ActiveRecord::Base
   validates_presence_of :name, :creator
 
   after_save :update_author_list
+  after_destroy :move_posts_to_sandbox
 
   attr_accessor :coauthor_ids, :cameo_ids
 
@@ -66,5 +67,11 @@ class Board < ActiveRecord::Base
     (updated_ids - existing_ids).each do |new_id|
       BoardAuthor.create(board_id: id, user_id: new_id, cameo: true)
     end
+  end
+
+  def move_posts_to_sandbox
+    # TODO don't hard code sandbox board_id
+    # TODO / WARNING this doesn't trigger callbacks
+    posts.update_all(board_id: 3)
   end
 end
