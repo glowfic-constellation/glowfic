@@ -8,7 +8,7 @@ class PostsController < WritableController
   before_filter :build_tags, only: [:new, :edit]
 
   def index
-    @posts = Post.order('tagged_at desc').includes(:board, :user, :last_user, :content_warnings).where('board_id != 4')
+    @posts = Post.order('tagged_at desc').includes(:board, :user, :last_user, :content_warnings).where('board_id != ?', Board::ID_SITETESTING)
     @posts = @posts.paginate(page: page, per_page: 25)
     @page_title = "Recent Threads"
   end
@@ -17,7 +17,7 @@ class PostsController < WritableController
     posts_started = Post.where(user_id: current_user.id).select(:id).group(:id).map(&:id)
     posts_in = Reply.where(user_id: current_user.id).select(:post_id).group(:post_id).map(&:post_id)
     ids = posts_in + posts_started
-    @posts = Post.where(id: ids.uniq).where("board_id != 4").where('status != 1').order('tagged_at desc') # TODO don't hardcode things
+    @posts = Post.where(id: ids.uniq).where("board_id != ?", Board::ID_SITETESTING).where('status != ?', Post::STATUS_COMPLETE).where('status != ?', Post::STATUS_ABANDONED).order('tagged_at desc')
     @posts = @posts.where('last_user_id != ?', current_user.id).includes(:board, :content_warnings).paginate(page: page, per_page: 25)
     @page_title = "Tags Owed"
     @show_unread = true
