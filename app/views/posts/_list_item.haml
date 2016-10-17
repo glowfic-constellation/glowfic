@@ -7,7 +7,7 @@
     - if post.on_hiatus?
       = image_tag "/images/hourglass.png", class: 'vmid', title: "Thread On Hiatus"
     - if post.abandoned?
-      = image_tag "/images/minus.png", class: 'vmid', title: "Thread Abandoned"
+      = image_tag "/images/book_grey.png", class: 'vmid', title: "Thread Abandoned"
     - if post.content_warnings.present?
       = image_tag "/images/exclamation.png", class: 'vmid', title: "Content Warning: " + post.content_warnings.map(&:name).join(', '), alt: '!'
   %td.post-subject{class: klass}
