@@ -61,6 +61,11 @@ class GalleriesController < ApplicationController
         end
 
         @gallery = Gallery.find_by_id(params[:id])
+        unless @gallery
+          flash[:error] = "Gallery could not be found."
+          redirect_to galleries_path and return
+        end
+
         @user = @gallery.user
         @page_title = @gallery.name + " (Gallery)"
         use_javascript('galleries/index')
@@ -92,10 +97,10 @@ class GalleriesController < ApplicationController
         redirect_to galleries_path and return
       end
 
-      icon_ids = params[:image_ids].split(',').map(&:to_i).reject(&:zero?)  
+      icon_ids = params[:image_ids].split(',').map(&:to_i).reject(&:zero?)
       icons = Icon.where(id: icon_ids)
-      icons.each do |icon|  
-        next unless icon.user_id == current_user.id  
+      icons.each do |icon|
+        next unless icon.user_id == current_user.id
         @gallery.icons << icon
       end
       flash[:success] = "Icons added to gallery successfully."
@@ -171,7 +176,7 @@ class GalleriesController < ApplicationController
       use_javascript('galleries/add_existing')
     else
       use_javascript('galleries/add_new')
-    end  
+    end
     @icons = []
     find_gallery if params[:id] != '0'
     @unassigned = current_user.galleryless_icons
