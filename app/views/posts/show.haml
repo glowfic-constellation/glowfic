@@ -63,7 +63,7 @@
         - unless @post.abandoned?
           = link_to post_path(@post, status: 'abandoned'), method: :put do
             %div
-              = image_tag '/images/minus.png'
+              = image_tag '/images/book_grey.png'
               Mark Abandoned
       = link_to post_path(@post, unread: true), method: :put do
         %div
