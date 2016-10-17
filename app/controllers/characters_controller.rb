@@ -85,11 +85,16 @@ class CharactersController < ApplicationController
         @pbs[key] ||= []
         @pbs[key] << character.pb
       end
+    elsif params[:sort] == "writer"
+      chars.each do |character|
+        @pbs[character.user] ||= {}
+        @pbs[character.user][character.pb] ||= []
+        @pbs[character.user][character.pb] << (character.template || character)
+      end
     else
       chars.each do |character|
         @pbs[character.pb] ||= []
-        @pbs[character.pb] << character unless character.template
-        @pbs[character.pb] << character.template if character.template
+        @pbs[character.pb] << (character.template || character)
       end
     end
   end
