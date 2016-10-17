@@ -179,6 +179,13 @@ class GalleriesController < ApplicationController
   end
 
   def set_s3_url
+    unless S3_BUCKET
+      logger.error "S3_BUCKET does not exist; icon upload will FAIL."
+      # Assume we are in development mode.
+      @s3_direct_post = Struct.new(:url, :fields).new('', nil)
+      return @s3_direct_post
+    end
+
     @s3_direct_post = S3_BUCKET.presigned_post(
       key: "users/#{current_user.id}/icons/#{SecureRandom.uuid}_${filename}",
       success_action_status: '201',
