@@ -25,6 +25,8 @@ table.form-table .icon { vertical-align: middle; }
     display: inline-block;
 }
 
+.gallery-icon .character-screenname { font-size: 85%; }
+
 /* Tiny buttons that hover over icons to allow deleting or selecting a checkbox for editing */
 .delete-button, .select-button { position: absolute; top: 0px; right: 8px; cursor: pointer; }
 .delete-button { width: 10px; background-color: #e5dfd1; border: 1px #C00 solid; color: #C00; padding: 3px; }
