@@ -1,6 +1,8 @@
 class Board < ActiveRecord::Base
   include Viewable
 
+  ID_SITETESTING = 4
+
   has_many :posts
   has_many :board_sections
   has_many :board_authors
