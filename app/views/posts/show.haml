@@ -60,6 +60,11 @@
             %div
               = image_tag '/images/book_open.png'
               Mark In Progress
+        - unless @post.abandoned?
+          = link_to post_path(@post, status: 'abandoned'), method: :put do
+            %div
+              = image_tag '/images/minus.png'
+              Mark Abandoned
       = link_to post_path(@post, unread: true), method: :put do
         %div
           = image_tag '/images/eye.png', class: 'vmid', style: 'margin-bottom: 3px;'
@@ -108,6 +113,8 @@
         .clear
 - if @post.on_hiatus? && (@replies.empty? || (@replies.last.id == @post.replies.order('id desc').first.id))
   .post-ender This Thread Is On Hiatus
+- if @post.abandoned? && (@replies.empty? || (@replies.last.id == @post.replies.order('id desc').first.id))
+  .post-ender This Thread Has Been Permanently Abandoned
 - if @replies.present?
   = render partial: 'posts/paginator', locals: { paginated: @replies, path: :post_path }
 - if logged_in? && !@post.completed? && current_user.writes_in?(@post.board)

@@ -12,6 +12,7 @@ class Post < ActiveRecord::Base
   STATUS_ACTIVE = 0
   STATUS_COMPLETE = 1
   STATUS_HIATUS = 2
+  STATUS_ABANDONED = 3
 
   belongs_to :board, inverse_of: :posts
   belongs_to :section, class_name: BoardSection, inverse_of: :posts
@@ -101,6 +102,10 @@ class Post < ActiveRecord::Base
 
   def active?
     status == STATUS_ACTIVE
+  end
+
+  def abandoned?
+    status == STATUS_ABANDONED
   end
 
   def self.privacy_settings
