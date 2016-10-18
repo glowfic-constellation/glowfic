@@ -26,7 +26,7 @@
     %tr
       %td.even.padding-5.centered
         = select_tag :board_id, 
-                     options_from_collection_for_select(Board.all, :id, :name, params[:board_id]), 
+                     options_from_collection_for_select(Board.all.sort_by{|b|b.name.downcase}, :id, :name, params[:board_id]),
                      {class: 'chosen-select', prompt: '— Choose Continuity —'}
     %tr
       %th.subber
