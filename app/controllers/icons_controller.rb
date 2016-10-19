@@ -65,6 +65,9 @@ class IconsController < ApplicationController
     use_javascript('icons')
     gon.gallery = Hash[all_icons.map { |i| [i.id, {url: i.url, keyword: i.keyword}] }]
     gon.gallery[''] = {url: '/images/no-icon.png', keyword: 'No Icon'}
+
+    all_posts = Post.where(icon_id: @icon.id) + Reply.where(icon_id: @icon.id).select(:post_id).group(:post_id).map(&:post)
+    @posts = all_posts.uniq
   end
 
   def do_replace
@@ -79,12 +82,17 @@ class IconsController < ApplicationController
     end
 
     Post.transaction do
-      Reply.where(icon_id: @icon.id).each do |reply|
+      replies = Reply.where(icon_id: @icon.id)
+      replies = replies.where(post_id: params[:post_ids]) if params[:post_ids].present?
+      replies.each do |reply|
         reply.icon_id = new_icon.try(:id)
         reply.skip_post_update = true
         reply.save
       end
-      Post.where(icon_id: @icon.id).each do |post|
+
+      posts = Post.where(icon_id: @icon.id)
+      posts = posts.where(id: params[:post_ids]) if params[:post_ids].present?
+      posts.each do |post|
         post.icon_id = new_icon.try(:id)
         post.skip_edited = true
         post.save
