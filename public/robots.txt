@@ -9,3 +9,4 @@ Crawl-delay: 30
 
 User-agent: *
 Disallow: /replies/
+Disallow: /posts/*reply_id
