@@ -8,7 +8,7 @@ class WritableController < ApplicationController
     faked = Struct.new(:name, :id, :ordered_characters)
     templateless = faked.new('Templateless', nil, current_user.characters.where(:template_id => nil).to_a.sort_by(&:name))
     @templates = templates + [templateless]
-    
+
     if @post
       uniq_chars_ids = @post.replies.where(user_id: current_user.id).select(:character_id).group(:character_id).map(&:character_id).uniq
       uniq_chars_ids << @post.character_id if @post.user_id == current_user.id
@@ -81,14 +81,20 @@ class WritableController < ApplicationController
       end
     end
 
+    # show <link rel="canonical"> – for SEO stuff
+    canon_params = {}
+    canon_params[:per_page] = per unless per == 25
+    canon_params[:page] = cur_page unless cur_page == 1
+    @meta_canonical = post_url(@post, canon_params)
+
     if logged_in?
       use_javascript('posts')
-      
+
       active_char = @post.last_character_for(current_user)
       @reply = ReplyDraft.draft_reply_for(@post, current_user) || Reply.new(
         post: @post,
         character: active_char,
-        user: current_user, 
+        user: current_user,
         icon: active_char.try(:icon))
       @character = @reply.character
       @image = @character ? @character.icon : current_user.avatar
