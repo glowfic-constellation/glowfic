@@ -11,7 +11,7 @@ class Reply < ActiveRecord::Base
   after_update :update_post
   after_destroy :update_last_reply
 
-  attr_accessor :skip_notify, :skip_post_update
+  attr_accessor :skip_notify, :skip_post_update, :is_import
 
   pg_search_scope(
     :search,
@@ -44,6 +44,7 @@ class Reply < ActiveRecord::Base
   end
 
   def update_active_char
+    return if is_import
     user.update_attributes(:active_character => character)
   end
 
@@ -64,6 +65,7 @@ class Reply < ActiveRecord::Base
   end
 
   def destroy_draft
+    return if is_import
     ReplyDraft.draft_for(post_id, user_id).try(:destroy)
   end
 
