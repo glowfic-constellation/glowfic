@@ -38,6 +38,7 @@ class IconsController < ApplicationController
   end
 
   def show
+    use_javascript('galleries/index') if params[:view] == 'galleries'
   end
 
   def edit

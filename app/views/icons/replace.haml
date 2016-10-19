@@ -1,5 +1,5 @@
 - content_for :breadcrumbs do
-  %b Icons
+  = link_to "Galleries", galleries_path
   &raquo;
   = link_to @icon.keyword, icon_path(@icon)
   &raquo;

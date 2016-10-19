@@ -6,7 +6,7 @@
 
 %span{style: 'font-size: 10px; position: absolute; top: 2px; right: 20px;'}= pretty_time(DateTime.now.in_time_zone)
 
-%table
+%table{style: local_assigns[:style].to_s}
   %thead
     %tr
       %th{colspan: col_count}= content_for :posts_title
@@ -29,5 +29,5 @@
     - if posts.empty?
       %tr
         %td.centered.padding-10.no-posts{ class: cycle('even','odd'), colspan: col_count } — No posts yet —
-- if posts.total_pages > 1
+- if posts.methods.include?(:total_pages) && posts.total_pages > 1
   = render partial: 'posts/paginator', locals: { paginated: posts, path: (local_assigns[:path] || :posts_path) }

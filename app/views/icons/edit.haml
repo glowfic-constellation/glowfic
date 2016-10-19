@@ -1,3 +1,15 @@
+- content_for :breadcrumbs do
+  - if @icon.user_id == current_user.try(:id)
+    = link_to "Galleries", galleries_path
+  - else
+    = link_to "#{@icon.user.username}", user_path(@icon.user)
+    &raquo;
+    = link_to "#{@icon.user.username}'s Galleries", user_galleries_path(@icon.user)
+  &raquo;
+  = link_to @icon.keyword, icon_path(@icon)
+  &raquo;
+  %b Edit
+
 = form_for @icon, :url => icon_path(@icon), :method => :put do |f|
   %table.form-table
     %tr
