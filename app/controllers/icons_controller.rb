@@ -87,7 +87,7 @@ class IconsController < ApplicationController
       replies.each do |reply|
         reply.icon_id = new_icon.try(:id)
         reply.skip_post_update = true
-        reply.save
+        reply.save!
       end
 
       posts = Post.where(icon_id: @icon.id)
@@ -95,7 +95,7 @@ class IconsController < ApplicationController
       posts.each do |post|
         post.icon_id = new_icon.try(:id)
         post.skip_edited = true
-        post.save
+        post.save!
       end
     end
 

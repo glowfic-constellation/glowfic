@@ -39,6 +39,8 @@
   - if logged_in? && current_user.id == @character.user_id
     %br
     = link_to 'Edit character', edit_character_path(@character), class: 'character-edit'
+    %br
+    = link_to 'Replace character', replace_character_path(@character), class: 'character-replace'
 %br
 - if @posts.present?
   - content_for :posts_title do 'Recent Threads' end

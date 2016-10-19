@@ -29,6 +29,8 @@ Rails.application.routes.draw do
   resources :characters do
     member do
       post :icon
+      get :replace
+      post :do_replace
     end
     collection { get :facecasts }
   end

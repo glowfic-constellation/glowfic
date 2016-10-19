@@ -1,8 +1,8 @@
 class CharactersController < ApplicationController
   before_filter :login_required, :except => [:index, :show, :facecasts]
-  before_filter :find_character, :only => [:show, :edit, :update, :destroy, :icon]
+  before_filter :find_character, :only => [:show, :edit, :update, :destroy, :icon, :replace, :do_replace]
   before_filter :find_group, :only => :index
-  before_filter :require_own_character, :only => [:edit, :update, :destroy, :icon]
+  before_filter :require_own_character, :only => [:edit, :update, :destroy, :icon, :replace, :do_replace]
   before_filter :build_editor, :only => [:new, :create, :edit, :update]
 
   def index
@@ -97,6 +97,70 @@ class CharactersController < ApplicationController
         @pbs[character.pb] << (character.template || character)
       end
     end
+  end
+
+  def replace
+    if @character.template
+      @alts = @character.template.characters
+    else
+      @alts = @character.user.characters.where(template_id: nil)
+    end
+    @alts -= [@character]
+    use_javascript('icons')
+
+    icons = @alts.map do |alt|
+      if alt.icon.present?
+        [alt.id, {url: alt.icon.url, keyword: alt.icon.keyword}]
+      else
+        [alt.id, {url: '/images/no-icon.png', keyword: 'No Icon'}]
+      end
+    end
+    gon.gallery = Hash[icons]
+    gon.gallery[''] = {url: '/images/no-icon.png', keyword: 'No Character'}
+
+    @alt_dropdown = @alts.map do |alt|
+      name = alt.name
+      name += ' | ' + alt.screenname if alt.screenname
+      name += ' | ' + alt.template_name if alt.template_name
+      name += ' | ' + alt.setting if alt.setting
+      [name, alt.id]
+    end
+
+    all_posts = Post.where(character_id: @character.id) + Reply.where(character_id: @character.id).select(:post_id).group(:post_id).map(&:post)
+    @posts = all_posts.uniq
+  end
+
+  def do_replace
+    unless params[:icon_dropdown].blank? || new_char = Character.find_by_id(params[:icon_dropdown])
+      flash[:error] = "Character could not be found."
+      redirect_to replace_character_path(@character)
+    end
+
+    if new_char && new_char.user_id != current_user.id
+      flash[:error] = "That is not your character."
+      redirect_to replace_character_path(@character)
+    end
+
+    Post.transaction do
+      replies = Reply.where(character_id: @character.id)
+      replies = replies.where(post_id: params[:post_ids]) if params[:post_ids].present?
+      replies.each do |reply|
+        reply.character_id = new_char.try(:id)
+        reply.skip_post_update = true
+        reply.save!
+      end
+
+      posts = Post.where(character_id: @character.id)
+      posts = posts.where(id: params[:post_ids]) if params[:post_ids].present?
+      posts.each do |post|
+        post.character_id = new_char.try(:id)
+        post.skip_edited = true
+        post.save!
+      end
+    end
+
+    flash[:success] = "All uses of this character have been replaced."
+    redirect_to character_path(@character)
   end
 
   private
