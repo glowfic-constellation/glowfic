@@ -42,8 +42,7 @@ class BoardSectionsController < ApplicationController
     @board_section.assign_attributes(params[:board_section])
     require_permission
     return if performed?
-    if @board_section.valid?
-      @board_section.save
+    if @board_section.save
       flash[:success] = "#{@board_section.name} has been successfully updated."
       redirect_to board_section_path(@board_section)
     else
