@@ -6,8 +6,21 @@ class Tag < ActiveRecord::Base
   has_many :characters, through: :character_tags
 
   validates_presence_of :user, :name
+  validates :name, uniqueness: { scope: :type }
 
   def editable_by?(user)
     user.try(:admin?)
+  end
+
+  def as_json(*args, **kwargs)
+    {id: self.id, text: self.name}
+  end
+
+  def merge_with(other_tag)
+    transaction do
+      PostTag.where(tag_id: other_tag.id).where(post_id: post_tags.map(&:post_id)).delete_all
+      PostTag.where(tag_id: other_tag.id).update_all(tag_id: self.id)
+      other_tag.destroy
+    end
   end
 end

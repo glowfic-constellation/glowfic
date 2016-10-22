@@ -1,7 +1,6 @@
 class Character < ActiveRecord::Base
   belongs_to :user
   belongs_to :template
-  belongs_to :gallery
   belongs_to :default_icon, class_name: Icon
   belongs_to :character_group
   has_many :replies
@@ -29,7 +28,7 @@ class Character < ActiveRecord::Base
 
   def recent_posts(limit=25, page=1)
     return @recent unless @recent.nil?
-    reply_ids =  replies.group(:post_id).select(:post_id).map(&:post_id)
+    reply_ids = replies.group(:post_id).select(:post_id).map(&:post_id)
     post_ids = posts.select(:id).map(&:id)
     @recent ||= Post.where(id: (post_ids + reply_ids).uniq).order('tagged_at desc').paginate(per_page: limit, page: page)
   end

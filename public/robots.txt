@@ -3,3 +3,10 @@
 # To ban all spiders from the entire site uncomment the next two lines:
 # User-agent: *
 # Disallow: /
+
+User-agent: BLEXBot
+Crawl-delay: 30
+
+User-agent: *
+Disallow: /replies/
+Disallow: /posts/*reply_id

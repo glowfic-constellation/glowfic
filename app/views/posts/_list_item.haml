@@ -6,28 +6,32 @@
       = image_tag "/images/book.png", class: 'vmid', title: "Thread Complete"
     - if post.on_hiatus?
       = image_tag "/images/hourglass.png", class: 'vmid', title: "Thread On Hiatus"
+    - if post.abandoned?
+      = image_tag "/images/book_grey.png", class: 'vmid', title: "Thread Abandoned"
     - if post.content_warnings.present?
-      = image_tag "/images/exclamation.png", class: 'vmid', title: "Thread Has Content Warnings", alt: '!'
+      = image_tag "/images/exclamation.png", class: 'vmid', title: "Content Warning: " + post.content_warnings.map(&:name).join(', '), alt: '!'
   %td.post-subject{class: klass}
+    - if logged_in? && (@show_unread || !@opened_ids.nil?)
+      - if @opened_ids.nil? || @opened_ids.include?(post.id)
+        = link_to post_path(post, page: 'unread', anchor: 'unread') do
+          = image_tag unread_img, class: 'vmid', title: 'First Unread'
     = link_to post.subject, post_path(post)
-    - if !@show_unread && (!logged_in? || per_page > 0)
+    - if !@show_unread && @opened_ids.nil? && (!logged_in? || per_page > 0)
       - total_pages = (replies_count.to_f / per_page).ceil
       - if total_pages > 1
         = surround '[', ']' do
           - if total_pages <= 6
+            - params = {}
             - total_pages.times do |index|
-              = link_to (index + 1), post_path(post, page: index + 1)
+              - params[:page] = index + 1 unless index == 0
+              = link_to (index + 1), post_path(post, params)
           - else
-            = link_to 1, post_path(post, page: 1)
+            = link_to 1, post_path(post)
             = link_to 2, post_path(post, page: 2)
             = link_to 3, post_path(post, page: 3)
             \...
             - (total_pages-2).upto(total_pages) do |index|
               = link_to (index), post_path(post, page: index)
-    - if logged_in? && @show_unread
-      - if !@conditional_unread || @opened_ids.include?(post.id)
-        = link_to post_path(post, page: 'unread', anchor: 'unread') do
-          = image_tag "/images/link.png", class: 'vmid', title: 'First Unread'
   - unless local_assigns[:hide_continuity]
     %td.post-board{class: klass}= link_to post.board.name, board_path(post.board)
   %td.post-authors{class: klass}= post.authors.map { |author| link_to author.username, user_path(author) }.join(', ').html_safe
@@ -43,4 +47,4 @@
     by
     = link_to post.last_user.username, user_path(post.last_user)
   - if local_assigns[:check_box_name]
-    %td.padding-right-10{class: klass}= check_box_tag check_box_name, post.id
+    %td.padding-right-10{class: klass}= check_box_tag check_box_name, post.id, false, class: 'checkbox'

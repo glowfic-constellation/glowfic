@@ -1,5 +1,5 @@
 class TemplatesController < ApplicationController
-  before_filter :login_required, except: :index
+  before_filter :login_required, except: [:index, :show]
   before_filter :find_template, :only => [:show, :destroy, :edit, :update]
   before_filter :require_own_template, :only => [:edit, :update, :destroy]
 
@@ -9,6 +9,11 @@ class TemplatesController < ApplicationController
     if params[:user_id].present?
       @user = User.find_by_id(params[:user_id]) || current_user
       @page_title = @user.username + "'s Templates"
+    end
+
+    unless @user
+      flash[:error] = "User could not be found."
+      redirect_to users_path and return
     end
     @templates = @user.templates
   end

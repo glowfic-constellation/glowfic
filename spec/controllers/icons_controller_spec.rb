@@ -130,6 +130,18 @@ RSpec.describe IconsController do
       expect(flash[:success]).to eq("Icon deleted successfully.")
       expect(Icon.find_by_id(icon.id)).to be_nil
     end
+
+    it "successfully goes to gallery if one" do
+      icon = create(:icon)
+      gallery = create(:gallery, user: icon.user)
+      icon.galleries << gallery
+      login_as(icon.user)
+      delete :destroy, id: icon.id
+      expect(response.status).to eq(302)
+      expect(response.redirect_url).to eq(gallery_url(gallery))
+      expect(flash[:success]).to eq("Icon deleted successfully.")
+      expect(Icon.find_by_id(icon.id)).to be_nil
+    end
   end
 
   describe "POST avatar" do

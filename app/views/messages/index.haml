@@ -18,7 +18,7 @@
           %td.pading-left-5{class: klass}
             - if message.send('marked_'+@view+'?')
               = image_tag "/images/asterisk.png"
-          %td{class: klass}= link_to message.subject, message_path(message)
+          %td{class: klass}= link_to message.unempty_subject, message_path(message)
           %td{class: klass}
             - if @view == 'inbox'
               = link_to message.sender.username, user_path(message.sender)

@@ -1,7 +1,7 @@
 class IconsController < ApplicationController
   before_filter :login_required, except: :show
   before_filter :find_icon, except: :delete_multiple
-  before_filter :require_own_icon, only: [:edit, :update, :destroy, :avatar]
+  before_filter :require_own_icon, only: [:edit, :update, :replace, :do_replace, :destroy, :avatar]
   
   def delete_multiple
     icon_ids = (params[:marked_ids] || []).map(&:to_i).reject(&:zero?)
@@ -38,6 +38,7 @@ class IconsController < ApplicationController
   end
 
   def show
+    use_javascript('galleries/index') if params[:view] == 'galleries'
   end
 
   def edit
@@ -55,9 +56,59 @@ class IconsController < ApplicationController
     end
   end
 
+  def replace
+    all_icons = if @icon.has_gallery?
+      @icon.galleries.map(&:icons).flatten.uniq.compact - [@icon]
+    else
+      current_user.galleryless_icons - [@icon]
+    end
+    @alts = all_icons.sort_by{|i| i.keyword.downcase }
+    use_javascript('icons')
+    gon.gallery = Hash[all_icons.map { |i| [i.id, {url: i.url, keyword: i.keyword}] }]
+    gon.gallery[''] = {url: '/images/no-icon.png', keyword: 'No Icon'}
+
+    all_posts = Post.where(icon_id: @icon.id) + Reply.where(icon_id: @icon.id).select(:post_id).group(:post_id).map(&:post)
+    @posts = all_posts.uniq
+  end
+
+  def do_replace
+    unless params[:icon_dropdown].blank? || new_icon = Icon.find_by_id(params[:icon_dropdown])
+      flash[:error] = "Icon could not be found."
+      redirect_to replace_icon_path(@icon)
+    end
+
+    if new_icon && new_icon.user_id != current_user.id
+      flash[:error] = "That is not your icon."
+      redirect_to galleries_path
+    end
+
+    Post.transaction do
+      replies = Reply.where(icon_id: @icon.id)
+      replies = replies.where(post_id: params[:post_ids]) if params[:post_ids].present?
+      replies.each do |reply|
+        reply.icon_id = new_icon.try(:id)
+        reply.skip_post_update = true
+        reply.save!
+      end
+
+      posts = Post.where(icon_id: @icon.id)
+      posts = posts.where(id: params[:post_ids]) if params[:post_ids].present?
+      posts.each do |post|
+        post.icon_id = new_icon.try(:id)
+        post.skip_edited = true
+        post.save!
+      end
+    end
+
+    flash[:success] = "All uses of this icon have been replaced."
+    redirect_to icon_path(@icon)
+  end
+
   def destroy
+    gallery = @icon.galleries.first if @icon.galleries.count == 1
     @icon.destroy
     flash[:success] = "Icon deleted successfully."
+    redirect_to gallery_path(gallery) and return if gallery
     redirect_to galleries_path
   end
 

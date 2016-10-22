@@ -1,0 +1,39 @@
+- content_for :breadcrumbs do
+  = link_to "Galleries", galleries_path
+  &raquo;
+  = link_to @icon.keyword, icon_path(@icon)
+  &raquo;
+  %b= link_to 'Replace', replace_icon_path(@icon)
+
+= form_for @icon, url: do_replace_icon_path(@icon), method: :post do |f|
+  %table.form-table
+    %tr
+      %th.centered{colspan: 2} Replace All Uses of Icon
+    %tr
+      %th.sub Current
+      %th.sub New
+    %tr
+      %td.green.width-150.centered.vtop
+        = icon_tag @icon
+        %br
+        = @icon.keyword
+      %td.green.width-150.centered
+        - if @alts.first
+          = icon_tag @alts.first, id: 'new_icon'
+        - else
+          = no_icon_tag id: 'new_icon'
+        %br
+        = select_tag :icon_dropdown, options_for_select(@alts.map{|i| [i.keyword, i.id]}, @alts.first.try(:id)), prompt: "No Icon"
+    - if @posts.present?
+      %tr
+        %th.sub{colspan: 2} Optional: Select Post(s)
+      %tr
+        %td.odd.centered{colspan: 2}
+          .details *If none are selected, replaces all uses*
+    - @posts.each do |post|
+      %tr
+        %td{colspan: 2, class: cycle('even', 'odd')}
+          = check_box_tag :'post_ids[]', post.id
+          = link_to post.subject, post_path(post)
+    %tr
+      %th.subber{colspan: 2}= submit_tag "Replace", class: 'button'

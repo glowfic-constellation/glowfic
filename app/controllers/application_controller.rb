@@ -56,12 +56,6 @@ class ApplicationController < ActionController::Base
   end
   helper_method :page_view
 
-  def rowspan
-    messages = current_user.messages.select(&:unread?).size if logged_in?
-    @span ||= 1 + flash.keys.size + (messages || 0)
-  end
-  helper_method :rowspan
-
   def store_location
     return unless request.get?
     return if request.xhr?

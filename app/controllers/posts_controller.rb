@@ -1,12 +1,14 @@
+require 'will_paginate/array'
+
 class PostsController < WritableController
-  before_filter :login_required, except: [:index, :show, :history, :search, :stats]
-  before_filter :find_post, only: [:show, :history, :stats, :edit, :update, :destroy]
+  before_filter :login_required, except: [:index, :show, :history, :warnings, :search, :stats]
+  before_filter :find_post, only: [:show, :history, :stats, :warnings, :edit, :update, :destroy]
   before_filter :require_permission, only: [:edit, :destroy]
   before_filter :build_template_groups, only: [:new, :show, :edit]
   before_filter :build_tags, only: [:new, :edit]
 
   def index
-    @posts = Post.order('tagged_at desc').includes(:board, :user, :last_user).where('board_id != 4')
+    @posts = Post.order('tagged_at desc').includes(:board, :user, :last_user, :content_warnings).where('board_id != ?', Board::ID_SITETESTING)
     @posts = @posts.paginate(page: page, per_page: 25)
     @page_title = "Recent Threads"
   end
@@ -15,21 +17,23 @@ class PostsController < WritableController
     posts_started = Post.where(user_id: current_user.id).select(:id).group(:id).map(&:id)
     posts_in = Reply.where(user_id: current_user.id).select(:post_id).group(:post_id).map(&:post_id)
     ids = posts_in + posts_started
-    @posts = Post.where(id: ids.uniq).where("board_id != 4").where('status != 1').order('tagged_at desc') # TODO don't hardcode things
-    @posts = @posts.where('last_user_id != ?', current_user.id).includes(:board).paginate(page: page, per_page: 25)
+    @posts = Post.where(id: ids.uniq).where("board_id != ?", Board::ID_SITETESTING).where('status != ?', Post::STATUS_COMPLETE).where('status != ?', Post::STATUS_ABANDONED).order('tagged_at desc')
+    @posts = @posts.where('last_user_id != ?', current_user.id).includes(:board, :content_warnings).paginate(page: page, per_page: 25)
     @page_title = "Tags Owed"
     @show_unread = true
   end
 
   def unread
+    @opened_ids = PostView.where(user_id: current_user.id).select(:post_id).map(&:post_id)
     @posts = Post.joins("LEFT JOIN post_views ON post_views.post_id = posts.id AND post_views.user_id = #{current_user.id}")
     @posts = @posts.joins("LEFT JOIN board_views on board_views.board_id = posts.board_id AND board_views.user_id = #{current_user.id}")
-    @posts = @posts.where("post_views.user_id IS NULL OR (date_trunc('second', post_views.updated_at) < date_trunc('second', posts.tagged_at) AND post_views.ignored = '0')")
-    @posts = @posts.where("board_views.user_id IS NULL OR (date_trunc('second', board_views.updated_at) < date_trunc('second', posts.tagged_at) AND board_views.ignored = '0')")
-    @posts = @posts.order('tagged_at desc').includes(:board, :user, :last_user).paginate(per_page: 25, page: page)
-    @opened_ids = PostView.where(user_id: current_user.id).select(:post_id).map(&:post_id)
-    @page_title = "Unread Threads"
-    @show_unread = @conditional_unread = true
+    @posts = @posts.where("post_views.user_id IS NULL OR (date_trunc('second', post_views.read_at) < date_trunc('second', posts.tagged_at) AND post_views.ignored = '0')")
+    @posts = @posts.where("board_views.user_id IS NULL OR (date_trunc('second', board_views.read_at) < date_trunc('second', posts.tagged_at) AND board_views.ignored = '0')")
+    @posts = @posts.order('tagged_at desc').includes(:board, :user, :last_user, :content_warnings)
+    @posts = @posts.select { |p| p.visible_to?(current_user) }
+    @posts = @posts.select { |p|  @opened_ids.include?(p.id) } if params[:started] == 'true'
+    @posts = @posts.paginate(per_page: 25, page: page)
+    @page_title = params[:started] == 'true' ? "Opened Threads" : "Unread Threads"
   end
 
   def mark    
@@ -78,8 +82,6 @@ class PostsController < WritableController
   end
 
   def create
-    reorder_sections and return if params[:commit] == "reorder"
-
     gon.original_content = params[:post][:content]
     preview(:post, posts_path) and return if params[:button_preview].present?
 
@@ -125,6 +127,8 @@ class PostsController < WritableController
     @url = path
     @method = method
 
+    build_tags
+
     use_javascript('posts')
     gon.original_content = params[:post][:content] if params[:post]
     render action: 'preview'
@@ -150,6 +154,9 @@ class PostsController < WritableController
 
     create_new_tags if @post.valid?
 
+    edited_attrs = %w(subject content icon_id character_id)
+    @post.skip_edited = true unless edited_attrs.any?{ |edit| @post.send(edit + "_changed?")}
+
     if @post.save
       flash[:success] = "Your post has been updated."
       redirect_to post_path(@post)
@@ -162,14 +169,28 @@ class PostsController < WritableController
       use_javascript('posts')
       build_template_groups
       build_tags
-      render :action => :new
+      render :action => :edit
     end
   end
 
   def mark_unread
+    if params[:at_id].present?
+      reply = Reply.find(params[:at_id])
+      if reply && reply.post == @post
+        board_read = @post.board.last_read(current_user)
+        if board_read && board_read > reply.created_at
+          flash[:error] = "You have marked this continuity read more recently than that reply was written; it will not appear in your Unread posts."
+          Message.create(recipient_id: 1, sender_id: 1, subject: 'Unread at failure', message: "#{current_user.username} tried to mark post #{@post.id} unread at reply #{reply.id}")
+        else
+          @post.mark_read(current_user, reply.created_at, true)
+        end
+      end
+      return redirect_to unread_posts_path
+    end
+
     @post.views.where(user_id: current_user.id).destroy_all
     flash[:success] = "Post has been marked as unread"
-    redirect_to board_path(@post.board)
+    redirect_to unread_posts_path
   end
 
   def change_status
@@ -215,8 +236,25 @@ class PostsController < WritableController
     if params[:completed].present?
       @search_results = @search_results.where(status: Post::STATUS_COMPLETE)
     end
+    if params[:subj_content].present?
+      post_results = Post.search(params[:subj_content]).map(&:id)
+      reply_results = Reply.search(params[:subj_content])
+      @replies = reply_results.inject(Hash.new([])) { |hash, r| hash[r.post_id] += [r]; hash }
+      @search_results = @search_results.where(id: (post_results + @replies.keys).uniq)
+    end
 
     @search_results = @search_results.paginate(page: page, per_page: 25)
+  end
+
+  def warnings
+    if logged_in?
+      @post.hide_warnings_for(current_user)
+      flash[:success] = "Content warnings have been hidden for this thread. Proceed at your own risk."
+    else
+      session[:ignore_warnings] = true
+      flash[:success] = "All content warnings have been hidden. Proceed at your own risk."
+    end
+    redirect_to post_path(@post, page: page, per_page: per_page)
   end
 
   private
@@ -238,22 +276,10 @@ class PostsController < WritableController
   end
 
   def require_permission
-    unless @post.editable_by?(current_user)
+    unless @post.editable_by?(current_user) || @post.metadata_editable_by?(current_user)
       flash[:error] = "You do not have permission to modify this post."
       redirect_to post_path(@post)
     end
-  end
-
-  def reorder_sections
-    Post.transaction do
-      params[:changes].each do |post_id, section_order|
-        post = Post.where(id: post_id).first
-        next unless post
-        post.section_order = section_order
-        post.save
-      end
-    end
-    render json: {}
   end
 
   def build_tags
@@ -282,18 +308,27 @@ class PostsController < WritableController
     if @post.setting_ids.present?
       tags = @post.setting_ids.select { |id| id.to_i.zero? }.reject(&:blank?).compact.uniq
       @post.setting_ids -= tags
+      existing_tags = Setting.where(name: tags)
+      @post.setting_ids += existing_tags.map(&:id)
+      tags -= existing_tags.map(&:name)
       @post.setting_ids += tags.map { |tag| Setting.create(user: current_user, name: tag).id }
     end
 
     if @post.warning_ids.present?
       tags = @post.warning_ids.select { |id| id.to_i.zero? }.reject(&:blank?).compact.uniq
       @post.warning_ids -= tags
+      existing_tags = ContentWarning.where(name: tags)
+      @post.warning_ids += existing_tags.map(&:id)
+      tags -= existing_tags.map(&:name)
       @post.warning_ids += tags.map { |tag| ContentWarning.create(user: current_user, name: tag).id }
     end
 
     if @post.tag_ids.present?
       tags = @post.tag_ids.select { |id| id.to_i.zero? }.reject(&:blank?).compact.uniq
       @post.tag_ids -= tags
+      existing_tags = Tag.where(name: tags, type: nil)
+      @post.tag_ids += existing_tags.map(&:id)
+      tags -= existing_tags.map(&:name)
       @post.tag_ids += tags.map { |tag| Tag.create(user: current_user, name: tag).id }
     end
   end

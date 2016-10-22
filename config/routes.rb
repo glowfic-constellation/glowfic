@@ -2,6 +2,7 @@ Rails.application.routes.draw do
   root :to => 'sessions#index'
 
   # Accounts
+  match '/login' => 'sessions#new', :as => :login, :via => :get
   match '/login' => 'sessions#create', :as => :login, :via => :post
   match '/logout' => 'sessions#destroy', :as => :logout, :via => :delete
   resources :users do
@@ -28,6 +29,8 @@ Rails.application.routes.draw do
   resources :characters do
     member do
       post :icon
+      get :replace
+      post :do_replace
     end
     collection { get :facecasts }
   end
@@ -36,6 +39,8 @@ Rails.application.routes.draw do
   resources :icons, except: [:index, :new, :create] do
     member do
       post :avatar
+      get :replace
+      post :do_replace
     end
     collection do
       delete :delete_multiple
@@ -55,6 +60,7 @@ Rails.application.routes.draw do
     member do
       get :history
       get :stats
+      post :warnings
     end
     collection do
       post :mark

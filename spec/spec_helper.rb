@@ -17,6 +17,15 @@
 #
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 
+# Don't calculate coverage when running single tests
+unless ARGV.any? { |arg| arg[0] != '-' }
+  require 'simplecov'
+  SimpleCov.start 'rails' do
+    add_group "Presenters", "app/presenters"
+    add_group "Concerns", "app/concerns"
+  end
+end
+
 require 'factory_girl_rails'
 require 'rails_helper'
 require 'support/spec_test_helper'
@@ -98,4 +107,13 @@ RSpec.configure do |config|
   # as the one that triggered the failure.
   Kernel.srand config.seed
 =end
+end
+
+# Monkey patches the controller response objects to return JSON
+module ActionController
+  class TestResponse
+    def json
+      @json ||= JSON.parse(self.body)
+    end
+  end
 end

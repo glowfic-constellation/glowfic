@@ -2,7 +2,13 @@ require "spec_helper"
 
 RSpec.describe BoardsController do
   describe "GET index" do
-    it "does not require login" do
+    it "succeeds when logged out" do
+      get :index
+      expect(response.status).to eq(200)
+    end
+
+    it "succeeds when logged in" do
+      login
       get :index
       expect(response.status).to eq(200)
     end
@@ -21,12 +27,27 @@ RSpec.describe BoardsController do
       expect(response.status).to eq(200)
     end
 
-    it "sets the correct cowriters" do
-      user = create(:user)
-      others = 3.times.collect do create(:user) end
-      login_as(user)
+    it "sets correct variables" do
+      user_id = login
+      current_user = User.find(user_id)
+      other_users = 3.times.collect do create(:user) end
+
       get :new
-      expect(assigns(:users)).to match_array(others)
+
+      expect(assigns(:board)).to be_an_instance_of(Board)
+      expect(assigns(:board)).to be_a_new_record
+      expect(assigns(:board).creator_id).to eq(user_id)
+      expect(assigns(:page_title)).to eq("New Continuity")
+
+      expect(assigns(:authors).size).to eq(3)
+      expect(assigns(:authors)).to match_array(other_users)
+      expect(assigns(:authors)).not_to include(current_user)
+      expect(assigns(:authors).sort_by(&:username)).to eq(assigns(:authors))
+
+      expect(assigns(:cameos).size).to eq(3)
+      expect(assigns(:cameos)).to match_array(other_users)
+      expect(assigns(:cameos)).not_to include(current_user)
+      expect(assigns(:cameos).sort_by(&:username)).to eq(assigns(:cameos))
     end
   end
 
@@ -46,23 +67,38 @@ RSpec.describe BoardsController do
       expect(response).to render_template('new')
     end
 
-    it "sets the correct cowriters on failure" do
-      user = create(:user)
-      others = 3.times.collect do create(:user) end
-      login_as(user)
+    it "sets correct variables on failure" do
+      login
+      other_users = 3.times.collect do create(:user) end
+
       post :create
-      expect(assigns(:users)).to match_array(others)
+
+      expect(assigns(:board)).to be_an_instance_of(Board)
+      expect(assigns(:board)).to be_a_new_record
+      expect(assigns(:board)).not_to be_valid
+      expect(assigns(:board).creator).to eq(assigns(:current_user))
+      expect(assigns(:page_title)).to eq("New Continuity")
+
+      expect(assigns(:authors).size).to eq(3)
+      expect(assigns(:authors)).to match_array(other_users)
+      expect(assigns(:authors)).not_to include(assigns(:current_user))
+      expect(assigns(:authors).sort_by(&:username)).to eq(assigns(:authors))
+
+      expect(assigns(:cameos).size).to eq(3)
+      expect(assigns(:cameos)).to match_array(other_users)
+      expect(assigns(:cameos)).not_to include(assigns(:current_user))
+      expect(assigns(:cameos).sort_by(&:username)).to eq(assigns(:cameos))
     end
 
     it "successfully makes a board" do
       expect(Board.count).to eq(0)
-      user_id = login
-      post :create, board: {name: 'TestBoard'}
+      login
+      post :create, board: {name: 'TestCreateBoard'}
       expect(response).to redirect_to(boards_url)
       expect(flash[:success]).to eq("Continuity created!")
       expect(Board.count).to eq(1)
-      expect(Board.first.name).to eq('TestBoard')
-      expect(Board.first.creator_id).to eq(user_id)
+      expect(Board.first.name).to eq('TestCreateBoard')
+      expect(Board.first.creator).to eq(assigns(:current_user))
     end
   end
 
@@ -99,6 +135,23 @@ RSpec.describe BoardsController do
       get :show, id: board.id
       expect(assigns(:posts)).to eq(assigns(:posts).sort_by(&:tagged_at).reverse)
     end
+
+    it "succeeds with json" do
+      board = create(:board)
+      section1 = create(:board_section, board: board)
+      section2 = create(:board_section, board: board)
+      section3 = create(:board_section, board: board)
+      section1.update_attributes(section_order: 2)
+      section3.update_attributes(section_order: 0)
+
+      get :show, id: board.id, format: :json
+
+      expect(response.json).to be_present
+      expect(response.json.size).to eq(3)
+
+      expected_json = [section3, section2, section1].map { |s| [s.id, s.name] }
+      expect(response.json).to match_array(expected_json)
+    end
   end
 
   describe "GET edit" do
@@ -130,15 +183,6 @@ RSpec.describe BoardsController do
       login_as(board.creator)
       get :edit, id: board.id
       expect(response.status).to eq(200)
-    end
-
-    it "sets the correct cowriters" do
-      user = create(:user)
-      others = 3.times.collect do create(:user) end
-      board = create(:board, creator: user)
-      login_as(user)
-      get :edit, id: board.id
-      expect(assigns(:users)).to match_array(others)
     end
   end
 
@@ -174,15 +218,6 @@ RSpec.describe BoardsController do
       expect(response).to render_template('edit')
       expect(flash[:error][:message]).to eq("Continuity could not be created.")
       expect(flash[:error][:array]).to be_present
-    end
-
-    it "sets the correct cowriters on failure" do
-      user = create(:user)
-      others = 3.times.collect do create(:user) end
-      board = create(:board, creator: user)
-      login_as(user)
-      put :update, id: board.id, board: {name: ''}
-      expect(assigns(:users)).to match_array(others)
     end
 
     it "succeeds" do

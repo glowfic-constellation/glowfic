@@ -3,14 +3,15 @@ require "spec_helper"
 RSpec.describe BoardSection do
   it "should reset section_* fields in posts after deletion" do
     board = create(:board)
+    BoardSection.create(board: board, name: 'Test')
     section = BoardSection.create(board: board, name: 'Test')
     post = create(:post, board: board, section_id: section.id)
     expect(post.section_id).not_to be_nil
-    expect(post.section_order).not_to be_nil
+    expect(post.section_order).to eq(0)
     section.destroy
     post.reload
     expect(post.section_id).to be_nil
-    expect(post.section_order).to be_nil
+    expect(post.section_order).to eq(1)
   end
 
   it "should autofill post section order when not specified" do
@@ -26,9 +27,9 @@ RSpec.describe BoardSection do
 
   it "should autofill board section order when not specified" do
     board = create(:board)
-    section0 = BoardSection.create(board: board, name: 'Test')
-    section1 = BoardSection.create(board: board, name: 'Test')
-    section2 = BoardSection.create(board: board, name: 'Test')
+    section0 = BoardSection.create(board_id: board.id, name: 'Test')
+    section1 = BoardSection.create(board_id: board.id, name: 'Test')
+    section2 = BoardSection.create(board_id: board.id, name: 'Test')
     expect(section0.section_order).to eq(0)
     expect(section1.section_order).to eq(1)
     expect(section2.section_order).to eq(2)
