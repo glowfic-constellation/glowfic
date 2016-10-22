@@ -8,7 +8,7 @@ class WritableController < ApplicationController
     faked = Struct.new(:name, :id, :ordered_characters)
     templateless = faked.new('Templateless', nil, current_user.characters.where(:template_id => nil).to_a.sort_by(&:name))
     @templates = templates + [templateless]
-    
+
     if @post
       uniq_chars_ids = @post.replies.where(user_id: current_user.id).select(:character_id).group(:character_id).map(&:character_id).uniq
       uniq_chars_ids << @post.character_id if @post.user_id == current_user.id
@@ -16,6 +16,7 @@ class WritableController < ApplicationController
       threadchars = faked.new('Thread characters', nil, uniq_chars.sort_by(&:name))
       @templates.insert(0, threadchars)
     end
+    @templates.reject! {|template| template.ordered_characters.empty? }
 
     gon.current_user = current_user.gon_attributes
     gon.character_path = character_user_path(current_user)
@@ -62,7 +63,7 @@ class WritableController < ApplicationController
         self.page = cur_page = cur_page.to_i
       end
     else
-      per = replies.count
+      per = replies.count > 5000 ? (@per_page = 1000) : replies.count
       self.page = cur_page = 1
     end
 
@@ -71,17 +72,29 @@ class WritableController < ApplicationController
     redirect_to post_path(@post, page: @replies.total_pages, per_page: per) and return if cur_page > @replies.total_pages
     use_javascript('paginator')
 
-    @next_post = Post.where(board_id: @post.board_id).where("id > #{@post.id}").order('id asc').limit(1).first
-    @prev_post = Post.where(board_id: @post.board_id).where("id < #{@post.id}").order('id desc').limit(1).first
+    unless @post.board.open_to_anyone?
+      if @post.section_order.nil?
+        ExceptionNotifier.notify_exception(Exception.new, data: {id: @post.id, board: @post.board_id, section: @post.section_id})
+      else
+        @next_post = Post.where(board_id: @post.board_id).where(section_id: @post.section_id).where(section_order: @post.section_order + 1).first
+        @prev_post = Post.where(board_id: @post.board_id).where(section_id: @post.section_id).where(section_order: @post.section_order - 1).first
+      end
+    end
+
+    # show <link rel="canonical"> – for SEO stuff
+    canon_params = {}
+    canon_params[:per_page] = per unless per == 25
+    canon_params[:page] = cur_page unless cur_page == 1
+    @meta_canonical = post_url(@post, canon_params)
 
     if logged_in?
       use_javascript('posts')
-      
+
       active_char = @post.last_character_for(current_user)
       @reply = ReplyDraft.draft_reply_for(@post, current_user) || Reply.new(
         post: @post,
         character: active_char,
-        user: current_user, 
+        user: current_user,
         icon: active_char.try(:icon))
       @character = @reply.character
       @image = @character ? @character.icon : current_user.avatar
@@ -90,17 +103,20 @@ class WritableController < ApplicationController
       @post.mark_read(current_user, @post.read_time_for(@replies)) unless @post.board.ignored_by?(current_user)
     end
 
-    if @post.content_warnings.size > 1
-      flash.now[:error] = {}
-      flash.now[:error][:image] = "/images/exclamation.png"
-      flash.now[:error][:message] = "This post has the following content warnings:"
-      flash.now[:error][:array] = @post.content_warnings.map(&:name)
-    elsif @post.content_warnings.size == 1
-      flash.now[:error] = {}
-      flash.now[:error][:image] = "/images/exclamation.png"
-      flash.now[:error][:message] = "This post has the following content warning: " + @post.content_warnings.first.name
-    end
+    @warnings = @post.content_warnings if display_warnings?
 
     render 'posts/show'
+  end
+
+  def display_warnings?
+    return false if session[:ignore_warnings]
+
+    if params[:ignore_warnings].present?
+      session[:ignore_warnings] = true unless current_user
+      return false
+    end
+
+    return true unless current_user
+    @post.show_warnings_for?(current_user)
   end
 end

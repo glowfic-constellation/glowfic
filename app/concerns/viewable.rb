@@ -2,19 +2,20 @@ module Viewable
   extend ActiveSupport::Concern
 
   included do
-    has_many :views, class_name: self.name + 'View'
+    has_many :views, class_name: self.name + 'View', dependent: :destroy
 
-    def mark_read(user, at_time=nil)
+    def mark_read(user, at_time=nil, force=false)
       view = view_for(user)
       return true if view.ignored
+
       if view.new_record?
-        view.updated_at = at_time
-        view.save
-      else
-        return view.touch unless at_time.present?
-        return true if at_time <= view.updated_at
-        view.update_attributes(updated_at: at_time)
+        view.read_at = at_time
+        return view.save
       end
+
+      return view.update_attributes(read_at: Time.now) unless at_time.present?
+      return true if at_time <= view.read_at && !force
+      view.update_attributes(read_at: at_time)
     end
 
     def ignore(user)
@@ -26,7 +27,7 @@ module Viewable
     end
 
     def last_read(user)
-      view_for(user).updated_at
+      view_for(user).read_at
     end
 
     private

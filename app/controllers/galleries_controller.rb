@@ -41,7 +41,7 @@ class GalleriesController < ApplicationController
       format.json do
         if params[:id].to_s == '0' # avoids casting nils to 0
           user = params[:user_id].present? ? User.find_by_id(params[:user_id]) : current_user
-          render json: {icons: user.try(:galleryless_icons) || []}
+          render json: {name: 'Galleryless', icons: user.try(:galleryless_icons) || []}
         else
           @gallery = Gallery.find_by_id(params[:id])
           render json: {name: @gallery.name, icons: @gallery.icons.sort_by{|i| i.keyword.downcase }}
@@ -61,6 +61,11 @@ class GalleriesController < ApplicationController
         end
 
         @gallery = Gallery.find_by_id(params[:id])
+        unless @gallery
+          flash[:error] = "Gallery could not be found."
+          redirect_to galleries_path and return
+        end
+
         @user = @gallery.user
         @page_title = @gallery.name + " (Gallery)"
         use_javascript('galleries/index')
@@ -92,10 +97,10 @@ class GalleriesController < ApplicationController
         redirect_to galleries_path and return
       end
 
-      icon_ids = params[:image_ids].split(',').map(&:to_i).reject(&:zero?)  
+      icon_ids = params[:image_ids].split(',').map(&:to_i).reject(&:zero?)
       icons = Icon.where(id: icon_ids)
-      icons.each do |icon|  
-        next unless icon.user_id == current_user.id  
+      icons.each do |icon|
+        next unless icon.user_id == current_user.id
         @gallery.icons << icon
       end
       flash[:success] = "Icons added to gallery successfully."
@@ -167,7 +172,11 @@ class GalleriesController < ApplicationController
   end
 
   def setup_new_icons
-    use_javascript('galleries/add')
+    if params[:type] == "existing"
+      use_javascript('galleries/add_existing')
+    else
+      use_javascript('galleries/add_new')
+    end
     @icons = []
     find_gallery if params[:id] != '0'
     @unassigned = current_user.galleryless_icons
@@ -175,6 +184,11 @@ class GalleriesController < ApplicationController
   end
 
   def set_s3_url
-    @s3_direct_post = S3_BUCKET.presigned_post(key: "users/#{current_user.id}/icons/#{SecureRandom.uuid}_${filename}", success_action_status: '201', acl: 'public-read', content_type_starts_with: 'image/')
+    @s3_direct_post = S3_BUCKET.presigned_post(
+      key: "users/#{current_user.id}/icons/#{SecureRandom.uuid}_${filename}",
+      success_action_status: '201',
+      acl: 'public-read',
+      content_type_starts_with: 'image/',
+      cache_control: 'public, max-age=31536000')
   end
 end

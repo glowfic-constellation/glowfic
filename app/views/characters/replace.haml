@@ -1,0 +1,47 @@
+- content_for :breadcrumbs do
+  = link_to "Characters", characters_path
+  - if @character.template
+    &raquo;
+    = link_to "Templates", templates_path
+    &raquo;
+    = link_to @character.template.name, template_path(@character.template)
+  &raquo;
+  = link_to @character.name, character_path(@character)
+  &raquo;
+  %b Replace
+
+= form_for @character, url: do_replace_character_path(@character), method: :post do |f|
+  %table.form-table
+    %tr
+      %th.centered{colspan: 2} Replace All Uses of Character
+    %tr
+      %td.odd.centered{colspan: 2}
+        .details *This does NOT replace icons*
+    %tr
+      %th.sub Current
+      %th.sub New
+    %tr
+      %td.green.width-150.centered.vtop
+        = icon_tag @character.icon
+        %br
+        = @character.name
+      %td.green.width-150.centered
+        - if @alts.first.try(:icon)
+          = icon_tag @alts.first.icon, id: 'new_icon'
+        - else
+          = no_icon_tag id: 'new_icon'
+        %br
+        = select_tag :icon_dropdown, options_for_select(@alt_dropdown, @alts.first.try(:id)), prompt: "No Character"
+    - if @posts.present?
+      %tr
+        %th.sub{colspan: 2} Optional: Select Post(s)
+      %tr
+        %td.odd.centered{colspan: 2}
+          .details *If none are selected, replaces all uses*
+    - @posts.each do |post|
+      %tr
+        %td{colspan: 2, class: cycle('even', 'odd')}
+          = check_box_tag :'post_ids[]', post.id
+          = link_to post.subject, post_path(post)
+    %tr
+      %th.subber{colspan: 2}= submit_tag "Replace", class: 'button'

@@ -2,8 +2,49 @@ require "spec_helper"
 
 RSpec.describe TemplatesController do
   describe "GET index" do
-    it "has more tests" do
-      skip
+    context "with user id" do
+      it "works when logged out" do
+        user = create(:user)
+        templates = 3.times.collect do create(:template, user: user) end
+        create(:template)
+        get :index, user_id: user.id
+        expect(response.status).to eq(200)
+        expect(assigns(:page_title)).to eq("#{user.username}'s Templates")
+        expect(assigns(:templates)).to match_array(templates)
+        expect(assigns(:user)).to eq(user)
+      end
+
+      it "works when logged in" do
+        login
+        user = create(:user)
+        templates = 3.times.collect do create(:template, user: user) end
+        create(:template)
+        get :index, user_id: user.id
+        expect(response.status).to eq(200)
+        expect(assigns(:page_title)).to eq("#{user.username}'s Templates")
+        expect(assigns(:templates)).to match_array(templates)
+        expect(assigns(:user)).to eq(user)
+      end
+    end
+
+    context "without user id" do
+      it "redirects on logout" do
+        get :index
+        expect(response).to redirect_to(users_url)
+        expect(flash[:error]).to eq("User could not be found.")
+      end
+
+      it "works when logged in" do
+        user = create(:user)
+        templates = 3.times.collect do create(:template, user: user) end
+        create(:template)
+        login_as(user)
+        get :index
+        expect(response.status).to eq(200)
+        expect(assigns(:page_title)).to eq("Your Templates")
+        expect(assigns(:templates)).to match_array(templates)
+        expect(assigns(:user)).to eq(user)
+      end
     end
   end
 

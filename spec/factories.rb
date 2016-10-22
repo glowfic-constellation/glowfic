@@ -3,12 +3,11 @@ FactoryGirl.define do
     "JohnDoe#{n}"
   end
 
-  factory :user, aliases: [:creator] do
+  factory :user, aliases: [:creator, :sender, :recipient] do
     username
     password "password"
-
-    factory :user_with_email do
-      email "fake@faker.com"
+    sequence :email do |n|
+      "fake#{n}@faker.com"
     end
 
     factory :admin_user do
@@ -19,6 +18,11 @@ FactoryGirl.define do
   factory :board do
     creator
     name "test board"
+  end
+
+  factory :board_section do
+    name "TestSection"
+    board
   end
 
   factory :post do
@@ -52,6 +56,9 @@ FactoryGirl.define do
   factory :character do
     user
     name 'test character'
+    factory :template_character do
+      template
+    end
   end
 
   factory :template do
@@ -74,5 +81,21 @@ FactoryGirl.define do
       "Tag#{n}"
     end
     user
+
+    factory :setting do
+      type 'Setting'
+    end
+
+    factory :content_warning do
+      type 'ContentWarning'
+    end
+  end
+
+  factory :message do
+    sender
+    recipient
+    sequence :subject do |n|
+      "Message#{n}"
+    end
   end
 end

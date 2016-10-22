@@ -7,11 +7,11 @@ class TagsController < ApplicationController
     respond_to do |format|
       format.json do
         tags = if params[:t].blank?
-          Tag.where("name LIKE ?", params[:q].to_s + '%').where(type: nil).map{|t| {id: t.id, text: t.name} }
+          Tag.where("name LIKE ?", params[:q].to_s + '%').where(type: nil)
         elsif params[:t] == 'setting'
-          Setting.where("name LIKE ?", params[:q].to_s + '%').map{|t| {id: t.id, text: t.name} }
+          Setting.where("name LIKE ?", params[:q].to_s + '%')
         elsif params[:t] == 'warning'
-          ContentWarning.where("name LIKE ?", params[:q].to_s + '%').map{|t| {id: t.id, text: t.name} }
+          ContentWarning.where("name LIKE ?", params[:q].to_s + '%')
         else [] end
         render json: {results: tags}
       end
@@ -32,7 +32,7 @@ class TagsController < ApplicationController
 
     unless @tag.save
       flash.now[:error] = {}
-      flash.now[:error][:message] = "Tag could not be created."
+      flash.now[:error][:message] = "Tag could not be saved because of the following problems:"
       flash.now[:error][:array] = @tag.errors.full_messages
       @page_title = "New Tag"
       render action: :new and return
@@ -43,7 +43,7 @@ class TagsController < ApplicationController
   end
 
   def show
-    @posts = @tag.posts.paginate(per_page: 25, page: 1)
+    @posts = @tag.posts.includes(:board, :user, :last_user, :content_warnings).paginate(per_page: 25, page: page)
     @page_title = "#{@tag.name}"
   end
 
@@ -54,7 +54,7 @@ class TagsController < ApplicationController
   def update
     unless @tag.update_attributes(params[:tag])
       flash.now[:error] = {}
-      flash.now[:error][:message] = "Tag could not be saved."
+      flash.now[:error][:message] = "Tag could not be saved because of the following problems:"
       flash.now[:error][:array] = @tag.errors.full_messages
       @page_title = "Edit Tag #{@tag.name}"
       render action: :edit and return

@@ -1,4 +1,5 @@
 - klass = cycle('even', 'odd')
+- reply = local_assigns[:single] if local_assigns[:reply].nil?
 
 .post-container{class: [klass, reply.is_a?(Post) ? 'post-post' : (reply.is_a?(Reply) ? 'post-reply' : '')]}
   - if reply.is_a?(Reply) && reply.id.present?
@@ -24,13 +25,16 @@
           = link_to reply.user.username, user_path(reply.user)
     .post-edit-box
       - if reply.id.present?
-        = link_to post_or_reply_link(reply) do
+        = link_to post_or_reply_link(reply), rel: 'alternate' do
           = image_tag "/images/link.png", title: 'Permalink', alt: 'Permalink'
-      - if reply.id.present? && reply.editable_by?(current_user)
+      - if reply.id.present? && (reply.editable_by?(current_user) || (reply.is_a?(Post) && reply.metadata_editable_by?(current_user)))
         = link_to path_for(reply, 'edit_%s') do
           = image_tag "/images/pencil.png"
         = link_to path_for(reply, '%s'), method: :delete, confirm: "Are you sure you wish to delete this #{reply.class.to_s.downcase}?" do
           = image_tag "/images/cross.png"
+      - if reply.id.present? && reply.is_a?(Reply) && logged_in?
+        = link_to post_path(@post, unread: true, at_id: reply.id), method: :put do
+          = image_tag '/images/eye.png', title: 'Mark Unread Here', alt: 'Eye'
     .post-content
       = sanitize_post_content(reply.content).html_safe
   .post-footer

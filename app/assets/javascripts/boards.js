@@ -4,4 +4,9 @@ $(document).ready(function() {
     disable_search_threshold: 10,
     placeholder_text_multiple: 'Open to Anyone',
   });
+  $("#board_cameo_ids").chosen({ 
+    width: '100%' ,
+    disable_search_threshold: 10,
+    placeholder_text_multiple: '(Optional)',
+  });
 });
