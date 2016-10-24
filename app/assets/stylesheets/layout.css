@@ -112,7 +112,7 @@
 /* Not yet deserving of its own CSS file */
 #message_form textarea, .edit_board textarea, .new_board textarea { height: 100px; }
 #stats ul { margin-top: 0px; margin-bottom: 0px; padding-left: 15px; }
-.select2-container { margin: 3px 0px; width: 300px !important; }
+.select2-container { margin: 3px 0px; }
 .select2, .select2-dropdown { font-size: 13px !important; }
 .select2 input { height: 20px; margin: 0px; }
 .select2 ul { padding: 0px; }

@@ -43,6 +43,7 @@ $(document).ready(function() {
         return { q: term['term'] };
       },
     },
+    width: '300px'
   });
 
   $("#post_setting_ids").select2({
@@ -60,6 +61,7 @@ $(document).ready(function() {
         };
       },
     },
+    width: '300px'
   });
 
   $("#post_warning_ids").select2({
@@ -77,6 +79,7 @@ $(document).ready(function() {
         };
       },
     },
+    width: '300px'
   });
 
   $("#active_character").chosen({
