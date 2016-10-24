@@ -82,8 +82,8 @@ $(document).ready(function() {
     width: '300px'
   });
 
-  $("#active_character").chosen({
-    disable_search_threshold: 10,
+  $("#active_character").select2({
+    minimumResultsForSearch: 10,
     width: '100%',
   });
 
