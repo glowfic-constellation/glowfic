@@ -170,11 +170,11 @@ $(document).ready(function() {
     $('html, body').scrollTop($("#post-editor").offset().top);
   });
 
-  $("#active_character_chosen").click(function () {
+  $("#active_character").on('select2:close', function () {
     $('html, body').scrollTop($("#post-editor").offset().top);
   });
 
-  $("#active_character").change(function() { 
+  $("#active_character").change(function() {
     // Set the ID
     var id = $(this).val();
     $("#reply_character_id").val(id);
@@ -182,7 +182,7 @@ $(document).ready(function() {
   });
 
   // Hides selectors when you hit the escape key
-  $(document).bind("keydown", function(e){ 
+  $(document).bind("keydown", function(e){
     e = e || window.event;
     var charCode = e.which || e.keyCode;
     if(charCode == 27) {
@@ -196,16 +196,16 @@ $(document).ready(function() {
   $(document).click(function(e) {
     var target = e.target;
 
-    if (!$(target).is('#current-icon-holder') && 
+    if (!$(target).is('#current-icon-holder') &&
       !$(target).parents().is('#current-icon-holder') &&
-      !$(target).is('#gallery') && 
+      !$(target).is('#gallery') &&
       !$(target).parents().is('#gallery')) {
         $('#icon-overlay').hide();
         $('#gallery').hide();
     }
 
-    if (!$(target).is('#character-selector') && 
-      !$(target).is('#swap-icon') && 
+    if (!$(target).is('#character-selector') &&
+      !$(target).is('#swap-icon') &&
       !$(target).parents().is('#character-selector')) {
         $('#character-selector').hide();
     }
@@ -368,7 +368,7 @@ setSections = function() {
       for(var i = 0; i < resp.length; i++) {
         $("#post_section_id").append('<option value="'+resp[i][0]+'">'+resp[i][1]+'</option>');
       }
-      $("#post_section_id").trigger("chosen:updated");
+      $("#post_section_id").trigger("change");
     } else {
       $("#post_section_id").val("");
       $("#section").hide();
