@@ -19,9 +19,9 @@
 //= require select2
 
 $(document).ready(function() {
-  $(".chosen-select").chosen({
+  $(".chosen-select").select2({
     width: '100%',
-    disable_search_threshold: 20,
+    minimumResultsForSearch: 20,
   });
 
   $(".post-expander").click(function() {
