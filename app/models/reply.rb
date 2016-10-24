@@ -4,7 +4,8 @@ class Reply < ActiveRecord::Base
 
   belongs_to :post, inverse_of: :replies
   attr_accessible :post, :post_id, :thread_id
-  validates_presence_of :post
+  validates_presence_of :post, :user
+  validate :author_can_write_in_post, on: :create
   audited associated_with: :post
 
   after_create :notify_other_authors, :destroy_draft, :update_active_char, :update_post
@@ -88,5 +89,12 @@ class Reply < ActiveRecord::Base
 
   def previous_reply
     @prev ||= post.replies.where('id < ?', id).order('id desc').first
+  end
+
+  def author_can_write_in_post
+    return unless post && user
+    errors.add(:user, 'is not a valid continuity author') unless user.writes_in?(post.board)
+    return unless post.authors_locked?
+    errors.add(:post, 'is not a valid post author') unless post.author_ids.include?(user_id)
   end
 end
