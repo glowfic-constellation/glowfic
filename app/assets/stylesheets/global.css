@@ -33,8 +33,6 @@ button, input.button {
   background-clip: padding-box;
   height: 25px;
 }
-.chosen-choices { border-radius: 5px; }
-.chosen-container { margin-top: 5px; margin-bottom: 5px; }
 
 /* Display Helpers */
 .no-margin { margin: 0px; }

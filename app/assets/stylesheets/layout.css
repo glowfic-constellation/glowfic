@@ -84,6 +84,7 @@
     -moz-box-sizing: border-box;    /* Firefox, other Gecko */
     box-sizing: border-box;         /* Opera/IE 8+ */
 }
+#content table.form-table td .select2-container input, table#icon-table td .select2-container input { margin-top: 5px; }
 #content table.form-table td.spacer { height: 2px; padding: 0px; }
 @media (max-width: 400px) {
   #content table.form-table { width: 100%; }
