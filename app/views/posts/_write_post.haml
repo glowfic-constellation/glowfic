@@ -10,7 +10,7 @@
     = f.select :privacy, options_from_collection_for_select(Post.privacy_settings.to_a, :second, :first, post.privacy)
     #access_list{class: ('hidden' unless post.privacy == Post::PRIVACY_LIST)}
       = f.label :post_viewer_ids, '&#8627; Who can view this post? '.html_safe
-      = f.select :post_viewer_ids, options_from_collection_for_select(User.all - [current_user], :id, :username, post.post_viewer_ids || post.post_viewers.map(&:user_id)), {}, {multiple: true}
+      = f.select :post_viewer_ids, options_from_collection_for_select(User.order('username asc').all - [current_user], :id, :username, post.post_viewer_ids || post.post_viewers.map(&:user_id)), {}, {multiple: true}
     %br
     = f.label :setting_ids, 'Setting:'
     = f.select :setting_ids, options_from_collection_for_select(@settings, :id, :name, @post.setting_ids || @post.settings.map(&:id)), {}, {multiple: true}
