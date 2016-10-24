@@ -9,26 +9,26 @@ $(document).ready(function() {
   });
   $(selectd).prop("selected", true);
 
-  // Adding Chosen UI to relevant selects
-  $("#post_board_id").chosen({
+  // Adding Select2 UI to relevant selects
+  $("#post_board_id").select2({
     width: '200px',
-    disable_search_threshold: 20,
+    minimumResultsForSearch: 20,
   });
 
-  $("#post_section_id").chosen({
+  $("#post_section_id").select2({
     width: '200px',
-    disable_search_threshold: 20,
+    minimumResultsForSearch: 20,
   });
 
-  $("#post_privacy").chosen({
+  $("#post_privacy").select2({
     width: '200px',
-    disable_search_threshold: 20,
+    minimumResultsForSearch: 20,
   });
 
-  $("#post_post_viewer_ids").chosen({
+  $("#post_post_viewer_ids").select2({
     width: '200px',
-    disable_search_threshold: 20,
-    placeholder_text_multiple: 'Choose user(s) to view this post'
+    minimumResultsForSearch: 20,
+    placeholder: 'Choose user(s) to view this post'
   });
 
   $("#post_tag_ids").select2({
