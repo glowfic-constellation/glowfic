@@ -42,5 +42,3 @@ a:visited { color: #484357; }
 .pagination a { color: #F3F3F3; }
 .pagination a:visited { color: #9c9aa4; }
 .pagination .disabled { color: #58546b; }
-
-#content .beige .chosen-container, #content .beige .chosen-container a, .chosen-container, .chosen-container a { color: #444; }
