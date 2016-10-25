@@ -41,12 +41,9 @@ class Character < ActiveRecord::Base
 
   def valid_template
     unless template_id == 0
-      if template.present? && template.user_id != user.id
-        errors.add(:template, "must be yours")
-      end
-      return
+      return unless template.present?
+      errors.add(:template, "must be yours") and return if template.user_id != user.id
     end
-    return unless template_id == 0
     @template = Template.new(user: user, name: new_template_name)
     return if @template.valid?
     @template.errors.messages.each do |k, v|

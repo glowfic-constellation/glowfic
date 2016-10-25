@@ -68,6 +68,7 @@
           %li= link_to 'Facecasts', facecasts_characters_path
           - if logged_in?
             %li= link_to 'Unread', unread_posts_path
+            %li= link_to 'Favorites', favorites_path
             %li= link_to 'Tags Owed', owed_posts_path
           %li= link_to 'Contribute', contribute_path
     - if content_for?(:breadcrumbs)
