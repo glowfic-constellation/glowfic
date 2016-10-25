@@ -340,8 +340,8 @@ RSpec.describe CharactersController do
 
     it "changes icon if valid" do
       icon = create(:icon)
-      new_icon = create(:icon)
       character = create(:character, user: icon.user, default_icon_id: icon.id)
+      new_icon = create(:icon, user: icon.user)
       login_as(character.user)
 
       post :icon, id: character.id, icon_id: new_icon.id

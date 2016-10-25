@@ -57,7 +57,7 @@ FactoryGirl.define do
     user
     name 'test character'
     factory :template_character do
-      template
+      template { build(:template, user: user) }
     end
   end
 
