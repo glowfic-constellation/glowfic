@@ -80,4 +80,5 @@ Rails.application.routes.draw do
   resources :reports, only: [:index, :show]
   resources :bugs, only: :create
   resources :favorites, only: [:index, :create, :destroy]
+  match '/contribute' => 'contribute#index', as: :contribute, via: :get
 end
