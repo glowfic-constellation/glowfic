@@ -25,7 +25,7 @@ Rails.application.routes.draw do
   end
 
   # Characters
-  resources :templates
+  resources :templates, except: :index
   resources :characters do
     member do
       post :icon

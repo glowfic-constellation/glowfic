@@ -7,11 +7,6 @@
     = link_to "#{@character.user.username}'s Characters", user_characters_path(@character.user)
   - if @character.template
     &raquo;
-    - if @character.user_id == current_user.try(:id)
-      = link_to "Templates", templates_path
-    - else
-      = link_to "#{@character.user.username}'s Templates", user_templates_path(@character.user)
-    &raquo;
     = link_to @character.template.name, template_path(@character.template)
   &raquo;
   %b= @character.name
