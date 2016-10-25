@@ -28,7 +28,7 @@ class Board < ActiveRecord::Base
   def open_to?(user)
     return true if open_to_anyone?
     return true if creator_id == user.id
-    board_authors.select(&:user_id).map(&:user_id).include?(user.id)
+    BoardAuthor.unscoped { return board_authors.select(&:user_id).map(&:user_id).include?(user.id) }
   end
 
   def open_to_anyone?
@@ -66,7 +66,7 @@ class Board < ActiveRecord::Base
     updated_ids = (cameo_ids.uniq - [""]).map(&:to_i)
     existing_ids = coauthors.cameos.map(&:id)
 
-    BoardAuthor.where(board_id: id, user_id: (existing_ids - updated_ids)).destroy_all
+    BoardAuthor.unscoped.where(board_id: id, user_id: (existing_ids - updated_ids)).destroy_all
     (updated_ids - existing_ids).each do |new_id|
       BoardAuthor.create(board_id: id, user_id: new_id, cameo: true)
     end
