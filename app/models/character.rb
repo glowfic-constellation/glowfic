@@ -10,7 +10,7 @@ class Character < ActiveRecord::Base
   has_many :tags, through: :character_tags
 
   validates_presence_of :name, :user
-  validate :valid_template, :valid_group
+  validate :valid_template, :valid_group, :valid_galleries, :valid_default_icon
 
   after_save :update_galleries
 
@@ -40,6 +40,12 @@ class Character < ActiveRecord::Base
   private
 
   def valid_template
+    unless template_id == 0
+      if template.present? && template.user_id != user.id
+        errors.add(:template, "must be yours")
+      end
+      return
+    end
     return unless template_id == 0
     @template = Template.new(user: user, name: new_template_name)
     return if @template.valid?
@@ -54,6 +60,18 @@ class Character < ActiveRecord::Base
     return if @group.valid?
     @group.errors.messages.each do |k, v|
       v.each { |val| errors.add('group '+k.to_s, val) }
+    end
+  end
+  
+  def valid_galleries
+    if galleries.present? && galleries.detect{|g| g.user_id != user.id}
+      errors.add(:galleries, "must be yours")
+    end
+  end
+  
+  def valid_default_icon
+    if default_icon.present? && default_icon.user_id != user.id
+      errors.add(:default_icon, "must be yours")
     end
   end
 

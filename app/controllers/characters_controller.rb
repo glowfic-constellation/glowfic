@@ -70,7 +70,7 @@ class CharactersController < ApplicationController
 
   def icon
     icon = Icon.find_by_id(params[:icon_id])
-    @character.update_attributes(default_icon: icon) if icon
+    @character.update_attributes(default_icon: icon) if icon && icon.user_id == current_user.id
     render :json => {}
   end
 
