@@ -93,18 +93,15 @@ $(document).ready(function() {
     }
   });
 
-  // Hack to deal with Firefox's "helpful" caching of form values on soft refresh
-  var nameInSelect = $("#active_character").children("optgroup").children(':selected').text();
-  var nameInUI = $("#post-editor .post-character").text();
-  var iconInUI = $("#current-icon").attr('src');
-  var iconId = $("#reply_icon_id").val();
-  var iconInForm = $("#"+iconId).attr('src');
-  if (!nameInSelect.startsWith(nameInUI)) {
-    var characterId = $("#reply_character_id").val();
-    getAndSetCharacterData(characterId);
-    setIconFromId(iconId); // Reset icon in case above changed it
-  } else if (iconInUI != iconInForm) {
-    setIconFromId(iconId); // Handle the case where just the icon was cached
+  // Hack to deal with Firefox's "helpful" caching of form values on soft refresh (now via IDs)
+  var selectedCharID = $("#reply_character_id").val();
+  var displayCharID = $("#post-editor .post-character").data('character-id');
+  var selectedIconID = $("#reply_icon_id").val();
+  var displayIconID = $("#current-icon").data('icon-id');
+  if (selectedCharID != displayCharID) {
+    getAndSetCharacterData(selectedCharID, {restore_icon: true});
+  } else if (selectedIconID != displayIconID) {
+    setIconFromId(selectedIconID); // Handle the case where just the icon was cached
   };
 
   // Bind both change() and keyup() in the icon keyword dropdown because Firefox doesn't
@@ -262,15 +259,20 @@ tinyMCESetup = function(ed) {
   });
 };
 
-getAndSetCharacterData = function(characterId) {
+getAndSetCharacterData = function(characterId, options) {
+  var restore_icon = false;
+  if (typeof options != 'undefined') {
+    if (options['restore_icon']) restore_icon = options['restore_icon'];
+  }
   // Handle page interactions
+  var selectedIconID = $("#icon_dropdown :selected").val();
   $("#character-selector").hide();
   $("#current-icon-holder").unbind();
   $("#icon_dropdown").empty().append('<option value="">No Icon</option>');
 
   // Handle special case where just setting to your base account
   if (characterId == '') {
-    $("#post-editor .post-character").hide();
+    $("#post-editor .post-character").hide().data('character-id', '');
     $("#post-editor .post-screenname").hide();
 
     var url = gon.current_user.avatar.url;
@@ -282,11 +284,12 @@ getAndSetCharacterData = function(characterId) {
       $("#gallery").append(iconString({id: '', url: '/images/no-icon.png', keyword: 'No Icon', skip_dropdown: true}));
       bindIcon();
       bindGallery();
-      setIcon(aid, url, keyword, keyword);
+      if (!restore_icon) setIcon(aid, url, keyword, keyword);
       $("#post-editor #post-author-spacer").show();
     } else {
       $("#post-editor #post-author-spacer").hide();
     }
+    if (restore_icon) setIconFromId(selectedIconID);
 
     return // Don't need to load data from server (TODO combine with below?)
   }
@@ -294,7 +297,7 @@ getAndSetCharacterData = function(characterId) {
   $.post(gon.character_path, {'character_id':characterId}, function (resp) {
     // Display the correct name/screenname fields
     $("#post-editor #post-author-spacer").hide();
-    $("#post-editor .post-character").show().html(resp['name']);
+    $("#post-editor .post-character").show().html(resp['name']).data('character-id', characterId);
     if(resp['screenname'] == undefined) {
       $("#post-editor .post-screenname").hide();
     } else {
@@ -323,7 +326,10 @@ getAndSetCharacterData = function(characterId) {
     $("#gallery").append(iconString({id: '', url: '/images/no-icon.png', keyword: 'No Icon', skip_dropdown: true}));
     bindGallery();
     bindIcon();
-    setIcon(resp['default']['id'], resp['default']['url'], resp['default']['keyword'], resp['default']['keyword']);
+    if (restore_icon)
+      setIconFromId(selectedIconID);
+    else
+      setIcon(resp['default']['id'], resp['default']['url'], resp['default']['keyword'], resp['default']['keyword']);
   });
 };
 
@@ -349,6 +355,7 @@ setIcon = function(id, url, title, alt) {
   // Set necessary form values
   $("#reply_icon_id").val(id);
   $("#icon_dropdown").val(id);
+  $("#current-icon").data('icon-id', id);
 
   // Set current icon UI elements
   $("#current-icon").attr('src', url);
