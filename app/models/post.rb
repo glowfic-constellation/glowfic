@@ -25,6 +25,7 @@ class Post < ActiveRecord::Base
   has_many :tags, through: :post_tags
   has_many :settings, through: :post_tags, source: :setting
   has_many :content_warnings, through: :post_tags, source: :content_warning
+  has_many :favorites, as: :favorite, dependent: :destroy
 
   attr_accessible :board, :board_id, :subject, :privacy, :post_viewer_ids, :description, :section_id, :tag_ids, :warning_ids, :setting_ids, :section_order
   attr_accessor :post_viewer_ids, :tag_ids, :warning_ids, :setting_ids

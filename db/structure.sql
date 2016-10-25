@@ -296,7 +296,7 @@ CREATE TABLE characters_galleries (
     id integer NOT NULL,
     character_id integer NOT NULL,
     gallery_id integer NOT NULL,
-    section_order integer DEFAULT 0 NOT NULL
+    section_order integer
 );
 
 
@@ -339,23 +339,24 @@ ALTER SEQUENCE characters_id_seq OWNED BY characters.id;
 
 
 --
--- Name: continuity_memberships; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: favorites; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
-CREATE TABLE continuity_memberships (
+CREATE TABLE favorites (
     id integer NOT NULL,
-    board_id integer NOT NULL,
-    character_id integer NOT NULL,
+    user_id integer NOT NULL,
+    favorite_id integer NOT NULL,
+    favorite_type character varying(255) NOT NULL,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL
 );
 
 
 --
--- Name: continuity_memberships_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+-- Name: favorites_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE continuity_memberships_id_seq
+CREATE SEQUENCE favorites_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -364,10 +365,10 @@ CREATE SEQUENCE continuity_memberships_id_seq
 
 
 --
--- Name: continuity_memberships_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+-- Name: favorites_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
-ALTER SEQUENCE continuity_memberships_id_seq OWNED BY continuity_memberships.id;
+ALTER SEQUENCE favorites_id_seq OWNED BY favorites.id;
 
 
 --
@@ -660,15 +661,14 @@ CREATE TABLE posts (
     privacy integer DEFAULT 0 NOT NULL,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
-    status integer,
+    status integer DEFAULT 0,
     section_id integer,
     section_order integer,
     description character varying(255),
     last_user_id integer,
     last_reply_id integer,
     edited_at timestamp without time zone,
-    tagged_at timestamp without time zone,
-    tsv tsvector
+    tagged_at timestamp without time zone
 );
 
 
@@ -704,8 +704,7 @@ CREATE TABLE replies (
     icon_id integer,
     thread_id integer,
     created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL,
-    tsv tsvector
+    updated_at timestamp without time zone NOT NULL
 );
 
 
@@ -815,8 +814,7 @@ CREATE TABLE templates (
     user_id integer NOT NULL,
     name character varying(255),
     created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL,
-    character_group_id integer
+    updated_at timestamp without time zone NOT NULL
 );
 
 
@@ -951,7 +949,7 @@ ALTER TABLE ONLY characters_galleries ALTER COLUMN id SET DEFAULT nextval('chara
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY continuity_memberships ALTER COLUMN id SET DEFAULT nextval('continuity_memberships_id_seq'::regclass);
+ALTER TABLE ONLY favorites ALTER COLUMN id SET DEFAULT nextval('favorites_id_seq'::regclass);
 
 
 --
@@ -1125,11 +1123,11 @@ ALTER TABLE ONLY characters
 
 
 --
--- Name: continuity_memberships_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: favorites_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
-ALTER TABLE ONLY continuity_memberships
-    ADD CONSTRAINT continuity_memberships_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY favorites
+    ADD CONSTRAINT favorites_pkey PRIMARY KEY (id);
 
 
 --
@@ -1259,27 +1257,6 @@ CREATE INDEX auditable_index ON audits USING btree (auditable_id, auditable_type
 
 
 --
--- Name: idx_fts_post_content; Type: INDEX; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE INDEX idx_fts_post_content ON posts USING gin (to_tsvector('english'::regconfig, COALESCE(content, ''::text)));
-
-
---
--- Name: idx_fts_post_subject; Type: INDEX; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE INDEX idx_fts_post_subject ON posts USING gin (to_tsvector('english'::regconfig, COALESCE((subject)::text, ''::text)));
-
-
---
--- Name: idx_fts_reply_content; Type: INDEX; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE INDEX idx_fts_reply_content ON replies USING gin (to_tsvector('english'::regconfig, COALESCE(content, ''::text)));
-
-
---
 -- Name: index_audits_on_created_at; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -1357,17 +1334,17 @@ CREATE INDEX index_characters_on_user_id ON characters USING btree (user_id);
 
 
 --
--- Name: index_continuity_memberships_on_board_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: index_favorites_on_favorite_id_and_favorite_type; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
-CREATE INDEX index_continuity_memberships_on_board_id ON continuity_memberships USING btree (board_id);
+CREATE INDEX index_favorites_on_favorite_id_and_favorite_type ON favorites USING btree (favorite_id, favorite_type);
 
 
 --
--- Name: index_continuity_memberships_on_character_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: index_favorites_on_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
-CREATE INDEX index_continuity_memberships_on_character_id ON continuity_memberships USING btree (character_id);
+CREATE INDEX index_favorites_on_user_id ON favorites USING btree (user_id);
 
 
 --
@@ -1434,10 +1411,24 @@ CREATE INDEX index_messages_on_sender_id ON messages USING btree (sender_id);
 
 
 --
+-- Name: index_messages_on_thread_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_messages_on_thread_id ON messages USING btree (thread_id);
+
+
+--
 -- Name: index_password_resets_on_auth_token; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE UNIQUE INDEX index_password_resets_on_auth_token ON password_resets USING btree (auth_token);
+
+
+--
+-- Name: index_password_resets_on_user_id_and_created_at; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_password_resets_on_user_id_and_created_at ON password_resets USING btree (user_id, created_at);
 
 
 --
@@ -1490,13 +1481,6 @@ CREATE INDEX index_posts_on_icon_id ON posts USING btree (icon_id);
 
 
 --
--- Name: index_posts_on_tsv; Type: INDEX; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE INDEX index_posts_on_tsv ON posts USING btree (tsv);
-
-
---
 -- Name: index_posts_on_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -1532,13 +1516,6 @@ CREATE INDEX index_replies_on_thread_id ON replies USING btree (thread_id);
 
 
 --
--- Name: index_replies_on_tsv; Type: INDEX; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE INDEX index_replies_on_tsv ON replies USING btree (tsv);
-
-
---
 -- Name: index_replies_on_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -1564,13 +1541,6 @@ CREATE INDEX index_tags_on_name ON tags USING btree (name);
 --
 
 CREATE INDEX index_tags_on_type ON tags USING btree (type);
-
-
---
--- Name: index_templates_on_character_group_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE INDEX index_templates_on_character_group_id ON templates USING btree (character_group_id);
 
 
 --
@@ -1606,20 +1576,6 @@ CREATE UNIQUE INDEX unique_schema_migrations ON schema_migrations USING btree (v
 --
 
 CREATE INDEX user_index ON audits USING btree (user_id, user_type);
-
-
---
--- Name: tsvectorupdate; Type: TRIGGER; Schema: public; Owner: -
---
-
-CREATE TRIGGER tsvectorupdate BEFORE INSERT OR UPDATE ON posts FOR EACH ROW EXECUTE PROCEDURE tsvector_update_trigger('tsv', 'pg_catalog.english', 'subject', 'content');
-
-
---
--- Name: tsvectorupdate; Type: TRIGGER; Schema: public; Owner: -
---
-
-CREATE TRIGGER tsvectorupdate BEFORE INSERT OR UPDATE ON replies FOR EACH ROW EXECUTE PROCEDURE tsvector_update_trigger('tsv', 'pg_catalog.english', 'content');
 
 
 --
@@ -1716,10 +1672,6 @@ INSERT INTO schema_migrations (version) VALUES ('20160731040017');
 
 INSERT INTO schema_migrations (version) VALUES ('20160813025151');
 
+INSERT INTO schema_migrations (version) VALUES ('20160827161416');
+
 INSERT INTO schema_migrations (version) VALUES ('20160906223130');
-
-INSERT INTO schema_migrations (version) VALUES ('20160925031753');
-
-INSERT INTO schema_migrations (version) VALUES ('20160925032329');
-
-INSERT INTO schema_migrations (version) VALUES ('20161008224853');

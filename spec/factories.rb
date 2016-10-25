@@ -98,4 +98,8 @@ FactoryGirl.define do
       "Message#{n}"
     end
   end
+
+  factory :favorite do
+    user
+  end
 end
