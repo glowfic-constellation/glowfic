@@ -14,6 +14,8 @@ class PostScraper < Object
     # More???
   }
 
+  attr_reader :url
+
   def initialize(url, board_id=nil, active=false)
     @board_id ||= SANDBOX_ID
     @active = active
