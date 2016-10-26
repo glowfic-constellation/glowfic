@@ -13,7 +13,6 @@ Rails.application.routes.draw do
       post :username
     end
     member do
-      post :character
       put :password
     end
   end
