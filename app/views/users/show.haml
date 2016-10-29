@@ -36,11 +36,11 @@
         %td.centered{class: cycle('even', 'odd')}
           - if fav = Favorite.between(current_user, @user)
             = link_to favorite_path(fav), method: :delete do
-              = image_tag '/images/heart_delete.png', class: 'vmid'
+              = image_tag '/images/star_delete.png', class: 'vmid'
               Unfavorite
           - else
             = link_to favorites_path(user_id: @user.id), method: :post do
-              = image_tag '/images/heart_add.png', class: 'vmid'
+              = image_tag '/images/star_add.png', class: 'vmid'
               Favorite
 
 
