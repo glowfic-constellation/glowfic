@@ -24,16 +24,18 @@ class WritableController < ApplicationController
 
   def show_post(cur_page=nil)
     @threaded = false
-    replies = if @post.replies.where('thread_id is not null').count > 1
-      @threaded = true
-      if params[:thread_id].present?
-        @replies = @post.replies.where(thread_id: params[:thread_id])
-      else
-        @post.replies.where('id = thread_id')
-      end
-    else
-      @post.replies
-    end
+    replies = @post.replies
+    # Can resurrect when threading exists properly; for now, skip the database query.
+    # replies = if @post.replies.where('thread_id is not null').count > 1
+    #   @threaded = true
+    #   if params[:thread_id].present?
+    #     @replies = @post.replies.where(thread_id: params[:thread_id])
+    #   else
+    #     @post.replies.where('id = thread_id')
+    #   end
+    # else
+    #   @post.replies
+    # end
 
     @unread = @post.first_unread_for(current_user) if logged_in?
     if per_page > 0
