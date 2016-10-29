@@ -11,13 +11,22 @@
       %th.sub Authors
       %th.sub Last Updated
   %tbody
-    - Board.all.each do |board|
+    - if @boards
+      - @boards.each do |board|
+        = render partial: 'list_item', locals: {board: board}
+      - if @boards.empty?
+        %tr
+          %td.centered.padding-10.no-posts{ class: cycle('even','odd'), colspan: 3 } — No boards yet —
+    - elsif @owned_boards
       %tr
-        - klass = cycle('even','odd')
-        %td.padding-10.board-title{class: klass}= link_to board.name, board_path(board)
-        %td.padding-10.board-authors{class: klass}
-          - if board.open_to_anyone?
-            Anyone
-          - else
-            = board.writers.map { |u| link_to u.username, user_path(u) }.join(', ').html_safe
-        %td.padding-10.board-time{class: klass}= pretty_time(board.posts.limit(1).order('tagged_at desc').first.try(:tagged_at))
+        - @owned_boards.each do |board|
+          = render partial: 'list_item', locals: {board: board}
+        - if @owned_boards.empty?
+          %tr
+            %td.centered.padding-10.no-posts{ class: cycle('even','odd'), colspan: 3 } — No boards yet —
+        - if @cameod_boards.present?
+          %tr
+            %td.continuity-spacer
+          %th.sub{colspan: 3} Cameo Boards
+          - @cameod_boards.each do |board|
+            = render partial: 'list_item', locals: {board: board}

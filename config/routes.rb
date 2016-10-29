@@ -9,6 +9,7 @@ Rails.application.routes.draw do
     resources :characters, only: :index
     resources :templates, only: :index
     resources :galleries, only: [:index, :show]
+    resources :boards, only: :index
     collection do
       post :username
     end

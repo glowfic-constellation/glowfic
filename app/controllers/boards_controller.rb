@@ -6,6 +6,14 @@ class BoardsController < ApplicationController
 
   def index
     @page_title = "Continuities"
+    if params[:user_id].present?
+      @user = User.find_by_id(params[:user_id]) || current_user
+      @page_title = @user.username + "'s Continuities"
+      @owned_boards = BoardAuthor.where(user_id: @user.id).includes(:board).map(&:board)
+      @cameod_boards = BoardAuthor.cameo.where(user_id: @user.id).includes(:board).map(&:board)
+    else
+      @boards = Board.all
+    end
   end
 
   def new
