@@ -179,7 +179,7 @@ class GalleriesController < ApplicationController
   end
 
   def set_s3_url
-    if Rails.env.development? && !S3_BUCKET.present?
+    if Rails.env.development? && S3_BUCKET.nil?
       logger.error "S3_BUCKET does not exist; icon upload will FAIL."
       @s3_direct_post = Struct.new(:url, :fields).new('', nil)
       return
