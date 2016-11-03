@@ -31,6 +31,10 @@
     %br
     = precede 'Facecast: ' do
       %span.character-pb= @character.pb
+  - if @character.setting
+    %br
+    = precede 'Setting: ' do
+      %span.character-setting= @character.setting
   - if logged_in? && current_user.id == @character.user_id
     %br
     = link_to 'Edit character', edit_character_path(@character), class: 'character-edit'
