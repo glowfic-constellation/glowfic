@@ -101,7 +101,6 @@ class PostScraper < Object
   end
 
   def finalize_post_data
-    @post.skip_edited = true
     @post.last_user_id = @reply.user_id
     @post.last_reply_id = @reply.id
     @post.tagged_at = @reply.created_at

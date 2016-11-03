@@ -7,14 +7,21 @@ RSpec.describe Post do
     expect(post.edited_at).to be_the_same_time_as(post.created_at)
     expect(post.tagged_at).to be_the_same_time_as(post.created_at)
 
-    # edited with no replies
+    # edited with no replies updates edit and tag
     post.content = 'new content'
     post.save
     expect(post.tagged_at).to be_the_same_time_as(post.edited_at)
     expect(post.tagged_at).to be > post.created_at
     old_edited_at = post.edited_at
+    old_tagged_at = post.tagged_at
 
-    # reply created
+    # invalid edit field with no replies updates nothing
+    post.status = Post::STATUS_COMPLETE
+    post.save
+    expect(post.tagged_at).to be_the_same_time_as(old_tagged_at)
+    expect(post.edited_at).to be_the_same_time_as(old_edited_at)
+
+    # reply created updates tag but not edit
     reply = create(:reply, post: post)
     post.reload
     expect(post.tagged_at).to be_the_same_time_as(reply.created_at)
@@ -22,13 +29,20 @@ RSpec.describe Post do
     expect(post.tagged_at).to be > post.edited_at
     old_tagged_at = post.tagged_at
 
-    # edited with replies
+    # edited with replies updates edit but not tag
     post.content = 'newer content'
     post.save
     expect(post.tagged_at).to be_the_same_time_as(old_tagged_at)
     expect(post.edited_at).to be > old_edited_at
+    old_edited_at = post.edited_at
 
-    # second reply created
+    # invalid edit field with replies updates nothing
+    post.status = Post::STATUS_ACTIVE
+    post.save
+    expect(post.tagged_at).to be_the_same_time_as(old_tagged_at)
+    expect(post.edited_at).to be_the_same_time_as(old_edited_at)
+
+    # second reply created updates tag but not edit
     reply2 = create(:reply, post: post)
     post.reload
     expect(post.tagged_at).to be_the_same_time_as(reply2.created_at)
@@ -37,7 +51,7 @@ RSpec.describe Post do
     old_tagged_at = post.tagged_at
     old_edited_at = post.edited_at
 
-    # first reply updated
+    # first reply updated updates nothing
     reply.content = 'new content'
     reply.skip_post_update = true unless reply.post.last_reply_id == reply.id
     reply.save
@@ -45,7 +59,7 @@ RSpec.describe Post do
     expect(post.tagged_at).to be_the_same_time_as(old_tagged_at) # BAD
     expect(post.edited_at).to be_the_same_time_as(old_edited_at)
 
-    # second reply updated
+    # second reply updated updates tag but not edit
     reply2.content = 'new content'
     reply2.skip_post_update = true unless reply2.post.last_reply_id == reply2.id
     reply2.save

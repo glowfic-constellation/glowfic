@@ -34,13 +34,11 @@ class Reply < ActiveRecord::Base
 
   def update_post
     return if skip_post_update
-    post.skip_edited = true
     post.last_user = user
     post.last_reply = self
     post.tagged_at = updated_at
     post.status = Post::STATUS_ACTIVE if post.on_hiatus?
     post.save
-    post.skip_edited = false
   end
 
   def update_active_char
@@ -56,12 +54,10 @@ class Reply < ActiveRecord::Base
   def update_last_reply
     return if skip_post_update
     return unless post.replies.where('id >= ?', id).empty? # return unless needs to update last reply (this is destroyed, this is the last reply)
-    post.skip_edited = true
     post.last_reply = previous_reply
     post.last_user = (previous_reply || post).user
     post.tagged_at = (previous_reply || post).last_updated
     post.save
-    post.skip_edited = false
   end
 
   def destroy_draft
