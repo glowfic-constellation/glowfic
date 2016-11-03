@@ -14,6 +14,8 @@ class Post < ActiveRecord::Base
   STATUS_HIATUS = 2
   STATUS_ABANDONED = 3
 
+  EDITED_ATTRS = %w(subject content icon_id character_id)
+
   belongs_to :board, inverse_of: :posts
   belongs_to :section, class_name: BoardSection, inverse_of: :posts
   belongs_to :last_user, class_name: User
@@ -169,13 +171,16 @@ class Post < ActiveRecord::Base
 
   def timestamp_attributes_for_update
     # Makes Rails treat edited_at as a timestamp identical to updated_at
-    # unless the @skip_edited flag is set. Also uses tagged_at if there
+    # if specific attributes are updated. Also uses tagged_at if there
     # are no replies yet.
     # Be VERY CAREFUL editing this!
-    timestamps = super
-    timestamps << :tagged_at if replies.empty?
-    timestamps << :edited_at unless @skip_edited
-    timestamps
+    return super if skip_edited
+    return super + [:edited_at] unless replies.empty?
+    super + [:edited_at, :tagged_at]
+  end
+
+  def skip_edited
+    @skip_edited || !EDITED_ATTRS.any?{ |edit| send(edit + "_changed?")}
   end
 
   def timestamp_attributes_for_create

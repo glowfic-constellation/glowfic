@@ -27,6 +27,7 @@ gem 'select2-rails'
 gem 'tinymce-rails'
 gem 'will_paginate', '~> 3.0.6'
 gem 'sanitize'
+gem 'rack-timeout'
 
 group :production do
   gem 'puma'

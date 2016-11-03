@@ -155,9 +155,6 @@ class PostsController < WritableController
 
     create_new_tags if @post.valid?
 
-    edited_attrs = %w(subject content icon_id character_id)
-    @post.skip_edited = true unless edited_attrs.any?{ |edit| @post.send(edit + "_changed?")}
-
     if @post.save
       flash[:success] = "Your post has been updated."
       redirect_to post_path(@post)
