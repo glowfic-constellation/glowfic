@@ -41,6 +41,7 @@
               %li= link_to 'Inbox', messages_path
               %li= link_to "Characters", characters_path
               %li= link_to "Galleries", galleries_path
+              %li= link_to 'Favorites', favorites_path
               %li= link_to "Post", new_post_path
             = link_to logout_path, method: :delete, id: :"header-logout" do
               = button_tag "Log out", class: 'button'
@@ -67,7 +68,6 @@
           %li= link_to 'Facecasts', facecasts_characters_path
           - if logged_in?
             %li= link_to 'Unread', unread_posts_path
-            %li= link_to 'Favorites', favorites_path
             %li= link_to 'Tags Owed', owed_posts_path
           %li= link_to 'Contribute', contribute_path
     - if content_for?(:breadcrumbs)
