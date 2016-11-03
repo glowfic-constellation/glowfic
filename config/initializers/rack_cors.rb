@@ -8,6 +8,10 @@ if defined? Rack::Cors
             origins %w[
                 https://vast-journey-9935.herokuapp.com
                  http://vast-journey-9935.herokuapp.com
+                https://www.glowfic.com
+                 http://www.glowfic.com
+                https://glowfic.com
+                 http://glowfic.com
             ]
             resource '/assets/*'
             resource '/images/*'

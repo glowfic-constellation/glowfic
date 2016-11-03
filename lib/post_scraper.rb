@@ -8,14 +8,16 @@ class PostScraper < Object
     'peterxy' => 'Pedro',
     'peterverse' => 'Pedro',
     'curiousdiscoverer' => 'CuriousDiscoverer',
-    # TODO Throne
     # TODO Maggie
     # TODO Aestrix
     # More???
   }
 
-  def initialize(url, board_id=nil, active=false)
-    @board_id ||= SANDBOX_ID
+  attr_reader :url
+
+  def initialize(url, board_id=nil, section_id=nil, active=false)
+    @board_id = board_id || SANDBOX_ID
+    @section_id = section_id
     @active = active
     url = url + (if url.include?('?') then '&view=flat' else '?view=flat' end) unless url.include?('view=flat')
     url = url + '&style=site' unless url.include?('style=site')
@@ -60,6 +62,7 @@ class PostScraper < Object
 
     @post = Post.new
     @post.board_id = @board_id
+    @post.section_id = @section_id
     @post.subject = subject
     @post.content = strip_content(content)
     @post.created_at = @post.updated_at = @post.edited_at = created_at

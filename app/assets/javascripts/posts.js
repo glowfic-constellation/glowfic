@@ -291,7 +291,7 @@ getAndSetCharacterData = function(characterId) {
     return // Don't need to load data from server (TODO combine with below?)
   }
 
-  $.post(gon.character_path, {'character_id':characterId}, function (resp) {
+  $.get(gon.character_path + '/' + characterId, {}, function (resp) {
     // Display the correct name/screenname fields
     $("#post-editor #post-author-spacer").hide();
     $("#post-editor .post-character").show().html(resp['name']);

@@ -72,4 +72,13 @@ class ApplicationController < ActionController::Base
     return if logged_in?
     session[:user_id] = cookies.signed[:user_id] if cookies.signed[:user_id].present?
   end
+
+  def require_glowfic_domain
+    return unless Rails.env.production?
+    return unless request.get?
+    return if request.xhr?
+    return if request.host.include?('glowfic.com')
+    glowfic_url = root_url(host: ENV['DOMAIN_NAME'], protocol: 'https')[0...-1] + request.fullpath # strip double slash
+    redirect_to glowfic_url, status: :moved_permanently
+  end
 end

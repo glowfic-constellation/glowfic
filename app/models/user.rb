@@ -16,6 +16,8 @@ class User < ActiveRecord::Base
   has_many :password_resets
   has_many :favorites
   has_many :favoriteds, as: :favorite, class_name: Favorite
+  has_many :posts
+  has_many :replies
   belongs_to :avatar, :class_name => Icon
   belongs_to :active_character, :class_name => Character
 

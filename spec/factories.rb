@@ -35,6 +35,14 @@ FactoryGirl.define do
   factory :gallery do
     user
     name "test gallery"
+    transient do
+      icon_count 0
+    end
+    after(:create) do |gallery, evaluator|
+      evaluator.icon_count.times do
+        gallery.icons << create(:icon, user: gallery.user)
+      end
+    end
   end
 
   factory :icon do
