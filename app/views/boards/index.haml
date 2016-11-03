@@ -1,9 +1,21 @@
+- if @user.present? && @user.id != current_user.try(:id)
+  - content_for :breadcrumbs do
+    = link_to "#{@user.username}", user_path(@user)
+    &raquo;
+    %b #{@user.username}'s Continuities
+
 %table
   %thead
     %tr
       %th{colspan: 3}
-        Continuities
-        - if logged_in?
+        - if @user.present?
+          - if @user.id == current_user.try(:id)
+            Your Continuities
+          - else
+            = @user.username + "'s Continuities"
+        - else
+          Continuities
+        - if logged_in? && (@user.try(:id) == current_user.id)
           = link_to new_board_path do
             .link-box.green + New Continuity
     %tr
