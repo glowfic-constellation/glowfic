@@ -180,7 +180,7 @@ class PostsController < WritableController
           flash[:error] = "You have marked this continuity read more recently than that reply was written; it will not appear in your Unread posts."
           Message.create(recipient_id: 1, sender_id: 1, subject: 'Unread at failure', message: "#{current_user.username} tried to mark post #{@post.id} unread at reply #{reply.id}")
         else
-          @post.mark_read(current_user, reply.created_at, true)
+          @post.mark_read(current_user, reply.created_at - 1.second, true)
         end
       end
       return redirect_to unread_posts_path
