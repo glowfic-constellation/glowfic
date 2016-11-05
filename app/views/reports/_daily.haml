@@ -1,36 +1,49 @@
 %table
   %thead
     %tr
-      %th{colspan: 8} Daily Report
+      %th{colspan: 7} Daily Report
     - 0.upto(7) do |num_days|
       - day = num_days.days.ago
       - posts = posts_for(day)
       - if posts.present?
         %tr
-          %th.subber{colspan: 8}= day.strftime("%b %d, %Y")
+          %th.subber{colspan: 7}= day.strftime("%b %d, %Y")
         %tr
           %th.sub.width-15
           %th.sub Thread
           %th.sub Continuity
-          %th.sub Description
           %th.sub Authors
-          %th.sub Replies
-          %th.sub Replies Today
-          %th.sub First Update
+          %th.sub.width-70 Replies
+          %th.sub.width-70 Today
+          %th.sub.width-70 Updated
         - posts.each do |post|
+          - next unless post.visible_to?(current_user)
           %tr
             - klass = cycle('even', 'odd')
             - replies_today = post.replies.where(created_at: day.beginning_of_day .. day.end_of_day).order('created_at asc')
             - linked = linked_for(day, post, replies_today)
-            %td.padding-5.post-completed{class: [klass, (post.completed? ? 'post-complete' : 'post-incomplete')]}
+            %td.vtop.post-completed{class: [klass, (post.completed? ? 'post-complete' : 'post-incomplete')]}
               - if post.completed?
                 = image_tag "/images/book.png", class: 'vmid', title: "Thread Complete"
-            %td.padding-5{class: klass}= link_to post.subject, post_or_reply_link(linked)
-            %td.padding-5.post-board{class: klass}= link_to post.board.name, board_path(post.board)
-            %td.padding-5{class: klass}
+              - if post.on_hiatus?
+                = image_tag "/images/hourglass.png", class: 'vmid', title: "Thread On Hiatus"
+              - if post.abandoned?
+                = image_tag "/images/book_grey.png", class: 'vmid', title: "Thread Abandoned"
+              - if post.content_warnings.present?
+                = image_tag "/images/exclamation.png", class: 'vmid', title: "Content Warning: " + post.content_warnings.map(&:name).join(', '), alt: '!'
+            %td{class: klass}
+              - if has_unread?(post)
+                = link_to post_path(post, page: 'unread', anchor: 'unread') do
+                  = image_tag unread_img, class: 'vmid', title: 'First Unread'
+              - if @opened_ids.present? && !@opened_ids.include?(post.id)
+                %b= link_to post.subject, post_or_reply_link(linked)
+              - else
+                = link_to post.subject, post_or_reply_link(linked)
               - if post.description.present?
-                = sanitize_post_description(post.description).html_safe
-            %td.padding-5{class: klass}= post.authors.map { |author| link_to fun_name(author), user_path(author) }.join(', ').html_safe
-            %td.padding-5.width-70.post-replies{class: klass}= post.replies.count
-            %td.padding-5.width-70.post-replies{class: klass}= replies_today.count
-            %td.padding-5{class: klass}= linked.last_updated.strftime("%l:%M %p")
+                %br
+                %span.details= sanitize_post_description(post.description).html_safe
+            %td.vtop.post-board{class: klass}= link_to post.board.name, board_path(post.board)
+            %td.vtop{class: klass}= post.authors.map { |author| link_to fun_name(author), user_path(author) }.join(', ').html_safe
+            %td.vtop.centered.post-replies{class: klass}= post.replies.count
+            %td.vtop.centered.post-replies{class: klass}= replies_today.count
+            %td.vtop.centered{class: klass}= linked.last_updated.strftime("%l:%M %p")
