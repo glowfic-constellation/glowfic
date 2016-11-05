@@ -33,9 +33,6 @@ class BoardsController < ApplicationController
 
   def show
     respond_to do |format|
-      format.json do
-        render json: @board.board_sections.order('section_order asc').map { |s| [s.id, s.name] }
-      end
       format.html do
         order = 'section_order asc, tagged_at asc'
         order = 'tagged_at desc' if @board.open_to_anyone?
@@ -43,6 +40,9 @@ class BoardsController < ApplicationController
         @posts = @board.posts.includes(:user, :last_user, :content_warnings).order(order).paginate(per_page: 25, page: page)
         @board_items = @board.board_sections + @board.posts.where(section_id: nil)
         @board_items.sort_by! { |item| item.section_order.to_i }
+      end
+      format.json do
+        render json: @board.board_sections.order('section_order asc').map { |s| [s.id, s.name] }
       end
     end
   end
