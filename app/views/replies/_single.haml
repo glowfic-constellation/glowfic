@@ -1,7 +1,4 @@
-- klass = cycle('even', 'odd')
-- reply = local_assigns[:single] if local_assigns[:reply].nil?
-
-.post-container{class: [klass, reply.is_a?(Post) ? 'post-post' : (reply.is_a?(Reply) ? 'post-reply' : '')]}
+.post-container{class: [cycle('even', 'odd'), reply.is_a?(Post) ? 'post-post' : (reply.is_a?(Reply) ? 'post-reply' : '')]}
   - if reply.is_a?(Reply) && reply.id.present?
     <a name="reply-#{reply.id}"></a>
   - if reply.id.present? && logged_in? && !@unread.nil?

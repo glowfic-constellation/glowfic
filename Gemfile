@@ -21,17 +21,17 @@ gem 'rails', '3.2.21'
 gem 'rack-pratchett'
 gem 'redis'
 gem 'redis-rails'
+gem 'sanitize'
 gem 'sass-rails'
 gem 'seed_dump', '0.5.3'
 gem 'select2-rails'
 gem 'tinymce-rails'
 gem 'will_paginate', '~> 3.0.6'
-gem 'sanitize'
-gem 'rack-timeout'
 
 group :production do
   gem 'puma'
   gem 'rack-cors'
+  gem 'rack-timeout'
   gem 'rails_12factor'
 end
 

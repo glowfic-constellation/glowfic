@@ -8,8 +8,9 @@ class Reply < ActiveRecord::Base
   audited associated_with: :post
 
   after_create :notify_other_authors, :destroy_draft, :update_active_char, :update_post
+  before_update :delete_view_cache
   after_update :update_post
-  after_destroy :update_last_reply
+  after_destroy :update_last_reply, :delete_view_cache
 
   attr_accessor :skip_notify, :skip_post_update, :is_import
 
@@ -39,6 +40,12 @@ class Reply < ActiveRecord::Base
     post.tagged_at = updated_at
     post.status = Post::STATUS_ACTIVE if post.on_hiatus?
     post.save
+  end
+
+  def delete_view_cache
+    # don't rely on GC in Redis to get rid of these keys
+    cache_key = ActiveSupport::Cache.expand_cache_key(self, :views)
+    Rails.cache.delete(cache_key)
   end
 
   def update_active_char
