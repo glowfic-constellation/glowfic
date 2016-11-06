@@ -108,7 +108,7 @@
       = render partial: 'replies/single', locals: {reply: @post}
 - if @replies.present?
   = render partial: 'posts/paginator', locals: { paginated: @replies, path: :post_path }
-= render partial: 'replies/single', collection: @replies, as: :reply, cache: false, uncached: @unread
+= render partial: 'replies/single', collection: @replies, as: :reply, cache: !logged_in? # don't need uncached: @unread for logged out
 - if @post.completed? && (@replies.empty? || (@replies.last.id == @post.replies.order('id desc').first.id))
   .post-ender Here Ends This Thread
   - if @prev_post || @next_post

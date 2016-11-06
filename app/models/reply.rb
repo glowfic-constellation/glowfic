@@ -42,10 +42,13 @@ class Reply < ActiveRecord::Base
     post.save
   end
 
+  def view_cache_key
+    ActiveSupport::Cache.expand_cache_key(self, :views)
+  end
+
   def delete_view_cache
     # don't rely on GC in Redis to get rid of these keys
-    cache_key = ActiveSupport::Cache.expand_cache_key(self, :views)
-    Rails.cache.delete(cache_key)
+    Rails.cache.delete(view_cache_key)
   end
 
   def update_active_char

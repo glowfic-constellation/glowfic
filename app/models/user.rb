@@ -33,6 +33,8 @@ class User < ActiveRecord::Base
 
   before_validation :encrypt_password
   after_save :clear_password
+  after_update :delete_view_cache
+  after_destroy :delete_view_cache
 
   nilify_blanks
 
@@ -87,5 +89,12 @@ class User < ActiveRecord::Base
 
   def validate_password?
     !!@validate_password
+  end
+
+  def delete_view_cache
+    return unless username_changed?
+    replies.each do |reply|
+      reply.send(:delete_view_cache)
+    end
   end
 end
