@@ -1,14 +1,14 @@
 - content_for :posts_title do
-  - if params[:started] == 'true'
+  - if @started
     Opened
   - else
     Unread
   Posts
   = link_to hidden_posts_path do
     .view-button Hidden &raquo;
-  = link_to unread_posts_path(started: (params[:started] != 'true')) do
+  = link_to unread_posts_path(started: !@started) do
     .view-button
-      - if params[:started] == 'true'
+      - if @started
         Show All Threads
       - else
         Only Show Opened Threads

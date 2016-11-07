@@ -25,6 +25,7 @@ class PostsController < WritableController
 
   def unread
     # Anything on this page is guaranteed unread; the opened/unread distinction is for favorites#index
+    @started = (params[:started] == 'true') || (params[:started].nil? && current_user.unread_opened)
     @opened_ids = @unread_ids = PostView.where(user_id: current_user.id).select(:post_id).map(&:post_id)
     @posts = Post.joins("LEFT JOIN post_views ON post_views.post_id = posts.id AND post_views.user_id = #{current_user.id}")
     @posts = @posts.joins("LEFT JOIN board_views on board_views.board_id = posts.board_id AND board_views.user_id = #{current_user.id}")
@@ -32,9 +33,9 @@ class PostsController < WritableController
     @posts = @posts.where("board_views.user_id IS NULL OR (date_trunc('second', board_views.read_at) < date_trunc('second', posts.tagged_at) AND board_views.ignored = '0')")
     @posts = @posts.order('tagged_at desc').includes(:board, :user, :last_user, :content_warnings)
     @posts = @posts.select { |p| p.visible_to?(current_user) }
-    @posts = @posts.select { |p|  @opened_ids.include?(p.id) } if params[:started] == 'true'
+    @posts = @posts.select { |p|  @opened_ids.include?(p.id) } if @started
     @posts = @posts.paginate(per_page: 25, page: page)
-    @page_title = params[:started] == 'true' ? "Opened Threads" : "Unread Threads"
+    @page_title = @started ? "Opened Threads" : "Unread Threads"
   end
 
   def mark    

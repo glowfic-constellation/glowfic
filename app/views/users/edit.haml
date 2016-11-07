@@ -45,6 +45,11 @@
       %th.sub Time display
       %td.even= f.select :time_display, time_display_options(current_user.time_display)
     %tr
+      %th.sub Unread Default
+      %td.odd
+        = f.check_box :unread_opened, class: 'width-15 vmid'
+        Opened threads only
+    %tr
       %th.centered.subber{colspan: 2}= submit_tag "Save", class: 'button'
 
 %br
