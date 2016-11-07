@@ -1,5 +1,9 @@
 - content_for :posts_title do
-  Unread Posts
+  - if params[:started] == 'true'
+    Opened
+  - else
+    Unread
+  Posts
   = link_to hidden_posts_path do
     .view-button Hidden &raquo;
   = link_to unread_posts_path(started: (params[:started] != 'true')) do
