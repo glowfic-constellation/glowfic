@@ -9,7 +9,7 @@ class ReportsController < ApplicationController
     end
 
     if logged_in?
-      @opened_posts = PostView.where(user_id: current_user.id).select([:post_id, :read_at])
+      @opened_posts = PostView.where(user_id: current_user.id).select([:post_id, :read_at, :ignored])
       @opened_ids = @opened_posts.map(&:post_id)
     end
   end
