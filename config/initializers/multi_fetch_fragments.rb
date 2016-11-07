@@ -8,7 +8,6 @@ module MultiFetchFragments
   private
 
   def render_collection_with_multi_fetch_cache
-    debugger # check @view.fragment_name_with_digest and cache_fragment_name
     return nil if @collection.blank?
 
     if @options.key?(:spacer_template)
