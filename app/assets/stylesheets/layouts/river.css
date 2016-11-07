@@ -24,4 +24,4 @@ a:visited { color: #284150; }
 #header, #header #nav-bottom { background-color: #ADB5B9; }
 .post-character a, .post-character a:visited { color: #B3D3FF; }
 .post-footer { color: #717171; }
-#content .odd, #content .even { background-color: #F3F3F3; border-top: solid 1px #aaa; }
+#content .odd, #content .even, .post-post, .post-reply { background-color: #F3F3F3 !important; border-top: solid 1px #aaa; }
