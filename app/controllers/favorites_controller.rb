@@ -32,6 +32,7 @@ class FavoritesController < ApplicationController
       post = @posts.detect { |p| p.id == view.post_id }
       post && view.read_at < post.tagged_at
     end.map(&:post_id)
+    @page_title = "Favorites"
   end
 
   def create
