@@ -1,9 +1,12 @@
-= form_for @template, :url => template_path(@template), :method => :put do |f|
+- content_for :breadcrumbs do
+  = link_to "Characters", characters_path
+  &raquo;
+  = link_to @template.name, template_path(@template)
+  &raquo;
+  %b Edit
+
+= form_for @template, url: template_path(@template), method: :put do |f|
   %table.form-table
     %tr
       %th.centered{colspan: 2} Edit Template
-    %tr
-      %th.sub Template Name
-      %td.even= f.text_field :name, placeholder: "Template Name", class: 'text'
-    %tr
-      %th.subber{colspan: 2}= submit_tag "Save", class: 'button'
+    = render partial: 'editor', locals: {f: f}
