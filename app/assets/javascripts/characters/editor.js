@@ -76,7 +76,7 @@ function displayGallery(new_id){
     html_string += "</div>";
     $("#selected-gallery .gallery").append(html_string);
     bindIcons();
-  });
+  }, 'json');
 }
 
 function bindIcons() {

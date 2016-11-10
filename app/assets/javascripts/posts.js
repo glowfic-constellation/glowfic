@@ -324,7 +324,7 @@ getAndSetCharacterData = function(characterId) {
     bindGallery();
     bindIcon();
     setIcon(resp['default']['id'], resp['default']['url'], resp['default']['keyword'], resp['default']['keyword']);
-  });
+  }, 'json');
 };
 
 setIconFromId = function(id, img) {
@@ -370,5 +370,5 @@ setSections = function() {
       $("#post_section_id").val("");
       $("#section").hide();
     }
-  });
+  }, 'json');
 };
