@@ -8,8 +8,8 @@ class PostScraper < Object
     'peterxy' => 'Pedro',
     'peterverse' => 'Pedro',
     'curiousdiscoverer' => 'CuriousDiscoverer',
+    'aestrix' => 'Aestrix',
     # TODO Maggie
-    # TODO Aestrix
     # More???
   }
 
