@@ -1,4 +1,4 @@
-- if @template && @template.description
+- if @template && @template.description.present?
   %tr
     %td.beige.padding-5{colspan: 6}= @template.description
 %tr

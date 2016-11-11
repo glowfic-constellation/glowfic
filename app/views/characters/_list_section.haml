@@ -16,7 +16,7 @@
             .link-box.red{style: 'font-size: 14px'} x Delete
       - else
         %b= name
-- if @template && @template.description
+- if @template && @template.description.present?
   %tr
     %td.beige.padding-5{colspan: 6}= @template.description
 - if characters.empty?
