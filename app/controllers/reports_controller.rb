@@ -25,6 +25,14 @@ class ReportsController < ApplicationController
   end
   helper_method :has_unread?
 
+  def ignored?(post)
+    return false unless @opened_posts
+    view = @opened_posts.detect { |v| v.post_id == post.id }
+    return false unless view
+    view.ignored?
+  end
+  helper_method :ignored?
+
   def posts_for(day)
     posts = Post.where(tagged_at: day.beginning_of_day .. day.end_of_day).includes(:board, :user, :last_user)
     return unless posts.present?

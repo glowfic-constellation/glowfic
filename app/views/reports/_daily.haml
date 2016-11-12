@@ -19,10 +19,12 @@
         - posts.each do |post|
           - next unless post.visible_to?(current_user)
           %tr
-            - klass = cycle('even', 'odd')
+            - klass = [cycle('even', 'odd')]
+            - klass << 'post-ignored' if ignored?(post)
+            - klass << (post.completed? ? 'post-complete' : 'post-incomplete')
             - replies_today = post.replies.where(created_at: day.beginning_of_day .. day.end_of_day).order('created_at asc')
             - linked = linked_for(day, post, replies_today)
-            %td.vtop.post-completed{class: [klass, (post.completed? ? 'post-complete' : 'post-incomplete')]}
+            %td.vtop.post-completed{class: klass}
               - if post.completed?
                 = image_tag "/images/book.png", class: 'vmid', title: "Thread Complete"
               - if post.on_hiatus?
