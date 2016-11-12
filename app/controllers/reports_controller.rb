@@ -36,16 +36,7 @@ class ReportsController < ApplicationController
   helper_method :ignored?
 
   def posts_for(day)
-    posts = Post.where(tagged_at: day.beginning_of_day .. day.end_of_day).includes(:board, :user, :last_user)
-    return unless posts.present?
-    return posts.sort_by do |post|
-      linked = linked_for(day, post)
-      if linked.class == Post
-        linked.edited_at
-      else
-        linked.created_at
-      end
-    end.reverse
+    Post.where(tagged_at: day.beginning_of_day .. day.end_of_day).includes(:board, :user, :last_user).order('tagged_at desc')
   end
   helper_method :posts_for
 

@@ -47,4 +47,4 @@
             %td.vtop{class: klass}= post.authors.map { |author| link_to fun_name(author), user_path(author) }.join(', ').html_safe
             %td.vtop.centered.post-replies{class: klass}= post.replies.count
             %td.vtop.centered.post-replies{class: klass}= replies_today.count
-            %td.vtop.centered{class: klass}= linked.last_updated.strftime("%l:%M %p")
+            %td.vtop.centered{class: klass}= post.tagged_at.strftime("%l:%M %p")
