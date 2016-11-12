@@ -83,7 +83,10 @@
               %li= error
       - flash.delete(:error)
     - flash.keys.each do |key|
-      .flash{:class=>key}= flash[key]
+      - if key == :pass
+        .flash{class: 'error'}= flash[key].html_safe
+      - else
+        .flash{:class=>key}= flash[key]
     - if content_for?(:flashes)
       = content_for :flashes
     - if logged_in?
