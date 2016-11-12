@@ -10,6 +10,7 @@ class ReportsController < ApplicationController
 
     if logged_in?
       @opened_posts = PostView.where(user_id: current_user.id).select([:post_id, :read_at, :ignored])
+      @board_views = BoardView.where(user_id: current_user.id).select([:board_id, :ignored])
       @opened_ids = @opened_posts.map(&:post_id)
     end
   end
@@ -28,8 +29,9 @@ class ReportsController < ApplicationController
   def ignored?(post)
     return false unless @opened_posts
     view = @opened_posts.detect { |v| v.post_id == post.id }
-    return false unless view
-    view.ignored?
+    board_view = @board_views.detect { |v| v.board_id == post.board_id }
+    return false unless view || board_view
+    view.ignored? || board_view.ignored?
   end
   helper_method :ignored?
 

@@ -24,7 +24,7 @@
             - klass << (post.completed? ? 'post-complete' : 'post-incomplete')
             - replies_today = post.replies.where(created_at: day.beginning_of_day .. day.end_of_day).order('created_at asc')
             - linked = linked_for(day, post, replies_today)
-            %td.vtop.post-completed{class: klass}
+            %td.vtop.post-completed{class: klass, style: 'text-decoration: none'}
               - if post.completed?
                 = image_tag "/images/book.png", class: 'vmid', title: "Thread Complete"
               - if post.on_hiatus?
