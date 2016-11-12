@@ -31,7 +31,7 @@ class ReportsController < ApplicationController
     view = @opened_posts.detect { |v| v.post_id == post.id }
     board_view = @board_views.detect { |v| v.board_id == post.board_id }
     return false unless view || board_view
-    view.ignored? || board_view.ignored?
+    view.try(:ignored?) || board_view.try(:ignored?)
   end
   helper_method :ignored?
 
