@@ -4,7 +4,7 @@
       %th.centered{colspan: 2} Account Settings
     %tr
       %th.sub Username
-      %td.even= f.text_field :username, placeholder: "Username", class: 'text'
+      %td.even= f.text_field :username, placeholder: "Username", class: 'text', disabled: current_user.salt_uuid.nil?
     %tr
       %th.sub Email
       %td.odd= f.text_field :email, placeholder: "Email address", class: 'text'
@@ -54,7 +54,7 @@
 
 %br
 = form_for current_user, :url => password_user_path(current_user), :method => :put do |f|
-  %table.form-table
+  %table.form-table#change-password
     %tr
       %th.centered{colspan: 2} Change Password
     %tr
