@@ -100,9 +100,16 @@ $(document).ready(function() {
   var displayIconID = $("#current-icon").data('icon-id');
   if (selectedCharID != displayCharID) {
     getAndSetCharacterData(selectedCharID, {restore_icon: true});
-  } else if (selectedIconID != displayIconID) {
-    setIconFromId(selectedIconID); // Handle the case where just the icon was cached
-  };
+    $("#active_character").val(selectedCharID).trigger("chosen:updated");
+  } else {
+    if ($(".gallery-icon").length > 1) { /* Bind icon & gallery only if not resetting character, else it duplicate binds */
+      bindIcon();
+      bindGallery();
+    }
+    if (selectedIconID != displayIconID) {
+      setIconFromId(selectedIconID); // Handle the case where just the icon was cached
+    }
+  }
 
   // Bind both change() and keyup() in the icon keyword dropdown because Firefox doesn't
   // respect up/down key selections in a dropdown as a valid change() trigger
@@ -153,11 +160,6 @@ $(document).ready(function() {
     $("#preview_button").removeAttr('data-disable-with').attr('disabled', 'disabled');
     return true;
   });
-
-  if($(".gallery-icon").length > 1) {
-    bindIcon();
-    bindGallery();
-  }
 
   $("#swap-icon").click(function () {
     $('#character-selector').toggle();
@@ -265,7 +267,7 @@ getAndSetCharacterData = function(characterId, options) {
     if (options['restore_icon']) restore_icon = options['restore_icon'];
   }
   // Handle page interactions
-  var selectedIconID = $("#icon_dropdown :selected").val();
+  var selectedIconID = $("#reply_icon_id").val();
   $("#character-selector").hide();
   $("#current-icon-holder").unbind();
   $("#icon_dropdown").empty().append('<option value="">No Icon</option>');
