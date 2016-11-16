@@ -1,6 +1,7 @@
 class ApplicationController < ActionController::Base
   protect_from_forgery with: :exception
   before_filter :check_permanent_user
+  before_filter :show_password_warning
   around_filter :set_timezone
   after_filter :store_location
 
@@ -20,6 +21,13 @@ class ApplicationController < ActionController::Base
     unless logged_in?
       flash[:error] = "You must be logged in to view that page."
       redirect_to root_path
+    end
+  end
+
+  def show_password_warning
+    return unless logged_in?
+    if current_user.salt_uuid.nil?
+      flash.now[:pass] = "Because Marri accidentally made passwords a bit too secure, you cannot update your username until you <a href='/users/#{current_user.id}/edit#change-password'>update your password</a>. (You may update your password to the same password you already have, as long as you go through the Change Password flow.) Please fix your password as soon as possible. You may also fix your password by logging out and then back in."
     end
   end
 
@@ -71,5 +79,14 @@ class ApplicationController < ActionController::Base
   def check_permanent_user
     return if logged_in?
     session[:user_id] = cookies.signed[:user_id] if cookies.signed[:user_id].present?
+  end
+
+  def require_glowfic_domain
+    return unless Rails.env.production?
+    return unless request.get?
+    return if request.xhr?
+    return if request.host.include?('glowfic.com')
+    glowfic_url = root_url(host: ENV['DOMAIN_NAME'], protocol: 'https')[0...-1] + request.fullpath # strip double slash
+    redirect_to glowfic_url, status: :moved_permanently
   end
 end

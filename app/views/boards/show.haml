@@ -19,12 +19,12 @@
     - if fav = Favorite.between(current_user, @board)
       = link_to favorite_path(fav), method: :delete do
         .link-box.blue
-          = image_tag '/images/heart_delete.png', class: 'vmid'
+          = image_tag '/images/star_delete.png', class: 'vmid'
           Unfavorite
     - else
       = link_to favorites_path(board_id: @board.id), method: :post do
         .link-box.blue
-          = image_tag '/images/heart_add.png', class: 'vmid'
+          = image_tag '/images/star_add.png', class: 'vmid'
           Favorite
 
 - if @board.id == 1

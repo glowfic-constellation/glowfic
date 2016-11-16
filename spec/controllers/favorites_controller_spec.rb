@@ -113,7 +113,7 @@ RSpec.describe FavoritesController do
       login_as(user)
       post :create, user_id: fav.id
       expect(Favorite.between(user, fav)).not_to be_nil
-      expect(response).to redirect_to(favorites_url)
+      expect(response).to redirect_to(user_url(fav))
       expect(flash[:success]).to eq("Your favorite has been saved.")
     end
 
@@ -123,7 +123,18 @@ RSpec.describe FavoritesController do
       login_as(user)
       post :create, post_id: fav.id
       expect(Favorite.between(user, fav)).not_to be_nil
-      expect(response).to redirect_to(favorites_url)
+      expect(response).to redirect_to(post_url(fav))
+      expect(flash[:success]).to eq("Your favorite has been saved.")
+    end
+
+    it "favorites a post with a page redirect" do
+      user = create(:user)
+      fav = create(:post)
+      login_as(user)
+      request.session[:previous_url] = post_url(fav, page: 3)
+      post :create, post_id: fav.id
+      expect(Favorite.between(user, fav)).not_to be_nil
+      expect(response).to redirect_to(post_url(fav, page: 3))
       expect(flash[:success]).to eq("Your favorite has been saved.")
     end
 
@@ -133,7 +144,7 @@ RSpec.describe FavoritesController do
       login_as(user)
       post :create, board_id: board.id
       expect(Favorite.between(user, board)).not_to be_nil
-      expect(response).to redirect_to(favorites_url)
+      expect(response).to redirect_to(board_url(board))
       expect(flash[:success]).to eq("Your favorite has been saved.")
     end
   end

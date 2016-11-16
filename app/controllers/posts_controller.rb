@@ -8,7 +8,7 @@ class PostsController < WritableController
   before_filter :build_tags, only: [:new, :edit]
 
   def index
-    @posts = Post.order('tagged_at desc').includes(:board, :user, :last_user, :content_warnings).where('board_id != ?', Board::ID_SITETESTING)
+    @posts = Post.order('tagged_at desc').includes(:board, :user, :last_user, :content_warnings)
     @posts = @posts.paginate(page: page, per_page: 25)
     @page_title = "Recent Threads"
   end
@@ -17,23 +17,25 @@ class PostsController < WritableController
     posts_started = Post.where(user_id: current_user.id).select(:id).group(:id).map(&:id)
     posts_in = Reply.where(user_id: current_user.id).select(:post_id).group(:post_id).map(&:post_id)
     ids = posts_in + posts_started
-    @posts = Post.where(id: ids.uniq).where("board_id != ?", Board::ID_SITETESTING).where('status != ?', Post::STATUS_COMPLETE).where('status != ?', Post::STATUS_ABANDONED).order('tagged_at desc')
+    @posts = Post.where(id: ids.uniq).where('status != ?', Post::STATUS_COMPLETE).where('status != ?', Post::STATUS_ABANDONED).order('tagged_at desc')
     @posts = @posts.where('last_user_id != ?', current_user.id).includes(:board, :content_warnings).paginate(page: page, per_page: 25)
     @page_title = "Tags Owed"
     @show_unread = true
   end
 
   def unread
-    @opened_ids = PostView.where(user_id: current_user.id).select(:post_id).map(&:post_id)
+    # Anything on this page is guaranteed unread; the opened/unread distinction is for favorites#index
+    @started = (params[:started] == 'true') || (params[:started].nil? && current_user.unread_opened)
+    @opened_ids = @unread_ids = PostView.where(user_id: current_user.id).select(:post_id).map(&:post_id)
     @posts = Post.joins("LEFT JOIN post_views ON post_views.post_id = posts.id AND post_views.user_id = #{current_user.id}")
     @posts = @posts.joins("LEFT JOIN board_views on board_views.board_id = posts.board_id AND board_views.user_id = #{current_user.id}")
     @posts = @posts.where("post_views.user_id IS NULL OR (date_trunc('second', post_views.read_at) < date_trunc('second', posts.tagged_at) AND post_views.ignored = '0')")
     @posts = @posts.where("board_views.user_id IS NULL OR (date_trunc('second', board_views.read_at) < date_trunc('second', posts.tagged_at) AND board_views.ignored = '0')")
     @posts = @posts.order('tagged_at desc').includes(:board, :user, :last_user, :content_warnings)
     @posts = @posts.select { |p| p.visible_to?(current_user) }
-    @posts = @posts.select { |p|  @opened_ids.include?(p.id) } if params[:started] == 'true'
+    @posts = @posts.select { |p|  @opened_ids.include?(p.id) } if @started
     @posts = @posts.paginate(per_page: 25, page: page)
-    @page_title = params[:started] == 'true' ? "Opened Threads" : "Unread Threads"
+    @page_title = @started ? "Opened Threads" : "Unread Threads"
   end
 
   def mark    
@@ -154,9 +156,6 @@ class PostsController < WritableController
 
     create_new_tags if @post.valid?
 
-    edited_attrs = %w(subject content icon_id character_id)
-    @post.skip_edited = true unless edited_attrs.any?{ |edit| @post.send(edit + "_changed?")}
-
     if @post.save
       flash[:success] = "Your post has been updated."
       redirect_to post_path(@post)
@@ -182,7 +181,7 @@ class PostsController < WritableController
           flash[:error] = "You have marked this continuity read more recently than that reply was written; it will not appear in your Unread posts."
           Message.create(recipient_id: 1, sender_id: 1, subject: 'Unread at failure', message: "#{current_user.username} tried to mark post #{@post.id} unread at reply #{reply.id}")
         else
-          @post.mark_read(current_user, reply.created_at, true)
+          @post.mark_read(current_user, reply.created_at - 1.second, true)
         end
       end
       return redirect_to unread_posts_path

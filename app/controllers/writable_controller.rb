@@ -19,21 +19,23 @@ class WritableController < ApplicationController
     @templates.reject! {|template| template.ordered_characters.empty? }
 
     gon.current_user = current_user.gon_attributes
-    gon.character_path = character_user_path(current_user)
+    gon.character_path = characters_path
   end
 
   def show_post(cur_page=nil)
     @threaded = false
-    replies = if @post.replies.where('thread_id is not null').count > 1
-      @threaded = true
-      if params[:thread_id].present?
-        @replies = @post.replies.where(thread_id: params[:thread_id])
-      else
-        @post.replies.where('id = thread_id')
-      end
-    else
-      @post.replies
-    end
+    replies = @post.replies
+    # Can resurrect when threading exists properly; for now, skip the database query.
+    # replies = if @post.replies.where('thread_id is not null').count > 1
+    #   @threaded = true
+    #   if params[:thread_id].present?
+    #     @replies = @post.replies.where(thread_id: params[:thread_id])
+    #   else
+    #     @post.replies.where('id = thread_id')
+    #   end
+    # else
+    #   @post.replies
+    # end
 
     @unread = @post.first_unread_for(current_user) if logged_in?
     if per_page > 0

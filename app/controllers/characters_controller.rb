@@ -39,10 +39,17 @@ class CharactersController < ApplicationController
   end
 
   def show
-    @page_title = @character.name
-    @posts = @character.recent_posts(25, page).includes(:board, :user, :last_user, :content_warnings)
-    use_javascript('characters/show') if @character.user_id == current_user.try(:id)
-    use_javascript('galleries/index') if @character.galleries.ordered.present?
+    respond_to do |format|
+      format.json do
+        render json: CharacterPresenter.new(@character)
+      end
+      format.html do
+        @page_title = @character.name
+        @posts = @character.recent_posts(25, page).includes(:board, :user, :last_user, :content_warnings)
+        use_javascript('characters/show') if @character.user_id == current_user.try(:id)
+        use_javascript('galleries/index') if @character.galleries.ordered.present?
+      end
+    end
   end
 
   def edit

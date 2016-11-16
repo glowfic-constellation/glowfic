@@ -1,11 +1,13 @@
 %table{style: 'width:200px; float: left;'}
   %thead
     %tr
-      %th.centered= @user.username
+      %th.centered.username= @user.username
   %tbody
     - if @user.avatar
       %tr
-        %td.green.centered= icon_tag @user.avatar
+        %td.green.centered.user-avatar
+          = link_to icon_path(@user.avatar) do
+            = icon_tag @user.avatar
     %tr
       %td.centered{class: cycle('even', 'odd')}
         = link_to new_message_path(recipient_id: @user.id) do
@@ -13,12 +15,12 @@
           Send Message
     %tr
       %td.centered{class: cycle('even', 'odd')}
-        = link_to user_characters_path(@user) do
+        = link_to user_characters_path(@user), class: 'user-characters' do
           = image_tag '/images/group.png', class: 'vmid'
           Characters
     %tr
       %td.centered{class: cycle('even', 'odd')}
-        = link_to user_galleries_path(@user) do
+        = link_to user_galleries_path(@user), class: 'user-galleries' do
           = image_tag '/images/photos.png', class: 'vmid'
           Galleries
     %tr
@@ -36,11 +38,11 @@
         %td.centered{class: cycle('even', 'odd')}
           - if fav = Favorite.between(current_user, @user)
             = link_to favorite_path(fav), method: :delete do
-              = image_tag '/images/heart_delete.png', class: 'vmid'
+              = image_tag '/images/star_delete.png', class: 'vmid'
               Unfavorite
           - else
             = link_to favorites_path(user_id: @user.id), method: :post do
-              = image_tag '/images/heart_add.png', class: 'vmid'
+              = image_tag '/images/star_add.png', class: 'vmid'
               Favorite
 
 

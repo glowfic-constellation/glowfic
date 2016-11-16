@@ -110,7 +110,7 @@
 .view-button .icon-view { width: 15px; height: 15px; display: inline; margin: 0px; padding: 0px; top: 2px; position: relative; }
 
 /* Not yet deserving of its own CSS file */
-#message_form textarea, .edit_board textarea, .new_board textarea { height: 100px; }
+#message_form textarea, .edit_board textarea, .new_board textarea, .new_template textarea, .edit_template textarea { height: 100px; }
 #stats ul { margin-top: 0px; margin-bottom: 0px; padding-left: 15px; }
 .select2-container { margin: 3px 0px; width: 300px !important; }
 .select2, .select2-dropdown { font-size: 13px !important; }
@@ -121,3 +121,4 @@ input.checkbox { height: 12px; margin: 0px; vertical-align: middle; } /* Keeps u
 #signup th.sub { width: 90px; }
 #content table.form-table input[type='checkbox'] { margin: 0 1px; height: 18px; width: 18px; vertical-align: middle; }
 td.continuity-spacer { height: 20px; }
+.post-ignored { opacity: 0.3; }

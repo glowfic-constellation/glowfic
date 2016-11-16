@@ -4,6 +4,10 @@ module ApplicationHelper
 
     klass = 'icon'
     klass += ' pointer' if args.delete(:pointer)
+    if supplied_class = args.delete(:class)
+      klass += ' ' + supplied_class
+    end
+
     image_tag icon.url, {alt: icon.keyword, title: icon.keyword, class: klass}.merge(**args)
   end
 

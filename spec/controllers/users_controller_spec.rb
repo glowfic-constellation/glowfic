@@ -80,12 +80,6 @@ RSpec.describe UsersController do
     end
   end
 
-  describe "POST character" do
-    it "has more tests" do
-      skip
-    end
-  end
-
   describe "PUT password" do
     it "has more tests" do
       skip

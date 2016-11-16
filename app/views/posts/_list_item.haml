@@ -11,11 +11,14 @@
     - if post.content_warnings.present?
       = image_tag "/images/exclamation.png", class: 'vmid', title: "Content Warning: " + post.content_warnings.map(&:name).join(', '), alt: '!'
   %td.post-subject{class: klass}
-    - if logged_in? && (@show_unread || !@opened_ids.nil?)
-      - if @opened_ids.nil? || @opened_ids.include?(post.id)
+    - if logged_in? && (@show_unread || !@unread_ids.nil?)
+      - if @unread_ids.nil? || @unread_ids.include?(post.id)
         = link_to post_path(post, page: 'unread', anchor: 'unread') do
           = image_tag unread_img, class: 'vmid', title: 'First Unread'
-    = link_to post.subject, post_path(post)
+    - if logged_in? && @opened_ids.present? && !@opened_ids.include?(post.id)
+      %b= link_to post.subject, post_path(post)
+    - else
+      = link_to post.subject, post_path(post)
     - if !@show_unread && @opened_ids.nil? && (!logged_in? || per_page > 0)
       - total_pages = (replies_count.to_f / per_page).ceil
       - if total_pages > 1
@@ -38,7 +41,7 @@
   %td.width-70.post-replies{class: klass}= replies_count
   - if logged_in? && local_assigns[:show_unread_count]
     %td.width-70{class: klass}
-      - if @opened_ids.include?(post.id)
+      - if @opened_ids.include?(post.id) && @unread_ids.include?(post.id)
         = Reply.where(post_id: post.id).where('created_at > ?', post.last_read(current_user)).count
       - else
         \-
