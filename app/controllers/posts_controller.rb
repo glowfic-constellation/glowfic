@@ -8,7 +8,7 @@ class PostsController < WritableController
   before_filter :build_tags, only: [:new, :edit]
 
   def index
-    @posts = Post.order('tagged_at desc').includes(:board, :user, :last_user, :content_warnings)
+    @posts = Post.no_tests.order('tagged_at desc').includes(:board, :user, :last_user, :content_warnings)
     @posts = @posts.paginate(page: page, per_page: 25)
     @page_title = "Recent Threads"
   end
@@ -17,7 +17,7 @@ class PostsController < WritableController
     posts_started = Post.where(user_id: current_user.id).select(:id).group(:id).map(&:id)
     posts_in = Reply.where(user_id: current_user.id).select(:post_id).group(:post_id).map(&:post_id)
     ids = posts_in + posts_started
-    @posts = Post.where(id: ids.uniq).where('status != ?', Post::STATUS_COMPLETE).where('status != ?', Post::STATUS_ABANDONED).order('tagged_at desc')
+    @posts = Post.no_tests.where(id: ids.uniq).where('status != ?', Post::STATUS_COMPLETE).where('status != ?', Post::STATUS_ABANDONED).order('tagged_at desc')
     @posts = @posts.where('last_user_id != ?', current_user.id).includes(:board, :content_warnings).paginate(page: page, per_page: 25)
     @page_title = "Tags Owed"
     @show_unread = true
@@ -27,7 +27,7 @@ class PostsController < WritableController
     # Anything on this page is guaranteed unread; the opened/unread distinction is for favorites#index
     @started = (params[:started] == 'true') || (params[:started].nil? && current_user.unread_opened)
     @opened_ids = @unread_ids = PostView.where(user_id: current_user.id).select(:post_id).map(&:post_id)
-    @posts = Post.joins("LEFT JOIN post_views ON post_views.post_id = posts.id AND post_views.user_id = #{current_user.id}")
+    @posts = Post.no_tests.joins("LEFT JOIN post_views ON post_views.post_id = posts.id AND post_views.user_id = #{current_user.id}")
     @posts = @posts.joins("LEFT JOIN board_views on board_views.board_id = posts.board_id AND board_views.user_id = #{current_user.id}")
     @posts = @posts.where("post_views.user_id IS NULL OR (date_trunc('second', post_views.read_at) < date_trunc('second', posts.tagged_at) AND post_views.ignored = '0')")
     @posts = @posts.where("board_views.user_id IS NULL OR (date_trunc('second', board_views.read_at) < date_trunc('second', posts.tagged_at) AND board_views.ignored = '0')")
