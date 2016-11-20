@@ -18,8 +18,16 @@
       = stylesheet_link_tag "layouts/#{current_user.layout}"
 
     / Favicons
-    <link rel="shortcut icon" type="image/png" sizes="32x32" href="https://www.glowfic.com/images/favicon-32x32.png?v=3">
-    <link rel="shortcut icon" type="image/png" sizes="16x16" href="https://www.glowfic.com/images/favicon-16x16.png?v=3">
+    %meta{name: "apple-mobile-web-app-title", content: "Glowfic Constellation"}
+    %meta{name: "application-name", content: "Glowfic Constellation"}
+    %meta{name: "msapplication-config", content: asset_path('favicons/browserconfig.xml')}
+    %meta{name: "theme-color", content: "#ffffff"}
+    = favicon_link_tag asset_path('favicons/favicon.ico')
+    = favicon_link_tag asset_path('favicons/favicon-32x32.png'), type: 'image/png', rel: 'icon', sizes: '32x32'
+    = favicon_link_tag asset_path('favicons/favicon-16x16.png'), type: 'image/png', rel: 'icon', sizes: '16x16'
+    = favicon_link_tag asset_path('favicons/apple-touch-icon.png'), type: 'image/png', rel: 'apple-touch-icon', sizes: '180x180'
+    %link{rel: 'mask-icon', href: asset_path('favicons/safari-pinned-tab.svg'), color: '#2b5797'}
+    %link{rel: 'manifest', href: asset_path('favicons/manifest.json')}
 
     = include_gon
   %body
