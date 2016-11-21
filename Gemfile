@@ -51,3 +51,7 @@ group :development, :test do
   gem 'timecop'
   gem 'thin'
 end
+
+group :test do
+  gem "webmock"
+end

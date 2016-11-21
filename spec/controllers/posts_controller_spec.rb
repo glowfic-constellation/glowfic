@@ -33,6 +33,28 @@ RSpec.describe PostsController do
     end
   end
 
+  describe "GET new" do
+    it "requires login" do
+      get :new
+      expect(response).to redirect_to(root_url)
+      expect(flash[:error]).to eq("You must be logged in to view that page.")
+    end
+
+    it "sets relevant fields" do
+      user = create(:user)
+      character = create(:character, user: user)
+      user.update_attributes(active_character: character)
+      user.reload
+      login_as(user)
+
+      get :new
+
+      expect(response.status).to eq(200)
+      expect(assigns(:post)).to be_new_record
+      expect(assigns(:character)).to eq(character)
+    end
+  end
+
   describe "GET show" do
     it "does not require login" do
       post = create(:post)
@@ -73,6 +95,56 @@ RSpec.describe PostsController do
     end
 
     # TODO WAY more tests
+  end
+
+  describe "GET hidden" do
+    it "requires login" do
+      get :hidden
+      expect(response).to redirect_to(root_url)
+      expect(flash[:error]).to eq("You must be logged in to view that page.")
+    end
+
+    it "succeeds with no hidden" do
+      login
+      get :hidden
+      expect(response.status).to eq(200)
+      expect(assigns(:hidden_boardviews)).to be_empty
+      expect(assigns(:hidden_postviews)).to be_empty
+    end
+
+    it "succeeds with board hidden" do
+      user = create(:user)
+      board = create(:board)
+      board.ignore(user)
+      login_as(user)
+      get :hidden
+      expect(response.status).to eq(200)
+      expect(assigns(:hidden_boardviews)).not_to be_empty
+      expect(assigns(:hidden_postviews)).to be_empty
+    end
+
+    it "succeeds with post hidden" do
+      user = create(:user)
+      post = create(:post)
+      post.ignore(user)
+      login_as(user)
+      get :hidden
+      expect(response.status).to eq(200)
+      expect(assigns(:hidden_boardviews)).to be_empty
+      expect(assigns(:hidden_postviews)).not_to be_empty
+    end
+
+    it "succeeds with both hidden" do
+      user = create(:user)
+      post = create(:post)
+      post.ignore(user)
+      post.board.ignore(user)
+      login_as(user)
+      get :hidden
+      expect(response.status).to eq(200)
+      expect(assigns(:hidden_boardviews)).not_to be_empty
+      expect(assigns(:hidden_postviews)).not_to be_empty
+    end
   end
 
   describe "DELETE destroy" do
