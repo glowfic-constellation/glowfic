@@ -79,7 +79,7 @@ class GalleriesController < ApplicationController
   def update
     if @gallery.update_attributes(params[:gallery])
       flash[:success] = "Gallery saved."
-      redirect_to gallery_path(@gallery)
+      redirect_to edit_gallery_path(@gallery)
     else
       flash.now[:error] = {}
       flash.now[:error][:message] = "Gallery could not be saved."
