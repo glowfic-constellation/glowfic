@@ -45,10 +45,10 @@ class PostsController < WritableController
     end
     if params[:commit] == "Mark Read"
       posts.each { |post| post.mark_read(current_user) }
-      flash[:success] = posts.count.to_s + " posts marked as read."
+      flash[:success] = posts.size.to_s + " posts marked as read."
     else
       posts.each { |post| post.ignore(current_user) }
-      flash[:success] = posts.count.to_s + " posts hidden from this page."
+      flash[:success] = posts.size.to_s + " posts hidden from this page."
     end
     redirect_to unread_posts_path
   end

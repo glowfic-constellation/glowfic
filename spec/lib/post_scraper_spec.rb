@@ -36,6 +36,7 @@ RSpec.describe PostScraper do
     scraper = PostScraper.new(url, board.id)
     allow(scraper).to receive(:prompt_for_user) { user }
     allow(scraper).to receive(:set_from_icon) { nil }
+    expect(scraper).to receive(:puts).with("Importing thread 'linear b'")
 
     scraper.scrape
 
@@ -61,6 +62,7 @@ RSpec.describe PostScraper do
     scraper = PostScraper.new(url, board.id)
     allow(scraper).to receive(:prompt_for_user) { user }
     allow(scraper).to receive(:set_from_icon) { nil }
+    expect(scraper).to receive(:puts).with("Importing thread 'linear b'")
 
     scraper.scrape
 
@@ -82,6 +84,8 @@ RSpec.describe PostScraper do
 
     scraper = PostScraper.new(url, board.id)
     allow(STDIN).to receive(:gets).and_return(user.username)
+    expect(scraper).to receive(:puts).with("Importing thread 'linear b'")
+    expect(scraper).to receive(:print).with("User ID or username for wild_pegasus_appeared? ")
 
     scraper.scrape
 

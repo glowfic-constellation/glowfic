@@ -10,18 +10,31 @@ RSpec.describe GalleriesController do
       end
 
       it "successfully loads" do
-        login
+        user = create(:user)
+        login_as(user)
         get :index
         expect(response.status).to eq(200)
+        expect(assigns(:user)).to eq(user)
       end
     end
 
     context "with a user_id" do
       it "does not require login" do
-        skip
+        user = create(:user)
+        get :index, user_id: user.id
+        expect(response.status).to eq(200)
+        expect(assigns(:user)).to eq(user)
       end
 
       it "defaults to current user if user id invalid" do
+        user = create(:user)
+        login_as(user)
+        get :index, user_id: -1
+        expect(response.status).to eq(200)
+        expect(assigns(:user)).to eq(user)
+      end
+
+      it "displays error if user id invalid and logged out" do
         skip
       end
     end
@@ -53,11 +66,15 @@ RSpec.describe GalleriesController do
     context ".json" do
       context "with zero gallery id" do
         it "requires login" do
-          skip
+          skip "how do I handle this"
         end
 
         it "returns galleryless icons" do
-          skip
+          login
+          get :show, id: '0', format: :json
+          expect(response.status).to eq(200)
+          expect(response.json['name']).to eq('Galleryless')
+          expect(response.json['icons']).to be_empty
         end
       end
 
@@ -68,6 +85,15 @@ RSpec.describe GalleriesController do
 
         it "requires you to have access to the gallery" do
           skip
+        end
+
+        it "displays the gallery" do
+          gallery = create(:gallery)
+          login_as(gallery.user)
+          get :show, id: gallery.id, format: :json
+          expect(response.status).to eq(200)
+          expect(response.json['name']).to eq(gallery.name)
+          expect(response.json['icons']).to be_empty
         end
       end
     end
