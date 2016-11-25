@@ -52,11 +52,6 @@ class WritableController < ApplicationController
           else
             self.page = cur_page = @unread.post_page(per)
           end
-          if params[:ru].to_i == 1
-            args = {page: cur_page}
-            args[:anchor] = "reply-#{@unread.id}" if @unread.class == Reply
-            redirect_to post_path(@post, args) and return
-          end
         else
           flash.now[:error] = "You must be logged in to view unread posts."
           self.page = cur_page = 1
