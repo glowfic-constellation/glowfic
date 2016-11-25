@@ -317,6 +317,7 @@ RSpec.describe GalleriesController do
     end
 
     it "supports galleryless" do
+      expect(S3_BUCKET).to receive(:presigned_post).and_return(1)
       login
       get :add, id: 0
       expect(response).to render_template('add')
@@ -325,6 +326,7 @@ RSpec.describe GalleriesController do
     end
 
     it "supports normal gallery" do
+      expect(S3_BUCKET).to receive(:presigned_post).and_return(1)
       gallery = create(:gallery)
       login_as(gallery.user)
       get :add, id: gallery.id
@@ -339,7 +341,7 @@ RSpec.describe GalleriesController do
       get :add, id: gallery.id, type: 'existing'
       expect(response).to render_template('add')
       expect(assigns(:page_title)).to eq("Add Icons")
-      expect(assigns(:s3_direct_post)).not_to be_nil
+      expect(assigns(:s3_direct_post)).to be_nil
     end
 
     it "doesn't support existing view for galleryless" do

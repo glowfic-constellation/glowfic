@@ -1,8 +1,8 @@
 class GalleriesController < ApplicationController
   before_filter :login_required, except: [:index, :show]
   before_filter :find_gallery, only: [:destroy, :edit, :update]
-  before_filter :set_s3_url, only: [:add, :icon]
   before_filter :setup_new_icons, only: [:add, :icon]
+  before_filter :set_s3_url, only: [:add, :icon]
 
   def index
     if params[:user_id].present?
@@ -193,6 +193,8 @@ class GalleriesController < ApplicationController
   end
 
   def set_s3_url
+    return if params[:type] == "existing"
+
     if Rails.env.development? && S3_BUCKET.nil?
       logger.error "S3_BUCKET does not exist; icon upload will FAIL."
       @s3_direct_post = Struct.new(:url, :fields).new('', nil)
