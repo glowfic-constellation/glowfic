@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-ruby '2.1.10'
+ruby '2.2.6'
 
 gem 'audited-activerecord', '~> 3.0'
 gem 'aws-sdk', '~> 2'
@@ -27,6 +27,7 @@ gem 'seed_dump', '0.5.3'
 gem 'select2-rails'
 gem 'tinymce-rails'
 gem 'will_paginate', '~> 3.0.6'
+gem 'test-unit', '~> 3.0'
 
 group :production do
   gem 'puma'
