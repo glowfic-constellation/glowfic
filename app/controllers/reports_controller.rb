@@ -54,7 +54,7 @@ class ReportsController < ApplicationController
       when 'subject'
         'LOWER(subject)'
       when 'continuity'
-        'LOWER(boards.name)'
+        'LOWER(boards.name), tagged_at desc'
       else
         'tagged_at desc'
     end
