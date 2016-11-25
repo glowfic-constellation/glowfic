@@ -294,6 +294,17 @@ RSpec.describe GalleriesController do
   end
 
   describe "GET add" do
+    def handle_s3_bucket
+      # compensates for developers not having S3 buckets set up locally
+      return unless S3_BUCKET.nil?
+      struct = Struct.new(:url) do
+        def presigned_post(args)
+          1
+        end
+      end
+      stub_const("S3_BUCKET", struct.new(''))
+    end
+
     it "requires login" do
       get :add, id: -1
       expect(response).to redirect_to(root_url)
@@ -317,7 +328,7 @@ RSpec.describe GalleriesController do
     end
 
     it "supports galleryless" do
-      expect(S3_BUCKET).to receive(:presigned_post).and_return(1)
+      handle_s3_bucket
       login
       get :add, id: 0
       expect(response).to render_template('add')
@@ -326,7 +337,7 @@ RSpec.describe GalleriesController do
     end
 
     it "supports normal gallery" do
-      expect(S3_BUCKET).to receive(:presigned_post).and_return(1)
+      handle_s3_bucket
       gallery = create(:gallery)
       login_as(gallery.user)
       get :add, id: gallery.id
