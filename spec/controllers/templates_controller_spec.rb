@@ -4,7 +4,7 @@ RSpec.describe TemplatesController do
   describe "GET new" do
     it "requires login" do
       get :new
-      expect(response.status).to eq(302)
+      expect(response).to redirect_to(root_url)
       expect(flash[:error]).to eq("You must be logged in to view that page.")
     end
   end
