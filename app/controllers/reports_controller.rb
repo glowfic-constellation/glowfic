@@ -8,6 +8,8 @@ class ReportsController < ApplicationController
       redirect_to reports_path
     end
 
+    @page_title = params[:id].capitalize + " Report"
+
     if logged_in?
       @opened_posts = PostView.where(user_id: current_user.id).select([:post_id, :read_at, :ignored])
       @board_views = BoardView.where(user_id: current_user.id).select([:board_id, :ignored])
