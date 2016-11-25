@@ -36,7 +36,8 @@ class ReportsController < ApplicationController
   helper_method :ignored?
 
   def posts_for(day)
-    Post.where(tagged_at: day.beginning_of_day .. day.end_of_day).includes(:board, :user, :last_user).order('tagged_at desc')
+
+    Post.where(tagged_at: day.beginning_of_day .. day.end_of_day).includes(:board, :user, :last_user).order(sort)
   end
   helper_method :posts_for
 
@@ -47,4 +48,15 @@ class ReportsController < ApplicationController
     replies.first
   end
   helper_method :linked_for
+
+  def sort
+    @sort ||= case params[:sort]
+      when 'subject'
+        'LOWER(subject)'
+      when 'continuity'
+        'LOWER(boards.name)'
+      else
+        'tagged_at desc'
+    end
+  end
 end

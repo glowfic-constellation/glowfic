@@ -10,8 +10,8 @@
           %th.subber{colspan: 7}= day.strftime("%b %d, %Y")
         %tr
           %th.sub.width-15
-          %th.sub Thread
-          %th.sub Continuity
+          %th.sub= link_to 'Thread', url_for(sort: 'subject')
+          %th.sub= link_to 'Continuity', url_for(sort: 'continuity')
           %th.sub Authors
           %th.sub.width-70 Replies
           %th.sub.width-70 Today
