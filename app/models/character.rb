@@ -13,6 +13,8 @@ class Character < ActiveRecord::Base
   validate :valid_template, :valid_group, :valid_galleries, :valid_default_icon
 
   after_save :update_galleries
+  after_update :delete_view_cache
+  after_destroy :delete_view_cache
 
   attr_accessor :new_template_name, :group_name, :gallery_ids
 
@@ -81,6 +83,13 @@ class Character < ActiveRecord::Base
     CharactersGallery.where(character_id: id, gallery_id: (existing_ids - updated_ids)).destroy_all
     (updated_ids - existing_ids).each do |new_id|
       CharactersGallery.create(character_id: id, gallery_id: new_id)
+    end
+  end
+
+  def delete_view_cache
+    return unless name_changed? || screenname_changed?
+    replies.each do |reply|
+      reply.send(:delete_view_cache)
     end
   end
 end

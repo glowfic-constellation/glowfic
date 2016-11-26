@@ -57,8 +57,16 @@ RSpec.describe UsersController do
   end
 
   describe "GET edit" do
-    it "has more tests" do
-      skip
+    it "requires login" do
+      get :edit, id: -1
+      expect(response).to redirect_to(root_url)
+      expect(flash[:error]).to eq("You must be logged in to view that page.")
+    end
+
+    it "succeeds" do
+      login
+      get :edit, id: -1
+      expect(response.status).to eq(200)
     end
   end
 

@@ -18,6 +18,11 @@ class SessionsController < ApplicationController
     elsif user.password_resets.active.unused.exists?
       flash[:error] = "The password for this account has been reset. Please check your email."
     elsif user.authenticate(params[:password])
+      unless user.salt_uuid.present?
+        user.salt_uuid = SecureRandom.uuid
+        user.crypted = user.send(:crypted_password, params[:password])
+        user.save!
+      end
       flash[:success] = "You are now logged in as #{user.username}. Welcome back!"
       session[:user_id] = user.id
       cookies.permanent.signed[:user_id] = user.id if params[:remember_me].present?

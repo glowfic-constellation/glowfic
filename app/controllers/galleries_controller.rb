@@ -1,18 +1,26 @@
 class GalleriesController < ApplicationController
   before_filter :login_required, except: [:index, :show]
   before_filter :find_gallery, only: [:destroy, :edit, :update]
-  before_filter :set_s3_url, only: [:add, :icon]
   before_filter :setup_new_icons, only: [:add, :icon]
+  before_filter :set_s3_url, only: [:add, :icon]
 
   def index
-    (return if login_required) unless params[:user_id].present?
-    use_javascript('galleries/index')
-    @page_title = "Your Galleries"
-    @user = current_user
     if params[:user_id].present?
-      @user = User.find_by_id(params[:user_id]) || current_user
+      unless @user = User.find_by_id(params[:user_id]) || current_user
+        flash[:error] = 'User could not be found.'
+        redirect_to root_path and return
+      end
+    else
+      return if login_required
+      @user = current_user
+    end
+
+    if @user == current_user
+      @page_title = "Your Galleries"
+    else
       @page_title = @user.username + "'s Galleries"
     end
+    use_javascript('galleries/index')
   end
 
   def new
@@ -23,14 +31,15 @@ class GalleriesController < ApplicationController
   def create
     @gallery = Gallery.new(params[:gallery])
     @gallery.user = current_user
-    if @gallery.save
-      flash[:success] = "Gallery saved successfully."
-      redirect_to gallery_path(@gallery)
-    else
+
+    unless @gallery.save
       flash.now[:error] = "Your gallery could not be saved."
       @page_title = "New Gallery"
-      render :action => :new
+      render :action => :new and return
     end
+
+    flash[:success] = "Gallery saved successfully."
+    redirect_to gallery_path(@gallery)
   end
 
   def add
@@ -77,15 +86,15 @@ class GalleriesController < ApplicationController
   end
 
   def update
-    if @gallery.update_attributes(params[:gallery])
-      flash[:success] = "Gallery saved."
-      redirect_to gallery_path(@gallery)
-    else
+    unless @gallery.update_attributes(params[:gallery])
       flash.now[:error] = {}
       flash.now[:error][:message] = "Gallery could not be saved."
       flash.now[:error][:array] = @gallery.errors.full_messages
-      render action: :edit
+      render action: :edit and return
     end
+
+    flash[:success] = "Gallery saved."
+    redirect_to edit_gallery_path(@gallery)
   end
 
   def icon
@@ -184,6 +193,14 @@ class GalleriesController < ApplicationController
   end
 
   def set_s3_url
+    return if params[:type] == "existing"
+
+    if Rails.env.development? && S3_BUCKET.nil?
+      logger.error "S3_BUCKET does not exist; icon upload will FAIL."
+      @s3_direct_post = Struct.new(:url, :fields).new('', nil)
+      return
+    end
+
     @s3_direct_post = S3_BUCKET.presigned_post(
       key: "users/#{current_user.id}/icons/#{SecureRandom.uuid}_${filename}",
       success_action_status: '201',

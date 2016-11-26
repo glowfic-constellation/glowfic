@@ -104,6 +104,7 @@ function bindFileInput(fileInput) {
         submitButton.prop('disabled', false);
         var response = data.response().jqXHR
         var policyExpired = response.responseText.includes("Invalid according to Policy: Policy expired.");
+        if (!policyExpired) { policyExpired = response.responseText.includes("Idle connections will be closed."); }
         var badFiletype = response.responseText.includes("Policy Condition failed") && response.responseText.includes('"$Content-Type", "image/"');
         var bugsData = {
           'response_status': response.status,

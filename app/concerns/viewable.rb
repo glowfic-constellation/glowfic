@@ -30,6 +30,11 @@ module Viewable
       view_for(user).read_at
     end
 
+    def reload
+      @view = nil
+      super
+    end
+
     private
 
     def view_for(user)

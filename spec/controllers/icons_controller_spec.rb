@@ -4,12 +4,102 @@ RSpec.describe IconsController do
   describe "DELETE delete_multiple" do
     it "requires login" do
       delete :delete_multiple
-      expect(response.status).to eq(302)
+      expect(response).to redirect_to(root_url)
       expect(flash[:error]).to eq("You must be logged in to view that page.")
     end
 
-    it "has more tests" do
-      skip
+    it "requires icons" do
+      login
+      delete :delete_multiple
+      expect(response).to redirect_to(galleries_url)
+      expect(flash[:error]).to eq("No icons selected.")
+    end
+
+    it "requires valid icons" do
+      icon = create(:icon)
+      icon.destroy
+      login
+      delete :delete_multiple, marked_ids: [0, '0', 'abc', -1, '-1', icon.id]
+      expect(response).to redirect_to(galleries_url)
+      expect(flash[:error]).to eq("No icons selected.")
+    end
+
+    context "removing icons from a gallery" do
+      let(:user) { create(:user) }
+      before(:each) { login_as(user) }
+
+      it "requires gallery" do
+        icon = create(:icon, user: user)
+        delete :delete_multiple, marked_ids: [icon.id], gallery_delete: true
+        expect(response).to redirect_to(galleries_url)
+        expect(flash[:error]).to eq("Gallery could not be found.")
+      end
+
+      it "requires your gallery" do
+        icon = create(:icon, user: user)
+        gallery = create(:gallery)
+        delete :delete_multiple, marked_ids: [icon.id], gallery_id: gallery.id, gallery_delete: true
+        expect(response).to redirect_to(galleries_url)
+        expect(flash[:error]).to eq("That is not your gallery.")
+      end
+
+      it "skips other people's icons" do
+        icon = create(:icon)
+        gallery = create(:gallery, user: user)
+        gallery.icons << icon
+        icon.reload
+        expect(icon.galleries.count).to eq(1)
+        delete :delete_multiple, marked_ids: [icon.id], gallery_id: gallery.id, gallery_delete: true
+        icon.reload
+        expect(icon.galleries.count).to eq(1)
+      end
+
+      it "removes int ids from gallery" do
+        icon = create(:icon, user: user)
+        gallery = create(:gallery, user: user)
+        gallery.icons << icon
+        expect(icon.galleries.count).to eq(1)
+        delete :delete_multiple, marked_ids: [icon.id], gallery_id: gallery.id, gallery_delete: true
+        expect(icon.galleries.count).to eq(0)
+        expect(response).to redirect_to(gallery_url(gallery))
+        expect(flash[:success]).to eq("Icons removed from gallery.")
+      end
+
+      it "removes string ids from gallery" do
+        icon = create(:icon, user: user)
+        gallery = create(:gallery, user: user)
+        gallery.icons << icon
+        expect(icon.galleries.count).to eq(1)
+        delete :delete_multiple, marked_ids: [icon.id.to_s], gallery_id: gallery.id, gallery_delete: true
+        expect(icon.galleries.count).to eq(0)
+        expect(response).to redirect_to(gallery_url(gallery))
+        expect(flash[:success]).to eq("Icons removed from gallery.")
+      end
+    end
+
+    context "deleting icons from the site" do
+      let(:user) { create(:user) }
+      before(:each) { login_as(user) }
+
+      it "skips other people's icons" do
+        icon = create(:icon)
+        delete :delete_multiple, marked_ids: [icon.id]
+        icon.reload
+      end
+
+      it "removes int ids from gallery" do
+        icon = create(:icon, user: user)
+        delete :delete_multiple, marked_ids: [icon.id]
+        expect(Icon.find_by_id(icon.id)).to be_nil
+      end
+
+      it "removes string ids from gallery" do
+        icon = create(:icon, user: user)
+        icon2 = create(:icon, user: user)
+        delete :delete_multiple, marked_ids: [icon.id.to_s, icon2.id.to_s]
+        expect(Icon.find_by_id(icon.id)).to be_nil
+        expect(Icon.find_by_id(icon2.id)).to be_nil
+      end
     end
   end
 

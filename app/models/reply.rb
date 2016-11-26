@@ -4,12 +4,14 @@ class Reply < ActiveRecord::Base
 
   belongs_to :post, inverse_of: :replies
   attr_accessible :post, :post_id, :thread_id
-  validates_presence_of :post
+  validates_presence_of :post, :user
+  validate :author_can_write_in_post, on: :create
   audited associated_with: :post
 
   after_create :notify_other_authors, :destroy_draft, :update_active_char, :update_post
+  before_update :delete_view_cache
   after_update :update_post
-  after_destroy :update_last_reply
+  after_destroy :update_last_reply, :delete_view_cache
 
   attr_accessor :skip_notify, :skip_post_update, :is_import
 
@@ -39,6 +41,15 @@ class Reply < ActiveRecord::Base
     post.tagged_at = updated_at
     post.status = Post::STATUS_ACTIVE if post.on_hiatus?
     post.save
+  end
+
+  def view_cache_key
+    ActiveSupport::Cache.expand_cache_key(self, :views)
+  end
+
+  def delete_view_cache
+    # don't rely on GC in Redis to get rid of these keys
+    Rails.cache.delete(view_cache_key)
   end
 
   def update_active_char
@@ -78,5 +89,12 @@ class Reply < ActiveRecord::Base
 
   def previous_reply
     @prev ||= post.replies.where('id < ?', id).order('id desc').first
+  end
+
+  def author_can_write_in_post
+    return unless post && user
+    errors.add(:user, 'is not a valid continuity author') unless user.writes_in?(post.board)
+    return unless post.authors_locked?
+    errors.add(:post, 'is not a valid post author') unless post.author_ids.include?(user_id)
   end
 end

@@ -8,8 +8,8 @@ class PostScraper < Object
     'peterxy' => 'Pedro',
     'peterverse' => 'Pedro',
     'curiousdiscoverer' => 'CuriousDiscoverer',
+    'aestrix' => 'Aestrix',
     # TODO Maggie
-    # TODO Aestrix
     # More???
   }
 
@@ -101,9 +101,9 @@ class PostScraper < Object
   end
 
   def finalize_post_data
-    @post.last_user_id = @reply.user_id
-    @post.last_reply_id = @reply.id
-    @post.tagged_at = @reply.created_at
+    @post.last_user_id = @reply.try(:user_id) || @post.user_id
+    @post.last_reply_id = @reply.try(:id)
+    @post.tagged_at = @reply.try(:created_at) || @post.created_at
     @post.save!
   end
 

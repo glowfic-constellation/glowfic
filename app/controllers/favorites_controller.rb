@@ -24,7 +24,7 @@ class FavoritesController < ApplicationController
 
     @posts = @posts.where(where_calc.where_values.reduce(:or))
     @posts = @posts.includes(:board, :user, :last_user, :content_warnings)
-    @posts = @posts.order('tagged_at desc')
+    @posts = @posts.no_tests.order('tagged_at desc')
     @posts = @posts.paginate(per_page: 25, page: page)
     opened_posts = PostView.where(user_id: current_user.id).select([:post_id, :read_at])
     @opened_ids = opened_posts.map(&:post_id)
@@ -32,6 +32,7 @@ class FavoritesController < ApplicationController
       post = @posts.detect { |p| p.id == view.post_id }
       post && view.read_at < post.tagged_at
     end.map(&:post_id)
+    @page_title = "Favorites"
   end
 
   def create

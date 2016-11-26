@@ -2,17 +2,33 @@
 %html
   %head
     %title= (Rails.env.development? ? 'DEV: ' : '') + (@page_title ? @page_title + " | Glowfic Constellation" : "Glowfic Constellation")
-    %meta{ :charset => "utf-8" }
-    <meta name="viewport" content="width=device-width">
+
+    / Meta
+    %meta{charset: 'utf-8'}
+    %meta{name: 'viewport', content: 'width=device-width'}
+    = csrf_meta_tag
+
+    / SEO canonical
     - if @meta_canonical.present?
-      %link{:rel => 'canonical', :href => @meta_canonical}
+      %link{rel: 'canonical', href: @meta_canonical}
+
+    / Stylesheets
     = stylesheet_link_tag 'application'
     - if current_user.try(:layout).present?
       = stylesheet_link_tag "layouts/#{current_user.layout}"
-    %link{ :href => "/stylesheets/chosen.css", :rel => "stylesheet", :type => "text/css", :media => "screen" }
-    <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
-    = csrf_meta_tag
+
+    / Favicons
+    %meta{name: "apple-mobile-web-app-title", content: "Glowfic Constellation"}
+    %meta{name: "application-name", content: "Glowfic Constellation"}
+    %meta{name: "msapplication-config", content: asset_path('favicons/browserconfig.xml')}
+    %meta{name: "theme-color", content: "#ffffff"}
+    = favicon_link_tag asset_path('favicons/favicon.ico')
+    = favicon_link_tag asset_path('favicons/favicon-32x32.png'), type: 'image/png', rel: 'icon', sizes: '32x32'
+    = favicon_link_tag asset_path('favicons/favicon-16x16.png'), type: 'image/png', rel: 'icon', sizes: '16x16'
+    = favicon_link_tag asset_path('favicons/apple-touch-icon.png'), type: 'image/png', rel: 'apple-touch-icon', sizes: '180x180'
+    %link{rel: 'mask-icon', href: asset_path('favicons/safari-pinned-tab.svg'), color: '#2b5797'}
+    %link{rel: 'manifest', href: asset_path('favicons/manifest.json')}
+
     = include_gon
   %body
     #header
@@ -83,7 +99,10 @@
               %li= error
       - flash.delete(:error)
     - flash.keys.each do |key|
-      .flash{:class=>key}= flash[key]
+      - if key == :pass
+        .flash{class: 'error'}= flash[key].html_safe
+      - else
+        .flash{:class=>key}= flash[key]
     - if content_for?(:flashes)
       = content_for :flashes
     - if logged_in?

@@ -5,9 +5,9 @@ Rails.application.routes.draw do
   match '/login' => 'sessions#new', :as => :login, :via => :get
   match '/login' => 'sessions#create', :as => :login, :via => :post
   match '/logout' => 'sessions#destroy', :as => :logout, :via => :delete
+  match '/users/:id/templates' => redirect('/users/%{id}/characters'), via: :get
   resources :users do
     resources :characters, only: :index
-    resources :templates, only: :index
     resources :galleries, only: [:index, :show]
     resources :boards, only: :index
     collection do

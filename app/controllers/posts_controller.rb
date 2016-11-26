@@ -8,7 +8,7 @@ class PostsController < WritableController
   before_filter :build_tags, only: [:new, :edit]
 
   def index
-    @posts = Post.order('tagged_at desc').includes(:board, :user, :last_user, :content_warnings).where('board_id != ?', Board::ID_SITETESTING)
+    @posts = Post.no_tests.order('tagged_at desc').includes(:board, :user, :last_user, :content_warnings)
     @posts = @posts.paginate(page: page, per_page: 25)
     @page_title = "Recent Threads"
   end
@@ -17,7 +17,7 @@ class PostsController < WritableController
     posts_started = Post.where(user_id: current_user.id).select(:id).group(:id).map(&:id)
     posts_in = Reply.where(user_id: current_user.id).select(:post_id).group(:post_id).map(&:post_id)
     ids = posts_in + posts_started
-    @posts = Post.where(id: ids.uniq).where("board_id != ?", Board::ID_SITETESTING).where('status != ?', Post::STATUS_COMPLETE).where('status != ?', Post::STATUS_ABANDONED).order('tagged_at desc')
+    @posts = Post.no_tests.where(id: ids.uniq).where('status != ?', Post::STATUS_COMPLETE).where('status != ?', Post::STATUS_ABANDONED).order('tagged_at desc')
     @posts = @posts.where('last_user_id != ?', current_user.id).includes(:board, :content_warnings).paginate(page: page, per_page: 25)
     @page_title = "Tags Owed"
     @show_unread = true
@@ -25,29 +25,30 @@ class PostsController < WritableController
 
   def unread
     # Anything on this page is guaranteed unread; the opened/unread distinction is for favorites#index
+    @started = (params[:started] == 'true') || (params[:started].nil? && current_user.unread_opened)
     @opened_ids = @unread_ids = PostView.where(user_id: current_user.id).select(:post_id).map(&:post_id)
-    @posts = Post.joins("LEFT JOIN post_views ON post_views.post_id = posts.id AND post_views.user_id = #{current_user.id}")
+    @posts = Post.no_tests.joins("LEFT JOIN post_views ON post_views.post_id = posts.id AND post_views.user_id = #{current_user.id}")
     @posts = @posts.joins("LEFT JOIN board_views on board_views.board_id = posts.board_id AND board_views.user_id = #{current_user.id}")
     @posts = @posts.where("post_views.user_id IS NULL OR (date_trunc('second', post_views.read_at) < date_trunc('second', posts.tagged_at) AND post_views.ignored = '0')")
     @posts = @posts.where("board_views.user_id IS NULL OR (date_trunc('second', board_views.read_at) < date_trunc('second', posts.tagged_at) AND board_views.ignored = '0')")
     @posts = @posts.order('tagged_at desc').includes(:board, :user, :last_user, :content_warnings)
     @posts = @posts.select { |p| p.visible_to?(current_user) }
-    @posts = @posts.select { |p|  @opened_ids.include?(p.id) } if params[:started] == 'true'
+    @posts = @posts.select { |p|  @opened_ids.include?(p.id) } if @started
     @posts = @posts.paginate(per_page: 25, page: page)
-    @page_title = params[:started] == 'true' ? "Opened Threads" : "Unread Threads"
+    @page_title = @started ? "Opened Threads" : "Unread Threads"
   end
 
-  def mark    
+  def mark
     posts = Post.where(id: params[:marked_ids])
     posts.select! do |post|
       post.visible_to?(current_user)
     end
     if params[:commit] == "Mark Read"
       posts.each { |post| post.mark_read(current_user) }
-      flash[:success] = posts.count.to_s + " posts marked as read."
+      flash[:success] = posts.size.to_s + " posts marked as read."
     else
       posts.each { |post| post.ignore(current_user) }
-      flash[:success] = posts.count.to_s + " posts hidden from this page."
+      flash[:success] = posts.size.to_s + " posts hidden from this page."
     end
     redirect_to unread_posts_path
   end
@@ -120,7 +121,7 @@ class PostsController < WritableController
 
   def preview(method, path)
     build_template_groups
-    
+
     @written = Post.new(params[:post])
     @post = @written
     @written.user = current_user
@@ -144,9 +145,11 @@ class PostsController < WritableController
 
   def update
     mark_unread and return if params[:unread].present?
-    change_status and return if params[:status].present?
 
     require_permission
+
+    change_status and return if params[:status].present?
+    change_authors_locked and return if params[:authors_locked].present?
     preview(:put, post_path(params[:id])) and return if params[:button_preview].present?
 
     gon.original_content = params[:post][:content] if params[:post]
@@ -180,7 +183,7 @@ class PostsController < WritableController
           flash[:error] = "You have marked this continuity read more recently than that reply was written; it will not appear in your Unread posts."
           Message.create(recipient_id: 1, sender_id: 1, subject: 'Unread at failure', message: "#{current_user.username} tried to mark post #{@post.id} unread at reply #{reply.id}")
         else
-          @post.mark_read(current_user, reply.created_at, true)
+          @post.mark_read(current_user, reply.created_at - 1.second, true)
         end
       end
       return redirect_to unread_posts_path
@@ -192,11 +195,6 @@ class PostsController < WritableController
   end
 
   def change_status
-    unless @post.metadata_editable_by?(current_user)
-      flash[:error] = "You do not have permission to modify this post."
-      redirect_to post_path(@post)
-    end
-
     begin
       new_status = Post.const_get('STATUS_'+params[:status].upcase)
     rescue NameError
@@ -206,6 +204,13 @@ class PostsController < WritableController
       @post.save
       flash[:success] = "Post has been marked #{params[:status]}."
     end
+    redirect_to post_path(@post)
+  end
+
+  def change_authors_locked
+    @post.authors_locked = (params[:authors_locked] == 'true')
+    @post.save
+    flash[:success] = "Post has been #{@post.authors_locked? ? 'locked to' : 'unlocked from'} current authors."
     redirect_to post_path(@post)
   end
 

@@ -62,7 +62,7 @@ RSpec.describe SessionsController do
       expect(controller.send(:logged_in?)).not_to be_true
     end
 
-    it "logs in successfully" do
+    it "logs in successfully with salt_uuid" do
       password = 'password'
       user = create(:user, password: password)
       expect(session[:user_id]).to be_nil
@@ -74,6 +74,26 @@ RSpec.describe SessionsController do
       expect(controller.send(:logged_in?)).to be_true
       expect(flash[:success]).to eq("You are now logged in as #{user.username}. Welcome back!")
       expect(cookies.signed[:user_id]).to be_nil
+    end
+
+    it "logs in successfully without salt_uuid and sets it" do
+      password = 'password'
+      user = create(:user)
+      user.update_attribute(:salt_uuid, nil)
+      user.update_attribute(:crypted, user.send(:old_crypted_password, password))
+      user.reload
+      expect(user.salt_uuid).to be_nil
+      expect(session[:user_id]).to be_nil
+      expect(controller.send(:logged_in?)).not_to be_true
+
+      post :create, username: user.username, password: password
+
+      expect(session[:user_id]).to eq(user.id)
+      expect(controller.send(:logged_in?)).to be_true
+      expect(flash[:success]).to eq("You are now logged in as #{user.username}. Welcome back!")
+      expect(cookies.signed[:user_id]).to be_nil
+      expect(user.reload.salt_uuid).not_to be_nil
+      expect(user.authenticate(password)).to be_true
     end
 
     it "creates permanent cookies when remember me is provided" do
