@@ -6,12 +6,7 @@ class BoardsController < ApplicationController
 
   def index
     @page_title = "Continuities"
-    @boards = Board.all
-    @boards.sort_by! { |b| b.name.downcase }
-    if sandboxes = Board.where(name: 'Sandboxes').first
-      @boards.delete(sandboxes)
-      @boards.prepend(sandboxes)
-    end
+    @boards = Board.order('pinned DESC, LOWER(name)')
   end
 
   def new
