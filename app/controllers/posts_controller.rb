@@ -38,7 +38,7 @@ class PostsController < WritableController
     @page_title = @started ? "Opened Threads" : "Unread Threads"
   end
 
-  def mark    
+  def mark
     posts = Post.where(id: params[:marked_ids])
     posts.select! do |post|
       post.visible_to?(current_user)
@@ -121,7 +121,7 @@ class PostsController < WritableController
 
   def preview(method, path)
     build_template_groups
-    
+
     @written = Post.new(params[:post])
     @post = @written
     @written.user = current_user
@@ -145,9 +145,11 @@ class PostsController < WritableController
 
   def update
     mark_unread and return if params[:unread].present?
-    change_status and return if params[:status].present?
 
     require_permission
+
+    change_status and return if params[:status].present?
+    change_authors_locked and return if params[:authors_locked].present?
     preview(:put, post_path(params[:id])) and return if params[:button_preview].present?
 
     gon.original_content = params[:post][:content] if params[:post]
@@ -193,11 +195,6 @@ class PostsController < WritableController
   end
 
   def change_status
-    unless @post.metadata_editable_by?(current_user)
-      flash[:error] = "You do not have permission to modify this post."
-      redirect_to post_path(@post)
-    end
-
     begin
       new_status = Post.const_get('STATUS_'+params[:status].upcase)
     rescue NameError
@@ -207,6 +204,13 @@ class PostsController < WritableController
       @post.save
       flash[:success] = "Post has been marked #{params[:status]}."
     end
+    redirect_to post_path(@post)
+  end
+
+  def change_authors_locked
+    @post.authors_locked = (params[:authors_locked] == 'true')
+    @post.save
+    flash[:success] = "Post has been #{@post.authors_locked? ? 'locked to' : 'unlocked from'} current authors."
     redirect_to post_path(@post)
   end
 

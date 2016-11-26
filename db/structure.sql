@@ -670,7 +670,8 @@ CREATE TABLE posts (
     last_user_id integer,
     last_reply_id integer,
     edited_at timestamp without time zone,
-    tagged_at timestamp without time zone
+    tagged_at timestamp without time zone,
+    authors_locked boolean DEFAULT false
 );
 
 
@@ -1705,6 +1706,8 @@ INSERT INTO schema_migrations (version) VALUES ('20160906223130');
 INSERT INTO schema_migrations (version) VALUES ('20160925032329');
 
 INSERT INTO schema_migrations (version) VALUES ('20161008224853');
+
+INSERT INTO schema_migrations (version) VALUES ('20161024185615');
 
 INSERT INTO schema_migrations (version) VALUES ('20161107014948');
 
