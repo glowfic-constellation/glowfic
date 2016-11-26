@@ -183,7 +183,8 @@ CREATE TABLE boards (
     creator_id integer NOT NULL,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
-    description text
+    description text,
+    pinned boolean DEFAULT false
 );
 
 
@@ -284,7 +285,8 @@ CREATE TABLE characters (
     updated_at timestamp without time zone NOT NULL,
     pb character varying(255),
     character_group_id integer,
-    setting character varying(255)
+    setting character varying(255),
+    description text
 );
 
 
@@ -814,7 +816,8 @@ CREATE TABLE templates (
     user_id integer NOT NULL,
     name character varying(255),
     created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    updated_at timestamp without time zone NOT NULL,
+    description text
 );
 
 
@@ -859,7 +862,9 @@ CREATE TABLE users (
     moiety_name character varying(255),
     default_view character varying(255),
     default_editor character varying(255) DEFAULT 'rtf'::character varying,
-    time_display character varying(255) DEFAULT '%b %d, %Y %l:%M %p'::character varying
+    time_display character varying(255) DEFAULT '%b %d, %Y %l:%M %p'::character varying,
+    salt_uuid character varying(255),
+    unread_opened boolean DEFAULT false
 );
 
 
@@ -1254,6 +1259,27 @@ CREATE INDEX associated_index ON audits USING btree (associated_id, associated_t
 --
 
 CREATE INDEX auditable_index ON audits USING btree (auditable_id, auditable_type);
+
+
+--
+-- Name: idx_fts_post_content; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX idx_fts_post_content ON posts USING gin (to_tsvector('english'::regconfig, COALESCE(content, ''::text)));
+
+
+--
+-- Name: idx_fts_post_subject; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX idx_fts_post_subject ON posts USING gin (to_tsvector('english'::regconfig, COALESCE((subject)::text, ''::text)));
+
+
+--
+-- Name: idx_fts_reply_content; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX idx_fts_reply_content ON replies USING gin (to_tsvector('english'::regconfig, COALESCE(content, ''::text)));
 
 
 --
@@ -1675,3 +1701,13 @@ INSERT INTO schema_migrations (version) VALUES ('20160813025151');
 INSERT INTO schema_migrations (version) VALUES ('20160827161416');
 
 INSERT INTO schema_migrations (version) VALUES ('20160906223130');
+
+INSERT INTO schema_migrations (version) VALUES ('20160925032329');
+
+INSERT INTO schema_migrations (version) VALUES ('20161008224853');
+
+INSERT INTO schema_migrations (version) VALUES ('20161107014948');
+
+INSERT INTO schema_migrations (version) VALUES ('20161110055637');
+
+INSERT INTO schema_migrations (version) VALUES ('20161126195558');
