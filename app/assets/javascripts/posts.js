@@ -294,7 +294,7 @@ getAndSetCharacterData = function(characterId) {
     return // Don't need to load data from server (TODO combine with below?)
   }
 
-  $.post(gon.character_path, {'character_id':characterId}, function (resp) {
+  $.get(gon.character_path + '/' + characterId, {}, function (resp) {
     // Display the correct name/screenname fields
     $("#post-editor #post-author-spacer").hide();
     $("#post-editor .post-character").show().html(resp['name']);
@@ -327,7 +327,7 @@ getAndSetCharacterData = function(characterId) {
     bindGallery();
     bindIcon();
     setIcon(resp['default']['id'], resp['default']['url'], resp['default']['keyword'], resp['default']['keyword']);
-  });
+  }, 'json');
 };
 
 setIconFromId = function(id, img) {
@@ -373,5 +373,5 @@ setSections = function() {
       $("#post_section_id").val("");
       $("#section").hide();
     }
-  });
+  }, 'json');
 };

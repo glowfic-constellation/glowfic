@@ -44,6 +44,20 @@
         = image_tag '/images/chart_bar.png'
         View Stats
     - if logged_in?
+      = link_to post_path(@post, unread: true), method: :put do
+        %div
+          = image_tag '/images/eye.png', class: 'vmid', style: 'margin-bottom: 3px;'
+          Mark Unread
+      - if fav = Favorite.between(current_user, @post)
+        = link_to favorite_path(fav), method: :delete do
+          %div
+            = image_tag '/images/star_delete.png', class: 'vmid', style: 'margin-bottom: 3px;'
+            Unfavorite
+      - else
+        = link_to favorites_path(post_id: @post.id), method: :post do
+          %div
+            = image_tag '/images/star_add.png', class: 'vmid', style: 'margin-bottom: 3px;'
+            Favorite
       - if @post.metadata_editable_by?(current_user)
         - unless @post.completed?
           = link_to post_path(@post, status: 'complete'), method: :put do
@@ -65,10 +79,16 @@
             %div
               = image_tag '/images/book_grey.png'
               Mark Abandoned
-      = link_to post_path(@post, unread: true), method: :put do
-        %div
-          = image_tag '/images/eye.png', class: 'vmid', style: 'margin-bottom: 3px;'
-          Mark Unread
+        - if @post.authors_locked?
+          = link_to post_path(@post, authors_locked: 'false'), method: :put do
+            %div
+              = image_tag '/images/lock_open.png'
+              Unlock Authors
+        - else
+          = link_to post_path(@post, authors_locked: 'true'), method: :put do
+            %div
+              = image_tag '/images/lock.png'
+              Lock Post to Authors
       / TODO need more dynos before I can create this feature
       /= link_to users_path do
       /  %div
@@ -98,7 +118,7 @@
       = render partial: 'replies/single', locals: {reply: @post}
 - if @replies.present?
   = render partial: 'posts/paginator', locals: { paginated: @replies, path: :post_path }
-= render partial: 'replies/single', collection: @replies
+= render partial: 'replies/single', collection: @replies, as: :reply, cache: !logged_in? # don't need uncached: @unread for logged out
 - if @post.completed? && (@replies.empty? || (@replies.last.id == @post.replies.order('id desc').first.id))
   .post-ender Here Ends This Thread
   - if @prev_post || @next_post
@@ -120,7 +140,7 @@
 - if logged_in? && !@post.completed? && current_user.writes_in?(@post.board)
   - if @post.authors.include?(current_user)
     = render partial: 'posts/write_reply', locals: { reply: @reply, url: replies_path, method: :post }
-  - else
+  - elsif !@post.authors_locked?
     .post-expander
       .info + Join Thread
       .hidden

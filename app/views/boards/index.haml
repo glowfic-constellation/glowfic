@@ -11,7 +11,7 @@
       %th.sub Authors
       %th.sub Last Updated
   %tbody
-    - Board.all.each do |board|
+    - @boards.each do |board|
       %tr
         - klass = cycle('even','odd')
         %td.padding-10.board-title{class: klass}= link_to board.name, board_path(board)

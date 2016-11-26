@@ -6,17 +6,17 @@
 #header #header-right { overflow: hidden; }
 #header #logo { text-align: right; background-color: #3f7055; padding: 0.5em; overflow: hidden; }
 #header #logo img { padding: 0.5em 0.5em 0 0; }
-#header #nav-top { padding: 0.5em; background-color: #3e384f; padding-left: 1em; padding-right: 1em; overflow: hidden; }
+#header #nav-top { padding: 0.5em; background-color: #3e384f; padding-right: 1em; overflow: hidden; }
 #header #nav-top button, #header #nav-top .button { color: #444444; font-size: 13px; margin-right: 10px; }
 #header #nav-top input { margin: 0px 0px 0px 10px; }
 #header #nav-top #remember_me { vertical-align: middle; }
-#header ul { font-size: 16px; padding: 0; text-align:left; padding-right: 0.5em; display: inline; vertical-align: middle; }
+#header #header-logout { margin-left: 1em; }
+#header ul { font-size: 16px; padding: 0; text-align:left; margin-right: 0.5em; display: inline; vertical-align: middle; }
 #header li { display: inline; padding: 0; white-space: nowrap; }
-#header li { margin-right: 1em; }
+#header li { margin-left: 1em; }
 #header li a, #header a { color: #FEFEFE; font-weight: bold; font-size: 16px; }
 #header li a:hover { color: #8B8687; }
-#header #nav-bottom { color: #101010; text-align: left; padding: 0.5em 1em; background-color: #B9B6AD; }
-#header #nav-bottom ul { margin-left: 1em; }
+#header #nav-bottom { color: #101010; text-align: left; padding: 0.5em 0; background-color: #B9B6AD; }
 #header #nav-bottom a { font-weight: normal; }
 #header #header-collaspe { display: none; }
 
@@ -111,7 +111,7 @@
 .view-button .icon-view { width: 15px; height: 15px; display: inline; margin: 0px; padding: 0px; top: 2px; position: relative; }
 
 /* Not yet deserving of its own CSS file */
-#message_form textarea, .edit_board textarea, .new_board textarea { height: 100px; }
+#message_form textarea, .edit_board textarea, .new_board textarea, .new_template textarea, .edit_template textarea { height: 100px; }
 #stats ul { margin-top: 0px; margin-bottom: 0px; padding-left: 15px; }
 .select2-container { margin: 3px 0px; color: #333; }
 .select2, .select2-dropdown { font-size: 13px !important; }
@@ -122,3 +122,4 @@ input.checkbox { height: 12px; margin: 0px; vertical-align: middle; } /* Keeps u
 #signup th.sub { width: 90px; }
 #content table.form-table input[type='checkbox'] { margin: 0 1px; height: 18px; width: 18px; vertical-align: middle; }
 td.continuity-spacer { height: 20px; }
+.post-ignored { opacity: 0.3; }

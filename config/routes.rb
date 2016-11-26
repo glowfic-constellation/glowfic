@@ -5,15 +5,14 @@ Rails.application.routes.draw do
   match '/login' => 'sessions#new', :as => :login, :via => :get
   match '/login' => 'sessions#create', :as => :login, :via => :post
   match '/logout' => 'sessions#destroy', :as => :logout, :via => :delete
+  match '/users/:id/templates' => redirect('/users/%{id}/characters'), via: :get
   resources :users do
     resources :characters, only: :index
-    resources :templates, only: :index
     resources :galleries, only: [:index, :show]
     collection do
       post :username
     end
     member do
-      post :character
       put :password
     end
   end
@@ -25,7 +24,7 @@ Rails.application.routes.draw do
   end
 
   # Characters
-  resources :templates
+  resources :templates, except: :index
   resources :characters do
     member do
       post :icon
@@ -79,4 +78,6 @@ Rails.application.routes.draw do
   # Miscellaneous
   resources :reports, only: [:index, :show]
   resources :bugs, only: :create
+  resources :favorites, only: [:index, :create, :destroy]
+  match '/contribute' => 'contribute#index', as: :contribute, via: :get
 end

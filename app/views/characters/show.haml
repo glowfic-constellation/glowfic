@@ -7,11 +7,6 @@
     = link_to "#{@character.user.username}'s Characters", user_characters_path(@character.user)
   - if @character.template
     &raquo;
-    - if @character.user_id == current_user.try(:id)
-      = link_to "Templates", templates_path
-    - else
-      = link_to "#{@character.user.username}'s Templates", user_templates_path(@character.user)
-    &raquo;
     = link_to @character.template.name, template_path(@character.template)
   &raquo;
   %b= @character.name
@@ -36,6 +31,10 @@
     %br
     = precede 'Facecast: ' do
       %span.character-pb= @character.pb
+  - if @character.setting
+    %br
+    = precede 'Setting: ' do
+      %span.character-setting= @character.setting
   - if logged_in? && current_user.id == @character.user_id
     %br
     = link_to 'Edit character', edit_character_path(@character), class: 'character-edit'

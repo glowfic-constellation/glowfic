@@ -39,9 +39,17 @@ class CharactersController < ApplicationController
   end
 
   def show
-    @page_title = @character.name
-    @posts = @character.recent_posts(25, page).includes(:board, :user, :last_user, :content_warnings)
-    use_javascript('characters/show') if @character.user_id == current_user.try(:id)
+    respond_to do |format|
+      format.json do
+        render json: CharacterPresenter.new(@character)
+      end
+      format.html do
+        @page_title = @character.name
+        @posts = @character.recent_posts(25, page).includes(:board, :user, :last_user, :content_warnings)
+        use_javascript('characters/show') if @character.user_id == current_user.try(:id)
+        use_javascript('galleries/index') if @character.galleries.ordered.present?
+      end
+    end
   end
 
   def edit
@@ -70,7 +78,7 @@ class CharactersController < ApplicationController
 
   def icon
     icon = Icon.find_by_id(params[:icon_id])
-    @character.update_attributes(default_icon: icon) if icon
+    @character.update_attributes(default_icon: icon) if icon && icon.user_id == current_user.id
     render :json => {}
   end
 

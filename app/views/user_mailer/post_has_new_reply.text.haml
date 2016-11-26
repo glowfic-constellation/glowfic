@@ -1,2 +1,2 @@
 #{@subject}. See it here:
-= link_to reply_url(@reply, host: 'vast-journey-9935.herokuapp.com'), reply_url(@reply, host: 'vast-journey-9935.herokuapp.com')
+= reply_url(@reply, host: ENV['DOMAIN_NAME'], protocol: 'https')

@@ -151,33 +151,95 @@ RSpec.describe CharactersController do
   end
 
   describe "GET show" do
-    it "requires valid character" do
-      get :show, id: -1
-      expect(response).to redirect_to(characters_url)
-      expect(flash[:error]).to eq("Character could not be found.")
+    context "html" do
+      it "requires valid character" do
+        get :show, id: -1
+        expect(response).to redirect_to(characters_url)
+        expect(flash[:error]).to eq("Character could not be found.")
+      end
+
+      it "should succeed when logged out" do
+        character = create(:character)
+        get :show, id: character.id
+        expect(response.status).to eq(200)
+      end
+
+      it "should succeed when logged in" do
+        character = create(:character)
+        login
+        get :show, id: character.id
+        expect(response.status).to eq(200)
+      end
+
+      it "should set correct variables" do
+        character = create(:character)
+        posts = 26.times.collect do create(:post, character: character, user: character.user) end
+        get :show, id: character.id
+        expect(response.status).to eq(200)
+        expect(assigns(:page_title)).to eq(character.name)
+        expect(assigns(:posts).size).to eq(25)
+        expect(assigns(:posts)).to match_array(Post.where(character_id: character.id).order('tagged_at desc').limit(25))
+      end
     end
 
-    it "should succeed when logged out" do
-      character = create(:character)
-      get :show, id: character.id
-      expect(response.status).to eq(200)
-    end
+    context "json" do
+      it "requires valid character" do
+        get :show, id: -1, format: :json
+        expect(response).to redirect_to(characters_url)
+        expect(flash[:error]).to eq("Character could not be found.")
+      end
 
-    it "should succeed when logged in" do
-      character = create(:character)
-      login
-      get :show, id: character.id
-      expect(response.status).to eq(200)
-    end
+      it "should succeed when logged out" do
+        character = create(:character)
+        get :show, id: character.id, format: :json
+        expect(response.status).to eq(200)
+        expect(response.json['name']).to eq(character.name)
+      end
 
-    it "should set correct variables" do
-      character = create(:character)
-      posts = 26.times.collect do create(:post, character: character, user: character.user) end
-      get :show, id: character.id
-      expect(response.status).to eq(200)
-      expect(assigns(:page_title)).to eq(character.name)
-      expect(assigns(:posts).size).to eq(25)
-      expect(assigns(:posts)).to match_array(Post.where(character_id: character.id).order('tagged_at desc').limit(25))
+      it "should succeed when logged in" do
+        character = create(:character)
+        login
+        get :show, id: character.id, format: :json
+        expect(response.status).to eq(200)
+        expect(response.json['name']).to eq(character.name)
+      end
+
+      it "has galleries when present" do
+        character = create(:character)
+        character.galleries << create(:gallery, user: character.user, icon_count: 2)
+        character.galleries << create(:gallery, user: character.user, icon_count: 1)
+        get :show, id: character.id, format: :json
+        expect(response.status).to eq(200)
+        expect(response.json['galleries'].size).to eq(2)
+      end
+
+      it "has galleries when icon_picker_grouping is false" do
+        user = create(:user, icon_picker_grouping: false)
+        character = create(:character, user: user)
+        character.galleries << create(:gallery, user: user)
+        character.galleries << create(:gallery, user: user)
+        login_as(user)
+        get :show, id: character.id, format: :json
+        expect(response.status).to eq(200)
+        expect(response.json['galleries'].size).to eq(1)
+      end
+
+      it "has single gallery when present" do
+        character = create(:character)
+        character.galleries << create(:gallery, user: character.user)
+        get :show, id: character.id, format: :json
+        expect(response.status).to eq(200)
+        expect(response.json['galleries'].size).to eq(1)
+      end
+
+      it "has single gallery when icon present" do
+        character = create(:character)
+        character.default_icon = create(:icon, user: character.user)
+        character.save
+        get :show, id: character.id, format: :json
+        expect(response.status).to eq(200)
+        expect(response.json['galleries'].size).to eq(1)
+      end
     end
   end
 
@@ -335,13 +397,20 @@ RSpec.describe CharactersController do
     end
 
     it "does not change icon if icon without permission provided" do
-      skip "POST icon does not yet validate icon permission"
+      icon = create(:icon)
+      character = create(:character, user: icon.user, default_icon_id: icon.id)
+      new_icon = create(:icon)
+      login_as(character.user)
+      post :icon, id: character.id, icon_id: new_icon.id
+      expect(response.status).to eq(200)
+      expect(response.json).to eq({})
+      expect(character.reload.default_icon_id).to eq(icon.id)
     end
 
     it "changes icon if valid" do
       icon = create(:icon)
-      new_icon = create(:icon)
       character = create(:character, user: icon.user, default_icon_id: icon.id)
+      new_icon = create(:icon, user: icon.user)
       login_as(character.user)
 
       post :icon, id: character.id, icon_id: new_icon.id

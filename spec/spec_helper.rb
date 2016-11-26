@@ -109,6 +109,12 @@ RSpec.configure do |config|
 =end
 end
 
+RSpec::Matchers.define :be_the_same_time_as do |expected|
+  match do |actual|
+    expected.to_s(:db) == actual.to_s(:db)
+  end
+end
+
 # Monkey patches the controller response objects to return JSON
 module ActionController
   class TestResponse
@@ -117,3 +123,6 @@ module ActionController
     end
   end
 end
+
+require 'webmock/rspec'
+WebMock.disable_net_connect!(allow_localhost: true)

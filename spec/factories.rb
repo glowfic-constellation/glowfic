@@ -35,6 +35,14 @@ FactoryGirl.define do
   factory :gallery do
     user
     name "test gallery"
+    transient do
+      icon_count 0
+    end
+    after(:create) do |gallery, evaluator|
+      evaluator.icon_count.times do
+        gallery.icons << create(:icon, user: gallery.user)
+      end
+    end
   end
 
   factory :icon do
@@ -48,16 +56,24 @@ FactoryGirl.define do
   end
 
   factory :reply do
+    transient do
+      with_icon false
+      with_character false
+    end
     user
     post
     content "test content"
+    before(:create) do |reply, evaluator|
+      reply.character = create(:character, user: reply.user) if evaluator.with_character
+      reply.icon = create(:icon, user: reply.user) if evaluator.with_icon
+    end
   end
 
   factory :character do
     user
     name 'test character'
     factory :template_character do
-      template
+      template { build(:template, user: user) }
     end
   end
 
@@ -97,5 +113,9 @@ FactoryGirl.define do
     sequence :subject do |n|
       "Message#{n}"
     end
+  end
+
+  factory :favorite do
+    user
   end
 end
