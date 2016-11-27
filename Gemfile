@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-ruby '2.1.10'
+ruby '2.2.6'
 
 gem 'audited-activerecord', '~> 3.0'
 gem 'aws-sdk', '~> 2'
@@ -17,7 +17,7 @@ gem 'nilify_blanks'
 gem 'nokogiri'
 gem 'pg'
 gem 'pg_search'
-gem 'rails', '3.2.22.2'
+gem 'rails', '3.2.22.3'
 gem 'rack-pratchett'
 gem 'redis'
 gem 'redis-rails'
@@ -28,6 +28,7 @@ gem 'select2-rails'
 gem 'tinymce-rails'
 gem 'tunemygc'
 gem 'will_paginate', '~> 3.0.6'
+gem 'test-unit', '~> 3.0'
 
 group :production do
   gem 'puma'
