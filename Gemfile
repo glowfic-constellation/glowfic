@@ -26,6 +26,7 @@ gem 'sass-rails'
 gem 'seed_dump', '0.5.3'
 gem 'select2-rails'
 gem 'tinymce-rails'
+gem 'tunemygc'
 gem 'will_paginate', '~> 3.0.6'
 
 group :production do
