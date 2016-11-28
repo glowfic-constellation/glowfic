@@ -6,21 +6,22 @@
 #header #header-right { overflow: hidden; }
 #header #logo { text-align: right; background-color: #3f7055; padding: 0.5em; overflow: hidden; }
 #header #logo img { padding: 0.5em 0.5em 0 0; }
-#header #nav-top { padding: 0.5em; background-color: #3e384f; padding-left: 1em; padding-right: 1em; overflow: hidden; }
+#header #nav-top { padding: 0.5em; background-color: #3e384f; padding-right: 1em; overflow: hidden; }
 #header #nav-top button, #header #nav-top .button { color: #444444; font-size: 13px; margin-right: 10px; }
 #header #nav-top input { margin: 0px 0px 0px 10px; }
 #header #nav-top #remember_me { vertical-align: middle; }
-#header ul { font-size: 16px; padding: 0; text-align:left; padding-right: 0.5em; display: inline; vertical-align: middle; }
+#header #header-logout { margin-left: 1em; }
+#header ul { font-size: 16px; padding: 0; text-align:left; margin-right: 0.5em; display: inline; vertical-align: middle; }
 #header li { display: inline; padding: 0; white-space: nowrap; }
-#header li { margin-right: 1em; }
+#header li { margin-left: 1em; }
 #header li a, #header a { color: #FEFEFE; font-weight: bold; font-size: 16px; }
 #header li a:hover { color: #8B8687; }
-#header #nav-bottom { color: #101010; text-align: left; padding: 0.5em 1em; background-color: #B9B6AD; }
-#header #nav-bottom ul { margin-left: 1em; }
+#header #nav-bottom { color: #101010; text-align: left; padding: 0.5em 0; background-color: #B9B6AD; }
 #header #nav-bottom a { font-weight: normal; }
 #header #header-collaspe { display: none; }
 
 #header #header-forms, #header #header-remember, #header #header-buttons { display: inline; }
+#header #header-links { display: none; }
 
 @media (max-width: 700px) {
   #header #button-break { display: block; clear: both; }
@@ -38,15 +39,21 @@
 }
 @media (max-width: 400px) {
   #header #user-info img { display: none; }
+  #header #header-forms, #header #header-remember, #header #header-buttons { display: none; }
+  #header #header-links { display: inline-block; height: 20px; }
+  #header #header-links a, #header #header-links span { vertical-align: middle; font-size: 14px; }
+  #header #logo { text-align: left; }
+  #header #logo img { padding-bottom: 2px; padding-top: 2px; height: 20px; float: right; }
+  #content table.form-table { width: 100%; }
 }
 
 /* Main Content */
 #content { padding: 20px; font-size: 16px; line-height: 20px; text-align: left; position: relative; }
 @media (max-width: 600px) {
-  #content { padding-left: 10px; padding-right: 10px; }
+  #content { padding: 10px; }
 }
 @media (max-width: 500px) {
-  #content { padding-left: 5px; padding-right: 5px; }
+  #content { padding: 5px; }
 }
 
 /* Flash Displays */
@@ -77,7 +84,11 @@
     -moz-box-sizing: border-box;    /* Firefox, other Gecko */
     box-sizing: border-box;         /* Opera/IE 8+ */
 }
+#content table.form-table td .select2-container input, table#icon-table td .select2-container input { margin-top: 5px; }
 #content table.form-table td.spacer { height: 2px; padding: 0px; }
+@media (max-width: 400px) {
+  #content table.form-table { width: 100%; }
+}
 
 /* Buttons like List View or Outbox View in top right of page */
 .view-button {
@@ -100,13 +111,15 @@
 .view-button .icon-view { width: 15px; height: 15px; display: inline; margin: 0px; padding: 0px; top: 2px; position: relative; }
 
 /* Not yet deserving of its own CSS file */
-#message_form textarea, .edit_board textarea, .new_board textarea { height: 100px; }
+#message_form textarea, .edit_board textarea, .new_board textarea, .new_template textarea, .edit_template textarea { height: 100px; }
 #stats ul { margin-top: 0px; margin-bottom: 0px; padding-left: 15px; }
-.select2-container { margin: 3px 0px; width: 300px !important; }
+.select2-container { margin: 3px 0px; color: #333; }
 .select2, .select2-dropdown { font-size: 13px !important; }
 .select2 input { height: 20px; margin: 0px; }
 .select2 ul { padding: 0px; }
 .field_with_errors { display: inline-block; } /* Keeps forms from whitespacing weirdly when errors present */
-input.checkbox { height: 12px; margin: 0px; } /* Keeps unread table from padding excessively for the checkboxes */
+input.checkbox { height: 12px; margin: 0px; vertical-align: middle; } /* Keeps unread table from padding excessively for the checkboxes */
 #signup th.sub { width: 90px; }
+#content table.form-table input[type='checkbox'] { margin: 0 1px; height: 18px; width: 18px; vertical-align: middle; }
 td.continuity-spacer { height: 20px; }
+.post-ignored { opacity: 0.3; }

@@ -33,8 +33,6 @@ button, input.button {
   background-clip: padding-box;
   height: 25px;
 }
-.chosen-choices { border-radius: 5px; }
-.chosen-container { margin-top: 5px; margin-bottom: 5px; }
 
 /* Display Helpers */
 .no-margin { margin: 0px; }
@@ -69,8 +67,8 @@ button, input.button {
 #content .beige { background-color: #B9B6AD; }
 .green { background-color: #B0BBA9; }
 #content .dark { background-color: #8B8687; }
-#content .even { background-color: #E3E3E3; padding: 5px; }
-#content .odd { background-color: #D8D8D8; padding: 5px; }
+#content .even, .post-post, .post-reply:nth-child(even) { background-color: #E3E3E3; padding: 5px; }
+#content .odd, .post-reply:nth-child(odd) { background-color: #D8D8D8; padding: 5px; }
 #content .subber, .subber { background-color: #a3a1a0; }
 #content .sub { background-color: #B9B6AD; }
 

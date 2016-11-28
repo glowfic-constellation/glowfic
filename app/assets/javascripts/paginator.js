@@ -1,7 +1,7 @@
 $(document).ready(function() {
-  $(".per-page").chosen({
+  $(".per-page").select2({
     width: '70px',
-    disable_search_threshold: 20,
+    minimumResultsForSearch: 20,
   });
 
   $(".per-page").change(function () {

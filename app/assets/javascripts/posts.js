@@ -9,26 +9,26 @@ $(document).ready(function() {
   });
   $(selectd).prop("selected", true);
 
-  // Adding Chosen UI to relevant selects
-  $("#post_board_id").chosen({
+  // Adding Select2 UI to relevant selects
+  $("#post_board_id").select2({
     width: '200px',
-    disable_search_threshold: 20,
+    minimumResultsForSearch: 20,
   });
 
-  $("#post_section_id").chosen({
+  $("#post_section_id").select2({
     width: '200px',
-    disable_search_threshold: 20,
+    minimumResultsForSearch: 20,
   });
 
-  $("#post_privacy").chosen({
+  $("#post_privacy").select2({
     width: '200px',
-    disable_search_threshold: 20,
+    minimumResultsForSearch: 20,
   });
 
-  $("#post_post_viewer_ids").chosen({
+  $("#post_post_viewer_ids").select2({
     width: '200px',
-    disable_search_threshold: 20,
-    placeholder_text_multiple: 'Choose user(s) to view this post'
+    minimumResultsForSearch: 20,
+    placeholder: 'Choose user(s) to view this post'
   });
 
   $("#post_tag_ids").select2({
@@ -43,6 +43,7 @@ $(document).ready(function() {
         return { q: term['term'] };
       },
     },
+    width: '300px'
   });
 
   $("#post_setting_ids").select2({
@@ -60,6 +61,7 @@ $(document).ready(function() {
         };
       },
     },
+    width: '300px'
   });
 
   $("#post_warning_ids").select2({
@@ -77,10 +79,11 @@ $(document).ready(function() {
         };
       },
     },
+    width: '300px'
   });
 
-  $("#active_character").chosen({
-    disable_search_threshold: 10,
+  $("#active_character").select2({
+    minimumResultsForSearch: 10,
     width: '100%',
   });
 
@@ -139,11 +142,6 @@ $(document).ready(function() {
     }
   });
 
-  $(".post-expander").click(function() {
-    $(this).children(".info").remove();
-    $(this).children(".hidden").show();
-  });
-
   $("#submit_button").click(function() {
     $("#preview_button").removeAttr('data-disable-with').attr('disabled', 'disabled');
     $("#draft_button").removeAttr('data-disable-with').attr('disabled', 'disabled');
@@ -172,11 +170,11 @@ $(document).ready(function() {
     $('html, body').scrollTop($("#post-editor").offset().top);
   });
 
-  $("#active_character_chosen").click(function () {
+  $("#active_character").on('select2:close', function () {
     $('html, body').scrollTop($("#post-editor").offset().top);
   });
 
-  $("#active_character").change(function() { 
+  $("#active_character").change(function() {
     // Set the ID
     var id = $(this).val();
     $("#reply_character_id").val(id);
@@ -184,7 +182,7 @@ $(document).ready(function() {
   });
 
   // Hides selectors when you hit the escape key
-  $(document).bind("keydown", function(e){ 
+  $(document).bind("keydown", function(e){
     e = e || window.event;
     var charCode = e.which || e.keyCode;
     if(charCode == 27) {
@@ -198,16 +196,16 @@ $(document).ready(function() {
   $(document).click(function(e) {
     var target = e.target;
 
-    if (!$(target).is('#current-icon-holder') && 
+    if (!$(target).is('#current-icon-holder') &&
       !$(target).parents().is('#current-icon-holder') &&
-      !$(target).is('#gallery') && 
+      !$(target).is('#gallery') &&
       !$(target).parents().is('#gallery')) {
         $('#icon-overlay').hide();
         $('#gallery').hide();
     }
 
-    if (!$(target).is('#character-selector') && 
-      !$(target).is('#swap-icon') && 
+    if (!$(target).is('#character-selector') &&
+      !$(target).is('#swap-icon') &&
       !$(target).parents().is('#character-selector')) {
         $('#character-selector').hide();
     }
@@ -248,11 +246,9 @@ iconString = function(icon) {
   var img_url = icon["url"];
   var img_key = icon["keyword"];
 
-  $("#icon_dropdown").append('<option value="'+img_id+'">'+img_key+'</option>');
-  return "<div class='gallery-icon'>"
-    + "<img src='" + img_url + "' id='" + img_id + "' alt='" + img_key + "' title='" + img_key + "' class='icon' />"
-    + "<br />" + img_key
-    + "</div>";
+  if (!icon['skip_dropdown']) $("#icon_dropdown").append($("<option>").attr({value: img_id}).append(img_key));
+  var icon_img = $("<img>").attr({src: img_url, id: img_id, alt: img_key, title: img_key, 'class': 'icon'});
+  return $("<div>").attr('class', 'gallery-icon').append(icon_img).append("<br />").append(img_key)[0].outerHTML;
 };
 
 tinyMCESetup = function(ed) {
@@ -284,10 +280,9 @@ getAndSetCharacterData = function(characterId) {
     if(url != null) {
       var aid = gon.current_user.avatar.id;
       var keyword = gon.current_user.avatar.keyword;
-      $("#icon_dropdown").append('<option value="'+aid+'">'+keyword+'</option>');
       $("#gallery").html("");
-      $("#gallery").append("<div class='gallery-icon'><img src='" + url + "' id='" + aid + "' class='icon' /><br />Avatar</div>");
-      $("#gallery").append("<div class='gallery-icon'><img src='/images/no-icon.png' id='' class='icon' /><br />No Icon</div>");
+      $("#gallery").append(iconString({id: aid, url: url, keyword: keyword}));
+      $("#gallery").append(iconString({id: '', url: '/images/no-icon.png', keyword: 'No Icon', skip_dropdown: true}));
       bindIcon();
       bindGallery();
       setIcon(aid, url, keyword, keyword);
@@ -299,7 +294,7 @@ getAndSetCharacterData = function(characterId) {
     return // Don't need to load data from server (TODO combine with below?)
   }
 
-  $.post(gon.character_path, {'character_id':characterId}, function (resp) {
+  $.get(gon.character_path + '/' + characterId, {}, function (resp) {
     // Display the correct name/screenname fields
     $("#post-editor #post-author-spacer").hide();
     $("#post-editor .post-character").show().html(resp['name']);
@@ -328,11 +323,11 @@ getAndSetCharacterData = function(characterId) {
       $("#gallery").append(galleryString(gallery, multiGallery));
     }
 
-    $("#gallery").append("<div class='gallery-icon'><img src='/images/no-icon.png' id='' alt='No Icon' title='No Icon' class='icon' /><br />No Icon</div>");
+    $("#gallery").append(iconString({id: '', url: '/images/no-icon.png', keyword: 'No Icon', skip_dropdown: true}));
     bindGallery();
     bindIcon();
     setIcon(resp['default']['id'], resp['default']['url'], resp['default']['keyword'], resp['default']['keyword']);
-  });
+  }, 'json');
 };
 
 setIconFromId = function(id, img) {
@@ -373,10 +368,10 @@ setSections = function() {
       for(var i = 0; i < resp.length; i++) {
         $("#post_section_id").append('<option value="'+resp[i][0]+'">'+resp[i][1]+'</option>');
       }
-      $("#post_section_id").trigger("chosen:updated");
+      $("#post_section_id").trigger("change");
     } else {
       $("#post_section_id").val("");
       $("#section").hide();
     }
-  });
+  }, 'json');
 };

@@ -14,6 +14,10 @@ class User < ActiveRecord::Base
   has_many :sent_messages, :class_name => Message, :foreign_key => 'sender_id'
   has_many :messages, :foreign_key => 'recipient_id'
   has_many :password_resets
+  has_many :favorites
+  has_many :favoriteds, as: :favorite, class_name: Favorite
+  has_many :posts
+  has_many :replies
   belongs_to :avatar, :class_name => Icon
   belongs_to :active_character, :class_name => Character
 
@@ -29,11 +33,14 @@ class User < ActiveRecord::Base
 
   before_validation :encrypt_password
   after_save :clear_password
+  after_update :delete_view_cache
+  after_destroy :delete_view_cache
 
   nilify_blanks
 
   def authenticate(password)
-    crypted == crypted_password(password)
+    return crypted == crypted_password(password) if salt_uuid.present?
+    crypted == old_crypted_password(password)
   end
 
   def gon_attributes
@@ -63,16 +70,25 @@ class User < ActiveRecord::Base
   private
 
   def encrypt_password
-    self.crypted = crypted_password(password) if password.present?
+    if password.present?
+      self.salt_uuid ||= SecureRandom.uuid
+      self.crypted = crypted_password(password)
+    end
   end
 
   def crypted_password(unencrypted)
-    crypted = "Adding #{salt} to #{unencrypted}"
+    crypted = "Adding #{salt_uuid} to #{unencrypted}"
     17.times { crypted = Digest::SHA1.hexdigest(crypted) }
     crypted
   end
 
-  def salt
+  def old_crypted_password(unencrypted)
+    crypted = "Adding #{old_salt} to #{unencrypted}"
+    17.times { crypted = Digest::SHA1.hexdigest(crypted) }
+    crypted
+  end
+
+  def old_salt
     "1d0e9f00dc7#{username.to_s.downcase}dda7264ec524b051e434f4dda9ecfef8891004efe56fbff6a0"
   end
 
@@ -83,5 +99,12 @@ class User < ActiveRecord::Base
 
   def validate_password?
     !!@validate_password
+  end
+
+  def delete_view_cache
+    return unless username_changed?
+    replies.each do |reply|
+      reply.send(:delete_view_cache)
+    end
   end
 end

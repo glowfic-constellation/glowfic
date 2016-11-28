@@ -1,26 +1,91 @@
-= icon_tag @icon
-%br
-Keyword:
-= @icon.keyword
-- if @icon.credit
-  %br
-  Credit:
-  = @icon.credit
-- if @icon.user_id == current_user.try(:id)
-  %br
-  = link_to "Make avatar", avatar_icon_path(@icon), method: :post
-  %br
-  = link_to "Edit icon", edit_icon_path(@icon)
-  %br
-  = link_to "Delete icon", icon_path(@icon), method: :delete, confirm: 'Are you sure you want to delete this icon?'
-  %br
-  = link_to "Replace icon with another icon", replace_icon_path(@icon)
+- content_for :breadcrumbs do
+  - if @icon.user_id == current_user.try(:id)
+    = link_to "Galleries", galleries_path
+  - else
+    = link_to "#{@icon.user.username}", user_path(@icon.user)
+    &raquo;
+    = link_to "#{@icon.user.username}'s Galleries", user_galleries_path(@icon.user)
+  &raquo;
+  = link_to @icon.keyword, icon_path(@icon)
+  &raquo;
+  - if params[:view] == 'galleries'
+    %b Galleries
+  - elsif params[:view] == 'posts'
+    %b Posts
+  - else
+    %b Stats
 
-- if @icon.galleries.present?
-  %br
-  %br
+%table{style: 'width:150px;float: left;'}
+  %tr
+    %th.centered.icon-keyword= @icon.keyword
+  %tr
+    %td.green.centered.icon-icon= icon_tag @icon
+  - if @icon.credit
+    %tr
+      %td.green.centered
+        .details= @icon.credit
+  %tr
+    %td.centered{class: cycle('even', 'odd')}
+      = link_to icon_path(@icon, view: 'stats') do
+        = image_tag '/images/chart_bar.png'
+        Stats
+  %tr
+    %td.centered{class: cycle('even', 'odd')}
+      = link_to icon_path(@icon, view: 'galleries') do
+        = image_tag '/images/photos.png'
+        &nbsp;Galleries
+  %tr
+    %td.centered{class: cycle('even', 'odd')}
+      = link_to icon_path(@icon, view: 'posts') do
+        = image_tag '/images/book_open.png'
+        Posts
+  - if @icon.user_id == current_user.try(:id)
+    %tr
+      %td.centered{class: cycle('even', 'odd')}
+        = link_to edit_icon_path(@icon) do
+          = image_tag '/images/pencil.png'
+          Edit Icon
+    %tr
+      %td.centered{class: cycle('even', 'odd')}
+        = link_to avatar_icon_path(@icon), method: :post do
+          = image_tag '/images/status_online.png'
+          Set as Default
+    %tr
+      %td.centered{class: cycle('even', 'odd')}
+        = link_to replace_icon_path(@icon) do
+          = image_tag '/images/swap.png', style: 'width: 16px;'
+          Replace Icon
+    %tr
+      %td.centered{class: cycle('even', 'odd')}
+        = link_to icon_path(@icon), method: :delete, confirm: 'Are you sure you want to delete this icon?' do
+          = image_tag '/images/cross.png'
+          Delete Icon
+
+- if params[:view] == 'galleries'
   .post-header
     .padding-15 Galleries
-  %table
-    - @icon.galleries.order(:name).each do |gallery|
-      = render partial: 'galleries/single', locals: {gallery: gallery, klass: 'subber', skip_forms: true}
+  %table.float-left{style: 'width: calc(100% - 150px);'}
+    - if (galleries = @icon.galleries.order(:name)).present?
+      - galleries.each do |gallery|
+        = render partial: 'galleries/single', locals: {gallery: gallery, klass: 'subber', skip_forms: true}
+    - else
+      %tr
+        %td.even.centered — No galleries yet —
+- elsif params[:view] == 'posts'
+  - content_for :posts_title do
+    Posts Containing Icon
+  %table{style: 'width: calc(100% - 150px); float:left;'}
+    - posts = Post.where(icon_id: @icon.id) + Reply.where(icon_id: @icon.id).select(:post_id).group(&:post_id).map(&:post)
+    = render partial: 'posts/list', locals: {posts: posts.uniq, style: 'width: calc(100% - 150px); float:left;'}
+- else
+  - posts_using = Post.where(icon_id: @icon.id)
+  - replies_using = Reply.where(icon_id: @icon.id)
+  .post-header
+    .padding-15 Stats
+  %table{style: 'width: calc(100% - 150px); float:left;'}
+    %tr
+      %th.sub.width-150 Times Used
+      %td.even= posts_using.count + replies_using.count
+    %tr
+      %th.sub.width-150 Posts In
+      %td.even= (posts_using.map(&:id) + replies_using.map(&:post)).uniq.count

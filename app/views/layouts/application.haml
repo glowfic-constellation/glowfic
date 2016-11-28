@@ -2,15 +2,33 @@
 %html
   %head
     %title= (Rails.env.development? ? 'DEV: ' : '') + (@page_title ? @page_title + " | Glowfic Constellation" : "Glowfic Constellation")
-    %meta{ :charset => "utf-8" }
-    <meta name="viewport" content="width=device-width">
+
+    / Meta
+    %meta{charset: 'utf-8'}
+    %meta{name: 'viewport', content: 'width=device-width'}
+    = csrf_meta_tag
+
+    / SEO canonical
+    - if @meta_canonical.present?
+      %link{rel: 'canonical', href: @meta_canonical}
+
+    / Stylesheets
     = stylesheet_link_tag 'application'
     - if current_user.try(:layout).present?
       = stylesheet_link_tag "layouts/#{current_user.layout}"
-    %link{ :href => "/stylesheets/chosen.css", :rel => "stylesheet", :type => "text/css", :media => "screen" }
-    <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
-    = csrf_meta_tag
+
+    / Favicons
+    %meta{name: "apple-mobile-web-app-title", content: "Glowfic Constellation"}
+    %meta{name: "application-name", content: "Glowfic Constellation"}
+    %meta{name: "msapplication-config", content: asset_path('favicons/browserconfig.xml')}
+    %meta{name: "theme-color", content: "#ffffff"}
+    = favicon_link_tag asset_path('favicons/favicon.ico')
+    = favicon_link_tag asset_path('favicons/favicon-32x32.png'), type: 'image/png', rel: 'icon', sizes: '32x32'
+    = favicon_link_tag asset_path('favicons/favicon-16x16.png'), type: 'image/png', rel: 'icon', sizes: '16x16'
+    = favicon_link_tag asset_path('favicons/apple-touch-icon.png'), type: 'image/png', rel: 'apple-touch-icon', sizes: '180x180'
+    %link{rel: 'mask-icon', href: asset_path('favicons/safari-pinned-tab.svg'), color: '#2b5797'}
+    %link{rel: 'manifest', href: asset_path('favicons/manifest.json')}
+
     = include_gon
   %body
     #header
@@ -25,6 +43,11 @@
             #username= current_user.username
       #header-right
         #logo
+          - unless logged_in?
+            #header-links
+              = link_to "Login", login_path
+              %span &nbsp;|&nbsp;
+              = link_to "Sign up", new_user_path
           = link_to root_path do
             = image_tag '/images/logo.png', alt: 'Glowfic Constellation'
         #nav-top
@@ -32,9 +55,9 @@
             %ul
               %li= link_to 'Account', edit_user_path(current_user)
               %li= link_to 'Inbox', messages_path
-              %li= link_to "Templates", templates_path
               %li= link_to "Characters", characters_path
               %li= link_to "Galleries", galleries_path
+              %li= link_to 'Favorites', favorites_path
               %li= link_to "Post", new_post_path
             = link_to logout_path, method: :delete, id: :"header-logout" do
               = button_tag "Log out", class: 'button'
@@ -62,7 +85,7 @@
           - if logged_in?
             %li= link_to 'Unread', unread_posts_path
             %li= link_to 'Tags Owed', owed_posts_path
-          %li= link_to 'Contribute', 'http://paypal.me/aschloss'
+          %li= link_to 'Contribute', contribute_path
     - if content_for?(:breadcrumbs)
       .flash.subber= content_for :breadcrumbs
     - if flash[:error].is_a?(Hash)
@@ -76,7 +99,10 @@
               %li= error
       - flash.delete(:error)
     - flash.keys.each do |key|
-      .flash{:class=>key}= flash[key]
+      - if key == :pass
+        .flash{class: 'error'}= flash[key].html_safe
+      - else
+        .flash{:class=>key}= flash[key]
     - if content_for?(:flashes)
       = content_for :flashes
     - if logged_in?
@@ -86,8 +112,8 @@
           .flash.inbox
             New message from
             = link_to message.sender.username, user_path(message.sender)
-            &nbsp;- &nbsp;
-            = link_to message.subject, message_path(message)
+            &ndash;
+            = link_to message.unempty_subject, message_path(message)
     #content= yield
 
   = javascript_include_tag 'application'

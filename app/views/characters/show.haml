@@ -2,13 +2,10 @@
   - if @character.user_id == current_user.try(:id)
     = link_to "Characters", characters_path
   - else
+    = link_to "#{@character.user.username}", user_path(@character.user)
+    &raquo;
     = link_to "#{@character.user.username}'s Characters", user_characters_path(@character.user)
   - if @character.template
-    &raquo;
-    - if @character.user_id == current_user.try(:id)
-      = link_to "Templates", templates_path
-    - else
-      = link_to "#{@character.user.username}'s Templates", user_templates_path(@character.user)
     &raquo;
     = link_to @character.template.name, template_path(@character.template)
   &raquo;
@@ -34,19 +31,25 @@
     %br
     = precede 'Facecast: ' do
       %span.character-pb= @character.pb
+  - if @character.setting
+    %br
+    = precede 'Setting: ' do
+      %span.character-setting= @character.setting
   - if logged_in? && current_user.id == @character.user_id
     %br
     = link_to 'Edit character', edit_character_path(@character), class: 'character-edit'
+    %br
+    = link_to 'Replace character', replace_character_path(@character), class: 'character-replace'
 %br
 - if @posts.present?
   - content_for :posts_title do 'Recent Threads' end
-  = render partial: 'posts/list', locals: {posts: @character.recent_posts.includes(:board, :user, :last_user), path: :character_path}
+  = render partial: 'posts/list', locals: {posts: @posts, path: :character_path}
 %br
-- if @character.galleries.present?
+- if @character.galleries.ordered.present?
   %table
     %thead
       %tr
         %th Galleries
     %tbody
-      - @character.galleries.includes(:user).each do |gallery|
-        = render partial: 'galleries/single', locals: {gallery: gallery, klass: 'subber', skip_forms: true}
+      - @character.galleries.ordered.each do |gallery|
+        = render partial: 'galleries/single', locals: {gallery: gallery, klass: 'subber', skip_forms: true, section: gallery.character_gallery_for(@character)}

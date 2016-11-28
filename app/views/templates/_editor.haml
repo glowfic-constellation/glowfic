@@ -1,0 +1,8 @@
+%tr
+  %th.sub Name
+  %td.even= f.text_field :name, placeholder: "Template Name", class: 'text'
+%tr
+  %th.sub.vtop Description
+  %td.odd= f.text_area :description
+%tr
+  %th.subber{colspan: 2}= submit_tag "Save", class: 'button'

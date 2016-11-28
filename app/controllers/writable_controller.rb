@@ -8,7 +8,7 @@ class WritableController < ApplicationController
     faked = Struct.new(:name, :id, :ordered_characters)
     templateless = faked.new('Templateless', nil, current_user.characters.where(:template_id => nil).to_a.sort_by(&:name))
     @templates = templates + [templateless]
-    
+
     if @post
       uniq_chars_ids = @post.replies.where(user_id: current_user.id).select(:character_id).group(:character_id).map(&:character_id).uniq
       uniq_chars_ids << @post.character_id if @post.user_id == current_user.id
@@ -16,23 +16,26 @@ class WritableController < ApplicationController
       threadchars = faked.new('Thread characters', nil, uniq_chars.sort_by(&:name))
       @templates.insert(0, threadchars)
     end
+    @templates.reject! {|template| template.ordered_characters.empty? }
 
     gon.current_user = current_user.gon_attributes
-    gon.character_path = character_user_path(current_user)
+    gon.character_path = characters_path
   end
 
   def show_post(cur_page=nil)
     @threaded = false
-    replies = if @post.replies.where('thread_id is not null').count > 1
-      @threaded = true
-      if params[:thread_id].present?
-        @replies = @post.replies.where(thread_id: params[:thread_id])
-      else
-        @post.replies.where('id = thread_id')
-      end
-    else
-      @post.replies
-    end
+    replies = @post.replies
+    # Can resurrect when threading exists properly; for now, skip the database query.
+    # replies = if @post.replies.where('thread_id is not null').count > 1
+    #   @threaded = true
+    #   if params[:thread_id].present?
+    #     @replies = @post.replies.where(thread_id: params[:thread_id])
+    #   else
+    #     @post.replies.where('id = thread_id')
+    #   end
+    # else
+    #   @post.replies
+    # end
 
     @unread = @post.first_unread_for(current_user) if logged_in?
     if per_page > 0
@@ -49,11 +52,6 @@ class WritableController < ApplicationController
           else
             self.page = cur_page = @unread.post_page(per)
           end
-          if params[:ru].to_i == 1
-            args = {page: cur_page}
-            args[:anchor] = "reply-#{@unread.id}" if @unread.class == Reply
-            redirect_to post_path(@post, args) and return
-          end
         else
           flash.now[:error] = "You must be logged in to view unread posts."
           self.page = cur_page = 1
@@ -62,7 +60,7 @@ class WritableController < ApplicationController
         self.page = cur_page = cur_page.to_i
       end
     else
-      per = replies.count
+      per = replies.count > 5000 ? (@per_page = 1000) : replies.count
       self.page = cur_page = 1
     end
 
@@ -72,18 +70,28 @@ class WritableController < ApplicationController
     use_javascript('paginator')
 
     unless @post.board.open_to_anyone?
-      @next_post = Post.where(board_id: @post.board_id).where(section_id: @post.section_id).where(section_order: @post.section_order + 1).first
-      @prev_post = Post.where(board_id: @post.board_id).where(section_id: @post.section_id).where(section_order: @post.section_order - 1).first
+      if @post.section_order.nil?
+        ExceptionNotifier.notify_exception(Exception.new, data: {id: @post.id, board: @post.board_id, section: @post.section_id})
+      else
+        @next_post = Post.where(board_id: @post.board_id).where(section_id: @post.section_id).where(section_order: @post.section_order + 1).first
+        @prev_post = Post.where(board_id: @post.board_id).where(section_id: @post.section_id).where(section_order: @post.section_order - 1).first
+      end
     end
+
+    # show <link rel="canonical"> – for SEO stuff
+    canon_params = {}
+    canon_params[:per_page] = per unless per == 25
+    canon_params[:page] = cur_page unless cur_page == 1
+    @meta_canonical = post_url(@post, canon_params)
 
     if logged_in?
       use_javascript('posts')
-      
+
       active_char = @post.last_character_for(current_user)
       @reply = ReplyDraft.draft_reply_for(@post, current_user) || Reply.new(
         post: @post,
         character: active_char,
-        user: current_user, 
+        user: current_user,
         icon: active_char.try(:icon))
       gon.original_content = @reply.content
 

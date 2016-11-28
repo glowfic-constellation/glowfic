@@ -104,6 +104,7 @@ function bindFileInput(fileInput) {
         submitButton.prop('disabled', false);
         var response = data.response().jqXHR
         var policyExpired = response.responseText.includes("Invalid according to Policy: Policy expired.");
+        if (!policyExpired) { policyExpired = response.responseText.includes("Idle connections will be closed."); }
         var badFiletype = response.responseText.includes("Policy Condition failed") && response.responseText.includes('"$Content-Type", "image/"');
         var bugsData = {
           'response_status': response.status,
@@ -112,12 +113,12 @@ function bindFileInput(fileInput) {
           'file_name': data.files[0].name,
           'file_type': data.files[0].type,
         };
-        $.post('/bugs', bugsData);
         if (policyExpired) {
           alert("Your upload permissions appear to have expired. Please refresh the page and try again.");
         } else if (badFiletype) {
           alert("You must upload files with an image filetype such as .png or .jpg - please retry with a valid file.");
         } else {
+          $.post('/bugs', bugsData);
           alert("Upload of " + data.files[0].name + " failed, Marri has been notified.");
         }
       },

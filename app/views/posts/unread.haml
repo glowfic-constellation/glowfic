@@ -1,7 +1,17 @@
 - content_for :posts_title do
-  Unread Posts
+  - if @started
+    Opened
+  - else
+    Unread
+  Posts
   = link_to hidden_posts_path do
     .view-button Hidden &raquo;
+  = link_to unread_posts_path(started: !@started) do
+    .view-button
+      - if @started
+        Show All Threads
+      - else
+        Only Show Opened Threads
 
 = form_tag mark_posts_path, :method => :post do
   = render partial: 'posts/list', locals: {posts: @posts, show_unread_count: true, check_box_name: 'marked_ids[]', path: :unread_posts_path}
@@ -20,7 +30,7 @@
     %tr
       %td.even.padding-5.centered
         = select_tag :board_id, 
-                     options_from_collection_for_select(Board.all, :id, :name, params[:board_id]), 
+                     options_from_collection_for_select(Board.all.sort_by{|b|b.name.downcase}, :id, :name, params[:board_id]),
                      {class: 'chosen-select', prompt: '— Choose Continuity —'}
     %tr
       %th.subber

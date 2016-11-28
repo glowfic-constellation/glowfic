@@ -1,3 +1,6 @@
+- if @template && @template.description.present?
+  %tr
+    %td.beige.padding-5{colspan: 6}= @template.description
 %tr
   %td.green.left-align
     .gallery
@@ -11,6 +14,9 @@
               <div class='icon gallery-no-icon'>&nbsp;</div>
               %br
             %span.character-name= character.name
+            - if character.screenname.present?
+              %br
+              %span.character-screenname= surround('(', ')') { sanitize(character.screenname).gsub('_', '_<wbr>') }
           - if character.user_id == current_user.try(:id)
             .delete-button{ id: character.id }
               = link_to 'X', character_path(character), :method => :delete, confirm: 'Are you sure you want to delete '+character.name+'?'

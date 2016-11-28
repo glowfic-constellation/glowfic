@@ -21,12 +21,6 @@ body {
   background-color: #4A4A4A;
   color: #c2c2c2;
 }
-#content td.even {
-  background-color: #353535;
-}
-#content td.odd {
-  background-color: #3E3E3E;
-}
 #content a {
   color: #598D70;
 }
@@ -43,10 +37,10 @@ body {
   background-color: #3B4841;
 }
 #header a, #header li a { color: #CCCCCC; }
-#content .even {
+#content .even, .post-post, .post-reply:nth-child(even) {
   background-color: #3E3E3E;
 }
-#content .odd {
+#content .odd, .post-reply:nth-child(odd) {
   background-color: #474747;
 }
 .green {
@@ -75,9 +69,10 @@ body {
 .character-view-select {
   background-color: #666460;
 }
-.post-icon {
+.post-icon, #current-icon-dropdown {
   background-color: #444D3F;
 }
+#current-icon-dropdown { color: #111111; }
 .post-expander {
   background-color: #6F7769;
 }

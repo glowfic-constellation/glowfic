@@ -10,9 +10,11 @@ class Character < ActiveRecord::Base
   has_many :tags, through: :character_tags
 
   validates_presence_of :name, :user
-  validate :valid_template, :valid_group
+  validate :valid_template, :valid_group, :valid_galleries, :valid_default_icon
 
   after_save :update_galleries
+  after_update :delete_view_cache
+  after_destroy :delete_view_cache
 
   attr_accessor :new_template_name, :group_name, :gallery_ids
 
@@ -28,7 +30,7 @@ class Character < ActiveRecord::Base
 
   def recent_posts(limit=25, page=1)
     return @recent unless @recent.nil?
-    reply_ids =  replies.group(:post_id).select(:post_id).map(&:post_id)
+    reply_ids = replies.group(:post_id).select(:post_id).map(&:post_id)
     post_ids = posts.select(:id).map(&:id)
     @recent ||= Post.where(id: (post_ids + reply_ids).uniq).order('tagged_at desc').paginate(per_page: limit, page: page)
   end
@@ -40,7 +42,10 @@ class Character < ActiveRecord::Base
   private
 
   def valid_template
-    return unless template_id == 0
+    unless template_id == 0
+      errors.add(:template, "must be yours") if template.present? && template.user_id != user.id
+      return
+    end
     @template = Template.new(user: user, name: new_template_name)
     return if @template.valid?
     @template.errors.messages.each do |k, v|
@@ -56,6 +61,18 @@ class Character < ActiveRecord::Base
       v.each { |val| errors.add('group '+k.to_s, val) }
     end
   end
+  
+  def valid_galleries
+    if galleries.present? && galleries.detect{|g| g.user_id != user.id}
+      errors.add(:galleries, "must be yours")
+    end
+  end
+  
+  def valid_default_icon
+    if default_icon.present? && default_icon.user_id != user.id
+      errors.add(:default_icon, "must be yours")
+    end
+  end
 
   def update_galleries
     return unless gallery_ids
@@ -66,6 +83,13 @@ class Character < ActiveRecord::Base
     CharactersGallery.where(character_id: id, gallery_id: (existing_ids - updated_ids)).destroy_all
     (updated_ids - existing_ids).each do |new_id|
       CharactersGallery.create(character_id: id, gallery_id: new_id)
+    end
+  end
+
+  def delete_view_cache
+    return unless name_changed? || screenname_changed?
+    replies.each do |reply|
+      reply.send(:delete_view_cache)
     end
   end
 end

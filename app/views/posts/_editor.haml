@@ -9,7 +9,7 @@
       - else
         = no_icon_tag id: 'current-icon', pointer: item.has_icons?
       #icon-overlay
-    #current-icon-dropdown.post-icon
+    #current-icon-dropdown
       - if item.character
         = select_tag :icon_dropdown, options_for_select(item.character.icons.sort_by{|i| i.keyword.downcase }.map{|i| [i.keyword, i.id]}, item.icon.try(:id)), prompt: "No Icon"
       - elsif current_user.avatar
@@ -24,19 +24,20 @@
           = image_tag ((current_user.layout == 'starrydark' or current_user.layout == 'starry' or current_user.layout == 'starrylight') ? '/images/swapgray.png' : '/images/swap.png'), :id => 'swap-icon', :alt => ">"
           #character-selector.beige
             %b Choose Character
-            = select_tag :active_character, 
+            = select_tag :active_character,
             option_groups_from_collection_for_select(@templates, :ordered_characters, :name, :id, :selector_name, item.character.try(:id)),
-            { :include_blank => true, :prompt => current_user.username }
+            { :prompt => current_user.username }
             %br
   #gallery.green
     - if item.character.nil?
       - if current_user.avatar
         .gallery-icon
           = icon_tag current_user.avatar, id: current_user.avatar.id, pointer: true
-          %br> Avatar
+          %br>
+          = current_user.avatar.keyword
     - elsif item.character.galleries.present?
       - if current_user.icon_picker_grouping && item.character.galleries.count > 1
-        - galleries = item.character.galleries.includes(:icons).order('name asc')
+        - galleries = item.character.galleries.includes(:icons).ordered
         - galleries.each do |gallery|
           .gallery-group
             .gallery-name= gallery.name

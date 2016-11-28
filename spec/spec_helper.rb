@@ -17,6 +17,15 @@
 #
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 
+# Don't calculate coverage when running single tests
+unless ARGV.any? { |arg| arg[0] != '-' }
+  require 'simplecov'
+  SimpleCov.start 'rails' do
+    add_group "Presenters", "app/presenters"
+    add_group "Concerns", "app/concerns"
+  end
+end
+
 require 'factory_girl_rails'
 require 'rails_helper'
 require 'support/spec_test_helper'
@@ -100,6 +109,12 @@ RSpec.configure do |config|
 =end
 end
 
+RSpec::Matchers.define :be_the_same_time_as do |expected|
+  match do |actual|
+    expected.to_s(:db) == actual.to_s(:db)
+  end
+end
+
 # Monkey patches the controller response objects to return JSON
 module ActionController
   class TestResponse
@@ -108,3 +123,6 @@ module ActionController
     end
   end
 end
+
+require 'webmock/rspec'
+WebMock.disable_net_connect!(allow_localhost: true)

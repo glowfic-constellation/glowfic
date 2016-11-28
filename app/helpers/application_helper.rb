@@ -4,6 +4,10 @@ module ApplicationHelper
 
     klass = 'icon'
     klass += ' pointer' if args.delete(:pointer)
+    if supplied_class = args.delete(:class)
+      klass += ' ' + supplied_class
+    end
+
     image_tag icon.url, {alt: icon.keyword, title: icon.keyword, class: klass}.merge(**args)
   end
 
@@ -41,7 +45,7 @@ module ApplicationHelper
 
   def per_page_options(default=nil)
     default ||= per_page
-    options = [10,25,50,100,250,500]
+    options = [10,25,50,100,250,500,1000]
     options << default unless default.nil? || default.zero? || options.include?(default)
     options = Hash[*(options * 2).sort].merge({'All' => 'all'})
     default = 'all' if default == -1
@@ -69,12 +73,14 @@ module ApplicationHelper
   end
   
   def time_display_options(default=nil)
-    time_thing = Time.new(2016, 12, 25, 21, 34) # Example time: "2016-12-25 21:34" (for unambiguous display purposes)
-    time_display_list = ["%b %d, %Y %l:%M %p", "%b %d, %Y %H:%M",
-      "%d %b %Y %l:%M %p", "%d %b %Y %H:%M",
-      "%m-%d-%Y %l:%M %p", "%m-%d-%Y %H:%M",
-      "%d-%m-%Y %l:%M %p", "%d-%m-%Y %H:%M",
-      "%Y-%m-%d %l:%M %p", "%Y-%m-%d %H:%M"]
+    time_thing = Time.new(2016, 12, 25, 21, 34, 56) # Example time: "2016-12-25 21:34:56" (for unambiguous display purposes)
+    time_display_list = [
+      "%b %d, %Y %l:%M %p", "%b %d, %Y %H:%M", "%b %d, %Y %l:%M:%S %p", "%b %d, %Y %H:%M:%S",
+      "%d %b %Y %l:%M %p", "%d %b %Y %H:%M", "%d %b %Y %l:%M:%S %p", "%d %b %Y %H:%M:%S",
+      "%m-%d-%Y %l:%M %p", "%m-%d-%Y %H:%M", "%m-%d-%Y %l:%M:%S %p", "%m-%d-%Y %H:%M:%S",
+      "%d-%m-%Y %l:%M %p", "%d-%m-%Y %H:%M", "%d-%m-%Y %l:%M:%S %p", "%d-%m-%Y %H:%M:%S",
+      "%Y-%m-%d %l:%M %p", "%Y-%m-%d %H:%M", "%Y-%m-%d %l:%M:%S %p", "%Y-%m-%d %H:%M:%S"
+    ]
     time_displays = Hash[time_display_list.map { |v| [time_thing.strftime(v), v] }]
     options_for_select(time_displays, default)
   end

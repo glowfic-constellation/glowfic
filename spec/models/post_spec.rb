@@ -4,54 +4,68 @@ RSpec.describe Post do
   it "should have the right timestamps" do
     # creation
     post = create(:post)
-    expect(post.edited_at).to eq(post.created_at)
-    expect(post.tagged_at).to eq(post.created_at)
+    expect(post.edited_at).to be_the_same_time_as(post.created_at)
+    expect(post.tagged_at).to be_the_same_time_as(post.created_at)
 
-    # edited with no replies
+    # edited with no replies updates edit and tag
     post.content = 'new content'
     post.save
-    expect(post.tagged_at).to eq(post.edited_at)
+    expect(post.tagged_at).to be_the_same_time_as(post.edited_at)
     expect(post.tagged_at).to be > post.created_at
     old_edited_at = post.edited_at
+    old_tagged_at = post.tagged_at
 
-    # reply created
+    # invalid edit field with no replies updates nothing
+    post.status = Post::STATUS_COMPLETE
+    post.save
+    expect(post.tagged_at).to be_the_same_time_as(old_tagged_at)
+    expect(post.edited_at).to be_the_same_time_as(old_edited_at)
+
+    # reply created updates tag but not edit
     reply = create(:reply, post: post)
     post.reload
-    expect(post.tagged_at).to eq(reply.created_at)
-    expect(post.edited_at).to eq(old_edited_at)
+    expect(post.tagged_at).to be_the_same_time_as(reply.created_at)
+    expect(post.edited_at).to be_the_same_time_as(old_edited_at)
     expect(post.tagged_at).to be > post.edited_at
     old_tagged_at = post.tagged_at
 
-    # edited with replies
+    # edited with replies updates edit but not tag
     post.content = 'newer content'
     post.save
-    expect(post.tagged_at).to eq(old_tagged_at)
+    expect(post.tagged_at).to be_the_same_time_as(old_tagged_at)
     expect(post.edited_at).to be > old_edited_at
+    old_edited_at = post.edited_at
 
-    # second reply created
+    # invalid edit field with replies updates nothing
+    post.status = Post::STATUS_ACTIVE
+    post.save
+    expect(post.tagged_at).to be_the_same_time_as(old_tagged_at)
+    expect(post.edited_at).to be_the_same_time_as(old_edited_at)
+
+    # second reply created updates tag but not edit
     reply2 = create(:reply, post: post)
     post.reload
-    expect(post.tagged_at).to eq(reply2.created_at)
+    expect(post.tagged_at).to be_the_same_time_as(reply2.created_at)
     expect(post.updated_at).to be >= reply2.created_at
     expect(post.tagged_at).to be > post.edited_at
     old_tagged_at = post.tagged_at
     old_edited_at = post.edited_at
 
-    # first reply updated
+    # first reply updated updates nothing
     reply.content = 'new content'
     reply.skip_post_update = true unless reply.post.last_reply_id == reply.id
     reply.save
     post.reload
-    expect(post.tagged_at).to eq(old_tagged_at) # BAD
-    expect(post.edited_at).to eq(old_edited_at)
+    expect(post.tagged_at).to be_the_same_time_as(old_tagged_at) # BAD
+    expect(post.edited_at).to be_the_same_time_as(old_edited_at)
 
-    # second reply updated
+    # second reply updated updates tag but not edit
     reply2.content = 'new content'
     reply2.skip_post_update = true unless reply2.post.last_reply_id == reply2.id
     reply2.save
     post.reload
-    expect(post.tagged_at).to eq(reply2.updated_at)
-    expect(post.edited_at).to eq(old_edited_at)
+    expect(post.tagged_at).to be_the_same_time_as(reply2.updated_at)
+    expect(post.edited_at).to be_the_same_time_as(old_edited_at)
   end
 
   it "should allow blank content" do
@@ -212,6 +226,95 @@ RSpec.describe Post do
       expect(post0.reload.section_order).to eq(0)
       expect(post2.reload.section_order).to eq(1)
       expect(post3.reload.section_order).to eq(2)
+    end
+
+    it "should autofill correctly upon board change" do
+      board = create(:board)
+      board2 = create(:board)
+      post0 = create(:post, board_id: board.id)
+      post1 = create(:post, board_id: board.id)
+      post2 = create(:post, board_id: board2.id)
+      expect(post0.section_order).to eq(0)
+      expect(post1.section_order).to eq(1)
+      expect(post2.section_order).to eq(0)
+
+      post2.board_id = board.id
+      post2.skip_edited = true
+      post2.save
+
+      expect(post0.section_order).to eq(0)
+      expect(post1.section_order).to eq(1)
+      expect(post2.section_order).to eq(2)
+    end
+
+    it "should autofill correctly upon board change with mix" do
+      board = create(:board)
+      board2 = create(:board)
+
+      section1 = create(:board_section, board_id: board.id)
+      post = create(:post, board_id: board.id)
+      section2 = create(:board_section, board_id: board.id)
+
+      expect(section1.section_order).to eq(0)
+      expect(post.section_order).to eq(1)
+      expect(section2.section_order).to eq(2)
+
+      post.board_id = board2.id
+      post.skip_edited = true
+      post.save
+
+      expect(post.reload.section_order).to eq(0)
+      expect(section1.reload.section_order).to eq(0)
+      expect(section2.reload.section_order).to eq(1)
+    end
+  end
+
+  describe "#has_icons?" do
+    let(:user) { create(:user) }
+
+    context "without character" do
+      let(:post) { create(:post, user: user) }
+
+      it "is true with avatar" do
+        icon = create(:icon, user: user)
+        user.update_attributes(avatar: icon)
+        user.reload
+
+        expect(post.character).to be_nil
+        expect(post.has_icons?).to be_true
+      end
+
+      it "is false without avatar" do
+        expect(post.character).to be_nil
+        expect(post.has_icons?).not_to be_true
+      end
+    end
+
+    context "with character" do
+      let(:character) { create(:character, user: user) }
+      let(:post) { create(:post, user: user, character: character) }
+
+      it "is true with default icon" do
+        icon = create(:icon, user: user)
+        character.update_attributes(default_icon: icon)
+        expect(post.has_icons?).to be_true
+      end
+
+      it "is false without galleries" do
+        expect(post.has_icons?).not_to be_true
+      end
+
+      it "is true with icons in galleries" do
+        gallery = create(:gallery, user: user)
+        gallery.icons << create(:icon, user: user)
+        character.galleries << gallery
+        expect(post.has_icons?).to be_true
+      end
+
+      it "is false without icons in galleries" do
+        character.galleries << create(:gallery, user: user)
+        expect(post.has_icons?).not_to be_true
+      end
     end
   end
 end

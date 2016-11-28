@@ -1,7 +1,8 @@
 class Post < ActiveRecord::Base
   include Writable
   include Viewable
-  include Orderable
+  include PostOrderable
+  include PgSearch
 
   PRIVACY_PUBLIC = 0
   PRIVACY_PRIVATE = 1
@@ -11,6 +12,9 @@ class Post < ActiveRecord::Base
   STATUS_ACTIVE = 0
   STATUS_COMPLETE = 1
   STATUS_HIATUS = 2
+  STATUS_ABANDONED = 3
+
+  EDITED_ATTRS = %w(subject content icon_id character_id)
 
   belongs_to :board, inverse_of: :posts
   belongs_to :section, class_name: BoardSection, inverse_of: :posts
@@ -23,6 +27,7 @@ class Post < ActiveRecord::Base
   has_many :tags, through: :post_tags
   has_many :settings, through: :post_tags, source: :setting
   has_many :content_warnings, through: :post_tags, source: :content_warning
+  has_many :favorites, as: :favorite, dependent: :destroy
 
   attr_accessible :board, :board_id, :subject, :privacy, :post_viewer_ids, :description, :section_id, :tag_ids, :warning_ids, :setting_ids, :section_order
   attr_accessor :post_viewer_ids, :tag_ids, :warning_ids, :setting_ids
@@ -35,6 +40,16 @@ class Post < ActiveRecord::Base
 
   audited except: [:last_reply_id, :last_user_id, :edited_at, :tagged_at, :section_id, :section_order]
   has_associated_audits
+
+  pg_search_scope(
+    :search,
+    against: %i(
+      subject
+      content
+    ),
+    using: {tsearch: { dictionary: "english" } }
+  )
+  scope :no_tests, where('posts.board_id != ?', Board::ID_SITETESTING)
 
   def visible_to?(user)
     return true if privacy == PRIVACY_PUBLIC
@@ -87,11 +102,15 @@ class Post < ActiveRecord::Base
   end
 
   def on_hiatus?
-    status == STATUS_HIATUS
+    status == STATUS_HIATUS || (active? && tagged_at < 1.month.ago)
   end
 
   def active?
     status == STATUS_ACTIVE
+  end
+
+  def abandoned?
+    status == STATUS_ABANDONED
   end
 
   def self.privacy_settings
@@ -167,13 +186,16 @@ class Post < ActiveRecord::Base
 
   def timestamp_attributes_for_update
     # Makes Rails treat edited_at as a timestamp identical to updated_at
-    # unless the @skip_edited flag is set. Also uses tagged_at if there
+    # if specific attributes are updated. Also uses tagged_at if there
     # are no replies yet.
     # Be VERY CAREFUL editing this!
-    timestamps = super
-    timestamps << :tagged_at if replies.empty?
-    timestamps << :edited_at unless @skip_edited
-    timestamps
+    return super if skip_edited
+    return super + [:edited_at] unless replies.empty?
+    super + [:edited_at, :tagged_at]
+  end
+
+  def skip_edited
+    @skip_edited || !EDITED_ATTRS.any?{ |edit| send(edit + "_changed?")}
   end
 
   def timestamp_attributes_for_create

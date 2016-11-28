@@ -6,11 +6,20 @@
       = image_tag "/images/book.png", class: 'vmid', title: "Thread Complete"
     - if post.on_hiatus?
       = image_tag "/images/hourglass.png", class: 'vmid', title: "Thread On Hiatus"
+    - if post.abandoned?
+      = image_tag "/images/book_grey.png", class: 'vmid', title: "Thread Abandoned"
     - if post.content_warnings.present?
       = image_tag "/images/exclamation.png", class: 'vmid', title: "Content Warning: " + post.content_warnings.map(&:name).join(', '), alt: '!'
   %td.post-subject{class: klass}
-    = link_to post.subject, post_path(post)
-    - if !@show_unread && (!logged_in? || per_page > 0)
+    - if logged_in? && (@show_unread || !@unread_ids.nil?)
+      - if @unread_ids.nil? || @unread_ids.include?(post.id)
+        = link_to post_path(post, page: 'unread', anchor: 'unread') do
+          = image_tag unread_img, class: 'vmid', title: 'First Unread'
+    - if logged_in? && @opened_ids.present? && !@opened_ids.include?(post.id)
+      %b= link_to post.subject, post_path(post)
+    - else
+      = link_to post.subject, post_path(post)
+    - if !@show_unread && @opened_ids.nil? && (!logged_in? || per_page > 0)
       - total_pages = (replies_count.to_f / per_page).ceil
       - if total_pages > 1
         = surround '[', ']' do
@@ -26,17 +35,13 @@
             \...
             - (total_pages-2).upto(total_pages) do |index|
               = link_to (index), post_path(post, page: index)
-    - if logged_in? && @show_unread
-      - if !@conditional_unread || @opened_ids.include?(post.id)
-        = link_to post_path(post, page: 'unread', anchor: 'unread') do
-          = image_tag unread_img, class: 'vmid', title: 'First Unread'
   - unless local_assigns[:hide_continuity]
     %td.post-board{class: klass}= link_to post.board.name, board_path(post.board)
   %td.post-authors{class: klass}= post.authors.map { |author| link_to author.username, user_path(author) }.join(', ').html_safe
   %td.width-70.post-replies{class: klass}= replies_count
   - if logged_in? && local_assigns[:show_unread_count]
     %td.width-70{class: klass}
-      - if @opened_ids.include?(post.id)
+      - if @opened_ids.include?(post.id) && @unread_ids.include?(post.id)
         = Reply.where(post_id: post.id).where('created_at > ?', post.last_read(current_user)).count
       - else
         \-

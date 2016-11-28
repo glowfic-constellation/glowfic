@@ -3,20 +3,20 @@ var gallery_ids = [];
 $(document).ready(function() {
   gallery_ids = jQuery.map($(".gallery div"), function(el) { return el.dataset['id']; });
 
-  $("#character_template_id").chosen({
+  $("#character_template_id").select2({
     width: '100%',
-    disable_search_threshold: 10,
+    minimumResultsForSearch: 10,
   });
 
-  $("#character_gallery_ids").chosen({
+  $("#character_gallery_ids").select2({
     width: '100%',
-    disable_search_threshold: 10,
-    placeholder_text_multiple: 'Default Gallery'
+    minimumResultsForSearch: 10,
+    placeholder: 'Default Gallery'
   });
 
-  $("#character_character_group_id").chosen({
+  $("#character_character_group_id").select2({
     width: '100%',
-    disable_search_threshold: 10,
+    minimumResultsForSearch: 10,
   });
 
   bindIcons();
@@ -44,23 +44,14 @@ $(document).ready(function() {
     var new_gallery;
 
     // a gallery was removed
-    if(gallery_ids.length > new_gallery_ids.length) {  
+    if(gallery_ids.length > new_gallery_ids.length) {
       var removed_gallery = $(gallery_ids).not(new_gallery_ids).get();
       gallery_ids = new_gallery_ids;
       $(".gallery #gallery"+removed_gallery).remove();
 
       // if no more galleries are left, display galleryless icons
       if (gallery_ids == '') {
-        $.get('/galleries/0', function (resp) {
-          $("#selected-gallery .gallery").html("<div id='gallery0' data-id='0'></div>");
-          for(var i = 0; i < resp['icons'].length; i++) {
-            var url = resp['icons'][i]['url'];
-            var keyword = resp['icons'][i]['keyword'];
-            var id = resp['icons'][i]['id'];
-            $("#selected-gallery .gallery #gallery0").append('<img src="'+url+'" alt="'+keyword+'" title="'+keyword+'" class="icon character-icon" id="'+id+'" />');  
-          }
-          bindIcons();
-        });
+        displayGallery('0');
       }
       return;
     }
@@ -69,18 +60,24 @@ $(document).ready(function() {
     gallery_ids = new_gallery_ids;
     $(".gallery #gallery0").remove();
 
-    $.get('/galleries/'+new_id, function (resp) {
-      $("#selected-gallery .gallery").append("<div id='gallery"+new_id+"' data-id='"+new_id+"'><br><b>"+resp['name']+"</b><br></div>");
-      for(var i = 0; i < resp['icons'].length; i++) {
-        var url = resp['icons'][i]['url'];
-        var keyword = resp['icons'][i]['keyword'];
-        var id = resp['icons'][i]['id'];
-        $("#selected-gallery .gallery #gallery"+new_id).append('<img src="'+url+'" alt="'+keyword+'" title="'+keyword+'" class="icon character-icon" id="'+id+'" />');  
-      }
-      bindIcons();
-    });
+    displayGallery(new_id);
   });
 });
+
+function displayGallery(new_id){
+  $.get('/galleries/'+new_id, function (resp) {
+    html_string = "<div id='gallery"+new_id+"' data-id='"+new_id+"'><br /><b class='gallery-name'>"+resp['name']+"</b><br /><div class='gallery-icons'>";
+    for(var i = 0; i < resp['icons'].length; i++) {
+      var url = resp['icons'][i]['url'];
+      var keyword = resp['icons'][i]['keyword'];
+      var id = resp['icons'][i]['id'];
+      html_string += '<img src="'+url+'" alt="'+keyword+'" title="'+keyword+'" class="icon character-icon" id="'+id+'" />';
+    }
+    html_string += "</div>";
+    $("#selected-gallery .gallery").append(html_string);
+    bindIcons();
+  }, 'json');
+}
 
 function bindIcons() {
   $(".character-icon").click(function() {

@@ -1,6 +1,6 @@
 $(document).ready(function() {
-  $("#message_recipient_id").chosen({
+  $("#message_recipient_id").select2({
     width: '230px',
-    disable_search_threshold: 20,
+    minimumResultsForSearch: 20,
   });
 });

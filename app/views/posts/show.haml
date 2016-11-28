@@ -12,10 +12,10 @@
   - content_for :flashes do
     .flash.error
       - if logged_in?
-        = link_to warnings_post_path(@post), method: :post do
+        = link_to warnings_post_path(@post, page: page, per_page: per_page), method: :post do
           .link-box.red.float-right Dismiss for this post
       - else
-        = link_to warnings_post_path(@post), method: :post, confirm: 'Are you sure? You will not see content warnings again until you restart your browser!' do
+        = link_to warnings_post_path(@post, page: page, per_page: per_page), method: :post, confirm: 'Are you sure? You will not see content warnings again until you restart your browser!' do
           .link-box.red.float-right Dismiss all content warnings
       = image_tag "/images/exclamation.png", class: 'vmid'
       This post has the following content warnings:
@@ -35,7 +35,7 @@
     /  %div
     /    = image_tag '/images/book_go.png'
     /    Download as ePub
-    = link_to post_path(@post, view: 'flat') do
+    = link_to post_path(@post, view: 'flat'), rel: 'nofollow noindex' do
       %div
         = image_tag '/images/page_world.png'
         View Flat HTML
@@ -44,6 +44,20 @@
         = image_tag '/images/chart_bar.png'
         View Stats
     - if logged_in?
+      = link_to post_path(@post, unread: true), method: :put do
+        %div
+          = image_tag '/images/eye.png', class: 'vmid', style: 'margin-bottom: 3px;'
+          Mark Unread
+      - if fav = Favorite.between(current_user, @post)
+        = link_to favorite_path(fav), method: :delete do
+          %div
+            = image_tag '/images/star_delete.png', class: 'vmid', style: 'margin-bottom: 3px;'
+            Unfavorite
+      - else
+        = link_to favorites_path(post_id: @post.id), method: :post do
+          %div
+            = image_tag '/images/star_add.png', class: 'vmid', style: 'margin-bottom: 3px;'
+            Favorite
       - if @post.metadata_editable_by?(current_user)
         - unless @post.completed?
           = link_to post_path(@post, status: 'complete'), method: :put do
@@ -60,10 +74,21 @@
             %div
               = image_tag '/images/book_open.png'
               Mark In Progress
-      = link_to post_path(@post, unread: true), method: :put do
-        %div
-          = image_tag '/images/eye.png', class: 'vmid', style: 'margin-bottom: 3px;'
-          Mark Unread
+        - unless @post.abandoned?
+          = link_to post_path(@post, status: 'abandoned'), method: :put do
+            %div
+              = image_tag '/images/book_grey.png'
+              Mark Abandoned
+        - if @post.authors_locked?
+          = link_to post_path(@post, authors_locked: 'false'), method: :put do
+            %div
+              = image_tag '/images/lock_open.png'
+              Unlock Authors
+        - else
+          = link_to post_path(@post, authors_locked: 'true'), method: :put do
+            %div
+              = image_tag '/images/lock.png'
+              Lock Post to Authors
       / TODO need more dynos before I can create this feature
       /= link_to users_path do
       /  %div
@@ -93,18 +118,29 @@
       = render partial: 'replies/single', locals: {reply: @post}
 - if @replies.present?
   = render partial: 'posts/paginator', locals: { paginated: @replies, path: :post_path }
-- @replies.each do |reply|
-  = render partial: 'replies/single', locals: {reply: reply}
+= render partial: 'replies/single', collection: @replies, as: :reply, cache: !logged_in? # don't need uncached: @unread for logged out
 - if @post.completed? && (@replies.empty? || (@replies.last.id == @post.replies.order('id desc').first.id))
   .post-ender Here Ends This Thread
+  - if @prev_post || @next_post
+    .post-navheader
+      .padding-10
+        - if @next_post
+          = link_to post_path(@next_post) do
+            .view-button Next Post &raquo;
+        - if @prev_post
+          = link_to post_path(@prev_post) do
+            .view-button.float-none &laquo; Previous Post
+        .clear
 - if @post.on_hiatus? && (@replies.empty? || (@replies.last.id == @post.replies.order('id desc').first.id))
   .post-ender This Thread Is On Hiatus
+- if @post.abandoned? && (@replies.empty? || (@replies.last.id == @post.replies.order('id desc').first.id))
+  .post-ender This Thread Has Been Permanently Abandoned
 - if @replies.present?
   = render partial: 'posts/paginator', locals: { paginated: @replies, path: :post_path }
 - if logged_in? && !@post.completed? && current_user.writes_in?(@post.board)
   - if @post.authors.include?(current_user)
     = render partial: 'posts/write_reply', locals: { reply: @reply, url: replies_path, method: :post }
-  - else
+  - elsif !@post.authors_locked?
     .post-expander
       .info + Join Thread
       .hidden

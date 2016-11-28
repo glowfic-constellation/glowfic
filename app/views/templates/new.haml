@@ -1,9 +1,10 @@
+- content_for :breadcrumbs do
+  = link_to "Characters", characters_path
+  &raquo;
+  %b New Template
+
 = form_for @template, :url => templates_path, :method => :post do |f|
   %table.form-table
     %tr
       %th.centered{colspan: 2} New Template
-    %tr
-      %th.sub Template Name
-      %td.even= f.text_field :name, placeholder: "Template Name", class: 'text'
-    %tr
-      %th.subber{colspan: 2}= submit_tag "Create", class: 'button'
+    = render partial: 'editor', locals: {f: f}

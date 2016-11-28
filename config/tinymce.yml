@@ -17,4 +17,4 @@ autoresize_bottom_margin: 15
 browser_spellcheck: true
 relative_urls: false
 remove_script_host: true
-document_base_url: 'https://vast-journey-9935.herokuapp.com/'
+document_base_url: <%= ENV['DOMAIN_NAME'] ? "https://#{ENV['DOMAIN_NAME']}/" : '/' %>
