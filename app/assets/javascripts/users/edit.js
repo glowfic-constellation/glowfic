@@ -1,28 +1,28 @@
 $(document).ready(function() {
-  $("#user_per_page").chosen({
+  $("#user_per_page").select2({
     width: '70px',
-    disable_search_threshold: 20,
+    minimumResultsForSearch: 20,
   });
 
-  $("#user_default_view").chosen({
+  $("#user_default_view").select2({
     width: '100px',
-    disable_search_threshold: 20,
+    minimumResultsForSearch: 20,
   });
 
-  $("#user_default_editor").chosen({
+  $("#user_default_editor").select2({
     width: '100px',
-    disable_search_threshold: 20,
+    minimumResultsForSearch: 20,
   });
 
-  $("#user_layout").chosen({
+  $("#user_layout").select2({
     width: '150px',
-    disable_search_threshold: 20,
+    minimumResultsForSearch: 20,
   });
 
-  $("#user_timezone").chosen({width: '250px'});
+  $("#user_timezone").select2({width: '250px'});
   
-  $("#user_time_display").chosen({
+  $("#user_time_display").select2({
     width: '200px',
-    disable_search_threshold: 20
+    minimumResultsForSearch: 20
   });
 });
