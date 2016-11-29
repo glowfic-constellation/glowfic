@@ -60,7 +60,7 @@ class User < ActiveRecord::Base
   end
 
   def galleryless_icons
-    icons.where(has_gallery: false).sort_by{|i| i.keyword.downcase }
+    icons.where(has_gallery: false).order('LOWER(keyword)')
   end
 
   def default_view

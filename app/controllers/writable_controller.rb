@@ -4,16 +4,16 @@ class WritableController < ApplicationController
   def build_template_groups
     return unless logged_in?
 
-    templates = current_user.templates.includes(:characters).sort_by(&:name)
+    templates = current_user.templates.includes(:characters).order('LOWER(name)')
     faked = Struct.new(:name, :id, :ordered_characters)
     templateless = faked.new('Templateless', nil, current_user.characters.where(:template_id => nil).to_a.sort_by(&:name))
     @templates = templates + [templateless]
 
     if @post
-      uniq_chars_ids = @post.replies.where(user_id: current_user.id).select(:character_id).group(:character_id).map(&:character_id).uniq
-      uniq_chars_ids << @post.character_id if @post.user_id == current_user.id
-      uniq_chars = Character.where(id: uniq_chars_ids.compact).to_a
-      threadchars = faked.new('Thread characters', nil, uniq_chars.sort_by(&:name))
+      uniq_chars_ids = @post.replies.where(user_id: current_user.id).where('character_id is not null').select(:character_id).group(:character_id).map(&:character_id)
+      uniq_chars_ids << @post.character_id if @post.user_id == current_user.id && @post.character_id.present?
+      uniq_chars = Character.where(id: uniq_chars_ids).order('LOWER(name)')
+      threadchars = faked.new('Thread characters', nil, uniq_chars)
       @templates.insert(0, threadchars)
     end
     @templates.reject! {|template| template.ordered_characters.empty? }
@@ -23,9 +23,9 @@ class WritableController < ApplicationController
   end
 
   def show_post(cur_page=nil)
-    @threaded = false
     replies = @post.replies
     # Can resurrect when threading exists properly; for now, skip the database query.
+    # @threaded = false
     # replies = if @post.replies.where('thread_id is not null').count > 1
     #   @threaded = true
     #   if params[:thread_id].present?
@@ -92,7 +92,6 @@ class WritableController < ApplicationController
           user: current_user,
           icon: active_char.try(:icon))
         @character = @reply.character
-        @image = @character ? @character.icon : current_user.avatar
         gon.original_content = @reply.content
       end
 

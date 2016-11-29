@@ -25,7 +25,7 @@ class CharacterPresenter
     galleries_json = galleries.map do |gallery|
       {
         name: gallery.name,
-        icons: gallery.icons.sort_by { |i| i.keyword }
+        icons: gallery.icons.order('LOWER(keyword)')
       }
     end
   end

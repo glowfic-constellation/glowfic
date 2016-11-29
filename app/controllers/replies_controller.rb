@@ -59,7 +59,6 @@ class RepliesController < WritableController
 
   def edit
     @character = @reply.character
-    @image = @reply.icon
     use_javascript('posts')
     gon.original_content = @reply.content
   end
