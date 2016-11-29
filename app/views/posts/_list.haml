@@ -16,6 +16,10 @@
       %tr
         %td.continuity-spacer{colspan: col_count}
     %tr
+      %th.sub{colspan: col_count, style: 'padding: 0;'}
+        - if posts.methods.include?(:total_pages) && posts.total_pages > 1
+          = render partial: 'posts/paginator', locals: { paginated: posts, path: (local_assigns[:path] || :posts_path), compact: true, hide_total: true }
+    %tr
       %th.sub.width-15
       %th.sub Thread
       - unless local_assigns[:hide_continuity]
@@ -36,4 +40,4 @@
   - if posts.methods.include?(:total_pages) && posts.total_pages > 1
     %tfoot
       %tr
-        %td{colspan: col_count}= render partial: 'posts/paginator', locals: { paginated: posts }
+        %td{colspan: col_count}= render partial: 'posts/paginator', locals: { paginated: posts, compact: true }

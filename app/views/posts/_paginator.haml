@@ -1,8 +1,9 @@
-.paginator.centered.sub
+.paginator.centered.sub{class: (local_assigns[:compact] ? 'paginator-compact' : '')}
   - unless browser.device.mobile?
-    .left-align
-      Total:
-      %span.reply-count=paginated.total_entries
+    - unless local_assigns[:hide_total]
+      .left-align
+        Total:
+        %span.reply-count=paginated.total_entries
     .right-align
       - if paginated.klass == Reply && !local_assigns[:no_per]
         Posts Per Page:
