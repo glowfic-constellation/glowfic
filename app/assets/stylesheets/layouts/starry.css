@@ -49,3 +49,6 @@ a:visited { color: #484357; }
 .pagination a { color: #F3F3F3; }
 .pagination a:visited { color: #9C9AA4; }
 .pagination .disabled { color: #58546B; }
+
+/* make the compact paginator less ugly */
+#content .paginator.paginator-compact { border-bottom: none; }
