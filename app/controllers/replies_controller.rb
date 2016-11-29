@@ -47,16 +47,6 @@ class RepliesController < WritableController
     end
   end
 
-  def preview
-    build_template_groups
-
-    @written = Reply.new(params[:reply])
-    @post = @written.post
-    @written.user = current_user
-
-    use_javascript('posts')
-  end
-
   def show
     @page_title = @post.subject
     params[:page] ||= @reply.post_page(per_page)
@@ -124,7 +114,6 @@ class RepliesController < WritableController
     @written = Reply.new(params[:reply])
     @post = @written.post
     @written.user = current_user
-    @character = @written.character
 
     use_javascript('posts')
   end
