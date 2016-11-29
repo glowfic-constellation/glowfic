@@ -4,7 +4,7 @@ class PostsController < WritableController
   before_filter :login_required, except: [:index, :show, :history, :warnings, :search, :stats]
   before_filter :find_post, only: [:show, :history, :stats, :warnings, :edit, :update, :destroy]
   before_filter :require_permission, only: [:edit, :destroy]
-  before_filter :build_template_groups, only: [:new, :show, :edit]
+  before_filter :build_template_groups, only: [:new, :edit]
   before_filter :build_tags, only: [:new, :edit]
 
   def index

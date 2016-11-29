@@ -1,7 +1,5 @@
 - content_for :form do
   = form_for reply, :url => url, :method => method, :html => {:id => 'post_form'} do |f|
-    - if @unread.nil?
-      <a name="unread"></a>
     %b Reply
     .view-button#rtf{class: ('selected' if (params[:editor_mode] || current_user.default_editor) == 'rtf')} Rich Text
     .view-button#html{class: ('selected' if (params[:editor_mode] || current_user.default_editor) == 'html')} HTML

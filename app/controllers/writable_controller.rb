@@ -37,7 +37,6 @@ class WritableController < ApplicationController
     #   @post.replies
     # end
 
-    @unread = @post.first_unread_for(current_user) if logged_in?
     if per_page > 0
       per = per_page
       cur_page ||= page
@@ -45,6 +44,7 @@ class WritableController < ApplicationController
         self.page = cur_page = @post.replies.paginate(per_page: per, page: 1).total_pages
       elsif cur_page == 'unread'
         if logged_in?
+          @unread = @post.first_unread_for(current_user) if logged_in?
           if @unread.nil?
             self.page = cur_page = @post.replies.paginate(per_page: per, page: 1).total_pages
           elsif @unread.class == Post
@@ -70,12 +70,8 @@ class WritableController < ApplicationController
     use_javascript('paginator')
 
     unless @post.board.open_to_anyone?
-      if @post.section_order.nil?
-        ExceptionNotifier.notify_exception(Exception.new, data: {id: @post.id, board: @post.board_id, section: @post.section_id})
-      else
-        @next_post = Post.where(board_id: @post.board_id).where(section_id: @post.section_id).where(section_order: @post.section_order + 1).first
-        @prev_post = Post.where(board_id: @post.board_id).where(section_id: @post.section_id).where(section_order: @post.section_order - 1).first
-      end
+      @next_post = Post.where(board_id: @post.board_id).where(section_id: @post.section_id).where(section_order: @post.section_order + 1).first
+      @prev_post = Post.where(board_id: @post.board_id).where(section_id: @post.section_id).where(section_order: @post.section_order - 1).first
     end
 
     # show <link rel="canonical"> – for SEO stuff
@@ -87,15 +83,18 @@ class WritableController < ApplicationController
     if logged_in?
       use_javascript('posts')
 
-      active_char = @post.last_character_for(current_user)
-      @reply = ReplyDraft.draft_reply_for(@post, current_user) || Reply.new(
-        post: @post,
-        character: active_char,
-        user: current_user,
-        icon: active_char.try(:icon))
-      @character = @reply.character
-      @image = @character ? @character.icon : current_user.avatar
-      gon.original_content = @reply.content
+      if @post.taggable_by?(current_user)
+        build_template_groups
+        active_char = @post.last_character_for(current_user)
+        @reply = ReplyDraft.draft_reply_for(@post, current_user) || Reply.new(
+          post: @post,
+          character: active_char,
+          user: current_user,
+          icon: active_char.try(:icon))
+        @character = @reply.character
+        @image = @character ? @character.icon : current_user.avatar
+        gon.original_content = @reply.content
+      end
 
       @post.mark_read(current_user, @post.read_time_for(@replies)) unless @post.board.ignored_by?(current_user)
     end
