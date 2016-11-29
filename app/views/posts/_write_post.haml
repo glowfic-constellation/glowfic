@@ -1,7 +1,7 @@
 - content_for :form do
   = form_for post, :url => url, :method => method, :html => { :id => 'post_form' } do |f|
     = f.label :board_id, 'Continuity:'
-    = f.select :board_id, options_from_collection_for_select(Board.select {|b| current_user.writes_in?(b) }, :id, :name, @post.board_id)
+    = f.select :board_id, options_from_collection_for_select(Board.order('pinned DESC, LOWER(name)').select {|b| current_user.writes_in?(b) }, :id, :name, @post.board_id)
     %br
     #section{class: ('hidden' unless @post.board && @post.board.board_sections.exists?)}
       = f.label :section_id, 'Continuity section:'
