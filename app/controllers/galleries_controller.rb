@@ -192,7 +192,7 @@ class GalleriesController < ApplicationController
     find_gallery if params[:id] != '0'
     @unassigned = current_user.galleryless_icons
     @page_title = "Add Icons"
-    @page_title += ": " + @gallery.name unless params[:id] == '0'
+    @page_title += ": " + @gallery.name unless @gallery.nil?
   end
 
   def set_s3_url
