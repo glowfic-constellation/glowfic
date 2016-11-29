@@ -5,6 +5,7 @@ class TemplatesController < ApplicationController
 
   def new
     @template = Template.new
+    @page_title = "New Template"
   end
 
   def create
@@ -15,6 +16,7 @@ class TemplatesController < ApplicationController
       redirect_to template_path(@template)
     else
       flash.now[:error] = "Your template could not be saved."
+      @page_title = "New Template"
       render :action => :new
     end
   end
@@ -26,9 +28,11 @@ class TemplatesController < ApplicationController
     post_ids = Reply.where(character_id: character_ids).select(:post_id).map(&:post_id).uniq
     where = Post.where(character_id: character_ids).where(id: post_ids).where_values.reduce(:or)
     @posts = Post.where(where).order('tagged_at desc').paginate(per_page: 25, page: page)
+    @page_title = @template.name
   end
 
   def edit
+    @page_title = 'Edit Template: ' + @template.name
   end
 
   def update
@@ -37,6 +41,7 @@ class TemplatesController < ApplicationController
       redirect_to template_path(@template)
     else
       flash.now[:error] = "Your template could not be saved."
+      @page_title = 'Edit Template: ' + @template.name_was
       render :action => :edit
     end
   end

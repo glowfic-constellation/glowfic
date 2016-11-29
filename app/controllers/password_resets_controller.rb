@@ -3,9 +3,11 @@ class PasswordResetsController < ApplicationController
   before_filter :find_reset, only: [:show, :update]
 
   def new
+    @page_title = 'Reset Password'
   end
 
   def create
+    @page_title = 'Reset Password'
     unless params[:email].present?
       flash.now[:error] = "Email is required."
       render :new and return
@@ -42,6 +44,7 @@ class PasswordResetsController < ApplicationController
   end
 
   def show
+    @page_title = 'Change Password'
   end
 
   def update
@@ -53,6 +56,7 @@ class PasswordResetsController < ApplicationController
       flash.now[:error] = {}
       flash.now[:error][:message] = "Could not update password."
       flash.now[:error][:array] = @password_reset.user.errors.full_messages
+      @page_title = 'Change Password'
       render :show and return
     end
 
