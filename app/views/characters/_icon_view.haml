@@ -4,7 +4,7 @@
 %tr
   %td.green.left-align
     .gallery
-      - @characters.includes(:default_icon).each do |character|
+      - @characters.order('name asc').includes(:default_icon).each do |character|
         .gallery-icon
           = link_to character_path(character) do
             - if character.icon

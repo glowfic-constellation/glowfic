@@ -9,6 +9,8 @@ $(document).ready(function() {
   });
   $(selectd).prop("selected", true);
 
+  PRIVACY_ACCESS = 2; // TODO don't hardcode
+
   // Adding Select2 UI to relevant selects
   $("#post_board_id").select2({
     width: '200px',
@@ -110,6 +112,9 @@ $(document).ready(function() {
     setIconFromId(iconId); // Handle the case where just the icon was cached
   };
 
+  if ($("#post_privacy").val() != PRIVACY_ACCESS)
+    $("#access_list").hide();
+
   // Bind both change() and keyup() in the icon keyword dropdown because Firefox doesn't
   // respect up/down key selections in a dropdown as a valid change() trigger
   $("#icon_dropdown").change(function() { setIconFromId($(this).val()); });
@@ -135,7 +140,7 @@ $(document).ready(function() {
   });
 
   $("#post_privacy").change(function() {
-    if($(this).val() == 2) { // TODO don't hardcode, should be PRIVACY_ACCESS
+    if($(this).val() == PRIVACY_ACCESS) {
       $("#access_list").show();
     } else {
       $("#access_list").hide();

@@ -4,7 +4,6 @@ class PostsController < WritableController
   before_filter :login_required, except: [:index, :show, :history, :warnings, :search, :stats]
   before_filter :find_post, only: [:show, :history, :stats, :warnings, :edit, :update, :destroy]
   before_filter :require_permission, only: [:edit, :destroy]
-  before_filter :build_template_groups, only: [:show]
   before_filter :editor_setup, only: [:new, :edit]
 
   def index
@@ -77,8 +76,7 @@ class PostsController < WritableController
   def new
     @post = Post.new(character: current_user.active_character, user: current_user)
     @post.board_id = params[:board_id]
-    image = current_user.active_character.try(:icon) || current_user.avatar
-    @post.icon_id = image.try(:id)
+    @post.icon_id = (current_user.active_character.try(:icon) || current_user.avatar).try(:id)
   end
 
   def create

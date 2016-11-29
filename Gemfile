@@ -21,8 +21,8 @@ gem 'redis-rails'
 gem 'sanitize'
 gem 'sass-rails'
 gem 'select2-rails'
+gem 'test-unit', '~> 3.0' # required by Heroku for production console
 gem 'tinymce-rails'
-gem 'tunemygc'
 gem 'will_paginate', '~> 3.0.6'
 
 group :production do
@@ -30,6 +30,7 @@ group :production do
   gem 'rack-cors'
   gem 'rack-timeout'
   gem 'rails_12factor'
+  gem 'tunemygc'
 end
 
 group :assets do
@@ -50,7 +51,6 @@ group :test do
   gem 'json', '1.8.2'
   gem 'rspec-rails'
   gem 'simplecov'
-  gem 'test-unit', '~> 3.0'
   gem 'timecop'
   gem 'webmock'
 end
