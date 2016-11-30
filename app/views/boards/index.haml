@@ -15,7 +15,7 @@
             = @user.username + "'s Continuities"
         - else
           Continuities
-        - if logged_in? && (@user.try(:id) == current_user.id)
+        - if logged_in? && (@user.nil? || @user.try(:id) == current_user.id)
           = link_to new_board_path do
             .link-box.green + New Continuity
     %tr
