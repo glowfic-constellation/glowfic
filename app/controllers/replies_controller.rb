@@ -58,7 +58,6 @@ class RepliesController < WritableController
   end
 
   def edit
-    @character = @reply.character
     use_javascript('posts')
     gon.original_content = @reply.content
   end
@@ -115,7 +114,6 @@ class RepliesController < WritableController
     @written = Reply.new(params[:reply])
     @post = @written.post
     @written.user = current_user
-    @character = @written.character
 
     use_javascript('posts')
   end

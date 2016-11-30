@@ -11,7 +11,7 @@
       #icon-overlay
     #current-icon-dropdown
       - if item.character
-        = select_tag :icon_dropdown, options_for_select(item.character.icons.map{|i| [i.keyword, i.id]}, item.icon.try(:id)), prompt: "No Icon"
+        = select_tag :icon_dropdown, options_for_select(item.character.icons.map{|i| [i.keyword, i.id]}, item.icon_id), prompt: "No Icon"
       - elsif current_user.avatar
         = select_tag :icon_dropdown, options_for_select([[current_user.avatar.keyword, current_user.avatar.id]], current_user.avatar.id), prompt: "No Icon"
     .post-info-text
@@ -24,8 +24,8 @@
           = image_tag ((current_user.layout == 'starrydark' or current_user.layout == 'starry' or current_user.layout == 'starrylight') ? '/images/swapgray.png' : '/images/swap.png'), :id => 'swap-icon', :alt => ">"
           #character-selector.beige
             %b Choose Character
-            = select_tag :active_character, 
-            option_groups_from_collection_for_select(@templates, :ordered_characters, :name, :id, :selector_name, @character.try(:id)),
+            = select_tag :active_character,
+            option_groups_from_collection_for_select(@templates, :ordered_characters, :name, :id, :selector_name, item.character_id),
             { :prompt => current_user.username }
             %br
   #gallery.green
