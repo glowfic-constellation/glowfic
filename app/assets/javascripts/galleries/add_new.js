@@ -14,7 +14,7 @@ function fixButtons() {
   $("#icon-table tr.icon-row:even td").removeClass('odd').addClass("even");
 };
 
-function bindAdd() { 
+function bindAdd() {
   $(".icon-row-add").click(function () {
     addNewRow();
     fixButtons();
@@ -71,7 +71,7 @@ function bindFileInput(fileInput) {
           return;
         } else if (fileType === 'image/tiff') {
           alert("Unfortunately, .tiff files are only supported by Safari - please retry with a valid file.");
-          return
+          return;
         }
 
         formData["Content-Type"] = fileType;
@@ -95,6 +95,14 @@ function bindFileInput(fileInput) {
         var urlCell = $(urlInput.parents('td:first'));
         urlInput.hide().val(url);
         urlCell.find('.conf').remove();
+
+        // update keyword box with data.files[0].name minus file extension
+        var keyword = data.files[0].name;
+        var fileExt = keyword.split('.').slice(-1)[0];
+        if (fileExt != keyword)
+          keyword = keyword.replace('.'+fileExt, '');
+        $(".icon-row[data-index='" + iconIndex + "'] input[id$='_keyword']").val(keyword);
+
         var uploaded = ' Uploaded ' + data.files[0].name;
         urlCell.append("<span class='conf'><img src='/images/accept.png' alt='' title='Successfully uploaded' class='vmid' />"+uploaded+"</span>");
         cleanUpRows();
