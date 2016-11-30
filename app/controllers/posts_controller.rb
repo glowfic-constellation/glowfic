@@ -78,8 +78,7 @@ class PostsController < WritableController
     use_javascript('posts')
     @post = Post.new(character: current_user.active_character, user: current_user)
     @post.board_id = params[:board_id]
-    @post.icon_id = @character ? @character.icon.try(:id) : current_user.avatar_id
-    @character = current_user.active_character
+    @post.icon_id = (current_user.active_character ? current_user.active_character.icon_id : current_user.avatar_id)
   end
 
   def create
@@ -98,7 +97,6 @@ class PostsController < WritableController
       flash.now[:error] = {}
       flash.now[:error][:array] = @post.errors.full_messages
       flash.now[:error][:message] = "Your post could not be saved because of the following problems:"
-      @character = @post.character
       use_javascript('posts')
       build_template_groups
       build_tags
@@ -123,7 +121,6 @@ class PostsController < WritableController
     @written = Post.new(params[:post])
     @post = @written
     @written.user = current_user
-    @character = @post.character
     @url = path
     @method = method
 
@@ -136,7 +133,6 @@ class PostsController < WritableController
 
   def edit
     use_javascript('posts')
-    @character = @post.character
     gon.original_content = @post.content
   end
 
@@ -162,7 +158,6 @@ class PostsController < WritableController
       flash.now[:error] = {}
       flash.now[:error][:array] = @post.errors.full_messages
       flash.now[:error][:message] = "Your post could not be saved because of the following problems:"
-      @character = @post.character
       use_javascript('posts')
       build_template_groups
       build_tags
