@@ -139,8 +139,8 @@
   = render partial: 'posts/paginator', locals: { paginated: @replies, path: :post_path }
 - if logged_in? && @unread.nil?
   <a name="unread"></a>
-- if logged_in? && !@post.completed? && current_user.writes_in?(@post.board)
-  - if @post.authors.include?(current_user)
+- if @post.taggable_by?(current_user)
+  - if @post.author_ids.include?(current_user.id)
     = render partial: 'posts/write_reply', locals: { reply: @reply, url: replies_path, method: :post }
   - elsif !@post.authors_locked?
     .post-expander

@@ -10,7 +10,7 @@
       = image_tag "/images/book_grey.png", class: 'vmid', title: "Thread Abandoned"
     - if post.content_warnings.present?
       = image_tag "/images/exclamation.png", class: 'vmid', title: "Content Warning: " + post.content_warnings.map(&:name).join(', '), alt: '!'
-  %td.post-subject{class: klass}
+  %td.post-subject{class: klass, title: strip_tags(post.description)}
     - if logged_in? && (@show_unread || !@unread_ids.nil?)
       - if @unread_ids.nil? || @unread_ids.include?(post.id)
         = link_to post_path(post, page: 'unread', anchor: 'unread') do

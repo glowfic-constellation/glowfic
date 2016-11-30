@@ -1,11 +1,11 @@
 - content_for :form do
   = form_for post, :url => url, :method => method, :html => { :id => 'post_form' } do |f|
     = f.label :board_id, 'Continuity:'
-    = f.select :board_id, options_from_collection_for_select(Board.select {|b| current_user.writes_in?(b) }, :id, :name, @post.board_id)
+    = f.select :board_id, options_from_collection_for_select(Board.order('pinned DESC, LOWER(name)').select {|b| current_user.writes_in?(b) }, :id, :name, post.board_id)
     %br
-    #section{class: ('hidden' unless @post.board && @post.board.board_sections.exists?)}
+    #section{class: ('hidden' unless post.board && post.board.board_sections.exists?)}
       = f.label :section_id, 'Continuity section:'
-      = f.select :section_id, options_from_collection_for_select(BoardSection.where(board_id: @post.board_id).order('section_order asc'), :id, :name, @post.section_id), include_blank: '— Choose Section —'
+      = f.select :section_id, options_from_collection_for_select(BoardSection.where(board_id: post.board_id).order('section_order asc'), :id, :name, post.section_id), include_blank: '— Choose Section —'
     = f.label :privacy, 'Privacy:'
     = f.select :privacy, options_from_collection_for_select(Post.privacy_settings.to_a, :second, :first, post.privacy)
     #access_list
@@ -13,13 +13,13 @@
       = f.select :post_viewer_ids, options_from_collection_for_select(User.order('username asc').all - [current_user], :id, :username, post.post_viewer_ids || post.post_viewers.map(&:user_id)), {}, {multiple: true}
     %br
     = f.label :setting_ids, 'Setting:'
-    = f.select :setting_ids, options_from_collection_for_select(@settings, :id, :name, @post.setting_ids || @post.settings.map(&:id)), {}, {multiple: true}
+    = f.select :setting_ids, options_from_collection_for_select(@settings, :id, :name, post.setting_ids || post.settings.map(&:id)), {}, {multiple: true}
     %br
     = f.label :warning_ids, 'Content Warnings:'
-    = f.select :warning_ids, options_from_collection_for_select(@warnings, :id, :name, @post.warning_ids || @post.content_warnings.map(&:id)), {}, {multiple: true}
+    = f.select :warning_ids, options_from_collection_for_select(@warnings, :id, :name, post.warning_ids || post.content_warnings.map(&:id)), {}, {multiple: true}
     %br
     = f.label :tag_ids, 'Tags:'
-    = f.select :tag_ids, options_from_collection_for_select(@tags, :id, :name, @post.tag_ids || @post.post_tags.map(&:tag_id)), {}, {multiple: true}
+    = f.select :tag_ids, options_from_collection_for_select(@tags, :id, :name, post.tag_ids || post.post_tags.map(&:tag_id)), {}, {multiple: true}
     - if post.id.present? && !post.editable_by?(current_user)
       = submit_tag 'Save', class: 'button', id: 'submit_button', disable_with: 'Saving...'
     - else
@@ -44,4 +44,4 @@
 - if post.id.present? && !post.editable_by?(current_user)
   #post-editor.padding-10{class: cycle('even', 'odd')}= yield :form
 - else
-  = render partial: 'editor', locals: {item: @post}
+  = render partial: 'editor', locals: {item: post}

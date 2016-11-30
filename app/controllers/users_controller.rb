@@ -21,7 +21,7 @@ class UsersController < ApplicationController
 
   def new
     @user = User.new
-    @page_title = 'Sign up'
+    @page_title = 'Sign Up'
   end
 
   def create
