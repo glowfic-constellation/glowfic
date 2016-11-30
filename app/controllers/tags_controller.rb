@@ -48,7 +48,7 @@ class TagsController < ApplicationController
   end
 
   def edit
-    @page_title = "Edit Tag #{@tag.name}"
+    @page_title = "Edit Tag: #{@tag.name}"
   end
 
   def update
@@ -56,7 +56,7 @@ class TagsController < ApplicationController
       flash.now[:error] = {}
       flash.now[:error][:message] = "Tag could not be saved because of the following problems:"
       flash.now[:error][:array] = @tag.errors.full_messages
-      @page_title = "Edit Tag #{@tag.name}"
+      @page_title = "Edit Tag: #{@tag.name}"
       render action: :edit and return
     end
 

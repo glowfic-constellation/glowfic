@@ -342,7 +342,7 @@ RSpec.describe GalleriesController do
       login_as(gallery.user)
       get :add, id: gallery.id
       expect(response).to render_template('add')
-      expect(assigns(:page_title)).to eq("Add Icons")
+      expect(assigns(:page_title)).to eq("Add Icons: #{gallery.name}")
       expect(assigns(:s3_direct_post)).not_to be_nil
     end
 
@@ -351,7 +351,7 @@ RSpec.describe GalleriesController do
       login_as(gallery.user)
       get :add, id: gallery.id, type: 'existing'
       expect(response).to render_template('add')
-      expect(assigns(:page_title)).to eq("Add Icons")
+      expect(assigns(:page_title)).to eq("Add Icons: #{gallery.name}")
       expect(assigns(:s3_direct_post)).to be_nil
     end
 

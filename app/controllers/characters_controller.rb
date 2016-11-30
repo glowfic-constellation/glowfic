@@ -14,11 +14,16 @@ class CharactersController < ApplicationController
       redirect_to users_path and return
     end
 
+    @page_title = if @user.id == current_user.try(:id)
+      "Your Characters"
+    else
+      @user.username + "'s Characters"
+    end
     @characters = @user.characters.order('name asc')
   end
 
   def new
-    @page_title = "New Character"
+    @page_title = 'New Character'
     @character = Character.new(template_id: params[:template_id])
   end
 
@@ -32,7 +37,7 @@ class CharactersController < ApplicationController
       flash[:success] = "Character saved successfully."
       redirect_to character_path(@character)
     else
-      @page_title = "New Character"
+      @page_title = 'New Character'
       flash.now[:error] = "Your character could not be saved."
       render :action => :new
     end
@@ -53,7 +58,7 @@ class CharactersController < ApplicationController
   end
 
   def edit
-    @page_title = "Edit Character: " + @character.name
+    @page_title = 'Edit Character: ' + @character.name
   end
 
   def update
@@ -65,7 +70,7 @@ class CharactersController < ApplicationController
       redirect_to character_path(@character)
     else
       flash.now[:error] = "Your character could not be saved."
-      @page_title = "Edit Character: " + @character.name
+      @page_title = 'Edit Character: ' + @character.name
       render :action => :edit
     end
   end
@@ -108,6 +113,7 @@ class CharactersController < ApplicationController
   end
 
   def replace
+    @page_title = 'Replace Character: ' + @character.name
     if @character.template
       @alts = @character.template.characters
     else

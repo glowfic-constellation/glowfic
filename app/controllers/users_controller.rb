@@ -3,6 +3,7 @@ class UsersController < ApplicationController
   before_filter :login_required, :except => [:index, :show, :new, :create, :username]
 
   def index
+    @page_title = 'Glowficcers'
   end
 
   def show
@@ -20,14 +21,16 @@ class UsersController < ApplicationController
 
   def new
     @user = User.new
+    @page_title = 'Sign Up'
   end
 
   def create
     @user = User.new(params[:user])
     @user.validate_password = true
-    
+
     if params[:secret] != "ALLHAILTHECOIN"
       flash.now[:error] = "This is in beta. Please come back later."
+      @page_title = 'Sign up'
       render :action => "new" and return
     end
 
@@ -41,12 +44,14 @@ class UsersController < ApplicationController
       flash.now[:error] = {}
       flash.now[:error][:message] = "There was a problem completing your sign up."
       flash.now[:error][:array] = @user.errors.full_messages
+      @page_title = 'Sign up'
       render :action => "new"
     end
   end
 
   def edit
     use_javascript('users/edit')
+    @page_title = 'Edit Account'
   end
 
   def update
@@ -62,9 +67,10 @@ class UsersController < ApplicationController
   def password
     unless current_user.authenticate(params[:old_password])
       flash.now[:error] = "Incorrect password entered."
+      @page_title = 'Edit Account'
       render action: :edit and return
     end
-    
+
     current_user.validate_password = true
     if current_user.update_attributes(params[:user])
       flash[:success] = "Changes saved successfully."
@@ -73,6 +79,7 @@ class UsersController < ApplicationController
       flash.now[:error] = {}
       flash.now[:error][:message] = "There was a problem with your changes."
       flash.now[:error][:array] = current_user.errors.full_messages
+      @page_title = 'Edit Account'
       render action: :edit
     end
   end
