@@ -30,7 +30,7 @@ class UsersController < ApplicationController
 
     if params[:secret] != "ALLHAILTHECOIN"
       flash.now[:error] = "This is in beta. Please come back later."
-      @page_title = 'Sign up'
+      @page_title = 'Sign Up'
       render :action => "new" and return
     end
 
@@ -44,7 +44,7 @@ class UsersController < ApplicationController
       flash.now[:error] = {}
       flash.now[:error][:message] = "There was a problem completing your sign up."
       flash.now[:error][:array] = @user.errors.full_messages
-      @page_title = 'Sign up'
+      @page_title = 'Sign Up'
       render :action => "new"
     end
   end
