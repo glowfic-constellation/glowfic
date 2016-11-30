@@ -21,18 +21,19 @@
     %br
     = f.label :tag_ids, 'Tags:'
     = f.select :tag_ids, options_from_collection_for_select(@tags, :id, :name, post.tag_ids || post.post_tags.map(&:tag_id)), {}, {multiple: true}
+    %hr
+    - unless post.id.present? && !post.editable_by?(current_user)
+      .view-button#rtf{class: ('selected' if current_user.default_editor == 'rtf')} Rich Text
+      .view-button#html{class: ('selected' if current_user.default_editor == 'html')} HTML
+    = f.label :subject, 'Subject:'
+    = f.text_field :subject, placeholder: 'Subject'
+    %br
+    = f.label :description, 'Description:'
+    = f.text_field :description, placeholder: 'Description'
+    .details (Optional: describe the thread's setting and major players, e.g. A Bell and Vorkosigans in Chronicle)
     - if post.id.present? && !post.editable_by?(current_user)
       = submit_tag 'Save', class: 'button', id: 'submit_button', disable_with: 'Saving...'
     - else
-      %hr
-      .view-button#rtf{class: ('selected' if current_user.default_editor == 'rtf')} Rich Text
-      .view-button#html{class: ('selected' if current_user.default_editor == 'html')} HTML
-      = f.label :subject, 'Subject:'
-      = f.text_field :subject, placeholder: 'Subject'
-      %br
-      = f.label :description, 'Description:'
-      = f.text_field :description, placeholder: 'Description'
-      .details (Optional: describe the thread's setting and major players, e.g. A Bell and Vorkosigans in Chronicle)
       %br
       #post-form-wrapper
         = f.text_area :content, class: 'tinymce'
