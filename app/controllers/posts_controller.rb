@@ -4,13 +4,13 @@ class PostsController < WritableController
   before_filter :login_required, except: [:index, :show, :history, :warnings, :search, :stats]
   before_filter :find_post, only: [:show, :history, :stats, :warnings, :edit, :update, :destroy]
   before_filter :require_permission, only: [:edit, :destroy]
-  before_filter :build_template_groups, only: [:new, :show, :edit]
+  before_filter :build_template_groups, only: [:new, :edit]
   before_filter :build_tags, only: [:new, :edit]
 
   def index
     @posts = Post.no_tests.order('tagged_at desc').includes(:board, :user, :last_user, :content_warnings)
     @posts = @posts.paginate(page: page, per_page: 25)
-    @page_title = "Recent Threads"
+    @page_title = 'Recent Threads'
   end
 
   def owed
@@ -19,7 +19,7 @@ class PostsController < WritableController
     ids = posts_in + posts_started
     @posts = Post.no_tests.where(id: ids.uniq).where('status != ?', Post::STATUS_COMPLETE).where('status != ?', Post::STATUS_ABANDONED).order('tagged_at desc')
     @posts = @posts.where('last_user_id != ?', current_user.id).includes(:board, :content_warnings).paginate(page: page, per_page: 25)
-    @page_title = "Tags Owed"
+    @page_title = 'Tags Owed'
     @show_unread = true
   end
 
@@ -35,7 +35,7 @@ class PostsController < WritableController
     @posts = @posts.select { |p| p.visible_to?(current_user) }
     @posts = @posts.select { |p|  @opened_ids.include?(p.id) } if @started
     @posts = @posts.paginate(per_page: 25, page: page)
-    @page_title = @started ? "Opened Threads" : "Unread Threads"
+    @page_title = @started ? 'Opened Threads' : 'Unread Threads'
   end
 
   def mark
@@ -56,6 +56,7 @@ class PostsController < WritableController
   def hidden
     @hidden_boardviews = BoardView.where(user_id: current_user.id).where(ignored: true).includes(:board)
     @hidden_postviews = PostView.where(user_id: current_user.id).where(ignored: true).includes(:post)
+    @page_title = 'Hidden Posts & Boards'
   end
 
   def unhide
@@ -78,9 +79,8 @@ class PostsController < WritableController
     use_javascript('posts')
     @post = Post.new(character: current_user.active_character, user: current_user)
     @post.board_id = params[:board_id]
-    @character = current_user.active_character
-    @image = @character ? @character.icon : current_user.avatar
-    @post.icon_id = @image.try(:id)
+    @post.icon_id = (current_user.active_character ? current_user.active_character.icon.try(:id) : current_user.avatar_id)
+    @page_title = 'New Post'
   end
 
   def create
@@ -99,11 +99,10 @@ class PostsController < WritableController
       flash.now[:error] = {}
       flash.now[:error][:array] = @post.errors.full_messages
       flash.now[:error][:message] = "Your post could not be saved because of the following problems:"
-      @image = @post.icon
-      @character = @post.character
       use_javascript('posts')
       build_template_groups
       build_tags
+      @page_title = 'New Post'
       render :action => :new
     end
   end
@@ -125,7 +124,6 @@ class PostsController < WritableController
     @written = Post.new(params[:post])
     @post = @written
     @written.user = current_user
-    @character = @post.character
     @url = path
     @method = method
 
@@ -133,13 +131,12 @@ class PostsController < WritableController
 
     use_javascript('posts')
     gon.original_content = params[:post][:content] if params[:post]
+    @page_title = 'Previewing: ' + @post.subject
     render action: 'preview'
   end
 
   def edit
     use_javascript('posts')
-    @image = @post.icon
-    @character = @post.character
     gon.original_content = @post.content
   end
 
@@ -165,8 +162,6 @@ class PostsController < WritableController
       flash.now[:error] = {}
       flash.now[:error][:array] = @post.errors.full_messages
       flash.now[:error][:message] = "Your post could not be saved because of the following problems:"
-      @image = @post.icon
-      @character = @post.character
       use_javascript('posts')
       build_template_groups
       build_tags
@@ -221,6 +216,7 @@ class PostsController < WritableController
   end
 
   def search
+    @page_title = 'Search Posts'
     return unless params[:commit].present?
 
     @search_results = Post.order('tagged_at desc').includes(:board)

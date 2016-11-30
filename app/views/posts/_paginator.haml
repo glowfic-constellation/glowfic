@@ -1,7 +1,7 @@
 .paginator.centered.sub
   - unless browser.device.mobile?
     .left-align
-      Total#{' Threads' if @threaded && params[:thread_id].blank?}:
+      Total:
       %span.reply-count=paginated.total_entries
     .right-align
       - if paginated.klass == Reply

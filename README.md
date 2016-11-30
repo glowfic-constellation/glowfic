@@ -2,8 +2,8 @@
 
 ### Dependencies
 
-This application currently uses [Ruby](https://www.ruby-lang.org/en/) 2.0.0
-and [Rails](http://rubyonrails.org/) 3.2. If you are not acquainted with Rails,
+This application currently uses [Ruby](https://www.ruby-lang.org/en/) 2.1.10
+and [Rails](http://rubyonrails.org/) 3.2.22.2. If you are not acquainted with Rails,
 it may help to go through the '[Getting Started with Rails](http://guides.rubyonrails.org/v3.2/getting_started.html)'
 tutorial for Rails 3.2. If you wish to learn Ruby, try out the '[quickstart](https://www.ruby-lang.org/en/documentation/quickstart/)'
 guide provided on their website, or if you are already acquainted with various

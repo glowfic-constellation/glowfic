@@ -25,7 +25,7 @@ class Character < ActiveRecord::Base
   end
 
   def icons
-    @icons ||= galleries.map(&:icons).flatten.uniq_by(&:id)
+    @icons ||= galleries.map(&:icons).flatten.uniq_by(&:id).sort_by { |i| i.keyword.downcase }
   end
 
   def recent_posts(limit=25, page=1)

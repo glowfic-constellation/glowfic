@@ -1,12 +1,12 @@
 $(document).ready(function() {
-  $("#board_coauthor_ids").chosen({ 
+  $("#board_coauthor_ids").select2({ 
     width: '100%' ,
-    disable_search_threshold: 10,
-    placeholder_text_multiple: 'Open to Anyone',
+    minimumResultsForSearch: 10,
+    placeholder: 'Open to Anyone',
   });
-  $("#board_cameo_ids").chosen({ 
+  $("#board_cameo_ids").select2({ 
     width: '100%' ,
-    disable_search_threshold: 10,
-    placeholder_text_multiple: '(Optional)',
+    minimumResultsForSearch: 10,
+    placeholder: '(Optional)',
   });
 });

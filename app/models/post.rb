@@ -142,10 +142,18 @@ class Post < ActiveRecord::Base
     @chars ||= Character.where(id: ([character_id] + replies.select(:character_id).group(:character_id).map(&:character_id)).compact).sort_by(&:name)
   end
 
+  def taggable_by?(user)
+    return false unless user
+    return false if completed? || abandoned?
+    return false unless user.writes_in?(board)
+    return true unless authors_locked?
+    author_ids.include?(user.id)
+  end
+
   private
 
   def update_access_list
-    return unless privacy_changed?
+    return unless privacy_changed? || privacy == PRIVACY_LIST
     PostViewer.where(post_id: id).destroy_all and return unless privacy == PRIVACY_LIST
     return unless post_viewer_ids
 

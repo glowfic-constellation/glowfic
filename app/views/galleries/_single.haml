@@ -22,7 +22,7 @@
   %td.green
     .gallery{id: "gallery#{gallery.id.to_s}"}
       = form_tag delete_multiple_icons_path, method: :delete do
-        - icons = gallery.icons.sort_by{|i| i.keyword.downcase }
+        - icons = gallery.icons.order('LOWER(keyword)')
         - icons.each do |icon|
           .gallery-icon
             = link_to icon_path(icon) do

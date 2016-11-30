@@ -1,7 +1,7 @@
 class RepliesController < WritableController
   before_filter :login_required, except: [:show, :history]
   before_filter :find_reply, only: [:show, :history, :edit, :update, :destroy]
-  before_filter :build_template_groups, only: [:show, :edit]
+  before_filter :build_template_groups, only: [:edit]
   before_filter :require_permission, only: [:edit, :update, :destroy]
 
   def create
@@ -58,8 +58,6 @@ class RepliesController < WritableController
   end
 
   def edit
-    @character = @reply.character
-    @image = @reply.icon
     use_javascript('posts')
     gon.original_content = @reply.content
   end
@@ -101,6 +99,8 @@ class RepliesController < WritableController
       flash[:error] = "You do not have permission to view this post."
       redirect_to boards_path and return
     end
+
+    @page_title = @post.subject
   end
 
   def require_permission
@@ -116,7 +116,8 @@ class RepliesController < WritableController
     @written = Reply.new(params[:reply])
     @post = @written.post
     @written.user = current_user
-    @character = @written.character
+
+    @page_title = @post.subject
 
     use_javascript('posts')
   end

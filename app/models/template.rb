@@ -7,7 +7,7 @@ class Template < ActiveRecord::Base
   before_destroy :clear_character_templates
 
   def ordered_characters
-    characters.sort_by(&:name)
+    characters.order('LOWER(name)')
   end
 
   private

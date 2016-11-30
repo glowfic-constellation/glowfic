@@ -5,13 +5,13 @@ class BoardsController < ApplicationController
   before_filter :require_permission, only: [:edit, :update, :destroy]
 
   def index
-    @page_title = "Continuities"
     if params[:user_id].present?
       @user = User.find_by_id(params[:user_id]) || current_user
       @page_title = @user.username + "'s Continuities"
       @owned_boards = BoardAuthor.where(user_id: @user.id).includes(:board).map(&:board)
       @cameod_boards = BoardAuthor.cameo.where(user_id: @user.id).includes(:board).map(&:board)
     else
+      @page_title = 'Continuities'
       @boards = Board.order('pinned DESC, LOWER(name)')
     end
   end
@@ -19,7 +19,7 @@ class BoardsController < ApplicationController
   def new
     @board = Board.new
     @board.creator = current_user
-    @page_title = "New Continuity"
+    @page_title = 'New Continuity'
   end
 
   def create
@@ -34,7 +34,7 @@ class BoardsController < ApplicationController
     flash.now[:error] = {}
     flash.now[:error][:message] = "Continuity could not be created."
     flash.now[:error][:array] = @board.errors.full_messages
-    @page_title = "New Continuity"
+    @page_title = 'New Continuity'
     set_available_cowriters
     render :action => :new
   end
@@ -56,7 +56,7 @@ class BoardsController < ApplicationController
   end
 
   def edit
-    @page_title = "Edit Continuity"
+    @page_title = 'Edit Continuity: ' + @board.name
     use_javascript('board_sections')
     @board_items = @board.board_sections + @board.posts.where(section_id: nil)
     @board_items.sort_by! { |item| item.section_order.to_i }
@@ -70,8 +70,11 @@ class BoardsController < ApplicationController
       flash.now[:error] = {}
       flash.now[:error][:message] = "Continuity could not be created."
       flash.now[:error][:array] = @board.errors.full_messages
-      @page_title = "Edit Continuity"
+      @page_title = 'Edit Continuity: ' + @board.name_was
       set_available_cowriters
+      use_javascript('board_sections')
+      @board_items = @board.board_sections + @board.posts.where(section_id: nil)
+      @board_items.sort_by! { |item| item.section_order.to_i }
       render :action => :edit
     end
   end

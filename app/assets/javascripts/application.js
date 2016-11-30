@@ -12,16 +12,15 @@
 //
 //= require jquery
 //= require jquery_ujs
-//= require chosen-jquery
 //= require jquery.ui.widget
 //= require z.jquery.fileupload
 //= require tinymce-jquery
 //= require select2
 
 $(document).ready(function() {
-  $(".chosen-select").chosen({
+  $(".chosen-select").select2({
     width: '100%',
-    disable_search_threshold: 20,
+    minimumResultsForSearch: 20,
   });
 
   $(".post-expander").click(function() {

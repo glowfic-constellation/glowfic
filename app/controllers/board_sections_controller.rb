@@ -5,7 +5,7 @@ class BoardSectionsController < ApplicationController
 
   def new
     @board_section = BoardSection.new(board_id: params[:board_id])
-    @page_title = "New Section"
+    @page_title = 'New Section'
   end
 
   def create
@@ -24,6 +24,7 @@ class BoardSectionsController < ApplicationController
       flash.now[:error] = {}
       flash.now[:error][:message] = "Section could not be created."
       flash.now[:error][:array] = @board_section.errors.full_messages
+      @page_title = 'New Section'
       render action: :new
     end
   end
@@ -49,6 +50,7 @@ class BoardSectionsController < ApplicationController
       flash.now[:error] = {}
       flash.now[:error][:message] = "Section could not be updated."
       flash.now[:error][:array] = @board_section.errors.full_messages
+      @page_title = 'Edit ' + @board_section.name_was
       render action: :edit
     end
   end

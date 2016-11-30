@@ -15,17 +15,17 @@ class GalleriesController < ApplicationController
       @user = current_user
     end
 
-    if @user == current_user
-      @page_title = "Your Galleries"
+    @page_title = if @user.id == current_user.try(:id)
+      "Your Galleries"
     else
-      @page_title = @user.username + "'s Galleries"
+      @user.username + "'s Galleries"
     end
     use_javascript('galleries/index')
   end
 
   def new
+    @page_title = 'New Gallery'
     @gallery = Gallery.new
-    @page_title = "New Gallery"
   end
 
   def create
@@ -34,7 +34,7 @@ class GalleriesController < ApplicationController
 
     unless @gallery.save
       flash.now[:error] = "Your gallery could not be saved."
-      @page_title = "New Gallery"
+      @page_title = 'New Gallery'
       render :action => :new and return
     end
 
@@ -76,13 +76,14 @@ class GalleriesController < ApplicationController
         end
 
         @user = @gallery.user
-        @page_title = @gallery.name + " (Gallery)"
+        @page_title = @gallery.name + ' (Gallery)'
         use_javascript('galleries/index')
       end
     end
   end
 
   def edit
+    @page_title = 'Edit Gallery: ' + @gallery.name
   end
 
   def update
@@ -90,6 +91,7 @@ class GalleriesController < ApplicationController
       flash.now[:error] = {}
       flash.now[:error][:message] = "Gallery could not be saved."
       flash.now[:error][:array] = @gallery.errors.full_messages
+      @page_title = 'Edit Gallery: ' + @gallery.name_was
       render action: :edit and return
     end
 
@@ -190,6 +192,7 @@ class GalleriesController < ApplicationController
     find_gallery if params[:id] != '0'
     @unassigned = current_user.galleryless_icons
     @page_title = "Add Icons"
+    @page_title += ": " + @gallery.name unless @gallery.nil?
   end
 
   def set_s3_url

@@ -84,6 +84,7 @@
     -moz-box-sizing: border-box;    /* Firefox, other Gecko */
     box-sizing: border-box;         /* Opera/IE 8+ */
 }
+#content table.form-table td .select2-container input, table#icon-table td .select2-container input { margin-top: 5px; }
 #content table.form-table td.spacer { height: 2px; padding: 0px; }
 @media (max-width: 400px) {
   #content table.form-table { width: 100%; }
@@ -112,7 +113,7 @@
 /* Not yet deserving of its own CSS file */
 #message_form textarea, .edit_board textarea, .new_board textarea, .new_template textarea, .edit_template textarea { height: 100px; }
 #stats ul { margin-top: 0px; margin-bottom: 0px; padding-left: 15px; }
-.select2-container { margin: 3px 0px; width: 300px !important; }
+.select2-container { margin: 3px 0px; color: #333; }
 .select2, .select2-dropdown { font-size: 13px !important; }
 .select2 input { height: 20px; margin: 0px; }
 .select2 ul { padding: 0px; }

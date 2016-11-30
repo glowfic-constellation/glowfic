@@ -32,7 +32,7 @@ class Board < ActiveRecord::Base
   end
 
   def open_to_anyone?
-    coauthors.empty?
+    !board_authors.exists?
   end
 
   def editable_by?(user)

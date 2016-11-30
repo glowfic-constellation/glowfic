@@ -32,8 +32,6 @@
 .pagination a:visited { color: #9c9aa4; }
 .pagination .disabled { color: #58546b; }
 
-#content .beige .chosen-container, #content .beige .chosen-container a, .chosen-container, .chosen-container a { color: #444; }
-
 body { background-color: #211e2f; color: #DADADA; }
 #content th.subber { color: #DADADA; }
 #post-form-wrapper textarea { background-color: #4d4b5b; color: #DADADA; }
