@@ -2,14 +2,14 @@ class IconsController < ApplicationController
   before_filter :login_required, except: :show
   before_filter :find_icon, except: :delete_multiple
   before_filter :require_own_icon, only: [:edit, :update, :replace, :do_replace, :destroy, :avatar]
-  
+
   def delete_multiple
     icon_ids = (params[:marked_ids] || []).map(&:to_i).reject(&:zero?)
     if icon_ids.empty? or (icons = Icon.where(id: icon_ids)).empty?
       flash[:error] = "No icons selected."
       redirect_to galleries_path and return
     end
-    
+
     if params[:gallery_delete]
       gallery = Gallery.find_by_id(params[:gallery_id])
       unless gallery
@@ -21,8 +21,8 @@ class IconsController < ApplicationController
         redirect_to galleries_path and return
       end
 
-      icons.each do |icon|  
-        next unless icon.user_id == current_user.id  
+      icons.each do |icon|
+        next unless icon.user_id == current_user.id
         gallery.icons.delete(icon)
       end
       flash[:success] = "Icons removed from gallery."
@@ -38,10 +38,12 @@ class IconsController < ApplicationController
   end
 
   def show
+    @page_title = @icon.keyword
     use_javascript('galleries/index') if params[:view] == 'galleries'
   end
 
   def edit
+    @page_title = 'Edit Icon: ' + @icon.keyword
   end
 
   def update
@@ -52,11 +54,13 @@ class IconsController < ApplicationController
       flash.now[:error] = {}
       flash.now[:error][:message] = "Your icon could not be saved due to the following problems:"
       flash.now[:error][:array] = @icon.errors.full_messages
+      @page_title = 'Edit icon: ' + @icon.keyword_was
       render :action => :edit
     end
   end
 
   def replace
+    @page_title = "Replace Icon: " + @icon.keyword
     all_icons = if @icon.has_gallery?
       @icon.galleries.map(&:icons).flatten.uniq.compact - [@icon]
     else

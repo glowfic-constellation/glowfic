@@ -90,7 +90,7 @@ class WritableController < ApplicationController
           post: @post,
           character: active_char,
           user: current_user,
-          icon: active_char.try(:icon))
+          icon: (active_char ? active_char.icon : current_user.avatar))
         gon.original_content = @reply.content
       end
 

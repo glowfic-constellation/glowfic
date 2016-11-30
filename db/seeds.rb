@@ -21,7 +21,7 @@ pixiethreads = Board.create(name: 'Pixiethreads', creator: kappa)
 pixiethreads.coauthors << aestrix
 witchlight = Board.create(name: 'Witchlight', creator: alicorn)
 witchlight.coauthors << marri
-sandboxen = Board.create(name: 'Sandboxes', creator: marri)
+sandboxen = Board.create(name: 'Sandboxes', creator: marri, pinned: true)
 
 Character.create([
   { :user_id => 3, :name => "Sierulyperinon | Arcane", :template_name => nil, :screenname => "infinitely_stranger", :template_id => 4, :default_icon_id => nil, :created_at => "2015-10-06 15:47:25", :updated_at => "2015-10-06 15:47:25", :pb => nil },

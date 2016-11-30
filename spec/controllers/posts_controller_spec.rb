@@ -147,7 +147,7 @@ RSpec.describe PostsController do
       expect(response.status).to eq(200)
       expect(assigns(:post)).to eq(post)
       expect(assigns(:post).character).to eq(character)
-      expect(assigns(:post).icon_id).to be_nil
+      expect(assigns(:post).icon).to be_nil
     end
   end
 

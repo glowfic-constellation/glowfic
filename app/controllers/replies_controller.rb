@@ -99,6 +99,8 @@ class RepliesController < WritableController
       flash[:error] = "You do not have permission to view this post."
       redirect_to boards_path and return
     end
+
+    @page_title = @post.subject
   end
 
   def require_permission
@@ -114,6 +116,8 @@ class RepliesController < WritableController
     @written = Reply.new(params[:reply])
     @post = @written.post
     @written.user = current_user
+
+    @page_title = @post.subject
 
     use_javascript('posts')
   end
