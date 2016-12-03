@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-ruby '2.3.1'
+ruby '2.3.3'
 
 gem 'audited-activerecord', '~> 3.0'
 gem 'aws-sdk', '~> 2'
