@@ -44,4 +44,13 @@ RSpec.describe Icon do
       end
     end
   end
+
+  describe "#after_destroy" do
+    it "updates ids" do
+      reply = create(:reply, with_icon: true)
+      reply.icon.destroy
+      reply.reload
+      expect(reply.icon_id).to be_nil
+    end
+  end
 end

@@ -10,7 +10,7 @@ class Icon < ActiveRecord::Base
   nilify_blanks
 
   after_update :delete_view_cache
-  after_destroy :delete_view_cache
+  after_destroy :delete_view_cache, :clear_icon_ids
   before_destroy :delete_from_s3
 
   def as_json(options={})
@@ -53,6 +53,11 @@ class Icon < ActiveRecord::Base
     return unless check.exists?
     self.url = url_was
     errors.add(:url, 'has already been taken')
+  end
+
+  def clear_icon_ids
+    Reply.where(icon_id: id).update_all(icon_id: nil)
+    Post.where(icon_id: id).update_all(icon_id: nil)
   end
 
   class UploadError < Exception
