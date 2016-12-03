@@ -64,7 +64,13 @@ class WritableController < ApplicationController
       self.page = cur_page = 1
     end
 
-    @replies = replies.includes(:user, :character, :icon).order('id asc').paginate(page: cur_page, per_page: per)
+    @replies = @post.replies
+      .select('replies.*, characters.name, characters.screenname, icons.keyword, icons.url, users.username')
+      .joins(:user)
+      .joins("LEFT OUTER JOIN characters ON characters.id = replies.character_id")
+      .joins("LEFT OUTER JOIN icons ON icons.id = replies.icon_id")
+      .order('id asc')
+      .paginate(page: cur_page, per_page: per)
     @paginate_params = {controller: 'posts', action: 'show', id: @post.id}
     redirect_to post_path(@post, page: @replies.total_pages, per_page: per) and return if cur_page > @replies.total_pages
     use_javascript('paginator')

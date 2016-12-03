@@ -1,14 +1,17 @@
 module ApplicationHelper
   def icon_tag(icon, **args)
     return '' if icon.nil?
+    icon_mem_tag(icon.url, icon.keyword, **args)
+  end
 
+  def icon_mem_tag(url, keyword, **args)
     klass = 'icon'
     klass += ' pointer' if args.delete(:pointer)
     if supplied_class = args.delete(:class)
       klass += ' ' + supplied_class
     end
 
-    image_tag icon.url, {alt: icon.keyword, title: icon.keyword, class: klass}.merge(**args)
+    image_tag url, {alt: keyword, title: keyword, class: klass}.merge(**args)
   end
 
   def no_icon_tag(**args)
