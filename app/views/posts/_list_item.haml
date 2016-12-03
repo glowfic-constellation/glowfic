@@ -10,15 +10,15 @@
       = image_tag "/images/book_grey.png", class: 'vmid', title: "Thread Abandoned"
     - if post.content_warnings.present?
       = image_tag "/images/exclamation.png", class: 'vmid', title: "Content Warning: " + post.content_warnings.map(&:name).join(', '), alt: '!'
-  %td.post-subject{class: klass, title: strip_tags(post.description)}
+  %td.post-subject{class: klass}
     - if logged_in? && (@show_unread || !@unread_ids.nil?)
       - if @unread_ids.nil? || @unread_ids.include?(post.id)
         = link_to post_path(post, page: 'unread', anchor: 'unread') do
           = image_tag unread_img, class: 'vmid', title: 'First Unread'
     - if logged_in? && @opened_ids.present? && !@opened_ids.include?(post.id)
-      %b= link_to post.subject, post_path(post)
+      %b= link_to post.subject, post_path(post), {title: strip_tags(post.description)}
     - else
-      = link_to post.subject, post_path(post)
+      = link_to post.subject, post_path(post), {title: strip_tags(post.description)}
     - if !@show_unread && @opened_ids.nil? && (!logged_in? || per_page > 0)
       - total_pages = (replies_count.to_f / per_page).ceil
       - if total_pages > 1
