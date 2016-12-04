@@ -108,7 +108,16 @@ class PostsController < WritableController
   end
 
   def show
-    render action: :flat, layout: false and return if params[:view] == 'flat'
+    if params[:view] == 'flat'
+      @replies = @post.replies
+        .select('replies.*, characters.name, characters.screenname, icons.keyword, icons.url, users.username')
+        .joins(:user)
+        .joins("LEFT OUTER JOIN characters ON characters.id = replies.character_id")
+        .joins("LEFT OUTER JOIN icons ON icons.id = replies.icon_id")
+        .order('id asc')
+      render action: :flat, layout: false and return
+    end
+
     show_post
   end
 
