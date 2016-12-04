@@ -89,19 +89,11 @@ class IconsController < ApplicationController
     Post.transaction do
       replies = Reply.where(icon_id: @icon.id)
       replies = replies.where(post_id: params[:post_ids]) if params[:post_ids].present?
-      replies.each do |reply|
-        reply.icon_id = new_icon.try(:id)
-        reply.skip_post_update = true
-        reply.save!
-      end
+      replies.update_all(icon_id: new_icon.try(:id))
 
       posts = Post.where(icon_id: @icon.id)
       posts = posts.where(id: params[:post_ids]) if params[:post_ids].present?
-      posts.each do |post|
-        post.icon_id = new_icon.try(:id)
-        post.skip_edited = true
-        post.save!
-      end
+      posts.update_all(icon_id: new_icon.try(:id))
     end
 
     flash[:success] = "All uses of this icon have been replaced."
