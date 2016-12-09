@@ -12,7 +12,7 @@
       %th.sub Type
       %th.sub Posts
       %th.sub
-    - Tag.all.each do |tag|
+    - Tag.order('type desc, LOWER(name) asc').all.each do |tag|
       - klass = cycle('even', 'odd')
       %tr
         %td{class: klass}= link_to tag.name, tag_path(tag)
