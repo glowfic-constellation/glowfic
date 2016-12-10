@@ -15,9 +15,9 @@
         = link_to warnings_post_path(@post, page: page, per_page: per_page), method: :post do
           .link-box.red.float-right Dismiss for this post
       - else
-        = link_to warnings_post_path(@post, page: page, per_page: per_page), method: :post, confirm: 'Are you sure? You will not see content warnings again until you restart your browser!' do
+        = link_to warnings_post_path(@post, page: page, per_page: per_page), method: :post, confirm: 'Are you sure? You will not see content warnings again until you restart your browser!'.freeze do
           .link-box.red.float-right Dismiss all content warnings
-      = image_tag "/images/exclamation.png", class: 'vmid'.freeze
+      = image_tag "/images/exclamation.png".freeze, class: 'vmid'.freeze
       This post has the following content warnings:
       %ul
         - @warnings.each do |warning|
@@ -27,7 +27,7 @@
   .padding-15
     %span#post-title= link_to @post.subject, post_path(@post)
     .view-button#post-menu
-      = image_tag ((current_user.try(:layout) == 'starrydark' or current_user.try(:layout) == 'starry' or current_user.try(:layout) == 'starrylight') ? '/images/menugray.png' : '/images/menu.png'), class: 'icon-view'
+      = image_tag ((current_user.try(:layout) == 'starrydark'.freeze or current_user.try(:layout) == 'starry'.freeze or current_user.try(:layout) == 'starrylight'.freeze) ? '/images/menugray.png'.freeze : '/images/menu.png'.freeze), class: 'icon-view'.freeze
 #post-menu-holder
   #post-menu-box.hidden
     / TODO Throne3d is writing an ePub downloader
@@ -35,59 +35,59 @@
     /  %div
     /    = image_tag '/images/book_go.png'
     /    Download as ePub
-    = link_to post_path(@post, view: 'flat'.freeze), rel: 'nofollow noindex' do
+    = link_to post_path(@post, view: 'flat'.freeze), rel: 'nofollow noindex'.freeze do
       %div
-        = image_tag '/images/page_world.png'
+        = image_tag '/images/page_world.png'.freeze
         View Flat HTML
     = link_to stats_post_path(@post) do
       %div
-        = image_tag '/images/chart_bar.png'
+        = image_tag '/images/chart_bar.png'.freeze
         View Stats
     - if logged_in?
       = link_to post_path(@post, unread: true), method: :put do
         %div
-          = image_tag '/images/eye.png', class: 'vmid', style: 'margin-bottom: 3px;'
+          = image_tag '/images/eye.png'.freeze, class: 'vmid'.freeze, style: 'margin-bottom: 3px;'.freeze
           Mark Unread
       - if fav = Favorite.between(current_user, @post)
         = link_to favorite_path(fav), method: :delete do
           %div
-            = image_tag '/images/star_delete.png', class: 'vmid', style: 'margin-bottom: 3px;'
+            = image_tag '/images/star_delete.png'.freeze, class: 'vmid'.freeze, style: 'margin-bottom: 3px;'.freeze
             Unfavorite
       - else
         = link_to favorites_path(post_id: @post.id), method: :post do
           %div
-            = image_tag '/images/star_add.png', class: 'vmid', style: 'margin-bottom: 3px;'
+            = image_tag '/images/star_add.png'.freeze, class: 'vmid'.freeze, style: 'margin-bottom: 3px;'.freeze
             Favorite
       - if @post.metadata_editable_by?(current_user)
         - unless @post.completed?
-          = link_to post_path(@post, status: 'complete'), method: :put do
+          = link_to post_path(@post, status: 'complete'.freeze), method: :put do
             %div
-              = image_tag '/images/book.png'
+              = image_tag '/images/book.png'.freeze
               Mark Complete
         - unless @post.on_hiatus?
-          = link_to post_path(@post, status: 'hiatus'), method: :put do
+          = link_to post_path(@post, status: 'hiatus'.freeze), method: :put do
             %div
-              = image_tag '/images/hourglass.png'
+              = image_tag '/images/hourglass.png'.freeze
               Put On Hiatus
         - unless @post.active?
-          = link_to post_path(@post, status: 'active'), method: :put do
+          = link_to post_path(@post, status: 'active'.freeze), method: :put do
             %div
-              = image_tag '/images/book_open.png'
+              = image_tag '/images/book_open.png'.freeze
               Mark In Progress
         - unless @post.abandoned?
-          = link_to post_path(@post, status: 'abandoned'), method: :put do
+          = link_to post_path(@post, status: 'abandoned'.freeze), method: :put do
             %div
-              = image_tag '/images/book_grey.png'
+              = image_tag '/images/book_grey.png'.freeze
               Mark Abandoned
         - if @post.authors_locked?
-          = link_to post_path(@post, authors_locked: 'false'), method: :put do
+          = link_to post_path(@post, authors_locked: 'false'.freeze), method: :put do
             %div
-              = image_tag '/images/lock_open.png'
+              = image_tag '/images/lock_open.png'.freeze
               Unlock Authors
         - else
-          = link_to post_path(@post, authors_locked: 'true'), method: :put do
+          = link_to post_path(@post, authors_locked: 'true'.freeze), method: :put do
             %div
-              = image_tag '/images/lock.png'
+              = image_tag '/images/lock.png'.freeze
               Lock Post to Authors
       / TODO need more dynos before I can create this feature
       /= link_to users_path do
@@ -110,15 +110,15 @@
       .clear
 
 - if page.to_i == 1
-  = render partial: 'replies/single', locals: {reply: @post}
+  = render partial: 'replies/single'.freeze, locals: {reply: @post}
 - else
   .post-expander
     .info + Show First Post
     .hidden
-      = render partial: 'replies/single', locals: {reply: @post}
+      = render partial: 'replies/single'.freeze, locals: {reply: @post}
 - if @replies.present?
-  = render partial: 'posts/paginator', locals: { paginated: @replies, path: :post_path }
-= render partial: 'replies/mem', collection: @replies, as: :reply, cache: !logged_in? # don't need uncached: @unread for logged out
+  = render partial: 'posts/paginator'.freeze, locals: { paginated: @replies, path: :post_path }
+= render partial: 'replies/mem'.freeze, collection: @replies, as: :reply, cache: !logged_in? # don't need uncached: @unread for logged out
 - if @post.completed? && (@replies.empty? || (@replies.last.id == @post.last_reply_id))
   .post-ender Here Ends This Thread
   - if @prev_post || @next_post
@@ -136,16 +136,16 @@
 - if @post.abandoned? && (@replies.empty? || (@replies.last.id == @post.last_reply_id))
   .post-ender This Thread Has Been Permanently Abandoned
 - if @replies.present?
-  = render partial: 'posts/paginator', locals: { paginated: @replies, path: :post_path }
+  = render partial: 'posts/paginator'.freeze, locals: { paginated: @replies, path: :post_path }
 - if logged_in? && @unread.nil?
   <a name="unread"></a>
 - if @post.taggable_by?(current_user)
   - if @post.author_ids.include?(current_user.id)
-    = render partial: 'posts/write_reply', locals: { reply: @reply, url: replies_path, method: :post }
+    = render partial: 'posts/write_reply'.freeze, locals: { reply: @reply, url: replies_path, method: :post }
   - elsif !@post.authors_locked?
     .post-expander
       .info + Join Thread
       .hidden
-        = render partial: 'posts/write_reply', locals: { reply: @reply, url: replies_path, method: :post }
+        = render partial: 'posts/write_reply'.freeze, locals: { reply: @reply, url: replies_path, method: :post }
 
-.centered.margin-10= link_to 'Back to Top'.freeze, '#'
+.centered.margin-10= link_to 'Back to Top'.freeze, '#'.freeze
