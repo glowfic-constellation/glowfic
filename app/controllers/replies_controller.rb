@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 class RepliesController < WritableController
   before_filter :login_required, except: [:show, :history]
   before_filter :find_reply, only: [:show, :history, :edit, :update, :destroy]
