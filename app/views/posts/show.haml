@@ -110,15 +110,15 @@
       .clear
 
 - if page.to_i == 1
-  = render partial: 'replies/single'.freeze, locals: {reply: @post}
+  = render partial: 'replies/single', locals: {reply: @post}
 - else
   .post-expander
     .info + Show First Post
     .hidden
-      = render partial: 'replies/single'.freeze, locals: {reply: @post}
+      = render partial: 'replies/single', locals: {reply: @post}
 - if @replies.present?
-  = render partial: 'posts/paginator'.freeze, locals: { paginated: @replies, path: :post_path }
-= render partial: 'replies/mem'.freeze, collection: @replies, as: :reply, cache: !logged_in? # don't need uncached: @unread for logged out
+  = render partial: 'posts/paginator', locals: { paginated: @replies, path: :post_path }
+= render partial: 'replies/mem', collection: @replies, as: :reply, cache: !logged_in? # don't need uncached: @unread for logged out
 - if @post.completed? && (@replies.empty? || (@replies.last.id == @post.last_reply_id))
   .post-ender Here Ends This Thread
   - if @prev_post || @next_post
@@ -136,16 +136,16 @@
 - if @post.abandoned? && (@replies.empty? || (@replies.last.id == @post.last_reply_id))
   .post-ender This Thread Has Been Permanently Abandoned
 - if @replies.present?
-  = render partial: 'posts/paginator'.freeze, locals: { paginated: @replies, path: :post_path }
+  = render partial: 'posts/paginator', locals: { paginated: @replies, path: :post_path }
 - if logged_in? && @unread.nil?
   <a name="unread"></a>
 - if @post.taggable_by?(current_user)
   - if @post.author_ids.include?(current_user.id)
-    = render partial: 'posts/write_reply'.freeze, locals: { reply: @reply, url: replies_path, method: :post }
+    = render partial: 'posts/write_reply', locals: { reply: @reply, url: replies_path, method: :post }
   - elsif !@post.authors_locked?
     .post-expander
       .info + Join Thread
       .hidden
-        = render partial: 'posts/write_reply'.freeze, locals: { reply: @reply, url: replies_path, method: :post }
+        = render partial: 'posts/write_reply', locals: { reply: @reply, url: replies_path, method: :post }
 
-.centered.margin-10= link_to 'Back to Top'.freeze, '#'.freeze
+.centered.margin-10= link_to 'Back to Top', '#'
