@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 class BoardsController < ApplicationController
   before_filter :login_required, except: [:index, :show]
   before_filter :find_board, only: [:show, :edit, :update, :destroy]

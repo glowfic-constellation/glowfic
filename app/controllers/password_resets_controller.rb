@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 class PasswordResetsController < ApplicationController
   before_filter :logout_required
   before_filter :find_reset, only: [:show, :update]

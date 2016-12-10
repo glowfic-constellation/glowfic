@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 class FavoritesController < ApplicationController
   before_filter :login_required
 

@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 class MessagesController < ApplicationController
   before_filter :login_required
 

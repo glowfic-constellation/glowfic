@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 class UsersController < ApplicationController
   before_filter :signup_prep, :only => :new
   before_filter :login_required, :except => [:index, :show, :new, :create, :username]
