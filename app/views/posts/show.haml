@@ -1,5 +1,5 @@
 - content_for :breadcrumbs do
-  = link_to "Continuities", boards_path
+  = link_to "Continuities".freeze, boards_path
   &raquo;
   = link_to @post.board.name, board_path(@post.board)
   - if @post.section
@@ -17,7 +17,7 @@
       - else
         = link_to warnings_post_path(@post, page: page, per_page: per_page), method: :post, confirm: 'Are you sure? You will not see content warnings again until you restart your browser!' do
           .link-box.red.float-right Dismiss all content warnings
-      = image_tag "/images/exclamation.png", class: 'vmid'
+      = image_tag "/images/exclamation.png", class: 'vmid'.freeze
       This post has the following content warnings:
       %ul
         - @warnings.each do |warning|
@@ -35,7 +35,7 @@
     /  %div
     /    = image_tag '/images/book_go.png'
     /    Download as ePub
-    = link_to post_path(@post, view: 'flat'), rel: 'nofollow noindex' do
+    = link_to post_path(@post, view: 'flat'.freeze), rel: 'nofollow noindex' do
       %div
         = image_tag '/images/page_world.png'
         View Flat HTML
@@ -148,4 +148,4 @@
       .hidden
         = render partial: 'posts/write_reply', locals: { reply: @reply, url: replies_path, method: :post }
 
-.centered.margin-10= link_to 'Back to Top', '#'
+.centered.margin-10= link_to 'Back to Top'.freeze, '#'
