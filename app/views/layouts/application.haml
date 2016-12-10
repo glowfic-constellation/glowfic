@@ -107,7 +107,7 @@
       = content_for :flashes
     - if logged_in?
       - if current_user.messages.where(unread: true).exists?
-        - current_user.messages.each do |message|
+        - current_user.messages.where(unread: true).each do |message|
           .flash.inbox
             New message from
             = link_to message.sender.username, user_path(message.sender)
