@@ -12,7 +12,7 @@ class RepliesController < WritableController
       @url = replies_path
       @method = :post
       preview
-      render :action => 'preview' and return
+      render :action => :preview and return
     end
 
     if params[:button_draft]
@@ -69,7 +69,7 @@ class RepliesController < WritableController
       @url = reply_path(params[:id])
       @method = :put
       preview
-      render :action => 'preview'
+      render :action => :preview
     else
       @reply.skip_post_update = true unless @reply.post.last_reply_id == @reply.id
       @reply.update_attributes(params[:reply])

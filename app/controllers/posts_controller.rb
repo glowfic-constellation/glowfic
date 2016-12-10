@@ -142,7 +142,7 @@ class PostsController < WritableController
     use_javascript('posts')
     gon.original_content = params[:post][:content] if params[:post]
     @page_title = 'Previewing: ' + @post.subject
-    render action: 'preview'
+    render action: :preview
   end
 
   def edit
