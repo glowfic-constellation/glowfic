@@ -70,6 +70,18 @@ RSpec.describe PostsController do
       expect(response.status).to eq(200)
     end
 
+    context "with render_views" do
+      # this is very expensive, be thoughtful about adding tests!
+      render_views
+
+      it "renders HAML with additional attributes" do
+        post = create(:post, with_icon: true, with_character: true)
+        create(:reply, post: post, with_icon: true, with_character: true)
+        get :show, id: post.id
+        expect(response.status).to eq(200)
+      end
+    end
+
     # TODO WAY more tests
   end
 

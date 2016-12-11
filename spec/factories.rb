@@ -26,10 +26,18 @@ FactoryGirl.define do
   end
 
   factory :post do
+    transient do
+      with_icon false
+      with_character false
+    end
     user
     board
     content "test content"
     subject "test subject"
+    before(:create) do |post, evaluator|
+      post.character = create(:character, user: post.user) if evaluator.with_character
+      post.icon = create(:icon, user: post.user) if evaluator.with_icon
+    end
   end
 
   factory :gallery do

@@ -317,4 +317,45 @@ RSpec.describe Post do
       end
     end
   end
+
+  describe "validations" do
+    it "requires user" do
+      post = create(:post)
+      expect(post.valid?).to be_true
+      post.user = nil
+      expect(post.valid?).not_to be_true
+    end
+
+    it "requires user's character" do
+      post = create(:post)
+      character = create(:character)
+      expect(post.user).not_to eq(character.user)
+      post.character = character
+      expect(post.valid?).not_to be_true
+    end
+
+    it "requires user's icon" do
+      post = create(:post)
+      icon = create(:icon)
+      expect(post.user).not_to eq(icon.user)
+      post.icon = icon
+      expect(post.valid?).not_to be_true
+    end
+  end
+
+  describe "word count" do
+    it "guesses correctly with replies" do
+      post = create(:post, content: 'one two three four five')
+      reply = create(:reply, post: post, content: 'six seven')
+      reply = create(:reply, post: post, content: 'eight')
+      expect(post.word_count).to eq(5)
+      expect(post.total_word_count).to eq(8)
+    end
+
+    it "guesses correctly without replies" do
+      post = create(:post, content: 'one two three four five')
+      expect(post.word_count).to eq(5)
+      expect(post.total_word_count).to eq(5)
+    end
+  end
 end

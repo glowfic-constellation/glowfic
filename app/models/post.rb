@@ -150,6 +150,13 @@ class Post < ActiveRecord::Base
     author_ids.include?(user.id)
   end
 
+  def total_word_count
+    return word_count unless replies.exists?
+    contents = replies.pluck(:content)
+    contents[0] = contents[0].split.size
+    word_count + contents.inject{|r, e| r + e.split.size}.to_i
+  end
+
   private
 
   def update_access_list
