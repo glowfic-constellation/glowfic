@@ -7,11 +7,11 @@
 %tr
   %th.sub Coauthors
   %td.even
-    = f.collection_select(:coauthor_ids, @authors, :id, :username, {selected: @board.coauthors.map(&:id)}, {multiple: true})
+    = f.collection_select(:coauthor_ids, @authors, :id, :username, {selected: @board.coauthors.pluck(:id)}, {multiple: true})
 %tr
   %th.sub Cameos
   %td.odd
-    = f.collection_select(:cameo_ids, @cameos, :id, :username, {selected: @board.coauthors.cameos.map(&:id)}, {multiple: true})
+    = f.collection_select(:cameo_ids, @cameos, :id, :username, {selected: @board.coauthors.cameos.pluck(:id)}, {multiple: true})
 %tr
   %th.sub.vtop Description
   %td.even= f.text_area :description

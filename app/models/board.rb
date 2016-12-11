@@ -19,7 +19,7 @@ class Board < ActiveRecord::Base
   after_save :update_author_list
   after_destroy :move_posts_to_sandbox
 
-  attr_accessor :coauthor_ids, :cameo_ids
+  attr_accessor :cameo_ids
 
   def writers
     @writers ||= coauthors + [creator]
@@ -52,21 +52,11 @@ class Board < ActiveRecord::Base
   private
 
   def update_author_list
-    coauthor_ids = self.coauthor_ids || []
     cameo_ids = self.cameo_ids || []
-
-    updated_ids = (coauthor_ids.uniq - [""]).map(&:to_i)
-    existing_ids = coauthors.map(&:id)
-
-    BoardAuthor.where(board_id: id, user_id: (existing_ids - updated_ids)).destroy_all
-    (updated_ids - existing_ids).each do |new_id|
-      BoardAuthor.create(board_id: id, user_id: new_id)
-    end
-
     updated_ids = (cameo_ids.uniq - [""]).map(&:to_i)
-    existing_ids = coauthors.cameos.map(&:id)
+    existing_ids = coauthors.cameos.pluck(:id)
 
-    BoardAuthor.unscoped.where(board_id: id, user_id: (existing_ids - updated_ids)).destroy_all
+    BoardAuthor.unscoped.where(board_id: id, user_id: (existing_ids - updated_ids), cameo: true).destroy_all
     (updated_ids - existing_ids).each do |new_id|
       BoardAuthor.create(board_id: id, user_id: new_id, cameo: true)
     end
