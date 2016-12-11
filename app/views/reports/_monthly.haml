@@ -1,11 +1,14 @@
+%span.time-loaded{style: 'font-size: 10px; position: absolute; top: 2px; right: 20px;'}= pretty_time(DateTime.now.in_time_zone)
+
 %table
   %thead
     %tr
       %th{colspan: 6} Monthly Report
-    - 1.upto(1.month.ago.end_of_month.day) do |num_days|
-      - day = 1.month.ago.end_of_month - (num_days - 1).days
-      - posts = Post.where(tagged_at: day.beginning_of_day .. day.end_of_day)
-      - if posts.present?
+  - 1.upto(1.month.ago.end_of_month.day) do |num_days|
+    - day = 1.month.ago.end_of_month - (num_days - 1).days
+    - posts = Post.where(tagged_at: day.beginning_of_day .. day.end_of_day)
+    - if posts.present?
+      %tbody
         %tr
           %th.subber{colspan: 6}= day.strftime("%b %d, %Y")
         %tr
