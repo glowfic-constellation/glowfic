@@ -5,18 +5,22 @@ class Character < ActiveRecord::Base
   belongs_to :character_group
   has_many :replies
   has_many :posts
-  has_and_belongs_to_many :galleries
+
+  has_many :characters_galleries
+  has_many :galleries, through: :characters_galleries
+
   has_many :character_tags, inverse_of: :character, dependent: :destroy
-  has_many :tags, through: :character_tags
+  has_many :tags, through: :character_tags, source: :all_tags, source_type: 'Tag' # TODO THIS IS BROKEN does not filter subtypes like setting
+
+  has_many :settings, through: :character_tags, source: :all_tags, source_type: 'Setting'
 
   validates_presence_of :name, :user
   validate :valid_template, :valid_group, :valid_galleries, :valid_default_icon
 
-  after_save :update_galleries
   after_update :delete_view_cache
   after_destroy :delete_view_cache
 
-  attr_accessor :new_template_name, :group_name, :gallery_ids
+  attr_accessor :new_template_name, :group_name
 
   nilify_blanks
 
@@ -71,18 +75,6 @@ class Character < ActiveRecord::Base
   def valid_default_icon
     if default_icon.present? && default_icon.user_id != user.id
       errors.add(:default_icon, "must be yours")
-    end
-  end
-
-  def update_galleries
-    return unless gallery_ids
-
-    updated_ids = (gallery_ids - [""]).map(&:to_i)
-    existing_ids = galleries.map(&:id)
-
-    CharactersGallery.where(character_id: id, gallery_id: (existing_ids - updated_ids)).destroy_all
-    (updated_ids - existing_ids).each do |new_id|
-      CharactersGallery.create(character_id: id, gallery_id: new_id)
     end
   end
 
