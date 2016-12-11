@@ -6,20 +6,20 @@
       <a name="unread"></a>
   .padding-10
     .post-info-box
-      - if reply.icon
+      - if reply.icon_id
         .post-icon
-          = link_to icon_path(reply.icon) do
-            = icon_tag reply.icon
+          = link_to icon_path(reply.icon_id) do
+            = icon_mem_tag reply.url, reply.keyword
       .post-info-text
-        - if reply.character
+        - if reply.character_id
           .post-character
-            = link_to reply.character.name, character_path(reply.character)
-          - if reply.character.screenname
-            .post-screenname= reply.character.screenname
+            = link_to reply.name, character_path(reply.character_id)
+          - if reply.screenname
+            .post-screenname= reply.screenname
         - else
           .dark.spacer
         .post-author
-          = link_to reply.user.username, user_path(reply.user)
+          = link_to reply.username, user_path(reply.user_id)
     .post-edit-box
       - if reply.id.present?
         = link_to post_or_reply_link(reply), rel: 'alternate'.freeze do

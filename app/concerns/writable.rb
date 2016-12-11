@@ -27,6 +27,31 @@ module Writable
       content.split.size
     end
 
+    def url
+      return read_attribute(:url) if has_attribute?(:url)
+      icon.try(:url)
+    end
+
+    def keyword
+      return read_attribute(:keyword) if has_attribute?(:keyword)
+      icon.try(:keyword)
+    end
+
+    def name
+      return read_attribute(:name) if has_attribute?(:name)
+      character.try(:name)
+    end
+
+    def screenname
+      return read_attribute(:screenname) if has_attribute?(:screenname)
+      character.try(:screenname)
+    end
+
+    def username
+      return read_attribute(:username) if has_attribute?(:username)
+      user.username
+    end
+
     private
 
     def character_ownership
