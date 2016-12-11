@@ -34,4 +34,37 @@ RSpec.describe BoardSection do
     expect(section1.section_order).to eq(1)
     expect(section2.section_order).to eq(2)
   end
+
+  it "should reorder upon deletion" do
+    board = create(:board)
+    section0 = create(:board_section, board_id: board.id)
+    expect(section0.section_order).to eq(0)
+    section1 = create(:board_section, board_id: board.id)
+    expect(section1.section_order).to eq(1)
+    section2 = create(:board_section, board_id: board.id)
+    expect(section2.section_order).to eq(2)
+    section3 = create(:board_section, board_id: board.id)
+    expect(section3.section_order).to eq(3)
+    section1.destroy
+    expect(section0.reload.section_order).to eq(0)
+    expect(section2.reload.section_order).to eq(1)
+    expect(section3.reload.section_order).to eq(2)
+  end
+
+  it "should reorder upon board change" do
+    board = create(:board)
+    section0 = create(:board_section, board_id: board.id)
+    expect(section0.section_order).to eq(0)
+    section1 = create(:board_section, board_id: board.id)
+    expect(section1.section_order).to eq(1)
+    section2 = create(:board_section, board_id: board.id)
+    expect(section2.section_order).to eq(2)
+    section3 = create(:board_section, board_id: board.id)
+    expect(section3.section_order).to eq(3)
+    section1.board = create(:board)
+    section1.save
+    expect(section0.reload.section_order).to eq(0)
+    expect(section2.reload.section_order).to eq(1)
+    expect(section3.reload.section_order).to eq(2)
+  end
 end

@@ -70,8 +70,33 @@ RSpec.describe PostsController do
       expect(response.status).to eq(200)
     end
 
+    it "works with login" do
+      post = create(:post)
+      login
+      get :show, id: post.id
+      expect(response.status).to eq(200)
+    end
+
+    it "marks read multiple times" do
+      post = create(:post)
+      user = create(:user)
+      login_as(user)
+      expect(post.last_read(user)).to be_nil
+      get :show, id: post.id
+      last_read = post.reload.last_read(user)
+      expect(last_read).not_to be_nil
+
+      Timecop.freeze(last_read + 1.second) do
+        reply = create(:reply, post: post)
+        expect(reply.created_at).not_to be_the_same_time_as(last_read)
+        get :show, id: post.id
+        cur_read = post.reload.last_read(user)
+        expect(last_read).not_to be_the_same_time_as(cur_read)
+        expect(last_read.to_i).to be < cur_read.to_i
+      end
+    end
+
     context "with render_views" do
-      # this is very expensive, be thoughtful about adding tests!
       render_views
 
       it "renders HAML with additional attributes" do
@@ -79,6 +104,17 @@ RSpec.describe PostsController do
         create(:reply, post: post, with_icon: true, with_character: true)
         get :show, id: post.id
         expect(response.status).to eq(200)
+        expect(response.body).to include(post.subject)
+      end
+
+      it "renders HAML for logged in user" do
+        post = create(:post)
+        create(:reply, post: post)
+        character = create(:character)
+        login_as(character.user)
+        get :show, id: post.id
+        expect(response.status).to eq(200)
+        expect(response.body).to include('Join Thread')
       end
     end
 
