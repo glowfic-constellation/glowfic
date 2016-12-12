@@ -23,8 +23,7 @@ class Reply < ActiveRecord::Base
 
   def post_page(per=25)
     per_page = per > 0 ? per : post.replies.count
-    index = post.replies.order('id asc').to_a.index(self)
-    return 1 unless index.present?
+    index = post.replies.where('id < ?', self.id).count
     (index / per_page) + 1
   end
 

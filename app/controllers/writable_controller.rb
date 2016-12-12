@@ -11,7 +11,7 @@ class WritableController < ApplicationController
     @templates = templates + [templateless]
 
     if @post
-      uniq_chars_ids = @post.replies.where(user_id: current_user.id).where('character_id is not null').select(:character_id).group(:character_id).map(&:character_id)
+      uniq_chars_ids = @post.replies.where(user_id: current_user.id).where('character_id is not null').group(:character_id).pluck(:character_id)
       uniq_chars_ids << @post.character_id if @post.user_id == current_user.id && @post.character_id.present?
       uniq_chars = Character.where(id: uniq_chars_ids).order('LOWER(name)')
       threadchars = faked.new('Thread characters', nil, uniq_chars)

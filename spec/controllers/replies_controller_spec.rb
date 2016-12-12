@@ -231,10 +231,23 @@ RSpec.describe RepliesController do
     end
 
     it "respects per_page when redirecting" do
-      reply = create(:reply)
-      reply = create(:reply, post: reply.post, user: reply.user)
+      reply = create(:reply) #p1
+      reply = create(:reply, post: reply.post, user: reply.user) #p1
+      reply = create(:reply, post: reply.post, user: reply.user) #p2
+      reply = create(:reply, post: reply.post, user: reply.user) #p2
       login_as(reply.user)
-      delete :destroy, id: reply.id, per_page: 1
+      delete :destroy, id: reply.id, per_page: 2
+      expect(response).to redirect_to(post_url(reply.post, page: 2))
+    end
+
+    it "respects per_page when redirecting first on page" do
+      reply = create(:reply) #p1
+      reply = create(:reply, post: reply.post, user: reply.user) #p1
+      reply = create(:reply, post: reply.post, user: reply.user) #p2
+      reply = create(:reply, post: reply.post, user: reply.user) #p2
+      reply = create(:reply, post: reply.post, user: reply.user) #p3
+      login_as(reply.user)
+      delete :destroy, id: reply.id, per_page: 2
       expect(response).to redirect_to(post_url(reply.post, page: 2))
     end
   end
