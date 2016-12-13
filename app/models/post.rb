@@ -66,12 +66,12 @@ class Post < ActiveRecord::Base
   end
 
   def author_ids
-    @author_ids ||= (replies.select(:user_id).group(:user_id).map(&:user_id) + [user_id]).uniq
+    @author_ids ||= (replies.group(:user_id).pluck(:user_id) + [user_id]).uniq
   end
 
   def last_character_for(user)
     ordered_replies = replies.where(user_id: user.id).order('id asc')
-    if ordered_replies.present?
+    if ordered_replies.exists?
       ordered_replies.last.character
     elsif self.user == user
       self.character
@@ -84,8 +84,8 @@ class Post < ActiveRecord::Base
     return @first_unread if @first_unread
     viewed_at = last_read(user) || board.last_read(user)
     return @first_unread = self unless viewed_at
-    return unless replies.present?
-    @first_unread ||= replies.order('created_at asc').detect { |reply| viewed_at < reply.created_at }
+    return unless replies.exists?
+    @first_unread ||= replies.where('created_at > ?', viewed_at).order('created_at asc').first
   end
 
   def hide_warnings_for(user)
@@ -139,7 +139,7 @@ class Post < ActiveRecord::Base
   end
 
   def characters
-    @chars ||= Character.where(id: ([character_id] + replies.select(:character_id).group(:character_id).map(&:character_id)).compact).sort_by(&:name)
+    @chars ||= Character.where(id: ([character_id] + replies.group(:character_id).pluck(:character_id)).compact).sort_by(&:name)
   end
 
   def taggable_by?(user)
@@ -191,7 +191,7 @@ class Post < ActiveRecord::Base
     # are no replies yet.
     # Be VERY CAREFUL editing this!
     return super if skip_edited
-    return super + [:edited_at] unless replies.empty?
+    return super + [:edited_at] if replies.exists?
     super + [:edited_at, :tagged_at]
   end
 
