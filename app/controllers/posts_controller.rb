@@ -233,12 +233,12 @@ class PostsController < WritableController
     @search_results = @search_results.where(board_id: params[:board_id]) if params[:board_id].present?
     @search_results = @search_results.where(id: Setting.find(params[:setting_id]).post_tags.map(&:post_id)) if params[:setting_id].present?
     if params[:author_id].present?
-      post_ids = Reply.where(user_id: params[:author_id]).select(:post_id).map(&:post_id).uniq
+      post_ids = Reply.where(user_id: params[:author_id]).group(:post_id).pluck(:post_id)
       where = Post.where(user_id: params[:author_id]).where(id: post_ids).where_values.reduce(:or)
       @search_results = @search_results.where(where)
     end
     if params[:character_id].present?
-      post_ids = Reply.where(character_id: params[:character_id]).select(:post_id).map(&:post_id).uniq
+      post_ids = Reply.where(character_id: params[:character_id]).group(:post_id).pluck(:post_id)
       where = Post.where(character_id: params[:character_id]).where(id: post_ids).where_values.reduce(:or)
       @search_results = @search_results.where(where)
     end
@@ -246,10 +246,9 @@ class PostsController < WritableController
       @search_results = @search_results.where(status: Post::STATUS_COMPLETE)
     end
     if params[:subj_content].present?
-      post_results = Post.search(params[:subj_content]).map(&:id)
-      reply_results = Reply.search(params[:subj_content])
-      @replies = reply_results.inject(Hash.new([])) { |hash, r| hash[r.post_id] += [r]; hash }
-      @search_results = @search_results.where(id: (post_results + @replies.keys).uniq)
+      post_results = Post.search(params[:subj_content]).pluck(:id)
+      post_ids = Reply.search(params[:subj_content]).reorder('post_id asc').group(:post_id).pluck(:post_id)
+      @search_results = @search_results.where(id: (post_results + post_ids).uniq)
     end
 
     @search_results = @search_results.paginate(page: page, per_page: 25)
