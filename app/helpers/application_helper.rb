@@ -11,6 +11,7 @@ module ApplicationHelper
   end
 
   def icon_mem_tag(url, keyword, **args)
+    return '' if url.nil?
     klass = ICON
     klass += ' pointer' if args.delete(:pointer)
     if supplied_class = args.delete(:class)

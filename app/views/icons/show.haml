@@ -75,7 +75,7 @@
   - content_for :posts_title do
     Posts Containing Icon
   %table{style: 'width: calc(100% - 150px); float:left;'}
-    - posts = Post.where(icon_id: @icon.id) + Post.where(id: Reply.where(icon_id: @icon.id).group(&:post_id).pluck(:post_id))
+    - posts = Post.where(icon_id: @icon.id) + Post.where(id: Reply.where(icon_id: @icon.id).pluck('distinct post_id'))
     = render partial: 'posts/list', locals: {posts: posts.uniq, style: 'width: calc(100% - 150px); float:left;'}
 - else
   - posts_using = Post.where(icon_id: @icon.id)
@@ -88,4 +88,4 @@
       %td.even= posts_using.count + replies_using.count
     %tr
       %th.sub.width-150 Posts In
-      %td.even= (posts_using.pluck(:id) + replies_using.group(:post_id).pluck(:post_id)).uniq.count
+      %td.even= (posts_using.pluck(:id) + replies_using.pluck('distinct post_id')).uniq.count
