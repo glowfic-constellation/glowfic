@@ -72,7 +72,7 @@ class IconsController < ApplicationController
     gon.gallery = Hash[all_icons.map { |i| [i.id, {url: i.url, keyword: i.keyword}] }]
     gon.gallery[''] = {url: '/images/no-icon.png', keyword: 'No Icon'}
 
-    all_posts = Post.where(icon_id: @icon.id) + Reply.where(icon_id: @icon.id).select(:post_id).group(:post_id).map(&:post)
+    all_posts = Post.where(icon_id: @icon.id) + Post.where(id: Reply.where(icon_id: @icon.id).pluck('distinct post_id'))
     @posts = all_posts.uniq
   end
 

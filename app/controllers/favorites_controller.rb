@@ -14,7 +14,7 @@ class FavoritesController < ApplicationController
     current_user.favorites.each do |favorite_rec|
       if favorite_rec.favorite_type == User.to_s
         where_calc = where_calc.where(user_id: favorite_rec.favorite_id)
-        reply_ids = Reply.where(user_id: favorite_rec.favorite_id).select(:post_id).group(:post_id).map(&:post_id)
+        reply_ids = Reply.where(user_id: favorite_rec.favorite_id).pluck('distinct post_id')
         where_calc = where_calc.where(id: reply_ids)
       elsif favorite_rec.favorite_type == Post.to_s
         where_calc = where_calc.where(id: favorite_rec.favorite_id)

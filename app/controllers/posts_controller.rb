@@ -16,7 +16,7 @@ class PostsController < WritableController
 
   def owed
     posts_started = Post.where(user_id: current_user.id).select(:id).group(:id).map(&:id)
-    posts_in = Reply.where(user_id: current_user.id).select(:post_id).group(:post_id).map(&:post_id)
+    posts_in = Reply.where(user_id: current_user.id).pluck('distinct post_id')
     ids = posts_in + posts_started
     @posts = Post.no_tests.where(id: ids.uniq).where('status != ?', Post::STATUS_COMPLETE).where('status != ?', Post::STATUS_ABANDONED).order('tagged_at desc')
     @posts = @posts.where('last_user_id != ?', current_user.id).includes(:board, :content_warnings).paginate(page: page, per_page: 25)
@@ -233,12 +233,12 @@ class PostsController < WritableController
     @search_results = @search_results.where(board_id: params[:board_id]) if params[:board_id].present?
     @search_results = @search_results.where(id: Setting.find(params[:setting_id]).post_tags.map(&:post_id)) if params[:setting_id].present?
     if params[:author_id].present?
-      post_ids = Reply.where(user_id: params[:author_id]).group(:post_id).pluck(:post_id)
+      post_ids = Reply.where(user_id: params[:author_id]).pluck('distinct post_id')
       where = Post.where(user_id: params[:author_id]).where(id: post_ids).where_values.reduce(:or)
       @search_results = @search_results.where(where)
     end
     if params[:character_id].present?
-      post_ids = Reply.where(character_id: params[:character_id]).group(:post_id).pluck(:post_id)
+      post_ids = Reply.where(character_id: params[:character_id]).pluck('distinct post_id')
       where = Post.where(character_id: params[:character_id]).where(id: post_ids).where_values.reduce(:or)
       @search_results = @search_results.where(where)
     end
