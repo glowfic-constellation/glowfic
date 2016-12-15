@@ -15,11 +15,11 @@ class PostsController < WritableController
   end
 
   def owed
-    posts_started = Post.where(user_id: current_user.id).select(:id).group(:id).map(&:id)
+    posts_started = Post.where(user_id: current_user.id).pluck('distinct id')
     posts_in = Reply.where(user_id: current_user.id).pluck('distinct post_id')
     ids = posts_in + posts_started
     @posts = Post.no_tests.where(id: ids.uniq).where('status != ?', Post::STATUS_COMPLETE).where('status != ?', Post::STATUS_ABANDONED).order('tagged_at desc')
-    @posts = @posts.where('last_user_id != ?', current_user.id).includes(:board, :content_warnings).paginate(page: page, per_page: 25)
+    @posts = @posts.where('last_user_id != ?', current_user.id).includes(:board, :content_warnings).paginate(page: page, per_page: 30)
     @page_title = 'Tags Owed'
     @show_unread = true
   end

@@ -26,7 +26,7 @@ class TemplatesController < ApplicationController
     @user = @template.user
     @characters = @template.characters
     character_ids = @characters.map(&:id)
-    post_ids = Reply.where(character_id: character_ids).select(:post_id).map(&:post_id).uniq
+    post_ids = Reply.where(character_id: character_ids).pluck('distinct post_id')
     where = Post.where(character_id: character_ids).where(id: post_ids).where_values.reduce(:or)
     @posts = Post.where(where).order('tagged_at desc').paginate(per_page: 25, page: page)
     @page_title = @template.name
