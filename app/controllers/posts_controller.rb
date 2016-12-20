@@ -226,12 +226,12 @@ class PostsController < WritableController
   end
 
   def search
-    @page_title = 'Search Posts'
+    @page_title = 'Browse Posts'
     return unless params[:commit].present?
 
     @search_results = Post.order('tagged_at desc').includes(:board)
     @search_results = @search_results.where(board_id: params[:board_id]) if params[:board_id].present?
-    @search_results = @search_results.where(id: Setting.find(params[:setting_id]).post_tags.map(&:post_id)) if params[:setting_id].present?
+    @search_results = @search_results.where(id: Setting.find(params[:setting_id]).post_tags.pluck(&:post_id)) if params[:setting_id].present?
     if params[:author_id].present?
       post_ids = Reply.where(user_id: params[:author_id]).pluck('distinct post_id')
       where = Post.where(user_id: params[:author_id]).where(id: post_ids).where_values.reduce(:or)
@@ -245,12 +245,6 @@ class PostsController < WritableController
     if params[:completed].present?
       @search_results = @search_results.where(status: Post::STATUS_COMPLETE)
     end
-    if params[:subj_content].present?
-      post_results = Post.search(params[:subj_content]).pluck(:id)
-      post_ids = Reply.search(params[:subj_content]).reorder('post_id asc').group(:post_id).pluck(:post_id)
-      @search_results = @search_results.where(id: (post_results + post_ids).uniq)
-    end
-
     @search_results = @search_results.paginate(page: page, per_page: 25)
   end
 

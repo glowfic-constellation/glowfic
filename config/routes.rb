@@ -72,6 +72,7 @@ Rails.application.routes.draw do
   end
   resources :replies, except: [:index, :new] do
     member { get :history }
+    collection { get :search }
   end
   resources :tags
 

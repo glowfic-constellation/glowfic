@@ -1,9 +1,35 @@
 # frozen_string_literal: true
 class RepliesController < WritableController
-  before_filter :login_required, except: [:show, :history]
+  before_filter :login_required, except: [:search, :show, :history]
   before_filter :find_reply, only: [:show, :history, :edit, :update, :destroy]
   before_filter :build_template_groups, only: [:edit]
   before_filter :require_permission, only: [:edit, :update, :destroy]
+
+  def search
+    @page_title = 'Search Replies'
+    @post = Post.find_by_id(params[:post_id]) if params[:post_id].present?
+    return unless params[:commit].present?
+
+    @search_results = Reply.unscoped
+    @search_results = @search_results.where(user_id: params[:author_id]) if params[:author_id].present?
+    @search_results = @search_results.where(character_id: params[:character_id]) if params[:character_id].present?
+    if params[:subj_content].present?
+      @search_results = @search_results.search(params[:subj_content])
+    else
+      @search_results = @search_results.order('replies.id DESC')
+    end
+    if @post
+      @search_results = @search_results.where(post_id: @post.id)
+    elsif params[:board_id].present?
+      post_ids = Post.where(board_id: params[:board_id]).pluck(:id)
+      @search_results = @search_results.where(post_id: post_ids)
+    end
+    @search_results = @search_results
+      .select('replies.*, characters.name, characters.screenname, users.username, posts.subject')
+      .joins(:user, :post)
+      .joins("LEFT OUTER JOIN characters ON characters.id = replies.character_id")
+      .paginate(page: page, per_page: 25)
+  end
 
   def create
     gon.original_content = params[:reply].try(:[], :content)
