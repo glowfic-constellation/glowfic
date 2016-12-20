@@ -1,0 +1,74 @@
+- content_for :breadcrumbs do
+  = link_to "Search", search_posts_path
+  &raquo;
+  %b Search Replies
+
+%table
+  %thead
+    %tr
+      %th.width-150
+        Search Replies
+        - if @search_results
+          = '- '+@search_results.total_entries.to_s+' results'
+      %th
+        - if @search_results
+          = render partial: 'posts/paginator', locals: {paginated: @search_results, path: :search_replies_path, no_per: true}
+    - unless @search_results
+      %tr
+        %th.subber{colspan: 2} Find specific replies
+  %tbody
+    %tr
+      %td.width-300.padding-10.vtop.dark
+        = form_tag search_replies_path, :method => :get do
+          %table#signup
+            %tr
+              %td.width-70 Continuity
+              %td
+                - if @post
+                  %b= @post.board.name
+                - else
+                  = select_tag :board_id, options_from_collection_for_select(Board.all, :id, :name, params[:board_id]), {class: 'chosen-select', prompt: '— Choose Continuity —'}
+            %tr
+              %td Author
+              %td= select_tag :author_id, options_from_collection_for_select(User.order('username'), :id, :username, params[:author_id]), {class: 'chosen-select', prompt: '— Choose Author —'}
+            %tr
+              %td Character
+              %td= select_tag :character_id, options_from_collection_for_select(Character.order('name'), :id, :selector_name, params[:character_id]), {class: 'chosen-select', prompt: '— Choose Character —'}
+            %tr
+              %td Content
+              %td= text_field_tag :subj_content, params[:subj_content], style: 'width: 100%; margin: 5px 0px; box-sizing: border-box;'
+            - if @post.present?
+              %tr
+                %td Post
+                %td
+                  %b= @post.subject
+                  = hidden_field_tag :post_id, @post.id
+            %tr
+              %td.centered{colspan: 2}= submit_tag "Search", class: 'button'
+        %td.vtop
+          - if @search_results.present?
+            %table
+              %tbody
+                - @search_results.each do |reply|
+                  - klass = cycle('even'.freeze, 'odd'.freeze)
+                  %tr
+                    %td{class: klass}
+                      .post-info-box
+                        .post-info-text 
+                          - if reply.name.present?
+                            .post-character= link_to reply.name, character_path(reply.character_id)
+                          .post-author= link_to reply.username, user_path(reply.user_id)
+                    %td.vtop{class: klass}
+                      %b= link_to reply.subject, post_path(reply.post_id)
+                      %br
+                      = excerpt(strip_tags(reply.content), params[:subj_content], radius: 50)
+                    %td.vtop{class: klass}
+                      = link_to reply_path(reply) do
+                        = image_tag "/images/link.png".freeze, title: 'Permalink'.freeze, alt: 'Permalink'.freeze
+                  /= render partial: 'single', locals: {reply: reply}
+
+  - if @search_results && @search_results.total_pages > 1
+    %tfoot
+      %tr
+        %th.width-150
+        %th= render partial: 'posts/paginator', locals: {paginated: @search_results, path: :search_replies_path, no_per: true}
