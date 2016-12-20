@@ -32,6 +32,9 @@
               %td Author
               %td= select_tag :author_id, options_from_collection_for_select(User.order('username'), :id, :username, params[:author_id]), {class: 'chosen-select', prompt: '— Choose Author —'}
             %tr
+              %td Template
+              %td= select_tag :template_id, options_from_collection_for_select(Object::Template.order('name'), :id, :name, params[:template_id]), {class: 'chosen-select', prompt: '— Choose Template —'}
+            %tr
               %td Character
               %td= select_tag :character_id, options_from_collection_for_select(Character.order('name'), :id, :selector_name, params[:character_id]), {class: 'chosen-select', prompt: '— Choose Character —'}
             %tr

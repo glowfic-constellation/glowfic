@@ -24,6 +24,14 @@ class RepliesController < WritableController
       post_ids = Post.where(board_id: params[:board_id]).pluck(:id)
       @search_results = @search_results.where(post_id: post_ids)
     end
+    if params[:template_id].present?
+      template = Template.find_by_id(params[:template_id])
+      if template.present?
+        character_ids = Character.where(template_id: template.id).pluck(:id)
+        @search_results = @search_results.where(character_id: character_ids)
+      end
+    end
+
     @search_results = @search_results
       .select('replies.*, characters.name, characters.screenname, users.username, posts.subject')
       .joins(:user, :post)

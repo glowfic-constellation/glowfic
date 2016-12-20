@@ -43,6 +43,10 @@
       %div
         = image_tag '/images/chart_bar.png'.freeze
         View Stats
+    = link_to search_replies_path(post_id: @post.id) do
+      %div
+        = image_tag '/images/magnifier.png'.freeze
+        Search Post
     - if logged_in?
       = link_to post_path(@post, unread: true), method: :put do
         %div
