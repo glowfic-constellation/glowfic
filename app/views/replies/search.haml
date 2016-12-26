@@ -64,9 +64,9 @@
                     %td.vtop{class: klass}
                       %b= link_to reply.subject, post_path(reply.post_id)
                       %br
-                      = excerpt(strip_tags(reply.content), params[:subj_content], radius: 50)
+                      = reply.pg_search_highlight.html_safe
                     %td.vtop{class: klass}
-                      = link_to reply_path(reply) do
+                      = link_to reply_path(reply, anchor: "reply-#{reply.id}") do
                         = image_tag "/images/link.png".freeze, title: 'Permalink'.freeze, alt: 'Permalink'.freeze
                   /= render partial: 'single', locals: {reply: reply}
 

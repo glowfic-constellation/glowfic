@@ -15,6 +15,14 @@ class RepliesController < WritableController
     @search_results = @search_results.where(character_id: params[:character_id]) if params[:character_id].present?
     if params[:subj_content].present?
       @search_results = @search_results.search(params[:subj_content])
+      exact_phrases = params[:subj_content].scan(/"([^"]*)"/)
+      if exact_phrases.present?
+        exact_phrases.each do |phrase|
+          phrase = phrase.first.strip
+          next if phrase.blank?
+          @search_results = @search_results.where("replies.content LIKE ?", "%#{phrase}%")
+        end
+      end
     else
       @search_results = @search_results.order('replies.id DESC')
     end
@@ -36,7 +44,7 @@ class RepliesController < WritableController
       .select('replies.*, characters.name, characters.screenname, users.username, posts.subject')
       .joins(:user, :post)
       .joins("LEFT OUTER JOIN characters ON characters.id = replies.character_id")
-      .paginate(page: page, per_page: 25)
+      .paginate(page: page, per_page: 25).with_pg_search_highlight
   end
 
   def create
