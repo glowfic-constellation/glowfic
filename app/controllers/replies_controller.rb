@@ -7,14 +7,26 @@ class RepliesController < WritableController
 
   def search
     @page_title = 'Search Replies'
+
     @post = Post.find_by_id(params[:post_id]) if params[:post_id].present?
+    if @post
+      @users = @post.authors
+      char_ids = @post.replies.pluck('distinct character_id') + [@post.character_id]
+      @characters = Character.where(id: char_ids).order('name')
+      @templates = Template.where(id: @characters.map(&:template_id).uniq.compact).order('name')
+    else
+      @users = User.order('username')
+      @characters = Character.order('name')
+      @templates = Template.order('name')
+    end
+
     return unless params[:commit].present?
 
     @search_results = Reply.unscoped
     @search_results = @search_results.where(user_id: params[:author_id]) if params[:author_id].present?
     @search_results = @search_results.where(character_id: params[:character_id]) if params[:character_id].present?
     if params[:subj_content].present?
-      @search_results = @search_results.search(params[:subj_content])
+      @search_results = @search_results.search(params[:subj_content]).with_pg_search_highlight
       exact_phrases = params[:subj_content].scan(/"([^"]*)"/)
       if exact_phrases.present?
         exact_phrases.each do |phrase|
@@ -44,7 +56,7 @@ class RepliesController < WritableController
       .select('replies.*, characters.name, characters.screenname, users.username, posts.subject')
       .joins(:user, :post)
       .joins("LEFT OUTER JOIN characters ON characters.id = replies.character_id")
-      .paginate(page: page, per_page: 25).with_pg_search_highlight
+      .paginate(page: page, per_page: 25)
   end
 
   def create
