@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 class ApplicationController < ActionController::Base
+  include Authentication
+
   protect_from_forgery with: :exception
   before_filter :check_permanent_user
   before_filter :show_password_warning
@@ -13,11 +15,6 @@ class ApplicationController < ActionController::Base
     @current_user ||= User.find_by_id(session[:user_id]) if logged_in?
   end
   helper_method :current_user
-
-  def logged_in?
-    session[:user_id].present?
-  end
-  helper_method :logged_in?
 
   def login_required
     unless logged_in?
@@ -76,11 +73,6 @@ class ApplicationController < ActionController::Base
     return yield unless logged_in?
     return yield unless current_user.timezone
     Time.use_zone(current_user.timezone, &block)
-  end
-
-  def check_permanent_user
-    return if logged_in?
-    session[:user_id] = cookies.signed[:user_id] if cookies.signed[:user_id].present?
   end
 
   def require_glowfic_domain

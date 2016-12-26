@@ -368,12 +368,13 @@ setIcon = function(id, url, title, alt) {
 
 setSections = function() {
   var board_id = $("#post_board_id").val();
-  $.get("/boards/"+board_id, {}, function(resp) {
-    if (resp.length > 0) {
+  $.get("/api/v1/boards/"+board_id, {}, function(resp) {
+    var sections = resp['data']['board_sections'];
+    if (sections.length > 0) {
       $("#section").show();
       $("#post_section_id").empty().append('<option value="">— Choose Section —</option>');
-      for(var i = 0; i < resp.length; i++) {
-        $("#post_section_id").append('<option value="'+resp[i][0]+'">'+resp[i][1]+'</option>');
+      for(var i = 0; i < sections.length; i++) {
+        $("#post_section_id").append('<option value="'+sections[i]['id']+'">'+sections[i]['name']+'</option>');
       }
       $("#post_section_id").trigger("change");
     } else {

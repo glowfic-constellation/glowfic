@@ -79,6 +79,13 @@ Rails.application.routes.draw do
   end
   resources :tags
 
+  # API
+  namespace :api do
+    namespace :v1 do
+      resources :boards, only: :show
+    end
+  end
+
   # Miscellaneous
   resources :reports, only: [:index, :show]
   resources :bugs, only: :create
