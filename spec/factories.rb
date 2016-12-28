@@ -37,6 +37,7 @@ FactoryGirl.define do
     before(:create) do |post, evaluator|
       post.character = create(:character, user: post.user) if evaluator.with_character
       post.icon = create(:icon, user: post.user) if evaluator.with_icon
+      post.last_user = post.user
     end
   end
 

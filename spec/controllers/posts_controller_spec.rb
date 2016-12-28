@@ -351,7 +351,7 @@ RSpec.describe PostsController do
       get :hidden
       expect(response.status).to eq(200)
       expect(assigns(:hidden_boardviews)).to be_empty
-      expect(assigns(:hidden_postviews)).to be_empty
+      expect(assigns(:hidden_posts)).to be_empty
     end
 
     it "succeeds with board hidden" do
@@ -362,7 +362,7 @@ RSpec.describe PostsController do
       get :hidden
       expect(response.status).to eq(200)
       expect(assigns(:hidden_boardviews)).not_to be_empty
-      expect(assigns(:hidden_postviews)).to be_empty
+      expect(assigns(:hidden_posts)).to be_empty
     end
 
     it "succeeds with post hidden" do
@@ -373,7 +373,7 @@ RSpec.describe PostsController do
       get :hidden
       expect(response.status).to eq(200)
       expect(assigns(:hidden_boardviews)).to be_empty
-      expect(assigns(:hidden_postviews)).not_to be_empty
+      expect(assigns(:hidden_posts)).not_to be_empty
     end
 
     it "succeeds with both hidden" do
@@ -385,7 +385,7 @@ RSpec.describe PostsController do
       get :hidden
       expect(response.status).to eq(200)
       expect(assigns(:hidden_boardviews)).not_to be_empty
-      expect(assigns(:hidden_postviews)).not_to be_empty
+      expect(assigns(:hidden_posts)).not_to be_empty
     end
   end
 

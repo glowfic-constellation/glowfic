@@ -41,6 +41,10 @@ class IconsController < ApplicationController
   def show
     @page_title = @icon.keyword
     use_javascript('galleries/index') if params[:view] == 'galleries'
+    if params[:view] == 'posts'
+      where_calc = Post.where(icon_id: @icon.id).where(id: Reply.where(icon_id: @icon.id).pluck('distinct post_id'))
+      @posts = posts_from_relation(Post.where(where_calc.where_values.reduce(:or)).order('tagged_at desc'))
+    end
   end
 
   def edit

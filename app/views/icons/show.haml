@@ -75,8 +75,7 @@
   - content_for :posts_title do
     Posts Containing Icon
   %table{style: 'width: calc(100% - 150px); float:left;'}
-    - posts = Post.where(icon_id: @icon.id) + Post.where(id: Reply.where(icon_id: @icon.id).pluck('distinct post_id'))
-    = render partial: 'posts/list', locals: {posts: posts.uniq, style: 'width: calc(100% - 150px); float:left;'}
+    = render partial: 'posts/list', locals: {posts: @posts, style: 'width: calc(100% - 150px); float:left;'}
 - else
   - posts_using = Post.where(icon_id: @icon.id)
   - replies_using = Reply.where(icon_id: @icon.id)

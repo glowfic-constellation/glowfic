@@ -52,7 +52,7 @@ RSpec.describe UsersController do
       create(:post)
       get :show, id: user.id
       expect(assigns(:page_title)).to eq(user.username)
-      expect(assigns(:posts)).to match_array(posts)
+      expect(assigns(:posts).to_a).to match_array(posts)
     end
   end
 

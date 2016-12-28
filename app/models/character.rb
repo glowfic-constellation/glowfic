@@ -32,11 +32,11 @@ class Character < ActiveRecord::Base
     @icons ||= galleries.map(&:icons).flatten.uniq_by(&:id).sort_by { |i| i.keyword.downcase }
   end
 
-  def recent_posts(limit=25, page=1)
+  def recent_posts
     return @recent unless @recent.nil?
     reply_ids = replies.group(:post_id).select(:post_id).map(&:post_id)
     post_ids = posts.select(:id).map(&:id)
-    @recent ||= Post.where(id: (post_ids + reply_ids).uniq).order('tagged_at desc').paginate(per_page: limit, page: page)
+    @recent ||= Post.where(id: (post_ids + reply_ids).uniq).order('tagged_at desc')
   end
 
   def selector_name

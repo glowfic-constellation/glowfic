@@ -16,7 +16,7 @@ class UsersController < ApplicationController
     post_ids = Post.where(user_id: @user.id).order('tagged_at desc').pluck(:id)
     reply_ids = Reply.where(user_id: @user.id).pluck('distinct post_id')
     ids = (post_ids + reply_ids).uniq
-    @posts = Post.where(id: ids).order('tagged_at desc').includes(:board, :user, :last_user, :content_warnings).paginate(per_page: 25, page: page)
+    @posts = posts_from_relation(Post.where(id: ids).order('tagged_at desc'))
     @page_title = @user.username
   end
 

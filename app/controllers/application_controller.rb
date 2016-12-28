@@ -90,4 +90,27 @@ class ApplicationController < ActionController::Base
     glowfic_url = root_url(host: ENV['DOMAIN_NAME'], protocol: 'https')[0...-1] + request.fullpath # strip double slash
     redirect_to glowfic_url, status: :moved_permanently
   end
+
+  def posts_from_relation(relation, no_tests=true, with_pagination=true)
+    posts = relation
+      .select('posts.*, boards.name as board_name, users.username as last_user_name')
+      .joins(:board)
+      .joins(:last_user)
+
+    posts = posts.paginate(page: page, per_page: 25) if with_pagination
+    posts = posts.no_tests if no_tests
+
+    if logged_in?
+      opened_posts = PostView.where(user_id: current_user.id).select([:post_id, :read_at])
+      @opened_ids = opened_posts.map(&:post_id)
+      @unread_ids ||= []
+      @unread_ids += opened_posts.select do |view|
+        post = posts.detect { |p| p.id == view.post_id }
+        post && view.read_at < post.tagged_at
+      end.map(&:post_id)
+    end
+
+    posts
+  end
+  helper_method :posts_from_relation
 end
