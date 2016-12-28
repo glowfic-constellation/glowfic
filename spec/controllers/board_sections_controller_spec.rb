@@ -53,8 +53,22 @@ RSpec.describe BoardSectionsController do
       expect(flash[:error]).to eq("You do not have permission to edit this continuity.")
     end
 
-    it "has more tests" do
-      skip
+    it "requires valid section" do
+      board = create(:board)
+      login_as(board.creator)
+      post :create, board_section: {board_id: board.id}
+      expect(response).to have_http_status(200)
+      expect(response).to render_template(:new)
+      expect(flash[:error][:message]).to eq("Section could not be created.")
+    end
+
+    it "succeeds" do
+      board = create(:board)
+      login_as(board.creator)
+      section_name = 'ValidSection'
+      post :create, board_section: {board_id: board.id, name: section_name}
+      expect(response).to redirect_to(edit_board_url(board))
+      expect(flash[:success]).to eq("New #{board.name} section #{section_name} has been successfully created.")
     end
   end
 

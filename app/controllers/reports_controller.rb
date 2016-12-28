@@ -40,7 +40,6 @@ class ReportsController < ApplicationController
   helper_method :ignored?
 
   def posts_for(day)
-
     Post.where(tagged_at: day.beginning_of_day .. day.end_of_day).includes(:board, :user, :last_user).order(sort)
   end
   helper_method :posts_for

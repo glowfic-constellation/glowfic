@@ -22,7 +22,6 @@ class UsersController < ApplicationController
 
   def new
     @user = User.new
-    @page_title = 'Sign Up'
   end
 
   def create
@@ -45,7 +44,6 @@ class UsersController < ApplicationController
       flash.now[:error] = {}
       flash.now[:error][:message] = "There was a problem completing your sign up."
       flash.now[:error][:array] = @user.errors.full_messages
-      @page_title = 'Sign Up'
       render :action => :new
     end
   end
@@ -90,16 +88,12 @@ class UsersController < ApplicationController
     render :json => { :username_free => User.find_by_username(params[:username]).nil? }
   end
 
-  def character
-    character = Character.find_by_id(params[:character_id])
-    render :json => CharacterPresenter.new(character)
-  end
-
   private
 
   def signup_prep
     use_javascript('users/new')
     gon.max = User::MAX_USERNAME_LEN
     gon.min = User::MIN_USERNAME_LEN
+    @page_title = 'Sign Up'
   end
 end

@@ -13,7 +13,7 @@ RSpec.describe MessagesController do
       login_as(user)
       messages = 4.times.collect do create(:message, recipient: user) end
       get :index
-      expect(response.status).to eq(200)
+      expect(response).to have_http_status(200)
       expect(assigns(:view)).to eq('inbox')
       expect(assigns(:page_title)).to eq('Inbox')
       expect(assigns(:messages)).to match_array(messages)
@@ -24,7 +24,7 @@ RSpec.describe MessagesController do
       login_as(user)
       messages = 4.times.collect do create(:message, sender: user) end
       get :index, view: 'outbox'
-      expect(response.status).to eq(200)
+      expect(response).to have_http_status(200)
       expect(assigns(:view)).to eq('outbox')
       expect(assigns(:page_title)).to eq('Outbox')
       expect(assigns(:messages)).to match_array(messages)
@@ -89,8 +89,50 @@ RSpec.describe MessagesController do
   end
 
   describe "GET show" do
-    it "has more tests" do
-      skip
+    it "requires login" do
+      get :show, id: -1
+      expect(response).to redirect_to(root_url)
+      expect(flash[:error]).to eq("You must be logged in to view that page.")
+    end
+
+    it "requires valid message" do
+      login
+      get :show, id: -1
+      expect(response).to redirect_to(messages_url(view: 'inbox'))
+      expect(flash[:error]).to eq("Message could not be found.")
+    end
+
+    it "requires your message" do
+      message = create(:message)
+      login
+      get :show, id: message.id
+      expect(response).to redirect_to(messages_url(view: 'inbox'))
+      expect(flash[:error]).to eq("That is not your message!")
+    end
+
+    it "works for sender" do
+      message = create(:message)
+      login_as(message.sender)
+      get :show, id: message.id
+      expect(response).to have_http_status(200)
+      expect(assigns(:message)).to eq(message)
+      expect(message.reload.unread?).to be_true
+    end
+
+    it "works for recipient" do
+      message = create(:message)
+      login_as(message.recipient)
+      get :show, id: message.id
+      expect(response).to have_http_status(200)
+      expect(assigns(:message)).to eq(message)
+      expect(message.reload.unread?).not_to be_true
+    end
+
+    it "does not remark the message read" do
+      message = create(:message, unread: false)
+      login_as(message.recipient)
+      expect_any_instance_of(Message).not_to receive(:update_attributes)
+      get :show, id: message.id
     end
   end
 

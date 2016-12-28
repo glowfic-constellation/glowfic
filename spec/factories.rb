@@ -29,6 +29,7 @@ FactoryGirl.define do
     transient do
       with_icon false
       with_character false
+      num_replies 0
     end
     user
     board
@@ -38,6 +39,7 @@ FactoryGirl.define do
       post.character = create(:character, user: post.user) if evaluator.with_character
       post.icon = create(:icon, user: post.user) if evaluator.with_icon
       post.last_user = post.user
+      evaluator.num_replies.times do create(:reply, user: post.user) end
     end
   end
 

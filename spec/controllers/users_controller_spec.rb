@@ -2,14 +2,29 @@ require "spec_helper"
 
 RSpec.describe UsersController do
   describe "GET index" do
-    it "has more tests" do
-      skip
+    it "succeeds when logged out" do
+      get :index
+      expect(response).to have_http_status(200)
+    end
+
+    it "succeeds when logged in" do
+      login
+      get :index
+      expect(response).to have_http_status(200)
     end
   end
 
   describe "GET new" do
-    it "has more tests" do
-      skip
+    it "succeeds when logged out" do
+      get :new
+      expect(response).to have_http_status(200)
+      expect(assigns(:page_title)).to eq('Sign Up')
+      expect(controller.gon.min).to eq(User::MIN_USERNAME_LEN)
+      expect(controller.gon.max).to eq(User::MAX_USERNAME_LEN)
+    end
+
+    it "complains when logged in" do
+      skip "TODO not yet implemented"
     end
   end
 
@@ -76,15 +91,26 @@ RSpec.describe UsersController do
     end
   end
 
-  describe "DELETE destroy" do
-    it "has more tests" do
-      skip
-    end
-  end
-
   describe "POST username" do
-    it "has more tests" do
-      skip
+    it "complains when logged in" do
+      skip "TODO not yet implemented"
+    end
+
+    it "requires username" do
+      post :username
+      expect(response.json['error']).to eq("No username provided.")
+    end
+
+    it "finds user" do
+      user = create(:user)
+      post :username, username: user.username
+      expect(response.json['username_free']).not_to be_true
+    end
+
+    it "finds free username" do
+      user = create(:user)
+      post :username, username: user.username + 'nope'
+      expect(response.json['username_free']).to be_true
     end
   end
 

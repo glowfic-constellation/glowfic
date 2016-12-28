@@ -251,4 +251,62 @@ RSpec.describe RepliesController do
       expect(response).to redirect_to(post_url(reply.post, page: 2))
     end
   end
+
+  describe "GET search" do
+    context "no search" do
+      before(:each) do
+        2.times do 
+          create(:user) 
+          create(:character)
+          create(:template_character)
+        end
+      end
+
+      it "works logged out" do
+        get :search
+        expect(response).to have_http_status(200)
+        expect(assigns(:page_title)).to eq('Search Replies')
+        expect(assigns(:post)).to be_nil
+        expect(assigns(:search_results)).to be_nil
+        expect(assigns(:users)).to match_array(User.all)
+        expect(assigns(:characters)).to match_array(Character.all)
+        expect(assigns(:templates)).to match_array(Template.all)
+      end
+
+      it "works logged in" do
+        login
+        get :search
+        expect(response).to have_http_status(200)
+        expect(assigns(:page_title)).to eq('Search Replies')
+        expect(assigns(:post)).to be_nil
+        expect(assigns(:search_results)).to be_nil
+        expect(assigns(:users)).to match_array(User.all)
+      end
+
+      it "handles invalid post" do
+        get :search, post_id: -1
+        expect(response).to have_http_status(200)
+        expect(assigns(:page_title)).to eq('Search Replies')
+        expect(assigns(:post)).to be_nil
+        expect(assigns(:search_results)).to be_nil
+        expect(assigns(:users)).to match_array(User.all)
+      end
+
+      it "handles valid post" do
+        templateless_char = Character.where(template_id: nil).first
+        post = create(:post, character: templateless_char, user: templateless_char.user)
+        get :search, post_id: post.id
+        expect(response).to have_http_status(200)
+        expect(assigns(:page_title)).to eq('Search Replies')
+        expect(assigns(:post)).to eq(post)
+        expect(assigns(:search_results)).to be_nil
+        expect(assigns(:users)).to match_array(post.authors)
+        expect(assigns(:characters)).to match_array([post.character])
+        expect(assigns(:templates)).to be_empty
+      end
+    end
+
+    context "searching" do
+    end
+  end
 end

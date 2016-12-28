@@ -67,14 +67,21 @@ RSpec.describe PostsController do
     it "does not require login" do
       post = create(:post)
       get :show, id: post.id
-      expect(response.status).to eq(200)
+      expect(response).to have_http_status(200)
+    end
+
+    it "requires permission" do
+      post = create(:post, privacy: Post::PRIVACY_PRIVATE)
+      get :show, id: post.id
+      expect(response).to redirect_to(boards_url)
+      expect(flash[:error]).to eq("You do not have permission to view this post.")
     end
 
     it "works with login" do
       post = create(:post)
       login
       get :show, id: post.id
-      expect(response.status).to eq(200)
+      expect(response).to have_http_status(200)
     end
 
     it "marks read multiple times" do
