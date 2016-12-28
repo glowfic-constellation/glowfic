@@ -112,6 +112,7 @@ RSpec.describe PostsController do
         get :show, id: post.id
         expect(response.status).to eq(200)
         expect(response.body).to include(post.subject)
+        expect(response.body).to include('header-right')
       end
 
       it "renders HAML for logged in user" do
@@ -122,6 +123,15 @@ RSpec.describe PostsController do
         get :show, id: post.id
         expect(response.status).to eq(200)
         expect(response.body).to include('Join Thread')
+      end
+
+      it "flat view renders HAML properly" do
+        post = create(:post, with_icon: true, with_character: true)
+        create(:reply, post: post, with_icon: true, with_character: true)
+        get :show, id: post.id, view: 'flat'
+        expect(response.status).to eq(200)
+        expect(response.body).to include(post.subject)
+        expect(response.body).not_to include('header-right')
       end
     end
 
@@ -211,6 +221,42 @@ RSpec.describe PostsController do
   end
 
   describe "POST warnings" do
+    it "requires a valid post" do
+      post :warnings, id: -1
+      expect(response).to redirect_to(boards_url)
+      expect(flash[:error]).to eq("Post could not be found.")
+    end
+
+    it "requires permission" do
+      warn_post = create(:post, privacy: Post::PRIVACY_PRIVATE)
+      post :warnings, id: warn_post.id
+      expect(response).to redirect_to(boards_url)
+      expect(flash[:error]).to eq("You do not have permission to view this post.")
+    end
+
+    it "works for logged out" do
+      warn_post = create(:post)
+      expect(session[:ignore_warnings]).to be_nil
+      post :warnings, id: warn_post.id
+      expect(response).to redirect_to(post_url(warn_post, per_page: 25, page: 1))
+      expect(flash[:success]).to eq("All content warnings have been hidden. Proceed at your own risk.")
+      expect(session[:ignore_warnings]).to be_true
+    end
+
+    it "works for logged in" do
+      warn_post = create(:post)
+      user = create(:user)
+      expect(session[:ignore_warnings]).to be_nil
+      expect(warn_post.send(:view_for, user)).to be_a_new_record
+      login_as(user)
+      post :warnings, id: warn_post.id
+      expect(response).to redirect_to(post_url(warn_post, per_page: 25, page: 1))
+      expect(flash[:success]).to eq("Content warnings have been hidden for this thread. Proceed at your own risk.")
+      expect(session[:ignore_warnings]).to be_nil
+      view = warn_post.reload.send(:view_for, user)
+      expect(view).not_to be_a_new_record
+      expect(view.warnings_hidden).to be_true
+    end
   end
 
   describe "DELETE destroy" do

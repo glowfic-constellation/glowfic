@@ -27,7 +27,7 @@
                 - if @post
                   %b= @post.board.name
                 - else
-                  = select_tag :board_id, options_from_collection_for_select(Board.all, :id, :name, params[:board_id]), {class: 'chosen-select', prompt: '— Choose Continuity —'}
+                  = select_tag :board_id, options_from_collection_for_select(Board.order('pinned DESC, LOWER(name)'), :id, :name, params[:board_id]), {class: 'chosen-select', prompt: '— Choose Continuity —'}
             %tr
               %td Author
               %td= select_tag :author_id, options_from_collection_for_select(@users, :id, :username, params[:author_id]), {class: 'chosen-select', prompt: '— Choose Author —'}

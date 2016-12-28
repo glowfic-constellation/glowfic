@@ -29,23 +29,23 @@ class UsersController < ApplicationController
     @user.validate_password = true
 
     if params[:secret] != "ALLHAILTHECOIN"
+      signup_prep
       flash.now[:error] = "This is in beta. Please come back later."
-      @page_title = 'Sign Up'
       render :action => :new and return
     end
 
-    if @user.save
-      flash[:success] = "User created! You have been logged in."
-      session[:user_id] = @user.id
-      @current_user = @user
-      redirect_to root_url
-    else
+    unless @user.save
       signup_prep
       flash.now[:error] = {}
       flash.now[:error][:message] = "There was a problem completing your sign up."
       flash.now[:error][:array] = @user.errors.full_messages
-      render :action => :new
+      render :action => :new and return
     end
+
+    flash[:success] = "User created! You have been logged in."
+    session[:user_id] = @user.id
+    @current_user = @user
+    redirect_to root_url
   end
 
   def edit

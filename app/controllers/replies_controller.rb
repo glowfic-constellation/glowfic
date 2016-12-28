@@ -25,6 +25,7 @@ class RepliesController < WritableController
     @search_results = Reply.unscoped
     @search_results = @search_results.where(user_id: params[:author_id]) if params[:author_id].present?
     @search_results = @search_results.where(character_id: params[:character_id]) if params[:character_id].present?
+
     if params[:subj_content].present?
       @search_results = @search_results.search(params[:subj_content]).with_pg_search_highlight
       exact_phrases = params[:subj_content].scan(/"([^"]*)"/)
@@ -38,12 +39,14 @@ class RepliesController < WritableController
     else
       @search_results = @search_results.order('replies.id DESC')
     end
+
     if @post
       @search_results = @search_results.where(post_id: @post.id)
     elsif params[:board_id].present?
       post_ids = Post.where(board_id: params[:board_id]).pluck(:id)
       @search_results = @search_results.where(post_id: post_ids)
     end
+
     if params[:template_id].present?
       template = Template.find_by_id(params[:template_id])
       if template.present?

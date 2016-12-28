@@ -307,6 +307,70 @@ RSpec.describe RepliesController do
     end
 
     context "searching" do
+      it "finds all when no arguments given" do
+        4.times do create(:reply) end
+        get :search, commit: true
+        expect(assigns(:search_results)).to match_array(Reply.all)
+      end
+
+      it "filters by author" do
+        replies = 4.times.collect do create(:reply) end
+        filtered_reply = replies.last
+        get :search, commit: true, author_id: filtered_reply.user_id
+        expect(assigns(:search_results)).to match_array([filtered_reply])
+      end
+
+      it "filters by character" do
+        create(:reply, with_character: true)
+        reply = create(:reply, with_character: true)
+        get :search, commit: true, character_id: reply.character_id
+        expect(assigns(:search_results)).to match_array([reply])
+      end
+
+      it "filters by string" do
+        reply = create(:reply, content: 'contains seagull')
+        cap_reply = create(:reply, content: 'Seagull is capital')
+        create(:reply, content: 'nope')
+        get :search, commit: true, subj_content: 'seagull'
+        expect(assigns(:search_results)).to match_array([reply, cap_reply])
+      end
+
+      it "filters by exact match" do
+        create(:reply, content: 'contains forks')
+        create(:reply, content: 'Forks is capital')
+        reply = create(:reply, content: 'Forks High is capital')
+        create(:reply, content: 'Forks high is kinda capital')
+        create(:reply, content: 'forks High is different capital')
+        create(:reply, content: 'forks high is not capital')
+        create(:reply, content: 'Forks is split from High')
+        create(:reply, content: 'nope')
+        get :search, commit: true, subj_content: '"Forks High"'
+        expect(assigns(:search_results)).to match_array([reply])
+      end
+
+      it "filters by post" do
+        replies = 4.times.collect do create(:reply) end
+        filtered_reply = replies.last
+        get :search, commit: true, post_id: filtered_reply.post_id
+        expect(assigns(:search_results)).to match_array([filtered_reply])
+      end
+
+      it "filters by continuity" do
+        continuity_post = create(:post, num_replies: 1)
+        wrong_post = create(:post, num_replies: 1)
+        filtered_reply = continuity_post.replies.last
+        get :search, commit: true, board_id: continuity_post.board_id
+        expect(assigns(:search_results)).to match_array([filtered_reply])
+      end
+
+      it "filters by template" do
+        character = create(:template_character)
+        templateless_char = create(:character)
+        reply = create(:reply, character: character, user: character.user)
+        create(:reply, character: templateless_char, user: templateless_char.user)
+        get :search, commit: true, template_id: character.template_id
+        expect(assigns(:search_results)).to match_array([reply])
+      end
     end
   end
 end

@@ -99,7 +99,4 @@ class MessagesController < ApplicationController
     flash[:success] = "Messages updated"
     redirect_to messages_path(view: box || 'inbox')
   end
-
-  def destroy
-  end
 end

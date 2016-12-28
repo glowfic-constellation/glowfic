@@ -29,8 +29,28 @@ RSpec.describe UsersController do
   end
 
   describe "POST create" do
-    it "has more tests" do
-      skip
+    it "complains when logged in" do
+      skip "TODO not yet implemented"
+    end
+
+    it "requires beta secret" do
+      post :create
+      expect(response).to render_template(:new)
+      expect(flash[:error]).to eq("This is in beta. Please come back later.")
+      expect(assigns(:user)).not_to be_valid
+      expect(assigns(:page_title)).to eq('Sign Up')
+      expect(controller.gon.min).to eq(User::MIN_USERNAME_LEN)
+      expect(controller.gon.max).to eq(User::MAX_USERNAME_LEN)
+    end
+
+    it "requires valid fields" do
+      post :create, secret: "ALLHAILTHECOIN"
+      expect(response).to render_template(:new)
+      expect(flash[:error][:message]).to eq("There was a problem completing your sign up.")
+      expect(assigns(:user)).not_to be_valid
+      expect(assigns(:page_title)).to eq('Sign Up')
+      expect(controller.gon.min).to eq(User::MIN_USERNAME_LEN)
+      expect(controller.gon.max).to eq(User::MAX_USERNAME_LEN)
     end
   end
 

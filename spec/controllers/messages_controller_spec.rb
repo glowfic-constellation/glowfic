@@ -142,15 +142,119 @@ RSpec.describe MessagesController do
     end
   end
 
-  describe "DELETE destroy" do
-    it "has more tests" do
-      skip
-    end
-  end
-
   describe "POST mark" do
-    it "has more tests" do
-      skip
+    it "requires login" do
+      post :mark
+      expect(response).to redirect_to(root_url)
+      expect(flash[:error]).to eq("You must be logged in to view that page.")
+    end
+
+    context "marking read/unread" do
+      it "handles invalid message ids" do
+        skip
+      end
+
+      it "does not work for users without access" do
+        skip
+      end
+
+      it "does not work for sender" do
+        skip "not yet implemented"
+      end
+
+      it "works read for recipient" do
+        skip
+      end
+
+      it "works unread for recipient" do
+        skip
+      end
+    end
+
+    context "marking important/unimportant" do
+      it "handles invalid message ids" do
+        login
+        expect_any_instance_of(Message).not_to receive(:update_attributes)
+        post :mark, marked_ids: ['nope', -1, '0'], commit: "Mark / Unmark Important"
+      end
+
+      it "does not work for users without access" do
+        message = create(:message)
+        login
+        expect_any_instance_of(Message).not_to receive(:update_attributes)
+        post :mark, marked_ids: [message.id.to_s], commit: "Mark / Unmark Important"
+      end
+
+      context "sender" do
+        it "works for important" do
+          message = create(:message)
+          login_as(message.sender)
+          expect(message.marked_outbox).not_to be_true
+          post :mark, marked_ids: [message.id.to_s], commit: "Mark / Unmark Important"
+          expect(message.reload.marked_outbox).to be_true
+        end
+
+        it "works for unimportant" do
+          message = create(:message, marked_outbox: true)
+          login_as(message.sender)
+          expect(message.marked_outbox).to be_true
+          post :mark, marked_ids: [message.id.to_s], commit: "Mark / Unmark Important"
+          expect(message.reload.marked_outbox).not_to be_true
+        end
+      end
+
+      context "recipient" do
+        it "works for important" do
+          message = create(:message)
+          login_as(message.recipient)
+          expect(message.marked_inbox).not_to be_true
+          post :mark, marked_ids: [message.id.to_s], commit: "Mark / Unmark Important"
+          expect(message.reload.marked_inbox).to be_true
+        end
+
+        it "works for unimportant" do
+          message = create(:message, marked_inbox: true)
+          login_as(message.recipient)
+          expect(message.marked_inbox).to be_true
+          post :mark, marked_ids: [message.id.to_s], commit: "Mark / Unmark Important"
+          expect(message.reload.marked_inbox).not_to be_true
+        end
+      end
+    end
+
+    context "deleting" do
+      it "handles invalid message ids" do
+        login
+        expect_any_instance_of(Message).not_to receive(:update_attributes)
+        post :mark, marked_ids: ['nope', -1, '0'], commit: "Delete"
+      end
+
+      it "does not work for users without access" do
+        message = create(:message)
+        login
+        expect_any_instance_of(Message).not_to receive(:update_attributes)
+        post :mark, marked_ids: [message.id.to_s], commit: "Delete"
+      end
+
+      context "sender" do
+        it "works" do
+          message = create(:message)
+          login_as(message.sender)
+          expect(message.visible_outbox).to be_true
+          post :mark, marked_ids: [message.id.to_s], commit: "Delete"
+          expect(message.reload.visible_outbox).not_to be_true
+        end
+      end
+
+      context "recipient" do
+        it "works" do
+          message = create(:message)
+          login_as(message.recipient)
+          expect(message.visible_inbox).to be_true
+          post :mark, marked_ids: [message.id.to_s], commit: "Delete"
+          expect(message.reload.visible_inbox).not_to be_true
+        end
+      end
     end
   end
 end

@@ -39,7 +39,9 @@ FactoryGirl.define do
       post.character = create(:character, user: post.user) if evaluator.with_character
       post.icon = create(:icon, user: post.user) if evaluator.with_icon
       post.last_user = post.user
-      evaluator.num_replies.times do create(:reply, user: post.user) end
+    end
+    after(:create) do |post, evaluator|
+      evaluator.num_replies.times do create(:reply, user: post.user, post: post) end
     end
   end
 

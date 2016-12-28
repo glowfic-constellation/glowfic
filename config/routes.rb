@@ -19,7 +19,7 @@ Rails.application.routes.draw do
   resources :password_resets, only: [:new, :create, :show, :update]
 
   # Messages and notifications
-  resources :messages, except: :edit do
+  resources :messages, except: [:edit, :update, :destroy] do
     collection { post :mark }
   end
 
