@@ -28,6 +28,13 @@ RSpec.describe FavoritesController do
       let (:board_post) { create(:post, board: board) }
       let (:board_user_post) { create(:post, board: board, user: user) }
 
+      before(:each) do
+        user_post
+        post
+        board_post
+        board_user_post
+      end
+
       it "shows user's post when user is favorited" do
         favorite = create(:favorite, favorite: user)
         login_as(favorite.user)
