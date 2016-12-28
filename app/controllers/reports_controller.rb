@@ -10,6 +10,7 @@ class ReportsController < ApplicationController
     end
 
     @page_title = params[:id].capitalize + " Report"
+    @hide_quicklinks = true
 
     if logged_in?
       @opened_posts = PostView.where(user_id: current_user.id).select([:post_id, :read_at, :ignored])

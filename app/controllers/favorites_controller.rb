@@ -24,6 +24,7 @@ class FavoritesController < ApplicationController
     end
 
     @posts = posts_from_relation(@posts.where(where_calc.where_values.reduce(:or)).order('tagged_at desc'))
+    @hide_quicklinks = true
     @page_title = 'Favorites'
   end
 
