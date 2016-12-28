@@ -16,11 +16,12 @@ class PostsController < WritableController
   def owed
     posts_started = Post.where(user_id: current_user.id).pluck('distinct id')
     posts_in = Reply.where(user_id: current_user.id).pluck('distinct post_id')
-    ids = posts_in + posts_started
-    @posts = Post.where(id: ids.uniq).where('status != ?', Post::STATUS_COMPLETE).where('status != ?', Post::STATUS_ABANDONED).order('tagged_at desc')
-    @posts = posts_from_relation(@posts.where('last_user_id != ?', current_user.id))
-    @page_title = 'Tags Owed'
+    ids = (posts_in + posts_started).uniq
+    @posts = Post.where(id: ids).where('status != ?', Post::STATUS_COMPLETE).where('status != ?', Post::STATUS_ABANDONED).where('last_user_id != ?', current_user.id)
+    @posts = posts_from_relation(@posts.order('tagged_at desc'))
     @show_unread = true
+    @hide_quicklinks = true
+    @page_title = 'Tags Owed'
   end
 
   def unread
@@ -33,6 +34,7 @@ class PostsController < WritableController
     @posts = @posts.select { |p| p.visible_to?(current_user) }
     @posts = @posts.select { |p|  @opened_ids.include?(p.id) } if @started
     @posts = @posts.paginate(per_page: 25, page: page)
+    @hide_quicklinks = true
     @page_title = @started ? 'Opened Threads' : 'Unread Threads'
   end
 
