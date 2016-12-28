@@ -285,10 +285,11 @@ getAndSetCharacterData = function(characterId, options) {
     $("#post-editor .post-character").hide().data('character-id', '');
     $("#post-editor .post-screenname").hide();
 
-    var url = gon.current_user.avatar.url;
-    if(url != null) {
-      var aid = gon.current_user.avatar.id;
-      var keyword = gon.current_user.avatar.keyword;
+    var avatar = gon.current_user.avatar;
+    if(avatar && avatar.url != null) {
+      var url = avatar.url;
+      var aid = avatar.id;
+      var keyword = avatar.keyword;
       $("#gallery").html("");
       $("#gallery").append(iconString({id: aid, url: url, keyword: keyword}));
       $("#gallery").append(iconString({id: '', url: '/images/no-icon.png', keyword: 'No Icon', skip_dropdown: true}));
