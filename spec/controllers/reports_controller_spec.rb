@@ -47,6 +47,7 @@ RSpec.describe ReportsController do
 
       it "works" do
         3.times do create(:post) end
+        Post.last.user.update_attributes(moiety: 'abcdef')
         create(:post, num_replies: 4, created_at: 2.days.ago)
         get :show, id: 'daily'
       end

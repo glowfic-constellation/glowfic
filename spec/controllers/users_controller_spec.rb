@@ -12,6 +12,17 @@ RSpec.describe UsersController do
       get :index
       expect(response).to have_http_status(200)
     end
+
+    context "with moieties" do
+      render_views
+
+      it "displays the name" do
+        user = create(:user, moiety: 'fed123', moiety_name: 'moietycolor')
+        get :index
+        expect(response.body).to include('moietycolor')
+        expect(response.body).to include('fed123')
+      end
+    end
   end
 
   describe "GET new" do
@@ -102,6 +113,15 @@ RSpec.describe UsersController do
       login
       get :edit, id: -1
       expect(response.status).to eq(200)
+    end
+
+    context "with views" do
+      render_views
+
+      it "displays options" do
+        login
+        get :edit, id: -1
+      end
     end
   end
 
