@@ -97,6 +97,10 @@ class ApplicationController < ActionController::Base
     posts = posts.paginate(page: page, per_page: 25) if with_pagination
     posts = posts.no_tests if no_tests
 
+    if (with_pagination && posts.total_pages <= 1) || posts.count <= 25
+      posts = posts.select {|post| post.visible_to?(current_user)}
+    end
+
     if logged_in?
       @opened_ids ||= PostView.where(user_id: current_user.id).pluck(:post_id)
 
