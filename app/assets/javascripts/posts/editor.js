@@ -59,15 +59,7 @@ $(document).ready(function() {
 
   if ($("#post-editor .view-button").length === 0) return; // Skip if there is no writable editor (no RTF/HTML buttons)
 
-  $('.post-editor-expander').each(function() {
-    // set up expander post noscript
-    var expander = $(this);
-    var expanderText = expander.data('expander-text');
-    var infoBox = $("<div class='info'>").append(expanderText);
-    var hiddenBox = $("<div class='hidden'>").append(expander.children(":not(.noexpand)"));
-    expander.children('.noexpand').remove();
-    expander.append(infoBox).append(hiddenBox);
-  }).click(function() {
+  $('.post-editor-expander').click(function() {
     $(this).children(".info").hide();
     $(this).children(".hidden").show();
   });

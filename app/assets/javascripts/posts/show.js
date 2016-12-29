@@ -42,6 +42,19 @@ $(document).ready(function() {
     });
   }
 
+  // Make expanders work in NoScript
+  $('.post-expander').each(function() {
+    // set up expander post noscript
+    var expander = $(this);
+    var expanderText = expander.data('expander-text');
+    var infoBox = $("<div class='info'>").append(expanderText);
+    var hiddenBox = $("<div class='hidden'>").append(expander.children(":not(.noexpand)"));
+    hiddenBox.append(hiddenBox.children('.hidden.expand').children());
+    hiddenBox.children('.hidden.expand').remove();
+    expander.children('.noexpand').remove();
+    expander.append(infoBox).append(hiddenBox);
+  });
+
   // TODO fix hack
   // Resizes screennames to be slightly smaller if they're long for UI reasons
   $(".post-screenname").each(function() {

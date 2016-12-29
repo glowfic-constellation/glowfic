@@ -128,9 +128,10 @@
 - if page.to_i == 1
   = render partial: 'replies/single', locals: {reply: @post}
 - else
-  .post-expander
-    .info + Show First Post
-    .hidden
+  .post-expander{data: {expander_text: '+ Show First Post'}}
+    .noexpand.info
+      %b= link_to 'Go to first post', post_path(@post)
+    .hidden.expand
       = render partial: 'replies/single', locals: {reply: @post}
 - if @replies.present?
   = render partial: 'posts/paginator', locals: { paginated: @replies }
@@ -160,7 +161,7 @@
     = render partial: 'replies/write', locals: { reply: @reply, url: replies_path, method: :post }
   - elsif !@post.authors_locked?
     .post-expander.post-editor-expander{data: {expander_text: '+ Join Thread'}}
-      .noexpand.padding-10
+      .noexpand.info
         %b Join Thread
       = render partial: 'replies/write', locals: { reply: @reply, url: replies_path, method: :post }
 
