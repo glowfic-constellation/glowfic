@@ -48,7 +48,10 @@ class FavoritesController < ApplicationController
         flash[:error] = "Post could not be found."
         redirect_to posts_path and return
       end
-      fav_path = session[:previous_url] || post_path(favorite)
+      params = {}
+      params[:page] = page unless page.to_s == '1'
+      params[:per_page] = per_page unless per_page.to_s == (current_user.try(:per_page) || 25).to_s
+      fav_path = post_path(favorite, params)
     else
       flash[:error] = "No favorite specified."
       redirect_to boards_path and return

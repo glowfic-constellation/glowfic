@@ -58,7 +58,7 @@
             = image_tag '/images/star_delete.png'.freeze, class: 'vmid'.freeze, style: 'margin-bottom: 3px;'.freeze
             Unfavorite
       - else
-        = link_to favorites_path(post_id: @post.id), method: :post do
+        = link_to favorites_path(post_id: @post.id, page: page, per_page: per_page), method: :post do
           %div
             = image_tag '/images/star_add.png'.freeze, class: 'vmid'.freeze, style: 'margin-bottom: 3px;'.freeze
             Favorite
