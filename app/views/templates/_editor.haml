@@ -7,11 +7,12 @@
 %tr
   %th.sub.vtop Characters
   %td.even
-    - @template.characters.order('name asc').each do |char|
-      = check_box_tag "template[character_ids][]", char.id, true, id: "template_character_ids_#{char.id}"
-      = label_tag "template_character_ids_#{char.id}", char.name
-      %br
-    - current_user.characters.where(template_id: nil).order('name asc').each do |char|
+    - if @template.id
+      - @template.characters.order('LOWER(name)').each do |char|
+        = check_box_tag "template[character_ids][]", char.id, true, id: "template_character_ids_#{char.id}"
+        = label_tag "template_character_ids_#{char.id}", char.name
+        %br
+    - current_user.characters.where(template_id: nil).order('LOWER(name)').each do |char|
       = check_box_tag "template[character_ids][]", char.id, false, id: "template_character_ids_#{char.id}"
       = label_tag "template_character_ids_#{char.id}", char.name
       %br
