@@ -9,8 +9,7 @@ class Icon < ActiveRecord::Base
   validate :uploaded_url_not_in_use
   nilify_blanks
 
-  after_update :delete_view_cache
-  after_destroy :delete_view_cache, :clear_icon_ids
+  after_destroy :clear_icon_ids
   before_destroy :delete_from_s3
 
   def as_json(options={})
@@ -27,13 +26,6 @@ class Icon < ActiveRecord::Base
   end
 
   private
-
-  def delete_view_cache
-    return unless url_changed? || keyword_changed?
-    replies.each do |reply|
-      reply.send(:delete_view_cache)
-    end
-  end
 
   def url_is_url
     return true if url.to_s.starts_with?('http://') || url.to_s.starts_with?('https://')

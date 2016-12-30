@@ -17,9 +17,6 @@ class Character < ActiveRecord::Base
   validates_presence_of :name, :user
   validate :valid_template, :valid_group, :valid_galleries, :valid_default_icon
 
-  after_update :delete_view_cache
-  after_destroy :delete_view_cache
-
   attr_accessor :new_template_name, :group_name
 
   nilify_blanks
@@ -75,13 +72,6 @@ class Character < ActiveRecord::Base
   def valid_default_icon
     if default_icon.present? && default_icon.user_id != user.id
       errors.add(:default_icon, "must be yours")
-    end
-  end
-
-  def delete_view_cache
-    return unless name_changed? || screenname_changed?
-    replies.each do |reply|
-      reply.send(:delete_view_cache)
     end
   end
 end
