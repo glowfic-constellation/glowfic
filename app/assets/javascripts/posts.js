@@ -27,7 +27,7 @@ $(document).ready(function() {
     minimumResultsForSearch: 20,
   });
 
-  $("#post_post_viewer_ids").select2({
+  $("#post_viewer_ids").select2({
     width: '200px',
     minimumResultsForSearch: 20,
     placeholder: 'Choose user(s) to view this post'

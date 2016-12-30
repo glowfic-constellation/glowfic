@@ -411,8 +411,7 @@ RSpec.describe Post do
 
       it "is visible to list user" do
         user = create(:user)
-        post.post_viewer_ids = [user.id]
-        post.save
+        post.viewers << user
         expect(post.reload).to be_visible_to(user)
       end
 

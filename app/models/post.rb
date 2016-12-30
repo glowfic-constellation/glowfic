@@ -22,6 +22,7 @@ class Post < ActiveRecord::Base
   belongs_to :last_reply, class_name: Reply
   has_many :replies, inverse_of: :post, dependent: :destroy
   has_many :post_viewers, dependent: :destroy
+  has_many :viewers, through: :post_viewers, source: :user
   has_many :reply_drafts, dependent: :destroy
   has_many :post_tags, inverse_of: :post, dependent: :destroy
   has_many :tags, through: :post_tags
@@ -29,13 +30,13 @@ class Post < ActiveRecord::Base
   has_many :content_warnings, through: :post_tags, source: :content_warning
   has_many :favorites, as: :favorite, dependent: :destroy
 
-  attr_accessible :board, :board_id, :subject, :privacy, :post_viewer_ids, :description, :section_id, :tag_ids, :warning_ids, :setting_ids, :section_order
-  attr_accessor :post_viewer_ids, :tag_ids, :warning_ids, :setting_ids
+  attr_accessible :board, :board_id, :subject, :privacy, :viewer_ids, :description, :section_id, :tag_ids, :warning_ids, :setting_ids, :section_order
+  attr_accessor :tag_ids, :warning_ids, :setting_ids
   attr_writer :skip_edited
 
   validates_presence_of :board, :subject
 
-  after_save :update_access_list, :update_tag_list
+  after_save :update_tag_list
 
   audited except: [:last_reply_id, :last_user_id, :edited_at, :tagged_at, :section_id, :section_order]
   has_associated_audits
@@ -151,20 +152,6 @@ class Post < ActiveRecord::Base
   end
 
   private
-
-  def update_access_list
-    return unless privacy_changed? || privacy == PRIVACY_LIST
-    PostViewer.where(post_id: id).destroy_all and return unless privacy == PRIVACY_LIST
-    return unless post_viewer_ids
-
-    updated_ids = (post_viewer_ids - [""]).map(&:to_i)
-    existing_ids = post_viewers.map(&:user_id)
-
-    PostViewer.where(post_id: id, user_id: (existing_ids - updated_ids)).destroy_all
-    (updated_ids - existing_ids).each do |new_id|
-      PostViewer.create(post_id: id, user_id: new_id)
-    end
-  end
 
   def update_tag_list
     return unless tag_ids.present? || setting_ids.present? || warning_ids.present?
