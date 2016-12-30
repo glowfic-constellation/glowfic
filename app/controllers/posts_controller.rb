@@ -256,7 +256,10 @@ class PostsController < WritableController
       session[:ignore_warnings] = true
       flash[:success] = "All content warnings have been hidden. Proceed at your own risk."
     end
-    redirect_to post_path(@post, page: page, per_page: per_page)
+    params = {}
+    params[:page] = page unless page.to_s == '1'
+    params[:per_page] = per_page unless per_page.to_s == (current_user.try(:per_page) || 25).to_s
+    redirect_to post_path(@post, params)
   end
 
   private
