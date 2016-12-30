@@ -20,7 +20,6 @@ class CharactersController < ApplicationController
     else
       @user.username + "'s Characters"
     end
-    @characters = @user.characters.order('name asc')
   end
 
   def new

@@ -25,6 +25,7 @@ class RepliesController < WritableController
     @search_results = Reply.unscoped
     @search_results = @search_results.where(user_id: params[:author_id]) if params[:author_id].present?
     @search_results = @search_results.where(character_id: params[:character_id]) if params[:character_id].present?
+    @search_results = @search_results.where(icon_id: params[:icon_id]) if params[:icon_id].present?
 
     if params[:subj_content].present?
       @search_results = @search_results.search(params[:subj_content]).with_pg_search_highlight

@@ -320,6 +320,13 @@ RSpec.describe RepliesController do
         expect(assigns(:search_results)).to match_array([filtered_reply])
       end
 
+      it "filters by icon" do
+        create(:reply, with_icon: true)
+        reply = create(:reply, with_icon: true)
+        get :search, commit: true, icon_id: reply.icon_id
+        expect(assigns(:search_results)).to match_array([reply])
+      end
+
       it "filters by character" do
         create(:reply, with_character: true)
         reply = create(:reply, with_character: true)

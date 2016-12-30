@@ -30,4 +30,4 @@
   - if page_view == 'list'
     = render partial: 'list_view'
   - else
-    = render partial: 'icon_view'
+    = render partial: 'icon_view', locals: {characters: @user.characters.order('name asc').includes(:default_icon)}

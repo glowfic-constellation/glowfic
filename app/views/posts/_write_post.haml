@@ -7,10 +7,11 @@
       = f.label :section_id, 'Continuity section:'
       = f.select :section_id, options_from_collection_for_select(BoardSection.where(board_id: post.board_id).order('section_order asc'), :id, :name, post.section_id), include_blank: '— Choose Section —'
     = f.label :privacy, 'Privacy:'
-    = f.select :privacy, options_from_collection_for_select(Post.privacy_settings.to_a, :second, :first, post.privacy)
+    = f.select :privacy, options_from_collection_for_select(post_privacy_settings.to_a, :second, :first, post.privacy)
     #access_list
       = f.label :post_viewer_ids, '&#8627; Who can view this post? '.html_safe
-      = f.collection_select(:post_viewer_ids, @viewers, :id, :username, {selected: post.post_viewer_ids || post.post_viewers.pluck(:user_id)}, {multiple: true})
+      = f.collection_select(:viewer_ids, User.where('id != ?', post.user_id || current_user.id).order('username asc'),
+      :id, :username, {selected: post.post_viewers.pluck(:user_id)}, {multiple: true})
     %br
     = f.label :setting_ids, 'Setting:'
     = f.select :setting_ids, options_from_collection_for_select(@settings, :id, :name, post.setting_ids || post.settings.map(&:id)), {}, {multiple: true}

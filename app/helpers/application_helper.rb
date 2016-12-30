@@ -111,4 +111,11 @@ module ApplicationHelper
     content = (content.include?("<p>".freeze) || content[/<br ?\/?>/]) ? content : content.gsub("\n".freeze,"<br/>".freeze)
     Sanitize.fragment(content, Glowfic::POST_CONTENT_SANITIZER)
   end
+
+  def post_privacy_settings
+    { 'Public'              => Post::PRIVACY_PUBLIC,
+      'Constellation Users' => Post::PRIVACY_REGISTERED,
+      'Access List'         => Post::PRIVACY_LIST,
+      'Private'             => Post::PRIVACY_PRIVATE }
+  end
 end
