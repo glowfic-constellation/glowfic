@@ -55,8 +55,8 @@
             %ul
               %li= link_to 'Account', edit_user_path(current_user)
               %li= link_to 'Inbox', messages_path
-              %li= link_to "Characters", characters_path
-              %li= link_to "Galleries", galleries_path
+              %li= link_to "Characters", user_characters_path(current_user)
+              %li= link_to "Galleries", user_galleries_path(current_user)
               %li= link_to 'Favorites', favorites_path
               %li= link_to "Post", new_post_path
             = link_to logout_path, method: :delete, id: :"header-logout" do
