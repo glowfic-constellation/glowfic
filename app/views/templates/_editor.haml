@@ -7,7 +7,7 @@
 %tr
   %th.sub.vtop Characters
   %td.even
-    - if @template.id
+    - unless @template.new_record?
       - @template.characters.order('LOWER(name)').each do |char|
         = check_box_tag "template[character_ids][]", char.id, true, id: "template_character_ids_#{char.id}"
         = label_tag "template_character_ids_#{char.id}", char.name
