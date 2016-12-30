@@ -112,4 +112,66 @@ RSpec.describe Reply do
       end
     end
   end
+
+  describe "#notify_other_authors" do
+    it "does nothing if skip_notify is set" do
+      notified_user = create(:user, email_notifications: true)
+      post = create(:post, user: notified_user)
+
+      ActionMailer::Base.deliveries.clear
+      create(:reply, post: post, skip_notify: true)
+      expect(ActionMailer::Base.deliveries.count).to eq(0)
+    end
+
+    it "does nothing if the previous reply was yours" do
+      notified_user = create(:user, email_notifications: true)
+      post = create(:post, user: notified_user)
+
+      reply = create(:reply, post: post, skip_notify: true)
+
+      ActionMailer::Base.deliveries.clear
+      create(:reply, post: post, user: reply.user)
+      expect(ActionMailer::Base.deliveries.count).to eq(0)
+    end
+
+    it "does nothing if the post was yours on the first reply" do
+      notified_user = create(:user, email_notifications: true)
+      post = create(:post, user: notified_user)
+
+      ActionMailer::Base.deliveries.clear
+      create(:reply, post: post, user: notified_user)
+      expect(ActionMailer::Base.deliveries.count).to eq(0)
+    end
+
+    it "sends to all other active authors if previous reply wasn't yours" do
+      post = create(:post)
+      expect(post.user.email_notifications).not_to be_true
+
+      user = create(:user)
+      user.update_attribute('email', nil)
+      create(:reply, user: user, post: post, skip_notify: true)
+
+      notified_user = create(:user, email_notifications: true)
+      create(:reply, user: notified_user, post: post, skip_notify: true)
+
+      another_notified_user = create(:user, email_notifications: true)
+      create(:reply, user: another_notified_user, post: post, skip_notify: true)
+
+      ActionMailer::Base.deliveries.clear
+      create(:reply, post: post)
+      expect(ActionMailer::Base.deliveries.count).to eq(2)
+    end
+
+    it "sends if the post was yours but previous reply wasn't" do
+      notified_user = create(:user, email_notifications: true)
+      post = create(:post, user: notified_user)
+
+      another_notified_user = create(:user, email_notifications: true)
+      create(:reply, user: another_notified_user, post: post, skip_notify: true)
+
+      ActionMailer::Base.deliveries.clear
+      create(:reply, post: post, user: notified_user)
+      expect(ActionMailer::Base.deliveries.count).to eq(1)
+    end
+  end
 end

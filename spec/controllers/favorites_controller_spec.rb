@@ -134,14 +134,23 @@ RSpec.describe FavoritesController do
       expect(flash[:success]).to eq("Your favorite has been saved.")
     end
 
-    it "favorites a post with a page redirect" do
+    it "favorites a post with a page/per redirect" do
       user = create(:user)
       fav = create(:post)
       login_as(user)
-      request.session[:previous_url] = post_url(fav, page: 3)
-      post :create, post_id: fav.id
+      post :create, post_id: fav.id, page: 3, per_page: 10
       expect(Favorite.between(user, fav)).not_to be_nil
-      expect(response).to redirect_to(post_url(fav, page: 3))
+      expect(response).to redirect_to(post_url(fav, page: 3, per_page: 10))
+      expect(flash[:success]).to eq("Your favorite has been saved.")
+    end
+
+    it "favorites a post without a page redirect for first page" do
+      user = create(:user)
+      fav = create(:post)
+      login_as(user)
+      post :create, post_id: fav.id, page: 1, per_page: 25
+      expect(Favorite.between(user, fav)).not_to be_nil
+      expect(response).to redirect_to(post_url(fav))
       expect(flash[:success]).to eq("Your favorite has been saved.")
     end
 

@@ -237,8 +237,8 @@ RSpec.describe PostsController do
     it "works for logged out" do
       warn_post = create(:post)
       expect(session[:ignore_warnings]).to be_nil
-      post :warnings, id: warn_post.id
-      expect(response).to redirect_to(post_url(warn_post, per_page: 25, page: 1))
+      post :warnings, id: warn_post.id, per_page: 10, page: 2
+      expect(response).to redirect_to(post_url(warn_post, per_page: 10, page: 2))
       expect(flash[:success]).to eq("All content warnings have been hidden. Proceed at your own risk.")
       expect(session[:ignore_warnings]).to be_true
     end
@@ -250,7 +250,7 @@ RSpec.describe PostsController do
       expect(warn_post.send(:view_for, user)).to be_a_new_record
       login_as(user)
       post :warnings, id: warn_post.id
-      expect(response).to redirect_to(post_url(warn_post, per_page: 25, page: 1))
+      expect(response).to redirect_to(post_url(warn_post))
       expect(flash[:success]).to eq("Content warnings have been hidden for this thread. Proceed at your own risk.")
       expect(session[:ignore_warnings]).to be_nil
       view = warn_post.reload.send(:view_for, user)

@@ -112,13 +112,6 @@ class Post < ActiveRecord::Base
     status == STATUS_ABANDONED
   end
 
-  def self.privacy_settings
-    { 'Public'              => PRIVACY_PUBLIC,
-      'Constellation Users' => PRIVACY_REGISTERED,
-      'Access List'         => PRIVACY_LIST,
-      'Private'             => PRIVACY_PRIVATE }
-  end
-
   def last_updated
     edited_at
   end
