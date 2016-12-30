@@ -10,7 +10,7 @@
     = f.select :privacy, options_from_collection_for_select(post_privacy_settings.to_a, :second, :first, post.privacy)
     #access_list
       = f.label :post_viewer_ids, '&#8627; Who can view this post? '.html_safe
-      = f.collection_select(:viewer_ids, User.where('id != ?', post.user_id || current_user.id).order('username asc'),
+      = f.collection_select(:viewer_ids, User.where('id != ?', post.user_id).order('username asc'),
       :id, :username, {selected: post.post_viewers.pluck(:user_id)}, {multiple: true})
     %br
     = f.label :setting_ids, 'Setting:'
