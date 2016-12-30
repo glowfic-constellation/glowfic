@@ -71,7 +71,6 @@
                     %td.vtop{class: klass}
                       = link_to reply_path(reply, anchor: "reply-#{reply.id}") do
                         = image_tag "/images/link.png".freeze, title: 'Permalink'.freeze, alt: 'Permalink'.freeze
-                  /= render partial: 'single', locals: {reply: reply}
 
   - if @search_results && @search_results.total_pages > 1
     %tfoot

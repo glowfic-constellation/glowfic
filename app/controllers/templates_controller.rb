@@ -24,8 +24,7 @@ class TemplatesController < ApplicationController
 
   def show
     @user = @template.user
-    @characters = @template.characters
-    character_ids = @characters.map(&:id)
+    character_ids = @template.characters.pluck(:id)
     post_ids = Reply.where(character_id: character_ids).pluck('distinct post_id')
     where = Post.where(character_id: character_ids).where(id: post_ids).where_values.reduce(:or)
     @posts = posts_from_relation(Post.where(where).order('tagged_at desc'))

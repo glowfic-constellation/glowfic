@@ -32,7 +32,7 @@
   - if page_view == 'list'
     = render partial: 'characters/list_view'
   - else
-    = render partial: 'characters/icon_view'
+    = render partial: 'characters/icon_view', locals: {characters: @template.characters.order('name asc').includes(:default_icon)}
 - if @posts.present?
   %br
   - content_for :posts_title do 'Posts with Template Instances' end

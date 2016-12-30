@@ -4,7 +4,7 @@
 %tr
   %td.green.left-align
     .gallery
-      - @user.characters.order('name asc').includes(:default_icon).each do |character|
+      - characters.each do |character|
         .gallery-icon
           = link_to character_path(character) do
             - if character.icon
@@ -20,5 +20,5 @@
           - if character.user_id == current_user.try(:id)
             .delete-button{ id: character.id }
               = link_to 'X', character_path(character), :method => :delete, confirm: 'Are you sure you want to delete '+character.name+'?'
-      - unless @user.characters.exists?
+      - unless characters.present?
         .centered — No characters yet —
