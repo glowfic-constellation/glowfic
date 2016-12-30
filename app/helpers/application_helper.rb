@@ -22,7 +22,7 @@ module ApplicationHelper
   end
 
   def no_icon_tag(**args)
-    icon_mem_tag(NO_ICON_URL, NO_ICON)
+    icon_mem_tag(NO_ICON_URL, NO_ICON, args)
   end
 
   def pretty_time(time)
@@ -80,7 +80,7 @@ module ApplicationHelper
     }
     options_for_select(layouts, default)
   end
-  
+
   def time_display_options(default=nil)
     time_thing = Time.new(2016, 12, 25, 21, 34, 56) # Example time: "2016-12-25 21:34:56" (for unambiguous display purposes)
     time_display_list = [
@@ -102,11 +102,11 @@ module ApplicationHelper
       post_path(reply)
     end
   end
-  
+
   def sanitize_post_description(desc)
     Sanitize.fragment(desc, elements: ['a'], attributes: {'a' => ['href']})
   end
-  
+
   def sanitize_post_content(content)
     content = (content.include?("<p>".freeze) || content[/<br ?\/?>/]) ? content : content.gsub("\n".freeze,"<br/>".freeze)
     Sanitize.fragment(content, Glowfic::POST_CONTENT_SANITIZER)
