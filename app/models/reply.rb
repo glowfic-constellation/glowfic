@@ -9,9 +9,8 @@ class Reply < ActiveRecord::Base
   audited associated_with: :post
 
   after_create :notify_other_authors, :destroy_draft, :update_active_char, :update_post
-  before_update :delete_view_cache
   after_update :update_post
-  after_destroy :update_last_reply, :delete_view_cache
+  after_destroy :update_last_reply
 
   attr_accessor :skip_notify, :skip_post_update, :is_import
 
@@ -44,11 +43,6 @@ class Reply < ActiveRecord::Base
 
   def view_cache_key
     ActiveSupport::Cache.expand_cache_key(self, :views)
-  end
-
-  def delete_view_cache
-    # don't rely on GC in Redis to get rid of these keys
-    Rails.cache.delete(view_cache_key)
   end
 
   def update_active_char
