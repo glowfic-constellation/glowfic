@@ -7,6 +7,7 @@ class PostsController < WritableController
   before_filter :require_permission, only: [:edit, :destroy]
   before_filter :build_template_groups, only: [:new, :edit]
   before_filter :build_tags, only: [:new, :edit]
+  before_filter :set_available_postviewers, only: [:new, :edit]
 
   def index
     @posts = posts_from_relation(Post.order('tagged_at desc'))
@@ -103,6 +104,7 @@ class PostsController < WritableController
       use_javascript('posts')
       build_template_groups
       build_tags
+      set_available_postviewers
       @page_title = 'New Post'
       render :action => :new
     end
@@ -138,6 +140,7 @@ class PostsController < WritableController
     @method = method
 
     build_tags
+    set_available_postviewers
 
     use_javascript('posts')
     gon.original_content = params[:post][:content] if params[:post]
@@ -175,6 +178,7 @@ class PostsController < WritableController
       use_javascript('posts')
       build_template_groups
       build_tags
+      set_available_postviewers
       render :action => :edit
     end
   end
@@ -335,6 +339,15 @@ class PostsController < WritableController
       @post.tag_ids += existing_tags.map(&:id)
       tags -= existing_tags.map(&:name)
       @post.tag_ids += tags.map { |tag| Tag.create(user: current_user, name: tag).id }
+    end
+  end
+
+  def set_available_postviewers
+    @viewers = User.order(:username)
+    if @post
+      @viewers -= [@post.user]
+    else
+      @viewers -= [current_user]
     end
   end
 end
