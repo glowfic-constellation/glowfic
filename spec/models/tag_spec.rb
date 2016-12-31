@@ -23,4 +23,18 @@ RSpec.describe Tag do
       expect(good_tag.posts.count).to eq(5)
     end
   end
+
+  describe "validations" do
+    it "requires unique name" do
+      tag = create(:tag)
+      new_tag = build(:tag, name: tag.name)
+      expect(new_tag).not_to be_valid
+    end
+
+    it "requires unique case sensitive name" do
+      tag = create(:tag, name: 'CASE')
+      new_tag = build(:tag, name: tag.name.downcase)
+      expect(new_tag).not_to be_valid
+    end
+  end
 end
