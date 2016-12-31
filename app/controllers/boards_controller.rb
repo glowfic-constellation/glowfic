@@ -7,8 +7,16 @@ class BoardsController < ApplicationController
 
   def index
     if params[:user_id].present?
-      @user = User.find_by_id(params[:user_id]) || current_user
-      @page_title = @user.username + "'s Continuities"
+      unless @user = User.find_by_id(params[:user_id]) || current_user
+        flash[:error] = "User could not be found."
+        redirect_to root_path and return
+      end
+
+      @page_title = if @user.id == current_user.try(:id)
+        "Your Continuities"
+      else
+        @user.username + "'s Continuities"
+      end
 
       @owned_board_ids = BoardAuthor.where(user_id: @user.id, cameo: false).pluck('distinct board_id') + Board.where(creator_id: @user.id).pluck(:id)
       @owned_boards = Board.where(id: @owned_board_ids).order('pinned DESC, LOWER(name)')
