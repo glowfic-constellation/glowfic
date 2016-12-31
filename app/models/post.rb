@@ -87,7 +87,7 @@ class Post < ActiveRecord::Base
     return @first_unread = self unless viewed_at
     return unless replies.exists?
     reply = replies.where('created_at > ?', viewed_at).order('id asc').first
-    Rails.logger.info("**[first_unread_for] viewed_at: #{viewed_at} reply: #{reply.id}")
+    Rails.logger.info("**[first_unread_for] viewed_at: #{viewed_at} reply: #{reply.id}") if reply
     @first_unread ||= reply
   end
 

@@ -1,2 +1,2 @@
 #{@subject}. See it here:
-= reply_url(@reply, host: ENV['DOMAIN_NAME'], protocol: 'https')
+= reply_url(@reply, host: current_host, protocol: 'https')
