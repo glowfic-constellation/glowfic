@@ -2,7 +2,7 @@
   %div{style: 'padding: 15px; overflow: hidden;'}
     %span{style: 'line-height: 28px;'}
       New reply in
-      = link_to @reply.post.subject, reply_url(@reply, host: ENV['DOMAIN_NAME'], protocol: 'https'), style: 'color: #eeeeee;'
+      = link_to @reply.post.subject, reply_url(@reply, host: current_host, protocol: 'https'), style: 'color: #eeeeee;'
 
 %div{style: 'background-color: #D8D8D8; overflow: auto; width: 500px; margin: 0px auto;'}
   %div{style: 'padding: 10px; text-align: left;'}
