@@ -147,6 +147,13 @@ class Post < ActiveRecord::Base
     author_ids.include?(user.id)
   end
 
+  def total_word_count
+    return word_count unless replies.exists?
+    contents = replies.pluck(:content)
+    contents[0] = contents[0].split.size
+    word_count + contents.inject{|r, e| r + e.split.size}.to_i
+  end
+
   private
 
   def valid_board
@@ -161,29 +168,6 @@ class Post < ActiveRecord::Base
       errors.add(:section, "must be in the post's board")
     end
   end
-
-  def update_access_list
-    return unless privacy_changed? || privacy == PRIVACY_LIST
-    PostViewer.where(post_id: id).destroy_all and return unless privacy == PRIVACY_LIST
-    return unless post_viewer_ids
-
-    updated_ids = (post_viewer_ids - [""]).map(&:to_i)
-    existing_ids = post_viewers.map(&:user_id)
-
-    PostViewer.where(post_id: id, user_id: (existing_ids - updated_ids)).destroy_all
-    (updated_ids - existing_ids).each do |new_id|
-      PostViewer.create(post_id: id, user_id: new_id)
-    end
-  end
-
-  def total_word_count
-    return word_count unless replies.exists?
-    contents = replies.pluck(:content)
-    contents[0] = contents[0].split.size
-    word_count + contents.inject{|r, e| r + e.split.size}.to_i
-  end
-
-  private
 
   def update_tag_list
     return unless tag_ids.present? || setting_ids.present? || warning_ids.present?
