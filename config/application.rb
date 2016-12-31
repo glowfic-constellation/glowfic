@@ -1,3 +1,10 @@
+# this is a patch for the following bug:
+# https://github.com/rails/rails/issues/25010
+# TODO remove with Rails 4
+class Hash
+  undef_method :to_proc if self.method_defined?(:to_proc)
+end
+
 require File.expand_path('../boot', __FILE__)
 
 require 'rails/all'

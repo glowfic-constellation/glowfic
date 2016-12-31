@@ -5,21 +5,18 @@ class Board < ActiveRecord::Base
 
   has_many :posts
   has_many :board_sections
-  has_many :board_authors
   has_many :favorites, as: :favorite, dependent: :destroy
   belongs_to :creator, class_name: User
-  has_many :coauthors, class_name: User, through: :board_authors, source: :user do
-    def cameos
-      merge(BoardAuthor.cameo)
-    end
-  end
+
+  has_many :board_authors
+  has_many :board_coauthors, class_name: BoardAuthor, conditions: {cameo: false}
+  has_many :coauthors, class_name: User, through: :board_coauthors, source: :user
+  has_many :board_cameos, class_name: BoardAuthor, conditions: {cameo: true}
+  has_many :cameos, class_name: User, through: :board_cameos, source: :user
 
   validates_presence_of :name, :creator
 
-  after_save :update_author_list
   after_destroy :move_posts_to_sandbox
-
-  attr_accessor :cameo_ids
 
   def writers
     @writers ||= coauthors + [creator]
@@ -28,7 +25,7 @@ class Board < ActiveRecord::Base
   def open_to?(user)
     return true if open_to_anyone?
     return true if creator_id == user.id
-    BoardAuthor.unscoped { return board_authors.select(&:user_id).map(&:user_id).include?(user.id) }
+    board_authors.where(user_id: user.id).exists?
   end
 
   def open_to_anyone?
@@ -39,7 +36,7 @@ class Board < ActiveRecord::Base
     return false unless user
     return true if user.admin?
     return true if creator_id == user.id
-    coauthors.select(&:id).map(&:id).include?(user.id)
+    board_coauthors.where(user_id: user.id).exists?
   end
 
   def ordered_items
@@ -50,17 +47,6 @@ class Board < ActiveRecord::Base
   end
 
   private
-
-  def update_author_list
-    cameo_ids = self.cameo_ids || []
-    updated_ids = (cameo_ids.uniq - [""]).map(&:to_i)
-    existing_ids = coauthors.cameos.pluck(:id)
-
-    BoardAuthor.unscoped.where(board_id: id, user_id: (existing_ids - updated_ids), cameo: true).destroy_all
-    (updated_ids - existing_ids).each do |new_id|
-      BoardAuthor.create(board_id: id, user_id: new_id, cameo: true)
-    end
-  end
 
   def move_posts_to_sandbox
     # TODO don't hard code sandbox board_id
