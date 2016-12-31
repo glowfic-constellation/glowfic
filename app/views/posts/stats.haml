@@ -43,7 +43,7 @@
         %td{class: cycle('odd', 'even')}= tags.map { |tag| link_to tag.name, tag_path(tag) }.join(', ').html_safe
     %tr
       %td.sub.width-150 Word Count
-      %td{class: cycle('odd', 'even')}= @post.word_count + @post.replies.map(&:word_count).inject(&:+).to_i
+      %td{class: cycle('odd', 'even')}= @post.total_word_count
     %tr
       %td.sub.width-150 Audience
       %td{class: cycle('odd', 'even')}

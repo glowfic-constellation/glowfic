@@ -1,8 +1,67 @@
+# frozen_string_literal: true
 class RepliesController < WritableController
-  before_filter :login_required, except: [:show, :history]
+  before_filter :login_required, except: [:search, :show, :history]
   before_filter :find_reply, only: [:show, :history, :edit, :update, :destroy]
   before_filter :build_template_groups, only: [:edit]
   before_filter :require_permission, only: [:edit, :update, :destroy]
+
+  def search
+    @page_title = 'Search Replies'
+
+    @post = Post.find_by_id(params[:post_id]) if params[:post_id].present?
+    if @post
+      @users = @post.authors
+      char_ids = @post.replies.pluck('distinct character_id') + [@post.character_id]
+      @characters = Character.where(id: char_ids).order('name')
+      @templates = Template.where(id: @characters.map(&:template_id).uniq.compact).order('name')
+    else
+      @users = User.order('username')
+      @characters = Character.order('name')
+      @templates = Template.order('name')
+    end
+
+    return unless params[:commit].present?
+
+    @search_results = Reply.unscoped
+    @search_results = @search_results.where(user_id: params[:author_id]) if params[:author_id].present?
+    @search_results = @search_results.where(character_id: params[:character_id]) if params[:character_id].present?
+    @search_results = @search_results.where(icon_id: params[:icon_id]) if params[:icon_id].present?
+
+    if params[:subj_content].present?
+      @search_results = @search_results.search(params[:subj_content]).with_pg_search_highlight
+      exact_phrases = params[:subj_content].scan(/"([^"]*)"/)
+      if exact_phrases.present?
+        exact_phrases.each do |phrase|
+          phrase = phrase.first.strip
+          next if phrase.blank?
+          @search_results = @search_results.where("replies.content LIKE ?", "%#{phrase}%")
+        end
+      end
+    else
+      @search_results = @search_results.order('replies.id DESC')
+    end
+
+    if @post
+      @search_results = @search_results.where(post_id: @post.id)
+    elsif params[:board_id].present?
+      post_ids = Post.where(board_id: params[:board_id]).pluck(:id)
+      @search_results = @search_results.where(post_id: post_ids)
+    end
+
+    if params[:template_id].present?
+      template = Template.find_by_id(params[:template_id])
+      if template.present?
+        character_ids = Character.where(template_id: template.id).pluck(:id)
+        @search_results = @search_results.where(character_id: character_ids)
+      end
+    end
+
+    @search_results = @search_results
+      .select('replies.*, characters.name, characters.screenname, users.username, posts.subject')
+      .joins(:user, :post)
+      .joins("LEFT OUTER JOIN characters ON characters.id = replies.character_id")
+      .paginate(page: page, per_page: 25)
+  end
 
   def create
     gon.original_content = params[:reply].try(:[], :content)
@@ -11,7 +70,7 @@ class RepliesController < WritableController
       @url = replies_path
       @method = :post
       preview
-      render :action => 'preview' and return
+      render :action => :preview and return
     end
 
     if params[:button_draft]
@@ -68,7 +127,7 @@ class RepliesController < WritableController
       @url = reply_path(params[:id])
       @method = :put
       preview
-      render :action => 'preview'
+      render :action => :preview
     else
       @reply.skip_post_update = true unless @reply.post.last_reply_id == @reply.id
       @reply.update_attributes(params[:reply])
@@ -78,7 +137,8 @@ class RepliesController < WritableController
   end
 
   def destroy
-    to_page = @reply.post_page(per_page) # get index before destroying
+    previous_reply = @reply.send(:previous_reply)
+    to_page = previous_reply.try(:post_page, per_page) || 1
     @reply.destroy # to destroy subsequent ones, do @reply.destroy_subsequent_replies
     flash[:success] = "Post deleted."
     redirect_to post_path(@reply.post, page: to_page)

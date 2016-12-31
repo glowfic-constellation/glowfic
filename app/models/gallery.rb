@@ -2,8 +2,9 @@ class Gallery < ActiveRecord::Base
   belongs_to :user
   belongs_to :cover_icon, :class_name => Icon
   has_and_belongs_to_many :icons, after_add: :set_has_gallery, after_remove: :unset_has_gallery
-  has_and_belongs_to_many :characters
+
   has_many :characters_galleries
+  has_many :characters, through: :characters_galleries
 
   accepts_nested_attributes_for :icons
 

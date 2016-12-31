@@ -1,11 +1,14 @@
+%span.time-loaded{style: 'font-size: 10px; position: absolute; top: 2px; right: 20px;'}= pretty_time(DateTime.now.in_time_zone)
+
 %table
   %thead
     %tr
       %th{colspan: 7} Daily Report
-    - 0.upto(7) do |num_days|
-      - day = num_days.days.ago
-      - posts = posts_for(day)
-      - if posts.present?
+  - 0.upto(7) do |num_days|
+    - day = num_days.days.ago
+    - posts = posts_for(day)
+    - if posts.present?
+      %tbody
         %tr
           %th.subber{colspan: 7}= day.strftime("%b %d, %Y")
         %tr
@@ -32,7 +35,7 @@
                 = image_tag "/images/book_grey.png", class: 'vmid', title: "Thread Abandoned"
               - if post.content_warnings.present?
                 = image_tag "/images/exclamation.png", class: 'vmid', title: "Content Warning: " + post.content_warnings.map(&:name).join(', '), alt: '!'
-            %td{class: klass}
+            %td.post-subject{class: klass}
               - if has_unread?(post)
                 = link_to post_path(post, page: 'unread', anchor: 'unread') do
                   = image_tag unread_img, class: 'vmid', title: 'First Unread'
@@ -44,7 +47,7 @@
                 %br
                 %span.details= sanitize_post_description(post.description).html_safe
             %td.vtop.post-board{class: klass}= link_to post.board.name, board_path(post.board)
-            %td.vtop{class: klass}= post.authors.map { |author| link_to fun_name(author), user_path(author) }.join(', ').html_safe
+            %td.vtop.post-authors{class: klass}= post.authors.map { |author| link_to fun_name(author), user_path(author) }.join(', ').html_safe
             %td.vtop.centered.post-replies{class: klass}= post.replies.count
             %td.vtop.centered.post-replies{class: klass}= replies_today.count
-            %td.vtop.centered{class: klass}= post.tagged_at.strftime("%l:%M %p")
+            %td.vtop.centered.post-time{class: klass}= post.tagged_at.strftime("%l:%M %p")

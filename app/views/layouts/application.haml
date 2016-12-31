@@ -55,8 +55,8 @@
             %ul
               %li= link_to 'Account', edit_user_path(current_user)
               %li= link_to 'Inbox', messages_path
-              %li= link_to "Characters", characters_path
-              %li= link_to "Galleries", galleries_path
+              %li= link_to "Characters", user_characters_path(current_user)
+              %li= link_to "Galleries", user_galleries_path(current_user)
               %li= link_to 'Favorites', favorites_path
               %li= link_to "Post", new_post_path
             = link_to logout_path, method: :delete, id: :"header-logout" do
@@ -91,7 +91,7 @@
     - if flash[:error].is_a?(Hash)
       .flash.error
         - if flash[:error].has_key? :image
-          = image_tag flash[:error][:image], class: 'vmid'
+          = image_tag flash[:error][:image], class: 'vmid'.freeze
         = flash[:error][:message]
         - if flash[:error].has_key? :array
           %ul
@@ -100,15 +100,14 @@
       - flash.delete(:error)
     - flash.keys.each do |key|
       - if key == :pass
-        .flash{class: 'error'}= flash[key].html_safe
+        .flash{class: 'error'.freeze}= flash[key].html_safe
       - else
         .flash{:class=>key}= flash[key]
     - if content_for?(:flashes)
       = content_for :flashes
     - if logged_in?
-      - messages = current_user.messages.select(&:unread?)
-      - if messages.present?
-        - messages.each do |message|
+      - if current_user.messages.where(unread: true).exists?
+        - current_user.messages.where(unread: true).each do |message|
           .flash.inbox
             New message from
             = link_to message.sender.username, user_path(message.sender)
@@ -116,6 +115,6 @@
             = link_to message.unempty_subject, message_path(message)
     #content= yield
 
-  = javascript_include_tag 'application'
+  = javascript_include_tag 'application'.freeze
   - (@javascripts || []).each do |javascript|
     = javascript_include_tag javascript

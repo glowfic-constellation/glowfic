@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 class ReportsController < ApplicationController
   def index
   end
@@ -9,6 +10,7 @@ class ReportsController < ApplicationController
     end
 
     @page_title = params[:id].capitalize + " Report"
+    @hide_quicklinks = true
 
     if logged_in?
       @opened_posts = PostView.where(user_id: current_user.id).select([:post_id, :read_at, :ignored])
@@ -38,7 +40,6 @@ class ReportsController < ApplicationController
   helper_method :ignored?
 
   def posts_for(day)
-
     Post.where(tagged_at: day.beginning_of_day .. day.end_of_day).includes(:board, :user, :last_user).order(sort)
   end
   helper_method :posts_for

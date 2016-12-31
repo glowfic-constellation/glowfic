@@ -67,7 +67,72 @@ RSpec.describe PostsController do
     it "does not require login" do
       post = create(:post)
       get :show, id: post.id
-      expect(response.status).to eq(200)
+      expect(response).to have_http_status(200)
+    end
+
+    it "requires permission" do
+      post = create(:post, privacy: Post::PRIVACY_PRIVATE)
+      get :show, id: post.id
+      expect(response).to redirect_to(boards_url)
+      expect(flash[:error]).to eq("You do not have permission to view this post.")
+    end
+
+    it "works with login" do
+      post = create(:post)
+      login
+      get :show, id: post.id
+      expect(response).to have_http_status(200)
+    end
+
+    it "marks read multiple times" do
+      post = create(:post)
+      user = create(:user)
+      login_as(user)
+      expect(post.last_read(user)).to be_nil
+      get :show, id: post.id
+      last_read = post.reload.last_read(user)
+      expect(last_read).not_to be_nil
+
+      Timecop.freeze(last_read + 1.second) do
+        reply = create(:reply, post: post)
+        expect(reply.created_at).not_to be_the_same_time_as(last_read)
+        get :show, id: post.id
+        cur_read = post.reload.last_read(user)
+        expect(last_read).not_to be_the_same_time_as(cur_read)
+        expect(last_read.to_i).to be < cur_read.to_i
+      end
+    end
+
+    context "with render_views" do
+      render_views
+
+      it "renders HAML with additional attributes" do
+        post = create(:post, with_icon: true, with_character: true)
+        create(:reply, post: post, with_icon: true, with_character: true)
+        get :show, id: post.id
+        expect(response.status).to eq(200)
+        expect(response.body).to include(post.subject)
+        expect(response.body).to include('header-right')
+      end
+
+      it "renders HAML for logged in user" do
+        post = create(:post)
+        create(:reply, post: post)
+        character = create(:character)
+        login_as(character.user)
+        get :show, id: post.id
+        expect(response.status).to eq(200)
+        expect(response.body).to include('Join Thread')
+      end
+
+      it "flat view renders HAML properly" do
+        post = create(:post, with_icon: true, with_character: true)
+        create(:reply, post: post, with_icon: true, with_character: true)
+        get :show, id: post.id, view: 'flat'
+        expect(response.status).to eq(200)
+        expect(response.body).to include(post.subject)
+        expect(response.body).not_to include('header-right')
+      end
     end
 
     # TODO WAY more tests
@@ -156,6 +221,42 @@ RSpec.describe PostsController do
   end
 
   describe "POST warnings" do
+    it "requires a valid post" do
+      post :warnings, id: -1
+      expect(response).to redirect_to(boards_url)
+      expect(flash[:error]).to eq("Post could not be found.")
+    end
+
+    it "requires permission" do
+      warn_post = create(:post, privacy: Post::PRIVACY_PRIVATE)
+      post :warnings, id: warn_post.id
+      expect(response).to redirect_to(boards_url)
+      expect(flash[:error]).to eq("You do not have permission to view this post.")
+    end
+
+    it "works for logged out" do
+      warn_post = create(:post)
+      expect(session[:ignore_warnings]).to be_nil
+      post :warnings, id: warn_post.id, per_page: 10, page: 2
+      expect(response).to redirect_to(post_url(warn_post, per_page: 10, page: 2))
+      expect(flash[:success]).to eq("All content warnings have been hidden. Proceed at your own risk.")
+      expect(session[:ignore_warnings]).to be_true
+    end
+
+    it "works for logged in" do
+      warn_post = create(:post)
+      user = create(:user)
+      expect(session[:ignore_warnings]).to be_nil
+      expect(warn_post.send(:view_for, user)).to be_a_new_record
+      login_as(user)
+      post :warnings, id: warn_post.id
+      expect(response).to redirect_to(post_url(warn_post))
+      expect(flash[:success]).to eq("Content warnings have been hidden for this thread. Proceed at your own risk.")
+      expect(session[:ignore_warnings]).to be_nil
+      view = warn_post.reload.send(:view_for, user)
+      expect(view).not_to be_a_new_record
+      expect(view.warnings_hidden).to be_true
+    end
   end
 
   describe "DELETE destroy" do
@@ -303,7 +404,7 @@ RSpec.describe PostsController do
       get :hidden
       expect(response.status).to eq(200)
       expect(assigns(:hidden_boardviews)).to be_empty
-      expect(assigns(:hidden_postviews)).to be_empty
+      expect(assigns(:hidden_posts)).to be_empty
     end
 
     it "succeeds with board hidden" do
@@ -314,7 +415,7 @@ RSpec.describe PostsController do
       get :hidden
       expect(response.status).to eq(200)
       expect(assigns(:hidden_boardviews)).not_to be_empty
-      expect(assigns(:hidden_postviews)).to be_empty
+      expect(assigns(:hidden_posts)).to be_empty
     end
 
     it "succeeds with post hidden" do
@@ -325,7 +426,7 @@ RSpec.describe PostsController do
       get :hidden
       expect(response.status).to eq(200)
       expect(assigns(:hidden_boardviews)).to be_empty
-      expect(assigns(:hidden_postviews)).not_to be_empty
+      expect(assigns(:hidden_posts)).not_to be_empty
     end
 
     it "succeeds with both hidden" do
@@ -337,11 +438,68 @@ RSpec.describe PostsController do
       get :hidden
       expect(response.status).to eq(200)
       expect(assigns(:hidden_boardviews)).not_to be_empty
-      expect(assigns(:hidden_postviews)).not_to be_empty
+      expect(assigns(:hidden_posts)).not_to be_empty
     end
   end
 
   describe "POST unhide" do
-    skip
+    it "requires login" do
+      post :unhide
+      expect(response).to redirect_to(root_url)
+      expect(flash[:error]).to eq("You must be logged in to view that page.")
+    end
+
+    it "succeeds for posts" do
+      hidden_post = create(:post)
+      stay_hidden_post = create(:post)
+      user = create(:user)
+      hidden_post.ignore(user)
+      stay_hidden_post.ignore(user)
+      login_as(user)
+      post :unhide, unhide_posts: [hidden_post.id]
+      expect(response).to redirect_to(hidden_posts_url)
+      hidden_post.reload
+      stay_hidden_post.reload
+      expect(hidden_post).not_to be_ignored_by(user)
+      expect(stay_hidden_post).to be_ignored_by(user)
+    end
+
+    it "succeeds for board" do
+      board = create(:board)
+      stay_hidden_board = create(:board)
+      user = create(:user)
+      board.ignore(user)
+      stay_hidden_board.ignore(user)
+      login_as(user)
+      post :unhide, unhide_boards: [board.id]
+      expect(response).to redirect_to(hidden_posts_url)
+      board.reload
+      stay_hidden_board.reload
+      expect(board).not_to be_ignored_by(user)
+      expect(stay_hidden_board).to be_ignored_by(user)
+    end
+
+    it "succeeds for both" do
+      board = create(:board)
+      hidden_post = create(:post)
+      user = create(:user)
+      board.ignore(user)
+      hidden_post.ignore(user)
+      login_as(user)
+
+      post :unhide, unhide_boards: [board.id], unhide_posts: [hidden_post.id]
+
+      expect(response).to redirect_to(hidden_posts_url)
+      board.reload
+      hidden_post.reload
+      expect(board).not_to be_ignored_by(user)
+      expect(hidden_post).not_to be_ignored_by(user)
+    end
+
+    it "succeeds for neither" do
+      login
+      post :unhide
+      expect(response).to redirect_to(hidden_posts_url)
+    end
   end
 end

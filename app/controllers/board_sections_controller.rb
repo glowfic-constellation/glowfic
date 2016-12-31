@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 class BoardSectionsController < ApplicationController
   before_filter :login_required, except: :show
   before_filter :find_section, except: [:new, :create]
@@ -31,7 +32,7 @@ class BoardSectionsController < ApplicationController
 
   def show
     @page_title = @board_section.name
-    @posts = @board_section.posts.includes(:user, :last_user, :content_warnings).order('section_order asc').paginate(per_page: 25, page: page)
+    @posts = posts_from_relation(@board_section.posts.order('section_order asc'))
   end
 
   def edit

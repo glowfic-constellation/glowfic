@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 class TagsController < ApplicationController
   before_filter :login_required, except: [:index, :show]
   before_filter :find_tag, except: [:index, :new, :create]
@@ -43,7 +44,7 @@ class TagsController < ApplicationController
   end
 
   def show
-    @posts = @tag.posts.includes(:board, :user, :last_user, :content_warnings).paginate(per_page: 25, page: page)
+    @posts = posts_from_relation(@tag.posts)
     @page_title = "#{@tag.name}"
   end
 

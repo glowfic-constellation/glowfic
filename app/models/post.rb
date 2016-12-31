@@ -22,6 +22,7 @@ class Post < ActiveRecord::Base
   belongs_to :last_reply, class_name: Reply
   has_many :replies, inverse_of: :post, dependent: :destroy
   has_many :post_viewers, dependent: :destroy
+  has_many :viewers, through: :post_viewers, source: :user
   has_many :reply_drafts, dependent: :destroy
   has_many :post_tags, inverse_of: :post, dependent: :destroy
   has_many :tags, through: :post_tags
@@ -29,14 +30,14 @@ class Post < ActiveRecord::Base
   has_many :content_warnings, through: :post_tags, source: :content_warning
   has_many :favorites, as: :favorite, dependent: :destroy
 
-  attr_accessible :board, :board_id, :subject, :privacy, :post_viewer_ids, :description, :section_id, :tag_ids, :warning_ids, :setting_ids, :section_order
-  attr_accessor :post_viewer_ids, :tag_ids, :warning_ids, :setting_ids
+  attr_accessible :board, :board_id, :subject, :privacy, :viewer_ids, :description, :section_id, :tag_ids, :warning_ids, :setting_ids, :section_order
+  attr_accessor :tag_ids, :warning_ids, :setting_ids
   attr_writer :skip_edited
 
   validates_presence_of :board, :subject
   validate :valid_board, :valid_board_section
 
-  after_save :update_access_list, :update_tag_list
+  after_save :update_tag_list
 
   audited except: [:last_reply_id, :last_user_id, :edited_at, :tagged_at, :section_id, :section_order]
   has_associated_audits
@@ -67,12 +68,12 @@ class Post < ActiveRecord::Base
   end
 
   def author_ids
-    @author_ids ||= (replies.select(:user_id).group(:user_id).map(&:user_id) + [user_id]).uniq
+    @author_ids ||= (replies.group(:user_id).pluck(:user_id) + [user_id]).uniq
   end
 
   def last_character_for(user)
     ordered_replies = replies.where(user_id: user.id).order('id asc')
-    if ordered_replies.present?
+    if ordered_replies.exists?
       ordered_replies.last.character
     elsif self.user == user
       self.character
@@ -85,8 +86,10 @@ class Post < ActiveRecord::Base
     return @first_unread if @first_unread
     viewed_at = last_read(user) || board.last_read(user)
     return @first_unread = self unless viewed_at
-    return unless replies.present?
-    @first_unread ||= replies.order('created_at asc').detect { |reply| viewed_at < reply.created_at }
+    return unless replies.exists?
+    reply = replies.where('created_at > ?', viewed_at).order('id asc').first
+    Rails.logger.info("**[first_unread_for] viewed_at: #{viewed_at} reply: #{reply.try(:id)}")
+    @first_unread ||= reply
   end
 
   def hide_warnings_for(user)
@@ -113,13 +116,6 @@ class Post < ActiveRecord::Base
     status == STATUS_ABANDONED
   end
 
-  def self.privacy_settings
-    { 'Public'              => PRIVACY_PUBLIC,
-      'Constellation Users' => PRIVACY_REGISTERED,
-      'Access List'         => PRIVACY_LIST,
-      'Private'             => PRIVACY_PRIVATE }
-  end
-
   def last_updated
     edited_at
   end
@@ -140,7 +136,7 @@ class Post < ActiveRecord::Base
   end
 
   def characters
-    @chars ||= Character.where(id: ([character_id] + replies.select(:character_id).group(:character_id).map(&:character_id)).compact).sort_by(&:name)
+    @chars ||= Character.where(id: ([character_id] + replies.group(:character_id).pluck(:character_id)).compact).sort_by(&:name)
   end
 
   def taggable_by?(user)
@@ -180,6 +176,15 @@ class Post < ActiveRecord::Base
     end
   end
 
+  def total_word_count
+    return word_count unless replies.exists?
+    contents = replies.pluck(:content)
+    contents[0] = contents[0].split.size
+    word_count + contents.inject{|r, e| r + e.split.size}.to_i
+  end
+
+  private
+
   def update_tag_list
     return unless tag_ids.present? || setting_ids.present? || warning_ids.present?
 
@@ -198,7 +203,7 @@ class Post < ActiveRecord::Base
     # are no replies yet.
     # Be VERY CAREFUL editing this!
     return super if skip_edited
-    return super + [:edited_at] unless replies.empty?
+    return super + [:edited_at] if replies.exists?
     super + [:edited_at, :tagged_at]
   end
 

@@ -23,6 +23,20 @@ CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
 COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
 
 
+--
+-- Name: citext; Type: EXTENSION; Schema: -; Owner: -
+--
+
+CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA public;
+
+
+--
+-- Name: EXTENSION citext; Type: COMMENT; Schema: -; Owner: -
+--
+
+COMMENT ON EXTENSION citext IS 'data type for case-insensitive character strings';
+
+
 SET search_path = public, pg_catalog;
 
 SET default_tablespace = '';
@@ -298,7 +312,7 @@ CREATE TABLE characters_galleries (
     id integer NOT NULL,
     character_id integer NOT NULL,
     gallery_id integer NOT NULL,
-    section_order integer
+    section_order integer DEFAULT 0 NOT NULL
 );
 
 
@@ -782,7 +796,7 @@ CREATE TABLE schema_migrations (
 CREATE TABLE tags (
     id integer NOT NULL,
     user_id integer NOT NULL,
-    name character varying(255) NOT NULL,
+    name citext NOT NULL,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
     type character varying(255)
@@ -1701,8 +1715,6 @@ INSERT INTO schema_migrations (version) VALUES ('20160813025151');
 
 INSERT INTO schema_migrations (version) VALUES ('20160827161416');
 
-INSERT INTO schema_migrations (version) VALUES ('20160906223130');
-
 INSERT INTO schema_migrations (version) VALUES ('20160925032329');
 
 INSERT INTO schema_migrations (version) VALUES ('20161008224853');
@@ -1714,3 +1726,5 @@ INSERT INTO schema_migrations (version) VALUES ('20161107014948');
 INSERT INTO schema_migrations (version) VALUES ('20161110055637');
 
 INSERT INTO schema_migrations (version) VALUES ('20161126195558');
+
+INSERT INTO schema_migrations (version) VALUES ('20161129195022');

@@ -5,18 +5,20 @@ class Character < ActiveRecord::Base
   belongs_to :character_group
   has_many :replies
   has_many :posts
-  has_and_belongs_to_many :galleries
+
+  has_many :characters_galleries
+  has_many :galleries, through: :characters_galleries
+  has_many :icons, through: :galleries, group: 'icons.id', order: 'LOWER(keyword)'
+
   has_many :character_tags, inverse_of: :character, dependent: :destroy
-  has_many :tags, through: :character_tags
+  has_many :tags, through: :character_tags, source: :all_tags, source_type: 'Tag' # TODO THIS IS BROKEN does not filter subtypes like setting
+
+  has_many :settings, through: :character_tags, source: :all_tags, source_type: 'Setting'
 
   validates_presence_of :name, :user
   validate :valid_template, :valid_group, :valid_galleries, :valid_default_icon
 
-  after_save :update_galleries
-  after_update :delete_view_cache
-  after_destroy :delete_view_cache
-
-  attr_accessor :new_template_name, :group_name, :gallery_ids
+  attr_accessor :new_template_name, :group_name
 
   nilify_blanks
 
@@ -24,15 +26,11 @@ class Character < ActiveRecord::Base
     @icon ||= default_icon || galleries.detect(&:default_icon).try(:default_icon)
   end
 
-  def icons
-    @icons ||= galleries.map(&:icons).flatten.uniq_by(&:id).sort_by { |i| i.keyword.downcase }
-  end
-
-  def recent_posts(limit=25, page=1)
+  def recent_posts
     return @recent unless @recent.nil?
     reply_ids = replies.group(:post_id).select(:post_id).map(&:post_id)
     post_ids = posts.select(:id).map(&:id)
-    @recent ||= Post.where(id: (post_ids + reply_ids).uniq).order('tagged_at desc').paginate(per_page: limit, page: page)
+    @recent ||= Post.where(id: (post_ids + reply_ids).uniq).order('tagged_at desc')
   end
 
   def selector_name
@@ -71,25 +69,6 @@ class Character < ActiveRecord::Base
   def valid_default_icon
     if default_icon.present? && default_icon.user_id != user.id
       errors.add(:default_icon, "must be yours")
-    end
-  end
-
-  def update_galleries
-    return unless gallery_ids
-
-    updated_ids = (gallery_ids - [""]).map(&:to_i)
-    existing_ids = galleries.map(&:id)
-
-    CharactersGallery.where(character_id: id, gallery_id: (existing_ids - updated_ids)).destroy_all
-    (updated_ids - existing_ids).each do |new_id|
-      CharactersGallery.create(character_id: id, gallery_id: new_id)
-    end
-  end
-
-  def delete_view_cache
-    return unless name_changed? || screenname_changed?
-    replies.each do |reply|
-      reply.send(:delete_view_cache)
     end
   end
 end

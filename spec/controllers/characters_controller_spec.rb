@@ -33,32 +33,6 @@ RSpec.describe CharactersController do
       expect(response.status).to eq(200)
     end
 
-    it "sets user's characters" do
-      user = create(:user)
-      characters = 4.times.collect do create(:character, user: user) end
-      create(:character)
-      login_as(user)
-      get :index
-      expect(assigns(:characters)).to match_array(characters)
-    end
-
-    it "sets other user's characters" do
-      user = create(:user)
-      characters = 4.times.collect do create(:character, user: user) end
-      create(:character)
-      get :index, user_id: user.id
-      expect(assigns(:characters)).to match_array(characters)
-    end
-
-    it "sets other user's characters" do
-      user = create(:user)
-      characters = 4.times.collect do create(:character, user: user) end
-      create(:character)
-      login
-      get :index, user_id: user.id
-      expect(assigns(:characters)).to match_array(characters)
-    end
-
     it "does something with character groups" do
       skip "Character groups need to be refactored"
     end

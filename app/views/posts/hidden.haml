@@ -18,11 +18,11 @@
       %td.padding-10.centered{class: cycle('even', 'odd'), colspan: 7} — No continuities hidden —
     %tr
       %th.subber{colspan: 7} Posts
-    - @hidden_postviews.each do |view|
-      = render partial: 'posts/list_item', locals: {post: view.post, check_box_name: 'unhide_posts[]'}
-    - if @hidden_postviews.empty?
+    - @hidden_posts.each do |post|
+      = render partial: 'posts/list_item', locals: {post: post, check_box_name: 'unhide_posts[]'}
+    - if @hidden_posts.empty?
       %td.padding-10.centered{class: cycle('even', 'odd'), colspan: 7} — No posts hidden —
-    - if @hidden_postviews.present? || @hidden_boardviews.present?
+    - if @hidden_posts.present? || @hidden_boardviews.present?
       %tr
         %td.right-align.padding-5{class: cycle('even', 'odd'), colspan: 7}
           = submit_tag "Show in Unread", class: 'button'

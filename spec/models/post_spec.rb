@@ -317,4 +317,194 @@ RSpec.describe Post do
       end
     end
   end
+
+  describe "validations" do
+    it "requires user" do
+      post = create(:post)
+      expect(post.valid?).to be_true
+      post.user = nil
+      expect(post.valid?).not_to be_true
+    end
+
+    it "requires user's character" do
+      post = create(:post)
+      character = create(:character)
+      expect(post.user).not_to eq(character.user)
+      post.character = character
+      expect(post.valid?).not_to be_true
+    end
+
+    it "requires user's icon" do
+      post = create(:post)
+      icon = create(:icon)
+      expect(post.user).not_to eq(icon.user)
+      post.icon = icon
+      expect(post.valid?).not_to be_true
+    end
+  end
+
+  describe "#word_count" do
+    it "guesses correctly with replies" do
+      post = create(:post, content: 'one two three four five')
+      reply = create(:reply, post: post, content: 'six seven')
+      reply = create(:reply, post: post, content: 'eight')
+      expect(post.word_count).to eq(5)
+      expect(post.total_word_count).to eq(8)
+    end
+
+    it "guesses correctly without replies" do
+      post = create(:post, content: 'one two three four five')
+      expect(post.word_count).to eq(5)
+      expect(post.total_word_count).to eq(5)
+    end
+  end
+
+  describe "#visible_to?" do
+    context "public" do
+      let(:post) { create(:post, privacy: Post::PRIVACY_PUBLIC) }
+
+      it "is visible to poster" do
+        expect(post).to be_visible_to(post.user)
+      end
+
+      it "is visible to author" do
+        reply = create(:reply, post: post)
+        expect(post).to be_visible_to(reply.user)
+      end
+
+      it "is visible to site user" do
+        expect(post).to be_visible_to(create(:user))
+      end
+
+      it "is visible to logged out users" do
+        expect(post).to be_visible_to(nil)
+      end
+    end
+
+    context "private" do
+      let(:post) { create(:post, privacy: Post::PRIVACY_PRIVATE) }
+
+      it "is visible to poster" do
+        expect(post).to be_visible_to(post.user)
+      end
+
+      it "is not visible to author" do # TODO seems wrong
+        reply = create(:reply, post: post)
+        expect(post).not_to be_visible_to(reply.user)
+      end
+
+      it "is not visible to site user" do
+        expect(post).not_to be_visible_to(create(:user))
+      end
+
+      it "is not visible to logged out users" do
+        expect(post).not_to be_visible_to(nil)
+      end
+    end
+
+    context "list" do
+      let(:post) { create(:post, privacy: Post::PRIVACY_LIST) }
+
+      it "is visible to poster" do
+        expect(post).to be_visible_to(post.user)
+      end
+
+      it "is visible to list user" do
+        user = create(:user)
+        post.viewers << user
+        expect(post.reload).to be_visible_to(user)
+      end
+
+      it "is not visible to author" do # TODO seems wrong
+        reply = create(:reply, post: post)
+        expect(post).not_to be_visible_to(reply.user)
+      end
+
+      it "is not visible to site user" do
+        expect(post).not_to be_visible_to(create(:user))
+      end
+
+      it "is not visible to logged out users" do
+        expect(post).not_to be_visible_to(nil)
+      end
+    end
+
+    context "registered" do
+      let(:post) { create(:post, privacy: Post::PRIVACY_REGISTERED) }
+      it "is visible to poster" do
+        expect(post).to be_visible_to(post.user)
+      end
+
+      it "is visible to author" do
+        reply = create(:reply, post: post)
+        expect(post).to be_visible_to(reply.user)
+      end
+
+      it "is visible to arbitrary site user" do
+        expect(post).to be_visible_to(create(:user))
+      end
+
+      it "is not visible to logged out (nil) users" do
+        expect(post).not_to be_visible_to(nil)
+      end
+    end
+  end
+
+  describe "#last_character_for" do
+
+  end
+
+  describe "#first_unread_for" do
+    it "uses instance variable if set" do
+      post = create(:post)
+      post.instance_variable_set('@first_unread', 3)
+      expect(post).not_to receive(:last_read)
+      expect(post.first_unread_for(nil)).to eq(3)
+    end
+
+    it "uses itself if not yet viewed" do
+      post = create(:post)
+      create(:reply, post: post)
+      expect(post.first_unread_for(post.user)).to eq(post)
+    end
+
+    context "with replies" do
+      let(:post) { create(:post) }
+      before(:each) { create(:reply, post: post) }
+
+      it "uses nil if full post viewed" do
+        post.mark_read(post.user)
+        expect(post.first_unread_for(post.user)).to be_nil
+      end
+
+      it "uses nil if full continuity viewed" do
+        post.board.mark_read(post.user)
+        expect(post.first_unread_for(post.user)).to be_nil
+      end
+
+      it "uses reply created after viewed_at if partially viewed" do
+        post.mark_read(post.user)
+        unread = create(:reply, post: post)
+        expect(post.first_unread_for(post.user)).to eq(unread)
+      end
+    end
+
+    context "without replies" do
+      let(:post) { create(:post) }
+
+      it "uses nil if post viewed" do
+        post.mark_read(post.user)
+        expect(post.first_unread_for(post.user)).to be_nil
+      end
+
+      it "uses nil if continuity viewed" do
+        post.board.mark_read(post.user)
+        expect(post.first_unread_for(post.user)).to be_nil
+      end
+    end
+  end
+
+  describe "#last_character_for" do
+
+  end
 end

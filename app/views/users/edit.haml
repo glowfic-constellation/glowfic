@@ -12,7 +12,7 @@
       %th.sub Notifications
       %td.even
         = f.check_box :email_notifications, class: 'width-15 vmid'
-        Email about new tags
+        = f.label :email_notifications, "Email about new tags"
     %tr
       %th.sub Paging
       %td.odd= f.select(:per_page, per_page_options(current_user.per_page))
@@ -23,7 +23,7 @@
       %th.sub Split icon picker
       %td.odd
         = f.check_box :icon_picker_grouping, class: 'width-15 vmid'
-        Group the icon picker by gallery
+        = f.label :icon_picker_grouping, "Group the icon picker by gallery"
     %tr
       %th.sub Default view
       %td.even= f.select(:default_view, options_for_select({Icon: 'icon', List: 'list'}, current_user.default_view))
@@ -48,7 +48,7 @@
       %th.sub Unread Default
       %td.odd
         = f.check_box :unread_opened, class: 'width-15 vmid'
-        Opened threads only
+        = f.label :unread_opened, "Opened threads only"
     %tr
       %th.centered.subber{colspan: 2}= submit_tag "Save", class: 'button'
 

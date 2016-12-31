@@ -2,20 +2,66 @@ require "spec_helper"
 
 RSpec.describe UsersController do
   describe "GET index" do
-    it "has more tests" do
-      skip
+    it "succeeds when logged out" do
+      get :index
+      expect(response).to have_http_status(200)
+    end
+
+    it "succeeds when logged in" do
+      login
+      get :index
+      expect(response).to have_http_status(200)
+    end
+
+    context "with moieties" do
+      render_views
+
+      it "displays the name" do
+        user = create(:user, moiety: 'fed123', moiety_name: 'moietycolor')
+        get :index
+        expect(response.body).to include('moietycolor')
+        expect(response.body).to include('fed123')
+      end
     end
   end
 
   describe "GET new" do
-    it "has more tests" do
-      skip
+    it "succeeds when logged out" do
+      get :new
+      expect(response).to have_http_status(200)
+      expect(assigns(:page_title)).to eq('Sign Up')
+      expect(controller.gon.min).to eq(User::MIN_USERNAME_LEN)
+      expect(controller.gon.max).to eq(User::MAX_USERNAME_LEN)
+    end
+
+    it "complains when logged in" do
+      skip "TODO not yet implemented"
     end
   end
 
   describe "POST create" do
-    it "has more tests" do
-      skip
+    it "complains when logged in" do
+      skip "TODO not yet implemented"
+    end
+
+    it "requires beta secret" do
+      post :create
+      expect(response).to render_template(:new)
+      expect(flash[:error]).to eq("This is in beta. Please come back later.")
+      expect(assigns(:user)).not_to be_valid
+      expect(assigns(:page_title)).to eq('Sign Up')
+      expect(controller.gon.min).to eq(User::MIN_USERNAME_LEN)
+      expect(controller.gon.max).to eq(User::MAX_USERNAME_LEN)
+    end
+
+    it "requires valid fields" do
+      post :create, secret: "ALLHAILTHECOIN"
+      expect(response).to render_template(:new)
+      expect(flash[:error][:message]).to eq("There was a problem completing your sign up.")
+      expect(assigns(:user)).not_to be_valid
+      expect(assigns(:page_title)).to eq('Sign Up')
+      expect(controller.gon.min).to eq(User::MIN_USERNAME_LEN)
+      expect(controller.gon.max).to eq(User::MAX_USERNAME_LEN)
     end
   end
 
@@ -52,7 +98,7 @@ RSpec.describe UsersController do
       create(:post)
       get :show, id: user.id
       expect(assigns(:page_title)).to eq(user.username)
-      expect(assigns(:posts)).to match_array(posts)
+      expect(assigns(:posts).to_a).to match_array(posts)
     end
   end
 
@@ -68,6 +114,15 @@ RSpec.describe UsersController do
       get :edit, id: -1
       expect(response.status).to eq(200)
     end
+
+    context "with views" do
+      render_views
+
+      it "displays options" do
+        login
+        get :edit, id: -1
+      end
+    end
   end
 
   describe "PUT update" do
@@ -76,15 +131,26 @@ RSpec.describe UsersController do
     end
   end
 
-  describe "DELETE destroy" do
-    it "has more tests" do
-      skip
-    end
-  end
-
   describe "POST username" do
-    it "has more tests" do
-      skip
+    it "complains when logged in" do
+      skip "TODO not yet implemented"
+    end
+
+    it "requires username" do
+      post :username
+      expect(response.json['error']).to eq("No username provided.")
+    end
+
+    it "finds user" do
+      user = create(:user)
+      post :username, username: user.username
+      expect(response.json['username_free']).not_to be_true
+    end
+
+    it "finds free username" do
+      user = create(:user)
+      post :username, username: user.username + 'nope'
+      expect(response.json['username_free']).to be_true
     end
   end
 
