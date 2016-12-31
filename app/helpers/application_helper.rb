@@ -22,7 +22,7 @@ module ApplicationHelper
   end
 
   def no_icon_tag(**args)
-    icon_mem_tag(NO_ICON_URL, NO_ICON, args)
+    icon_mem_tag(NO_ICON_URL, NO_ICON, **args)
   end
 
   def pretty_time(time)
