@@ -8,6 +8,7 @@ class Character < ActiveRecord::Base
 
   has_many :characters_galleries
   has_many :galleries, through: :characters_galleries
+  has_many :icons, through: :galleries, group: 'icons.id', order: 'LOWER(keyword)'
 
   has_many :character_tags, inverse_of: :character, dependent: :destroy
   has_many :tags, through: :character_tags, source: :all_tags, source_type: 'Tag' # TODO THIS IS BROKEN does not filter subtypes like setting
@@ -23,10 +24,6 @@ class Character < ActiveRecord::Base
 
   def icon
     @icon ||= default_icon || galleries.detect(&:default_icon).try(:default_icon)
-  end
-
-  def icons
-    @icons ||= galleries.map(&:icons).flatten.uniq_by(&:id).sort_by { |i| i.keyword.downcase }
   end
 
   def recent_posts
