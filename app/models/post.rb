@@ -86,7 +86,9 @@ class Post < ActiveRecord::Base
     viewed_at = last_read(user) || board.last_read(user)
     return @first_unread = self unless viewed_at
     return unless replies.exists?
-    @first_unread ||= replies.where('created_at > ?', viewed_at).order('created_at asc').first
+    reply = replies.where('created_at > ?', viewed_at).order('id asc').first
+    Rails.logger.info("**[first_unread_for] viewed_at: #{viewed_at} reply: #{reply.id}")
+    @first_unread ||= reply
   end
 
   def hide_warnings_for(user)

@@ -1,4 +1,9 @@
-.post-container{class: reply.is_a?(Post) ? 'post-post'.freeze : (reply.is_a?(Reply) ? 'post-reply'.freeze : '')}
+-# Hack for Alicorn's unread bug
+- highlighted = ''
+- if reply.id.present? && logged_in? && current_user.id == 2 && @unread.present? && @unread.id == reply.id && @unread.class == reply.class
+  - highlighted = 'border: 2px red solid;'
+
+.post-container{class: reply.is_a?(Post) ? 'post-post'.freeze : (reply.is_a?(Reply) ? 'post-reply'.freeze : ''), style: highlighted}
   - if reply.is_a?(Reply) && reply.id.present?
     <a name="reply-#{reply.id}"></a>
   - if reply.id.present? && logged_in? && !@unread.nil?
