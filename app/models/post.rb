@@ -157,7 +157,7 @@ class Post < ActiveRecord::Base
   private
 
   def valid_board
-    return unless board_id_changed?
+    return unless new_record? || board_id_changed?
     unless board.open_to?(user)
       errors.add(:board, "is invalid – you must be able to write in it")
     end
