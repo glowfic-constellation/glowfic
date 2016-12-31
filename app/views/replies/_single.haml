@@ -1,4 +1,9 @@
-.post-container{class: reply.is_a?(Post) ? 'post-post' : (reply.is_a?(Reply) ? 'post-reply' : '')}
+-# Hack for Alicorn's unread bug
+- highlighted = ''
+- if reply.id.present? && logged_in? && current_user.id == 2 && @unread.present? && @unread.id == reply.id && @unread.class == reply.class
+  - highlighted = 'border: 2px red solid;'
+
+.post-container{class: reply.is_a?(Post) ? 'post-post'.freeze : (reply.is_a?(Reply) ? 'post-reply'.freeze : ''), style: highlighted}
   - if reply.is_a?(Reply) && reply.id.present?
     <a name="reply-#{reply.id}"></a>
   - if reply.id.present? && logged_in? && !@unread.nil?
@@ -6,41 +11,41 @@
       <a name="unread"></a>
   .padding-10
     .post-info-box
-      - if reply.icon
+      - if reply.icon_id
         .post-icon
-          = link_to icon_path(reply.icon) do
-            = icon_tag reply.icon
+          = link_to icon_path(reply.icon_id) do
+            = icon_mem_tag reply.url, reply.keyword
       .post-info-text
-        - if reply.character
+        - if reply.character_id
           .post-character
-            = link_to reply.character.name, character_path(reply.character)
-          - if reply.character.screenname
-            .post-screenname= reply.character.screenname
+            = link_to reply.name, character_path(reply.character_id)
+          - if reply.screenname
+            .post-screenname= reply.screenname
         - else
           .dark.spacer
         .post-author
-          = link_to reply.user.username, user_path(reply.user)
+          = link_to reply.username, user_path(reply.user_id)
     .post-edit-box
       - if reply.id.present?
-        = link_to post_or_reply_link(reply), rel: 'alternate' do
-          = image_tag "/images/link.png", title: 'Permalink', alt: 'Permalink'
+        = link_to post_or_reply_link(reply), rel: 'alternate'.freeze do
+          = image_tag "/images/link.png".freeze, title: 'Permalink'.freeze, alt: 'Permalink'.freeze
       - if reply.id.present? && (reply.editable_by?(current_user) || (reply.is_a?(Post) && reply.metadata_editable_by?(current_user)))
         = link_to path_for(reply, 'edit_%s') do
-          = image_tag "/images/pencil.png"
+          = image_tag "/images/pencil.png".freeze
         = link_to path_for(reply, '%s'), method: :delete, confirm: "Are you sure you wish to delete this #{reply.class.to_s.downcase}?" do
-          = image_tag "/images/cross.png"
+          = image_tag "/images/cross.png".freeze
       - if reply.id.present? && reply.is_a?(Reply) && logged_in?
         = link_to post_path(@post, unread: true, at_id: reply.id), method: :put do
-          = image_tag '/images/eye.png', title: 'Mark Unread Here', alt: 'Eye'
+          = image_tag '/images/eye.png'.freeze, title: 'Mark Unread Here'.freeze, alt: 'Eye'.freeze
     .post-content
       = sanitize_post_content(reply.content).html_safe
   .post-footer
     .right-align>
       .padding-5>
         - if reply.created_at
-          = precede 'Posted ' do
+          = precede 'Posted '.freeze do
             %span.post-posted=pretty_time(reply.created_at)
         - if reply.id.present? && reply.created_at.to_i != reply.last_updated.to_i
-          = surround ' | Updated ', ' | ' do
+          = surround ' | Updated '.freeze, ' | '.freeze do
             %span.post-updated=pretty_time(reply.last_updated)
-          = link_to 'See History', path_for(reply, 'history_%s'), class: 'post-history'
+          = link_to 'See History'.freeze, path_for(reply, 'history_%s'), class: 'post-history'.freeze

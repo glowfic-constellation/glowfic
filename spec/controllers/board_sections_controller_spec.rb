@@ -53,20 +53,52 @@ RSpec.describe BoardSectionsController do
       expect(flash[:error]).to eq("You do not have permission to edit this continuity.")
     end
 
-    it "has more tests" do
-      skip
+    it "requires valid section" do
+      board = create(:board)
+      login_as(board.creator)
+      post :create, board_section: {board_id: board.id}
+      expect(response).to have_http_status(200)
+      expect(response).to render_template(:new)
+      expect(flash[:error][:message]).to eq("Section could not be created.")
+    end
+
+    it "succeeds" do
+      board = create(:board)
+      login_as(board.creator)
+      section_name = 'ValidSection'
+      post :create, board_section: {board_id: board.id, name: section_name}
+      expect(response).to redirect_to(edit_board_url(board))
+      expect(flash[:success]).to eq("New #{board.name} section #{section_name} has been successfully created.")
     end
   end
 
   describe "GET show" do
-    it "requires login" do
-      post :create
-      expect(response).to redirect_to(root_url)
-      expect(flash[:error]).to eq("You must be logged in to view that page.")
+    it "requires valid section" do
+      get :show, id: -1
+      expect(response).to redirect_to(boards_url)
+      expect(flash[:error]).to eq("Section not found.")
     end
 
-    it "has more tests" do
-      skip
+    it "does not require login" do
+      section = create(:board_section)
+      posts = 2.times.collect do create(:post, board: section.board, section: section) end
+      create(:post)
+      create(:post, board: section.board)
+      get :show, id: section.id
+      expect(response).to have_http_status(200)
+      expect(assigns(:page_title)).to eq(section.name)
+      expect(assigns(:posts)).to match_array(posts)
+    end
+
+    it "works with login" do
+      section = create(:board_section)
+      posts = 2.times.collect do create(:post, board: section.board, section: section) end
+      create(:post)
+      create(:post, board: section.board)
+      get :show, id: section.id
+      expect(response).to have_http_status(200)
+      expect(assigns(:page_title)).to eq(section.name)
+      expect(assigns(:posts)).to match_array(posts)
     end
   end
 

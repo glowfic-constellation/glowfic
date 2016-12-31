@@ -231,11 +231,153 @@ RSpec.describe RepliesController do
     end
 
     it "respects per_page when redirecting" do
-      reply = create(:reply)
-      reply = create(:reply, post: reply.post, user: reply.user)
+      reply = create(:reply) #p1
+      reply = create(:reply, post: reply.post, user: reply.user) #p1
+      reply = create(:reply, post: reply.post, user: reply.user) #p2
+      reply = create(:reply, post: reply.post, user: reply.user) #p2
       login_as(reply.user)
-      delete :destroy, id: reply.id, per_page: 1
+      delete :destroy, id: reply.id, per_page: 2
       expect(response).to redirect_to(post_url(reply.post, page: 2))
+    end
+
+    it "respects per_page when redirecting first on page" do
+      reply = create(:reply) #p1
+      reply = create(:reply, post: reply.post, user: reply.user) #p1
+      reply = create(:reply, post: reply.post, user: reply.user) #p2
+      reply = create(:reply, post: reply.post, user: reply.user) #p2
+      reply = create(:reply, post: reply.post, user: reply.user) #p3
+      login_as(reply.user)
+      delete :destroy, id: reply.id, per_page: 2
+      expect(response).to redirect_to(post_url(reply.post, page: 2))
+    end
+  end
+
+  describe "GET search" do
+    context "no search" do
+      before(:each) do
+        2.times do 
+          create(:user) 
+          create(:character)
+          create(:template_character)
+        end
+      end
+
+      it "works logged out" do
+        get :search
+        expect(response).to have_http_status(200)
+        expect(assigns(:page_title)).to eq('Search Replies')
+        expect(assigns(:post)).to be_nil
+        expect(assigns(:search_results)).to be_nil
+        expect(assigns(:users)).to match_array(User.all)
+        expect(assigns(:characters)).to match_array(Character.all)
+        expect(assigns(:templates)).to match_array(Template.all)
+      end
+
+      it "works logged in" do
+        login
+        get :search
+        expect(response).to have_http_status(200)
+        expect(assigns(:page_title)).to eq('Search Replies')
+        expect(assigns(:post)).to be_nil
+        expect(assigns(:search_results)).to be_nil
+        expect(assigns(:users)).to match_array(User.all)
+      end
+
+      it "handles invalid post" do
+        get :search, post_id: -1
+        expect(response).to have_http_status(200)
+        expect(assigns(:page_title)).to eq('Search Replies')
+        expect(assigns(:post)).to be_nil
+        expect(assigns(:search_results)).to be_nil
+        expect(assigns(:users)).to match_array(User.all)
+      end
+
+      it "handles valid post" do
+        templateless_char = Character.where(template_id: nil).first
+        post = create(:post, character: templateless_char, user: templateless_char.user)
+        get :search, post_id: post.id
+        expect(response).to have_http_status(200)
+        expect(assigns(:page_title)).to eq('Search Replies')
+        expect(assigns(:post)).to eq(post)
+        expect(assigns(:search_results)).to be_nil
+        expect(assigns(:users)).to match_array(post.authors)
+        expect(assigns(:characters)).to match_array([post.character])
+        expect(assigns(:templates)).to be_empty
+      end
+    end
+
+    context "searching" do
+      it "finds all when no arguments given" do
+        4.times do create(:reply) end
+        get :search, commit: true
+        expect(assigns(:search_results)).to match_array(Reply.all)
+      end
+
+      it "filters by author" do
+        replies = 4.times.collect do create(:reply) end
+        filtered_reply = replies.last
+        get :search, commit: true, author_id: filtered_reply.user_id
+        expect(assigns(:search_results)).to match_array([filtered_reply])
+      end
+
+      it "filters by icon" do
+        create(:reply, with_icon: true)
+        reply = create(:reply, with_icon: true)
+        get :search, commit: true, icon_id: reply.icon_id
+        expect(assigns(:search_results)).to match_array([reply])
+      end
+
+      it "filters by character" do
+        create(:reply, with_character: true)
+        reply = create(:reply, with_character: true)
+        get :search, commit: true, character_id: reply.character_id
+        expect(assigns(:search_results)).to match_array([reply])
+      end
+
+      it "filters by string" do
+        reply = create(:reply, content: 'contains seagull')
+        cap_reply = create(:reply, content: 'Seagull is capital')
+        create(:reply, content: 'nope')
+        get :search, commit: true, subj_content: 'seagull'
+        expect(assigns(:search_results)).to match_array([reply, cap_reply])
+      end
+
+      it "filters by exact match" do
+        create(:reply, content: 'contains forks')
+        create(:reply, content: 'Forks is capital')
+        reply = create(:reply, content: 'Forks High is capital')
+        create(:reply, content: 'Forks high is kinda capital')
+        create(:reply, content: 'forks High is different capital')
+        create(:reply, content: 'forks high is not capital')
+        create(:reply, content: 'Forks is split from High')
+        create(:reply, content: 'nope')
+        get :search, commit: true, subj_content: '"Forks High"'
+        expect(assigns(:search_results)).to match_array([reply])
+      end
+
+      it "filters by post" do
+        replies = 4.times.collect do create(:reply) end
+        filtered_reply = replies.last
+        get :search, commit: true, post_id: filtered_reply.post_id
+        expect(assigns(:search_results)).to match_array([filtered_reply])
+      end
+
+      it "filters by continuity" do
+        continuity_post = create(:post, num_replies: 1)
+        wrong_post = create(:post, num_replies: 1)
+        filtered_reply = continuity_post.replies.last
+        get :search, commit: true, board_id: continuity_post.board_id
+        expect(assigns(:search_results)).to match_array([filtered_reply])
+      end
+
+      it "filters by template" do
+        character = create(:template_character)
+        templateless_char = create(:character)
+        reply = create(:reply, character: character, user: character.user)
+        create(:reply, character: templateless_char, user: templateless_char.user)
+        get :search, commit: true, template_id: character.template_id
+        expect(assigns(:search_results)).to match_array([reply])
+      end
     end
   end
 end

@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 class CharactersController < ApplicationController
   before_filter :login_required, :except => [:index, :show, :facecasts]
   before_filter :find_character, :only => [:show, :edit, :update, :destroy, :icon, :replace, :do_replace]
@@ -19,7 +20,6 @@ class CharactersController < ApplicationController
     else
       @user.username + "'s Characters"
     end
-    @characters = @user.characters.order('name asc')
   end
 
   def new
@@ -50,7 +50,7 @@ class CharactersController < ApplicationController
       end
       format.html do
         @page_title = @character.name
-        @posts = @character.recent_posts(25, page).includes(:board, :user, :last_user, :content_warnings)
+        @posts = posts_from_relation(@character.recent_posts)
         use_javascript('characters/show') if @character.user_id == current_user.try(:id)
         use_javascript('galleries/index') if @character.galleries.ordered.present?
       end
@@ -140,7 +140,7 @@ class CharactersController < ApplicationController
       [name, alt.id]
     end
 
-    all_posts = Post.where(character_id: @character.id) + Reply.where(character_id: @character.id).select(:post_id).group(:post_id).map(&:post)
+    all_posts = Post.where(character_id: @character.id) + Post.where(id: Reply.where(character_id: @character.id).pluck('distinct post_id'))
     @posts = all_posts.uniq
   end
 
@@ -158,19 +158,11 @@ class CharactersController < ApplicationController
     Post.transaction do
       replies = Reply.where(character_id: @character.id)
       replies = replies.where(post_id: params[:post_ids]) if params[:post_ids].present?
-      replies.each do |reply|
-        reply.character_id = new_char.try(:id)
-        reply.skip_post_update = true
-        reply.save!
-      end
+      replies.update_all(character_id: new_char.try(:id))
 
       posts = Post.where(character_id: @character.id)
       posts = posts.where(id: params[:post_ids]) if params[:post_ids].present?
-      posts.each do |post|
-        post.character_id = new_char.try(:id)
-        post.skip_edited = true
-        post.save!
-      end
+      posts.update_all(character_id: new_char.try(:id))
     end
 
     flash[:success] = "All uses of this character have been replaced."

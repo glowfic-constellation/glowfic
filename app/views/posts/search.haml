@@ -1,13 +1,23 @@
+- content_for :breadcrumbs do
+  = link_to "Search", search_posts_path
+  &raquo;
+  %b Browse Posts
+
 %table
   %thead
     %tr
       %th.width-150
-        Search
+        Browse Posts
         - if @search_results
           = '- '+@search_results.total_entries.to_s+' results'
       %th
         - if @search_results
           = render partial: 'paginator', locals: {paginated: @search_results, path: :search_posts_path}
+    - unless @search_results
+      %tr
+        %th.subber{colspan: 2}
+          Browse for posts meeting certain criteria.
+          = link_to 'Find a specific reply instead?', search_replies_path
   %tbody
     %tr
       %td.width-300.padding-10.vtop.dark
@@ -25,9 +35,6 @@
             %tr
               %td Setting
               %td= select_tag :setting_id, options_from_collection_for_select(Setting.order('name'), :id, :name, params[:setting_id]), {class: 'chosen-select', prompt: '— Choose Setting —'}
-            %tr
-              %td Content
-              %td= text_field_tag :subj_content, params[:subj_content], style: 'width: 100%; margin: 5px 0px; box-sizing: border-box;'
             %tr
               %td Completed
               %td.padding-5

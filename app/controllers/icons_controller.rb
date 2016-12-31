@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 class IconsController < ApplicationController
   before_filter :login_required, except: :show
   before_filter :find_icon, except: :delete_multiple
@@ -40,6 +41,10 @@ class IconsController < ApplicationController
   def show
     @page_title = @icon.keyword
     use_javascript('galleries/index') if params[:view] == 'galleries'
+    if params[:view] == 'posts'
+      where_calc = Post.where(icon_id: @icon.id).where(id: Reply.where(icon_id: @icon.id).pluck('distinct post_id'))
+      @posts = posts_from_relation(Post.where(where_calc.where_values.reduce(:or)).order('tagged_at desc'))
+    end
   end
 
   def edit
@@ -71,7 +76,7 @@ class IconsController < ApplicationController
     gon.gallery = Hash[all_icons.map { |i| [i.id, {url: i.url, keyword: i.keyword}] }]
     gon.gallery[''] = {url: '/images/no-icon.png', keyword: 'No Icon'}
 
-    all_posts = Post.where(icon_id: @icon.id) + Reply.where(icon_id: @icon.id).select(:post_id).group(:post_id).map(&:post)
+    all_posts = Post.where(icon_id: @icon.id) + Post.where(id: Reply.where(icon_id: @icon.id).pluck('distinct post_id'))
     @posts = all_posts.uniq
   end
 
@@ -89,19 +94,11 @@ class IconsController < ApplicationController
     Post.transaction do
       replies = Reply.where(icon_id: @icon.id)
       replies = replies.where(post_id: params[:post_ids]) if params[:post_ids].present?
-      replies.each do |reply|
-        reply.icon_id = new_icon.try(:id)
-        reply.skip_post_update = true
-        reply.save!
-      end
+      replies.update_all(icon_id: new_icon.try(:id))
 
       posts = Post.where(icon_id: @icon.id)
       posts = posts.where(id: params[:post_ids]) if params[:post_ids].present?
-      posts.each do |post|
-        post.icon_id = new_icon.try(:id)
-        post.skip_edited = true
-        post.save!
-      end
+      posts.update_all(icon_id: new_icon.try(:id))
     end
 
     flash[:success] = "All uses of this icon have been replaced."

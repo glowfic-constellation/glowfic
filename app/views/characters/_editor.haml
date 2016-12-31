@@ -10,6 +10,8 @@
 %tr
   %th.sub Setting
   %td{class: cycle('even', 'odd')}= f.text_field :setting, placeholder: "Setting", class: 'text'
+  /%td{class: cycle('even', 'odd')}= f.collection_select(:setting_ids,
+  /  Setting.all, :id, :name, {selected: @character.settings.pluck(:id)}, {multiple: true})
 %tr
   - klass = cycle('even', 'odd')
   %th.sub Template
@@ -23,7 +25,7 @@
     %td{class: cycle('even', 'odd')}
       = f.collection_select(:gallery_ids,
       current_user.galleries.order('name asc'),
-      :id, :name, {selected: @character.galleries.map(&:id)}, {:class => 'text', multiple: true})
+      :id, :name, {selected: @character.galleries.pluck(:id)}, {multiple: true})
 %tr
   %th.sub Facecast
   %td{class: cycle('even', 'odd')}= f.text_field :pb, placeholder: "Facecast", class: 'text'

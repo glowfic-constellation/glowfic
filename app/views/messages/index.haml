@@ -1,6 +1,6 @@
 = form_tag mark_messages_path, method: :post do
   %table
-    = render partial: @view
+    = render partial: @view.dup
     - if @messages.empty?
       %tr
         %td.centered.odd.padding-10 — No messages yet —

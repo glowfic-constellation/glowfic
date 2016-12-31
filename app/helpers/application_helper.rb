@@ -1,25 +1,33 @@
 module ApplicationHelper
+  ICON = 'icon'.freeze
+  NO_ICON = 'No Icon'.freeze
+  NO_ICON_URL = '/images/no-icon.png'.freeze
+  TIME_FORMAT = '%b %d, %Y %l:%M %p'.freeze
+
+
   def icon_tag(icon, **args)
     return '' if icon.nil?
+    icon_mem_tag(icon.url, icon.keyword, **args)
+  end
 
-    klass = 'icon'
+  def icon_mem_tag(url, keyword, **args)
+    return '' if url.nil?
+    klass = ICON
     klass += ' pointer' if args.delete(:pointer)
     if supplied_class = args.delete(:class)
       klass += ' ' + supplied_class
     end
 
-    image_tag icon.url, {alt: icon.keyword, title: icon.keyword, class: klass}.merge(**args)
+    image_tag url, {alt: keyword, title: keyword, class: klass}.merge(**args)
   end
 
   def no_icon_tag(**args)
-    klass = 'icon'
-    klass += ' pointer' if args.delete(:pointer)
-    image_tag "/images/no-icon.png", {class: klass, alt:'No Icon', title: 'No Icon'}.merge(**args)
+    icon_mem_tag(NO_ICON_URL, NO_ICON, **args)
   end
 
   def pretty_time(time)
     return unless time
-    time.strftime(current_user.try(:time_display) || "%b %d, %Y %l:%M %p")
+    time.strftime(current_user.try(:time_display) || TIME_FORMAT)
   end
 
   def fun_name(user)
@@ -47,8 +55,9 @@ module ApplicationHelper
     default ||= per_page
     options = [10,25,50,100,250,500,1000]
     options << default unless default.nil? || default.zero? || options.include?(default)
-    options = Hash[*(options * 2).sort].merge({'All' => 'all'})
-    default = 'all' if default == -1
+    all = 'all'.freeze
+    options = Hash[*(options * 2).sort].merge({'All' => all})
+    default = all if default == -1
     options_for_select(options, default)
   end
 
@@ -60,18 +69,18 @@ module ApplicationHelper
 
   def layout_options(default=nil)
     layouts = {
-      Default: nil,
-      Dark: 'dark',
-      Iconless: 'iconless',
-      Starry: 'starry',
-      :"Starry Dark" => 'starrydark',
-      :"Starry Light" => 'starrylight',
-      Monochrome: 'monochrome',
-      :"Milky River" => 'river',
+      'Default': nil,
+      'Dark': 'dark'.freeze,
+      'Iconless': 'iconless'.freeze,
+      'Starry': 'starry'.freeze,
+      'Starry Dark' => 'starrydark'.freeze,
+      'Starry Light' => 'starrylight'.freeze,
+      'Monochrome': 'monochrome'.freeze,
+      'Milky River' => 'river'.freeze,
     }
     options_for_select(layouts, default)
   end
-  
+
   def time_display_options(default=nil)
     time_thing = Time.new(2016, 12, 25, 21, 34, 56) # Example time: "2016-12-25 21:34:56" (for unambiguous display purposes)
     time_display_list = [
@@ -93,13 +102,20 @@ module ApplicationHelper
       post_path(reply)
     end
   end
-  
+
   def sanitize_post_description(desc)
     Sanitize.fragment(desc, elements: ['a'], attributes: {'a' => ['href']})
   end
-  
+
   def sanitize_post_content(content)
-    content = (content.include?("<p>") || content[/<br ?\/?>/]) ? content : content.gsub("\n","<br/>")
+    content = (content.include?("<p>".freeze) || content[/<br ?\/?>/]) ? content : content.gsub("\n".freeze,"<br/>".freeze)
     Sanitize.fragment(content, Glowfic::POST_CONTENT_SANITIZER)
+  end
+
+  def post_privacy_settings
+    { 'Public'              => Post::PRIVACY_PUBLIC,
+      'Constellation Users' => Post::PRIVACY_REGISTERED,
+      'Access List'         => Post::PRIVACY_LIST,
+      'Private'             => Post::PRIVACY_PRIVATE }
   end
 end

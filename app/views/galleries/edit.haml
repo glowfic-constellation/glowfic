@@ -1,3 +1,10 @@
+- content_for :breadcrumbs do
+  = link_to "Galleries", galleries_path
+  &raquo;
+  = link_to @gallery.name, gallery_path(@gallery)
+  &raquo;
+  %b Edit
+
 = form_for @gallery, :url => gallery_path(@gallery), :method => :put do |f|
   %table.form-table
     %tr

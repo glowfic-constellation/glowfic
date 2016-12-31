@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 class UsersController < ApplicationController
   before_filter :signup_prep, :only => :new
   before_filter :login_required, :except => [:index, :show, :new, :create, :username]
@@ -12,16 +13,15 @@ class UsersController < ApplicationController
       redirect_to users_path and return
     end
 
-    post_ids = Post.where(user_id: @user.id).order('tagged_at desc').select(:id).map(&:id)
-    reply_ids = Reply.where(user_id: @user.id).group(:post_id).select("post_id, max(updated_at)").map(&:post_id)
+    post_ids = Post.where(user_id: @user.id).order('tagged_at desc').pluck(:id)
+    reply_ids = Reply.where(user_id: @user.id).pluck('distinct post_id')
     ids = (post_ids + reply_ids).uniq
-    @posts = Post.where(id: ids).order('tagged_at desc').includes(:board, :user, :last_user, :content_warnings).paginate(per_page: 25, page: page)
+    @posts = posts_from_relation(Post.where(id: ids).order('tagged_at desc'))
     @page_title = @user.username
   end
 
   def new
     @user = User.new
-    @page_title = 'Sign Up'
   end
 
   def create
@@ -29,24 +29,23 @@ class UsersController < ApplicationController
     @user.validate_password = true
 
     if params[:secret] != "ALLHAILTHECOIN"
+      signup_prep
       flash.now[:error] = "This is in beta. Please come back later."
-      @page_title = 'Sign up'
-      render :action => "new" and return
+      render :action => :new and return
     end
 
-    if @user.save
-      flash[:success] = "User created! You have been logged in."
-      session[:user_id] = @user.id
-      @current_user = @user
-      redirect_to root_url
-    else
+    unless @user.save
       signup_prep
       flash.now[:error] = {}
       flash.now[:error][:message] = "There was a problem completing your sign up."
       flash.now[:error][:array] = @user.errors.full_messages
-      @page_title = 'Sign up'
-      render :action => "new"
+      render :action => :new and return
     end
+
+    flash[:success] = "User created! You have been logged in."
+    session[:user_id] = @user.id
+    @current_user = @user
+    redirect_to root_url
   end
 
   def edit
@@ -89,16 +88,12 @@ class UsersController < ApplicationController
     render :json => { :username_free => User.find_by_username(params[:username]).nil? }
   end
 
-  def character
-    character = Character.find_by_id(params[:character_id])
-    render :json => CharacterPresenter.new(character)
-  end
-
   private
 
   def signup_prep
     use_javascript('users/new')
     gon.max = User::MAX_USERNAME_LEN
     gon.min = User::MIN_USERNAME_LEN
+    @page_title = 'Sign Up'
   end
 end

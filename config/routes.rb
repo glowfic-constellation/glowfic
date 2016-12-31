@@ -20,7 +20,7 @@ Rails.application.routes.draw do
   resources :password_resets, only: [:new, :create, :show, :update]
 
   # Messages and notifications
-  resources :messages, except: :edit do
+  resources :messages, except: [:edit, :update, :destroy] do
     collection { post :mark }
   end
 
@@ -73,6 +73,7 @@ Rails.application.routes.draw do
   end
   resources :replies, except: [:index, :new] do
     member { get :history }
+    collection { get :search }
   end
   resources :tags
 

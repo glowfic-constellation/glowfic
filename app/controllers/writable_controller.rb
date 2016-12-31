@@ -1,4 +1,6 @@
+# frozen_string_literal: true
 class WritableController < ApplicationController
+  VALID_PAGES = ['last', 'unread']
   protected
 
   def build_template_groups
@@ -10,7 +12,7 @@ class WritableController < ApplicationController
     @templates = templates + [templateless]
 
     if @post
-      uniq_chars_ids = @post.replies.where(user_id: current_user.id).where('character_id is not null').select(:character_id).group(:character_id).map(&:character_id)
+      uniq_chars_ids = @post.replies.where(user_id: current_user.id).where('character_id is not null').group(:character_id).pluck(:character_id)
       uniq_chars_ids << @post.character_id if @post.user_id == current_user.id && @post.character_id.present?
       uniq_chars = Character.where(id: uniq_chars_ids).order('LOWER(name)')
       threadchars = faked.new('Thread characters', nil, uniq_chars)
@@ -36,6 +38,13 @@ class WritableController < ApplicationController
     # else
     #   @post.replies
     # end
+
+    if page.to_i == 0
+      unless VALID_PAGES.include?(page)
+        flash[:error] = "Page not recognized, defaulting to page 1."
+        self.page = cur_page = 1
+      end
+    end
 
     if per_page > 0
       per = per_page
@@ -64,7 +73,13 @@ class WritableController < ApplicationController
       self.page = cur_page = 1
     end
 
-    @replies = replies.includes(:user, :character, :icon).order('id asc').paginate(page: cur_page, per_page: per)
+    @replies = @post.replies
+      .select('replies.*, characters.name, characters.screenname, icons.keyword, icons.url, users.username')
+      .joins(:user)
+      .joins("LEFT OUTER JOIN characters ON characters.id = replies.character_id")
+      .joins("LEFT OUTER JOIN icons ON icons.id = replies.icon_id")
+      .order('id asc')
+      .paginate(page: cur_page, per_page: per)
     @paginate_params = {controller: 'posts', action: 'show', id: @post.id}
     redirect_to post_path(@post, page: @replies.total_pages, per_page: per) and return if cur_page > @replies.total_pages
     use_javascript('paginator')

@@ -8,6 +8,13 @@ $(document).ready(function() {
     minimumResultsForSearch: 10,
   });
 
+  $("#character_setting_ids").select2({
+    width: '100%',
+    minimumResultsForSearch: 10,
+    placeholder: 'Setting',
+    tags: true,
+  });
+
   $("#character_gallery_ids").select2({
     width: '100%',
     minimumResultsForSearch: 10,

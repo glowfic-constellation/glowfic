@@ -35,23 +35,23 @@
         .post-footer
           .right-align>
             .padding-5> Posted #{pretty_time(@post.created_at)}
-      - replies = @post.replies.includes(:user, :character, :post, :icon).order('id asc')
-      - replies.each do |reply|
-        - klass = cycle('even', 'odd')
-        .post-container{class: klass}
-          .padding-10
-            .post-info-box
-              - if reply.icon
-                .post-icon= icon_tag reply.icon
-              .post-info-text
-                - if reply.character
-                  .post-character= reply.character.name
-                  - if reply.character.screenname
-                    .post-screenname= reply.character.screenname
-                - else
-                  .dark.spacer
-                .post-author= reply.user.username
-            = sanitize_post_content(reply.content).html_safe
-          .post-footer
-            .right-align>
-              .padding-5> Posted #{pretty_time(reply.created_at)}
+      - 1.upto(@replies.count / 250 + 1). each do |index|
+        - @replies.paginate(per_page: 250, page: index).each do |reply|
+          - klass = cycle('even', 'odd')
+          .post-container{class: klass}
+            .padding-10
+              .post-info-box
+                - if reply.icon_id
+                  .post-icon= icon_mem_tag reply.url, reply.keyword
+                .post-info-text
+                  - if reply.character_id
+                    .post-character= reply.name
+                    - if reply.screenname
+                      .post-screenname= reply.screenname
+                  - else
+                    .dark.spacer
+                  .post-author= reply.username
+              = sanitize_post_content(reply.content).html_safe
+            .post-footer
+              .right-align>
+                .padding-5> Posted #{pretty_time(reply.created_at)}

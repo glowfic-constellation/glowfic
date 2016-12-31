@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 class FavoritesController < ApplicationController
   before_filter :login_required
 
@@ -13,7 +14,7 @@ class FavoritesController < ApplicationController
     current_user.favorites.each do |favorite_rec|
       if favorite_rec.favorite_type == User.to_s
         where_calc = where_calc.where(user_id: favorite_rec.favorite_id)
-        reply_ids = Reply.where(user_id: favorite_rec.favorite_id).select(:post_id).group(:post_id).map(&:post_id)
+        reply_ids = Reply.where(user_id: favorite_rec.favorite_id).pluck('distinct post_id')
         where_calc = where_calc.where(id: reply_ids)
       elsif favorite_rec.favorite_type == Post.to_s
         where_calc = where_calc.where(id: favorite_rec.favorite_id)
@@ -22,16 +23,8 @@ class FavoritesController < ApplicationController
       end
     end
 
-    @posts = @posts.where(where_calc.where_values.reduce(:or))
-    @posts = @posts.includes(:board, :user, :last_user, :content_warnings)
-    @posts = @posts.no_tests.order('tagged_at desc')
-    @posts = @posts.paginate(per_page: 25, page: page)
-    opened_posts = PostView.where(user_id: current_user.id).select([:post_id, :read_at])
-    @opened_ids = opened_posts.map(&:post_id)
-    @unread_ids = opened_posts.select do |view|
-      post = @posts.detect { |p| p.id == view.post_id }
-      post && view.read_at < post.tagged_at
-    end.map(&:post_id)
+    @posts = posts_from_relation(@posts.where(where_calc.where_values.reduce(:or)).order('tagged_at desc'))
+    @hide_quicklinks = true
     @page_title = 'Favorites'
   end
 
@@ -55,7 +48,10 @@ class FavoritesController < ApplicationController
         flash[:error] = "Post could not be found."
         redirect_to posts_path and return
       end
-      fav_path = session[:previous_url] || post_path(favorite)
+      params = {}
+      params[:page] = page unless page.to_s == '1'
+      params[:per_page] = per_page unless per_page.to_s == (current_user.try(:per_page) || 25).to_s
+      fav_path = post_path(favorite, params)
     else
       flash[:error] = "No favorite specified."
       redirect_to boards_path and return
