@@ -18,8 +18,28 @@ RSpec.describe TemplatesController do
   end
 
   describe "POST create" do
-    it "has more tests" do
-      skip
+    it "requires login" do
+      post :create
+      expect(response).to redirect_to(root_url)
+      expect(flash[:error]).to eq("You must be logged in to view that page.")
+    end
+
+    it "requires valid params" do
+      login
+      post :create
+      expect(response).to render_template(:new)
+      expect(flash[:error]).to eq("Your template could not be saved.")
+      expect(assigns(:page_title)).to eq("New Template")
+      expect(assigns(:template)).not_to be_valid
+      expect(assigns(:template)).to be_a_new_record
+    end
+
+    it "works" do
+      login
+      post :create, template: {name: 'testtest'}
+      created = Template.last
+      expect(response).to redirect_to(template_url(created))
+      expect(flash[:success]).to eq("Template saved successfully.")
     end
   end
 
