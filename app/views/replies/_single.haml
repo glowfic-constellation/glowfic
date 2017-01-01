@@ -8,7 +8,7 @@
     <a name="reply-#{reply.id}"></a>
   - if reply.id.present? && logged_in? && !@unread.nil?
     - if reply.id == @unread.id && reply.class == @unread.class
-      <a id="unread">&nbsp;</a>
+      <a id="unread"> </a>
   .padding-10
     .post-info-box
       - if reply.icon_id
