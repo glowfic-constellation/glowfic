@@ -36,14 +36,14 @@ class TemplatesController < ApplicationController
   end
 
   def update
-    if @template.update_attributes(params[:template])
-      flash[:success] = "Template saved successfully."
-      redirect_to template_path(@template)
-    else
+    unless @template.update_attributes(params[:template])
       flash.now[:error] = "Your template could not be saved."
       @page_title = 'Edit Template: ' + @template.name_was
-      render :action => :edit
+      render :action => :edit and return
     end
+
+    flash[:success] = "Template saved successfully."
+    redirect_to template_path(@template)
   end
 
   def destroy

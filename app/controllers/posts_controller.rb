@@ -189,6 +189,7 @@ class PostsController < WritableController
           Message.create(recipient_id: 1, sender_id: 1, subject: 'Unread at failure', message: "#{current_user.username} tried to mark post #{@post.id} unread at reply #{reply.id}")
         else
           @post.mark_read(current_user, reply.created_at - 1.second, true)
+          flash[:success] = "Post has been marked as read until reply ##{reply.id}."
         end
       end
       return redirect_to unread_posts_path

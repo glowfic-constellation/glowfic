@@ -217,7 +217,91 @@ RSpec.describe PostsController do
   end
 
   describe "PUT update" do
-    skip
+    it "requires login" do
+      put :update, id: -1
+      expect(response).to redirect_to(root_url)
+      expect(flash[:error]).to eq("You must be logged in to view that page.")
+    end
+
+    it "requires valid post" do
+      login
+      put :update, id: -1
+      expect(response).to redirect_to(boards_url)
+      expect(flash[:error]).to eq("Post could not be found.")
+    end
+
+    context "mark unread" do
+
+      it "requires valid at_id" do
+      end
+
+      it "requires post's at_id" do
+      end
+
+      it "notifies Marri about board_read" do
+        # TODO fix the board_read thing better
+        post = create(:post)
+        unread_reply = create(:reply, post: post)
+        reply = create(:reply, post: post)
+        time = Time.now
+        post.board.mark_read(post.user, time)
+        skip "todo"
+        expect(post.last_read(post.user).time).to be_the_same_time_as(time)
+        login_as(post.user)
+
+        put :update, id: post.id, unread: true, at_id: unread_reply.id
+
+        expect(response).to redirect_to(unread_posts_url)
+        expect(flash[:error]).to eq("You have marked this continuity read more recently than that reply was written; it will not appear in your Unread posts.")
+        expect(post.reload.last_read(post.user)).to be_the_same_time_as(time)
+      end
+
+      it "works with at_id" do
+        post = create(:post)
+        unread_reply = create(:reply, post: post)
+        reply = create(:reply, post: post)
+        time = Time.now
+        post.mark_read(post.user, time)
+        expect(post.last_read(post.user).time).to be_the_same_time_as(time)
+        login_as(post.user)
+
+        put :update, id: post.id, unread: true, at_id: unread_reply.id
+
+        expect(response).to redirect_to(unread_posts_url)
+        expect(flash[:success]).to eq("Post has been marked as read until reply ##{unread_reply.id}.")
+        expect(post.reload.last_read(post.user)).to be_the_same_time_as((unread_reply.created_at - 1.second))
+      end
+
+      it "works without at_id" do
+        post = create(:post)
+        user = create(:user)
+        post.mark_read(user)
+        expect(post.reload.send(:view_for, user)).not_to be_nil
+        login_as(user)
+
+        put :update, id: post.id, unread: true
+
+        expect(response).to redirect_to(unread_posts_url)
+        expect(flash[:success]).to eq("Post has been marked as unread")
+        expect(post.reload.send(:view_for, user)).to be_a_new_record
+      end
+    end
+
+    context "change status" do
+      skip "TODO"
+    end
+
+    context "author lock" do
+      skip "TODO"
+    end
+
+    context "preview" do
+      skip "TODO"
+    end
+
+    context "make changes" do
+      skip "TODO"
+    end
   end
 
   describe "POST warnings" do

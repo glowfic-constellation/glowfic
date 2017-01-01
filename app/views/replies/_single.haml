@@ -5,7 +5,7 @@
 
 .post-container{class: reply.is_a?(Post) ? 'post-post'.freeze : (reply.is_a?(Reply) ? 'post-reply'.freeze : ''), style: highlighted}
   - if reply.is_a?(Reply) && reply.id.present?
-    <a name="reply-#{reply.id}"></a>
+    <a id="reply-#{reply.id}"> </a>
   - if reply.id.present? && logged_in? && !@unread.nil?
     - if reply.id == @unread.id && reply.class == @unread.class
       <a id="unread"> </a>
