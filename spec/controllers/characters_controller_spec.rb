@@ -378,7 +378,7 @@ RSpec.describe CharactersController do
       expect(flash[:error]).to eq("You do not have permission to edit that character.")
     end
 
-    it "does not change icon if invalid icon provided" do
+    it "does not change icon if no icon provided" do
       icon = create(:icon)
       character = create(:character, user: icon.user, default_icon_id: icon.id)
       login_as(character.user)
@@ -386,6 +386,26 @@ RSpec.describe CharactersController do
       expect(response.status).to eq(200)
       expect(response.json).to eq({})
       expect(character.reload.default_icon_id).to eq(icon.id)
+    end
+
+    it "does not change icon if invalid icon provided" do
+      icon = create(:icon)
+      character = create(:character, user: icon.user, default_icon_id: icon.id)
+      login_as(character.user)
+      post :icon, id: character.id, icon_id: -1
+      expect(response.status).to eq(200)
+      expect(response.json).to eq({})
+      expect(character.reload.default_icon_id).to eq(icon.id)
+    end
+
+    it "removes icon successfully with empty icon_id" do
+      icon = create(:icon)
+      character = create(:character, user: icon.user, default_icon_id: icon.id)
+      login_as(character.user)
+      post :icon, id: character.id, icon_id: ''
+      expect(response.status).to eq(200)
+      expect(response.json).to eq({})
+      expect(character.reload.default_icon_id).to be_nil
     end
 
     it "does not change icon if icon without permission provided" do
