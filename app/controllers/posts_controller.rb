@@ -5,8 +5,7 @@ class PostsController < WritableController
   before_filter :login_required, except: [:index, :show, :history, :warnings, :search, :stats]
   before_filter :find_post, only: [:show, :history, :stats, :warnings, :edit, :update, :destroy]
   before_filter :require_permission, only: [:edit, :destroy]
-  before_filter :build_template_groups, only: [:new, :edit]
-  before_filter :build_tags, only: [:new, :edit]
+  before_filter :editor_setup, only: [:new, :edit]
 
   def index
     @posts = posts_from_relation(Post.order('tagged_at desc'))
@@ -77,7 +76,6 @@ class PostsController < WritableController
   end
 
   def new
-    use_javascript('posts')
     @post = Post.new(character: current_user.active_character, user: current_user)
     @post.board_id = params[:board_id]
     @post.icon_id = (current_user.active_character ? current_user.active_character.icon.try(:id) : current_user.avatar_id)
@@ -100,9 +98,7 @@ class PostsController < WritableController
       flash.now[:error] = {}
       flash.now[:error][:array] = @post.errors.full_messages
       flash.now[:error][:message] = "Your post could not be saved because of the following problems:"
-      use_javascript('posts')
-      build_template_groups
-      build_tags
+      editor_setup
       @page_title = 'New Post'
       render :action => :new
     end
@@ -137,16 +133,14 @@ class PostsController < WritableController
     @url = path
     @method = method
 
-    build_tags
+    editor_setup
 
-    use_javascript('posts')
     gon.original_content = params[:post][:content] if params[:post]
     @page_title = 'Previewing: ' + @post.subject
     render action: :preview
   end
 
   def edit
-    use_javascript('posts')
     gon.original_content = @post.content
   end
 
@@ -172,9 +166,7 @@ class PostsController < WritableController
       flash.now[:error] = {}
       flash.now[:error][:array] = @post.errors.full_messages
       flash.now[:error][:message] = "Your post could not be saved because of the following problems:"
-      use_javascript('posts')
-      build_template_groups
-      build_tags
+      editor_setup
       render :action => :edit
     end
   end
@@ -337,5 +329,11 @@ class PostsController < WritableController
       tags -= existing_tags.map(&:name)
       @post.tag_ids += tags.map { |tag| Tag.create(user: current_user, name: tag).id }
     end
+  end
+
+  def editor_setup
+    use_javascript('posts')
+    build_template_groups
+    build_tags
   end
 end
