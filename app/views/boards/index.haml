@@ -1,9 +1,15 @@
+- if @user.present? && @user.id != current_user.try(:id)
+  - content_for :breadcrumbs do
+    = link_to "#{@user.username}", user_path(@user)
+    &raquo;
+    %b #{@user.username}'s Continuities
+
 %table
   %thead
     %tr
       %th{colspan: 3}
-        Continuities
-        - if logged_in?
+        = @page_title
+        - if logged_in? && (@user.nil? || @user.id == current_user.id)
           = link_to new_board_path do
             .link-box.green + New Continuity
     %tr
@@ -12,12 +18,15 @@
       %th.sub Last Updated
   %tbody
     - @boards.each do |board|
+      = render partial: 'list_item', locals: {board: board}
+    - if @boards.empty?
       %tr
-        - klass = cycle('even','odd')
-        %td.padding-10.board-title{class: klass}= link_to board.name, board_path(board)
-        %td.padding-10.board-authors{class: klass}
-          - if board.open_to_anyone?
-            Anyone
-          - else
-            = board.writers.map { |u| link_to u.username, user_path(u) }.join(', ').html_safe
-        %td.padding-10.board-time{class: klass}= pretty_time(board.posts.limit(1).order('tagged_at desc').first.try(:tagged_at))
+        %td.centered.padding-10.no-posts{ class: cycle('even','odd'), colspan: 3 } — No boards yet —
+
+  - if @cameo_boards.present?
+    %tr
+      %td.continuity-spacer
+    %tr
+      %th.sub{colspan: 3} Cameo Boards
+    - @cameo_boards.each do |board|
+      = render partial: 'list_item', locals: {board: board}

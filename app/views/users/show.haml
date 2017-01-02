@@ -25,6 +25,11 @@
           Galleries
     %tr
       %td.centered{class: cycle('even', 'odd')}
+        = link_to user_boards_path(@user) do
+          = image_tag '/images/table.png', class: 'vmid'
+          Continuities
+    %tr
+      %td.centered{class: cycle('even', 'odd')}
         = link_to search_posts_path(author_id: @user.id, commit: 'Search') do
           = image_tag '/images/book_open.png', class: 'vmid'
           All Posts

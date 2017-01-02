@@ -2,15 +2,70 @@ require "spec_helper"
 
 RSpec.describe BoardsController do
   describe "GET index" do
-    it "succeeds when logged out" do
-      get :index
-      expect(response.status).to eq(200)
+    context "without a user_id" do
+      it "succeeds when logged out" do
+        get :index
+        expect(response.status).to eq(200)
+      end
+
+      it "succeeds when logged in" do
+        login
+        get :index
+        expect(response.status).to eq(200)
+      end
+
+      it "sets correct variables" do
+        user = create(:user)
+        board1 = create(:board, creator_id: user.id)
+        board2 = create(:board, creator_id: user.id)
+
+        get :index
+        expect(assigns(:boards)).to match_array([board1, board2])
+        expect(assigns(:page_title)).to eq('Continuities')
+      end
     end
 
-    it "succeeds when logged in" do
-      login
-      get :index
-      expect(response.status).to eq(200)
+    context "with a user_id" do
+      it "does not require login" do
+        user = create(:user)
+        get :index, user_id: user.id
+        expect(response.status).to eq(200)
+        expect(assigns(:user)).to eq(user)
+        expect(assigns(:page_title)).to eq("#{user.username}'s Continuities")
+      end
+
+      it "defaults to current user if user id invalid" do
+        user = create(:user)
+        login_as(user)
+        get :index, user_id: -1
+        expect(response.status).to eq(200)
+        expect(assigns(:user)).to eq(user)
+        expect(assigns(:page_title)).to eq('Your Continuities')
+      end
+
+      it "displays error if user id invalid and logged out" do
+        get :index, user_id: -1
+        expect(flash[:error]).to eq('User could not be found.')
+        expect(response).to redirect_to(root_url)
+      end
+
+      it "sets correct variables" do
+        user = create(:user)
+        owned_board = create(:board, creator_id: user.id)
+
+        get :index, user_id: user.id
+        expect(assigns(:boards)).to match_array([owned_board])
+
+        coauthor = create(:user)
+        owned_board2 = create(:board, creator_id: user.id)
+        owned_board2.coauthors << coauthor
+        owned_board3 = create(:board, creator_id: user.id)
+        owned_board3.cameos << coauthor
+
+        get :index, user_id: coauthor.id
+        expect(assigns(:boards)).to match_array([owned_board2])
+        expect(assigns(:cameo_boards)).to match_array([owned_board3])
+      end
     end
   end
 

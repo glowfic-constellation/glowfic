@@ -6,8 +6,26 @@ class BoardsController < ApplicationController
   before_filter :require_permission, only: [:edit, :update, :destroy]
 
   def index
-    @page_title = 'Continuities'
-    @boards = Board.order('pinned DESC, LOWER(name)')
+    if params[:user_id].present?
+      unless @user = User.find_by_id(params[:user_id]) || current_user
+        flash[:error] = "User could not be found."
+        redirect_to root_path and return
+      end
+
+      @page_title = if @user.id == current_user.try(:id)
+        "Your Continuities"
+      else
+        @user.username + "'s Continuities"
+      end
+
+      board_ids = BoardAuthor.where(user_id: @user.id, cameo: false).pluck('distinct board_id')
+      where = Board.where(creator_id: @user.id).where(id: board_ids).where_values.reduce(:or)
+      @boards = Board.where(where).order('pinned DESC, LOWER(name)')
+      @cameo_boards = Board.where(id: BoardAuthor.where(user_id: @user.id, cameo: true).pluck('distinct board_id')).order('pinned DESC, LOWER(name)')
+    else
+      @page_title = 'Continuities'
+      @boards = Board.order('pinned DESC, LOWER(name)')
+    end
   end
 
   def new
