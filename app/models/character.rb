@@ -7,7 +7,7 @@ class Character < ActiveRecord::Base
   has_many :posts
 
   has_many :characters_galleries
-  has_many :galleries, through: :characters_galleries
+  has_many :galleries, through: :characters_galleries, after_remove: :reorder_galleries
   has_many :icons, through: :galleries, group: 'icons.id', order: 'LOWER(keyword)'
 
   has_many :character_tags, inverse_of: :character, dependent: :destroy
@@ -35,6 +35,18 @@ class Character < ActiveRecord::Base
 
   def selector_name
     [name, template_name, screenname].compact.join(' | ')
+  end
+
+  def reorder_galleries(gallery=nil)
+    # public so that it can be called from CharactersGallery.after_destroy
+    galleries = CharactersGallery.where(character_id: id).order('section_order asc')
+    return unless galleries.present?
+
+    galleries.each_with_index do |other, index|
+      next if other.section_order == index
+      other.section_order = index
+      other.save
+    end
   end
 
   private

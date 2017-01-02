@@ -323,16 +323,34 @@ RSpec.describe CharactersController do
     end
 
     it "sets correct variables when invalid" do
-      user = create(:user)
-      templates = 2.times.collect do create(:template, user: user) end
+      character = create(:character)
+      templates = 2.times.collect do create(:template, user: character.user) end
       names = ['— Create New Template —'] + templates.map(&:name)
       create(:template)
 
-      login_as(user)
-      post :create, character: {}
+      login_as(character.user)
+      put :update, id: character.id, character: {}
 
-      expect(controller.gon.character_id).to eq('')
+      expect(controller.gon.character_id).to eq(character.id)
       expect(assigns(:templates).map(&:name)).to match_array(names)
+    end
+
+    it "reorders galleries as necessary" do
+      character = create(:character)
+      g1 = create(:gallery, user: character.user)
+      g2 = create(:gallery, user: character.user)
+      character.galleries << g1
+      character.galleries << g2
+      g1_cg = CharactersGallery.where(gallery_id: g1.id).first
+      g2_cg = CharactersGallery.where(gallery_id: g2.id).first
+      expect(g1_cg.section_order).to eq(0)
+      expect(g2_cg.section_order).to eq(1)
+
+      login_as(character.user)
+      put :update, id: character.id, character: {gallery_ids: [g2.id.to_s]}
+
+      expect(character.reload.galleries.pluck(:id)).to eq([g2.id])
+      expect(g2_cg.reload.section_order).to eq(0)
     end
   end
 
