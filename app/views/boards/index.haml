@@ -8,14 +8,8 @@
   %thead
     %tr
       %th{colspan: 3}
-        - if @user.present?
-          - if @user.id == current_user.try(:id)
-            Your Continuities
-          - else
-            = @user.username + "'s Continuities"
-        - else
-          Continuities
-        - if logged_in? && (@user.nil? || @user.try(:id) == current_user.id)
+        = @page_title
+        - if logged_in? && (@user.nil? || @user.id == current_user.id)
           = link_to new_board_path do
             .link-box.green + New Continuity
     %tr
@@ -23,22 +17,16 @@
       %th.sub Authors
       %th.sub Last Updated
   %tbody
-    - if @boards
-      - @boards.each do |board|
-        = render partial: 'list_item', locals: {board: board}
-      - if @boards.empty?
-        %tr
-          %td.centered.padding-10.no-posts{ class: cycle('even','odd'), colspan: 3 } — No boards yet —
-    - elsif @owned_boards
+    - @boards.each do |board|
+      = render partial: 'list_item', locals: {board: board}
+    - if @boards.empty?
       %tr
-        - @owned_boards.each do |board|
-          = render partial: 'list_item', locals: {board: board}
-        - if @owned_boards.empty?
-          %tr
-            %td.centered.padding-10.no-posts{ class: cycle('even','odd'), colspan: 3 } — No boards yet —
-        - if @cameod_boards.present?
-          %tr
-            %td.continuity-spacer
-          %th.sub{colspan: 3} Cameo Boards
-          - @cameod_boards.each do |board|
-            = render partial: 'list_item', locals: {board: board}
+        %td.centered.padding-10.no-posts{ class: cycle('even','odd'), colspan: 3 } — No boards yet —
+
+  - if @cameo_boards.present?
+    %tr
+      %td.continuity-spacer
+    %tr
+      %th.sub{colspan: 3} Cameo Boards
+    - @cameo_boards.each do |board|
+      = render partial: 'list_item', locals: {board: board}

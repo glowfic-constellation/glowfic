@@ -6,4 +6,4 @@
       Anyone
     - else
       = board.writers.map { |u| link_to u.username, user_path(u) }.join(', ').html_safe
-  %td.padding-10.board-time{class: klass}= pretty_time(board.posts.limit(1).order('tagged_at desc').first.try(:tagged_at))
+  %td.padding-10.board-time{class: klass}= pretty_time(board.posts.order('tagged_at desc').first.try(:tagged_at))

@@ -54,7 +54,7 @@ RSpec.describe BoardsController do
         owned_board = create(:board, creator_id: user.id)
 
         get :index, user_id: user.id
-        expect(assigns(:owned_boards)).to match_array([owned_board])
+        expect(assigns(:boards)).to match_array([owned_board])
 
         coauthor = create(:user)
         owned_board2 = create(:board, creator_id: user.id)
@@ -63,8 +63,8 @@ RSpec.describe BoardsController do
         owned_board3.cameos << coauthor
 
         get :index, user_id: coauthor.id
-        expect(assigns(:owned_boards)).to match_array([owned_board2])
-        expect(assigns(:cameod_boards)).to match_array([owned_board3])
+        expect(assigns(:boards)).to match_array([owned_board2])
+        expect(assigns(:cameo_boards)).to match_array([owned_board3])
       end
     end
   end

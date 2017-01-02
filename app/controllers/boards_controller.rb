@@ -18,9 +18,10 @@ class BoardsController < ApplicationController
         @user.username + "'s Continuities"
       end
 
-      @owned_board_ids = BoardAuthor.where(user_id: @user.id, cameo: false).pluck('distinct board_id') + Board.where(creator_id: @user.id).pluck(:id)
-      @owned_boards = Board.where(id: @owned_board_ids).order('pinned DESC, LOWER(name)')
-      @cameod_boards = Board.where(id: BoardAuthor.where(user_id: @user.id, cameo: true).pluck('distinct board_id')).order('pinned DESC, LOWER(name)')
+      board_ids = BoardAuthor.where(user_id: @user.id, cameo: false).pluck('distinct board_id')
+      where = Board.where(creator_id: @user.id).where(id: board_ids).where_values.reduce(:or)
+      @boards = Board.where(where).order('pinned DESC, LOWER(name)')
+      @cameo_boards = Board.where(id: BoardAuthor.where(user_id: @user.id, cameo: true).pluck('distinct board_id')).order('pinned DESC, LOWER(name)')
     else
       @page_title = 'Continuities'
       @boards = Board.order('pinned DESC, LOWER(name)')
