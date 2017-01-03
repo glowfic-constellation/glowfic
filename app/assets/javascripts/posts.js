@@ -152,20 +152,12 @@ $(document).ready(function() {
   });
 
   $("#submit_button").click(function() {
-    $("#preview_button").removeAttr('data-disable-with').attr('disabled', 'disabled');
-    $("#draft_button").removeAttr('data-disable-with').attr('disabled', 'disabled');
-    return true;
-  });
-
-  $("#preview_button").click(function() {
-    $("#submit_button").removeAttr('data-disable-with').attr('disabled', 'disabled');
     $("#draft_button").removeAttr('data-disable-with').attr('disabled', 'disabled');
     return true;
   });
 
   $("#draft_button").click(function() {
     $("#submit_button").removeAttr('data-disable-with').attr('disabled', 'disabled');
-    $("#preview_button").removeAttr('data-disable-with').attr('disabled', 'disabled');
     return true;
   });
 
