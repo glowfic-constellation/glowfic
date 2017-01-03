@@ -8,8 +8,8 @@ class BaseJob < Object
     Resque.enqueue(self, *args)
   end
 
-  def on_failure_retry(e, *args)
-    Rails.logger.error("Performing #{self} caused an exception (#{e}). Retrying...")
-    Resque.enqueue(self, *args)
-  end
+  # def on_failure_retry(e, *args)
+  #   Rails.logger.error("Performing #{self} caused an exception (#{e}). Retrying...")
+  #   Resque.enqueue(self, *args)
+  # end
 end
