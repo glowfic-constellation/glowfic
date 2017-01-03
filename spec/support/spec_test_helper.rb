@@ -7,3 +7,12 @@ module SpecTestHelper
     login_as(create(:user))
   end
 end
+
+module BackgroundJobs
+  def run_background_jobs_immediately(&block)
+    inline = Resque.inline
+    Resque.inline = true
+    yield
+    Resque.inline = inline
+  end
+end

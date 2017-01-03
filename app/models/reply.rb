@@ -76,7 +76,7 @@ class Reply < ActiveRecord::Base
       next if author.id == user_id
       next unless author.email.present?
       next unless author.email_notifications?
-      UserMailer.post_has_new_reply(author, self).deliver
+      Resque.enqueue(EmailPostHasNewReplyJob, author.id, self.id)
     end
   end
 
