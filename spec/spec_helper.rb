@@ -112,6 +112,14 @@ RSpec::Matchers.define :be_the_same_time_as do |expected|
   match do |actual|
     expected.to_s(:db) == actual.to_s(:db)
   end
+
+  failure_message do |actual|
+    "expected #{actual} to be the same time as #{expected}"
+  end
+
+  failure_message_when_negated do |actual|
+    "expected #{actual} not to be the same time as #{expected}"
+  end
 end
 
 # Monkey patches the controller response objects to return JSON
