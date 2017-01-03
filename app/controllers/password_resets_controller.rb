@@ -38,7 +38,7 @@ class PasswordResetsController < ApplicationController
       render :new and return
     end
 
-    UserMailer.password_reset_link(password_reset).deliver
+    Resque.enqueue(EmailPasswordResetJob, password_reset.id)
     params[:email] = params[:username] = nil
     flash[:success] = "A password reset link has been emailed to you."
     redirect_to new_password_reset_path
