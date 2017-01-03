@@ -142,7 +142,7 @@
 - if @replies.present?
   = render partial: 'posts/paginator', locals: { paginated: @replies, path: :post_path }
 - if logged_in? && @unread.nil?
-  <a id="unread"> </a>
+  <a id="unread" class="noheight"> </a>
 - if @post.taggable_by?(current_user)
   - if @post.author_ids.include?(current_user.id)
     = render partial: 'posts/write_reply', locals: { reply: @reply, url: replies_path, method: :post }
