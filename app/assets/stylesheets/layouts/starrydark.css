@@ -44,8 +44,8 @@ body { background-color: #211e2f; color: #DADADA; }
 #post-menu-box a:hover div { background-color: #252525; }
 
 #post-menu-box, #content .even, #content .odd, .post-post, .post-reply { color: #DADADA; }
-#content .even, .post-post, .post-reply:nth-child(even), .post-reply:nth-child(odd) blockquote { background-color: #31323b; }
-#content .odd, .post-expander, .post-post, .post-reply:nth-child(odd), .post-post blockquote, .post-reply:nth-child(even) blockquote { background-color: #25262e; }
+#content .even, .post-post, .post-reply:nth-child(even), .post-reply:nth-child(odd) blockquote, .post-post blockquote { background-color: #31323b; }
+#content .odd, .post-expander, .post-post, .post-reply:nth-child(odd), .post-reply:nth-child(even) blockquote { background-color: #25262e; }
 
 .green { background-color: #323232; }
 
