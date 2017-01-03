@@ -11,6 +11,13 @@
     <link rel="icon" type="image/png" sizes="16x16" href="https://www.glowfic.com/images/favicon-16x16.png?v=3">
   %body
     #content
+      = link_to post_path(@post) do
+        &laquo; Back
+      %br
+      .details.float-right
+        Generated: #{pretty_time(@post.flat_post.updated_at)}
+      .details
+        Post last updated: #{pretty_time(@post.tagged_at)}
       .post-header
         .padding-15
           %span#post-title= @post.subject
@@ -31,27 +38,8 @@
               - else
                 .dark.spacer
               .post-author= @post.user.username
-          = sanitize_post_content(@post.content).html_safe
+          .post-content= sanitize_post_content(@post.content).html_safe
         .post-footer
           .right-align>
-            .padding-5> Posted #{pretty_time(@post.created_at)}
-      - 1.upto(@replies.count / 250 + 1). each do |index|
-        - @replies.paginate(per_page: 250, page: index).each do |reply|
-          - klass = cycle('even', 'odd')
-          .post-container{class: klass}
-            .padding-10
-              .post-info-box
-                - if reply.icon_id
-                  .post-icon= icon_mem_tag reply.url, reply.keyword
-                .post-info-text
-                  - if reply.character_id
-                    .post-character= reply.name
-                    - if reply.screenname
-                      .post-screenname= reply.screenname
-                  - else
-                    .dark.spacer
-                  .post-author= reply.username
-              = sanitize_post_content(reply.content).html_safe
-            .post-footer
-              .right-align>
-                .padding-5> Posted #{pretty_time(reply.created_at)}
+            .padding-5> Posted #{pretty_time(@post.created_at, ApplicationHelper::TIME_FORMAT)}
+      = @post.flat_post.content.try(:html_safe)

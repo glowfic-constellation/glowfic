@@ -25,9 +25,9 @@ module ApplicationHelper
     icon_mem_tag(NO_ICON_URL, NO_ICON, **args)
   end
 
-  def pretty_time(time)
+  def pretty_time(time, format=nil)
     return unless time
-    time.strftime(current_user.try(:time_display) || TIME_FORMAT)
+    time.strftime(format || current_user.try(:time_display) || TIME_FORMAT)
   end
 
   def fun_name(user)

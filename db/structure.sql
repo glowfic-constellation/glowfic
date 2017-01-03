@@ -388,6 +388,38 @@ ALTER SEQUENCE favorites_id_seq OWNED BY favorites.id;
 
 
 --
+-- Name: flat_posts; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE flat_posts (
+    id integer NOT NULL,
+    post_id integer NOT NULL,
+    content text,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
+-- Name: flat_posts_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE flat_posts_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: flat_posts_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE flat_posts_id_seq OWNED BY flat_posts.id;
+
+
+--
 -- Name: galleries; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -976,6 +1008,13 @@ ALTER TABLE ONLY favorites ALTER COLUMN id SET DEFAULT nextval('favorites_id_seq
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
+ALTER TABLE ONLY flat_posts ALTER COLUMN id SET DEFAULT nextval('flat_posts_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY galleries ALTER COLUMN id SET DEFAULT nextval('galleries_id_seq'::regclass);
 
 
@@ -1148,6 +1187,14 @@ ALTER TABLE ONLY characters
 
 ALTER TABLE ONLY favorites
     ADD CONSTRAINT favorites_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: flat_posts_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY flat_posts
+    ADD CONSTRAINT flat_posts_pkey PRIMARY KEY (id);
 
 
 --
@@ -1386,6 +1433,13 @@ CREATE INDEX index_favorites_on_favorite_id_and_favorite_type ON favorites USING
 --
 
 CREATE INDEX index_favorites_on_user_id ON favorites USING btree (user_id);
+
+
+--
+-- Name: index_flat_posts_on_post_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_flat_posts_on_post_id ON flat_posts USING btree (post_id);
 
 
 --
@@ -1728,3 +1782,5 @@ INSERT INTO schema_migrations (version) VALUES ('20161110055637');
 INSERT INTO schema_migrations (version) VALUES ('20161126195558');
 
 INSERT INTO schema_migrations (version) VALUES ('20161129195022');
+
+INSERT INTO schema_migrations (version) VALUES ('20170103184309');

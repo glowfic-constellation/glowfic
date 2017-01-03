@@ -69,7 +69,7 @@ RSpec.describe Post do
   end
 
   it "should allow blank content" do
-    post = create(:post, content: nil)
+    post = create(:post, content: '')
     expect(post.id).not_to be_nil
   end
 

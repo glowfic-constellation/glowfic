@@ -38,7 +38,7 @@ RSpec.describe RepliesController do
       reply_post = create(:post)
       expect(Reply.count).to eq(0)
 
-      post :create, reply: {post_id: reply_post.id}, content: 'test!'
+      post :create, reply: {post_id: reply_post.id, content: 'test!' }
 
       reply = Reply.first
       expect(reply).not_to be_nil

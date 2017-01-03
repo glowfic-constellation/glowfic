@@ -1,0 +1,20 @@
+- 1.upto((replies.count / 250.0).ceil). each do |index|
+  - replies.paginate(per_page: 250, page: index).each do |reply|
+    - klass = cycle('even', 'odd')
+    .post-container{class: klass}
+      .padding-10
+        .post-info-box
+          - if reply.icon_id
+            .post-icon= icon_mem_tag reply.url, reply.keyword
+          .post-info-text
+            - if reply.character_id
+              .post-character= reply.name
+              - if reply.screenname
+                .post-screenname= reply.screenname
+            - else
+              .dark.spacer
+            .post-author= reply.username
+        .post-content= sanitize_post_content(reply.content).html_safe
+      .post-footer
+        .right-align>
+          .padding-5> Posted #{pretty_time(reply.created_at, ApplicationHelper::TIME_FORMAT)}

@@ -20,6 +20,7 @@ class Post < ActiveRecord::Base
   belongs_to :section, class_name: BoardSection, inverse_of: :posts
   belongs_to :last_user, class_name: User
   belongs_to :last_reply, class_name: Reply
+  has_one :flat_post
   has_many :replies, inverse_of: :post, dependent: :destroy
   has_many :post_viewers, dependent: :destroy
   has_many :viewers, through: :post_viewers, source: :user
@@ -37,6 +38,7 @@ class Post < ActiveRecord::Base
   validates_presence_of :board, :subject
   validate :valid_board, :valid_board_section
 
+  before_create :build_initial_flat_post
   after_save :update_tag_list
 
   audited except: [:last_reply_id, :last_user_id, :edited_at, :tagged_at, :section_id, :section_order]
@@ -200,5 +202,10 @@ class Post < ActiveRecord::Base
 
   def ordered_attributes
     [:section_id, :board_id]
+  end
+
+  def build_initial_flat_post
+    build_flat_post
+    true
   end
 end

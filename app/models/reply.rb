@@ -9,10 +9,11 @@ class Reply < ActiveRecord::Base
   audited associated_with: :post
 
   after_create :notify_other_authors, :destroy_draft, :update_active_char, :update_post
+  after_save :update_flat_post
   after_update :update_post
   after_destroy :update_last_reply
 
-  attr_accessor :skip_notify, :skip_post_update, :is_import
+  attr_accessor :skip_notify, :skip_post_update, :is_import, :skip_regenerate
 
   pg_search_scope(
     :search,
@@ -89,5 +90,10 @@ class Reply < ActiveRecord::Base
     errors.add(:user, 'is not a valid continuity author') unless user.writes_in?(post.board)
     return unless post.authors_locked?
     errors.add(:post, 'is not a valid post author') unless post.author_ids.include?(user_id)
+  end
+
+  def update_flat_post
+    return if skip_regenerate
+    Resque.enqueue(GenerateFlatPostJob, post_id)
   end
 end

@@ -14,4 +14,4 @@ Resque::Mailer.error_handler = lambda { |mailer, message, error, action, args|
     raise error
   end
 }
-Resque::Mailer.excluded_environments = [] # override default to exclude tests, so I can test it
+Resque::Mailer.excluded_environments = [] # I explicitly want this to run in tests; don't exclude them.
