@@ -12,7 +12,7 @@ a:visited { color: #28503a; }
 a:hover { color: #fcfefd; }
 
 /* Inputs */
-input, textarea, button { 
+input, textarea, button {
   font-size: 13px;
   height: 23px;
   border-radius: 5px;

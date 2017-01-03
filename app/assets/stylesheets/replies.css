@@ -1,5 +1,5 @@
 /* Box displaying current icon */
-#icon-overlay { 
+#icon-overlay {
     background-color: #000000;
     height: 100px;
     width: 100px;
@@ -22,7 +22,7 @@
     padding:5px 20px 10px 20px;
     z-index: 2;
     min-width: 200px;
-    display: none; 
+    display: none;
     text-align: left;
 }
 #character-selector h4 { margin-bottom: 0px; margin-top:0px; }
@@ -89,6 +89,10 @@ select.per-page { margin-top: 5px; margin-bottom: 5px; }
 #post-editor { position: relative; }
 .details { display: inline; font-size: 12px; font-style: italic; }
 
+.post-post blockquote, .post-reply:nth-child(even) blockquote { background-color: #D8D8D8; }
+.post-reply:nth-child(odd) blockquote { background-color: #E3E3E3; }
+.post-content blockquote { margin: 0.5em 5.5em; padding: 0.5em; }
+
 @media (max-width: 600px) {
     .post-info-box { float: none; width: 100%; display: inline-block; }
     .post-icon { float: left; margin-right: 0; margin-bottom: 5px; }
@@ -97,6 +101,7 @@ select.per-page { margin-top: 5px; margin-bottom: 5px; }
     #character-selector { left: 0px; }
     .post-character { background-color: #B9B6AD; }
     .post-author { background-color: #8B8687; }
+    .post-content blockquote { margin: 0.5em 1.5em; }
 }
 
 /* Pagination */
