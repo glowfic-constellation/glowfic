@@ -1,3 +1,5 @@
+require "resque_web"
+
 Rails.application.routes.draw do
   root :to => 'sessions#index'
 
@@ -82,4 +84,5 @@ Rails.application.routes.draw do
   resources :bugs, only: :create
   resources :favorites, only: [:index, :create, :destroy]
   match '/contribute' => 'contribute#index', as: :contribute, via: :get
+  mount ResqueWeb::Engine => "/resque_web"
 end
