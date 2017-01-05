@@ -52,6 +52,7 @@ end
 group :test do
   gem 'factory_girl_rails'
   gem 'json', '1.8.2'
+  gem 'resque_spec'
   gem 'rspec-rails'
   gem 'simplecov'
   gem 'timecop'

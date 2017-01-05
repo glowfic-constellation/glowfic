@@ -51,13 +51,14 @@ RSpec.describe Reply do
   end
 
   describe "#notify_other_authors" do
+    before(:each) do ResqueSpec.reset! end
+
     it "does nothing if skip_notify is set" do
       notified_user = create(:user, email_notifications: true)
       post = create(:post, user: notified_user)
 
-      ActionMailer::Base.deliveries.clear
       create(:reply, post: post, skip_notify: true)
-      expect(ActionMailer::Base.deliveries.count).to eq(0)
+      expect(UserMailer).to have_queue_size_of(0)
     end
 
     it "does nothing if the previous reply was yours" do
@@ -66,18 +67,16 @@ RSpec.describe Reply do
 
       reply = create(:reply, post: post, skip_notify: true)
 
-      ActionMailer::Base.deliveries.clear
       create(:reply, post: post, user: reply.user)
-      expect(ActionMailer::Base.deliveries.count).to eq(0)
+      expect(UserMailer).to have_queue_size_of(0)
     end
 
     it "does nothing if the post was yours on the first reply" do
       notified_user = create(:user, email_notifications: true)
       post = create(:post, user: notified_user)
 
-      ActionMailer::Base.deliveries.clear
       create(:reply, post: post, user: notified_user)
-      expect(ActionMailer::Base.deliveries.count).to eq(0)
+      expect(UserMailer).to have_queue_size_of(0)
     end
 
     it "sends to all other active authors if previous reply wasn't yours" do
@@ -94,9 +93,10 @@ RSpec.describe Reply do
       another_notified_user = create(:user, email_notifications: true)
       create(:reply, user: another_notified_user, post: post, skip_notify: true)
 
-      ActionMailer::Base.deliveries.clear
-      create(:reply, post: post)
-      expect(ActionMailer::Base.deliveries.count).to eq(2)
+      reply = create(:reply, post: post)
+      expect(UserMailer).to have_queue_size_of(2)
+      expect(UserMailer).to have_queued(:post_has_new_reply, [notified_user.id, reply.id])
+      expect(UserMailer).to have_queued(:post_has_new_reply, [another_notified_user.id, reply.id])
     end
 
     it "sends if the post was yours but previous reply wasn't" do
@@ -106,9 +106,9 @@ RSpec.describe Reply do
       another_notified_user = create(:user, email_notifications: true)
       create(:reply, user: another_notified_user, post: post, skip_notify: true)
 
-      ActionMailer::Base.deliveries.clear
-      create(:reply, post: post, user: notified_user)
-      expect(ActionMailer::Base.deliveries.count).to eq(1)
+      reply = create(:reply, post: post, user: notified_user)
+      expect(UserMailer).to have_queue_size_of(1)
+      expect(UserMailer).to have_queued(:post_has_new_reply, [another_notified_user.id, reply.id])
     end
   end
 end

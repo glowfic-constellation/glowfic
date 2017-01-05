@@ -72,7 +72,7 @@ RSpec.describe PasswordResetsController do
       expect(PasswordReset.count).to eq(1)
       post :create, username: user.username, email: user.email
       expect(flash[:success]).to eq("Your password reset link has been re-sent.")
-      expect(ActionMailer::Base.deliveries.count).to eq(1)
+      expect(UserMailer).to have_queued(:password_reset_link, [reset.id])
       expect(PasswordReset.count).to eq(1)
     end
 
@@ -82,9 +82,9 @@ RSpec.describe PasswordResetsController do
       post :create, username: user.username, email: user.email
       expect(response).to redirect_to(new_password_reset_url)
       expect(flash[:success]).to eq("A password reset link has been emailed to you.")
-      expect(ActionMailer::Base.deliveries.count).to eq(1)
       expect(PasswordReset.count).to eq(1)
       expect(PasswordReset.first.user_id).to eq(user.id)
+      expect(UserMailer).to have_queued(:password_reset_link, [PasswordReset.last.id])
     end
   end
 
