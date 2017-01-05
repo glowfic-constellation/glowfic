@@ -31,7 +31,7 @@ class Post < ActiveRecord::Base
   has_many :content_warnings, through: :post_tags, source: :content_warning
   has_many :favorites, as: :favorite, dependent: :destroy
 
-  attr_accessible :board, :board_id, :subject, :privacy, :viewer_ids, :description, :section_id, :tag_ids, :warning_ids, :setting_ids, :section_order
+  attr_accessible :board, :board_id, :subject, :privacy, :viewer_ids, :description, :section_id, :tag_ids, :warning_ids, :setting_ids, :section_order, :status
   attr_accessor :tag_ids, :warning_ids, :setting_ids
   attr_writer :skip_edited
 
