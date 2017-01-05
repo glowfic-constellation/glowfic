@@ -1,0 +1,18 @@
+%div{style: 'width: 500px; margin: 0px auto; background-color: #8B8687; color:#eeeeee; padding: 0px; font-size: 18px;'}
+  %div{style: 'padding: 15px; overflow: hidden;'}
+    %span{style: 'line-height: 28px;'}
+      = link_to @message.unempty_subject, message_url(@message, host: current_host, protocol: 'https'), style: 'color: #eeeeee;'
+
+%div{style: 'background-color: #D8D8D8; color:#101010; overflow: auto; width: 500px; margin: 0px auto;'}
+  %div{style: 'padding: 10px; text-align: left;'}
+    %div{style: 'text-align: center; padding: 0px; float: left; margin-right: 10px; margin-bottom: 10px; width: 150px; overflow: visible;'}
+      - if @message.sender.avatar
+        %div{style: 'padding: 0px; background-color: #B0BBA9;'}
+          = icon_tag @message.sender.avatar, style: 'margin: 10px; vertical-align: middle; position: relative; max-height: 100px; max-width: 100px;'
+      %div{style: 'background-color: #8B8687; padding: 4px;'}
+        %b From:
+        = @message.sender.username
+      %div{style: 'background-color: #a3a1a0; padding: 4px;'}
+        %b To:
+        = @message.recipient.username
+    = sanitize_written_content(@message.message).html_safe

@@ -11,4 +11,10 @@ class UserMailer < AsyncMailer
     @password_reset = PasswordReset.find(password_reset_id)
     mail(to: @password_reset.user.email, subject: @subject)
   end
+
+  def new_message(message_id)
+    @message = Message.find(message_id)
+    @subject = "New message from #{@message.sender.username}: #{@message.unempty_subject}"
+    mail(to: @message.recipient.email, subject: @subject)
+  end
 end

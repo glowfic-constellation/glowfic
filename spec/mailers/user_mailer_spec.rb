@@ -16,4 +16,12 @@ RSpec.describe UserMailer, type: :mailer do
       expect(ActionMailer::Base.deliveries.count).to eq(1)
     end
   end
+
+  describe "#new_message" do
+    it "sends email" do
+      ActionMailer::Base.deliveries.clear
+      UserMailer.new_message(create(:message).id).deliver!
+      expect(ActionMailer::Base.deliveries.count).to eq(1)
+    end
+  end
 end
