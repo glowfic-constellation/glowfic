@@ -10,6 +10,14 @@ guide provided on their website, or if you are already acquainted with various
 programming languages, try the '[Learn X in Y minutes](https://learnxinyminutes.com/docs/ruby/)'
 tutorial for Ruby.
 
+You also need to have [Redis](https://redis.io/) installed. To get this done
+quickly, follow [the quickstart guide](https://redis.io/topics/quickstart)
+(installing Redis). In order to perform this task properly, you may need to
+first: `sudo apt-get install build-essential tcl8.5`. To set it up as a daemon
+(background server), on Ubuntu/Debian you will also want to run `cd utils &&
+sudo ./install_server.sh` from the 'redis-stable' directory – the default
+settings should work.
+
 ### Setup Process
 
 #### Cloning the repository
@@ -22,7 +30,7 @@ may be found on the Bitbucket site.
 #### Language dependencies
 
 Install Ruby (probably with something such as [RVM](https://rvm.io/rvm/install)
-or [rbenv](https://github.com/rbenv/rbenv) so as to manage your version 
+or [rbenv](https://github.com/rbenv/rbenv) so as to manage your version
 appropriately), and the necessary dependencies (`gem install bundler`,
 `bundler`).
 
@@ -49,7 +57,7 @@ process for rbenv has not yet been documented in more depth.
 
 If you have not yet set up PostgreSQL, ensure you have it installed with (on
 Ubuntu) `sudo apt install postgresql`. Then run `sudo -u postgres psql` and
-create a user account – `create user <USERNAME> createdb createuser password 
+create a user account – `create user <USERNAME> createdb createuser password
 '<PASSWORD>';` should do this, replacing the appropriate parts. Then, either
 alter the `config/database.yml` file to have the appropriate username and
 password (ensure not to check this in if you commit something), or
