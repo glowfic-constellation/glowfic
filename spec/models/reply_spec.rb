@@ -94,8 +94,9 @@ RSpec.describe Reply do
       another_notified_user = create(:user, email_notifications: true)
       create(:reply, user: another_notified_user, post: post, skip_notify: true)
 
-      expect(Resque).to receive(:enqueue).exactly(2).times
+      ActionMailer::Base.deliveries.clear
       create(:reply, post: post)
+      expect(ActionMailer::Base.deliveries.count).to eq(2)
     end
 
     it "sends if the post was yours but previous reply wasn't" do

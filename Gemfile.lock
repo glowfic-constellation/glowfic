@@ -194,6 +194,8 @@ GEM
       resque
       sass-rails
       twitter-bootstrap-rails
+    resque_mailer (2.4.1)
+      actionmailer (>= 3.0)
     rspec-core (3.5.4)
       rspec-support (~> 3.5.0)
     rspec-expectations (3.5.0)
@@ -301,6 +303,7 @@ DEPENDENCIES
   redis-rails
   resque
   resque-web (= 0.0.8)
+  resque_mailer
   rspec-rails
   sanitize
   sass-rails
