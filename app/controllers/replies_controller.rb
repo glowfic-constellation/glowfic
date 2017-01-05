@@ -100,6 +100,14 @@ class RepliesController < WritableController
 
     reply = Reply.new(params[:reply])
     reply.user = current_user
+
+    if reply.post.try(:first_unread_for, current_user) && !params[:reply_warned]
+      # There are unreads and the user has not been warned.
+      params[:reply_warned] = true
+      flash[:error] = "There are unread replies not shown here. (Click 'post' again if you wish to ignore this warning.)"
+      preview(reply) and return
+    end
+
     if reply.save
       flash[:success] = "Posted!"
       redirect_to reply_path(reply, anchor: "reply-#{reply.id}")

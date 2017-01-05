@@ -4,6 +4,10 @@
     .view-button#rtf{class: ('selected' if (params[:editor_mode] || current_user.default_editor) == 'rtf')} Rich Text
     .view-button#html{class: ('selected' if (params[:editor_mode] || current_user.default_editor) == 'html')} HTML
     %br
+    - if reply_warning
+      .reply-warning
+        = reply_warning.html_safe
+      = hidden_field_tag :reply_warned, true
     %br
     = f.hidden_field :post_id
     = f.hidden_field :character_id
