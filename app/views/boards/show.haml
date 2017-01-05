@@ -60,7 +60,7 @@
         %th{colspan: 5}= content_for :posts_title
       - if @board.description.present?
         %tr
-          %td.odd{colspan: 5}= sanitize_post_content(@board.description).html_safe
+          %td.odd{colspan: 5}= sanitize_written_content(@board.description).html_safe
     %tbody
       %tr
         %td.continuity-spacer{colspan: 5}

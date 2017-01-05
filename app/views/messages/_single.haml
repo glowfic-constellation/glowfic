@@ -9,7 +9,9 @@
         .post-screenname
           %b To:
           = link_to(message.recipient.username, user_path(message.recipient))
-    = sanitize(message.message.gsub("\n","<br/>")).html_safe
+    = sanitize_written_content(message.message).html_safe
   .post-footer
     .right-align> 
-      .padding-5> Sent #{pretty_time(message.created_at)}
+      .padding-5>
+        - if message.created_at
+          Sent #{pretty_time(message.created_at)}

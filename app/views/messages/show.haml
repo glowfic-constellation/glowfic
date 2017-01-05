@@ -12,8 +12,4 @@
     .link-box.green Reply &raquo;
 
 - if @message.thread_id
-  .post-header
-    .padding-15
-      %span Full Message Thread
-  - Message.where(thread_id: @message.thread_id).order('id asc').each do |message|
-    = render partial: 'single', locals: {message: message}
+  = render partial: 'thread', locals: {thread_id: @message.thread_id}

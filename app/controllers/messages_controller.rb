@@ -21,10 +21,24 @@ class MessagesController < ApplicationController
     @page_title = 'Compose Message'
     if params[:reply_id].present?
       @message.parent = Message.find_by_id(params[:reply_id])
-      if @message.parent.visible_to?(current_user)
-        @message.subject = @message.subject_from_parent
-      else
+      unless @message.parent.present?
         @message.parent = nil
+        flash.now[:error] = "Message parent could not be found."
+        return
+      end
+
+      unless @message.parent.visible_to?(current_user)
+        @message.parent = nil
+        flash.now[:error] = "You do not have permission to reply to that message."
+        return
+      end
+
+      @message.subject = @message.subject_from_parent
+      @message.thread_id = @message.parent.thread_id || @message.parent.id
+      @message.recipient_id = @message.parent.sender_id # set recipient to parent's sender
+
+      if @message.recipient_id == current_user.id # if recipient is self
+        @message.recipient_id = @message.parent.recipient_id # use the same recipient as the parent message
       end
     end
   end
@@ -35,15 +49,39 @@ class MessagesController < ApplicationController
     if params[:parent_id].present?
       @message.parent = Message.find_by_id(params[:parent_id])
       @message.parent = nil unless @message.parent.visible_to?(current_user)
-      @message.recipient = @message.parent.sender
-      @message.thread_id = @message.parent.thread_id || @message.parent.id
+      @message.thread_id = @message.parent.try(:thread_id) || @message.parent.try(:id)
+      @message.recipient_id ||= @message.parent.try(:sender_id)
+    end
+
+    if @message.parent
+      if @message.recipient_id != @message.parent.sender_id && @message.recipient_id != @message.parent.recipient_id
+        # this message is attemptedly not actually part of the conversation
+        @message.recipient_id = nil
+        flash.now[:error] = "Forwarding is not yet implemented."
+        use_javascript('messages')
+        @page_title = 'Compose Message'
+        render :action => :new
+        return
+      else
+        @message.recipient_id = if @message.sender_id == @message.parent.sender_id
+          @message.parent.recipient_id
+        else
+          @message.parent.sender_id
+        end
+      end
+    end
+
+    if params[:button_preview]
+      render :action => 'preview' and return
     end
 
     if @message.save
       flash[:success] = "Message sent!"
       redirect_to messages_path(view: 'inbox')
     else
-      flash.now[:error] = @message.errors.full_messages.to_s
+      flash.now[:error] = {}
+      flash.now[:error][:array] = @message.errors.full_messages
+      flash.now[:error][:message] = "Your message could not be sent because of the following problems:"
       use_javascript('messages')
       @page_title = 'Compose Message'
       render :action => :new

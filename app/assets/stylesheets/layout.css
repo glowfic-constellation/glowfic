@@ -122,5 +122,8 @@ input.checkbox { height: 12px; margin: 0px; vertical-align: middle; } /* Keeps u
 #signup th.sub { width: 90px; }
 #content table.form-table input[type='checkbox'] { margin: 0 1px; height: 18px; width: 18px; vertical-align: middle; }
 td.continuity-spacer { height: 20px; }
+#message_form tr#message-row { width: 75%; max-width: 900px; min-width: 300px; }
+#message_form textarea { min-width: 200px; width: 100%; box-sizing: border-box; min-height: 250px; }
+#content #message_form .form-table { width: 90%; }
 .post-ignored { opacity: 0.3; }
 .time-loaded { font-size: 10px; position: absolute; top: 2px; right: 20px; }
