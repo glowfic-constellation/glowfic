@@ -1,18 +1,8 @@
-html, body {
-  background-color: #212121;
-}
-body {
-  color: #A2A2A2;
-}
-#content {
-  background-color: #212121;
-}
-#content .beige {
-  background-color: #565656;
-}
-#content table {
-  border-color: #555;
-}
+html, body { background-color: #212121; }
+body { color: #A2A2A2; }
+#content { background-color: #212121; }
+#content .beige { background-color: #565656; }
+#content table { border-color: #555; }
 #content .sub {
   background-color: #3C3C3C;
   color: #C9C9C9;
@@ -21,37 +11,21 @@ body {
   background-color: #4A4A4A;
   color: #c2c2c2;
 }
-#content a {
-  color: #598D70;
-}
-#content a:hover {
-  color: #838383;
-}
-#content a:visited {
-  color: #598D70;
-}
-#header #nav-bottom, #header {
-  background-color: #56554F;
-}
-#header #logo {
-  background-color: #3B4841;
-}
+#content a { color: #598D70; }
+#content a:hover { color: #838383; }
+#content a:visited { color: #598D70; }
+#header #nav-bottom, #header { background-color: #56554F; }
+#header #logo { background-color: #3B4841; }
 #header a, #header li a { color: #CCCCCC; }
-#content .even, .post-post, .post-reply:nth-child(even), .post-reply:nth-child(odd) blockquote {
+#content .even, .post-post, .post-reply:nth-child(even), #post-editor, .post-reply:nth-child(odd) blockquote {
   background-color: #3E3E3E;
 }
-#content .odd, .post-reply:nth-child(odd), .post-post blockquote, .post-reply:nth-child(even) blockquote {
+#content .odd, .post-reply:nth-child(odd), .post-post + #post-editor, .post-post + a + #post-editor, .post-post blockquote, .post-reply:nth-child(even) blockquote {
   background-color: #474747;
 }
-.green {
-  background-color: #444D3F;
-}
-#content .subber, .subber {
-  background-color: #464646;
-}
-  .post-subheader {
-  background-color: #5D5D5D;
-}
+.green { background-color: #444D3F; }
+#content .subber, .subber { background-color: #464646; }
+.post-subheader { background-color: #5D5D5D; }
 #post_content, #reply_content {
   background-color: #717171;
   color: #ccc;
@@ -60,34 +34,16 @@ body {
   background-color: #5B655B;
   color: #bbb;
 }
-.post-header {
-  background-color: #4A4848;
-}
-  .post-navheader {
-    background-color: #5F5D57;
-  }
-.character-view-select {
-  background-color: #666460;
-}
-.post-icon, #current-icon-dropdown {
-  background-color: #444D3F;
-}
+.post-header { background-color: #4A4848; }
+.post-navheader { background-color: #5F5D57; }
+.character-view-select { background-color: #666460; }
+.post-icon, #current-icon-dropdown { background-color: #444D3F; }
 #current-icon-dropdown { color: #111111; }
-.post-expander {
-  background-color: #6F7769;
-}
-.post-character {
-  background-color: #595959;
-}
-.post-screenname {
-  background-color: #515151;
-}
-.post-author {
-  background-color: #4D4C4C;
-}
-.flash.success {
-  background-color: #656F65;
-}
+.post-expander { background-color: #6F7769; }
+.post-character { background-color: #595959; }
+.post-screenname { background-color: #515151; }
+.post-author { background-color: #4D4C4C; }
+.flash.success { background-color: #656F65; }
 .flash.inbox {
   background-color: #7C867C;
   color: #C5C5C5;
@@ -96,7 +52,5 @@ body {
   background-color: #85837C;
   color: #DDDDDD;
 }
-.view-button.selected {
-  background-color: #6A6A6A;
-}
+.view-button.selected { background-color: #6A6A6A; }
 .link-box { color: #DDDDDD; }
