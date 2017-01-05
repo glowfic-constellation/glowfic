@@ -48,6 +48,7 @@ class WritableController < ApplicationController
 
     if per_page > 0
       per = per_page
+      per = @per_page = 500 if per > 500
       cur_page ||= page
       if cur_page == 'last'
         self.page = cur_page = @post.replies.paginate(per_page: per, page: 1).total_pages
@@ -69,8 +70,7 @@ class WritableController < ApplicationController
         self.page = cur_page = cur_page.to_i
       end
     else
-      per = replies.count > 5000 ? (@per_page = 1000) : replies.count
-      self.page = cur_page = 1
+      per = @per_page = 500
     end
 
     @replies = @post.replies
