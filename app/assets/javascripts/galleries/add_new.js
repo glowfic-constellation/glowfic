@@ -1,7 +1,49 @@
 $(document).ready(function() {
   fixButtons();
+  $(".icon-row td:has(input)").each(function() {
+    $(this).keydown(processDirectionalKey);
+  });
   bindFileInput($("#icon_files"));
 });
+
+function processDirectionalKey(event) {
+  var keyLeft = 37,
+    keyUp = 38,
+    keyRight = 39,
+    keyDown = 40;
+  if ([keyLeft, keyUp, keyRight, keyDown].indexOf(event.which) < 0) return;
+  var input = $('input', this);
+  if (input.get(0).type !== 'text') return;
+
+  var caret = input.get(0).selectionStart;
+  var length = input.val().length;
+  var index = $(this).closest('td').index();
+
+  var consume = false;
+  switch (event.which) {
+  case keyLeft:
+    if (caret === 0) {
+      $(this).closest('td').prev().find('input').focus();
+      consume = true;
+    }
+    break;
+  case keyRight:
+    if (caret >= length) {
+      $(this).closest('td').next().find('input').focus();
+      consume = true;
+    }
+    break;
+  case keyUp:
+    $(this).closest('tr').prev('.icon-row').children().eq(index).find('input').focus();
+    consume = true;
+    break;
+  case keyDown:
+    $(this).closest('tr').next('.icon-row').children().eq(index).find('input').focus();
+    consume = true;
+    break;
+  }
+  if (consume) event.preventDefault();
+}
 
 function fixButtons() {
   $(".icon-row-add").hide().unbind();
@@ -38,6 +80,9 @@ function addNewRow() {
   urlField.attr('id', 'icons_'+index+'_url');
 
   new_row.insertBefore($(".submit-row"));
+  $("td:has(input)", new_row).each(function() {
+    $(this).keydown(processDirectionalKey);
+  });
   return index;
 }
 
