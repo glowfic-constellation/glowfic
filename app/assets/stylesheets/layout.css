@@ -77,7 +77,7 @@
 /* Form Tables */
 #content table.form-table { text-align: center; width: 400px; margin: 0px; border-spacing: 0px; }
 #content table.form-table td { text-align: left; padding: 5px; }
-#content table.form-table td input, table#icon-table td input { 
+#content table.form-table td input, table#icon-table td input {
     margin: 0px;
     width: 100%;
     -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
@@ -123,3 +123,4 @@ input.checkbox { height: 12px; margin: 0px; vertical-align: middle; } /* Keeps u
 #content table.form-table input[type='checkbox'] { margin: 0 1px; height: 18px; width: 18px; vertical-align: middle; }
 td.continuity-spacer { height: 20px; }
 .post-ignored { opacity: 0.3; }
+.time-loaded { font-size: 10px; position: absolute; top: 2px; right: 20px; }
