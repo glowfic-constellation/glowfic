@@ -15,7 +15,7 @@
       = f.text_area :content, class: 'tinymce'
       = tinymce
       = submit_tag (method == :put ? 'Save' : "Post"), class: 'button', id: 'submit_button', disable_with: 'Saving...'
-      = submit_tag "Preview", class: 'button', id: 'preview_button', disable_with: 'Loading...', name: 'button_preview'
+      = submit_tag "Preview", class: 'button', id: 'preview_button', name: 'button_preview'
       - if method == :post
         = submit_tag "Save Draft", class: 'button', id: 'draft_button', disable_with: 'Saving...', name: 'button_draft'
 

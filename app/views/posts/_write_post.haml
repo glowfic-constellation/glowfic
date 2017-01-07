@@ -40,7 +40,7 @@
         = f.hidden_field :character_id, id: 'reply_character_id'
         = f.hidden_field :icon_id, id: 'reply_icon_id'
         = submit_tag (method == :put ? 'Save' : "Post"), class: 'button', id: 'submit_button', disable_with: 'Saving...'
-        = submit_tag "Preview", class: 'button', id: 'preview_button', disable_with: 'Loading...', name: 'button_preview'
+        = submit_tag "Preview", class: 'button', id: 'preview_button', name: 'button_preview'
 
 - if post.id.present? && !post.editable_by?(current_user)
   #post-editor.padding-10{class: cycle('even', 'odd')}= yield :form
