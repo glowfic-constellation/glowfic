@@ -327,6 +327,15 @@ RSpec.describe GalleriesController do
       expect(flash[:error]).to eq("That is not your gallery.")
     end
 
+    it "correctly stubs S3 bucket for devs without local buckets" do
+      stub_const("S3_BUCKET", nil)
+      login
+      get :add, id: 0
+      expect(response).to render_template('add')
+      expect(assigns(:page_title)).to eq("Add Icons")
+      expect(assigns(:s3_direct_post)).to be_a(Struct)
+    end
+
     it "supports galleryless" do
       handle_s3_bucket
       login
