@@ -38,6 +38,11 @@
               - else
                 .dark.spacer
               .post-author= @post.user.username
+          .post-edit-box
+            = link_to post_path(@post), rel: 'alternate' do
+              = image_tag "/images/link.png", title: 'Permalink', alt: 'Permalink'
+            = link_to post_path(@post, unread: true), method: :put do
+              = image_tag '/images/eye.png', title: 'Mark Unread Here', alt: 'Eye'
           .post-content= sanitize_post_content(@post.content).html_safe
         .post-footer
           .right-align>

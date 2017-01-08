@@ -1,6 +1,12 @@
 require 'resque/errors'
 
 class BaseJob < Object
+  extend Resque::Plugins::Retry
+
+  @retry_limit = 5
+  @expire_retry_key_after = 3600
+  give_up_callback :notify_exception
+
   def self.perform(*args)
     self.process(*args)
   rescue Resque::TermException
@@ -8,8 +14,16 @@ class BaseJob < Object
     Resque.enqueue(self, *args)
   end
 
-  # def on_failure_retry(e, *args)
-  #   Rails.logger.error("Performing #{self} caused an exception (#{e}). Retrying...")
-  #   Resque.enqueue(self, *args)
-  # end
+  def self.process(*args)
+    raise NotImplementedError
+  end
+
+  def self.notify_exception(exception, *args)
+    Rails.logger.error("Received #{exception}, job #{self.name} failed with #{args}")
+    ExceptionNotifier.notify_exception(exception, data: {job: self.name, args: args})
+  end
+
+  def self.queue
+    @queue
+  end
 end

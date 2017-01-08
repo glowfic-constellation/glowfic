@@ -1,14 +1,6 @@
 require "spec_helper"
 
 RSpec.describe GenerateFlatPostJob do
-  it "retries on sigterm" do
-    ResqueSpec.reset!
-    exception = Resque::TermException.new(15)
-    expect(GenerateFlatPostJob).to receive(:process).and_raise(exception)
-    GenerateFlatPostJob.perform(1)
-    expect(GenerateFlatPostJob).to have_queued(1).in(:high)
-  end
-
   it "does nothing with invalid post id" do
     expect($redis).not_to receive(:set)
     GenerateFlatPostJob.perform(-1)
@@ -37,8 +29,12 @@ RSpec.describe GenerateFlatPostJob do
 
     expect_any_instance_of(FlatPost).to receive(:save).and_raise(Exception)
     ResqueSpec.reset!
+    Resque.enqueue(GenerateFlatPostJob, post.id)
 
-    GenerateFlatPostJob.perform(post.id)
+    begin
+      ResqueSpec.perform_next(GenerateFlatPostJob.queue)
+    rescue Exception
+    end
 
     expect(GenerateFlatPostJob).to have_queued(post.id).in(:high)
     expect($redis.get(GenerateFlatPostJob.lock_key(post.id))).to be_nil

@@ -1,7 +1,8 @@
-- 1.upto((replies.count / 250.0).ceil). each do |index|
+- 1.upto((replies.count / 250.0).ceil).each do |index|
   - replies.paginate(per_page: 250, page: index).each do |reply|
-    - klass = cycle('even', 'odd')
+    - klass = cycle('even'.freeze, 'odd'.freeze)
     .post-container{class: klass}
+      <a id="reply-#{reply.id}" class="noheight"> </a>
       .padding-10
         .post-info-box
           - if reply.icon_id
@@ -14,6 +15,11 @@
             - else
               .dark.spacer
             .post-author= reply.username
+        .post-edit-box
+          = link_to Rails.application.routes.url_helpers.reply_path(reply, anchor: "reply-#{reply.id}"), rel: 'alternate'.freeze do
+            = image_tag "/images/link.png".freeze, title: 'Permalink'.freeze, alt: 'Permalink'.freeze
+          = link_to Rails.application.routes.url_helpers.post_path(reply.post_id, unread: true, at_id: reply.id), method: :put do
+            = image_tag '/images/eye.png'.freeze, title: 'Mark Unread Here'.freeze, alt: 'Eye'.freeze
         .post-content= sanitize_post_content(reply.content).html_safe
       .post-footer
         .right-align>

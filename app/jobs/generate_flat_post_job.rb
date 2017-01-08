@@ -34,9 +34,8 @@ class GenerateFlatPostJob < BaseJob
         Resque.enqueue(self, post_id)
       end
     rescue Exception => e
-      # TODO raise or retry manually?
       $redis.del(lock_key)
-      Resque.enqueue(self, post_id)
+      raise e # jobs are automatically retried
     end
   end
 
