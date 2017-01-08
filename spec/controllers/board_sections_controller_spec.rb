@@ -109,8 +109,28 @@ RSpec.describe BoardSectionsController do
       expect(flash[:error]).to eq("You must be logged in to view that page.")
     end
 
-    it "has more tests" do
-      skip
+    it "requires valid section" do
+      login
+      get :edit, id: -1
+      expect(response).to redirect_to(boards_url)
+      expect(flash[:error]).to eq("Section not found.")
+    end
+
+    it "requires permission" do
+      section = create(:board_section)
+      login
+      get :edit, id: section.id
+      expect(response).to redirect_to(boards_url)
+      expect(flash[:error]).to eq("You do not have permission to edit this continuity.")
+    end
+
+    it "works" do
+      section = create(:board_section)
+      login_as(section.board.creator)
+      get :edit, id: section.id
+      expect(response).to have_http_status(200)
+      expect(assigns(:page_title)).to eq("Edit #{section.name}")
+      expect(assigns(:board_section)).to eq(section)
     end
   end
 
@@ -133,8 +153,28 @@ RSpec.describe BoardSectionsController do
       expect(flash[:error]).to eq("You must be logged in to view that page.")
     end
 
-    it "has more tests" do
-      skip
+    it "requires valid section" do
+      login
+      delete :destroy, id: -1
+      expect(response).to redirect_to(boards_url)
+      expect(flash[:error]).to eq("Section not found.")
+    end
+
+    it "requires permission" do
+      section = create(:board_section)
+      login
+      delete :destroy, id: section.id
+      expect(response).to redirect_to(boards_url)
+      expect(flash[:error]).to eq("You do not have permission to edit this continuity.")
+    end
+
+    it "works" do
+      section = create(:board_section)
+      login_as(section.board.creator)
+      delete :destroy, id: section.id
+      expect(response).to redirect_to(edit_board_url(section.board))
+      expect(flash[:success]).to eq("Section deleted.")
+      expect(BoardSection.find_by_id(section.id)).to be_nil
     end
   end
 end
