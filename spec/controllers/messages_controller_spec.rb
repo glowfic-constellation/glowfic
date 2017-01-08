@@ -104,7 +104,7 @@ RSpec.describe MessagesController do
 
   describe "POST create" do
     it "requires login" do
-      get :new
+      post :create
       expect(response).to redirect_to(root_url)
       expect(flash[:error]).to eq("You must be logged in to view that page.")
     end
@@ -112,8 +112,9 @@ RSpec.describe MessagesController do
     it "fails with invalid params" do
       login
       post :create, message: {}
-      expect(response.status).to eq(200)
+      expect(response).to render_template(:new)
       expect(flash[:error][:message]).to eq("Your message could not be sent because of the following problems:")
+      expect(assigns(:message)).not_to be_valid
       expect(assigns(:page_title)).to eq('Compose Message')
     end
 
@@ -161,10 +162,6 @@ RSpec.describe MessagesController do
     end
 
     context "preview" do
-      skip
-    end
-
-    it "has more tests" do
       skip
     end
   end
@@ -224,13 +221,25 @@ RSpec.describe MessagesController do
       expect(flash[:error]).to eq("You must be logged in to view that page.")
     end
 
+    it "requires valid action" do
+      login
+      post :mark
+      expect(response).to redirect_to(messages_url)
+      expect(flash[:error]).to eq("Could not perform unknown action.")
+    end
+
     context "marking read/unread" do
       it "handles invalid message ids" do
-        skip
+        login
+        expect_any_instance_of(Message).not_to receive(:update_attributes)
+        post :mark, marked_ids: ['nope', -1, '0'], commit: "Mark Read / Unread"
       end
 
       it "does not work for users without access" do
-        skip
+        message = create(:message)
+        login
+        expect_any_instance_of(Message).not_to receive(:update_attributes)
+        post :mark, marked_ids: [message.id.to_s], commit: "Mark Read / Unread"
       end
 
       it "does not work for sender" do
@@ -238,11 +247,17 @@ RSpec.describe MessagesController do
       end
 
       it "works read for recipient" do
-        skip
+        message = create(:message, unread: true)
+        login_as(message.recipient)
+        post :mark, marked_ids: [message.id.to_s], commit: "Mark Read / Unread"
+        expect(message.reload.unread).not_to be_true
       end
 
       it "works unread for recipient" do
-        skip
+        message = create(:message, unread: false)
+        login_as(message.recipient)
+        post :mark, marked_ids: [message.id.to_s], commit: "Mark Read / Unread"
+        expect(message.reload.unread).to be_true
       end
     end
 

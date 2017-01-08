@@ -49,21 +49,21 @@ class MessagesController < ApplicationController
         @message.parent = nil
         flash.now[:error] = "Parent could not be found."
         editor_setup
-        render :action => :new and return
+        render action: :new and return
       end
 
       @message.thread_id = @message.parent.thread_id
       @message.recipient_id = @message.parent.user_ids.detect { |id| id != current_user.id }
     end
 
-    render :action => 'preview' and return if params[:button_preview]
+    render action: :preview and return if params[:button_preview]
 
     unless @message.save
       flash.now[:error] = {}
       flash.now[:error][:array] = @message.errors.full_messages
       flash.now[:error][:message] = "Your message could not be sent because of the following problems:"
       editor_setup
-      render :action => :new and return
+      render action: :new and return
     end
 
     flash[:success] = "Message sent!"
