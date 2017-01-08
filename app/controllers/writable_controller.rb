@@ -46,31 +46,27 @@ class WritableController < ApplicationController
       end
     end
 
-    if per_page > 0
-      per = per_page
-      per = @per_page = 500 if per > 500
-      cur_page ||= page
-      if cur_page == 'last'
-        self.page = cur_page = @post.replies.paginate(per_page: per, page: 1).total_pages
-      elsif cur_page == 'unread'
-        if logged_in?
-          @unread = @post.first_unread_for(current_user) if logged_in?
-          if @unread.nil?
-            self.page = cur_page = @post.replies.paginate(per_page: per, page: 1).total_pages
-          elsif @unread.class == Post
-            self.page = cur_page = 1
-          else
-            self.page = cur_page = @unread.post_page(per)
-          end
-        else
-          flash.now[:error] = "You must be logged in to view unread posts."
+    per = per_page
+    per = @per_page = 500 if per > 500
+    cur_page ||= page
+    if cur_page == 'last'
+      self.page = cur_page = @post.replies.paginate(per_page: per, page: 1).total_pages
+    elsif cur_page == 'unread'
+      if logged_in?
+        @unread = @post.first_unread_for(current_user) if logged_in?
+        if @unread.nil?
+          self.page = cur_page = @post.replies.paginate(per_page: per, page: 1).total_pages
+        elsif @unread.class == Post
           self.page = cur_page = 1
+        else
+          self.page = cur_page = @unread.post_page(per)
         end
       else
-        self.page = cur_page = cur_page.to_i
+        flash.now[:error] = "You must be logged in to view unread posts."
+        self.page = cur_page = 1
       end
     else
-      per = @per_page = 500
+      self.page = cur_page = cur_page.to_i
     end
 
     @replies = @post.replies
