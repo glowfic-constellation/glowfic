@@ -18,7 +18,7 @@ class Tag < ActiveRecord::Base
 
   def merge_with(other_tag)
     transaction do
-      PostTag.where(tag_id: other_tag.id).where(post_id: post_tags.map(&:post_id)).delete_all
+      PostTag.where(tag_id: other_tag.id).where(post_id: post_tags.pluck('distinct post_id')).delete_all
       PostTag.where(tag_id: other_tag.id).update_all(tag_id: self.id)
       other_tag.destroy
     end
