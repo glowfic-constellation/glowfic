@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 class MessagesController < ApplicationController
   before_filter :login_required
+  before_filter :editor_setup, only: :new
 
   def index
     if params[:view] == 'outbox'
@@ -15,10 +16,9 @@ class MessagesController < ApplicationController
   end
 
   def new
-    use_javascript('messages')
     @message = Message.new
     @message.recipient = User.find_by_id(params[:recipient_id])
-    @page_title = 'Compose Message'
+
     if params[:reply_id].present?
       @message.parent = Message.find_by_id(params[:reply_id])
       unless @message.parent.present?
@@ -34,17 +34,13 @@ class MessagesController < ApplicationController
       end
 
       @message.subject = @message.subject_from_parent
-      @message.thread_id = @message.parent.thread_id || @message.parent.id
-      @message.recipient_id = @message.parent.sender_id # set recipient to parent's sender
-
-      if @message.recipient_id == current_user.id # if recipient is self
-        @message.recipient_id = @message.parent.recipient_id # use the same recipient as the parent message
-      end
+      @message.thread_id = @message.parent.thread_id
+      @message.recipient_id = @message.parent.user_ids.detect { |id| id != current_user.id }
     end
   end
 
   def create
-    @message = Message.new(params[:message].merge(sender: current_user))
+    @message = Message.new((params[:message] || {}).merge(sender: current_user))
 
     if params[:parent_id].present?
       @message.parent = Message.find_by_id(params[:parent_id])
@@ -52,51 +48,26 @@ class MessagesController < ApplicationController
       unless @message.parent && @message.parent.visible_to?(current_user)
         @message.parent = nil
         flash.now[:error] = "Parent could not be found."
-        use_javascript('messages')
-        @page_title = 'Compose Message'
-        render :action => :new
-        return
+        editor_setup
+        render :action => :new and return
       end
 
       @message.thread_id = @message.parent.thread_id
-      @message.recipient_id ||= @message.parent.sender_id
+      @message.recipient_id = @message.parent.user_ids.detect { |id| id != current_user.id }
     end
 
-    if @message.parent
-      if @message.recipient_id != @message.parent.sender_id && @message.recipient_id != @message.parent.recipient_id
-        # this message is attemptedly not actually part of the conversation
-        # so someone sent invalid data to the form, or something weird happened
-        @message.recipient_id = nil
-        flash.now[:error] = "Forwarding is not yet implemented."
-        use_javascript('messages')
-        @page_title = 'Compose Message'
-        render :action => :new
-        return
-      else
-        # set the recipient to whoever's not sending it of the conversation partners
-        @message.recipient_id = if @message.sender_id == @message.parent.sender_id
-          @message.parent.recipient_id
-        else
-          @message.parent.sender_id
-        end
-      end
-    end
+    render :action => 'preview' and return if params[:button_preview]
 
-    if params[:button_preview]
-      render :action => 'preview' and return
-    end
-
-    if @message.save
-      flash[:success] = "Message sent!"
-      redirect_to messages_path(view: 'inbox')
-    else
+    unless @message.save
       flash.now[:error] = {}
       flash.now[:error][:array] = @message.errors.full_messages
       flash.now[:error][:message] = "Your message could not be sent because of the following problems:"
-      use_javascript('messages')
-      @page_title = 'Compose Message'
-      render :action => :new
+      editor_setup
+      render :action => :new and return
     end
+
+    flash[:success] = "Message sent!"
+    redirect_to messages_path(view: 'inbox')
   end
 
   def show
@@ -147,5 +118,12 @@ class MessagesController < ApplicationController
 
     flash[:success] = "Messages updated"
     redirect_to messages_path(view: box || 'inbox')
+  end
+
+  private
+
+  def editor_setup
+    use_javascript('messages')
+    @page_title = 'Compose Message'
   end
 end

@@ -125,14 +125,12 @@ RSpec.describe MessagesController do
       expect(flash[:success]).to eq('Message sent!')
     end
 
-    it "fails if you try to forward a message" do
+    it "overrides recipient if you try to forward a message" do
       previous = create(:message)
       other_user = create(:user)
       login_as(previous.recipient)
       post :create, message: {subject: 'Re: ' + previous.subject, message: 'response', recipient_id: other_user.id}, parent_id: previous.id
-      expect(flash[:error]).to eq('Forwarding is not yet implemented.')
-      expect(assigns(:message).recipient_id).to be_nil
-      expect(assigns(:page_title)).to eq('Compose Message')
+      expect(assigns(:message).recipient_id).to eq(previous.sender_id)
     end
 
     it "fails with invalid parent" do

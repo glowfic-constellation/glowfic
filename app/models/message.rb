@@ -8,7 +8,7 @@ class Message < ActiveRecord::Base
   after_create :set_thread_id
 
   def visible_to?(user)
-    [sender_id, recipient_id].include?(user.id)
+    user_ids.include?(user.id)
   end
   
   def unempty_subject
@@ -22,6 +22,10 @@ class Message < ActiveRecord::Base
 
   def box(user)
     @box ||= (sender_id == user.id ? 'outbox' : 'inbox')
+  end
+
+  def user_ids
+    [sender_id, recipient_id]
   end
 
   private
