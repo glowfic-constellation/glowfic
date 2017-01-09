@@ -53,6 +53,14 @@ RSpec.describe MessagesController do
       expect(assigns(:message).recipient_id).to eq(recipient.id)
     end
 
+    it "handles invalid parent" do
+      login
+      get :new, reply_id: -1
+      expect(flash[:error]).to eq('Message parent could not be found.')
+      expect(assigns(:message).parent_id).to be_nil
+      expect(assigns(:message).subject).to be_blank
+    end
+
     it "handles provided parent" do
       previous = create(:message)
       login_as(previous.sender)
@@ -62,12 +70,24 @@ RSpec.describe MessagesController do
       expect(assigns(:message).subject).to eq("Re: #{previous.subject}")
     end
 
-    it "ignores provided parents without permission" do
+    it "handles replying to your own message" do
+      original = create(:message)
+      previous = create(:message, parent_id: original.id, thread_id: original.id, recipient_id: original.sender_id, sender_id: original.recipient_id)
+      login_as(previous.sender)
+      get :new, reply_id: previous.id
+      expect(response.status).to eq(200)
+      expect(assigns(:message).parent_id).to eq(previous.id)
+      expect(assigns(:message).subject).to eq("Re: #{previous.subject}")
+      expect(assigns(:message).recipient_id).to eq(previous.recipient_id)
+    end
+
+    it "rejects provided parents without permission" do
       previous = create(:message)
       login
       get :new, reply_id: previous.id
       expect(response.status).to eq(200)
       expect(previous).not_to be_visible_to(assigns(:current_user))
+      expect(flash[:error]).to eq('You do not have permission to reply to that message.')
       expect(assigns(:message).parent_id).to be_nil
       expect(assigns(:message).subject).to be_blank
     end
@@ -83,6 +103,67 @@ RSpec.describe MessagesController do
   end
 
   describe "POST create" do
+    it "requires login" do
+      get :new
+      expect(response).to redirect_to(root_url)
+      expect(flash[:error]).to eq("You must be logged in to view that page.")
+    end
+
+    it "fails with invalid params" do
+      login
+      post :create, message: {}
+      expect(response.status).to eq(200)
+      expect(flash[:error][:message]).to eq("Your message could not be sent because of the following problems:")
+      expect(assigns(:page_title)).to eq('Compose Message')
+    end
+
+    it "succeeds with valid recipient" do
+      login
+      recipient = create(:user)
+      post :create, message: {subject: 'test', message: 'testing', recipient_id: recipient.id}
+      expect(response).to redirect_to(messages_path(view: 'inbox'))
+      expect(flash[:success]).to eq('Message sent!')
+    end
+
+    it "overrides recipient if you try to forward a message" do
+      previous = create(:message)
+      other_user = create(:user)
+      login_as(previous.recipient)
+      post :create, message: {subject: 'Re: ' + previous.subject, message: 'response', recipient_id: other_user.id}, parent_id: previous.id
+      expect(assigns(:message).recipient_id).to eq(previous.sender_id)
+    end
+
+    it "fails with invalid parent" do
+      login
+      post :create, message: {subject: 'Re: Fake', message: 'response'}, parent_id: -1
+      expect(flash[:error]).to eq('Parent could not be found.')
+      expect(assigns(:message).parent).to be_nil
+    end
+
+    it "succeeds with valid parent" do
+      previous = create(:message)
+      login_as(previous.recipient)
+      post :create, message: {subject: 'Re: ' + previous.subject, message: 'response'}, parent_id: previous.id
+      expect(response).to redirect_to(messages_path(view: 'inbox'))
+      expect(flash[:success]).to eq('Message sent!')
+      expect(assigns(:message).sender_id).to eq(previous.recipient_id)
+      expect(assigns(:message).recipient_id).to eq(previous.sender_id)
+    end
+
+    it "succeeds when replying to yourself" do
+      previous = create(:message)
+      login_as(previous.sender)
+      post :create, message: {subject: 'Re: ' + previous.subject, message: 'response'}, parent_id: previous.id
+      expect(response).to redirect_to(messages_path(view: 'inbox'))
+      expect(flash[:success]).to eq('Message sent!')
+      expect(assigns(:message).sender_id).to eq(previous.sender_id)
+      expect(assigns(:message).recipient_id).to eq(previous.recipient_id)
+    end
+
+    context "preview" do
+      skip
+    end
+
     it "has more tests" do
       skip
     end
@@ -133,12 +214,6 @@ RSpec.describe MessagesController do
       login_as(message.recipient)
       expect_any_instance_of(Message).not_to receive(:update_attributes)
       get :show, id: message.id
-    end
-  end
-
-  describe "PUT update" do
-    it "has more tests" do
-      skip
     end
   end
 

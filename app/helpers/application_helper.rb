@@ -107,7 +107,7 @@ module ApplicationHelper
     Sanitize.fragment(desc, elements: ['a'], attributes: {'a' => ['href']})
   end
 
-  def sanitize_post_content(content)
+  def sanitize_written_content(content)
     content = (content.include?("<p>".freeze) || content[/<br ?\/?>/]) ? content : content.gsub("\n".freeze,"<br/>".freeze)
     Sanitize.fragment(content, Glowfic::POST_CONTENT_SANITIZER)
   end

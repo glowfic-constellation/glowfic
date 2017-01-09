@@ -43,7 +43,7 @@
               = image_tag "/images/link.png", title: 'Permalink', alt: 'Permalink'
             = link_to post_path(@post, unread: true), method: :put do
               = image_tag '/images/eye.png', title: 'Mark Unread Here', alt: 'Eye'
-          .post-content= sanitize_post_content(@post.content).html_safe
+          .post-content= sanitize_written_content(@post.content).html_safe
         .post-footer
           .right-align>
             .padding-5> Posted #{pretty_time(@post.created_at, ApplicationHelper::TIME_FORMAT)}

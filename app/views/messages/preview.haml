@@ -1,0 +1,6 @@
+.post-header
+  .padding-15
+    %span= @message.unempty_subject
+= render partial: 'messages/single', locals: { message: @message }
+%br
+= render partial: 'editor'
