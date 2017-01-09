@@ -123,6 +123,7 @@ FactoryGirl.define do
   factory :message do
     sender
     recipient
+    message 'test message'
     sequence :subject do |n|
       "Message#{n}"
     end
