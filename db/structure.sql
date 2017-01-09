@@ -911,7 +911,8 @@ CREATE TABLE users (
     default_editor character varying(255) DEFAULT 'rtf'::character varying,
     time_display character varying(255) DEFAULT '%b %d, %Y %l:%M %p'::character varying,
     salt_uuid character varying(255),
-    unread_opened boolean DEFAULT false
+    unread_opened boolean DEFAULT false,
+    hide_warnings boolean DEFAULT false
 );
 
 
@@ -1784,3 +1785,5 @@ INSERT INTO schema_migrations (version) VALUES ('20161126195558');
 INSERT INTO schema_migrations (version) VALUES ('20161129195022');
 
 INSERT INTO schema_migrations (version) VALUES ('20170103184309');
+
+INSERT INTO schema_migrations (version) VALUES ('20170109000120');
