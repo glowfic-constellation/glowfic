@@ -8,7 +8,7 @@
       = image_tag "/images/hourglass.png", class: 'vmid', title: "Thread On Hiatus"
     - if post.abandoned?
       = image_tag "/images/book_grey.png", class: 'vmid', title: "Thread Abandoned"
-    - if post.content_warnings.exists?
+    - if !current_user.try(:hide_warnings) && post.content_warnings.exists?
       = image_tag "/images/exclamation.png", class: 'vmid', title: "Content Warning: " + post.content_warnings.pluck(:name).join(', '), alt: '!'
   %td.post-subject{class: klass}
     - if logged_in? && (@show_unread || (!@unread_ids.nil? && @unread_ids.include?(post.id)))

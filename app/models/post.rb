@@ -98,6 +98,7 @@ class Post < ActiveRecord::Base
   end
 
   def show_warnings_for?(user)
+    return false if user.hide_warnings
     !(view_for(user).try(:warnings_hidden))
   end
 
