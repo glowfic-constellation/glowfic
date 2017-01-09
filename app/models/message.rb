@@ -6,7 +6,6 @@ class Message < ActiveRecord::Base
   validates_presence_of :sender, :recipient
 
   after_create :set_thread_id, :notify_recipient
-  attr_accessor :skip_notify
 
   def visible_to?(user)
     user_ids.include?(user.id)
@@ -37,7 +36,6 @@ class Message < ActiveRecord::Base
   end
 
   def notify_recipient
-    return if skip_notify
     return if recipient_id == sender_id
     return unless recipient.email.present?
     return unless recipient.email_notifications?

@@ -4,12 +4,6 @@ RSpec.describe Message do
   describe "#notify_recipient" do
     before(:each) do ResqueSpec.reset! end
 
-    it "does nothing if skip_notify is set" do
-      notified_user = create(:user, email_notifications: true)
-      create(:message, recipient: notified_user, skip_notify: true)
-      expect(UserMailer).to have_queue_size_of(0)
-    end
-
     it "sends" do
       message = create(:message)
       expect(message.recipient.email_notifications).not_to be_true
