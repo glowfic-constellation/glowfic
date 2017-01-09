@@ -135,6 +135,13 @@ RSpec.describe MessagesController do
       expect(assigns(:page_title)).to eq('Compose Message')
     end
 
+    it "fails with invalid parent" do
+      login
+      post :create, message: {subject: 'Re: Fake', message: 'response'}, parent_id: -1
+      expect(flash[:error]).to eq('Parent could not be found.')
+      expect(assigns(:message).parent).to be_nil
+    end
+
     it "succeeds with valid parent" do
       previous = create(:message)
       login_as(previous.recipient)

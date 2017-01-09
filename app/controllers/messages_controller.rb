@@ -48,14 +48,24 @@ class MessagesController < ApplicationController
 
     if params[:parent_id].present?
       @message.parent = Message.find_by_id(params[:parent_id])
-      @message.parent = nil unless @message.parent.visible_to?(current_user)
-      @message.thread_id = @message.parent.try(:thread_id) || @message.parent.try(:id)
-      @message.recipient_id ||= @message.parent.try(:sender_id)
+
+      unless @message.parent && @message.parent.visible_to?(current_user)
+        @message.parent = nil
+        flash.now[:error] = "Parent could not be found."
+        use_javascript('messages')
+        @page_title = 'Compose Message'
+        render :action => :new
+        return
+      end
+
+      @message.thread_id = @message.parent.thread_id
+      @message.recipient_id ||= @message.parent.sender_id
     end
 
     if @message.parent
       if @message.recipient_id != @message.parent.sender_id && @message.recipient_id != @message.parent.recipient_id
         # this message is attemptedly not actually part of the conversation
+        # so someone sent invalid data to the form, or something weird happened
         @message.recipient_id = nil
         flash.now[:error] = "Forwarding is not yet implemented."
         use_javascript('messages')
@@ -63,6 +73,7 @@ class MessagesController < ApplicationController
         render :action => :new
         return
       else
+        # set the recipient to whoever's not sending it of the conversation partners
         @message.recipient_id = if @message.sender_id == @message.parent.sender_id
           @message.parent.recipient_id
         else
