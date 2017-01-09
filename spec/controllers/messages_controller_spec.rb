@@ -122,7 +122,7 @@ RSpec.describe MessagesController do
       login
       recipient = create(:user)
       post :create, message: {subject: 'test', message: 'testing', recipient_id: recipient.id}
-      expect(response).to redirect_to(messages_path(view: 'inbox'))
+      expect(response).to redirect_to(messages_url(view: 'inbox'))
       expect(flash[:success]).to eq('Message sent!')
     end
 
@@ -144,7 +144,9 @@ RSpec.describe MessagesController do
     it "succeeds with valid parent" do
       previous = create(:message)
       login_as(previous.recipient)
+      expect(Message.count).to eq(1)
       post :create, message: {subject: 'Re: ' + previous.subject, message: 'response'}, parent_id: previous.id
+      expect(Message.count).to eq(2)
       expect(response).to redirect_to(messages_path(view: 'inbox'))
       expect(flash[:success]).to eq('Message sent!')
       expect(assigns(:message).sender_id).to eq(previous.recipient_id)
@@ -154,7 +156,9 @@ RSpec.describe MessagesController do
     it "succeeds when replying to yourself" do
       previous = create(:message)
       login_as(previous.sender)
+      expect(Message.count).to eq(1)
       post :create, message: {subject: 'Re: ' + previous.subject, message: 'response'}, parent_id: previous.id
+      expect(Message.count).to eq(2)
       expect(response).to redirect_to(messages_path(view: 'inbox'))
       expect(flash[:success]).to eq('Message sent!')
       expect(assigns(:message).sender_id).to eq(previous.sender_id)
