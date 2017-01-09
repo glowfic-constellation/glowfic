@@ -6,13 +6,8 @@ class GenerateFlatPostJob < BaseJob
     return unless post = Post.find_by_id(post_id)
 
     lock_key = self.lock_key(post_id)
-    redo_key = self.retry_key(post_id)
 
     begin
-      # frequent tag check
-      $redis.set(redo_key, true) and return if $redis.get(lock_key)
-      $redis.set(lock_key, true)
-
       replies = post.replies
         .select('replies.*, characters.name, characters.screenname, icons.keyword, icons.url, users.username')
         .joins(:user)
@@ -29,10 +24,6 @@ class GenerateFlatPostJob < BaseJob
       flat_post.save
 
       $redis.del(lock_key)
-      if $redis.get(redo_key)
-        $redis.del(redo_key)
-        Resque.enqueue(self, post_id)
-      end
     rescue Exception => e
       $redis.del(lock_key)
       raise e # jobs are automatically retried
@@ -43,7 +34,8 @@ class GenerateFlatPostJob < BaseJob
     "lock.generate_flat_posts.#{post_id}"
   end
 
-  def self.retry_key(post_id)
-    "generate_flat_posts.#{post_id}.redo"
+  def self.notify_exception(exception, *args)
+    $redis.del(self.lock_key(args[0]))
+    super
   end
 end

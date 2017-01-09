@@ -6,12 +6,18 @@ RSpec.describe GenerateFlatPostJob do
     GenerateFlatPostJob.perform(-1)
   end
 
-  it "sets redis key and quits if lock present" do
+  it "quits if lock present" do
     post = create(:post)
-    expect_any_instance_of(ActionView::Base).not_to receive(:render)
     $redis.set(GenerateFlatPostJob.lock_key(post.id), true)
-    GenerateFlatPostJob.perform(post.id)
-    expect($redis.get(GenerateFlatPostJob.lock_key(post.id))).to be_true
+    create(:reply)
+    expect(GenerateFlatPostJob).not_to have_queued(post.id).in(:high)
+  end
+
+  it "deletes key when retry gives up" do
+    exc = Exception.new
+    $redis.set(GenerateFlatPostJob.lock_key(2), true)
+    GenerateFlatPostJob.notify_exception(exc, 2)
+    expect($redis.get(GenerateFlatPostJob.lock_key(2))).to be_nil
   end
 
   it "regenerates content" do
@@ -26,6 +32,7 @@ RSpec.describe GenerateFlatPostJob do
 
   it "unsets key even if exception is raised" do
     post = create(:post)
+    $redis.set(GenerateFlatPostJob.lock_key(post.id), true)
 
     expect_any_instance_of(FlatPost).to receive(:save).and_raise(Exception)
     ResqueSpec.reset!
@@ -38,17 +45,5 @@ RSpec.describe GenerateFlatPostJob do
 
     expect(GenerateFlatPostJob).to have_queued(post.id).in(:high)
     expect($redis.get(GenerateFlatPostJob.lock_key(post.id))).to be_nil
-  end
-
-  it "retries if the retry key is set" do
-    post = create(:post)
-    key = GenerateFlatPostJob.retry_key(post.id)
-    $redis.set(key, true)
-
-    GenerateFlatPostJob.perform(post.id)
-
-    expect(post.flat_post.reload.content).not_to be_nil
-    expect($redis.get(key)).to be_nil
-    expect(GenerateFlatPostJob).to have_queued(post.id).in(:high)
   end
 end
