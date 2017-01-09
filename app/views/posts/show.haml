@@ -8,6 +8,8 @@
   &raquo;
   %b= @post.subject
 
+%span.time-loaded= pretty_time(DateTime.now.in_time_zone)
+
 - if @warnings.present?
   - content_for :flashes do
     .flash.error
