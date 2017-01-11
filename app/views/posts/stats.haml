@@ -19,7 +19,7 @@
   %tbody
     %tr
       %td.sub.width-150 Authors
-      %td.even= @post.authors.map { |author| link_to author.username, user_path(author) }.join(', ').html_safe
+      %td.even= @post.authors.sort_by { |author| author.username.downcase }.map { |author| link_to author.username, user_path(author) }.join(', ').html_safe
     - if @post.settings.present?
       %tr
         %td.sub.width-150 Setting

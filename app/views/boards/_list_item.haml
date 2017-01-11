@@ -5,5 +5,5 @@
     - if board.open_to_anyone?
       Anyone
     - else
-      = board.writers.map { |u| link_to u.username, user_path(u) }.join(', ').html_safe
+      = board.writers.sort_by{ |author| author.username.downcase }.map { |u| link_to u.username, user_path(u) }.join(', ').html_safe
   %td.padding-10.board-time{class: klass}= pretty_time(board.posts.order('tagged_at desc').first.try(:tagged_at))

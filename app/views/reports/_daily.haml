@@ -47,7 +47,7 @@
                 %br
                 %span.details= sanitize_post_description(post.description).html_safe
             %td.vtop.post-board{class: klass}= link_to post.board.name, board_path(post.board)
-            %td.vtop.post-authors{class: klass}= post.authors.map { |author| link_to fun_name(author), user_path(author) }.join(', ').html_safe
+            %td.vtop.post-authors{class: klass}= post.authors.sort_by { |author| author.username.downcase }.map { |author| link_to fun_name(author), user_path(author) }.join(', ').html_safe
             %td.vtop.centered.post-replies{class: klass}= post.replies.count
             %td.vtop.centered.post-replies{class: klass}= replies_today.count
             %td.vtop.centered.post-time{class: klass}= post.tagged_at.strftime("%l:%M %p")
