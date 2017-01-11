@@ -63,6 +63,17 @@ RSpec.describe UsersController do
       expect(controller.gon.min).to eq(User::MIN_USERNAME_LEN)
       expect(controller.gon.max).to eq(User::MAX_USERNAME_LEN)
     end
+
+    it "signs you up" do
+      user = build(:user).attributes.merge(password: 'testpassword', password_confirmation: 'testpassword')
+      expect {
+        post :create, {secret: "ALLHAILTHECOIN"}.merge(user: user)
+      }.to change{User.count}.by(1)
+      expect(response).to redirect_to(root_url)
+      expect(flash[:success]).to eq("User created! You have been logged in.")
+      expect(assigns(:current_user)).not_to be_nil
+      expect(assigns(:current_user).username).to eq(user['username'])
+    end
   end
 
   describe "GET show" do
