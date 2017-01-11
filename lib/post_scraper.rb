@@ -36,6 +36,7 @@ class PostScraper < Object
       end
       finalize_post_data
     end
+    Resque.enqueue(GenerateFlatPostJob, @post.id)
   end
 
   private
@@ -95,6 +96,7 @@ class PostScraper < Object
 
       @reply.skip_notify = true
       @reply.skip_post_update = true
+      @reply.skip_regenerate = true
       @reply.is_import = true
       @reply.save!
     end

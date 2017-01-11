@@ -13,26 +13,24 @@ response = HTTParty.get('http://alicornutopia.dreamwidth.org/7441.html')
 html_doc = Nokogiri::HTML(response.body)
 
 main_list = html_doc.css('.entry-content i')
-Post.transaction do
-  main_list.each do |section|
-    # restrict to specified section if provided
-    section_index += 1
-    next if section_number > 0 && section_index != section_number
+main_list.each do |section|
+  # restrict to specified section if provided
+  section_index += 1
+  next if section_number > 0 && section_index != section_number
 
-    # don't reprocess already processed sections
-    next if BoardSection.where(board_id: board_id, section_order: section_index).exists?
+  # don't reprocess already processed sections
+  next if BoardSection.where(board_id: board_id, section_order: section_index).exists?
 
-    # don't crash on final empty section
-    section_title = section.content.strip
-    next unless section_title.present?
-    pp "Importing section #{section_title}"
+  # don't crash on final empty section
+  section_title = section.content.strip
+  next unless section_title.present?
+  pp "Importing section #{section_title}"
 
-    links = section.parent.css('li')
-    board_section = BoardSection.create!(board_id: board_id, name: section_title, section_order: section_index, status: 1)
-    links.each_with_index do |link, index|
-      url = link.at_css('a').attribute('href').value
-      scraper = PostScraper.new(url, board_id, board_section.id)
-      scraper.scrape
-    end
+  links = section.parent.css('li')
+  board_section = BoardSection.create!(board_id: board_id, name: section_title, section_order: section_index, status: 1)
+  links.each_with_index do |link, index|
+    url = link.at_css('a').attribute('href').value
+    scraper = PostScraper.new(url, board_id, board_section.id)
+    scraper.scrape
   end
 end
