@@ -69,6 +69,15 @@ $(document).ready(function() {
 
     displayGallery(new_id);
   });
+
+  $("#character-default-clear").click(function(){
+    $(".selected-icon").removeClass('selected-icon');
+    if (gon.character_id) {
+      $.post('/characters/'+gon.character_id+'/icon', {'icon_id':''}, function(resp) {});
+    } else {
+      $("#character_default_icon_id").val('');
+    }
+  });
 });
 
 function displayGallery(new_id){
