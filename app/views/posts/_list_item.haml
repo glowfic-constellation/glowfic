@@ -36,7 +36,7 @@
               = link_to (index), post_path(post, page: index)
   - unless local_assigns[:hide_continuity]
     %td.post-board{class: klass}= link_to post.board_name, board_path(post.board_id)
-  %td.post-authors{class: klass}= post.authors.map { |author| link_to author.username, user_path(author) }.join(', ').html_safe
+  %td.post-authors{class: klass}= post.authors.sort_by { |author| author.username.downcase }.map { |author| link_to author.username, user_path(author) }.join(', ').html_safe
   %td.width-70.post-replies{class: klass}= replies_count
   - if logged_in? && local_assigns[:show_unread_count]
     %td.width-70{class: klass}
