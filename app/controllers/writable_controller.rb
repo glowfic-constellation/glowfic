@@ -35,16 +35,20 @@ class WritableController < ApplicationController
     per = per_page
     cur_page ||= page
     @replies = @post.replies
+    @paginate_params = {controller: 'posts', action: 'show', id: @post.id}
 
     if params[:at_id].present?
       reply = if params[:at_id] == 'unread' && logged_in?
         @unread = @post.first_unread_for(current_user)
+        @paginate_params['at_id'] = @unread.id
+        @unread
       else
         Reply.find_by_id(params[:at_id].to_i)
       end
 
       if reply && reply.post_id == @post.id
         @replies = @replies.where('replies.id >= ?', reply.id)
+        self.page = cur_page = cur_page.to_i
       else
         flash[:error] = "Could not locate specified reply, defaulting to first page."
         self.page = cur_page = 1
@@ -76,7 +80,6 @@ class WritableController < ApplicationController
       .joins("LEFT OUTER JOIN icons ON icons.id = replies.icon_id")
       .order('id asc')
       .paginate(page: cur_page, per_page: per)
-    @paginate_params = {controller: 'posts', action: 'show', id: @post.id}
     redirect_to post_path(@post, page: @replies.total_pages, per_page: per) and return if cur_page > @replies.total_pages
     use_javascript('paginator')
 
