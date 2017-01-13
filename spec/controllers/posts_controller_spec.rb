@@ -135,6 +135,68 @@ RSpec.describe PostsController do
       end
     end
 
+    context "with at_id" do
+      let(:post) { create(:post) }
+      before(:each) do
+        5.times do create(:reply, post: post) end
+      end
+
+      it "shows error if reply not found" do
+        get :show, id: post.id, at_id: -1
+        expect(flash[:error]).to eq("Could not locate specified reply, defaulting to first page.")
+        expect(assigns(:replies).count).to eq(5)
+      end
+
+      it "shows error if unread not logged in" do
+        get :show, id: post.id, at_id: 'unread'
+        expect(flash[:error]).to eq("Could not locate specified reply, defaulting to first page.")
+        expect(assigns(:replies).count).to eq(5)
+      end
+
+      it "shows error if no unread" do
+        user = create(:user)
+        post.mark_read(user)
+        login_as(user)
+        get :show, id: post.id, at_id: 'unread'
+        expect(flash[:error]).to eq("Could not locate specified reply, defaulting to first page.")
+        expect(assigns(:replies).count).to eq(5)
+      end
+
+      it "shows error when reply is wrong post" do
+        get :show, id: post.id, at_id: create(:reply).id
+        expect(flash[:error]).to eq("Could not locate specified reply, defaulting to first page.")
+        expect(assigns(:replies).count).to eq(5)
+      end
+
+      it "works for specified reply" do
+        last_reply = post.replies.order('id asc').last
+        get :show, id: post.id, at_id: last_reply.id
+        expect(assigns(:replies)).to eq([last_reply])
+        expect(assigns(:replies).current_page.to_i).to eq(1)
+        expect(assigns(:replies).per_page).to eq(25)
+      end
+
+      it "works for specified reply with page settings" do
+        second_last_reply = post.replies.order('id asc').last(2).first
+        get :show, id: post.id, at_id: second_last_reply.id, per_page: 1
+        expect(assigns(:replies)).to eq([second_last_reply])
+        expect(assigns(:replies).current_page.to_i).to eq(1)
+        expect(assigns(:replies).per_page).to eq(1)
+      end
+
+      it "works for unread" do
+        third_reply = post.replies.order('id asc').limit(3).last
+        second_last_reply = post.replies.order('id asc').last(2).first
+        user = create(:user)
+        post.mark_read(user, third_reply.created_at)
+        expect(post.first_unread_for(user)).to eq(second_last_reply)
+        login_as(user)
+        get :show, id: post.id, at_id: 'unread', per_page: 1
+        expect(assigns(:replies)).to eq([second_last_reply])
+        expect(assigns(:unread)).to eq(second_last_reply)
+      end
+    end
+
     # TODO WAY more tests
   end
 

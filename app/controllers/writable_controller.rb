@@ -25,20 +25,6 @@ class WritableController < ApplicationController
   end
 
   def show_post(cur_page=nil)
-    replies = @post.replies
-    # Can resurrect when threading exists properly; for now, skip the database query.
-    # @threaded = false
-    # replies = if @post.replies.where('thread_id is not null').count > 1
-    #   @threaded = true
-    #   if params[:thread_id].present?
-    #     @replies = @post.replies.where(thread_id: params[:thread_id])
-    #   else
-    #     @post.replies.where('id = thread_id')
-    #   end
-    # else
-    #   @post.replies
-    # end
-
     if page.to_i == 0
       unless VALID_PAGES.include?(page)
         flash[:error] = "Page not recognized, defaulting to page 1."
@@ -48,7 +34,22 @@ class WritableController < ApplicationController
 
     per = per_page
     cur_page ||= page
-    if cur_page == 'last'
+    @replies = @post.replies
+
+    if params[:at_id].present?
+      reply = if params[:at_id] == 'unread' && logged_in?
+        @unread = @post.first_unread_for(current_user)
+      else
+        Reply.find_by_id(params[:at_id].to_i)
+      end
+
+      if reply && reply.post_id == @post.id
+        @replies = @replies.where('replies.id >= ?', reply.id)
+      else
+        flash[:error] = "Could not locate specified reply, defaulting to first page."
+        self.page = cur_page = 1
+      end
+    elsif cur_page == 'last'
       self.page = cur_page = @post.replies.paginate(per_page: per, page: 1).total_pages
     elsif cur_page == 'unread'
       if logged_in?
@@ -68,7 +69,7 @@ class WritableController < ApplicationController
       self.page = cur_page = cur_page.to_i
     end
 
-    @replies = @post.replies
+    @replies = @replies
       .select('replies.*, characters.name, characters.screenname, icons.keyword, icons.url, users.username')
       .joins(:user)
       .joins("LEFT OUTER JOIN characters ON characters.id = replies.character_id")
