@@ -184,6 +184,15 @@ RSpec.describe PostsController do
         expect(assigns(:replies).per_page).to eq(1)
       end
 
+      it "works for specified reply with page settings" do
+        last_reply = post.replies.order('id asc').last
+        second_last_reply = post.replies.order('id asc').last(2).first
+        get :show, id: post.id, at_id: second_last_reply.id, per_page: 1, page: 2
+        expect(assigns(:replies)).to eq([last_reply])
+        expect(assigns(:replies).current_page.to_i).to eq(2)
+        expect(assigns(:replies).per_page).to eq(1)
+      end
+
       it "works for unread" do
         third_reply = post.replies.order('id asc').limit(3).last
         second_last_reply = post.replies.order('id asc').last(2).first
@@ -194,6 +203,7 @@ RSpec.describe PostsController do
         get :show, id: post.id, at_id: 'unread', per_page: 1
         expect(assigns(:replies)).to eq([second_last_reply])
         expect(assigns(:unread)).to eq(second_last_reply)
+        expect(assigns(:paginate_params)['at_id']).to eq(second_last_reply.id)
       end
     end
 

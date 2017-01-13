@@ -40,7 +40,7 @@ class WritableController < ApplicationController
     if params[:at_id].present?
       reply = if params[:at_id] == 'unread' && logged_in?
         @unread = @post.first_unread_for(current_user)
-        @paginate_params['at_id'] = @unread.id
+        @paginate_params['at_id'] = @unread.try(:id)
         @unread
       else
         Reply.find_by_id(params[:at_id].to_i)
