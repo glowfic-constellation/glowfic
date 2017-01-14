@@ -436,7 +436,7 @@ RSpec.describe PostsController do
         reply = create(:reply, post: post)
         time = Time.now
         post.mark_read(post.user, time)
-        expect(post.last_read(post.user).time).to be_the_same_time_as(time)
+        expect(post.last_read(post.user)).to be_the_same_time_as(time)
         login_as(post.user)
 
         put :update, id: post.id, unread: true, at_id: unread_reply.id

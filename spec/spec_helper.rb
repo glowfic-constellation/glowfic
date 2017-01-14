@@ -110,7 +110,19 @@ end
 
 RSpec::Matchers.define :be_the_same_time_as do |expected|
   match do |actual|
-    expected.to_s(:db) == actual.to_s(:db)
+    expected.in_time_zone.to_s(:iso8601) == actual.in_time_zone.to_s(:iso8601)
+  end
+
+  failure_message do |actual|
+    "expected #{actual} to be the same time as #{expected}\n" +
+    "compared: #{actual.in_time_zone.to_s(:iso8601)}\n" +
+    "    with: #{expected.in_time_zone.to_s(:iso8601)}"
+  end
+
+  failure_message_when_negated do |actual|
+    "expected #{actual} not to be the same time as #{expected}\n" +
+    "compared: #{actual.in_time_zone.to_s(:iso8601)}\n" +
+    "    with: #{expected.in_time_zone.to_s(:iso8601)}"
   end
 end
 
