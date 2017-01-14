@@ -34,7 +34,8 @@ RSpec.describe ReportsController do
       expect(response).to have_http_status(200)
       expect(assigns(:board_views)).to be_empty
       expect(assigns(:opened_ids)).to match_array([view.post_id])
-      expect(assigns(:opened_posts).map(&:read_at)).to match_array([view.read_at])
+      expect(assigns(:opened_posts).length).to eq(1)
+      expect(assigns(:opened_posts).first.read_at).to be_the_same_time_as(view.read_at)
     end
 
     it "succeeds with monthly" do
