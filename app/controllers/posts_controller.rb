@@ -83,7 +83,6 @@ class PostsController < WritableController
   end
 
   def create
-    gon.original_content = params[:post][:content]
     preview(:post, posts_path) and return if params[:button_preview].present?
 
     @post = Post.new(params[:post])
@@ -98,6 +97,7 @@ class PostsController < WritableController
       flash.now[:error] = {}
       flash.now[:error][:array] = @post.errors.full_messages
       flash.now[:error][:message] = "Your post could not be saved because of the following problems:"
+      gon.original_content = params[:post][:content]
       editor_setup
       @page_title = 'New Post'
       render :action => :new
@@ -116,8 +116,6 @@ class PostsController < WritableController
   end
 
   def preview(method, path)
-    build_template_groups
-
     @written = Post.new(params[:post])
     @post = @written
     @written.user = current_user
@@ -127,7 +125,7 @@ class PostsController < WritableController
     editor_setup
 
     gon.original_content = params[:post][:content] if params[:post]
-    @page_title = 'Previewing: ' + @post.subject
+    @page_title = 'Previewing: ' + @post.subject.to_s
     render action: :preview
   end
 
@@ -296,7 +294,7 @@ class PostsController < WritableController
 
   def create_new_tags
     if @post.setting_ids.present?
-      tags = @post.setting_ids.select { |id| id.to_i.zero? }.reject(&:blank?).compact.uniq
+      tags = @post.setting_ids.select { |id| id.to_i.zero? }.reject(&:blank?).uniq
       @post.setting_ids -= tags
       existing_tags = Setting.where(name: tags)
       @post.setting_ids += existing_tags.map(&:id)
@@ -305,7 +303,7 @@ class PostsController < WritableController
     end
 
     if @post.warning_ids.present?
-      tags = @post.warning_ids.select { |id| id.to_i.zero? }.reject(&:blank?).compact.uniq
+      tags = @post.warning_ids.select { |id| id.to_i.zero? }.reject(&:blank?).uniq
       @post.warning_ids -= tags
       existing_tags = ContentWarning.where(name: tags)
       @post.warning_ids += existing_tags.map(&:id)
@@ -314,7 +312,7 @@ class PostsController < WritableController
     end
 
     if @post.tag_ids.present?
-      tags = @post.tag_ids.select { |id| id.to_i.zero? }.reject(&:blank?).compact.uniq
+      tags = @post.tag_ids.select { |id| id.to_i.zero? }.reject(&:blank?).uniq
       @post.tag_ids -= tags
       existing_tags = Tag.where(name: tags, type: nil)
       @post.tag_ids += existing_tags.map(&:id)

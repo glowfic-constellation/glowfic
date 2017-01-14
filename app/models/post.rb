@@ -159,6 +159,7 @@ class Post < ActiveRecord::Base
   private
 
   def valid_board
+    return unless board_id.present?
     return unless new_record? || board_id_changed?
     unless board.open_to?(user)
       errors.add(:board, "is invalid – you must be able to write in it")
@@ -174,7 +175,7 @@ class Post < ActiveRecord::Base
   def update_tag_list
     return unless tag_ids.present? || setting_ids.present? || warning_ids.present?
 
-    updated_ids = (tag_ids + setting_ids + warning_ids - ['']).map(&:to_i).reject(&:zero?).uniq.compact
+    updated_ids = ((tag_ids || []) + (setting_ids || []) + (warning_ids || []) - ['']).map(&:to_i).reject(&:zero?).uniq.compact
     existing_ids = post_tags.map(&:tag_id)
 
     PostTag.where(post_id: id, tag_id: (existing_ids - updated_ids)).destroy_all

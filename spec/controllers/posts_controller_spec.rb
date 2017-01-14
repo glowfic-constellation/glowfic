@@ -60,7 +60,105 @@ RSpec.describe PostsController do
   end
 
   describe "POST create" do
-    skip
+    it "requires login" do
+      post :create
+      expect(response).to redirect_to(root_url)
+      expect(flash[:error]).to eq("You must be logged in to view that page.")
+    end
+
+    context "preview" do
+      it "sets expected variables" do
+        user = create(:user)
+        login_as(user)
+        post :create, button_preview: true, post: {subject: 'test', content: 'orign'}
+        expect(response).to render_template(:preview)
+        expect(assigns(:written)).to be_an_instance_of(Post)
+        expect(assigns(:written)).to be_a_new_record
+        expect(assigns(:written).user).to eq(user)
+        expect(assigns(:post)).to eq(assigns(:written))
+        expect(assigns(:url)).to eq(posts_path)
+        expect(assigns(:method)).to eq(:post)
+        expect(assigns(:page_title)).to eq('Previewing: test')
+        expect(controller.gon.original_content).to eq('orign')
+        # TODO editor setup
+      end
+
+      it "does not crash without arguments" do
+        user = create(:user)
+        login_as(user)
+        post :create, button_preview: true
+        expect(response).to render_template(:preview)
+        expect(assigns(:written)).to be_an_instance_of(Post)
+        expect(assigns(:written)).to be_a_new_record
+        expect(assigns(:written).user).to eq(user)
+      end
+    end
+
+    it "creates new tags" do
+      existing_name = create(:tag)
+      existing_case = create(:tag)
+      tags = ['atag', 'atag', create(:tag).id, '', existing_name.name, existing_case.name.upcase]
+      login
+      expect {
+        post :create, post: {subject: 'a', board_id: create(:board).id, tag_ids: tags}
+      }.to change{Tag.count}.by(1)
+      expect(Tag.last.name).to eq('atag')
+      expect(assigns(:post).tags.count).to eq(4)
+    end
+
+    it "creates new settings" do
+      existing_name = create(:setting)
+      existing_case = create(:setting)
+      tags = ['atag', 'atag', create(:setting).id, '', existing_name.name, existing_case.name.upcase]
+      login
+      expect {
+        post :create, post: {subject: 'a', board_id: create(:board).id, setting_ids: tags}
+      }.to change{Setting.count}.by(1)
+      expect(Setting.last.name).to eq('atag')
+      expect(assigns(:post).settings.count).to eq(4)
+    end
+
+    it "creates new content warnings" do
+      existing_name = create(:content_warning)
+      existing_case = create(:content_warning)
+      tags = ['atag', 'atag', create(:content_warning).id, '', existing_name.name, existing_case.name.upcase]
+      login
+      expect {
+        post :create, post: {subject: 'a', board_id: create(:board).id, warning_ids: tags}
+      }.to change{ContentWarning.count}.by(1)
+      expect(ContentWarning.last.name).to eq('atag')
+      expect(assigns(:post).content_warnings.count).to eq(4)
+    end
+
+    it "handles invalid posts" do
+      user = create(:user)
+      login_as(user)
+      post :create, post: {subject: 'asubjct', content: 'acontnt'}
+      expect(response).to render_template(:new)
+      expect(flash[:error][:message]).to eq("Your post could not be saved because of the following problems:")
+      expect(assigns(:post)).not_to be_persisted
+      expect(assigns(:post).user).to eq(user)
+      expect(assigns(:post).subject).to eq('asubjct')
+      expect(assigns(:post).content).to eq('acontnt')
+      expect(assigns(:page_title)).to eq('New Post')
+      expect(controller.gon.original_content).to eq('acontnt')
+      # TODO editor_setup
+    end
+
+    it "creates a post" do
+      user = create(:user)
+      login_as(user)
+      expect {
+        post :create, post: {subject: 'asubjct', content: 'acontnt', board_id: create(:board).id}
+      }.to change{Post.count}.by(1)
+      expect(response).to redirect_to(post_path(assigns(:post)))
+      expect(flash[:success]).to eq("You have successfully posted.")
+      expect(assigns(:post)).to be_persisted
+      expect(assigns(:post).user).to eq(user)
+      expect(assigns(:post).last_user).to eq(user)
+      expect(assigns(:post).subject).to eq('asubjct')
+      expect(assigns(:post).content).to eq('acontnt')
+    end
   end
 
   describe "GET show" do
