@@ -139,6 +139,7 @@ class PostsController < WritableController
     mark_unread and return if params[:unread].present?
 
     require_permission
+    return if performed?
 
     change_status and return if params[:status].present?
     change_authors_locked and return if params[:authors_locked].present?

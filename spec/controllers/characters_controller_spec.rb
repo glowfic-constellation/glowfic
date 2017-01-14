@@ -464,6 +464,13 @@ RSpec.describe CharactersController do
       get :facecasts, sort: 'name'
       expect(assigns(:pbs).keys).to match_array(chars.map { |c| c.template || c })
     end
+
+    it "sets correct variables for writer sort" do
+      chars = 3.times.collect do create(:template_character, pb: SecureRandom.urlsafe_base64) end
+      chars += 3.times.collect do create(:character, pb: SecureRandom.urlsafe_base64) end
+      get :facecasts, sort: 'writer'
+      expect(assigns(:pbs).keys).to match_array(chars.map { |c| c.user })
+    end
   end
 
   describe "DELETE destroy" do

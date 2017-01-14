@@ -52,16 +52,16 @@ class IconsController < ApplicationController
   end
 
   def update
-    if @icon.update_attributes(params[:icon])
-      flash[:success] = "Icon updated."
-      redirect_to icon_path(@icon)
-    else
+    unless @icon.update_attributes(params[:icon])
       flash.now[:error] = {}
       flash.now[:error][:message] = "Your icon could not be saved due to the following problems:"
       flash.now[:error][:array] = @icon.errors.full_messages
       @page_title = 'Edit icon: ' + @icon.keyword_was
-      render :action => :edit
+      render action: :edit and return
     end
+
+    flash[:success] = "Icon updated."
+    redirect_to icon_path(@icon)
   end
 
   def replace

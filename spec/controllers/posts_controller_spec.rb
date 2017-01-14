@@ -305,27 +305,31 @@ RSpec.describe PostsController do
     context "mark unread" do
 
       it "requires valid at_id" do
+        skip "TODO does not notify"
       end
 
       it "requires post's at_id" do
+        skip "TODO does not notify"
       end
 
       it "notifies Marri about board_read" do
         # TODO fix the board_read thing better
         post = create(:post)
+        post.mark_read(post.user, post.created_at)
         unread_reply = create(:reply, post: post)
         reply = create(:reply, post: post)
         time = Time.now
         post.board.mark_read(post.user, time)
-        skip "todo"
-        expect(post.last_read(post.user).time).to be_the_same_time_as(time)
-        login_as(post.user)
 
-        put :update, id: post.id, unread: true, at_id: unread_reply.id
+        login_as(post.user)
+        create(:admin_user) # to receive the alert message
+        expect {
+          put :update, id: post.id, unread: true, at_id: unread_reply.id
+        }.to change{ Message.count }.by(1)
 
         expect(response).to redirect_to(unread_posts_url)
         expect(flash[:error]).to eq("You have marked this continuity read more recently than that reply was written; it will not appear in your Unread posts.")
-        expect(post.reload.last_read(post.user)).to be_the_same_time_as(time)
+        expect(post.reload.last_read(post.user)).to be_the_same_time_as(post.created_at)
       end
 
       it "works with at_id" do
@@ -360,11 +364,103 @@ RSpec.describe PostsController do
     end
 
     context "change status" do
-      skip "TODO"
+      it "requires permission" do
+        post = create(:post)
+        login
+        put :update, id: post.id, status: 'complete'
+        expect(response).to redirect_to(post_url(post))
+        expect(flash[:error]).to eq("You do not have permission to modify this post.")
+        expect(post.reload).to be_active
+      end
+
+      it "requires valid status" do
+        post = create(:post)
+        login_as(post.user)
+        put :update, id: post.id, status: 'invalid'
+        expect(response).to redirect_to(post_url(post))
+        expect(flash[:error]).to eq("Invalid status selected.")
+        expect(post.reload).to be_active
+      end
+
+      {complete: 'completed', abandoned: 'abandoned', hiatus: 'on_hiatus', active: 'active'}.each do |status, method|
+        context "to #{status}" do
+          let(:post) { create(:post) }
+
+          it "works for creator" do
+            login_as(post.user)
+            put :update, id: post.id, status: status
+            expect(response).to redirect_to(post_url(post))
+            expect(flash[:success]).to eq("Post has been marked #{status}.")
+            expect(post.reload.send("#{method}?")).to be_true
+          end
+
+          it "works for coauthor" do
+            reply = create(:reply, post: post)
+            login_as(reply.user)
+            put :update, id: post.id, status: status
+            expect(response).to redirect_to(post_url(post))
+            expect(flash[:success]).to eq("Post has been marked #{status}.")
+            expect(post.reload.send("#{method}?")).to be_true
+          end
+
+          it "works for admin" do
+            login_as(create(:admin_user))
+            put :update, id: post.id, status: status
+            expect(response).to redirect_to(post_url(post))
+            expect(flash[:success]).to eq("Post has been marked #{status}.")
+            expect(post.reload.send("#{method}?")).to be_true
+          end
+        end
+      end
     end
 
     context "author lock" do
-      skip "TODO"
+      let(:post) { create(:post, authors_locked: false) }
+
+      it "requires permission" do
+        login
+        put :update, id: post.id, authors_locked: 'true'
+        expect(response).to redirect_to(post_url(post))
+        expect(flash[:error]).to eq("You do not have permission to modify this post.")
+        expect(post.reload).not_to be_authors_locked
+      end
+
+      it "works for creator" do
+        login_as(post.user)
+        put :update, id: post.id, authors_locked: 'true'
+        expect(response).to redirect_to(post_url(post))
+        expect(flash[:success]).to eq("Post has been locked to current authors.")
+        expect(post.reload).to be_authors_locked
+
+        put :update, id: post.id, authors_locked: 'false'
+        expect(flash[:success]).to eq("Post has been unlocked from current authors.")
+        expect(post.reload).not_to be_authors_locked
+      end
+
+      it "works for coauthor" do
+        reply = create(:reply, post: post)
+        login_as(reply.user)
+        put :update, id: post.id, authors_locked: 'true'
+        expect(response).to redirect_to(post_url(post))
+        expect(flash[:success]).to eq("Post has been locked to current authors.")
+        expect(post.reload).to be_authors_locked
+
+        put :update, id: post.id, authors_locked: 'false'
+        expect(flash[:success]).to eq("Post has been unlocked from current authors.")
+        expect(post.reload).not_to be_authors_locked
+      end
+
+      it "works for admin" do
+        login_as(create(:admin_user))
+        put :update, id: post.id, authors_locked: 'true'
+        expect(response).to redirect_to(post_url(post))
+        expect(flash[:success]).to eq("Post has been locked to current authors.")
+        expect(post.reload).to be_authors_locked
+
+        put :update, id: post.id, authors_locked: 'false'
+        expect(flash[:success]).to eq("Post has been unlocked from current authors.")
+        expect(post.reload).not_to be_authors_locked
+      end
     end
 
     context "preview" do
