@@ -15,8 +15,8 @@ body { background-color: #b0afb7; }
 #post-menu-box a:hover div { background-color: #D3D3D3; }
 #post-menu-box div { border-bottom: 1px solid rgba(128,128,128,0.5); }
 #post-menu-box a { color: inherit; }
-#content .even, .post-reply:nth-child(odd) blockquote { background-color: #E3E3E3; }
-#content .odd, .post-post blockquote, .post-reply:nth-child(even) blockquote { background-color: #D8D8D8; }
+#content .even, .post-post, .post-reply:nth-child(even), #post-editor, .post-reply:nth-child(odd) blockquote { background-color: #E3E3E3; }
+#content .odd, .post-reply:nth-child(odd), .post-post + #post-editor, .post-post + a + #post-editor, .post-post blockquote, .post-reply:nth-child(even) blockquote { background-color: #D8D8D8; }
 
 .post-navheader .view-button, .view-button.selected, .view-button, .link-box.green, .link-box.blue, .link-box.red { background-color: #584b81; }
 .green { background-color: #d8d8d8; }
