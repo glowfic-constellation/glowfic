@@ -1,6 +1,6 @@
 class UserMailer < AsyncMailer
   def post_has_new_reply(user_id, reply_id)
-    @reply = Reply.find_by_id(reply_id)
+    return unless @reply = Reply.find_by_id(reply_id)
     @subject = "New reply in the thread " + @reply.post.subject
     @user = User.find_by_id(user_id)
     mail(to: @user.email, subject: @subject)
