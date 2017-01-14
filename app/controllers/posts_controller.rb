@@ -87,7 +87,7 @@ class PostsController < WritableController
     preview(:post, posts_path) and return if params[:button_preview].present?
 
     @post = Post.new(params[:post])
-    @post.user = @post.last_user = current_user
+    @post.user = current_user
 
     create_new_tags if @post.valid?
 
