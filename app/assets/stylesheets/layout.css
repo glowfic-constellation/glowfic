@@ -38,7 +38,7 @@
   #header #header-logout:before { content: '\a'; white-space: pre; }
 }
 @media (max-width: 400px) {
-  #header #user-info img { display: none; }
+  #header #user-info img, #header #user-info .no-img { display: none; }
   #header #header-forms, #header #header-remember, #header #header-buttons { display: none; }
   #header #header-links { display: inline-block; height: 20px; }
   #header #header-links a, #header #header-links span { vertical-align: middle; font-size: 14px; }
