@@ -1,6 +1,11 @@
 var tinyMCEInit = false;
 
 $(document).ready(function() {
+  var closeToUnread = false;
+  var unreadElem = $("a#unread")
+  if (window.location.hash == "#unread" && unreadElem.length > 0)
+    closeToUnread = Math.abs(unreadElem.offset().top - $(window).scrollTop()) < 50;
+
   // TODO fix hack
   // Hack because having In Thread characters as a group in addition to Template groups
   // duplicates characters in the dropdown, and therefore multiple options are selected
@@ -105,6 +110,9 @@ $(document).ready(function() {
       if($(this).height() > 20 ) { $(this).css('font-size', "12px"); };
     }
   });
+
+  if (closeToUnread)
+    $(window).scrollTop(unreadElem.offset().top)
 
   // Hack to deal with Firefox's "helpful" caching of form values on soft refresh (now via IDs)
   var selectedCharID = $("#reply_character_id").val();
