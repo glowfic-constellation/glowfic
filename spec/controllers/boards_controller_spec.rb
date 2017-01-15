@@ -190,23 +190,6 @@ RSpec.describe BoardsController do
       get :show, id: board.id
       expect(assigns(:posts)).to eq(assigns(:posts).sort_by(&:tagged_at).reverse)
     end
-
-    it "succeeds with json" do
-      board = create(:board)
-      section1 = create(:board_section, board: board)
-      section2 = create(:board_section, board: board)
-      section3 = create(:board_section, board: board)
-      section1.update_attributes(section_order: 2)
-      section3.update_attributes(section_order: 0)
-
-      get :show, id: board.id, format: :json
-
-      expect(response.json).to be_present
-      expect(response.json.size).to eq(3)
-
-      expected_json = [section3, section2, section1].map { |s| [s.id, s.name] }
-      expect(response.json).to match_array(expected_json)
-    end
   end
 
   describe "GET edit" do
