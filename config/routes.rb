@@ -83,6 +83,9 @@ Rails.application.routes.draw do
   namespace :api do
     namespace :v1 do
       resources :boards, only: :show
+      resources :board_sections do # TODO other types
+        collection { post :reorder }
+      end
     end
   end
 

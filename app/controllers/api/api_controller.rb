@@ -7,6 +7,12 @@ class Api::ApiController < ActionController::Base
 
   protected
 
+  def login_required
+    return if logged_in?
+    error = {message: "You must be logged in to view that page."}
+    render json: {errors: [error]}, status: :unauthorized and return
+  end
+
   def set_timezone
     Time.use_zone("UTC") { yield }
   end

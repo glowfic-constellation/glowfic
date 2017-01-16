@@ -10,8 +10,6 @@ class BoardSectionsController < ApplicationController
   end
 
   def create
-    reorder_sections and return if params[:commit] == "reorder"
-
     @board_section = BoardSection.new(params[:board_section])
     unless @board_section.board.editable_by?(current_user)
       flash[:error] = "You do not have permission to edit this continuity."
@@ -78,25 +76,5 @@ class BoardSectionsController < ApplicationController
       flash[:error] = "You do not have permission to edit this continuity."
       redirect_to boards_path and return
     end
-  end
-
-  def reorder_sections
-    valid_types = ['Post', 'BoardSection']
-    render json: {} and return if params[:changes].any? { |key, el| !(valid_types.include?(el[:type])) }
-
-    if params[:changes].any? { |key, el| el[:order].nil? }
-      ExceptionNotifier.notify_exception(Exception.new, data: params)
-    end
-
-    BoardSection.transaction do
-      params[:changes].each do |section_id, change_info|
-        section_order = change_info[:order]
-        section_type = change_info[:type]
-        section = section_type.constantize.find_by_id(section_id)
-        next unless section
-        section.update_attributes(section_order: section_order)
-      end
-    end
-    render json: {}
   end
 end

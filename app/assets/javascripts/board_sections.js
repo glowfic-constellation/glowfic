@@ -32,7 +32,7 @@ function switchRows(old_order, new_order) {
   $("#section-table tr:odd td").removeClass('even').addClass("odd");
   $("#section-table tr:even td").removeClass('odd').addClass("even");
 
-  var json = {changes: {}, commit: 'reorder'};
+  var json = {changes: {}};
   json['changes'][this_row.attr('data-section')] = {
     type: this_row.attr('data-type'),
     order: new_order,
@@ -41,7 +41,7 @@ function switchRows(old_order, new_order) {
     type: that_row.attr('data-type'),
     order: old_order,
   };
-  $.post('/board_sections', json, function (resp) {
+  $.post('/api/v1/board_sections/reorder', json, function (resp) {
     $("#saveconf").show().delay(2000).fadeOut();
   });
 };

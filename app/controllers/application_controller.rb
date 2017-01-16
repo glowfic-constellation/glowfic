@@ -11,11 +11,6 @@ class ApplicationController < ActionController::Base
 
   protected
 
-  def current_user
-    @current_user ||= User.find_by_id(session[:user_id]) if logged_in?
-  end
-  helper_method :current_user
-
   def login_required
     unless logged_in?
       flash[:error] = "You must be logged in to view that page."
