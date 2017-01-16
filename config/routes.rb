@@ -86,6 +86,7 @@ Rails.application.routes.draw do
       resources :board_sections do # TODO other types
         collection { post :reorder }
       end
+      resources :characters, only: :show
     end
   end
 

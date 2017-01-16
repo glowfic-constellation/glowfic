@@ -297,18 +297,20 @@ getAndSetCharacterData = function(characterId, options) {
     return // Don't need to load data from server (TODO combine with below?)
   }
 
-  $.get(gon.character_path + '/' + characterId, {}, function (resp) {
+  $.get('/api/v1/characters/' + characterId, {}, function (resp) {
+    var character = resp['data'];
+
     // Display the correct name/screenname fields
     $("#post-editor #post-author-spacer").hide();
-    $("#post-editor .post-character").show().html(resp['name']).data('character-id', characterId);
-    if(resp['screenname'] == undefined) {
+    $("#post-editor .post-character").show().html(character['name']).data('character-id', characterId);
+    if(character['screenname'] == undefined) {
       $("#post-editor .post-screenname").hide();
     } else {
-      $("#post-editor .post-screenname").show().html(resp['screenname']);
+      $("#post-editor .post-screenname").show().html(character['screenname']);
     }
 
     // Display no icon if no default set
-    if (resp['default'] == undefined) {
+    if (character['default'] == undefined) {
       $("#current-icon").removeClass('pointer');
       setIcon('');
       return;
@@ -319,7 +321,7 @@ getAndSetCharacterData = function(characterId, options) {
 
     // Calculate new galleries
     $("#gallery").html("");
-    var galleries = resp['galleries'];
+    var galleries = character['galleries'];
     var multiGallery = galleries.length > 1;
     for(var i=0; i<galleries.length; i++) {
       var gallery = galleries[i];
@@ -332,7 +334,7 @@ getAndSetCharacterData = function(characterId, options) {
     if (restore_icon)
       setIconFromId(selectedIconID);
     else
-      setIcon(resp['default']['id'], resp['default']['url'], resp['default']['keyword'], resp['default']['keyword']);
+      setIcon(character['default']['id'], character['default']['url'], character['default']['keyword'], character['default']['keyword']);
   }, 'json');
 };
 

@@ -21,7 +21,6 @@ class WritableController < ApplicationController
     @templates.reject! {|template| template.ordered_characters.empty? }
 
     gon.current_user = current_user.gon_attributes
-    gon.character_path = characters_path
   end
 
   def show_post(cur_page=nil)

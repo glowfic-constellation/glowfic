@@ -155,66 +155,6 @@ RSpec.describe CharactersController do
         expect(assigns(:posts)).to match_array(Post.where(character_id: character.id).order('tagged_at desc').limit(25))
       end
     end
-
-    context "json" do
-      it "requires valid character" do
-        get :show, id: -1, format: :json
-        expect(response).to redirect_to(characters_url)
-        expect(flash[:error]).to eq("Character could not be found.")
-      end
-
-      it "should succeed when logged out" do
-        character = create(:character)
-        get :show, id: character.id, format: :json
-        expect(response.status).to eq(200)
-        expect(response.json['name']).to eq(character.name)
-      end
-
-      it "should succeed when logged in" do
-        character = create(:character)
-        login
-        get :show, id: character.id, format: :json
-        expect(response.status).to eq(200)
-        expect(response.json['name']).to eq(character.name)
-      end
-
-      it "has galleries when present" do
-        character = create(:character)
-        character.galleries << create(:gallery, user: character.user, icon_count: 2)
-        character.galleries << create(:gallery, user: character.user, icon_count: 1)
-        get :show, id: character.id, format: :json
-        expect(response.status).to eq(200)
-        expect(response.json['galleries'].size).to eq(2)
-      end
-
-      it "has galleries when icon_picker_grouping is false" do
-        user = create(:user, icon_picker_grouping: false)
-        character = create(:character, user: user)
-        character.galleries << create(:gallery, user: user)
-        character.galleries << create(:gallery, user: user)
-        login_as(user)
-        get :show, id: character.id, format: :json
-        expect(response.status).to eq(200)
-        expect(response.json['galleries'].size).to eq(1)
-      end
-
-      it "has single gallery when present" do
-        character = create(:character)
-        character.galleries << create(:gallery, user: character.user)
-        get :show, id: character.id, format: :json
-        expect(response.status).to eq(200)
-        expect(response.json['galleries'].size).to eq(1)
-      end
-
-      it "has single gallery when icon present" do
-        character = create(:character)
-        character.default_icon = create(:icon, user: character.user)
-        character.save
-        get :show, id: character.id, format: :json
-        expect(response.status).to eq(200)
-        expect(response.json['galleries'].size).to eq(1)
-      end
-    end
   end
 
   describe "GET edit" do
