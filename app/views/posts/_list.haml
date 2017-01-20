@@ -29,5 +29,7 @@
     - if posts.empty?
       %tr
         %td.centered.padding-10.no-posts{ class: cycle('even','odd'), colspan: col_count } — No posts yet —
-- if posts.methods.include?(:total_pages) && posts.total_pages > 1
-  = render partial: 'posts/paginator', locals: { paginated: posts, path: (local_assigns[:path] || :posts_path) }
+  - if posts.methods.include?(:total_pages) && posts.total_pages > 1
+    %tfoot
+      %tr
+        %td{colspan: col_count}= render partial: 'posts/paginator', locals: { paginated: posts, path: (local_assigns[:path] || :posts_path) }
