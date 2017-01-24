@@ -120,7 +120,7 @@ $(document).ready(function() {
   var displayAliasID = $("#post-editor .post-character").data('alias-id');
   if (selectedCharID != displayCharID) {
     getAndSetCharacterData(selectedCharID, {restore_icon: true, restore_alias: true});
-    $("#active_character").val(selectedCharID).trigger("change");
+    $("#active_character").val(selectedCharID).trigger("change.select2");
   } else {
     if ($(".gallery-icon").length > 1) { /* Bind icon & gallery only if not resetting character, else it duplicate binds */
       bindIcon();
