@@ -1,4 +1,4 @@
-- character_galleries = item.character.galleries.includes(:icons).ordered if item.character && item.character.galleries.present?
+- character_galleries = item.character.galleries.includes(:icons).ordered if item.character && current_user.icon_picker_grouping? && item.character.galleries.count > 1
 #post-editor.padding-10
   .post-info-box
     #current-icon-holder.post-icon
