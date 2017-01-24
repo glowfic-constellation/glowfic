@@ -120,7 +120,7 @@ $(document).ready(function() {
   var displayAliasID = $("#post-editor .post-character").data('alias-id');
   if (selectedCharID != displayCharID) {
     getAndSetCharacterData(selectedCharID, {restore_icon: true, restore_alias: true});
-    $("#active_character").val(selectedCharID);
+    $("#active_character").val(selectedCharID).trigger("change");
   } else {
     if ($(".gallery-icon").length > 1) { /* Bind icon & gallery only if not resetting character, else it duplicate binds */
       bindIcon();
@@ -355,6 +355,7 @@ getAndSetCharacterData = function(characterId, options) {
       if (!restore_icon) setIcon(aid, url, keyword, keyword);
       $("#post-editor #post-author-spacer").show();
     } else {
+      if (!restore_icon) setIcon("");
       $("#post-editor #post-author-spacer").hide();
     }
     if (restore_icon) setIconFromId(selectedIconID);
