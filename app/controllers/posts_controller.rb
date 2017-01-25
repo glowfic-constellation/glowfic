@@ -215,6 +215,7 @@ class PostsController < WritableController
     @search_results = Post.order('tagged_at desc').includes(:board)
     @search_results = @search_results.where(board_id: params[:board_id]) if params[:board_id].present?
     @search_results = @search_results.where(id: Setting.find(params[:setting_id]).post_tags.pluck(:post_id)) if params[:setting_id].present?
+    @search_results = @search_results.search(params[:subject]).where('subject LIKE ?', "%#{params[:subject]}%") if params[:subject].present?
     if params[:author_id].present?
       post_ids = Reply.where(user_id: params[:author_id]).pluck('distinct post_id')
       where = Post.where(user_id: params[:author_id]).where(id: post_ids).where_values.reduce(:or)

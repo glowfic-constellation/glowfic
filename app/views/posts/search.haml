@@ -36,6 +36,9 @@
               %td Setting
               %td= select_tag :setting_id, options_from_collection_for_select(Setting.order('name'), :id, :name, params[:setting_id]), {class: 'chosen-select', prompt: '— Choose Setting —'}
             %tr
+              %td Subject
+              %td= text_field_tag :subject, params[:subject], style: 'width: 100%; margin: 5px 0px; box-sizing: border-box;'
+            %tr
               %td Completed
               %td.padding-5
                 = check_box_tag :completed, true, params[:completed].present?, {class: 'vmid no-margin', style: 'margin-bottom: 3px;'}
