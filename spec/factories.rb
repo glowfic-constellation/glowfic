@@ -111,11 +111,11 @@ FactoryGirl.define do
     end
     user
 
-    factory :setting do
+    factory :setting, class: Setting do
       type 'Setting'
     end
 
-    factory :content_warning do
+    factory :content_warning, class: ContentWarning do
       type 'ContentWarning'
     end
   end

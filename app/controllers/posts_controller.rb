@@ -216,6 +216,7 @@ class PostsController < WritableController
     @search_results = @search_results.where(board_id: params[:board_id]) if params[:board_id].present?
     @search_results = @search_results.where(id: Setting.find(params[:setting_id]).post_tags.pluck(:post_id)) if params[:setting_id].present?
     @search_results = @search_results.search(params[:subject]).where('subject LIKE ?', "%#{params[:subject]}%") if params[:subject].present?
+    @search_results = @search_results.where(status: Post::STATUS_COMPLETE) if params[:completed].present?
     if params[:author_id].present?
       post_ids = Reply.where(user_id: params[:author_id]).pluck('distinct post_id')
       where = Post.where(user_id: params[:author_id]).where(id: post_ids).where_values.reduce(:or)
@@ -225,9 +226,6 @@ class PostsController < WritableController
       post_ids = Reply.where(character_id: params[:character_id]).pluck('distinct post_id')
       where = Post.where(character_id: params[:character_id]).where(id: post_ids).where_values.reduce(:or)
       @search_results = @search_results.where(where)
-    end
-    if params[:completed].present?
-      @search_results = @search_results.where(status: Post::STATUS_COMPLETE)
     end
     @search_results = @search_results.paginate(page: page, per_page: 25)
   end

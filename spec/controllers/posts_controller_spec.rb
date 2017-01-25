@@ -34,7 +34,88 @@ RSpec.describe PostsController do
   end
 
   describe "GET search" do
-    skip
+    context "no search" do
+      it "works logged out" do
+        get :search
+        expect(response).to have_http_status(200)
+        expect(assigns(:page_title)).to eq('Browse Posts')
+        expect(assigns(:search_results)).to be_nil
+      end
+
+      it "works logged in" do
+        login
+        get :search
+        expect(response).to have_http_status(200)
+        expect(assigns(:page_title)).to eq('Browse Posts')
+        expect(assigns(:search_results)).to be_nil
+      end
+    end
+
+    context "searching" do
+      it "finds all when no arguments given" do
+        4.times do create(:post) end
+        get :search, commit: true
+        expect(assigns(:search_results)).to match_array(Post.all)
+      end
+
+      it "filters by continuity" do
+        post = create(:post)
+        post2 = create(:post, board: post.board)
+        create(:post)
+        get :search, commit: true, board_id: post.board_id
+        expect(assigns(:search_results)).to match_array([post, post2])
+      end
+
+      it "filters by setting" do
+        setting = create(:setting)
+        post = create(:post)
+        post.settings << setting
+        create(:post)
+        get :search, commit: true, setting_id: setting.id
+        expect(assigns(:search_results)).to match_array([post])
+      end
+
+      it "filters by subject" do
+        post = create(:post, subject: 'contains stars')
+        create(:post, subject: 'unrelated')
+        get :search, commit: true, subject: 'stars'
+        expect(assigns(:search_results)).to match_array([post])
+      end
+
+      it "does not mix up subject with content" do
+        create(:post, subject: 'unrelated', content: 'contains stars')
+        get :search, commit: true, subject: 'stars'
+        expect(assigns(:search_results)).to be_empty
+      end
+
+      it "filters by exact match subject" do
+        skip "TODO not yet implemented"
+      end
+
+      it "filters by authors" do
+        posts = 4.times.collect do create(:post) end
+        filtered_post = posts.last
+        first_post = posts.first
+        create(:reply, post: first_post, user: filtered_post.user)
+        get :search, commit: true, author_id: filtered_post.user_id
+        expect(assigns(:search_results)).to match_array([filtered_post, first_post])
+      end
+
+      it "filters by characters" do
+        create(:reply, with_character: true)
+        reply = create(:reply, with_character: true)
+        post = create(:post, character: reply.character, user: reply.user)
+        get :search, commit: true, character_id: reply.character_id
+        expect(assigns(:search_results)).to match_array([reply.post, post])
+      end
+
+      it "filters by completed" do
+        create(:post)
+        post = create(:post, status: Post::STATUS_COMPLETE)
+        get :search, commit: true, completed: true
+        expect(assigns(:search_results)).to match_array(post)
+      end
+    end
   end
 
   describe "GET new" do
@@ -401,7 +482,6 @@ RSpec.describe PostsController do
     end
 
     context "mark unread" do
-
       it "requires valid at_id" do
         skip "TODO does not notify"
       end
@@ -566,7 +646,30 @@ RSpec.describe PostsController do
     end
 
     context "make changes" do
-      skip "TODO"
+      it "creates new tags if needed" do
+        skip "TODO"
+      end
+
+      it "requires valid update" do
+        post = create(:post)
+        newcontent = post.content + 'new'
+        login_as(post.user)
+        put :update, id: post.id, post: {subject: ''}
+        expect(response).to render_template(:edit)
+        expect(flash[:error][:message]).to eq("Your post could not be saved because of the following problems:")
+        expect(post.reload.subject).not_to be_empty
+        # TODO check editor setup
+      end
+
+      it "works" do
+        post = create(:post)
+        newcontent = post.content + 'new'
+        login_as(post.user)
+        put :update, id: post.id, post: {content: newcontent}
+        expect(response).to redirect_to(post_url(post))
+        expect(flash[:success]).to eq("Your post has been updated.")
+        expect(post.reload.content).to eq(newcontent)
+      end
     end
   end
 

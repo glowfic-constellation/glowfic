@@ -142,8 +142,23 @@ RSpec.describe RepliesController do
       expect(flash[:error]).to eq("You do not have permission to view this post.")
     end
 
-    it "has more tests" do
-      skip
+    it "requires reply access" do
+      reply = create(:reply)
+      login
+      get :edit, id: reply.id
+      expect(response).to redirect_to(post_url(reply.post))
+      expect(flash[:error]).to eq("You do not have permission to modify this post.")
+    end
+
+    it "works" do
+      reply = create(:reply)
+      login_as(reply.user)
+      get :edit, id: reply.id
+      expect(response).to render_template(:edit)
+      expect(assigns(:page_title)).to eq(reply.post.subject)
+      expect(assigns(:reply)).to eq(reply)
+      expect(assigns(:post)).to eq(reply.post)
+      # TODO expect it to call build_template_groups
     end
   end
 
@@ -177,7 +192,29 @@ RSpec.describe RepliesController do
       expect(flash[:error]).to eq("You do not have permission to view this post.")
     end
 
-    it "has more tests" do
+    it "requires reply access" do
+      reply = create(:reply)
+      login
+      put :update, id: reply.id
+      expect(response).to redirect_to(post_url(reply.post))
+      expect(flash[:error]).to eq("You do not have permission to modify this post.")
+    end
+
+    it "fails when invalid" do
+      skip "TODO not yet implemented"
+    end
+
+    it "succeeds" do
+      reply = create(:reply)
+      newcontent = reply.content + 'new'
+      login_as(reply.user)
+      put :update, id: reply.id, reply: {content: newcontent}
+      expect(response).to redirect_to(reply_url(reply, anchor: "reply-#{reply.id}"))
+      expect(flash[:success]).to eq("Post updated")
+      expect(reply.reload.content).to eq(newcontent)
+    end
+
+    context "preview" do
       skip
     end
   end
@@ -210,6 +247,14 @@ RSpec.describe RepliesController do
       delete :destroy, id: reply.id
       expect(response).to redirect_to(boards_url)
       expect(flash[:error]).to eq("You do not have permission to view this post.")
+    end
+
+    it "requires reply access" do
+      reply = create(:reply)
+      login
+      delete :destroy, id: reply.id
+      expect(response).to redirect_to(post_url(reply.post))
+      expect(flash[:error]).to eq("You do not have permission to modify this post.")
     end
 
     it "succeeds for reply creator" do
