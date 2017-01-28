@@ -96,4 +96,58 @@ RSpec.describe PostScraper do
     expect(Character.count).to eq(1)
     expect(Character.where(screenname: 'wild_pegasus_appeared').first).not_to be_nil
   end
+
+  it "doesn't recreate characters and icons if they exist" do
+    url = 'http://wild-pegasus-appeared.dreamwidth.org/403.html?style=site&view=flat'
+    file = File.join(Rails.root, 'spec', 'support', 'fixtures', 'scrape_no_replies.html')
+    stub_request(:get, url).to_return(status: 200, body: File.new(file))
+
+    user = create(:user, username: "Marri")
+    board = create(:board, creator: user)
+    nita = create(:character, user: user, screenname: 'wild_pegasus_appeared', name: 'Juanita')
+    icon = create(:icon, keyword: 'sad', url: 'http://v.dreamwidth.org/8517100/2343677', user: user)
+    gallery = create(:gallery, user: user)
+    gallery.icons << icon
+    nita.galleries << gallery
+
+    expect(User.count).to eq(1)
+    expect(Icon.count).to eq(1)
+    expect(Character.count).to eq(1)
+
+    scraper = PostScraper.new(url, board.id)
+    expect(scraper).not_to receive(:print).with("User ID or username for wild_pegasus_appeared? ")
+    expect(scraper).to receive(:puts).with("Importing thread 'linear b'") # just to quiet it
+
+    scraper.scrape
+    expect(User.count).to eq(1)
+    expect(Icon.count).to eq(1)
+    expect(Character.count).to eq(1)
+  end
+
+  it "doesn't recreate icons if they already exist for that character with new urls" do
+    url = 'http://wild-pegasus-appeared.dreamwidth.org/403.html?style=site&view=flat'
+    file = File.join(Rails.root, 'spec', 'support', 'fixtures', 'scrape_no_replies.html')
+    stub_request(:get, url).to_return(status: 200, body: File.new(file))
+
+    user = create(:user, username: "Marri")
+    board = create(:board, creator: user)
+    nita = create(:character, user: user, screenname: 'wild_pegasus_appeared', name: 'Juanita')
+    icon = create(:icon, keyword: 'sad', url: 'http://glowfic.com/uploaded/icon.png', user: user)
+    gallery = create(:gallery, user: user)
+    gallery.icons << icon
+    nita.galleries << gallery
+
+    expect(User.count).to eq(1)
+    expect(Icon.count).to eq(1)
+    expect(Character.count).to eq(1)
+
+    scraper = PostScraper.new(url, board.id)
+    expect(scraper).not_to receive(:print).with("User ID or username for wild_pegasus_appeared? ")
+    expect(scraper).to receive(:puts).with("Importing thread 'linear b'") # just to quiet it
+
+    scraper.scrape
+    expect(User.count).to eq(1)
+    expect(Icon.count).to eq(1)
+    expect(Character.count).to eq(1)
+  end
 end
