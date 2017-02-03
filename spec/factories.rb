@@ -82,6 +82,12 @@ FactoryGirl.define do
     end
   end
 
+  factory :reply_draft do
+    user
+    post
+    content "test draft"
+  end
+
   factory :character do
     user
     name 'test character'

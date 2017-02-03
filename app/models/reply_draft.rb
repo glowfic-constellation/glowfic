@@ -2,7 +2,7 @@ class ReplyDraft < ActiveRecord::Base
   include Writable
 
   belongs_to :post, inverse_of: :reply_drafts
-  validates_presence_of :post, :user
+  validates_presence_of :post
   attr_accessible :post, :post_id
 
   def self.draft_for(post_id, user_id)
