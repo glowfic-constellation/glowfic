@@ -10,7 +10,7 @@
         .link-box.blue
           = image_tag "/images/pencil.png"
           Edit Gallery
-      = link_to gallery_path(gallery), method: :delete, confirm: 'Are you sure you want to delete this gallery?', class: 'gallery-delete' do
+      = link_to gallery_path(gallery), method: :delete, confirm: 'Are you sure you want to delete this gallery? (This will not delete the icons.)', class: 'gallery-delete' do
         .link-box.red x Delete Gallery
     .gallery-box.float-right.gallery-minmax{id: gallery.id} -
     - if local_assigns[:section] && (gallery.user_id == current_user.try(:id) || current_user.try(:admin?))
