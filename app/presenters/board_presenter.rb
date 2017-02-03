@@ -7,9 +7,8 @@ class BoardPresenter
 
   def as_json(*args, **kwargs)
     return {} unless board
-    sections = board.board_sections.order('section_order asc').map { |section| BoardSectionPresenter.new(section) }
     # TODO what if lots of sections?
     { id: board.id,
-      board_sections: sections }
+      board_sections: board.board_sections.order('section_order asc') }
   end
 end

@@ -1,4 +1,6 @@
 class Character < ActiveRecord::Base
+  include Presentable
+
   belongs_to :user
   belongs_to :template
   belongs_to :default_icon, class_name: Icon
@@ -79,7 +81,7 @@ class Character < ActiveRecord::Base
   end
   
   def valid_default_icon
-    if default_icon.present? && default_icon.user_id != user.id
+    if default_icon.present? && default_icon.user_id != user_id
       errors.add(:default_icon, "must be yours")
     end
   end

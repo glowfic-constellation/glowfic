@@ -1,5 +1,6 @@
 class BoardSection < ActiveRecord::Base
   include Orderable
+  include Presentable
 
   belongs_to :board, inverse_of: :board_sections
   has_many :posts, inverse_of: :section, foreign_key: :section_id
