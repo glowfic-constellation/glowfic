@@ -5,6 +5,6 @@ class Api::V1::BoardsController < Api::ApiController
       render json: {errors: [error]}, status: :not_found and return
     end
 
-    render json: {data: BoardPresenter.new(board)}
+    render json: {data: board}
   end
 end

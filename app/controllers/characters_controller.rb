@@ -74,16 +74,6 @@ class CharactersController < ApplicationController
     redirect_to characters_path
   end
 
-  def icon
-    if params[:icon_id] && params[:icon_id].empty?
-      @character.update_attributes(default_icon: nil)
-    else
-      icon = Icon.find_by_id(params[:icon_id])
-      @character.update_attributes(default_icon: icon) if icon && icon.user_id == current_user.id
-    end
-    render :json => {}
-  end
-
   def facecasts
     @page_title = 'Facecasts'
     chars = Character.where('pb is not null').includes(:user, :template)

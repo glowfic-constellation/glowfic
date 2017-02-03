@@ -69,15 +69,6 @@ $(document).ready(function() {
 
     displayGallery(new_id);
   });
-
-  $("#character-default-clear").click(function(){
-    $(".selected-icon").removeClass('selected-icon');
-    if (gon.character_id) {
-      $.post('/characters/'+gon.character_id+'/icon', {'icon_id':''}, function(resp) {});
-    } else {
-      $("#character_default_icon_id").val('');
-    }
-  });
 });
 
 function displayGallery(new_id){
@@ -97,15 +88,27 @@ function displayGallery(new_id){
 
 function bindIcons() {
   $(".character-icon").click(function() {
-    if($(this).hasClass('selected-icon')) { return; }
+    if($(this).hasClass('selected-icon')) {
+      $(this).removeClass('selected-icon');
+      updateIcon('');
+      return;
+    }
+
     $(".selected-icon").removeClass('selected-icon');
     $(this).addClass('selected-icon');
-    var id = $(this).attr('id');
+    updateIcon($(this).attr('id'));
+  });
+};
 
+function updateIcon(id) {
     if (gon.character_id) {
-      $.post('/characters/'+gon.character_id+'/icon', {'icon_id':id}, function(resp) {});
+      $.ajax({
+        url: '/api/v1/characters/'+gon.character_id,
+        type: 'PUT',
+        data: {'character': {'default_icon_id':id}},
+        success: function(resp) {},
+      });
     } else {
       $("#character_default_icon_id").val(id);
     }
-  });
 };

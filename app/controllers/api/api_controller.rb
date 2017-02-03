@@ -16,4 +16,9 @@ class Api::ApiController < ActionController::Base
   def set_timezone
     Time.use_zone("UTC") { yield }
   end
+
+  def access_denied
+    error = {message: "You do not have permission to perform this action."}
+    render json: {errors: [error]}, status: :forbidden
+  end
 end

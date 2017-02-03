@@ -30,7 +30,6 @@ Rails.application.routes.draw do
   resources :templates, except: :index
   resources :characters do
     member do
-      post :icon
       get :replace
       post :do_replace
     end
@@ -86,7 +85,7 @@ Rails.application.routes.draw do
       resources :board_sections do # TODO other types
         collection { post :reorder }
       end
-      resources :characters, only: :show
+      resources :characters, only: [:show, :update]
     end
   end
 

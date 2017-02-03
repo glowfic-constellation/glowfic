@@ -1,4 +1,5 @@
 class Board < ActiveRecord::Base
+  include Presentable
   include Viewable
 
   ID_SITETESTING = 4

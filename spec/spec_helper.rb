@@ -21,8 +21,10 @@
 unless ARGV.any? { |arg| arg[0] != '-' }
   require 'simplecov'
   SimpleCov.start 'rails' do
+    add_group("Controllers") {|src| src.filename.include?('app/controllers') and not src.filename.include?('app/controllers/api') }
     add_group "Presenters", "app/presenters"
     add_group "Concerns", "app/concerns"
+    add_group "API", "app/controllers/api"
   end
 end
 
