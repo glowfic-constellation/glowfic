@@ -4,59 +4,59 @@
       %th.centered{colspan: 2} Account Settings
     %tr
       %th.sub Username
-      %td.even= f.text_field :username, placeholder: "Username", class: 'text', disabled: current_user.salt_uuid.nil?
+      %td{class: cycle('even', 'odd')}= f.text_field :username, placeholder: "Username", class: 'text', disabled: current_user.salt_uuid.nil?
     %tr
       %th.sub Email
-      %td.odd= f.text_field :email, placeholder: "Email address", class: 'text'
+      %td{class: cycle('even', 'odd')}= f.text_field :email, placeholder: "Email address", class: 'text'
     %tr
       %th.sub Notifications
-      %td.even
+      %td{class: cycle('even', 'odd')}
         = f.check_box :email_notifications, class: 'width-15 vmid'
         = f.label :email_notifications, "Email about new tags"
     %tr
       %th.sub Paging
-      %td.odd= f.select(:per_page, per_page_options(current_user.per_page))
+      %td{class: cycle('even', 'odd')}= f.select(:per_page, per_page_options(current_user.per_page))
     %tr
       %th.sub Time zone
-      %td.even= f.select(:timezone, timezone_options(current_user.timezone))
+      %td{class: cycle('even', 'odd')}= f.select(:timezone, timezone_options(current_user.timezone))
     %tr
       %th.sub Split icon picker
-      %td.odd
+      %td{class: cycle('even', 'odd')}
         = f.check_box :icon_picker_grouping, class: 'width-15 vmid'
         = f.label :icon_picker_grouping, "Group the icon picker by gallery"
     %tr
       %th.sub Default view
-      %td.even= f.select(:default_view, options_for_select({Icon: 'icon', List: 'list'}, current_user.default_view))
+      %td{class: cycle('even', 'odd')}= f.select(:default_view, options_for_select({Icon: 'icon', List: 'list'}, current_user.default_view))
     %tr
       %th.sub Default editor
-      %td.odd= f.select(:default_editor, options_for_select({'Rich Text' => 'rtf', HTML: 'html'}, current_user.default_editor))
+      %td{class: cycle('even', 'odd')}= f.select(:default_editor, options_for_select({'Rich Text' => 'rtf', HTML: 'html'}, current_user.default_editor))
     %tr
       %th.sub Moiety hex
-      %td.even
+      %td{class: cycle('even', 'odd')}
         \#
         = f.text_field :moiety, placeholder: "Hex code", class: 'text', style: 'width: 80px;', maxlength: 6
     %tr
       %th.sub Moiety name
-      %td.even= f.text_field :moiety_name, placeholder: "Moiety", class: 'text'
+      %td{class: cycle('even', 'odd')}= f.text_field :moiety_name, placeholder: "Moiety", class: 'text'
     %tr
       %th.sub Layout
-      %td.odd= f.select :layout, layout_options(current_user.layout)
+      %td{class: cycle('even', 'odd')}= f.select :layout, layout_options(current_user.layout)
     %tr
       %th.sub Time display
-      %td.even= f.select :time_display, time_display_options(current_user.time_display)
+      %td{class: cycle('even', 'odd')}= f.select :time_display, time_display_options(current_user.time_display)
     %tr
       %th.sub Unread Default
-      %td.odd
+      %td{class: cycle('even', 'odd')}
         = f.check_box :unread_opened, class: 'width-15 vmid'
         = f.label :unread_opened, "Opened threads only"
     %tr
       %th.sub Warnings
-      %td.even
+      %td{class: cycle('even', 'odd')}
         = f.check_box :hide_warnings, class: 'width-15 vmid'
         = f.label :hide_warnings, "Hide content warnings"
     %tr
-      %th.sub Tags owed filtering
-      %td.odd
+      %th.sub Tags Owed
+      %td{class: cycle('even', 'odd')}
         = f.check_box :hide_hiatused_tags_owed, class: 'width-15 vmid'
         = f.label :hide_hiatused_tags_owed, "Hide hiatused threads"
     %tr
@@ -69,12 +69,12 @@
       %th.centered{colspan: 2} Change Password
     %tr
       %th.sub Old
-      %td.even= password_field_tag :old_password, params[:old_password], :placeholder => "Old Password", :class => 'text'
+      %td{class: cycle('even', 'odd')}= password_field_tag :old_password, params[:old_password], :placeholder => "Old Password", :class => 'text'
     %tr
       %th.sub New
-      %td.odd= f.password_field :password, :placeholder => "New Password", :class => 'text', :value => (params[:user]||{})[:password]
+      %td{class: cycle('even', 'odd')}= f.password_field :password, :placeholder => "New Password", :class => 'text', :value => (params[:user]||{})[:password]
     %tr
       %th.sub Confirm
-      %td.even= f.password_field :password_confirmation, :placeholder => "Confirm Password", :class => 'text', :value => (params[:user]||{})[:password_confirmation]
+      %td{class: cycle('even', 'odd')}= f.password_field :password_confirmation, :placeholder => "Confirm Password", :class => 'text', :value => (params[:user]||{})[:password_confirmation]
     %tr
       %th.centered.subber{colspan: 2}= submit_tag "Save", class: 'button'
