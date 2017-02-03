@@ -8,7 +8,7 @@ RSpec.describe PostsController do
     end
 
     it "paginates" do
-      26.times do create(:post) end
+      27.times do create(:post) end # so that if a site_testing post is ignore it's still two pages
       get :index
       num_posts_fetched = controller.instance_variable_get('@posts').total_pages
       expect(num_posts_fetched).to eq(2)
@@ -754,9 +754,84 @@ RSpec.describe PostsController do
       login
       get :owed
       expect(response.status).to eq(200)
+      expect(assigns(:page_title)).to eq('Tags Owed')
     end
 
-    # TODO WAY more tests
+    context "with posts" do
+      let(:user) { create(:user) }
+      let(:other_user) { create(:user) }
+      before(:each) do
+        other_user
+        login_as(user)
+      end
+
+      it "shows a post if replied to by someone else" do
+        post = create(:post, user_id: user.id)
+        create(:reply, post_id: post.id, user_id: other_user.id)
+
+        get :owed
+        expect(response.status).to eq(200)
+        expect(assigns(:posts)).to match_array([post])
+      end
+
+      it "hides a post if you reply to it" do
+        post = create(:post, user_id: user.id)
+        create(:reply, post_id: post.id, user_id: other_user.id)
+        create(:reply, post_id: post.id, user_id: user.id)
+
+        get :owed
+        expect(response.status).to eq(200)
+        expect(assigns(:posts)).to be_empty
+      end
+
+      it "does not show posts from site_testing" do
+        skip "not sure how to create a board with a particular ID"
+      end
+
+      it "hides completed and abandoned threads" do
+        post = create(:post, user_id: user.id)
+        create(:reply, post_id: post.id, user_id: other_user.id)
+
+        post.update_attributes(status: Post::STATUS_COMPLETE)
+        get :owed
+        expect(response.status).to eq(200)
+        expect(assigns(:posts)).to be_empty
+
+        post.update_attributes(status: Post::STATUS_ACTIVE)
+        get :owed
+        expect(response.status).to eq(200)
+        expect(assigns(:posts)).to match_array([post])
+
+        post.update_attributes(status: Post::STATUS_ABANDONED)
+        get :owed
+        expect(response.status).to eq(200)
+        expect(assigns(:posts)).to be_empty
+      end
+
+      it "show hiatused threads by default" do
+        post = create(:post, user_id: user.id)
+        create(:reply, post_id: post.id, user_id: other_user.id)
+        post.update_attributes(status: Post::STATUS_HIATUS)
+
+        get :owed
+        expect(response.status).to eq(200)
+        expect(assigns(:posts)).to match_array([post])
+      end
+
+      it "optionally hides hiatused threads" do
+        post = create(:post, user_id: user.id)
+        create(:reply, post_id: post.id, user_id: other_user.id)
+        post.update_attributes(status: Post::STATUS_HIATUS)
+
+        user.hide_hiatused_tags_owed = true
+        user.save
+        get :owed
+        expect(response.status).to eq(200)
+        expect(assigns(:posts)).to be_empty
+      end
+    end
+
+    # TODO more tests
   end
 
   describe "GET unread" do

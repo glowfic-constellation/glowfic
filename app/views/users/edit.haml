@@ -51,9 +51,14 @@
         = f.label :unread_opened, "Opened threads only"
     %tr
       %th.sub Warnings
-      %td.odd
+      %td.even
         = f.check_box :hide_warnings, class: 'width-15 vmid'
         = f.label :hide_warnings, "Hide content warnings"
+    %tr
+      %th.sub Tags owed filtering
+      %td.odd
+        = f.check_box :hide_hiatused_tags_owed, class: 'width-15 vmid'
+        = f.label :hide_hiatused_tags_owed, "Hide hiatused threads"
     %tr
       %th.centered.subber{colspan: 2}= submit_tag "Save", class: 'button'
 
