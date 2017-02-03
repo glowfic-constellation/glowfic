@@ -160,7 +160,6 @@ RSpec.describe PostsController do
         expect(assigns(:url)).to eq(posts_path)
         expect(assigns(:method)).to eq(:post)
         expect(assigns(:page_title)).to eq('Previewing: test')
-        expect(controller.gon.original_content).to eq('orign')
         # TODO editor setup
       end
 
@@ -222,7 +221,6 @@ RSpec.describe PostsController do
       expect(assigns(:post).subject).to eq('asubjct')
       expect(assigns(:post).content).to eq('acontnt')
       expect(assigns(:page_title)).to eq('New Post')
-      expect(controller.gon.original_content).to eq('acontnt')
       # TODO editor_setup
     end
 

@@ -1,3 +1,5 @@
+var tinyMCEInit = false;
+
 $(document).ready(function() {
   // TODO fix hack
   // Hack because having In Thread characters as a group in addition to Template groups
@@ -90,6 +92,12 @@ $(document).ready(function() {
   });
 
   // TODO fix hack
+  // Only initialize TinyMCE if it's required
+  if($("#rtf").hasClass('selected') == true) {
+    setupTinyMCE();
+  }
+
+  // TODO fix hack
   // Resizes screennames to be slightly smaller if they're long for UI reasons
   $(".post-screenname").each(function (index) {
     if($(this).height() > 20) {
@@ -132,8 +140,10 @@ $(document).ready(function() {
       $("#html").removeClass('selected');
       $("#editor_mode").val('rtf')
       $(this).addClass('selected');
-      tinyMCE.execCommand('mceAddEditor', true, 'post_content');
-      tinyMCE.execCommand('mceAddEditor', true, 'reply_content');
+      if(tinyMCEInit) {
+        tinyMCE.execCommand('mceAddEditor', true, 'post_content');
+        tinyMCE.execCommand('mceAddEditor', true, 'reply_content');
+      } else { setupTinyMCE(); }
     } else if (this.id == 'html') {
       $("#rtf").removeClass('selected');
       $("#editor_mode").val('html')
@@ -247,18 +257,36 @@ iconString = function(icon) {
   return $("<div>").attr('class', 'gallery-icon').append(icon_img).append("<br />").append(img_key)[0].outerHTML;
 };
 
-tinyMCESetup = function(ed) {
-  ed.on('init', function(args) {
-    if($("#html").hasClass('selected') == true) {
-      tinyMCE.execCommand('mceRemoveEditor', false, 'post_content');
-      tinyMCE.execCommand('mceRemoveEditor', false, 'reply_content');
-      $(".tinymce").val(gon.original_content); // TODO fix hack
-    } else {
-      var rawContent = tinymce.activeEditor.getContent({format: 'raw'});
-      var content = tinymce.activeEditor.getContent();
-      if (rawContent == '<p>&nbsp;<br></p>' && content == '') { tinymce.activeEditor.setContent(''); } // TODO fix hack
-    };
-  });
+setupTinyMCE = function() {
+  if (typeof tinyMCE != 'undefined') {
+    tinyMCE.init({
+      selector: "textarea.tinymce",
+      menubar: false,
+      toolbar: ["bold italic underline strikethrough | link image | blockquote hr bullist numlist | undo redo"],
+      plugins: "image,hr,link,autoresize",
+      custom_undo_redo_levels: 10,
+      content_css: "/stylesheets/tinymce.css",
+      statusbar: true,
+      elementpath: false,
+      theme_advanced_resizing: true,
+      theme_advanced_resize_horizontal: false,
+      autoresize_bottom_margin: 15,
+      browser_spellcheck: true,
+      relative_urls: false,
+      remove_script_host: true,
+      document_base_url: "https://www.glowfic.com/",
+      setup: function(ed) {
+        ed.on('init', function(args) {
+          var rawContent = tinymce.activeEditor.getContent({format: 'raw'});
+          var content = tinymce.activeEditor.getContent();
+          if (rawContent == '<p>&nbsp;<br></p>' && content == '') { tinymce.activeEditor.setContent(''); } // TODO fix hack
+        });
+      },
+    });
+    tinyMCEInit = true;
+  } else {
+    setTimeout(arguments.callee, 50);
+  }
 };
 
 getAndSetCharacterData = function(characterId, options) {

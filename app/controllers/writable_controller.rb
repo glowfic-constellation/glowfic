@@ -104,7 +104,6 @@ class WritableController < ApplicationController
           character: active_char,
           user: current_user,
           icon: (active_char ? active_char.icon : current_user.avatar))
-        gon.original_content = @reply.content
       end
 
       @post.mark_read(current_user, @post.read_time_for(@replies)) unless @post.board.ignored_by?(current_user)

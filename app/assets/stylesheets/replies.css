@@ -85,7 +85,14 @@ select.per-page { margin-top: 5px; margin-bottom: 5px; }
 #post_content, #reply_content { width: 100%; display: block; }
 #reply_content { height: 130px; }
 #post_content { height: 300px; }
-#post-form-wrapper { margin-left: 160px; margin-right: 10px; }
+#post-form-wrapper {
+    margin-left: 160px;
+    margin-right: 10px;
+    background-image: url('/images/loading.gif');
+    background-position: 50% 30%;
+    background-size: 30px;
+    background-repeat: no-repeat;
+}
 #post-editor { position: relative; }
 .details { display: inline; font-size: 12px; font-style: italic; }
 

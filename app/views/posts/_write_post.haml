@@ -36,7 +36,6 @@
       %br
       #post-form-wrapper
         = f.text_area :content, class: 'tinymce'
-        = tinymce
         = f.hidden_field :character_id, id: 'reply_character_id'
         = f.hidden_field :icon_id, id: 'reply_icon_id'
         = submit_tag (method == :put ? 'Save' : "Post"), class: 'button', id: 'submit_button', disable_with: 'Saving...'

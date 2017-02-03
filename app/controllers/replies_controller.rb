@@ -64,8 +64,6 @@ class RepliesController < WritableController
   end
 
   def create
-    gon.original_content = params[:reply].try(:[], :content)
-
     if params[:button_preview]
       @url = replies_path
       @method = :post
@@ -118,11 +116,9 @@ class RepliesController < WritableController
 
   def edit
     use_javascript('posts')
-    gon.original_content = @reply.content
   end
 
   def update
-    gon.original_content = params[:reply][:content]
     if params[:button_preview]
       @url = reply_path(params[:id])
       @method = :put

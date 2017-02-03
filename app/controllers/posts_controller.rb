@@ -97,7 +97,6 @@ class PostsController < WritableController
       flash.now[:error] = {}
       flash.now[:error][:array] = @post.errors.full_messages
       flash.now[:error][:message] = "Your post could not be saved because of the following problems:"
-      gon.original_content = params[:post][:content]
       editor_setup
       @page_title = 'New Post'
       render :action => :new
@@ -124,13 +123,11 @@ class PostsController < WritableController
 
     editor_setup
 
-    gon.original_content = params[:post][:content] if params[:post]
     @page_title = 'Previewing: ' + @post.subject.to_s
     render action: :preview
   end
 
   def edit
-    gon.original_content = @post.content
   end
 
   def update
@@ -143,7 +140,6 @@ class PostsController < WritableController
     change_authors_locked and return if params[:authors_locked].present?
     preview(:put, post_path(params[:id])) and return if params[:button_preview].present?
 
-    gon.original_content = params[:post][:content] if params[:post]
     @post.assign_attributes(params[:post])
     @post.board ||= Board.find(3)
 
