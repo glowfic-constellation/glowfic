@@ -35,6 +35,7 @@
 body { background-color: #211e2f; color: #DADADA; }
 #content th.subber { color: #DADADA; }
 #post-form-wrapper textarea, #message_form textarea, #message_form input { background-color: #4d4b5b; color: #DADADA; }
+#message_form input.button { color: #444444; }
 
 #content .sub, .post-navheader, #content .subber, .subber { background-color: #131937; }
 #content th, .post-header { background-color: #0d0b1e; }
