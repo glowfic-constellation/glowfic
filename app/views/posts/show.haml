@@ -70,16 +70,19 @@
             %div
               = image_tag '/images/book.png'.freeze
               Mark Complete
-        - unless @post.on_hiatus?
+        - unless @post.marked_hiatus?
           = link_to post_path(@post, status: 'hiatus'.freeze), method: :put do
             %div
               = image_tag '/images/hourglass.png'.freeze
-              Put On Hiatus
+              Mark On Hiatus
         - unless @post.active?
           = link_to post_path(@post, status: 'active'.freeze), method: :put do
             %div
               = image_tag '/images/book_open.png'.freeze
-              Mark In Progress
+              - if @post.marked_hiatus?
+                Unmark Hiatus
+              - else
+                Mark In Progress
         - unless @post.abandoned?
           = link_to post_path(@post, status: 'abandoned'.freeze), method: :put do
             %div
