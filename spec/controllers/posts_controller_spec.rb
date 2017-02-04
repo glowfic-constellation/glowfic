@@ -702,7 +702,7 @@ RSpec.describe PostsController do
       login_as(user)
       post :warnings, id: warn_post.id
       expect(response).to redirect_to(post_url(warn_post))
-      expect(flash[:success]).to eq("Content warnings have been hidden for this thread. Proceed at your own risk.")
+      expect(flash[:success]).to start_with("Content warnings have been hidden for this thread. Proceed at your own risk.")
       expect(session[:ignore_warnings]).to be_nil
       view = warn_post.reload.send(:view_for, user)
       expect(view).not_to be_a_new_record

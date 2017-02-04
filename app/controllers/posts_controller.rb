@@ -230,7 +230,7 @@ class PostsController < WritableController
   def warnings
     if logged_in?
       @post.hide_warnings_for(current_user)
-      flash[:success] = "Content warnings have been hidden for this thread. Proceed at your own risk."
+      flash[:success] = "Content warnings have been hidden for this thread. Proceed at your own risk. Please be aware that this will reset if new warnings are added later."
     else
       session[:ignore_warnings] = true
       flash[:success] = "All content warnings have been hidden. Proceed at your own risk."

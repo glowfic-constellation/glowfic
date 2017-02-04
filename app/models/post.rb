@@ -28,7 +28,7 @@ class Post < ActiveRecord::Base
   has_many :post_tags, inverse_of: :post, dependent: :destroy
   has_many :tags, through: :post_tags
   has_many :settings, through: :post_tags, source: :setting
-  has_many :content_warnings, through: :post_tags, source: :content_warning
+  has_many :content_warnings, through: :post_tags, source: :content_warning, after_add: :reset_warnings
   has_many :favorites, as: :favorite, dependent: :destroy
 
   attr_accessible :board, :board_id, :subject, :privacy, :viewer_ids, :description, :section_id, :tag_ids, :warning_ids, :setting_ids, :section_order, :status
@@ -209,5 +209,9 @@ class Post < ActiveRecord::Base
   def build_initial_flat_post
     build_flat_post
     true
+  end
+
+  def reset_warnings(warning)
+    PostView.where(post_id: id).update_all(warnings_hidden: false)
   end
 end

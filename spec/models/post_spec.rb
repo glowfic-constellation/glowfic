@@ -507,4 +507,34 @@ RSpec.describe Post do
   describe "#last_character_for" do
 
   end
+
+  describe "#reset_warnings" do
+    let(:post) { create(:post) }
+    let(:warning) { create(:content_warning) }
+    let(:user) { create(:user) }
+    before(:each) do
+      post.content_warnings << warning
+      post.hide_warnings_for(user)
+      expect(post).not_to be_show_warnings_for(user)
+    end
+
+    it "does not reset on update" do
+      post.content = 'new content'
+      post.save
+      expect(post.reload).not_to be_show_warnings_for(user)
+    end
+
+    it "does not reset on remove" do
+      post.content_warnings.delete(warning)
+      expect(post.reload).not_to be_show_warnings_for(user)
+    end
+
+    it "resets with new warning without changing read time" do
+      at_time = 3.days.ago
+      post.mark_read(user, at_time, true)
+      post.content_warnings << create(:content_warning)
+      expect(post.reload).to be_show_warnings_for(user)
+      expect(post.last_read(user)).to be_the_same_time_as(at_time)
+    end
+  end
 end
