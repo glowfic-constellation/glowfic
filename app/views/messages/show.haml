@@ -1,15 +1,12 @@
 - content_for :breadcrumbs do
-  = link_to @message.box(current_user).capitalize, messages_path(view: @message.box(current_user))
+  = link_to @box.capitalize, messages_path(view: @box)
   &raquo;
-  %b= @message.unempty_subject
+  %b= @page_title
 
 .post-header
   .padding-15
-    %span= @message.unempty_subject
-= render partial: 'single', locals: {message: @message}
-.right-align.margin-5
-  = link_to new_message_path(reply_id: @message.id) do
-    .link-box.green Reply &raquo;
+    %span= @page_title
 
-- if @message.thread_id
-  = render partial: 'thread', locals: {thread_id: @message.thread_id}
+= render partial: 'single', collection: @messages, as: :message
+%br
+= render partial: 'editor'

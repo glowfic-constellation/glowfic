@@ -1,6 +1,6 @@
-= form_for @message, url: messages_path, method: :post, html: { id: 'message_form' } do |f|
+= form_for @message, html: { id: 'message_form' } do |f|
   = hidden_field_tag :parent_id, @message.parent_id
-  %table.form-table
+  %table
     %tr
       %th{colspan: 2} Compose New Message
     %tr
@@ -12,7 +12,11 @@
           = f.collection_select :recipient_id, User.order('username asc').all - [current_user], :id, :username, prompt: true
     %tr
       %th.sub.padding-10 Subject
-      %td.odd.padding-10= f.text_field :subject, placeholder: 'Subject'
+      %td.odd.padding-10
+        - if @message.thread_id.present?
+          = @message.subject
+        - else
+          = f.text_field :subject, placeholder: 'Subject'
     %tr#message-row
       %th.sub.padding-10.vtop Message
       %td.even.padding-10= f.text_area :message
@@ -20,6 +24,6 @@
       %th.subber.centered{colspan: 2}
         = f.submit "Send", class: 'button'
         = f.submit "Preview", class: 'button', name: 'button_preview'
-- if @message.thread_id
+- if @messages.nil? && @message.thread_id && @message.thread_id != @message.id
   %br
   = render partial: 'thread', locals: {thread_id: @message.thread_id}

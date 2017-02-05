@@ -7,36 +7,18 @@ class MessagesController < ApplicationController
     if params[:view] == 'outbox'
       @view = 'outbox'
       @page_title = 'Outbox'
-      @messages = current_user.sent_messages.where(visible_outbox: true).order('id desc')
+      @messages = current_user.sent_messages.where(visible_outbox: true).order('id desc').uniq_by! {|m| m.thread_id }
     else
       @view = 'inbox'
       @page_title = 'Inbox'
-      @messages = current_user.messages.where(visible_inbox: true).order('id desc')
+      @messages = current_user.messages.where(visible_inbox: true).order('id desc').uniq_by! {|m| m.thread_id }
     end
   end
 
   def new
     @message = Message.new
     @message.recipient = User.find_by_id(params[:recipient_id])
-
-    if params[:reply_id].present?
-      @message.parent = Message.find_by_id(params[:reply_id])
-      unless @message.parent.present?
-        @message.parent = nil
-        flash.now[:error] = "Message parent could not be found."
-        return
-      end
-
-      unless @message.parent.visible_to?(current_user)
-        @message.parent = nil
-        flash.now[:error] = "You do not have permission to reply to that message."
-        return
-      end
-
-      @message.subject = @message.subject_from_parent
-      @message.thread_id = @message.parent.thread_id
-      @message.recipient_id = @message.parent.user_ids.detect { |id| id != current_user.id }
-    end
+    set_message_parent(params[:reply_id]) if params[:reply_id].present?
   end
 
   def create
@@ -71,21 +53,26 @@ class MessagesController < ApplicationController
   end
 
   def show
-    @message = Message.find_by_id(params[:id])
-    unless @message
+    unless message = Message.find_by_id(params[:id])
       flash[:error] = "Message could not be found."
       redirect_to messages_path(view: 'inbox') and return
     end
 
-    unless @message.visible_to?(current_user)
+    unless message.visible_to?(current_user)
       flash[:error] = "That is not your message!"
       redirect_to messages_path(view: 'inbox') and return
     end
 
-    @page_title = @message.unempty_subject
-    if @message.unread? and @message.recipient_id == current_user.id
-      @message.update_attributes(unread: false)
+    @page_title = message.unempty_subject
+    @box = message.box(current_user)
+    if message.unread? and message.recipient_id == current_user.id
+      message.update_attributes(unread: false)
     end
+
+    @messages = Message.where(thread_id: message.thread_id).order('id asc')
+    @message = Message.new
+    set_message_parent(message.last_in_thread)
+    use_javascript('messages')
   end
 
   def mark
@@ -99,17 +86,14 @@ class MessagesController < ApplicationController
         box ||= message.box(current_user)
         message.update_attributes(unread: !message.unread?)
       end
-    elsif params[:commit] == "Mark / Unmark Important"
-      messages.each do |message|
-        box ||= message.box(current_user)
-        box_attr = "marked_#{box}"
-        message.update_attributes(box_attr => !message.send(box_attr+'?'))
-      end
     elsif params[:commit] == "Delete"
       messages.each do |message|
         box ||= message.box(current_user)
         box_attr = "visible_#{box}"
-        message.update_attributes(box_attr => false, unread: false)
+        user_id_attr = (box == 'inbox') ? 'recipient_id' : 'sender_id'
+        Message.where(thread_id: message.thread_id, "#{user_id_attr}": current_user.id).each do |thread_message|
+          thread_message.update_attributes(box_attr => false, unread: false)
+        end
       end
     else
       flash[:error] = "Could not perform unknown action."
@@ -125,5 +109,24 @@ class MessagesController < ApplicationController
   def editor_setup
     use_javascript('messages')
     @page_title = 'Compose Message'
+  end
+
+  def set_message_parent(parent_id)
+    @message.parent = Message.find_by_id(parent_id)
+    unless @message.parent.present?
+      @message.parent = nil
+      flash.now[:error] = "Message parent could not be found."
+      return
+    end
+
+    unless @message.parent.visible_to?(current_user)
+      @message.parent = nil
+      flash.now[:error] = "You do not have permission to reply to that message."
+      return
+    end
+
+    @message.subject = @message.subject_from_parent
+    @message.thread_id = @message.parent.thread_id
+    @message.recipient_id = @message.parent.user_ids.detect { |id| id != current_user.id }
   end
 end

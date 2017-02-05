@@ -15,20 +15,22 @@
         %tr
           - klass = cycle('even', 'odd')
           - klass += ' bold' if @view == 'inbox' and message.unread?
-          %td.pading-left-5{class: klass}
+          %td.padding-left-5{class: klass}
             - if message.send('marked_'+@view+'?')
               = image_tag "/images/asterisk.png"
-          %td{class: klass}= link_to message.unempty_subject, message_path(message)
+          %td{class: klass}
+            = link_to message.unempty_subject, message_path(message)
+            - if message.num_in_thread.to_i > 1
+              (#{message.num_in_thread})
           %td{class: klass}
             - if @view == 'inbox'
               = link_to message.sender.username, user_path(message.sender)
             - else
               = link_to message.recipient.username, user_path(message.recipient)
-          %td{class: klass}= pretty_time(message.created_at)
+          %td{class: klass}= pretty_time(message.last_in_thread.created_at)
           %td{class: klass}= check_box_tag :"marked_ids[]", message.id
       %tr
         %td.right-align.padding-5{colspan: 5, class: cycle('even', 'odd')}
           - if @view == 'inbox'
             = submit_tag "Mark Read / Unread", class: 'button'
-          = submit_tag "Mark / Unmark Important", class: 'button'
           = submit_tag "Delete", class: 'button', confirm: "Are you sure you want to delete these messages?"

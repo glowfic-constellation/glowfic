@@ -197,7 +197,7 @@ RSpec.describe MessagesController do
       login_as(message.sender)
       get :show, id: message.id
       expect(response).to have_http_status(200)
-      expect(assigns(:message)).to eq(message)
+      expect(assigns(:messages)).to eq([message])
       expect(message.reload.unread?).to be_true
     end
 
@@ -206,7 +206,7 @@ RSpec.describe MessagesController do
       login_as(message.recipient)
       get :show, id: message.id
       expect(response).to have_http_status(200)
-      expect(assigns(:message)).to eq(message)
+      expect(assigns(:messages)).to eq([message])
       expect(message.reload.unread?).not_to be_true
     end
 
@@ -262,57 +262,6 @@ RSpec.describe MessagesController do
         login_as(message.recipient)
         post :mark, marked_ids: [message.id.to_s], commit: "Mark Read / Unread"
         expect(message.reload.unread).to be_true
-      end
-    end
-
-    context "marking important/unimportant" do
-      it "handles invalid message ids" do
-        login
-        expect_any_instance_of(Message).not_to receive(:update_attributes)
-        post :mark, marked_ids: ['nope', -1, '0'], commit: "Mark / Unmark Important"
-      end
-
-      it "does not work for users without access" do
-        message = create(:message)
-        login
-        expect_any_instance_of(Message).not_to receive(:update_attributes)
-        post :mark, marked_ids: [message.id.to_s], commit: "Mark / Unmark Important"
-      end
-
-      context "sender" do
-        it "works for important" do
-          message = create(:message)
-          login_as(message.sender)
-          expect(message.marked_outbox).not_to be_true
-          post :mark, marked_ids: [message.id.to_s], commit: "Mark / Unmark Important"
-          expect(message.reload.marked_outbox).to be_true
-        end
-
-        it "works for unimportant" do
-          message = create(:message, marked_outbox: true)
-          login_as(message.sender)
-          expect(message.marked_outbox).to be_true
-          post :mark, marked_ids: [message.id.to_s], commit: "Mark / Unmark Important"
-          expect(message.reload.marked_outbox).not_to be_true
-        end
-      end
-
-      context "recipient" do
-        it "works for important" do
-          message = create(:message)
-          login_as(message.recipient)
-          expect(message.marked_inbox).not_to be_true
-          post :mark, marked_ids: [message.id.to_s], commit: "Mark / Unmark Important"
-          expect(message.reload.marked_inbox).to be_true
-        end
-
-        it "works for unimportant" do
-          message = create(:message, marked_inbox: true)
-          login_as(message.recipient)
-          expect(message.marked_inbox).to be_true
-          post :mark, marked_ids: [message.id.to_s], commit: "Mark / Unmark Important"
-          expect(message.reload.marked_inbox).not_to be_true
-        end
       end
     end
 
