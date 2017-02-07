@@ -5,6 +5,12 @@ class Api::ApiController < ActionController::Base
   before_filter :check_permanent_user
   around_filter :set_timezone
 
+  resource_description do
+    formats ['json']
+    meta author: {name: 'Marri'}
+    app_info 'The public API for the Glowfic Constellation'
+  end
+
   protected
 
   def login_required

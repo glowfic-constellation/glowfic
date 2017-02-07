@@ -1,6 +1,21 @@
 class Api::V1::BoardSectionsController < Api::ApiController
   before_filter :login_required
 
+  resource_description do
+    name 'Subcontinuities'
+    description 'Viewing and editing subcontinuities'
+  end
+
+  api :POST, '/board_sections/reorder', 'Update the order of subcontinuities (or, confusingly, posts). This may be moved or renamed and should not be trusted.'
+  error 401, "You must be logged in"
+  param :changes, Hash do
+    param :section_id, Hash do
+      param :type, String, desc: 'Accepted values are "BoardSection" or "Post"'
+      param :order, :number
+    end
+  end
+  example "'errors': [{'message': 'You must be logged in to view that page.'}]"
+  example "{}"
   def reorder
     valid_types = ['Post', 'BoardSection']
 

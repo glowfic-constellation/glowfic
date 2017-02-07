@@ -1,6 +1,8 @@
 require "resque_web"
 
 Rails.application.routes.draw do
+  apipie
+
   root :to => 'sessions#index'
 
   # Accounts

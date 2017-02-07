@@ -1,4 +1,6 @@
 class User < ActiveRecord::Base
+  include Presentable
+
   MIN_USERNAME_LEN = 3
   MAX_USERNAME_LEN = 80
 

@@ -1,4 +1,5 @@
 class Post < ActiveRecord::Base
+  include Presentable
   include Writable
   include Viewable
   include PostOrderable

@@ -5,19 +5,20 @@ class CharacterPresenter
     @character = character
   end
 
-  def as_json(*args, **kwargs)
+  def as_json(options={})
     return {} unless character
+    char_json = character.as_json_without_presenter(only: [:id, :name, :screenname])
+    return char_json unless options[:include].present?
+
+    char_json.merge!(default: character.icon.try(:as_json)) if options[:include].include?(:default)
+    return char_json unless options[:include].include?(:galleries)
 
     galleries = if character.galleries.present? && character.user.icon_picker_grouping?
       multi_gallery_json
     else
       single_gallery_json
     end
-
-    { galleries: galleries,
-      default: character.icon.try(:as_json),
-      name: character.name,
-      screenname: character.screenname }
+    char_json.merge(galleries: galleries)
   end
 
   def multi_gallery_json

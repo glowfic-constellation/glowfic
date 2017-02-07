@@ -3,7 +3,7 @@ require "spec_helper"
 RSpec.describe Api::V1::BoardsController do
   describe "GET show" do
     it "requires valid board" do
-      get :show, id: -1
+      get :show, id: 0
       expect(response).to have_http_status(404)
       expect(response.json['errors'].size).to eq(1)
       expect(response.json['errors'][0]['message']).to eq("Continuity could not be found.")
