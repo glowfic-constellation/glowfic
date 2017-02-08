@@ -653,7 +653,11 @@ RSpec.describe PostsController do
     context "mark hidden" do
       it "marks hidden" do
         post = create(:post)
+        reply = create(:reply, post: post)
         user = create(:user)
+        post.mark_read(user, post.read_time_for([reply]))
+        time_read = post.reload.last_read(user)
+
         login_as(user)
         expect(post.ignored_by?(user)).not_to be_true
 
@@ -661,12 +665,17 @@ RSpec.describe PostsController do
         expect(response).to redirect_to(post_url(post))
         expect(flash[:success]).to eq("Post has been hidden")
         expect(post.reload.ignored_by?(user)).to be_true
+        expect(post.last_read(user)).to be_the_same_time_as(time_read)
       end
 
       it "marks unhidden" do
         post = create(:post)
+        reply = create(:reply, post: post)
         user = create(:user)
         login_as(user)
+        post.mark_read(user, post.read_time_for([reply]))
+        time_read = post.reload.last_read(user)
+
         post.ignore(user)
         expect(post.reload.ignored_by?(user)).to be_true
 
@@ -674,6 +683,7 @@ RSpec.describe PostsController do
         expect(response).to redirect_to(post_url(post))
         expect(flash[:success]).to eq("Post has been unhidden")
         expect(post.reload.ignored_by?(user)).not_to be_true
+        expect(post.last_read(user)).to be_the_same_time_as(time_read)
       end
     end
 
