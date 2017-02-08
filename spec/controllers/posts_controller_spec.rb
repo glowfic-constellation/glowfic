@@ -588,6 +588,47 @@ RSpec.describe PostsController do
           end
         end
       end
+
+      context "with an old thread" do
+        {hiatus: 'on_hiatus', active: 'active'}.each do |status, method|
+          context "to #{status}" do
+            time = 2.months.ago
+            let(:post) { create(:post, created_at: time, updated_at: time) }
+            let(:reply) { create(:reply, post: post, created_at: time, updated_at: time) }
+            before (:each) { reply }
+
+            it "works for creator" do
+              login_as(post.user)
+              expect(post.tagged_at).to eq(time)
+              put :update, id: post.id, status: status
+              expect(response).to redirect_to(post_url(post))
+              expect(flash[:success]).to eq("Post has been marked #{status}.")
+              expect(post.reload.send("on_hiatus?")).to be_true
+              expect(post.reload.send("marked_hiatus?")).to eq(status == :hiatus)
+            end
+
+            it "works for coauthor" do
+              login_as(reply.user)
+              expect(post.tagged_at).to eq(time)
+              put :update, id: post.id, status: status
+              expect(response).to redirect_to(post_url(post))
+              expect(flash[:success]).to eq("Post has been marked #{status}.")
+              expect(post.reload.send("on_hiatus?")).to be_true
+              expect(post.reload.send("marked_hiatus?")).to eq(status == :hiatus)
+            end
+
+            it "works for admin" do
+              login_as(create(:admin_user))
+              expect(post.tagged_at).to eq(time)
+              put :update, id: post.id, status: status
+              expect(response).to redirect_to(post_url(post))
+              expect(flash[:success]).to eq("Post has been marked #{status}.")
+              expect(post.reload.send("on_hiatus?")).to be_true
+              expect(post.reload.send("marked_hiatus?")).to eq(status == :hiatus)
+            end
+          end
+        end
+      end
     end
 
     context "author lock" do
