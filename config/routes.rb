@@ -88,6 +88,7 @@ Rails.application.routes.draw do
         collection { post :reorder }
       end
       resources :characters, only: [:show, :update]
+      resources :posts, only: :show
     end
   end
 
