@@ -2,3 +2,8 @@ language: ruby
 rvm:
  - 2.3
 script: bundle exec rspec spec
+env:
+- CI=true
+services:
+  - redis-server
+  - postgresql
