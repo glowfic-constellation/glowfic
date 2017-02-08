@@ -599,7 +599,7 @@ RSpec.describe PostsController do
 
             it "works for creator" do
               login_as(post.user)
-              expect(post.tagged_at).to eq(time)
+              expect(post.reload.tagged_at).to be_the_same_time_as(time)
               put :update, id: post.id, status: status
               expect(response).to redirect_to(post_url(post))
               expect(flash[:success]).to eq("Post has been marked #{status}.")
@@ -609,7 +609,7 @@ RSpec.describe PostsController do
 
             it "works for coauthor" do
               login_as(reply.user)
-              expect(post.tagged_at).to eq(time)
+              expect(post.reload.tagged_at).to be_the_same_time_as(time)
               put :update, id: post.id, status: status
               expect(response).to redirect_to(post_url(post))
               expect(flash[:success]).to eq("Post has been marked #{status}.")
@@ -619,7 +619,7 @@ RSpec.describe PostsController do
 
             it "works for admin" do
               login_as(create(:admin_user))
-              expect(post.tagged_at).to eq(time)
+              expect(post.reload.tagged_at).to be_the_same_time_as(time)
               put :update, id: post.id, status: status
               expect(response).to redirect_to(post_url(post))
               expect(flash[:success]).to eq("Post has been marked #{status}.")
