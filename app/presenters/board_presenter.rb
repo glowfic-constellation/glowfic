@@ -5,10 +5,12 @@ class BoardPresenter
     @board = board
   end
 
-  def as_json(*args, **kwargs)
+  def as_json(options={})
     return {} unless board
+    board_json = board.as_json_without_presenter(only: [:id, :name])
+    return board_json unless options[:include].present?
+    return board_json unless options[:include].include?(:board_sections)
     # TODO what if lots of sections?
-    { id: board.id,
-      board_sections: board.board_sections.order('section_order asc') }
+    board_json.merge(board_sections: board.board_sections.order('section_order asc'))
   end
 end

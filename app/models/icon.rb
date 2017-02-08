@@ -1,4 +1,6 @@
 class Icon < ActiveRecord::Base
+  include Presentable
+
   belongs_to :user
   belongs_to :template
   has_many :replies
@@ -11,10 +13,6 @@ class Icon < ActiveRecord::Base
 
   after_destroy :clear_icon_ids
   before_destroy :delete_from_s3
-
-  def as_json(options={})
-    super({only: [:id, :url, :keyword]}.reverse_merge(options))
-  end
 
   def uploaded?
     url.to_s.starts_with?('https://d1anwqy6ci9o1i.cloudfront.net/')
