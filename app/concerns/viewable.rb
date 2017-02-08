@@ -22,6 +22,10 @@ module Viewable
       view_for(user).update_attributes(ignored: true)
     end
 
+    def unignore(user)
+      view_for(user).update_attributes(ignored: false)
+    end
+
     def ignored_by?(user)
       view_for(user).ignored
     end

@@ -479,6 +479,17 @@ RSpec.describe PostsController do
       expect(flash[:error]).to eq("Post could not be found.")
     end
 
+    it "requires post be visible to user" do
+      post = create(:post, privacy: Post::PRIVACY_PRIVATE)
+      user = create(:user)
+      login_as(user)
+      expect(post.visible_to?(user)).not_to be_true
+
+      put :update, id: post.id
+      expect(response).to redirect_to(boards_url)
+      expect(flash[:error]).to eq("You do not have permission to view this post.")
+    end
+
     context "mark unread" do
       it "requires valid at_id" do
         skip "TODO does not notify"
@@ -677,6 +688,43 @@ RSpec.describe PostsController do
         put :update, id: post.id, authors_locked: 'false'
         expect(flash[:success]).to eq("Post has been unlocked from current authors.")
         expect(post.reload).not_to be_authors_locked
+      end
+    end
+
+    context "mark hidden" do
+      it "marks hidden" do
+        post = create(:post)
+        reply = create(:reply, post: post)
+        user = create(:user)
+        post.mark_read(user, post.read_time_for([reply]))
+        time_read = post.reload.last_read(user)
+
+        login_as(user)
+        expect(post.ignored_by?(user)).not_to be_true
+
+        put :update, id: post.id, hidden: 'true'
+        expect(response).to redirect_to(post_url(post))
+        expect(flash[:success]).to eq("Post has been hidden")
+        expect(post.reload.ignored_by?(user)).to be_true
+        expect(post.last_read(user)).to be_the_same_time_as(time_read)
+      end
+
+      it "marks unhidden" do
+        post = create(:post)
+        reply = create(:reply, post: post)
+        user = create(:user)
+        login_as(user)
+        post.mark_read(user, post.read_time_for([reply]))
+        time_read = post.reload.last_read(user)
+
+        post.ignore(user)
+        expect(post.reload.ignored_by?(user)).to be_true
+
+        put :update, id: post.id, hidden: 'false'
+        expect(response).to redirect_to(post_url(post))
+        expect(flash[:success]).to eq("Post has been unhidden")
+        expect(post.reload.ignored_by?(user)).not_to be_true
+        expect(post.last_read(user)).to be_the_same_time_as(time_read)
       end
     end
 

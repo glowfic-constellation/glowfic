@@ -133,6 +133,7 @@ class PostsController < WritableController
 
   def update
     mark_unread and return if params[:unread].present?
+    mark_hidden and return if params[:hidden].present?
 
     require_permission
     return if performed?
@@ -177,6 +178,17 @@ class PostsController < WritableController
     @post.views.where(user_id: current_user.id).destroy_all
     flash[:success] = "Post has been marked as unread"
     redirect_to unread_posts_path
+  end
+
+  def mark_hidden
+    if params[:hidden].to_s == 'true'
+      @post.ignore(current_user)
+      flash[:success] = "Post has been hidden"
+    else
+      @post.unignore(current_user)
+      flash[:success] = "Post has been unhidden"
+    end
+    redirect_to post_path(@post)
   end
 
   def change_status
