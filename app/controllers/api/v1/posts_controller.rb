@@ -6,6 +6,7 @@ class Api::V1::PostsController < Api::ApiController
   api :GET, '/posts/:id', 'Load a single post as a JSON resource'
   param :id, :number, required: true, desc: "Post ID"
   param :page, :number, required: false, desc: 'Page in results'
+  param :per_page, :number, required: false, desc: 'Number of replies to load per page. Defaults to 25, accepts values from 1-100 inclusive.'
   error 403, "Post is not visible to the user"
   error 404, "Post not found"
   example "'errors': [{'message': 'Post could not be found.'}]"
@@ -28,6 +29,9 @@ class Api::V1::PostsController < Api::ApiController
   'subject': 'search',
   'description': 'example json',
   'content': 'Lorem ipsum...',
+  'created_at': '2000-01-07T01:02:03Z',
+  'edited_at': '2000-01-07T01:03:03Z',
+  'tagged_at': '2000-01-08T01:02:03Z',
   'status': 0,
   'character': {
     'id': 3,
@@ -38,6 +42,8 @@ class Api::V1::PostsController < Api::ApiController
   'replies': [{
     'id': 1,
     'content': 'dolor sit amet',
+    'created_at': '2000-01-07T01:05:03Z',
+    'updated_at': '2000-01-07T01:05:03Z',
     'character': null,
     'icon': null,
     'user': {
@@ -47,6 +53,8 @@ class Api::V1::PostsController < Api::ApiController
   }, {
     'id': 2,
     'content': 'consectetur adipiscing elit',
+    'created_at': '2000-01-08T01:02:03Z',
+    'updated_at': '2000-01-08T01:02:03Z',
     'character': null,
     'icon': {
       'id': 7,
