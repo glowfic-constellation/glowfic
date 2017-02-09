@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/Marri/glowfic.svg?branch=master)](https://travis-ci.org/Marri/glowfic)
+
 ## README
 
 ### Dependencies
