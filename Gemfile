@@ -2,6 +2,7 @@ source 'https://rubygems.org'
 
 ruby '2.3.3'
 
+gem 'api-pagination'
 gem 'apipie-rails'
 gem 'audited-activerecord', '~> 3.0'
 gem 'aws-sdk', '~> 2'

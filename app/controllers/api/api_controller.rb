@@ -27,4 +27,11 @@ class Api::ApiController < ActionController::Base
     error = {message: "You do not have permission to perform this action."}
     render json: {errors: [error]}, status: :forbidden
   end
+
+  def per_page
+    per = params[:per_page].to_i
+    return 25 if per < 1
+    return 100 if per > 100
+    per
+  end
 end

@@ -31,7 +31,14 @@ RSpec.describe Api::V1::PostsController do
     end
 
     it "paginates" do
-      skip
+      post = create(:post, num_replies: 5, with_icon: true, with_character: true)
+      get :show, id: post.id, per_page: 2, page: 3
+      expect(response).to have_http_status(200)
+      expect(response.headers['Per-Page'].to_i).to eq(2)
+      expect(response.headers['Page'].to_i).to eq(3)
+      expect(response.headers['Total'].to_i).to eq(5)
+      expect(response.headers['Link']).not_to be_nil
+      expect(response.json['data']['replies'].size).to eq(1)
     end
   end
 end

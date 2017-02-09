@@ -5,6 +5,7 @@ class Api::V1::PostsController < Api::ApiController
 
   api :GET, '/posts/:id', 'Load a single post as a JSON resource'
   param :id, :number, required: true, desc: "Post ID"
+  param :page, :number, required: false, desc: 'Page in results'
   error 403, "Post is not visible to the user"
   error 404, "Post not found"
   example "'errors': [{'message': 'Post could not be found.'}]"
@@ -66,6 +67,7 @@ class Api::V1::PostsController < Api::ApiController
 
     access_denied and return unless post.visible_to?(current_user)
 
-    render json: {data: post}
+    replies = paginate(post.replies.order('id asc'), per_page: per_page)
+    render json: {data: post.as_json(replies: replies)}
   end
 end
