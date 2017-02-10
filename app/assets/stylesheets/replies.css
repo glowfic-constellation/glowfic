@@ -14,8 +14,8 @@
 #current-icon-dropdown select { width: 100px; margin-bottom: 10px; }
 
 /* Character selector */
-#swap-icon { width: 14px;  height: 14px; position: relative; top: 1px; cursor: pointer; }
-#character-selector {
+#swap-icon, #swap-alias { width: 14px;  height: 14px; position: relative; top: 1px; cursor: pointer; }
+#character-selector, #alias-selector {
     position: absolute;
     top: 0px;
     left: 150px;
@@ -25,7 +25,7 @@
     display: none;
     text-align: left;
 }
-#character-selector h4 { margin-bottom: 0px; margin-top:0px; }
+#character-selector h4, #alias-selector h4 { margin-bottom: 0px; margin-top:0px; }
 
 /* Icon selector */
 #gallery { display: none; position: absolute; top: 10px; left: 160px; min-height: 101px; padding: 10px; margin: 0px; z-index: 4; }

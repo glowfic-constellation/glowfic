@@ -11,6 +11,7 @@ class CharacterPresenter
     return char_json unless options[:include].present?
 
     char_json.merge!(default: character.icon.try(:as_json)) if options[:include].include?(:default)
+    char_json.merge!(aliases: character.aliases) if options[:include].include?(:aliases)
     return char_json unless options[:include].include?(:galleries)
 
     galleries = if character.galleries.present? && character.user.icon_picker_grouping?

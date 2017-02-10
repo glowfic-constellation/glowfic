@@ -222,6 +222,38 @@ ALTER SEQUENCE boards_id_seq OWNED BY boards.id;
 
 
 --
+-- Name: character_aliases; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE character_aliases (
+    id integer NOT NULL,
+    character_id integer NOT NULL,
+    name character varying(255) NOT NULL,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
+-- Name: character_aliases_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE character_aliases_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: character_aliases_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE character_aliases_id_seq OWNED BY character_aliases.id;
+
+
+--
 -- Name: character_groups; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -717,7 +749,8 @@ CREATE TABLE posts (
     last_reply_id integer,
     edited_at timestamp without time zone,
     tagged_at timestamp without time zone,
-    authors_locked boolean DEFAULT false
+    authors_locked boolean DEFAULT false,
+    character_alias_id integer
 );
 
 
@@ -753,7 +786,8 @@ CREATE TABLE replies (
     icon_id integer,
     thread_id integer,
     created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    updated_at timestamp without time zone NOT NULL,
+    character_alias_id integer
 );
 
 
@@ -975,6 +1009,13 @@ ALTER TABLE ONLY boards ALTER COLUMN id SET DEFAULT nextval('boards_id_seq'::reg
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
+ALTER TABLE ONLY character_aliases ALTER COLUMN id SET DEFAULT nextval('character_aliases_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY character_groups ALTER COLUMN id SET DEFAULT nextval('character_groups_id_seq'::regclass);
 
 
@@ -1149,6 +1190,14 @@ ALTER TABLE ONLY board_views
 
 ALTER TABLE ONLY boards
     ADD CONSTRAINT boards_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: character_aliases_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY character_aliases
+    ADD CONSTRAINT character_aliases_pkey PRIMARY KEY (id);
 
 
 --
@@ -1372,6 +1421,13 @@ CREATE INDEX index_board_authors_on_user_id ON board_authors USING btree (user_i
 --
 
 CREATE INDEX index_board_views_on_user_id_and_board_id ON board_views USING btree (user_id, board_id);
+
+
+--
+-- Name: index_character_aliases_on_character_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_character_aliases_on_character_id ON character_aliases USING btree (character_id);
 
 
 --
@@ -1788,3 +1844,5 @@ INSERT INTO schema_migrations (version) VALUES ('20161218194918');
 INSERT INTO schema_migrations (version) VALUES ('20170103184309');
 
 INSERT INTO schema_migrations (version) VALUES ('20170109000120');
+
+INSERT INTO schema_migrations (version) VALUES ('20170210013443');

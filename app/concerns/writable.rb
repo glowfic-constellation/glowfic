@@ -5,8 +5,9 @@ module Writable
     belongs_to :character
     belongs_to :icon
     belongs_to :user
+    belongs_to :character_alias
 
-    attr_accessible :character, :character_id, :user, :user_id, :icon, :icon_id, :content, :created_at, :updated_at
+    attr_accessible :character, :character_id, :user, :user_id, :icon, :icon_id, :content, :created_at, :updated_at, :character_alias_id
 
     validates_presence_of :user
     validate :character_ownership, :icon_ownership
@@ -38,8 +39,13 @@ module Writable
     end
 
     def name
-      return read_attribute(:name) if has_attribute?(:name)
-      character.try(:name)
+      if character_alias_id.present?
+        return read_attribute(:alias) if has_attribute?(:alias)
+        character_alias.name
+      else
+        return read_attribute(:name) if has_attribute?(:name)
+        character.try(:name)
+      end
     end
 
     def screenname

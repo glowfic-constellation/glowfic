@@ -7,6 +7,7 @@ class Character < ActiveRecord::Base
   belongs_to :character_group
   has_many :replies
   has_many :posts
+  has_many :aliases, class_name: CharacterAlias
 
   has_many :characters_galleries
   has_many :galleries, through: :characters_galleries, after_remove: :reorder_galleries

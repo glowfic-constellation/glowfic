@@ -14,13 +14,18 @@
       - elsif current_user.avatar
         = select_tag :icon_dropdown, options_for_select([[current_user.avatar.keyword, current_user.avatar.id]], current_user.avatar.id), prompt: "No Icon"
     .post-info-text
-      .post-character{class: ('hidden' unless item.character), data: {character_id: item.character_id}}= item.character.try(:name)
+      .post-character{class: ('hidden' unless item.character), data: {character_id: item.character_id}}
+        %span#name= item.character.try(:name)
+        = image_tag swap_icon_url, id: 'swap-alias', alt: ">", title: 'Choose Alias', class: ('hidden' unless item.character.try(:aliases).present?)
+        #alias-selector.beige
+          %b Choose Alias
+          = select_tag :character_alias, options_from_collection_for_select(item.character.try(:aliases).to_a, :id, :name, item.character_alias_id), prompt: item.character.try(:name)
       .post-screenname{class: ('hidden' unless item.character.try(:screenname))}= item.character.try(:screenname)
       #post-author-spacer.dark.spacer{class: ('hidden' if item.character)}
       .post-author
         = item.user.username
         - if current_user.characters.present?
-          = image_tag ((current_user.layout == 'starrydark' or current_user.layout == 'starry' or current_user.layout == 'starrylight') ? '/images/swapgray.png' : '/images/swap.png'), :id => 'swap-icon', :alt => ">"
+          = image_tag swap_icon_url, id: 'swap-icon', alt: ">", title: 'Choose Character'
           #character-selector.beige
             %b Choose Character
             = select_tag :active_character,

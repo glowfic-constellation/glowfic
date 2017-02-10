@@ -91,6 +91,11 @@ $(document).ready(function() {
     width: '100%',
   });
 
+  $("#character_alias").select2({
+    minimumResultsForSearch: 10,
+    width: '100%',
+  });
+
   // TODO fix hack
   // Only initialize TinyMCE if it's required
   if($("#rtf").hasClass('selected') == true) {
@@ -173,6 +178,13 @@ $(document).ready(function() {
 
   $("#swap-icon").click(function () {
     $('#character-selector').toggle();
+    $('#alias-selector').hide();
+    $('html, body').scrollTop($("#post-editor").offset().top);
+  });
+
+  $("#swap-alias").click(function () {
+    $('#alias-selector').toggle();
+    $('#character-selector').hide();
     $('html, body').scrollTop($("#post-editor").offset().top);
   });
 
@@ -185,6 +197,18 @@ $(document).ready(function() {
     var id = $(this).val();
     $("#reply_character_id").val(id);
     getAndSetCharacterData(id);
+  });
+
+  $("#character_alias").on('select2:close', function () {
+    $('html, body').scrollTop($("#post-editor").offset().top);
+  });
+
+  $("#character_alias").change(function() {
+    // Set the ID
+    var id = $(this).val();
+    $("#reply_character_alias_id").val(id);
+    $("#post-editor .post-character #name").html($('#character_alias option:selected').text());
+    $('#alias-selector').hide();
   });
 
   // Hides selectors when you hit the escape key
@@ -329,11 +353,23 @@ getAndSetCharacterData = function(characterId, options) {
   $.get('/api/v1/characters/' + characterId, {}, function (resp) {
     // Display the correct name/screenname fields
     $("#post-editor #post-author-spacer").hide();
-    $("#post-editor .post-character").show().html(resp.name).data('character-id', characterId);
+    $("#post-editor .post-character").show().data('character-id', characterId);
+    $("#post-editor .post-character #name").html(resp.name);
     if(resp.screenname == undefined) {
       $("#post-editor .post-screenname").hide();
     } else {
       $("#post-editor .post-screenname").show().html(resp.screenname);
+    }
+
+    // Display alias selector if relevant
+    if(character['aliases'].length > 0) {
+      $("#swap-alias").show();
+      $("#character_alias").empty().append('<option value="">' + character['name'] + '</option>');
+      for(var i=0; i<character['aliases'].length; i++) {
+        $("#character_alias").append($("<option>").attr({value: character['aliases'][i]['id']}).append(character['aliases'][i]['name']));
+      }
+    } else {
+      $("#swap-alias").hide();
     }
 
     // Display no icon if no default set
