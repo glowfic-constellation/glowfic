@@ -41,6 +41,7 @@ class Post < ActiveRecord::Base
 
   before_create :build_initial_flat_post
   after_save :update_tag_list
+  before_create :set_last_user
 
   audited except: [:last_reply_id, :last_user_id, :edited_at, :tagged_at, :section_id, :section_order]
   has_associated_audits
@@ -187,6 +188,10 @@ class Post < ActiveRecord::Base
     (updated_ids - existing_ids).each do |new_id|
       PostTag.create(post_id: id, tag_id: new_id)
     end
+  end
+
+  def set_last_user
+    self.last_user = user
   end
 
   def timestamp_attributes_for_update
