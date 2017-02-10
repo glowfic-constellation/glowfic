@@ -20,9 +20,11 @@ class ApplicationController < ActionController::Base
 
   def show_password_warning
     return unless logged_in?
-    if current_user.salt_uuid.nil?
-      flash.now[:pass] = "Because Marri accidentally made passwords a bit too secure, you cannot update your username until you <a href='/users/#{current_user.id}/edit#change-password'>update your password</a>. (You may update your password to the same password you already have, as long as you go through the Change Password flow.) Please fix your password as soon as possible. You may also fix your password by logging out and then back in."
-    end
+    return unless current_user.salt_uuid.nil?
+    reset_session
+    cookies.delete(:user_id)
+    @current_user = nil
+    flash.now[:pass] = "Because Marri accidentally made passwords a bit too secure, you must log back in to continue using the site."
   end
 
   def use_javascript(js)
