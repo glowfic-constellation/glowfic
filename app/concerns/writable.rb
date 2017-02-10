@@ -39,13 +39,14 @@ module Writable
     end
 
     def name
-      if character_alias_id.present?
-        return read_attribute(:alias) if has_attribute?(:alias)
-        character_alias.name
-      else
-        return read_attribute(:name) if has_attribute?(:name)
-        character.try(:name)
-      end
+      return character_name unless character_alias_id.present?
+      return read_attribute(:alias) if has_attribute?(:alias)
+      character_alias.name
+    end
+
+    def character_name
+      return read_attribute(:name) if has_attribute?(:name)
+      character.try(:name)
     end
 
     def screenname

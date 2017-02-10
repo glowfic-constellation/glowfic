@@ -25,5 +25,14 @@ RSpec.describe Api::V1::PostsController do
       expect(response.json['icon']['id']).to eq(post.icon_id)
       expect(response.json['character']['id']).to eq(post.character_id)
     end
+
+    it "uses aliases" do
+      calias = create(:alias)
+      expect(calias.name).not_to eq(calias.character.name)
+      post = create(:post, character: calias.character, user: calias.character.user, character_alias: calias)
+      get :show, id: post.id
+      expect(response.json['character']['name']).to eq(calias.character.name)
+      expect(response.json['character_name']).to eq(calias.name)
+    end
   end
 end
