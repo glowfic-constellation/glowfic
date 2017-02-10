@@ -75,7 +75,12 @@ class Api::V1::PostsController < Api::ApiController
 
     access_denied and return unless post.visible_to?(current_user)
 
-    replies = paginate(post.replies.order('id asc'), per_page: per_page)
+    replies = paginate(post.replies
+      .select('replies.*, characters.name AS character_name, characters.screenname AS character_screenname, icons.keyword, icons.url, users.username')
+      .joins(:user)
+      .joins("LEFT OUTER JOIN characters ON characters.id = replies.character_id")
+      .joins("LEFT OUTER JOIN icons ON icons.id = replies.icon_id")
+      .order('id asc'), per_page: per_page)
     render json: {data: post.as_json(replies: replies)}
   end
 end
