@@ -5,8 +5,6 @@ class Api::V1::PostsController < Api::ApiController
 
   api! 'Load a single post as a JSON resource'
   param :id, :number, required: true, desc: "Post ID"
-  param :page, :number, required: false, desc: 'Page in results'
-  param :per_page, :number, required: false, desc: 'Number of replies to load per page. Defaults to 25, accepts values from 1-100 inclusive.'
   error 403, "Post is not visible to the user"
   error 404, "Post not found"
   example "'errors': [{'message': 'Post could not be found.'}]"
