@@ -326,19 +326,17 @@ getAndSetCharacterData = function(characterId, options) {
   }
 
   $.get('/api/v1/characters/' + characterId, {}, function (resp) {
-    var character = resp['data'];
-
     // Display the correct name/screenname fields
     $("#post-editor #post-author-spacer").hide();
-    $("#post-editor .post-character").show().html(character['name']).data('character-id', characterId);
-    if(character['screenname'] == undefined) {
+    $("#post-editor .post-character").show().html(resp['name']).data('character-id', characterId);
+    if(resp['screenname'] == undefined) {
       $("#post-editor .post-screenname").hide();
     } else {
-      $("#post-editor .post-screenname").show().html(character['screenname']);
+      $("#post-editor .post-screenname").show().html(resp['screenname']);
     }
 
     // Display no icon if no default set
-    if (character['default'] == undefined) {
+    if (resp['default'] == undefined) {
       $("#current-icon").removeClass('pointer');
       setIcon('');
       return;
@@ -349,7 +347,7 @@ getAndSetCharacterData = function(characterId, options) {
 
     // Calculate new galleries
     $("#gallery").html("");
-    var galleries = character['galleries'];
+    var galleries = resp['galleries'];
     var multiGallery = galleries.length > 1;
     for(var i=0; i<galleries.length; i++) {
       var gallery = galleries[i];
@@ -362,7 +360,7 @@ getAndSetCharacterData = function(characterId, options) {
     if (restore_icon)
       setIconFromId(selectedIconID);
     else
-      setIcon(character['default']['id'], character['default']['url'], character['default']['keyword'], character['default']['keyword']);
+      setIcon(resp['default']['id'], resp['default']['url'], resp['default']['keyword'], resp['default']['keyword']);
   }, 'json');
 };
 
@@ -399,7 +397,7 @@ setIcon = function(id, url, title, alt) {
 setSections = function() {
   var board_id = $("#post_board_id").val();
   $.get("/api/v1/boards/"+board_id, {}, function(resp) {
-    var sections = resp['data']['board_sections'];
+    var sections = resp['board_sections'];
     if (sections.length > 0) {
       $("#section").show();
       $("#post_section_id").empty().append('<option value="">— Choose Section —</option>');
