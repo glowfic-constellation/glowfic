@@ -38,34 +38,11 @@ class Api::V1::PostsController < Api::ApiController
     'name': 'Character Example',
     'screenname': 'char-example'
   },
-  'icon': null,
-  'replies': [{
-    'id': 1,
-    'content': 'dolor sit amet',
-    'created_at': '2000-01-07T01:05:03Z',
-    'updated_at': '2000-01-07T01:05:03Z',
-    'character': null,
-    'icon': null,
-    'user': {
-      'id': 2,
-      'username': 'Marri2'
-    }
-  }, {
-    'id': 2,
-    'content': 'consectetur adipiscing elit',
-    'created_at': '2000-01-08T01:02:03Z',
-    'updated_at': '2000-01-08T01:02:03Z',
-    'character': null,
-    'icon': {
-      'id': 7,
-      'url': 'http://www.example.com/image.png',
-      'keyword': 'icon'
-    },
-    'user': {
-      'id': 1,
-      'username': 'Marri1'
-    }
-  }],
+  'icon': {
+    'id': 4,
+    'url': 'http://www.example.com/image.png',
+    'keyword': 'icon'
+  }
 }"
   def show
     unless post = Post.find_by_id(params[:id])
@@ -74,13 +51,6 @@ class Api::V1::PostsController < Api::ApiController
     end
 
     access_denied and return unless post.visible_to?(current_user)
-
-    replies = paginate(post.replies
-      .select('replies.*, characters.name AS character_name, characters.screenname AS character_screenname, icons.keyword, icons.url, users.username')
-      .joins(:user)
-      .joins("LEFT OUTER JOIN characters ON characters.id = replies.character_id")
-      .joins("LEFT OUTER JOIN icons ON icons.id = replies.icon_id")
-      .order('id asc'), per_page: per_page)
-    render json: post.as_json(replies: replies)
+    render json: post
   end
 end

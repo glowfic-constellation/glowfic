@@ -15,7 +15,6 @@ class PostPresenter
       section: post.section,
       user: post.user,
       character: post.character,
-      icon: post.icon,
-      replies: options[:replies] || post.replies.order('id asc') })
+      icon: post.icon})
   end
 end
