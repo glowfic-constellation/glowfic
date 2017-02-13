@@ -3,7 +3,7 @@ class Api::V1::PostsController < Api::ApiController
     description 'Viewing and editing posts'
   end
 
-  api :GET, '/posts/:id', 'Load a single post as a JSON resource'
+  api! 'Load a single post as a JSON resource'
   param :id, :number, required: true, desc: "Post ID"
   param :page, :number, required: false, desc: 'Page in results'
   param :per_page, :number, required: false, desc: 'Number of replies to load per page. Defaults to 25, accepts values from 1-100 inclusive.'
@@ -11,7 +11,7 @@ class Api::V1::PostsController < Api::ApiController
   error 404, "Post not found"
   example "'errors': [{'message': 'Post could not be found.'}]"
   example "'errors': [{'message': 'You do not have permission to perform this action.'}]"
-  example "'data': {
+  example "{
   'id': 1,
   'user': {
     'id': 1,
@@ -81,6 +81,6 @@ class Api::V1::PostsController < Api::ApiController
       .joins("LEFT OUTER JOIN characters ON characters.id = replies.character_id")
       .joins("LEFT OUTER JOIN icons ON icons.id = replies.icon_id")
       .order('id asc'), per_page: per_page)
-    render json: {data: post.as_json(replies: replies)}
+    render json: post.as_json(replies: replies)
   end
 end

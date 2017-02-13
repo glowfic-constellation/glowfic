@@ -4,11 +4,11 @@ class Api::V1::BoardsController < Api::ApiController
     description 'Viewing and editing continuities'
   end
 
-  api :GET, '/boards/:id', 'Load a single continuity as a JSON resource.'
+  api! 'Load a single continuity as a JSON resource.'
   param :id, :number, required: true, desc: 'Continuity ID'
   error 404, "Continuity not found"
   example "'errors': [{'message': 'Continuity could not be found.'}]"
-  example "'data': {
+  example "{
   'id': 1,
   'name': 'Continuity',
   'board_sections': [{
@@ -27,6 +27,6 @@ class Api::V1::BoardsController < Api::ApiController
       render json: {errors: [error]}, status: :not_found and return
     end
 
-    render json: {data: board.as_json(include: [:board_sections])}
+    render json: board.as_json(include: [:board_sections])
   end
 end

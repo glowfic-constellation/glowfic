@@ -13,7 +13,7 @@ RSpec.describe Api::V1::CharactersController do
       character = create(:character)
       get :show, id: character.id
       expect(response).to have_http_status(200)
-      expect(response.json['data']['name']).to eq(character.name)
+      expect(response.json['name']).to eq(character.name)
     end
 
     it "succeeds for logged in users with valid character" do
@@ -21,7 +21,7 @@ RSpec.describe Api::V1::CharactersController do
       login
       get :show, id: character.id
       expect(response).to have_http_status(200)
-      expect(response.json['data']['name']).to eq(character.name)
+      expect(response.json['name']).to eq(character.name)
     end
 
     it "has single gallery when present" do
@@ -29,7 +29,7 @@ RSpec.describe Api::V1::CharactersController do
       character.galleries << create(:gallery, user: character.user)
       get :show, id: character.id
       expect(response).to have_http_status(200)
-      expect(response.json['data']['galleries'].size).to eq(1)
+      expect(response.json['galleries'].size).to eq(1)
     end
 
     it "has single gallery when icon present" do
@@ -38,7 +38,7 @@ RSpec.describe Api::V1::CharactersController do
       character.save
       get :show, id: character.id
       expect(response).to have_http_status(200)
-      expect(response.json['data']['galleries'].size).to eq(1)
+      expect(response.json['galleries'].size).to eq(1)
     end
 
     it "has galleries when present" do
@@ -47,7 +47,7 @@ RSpec.describe Api::V1::CharactersController do
       character.galleries << create(:gallery, user: character.user, icon_count: 1)
       get :show, id: character.id
       expect(response).to have_http_status(200)
-      expect(response.json['data']['galleries'].size).to eq(2)
+      expect(response.json['galleries'].size).to eq(2)
     end
 
     it "has galleries when icon_picker_grouping is false" do
@@ -58,7 +58,7 @@ RSpec.describe Api::V1::CharactersController do
       login_as(user)
       get :show, id: character.id
       expect(response).to have_http_status(200)
-      expect(response.json['data']['galleries'].size).to eq(1)
+      expect(response.json['galleries'].size).to eq(1)
     end
   end
 
@@ -110,7 +110,7 @@ RSpec.describe Api::V1::CharactersController do
       login_as(character.user)
       put :update, id: character.id, character: {default_icon_id: ''}
       expect(response.status).to eq(200)
-      expect(response.json['data']['name']).to eq(character.name)
+      expect(response.json['name']).to eq(character.name)
       expect(character.reload.default_icon_id).to be_nil
     end
 
@@ -123,7 +123,7 @@ RSpec.describe Api::V1::CharactersController do
       put :update, id: character.id, character: {default_icon_id: new_icon.id}
 
       expect(response.status).to eq(200)
-      expect(response.json['data']['name']).to eq(character.name)
+      expect(response.json['name']).to eq(character.name)
       expect(character.reload.default_icon_id).to eq(new_icon.id)
     end
 

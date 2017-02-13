@@ -21,13 +21,13 @@ RSpec.describe Api::V1::PostsController do
       reply = create(:reply, post: post, with_character: true, with_icon: true)
       get :show, id: post.id
       expect(response).to have_http_status(200)
-      expect(response.json['data']['id']).to eq(post.id)
-      expect(response.json['data']['icon']['id']).to eq(post.icon_id)
-      expect(response.json['data']['character']['id']).to eq(post.character_id)
-      expect(response.json['data']['replies'].size).to eq(3)
-      expect(response.json['data']['replies'][2]['id']).to eq(reply.id)
-      expect(response.json['data']['replies'][2]['icon']['id']).to eq(reply.icon_id)
-      expect(response.json['data']['replies'][2]['character']['id']).to eq(reply.character_id)
+      expect(response.json['id']).to eq(post.id)
+      expect(response.json['icon']['id']).to eq(post.icon_id)
+      expect(response.json['character']['id']).to eq(post.character_id)
+      expect(response.json['replies'].size).to eq(3)
+      expect(response.json['replies'][2]['id']).to eq(reply.id)
+      expect(response.json['replies'][2]['icon']['id']).to eq(reply.icon_id)
+      expect(response.json['replies'][2]['character']['id']).to eq(reply.character_id)
     end
 
     it "paginates" do
@@ -38,7 +38,7 @@ RSpec.describe Api::V1::PostsController do
       expect(response.headers['Page'].to_i).to eq(3)
       expect(response.headers['Total'].to_i).to eq(5)
       expect(response.headers['Link']).not_to be_nil
-      expect(response.json['data']['replies'].size).to eq(1)
+      expect(response.json['replies'].size).to eq(1)
     end
   end
 end
