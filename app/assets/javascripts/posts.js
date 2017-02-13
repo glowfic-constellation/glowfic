@@ -235,7 +235,7 @@ bindIcon = function() {
 
 galleryString = function(gallery, multiGallery) {
   var iconsString = "";
-  var icons = gallery["icons"];
+  var icons = gallery.icons;
 
   for (var i=0; i<icons.length; i++) {
     iconsString += iconString(icons[i]);
@@ -243,16 +243,16 @@ galleryString = function(gallery, multiGallery) {
 
   if(!multiGallery) { return iconsString; }
 
-  var nameString = "<div class='gallery-name'>" + gallery['name'] + "</div>"
+  var nameString = "<div class='gallery-name'>" + gallery.name + "</div>"
   return "<div class='gallery-group'>" + nameString + iconsString + "</div>"
 };
 
 iconString = function(icon) {
-  var img_id = icon["id"];
-  var img_url = icon["url"];
-  var img_key = icon["keyword"];
+  var img_id = icon.id;
+  var img_url = icon.url;
+  var img_key = icon.keyword;
 
-  if (!icon['skip_dropdown']) $("#icon_dropdown").append($("<option>").attr({value: img_id}).append(img_key));
+  if (!icon.skip_dropdown) $("#icon_dropdown").append($("<option>").attr({value: img_id}).append(img_key));
   var icon_img = $("<img>").attr({src: img_url, id: img_id, alt: img_key, title: img_key, 'class': 'icon'});
   return $("<div>").attr('class', 'gallery-icon').append(icon_img).append("<br />").append(img_key)[0].outerHTML;
 };
@@ -292,8 +292,9 @@ setupTinyMCE = function() {
 getAndSetCharacterData = function(characterId, options) {
   var restore_icon = false;
   if (typeof options != 'undefined') {
-    if (options['restore_icon']) restore_icon = options['restore_icon'];
+    restore_icon = options.restore_icon;
   }
+
   // Handle page interactions
   var selectedIconID = $("#reply_icon_id").val();
   $("#character-selector").hide();
@@ -328,15 +329,15 @@ getAndSetCharacterData = function(characterId, options) {
   $.get('/api/v1/characters/' + characterId, {}, function (resp) {
     // Display the correct name/screenname fields
     $("#post-editor #post-author-spacer").hide();
-    $("#post-editor .post-character").show().html(resp['name']).data('character-id', characterId);
-    if(resp['screenname'] == undefined) {
+    $("#post-editor .post-character").show().html(resp.name).data('character-id', characterId);
+    if(resp.screenname == undefined) {
       $("#post-editor .post-screenname").hide();
     } else {
-      $("#post-editor .post-screenname").show().html(resp['screenname']);
+      $("#post-editor .post-screenname").show().html(resp.screenname);
     }
 
     // Display no icon if no default set
-    if (resp['default'] == undefined) {
+    if (resp.default == undefined) {
       $("#current-icon").removeClass('pointer');
       setIcon('');
       return;
@@ -347,11 +348,9 @@ getAndSetCharacterData = function(characterId, options) {
 
     // Calculate new galleries
     $("#gallery").html("");
-    var galleries = resp['galleries'];
-    var multiGallery = galleries.length > 1;
-    for(var i=0; i<galleries.length; i++) {
-      var gallery = galleries[i];
-      $("#gallery").append(galleryString(gallery, multiGallery));
+    var multiGallery = resp.galleries.length > 1;
+    for(var i = 0; i < resp.galleries.length; i++) {
+      $("#gallery").append(galleryString(resp.galleries[i], multiGallery));
     }
 
     $("#gallery").append(iconString({id: '', url: '/images/no-icon.png', keyword: 'No Icon', skip_dropdown: true}));
@@ -360,7 +359,7 @@ getAndSetCharacterData = function(characterId, options) {
     if (restore_icon)
       setIconFromId(selectedIconID);
     else
-      setIcon(resp['default']['id'], resp['default']['url'], resp['default']['keyword'], resp['default']['keyword']);
+      setIcon(resp.default.id, resp.default.url, resp.default.keyword, resp.default.keyword);
   }, 'json');
 };
 
@@ -397,12 +396,12 @@ setIcon = function(id, url, title, alt) {
 setSections = function() {
   var board_id = $("#post_board_id").val();
   $.get("/api/v1/boards/"+board_id, {}, function(resp) {
-    var sections = resp['board_sections'];
+    var sections = resp.board_sections;
     if (sections.length > 0) {
       $("#section").show();
       $("#post_section_id").empty().append('<option value="">— Choose Section —</option>');
       for(var i = 0; i < sections.length; i++) {
-        $("#post_section_id").append('<option value="'+sections[i]['id']+'">'+sections[i]['name']+'</option>');
+        $("#post_section_id").append('<option value="'+sections[i].id+'">'+sections[i].name+'</option>');
       }
       $("#post_section_id").trigger("change");
     } else {
