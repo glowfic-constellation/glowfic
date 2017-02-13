@@ -55,10 +55,16 @@ RSpec.describe Api::V1::CharactersController do
       character = create(:character, user: user)
       character.galleries << create(:gallery, user: user)
       character.galleries << create(:gallery, user: user)
-      login_as(user)
       get :show, id: character.id
       expect(response).to have_http_status(200)
       expect(response.json['galleries'].size).to eq(1)
+    end
+
+    it "has aliases when present" do
+      calias = create(:alias)
+      get :show, id: calias.character_id
+      expect(response.json['aliases'].size).to eq(1)
+      expect(response.json['aliases'].first['id']).to eq(calias.id)
     end
   end
 
