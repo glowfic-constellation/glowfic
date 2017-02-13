@@ -73,11 +73,11 @@ $(document).ready(function() {
 
 function displayGallery(new_id){
   $.get('/galleries/'+new_id, function (resp) {
-    html_string = "<div id='gallery"+new_id+"' data-id='"+new_id+"'><br /><b class='gallery-name'>"+resp['name']+"</b><br /><div class='gallery-icons'>";
-    for(var i = 0; i < resp['icons'].length; i++) {
-      var url = resp['icons'][i]['url'];
-      var keyword = resp['icons'][i]['keyword'];
-      var id = resp['icons'][i]['id'];
+    html_string = "<div id='gallery"+new_id+"' data-id='"+new_id+"'><br /><b class='gallery-name'>"+resp.name+"</b><br /><div class='gallery-icons'>";
+    for(var i = 0; i < resp.icons.length; i++) {
+      var url = resp.icons[i].url;
+      var keyword = resp.icons[i].keyword;
+      var id = resp.icons[i].id;
       html_string += '<img src="'+url+'" alt="'+keyword+'" title="'+keyword+'" class="icon character-icon" id="'+id+'" />';
     }
     html_string += "</div>";

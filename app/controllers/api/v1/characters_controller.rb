@@ -7,11 +7,11 @@ class Api::V1::CharactersController < Api::ApiController
     description 'Viewing and editing characters'
   end
 
-  api :GET, '/characters/:id', 'Load a single character as a JSON resource'
+  api! 'Load a single character as a JSON resource'
   param :id, :number, required: true, desc: 'Character ID'
   error 404, "Character not found"
   example "'errors': [{'message': 'Character could not be found.'}]"
-  example "'data': {
+  example "{
   'id': 1,
   'name': 'Character Example',
   'screenname': 'char-example',
@@ -39,10 +39,10 @@ class Api::V1::CharactersController < Api::ApiController
   }]
 }"
   def show
-    render json: {data: @character.as_json(include: [:galleries, :default])}
+    render json: @character.as_json(include: [:galleries, :default])
   end
 
-  api :PUT, '/characters/:id', 'Update a given character'
+  api! 'Update a given character'
   param :id, :number, required: true, desc: 'Character ID'
   error 401, "You must be logged in"
   error 403, "Character is not editable by the user"
@@ -52,7 +52,7 @@ class Api::V1::CharactersController < Api::ApiController
   example "'errors': [{'message': 'You do not have permission to perform this action.'}]"
   example "'errors': [{'message': 'Character could not be found.'}]"
   example "'errors': [{'message': \"Name can't be blank\"}, {'message': 'Default icon could not be found'}]"
-  example "'data': {
+  example "{
   'id': 1,
   'name': 'Character Example',
   'screenname': 'char-example',
@@ -75,7 +75,7 @@ class Api::V1::CharactersController < Api::ApiController
     render json: {errors: errors}, status: :unprocessable_entity and return unless errors.empty?
 
     @character.save
-    render json: {data: @character.as_json(include: [:default])}
+    render json: @character.as_json(include: [:default])
   end
 
   private
