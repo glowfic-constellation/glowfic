@@ -450,10 +450,6 @@ RSpec.describe Post do
     end
   end
 
-  describe "#last_character_for" do
-
-  end
-
   describe "#first_unread_for" do
     it "uses instance variable if set" do
       post = create(:post)
@@ -504,10 +500,6 @@ RSpec.describe Post do
     end
   end
 
-  describe "#last_character_for" do
-
-  end
-
   describe "#reset_warnings" do
     let(:post) { create(:post) }
     let(:warning) { create(:content_warning) }
@@ -535,6 +527,94 @@ RSpec.describe Post do
       post.content_warnings << create(:content_warning)
       expect(post.reload).to be_show_warnings_for(user)
       expect(post.last_read(user)).to be_the_same_time_as(at_time)
+    end
+  end
+
+  describe "#build_new_reply_for" do
+    it "uses a draft if one exists" do
+      post = create(:post)
+      draft = create(:reply_draft, post: post)
+      reply = post.build_new_reply_for(draft.user)
+      expect(reply).to be_a_new_record
+      expect(reply.user).to eq(draft.user)
+      expect(reply.content).to eq(draft.content)
+    end
+
+    it "copies most recent reply details if present" do
+      post = create(:post)
+      last_reply = create(:reply, post: post, with_character: true, with_icon: true)
+      reply = post.build_new_reply_for(last_reply.user)
+      expect(reply).to be_a_new_record
+      expect(reply.user).to eq(last_reply.user)
+      expect(reply.icon_id).to eq(last_reply.icon_id)
+      expect(reply.character_id).to eq(last_reply.character_id)
+    end
+
+    it "copies post details if it belongs to the user" do
+      post = create(:post, with_character: true, with_icon: true)
+      reply = post.build_new_reply_for(post.user)
+      expect(reply).to be_a_new_record
+      expect(reply.user).to eq(post.user)
+      expect(reply.icon_id).to eq(post.icon_id)
+      expect(reply.character_id).to eq(post.character_id)
+    end
+
+    it "uses active character if available" do
+      post = create(:post)
+      character = create(:character)
+      character.user.active_character = character
+      character.user.save
+
+      reply = post.build_new_reply_for(character.user)
+
+      expect(reply).to be_a_new_record
+      expect(reply.user).to eq(character.user)
+      expect(reply.icon_id).to be_nil
+      expect(reply.character_id).to eq(character.id)
+    end
+
+    it "does not use avatar for active character without icons" do
+      post = create(:post)
+      icon = create(:icon)
+      character = create(:character, user: icon.user)
+
+      user = icon.user
+      user.avatar = icon
+      user.active_character = character
+      user.save
+
+      reply = post.build_new_reply_for(user)
+
+      expect(reply).to be_a_new_record
+      expect(reply.user).to eq(user)
+      expect(reply.icon_id).to be_nil
+      expect(reply.character_id).to eq(character.id)
+    end
+
+    it "uses avatar if available" do
+      post = create(:post)
+      icon = create(:icon)
+      icon.user.avatar = icon
+      icon.user.save
+
+      reply = post.build_new_reply_for(icon.user)
+
+      expect(reply).to be_a_new_record
+      expect(reply.user).to eq(icon.user)
+      expect(reply.icon_id).to eq(icon.user.avatar_id)
+      expect(reply.character_id).to be_nil
+    end
+
+    it "handles new user" do
+      post = create(:post)
+      user = create(:user)
+
+      reply = post.build_new_reply_for(user)
+
+      expect(reply).to be_a_new_record
+      expect(reply.user).to eq(user)
+      expect(reply.icon_id).to be_nil
+      expect(reply.character_id).to be_nil
     end
   end
 end

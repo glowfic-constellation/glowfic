@@ -99,12 +99,7 @@ class WritableController < ApplicationController
 
       if @post.taggable_by?(current_user)
         build_template_groups
-        active_char = @post.last_character_for(current_user)
-        @reply = ReplyDraft.draft_reply_for(@post, current_user) || Reply.new(
-          post: @post,
-          character: active_char,
-          user: current_user,
-          icon: (active_char ? active_char.icon : current_user.avatar))
+        @reply = @post.build_new_reply_for(current_user)
       end
 
       @post.mark_read(current_user, @post.read_time_for(@replies)) unless @post.board.ignored_by?(current_user)
