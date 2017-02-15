@@ -9,5 +9,6 @@ class CreateCharacterAliases < ActiveRecord::Migration
 
     add_column :posts, :character_alias_id, :integer
     add_column :replies, :character_alias_id, :integer
+    add_column :reply_drafts, :character_alias_id, :integer
   end
 end

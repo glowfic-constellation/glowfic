@@ -823,7 +823,8 @@ CREATE TABLE reply_drafts (
     icon_id integer,
     thread_id integer,
     created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    updated_at timestamp without time zone NOT NULL,
+    character_alias_id integer
 );
 
 
