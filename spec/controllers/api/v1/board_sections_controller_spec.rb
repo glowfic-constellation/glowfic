@@ -2,7 +2,7 @@ require "spec_helper"
 
 RSpec.describe Api::V1::BoardSectionsController do
   describe "POST reorder" do
-    it "requires login" do
+    it "requires login", :show_in_doc do
       post :reorder
       expect(response).to have_http_status(401)
       expect(response.json['errors'][0]['message']).to eq("You must be logged in to view that page.")
@@ -50,7 +50,7 @@ RSpec.describe Api::V1::BoardSectionsController do
       expect(board_post.reload.section_order).to eq(0)
     end
 
-    it "works for valid changes" do
+    it "works for valid changes", :show_in_doc do
       board = create(:board)
       board_post = create(:post, board_id: board.id)
       board_section = create(:board_section, board_id: board.id)

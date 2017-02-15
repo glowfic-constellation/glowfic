@@ -2,7 +2,7 @@ require "spec_helper"
 
 RSpec.describe Api::V1::CharactersController do
   describe "GET show" do
-    it "requires valid character" do
+    it "requires valid character", :show_in_doc do
       get :show, id: -1
       expect(response).to have_http_status(404)
       expect(response.json['errors'].size).to eq(1)
@@ -41,7 +41,7 @@ RSpec.describe Api::V1::CharactersController do
       expect(response.json['galleries'].size).to eq(1)
     end
 
-    it "has galleries when present" do
+    it "has galleries when present", :show_in_doc do
       character = create(:character)
       character.galleries << create(:gallery, user: character.user, icon_count: 2)
       character.galleries << create(:gallery, user: character.user, icon_count: 1)
@@ -63,20 +63,20 @@ RSpec.describe Api::V1::CharactersController do
   end
 
   describe "PUT update" do
-    it "requires login" do
+    it "requires login", :show_in_doc do
       put :update, id: -1
       expect(response).to have_http_status(401)
       expect(response.json['errors'][0]['message']).to eq("You must be logged in to view that page.")
     end
 
-    it "requires valid character" do
+    it "requires valid character", :show_in_doc do
       login
       put :update, id: -1
       expect(response).to have_http_status(404)
       expect(response.json['errors'][0]['message']).to eq("Character could not be found.")
     end
 
-    it "requires permission" do
+    it "requires permission", :show_in_doc do
       character = create(:character)
       login
       put :update, id: character.id
@@ -114,7 +114,7 @@ RSpec.describe Api::V1::CharactersController do
       expect(character.reload.default_icon_id).to be_nil
     end
 
-    it "changes icon if valid" do
+    it "changes icon if valid", :show_in_doc do
       icon = create(:icon)
       character = create(:character, user: icon.user, default_icon_id: icon.id)
       new_icon = create(:icon, user: icon.user)
@@ -127,7 +127,7 @@ RSpec.describe Api::V1::CharactersController do
       expect(character.reload.default_icon_id).to eq(new_icon.id)
     end
 
-    it "handles validation failures" do
+    it "handles validation failures", :show_in_doc do
       icon = create(:icon)
       character = create(:character, user: icon.user, default_icon_id: icon.id)
       new_icon = create(:icon, user: icon.user)
