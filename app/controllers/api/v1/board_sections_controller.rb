@@ -14,8 +14,6 @@ class Api::V1::BoardSectionsController < Api::ApiController
       param :order, :number
     end
   end
-  example "'errors': [{'message': 'You must be logged in to view that page.'}]"
-  example "{}"
   def reorder
     valid_types = ['Post', 'BoardSection']
 

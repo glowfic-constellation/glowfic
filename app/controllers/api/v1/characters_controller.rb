@@ -10,34 +10,6 @@ class Api::V1::CharactersController < Api::ApiController
   api! 'Load a single character as a JSON resource'
   param :id, :number, required: true, desc: 'Character ID'
   error 404, "Character not found"
-  example "'errors': [{'message': 'Character could not be found.'}]"
-  example "{
-  'id': 1,
-  'name': 'Character Example',
-  'screenname': 'char-example',
-  'default': {
-    'id': 2,
-    'url': 'http://www.example.com/image.png',
-    'keyword': 'icon'
-  },
-  'galleries': [
-    {
-      'name': 'Example 1',
-      'icons': []
-    }, {
-      'name': 'Example 2',
-      'icons': [
-        {
-          'id': 2,
-          'url': 'http://www.example.com/image.png',
-          'keyword': 'icon'
-        }, {
-          'id': 3,
-          'url': 'http://www.example.com/image2.png',
-          'keyword': 'icon2'
-      }]
-  }]
-}"
   def show
     render json: @character.as_json(include: [:galleries, :default])
   end
@@ -48,20 +20,6 @@ class Api::V1::CharactersController < Api::ApiController
   error 403, "Character is not editable by the user"
   error 404, "Character not found"
   error 422, "Invalid parameters provided"
-  example "'errors': [{'message': 'You must be logged in to view that page.'}]"
-  example "'errors': [{'message': 'You do not have permission to perform this action.'}]"
-  example "'errors': [{'message': 'Character could not be found.'}]"
-  example "'errors': [{'message': \"Name can't be blank\"}, {'message': 'Default icon could not be found'}]"
-  example "{
-  'id': 1,
-  'name': 'Character Example',
-  'screenname': 'char-example',
-  'default': {
-    'id': 2,
-    'url': 'http://www.example.com/image.png',
-    'keyword': 'icon'
-  }
-}"
   def update
     render json: {data: @character.as_json(include: [:default])} and return unless params[:character]
 
