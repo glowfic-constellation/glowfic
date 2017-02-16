@@ -18,7 +18,7 @@
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 
 # Don't calculate coverage when running single tests
-unless ENV['CI'] || ARGV.any? { |arg| arg[0] != '-' } || ARGV[0] == '--no'
+unless ENV['CI'] || ENV['APIPIE_RECORD'] || ARGV.any? { |arg| arg[0] != '-' } || ARGV[0] == '--no'
   require 'simplecov'
   SimpleCov.start 'rails' do
     add_group("Controllers") {|src| src.filename.include?('app/controllers') and not src.filename.include?('app/controllers/api') }
@@ -58,6 +58,8 @@ RSpec.configure do |config|
 
   config.include FactoryGirl::Syntax::Methods
   config.include SpecTestHelper, :type => :controller
+
+  config.filter_run :show_in_doc => true if ENV['APIPIE_RECORD']
 
 # The settings below are suggested to provide a good initial experience
 # with RSpec, but feel free to customize to your heart's content.

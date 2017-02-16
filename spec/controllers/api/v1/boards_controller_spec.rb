@@ -2,7 +2,7 @@ require "spec_helper"
 
 RSpec.describe Api::V1::BoardsController do
   describe "GET show" do
-    it "requires valid board" do
+    it "requires valid board", :show_in_doc do
       get :show, id: 0
       expect(response).to have_http_status(404)
       expect(response.json['errors'].size).to eq(1)
@@ -34,7 +34,7 @@ RSpec.describe Api::V1::BoardsController do
       expect(response.json['board_sections'][1]['id']).to eq(section2.id)
     end
 
-    it "orders sections by section_order" do
+    it "orders sections by section_order", :show_in_doc do
       board = create(:board)
       section1 = create(:board_section, board: board)
       section2 = create(:board_section, board: board)

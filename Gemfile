@@ -50,13 +50,13 @@ group :development, :test do
   gem 'rake', '10.4.2'
   gem 'seed_dump', '0.5.3'
   gem 'thin'
+  gem 'rspec-rails'
 end
 
 group :test do
   gem 'factory_girl_rails'
   gem 'json', '1.8.2'
   gem 'resque_spec'
-  gem 'rspec-rails'
   gem 'simplecov'
   gem 'timecop'
   gem 'webmock'

@@ -10,12 +10,10 @@ class Api::V1::BoardSectionsController < Api::ApiController
   error 401, "You must be logged in"
   param :changes, Hash do
     param :section_id, Hash do
-      param :type, String, desc: 'Accepted values are "BoardSection" or "Post"'
+      param :type, ['BoardSection', 'Post']
       param :order, :number
     end
   end
-  example "'errors': [{'message': 'You must be logged in to view that page.'}]"
-  example "{}"
   def reorder
     valid_types = ['Post', 'BoardSection']
 
