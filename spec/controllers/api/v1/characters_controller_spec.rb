@@ -41,13 +41,16 @@ RSpec.describe Api::V1::CharactersController do
       expect(response.json['galleries'].size).to eq(1)
     end
 
-    it "has galleries when present", :show_in_doc do
+    it "has associations when present", :show_in_doc do
       character = create(:character)
+      calias = create(:alias, character: character)
       character.galleries << create(:gallery, user: character.user, icon_count: 2)
       character.galleries << create(:gallery, user: character.user, icon_count: 1)
       get :show, id: character.id
       expect(response).to have_http_status(200)
       expect(response.json['galleries'].size).to eq(2)
+      expect(response.json['aliases'].size).to eq(1)
+      expect(response.json['aliases'].first['id']).to eq(calias.id)
     end
 
     it "has galleries when icon_picker_grouping is false" do
@@ -58,13 +61,6 @@ RSpec.describe Api::V1::CharactersController do
       get :show, id: character.id
       expect(response).to have_http_status(200)
       expect(response.json['galleries'].size).to eq(1)
-    end
-
-    it "has aliases when present" do
-      calias = create(:alias)
-      get :show, id: calias.character_id
-      expect(response.json['aliases'].size).to eq(1)
-      expect(response.json['aliases'].first['id']).to eq(calias.id)
     end
   end
 

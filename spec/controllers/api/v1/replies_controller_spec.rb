@@ -18,13 +18,17 @@ RSpec.describe Api::V1::RepliesController do
 
     it "succeeds with valid post", :show_in_doc do
       post = create(:post, num_replies: 2, with_icon: true, with_character: true)
-      reply = create(:reply, post: post, with_character: true, with_icon: true)
+      calias = create(:alias)
+      reply = create(:reply, post: post, user: calias.character.user, character: calias.character, character_alias: calias, with_icon: true)
+      expect(calias.name).not_to eq(reply.character.name)
       get :index, post_id: post.id
       expect(response).to have_http_status(200)
       expect(response.json.size).to eq(3)
       expect(response.json[2]['id']).to eq(reply.id)
       expect(response.json[2]['icon']['id']).to eq(reply.icon_id)
       expect(response.json[2]['character']['id']).to eq(reply.character_id)
+      expect(response.json[2]['character']['name']).to eq(calias.character.name)
+      expect(response.json[2]['character_name']).to eq(calias.name)
     end
 
     it "paginates" do
@@ -36,16 +40,6 @@ RSpec.describe Api::V1::RepliesController do
       expect(response.headers['Total'].to_i).to eq(5)
       expect(response.headers['Link']).not_to be_nil
       expect(response.json.size).to eq(1)
-    end
-
-    it "uses aliases" do
-      calias = create(:alias)
-      expect(calias.name).not_to eq(calias.character.name)
-      post = create(:post)
-      reply = create(:reply, post: post, character: calias.character, user: calias.character.user, character_alias: calias)
-      get :index, post_id: post.id
-      expect(response.json[0]['character']['name']).to eq(calias.character.name)
-      expect(response.json[0]['character_name']).to eq(calias.name)
     end
   end
 end
