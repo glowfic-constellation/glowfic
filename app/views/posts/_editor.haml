@@ -14,7 +14,7 @@
       - elsif current_user.avatar
         = select_tag :icon_dropdown, options_for_select([[current_user.avatar.keyword, current_user.avatar.id]], current_user.avatar.id), prompt: "No Icon"
     .post-info-text
-      .post-character{class: ('hidden' unless item.character), data: {character_id: item.character_id}}
+      .post-character{class: ('hidden' unless item.character), data: {character_id: item.character_id || '', alias_id: item.character_alias_id || ''}}
         %span#name= item.character.try(:name)
         = image_tag swap_icon_url, id: 'swap-alias', alt: ">", title: 'Choose Alias', class: ('hidden' unless item.character.try(:aliases).present?)
         #alias-selector.beige

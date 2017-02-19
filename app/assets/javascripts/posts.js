@@ -116,9 +116,11 @@ $(document).ready(function() {
   var displayCharID = $("#post-editor .post-character").data('character-id');
   var selectedIconID = $("#reply_icon_id").val();
   var displayIconID = $("#current-icon").data('icon-id');
+  var selectedAliasID = $("#reply_character_alias_id").val();
+  var displayAliasID = $("#post-editor .post-character").data('alias-id');
   if (selectedCharID != displayCharID) {
-    getAndSetCharacterData(selectedCharID, {restore_icon: true});
-    $("#active_character").val(selectedCharID).trigger("chosen:updated");
+    getAndSetCharacterData(selectedCharID, {restore_icon: true, restore_alias: true});
+    $("#active_character").val(selectedCharID);
   } else {
     if ($(".gallery-icon").length > 1) { /* Bind icon & gallery only if not resetting character, else it duplicate binds */
       bindIcon();
@@ -126,6 +128,12 @@ $(document).ready(function() {
     }
     if (selectedIconID != displayIconID) {
       setIconFromId(selectedIconID); // Handle the case where just the icon was cached
+    }
+    if (selectedAliasID != displayAliasID) {
+      var correctName = $("#character_alias option[value="+selectedAliasID+"]").text();
+      $("#post-editor .post-character #name").html(correctName);
+      $("#post-editor .post-character").data('alias-id', selectedAliasID);
+      $("#character_alias").val(selectedAliasID);
     }
   }
 
@@ -209,6 +217,7 @@ $(document).ready(function() {
     $("#reply_character_alias_id").val(id);
     $("#post-editor .post-character #name").html($('#character_alias option:selected').text());
     $('#alias-selector').hide();
+    $("#post-editor .post-character").data('alias-id', id);
   });
 
   // Hides selectors when you hit the escape key
@@ -315,19 +324,22 @@ setupTinyMCE = function() {
 
 getAndSetCharacterData = function(characterId, options) {
   var restore_icon = false;
+  var restore_alias = false;
   if (typeof options != 'undefined') {
     restore_icon = options.restore_icon;
+    restore_alias = options.restore_alias;
   }
 
   // Handle page interactions
   var selectedIconID = $("#reply_icon_id").val();
+  var selectedAliasID = $("#reply_character_alias_id").val();
   $("#character-selector").hide();
   $("#current-icon-holder").unbind();
   $("#icon_dropdown").empty().append('<option value="">No Icon</option>');
 
   // Handle special case where just setting to your base account
   if (characterId == '') {
-    $("#post-editor .post-character").hide().data('character-id', '');
+    $("#post-editor .post-character").hide().data('character-id', '').data('alias-id', '');
     $("#post-editor .post-screenname").hide();
 
     var avatar = gon.current_user.avatar;
@@ -362,11 +374,11 @@ getAndSetCharacterData = function(characterId, options) {
     }
 
     // Display alias selector if relevant
-    if(character['aliases'].length > 0) {
+    if(resp['aliases'].length > 0) {
       $("#swap-alias").show();
-      $("#character_alias").empty().append('<option value="">' + character['name'] + '</option>');
-      for(var i=0; i<character['aliases'].length; i++) {
-        $("#character_alias").append($("<option>").attr({value: character['aliases'][i]['id']}).append(character['aliases'][i]['name']));
+      $("#character_alias").empty().append('<option value="">' + resp['name'] + '</option>');
+      for(var i=0; i<resp['aliases'].length; i++) {
+        $("#character_alias").append($("<option>").attr({value: resp['aliases'][i]['id']}).append(resp['aliases'][i]['name']));
       }
     } else {
       $("#swap-alias").hide();
@@ -396,6 +408,13 @@ getAndSetCharacterData = function(characterId, options) {
       setIconFromId(selectedIconID);
     else
       setIcon(resp.default.id, resp.default.url, resp.default.keyword, resp.default.keyword);
+
+    if (restore_alias) {
+      var correctName = $("#character_alias option[value="+selectedAliasID+"]").text();
+      $("#post-editor .post-character #name").html(correctName);
+      $("#post-editor .post-character").data('alias-id', selectedAliasID);
+      $("#character_alias").val(selectedAliasID);
+    }
   }, 'json');
 };
 
