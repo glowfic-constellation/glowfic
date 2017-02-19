@@ -31,6 +31,7 @@ Rails.application.routes.draw do
   # Characters
   resources :templates, except: :index
   resources :characters do
+    resources :aliases, only: [:index, :new, :create, :destroy]
     member do
       get :replace
       post :do_replace

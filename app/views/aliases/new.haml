@@ -1,0 +1,21 @@
+- content_for :breadcrumbs do
+  = link_to "Characters", characters_path
+  - if @character.template
+    &raquo;
+    = link_to @character.template.name, template_path(@character.template)
+  &raquo;
+  = link_to @character.name, character_path(@character)
+  &raquo;
+  = link_to 'Aliases', character_aliases_path(@character)
+  &raquo;
+  %b New
+
+= form_for @alias, url: character_aliases_path(@character), method: :post do |f|
+  %table.form-table
+    %tr
+      %th.centered{colspan: 2}= "New Alias"
+    %tr
+      %th.sub Name
+      %td.even= f.text_field :name, placeholder: "Alias", class: 'text'
+    %tr
+      %th.centered.subber{colspan: 2}= submit_tag "Save", class: 'button'
