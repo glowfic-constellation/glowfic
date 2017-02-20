@@ -138,9 +138,8 @@ class PostScraper < Object
 
     url = 'https://v.dreamwidth.org' + url if url[0] == '/'
     host_url = url.gsub(/https?:\/\//, "")
-    http_url = 'http://' + host_url
     https_url = 'https://' + host_url
-    icon = Icon.find_by_url(https_url) || Icon.find_by_url(http_url)
+    icon = Icon.find_by_url(https_url)
     tag.icon = icon and return if icon
 
     end_index = keyword.index("(Default)").to_i - 1
@@ -154,7 +153,7 @@ class PostScraper < Object
       tag.icon = icon and return if icon
     end
 
-    icon = Icon.create!(user: tag.user, url: url, keyword: keyword)
+    icon = Icon.create!(user: tag.user, url: https_url, keyword: keyword)
     tag.icon = icon
     return unless tag.character
 
