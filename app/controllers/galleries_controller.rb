@@ -54,7 +54,7 @@ class GalleriesController < ApplicationController
           render json: {name: 'Galleryless', icons: user.try(:galleryless_icons) || []}
         else
           @gallery = Gallery.find_by_id(params[:id])
-          render json: {name: @gallery.name, icons: @gallery.icons.sort_by{|i| i.keyword.downcase }}
+          render json: {name: @gallery.name, icons: @gallery.icons}
         end
       end
       format.html do

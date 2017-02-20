@@ -23,11 +23,11 @@ class CharacterPresenter
   end
 
   def multi_gallery_json
-    galleries = character.galleries.ordered.includes(:ordered_icons)
+    galleries = character.galleries.ordered.includes(:icons)
     galleries_json = galleries.map do |gallery|
       {
         name: gallery.name,
-        icons: gallery.ordered_icons
+        icons: gallery.icons
       }
     end
   end

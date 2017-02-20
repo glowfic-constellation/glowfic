@@ -22,8 +22,7 @@
   %td.green
     .gallery{id: "gallery#{gallery.id.to_s}"}
       = form_tag delete_multiple_icons_path, method: :delete do
-        - icons = gallery.icons.order('LOWER(keyword)')
-        - icons.each do |icon|
+        - gallery.icons.each do |icon|
           .gallery-icon
             = link_to icon_path(icon) do
               = icon_tag icon
@@ -31,7 +30,7 @@
               %span.icon-keyword= icon.keyword
             - if gallery.user_id == current_user.try(:id) and not defined? skip_forms
               .select-button= check_box_tag :"marked_ids[]", icon.id
-        - if icons.empty?
+        - if gallery.icons.empty?
           .centered.no-icons — No icons yet —
         - elsif gallery.user_id == current_user.try(:id) and not defined? skip_forms
           .clear.centered.icons-remove

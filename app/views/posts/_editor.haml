@@ -1,4 +1,4 @@
-- character_galleries = item.character.galleries.includes(:ordered_icons).ordered if item.character && current_user.icon_picker_grouping? && item.character.galleries.count > 1
+- character_galleries = item.character.galleries.includes(:icons).ordered if item.character && current_user.icon_picker_grouping? && item.character.galleries.count > 1
 #post-editor.padding-10
   .post-info-box
     #current-icon-holder.post-icon
@@ -12,7 +12,7 @@
     #current-icon-dropdown
       - if item.character
         - if current_user.icon_picker_grouping? && item.character.galleries.count > 1
-          - icons = character_galleries.map(&:ordered_icons).flatten.map{|i| [i.keyword, i.id]}
+          - icons = character_galleries.map(&:icons).flatten.map{|i| [i.keyword, i.id]}
         - else
           - icons = item.character.icons.map{|i| [i.keyword, i.id]}
         - unless icons.present?
@@ -52,8 +52,7 @@
         - character_galleries.each do |gallery|
           .gallery-group
             .gallery-name= gallery.name
-            - gallery_icons = gallery.ordered_icons
-            - gallery_icons.each do |icon, icon_index|
+            - gallery.icons.each do |icon, icon_index|
               .gallery-icon
                 = icon_tag icon, id: icon.id, pointer: true
                 %br>
