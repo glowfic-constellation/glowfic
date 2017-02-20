@@ -6,9 +6,9 @@
   &raquo;
   = link_to @character.name, character_path(@character)
   &raquo;
-  = link_to 'Aliases', character_aliases_path(@character)
+  = link_to 'Edit', edit_character_path(@character)
   &raquo;
-  %b New
+  %b New Alias
 
 = form_for @alias, url: character_aliases_path(@character), method: :post do |f|
   %table.form-table

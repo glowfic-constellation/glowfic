@@ -4,11 +4,6 @@ class AliasesController < ApplicationController
   before_filter :find_character
   before_filter :find_alias, only: :destroy
 
-  def index
-    @page_title = "Aliases: " + @character.name
-    @aliases = @character.aliases.order('name asc')
-  end
-
   def new
     @page_title = "New Alias: " + @character.name
     @alias = CharacterAlias.new(character: @character)
@@ -27,13 +22,13 @@ class AliasesController < ApplicationController
     end
 
     flash[:success] = "Alias created."
-    redirect_to character_aliases_path(@character)
+    redirect_to edit_character_path(@character)
   end
 
   def destroy
     @alias.destroy
     flash[:success] = "Alias removed."
-    redirect_to character_aliases_path(@character)
+    redirect_to edit_character_path(@character)
   end
 
   private
@@ -53,12 +48,12 @@ class AliasesController < ApplicationController
   def find_alias
     unless @alias = CharacterAlias.find_by_id(params[:id])
       flash[:error] = "Alias could not be found."
-      redirect_to character_aliases_path(@character) and return
+      redirect_to edit_character_path(@character) and return
     end
 
     unless @alias.character_id == @character.id
       flash[:error] = "Alias could not be found for that character."
-      redirect_to character_aliases_path(@character) and return
+      redirect_to edit_character_path(@character) and return
     end
   end
 end

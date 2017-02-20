@@ -52,6 +52,7 @@ class CharactersController < ApplicationController
 
   def edit
     @page_title = 'Edit Character: ' + @character.name
+    @aliases = @character.aliases.order('name asc')
   end
 
   def update

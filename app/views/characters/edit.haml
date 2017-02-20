@@ -13,4 +13,21 @@
     %tr
       %th.centered{colspan: 2}= @character.name
     = render partial: 'editor', locals: {f: f}
-    
+
+%br
+%table.form-table
+  %tr
+    %th.centered
+      Aliases and Pseudonyms
+      = link_to new_character_alias_path(@character) do
+        .link-box.green + New Alias
+  - @aliases.each do |calias|
+    %tr
+      %td.padding-5{class: cycle('even', 'odd')}
+        = calias.name
+        .float-right
+          = link_to character_alias_path(@character, calias), method: :delete, confirm: 'Are you sure you want to delete this alias?' do
+            = image_tag "/images/cross.png"
+  - if @aliases.empty?
+    %tr
+      %td.centered.padding-10{ class: cycle('even','odd'), colspan: 6 } — No items yet —

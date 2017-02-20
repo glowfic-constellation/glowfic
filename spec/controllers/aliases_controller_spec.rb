@@ -1,41 +1,6 @@
 require "spec_helper"
 
 RSpec.describe AliasesController do
-  describe "GET index" do
-    it "requires login" do
-      get :index, character_id: -1
-      expect(response).to redirect_to(root_url)
-      expect(flash[:error]).to eq("You must be logged in to view that page.")
-    end
-
-    it "requires valid character" do
-      login
-      get :index, character_id: -1
-      expect(response).to redirect_to(characters_url)
-      expect(flash[:error]).to eq("Character could not be found.")
-    end
-
-    it "requires your character" do
-      user = create(:user)
-      login_as(user)
-      character = create(:character)
-      expect(character.user_id).not_to eq(user.id)
-      get :index, character_id: character.id
-      expect(response).to redirect_to(characters_url)
-      expect(flash[:error]).to eq("That is not your character.")
-    end
-
-    it "succeeds" do
-      character = create(:character)
-      3.times do create(:alias, character: character) end
-      login_as(character.user)
-      get :index, character_id: character.id
-      expect(response.status).to eq(200)
-      expect(assigns(:page_title)).to eq("Aliases: #{character.name}")
-      expect(assigns(:aliases).size).to eq(3)
-    end
-  end
-
   describe "GET new" do
     it "requires login" do
       get :new, character_id: -1
@@ -124,7 +89,7 @@ RSpec.describe AliasesController do
 
       post :create, character_id: character.id, character_alias: {name: test_name}
 
-      expect(response).to redirect_to(character_aliases_url(character))
+      expect(response).to redirect_to(edit_character_url(character))
       expect(flash[:success]).to eq("Alias created.")
       expect(CharacterAlias.count).to eq(1)
       expect(character.aliases.count).to eq(1)
@@ -160,7 +125,7 @@ RSpec.describe AliasesController do
       character = create(:character)
       login_as(character.user)
       delete :destroy, id: -1, character_id: character.id
-      expect(response).to redirect_to(character_aliases_url(character))
+      expect(response).to redirect_to(edit_character_url(character))
       expect(flash[:error]).to eq("Alias could not be found.")
     end
 
@@ -170,7 +135,7 @@ RSpec.describe AliasesController do
       login_as(character.user)
       expect(character.id).not_to eq(calias.character_id)
       delete :destroy, id: calias.id, character_id: character.id
-      expect(response).to redirect_to(character_aliases_url(character))
+      expect(response).to redirect_to(edit_character_url(character))
       expect(flash[:error]).to eq("Alias could not be found for that character.")
     end
 
@@ -179,7 +144,7 @@ RSpec.describe AliasesController do
       reply = create(:reply, user: calias.character.user, character: calias.character, character_alias: calias)
       login_as(calias.character.user)
       delete :destroy, id: calias.id, character_id: calias.character_id
-      expect(response).to redirect_to(character_aliases_url(calias.character))
+      expect(response).to redirect_to(edit_character_url(calias.character))
       expect(flash[:success]).to eq("Alias removed.")
       expect(reply.reload.character_alias_id).to be_nil
     end
