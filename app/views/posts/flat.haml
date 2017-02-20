@@ -32,7 +32,7 @@
               .post-icon= icon_tag @post.icon
             .post-info-text
               - if @post.character
-                .post-character= @post.character.name
+                .post-character= @post.name
                 - if @post.character.screenname
                   .post-screenname= @post.character.screenname
               - else

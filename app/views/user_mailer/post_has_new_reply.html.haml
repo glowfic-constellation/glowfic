@@ -12,7 +12,7 @@
           = icon_tag @reply.icon, style: 'margin: 10px; vertical-align: middle; position: relative; max-height: 100px; max-width: 100px;'
       - if @reply.character
         %div{style: 'background-color: #8B8687; padding: 4px; position: relative;'}
-          = @reply.character.name
+          = @reply.name
         - if @reply.character.screenname
           %div{style: 'background-color: #a3a1a0; padding: 4px; overflow-wrap: break-word; word-wrap: break-word;'}
             = @reply.character.screenname
