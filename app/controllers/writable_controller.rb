@@ -6,7 +6,7 @@ class WritableController < ApplicationController
   def build_template_groups
     return unless logged_in?
 
-    templates = current_user.templates.includes(:characters).order('LOWER(name)')
+    templates = current_user.templates.includes(:ordered_characters).order('LOWER(name)')
     faked = Struct.new(:name, :id, :ordered_characters)
     templateless = faked.new('Templateless', nil, current_user.characters.where(:template_id => nil).to_a.sort_by(&:name))
     @templates = templates + [templateless]
