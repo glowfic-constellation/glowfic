@@ -5,7 +5,8 @@
   &raquo;
   %b Edit
 
-= form_for @tag, url: tag_path(@tag), method: :put do |f|
+= form_for @tag.becomes(Tag) do |f|
+  - f.object = @tag.becomes(@tag.class) # handles the STI with Tag/Setting/ContentWarning properly
   %table.form-table
     %tr
       %th.centered{colspan: 2} Edit Tag
