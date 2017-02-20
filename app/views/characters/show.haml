@@ -26,7 +26,7 @@
   - if @character.template_name || @character.aliases.exists?
     %br
     = precede 'Nickname(s): ' do
-      %span.character-template-nickname= ([@character.template_name] + @character.aliases.order('name asc').pluck(:name)).join(", ")
+      %span.character-template-nickname= ([@character.template_name] + @character.aliases.order('name asc').pluck(:name)).compact.join(", ")
   - if @character.pb
     %br
     = precede 'Facecast: ' do
