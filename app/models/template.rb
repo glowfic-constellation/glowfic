@@ -1,18 +1,14 @@
 class Template < ActiveRecord::Base
   belongs_to :user, inverse_of: :templates
-  has_many :characters
+  has_many :characters, order: 'LOWER(name) ASC'
 
   validates_presence_of :name
 
-  before_destroy :clear_character_templates
-
-  def ordered_characters
-    characters.order('LOWER(name)')
-  end
+  after_destroy :clear_character_templates
 
   private
 
   def clear_character_templates
-    characters.update_all(template_id: nil)
+    Character.where(template_id: id).update_all(template_id: nil)
   end
 end

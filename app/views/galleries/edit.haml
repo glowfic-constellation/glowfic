@@ -15,7 +15,7 @@
       %td.even{colspan: 2}= f.text_field :name, placeholder: "Gallery Name", class: 'text'
     %tr
       %th.subber{colspan: 3} Edit Icons
-    - @gallery.icons.order('LOWER(keyword)').each do |icon|
+    - @gallery.icons.each do |icon|
       = f.fields_for "icons_attributes[]", icon do |i|
         %tr
           %td.green.centered{rowspan: 3}

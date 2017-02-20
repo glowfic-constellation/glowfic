@@ -74,13 +74,13 @@ class Character < ActiveRecord::Base
       v.each { |val| errors.add('group '+k.to_s, val) }
     end
   end
-  
+
   def valid_galleries
     if galleries.present? && galleries.detect{|g| g.user_id != user.id}
       errors.add(:galleries, "must be yours")
     end
   end
-  
+
   def valid_default_icon
     if default_icon.present? && default_icon.user_id != user_id
       errors.add(:default_icon, "must be yours")

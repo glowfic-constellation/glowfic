@@ -1,3 +1,4 @@
+- character_galleries = item.character.galleries.includes(:icons).ordered if item.character && current_user.icon_picker_grouping? && item.character.galleries.count > 1
 #post-editor.padding-10
   .post-info-box
     #current-icon-holder.post-icon
@@ -10,7 +11,14 @@
       #icon-overlay
     #current-icon-dropdown
       - if item.character
-        = select_tag :icon_dropdown, options_for_select(item.character.icons.map{|i| [i.keyword, i.id]}, item.icon_id), prompt: "No Icon"
+        - if current_user.icon_picker_grouping? && item.character.galleries.count > 1
+          - icons = character_galleries.map(&:icons).flatten.map{|i| [i.keyword, i.id]}
+        - else
+          - icons = item.character.icons.map{|i| [i.keyword, i.id]}
+        - unless icons.present?
+          - icon = item.character.icon
+          - icons = [[icon.keyword, icon.id]] unless icon.nil?
+        = select_tag :icon_dropdown, options_for_select(icons, item.icon_id), prompt: "No Icon"
       - elsif current_user.avatar
         = select_tag :icon_dropdown, options_for_select([[current_user.avatar.keyword, current_user.avatar.id]], current_user.avatar.id), prompt: "No Icon"
     .post-info-text
@@ -41,18 +49,16 @@
           = current_user.avatar.keyword
     - elsif item.character.galleries.present?
       - if current_user.icon_picker_grouping && item.character.galleries.count > 1
-        - galleries = item.character.galleries.includes(:icons).ordered
-        - galleries.each do |gallery|
+        - character_galleries.each do |gallery|
           .gallery-group
             .gallery-name= gallery.name
-            - gallery_icons = gallery.icons.order('LOWER(keyword)')
-            - gallery_icons.each do |icon, icon_index|
+            - gallery.icons.each do |icon, icon_index|
               .gallery-icon
                 = icon_tag icon, id: icon.id, pointer: true
                 %br>
                 = icon.keyword
       - else
-        - icons = item.character.galleries.map(&:icons).flatten.uniq.sort_by{|i| i.keyword.downcase }
+        - icons = item.character.icons
         - icons.each do |icon|
           .gallery-icon
             = icon_tag icon, id: icon.id, pointer: true

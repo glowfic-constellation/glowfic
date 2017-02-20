@@ -46,7 +46,7 @@
           %b.gallery-name= gallery.name
           %br
           .gallery-icons
-            - gallery.icons.order('LOWER(keyword)').each do |icon|
+            - gallery.icons.each do |icon|
               - klass = 'icon character-icon'
               - klass += ' selected-icon' if icon == @character.default_icon
               = icon_tag icon, class: klass, id: icon.id
