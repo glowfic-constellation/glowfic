@@ -133,7 +133,7 @@ $(document).ready(function() {
       var correctName = $("#character_alias option[value="+selectedAliasID+"]").text();
       $("#post-editor .post-character #name").html(correctName);
       $("#post-editor .post-character").data('alias-id', selectedAliasID);
-      $("#character_alias").val(selectedAliasID);
+      $("#character_alias").val(selectedAliasID).trigger("change.select2");
     }
   }
 
@@ -416,7 +416,7 @@ getAndSetCharacterData = function(characterId, options) {
       var correctName = $("#character_alias option[value="+selectedAliasID+"]").text();
       $("#post-editor .post-character #name").html(correctName);
       $("#post-editor .post-character").data('alias-id', selectedAliasID);
-      $("#character_alias").val(selectedAliasID);
+      $("#character_alias").val(selectedAliasID).trigger("change.select2");
     } else {
       $("#post-editor .post-character").data('alias-id', '');
       $("#character_alias").val('').trigger("change.select2");
