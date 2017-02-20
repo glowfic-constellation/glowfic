@@ -543,10 +543,13 @@ RSpec.describe Post do
     it "copies most recent reply details if present" do
       post = create(:post)
       last_reply = create(:reply, post: post, with_character: true, with_icon: true)
+      last_reply.character.default_icon = create(:icon, user: last_reply.user)
+      last_reply.character.save
+      last_reply.reload
       reply = post.build_new_reply_for(last_reply.user)
       expect(reply).to be_a_new_record
       expect(reply.user).to eq(last_reply.user)
-      expect(reply.icon_id).to eq(last_reply.icon_id)
+      expect(reply.icon_id).to eq(last_reply.character.default_icon_id)
       expect(reply.character_id).to eq(last_reply.character_id)
     end
 
