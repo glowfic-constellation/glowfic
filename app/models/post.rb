@@ -86,7 +86,7 @@ class Post < ActiveRecord::Base
       last_user_reply = user_replies.last
       reply.character_id = last_user_reply.character_id
       reply.character_alias_id = last_user_reply.character_alias_id
-      reply.icon_id = reply.character.icon.try(:id)
+      reply.icon_id = reply.character.try(:icon).try(:id)
     elsif self.user == user
       reply.character_id = self.character_id
       reply.character_alias_id = self.character_alias_id
