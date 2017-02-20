@@ -17,8 +17,8 @@
 #
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 
-# Don't calculate coverage when running single tests
-unless ENV['CI'] || ENV['APIPIE_RECORD'] || ARGV.any? { |arg| arg[0] != '-' } || ARGV[0] == '--no'
+# Don't calculate coverage when running single tests or recording API examples
+unless ENV['APIPIE_RECORD'] || ARGV.any? { |arg| arg[0] != '-' } || ARGV[0] == '--no'
   require 'simplecov'
   SimpleCov.start 'rails' do
     add_group("Controllers") {|src| src.filename.include?('app/controllers') and not src.filename.include?('app/controllers/api') }

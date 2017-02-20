@@ -49,6 +49,8 @@ GEM
     browser (2.3.0)
     builder (3.0.4)
     byebug (9.0.6)
+    codeclimate-test-reporter (1.0.5)
+      simplecov
     coffee-rails (3.2.2)
       coffee-script (>= 2.2.0)
       railties (~> 3.2.0)
@@ -299,6 +301,7 @@ DEPENDENCIES
   aws-sdk (~> 2)
   browser
   byebug
+  codeclimate-test-reporter (~> 1.0.0)
   coffee-rails
   dotenv-rails
   exception_notification

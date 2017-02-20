@@ -54,6 +54,7 @@ group :development, :test do
 end
 
 group :test do
+  gem "codeclimate-test-reporter", "~> 1.0.0"
   gem 'factory_girl_rails'
   gem 'json', '1.8.2'
   gem 'resque_spec'
