@@ -358,6 +358,8 @@ getAndSetCharacterData = function(characterId, options) {
       $("#post-editor #post-author-spacer").hide();
     }
     if (restore_icon) setIconFromId(selectedIconID);
+    $("#character_alias").val('').trigger("change.select2");
+    $("#reply_character_alias_id").val('');
 
     return // Don't need to load data from server (TODO combine with below?)
   }
@@ -414,6 +416,10 @@ getAndSetCharacterData = function(characterId, options) {
       $("#post-editor .post-character #name").html(correctName);
       $("#post-editor .post-character").data('alias-id', selectedAliasID);
       $("#character_alias").val(selectedAliasID);
+    } else {
+      $("#post-editor .post-character").data('alias-id', '');
+      $("#character_alias").val('').trigger("change.select2");
+      $("#reply_character_alias_id").val('');
     }
   }, 'json');
 };
