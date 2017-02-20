@@ -11,6 +11,7 @@ class ReplyPresenter
       content: reply.content,
       created_at: reply.created_at,
       updated_at: reply.updated_at,
+      character_name: reply.name, # handles alias
       character: character(reply),
       icon: icon(reply),
       user: user(reply) }
@@ -19,7 +20,7 @@ class ReplyPresenter
   def character(reply)
     return unless reply.character_id
     { id: reply.character_id,
-      name: reply.name,
+      name: reply.character_name, # explicitly does not include alias
       screenname: reply.screenname }
   end
 

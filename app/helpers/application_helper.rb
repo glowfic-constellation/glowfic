@@ -25,6 +25,12 @@ module ApplicationHelper
     icon_mem_tag(NO_ICON_URL, NO_ICON, **args)
   end
 
+  def swap_icon_url
+    return '/images/swap.png' unless current_user
+    return '/images/swap.png' unless current_user.layout.to_s.start_with?('starry')
+    '/images/swapgray.png'
+  end
+
   def pretty_time(time, format=nil)
     return unless time
     time.strftime(format || current_user.try(:time_display) || TIME_FORMAT)

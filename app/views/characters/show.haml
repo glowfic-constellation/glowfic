@@ -23,10 +23,10 @@
   - if @character.template
     = surround '(', ')' do
       = link_to @character.template.name, template_path(@character.template), class: 'character-template'
-  - if @character.template_name
+  - if @character.template_name || @character.aliases.exists?
     %br
-    = precede 'Nickname: ' do
-      %span.character-template-nickname=@character.template_name
+    = precede 'Nickname(s): ' do
+      %span.character-template-nickname= ([@character.template_name] + @character.aliases.order('name asc').pluck(:name)).join(", ")
   - if @character.pb
     %br
     = precede 'Facecast: ' do
@@ -38,6 +38,8 @@
   - if logged_in? && current_user.id == @character.user_id
     %br
     = link_to 'Edit character', edit_character_path(@character), class: 'character-edit'
+    %br
+    = link_to 'Manage aliases', character_aliases_path(@character), class: 'character-aliases'
     %br
     = link_to 'Replace character', replace_character_path(@character), class: 'character-replace'
 %br

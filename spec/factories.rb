@@ -95,6 +95,11 @@ FactoryGirl.define do
     end
   end
 
+  factory :alias, class: CharacterAlias do
+    character
+    name 'Alias'
+  end
+
   factory :template do
     user
     name 'test template'

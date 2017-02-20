@@ -11,7 +11,7 @@ class Api::V1::CharactersController < Api::ApiController
   param :id, :number, required: true, desc: 'Character ID'
   error 404, "Character not found"
   def show
-    render json: @character.as_json(include: [:galleries, :default])
+    render json: @character.as_json(include: [:galleries, :default, :aliases])
   end
 
   api! 'Update a given character'

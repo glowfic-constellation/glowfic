@@ -91,6 +91,11 @@ $(document).ready(function() {
     width: '100%',
   });
 
+  $("#character_alias").select2({
+    minimumResultsForSearch: 10,
+    width: '100%',
+  });
+
   // TODO fix hack
   // Only initialize TinyMCE if it's required
   if($("#rtf").hasClass('selected') == true) {
@@ -111,9 +116,11 @@ $(document).ready(function() {
   var displayCharID = $("#post-editor .post-character").data('character-id');
   var selectedIconID = $("#reply_icon_id").val();
   var displayIconID = $("#current-icon").data('icon-id');
+  var selectedAliasID = $("#reply_character_alias_id").val();
+  var displayAliasID = $("#post-editor .post-character").data('alias-id');
   if (selectedCharID != displayCharID) {
-    getAndSetCharacterData(selectedCharID, {restore_icon: true});
-    $("#active_character").val(selectedCharID).trigger("chosen:updated");
+    getAndSetCharacterData(selectedCharID, {restore_icon: true, restore_alias: true});
+    $("#active_character").val(selectedCharID);
   } else {
     if ($(".gallery-icon").length > 1) { /* Bind icon & gallery only if not resetting character, else it duplicate binds */
       bindIcon();
@@ -121,6 +128,12 @@ $(document).ready(function() {
     }
     if (selectedIconID != displayIconID) {
       setIconFromId(selectedIconID); // Handle the case where just the icon was cached
+    }
+    if (selectedAliasID != displayAliasID) {
+      var correctName = $("#character_alias option[value="+selectedAliasID+"]").text();
+      $("#post-editor .post-character #name").html(correctName);
+      $("#post-editor .post-character").data('alias-id', selectedAliasID);
+      $("#character_alias").val(selectedAliasID);
     }
   }
 
@@ -173,6 +186,13 @@ $(document).ready(function() {
 
   $("#swap-icon").click(function () {
     $('#character-selector').toggle();
+    $('#alias-selector').hide();
+    $('html, body').scrollTop($("#post-editor").offset().top);
+  });
+
+  $("#swap-alias").click(function () {
+    $('#alias-selector').toggle();
+    $('#character-selector').hide();
     $('html, body').scrollTop($("#post-editor").offset().top);
   });
 
@@ -185,6 +205,19 @@ $(document).ready(function() {
     var id = $(this).val();
     $("#reply_character_id").val(id);
     getAndSetCharacterData(id);
+  });
+
+  $("#character_alias").on('select2:close', function () {
+    $('html, body').scrollTop($("#post-editor").offset().top);
+  });
+
+  $("#character_alias").change(function() {
+    // Set the ID
+    var id = $(this).val();
+    $("#reply_character_alias_id").val(id);
+    $("#post-editor .post-character #name").html($('#character_alias option:selected').text());
+    $('#alias-selector').hide();
+    $("#post-editor .post-character").data('alias-id', id);
   });
 
   // Hides selectors when you hit the escape key
@@ -291,19 +324,22 @@ setupTinyMCE = function() {
 
 getAndSetCharacterData = function(characterId, options) {
   var restore_icon = false;
+  var restore_alias = false;
   if (typeof options != 'undefined') {
     restore_icon = options.restore_icon;
+    restore_alias = options.restore_alias;
   }
 
   // Handle page interactions
   var selectedIconID = $("#reply_icon_id").val();
+  var selectedAliasID = $("#reply_character_alias_id").val();
   $("#character-selector").hide();
   $("#current-icon-holder").unbind();
   $("#icon_dropdown").empty().append('<option value="">No Icon</option>');
 
   // Handle special case where just setting to your base account
   if (characterId == '') {
-    $("#post-editor .post-character").hide().data('character-id', '');
+    $("#post-editor .post-character").hide().data('character-id', '').data('alias-id', '');
     $("#post-editor .post-screenname").hide();
 
     var avatar = gon.current_user.avatar;
@@ -329,11 +365,23 @@ getAndSetCharacterData = function(characterId, options) {
   $.get('/api/v1/characters/' + characterId, {}, function (resp) {
     // Display the correct name/screenname fields
     $("#post-editor #post-author-spacer").hide();
-    $("#post-editor .post-character").show().html(resp.name).data('character-id', characterId);
+    $("#post-editor .post-character").show().data('character-id', characterId);
+    $("#post-editor .post-character #name").html(resp.name);
     if(resp.screenname == undefined) {
       $("#post-editor .post-screenname").hide();
     } else {
       $("#post-editor .post-screenname").show().html(resp.screenname);
+    }
+
+    // Display alias selector if relevant
+    if(resp['aliases'].length > 0) {
+      $("#swap-alias").show();
+      $("#character_alias").empty().append('<option value="">' + resp['name'] + '</option>');
+      for(var i=0; i<resp['aliases'].length; i++) {
+        $("#character_alias").append($("<option>").attr({value: resp['aliases'][i]['id']}).append(resp['aliases'][i]['name']));
+      }
+    } else {
+      $("#swap-alias").hide();
     }
 
     // Display no icon if no default set
@@ -360,6 +408,13 @@ getAndSetCharacterData = function(characterId, options) {
       setIconFromId(selectedIconID);
     else
       setIcon(resp.default.id, resp.default.url, resp.default.keyword, resp.default.keyword);
+
+    if (restore_alias) {
+      var correctName = $("#character_alias option[value="+selectedAliasID+"]").text();
+      $("#post-editor .post-character #name").html(correctName);
+      $("#post-editor .post-character").data('alias-id', selectedAliasID);
+      $("#character_alias").val(selectedAliasID);
+    }
   }, 'json');
 };
 

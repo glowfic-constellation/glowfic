@@ -17,13 +17,16 @@ RSpec.describe Api::V1::PostsController do
     end
 
     it "succeeds with valid post", :show_in_doc do
-      post = create(:post, with_icon: true, with_character: true)
-      reply = create(:reply, post: post, with_character: true, with_icon: true)
+      calias = create(:alias)
+      post = create(:post, user: calias.character.user, with_icon: true, character: calias.character, character_alias: calias)
+      expect(calias.name).not_to eq(calias.character.name)
       get :show, id: post.id
       expect(response).to have_http_status(200)
       expect(response.json['id']).to eq(post.id)
       expect(response.json['icon']['id']).to eq(post.icon_id)
       expect(response.json['character']['id']).to eq(post.character_id)
+      expect(response.json['character']['name']).to eq(calias.character.name)
+      expect(response.json['character_name']).to eq(calias.name)
     end
   end
 end

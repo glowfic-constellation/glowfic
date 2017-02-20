@@ -75,15 +75,30 @@ class Post < ActiveRecord::Base
     @author_ids ||= (replies.group(:user_id).pluck(:user_id) + [user_id]).uniq
   end
 
-  def last_character_for(user)
-    ordered_replies = replies.where(user_id: user.id).order('id asc')
-    if ordered_replies.exists?
-      ordered_replies.last.character
+  def build_new_reply_for(user)
+    draft = ReplyDraft.draft_reply_for(self, user)
+    return draft if draft.present?
+
+    reply = Reply.new(post: self, user: user)
+    user_replies = replies.where(user_id: user.id).order('id asc')
+
+    if user_replies.exists?
+      last_user_reply = user_replies.last
+      reply.character_id = last_user_reply.character_id
+      reply.character_alias_id = last_user_reply.character_alias_id
+      reply.icon_id = last_user_reply.icon_id
     elsif self.user == user
-      self.character
+      reply.character_id = self.character_id
+      reply.character_alias_id = self.character_alias_id
+      reply.icon_id = self.icon_id
+    elsif user.active_character_id.present?
+      reply.character_id = user.active_character_id
+      reply.icon = user.active_character.icon
     else
-      user.active_character
+      reply.icon_id = user.avatar_id
     end
+
+    return reply
   end
 
   def first_unread_for(user)

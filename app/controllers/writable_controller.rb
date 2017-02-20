@@ -73,10 +73,11 @@ class WritableController < ApplicationController
     end
 
     @replies = @replies
-      .select('replies.*, characters.name, characters.screenname, icons.keyword, icons.url, users.username')
+      .select('replies.*, characters.name, characters.screenname, icons.keyword, icons.url, users.username, character_aliases.name as alias')
       .joins(:user)
       .joins("LEFT OUTER JOIN characters ON characters.id = replies.character_id")
       .joins("LEFT OUTER JOIN icons ON icons.id = replies.icon_id")
+      .joins("LEFT OUTER JOIN character_aliases ON character_aliases.id = replies.character_alias_id")
       .order('id asc')
       .paginate(page: cur_page, per_page: per)
     redirect_to post_path(@post, page: @replies.total_pages, per_page: per) and return if cur_page > @replies.total_pages
@@ -98,12 +99,7 @@ class WritableController < ApplicationController
 
       if @post.taggable_by?(current_user)
         build_template_groups
-        active_char = @post.last_character_for(current_user)
-        @reply = ReplyDraft.draft_reply_for(@post, current_user) || Reply.new(
-          post: @post,
-          character: active_char,
-          user: current_user,
-          icon: (active_char ? active_char.icon : current_user.avatar))
+        @reply = @post.build_new_reply_for(current_user)
       end
 
       @post.mark_read(current_user, @post.read_time_for(@replies)) unless @post.board.ignored_by?(current_user)

@@ -18,10 +18,11 @@ class Api::V1::RepliesController < Api::ApiController
     access_denied and return unless post.visible_to?(current_user)
 
     replies = post.replies
-      .select('replies.*, characters.name, characters.screenname, icons.keyword, icons.url, users.username')
+      .select('replies.*, characters.name, characters.screenname, icons.keyword, icons.url, users.username, character_aliases.name as alias')
       .joins(:user)
       .joins("LEFT OUTER JOIN characters ON characters.id = replies.character_id")
       .joins("LEFT OUTER JOIN icons ON icons.id = replies.icon_id")
+      .joins("LEFT OUTER JOIN character_aliases ON character_aliases.id = replies.character_alias_id")
       .order('id asc')
     paginate json: replies, per_page: per_page
   end
