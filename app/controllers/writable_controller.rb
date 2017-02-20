@@ -6,9 +6,9 @@ class WritableController < ApplicationController
   def build_template_groups
     return unless logged_in?
 
-    templates = current_user.templates.includes(:ordered_characters).order('LOWER(name)')
-    faked = Struct.new(:name, :id, :ordered_characters)
-    templateless = faked.new('Templateless', nil, current_user.characters.where(:template_id => nil).to_a.sort_by(&:name))
+    templates = current_user.templates.includes(:characters).order('LOWER(name)')
+    faked = Struct.new(:name, :id, :characters)
+    templateless = faked.new('Templateless', nil, current_user.characters.where(:template_id => nil).order('LOWER(name) ASC'))
     @templates = templates + [templateless]
 
     if @post
@@ -18,7 +18,7 @@ class WritableController < ApplicationController
       threadchars = faked.new('Thread characters', nil, uniq_chars)
       @templates.insert(0, threadchars)
     end
-    @templates.reject! {|template| template.ordered_characters.empty? }
+    @templates.reject! {|template| template.characters.empty? }
 
     gon.current_user = current_user.gon_attributes
   end

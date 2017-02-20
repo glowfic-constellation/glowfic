@@ -37,7 +37,7 @@
           #character-selector.beige
             %b Choose Character
             = select_tag :active_character,
-            option_groups_from_collection_for_select(@templates, :ordered_characters, :name, :id, :selector_name, item.character_id),
+            option_groups_from_collection_for_select(@templates, :characters, :name, :id, :selector_name, item.character_id),
             { :prompt => current_user.username }
             %br
   #gallery.green
