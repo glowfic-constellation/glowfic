@@ -151,7 +151,7 @@ $(document).ready(function() {
   $('.view-button').click(function() {
     if(this.id == 'rtf') {
       $("#html").removeClass('selected');
-      $("#editor_mode").val('rtf')
+      $("#editor_mode").val('rtf');
       $(this).addClass('selected');
       if(tinyMCEInit) {
         tinyMCE.execCommand('mceAddEditor', true, 'post_content');
@@ -159,7 +159,7 @@ $(document).ready(function() {
       } else { setupTinyMCE(); }
     } else if (this.id == 'html') {
       $("#rtf").removeClass('selected');
-      $("#editor_mode").val('html')
+      $("#editor_mode").val('html');
       $(this).addClass('selected');
       tinyMCE.execCommand('mceRemoveEditor', false, 'post_content');
       tinyMCE.execCommand('mceRemoveEditor', false, 'reply_content');
@@ -465,9 +465,9 @@ setSections = function() {
       for(var i = 0; i < sections.length; i++) {
         $("#post_section_id").append('<option value="'+sections[i].id+'">'+sections[i].name+'</option>');
       }
-      $("#post_section_id").trigger("change");
+      $("#post_section_id").trigger("change.select2");
     } else {
-      $("#post_section_id").val("");
+      $("#post_section_id").val("").trigger("change.select2");
       $("#section").hide();
     }
   }, 'json');
