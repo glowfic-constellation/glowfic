@@ -367,4 +367,170 @@ RSpec.describe CharactersController do
       expect(Character.find_by_id(character.id)).to be_nil
     end
   end
+
+  describe "GET replace" do
+    it "requires login" do
+      character = create(:character)
+      get :replace, id: character.id
+      expect(response).to redirect_to(root_url)
+      expect(flash[:error]).to eq('You must be logged in to view that page.')
+    end
+
+    it "requires valid character" do
+      login
+      get :replace, id: -1
+      expect(response).to redirect_to(characters_path)
+      expect(flash[:error]).to eq('Character could not be found.')
+    end
+
+    it "requires own character" do
+      character = create(:character)
+      login
+      get :replace, id: character.id
+      expect(response).to redirect_to(characters_path)
+      expect(flash[:error]).to eq('You do not have permission to edit that character.')
+    end
+
+    it "sets correct variables" do
+      user = create(:user)
+      character = create(:character, user: user)
+      char_post = create(:post, user: user, character: character)
+      char_reply1 = create(:reply, user: user, post: char_post, character: character)
+      other_post = create(:post)
+      char_reply2 = create(:reply, user: user, character: character)
+
+      login_as(user)
+      get :replace, id: character.id
+      expect(response).to have_http_status(200)
+      expect(assigns(:page_title)).to eq('Replace Character: ' + character.name)
+
+      expect(assigns(:posts)).to match_array([char_post, char_reply2.post])
+    end
+
+    context "with template" do
+      it "sets alts correctly" do
+        user = create(:user)
+        template = create(:template, user: user)
+        character = create(:character, user: user, template: template)
+        alts = 5.times.collect do create(:character, user: user, template: template) end
+        other_character = create(:character, user: user)
+
+        login_as(user)
+        get :replace, id: character.id
+        expect(response).to have_http_status(200)
+        expect(assigns(:page_title)).to eq('Replace Character: ' + character.name)
+        expect(assigns(:alts)).to match_array(alts)
+        expect(assigns(:alt_dropdown).length).to eq(alts.length)
+      end
+    end
+
+    context "without template" do
+      it "sets alts correctly" do
+        user = create(:user)
+        character = create(:character, user: user)
+        alts = 5.times.collect do create(:character, user: user) end
+        template = create(:template, user: user)
+        other_char = create(:character, user: user, template: template)
+
+        login_as(user)
+        get :replace, id: character.id
+        expect(response).to have_http_status(200)
+        expect(assigns(:page_title)).to eq('Replace Character: ' + character.name)
+        expect(assigns(:alts)).to match_array(alts)
+        expect(assigns(:alt_dropdown).length).to eq(alts.length)
+      end
+    end
+  end
+
+  describe "POST do_replace" do
+    it "requires login" do
+      character = create(:character)
+      post :do_replace, id: character.id
+      expect(response).to redirect_to(root_url)
+      expect(flash[:error]).to eq('You must be logged in to view that page.')
+    end
+
+    it "requires valid character" do
+      login
+      post :do_replace, id: -1
+      expect(response).to redirect_to(characters_path)
+      expect(flash[:error]).to eq('Character could not be found.')
+    end
+
+    it "requires own character" do
+      character = create(:character)
+      login
+      post :do_replace, id: character.id
+      expect(response).to redirect_to(characters_path)
+      expect(flash[:error]).to eq('You do not have permission to edit that character.')
+    end
+
+    it "requires valid other character" do
+      character = create(:character)
+      login_as(character.user)
+      post :do_replace, id: character.id, icon_dropdown: -1
+      expect(response).to redirect_to(replace_character_path(character))
+      expect(flash[:error]).to eq('Character could not be found.')
+    end
+
+    it "requires other character to be yours if present" do
+      character = create(:character)
+      other_char = create(:character)
+      login_as(character.user)
+      post :do_replace, id: character.id, icon_dropdown: other_char.id
+      expect(response).to redirect_to(replace_character_path(character))
+      expect(flash[:error]).to eq('That is not your character.')
+    end
+
+    it "succeeds with valid other character" do
+      user = create(:user)
+      character = create(:character, user: user)
+      other_char = create(:character, user: user)
+      char_post = create(:post, user: user, character: character)
+      reply = create(:reply, user: user, character: character)
+      reply_post_char = reply.post.character_id
+
+      login_as(user)
+      post :do_replace, id: character.id, icon_dropdown: other_char.id
+      expect(response).to redirect_to(character_path(character))
+      expect(flash[:success]).to eq('All uses of this character have been replaced.')
+
+      expect(char_post.reload.character_id).to eq(other_char.id)
+      expect(reply.reload.character_id).to eq(other_char.id)
+      expect(reply.post.reload.character_id).to eq(reply_post_char) # check it doesn't replace all replies in a post
+    end
+
+    it "succeeds with no other character" do
+      user = create(:user)
+      character = create(:character, user: user)
+      char_post = create(:post, user: user, character: character)
+      reply = create(:reply, user: user, character: character)
+
+      login_as(user)
+      post :do_replace, id: character.id
+      expect(response).to redirect_to(character_path(character))
+      expect(flash[:success]).to eq('All uses of this character have been replaced.')
+
+      expect(char_post.reload.character_id).to be_nil
+      expect(reply.reload.character_id).to be_nil
+    end
+
+    it "filters to selected posts if given" do
+      user = create(:user)
+      character = create(:character, user: user)
+      other_char = create(:character, user: user)
+      char_post = create(:post, user: user, character: character)
+      char_reply = create(:reply, user: user, character: character)
+      other_post = create(:post, user: user, character: character)
+
+      login_as(user)
+      post :do_replace, id: character.id, icon_dropdown: other_char.id, post_ids: [char_post.id, char_reply.post.id]
+      expect(response).to redirect_to(character_path(character))
+      expect(flash[:success]).to eq('All uses of this character have been replaced.')
+
+      expect(char_post.reload.character_id).to eq(other_char.id)
+      expect(char_reply.reload.character_id).to eq(other_char.id)
+      expect(other_post.reload.character_id).to eq(character.id)
+    end
+  end
 end
