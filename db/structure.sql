@@ -324,12 +324,12 @@ CREATE TABLE characters (
     user_id integer NOT NULL,
     name character varying(255) NOT NULL,
     template_name character varying(255),
-    screenname character varying(255),
+    screenname citext,
     template_id integer,
     default_icon_id integer,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
-    pb character varying(255),
+    pb citext,
     character_group_id integer,
     setting character varying(255),
     description text
@@ -928,7 +928,7 @@ ALTER SEQUENCE templates_id_seq OWNED BY templates.id;
 
 CREATE TABLE users (
     id integer NOT NULL,
-    username character varying(255) NOT NULL,
+    username citext NOT NULL,
     crypted character varying(255) NOT NULL,
     avatar_id integer,
     active_character_id integer,
@@ -936,7 +936,7 @@ CREATE TABLE users (
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
     timezone character varying(255),
-    email character varying(255),
+    email citext,
     email_notifications boolean,
     icon_picker_grouping boolean DEFAULT true,
     moiety character varying(255),
@@ -1840,6 +1840,8 @@ INSERT INTO schema_migrations (version) VALUES ('20161110055637');
 
 INSERT INTO schema_migrations (version) VALUES ('20161126195558');
 
+INSERT INTO schema_migrations (version) VALUES ('20161129195022');
+
 INSERT INTO schema_migrations (version) VALUES ('20161218194918');
 
 INSERT INTO schema_migrations (version) VALUES ('20170103184309');
@@ -1847,3 +1849,5 @@ INSERT INTO schema_migrations (version) VALUES ('20170103184309');
 INSERT INTO schema_migrations (version) VALUES ('20170109000120');
 
 INSERT INTO schema_migrations (version) VALUES ('20170210013443');
+
+INSERT INTO schema_migrations (version) VALUES ('20170221171959');
