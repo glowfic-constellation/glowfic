@@ -17,8 +17,8 @@ To set it up as a daemon (background server), on Ubuntu/Debian you will also wan
 
 #### Cloning the repository
 
-In order to get up and running, clone the repository (get Git if you don't already have it – `sudo apt-get install git` on Ubuntu) with a command such as `git clone https://bitbucket.org/MarriNikari/glowfic`.
-More specific details may be found on the Bitbucket site.
+In order to get up and running, clone the repository (get Git if you don't already have it – `sudo apt-get install git` on Ubuntu) with a command such as `git clone https://github.com/Marri/glowfic.git`.
+More specific details may be found on the GitHub site.
 
 #### Language dependencies
 
