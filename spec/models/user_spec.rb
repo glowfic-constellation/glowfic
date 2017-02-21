@@ -16,4 +16,16 @@ RSpec.describe User do
       expect(user.authenticate('test')).to be_true
     end
   end
+
+  it "should be unique by username" do
+    user = create(:user, username: 'testuser1')
+    new_user = build(:user, username: user.username.upcase)
+    expect(new_user).not_to be_valid
+  end
+
+  it "should be unique by email" do
+    user = create(:user, email: 'testuser1@example.com')
+    new_user = build(:user, email: user.email.upcase)
+    expect(new_user).not_to be_valid
+  end
 end
