@@ -126,9 +126,17 @@ RSpec.describe UsersController do
       expect(flash[:error]).to eq("You must be logged in to view that page.")
     end
 
-    it "succeeds" do
+    it "requires own user" do
+      user = create(:user)
       login
-      get :edit, id: -1
+      get :edit, id: user.id
+      expect(response).to redirect_to(boards_url)
+      expect(flash[:error]).to eq('You do not have permission to edit that user.')
+    end
+
+    it "succeeds" do
+      user_id = login
+      get :edit, id: user_id
       expect(response.status).to eq(200)
     end
 
@@ -136,15 +144,64 @@ RSpec.describe UsersController do
       render_views
 
       it "displays options" do
-        login
-        get :edit, id: -1
+        user_id = login
+        get :edit, id: user_id
       end
     end
   end
 
   describe "PUT update" do
-    it "has more tests" do
-      skip
+    it "requires login" do
+      put :update, id: -1
+      expect(response).to redirect_to(root_url)
+      expect(flash[:error]).to eq("You must be logged in to view that page.")
+    end
+
+    it "requires valid params" do
+      user = create(:user)
+      login_as(user)
+      put :update, id: user.id, user: {moiety: 'A'}
+      expect(response).to redirect_to(edit_user_url(user))
+      expect(flash[:error]).to eq('There was a problem with your changes.')
+    end
+
+    it "does not update another user" do
+      user1 = create(:user)
+      user2 = create(:user)
+      login_as(user1)
+      put :update, id: user2.id, user: {email: 'bademail@example.com'}
+      expect(response).to redirect_to(boards_url)
+      expect(flash[:error]).to eq('You do not have permission to edit that user.')
+      expect(user2.reload.email).not_to eq('bademail@example.com')
+    end
+
+    it "works with valid params" do
+      user = create(:user)
+      login_as(user)
+      put :update, id: user.id, user: {email: 'testuser314@example.com', email_notifications: true, moiety_name: 'Testmoiety', moiety: 'AAAAAA'}
+      expect(response).to redirect_to(edit_user_url(user))
+      expect(flash[:success]).to eq('Changes saved successfully.')
+
+      user.reload
+      expect(user.email).to eq('testuser314@example.com')
+      expect(user.email_notifications).to be_true
+      expect(user.moiety_name).to eq('Testmoiety')
+      expect(user.moiety).to eq('AAAAAA')
+    end
+
+    it "updates username and still allows login" do
+      pass = 'password123'
+      user = create(:user, username: 'user123', password: pass)
+      expect(user.authenticate(pass)).to be_true
+      login_as(user)
+      put :update, id: user.id, user: {username: 'user124'}
+      expect(response).to redirect_to(edit_user_url(user))
+      expect(flash[:success]).to eq('Changes saved successfully.')
+
+      user.reload
+      expect(user.username).to eq('user124')
+      expect(user.authenticate(pass)).to be_true
+      expect(user.authenticate(pass + '1')).not_to be_true
     end
   end
 
@@ -172,6 +229,81 @@ RSpec.describe UsersController do
   end
 
   describe "PUT password" do
+    it "requires login" do
+      put :password, id: -1
+      expect(response).to redirect_to(root_url)
+      expect(flash[:error]).to eq("You must be logged in to view that page.")
+    end
+
+    it "requires own user" do
+      user = create(:user)
+      login
+      put :password, id: user.id
+      expect(response).to redirect_to(boards_url)
+      expect(flash[:error]).to eq('You do not have permission to edit that user.')
+    end
+
+    it "requires correct password" do
+      pass = 'testpass'
+      fakepass = 'wrongpass'
+      newpass = 'newpass'
+      user = create(:user, password: 'testpass')
+      login_as(user)
+
+      put :password, id: user.id, old_password: fakepass, user: {password: newpass, password_confirmation: newpass}
+
+      expect(response).to render_template(:edit)
+      expect(flash[:error]).to eq('Incorrect password entered.')
+      user.reload
+      expect(user.authenticate(pass)).to be_true
+      expect(user.authenticate(fakepass)).not_to be_true
+      expect(user.authenticate(newpass)).not_to be_true
+    end
+
+    it "requires valid password" do
+      pass = 'testpass'
+      newpass = 'bad'
+      user = create(:user, password: pass)
+      login_as(user)
+
+      put :password, id: user.id, old_password: pass, user: {password: newpass, password_confirmation: newpass}
+
+      expect(response).to render_template(:edit)
+      expect(flash[:error][:message]).to eq('There was a problem with your changes.')
+      expect(user.authenticate(pass)).to be_true
+      expect(user.authenticate(newpass)).not_to be_true
+    end
+
+    it "requires valid confirmation" do
+      pass = 'testpass'
+      newpass = 'newpassword'
+      user = create(:user, password: pass)
+      login_as(user)
+
+      put :password, id: user.id, old_password: pass, user: {password: newpass, password_confirmation: 'wrongconfirmation'}
+
+      expect(response).to render_template(:edit)
+      expect(flash[:error][:message]).to eq('There was a problem with your changes.')
+      user.reload
+      expect(user.authenticate(pass)).to be_true
+      expect(user.authenticate(newpass)).not_to be_true
+    end
+
+    it "succeeds" do
+      pass = 'testpass'
+      newpass = 'newpassword'
+      user = create(:user, password: pass)
+      login_as(user)
+
+      put :password, id: user.id, old_password: pass, user: {password: newpass, password_confirmation: newpass}
+
+      expect(response).to redirect_to(edit_user_url(user))
+      expect(flash[:success]).to eq('Changes saved successfully.')
+      user.reload
+      expect(user.authenticate(pass)).not_to be_true
+      expect(user.authenticate(newpass)).to be_true
+    end
+
     it "has more tests" do
       skip
     end
