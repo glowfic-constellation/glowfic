@@ -376,6 +376,175 @@ RSpec.describe GalleriesController do
       expect(flash[:error]).to eq("You must be logged in to view that page.")
     end
 
+    #TODO: setup_new_icons?
+
+    it "requires valid gallery" do
+      login
+      post :icon, id: -1
+      expect(response).to redirect_to(galleries_url)
+      expect(flash[:error]).to eq('Gallery could not be found.')
+    end
+
+    it "requires your gallery" do
+      gallery = create(:gallery)
+      login
+      post :icon, id: gallery.id
+      expect(response).to redirect_to(galleries_url)
+      expect(flash[:error]).to eq('That is not your gallery.')
+    end
+
+    context "when adding existing icons" do
+      it "doesn't support galleryless" do
+        user_id = login
+        icon = create(:icon, user_id: user_id)
+        gallery = create(:gallery, user_id: user_id, icon_ids: [icon.id])
+        expect(gallery.icons).to match_array([icon])
+
+        post :icon, id: 0, image_ids: icon.id.to_s
+        expect(response).to redirect_to(galleries_url)
+        expect(flash[:error]).to eq('Gallery could not be found.')
+      end
+
+      it "skips icons that are not yours" do
+        icon = create(:icon)
+        gallery = create(:gallery)
+        login_as(gallery.user)
+
+        post :icon, id: gallery.id, image_ids: icon.id.to_s
+        expect(response).to redirect_to(gallery_path(gallery))
+        expect(flash[:success]).to eq('Icons added to gallery successfully.')
+        expect(icon.reload.has_gallery).not_to be_true
+        expect(gallery.reload.icons).to be_empty
+      end
+
+      it "succeeds with galleryless icons" do
+        user = create(:user)
+        icon1 = create(:icon, user_id: user.id)
+        icon2 = create(:icon, user_id: user.id)
+        gallery = create(:gallery, user_id: user.id)
+        expect(icon1.has_gallery).not_to be_true
+        expect(icon2.has_gallery).not_to be_true
+
+        login_as(user)
+        post :icon, id: gallery.id, image_ids: "#{icon1.id},#{icon2.id}"
+        expect(response).to redirect_to(gallery_path(gallery))
+        expect(flash[:success]).to eq('Icons added to gallery successfully.')
+        expect(icon1.reload.has_gallery).to be_true
+        expect(icon2.reload.has_gallery).to be_true
+        expect(gallery.reload.icons).to match_array([icon1, icon2])
+      end
+
+      it "succeds with icons from other galleries" do
+        user = create(:user)
+        icon1 = create(:icon, user_id: user.id)
+        icon2 = create(:icon, user_id: user.id)
+        gallery1 = create(:gallery, user_id: user.id, icon_ids: [icon1.id, icon2.id])
+        gallery2 = create(:gallery, user_id: user.id)
+        expect(gallery1.icons).to match_array([icon1, icon2])
+        expect(gallery2.icons).to be_empty
+
+        login_as(user)
+        post :icon, id: gallery2.id, image_ids: "#{icon1.id},#{icon2.id}"
+        expect(response).to redirect_to(gallery_path(gallery2))
+        expect(flash[:success]).to eq('Icons added to gallery successfully.')
+        expect(icon1.reload.has_gallery).to be_true
+        expect(icon2.reload.has_gallery).to be_true
+        expect(gallery1.reload.icons).to match_array([icon1, icon2])
+        expect(gallery2.reload.icons).to match_array([icon1, icon2])
+      end
+    end
+
+    context "when adding new icons" do
+      it "requires icons" do
+        gallery = create(:gallery)
+        login_as(gallery.user)
+        post :icon, id: gallery.id, icons: []
+        expect(response).to render_template(:add)
+        expect(flash[:error]).to eq('You have to enter something.')
+      end
+
+      it "requires valid icons" do
+        gallery = create(:gallery)
+        uploaded_icon = create(:uploaded_icon)
+        login_as(gallery.user)
+
+        icons = [
+          {keyword: 'test1', url: uploaded_icon.url, credit: ''},
+          {keyword: '',
+          url: 'http://example.com/image3141.png',
+          credit: ''},
+          {keyword: 'test2', url: '', credit: ''},
+          {keyword: 'test3', url: 'fake', credit: ''},
+          {keyword: '', url: '', credit: ''}
+        ]
+
+        post :icon, id: gallery.id, icons: icons
+        expect(response).to render_template(:add)
+        expect(flash[:error][:message]).to eq('Your icons could not be saved.')
+        expect(assigns(:icons).length).to eq(icons.length-1) # removes blank icons
+        expect(assigns(:icons).first[:url]).to be_empty # removes duplicate uploaded icon URLs
+        expect(flash.now[:error][:array]).to include(
+          "Icon 1: url has already been taken",
+          "Icon 2: keyword can't be blank",
+          "Icon 3: url can't be blank",
+          "Icon 3: url must be an actual fully qualified url (http://www.example.com)"
+        )
+      end
+
+      it "succeeds with gallery" do
+        user = create(:user)
+        gallery = create(:gallery, user_id: user.id)
+        login_as(user)
+        icons = [
+          {keyword: 'test1', url: 'http://example.com/image3141.png', credit: 'test1'},
+          {keyword: 'test2', url: "https://d1anwqy6ci9o1i.cloudfront.net/users/#{user.id}/icons/nonsense-fakeimg.png"}
+        ]
+
+        post :icon, id: gallery.id, icons: icons
+        expect(response).to redirect_to(gallery_path(gallery))
+        expect(flash[:success]).to eq('Icons saved successfully.')
+
+        gallery.reload
+        icon_objs = gallery.icons
+        expect(icon_objs.length).to eq(2)
+
+        expect(icon_objs.first.keyword).to eq(icons.first[:keyword])
+        expect(icon_objs.first.url).to eq(icons.first[:url])
+        expect(icon_objs.first.credit).to eq(icons.first[:credit])
+
+        expect(icon_objs.last.keyword).to eq(icons.last[:keyword])
+        expect(icon_objs.last.url).to eq(icons.last[:url])
+        expect(icon_objs.last.credit).to be_nil
+      end
+
+      it "succeeds with galleryless" do
+        user = create(:user)
+        login_as(user)
+        icons = [
+          {keyword: 'test1', url: 'http://example.com/image3142.png', credit: 'test1'},
+          {keyword: 'test2', url: "https://d1anwqy6ci9o1i.cloudfront.net/users/#{user.id}/icons/nonsense-fakeimg.png"}
+        ]
+
+        post :icon, id: 0, icons: icons
+        expect(response).to redirect_to(gallery_path(id: 0))
+        expect(flash[:success]).to eq('Icons saved successfully.')
+
+        user.reload
+        icon_objs = user.icons.order('keyword ASC')
+        expect(icon_objs.length).to eq(2)
+
+        expect(icon_objs.any?(&:has_gallery)).not_to be_true
+
+        expect(icon_objs.first.keyword).to eq(icons.first[:keyword])
+        expect(icon_objs.first.url).to eq(icons.first[:url])
+        expect(icon_objs.first.credit).to eq(icons.first[:credit])
+
+        expect(icon_objs.last.keyword).to eq(icons.last[:keyword])
+        expect(icon_objs.last.url).to eq(icons.last[:url])
+        expect(icon_objs.last.credit).to be_nil
+      end
+    end
+
     it "has more tests" do
       skip "TODO"
     end
