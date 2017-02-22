@@ -141,8 +141,34 @@ RSpec.describe BoardSectionsController do
       expect(flash[:error]).to eq("You must be logged in to view that page.")
     end
 
-    it "has more tests" do
-      skip
+    it "requires board permission" do
+      user = create(:user)
+      login_as(user)
+      board_section = create(:board_section)
+      expect(board_section.board).not_to be_editable_by(user)
+
+      put :update, id: board_section.id
+      expect(response).to redirect_to(boards_url)
+      expect(flash[:error]).to eq("You do not have permission to edit this continuity.")
+    end
+
+    it "requires valid params" do
+      board_section = create(:board_section)
+      login_as(board_section.board.creator)
+      put :update, id: board_section.id, board_section: {name: ''}
+      expect(response).to have_http_status(200)
+      expect(response).to render_template(:edit)
+      expect(flash[:error][:message]).to eq("Section could not be updated.")
+    end
+
+    it "succeeds" do
+      board_section = create(:board_section, name: 'TestSection1')
+      login_as(board_section.board.creator)
+      section_name = 'TestSection2'
+      put :update, id: board_section.id, board_section: {name: section_name}
+      expect(response).to redirect_to(board_section_path(board_section))
+      expect(board_section.reload.name).to eq(section_name)
+      expect(flash[:success]).to eq("#{section_name} has been successfully updated.")
     end
   end
 
