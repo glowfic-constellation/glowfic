@@ -376,8 +376,6 @@ RSpec.describe GalleriesController do
       expect(flash[:error]).to eq("You must be logged in to view that page.")
     end
 
-    #TODO: setup_new_icons?
-
     it "requires valid gallery" do
       login
       post :icon, id: -1

@@ -101,8 +101,6 @@ class GalleriesController < ApplicationController
   end
 
   def icon
-    find_gallery if params[:id] != '0'
-
     if params[:image_ids].present?
       unless @gallery # gallery required for adding icons from other galleries
         flash[:error] = "Gallery could not be found."
