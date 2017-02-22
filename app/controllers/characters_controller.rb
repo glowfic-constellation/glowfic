@@ -135,12 +135,12 @@ class CharactersController < ApplicationController
   def do_replace
     unless params[:icon_dropdown].blank? || new_char = Character.find_by_id(params[:icon_dropdown])
       flash[:error] = "Character could not be found."
-      redirect_to replace_character_path(@character)
+      redirect_to replace_character_path(@character) and return
     end
 
     if new_char && new_char.user_id != current_user.id
       flash[:error] = "That is not your character."
-      redirect_to replace_character_path(@character)
+      redirect_to replace_character_path(@character) and return
     end
 
     Post.transaction do
@@ -172,7 +172,7 @@ class CharactersController < ApplicationController
   end
 
   def require_own_character
-    if @character.user_id != current_user.id
+    unless @character.user_id == current_user.id
       flash[:error] = "You do not have permission to edit that character."
       redirect_to characters_path and return
     end
