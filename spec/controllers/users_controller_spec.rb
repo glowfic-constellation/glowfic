@@ -35,13 +35,19 @@ RSpec.describe UsersController do
     end
 
     it "complains when logged in" do
-      skip "TODO not yet implemented"
+      login
+      post :create
+      expect(response).to redirect_to(boards_path)
+      expect(flash[:error]).to eq('You are already logged in.')
     end
   end
 
   describe "POST create" do
     it "complains when logged in" do
-      skip "TODO not yet implemented"
+      login
+      post :create
+      expect(response).to redirect_to(boards_path)
+      expect(flash[:error]).to eq('You are already logged in.')
     end
 
     it "requires beta secret" do

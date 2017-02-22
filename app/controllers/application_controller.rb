@@ -18,6 +18,13 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  def logout_required
+    if logged_in?
+      flash[:error] = "You are already logged in."
+      redirect_to boards_path
+    end
+  end
+
   def show_password_warning
     return unless logged_in?
     return unless current_user.salt_uuid.nil?
