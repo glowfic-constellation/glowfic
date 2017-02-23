@@ -2,6 +2,8 @@
 class UsersController < ApplicationController
   before_filter :signup_prep, :only => :new
   before_filter :login_required, :except => [:index, :show, :new, :create, :username]
+  before_filter :logout_required, only: [:new, :create]
+  before_filter :require_own_user, only: [:edit, :update, :password]
 
   def index
     @page_title = 'Glowficcers'
@@ -89,6 +91,13 @@ class UsersController < ApplicationController
   end
 
   private
+
+  def require_own_user
+    unless params[:id] == current_user.id.to_s
+      flash[:error] = "You do not have permission to edit that user."
+      redirect_to(boards_path)
+    end
+  end
 
   def signup_prep
     use_javascript('users/new')
