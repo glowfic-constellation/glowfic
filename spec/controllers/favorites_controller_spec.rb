@@ -114,6 +114,34 @@ RSpec.describe FavoritesController do
       expect(flash[:error]).to eq("You must be logged in to view that page.")
     end
 
+    it "requires a valid param" do
+      login
+      post :create
+      expect(response).to redirect_to(boards_path)
+      expect(flash[:error]).to eq('No favorite specified.')
+    end
+
+    it "requires valid user if given" do
+      login
+      post :create, user_id: -1
+      expect(response).to redirect_to(users_path)
+      expect(flash[:error]).to eq('User could not be found.')
+    end
+
+    it "requires valid post if given" do
+      login
+      post :create, post_id: -1
+      expect(response).to redirect_to(posts_path)
+      expect(flash[:error]).to eq('Post could not be found.')
+    end
+
+    it "requires valid board if given" do
+      login
+      post :create, board_id: -1
+      expect(response).to redirect_to(boards_path)
+      expect(flash[:error]).to eq('Continuity could not be found.')
+    end
+
     it "favorites a user" do
       user = create(:user)
       fav = create(:user)
