@@ -101,8 +101,6 @@ class GalleriesController < ApplicationController
   end
 
   def icon
-    find_gallery if params[:id] != '0'
-
     if params[:image_ids].present?
       unless @gallery # gallery required for adding icons from other galleries
         flash[:error] = "Gallery could not be found."
@@ -125,9 +123,9 @@ class GalleriesController < ApplicationController
       render :action => :add and return
     end
 
-    icons = []
     failed = false
-    @icons = params[:icons].reject { |icon| icon.values.all?(&:blank?) }
+    @icons = icons
+    icons = []
     @icons.each_with_index do |icon, index|
       icon = Icon.new(icon.except('file'))
       icon.user = current_user
@@ -177,7 +175,7 @@ class GalleriesController < ApplicationController
       redirect_to galleries_path and return
     end
 
-    if @gallery.user_id != current_user.id
+    unless @gallery.user_id == current_user.id
       flash[:error] = "That is not your gallery."
       redirect_to galleries_path and return
     end
