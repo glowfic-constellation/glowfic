@@ -20,7 +20,7 @@
 $(document).ready(function() {
   $(".chosen-select").select2({
     width: '100%',
-    minimumResultsForSearch: 20,
+    minimumResultsForSearch: 10,
   });
 
   $(".post-expander").click(function() {
@@ -39,7 +39,7 @@ $(document).ready(function() {
     $(document).bind("keydown", function(e){
       e = e || window.event;
       var charCode = e.which || e.keyCode;
-      if(charCode == 27) {
+      if(charCode === 27) {
         $('#post-menu-box').hide();
         $('#post-menu').removeClass('selected');
       }

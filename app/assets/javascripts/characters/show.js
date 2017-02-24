@@ -2,7 +2,7 @@ $(document).ready( function() {
   $(".section-up").click(function() {
     var old_order = parseInt($(this).attr('data-order'));
     var new_order = old_order - 1;
-    if (old_order == 0) { return false; }
+    if (old_order === 0) { return false; }
     switchRows(old_order, new_order);
     return false;
   });
@@ -10,7 +10,7 @@ $(document).ready( function() {
   $(".section-down").click(function() {
     var old_order = parseInt($(this).attr('data-order'));
     var new_order = old_order + 1;
-    if (document.getElementById("section-"+new_order) == null) { return false; }
+    if (document.getElementById("section-"+new_order) === null) { return false; }
     switchRows(old_order, new_order);
     return false;
   });
@@ -41,4 +41,4 @@ function switchRows(old_order, new_order) {
   json['changes'][this_row.attr('data-section')] = new_order;
   json['changes'][that_row.attr('data-section')] = old_order;
   $.post('/characters', json, function (resp) {});
-};
+}

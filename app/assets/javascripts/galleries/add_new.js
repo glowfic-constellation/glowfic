@@ -12,14 +12,14 @@ function fixButtons() {
   bindRem();
   $("#icon-table tr.icon-row:odd td").removeClass('even').addClass("odd");
   $("#icon-table tr.icon-row:even td").removeClass('odd').addClass("even");
-};
+}
 
 function bindAdd() {
   $(".icon-row-add").click(function () {
     addNewRow();
     fixButtons();
   });
-};
+}
 
 function addNewRow() {
   var new_row = $(".icon-row:last").clone();
@@ -39,7 +39,7 @@ function addNewRow() {
 
   new_row.insertBefore($(".submit-row"));
   return index;
-};
+}
 
 function bindRem() {
   $(".icon-row-rem").click(function () {
@@ -47,7 +47,7 @@ function bindRem() {
     rem_row.remove();
     fixButtons();
   });
-};
+}
 
 function bindFileInput(fileInput) {
     var form         = $('form.icon-upload');
