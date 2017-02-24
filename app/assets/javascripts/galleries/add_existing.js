@@ -19,6 +19,6 @@ $(document).ready( function() {
 });
 
 $(window).on('beforeunload', function(){
-  if (skip_warning || image_ids.length == 0) return;
+  if (skip_warning || image_ids.length === 0) return;
   return "Are you sure you wish to navigate away? You have " + image_ids.length + " image(s) selected.";
 });

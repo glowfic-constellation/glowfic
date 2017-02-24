@@ -86,16 +86,6 @@ $(document).ready(function() {
     width: '300px'
   });
 
-  $("#active_character").select2({
-    minimumResultsForSearch: 10,
-    width: '100%',
-  });
-
-  $("#character_alias").select2({
-    minimumResultsForSearch: 10,
-    width: '100%',
-  });
-
   // TODO fix hack
   // Only initialize TinyMCE if it's required
   if($("#rtf").hasClass('selected') == true) {
