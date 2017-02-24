@@ -18,36 +18,29 @@ class MessagesController < ApplicationController
   def new
     @message = Message.new
     @message.recipient = User.find_by_id(params[:recipient_id])
-    set_message_parent(params[:reply_id]) if params[:reply_id].present?
   end
 
   def create
     @message = Message.new((params[:message] || {}).merge(sender: current_user))
+    set_message_parent(params[:parent_id]) if params[:parent_id].present?
 
-    if params[:parent_id].present?
-      @message.parent = Message.find_by_id(params[:parent_id])
-
-      unless @message.parent && @message.parent.visible_to?(current_user)
-        @message.parent = nil
-        flash.now[:error] = "Parent could not be found."
-        editor_setup
-        render action: :new and return
-      end
-
-      @message.thread_id = @message.parent.thread_id
-      @message.recipient_id = @message.parent.user_ids.detect { |id| id != current_user.id }
+    if params[:button_preview]
+      @messages = Message.where(thread_id: @message.thread_id).order('id desc') if @message.thread_id
+      editor_setup
+      render action: :preview and return
     end
 
-    render action: :preview and return if params[:button_preview]
-
-    unless @message.save
+    unless @message.valid? && flash.now[:error].nil?
+      cached_error = flash.now[:error] # preserves errors from setting an invalid parent
       flash.now[:error] = {}
       flash.now[:error][:array] = @message.errors.full_messages
+      flash.now[:error][:array] << cached_error if cached_error.present?
       flash.now[:error][:message] = "Your message could not be sent because of the following problems:"
       editor_setup
       render action: :new and return
     end
 
+    @message.save
     flash[:success] = "Message sent!"
     redirect_to messages_path(view: 'inbox')
   end
@@ -125,7 +118,6 @@ class MessagesController < ApplicationController
       return
     end
 
-    @message.subject = @message.subject_from_parent
     @message.thread_id = @message.parent.thread_id
     @message.recipient_id = @message.parent.user_ids.detect { |id| id != current_user.id }
   end

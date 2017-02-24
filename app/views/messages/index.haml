@@ -15,9 +15,7 @@
         %tr
           - klass = cycle('even', 'odd')
           - klass += ' bold' if @view == 'inbox' and message.unread?
-          %td.padding-left-5{class: klass}
-            - if message.send('marked_'+@view+'?')
-              = image_tag "/images/asterisk.png"
+          %td.padding-left-5{class: klass}= # just padding
           %td{class: klass}
             = link_to message.unempty_subject, message_path(message)
             - if message.num_in_thread.to_i > 1

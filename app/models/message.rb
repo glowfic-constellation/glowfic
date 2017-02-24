@@ -28,10 +28,6 @@ class Message < ActiveRecord::Base
     @last ||= self.class.where(thread_id: thread_id).order('id desc').first
   end
 
-  def subject_from_parent
-    @subject ||= "Re: " + (parent.subject.starts_with?('Re: ') ? parent.subject[4..-1] : parent.subject)
-  end
-
   def box(user)
     @box ||= (sender_id == user.id ? 'outbox' : 'inbox')
   end

@@ -53,45 +53,6 @@ RSpec.describe MessagesController do
       expect(assigns(:message).recipient_id).to eq(recipient.id)
     end
 
-    it "handles invalid parent" do
-      login
-      get :new, reply_id: -1
-      expect(flash[:error]).to eq('Message parent could not be found.')
-      expect(assigns(:message).parent_id).to be_nil
-      expect(assigns(:message).subject).to be_blank
-    end
-
-    it "handles provided parent" do
-      previous = create(:message)
-      login_as(previous.sender)
-      get :new, reply_id: previous.id
-      expect(response.status).to eq(200)
-      expect(assigns(:message).parent_id).to eq(previous.id)
-      expect(assigns(:message).subject).to eq("Re: #{previous.subject}")
-    end
-
-    it "handles replying to your own message" do
-      original = create(:message)
-      previous = create(:message, parent_id: original.id, thread_id: original.id, recipient_id: original.sender_id, sender_id: original.recipient_id)
-      login_as(previous.sender)
-      get :new, reply_id: previous.id
-      expect(response.status).to eq(200)
-      expect(assigns(:message).parent_id).to eq(previous.id)
-      expect(assigns(:message).subject).to eq("Re: #{previous.subject}")
-      expect(assigns(:message).recipient_id).to eq(previous.recipient_id)
-    end
-
-    it "rejects provided parents without permission" do
-      previous = create(:message)
-      login
-      get :new, reply_id: previous.id
-      expect(response.status).to eq(200)
-      expect(previous).not_to be_visible_to(assigns(:current_user))
-      expect(flash[:error]).to eq('You do not have permission to reply to that message.')
-      expect(assigns(:message).parent_id).to be_nil
-      expect(assigns(:message).subject).to be_blank
-    end
-
     it "succeeds" do
       login
       get :new
@@ -137,7 +98,7 @@ RSpec.describe MessagesController do
     it "fails with invalid parent" do
       login
       post :create, message: {subject: 'Re: Fake', message: 'response'}, parent_id: -1
-      expect(flash[:error]).to eq('Parent could not be found.')
+      expect(flash[:error][:array]).to include('Message parent could not be found.')
       expect(assigns(:message).parent).to be_nil
     end
 

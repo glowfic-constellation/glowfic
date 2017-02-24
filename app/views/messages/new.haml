@@ -1,1 +1,6 @@
+- content_for :breadcrumbs do
+  = link_to 'Inbox', messages_path
+  &raquo;
+  %b New Message
+
 = render partial: 'editor'
