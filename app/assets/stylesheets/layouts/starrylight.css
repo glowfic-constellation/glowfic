@@ -1,6 +1,6 @@
 ﻿#header { background-image: url("/images/starry.jpg"); background-position: right top; }
 #logo, #nav-bottom { background-color: transparent !important; }
-#header #user-info, #header #nav-top { background-color: rgba(65, 65, 110, 0.9); }
+#header #user-info, #header #nav-top { background-color: #41416e; background-color: rgba(65, 65, 110, 0.9); }
 
 body { background-color: #b0afb7; }
 
@@ -11,9 +11,9 @@ body { background-color: #b0afb7; }
 #content .beige a, #content th a, .post-header a { color: #F3F3F3; }
 #content .beige a:visited, #content th a:visited { color: #c6c6e5; }
 
-#post-menu-box { border-top: 1px solid rgba(128,128,128,0.5); background-color: #BCBCBC; }
+#post-menu-box { border-top: 1px solid #808080; border-top: 1px solid rgba(128,128,128,0.5); background-color: #BCBCBC; }
 #post-menu-box a:hover div { background-color: #D3D3D3; }
-#post-menu-box div { border-bottom: 1px solid rgba(128,128,128,0.5); }
+#post-menu-box div { border-bottom: 1px solid #808080; border-bottom: 1px solid rgba(128,128,128,0.5); }
 #post-menu-box a { color: inherit; }
 #content .even, .post-post, .post-reply:nth-child(even), #post-editor, .post-reply:nth-child(odd) blockquote { background-color: #E3E3E3; }
 #content .odd, .post-reply:nth-child(odd), .post-post + #post-editor, .post-post + a + #post-editor, .post-post blockquote, .post-reply:nth-child(even) blockquote { background-color: #D8D8D8; }

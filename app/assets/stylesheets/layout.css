@@ -1,14 +1,14 @@
 /* Header Menus */
 #header { background-color: #B9B6AD; color: #eae9e9; vertical-align: top; text-align: left; position: relative; overflow: hidden; }
 #header #user-info { float: left; text-align: center; background-color: #3e384f; padding: 0.5em; font-weight: bold; font-size: 16px; }
-#header #user-info .no-img { height: 100px; width: 100px; margin: 5px; display: block; padding: 0px; }
+#header #user-info .no-img { height: 100px; width: 100px; margin: 5px; display: block; padding: 0; }
 #header #user-info img { margin: 5px; width: 100px; height: 100px; }
 #header #header-right { overflow: hidden; }
 #header #logo { text-align: right; background-color: #3f7055; padding: 0.5em; overflow: hidden; }
 #header #logo img { padding: 0.5em 0.5em 0 0; }
 #header #nav-top { padding: 0.5em; background-color: #3e384f; padding-right: 1em; overflow: hidden; }
 #header #nav-top button, #header #nav-top .button { color: #444444; font-size: 13px; margin-right: 10px; }
-#header #nav-top input { margin: 0px 0px 0px 10px; }
+#header #nav-top input { margin: 0 0 0 10px; }
 #header #nav-top #remember_me { vertical-align: middle; }
 #header #header-logout { margin-left: 1em; }
 #header ul { font-size: 16px; padding: 0; text-align:left; margin-right: 0.5em; display: inline; vertical-align: middle; }
@@ -59,7 +59,7 @@
 /* Flash Displays */
 .flash { padding: 10px 20px; }
 .flash.error { background-color: #FFDDDD; }
-.flash.error ul { margin: 0px; margin-top: 5px; }
+.flash.error ul { margin: 0; margin-top: 5px; }
 .flash.success { background-color: #DDEEDD; }
 .flash.inbox { background-color: #DDDDEE; }
 
@@ -69,23 +69,23 @@
 #content .sub { padding: 10px; font-size: 16px; color: #3E384F; }
 #content th.subber { padding: 10px 25px; color: black; font-size: 15px; font-weight: bold; }
 #content th.subber a, .subber a:visited { color: #FFFFFF; }
-#content th.subber input { margin: 0px; }
+#content th.subber input { margin: 0; }
 #content th.subber .link-box { font-size: 15px; }
 #content td { font-size: 14px; }
-#content td.icon-box { padding: 10px 0px 10px 10px; }
+#content td.icon-box { padding: 10px 0 10px 10px; }
 
 /* Form Tables */
-#content table.form-table { text-align: center; width: 400px; margin: 0px; border-spacing: 0px; }
+#content table.form-table { text-align: center; width: 400px; margin: 0; border-spacing: 0; }
 #content table.form-table td { text-align: left; padding: 5px; }
 #content table.form-table td input, table#icon-table td input {
-    margin: 0px;
+    margin: 0;
     width: 100%;
     -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
     -moz-box-sizing: border-box;    /* Firefox, other Gecko */
     box-sizing: border-box;         /* Opera/IE 8+ */
 }
 #content table.form-table td .select2-container input, table#icon-table td .select2-container input { margin-top: 5px; }
-#content table.form-table td.spacer { height: 2px; padding: 0px; }
+#content table.form-table td.spacer { height: 2px; padding: 0; }
 @media (max-width: 400px) {
   #content table.form-table { width: 100%; }
 }
@@ -95,10 +95,10 @@
     display: inline-block;
     background-color: #B9B6AD;
     font-size: 18px;
-    margin: 0px;
+    margin: 0;
     margin-left: 5px;
     background-image: none;
-    border: 0px;
+    border: 0;
     color: #FFFFFF;
     padding: 4px 12px;
     border-radius: 5px;
@@ -107,18 +107,18 @@
 }
 .view-button.selected { background-color: #9E9C93; }
 .view-button a { color: white; }
-.view-button .list-view { width: 20px; height: 17px; display: inline; margin: 0px; padding: 0px; top: 2px; position: relative; }
-.view-button .icon-view { width: 15px; height: 15px; display: inline; margin: 0px; padding: 0px; top: 2px; position: relative; }
+.view-button .list-view { width: 20px; height: 17px; display: inline; margin: 0; padding: 0; top: 2px; position: relative; }
+.view-button .icon-view { width: 15px; height: 15px; display: inline; margin: 0; padding: 0; top: 2px; position: relative; }
 
 /* Not yet deserving of its own CSS file */
 #message_form textarea, .edit_board textarea, .new_board textarea, .new_template textarea, .edit_template textarea { height: 100px; }
-#stats ul { margin-top: 0px; margin-bottom: 0px; padding-left: 15px; }
-.select2-container { margin: 3px 0px; color: #333; }
+#stats ul { margin-top: 0; margin-bottom: 0; padding-left: 15px; }
+.select2-container { margin: 3px 0; color: #333; }
 .select2, .select2-dropdown { font-size: 13px !important; }
-.select2 input { height: 20px; margin: 0px; }
-.select2 ul { padding: 0px; }
+.select2 input { height: 20px; margin: 0; }
+.select2 ul { padding: 0; }
 .field_with_errors { display: inline-block; } /* Keeps forms from whitespacing weirdly when errors present */
-input.checkbox { height: 12px; margin: 0px; vertical-align: middle; } /* Keeps unread table from padding excessively for the checkboxes */
+input.checkbox { height: 12px; margin: 0; vertical-align: middle; } /* Keeps unread table from padding excessively for the checkboxes */
 #signup th.sub { width: 90px; }
 #content table.form-table input[type='checkbox'] { margin: 0 1px; height: 18px; width: 18px; vertical-align: middle; }
 td.continuity-spacer { height: 20px; }

@@ -1,7 +1,7 @@
 .gallery-box { cursor: pointer; width: 20px; text-align: center; } /* The + / - symbol to minimize a gallery */
 .gallery-title { height: 5px; } /* So that when a gallery is minimized there is spacing */
-img.selected-icon { border: 10px #3F7055 solid; width: 80px; height: 80px; }
-table.form-table .icon { vertical-align: middle; }
+.selected-icon { border: 10px #3F7055 solid; width: 80px; height: 80px; }
+.form-table .icon { vertical-align: middle; }
 
 /* Basic gallery and gallery icon formatting */
 .gallery { padding: 10px; }
@@ -28,13 +28,13 @@ table.form-table .icon { vertical-align: middle; }
 .gallery-icon .character-screenname { font-size: 85%; }
 
 /* Tiny buttons that hover over icons to allow deleting or selecting a checkbox for editing */
-.delete-button, .select-button { position: absolute; top: 0px; right: 8px; cursor: pointer; }
+.delete-button, .select-button { position: absolute; top: 0; right: 8px; cursor: pointer; }
 .delete-button { width: 10px; background-color: #e5dfd1; border: 1px #C00 solid; color: #C00; padding: 3px; }
 .delete-button a, .delete-button a:visited, .delete-button a:hover { color: #CC0000; }
-.select-button { width: 20px; height: 20px; border: 0px; padding: 0px; background-color: transparent; }
-.select-button input { height: 20px; width: 20px; margin: 0px; }
+.select-button { width: 20px; height: 20px; border: 0; padding: 0; background-color: transparent; }
+.select-button input { height: 20px; width: 20px; margin: 0; }
 
 /* The table in galleries/add to add multiple icons at once */
-#content table#icon-table { margin: 0px; text-align: center; }
-#content table#icon-table td.icon-buttons { width: 40px; padding: 0px 5px 0px 0px; }
-#content table#icon-table td.icon-buttons img { display: inline-block; }
+#content #icon-table { margin: 0; text-align: center; }
+#content #icon-table td.icon-buttons { width: 40px; padding: 0 5px 0 0; }
+#content #icon-table td.icon-buttons img { display: inline-block; }
