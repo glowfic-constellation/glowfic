@@ -83,12 +83,12 @@ class IconsController < ApplicationController
   def do_replace
     unless params[:icon_dropdown].blank? || new_icon = Icon.find_by_id(params[:icon_dropdown])
       flash[:error] = "Icon could not be found."
-      redirect_to replace_icon_path(@icon)
+      redirect_to replace_icon_path(@icon) and return
     end
 
     if new_icon && new_icon.user_id != current_user.id
       flash[:error] = "That is not your icon."
-      redirect_to galleries_path
+      redirect_to replace_icon_path(@icon) and return
     end
 
     Post.transaction do
