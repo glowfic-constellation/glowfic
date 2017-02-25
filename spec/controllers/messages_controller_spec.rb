@@ -127,7 +127,22 @@ RSpec.describe MessagesController do
     end
 
     context "preview" do
-      skip
+      it "sets messages if in a thread" do
+        previous = create(:message)
+        login_as(previous.sender)
+        post :create, message: {subject: 'Preview', message: 'example'}, parent_id: previous.id, button_preview: true
+        expect(Message.count).to eq(1)
+        expect(response).to render_template(:preview)
+        expect(assigns(:messages)).to eq([previous])
+      end
+
+      it "succeeds" do
+        login
+        post :create, message: {subject: 'Preview', message: 'example'}, button_preview: true
+        expect(Message.count).to eq(0)
+        expect(response).to render_template(:preview)
+        expect(assigns(:javascripts)).to include('messages')
+      end
     end
   end
 

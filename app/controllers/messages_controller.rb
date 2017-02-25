@@ -25,7 +25,7 @@ class MessagesController < ApplicationController
     set_message_parent(params[:parent_id]) if params[:parent_id].present?
 
     if params[:button_preview]
-      @messages = Message.where(thread_id: @message.thread_id).order('id desc') if @message.thread_id
+      @messages = Message.where(thread_id: @message.thread_id).order('id asc') if @message.thread_id
       editor_setup
       render action: :preview and return
     end

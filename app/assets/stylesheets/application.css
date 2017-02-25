@@ -17,5 +17,6 @@
  *= require galleries
  *= require layout
  *= require replies
+ *= require messages
  *= require_self
  */

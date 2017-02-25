@@ -19,8 +19,8 @@ class Message < ActiveRecord::Base
   end
 
   def short_message
-    return message if message.length <= 100
-    message[0...100] + '...'
+    return message if message.length <= 75
+    message[0...75] + '...'
   end
 
   def last_in_thread

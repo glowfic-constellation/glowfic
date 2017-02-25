@@ -1,0 +1,22 @@
+#message_form tr#message-row { width: 75%; max-width: 900px; min-width: 300px; }
+#message_form textarea { min-width: 200px; width: 100%; box-sizing: border-box; min-height: 250px; }
+.message-collapse .message { margin-left: 10px; float: left; }
+.message-collapse .author { float: left; width: 100px; padding-bottom: 10px; text-align: center; }
+.message-collapse, .message-menu { cursor: pointer; }
+.message-expand, .message-menu { height: 40px; width: 100%; position: absolute; }
+.message-expand { z-index: 0; background-color: #000000; opacity: 0.1; }
+.message-menu { z-index: 1; }
+.message-menu .centered { margin-top: 10px;  }
+.message-content { margin-top: 35px; }
+.message-expanded, .message-expanded .post-info-box { position: relative; }
+.message-expanded .post-icon { z-index: 2; }
+.message-time { position: absolute; right: 10px; top: 10px; }
+.message-collapse .message { max-width: 80%; }
+.message-expanded .post-info-box { margin-top: 0; }
+.post-info-box a { color: #9498ac; }
+
+@media (max-width: 600px) {
+  .message-content { margin-top: 0; }
+  .message-menu .centered { text-align: left !important; margin-left: 10px;  }
+  .message-expanded .post-info-box { margin-top: 30px; }
+}
