@@ -1,18 +1,23 @@
-= form_for @message, url: messages_path, method: :post, html: { id: 'message_form' } do |f|
+= form_for @message, html: { id: 'message_form' } do |f|
   = hidden_field_tag :parent_id, @message.parent_id
-  %table.form-table
+  %table
     %tr
-      %th{colspan: 2} Compose New Message
+      %th{colspan: 2}
+        - if @message.thread_id.present?
+          Reply to Thread
+        - else
+          Compose New Message
     %tr
       %th.sub.padding-10.width-150 Recipient
       %td.even.padding-10
         - if @message.parent
-          = link_to @message.recipient.username, user_path(@message.recipient)
+          = link_to @message.recipient.try(:username), user_path(@message.recipient)
         - else
           = f.collection_select :recipient_id, User.order('username asc').all - [current_user], :id, :username, prompt: true
-    %tr
-      %th.sub.padding-10 Subject
-      %td.odd.padding-10= f.text_field :subject, placeholder: 'Subject'
+    - unless @message.thread_id.present?
+      %tr
+        %th.sub.padding-10 Subject
+        %td.odd.padding-10= f.text_field :subject, placeholder: 'Subject'
     %tr#message-row
       %th.sub.padding-10.vtop Message
       %td.even.padding-10= f.text_area :message
@@ -20,6 +25,3 @@
       %th.subber.centered{colspan: 2}
         = f.submit "Send", class: 'button'
         = f.submit "Preview", class: 'button', name: 'button_preview'
-- if @message.thread_id
-  %br
-  = render partial: 'thread', locals: {thread_id: @message.thread_id}

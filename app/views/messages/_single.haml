@@ -1,4 +1,22 @@
-.post-container{class: cycle('even', 'odd')}
+- col_klass = exp_klass = cycle('even', 'odd')
+- if local_assigns[:message_counter].present?
+  - col_klass += ' message-collapse'
+  - exp_klass += ' message-expand'
+
+- if local_assigns[:message_counter].nil? || (local_assigns[:all_collapse].nil? && local_assigns[:message_counter] >= @messages.length - 1)
+  - col_klass += ' hidden'
+- else
+  - exp_klass += ' hidden'
+
+.post-container{class: col_klass, id: "collapsed-#{message.id}", data: {id: message.id}}
+  .padding-10
+    .author= link_to(message.sender.username, user_path(message.sender))
+    .message= sanitize_written_content(message.short_message).html_safe
+    .float-right
+      - if message.created_at
+        Sent #{pretty_time(message.created_at)}
+
+.post-container{class: exp_klass, id: "expanded-#{message.id}", data: {id: message.id}}
   .padding-10
     .post-info-box
       .post-icon= icon_tag message.sender.avatar
@@ -8,7 +26,8 @@
           = link_to(message.sender.username, user_path(message.sender))
         .post-screenname
           %b To:
-          = link_to(message.recipient.username, user_path(message.recipient))
+          - if message.recipient
+            = link_to(message.recipient.username, user_path(message.recipient))
     = sanitize_written_content(message.message).html_safe
   .post-footer
     .right-align> 

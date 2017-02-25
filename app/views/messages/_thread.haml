@@ -1,6 +1,0 @@
-.post-header
-  .padding-15
-    %span Full thread (most recent first)
-- Message.where(thread_id: @message.thread_id).order('id desc').each do |message|
-  = render partial: 'single', locals: {message: message}
- 

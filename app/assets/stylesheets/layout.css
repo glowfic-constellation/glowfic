@@ -127,3 +127,6 @@ td.continuity-spacer { height: 20px; }
 #content #message_form .form-table { width: 90%; }
 .post-ignored { opacity: 0.3; }
 .time-loaded { font-size: 10px; position: absolute; top: 2px; right: 20px; }
+.message-collapse .message { margin-left: 10px; float: left; }
+.message-collapse .author { float: left; width: 100px; padding-bottom: 10px; text-align: center; }
+.message-collapse, .message-expand { cursor: pointer; }

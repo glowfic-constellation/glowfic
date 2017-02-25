@@ -53,45 +53,6 @@ RSpec.describe MessagesController do
       expect(assigns(:message).recipient_id).to eq(recipient.id)
     end
 
-    it "handles invalid parent" do
-      login
-      get :new, reply_id: -1
-      expect(flash[:error]).to eq('Message parent could not be found.')
-      expect(assigns(:message).parent_id).to be_nil
-      expect(assigns(:message).subject).to be_blank
-    end
-
-    it "handles provided parent" do
-      previous = create(:message)
-      login_as(previous.sender)
-      get :new, reply_id: previous.id
-      expect(response.status).to eq(200)
-      expect(assigns(:message).parent_id).to eq(previous.id)
-      expect(assigns(:message).subject).to eq("Re: #{previous.subject}")
-    end
-
-    it "handles replying to your own message" do
-      original = create(:message)
-      previous = create(:message, parent_id: original.id, thread_id: original.id, recipient_id: original.sender_id, sender_id: original.recipient_id)
-      login_as(previous.sender)
-      get :new, reply_id: previous.id
-      expect(response.status).to eq(200)
-      expect(assigns(:message).parent_id).to eq(previous.id)
-      expect(assigns(:message).subject).to eq("Re: #{previous.subject}")
-      expect(assigns(:message).recipient_id).to eq(previous.recipient_id)
-    end
-
-    it "rejects provided parents without permission" do
-      previous = create(:message)
-      login
-      get :new, reply_id: previous.id
-      expect(response.status).to eq(200)
-      expect(previous).not_to be_visible_to(assigns(:current_user))
-      expect(flash[:error]).to eq('You do not have permission to reply to that message.')
-      expect(assigns(:message).parent_id).to be_nil
-      expect(assigns(:message).subject).to be_blank
-    end
-
     it "succeeds" do
       login
       get :new
@@ -137,7 +98,7 @@ RSpec.describe MessagesController do
     it "fails with invalid parent" do
       login
       post :create, message: {subject: 'Re: Fake', message: 'response'}, parent_id: -1
-      expect(flash[:error]).to eq('Parent could not be found.')
+      expect(flash[:error][:array]).to include('Message parent could not be found.')
       expect(assigns(:message).parent).to be_nil
     end
 
@@ -197,7 +158,7 @@ RSpec.describe MessagesController do
       login_as(message.sender)
       get :show, id: message.id
       expect(response).to have_http_status(200)
-      expect(assigns(:message)).to eq(message)
+      expect(assigns(:messages)).to eq([message])
       expect(message.reload.unread?).to be_true
     end
 
@@ -206,7 +167,7 @@ RSpec.describe MessagesController do
       login_as(message.recipient)
       get :show, id: message.id
       expect(response).to have_http_status(200)
-      expect(assigns(:message)).to eq(message)
+      expect(assigns(:messages)).to eq([message])
       expect(message.reload.unread?).not_to be_true
     end
 
@@ -262,57 +223,6 @@ RSpec.describe MessagesController do
         login_as(message.recipient)
         post :mark, marked_ids: [message.id.to_s], commit: "Mark Read / Unread"
         expect(message.reload.unread).to be_true
-      end
-    end
-
-    context "marking important/unimportant" do
-      it "handles invalid message ids" do
-        login
-        expect_any_instance_of(Message).not_to receive(:update_attributes)
-        post :mark, marked_ids: ['nope', -1, '0'], commit: "Mark / Unmark Important"
-      end
-
-      it "does not work for users without access" do
-        message = create(:message)
-        login
-        expect_any_instance_of(Message).not_to receive(:update_attributes)
-        post :mark, marked_ids: [message.id.to_s], commit: "Mark / Unmark Important"
-      end
-
-      context "sender" do
-        it "works for important" do
-          message = create(:message)
-          login_as(message.sender)
-          expect(message.marked_outbox).not_to be_true
-          post :mark, marked_ids: [message.id.to_s], commit: "Mark / Unmark Important"
-          expect(message.reload.marked_outbox).to be_true
-        end
-
-        it "works for unimportant" do
-          message = create(:message, marked_outbox: true)
-          login_as(message.sender)
-          expect(message.marked_outbox).to be_true
-          post :mark, marked_ids: [message.id.to_s], commit: "Mark / Unmark Important"
-          expect(message.reload.marked_outbox).not_to be_true
-        end
-      end
-
-      context "recipient" do
-        it "works for important" do
-          message = create(:message)
-          login_as(message.recipient)
-          expect(message.marked_inbox).not_to be_true
-          post :mark, marked_ids: [message.id.to_s], commit: "Mark / Unmark Important"
-          expect(message.reload.marked_inbox).to be_true
-        end
-
-        it "works for unimportant" do
-          message = create(:message, marked_inbox: true)
-          login_as(message.recipient)
-          expect(message.marked_inbox).to be_true
-          post :mark, marked_ids: [message.id.to_s], commit: "Mark / Unmark Important"
-          expect(message.reload.marked_inbox).not_to be_true
-        end
       end
     end
 

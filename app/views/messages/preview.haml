@@ -1,6 +1,19 @@
+- content_for :breadcrumbs do
+  = link_to 'Inbox', messages_path
+  - if @message.thread_id
+    &raquo;
+    = link_to @message.unempty_subject, message_path(@message.first_thread)
+    &raquo;
+    %b New Reply
+  - else
+    &raquo;
+    %b New Message
+
 .post-header
   .padding-15
     %span= @message.unempty_subject
-= render partial: 'messages/single', locals: { message: @message }
+- if @messages.present?
+  = render partial: 'single', collection: @messages, as: :message, locals: {all_collapse: true}
+= render partial: 'single', locals: { message: @message }
 %br
 = render partial: 'editor'
