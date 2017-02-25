@@ -1,6 +1,6 @@
 ﻿#header { background-image: url("/images/starry.jpg"); background-position: right top; }
 #logo, #nav-bottom { background-color: transparent !important; }
-#header #user-info, #header #nav-top { background-color: rgba(5, 5, 15, 0.9); }
+#header #user-info, #header #nav-top { background-color: #05050f; background-color: rgba(5, 5, 15, 0.9); }
 
 #content .sub { color: #f3f3f3; }
 #content .sub, .post-navheader, #content .subber, .subber { background-color: #182152; }
@@ -8,8 +8,8 @@
 #content .beige a, #content th a, .post-header a { color: #B5AFCB; }
 #content .beige a:visited, #content th a:visited, .post-header a:visited { color: #9C9AA4; }
 
-#post-menu-box { border-top: 1px solid rgba(128,128,128,0.5); }
-#post-menu-box div { border-bottom: 1px solid rgba(128,128,128,0.5); }
+#post-menu-box { border-top: 1px solid #808080; border-top: 1px solid rgba(128,128,128,0.5); }
+#post-menu-box div { border-bottom: 1px solid #808080; border-bottom: 1px solid rgba(128,128,128,0.5); }
 #post-menu-box a { color: inherit; }
 
 .post-navheader .view-button, .view-button.selected, .view-button, .link-box.green, .link-box.blue, .link-box.red { background-color: #463c65; }
