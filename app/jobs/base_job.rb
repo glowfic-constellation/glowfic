@@ -3,8 +3,6 @@ require 'resque/errors'
 class BaseJob < Object
   extend Resque::Plugins::Retry
 
-  @retry_limit = 5
-  @expire_retry_key_after = 3600
   give_up_callback :notify_exception
 
   def self.perform(*args)
