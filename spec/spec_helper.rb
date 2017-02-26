@@ -18,12 +18,14 @@
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 
 # Don't calculate coverage when running single tests or recording API examples
-require 'simplecov'
-SimpleCov.start 'rails' do
-  add_group("Controllers") {|src| src.filename.include?('app/controllers') and not src.filename.include?('app/controllers/api') }
-  add_group "Presenters", "app/presenters"
-  add_group "Concerns", "app/concerns"
-  add_group "API", "app/controllers/api"
+unless ENV['SKIP_COVERAGE']
+  require 'simplecov'
+  SimpleCov.start 'rails' do
+    add_group("Controllers") {|src| src.filename.include?('app/controllers') and not src.filename.include?('app/controllers/api') }
+    add_group "Presenters", "app/presenters"
+    add_group "Concerns", "app/concerns"
+    add_group "API", "app/controllers/api"
+  end
 end
 
 require 'factory_girl_rails'
