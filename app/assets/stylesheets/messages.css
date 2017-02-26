@@ -3,19 +3,16 @@
 .message-collapse .message { margin-left: 10px; float: left; }
 .message-collapse .author { float: left; width: 100px; padding-bottom: 10px; text-align: center; }
 .message-collapse, .message-menu { cursor: pointer; }
-.message-expand, .message-menu { height: 40px; width: 100%; position: absolute; }
-.message-expand { z-index: 0; background-color: #000000; opacity: 0.1; }
-.message-menu { z-index: 1; }
-.message-menu .centered { margin-top: 10px;  }
-.message-content { margin-top: 35px; }
-.message-expanded, .message-expanded .post-info-box { position: relative; }
+.message-expand, .message-menu { min-height: 40px; }
+.message-expand { z-index: 0; background-color: rgba(0,0,0,0.1); }
+.message-menu { z-index: 1; padding: 10px 10px 10px 10px; box-sizing: border-box; }
+.message-menu .text { width: 55%; text-align: right; margin-bottom: 5px; }
 .message-expanded .post-icon { z-index: 2; }
-.message-time { position: absolute; right: 10px; top: 10px; }
+.message-time { font-size: 80%; }
 .message-collapse .message { max-width: 80%; }
 .message-expanded .post-info-box { margin-top: 0; }
 
 @media (max-width: 600px) {
-  .message-content { margin-top: 0; }
-  .message-menu .centered { text-align: left !important; margin-left: 10px;  }
-  .message-expanded .post-info-box { margin-top: 30px; }
+  .message-menu { overflow: overlay; } /* to get it to redraw the boundaries */
+  .message-menu .text { text-align: left; margin: 0 10px 0 10px; width: auto; }
 }

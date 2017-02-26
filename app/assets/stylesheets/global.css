@@ -54,6 +54,7 @@ button, .button {
 .left-align { text-align: left; }
 .right-align { text-align: right; }
 .hidden { display: none; }
+.float-left { float: left; }
 .float-right { float: right; }
 .float-none { float: none !important; }
 .clear { clear: both; }
