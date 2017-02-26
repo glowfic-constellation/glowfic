@@ -13,7 +13,6 @@
 .message-time { position: absolute; right: 10px; top: 10px; }
 .message-collapse .message { max-width: 80%; }
 .message-expanded .post-info-box { margin-top: 0; }
-.post-info-box a { color: #9498ac; }
 
 @media (max-width: 600px) {
   .message-content { margin-top: 0; }

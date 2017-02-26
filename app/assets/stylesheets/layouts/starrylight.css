@@ -34,6 +34,7 @@ body { background-color: #b0afb7; }
 .post-character, .post-screenname, #content .dark { background-color: #645f8a; }
 .post-screenname { color: #c6c6e5; font-style: italic; }
 .post-character, .post-character a, .post-character a:visited, .post-author, .post-author a, .post-author a:visited { color: #F3F3F3; }
+.post-info-box a { color: #9498ac; }
 
 a { color: #666284; }
 a:visited { color: #484357; }
