@@ -18,11 +18,6 @@ class Message < ActiveRecord::Base
     subject
   end
 
-  def short_message
-    return message if message.length <= 75
-    message[0...75] + '...'
-  end
-
   def last_in_thread
     return self if thread_id == id
     @last ||= self.class.where(thread_id: thread_id).order('id desc').first
