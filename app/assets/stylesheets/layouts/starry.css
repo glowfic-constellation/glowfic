@@ -31,7 +31,7 @@ body { background-color: #6c697c; }
 .post-character, .post-screenname, .post-author { font-weight: bold; }
 #character-selector { font-weight: normal; }
 .post-character, .post-screenname { background-color: #484357; }
-.post-screenname { color: #9c9aa4; }
+.post-screenname, .post-screenname a, .post-screenname a:visited { color: #9c9aa4; }
 .post-character, .post-character a, .post-character a:visited, .post-author, .post-author a, .post-author a:visited { color: #F3F3F3; }
 
 a { color: #666284; }
