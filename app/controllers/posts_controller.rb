@@ -289,7 +289,7 @@ class PostsController < WritableController
     tags = klass.all
     return tags unless @post && @post.send(method)
     new_tags = @post.send(method).reject { |t| t.blank? || !t.to_i.zero? }
-    tags += new_tags.map { |t| faked.new(t, t) }
+    tags + new_tags.map { |t| faked.new(t, t) }
   end
 
   def create_new_tags
