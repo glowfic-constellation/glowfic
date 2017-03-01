@@ -279,25 +279,17 @@ class PostsController < WritableController
   end
 
   def build_tags
-    @settings = Setting.all
-    @warnings = ContentWarning.all
-    @tags = Tag.where(type: nil)
     faked = Struct.new(:name, :id)
+    @settings = build_subtags(Setting, :setting_ids, faked)
+    @warnings = build_subtags(ContentWarning, :warning_ids, faked)
+    @tags = build_subtags(Tag, :tag_ids, faked)
+  end
 
-    if @post.try(:setting_ids)
-      new_tags = @post.setting_ids.reject { |t| t.blank? || !t.to_i.zero? }
-      @settings += new_tags.map { |t| faked.new(t, t) }
-    end
-
-    if @post.try(:warning_ids)
-      new_tags = @post.warning_ids.reject { |t| t.blank? || !t.to_i.zero? }
-      @warnings += new_tags.map { |t| faked.new(t, t) }
-    end
-
-    if @post.try(:tag_ids)
-      new_tags = @post.tag_ids.reject { |t| t.blank? || !t.to_i.zero? }
-      @tags += new_tags.map { |t| faked.new(t, t) }
-    end
+  def build_subtags(klass, method, faked)
+    tags = klass.all
+    return tags unless @post && @post.send(method)
+    new_tags = @post.send(method).reject { |t| t.blank? || !t.to_i.zero? }
+    tags += new_tags.map { |t| faked.new(t, t) }
   end
 
   def create_new_tags
