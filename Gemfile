@@ -11,6 +11,7 @@ gem 'exception_notification'
 gem 'gon'
 gem 'haml-rails', '~> 0.4.0'
 gem 'httparty'
+gem "jquery-fileupload-rails"
 gem 'jquery-rails'
 gem 'newrelic_rpm'
 gem 'nilify_blanks'
