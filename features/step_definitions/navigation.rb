@@ -16,12 +16,32 @@ Given(/^I have a long message$/) do
   create(:message, sender: User.last, message: "abcde" * 22)
 end
 
+Given(/^I have (\d) galleryless icons?$/) do |num|
+  num.to_i.times do create(:icon, user: User.last) end
+end
+
+Given(/^I have (\d) unread posts?$/) do |num|
+  num.to_i.times do
+    unread = create(:post)
+    unread.mark_read(User.first, Time.now - 1.day)
+    create(:reply, user: unread.user, post: unread)
+  end
+end
+
 When(/^I start a new post$/) do
   visit new_post_path
 end
 
+When(/^I go to create a new character$/) do
+  visit new_character_path
+end
+
 When(/^I go to my (in|out)box$/) do |box|
   visit messages_path(view: box + "box")
+end
+
+When(/^I view my unread posts$/) do
+  visit unread_posts_path
 end
 
 When(/^I open the message$/) do
