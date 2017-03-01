@@ -186,11 +186,32 @@ RSpec.describe MessagesController do
       expect(message.reload.unread?).not_to be_true
     end
 
+    it "works for unread in thread" do
+      message = create(:message, unread: true)
+      sender = create(:message, sender: message.recipient, recipient: message.sender, parent: message, thread_id: message.id, unread: false)
+      subsequent = create(:message, sender: message.recipient, recipient: message.sender, parent: message, thread_id: message.id, unread: false)
+      login_as(message.recipient)
+      get :show, id: subsequent.id
+      expect(response).to have_http_status(200)
+      expect(message.reload.unread?).not_to be_true
+    end
+
     it "does not remark the message read" do
       message = create(:message, unread: false)
       login_as(message.recipient)
       expect_any_instance_of(Message).not_to receive(:update_attributes)
       get :show, id: message.id
+    end
+
+    it "does not remark the message read for unread sender in thread" do
+      message = create(:message, unread: true)
+      sender = create(:message, sender: message.recipient, recipient: message.sender, parent: message, thread_id: message.id, unread: true)
+      subsequent = create(:message, sender: message.recipient, recipient: message.sender, parent: message, thread_id: message.id, unread: false)
+      login_as(message.recipient)
+      get :show, id: subsequent.id
+      expect(response).to have_http_status(200)
+      expect(message.reload.unread?).not_to be_true
+      expect(sender.reload.unread?).to be_true
     end
   end
 

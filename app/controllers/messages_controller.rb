@@ -58,11 +58,15 @@ class MessagesController < ApplicationController
 
     @page_title = message.unempty_subject
     @box = message.box(current_user)
-    if message.unread? and message.recipient_id == current_user.id
-      message.update_attributes(unread: false)
-    end
 
     @messages = Message.where(thread_id: message.thread_id).order('id asc')
+    if @messages.any? { |m| m.recipient_id == current_user.id && m.unread? }
+      @messages.each do |m|
+        next unless m.unread?
+        next unless m.recipient_id == current_user.id
+        m.update_attributes(unread: false)
+      end
+    end
     @message = Message.new
     set_message_parent(message.last_in_thread)
     use_javascript('messages')

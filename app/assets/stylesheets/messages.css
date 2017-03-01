@@ -1,7 +1,7 @@
 #message_form tr#message-row { width: 75%; max-width: 900px; min-width: 300px; }
 #message_form textarea { min-width: 200px; width: 100%; box-sizing: border-box; min-height: 250px; }
 .message-collapse .message { margin-left: 10px; float: left; }
-.message-collapse .author { float: left; width: 100px; padding-bottom: 10px; text-align: center; }
+.message-collapse .author { float: left; width: 100px; padding-bottom: 10px; text-align: center; word-wrap: break-word; }
 .message-collapse, .message-menu { cursor: pointer; }
 .message-expand, .message-menu { min-height: 40px; }
 .message-expand { z-index: 0; background-color: rgba(0,0,0,0.1); }
@@ -10,7 +10,7 @@
 .message-expanded .post-icon { z-index: 2; }
 .message-time { font-size: 80%; }
 .message-collapse .message { max-width: 80%; }
-.message-expanded .post-info-box { margin-top: 0; }
+.message-expanded .post-info-box { margin-top: 0; word-wrap: break-word; }
 
 @media (max-width: 600px) {
   .message-menu { overflow: overlay; } /* to get it to redraw the boundaries */
