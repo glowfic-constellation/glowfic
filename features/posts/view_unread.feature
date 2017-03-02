@@ -13,3 +13,11 @@ Given I am logged in
 And I have 2 unread posts
 When I view my unread posts
 Then I should see "Unread Posts"
+
+Scenario: Dark layout uses appropriate images
+Given I am logged in
+And my account uses the starry dark layout
+And I have 2 unread posts
+When I view my unread posts
+Then I should see the bullet icon
+And I should not see the note icon
