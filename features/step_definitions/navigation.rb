@@ -64,7 +64,7 @@ end
 
 Then(/^I should see the shortened message$/) do
   within(".message-collapse") do
-    expect(page).to have_content("abcde" * 15 + "...")
+    expect(page).to have_content(("abcde" * 15)[0...73] + "…")
     expect(page).not_to have_content("abcde" * 20)
   end
 end
