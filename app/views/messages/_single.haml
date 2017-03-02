@@ -10,22 +10,23 @@
 .post-container{class: col_klass, id: "collapsed-#{message.id}", data: {id: message.id}}
   .padding-10
     .author= link_to(message.sender.username, user_path(message.sender))
-    .message= sanitize_written_content(message.short_message).html_safe
+    .message= generate_short(message.message).html_safe
     .float-right
       - if message.created_at
-        Sent #{pretty_time(message.created_at)}
+        .message-time Sent #{pretty_time(message.created_at)}
 
 .post-container.message-expanded{class: exp_klass, id: "expanded-#{message.id}"}
   - if message.id && local_assigns[:message_counter].present?
     .message-expand
-    .message-menu{data: {id: message.id}}
-      .centered
-        %span.text Click to collapse
-        - if message.created_at
-          .message-time Sent #{pretty_time(message.created_at)}
+      .message-menu{data: {id: message.id}}
+        .float-left.text Click to collapse
+        .float-right
+          - if message.created_at
+            .message-time Sent #{pretty_time(message.created_at)}
   .padding-10
     .post-info-box
-      .post-icon= icon_tag message.sender.avatar
+      - if message.sender.avatar
+        .post-icon= icon_tag message.sender.avatar
       .post-info-text
         .post-character
           %b From:
@@ -36,5 +37,5 @@
             = link_to(message.recipient.username, user_path(message.recipient))
     .message-content= sanitize_written_content(message.message).html_safe
   .post-footer
-    .right-align> 
+    .right-align>
       .padding-5>
