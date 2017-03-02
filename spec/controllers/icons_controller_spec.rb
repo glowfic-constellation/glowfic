@@ -317,4 +317,166 @@ RSpec.describe IconsController do
       expect(user.reload.avatar_id).to eq(icon.id)
     end
   end
+
+  describe "GET replace" do
+    it "requires login" do
+      get :replace, id: create(:icon).id
+      expect(response).to redirect_to(root_url)
+      expect(flash[:error]).to eq("You must be logged in to view that page.")
+    end
+
+    it "requires valid icon" do
+      login
+      get :replace, id: -1
+      expect(response).to redirect_to(galleries_url)
+      expect(flash[:error]).to eq("Icon could not be found.")
+    end
+
+    it "requires your icon" do
+      login
+      get :replace, id: create(:icon).id
+      expect(response).to redirect_to(galleries_url)
+      expect(flash[:error]).to eq("That is not your icon.")
+    end
+
+    context "with galleryless icon" do
+      it "sets variables correctly" do
+        user = create(:user)
+        icon = create(:icon, user_id: user.id)
+        alts = 5.times.collect { |i| create(:icon, user_id: user.id) }
+        post = create(:post, user_id: user.id, icon_id: icon.id)
+        post_reply = create(:reply, post_id: post.id, user_id: user.id, icon_id: icon.id)
+        reply = create(:reply, user_id: user.id, icon_id: icon.id)
+
+        other_icon = create(:icon, user_id: user.id)
+        gallery = create(:gallery, user_id: user.id, icon_ids: [other_icon.id])
+        expect(gallery.icons).to match_array([other_icon])
+        other_post = create(:post, user_id: user.id, icon_id: other_icon.id)
+        other_reply = create(:reply, user_id: user.id, icon_id: other_icon.id)
+
+        login_as(icon.user)
+        get :replace, id: icon.id
+        expect(response).to have_http_status(200)
+        expect(assigns(:alts)).to match_array(alts)
+        expect(assigns(:posts)).to match_array([post, reply.post])
+        expect(assigns(:page_title)).to eq("Replace Icon: " + icon.keyword)
+      end
+    end
+
+    context "with icon gallery" do
+      it "sets variables correctly" do
+        user = create(:user)
+        icon = create(:icon, user_id: user.id)
+        alts = 5.times.collect { |i| create(:icon, user: user) }
+        gallery = create(:gallery, user: user, icon_ids: [icon.id] + alts.map(&:id))
+        other_icon = create(:icon, user: user)
+
+        expect(gallery.icons).to match_array([icon] + alts)
+
+        post = create(:post, user: user, icon: icon)
+        post_reply = create(:reply, post: post, user: user, icon: icon)
+        reply = create(:reply, user: user, icon: icon)
+
+        other_post = create(:post, user: user, icon: other_icon)
+        other_reply = create(:reply, user: user, icon: other_icon)
+
+        login_as(icon.user)
+        get :replace, id: icon.id
+        expect(response).to have_http_status(200)
+        expect(assigns(:alts)).to match_array(alts)
+        expect(assigns(:posts)).to match_array([post, reply.post])
+        expect(assigns(:page_title)).to eq("Replace Icon: " + icon.keyword)
+      end
+    end
+  end
+
+  describe "POST do_replace" do
+    it "requires login" do
+      post :do_replace, id: create(:icon).id
+      expect(response).to redirect_to(root_url)
+      expect(flash[:error]).to eq("You must be logged in to view that page.")
+    end
+
+    it "requires valid icon" do
+      login
+      post :do_replace, id: -1
+      expect(response).to redirect_to(galleries_url)
+      expect(flash[:error]).to eq("Icon could not be found.")
+    end
+
+    it "requires your icon" do
+      login
+      post :do_replace, id: create(:icon).id
+      expect(response).to redirect_to(galleries_url)
+      expect(flash[:error]).to eq("That is not your icon.")
+    end
+
+    it "requires valid other icon" do
+      icon = create(:icon)
+      login_as(icon.user)
+      post :do_replace, id: icon.id, icon_dropdown: -1
+      expect(response).to redirect_to(replace_icon_path(icon))
+      expect(flash[:error]).to eq('Icon could not be found.')
+    end
+
+    it "requires other icon to be yours if present" do
+      icon = create(:icon)
+      other_icon = create(:icon)
+      login_as(icon.user)
+      post :do_replace, id: icon.id, icon_dropdown: other_icon.id
+      expect(response).to redirect_to(replace_icon_path(icon))
+      expect(flash[:error]).to eq('That is not your icon.')
+    end
+
+    it "succeeds with valid other icon" do
+      user = create(:user)
+      icon = create(:icon, user: user)
+      other_icon = create(:icon, user: user)
+      icon_post = create(:post, user: user, icon: icon)
+      reply = create(:reply, user: user, icon: icon)
+      reply_post_icon = reply.post.icon_id
+
+      login_as(user)
+      post :do_replace, id: icon.id, icon_dropdown: other_icon.id
+      expect(response).to redirect_to(icon_path(icon))
+      expect(flash[:success]).to eq('All uses of this icon have been replaced.')
+
+      expect(icon_post.reload.icon_id).to eq(other_icon.id)
+      expect(reply.reload.icon_id).to eq(other_icon.id)
+      expect(reply.post.reload.icon_id).to eq(reply_post_icon) # check it doesn't replace all replies in a post
+    end
+
+    it "succeeds with no other icon" do
+      user = create(:user)
+      icon = create(:icon, user: user)
+      icon_post = create(:post, user: user, icon: icon)
+      reply = create(:reply, user: user, icon: icon)
+
+      login_as(user)
+      post :do_replace, id: icon.id
+      expect(response).to redirect_to(icon_path(icon))
+      expect(flash[:success]).to eq('All uses of this icon have been replaced.')
+
+      expect(icon_post.reload.icon_id).to be_nil
+      expect(reply.reload.icon_id).to be_nil
+    end
+
+    it "filters to selected posts if given" do
+      user = create(:user)
+      icon = create(:icon, user: user)
+      other_icon = create(:icon, user: user)
+      icon_post = create(:post, user: user, icon: icon)
+      icon_reply = create(:reply, user: user, icon: icon)
+      other_post = create(:post, user: user, icon: icon)
+
+      login_as(user)
+      post :do_replace, id: icon.id, icon_dropdown: other_icon.id, post_ids: [icon_post.id, icon_reply.post.id]
+      expect(response).to redirect_to(icon_path(icon))
+      expect(flash[:success]).to eq('All uses of this icon have been replaced.')
+
+      expect(icon_post.reload.icon_id).to eq(other_icon.id)
+      expect(icon_reply.reload.icon_id).to eq(other_icon.id)
+      expect(other_post.reload.icon_id).to eq(icon.id)
+    end
+  end
 end
