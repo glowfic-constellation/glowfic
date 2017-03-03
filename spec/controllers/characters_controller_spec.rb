@@ -154,6 +154,13 @@ RSpec.describe CharactersController do
         expect(assigns(:posts).size).to eq(25)
         expect(assigns(:posts)).to match_array(Post.where(character_id: character.id).order('tagged_at desc').limit(25))
       end
+
+      it "should only show visible posts" do
+        character = create(:character)
+        post = create(:post, character: character, user: character.user, privacy: Post::PRIVACY_PRIVATE)
+        get :show, id: character.id
+        expect(assigns(:posts)).to be_blank
+      end
     end
   end
 

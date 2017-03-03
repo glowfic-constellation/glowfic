@@ -58,4 +58,108 @@ RSpec.describe ApplicationController do
       end
     end
   end
+
+  describe "#posts_from_relation" do
+    it "gets posts" do
+      post = create(:post)
+      relation = Post.where('posts.id IS NOT NULL')
+      expect(controller.send(:posts_from_relation, relation)).to match_array([post])
+    end
+
+    it "will return a blank array if applicable" do
+      post = create(:post)
+      relation = Post.where('posts.id IS NULL')
+      expect(controller.send(:posts_from_relation, relation)).to be_blank
+    end
+
+    it "skips posts in site testing" do
+      skip "stubbing constants does not seem to work well with scopes"
+
+      post = create(:post, board: site_testing)
+      stub_const("Board::ID_SITETESTING", site_testing.id)
+      expect(Post.where(id: post.id).no_tests).to be_blank # fails
+      relation = Post.where(id: post.id)
+      expect(controller.send(:posts_from_relation, relation), true).to be_blank # so this fails
+    end
+
+    it "can be made to show site testing posts" do
+      skip "stubbing constants does not seem to work well with scopes"
+
+      site_testing = create(:board)
+      stub_const("Board::ID_SITETESTING", site_testing.id)
+      post = create(:post, board: site_testing)
+      relation = Post.where(id: post.id)
+      expect(controller.send(:posts_from_relation, relation), false).not_to be_blank
+    end
+
+    let(:default_post_ids) { 26.times.collect do create(:post) end.map(&:id) }
+
+    it "paginates by default" do
+      relation = Post.where(id: default_post_ids)
+      fetched_posts = controller.send(:posts_from_relation, relation)
+      expect(fetched_posts.total_pages).to eq(2)
+    end
+
+    it "allows pagination to be disabled" do
+      relation = Post.where(id: default_post_ids)
+      fetched_posts = controller.send(:posts_from_relation, relation, true, false)
+      expect(fetched_posts).not_to respond_to(:total_pages)
+    end
+
+    it "skips visibility check if there are more than 25 posts" do
+      expect_any_instance_of(Post).not_to receive(:visible_to?)
+      relation = Post.where(id: default_post_ids)
+      fetched_posts = controller.send(:posts_from_relation, relation)
+      expect(fetched_posts.count).to eq(26) # number when querying the database – actual number returned is 25, due to pagination
+    end
+
+    context "when logged in" do
+      it "returns empty array if no visible posts" do
+        hidden_post = create(:post, privacy: Post::PRIVACY_PRIVATE)
+        user = create(:user)
+        login_as(user)
+        expect(hidden_post).not_to be_visible_to(user)
+
+        relation = Post.where(id: hidden_post.id)
+        fetched_posts = controller.send(:posts_from_relation, relation)
+        expect(fetched_posts).to be_empty
+      end
+
+      it "filters array if mixed visible and not visible posts" do
+        hidden_post = create(:post, privacy: Post::PRIVACY_PRIVATE)
+        public_post = create(:post, privacy: Post::PRIVACY_PUBLIC)
+        user = create(:user)
+        own_post = create(:post, user: user, privacy: Post::PRIVACY_PUBLIC)
+        login_as(user)
+
+        relation = Post.where(id: [hidden_post.id, public_post.id, own_post.id])
+        fetched_posts = controller.send(:posts_from_relation, relation)
+        expect(fetched_posts).to match_array([public_post, own_post])
+      end
+    end
+
+    context "when logged out" do
+      it "returns empty array if no visible posts" do
+        hidden_post = create(:post, privacy: Post::PRIVACY_PRIVATE)
+
+        relation = Post.where(id: hidden_post.id)
+        fetched_posts = controller.send(:posts_from_relation, relation)
+        expect(fetched_posts).to be_empty
+      end
+
+      it "filters array if mixed visible and not visible posts" do
+        hidden_post = create(:post, privacy: Post::PRIVACY_PRIVATE)
+        public_post = create(:post, privacy: Post::PRIVACY_PUBLIC)
+        conste_post = create(:post, privacy: Post::PRIVACY_REGISTERED)
+
+        relation = Post.where(id: [hidden_post.id, public_post.id, conste_post.id])
+        fetched_posts = controller.send(:posts_from_relation, relation)
+        expect(fetched_posts).to match_array([public_post])
+      end
+    end
+
+    it "has more tests" do
+      skip
+    end
+  end
 end
