@@ -43,10 +43,6 @@ class Reply < ActiveRecord::Base
     post.save
   end
 
-  def view_cache_key
-    ActiveSupport::Cache.expand_cache_key(self, :views)
-  end
-
   def update_active_char
     return if is_import
     user.update_attributes(:active_character => character)
