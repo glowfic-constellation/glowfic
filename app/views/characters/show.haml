@@ -10,46 +10,84 @@
     = link_to @character.template.name, template_path(@character.template)
   &raquo;
   %b= @character.name
+  &raquo;
+  - if params[:view] == 'galleries'
+    %b Galleries
+  - elsif params[:view] == 'posts'
+    %b Posts
+  - else
+    %b Info
 
-.character-info
-  - if @character.icon
-    .character-icon
-      = link_to icon_path(@character.icon) do
-        = icon_tag @character.icon
-  - if @character.screenname
-    %b.character-screenname= @character.screenname
-    %br
-  %span.character-name= @character.name
-  - if @character.template
-    = surround '(', ')' do
-      = link_to @character.template.name, template_path(@character.template), class: 'character-template'
-  - if @character.template_name || @character.aliases.exists?
-    %br
-    = precede 'Nickname(s): ' do
-      %span.character-template-nickname= ([@character.template_name] + @character.aliases.order('name asc').pluck(:name)).compact.join(", ")
-  - if @character.pb
-    %br
-    = precede 'Facecast: ' do
-      %span.character-pb= @character.pb
-  - if @character.setting
-    %br
-    = precede 'Setting: ' do
-      %span.character-setting= @character.setting
-  - if logged_in? && current_user.id == @character.user_id
-    %br
-    = link_to 'Edit character', edit_character_path(@character), class: 'character-edit'
-    %br
-    = link_to 'Replace character', replace_character_path(@character), class: 'character-replace'
-%br
-- if @posts.present?
+%table.left-info-box.character-info-box
+  %thead
+    %tr
+      %th.centered
+        %span.character-name= @character.name
+        - if @character.screenname
+          %br
+          %span.character-screenname= @character.screenname
+  %tbody
+    - if @character.icon
+      %tr
+        %td.green.centered.character-icon
+          = link_to icon_path(@character.icon) do
+            = icon_tag @character.icon
+    - if @character.template
+      %tr
+        %td.centered{class: cycle('even', 'odd')}
+          = surround '(', ')' do
+            = link_to @character.template.name, template_path(@character.template), class: 'character-template'
+    %tr
+      %td.centered{class: cycle('even', 'odd')}
+        = link_to character_path(@character) do
+          = image_tag '/images/chart_bar.png'
+          Info
+    %tr
+      %td.centered{class: cycle('even', 'odd')}
+        = link_to character_path(@character, view: 'galleries') do
+          = image_tag '/images/photos.png'
+          &nbsp;Galleries
+    %tr
+      %td.centered{class: cycle('even', 'odd')}
+        = link_to character_path(@character, view: 'posts') do
+          = image_tag '/images/book_open.png'
+          Posts
+    - if logged_in? && current_user.id == @character.user_id
+      %tr
+        %td.centered{class: cycle('even', 'odd')}
+          = link_to edit_character_path(@character), class: 'character-edit' do
+            = image_tag '/images/pencil.png'
+            Edit Character
+      %tr
+        %td.centered{class: cycle('even', 'odd')}
+          = link_to replace_character_path(@character), class: 'character-replace' do
+            = image_tag '/images/swap.png', style: 'width: 16px;'
+            Replace Character
+
+- if params[:view] == 'galleries'
+  - if @character.galleries.ordered.present?
+    %table.character-right-content-box
+      %thead
+        %tr
+          %th Galleries
+      %tbody
+        - @character.galleries.ordered.each do |gallery|
+          = render partial: 'galleries/single', locals: {gallery: gallery, klass: 'subber', skip_forms: true, section: gallery.character_gallery_for(@character)}
+- elsif params[:view] == 'posts'
   - content_for :posts_title do 'Recent Threads' end
-  = render partial: 'posts/list', locals: {posts: @posts, path: :character_path}
-%br
-- if @character.galleries.ordered.present?
-  %table
+  = render partial: 'posts/list', locals: {posts: @posts, path: :character_path, table_class: 'character-right-content-box'}
+- else
+  %table.character-right-content-box
     %thead
       %tr
-        %th Galleries
+        %th{colspan: 2} Info
     %tbody
-      - @character.galleries.ordered.each do |gallery|
-        = render partial: 'galleries/single', locals: {gallery: gallery, klass: 'subber', skip_forms: true, section: gallery.character_gallery_for(@character)}
+      %tr
+        %th.sub.width-150 Nickname(s)
+        %td.character-template-nickname.even= ([@character.template_name] + @character.aliases.order('name asc').pluck(:name)).compact.join(", ")
+      %tr
+        %th.sub.width-150 Facecast
+        %td.character-pb.odd= @character.pb
+      %tr
+        %th.sub.width-150 Setting
+        %td.character-setting.even= @character.setting

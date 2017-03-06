@@ -115,8 +115,11 @@
 #content .right-content-box { float: left; }
 #content .user-info-box { width: 200px; }
 #content .icon-info-box { width: 150px; }
+#content .character-info-box { width: 200px; }
+#content .character-info-box .character-screenname { font-size: 85%; }
 #content .user-right-content-box { width: calc(100% - 200px); }
 #content .icon-right-content-box { width: calc(100% - 150px); }
+#content .character-right-content-box { width: calc(100% - 200px); }
 
 /* Not yet deserving of its own CSS file */
 #message_form textarea, .edit_board textarea, .new_board textarea, .new_template textarea, .edit_template textarea { height: 100px; }
