@@ -92,3 +92,7 @@
       %tr
         %th.sub.width-150 Setting
         %td.character-setting{class: cycle('even', 'odd')}= @character.setting
+      - if @character.description
+        %tr
+          %th.sub.width-150 Description
+          %td.character-description{class: cycle('even', 'odd')}= sanitize_written_content(@character.description).html_safe
