@@ -3,6 +3,9 @@
     %tr
       %th.centered{colspan: 2} Account Settings
     %tr
+      %td.odd.centered{colspan: 2}
+        .details *Please set your avatar directly from the desired icon's page*
+    %tr
       %th.sub Username
       %td{class: cycle('even', 'odd')}= f.text_field :username, placeholder: "Username", class: 'text', disabled: current_user.salt_uuid.nil?
     %tr
