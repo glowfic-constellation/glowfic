@@ -377,6 +377,17 @@ getAndSetCharacterData = function(characterId, options) {
       $("#swap-alias").hide();
     }
 
+    if (restore_alias) {
+      var correctName = $("#character_alias option[value="+selectedAliasID+"]").text();
+      $("#post-editor .post-character #name").html(correctName);
+      $("#post-editor .post-character").data('alias-id', selectedAliasID);
+      $("#character_alias").val(selectedAliasID).trigger("change.select2");
+    } else {
+      $("#post-editor .post-character").data('alias-id', '');
+      $("#character_alias").val('').trigger("change.select2");
+      $("#reply_character_alias_id").val('');
+    }
+
     // Display no icon if no default set
     if (resp.default == undefined) {
       $("#current-icon").removeClass('pointer');
@@ -401,17 +412,6 @@ getAndSetCharacterData = function(characterId, options) {
       setIconFromId(selectedIconID);
     else
       setIcon(resp.default.id, resp.default.url, resp.default.keyword, resp.default.keyword);
-
-    if (restore_alias) {
-      var correctName = $("#character_alias option[value="+selectedAliasID+"]").text();
-      $("#post-editor .post-character #name").html(correctName);
-      $("#post-editor .post-character").data('alias-id', selectedAliasID);
-      $("#character_alias").val(selectedAliasID).trigger("change.select2");
-    } else {
-      $("#post-editor .post-character").data('alias-id', '');
-      $("#character_alias").val('').trigger("change.select2");
-      $("#reply_character_alias_id").val('');
-    }
   }, 'json');
 };
 
