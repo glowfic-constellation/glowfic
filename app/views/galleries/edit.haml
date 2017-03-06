@@ -15,16 +15,16 @@
       %td.even{colspan: 2}= f.text_field :name, placeholder: "Gallery Name", class: 'text'
     %tr
       %th.subber{colspan: 3} Edit Icons
-    - @gallery.icons.each do |icon|
-      = f.fields_for "icons_attributes[]", icon do |i|
+    = f.fields_for :galleries_icons do |gif|
+      = gif.fields_for :icon do |i|
         %tr
-          %td.green.centered{rowspan: 3}
-            = icon_tag icon
+          %td.green.centered{rowspan: 5}
+            = icon_tag i.object
             = i.hidden_field :id
           - klass = cycle('even','odd')
           %td.centered{class: klass} URL
           %td{class: klass}
-            - if icon.uploaded?
+            - if i.object.uploaded?
               = image_tag "/images/accept.png", class: 'vmid'
               Uploaded to site
             - else
@@ -37,6 +37,14 @@
           - klass = cycle('even','odd')
           %td.centered{class: klass} Credit
           %td{class: klass}= i.text_field :credit, :placeholder => "Credit", :class => 'text'
+        %tr
+          %td{class: cycle('even','odd'), colspan: 2}
+            = gif.check_box :_destroy
+            = gif.label :_destroy, 'Remove from Gallery'
+        %tr
+          %td{class: cycle('even','odd'), colspan: 2}
+            = i.check_box :_destroy
+            = i.label :_destroy, 'Delete Icon'
         %tr
           %td.spacer.subber{colspan:3}
     %tr

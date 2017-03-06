@@ -257,6 +257,61 @@ RSpec.describe GalleriesController do
       put :update, id: gallery.id, gallery: {name: 'NewGalleryName'}
       expect(response).to redirect_to(edit_gallery_url(gallery))
       expect(flash[:success]).to eq('Gallery saved.')
+      expect(gallery.reload.name).to eq('NewGalleryName')
+    end
+
+    it "can update a gallery icon" do
+      user = create(:user)
+      gallery = create(:gallery, user: user)
+      icon = create(:icon, user: user)
+      newkey = icon.keyword + 'new'
+      gallery.icons << icon
+      login_as(user)
+
+      icon_attributes = {id: icon.id, keyword: newkey}
+      gid = gallery.galleries_icons.first.id
+      gallery_icon_attributes = {id: gid, icon_attributes: icon_attributes}
+
+      put :update, id: gallery.id, gallery: {galleries_icons_attributes: {gid.to_s => gallery_icon_attributes}}
+      expect(response).to redirect_to(edit_gallery_url(gallery))
+      expect(flash[:success]).to eq('Gallery saved.')
+      expect(icon.reload.keyword).to eq(newkey)
+    end
+
+    it "can remove a gallery icon from the gallery" do
+      user = create(:user)
+      gallery = create(:gallery, user: user)
+      icon = create(:icon, user: user)
+      gallery.icons << icon
+      login_as(user)
+
+      icon_attributes = {id: icon.id}
+      gid = gallery.galleries_icons.first.id
+      gallery_icon_attributes = {id: gid, _destroy: '1', icon_attributes: icon_attributes}
+
+      put :update, id: gallery.id, gallery: {galleries_icons_attributes: {gid.to_s => gallery_icon_attributes}}
+      expect(response).to redirect_to(edit_gallery_url(gallery))
+      expect(flash[:success]).to eq('Gallery saved.')
+      expect(gallery.reload.icons).to be_empty
+      expect(icon.reload).not_to be_nil
+    end
+
+    it "can delete a gallery icon" do
+      user = create(:user)
+      gallery = create(:gallery, user: user)
+      icon = create(:icon, user: user)
+      gallery.icons << icon
+      login_as(user)
+
+      icon_attributes = {id: icon.id, _destroy: '1'}
+      gid = gallery.galleries_icons.first.id
+      gallery_icon_attributes = {id: gid, icon_attributes: icon_attributes}
+
+      put :update, id: gallery.id, gallery: {galleries_icons_attributes: {gid.to_s => gallery_icon_attributes}}
+      expect(response).to redirect_to(edit_gallery_url(gallery))
+      expect(flash[:success]).to eq('Gallery saved.')
+      expect(gallery.reload.icons).to be_empty
+      expect(Icon.find_by_id(icon.id)).to be_nil
     end
   end
 
