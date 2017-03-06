@@ -32,11 +32,6 @@
         %td.green.centered.character-icon
           = link_to icon_path(@character.icon) do
             = icon_tag @character.icon
-    - if @character.template
-      %tr
-        %td.centered{class: cycle('even', 'odd')}
-          = surround '(', ')' do
-            = link_to @character.template.name, template_path(@character.template), class: 'character-template'
     %tr
       %td.centered{class: cycle('even', 'odd')}
         = link_to character_path(@character) do
@@ -77,6 +72,7 @@
   - content_for :posts_title do 'Recent Threads' end
   = render partial: 'posts/list', locals: {posts: @posts, path: :character_path, table_class: 'character-right-content-box'}
 - else
+  - reset_cycle
   %table.character-right-content-box
     %thead
       %tr
@@ -84,10 +80,15 @@
     %tbody
       %tr
         %th.sub.width-150 Nickname(s)
-        %td.character-template-nickname.even= ([@character.template_name] + @character.aliases.order('name asc').pluck(:name)).compact.join(", ")
+        %td.character-template-nickname{class: cycle('even', 'odd')}= ([@character.template_name] + @character.aliases.order('name asc').pluck(:name)).compact.join(", ")
+      - if @character.template
+        %tr
+          %th.sub Template
+          %td.character-template{class: cycle('even', 'odd')}
+            = link_to @character.template.name, template_path(@character.template), class: 'character-template'
       %tr
         %th.sub.width-150 Facecast
-        %td.character-pb.odd= @character.pb
+        %td.character-pb{class: cycle('even', 'odd')}= @character.pb
       %tr
         %th.sub.width-150 Setting
-        %td.character-setting.even= @character.setting
+        %td.character-setting{class: cycle('even', 'odd')}= @character.setting
