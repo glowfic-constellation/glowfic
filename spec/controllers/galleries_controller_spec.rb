@@ -85,104 +85,67 @@ RSpec.describe GalleriesController do
   end
 
   describe "GET show" do
-    context ".json" do
-      context "with zero gallery id" do
-        it "requires login" do
-          skip "how do I handle json errors"
+    context "with zero gallery id" do
+      context "with user id" do
+        it "requires valid user" do
+          skip "TODO not yet implemented"
         end
 
-        it "returns galleryless icons" do
-          login
-          get :show, id: '0', format: :json
-          expect(response.status).to eq(200)
-          expect(response.json['name']).to eq('Galleryless')
-          expect(response.json['icons']).to be_empty
+        it "succeeds when logged in" do
+          user = create(:user)
+          gallery_user = create(:user)
+          login_as(user)
+          get :show, id: '0', user_id: gallery_user.id
+          expect(response).to render_template('show')
+          expect(assigns(:page_title)).to eq('Galleryless Icons')
+          expect(assigns(:user)).to eq(gallery_user)
+        end
+
+        it "succeeds when logged out" do
+          user = create(:user)
+          get :show, id: '0', user_id: user.id
+          expect(response).to render_template('show')
+          expect(assigns(:page_title)).to eq('Galleryless Icons')
+          expect(assigns(:user)).to eq(user)
         end
       end
 
-      context "with normal gallery id" do
-        it "requires valid gallery id" do
-          skip "how do I handle json errors"
+      context "without user id" do
+        it "requires login" do
+          get :show, id: '0'
+          expect(response).to redirect_to(root_url)
+          expect(flash[:error]).to eq("You must be logged in to view that page.")
         end
 
-        it "requires you to have access to the gallery" do
-          skip "how do I handle json errors"
-        end
-
-        it "displays the gallery" do
-          gallery = create(:gallery)
-          login_as(gallery.user)
-          get :show, id: gallery.id, format: :json
-          expect(response.status).to eq(200)
-          expect(response.json['name']).to eq(gallery.name)
-          expect(response.json['icons']).to be_empty
+        it "succeeds when logged in" do
+          user = create(:user)
+          login_as(user)
+          get :show, id: '0'
+          expect(response).to render_template('show')
+          expect(assigns(:page_title)).to eq('Galleryless Icons')
+          expect(assigns(:user)).to eq(user)
         end
       end
     end
 
-    context ".html" do
-      context "with zero gallery id" do
-        context "with user id" do
-          it "requires valid user" do
-            skip "TODO not yet implemented"
-          end
-
-          it "succeeds when logged in" do
-            user = create(:user)
-            gallery_user = create(:user)
-            login_as(user)
-            get :show, id: '0', user_id: gallery_user.id
-            expect(response).to render_template('show')
-            expect(assigns(:page_title)).to eq('Galleryless Icons')
-            expect(assigns(:user)).to eq(gallery_user)
-          end
-
-          it "succeeds when logged out" do
-            user = create(:user)
-            get :show, id: '0', user_id: user.id
-            expect(response).to render_template('show')
-            expect(assigns(:page_title)).to eq('Galleryless Icons')
-            expect(assigns(:user)).to eq(user)
-          end
-        end
-
-        context "without user id" do
-          it "requires login" do
-            get :show, id: '0'
-            expect(response).to redirect_to(root_url)
-            expect(flash[:error]).to eq("You must be logged in to view that page.")
-          end
-
-          it "succeeds when logged in" do
-            user = create(:user)
-            login_as(user)
-            get :show, id: '0'
-            expect(response).to render_template('show')
-            expect(assigns(:page_title)).to eq('Galleryless Icons')
-            expect(assigns(:user)).to eq(user)
-          end
-        end
+    context "with normal gallery id" do
+      it "requires valid gallery id" do
+        get :show, id: -1
+        expect(response).to redirect_to(galleries_url)
+        expect(flash[:error]).to eq('Gallery could not be found.')
       end
 
-      context "with normal gallery id" do
-        it "requires valid gallery id" do
-          get :show, id: -1
-          expect(response).to redirect_to(galleries_url)
-          expect(flash[:error]).to eq('Gallery could not be found.')
-        end
+      it "successfully loads logged out" do
+        gallery = create(:gallery)
+        get :show, id: gallery.id
+        expect(response.status).to eq(200)
+      end
 
-        it "successfully loads logged out" do
-          gallery = create(:gallery)
-          get :show, id: gallery.id
-          expect(response.status).to eq(200)
-        end
-
-        it "successfully loads logged in" do
-          gallery = create(:gallery)
-          login
-          get :show, id: gallery.id
-          expect(response.status).to eq(200)
-        end
+      it "successfully loads logged in" do
+        gallery = create(:gallery)
+        login
+        get :show, id: gallery.id
+        expect(response.status).to eq(200)
       end
     end
   end

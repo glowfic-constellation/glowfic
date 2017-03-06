@@ -47,40 +47,27 @@ class GalleriesController < ApplicationController
   end
 
   def show
-    respond_to do |format|
-      format.json do
-        if params[:id].to_s == '0' # avoids casting nils to 0
-          user = params[:user_id].present? ? User.find_by_id(params[:user_id]) : current_user
-          render json: {name: 'Galleryless', icons: user.try(:galleryless_icons) || []}
-        else
-          @gallery = Gallery.find_by_id(params[:id])
-          render json: {name: @gallery.name, icons: @gallery.icons}
-        end
+    if params[:id].to_s == '0' # avoids casting nils to 0
+      if params[:user_id].present?
+        @user = User.find_by_id(params[:user_id])
+      else
+        return if login_required
+        @user = current_user
       end
-      format.html do
-        if params[:id].to_s == '0' # avoids casting nils to 0
-          if params[:user_id].present?
-            @user = User.find_by_id(params[:user_id])
-          else
-            return if login_required
-            @user = current_user
-          end
-          @page_title = 'Galleryless Icons'
-          use_javascript('galleries/index')
-          render :show and return
-        end
-
-        @gallery = Gallery.find_by_id(params[:id])
-        unless @gallery
-          flash[:error] = "Gallery could not be found."
-          redirect_to galleries_path and return
-        end
-
-        @user = @gallery.user
-        @page_title = @gallery.name + ' (Gallery)'
-        use_javascript('galleries/index')
-      end
+      @page_title = 'Galleryless Icons'
+      use_javascript('galleries/index')
+      render :show and return
     end
+
+    @gallery = Gallery.find_by_id(params[:id])
+    unless @gallery
+      flash[:error] = "Gallery could not be found."
+      redirect_to galleries_path and return
+    end
+
+    @user = @gallery.user
+    @page_title = @gallery.name + ' (Gallery)'
+    use_javascript('galleries/index')
   end
 
   def edit
