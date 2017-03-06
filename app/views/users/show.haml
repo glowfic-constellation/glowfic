@@ -1,4 +1,4 @@
-%table{style: 'width:200px; float: left;'}
+%table.left-info-box.user-info-box
   %thead
     %tr
       %th.centered.username= @user.username
@@ -54,4 +54,4 @@
 
 - content_for :posts_title do
   #{@user.username}'s Recent Posts
-= render partial: 'posts/list', locals: {posts: @posts, path: :user_path, style: 'width: calc(100% - 200px); float:left;'}
+= render partial: 'posts/list', locals: {posts: @posts, path: :user_path, table_class: 'user-right-content-box'}
