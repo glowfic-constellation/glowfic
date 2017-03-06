@@ -112,9 +112,9 @@ class CharactersController < ApplicationController
 
     icons = @alts.map do |alt|
       if alt.icon.present?
-        [alt.id, {url: alt.icon.url, keyword: alt.icon.keyword}]
+        [alt.id, {url: alt.icon.url, keyword: alt.icon.keyword, aliases: alt.aliases.as_json}]
       else
-        [alt.id, {url: '/images/no-icon.png', keyword: 'No Icon'}]
+        [alt.id, {url: '/images/no-icon.png', keyword: 'No Icon', aliases: alt.aliases.as_json}]
       end
     end
     gon.gallery = Hash[icons]
@@ -127,6 +127,7 @@ class CharactersController < ApplicationController
       name += ' | ' + alt.setting if alt.setting
       [name, alt.id]
     end
+    @alt = @alts.first
 
     all_posts = Post.where(character_id: @character.id) + Post.where(id: Reply.where(character_id: @character.id).pluck('distinct post_id'))
     @posts = all_posts.uniq
@@ -143,14 +144,24 @@ class CharactersController < ApplicationController
       redirect_to replace_character_path(@character) and return
     end
 
+    new_alias_id = nil
+    if params[:alias_dropdown].present?
+      new_alias = CharacterAlias.find_by_id(params[:alias_dropdown])
+      unless new_alias && new_alias.character_id == new_char.try(:id)
+        flash[:error] = "Invalid alias."
+        redirect_to replace_character_path(@character) and return
+      end
+      new_alias_id = new_alias.id
+    end
+
     Post.transaction do
       replies = Reply.where(character_id: @character.id)
       replies = replies.where(post_id: params[:post_ids]) if params[:post_ids].present?
-      replies.update_all(character_id: new_char.try(:id))
+      replies.update_all(character_id: new_char.try(:id), character_alias_id: new_alias_id)
 
       posts = Post.where(character_id: @character.id)
       posts = posts.where(id: params[:post_ids]) if params[:post_ids].present?
-      posts.update_all(character_id: new_char.try(:id))
+      posts.update_all(character_id: new_char.try(:id), character_alias_id: new_alias_id)
     end
 
     flash[:success] = "All uses of this character have been replaced."

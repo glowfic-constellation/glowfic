@@ -6,7 +6,16 @@ $(document).ready(function() {
 });
 
 function setIconFromId(id) {
-  $("#new_icon").attr('src', gon.gallery[id]['url']);
-  $("#new_icon").attr('alt', gon.gallery[id]['keyword']);
-  $("#new_icon").attr('title', gon.gallery[id]['keyword']);
+  $("#new_icon").attr('src', gon.gallery[id].url);
+  $("#new_icon").attr('alt', gon.gallery[id].keyword);
+  $("#new_icon").attr('title', gon.gallery[id].keyword);
+  if(gon.gallery[id].aliases !== undefined) {
+    var aliases = gon.gallery[id].aliases;
+    if (aliases.length > 0) {
+      $("#alias_dropdown").show().empty().append('<option value="">— No alias —</option>');
+      for(var i = 0; i < aliases.length; i++) {
+        $("#alias_dropdown").append($("<option>").attr({value: aliases[i].id}).append(aliases[i].name));
+      }
+    } else { $("#alias_dropdown").hide(); }
+  }
 };

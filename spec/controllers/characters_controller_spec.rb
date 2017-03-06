@@ -482,6 +482,24 @@ RSpec.describe CharactersController do
       expect(flash[:error]).to eq('That is not your character.')
     end
 
+    it "requires valid alias if parameter provided" do
+      character = create(:character)
+      login_as(character.user)
+      post :do_replace, id: character.id, alias_dropdown: -1
+      expect(response).to redirect_to(replace_character_path(character))
+      expect(flash[:error]).to eq('Invalid alias.')
+    end
+
+    it "requires matching alias if parameter provided" do
+      character = create(:character)
+      other_char = create(:character, user: character.user)
+      calias = create(:alias)
+      login_as(character.user)
+      post :do_replace, id: character.id, alias_dropdown: calias.id, icon_dropdown: other_char.id
+      expect(response).to redirect_to(replace_character_path(character))
+      expect(flash[:error]).to eq('Invalid alias.')
+    end
+
     it "succeeds with valid other character" do
       user = create(:user)
       character = create(:character, user: user)
@@ -513,6 +531,23 @@ RSpec.describe CharactersController do
 
       expect(char_post.reload.character_id).to be_nil
       expect(reply.reload.character_id).to be_nil
+    end
+
+    it "succeeds with alias" do
+      user = create(:user)
+      character = create(:character, user: user)
+      other_char = create(:character, user: user)
+      calias = create(:alias, character: other_char)
+      char_post = create(:post, user: user, character: character)
+      reply = create(:reply, user: user, character: character)
+
+      login_as(user)
+      post :do_replace, id: character.id, icon_dropdown: other_char.id, alias_dropdown: calias.id
+
+      expect(char_post.reload.character_id).to eq(other_char.id)
+      expect(reply.reload.character_id).to eq(other_char.id)
+      expect(char_post.reload.character_alias_id).to eq(calias.id)
+      expect(reply.reload.character_alias_id).to eq(calias.id)
     end
 
     it "filters to selected posts if given" do

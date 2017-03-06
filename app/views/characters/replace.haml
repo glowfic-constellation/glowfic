@@ -29,7 +29,8 @@
         - else
           = no_icon_tag id: 'new_icon'
         %br
-        = select_tag :icon_dropdown, options_for_select(@alt_dropdown, @alts.first.try(:id)), prompt: "No Character"
+        = select_tag :icon_dropdown, options_for_select(@alt_dropdown, @alt.try(:id)), prompt: "No Character"
+        = select_tag :alias_dropdown, options_from_collection_for_select(@alt.try(:aliases), :id, :name), prompt: '— No alias —', class: ('hidden' unless @alt.try(:aliases).present?)
     - if @posts.present?
       %tr
         %th.sub{colspan: 2} Optional: Select Post(s)
