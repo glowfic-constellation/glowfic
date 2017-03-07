@@ -16,6 +16,6 @@ function setIconFromId(id) {
       for(var i = 0; i < aliases.length; i++) {
         $("#alias_dropdown").append($("<option>").attr({value: aliases[i].id}).append(aliases[i].name));
       }
-    } else { $("#alias_dropdown").hide(); }
+    } else { $("#alias_dropdown").hide().val(''); }
   }
 };
