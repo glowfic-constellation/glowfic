@@ -107,7 +107,7 @@ class CharactersController < ApplicationController
     else
       @alts = @character.user.characters.where(template_id: nil)
     end
-    @alts -= [@character]
+    @alts -= [@character] unless @alts.size <= 1 || @character.aliases.exists?
     use_javascript('icons')
 
     icons = @alts.map do |alt|
@@ -144,11 +144,20 @@ class CharactersController < ApplicationController
       redirect_to replace_character_path(@character) and return
     end
 
+    orig_alias = nil
+    if params[:orig_alias].present? && params[:orig_alias] != 'all'
+      orig_alias = CharacterAlias.find_by_id(params[:orig_alias])
+      unless orig_alias && orig_alias.character_id == @character.id
+        flash[:error] = "Invalid old alias."
+        redirect_to replace_character_path(@character) and return
+      end
+    end
+
     new_alias_id = nil
     if params[:alias_dropdown].present?
       new_alias = CharacterAlias.find_by_id(params[:alias_dropdown])
       unless new_alias && new_alias.character_id == new_char.try(:id)
-        flash[:error] = "Invalid alias."
+        flash[:error] = "Invalid new alias."
         redirect_to replace_character_path(@character) and return
       end
       new_alias_id = new_alias.id
@@ -156,12 +165,20 @@ class CharactersController < ApplicationController
 
     Post.transaction do
       replies = Reply.where(character_id: @character.id)
-      replies = replies.where(post_id: params[:post_ids]) if params[:post_ids].present?
-      replies.update_all(character_id: new_char.try(:id), character_alias_id: new_alias_id)
-
       posts = Post.where(character_id: @character.id)
-      posts = posts.where(id: params[:post_ids]) if params[:post_ids].present?
+
+      if params[:post_ids].present?
+        replies = replies.where(post_id: params[:post_ids])
+        posts = posts.where(id: params[:post_ids])
+      end
+
+      if @character.aliases.exists? && params[:orig_alias] != 'all'
+        replies = replies.where(character_alias_id: orig_alias.try(:id))
+        posts = posts.where(character_alias_id: orig_alias.try(:id))
+      end
+
       posts.update_all(character_id: new_char.try(:id), character_alias_id: new_alias_id)
+      replies.update_all(character_id: new_char.try(:id), character_alias_id: new_alias_id)
     end
 
     flash[:success] = "All uses of this character have been replaced."

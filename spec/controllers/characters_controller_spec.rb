@@ -401,6 +401,10 @@ RSpec.describe CharactersController do
     it "sets correct variables" do
       user = create(:user)
       character = create(:character, user: user)
+      other_char = create(:character, user: user)
+      other_char.default_icon = create(:icon, user: user)
+      other_char.save
+      calias = create(:alias, character: other_char)
       char_post = create(:post, user: user, character: character)
       char_reply1 = create(:reply, user: user, post: char_post, character: character)
       other_post = create(:post)
@@ -411,6 +415,8 @@ RSpec.describe CharactersController do
       expect(response).to have_http_status(200)
       expect(assigns(:page_title)).to eq('Replace Character: ' + character.name)
 
+      expect(controller.gon.gallery[other_char.id][:url]).to eq(other_char.default_icon.url)
+      expect(controller.gon.gallery[other_char.id][:aliases]).to eq([calias.as_json])
       expect(assigns(:posts)).to match_array([char_post, char_reply2.post])
     end
 
@@ -429,6 +435,18 @@ RSpec.describe CharactersController do
         expect(assigns(:alts)).to match_array(alts)
         expect(assigns(:alt_dropdown).length).to eq(alts.length)
       end
+
+      it "includes character if no others in template" do
+        user = create(:user)
+        template = create(:template, user: user)
+        character = create(:character, user: user, template: template)
+        other_character = create(:character, user: user)
+
+        login_as(user)
+        get :replace, id: character.id
+        expect(response).to have_http_status(200)
+        expect(assigns(:alts)).to match_array([character])
+      end
     end
 
     context "without template" do
@@ -445,6 +463,18 @@ RSpec.describe CharactersController do
         expect(assigns(:page_title)).to eq('Replace Character: ' + character.name)
         expect(assigns(:alts)).to match_array(alts)
         expect(assigns(:alt_dropdown).length).to eq(alts.length)
+      end
+
+      it "includes character if no others in template" do
+        user = create(:user)
+        template = create(:template, user: user)
+        character = create(:character, user: user)
+        other_character = create(:character, user: user, template: template)
+
+        login_as(user)
+        get :replace, id: character.id
+        expect(response).to have_http_status(200)
+        expect(assigns(:alts)).to match_array([character])
       end
     end
   end
@@ -489,22 +519,39 @@ RSpec.describe CharactersController do
       expect(flash[:error]).to eq('That is not your character.')
     end
 
-    it "requires valid alias if parameter provided" do
+    it "requires valid new alias if parameter provided" do
       character = create(:character)
       login_as(character.user)
       post :do_replace, id: character.id, alias_dropdown: -1
       expect(response).to redirect_to(replace_character_path(character))
-      expect(flash[:error]).to eq('Invalid alias.')
+      expect(flash[:error]).to eq('Invalid new alias.')
     end
 
-    it "requires matching alias if parameter provided" do
+    it "requires matching new alias if parameter provided" do
       character = create(:character)
       other_char = create(:character, user: character.user)
       calias = create(:alias)
       login_as(character.user)
       post :do_replace, id: character.id, alias_dropdown: calias.id, icon_dropdown: other_char.id
       expect(response).to redirect_to(replace_character_path(character))
-      expect(flash[:error]).to eq('Invalid alias.')
+      expect(flash[:error]).to eq('Invalid new alias.')
+    end
+
+    it "requires valid old alias if parameter provided" do
+      character = create(:character)
+      login_as(character.user)
+      post :do_replace, id: character.id, orig_alias: -1
+      expect(response).to redirect_to(replace_character_path(character))
+      expect(flash[:error]).to eq('Invalid old alias.')
+    end
+
+    it "requires matching old alias if parameter provided" do
+      character = create(:character)
+      calias = create(:alias)
+      login_as(character.user)
+      post :do_replace, id: character.id, orig_alias: calias.id
+      expect(response).to redirect_to(replace_character_path(character))
+      expect(flash[:error]).to eq('Invalid old alias.')
     end
 
     it "succeeds with valid other character" do
@@ -573,6 +620,51 @@ RSpec.describe CharactersController do
       expect(char_post.reload.character_id).to eq(other_char.id)
       expect(char_reply.reload.character_id).to eq(other_char.id)
       expect(other_post.reload.character_id).to eq(character.id)
+    end
+
+    it "filters to alias if given" do
+      user = create(:user)
+      character = create(:character, user: user)
+      other_char = create(:character, user: user)
+      calias = create(:alias, character: character)
+      char_post = create(:post, user: user, character: character)
+      char_reply = create(:reply, user: user, character: character, character_alias_id: calias.id)
+
+      login_as(user)
+      post :do_replace, id: character.id, icon_dropdown: other_char.id, orig_alias: calias.id
+
+      expect(char_post.reload.character_id).to eq(character.id)
+      expect(char_reply.reload.character_id).to eq(other_char.id)
+    end
+
+    it "filters to nil if given" do
+      user = create(:user)
+      character = create(:character, user: user)
+      other_char = create(:character, user: user)
+      calias = create(:alias, character: character)
+      char_post = create(:post, user: user, character: character)
+      char_reply = create(:reply, user: user, character: character, character_alias_id: calias.id)
+
+      login_as(user)
+      post :do_replace, id: character.id, icon_dropdown: other_char.id, orig_alias: ''
+
+      expect(char_post.reload.character_id).to eq(other_char.id)
+      expect(char_reply.reload.character_id).to eq(character.id)
+    end
+
+    it "does not filter if all given" do
+      user = create(:user)
+      character = create(:character, user: user)
+      other_char = create(:character, user: user)
+      calias = create(:alias, character: character)
+      char_post = create(:post, user: user, character: character)
+      char_reply = create(:reply, user: user, character: character, character_alias_id: calias.id)
+
+      login_as(user)
+      post :do_replace, id: character.id, icon_dropdown: other_char.id, orig_alias: 'all'
+
+      expect(char_post.reload.character_id).to eq(other_char.id)
+      expect(char_reply.reload.character_id).to eq(other_char.id)
     end
   end
 end
