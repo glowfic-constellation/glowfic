@@ -1,9 +1,22 @@
 = form_for @gallery, url: galleries_path, method: :post do |f|
-  %table.form-table
+  - icons_present = current_user.galleryless_icons.present?
+  %table.form-table{style: (icons_present ? 'width: 100%;' : nil)}
     %tr
       %th.centered{colspan: 2}New Gallery
     %tr
-      %th.sub Name
+      %th.vtop.sub Name
       %td.even= f.text_field :name, placeholder: "Gallery Name", class: 'text'
+    - if icons_present
+      %tr
+        %th.vtop.sub Icons
+        %td.odd
+          - current_user.galleryless_icons.each do |icon|
+            = label_tag "gallery_icon_ids_#{icon.id}" do
+              .gallery-icon
+                = icon_tag icon, id: icon.id, pointer: true
+                %br>
+                %span.icon-keyword= icon.keyword
+                - box_selected = params[:gallery].try(:[], :icon_ids).try(:include?, icon.id.to_s)
+                .select-button= check_box_tag "gallery[icon_ids][]", icon.id, box_selected, id: "gallery_icon_ids_#{icon.id}"
     %tr
       %th.subber{colspan: 2}= submit_tag "Create", class: 'button'

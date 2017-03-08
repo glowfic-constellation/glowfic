@@ -199,7 +199,7 @@ class GalleriesController < ApplicationController
   end
 
   def gallery_params
-    params.fetch(:gallery, {}).permit(:name, galleries_icons_attributes: [:id, :_destroy, icon_attributes: [:url, :keyword, :credit, :id, :_destroy]])
+    params.fetch(:gallery, {}).permit(:name, galleries_icons_attributes: [:id, :_destroy, icon_attributes: [:url, :keyword, :credit, :id, :_destroy]], icon_ids: [])
   end
 
   def icon_params(paramset)
