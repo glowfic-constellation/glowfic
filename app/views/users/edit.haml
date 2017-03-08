@@ -3,9 +3,6 @@
     %tr
       %th.centered{colspan: 2} Account Settings
     %tr
-      %td.odd.centered{colspan: 2}
-        .details *Please set your avatar directly from the desired icon's page*
-    %tr
       %th.sub Username
       %td{class: cycle('even', 'odd')}= f.text_field :username, placeholder: "Username", class: 'text', disabled: current_user.salt_uuid.nil?
     %tr
@@ -16,6 +13,10 @@
       %td{class: cycle('even', 'odd')}
         = f.check_box :email_notifications, class: 'width-15 vmid'
         = f.label :email_notifications, "Email about new tags"
+    %tr
+      %th.sub Avatar
+      %td{class: cycle('even', 'odd')}
+        .details Please set your avatar directly from the desired icon's page.
     %tr
       %th.sub Paging
       %td{class: cycle('even', 'odd')}= f.select(:per_page, per_page_options(current_user.per_page))
