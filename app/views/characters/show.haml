@@ -79,20 +79,20 @@
         %th{colspan: 2} Info
     %tbody
       %tr
-        %th.sub.width-150 Nickname(s)
+        %th.sub.vtop.width-150 Nickname(s)
         %td.character-template-nickname{class: cycle('even', 'odd')}= ([@character.template_name] + @character.aliases.order('name asc').pluck(:name)).compact.join(", ")
       - if @character.template
         %tr
-          %th.sub Template
+          %th.sub.vtop.width-150 Template
           %td.character-template{class: cycle('even', 'odd')}
             = link_to @character.template.name, template_path(@character.template), class: 'character-template'
       %tr
-        %th.sub.width-150 Facecast
+        %th.sub.vtop.width-150 Facecast
         %td.character-pb{class: cycle('even', 'odd')}= @character.pb
       %tr
-        %th.sub.width-150 Setting
+        %th.sub.vtop.width-150 Setting
         %td.character-setting{class: cycle('even', 'odd')}= @character.setting
       - if @character.description
         %tr
-          %th.sub.width-150 Description
+          %th.sub.vtop.width-150 Description
           %td.character-description{class: cycle('even', 'odd')}= sanitize_written_content(@character.description).html_safe
