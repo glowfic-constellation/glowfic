@@ -74,15 +74,28 @@ RSpec.describe GalleriesController do
       expect(flash[:error]).to eq('Your gallery could not be saved.')
     end
 
+    it "does not set icon has_gallery on failure" do
+      icon = create(:icon)
+      login_as(icon.user)
+      post :create, gallery: {icon_ids: [icon.id]}
+      expect(response).to have_http_status(200)
+      expect(assigns(:page_title)).to eq('New Gallery')
+      expect(flash[:error]).to eq('Your gallery could not be saved.')
+      expect(icon.reload.has_gallery).not_to be_true
+    end
+
     it "succeeds" do
       expect(Gallery.count).to be_zero
-      login
-      post :create, gallery: {name: 'Test Gallery'}
+      icon = create(:icon)
+      login_as(icon.user)
+      post :create, gallery: {name: 'Test Gallery', icon_ids: [icon.id]}
       expect(Gallery.count).to eq(1)
       gallery = assigns(:gallery).reload
       expect(response).to redirect_to(gallery_url(gallery))
       expect(flash[:success]).to eq('Gallery saved successfully.')
       expect(gallery.name).to eq('Test Gallery')
+      expect(Gallery.first.icons).to match_array([icon])
+      expect(icon.reload.has_gallery).to be_true
     end
   end
 
