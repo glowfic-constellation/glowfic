@@ -13,10 +13,11 @@
       %td{class: cycle('even', 'odd')}
         = f.check_box :email_notifications, class: 'width-15 vmid'
         = f.label :email_notifications, "Email about new tags"
-    %tr
-      %th.sub Avatar
-      %td{class: cycle('even', 'odd')}
-        .details Please set your avatar directly from the desired icon's page.
+    - unless current_user.avatar.present?
+      %tr
+        %th.sub Avatar
+        %td{class: cycle('even', 'odd')}
+          .details Please set your avatar directly from the desired icon's page.
     %tr
       %th.sub Paging
       %td{class: cycle('even', 'odd')}= f.select(:per_page, per_page_options(current_user.per_page))
