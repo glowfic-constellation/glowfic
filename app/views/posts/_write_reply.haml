@@ -1,5 +1,5 @@
 - content_for :form do
-  = form_for reply, :url => url, :method => method, :html => {:id => 'post_form'} do |f|
+  = form_for reply, html: {id: 'post_form'} do |f|
     %b Reply
     .view-button#rtf{class: ('selected' if (params[:editor_mode] || current_user.default_editor) == 'rtf')} Rich Text
     .view-button#html{class: ('selected' if (params[:editor_mode] || current_user.default_editor) == 'html')} HTML

@@ -384,6 +384,38 @@ RSpec.describe PostsController do
       end
     end
 
+    context "page=unread" do
+      it "goes to the end if you're up to date" do
+        post = create(:post)
+        3.times do create(:reply, post: post, user: post.user) end
+        user = create(:user)
+        post.mark_read(user)
+        login_as(user)
+        get :show, id: post.id, page: 'unread', per_page: 1
+        expect(assigns(:page)).to eq(3)
+      end
+
+      it "goes to beginning if you've never read it" do
+        post = create(:post)
+        user = create(:user)
+        login_as(user)
+        get :show, id: post.id, page: 'unread'
+        expect(assigns(:page)).to eq(1)
+      end
+
+      it "goes to post page if you're behind" do
+        post = create(:post)
+        reply1 = create(:reply, post: post, user: post.user)
+        reply2 = Timecop.freeze(reply1.created_at + 1.second) do create(:reply, post: post, user: post.user) end
+        reply3 = Timecop.freeze(reply1.created_at + 2.seconds) do create(:reply, post: post, user: post.user) end
+        user = create(:user)
+        post.mark_read(user, reply1.created_at)
+        login_as(user)
+        get :show, id: post.id, page: 'unread', per_page: 1
+        expect(assigns(:page)).to eq(2)
+      end
+    end
+
     # TODO WAY more tests
   end
 

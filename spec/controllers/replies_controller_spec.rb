@@ -9,11 +9,51 @@ RSpec.describe RepliesController do
     end
 
     context "preview" do
-      skip
+      it "takes correct actions" do
+        reply_post = create(:post)
+        login_as(reply_post.user)
+        post :create, button_preview: true, reply: {post_id: reply_post.id}
+        expect(response).to render_template(:preview)
+        expect(assigns(:javascripts)).to include('posts')
+        expect(assigns(:page_title)).to eq(reply_post.subject)
+        expect(assigns(:written)).to be_a_new_record
+        expect(assigns(:written).user).to eq(reply_post.user)
+        expect(assigns(:post)).to eq(reply_post)
+        # TODO build_template_groups
+      end
     end
 
     context "draft" do
-      skip
+      it "displays errors if relevant" do
+        draft = create(:reply_draft)
+        login_as(draft.user)
+        post :create, button_draft: true, reply: {post_id: draft.post.id, user_id: ''}
+        expect(flash[:error][:message]).to eq("Your draft could not be saved because of the following problems:")
+        expect(draft.reload.user_id).not_to be_nil
+        expect(response).to redirect_to(post_url(draft.post, page: :last))
+      end
+
+      it "creates a new draft if none exists" do
+        reply_post = create(:post)
+        login_as(reply_post.user)
+        expect(ReplyDraft.count).to eq(0)
+        post :create, button_draft: true, reply: {post_id: reply_post.id}
+        expect(response).to redirect_to(post_url(reply_post, page: :last))
+        expect(flash[:success]).to eq("Draft saved!")
+        expect(ReplyDraft.count).to eq(1)
+        draft = ReplyDraft.last
+        expect(draft.post).to eq(reply_post)
+        expect(draft.user).to eq(reply_post.user)
+      end
+
+      it "updates the existing draft if one exists" do
+        draft = create(:reply_draft)
+        login_as(draft.user)
+        post :create, button_draft: true, reply: {post_id: draft.post.id, content: 'new draft'}
+        expect(flash[:success]).to eq("Draft saved!")
+        expect(draft.reload.content).to eq('new draft')
+        expect(ReplyDraft.count).to eq(1)
+      end
     end
 
     it "requires valid post" do

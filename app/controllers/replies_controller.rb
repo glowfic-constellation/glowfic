@@ -64,12 +64,7 @@ class RepliesController < WritableController
   end
 
   def create
-    if params[:button_preview]
-      @url = replies_path
-      @method = :post
-      preview
-      render :action => :preview and return
-    end
+    preview and return if params[:button_preview]
 
     if params[:button_draft]
       if draft = ReplyDraft.draft_for(params[:reply][:post_id], current_user.id)
@@ -86,9 +81,8 @@ class RepliesController < WritableController
         flash[:error][:message] = "Your draft could not be saved because of the following problems:"
         flash[:error][:array] = draft.errors.full_messages
       end
-      redirect_to post_path(draft.post, page: :last) and return
+      redirect_to post_path(draft.post, page: :last) and return # TODO handle draft.post.nil?
     end
-
 
     reply = Reply.new(params[:reply])
     reply.user = current_user
@@ -119,17 +113,11 @@ class RepliesController < WritableController
   end
 
   def update
-    if params[:button_preview]
-      @url = reply_path(params[:id])
-      @method = :put
-      preview
-      render :action => :preview
-    else
-      @reply.skip_post_update = true unless @reply.post.last_reply_id == @reply.id
-      @reply.update_attributes(params[:reply])
-      flash[:success] = "Post updated"
-      redirect_to reply_path(@reply, anchor: "reply-#{@reply.id}")
-    end
+    preview and return if params[:button_preview]
+    @reply.skip_post_update = true unless @reply.post.last_reply_id == @reply.id
+    @reply.update_attributes(params[:reply])
+    flash[:success] = "Post updated"
+    redirect_to reply_path(@reply, anchor: "reply-#{@reply.id}")
   end
 
   def destroy
@@ -176,5 +164,6 @@ class RepliesController < WritableController
     @page_title = @post.subject
 
     use_javascript('posts')
+    render :action => :preview
   end
 end
