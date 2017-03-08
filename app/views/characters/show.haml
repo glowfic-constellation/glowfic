@@ -78,9 +78,11 @@
       %tr
         %th{colspan: 2} Info
     %tbody
-      %tr
-        %th.sub.vtop.width-150 Nickname(s)
-        %td.character-template-nickname{class: cycle('even', 'odd')}= ([@character.template_name] + @character.aliases.order('name asc').pluck(:name)).compact.join(", ")
+      - nicknames = ([@character.template_name] + @character.aliases.order('name asc').pluck(:name)).compact
+      - if nicknames.present?
+        %tr
+          %th.sub.vtop.width-150 Nickname(s)
+          %td.character-template-nickname{class: cycle('even', 'odd')}= nicknames.join(", ")
       - if @character.template
         %tr
           %th.sub.vtop.width-150 Template
@@ -89,9 +91,10 @@
       %tr
         %th.sub.vtop.width-150 Facecast
         %td.character-pb{class: cycle('even', 'odd')}= @character.pb
-      %tr
-        %th.sub.vtop.width-150 Setting
-        %td.character-setting{class: cycle('even', 'odd')}= @character.setting
+      - if @character.setting.present?
+        %tr
+          %th.sub.vtop.width-150 Setting
+          %td.character-setting{class: cycle('even', 'odd')}= @character.setting
       - if @character.description
         %tr
           %th.sub.vtop.width-150 Description
