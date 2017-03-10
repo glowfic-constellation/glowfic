@@ -4,6 +4,7 @@ class Api::ApiController < ActionController::Base
   protect_from_forgery with: :exception
   before_filter :check_permanent_user
   around_filter :set_timezone
+  around_filter :handle_param_validation
 
   resource_description do
     formats ['json']
@@ -22,6 +23,15 @@ class Api::ApiController < ActionController::Base
   def set_timezone
     Time.use_zone("UTC") { yield }
   end
+
+  def handle_param_validation
+    begin
+      yield
+    rescue Apipie::ParamMissing, Apipie::ParamInvalid => error
+      render json: {errors: [Sanitize.fragment(error.message.gsub('"', "'"))]}, status: :unprocessable_entity
+    end
+  end
+
 
   def access_denied
     error = {message: "You do not have permission to perform this action."}

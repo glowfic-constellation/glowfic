@@ -5,21 +5,7 @@ class TagsController < ApplicationController
   before_filter :permission_required, only: [:edit, :update, :destroy]
 
   def index
-    respond_to do |format|
-      format.json do
-        tags = if params[:t].blank?
-          Tag.where("name LIKE ?", params[:q].to_s + '%').where(type: nil)
-        elsif params[:t] == 'setting'
-          Setting.where("name LIKE ?", params[:q].to_s + '%')
-        elsif params[:t] == 'warning'
-          ContentWarning.where("name LIKE ?", params[:q].to_s + '%')
-        else [] end
-        render json: {results: tags}
-      end
-      format.html do
-        @page_title = "Tags"
-      end
-    end
+    @page_title = "Tags"
   end
 
   def new

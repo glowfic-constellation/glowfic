@@ -93,6 +93,7 @@ Rails.application.routes.draw do
       resources :posts, only: :show do
         resources :replies, only: :index
       end
+      resources :tags, only: :index
     end
   end
 

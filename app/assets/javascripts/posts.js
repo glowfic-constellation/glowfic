@@ -35,56 +35,9 @@ $(document).ready(function() {
     placeholder: 'Choose user(s) to view this post'
   });
 
-  $("#post_tag_ids").select2({
-    tags: true,
-    tokenSeparators: [','],
-    placeholder: 'Enter tag(s) separated by commas',
-    ajax: {
-      delay: 200,
-      url: '/tags',
-      dataType: 'json',
-      data: function(term, page) {
-        return { q: term['term'] };
-      },
-    },
-    width: '300px'
-  });
-
-  $("#post_setting_ids").select2({
-    tags: true,
-    tokenSeparators: [','],
-    placeholder: 'Enter setting(s) separated by commas',
-    ajax: {
-      delay: 200,
-      url: '/tags',
-      dataType: 'json',
-      data: function(term, page) {
-        return {
-          q: term['term'],
-          t: 'setting',
-        };
-      },
-    },
-    width: '300px'
-  });
-
-  $("#post_warning_ids").select2({
-    tags: true,
-    tokenSeparators: [','],
-    placeholder: 'Enter warning(s) separated by commas',
-    ajax: {
-      delay: 200,
-      url: '/tags',
-      dataType: 'json',
-      data: function(term, page) {
-        return {
-          q: term['term'],
-          t: 'warning',
-        };
-      },
-    },
-    width: '300px'
-  });
+  createTagSelect("tag");
+  createTagSelect("setting");
+  createTagSelect("warning");
 
   // TODO fix hack
   // Only initialize TinyMCE if it's required
@@ -461,4 +414,37 @@ setSections = function() {
       $("#section").hide();
     }
   }, 'json');
+};
+
+createTagSelect = function(tagType) {
+  $("#post_"+tagType+"_ids").select2({
+    tags: true,
+    tokenSeparators: [','],
+    placeholder: 'Enter ' + tagType + '(s) separated by commas',
+    ajax: {
+      delay: 200,
+      url: '/api/v1/tags',
+      dataType: 'json',
+      data: function(params) {
+        var data = {
+          q: params.term,
+          t: tagType,
+          page: params.page
+        };
+        return data
+      },
+      processResults: function (data, params) {
+        params.page = params.page || 1;
+        var total = this._request.getResponseHeader('Total');
+        return {
+          results: data.results,
+          pagination: {
+            more: (params.page * 25) < total
+          }
+        }
+      },
+      cache: true
+    },
+    width: '300px'
+  });
 };
