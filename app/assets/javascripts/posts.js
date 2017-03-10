@@ -16,17 +16,17 @@ $(document).ready(function() {
   // Adding Select2 UI to relevant selects
   $("#post_board_id").select2({
     width: '200px',
-    minimumResultsForSearch: 20,
+    minimumResultsForSearch: 20
   });
 
   $("#post_section_id").select2({
     width: '200px',
-    minimumResultsForSearch: 20,
+    minimumResultsForSearch: 20
   });
 
   $("#post_privacy").select2({
     width: '200px',
-    minimumResultsForSearch: 20,
+    minimumResultsForSearch: 20
   });
 
   $("#post_viewer_ids").select2({
@@ -41,7 +41,7 @@ $(document).ready(function() {
 
   // TODO fix hack
   // Only initialize TinyMCE if it's required
-  if($("#rtf").hasClass('selected') == true) {
+  if($("#rtf").hasClass('selected') === true) {
     setupTinyMCE();
   }
 
@@ -50,18 +50,18 @@ $(document).ready(function() {
   $(".post-screenname").each(function (index) {
     if($(this).height() > 20) {
       $(this).css('font-size', "14px");
-      if($(this).height() > 20 ) { $(this).css('font-size', "12px"); };
+      if($(this).height() > 20 ) { $(this).css('font-size', "12px"); }
     }
   });
 
   // Hack to deal with Firefox's "helpful" caching of form values on soft refresh (now via IDs)
   var selectedCharID = $("#reply_character_id").val();
-  var displayCharID = $("#post-editor .post-character").data('character-id');
+  var displayCharID = String($("#post-editor .post-character").data('character-id'));
   var selectedIconID = $("#reply_icon_id").val();
-  var displayIconID = $("#current-icon").data('icon-id');
+  var displayIconID = String($("#current-icon").data('icon-id'));
   var selectedAliasID = $("#reply_character_alias_id").val();
-  var displayAliasID = $("#post-editor .post-character").data('alias-id');
-  if (selectedCharID != displayCharID) {
+  var displayAliasID = String($("#post-editor .post-character").data('alias-id'));
+  if (selectedCharID !== displayCharID) {
     getAndSetCharacterData(selectedCharID, {restore_icon: true, restore_alias: true});
     $("#active_character").val(selectedCharID).trigger("change.select2");
   } else {
@@ -69,10 +69,10 @@ $(document).ready(function() {
       bindIcon();
       bindGallery();
     }
-    if (selectedIconID != displayIconID) {
+    if (selectedIconID !== displayIconID) {
       setIconFromId(selectedIconID); // Handle the case where just the icon was cached
     }
-    if (selectedAliasID != displayAliasID) {
+    if (selectedAliasID !== displayAliasID) {
       var correctName = $("#character_alias option[value="+selectedAliasID+"]").text();
       $("#post-editor .post-character #name").html(correctName);
       $("#post-editor .post-character").data('alias-id', selectedAliasID);
@@ -80,7 +80,7 @@ $(document).ready(function() {
     }
   }
 
-  if ($("#post_privacy").val() != PRIVACY_ACCESS)
+  if ($("#post_privacy").val() !== PRIVACY_ACCESS)
     $("#access_list").hide();
 
   // Bind both change() and keyup() in the icon keyword dropdown because Firefox doesn't
@@ -88,11 +88,11 @@ $(document).ready(function() {
   $("#icon_dropdown").change(function() { setIconFromId($(this).val()); });
   $("#icon_dropdown").keyup(function() { setIconFromId($(this).val()); });
 
-  if ($("#post_section_id").val() == '') { setSections(); }
+  if ($("#post_section_id").val() === '') { setSections(); }
   $("#post_board_id").change(function() { setSections(); });
 
   $('.view-button').click(function() {
-    if(this.id == 'rtf') {
+    if(this.id === 'rtf') {
       $("#html").removeClass('selected');
       $("#editor_mode").val('rtf');
       $(this).addClass('selected');
@@ -100,13 +100,13 @@ $(document).ready(function() {
         tinyMCE.execCommand('mceAddEditor', true, 'post_content');
         tinyMCE.execCommand('mceAddEditor', true, 'reply_content');
       } else { setupTinyMCE(); }
-    } else if (this.id == 'html') {
+    } else if (this.id === 'html') {
       $("#rtf").removeClass('selected');
       $("#editor_mode").val('html');
       $(this).addClass('selected');
       tinyMCE.execCommand('mceRemoveEditor', false, 'post_content');
       tinyMCE.execCommand('mceRemoveEditor', false, 'reply_content');
-    };
+    }
   });
 
   $("#post_privacy").change(function() {
@@ -139,7 +139,7 @@ $(document).ready(function() {
     $('html, body').scrollTop($("#post-editor").offset().top);
   });
 
-  $("#active_character").on('select2:close', function () {
+  $("#active_character, #character_alias").on('select2:close', function () {
     $('html, body').scrollTop($("#post-editor").offset().top);
   });
 
@@ -148,10 +148,6 @@ $(document).ready(function() {
     var id = $(this).val();
     $("#reply_character_id").val(id);
     getAndSetCharacterData(id);
-  });
-
-  $("#character_alias").on('select2:close', function () {
-    $('html, body').scrollTop($("#post-editor").offset().top);
   });
 
   $("#character_alias").change(function() {
@@ -167,7 +163,7 @@ $(document).ready(function() {
   $(document).bind("keydown", function(e){
     e = e || window.event;
     var charCode = e.which || e.keyCode;
-    if(charCode == 27) {
+    if(charCode === 27) {
       $('#icon-overlay').hide();
       $('#gallery').hide();
       $('#character-selector').hide();
@@ -234,7 +230,7 @@ iconString = function(icon) {
 };
 
 setupTinyMCE = function() {
-  if (typeof tinyMCE != 'undefined') {
+  if (typeof tinyMCE !== 'undefined') {
     tinyMCE.init({
       selector: "textarea.tinymce",
       menubar: false,
@@ -255,9 +251,9 @@ setupTinyMCE = function() {
         ed.on('init', function(args) {
           var rawContent = tinymce.activeEditor.getContent({format: 'raw'});
           var content = tinymce.activeEditor.getContent();
-          if (rawContent == '<p>&nbsp;<br></p>' && content == '') { tinymce.activeEditor.setContent(''); } // TODO fix hack
+          if (rawContent === '<p>&nbsp;<br></p>' && content === '') { tinymce.activeEditor.setContent(''); } // TODO fix hack
         });
-      },
+      }
     });
     tinyMCEInit = true;
   } else {
@@ -268,7 +264,7 @@ setupTinyMCE = function() {
 getAndSetCharacterData = function(characterId, options) {
   var restore_icon = false;
   var restore_alias = false;
-  if (typeof options != 'undefined') {
+  if (typeof options !== 'undefined') {
     restore_icon = options.restore_icon;
     restore_alias = options.restore_alias;
   }
@@ -281,12 +277,12 @@ getAndSetCharacterData = function(characterId, options) {
   $("#icon_dropdown").empty().append('<option value="">No Icon</option>');
 
   // Handle special case where just setting to your base account
-  if (characterId == '') {
+  if (characterId === '') {
     $("#post-editor .post-character").hide().data('character-id', '').data('alias-id', '');
     $("#post-editor .post-screenname").hide();
 
     var avatar = gon.current_user.avatar;
-    if(avatar && avatar.url != null) {
+    if(avatar && avatar.url !== null) {
       var url = avatar.url;
       var aid = avatar.id;
       var keyword = avatar.keyword;
@@ -313,7 +309,7 @@ getAndSetCharacterData = function(characterId, options) {
     $("#post-editor #post-author-spacer").hide();
     $("#post-editor .post-character").show().data('character-id', characterId);
     $("#post-editor .post-character #name").html(resp.name);
-    if(resp.screenname == undefined) {
+    if(resp.screenname === undefined) {
       $("#post-editor .post-screenname").hide();
     } else {
       $("#post-editor .post-screenname").show().html(resp.screenname);
@@ -342,7 +338,7 @@ getAndSetCharacterData = function(characterId, options) {
     }
 
     // Display no icon if no default set
-    if (resp.default == undefined) {
+    if (resp.default === undefined) {
       $("#current-icon").removeClass('pointer');
       setIcon('');
       return;
@@ -354,8 +350,8 @@ getAndSetCharacterData = function(characterId, options) {
     // Calculate new galleries
     $("#gallery").html("");
     var multiGallery = resp.galleries.length > 1;
-    for(var i = 0; i < resp.galleries.length; i++) {
-      $("#gallery").append(galleryString(resp.galleries[i], multiGallery));
+    for(var j = 0; j < resp.galleries.length; j++) {
+      $("#gallery").append(galleryString(resp.galleries[j], multiGallery));
     }
 
     $("#gallery").append(iconString({id: '', url: '/images/no-icon.png', keyword: 'No Icon', skip_dropdown: true}));
@@ -377,7 +373,7 @@ setIconFromId = function(id, img) {
 
 setIcon = function(id, url, title, alt) {
   // Handle No Icon case
-  if (id == "") {
+  if (id === "") {
     url = "/images/no-icon.png";
     title = "No Icon";
     alt = "";
