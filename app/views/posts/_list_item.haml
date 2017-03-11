@@ -11,7 +11,7 @@
     - if !current_user.try(:hide_warnings) && post.content_warnings.exists?
       = image_tag "/images/exclamation.png", class: 'vmid', title: "Content Warning: " + post.content_warnings.pluck(:name).join(', '), alt: '!'
   %td.post-subject{class: klass}
-    - if logged_in? && ((@opened_ids.nil? || !@opened_ids.include?(post.id)) || (!@unread_ids.nil? && @unread_ids.include?(post.id)))
+    - if logged_in? && ((!@opened_ids.nil? && !@opened_ids.include?(post.id)) || (!@unread_ids.nil? && @unread_ids.include?(post.id)))
       - # logged in, thread not opened / unread
       = link_to post_path(post, page: 'unread', anchor: 'unread') do
         = image_tag unread_img, class: 'vmid', title: 'First Unread'
