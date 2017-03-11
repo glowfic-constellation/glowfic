@@ -53,6 +53,13 @@ module ApplicationHelper
     '/images/bullet_go.png'
   end
 
+  def lastlink_img
+    return '/images/note_go_strong.png' unless current_user
+    return '/images/note_go_strong.png' unless current_user.layout
+    return '/images/note_go_strong.png' unless current_user.layout.include?('dark')
+    '/images/bullet_go_strong.png'
+  end
+
   def path_for(obj, path)
     send (path + '_path') % obj.class.to_s.downcase, obj
   end
