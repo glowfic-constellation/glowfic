@@ -326,7 +326,7 @@ getAndSetCharacterData = function(characterId, options) {
       $("#swap-alias").hide();
     }
 
-    if (restore_alias) {
+    if (restore_alias && selectedAliasID) {
       var correctName = $("#character_alias option[value="+selectedAliasID+"]").text();
       $("#post-editor .post-character #name").html(correctName);
       $("#post-editor .post-character").data('alias-id', selectedAliasID);
