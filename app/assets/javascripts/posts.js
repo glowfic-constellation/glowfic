@@ -338,7 +338,7 @@ getAndSetCharacterData = function(characterId, options) {
     }
 
     // Display no icon if no default set
-    if (resp.default === undefined) {
+    if (!resp.default) {
       $("#current-icon").removeClass('pointer');
       setIcon('');
       return;
