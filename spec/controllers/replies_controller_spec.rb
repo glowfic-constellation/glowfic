@@ -30,7 +30,7 @@ RSpec.describe RepliesController do
         post :create, button_draft: true, reply: {post_id: draft.post.id, user_id: ''}
         expect(flash[:error][:message]).to eq("Your draft could not be saved because of the following problems:")
         expect(draft.reload.user_id).not_to be_nil
-        expect(response).to redirect_to(post_url(draft.post, page: :last))
+        expect(response).to redirect_to(post_url(draft.post, page: :unread, anchor: :unread))
       end
 
       it "creates a new draft if none exists" do
@@ -38,7 +38,7 @@ RSpec.describe RepliesController do
         login_as(reply_post.user)
         expect(ReplyDraft.count).to eq(0)
         post :create, button_draft: true, reply: {post_id: reply_post.id}
-        expect(response).to redirect_to(post_url(reply_post, page: :last))
+        expect(response).to redirect_to(post_url(reply_post, page: :unread, anchor: :unread))
         expect(flash[:success]).to eq("Draft saved!")
         expect(ReplyDraft.count).to eq(1)
         draft = ReplyDraft.last
@@ -340,8 +340,8 @@ RSpec.describe RepliesController do
   describe "GET search" do
     context "no search" do
       before(:each) do
-        2.times do 
-          create(:user) 
+        2.times do
+          create(:user)
           create(:character)
           create(:template_character)
         end
