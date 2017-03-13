@@ -137,4 +137,10 @@ module ApplicationHelper
       'Access List'         => Post::PRIVACY_LIST,
       'Private'             => Post::PRIVACY_PRIVATE }
   end
+
+  def unread_post?(post, unread_ids)
+    return false unless post
+    return false unless unread_ids
+    unread_ids.include?(post.id)
+  end
 end

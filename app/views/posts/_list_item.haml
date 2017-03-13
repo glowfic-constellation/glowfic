@@ -11,14 +11,13 @@
     - if !current_user.try(:hide_warnings) && post.content_warnings.exists?
       = image_tag "/images/exclamation.png", class: 'vmid', title: "Content Warning: " + post.content_warnings.pluck(:name).join(', '), alt: '!'
   %td.post-subject{class: klass}
-    - if logged_in? && ((!@opened_ids.nil? && !@opened_ids.include?(post.id)) || (!@unread_ids.nil? && @unread_ids.include?(post.id)))
-      - # logged in, thread not opened / unread
-      = link_to post_path(post, page: 'unread', anchor: 'unread') do
-        = image_tag unread_img, class: 'vmid', title: 'First Unread'
-    - elsif logged_in? && @show_unread
-      - # logged in, showing unread (hence show "last" link)
-      = link_to post_path(post, page: 'unread', anchor: 'unread') do
-        = image_tag lastlink_img, class: 'vmid', title: 'First Unread'
+    - if logged_in?
+      - if unread_post?(post, @unread_ids)
+        = link_to post_path(post, page: 'unread', anchor: 'unread') do
+          = image_tag unread_img, class: 'vmid', title: 'First Unread'
+      - elsif @show_unread
+        = link_to post_path(post, page: 'unread', anchor: 'unread') do
+          = image_tag lastlink_img, class: 'vmid', title: 'First Unread'
     - if logged_in? && @opened_ids.present? && !@opened_ids.include?(post.id)
       %b= link_to post.subject, post_path(post), title: strip_tags(post.description)
     - else
