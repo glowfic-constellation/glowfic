@@ -81,7 +81,7 @@ class RepliesController < WritableController
         flash[:error][:message] = "Your draft could not be saved because of the following problems:"
         flash[:error][:array] = draft.errors.full_messages
       end
-      redirect_to post_path(draft.post, page: :last) and return # TODO handle draft.post.nil?
+      redirect_to post_path(draft.post, page: :unread, anchor: :unread) and return # TODO handle draft.post.nil?
     end
 
     reply = Reply.new(params[:reply])
