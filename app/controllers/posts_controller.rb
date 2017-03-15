@@ -84,10 +84,9 @@ class PostsController < WritableController
   end
 
   def create
-    preview(:post, posts_path) and return if params[:button_preview].present?
-
     @post = Post.new(params[:post])
     @post.user = current_user
+    preview(@post) and return if params[:button_preview].present?
 
     create_new_tags if @post.valid?
 
@@ -115,12 +114,10 @@ class PostsController < WritableController
   def stats
   end
 
-  def preview(method, path)
-    @written = Post.new(params[:post])
+  def preview(written)
+    @written = written
     @post = @written
     @written.user = current_user
-    @url = path
-    @method = method
 
     editor_setup
 
@@ -140,10 +137,11 @@ class PostsController < WritableController
 
     change_status and return if params[:status].present?
     change_authors_locked and return if params[:authors_locked].present?
-    preview(:put, post_path(params[:id])) and return if params[:button_preview].present?
 
     @post.assign_attributes(params[:post])
     @post.board ||= Board.find(3)
+
+    preview(@post) and return if params[:button_preview].present?
 
     create_new_tags if @post.valid?
 
