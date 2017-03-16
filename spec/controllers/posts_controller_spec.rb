@@ -157,8 +157,6 @@ RSpec.describe PostsController do
         expect(assigns(:written)).to be_a_new_record
         expect(assigns(:written).user).to eq(user)
         expect(assigns(:post)).to eq(assigns(:written))
-        expect(assigns(:url)).to eq(posts_path)
-        expect(assigns(:method)).to eq(:post)
         expect(assigns(:page_title)).to eq('Previewing: test')
         # TODO editor setup
       end

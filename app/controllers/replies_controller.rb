@@ -64,7 +64,7 @@ class RepliesController < WritableController
   end
 
   def create
-    preview and return if params[:button_preview]
+    preview(Reply.new(params[:reply])) and return if params[:button_preview]
 
     if params[:button_draft]
       if draft = ReplyDraft.draft_for(params[:reply][:post_id], current_user.id)
@@ -113,7 +113,11 @@ class RepliesController < WritableController
   end
 
   def update
-    preview and return if params[:button_preview]
+    if params[:button_preview]
+      @reply.assign_attributes(params[:reply])
+      preview(@reply) and return
+    end
+
     @reply.skip_post_update = true unless @reply.post.last_reply_id == @reply.id
     @reply.update_attributes(params[:reply])
     flash[:success] = "Post updated"
@@ -154,10 +158,10 @@ class RepliesController < WritableController
     end
   end
 
-  def preview
+  def preview(written)
     build_template_groups
 
-    @written = Reply.new(params[:reply])
+    @written = written
     @post = @written.post
     @written.user = current_user
 
