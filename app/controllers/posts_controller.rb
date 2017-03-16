@@ -86,7 +86,7 @@ class PostsController < WritableController
   def create
     @post = Post.new(params[:post])
     @post.user = current_user
-    preview(@post) and return if params[:button_preview].present?
+    preview and return if params[:button_preview].present?
 
     create_new_tags if @post.valid?
 
@@ -114,13 +114,9 @@ class PostsController < WritableController
   def stats
   end
 
-  def preview(written)
-    @written = written
-    @post = @written
-    @written.user = current_user
-
+  def preview
+    @written = @post
     editor_setup
-
     @page_title = 'Previewing: ' + @post.subject.to_s
     render action: :preview
   end
@@ -141,7 +137,7 @@ class PostsController < WritableController
     @post.assign_attributes(params[:post])
     @post.board ||= Board.find(3)
 
-    preview(@post) and return if params[:button_preview].present?
+    preview and return if params[:button_preview].present?
 
     create_new_tags if @post.valid?
 

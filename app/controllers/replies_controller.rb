@@ -64,8 +64,6 @@ class RepliesController < WritableController
   end
 
   def create
-    preview(Reply.new(params[:reply])) and return if params[:button_preview]
-
     if params[:button_draft]
       if draft = ReplyDraft.draft_for(params[:reply][:post_id], current_user.id)
         draft.assign_attributes(params[:reply])
@@ -86,6 +84,8 @@ class RepliesController < WritableController
 
     reply = Reply.new(params[:reply])
     reply.user = current_user
+    preview(reply) and return if params[:button_preview]
+
     if reply.save
       flash[:success] = "Posted!"
       redirect_to reply_path(reply, anchor: "reply-#{reply.id}")
@@ -113,13 +113,11 @@ class RepliesController < WritableController
   end
 
   def update
-    if params[:button_preview]
-      @reply.assign_attributes(params[:reply])
-      preview(@reply) and return
-    end
+    @reply.assign_attributes(params[:reply])
+    preview(@reply) and return if params[:button_preview]
 
     @reply.skip_post_update = true unless @reply.post.last_reply_id == @reply.id
-    @reply.update_attributes(params[:reply])
+    @reply.save
     flash[:success] = "Post updated"
     redirect_to reply_path(@reply, anchor: "reply-#{@reply.id}")
   end
