@@ -37,7 +37,7 @@
       %tr
         %td.sub.width-150 Content Warnings
         %td{class: cycle('odd', 'even')}= @post.content_warnings.map { |tag| link_to tag.name, tag_path(tag) }.join(', ').html_safe
-    - if (tags = @post.tags.where(type: nil)).present?
+    - if (tags = @post.tags).present?
       %tr
         %td.sub.width-150 Tags
         %td{class: cycle('odd', 'even')}= tags.map { |tag| link_to tag.name, tag_path(tag) }.join(', ').html_safe

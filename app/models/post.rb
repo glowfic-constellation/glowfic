@@ -181,6 +181,11 @@ class Post < ActiveRecord::Base
     word_count + contents.inject{|r, e| r + e.split.size}.to_i
   end
 
+  def tags_with_scope
+    tags_without_scope.where(type: nil)
+  end
+  alias_method_chain :tags, :scope
+
   private
 
   def valid_board

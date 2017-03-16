@@ -280,9 +280,14 @@ class PostsController < WritableController
   end
 
   def build_subtags(klass, method, faked)
-    return [] unless @post && @post.send(method)
+    return [] unless @post
+
+    existing_saved = @post.send(klass.to_s.underscore.pluralize) || []
+    return existing_saved unless @post.send(method)
+
+    existing_unsaved = klass.where(id: @post.send(method) - existing_saved.map { |es| es.id.to_s })
     new_tags = @post.send(method).reject { |t| t.blank? || !t.to_i.zero? }
-    new_tags.map { |t| faked.new(t, t) }
+    existing_saved + existing_unsaved + new_tags.map { |t| faked.new(t, t) }
   end
 
   def create_new_tags
