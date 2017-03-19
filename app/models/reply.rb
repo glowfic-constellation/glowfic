@@ -84,7 +84,7 @@ class Reply < ActiveRecord::Base
 
   def author_can_write_in_post
     return unless post && user
-    errors.add(:user, 'is not a valid continuity author') unless user.writes_in?(post.board)
+    errors.add(:user, "#{user.username} is not a valid continuity author for #{post.board.name}") unless user.writes_in?(post.board)
     return unless post.authors_locked?
     errors.add(:post, 'is not a valid post author') unless post.author_ids.include?(user_id)
   end

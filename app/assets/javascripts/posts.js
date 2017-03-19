@@ -291,7 +291,7 @@ getAndSetCharacterData = function(characterId, options) {
   $("#icon_dropdown").empty().append('<option value="">No Icon</option>');
 
   // Handle special case where just setting to your base account
-  if (characterId === '') {
+  if (characterId === '' || characterId === undefined) {
     $("#post-editor .post-character").hide().data('character-id', '').data('alias-id', '');
     $("#post-editor .post-screenname").hide();
 

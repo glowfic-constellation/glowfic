@@ -85,6 +85,8 @@ class PostsController < WritableController
   end
 
   def create
+    import_thread and return if params[:button_import].present?
+
     @post = Post.new(params[:post])
     @post.user = current_user
     preview and return if params[:button_preview].present?
@@ -252,6 +254,19 @@ class PostsController < WritableController
   end
 
   private
+
+  def import_thread
+    if params[:dreamwidth_url].blank? || !params[:dreamwidth_url].include?('dreamwidth')
+      flash[:error] = "Invalid URL provided."
+      params[:view] = 'import'
+      editor_setup
+      return render action: :new
+    end
+
+    Resque.enqueue(ScrapePostJob, params[:dreamwidth_url], params[:board_id], params[:section_id], params[:status], current_user.id)
+    flash[:success] = "Post has begun importing. You will be updated on progress via site message."
+    redirect_to posts_path
+  end
 
   def find_post
     @post = Post.find_by_id(params[:id])

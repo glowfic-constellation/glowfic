@@ -8,23 +8,21 @@ class PostScraper < Object
     'peterxy' => 'Pedro',
     'peterverse' => 'Pedro',
     'curiousdiscoverer' => 'CuriousDiscoverer',
-    'aestrix' => 'Aestrix',
-    # TODO Maggie
-    # More???
+    'aestrix' => 'Aestrix'
   }
 
   attr_reader :url
 
-  def initialize(url, board_id=nil, section_id=nil, active=false)
+  def initialize(url, board_id=nil, section_id=nil, status=nil)
     @board_id = board_id || SANDBOX_ID
     @section_id = section_id
-    @active = active
+    @status = status || Post::STATUS_COMPLETE
     url = url + (if url.include?('?') then '&view=flat' else '?view=flat' end) unless url.include?('view=flat')
     url = url + '&style=site' unless url.include?('style=site')
     @url = url
   end
 
-  def scrape
+  def scrape!
     @html_doc = doc_from_url(@url)
 
     Post.transaction do
@@ -37,6 +35,7 @@ class PostScraper < Object
       finalize_post_data
     end
     Resque.enqueue(GenerateFlatPostJob, @post.id)
+    @post
   end
 
   private
@@ -67,7 +66,7 @@ class PostScraper < Object
     @post.subject = subject
     @post.content = strip_content(content)
     @post.created_at = @post.updated_at = @post.edited_at = created_at
-    @post.status = @active ? Post::STATUS_ACTIVE : Post::STATUS_COMPLETE
+    @post.status = @status
 
     set_from_username(@post, username)
     @post.last_user_id = @post.user_id
@@ -127,10 +126,7 @@ class PostScraper < Object
   end
 
   def prompt_for_user(username)
-    print('User ID or username for ' + username + '? ')
-    input = STDIN.gets.chomp
-    return User.find_by_id(input) if input.to_s == input.to_i.to_s
-    User.where('lower(username) = ?', input.downcase).first
+    raise UnrecognizedUsernameError.new("Unrecognized username: #{username}")
   end
 
   def set_from_icon(tag, url, keyword)
@@ -170,4 +166,7 @@ class PostScraper < Object
     index = content.index('edittime')
     content[0..index-13]
   end
+end
+
+class UnrecognizedUsernameError < Exception
 end
