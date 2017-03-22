@@ -167,13 +167,6 @@ RSpec.describe PasswordResetsController do
       expect(response).to render_template('show')
     end
 
-    it "requires short enough password" do
-      token = create(:password_reset)
-      put :update, id: token.auth_token, password: 'newpass' * 12, password_confirmation: 'newpass' * 12
-      expect(flash[:error][:message]).to eq("Could not update password.")
-      expect(response).to render_template('show')
-    end
-
     it "requires password confirmation" do
       token = create(:password_reset)
       put :update, id: token.auth_token, password: 'newpass'

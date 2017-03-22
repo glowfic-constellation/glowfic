@@ -70,6 +70,16 @@ RSpec.describe UsersController do
       expect(controller.gon.max).to eq(User::MAX_USERNAME_LEN)
     end
 
+    it "rejects short passwords" do
+      user = build(:user).attributes.merge(password: 'short', password_confirmation: 'short')
+      post :create, secret: 'ALLHAILTHECOIN', user: user
+      expect(response).to render_template(:new)
+      expect(flash[:error][:message]).to eq('There was a problem completing your sign up.')
+      expect(flash[:error][:array]).to eq(['Password is too short (minimum is 6 characters)'])
+      expect(assigns(:user)).not_to be_valid
+      expect(assigns(:page_title)).to eq('Sign Up')
+    end
+
     it "signs you up" do
       user = build(:user).attributes.merge(password: 'testpassword', password_confirmation: 'testpassword')
       expect {
@@ -79,6 +89,19 @@ RSpec.describe UsersController do
       expect(flash[:success]).to eq("User created! You have been logged in.")
       expect(assigns(:current_user)).not_to be_nil
       expect(assigns(:current_user).username).to eq(user['username'])
+    end
+
+    it "allows long passwords" do
+      pass = 'this is a long password to test the password validation feature and to see if it accepts this'
+      user = build(:user).attributes.merge(password: pass, password_confirmation: pass)
+      expect {
+        post :create, {secret: 'ALLHAILTHECOIN'}.merge(user: user)
+      }.to change{User.count}.by(1)
+      expect(response).to redirect_to(root_url)
+      expect(flash[:success]).to eq("User created! You have been logged in.")
+      expect(assigns(:current_user)).not_to be_nil
+      expect(assigns(:current_user).username).to eq(user['username'])
+      expect(assigns(:current_user).authenticate(pass)).to be_true
     end
   end
 
