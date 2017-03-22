@@ -29,7 +29,7 @@ class User < ActiveRecord::Base
   validates_uniqueness_of :email, allow_blank: true
   validates_length_of :username, :in => MIN_USERNAME_LEN..MAX_USERNAME_LEN, :allow_blank => true
   validates_length_of :moiety, in: 3..6, allow_blank: true
-  validates_length_of :password, :in => 6..25, if: :validate_password?
+  validates_length_of :password, minimum: 6, if: :validate_password?
   validates_confirmation_of :password, if: :validate_password?
   validates_presence_of :password, :password_confirmation, if: :validate_password?
 
@@ -44,9 +44,9 @@ class User < ActiveRecord::Base
   end
 
   def gon_attributes
-    { 
-      :username => username, 
-      :active_character_id => active_character_id, 
+    {
+      :username => username,
+      :active_character_id => active_character_id,
       :avatar => avatar.try(:as_json),
     }
   end

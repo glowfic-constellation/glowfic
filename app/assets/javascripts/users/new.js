@@ -1,20 +1,20 @@
 $(document).ready(function() {
-  $("#user_username").blur(function() { 
+  $("#user_username").blur(function() {
     $("#username .alert").remove();
     validateUsername();
   });
 
-  $("#user_email").blur(function() { 
+  $("#user_email").blur(function() {
     $("#email .alert").remove();
     validateEmail();
   });
 
-  $("#user_password").blur(function() { 
+  $("#user_password").blur(function() {
     $("#password .alert").remove();
     validatePassword();
   });
 
-  $("#user_password_confirmation").blur(function() { 
+  $("#user_password_confirmation").blur(function() {
     $("#conf .alert").remove();
     validateConfirmation();
   });
@@ -28,8 +28,8 @@ $(document).ready(function() {
     var passwordValid = validatePassword();
     var confirmationValid = validateConfirmation();
     var emailValid = validateEmail();
-    if(!(usernameValid && passwordValid && confirmationValid && emailValid)) { 
-      return false; 
+    if (!(usernameValid && passwordValid && confirmationValid && emailValid)) {
+      return false;
     }
     return true;
   });
@@ -37,7 +37,7 @@ $(document).ready(function() {
 
 validateUsername = function() {
   var username = $("#user_username").val();
-  if(username == '') { 
+  if (username == '') {
     addAlertAfter('user_username', 'Please choose a username.');
     return false;
   } else if (username.length < gon.min || username.length > gon.max) {
@@ -46,7 +46,7 @@ validateUsername = function() {
   }
 
   $.post('/users/username', {'username':username}, function(resp) {
-    if(!resp.username_free){
+    if (!resp.username_free){
       addAlertAfter('user_username', 'That username has already been taken.');
       return false;
     }
@@ -57,7 +57,7 @@ validateUsername = function() {
 
 validateEmail = function() {
   var email = $("#user_email").val();
-  if(email == '') { 
+  if (email == '') {
     addAlertAfter('user_email', 'Please enter an email address.');
     return false;
   }
@@ -68,7 +68,7 @@ validatePassword = function() {
   var password = $("#user_password").val();
   var conf = $("#user_password_confirmation").val();
   var success = true;
-  if(password == '') {
+  if (password == '') {
     addAlertAfter('user_password', 'Please choose a password.');
     success = false;
   }
@@ -84,7 +84,7 @@ validateConfirmation = function() {
   var password = $("#user_password").val();
   var conf = $("#user_password_confirmation").val();
   var success = true;
-  if(conf == '') {
+  if (conf == '') {
     addAlertAfter('user_password_confirmation', 'Please confirm your password.');
     success = false;
   }
