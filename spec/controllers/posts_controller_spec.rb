@@ -8,7 +8,7 @@ RSpec.describe PostsController do
     end
 
     it "paginates" do
-      27.times do create(:post) end # so that if a site_testing post is ignore it's still two pages
+      26.times do create(:post) end
       get :index
       num_posts_fetched = controller.instance_variable_get('@posts').total_pages
       expect(num_posts_fetched).to eq(2)

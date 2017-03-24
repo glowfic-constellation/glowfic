@@ -31,6 +31,8 @@ end
 require 'factory_girl_rails'
 require 'rails_helper'
 require 'support/spec_test_helper'
+$LOAD_PATH << '.'
+require 'features/support/fix_boards.rb'
 
 RSpec.configure do |config|
   # rspec-expectations config goes here. You can use an alternate
