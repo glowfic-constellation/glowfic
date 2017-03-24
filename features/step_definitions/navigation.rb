@@ -17,8 +17,25 @@ end
 Given(/^I have (\d) unread posts?$/) do |num|
   num.to_i.times do
     unread = create(:post)
-    unread.mark_read(current_user, Time.now - 1.day)
     create(:reply, user: unread.user, post: unread)
+  end
+end
+
+Given(/^I have (\d) partially-read posts?$/) do |num|
+  num.to_i.times do
+    unread = Timecop.freeze(Time.now - 1.day) do
+      unread = create(:post)
+      unread.mark_read(current_user)
+      unread
+    end
+    create(:reply, user: unread.user, post: unread)
+  end
+end
+
+Given(/^I have (\d) read posts?$/) do |num|
+  num.to_i.times do
+    read = create(:post)
+    read.mark_read(current_user)
   end
 end
 
