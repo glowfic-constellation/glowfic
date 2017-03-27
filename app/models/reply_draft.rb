@@ -10,7 +10,7 @@ class ReplyDraft < ActiveRecord::Base
   end
 
   def self.draft_reply_for(post, user)
-    return unless draft = draft_for(post.id, user.id)
+    return unless (draft = draft_for(post.id, user.id))
     ReplyDraft.reply_from_draft(draft)
   end
 

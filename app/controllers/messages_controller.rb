@@ -47,7 +47,7 @@ class MessagesController < ApplicationController
   end
 
   def show
-    unless message = Message.find_by_id(params[:id])
+    unless (message = Message.find_by_id(params[:id]))
       flash[:error] = "Message could not be found."
       redirect_to messages_path(view: 'inbox') and return
     end

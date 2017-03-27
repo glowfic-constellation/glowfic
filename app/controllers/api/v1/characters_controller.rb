@@ -60,7 +60,7 @@ class Api::V1::CharactersController < Api::ApiController
   private
 
   def find_character
-    unless @character = Character.find_by_id(params[:id])
+    unless (@character = Character.find_by_id(params[:id]))
       error = {message: "Character could not be found."}
       render json: {errors: [error]}, status: :not_found and return
     end

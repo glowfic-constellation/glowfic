@@ -40,7 +40,7 @@ class TagsController < ApplicationController
   private
 
   def find_tag
-    unless @tag = Tag.find_by_id(params[:id])
+    unless (@tag = Tag.find_by_id(params[:id]))
       flash[:error] = "Tag could not be found."
       redirect_to tags_path
     end

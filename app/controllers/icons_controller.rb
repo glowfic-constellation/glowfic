@@ -80,7 +80,7 @@ class IconsController < ApplicationController
   end
 
   def do_replace
-    unless params[:icon_dropdown].blank? || new_icon = Icon.find_by_id(params[:icon_dropdown])
+    unless params[:icon_dropdown].blank? || (new_icon = Icon.find_by_id(params[:icon_dropdown]))
       flash[:error] = "Icon could not be found."
       redirect_to replace_icon_path(@icon) and return
     end
@@ -124,7 +124,7 @@ class IconsController < ApplicationController
   private
 
   def find_icon
-    unless @icon = Icon.find_by_id(params[:id])
+    unless (@icon = Icon.find_by_id(params[:id]))
       flash[:error] = "Icon could not be found."
       redirect_to galleries_path
     end

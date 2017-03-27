@@ -7,7 +7,7 @@ class BoardsController < ApplicationController
 
   def index
     if params[:user_id].present?
-      unless @user = User.find_by_id(params[:user_id]) || current_user
+      unless (@user = User.find_by_id(params[:user_id]) || current_user)
         flash[:error] = "User could not be found."
         redirect_to root_path and return
       end
@@ -89,7 +89,7 @@ class BoardsController < ApplicationController
   end
 
   def mark
-    unless board = Board.find_by_id(params[:board_id])
+    unless (board = Board.find_by_id(params[:board_id]))
       flash[:error] = "Continuity could not be found."
       redirect_to unread_posts_path and return
     end
@@ -123,7 +123,7 @@ class BoardsController < ApplicationController
   end
 
   def find_board
-    unless @board = Board.find_by_id(params[:id])
+    unless (@board = Board.find_by_id(params[:id]))
       flash[:error] = "Continuity could not be found."
       redirect_to boards_path and return
     end

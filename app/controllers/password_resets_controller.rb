@@ -19,7 +19,7 @@ class PasswordResetsController < ApplicationController
       render :new and return
     end
 
-    unless user = User.where(email: params[:email], username: params[:username]).first
+    unless (user = User.where(email: params[:email], username: params[:username]).first)
       flash.now[:error] = "Account could not be found."
       render :new and return
     end
@@ -76,7 +76,7 @@ class PasswordResetsController < ApplicationController
   end
 
   def find_reset
-    unless @password_reset = PasswordReset.where(auth_token: params[:id]).first
+    unless (@password_reset = PasswordReset.where(auth_token: params[:id]).first)
       flash[:error] = "Authentication token not found."
       redirect_to root_url and return
     end

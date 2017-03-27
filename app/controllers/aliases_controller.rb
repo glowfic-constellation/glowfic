@@ -34,7 +34,7 @@ class AliasesController < ApplicationController
   private
 
   def find_character
-    unless @character = Character.find_by_id(params[:character_id])
+    unless (@character = Character.find_by_id(params[:character_id]))
       flash[:error] = "Character could not be found."
       redirect_to characters_path and return
     end
@@ -46,7 +46,7 @@ class AliasesController < ApplicationController
   end
 
   def find_alias
-    unless @alias = CharacterAlias.find_by_id(params[:id])
+    unless (@alias = CharacterAlias.find_by_id(params[:id]))
       flash[:error] = "Alias could not be found."
       redirect_to edit_character_path(@character) and return
     end

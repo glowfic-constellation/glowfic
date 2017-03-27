@@ -7,7 +7,7 @@ class GalleriesController < ApplicationController
 
   def index
     if params[:user_id].present?
-      unless @user = User.find_by_id(params[:user_id]) || current_user
+      unless (@user = User.find_by_id(params[:user_id]) || current_user)
         flash[:error] = 'User could not be found.'
         redirect_to root_path and return
       end

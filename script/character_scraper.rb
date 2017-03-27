@@ -8,7 +8,7 @@ unless comm_name.present? && user_id.present?
   exit 0
 end
 
-unless user = User.find_by_id(user_id)
+unless (user = User.find_by_id(user_id))
   puts "That user does not exist"
   exit 0
 end
@@ -25,11 +25,11 @@ characters.each do |username|
   html_doc = Nokogiri::HTML(response.body)
   name = html_doc.at_css('#basics_body .profile td').content.strip
 
-  unless gallery = Gallery.where(name: username).first
+  unless (gallery = Gallery.where(name: username).first)
     gallery = Gallery.create!(user: user, name: username)
   end
 
-  unless character = Character.where(screenname: username).first
+  unless (character = Character.where(screenname: username).first)
     character = Character.create!(user: user, name: name, screenname: username)
   end
 

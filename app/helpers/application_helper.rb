@@ -14,7 +14,7 @@ module ApplicationHelper
     return '' if url.nil?
     klass = ICON
     klass += ' pointer' if args.delete(:pointer)
-    if supplied_class = args.delete(:class)
+    if (supplied_class = args.delete(:class))
       klass += ' ' + supplied_class
     end
 

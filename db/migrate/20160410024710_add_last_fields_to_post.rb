@@ -6,7 +6,7 @@ class AddLastFieldsToPost < ActiveRecord::Migration
     ActiveRecord::Base.record_timestamps = false
     begin
       Post.all.each do |post|
-        if last_reply = post.replies.order('created_at desc').first
+        if (last_reply = post.replies.order('created_at desc').first)
           post.last_reply_id = last_reply.id
           post.last_user_id = last_reply.user_id
         else

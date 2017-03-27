@@ -4,7 +4,7 @@ class NotifyFollowersOfNewPostJob < BaseJob
   @expire_retry_key_after = 3600
 
   def self.process(post_id)
-    return unless post = Post.find_by_id(post_id)
+    return unless (post = Post.find_by_id(post_id))
 
     users_favoriting_user = Favorite.where(favorite: post.user).pluck(:user_id)
     users_favoriting_continuity = Favorite.where(favorite: post.board).pluck(:user_id)
