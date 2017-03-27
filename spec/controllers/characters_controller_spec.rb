@@ -358,7 +358,7 @@ RSpec.describe CharactersController do
       chars = 3.times.collect do create(:template_character, pb: SecureRandom.urlsafe_base64) end
       chars += 3.times.collect do create(:character, pb: SecureRandom.urlsafe_base64) end
       get :facecasts, sort: 'writer'
-      expect(assigns(:pbs).keys).to match_array(chars.map { |c| c.user })
+      expect(assigns(:pbs).keys).to match_array(chars.map(&:user))
     end
   end
 
