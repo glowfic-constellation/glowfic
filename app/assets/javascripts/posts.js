@@ -336,12 +336,6 @@ getAndSetCharacterData = function(characterId, options) {
       for(var i=0; i<resp['aliases'].length; i++) {
         $("#character_alias").append($("<option>").attr({value: resp['aliases'][i]['id']}).append(resp['aliases'][i]['name']));
       }
-      // Restore active alias, but only if not already restoring an alias
-      if(resp.alias_id_for_post !== undefined && !restore_alias) {
-        restore_alias = true;
-        selectedAliasID = resp.alias_id_for_post;
-        $("#reply_character_alias_id").val(selectedAliasID);
-      }
     } else {
       $("#swap-alias").hide();
     }
@@ -351,6 +345,13 @@ getAndSetCharacterData = function(characterId, options) {
       $("#post-editor .post-character #name").html(correctName);
       $("#post-editor .post-character").data('alias-id', selectedAliasID);
       $("#character_alias").val(selectedAliasID).trigger("change.select2");
+    } else if (resp.active_alias) {
+      var aliasID = resp.active_alias.id;
+      var correctName = $("#character_alias option[value="+aliasID+"]").text();
+      $("#post-editor .post-character #name").html(correctName);
+      $("#post-editor .post-character").data('alias-id', aliasID);
+      $("#character_alias").val(aliasID).trigger("change.select2");
+      $("#reply_character_alias_id").val(aliasID);
     } else {
       $("#post-editor .post-character").data('alias-id', '');
       $("#character_alias").val('').trigger("change.select2");

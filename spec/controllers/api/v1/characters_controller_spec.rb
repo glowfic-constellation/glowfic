@@ -63,42 +63,67 @@ RSpec.describe Api::V1::CharactersController do
       expect(response.json['galleries'].size).to eq(1)
     end
 
-    it "requires post to exist when provided a post_id", :show_in_doc do
-      character = create(:character)
-      get :show, id: character.id, post_id: 0
-      expect(response).to have_http_status(422)
-      expect(response.json['errors'].size).to eq(1)
-      expect(response.json['errors'][0]['message']).to eq("Post could not be found.")
-    end
+    context "with post_id" do
+      it "requires valid post_id if given", :show_in_doc do
+        character = create(:character)
+        get :show, id: character.id, post_id: 0 # using -1 gets an error that it's not a number?
+        expect(response).to have_http_status(422)
+        expect(response.json['errors'].size).to eq(1)
+        expect(response.json['errors'].first['message']).to eq('Post could not be found.')
+      end
 
-    it "includes alias_id_for_post field when given post_id" do
-      character = create(:character)
-      post = create(:post, user: character.user)
-      get :show, id: character.id, post_id: post.id
-      expect(response).to have_http_status(200)
-      expect(response.json).to have_key('alias_id_for_post')
-      expect(response.json['alias_id_for_post']).to be_nil
-    end
+      it "requires post be visible if post_id given" do
+        character = create(:character)
+        post = create(:post, privacy: Post::PRIVACY_PRIVATE)
 
-    it "sets correct alias_id_for_post when given post_id with recently used alias in post", :show_in_doc do
-      calias = create(:alias)
-      character = calias.character
-      post = create(:post, user: character.user, character: character, character_alias_id: calias.id)
-      get :show, id: character.id, post_id: post.id
-      expect(response).to have_http_status(200)
-      expect(response.json).to have_key('alias_id_for_post')
-      expect(response.json['alias_id_for_post']).to eq(calias.id)
-    end
+        get :show, id: character.id, post_id: post.id
+        expect(response).to have_http_status(422)
+        expect(response.json['errors'].size).to eq(1)
+        expect(response.json['errors'].first['message']).to eq('You do not have permission to perform this action.')
+      end
 
-    it "sets correct alias_id_for_post when given post_id with recently used alias in post" do
-      calias = create(:alias)
-      character = calias.character
-      post = create(:post, user: character.user, character: character)
-      reply = create(:reply, post: post, user: character.user, character: character, character_alias_id: calias.id)
-      get :show, id: character.id, post_id: post.id
-      expect(response).to have_http_status(200)
-      expect(response.json).to have_key('alias_id_for_post')
-      expect(response.json['alias_id_for_post']).to eq(calias.id)
+      it "has no active_alias when the post does not contain the character", :show_in_doc do
+        character = create(:character)
+        create(:alias, character: character)
+        post = create(:post)
+
+        get :show, id: character.id, post_id: post.id
+        expect(response).to have_http_status(200)
+        expect(response.json['active_alias']).to be_blank
+      end
+
+      it "sets active_alias from post" do
+        character = create(:character)
+        calias = create(:alias, character: character)
+        post = create(:post, user: character.user, character: character, character_alias: calias)
+
+        get :show, id: character.id, post_id: post.id
+        expect(response).to have_http_status(200)
+        expect(response.json['active_alias']['id']).to eq(calias.id)
+      end
+
+      it "has no active_alias if last reply with character had no alias" do
+        character = create(:character)
+        calias = create(:alias, character: character)
+        post = create(:post, user: character.user, character: character, character_alias: calias)
+        create(:reply, user: character.user, character: character, post: post)
+
+        get :show, id: character.id, post_id: post.id
+        expect(response).to have_http_status(200)
+        expect(response.json['active_alias']).to be_blank
+      end
+
+      it "sets active_alias from last reply", :show_in_doc do
+        character = create(:character)
+        calias1 = create(:alias, character: character)
+        calias2 = create(:alias, character: character)
+        post = create(:post, user: character.user, character: character, character_alias: calias1)
+        create(:reply, user: character.user, character: character, post: post, character_alias: calias2)
+
+        get :show, id: character.id, post_id: post.id
+        expect(response).to have_http_status(200)
+        expect(response.json['active_alias']['id']).to eq(calias2.id)
+      end
     end
   end
 

@@ -102,6 +102,16 @@ class Post < ActiveRecord::Base
     return reply
   end
 
+  def active_alias_for(character)
+    char_replies = replies.where(character_id: character.id).order('id asc')
+
+    if char_replies.exists?
+      char_replies.last.character_alias
+    elsif self.character == character
+      self.character_alias
+    end
+  end
+
   def first_unread_for(user)
     return @first_unread if @first_unread
     viewed_at = last_read(user) || board.last_read(user)
