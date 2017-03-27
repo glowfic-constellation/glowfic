@@ -17,10 +17,10 @@ class GalleriesController < ApplicationController
     end
 
     @page_title = if @user.id == current_user.try(:id)
-                    "Your Galleries"
-                  else
-                    @user.username + "'s Galleries"
-                  end
+      "Your Galleries"
+    else
+      @user.username + "'s Galleries"
+    end
     use_javascript('galleries/expander')
     gon.user_id = @user.id
   end

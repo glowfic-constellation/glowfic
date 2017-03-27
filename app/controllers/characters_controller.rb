@@ -16,10 +16,10 @@ class CharactersController < ApplicationController
     end
 
     @page_title = if @user.id == current_user.try(:id)
-                    "Your Characters"
-                  else
-                    @user.username + "'s Characters"
-                  end
+      "Your Characters"
+    else
+      @user.username + "'s Characters"
+    end
   end
 
   def new

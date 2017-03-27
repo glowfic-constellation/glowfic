@@ -66,10 +66,10 @@ class IconsController < ApplicationController
   def replace
     @page_title = "Replace Icon: " + @icon.keyword
     all_icons = if @icon.has_gallery?
-                  @icon.galleries.map(&:icons).flatten.uniq.compact - [@icon]
-                else
-                  current_user.galleryless_icons - [@icon]
-                end
+      @icon.galleries.map(&:icons).flatten.uniq.compact - [@icon]
+    else
+      current_user.galleryless_icons - [@icon]
+    end
     @alts = all_icons.sort_by{|i| i.keyword.downcase }
     use_javascript('icons')
     gon.gallery = Hash[all_icons.map { |i| [i.id, {url: i.url, keyword: i.keyword}] }]

@@ -22,10 +22,10 @@ class Api::V1::GalleriesController < Api::ApiController
 
   def show_galleryless
     user = if params[:user_id].present?
-             User.find_by_id(params[:user_id])
-           else
-             current_user
-           end
+      User.find_by_id(params[:user_id])
+    else
+      current_user
+    end
 
     unless user
       error = {message: "Gallery user could not be found."}
