@@ -25,11 +25,9 @@ class Api::ApiController < ActionController::Base
   end
 
   def handle_param_validation
-    begin
-      yield
-    rescue Apipie::ParamMissing, Apipie::ParamInvalid => error
-      render json: {errors: [Sanitize.fragment(error.message.gsub('"', "'"))]}, status: :unprocessable_entity
-    end
+    yield
+  rescue Apipie::ParamMissing, Apipie::ParamInvalid => error
+    render json: {errors: [Sanitize.fragment(error.message.gsub('"', "'"))]}, status: :unprocessable_entity
   end
 
   def access_denied
