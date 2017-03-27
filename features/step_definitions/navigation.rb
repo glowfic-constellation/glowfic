@@ -40,7 +40,7 @@ Given(/^I have (\d) read posts?$/) do |num|
 end
 
 Given(/^my account uses the (.+) layout$/) do |layout|
-  layout_name = layout.gsub(" ", "")
+  layout_name = layout.delete(' ')
   user = current_user
   user.layout = layout_name
   user.save!
