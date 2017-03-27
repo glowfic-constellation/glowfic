@@ -4,7 +4,7 @@ RSpec.describe ApplicationController do
   describe "#set_timezone" do
     it "uses the user's time zone within the block" do
       current_zone = Time.zone.name
-      different_zone = ActiveSupport::TimeZone.all().detect { |z| z.name != Time.zone.name }.name
+      different_zone = ActiveSupport::TimeZone.all.detect { |z| z.name != Time.zone.name }.name
       session[:user_id] = create(:user, timezone: different_zone).id
 
       expect(Time.zone.name).to eq(current_zone)
