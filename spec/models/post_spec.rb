@@ -558,13 +558,13 @@ RSpec.describe Post do
       reply = post.build_new_reply_for(post.user)
       expect(reply).to be_a_new_record
       expect(reply.user).to eq(post.user)
-      expect(reply.icon_id).to eq(post.icon_id)
+      expect(reply.icon_id).to eq(post.character.default_icon_id)
       expect(reply.character_id).to eq(post.character_id)
     end
 
     it "uses active character if available" do
       post = create(:post)
-      character = create(:character)
+      character = create(:character, with_default_icon: true)
       character.user.active_character = character
       character.user.save
 
@@ -572,7 +572,7 @@ RSpec.describe Post do
 
       expect(reply).to be_a_new_record
       expect(reply.user).to eq(character.user)
-      expect(reply.icon_id).to be_nil
+      expect(reply.icon_id).to eq(character.default_icon_id)
       expect(reply.character_id).to eq(character.id)
     end
 

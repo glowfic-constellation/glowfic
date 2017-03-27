@@ -86,20 +86,17 @@ class Post < ActiveRecord::Base
       last_user_reply = user_replies.last
       reply.character_id = last_user_reply.character_id
       reply.character_alias_id = last_user_reply.character_alias_id
-      if reply.character_id.nil?
-        reply.icon_id = user.avatar_id
-      else
-        reply.icon_id = reply.character.icon.try(:id)
-      end
     elsif self.user == user
       reply.character_id = self.character_id
       reply.character_alias_id = self.character_alias_id
-      reply.icon_id = self.icon_id
     elsif user.active_character_id.present?
       reply.character_id = user.active_character_id
-      reply.icon = user.active_character.icon
-    else
+    end
+
+    if reply.character_id.nil?
       reply.icon_id = user.avatar_id
+    else
+      reply.icon_id = reply.character.icon.try(:id)
     end
 
     return reply
