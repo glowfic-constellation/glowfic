@@ -3,7 +3,7 @@ require "spec_helper"
 RSpec.describe Presentable do
   class ExampleWithPresenter
     def initialize(obj) end
-    def as_json(options={})
+    def as_json(_options={})
       4
     end
   end
@@ -13,7 +13,7 @@ RSpec.describe Presentable do
   end
 
   class ExampleWithout
-    def as_json(options={})
+    def as_json(_options={})
       3
     end
     include Presentable

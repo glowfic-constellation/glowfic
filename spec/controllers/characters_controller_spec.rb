@@ -158,7 +158,7 @@ RSpec.describe CharactersController do
 
       it "should set correct variables" do
         character = create(:character)
-        posts = 26.times.collect do create(:post, character: character, user: character.user) end
+        26.times do create(:post, character: character, user: character.user) end
         get :show, id: character.id
         expect(response.status).to eq(200)
         expect(assigns(:page_title)).to eq(character.name)
@@ -168,7 +168,7 @@ RSpec.describe CharactersController do
 
       it "should only show visible posts" do
         character = create(:character)
-        post = create(:post, character: character, user: character.user, privacy: Post::PRIVACY_PRIVATE)
+        create(:post, character: character, user: character.user, privacy: Post::PRIVACY_PRIVATE)
         get :show, id: character.id
         expect(assigns(:posts)).to be_blank
       end
@@ -427,9 +427,9 @@ RSpec.describe CharactersController do
       other_char.save
       calias = create(:alias, character: other_char)
       char_post = create(:post, user: user, character: character)
-      char_reply1 = create(:reply, user: user, post: char_post, character: character)
-      other_post = create(:post)
-      char_reply2 = create(:reply, user: user, character: character)
+      create(:reply, user: user, post: char_post, character: character) # reply
+      create(:post) # other post
+      char_reply2 = create(:reply, user: user, character: character) # other reply
 
       login_as(user)
       get :replace, id: character.id
@@ -447,7 +447,7 @@ RSpec.describe CharactersController do
         template = create(:template, user: user)
         character = create(:character, user: user, template: template)
         alts = 5.times.collect do create(:character, user: user, template: template) end
-        other_character = create(:character, user: user)
+        create(:character, user: user) # other character
 
         login_as(user)
         get :replace, id: character.id
@@ -461,7 +461,7 @@ RSpec.describe CharactersController do
         user = create(:user)
         template = create(:template, user: user)
         character = create(:character, user: user, template: template)
-        other_character = create(:character, user: user)
+        create(:character, user: user) # other character
 
         login_as(user)
         get :replace, id: character.id
@@ -476,7 +476,7 @@ RSpec.describe CharactersController do
         character = create(:character, user: user)
         alts = 5.times.collect do create(:character, user: user) end
         template = create(:template, user: user)
-        other_char = create(:character, user: user, template: template)
+        create(:character, user: user, template: template) # other character
 
         login_as(user)
         get :replace, id: character.id
@@ -490,7 +490,7 @@ RSpec.describe CharactersController do
         user = create(:user)
         template = create(:template, user: user)
         character = create(:character, user: user)
-        other_character = create(:character, user: user, template: template)
+        create(:character, user: user, template: template) # other character
 
         login_as(user)
         get :replace, id: character.id

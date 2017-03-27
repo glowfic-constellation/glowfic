@@ -17,7 +17,7 @@ RSpec.describe UsersController do
       render_views
 
       it "displays the name" do
-        user = create(:user, moiety: 'fed123', moiety_name: 'moietycolor')
+        create(:user, moiety: 'fed123', moiety_name: 'moietycolor')
         get :index
         expect(response.body).to include('moietycolor')
         expect(response.body).to include('fed123')

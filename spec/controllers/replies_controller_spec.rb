@@ -552,7 +552,7 @@ RSpec.describe RepliesController do
 
       it "filters by continuity" do
         continuity_post = create(:post, num_replies: 1)
-        wrong_post = create(:post, num_replies: 1)
+        create(:post, num_replies: 1) # wrong post
         filtered_reply = continuity_post.replies.last
         get :search, commit: true, board_id: continuity_post.board_id
         expect(assigns(:search_results)).to match_array([filtered_reply])

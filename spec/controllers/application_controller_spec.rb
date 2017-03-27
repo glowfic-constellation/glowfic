@@ -67,7 +67,7 @@ RSpec.describe ApplicationController do
     end
 
     it "will return a blank array if applicable" do
-      post = create(:post)
+      create(:post)
       relation = Post.where('posts.id IS NULL')
       expect(controller.send(:posts_from_relation, relation)).to be_blank
     end

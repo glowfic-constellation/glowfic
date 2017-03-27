@@ -33,7 +33,7 @@ class CharacterPresenter
 
   def multi_gallery_json
     galleries = character.galleries.ordered
-    galleries_json = galleries.map do |gallery|
+    galleries.map do |gallery|
       {
         name: gallery.name,
         icons: gallery.icons

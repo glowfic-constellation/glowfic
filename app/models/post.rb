@@ -288,7 +288,7 @@ class Post < ActiveRecord::Base
     true
   end
 
-  def reset_warnings(warning)
+  def reset_warnings(_warning)
     PostView.where(post_id: id).update_all(warnings_hidden: false)
   end
 

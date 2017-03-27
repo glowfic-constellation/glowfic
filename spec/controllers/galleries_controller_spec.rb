@@ -346,7 +346,7 @@ RSpec.describe GalleriesController do
       # compensates for developers not having S3 buckets set up locally
       return unless S3_BUCKET.nil?
       struct = Struct.new(:url) do
-        def presigned_post(args)
+        def presigned_post(_args)
           1
         end
       end

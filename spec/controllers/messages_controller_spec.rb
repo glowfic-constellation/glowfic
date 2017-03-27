@@ -198,7 +198,7 @@ RSpec.describe MessagesController do
 
     it "works for unread in thread" do
       message = create(:message, unread: true)
-      sender = create(:message, sender: message.recipient, recipient: message.sender, parent: message, thread_id: message.id, unread: false)
+      create(:message, sender: message.recipient, recipient: message.sender, parent: message, thread_id: message.id, unread: false) # sender
       subsequent = create(:message, sender: message.recipient, recipient: message.sender, parent: message, thread_id: message.id, unread: false)
       login_as(message.recipient)
       get :show, id: subsequent.id

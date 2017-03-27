@@ -37,7 +37,7 @@ class Character < ActiveRecord::Base
     [name, template_name, screenname].compact.join(' | ')
   end
 
-  def reorder_galleries(gallery=nil)
+  def reorder_galleries(_gallery=nil)
     # public so that it can be called from CharactersGallery.after_destroy
     galleries = CharactersGallery.where(character_id: id).order('section_order asc')
     return unless galleries.present?

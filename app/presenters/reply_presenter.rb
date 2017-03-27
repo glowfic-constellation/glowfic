@@ -5,7 +5,7 @@ class ReplyPresenter
     @reply = reply
   end
 
-  def as_json(options={})
+  def as_json(_options={})
     return {} unless reply
     { id: reply.id,
       content: reply.content,

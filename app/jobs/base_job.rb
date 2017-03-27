@@ -12,7 +12,7 @@ class BaseJob < Object
     Resque.enqueue(self, *args)
   end
 
-  def self.process(*args)
+  def self.process(*_args)
     raise NotImplementedError
   end
 

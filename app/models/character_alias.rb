@@ -3,7 +3,7 @@ class CharacterAlias < ActiveRecord::Base
   validates_presence_of :character, :name
   after_destroy :clear_alias_ids
 
-  def as_json(options={})
+  def as_json(_options={})
     { id: id, name: name }
   end
 

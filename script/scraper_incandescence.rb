@@ -28,7 +28,7 @@ main_list.each do |section|
 
   links = section.parent.css('li')
   board_section = BoardSection.create!(board_id: board_id, name: section_title, section_order: section_index, status: 1)
-  links.each_with_index do |link, index|
+  links.each do |link|
     url = link.at_css('a').attribute('href').value
     scraper = PostScraper.new(url, board_id, board_section.id)
     scraper.scrape
