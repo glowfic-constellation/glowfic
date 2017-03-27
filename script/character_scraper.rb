@@ -20,7 +20,7 @@ html_doc = Nokogiri::HTML(response.body)
 characters = html_doc.at_css('#members_people_body').css('a').map(&:content).map(&:strip)
 characters.each do |username|
   puts "  -" + username
-  url_name = username.gsub('_','-')
+  url_name = username.gsub('_', '-')
   response = HTTParty.get("http://#{url_name}.dreamwidth.org/profile")
   html_doc = Nokogiri::HTML(response.body)
   name = html_doc.at_css('#basics_body .profile td').content.strip

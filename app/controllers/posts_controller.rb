@@ -33,7 +33,7 @@ class PostsController < WritableController
     @posts = @posts.where("board_views.user_id IS NULL OR ((board_views.read_at IS NULL OR (date_trunc('second', board_views.read_at) < date_trunc('second', posts.tagged_at))) AND board_views.ignored = '0')")
     @posts = posts_from_relation(@posts.order('tagged_at desc'), true, false)
     @posts = @posts.select { |p| p.visible_to?(current_user) }
-    @posts = @posts.select { |p|  @opened_ids.include?(p.id) } if @started
+    @posts = @posts.select { |p| @opened_ids.include?(p.id) } if @started
     @posts = @posts.paginate(per_page: 25, page: page)
     @hide_quicklinks = true
     @page_title = @started ? 'Opened Threads' : 'Unread Threads'

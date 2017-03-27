@@ -13,7 +13,7 @@ class AddLastFieldsToPost < ActiveRecord::Migration
           post.last_user_id = post.user_id
         end
 
-        last_edit = post.audits.where(action:'update').reject { |a| a.audited_changes.keys == ['privacy'] }.last
+        last_edit = post.audits.where(action: 'update').reject { |a| a.audited_changes.keys == ['privacy'] }.last
         if last_edit
           post.edited_at = last_edit.created_at
         else

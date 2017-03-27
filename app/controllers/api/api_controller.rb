@@ -32,7 +32,6 @@ class Api::ApiController < ActionController::Base
     end
   end
 
-
   def access_denied
     error = {message: "You do not have permission to perform this action."}
     render json: {errors: [error]}, status: :forbidden

@@ -83,7 +83,7 @@ module ApplicationHelper
     default ||= per_page
     default = nil if default.to_i > 100
 
-    options = [10,25,50,100]
+    options = [10, 25, 50, 100]
     options << default unless default.nil? || default.zero? || options.include?(default)
     options = Hash[*(options * 2).sort]
     options_for_select(options, default)
@@ -127,7 +127,7 @@ module ApplicationHelper
   end
 
   def sanitize_written_content(content)
-    content = (content.include?("<p>".freeze) || content[/<br ?\/?>/]) ? content : content.gsub("\n".freeze,"<br/>".freeze)
+    content = (content.include?("<p>".freeze) || content[/<br ?\/?>/]) ? content : content.gsub("\n".freeze, "<br/>".freeze)
     Sanitize.fragment(content, Glowfic::POST_CONTENT_SANITIZER)
   end
 
