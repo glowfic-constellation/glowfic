@@ -334,7 +334,7 @@ function getAndSetCharacterData(characterId, options) {
     // Display alias selector if relevant
     if (resp.aliases.length > 0) {
       $("#swap-alias").show();
-      $("#character_alias").empty().append('<option value="">' + resp.name + '</option>');
+      $("#character_alias").empty().append($("<option>").attr({value: ''}).append(resp.name));
       for (var i=0; i<resp.aliases.length; i++) {
         $("#character_alias").append($("<option>").attr({value: resp.aliases[i].id}).append(resp.aliases[i].name));
       }
@@ -428,7 +428,7 @@ function setSections() {
       $("#section").show();
       $("#post_section_id").empty().append('<option value="">— Choose Section —</option>');
       for (var i = 0; i < sections.length; i++) {
-        $("#post_section_id").append('<option value="'+sections[i].id+'">'+sections[i].name+'</option>');
+        $("#post_section_id").append($("<option>").attr({value: sections[i].id}).append(sections[i].name));
       }
       $("#post_section_id").trigger("change.select2");
     } else {
