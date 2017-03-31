@@ -1,6 +1,14 @@
 var tinyMCEInit = false;
 
 $(document).ready(function() {
+  // Checks if the user is on the unread page but also started near the unread element,
+  // since e.g. on a refresh some browsers will retain your spot on the page
+  // Will be used after some page-size-changing functions to revert to the correct spot
+  var unreadElem = $("a#unread")
+  var shouldScrollToUnread = false;
+  if (window.location.hash == "#unread" && unreadElem.length > 0)
+    shouldScrollToUnread = Math.abs(unreadElem.offset().top - $(window).scrollTop()) < 50;
+
   // TODO fix hack
   // Hack because having In Thread characters as a group in addition to Template groups
   // duplicates characters in the dropdown, and therefore multiple options are selected
@@ -54,11 +62,10 @@ $(document).ready(function() {
     }
   });
 
-  var unreadElem = $("a#unread")
-  if (window.location.hash == "#unread" && unreadElem.length > 0) {
-    var closeToUnread = Math.abs(unreadElem.offset().top - $(window).scrollTop()) < 50;
-    if (closeToUnread) { $(window).scrollTop(unreadElem.offset().top); }
-  }
+  // Now that we've finished the scripts that change page locations, scroll to #unread
+  // if we determined on page load that we should.
+  if (shouldScrollToUnread)
+    $(window).scrollTop(unreadElem.offset().top);
 
   // Hack to deal with Firefox's "helpful" caching of form values on soft refresh (now via IDs)
   var selectedCharID = $("#reply_character_id").val();
