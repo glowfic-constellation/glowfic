@@ -115,4 +115,9 @@ class ApplicationController < ActionController::Base
     posts
   end
   helper_method :posts_from_relation
+
+  def unread_ids
+    @unread_ids
+  end
+  helper_method :unread_ids
 end
