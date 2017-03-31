@@ -88,10 +88,16 @@ FactoryGirl.define do
   end
 
   factory :character do
+    transient do
+      with_default_icon false
+    end
     user
     name 'test character'
     factory :template_character do
       template { build(:template, user: user) }
+    end
+    before(:create) do |character, evaluator|
+      character.default_icon = create(:icon, user: character.user) if evaluator.with_default_icon
     end
   end
 
