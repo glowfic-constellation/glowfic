@@ -317,7 +317,8 @@ getAndSetCharacterData = function(characterId, options) {
     return // Don't need to load data from server (TODO combine with below?)
   }
 
-  $.get('/api/v1/characters/' + characterId, {}, function (resp) {
+  var postID = $("#reply_post_id").val();
+  $.getJSON('/api/v1/characters/' + characterId, { post_id: postID }, function (resp) {
     // Display the correct name/screenname fields
     $("#post-editor #post-author-spacer").hide();
     $("#post-editor .post-character").show().data('character-id', characterId);
@@ -334,6 +335,10 @@ getAndSetCharacterData = function(characterId, options) {
       $("#character_alias").empty().append('<option value="">' + resp['name'] + '</option>');
       for(var i=0; i<resp['aliases'].length; i++) {
         $("#character_alias").append($("<option>").attr({value: resp['aliases'][i]['id']}).append(resp['aliases'][i]['name']));
+      }
+      if(resp.alias_id_for_post !== undefined) {
+        restore_alias = true;
+        selectedAliasID = resp.alias_id_for_post;
       }
     } else {
       $("#swap-alias").hide();
@@ -374,7 +379,7 @@ getAndSetCharacterData = function(characterId, options) {
       setIconFromId(selectedIconID);
     else
       setIcon(resp.default.id, resp.default.url, resp.default.keyword, resp.default.keyword);
-  }, 'json');
+  });
 };
 
 setIconFromId = function(id, img) {

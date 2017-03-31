@@ -7,8 +7,17 @@ class CharacterPresenter
 
   def as_json(options={})
     return {} unless character
+
     char_json = character.as_json_without_presenter(only: [:id, :name, :screenname])
-    return char_json unless options[:include].present?
+    return char_json unless options[:include].present? || options[:post_for_alias].present?
+
+    if options[:post_for_alias].present?
+      post = options[:post_for_alias]
+      most_recent_use = post.replies.where(character_id: @character.id).order('id desc').first
+      most_recent_use = post if most_recent_use.nil? && post.character_id == character.id
+      char_json.merge!(alias_id_for_post: most_recent_use.try(:character_alias_id))
+      return char_json unless options[:include].present?
+    end
 
     char_json.merge!(default: character.icon.try(:as_json)) if options[:include].include?(:default)
     char_json.merge!(aliases: character.aliases) if options[:include].include?(:aliases)

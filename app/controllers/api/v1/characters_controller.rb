@@ -9,9 +9,19 @@ class Api::V1::CharactersController < Api::ApiController
 
   api! 'Load a single character as a JSON resource'
   param :id, :number, required: true, desc: 'Character ID'
+  param :post_id, :number, required: false, desc: 'If provided, will return an additional alias_id_for_post param to represent most recently used alias for this character in the provided post'
   error 404, "Character not found"
+  error 422, "Invalid parameters provided"
   def show
-    render json: @character.as_json(include: [:galleries, :default, :aliases])
+    post = nil
+    if params[:post_id].present?
+      unless (post = Post.find_by_id(params[:post_id]))
+        error = {message: "Post could not be found."}
+        render json: {errors: [error]}, status: :unprocessable_entity and return
+      end
+    end
+
+    render json: @character.as_json(include: [:galleries, :default, :aliases], post_for_alias: post)
   end
 
   api! 'Update a given character'

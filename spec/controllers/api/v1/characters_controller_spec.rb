@@ -62,6 +62,44 @@ RSpec.describe Api::V1::CharactersController do
       expect(response).to have_http_status(200)
       expect(response.json['galleries'].size).to eq(1)
     end
+
+    it "requires post to exist when provided a post_id", :show_in_doc do
+      character = create(:character)
+      get :show, id: character.id, post_id: 0
+      expect(response).to have_http_status(422)
+      expect(response.json['errors'].size).to eq(1)
+      expect(response.json['errors'][0]['message']).to eq("Post could not be found.")
+    end
+
+    it "includes alias_id_for_post field when given post_id" do
+      character = create(:character)
+      post = create(:post, user: character.user)
+      get :show, id: character.id, post_id: post.id
+      expect(response).to have_http_status(200)
+      expect(response.json).to have_key('alias_id_for_post')
+      expect(response.json['alias_id_for_post']).to be_nil
+    end
+
+    it "sets correct alias_id_for_post when given post_id with recently used alias in post", :show_in_doc do
+      calias = create(:alias)
+      character = calias.character
+      post = create(:post, user: character.user, character: character, character_alias_id: calias.id)
+      get :show, id: character.id, post_id: post.id
+      expect(response).to have_http_status(200)
+      expect(response.json).to have_key('alias_id_for_post')
+      expect(response.json['alias_id_for_post']).to eq(calias.id)
+    end
+
+    it "sets correct alias_id_for_post when given post_id with recently used alias in post" do
+      calias = create(:alias)
+      character = calias.character
+      post = create(:post, user: character.user, character: character)
+      reply = create(:reply, post: post, user: character.user, character: character, character_alias_id: calias.id)
+      get :show, id: character.id, post_id: post.id
+      expect(response).to have_http_status(200)
+      expect(response.json).to have_key('alias_id_for_post')
+      expect(response.json['alias_id_for_post']).to eq(calias.id)
+    end
   end
 
   describe "PUT update" do
