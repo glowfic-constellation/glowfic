@@ -27,7 +27,8 @@ More specific details may be found on the GitHub site.
 
 #### Language dependencies
 
-Ruby is required for this project. [RVM](https://rvm.io/rvm/install) and [rbenv](https://github.com/rbenv/rbenv) allow you to have multiple versions of Ruby installed at a time, so it's recommended you get one of those if you plan on doing much Ruby work.
+Ruby is required for this project.
+[RVM](https://rvm.io/rvm/install) and [rbenv](https://github.com/rbenv/rbenv) allow you to have multiple versions of Ruby installed at a time, so it's recommended you get one of those if you plan on doing much Ruby work.
 
 Once you've done so, you need to install the necessary dependencies.
 This can be done with:
@@ -81,10 +82,23 @@ Once you've taken these steps, you should be able to go into the 'glowfic' folde
 
 This will set up the database and add some sample information, though no posts will be created.
 
+If you encounter an error when creating the 'citext' extension:
+
+*   Execute `sudo -u postgres psql`, and then in the prompt that appears:
+*   `CREATE EXTENSION IF NOT EXISTS citext;`
+
+You will need to re-run `rake db:migrate`.
+If the error persists, you might consider making your user a superuser with the following:
+
+*   Execute `sudo -u postgres psql` again, and in the prompt:
+*   `ALTER USER "<USERNAME>" WITH superuser;`
+
 #### Executing the server
 
-You should now be able to run `script/rails s` in the glowfic directory. When it's started, go to [http://localhost:3000/](http://localhost:3000/), where you should see a local copy of the Constellation.
+You should now be able to run `script/rails s` in the glowfic directory.
+When it's started, go to [http://localhost:3000/](http://localhost:3000/), where you should see a local copy of the Constellation.
 
 #### Running tests
 
-To run tests, go to the root of the directory (the 'glowfic' folder) and execute the command `rake spec`. This will go through the [rspec](http://rspec.info/) tests.
+To run tests, go to the root of the directory (the 'glowfic' folder) and execute the command `rake spec`.
+This will go through the [rspec](http://rspec.info/) tests.
