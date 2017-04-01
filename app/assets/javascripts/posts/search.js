@@ -38,7 +38,7 @@ $(document).ready(function() {
           q: params.term,
           page: params.page
         };
-        if (typeof(gon) !== 'undefined') { data.post_id = gon.post_id; }
+        if (typeof gon !== 'undefined') { data.post_id = gon.post_id; }
         return data;
       },
       processResults: function(data, params) {

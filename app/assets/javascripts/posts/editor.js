@@ -339,7 +339,7 @@ function getAndSetCharacterData(characterId, options) {
         $("#character_alias").append($("<option>").attr({value: resp.aliases[i].id}).append(resp.aliases[i].name));
       }
       // Restore active alias, but only if not already restoring an alias
-      if (resp.alias_id_for_post !== undefined && !restore_alias) {
+      if (typeof resp.alias_id_for_post !== "undefined" && !restore_alias) {
         restore_alias = true;
         selectedAliasID = resp.alias_id_for_post;
         $("#reply_character_alias_id").val(selectedAliasID);
@@ -393,7 +393,7 @@ function getAndSetCharacterData(characterId, options) {
 function setIconFromId(id, img) {
   // Assumes the #gallery div is populated with icons with the correct values
   if (id === "") return setIcon(id);
-  if (typeof(img) === 'undefined') img = $("#"+id);
+  if (typeof img === 'undefined') img = $("#"+id);
   setIcon(id, img.attr('src'), img.attr('title'), img.attr('alt'));
 }
 
