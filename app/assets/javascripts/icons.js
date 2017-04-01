@@ -18,4 +18,4 @@ function setIconFromId(id) {
       }
     } else { $("#alias_dropdown").hide().val(''); }
   }
-};
+}

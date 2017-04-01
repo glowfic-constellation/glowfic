@@ -58,4 +58,4 @@ function switchRows(old_order, new_order) {
     $("#saveconf").show().delay(2000).fadeOut();
     bindArrows();
   });
-};
+}

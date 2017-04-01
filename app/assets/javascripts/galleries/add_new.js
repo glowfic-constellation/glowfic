@@ -110,7 +110,7 @@ function bindFileInput(fileInput) {
     fail: function(e, data) {
       var iconIndex = data.iconIndex;
       submitButton.prop('disabled', false);
-      var response = data.response().jqXHR
+      var response = data.response().jqXHR;
       var policyExpired = response.responseText.includes("Invalid according to Policy: Policy expired.");
       if (!policyExpired) { policyExpired = response.responseText.includes("Idle connections will be closed."); }
       var badFiletype = response.responseText.includes("Policy Condition failed") && response.responseText.includes('"$Content-Type", "image/"');
@@ -131,7 +131,7 @@ function bindFileInput(fileInput) {
       }
     },
   });
-};
+}
 
 function cleanUpRows() {
   $(".icon-row").each(function(index) {
@@ -150,4 +150,4 @@ function cleanUpRows() {
     $(this).find('input').first().attr('id', 'icons_'+index+'_url');
   });
   fixButtons();
-};
+}

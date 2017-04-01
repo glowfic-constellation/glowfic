@@ -24,7 +24,7 @@ $(document).ready(function() {
 
         // Add control buttons for the owner
         if ($("#icons-" + galleryId + " .icons-remove").length > 0) {
-          var iconCheckbox = $("<input>").attr({id: 'marked_ids_'+icon.id, name: 'marked_ids[]', type: 'checkbox'}).val(icon.id)
+          var iconCheckbox = $("<input>").attr({id: 'marked_ids_'+icon.id, name: 'marked_ids[]', type: 'checkbox'}).val(icon.id);
           iconDiv.append($("<div>").attr({class: 'select-button'}).append(iconCheckbox));
         }
 

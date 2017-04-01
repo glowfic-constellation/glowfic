@@ -53,7 +53,7 @@ function validateUsername() {
   });
 
   return true;
-};
+}
 
 function validateEmail() {
   var email = $("#user_email").val();
@@ -62,7 +62,7 @@ function validateEmail() {
     return false;
   }
   return true;
-};
+}
 
 function validatePassword() {
   var password = $("#user_password").val();
@@ -78,7 +78,7 @@ function validatePassword() {
     success = false;
   }
   return success;
-};
+}
 
 function validateConfirmation() {
   var password = $("#user_password").val();
@@ -93,9 +93,9 @@ function validateConfirmation() {
     success = false;
   }
   return success;
-};
+}
 
 function addAlertAfter(id, message) {
-  image = "<img src='/images/exclamation.png' alt='!' title='' class='vmid' /> "
+  image = "<img src='/images/exclamation.png' alt='!' title='' class='vmid' /> ";
   $("#"+id).after("<div class='alert' style='margin: 2px 0px;'>" + image + message + "</div>");
-};
+}

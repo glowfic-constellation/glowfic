@@ -1,4 +1,4 @@
-image_ids = []
+image_ids = [];
 skip_warning = false;
 $(document).ready(function() {
   bindGalleryIcons(".add-gallery-icon");

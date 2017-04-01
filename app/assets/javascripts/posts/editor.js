@@ -202,7 +202,7 @@ function bindGallery() {
     id = $(this).attr('id');
     setIconFromId(id, $(this));
   });
-};
+}
 
 function bindIcon() {
   $('#current-icon-holder').click(function() {
@@ -210,7 +210,7 @@ function bindIcon() {
     $('#gallery').toggle();
     $('html, body').scrollTop($("#post-editor").offset().top);
   });
-};
+}
 
 function galleryString(gallery, multiGallery) {
   var iconsString = "";
@@ -222,9 +222,9 @@ function galleryString(gallery, multiGallery) {
 
   if (!multiGallery) { return iconsString; }
 
-  var nameString = "<div class='gallery-name'>" + gallery.name + "</div>"
-  return "<div class='gallery-group'>" + nameString + iconsString + "</div>"
-};
+  var nameString = "<div class='gallery-name'>" + gallery.name + "</div>";
+  return "<div class='gallery-group'>" + nameString + iconsString + "</div>";
+}
 
 function iconString(icon) {
   var img_id = icon.id;
@@ -234,7 +234,7 @@ function iconString(icon) {
   if (!icon.skip_dropdown) $("#icon_dropdown").append($("<option>").attr({value: img_id}).append(img_key));
   var icon_img = $("<img>").attr({src: img_url, id: img_id, alt: img_key, title: img_key, 'class': 'icon'});
   return $("<div>").attr('class', 'gallery-icon').append(icon_img).append("<br />").append(img_key)[0].outerHTML;
-};
+}
 
 function setupTinyMCE() {
   if (typeof tinyMCE !== 'undefined') {
@@ -266,7 +266,7 @@ function setupTinyMCE() {
   } else {
     setTimeout(arguments.callee, 50);
   }
-};
+}
 
 function getAndSetCharacterData(characterId, options) {
   var restore_icon = false;
@@ -310,7 +310,7 @@ function getAndSetCharacterData(characterId, options) {
     $("#character_alias").val('').trigger("change.select2");
     $("#reply_character_alias_id").val('');
 
-    return // Don't need to load data from server (TODO combine with below?)
+    return; // Don't need to load data from server (TODO combine with below?)
   }
 
   var postID = $("#reply_post_id").val();
@@ -382,14 +382,14 @@ function getAndSetCharacterData(characterId, options) {
     else
       setIcon(resp.default.id, resp.default.url, resp.default.keyword, resp.default.keyword);
   });
-};
+}
 
 function setIconFromId(id, img) {
   // Assumes the #gallery div is populated with icons with the correct values
   if (id == "") return setIcon(id);
   if (typeof(img) === 'undefined') img = $("#"+id);
   setIcon(id, img.attr('src'), img.attr('title'), img.attr('alt'));
-};
+}
 
 function setIcon(id, url, title, alt) {
   // Handle No Icon case
@@ -412,7 +412,7 @@ function setIcon(id, url, title, alt) {
   $("#current-icon").attr('src', url);
   $("#current-icon").attr('title', title);
   $("#current-icon").attr('alt', alt);
-};
+}
 
 function setSections() {
   var board_id = $("#post_board_id").val();
@@ -430,7 +430,7 @@ function setSections() {
       $("#section").hide();
     }
   }, 'json');
-};
+}
 
 function createTagSelect(tagType, selector) {
   $("#post_"+selector+"_ids").select2({
@@ -447,7 +447,7 @@ function createTagSelect(tagType, selector) {
           t: tagType,
           page: params.page
         };
-        return data
+        return data;
       },
       processResults: function(data, params) {
         params.page = params.page || 1;
@@ -457,13 +457,13 @@ function createTagSelect(tagType, selector) {
           pagination: {
             more: (params.page * 25) < total
           }
-        }
+        };
       },
       cache: true
     },
     width: '300px'
   });
-};
+}
 
 function setCharacterListSelected(characterId) {
   $(".char-access-icon.semiopaque").removeClass('semiopaque').addClass('pointer');
