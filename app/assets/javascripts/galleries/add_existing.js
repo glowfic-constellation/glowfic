@@ -43,7 +43,7 @@ $(window).on('beforeunload', function() {
   return "Are you sure you wish to navigate away? You have " + image_ids.length + " image(s) selected.";
 });
 
-bindGalleryIcons = function(css_selector) {
+function bindGalleryIcons(css_selector) {
   $(css_selector).click(function() {
     $(this).toggleClass('selected-icon');
     if ($(this).hasClass('selected-icon')) {

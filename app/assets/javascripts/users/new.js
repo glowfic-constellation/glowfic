@@ -35,7 +35,7 @@ $(document).ready(function() {
   });
 });
 
-validateUsername = function() {
+function validateUsername() {
   var username = $("#user_username").val();
   if (username == '') {
     addAlertAfter('user_username', 'Please choose a username.');
@@ -55,7 +55,7 @@ validateUsername = function() {
   return true;
 };
 
-validateEmail = function() {
+function validateEmail() {
   var email = $("#user_email").val();
   if (email == '') {
     addAlertAfter('user_email', 'Please enter an email address.');
@@ -64,7 +64,7 @@ validateEmail = function() {
   return true;
 };
 
-validatePassword = function() {
+function validatePassword() {
   var password = $("#user_password").val();
   var conf = $("#user_password_confirmation").val();
   var success = true;
@@ -80,7 +80,7 @@ validatePassword = function() {
   return success;
 };
 
-validateConfirmation = function() {
+function validateConfirmation() {
   var password = $("#user_password").val();
   var conf = $("#user_password_confirmation").val();
   var success = true;
@@ -95,7 +95,7 @@ validateConfirmation = function() {
   return success;
 };
 
-addAlertAfter = function(id, message) {
+function addAlertAfter(id, message) {
   image = "<img src='/images/exclamation.png' alt='!' title='' class='vmid' /> "
   $("#"+id).after("<div class='alert' style='margin: 2px 0px;'>" + image + message + "</div>");
 };
