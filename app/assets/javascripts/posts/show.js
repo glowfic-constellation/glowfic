@@ -43,7 +43,7 @@ $(document).ready(function() {
 
   // TODO fix hack
   // Resizes screennames to be slightly smaller if they're long for UI reasons
-  $(".post-screenname").each(function(index) {
+  $(".post-screenname").each(function() {
     if ($(this).height() > 20) {
       $(this).css('font-size', "14px");
       if ($(this).height() > 20) $(this).css('font-size', "12px");

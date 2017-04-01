@@ -1,3 +1,4 @@
+/* global gon */
 $(document).ready(function() {
   $(".gallery-box").click(function() {
     // Update toggle +/-

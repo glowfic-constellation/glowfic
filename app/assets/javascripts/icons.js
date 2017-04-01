@@ -1,3 +1,4 @@
+/* global gon */
 $(document).ready(function() {
   // Bind both change() and keyup() in the icon keyword dropdown because Firefox doesn't
   // respect up/down key selections in a dropdown as a valid change() trigger

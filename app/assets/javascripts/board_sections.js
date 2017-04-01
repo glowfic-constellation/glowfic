@@ -53,7 +53,7 @@ function switchRows(old_order, new_order) {
     type: that_row.attr('data-type'),
     order: old_order
   };
-  $.post('/api/v1/board_sections/reorder', json, function(resp) {
+  $.post('/api/v1/board_sections/reorder', json, function() {
     $("#loading").hide();
     $("#saveconf").show().delay(2000).fadeOut();
     bindArrows();

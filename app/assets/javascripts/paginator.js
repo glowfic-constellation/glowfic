@@ -1,3 +1,4 @@
+/* global add_parameter */
 $(document).ready(function() {
   $(".per-page").select2({width: '70px'});
   $(".per-page").change(function() {

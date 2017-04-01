@@ -79,7 +79,7 @@ function bindFileInput(fileInput) {
       data.submit();
       fileInput.val('');
     },
-    start: function(e) {
+    start: function() {
       submitButton.prop('disabled', true);
     },
     done: function(e, data) {
@@ -108,7 +108,6 @@ function bindFileInput(fileInput) {
       cleanUpRows();
     },
     fail: function(e, data) {
-      var iconIndex = data.iconIndex;
       submitButton.prop('disabled', false);
       var response = data.response().jqXHR;
       var policyExpired = response.responseText.includes("Invalid according to Policy: Policy expired.");
@@ -134,7 +133,7 @@ function bindFileInput(fileInput) {
 }
 
 function cleanUpRows() {
-  $(".icon-row").each(function(index) {
+  $(".icon-row").each(function() {
     var anySet = false;
     if ($(this).find('.conf').length > 0) return true;
     $(this).find('input').each(function() {

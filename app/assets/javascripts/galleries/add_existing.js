@@ -1,5 +1,5 @@
-image_ids = [];
-skip_warning = false;
+var image_ids = [];
+var skip_warning = false;
 $(document).ready(function() {
   bindGalleryIcons(".add-gallery-icon");
 

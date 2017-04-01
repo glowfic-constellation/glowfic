@@ -1,3 +1,4 @@
+/* global gon */
 $(document).ready(function() {
   $("#user_username").blur(function() {
     $("#username .alert").remove();
@@ -96,6 +97,6 @@ function validateConfirmation() {
 }
 
 function addAlertAfter(id, message) {
-  image = "<img src='/images/exclamation.png' alt='!' title='' class='vmid' /> ";
+  var image = "<img src='/images/exclamation.png' alt='!' title='' class='vmid' /> ";
   $("#"+id).after("<div class='alert' style='margin: 2px 0px;'>" + image + message + "</div>");
 }

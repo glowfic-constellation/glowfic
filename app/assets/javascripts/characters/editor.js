@@ -1,3 +1,4 @@
+/* global gon */
 var gallery_ids = [];
 
 $(document).ready(function() {

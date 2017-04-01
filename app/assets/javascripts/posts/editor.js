@@ -1,9 +1,10 @@
+/* global gon, tinymce, tinyMCE */
 var tinyMCEInit = false;
 
 $(document).ready(function() {
   // SET UP POST METADATA EDITOR:
 
-  PRIVACY_ACCESS = 2; // TODO don't hardcode
+  var PRIVACY_ACCESS = 2; // TODO don't hardcode
 
   // Adding Select2 UI to relevant selects
   $("#post_board_id").select2({
@@ -201,7 +202,7 @@ $(document).ready(function() {
 
 function bindGallery() {
   $("#gallery img").click(function() {
-    id = $(this).attr('id');
+    var id = $(this).attr('id');
     setIconFromId(id, $(this));
   });
 }
@@ -259,7 +260,7 @@ function setupTinyMCE() {
       remove_script_host: true,
       document_base_url: "https://www.glowfic.com/",
       setup: function(ed) {
-        ed.on('init', function(args) {
+        ed.on('init', function() {
           var rawContent = tinymce.activeEditor.getContent({format: 'raw'});
           var content = tinymce.activeEditor.getContent();
           // TODO fix hack

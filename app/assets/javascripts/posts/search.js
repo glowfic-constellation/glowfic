@@ -1,3 +1,4 @@
+/* global gon */
 $(document).ready(function() {
   $("#setting_id").select2({
     ajax: {
