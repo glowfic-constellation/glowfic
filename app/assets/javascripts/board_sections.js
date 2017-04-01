@@ -45,11 +45,11 @@ function switchRows(old_order, new_order) {
   $("#section-table tr:even td").removeClass('odd').addClass("even");
 
   var json = {changes: {}};
-  json['changes'][this_row.attr('data-section')] = {
+  json.changes[this_row.attr('data-section')] = {
     type: this_row.attr('data-type'),
     order: new_order
   };
-  json['changes'][that_row.attr('data-section')] = {
+  json.changes[that_row.attr('data-section')] = {
     type: that_row.attr('data-type'),
     order: old_order
   };

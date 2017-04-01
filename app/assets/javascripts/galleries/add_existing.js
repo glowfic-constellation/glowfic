@@ -47,9 +47,9 @@ function bindGalleryIcons(css_selector) {
   $(css_selector).click(function() {
     $(this).toggleClass('selected-icon');
     if ($(this).hasClass('selected-icon')) {
-      image_ids.push(this.dataset['id']);
+      image_ids.push(this.dataset.id);
     } else {
-      image_ids.pop(this.dataset['id']);
+      image_ids.pop(this.dataset.id);
     }
   });
 }

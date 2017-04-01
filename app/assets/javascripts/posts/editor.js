@@ -331,11 +331,11 @@ function getAndSetCharacterData(characterId, options) {
     }
 
     // Display alias selector if relevant
-    if (resp['aliases'].length > 0) {
+    if (resp.aliases.length > 0) {
       $("#swap-alias").show();
-      $("#character_alias").empty().append('<option value="">' + resp['name'] + '</option>');
-      for (var i=0; i<resp['aliases'].length; i++) {
-        $("#character_alias").append($("<option>").attr({value: resp['aliases'][i]['id']}).append(resp['aliases'][i]['name']));
+      $("#character_alias").empty().append('<option value="">' + resp.name + '</option>');
+      for (var i=0; i<resp.aliases.length; i++) {
+        $("#character_alias").append($("<option>").attr({value: resp.aliases[i].id}).append(resp.aliases[i].name));
       }
       // Restore active alias, but only if not already restoring an alias
       if (resp.alias_id_for_post !== undefined && !restore_alias) {

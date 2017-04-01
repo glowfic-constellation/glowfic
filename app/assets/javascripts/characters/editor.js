@@ -1,7 +1,7 @@
 var gallery_ids = [];
 
 $(document).ready(function() {
-  gallery_ids = jQuery.map($(".gallery div"), function(el) { return el.dataset['id']; });
+  gallery_ids = jQuery.map($(".gallery div"), function(el) { return el.dataset.id; });
 
   $("#character_setting_ids").select2({
     width: '100%',
