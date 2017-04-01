@@ -31,7 +31,7 @@ $(document).ready(function() {
   createTagSelect("Setting", "setting");
   createTagSelect("ContentWarning", "warning");
 
-  if (String($("#post_privacy").val()) !== String(PRIVACY_ACCESS)){
+  if (String($("#post_privacy").val()) !== String(PRIVACY_ACCESS)) {
     $("#access_list").hide();
   }
 
@@ -39,7 +39,7 @@ $(document).ready(function() {
   $("#post_board_id").change(function() { setSections(); });
 
   $("#post_privacy").change(function() {
-    if(String($(this).val()) == String(PRIVACY_ACCESS)) {
+    if (String($(this).val()) == String(PRIVACY_ACCESS)) {
       $("#access_list").show();
     } else {
       $("#access_list").hide();
@@ -64,7 +64,7 @@ $(document).ready(function() {
   // Hack because having In Thread characters as a group in addition to Template groups
   // duplicates characters in the dropdown, and therefore multiple options are selected
   var selectd;
-  $("#active_character option[selected]").each(function(){
+  $("#active_character option[selected]").each(function() {
     if (!selectd) selectd = this;
     $(this).prop("selected", false);
   });
@@ -72,7 +72,7 @@ $(document).ready(function() {
 
   // TODO fix hack
   // Only initialize TinyMCE if it's required
-  if($("#rtf").hasClass('selected') === true) {
+  if ($("#rtf").hasClass('selected') === true) {
     setupTinyMCE();
   }
 
@@ -111,11 +111,11 @@ $(document).ready(function() {
   $("#icon_dropdown").keyup(function() { setIconFromId($(this).val()); });
 
   $('.view-button').click(function() {
-    if(this.id === 'rtf') {
+    if (this.id === 'rtf') {
       $("#html").removeClass('selected');
       $("#editor_mode").val('rtf');
       $(this).addClass('selected');
-      if(tinyMCEInit) {
+      if (tinyMCEInit) {
         tinyMCE.execCommand('mceAddEditor', true, 'post_content');
         tinyMCE.execCommand('mceAddEditor', true, 'reply_content');
       } else { setupTinyMCE(); }
@@ -128,19 +128,19 @@ $(document).ready(function() {
     }
   });
 
-  $("#swap-icon").click(function () {
+  $("#swap-icon").click(function() {
     $('#character-selector').toggle();
     $('#alias-selector').hide();
     $('html, body').scrollTop($("#post-editor").offset().top);
   });
 
-  $("#swap-alias").click(function () {
+  $("#swap-alias").click(function() {
     $('#alias-selector').toggle();
     $('#character-selector').hide();
     $('html, body').scrollTop($("#post-editor").offset().top);
   });
 
-  $("#active_character, #character_alias").on('select2:close', function () {
+  $("#active_character, #character_alias").on('select2:close', function() {
     $('html, body').scrollTop($("#post-editor").offset().top);
   });
 
@@ -167,10 +167,10 @@ $(document).ready(function() {
   });
 
   // Hides selectors when you hit the escape key
-  $(document).bind("keydown", function(e){
+  $(document).bind("keydown", function(e) {
     e = e || window.event;
     var charCode = e.which || e.keyCode;
-    if(charCode === 27) {
+    if (charCode === 27) {
       $('#icon-overlay').hide();
       $('#gallery').hide();
       $('#character-selector').hide();
@@ -182,17 +182,17 @@ $(document).ready(function() {
     var target = e.target;
 
     if (!$(target).is('#current-icon-holder') &&
-      !$(target).parents().is('#current-icon-holder') &&
-      !$(target).is('#gallery') &&
-      !$(target).parents().is('#gallery')) {
-        $('#icon-overlay').hide();
-        $('#gallery').hide();
+        !$(target).parents().is('#current-icon-holder') &&
+        !$(target).is('#gallery') &&
+        !$(target).parents().is('#gallery')) {
+      $('#icon-overlay').hide();
+      $('#gallery').hide();
     }
 
     if (!$(target).is('#character-selector') &&
-      !$(target).is('#swap-icon') &&
-      !$(target).parents().is('#character-selector')) {
-        $('#character-selector').hide();
+        !$(target).is('#swap-icon') &&
+        !$(target).parents().is('#character-selector')) {
+      $('#character-selector').hide();
     }
   });
 });
@@ -220,7 +220,7 @@ galleryString = function(gallery, multiGallery) {
     iconsString += iconString(icons[i]);
   }
 
-  if(!multiGallery) { return iconsString; }
+  if (!multiGallery) { return iconsString; }
 
   var nameString = "<div class='gallery-name'>" + gallery.name + "</div>"
   return "<div class='gallery-group'>" + nameString + iconsString + "</div>"
@@ -291,7 +291,7 @@ getAndSetCharacterData = function(characterId, options) {
     $("#post-editor .post-screenname").hide();
 
     var avatar = gon.current_user.avatar;
-    if(avatar && avatar.url !== null) {
+    if (avatar && avatar.url !== null) {
       var url = avatar.url;
       var aid = avatar.id;
       var keyword = avatar.keyword;
@@ -314,26 +314,26 @@ getAndSetCharacterData = function(characterId, options) {
   }
 
   var postID = $("#reply_post_id").val();
-  $.getJSON('/api/v1/characters/' + characterId, { post_id: postID }, function (resp) {
+  $.getJSON('/api/v1/characters/' + characterId, {post_id: postID}, function(resp) {
     // Display the correct name/screenname fields
     $("#post-editor #post-author-spacer").hide();
     $("#post-editor .post-character").show().data('character-id', characterId);
     $("#post-editor .post-character #name").html(resp.name);
-    if(!resp.screenname) {
+    if (!resp.screenname) {
       $("#post-editor .post-screenname").hide();
     } else {
       $("#post-editor .post-screenname").show().html(resp.screenname);
     }
 
     // Display alias selector if relevant
-    if(resp['aliases'].length > 0) {
+    if (resp['aliases'].length > 0) {
       $("#swap-alias").show();
       $("#character_alias").empty().append('<option value="">' + resp['name'] + '</option>');
-      for(var i=0; i<resp['aliases'].length; i++) {
+      for (var i=0; i<resp['aliases'].length; i++) {
         $("#character_alias").append($("<option>").attr({value: resp['aliases'][i]['id']}).append(resp['aliases'][i]['name']));
       }
       // Restore active alias, but only if not already restoring an alias
-      if(resp.alias_id_for_post !== undefined && !restore_alias) {
+      if (resp.alias_id_for_post !== undefined && !restore_alias) {
         restore_alias = true;
         selectedAliasID = resp.alias_id_for_post;
         $("#reply_character_alias_id").val(selectedAliasID);
@@ -370,7 +370,7 @@ getAndSetCharacterData = function(characterId, options) {
 
     // Calculate new galleries
     var multiGallery = resp.galleries.length > 1;
-    for(var j = 0; j < resp.galleries.length; j++) {
+    for (var j = 0; j < resp.galleries.length; j++) {
       $("#gallery").append(galleryString(resp.galleries[j], multiGallery));
     }
 
@@ -421,7 +421,7 @@ setSections = function() {
     if (sections.length > 0) {
       $("#section").show();
       $("#post_section_id").empty().append('<option value="">— Choose Section —</option>');
-      for(var i = 0; i < sections.length; i++) {
+      for (var i = 0; i < sections.length; i++) {
         $("#post_section_id").append('<option value="'+sections[i].id+'">'+sections[i].name+'</option>');
       }
       $("#post_section_id").trigger("change.select2");
@@ -449,7 +449,7 @@ createTagSelect = function(tagType, selector) {
         };
         return data
       },
-      processResults: function (data, params) {
+      processResults: function(data, params) {
         params.page = params.page || 1;
         var total = this._request.getResponseHeader('Total');
         return {
@@ -467,7 +467,7 @@ createTagSelect = function(tagType, selector) {
 
 function setCharacterListSelected(characterId) {
   $(".char-access-icon.semiopaque").removeClass('semiopaque').addClass('pointer');
-  $(".char-access-icon").each(function(){
+  $(".char-access-icon").each(function() {
     if (String($(this).data('character-id')) === String(characterId)) $(this).addClass('semiopaque').removeClass('pointer');
   });
 }

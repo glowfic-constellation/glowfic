@@ -18,7 +18,7 @@ $(document).ready(function() {
 
   bindIcons();
 
-  $("#character_template_id").change(function () {
+  $("#character_template_id").change(function() {
     if ($(this).val() !== "0") {
       $("#create_template").hide();
     } else {
@@ -52,8 +52,8 @@ $(document).ready(function() {
   });
 });
 
-function displayGallery(new_id){
-  $.get('/api/v1/galleries/'+new_id, function (resp) {
+function displayGallery(new_id) {
+  $.get('/api/v1/galleries/'+new_id, function(resp) {
     var galleryObj = $("<div>").attr({id: 'gallery'+new_id}).data('id', new_id);
     galleryObj.append("<br />");
     galleryObj.append($("<b>").attr({class: 'gallery-name'}).append(resp.name));

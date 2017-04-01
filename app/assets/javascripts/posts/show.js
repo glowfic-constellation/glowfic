@@ -20,10 +20,10 @@ $(document).ready(function() {
     });
 
     // Hides selectors when you hit the escape key
-    $(document).bind("keydown", function(e){
+    $(document).bind("keydown", function(e) {
       e = e || window.event;
       var charCode = e.which || e.keyCode;
-      if(charCode === 27) {
+      if (charCode === 27) {
         $('#post-menu-box').hide();
         $('#post-menu').removeClass('selected');
       }
@@ -43,10 +43,10 @@ $(document).ready(function() {
 
   // TODO fix hack
   // Resizes screennames to be slightly smaller if they're long for UI reasons
-  $(".post-screenname").each(function (index) {
-    if($(this).height() > 20) {
+  $(".post-screenname").each(function(index) {
+    if ($(this).height() > 20) {
       $(this).css('font-size', "14px");
-      if($(this).height() > 20 ) { $(this).css('font-size', "12px"); }
+      if ($(this).height() > 20) { $(this).css('font-size', "12px"); }
     }
   });
 

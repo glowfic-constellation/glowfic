@@ -1,6 +1,6 @@
 image_ids = []
 skip_warning = false;
-$(document).ready( function() {
+$(document).ready(function() {
   bindGalleryIcons(".add-gallery-icon");
 
   $("#add-gallery-icons").submit(function() {
@@ -23,7 +23,7 @@ $(document).ready( function() {
     // Show icons if they're hidden
     $("#icons-" + gallery_id).show();
     $("#minmax-" + gallery_id).text("-");
-    if($("#icons-" + gallery_id).html().length > 0) { return true; }
+    if ($("#icons-" + gallery_id).html().length > 0) { return true; }
 
     // Load and bind icons if they have not already been loaded
     $.get("/api/v1/galleries/" + gallery_id, {}, function(resp) {
@@ -38,7 +38,7 @@ $(document).ready( function() {
   });
 });
 
-$(window).on('beforeunload', function(){
+$(window).on('beforeunload', function() {
   if (skip_warning || image_ids.length === 0) return;
   return "Are you sure you wish to navigate away? You have " + image_ids.length + " image(s) selected.";
 });

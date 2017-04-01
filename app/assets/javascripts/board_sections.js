@@ -1,4 +1,4 @@
-$(document).ready( function() {
+$(document).ready(function() {
   bindArrows();
 });
 
@@ -36,7 +36,7 @@ function switchRows(old_order, new_order) {
   this_row.attr('id', "section-"+new_order);
   that_row.attr('id', "section-"+old_order);
 
-  if(old_order > new_order) {
+  if (old_order > new_order) {
     this_row.insertBefore(that_row);
   } else {
     this_row.insertAfter(that_row);
@@ -53,7 +53,7 @@ function switchRows(old_order, new_order) {
     type: that_row.attr('data-type'),
     order: old_order
   };
-  $.post('/api/v1/board_sections/reorder', json, function (resp) {
+  $.post('/api/v1/board_sections/reorder', json, function(resp) {
     $("#loading").hide();
     $("#saveconf").show().delay(2000).fadeOut();
     bindArrows();

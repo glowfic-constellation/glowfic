@@ -12,7 +12,7 @@ $(document).ready(function() {
         };
         return data
       },
-      processResults: function (data, params) {
+      processResults: function(data, params) {
         params.page = params.page || 1;
         var total = this._request.getResponseHeader('Total');
         return {
@@ -37,16 +37,16 @@ $(document).ready(function() {
           q: params.term,
           page: params.page
         };
-        if(typeof(gon) !== 'undefined') { data.post_id = gon.post_id }
+        if (typeof(gon) !== 'undefined') { data.post_id = gon.post_id }
         return data
       },
-      processResults: function (data, params) {
+      processResults: function(data, params) {
         params.page = params.page || 1;
         var total = this._request.getResponseHeader('Total');
 
-        // Reformat the response to be 
+        // Reformat the response to be
         var formattedChars = []
-        for(var i = 0; i < data.results.length; i++) {
+        for (var i = 0; i < data.results.length; i++) {
           formattedChars[i] = {
             id: data.results[i].id,
             text: data.results[i].name
@@ -76,13 +76,13 @@ $(document).ready(function() {
         };
         return data
       },
-      processResults: function (data, params) {
+      processResults: function(data, params) {
         params.page = params.page || 1;
         var total = this._request.getResponseHeader('Total');
 
-        // Reformat the response to be 
+        // Reformat the response to be
         var formattedChars = []
-        for(var i = 0; i < data.results.length; i++) {
+        for (var i = 0; i < data.results.length; i++) {
           formattedChars[i] = {
             id: data.results[i].id,
             text: data.results[i].username
@@ -112,13 +112,13 @@ $(document).ready(function() {
         };
         return data
       },
-      processResults: function (data, params) {
+      processResults: function(data, params) {
         params.page = params.page || 1;
         var total = this._request.getResponseHeader('Total');
 
-        // Reformat the response to be 
+        // Reformat the response to be
         var formattedChars = []
-        for(var i = 0; i < data.results.length; i++) {
+        for (var i = 0; i < data.results.length; i++) {
           formattedChars[i] = {
             id: data.results[i].id,
             text: data.results[i].name
@@ -148,13 +148,13 @@ $(document).ready(function() {
         };
         return data
       },
-      processResults: function (data, params) {
+      processResults: function(data, params) {
         params.page = params.page || 1;
         var total = this._request.getResponseHeader('Total');
 
-        // Reformat the response to be 
+        // Reformat the response to be
         var formattedChars = []
-        for(var i = 0; i < data.results.length; i++) {
+        for (var i = 0; i < data.results.length; i++) {
           formattedChars[i] = {
             id: data.results[i].id,
             text: data.results[i].name

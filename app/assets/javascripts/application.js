@@ -55,29 +55,29 @@ $(document).ready(function() {
   });
 });
 
-function add_parameter(url, param, value){
-    var hash       = {};
-    var parser     = document.createElement('a');
+function add_parameter(url, param, value) {
+  var hash = {};
+  var parser = document.createElement('a');
 
-    parser.href    = url;
+  parser.href = url;
 
-    var parameters = parser.search.split(/\?|&/);
+  var parameters = parser.search.split(/\?|&/);
 
-    for(var i=0; i < parameters.length; i++) {
-        if(!parameters[i])
-            continue;
+  for (var i=0; i < parameters.length; i++) {
+    if (!parameters[i])
+      continue;
 
-        var ary      = parameters[i].split('=');
-        hash[ary[0]] = ary[1];
-    }
+    var ary = parameters[i].split('=');
+    hash[ary[0]] = ary[1];
+  }
 
-    hash[param] = value;
+  hash[param] = value;
 
-    var list = [];
-    Object.keys(hash).forEach(function (key) {
-        list.push(key + '=' + hash[key]);
-    });
+  var list = [];
+  Object.keys(hash).forEach(function(key) {
+    list.push(key + '=' + hash[key]);
+  });
 
-    parser.search = '?' + list.join('&');
-    return parser.href;
+  parser.search = '?' + list.join('&');
+  return parser.href;
 }
