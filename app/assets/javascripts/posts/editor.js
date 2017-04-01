@@ -35,7 +35,7 @@ $(document).ready(function() {
     $("#access_list").hide();
   }
 
-  if ($("#post_section_id").val() === '') { setSections(); }
+  if ($("#post_section_id").val() === '') setSections();
   $("#post_board_id").change(function() { setSections(); });
 
   $("#post_privacy").change(function() {
@@ -118,7 +118,9 @@ $(document).ready(function() {
       if (tinyMCEInit) {
         tinyMCE.execCommand('mceAddEditor', true, 'post_content');
         tinyMCE.execCommand('mceAddEditor', true, 'reply_content');
-      } else { setupTinyMCE(); }
+      } else {
+        setupTinyMCE();
+      }
     } else if (this.id === 'html') {
       $("#rtf").removeClass('selected');
       $("#editor_mode").val('html');
@@ -220,7 +222,7 @@ function galleryString(gallery, multiGallery) {
     iconsString += iconString(icons[i]);
   }
 
-  if (!multiGallery) { return iconsString; }
+  if (!multiGallery) return iconsString;
 
   var nameString = "<div class='gallery-name'>" + gallery.name + "</div>";
   return "<div class='gallery-group'>" + nameString + iconsString + "</div>";
@@ -258,7 +260,10 @@ function setupTinyMCE() {
         ed.on('init', function(args) {
           var rawContent = tinymce.activeEditor.getContent({format: 'raw'});
           var content = tinymce.activeEditor.getContent();
-          if (rawContent === '<p>&nbsp;<br></p>' && content === '') { tinymce.activeEditor.setContent(''); } // TODO fix hack
+          // TODO fix hack
+          if (rawContent === '<p>&nbsp;<br></p>' && content === '') {
+            tinymce.activeEditor.setContent('');
+          }
         });
       }
     });

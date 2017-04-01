@@ -4,7 +4,7 @@ $(document).ready(function() {
   bindGalleryIcons(".add-gallery-icon");
 
   $("#add-gallery-icons").submit(function() {
-    if (image_ids.length < 1) { return false; }
+    if (image_ids.length < 1) return false;
     $("#image_ids").val(image_ids);
     skip_warning = true;
     return true;

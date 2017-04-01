@@ -46,7 +46,7 @@ $(document).ready(function() {
   $(".post-screenname").each(function(index) {
     if ($(this).height() > 20) {
       $(this).css('font-size', "14px");
-      if ($(this).height() > 20) { $(this).css('font-size', "12px"); }
+      if ($(this).height() > 20) $(this).css('font-size', "12px");
     }
   });
 
