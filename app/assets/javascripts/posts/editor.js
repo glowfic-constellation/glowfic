@@ -39,7 +39,7 @@ $(document).ready(function() {
   $("#post_board_id").change(function() { setSections(); });
 
   $("#post_privacy").change(function() {
-    if (String($(this).val()) == String(PRIVACY_ACCESS)) {
+    if (String($(this).val()) === String(PRIVACY_ACCESS)) {
       $("#access_list").show();
     } else {
       $("#access_list").hide();
@@ -359,7 +359,7 @@ function getAndSetCharacterData(characterId, options) {
     if (!resp.default) {
       setIcon('');
       // Remove pointer and skip galleries if no galleries attached to character
-      if (resp.galleries.length == 0) {
+      if (resp.galleries.length === 0) {
         $("#current-icon").removeClass('pointer');
         return;
       }
@@ -386,7 +386,7 @@ function getAndSetCharacterData(characterId, options) {
 
 function setIconFromId(id, img) {
   // Assumes the #gallery div is populated with icons with the correct values
-  if (id == "") return setIcon(id);
+  if (id === "") return setIcon(id);
   if (typeof(img) === 'undefined') img = $("#"+id);
   setIcon(id, img.attr('src'), img.attr('title'), img.attr('alt'));
 }

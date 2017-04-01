@@ -38,7 +38,7 @@ $(document).ready(function() {
       $(".gallery #gallery"+removed_gallery).remove();
 
       // if no more galleries are left, display galleryless icons
-      if (gallery_ids.length == 0) {
+      if (gallery_ids.length === 0) {
         displayGallery('0');
       }
       return;

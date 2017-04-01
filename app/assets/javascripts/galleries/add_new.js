@@ -99,7 +99,7 @@ function bindFileInput(fileInput) {
       // update keyword box with data.files[0].name minus file extension
       var keyword = data.files[0].name;
       var fileExt = keyword.split('.').slice(-1)[0];
-      if (fileExt != keyword)
+      if (fileExt !== keyword)
         keyword = keyword.replace('.'+fileExt, '');
       $(".icon-row[data-index='" + iconIndex + "'] input[id$='_keyword']").val(keyword);
 
@@ -138,7 +138,7 @@ function cleanUpRows() {
     var anySet = false;
     if ($(this).find('.conf').length > 0) { return true; }
     $(this).find('input').each(function() {
-      if ($(this).val() != '') {
+      if ($(this).val() !== '') {
         anySet = true;
         return false;
       }

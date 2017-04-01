@@ -37,7 +37,7 @@ $(document).ready(function() {
 
 function validateUsername() {
   var username = $("#user_username").val();
-  if (username == '') {
+  if (username === '') {
     addAlertAfter('user_username', 'Please choose a username.');
     return false;
   } else if (username.length < gon.min || username.length > gon.max) {
@@ -57,7 +57,7 @@ function validateUsername() {
 
 function validateEmail() {
   var email = $("#user_email").val();
-  if (email == '') {
+  if (email === '') {
     addAlertAfter('user_email', 'Please enter an email address.');
     return false;
   }
@@ -68,11 +68,11 @@ function validatePassword() {
   var password = $("#user_password").val();
   var conf = $("#user_password_confirmation").val();
   var success = true;
-  if (password == '') {
+  if (password === '') {
     addAlertAfter('user_password', 'Please choose a password.');
     success = false;
   }
-  if (conf != password) {
+  if (conf !== password) {
     $("#conf .alert").remove();
     addAlertAfter('user_password_confirmation', 'Your passwords do not match.');
     success = false;
@@ -84,11 +84,11 @@ function validateConfirmation() {
   var password = $("#user_password").val();
   var conf = $("#user_password_confirmation").val();
   var success = true;
-  if (conf == '') {
+  if (conf === '') {
     addAlertAfter('user_password_confirmation', 'Please confirm your password.');
     success = false;
   }
-  if (conf != password) {
+  if (conf !== password) {
     addAlertAfter('user_password_confirmation', 'Your passwords do not match.');
     success = false;
   }
