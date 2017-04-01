@@ -92,8 +92,7 @@ function updateIcon(id) {
     $.ajax({
       url: '/api/v1/characters/'+gon.character_id,
       type: 'PUT',
-      data: {character: {default_icon_id: id}},
-      success: function(resp) {}
+      data: {character: {default_icon_id: id}}
     });
   } else {
     $("#character_default_icon_id").val(id);

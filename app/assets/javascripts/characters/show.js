@@ -40,5 +40,5 @@ function switchRows(old_order, new_order) {
   var json = {changes: {}, commit: 'reorder'};
   json.changes[this_row.attr('data-section')] = new_order;
   json.changes[that_row.attr('data-section')] = old_order;
-  $.post('/characters', json, function(resp) {});
+  $.post('/characters', json);
 }
