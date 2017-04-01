@@ -19,10 +19,10 @@ $(document).ready(function() {
   bindIcons();
 
   $("#character_template_id").change(function() {
-    if ($(this).val() !== "0") {
-      $("#create_template").hide();
-    } else {
+    if ($(this).val() === "0") {
       $("#create_template").show();
+    } else {
+      $("#create_template").hide();
     }
   });
 

@@ -239,7 +239,9 @@ function iconString(icon) {
 }
 
 function setupTinyMCE() {
-  if (typeof tinyMCE !== 'undefined') {
+  if (typeof tinyMCE === 'undefined') {
+    setTimeout(arguments.callee, 50);
+  } else {
     tinyMCE.init({
       selector: "textarea.tinymce",
       menubar: false,
@@ -268,8 +270,6 @@ function setupTinyMCE() {
       }
     });
     tinyMCEInit = true;
-  } else {
-    setTimeout(arguments.callee, 50);
   }
 }
 
