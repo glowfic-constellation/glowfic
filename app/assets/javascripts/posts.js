@@ -93,8 +93,9 @@ $(document).ready(function() {
     }
   }
 
-  if ($("#post_privacy").val() !== PRIVACY_ACCESS)
+  if (String($("#post_privacy").val()) !== String(PRIVACY_ACCESS)){
     $("#access_list").hide();
+  }
 
   // Bind both change() and keyup() in the icon keyword dropdown because Firefox doesn't
   // respect up/down key selections in a dropdown as a valid change() trigger
@@ -123,7 +124,7 @@ $(document).ready(function() {
   });
 
   $("#post_privacy").change(function() {
-    if($(this).val() == PRIVACY_ACCESS) {
+    if(String($(this).val()) == String(PRIVACY_ACCESS)) {
       $("#access_list").show();
     } else {
       $("#access_list").hide();
