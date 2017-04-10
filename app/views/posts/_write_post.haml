@@ -19,8 +19,8 @@
     = f.label :warning_ids, 'Content Warnings:'
     = f.select :warning_ids, options_from_collection_for_select(@warnings, :id, :name, post.warning_ids || post.content_warnings.map(&:id)), {}, {multiple: true}
     %br
-    = f.label :tag_ids, 'Tags:'
-    = f.select :tag_ids, options_from_collection_for_select(@tags, :id, :name, post.tag_ids || post.post_tags.map(&:tag_id)), {}, {multiple: true}
+    = f.label :label_ids, 'Labels:'
+    = f.select :label_ids, options_from_collection_for_select(@tags, :id, :name, post.label_ids || post.labels.map(&:id)), {}, {multiple: true}
     %hr
     - unless post.id.present? && !post.editable_by?(current_user)
       .view-button#rtf{class: ('selected' if current_user.default_editor == 'rtf')} Rich Text

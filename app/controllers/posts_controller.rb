@@ -331,7 +331,7 @@ class PostsController < WritableController
     faked = Struct.new(:name, :id)
     @settings = build_subtags(Setting, :setting_ids, faked)
     @warnings = build_subtags(ContentWarning, :warning_ids, faked)
-    @tags = build_subtags(Tag, :tag_ids, faked)
+    @tags = build_subtags(Label, :label_ids, faked)
   end
 
   def build_subtags(klass, method, faked)
@@ -364,13 +364,13 @@ class PostsController < WritableController
       @post.warning_ids += tags.map { |tag| ContentWarning.create(user: current_user, name: tag).id }
     end
 
-    if @post.tag_ids.present?
-      tags = @post.tag_ids.select { |id| id.to_i.zero? }.reject(&:blank?).uniq
-      @post.tag_ids -= tags
-      existing_tags = Tag.where(name: tags, type: nil)
-      @post.tag_ids += existing_tags.map(&:id)
+    if @post.label_ids.present?
+      tags = @post.label_ids.select { |id| id.to_i.zero? }.reject(&:blank?).uniq
+      @post.label_ids -= tags
+      existing_tags = Label.where(name: tags)
+      @post.label_ids += existing_tags.map(&:id)
       tags -= existing_tags.map(&:name)
-      @post.tag_ids += tags.map { |tag| Tag.create(user: current_user, name: tag).id }
+      @post.label_ids += tags.map { |tag| Label.create(user: current_user, name: tag).id }
     end
   end
 

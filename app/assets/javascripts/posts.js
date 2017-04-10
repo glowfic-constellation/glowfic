@@ -43,9 +43,9 @@ $(document).ready(function() {
     placeholder: 'Choose user(s) to view this post'
   });
 
-  createTagSelect("tag");
-  createTagSelect("setting");
-  createTagSelect("warning");
+  createTagSelect("Label", "label");
+  createTagSelect("Setting", "setting");
+  createTagSelect("ContentWarning", "warning");
 
   // TODO fix hack
   // Only initialize TinyMCE if it's required
@@ -443,11 +443,11 @@ setSections = function() {
   }, 'json');
 };
 
-createTagSelect = function(tagType) {
-  $("#post_"+tagType+"_ids").select2({
+createTagSelect = function(tagType, selector) {
+  $("#post_"+selector+"_ids").select2({
     tags: true,
     tokenSeparators: [','],
-    placeholder: 'Enter ' + tagType + '(s) separated by commas',
+    placeholder: 'Enter ' + selector + '(s) separated by commas',
     ajax: {
       delay: 200,
       url: '/api/v1/tags',

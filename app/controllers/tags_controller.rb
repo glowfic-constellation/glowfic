@@ -1,32 +1,11 @@
 # frozen_string_literal: true
 class TagsController < ApplicationController
   before_filter :login_required, except: [:index, :show]
-  before_filter :find_tag, except: [:index, :new, :create]
-  before_filter :permission_required, only: [:edit, :update, :destroy]
+  before_filter :find_tag, except: :index
+  before_filter :permission_required, except: [:index, :show]
 
   def index
     @page_title = "Tags"
-  end
-
-  def new
-    @tag = Tag.new
-    @page_title = "New Tag"
-  end
-
-  def create
-    @tag = Tag.new(params[:tag])
-    @tag.user = current_user
-
-    unless @tag.save
-      flash.now[:error] = {}
-      flash.now[:error][:message] = "Tag could not be saved because of the following problems:"
-      flash.now[:error][:array] = @tag.errors.full_messages
-      @page_title = "New Tag"
-      render action: :new and return
-    end
-
-    flash[:success] = "Tag created!"
-    redirect_to tag_path(@tag)
   end
 
   def show

@@ -79,7 +79,7 @@ Rails.application.routes.draw do
     member { get :history }
     collection { get :search }
   end
-  resources :tags
+  resources :tags, except: [:new, :create]
 
   # API
   namespace :api do

@@ -3,17 +3,17 @@ require "spec_helper"
 RSpec.describe Api::V1::TagsController do
   describe "GET index" do
     shared_examples_for "index.json" do |in_doc|
-      it "should support tag search", show_in_doc: in_doc do
-        tag = create(:tag)
-        get :index, q: tag.name, t: 'tag'
+      it "should support label search", show_in_doc: in_doc do
+        tag = create(:label)
+        get :index, q: tag.name, t: 'Label'
         expect(response).to have_http_status(200)
         expect(response.json).to have_key('results')
         expect(response.json['results']).to contain_exactly(tag.as_json.stringify_keys)
       end
 
-      it "should suuport setting search", show_in_doc: in_doc do
+      it "should support setting search", show_in_doc: in_doc do
         tag = create(:setting)
-        get :index, q: tag.name, t: 'setting'
+        get :index, q: tag.name, t: 'Setting'
         expect(response).to have_http_status(200)
         expect(response.json).to have_key('results')
         expect(response.json['results']).to contain_exactly(tag.as_json.stringify_keys)
@@ -21,7 +21,7 @@ RSpec.describe Api::V1::TagsController do
 
       it "should support content warning search", show_in_doc: in_doc do
         tag = create(:content_warning)
-        get :index, q: tag.name, t: 'warning'
+        get :index, q: tag.name, t: 'ContentWarning'
         expect(response).to have_http_status(200)
         expect(response.json).to have_key('results')
         expect(response.json['results']).to contain_exactly(tag.as_json.stringify_keys)
@@ -32,9 +32,6 @@ RSpec.describe Api::V1::TagsController do
         expect(response).to have_http_status(422)
         expect(response.json).to have_key('errors')
         expect(response.json['errors'].first).to include("Invalid parameter 't'")
-      end
-
-      it "should require tag" do
       end
     end
 

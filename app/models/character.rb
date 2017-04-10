@@ -14,9 +14,8 @@ class Character < ActiveRecord::Base
   has_many :icons, through: :galleries, group: 'icons.id', order: 'LOWER(keyword)'
 
   has_many :character_tags, inverse_of: :character, dependent: :destroy
-  has_many :tags, through: :character_tags, source: :all_tags, source_type: 'Tag' # TODO THIS IS BROKEN does not filter subtypes like setting
-
-  has_many :settings, through: :character_tags, source: :all_tags, source_type: 'Setting'
+  has_many :labels, through: :character_tags, source: :label
+  has_many :settings, through: :character_tags, source: :setting
 
   validates_presence_of :name, :user
   validate :valid_template, :valid_group, :valid_galleries, :valid_default_icon

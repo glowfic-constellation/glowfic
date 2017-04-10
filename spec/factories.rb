@@ -127,6 +127,10 @@ FactoryGirl.define do
     end
     user
 
+    factory :label, class: Label do
+      type 'Label'
+    end
+
     factory :setting, class: Setting do
       type 'Setting'
     end
