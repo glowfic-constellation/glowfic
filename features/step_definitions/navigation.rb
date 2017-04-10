@@ -1,26 +1,30 @@
+def current_user
+  @user
+end
+
 Given(/^I am logged in$/) do
-  user = create(:user, password: 'secret')
+  @user = create(:user, password: 'secret')
   visit root_path
-  fill_in "username", with: user.username
+  fill_in "username", with: @user.username
   fill_in "password", with: 'secret'
   click_button "Log in"
 end
 
 Given(/^I have (\d) galleryless icons?$/) do |num|
-  num.to_i.times do create(:icon, user: User.last) end
+  num.to_i.times do create(:icon, user: current_user) end
 end
 
 Given(/^I have (\d) unread posts?$/) do |num|
   num.to_i.times do
     unread = create(:post)
-    unread.mark_read(User.first, Time.now - 1.day)
+    unread.mark_read(current_user, Time.now - 1.day)
     create(:reply, user: unread.user, post: unread)
   end
 end
 
 Given(/^my account uses the (.+) layout$/) do |layout|
   layout_name = layout.gsub(" ", "")
-  user = User.last
+  user = current_user
   user.layout = layout_name
   user.save!
 end
