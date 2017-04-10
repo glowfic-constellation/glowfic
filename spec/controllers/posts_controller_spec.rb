@@ -278,6 +278,39 @@ RSpec.describe PostsController do
       end
     end
 
+    it "handles invalid pages" do
+      post = create(:post)
+      get :show, id: post.id, page: 'invalid'
+      expect(flash[:error]).to eq('Page not recognized, defaulting to page 1.')
+      expect(assigns(:page)).to eq(1)
+      expect(response).to have_http_status(200)
+      expect(response).to render_template(:show)
+    end
+
+    it "handles pages outside range" do
+      post = create(:post)
+      5.times { create(:reply, post: post) }
+      get :show, id: post.id, per_page: 1, page: 10
+      expect(response).to redirect_to(post_url(post, page: 5, per_page: 1))
+    end
+
+    it "handles page=last with replies" do
+      post = create(:post)
+      5.times { create(:reply, post: post) }
+      get :show, id: post.id, per_page: 1, page: 'last'
+      expect(assigns(:page)).to eq(5)
+      expect(response).to have_http_status(200)
+      expect(response).to render_template(:show)
+    end
+
+    it "handles page=last with no replies" do
+      post = create(:post)
+      get :show, id: post.id, page: 'last'
+      expect(assigns(:page)).to eq(1)
+      expect(response).to have_http_status(200)
+      expect(response).to render_template(:show)
+    end
+
     context "with render_views" do
       render_views
 
@@ -411,6 +444,79 @@ RSpec.describe PostsController do
         login_as(user)
         get :show, id: post.id, page: 'unread', per_page: 1
         expect(assigns(:page)).to eq(2)
+      end
+    end
+
+    context "with author" do
+      it "works" do
+        post = create(:post)
+        login_as(post.user)
+        get :show, id: post.id
+        expect(response).to have_http_status(200)
+      end
+
+      it "sets reply variable using build_new_reply_for" do
+        post = create(:post, with_icon: true, with_character: true)
+        user = post.user
+        post.reload
+
+        # mock Post.find_by_id so we can mock post.build_new_reply_for
+        allow(Post).to receive(:find_by_id).with(post.id.to_s).and_return(post)
+
+        login_as(user)
+        expect(post).to be_taggable_by(user)
+        expect(post).to receive(:build_new_reply_for).with(user).and_call_original
+
+        get :show, id: post.id
+        expect(response).to have_http_status(200)
+        expect(assigns(:reply)).not_to be_nil
+      end
+    end
+
+    context "with non-author who can write" do
+      it "works" do
+        post = create(:post, authors_locked: false)
+        user = create(:user)
+        login_as(user)
+        expect(post).to be_taggable_by(user)
+        get :show, id: post.id
+        expect(response).to have_http_status(200)
+      end
+
+      it "sets reply variable using build_new_reply_for" do
+        post = create(:post, with_icon: true, with_character: true)
+        user = create(:user)
+        post.reload
+
+        # mock Post.find_by_id so we can mock post.build_new_reply_for
+        allow(Post).to receive(:find_by_id).with(post.id.to_s).and_return(post)
+
+        login_as(user)
+        expect(post).to be_taggable_by(user)
+        expect(post).to receive(:build_new_reply_for).with(user).and_call_original
+
+        get :show, id: post.id
+        expect(response).to have_http_status(200)
+        expect(assigns(:reply)).not_to be_nil
+      end
+    end
+
+    context "with user who cannot write" do
+      it "works and does not call build_new_reply_for" do
+        post = create(:post, authors_locked: true)
+        user = create(:user)
+        post.reload
+
+        # mock Post.find_by_id so we can mock post.build_new_reply_for
+        allow(Post).to receive(:find_by_id).with(post.id.to_s).and_return(post)
+
+        login_as(user)
+        expect(post).not_to be_taggable_by(user)
+        expect(post).not_to receive(:build_new_reply_for)
+
+        get :show, id: post.id
+        expect(response).to have_http_status(200)
+        expect(assigns(:reply)).to be_nil
       end
     end
 
