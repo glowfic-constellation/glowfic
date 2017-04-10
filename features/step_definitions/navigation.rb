@@ -58,6 +58,10 @@ When(/^I view my unread posts$/) do
   visit unread_posts_path
 end
 
+When(/^I view the board "(.*)"$/) do |name|
+  visit board_path(Board.where(name: name).first)
+end
+
 Then(/^I should see "(.*)"$/) do |content|
   expect(page).to have_content(content)
 end
