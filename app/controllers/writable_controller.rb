@@ -94,6 +94,7 @@ class WritableController < ApplicationController
     canon_params[:page] = cur_page unless cur_page == 1
     @meta_canonical = post_url(@post, canon_params)
 
+    use_javascript('posts/show')
     if logged_in?
       use_javascript('posts/editor')
 
