@@ -81,3 +81,17 @@ function add_parameter(url, param, value) {
   parser.search = '?' + list.join('&');
   return parser.href;
 }
+
+function resizeScreenname(screenameBox) {
+  screenameBox = $(screenameBox);
+
+  // reset previous CSS for post-editor screenname updates
+  screenameBox.css('font-size', '');
+
+  // shrink font-size to decrease box size
+  if (screenameBox.height() <= 20) return;
+  screenameBox.css('font-size', "87.5%");
+
+  if (screenameBox.height() <= 20) return;
+  screenameBox.css('font-size', "75%");
+}
