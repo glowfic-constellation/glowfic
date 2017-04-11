@@ -25,6 +25,8 @@ class Character < ActiveRecord::Base
 
   nilify_blanks
 
+  scope :active, where(retired: false)
+
   def icon
     @icon ||= default_icon || galleries.detect(&:default_icon).try(:default_icon)
   end

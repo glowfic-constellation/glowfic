@@ -8,13 +8,13 @@ class WritableController < ApplicationController
 
     templates = current_user.templates.includes(:characters).order('LOWER(name)')
     faked = Struct.new(:name, :id, :characters)
-    templateless = faked.new('Templateless', nil, current_user.characters.where(:template_id => nil).order('LOWER(name) ASC'))
+    templateless = faked.new('Templateless', nil, current_user.characters.active.where(:template_id => nil).order('LOWER(name) ASC'))
     @templates = templates + [templateless]
 
     if @post
       uniq_chars_ids = @post.replies.where(user_id: current_user.id).where('character_id is not null').group(:character_id).pluck(:character_id)
       uniq_chars_ids << @post.character_id if @post.user_id == current_user.id && @post.character_id.present?
-      uniq_chars = Character.where(id: uniq_chars_ids).order('LOWER(name)')
+      uniq_chars = Character.where(id: uniq_chars_ids).active.order('LOWER(name)')
       threadchars = faked.new('Thread characters', nil, uniq_chars)
       @templates.insert(0, threadchars)
     end

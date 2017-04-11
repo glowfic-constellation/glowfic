@@ -332,7 +332,8 @@ CREATE TABLE characters (
     pb character varying(255),
     character_group_id integer,
     setting character varying(255),
-    description text
+    description text,
+    retired boolean DEFAULT false
 );
 
 
@@ -1851,3 +1852,5 @@ INSERT INTO schema_migrations (version) VALUES ('20170109000120');
 INSERT INTO schema_migrations (version) VALUES ('20170210013443');
 
 INSERT INTO schema_migrations (version) VALUES ('20170221171959');
+
+INSERT INTO schema_migrations (version) VALUES ('20170410235709');

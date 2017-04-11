@@ -32,7 +32,7 @@
       #post-author-spacer.dark.spacer{class: ('hidden' if item.character)}
       .post-author
         = item.user.username
-        - if current_user.characters.present?
+        - if current_user.characters.active.exists?
           = image_tag swap_icon_url, id: 'swap-icon', alt: ">", title: 'Choose Character'
           #character-selector.beige
             %b Choose Character
