@@ -2,9 +2,9 @@ $(document).ready(function() {
   // Checks if the user is on the unread page but also started near the unread element,
   // since e.g. on a refresh some browsers will retain your spot on the page
   // Will be used after some page-size-changing functions to revert to the correct spot
-  var unreadElem = $("a#unread")
+  var unreadElem = $("a#unread");
   var shouldScrollToUnread = false;
-  if (window.location.hash == "#unread" && unreadElem.length > 0)
+  if (window.location.hash === "#unread" && unreadElem.length > 0)
     shouldScrollToUnread = Math.abs(unreadElem.offset().top - $(window).scrollTop()) < 50;
 
   $(".post-expander").click(function() {
