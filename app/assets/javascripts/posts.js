@@ -25,6 +25,8 @@ $(document).ready(function() {
   if (shouldScrollToUnread)
     $(window).scrollTop(unreadElem.offset().top);
 
+  if ($("#post-editor").length === 0) return; // Skip if there is no post / writable editor
+
   // SET UP POST EDITOR:
 
   PRIVACY_ACCESS = 2; // TODO don't hardcode
@@ -79,6 +81,8 @@ $(document).ready(function() {
     $("#submit_button").removeAttr('data-disable-with').attr('disabled', 'disabled');
     return true;
   });
+
+  if ($("#post-editor .view-button").length === 0) return; // Skip if there is no writable editor (no RTF/HTML buttons)
 
   // SET UP WRITABLE EDITOR:
 
