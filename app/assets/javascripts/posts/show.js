@@ -7,6 +7,40 @@ $(document).ready(function() {
   if (window.location.hash == "#unread" && unreadElem.length > 0)
     shouldScrollToUnread = Math.abs(unreadElem.offset().top - $(window).scrollTop()) < 50;
 
+  $(".post-expander").click(function() {
+    $(this).children(".info").remove();
+    $(this).children(".hidden").show();
+  });
+
+  // Dropdown menu code
+  if ($("#post-menu").length > 0) {
+    $("#post-menu").click(function() {
+      $(this).toggleClass('selected');
+      $("#post-menu-box").toggle();
+    });
+
+    // Hides selectors when you hit the escape key
+    $(document).bind("keydown", function(e){
+      e = e || window.event;
+      var charCode = e.which || e.keyCode;
+      if(charCode === 27) {
+        $('#post-menu-box').hide();
+        $('#post-menu').removeClass('selected');
+      }
+    });
+
+    // Hides selectors when you click outside them
+    $(document).click(function(e) {
+      var target = e.target;
+
+      if (!$(target).is('#post-menu-box') && !$(target).parents().is('#post-menu-box')
+        && !$(target).is('#post-menu') && !$(target).parents().is('#post-menu')) {
+        $('#post-menu-box').hide();
+        $('#post-menu').removeClass('selected');
+      }
+    });
+  }
+
   // TODO fix hack
   // Resizes screennames to be slightly smaller if they're long for UI reasons
   $(".post-screenname").each(function (index) {
