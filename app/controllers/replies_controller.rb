@@ -131,7 +131,7 @@ class RepliesController < WritableController
   end
 
   def edit
-    use_javascript('posts')
+    use_javascript('posts/editor')
   end
 
   def update
@@ -187,7 +187,7 @@ class RepliesController < WritableController
 
     @page_title = @post.subject
 
-    use_javascript('posts')
+    use_javascript('posts/editor')
     render :action => :preview
   end
 end

@@ -95,7 +95,7 @@ class WritableController < ApplicationController
     @meta_canonical = post_url(@post, canon_params)
 
     if logged_in?
-      use_javascript('posts')
+      use_javascript('posts/editor')
 
       if @post.taggable_by?(current_user)
         build_template_groups
