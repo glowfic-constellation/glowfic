@@ -1,14 +1,11 @@
 -# Hack for Alicorn's unread bug
-- highlighted = ''
-- if reply.id.present? && logged_in? && current_user.id == 2 && @unread.present? && @unread.id == reply.id && @unread.class == reply.class
-  - highlighted = 'border: 1px red solid;'
+- highlighted = 'border: 1px red solid;' if reply == @unread && current_user.try(:visible_unread?)
 
 .post-container{class: reply.is_a?(Post) ? 'post-post'.freeze : (reply.is_a?(Reply) ? 'post-reply'.freeze : ''), style: highlighted}
   - if reply.is_a?(Reply) && reply.id.present?
     <a id="reply-#{reply.id}" class="noheight"> </a>
-  - if reply.id.present? && logged_in? && !@unread.nil?
-    - if reply.id == @unread.id && reply.class == @unread.class
-      <a id="unread" class="noheight"> </a>
+  - if reply == @unread
+    <a id="unread" class="noheight"> </a>
   .padding-10
     .post-info-box
       - if reply.icon_id
