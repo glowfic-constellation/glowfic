@@ -28,14 +28,16 @@ RSpec.describe ReportsController do
 
     it "sets variables with logged in daily" do
       user = create(:user)
-      view = PostView.create(user: user, post: create(:post))
+      post = create(:post)
+      post.mark_read(user)
+      time = post.last_read(user)
       login_as(user)
       get :show, id: 'daily'
       expect(response).to have_http_status(200)
       expect(assigns(:board_views)).to be_empty
-      expect(assigns(:opened_ids)).to match_array([view.post_id])
+      expect(assigns(:opened_ids)).to match_array([post.id])
       expect(assigns(:opened_posts).length).to eq(1)
-      expect(assigns(:opened_posts).first.read_at).to be_the_same_time_as(view.read_at)
+      expect(assigns(:opened_posts).first.read_at).to be_the_same_time_as(time)
     end
 
     it "succeeds with monthly" do
