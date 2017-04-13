@@ -10,6 +10,8 @@
       = link_to new_post_path params: {board_id: @board.id} do
         .link-box.green + New Post
     - if @board.editable_by?(current_user)
+      = link_to new_board_section_path params: {board_id: @board.id} do
+        .link-box.green + New Section
       = link_to edit_board_path(@board) do
         .link-box.blue
           = image_tag "/images/pencil.png"
