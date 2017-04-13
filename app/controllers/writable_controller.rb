@@ -102,7 +102,7 @@ class WritableController < ApplicationController
         @reply = @post.build_new_reply_for(current_user)
       end
 
-      @post.mark_read(current_user, @post.read_time_for(@replies)) unless @post.board.ignored_by?(current_user)
+      @post.mark_read(current_user, @post.read_time_for(@replies))
     end
 
     @warnings = @post.content_warnings if display_warnings?

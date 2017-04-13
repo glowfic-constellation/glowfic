@@ -6,7 +6,6 @@ module Viewable
 
     def mark_read(user, at_time=nil, force=false)
       view = view_for(user)
-      return true if view.ignored
 
       if view.new_record?
         view.read_at = at_time || Time.now
@@ -36,6 +35,7 @@ module Viewable
 
     def reload
       @view = nil
+      @first_unread = nil
       super
     end
 
