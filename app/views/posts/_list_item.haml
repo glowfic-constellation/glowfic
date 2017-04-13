@@ -1,5 +1,6 @@
 %tr
-  - klass = cycle('even', 'odd')
+  - klass = [cycle('even', 'odd')]
+  - klass << 'post-ignored' if current_user && post.ignored_by?(current_user)
   - replies_count = post.reply_count
   %td.post-completed{class: [klass, (post.completed? ? 'post-complete' : 'post-incomplete')]}
     - if post.completed?
