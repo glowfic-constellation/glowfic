@@ -5,7 +5,8 @@
   - if reply.is_a?(Reply) && reply.id.present?
     <a id="reply-#{reply.id}" class="noheight"> </a>
   - if reply == @unread
-    <a id="unread" class="noheight"> </a>
+    .unread-marker-container
+      %a#unread.unread-marker First unread marker
   .padding-10
     .post-info-box
       - if reply.icon_id
