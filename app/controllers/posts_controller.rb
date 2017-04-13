@@ -231,6 +231,9 @@ class PostsController < WritableController
       @search_results = @search_results.where(where)
     end
     @search_results = @search_results.paginate(page: page, per_page: 25)
+    if @search_results.total_pages <= 1
+      @search_results = @search_results.select {|post| post.visible_to?(current_user)}.paginate(page: page, per_page: 25)
+    end
   end
 
   def warnings

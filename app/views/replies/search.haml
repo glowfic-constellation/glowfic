@@ -53,6 +53,7 @@
             %table
               %tbody
                 - @search_results.each do |reply|
+                  - next unless reply.post.visible_to?(current_user)
                   - klass = cycle('even'.freeze, 'odd'.freeze)
                   %tr
                     %td{class: klass}
