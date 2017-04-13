@@ -767,4 +767,73 @@ RSpec.describe CharactersController do
       end
     end
   end
+
+  describe "POST duplicate" do
+    it "requires login" do
+      post :duplicate, id: -1
+      expect(response).to redirect_to(root_url)
+      expect(flash[:error]).to eq('You must be logged in to view that page.')
+    end
+
+    it "requires valid character id" do
+      login
+      post :duplicate, id: -1
+      expect(response).to redirect_to(characters_url)
+      expect(flash[:error]).to eq('Character could not be found.')
+    end
+
+    it "requires character with permissions" do
+      login
+      post :duplicate, id: create(:character).id
+      expect(response).to redirect_to(characters_url)
+      expect(flash[:error]).to eq('You do not have permission to edit that character.')
+    end
+
+    it "succeeds" do
+      user = create(:user)
+      template = create(:template, user: user)
+      icon = create(:icon, user: user)
+      gallery = create(:gallery, icons: [icon], user: user)
+      character = create(:character, template: template, galleries: [gallery], default_icon: icon, user: user)
+      calias = create(:alias, character: character)
+
+      login_as(user)
+      expect do
+        post :duplicate, id: character.id
+      end.to not_change {
+        [Template.count, Gallery.count, Icon.count, Reply.count, Post.count]
+      }.and change { Character.count }.by(1)
+
+      dup = assigns(:dup)
+      dup.reload
+      character.reload
+      expect(response).to redirect_to(edit_character_url(dup))
+      expect(flash[:success]).to eq('Character duplicated successfully.')
+
+      expect(dup).not_to eq(character)
+
+      # check all attrs but id, created_at and updated_at are same
+      dup_attrs = dup.attributes.clone
+      char_attrs = character.attributes.clone
+      ['id', 'created_at', 'updated_at'].each do |val|
+        dup_attrs.delete(val)
+        char_attrs.delete(val)
+      end
+      expect(dup_attrs).to eq(char_attrs)
+
+      # check character associations aren't changed
+      expect(character.template).to eq(template)
+      expect(character.galleries).to match_array([gallery])
+      expect(character.default_icon).to eq(icon)
+      expect(character.user).to eq(user)
+      expect(character.aliases.map(&:name)).to eq([calias.name])
+
+      # check duplicate has appropriate associations
+      expect(dup.template).to eq(template)
+      expect(dup.galleries).to match_array([gallery])
+      expect(dup.default_icon).to eq(icon)
+      expect(dup.user).to eq(user)
+      expect(dup.aliases.map(&:name)).to eq([calias.name])
+    end
+  end
 end

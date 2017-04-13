@@ -58,6 +58,11 @@
           = link_to replace_character_path(@character), class: 'character-replace' do
             = image_tag '/images/swap.png', style: 'width: 16px;'
             Replace Character
+      %tr
+        %td.centered{class: cycle('even', 'odd')}
+          = link_to duplicate_character_path(@character), method: :post, class: 'character-duplicate', data: { confirm: 'Are you sure you want to duplicate this character?' } do
+            = image_tag '/images/arrow_branch.png'
+            Duplicate Character
 
 - if params[:view] == 'galleries'
   - if @character.galleries.ordered.present?

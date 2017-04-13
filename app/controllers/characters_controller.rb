@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 class CharactersController < ApplicationController
   before_filter :login_required, :except => [:index, :show, :facecasts, :search]
-  before_filter :find_character, :only => [:show, :edit, :update, :destroy, :icon, :replace, :do_replace]
+  before_filter :find_character, :only => [:show, :edit, :update, :duplicate, :destroy, :icon, :replace, :do_replace]
   before_filter :find_group, :only => :index
-  before_filter :require_own_character, :only => [:edit, :update, :destroy, :icon, :replace, :do_replace]
+  before_filter :require_own_character, :only => [:edit, :update, :duplicate, :destroy, :icon, :replace, :do_replace]
   before_filter :build_editor, :only => [:new, :create, :edit, :update]
 
   def index
@@ -67,6 +67,19 @@ class CharactersController < ApplicationController
       @page_title = 'Edit Character: ' + @character.name
       render :action => :edit
     end
+  end
+
+  def duplicate
+    @dup = @character.dup
+    @dup.galleries = @character.galleries
+    @character.aliases.find_each do |calias|
+      dupalias = calias.dup
+      @dup.aliases << dupalias
+      dupalias.save
+    end
+    @dup.save
+    flash[:success] = "Character duplicated successfully."
+    redirect_to edit_character_path(@dup)
   end
 
   def destroy

@@ -38,6 +38,7 @@ Rails.application.routes.draw do
     member do
       get :replace
       post :do_replace
+      post :duplicate
     end
     collection do
       get :search
