@@ -63,29 +63,35 @@ class RepliesController < WritableController
       .paginate(page: page, per_page: 25)
   end
 
+  def make_draft
+    if draft = ReplyDraft.draft_for(params[:reply][:post_id], current_user.id)
+      draft.assign_attributes(params[:reply])
+    else
+      draft = ReplyDraft.new(params[:reply])
+      draft.user = current_user
+    end
+
+    if draft.save
+      flash[:success] = "Draft saved!"
+    else
+      flash[:error] = {}
+      flash[:error][:message] = "Your draft could not be saved because of the following problems:"
+      flash[:error][:array] = draft.errors.full_messages
+    end
+    draft
+  end
+
   def create
     if params[:button_draft]
-      if draft = ReplyDraft.draft_for(params[:reply][:post_id], current_user.id)
-        draft.assign_attributes(params[:reply])
-      else
-        draft = ReplyDraft.new(params[:reply])
-        draft.user = current_user
-      end
-
-      if draft.save
-        flash[:success] = "Draft saved!"
-      else
-        flash[:error] = {}
-        flash[:error][:message] = "Your draft could not be saved because of the following problems:"
-        flash[:error][:array] = draft.errors.full_messages
-      end
+      draft = make_draft
       redirect_to post_path(draft.post, page: :unread, anchor: :unread) and return # TODO handle draft.post.nil?
+    elsif params[:button_preview]
+      draft = make_draft
+      preview(draft.post.build_new_reply_for(current_user)) and return
     end
 
     reply = Reply.new(params[:reply])
     reply.user = current_user
-    preview(reply) and return if params[:button_preview]
-
     if reply.save
       flash[:success] = "Posted!"
       redirect_to reply_path(reply, anchor: "reply-#{reply.id}")
