@@ -112,13 +112,13 @@ class ApplicationController < ActionController::Base
     end
 
     if logged_in?
-      @opened_ids ||= PostView.where(user_id: current_user.id).pluck(:post_id)
+      @opened_ids ||= PostView.where(user_id: current_user.id).where('read_at IS NOT NULL').pluck(:post_id)
 
-      opened_posts = PostView.where(user_id: current_user.id).where(post_id: posts.map(&:id)).select([:post_id, :read_at])
+      opened_posts = PostView.where(user_id: current_user.id).where('read_at IS NOT NULL').where(post_id: posts.map(&:id)).select([:post_id, :read_at])
       @unread_ids ||= []
       @unread_ids += opened_posts.select do |view|
         post = posts.detect { |p| p.id == view.post_id }
-        post && (view.read_at.nil? || view.read_at < post.tagged_at)
+        post && view.read_at < post.tagged_at
       end.map(&:post_id)
     end
 

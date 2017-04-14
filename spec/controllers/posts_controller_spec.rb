@@ -762,7 +762,7 @@ RSpec.describe PostsController do
 
         expect(response).to redirect_to(unread_posts_url)
         expect(flash[:success]).to eq("Post has been marked as unread")
-        expect(post.reload.send(:view_for, user)).to be_a_new_record
+        expect(post.reload.first_unread_for(user)).to eq(post)
       end
     end
 
