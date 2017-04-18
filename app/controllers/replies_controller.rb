@@ -9,7 +9,7 @@ class RepliesController < WritableController
     @page_title = 'Search Replies'
 
     @post = Post.find_by_id(params[:post_id]) if params[:post_id].present?
-    if @post
+    if @post.try(:visible_to?, current_user)
       @users = @post.authors
       char_ids = @post.replies.pluck('distinct character_id') + [@post.character_id]
       @characters = Character.where(id: char_ids).order('name')
@@ -18,6 +18,11 @@ class RepliesController < WritableController
       @users = User.order('username')
       @characters = Character.order('name')
       @templates = Template.order('name')
+      if @post
+        # post exists but post not visible
+        flash[:error] = "You do not have permission to view this post."
+        return
+      end
     end
 
     return unless params[:commit].present?

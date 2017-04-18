@@ -88,6 +88,13 @@ RSpec.describe PostsController do
         expect(assigns(:search_results)).to be_empty
       end
 
+      it "restricts to visible posts" do
+        create(:post, subject: 'contains stars', privacy: Post::PRIVACY_PRIVATE)
+        post = create(:post, subject: 'visible contains stars')
+        get :search, commit: true, subject: 'stars'
+        expect(assigns(:search_results)).to match_array([post])
+      end
+
       it "filters by exact match subject" do
         skip "TODO not yet implemented"
       end
