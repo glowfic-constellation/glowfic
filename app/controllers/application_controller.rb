@@ -117,7 +117,13 @@ class ApplicationController < ActionController::Base
   helper_method :posts_from_relation
 
   def unread_ids
+    # does not necessarily include fully unread posts
     @unread_ids
   end
   helper_method :unread_ids
+
+  def opened_ids
+    @opened_ids
+  end
+  helper_method :opened_ids
 end

@@ -12,7 +12,7 @@
       = image_tag "/images/exclamation.png", class: 'vmid', title: "Content Warning: " + post.content_warnings.pluck(:name).join(', '), alt: '!'
   %td.post-subject{class: klass}
     - if logged_in?
-      - if unread_post?(post, unread_ids)
+      - if unread_post?(post, unread_ids) || (@show_unread && !opened_post?(post, opened_ids))
         = link_to post_path(post, page: 'unread', anchor: 'unread') do
           = image_tag unread_img, class: 'vmid', title: 'First Unread'
       - elsif @show_unread

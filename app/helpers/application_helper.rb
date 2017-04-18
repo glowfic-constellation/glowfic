@@ -143,4 +143,10 @@ module ApplicationHelper
     return false unless unread_ids
     unread_ids.include?(post.id)
   end
+
+  def opened_post?(post, opened_ids)
+    return false unless post
+    return false unless opened_ids
+    opened_ids.include?(post.id)
+  end
 end
