@@ -70,14 +70,17 @@ class CharactersController < ApplicationController
   end
 
   def duplicate
-    @dup = @character.dup
-    @dup.galleries = @character.galleries
-    @character.aliases.find_each do |calias|
-      dupalias = calias.dup
-      @dup.aliases << dupalias
-      dupalias.save
+    Character.transaction do
+      @dup = @character.dup
+      @dup.galleries = @character.galleries
+      @character.aliases.find_each do |calias|
+        dupalias = calias.dup
+        @dup.aliases << dupalias
+        dupalias.save
+      end
+      @dup.save
     end
-    @dup.save
+
     flash[:success] = "Character duplicated successfully."
     redirect_to edit_character_path(@dup)
   end
