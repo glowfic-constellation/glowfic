@@ -61,6 +61,9 @@ class RepliesController < WritableController
       .joins(:user, :post)
       .joins("LEFT OUTER JOIN characters ON characters.id = replies.character_id")
       .paginate(page: page, per_page: 25)
+    if @search_results.total_pages <= 1
+      @search_results = @search_results.select {|reply| reply.post.visible_to?(current_user)}.paginate(page: page, per_page: 25)
+    end
   end
 
   def create
