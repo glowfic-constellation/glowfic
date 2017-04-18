@@ -87,7 +87,7 @@ class RepliesController < WritableController
       redirect_to post_path(draft.post, page: :unread, anchor: :unread) and return # TODO handle draft.post.nil?
     elsif params[:button_preview]
       draft = make_draft
-      preview(draft.post.build_new_reply_for(current_user)) and return
+      preview(ReplyDraft.reply_from_draft(draft)) and return
     end
 
     reply = Reply.new(params[:reply])
