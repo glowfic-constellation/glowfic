@@ -12,6 +12,7 @@ RSpec.describe RepliesController do
       it "takes correct actions" do
         reply_post = create(:post)
         login_as(reply_post.user)
+        expect(ReplyDraft.count).to eq(0)
         post :create, button_preview: true, reply: {post_id: reply_post.id}
         expect(response).to render_template(:preview)
         expect(assigns(:javascripts)).to include('posts')
@@ -19,6 +20,11 @@ RSpec.describe RepliesController do
         expect(assigns(:written)).to be_a_new_record
         expect(assigns(:written).user).to eq(reply_post.user)
         expect(assigns(:post)).to eq(reply_post)
+        expect(ReplyDraft.count).to eq(1)
+        draft = ReplyDraft.last
+        expect(draft.post).to eq(reply_post)
+        expect(draft.user).to eq(reply_post.user)
+        expect(flash[:success]).to eq('Draft saved!')
         # TODO build_template_groups
       end
     end
