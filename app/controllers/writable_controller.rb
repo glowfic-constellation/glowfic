@@ -110,23 +110,6 @@ class WritableController < ApplicationController
     render 'posts/show'
   end
 
-  def reply_warning
-    return @reply_warning unless @reply_warning.nil?
-    unread_time = @post.last_read(current_user) || @post.board.last_read(current_user)
-    unread_reply = if unread_time
-      @post.replies.order('created_at asc').detect { |reply| unread_time < reply.created_at }
-    else
-      @post
-    end
-    unless unread_reply
-      @reply_warning = false
-      return @reply_warning
-    end
-    # Get unread_reply separately from @post.first_unread_for because that caches (and sometimes does "halfway down the page you just loaded" when we want 'first unread after the whole page has loaded')
-    @reply_warning = "Post has <a href=\"#{post_or_reply_link(unread_reply)}\" target=\"_blank\">unread replies</a>."
-  end
-  helper_method :reply_warning
-
   def display_warnings?
     return false if session[:ignore_warnings]
 
