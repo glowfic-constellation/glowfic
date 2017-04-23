@@ -6,7 +6,7 @@
 
 %span.time-loaded= pretty_time(DateTime.now.in_time_zone)
 
-%table{style: local_assigns[:style].to_s, class: local_assigns[:table_class].to_s}
+%table{class: local_assigns[:table_class].to_s}
   %thead
     %tr
       %th{colspan: col_count}= content_for :posts_title
