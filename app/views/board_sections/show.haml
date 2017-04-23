@@ -7,6 +7,9 @@
 
 - content_for :posts_title do
   = @board_section.name
+  - if @board_section.board.open_to?(current_user)
+    = link_to new_post_path params: {board_id: @board_section.board.id, section_id: @board_section.id} do
+      .link-box.green + New Post
   - if @board_section.board.editable_by?(current_user)
     = link_to edit_board_section_path(@board_section) do
       .link-box.blue
