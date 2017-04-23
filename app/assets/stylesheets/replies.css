@@ -197,3 +197,5 @@ div.char-access-icon {
   top: -5px;
   font-size: 70%;
 }
+
+.reply-highlighted { border: 1px red solid; }
