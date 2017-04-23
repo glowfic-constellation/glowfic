@@ -24,6 +24,7 @@ class Gallery < ActiveRecord::Base
   private
 
   def set_has_gallery(icon)
+    return unless valid? # don't change icon status unless the gallery being saved is valid
     icon.update_attributes(has_gallery: true)
   end
 
