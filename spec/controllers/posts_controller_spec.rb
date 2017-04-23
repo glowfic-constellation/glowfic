@@ -1076,10 +1076,112 @@ RSpec.describe PostsController do
     it "succeeds" do
       login
       get :unread
-      expect(response.status).to eq(200)
+      expect(response).to have_http_status(200)
+      expect(assigns(:started)).not_to be_true
+      expect(assigns(:page_title)).to eq('Unread Threads')
+      expect(assigns(:posts)).to be_empty
+      expect(assigns(:hide_quicklinks)).to be_true
     end
 
-    # TODO WAY more tests
+    it "shows appropriate posts" do
+      user = create(:user)
+      time = Time.now - 10.minutes
+
+      unread_post = create(:post) # post
+      opened_post1, opened_post2, reply1, read_post1, read_post2, hidden_post = Timecop.freeze(time) do
+        opened_post1 = create(:post) # post & reply, read post
+        opened_post2 = create(:post) # post & 2 replies, read post & reply
+        reply1 = create(:reply, post: opened_post2)
+        read_post1 = create(:post) # post
+        read_post2 = create(:post) # post & reply
+        hidden_post = create(:post) # post
+        [opened_post1, opened_post2, reply1, read_post1, read_post2, hidden_post]
+      end
+      reply2, reply3, reply4 = Timecop.freeze(time + 5.minutes) do
+        reply2 = create(:reply, post: opened_post1)
+        reply3 = create(:reply, post: opened_post2)
+        reply4 = create(:reply, post: read_post2)
+        [reply2, reply3, reply4]
+      end
+
+      opened_post1.mark_read(user, time)
+      opened_post2.mark_read(user, time)
+      read_post1.mark_read(user)
+      read_post2.mark_read(user)
+      hidden_post.ignore(user)
+
+      expect(unread_post.reload.first_unread_for(user)).to eq(unread_post)
+      expect(opened_post1.reload.first_unread_for(user)).to eq(reply2)
+      expect(opened_post2.reload.first_unread_for(user)).to eq(reply3)
+      expect(read_post1.reload.first_unread_for(user)).to be_nil
+      expect(read_post2.reload.first_unread_for(user)).to be_nil
+      expect(hidden_post.reload).to be_ignored_by(user)
+
+      login_as(user)
+      get :unread
+      expect(response).to have_http_status(200)
+      expect(assigns(:started)).not_to be_true
+      expect(assigns(:page_title)).to eq('Unread Threads')
+      expect(assigns(:posts)).to match_array([unread_post, opened_post1, opened_post2])
+      expect(assigns(:hide_quicklinks)).to be_true
+    end
+
+    context "opened" do
+      it "accepts parameter to force opened mode" do
+        user = create(:user)
+        expect(user.unread_opened).not_to be_true
+        login_as(user)
+        get :unread, started: 'true'
+        expect(response).to have_http_status(200)
+        expect(assigns(:started)).to be_true
+        expect(assigns(:page_title)).to eq('Opened Threads')
+      end
+
+      it "shows appropriate posts" do
+        user = create(:user, unread_opened: true)
+        time = Time.now - 10.minutes
+
+        unread_post = create(:post) # post
+        opened_post1, opened_post2, reply1, read_post1, read_post2, hidden_post = Timecop.freeze(time) do
+          opened_post1 = create(:post) # post & reply, read post
+          opened_post2 = create(:post) # post & 2 replies, read post & reply
+          reply1 = create(:reply, post: opened_post2)
+          read_post1 = create(:post) # post
+          read_post2 = create(:post) # post & reply
+          hidden_post = create(:post) # post & reply
+          [opened_post1, opened_post2, reply1, read_post1, read_post2, hidden_post]
+        end
+        reply2, reply3, reply4, reply5 = Timecop.freeze(time + 5.minutes) do
+          reply2 = create(:reply, post: opened_post1)
+          reply3 = create(:reply, post: opened_post2)
+          reply4 = create(:reply, post: read_post2)
+          reply5 = create(:reply, post: hidden_post)
+          [reply2, reply3, reply4, reply5]
+        end
+
+        opened_post1.mark_read(user, time)
+        opened_post2.mark_read(user, time)
+        read_post1.mark_read(user)
+        read_post2.mark_read(user)
+        hidden_post.mark_read(user, time)
+        hidden_post.ignore(user)
+
+        expect(unread_post.reload.first_unread_for(user)).to eq(unread_post)
+        expect(opened_post1.reload.first_unread_for(user)).to eq(reply2)
+        expect(opened_post2.reload.first_unread_for(user)).to eq(reply3)
+        expect(read_post1.reload.first_unread_for(user)).to be_nil
+        expect(read_post2.reload.first_unread_for(user)).to be_nil
+        expect(hidden_post.reload).to be_ignored_by(user)
+
+        login_as(user)
+        get :unread
+        expect(response).to have_http_status(200)
+        expect(assigns(:started)).to be_true
+        expect(assigns(:page_title)).to eq('Opened Threads')
+        expect(assigns(:posts)).to match_array([opened_post1, opened_post2])
+        expect(assigns(:hide_quicklinks)).to be_true
+      end
+    end
   end
 
   describe "POST mark" do
