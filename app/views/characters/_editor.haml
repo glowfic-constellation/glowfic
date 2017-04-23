@@ -30,6 +30,9 @@
   %th.sub Facecast
   %td{class: cycle('even', 'odd')}= f.text_field :pb, placeholder: "Facecast", class: 'text'
 %tr
+  %th.sub Description
+  %td{class: cycle('even', 'odd')}= f.text_area :description, placeholder: 'Description', class: 'text', cols: 35
+%tr
   %th.centered.subber{colspan: 2}= submit_tag "Save", class: 'button'
 
 #selected-gallery
