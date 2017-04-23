@@ -110,6 +110,19 @@
 .view-button .list-view { width: 20px; height: 17px; display: inline; margin: 0; padding: 0; top: 2px; position: relative; }
 .view-button .icon-view { width: 15px; height: 15px; display: inline; margin: 0; padding: 0; top: 2px; position: relative; }
 
+/* The new object layout with the floating left info box and the right content area */
+#content .left-info-box { float: left; }
+#content .right-content-box { float: left; }
+#content .user-info-box { width: 200px; }
+#content .icon-info-box { width: 150px; }
+#content .character-info-box { width: 175px; }
+#content .character-info-box .character-screenname { font-size: 85%; }
+#content .user-right-content-box { width: calc(100% - 200px); }
+#content .icon-right-content-box { width: calc(100% - 150px); }
+#content .character-right-content-box { width: calc(100% - 175px); }
+
+.new_character textarea, .edit_character textarea { height: 10em; box-sizing: border-box; width: 100%; }
+
 /* Not yet deserving of its own CSS file */
 #message_form textarea, .edit_board textarea, .new_board textarea, .new_template textarea, .edit_template textarea { height: 100px; }
 #stats ul { margin-top: 0; margin-bottom: 0; padding-left: 15px; }

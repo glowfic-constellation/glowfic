@@ -9,7 +9,7 @@ class RepliesController < WritableController
     @page_title = 'Search Replies'
 
     @post = Post.find_by_id(params[:post_id]) if params[:post_id].present?
-    if @post
+    if @post.try(:visible_to?, current_user)
       @users = @post.authors
       char_ids = @post.replies.pluck('distinct character_id') + [@post.character_id]
       @characters = Character.where(id: char_ids).order('name')
@@ -18,6 +18,11 @@ class RepliesController < WritableController
       @users = User.order('username')
       @characters = Character.order('name')
       @templates = Template.order('name')
+      if @post
+        # post exists but post not visible
+        flash[:error] = "You do not have permission to view this post."
+        return
+      end
     end
 
     return unless params[:commit].present?
@@ -61,31 +66,40 @@ class RepliesController < WritableController
       .joins(:user, :post)
       .joins("LEFT OUTER JOIN characters ON characters.id = replies.character_id")
       .paginate(page: page, per_page: 25)
+    if @search_results.total_pages <= 1
+      @search_results = @search_results.select {|reply| reply.post.visible_to?(current_user)}.paginate(page: page, per_page: 25)
+    end
+  end
+
+  def make_draft
+    if draft = ReplyDraft.draft_for(params[:reply][:post_id], current_user.id)
+      draft.assign_attributes(params[:reply])
+    else
+      draft = ReplyDraft.new(params[:reply])
+      draft.user = current_user
+    end
+
+    if draft.save
+      flash[:success] = "Draft saved!"
+    else
+      flash[:error] = {}
+      flash[:error][:message] = "Your draft could not be saved because of the following problems:"
+      flash[:error][:array] = draft.errors.full_messages
+    end
+    draft
   end
 
   def create
     if params[:button_draft]
-      if draft = ReplyDraft.draft_for(params[:reply][:post_id], current_user.id)
-        draft.assign_attributes(params[:reply])
-      else
-        draft = ReplyDraft.new(params[:reply])
-        draft.user = current_user
-      end
-
-      if draft.save
-        flash[:success] = "Draft saved!"
-      else
-        flash[:error] = {}
-        flash[:error][:message] = "Your draft could not be saved because of the following problems:"
-        flash[:error][:array] = draft.errors.full_messages
-      end
+      draft = make_draft
       redirect_to post_path(draft.post, page: :unread, anchor: :unread) and return # TODO handle draft.post.nil?
+    elsif params[:button_preview]
+      draft = make_draft
+      preview(ReplyDraft.reply_from_draft(draft)) and return
     end
 
     reply = Reply.new(params[:reply])
     reply.user = current_user
-    preview(reply) and return if params[:button_preview]
-
     if reply.save
       flash[:success] = "Posted!"
       redirect_to reply_path(reply, anchor: "reply-#{reply.id}")

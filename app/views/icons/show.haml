@@ -15,7 +15,7 @@
   - else
     %b Stats
 
-%table{style: 'width:150px;float: left;'}
+%table.left-info-box.icon-info-box
   %tr
     %th.centered.icon-keyword= @icon.keyword
   %tr
@@ -62,29 +62,32 @@
           Delete Icon
 
 - if params[:view] == 'galleries'
-  .post-header
-    .padding-15 Galleries
-  %table.float-left{style: 'width: calc(100% - 150px);'}
-    - if @icon.galleries.exists?
-      - @icon.galleries.order(:name).each do |gallery|
-        = render partial: 'galleries/single', locals: {gallery: gallery, klass: 'subber', skip_forms: true}
-    - else
+  %table.icon-right-content-box
+    %thead
       %tr
-        %td.even.centered — No galleries yet —
+        %th Galleries
+    %tbody
+      - if @icon.galleries.exists?
+        - @icon.galleries.order(:name).each do |gallery|
+          = render partial: 'galleries/single', locals: {gallery: gallery, klass: 'subber', skip_forms: true}
+      - else
+        %tr
+          %td.even.centered — No galleries yet —
 - elsif params[:view] == 'posts'
   - content_for :posts_title do
     Posts Containing Icon
-  %table{style: 'width: calc(100% - 150px); float:left;'}
-    = render partial: 'posts/list', locals: {posts: @posts, style: 'width: calc(100% - 150px); float:left;'}
+  = render partial: 'posts/list', locals: {posts: @posts, table_class: 'icon-right-content-box'}
 - else
   - posts_using = Post.where(icon_id: @icon.id)
   - replies_using = Reply.where(icon_id: @icon.id)
-  .post-header
-    .padding-15 Stats
-  %table{style: 'width: calc(100% - 150px); float:left;'}
-    %tr
-      %th.sub.width-150 Times Used
-      %td.even= link_to (posts_using.count + replies_using.count).to_s, search_replies_path(commit: true, icon_id: @icon.id)
-    %tr
-      %th.sub.width-150 Posts In
-      %td.even= (posts_using.pluck(:id) + replies_using.pluck('distinct post_id')).uniq.count
+  %table.icon-right-content-box
+    %thead
+      %tr
+        %th{colspan: 2} Stats
+    %tbody
+      %tr
+        %th.sub.width-150 Times Used
+        %td.even= link_to (posts_using.count + replies_using.count).to_s, search_replies_path(commit: true, icon_id: @icon.id)
+      %tr
+        %th.sub.width-150 Posts In
+        %td.even= (posts_using.pluck(:id) + replies_using.pluck('distinct post_id')).uniq.count

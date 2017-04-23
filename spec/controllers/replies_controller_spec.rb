@@ -12,6 +12,7 @@ RSpec.describe RepliesController do
       it "takes correct actions" do
         reply_post = create(:post)
         login_as(reply_post.user)
+        expect(ReplyDraft.count).to eq(0)
         post :create, button_preview: true, reply: {post_id: reply_post.id}
         expect(response).to render_template(:preview)
         expect(assigns(:javascripts)).to include('posts')
@@ -19,6 +20,11 @@ RSpec.describe RepliesController do
         expect(assigns(:written)).to be_a_new_record
         expect(assigns(:written).user).to eq(reply_post.user)
         expect(assigns(:post)).to eq(reply_post)
+        expect(ReplyDraft.count).to eq(1)
+        draft = ReplyDraft.last
+        expect(draft.post).to eq(reply_post)
+        expect(draft.user).to eq(reply_post.user)
+        expect(flash[:success]).to eq('Draft saved!')
         # TODO build_template_groups
       end
     end
@@ -440,11 +446,30 @@ RSpec.describe RepliesController do
         expect(assigns(:search_results)).to match_array([reply])
       end
 
+      it "only shows from visible posts" do
+        reply1 = create(:reply, content: 'contains forks')
+        reply2 = create(:reply, content: 'visible contains forks')
+        reply1.post.update_attributes(privacy: Post::PRIVACY_PRIVATE)
+        expect(reply1.post.reload).not_to be_visible_to(nil) # logged out, not visible
+        expect(reply2.post.reload).to be_visible_to(nil)
+        get :search, commit: true, subj_content: 'forks'
+        expect(assigns(:search_results)).to match_array([reply2])
+      end
+
       it "filters by post" do
         replies = 4.times.collect do create(:reply) end
         filtered_reply = replies.last
         get :search, commit: true, post_id: filtered_reply.post_id
         expect(assigns(:search_results)).to match_array([filtered_reply])
+      end
+
+      it "requires visible post if given" do
+        reply1 = create(:reply)
+        reply1.post.update_attributes(privacy: Post::PRIVACY_PRIVATE)
+        expect(reply1.post.reload).not_to be_visible_to(nil)
+        get :search, commit: true, post_id: reply1.post_id
+        expect(assigns(:search_results)).to be_nil
+        expect(flash[:error]).to eq('You do not have permission to view this post.')
       end
 
       it "filters by continuity" do

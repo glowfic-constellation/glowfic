@@ -79,6 +79,7 @@ class PostsController < WritableController
   def new
     @post = Post.new(character: current_user.active_character, user: current_user)
     @post.board_id = params[:board_id]
+    @post.section_id = params[:section_id]
     @post.icon_id = (current_user.active_character ? current_user.active_character.icon.try(:id) : current_user.avatar_id)
     @page_title = 'New Post'
   end
@@ -231,6 +232,9 @@ class PostsController < WritableController
       @search_results = @search_results.where(where)
     end
     @search_results = @search_results.paginate(page: page, per_page: 25)
+    if @search_results.total_pages <= 1
+      @search_results = @search_results.select {|post| post.visible_to?(current_user)}.paginate(page: page, per_page: 25)
+    end
   end
 
   def warnings
