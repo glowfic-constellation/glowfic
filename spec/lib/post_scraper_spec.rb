@@ -38,7 +38,7 @@ RSpec.describe PostScraper do
     allow(scraper).to receive(:set_from_icon) { nil }
     expect(scraper).to receive(:puts).with("Importing thread 'linear b'")
 
-    scraper.scrape
+    scraper.scrape!
 
     expect(Post.count).to eq(1)
     expect(Reply.count).to eq(46)
@@ -64,7 +64,7 @@ RSpec.describe PostScraper do
     allow(scraper).to receive(:set_from_icon) { nil }
     expect(scraper).to receive(:puts).with("Importing thread 'linear b'")
 
-    scraper.scrape
+    scraper.scrape!
 
     expect(Post.count).to eq(1)
     expect(Reply.count).to eq(92)
@@ -75,6 +75,15 @@ RSpec.describe PostScraper do
     expect(Character.where(screenname: 'undercover_talent').first).not_to be_nil
   end
 
+  it "should raise an error when an unexpected character is found" do
+    url = 'http://wild-pegasus-appeared.dreamwidth.org/403.html?style=site&view=flat'
+    file = File.join(Rails.root, 'spec', 'support', 'fixtures', 'scrape_no_replies.html')
+    stub_request(:get, url).to_return(status: 200, body: File.new(file))
+    scraper = PostScraper.new(url)
+    expect(scraper).to receive(:puts).with("Importing thread 'linear b'")
+    expect { scraper.scrape! }.to raise_error(UnrecognizedUsernameError)
+  end
+
   it "should scrape character, user and icon properly" do
     url = 'http://wild-pegasus-appeared.dreamwidth.org/403.html?style=site&view=flat'
     file = File.join(Rails.root, 'spec', 'support', 'fixtures', 'scrape_no_replies.html')
@@ -82,12 +91,12 @@ RSpec.describe PostScraper do
     user = create(:user, username: "Marri")
     board = create(:board, creator: user)
 
-    scraper = PostScraper.new(url, board.id)
+    scraper = PostScraper.new(url, board.id, nil, nil, true)
     allow(STDIN).to receive(:gets).and_return(user.username)
     expect(scraper).to receive(:puts).with("Importing thread 'linear b'")
     expect(scraper).to receive(:print).with("User ID or username for wild_pegasus_appeared? ")
 
-    scraper.scrape
+    scraper.scrape!
 
     expect(Post.count).to eq(1)
     expect(Reply.count).to eq(0)
@@ -118,7 +127,7 @@ RSpec.describe PostScraper do
     expect(scraper).not_to receive(:print).with("User ID or username for wild_pegasus_appeared? ")
     expect(scraper).to receive(:puts).with("Importing thread 'linear b'") # just to quiet it
 
-    scraper.scrape
+    scraper.scrape!
     expect(User.count).to eq(1)
     expect(Icon.count).to eq(1)
     expect(Character.count).to eq(1)
@@ -145,7 +154,7 @@ RSpec.describe PostScraper do
     expect(scraper).not_to receive(:print).with("User ID or username for wild_pegasus_appeared? ")
     expect(scraper).to receive(:puts).with("Importing thread 'linear b'") # just to quiet it
 
-    scraper.scrape
+    scraper.scrape!
     expect(User.count).to eq(1)
     expect(Icon.count).to eq(1)
     expect(Character.count).to eq(1)

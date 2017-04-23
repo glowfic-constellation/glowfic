@@ -13,13 +13,14 @@ class PostScraper < Object
 
   attr_reader :url
 
-  def initialize(url, board_id=nil, section_id=nil, status=nil)
+  def initialize(url, board_id=nil, section_id=nil, status=nil, console_import=false)
     @board_id = board_id || SANDBOX_ID
     @section_id = section_id
     @status = status || Post::STATUS_COMPLETE
     url = url + (if url.include?('?') then '&view=flat' else '?view=flat' end) unless url.include?('view=flat')
     url = url + '&style=site' unless url.include?('style=site')
     @url = url
+    @console_import = console_import
   end
 
   def scrape!
@@ -126,7 +127,11 @@ class PostScraper < Object
   end
 
   def prompt_for_user(username)
-    raise UnrecognizedUsernameError.new("Unrecognized username: #{username}")
+    raise UnrecognizedUsernameError.new("Unrecognized username: #{username}") unless @console_import
+    print('User ID or username for ' + username + '? ')
+    input = STDIN.gets.chomp
+    return User.find_by_id(input) if input.to_s == input.to_i.to_s
+    User.where('lower(username) = ?', input.downcase).first
   end
 
   def set_from_icon(tag, url, keyword)
