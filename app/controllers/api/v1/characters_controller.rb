@@ -9,19 +9,28 @@ class Api::V1::CharactersController < Api::ApiController
 
   api! 'Load a single character as a JSON resource'
   param :id, :number, required: true, desc: 'Character ID'
-  param :post_id, :number, required: false, desc: 'If provided, will return an additional alias_id_for_post param to represent most recently used alias for this character in the provided post'
+  param :post_id, :number, required: false, desc: 'If provided, will return an additional character.active_alias to represent most recently used alias for this character in the provided post'
   error 404, "Character not found"
   error 422, "Invalid parameters provided"
   def show
-    post = nil
+    active_alias = nil
     if params[:post_id].present?
       unless (post = Post.find_by_id(params[:post_id]))
         error = {message: "Post could not be found."}
         render json: {errors: [error]}, status: :unprocessable_entity and return
       end
+
+      unless post.visible_to?(current_user)
+        error = {message: 'You do not have permission to perform this action.'}
+        render json: {errors: [error]}, status: :unprocessable_entity and return
+      end
+
+      active_alias = post.active_alias_for(@character)
     end
 
-    render json: @character.as_json(include: [:galleries, :default, :aliases], post_for_alias: post)
+    json_obj = @character.as_json(include: [:galleries, :default, :aliases])
+    json_obj.merge!(active_alias: active_alias.as_json) if active_alias
+    render json: json_obj
   end
 
   api! 'Update a given character'
