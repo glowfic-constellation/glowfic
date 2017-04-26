@@ -256,7 +256,7 @@ class PostsController < WritableController
   private
 
   def import_thread
-    if params[:dreamwidth_url].blank? || !params[:dreamwidth_url].include?('dreamwidth')
+    unless valid_dreamwidth_url?(params[:dreamwidth_url])
       flash[:error] = "Invalid URL provided."
       params[:view] = 'import'
       editor_setup
@@ -266,6 +266,17 @@ class PostsController < WritableController
     Resque.enqueue(ScrapePostJob, params[:dreamwidth_url], params[:board_id], params[:section_id], params[:status], current_user.id)
     flash[:success] = "Post has begun importing. You will be updated on progress via site message."
     redirect_to posts_path
+  end
+
+  def valid_dreamwidth_url?(url)
+    # this is simply checking for a properly formatted Dreamwidth URL
+    # errors when actually querying the URL are handled by ScrapePostJob
+    return false if url.blank?
+    return unless params[:dreamwidth_url].include?('dreamwidth')
+    parsed_url = URI.parse(url)
+    url.host.ends_with?('dreamwidth.org')
+  rescue URI::InvalidURIError
+    false
   end
 
   def find_post
