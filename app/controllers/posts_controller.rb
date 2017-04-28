@@ -2,6 +2,7 @@
 require 'will_paginate/array'
 
 class PostsController < WritableController
+  SCRAPE_USERS = [1, 2, 3, 8, 24, 31]
   before_filter :login_required, except: [:index, :show, :history, :warnings, :search, :stats]
   before_filter :find_post, only: [:show, :history, :stats, :warnings, :edit, :update, :destroy]
   before_filter :require_permission, only: [:edit, :destroy]
@@ -256,10 +257,16 @@ class PostsController < WritableController
   private
 
   def import_thread
+    unless SCRAPE_USERS.include?(current_user.id)
+      flash[:error] = "You do not have access to this feature."
+      editor_setup
+      return render action: :new
+    end
+
     unless valid_dreamwidth_url?(params[:dreamwidth_url])
       flash[:error] = "Invalid URL provided."
       params[:view] = 'import'
-      editor_setup
+      use_javascript('posts')
       return render action: :new
     end
 
@@ -274,7 +281,8 @@ class PostsController < WritableController
     return false if url.blank?
     return false unless params[:dreamwidth_url].include?('dreamwidth')
     parsed_url = URI.parse(url)
-    url.host.ends_with?('dreamwidth.org')
+    return false unless parsed_url.host
+    parsed_url.host.ends_with?('dreamwidth.org')
   rescue URI::InvalidURIError
     false
   end
