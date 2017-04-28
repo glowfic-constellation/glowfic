@@ -9,6 +9,7 @@ class PostScraper < Object
     'peterverse' => 'Pedro',
     'curiousdiscoverer' => 'CuriousDiscoverer',
     'aestrix' => 'Aestrix',
+    'unbitwise' => 'Unbitwise',
     'maggie-of-the-owls' => 'MaggieoftheOwls',
     'maggie_of_the_owls' => 'MaggieoftheOwls' # have both - and _ versions cause Dreamwidth supports both
   }
