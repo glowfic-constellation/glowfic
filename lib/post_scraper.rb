@@ -8,7 +8,9 @@ class PostScraper < Object
     'peterxy' => 'Pedro',
     'peterverse' => 'Pedro',
     'curiousdiscoverer' => 'CuriousDiscoverer',
-    'aestrix' => 'Aestrix'
+    'aestrix' => 'Aestrix',
+    'maggie-of-the-owls' => 'MaggieoftheOwls',
+    'maggie_of_the_owls' => 'MaggieoftheOwls' # have both - and _ versions cause Dreamwidth supports both
   }
 
   attr_reader :url
