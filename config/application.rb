@@ -14,11 +14,11 @@ require 'rails/all'
 Bundler.require(*Rails.groups)
 
 module Glowfic
-  ALLOWED_TAGS = ["b", "i", "u", "sub", "sup", "del", "hr", "p", "br", "div", "span", "pre", "code", "h1", "h2", "h3", "h4", "h5", "h6", "ul", "ol", "li", "dl", "dt", "dd", "a", "img", "blockquote", "table", "td", "th", "tr", "strike", "s", "strong", "em", "big", "small", "font"]
+  ALLOWED_TAGS = ["b", "i", "u", "sub", "sup", "del", "hr", "p", "br", "div", "span", "pre", "code", "h1", "h2", "h3", "h4", "h5", "h6", "ul", "ol", "li", "dl", "dt", "dd", "a", "img", "blockquote", "q", "table", "td", "th", "tr", "strike", "s", "strong", "em", "big", "small", "font",  "cite", "abbr", "var", "samp", "kbd", "mark", "ruby", "rp", "rt", "bdo", "wbr"]
   POST_CONTENT_SANITIZER = Sanitize::Config.merge(Sanitize::Config::RELAXED,
     :elements => ALLOWED_TAGS,
     :attributes => {
-      :all => ["xml:lang", "class", "style", "title"],
+      :all => ["xml:lang", "class", "style", "title", "lang", "dir"],
       "hr" => ["width"],
       "li" => ["value"],
       "ol" => ["reversed", "start", "type"],
@@ -27,13 +27,14 @@ module Glowfic
       "table" => ["width"],
       "td" => ["abbr", "width"],
       "th" => ["abbr", "width"],
-      "blockquote" => ["cite"]
+      "blockquote" => ["cite"],
+      "cite" => ["href"]
     }
   )
 
   class Application < Rails::Application
     config.assets.enabled = true
-    
+
     # Settings in config/environments/* take precedence over those specified here.
     # Application configuration should go into files in config/initializers
     # -- all .rb files in that directory are automatically loaded.
