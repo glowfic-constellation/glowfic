@@ -63,6 +63,7 @@ button, .button {
 .vmid { vertical-align: middle; }
 .bold { font-weight: bold; }
 .auto { overflow: auto; }
+.semiopaque { opacity: 0.5; }
 
 /* Displaying forum threads */
 #content .bg { background-color: #e5dfd1; }

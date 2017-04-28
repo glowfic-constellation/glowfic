@@ -93,6 +93,8 @@ $(document).ready(function() {
     }
   }
 
+  setCharacterListSelected(selectedCharID);
+
   if (String($("#post_privacy").val()) !== String(PRIVACY_ACCESS)){
     $("#access_list").hide();
   }
@@ -160,6 +162,12 @@ $(document).ready(function() {
   $("#active_character").change(function() {
     // Set the ID
     var id = $(this).val();
+    $("#reply_character_id").val(id);
+    getAndSetCharacterData(id);
+  });
+
+  $(".char-access-icon").click(function() {
+    var id = $(this).data('character-id');
     $("#reply_character_id").val(id);
     getAndSetCharacterData(id);
   });
@@ -289,6 +297,8 @@ getAndSetCharacterData = function(characterId, options) {
   $("#character-selector").hide();
   $("#current-icon-holder").unbind();
   $("#icon_dropdown").empty().append('<option value="">No Icon</option>');
+
+  setCharacterListSelected(characterId);
 
   // Handle special case where just setting to your base account
   if (characterId === '') {
@@ -465,3 +475,10 @@ createTagSelect = function(tagType) {
     width: '300px'
   });
 };
+
+function setCharacterListSelected(characterId) {
+  $(".char-access-icon.semiopaque").removeClass('semiopaque').addClass('pointer');
+  $(".char-access-icon").each(function(){
+    if (String($(this).data('character-id')) === String(characterId)) $(this).addClass('semiopaque').removeClass('pointer');
+  });
+}

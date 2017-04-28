@@ -3,6 +3,7 @@ module ApplicationHelper
   NO_ICON = 'No Icon'.freeze
   NO_ICON_URL = '/images/no-icon.png'.freeze
   TIME_FORMAT = '%b %d, %Y %l:%M %p'.freeze
+  CHAR_ICON = 'char-access-icon pointer'.freeze
 
   def icon_tag(icon, **args)
     return '' if icon.nil?
@@ -22,6 +23,21 @@ module ApplicationHelper
 
   def no_icon_tag(**args)
     icon_mem_tag(NO_ICON_URL, NO_ICON, **args)
+  end
+
+  def quick_switch_tag(image_url, short_text, hover_name, char_id)
+    if image_url.nil?
+      return content_tag :div, short_text, class: CHAR_ICON, title: hover_name, data: { character_id: char_id }
+    end
+    image_tag image_url, class: CHAR_ICON, alt: hover_name, title: hover_name, data: { character_id: char_id }
+  end
+
+  def user_icon_tag(user)
+    quick_switch_tag(user.avatar.try(:url), user.username[0..1], user.username, '')
+  end
+
+  def character_icon_tag(character)
+    quick_switch_tag(character.icon.try(:url), character.name[0..1], character.selector_name, character.id)
   end
 
   def swap_icon_url
