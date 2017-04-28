@@ -4,7 +4,8 @@ class Message < ActiveRecord::Base
   belongs_to :parent, class_name: Message
   belongs_to :first_thread, class_name: Message, foreign_key: :thread_id
 
-  validates_presence_of :sender, :recipient
+  validates_presence_of :recipient
+  validates_presence_of :sender, if: Proc.new { |m| m.sender_id != 0 }
 
   after_create :set_thread_id, :notify_recipient
 
@@ -33,6 +34,19 @@ class Message < ActiveRecord::Base
 
   def num_in_thread
     self.class.where(thread_id: thread_id).count
+  end
+
+  def sender_name
+    return 'Glowfic Constellation' if site_message?
+    sender.username
+  end
+
+  def site_message?
+    sender_id.to_i.zero?
+  end
+
+  def self.send_site_message(user_id, subject, message)
+    Message.create(recipient_id: user_id, sender_id: 0, subject: subject, message: message)
   end
 
   private

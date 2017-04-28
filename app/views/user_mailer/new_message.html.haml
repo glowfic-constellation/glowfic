@@ -6,12 +6,12 @@
 %div{style: 'background-color: #D8D8D8; color:#101010; overflow: auto; width: 500px; margin: 0px auto;'}
   %div{style: 'padding: 10px; text-align: left;'}
     %div{style: 'text-align: center; padding: 0px; float: left; margin-right: 10px; margin-bottom: 10px; width: 150px; overflow: visible;'}
-      - if @message.sender.avatar
+      - if @message.sender.try(:avatar)
         %div{style: 'padding: 0px; background-color: #B0BBA9;'}
           = icon_tag @message.sender.avatar, style: 'margin: 10px; vertical-align: middle; position: relative; max-height: 100px; max-width: 100px;'
       %div{style: 'background-color: #8B8687; padding: 4px;'}
         %b From:
-        = @message.sender.username
+        = @message.sender_name
       %div{style: 'background-color: #a3a1a0; padding: 4px;'}
         %b To:
         = @message.recipient.username

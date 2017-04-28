@@ -4,7 +4,6 @@ module ApplicationHelper
   NO_ICON_URL = '/images/no-icon.png'.freeze
   TIME_FORMAT = '%b %d, %Y %l:%M %p'.freeze
 
-
   def icon_tag(icon, **args)
     return '' if icon.nil?
     icon_mem_tag(icon.url, icon.keyword, **args)
@@ -148,5 +147,10 @@ module ApplicationHelper
     return false unless post
     return false unless opened_ids
     opened_ids.include?(post.id)
+  end
+
+  def message_sender(message)
+    return message.sender_name if message.site_message?
+    link_to(message.sender_name, user_path(message.sender))
   end
 end

@@ -22,7 +22,7 @@
               (#{message.num_in_thread})
           %td{class: klass}
             - if @view == 'inbox'
-              = link_to message.sender.username, user_path(message.sender)
+              = message_sender(message)
             - else
               = link_to message.recipient.username, user_path(message.recipient)
           %td{class: klass}= pretty_time(message.last_in_thread.created_at)

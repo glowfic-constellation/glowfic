@@ -15,7 +15,7 @@ class UserMailer < AsyncMailer
 
   def new_message(message_id)
     @message = Message.find(message_id)
-    @subject = "New message from #{@message.sender.username}: #{@message.unempty_subject}"
+    @subject = "New message from #{@message.sender_name}: #{@message.unempty_subject}"
     mail(to: @message.recipient.email, subject: @subject)
   end
 end

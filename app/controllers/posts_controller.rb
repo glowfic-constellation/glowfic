@@ -163,7 +163,7 @@ class PostsController < WritableController
         board_read = @post.board.last_read(current_user)
         if board_read && board_read > reply.created_at
           flash[:error] = "You have marked this continuity read more recently than that reply was written; it will not appear in your Unread posts."
-          Message.create(recipient_id: 1, sender_id: current_user.id, visible_outbox: false, thread_id: 330, subject: 'Unread at failure', message: "#{current_user.username} tried to mark post #{@post.id} unread at reply #{reply.id}")
+          Message.send_site_message(1, 'Unread at failure', "#{current_user.username} tried to mark post #{@post.id} unread at reply #{reply.id}")
         else
           @post.mark_read(current_user, reply.created_at - 1.second, true)
           flash[:success] = "Post has been marked as read until reply ##{reply.id}."
@@ -272,7 +272,7 @@ class PostsController < WritableController
     # this is simply checking for a properly formatted Dreamwidth URL
     # errors when actually querying the URL are handled by ScrapePostJob
     return false if url.blank?
-    return unless params[:dreamwidth_url].include?('dreamwidth')
+    return false unless params[:dreamwidth_url].include?('dreamwidth')
     parsed_url = URI.parse(url)
     url.host.ends_with?('dreamwidth.org')
   rescue URI::InvalidURIError
