@@ -2,6 +2,7 @@
 require 'will_paginate/array'
 
 class PostsController < WritableController
+  SCRAPE_USERS = [1, 2, 3, 8, 24, 31]
   before_filter :login_required, except: [:index, :show, :history, :warnings, :search, :stats]
   before_filter :find_post, only: [:show, :history, :stats, :warnings, :edit, :update, :destroy]
   before_filter :require_permission, only: [:edit, :destroy]
@@ -85,6 +86,8 @@ class PostsController < WritableController
   end
 
   def create
+    import_thread and return if params[:button_import].present?
+
     @post = Post.new(params[:post])
     @post.user = current_user
     preview and return if params[:button_preview].present?
@@ -161,7 +164,7 @@ class PostsController < WritableController
         board_read = @post.board.last_read(current_user)
         if board_read && board_read > reply.created_at
           flash[:error] = "You have marked this continuity read more recently than that reply was written; it will not appear in your Unread posts."
-          Message.create(recipient_id: 1, sender_id: current_user.id, visible_outbox: false, thread_id: 330, subject: 'Unread at failure', message: "#{current_user.username} tried to mark post #{@post.id} unread at reply #{reply.id}")
+          Message.send_site_message(1, 'Unread at failure', "#{current_user.username} tried to mark post #{@post.id} unread at reply #{reply.id}")
         else
           @post.mark_read(current_user, reply.created_at - 1.second, true)
           flash[:success] = "Post has been marked as read until reply ##{reply.id}."
@@ -252,6 +255,37 @@ class PostsController < WritableController
   end
 
   private
+
+  def import_thread
+    unless SCRAPE_USERS.include?(current_user.id)
+      flash[:error] = "You do not have access to this feature."
+      editor_setup
+      return render action: :new
+    end
+
+    unless valid_dreamwidth_url?(params[:dreamwidth_url])
+      flash[:error] = "Invalid URL provided."
+      params[:view] = 'import'
+      use_javascript('posts')
+      return render action: :new
+    end
+
+    Resque.enqueue(ScrapePostJob, params[:dreamwidth_url], params[:board_id], params[:section_id], params[:status], current_user.id)
+    flash[:success] = "Post has begun importing. You will be updated on progress via site message."
+    redirect_to posts_path
+  end
+
+  def valid_dreamwidth_url?(url)
+    # this is simply checking for a properly formatted Dreamwidth URL
+    # errors when actually querying the URL are handled by ScrapePostJob
+    return false if url.blank?
+    return false unless params[:dreamwidth_url].include?('dreamwidth')
+    parsed_url = URI.parse(url)
+    return false unless parsed_url.host
+    parsed_url.host.ends_with?('dreamwidth.org')
+  rescue URI::InvalidURIError
+    false
+  end
 
   def find_post
     @post = Post.find_by_id(params[:id])

@@ -111,7 +111,7 @@
         - current_user.messages.where(unread: true).each do |message|
           .flash.inbox
             New message from
-            = link_to message.sender.username, user_path(message.sender)
+            = message_sender(message)
             &ndash;
             = link_to message.unempty_subject, message_path(message)
     #content= yield

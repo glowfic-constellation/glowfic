@@ -141,9 +141,15 @@ RSpec.describe PostsController do
 
       get :new
 
-      expect(response.status).to eq(200)
+      expect(response).to have_http_status(200)
       expect(assigns(:post)).to be_new_record
       expect(assigns(:post).character).to eq(character)
+    end
+
+    it "works for importer" do
+      login
+      get :new, view: :import
+      expect(response).to have_http_status(200)
     end
   end
 
@@ -152,6 +158,58 @@ RSpec.describe PostsController do
       post :create
       expect(response).to redirect_to(root_url)
       expect(flash[:error]).to eq("You must be logged in to view that page.")
+    end
+
+    context "scrape" do
+      it "requires valid user" do
+        user = create(:user, id: PostsController::SCRAPE_USERS.max + 1)
+        login_as(user)
+        post :create, button_import: true
+        expect(response).to render_template(:new)
+        expect(flash[:error]).to eq("You do not have access to this feature.")
+      end
+
+      it "requires url" do
+        user = create(:user, id: PostsController::SCRAPE_USERS.first)
+        login_as(user)
+        post :create, button_import: true
+        expect(response).to render_template(:new)
+        expect(flash[:error]).to eq("Invalid URL provided.")
+      end
+
+      it "requires dreamwidth url" do
+        user = create(:user, id: PostsController::SCRAPE_USERS.first)
+        login_as(user)
+        post :create, button_import: true, dreamwidth_url: 'http://www.google.com'
+        expect(response).to render_template(:new)
+        expect(flash[:error]).to eq("Invalid URL provided.")
+      end
+
+      it "requires dreamwidth.org url" do
+        user = create(:user, id: PostsController::SCRAPE_USERS.first)
+        login_as(user)
+        post :create, button_import: true, dreamwidth_url: 'http://www.dreamwidth.com'
+        expect(response).to render_template(:new)
+        expect(flash[:error]).to eq("Invalid URL provided.")
+      end
+
+      it "requires well formed url" do
+        user = create(:user, id: PostsController::SCRAPE_USERS.first)
+        login_as(user)
+        expect(URI).to receive(:parse).and_raise(URI::InvalidURIError)
+        post :create, button_import: true, dreamwidth_url: 'dreamwidth'
+        expect(response).to render_template(:new)
+        expect(flash[:error]).to eq("Invalid URL provided.")
+      end
+
+      it "scrapes" do
+        user = create(:user, id: PostsController::SCRAPE_USERS.first)
+        login_as(user)
+        post :create, button_import: true, dreamwidth_url: 'http://www.dreamwidth.org'
+        expect(response).to redirect_to(posts_url)
+        expect(flash[:success]).to eq("Post has begun importing. You will be updated on progress via site message.")
+        expect(ScrapePostJob).to have_queue_size_of(1)
+      end
     end
 
     context "preview" do

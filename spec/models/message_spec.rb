@@ -18,5 +18,18 @@ RSpec.describe Message do
       expect(UserMailer).to have_queue_size_of(1)
       expect(UserMailer).to have_queued(:new_message, [message.id])
     end
+
+    it "cannot have a nil sender" do
+      message = build(:message)
+      message.sender = nil
+      expect(message).not_to be_valid
+    end
+
+    it "can have a zero sender_id to represent site messages" do
+      message = build(:message)
+      message.sender_id = 0
+      expect(message).to be_valid
+      expect(message.sender_name).to eq('Glowfic Constellation')
+    end
   end
 end

@@ -9,7 +9,7 @@
 
 .post-container{class: col_klass, id: "collapsed-#{message.id}", data: {id: message.id}}
   .padding-10
-    .author= link_to(message.sender.username, user_path(message.sender))
+    .author= message_sender(message)
     .message= generate_short(message.message).html_safe
     .float-right
       - if message.created_at
@@ -25,12 +25,12 @@
             .message-time Sent #{pretty_time(message.created_at)}
   .padding-10
     .post-info-box
-      - if message.sender.avatar
+      - if message.sender.try(:avatar)
         .post-icon= icon_tag message.sender.avatar
       .post-info-text
         .post-character
           %b From:
-          = link_to(message.sender.username, user_path(message.sender))
+          = message_sender(message)
         .post-screenname
           %b To:
           - if message.recipient
