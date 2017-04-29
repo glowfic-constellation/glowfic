@@ -84,6 +84,19 @@ RSpec.describe PostScraper do
     expect { scraper.scrape! }.to raise_error(UnrecognizedUsernameError)
   end
 
+  it "should raise an error when post is already imported" do
+    board = create(:board)
+    create(:character, screenname: 'wild_pegasus_appeared', user: board.creator)
+    url = 'http://wild-pegasus-appeared.dreamwidth.org/403.html?style=site&view=flat'
+    file = File.join(Rails.root, 'spec', 'support', 'fixtures', 'scrape_no_replies.html')
+    stub_request(:get, url).to_return(status: 200, body: File.new(file))
+    scraper = PostScraper.new(url, board.id)
+    allow(scraper).to receive(:puts).with("Importing thread 'linear b'")
+    expect { scraper.scrape! }.to change { Post.count }.by(1)
+    expect { scraper.scrape! }.to raise_error(AlreadyImportedError)
+    expect(Post.count).to eq(1)
+  end
+
   it "should scrape character, user and icon properly" do
     url = 'http://wild-pegasus-appeared.dreamwidth.org/403.html?style=site&view=flat'
     file = File.join(Rails.root, 'spec', 'support', 'fixtures', 'scrape_no_replies.html')

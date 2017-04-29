@@ -72,6 +72,11 @@ class PostScraper < Object
     @post.created_at = @post.updated_at = @post.edited_at = created_at
     @post.status = @status
 
+    # detect already imported
+    if (subj_post = Post.where(subject: @post.subject).first)
+      raise AlreadyImportedError.new("This thread has already been imported", subj_post.id)
+    end
+
     set_from_username(@post, username)
     @post.last_user_id = @post.user_id
 
@@ -177,4 +182,12 @@ class PostScraper < Object
 end
 
 class UnrecognizedUsernameError < Exception
+end
+
+class AlreadyImportedError < Exception
+  attr_reader :post_id
+  def initialize(msg, post_id)
+    @post_id = post_id
+    super(msg)
+  end
 end
