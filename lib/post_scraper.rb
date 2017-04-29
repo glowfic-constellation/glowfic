@@ -161,6 +161,13 @@ class PostScraper < Object
     if tag.character
       icon = tag.character.icons.where(keyword: keyword).first
       tag.icon = icon and return if icon
+
+      # kappa icon handling - icons are prefixed
+      if tag.user_id == 3 && (spaceindex = keyword.index(" "))
+        unprefixed = keyword.slice(spaceindex, keyword.length)
+        icon = tag.character.icons.detect { |i| i.keyword.ends_with?(unprefixed) }
+        tag.icon = icon and return if icon
+      end
     end
 
     icon = Icon.create!(user: tag.user, url: https_url, keyword: keyword)

@@ -172,4 +172,19 @@ RSpec.describe PostScraper do
     expect(Icon.count).to eq(1)
     expect(Character.count).to eq(1)
   end
+
+  it "handles Kappa icons" do
+    kappa = create(:user, id: 3)
+    char = create(:character, user: kappa)
+    gallery = create(:gallery, user: kappa)
+    char.galleries << gallery
+    icon = create(:icon, user: kappa, keyword: '⑮ mountains')
+    gallery.icons << icon
+    tag = build(:reply, user: kappa, character: char)
+    expect(tag.icon_id).to be_nil
+    scraper = PostScraper.new('')
+    scraper.send(:set_from_icon, tag, 'http://irrelevanturl.com', 'f.1 mountains')
+    expect(Icon.count).to eq(1)
+    expect(tag.icon_id).to eq(icon.id)
+  end
 end
