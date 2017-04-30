@@ -270,9 +270,26 @@ class PostsController < WritableController
       return render action: :new
     end
 
+    if (missing = missing_usernames(params[:dreamwidth_url])).present?
+      flash[:error] = {}
+      flash[:error][:message] = "The following usernames were not recognized. Please have the correct author create a character with the correct screenname, or contact Marri if you wish to map a particular screenname to 'your base account posting without a character'."
+      flash[:error][:array] = missing
+      return render action: :new
+    end
+
     Resque.enqueue(ScrapePostJob, params[:dreamwidth_url], params[:board_id], params[:section_id], params[:status], current_user.id)
     flash[:success] = "Post has begun importing. You will be updated on progress via site message."
     redirect_to posts_path
+  end
+
+  def missing_usernames(url)
+    require "#{Rails.root}/lib/post_scraper"
+    doc = Nokogiri::HTML(HTTParty.get(url).body)
+    usernames = doc.css('.poster span.ljuser b').map(&:text).uniq
+    usernames -= PostScraper::BASE_ACCOUNTS.keys
+    poster_names = doc.css('.entry-poster span.ljuser b')
+    usernames -= [poster_names.last.text] if poster_names.count > 1
+    usernames - Character.where(screenname: usernames).pluck(:screenname)
   end
 
   def valid_dreamwidth_url?(url)

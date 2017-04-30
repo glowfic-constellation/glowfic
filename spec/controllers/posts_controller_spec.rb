@@ -202,10 +202,25 @@ RSpec.describe PostsController do
         expect(flash[:error]).to eq("Invalid URL provided.")
       end
 
+      it "requires extant usernames" do
+        user = create(:user, id: PostsController::SCRAPE_USERS.first)
+        login_as(user)
+        url = 'http://wild-pegasus-appeared.dreamwidth.org/403.html?style=site&view=flat'
+        file = File.join(Rails.root, 'spec', 'support', 'fixtures', 'scrape_no_replies.html')
+        stub_request(:get, url).to_return(status: 200, body: File.new(file))
+        post :create, button_import: true, dreamwidth_url: url
+        expect(response).to render_template(:new)
+        expect(flash[:error][:message]).to start_with("The following usernames were not recognized")
+        expect(flash[:error][:array]).to include("wild_pegasus_appeared")
+        expect(ScrapePostJob).to have_queue_size_of(0)
+      end
+
       it "scrapes" do
         user = create(:user, id: PostsController::SCRAPE_USERS.first)
         login_as(user)
-        post :create, button_import: true, dreamwidth_url: 'http://www.dreamwidth.org'
+        url = 'http://www.dreamwidth.org'
+        stub_request(:get, url).to_return(status: 200, body: '')
+        post :create, button_import: true, dreamwidth_url: url
         expect(response).to redirect_to(posts_url)
         expect(flash[:success]).to eq("Post has begun importing. You will be updated on progress via site message.")
         expect(ScrapePostJob).to have_queue_size_of(1)
