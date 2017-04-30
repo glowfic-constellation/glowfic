@@ -324,7 +324,7 @@ getAndSetCharacterData = function(characterId, options) {
     $("#post-editor #post-author-spacer").hide();
     $("#post-editor .post-character").show().data('character-id', characterId);
     $("#post-editor .post-character #name").html(resp.name);
-    if(resp.screenname === undefined) {
+    if(!resp.screenname) {
       $("#post-editor .post-screenname").hide();
     } else {
       $("#post-editor .post-screenname").show().html(resp.screenname);
