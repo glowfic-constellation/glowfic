@@ -48,7 +48,7 @@
       = link_to post.user.username, user_path(post.user)
       and
       = link_to "#{authors.length-1} others", stats_post_path(post)
-  %td.width-70.post-replies{class: klass}= replies_count
+  %td.width-70.post-replies{class: klass}= link_to replies_count, stats_post_path(post)
   - if logged_in? && local_assigns[:show_unread_count]
     %td.width-70{class: klass}
       - if @opened_ids.include?(post.id) && unread_ids.include?(post.id)
