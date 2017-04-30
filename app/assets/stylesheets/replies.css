@@ -96,12 +96,28 @@ select.per-page { margin-top: 5px; margin-bottom: 5px; }
 #post-editor { position: relative; }
 .details { display: inline; font-size: 12px; font-style: italic; }
 
+/* Small icons for selecting characters in post-editor */
+.char-access-icon {
+  height: 30px;
+  width: 30px;
+  float: left;
+  box-sizing: border-box;
+}
+div.char-access-icon {
+  padding: 5px 0 5px 0;
+  font-size: 80%;
+  background-color: #aaa;
+  background-color: rgba(128,128,128,0.3);
+}
+
+/* Blockquotes */
 .post-post blockquote, .post-reply:nth-child(even) blockquote { background-color: #D8D8D8; }
 .post-reply:nth-child(odd) blockquote { background-color: #E3E3E3; }
 .post-content blockquote { margin: 0.5em 5.5em; padding: 0.5em; }
 .post-content blockquote > p:first-child { margin-top: 0; }
 .post-content blockquote > p:last-child { margin-bottom: 0; }
 
+/* Narrow window display */
 @media (max-width: 600px) {
     .post-info-box { float: none; width: 100%; display: inline-block; }
     .post-icon { float: left; margin-right: 0; margin-bottom: 5px; }

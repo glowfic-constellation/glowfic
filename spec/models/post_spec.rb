@@ -500,6 +500,53 @@ RSpec.describe Post do
     end
   end
 
+  describe "#recent_characters_for" do
+    it "is blank if user has not responded to post" do
+      post = create(:post)
+      create(:reply, post: post)
+      user = create(:user)
+      expect(post.authors).not_to include(user)
+      expect(post.recent_characters_for(user)).to be_blank
+    end
+
+    it "includes the post character if relevant" do
+      char = create(:character)
+      post = create(:post, user: char.user, character: char)
+      expect(post.recent_characters_for(char.user)).to match_array([char])
+    end
+
+    it "only includes characters for specified author" do
+      other_char1 = create(:character)
+      other_char2 = create(:character)
+      post = create(:post, user: other_char1.user, character: other_char1)
+      create(:reply, post: post, user: other_char2.user, character: other_char2)
+      reply = create(:reply, character_id: nil)
+      expect(post.recent_characters_for(reply.user)).to be_blank
+    end
+
+    it "returns correctly ordered information without duplicates" do
+      user = create(:user)
+      char = create(:character, user: user)
+      post = create(:post, user: user, character: char)
+      reply_char = create(:character, user: user)
+      reply_char2 = create(:character, user: user)
+      create(:reply, post: post, user: user, character: reply_char)
+      create(:reply, post: post, user: user, character: reply_char)
+      create(:reply, post: post, user: user, character: char)
+      create(:reply, post: post, user: user, character: reply_char2)
+      coauthor = create(:user)
+      cochar = create(:character, user: coauthor)
+      create(:reply, post: post, user: coauthor, character: cochar)
+
+      other_char = create(:character, user: user)
+      other_post = create(:post, user: user, character: other_char)
+      create(:reply, post: other_post, user: user, character: other_char)
+      create(:reply, post: post, user: coauthor, character: cochar)
+
+      expect(post.recent_characters_for(user)).to eq([reply_char2, char, reply_char])
+    end
+  end
+
   describe "#reset_warnings" do
     let(:post) { create(:post) }
     let(:warning) { create(:content_warning) }
