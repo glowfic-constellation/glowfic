@@ -520,13 +520,13 @@ RSpec.describe Post do
       create(:reply, post: post)
       user = create(:user)
       expect(post.authors).not_to include(user)
-      expect(post.recent_characters_for(user)).to be_blank
+      expect(post.recent_characters_for(user, 4)).to be_blank
     end
 
     it "includes the post character if relevant" do
       char = create(:character)
       post = create(:post, user: char.user, character: char)
-      expect(post.recent_characters_for(char.user)).to match_array([char])
+      expect(post.recent_characters_for(char.user, 4)).to match_array([char])
     end
 
     it "only includes characters for specified author" do
@@ -535,7 +535,7 @@ RSpec.describe Post do
       post = create(:post, user: other_char1.user, character: other_char1)
       create(:reply, post: post, user: other_char2.user, character: other_char2)
       reply = create(:reply, character_id: nil)
-      expect(post.recent_characters_for(reply.user)).to be_blank
+      expect(post.recent_characters_for(reply.user, 4)).to be_blank
     end
 
     it "returns correctly ordered information without duplicates" do
@@ -557,7 +557,19 @@ RSpec.describe Post do
       create(:reply, post: other_post, user: user, character: other_char)
       create(:reply, post: post, user: coauthor, character: cochar)
 
-      expect(post.recent_characters_for(user)).to eq([reply_char2, char, reply_char])
+      expect(post.recent_characters_for(user, 4)).to eq([reply_char2, char, reply_char])
+    end
+
+    it "limits the amount of returned data" do
+      user = create(:user)
+      characters = Array.new(5) { create(:character, user: user) }
+      post_char = create(:character, user: user)
+      post = create(:post, user: user, character: post_char)
+      characters.each do |char|
+        create(:reply, user: user, post: post, character: char)
+      end
+
+      expect(post.recent_characters_for(user, 4)).to eq(characters[-4..-1].reverse)
     end
   end
 
