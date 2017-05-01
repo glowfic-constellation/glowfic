@@ -42,8 +42,11 @@
             %br
       - if item.is_a?(Reply)
         .post-char-access
-          - recent_characters = item.post.try(:recent_characters_for, current_user)
-          = user_icon_tag(current_user)
+          - char_count = 5
+          - char_count -= 1 if current_user.show_user_in_switcher?
+          - recent_characters = item.post.try(:recent_characters_for, current_user, char_count)
+          - if current_user.show_user_in_switcher?
+            = user_icon_tag(current_user)
           - if recent_characters.present?
             - recent_characters.each do |character|
               = character_icon_tag character
