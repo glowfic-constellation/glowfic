@@ -22,6 +22,8 @@ class Character < ActiveRecord::Base
 
   attr_accessor :new_template_name, :group_name
 
+  after_destroy :clear_char_ids
+
   nilify_blanks
 
   def recent_posts
@@ -80,5 +82,10 @@ class Character < ActiveRecord::Base
     if default_icon.present? && default_icon.user_id != user_id
       errors.add(:default_icon, "must be yours")
     end
+  end
+
+  def clear_char_ids
+    Reply.where(character_id: id).update_all(character_id: nil)
+    Post.where(character_id: id).update_all(character_id: nil)
   end
 end
