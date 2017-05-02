@@ -9,5 +9,5 @@
 
 = render partial: 'single', collection: @messages, as: :message
 %br
-- unless @message.site_message?
+- unless @message.parent.site_message?
   = render partial: 'editor'
