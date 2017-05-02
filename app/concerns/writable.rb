@@ -25,6 +25,7 @@ module Writable
     end
 
     def word_count
+      return 0 if content.nil?
       content.split.size
     end
 
