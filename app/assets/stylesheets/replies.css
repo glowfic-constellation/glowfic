@@ -116,6 +116,7 @@ div.char-access-icon {
 .post-content blockquote { margin: 0.5em 5.5em; padding: 0.5em; }
 .post-content blockquote > p:first-child { margin-top: 0; }
 .post-content blockquote > p:last-child { margin-bottom: 0; }
+.post-content img { max-width: 100%; height: auto; }
 
 /* Narrow window display */
 @media (max-width: 600px) {
