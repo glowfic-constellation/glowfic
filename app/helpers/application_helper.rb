@@ -37,7 +37,7 @@ module ApplicationHelper
   end
 
   def character_icon_tag(character)
-    quick_switch_tag(character.icon.try(:url), character.name[0..1], character.selector_name, character.id)
+    quick_switch_tag(character.default_icon.try(:url), character.name[0..1], character.selector_name, character.id)
   end
 
   def swap_icon_url

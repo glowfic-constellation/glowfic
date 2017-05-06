@@ -16,7 +16,7 @@
         - else
           - icons = item.character.icons.map{|i| [i.keyword, i.id]}
         - unless icons.present?
-          - icon = item.character.icon
+          - icon = item.character.default_icon
           - icons = [[icon.keyword, icon.id]] unless icon.nil?
         = select_tag :icon_dropdown, options_for_select(icons, item.icon_id), prompt: "No Icon"
       - elsif current_user.avatar

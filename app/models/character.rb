@@ -25,10 +25,6 @@ class Character < ActiveRecord::Base
 
   nilify_blanks
 
-  def icon
-    default_icon
-  end
-
   def recent_posts
     return @recent unless @recent.nil?
     reply_ids = replies.group(:post_id).pluck(:post_id)
