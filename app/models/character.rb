@@ -26,7 +26,7 @@ class Character < ActiveRecord::Base
   nilify_blanks
 
   def icon
-    @icon ||= default_icon || galleries.detect(&:default_icon).try(:default_icon)
+    default_icon
   end
 
   def recent_posts
