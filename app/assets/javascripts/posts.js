@@ -1,6 +1,8 @@
 var tinyMCEInit = false;
 
 $(document).ready(function() {
+  // SET UP POST VIEWING:
+
   // Checks if the user is on the unread page but also started near the unread element,
   // since e.g. on a refresh some browsers will retain your spot on the page
   // Will be used after some page-size-changing functions to revert to the correct spot
@@ -10,14 +12,22 @@ $(document).ready(function() {
     shouldScrollToUnread = Math.abs(unreadElem.offset().top - $(window).scrollTop()) < 50;
 
   // TODO fix hack
-  // Hack because having In Thread characters as a group in addition to Template groups
-  // duplicates characters in the dropdown, and therefore multiple options are selected
-  var selectd;
-  $("#active_character option[selected]").each(function(){
-    if (!selectd) selectd = this;
-    $(this).prop("selected", false);
+  // Resizes screennames to be slightly smaller if they're long for UI reasons
+  $(".post-screenname").each(function (index) {
+    if($(this).height() > 20) {
+      $(this).css('font-size', "14px");
+      if($(this).height() > 20 ) { $(this).css('font-size', "12px"); }
+    }
   });
-  $(selectd).prop("selected", true);
+
+  // Now that we've finished the scripts that change page locations, scroll to #unread
+  // if we determined on page load that we should.
+  if (shouldScrollToUnread)
+    $(window).scrollTop(unreadElem.offset().top);
+
+  if ($("#post-editor").length === 0) return; // Skip if there is no post / writable editor
+
+  // SET UP POST EDITOR:
 
   PRIVACY_ACCESS = 2; // TODO don't hardcode
 
@@ -47,25 +57,50 @@ $(document).ready(function() {
   createTagSelect("setting");
   createTagSelect("warning");
 
+  if (String($("#post_privacy").val()) !== String(PRIVACY_ACCESS)){
+    $("#access_list").hide();
+  }
+
+  if ($("#post_section_id").val() === '') { setSections(); }
+  $("#post_board_id").change(function() { setSections(); });
+
+  $("#post_privacy").change(function() {
+    if(String($(this).val()) == String(PRIVACY_ACCESS)) {
+      $("#access_list").show();
+    } else {
+      $("#access_list").hide();
+    }
+  });
+
+  $("#submit_button").click(function() {
+    $("#draft_button").removeAttr('data-disable-with').attr('disabled', 'disabled');
+    return true;
+  });
+
+  $("#draft_button").click(function() {
+    $("#submit_button").removeAttr('data-disable-with').attr('disabled', 'disabled');
+    return true;
+  });
+
+  if ($("#post-editor .view-button").length === 0) return; // Skip if there is no writable editor (no RTF/HTML buttons)
+
+  // SET UP WRITABLE EDITOR:
+
+  // TODO fix hack
+  // Hack because having In Thread characters as a group in addition to Template groups
+  // duplicates characters in the dropdown, and therefore multiple options are selected
+  var selectd;
+  $("#active_character option[selected]").each(function(){
+    if (!selectd) selectd = this;
+    $(this).prop("selected", false);
+  });
+  $(selectd).prop("selected", true);
+
   // TODO fix hack
   // Only initialize TinyMCE if it's required
   if($("#rtf").hasClass('selected') === true) {
     setupTinyMCE();
   }
-
-  // TODO fix hack
-  // Resizes screennames to be slightly smaller if they're long for UI reasons
-  $(".post-screenname").each(function (index) {
-    if($(this).height() > 20) {
-      $(this).css('font-size', "14px");
-      if($(this).height() > 20 ) { $(this).css('font-size', "12px"); }
-    }
-  });
-
-  // Now that we've finished the scripts that change page locations, scroll to #unread
-  // if we determined on page load that we should.
-  if (shouldScrollToUnread)
-    $(window).scrollTop(unreadElem.offset().top);
 
   // Hack to deal with Firefox's "helpful" caching of form values on soft refresh (now via IDs)
   var selectedCharID = $("#reply_character_id").val();
@@ -93,19 +128,13 @@ $(document).ready(function() {
     }
   }
 
+  // Set the quick-switcher's selected character
   setCharacterListSelected(selectedCharID);
-
-  if (String($("#post_privacy").val()) !== String(PRIVACY_ACCESS)){
-    $("#access_list").hide();
-  }
 
   // Bind both change() and keyup() in the icon keyword dropdown because Firefox doesn't
   // respect up/down key selections in a dropdown as a valid change() trigger
   $("#icon_dropdown").change(function() { setIconFromId($(this).val()); });
   $("#icon_dropdown").keyup(function() { setIconFromId($(this).val()); });
-
-  if ($("#post_section_id").val() === '') { setSections(); }
-  $("#post_board_id").change(function() { setSections(); });
 
   $('.view-button').click(function() {
     if(this.id === 'rtf') {
@@ -123,24 +152,6 @@ $(document).ready(function() {
       tinyMCE.execCommand('mceRemoveEditor', false, 'post_content');
       tinyMCE.execCommand('mceRemoveEditor', false, 'reply_content');
     }
-  });
-
-  $("#post_privacy").change(function() {
-    if(String($(this).val()) == String(PRIVACY_ACCESS)) {
-      $("#access_list").show();
-    } else {
-      $("#access_list").hide();
-    }
-  });
-
-  $("#submit_button").click(function() {
-    $("#draft_button").removeAttr('data-disable-with').attr('disabled', 'disabled');
-    return true;
-  });
-
-  $("#draft_button").click(function() {
-    $("#submit_button").removeAttr('data-disable-with').attr('disabled', 'disabled');
-    return true;
   });
 
   $("#swap-icon").click(function () {
