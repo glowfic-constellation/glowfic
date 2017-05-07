@@ -19,7 +19,7 @@ class CharacterPresenter
       return char_json unless options[:include].present?
     end
 
-    char_json.merge!(default: character.icon.try(:as_json)) if options[:include].include?(:default)
+    char_json.merge!(default: character.default_icon.try(:as_json)) if options[:include].include?(:default)
     char_json.merge!(aliases: character.aliases) if options[:include].include?(:aliases)
     return char_json unless options[:include].include?(:galleries)
 
@@ -44,8 +44,8 @@ class CharacterPresenter
   def single_gallery_json
     if character.galleries.present?
       [{icons: character.icons}]
-    elsif character.icon.present?
-      [{icons: [character.icon]}]
+    elsif character.default_icon.present?
+      [{icons: [character.default_icon]}]
     else
       []
     end

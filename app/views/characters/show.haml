@@ -27,11 +27,11 @@
           %br
           %span.character-screenname= @character.screenname
   %tbody
-    - if @character.icon
+    - if @character.default_icon
       %tr
         %td.green.centered.character-icon
-          = link_to icon_path(@character.icon) do
-            = icon_tag @character.icon
+          = link_to icon_path(@character.default_icon) do
+            = icon_tag @character.default_icon
     %tr
       %td.centered{class: cycle('even', 'odd')}
         = link_to character_path(@character) do

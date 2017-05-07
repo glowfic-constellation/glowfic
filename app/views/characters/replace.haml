@@ -20,14 +20,14 @@
       %th.sub New
     %tr
       %td.green.width-150.centered.vtop
-        = icon_tag @character.icon
+        = icon_tag @character.default_icon
         %br
         = @character.name
         - if @character.aliases.exists?
           = select_tag :orig_alias, options_for_select({'— Any Alias —': 'all'}, 'all') + options_from_collection_for_select(@character.aliases, :id, :name), prompt: '— No alias —'
       %td.green.width-150.centered
         - if @alts.first.try(:icon)
-          = icon_tag @alts.first.icon, id: 'new_icon'
+          = icon_tag @alts.first.default_icon, id: 'new_icon'
         - else
           = no_icon_tag id: 'new_icon'
         %br

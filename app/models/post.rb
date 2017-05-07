@@ -96,7 +96,7 @@ class Post < ActiveRecord::Base
     if reply.character_id.nil?
       reply.icon_id = user.avatar_id
     else
-      reply.icon_id = reply.character.icon.try(:id)
+      reply.icon_id = reply.character.default_icon.try(:id)
     end
 
     return reply

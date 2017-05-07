@@ -111,8 +111,8 @@ class CharactersController < ApplicationController
     use_javascript('icons')
 
     icons = @alts.map do |alt|
-      if alt.icon.present?
-        [alt.id, {url: alt.icon.url, keyword: alt.icon.keyword, aliases: alt.aliases.as_json}]
+      if alt.default_icon.present?
+        [alt.id, {url: alt.default_icon.url, keyword: alt.default_icon.keyword, aliases: alt.aliases.as_json}]
       else
         [alt.id, {url: '/images/no-icon.png', keyword: 'No Icon', aliases: alt.aliases.as_json}]
       end
