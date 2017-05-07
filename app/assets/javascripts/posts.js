@@ -368,18 +368,22 @@ getAndSetCharacterData = function(characterId, options) {
       $("#reply_character_alias_id").val('');
     }
 
+    $("#gallery").html('');
+
     // Display no icon if no default set
     if (!resp.default) {
-      $("#current-icon").removeClass('pointer');
       setIcon('');
-      return;
+      // Remove pointer and skip galleries if no galleries attached to character
+      if (resp.galleries.length == 0) {
+        $("#current-icon").removeClass('pointer');
+        return;
+      }
     }
 
     // Display default icon
     $("#current-icon").addClass('pointer');
 
     // Calculate new galleries
-    $("#gallery").html("");
     var multiGallery = resp.galleries.length > 1;
     for(var j = 0; j < resp.galleries.length; j++) {
       $("#gallery").append(galleryString(resp.galleries[j], multiGallery));
