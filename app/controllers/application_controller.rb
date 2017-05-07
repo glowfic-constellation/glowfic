@@ -88,6 +88,16 @@ class ApplicationController < ActionController::Base
     redirect_to glowfic_url, status: :moved_permanently
   end
 
+  def post_or_reply_link(reply)
+    return unless reply.id.present?
+    if reply.is_a?(Reply)
+      reply_path(reply, anchor: "reply-#{reply.id}")
+    else
+      post_path(reply)
+    end
+  end
+  helper_method :post_or_reply_link
+
   def posts_from_relation(relation, no_tests=true, with_pagination=true)
     posts = relation
       .select('posts.*, boards.name as board_name, users.username as last_user_name')

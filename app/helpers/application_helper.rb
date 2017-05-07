@@ -122,15 +122,6 @@ module ApplicationHelper
     options_for_select(time_displays, default)
   end
 
-  def post_or_reply_link(reply)
-    return unless reply.id.present?
-    if reply.is_a?(Reply)
-      reply_path(reply, anchor: "reply-#{reply.id}")
-    else
-      post_path(reply)
-    end
-  end
-
   def sanitize_post_description(desc)
     Sanitize.fragment(desc, elements: ['a'], attributes: {'a' => ['href']})
   end
