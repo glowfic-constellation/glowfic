@@ -12,8 +12,7 @@
         = link_to template_path(template), :method => :delete, confirm: 'Are you sure you want to delete this template?' do
           .link-box.red x Delete Template
       - if page_view == 'list'
-        - @template = template
-        = render partial: 'characters/list_view'
+        = render partial: 'templates/list_view', locals: {template: template, characters: template.characters} # TODO paginate
       - else
         - @characters = template.characters
         = render partial: 'characters/icon_view'

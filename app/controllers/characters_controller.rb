@@ -20,6 +20,12 @@ class CharactersController < ApplicationController
                   else
                     @user.username + "'s Characters"
                   end
+
+    @characters = @user.characters.includes(:template).order('templates.name ASC, characters.name ASC').paginate(page: page, per_page: 50)
+    @templates = @characters.map(&:template).uniq
+    if @characters.total_pages.to_i == page.to_i
+      @templates += @user.templates.joins('left join characters on characters.template_id = templates.id').having('count(characters.id) < 1').group('templates.id')
+    end
   end
 
   def new

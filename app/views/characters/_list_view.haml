@@ -1,34 +1,14 @@
-- if @group
-  - @group.characters.map(&:template).uniq.compact.sort_by(&:name).each do |template|
-    = render partial: 'characters/list_section', locals: {name: template, characters: template.characters}
-  - if @group.characters.where(template_id: nil).exists?
-    = render partial: 'characters/list_section', locals: {name: "No Template", characters: @group.characters.where(template_id: nil).order('name asc')}
-- elsif @template
-  = render partial: 'characters/list_section', locals: {name: @template, characters: @template.characters}
-- elsif @user.character_groups.exists?
-  - @user.character_groups.order('id asc').each do |group|
-    %tr
-      %th.subber{colspan: 6}
-        Group:
-        = group.name
-    - group.characters.map(&:template).uniq.compact.sort_by(&:name).each do |template|
-      = render partial: 'characters/list_section', locals: {name: template, characters: template.characters}
-    - if group.characters.where(template_id: nil).exists?
-      = render partial: 'characters/list_section', locals: {name: "No Template", characters: group.characters.where(template_id: nil).order('name asc')}
-  - if @user.characters.where(character_group_id: nil).exists?
-    %tr
-      %th{colspan: 6} Ungrouped Characters
-    - @user.characters.where(character_group_id: nil).includes(:template).map(&:template).uniq.compact.sort_by(&:name).each do |template|
-      - next if template.characters.where('character_group_id is not null').exists?
-      = render partial: 'characters/list_section', locals: {name: template, characters: template.characters}
-    = render partial: 'characters/list_section', locals: {name: "No Template", characters: @user.characters.where(character_group_id: nil).where(template_id: nil).order('name asc')}
+- if @template
+  = render partial: 'templates/list_view', locals: {template: @template, characters: @template.characters} # TODO paginate
 
-- elsif @user.characters.exists?
-  - @user.templates.order('name asc').each do |template|  
-    = render partial: 'characters/list_section', locals: {name: template, characters: template.characters}
+- elsif @characters.exists?
+  - @templates.each do |template|
+    = render partial: 'templates/list_view', locals: {template: template, characters: @characters.select { |c| c.template == template} }
+  - if @characters.total_pages > 1
+    %tfoot
+      %tr
+        %td{colspan: 6}= render partial: 'posts/paginator', locals: { paginated: @characters }
 
-  - unless @user.characters.where(template_id: nil).count.zero?
-    = render partial: 'characters/list_section', locals: {name: "No Template", characters: @user.characters.where(template_id: nil).order('name asc')}
 - else
   %tr
     %td.centered.padding-10{class: cycle('even', 'odd'), colspan: 6} — No characters yet —
