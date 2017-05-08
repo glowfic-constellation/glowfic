@@ -14,45 +14,6 @@ RSpec.describe TagsController do
     end
   end
 
-  describe "GET new" do
-    it "requires login" do
-      get :new
-      expect(response).to redirect_to(root_url)
-      expect(flash[:error]).to eq("You must be logged in to view that page.")
-    end
-
-    it "succeeds when logged in" do
-      login
-      get :new
-      expect(response.status).to eq(200)
-    end
-  end
-
-  describe "POST create" do
-    it "requires login" do
-      post :create
-      expect(response).to redirect_to(root_url)
-      expect(flash[:error]).to eq("You must be logged in to view that page.")
-    end
-
-    it "requires valid params" do
-      login
-      post :create
-      expect(response.status).to eq(200)
-      expect(flash[:error][:message]).to eq("Tag could not be saved because of the following problems:")
-    end
-
-    it "creates a tag" do
-      expect(Tag.first).to be_nil
-      user_id = login
-      post :create, tag: {name: 'TestTag'}
-      tag = Tag.first
-      expect(tag).not_to be_nil
-      expect(response).to redirect_to(tag_url(tag))
-      expect(tag.user_id).to eq(user_id)
-    end
-  end
-
   describe "GET show" do
     it "requires valid tag" do
       get :show, id: -1
@@ -61,13 +22,13 @@ RSpec.describe TagsController do
     end
 
     it "succeeds with valid tag" do
-      tag = create(:tag)
+      tag = create(:label)
       get :show, id: tag.id
       expect(response.status).to eq(200)
     end
 
     it "succeeds for logged in users with valid tag" do
-      tag = create(:tag)
+      tag = create(:label)
       login
       get :show, id: tag.id
       expect(response.status).to eq(200)
@@ -89,7 +50,7 @@ RSpec.describe TagsController do
     end
 
     it "requires permission" do
-      tag = create(:tag)
+      tag = create(:label)
       login
       get :edit, id: tag.id
       expect(response).to redirect_to(tag_url(tag))
@@ -97,7 +58,7 @@ RSpec.describe TagsController do
     end
 
     it "allows admin to edit the tag" do
-      tag = create(:tag)
+      tag = create(:label)
       login_as(create(:admin_user))
       get :edit, id: tag.id
       expect(response.status).to eq(200)
@@ -120,14 +81,14 @@ RSpec.describe TagsController do
 
     it "requires permission" do
       login
-      tag = create(:tag)
+      tag = create(:label)
       put :update, id: tag.id
       expect(response).to redirect_to(tag_url(tag))
       expect(flash[:error]).to eq("You do not have permission to edit this tag.")
     end
 
     it "requires valid params" do
-      tag = create(:tag)
+      tag = create(:label)
       login_as(create(:admin_user))
       put :update, id: tag.id, tag: {name: nil}
       expect(response.status).to eq(200)
@@ -135,7 +96,7 @@ RSpec.describe TagsController do
     end
 
     it "allows admin to update the tag" do
-      tag = create(:tag)
+      tag = create(:label)
       name = tag.name + 'Edited'
       login_as(create(:admin_user))
       put :update, id: tag.id, tag: {name: name}
@@ -160,7 +121,7 @@ RSpec.describe TagsController do
     end
 
     it "requires permission" do
-      tag = create(:tag)
+      tag = create(:label)
       login
       delete :destroy, id: tag.id
       expect(response).to redirect_to(tag_url(tag))
@@ -168,7 +129,7 @@ RSpec.describe TagsController do
     end
 
     it "allows admin to destroy the tag" do
-      tag = create(:tag)
+      tag = create(:label)
       login_as(create(:admin_user))
       delete :destroy, id: tag.id
       expect(response).to redirect_to(tags_path)

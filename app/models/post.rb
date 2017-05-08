@@ -27,13 +27,13 @@ class Post < ActiveRecord::Base
   has_many :viewers, through: :post_viewers, source: :user
   has_many :reply_drafts, dependent: :destroy
   has_many :post_tags, inverse_of: :post, dependent: :destroy
-  has_many :tags, through: :post_tags
+  has_many :labels, through: :post_tags, source: :label
   has_many :settings, through: :post_tags, source: :setting
   has_many :content_warnings, through: :post_tags, source: :content_warning, after_add: :reset_warnings
   has_many :favorites, as: :favorite, dependent: :destroy
 
-  attr_accessible :board, :board_id, :subject, :privacy, :viewer_ids, :description, :section_id, :tag_ids, :warning_ids, :setting_ids, :section_order, :status
-  attr_accessor :tag_ids, :warning_ids, :setting_ids
+  attr_accessible :board, :board_id, :subject, :privacy, :viewer_ids, :description, :section_id, :label_ids, :warning_ids, :setting_ids, :section_order, :status
+  attr_accessor :label_ids, :warning_ids, :setting_ids
   attr_writer :skip_edited
 
   validates_presence_of :board, :subject
@@ -193,11 +193,6 @@ class Post < ActiveRecord::Base
     word_count + contents.inject{|r, e| r + e.split.size}.to_i
   end
 
-  def tags_with_scope
-    tags_without_scope.where(type: nil)
-  end
-  alias_method_chain :tags, :scope
-
   private
 
   def valid_board
@@ -215,9 +210,9 @@ class Post < ActiveRecord::Base
   end
 
   def update_tag_list
-    return unless tag_ids.present? || setting_ids.present? || warning_ids.present?
+    return unless label_ids.present? || setting_ids.present? || warning_ids.present?
 
-    updated_ids = ((tag_ids || []) + (setting_ids || []) + (warning_ids || []) - ['']).map(&:to_i).reject(&:zero?).uniq.compact
+    updated_ids = ((label_ids || []) + (setting_ids || []) + (warning_ids || []) - ['']).map(&:to_i).reject(&:zero?).uniq.compact
     existing_ids = post_tags.map(&:tag_id)
 
     PostTag.where(post_id: id, tag_id: (existing_ids - updated_ids)).destroy_all

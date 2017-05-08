@@ -5,7 +5,7 @@ class Tag < ActiveRecord::Base
   has_many :character_tags, dependent: :destroy
   has_many :characters, through: :character_tags
 
-  validates_presence_of :user, :name
+  validates_presence_of :user, :name, :type
   validates :name, uniqueness: { scope: :type }
 
   def editable_by?(user)
@@ -20,6 +20,8 @@ class Tag < ActiveRecord::Base
     transaction do
       PostTag.where(tag_id: other_tag.id).where(post_id: post_tags.pluck('distinct post_id')).delete_all
       PostTag.where(tag_id: other_tag.id).update_all(tag_id: self.id)
+      CharacterTag.where(tag_id: other_tag.id).where(character_id: character_tags.pluck('distinct character_id')).delete_all
+      CharacterTag.where(tag_id: other_tag.id).update_all(tag_id: self.id)
       other_tag.destroy
     end
   end

@@ -253,15 +253,15 @@ RSpec.describe PostsController do
     end
 
     it "creates new tags" do
-      existing_name = create(:tag)
-      existing_case = create(:tag)
-      tags = ['atag', 'atag', create(:tag).id, '', existing_name.name, existing_case.name.upcase]
+      existing_name = create(:label)
+      existing_case = create(:label)
+      tags = ['atag', 'atag', create(:label).id, '', existing_name.name, existing_case.name.upcase]
       login
       expect {
-        post :create, post: {subject: 'a', board_id: create(:board).id, tag_ids: tags}
-      }.to change{Tag.count}.by(1)
-      expect(Tag.last.name).to eq('atag')
-      expect(assigns(:post).tags.count).to eq(4)
+        post :create, post: {subject: 'a', board_id: create(:board).id, label_ids: tags}
+      }.to change{Label.count}.by(1)
+      expect(Label.last.name).to eq('atag')
+      expect(assigns(:post).labels.count).to eq(4)
     end
 
     it "creates new settings" do
