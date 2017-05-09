@@ -76,10 +76,11 @@ RSpec.describe PostsController do
       end
 
       it "filters by subject" do
-        post = create(:post, subject: 'contains stars')
+        post1 = create(:post, subject: 'contains stars')
+        post2 = create(:post, subject: 'contains Stars cased')
         create(:post, subject: 'unrelated')
         get :search, commit: true, subject: 'stars'
-        expect(assigns(:search_results)).to match_array([post])
+        expect(assigns(:search_results)).to match_array([post1, post2])
       end
 
       it "does not mix up subject with content" do
