@@ -9,6 +9,6 @@ module WritableHelper
       @post
     end
     return (@unread_warning = false) unless unread_reply
-    @unread_warning = content_tag :a, 'Post has unread replies', href: post_or_reply_link(unread_reply), class: 'unread-warning'
+    @unread_warning = content_tag :a, 'Post has unread replies', href: post_or_reply_link(unread_reply), class: 'unread-warning', target: '_blank'
   end
 end
