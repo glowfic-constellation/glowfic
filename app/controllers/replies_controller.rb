@@ -103,11 +103,13 @@ class RepliesController < WritableController
 
     if reply.post.present?
       last_seen_reply_id = params[:last_seen]
-      @unseen_replies = reply.post.replies.order('id asc').paginate(page: 1, per_page: 5)
+      @unseen_replies = reply.post.replies.order('id asc').paginate(page: 1, per_page: 10)
       @unseen_replies = @unseen_replies.where('id > ?', last_seen_reply_id) if last_seen_reply_id.present?
       most_recent_unseen_reply = @unseen_replies.last
       if most_recent_unseen_reply.present?
-        flash[:error] = "There have been #{@unseen_replies.count} new replies since you last viewed this post."
+        reply.post.mark_read(current_user, reply.post.read_time_for(@unseen_replies))
+        num = @unseen_replies.count
+        flash[:error] = "There have been #{num} new #{'reply'.pluralize(num)} since you last viewed this post."
         @last_seen_id = most_recent_unseen_reply.id
         preview(reply) and return
       end

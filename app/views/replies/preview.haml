@@ -2,9 +2,7 @@
   .post-header
     .padding-15
       Unseen Replies
-      = link_to post_path(@post, page: 'unread', anchor: 'unread'), target: '_blank' do
-        .view-button Unread (new tab) &raquo;
-      = link_to post_path(@post, page: 'unread', anchor: 'unread') do
+      = link_to unread_path(@post) do
         .view-button.float-left Unread &raquo;
 
   = render partial: 'replies/single', collection: @unseen_replies, as: :reply

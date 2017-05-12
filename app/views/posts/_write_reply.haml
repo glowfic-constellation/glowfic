@@ -4,6 +4,7 @@
     .view-button#rtf{class: ('selected' if (params[:editor_mode] || current_user.default_editor) == 'rtf')} Rich Text
     .view-button#html{class: ('selected' if (params[:editor_mode] || current_user.default_editor) == 'html')} HTML
     %br
+    = unread_warning.try(:html_safe)
     = hidden_field_tag :last_seen, @last_seen_id
     %br
     = f.hidden_field :post_id

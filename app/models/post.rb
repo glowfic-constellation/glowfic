@@ -117,7 +117,7 @@ class Post < ActiveRecord::Base
     viewed_at = last_read(user) || board.last_read(user)
     return unless viewed_at
     reply = replies.where('created_at <= ?', viewed_at).order('id desc').first
-    @last_seen ||= reply
+    @last_seen = reply
   end
 
   def recent_characters_for(user, count=4)

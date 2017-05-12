@@ -1,14 +1,13 @@
 module WritableHelper
   def unread_warning
-    return @unread_warning unless @unread_warning.nil?
-    # Get unread_reply separately from @post.first_unread_for because that caches (and sometimes does "halfway down the page you just loaded" when we want 'first unread after the whole page has loaded')
-    viewed_at = @post.last_read(current_user) || @post.board.last_read(current_user)
-    unread_reply = if viewed_at
-      @post.replies.where('created_at > ?', viewed_at).order('id asc').first
-    else
-      @post
-    end
-    return (@unread_warning = false) unless unread_reply
-    @unread_warning = content_tag :a, 'Post has unread replies', href: post_or_reply_link(unread_reply), class: 'unread-warning', target: '_blank'
+    return unless @replies.present?
+    return if @replies.total_pages == page
+    'Post has unread replies ' + \
+    content_tag(:a, '(View)', href: unread_path(@post, warn_id: @last_seen_id.to_i), class: 'unread-warning') + ' ' + \
+    content_tag(:a, '(New Tab)', href: unread_path(@post), class: 'unread-warning', target: '_blank')
+  end
+
+  def unread_path(post, **kwargs)
+    post_path(post, page: 'unread', anchor: 'unread', **kwargs)
   end
 end

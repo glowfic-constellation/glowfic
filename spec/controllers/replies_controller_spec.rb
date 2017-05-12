@@ -77,10 +77,10 @@ RSpec.describe RepliesController do
 
       post :create, reply: {post_id: reply_post.id, user_id: reply_post.user_id}
       expect(response.status).to eq(200)
-      expect(flash[:error]).to eq("There have been 1 new replies since you last viewed this post.")
+      expect(flash[:error]).to eq("There have been 1 new reply since you last viewed this post.")
     end
 
-    it "handles multiple creations with " do
+    it "handles multiple creations with last_seen" do
       reply_post = create(:post)
       login_as(reply_post.user)
       reply_post.mark_read(reply_post.user)
@@ -88,7 +88,7 @@ RSpec.describe RepliesController do
 
       post :create, reply: {post_id: reply_post.id, user_id: reply_post.user_id}
       expect(response.status).to eq(200)
-      expect(flash[:error]).to eq("There have been 1 new replies since you last viewed this post.")
+      expect(flash[:error]).to eq("There have been 1 new reply since you last viewed this post.")
 
       create(:reply, post: reply_post)
       create(:reply, post: reply_post)
