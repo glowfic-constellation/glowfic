@@ -20,7 +20,7 @@ class RepliesController < WritableController
       @templates = Template.order('name')
       if @post
         # post exists but post not visible
-        flash[:error] = "You do not have permission to view this post."
+        flash.now[:error] = "You do not have permission to view this post."
         return
       end
     end
@@ -110,7 +110,7 @@ class RepliesController < WritableController
         reply.post.mark_read(current_user, reply.post.read_time_for(@unseen_replies))
         num = @unseen_replies.count
         pluraled = num > 1 ? "have been #{num} new replies" : "has been 1 new reply"
-        flash[:error] = "There #{pluraled} since you last viewed this post."
+        flash.now[:error] = "There #{pluraled} since you last viewed this post."
         @last_seen_id = most_recent_unseen_reply.id
         preview(reply) and return
       end
