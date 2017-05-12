@@ -359,6 +359,26 @@ RSpec.describe PostsController do
       end
     end
 
+    it "marks read even if post is ignored" do
+      post = create(:post)
+      user = create(:user)
+      login_as(user)
+      post.ignore(user)
+      expect(post.reload.first_unread_for(user)).to eq(post)
+
+      get :show, id: post.id
+      expect(post.reload.first_unread_for(user)).to be_nil
+      last_read = post.last_read(user)
+
+      Timecop.freeze(last_read + 1.second) do
+        reply = create(:reply, post: post)
+        expect(reply.created_at).not_to be_the_same_time_as(last_read)
+        expect(post.reload.first_unread_for(user)).to eq(reply)
+        get :show, id: post.id
+        expect(post.reload.first_unread_for(user)).to be_nil
+      end
+    end
+
     it "handles invalid pages" do
       post = create(:post)
       get :show, id: post.id, page: 'invalid'
@@ -757,6 +777,39 @@ RSpec.describe PostsController do
         user = create(:user)
         post.mark_read(user)
         expect(post.reload.send(:view_for, user)).not_to be_nil
+        login_as(user)
+
+        put :update, id: post.id, unread: true
+
+        expect(response).to redirect_to(unread_posts_url)
+        expect(flash[:success]).to eq("Post has been marked as unread")
+        expect(post.reload.first_unread_for(user)).to eq(post)
+      end
+
+      it "works when ignored with at_id" do
+        user = create(:user)
+        post = create(:post)
+        unread_reply = create(:reply, post: post)
+        create(:reply, post: post)
+        post.mark_read(user)
+        post.ignore(user)
+        expect(post.reload.first_unread_for(user)).to be_nil
+        login_as(user)
+
+        put :update, id: post.id, unread: true, at_id: unread_reply.id
+
+        expect(response).to redirect_to(unread_posts_url)
+        expect(flash[:success]).to eq("Post has been marked as read until reply ##{unread_reply.id}.")
+        expect(post.reload.first_unread_for(user)).to eq(unread_reply)
+        expect(post).to be_ignored_by(user)
+      end
+
+      it "works when ignored without at_id" do
+        post = create(:post)
+        user = create(:user)
+        post.mark_read(user)
+        post.ignore(user)
+        expect(post.reload.first_unread_for(user)).to be_nil
         login_as(user)
 
         put :update, id: post.id, unread: true
