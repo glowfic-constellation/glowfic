@@ -26,7 +26,7 @@ class ReportsController < ApplicationController
     view = @opened_posts.detect { |v| v.post_id == post.id }
     return false unless view
     return false if view.ignored?
-    view.read_at < post.tagged_at
+    view.read_at.nil? || view.read_at < post.tagged_at
   end
   helper_method :has_unread?
 

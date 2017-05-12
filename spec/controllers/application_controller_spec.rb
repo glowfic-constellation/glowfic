@@ -136,6 +136,47 @@ RSpec.describe ApplicationController do
         fetched_posts = controller.send(:posts_from_relation, relation)
         expect(fetched_posts).to match_array([public_post, own_post])
       end
+
+      it "sets opened_ids and unread_ids properly" do
+        user = create(:user)
+        login_as(user)
+        time = Time.now - 5.minutes
+        unopened1, unopened2, partread, read1, read2, hidden_unread, hidden_partread = posts = Timecop.freeze(time) do
+          unopened1 = create(:post) # post
+          unopened2 = create(:post) # post, reply
+          partread = create(:post) # post, reply
+          read1 = create(:post) # post
+          read2 = create(:post) # post, reply
+          hidden_unread = create(:post) # post
+          hidden_partread = create(:post) # post, reply
+
+          partread.mark_read(user)
+          read1.mark_read(user)
+          hidden_partread.mark_read(user)
+
+          [unopened1, unopened2, partread, read1, read2, hidden_unread, hidden_partread]
+        end
+
+        unopened2_reply, partread_reply, read2_reply, hidden_partread_reply = Timecop.freeze(time + 1.minute) do
+          unopened2_reply = create(:reply, post: unopened2)
+          partread_reply = create(:reply, post: partread)
+          read2_reply = create(:reply, post: read2)
+          hidden_partread_reply = create(:reply, post: hidden_partread)
+
+          read2.mark_read(user)
+
+          [unopened2_reply, partread_reply, read2_reply, hidden_partread_reply]
+        end
+
+        hidden_unread.ignore(user)
+        hidden_partread.ignore(user)
+
+        relation = Post.where(id: posts.map(&:id))
+        fetched_posts = controller.send(:posts_from_relation, relation)
+        expect(fetched_posts).to match_array(posts)
+        expect(assigns(:opened_ids)).to match_array([partread, read1, read2, hidden_partread].map(&:id))
+        expect(assigns(:unread_ids)).to match_array([partread, hidden_partread].map(&:id))
+      end
     end
 
     context "when logged out" do

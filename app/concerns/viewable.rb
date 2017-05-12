@@ -9,12 +9,12 @@ module Viewable
       return true if view.ignored
 
       if view.new_record?
-        view.read_at = at_time
+        view.read_at = at_time || Time.now
         return view.save
       end
 
       return view.update_attributes(read_at: Time.now) unless at_time.present?
-      return true if at_time <= view.read_at && !force
+      return true if view.read_at && at_time <= view.read_at && !force
       view.update_attributes(read_at: at_time)
     end
 

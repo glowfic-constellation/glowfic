@@ -763,7 +763,7 @@ RSpec.describe PostsController do
 
         expect(response).to redirect_to(unread_posts_url)
         expect(flash[:success]).to eq("Post has been marked as unread")
-        expect(post.reload.send(:view_for, user)).to be_a_new_record
+        expect(post.reload.first_unread_for(user)).to eq(post)
       end
     end
 
@@ -1322,6 +1322,40 @@ RSpec.describe PostsController do
         expect(flash[:success]).to eq("2 posts hidden from this page.")
         expect(post1.reload.ignored_by?(user)).to be_true
         expect(post2.reload.ignored_by?(user)).to be_true
+      end
+
+      it "does not mess with read timestamps" do
+        user = create(:user)
+
+        time = Time.now - 10.minutes
+        post1 = create(:post, created_at: time, updated_at: time) # unread
+        post2 = create(:post, created_at: time, updated_at: time) # partially read
+        post3 = create(:post, created_at: time, updated_at: time) # fully read
+        replies1 = Array.new(5) { |i| create(:reply, post: post1, created_at: time + i.minutes, updated_at: time + i.minutes) }
+        replies2 = Array.new(5) { |i| create(:reply, post: post2, created_at: time + i.minutes, updated_at: time + i.minutes) }
+        replies3 = Array.new(5) { |i| create(:reply, post: post3, created_at: time + i.minutes, updated_at: time + i.minutes) }
+
+        login_as(user)
+        expect(post1).to be_visible_to(user)
+        expect(post2).to be_visible_to(user)
+        expect(post3).to be_visible_to(user)
+
+        time2 = replies2.first.updated_at
+        time3 = replies3.last.updated_at
+        post2.mark_read(user, time2)
+        post3.mark_read(user, time3)
+
+        expect(post1.reload.last_read(user)).to be_nil
+        expect(post2.reload.last_read(user)).to be_the_same_time_as(time2)
+        expect(post3.reload.last_read(user)).to be_the_same_time_as(time3)
+
+        post :mark, marked_ids: [post1, post2, post3].map(&:id).map(&:to_s)
+
+        expect(response).to redirect_to(unread_posts_url)
+        expect(flash[:success]).to eq("3 posts hidden from this page.")
+        expect(post1.reload.last_read(user)).to be_nil
+        expect(post2.reload.last_read(user)).to be_the_same_time_as(time2)
+        expect(post3.reload.last_read(user)).to be_the_same_time_as(time3)
       end
     end
   end
