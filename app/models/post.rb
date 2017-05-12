@@ -111,6 +111,15 @@ class Post < ActiveRecord::Base
     @first_unread ||= reply
   end
 
+  def last_seen_reply_for(user)
+    return @last_seen if @last_seen
+    return unless replies.exists? # unlike first_unread_for we don't care about the post
+    viewed_at = last_read(user) || board.last_read(user)
+    return unless viewed_at
+    reply = replies.where('created_at <= ?', viewed_at).order('id desc').first
+    @last_seen = reply
+  end
+
   def recent_characters_for(user, count=4)
     # fetch the 4 (count) most recent non-nil character_ids for user in post
     recent_ids = replies.where(user_id: user.id).where('character_id IS NOT NULL').limit(count).group('character_id').select('DISTINCT character_id, MAX(id)').order('MAX(id) desc').pluck(:character_id)

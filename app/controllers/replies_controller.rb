@@ -101,11 +101,19 @@ class RepliesController < WritableController
     reply = Reply.new(params[:reply])
     reply.user = current_user
 
-    if reply.post.try(:first_unread_for, current_user) && !params[:unread_warned]
-      # There are unreads and the user has not been warned.
-      params[:unread_warned] = true
-      flash[:error] = "There are unread replies not shown here. (Click 'post' again if you wish to ignore this warning.)"
-      preview(reply) and return
+    if reply.post.present?
+      last_seen_reply_id = params[:last_seen]
+      @unseen_replies = reply.post.replies.order('id asc').paginate(page: 1, per_page: 10)
+      @unseen_replies = @unseen_replies.where('id > ?', last_seen_reply_id) if last_seen_reply_id.present?
+      most_recent_unseen_reply = @unseen_replies.last
+      if most_recent_unseen_reply.present?
+        reply.post.mark_read(current_user, reply.post.read_time_for(@unseen_replies))
+        num = @unseen_replies.count
+        pluraled = num > 1 ? "have been #{num} new replies" : "has been 1 new reply"
+        flash[:error] = "There #{pluraled} since you last viewed this post."
+        @last_seen_id = most_recent_unseen_reply.id
+        preview(reply) and return
+      end
     end
 
     if reply.save

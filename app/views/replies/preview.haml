@@ -1,3 +1,15 @@
+- if @unseen_replies.present?
+  .post-header
+    .padding-15
+      Unseen Replies
+      = link_to unread_path(@post) do
+        .view-button.float-left Unread &raquo;
+
+  = render partial: 'replies/single', collection: @unseen_replies, as: :reply
+  - if @unseen_replies.total_pages > 1
+    .post-ender ... and #{@unseen_replies.total_entries - @unseen_replies.per_page} more ...
+  %br
+
 .post-header
   .padding-15= @post.subject
 - if @post.description

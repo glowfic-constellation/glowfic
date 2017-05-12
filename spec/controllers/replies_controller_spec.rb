@@ -69,13 +69,33 @@ RSpec.describe RepliesController do
       expect(flash[:error][:message]).to eq("Your post could not be saved because of the following problems:")
     end
 
-    it "requires post read if no unread_warned param" do
-      user_id = login
+    it "requires post read if no last_seen param" do
       reply_post = create(:post)
+      login_as(reply_post.user)
+      reply_post.mark_read(reply_post.user)
+      create(:reply, post: reply_post)
 
-      post :create, reply: {post_id: reply_post.id, user_id: user_id}
+      post :create, reply: {post_id: reply_post.id, user_id: reply_post.user_id}
       expect(response.status).to eq(200)
-      expect(flash[:error]).to eq("There are unread replies not shown here. (Click 'post' again if you wish to ignore this warning.)")
+      expect(flash[:error]).to eq("There has been 1 new reply since you last viewed this post.")
+    end
+
+    it "handles multiple creations with last_seen" do
+      reply_post = create(:post)
+      login_as(reply_post.user)
+      reply_post.mark_read(reply_post.user)
+      last_seen = create(:reply, post: reply_post)
+
+      post :create, reply: {post_id: reply_post.id, user_id: reply_post.user_id}
+      expect(response.status).to eq(200)
+      expect(flash[:error]).to eq("There has been 1 new reply since you last viewed this post.")
+
+      create(:reply, post: reply_post)
+      create(:reply, post: reply_post)
+
+      post :create, reply: {post_id: reply_post.id, user_id: reply_post.user_id}, last_seen: assigns(:last_seen_id)
+      expect(response.status).to eq(200)
+      expect(flash[:error]).to eq("There have been 2 new replies since you last viewed this post.")
     end
 
     it "requires valid params if read" do
