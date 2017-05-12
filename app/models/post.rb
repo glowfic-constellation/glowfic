@@ -237,10 +237,10 @@ class Post < ActiveRecord::Base
   def timestamp_attributes_for_update
     # Makes Rails treat edited_at as a timestamp identical to updated_at
     # if specific attributes are updated. Also uses tagged_at if there
-    # are no replies yet.
+    # are no replies yet or if the status has changed.
     # Be VERY CAREFUL editing this!
     return super if skip_edited
-    return super + [:edited_at] if replies.exists?
+    return super + [:edited_at] if replies.exists? && !status_changed?
     super + [:edited_at, :tagged_at]
   end
 
