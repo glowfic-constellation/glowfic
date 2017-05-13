@@ -35,6 +35,8 @@
                 = image_tag "/images/book_grey.png", class: 'vmid', title: "Thread Abandoned"
               - if post.content_warnings.present?
                 = image_tag "/images/exclamation.png", class: 'vmid', title: "Content Warning: " + post.content_warnings.map(&:name).join(', '), alt: '!'
+              - if post.created_at.beginning_of_day == day.beginning_of_day
+                = image_tag "/images/new.png", class: 'vmid', title: 'New Today', alt: 'New'
             %td.post-subject{class: klass}
               - if has_unread?(post)
                 = link_to unread_path(post) do
