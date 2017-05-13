@@ -134,7 +134,7 @@ GEM
     jquery-rails (3.1.4)
       railties (>= 3.0, < 5.0)
       thor (>= 0.14, < 2.0)
-    json (1.8.2)
+    json (1.8.6)
     less (2.6.0)
       commonjs (~> 0.2.7)
     less-rails (2.6.0)
@@ -349,7 +349,7 @@ DEPENDENCIES
   httparty
   jquery-fileupload-rails
   jquery-rails
-  json (= 1.8.2)
+  json
   newrelic_rpm
   nilify_blanks
   nokogiri
@@ -384,7 +384,7 @@ DEPENDENCIES
   will_paginate (~> 3.0.6)
 
 RUBY VERSION
-   ruby 2.3.3p222
+   ruby 2.4.1p111
 
 BUNDLED WITH
-   1.13.6
+   1.14.6
