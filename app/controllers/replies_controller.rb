@@ -195,6 +195,10 @@ class RepliesController < WritableController
 
     @page_title = @post.subject
 
+    if @written.new_record?
+      @last_seen_id = @post.last_seen_reply_for(current_user).try(:id)
+    end
+
     use_javascript('posts')
     render :action => :preview
   end

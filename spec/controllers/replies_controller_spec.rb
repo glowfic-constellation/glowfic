@@ -11,6 +11,8 @@ RSpec.describe RepliesController do
     context "preview" do
       it "takes correct actions" do
         reply_post = create(:post)
+        reply = create(:reply, post: reply_post)
+        reply_post.mark_read(reply_post.user)
         login_as(reply_post.user)
         expect(ReplyDraft.count).to eq(0)
         post :create, button_preview: true, reply: {post_id: reply_post.id}
@@ -20,6 +22,7 @@ RSpec.describe RepliesController do
         expect(assigns(:written)).to be_a_new_record
         expect(assigns(:written).user).to eq(reply_post.user)
         expect(assigns(:post)).to eq(reply_post)
+        expect(assigns(:last_seen_id)).to eq(reply.id)
         expect(ReplyDraft.count).to eq(1)
         draft = ReplyDraft.last
         expect(draft.post).to eq(reply_post)
