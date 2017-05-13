@@ -1628,10 +1628,24 @@ CREATE INDEX index_posts_on_character_id ON posts USING btree (character_id);
 
 
 --
+-- Name: index_posts_on_created_at; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_posts_on_created_at ON posts USING btree (created_at);
+
+
+--
 -- Name: index_posts_on_icon_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_posts_on_icon_id ON posts USING btree (icon_id);
+
+
+--
+-- Name: index_posts_on_tagged_at; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_posts_on_tagged_at ON posts USING btree (tagged_at);
 
 
 --
@@ -1646,6 +1660,13 @@ CREATE INDEX index_posts_on_user_id ON posts USING btree (user_id);
 --
 
 CREATE INDEX index_replies_on_character_id ON replies USING btree (character_id);
+
+
+--
+-- Name: index_replies_on_created_at; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_replies_on_created_at ON replies USING btree (created_at);
 
 
 --
@@ -1855,3 +1876,5 @@ INSERT INTO schema_migrations (version) VALUES ('20170221171959');
 INSERT INTO schema_migrations (version) VALUES ('20170331133925');
 
 INSERT INTO schema_migrations (version) VALUES ('20170505173455');
+
+INSERT INTO schema_migrations (version) VALUES ('20170513052413');
