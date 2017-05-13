@@ -111,7 +111,6 @@ class RepliesController < WritableController
         num = @unseen_replies.count
         pluraled = num > 1 ? "have been #{num} new replies" : "has been 1 new reply"
         flash.now[:error] = "There #{pluraled} since you last viewed this post."
-        @last_seen_id = most_recent_unseen_reply.id
         preview(reply) and return
       end
     end

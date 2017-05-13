@@ -71,7 +71,7 @@ RSpec.describe RepliesController do
       expect(flash[:error][:message]).to eq("Your post could not be saved because of the following problems:")
     end
 
-    it "requires post read if no last_seen param" do
+    it "requires post read" do
       reply_post = create(:post)
       login_as(reply_post.user)
       reply_post.mark_read(reply_post.user)
