@@ -1,4 +1,5 @@
 .gallery-box { cursor: pointer; width: 20px; text-align: center; } /* The + / - symbol to minimize a gallery */
+.gallery-minmax, .add-gallery-icon { cursor: pointer; }
 .gallery-title { height: 5px; } /* So that when a gallery is minimized there is spacing */
 .selected-icon { border: 10px #3F7055 solid; width: 80px; height: 80px; }
 .form-table .icon { vertical-align: middle; }
