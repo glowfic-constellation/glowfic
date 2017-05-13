@@ -22,7 +22,6 @@ RSpec.describe RepliesController do
         expect(assigns(:written)).to be_a_new_record
         expect(assigns(:written).user).to eq(reply_post.user)
         expect(assigns(:post)).to eq(reply_post)
-        expect(assigns(:last_seen_id)).to eq(reply.id)
         expect(ReplyDraft.count).to eq(1)
         draft = ReplyDraft.last
         expect(draft.post).to eq(reply_post)
@@ -83,7 +82,7 @@ RSpec.describe RepliesController do
       expect(flash[:error]).to eq("There has been 1 new reply since you last viewed this post.")
     end
 
-    it "handles multiple creations with last_seen" do
+    it "handles multiple creations with unread warning" do
       reply_post = create(:post)
       login_as(reply_post.user)
       reply_post.mark_read(reply_post.user)
@@ -96,7 +95,7 @@ RSpec.describe RepliesController do
       create(:reply, post: reply_post)
       create(:reply, post: reply_post)
 
-      post :create, reply: {post_id: reply_post.id, user_id: reply_post.user_id}, last_seen: assigns(:last_seen_id)
+      post :create, reply: {post_id: reply_post.id, user_id: reply_post.user_id}
       expect(response.status).to eq(200)
       expect(flash[:error]).to eq("There have been 2 new replies since you last viewed this post.")
     end

@@ -102,7 +102,7 @@ class RepliesController < WritableController
     reply.user = current_user
 
     if reply.post.present?
-      last_seen_reply_id = params[:last_seen]
+      last_seen_reply_id = reply.post.last_seen_reply_for(current_user).try(:id)
       @unseen_replies = reply.post.replies.order('id asc').paginate(page: 1, per_page: 10)
       @unseen_replies = @unseen_replies.where('id > ?', last_seen_reply_id) if last_seen_reply_id.present?
       most_recent_unseen_reply = @unseen_replies.last
@@ -194,10 +194,6 @@ class RepliesController < WritableController
     @written.user = current_user
 
     @page_title = @post.subject
-
-    if @written.new_record?
-      @last_seen_id = @post.last_seen_reply_for(current_user).try(:id)
-    end
 
     use_javascript('posts')
     render :action => :preview
