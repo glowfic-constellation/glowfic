@@ -103,12 +103,6 @@ class WritableController < ApplicationController
       end
 
       @post.mark_read(current_user, @post.read_time_for(@replies))
-
-      if @replies.total_pages == cur_page
-        @last_seen_id = @replies.last.try(:id)
-      else
-        @last_seen_id = @post.last_seen_reply_for(current_user).try(:id)
-      end
     end
 
     @warnings = @post.content_warnings if display_warnings?

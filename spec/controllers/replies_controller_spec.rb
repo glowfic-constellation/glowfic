@@ -11,6 +11,8 @@ RSpec.describe RepliesController do
     context "preview" do
       it "takes correct actions" do
         reply_post = create(:post)
+        reply = create(:reply, post: reply_post)
+        reply_post.mark_read(reply_post.user)
         login_as(reply_post.user)
         expect(ReplyDraft.count).to eq(0)
         post :create, button_preview: true, reply: {post_id: reply_post.id}
@@ -69,7 +71,7 @@ RSpec.describe RepliesController do
       expect(flash[:error][:message]).to eq("Your post could not be saved because of the following problems:")
     end
 
-    it "requires post read if no last_seen param" do
+    it "requires post read" do
       reply_post = create(:post)
       login_as(reply_post.user)
       reply_post.mark_read(reply_post.user)
@@ -80,7 +82,7 @@ RSpec.describe RepliesController do
       expect(flash[:error]).to eq("There has been 1 new reply since you last viewed this post.")
     end
 
-    it "handles multiple creations with last_seen" do
+    it "handles multiple creations with unread warning" do
       reply_post = create(:post)
       login_as(reply_post.user)
       reply_post.mark_read(reply_post.user)
@@ -93,7 +95,7 @@ RSpec.describe RepliesController do
       create(:reply, post: reply_post)
       create(:reply, post: reply_post)
 
-      post :create, reply: {post_id: reply_post.id, user_id: reply_post.user_id}, last_seen: assigns(:last_seen_id)
+      post :create, reply: {post_id: reply_post.id, user_id: reply_post.user_id}
       expect(response.status).to eq(200)
       expect(flash[:error]).to eq("There have been 2 new replies since you last viewed this post.")
     end
@@ -111,18 +113,6 @@ RSpec.describe RepliesController do
       expect(flash[:error][:message]).to eq("Your post could not be saved because of the following problems:")
     end
 
-    it "requires valid params with an unread_warned param if not read" do
-      user = create(:user)
-      login_as(user)
-      character = create(:character)
-      reply_post = create(:post)
-
-      expect(character.user_id).not_to eq(user.id)
-      post :create, reply: {character_id: character.id, post_id: reply_post.id}, unread_warned: true
-      expect(response).to redirect_to(post_url(reply_post))
-      expect(flash[:error][:message]).to eq("Your post could not be saved because of the following problems:")
-    end
-
     it "saves a new reply successfully if read" do
       user = create(:user)
       login_as(user)
@@ -131,20 +121,6 @@ RSpec.describe RepliesController do
       expect(Reply.count).to eq(0)
 
       post :create, reply: {post_id: reply_post.id, content: 'test!' }
-
-      reply = Reply.first
-      expect(reply).not_to be_nil
-      expect(response).to redirect_to(reply_url(reply, anchor: "reply-#{reply.id}"))
-      expect(flash[:success]).to eq("Posted!")
-    end
-
-    it "saves a new reply successfully with an unread_warned param if not read" do
-      user = create(:user)
-      login_as(user)
-      reply_post = create(:post)
-      expect(Reply.count).to eq(0)
-
-      post :create, reply: {post_id: reply_post.id}, unread_warned: true, content: 'test!'
 
       reply = Reply.first
       expect(reply).not_to be_nil
