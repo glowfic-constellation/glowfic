@@ -1,3 +1,5 @@
+= render 'writable/char_picker'
+
 - character_galleries = item.character.galleries.ordered if item.character && current_user.icon_picker_grouping? && item.character.galleries.count > 1
 #post-editor.padding-10
   .post-info-box
@@ -24,12 +26,9 @@
       .post-author
         = item.user.username
         - if current_user.characters.present?
-          = image_tag swap_icon_url, id: 'swap-character', alt: ">", title: 'Choose Character', class: 'selector-popup-button'
+          = image_tag swap_icon_url, id: 'swap-character', alt: ">", title: 'Choose Character', class: 'selector-popup-button', data: {toggle: 'modal', target: '#char-picker'}
           #character-selector.selector-popup
             %h4 Choose Character
-            = select_tag :active_character,
-            option_groups_from_collection_for_select(@templates, :plucked_characters, :name, :first, :last, item.character_id),
-            { prompt: current_user.username, class: 'chosen-select' }
             %br
       - if item.is_a?(Reply)
         .post-char-access

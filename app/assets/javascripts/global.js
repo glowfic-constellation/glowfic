@@ -172,3 +172,23 @@ function createTagSelect(tagType, selector, formType, scope) {
     width: '300px'
   });
 }
+
+function paginatedGet(url, data, successFunc, page, perPage) {
+  page = page || 1;
+  perPage = perPage || 25;
+  data.page = page;
+
+  $.getJSON(url, data, function(response, status, xhr) {
+    var total = xhr.getResponseHeader('Total');
+    response.page = page;
+    response.total = total;
+    response.isFirstPage = (page === 1);
+    response.isLastPage = ((page * perPage) >= total);
+
+    successFunc(response);
+
+    if ((page * perPage) < total) paginatedGet(url, data, successFunc, page + 1, perPage);
+    return response;
+  });
+
+}

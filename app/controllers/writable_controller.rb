@@ -15,13 +15,14 @@ class WritableController < ApplicationController
     if @post
       uniq_chars_ids = @post.replies.where(user_id: user.id).where('character_id is not null').group(:character_id).pluck(:character_id)
       uniq_chars_ids << @post.character_id if @post.user_id == user.id && @post.character_id.present?
-      uniq_chars = Character.where(id: uniq_chars_ids).ordered.pluck(pluck)
-      threadchars = faked.new('Thread characters', nil, uniq_chars)
+      @uniq_chars = Character.where(id: uniq_chars_ids).ordered
+      threadchars = faked.new('Thread characters', nil, @uniq_chars.pluck(pluck))
       @templates.insert(0, threadchars)
     end
     @templates.reject! {|template| template.plucked_characters.empty? }
 
     gon.editor_user = user.gon_attributes
+    gon.post_id = @post.try(:id)
   end
 
   def show_post(cur_page=nil)

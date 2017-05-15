@@ -1,0 +1,35 @@
+#char-picker.modal.fade{role: 'dialog'}
+  .modal-dialog
+    .modal-content
+      .modal-header
+        %h4.modal-title Choose Character
+        = image_tag 'icons/cross.png', data: {dismiss: 'modal'}, alt: 'X', class: 'close-modal'
+      .modal-body
+        .search-box
+          .search-label Search:
+          .search-input= text_field_tag :autocomplete_character
+        .col-container
+          .template-list
+            - if @post.persisted?
+              = link_to 'In Thread', '#', class: 'group-link selected in-thread-link'
+            = link_to 'Search Results', '#', class: 'group-link search-link'
+            .template-title Templates
+            - current_user.templates.pluck(:id, :name).each do |tid, tname|
+              - next if tid == 15
+              = link_to tname, '#', class: 'group-link', data: {template_id: tid}
+            - if current_user.characters.where(template_id: nil).exists?
+              = link_to 'Templateless', '#', class: 'group-link', data: {template_id: 0}
+          .group-characters
+            .search-results
+              - if @uniq_chars.present?
+                - @uniq_chars.each do |thread_char|
+                  .gallery-icon{data: {character_id: thread_char.id}}
+                    = icon_tag thread_char.default_icon
+                    %div= thread_char.name
+                    .character-screenname= "(#{thread_char.screenname})"
+                    .details= thread_char.template_name
+              - else
+                .centered — No characters yet —
+            .loading.hidden= image_tag 'icons/loading.gif', title: 'Loading...', alt: '...'
+      /.modal-footer
+      /  Footer!

@@ -1,4 +1,4 @@
-/* global gon, tinymce, tinyMCE, resizeScreenname, createTagSelect */
+/* global gon, tinymce, tinyMCE, resizeScreenname, createTagSelect, paginatedGet, Bloodhound */
 var tinyMCEInit = false, shownIcons = [];
 var PRIVACY_ACCESS = 2; // TODO don't hardcode
 var iconSelectBox;
@@ -78,16 +78,6 @@ function setupWritableEditor() {
   // SET UP WRITABLE EDITOR:
 
   // TODO fix hack
-  // Hack because having In Thread characters as a group in addition to Template groups
-  // duplicates characters in the dropdown, and therefore multiple options are selected
-  var selectd;
-  $("#active_character option[selected]").each(function() {
-    if (!selectd) selectd = this;
-    $(this).prop("selected", false);
-  });
-  $(selectd).prop("selected", true);
-
-  // TODO fix hack
   // Only initialize TinyMCE if it's required
   if ($("#rtf").hasClass('selected') === true) {
     setupTinyMCE();
@@ -121,11 +111,87 @@ function setupWritableEditor() {
       editorHelp.dialog('open');
     }
   });
+  bindCharSelectorIcons();
 
-  $("#swap-character").click(function() {
-    $('#character-selector').toggle();
-    $('#alias-selector').hide();
-    $('html, body').scrollTop($("#post-editor").offset().top);
+  $(".group-link").click(function() {
+    $('.group-link').removeClass('selected');
+    $(this).addClass('selected');
+    var data = {template_id: $(this).data('template-id')};
+    if ($(this).hasClass('in-thread-link')) data = {post_id: gon.post_id};
+    if ($(this).hasClass('search-link')) data = {q: $("#autocomplete_character").typeahead('val')};
+    data.user_id = gon.editor_user.id;
+    data.includes = ['default_icon', 'aliases', 'template_name'];
+    loadCharSelectorCharacters(data);
+    return false;
+  });
+  $('#char-picker').modal('show'); // TODO
+
+  var characters = new Bloodhound({
+    initialize: false,
+    datumTokenizer: Bloodhound.tokenizers.obj.whitespace('selector_name'),
+    queryTokenizer: Bloodhound.tokenizers.whitespace,
+    sufficient: 1,
+    identify: function(obj) { return obj.id; },
+    local: [], // TODO only the characters you've got on the page
+    remote: {
+      url: '/api/v1/characters',
+      prepare: function(query, settings) {
+        $("#char-picker .search-results").html('');
+        $('.group-link').removeClass('selected');
+        $('.group-link.search-link').addClass('selected');
+        // TODO loading gif
+
+        settings.data = {q: query};
+        settings.data.user_id = gon.editor_user.id;
+        settings.data.includes = ['default_icon', 'aliases', 'template_name'];
+        return settings;
+      },
+      transform: function(response) {
+        // TODO clear loading gif
+        $("#char-picker .search-results").html(''); // In case of race conditions
+        addCharactersToPicker(response);
+        bindCharSelectorIcons();
+        return response.results;
+      },
+    }
+  });
+
+  $('#char-picker').on('shown.bs.modal', function() {
+    $("#autocomplete_character").focus();
+    characters.initialize();
+  });
+  $('#autocomplete_character').bind('typeahead:select', function(ev, suggestion) {
+    $("#char-picker").modal('hide');
+    $("#reply_character_id").val(suggestion.id);
+    getAndSetCharacterData(suggestion.id);
+    $("#autocomplete_character").typeahead('val', '');
+  });
+  $('#autocomplete_character').keyup(function() {
+    if ($(this).typeahead('val').length < 2) {
+      $(".tt-hint").removeClass('opened');
+      $('#autocomplete_character').removeClass('opened');
+    }
+  });
+  $('#autocomplete_character').bind('typeahead:render', function(ev, suggestions) {
+    suggestions = suggestions || [];
+    if ($(this).typeahead('val').length < 2 || suggestions.length < 1) {
+      $(".tt-hint").removeClass('opened');
+      $('#autocomplete_character').removeClass('opened');
+      return;
+    }
+    $(".tt-hint").addClass('opened');
+    $('#autocomplete_character').addClass('opened');
+  });
+  $('#autocomplete_character').bind('typeahead:close', function() {
+    $(".tt-hint").removeClass('opened');
+    $('#autocomplete_character').removeClass('opened');
+  });
+
+  $("#autocomplete_character").typeahead({highlight: true, hint: false, minLength: 2}, {
+    source: characters.ttAdapter(),
+    display: function (obj) {
+      return obj.selector_name;
+    },
   });
 
   $("#swap-alias").click(function() {
@@ -134,21 +200,13 @@ function setupWritableEditor() {
     $('html, body').scrollTop($("#post-editor").offset().top);
   });
 
-  $("#active_character, #character_alias").on('select2:close', function() {
+  $(" #character_alias").on('select2:close', function() {
     $('html, body').scrollTop($("#post-editor").offset().top);
-  });
-
-  $("#active_character").change(function() {
-    // Set the ID
-    var id = $(this).val();
-    $("#reply_character_id").val(id);
-    getAndSetCharacterData(id);
   });
 
   $(".char-access-icon").click(function() {
     var id = $(this).data('character-id');
     $("#reply_character_id").val(id);
-    $("#active_character").val(id).trigger('change.select2');
     getAndSetCharacterData(id);
   });
 
@@ -215,7 +273,6 @@ function fixWritableFormCaching() {
     }
   } else {
     getAndSetCharacterData(selectedCharID, {restore_icon: true, restore_alias: true});
-    $("#active_character").val(selectedCharID).trigger("change.select2");
   }
 
   // Set the quick-switcher's selected character
@@ -509,5 +566,49 @@ function setSwitcherListSelected(characterId) {
   $(".char-access-icon.semiopaque").removeClass('semiopaque').addClass('pointer');
   $(".char-access-icon").each(function() {
     if (String($(this).data('character-id')) === String(characterId)) $(this).addClass('semiopaque').removeClass('pointer');
+  });
+}
+
+function bindCharSelectorIcons() {
+  $("#char-picker .gallery-icon").click(function() {
+    var id = $(this).data('character-id');
+    $("#reply_character_id").val(id);
+    getAndSetCharacterData(id);
+    $('#char-picker').modal('hide');
+  });
+}
+
+function loadCharSelectorCharacters(data) {
+  $("#char-picker .search-results").html('');
+  var timeoutID = setTimeout(function() { $("#char-picker .loading").show(); }, 500);
+  paginatedGet('/api/v1/characters', data, function(response) {
+    if (response.isFirstPage) {
+      clearTimeout(timeoutID);
+      $("#char-picker .loading").hide();
+    }
+    addCharactersToPicker(response);
+    if (response.isLastPage) bindCharSelectorIcons();
+  });
+}
+
+function addCharactersToPicker(response) {
+  var characters = response.results;
+  if (characters.length < 1) {
+    $('.search-results').append($('<div>').attr({class: 'centered'}).append(' — No characters found —'));
+    return;
+  }
+
+  characters.forEach(function(char) {
+    var newChar = $("<div>").attr({class: 'gallery-icon'}).data('character-id', char.id);
+    if (char.default_icon === null) {
+      newChar.append($("<div>").attr({class: 'icon character-no-icon'}).append('&nbsp;'));
+    } else {
+      newChar.append($("<img>").attr({alt: char.default_icon.keyword, title: char.default_icon.keyword, class: 'icon', src: char.default_icon.url}));
+    }
+    newChar.append($("<div>").append(char.name));
+    if (char.screenname !== null) newChar.append($("<div>").attr({class: 'character-screenname'}).append("("+char.screenname+")"));
+    if (char.template_name !== null) newChar.append($("<div>").attr({class: 'details'}).append(char.template_name));
+    $(".search-results").append(newChar);
+    // TODO .details= thread_char.template_name
   });
 }
