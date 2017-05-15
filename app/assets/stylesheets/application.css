@@ -10,13 +10,33 @@
  * defined in the other CSS/SCSS files in this directory. It is generally better to create a new
  * file per style scope.
  *
+ *= require bootstrap
  *= require normalize
  *= require select2
- *= require global
- *= require characters
- *= require galleries
- *= require layout
- *= require replies
- *= require messages
+ * require global
+ * require characters
+ * require galleries
+ * require layout
+ * require replies
+ * require messages
  *= require_self
  */
+
+/* Actual layout positioning TODO issues at <768px */
+.container { width: 100%; padding-left: 0px; padding-right: 0px; }
+#user-info { text-align: center; padding: 14px; font-weight: bold; font-size: 16px; }
+#user-info img { width: 100px; height: 100px; }
+#logo { margin: 10px 20px; }
+#user-info a { font-weight: bold; font-size: 16px; text-decoration: none; }
+.navbar-collapse { width: calc(100% - 133px); }
+.navbar-static-top .navbar-collapse { padding: 5px; }
+
+/* Colorizing layout specific stuff */
+.navbar { background-image: url("/images/starry.jpg"); background-position: right top; border-bottom: 0px; }
+#user-info, #navbar1 { background-color: #41416e; background-color: rgba(65, 65, 110, 0.9); }
+#user-info a { color: #FEFEFE; }
+#user-info a:hover { color: #777; }
+.nav-pills > li.active > a, .nav-pills > li.active > a:hover, .nav-pills > li.active > a:focus { background-color: #8287a2; }
+.nav-pills > li > a:hover, .nav > li > a:focus { background-color: #584b81; color: #f3f3f3; }
+.nav-pills > li > a { color: #f3f3f3; }
+.nav .open > a, .nav .open > a:hover, .nav .open > a:focus { background-color: #584b81; border: 0px; }

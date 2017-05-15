@@ -16,12 +16,15 @@
 //= require jquery-fileupload/basic
 //= require tinymce-jquery
 //= require select2
+//= require bootstrap
 
 $(document).ready(function() {
   $(".chosen-select").select2({
     width: '100%',
     minimumResultsForSearch: 10,
   });
+
+  $('.dropdown-toggle').dropdown();
 });
 
 function add_parameter(url, param, value){
