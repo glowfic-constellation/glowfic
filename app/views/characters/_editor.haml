@@ -52,4 +52,4 @@
             - gallery.icons.each do |icon|
               - klass = 'icon character-icon'
               - klass += ' selected-icon' if icon == @character.default_icon
-              = icon_tag icon, class: klass, id: icon.id
+              = icon_tag icon, class: klass, data: { id: icon.id }

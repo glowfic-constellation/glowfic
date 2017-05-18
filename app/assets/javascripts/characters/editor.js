@@ -30,16 +30,15 @@ $(document).ready(function() {
     $("#character_default_icon_id").val('');
 
     var new_gallery_ids = $(this).val() || [];
-    var new_gallery;
 
     // a gallery was removed
-    if(gallery_ids.length > new_gallery_ids.length) {
+    if (gallery_ids.length > new_gallery_ids.length) {
       var removed_gallery = $(gallery_ids).not(new_gallery_ids).get();
       gallery_ids = new_gallery_ids;
       $(".gallery #gallery"+removed_gallery).remove();
 
       // if no more galleries are left, display galleryless icons
-      if (gallery_ids === '') {
+      if (gallery_ids.length == 0) {
         displayGallery('0');
       }
       return;
@@ -55,22 +54,28 @@ $(document).ready(function() {
 
 function displayGallery(new_id){
   $.get('/api/v1/galleries/'+new_id, function (resp) {
-    html_string = "<div id='gallery"+new_id+"' data-id='"+new_id+"'><br /><b class='gallery-name'>"+resp.name+"</b><br /><div class='gallery-icons'>";
-    for(var i = 0; i < resp.icons.length; i++) {
+    var galleryObj = $("<div>").attr({id: 'gallery'+new_id}).data('id', new_id);
+    galleryObj.append("<br />");
+    galleryObj.append($("<b>").attr({class: 'gallery-name'}).append(resp.name));
+    galleryObj.append("<br />");
+    var galleryIcons = $("<div>").attr({class: 'gallery-icons'});
+    galleryObj.append(galleryIcons);
+    for (var i = 0; i < resp.icons.length; i++) {
       var url = resp.icons[i].url;
       var keyword = resp.icons[i].keyword;
       var id = resp.icons[i].id;
-      html_string += '<img src="'+url+'" alt="'+keyword+'" title="'+keyword+'" class="icon character-icon" id="'+id+'" />';
+      var galleryIcon = $("<img>").attr({src: url, alt: keyword, title: keyword, class: 'icon character-icon'}).data('id', id);
+      galleryIcons.append(galleryIcon);
     }
-    html_string += "</div>";
-    $("#selected-gallery .gallery").append(html_string);
-    bindIcons();
+    $("#selected-gallery .gallery").append(galleryObj);
+    bindIcons(galleryObj);
   }, 'json');
 }
 
-function bindIcons() {
-  $(".character-icon").click(function() {
-    if($(this).hasClass('selected-icon')) {
+function bindIcons(obj) {
+  obj = obj || window.body;
+  $(".character-icon", obj).click(function() {
+    if ($(this).hasClass('selected-icon')) {
       $(this).removeClass('selected-icon');
       updateIcon('');
       return;
@@ -78,19 +83,19 @@ function bindIcons() {
 
     $(".selected-icon").removeClass('selected-icon');
     $(this).addClass('selected-icon');
-    updateIcon($(this).attr('id'));
+    updateIcon($(this).data('id'));
   });
 }
 
 function updateIcon(id) {
-    if (gon.character_id) {
-      $.ajax({
-        url: '/api/v1/characters/'+gon.character_id,
-        type: 'PUT',
-        data: {'character': {'default_icon_id':id}},
-        success: function(resp) {}
-      });
-    } else {
-      $("#character_default_icon_id").val(id);
-    }
+  if (gon.character_id) {
+    $.ajax({
+      url: '/api/v1/characters/'+gon.character_id,
+      type: 'PUT',
+      data: {character: {default_icon_id: id}},
+      success: function(resp) {}
+    });
+  } else {
+    $("#character_default_icon_id").val(id);
+  }
 }
