@@ -12,7 +12,7 @@ class SessionsController < ApplicationController
   end
 
   def create
-    user = User.find_by_username(params[:username])
+    user = User.find_by(username: params[:username])
 
     if !user
       flash[:error] = "That username does not exist."

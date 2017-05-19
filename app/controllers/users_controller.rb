@@ -87,7 +87,7 @@ class UsersController < ApplicationController
 
   def username
     render :json => { :error => "No username provided." } and return unless params[:username]
-    render :json => { :username_free => User.find_by_username(params[:username]).nil? }
+    render :json => { :username_free => User.find_by(username: params[:username]).nil? }
   end
 
   private
