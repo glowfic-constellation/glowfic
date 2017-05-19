@@ -7,6 +7,7 @@ gem 'apipie-rails'
 gem 'audited-activerecord', '~> 4.0'
 gem 'aws-sdk', '~> 2'
 gem 'browser'
+gem 'coffee-rails'
 gem 'exception_notification'
 gem 'gon'
 gem 'haml-rails', '~> 0.4.0'
@@ -30,6 +31,7 @@ gem 'sass-rails'
 gem 'select2-rails'
 gem 'test-unit', '~> 3.0' # required by Heroku for production console
 gem 'tinymce-rails'
+gem 'uglifier'
 gem 'will_paginate', '~> 3.0.6'
 
 group :production do
@@ -38,11 +40,6 @@ group :production do
   gem 'rack-timeout'
   gem 'rails_12factor'
   gem 'tunemygc'
-end
-
-group :assets do
-  gem 'coffee-rails'
-  gem 'uglifier'
 end
 
 group :development, :test do
