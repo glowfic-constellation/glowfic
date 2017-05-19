@@ -19,6 +19,32 @@ RSpec.describe Api::V1::CharactersController do
         expect(response.json).to have_key('results')
         expect(response.json['results']).to contain_exactly(char.as_json.stringify_keys)
       end
+
+      it "requires valid post id if provided", show_in_doc: in_doc do
+        char = create(:character)
+        get :index, post_id: -1
+        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response.json['errors'].size).to eq(1)
+        expect(response.json['errors'][0]['message']).to eq("Post could not be found.")
+      end
+
+      it "requires post with permission", show_in_doc: in_doc do
+        post = create(:post, privacy: Post::PRIVACY_PRIVATE, with_character: true)
+        get :index, post_id: post.id
+        expect(response).to have_http_status(:forbidden)
+        expect(response.json['errors'].size).to eq(1)
+        expect(response.json['errors'][0]['message']).to eq("You do not have permission to perform this action.")
+      end
+
+      it "filters by post", show_in_doc: in_doc do
+        char = create(:character)
+        char2 = create(:character)
+        post = create(:post, character: char, user: char.user)
+        get :index, post_id: post.id
+        expect(response).to have_http_status(200)
+        expect(response.json).to have_key('results')
+        expect(response.json['results']).to contain_exactly(char.as_json.stringify_keys)
+      end
     end
 
     context "when logged in" do
@@ -99,6 +125,14 @@ RSpec.describe Api::V1::CharactersController do
       expect(response).to have_http_status(422)
       expect(response.json['errors'].size).to eq(1)
       expect(response.json['errors'][0]['message']).to eq("Post could not be found.")
+    end
+
+    it "requires post to have permission when provided a post_id", :show_in_doc do
+      post = create(:post, privacy: Post::PRIVACY_PRIVATE, with_character: true)
+      get :show, id: post.character_id, post_id: post.id
+      expect(response).to have_http_status(:forbidden)
+      expect(response.json['errors'].size).to eq(1)
+      expect(response.json['errors'][0]['message']).to eq("You do not have permission to perform this action.")
     end
 
     it "includes alias_id_for_post field when given post_id" do

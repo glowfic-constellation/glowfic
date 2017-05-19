@@ -36,7 +36,7 @@
               %td= select_tag :template_id, options_from_collection_for_select(@templates, :id, :name, params[:template_id]), {class: 'chosen-select', prompt: '— Choose Template —'}
             %tr
               %td Character
-              %td= select_tag :character_id, options_from_collection_for_select(@characters, :id, :selector_name, params[:character_id]), {class: 'chosen-select', prompt: '— Choose Character —'}
+              %td= select_tag :character_id, options_from_collection_for_select(@characters || [], :id, :selector_name, params[:character_id]), {prompt: '— Choose Character —'}
             %tr
               %td Content
               %td= text_field_tag :subj_content, params[:subj_content], style: 'width: 100%; margin: 5px 0px; box-sizing: border-box;'

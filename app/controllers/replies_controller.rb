@@ -7,6 +7,7 @@ class RepliesController < WritableController
 
   def search
     @page_title = 'Search Replies'
+    use_javascript('posts/search')
 
     @post = Post.find_by_id(params[:post_id]) if params[:post_id].present?
     if @post.try(:visible_to?, current_user)
@@ -14,9 +15,10 @@ class RepliesController < WritableController
       char_ids = @post.replies.pluck('distinct character_id') + [@post.character_id]
       @characters = Character.where(id: char_ids).order('name')
       @templates = Template.where(id: @characters.map(&:template_id).uniq.compact).order('name')
+      gon.post_id = @post.id
     else
       @users = User.order('username')
-      @characters = Character.order('name')
+      @characters = Character.where(id: params[:character_id]) if params[:character_id].present?
       @templates = Template.order('name')
       if @post
         # post exists but post not visible
