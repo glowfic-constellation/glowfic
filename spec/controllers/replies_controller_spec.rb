@@ -411,7 +411,7 @@ RSpec.describe RepliesController do
         expect(assigns(:post)).to be_nil
         expect(assigns(:search_results)).to be_nil
         expect(assigns(:users)).to match_array(User.all)
-        expect(assigns(:characters)).to match_array(Character.all)
+        expect(assigns(:characters)).to be_nil # this will be dynamically loaded
         expect(assigns(:templates)).to match_array(Template.all)
       end
 
