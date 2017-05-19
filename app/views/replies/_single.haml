@@ -32,7 +32,7 @@
       - if reply.id.present? && (reply.editable_by?(current_user) || (reply.is_a?(Post) && reply.metadata_editable_by?(current_user)))
         = link_to path_for(reply, 'edit_%s') do
           = image_tag "/images/pencil.png".freeze
-        = link_to path_for(reply, '%s'), method: :delete, confirm: "Are you sure you wish to delete this #{reply.class.to_s.downcase}?" do
+        = link_to path_for(reply, '%s'), method: :delete, data: { confirm: "Are you sure you wish to delete this #{reply.class.to_s.downcase}?" } do
           = image_tag "/images/cross.png".freeze
       - if reply.id.present? && reply.is_a?(Reply) && logged_in?
         = link_to post_path(@post, unread: true, at_id: reply.id), method: :put do

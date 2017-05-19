@@ -17,7 +17,7 @@
         = link_to warnings_post_path(@post, page: page, per_page: per_page), method: :post do
           .link-box.red.float-right Dismiss for this post
       - else
-        = link_to warnings_post_path(@post, page: page, per_page: per_page), method: :post, confirm: 'Are you sure? You will not see content warnings again until you restart your browser!'.freeze do
+        = link_to warnings_post_path(@post, page: page, per_page: per_page), method: :post, data: { confirm: 'Are you sure? You will not see content warnings again until you restart your browser!'.freeze } do
           .link-box.red.float-right Dismiss all content warnings
       = image_tag "/images/exclamation.png".freeze, class: 'vmid'.freeze
       This post has the following content warnings:

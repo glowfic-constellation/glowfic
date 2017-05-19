@@ -23,7 +23,7 @@
       .gallery{style: 'padding: 0px;'}
       - if @user.id == current_user.try(:id)
         .clear.centered.icons-remove
-          = submit_tag "x Delete selected icons permanently", confirm: "Are you sure? These icons will be gone from the site!"
+          = submit_tag "x Delete selected icons permanently", data: { confirm: "Are you sure? These icons will be gone from the site!" }
 - @user.galleries.order('name asc').each do |gallery|
   %tr
     - klass = cycle('even', 'odd')
@@ -35,7 +35,7 @@
           = image_tag "/images/add.png"
         = link_to edit_gallery_path(gallery), title: "Edit Gallery", class: 'gallery-edit' do
           = image_tag "/images/pencil.png"
-        = link_to gallery_path(gallery), title: "Delete Gallery", method: :delete, confirm: "Are you sure you want to delete #{gallery.name}?", class: 'gallery-delete' do
+        = link_to gallery_path(gallery), title: "Delete Gallery", method: :delete, data: { confirm: "Are you sure you want to delete #{gallery.name}?" }, class: 'gallery-delete' do
           = image_tag "/images/cross.png"
     %td.centered.width-70{class: klass}
       .gallery-box.vmid{id: "minmax-#{gallery.id}", style: 'display: inline-block;', data: {id: gallery.id}}
@@ -48,4 +48,4 @@
           .clear.centered.icons-remove
             = hidden_field_tag :gallery_id, gallery.id
             = submit_tag "- Remove selected icons from gallery", name: 'gallery_delete'
-            = submit_tag "x Delete selected icons permanently", confirm: "Are you sure? These icons will be gone from the site!"
+            = submit_tag "x Delete selected icons permanently", data: { confirm: "Are you sure? These icons will be gone from the site!" }
