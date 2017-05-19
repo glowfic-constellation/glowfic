@@ -21,7 +21,8 @@ class MessagesController < ApplicationController
   end
 
   def create
-    @message = Message.new((params[:message] || {}).merge(sender: current_user))
+    @message = Message.new(params[:message])
+    @message.sender = current_user
     set_message_parent(params[:parent_id]) if params[:parent_id].present?
 
     if params[:button_preview]

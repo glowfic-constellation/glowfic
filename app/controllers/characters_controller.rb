@@ -30,7 +30,8 @@ class CharactersController < ApplicationController
   def create
     reorder_galleries and return if params[:commit] == "reorder"
 
-    @character = Character.new((params[:character] || {}).merge(user: current_user))
+    @character = Character.new(params[:character])
+    @character.user = current_user
 
     if @character.valid?
       save_character_with_extras
