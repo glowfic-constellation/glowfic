@@ -31,10 +31,10 @@
               %td= select_tag :author_id, options_from_collection_for_select(User.order('username'), :id, :username, params[:author_id]), {class: 'chosen-select', prompt: '— Choose Author —'}
             %tr
               %td Character
-              %td= select_tag :character_id, options_from_collection_for_select(Character.order('name'), :id, :selector_name, params[:character_id]), {class: 'chosen-select', prompt: '— Choose Character —'}
+              %td= select_tag :character_id, options_from_collection_for_select(@character, :id, :selector_name, params[:character_id]), {class: 'chosen-select', prompt: '— Choose Character —'}
             %tr
               %td Setting
-              %td= select_tag :setting_id, options_from_collection_for_select(Setting.order('name'), :id, :name, params[:setting_id]), {class: 'chosen-select', prompt: '— Choose Setting —'}
+              %td= select_tag :setting_id, options_from_collection_for_select(@setting || [], :id, :name, params[:setting_id]), {class: 'chosen-select', prompt: '— Choose Setting —'}
             %tr
               %td Subject
               %td= text_field_tag :subject, params[:subject], style: 'width: 100%; margin: 5px 0px; box-sizing: border-box;'

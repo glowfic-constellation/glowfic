@@ -217,6 +217,9 @@ class PostsController < WritableController
 
   def search
     @page_title = 'Browse Posts'
+    @setting = Setting.where(id: params[:setting_id]) if params[:setting_id].present?
+    @character = Character.where(id: params[:character_id]) if params[:character_id].present?
+    use_javascript('posts/search')
     return unless params[:commit].present?
 
     @search_results = Post.order('tagged_at desc').includes(:board)

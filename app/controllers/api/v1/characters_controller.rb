@@ -1,10 +1,20 @@
 class Api::V1::CharactersController < Api::ApiController
   before_filter :login_required, only: :update
-  before_filter :find_character
+  before_filter :find_character, except: :index
   before_filter :require_permission, only: :update
 
   resource_description do
     description 'Viewing and editing characters'
+  end
+
+  api! 'Load all the characters of the specified type that match the given query, results ordered by name'
+  param :q, String, required: false, desc: "Query string"
+  param :page, :number, required: false, desc: 'Page in results (25 per page)'
+  def index
+    queryset = Character.where("name LIKE ?", params[:q].to_s + '%').order('name')
+    Rails.logger.info("#{queryset.count} results")
+    characters = paginate queryset, per_page: 25
+    render json: {results: characters}
   end
 
   api! 'Load a single character as a JSON resource'
