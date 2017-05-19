@@ -11,7 +11,7 @@ class Character < ActiveRecord::Base
 
   has_many :characters_galleries
   has_many :galleries, through: :characters_galleries, after_remove: :reorder_galleries
-  has_many :icons, through: :galleries, group: 'icons.id', order: 'LOWER(keyword)'
+  has_many :icons, -> { group('icons.id').order('LOWER(keyword)') }, through: :galleries
 
   has_many :character_tags, inverse_of: :character, dependent: :destroy
   has_many :labels, through: :character_tags, source: :label

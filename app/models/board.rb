@@ -10,9 +10,9 @@ class Board < ActiveRecord::Base
   belongs_to :creator, class_name: User
 
   has_many :board_authors
-  has_many :board_coauthors, class_name: BoardAuthor, conditions: {cameo: false}
+  has_many :board_coauthors, -> { where(cameo: false) }, class_name: BoardAuthor
   has_many :coauthors, class_name: User, through: :board_coauthors, source: :user
-  has_many :board_cameos, class_name: BoardAuthor, conditions: {cameo: true}
+  has_many :board_cameos, -> { where(cameo: true) }, class_name: BoardAuthor
   has_many :cameos, class_name: User, through: :board_cameos, source: :user
 
   validates_presence_of :name, :creator

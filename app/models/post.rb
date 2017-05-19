@@ -54,7 +54,7 @@ class Post < ActiveRecord::Base
     ),
     using: {tsearch: { dictionary: "english" } }
   )
-  scope :no_tests, where('posts.board_id != ?', Board::ID_SITETESTING)
+  scope :no_tests, -> { where('posts.board_id != ?', Board::ID_SITETESTING) }
 
   def visible_to?(user)
     return true if privacy == PRIVACY_PUBLIC
