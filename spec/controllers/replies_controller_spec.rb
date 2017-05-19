@@ -17,7 +17,7 @@ RSpec.describe RepliesController do
         expect(ReplyDraft.count).to eq(0)
         post :create, button_preview: true, reply: {post_id: reply_post.id}
         expect(response).to render_template(:preview)
-        expect(assigns(:javascripts)).to include('posts')
+        expect(assigns(:javascripts)).to include('posts/editor')
         expect(assigns(:page_title)).to eq(reply_post.subject)
         expect(assigns(:written)).to be_a_new_record
         expect(assigns(:written).user).to eq(reply_post.user)
@@ -150,6 +150,21 @@ RSpec.describe RepliesController do
       get :show, id: reply.id
       expect(response).to redirect_to(boards_url)
       expect(flash[:error]).to eq("You do not have permission to view this post.")
+    end
+
+    it "succeeds when logged out" do
+      reply = create(:reply)
+      get :show, id: reply.id
+      expect(response).to have_http_status(200)
+      expect(assigns(:javascripts)).to include('posts/show')
+    end
+
+    it "succeeds when logged in" do
+      reply = create(:reply)
+      login
+      get :show, id: reply.id
+      expect(response).to have_http_status(200)
+      expect(assigns(:javascripts)).to include('posts/show')
     end
 
     it "has more tests" do

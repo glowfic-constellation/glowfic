@@ -145,6 +145,7 @@ RSpec.describe PostsController do
       expect(response).to have_http_status(200)
       expect(assigns(:post)).to be_new_record
       expect(assigns(:post).character).to eq(character)
+      expect(assigns(:javascripts)).to include('posts/editor')
     end
 
     it "works for importer" do
@@ -324,6 +325,7 @@ RSpec.describe PostsController do
       post = create(:post)
       get :show, id: post.id
       expect(response).to have_http_status(200)
+      expect(assigns(:javascripts)).to include('posts/show')
     end
 
     it "requires permission" do
@@ -338,6 +340,7 @@ RSpec.describe PostsController do
       login
       get :show, id: post.id
       expect(response).to have_http_status(200)
+      expect(assigns(:javascripts)).to include('posts/show')
     end
 
     it "marks read multiple times" do
@@ -571,6 +574,7 @@ RSpec.describe PostsController do
         get :show, id: post.id
         expect(response).to have_http_status(200)
         expect(assigns(:reply)).not_to be_nil
+        expect(assigns(:javascripts)).to include('posts/show', 'posts/editor')
       end
     end
 
