@@ -7,7 +7,7 @@ Rails.application.routes.draw do
 
   # Accounts
   match '/login' => 'sessions#new', :as => :login, :via => :get
-  match '/login' => 'sessions#create', :as => :login, :via => :post
+  match '/login' => 'sessions#create', :via => :post
   match '/logout' => 'sessions#destroy', :as => :logout, :via => :delete
   match '/users/:id/templates' => redirect('/users/%{id}/characters'), via: :get
   resources :users do
