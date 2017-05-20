@@ -99,7 +99,7 @@ RSpec.describe AliasesController do
 
   describe "DELETE destroy" do
     it "requires login" do
-      delete :destroy, id: -1
+      delete :destroy, id: -1, character_id: -1
       expect(response).to redirect_to(root_url)
       expect(flash[:error]).to eq("You must be logged in to view that page.")
     end
