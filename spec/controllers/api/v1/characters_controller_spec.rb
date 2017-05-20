@@ -231,7 +231,7 @@ RSpec.describe Api::V1::CharactersController do
       expect(character.reload.default_icon_id).to eq(new_icon.id)
     end
 
-    it "handles validation failures", :show_in_doc do
+    it "handles validation failures and invalid params", :show_in_doc do
       icon = create(:icon)
       character = create(:character, user: icon.user, default_icon_id: icon.id)
       new_icon = create(:icon, user: icon.user)
@@ -241,8 +241,8 @@ RSpec.describe Api::V1::CharactersController do
 
       expect(response.status).to eq(422)
       expect(response.json['errors'][0]['message']).to eq("Name can't be blank")
-      expect(response.json['errors'][1]['message']).to eq("User can't be blank")
       expect(character.reload.default_icon_id).to eq(icon.id)
+      expect(character.reload.user_id).to eq(icon.user_id)
     end
   end
 end

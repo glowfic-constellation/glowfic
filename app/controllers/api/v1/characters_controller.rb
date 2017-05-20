@@ -49,7 +49,7 @@ class Api::V1::CharactersController < Api::ApiController
       errors << {message: "Default icon could not be found"} unless Icon.find_by_id(params[:character][:default_icon_id])
     end
 
-    @character.assign_attributes(params[:character])
+    @character.assign_attributes(character_params)
     errors += @character.errors.full_messages.map { |msg| {message: msg} } unless @character.valid?
     render json: {errors: errors}, status: :unprocessable_entity and return unless errors.empty?
 
@@ -79,5 +79,9 @@ class Api::V1::CharactersController < Api::ApiController
 
   def require_permission
     access_denied unless @character.user == current_user
+  end
+
+  def character_params
+    params.fetch(:character, {}).permit(:default_icon_id, :name, :template_name, :screenname, :setting, :template_id, :new_template_name, :pb, :description, gallery_ids: [])
   end
 end

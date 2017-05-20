@@ -30,7 +30,7 @@ class CharactersController < ApplicationController
   def create
     reorder_galleries and return if params[:commit] == "reorder"
 
-    @character = Character.new(params[:character])
+    @character = Character.new(character_params)
     @character.user = current_user
 
     if @character.valid?
@@ -57,7 +57,7 @@ class CharactersController < ApplicationController
   end
 
   def update
-    @character.assign_attributes(params[:character])
+    @character.assign_attributes(character_params)
 
     if @character.valid?
       save_character_with_extras
@@ -241,5 +241,9 @@ class CharactersController < ApplicationController
       end
     end
     render json: {}
+  end
+
+  def character_params
+    params.fetch(:character, {}).permit(:default_icon_id, :name, :template_name, :screenname, :setting, :template_id, :new_template_name, :pb, :description, gallery_ids: [])
   end
 end
