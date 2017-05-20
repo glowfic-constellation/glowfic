@@ -18,7 +18,7 @@ class TagsController < ApplicationController
   end
 
   def update
-    unless @tag.update_attributes(params[:tag])
+    unless @tag.update_attributes(tag_params)
       flash.now[:error] = {}
       flash.now[:error][:message] = "Tag could not be saved because of the following problems:"
       flash.now[:error][:array] = @tag.errors.full_messages
@@ -50,5 +50,9 @@ class TagsController < ApplicationController
       flash[:error] = "You do not have permission to edit this tag."
       redirect_to tag_path(@tag)
     end
+  end
+
+  def tag_params
+    params.fetch(:tag, {}).permit(:name, :type)
   end
 end
