@@ -35,7 +35,7 @@ class BoardsController < ApplicationController
   end
 
   def create
-    @board = Board.new(params[:board])
+    @board = Board.new(board_params)
     @board.creator = current_user
 
     if @board.save
@@ -68,7 +68,7 @@ class BoardsController < ApplicationController
   end
 
   def update
-    if @board.update_attributes(params[:board])
+    if @board.update_attributes(board_params)
       flash[:success] = "Continuity saved!"
       redirect_to board_path(@board)
     else
@@ -136,5 +136,9 @@ class BoardsController < ApplicationController
       flash[:error] = "You do not have permission to edit that continuity."
       redirect_to board_path(@board) and return
     end
+  end
+
+  def board_params
+    params.fetch(:board, {}).permit(:name, :description, coauthor_ids: [], cameo_ids: [])
   end
 end
