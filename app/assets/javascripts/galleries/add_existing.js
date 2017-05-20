@@ -29,7 +29,7 @@ $(document).ready( function() {
     $.get("/api/v1/galleries/" + gallery_id, {}, function(resp) {
       $.each(resp.icons, function(index, icon) {
         var icon_div = $("<div>").attr({class: 'gallery-icon'});
-        var icon_img = $("<img>").attr({src: icon.url, id: icon.id, alt: icon.keyword, title: icon.keyword, 'class': 'icon add-gallery-icon'});
+        var icon_img = $("<img>").attr({src: icon.url, alt: icon.keyword, title: icon.keyword, 'class': 'icon add-gallery-icon', 'data-id': icon.id});
         icon_div.append(icon_img).append("<br>").append($("<span>").attr({class: 'icon-keyword'}).append(icon.keyword));
         $("#icons-" + gallery_id).append(icon_div);
       });
