@@ -22,6 +22,7 @@ class GalleriesController < ApplicationController
                     @user.username + "'s Galleries"
                   end
     use_javascript('galleries/index')
+    gon.user_id = @user.id
   end
 
   def new
