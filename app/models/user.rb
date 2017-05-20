@@ -5,7 +5,6 @@ class User < ActiveRecord::Base
   MAX_USERNAME_LEN = 80
 
   attr_accessor :password, :password_confirmation
-  attr_protected :crypted
   attr_writer :validate_password
 
   has_many :icons
