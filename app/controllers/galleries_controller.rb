@@ -115,7 +115,7 @@ class GalleriesController < ApplicationController
     @icons = icons
     icons = []
     @icons.each_with_index do |icon, index|
-      icon = Icon.new(icon.except('file'))
+      icon = Icon.new(icon_params(icon.except('file')))
       icon.user = current_user
       unless icon.valid?
         @icons[index]['url'] = '' if icon.errors.messages[:url] && icon.errors.messages[:url].include?('has already been taken')
@@ -201,5 +201,9 @@ class GalleriesController < ApplicationController
 
   def gallery_params
     params.fetch(:gallery, {}).permit(:name, galleries_icons_attributes: [:id, :_destroy, icon_attributes: [:url, :keyword, :credit, :id, :_destroy]])
+  end
+
+  def icon_params(paramset)
+    paramset.permit(:url, :keyword, :credit)
   end
 end

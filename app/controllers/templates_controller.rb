@@ -10,7 +10,7 @@ class TemplatesController < ApplicationController
   end
 
   def create
-    @template = Template.new(params[:template])
+    @template = Template.new(template_params)
     @template.user = current_user
     if @template.save
       flash[:success] = "Template saved successfully."
@@ -36,7 +36,7 @@ class TemplatesController < ApplicationController
   end
 
   def update
-    unless @template.update_attributes(params[:template])
+    unless @template.update_attributes(template_params)
       flash.now[:error] = "Your template could not be saved."
       @page_title = 'Edit Template: ' + @template.name_was
       render :action => :edit and return
@@ -65,5 +65,9 @@ class TemplatesController < ApplicationController
     return true if @template.user_id == current_user.id
     flash[:error] = "That is not your template."
     redirect_to characters_path
+  end
+
+  def template_params
+    params.fetch(:template, {}).permit(:name, :description, character_ids: [])
   end
 end
