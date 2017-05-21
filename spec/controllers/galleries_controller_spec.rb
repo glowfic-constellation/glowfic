@@ -246,6 +246,7 @@ RSpec.describe GalleriesController do
       gallery = create(:gallery, user: user)
       icon = create(:icon, user: user)
       gallery.icons << icon
+      expect(icon.reload.has_gallery).to be_true
       login_as(user)
 
       icon_attributes = {id: icon.id}
@@ -257,6 +258,7 @@ RSpec.describe GalleriesController do
       expect(flash[:success]).to eq('Gallery saved.')
       expect(gallery.reload.icons).to be_empty
       expect(icon.reload).not_to be_nil
+      expect(icon.has_gallery).not_to be_true
     end
 
     it "can delete a gallery icon" do
