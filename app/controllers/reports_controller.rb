@@ -14,7 +14,7 @@ class ReportsController < ApplicationController
     @day = (page.to_i - 1).days.ago
 
     if logged_in?
-      @opened_posts = PostView.where(user_id: current_user.id).select([:post_id, :read_at, :ignored])
+      @opened_posts = PostView.where(user_id: current_user.id).where('read_at IS NOT NULL').select([:post_id, :read_at, :ignored])
       @board_views = BoardView.where(user_id: current_user.id).select([:board_id, :ignored])
       @opened_ids = @opened_posts.map(&:post_id)
     end
