@@ -120,11 +120,11 @@ class PostScraper < Object
 
   def set_from_username(tag, username)
     if BASE_ACCOUNTS.keys.include?(username)
-      tag.user = User.find_by_username(BASE_ACCOUNTS[username])
+      tag.user = User.find_by(username: BASE_ACCOUNTS[username])
       return
     end
 
-    unless character = Character.find_by_screenname(username)
+    unless (character = Character.find_by(screenname: username))
       user = prompt_for_user(username)
       character = Character.create!(user: user, name: username, screenname: username)
       gallery = Gallery.create!(user: user, name: username)
@@ -149,7 +149,7 @@ class PostScraper < Object
     url = 'https://v.dreamwidth.org' + url if url[0] == '/'
     host_url = url.gsub(/https?:\/\//, "")
     https_url = 'https://' + host_url
-    icon = Icon.find_by_url(https_url)
+    icon = Icon.find_by(url: https_url)
     tag.icon = icon and return if icon
 
     end_index = keyword.index("(Default)").to_i - 1

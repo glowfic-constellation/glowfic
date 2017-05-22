@@ -6,8 +6,8 @@ class PasswordReset < ActiveRecord::Base
 
   before_validation :generate_unique_auth_token
 
-  scope :active, lambda{ where('created_at > ?', 1.day.ago) }
-  scope :unused, where(used: false)
+  scope :active, -> { where('created_at > ?', 1.day.ago) }
+  scope :unused, -> { where(used: false) }
 
   def active?
     created_at > 1.day.ago

@@ -52,7 +52,7 @@ class IconsController < ApplicationController
   end
 
   def update
-    unless @icon.update_attributes(params[:icon])
+    unless @icon.update_attributes(icon_params)
       flash.now[:error] = {}
       flash.now[:error][:message] = "Your icon could not be saved due to the following problems:"
       flash.now[:error][:array] = @icon.errors.full_messages
@@ -136,5 +136,9 @@ class IconsController < ApplicationController
       flash[:error] = "That is not your icon."
       redirect_to galleries_path
     end
+  end
+
+  def icon_params
+    params.fetch(:icon, {}).permit(:url, :keyword, :credit)
   end
 end

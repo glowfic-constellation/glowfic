@@ -29,4 +29,4 @@
           .centered.no-icons — No icons yet —
         - elsif @user.id == current_user.try(:id)
           .clear.centered.icons-remove
-            = submit_tag "x Delete selected icons permanently", confirm: "Are you sure? These icons will be gone from the site!"
+            = submit_tag "x Delete selected icons permanently", data: { confirm: "Are you sure? These icons will be gone from the site!" }

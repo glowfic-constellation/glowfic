@@ -7,11 +7,11 @@ class MessagesController < ApplicationController
     if params[:view] == 'outbox'
       @view = 'outbox'
       @page_title = 'Outbox'
-      @messages = current_user.sent_messages.where(visible_outbox: true).order('id desc').uniq_by! {|m| m.thread_id }
+      @messages = current_user.sent_messages.where(visible_outbox: true).order('id desc').uniq! {|m| m.thread_id }
     else
       @view = 'inbox'
       @page_title = 'Inbox'
-      @messages = current_user.messages.where(visible_inbox: true).order('id desc').uniq_by! {|m| m.thread_id }
+      @messages = current_user.messages.where(visible_inbox: true).order('id desc').uniq! {|m| m.thread_id }
     end
   end
 
@@ -21,7 +21,8 @@ class MessagesController < ApplicationController
   end
 
   def create
-    @message = Message.new((params[:message] || {}).merge(sender: current_user))
+    @message = Message.new(params[:message])
+    @message.sender = current_user
     set_message_parent(params[:parent_id]) if params[:parent_id].present?
 
     if params[:button_preview]

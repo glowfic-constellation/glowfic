@@ -57,7 +57,7 @@
           Replace Icon
     %tr
       %td.centered{class: cycle('even', 'odd')}
-        = link_to icon_path(@icon), method: :delete, confirm: 'Are you sure you want to delete this icon?' do
+        = link_to icon_path(@icon), method: :delete, data: { confirm: 'Are you sure you want to delete this icon?' } do
           = image_tag '/images/cross.png'
           Delete Icon
 

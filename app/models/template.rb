@@ -1,8 +1,8 @@
 class Template < ActiveRecord::Base
   belongs_to :user, inverse_of: :templates
-  has_many :characters, order: 'LOWER(name) ASC'
+  has_many :characters, -> { order('LOWER(name) ASC') }
 
-  validates_presence_of :name
+  validates_presence_of :name, :user
 
   after_destroy :clear_character_templates
 

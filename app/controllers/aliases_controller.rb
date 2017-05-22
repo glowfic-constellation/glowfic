@@ -10,7 +10,7 @@ class AliasesController < ApplicationController
   end
 
   def create
-    @alias = CharacterAlias.new(params[:character_alias])
+    @alias = CharacterAlias.new(calias_params)
     @alias.character = @character
 
     unless @alias.save
@@ -55,5 +55,9 @@ class AliasesController < ApplicationController
       flash[:error] = "Alias could not be found for that character."
       redirect_to edit_character_path(@character) and return
     end
+  end
+
+  def calias_params
+    params.fetch(:character_alias, {}).permit(:name)
   end
 end

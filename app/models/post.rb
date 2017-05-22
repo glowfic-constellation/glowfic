@@ -32,7 +32,7 @@ class Post < ActiveRecord::Base
   has_many :content_warnings, through: :post_tags, source: :content_warning, after_add: :reset_warnings
   has_many :favorites, as: :favorite, dependent: :destroy
 
-  attr_accessible :board, :board_id, :subject, :privacy, :viewer_ids, :description, :section_id, :label_ids, :warning_ids, :setting_ids, :section_order, :status
+  attr_accessible :board, :board_id, :subject, :privacy, :viewer_ids, :description, :section_id, :label_ids, :warning_ids, :setting_ids, :section_order, :status, :authors_locked
   attr_accessor :label_ids, :warning_ids, :setting_ids
   attr_writer :skip_edited
 
@@ -54,7 +54,7 @@ class Post < ActiveRecord::Base
     ),
     using: {tsearch: { dictionary: "english" } }
   )
-  scope :no_tests, where('posts.board_id != ?', Board::ID_SITETESTING)
+  scope :no_tests, -> { where('posts.board_id != ?', Board::ID_SITETESTING) }
 
   def visible_to?(user)
     return true if privacy == PRIVACY_PUBLIC

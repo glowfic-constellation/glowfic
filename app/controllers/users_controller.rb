@@ -27,7 +27,7 @@ class UsersController < ApplicationController
   end
 
   def create
-    @user = User.new(params[:user])
+    @user = User.new(user_params)
     @user.validate_password = true
 
     if params[:secret] != "ALLHAILTHECOIN"
@@ -57,7 +57,7 @@ class UsersController < ApplicationController
 
   def update
     params[:user][:per_page] = -1 if params[:user].try(:[], :per_page) == 'all'
-    if current_user.update_attributes(params[:user])
+    if current_user.update_attributes(user_params)
       flash[:success] = "Changes saved successfully."
     else
       flash[:error] = "There was a problem with your changes."
@@ -73,7 +73,7 @@ class UsersController < ApplicationController
     end
 
     current_user.validate_password = true
-    if current_user.update_attributes(params[:user])
+    if current_user.update_attributes(user_params)
       flash[:success] = "Changes saved successfully."
       redirect_to edit_user_path(current_user)
     else
@@ -87,7 +87,7 @@ class UsersController < ApplicationController
 
   def username
     render :json => { :error => "No username provided." } and return unless params[:username]
-    render :json => { :username_free => User.find_by_username(params[:username]).nil? }
+    render :json => { :username_free => User.find_by(username: params[:username]).nil? }
   end
 
   private
@@ -104,5 +104,9 @@ class UsersController < ApplicationController
     gon.max = User::MAX_USERNAME_LEN
     gon.min = User::MIN_USERNAME_LEN
     @page_title = 'Sign Up'
+  end
+
+  def user_params
+    params.fetch(:user, {}).permit(:username, :email, :password, :password_confirmation, :email_notifications, :per_page, :timezone, :icon_picker_grouping, :default_view, :default_editor, :moiety, :moiety_name, :layout, :time_display, :unread_opened, :hide_warnings, :hide_hiatused_tags_owed)
   end
 end

@@ -19,7 +19,7 @@
           .link-box.blue
             = image_tag '/images/pencil.png'
             Edit Template
-        = link_to template_path(@template), :method => :delete, confirm: 'Are you sure you want to delete this template?' do
+        = link_to template_path(@template), :method => :delete, data: { confirm: 'Are you sure you want to delete this template?' } do
           .link-box.red x Delete Template
       = link_to url_for(view: 'icons') do
         .view-button{class: (:selected unless page_view == 'list')}

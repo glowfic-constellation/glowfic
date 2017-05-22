@@ -9,6 +9,8 @@ class Message < ActiveRecord::Base
 
   after_create :set_thread_id, :notify_recipient
 
+  attr_accessible :recipient, :recipient_id, :parent, :parent_id, :thread, :thread_id, :subject, :message, :visible_inbox, :visible_outbox, :marked_inbox, :marked_outbox, :read_at, :unread # TODO: figure if marked still used
+
   def visible_to?(user)
     user_ids.include?(user.id)
   end
@@ -46,7 +48,9 @@ class Message < ActiveRecord::Base
   end
 
   def self.send_site_message(user_id, subject, message)
-    Message.create(recipient_id: user_id, sender_id: 0, subject: subject, message: message)
+    msg = Message.new(recipient_id: user_id, subject: subject, message: message)
+    msg.sender_id = 0
+    msg.save
   end
 
   private

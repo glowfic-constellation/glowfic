@@ -39,7 +39,7 @@ RSpec.describe SessionsController do
 
     it "requires an existing username" do
       nonusername = 'nonuser'
-      expect(User.find_by_username(nonusername)).to be_nil
+      expect(User.find_by(username: nonusername)).to be_nil
       post :create, username: nonusername
       expect(flash[:error]).to eq("That username does not exist.")
       expect(controller.send(:logged_in?)).not_to be_true

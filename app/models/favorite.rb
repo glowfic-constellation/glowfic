@@ -6,6 +6,8 @@ class Favorite < ActiveRecord::Base
   validates :user_id, uniqueness: { scope: [:favorite_id, :favorite_type] }
   validate :not_yourself
 
+  attr_accessible :favorite_id, :favorited_type, :favorite
+
   def self.between(user, favorite)
     return unless user && favorite
     Favorite.where(user_id: user.id, favorite_id: favorite.id, favorite_type: favorite.class.to_s).first
