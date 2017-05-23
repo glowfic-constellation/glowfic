@@ -21,7 +21,7 @@ class GalleriesController < ApplicationController
                   else
                     @user.username + "'s Galleries"
                   end
-    use_javascript('galleries/index')
+    use_javascript('galleries/expander')
     gon.user_id = @user.id
   end
 
@@ -56,7 +56,6 @@ class GalleriesController < ApplicationController
         @user = current_user
       end
       @page_title = 'Galleryless Icons'
-      use_javascript('galleries/index')
       render :show and return
     end
 
@@ -68,7 +67,6 @@ class GalleriesController < ApplicationController
 
     @user = @gallery.user
     @page_title = @gallery.name + ' (Gallery)'
-    use_javascript('galleries/index')
   end
 
   def edit

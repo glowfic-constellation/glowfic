@@ -1,9 +1,9 @@
 $(document).ready( function() {
   $(".gallery-box").click(function() {
     // Update toggle +/-
-    var toggleBox = $(this).children('.view-button').first();
-    var wasVisible = (toggleBox.html() == '-');
-    toggleBox.html(wasVisible ? '+' : '-');
+    var toggleBox = $(this).children('.view-button').first().children('img').first();
+    var wasVisible = (toggleBox.attr('src').includes("up"));
+    toggleBox.attr('src', (wasVisible ? '/images/bullet_arrow_down.png' : '/images/bullet_arrow_up.png'));
 
     // Toggle display
     var galleryId = $(this).data('id');

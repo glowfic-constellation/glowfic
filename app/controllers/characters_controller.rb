@@ -48,7 +48,6 @@ class CharactersController < ApplicationController
     @page_title = @character.name
     @posts = posts_from_relation(@character.recent_posts)
     use_javascript('characters/show') if @character.user_id == current_user.try(:id)
-    use_javascript('galleries/index') if @character.galleries.ordered.present?
   end
 
   def edit
