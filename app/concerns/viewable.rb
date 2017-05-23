@@ -36,7 +36,7 @@ module Viewable
     def reload
       @view = nil
       @first_unread = nil
-      @visible = false # for post.visible_to? in tests
+      @visible = nil # for post.visible_to? in tests
       super
     end
 
