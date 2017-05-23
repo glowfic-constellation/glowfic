@@ -23,7 +23,7 @@ class Post < ActiveRecord::Base
   belongs_to :last_reply, class_name: Reply
   has_one :flat_post
   has_many :replies, inverse_of: :post, dependent: :destroy
-  has_many :post_viewers, dependent: :destroy
+  has_many :post_viewers, inverse_of: :post, dependent: :destroy
   has_many :viewers, through: :post_viewers, source: :user
   has_many :reply_drafts, dependent: :destroy
   has_many :post_tags, inverse_of: :post, dependent: :destroy

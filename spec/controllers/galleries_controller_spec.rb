@@ -79,8 +79,10 @@ RSpec.describe GalleriesController do
       login
       post :create, gallery: {name: 'Test Gallery'}
       expect(Gallery.count).to eq(1)
-      expect(response).to redirect_to(gallery_url(assigns(:gallery)))
+      gallery = assigns(:gallery).reload
+      expect(response).to redirect_to(gallery_url(gallery))
       expect(flash[:success]).to eq('Gallery saved successfully.')
+      expect(gallery.name).to eq('Test Gallery')
     end
   end
 

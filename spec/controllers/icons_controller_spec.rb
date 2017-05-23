@@ -216,10 +216,13 @@ RSpec.describe IconsController do
       icon = create(:icon)
       login_as(icon.user)
       new_url = icon.url + '?param'
-      put :update, id: icon.id, icon: {url: new_url}
+      put :update, id: icon.id, icon: {url: new_url, keyword: 'new keyword', credit: 'new credit'}
       expect(response).to redirect_to(icon_url(icon))
       expect(flash[:success]).to eq("Icon updated.")
-      expect(icon.reload.url).to eq(new_url)
+      icon.reload
+      expect(icon.url).to eq(new_url)
+      expect(icon.keyword).to eq('new keyword')
+      expect(icon.credit).to eq('new credit')
     end
   end
 

@@ -42,16 +42,26 @@ RSpec.describe RepliesController do
       end
 
       it "creates a new draft if none exists" do
-        reply_post = create(:post)
-        login_as(reply_post.user)
+        user = create(:user)
+        reply_post = create(:post, user: user)
+        login_as(user)
+        char = create(:character, user: user)
+        icon = create(:icon, user: user)
+        calias = create(:alias, character: char)
+
         expect(ReplyDraft.count).to eq(0)
-        post :create, button_draft: true, reply: {post_id: reply_post.id}
+        post :create, button_draft: true, reply: {post_id: reply_post.id, character_id: char.id, icon_id: icon.id, content: 'testcontent', character_alias_id: calias.id}
         expect(response).to redirect_to(post_url(reply_post, page: :unread, anchor: :unread))
         expect(flash[:success]).to eq("Draft saved!")
         expect(ReplyDraft.count).to eq(1)
+
         draft = ReplyDraft.last
         expect(draft.post).to eq(reply_post)
-        expect(draft.user).to eq(reply_post.user)
+        expect(draft.user).to eq(user)
+        expect(draft.character_id).to eq(char.id)
+        expect(draft.icon_id).to eq(icon.id)
+        expect(draft.content).to eq('testcontent')
+        expect(draft.character_alias_id).to eq(calias.id)
       end
 
       it "updates the existing draft if one exists" do
@@ -119,13 +129,22 @@ RSpec.describe RepliesController do
       reply_post = create(:post)
       reply_post.mark_read(user, reply_post.created_at + 1.second, true)
       expect(Reply.count).to eq(0)
+      char = create(:character, user: user)
+      icon = create(:icon, user: user)
+      calias = create(:alias, character: char)
 
-      post :create, reply: {post_id: reply_post.id, content: 'test!' }
+      post :create, reply: {post_id: reply_post.id, content: 'test!', character_id: char.id, icon_id: icon.id, character_alias_id: calias.id}
 
       reply = Reply.first
       expect(reply).not_to be_nil
       expect(response).to redirect_to(reply_url(reply, anchor: "reply-#{reply.id}"))
       expect(flash[:success]).to eq("Posted!")
+      expect(reply.user).to eq(user)
+      expect(reply.post).to eq(reply_post)
+      expect(reply.content).to eq('test!')
+      expect(reply.character_id).to eq(char.id)
+      expect(reply.icon_id).to eq(icon.id)
+      expect(reply.character_alias_id).to eq(calias.id)
     end
   end
 
@@ -302,13 +321,23 @@ RSpec.describe RepliesController do
     end
 
     it "succeeds" do
-      reply = create(:reply)
+      user = create(:user)
+      reply = create(:reply, user: user)
       newcontent = reply.content + 'new'
-      login_as(reply.user)
-      put :update, id: reply.id, reply: {content: newcontent}
+      login_as(user)
+      char = create(:character, user: user)
+      icon = create(:icon, user: user)
+      calias = create(:alias, character: char)
+
+      put :update, id: reply.id, reply: {content: newcontent, character_id: char.id, icon_id: icon.id, character_alias_id: calias.id}
       expect(response).to redirect_to(reply_url(reply, anchor: "reply-#{reply.id}"))
       expect(flash[:success]).to eq("Post updated")
-      expect(reply.reload.content).to eq(newcontent)
+
+      reply.reload
+      expect(reply.content).to eq(newcontent)
+      expect(reply.character_id).to eq(char.id)
+      expect(reply.icon_id).to eq(icon.id)
+      expect(reply.character_alias_id).to eq(calias.id)
     end
 
     context "preview" do

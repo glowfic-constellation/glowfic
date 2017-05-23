@@ -90,15 +90,26 @@ RSpec.describe CharactersController do
     it "succeeds when valid" do
       expect(Character.count).to eq(0)
       test_name = 'Test character'
+      user = create(:user)
+      template = create(:template, user: user)
+      gallery = create(:gallery, user: user)
 
-      user_id = login
-      post :create, character: {name: test_name}
+      login_as(user)
+      post :create, character: {name: test_name, template_name: 'TempName', screenname: 'just-a-test', setting: 'A World', template_id: template.id, pb: 'Facecast', description: 'Desc', gallery_ids: [gallery.id]}
 
       expect(response).to redirect_to(assigns(:character))
       expect(flash[:success]).to eq("Character saved successfully.")
       expect(Character.count).to eq(1)
-      expect(assigns(:character).name).to eq(test_name)
-      expect(assigns(:character).user_id).to eq(user_id)
+      character = assigns(:character)
+      expect(character.name).to eq(test_name)
+      expect(character.user_id).to eq(user.id)
+      expect(character.template_name).to eq('TempName')
+      expect(character.screenname).to eq('just-a-test')
+      expect(character.setting).to eq('A World')
+      expect(character.template).to eq(template)
+      expect(character.pb).to eq('Facecast')
+      expect(character.description).to eq('Desc')
+      expect(character.galleries).to match_array([gallery])
     end
 
     it "creates new templates when specified" do
@@ -249,14 +260,24 @@ RSpec.describe CharactersController do
 
     it "succeeds when valid" do
       character = create(:character)
-      login_as(character.user)
+      user = character.user
+      login_as(user)
       new_name = character.name + 'aaa'
-      put :update, id: character.id, character: {name: new_name}
+      template = create(:template, user: user)
+      gallery = create(:gallery, user: user)
+      put :update, id: character.id, character: {name: new_name, template_name: 'TemplateName', screenname: 'a-new-test', setting: 'Another World', template_id: template.id, pb: 'Actor', description: 'Description', gallery_ids: [gallery.id]}
 
       expect(response).to redirect_to(assigns(:character))
       expect(flash[:success]).to eq("Character saved successfully.")
       character.reload
       expect(character.name).to eq(new_name)
+      expect(character.template_name).to eq('TemplateName')
+      expect(character.screenname).to eq('a-new-test')
+      expect(character.setting).to eq('Another World')
+      expect(character.template).to eq(template)
+      expect(character.pb).to eq('Actor')
+      expect(character.description).to eq('Description')
+      expect(character.galleries).to match_array([gallery])
     end
 
     it "creates new templates when specified" do

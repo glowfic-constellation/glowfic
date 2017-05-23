@@ -71,7 +71,7 @@ RSpec.describe UsersController do
     end
 
     it "rejects short passwords" do
-      user = build(:user).attributes.merge(password: 'short', password_confirmation: 'short')
+      user = build(:user).attributes.with_indifferent_access.merge(password: 'short', password_confirmation: 'short')
       post :create, secret: 'ALLHAILTHECOIN', user: user
       expect(response).to render_template(:new)
       expect(flash[:error][:message]).to eq('There was a problem completing your sign up.')
@@ -81,19 +81,25 @@ RSpec.describe UsersController do
     end
 
     it "signs you up" do
-      user = build(:user).attributes.merge(password: 'testpassword', password_confirmation: 'testpassword')
+      pass = 'testpassword'
+      user = build(:user).attributes.with_indifferent_access.merge(password: pass, password_confirmation: pass, email: 'testemail@example.com')
+
       expect {
         post :create, {secret: "ALLHAILTHECOIN"}.merge(user: user)
       }.to change{User.count}.by(1)
       expect(response).to redirect_to(root_url)
       expect(flash[:success]).to eq("User created! You have been logged in.")
-      expect(assigns(:current_user)).not_to be_nil
-      expect(assigns(:current_user).username).to eq(user['username'])
+
+      new_user = assigns(:current_user)
+      expect(new_user).not_to be_nil
+      expect(new_user.username).to eq(user[:username])
+      expect(new_user.authenticate(user[:password])).to be_true
+      expect(new_user.email).to eq(user[:email])
     end
 
     it "allows long passwords" do
       pass = 'this is a long password to test the password validation feature and to see if it accepts this'
-      user = build(:user).attributes.merge(password: pass, password_confirmation: pass)
+      user = build(:user).attributes.with_indifferent_access.merge(password: pass, password_confirmation: pass)
       expect {
         post :create, {secret: 'ALLHAILTHECOIN'}.merge(user: user)
       }.to change{User.count}.by(1)
