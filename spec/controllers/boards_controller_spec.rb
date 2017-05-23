@@ -147,13 +147,22 @@ RSpec.describe BoardsController do
 
     it "successfully makes a board" do
       expect(Board.count).to eq(0)
-      login
-      post :create, board: {name: 'TestCreateBoard'}
+      creator = create(:user)
+      login_as(creator)
+      user2 = create(:user)
+      user3 = create(:user)
+
+      post :create, board: {name: 'TestCreateBoard', description: 'Test description', coauthor_ids: [user2.id], cameo_ids: [user3.id]}
       expect(response).to redirect_to(boards_url)
       expect(flash[:success]).to eq("Continuity created!")
       expect(Board.count).to eq(1)
-      expect(Board.first.name).to eq('TestCreateBoard')
-      expect(Board.first.creator).to eq(assigns(:current_user))
+
+      board = Board.first
+      expect(board.name).to eq('TestCreateBoard')
+      expect(board.creator).to eq(creator)
+      expect(board.description).to eq('Test description')
+      expect(board.coauthors).to match_array([user2])
+      expect(board.cameos).to match_array([user3])
     end
   end
 
@@ -263,10 +272,16 @@ RSpec.describe BoardsController do
       board = create(:board, creator: user)
       name = board.name
       login_as(user)
-      put :update, id: board.id, board: {name: name + 'edit'}
+      user2 = create(:user)
+      user3 = create(:user)
+      put :update, id: board.id, board: {name: name + 'edit', description: 'New description', coauthor_ids: [user2.id], cameo_ids: [user3.id]}
       expect(response).to redirect_to(board_url(board))
       expect(flash[:success]).to eq("Continuity saved!")
-      expect(board.reload.name).to eq(name + 'edit')
+      board.reload
+      expect(board.name).to eq(name + 'edit')
+      expect(board.description).to eq('New description')
+      expect(board.coauthors).to match_array([user2])
+      expect(board.cameos).to match_array([user3])
     end
   end
 

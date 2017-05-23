@@ -35,11 +35,15 @@ RSpec.describe TemplatesController do
     end
 
     it "works" do
-      login
-      post :create, template: {name: 'testtest'}
+      char = create(:character)
+      login_as(char.user)
+      post :create, template: {name: 'testtest', description: 'test desc', character_ids: [char.id]}
       created = Template.last
       expect(response).to redirect_to(template_url(created))
       expect(flash[:success]).to eq("Template saved successfully.")
+      expect(created.name).to eq('testtest')
+      expect(created.description).to eq('test desc')
+      expect(created.characters).to match_array([char])
     end
   end
 
@@ -143,12 +147,18 @@ RSpec.describe TemplatesController do
 
     it "works" do
       template = create(:template)
+      char = create(:character, user: template.user)
       new_name = template.name + 'new'
       login_as(template.user)
-      put :update, id: template.id, template: {name: new_name}
+
+      put :update, id: template.id, template: {name: new_name, description: 'new desc', character_ids: [char.id]}
       expect(response).to redirect_to(template_url(template))
       expect(flash[:success]).to eq("Template saved successfully.")
-      expect(template.reload.name).to eq(new_name)
+
+      template.reload
+      expect(template.name).to eq(new_name)
+      expect(template.description).to eq('new desc')
+      expect(template.characters).to match_array([char])
     end
   end
 

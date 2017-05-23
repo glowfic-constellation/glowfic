@@ -85,6 +85,10 @@ RSpec.describe MessagesController do
       post :create, message: {subject: 'test', message: 'testing', recipient_id: recipient.id}
       expect(response).to redirect_to(messages_url(view: 'inbox'))
       expect(flash[:success]).to eq('Message sent!')
+      message = assigns(:message).reload
+      expect(message.subject).to eq('test')
+      expect(message.message).to eq('testing')
+      expect(message.recipient).to eq(recipient)
     end
 
     it "overrides recipient if you try to forward a message" do
@@ -109,12 +113,16 @@ RSpec.describe MessagesController do
       post :create, message: {subject: 'Re: ' + previous.subject, message: 'response'}, parent_id: previous.id
       expect(Message.count).to eq(2)
       expect(response).to redirect_to(messages_path(view: 'inbox'))
+      message = assigns(:message).reload
       expect(flash[:success]).to eq('Message sent!')
-      expect(assigns(:message).sender_id).to eq(previous.recipient_id)
-      expect(assigns(:message).recipient_id).to eq(previous.sender_id)
+      expect(message.sender_id).to eq(previous.recipient_id)
+      expect(message.recipient_id).to eq(previous.sender_id)
+      expect(message.message).to eq('response')
+      expect(message.subject).to eq('Re: ' + previous.subject)
+      expect(message.parent).to eq(previous)
     end
 
-    it "succeeds when replying to yourself" do
+    it "succeeds when replying to own message" do
       previous = create(:message)
       login_as(previous.sender)
       expect(Message.count).to eq(1)
@@ -122,8 +130,10 @@ RSpec.describe MessagesController do
       expect(Message.count).to eq(2)
       expect(response).to redirect_to(messages_path(view: 'inbox'))
       expect(flash[:success]).to eq('Message sent!')
-      expect(assigns(:message).sender_id).to eq(previous.sender_id)
-      expect(assigns(:message).recipient_id).to eq(previous.recipient_id)
+      message = assigns(:message).reload
+      expect(message.sender_id).to eq(previous.sender_id)
+      expect(message.recipient_id).to eq(previous.recipient_id)
+      expect(message.parent).to eq(previous)
     end
 
     context "preview" do

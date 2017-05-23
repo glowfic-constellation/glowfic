@@ -307,16 +307,35 @@ RSpec.describe PostsController do
     it "creates a post" do
       user = create(:user)
       login_as(user)
+      board = create(:board)
+      section = create(:board_section, board: board)
+      char = create(:character, user: user)
+      icon = create(:icon, user: user)
+      calias = create(:alias, character: char)
+      viewer = create(:user)
+
       expect {
-        post :create, post: {subject: 'asubjct', content: 'acontnt', board_id: create(:board).id}
+        post :create, post: {subject: 'asubjct', content: 'acontnt', description: 'adesc', board_id: board.id, section_id: section.id, character_id: char.id, icon_id: icon.id, character_alias_id: calias.id, privacy: Post::PRIVACY_LIST, viewer_ids: [viewer.id]}
       }.to change{Post.count}.by(1)
       expect(response).to redirect_to(post_path(assigns(:post)))
       expect(flash[:success]).to eq("You have successfully posted.")
-      expect(assigns(:post)).to be_persisted
-      expect(assigns(:post).user).to eq(user)
-      expect(assigns(:post).last_user).to eq(user)
-      expect(assigns(:post).subject).to eq('asubjct')
-      expect(assigns(:post).content).to eq('acontnt')
+
+      post = assigns(:post).reload
+      expect(post).to be_persisted
+      expect(post.user).to eq(user)
+      expect(post.last_user).to eq(user)
+      expect(post.subject).to eq('asubjct')
+      expect(post.content).to eq('acontnt')
+      expect(post.description).to eq('adesc')
+      expect(post.board).to eq(board)
+      expect(post.section).to eq(section)
+      expect(post.character_id).to eq(char.id)
+      expect(post.icon_id).to eq(icon.id)
+      expect(post.character_alias_id).to eq(calias.id)
+      expect(post.privacy).to eq(Post::PRIVACY_LIST)
+      expect(post.viewers).to match_array([viewer])
+      expect(post.reload).to be_visible_to(viewer)
+      expect(post.reload).not_to be_visible_to(create(:user))
     end
   end
 
@@ -1023,13 +1042,35 @@ RSpec.describe PostsController do
       end
 
       it "works" do
-        post = create(:post)
+        user = create(:user)
+        post = create(:post, user: user)
         newcontent = post.content + 'new'
-        login_as(post.user)
-        put :update, id: post.id, post: {content: newcontent}
+        newsubj = post.subject + 'new'
+        login_as(user)
+        board = create(:board)
+        section = create(:board_section, board: board)
+        char = create(:character, user: user)
+        calias = create(:alias, character_id: char.id)
+        icon = create(:icon, user: user)
+        viewer = create(:user)
+
+        put :update, id: post.id, post: {content: newcontent, subject: newsubj, description: 'desc', board_id: board.id, section_id: section.id, character_id: char.id, character_alias_id: calias.id, icon_id: icon.id, privacy: Post::PRIVACY_LIST, viewer_ids: [viewer.id]}
         expect(response).to redirect_to(post_url(post))
         expect(flash[:success]).to eq("Your post has been updated.")
-        expect(post.reload.content).to eq(newcontent)
+
+        post.reload
+        expect(post.content).to eq(newcontent)
+        expect(post.subject).to eq(newsubj)
+        expect(post.description).to eq('desc')
+        expect(post.board_id).to eq(board.id)
+        expect(post.section_id).to eq(section.id)
+        expect(post.character_id).to eq(char.id)
+        expect(post.character_alias_id).to eq(calias.id)
+        expect(post.icon_id).to eq(icon.id)
+        expect(post.privacy).to eq(Post::PRIVACY_LIST)
+        expect(post.viewers).to match_array([viewer])
+        expect(post.reload).to be_visible_to(viewer)
+        expect(post.reload).not_to be_visible_to(create(:user))
       end
     end
   end
