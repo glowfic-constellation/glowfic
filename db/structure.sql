@@ -1405,6 +1405,13 @@ CREATE INDEX index_audits_on_created_at ON audits USING btree (created_at);
 
 
 --
+-- Name: index_audits_on_request_uuid; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_audits_on_request_uuid ON audits USING btree (request_uuid);
+
+
+--
 -- Name: index_board_authors_on_board_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 

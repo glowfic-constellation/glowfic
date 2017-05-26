@@ -437,6 +437,20 @@ RSpec.describe GalleriesController do
         expect(gallery.reload.icons).to be_empty
       end
 
+      it "skips icons in the gallery" do
+        icon = create(:icon)
+        gallery = create(:gallery, user: icon.user)
+        gallery.icons << icon
+        expect(gallery.galleries_icons.count).to eq(1)
+        login_as(gallery.user)
+
+        post :icon, id: gallery.id, image_ids: icon.id.to_s
+        expect(response).to redirect_to(gallery_path(gallery))
+        expect(flash[:success]).to eq('Icons added to gallery successfully.')
+        expect(icon.reload.has_gallery).to be_true
+        expect(gallery.reload.galleries_icons.count).to eq(1)
+      end
+
       it "succeeds with galleryless icons" do
         user = create(:user)
         icon1 = create(:icon, user_id: user.id)

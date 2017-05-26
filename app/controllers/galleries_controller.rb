@@ -94,6 +94,7 @@ class GalleriesController < ApplicationController
       end
 
       icon_ids = params[:image_ids].split(',').map(&:to_i).reject(&:zero?)
+      icon_ids -= @gallery.icons.pluck(:id)
       icons = Icon.where(id: icon_ids)
       icons.each do |icon|
         next unless icon.user_id == current_user.id
