@@ -1,1 +1,0 @@
-Glowfic::Application.config.secret_token="d0b298432e1100ece7f904b118d9ce219a4ad658c6fb630de72adc6b027ab7ac3c8456cebcba5ed20ac0f1cd1344fe03978cc05d9538b65b9dd63e2351fc3bcc"
