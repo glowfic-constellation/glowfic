@@ -2,7 +2,7 @@
 class ApplicationController < ActionController::Base
   include Authentication
 
-  protect_from_forgery with: :exception
+  #protect_from_forgery with: :exception
   before_filter :check_permanent_user
   before_filter :show_password_warning
   before_filter :require_glowfic_domain
