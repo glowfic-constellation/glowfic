@@ -22,4 +22,12 @@ RSpec.describe Gallery do
     expect(gallery.save).to eq(false)
     expect(icon.reload.has_gallery).to eq(false)
   end
+
+  it "returns icons in keyword order" do
+    gallery = create(:gallery)
+    gallery.icons << create(:icon, keyword: 'zzz', user: gallery.user)
+    gallery.icons << create(:icon, keyword: 'yyy', user: gallery.user)
+    gallery.icons << create(:icon, keyword: 'xxx', user: gallery.user)
+    expect(gallery.icons.pluck(:keyword)).to eq(['xxx', 'yyy', 'zzz'])
+  end
 end

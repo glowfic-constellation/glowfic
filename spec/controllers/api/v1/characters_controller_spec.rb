@@ -97,6 +97,20 @@ RSpec.describe Api::V1::CharactersController do
       expect(response.json['galleries'].size).to eq(1)
     end
 
+    it "returns icons in keyword order" do
+      gallery = create(:gallery)
+      gallery.icons << create(:icon, keyword: 'zzz', user: gallery.user)
+      gallery.icons << create(:icon, keyword: 'yyy', user: gallery.user)
+      gallery.icons << create(:icon, keyword: 'xxx', user: gallery.user)
+      expect(gallery.icons.pluck(:keyword)).to eq(['xxx', 'yyy', 'zzz'])
+      character = create(:character, user: gallery.user)
+      character.galleries << gallery
+      get :show, id: character.id
+      expect(response).to have_http_status(200)
+      expect(response.json['galleries'].size).to eq(1)
+      expect(response.json['galleries'][0]['icons'].map { |i| i['keyword'] }).to eq(['xxx', 'yyy', 'zzz'])
+    end
+
     it "has associations when present", :show_in_doc do
       character = create(:character)
       calias = create(:alias, character: character)

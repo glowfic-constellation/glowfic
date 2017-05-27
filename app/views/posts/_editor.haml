@@ -59,7 +59,7 @@
         - character_galleries.each do |gallery|
           .gallery-group
             .gallery-name= gallery.name
-            - gallery.icons.each do |icon, icon_index|
+            - gallery.icons.each do |icon|
               .gallery-icon
                 = icon_tag icon, id: icon.id, pointer: true
                 %br>
