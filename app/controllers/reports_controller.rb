@@ -14,7 +14,7 @@ class ReportsController < ApplicationController
     @day = (page.to_i - 1).days.ago
 
     if logged_in?
-      @opened_posts = PostView.where(user_id: current_user.id).where('read_at IS NOT NULL').select([:post_id, :read_at, :ignored])
+      @opened_posts = PostView.where(user_id: current_user.id).select([:post_id, :read_at, :ignored])
       @board_views = BoardView.where(user_id: current_user.id).select([:board_id, :ignored])
       @opened_ids = @opened_posts.map(&:post_id)
     end
@@ -23,16 +23,27 @@ class ReportsController < ApplicationController
   private
 
   def has_unread?(post)
-    return false unless @opened_posts
+    return false unless @opened_posts.present?
     view = @opened_posts.detect { |v| v.post_id == post.id }
     return false unless view
     return false if view.ignored?
-    view.read_at.nil? || view.read_at < post.tagged_at
+    return false if view.read_at.nil? # totally unread, not partially
+    view.read_at < post.tagged_at
   end
   helper_method :has_unread?
 
+  def never_read?(post)
+    return false unless logged_in?
+    return true unless @opened_posts.present?
+    view = @opened_posts.detect { |v| v.post_id == post.id }
+    return true unless view
+    return false if view.ignored?
+    view.read_at.nil?
+  end
+  helper_method :never_read?
+
   def ignored?(post)
-    return false unless @opened_posts
+    return false unless @opened_posts.present?
     view = @opened_posts.detect { |v| v.post_id == post.id }
     board_view = @board_views.detect { |v| v.board_id == post.board_id }
     return false unless view || board_view

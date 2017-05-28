@@ -46,7 +46,7 @@
             - if has_unread?(post)
               = link_to unread_path(post) do
                 = image_tag unread_img, class: 'vmid', title: 'First Unread'
-            - if @opened_ids.present? && !@opened_ids.include?(post.id)
+            - elsif never_read?(post)
               %b= link_to post.subject, post_path(post)
             - else
               = link_to post.subject, post_path(post)
