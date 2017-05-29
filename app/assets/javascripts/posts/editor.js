@@ -195,6 +195,47 @@ $(document).ready(function() {
         $('#character-selector').hide();
     }
   });
+
+  // Dyanmic load character selector
+  $("#active_character").select2({
+    ajax: {
+      delay: 200,
+      url: '/api/v1/characters/taggable_characters',
+      dataType: 'json',
+      data: function(params) {
+        var data = {
+          q: params.term,
+          page: params.page
+        };
+        if(gon.post_id !== null) { data.post_id = gon.post_id }
+        return data
+      },
+      processResults: function (data, params) {
+        params.page = params.page || 1;
+        var total = this._request.getResponseHeader('Total');
+
+        if (params.term) {
+          return {
+            results: data.results,
+            pagination: {
+              more: (params.page * 25) < total
+            }
+          }
+        }
+
+        // Keep loading if it's a small/empty template since scroll won't work
+        if(params.page < total && this.container.results.$results[0].childElementCount < 10) { this.container.results.loadMore(); }
+        return {
+          results: data.results,
+          pagination: {
+            more: params.page < total
+          }
+        }
+      },
+      cache: true
+    },
+    width: '100%'
+  });
 });
 
 bindGallery = function() {

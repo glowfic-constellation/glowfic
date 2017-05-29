@@ -259,4 +259,53 @@ RSpec.describe Api::V1::CharactersController do
       expect(character.reload.user_id).to eq(icon.user_id)
     end
   end
+
+  describe "GET taggable_characters" do
+    it "requires login" do
+      get :taggable_characters
+      expect(response).to have_http_status(401)
+      expect(response.json['errors'][0]['message']).to eq("You must be logged in to view that page.")
+    end
+
+    context "for a post" do
+      before(:each) do
+        user = create(:user)
+        login_as(user)
+        @post = create(:post, user: user, character: create(:character, user: user))
+        template1 = create(:template, user: user, name: 'aaa')
+        template2 = create(:template, user: user, name: 'bbb')
+        2.times do create(:character, user: user, template: template1) end
+        3.times do create(:character, user: user, template: template2) end
+        3.times do create(:character, user: user) end
+      end
+
+      it "provides thread characters on page one" do
+        get :taggable_characters, post_id: @post.id, page: 1
+        expect(response.json['results'].size).to eq(1)
+        expect(response.json['results'][0]['text']).to eq('Thread characters')
+        expect(response.json['results'][0]['children'].size).to eq(1)
+      end
+
+      it "provides first alphabetical template on page two" do
+        get :taggable_characters, post_id: @post.id, page: 2
+        expect(response.json['results'].size).to eq(1)
+        expect(response.json['results'][0]['text']).to eq('aaa')
+        expect(response.json['results'][0]['children'].size).to eq(2)
+      end
+
+      it "provides second alphabetical template on page three" do
+        get :taggable_characters, post_id: @post.id, page: 3
+        expect(response.json['results'].size).to eq(1)
+        expect(response.json['results'][0]['text']).to eq('bbb')
+        expect(response.json['results'][0]['children'].size).to eq(3)
+      end
+
+      it "provides no template on page four" do
+        get :taggable_characters, post_id: @post.id, page: 4
+        expect(response.json['results'].size).to eq(1)
+        expect(response.json['results'][0]['text']).to eq('Templateless')
+        expect(response.json['results'][0]['children'].size).to eq(4)
+      end
+    end
+  end
 end

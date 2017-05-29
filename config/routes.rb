@@ -88,7 +88,9 @@ Rails.application.routes.draw do
       resources :board_sections do # TODO other types
         collection { post :reorder }
       end
-      resources :characters, only: [:index, :show, :update]
+      resources :characters, only: [:index, :show, :update] do
+        collection { get :taggable_characters }
+      end
       resources :galleries, only: :show
       resources :posts, only: :show do
         resources :replies, only: :index
