@@ -1,10 +1,3 @@
-# this is a patch for the following bug:
-# https://github.com/rails/rails/issues/25010
-# TODO remove with Rails 4
-class Hash
-  undef_method :to_proc if self.method_defined?(:to_proc)
-end
-
 require File.expand_path('../boot', __FILE__)
 
 require 'rails/all'
@@ -33,13 +26,12 @@ module Glowfic
   )
 
   class Application < Rails::Application
-    config.assets.enabled = true
-
     # Settings in config/environments/* take precedence over those specified here.
     # Application configuration should go into files in config/initializers
     # -- all .rb files in that directory are automatically loaded.
 
     # Set Time.zone default to the specified zone and make Active Record auto-convert to this zone.
+    # Run "rake -D time" for a list of tasks for finding time zone names. Default is UTC.
     config.time_zone = 'Eastern Time (US & Canada)'
     config.active_record.default_timezone = :local
 
