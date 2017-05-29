@@ -16,6 +16,7 @@ class Api::V1::CharactersController < Api::ApiController
   error 422, "Invalid parameters provided"
   def index
     queryset = Character.where("name LIKE ?", params[:q].to_s + '%').order('name')
+    queryset = queryset.where(user_id: @user.id) if @user
     if @post
       char_ids = @post.replies.pluck('distinct character_id') + [@post.character_id]
       queryset = queryset.where(id: char_ids)

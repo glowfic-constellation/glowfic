@@ -195,6 +195,55 @@ $(document).ready(function() {
         $('#character-selector').hide();
     }
   });
+
+  $("#active_character").select2({
+    ajax: {
+      delay: 200,
+      url: '/api/v1/characters',
+      dataType: 'json',
+      data: function(params) {
+        var data = {
+          q: params.term,
+          page: params.page
+        };
+        if(typeof(gon) !== 'undefined') { data.user_id = gon.current_user.id }
+        return data
+      },
+      processResults: function (data, params) {
+        params.page = params.page || 1;
+        var total = this._request.getResponseHeader('Total');
+
+        // Reformat the response to be formatted for Select2
+        var formattedChars = []
+        var templates = {}
+        for(var i = 0; i < data.results.length; i++) {
+          if(!data.results[i].template) { continue; }
+          var templateName = data.results[i].template.name;
+          if(!templates[templateName]) { templates[templateName] = []; }
+          templates[templateName].push({
+            id: data.results[i].id,
+            text: data.results[i].name
+          });
+        }
+        for(var template in templates) {
+          if(!templates.hasOwnProperty(template)) { continue; }
+          formattedChars.push({
+            text: template,
+            children: templates[template]
+          });
+        }
+        console.log(formattedChars);
+        return {
+          results: formattedChars,
+          pagination: {
+            more: (params.page * 25) < total
+          }
+        }
+      },
+      cache: true
+    },
+    width: '100%'
+  });
 });
 
 bindGallery = function() {

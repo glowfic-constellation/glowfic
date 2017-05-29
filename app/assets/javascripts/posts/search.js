@@ -44,7 +44,7 @@ $(document).ready(function() {
         params.page = params.page || 1;
         var total = this._request.getResponseHeader('Total');
 
-        // Reformat the response to be 
+        // Reformat the response to be formatted for Select2
         var formattedChars = []
         for(var i = 0; i < data.results.length; i++) {
           formattedChars[i] = {
