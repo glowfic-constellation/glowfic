@@ -56,7 +56,7 @@ class ReportsController < ApplicationController
     edited_no_replies = Post.where(last_reply_id: nil, tagged_at: day.beginning_of_day .. day.end_of_day).pluck(:id)
     by_replies = Reply.where(created_at: day.beginning_of_day .. day.end_of_day).pluck(:post_id)
     all_post_ids = created_no_replies + edited_no_replies + by_replies
-    Post.where(id: all_post_ids.uniq).includes(:board, :user, :last_user).order(sort)
+    Post.where(id: all_post_ids.uniq).joins(:board).includes(:board, :user, :last_user).order(sort)
   end
   helper_method :posts_for
 
