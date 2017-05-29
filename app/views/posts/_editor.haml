@@ -36,7 +36,8 @@
           = image_tag swap_icon_url, id: 'swap-icon', alt: ">", title: 'Choose Character'
           #character-selector.beige
             %b Choose Character
-            = select_tag :active_character, options_for_select([[item.character.try(:selector_name), item.character_id]], item.character_id)
+            - @active_char_opts << [item.character.try(:selector_name), item.character_id]
+            = select_tag :active_character, options_for_select(@active_char_opts, item.character_id)
             %br
       - if item.is_a?(Reply)
         .post-char-access

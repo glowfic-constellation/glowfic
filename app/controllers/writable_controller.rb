@@ -5,8 +5,10 @@ class WritableController < ApplicationController
 
   def build_template_groups
     return unless logged_in?
+    use_javascript('posts/load_characters')
     gon.current_user = current_user.gon_attributes
     gon.post_id = @post.try(:id)
+    @active_char_opts = [[current_user.username, nil]]
   end
 
   def show_post(cur_page=nil)
