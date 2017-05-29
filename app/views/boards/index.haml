@@ -32,3 +32,7 @@
       %th.sub{colspan: 3} Cameo Boards
     - @cameo_boards.each do |board|
       = render partial: 'list_item', locals: {board: board}
+  - if @boards.total_pages > 1
+    %tfoot
+      %tr
+        %td{colspan: 3}= render partial: 'posts/paginator', locals: { paginated: @boards }

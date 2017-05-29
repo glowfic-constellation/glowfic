@@ -24,7 +24,7 @@ class BoardsController < ApplicationController
       @cameo_boards = Board.where(id: BoardAuthor.where(user_id: @user.id, cameo: true).pluck('distinct board_id')).order('pinned DESC, LOWER(name)')
     else
       @page_title = 'Continuities'
-      @boards = Board.order('pinned DESC, LOWER(name)')
+      @boards = Board.order('pinned DESC, LOWER(name)').paginate(page: page, per_page: 25)
     end
   end
 
