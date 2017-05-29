@@ -19,7 +19,8 @@ class BoardsController < ApplicationController
       end
 
       board_ids = BoardAuthor.where(user_id: @user.id, cameo: false).pluck('distinct board_id')
-      where = Board.where(creator_id: @user.id).where(id: board_ids).where_values.reduce(:or)
+      arel = Board.arel_table
+      where = arel[:creator_id].eq(@user.id).or(arel[:id].in(board_ids))
       @boards = Board.where(where).order('pinned DESC, LOWER(name)')
       @cameo_boards = Board.where(id: BoardAuthor.where(user_id: @user.id, cameo: true).pluck('distinct board_id')).order('pinned DESC, LOWER(name)')
     else

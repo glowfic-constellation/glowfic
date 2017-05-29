@@ -227,6 +227,7 @@ class PostsController < WritableController
 
     return unless params[:commit].present?
 
+    arel = Post.arel_table
     @search_results = Post.order('tagged_at desc').includes(:board)
     @search_results = @search_results.where(board_id: params[:board_id]) if params[:board_id].present?
     @search_results = @search_results.where(id: Setting.find(params[:setting_id]).post_tags.pluck(:post_id)) if params[:setting_id].present?
@@ -234,12 +235,12 @@ class PostsController < WritableController
     @search_results = @search_results.where(status: Post::STATUS_COMPLETE) if params[:completed].present?
     if params[:author_id].present?
       post_ids = Reply.where(user_id: params[:author_id]).pluck('distinct post_id')
-      where = Post.where(user_id: params[:author_id]).where(id: post_ids).where_values.reduce(:or)
+      where = arel[:user_id].eq(params[:author_id]).or(arel[:id].in(post_ids))
       @search_results = @search_results.where(where)
     end
     if params[:character_id].present?
       post_ids = Reply.where(character_id: params[:character_id]).pluck('distinct post_id')
-      where = Post.where(character_id: params[:character_id]).where(id: post_ids).where_values.reduce(:or)
+      where = arel[:character_id].eq(params[:character_id]).or(arel[:id].in(post_ids))
       @search_results = @search_results.where(where)
     end
     @search_results = @search_results.paginate(page: page, per_page: 25)

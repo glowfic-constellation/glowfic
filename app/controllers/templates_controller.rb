@@ -26,7 +26,8 @@ class TemplatesController < ApplicationController
     @user = @template.user
     character_ids = @template.characters.pluck(:id)
     post_ids = Reply.where(character_id: character_ids).pluck('distinct post_id')
-    where = Post.where(character_id: character_ids).where(id: post_ids).where_values.reduce(:or)
+    arel = Post.arel_table
+    where = arel[:character_id].in(character_ids).or(arel[:id].in(post_ids))
     @posts = posts_from_relation(Post.where(where).order('tagged_at desc'))
     @page_title = @template.name
   end
