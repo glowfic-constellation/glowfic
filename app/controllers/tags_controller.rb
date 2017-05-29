@@ -6,6 +6,7 @@ class TagsController < ApplicationController
 
   def index
     @page_title = "Tags"
+    @tags = Tag.order('type desc, LOWER(name) asc').paginate(per_page: 25, page: page)
   end
 
   def show

@@ -9,7 +9,7 @@
       %th.sub Type
       %th.sub Posts
       %th.sub
-    - Tag.order('type desc, LOWER(name) asc').all.each do |tag|
+    - @tags.each do |tag|
       - klass = cycle('even', 'odd')
       %tr
         %td{class: klass}= link_to tag.name, tag_path(tag)
@@ -22,3 +22,7 @@
             = link_to tag_path(tag), method: :delete, confirm: 'Are you sure you want to delete '+tag.name+'?' do
               = image_tag "/images/cross.png"
             &nbsp;
+  - if @tags.total_pages > 1
+    %tfoot
+      %tr
+        %td{colspan: 4}= render partial: 'posts/paginator', locals: { paginated: @tags }
