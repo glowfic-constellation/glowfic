@@ -24,7 +24,7 @@ class IconsController < ApplicationController
 
       icons.each do |icon|
         next unless icon.user_id == current_user.id
-        gallery.icons.delete(icon)
+        gallery.icons.destroy(icon)
       end
       flash[:success] = "Icons removed from gallery."
       redirect_to gallery_path(gallery) and return
