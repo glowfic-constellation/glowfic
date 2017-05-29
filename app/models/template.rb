@@ -6,6 +6,10 @@ class Template < ActiveRecord::Base
 
   after_destroy :clear_character_templates
 
+  def plucked_characters
+    characters.pluck("id, concat_ws(' | ', name, template_name, screenname)")
+  end
+
   private
 
   def clear_character_templates

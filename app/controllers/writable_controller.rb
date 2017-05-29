@@ -6,19 +6,20 @@ class WritableController < ApplicationController
   def build_template_groups
     return unless logged_in?
 
-    templates = current_user.templates.includes(:characters).order('LOWER(name)')
-    faked = Struct.new(:name, :id, :characters)
-    templateless = faked.new('Templateless', nil, current_user.characters.where(:template_id => nil).order('LOWER(name) ASC'))
+    faked = Struct.new(:name, :id, :plucked_characters)
+    pluck = "id, concat_ws(' | ', name, template_name, screenname)"
+    templates = current_user.templates.order('LOWER(name)')
+    templateless = faked.new('Templateless', nil, current_user.characters.where(:template_id => nil).order('LOWER(name) ASC').pluck(pluck))
     @templates = templates + [templateless]
 
     if @post
       uniq_chars_ids = @post.replies.where(user_id: current_user.id).where('character_id is not null').group(:character_id).pluck(:character_id)
       uniq_chars_ids << @post.character_id if @post.user_id == current_user.id && @post.character_id.present?
-      uniq_chars = Character.where(id: uniq_chars_ids).order('LOWER(name)')
+      uniq_chars = Character.where(id: uniq_chars_ids).order('LOWER(name)').pluck(pluck)
       threadchars = faked.new('Thread characters', nil, uniq_chars)
       @templates.insert(0, threadchars)
     end
-    @templates.reject! {|template| template.characters.empty? }
+    @templates.reject! {|template| template.plucked_characters.empty? }
 
     gon.current_user = current_user.gon_attributes
   end
