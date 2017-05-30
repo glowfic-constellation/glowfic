@@ -2,6 +2,7 @@
 class ApplicationController < ActionController::Base
   include Authentication
 
+  before_filter :clear_old_cookies
   protect_from_forgery with: :exception
   before_filter :check_permanent_user
   before_filter :show_password_warning
@@ -10,6 +11,14 @@ class ApplicationController < ActionController::Base
   after_filter :store_location
 
   protected
+
+  def clear_old_cookies
+    # historical stuff I should kill for safety vs conflicts
+    [:_glowfic_session, :_glowfic_session_production].each do |key|
+      cookies.delete(key, domain: 'glowfic.com')
+      cookies.delete(key, domain: 'www.glowfic.com')
+    end
+  end
 
   def login_required
     unless logged_in?

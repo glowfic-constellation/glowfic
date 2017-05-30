@@ -26,7 +26,7 @@ class SessionsController < ApplicationController
       end
       flash[:success] = "You are now logged in as #{user.username}. Welcome back!"
       session[:user_id] = user.id
-      cookies.permanent.signed[:user_id] = user.id if params[:remember_me].present?
+      cookies.permanent.signed[:user_id] = {value: user.id, domain: '.glowfic.com'} if params[:remember_me].present?
       @current_user = user
       redirect_to boards_path and return if session[:previous_url] == '/login'
     else
@@ -38,7 +38,7 @@ class SessionsController < ApplicationController
   def destroy
     url = session[:previous_url] || root_url
     reset_session
-    cookies.delete(:user_id)
+    cookies.delete(:user_id, domain: '.glowfic.com')
     @current_user = nil
     flash[:success] = "You have been logged out."
     redirect_to url
