@@ -68,7 +68,7 @@
                 = password_field_tag :password, params[:password], placeholder: "Password"
               #header-remember
                 = check_box_tag :remember_me
-                Remember Me
+                = label_tag :remember_me, "Remember Me"
               #header-buttons
                 = submit_tag "Log in", class: 'button'
                 = link_to "Sign up", new_user_path
