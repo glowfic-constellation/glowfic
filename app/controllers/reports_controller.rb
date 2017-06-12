@@ -11,12 +11,19 @@ class ReportsController < ApplicationController
 
     @page_title = params[:id].capitalize + " Report"
     @hide_quicklinks = true
-    @day = (page.to_i - 1).days.ago
+    if params[:day].present?
+      @day = Date.parse(params[:day]) rescue Date.today
+      @page = (Date.today - @day).to_i + 1
+    else
+      @day = (page.to_i - 1).days.ago.to_date
+    end
 
     if logged_in?
       @opened_posts = PostView.where(user_id: current_user.id).select([:post_id, :read_at, :ignored])
       @board_views = BoardView.where(user_id: current_user.id).select([:board_id, :ignored])
       @opened_ids = @opened_posts.map(&:post_id)
+
+      DailyReport.mark_read(current_user, @day) if @day.to_date < Time.now.to_date
     end
   end
 
@@ -51,15 +58,6 @@ class ReportsController < ApplicationController
   end
   helper_method :ignored?
 
-  def posts_for(day)
-    created_no_replies = Post.where(last_reply_id: nil, created_at: day.beginning_of_day .. day.end_of_day).pluck(:id)
-    edited_no_replies = Post.where(last_reply_id: nil, tagged_at: day.beginning_of_day .. day.end_of_day).pluck(:id)
-    by_replies = Reply.where(created_at: day.beginning_of_day .. day.end_of_day).pluck(:post_id)
-    all_post_ids = created_no_replies + edited_no_replies + by_replies
-    Post.where(id: all_post_ids.uniq).joins(:board).includes(:board, :user, :last_user).order(sort)
-  end
-  helper_method :posts_for
-
   def linked_for(day, post, replies=nil)
     return post if post.created_at.to_date == day.to_date
     replies ||= post.replies.where(created_at: day.beginning_of_day .. day.end_of_day).order('created_at asc')
@@ -78,4 +76,5 @@ class ReportsController < ApplicationController
         'tagged_at desc'
     end
   end
+  helper_method :sort
 end

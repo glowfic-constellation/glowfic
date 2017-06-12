@@ -9,21 +9,21 @@
     %tr
       %th.sub{colspan: 7}
         - if page.to_i > 1
-          = link_to report_path(id: 'daily', page: page.to_i - 1) do
+          = link_to url_for(params.except(:day).merge(page: page.to_i - 1)) do
             .view-button &raquo; Next Day
-        = link_to report_path(id: 'daily', page: page.to_i + 1) do
+        = link_to url_for(params.except(:day).merge(page: page.to_i + 1)) do
           .view-button.float-none &laquo; Previous Day
-  - posts = posts_for(@day)
+  - posts = DailyReport.new(@day).posts(sort)
   - if posts.present?
     %tbody
       %tr
         %th.subber.width-15
-        %th.subber= link_to 'Thread', url_for(sort: 'subject')
-        %th.subber= link_to 'Continuity', url_for(sort: 'continuity')
+        %th.subber= link_to 'Thread', url_for(params.merge(sort: 'subject'))
+        %th.subber= link_to 'Continuity', url_for(params.merge(sort: 'continuity'))
         %th.subber Authors
         %th.subber.width-70 Replies
         %th.subber.width-70 Today
-        %th.subber.width-70= link_to 'Updated', url_for(sort: 'updated')
+        %th.subber.width-70= link_to 'Updated', url_for(params.merge(sort: 'updated'))
       - posts.each do |post|
         - next unless post.visible_to?(current_user)
         %tr
@@ -53,7 +53,7 @@
             - if post.description.present?
               %br
               %span.details= sanitize_post_description(post.description).html_safe
-          %td.vtop.post-board{class: klass}= link_to post.board.name, board_path(post.board)
+          %td.vtop.post-board{class: klass}= link_to post.board_name, board_path(post.board_id)
           %td.vtop.post-authors{class: klass}
             - authors = post.authors.sort_by { |author| author.username.downcase }
             - if authors.length < 4

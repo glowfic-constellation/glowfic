@@ -849,6 +849,38 @@ ALTER SEQUENCE reply_drafts_id_seq OWNED BY reply_drafts.id;
 
 
 --
+-- Name: report_views; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE report_views (
+    id integer NOT NULL,
+    user_id integer NOT NULL,
+    read_at timestamp without time zone,
+    created_at timestamp without time zone,
+    updated_at timestamp without time zone
+);
+
+
+--
+-- Name: report_views_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE report_views_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: report_views_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE report_views_id_seq OWNED BY report_views.id;
+
+
+--
 -- Name: schema_migrations; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -1137,6 +1169,13 @@ ALTER TABLE ONLY reply_drafts ALTER COLUMN id SET DEFAULT nextval('reply_drafts_
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
+ALTER TABLE ONLY report_views ALTER COLUMN id SET DEFAULT nextval('report_views_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY tags ALTER COLUMN id SET DEFAULT nextval('tags_id_seq'::regclass);
 
 
@@ -1336,6 +1375,14 @@ ALTER TABLE ONLY replies
 
 ALTER TABLE ONLY reply_drafts
     ADD CONSTRAINT reply_drafts_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: report_views_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY report_views
+    ADD CONSTRAINT report_views_pkey PRIMARY KEY (id);
 
 
 --
@@ -1713,6 +1760,13 @@ CREATE INDEX index_reply_drafts_on_post_id_and_user_id ON reply_drafts USING btr
 
 
 --
+-- Name: index_report_views_on_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_report_views_on_user_id ON report_views USING btree (user_id);
+
+
+--
 -- Name: index_tags_on_name; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -1888,3 +1942,6 @@ INSERT INTO schema_migrations (version) VALUES ('20170505173455');
 INSERT INTO schema_migrations (version) VALUES ('20170513052413');
 
 INSERT INTO schema_migrations (version) VALUES ('20170519123223');
+
+INSERT INTO schema_migrations (version) VALUES ('20170612015922');
+
