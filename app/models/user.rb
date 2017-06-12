@@ -19,6 +19,7 @@ class User < ActiveRecord::Base
   has_many :favoriteds, as: :favorite, class_name: Favorite
   has_many :posts
   has_many :replies
+  has_one :report_view
   belongs_to :avatar, :class_name => Icon
   belongs_to :active_character, :class_name => Character
 
