@@ -81,9 +81,9 @@ module ApplicationHelper
 
   def per_page_options(default=nil)
     default ||= per_page
-    default = nil if default.to_i > 500
+    default = nil if default.to_i > 100
 
-    options = [10,25,50,100,250,500]
+    options = [10,25,50,100]
     options << default unless default.nil? || default.zero? || options.include?(default)
     options = Hash[*(options * 2).sort]
     options_for_select(options, default)

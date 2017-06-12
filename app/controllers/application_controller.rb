@@ -60,7 +60,7 @@ class ApplicationController < ActionController::Base
   def per_page
     default = 25 # browser.mobile? ? -1 : 25
     per = (params[:per_page] || current_user.try(:per_page) || default)
-    per = 500 if per == 'all' || per.to_i > 500
+    per = 100 if per == 'all' || per.to_i > 100
     per = default if per.to_i.zero?
     @per_page ||= per.to_i
   end
