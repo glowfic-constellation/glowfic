@@ -981,7 +981,8 @@ CREATE TABLE users (
     salt_uuid character varying(255),
     unread_opened boolean DEFAULT false,
     hide_hiatused_tags_owed boolean DEFAULT false,
-    hide_warnings boolean DEFAULT false
+    hide_warnings boolean DEFAULT false,
+    ignore_unread_daily_report boolean DEFAULT false
 );
 
 
@@ -1944,4 +1945,6 @@ INSERT INTO schema_migrations (version) VALUES ('20170513052413');
 INSERT INTO schema_migrations (version) VALUES ('20170519123223');
 
 INSERT INTO schema_migrations (version) VALUES ('20170612015922');
+
+INSERT INTO schema_migrations (version) VALUES ('20170617180015');
 
