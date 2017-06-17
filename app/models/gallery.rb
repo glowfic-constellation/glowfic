@@ -13,6 +13,11 @@ class Gallery < ActiveRecord::Base
   validates_presence_of :user, :name
 
   scope :ordered, -> { order('characters_galleries.section_order ASC') }
+  scope :with_icon_count, -> {
+    joins('LEFT JOIN galleries_icons ON galleries.id = galleries_icons.gallery_id')
+      .select("galleries.*, count(galleries_icons.id) as icon_count")
+      .group("galleries.id")
+  }
 
   def default_icon
     cover_icon || icons.first

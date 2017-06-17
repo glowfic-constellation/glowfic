@@ -24,11 +24,11 @@
       - if @user.id == current_user.try(:id)
         .clear.centered.icons-remove
           = submit_tag "x Delete selected icons permanently", data: { confirm: "Are you sure? These icons will be gone from the site!" }
-- @user.galleries.order('name asc').each do |gallery|
+- @user.galleries.with_icon_count.order('name asc').each do |gallery|
   %tr
     - klass = cycle('even', 'odd')
     %td.gallery-name{class: klass}= link_to gallery.name, gallery_path(gallery)
-    %td.width-150.centered.gallery-icon-count{class: klass}= gallery.icons.count
+    %td.width-150.centered.gallery-icon-count{class: klass}= gallery.icon_count
     %td.width-70.gallery-buttons{class: klass}
       - if @user.id == current_user.try(:id)
         = link_to add_gallery_path(gallery), title: "Add Icons", class: 'gallery-add' do
