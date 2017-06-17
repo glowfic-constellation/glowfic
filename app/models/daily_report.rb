@@ -19,6 +19,7 @@ class DailyReport < Report
   def self.unread_date_for(user)
     # ignores reports in progress
     return nil unless user
+    return nil if user.ignore_unread_daily_report?
     last_read = last_read(user)
     return 1.day.ago.to_date.to_s unless last_read
     return nil unless last_read.to_date < 1.day.ago.to_date

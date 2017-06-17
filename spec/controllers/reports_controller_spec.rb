@@ -81,6 +81,14 @@ RSpec.describe ReportsController do
       expect(user.report_view.read_at.to_date).to eq(2.days.ago.to_date)
     end
 
+    it "does not mark read for ignoring users" do
+      user = create(:user, ignore_unread_daily_report: true)
+      expect(user.report_view).to be_nil
+      login_as(user)
+      get :show, id: 'daily', day: 2.days.ago.to_date.to_s
+      expect(user.report_view).to be_nil
+    end
+
     it "marks read for previous days when already read once" do
       user = create(:user)
       expect(user.report_view).to be_nil

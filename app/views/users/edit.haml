@@ -55,6 +55,11 @@
         = f.check_box :unread_opened, class: 'width-15 vmid'
         = f.label :unread_opened, "Opened threads only"
     %tr
+      %th.sub Daily Report
+      %td{class: cycle('even', 'odd')}
+        = f.check_box :ignore_unread_daily_report, class: 'width-15 vmid'
+        = f.label :ignore_unread_daily_report, "Hide unread notice"
+    %tr
       %th.sub Warnings
       %td{class: cycle('even', 'odd')}
         = f.check_box :hide_warnings, class: 'width-15 vmid'
