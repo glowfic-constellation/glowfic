@@ -5,7 +5,7 @@ class DailyReport < Report
     @day = day
   end
 
-  def posts(sort='')
+  def posts(sort='', page=1, per_page=25)
     created_no_replies = Post.where(last_reply_id: nil, created_at: day.beginning_of_day .. day.end_of_day).pluck(:id)
     edited_no_replies = Post.where(last_reply_id: nil, tagged_at: day.beginning_of_day .. day.end_of_day).pluck(:id)
     by_replies = Reply.where(created_at: day.beginning_of_day .. day.end_of_day).pluck(:post_id)
@@ -14,6 +14,7 @@ class DailyReport < Report
       .select('posts.*, boards.name as board_name')
       .joins(:board)
       .order(sort)
+      .paginate(page: page, per_page: per_page)
   end
 
   def self.unread_date_for(user)

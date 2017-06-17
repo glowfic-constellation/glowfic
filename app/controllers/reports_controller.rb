@@ -13,9 +13,8 @@ class ReportsController < ApplicationController
     @hide_quicklinks = true
     if params[:day].present?
       @day = Date.parse(params[:day]) rescue Date.today
-      @page = (Date.today - @day).to_i + 1
     else
-      @day = (page.to_i - 1).days.ago.to_date
+      @day = Date.today
     end
 
     if logged_in?

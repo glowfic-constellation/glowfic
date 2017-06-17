@@ -8,12 +8,12 @@
         = @day.strftime("%b %d, %Y")
     %tr
       %th.sub{colspan: 7}
-        - if page.to_i > 1
-          = link_to url_for(params.except(:day).merge(page: page.to_i - 1)) do
+        - if @day < Date.today
+          = link_to url_for(params.except(:page).merge(day: @day + 1.day)) do
             .view-button &raquo; Next Day
-        = link_to url_for(params.except(:day).merge(page: page.to_i + 1)) do
+        = link_to url_for(params.except(:page).merge(day: @day - 1.day)) do
           .view-button.float-none &laquo; Previous Day
-  - posts = DailyReport.new(@day).posts(sort)
+  - posts = DailyReport.new(@day).posts(sort, page, per_page)
   - if posts.present?
     %tbody
       %tr
@@ -68,3 +68,7 @@
   - else
     %tr
       %td.centered.even{colspan: 7} — No posts yet —
+  - if posts.total_pages > 1
+    %tfoot
+      %tr
+        %td{colspan: 7}= render partial: 'posts/paginator', locals: {paginated: posts}
