@@ -12,9 +12,9 @@ class ReportsController < ApplicationController
     @page_title = params[:id].capitalize + " Report"
     @hide_quicklinks = true
     if params[:day].present?
-      @day = Date.parse(params[:day]) rescue Date.today
+      @day = Date.parse(params[:day]) rescue Time.zone.now.to_date
     else
-      @day = Date.today
+      @day = Time.zone.now.to_date
     end
 
     if logged_in?
