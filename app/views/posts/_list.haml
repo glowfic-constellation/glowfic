@@ -6,10 +6,10 @@
 
 %span.time-loaded= pretty_time(DateTime.now.in_time_zone)
 
+.post-header
+  .padding-15= content_for :posts_title
 %table{class: local_assigns[:table_class].to_s}
   %thead
-    %tr
-      %th{colspan: col_count}= content_for :posts_title
     %tr
       %th.sub.width-15
       %th.sub Thread

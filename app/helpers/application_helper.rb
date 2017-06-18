@@ -160,4 +160,10 @@ module ApplicationHelper
     return message.sender_name if message.site_message?
     link_to(message.sender_name, user_path(message.sender))
   end
+
+  def menu_icon
+    menu_url = '/images/menu.png'
+    menu_url = '/images/menugray.png' if current_user.try(:layout).to_s.starts_with?('starry')
+    image_tag menu_url, class: 'icon-view'
+  end
 end

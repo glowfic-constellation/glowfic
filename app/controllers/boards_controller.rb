@@ -58,6 +58,7 @@ class BoardsController < ApplicationController
     @posts = posts_from_relation(@board.posts.order(order), false)
     @board_items = @board.board_sections + posts_from_relation(@board.posts.where(section_id: nil), false)
     @board_items.sort_by! { |item| item.section_order.to_i }
+    use_javascript('boards')
   end
 
   def edit

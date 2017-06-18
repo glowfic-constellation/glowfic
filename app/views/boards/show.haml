@@ -4,36 +4,56 @@
   %b= @board.name
 
 - content_for :posts_title do
-  = @board.name
+  .post-header
+    .padding-15
+      = @board.name
+      - if logged_in?
+        .view-button#post-menu= menu_icon
   - if logged_in?
-    - if @board.open_to?(current_user)
-      = link_to new_post_path params: {board_id: @board.id} do
-        .link-box.green + New Post
-    - if @board.editable_by?(current_user)
-      = link_to new_board_section_path params: {board_id: @board.id} do
-        .link-box.green + New Section
-      = link_to edit_board_path(@board) do
-        .link-box.blue
-          = image_tag "/images/pencil.png"
-          Edit
-      = link_to board_path(@board), method: :delete, data: { confirm: 'Are you sure you want to delete this continuity?' } do
-        .link-box.red x Delete
-    - if fav = Favorite.between(current_user, @board)
-      = link_to favorite_path(fav), method: :delete do
-        .link-box.blue
-          = image_tag '/images/star_delete.png', class: 'vmid'
-          Unfavorite
-    - else
-      = link_to favorites_path(board_id: @board.id), method: :post do
-        .link-box.blue
-          = image_tag '/images/star_add.png', class: 'vmid'
-          Favorite
+    #post-menu-holder
+      #post-menu-box.hidden
+        - if @board.editable_by?(current_user)#.open_to?(current_user)
+          = link_to new_post_path params: {board_id: @board.id} do
+            %div
+              = image_tag '/images/add.png'.freeze
+              New Post
+        - if @board.editable_by?(current_user)
+          = link_to new_board_section_path params: {board_id: @board.id} do
+            %div
+              = image_tag '/images/add.png'.freeze
+              New Section
+          = link_to edit_board_path(@board) do
+            %div
+              = image_tag '/images/pencil.png'.freeze
+              Edit
+          = link_to board_path(@board), method: :delete, data: { confirm: 'Are you sure you want to delete this continuity?' } do
+            %div
+              = image_tag '/images/cross.png'.freeze
+              Delete
+        - if fav = Favorite.between(current_user, @board)
+          = link_to favorite_path(fav), method: :delete do
+            %div
+              = image_tag '/images/star_delete.png'
+              Unfavorite
+        - else
+          = link_to favorites_path(board_id: @board.id), method: :post do
+            %div
+              = image_tag '/images/star_add.png'
+              Favorite
+        - if @board.ignored_by?(current_user)
+          = link_to board_path(@board, hidden: false), method: :put do
+            %div
+              = image_tag '/images/weather_cloudy.png'.freeze, class: 'vmid'.freeze, style: 'margin-bottom: 3px;'.freeze
+              Unhide
+        - else
+          = link_to board_path(@board, hidden: true), method: :put do
+            %div
+              = image_tag '/images/weather_clouds.png'.freeze, class: 'vmid'.freeze, style: 'margin-bottom: 3px;'.freeze
+              Hide
 
 - if @board.id == 1
+  = content_for :posts_title
   %table
-    %thead
-      %tr
-        %th{colspan: 6}= content_for :posts_title
     %tbody
       - @board.board_sections.order('section_order asc').each do |section|
         %tr
@@ -56,10 +76,9 @@
               = link_to post.subject, post_path(post)
             %td.padding-10{class: klass}= pretty_time(post.tagged_at)
 - elsif @board.board_sections.exists?
+  = content_for :posts_title
   %table
     %thead
-      %tr
-        %th{colspan: 5}= content_for :posts_title
       - if @board.description.present?
         %tr
           %td.odd{colspan: 5}= sanitize_written_content(@board.description).html_safe
