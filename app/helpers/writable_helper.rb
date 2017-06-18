@@ -3,7 +3,7 @@ module WritableHelper
     return unless @replies.present?
     return if @replies.total_pages == page
     'You are not on the latest page of the thread ' + \
-    content_tag(:a, '(View unread)', href: unread_path(@post, warn_time: Time.now.to_i), class: 'unread-warning') + ' ' + \
+    content_tag(:a, '(View unread)', href: unread_path(@post), class: 'unread-warning') + ' ' + \
     content_tag(:a, '(New tab)', href: unread_path(@post), class: 'unread-warning', target: '_blank')
   end
 

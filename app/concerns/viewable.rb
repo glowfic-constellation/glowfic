@@ -8,11 +8,11 @@ module Viewable
       view = view_for(user)
 
       if view.new_record?
-        view.read_at = at_time || Time.now
+        view.read_at = at_time || Time.now.in_time_zone
         return view.save
       end
 
-      return view.update_attributes(read_at: Time.now) unless at_time.present?
+      return view.update_attributes(read_at: Time.now.in_time_zone) unless at_time.present?
       return true if view.read_at && at_time <= view.read_at && !force
       view.update_attributes(read_at: at_time)
     end
