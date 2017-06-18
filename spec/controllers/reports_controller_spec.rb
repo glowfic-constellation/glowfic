@@ -64,49 +64,55 @@ RSpec.describe ReportsController do
       end
     end
 
-    it "does not mark read for today's unfinished report" do
-      user = create(:user)
-      expect(user.report_view).to be_nil
-      login_as(user)
-      get :show, id: 'daily'
-      expect(user.reload.report_view).to be_nil
-    end
+    context "reading" do
+      before(:each) do
+        Time.zone = "UTC"
+      end
 
-    it "marks read for previous days" do
-      user = create(:user)
-      expect(user.report_view).to be_nil
-      login_as(user)
-      get :show, id: 'daily', day: 2.days.ago.to_date.to_s
-      expect(user.reload.report_view).not_to be_nil
-      expect(user.report_view.read_at.to_date).to eq(2.days.ago.to_date)
-    end
+      it "does not mark read for today's unfinished report" do
+        user = create(:user)
+        expect(user.report_view).to be_nil
+        login_as(user)
+        get :show, id: 'daily'
+        expect(user.reload.report_view).to be_nil
+      end
 
-    it "does not mark read for ignoring users" do
-      user = create(:user, ignore_unread_daily_report: true)
-      expect(user.report_view).to be_nil
-      login_as(user)
-      get :show, id: 'daily', day: 2.days.ago.to_date.to_s
-      expect(user.report_view).to be_nil
-    end
+      it "marks read for previous days" do
+        user = create(:user)
+        expect(user.report_view).to be_nil
+        login_as(user)
+        get :show, id: 'daily', day: 2.days.ago.to_date.to_s
+        expect(user.reload.report_view).not_to be_nil
+        expect(user.report_view.read_at.to_date).to eq(2.days.ago.to_date)
+      end
 
-    it "marks read for previous days when already read once" do
-      user = create(:user)
-      expect(user.report_view).to be_nil
-      DailyReport.mark_read(user, 3.day.ago.to_date)
-      login_as(user)
-      get :show, id: 'daily', day: 2.days.ago.to_date.to_s
-      expect(user.reload.report_view).not_to be_nil
-      expect(user.report_view.read_at.to_date).to eq(2.days.ago.to_date)
-    end
+      it "does not mark read for ignoring users" do
+        user = create(:user, ignore_unread_daily_report: true)
+        expect(user.report_view).to be_nil
+        login_as(user)
+        get :show, id: 'daily', day: 2.days.ago.to_date.to_s
+        expect(user.report_view).to be_nil
+      end
 
-    it "does not mark read if you've read more recently" do
-      user = create(:user)
-      expect(user.report_view).to be_nil
-      DailyReport.mark_read(user, 2.day.ago.to_date)
-      login_as(user)
-      get :show, id: 'daily', day: 3.days.ago.to_date.to_s
-      expect(user.reload.report_view).not_to be_nil
-      expect(user.report_view.read_at.to_date).to eq(2.days.ago.to_date)
+      it "marks read for previous days when already read once" do
+        user = create(:user)
+        expect(user.report_view).to be_nil
+        DailyReport.mark_read(user, 3.day.ago.to_date)
+        login_as(user)
+        get :show, id: 'daily', day: 2.days.ago.to_date.to_s
+        expect(user.reload.report_view).not_to be_nil
+        expect(user.report_view.read_at.to_date).to eq(2.days.ago.to_date)
+      end
+
+      it "does not mark read if you've read more recently" do
+        user = create(:user)
+        expect(user.report_view).to be_nil
+        DailyReport.mark_read(user, 2.day.ago.to_date)
+        login_as(user)
+        get :show, id: 'daily', day: 3.days.ago.to_date.to_s
+        expect(user.reload.report_view).not_to be_nil
+        expect(user.report_view.read_at.to_date).to eq(2.days.ago.to_date)
+      end
     end
   end
 end
