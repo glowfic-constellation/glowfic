@@ -65,10 +65,6 @@ RSpec.describe ReportsController do
     end
 
     context "reading" do
-      before(:each) do
-        Time.zone = "UTC"
-      end
-
       it "does not mark read for today's unfinished report" do
         user = create(:user)
         expect(user.report_view).to be_nil
