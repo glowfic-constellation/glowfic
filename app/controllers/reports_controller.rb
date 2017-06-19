@@ -72,7 +72,7 @@ class ReportsController < ApplicationController
       when 'continuity'
         'LOWER(boards.name), tagged_at desc'
       else
-        'tagged_at desc'
+        'first_updated_at desc'
     end
   end
   helper_method :sort
