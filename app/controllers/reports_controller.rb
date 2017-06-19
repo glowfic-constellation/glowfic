@@ -70,7 +70,7 @@ class ReportsController < ApplicationController
       when 'subject'
         'LOWER(subject)'
       when 'continuity'
-        'LOWER(boards.name), tagged_at desc'
+        'LOWER(max(boards.name)), tagged_at desc'
       else
         'first_updated_at desc'
     end
