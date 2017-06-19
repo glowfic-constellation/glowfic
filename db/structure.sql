@@ -460,7 +460,6 @@ CREATE TABLE galleries (
     id integer NOT NULL,
     user_id integer NOT NULL,
     name character varying(255) NOT NULL,
-    cover_icon_id integer,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL
 );
@@ -1947,4 +1946,6 @@ INSERT INTO schema_migrations (version) VALUES ('20170519123223');
 INSERT INTO schema_migrations (version) VALUES ('20170612015922');
 
 INSERT INTO schema_migrations (version) VALUES ('20170617180015');
+
+INSERT INTO schema_migrations (version) VALUES ('20170619010707');
 

@@ -1,6 +1,5 @@
 class Gallery < ActiveRecord::Base
   belongs_to :user
-  belongs_to :cover_icon, class_name: Icon
 
   has_many :galleries_icons
   has_many :icons, -> { order('LOWER(keyword)') }, through: :galleries_icons
@@ -18,10 +17,6 @@ class Gallery < ActiveRecord::Base
       .select("galleries.*, count(galleries_icons.id) as icon_count")
       .group("galleries.id")
   }
-
-  def default_icon
-    cover_icon || icons.first
-  end
 
   def character_gallery_for(character)
     characters_galleries.where(character_id: character).first

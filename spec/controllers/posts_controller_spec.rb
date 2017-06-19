@@ -464,6 +464,14 @@ RSpec.describe PostsController do
         expect(response.body).to include(post.subject)
         expect(response.body).not_to include('header-right')
       end
+
+      it "displays quick switch properly" do
+        post = create(:post)
+        reply = create(:reply, post: post, with_icon: true, with_character: true)
+        login_as(reply.user)
+        get :show, id: post.id
+        expect(response.status).to eq(200)
+      end
     end
 
     context "with at_id" do
