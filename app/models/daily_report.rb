@@ -11,8 +11,10 @@ class DailyReport < Report
     by_replies = Reply.where(created_at: day.beginning_of_day .. day.end_of_day).pluck(:post_id)
     all_post_ids = created_no_replies + edited_no_replies + by_replies
     Post.where(id: all_post_ids.uniq)
-      .select('posts.*, boards.name as board_name')
+      .select('posts.*, max(boards.name) as board_name, count(replies.id) as reply_count')
       .joins(:board)
+      .joins("LEFT JOIN replies ON replies.post_id = posts.id")
+      .group("posts.id")
       .order(sort)
       .paginate(page: page, per_page: per_page)
   end
