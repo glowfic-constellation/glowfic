@@ -65,10 +65,9 @@
           %td.vtop.centered.post-replies{class: klass}= link_to post.reply_count, stats_post_path(post)
           %td.vtop.centered.post-replies{class: klass}= link_to replies_today.count, post_or_reply_link(linked)
           %td.vtop.centered.post-time{class: klass}= linked.created_at.strftime("%l:%M %p")
-  - else
-    %tr
-      %td.centered.even{colspan: 7} — No posts yet —
-  - if posts.total_pages > 1
     %tfoot
       %tr
         %td{colspan: 7}= render partial: 'posts/paginator', locals: {paginated: posts}
+  - else
+    %tr
+      %td.centered.even{colspan: 7} — No posts yet —
