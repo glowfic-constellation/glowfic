@@ -54,5 +54,22 @@ RSpec.describe DailyReport do
         end
       end
     end
+
+    it "does not multiply reply_count" do
+      # okay so it kinda multiples it, but it's divided in the view
+      now = Time.now
+      post = nil
+      Timecop.freeze(now - 2.days) do
+        post = create(:post)
+        2.times do create(:reply, post: post, user: post.user) end
+      end
+      Timecop.freeze(now) do
+        3.times do create(:reply, post: post, user: post.user) end
+      end
+      report = DailyReport.new(now)
+      example_post = report.posts.first
+      replies_today = example_post.replies.where(created_at: now.beginning_of_day .. now.end_of_day).order('created_at asc')
+      expect(example_post.reply_count / replies_today.count).to eq(5)
+    end
   end
 end
