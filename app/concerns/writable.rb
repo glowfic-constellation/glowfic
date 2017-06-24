@@ -42,7 +42,7 @@ module Writable
     def name
       return character_name unless character_alias_id.present?
       return read_attribute(:alias) if has_attribute?(:alias)
-      character_alias.name
+      character_alias.try(:name)
     end
 
     def character_name
