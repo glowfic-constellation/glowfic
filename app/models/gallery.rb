@@ -2,7 +2,7 @@ class Gallery < ActiveRecord::Base
   belongs_to :user
   belongs_to :cover_icon, class_name: Icon
 
-  has_many :galleries_icons
+  has_many :galleries_icons, dependent: :destroy
   has_many :icons, -> { order('LOWER(keyword)') }, through: :galleries_icons
 
   has_many :characters_galleries
