@@ -313,6 +313,19 @@ RSpec.describe GalleriesController do
       expect(flash[:success]).to eq("Gallery deleted successfully.")
       expect(Gallery.find_by_id(gallery.id)).to be_nil
     end
+
+    it "modifies associations relevantly" do
+      user_id = login
+      gallery = create(:gallery, user_id: user_id)
+      icon = create(:icon, user_id: user_id)
+      gallery.icons << icon
+      gallery.save
+      expect(icon.reload.has_gallery).to be_true
+      delete :destroy, id: gallery.id
+      expect(response).to redirect_to(galleries_url)
+      expect(flash[:success]).to eq("Gallery deleted successfully.")
+      expect(icon.reload.has_gallery).not_to be_true
+    end
   end
 
   describe "GET add" do
