@@ -67,9 +67,26 @@ RSpec.describe DailyReport do
         3.times do create(:reply, post: post, user: post.user) end
       end
       report = DailyReport.new(now)
-      example_post = report.posts.first
-      replies_today = example_post.replies.where(created_at: now.beginning_of_day .. now.end_of_day).order('created_at asc')
-      expect(example_post.reply_count / replies_today.count).to eq(5)
+      expect(report.posts.first.reply_count).to eq(5)
+    end
+
+    it "calculates today posts with replies timestamp correctly" do
+      old = Time.zone
+      Time.zone = "Eastern Time (US & Canada)"
+      now = Time.now.end_of_day - 1.hour # ensure no issues running near midnight
+      post = nil
+
+      Timecop.freeze(now) do
+        post = create(:post)
+      end
+
+      Timecop.freeze(now + 10.minutes) do
+        create(:reply, post: post, user: post.user)
+      end
+
+      report = DailyReport.new(now)
+      expect(report.posts.first.first_updated_at).to be_the_same_time_as(now)
+      Time.zone = old
     end
   end
 end

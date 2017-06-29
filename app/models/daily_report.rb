@@ -12,8 +12,12 @@ class DailyReport < Report
     Post.where(id: all_post_ids.uniq)
       .select('posts.*,
         max(boards.name) as board_name,
-        count(replies.id) as reply_count,
-        coalesce(min(replies_today.created_at), posts.created_at) as first_updated_at ')
+        count(distinct replies.id) as reply_count,
+        case date_trunc(\'day\', posts.created_at)
+          when \'' + day.beginning_of_day.strftime("%Y-%m-%d %H:%M:%S") + '\'
+          then posts.created_at
+          else coalesce(min(replies_today.created_at), posts.created_at)
+          end as first_updated_at')
       .joins(:board)
       .joins("LEFT JOIN replies ON replies.post_id = posts.id")
       .joins("LEFT JOIN replies AS replies_today ON replies_today.post_id = posts.id")
