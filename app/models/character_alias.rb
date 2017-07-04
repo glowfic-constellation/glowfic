@@ -12,5 +12,6 @@ class CharacterAlias < ActiveRecord::Base
   def clear_alias_ids
     Reply.where(character_alias_id: id).update_all(character_alias_id: nil)
     Post.where(character_alias_id: id).update_all(character_alias_id: nil)
+    ReplyDraft.where(character_alias_id: id).update_all(character_alias_id: nil)
   end
 end
