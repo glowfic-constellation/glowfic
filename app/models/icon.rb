@@ -48,6 +48,7 @@ class Icon < ActiveRecord::Base
   def clear_icon_ids
     Reply.where(icon_id: id).update_all(icon_id: nil)
     Post.where(icon_id: id).update_all(icon_id: nil)
+    ReplyDraft.where(icon_id: id).update_all(icon_id: nil)
   end
 
   class UploadError < Exception
