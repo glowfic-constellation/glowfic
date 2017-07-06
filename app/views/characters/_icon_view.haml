@@ -1,6 +1,6 @@
 - if @template && @template.description.present?
   %tr
-    %td.beige.padding-5{colspan: 6}= @template.description
+    %td.beige.padding-5{colspan: 6}= sanitize_written_content(@template.description).html_safe
 %tr
   %td.green.left-align
     .gallery
