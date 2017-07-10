@@ -79,9 +79,14 @@ RSpec.describe ReportsController do
           it "marks read for previous days" do
             expect(user.report_view).to be_nil
             login_as(user)
-            get :show, id: 'daily', day: 2.days.ago.to_date.to_s
-            expect(user.reload.report_view).not_to be_nil
-            expect(user.report_view.read_at.in_time_zone(place).to_date).to eq(2.days.ago.to_date)
+            viewed_time = 2.days.ago
+            expect_time = viewed_time
+
+            get :show, id: 'daily', day: viewed_time.to_date.to_s
+
+            user.reload
+            expect(user.report_view).not_to be_nil
+            expect(user.report_view.read_at.in_time_zone(place).to_date).to eq(expect_time.to_date)
           end
 
           it "does not mark read for ignoring users" do
@@ -94,21 +99,38 @@ RSpec.describe ReportsController do
 
           it "marks read for previous days when already read once" do
             expect(user.report_view).to be_nil
-            DailyReport.mark_read(user, 3.days.ago.to_date)
+
+            before_time = 3.days.ago
+            viewed_time = 2.days.ago
+            expect_time = viewed_time
+            Time.use_zone(place) do
+              DailyReport.mark_read(user, before_time.to_date)
+            end
+
             login_as(user)
-            get :show, id: 'daily', day: 2.days.ago.to_date.to_s
-            expect(user.reload.report_view).not_to be_nil
-            expect(user.report_view.read_at.to_date).to eq(2.days.ago.to_date)
+            get :show, id: 'daily', day: viewed_time.to_date.to_s
+
+            user.reload
+            expect(user.report_view).not_to be_nil
+            expect(user.report_view.read_at.in_time_zone(place).to_date).to eq(expect_time.to_date)
           end
 
           it "does not mark read if you've read more recently" do
-            user = create(:user)
             expect(user.report_view).to be_nil
-            DailyReport.mark_read(user, 2.days.ago.to_date)
+
+            before_time = 2.days.ago
+            viewed_time = 3.days.ago
+            expect_time = before_time
+            Time.use_zone(place) do
+              DailyReport.mark_read(user, before_time.to_date)
+            end
+
             login_as(user)
-            get :show, id: 'daily', day: 3.days.ago.to_date.to_s
-            expect(user.reload.report_view).not_to be_nil
-            expect(user.report_view.read_at.to_date).to eq(2.days.ago.to_date)
+            get :show, id: 'daily', day: viewed_time.to_date.to_s
+
+            user.reload
+            expect(user.report_view).not_to be_nil
+            expect(user.report_view.read_at.in_time_zone(place).to_date).to eq(expect_time.to_date)
           end
         end
       end
