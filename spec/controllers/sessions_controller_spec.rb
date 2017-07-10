@@ -7,10 +7,10 @@ RSpec.describe SessionsController do
       expect(response.status).to eq(200)
     end
 
-    it "redirects when logged in" do
+    it "works when logged in" do
       login
       get :index
-      expect(response).to redirect_to(boards_url)
+      expect(response).to have_http_status(200)
     end
   end
 

@@ -4,7 +4,6 @@ class SessionsController < ApplicationController
   before_filter :login_required, only: [:destroy]
 
   def index
-    redirect_to boards_path and return if logged_in?
   end
 
   def new
