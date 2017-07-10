@@ -69,6 +69,9 @@ RSpec.describe ReportsController do
         context "in #{place}" do
           let(:user) { create(:user, timezone: place) }
 
+          # the user's report_view.read_at should be set in their relevant timezone, since that's what will occur in the application
+          # the user's report_view.read_at should be read as a date *in their timezone*, since again, that's what happens in the application
+
           it "does not mark read for today's unfinished report" do
             expect(user.report_view).to be_nil
             login_as(user)
