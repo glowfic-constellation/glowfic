@@ -40,8 +40,9 @@ class Post < ActiveRecord::Base
   validate :valid_board, :valid_board_section
 
   before_create :build_initial_flat_post
-  after_save :update_tag_list
   before_create :set_last_user
+  after_commit :notify_followers, on: :create
+  after_save :update_tag_list
 
   audited except: [:last_reply_id, :last_user_id, :edited_at, :tagged_at, :section_id, :section_order]
   has_associated_audits
@@ -62,7 +63,7 @@ class Post < ActiveRecord::Base
     return true if privacy == PRIVACY_REGISTERED
     return true if user.admin?
     return user.id == user_id if privacy == PRIVACY_PRIVATE
-    @visible ||= (post_viewers.map(&:user_id) + [user_id]).include?(user.id)
+    (post_viewers.pluck(:user_id) + [user_id]).include?(user.id)
   end
 
   def authors
@@ -263,5 +264,9 @@ class Post < ActiveRecord::Base
 
   def reset_warnings(warning)
     PostView.where(post_id: id).update_all(warnings_hidden: false)
+  end
+
+  def notify_followers
+    Resque.enqueue(NotifyFollowersOfNewPostJob, self.id)
   end
 end

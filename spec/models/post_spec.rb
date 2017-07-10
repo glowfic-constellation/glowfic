@@ -667,4 +667,13 @@ RSpec.describe Post do
       expect(reply.character_id).to be_nil
     end
   end
+
+  it "should enqueue a message after creation" do
+    author = create(:user)
+    notified = create(:user)
+    create(:favorite, user: notified, favorite: author)
+    post = create(:post, user: author)
+    post.run_callbacks(:commit) # deal with tests running in a transaction
+    expect(NotifyFollowersOfNewPostJob).to have_queued(post.id)
+  end
 end
