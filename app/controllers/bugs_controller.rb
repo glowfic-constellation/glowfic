@@ -4,7 +4,7 @@ class BugsController < ApplicationController
 
   def create
     exception = Icon::UploadError.new
-    data = params.merge({user: current_user})
+    data = params.merge({user_id: current_user.try(:id)})
     ExceptionNotifier.notify_exception(exception, data: data)
     render json: {}
   end
