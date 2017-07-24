@@ -75,6 +75,15 @@ RSpec.describe PostScraper do
     expect(Character.where(screenname: 'undercover_talent').first).not_to be_nil
   end
 
+  it "should detect all threaded pages" do
+    url = 'http://alicornutopia.dreamwidth.org/9596.html?thread=4077436&style=site#cmt4077436'
+    file = File.join(Rails.root, 'spec', 'support', 'fixtures', 'scrape_threaded.html')
+    stub_request(:get, url.gsub("#cmt4077436", "")).to_return(status: 200, body: File.new(file))
+    scraper = PostScraper.new(url, nil, nil, nil, true)
+    scraper.instance_variable_set('@html_doc', scraper.send(:doc_from_url, url))
+    expect(scraper.send(:page_links).size).to eq(2)
+  end
+
   it "should raise an error when an unexpected character is found" do
     url = 'http://wild-pegasus-appeared.dreamwidth.org/403.html?style=site&view=flat'
     file = File.join(Rails.root, 'spec', 'support', 'fixtures', 'scrape_no_replies.html')
@@ -104,7 +113,7 @@ RSpec.describe PostScraper do
     user = create(:user, username: "Marri")
     board = create(:board, creator: user)
 
-    scraper = PostScraper.new(url, board.id, nil, nil, true)
+    scraper = PostScraper.new(url, board.id, nil, nil, false, true)
     allow(STDIN).to receive(:gets).and_return(user.username)
     expect(scraper).to receive(:puts).with("Importing thread 'linear b'")
     expect(scraper).to receive(:print).with("User ID or username for wild_pegasus_appeared? ")

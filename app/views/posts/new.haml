@@ -16,6 +16,9 @@
         = label_tag :status, "Status", style: "width: 150px; display: inline-block;"
         = select_tag :status, options_for_select([['In Progress',Post::STATUS_ACTIVE],['Complete',Post::STATUS_COMPLETE],['On Hiatus', Post::STATUS_HIATUS],['Abandoned', Post::STATUS_ABANDONED]], params[:status] || Post::STATUS_COMPLETE), style: 'margin-top: 5px;'
         %br
+        = label_tag :threaded, "Threaded?", style: "width: 150px; display: inline-block;"
+        = check_box_tag :threaded, "1", params[:threaded].present?
+        %br
         = submit_tag "Import", class: 'button', id: 'import_button', name: 'button_import'
 - else
   .post-header

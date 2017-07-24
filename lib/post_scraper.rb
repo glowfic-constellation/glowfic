@@ -17,7 +17,7 @@ class PostScraper < Object
 
   attr_reader :url
 
-  def initialize(url, board_id=nil, section_id=nil, status=nil, console_import=false)
+  def initialize(url, board_id=nil, section_id=nil, status=nil, threaded_import=false, console_import=false)
     @board_id = board_id || SANDBOX_ID
     @section_id = section_id
     @status = status || Post::STATUS_COMPLETE
@@ -25,6 +25,7 @@ class PostScraper < Object
     url = url + '&style=site' unless url.include?('style=site')
     @url = url
     @console_import = console_import
+    @threaded_import = threaded_import
   end
 
   def scrape!
@@ -50,9 +51,22 @@ class PostScraper < Object
   end
 
   def page_links
+    return threaded_page_links if @threaded_import
     links = @html_doc.at_css('.page-links')
     return [] if links.nil?
     links.css('a').map { |link| link.attribute('href').value }
+  end
+
+  def threaded_page_links
+    last_index = @html_doc.at_css('#comments').css('.comment-thread').last.attribute('class').value.split.last.gsub("comment-depth-", "").to_i
+    index = 26
+    links = []
+    while true
+      next_reply = @html_doc.at_css(".comment-depth-#{index}")
+      return links unless next_reply.present?
+      links << next_reply.at_css('.comment-title').at_css('a').attribute('href').value
+      index += 25
+    end
   end
 
   def import_post_from_doc(doc)
@@ -72,9 +86,10 @@ class PostScraper < Object
     @post.content = strip_content(content)
     @post.created_at = @post.updated_at = @post.edited_at = created_at
     @post.status = @status
+    @post.is_import = true
 
     # detect already imported
-    if (subj_post = Post.where(subject: @post.subject).first)
+    if !@threaded_import && (subj_post = Post.where(subject: @post.subject).first)
       raise AlreadyImportedError.new("This thread has already been imported", subj_post.id)
     end
 
@@ -87,7 +102,12 @@ class PostScraper < Object
   end
 
   def import_replies_from_doc(doc)
-    comments = doc.at_css('#comments').css('.comment-thread')
+    comments = if @threaded_import
+      doc.at_css('#comments').css('.comment-thread').first(25).compact
+    else
+      doc.at_css('#comments').css('.comment-thread') # can't do 25 on non-threaded because single page is 50 per
+    end
+
     comments.each do |comment|
       content = comment.at_css('.comment-content').inner_html
       img_url = comment.at_css('.userpic img').try(:attribute, 'src').try(:value)
