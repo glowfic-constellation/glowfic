@@ -33,7 +33,7 @@ class Post < ActiveRecord::Base
   has_many :favorites, as: :favorite, dependent: :destroy
 
   attr_accessible :board, :board_id, :subject, :privacy, :viewer_ids, :description, :section_id, :label_ids, :warning_ids, :setting_ids, :section_order, :status, :authors_locked
-  attr_accessor :label_ids, :warning_ids, :setting_ids
+  attr_accessor :label_ids, :warning_ids, :setting_ids, :is_import
   attr_writer :skip_edited
 
   validates_presence_of :board, :subject
@@ -267,6 +267,7 @@ class Post < ActiveRecord::Base
   end
 
   def notify_followers
+    return if is_import
     Resque.enqueue(NotifyFollowersOfNewPostJob, self.id)
   end
 end

@@ -7,7 +7,7 @@ RSpec.describe ScrapePostJob do
     stub_request(:get, url).to_return(status: 200, body: File.new(file))
     board = create(:board)
     create(:character, screenname: 'wild_pegasus_appeared')
-    ScrapePostJob.process(url, board.id, nil, Post::STATUS_COMPLETE, board.creator_id)
+    ScrapePostJob.process(url, board.id, nil, Post::STATUS_COMPLETE, false, board.creator_id)
     expect(Message.count).to eq(1)
     expect(Message.first.subject).to eq("Post import succeeded")
     expect(Post.count).to eq(1)
@@ -20,10 +20,10 @@ RSpec.describe ScrapePostJob do
     board = create(:board)
 
     begin
-      Resque.enqueue(ScrapePostJob, url, board.id, nil, Post::STATUS_COMPLETE, board.creator_id)
+      Resque.enqueue(ScrapePostJob, url, board.id, nil, Post::STATUS_COMPLETE, false, board.creator_id)
       ResqueSpec.perform_next(ScrapePostJob.queue)
     rescue UnrecognizedUsernameError => e
-      ScrapePostJob.notify_exception(e, url, board.id, nil, Post::STATUS_COMPLETE, board.creator_id)
+      ScrapePostJob.notify_exception(e, url, board.id, nil, Post::STATUS_COMPLETE, false, board.creator_id)
       expect(Message.count).to eq(1)
       expect(Message.first.subject).to eq("Post import failed")
       expect(Message.first.message).to include("wild_pegasus_appeared")
@@ -43,10 +43,10 @@ RSpec.describe ScrapePostJob do
     scraper.scrape!
 
     begin
-      Resque.enqueue(ScrapePostJob, url, board.id, nil, Post::STATUS_COMPLETE, board.creator_id)
+      Resque.enqueue(ScrapePostJob, url, board.id, nil, Post::STATUS_COMPLETE, false, board.creator_id)
       ResqueSpec.perform_next(ScrapePostJob.queue)
     rescue AlreadyImportedError => e
-      ScrapePostJob.notify_exception(e, url, board.id, nil, Post::STATUS_COMPLETE, board.creator_id)
+      ScrapePostJob.notify_exception(e, url, board.id, nil, Post::STATUS_COMPLETE, false, board.creator_id)
       expect(Message.count).to eq(1)
       expect(Message.first.subject).to eq("Post import failed")
       expect(Message.first.message).to include("already imported")
