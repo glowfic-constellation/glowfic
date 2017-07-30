@@ -70,7 +70,16 @@
 .post-container { overflow: auto; }
 #content > .post-container { padding: 0; }
 .post-edit-box { float: right; margin-left: 10px; margin-bottom: 5px; padding: 5px; }
-.post-info-box { text-align: center; padding: 0; float: left; margin-right: 10px; margin-bottom: 5px; width: 150px; overflow: visible; }
+.post-info-box {
+  text-align: center;
+  padding: 0;
+  float: left;
+  margin-right: 10px;
+  margin-bottom: 5px;
+  width: 150px;
+  overflow: visible;
+  overflow-wrap: break-word;
+}
 .post-icon, #current-icon-dropdown { background-color: #B0BBA9; }
 .post-icon { padding: 0; height: 120px; }
 .post-icon img, .post-icon div { margin-top: 10px; margin-right: 10px; margin-left: 10px; }
