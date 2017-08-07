@@ -16,17 +16,17 @@ class PostScraper < Object
     'maggie_of_the_owls' => 'MaggieoftheOwls' # have both - and _ versions cause Dreamwidth supports both
   }
 
-  attr_reader :url
+  attr_accessor :url, :post, :html_doc
 
   def initialize(url, board_id=nil, section_id=nil, status=nil, threaded_import=false, console_import=false)
     @board_id = board_id || SANDBOX_ID
     @section_id = section_id
     @status = status || Post::STATUS_COMPLETE
-    url = url + (if url.include?('?') then '&view=flat' else '?view=flat' end) unless url.include?('view=flat')
+    url = url + (if url.include?('?') then '&view=flat' else '?view=flat' end) unless url.include?('view=flat') || threaded_import
     url = url + '&style=site' unless url.include?('style=site')
     @url = url
     @console_import = console_import
-    @threaded_import = threaded_import
+    @threaded_import = threaded_import # boolean
   end
 
   def scrape!
@@ -38,6 +38,33 @@ class PostScraper < Object
       page_links.each do |link|
         doc = doc_from_url(link)
         import_replies_from_doc(doc)
+      end
+      finalize_post_data
+    end
+    Resque.enqueue(GenerateFlatPostJob, @post.id)
+    @post
+  end
+
+  # works as an alternative to scrape! when you want to scrape particular top-level threads of a post sequentially
+  # "threads" are URL permalinks to the threads to scrape, which it will scrape in the given order
+  def scrape_threads!(threads)
+    raise RuntimeError.new('threaded_import must be true to use scrape_threads!') unless @threaded_import
+
+    @html_doc = doc_from_url(@url)
+    # if threads.blank?
+    #   threads = top_level_comments(@html_doc)
+    # end
+
+    Post.transaction do
+      import_post_from_doc(@html_doc)
+      threads.each do |thread|
+        @html_doc = doc_from_url(thread)
+        import_replies_from_doc(@html_doc)
+        old_count = @post.replies.count
+        page_links.each do |link|
+          doc = doc_from_url(link)
+          import_replies_from_doc(doc)
+        end
       end
       finalize_post_data
     end
@@ -65,7 +92,13 @@ class PostScraper < Object
     while true
       next_reply = @html_doc.at_css(".comment-depth-#{index}")
       return links unless next_reply.present?
-      links << next_reply.at_css('.comment-title').at_css('a').attribute('href').value
+      url = next_reply.at_css('.comment-title').at_css('a').attribute('href').value
+      unless url['style=site']
+        url_obj = URI.parse(url)
+        url_obj.query += ('&' unless url_obj.query.empty?) + 'style=site'
+        url = url_obj.to_s
+      end
+      links << url
       index += 25
     end
   end
