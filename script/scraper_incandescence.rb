@@ -4,7 +4,7 @@ require "#{Rails.root}/lib/post_scraper"
 require 'pp'
 
 section_number = ARGV[0].to_i # only-process-this section number
-board_id = ARGV[1].to_i || 3
+board_id = (ARGV[1] || 3).to_i
 section_index = 0
 
 # processes the Incandescence index
