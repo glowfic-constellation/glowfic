@@ -4,7 +4,7 @@ require "#{Rails.root}/lib/post_scraper"
 RSpec.describe PostScraper do
   it "should add view to url" do
     scraper = PostScraper.new('http://wild-pegasus-appeared.dreamwidth.org/403.html')
-    expect(scraper.url).to include('?view=flat')
+    expect(scraper.url).to include('view=flat')
   end
 
   it "should not change url if view is present" do
