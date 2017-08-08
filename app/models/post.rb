@@ -57,6 +57,21 @@ class Post < ActiveRecord::Base
   )
   scope :no_tests, -> { where('posts.board_id != ?', Board::ID_SITETESTING) }
 
+  scope :with_has_content_warnings, -> {
+    select("(SELECT tags.id FROM tags LEFT JOIN post_tags ON tags.id = post_tags.tag_id WHERE tags.type = 'ContentWarning' AND post_tags.post_id = posts.id LIMIT 1) AS has_content_warnings")
+  }
+
+  scope :with_author_ids, -> {
+    # fetches replies.map(&:user_id).uniq
+    # then appends post.user_id
+    # then unions distinctly, and re-converts to an array
+    select('ARRAY(SELECT posts.user_id UNION SELECT replies.user_id FROM replies WHERE replies.post_id = posts.id GROUP BY replies.user_id) AS author_ids')
+  }
+
+  scope :with_reply_count, -> {
+    select('(SELECT COUNT(*) FROM replies WHERE replies.post_id = posts.id GROUP BY posts.id) AS reply_count')
+  }
+
   def visible_to?(user)
     return true if privacy == PRIVACY_PUBLIC
     return false unless user
@@ -73,6 +88,7 @@ class Post < ActiveRecord::Base
   end
 
   def author_ids
+    return read_attribute(:author_ids) if has_attribute?(:author_ids)
     @author_ids ||= (replies.group(:user_id).pluck(:user_id) + [user_id]).uniq
   end
 
@@ -201,6 +217,16 @@ class Post < ActiveRecord::Base
     contents = replies.pluck(:content)
     contents[0] = contents[0].split.size
     word_count + contents.inject{|r, e| r + e.split.size}.to_i
+  end
+
+  def has_content_warnings?
+    return read_attribute(:has_content_warnings) if has_attribute?(:has_content_warnings)
+    content_warnings.exists?
+  end
+
+  def reply_count
+    return read_attribute(:reply_count) if has_attribute?(:reply_count)
+    replies.count
   end
 
   private

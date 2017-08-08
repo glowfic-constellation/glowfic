@@ -1,6 +1,6 @@
 %tr
   - klass = cycle('even', 'odd')
-  - replies_count = post.replies.count
+  - replies_count = post.reply_count
   %td.post-completed{class: [klass, (post.completed? ? 'post-complete' : 'post-incomplete')]}
     - if post.completed?
       = image_tag "/images/book.png", class: 'vmid', title: "Thread Complete"
@@ -8,7 +8,7 @@
       = image_tag "/images/hourglass.png", class: 'vmid', title: "Thread On Hiatus"
     - if post.abandoned?
       = image_tag "/images/book_grey.png", class: 'vmid', title: "Thread Abandoned"
-    - if !current_user.try(:hide_warnings) && post.content_warnings.exists?
+    - if !current_user.try(:hide_warnings) && post.has_content_warnings?
       = image_tag "/images/exclamation.png", class: 'vmid', title: "Content Warning: " + post.content_warnings.pluck(:name).join(', '), alt: '!'
   %td.post-subject{class: klass}
     - if logged_in?
