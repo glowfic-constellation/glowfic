@@ -24,44 +24,79 @@ main_list.children.each do |section|
   section_index += 1
   next if section_number > 0 && section_index != section_number
 
-  # don't reprocess already processed sections
-  next if BoardSection.where(board_id: board_id, section_order: section_index).exists?
-
+  section_title_obj = section.at_css('> a') || section.children[0]
+  section_title = section_title_obj.content.strip
   # don't crash on final empty section
-  section_title = section.children[0].content.strip
   next unless section_title.present?
-  pp "Importing section #{section_title}"
 
-  # process sections that are exclusively a single post with multiple threads
-  if section.children[1].name == 'a'
-    link = section.children[1]
-    url = link.attribute('href').value
-    section_title = link.inner_html
-    board_section = BoardSection.create!(board_id: board_id, name: section_title, section_order: section_index, status: 1)
-    scraper = PostScraper.new(url, board_id, board_section.id)
-    scraper.scrape!
+  # don't reprocess already processed sections
+  next if BoardSection.where(board_id: board_id, name: section_title).exists?
+
+  puts "# Importing section #{section_title}"
+
+  # process sections
+  list = section.at_css('ul, ol')
+  links = list.css('> li')
+  section_active = links.last.children.size == 1 && links.last.children.first.name == 'text' && links.last.children.first.content.strip == '+'
+  section_status = section_active ? Post::STATUS_ACTIVE : Post::STATUS_COMPLETE
+  board_section = BoardSection.create!(board_id: board_id, name: section_title, section_order: section_index - 1, status: section_status)
+
+  # process a list and import the posts for the given section
+  # if they're sub-threads, makes them into whole posts with the sub-thread's name
+  def process_ordered(links, section_active, board_id, board_section, threaded=false, rename_prefix=nil)
+    links.map do |link|
+      break if section_active && link == links.last
+
+      url = link.at_css('a').attribute('href').value
+      title_obj = link.at_css('> a') || link.children[0]
+      title = title_obj.content.strip
+
+      # special-case if a post has sub-threads
+      if (sub_list = link.at_css('ul, ol'))
+        sub_links = sub_list.css('> li')
+        # import sub-threads with #{post_title}: before their title
+        threads = process_ordered(sub_links, section_active, board_id, board_section, true, title + ': ')
+        next
+      end
+
+      # TODO: fix logic, references
+      title = title[0..-2] if (is_active = link.content.strip.last == '+')
+      post_status = is_active ? Post::STATUS_ACTIVE : Post::STATUS_COMPLETE
+      scraper = PostScraper.new(url, board_id, board_section.id, post_status, threaded)
+      post = scraper.scrape!
+      # if threaded, force the thread title not to be the post's title
+      # also prepend rename_prefix if given
+      new_title = post.subject
+      new_title = title if threaded
+      new_title = rename_prefix + new_title if rename_prefix
+      unless new_title == post.subject
+        post.update_attribute(:subject, new_title)
+        puts "Renamed thread to '#{new_title}'"
+      end
+      post
+    end
+  end
+
+  # special-case repealing
+  if section_title == 'repealing'
+    # import the first ordered list into a single post, as the threads are short
+    shorts = links.first.css('li')
+    threads = shorts.map do |link|
+      link.at_css('a').attribute('href').value
+    end
+    url = threads.first
+    scraper = PostScraper.new(url, board_id, board_section.id, Post::STATUS_COMPLETE, true)
+    post = scraper.scrape_threads!(threads)
+    post.update_attribute(:subject, 'guest list')
+    puts "Renamed thread to 'guest list'"
+
+    # import the second ordered list separately
+    longs = links.last.css('li')
+    process_ordered(longs, section_active, board_id, board_section, true)
     next
   end
 
-  # process sections with multiple posts
-  links = section.children[1].css('li')
-  section_active = links.last.children.size == 1 && links.last.children.first.name == 'text' && links.last.children.first.content.strip == '+'
-  section_status = section_active ? 0 : 1
-  board_section = BoardSection.create!(board_id: board_id, name: section_title, section_order: section_index, status: section_status)
-  links.each_with_index do |link, index|
-    break if section_active && link == links.last
-
-    url = link.at_css('a').attribute('href').value
-    next if url.include?('#cmt') or url.include?('thread=')
-
-    if link.children.last.name == 'ul'
-      import_threaded_thread(url, board_section, index, link, alicorn_characters, kappa_characters)
-    else
-      title = link.content
-      title = title[0..-2] if is_active = link.content.strip.last == '+'
-      status = is_active ? Post::STATUS_ACTIVE : Post::STATUS_COMPLETE
-      scraper = PostScraper.new(url, board_id, board_section.id, status)
-      scraper.scrape!
-    end
-  end
+  # process the ordered list for the section
+  threaded = list.name == 'ul'
+  process_ordered(links, section_active, board_id, board_section, threaded)
 end
