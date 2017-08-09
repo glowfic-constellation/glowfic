@@ -11,7 +11,7 @@ class TagsController < ApplicationController
 
   def show
     @posts = posts_from_relation(@tag.posts)
-    @page_title = "#{@tag.name}"
+    @page_title = @tag.name.to_s
   end
 
   def edit

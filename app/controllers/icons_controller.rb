@@ -6,7 +6,7 @@ class IconsController < ApplicationController
 
   def delete_multiple
     icon_ids = (params[:marked_ids] || []).map(&:to_i).reject(&:zero?)
-    if icon_ids.empty? or (icons = Icon.where(id: icon_ids)).empty?
+    if icon_ids.empty? || (icons = Icon.where(id: icon_ids)).empty?
       flash[:error] = "No icons selected."
       redirect_to galleries_path and return
     end
@@ -17,7 +17,8 @@ class IconsController < ApplicationController
         flash[:error] = "Gallery could not be found."
         redirect_to galleries_path and return
       end
-      if gallery.user_id != current_user.id
+
+      unless gallery.user_id == current_user.id
         flash[:error] = "That is not your gallery."
         redirect_to galleries_path and return
       end

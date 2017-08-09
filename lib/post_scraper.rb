@@ -263,10 +263,10 @@ class PostScraper < Object
   end
 end
 
-class UnrecognizedUsernameError < Exception
+class UnrecognizedUsernameError < RuntimeError
 end
 
-class AlreadyImportedError < Exception
+class AlreadyImportedError < RuntimeError
   attr_reader :post_id
   def initialize(msg, post_id)
     @post_id = post_id
