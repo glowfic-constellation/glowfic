@@ -45,6 +45,7 @@ main_list.children.each do |section|
   # process a list and import the posts for the given section
   # if they're sub-threads, makes them into whole posts with the sub-thread's name
   def process_ordered(links, section_active, board_id, board_section, threaded=false, rename_prefix=nil)
+    # rename_prefix only works if threaded is true
     links.map do |link|
       break if section_active && link == links.last
 
@@ -60,23 +61,17 @@ main_list.children.each do |section|
         next
       end
 
-      # TODO: fix logic, references
       title = title[0..-2] if (is_active = link.content.strip.last == '+')
       post_status = is_active ? Post::STATUS_ACTIVE : Post::STATUS_COMPLETE
-      scraper = PostScraper.new(url, board_id, board_section.id, post_status, threaded)
+
+      desired_title = nil
+      desired_title = rename_prefix.to_s + title if threaded
+
+      scraper = PostScraper.new(url, board_id, board_section.id, post_status, threaded, false, desired_title)
       begin
         post = scraper.scrape!
       rescue AlreadyImportedError
         next # allows safe restart of a failed section where some but not all posts succeeded
-      end
-      # if threaded, force the thread title not to be the post's title
-      # also prepend rename_prefix if given
-      new_title = post.subject
-      new_title = title if threaded
-      new_title = rename_prefix + new_title if rename_prefix
-      unless new_title == post.subject
-        post.update_attribute(:subject, new_title)
-        puts "Renamed thread to '#{new_title}'"
       end
       post
     end
