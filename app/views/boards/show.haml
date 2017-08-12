@@ -48,7 +48,7 @@
           %tr
             %th.subber{colspan: 5}= link_to item.name, board_section_path(item)
           - if item.posts.present?
-            - posts_from_relation(item.posts.order('section_order'), false).each do |post|
+            - posts_from_relation(item.posts.order('section_order'), false, false).each do |post|
               - next unless post.visible_to?(current_user)
               = render partial: 'posts/list_item', locals: {post: post, hide_continuity: true}
           - else
