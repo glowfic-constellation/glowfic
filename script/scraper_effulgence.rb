@@ -29,8 +29,9 @@ main_list.children.each do |section|
   # don't crash on final empty section
   next unless section_title.present?
 
-  # don't reprocess already processed sections
-  next if BoardSection.where(board_id: board_id, name: section_title).exists?
+  # don't reprocess already processed sections unless specified
+  board_section = BoardSection.where(board_id: board_id, name: section_title).first
+  next if section_number.zero? && board_section
 
   puts "# Importing section #{section_title}"
 
@@ -39,7 +40,7 @@ main_list.children.each do |section|
   links = list.css('> li')
   section_active = links.last.children.size == 1 && links.last.children.first.name == 'text' && links.last.children.first.content.strip == '+'
   section_status = section_active ? Post::STATUS_ACTIVE : Post::STATUS_COMPLETE
-  board_section = BoardSection.create!(board_id: board_id, name: section_title, section_order: section_index - 1, status: section_status)
+  board_section ||= BoardSection.create!(board_id: board_id, name: section_title, section_order: section_index - 1, status: section_status)
 
   # process a list and import the posts for the given section
   # if they're sub-threads, makes them into whole posts with the sub-thread's name
@@ -63,7 +64,11 @@ main_list.children.each do |section|
       title = title[0..-2] if (is_active = link.content.strip.last == '+')
       post_status = is_active ? Post::STATUS_ACTIVE : Post::STATUS_COMPLETE
       scraper = PostScraper.new(url, board_id, board_section.id, post_status, threaded)
-      post = scraper.scrape!
+      begin
+        post = scraper.scrape!
+      rescue AlreadyImportedError
+        next # allows safe restart of a failed section where some but not all posts succeeded
+      end
       # if threaded, force the thread title not to be the post's title
       # also prepend rename_prefix if given
       new_title = post.subject
