@@ -106,6 +106,19 @@ RSpec.describe PostScraper do
     expect(Post.count).to eq(1)
   end
 
+  it "should raise an error when post is already imported with given subject" do
+    new_title = 'other name'
+    board = create(:board)
+    post = create(:post, board: board, subject: new_title)
+    url = 'http://wild-pegasus-appeared.dreamwidth.org/403.html?style=site&view=flat'
+    file = File.join(Rails.root, 'spec', 'support', 'fixtures', 'scrape_no_replies.html')
+    stub_request(:get, url).to_return(status: 200, body: File.new(file))
+    scraper = PostScraper.new(url, board.id, nil, nil, false, false, new_title)
+    allow(scraper).to receive(:puts).with("Importing thread '#{new_title}'")
+    expect { scraper.scrape! }.to raise_error(AlreadyImportedError)
+    expect(Post.count).to eq(1)
+  end
+
   it "should scrape character, user and icon properly" do
     url = 'http://wild-pegasus-appeared.dreamwidth.org/403.html?style=site&view=flat'
     file = File.join(Rails.root, 'spec', 'support', 'fixtures', 'scrape_no_replies.html')
