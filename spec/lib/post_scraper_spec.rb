@@ -4,7 +4,7 @@ require "#{Rails.root}/lib/post_scraper"
 RSpec.describe PostScraper do
   it "should add view to url" do
     scraper = PostScraper.new('http://wild-pegasus-appeared.dreamwidth.org/403.html')
-    expect(scraper.url).to include('?view=flat')
+    expect(scraper.url).to include('view=flat')
   end
 
   it "should not change url if view is present" do
@@ -126,6 +126,45 @@ RSpec.describe PostScraper do
     expect(Icon.count).to eq(1)
     expect(Character.count).to eq(1)
     expect(Character.where(screenname: 'wild_pegasus_appeared').first).not_to be_nil
+  end
+
+  it "should only scrape specified threads if given" do
+    stubs = {
+      'https://mind-game.dreamwidth.org/1073.html?style=site' => File.join(Rails.root, 'spec', 'support', 'fixtures', 'scrape_specific_threads.html'),
+      'https://mind-game.dreamwidth.org/1073.html?thread=6961&style=site#cmt6961' => File.join(Rails.root, 'spec', 'support', 'fixtures', 'scrape_specific_threads_thread1.html'),
+      'https://mind-game.dreamwidth.org/1073.html?thread=16689&style=site#cmt16689' => File.join(Rails.root, 'spec', 'support', 'fixtures', 'scrape_specific_threads_thread2_1.html'),
+      'https://mind-game.dreamwidth.org/1073.html?thread=48177&style=site#cmt48177' => File.join(Rails.root, 'spec', 'support', 'fixtures', 'scrape_specific_threads_thread2_2.html')
+    }
+    stubs.each do |url, file|
+      stub_request(:get, url.split('#').first).to_return(status: 200, body: File.new(file))
+    end
+    urls = stubs.keys
+    threads = ['https://mind-game.dreamwidth.org/1073.html?thread=6961&style=site#cmt6961', 'https://mind-game.dreamwidth.org/1073.html?thread=16689&style=site#cmt16689']
+
+    alicorn = create(:user, username: 'Alicorn')
+    kappa = create(:user, username: 'Kappa')
+    board = create(:board, creator: alicorn, coauthors: [kappa])
+    characters = [
+      {screenname: 'mind_game', name: 'Jane', user: alicorn},
+      {screenname: 'luminous_regnant', name: 'Isabella Marie Swan Cullen ☼ "Golden"', user: alicorn},
+      {screenname: 'manofmyword', name: 'here\'s my card', user: kappa},
+      {screenname: 'temporal_affairs', name: 'Nathan Corlett | Minister of Temporal Affairs', user: alicorn},
+      {screenname: 'pina_colada', name: 'Kerron Corlett', user: alicorn},
+      {screenname: 'pumpkin_pie', name: 'Aedyt Corlett', user: kappa},
+      {screenname: 'lifes_sake', name: 'Campbell Mark Swan ҂ "Cam"', user: alicorn},
+      {screenname: 'withmypowers', name: 'Matilda Wormwood Honey', user: kappa}
+    ]
+    characters.each { |data| create(:character, data) }
+
+    scraper = PostScraper.new(urls.first, board.id, nil, nil, true, false)
+    expect(scraper).to receive(:puts).with("Importing thread 'repealing'")
+    scraper.scrape_threads!(threads)
+    expect(Post.count).to eq(1)
+    expect(Post.first.subject).to eq('repealing')
+    expect(Reply.count).to eq(55)
+    expect(User.count).to eq(2)
+    expect(Icon.count).to eq(30)
+    expect(Character.count).to eq(8)
   end
 
   it "doesn't recreate characters and icons if they exist" do

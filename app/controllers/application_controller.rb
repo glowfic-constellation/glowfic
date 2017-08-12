@@ -112,6 +112,9 @@ class ApplicationController < ActionController::Base
       .select('posts.*, boards.name as board_name, users.username as last_user_name')
       .joins(:board)
       .joins(:last_user)
+      .with_has_content_warnings
+      .with_author_ids
+      .with_reply_count
 
     posts = posts.paginate(page: page, per_page: 25) if with_pagination
     posts = posts.no_tests if no_tests
