@@ -1,6 +1,8 @@
 require "spec_helper"
 
 RSpec.describe ScrapePostJob do
+  before(:each) do ResqueSpec.reset! end
+
   it "creates the correct objects" do
     url = 'http://wild-pegasus-appeared.dreamwidth.org/403.html?style=site&view=flat'
     file = File.join(Rails.root, 'spec', 'support', 'fixtures', 'scrape_no_replies.html')
