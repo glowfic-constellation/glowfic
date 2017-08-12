@@ -217,11 +217,28 @@ class PostScraper < Object
       icon = tag.character.icons.where(keyword: keyword).first
       tag.icon = icon and return if icon
 
+      # split out the last " (...)" from the keyword (which should be at the very end), if applicable, for without_desc
+      without_desc = nil
+      if keyword.end_with?(')')
+        lbracket = keyword.rindex(' (')
+        if lbracket && lbracket > 0 # without_desc must be non-empty
+          without_desc = keyword[0...lbracket]
+          icon = tag.character.icons.where(keyword: without_desc).first
+          tag.icon = icon and return if icon
+        end
+      end
+
       # kappa icon handling - icons are prefixed
       if tag.user_id == 3 && (spaceindex = keyword.index(" "))
         unprefixed = keyword.slice(spaceindex, keyword.length)
         icon = tag.character.icons.detect { |i| i.keyword.ends_with?(unprefixed) }
         tag.icon = icon and return if icon
+
+        if without_desc
+          unprefixed = without_desc.slice(spaceindex, without_desc.length)
+          icon = tag.character.icons.detect { |i| i.keyword.ends_with?(unprefixed) }
+          tag.icon = icon and return if icon
+        end
       end
     end
 
