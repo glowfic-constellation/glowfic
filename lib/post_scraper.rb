@@ -123,7 +123,7 @@ class PostScraper < Object
     @post.is_import = true
 
     # detect already imported
-    if !@threaded_import && (subj_post = Post.where(subject: @post.subject).first)
+    if !@threaded_import && (subj_post = Post.where(subject: @post.subject, board_id: @board_id).first)
       raise AlreadyImportedError.new("This thread has already been imported", subj_post.id)
     end
 
