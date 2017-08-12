@@ -113,6 +113,46 @@ RSpec.describe ApplicationController do
       expect(fetched_posts.count).to eq(26) # number when querying the database – actual number returned is 25, due to pagination
     end
 
+    it "fetches correct authors, reply counts and content warnings" do
+      post1 = create(:post)
+      warning1 = create(:content_warning)
+      post2 = create(:post, content_warnings: [warning1])
+      post2_reply = create(:reply, post: post2)
+      warning2 = create(:content_warning)
+      post3 = create(:post, content_warnings: [warning1, warning2])
+      post3_user2 = create(:user)
+      post3_user3 = create(:user)
+      25.times { |i| create(:reply, post: post3, user: post3_user2) }
+      10.times { |i| create(:reply, post: post3, user: post3_user3)}
+
+      id_list = [post1.id, post2.id, post3.id]
+      relation = Post.where(id: id_list).order('id asc')
+      fetched_posts = controller.send(:posts_from_relation, relation)
+      expect(fetched_posts.count).to eq(3)
+      expect(fetched_posts.map(&:id)).to match_array(id_list)
+
+      fetched1 = fetched_posts[0]
+      fetched2 = fetched_posts[1]
+      fetched3 = fetched_posts[2]
+
+      expect(fetched1.has_content_warnings?).not_to be_true
+      expect(fetched2.has_content_warnings?).to be_true
+      expect(fetched3.has_content_warnings?).to be_true
+      expect(fetched2.content_warnings).to match_array([warning1])
+      expect(fetched3.content_warnings).to match_array([warning1, warning2])
+
+      expect(fetched1.reply_count).to eq(0)
+      expect(fetched2.reply_count).to eq(1)
+      expect(fetched3.reply_count).to eq(35)
+
+      expect(fetched1.authors).to match_array([post1.user])
+      expect(fetched2.authors).to match_array([post2.user, post2_reply.user])
+      expect(fetched3.authors).to match_array([post3.user, post3_user2, post3_user3])
+      expect(fetched1.author_ids).to match_array([post1.user_id])
+      expect(fetched2.author_ids).to match_array([post2.user_id, post2_reply.user_id])
+      expect(fetched3.author_ids).to match_array([post3.user_id, post3_user2.id, post3_user3.id])
+    end
+
     context "when logged in" do
       it "returns empty array if no visible posts" do
         hidden_post = create(:post, privacy: Post::PRIVACY_PRIVATE)
