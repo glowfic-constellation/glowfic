@@ -225,7 +225,7 @@ class Post < ActiveRecord::Base
   end
 
   def reply_count
-    return read_attribute(:reply_count) if has_attribute?(:reply_count)
+    return read_attribute(:reply_count) || 0 if has_attribute?(:reply_count)
     replies.count
   end
 
