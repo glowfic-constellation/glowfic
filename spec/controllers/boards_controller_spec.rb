@@ -85,7 +85,7 @@ RSpec.describe BoardsController do
     it "sets correct variables" do
       user_id = login
       current_user = User.find(user_id)
-      other_users = 3.times.collect do create(:user) end
+      other_users = Array.new(3) { create(:user) }
 
       get :new
 
@@ -124,7 +124,7 @@ RSpec.describe BoardsController do
 
     it "sets correct variables on failure" do
       login
-      other_users = 3.times.collect do create(:user) end
+      other_users = Array.new(3) { create(:user) }
 
       post :create
 

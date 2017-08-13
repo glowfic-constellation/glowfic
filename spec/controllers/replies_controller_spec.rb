@@ -483,7 +483,7 @@ RSpec.describe RepliesController do
       end
 
       it "filters by author" do
-        replies = 4.times.collect do create(:reply) end
+        replies = Array.new(4) { create(:reply) }
         filtered_reply = replies.last
         get :search, commit: true, author_id: filtered_reply.user_id
         expect(assigns(:search_results)).to match_array([filtered_reply])
@@ -535,7 +535,7 @@ RSpec.describe RepliesController do
       end
 
       it "filters by post" do
-        replies = 4.times.collect do create(:reply) end
+        replies = Array.new(4) { create(:reply) }
         filtered_reply = replies.last
         get :search, commit: true, post_id: filtered_reply.post_id
         expect(assigns(:search_results)).to match_array([filtered_reply])

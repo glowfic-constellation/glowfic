@@ -92,7 +92,7 @@ RSpec.describe ApplicationController do
       expect(controller.send(:posts_from_relation, relation), false).not_to be_blank
     end
 
-    let(:default_post_ids) { 26.times.collect do create(:post) end.map(&:id) }
+    let(:default_post_ids) { Array.new(26) do create(:post).id end }
 
     it "paginates by default" do
       relation = Post.where(id: default_post_ids)

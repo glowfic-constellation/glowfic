@@ -11,7 +11,7 @@ RSpec.describe MessagesController do
     it "assigns correct inbox variables" do
       user = create(:user)
       login_as(user)
-      messages = 4.times.collect do create(:message, recipient: user) end
+      messages = Array.new(4) { create(:message, recipient: user) }
       get :index
       expect(response).to have_http_status(200)
       expect(assigns(:view)).to eq('inbox')
@@ -22,7 +22,7 @@ RSpec.describe MessagesController do
     it "assigns correct outbox variables" do
       user = create(:user)
       login_as(user)
-      messages = 4.times.collect do create(:message, sender: user) end
+      messages = Array.new(4) { create(:message, sender: user) }
       get :index, view: 'outbox'
       expect(response).to have_http_status(200)
       expect(assigns(:view)).to eq('outbox')

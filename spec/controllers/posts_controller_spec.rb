@@ -101,7 +101,7 @@ RSpec.describe PostsController do
       end
 
       it "filters by authors" do
-        posts = 4.times.collect do create(:post) end
+        posts = Array.new(4) { create(:post) }
         filtered_post = posts.last
         first_post = posts.first
         create(:reply, post: first_post, user: filtered_post.user)
