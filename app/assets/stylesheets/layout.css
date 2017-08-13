@@ -137,3 +137,4 @@ input.checkbox { height: 12px; margin: 0; vertical-align: middle; } /* Keeps unr
 td.continuity-spacer { height: 20px; }
 .post-ignored { opacity: 0.3; }
 .time-loaded { font-size: 10px; position: absolute; top: 2px; right: 20px; }
+#loading img { height: 20px; width: 20px; }

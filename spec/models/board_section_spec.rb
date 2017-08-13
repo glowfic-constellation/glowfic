@@ -5,13 +5,16 @@ RSpec.describe BoardSection do
     board = create(:board)
     BoardSection.create(board: board, name: 'Test')
     section = BoardSection.create(board: board, name: 'Test')
+    section2 = BoardSection.create(board: board, name: 'Test')
     post = create(:post, board: board, section_id: section.id)
     expect(post.section_id).not_to be_nil
     expect(post.section_order).to eq(0)
+    expect(section2.section_order).to eq(2)
     section.destroy
     post.reload
     expect(post.section_id).to be_nil
-    expect(post.section_order).to eq(1)
+    expect(post.section_order).to eq(0)
+    expect(section2.reload.section_order).to eq(1)
   end
 
   it "should autofill post section order when not specified" do

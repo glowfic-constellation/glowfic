@@ -55,16 +55,14 @@ class BoardsController < ApplicationController
     order = 'section_order asc, tagged_at asc'
     order = 'tagged_at desc' if @board.open_to_anyone?
     @page_title = @board.name
-    @posts = posts_from_relation(@board.posts.order(order), false)
-    @board_items = @board.board_sections + posts_from_relation(@board.posts.where(section_id: nil), false)
-    @board_items.sort_by! { |item| item.section_order.to_i }
+    @posts = posts_from_relation(@board.posts.where(section_id: nil).order(order), false)
+    @board_sections = @board.board_sections.order('section_order asc')
   end
 
   def edit
     @page_title = 'Edit Continuity: ' + @board.name
     use_javascript('board_sections')
-    @board_items = @board.board_sections + @board.posts.where(section_id: nil)
-    @board_items.sort_by! { |item| item.section_order.to_i }
+    @board_items = @board.board_sections.order('section_order asc')
   end
 
   def update

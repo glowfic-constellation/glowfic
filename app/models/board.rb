@@ -41,18 +41,23 @@ class Board < ActiveRecord::Base
     board_coauthors.where(user_id: user.id).exists?
   end
 
-  def ordered_items
-    return @items unless @items.nil?
-    @items = posts.where(section_id: nil).to_a
-    @items += board_sections.to_a
-    @items.sort_by!{ |i| i.section_order }
-  end
-
   private
 
   def move_posts_to_sandbox
     # TODO don't hard code sandbox board_id
     # TODO / WARNING this doesn't trigger callbacks
     posts.update_all(board_id: 3)
+  end
+
+  def fix_ordering
+    # this should ONLY be called by an admin for emergency fixes
+    board_sections.order('section_order asc').each_with_index do |section, index|
+      next if section.section_order == index
+      section.update_attribute(:section_order, index)
+    end
+    posts.where(section_id: nil).order('section_order asc').each_with_index do |post, index|
+      next if post.section_order == index
+      post.update_attribute(:section_order, index)
+    end
   end
 end
