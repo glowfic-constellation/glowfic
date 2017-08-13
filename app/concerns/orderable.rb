@@ -24,16 +24,18 @@ module Orderable
 
     def autofill_order
       return unless new_record? || order_change?
-      self.section_order = ordered_for.ordered_items.count
+      self.section_order = ordered_items.count
     end
 
     def order_change?
       ordered_attributes.any? { |atr| send("#{atr}_changed?") }
     end
 
-    def ordered_for
+    def ordered_items
       id = ordered_attributes.detect { |a| send(a).present? }
-      send(id.to_s[0..-4])
+      ordered_for = send(id.to_s[0..-4])
+      where_attr = Hash[ordered_attributes.map { |a| [a, send(a)] }]
+      ordered_for.send(self.class.to_s.tableize).where(where_attr)
     end
   end
 end

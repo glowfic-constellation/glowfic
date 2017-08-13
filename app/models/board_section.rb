@@ -11,10 +11,6 @@ class BoardSection < ActiveRecord::Base
 
   after_destroy :clear_post_values
 
-  def ordered_items
-    @items ||= posts.order('section_order asc')
-  end
-
   private
 
   def clear_post_values

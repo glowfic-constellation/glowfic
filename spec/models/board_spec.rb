@@ -44,4 +44,16 @@ RSpec.describe Board do
     expect(board.board_authors.count).to eq(1)
     expect(board2.board_authors.count).to eq(1)
   end
+
+  it "should be fixable via admin method" do
+    board = create(:board)
+    post = create(:post, board: board)
+    post2 = create(:post, board: board)
+    post3 = create(:post, board: board)
+    post4 = create(:post, board: board)
+    post.update_attribute(:section_order, 2)
+    expect(board.posts.order('section_order asc').pluck(:section_order)).to eq([1, 2, 2, 3])
+    board.send(:fix_ordering)
+    expect(board.posts.order('section_order asc').pluck(:section_order)).to eq([0, 1, 2, 3])
+  end
 end

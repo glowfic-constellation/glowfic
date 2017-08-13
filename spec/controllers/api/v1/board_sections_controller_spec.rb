@@ -54,20 +54,28 @@ RSpec.describe Api::V1::BoardSectionsController do
       board = create(:board)
       board_post = create(:post, board_id: board.id)
       board_section = create(:board_section, board_id: board.id)
+      board_post2 = create(:post, board_id: board.id)
+      board_section2 = create(:board_section, board_id: board.id)
 
       expect(board_post.reload.section_order).to eq(0)
-      expect(board_section.reload.section_order).to eq(1)
+      expect(board_section.reload.section_order).to eq(0)
+      expect(board_post2.reload.section_order).to eq(1)
+      expect(board_section2.reload.section_order).to eq(1)
 
       changes = {}
       changes[board_post.id] = {type: 'Post', order: 1}
-      changes[board_section.id] = {type: 'BoardSection', order: 0}
+      changes[board_section.id] = {type: 'BoardSection', order: 1}
+      changes[board_post2.id] = {type: 'Post', order: 0}
+      changes[board_section2.id] = {type: 'BoardSection', order: 0}
 
       login_as(board.creator)
       post :reorder, changes: changes
       expect(response).to have_http_status(200)
       expect(response.json).to eq({})
       expect(board_post.reload.section_order).to eq(1)
-      expect(board_section.reload.section_order).to eq(0)
+      expect(board_section.reload.section_order).to eq(1)
+      expect(board_post2.reload.section_order).to eq(0)
+      expect(board_section2.reload.section_order).to eq(0)
     end
   end
 end
