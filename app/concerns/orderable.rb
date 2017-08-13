@@ -10,6 +10,7 @@ module Orderable
 
     def reorder_others
       return unless destroyed? || order_change?
+      return if board.open_to_anyone? && !board.board_sections.exists?
 
       other_where = Hash[ordered_attributes.map { |atr| [atr, send("#{atr}_was")] }]
       others = self.class.where(other_where).order('section_order asc')

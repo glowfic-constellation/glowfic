@@ -1,4 +1,8 @@
 $(document).ready( function() {
+  bindArrows();
+});
+
+function bindArrows() {
   $(".section-up").click(function() {
     var old_order = parseInt($(this).attr('data-order'));
     var new_order = old_order - 1;
@@ -14,9 +18,17 @@ $(document).ready( function() {
     switchRows(old_order, new_order);
     return false;
   });
-});
+}
+
+function unbindArrows() {
+  $(".section-down").unbind();
+  $(".section-up").unbind();
+}
 
 function switchRows(old_order, new_order) {
+  unbindArrows(); // Reduce race conditions by only allowing one update at a time
+  $("#loading").show();
+
   var this_row = $("#section-"+old_order);
   var that_row = $("#section-"+new_order);
   $("#section-"+old_order+" img").attr('data-order', new_order);
@@ -42,6 +54,8 @@ function switchRows(old_order, new_order) {
     order: old_order
   };
   $.post('/api/v1/board_sections/reorder', json, function (resp) {
+    $("#loading").hide();
     $("#saveconf").show().delay(2000).fadeOut();
+    bindArrows();
   });
 };

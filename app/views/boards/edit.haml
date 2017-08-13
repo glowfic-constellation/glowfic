@@ -18,6 +18,8 @@
     Organize Continuity Index
     = link_to new_board_section_path params: {board_id: @board.id} do
       .link-box.green + New Section
+    #loading.float-right.hidden
+      = image_tag '/images/loading.gif', title: 'Loading...', class: 'vmid', alt: '...'
     #saveconf.float-right.hidden{style: 'padding-top: 4px;'}
       = image_tag '/images/accept.png', title: 'Saved', class: 'vmid', alt: ''
       Saved
