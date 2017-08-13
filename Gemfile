@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-ruby '2.3.4'
+ruby '2.4.1'
 
 gem 'api-pagination'
 gem 'apipie-rails'
@@ -61,7 +61,7 @@ end
 group :test do
   gem 'codeclimate-test-reporter', '~> 1.0.0'
   gem 'factory_girl_rails'
-  gem 'json', '1.8.2'
+  gem 'json'
   gem 'resque_spec'
   gem 'simplecov'
   gem 'timecop'
