@@ -1,15 +1,15 @@
 ﻿#header { background-image: url("/images/starry.jpg"); background-position: right top; }
 #logo, #nav-bottom { background-color: transparent !important; }
-#header #user-info, #header #nav-top { background-color: #41416e; background-color: rgba(65, 65, 110, 0.9); }
+#header #user-info, #header #nav-top { background-color: #41416E; background-color: rgba(65, 65, 110, 0.9); }
 
-body { background-color: #b0afb7; }
+body { background-color: #B0AFB7; }
 
-#content th, .post-header { background-color: #42416e; }
-#content .sub { color: #f3f3f3; }
-#content .sub, .post-navheader, .flash.subber { background-color: #8287a2; }
-#content .beige, #content .subber, .subber { background-color: #484357; color: #DADADA; }
+#content th, .post-header { background-color: #42416E; }
+#content .sub { color: #F3F3F3; }
+#content .sub, .post-navheader, .flash.subber { background-color: #8287A2; }
+#content .beige, #content .subber, .subber { background-color: #6F658D; color: #DADADA; }
 #content .beige a, #content th a, .post-header a { color: #F3F3F3; }
-#content .beige a:visited, #content th a:visited { color: #c6c6e5; }
+#content .beige a:visited, #content th a:visited { color: #C6C6E5; }
 
 #post-menu-box { border-top: 1px solid #808080; border-top: 1px solid rgba(128,128,128,0.5); background-color: #BCBCBC; }
 #post-menu-box a:hover div { background-color: #D3D3D3; }
@@ -18,29 +18,35 @@ body { background-color: #b0afb7; }
 #content .even, .post-post, .post-reply:nth-child(even), #post-editor, .post-reply:nth-child(odd) blockquote { background-color: #E3E3E3; }
 #content .odd, .post-reply:nth-child(odd), .post-post + #post-editor, .post-post + a + #post-editor, .post-post blockquote, .post-reply:nth-child(even) blockquote { background-color: #D8D8D8; }
 
-.post-navheader .view-button, .view-button.selected, .view-button, .link-box.green, .link-box.blue, .link-box.red { background-color: #584b81; }
-.green { background-color: #d8d8d8; }
-#post-editor .green { background-color: #9692a8; color: #DADADA; }
-.post-subheader { background-color: #9692a8; color: #F3F3F3; }
+.post-navheader .view-button, .view-button.selected, .view-button, .link-box.green, .link-box.blue, .link-box.red { background-color: #6679B8; }
+#content .beige .link-box, #content .subber .link-box, .subber .link-box { background-color: #8689B7; }
+.green { background-color: #D8D8D8; }
+#post-editor .green { background-color: #9692A8; color: #DADADA; }
+.post-subheader { background-color: #9692A8; color: #F3F3F3; }
 
-.subber, .subber a, .subber a:visited { color: #c6c6e5; }
+.subber, .subber a, .subber a:visited { color: #C6C6E5; }
 .subber b { color: #F3F3F3; }
 .post-expander { background-color: #D8D8D8; }
 
-.post-icon, #current-icon-dropdown { background-color: #9498ac; }
-.post-author { background-color: #42416e; }
-.post-character, .post-screenname, .post-author { font-weight: normal; }
 #character-selector { font-weight: normal; }
-.post-character, .post-screenname, #content .dark { background-color: #645f8a; }
-.post-screenname, .post-screenname a, .post-screenname a:visited { color: #c6c6e5; font-style: italic; }
+.post-icon, #current-icon-dropdown { background-color: #9498AC; }
+.post-author { background-color: #42416E; }
+.post-character, .post-screenname, .post-author { font-weight: normal; }
+.post-character, .post-screenname { background-color: #645F8A; }
+.post-screenname, .post-screenname a, .post-screenname a:visited { color: #C6C6E5; font-style: italic; }
 .post-character, .post-character a, .post-character a:visited, .post-author, .post-author a, .post-author a:visited { color: #F3F3F3; }
 
-a { color: #666284; }
-a:visited { color: #484357; }
+/*.selected-icon { border-color: #409CFF; }*/
 
-.flash.success, .flash.error, .flash.inbox { background-color: #9692a8; }
-.pagination .current { background-color: #9692a8; }
+#content .dark { background-color: #645F8A; color: #FEFEFE; }
+
+a { color: #6080B0; }
+a:visited { color: #7771A3; }
+a:hover { color: #FFFFFF; }
+
+.flash.success, .flash.error, .flash.inbox { background-color: #CDC7E7; }
+.pagination .current { background-color: #9692A8; }
 .pagination a { color: #F3F3F3; }
-.pagination a:visited { color: #c6c6e5; }
-.pagination .disabled { color: #58546b; }
-.pagination a:hover { background-color: #9498ac; }
+.pagination a:visited { color: #C6C6E5; }
+.pagination .disabled { color: #58546B; }
+.pagination a:hover { background-color: #9498AC; }
