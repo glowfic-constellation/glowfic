@@ -3,15 +3,17 @@
 #header #user-info, #header #nav-top { background-color: #05050F; background-color: rgba(5, 5, 15, 0.9); }
 
 body { background-color: #6C697C; }
+#selected-gallery, .time-loaded { color: #DADADA; }
 
 #content th, .post-header { background-color: #13132F; }
 #content .sub { color: #F3F3F3; }
-#content .sub, .post-navheader, #content .subber, .subber { background-color: #182152; }
+#content .sub, .post-navheader, .subber { background-color: #182152; }
+#content .subber { background-color: #13132F; }
 #content .beige { background-color: #484357; color: #DADADA; }
 #content .beige a, #content th a, .post-header a { color: #B5AFCB; }
 #content .beige a:visited, #content th a:visited, .post-header a:visited { color: #9C9AA4; }
 
-#post-menu-box { border-top: 1px solid #808080; border-top: 1px solid rgba(128,128,128,0.5); background-color: #BCBCBC; }
+#post-menu-box { border-top: 1px solid #808080; border-top: 1px solid rgba(128,128,128,0.5); background-color: #BCBCBC; color: #101010; }
 #post-menu-box a:hover div { background-color: #D3D3D3; }
 #post-menu-box div { border-bottom: 1px solid #808080; border-bottom: 1px solid rgba(128,128,128,0.5); }
 #post-menu-box a { color: inherit; }
@@ -19,6 +21,7 @@ body { background-color: #6C697C; }
 #content .odd, .post-reply:nth-child(odd), .post-post + #post-editor, .post-post + a + #post-editor, .post-post blockquote, .post-reply:nth-child(even) blockquote { background-color: #D8D8D8; }
 
 .post-navheader .view-button, .view-button.selected, .view-button, .link-box.green, .link-box.blue, .link-box.red { background-color: #463C65; }
+#content .beige .link-box, #content .subber .link-box, .subber .link-box { background-color: #66608B; }
 .green { background-color: #D8D8D8; }
 #post-editor .green { background-color: #484357; color: #DADADA; }
 .post-subheader { background-color: #484357; color: #F3F3F3; }
