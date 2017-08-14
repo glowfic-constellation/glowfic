@@ -15,6 +15,7 @@ Rails.application.routes.draw do
     resources :galleries, only: [:index, :show]
     resources :boards, only: :index
     collection do
+      get :search
       post :username
     end
     member do
@@ -29,14 +30,19 @@ Rails.application.routes.draw do
   end
 
   # Characters
-  resources :templates, except: :index
+  resources :templates, except: :index do
+    collection { get :search}
+  end
   resources :characters do
     resources :aliases, only: [:new, :create, :destroy]
     member do
       get :replace
       post :do_replace
     end
-    collection { get :facecasts }
+    collection do
+      get :search
+      get :facecasts
+    end
   end
 
   # Images
@@ -55,6 +61,7 @@ Rails.application.routes.draw do
       get :add
       post :icon
     end
+    collection { get :search}
   end
 
   # Forums
@@ -84,7 +91,7 @@ Rails.application.routes.draw do
   # API
   namespace :api do
     namespace :v1 do
-      resources :boards, only: :show
+      resources :boards, only: [:index, :show]
       resources :board_sections do # TODO other types
         collection { post :reorder }
       end
@@ -94,6 +101,8 @@ Rails.application.routes.draw do
         resources :replies, only: :index
       end
       resources :tags, only: :index
+      resources :templates, only: :index
+      resources :users, only: :index
     end
   end
 

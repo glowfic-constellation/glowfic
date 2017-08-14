@@ -194,7 +194,7 @@ ALTER SEQUENCE board_views_id_seq OWNED BY board_views.id;
 
 CREATE TABLE boards (
     id integer NOT NULL,
-    name character varying(255) NOT NULL,
+    name citext NOT NULL,
     creator_id integer NOT NULL,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
@@ -323,7 +323,7 @@ ALTER SEQUENCE character_tags_id_seq OWNED BY character_tags.id;
 CREATE TABLE characters (
     id integer NOT NULL,
     user_id integer NOT NULL,
-    name character varying(255) NOT NULL,
+    name citext NOT NULL,
     template_name character varying(255),
     screenname character varying(255),
     template_id integer,
@@ -928,7 +928,7 @@ ALTER SEQUENCE tags_id_seq OWNED BY tags.id;
 CREATE TABLE templates (
     id integer NOT NULL,
     user_id integer NOT NULL,
-    name character varying(255),
+    name citext,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
     description text
@@ -1951,4 +1951,6 @@ INSERT INTO schema_migrations (version) VALUES ('20170612015922');
 INSERT INTO schema_migrations (version) VALUES ('20170617180015');
 
 INSERT INTO schema_migrations (version) VALUES ('20170619010707');
+
+INSERT INTO schema_migrations (version) VALUES ('20170814042150');
 

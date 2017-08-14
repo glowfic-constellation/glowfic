@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 class UsersController < ApplicationController
   before_filter :signup_prep, :only => :new
-  before_filter :login_required, :except => [:index, :show, :new, :create, :username]
+  before_filter :login_required, :except => [:index, :show, :new, :create, :username, :search]
   before_filter :logout_required, only: [:new, :create]
   before_filter :require_own_user, only: [:edit, :update, :password]
 
@@ -88,6 +88,13 @@ class UsersController < ApplicationController
   def username
     render :json => { :error => "No username provided." } and return unless params[:username]
     render :json => { :username_free => User.find_by(username: params[:username]).nil? }
+  end
+
+  def search
+    @page_title = 'Search Users'
+    return unless params[:commit].present?
+    username = '%' + params[:username].to_s + '%'
+    @search_results = User.where("username LIKE ?", username).order('username asc').paginate(per_page: 25, page: page)
   end
 
   private

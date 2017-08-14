@@ -217,9 +217,14 @@ class PostsController < WritableController
 
   def search
     @page_title = 'Browse Posts'
+    use_javascript('posts/search')
+
+    # don't start blank if the parameters are set
     @setting = Setting.where(id: params[:setting_id]) if params[:setting_id].present?
     @character = Character.where(id: params[:character_id]) if params[:character_id].present?
-    use_javascript('posts/search')
+    @user = User.where(id: params[:author_id]) if params[:author_id].present?
+    @board = Board.where(id: params[:board_id]) if params[:board_id].present?
+
     return unless params[:commit].present?
 
     @search_results = Post.order('tagged_at desc').includes(:board)

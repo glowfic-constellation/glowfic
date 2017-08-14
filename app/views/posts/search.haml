@@ -1,23 +1,15 @@
-- content_for :breadcrumbs do
-  = link_to "Search", search_posts_path
-  &raquo;
-  %b Browse Posts
+= render partial: 'search/breadcrumbs'
 
 %table
   %thead
     %tr
       %th.width-150
-        Browse Posts
+        Search Posts
         - if @search_results
           = '- '+@search_results.total_entries.to_s+' results'
       %th
         - if @search_results
-          = render partial: 'paginator', locals: {paginated: @search_results, path: :search_posts_path}
-    - unless @search_results
-      %tr
-        %th.subber{colspan: 2}
-          Browse for posts meeting certain criteria.
-          = link_to 'Find a specific reply instead?', search_replies_path
+          = render partial: 'paginator', locals: {paginated: @search_results}
   %tbody
     %tr
       %td.width-300.padding-10.vtop.dark
@@ -25,10 +17,10 @@
           %table#signup
             %tr
               %td.width-70 Continuity
-              %td= select_tag :board_id, options_from_collection_for_select(Board.all, :id, :name, params[:board_id]), {class: 'chosen-select', prompt: '— Choose Continuity —'}
+              %td= select_tag :board_id, options_from_collection_for_select(@board || [], :id, :name, params[:board_id]), {class: 'chosen-select', prompt: '— Choose Continuity —'}
             %tr
               %td Author
-              %td= select_tag :author_id, options_from_collection_for_select(User.order('username'), :id, :username, params[:author_id]), {class: 'chosen-select', prompt: '— Choose Author —'}
+              %td= select_tag :author_id, options_from_collection_for_select(@user || [], :id, :username, params[:author_id]), {class: 'chosen-select', prompt: '— Choose Author —'}
             %tr
               %td Character
               %td= select_tag :character_id, options_from_collection_for_select(@character || [], :id, :selector_name, params[:character_id]), {prompt: '— Choose Character —'}
@@ -74,4 +66,4 @@
     %tfoot
       %tr
         %th.width-150
-        %th= render partial: 'paginator', locals: {paginated: @search_results, path: :search_posts_path}
+        %th= render partial: 'paginator', locals: {paginated: @search_results}

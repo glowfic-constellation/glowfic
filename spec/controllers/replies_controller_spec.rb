@@ -439,9 +439,9 @@ RSpec.describe RepliesController do
         expect(assigns(:page_title)).to eq('Search Replies')
         expect(assigns(:post)).to be_nil
         expect(assigns(:search_results)).to be_nil
-        expect(assigns(:users)).to match_array(User.all)
+        expect(assigns(:users)).to be_nil # this will be dynamically loaded
         expect(assigns(:characters)).to be_nil # this will be dynamically loaded
-        expect(assigns(:templates)).to match_array(Template.all)
+        expect(assigns(:users)).to be_nil # this will be dynamically loaded
       end
 
       it "works logged in" do
@@ -451,7 +451,6 @@ RSpec.describe RepliesController do
         expect(assigns(:page_title)).to eq('Search Replies')
         expect(assigns(:post)).to be_nil
         expect(assigns(:search_results)).to be_nil
-        expect(assigns(:users)).to match_array(User.all)
       end
 
       it "handles invalid post" do
@@ -460,7 +459,6 @@ RSpec.describe RepliesController do
         expect(assigns(:page_title)).to eq('Search Replies')
         expect(assigns(:post)).to be_nil
         expect(assigns(:search_results)).to be_nil
-        expect(assigns(:users)).to match_array(User.all)
       end
 
       it "handles valid post" do

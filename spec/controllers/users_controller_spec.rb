@@ -337,4 +337,33 @@ RSpec.describe UsersController do
       skip
     end
   end
+
+  describe "GET search" do
+    it "works logged in" do
+      login
+      get :search
+      expect(response).to have_http_status(200)
+      expect(assigns(:search_results)).to be_nil
+    end
+
+    it "works logged out" do
+      get :search
+      expect(response).to have_http_status(200)
+      expect(assigns(:search_results)).to be_nil
+    end
+
+    it "subsearches correctly" do
+      firstuser = create(:user, username: 'baa')
+      miduser = create(:user, username: 'aba')
+      enduser = create(:user, username: 'aab')
+      notuser = create(:user, username: 'aaa')
+      User.all.each do |user|
+        create(:user, username: user.username.upcase + 'c')
+      end
+      get :search, commit: 'Search', username: 'b'
+      expect(response).to have_http_status(200)
+      expect(assigns(:search_results)).to be_present
+      expect(assigns(:search_results).count).to eq(6)
+    end
+  end
 end
