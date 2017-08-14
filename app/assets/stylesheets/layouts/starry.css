@@ -27,12 +27,14 @@ body { background-color: #6C697C; }
 .subber b { color: #F3F3F3; }
 .post-expander { background-color: #9692A8; }
 
+#character-selector { font-weight: normal; }
 .post-icon, #current-icon-dropdown, .post-author { background-color: #13132F; }
 .post-character, .post-screenname, .post-author { font-weight: bold; }
-#character-selector { font-weight: normal; }
 .post-character, .post-screenname { background-color: #484357; }
 .post-screenname, .post-screenname a, .post-screenname a:visited { color: #9C9AA4; }
 .post-character, .post-character a, .post-character a:visited, .post-author, .post-author a, .post-author a:visited { color: #F3F3F3; }
+
+#content .dark { background-color: #182152; color: #FEFEFE; }
 
 a { color: #666284; }
 a:visited { color: #484357; }
