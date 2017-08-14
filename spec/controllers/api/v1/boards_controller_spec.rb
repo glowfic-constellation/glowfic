@@ -1,6 +1,38 @@
 require "spec_helper"
 
 RSpec.describe Api::V1::BoardsController do
+  describe "GET index" do
+    def create_search_boards
+      firstuser = create(:board, name: 'baa')
+      miduser = create(:board, name: 'aba')
+      enduser = create(:board, name: 'aab')
+      notuser = create(:board, name: 'aaa')
+      Board.all.each do |board|
+        create(:board, name: board.name.upcase + 'c')
+      end
+    end
+
+    it "works logged in" do
+      create_search_boards
+      login
+      get :index
+      expect(response).to have_http_status(200)
+      expect(response.json['results'].count).to eq(8)
+    end
+
+    it "works logged out" do
+      create_search_boards
+      get :index, q: 'b'
+      expect(response).to have_http_status(200)
+      expect(response.json['results'].count).to eq(2)
+    end
+
+    it "raises error on invalid page" do
+      get :index, page: 'b'
+      expect(response).to have_http_status(422)
+    end
+  end
+
   describe "GET show" do
     it "requires valid board", :show_in_doc do
       get :show, id: 0

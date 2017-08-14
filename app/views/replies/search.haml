@@ -1,7 +1,4 @@
-- content_for :breadcrumbs do
-  = link_to "Search", search_posts_path
-  &raquo;
-  %b Search Replies
+= render partial: 'search/breadcrumbs'
 
 %table
   %thead
@@ -12,10 +9,7 @@
           = '- '+@search_results.total_entries.to_s+' results'
       %th
         - if @search_results
-          = render partial: 'posts/paginator', locals: {paginated: @search_results, path: :search_replies_path, no_per: true}
-    - unless @search_results
-      %tr
-        %th.subber{colspan: 2} Find specific replies
+          = render partial: 'posts/paginator', locals: {paginated: @search_results, no_per: true}
   %tbody
     %tr
       %td.width-300.padding-10.vtop.dark
@@ -27,10 +21,10 @@
                 - if @post
                   %b= @post.board.name
                 - else
-                  = select_tag :board_id, options_from_collection_for_select(Board.order('pinned DESC, LOWER(name)'), :id, :name, params[:board_id]), {class: 'chosen-select', prompt: '— Choose Continuity —'}
+                  = select_tag :board_id, options_from_collection_for_select(@boards || [], :id, :name, params[:board_id]), {class: 'chosen-select', prompt: '— Choose Continuity —'}
             %tr
               %td Author
-              %td= select_tag :author_id, options_from_collection_for_select(@users, :id, :username, params[:author_id]), {class: 'chosen-select', prompt: '— Choose Author —'}
+              %td= select_tag :author_id, options_from_collection_for_select(@users || [], :id, :username, params[:author_id]), {class: 'chosen-select', prompt: '— Choose Author —'}
             %tr
               %td Template
               %td= select_tag :template_id, options_from_collection_for_select(@templates, :id, :name, params[:template_id]), {class: 'chosen-select', prompt: '— Choose Template —'}
@@ -77,4 +71,4 @@
     %tfoot
       %tr
         %th.width-150
-        %th= render partial: 'posts/paginator', locals: {paginated: @search_results, path: :search_replies_path, no_per: true}
+        %th= render partial: 'posts/paginator', locals: {paginated: @search_results, no_per: true}

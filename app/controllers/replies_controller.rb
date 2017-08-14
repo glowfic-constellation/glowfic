@@ -1,4 +1,6 @@
 # frozen_string_literal: true
+require 'will_paginate/array'
+
 class RepliesController < WritableController
   before_filter :login_required, except: [:search, :show, :history]
   before_filter :find_reply, only: [:show, :history, :edit, :update, :destroy]
@@ -17,9 +19,10 @@ class RepliesController < WritableController
       @templates = Template.where(id: @characters.map(&:template_id).uniq.compact).order('name')
       gon.post_id = @post.id
     else
-      @users = User.order('username')
+      @users = User.where(id: params[:author_id]) if params[:author_id].present?
       @characters = Character.where(id: params[:character_id]) if params[:character_id].present?
       @templates = Template.order('name')
+      @boards = Board.where(id: params[:board_id]) if params[:board_id].present?
       if @post
         # post exists but post not visible
         flash.now[:error] = "You do not have permission to view this post."

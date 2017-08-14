@@ -1,0 +1,14 @@
+- content_for :breadcrumbs do
+  %b 
+    Search:
+    = link_to_unless_current "Posts", search_posts_path
+    |
+    = link_to_unless_current "Replies", search_replies_path
+    |
+    = link_to_unless_current "Characters", search_characters_path
+    |
+    = link_to_unless_current "Templates", search_templates_path
+    |
+    = link_to_unless_current "Galleries", search_galleries_path
+    |
+    = link_to_unless_current "Users", search_users_path

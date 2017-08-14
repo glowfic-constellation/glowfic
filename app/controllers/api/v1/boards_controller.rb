@@ -1,7 +1,17 @@
 class Api::V1::BoardsController < Api::ApiController
   resource_description do
     name 'Continuities'
-    description 'Viewing and editing continuities'
+    description 'Viewing, searching, and editing continuities'
+  end
+
+  api! 'Load all the continuities that match the given query, results ordered by name'
+  param :q, String, required: false, desc: "Query string"
+  param :page, :number, required: false, desc: 'Page in results (25 per page)'
+  error 422, "Invalid parameters provided"
+  def index
+    queryset = Board.where("name LIKE ?", params[:q].to_s + '%').order('pinned DESC, LOWER(name)')
+    boards = paginate queryset, per_page: 25
+    render json: {results: boards}
   end
 
   api! 'Load a single continuity as a JSON resource.'
