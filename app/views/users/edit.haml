@@ -50,10 +50,13 @@
       %th.sub Time display
       %td{class: cycle('even', 'odd')}= f.select :time_display, time_display_options(current_user.time_display)
     %tr
-      %th.sub Unread Default
+      %th.sub Unread
       %td{class: cycle('even', 'odd')}
         = f.check_box :unread_opened, class: 'width-15 vmid'
-        = f.label :unread_opened, "Opened threads only"
+        = f.label :unread_opened, "Display opened threads only"
+        %br
+        = f.check_box :visible_unread, class: 'width-15 vmid'
+        = f.label :visible_unread, "Outline when jumping to unread"
     %tr
       %th.sub Daily Report
       %td{class: cycle('even', 'odd')}

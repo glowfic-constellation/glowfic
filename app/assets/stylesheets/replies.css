@@ -185,3 +185,17 @@ div.char-access-icon {
 
 /* Handle post tables */
 .post-completed { text-align: center; width: 40px; }
+
+/* Unread marker on posts */
+.unread-marker-container {
+  position: relative;
+}
+.unread-marker {
+  background-color: transparent;
+  color: transparent !important;
+  position: absolute;
+  top: -5px;
+  font-size: 70%;
+}
+
+.reply-highlighted { border: 1px red solid; }
