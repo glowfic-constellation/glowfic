@@ -216,7 +216,7 @@ class PostsController < WritableController
   end
 
   def search
-    @page_title = 'Browse Posts'
+    @page_title = 'Search Posts'
     use_javascript('posts/search')
 
     # don't start blank if the parameters are set

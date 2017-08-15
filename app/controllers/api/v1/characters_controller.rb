@@ -8,7 +8,7 @@ class Api::V1::CharactersController < Api::ApiController
     description 'Viewing and editing characters'
   end
 
-  api! 'Load all the characters of the specified type that match the given query, results ordered by name'
+  api! 'Load all the characters that match the given query, results ordered by name'
   param :q, String, required: false, desc: "Query string"
   param :page, :number, required: false, desc: 'Page in results (25 per page)'
   param :post_id, :number, required: false, desc: 'If provided, will return only characters that appear in the provided post'

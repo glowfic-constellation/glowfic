@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 class CharactersController < ApplicationController
-  before_filter :login_required, :except => [:index, :show, :facecasts]
+  before_filter :login_required, :except => [:index, :show, :facecasts, :search]
   before_filter :find_character, :only => [:show, :edit, :update, :destroy, :icon, :replace, :do_replace]
   before_filter :find_group, :only => :index
   before_filter :require_own_character, :only => [:edit, :update, :destroy, :icon, :replace, :do_replace]
@@ -183,6 +183,40 @@ class CharactersController < ApplicationController
 
     flash[:success] = "All uses of this character have been replaced."
     redirect_to character_path(@character)
+  end
+
+  def search
+    @page_title = 'Search Characters'
+    use_javascript('posts/search')
+    @users = []
+    @templates = []
+    return unless params[:commit].present?
+
+    @search_results = Character.unscoped
+
+    if params[:author_id].present?
+      # TODO display error if the user doesn't exist
+      @users = User.where(id: params[:author_id])
+      @search_results = @search_results.where(user_id: params[:author_id])
+    end
+
+    if params[:template_id].present?
+      # TODO display error if the template doesn't exist
+      # TODO display error if template is not user's
+      @templates = Template.where(id: params[:template_id])
+      @search_results = @search_results.where(template_id: params[:template_id])
+    end
+
+    if params[:name].present?
+      where_calc = []
+      where_calc << "name LIKE ?" if params[:search_name].present?
+      where_calc << "screenname LIKE ?" if params[:search_screenname].present?
+      where_calc << "template_name LIKE ?" if params[:search_nickname].present?
+
+      @search_results = @search_results.where(where_calc.join(' OR '), *(['%' + params[:name].to_s + '%'] * where_calc.length))
+    end
+
+    @search_results = @search_results.order('name asc').paginate(page: page, per_page: 25)
   end
 
   private
