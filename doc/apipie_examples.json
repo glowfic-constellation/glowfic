@@ -1,1 +1,931 @@
-{"board_sections#reorder":[{"verb":"POST","path":"/api/v1/board_sections/reorder","versions":["1.0"],"query":null,"request_data":{},"response_data":{"errors":[{"message":"You must be logged in to view that page."}]},"code":"401","show_in_doc":1,"recorded":true},{"verb":"POST","path":"/api/v1/board_sections/reorder","versions":["1.0"],"query":null,"request_data":{"changes":{"853":{"type":"Post","order":"1"},"42":{"type":"BoardSection","order":"0"}}},"response_data":{},"code":"200","show_in_doc":1,"recorded":true}],"boards#show":[{"verb":"GET","path":"/api/v1/boards/0","versions":["1.0"],"query":"","request_data":null,"response_data":{"errors":[{"message":"Continuity could not be found."}]},"code":"404","show_in_doc":1,"recorded":true},{"verb":"GET","path":"/api/v1/boards/881","versions":["1.0"],"query":"","request_data":null,"response_data":{"id":881,"name":"test board","board_sections":[{"id":44,"name":"TestSection","order":0},{"id":43,"name":"TestSection","order":1}]},"code":"200","show_in_doc":1,"recorded":true}],"characters#index":[{"verb":"GET","path":"/api/v1/characters","versions":["1.0"],"query":"","request_data":null,"response_data":{"results":[{"id":384,"name":"test character","screenname":null}]},"code":"200","show_in_doc":1,"recorded":true},{"verb":"GET","path":"/api/v1/characters","versions":["1.0"],"query":"q=se","request_data":null,"response_data":{"results":[{"id":385,"name":"search","screenname":null}]},"code":"200","show_in_doc":1,"recorded":true},{"verb":"GET","path":"/api/v1/characters","versions":["1.0"],"query":"post_id=-1","request_data":null,"response_data":{"errors":[{"message":"Post could not be found."}]},"code":"422","show_in_doc":1,"recorded":true},{"verb":"GET","path":"/api/v1/characters","versions":["1.0"],"query":"post_id=854","request_data":null,"response_data":{"errors":[{"message":"You do not have permission to perform this action."}]},"code":"403","show_in_doc":1,"recorded":true},{"verb":"GET","path":"/api/v1/characters","versions":["1.0"],"query":"post_id=855","request_data":null,"response_data":{"results":[{"id":389,"name":"test character","screenname":null}]},"code":"200","show_in_doc":1,"recorded":true}],"characters#show":[{"verb":"GET","path":"/api/v1/characters/-1","versions":["1.0"],"query":"","request_data":null,"response_data":{"errors":[{"message":"Character could not be found."}]},"code":"404","show_in_doc":1,"recorded":true},{"verb":"GET","path":"/api/v1/characters/391","versions":["1.0"],"query":"","request_data":null,"response_data":{"id":391,"name":"test character","screenname":null,"default":null,"aliases":[{"id":38,"name":"Alias"}],"galleries":[{"name":"test gallery","icons":[{"id":207,"keyword":"totally fake","url":"http://www.fakeicon.com"},{"id":208,"keyword":"totally fake","url":"http://www.fakeicon.com"}]},{"name":"test gallery","icons":[{"id":209,"keyword":"totally fake","url":"http://www.fakeicon.com"}]}]},"code":"200","show_in_doc":1,"recorded":true},{"verb":"GET","path":"/api/v1/characters/392","versions":["1.0"],"query":"post_id=0","request_data":null,"response_data":{"errors":[{"message":"Post could not be found."}]},"code":"422","show_in_doc":1,"recorded":true},{"verb":"GET","path":"/api/v1/characters/393","versions":["1.0"],"query":"post_id=856","request_data":null,"response_data":{"errors":[{"message":"You do not have permission to perform this action."}]},"code":"403","show_in_doc":1,"recorded":true},{"verb":"GET","path":"/api/v1/characters/394","versions":["1.0"],"query":"post_id=857","request_data":null,"response_data":{"id":394,"name":"test character","screenname":null,"alias_id_for_post":39,"default":null,"aliases":[{"id":39,"name":"Alias"}],"galleries":[]},"code":"200","show_in_doc":1,"recorded":true}],"characters#update":[{"verb":"PUT","path":"/api/v1/characters/-1","versions":["1.0"],"query":null,"request_data":{},"response_data":{"errors":[{"message":"You must be logged in to view that page."}]},"code":"401","show_in_doc":1,"recorded":true},{"verb":"PUT","path":"/api/v1/characters/-1","versions":["1.0"],"query":null,"request_data":{},"response_data":{"errors":[{"message":"Character could not be found."}]},"code":"404","show_in_doc":1,"recorded":true},{"verb":"PUT","path":"/api/v1/characters/395","versions":["1.0"],"query":null,"request_data":{},"response_data":{"errors":[{"message":"You do not have permission to perform this action."}]},"code":"403","show_in_doc":1,"recorded":true},{"verb":"PUT","path":"/api/v1/characters/396","versions":["1.0"],"query":null,"request_data":{"character":{"default_icon_id":"211"}},"response_data":{"id":396,"name":"test character","screenname":null,"default":{"id":211,"keyword":"totally fake","url":"http://www.fakeicon.com"}},"code":"200","show_in_doc":1,"recorded":true},{"verb":"PUT","path":"/api/v1/characters/397","versions":["1.0"],"query":null,"request_data":{"character":{"default_icon_id":"213","name":"","user_id":null}},"response_data":{"errors":[{"message":"Name can't be blank"},{"message":"User can't be blank"},{"message":"Default icon must be yours"}]},"code":"422","show_in_doc":1,"recorded":true}],"galleries#show":[{"verb":"GET","path":"/api/v1/galleries/0","versions":["1.0"],"query":"","request_data":null,"response_data":{"errors":[{"message":"Gallery user could not be found."}]},"code":"422","show_in_doc":1,"recorded":true},{"verb":"GET","path":"/api/v1/galleries/0","versions":["1.0"],"query":"user_id=2754","request_data":null,"response_data":{"name":"Galleryless","icons":[]},"code":"200","show_in_doc":1,"recorded":true},{"verb":"GET","path":"/api/v1/galleries/1","versions":["1.0"],"query":"","request_data":null,"response_data":{"errors":[{"message":"Gallery could not be found."}]},"code":"404","show_in_doc":1,"recorded":true},{"verb":"GET","path":"/api/v1/galleries/102","versions":["1.0"],"query":"","request_data":null,"response_data":{"name":"test gallery","icons":[{"id":214,"keyword":"totally fake","url":"http://www.fakeicon.com"}]},"code":"200","show_in_doc":1,"recorded":true}],"posts#show":[{"verb":"GET","path":"/api/v1/posts/0","versions":["1.0"],"query":"","request_data":null,"response_data":{"errors":[{"message":"Post could not be found."}]},"code":"404","show_in_doc":1,"recorded":true},{"verb":"GET","path":"/api/v1/posts/858","versions":["1.0"],"query":"","request_data":null,"response_data":{"errors":[{"message":"You do not have permission to perform this action."}]},"code":"403","show_in_doc":1,"recorded":true},{"verb":"GET","path":"/api/v1/posts/859","versions":["1.0"],"query":"","request_data":null,"response_data":{"content":"test content","created_at":"2017-05-19T07:38:41Z","description":null,"edited_at":"2017-05-19T07:38:41Z","id":859,"status":0,"subject":"test subject","tagged_at":"2017-05-19T07:38:41Z","board":{"id":887,"name":"test board"},"section":null,"user":{"id":2758,"username":"JohnDoe33"},"character":{"id":398,"name":"test character","screenname":null},"character_name":"Alias","icon":{"id":215,"keyword":"totally fake","url":"http://www.fakeicon.com"}},"code":"200","show_in_doc":1,"recorded":true}],"replies#index":[{"verb":"GET","path":"/api/v1/posts/0/replies","versions":["1.0"],"query":"","request_data":null,"response_data":{"errors":[{"message":"Post could not be found."}]},"code":"404","show_in_doc":1,"recorded":true},{"verb":"GET","path":"/api/v1/posts/860/replies","versions":["1.0"],"query":"","request_data":null,"response_data":{"errors":[{"message":"You do not have permission to perform this action."}]},"code":"403","show_in_doc":1,"recorded":true},{"verb":"GET","path":"/api/v1/posts/861/replies","versions":["1.0"],"query":"","request_data":null,"response_data":[{"id":423,"content":"test content","created_at":"2017-05-19T07:38:41Z","updated_at":"2017-05-19T07:38:41Z","character_name":null,"character":null,"icon":null,"user":{"id":2762,"username":"JohnDoe37"}},{"id":424,"content":"test content","created_at":"2017-05-19T07:38:41Z","updated_at":"2017-05-19T07:38:41Z","character_name":null,"character":null,"icon":null,"user":{"id":2762,"username":"JohnDoe37"}},{"id":425,"content":"test content","created_at":"2017-05-19T07:38:41Z","updated_at":"2017-05-19T07:38:41Z","character_name":"Alias","character":{"id":400,"name":"test character","screenname":null},"icon":{"id":217,"url":"http://www.fakeicon.com","keyword":"totally fake"},"user":{"id":2764,"username":"JohnDoe39"}}],"code":"200","show_in_doc":1,"recorded":true}],"tags#index":[{"verb":"GET","path":"/api/v1/tags","versions":["1.0"],"query":"q=Tag1&t=Label","request_data":null,"response_data":{"results":[{"id":40,"text":"Tag1"}]},"code":"200","show_in_doc":1,"recorded":true},{"verb":"GET","path":"/api/v1/tags","versions":["1.0"],"query":"q=Tag2&t=Setting","request_data":null,"response_data":{"results":[{"id":41,"text":"Tag2"}]},"code":"200","show_in_doc":1,"recorded":true},{"verb":"GET","path":"/api/v1/tags","versions":["1.0"],"query":"q=Tag3&t=ContentWarning","request_data":null,"response_data":{"results":[{"id":42,"text":"Tag3"}]},"code":"200","show_in_doc":1,"recorded":true},{"verb":"GET","path":"/api/v1/tags","versions":["1.0"],"query":"t=b","request_data":null,"response_data":{"errors":["Invalid parameter 't' value 'b': Must be one of: Setting, Label, ContentWarning."]},"code":"422","show_in_doc":1,"recorded":true}]}
+{
+  "board_sections#reorder": [
+    {
+      "verb": "POST",
+      "path": "/api/v1/board_sections/reorder",
+      "versions": [
+        "1.0"
+      ],
+      "query": null,
+      "request_data": {
+      },
+      "response_data": {
+        "errors": [
+          {
+            "message": "You must be logged in to view that page."
+          }
+        ]
+      },
+      "code": "401",
+      "show_in_doc": 1,
+      "recorded": true
+    },
+    {
+      "verb": "POST",
+      "path": "/api/v1/board_sections/reorder",
+      "versions": [
+        "1.0"
+      ],
+      "query": null,
+      "request_data": {
+        "changes": {
+          "34613": {
+            "type": "Post",
+            "order": "1"
+          },
+          "1722": {
+            "type": "BoardSection",
+            "order": "1"
+          },
+          "34614": {
+            "type": "Post",
+            "order": "0"
+          },
+          "1723": {
+            "type": "BoardSection",
+            "order": "0"
+          }
+        }
+      },
+      "response_data": {
+      },
+      "code": "200",
+      "show_in_doc": 1,
+      "recorded": true
+    }
+  ],
+  "boards#index": [
+    {
+      "verb": "GET",
+      "path": "/api/v1/boards",
+      "versions": [
+        "1.0"
+      ],
+      "query": "q=b",
+      "request_data": null,
+      "response_data": {
+        "results": [
+          {
+            "id": 34606,
+            "name": "baa"
+          },
+          {
+            "id": 34610,
+            "name": "BAAc"
+          }
+        ]
+      },
+      "code": "200",
+      "show_in_doc": 1,
+      "recorded": true
+    },
+    {
+      "verb": "GET",
+      "path": "/api/v1/boards",
+      "versions": [
+        "1.0"
+      ],
+      "query": "page=b",
+      "request_data": null,
+      "response_data": {
+        "errors": [
+          "Invalid parameter 'page' value 'b': Must be a number."
+        ]
+      },
+      "code": "422",
+      "show_in_doc": 1,
+      "recorded": true
+    }
+  ],
+  "boards#show": [
+    {
+      "verb": "GET",
+      "path": "/api/v1/boards/0",
+      "versions": [
+        "1.0"
+      ],
+      "query": "",
+      "request_data": null,
+      "response_data": {
+        "errors": [
+          {
+            "message": "Continuity could not be found."
+          }
+        ]
+      },
+      "code": "404",
+      "show_in_doc": 1,
+      "recorded": true
+    },
+    {
+      "verb": "GET",
+      "path": "/api/v1/boards/34614",
+      "versions": [
+        "1.0"
+      ],
+      "query": "",
+      "request_data": null,
+      "response_data": {
+        "id": 34614,
+        "name": "test board",
+        "board_sections": [
+          {
+            "id": 1725,
+            "name": "TestSection",
+            "order": 0
+          },
+          {
+            "id": 1724,
+            "name": "TestSection",
+            "order": 1
+          }
+        ]
+      },
+      "code": "200",
+      "show_in_doc": 1,
+      "recorded": true
+    }
+  ],
+  "characters#index": [
+    {
+      "verb": "GET",
+      "path": "/api/v1/characters",
+      "versions": [
+        "1.0"
+      ],
+      "query": "",
+      "request_data": null,
+      "response_data": {
+        "results": [
+          {
+            "id": 9300,
+            "name": "test character",
+            "screenname": null
+          }
+        ]
+      },
+      "code": "200",
+      "show_in_doc": 1,
+      "recorded": true
+    },
+    {
+      "verb": "GET",
+      "path": "/api/v1/characters",
+      "versions": [
+        "1.0"
+      ],
+      "query": "q=se",
+      "request_data": null,
+      "response_data": {
+        "results": [
+          {
+            "id": 9301,
+            "name": "search",
+            "screenname": null
+          }
+        ]
+      },
+      "code": "200",
+      "show_in_doc": 1,
+      "recorded": true
+    },
+    {
+      "verb": "GET",
+      "path": "/api/v1/characters",
+      "versions": [
+        "1.0"
+      ],
+      "query": "post_id=-1",
+      "request_data": null,
+      "response_data": {
+        "errors": [
+          {
+            "message": "Post could not be found."
+          }
+        ]
+      },
+      "code": "422",
+      "show_in_doc": 1,
+      "recorded": true
+    },
+    {
+      "verb": "GET",
+      "path": "/api/v1/characters",
+      "versions": [
+        "1.0"
+      ],
+      "query": "post_id=34615",
+      "request_data": null,
+      "response_data": {
+        "errors": [
+          {
+            "message": "You do not have permission to perform this action."
+          }
+        ]
+      },
+      "code": "403",
+      "show_in_doc": 1,
+      "recorded": true
+    },
+    {
+      "verb": "GET",
+      "path": "/api/v1/characters",
+      "versions": [
+        "1.0"
+      ],
+      "query": "post_id=34616",
+      "request_data": null,
+      "response_data": {
+        "results": [
+          {
+            "id": 9305,
+            "name": "test character",
+            "screenname": null
+          }
+        ]
+      },
+      "code": "200",
+      "show_in_doc": 1,
+      "recorded": true
+    }
+  ],
+  "characters#show": [
+    {
+      "verb": "GET",
+      "path": "/api/v1/characters/-1",
+      "versions": [
+        "1.0"
+      ],
+      "query": "",
+      "request_data": null,
+      "response_data": {
+        "errors": [
+          {
+            "message": "Character could not be found."
+          }
+        ]
+      },
+      "code": "404",
+      "show_in_doc": 1,
+      "recorded": true
+    },
+    {
+      "verb": "GET",
+      "path": "/api/v1/characters/9307",
+      "versions": [
+        "1.0"
+      ],
+      "query": "",
+      "request_data": null,
+      "response_data": {
+        "id": 9307,
+        "name": "test character",
+        "screenname": null,
+        "default": null,
+        "aliases": [
+          {
+            "id": 806,
+            "name": "Alias"
+          }
+        ],
+        "galleries": [
+          {
+            "name": "test gallery",
+            "icons": [
+              {
+                "id": 6037,
+                "url": "http://www.fakeicon.com",
+                "keyword": "totally fake"
+              },
+              {
+                "id": 6038,
+                "url": "http://www.fakeicon.com",
+                "keyword": "totally fake"
+              }
+            ]
+          },
+          {
+            "name": "test gallery",
+            "icons": [
+              {
+                "id": 6039,
+                "url": "http://www.fakeicon.com",
+                "keyword": "totally fake"
+              }
+            ]
+          }
+        ]
+      },
+      "code": "200",
+      "show_in_doc": 1,
+      "recorded": true
+    },
+    {
+      "verb": "GET",
+      "path": "/api/v1/characters/9308",
+      "versions": [
+        "1.0"
+      ],
+      "query": "post_id=0",
+      "request_data": null,
+      "response_data": {
+        "errors": [
+          {
+            "message": "Post could not be found."
+          }
+        ]
+      },
+      "code": "422",
+      "show_in_doc": 1,
+      "recorded": true
+    },
+    {
+      "verb": "GET",
+      "path": "/api/v1/characters/9309",
+      "versions": [
+        "1.0"
+      ],
+      "query": "post_id=34617",
+      "request_data": null,
+      "response_data": {
+        "errors": [
+          {
+            "message": "You do not have permission to perform this action."
+          }
+        ]
+      },
+      "code": "403",
+      "show_in_doc": 1,
+      "recorded": true
+    },
+    {
+      "verb": "GET",
+      "path": "/api/v1/characters/9310",
+      "versions": [
+        "1.0"
+      ],
+      "query": "post_id=34618",
+      "request_data": null,
+      "response_data": {
+        "id": 9310,
+        "name": "test character",
+        "screenname": null,
+        "alias_id_for_post": 807,
+        "default": null,
+        "aliases": [
+          {
+            "id": 807,
+            "name": "Alias"
+          }
+        ],
+        "galleries": [
+
+        ]
+      },
+      "code": "200",
+      "show_in_doc": 1,
+      "recorded": true
+    }
+  ],
+  "characters#update": [
+    {
+      "verb": "PUT",
+      "path": "/api/v1/characters/-1",
+      "versions": [
+        "1.0"
+      ],
+      "query": null,
+      "request_data": {
+      },
+      "response_data": {
+        "errors": [
+          {
+            "message": "You must be logged in to view that page."
+          }
+        ]
+      },
+      "code": "401",
+      "show_in_doc": 1,
+      "recorded": true
+    },
+    {
+      "verb": "PUT",
+      "path": "/api/v1/characters/-1",
+      "versions": [
+        "1.0"
+      ],
+      "query": null,
+      "request_data": {
+      },
+      "response_data": {
+        "errors": [
+          {
+            "message": "Character could not be found."
+          }
+        ]
+      },
+      "code": "404",
+      "show_in_doc": 1,
+      "recorded": true
+    },
+    {
+      "verb": "PUT",
+      "path": "/api/v1/characters/9311",
+      "versions": [
+        "1.0"
+      ],
+      "query": null,
+      "request_data": {
+      },
+      "response_data": {
+        "errors": [
+          {
+            "message": "You do not have permission to perform this action."
+          }
+        ]
+      },
+      "code": "403",
+      "show_in_doc": 1,
+      "recorded": true
+    },
+    {
+      "verb": "PUT",
+      "path": "/api/v1/characters/9312",
+      "versions": [
+        "1.0"
+      ],
+      "query": null,
+      "request_data": {
+        "character": {
+          "default_icon_id": "6041"
+        }
+      },
+      "response_data": {
+        "id": 9312,
+        "name": "test character",
+        "screenname": null,
+        "default": {
+          "id": 6041,
+          "url": "http://www.fakeicon.com",
+          "keyword": "totally fake"
+        }
+      },
+      "code": "200",
+      "show_in_doc": 1,
+      "recorded": true
+    },
+    {
+      "verb": "PUT",
+      "path": "/api/v1/characters/9313",
+      "versions": [
+        "1.0"
+      ],
+      "query": null,
+      "request_data": {
+        "character": {
+          "default_icon_id": "6043",
+          "name": "",
+          "user_id": null
+        }
+      },
+      "response_data": {
+        "errors": [
+          {
+            "message": "Name can't be blank"
+          }
+        ]
+      },
+      "code": "422",
+      "show_in_doc": 1,
+      "recorded": true
+    }
+  ],
+  "galleries#show": [
+    {
+      "verb": "GET",
+      "path": "/api/v1/galleries/0",
+      "versions": [
+        "1.0"
+      ],
+      "query": "",
+      "request_data": null,
+      "response_data": {
+        "errors": [
+          {
+            "message": "Gallery user could not be found."
+          }
+        ]
+      },
+      "code": "422",
+      "show_in_doc": 1,
+      "recorded": true
+    },
+    {
+      "verb": "GET",
+      "path": "/api/v1/galleries/0",
+      "versions": [
+        "1.0"
+      ],
+      "query": "user_id=102567",
+      "request_data": null,
+      "response_data": {
+        "name": "Galleryless",
+        "icons": [
+
+        ]
+      },
+      "code": "200",
+      "show_in_doc": 1,
+      "recorded": true
+    },
+    {
+      "verb": "GET",
+      "path": "/api/v1/galleries/1",
+      "versions": [
+        "1.0"
+      ],
+      "query": "",
+      "request_data": null,
+      "response_data": {
+        "errors": [
+          {
+            "message": "Gallery could not be found."
+          }
+        ]
+      },
+      "code": "404",
+      "show_in_doc": 1,
+      "recorded": true
+    },
+    {
+      "verb": "GET",
+      "path": "/api/v1/galleries/3111",
+      "versions": [
+        "1.0"
+      ],
+      "query": "",
+      "request_data": null,
+      "response_data": {
+        "name": "test gallery",
+        "icons": [
+          {
+            "id": 6044,
+            "url": "http://www.fakeicon.com",
+            "keyword": "totally fake"
+          }
+        ]
+      },
+      "code": "200",
+      "show_in_doc": 1,
+      "recorded": true
+    }
+  ],
+  "posts#show": [
+    {
+      "verb": "GET",
+      "path": "/api/v1/posts/0",
+      "versions": [
+        "1.0"
+      ],
+      "query": "",
+      "request_data": null,
+      "response_data": {
+        "errors": [
+          {
+            "message": "Post could not be found."
+          }
+        ]
+      },
+      "code": "404",
+      "show_in_doc": 1,
+      "recorded": true
+    },
+    {
+      "verb": "GET",
+      "path": "/api/v1/posts/34619",
+      "versions": [
+        "1.0"
+      ],
+      "query": "",
+      "request_data": null,
+      "response_data": {
+        "errors": [
+          {
+            "message": "You do not have permission to perform this action."
+          }
+        ]
+      },
+      "code": "403",
+      "show_in_doc": 1,
+      "recorded": true
+    },
+    {
+      "verb": "GET",
+      "path": "/api/v1/posts/34620",
+      "versions": [
+        "1.0"
+      ],
+      "query": "",
+      "request_data": null,
+      "response_data": {
+        "id": 34620,
+        "subject": "test subject",
+        "content": "test content",
+        "created_at": "2017-08-15T04:56:21.813Z",
+        "status": 0,
+        "description": null,
+        "edited_at": "2017-08-15T04:56:21.813Z",
+        "tagged_at": "2017-08-15T04:56:21.813Z",
+        "board": {
+          "id": 34620,
+          "name": "test board"
+        },
+        "section": null,
+        "user": {
+          "id": 102571,
+          "username": "JohnDoe42"
+        },
+        "character": {
+          "id": 9314,
+          "name": "test character",
+          "screenname": null
+        },
+        "character_name": "Alias",
+        "icon": {
+          "id": 6045,
+          "url": "http://www.fakeicon.com",
+          "keyword": "totally fake"
+        }
+      },
+      "code": "200",
+      "show_in_doc": 1,
+      "recorded": true
+    }
+  ],
+  "replies#index": [
+    {
+      "verb": "GET",
+      "path": "/api/v1/posts/0/replies",
+      "versions": [
+        "1.0"
+      ],
+      "query": "",
+      "request_data": null,
+      "response_data": {
+        "errors": [
+          {
+            "message": "Post could not be found."
+          }
+        ]
+      },
+      "code": "404",
+      "show_in_doc": 1,
+      "recorded": true
+    },
+    {
+      "verb": "GET",
+      "path": "/api/v1/posts/34621/replies",
+      "versions": [
+        "1.0"
+      ],
+      "query": "",
+      "request_data": null,
+      "response_data": {
+        "errors": [
+          {
+            "message": "You do not have permission to perform this action."
+          }
+        ]
+      },
+      "code": "403",
+      "show_in_doc": 1,
+      "recorded": true
+    },
+    {
+      "verb": "GET",
+      "path": "/api/v1/posts/34622/replies",
+      "versions": [
+        "1.0"
+      ],
+      "query": "",
+      "request_data": null,
+      "response_data": [
+        {
+          "id": 19272,
+          "content": "test content",
+          "created_at": "2017-08-15T04:56:21.945Z",
+          "updated_at": "2017-08-15T04:56:21.945Z",
+          "character_name": null,
+          "character": null,
+          "icon": null,
+          "user": {
+            "id": 102575,
+            "username": "JohnDoe46"
+          }
+        },
+        {
+          "id": 19273,
+          "content": "test content",
+          "created_at": "2017-08-15T04:56:21.988Z",
+          "updated_at": "2017-08-15T04:56:21.988Z",
+          "character_name": null,
+          "character": null,
+          "icon": null,
+          "user": {
+            "id": 102575,
+            "username": "JohnDoe46"
+          }
+        },
+        {
+          "id": 19274,
+          "content": "test content",
+          "created_at": "2017-08-15T04:56:22.026Z",
+          "updated_at": "2017-08-15T04:56:22.026Z",
+          "character_name": "Alias",
+          "character": {
+            "id": 9316,
+            "name": "test character",
+            "screenname": null
+          },
+          "icon": {
+            "id": 6047,
+            "url": "http://www.fakeicon.com",
+            "keyword": "totally fake"
+          },
+          "user": {
+            "id": 102577,
+            "username": "JohnDoe48"
+          }
+        }
+      ],
+      "code": "200",
+      "show_in_doc": 1,
+      "recorded": true
+    }
+  ],
+  "tags#index": [
+    {
+      "verb": "GET",
+      "path": "/api/v1/tags",
+      "versions": [
+        "1.0"
+      ],
+      "query": "q=Tag1&t=Label",
+      "request_data": null,
+      "response_data": {
+        "results": [
+          {
+            "id": 1477,
+            "text": "Tag1"
+          }
+        ]
+      },
+      "code": "200",
+      "show_in_doc": 1,
+      "recorded": true
+    },
+    {
+      "verb": "GET",
+      "path": "/api/v1/tags",
+      "versions": [
+        "1.0"
+      ],
+      "query": "q=Tag2&t=Setting",
+      "request_data": null,
+      "response_data": {
+        "results": [
+          {
+            "id": 1478,
+            "text": "Tag2"
+          }
+        ]
+      },
+      "code": "200",
+      "show_in_doc": 1,
+      "recorded": true
+    },
+    {
+      "verb": "GET",
+      "path": "/api/v1/tags",
+      "versions": [
+        "1.0"
+      ],
+      "query": "q=Tag3&t=ContentWarning",
+      "request_data": null,
+      "response_data": {
+        "results": [
+          {
+            "id": 1479,
+            "text": "Tag3"
+          }
+        ]
+      },
+      "code": "200",
+      "show_in_doc": 1,
+      "recorded": true
+    },
+    {
+      "verb": "GET",
+      "path": "/api/v1/tags",
+      "versions": [
+        "1.0"
+      ],
+      "query": "t=b",
+      "request_data": null,
+      "response_data": {
+        "errors": [
+          "Invalid parameter 't' value 'b': Must be one of: Setting, Label, ContentWarning."
+        ]
+      },
+      "code": "422",
+      "show_in_doc": 1,
+      "recorded": true
+    }
+  ],
+  "templates#index": [
+    {
+      "verb": "GET",
+      "path": "/api/v1/templates",
+      "versions": [
+        "1.0"
+      ],
+      "query": "q=b",
+      "request_data": null,
+      "response_data": {
+        "results": [
+          {
+            "id": 2092,
+            "name": "baa"
+          },
+          {
+            "id": 2096,
+            "name": "BAAc"
+          }
+        ]
+      },
+      "code": "200",
+      "show_in_doc": 1,
+      "recorded": true
+    },
+    {
+      "verb": "GET",
+      "path": "/api/v1/templates",
+      "versions": [
+        "1.0"
+      ],
+      "query": "page=b",
+      "request_data": null,
+      "response_data": {
+        "errors": [
+          "Invalid parameter 'page' value 'b': Must be a number."
+        ]
+      },
+      "code": "422",
+      "show_in_doc": 1,
+      "recorded": true
+    }
+  ],
+  "users#index": [
+    {
+      "verb": "GET",
+      "path": "/api/v1/users",
+      "versions": [
+        "1.0"
+      ],
+      "query": "q=b",
+      "request_data": null,
+      "response_data": {
+        "results": [
+          {
+            "id": 102589,
+            "username": "baa"
+          },
+          {
+            "id": 102593,
+            "username": "BAAc"
+          }
+        ]
+      },
+      "code": "200",
+      "show_in_doc": 1,
+      "recorded": true
+    },
+    {
+      "verb": "GET",
+      "path": "/api/v1/users",
+      "versions": [
+        "1.0"
+      ],
+      "query": "page=b",
+      "request_data": null,
+      "response_data": {
+        "errors": [
+          "Invalid parameter 'page' value 'b': Must be a number."
+        ]
+      },
+      "code": "422",
+      "show_in_doc": 1,
+      "recorded": true
+    }
+  ]
+}

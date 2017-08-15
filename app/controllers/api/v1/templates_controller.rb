@@ -3,7 +3,7 @@ class Api::V1::TemplatesController < Api::ApiController
     description 'Viewing and searching templates'
   end
 
-  api! 'Load all the templates that match the given query, results ordered by name'
+  api :GET, '/templates', 'Load all the templates that match the given query, results ordered by name'
   param :q, String, required: false, desc: "Query string"
   param :page, :number, required: false, desc: 'Page in results (25 per page)'
   error 422, "Invalid parameters provided"

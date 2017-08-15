@@ -1,4 +1,6 @@
 class Template < ActiveRecord::Base
+  include Presentable
+
   belongs_to :user, inverse_of: :templates
   has_many :characters, -> { order('LOWER(name) ASC') }
 

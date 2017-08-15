@@ -688,4 +688,83 @@ RSpec.describe CharactersController do
       expect(char_reply.reload.character_id).to eq(other_char.id)
     end
   end
+
+  describe "GET search" do
+    it 'works logged in' do
+      login
+      get :search
+      expect(response).to have_http_status(200)
+      expect(assigns(:users)).to be_empty
+    end
+
+    it 'works logged out' do
+      get :search
+      expect(response).to have_http_status(200)
+      expect(assigns(:users)).to be_empty
+    end
+
+    it 'searches author' do
+      author = create(:user)
+      found = create(:character, user: author)
+      notfound = create(:character, user: create(:user))
+      get :search, commit: true, author_id: author.id
+      expect(response).to have_http_status(200)
+      expect(assigns(:users)).to match_array([author])
+      expect(assigns(:search_results)).to match_array([found])
+    end
+
+    it 'searches template' do
+      author = create(:user)
+      template = create(:template, user: author)
+      found = create(:character, user: author, template: template)
+      notfound = create(:character, user: author, template: create(:template, user: author))
+      get :search, commit: true, template_id: template.id
+      expect(response).to have_http_status(200)
+      expect(assigns(:templates)).to match_array([template])
+      expect(assigns(:search_results)).to match_array([found])
+    end
+
+    context "searching" do
+      before(:each) do
+        @name = create(:character, name: 'a', screenname: 'b', template_name: 'c')
+        @nickname = create(:character, name: 'b', screenname: 'c', template_name: 'a')
+        @screenname = create(:character, name: 'c', screenname: 'a', template_name: 'b')
+      end
+
+      it "searches names correctly" do
+        get :search, commit: true, name: 'a', search_name: true
+        expect(assigns(:search_results)).to match_array([@name])
+      end
+
+      it "searches screenname correctly" do
+        get :search, commit: true, name: 'a', search_screenname: true
+        expect(assigns(:search_results)).to match_array([@screenname])
+      end
+
+      it "searches nickname correctly" do
+        get :search, commit: true, name: 'a', search_nickname: true
+        expect(assigns(:search_results)).to match_array([@nickname])
+      end
+
+      it "searches name + screenname correctly" do
+        get :search, commit: true, name: 'a', search_name: true, search_screenname: true
+        expect(assigns(:search_results)).to match_array([@name, @screenname])
+      end
+
+      it "searches name + nickname correctly" do
+        get :search, commit: true, name: 'a', search_name: true, search_nickname: true
+        expect(assigns(:search_results)).to match_array([@name, @nickname])
+      end
+
+      it "searches nickname + screenname correctly" do
+        get :search, commit: true, name: 'a', search_nickname: true, search_screenname: true
+        expect(assigns(:search_results)).to match_array([@nickname, @screenname])
+      end
+
+      it "searches all correctly" do
+        get :search, commit: true, name: 'a', search_name: true, search_screenname: true, search_nickname: true
+        expect(assigns(:search_results)).to match_array([@name, @screenname, @nickname])
+      end
+    end
+  end
 end

@@ -38,7 +38,7 @@ RSpec.describe PostsController do
       it "works logged out" do
         get :search
         expect(response).to have_http_status(200)
-        expect(assigns(:page_title)).to eq('Browse Posts')
+        expect(assigns(:page_title)).to eq('Search Posts')
         expect(assigns(:search_results)).to be_nil
       end
 
@@ -46,7 +46,7 @@ RSpec.describe PostsController do
         login
         get :search
         expect(response).to have_http_status(200)
-        expect(assigns(:page_title)).to eq('Browse Posts')
+        expect(assigns(:page_title)).to eq('Search Posts')
         expect(assigns(:search_results)).to be_nil
       end
     end
