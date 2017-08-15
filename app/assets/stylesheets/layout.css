@@ -63,6 +63,9 @@
 .flash.success { background-color: #DDEEDD; }
 .flash.inbox { background-color: #DDDDEE; }
 
+/* Login / logout warning */
+#login_status_warning { position: absolute; top: 0; width: 100%; box-sizing: border-box; }
+
 /* List Tables */
 #content table { width: 100%; }
 #content th { background-color: #8B8687; color: #EEEEEE; padding: 15px; font-size: 18px; font-weight: normal; }

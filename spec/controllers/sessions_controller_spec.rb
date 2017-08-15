@@ -5,12 +5,14 @@ RSpec.describe SessionsController do
     it "works when logged out" do
       get :index
       expect(response.status).to eq(200)
+      expect(controller.gon.logged_in).not_to be_true
     end
 
     it "works when logged in" do
       login
       get :index
       expect(response).to have_http_status(200)
+      expect(controller.gon.logged_in).to be_true
     end
   end
 

@@ -7,6 +7,7 @@ class ApplicationController < ActionController::Base
   before_filter :check_permanent_user
   before_filter :show_password_warning
   before_filter :require_glowfic_domain
+  before_filter :set_login_gon
   around_filter :set_timezone
   after_filter :store_location
 
@@ -95,6 +96,10 @@ class ApplicationController < ActionController::Base
     return if request.host.include?('glowfic.com')
     glowfic_url = root_url(host: ENV['DOMAIN_NAME'], protocol: 'https')[0...-1] + request.fullpath # strip double slash
     redirect_to glowfic_url, status: :moved_permanently
+  end
+
+  def set_login_gon
+    gon.logged_in = logged_in?
   end
 
   def post_or_reply_link(reply)
