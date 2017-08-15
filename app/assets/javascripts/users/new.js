@@ -49,7 +49,7 @@ function validateUsername() {
   $.post('/users/username', {'username': username}, function(resp) {
     if (!resp.username_free) {
       addAlertAfter('user_username', 'That username has already been taken.');
-      return false;
+      return false; // TODO: actually return false from validateUsername
     }
   });
 

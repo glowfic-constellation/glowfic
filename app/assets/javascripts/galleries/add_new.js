@@ -135,7 +135,7 @@ function bindFileInput(fileInput) {
 function cleanUpRows() {
   $(".icon-row").each(function() {
     var anySet = false;
-    if ($(this).find('.conf').length > 0) return true;
+    if ($(this).find('.conf').length > 0) return;
     $(this).find('input').each(function() {
       if ($(this).val() !== '') {
         anySet = true;

@@ -394,7 +394,7 @@ function setIconFromId(id, img) {
   // Assumes the #gallery div is populated with icons with the correct values
   if (id === "") return setIcon(id);
   if (typeof img === 'undefined') img = $("#"+id);
-  setIcon(id, img.attr('src'), img.attr('title'), img.attr('alt'));
+  return setIcon(id, img.attr('src'), img.attr('title'), img.attr('alt'));
 }
 
 function setIcon(id, url, title, alt) {

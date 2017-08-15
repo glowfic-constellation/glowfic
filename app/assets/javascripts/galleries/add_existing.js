@@ -17,13 +17,13 @@ $(document).ready(function() {
     if ($("#icons-" + gallery_id).is(':visible')) {
       $("#icons-" + gallery_id).hide();
       $("#minmax-" + gallery_id).text("+");
-      return true;
+      return;
     }
 
     // Show icons if they're hidden
     $("#icons-" + gallery_id).show();
     $("#minmax-" + gallery_id).text("-");
-    if ($("#icons-" + gallery_id).html().length > 0) { return true; }
+    if ($("#icons-" + gallery_id).html().length > 0) { return; }
 
     // Load and bind icons if they have not already been loaded
     $.get("/api/v1/galleries/" + gallery_id, {}, function(resp) {

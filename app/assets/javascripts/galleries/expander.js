@@ -11,8 +11,8 @@ $(document).ready(function() {
     $("#icons-" + galleryId).toggle();
 
     // Nothing more necessary if collapsing or already loaded
-    if (wasVisible) { return true; }
-    if ($("#icons-" + galleryId + " .gallery").html().length > 0) { return true; }
+    if (wasVisible) { return; }
+    if ($("#icons-" + galleryId + " .gallery").html().length > 0) { return; }
 
     // Load and bind icons if they have not already been loaded
     $.get("/api/v1/galleries/" + galleryId, {user_id: gon.user_id}, function(resp) {
