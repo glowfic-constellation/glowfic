@@ -48,8 +48,16 @@ class ApplicationController < ActionController::Base
     @javascripts << js
   end
 
+  VALID_PAGES = ['last', 'unread']
   def page
-    @page ||= params[:page] || 1
+    return @page if @page
+    return (@page = 1) unless params[:page]
+    @page = params[:page]
+    return @page if VALID_PAGES.include?(@page)
+    @page = @page.to_i
+    return @page if @page > 0
+    flash.now[:error] = "Page not recognized, defaulting to page 1."
+    @page = 1
   end
   helper_method :page
 

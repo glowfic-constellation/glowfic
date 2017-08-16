@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 class WritableController < ApplicationController
-  VALID_PAGES = ['last', 'unread']
   protected
 
   def build_template_groups
@@ -25,13 +24,6 @@ class WritableController < ApplicationController
   end
 
   def show_post(cur_page=nil)
-    if page.to_i == 0
-      unless VALID_PAGES.include?(page)
-        flash[:error] = "Page not recognized, defaulting to page 1."
-        self.page = cur_page = 1
-      end
-    end
-
     per = per_page
     cur_page ||= page
     @replies = @post.replies
