@@ -5,7 +5,7 @@ class Board < ActiveRecord::Base
   ID_SITETESTING = 4
 
   has_many :posts
-  has_many :board_sections
+  has_many :board_sections, dependent: :destroy
   has_many :favorites, as: :favorite, dependent: :destroy
   belongs_to :creator, class_name: User
 

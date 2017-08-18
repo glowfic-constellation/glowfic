@@ -316,6 +316,20 @@ RSpec.describe BoardsController do
       expect(response).to redirect_to(boards_url)
       expect(flash[:success]).to eq("Continuity deleted.")
     end
+
+    it "moves posts to sandboxes" do
+      board = create(:board)
+      section = create(:board_section, board: board)
+      post = create(:post, board: board, section: section)
+      login_as(board.creator)
+      delete :destroy, id: board.id
+      expect(response).to redirect_to(boards_url)
+      expect(flash[:success]).to eq('Continuity deleted.')
+      post.reload
+      expect(post.board_id).to eq(3)
+      expect(post.section).to be_nil
+      expect(BoardSection.find_by_id(section.id)).to be_nil
+    end
   end
 
   describe "POST mark" do
