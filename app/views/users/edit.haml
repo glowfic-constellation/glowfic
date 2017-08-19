@@ -13,6 +13,9 @@
       %td{class: cycle('even', 'odd')}
         = f.check_box :email_notifications, class: 'width-15 vmid'
         = f.label :email_notifications, "Email about new tags"
+        %br
+        = f.check_box :favorite_notifications, class: 'width-15 vmid'
+        = f.label :favorite_notifications, 'Notify when a favorited author makes a new post'
     - unless current_user.avatar.present?
       %tr
         %th.sub Avatar
