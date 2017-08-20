@@ -39,6 +39,14 @@ RSpec.describe NotifyFollowersOfNewPostJob do
     expect { NotifyFollowersOfNewPostJob.perform(post.id) }.not_to change { Message.count }
   end
 
+  it "does not send if reader has config disabled" do
+    author = create(:user)
+    notified = create(:user, favorite_notifications: false)
+    create(:favorite, user: notified, favorite: author)
+    post = create(:post, user: author)
+    expect { NotifyFollowersOfNewPostJob.perform(post.id) }.not_to change { Message.count }
+  end
+
   it "does not send to the poster" do
     board = create(:board)
     author = create(:user)

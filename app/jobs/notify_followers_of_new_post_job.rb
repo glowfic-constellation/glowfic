@@ -15,6 +15,7 @@ class NotifyFollowersOfNewPostJob < BaseJob
     subject = 'New post by ' + post.user.username
     users.each do |user|
       next unless post.visible_to?(user)
+      next unless user.favorite_notifications?
       message = "#{post.user.username} has just posted a new post entitled #{post.subject}"
       message += " in the #{post.board.name} continuity" if users_favoriting_continuity.include?(user.id)
       message += ". #{view_post(post_id)}"

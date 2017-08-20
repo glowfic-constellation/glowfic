@@ -207,15 +207,28 @@ RSpec.describe UsersController do
     it "works with valid params" do
       user = create(:user)
       login_as(user)
-      put :update, id: user.id, user: {email: 'testuser314@example.com', email_notifications: true, moiety_name: 'Testmoiety', moiety: 'AAAAAA'}
+
+      user_details = {
+        email: 'testuser314@example.com',
+        email_notifications: true,
+        moiety_name: 'Testmoiety',
+        moiety: 'AAAAAA',
+        favorite_notifications: false
+      }
+
+      # ensure new values are different, so test tests correct things
+      user_details.each do |key, value|
+        expect(user.public_send(key)).not_to eq(value)
+      end
+
+      put :update, id: user.id, user: user_details
       expect(response).to redirect_to(edit_user_url(user))
       expect(flash[:success]).to eq('Changes saved successfully.')
 
       user.reload
-      expect(user.email).to eq('testuser314@example.com')
-      expect(user.email_notifications).to be_true
-      expect(user.moiety_name).to eq('Testmoiety')
-      expect(user.moiety).to eq('AAAAAA')
+      user_details.each do |key, value|
+        expect(user.public_send(key)).to eq(value)
+      end
     end
 
     it "updates username and still allows login" do

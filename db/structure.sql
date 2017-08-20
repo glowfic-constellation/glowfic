@@ -982,7 +982,8 @@ CREATE TABLE users (
     hide_hiatused_tags_owed boolean DEFAULT false,
     hide_warnings boolean DEFAULT false,
     visible_unread boolean DEFAULT false,
-    ignore_unread_daily_report boolean DEFAULT false
+    ignore_unread_daily_report boolean DEFAULT false,
+    favorite_notifications boolean DEFAULT true
 );
 
 
@@ -1953,4 +1954,6 @@ INSERT INTO schema_migrations (version) VALUES ('20170617180015');
 INSERT INTO schema_migrations (version) VALUES ('20170619010707');
 
 INSERT INTO schema_migrations (version) VALUES ('20170814042150');
+
+INSERT INTO schema_migrations (version) VALUES ('20170819222420');
 
