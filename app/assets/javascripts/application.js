@@ -38,7 +38,6 @@ $(document).ready(function() {
   window.addEventListener('storage', function(e) {
     // skip non-login-status changes
     if (e.key !== loggedInKey) return;
-    console.log(e.key, '–', e.oldValue, '→', e.newValue);
     // skip creation and deletion of storage key (when someone loads the site for the first time or clears cache)
     if (e.oldValue === null || e.newValue === null) return;
 
