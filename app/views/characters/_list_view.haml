@@ -11,17 +11,19 @@
       %th.sub{colspan: 6}
         Group:
         = group.name
-    - group.characters.map(&:template).uniq.compact.sort_by(&:name).each do |template|
+    - template_ids = group.characters.group(:template_id).pluck(:template_id).uniq.compact
+    - ActiveRecord::Base::Template.where(id: template_ids).order('name asc').each do |template|
       = render partial: 'characters/list_section', locals: {name: template, characters: template.characters}
     - if group.characters.where(template_id: nil).exists?
       = render partial: 'characters/list_section', locals: {name: "No Template", characters: group.characters.where(template_id: nil).order('name asc')}
   - if @user.characters.where(character_group_id: nil).exists?
     %tr
       %th.sub{colspan: 6} Ungrouped Characters
-    - @user.characters.where(character_group_id: nil).includes(:template).map(&:template).uniq.compact.sort_by(&:name).each do |template|
+    - template_ids = @user.characters.where(character_group_id: nil).group(:template_id).pluck(:template_id).uniq.compact
+    - ActiveRecord::Base::Template.where(id: template_ids).order('name asc').each do |template|
       - next if template.characters.where('character_group_id is not null').exists?
       = render partial: 'characters/list_section', locals: {name: template, characters: template.characters}
-    = render partial: 'characters/list_section', locals: {name: "No Template", characters: @user.characters.where(character_group_id: nil).where(template_id: nil).order('name asc')}
+    = render partial: 'characters/list_section', locals: {name: "No Template", characters: @user.characters.where(character_group_id: nil, template_id: nil).order('name asc')}
 
 - elsif @user.characters.exists?
   - @user.templates.order('name asc').each do |template|
