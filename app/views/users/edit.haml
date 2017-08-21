@@ -34,7 +34,10 @@
         = f.label :icon_picker_grouping, "Group the icon picker by gallery"
     %tr
       %th.sub Default view
-      %td{class: cycle('even', 'odd')}= f.select(:default_view, options_for_select({Icon: 'icon', List: 'list'}, current_user.default_view))
+      %td{class: cycle('even', 'odd')}
+        = f.select(:default_view, options_for_select({Icon: 'icon', List: 'list'}, current_user.default_view))
+        %br
+        = f.select(:default_character_split, options_for_select({'Group characters page by template': 'template', 'Do not group characters page': 'none'}, current_user.default_character_split))
     %tr
       %th.sub Default editor
       %td{class: cycle('even', 'odd')}= f.select(:default_editor, options_for_select({'Rich Text' => 'rtf', HTML: 'html'}, current_user.default_editor))
