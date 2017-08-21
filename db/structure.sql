@@ -983,8 +983,9 @@ CREATE TABLE users (
     hide_warnings boolean DEFAULT false,
     visible_unread boolean DEFAULT false,
     ignore_unread_daily_report boolean DEFAULT false,
-    favorite_notifications boolean DEFAULT true
-    show_user_in_switcher boolean DEFAULT true
+    favorite_notifications boolean DEFAULT true,
+    show_user_in_switcher boolean DEFAULT true,
+    default_character_split character varying(255) DEFAULT 'template'::character varying
 );
 
 
@@ -1959,4 +1960,6 @@ INSERT INTO schema_migrations (version) VALUES ('20170619010707');
 INSERT INTO schema_migrations (version) VALUES ('20170814042150');
 
 INSERT INTO schema_migrations (version) VALUES ('20170819222420');
+
+INSERT INTO schema_migrations (version) VALUES ('20170821210336');
 
