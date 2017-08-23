@@ -7,7 +7,7 @@ body { background-color: #B0AFB7; }
 #content th, .post-header { background-color: #42416E; }
 #content .sub { color: #F3F3F3; }
 #content .sub, .post-navheader, .flash.subber { background-color: #8287A2; }
-#content .beige, #content .subber, .subber { background-color: #6F658D; color: #DADADA; }
+#content .beige, #content .subber, #content th.subber, .subber { background-color: #6F658D; color: #DADADA; }
 #content .beige a, #content th a, .post-header a { color: #F3F3F3; }
 #content .beige a:visited, #content th a:visited { color: #C6C6E5; }
 
