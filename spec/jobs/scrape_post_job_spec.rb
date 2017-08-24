@@ -1,7 +1,10 @@
 require "spec_helper"
 
 RSpec.describe ScrapePostJob do
-  before(:each) do ResqueSpec.reset! end
+  before(:each) do
+    ResqueSpec.reset!
+    allow(STDOUT).to receive(:puts)
+  end
 
   it "creates the correct objects" do
     url = 'http://wild-pegasus-appeared.dreamwidth.org/403.html?style=site&view=flat'
