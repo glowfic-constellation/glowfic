@@ -303,8 +303,8 @@ RSpec.describe ApplicationController do
     it "works when logged in with default theme" do
       login
       controller.send(:setup_layout_gon)
-      expect(gon.editor_class).to be_nil
-      expect(gon.base_url).not_to be_nil
+      expect(controller.gon.editor_class).to be_nil
+      expect(controller.gon.base_url).not_to be_nil
     end
 
     context "with dark theme" do
@@ -313,8 +313,8 @@ RSpec.describe ApplicationController do
           user = create(:user, layout: theme)
           login_as(user)
           controller.send(:setup_layout_gon)
-          expect(gon.editor_class).to eq('tinymce_dark')
-          expect(gon.base_url).not_to be_nil
+          expect(controller.gon.editor_class).to eq('tinymce_dark')
+          expect(controller.gon.base_url).not_to be_nil
         end
       end
     end
