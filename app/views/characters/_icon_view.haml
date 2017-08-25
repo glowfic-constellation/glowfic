@@ -37,6 +37,6 @@
               %span.character-screenname= surround('(', ')') { sanitize(character.screenname).gsub('_', '_<wbr>') }
           - if character.user_id == current_user.try(:id)
             .delete-button{ id: character.id }
-              = link_to 'X', character_path(character), :method => :delete, data: { confirm: 'Are you sure you want to delete '+character.name+'?' }
+              = link_to '×', character_path(character), :method => :delete, data: { confirm: 'Are you sure you want to delete '+character.name+'?' }
       - unless characters.present?
         .centered — No characters yet —
