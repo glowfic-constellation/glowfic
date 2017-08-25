@@ -296,7 +296,7 @@ RSpec.describe ApplicationController do
   end
 
   describe "#setup_layout_gon" do
-    it "works when logged out" do
+    it "does not error when logged out" do
       controller.send(:setup_layout_gon)
     end
 
@@ -304,6 +304,7 @@ RSpec.describe ApplicationController do
       login
       controller.send(:setup_layout_gon)
       expect(gon.editor_class).to be_nil
+      expect(gon.base_url).not_to be_nil
     end
 
     context "with dark theme" do
@@ -313,6 +314,7 @@ RSpec.describe ApplicationController do
           login_as(user)
           controller.send(:setup_layout_gon)
           expect(gon.editor_class).to eq('tinymce_dark')
+          expect(gon.base_url).not_to be_nil
         end
       end
     end

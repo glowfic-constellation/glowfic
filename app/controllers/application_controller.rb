@@ -113,6 +113,7 @@ class ApplicationController < ActionController::Base
 
   def setup_layout_gon
     return unless logged_in?
+    gon.base_url = ENV['DOMAIN_NAME'] ? "https://#{ENV['DOMAIN_NAME']}/" : '/'
     gon.editor_class = 'layout_' + current_user.layout if current_user.layout
   end
 

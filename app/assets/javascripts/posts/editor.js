@@ -259,7 +259,7 @@ function setupTinyMCE() {
       browser_spellcheck: true,
       relative_urls: false,
       remove_script_host: true,
-      document_base_url: "https://www.glowfic.com/",
+      document_base_url: gon.base_url,
       body_class: gon.editor_class,
       setup: function(ed) {
         ed.on('init', function() {
