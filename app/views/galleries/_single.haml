@@ -15,8 +15,8 @@
     .gallery-box.float-right.gallery-minmax{id: gallery.id} -
     - if local_assigns[:section] && (gallery.user_id == current_user.try(:id) || current_user.try(:admin?))
       .float-right
-        = image_tag "/images/arrow_up.png", class: "section-up pointer", data: {order: section.section_order}
-        = image_tag "/images/arrow_down.png", class: "section-down pointer", data: {order: section.section_order}
+        = image_tag "/images/arrow_up.png", class: "section-up disabled-arrow", data: {order: section.section_order}
+        = image_tag "/images/arrow_down.png", class: "section-down disabled-arrow", data: {order: section.section_order}
 - attrs = {id: "section-gallery-#{section.section_order}"} if attrs[:id]
 %tr.gallery-icons{**attrs}
   %td.green
