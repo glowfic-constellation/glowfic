@@ -131,6 +131,8 @@ RSpec::Matchers.define :be_the_same_time_as do |expected|
   end
 end
 
+RSpec::Matchers.define_negated_matcher :not_change, :change
+
 # Monkey patches the controller response objects to return JSON
 module ActionController
   class TestResponse
