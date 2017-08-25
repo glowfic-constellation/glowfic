@@ -1,3 +1,4 @@
+/* global gon */
 $(document).ready(function() {
   $("#user_username").blur(function() {
     $("#username .alert").remove();
@@ -35,9 +36,9 @@ $(document).ready(function() {
   });
 });
 
-validateUsername = function() {
+function validateUsername() {
   var username = $("#user_username").val();
-  if (username == '') {
+  if (username === '') {
     addAlertAfter('user_username', 'Please choose a username.');
     return false;
   } else if (username.length < gon.min || username.length > gon.max) {
@@ -45,57 +46,57 @@ validateUsername = function() {
     return false;
   }
 
-  $.post('/users/username', {'username':username}, function(resp) {
-    if (!resp.username_free){
+  $.post('/users/username', {'username': username}, function(resp) {
+    if (!resp.username_free) {
       addAlertAfter('user_username', 'That username has already been taken.');
-      return false;
+      return false; // TODO: actually return false from validateUsername
     }
   });
 
   return true;
-};
+}
 
-validateEmail = function() {
+function validateEmail() {
   var email = $("#user_email").val();
-  if (email == '') {
+  if (email === '') {
     addAlertAfter('user_email', 'Please enter an email address.');
     return false;
   }
   return true;
-};
+}
 
-validatePassword = function() {
+function validatePassword() {
   var password = $("#user_password").val();
   var conf = $("#user_password_confirmation").val();
   var success = true;
-  if (password == '') {
+  if (password === '') {
     addAlertAfter('user_password', 'Please choose a password.');
     success = false;
   }
-  if (conf != password) {
+  if (conf !== password) {
     $("#conf .alert").remove();
     addAlertAfter('user_password_confirmation', 'Your passwords do not match.');
     success = false;
   }
   return success;
-};
+}
 
-validateConfirmation = function() {
+function validateConfirmation() {
   var password = $("#user_password").val();
   var conf = $("#user_password_confirmation").val();
   var success = true;
-  if (conf == '') {
+  if (conf === '') {
     addAlertAfter('user_password_confirmation', 'Please confirm your password.');
     success = false;
   }
-  if (conf != password) {
+  if (conf !== password) {
     addAlertAfter('user_password_confirmation', 'Your passwords do not match.');
     success = false;
   }
   return success;
-};
+}
 
-addAlertAfter = function(id, message) {
-  image = "<img src='/images/exclamation.png' alt='!' title='' class='vmid' /> "
+function addAlertAfter(id, message) {
+  var image = "<img src='/images/exclamation.png' alt='!' title='' class='vmid' /> ";
   $("#"+id).after("<div class='alert' style='margin: 2px 0px;'>" + image + message + "</div>");
-};
+}

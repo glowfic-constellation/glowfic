@@ -1,10 +1,10 @@
-image_ids = []
-skip_warning = false;
-$(document).ready( function() {
+var image_ids = [];
+var skip_warning = false;
+$(document).ready(function() {
   bindGalleryIcons(".add-gallery-icon");
 
   $("#add-gallery-icons").submit(function() {
-    if (image_ids.length < 1) { return false; }
+    if (image_ids.length < 1) return false;
     $("#image_ids").val(image_ids);
     skip_warning = true;
     return true;
@@ -17,13 +17,13 @@ $(document).ready( function() {
     if ($("#icons-" + gallery_id).is(':visible')) {
       $("#icons-" + gallery_id).hide();
       $("#minmax-" + gallery_id).text("+");
-      return true;
+      return;
     }
 
     // Show icons if they're hidden
     $("#icons-" + gallery_id).show();
     $("#minmax-" + gallery_id).text("-");
-    if($("#icons-" + gallery_id).html().length > 0) { return true; }
+    if ($("#icons-" + gallery_id).html().length > 0) { return; }
 
     // Load and bind icons if they have not already been loaded
     $.get("/api/v1/galleries/" + gallery_id, {}, function(resp) {
@@ -38,18 +38,18 @@ $(document).ready( function() {
   });
 });
 
-$(window).on('beforeunload', function(){
+$(window).on('beforeunload', function() {
   if (skip_warning || image_ids.length === 0) return;
   return "Are you sure you wish to navigate away? You have " + image_ids.length + " image(s) selected.";
 });
 
-bindGalleryIcons = function(css_selector) {
+function bindGalleryIcons(css_selector) {
   $(css_selector).click(function() {
     $(this).toggleClass('selected-icon');
     if ($(this).hasClass('selected-icon')) {
-      image_ids.push(this.dataset['id']);
+      image_ids.push(this.dataset.id);
     } else {
-      image_ids.pop(this.dataset['id']);
+      image_ids.pop(this.dataset.id);
     }
   });
 }

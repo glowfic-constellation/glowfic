@@ -1,7 +1,8 @@
+/* global gon */
 var gallery_ids = [];
 
 $(document).ready(function() {
-  gallery_ids = jQuery.map($(".gallery div"), function(el) { return el.dataset['id']; });
+  gallery_ids = jQuery.map($(".gallery div"), function(el) { return el.dataset.id; });
 
   $("#character_setting_ids").select2({
     width: '100%',
@@ -18,11 +19,11 @@ $(document).ready(function() {
 
   bindIcons();
 
-  $("#character_template_id").change(function () {
-    if ($(this).val() !== "0") {
-      $("#create_template").hide();
-    } else {
+  $("#character_template_id").change(function() {
+    if ($(this).val() === "0") {
       $("#create_template").show();
+    } else {
+      $("#create_template").hide();
     }
   });
 
@@ -38,7 +39,7 @@ $(document).ready(function() {
       $(".gallery #gallery"+removed_gallery).remove();
 
       // if no more galleries are left, display galleryless icons
-      if (gallery_ids.length == 0) {
+      if (gallery_ids.length === 0) {
         displayGallery('0');
       }
       return;
@@ -52,8 +53,8 @@ $(document).ready(function() {
   });
 });
 
-function displayGallery(new_id){
-  $.get('/api/v1/galleries/'+new_id, function (resp) {
+function displayGallery(new_id) {
+  $.get('/api/v1/galleries/'+new_id, function(resp) {
     var galleryObj = $("<div>").attr({id: 'gallery'+new_id}).data('id', new_id);
     galleryObj.append("<br />");
     galleryObj.append($("<b>").attr({class: 'gallery-name'}).append(resp.name));
@@ -92,8 +93,7 @@ function updateIcon(id) {
     $.ajax({
       url: '/api/v1/characters/'+gon.character_id,
       type: 'PUT',
-      data: {character: {default_icon_id: id}},
-      success: function(resp) {}
+      data: {character: {default_icon_id: id}}
     });
   } else {
     $("#character_default_icon_id").val(id);

@@ -20,7 +20,7 @@ $(document).ready(function() {
   });
 
   $("#user_timezone").select2({width: '250px'});
-  
+
   $("#user_time_display").select2({
     width: '200px',
     minimumResultsForSearch: 20

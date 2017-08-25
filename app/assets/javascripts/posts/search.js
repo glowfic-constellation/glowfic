@@ -1,3 +1,4 @@
+/* global gon */
 $(document).ready(function() {
   $("#setting_id").select2({
     ajax: {
@@ -10,9 +11,9 @@ $(document).ready(function() {
           t: 'Setting',
           page: params.page
         };
-        return data
+        return data;
       },
-      processResults: function (data, params) {
+      processResults: function(data, params) {
         params.page = params.page || 1;
         var total = this._request.getResponseHeader('Total');
         return {
@@ -20,7 +21,7 @@ $(document).ready(function() {
           pagination: {
             more: (params.page * 25) < total
           }
-        }
+        };
       },
       cache: true
     },
@@ -37,27 +38,27 @@ $(document).ready(function() {
           q: params.term,
           page: params.page
         };
-        if(typeof(gon) !== 'undefined') { data.post_id = gon.post_id }
-        return data
+        if (typeof gon !== 'undefined') { data.post_id = gon.post_id; }
+        return data;
       },
-      processResults: function (data, params) {
+      processResults: function(data, params) {
         params.page = params.page || 1;
         var total = this._request.getResponseHeader('Total');
 
-        // Reformat the response to be 
-        var formattedChars = []
-        for(var i = 0; i < data.results.length; i++) {
+        // Reformat the response to be
+        var formattedChars = [];
+        for (var i = 0; i < data.results.length; i++) {
           formattedChars[i] = {
             id: data.results[i].id,
             text: data.results[i].name
-          }
+          };
         }
         return {
           results: formattedChars,
           pagination: {
             more: (params.page * 25) < total
           }
-        }
+        };
       },
       cache: true
     },
@@ -74,26 +75,26 @@ $(document).ready(function() {
           q: params.term,
           page: params.page
         };
-        return data
+        return data;
       },
-      processResults: function (data, params) {
+      processResults: function(data, params) {
         params.page = params.page || 1;
         var total = this._request.getResponseHeader('Total');
 
-        // Reformat the response to be 
-        var formattedChars = []
-        for(var i = 0; i < data.results.length; i++) {
+        // Reformat the response to be
+        var formattedChars = [];
+        for (var i = 0; i < data.results.length; i++) {
           formattedChars[i] = {
             id: data.results[i].id,
             text: data.results[i].username
-          }
+          };
         }
         return {
           results: formattedChars,
           pagination: {
             more: (params.page * 25) < total
           }
-        }
+        };
       },
       cache: true
     },
@@ -110,26 +111,26 @@ $(document).ready(function() {
           q: params.term,
           page: params.page
         };
-        return data
+        return data;
       },
-      processResults: function (data, params) {
+      processResults: function(data, params) {
         params.page = params.page || 1;
         var total = this._request.getResponseHeader('Total');
 
-        // Reformat the response to be 
-        var formattedChars = []
-        for(var i = 0; i < data.results.length; i++) {
+        // Reformat the response to be
+        var formattedChars = [];
+        for (var i = 0; i < data.results.length; i++) {
           formattedChars[i] = {
             id: data.results[i].id,
             text: data.results[i].name
-          }
+          };
         }
         return {
           results: formattedChars,
           pagination: {
             more: (params.page * 25) < total
           }
-        }
+        };
       },
       cache: true
     },
@@ -146,26 +147,26 @@ $(document).ready(function() {
           q: params.term,
           page: params.page
         };
-        return data
+        return data;
       },
-      processResults: function (data, params) {
+      processResults: function(data, params) {
         params.page = params.page || 1;
         var total = this._request.getResponseHeader('Total');
 
-        // Reformat the response to be 
-        var formattedChars = []
-        for(var i = 0; i < data.results.length; i++) {
+        // Reformat the response to be
+        var formattedChars = [];
+        for (var i = 0; i < data.results.length; i++) {
           formattedChars[i] = {
             id: data.results[i].id,
             text: data.results[i].name
-          }
+          };
         }
         return {
           results: formattedChars,
           pagination: {
             more: (params.page * 25) < total
           }
-        }
+        };
       },
       cache: true
     },
