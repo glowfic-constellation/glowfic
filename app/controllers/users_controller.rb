@@ -114,6 +114,28 @@ class UsersController < ApplicationController
   end
 
   def user_params
-    params.fetch(:user, {}).permit(:username, :email, :password, :password_confirmation, :email_notifications, :per_page, :timezone, :icon_picker_grouping, :default_view, :default_editor, :moiety, :moiety_name, :layout, :time_display, :unread_opened, :hide_warnings, :hide_hiatused_tags_owed, :ignore_unread_daily_report, :visible_unread, :favorite_notifications)
+    params.fetch(:user, {}).permit(
+      :username,
+      :email,
+      :password,
+      :password_confirmation,
+      :email_notifications,
+      :per_page,
+      :timezone,
+      :icon_picker_grouping,
+      :default_view,
+      :default_editor,
+      :moiety,
+      :moiety_name,
+      :layout,
+      :time_display,
+      :unread_opened,
+      :hide_warnings,
+      :hide_hiatused_tags_owed,
+      :ignore_unread_daily_report,
+      :visible_unread,
+      :favorite_notifications,
+      :show_user_in_switcher
+    )
   end
 end
