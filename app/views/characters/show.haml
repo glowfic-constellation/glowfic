@@ -65,14 +65,18 @@
             Replace Character
 
 - if params[:view] == 'galleries'
-  - if @character.galleries.ordered.present?
-    %table.character-right-content-box
-      %thead
+  - galleries = @character.galleries.ordered
+  %table.character-right-content-box
+    %thead
+      %tr
+        %th Galleries
+    %tbody
+      - galleries.each do |gallery|
+        = render partial: 'galleries/single', locals: {gallery: gallery, klass: 'subber', skip_forms: true, section: gallery.character_gallery_for(@character)}
+      - unless galleries.present?
         %tr
-          %th Galleries
-      %tbody
-        - @character.galleries.ordered.each do |gallery|
-          = render partial: 'galleries/single', locals: {gallery: gallery, klass: 'subber', skip_forms: true, section: gallery.character_gallery_for(@character)}
+          %td.green
+            .centered.padding-5 — No galleries yet —
 - elsif params[:view] == 'posts'
   - content_for :posts_title do 'Recent Threads' end
   = render partial: 'posts/list', locals: {posts: @posts, path: :character_path, table_class: 'character-right-content-box'}
