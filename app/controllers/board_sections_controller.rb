@@ -17,7 +17,7 @@ class BoardSectionsController < ApplicationController
     end
 
     if @board_section.save
-      flash[:success] = "New #{@board_section.board.name} section #{@board_section.name} has been successfully created."
+      flash[:success] = "New section, #{@board_section.name}, has successfully been created for #{@board_section.board.name}."
       redirect_to edit_board_path(@board_section.board)
     else
       flash.now[:error] = {}
