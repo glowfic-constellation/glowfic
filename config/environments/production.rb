@@ -57,7 +57,7 @@ Glowfic::Application.configure do
   config.cache_store = :redis_store, ENV['REDIS_URL'], { expires_in: 30.days }
 
   # Enable serving of images, stylesheets, and JavaScripts from an asset server.
-  config.action_controller.asset_host = 'https://dhtmoj33sf3e0.cloudfront.net'
+  config.action_controller.asset_host = ENV['ASSET_HOST']
 
   # Ignore bad email addresses and do not raise email delivery errors.
   # Set this to true and configure the email server for immediate delivery to raise delivery errors.
