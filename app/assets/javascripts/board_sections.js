@@ -28,6 +28,7 @@ function unbindArrows() {
 function switchRows(old_order, new_order) {
   unbindArrows(); // Reduce race conditions by only allowing one update at a time
   $("#loading").show();
+  $("#saveconf").stop(true, true).hide();
 
   var this_row = $("#section-"+old_order);
   var that_row = $("#section-"+new_order);
