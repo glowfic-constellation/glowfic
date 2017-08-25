@@ -1,4 +1,12 @@
 /* global gon */
+function queryTransform(params) {
+  var data = {
+    q: params.term,
+    page: params.page
+  };
+  return data;
+}
+
 $(document).ready(function() {
   $("#setting_id").select2({
     ajax: {
@@ -6,11 +14,8 @@ $(document).ready(function() {
       url: '/api/v1/tags',
       dataType: 'json',
       data: function(params) {
-        var data = {
-          q: params.term,
-          t: 'Setting',
-          page: params.page
-        };
+        var data = queryTransform(params);
+        data.t = 'Setting';
         return data;
       },
       processResults: function(data, params) {
@@ -36,11 +41,8 @@ $(document).ready(function() {
       url: '/api/v1/characters',
       dataType: 'json',
       data: function(params) {
-        var data = {
-          q: params.term,
-          page: params.page
-        };
-        if (typeof gon !== 'undefined') { data.post_id = gon.post_id; }
+        var data = queryTransform(params);
+        if (typeof gon !== 'undefined') data.post_id = gon.post_id;
         return data;
       },
       processResults: function(data, params) {
@@ -74,13 +76,7 @@ $(document).ready(function() {
       delay: 200,
       url: '/api/v1/users',
       dataType: 'json',
-      data: function(params) {
-        var data = {
-          q: params.term,
-          page: params.page
-        };
-        return data;
-      },
+      data: queryTransform,
       processResults: function(data, params) {
         params.page = params.page || 1;
         var total = this._request.getResponseHeader('Total');
@@ -112,13 +108,7 @@ $(document).ready(function() {
       delay: 200,
       url: '/api/v1/boards',
       dataType: 'json',
-      data: function(params) {
-        var data = {
-          q: params.term,
-          page: params.page
-        };
-        return data;
-      },
+      data: queryTransform,
       processResults: function(data, params) {
         params.page = params.page || 1;
         var total = this._request.getResponseHeader('Total');
@@ -150,13 +140,7 @@ $(document).ready(function() {
       delay: 200,
       url: '/api/v1/templates',
       dataType: 'json',
-      data: function(params) {
-        var data = {
-          q: params.term,
-          page: params.page
-        };
-        return data;
-      },
+      data: queryTransform,
       processResults: function(data, params) {
         params.page = params.page || 1;
         var total = this._request.getResponseHeader('Total');
