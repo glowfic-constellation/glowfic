@@ -30,9 +30,9 @@
           = image_tag '/images/list.png', class:'list-view', alt: ''
           List
   - if page_view == 'list'
-    = render partial: 'characters/list_view'
+    = render partial: 'characters/list_section', locals: {characters: @template.characters}
   - else
-    = render partial: 'characters/icon_view', locals: {characters: @template.characters.includes(:default_icon)}
+    = render partial: 'characters/icon_view', locals: {characters: @template.characters}
 - if @posts.present?
   %br
   - content_for :posts_title do 'Posts with Template Instances' end

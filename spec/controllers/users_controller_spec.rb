@@ -214,7 +214,8 @@ RSpec.describe UsersController do
         moiety_name: 'Testmoiety',
         moiety: 'AAAAAA',
         favorite_notifications: false,
-        show_user_in_switcher: false
+        show_user_in_switcher: false,
+        default_character_split: 'none'
       }
 
       # ensure new values are different, so test tests correct things

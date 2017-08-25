@@ -1,4 +1,4 @@
-- unless @template
+- if @template.nil? && name.present?
   %tr
     %td.beige.padding-10{colspan: 6}
       - if name.is_a? ActiveRecord::Base::Template

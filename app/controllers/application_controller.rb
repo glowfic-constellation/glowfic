@@ -85,6 +85,16 @@ class ApplicationController < ActionController::Base
   end
   helper_method :page_view
 
+  def character_split
+    return @character_split if @character_split
+    if logged_in?
+      @character_split = params[:character_split] || current_user.default_character_split
+    else
+      @character_split = params[:character_split] = params[:character_split] || session[:character_split] || 'template'
+    end
+  end
+  helper_method :character_split
+
   def store_location
     return unless request.get?
     return if request.xhr?

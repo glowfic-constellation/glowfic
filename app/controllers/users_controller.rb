@@ -124,6 +124,7 @@ class UsersController < ApplicationController
       :timezone,
       :icon_picker_grouping,
       :default_view,
+      :default_character_split,
       :default_editor,
       :moiety,
       :moiety_name,

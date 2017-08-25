@@ -9,6 +9,11 @@ $(document).ready(function() {
     minimumResultsForSearch: 20,
   });
 
+  $("#user_default_character_split").select2({
+    width: '250px',
+    minimumResultsForSearch: 20,
+  });
+
   $("#user_default_editor").select2({
     width: '100px',
     minimumResultsForSearch: 20,

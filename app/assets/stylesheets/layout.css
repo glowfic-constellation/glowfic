@@ -107,6 +107,7 @@
     border-radius: 5px;
     float: right;
     cursor: pointer;
+    line-height: 1.3em;
 }
 .view-button.selected { background-color: #9E9C93; }
 .view-button a { color: white; }
