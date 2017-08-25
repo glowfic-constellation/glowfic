@@ -1,5 +1,5 @@
 class NotifyFollowersOfNewPostJob < BaseJob
-  @queue = :high
+  @queue = :notifier
   @retry_limit = 5
   @expire_retry_key_after = 3600
 
