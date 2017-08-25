@@ -62,7 +62,7 @@ class BoardsController < ApplicationController
   def edit
     @page_title = 'Edit Continuity: ' + @board.name
     use_javascript('board_sections')
-    @board_items = @board.board_sections.order('section_order asc')
+    @board_sections = @board.board_sections.order('section_order asc')
   end
 
   def update
@@ -76,8 +76,7 @@ class BoardsController < ApplicationController
       @page_title = 'Edit Continuity: ' + @board.name_was
       set_available_cowriters
       use_javascript('board_sections')
-      @board_items = @board.board_sections + @board.posts.where(section_id: nil)
-      @board_items.sort_by! { |item| item.section_order.to_i }
+      @board_sections = @board.board_sections.order('section_order')
       render :action => :edit
     end
   end
