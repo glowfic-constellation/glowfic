@@ -1,9 +1,9 @@
 # Be sure to restart your server when you modify this file.
 
 options = if Rails.env.production?
-  {domain: ['.glowfic.com', '.glowfic-staging.herokuapp.com']}
+  {domain: ['glowfic.com', '.glowfic-staging.herokuapp.com'], tld_length: 2}
 elsif Rails.env.development?
-  {domain: '.localhost'}
+  {domain: 'localhost', tld_length: 2}
 else
   {}
 end
