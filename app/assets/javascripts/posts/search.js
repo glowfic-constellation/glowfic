@@ -7,6 +7,27 @@ function queryTransform(params) {
   return data;
 }
 
+function processResults(data, params, total, textKey) {
+  params.page = params.page || 1;
+  var processed = {
+    results: data.results,
+    pagination: {more: (params.page * 25) < total}
+  };
+  if (textKey) {
+    // Reformat response data
+    var formatted = [];
+    for (var i=0; i < data.results.length; i++) {
+      var result = data.results[i];
+      formatted[i] = {
+        id: result.id,
+        text: result[textKey]
+      };
+    }
+    processed.results = formatted;
+  }
+  return processed;
+}
+
 $(document).ready(function() {
   $("#setting_id").select2({
     ajax: {
@@ -19,14 +40,8 @@ $(document).ready(function() {
         return data;
       },
       processResults: function(data, params) {
-        params.page = params.page || 1;
         var total = this._request.getResponseHeader('Total');
-        return {
-          results: data.results,
-          pagination: {
-            more: (params.page * 25) < total
-          }
-        };
+        return processResults(data, params, total);
       },
       cache: true
     },
@@ -46,23 +61,8 @@ $(document).ready(function() {
         return data;
       },
       processResults: function(data, params) {
-        params.page = params.page || 1;
         var total = this._request.getResponseHeader('Total');
-
-        // Reformat the response to be
-        var formattedChars = [];
-        for (var i = 0; i < data.results.length; i++) {
-          formattedChars[i] = {
-            id: data.results[i].id,
-            text: data.results[i].name
-          };
-        }
-        return {
-          results: formattedChars,
-          pagination: {
-            more: (params.page * 25) < total
-          }
-        };
+        return processResults(data, params, total, 'name');
       },
       cache: true
     },
@@ -78,23 +78,8 @@ $(document).ready(function() {
       dataType: 'json',
       data: queryTransform,
       processResults: function(data, params) {
-        params.page = params.page || 1;
         var total = this._request.getResponseHeader('Total');
-
-        // Reformat the response to be
-        var formattedChars = [];
-        for (var i = 0; i < data.results.length; i++) {
-          formattedChars[i] = {
-            id: data.results[i].id,
-            text: data.results[i].username
-          };
-        }
-        return {
-          results: formattedChars,
-          pagination: {
-            more: (params.page * 25) < total
-          }
-        };
+        return processResults(data, params, total, 'username');
       },
       cache: true
     },
@@ -110,23 +95,8 @@ $(document).ready(function() {
       dataType: 'json',
       data: queryTransform,
       processResults: function(data, params) {
-        params.page = params.page || 1;
         var total = this._request.getResponseHeader('Total');
-
-        // Reformat the response to be
-        var formattedChars = [];
-        for (var i = 0; i < data.results.length; i++) {
-          formattedChars[i] = {
-            id: data.results[i].id,
-            text: data.results[i].name
-          };
-        }
-        return {
-          results: formattedChars,
-          pagination: {
-            more: (params.page * 25) < total
-          }
-        };
+        return processResults(data, params, total, 'name');
       },
       cache: true
     },
@@ -142,23 +112,8 @@ $(document).ready(function() {
       dataType: 'json',
       data: queryTransform,
       processResults: function(data, params) {
-        params.page = params.page || 1;
         var total = this._request.getResponseHeader('Total');
-
-        // Reformat the response to be
-        var formattedChars = [];
-        for (var i = 0; i < data.results.length; i++) {
-          formattedChars[i] = {
-            id: data.results[i].id,
-            text: data.results[i].name
-          };
-        }
-        return {
-          results: formattedChars,
-          pagination: {
-            more: (params.page * 25) < total
-          }
-        };
+        return processResults(data, params, total, 'name');
       },
       cache: true
     },
