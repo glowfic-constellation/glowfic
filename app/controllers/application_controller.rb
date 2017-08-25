@@ -102,6 +102,7 @@ class ApplicationController < ActionController::Base
     return unless request.get?
     return if request.xhr?
     return if request.host.include?('glowfic.com')
+    return if request.host.include?('glowfic-staging.herokuapp.com')
     glowfic_url = root_url(host: ENV['DOMAIN_NAME'], protocol: 'https')[0...-1] + request.fullpath # strip double slash
     redirect_to glowfic_url, status: :moved_permanently
   end
