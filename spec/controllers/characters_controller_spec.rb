@@ -796,6 +796,8 @@ RSpec.describe CharactersController do
       gallery = create(:gallery, icons: [icon], user: user)
       character = create(:character, template: template, galleries: [gallery], default_icon: icon, user: user)
       calias = create(:alias, character: character)
+      char_post = create(:post, character: character, user: user)
+      char_reply = create(:reply, character: character, user: user)
 
       login_as(user)
       expect do
@@ -834,6 +836,12 @@ RSpec.describe CharactersController do
       expect(dup.default_icon).to eq(icon)
       expect(dup.user).to eq(user)
       expect(dup.aliases.map(&:name)).to eq([calias.name])
+
+      # check old posts and replies have old attributes
+      char_post.reload
+      char_reply.reload
+      expect(char_post.character).to eq(character)
+      expect(char_reply.character).to eq(character)
     end
   end
 end
