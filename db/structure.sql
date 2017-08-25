@@ -2,12 +2,17 @@
 -- PostgreSQL database dump
 --
 
+-- Dumped from database version 9.6.4
+-- Dumped by pg_dump version 9.6.4
+
 SET statement_timeout = 0;
 SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
 SET client_encoding = 'UTF8';
 SET standard_conforming_strings = on;
 SET check_function_bodies = false;
 SET client_min_messages = warning;
+SET row_security = off;
 
 --
 -- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: -
@@ -44,7 +49,7 @@ SET default_tablespace = '';
 SET default_with_oids = false;
 
 --
--- Name: audits; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: audits; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE audits (
@@ -86,15 +91,15 @@ ALTER SEQUENCE audits_id_seq OWNED BY audits.id;
 
 
 --
--- Name: board_authors; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: board_authors; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE board_authors (
     id integer NOT NULL,
     user_id integer NOT NULL,
     board_id integer NOT NULL,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL,
+    created_at timestamp without time zone,
+    updated_at timestamp without time zone,
     cameo boolean DEFAULT false
 );
 
@@ -119,7 +124,7 @@ ALTER SEQUENCE board_authors_id_seq OWNED BY board_authors.id;
 
 
 --
--- Name: board_sections; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: board_sections; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE board_sections (
@@ -128,8 +133,8 @@ CREATE TABLE board_sections (
     name character varying(255) NOT NULL,
     status integer DEFAULT 0 NOT NULL,
     section_order integer NOT NULL,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    created_at timestamp without time zone,
+    updated_at timestamp without time zone
 );
 
 
@@ -153,7 +158,7 @@ ALTER SEQUENCE board_sections_id_seq OWNED BY board_sections.id;
 
 
 --
--- Name: board_views; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: board_views; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE board_views (
@@ -163,8 +168,8 @@ CREATE TABLE board_views (
     ignored boolean DEFAULT false,
     notify_message boolean DEFAULT false,
     notify_email boolean DEFAULT false,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL,
+    created_at timestamp without time zone,
+    updated_at timestamp without time zone,
     read_at timestamp without time zone
 );
 
@@ -189,15 +194,15 @@ ALTER SEQUENCE board_views_id_seq OWNED BY board_views.id;
 
 
 --
--- Name: boards; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: boards; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE boards (
     id integer NOT NULL,
     name citext NOT NULL,
     creator_id integer NOT NULL,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL,
+    created_at timestamp without time zone,
+    updated_at timestamp without time zone,
     description text,
     pinned boolean DEFAULT false
 );
@@ -223,15 +228,15 @@ ALTER SEQUENCE boards_id_seq OWNED BY boards.id;
 
 
 --
--- Name: character_aliases; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: character_aliases; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE character_aliases (
     id integer NOT NULL,
     character_id integer NOT NULL,
     name character varying(255) NOT NULL,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    created_at timestamp without time zone,
+    updated_at timestamp without time zone
 );
 
 
@@ -255,7 +260,7 @@ ALTER SEQUENCE character_aliases_id_seq OWNED BY character_aliases.id;
 
 
 --
--- Name: character_groups; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: character_groups; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE character_groups (
@@ -285,15 +290,15 @@ ALTER SEQUENCE character_groups_id_seq OWNED BY character_groups.id;
 
 
 --
--- Name: character_tags; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: character_tags; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE character_tags (
     id integer NOT NULL,
     character_id integer NOT NULL,
     tag_id integer NOT NULL,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    created_at timestamp without time zone,
+    updated_at timestamp without time zone
 );
 
 
@@ -317,7 +322,7 @@ ALTER SEQUENCE character_tags_id_seq OWNED BY character_tags.id;
 
 
 --
--- Name: characters; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: characters; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE characters (
@@ -328,8 +333,8 @@ CREATE TABLE characters (
     screenname character varying(255),
     template_id integer,
     default_icon_id integer,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL,
+    created_at timestamp without time zone,
+    updated_at timestamp without time zone,
     pb character varying(255),
     character_group_id integer,
     setting character varying(255),
@@ -338,7 +343,7 @@ CREATE TABLE characters (
 
 
 --
--- Name: characters_galleries; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: characters_galleries; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE characters_galleries (
@@ -388,7 +393,7 @@ ALTER SEQUENCE characters_id_seq OWNED BY characters.id;
 
 
 --
--- Name: favorites; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: favorites; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE favorites (
@@ -396,8 +401,8 @@ CREATE TABLE favorites (
     user_id integer NOT NULL,
     favorite_id integer NOT NULL,
     favorite_type character varying(255) NOT NULL,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    created_at timestamp without time zone,
+    updated_at timestamp without time zone
 );
 
 
@@ -421,15 +426,15 @@ ALTER SEQUENCE favorites_id_seq OWNED BY favorites.id;
 
 
 --
--- Name: flat_posts; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: flat_posts; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE flat_posts (
     id integer NOT NULL,
     post_id integer NOT NULL,
     content text,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    created_at timestamp without time zone,
+    updated_at timestamp without time zone
 );
 
 
@@ -453,20 +458,20 @@ ALTER SEQUENCE flat_posts_id_seq OWNED BY flat_posts.id;
 
 
 --
--- Name: galleries; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: galleries; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE galleries (
     id integer NOT NULL,
     user_id integer NOT NULL,
     name character varying(255) NOT NULL,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    created_at timestamp without time zone,
+    updated_at timestamp without time zone
 );
 
 
 --
--- Name: galleries_icons; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: galleries_icons; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE galleries_icons (
@@ -515,7 +520,7 @@ ALTER SEQUENCE galleries_id_seq OWNED BY galleries.id;
 
 
 --
--- Name: icons; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: icons; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE icons (
@@ -523,8 +528,8 @@ CREATE TABLE icons (
     user_id integer NOT NULL,
     url character varying(255) NOT NULL,
     keyword character varying(255) NOT NULL,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL,
+    created_at timestamp without time zone,
+    updated_at timestamp without time zone,
     credit character varying(255),
     has_gallery boolean DEFAULT false
 );
@@ -550,7 +555,7 @@ ALTER SEQUENCE icons_id_seq OWNED BY icons.id;
 
 
 --
--- Name: messages; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: messages; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE messages (
@@ -567,8 +572,8 @@ CREATE TABLE messages (
     marked_inbox boolean DEFAULT false,
     marked_outbox boolean DEFAULT false,
     read_at timestamp without time zone,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    created_at timestamp without time zone,
+    updated_at timestamp without time zone
 );
 
 
@@ -592,7 +597,7 @@ ALTER SEQUENCE messages_id_seq OWNED BY messages.id;
 
 
 --
--- Name: password_resets; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: password_resets; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE password_resets (
@@ -600,8 +605,8 @@ CREATE TABLE password_resets (
     user_id integer NOT NULL,
     auth_token character varying(255) NOT NULL,
     used boolean DEFAULT false,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    created_at timestamp without time zone,
+    updated_at timestamp without time zone
 );
 
 
@@ -625,7 +630,7 @@ ALTER SEQUENCE password_resets_id_seq OWNED BY password_resets.id;
 
 
 --
--- Name: post_tags; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: post_tags; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE post_tags (
@@ -633,8 +638,8 @@ CREATE TABLE post_tags (
     post_id integer NOT NULL,
     tag_id integer NOT NULL,
     suggested boolean DEFAULT false,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    created_at timestamp without time zone,
+    updated_at timestamp without time zone
 );
 
 
@@ -658,15 +663,15 @@ ALTER SEQUENCE post_tags_id_seq OWNED BY post_tags.id;
 
 
 --
--- Name: post_viewers; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: post_viewers; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE post_viewers (
     id integer NOT NULL,
     post_id integer NOT NULL,
     user_id integer NOT NULL,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    created_at timestamp without time zone,
+    updated_at timestamp without time zone
 );
 
 
@@ -690,7 +695,7 @@ ALTER SEQUENCE post_viewers_id_seq OWNED BY post_viewers.id;
 
 
 --
--- Name: post_views; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: post_views; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE post_views (
@@ -700,8 +705,8 @@ CREATE TABLE post_views (
     ignored boolean DEFAULT false,
     notify_message boolean DEFAULT false,
     notify_email boolean DEFAULT false,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL,
+    created_at timestamp without time zone,
+    updated_at timestamp without time zone,
     read_at timestamp without time zone,
     warnings_hidden boolean DEFAULT false
 );
@@ -727,7 +732,7 @@ ALTER SEQUENCE post_views_id_seq OWNED BY post_views.id;
 
 
 --
--- Name: posts; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: posts; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE posts (
@@ -739,8 +744,8 @@ CREATE TABLE posts (
     character_id integer,
     icon_id integer,
     privacy integer DEFAULT 0 NOT NULL,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL,
+    created_at timestamp without time zone,
+    updated_at timestamp without time zone,
     status integer DEFAULT 0,
     section_id integer,
     section_order integer,
@@ -774,7 +779,7 @@ ALTER SEQUENCE posts_id_seq OWNED BY posts.id;
 
 
 --
--- Name: replies; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: replies; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE replies (
@@ -785,8 +790,8 @@ CREATE TABLE replies (
     character_id integer,
     icon_id integer,
     thread_id integer,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL,
+    created_at timestamp without time zone,
+    updated_at timestamp without time zone,
     character_alias_id integer
 );
 
@@ -811,7 +816,7 @@ ALTER SEQUENCE replies_id_seq OWNED BY replies.id;
 
 
 --
--- Name: reply_drafts; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: reply_drafts; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE reply_drafts (
@@ -822,8 +827,8 @@ CREATE TABLE reply_drafts (
     character_id integer,
     icon_id integer,
     thread_id integer,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL,
+    created_at timestamp without time zone,
+    updated_at timestamp without time zone,
     character_alias_id integer
 );
 
@@ -848,7 +853,7 @@ ALTER SEQUENCE reply_drafts_id_seq OWNED BY reply_drafts.id;
 
 
 --
--- Name: report_views; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: report_views; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE report_views (
@@ -880,7 +885,7 @@ ALTER SEQUENCE report_views_id_seq OWNED BY report_views.id;
 
 
 --
--- Name: schema_migrations; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: schema_migrations; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE schema_migrations (
@@ -889,15 +894,15 @@ CREATE TABLE schema_migrations (
 
 
 --
--- Name: tags; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: tags; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE tags (
     id integer NOT NULL,
     user_id integer NOT NULL,
     name citext NOT NULL,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL,
+    created_at timestamp without time zone,
+    updated_at timestamp without time zone,
     type character varying(255)
 );
 
@@ -922,15 +927,15 @@ ALTER SEQUENCE tags_id_seq OWNED BY tags.id;
 
 
 --
--- Name: templates; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: templates; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE templates (
     id integer NOT NULL,
     user_id integer NOT NULL,
     name citext,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL,
+    created_at timestamp without time zone,
+    updated_at timestamp without time zone,
     description text
 );
 
@@ -955,7 +960,7 @@ ALTER SEQUENCE templates_id_seq OWNED BY templates.id;
 
 
 --
--- Name: users; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: users; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE users (
@@ -965,8 +970,8 @@ CREATE TABLE users (
     avatar_id integer,
     active_character_id integer,
     per_page integer DEFAULT 25,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL,
+    created_at timestamp without time zone,
+    updated_at timestamp without time zone,
     timezone character varying(255),
     email citext,
     email_notifications boolean,
@@ -982,9 +987,9 @@ CREATE TABLE users (
     hide_hiatused_tags_owed boolean DEFAULT false,
     hide_warnings boolean DEFAULT false,
     visible_unread boolean DEFAULT false,
+    show_user_in_switcher boolean DEFAULT true,
     ignore_unread_daily_report boolean DEFAULT false,
     favorite_notifications boolean DEFAULT true,
-    show_user_in_switcher boolean DEFAULT true,
     default_character_split character varying(255) DEFAULT 'template'::character varying
 );
 
@@ -1009,196 +1014,196 @@ ALTER SEQUENCE users_id_seq OWNED BY users.id;
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: audits id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY audits ALTER COLUMN id SET DEFAULT nextval('audits_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: board_authors id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY board_authors ALTER COLUMN id SET DEFAULT nextval('board_authors_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: board_sections id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY board_sections ALTER COLUMN id SET DEFAULT nextval('board_sections_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: board_views id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY board_views ALTER COLUMN id SET DEFAULT nextval('board_views_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: boards id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY boards ALTER COLUMN id SET DEFAULT nextval('boards_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: character_aliases id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY character_aliases ALTER COLUMN id SET DEFAULT nextval('character_aliases_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: character_groups id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY character_groups ALTER COLUMN id SET DEFAULT nextval('character_groups_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: character_tags id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY character_tags ALTER COLUMN id SET DEFAULT nextval('character_tags_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: characters id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY characters ALTER COLUMN id SET DEFAULT nextval('characters_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: characters_galleries id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY characters_galleries ALTER COLUMN id SET DEFAULT nextval('characters_galleries_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: favorites id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY favorites ALTER COLUMN id SET DEFAULT nextval('favorites_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: flat_posts id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY flat_posts ALTER COLUMN id SET DEFAULT nextval('flat_posts_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: galleries id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY galleries ALTER COLUMN id SET DEFAULT nextval('galleries_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: galleries_icons id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY galleries_icons ALTER COLUMN id SET DEFAULT nextval('galleries_icons_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: icons id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY icons ALTER COLUMN id SET DEFAULT nextval('icons_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: messages id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY messages ALTER COLUMN id SET DEFAULT nextval('messages_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: password_resets id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY password_resets ALTER COLUMN id SET DEFAULT nextval('password_resets_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: post_tags id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY post_tags ALTER COLUMN id SET DEFAULT nextval('post_tags_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: post_viewers id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY post_viewers ALTER COLUMN id SET DEFAULT nextval('post_viewers_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: post_views id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY post_views ALTER COLUMN id SET DEFAULT nextval('post_views_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: posts id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY posts ALTER COLUMN id SET DEFAULT nextval('posts_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: replies id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY replies ALTER COLUMN id SET DEFAULT nextval('replies_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: reply_drafts id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY reply_drafts ALTER COLUMN id SET DEFAULT nextval('reply_drafts_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: report_views id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY report_views ALTER COLUMN id SET DEFAULT nextval('report_views_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: tags id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY tags ALTER COLUMN id SET DEFAULT nextval('tags_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: templates id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY templates ALTER COLUMN id SET DEFAULT nextval('templates_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: users id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY users ALTER COLUMN id SET DEFAULT nextval('users_id_seq'::regclass);
 
 
 --
--- Name: audits_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: audits audits_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY audits
@@ -1206,7 +1211,7 @@ ALTER TABLE ONLY audits
 
 
 --
--- Name: board_authors_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: board_authors board_authors_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY board_authors
@@ -1214,7 +1219,7 @@ ALTER TABLE ONLY board_authors
 
 
 --
--- Name: board_sections_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: board_sections board_sections_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY board_sections
@@ -1222,7 +1227,7 @@ ALTER TABLE ONLY board_sections
 
 
 --
--- Name: board_views_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: board_views board_views_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY board_views
@@ -1230,7 +1235,7 @@ ALTER TABLE ONLY board_views
 
 
 --
--- Name: boards_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: boards boards_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY boards
@@ -1238,7 +1243,7 @@ ALTER TABLE ONLY boards
 
 
 --
--- Name: character_aliases_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: character_aliases character_aliases_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY character_aliases
@@ -1246,7 +1251,7 @@ ALTER TABLE ONLY character_aliases
 
 
 --
--- Name: character_groups_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: character_groups character_groups_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY character_groups
@@ -1254,7 +1259,7 @@ ALTER TABLE ONLY character_groups
 
 
 --
--- Name: character_tags_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: character_tags character_tags_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY character_tags
@@ -1262,7 +1267,7 @@ ALTER TABLE ONLY character_tags
 
 
 --
--- Name: characters_galleries_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: characters_galleries characters_galleries_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY characters_galleries
@@ -1270,7 +1275,7 @@ ALTER TABLE ONLY characters_galleries
 
 
 --
--- Name: characters_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: characters characters_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY characters
@@ -1278,7 +1283,7 @@ ALTER TABLE ONLY characters
 
 
 --
--- Name: favorites_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: favorites favorites_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY favorites
@@ -1286,7 +1291,7 @@ ALTER TABLE ONLY favorites
 
 
 --
--- Name: flat_posts_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: flat_posts flat_posts_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY flat_posts
@@ -1294,7 +1299,7 @@ ALTER TABLE ONLY flat_posts
 
 
 --
--- Name: galleries_icons_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: galleries_icons galleries_icons_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY galleries_icons
@@ -1302,7 +1307,7 @@ ALTER TABLE ONLY galleries_icons
 
 
 --
--- Name: galleries_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: galleries galleries_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY galleries
@@ -1310,7 +1315,7 @@ ALTER TABLE ONLY galleries
 
 
 --
--- Name: icons_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: icons icons_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY icons
@@ -1318,7 +1323,7 @@ ALTER TABLE ONLY icons
 
 
 --
--- Name: messages_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: messages messages_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY messages
@@ -1326,7 +1331,7 @@ ALTER TABLE ONLY messages
 
 
 --
--- Name: password_resets_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: password_resets password_resets_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY password_resets
@@ -1334,7 +1339,7 @@ ALTER TABLE ONLY password_resets
 
 
 --
--- Name: post_tags_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: post_tags post_tags_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY post_tags
@@ -1342,7 +1347,7 @@ ALTER TABLE ONLY post_tags
 
 
 --
--- Name: post_viewers_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: post_viewers post_viewers_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY post_viewers
@@ -1350,7 +1355,7 @@ ALTER TABLE ONLY post_viewers
 
 
 --
--- Name: post_views_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: post_views post_views_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY post_views
@@ -1358,7 +1363,7 @@ ALTER TABLE ONLY post_views
 
 
 --
--- Name: posts_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: posts posts_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY posts
@@ -1366,7 +1371,7 @@ ALTER TABLE ONLY posts
 
 
 --
--- Name: replies_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: replies replies_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY replies
@@ -1374,7 +1379,7 @@ ALTER TABLE ONLY replies
 
 
 --
--- Name: reply_drafts_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: reply_drafts reply_drafts_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY reply_drafts
@@ -1382,7 +1387,7 @@ ALTER TABLE ONLY reply_drafts
 
 
 --
--- Name: report_views_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: report_views report_views_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY report_views
@@ -1390,7 +1395,7 @@ ALTER TABLE ONLY report_views
 
 
 --
--- Name: tags_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: tags tags_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY tags
@@ -1398,7 +1403,7 @@ ALTER TABLE ONLY tags
 
 
 --
--- Name: templates_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: templates templates_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY templates
@@ -1406,7 +1411,7 @@ ALTER TABLE ONLY templates
 
 
 --
--- Name: users_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY users
@@ -1414,406 +1419,406 @@ ALTER TABLE ONLY users
 
 
 --
--- Name: associated_index; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: associated_index; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX associated_index ON audits USING btree (associated_id, associated_type);
 
 
 --
--- Name: auditable_index; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: auditable_index; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX auditable_index ON audits USING btree (auditable_id, auditable_type);
 
 
 --
--- Name: idx_fts_post_content; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: idx_fts_post_content; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX idx_fts_post_content ON posts USING gin (to_tsvector('english'::regconfig, COALESCE(content, ''::text)));
 
 
 --
--- Name: idx_fts_post_subject; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: idx_fts_post_subject; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX idx_fts_post_subject ON posts USING gin (to_tsvector('english'::regconfig, COALESCE((subject)::text, ''::text)));
 
 
 --
--- Name: idx_fts_reply_content; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: idx_fts_reply_content; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX idx_fts_reply_content ON replies USING gin (to_tsvector('english'::regconfig, COALESCE(content, ''::text)));
 
 
 --
--- Name: index_audits_on_created_at; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: index_audits_on_created_at; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX index_audits_on_created_at ON audits USING btree (created_at);
 
 
 --
--- Name: index_audits_on_request_uuid; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: index_audits_on_request_uuid; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX index_audits_on_request_uuid ON audits USING btree (request_uuid);
 
 
 --
--- Name: index_board_authors_on_board_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: index_board_authors_on_board_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX index_board_authors_on_board_id ON board_authors USING btree (board_id);
 
 
 --
--- Name: index_board_authors_on_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: index_board_authors_on_user_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX index_board_authors_on_user_id ON board_authors USING btree (user_id);
 
 
 --
--- Name: index_board_views_on_user_id_and_board_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: index_board_views_on_user_id_and_board_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX index_board_views_on_user_id_and_board_id ON board_views USING btree (user_id, board_id);
 
 
 --
--- Name: index_character_aliases_on_character_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: index_character_aliases_on_character_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX index_character_aliases_on_character_id ON character_aliases USING btree (character_id);
 
 
 --
--- Name: index_character_tags_on_character_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: index_character_tags_on_character_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX index_character_tags_on_character_id ON character_tags USING btree (character_id);
 
 
 --
--- Name: index_character_tags_on_tag_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: index_character_tags_on_tag_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX index_character_tags_on_tag_id ON character_tags USING btree (tag_id);
 
 
 --
--- Name: index_characters_galleries_on_character_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: index_characters_galleries_on_character_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX index_characters_galleries_on_character_id ON characters_galleries USING btree (character_id);
 
 
 --
--- Name: index_characters_galleries_on_gallery_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: index_characters_galleries_on_gallery_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX index_characters_galleries_on_gallery_id ON characters_galleries USING btree (gallery_id);
 
 
 --
--- Name: index_characters_on_character_group_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: index_characters_on_character_group_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX index_characters_on_character_group_id ON characters USING btree (character_group_id);
 
 
 --
--- Name: index_characters_on_template_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: index_characters_on_template_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX index_characters_on_template_id ON characters USING btree (template_id);
 
 
 --
--- Name: index_characters_on_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: index_characters_on_user_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX index_characters_on_user_id ON characters USING btree (user_id);
 
 
 --
--- Name: index_favorites_on_favorite_id_and_favorite_type; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: index_favorites_on_favorite_id_and_favorite_type; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX index_favorites_on_favorite_id_and_favorite_type ON favorites USING btree (favorite_id, favorite_type);
 
 
 --
--- Name: index_favorites_on_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: index_favorites_on_user_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX index_favorites_on_user_id ON favorites USING btree (user_id);
 
 
 --
--- Name: index_flat_posts_on_post_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: index_flat_posts_on_post_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX index_flat_posts_on_post_id ON flat_posts USING btree (post_id);
 
 
 --
--- Name: index_galleries_icons_on_gallery_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: index_galleries_icons_on_gallery_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX index_galleries_icons_on_gallery_id ON galleries_icons USING btree (gallery_id);
 
 
 --
--- Name: index_galleries_icons_on_icon_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: index_galleries_icons_on_icon_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX index_galleries_icons_on_icon_id ON galleries_icons USING btree (icon_id);
 
 
 --
--- Name: index_galleries_on_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: index_galleries_on_user_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX index_galleries_on_user_id ON galleries USING btree (user_id);
 
 
 --
--- Name: index_icons_on_has_gallery; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: index_icons_on_has_gallery; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX index_icons_on_has_gallery ON icons USING btree (has_gallery);
 
 
 --
--- Name: index_icons_on_keyword; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: index_icons_on_keyword; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX index_icons_on_keyword ON icons USING btree (keyword);
 
 
 --
--- Name: index_icons_on_url; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: index_icons_on_url; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX index_icons_on_url ON icons USING btree (url);
 
 
 --
--- Name: index_icons_on_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: index_icons_on_user_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX index_icons_on_user_id ON icons USING btree (user_id);
 
 
 --
--- Name: index_messages_on_recipient_id_and_unread; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: index_messages_on_recipient_id_and_unread; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX index_messages_on_recipient_id_and_unread ON messages USING btree (recipient_id, unread);
 
 
 --
--- Name: index_messages_on_sender_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: index_messages_on_sender_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX index_messages_on_sender_id ON messages USING btree (sender_id);
 
 
 --
--- Name: index_messages_on_thread_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: index_messages_on_thread_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX index_messages_on_thread_id ON messages USING btree (thread_id);
 
 
 --
--- Name: index_password_resets_on_auth_token; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: index_password_resets_on_auth_token; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE UNIQUE INDEX index_password_resets_on_auth_token ON password_resets USING btree (auth_token);
 
 
 --
--- Name: index_password_resets_on_user_id_and_created_at; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: index_password_resets_on_user_id_and_created_at; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX index_password_resets_on_user_id_and_created_at ON password_resets USING btree (user_id, created_at);
 
 
 --
--- Name: index_post_tags_on_post_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: index_post_tags_on_post_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX index_post_tags_on_post_id ON post_tags USING btree (post_id);
 
 
 --
--- Name: index_post_tags_on_tag_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: index_post_tags_on_tag_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX index_post_tags_on_tag_id ON post_tags USING btree (tag_id);
 
 
 --
--- Name: index_post_viewers_on_post_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: index_post_viewers_on_post_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX index_post_viewers_on_post_id ON post_viewers USING btree (post_id);
 
 
 --
--- Name: index_post_views_on_user_id_and_post_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: index_post_views_on_user_id_and_post_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX index_post_views_on_user_id_and_post_id ON post_views USING btree (user_id, post_id);
 
 
 --
--- Name: index_posts_on_board_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: index_posts_on_board_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX index_posts_on_board_id ON posts USING btree (board_id);
 
 
 --
--- Name: index_posts_on_character_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: index_posts_on_character_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX index_posts_on_character_id ON posts USING btree (character_id);
 
 
 --
--- Name: index_posts_on_created_at; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: index_posts_on_created_at; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX index_posts_on_created_at ON posts USING btree (created_at);
 
 
 --
--- Name: index_posts_on_icon_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: index_posts_on_icon_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX index_posts_on_icon_id ON posts USING btree (icon_id);
 
 
 --
--- Name: index_posts_on_tagged_at; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: index_posts_on_tagged_at; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX index_posts_on_tagged_at ON posts USING btree (tagged_at);
 
 
 --
--- Name: index_posts_on_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: index_posts_on_user_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX index_posts_on_user_id ON posts USING btree (user_id);
 
 
 --
--- Name: index_replies_on_character_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: index_replies_on_character_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX index_replies_on_character_id ON replies USING btree (character_id);
 
 
 --
--- Name: index_replies_on_created_at; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: index_replies_on_created_at; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX index_replies_on_created_at ON replies USING btree (created_at);
 
 
 --
--- Name: index_replies_on_icon_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: index_replies_on_icon_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX index_replies_on_icon_id ON replies USING btree (icon_id);
 
 
 --
--- Name: index_replies_on_post_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: index_replies_on_post_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX index_replies_on_post_id ON replies USING btree (post_id);
 
 
 --
--- Name: index_replies_on_thread_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: index_replies_on_thread_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX index_replies_on_thread_id ON replies USING btree (thread_id);
 
 
 --
--- Name: index_replies_on_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: index_replies_on_user_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX index_replies_on_user_id ON replies USING btree (user_id);
 
 
 --
--- Name: index_reply_drafts_on_post_id_and_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: index_reply_drafts_on_post_id_and_user_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX index_reply_drafts_on_post_id_and_user_id ON reply_drafts USING btree (post_id, user_id);
 
 
 --
--- Name: index_report_views_on_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: index_report_views_on_user_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX index_report_views_on_user_id ON report_views USING btree (user_id);
 
 
 --
--- Name: index_tags_on_name; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: index_tags_on_name; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX index_tags_on_name ON tags USING btree (name);
 
 
 --
--- Name: index_tags_on_type; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: index_tags_on_type; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX index_tags_on_type ON tags USING btree (type);
 
 
 --
--- Name: index_templates_on_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: index_templates_on_user_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX index_templates_on_user_id ON templates USING btree (user_id);
 
 
 --
--- Name: index_users_on_email; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: index_users_on_email; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE UNIQUE INDEX index_users_on_email ON users USING btree (email);
 
 
 --
--- Name: index_users_on_username; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: index_users_on_username; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE UNIQUE INDEX index_users_on_username ON users USING btree (username);
 
 
 --
--- Name: unique_schema_migrations; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: unique_schema_migrations; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE UNIQUE INDEX unique_schema_migrations ON schema_migrations USING btree (version);
 
 
 --
--- Name: user_index; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: user_index; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX user_index ON audits USING btree (user_id, user_type);
@@ -1823,7 +1828,7 @@ CREATE INDEX user_index ON audits USING btree (user_id, user_type);
 -- PostgreSQL database dump complete
 --
 
-SET search_path TO "$user",public;
+SET search_path TO "$user", public;
 
 INSERT INTO schema_migrations (version) VALUES ('20150413062555');
 
