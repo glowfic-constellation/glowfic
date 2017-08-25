@@ -25,6 +25,8 @@ $(document).ready(function() {
       },
       cache: true
     },
+    placeholder: '— Choose Setting —',
+    allowClear: true,
     width: '100%'
   });
 
@@ -62,6 +64,8 @@ $(document).ready(function() {
       },
       cache: true
     },
+    placeholder: '— Choose Character —',
+    allowClear: true,
     width: '100%'
   });
 
@@ -98,6 +102,8 @@ $(document).ready(function() {
       },
       cache: true
     },
+    placeholder: '— Choose Author —',
+    allowClear: true,
     width: '100%'
   });
 
@@ -134,6 +140,8 @@ $(document).ready(function() {
       },
       cache: true
     },
+    placeholder: '— Choose Continuity —',
+    allowClear: true,
     width: '100%'
   });
 
@@ -170,6 +178,8 @@ $(document).ready(function() {
       },
       cache: true
     },
+    placeholder: '— Choose Template —',
+    allowClear: true,
     width: '100%'
   });
 });
