@@ -81,7 +81,7 @@ class CharactersController < ApplicationController
       @dup.save
     end
 
-    flash[:success] = "Character duplicated successfully."
+    flash[:success] = "Character duplicated successfully. You are now editing the new character."
     redirect_to edit_character_path(@dup)
   end
 

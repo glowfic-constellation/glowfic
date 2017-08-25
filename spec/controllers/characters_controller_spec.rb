@@ -808,7 +808,7 @@ RSpec.describe CharactersController do
       dup.reload
       character.reload
       expect(response).to redirect_to(edit_character_url(dup))
-      expect(flash[:success]).to eq('Character duplicated successfully.')
+      expect(flash[:success]).to eq('Character duplicated successfully. You are now editing the new character.')
 
       expect(dup).not_to eq(character)
 
