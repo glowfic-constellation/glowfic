@@ -562,14 +562,15 @@ RSpec.describe Post do
 
     it "limits the amount of returned data" do
       user = create(:user)
-      characters = Array.new(5) { create(:character, user: user) }
+      characters = Array.new(10) { create(:character, user: user) }
       post_char = create(:character, user: user)
       post = create(:post, user: user, character: post_char)
       characters.each do |char|
         create(:reply, user: user, post: post, character: char)
       end
 
-      expect(post.recent_characters_for(user, 4)).to eq(characters[-4..-1].reverse)
+      expect(post.recent_characters_for(user, 9)).to eq(characters[-9..-1].reverse)
+      expect(post.recent_characters_for(user, 10)).to eq(characters.reverse)
     end
   end
 

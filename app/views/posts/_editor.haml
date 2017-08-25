@@ -42,7 +42,7 @@
             %br
       - if item.is_a?(Reply)
         .post-char-access
-          - char_count = 5
+          - char_count = 10
           - char_count -= 1 if current_user.show_user_in_switcher?
           - recent_characters = item.post.try(:recent_characters_for, current_user, char_count)
           - if current_user.show_user_in_switcher?
