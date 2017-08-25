@@ -25,6 +25,7 @@
     - unless post.id.present? && !post.editable_by?(current_user)
       .view-button#rtf{class: ('selected' if current_user.default_editor == 'rtf')} Rich Text
       .view-button#html{class: ('selected' if current_user.default_editor == 'html')} HTML
+      .view-button#markup-allowed{title: 'Allowed markup'} ?
     = f.label :subject, 'Subject:'
     = f.text_field :subject, placeholder: 'Subject'
     %br
@@ -42,6 +43,8 @@
         = f.hidden_field :character_alias_id, id: 'reply_character_alias_id'
         = submit_tag (post.new_record? ? 'Post' : 'Save'), class: 'button', id: 'submit_button', data: { disable_with: 'Saving...' }
         = submit_tag "Preview", class: 'button', id: 'preview_button', name: 'button_preview'
+      %br
+      = render partial: 'markup_box'
 
 - if post.id.present? && !post.editable_by?(current_user)
   #post-editor.padding-10= yield :form

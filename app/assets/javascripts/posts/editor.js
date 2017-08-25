@@ -133,6 +133,11 @@ $(document).ready(function() {
       $(this).addClass('selected');
       tinyMCE.execCommand('mceRemoveEditor', false, 'post_content');
       tinyMCE.execCommand('mceRemoveEditor', false, 'reply_content');
+    } else if (this.id === 'markup-allowed') {
+      $("#markup-allowed-box").toggle();
+      if ($("#markup-allowed-box").is(":visible")) {
+        $('html, body').scrollTop($("#markup-allowed-box").offset().top);
+      }
     }
   });
 

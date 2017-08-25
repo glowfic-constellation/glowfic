@@ -1,0 +1,11 @@
+#markup-allowed-box{style: 'display:none'}
+  %b Allowed tags in the HTML editor:
+  = Glowfic::ALLOWED_TAGS.sort * ', '
+  %br
+  %br
+  %b Allowed attributes:
+  - Glowfic::ALLOWED_ATTRIBUTES.each do |tag_name, attrs|
+    = succeed ':' do
+      %b= tag_name
+    = attrs * ', '
+    %br
