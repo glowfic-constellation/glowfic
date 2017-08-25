@@ -984,6 +984,7 @@ CREATE TABLE users (
     visible_unread boolean DEFAULT false,
     ignore_unread_daily_report boolean DEFAULT false,
     favorite_notifications boolean DEFAULT true
+    show_user_in_switcher boolean DEFAULT true
 );
 
 
@@ -1940,6 +1941,8 @@ INSERT INTO schema_migrations (version) VALUES ('20170221171959');
 INSERT INTO schema_migrations (version) VALUES ('20170331133925');
 
 INSERT INTO schema_migrations (version) VALUES ('20170413195840');
+
+INSERT INTO schema_migrations (version) VALUES ('20170501214439');
 
 INSERT INTO schema_migrations (version) VALUES ('20170505173455');
 

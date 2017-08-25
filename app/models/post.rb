@@ -137,8 +137,8 @@ class Post < ActiveRecord::Base
     @last_seen = reply
   end
 
-  def recent_characters_for(user, count=4)
-    # fetch the 4 (count) most recent non-nil character_ids for user in post
+  def recent_characters_for(user, count)
+    # fetch the (count) most recent non-nil character_ids for user in post
     recent_ids = replies.where(user_id: user.id).where('character_id IS NOT NULL').limit(count).group('character_id').select('DISTINCT character_id, MAX(id)').order('MAX(id) desc').pluck(:character_id)
 
     # add the post's character_id to the last one if it's not over the limit

@@ -76,6 +76,11 @@
         = f.check_box :hide_hiatused_tags_owed, class: 'width-15 vmid'
         = f.label :hide_hiatused_tags_owed, "Hide hiatused threads"
     %tr
+      %th.sub Character Quick Switcher
+      %td{class: cycle('even', 'odd')}
+        = f.check_box :show_user_in_switcher, class: 'width-15 vmid'
+        = f.label :show_user_in_switcher, "Show user character"
+    %tr
       %th.centered.subber{colspan: 2}= submit_tag "Save", class: 'button'
 
 %br

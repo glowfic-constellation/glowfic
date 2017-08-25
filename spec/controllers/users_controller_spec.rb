@@ -213,7 +213,8 @@ RSpec.describe UsersController do
         email_notifications: true,
         moiety_name: 'Testmoiety',
         moiety: 'AAAAAA',
-        favorite_notifications: false
+        favorite_notifications: false,
+        show_user_in_switcher: false
       }
 
       # ensure new values are different, so test tests correct things
