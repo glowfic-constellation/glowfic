@@ -402,21 +402,21 @@ RSpec.describe RepliesController do
     end
 
     it "respects per_page when redirecting" do
-      reply = create(:reply) #p1
-      reply = create(:reply, post: reply.post, user: reply.user) #p1
-      reply = create(:reply, post: reply.post, user: reply.user) #p2
-      reply = create(:reply, post: reply.post, user: reply.user) #p2
+      reply = create(:reply) # p1
+      reply = create(:reply, post: reply.post, user: reply.user) # p1
+      reply = create(:reply, post: reply.post, user: reply.user) # p2
+      reply = create(:reply, post: reply.post, user: reply.user) # p2
       login_as(reply.user)
       delete :destroy, id: reply.id, per_page: 2
       expect(response).to redirect_to(post_url(reply.post, page: 2))
     end
 
     it "respects per_page when redirecting first on page" do
-      reply = create(:reply) #p1
-      reply = create(:reply, post: reply.post, user: reply.user) #p1
-      reply = create(:reply, post: reply.post, user: reply.user) #p2
-      reply = create(:reply, post: reply.post, user: reply.user) #p2
-      reply = create(:reply, post: reply.post, user: reply.user) #p3
+      reply = create(:reply) # p1
+      reply = create(:reply, post: reply.post, user: reply.user) # p1
+      reply = create(:reply, post: reply.post, user: reply.user) # p2
+      reply = create(:reply, post: reply.post, user: reply.user) # p2
+      reply = create(:reply, post: reply.post, user: reply.user) # p3
       login_as(reply.user)
       delete :destroy, id: reply.id, per_page: 2
       expect(response).to redirect_to(post_url(reply.post, page: 2))
@@ -483,7 +483,7 @@ RSpec.describe RepliesController do
       end
 
       it "filters by author" do
-        replies = 4.times.collect do create(:reply) end
+        replies = Array.new(4) { create(:reply) }
         filtered_reply = replies.last
         get :search, commit: true, author_id: filtered_reply.user_id
         expect(assigns(:search_results)).to match_array([filtered_reply])
@@ -535,7 +535,7 @@ RSpec.describe RepliesController do
       end
 
       it "filters by post" do
-        replies = 4.times.collect do create(:reply) end
+        replies = Array.new(4) { create(:reply) }
         filtered_reply = replies.last
         get :search, commit: true, post_id: filtered_reply.post_id
         expect(assigns(:search_results)).to match_array([filtered_reply])
@@ -552,7 +552,7 @@ RSpec.describe RepliesController do
 
       it "filters by continuity" do
         continuity_post = create(:post, num_replies: 1)
-        wrong_post = create(:post, num_replies: 1)
+        create(:post, num_replies: 1) # wrong post
         filtered_reply = continuity_post.replies.last
         get :search, commit: true, board_id: continuity_post.board_id
         expect(assigns(:search_results)).to match_array([filtered_reply])

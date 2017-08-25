@@ -55,7 +55,7 @@ class TemplatesController < ApplicationController
   private
 
   def find_template
-    unless @template = Template.find_by_id(params[:id])
+    unless (@template = Template.find_by_id(params[:id]))
       flash[:error] = "Template could not be found."
       redirect_to characters_path and return
     end

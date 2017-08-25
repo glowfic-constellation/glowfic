@@ -22,7 +22,7 @@ class AddMoietyToUser < ActiveRecord::Migration
     31 => '860018',
     33 => '006000',
   }
-  #this constant was removed from the model but is still needed here.
+  # this constant was removed from the model but is still needed here.
 
   def change
     add_column :users, :moiety, :string

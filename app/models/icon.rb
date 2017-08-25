@@ -33,7 +33,7 @@ class Icon < ActiveRecord::Base
 
   def delete_from_s3
     return unless uploaded?
-    resp = S3_BUCKET.delete_objects(delete: {objects: [{key: s3_key}], quiet: true})
+    S3_BUCKET.delete_objects(delete: {objects: [{key: s3_key}], quiet: true})
   end
 
   def uploaded_url_not_in_use

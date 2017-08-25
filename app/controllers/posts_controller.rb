@@ -33,7 +33,7 @@ class PostsController < WritableController
     @posts = @posts.where("board_views.user_id IS NULL OR ((board_views.read_at IS NULL OR (date_trunc('second', board_views.read_at) < date_trunc('second', posts.tagged_at))) AND board_views.ignored = '0')")
     @posts = posts_from_relation(@posts.order('tagged_at desc'), true, false)
     @posts = @posts.select { |p| p.visible_to?(current_user) }
-    @posts = @posts.select { |p|  @opened_ids.include?(p.id) } if @started
+    @posts = @posts.select { |p| @opened_ids.include?(p.id) } if @started
     @posts = @posts.paginate(per_page: 25, page: page)
     @hide_quicklinks = true
     @page_title = @started ? 'Opened Threads' : 'Unread Threads'
@@ -348,9 +348,9 @@ class PostsController < WritableController
     existing_saved = @post.send(klass.to_s.underscore.pluralize) || []
     return existing_saved unless @post.send(method)
 
-    existing_unsaved = klass.where(id: @post.send(method) - existing_saved.map { |es| es.id.to_s })
+    existing_unsaved = klass.where(id: @post.send(method) - (existing_saved.map { |es| es.id.to_s }))
     new_tags = @post.send(method).reject { |t| t.blank? || !t.to_i.zero? }
-    existing_saved + existing_unsaved + new_tags.map { |t| faked.new(t, t) }
+    existing_saved + existing_unsaved + (new_tags.map { |t| faked.new(t, t) })
   end
 
   def create_new_tags

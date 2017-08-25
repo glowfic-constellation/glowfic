@@ -82,7 +82,7 @@ RSpec.describe BoardSectionsController do
 
     it "does not require login" do
       section = create(:board_section)
-      posts = 2.times.collect do create(:post, board: section.board, section: section) end
+      posts = Array.new(2) { create(:post, board: section.board, section: section) }
       create(:post)
       create(:post, board: section.board)
       get :show, id: section.id
@@ -93,7 +93,7 @@ RSpec.describe BoardSectionsController do
 
     it "works with login" do
       section = create(:board_section)
-      posts = 2.times.collect do create(:post, board: section.board, section: section) end
+      posts = Array.new(2) { create(:post, board: section.board, section: section) }
       create(:post)
       create(:post, board: section.board)
       get :show, id: section.id

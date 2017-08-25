@@ -101,7 +101,7 @@ RSpec.describe PostsController do
       end
 
       it "filters by authors" do
-        posts = 4.times.collect do create(:post) end
+        posts = Array.new(4) { create(:post) }
         filtered_post = posts.last
         first_post = posts.first
         create(:reply, post: first_post, user: filtered_post.user)
@@ -568,8 +568,8 @@ RSpec.describe PostsController do
       it "goes to post page if you're behind" do
         post = create(:post)
         reply1 = create(:reply, post: post, user: post.user)
-        reply2 = Timecop.freeze(reply1.created_at + 1.second) do create(:reply, post: post, user: post.user) end
-        reply3 = Timecop.freeze(reply1.created_at + 2.seconds) do create(:reply, post: post, user: post.user) end
+        Timecop.freeze(reply1.created_at + 1.second) do create(:reply, post: post, user: post.user) end # second reply
+        Timecop.freeze(reply1.created_at + 2.seconds) do create(:reply, post: post, user: post.user) end # third reply
         user = create(:user)
         post.mark_read(user, reply1.created_at)
         login_as(user)
@@ -772,7 +772,7 @@ RSpec.describe PostsController do
         post = create(:post)
         post.mark_read(post.user, post.created_at)
         unread_reply = create(:reply, post: post)
-        reply = create(:reply, post: post)
+        create(:reply, post: post)
         time = Time.now
         post.board.mark_read(post.user, time)
 
@@ -790,7 +790,7 @@ RSpec.describe PostsController do
       it "works with at_id" do
         post = create(:post)
         unread_reply = create(:reply, post: post)
-        reply = create(:reply, post: post)
+        create(:reply, post: post)
         time = Time.now
         post.mark_read(post.user, time)
         expect(post.last_read(post.user)).to be_the_same_time_as(time)
@@ -902,7 +902,7 @@ RSpec.describe PostsController do
       end
 
       context "with an old thread" do
-        {hiatus: 'on_hiatus', active: 'active'}.each do |status, method|
+        [:hiatus, :active].each do |status|
           context "to #{status}" do
             time = 2.months.ago
             let(:post) { create(:post, created_at: time, updated_at: time) }
@@ -1040,7 +1040,6 @@ RSpec.describe PostsController do
 
       it "requires valid update" do
         post = create(:post)
-        newcontent = post.content + 'new'
         login_as(post.user)
         put :update, id: post.id, post: {subject: ''}
         expect(response).to render_template(:edit)

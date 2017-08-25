@@ -22,8 +22,8 @@ class PostScraper < Object
     @board_id = board_id || SANDBOX_ID
     @section_id = section_id
     @status = status || Post::STATUS_COMPLETE
-    url = url + (url.include?('?') ? '&' : '?') + 'style=site' unless url.include?('style=site')
-    url = url + '&view=flat' unless url.include?('view=flat') || threaded_import
+    url += (url.include?('?') ? '&' : '?') + 'style=site' unless url.include?('style=site')
+    url += '&view=flat' unless url.include?('view=flat') || threaded_import
     @url = url
     @console_import = console_import
     @threaded_import = threaded_import # boolean
@@ -263,10 +263,10 @@ class PostScraper < Object
   end
 end
 
-class UnrecognizedUsernameError < Exception
+class UnrecognizedUsernameError < RuntimeError
 end
 
-class AlreadyImportedError < Exception
+class AlreadyImportedError < RuntimeError
   attr_reader :post_id
   def initialize(msg, post_id)
     @post_id = post_id

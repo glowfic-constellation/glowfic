@@ -53,7 +53,7 @@ RSpec.describe CharactersController do
 
     it "sets correct variables" do
       user = create(:user)
-      templates = 2.times.collect do create(:template, user: user) end
+      templates = Array.new(2) { create(:template, user: user) }
       names = ['— Create New Template —'] + templates.map(&:name)
       create(:template)
 
@@ -123,7 +123,7 @@ RSpec.describe CharactersController do
 
     it "sets correct variables when invalid" do
       user = create(:user)
-      templates = 2.times.collect do create(:template, user: user) end
+      templates = Array.new(2) { create(:template, user: user) }
       names = ['— Create New Template —'] + templates.map(&:name)
       create(:template)
 
@@ -158,7 +158,7 @@ RSpec.describe CharactersController do
 
       it "should set correct variables" do
         character = create(:character)
-        posts = 26.times.collect do create(:post, character: character, user: character.user) end
+        Array.new(26) { create(:post, character: character, user: character.user) }
         get :show, id: character.id
         expect(response.status).to eq(200)
         expect(assigns(:page_title)).to eq(character.name)
@@ -168,7 +168,7 @@ RSpec.describe CharactersController do
 
       it "should only show visible posts" do
         character = create(:character)
-        post = create(:post, character: character, user: character.user, privacy: Post::PRIVACY_PRIVATE)
+        create(:post, character: character, user: character.user, privacy: Post::PRIVACY_PRIVATE)
         get :show, id: character.id
         expect(assigns(:posts)).to be_blank
       end
@@ -206,7 +206,7 @@ RSpec.describe CharactersController do
     it "sets correct variables" do
       user = create(:user)
       character = create(:character, user: user)
-      templates = 2.times.collect do create(:template, user: user) end
+      templates = Array.new(2) { create(:template, user: user) }
       names = ['— Create New Template —'] + templates.map(&:name)
       create(:template)
 
@@ -292,7 +292,7 @@ RSpec.describe CharactersController do
 
     it "sets correct variables when invalid" do
       character = create(:character)
-      templates = 2.times.collect do create(:template, user: character.user) end
+      templates = Array.new(2) { create(:template, user: character.user) }
       names = ['— Create New Template —'] + templates.map(&:name)
       create(:template)
 
@@ -330,35 +330,35 @@ RSpec.describe CharactersController do
     end
 
     it "sets correct variables for facecast name sort" do
-      chars = 3.times.collect do create(:character, pb: SecureRandom.urlsafe_base64) end
+      chars = Array.new(3) { create(:character, pb: SecureRandom.urlsafe_base64) }
       get :facecasts
       expect(assigns(:pbs).keys).to match_array(chars.map(&:pb))
     end
 
     it "sets correct variables for character name sort: character only" do
-      chars = 3.times.collect do create(:character, pb: SecureRandom.urlsafe_base64) end
+      chars = Array.new(3) { create(:character, pb: SecureRandom.urlsafe_base64) }
       get :facecasts, sort: 'name'
       expect(assigns(:pbs).keys).to match_array(chars)
     end
 
     it "sets correct variables for character name sort: template only" do
-      chars = 3.times.collect do create(:template_character, pb: SecureRandom.urlsafe_base64) end
+      chars = Array.new(3) { create(:template_character, pb: SecureRandom.urlsafe_base64) }
       get :facecasts, sort: 'name'
       expect(assigns(:pbs).keys).to match_array(chars.map(&:template))
     end
 
     it "sets correct variables for character name sort: character and template mixed" do
-      chars = 3.times.collect do create(:template_character, pb: SecureRandom.urlsafe_base64) end
-      chars += 3.times.collect do create(:character, pb: SecureRandom.urlsafe_base64) end
+      chars = Array.new(3) { create(:template_character, pb: SecureRandom.urlsafe_base64) }
+      chars += Array.new(3) { create(:character, pb: SecureRandom.urlsafe_base64) }
       get :facecasts, sort: 'name'
       expect(assigns(:pbs).keys).to match_array(chars.map { |c| c.template || c })
     end
 
     it "sets correct variables for writer sort" do
-      chars = 3.times.collect do create(:template_character, pb: SecureRandom.urlsafe_base64) end
-      chars += 3.times.collect do create(:character, pb: SecureRandom.urlsafe_base64) end
+      chars = Array.new(3) { create(:template_character, pb: SecureRandom.urlsafe_base64) }
+      chars += Array.new(3) { create(:character, pb: SecureRandom.urlsafe_base64) }
       get :facecasts, sort: 'writer'
-      expect(assigns(:pbs).keys).to match_array(chars.map { |c| c.user })
+      expect(assigns(:pbs).keys).to match_array(chars.map(&:user))
     end
   end
 
@@ -427,9 +427,9 @@ RSpec.describe CharactersController do
       other_char.save
       calias = create(:alias, character: other_char)
       char_post = create(:post, user: user, character: character)
-      char_reply1 = create(:reply, user: user, post: char_post, character: character)
-      other_post = create(:post)
-      char_reply2 = create(:reply, user: user, character: character)
+      create(:reply, user: user, post: char_post, character: character) # reply
+      create(:post) # other post
+      char_reply2 = create(:reply, user: user, character: character) # other reply
 
       login_as(user)
       get :replace, id: character.id
@@ -446,8 +446,8 @@ RSpec.describe CharactersController do
         user = create(:user)
         template = create(:template, user: user)
         character = create(:character, user: user, template: template)
-        alts = 5.times.collect do create(:character, user: user, template: template) end
-        other_character = create(:character, user: user)
+        alts = Array.new(5) { create(:character, user: user, template: template) }
+        create(:character, user: user) # other character
 
         login_as(user)
         get :replace, id: character.id
@@ -461,7 +461,7 @@ RSpec.describe CharactersController do
         user = create(:user)
         template = create(:template, user: user)
         character = create(:character, user: user, template: template)
-        other_character = create(:character, user: user)
+        create(:character, user: user) # other character
 
         login_as(user)
         get :replace, id: character.id
@@ -474,9 +474,9 @@ RSpec.describe CharactersController do
       it "sets alts correctly" do
         user = create(:user)
         character = create(:character, user: user)
-        alts = 5.times.collect do create(:character, user: user) end
+        alts = Array.new(5) { create(:character, user: user) }
         template = create(:template, user: user)
-        other_char = create(:character, user: user, template: template)
+        create(:character, user: user, template: template) # other character
 
         login_as(user)
         get :replace, id: character.id
@@ -490,7 +490,7 @@ RSpec.describe CharactersController do
         user = create(:user)
         template = create(:template, user: user)
         character = create(:character, user: user)
-        other_character = create(:character, user: user, template: template)
+        create(:character, user: user, template: template) # other character
 
         login_as(user)
         get :replace, id: character.id

@@ -49,7 +49,7 @@ RSpec.describe SessionsController do
 
     it "disallows logins with old passwords when reset is pending" do
       user = create(:user)
-      reset = create(:password_reset, user: user)
+      create(:password_reset, user: user)
       expect(user.password_resets.active.unused).not_to be_empty
       post :create, username: user.username
       expect(flash[:error]).to eq("The password for this account has been reset. Please check your email.")

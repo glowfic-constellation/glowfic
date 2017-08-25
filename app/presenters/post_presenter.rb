@@ -5,7 +5,7 @@ class PostPresenter
     @post = post
   end
 
-  def as_json(options={})
+  def as_json(_options={})
     return {} unless post
 
     attrs = %w(id status subject description content created_at edited_at tagged_at)

@@ -10,7 +10,7 @@ class Api::V1::RepliesController < Api::ApiController
   error 403, "Post is not visible to the user"
   error 404, "Post not found"
   def index
-    unless post = Post.find_by_id(params[:post_id])
+    unless (post = Post.find_by_id(params[:post_id]))
       error = {message: "Post could not be found."}
       render json: {errors: [error]}, status: :not_found and return
     end

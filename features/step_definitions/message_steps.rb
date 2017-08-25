@@ -5,7 +5,7 @@ end
 Given(/^I have a message thread$/) do
   first = create(:message, sender: current_user)
   second = create(:message, thread_id: first.id, sender: first.recipient, recipient: first.sender, parent: first)
-  last = create(:message, thread_id: first.id, sender: first.sender, recipient: first.recipient, parent: second)
+  create(:message, thread_id: first.id, sender: first.sender, recipient: first.recipient, parent: second) # last
 end
 
 When(/^I go to my (in|out)box$/) do |box|

@@ -12,7 +12,7 @@ class Tag < ActiveRecord::Base
     user.try(:admin?)
   end
 
-  def as_json(*args, **kwargs)
+  def as_json(*)
     {id: self.id, text: self.name}
   end
 

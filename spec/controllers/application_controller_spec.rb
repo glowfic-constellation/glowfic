@@ -4,7 +4,7 @@ RSpec.describe ApplicationController do
   describe "#set_timezone" do
     it "uses the user's time zone within the block" do
       current_zone = Time.zone.name
-      different_zone = ActiveSupport::TimeZone.all().detect { |z| z.name != Time.zone.name }.name
+      different_zone = ActiveSupport::TimeZone.all.detect { |z| z.name != Time.zone.name }.name
       session[:user_id] = create(:user, timezone: different_zone).id
 
       expect(Time.zone.name).to eq(current_zone)
@@ -67,7 +67,7 @@ RSpec.describe ApplicationController do
     end
 
     it "will return a blank array if applicable" do
-      post = create(:post)
+      create(:post)
       relation = Post.where('posts.id IS NULL')
       expect(controller.send(:posts_from_relation, relation)).to be_blank
     end
@@ -92,7 +92,7 @@ RSpec.describe ApplicationController do
       expect(controller.send(:posts_from_relation, relation), false).not_to be_blank
     end
 
-    let(:default_post_ids) { 26.times.collect do create(:post) end.map(&:id) }
+    let(:default_post_ids) { Array.new(26) do create(:post).id end }
 
     it "paginates by default" do
       relation = Post.where(id: default_post_ids)

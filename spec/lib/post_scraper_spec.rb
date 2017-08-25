@@ -11,7 +11,7 @@ RSpec.describe PostScraper do
     url = 'http://wild-pegasus-appeared.dreamwidth.org/403.html?view=flat'
     scraper = PostScraper.new(url)
     expect(scraper.url.sub('view=flat', '')).not_to include('view=flat')
-    expect(scraper.url.gsub("&style=site","").length).to eq(url.length)
+    expect(scraper.url.gsub("&style=site", "").length).to eq(url.length)
   end
 
   it "should add site style to the url" do

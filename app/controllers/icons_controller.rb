@@ -6,7 +6,7 @@ class IconsController < ApplicationController
 
   def delete_multiple
     icon_ids = (params[:marked_ids] || []).map(&:to_i).reject(&:zero?)
-    if icon_ids.empty? or (icons = Icon.where(id: icon_ids)).empty?
+    if icon_ids.empty? || (icons = Icon.where(id: icon_ids)).empty?
       flash[:error] = "No icons selected."
       redirect_to galleries_path and return
     end
@@ -17,7 +17,8 @@ class IconsController < ApplicationController
         flash[:error] = "Gallery could not be found."
         redirect_to galleries_path and return
       end
-      if gallery.user_id != current_user.id
+
+      unless gallery.user_id == current_user.id
         flash[:error] = "That is not your gallery."
         redirect_to galleries_path and return
       end
@@ -66,10 +67,10 @@ class IconsController < ApplicationController
   def replace
     @page_title = "Replace Icon: " + @icon.keyword
     all_icons = if @icon.has_gallery?
-                  @icon.galleries.map(&:icons).flatten.uniq.compact - [@icon]
-                else
-                  current_user.galleryless_icons - [@icon]
-                end
+      @icon.galleries.map(&:icons).flatten.uniq.compact - [@icon]
+    else
+      current_user.galleryless_icons - [@icon]
+    end
     @alts = all_icons.sort_by{|i| i.keyword.downcase }
     use_javascript('icons')
     gon.gallery = Hash[all_icons.map { |i| [i.id, {url: i.url, keyword: i.keyword}] }]
@@ -80,7 +81,7 @@ class IconsController < ApplicationController
   end
 
   def do_replace
-    unless params[:icon_dropdown].blank? || new_icon = Icon.find_by_id(params[:icon_dropdown])
+    unless params[:icon_dropdown].blank? || (new_icon = Icon.find_by_id(params[:icon_dropdown]))
       flash[:error] = "Icon could not be found."
       redirect_to replace_icon_path(@icon) and return
     end
@@ -124,7 +125,7 @@ class IconsController < ApplicationController
   private
 
   def find_icon
-    unless @icon = Icon.find_by_id(params[:id])
+    unless (@icon = Icon.find_by_id(params[:id]))
       flash[:error] = "Icon could not be found."
       redirect_to galleries_path
     end

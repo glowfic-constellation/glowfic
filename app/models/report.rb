@@ -8,7 +8,7 @@
 class Report < Object
   def self.mark_read(user, at_time)
     view = view_for(user)
-    
+
     if view.new_record?
       view.read_at = at_time
       return view.save

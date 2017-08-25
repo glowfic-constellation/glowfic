@@ -11,7 +11,7 @@ class TagsController < ApplicationController
 
   def show
     @posts = posts_from_relation(@tag.posts)
-    @page_title = "#{@tag.name}"
+    @page_title = @tag.name.to_s
   end
 
   def edit
@@ -40,7 +40,7 @@ class TagsController < ApplicationController
   private
 
   def find_tag
-    unless @tag = Tag.find_by_id(params[:id])
+    unless (@tag = Tag.find_by_id(params[:id]))
       flash[:error] = "Tag could not be found."
       redirect_to tags_path
     end

@@ -14,7 +14,7 @@ module ApplicationHelper
     return '' if url.nil?
     klass = ICON
     klass += ' pointer' if args.delete(:pointer)
-    if supplied_class = args.delete(:class)
+    if (supplied_class = args.delete(:class))
       klass += ' ' + supplied_class
     end
 
@@ -83,7 +83,7 @@ module ApplicationHelper
     default ||= per_page
     default = nil if default.to_i > 100
 
-    options = [10,25,50,100]
+    options = [10, 25, 50, 100]
     options << default unless default.nil? || default.zero? || options.include?(default)
     options = Hash[*(options * 2).sort]
     options_for_select(options, default)
@@ -91,7 +91,7 @@ module ApplicationHelper
 
   def timezone_options(default=nil)
     default ||= 'Eastern Time (US & Canada)'
-    zones = ActiveSupport::TimeZone.all()
+    zones = ActiveSupport::TimeZone.all
     options_from_collection_for_select(zones, :name, :to_s, default)
   end
 
@@ -127,7 +127,7 @@ module ApplicationHelper
   end
 
   def sanitize_written_content(content)
-    content = (content.include?("<p>".freeze) || content[/<br ?\/?>/]) ? content : content.gsub("\n".freeze,"<br/>".freeze)
+    content = (content.include?("<p>".freeze) || content[/<br ?\/?>/]) ? content : content.gsub("\n".freeze, "<br/>".freeze)
     Sanitize.fragment(content, Glowfic::POST_CONTENT_SANITIZER)
   end
 

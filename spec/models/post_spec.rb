@@ -360,8 +360,8 @@ RSpec.describe Post do
   describe "#word_count" do
     it "guesses correctly with replies" do
       post = create(:post, content: 'one two three four five')
-      reply = create(:reply, post: post, content: 'six seven')
-      reply = create(:reply, post: post, content: 'eight')
+      create(:reply, post: post, content: 'six seven')
+      create(:reply, post: post, content: 'eight')
       expect(post.word_count).to eq(5)
       expect(post.total_word_count).to eq(8)
     end

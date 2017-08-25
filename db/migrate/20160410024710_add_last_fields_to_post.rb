@@ -6,14 +6,14 @@ class AddLastFieldsToPost < ActiveRecord::Migration
     ActiveRecord::Base.record_timestamps = false
     begin
       Post.all.each do |post|
-        if last_reply = post.replies.order('created_at desc').first
+        if (last_reply = post.replies.order('created_at desc').first)
           post.last_reply_id = last_reply.id
           post.last_user_id = last_reply.user_id
         else
           post.last_user_id = post.user_id
         end
 
-        last_edit = post.audits.where(action:'update').reject { |a| a.audited_changes.keys == ['privacy'] }.last
+        last_edit = post.audits.where(action: 'update').reject { |a| a.audited_changes.keys == ['privacy'] }.last
         if last_edit
           post.edited_at = last_edit.created_at
         else

@@ -12,7 +12,7 @@ class ScrapePostJob < BaseJob
   end
 
   def self.notify_exception(exception, url, board_id, section_id, status, threaded, importer_id)
-    if (importer = User.find_by_id(importer_id))
+    if User.find_by_id(importer_id)
       message = "The url #{url} could not be successfully scraped. "
       message += exception.message if exception.is_a?(UnrecognizedUsernameError)
       message += "Your post was already imported! #{view_post(exception.post_id)}" if exception.is_a?(AlreadyImportedError)

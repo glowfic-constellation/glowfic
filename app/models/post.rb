@@ -116,7 +116,7 @@ class Post < ActiveRecord::Base
       reply.icon_id = reply.character.default_icon.try(:id)
     end
 
-    return reply
+    reply
   end
 
   def first_unread_for(user)
@@ -158,7 +158,7 @@ class Post < ActiveRecord::Base
 
   def show_warnings_for?(user)
     return false if user.hide_warnings
-    !(view_for(user).try(:warnings_hidden))
+    !view_for(user).try(:warnings_hidden)
   end
 
   def completed?
@@ -272,7 +272,7 @@ class Post < ActiveRecord::Base
   end
 
   def skip_edited
-    @skip_edited || !EDITED_ATTRS.any?{ |edit| send(edit + "_changed?")}
+    @skip_edited || EDITED_ATTRS.none? { |edit| send(edit + "_changed?") }
   end
 
   def timestamp_attributes_for_create
@@ -288,7 +288,7 @@ class Post < ActiveRecord::Base
     true
   end
 
-  def reset_warnings(warning)
+  def reset_warnings(_warning)
     PostView.where(post_id: id).update_all(warnings_hidden: false)
   end
 

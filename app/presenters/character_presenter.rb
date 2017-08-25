@@ -15,12 +15,12 @@ class CharacterPresenter
       post = options[:post_for_alias]
       most_recent_use = post.replies.where(character_id: @character.id).order('id desc').first
       most_recent_use = post if most_recent_use.nil? && post.character_id == character.id
-      char_json.merge!(alias_id_for_post: most_recent_use.try(:character_alias_id))
+      char_json[:alias_id_for_post] = most_recent_use.try(:character_alias_id)
       return char_json unless options[:include].present?
     end
 
-    char_json.merge!(default: character.default_icon.try(:as_json)) if options[:include].include?(:default)
-    char_json.merge!(aliases: character.aliases) if options[:include].include?(:aliases)
+    char_json[:default] = character.default_icon.try(:as_json) if options[:include].include?(:default)
+    char_json[:aliases] = character.aliases if options[:include].include?(:aliases)
     return char_json unless options[:include].include?(:galleries)
 
     galleries = if character.galleries.present? && character.user.icon_picker_grouping?
@@ -33,7 +33,7 @@ class CharacterPresenter
 
   def multi_gallery_json
     galleries = character.galleries.ordered
-    galleries_json = galleries.map do |gallery|
+    galleries.map do |gallery|
       {
         name: gallery.name,
         icons: gallery.icons

@@ -5,7 +5,7 @@ class GenerateFlatPostJob < BaseJob
 
   def self.process(post_id)
     Rails.logger.info("[GenerateFlatPostJob] updating flat post for post #{post_id}")
-    return unless post = Post.find_by_id(post_id)
+    return unless (post = Post.find_by_id(post_id))
 
     lock_key = self.lock_key(post_id)
 

@@ -17,7 +17,7 @@ RSpec.describe UsersController do
       render_views
 
       it "displays the name" do
-        user = create(:user, moiety: 'fed123', moiety_name: 'moietycolor')
+        create(:user, moiety: 'fed123', moiety_name: 'moietycolor')
         get :index
         expect(response.body).to include('moietycolor')
         expect(response.body).to include('fed123')
@@ -140,7 +140,7 @@ RSpec.describe UsersController do
 
     it "sets the correct variables" do
       user = create(:user)
-      posts = 3.times.collect do create(:post, user: user) end
+      posts = Array.new(3) { create(:post, user: user) }
       create(:post)
       get :show, id: user.id
       expect(assigns(:page_title)).to eq(user.username)

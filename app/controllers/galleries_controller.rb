@@ -7,7 +7,7 @@ class GalleriesController < ApplicationController
 
   def index
     if params[:user_id].present?
-      unless @user = User.find_by_id(params[:user_id]) || current_user
+      unless (@user = User.find_by_id(params[:user_id]) || current_user)
         flash[:error] = 'User could not be found.'
         redirect_to root_path and return
       end
@@ -17,10 +17,10 @@ class GalleriesController < ApplicationController
     end
 
     @page_title = if @user.id == current_user.try(:id)
-                    "Your Galleries"
-                  else
-                    @user.username + "'s Galleries"
-                  end
+      "Your Galleries"
+    else
+      @user.username + "'s Galleries"
+    end
     use_javascript('galleries/expander')
     gon.user_id = @user.id
   end

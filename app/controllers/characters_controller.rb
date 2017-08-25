@@ -16,10 +16,10 @@ class CharactersController < ApplicationController
     end
 
     @page_title = if @user.id == current_user.try(:id)
-                    "Your Characters"
-                  else
-                    @user.username + "'s Characters"
-                  end
+      "Your Characters"
+    else
+      @user.username + "'s Characters"
+    end
   end
 
   def new
@@ -134,7 +134,7 @@ class CharactersController < ApplicationController
   end
 
   def do_replace
-    unless params[:icon_dropdown].blank? || new_char = Character.find_by_id(params[:icon_dropdown])
+    unless params[:icon_dropdown].blank? || (new_char = Character.find_by_id(params[:icon_dropdown]))
       flash[:error] = "Character could not be found."
       redirect_to replace_character_path(@character) and return
     end
@@ -222,7 +222,7 @@ class CharactersController < ApplicationController
   private
 
   def find_character
-    unless @character = Character.find_by_id(params[:id])
+    unless (@character = Character.find_by_id(params[:id]))
       flash[:error] = "Character could not be found."
       redirect_to characters_path and return
     end
@@ -252,11 +252,11 @@ class CharactersController < ApplicationController
 
   def save_character_with_extras
     Character.transaction do
-      if template = @character.instance_variable_get('@template')
+      if (template = @character.instance_variable_get('@template'))
         template.save
         @character.template = template
       end
-      if group = @character.instance_variable_get('@group')
+      if (group = @character.instance_variable_get('@group'))
         group.save
         @character.character_group = group
       end

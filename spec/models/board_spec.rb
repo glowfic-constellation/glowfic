@@ -35,7 +35,7 @@ RSpec.describe Board do
     board = create(:board)
     board2 = create(:board)
     coauthor = create(:user)
-    cameo = create(:user)
+    cameo = create(:user) # FIXME: unused
     board.board_authors.create(user: coauthor)
     board.board_authors.create(user: coauthor)
     board2.board_authors.create(user: coauthor)

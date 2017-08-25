@@ -77,7 +77,7 @@ class RepliesController < WritableController
   end
 
   def make_draft
-    if draft = ReplyDraft.draft_for(params[:reply][:post_id], current_user.id)
+    if (draft = ReplyDraft.draft_for(params[:reply][:post_id], current_user.id))
       draft.assign_attributes(params[:reply])
     else
       draft = ReplyDraft.new(params[:reply])

@@ -7,11 +7,11 @@ class MessagesController < ApplicationController
     if params[:view] == 'outbox'
       @view = 'outbox'
       @page_title = 'Outbox'
-      @messages = current_user.sent_messages.where(visible_outbox: true).order('id desc').uniq! {|m| m.thread_id }
+      @messages = current_user.sent_messages.where(visible_outbox: true).order('id desc').uniq!(&:thread_id)
     else
       @view = 'inbox'
       @page_title = 'Inbox'
-      @messages = current_user.messages.where(visible_inbox: true).order('id desc').uniq! {|m| m.thread_id }
+      @messages = current_user.messages.where(visible_inbox: true).order('id desc').uniq!(&:thread_id)
     end
   end
 
@@ -47,7 +47,7 @@ class MessagesController < ApplicationController
   end
 
   def show
-    unless message = Message.find_by_id(params[:id])
+    unless (message = Message.find_by_id(params[:id]))
       flash[:error] = "Message could not be found."
       redirect_to messages_path(view: 'inbox') and return
     end

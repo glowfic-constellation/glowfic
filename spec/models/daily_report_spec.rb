@@ -5,9 +5,9 @@ RSpec.describe DailyReport do
     default_zone = Time.zone
     {
       # 2017-11-05 10:00, clock goes back in Eastern
-      "without timezone" => [default_zone, [2017, 11, 05, 10, 00]],
+      "without timezone" => [default_zone, [2017, 11, 5, 10, 0]],
       # 2017-10-29 10:00, clock goes back in GMT/BST
-      "with timezone" => ["Europe/London", [2017, 10, 29, 10, 00]]
+      "with timezone" => ["Europe/London", [2017, 10, 29, 10, 0]]
     }.each do |name, data|
       zone = data.first
       dst_day_params = data.last
@@ -15,7 +15,7 @@ RSpec.describe DailyReport do
         before(:each) { Time.zone = zone }
         after(:each) { Time.zone = default_zone }
         it "should work on a regular day" do
-          time = Time.zone.local(2017, 01, 02, 10, 00) # 2017-01-02 10:00
+          time = Time.zone.local(2017, 1, 2, 10, 0) # 2017-01-02 10:00
           day = time.beginning_of_day
           shown_posts = Array.new(24) do |i| # 0 .. 23
             step = day + i.hours
