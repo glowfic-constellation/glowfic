@@ -18,7 +18,7 @@ class PostScraper < Object
 
   attr_accessor :url, :post, :html_doc
 
-  def initialize(url, board_id=nil, section_id=nil, status=nil, threaded_import=false, console_import=false)
+  def initialize(url, board_id=nil, section_id=nil, status=nil, threaded_import=false, console_import=false, subject=nil)
     @board_id = board_id || SANDBOX_ID
     @section_id = section_id
     @status = status || Post::STATUS_COMPLETE
@@ -27,6 +27,7 @@ class PostScraper < Object
     @url = url
     @console_import = console_import
     @threaded_import = threaded_import # boolean
+    @subject = subject
   end
 
   def scrape!
@@ -104,7 +105,7 @@ class PostScraper < Object
   end
 
   def import_post_from_doc(doc)
-    subject = doc.at_css('.entry .entry-title').text.strip
+    subject = @subject || doc.at_css('.entry .entry-title').text.strip
     puts "Importing thread '#{subject}'"
 
     username = doc.at_css('.entry-poster b').inner_html
@@ -123,7 +124,8 @@ class PostScraper < Object
     @post.is_import = true
 
     # detect already imported
-    if !@threaded_import && (subj_post = Post.where(subject: @post.subject, board_id: @board_id).first)
+    # skip if it's a threaded import, unless a subject was given manually
+    if (@subject || !@threaded_import) && (subj_post = Post.where(subject: @post.subject, board_id: @board_id).first)
       raise AlreadyImportedError.new("This thread has already been imported", subj_post.id)
     end
 
