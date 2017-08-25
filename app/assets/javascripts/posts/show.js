@@ -1,3 +1,4 @@
+/* global resizeScreenname */
 $(document).ready(function() {
   // Checks if the user is on the unread page but also started near the unread element,
   // since e.g. on a refresh some browsers will retain your spot on the page
@@ -44,10 +45,7 @@ $(document).ready(function() {
   // TODO fix hack
   // Resizes screennames to be slightly smaller if they're long for UI reasons
   $(".post-screenname").each(function() {
-    if ($(this).height() > 20) {
-      $(this).css('font-size', "14px");
-      if ($(this).height() > 20) $(this).css('font-size', "12px");
-    }
+    resizeScreenname(this);
   });
 
   // Now that we've finished the scripts that change page locations, scroll to #unread

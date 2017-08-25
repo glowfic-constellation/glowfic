@@ -1,4 +1,4 @@
-/* global gon, tinymce, tinyMCE */
+/* global gon, tinymce, tinyMCE, resizeScreenname */
 var tinyMCEInit = false;
 
 $(document).ready(function() {
@@ -294,7 +294,7 @@ function getAndSetCharacterData(characterId, options) {
   // Handle special case where just setting to your base account
   if (characterId === '') {
     $("#post-editor .post-character").hide().data('character-id', '').data('alias-id', '');
-    $("#post-editor .post-screenname").hide();
+    $("#post-editor .post-screenname").hide().html('');
 
     var avatar = gon.current_user.avatar;
     if (avatar && avatar.url !== null) {
@@ -325,10 +325,12 @@ function getAndSetCharacterData(characterId, options) {
     $("#post-editor #post-author-spacer").hide();
     $("#post-editor .post-character").show().data('character-id', characterId);
     $("#post-editor .post-character #name").html(resp.name);
+    var screennameBox = $("#post-editor .post-screenname")
     if (!resp.screenname) {
-      $("#post-editor .post-screenname").hide();
+      screennameBox.hide().html('');
     } else {
-      $("#post-editor .post-screenname").show().html(resp.screenname);
+      screennameBox.show().html(resp.screenname);
+      resizeScreenname(screennameBox);
     }
 
     // Display alias selector if relevant
