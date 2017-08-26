@@ -7,6 +7,8 @@ services:
   - redis-server
   - postgresql
 cache: bundler
+before_install:
+  - gem install bundler
 before_script:
   - psql -c 'create database glowfic_test;' -U postgres
 script:
