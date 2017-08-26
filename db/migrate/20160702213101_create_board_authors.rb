@@ -3,7 +3,7 @@ class CreateBoardAuthors < ActiveRecord::Migration
     create_table :board_authors do |t|
       t.integer :user_id, null: false
       t.integer :board_id, null: false
-      t.timestamps
+      t.timestamps null: true
     end
     add_index :board_authors, :board_id
     add_index :board_authors, :user_id

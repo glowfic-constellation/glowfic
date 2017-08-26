@@ -3,7 +3,7 @@ class CreateTemplates < ActiveRecord::Migration
     create_table :templates do |t|
       t.integer :user_id, :null => false
       t.string :name
-      t.timestamps
+      t.timestamps null: true
     end
     add_index :templates, :user_id
   end

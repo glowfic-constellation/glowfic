@@ -6,7 +6,7 @@ class CreatePostView < ActiveRecord::Migration
       t.boolean :ignored, :default => false
       t.boolean :notify_message, :default => false
       t.boolean :notify_email, :default => false
-      t.timestamps
+      t.timestamps null: true
     end
     add_index :post_views, [:user_id, :post_id]
   end

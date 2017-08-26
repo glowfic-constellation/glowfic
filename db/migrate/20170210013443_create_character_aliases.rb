@@ -3,7 +3,7 @@ class CreateCharacterAliases < ActiveRecord::Migration
     create_table :character_aliases do |t|
       t.integer :character_id, null: false
       t.string :name, null: false
-      t.timestamps
+      t.timestamps null: true
     end
     add_index :character_aliases, :character_id
 

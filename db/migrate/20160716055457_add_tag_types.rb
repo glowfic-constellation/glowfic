@@ -6,7 +6,7 @@ class AddTagTypes < ActiveRecord::Migration
     create_table :character_tags do |t|
       t.integer :character_id, null: false
       t.integer :tag_id, null: false
-      t.timestamps
+      t.timestamps null: true
     end
     add_index :character_tags, :character_id
     add_index :character_tags, :tag_id

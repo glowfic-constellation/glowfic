@@ -3,7 +3,7 @@ class CreateFlatPosts < ActiveRecord::Migration
     create_table :flat_posts do |t|
       t.integer :post_id, :null => false
       t.text :content
-      t.timestamps
+      t.timestamps null: true
     end
     add_index :flat_posts, :post_id
     ids = Post.pluck(:id)

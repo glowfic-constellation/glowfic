@@ -6,7 +6,7 @@ class CreateBoardView < ActiveRecord::Migration
       t.boolean :ignored, :default => false
       t.boolean :notify_message, :default => false
       t.boolean :notify_email, :default => false
-      t.timestamps
+      t.timestamps null: true
     end
     add_index :board_views, [:user_id, :board_id]
   end

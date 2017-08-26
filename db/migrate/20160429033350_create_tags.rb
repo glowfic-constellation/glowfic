@@ -3,7 +3,7 @@ class CreateTags < ActiveRecord::Migration
     create_table :tags do |t|
       t.integer :user_id, null: false
       t.string :name, null: false
-      t.timestamps
+      t.timestamps null: true
     end
     add_index :tags, :name
 
@@ -11,7 +11,7 @@ class CreateTags < ActiveRecord::Migration
       t.integer :post_id, null: false
       t.integer :tag_id, null: false
       t.boolean :suggested, default: false
-      t.timestamps
+      t.timestamps null: true
     end
     add_index :post_tags, :post_id
     add_index :post_tags, :tag_id

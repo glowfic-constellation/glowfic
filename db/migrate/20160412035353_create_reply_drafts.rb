@@ -7,7 +7,7 @@ class CreateReplyDrafts < ActiveRecord::Migration
       t.integer :character_id
       t.integer :icon_id
       t.integer :thread_id
-      t.timestamps
+      t.timestamps null: true
     end
     add_index :reply_drafts, [:post_id, :user_id]
     add_column :users, :default_editor, :string, default: 'rtf'
