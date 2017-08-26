@@ -230,13 +230,13 @@ function galleryString(gallery, multiGallery) {
 }
 
 function iconString(icon) {
-  var img_id = icon.id;
-  var img_url = icon.url;
-  var img_key = icon.keyword;
+  var imgId = icon.id;
+  var imgUrl = icon.url;
+  var imgKey = icon.keyword;
 
-  if (!icon.skip_dropdown) $("#icon_dropdown").append($("<option>").attr({value: img_id}).append(img_key));
-  var icon_img = $("<img>").attr({src: img_url, id: img_id, alt: img_key, title: img_key, 'class': 'icon'});
-  return $("<div>").attr('class', 'gallery-icon').append(icon_img).append("<br />").append(img_key)[0].outerHTML;
+  if (!icon.skip_dropdown) $("#icon_dropdown").append($("<option>").attr({value: imgId}).append(imgKey));
+  var iconImg = $("<img>").attr({src: imgUrl, id: imgId, alt: imgKey, title: imgKey, 'class': 'icon'});
+  return $("<div>").attr('class', 'gallery-icon').append(iconImg).append("<br />").append(imgKey)[0].outerHTML;
 }
 
 function setupTinyMCE() {
@@ -275,11 +275,11 @@ function setupTinyMCE() {
 }
 
 function getAndSetCharacterData(characterId, options) {
-  var restore_icon = false;
-  var restore_alias = false;
+  var restoreIcon = false;
+  var restoreAlias = false;
   if (typeof options !== 'undefined') {
-    restore_icon = options.restore_icon;
-    restore_alias = options.restore_alias;
+    restoreIcon = options.restore_icon;
+    restoreAlias = options.restore_alias;
   }
 
   // Handle page interactions
@@ -306,13 +306,13 @@ function getAndSetCharacterData(characterId, options) {
       $("#gallery").append(iconString({id: '', url: '/images/no-icon.png', keyword: 'No Icon', skip_dropdown: true}));
       bindIcon();
       bindGallery();
-      if (!restore_icon) setIcon(aid, url, keyword, keyword);
+      if (!restoreIcon) setIcon(aid, url, keyword, keyword);
       $("#post-editor #post-author-spacer").show();
     } else {
-      if (!restore_icon) setIcon("");
+      if (!restoreIcon) setIcon("");
       $("#post-editor #post-author-spacer").hide();
     }
-    if (restore_icon) setIconFromId(selectedIconID);
+    if (restoreIcon) setIconFromId(selectedIconID);
     $("#character_alias").val('').trigger("change.select2");
     $("#reply_character_alias_id").val('');
 
@@ -341,8 +341,8 @@ function getAndSetCharacterData(characterId, options) {
         $("#character_alias").append($("<option>").attr({value: resp.aliases[i].id}).append(resp.aliases[i].name));
       }
       // Restore active alias, but only if not already restoring an alias
-      if (typeof resp.alias_id_for_post !== "undefined" && !restore_alias) {
-        restore_alias = true;
+      if (typeof resp.alias_id_for_post !== "undefined" && !restoreAlias) {
+        restoreAlias = true;
         selectedAliasID = resp.alias_id_for_post;
         $("#reply_character_alias_id").val(selectedAliasID);
       }
@@ -350,7 +350,7 @@ function getAndSetCharacterData(characterId, options) {
       $("#swap-alias").hide();
     }
 
-    if (restore_alias && selectedAliasID) {
+    if (restoreAlias && selectedAliasID) {
       var correctName = $("#character_alias option[value="+selectedAliasID+"]").text();
       $("#post-editor .post-character #name").html(correctName);
       $("#post-editor .post-character").data('alias-id', selectedAliasID);
@@ -385,7 +385,7 @@ function getAndSetCharacterData(characterId, options) {
     $("#gallery").append(iconString({id: '', url: '/images/no-icon.png', keyword: 'No Icon', skip_dropdown: true}));
     bindGallery();
     bindIcon();
-    if (restore_icon)
+    if (restoreIcon)
       setIconFromId(selectedIconID);
     else
       setIcon(resp.default.id, resp.default.url, resp.default.keyword, resp.default.keyword);
@@ -423,8 +423,8 @@ function setIcon(id, url, title, alt) {
 }
 
 function setSections() {
-  var board_id = $("#post_board_id").val();
-  $.get("/api/v1/boards/"+board_id, {}, function(resp) {
+  var boardId = $("#post_board_id").val();
+  $.get("/api/v1/boards/"+boardId, {}, function(resp) {
     var sections = resp.board_sections;
     if (sections.length > 0) {
       $("#section").show();

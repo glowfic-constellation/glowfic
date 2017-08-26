@@ -1,55 +1,55 @@
-var image_ids = [];
-var skip_warning = false;
+var imageIds = [];
+var skipWarning = false;
 $(document).ready(function() {
   bindGalleryIcons(".add-gallery-icon");
 
   $("#add-gallery-icons").submit(function() {
-    if (image_ids.length < 1) return false;
-    $("#image_ids").val(image_ids);
-    skip_warning = true;
+    if (imageIds.length < 1) return false;
+    $("#image_ids").val(imageIds);
+    skipWarning = true;
     return true;
   });
 
   $(".gallery-minmax").click(function() {
-    var gallery_id = $(this).data('id');
+    var galleryId = $(this).data('id');
 
     // Hide icons if they're already visible
-    if ($("#icons-" + gallery_id).is(':visible')) {
-      $("#icons-" + gallery_id).hide();
-      $("#minmax-" + gallery_id).text("+");
+    if ($("#icons-" + galleryId).is(':visible')) {
+      $("#icons-" + galleryId).hide();
+      $("#minmax-" + galleryId).text("+");
       return;
     }
 
     // Show icons if they're hidden
-    $("#icons-" + gallery_id).show();
-    $("#minmax-" + gallery_id).text("-");
-    if ($("#icons-" + gallery_id).html().length > 0) { return; }
+    $("#icons-" + galleryId).show();
+    $("#minmax-" + galleryId).text("-");
+    if ($("#icons-" + galleryId).html().length > 0) { return; }
 
     // Load and bind icons if they have not already been loaded
-    $.get("/api/v1/galleries/" + gallery_id, {}, function(resp) {
+    $.get("/api/v1/galleries/" + galleryId, {}, function(resp) {
       $.each(resp.icons, function(index, icon) {
-        var icon_div = $("<div>").attr({class: 'gallery-icon'});
-        var icon_img = $("<img>").attr({src: icon.url, alt: icon.keyword, title: icon.keyword, 'class': 'icon add-gallery-icon', 'data-id': icon.id});
-        icon_div.append(icon_img).append("<br>").append($("<span>").attr({class: 'icon-keyword'}).append(icon.keyword));
-        $("#icons-" + gallery_id).append(icon_div);
+        var iconDiv = $("<div>").attr({class: 'gallery-icon'});
+        var iconImg = $("<img>").attr({src: icon.url, alt: icon.keyword, title: icon.keyword, 'class': 'icon add-gallery-icon', 'data-id': icon.id});
+        iconDiv.append(iconImg).append("<br>").append($("<span>").attr({class: 'icon-keyword'}).append(icon.keyword));
+        $("#icons-" + galleryId).append(iconDiv);
       });
-      bindGalleryIcons("#icons-" + gallery_id + " .add-gallery-icon");
+      bindGalleryIcons("#icons-" + galleryId + " .add-gallery-icon");
     });
   });
 });
 
 $(window).on('beforeunload', function() {
-  if (skip_warning || image_ids.length === 0) return;
-  return "Are you sure you wish to navigate away? You have " + image_ids.length + " image(s) selected.";
+  if (skipWarning || imageIds.length === 0) return;
+  return "Are you sure you wish to navigate away? You have " + imageIds.length + " image(s) selected.";
 });
 
-function bindGalleryIcons(css_selector) {
-  $(css_selector).click(function() {
+function bindGalleryIcons(selector) {
+  $(selector).click(function() {
     $(this).toggleClass('selected-icon');
     if ($(this).hasClass('selected-icon')) {
-      image_ids.push(this.dataset.id);
+      imageIds.push(this.dataset.id);
     } else {
-      image_ids.pop(this.dataset.id);
+      imageIds.pop(this.dataset.id);
     }
   });
 }

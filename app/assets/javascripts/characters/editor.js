@@ -1,8 +1,8 @@
 /* global gon */
-var gallery_ids = [];
+var galleryIds = [];
 
 $(document).ready(function() {
-  gallery_ids = jQuery.map($(".gallery div"), function(el) { return el.dataset.id; });
+  galleryIds = jQuery.map($(".gallery div"), function(el) { return el.dataset.id; });
 
   $("#character_setting_ids").select2({
     width: '100%',
@@ -30,32 +30,32 @@ $(document).ready(function() {
   $("#character_gallery_ids").change(function() {
     $("#character_default_icon_id").val('');
 
-    var new_gallery_ids = $(this).val() || [];
+    var newGalleryIds = $(this).val() || [];
 
     // a gallery was removed
-    if (gallery_ids.length > new_gallery_ids.length) {
-      var removed_gallery = $(gallery_ids).not(new_gallery_ids).get();
-      gallery_ids = new_gallery_ids;
-      $(".gallery #gallery"+removed_gallery).remove();
+    if (galleryIds.length > newGalleryIds.length) {
+      var removedGallery = $(galleryIds).not(newGalleryIds).get();
+      galleryIds = newGalleryIds;
+      $(".gallery #gallery"+removedGallery).remove();
 
       // if no more galleries are left, display galleryless icons
-      if (gallery_ids.length === 0) {
+      if (galleryIds.length === 0) {
         displayGallery('0');
       }
       return;
     }
 
-    var new_id = $(new_gallery_ids).not(gallery_ids).get();
-    gallery_ids = new_gallery_ids;
+    var newId = $(newGalleryIds).not(galleryIds).get();
+    galleryIds = newGalleryIds;
     $(".gallery #gallery0").remove();
 
-    displayGallery(new_id);
+    displayGallery(newId);
   });
 });
 
-function displayGallery(new_id) {
-  $.get('/api/v1/galleries/'+new_id, function(resp) {
-    var galleryObj = $("<div>").attr({id: 'gallery'+new_id}).data('id', new_id);
+function displayGallery(newId) {
+  $.get('/api/v1/galleries/'+newId, function(resp) {
+    var galleryObj = $("<div>").attr({id: 'gallery'+newId}).data('id', newId);
     galleryObj.append("<br />");
     galleryObj.append($("<b>").attr({class: 'gallery-name'}).append(resp.name));
     galleryObj.append("<br />");
