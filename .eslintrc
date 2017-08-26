@@ -147,7 +147,9 @@ rules:
     - 1
     - 1tbs
     - allowSingleLine: true
-  camelcase: 1
+  camelcase:
+    - 1
+    - properties: never
   capitalized-comments: 0
   comma-dangle: 0
   comma-spacing: 1

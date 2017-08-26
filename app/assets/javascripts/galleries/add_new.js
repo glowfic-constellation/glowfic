@@ -64,23 +64,23 @@ function bindAdd() {
 }
 
 function addNewRow() {
-  var new_row = $(".icon-row:last").clone();
-  var index = new_row.data('index') + 1;
-  new_row.attr('data-index', index);
+  var newRow = $(".icon-row:last").clone();
+  var index = newRow.data('index') + 1;
+  newRow.data('index', index);
 
   // clear all input values in the clone
-  var inputs = new_row.find('input');
+  var inputs = newRow.find('input');
   inputs.val('');
 
   // handle the URL field specially
   // because uploads have special UI
   var urlField = inputs.first();
-  new_row.find('.conf').remove();
+  newRow.find('.conf').remove();
   urlField.show();
   urlField.attr('id', 'icons_'+index+'_url');
 
-  new_row.insertBefore($(".submit-row"));
-  $("td:has(input)", new_row).each(function() {
+  newRow.insertBefore($(".submit-row"));
+  $("td:has(input)", newRow).each(function() {
     $(this).keydown(processDirectionalKey);
   });
   return index;
@@ -88,8 +88,8 @@ function addNewRow() {
 
 function bindRem() {
   $(".icon-row-rem").click(function() {
-    var rem_row = $(this).parent().parent();
-    rem_row.remove();
+    var remRow = $(this).parent().parent();
+    remRow.remove();
     fixButtons();
   });
 }
@@ -190,7 +190,7 @@ function cleanUpRows() {
     if (!anySet) $(this).remove();
   });
   $(".icon-row").each(function(index) {
-    $(this).attr('data-index', index);
+    $(this).data('index', index);
     $(this).find('input').first().attr('id', 'icons_'+index+'_url');
   });
   fixButtons();

@@ -16,6 +16,7 @@
 //= require jquery-fileupload/basic
 //= require tinymce-jquery
 //= require select2
+/* global gon */
 
 $(document).ready(function() {
   $(".chosen-select").select2({
@@ -55,7 +56,7 @@ $(document).ready(function() {
   });
 });
 
-function add_parameter(url, param, value) {
+function addParameter(url, param, value) {
   var hash = {};
   var parser = document.createElement('a');
 
