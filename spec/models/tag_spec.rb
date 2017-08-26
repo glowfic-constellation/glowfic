@@ -7,11 +7,11 @@ RSpec.describe Tag do
       bad_tag = create(:label)
 
       # TODO handle properly with nested attributes
-      create(:post, label_ids: [good_tag.id], setting_ids: [], warning_ids: [])
-      create(:post, label_ids: [good_tag.id], setting_ids: [], warning_ids: [])
-      create(:post, label_ids: [good_tag.id], setting_ids: [], warning_ids: [])
-      create(:post, label_ids: [bad_tag.id], setting_ids: [], warning_ids: [])
-      create(:post, label_ids: [bad_tag.id], setting_ids: [], warning_ids: [])
+      create(:post, label_ids: [good_tag.id], setting_ids: [], content_warning_ids: [])
+      create(:post, label_ids: [good_tag.id], setting_ids: [], content_warning_ids: [])
+      create(:post, label_ids: [good_tag.id], setting_ids: [], content_warning_ids: [])
+      create(:post, label_ids: [bad_tag.id], setting_ids: [], content_warning_ids: [])
+      create(:post, label_ids: [bad_tag.id], setting_ids: [], content_warning_ids: [])
 
       expect(good_tag.posts.count).to eq(3)
       expect(bad_tag.posts.count).to eq(2)

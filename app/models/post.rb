@@ -32,8 +32,8 @@ class Post < ActiveRecord::Base
   has_many :content_warnings, through: :post_tags, source: :content_warning, after_add: :reset_warnings
   has_many :favorites, as: :favorite, dependent: :destroy
 
-  attr_accessible :board, :board_id, :subject, :privacy, :viewer_ids, :description, :section_id, :label_ids, :warning_ids, :setting_ids, :section_order, :status, :authors_locked
-  attr_accessor :label_ids, :warning_ids, :setting_ids, :is_import
+  attr_accessible :board, :board_id, :subject, :privacy, :viewer_ids, :description, :section_id, :label_ids, :content_warning_ids, :setting_ids, :section_order, :status, :authors_locked
+  attr_accessor :is_import, :label_ids, :content_warning_ids, :setting_ids
   attr_writer :skip_edited
 
   validates_presence_of :board, :subject
@@ -246,9 +246,9 @@ class Post < ActiveRecord::Base
   end
 
   def update_tag_list
-    return unless label_ids.present? || setting_ids.present? || warning_ids.present?
+    return unless label_ids.present? || setting_ids.present? || content_warning_ids.present?
 
-    updated_ids = ((label_ids || []) + (setting_ids || []) + (warning_ids || []) - ['']).map(&:to_i).reject(&:zero?).uniq.compact
+    updated_ids = ((label_ids || []) + (setting_ids || []) + (content_warning_ids || []) - ['']).map(&:to_i).reject(&:zero?).uniq.compact
     existing_ids = post_tags.map(&:tag_id)
 
     PostTag.where(post_id: id, tag_id: (existing_ids - updated_ids)).destroy_all

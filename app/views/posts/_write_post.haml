@@ -16,8 +16,8 @@
     = f.label :setting_ids, 'Setting:'
     = f.select :setting_ids, options_from_collection_for_select(@settings, :id, :name, post.setting_ids || post.settings.map(&:id)), {}, {multiple: true}
     %br
-    = f.label :warning_ids, 'Content Warnings:'
-    = f.select :warning_ids, options_from_collection_for_select(@warnings, :id, :name, post.warning_ids || post.content_warnings.map(&:id)), {}, {multiple: true}
+    = f.label :content_warning_ids, 'Content Warnings:'
+    = f.select :content_warning_ids, options_from_collection_for_select(@warnings, :id, :name, post.content_warning_ids || post.content_warnings.map(&:id)), {}, {multiple: true}
     %br
     = f.label :label_ids, 'Labels:'
     = f.select :label_ids, options_from_collection_for_select(@tags, :id, :name, post.label_ids || post.labels.map(&:id)), {}, {multiple: true}

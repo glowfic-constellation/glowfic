@@ -257,7 +257,7 @@ RSpec.describe PostsController do
     it "creates new tags" do
       existing_name = create(:label)
       existing_case = create(:label)
-      tags = ['atag', 'atag', create(:label).id, '', existing_name.name, existing_case.name.upcase]
+      tags = ['_atag', '_atag', create(:label).id, '', '_' + existing_name.name, '_' + existing_case.name.upcase]
       login
       expect {
         post :create, post: {subject: 'a', board_id: create(:board).id, label_ids: tags}
@@ -269,7 +269,7 @@ RSpec.describe PostsController do
     it "creates new settings" do
       existing_name = create(:setting)
       existing_case = create(:setting)
-      tags = ['atag', 'atag', create(:setting).id, '', existing_name.name, existing_case.name.upcase]
+      tags = ['_atag', '_atag', create(:setting).id, '', '_' + existing_name.name, '_' + existing_case.name.upcase]
       login
       expect {
         post :create, post: {subject: 'a', board_id: create(:board).id, setting_ids: tags}
@@ -281,10 +281,10 @@ RSpec.describe PostsController do
     it "creates new content warnings" do
       existing_name = create(:content_warning)
       existing_case = create(:content_warning)
-      tags = ['atag', 'atag', create(:content_warning).id, '', existing_name.name, existing_case.name.upcase]
+      tags = ['_atag', '_atag', create(:content_warning).id, '', '_' + existing_name.name, '_' + existing_case.name.upcase]
       login
       expect {
-        post :create, post: {subject: 'a', board_id: create(:board).id, warning_ids: tags}
+        post :create, post: {subject: 'a', board_id: create(:board).id, content_warning_ids: tags}
       }.to change{ContentWarning.count}.by(1)
       expect(ContentWarning.last.name).to eq('atag')
       expect(assigns(:post).content_warnings.count).to eq(4)

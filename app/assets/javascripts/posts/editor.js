@@ -30,7 +30,7 @@ $(document).ready(function() {
 
   createTagSelect("Label", "label");
   createTagSelect("Setting", "setting");
-  createTagSelect("ContentWarning", "warning");
+  createTagSelect("ContentWarning", "content_warning");
 
   if (String($("#post_privacy").val()) !== String(PRIVACY_ACCESS)) {
     $("#access_list").hide();
@@ -444,7 +444,7 @@ function createTagSelect(tagType, selector) {
   $("#post_"+selector+"_ids").select2({
     tags: true,
     tokenSeparators: [','],
-    placeholder: 'Enter ' + selector + '(s) separated by commas',
+    placeholder: 'Enter ' + selector.replace('_', ' ') + '(s) separated by commas',
     ajax: {
       delay: 200,
       url: '/api/v1/tags',
@@ -468,6 +468,15 @@ function createTagSelect(tagType, selector) {
         };
       },
       cache: true
+    },
+    createTag: function(params) {
+      var term = $.trim(params.term);
+      if (term === '') return null;
+
+      return {
+        id: '_' + term,
+        text: term
+      };
     },
     width: '300px'
   });

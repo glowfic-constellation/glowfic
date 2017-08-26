@@ -337,50 +337,60 @@ class PostsController < WritableController
   end
 
   def build_tags
-    faked = Struct.new(:name, :id)
-    @settings = build_subtags(Setting, :setting_ids, faked)
-    @warnings = build_subtags(ContentWarning, :warning_ids, faked)
-    @tags = build_subtags(Label, :label_ids, faked)
+    @settings = build_subtags(@post, Setting)
+    @warnings = build_subtags(@post, ContentWarning)
+    @tags = build_subtags(@post, Label)
   end
 
-  def build_subtags(klass, method, faked)
-    return [] unless @post
+  def build_subtags(model, klass)
+    return [] unless model
+    base = klass.to_s.underscore
+    method = base.pluralize
+    id_method = base + '_ids'
 
-    existing_saved = @post.send(klass.to_s.underscore.pluralize) || []
-    return existing_saved unless @post.send(method)
+    tags = model.send(method)
+    return tags unless model.send(id_method)
 
-    existing_unsaved = klass.where(id: @post.send(method) - (existing_saved.map { |es| es.id.to_s }))
-    new_tags = @post.send(method).reject { |t| t.blank? || !t.to_i.zero? }
-    existing_saved + existing_unsaved + (new_tags.map { |t| faked.new(t, t) })
+    faked = Struct.new(:id, :name)
+
+    unsaved = model.send(id_method).select {|i| i.to_s.start_with?('_') }.map {|name| name[1..-1] }
+    existing = klass.where(name: unsaved)
+    existing_names = existing.map(&:name).map(&:upcase)
+    new_tags = unsaved.reject { |name| existing_names.include?(name.upcase) }
+    tags + existing + (new_tags.map { |t| faked.new('_' + t, t) })
   end
 
   def create_new_tags
-    if @post.setting_ids.present?
-      tags = @post.setting_ids.select { |id| id.to_i.zero? }.reject(&:blank?).uniq
-      @post.setting_ids -= tags
-      existing_tags = Setting.where(name: tags)
-      @post.setting_ids += existing_tags.map(&:id)
-      tags -= existing_tags.map(&:name)
-      @post.setting_ids += tags.map { |tag| Setting.create(user: current_user, name: tag).id }
-    end
+    create_new_subtags(@post, Setting)
+    create_new_subtags(@post, ContentWarning)
+    create_new_subtags(@post, Label)
+  end
 
-    if @post.warning_ids.present?
-      tags = @post.warning_ids.select { |id| id.to_i.zero? }.reject(&:blank?).uniq
-      @post.warning_ids -= tags
-      existing_tags = ContentWarning.where(name: tags)
-      @post.warning_ids += existing_tags.map(&:id)
-      tags -= existing_tags.map(&:name)
-      @post.warning_ids += tags.map { |tag| ContentWarning.create(user: current_user, name: tag).id }
-    end
+  def create_new_subtags(model, klass)
+    base = klass.to_s.underscore
+    method = base.pluralize
+    id_method = base + '_ids'
+    id_method_assign = id_method + '='
 
-    if @post.label_ids.present?
-      tags = @post.label_ids.select { |id| id.to_i.zero? }.reject(&:blank?).uniq
-      @post.label_ids -= tags
-      existing_tags = Label.where(name: tags)
-      @post.label_ids += existing_tags.map(&:id)
-      tags -= existing_tags.map(&:name)
-      @post.label_ids += tags.map { |tag| Label.create(user: current_user, name: tag).id }
-    end
+    return if model.send(id_method).blank?
+
+    # find fake tags by initial underscore
+    tags = model.send(id_method).select { |id| id.to_s.start_with?('_') }.uniq
+    # remove faked tags from association
+    model.send(id_method_assign, model.send(id_method) - tags)
+    # trim fake tag names
+    tags = tags.map { |name| name[1..-1] }
+
+    # find existing tags by same name
+    existing_tags = klass.where(name: tags)
+    model.send(id_method_assign, model.send(id_method) + existing_tags.map(&:id))
+    # remove fakes with same name
+    existing_tag_names = existing_tags.map(&:name).map(&:upcase)
+    tags = tags.reject { |name| existing_tag_names.include?(name.upcase) }
+
+    # create real tags for fakes
+    new_tags = tags.map { |tag| klass.create(user: current_user, name: tag).id }
+    model.send(id_method_assign, model.send(id_method) + new_tags)
   end
 
   def editor_setup
