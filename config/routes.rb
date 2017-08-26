@@ -100,6 +100,7 @@ Rails.application.routes.draw do
       resources :galleries, only: :show
       resources :posts, only: :show do
         resources :replies, only: :index
+        collection { post :reorder }
       end
       resources :tags, only: :index
       resources :templates, only: :index

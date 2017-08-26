@@ -23,6 +23,9 @@
           .link-box.green + New Section
         #loading.float-right.hidden
           = image_tag '/images/loading.gif', title: 'Loading...', class: 'vmid', alt: '...', style: 'width: 16px; height: 16px;'
+        #saveerror.float-right.hidden
+          = image_tag '/images/exclamation.png', title: 'Error', class: 'vmid', alt: '!'
+          Error, please refresh
         #saveconf.float-right.hidden
           = image_tag '/images/accept.png', title: 'Saved', class: 'vmid', alt: ''
           Saved
@@ -30,7 +33,7 @@
     - @board_sections.each do |section|
       %tr{class: 'section-ordered', data: {id: section.id, type: section.class.to_s, order: section.section_order}}
         %td.padding-5{class: cycle('even', 'odd')}
-          = link_to 'Section: ' + section.name, board_section_path(section)
+          = link_to section.name, board_section_path(section)
           .float-right
             = image_tag "/images/arrow_up.png", class: "section-up disabled-arrow"
             = image_tag "/images/arrow_down.png", class: "section-down disabled-arrow"
@@ -52,6 +55,9 @@
           Organize Unsectioned Posts
           #loading.float-right.hidden
             = image_tag '/images/loading.gif', title: 'Loading...', class: 'vmid', alt: '...', style: 'width: 16px; height: 16px;'
+          #saveerror.float-right.hidden
+            = image_tag '/images/exclamation.png', title: 'Error', class: 'vmid', alt: '!'
+            Error, please refresh
           #saveconf.float-right.hidden
             = image_tag '/images/accept.png', title: 'Saved', class: 'vmid', alt: ''
             Saved

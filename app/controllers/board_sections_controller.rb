@@ -36,6 +36,7 @@ class BoardSectionsController < ApplicationController
   def edit
     @page_title = 'Edit ' + @board_section.name
     use_javascript('board_sections')
+    gon.section_id = @board_section.id
   end
 
   def update
@@ -50,6 +51,8 @@ class BoardSectionsController < ApplicationController
       flash.now[:error][:message] = "Section could not be updated."
       flash.now[:error][:array] = @board_section.errors.full_messages
       @page_title = 'Edit ' + @board_section.name_was
+      use_javascript('board_sections')
+      gon.section_id = @board_section.id
       render action: :edit
     end
   end
