@@ -20,7 +20,7 @@ gem 'nokogiri'
 gem 'pg', '0.20.0'
 gem 'pg_search'
 gem 'protected_attributes'
-gem 'rails', '4.1.16'
+gem 'rails', '4.2.8'
 gem 'rack-pratchett'
 gem 'redis-rails'
 gem 'resque'
@@ -41,6 +41,10 @@ group :production do
   gem 'rack-timeout'
   gem 'rails_12factor'
   gem 'tunemygc'
+end
+
+group :development do
+  gem 'web-console', '~> 2.0'
 end
 
 group :development, :test do

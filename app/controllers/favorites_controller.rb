@@ -9,21 +9,28 @@ class FavoritesController < ApplicationController
     end
 
     @posts = Post.unscoped
-    where_calc = Post.unscoped
+    arel = Post.arel_table
+    where_calc = nil
 
     current_user.favorites.each do |favorite_rec|
+      new_calc = nil
       if favorite_rec.favorite_type == User.to_s
-        where_calc = where_calc.where(user_id: favorite_rec.favorite_id)
+        new_calc = arel[:user_id].eq(favorite_rec.favorite_id)
         reply_ids = Reply.where(user_id: favorite_rec.favorite_id).pluck('distinct post_id')
-        where_calc = where_calc.where(id: reply_ids)
+        new_calc = new_calc.or(arel[:id].in(reply_ids))
       elsif favorite_rec.favorite_type == Post.to_s
-        where_calc = where_calc.where(id: favorite_rec.favorite_id)
+        new_calc = arel[:id].eq(favorite_rec.favorite_id)
       elsif favorite_rec.favorite_type == Board.to_s
-        where_calc = where_calc.where(board_id: favorite_rec.favorite_id)
+        new_calc = arel[:board_id].eq(favorite_rec.favorite_id)
+      end
+      if where_calc.nil?
+        where_calc = new_calc
+      else
+        where_calc = where_calc.or(new_calc)
       end
     end
 
-    @posts = posts_from_relation(@posts.where(where_calc.where_values.reduce(:or)).order('tagged_at desc'))
+    @posts = posts_from_relation(@posts.where(where_calc).order('tagged_at desc'))
     @hide_quicklinks = true
     @page_title = 'Favorites'
   end

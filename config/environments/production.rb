@@ -1,4 +1,4 @@
-Glowfic::Application.configure do
+Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
 
   # Code is not reloaded between requests.
@@ -20,6 +20,8 @@ Glowfic::Application.configure do
   # NGINX, varnish or squid.
   # config.action_dispatch.rack_cache = true
 
+  # Disable serving static files from the `/public` folder by default since
+  # Apache or NGINX already handles this.
   config.serve_static_files = ENV['RAILS_SERVE_STATIC_FILES'].present?
   config.static_cache_control = 'public, max-age=31536000'
 
@@ -74,6 +76,9 @@ Glowfic::Application.configure do
 
   # Use default logging formatter so that PID and timestamp are not suppressed.
   config.log_formatter = ::Logger::Formatter.new
+
+  # Do not dump schema after migrations.
+  config.active_record.dump_schema_after_migration = false
 
   # use ExceptionNotification to email Marri stack traces
   Rails.application.config.middleware.use ExceptionNotification::Rack,

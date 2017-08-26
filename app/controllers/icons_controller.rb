@@ -42,8 +42,9 @@ class IconsController < ApplicationController
   def show
     @page_title = @icon.keyword
     if params[:view] == 'posts'
-      where_calc = Post.where(icon_id: @icon.id).where(id: Reply.where(icon_id: @icon.id).pluck('distinct post_id'))
-      @posts = posts_from_relation(Post.where(where_calc.where_values.reduce(:or)).order('tagged_at desc'))
+      arel = Post.arel_table
+      where_calc = arel[:icon_id].eq(@icon.id).or(arel[:id].in(Reply.where(icon_id: @icon.id).pluck('distinct post_id')))
+      @posts = posts_from_relation(Post.where(where_calc).order('tagged_at desc'))
     end
   end
 
