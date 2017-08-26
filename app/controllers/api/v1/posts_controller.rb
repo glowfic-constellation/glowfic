@@ -1,4 +1,5 @@
 class Api::V1::PostsController < Api::ApiController
+  before_filter :login_required, except: :show
   resource_description do
     description 'Viewing and editing posts'
   end
@@ -25,7 +26,7 @@ class Api::V1::PostsController < Api::ApiController
   param :ordered_post_ids, Array, allow_blank: false
   param :section_id, :number, required: false
   def reorder
-    section_id = params[:section_id]
+    section_id = params[:section_id] ? params[:section_id].to_i : nil
     post_ids = params[:ordered_post_ids].map(&:to_i).uniq
     posts = Post.where(id: post_ids)
     posts_count = posts.count
