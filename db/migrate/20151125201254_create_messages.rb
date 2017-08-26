@@ -13,7 +13,7 @@ class CreateMessages < ActiveRecord::Migration
       t.boolean :marked_inbox, :default => false
       t.boolean :marked_outbox, :default => false
       t.datetime :read_at
-      t.timestamps
+      t.timestamps null: true
     end
     add_index :messages, :sender_id
     add_index :messages, [:recipient_id, :unread]

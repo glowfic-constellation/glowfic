@@ -5,7 +5,7 @@ class CreateBoardSections < ActiveRecord::Migration
       t.string :name, :null => false
       t.integer :status, :null => false, :default => 0
       t.integer :section_order, :null => false
-      t.timestamps
+      t.timestamps null: true
     end
     add_column :posts, :section_id, :integer
     add_column :posts, :section_order, :integer

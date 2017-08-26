@@ -4,7 +4,7 @@ class CreateGalleries < ActiveRecord::Migration
       t.integer :user_id, :null => false
       t.string :name, :null => false
       t.integer :cover_icon_id
-      t.timestamps
+      t.timestamps null: true
     end
     add_index :galleries, :user_id
   end

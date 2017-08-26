@@ -8,7 +8,7 @@ class CreateCharacters < ActiveRecord::Migration
       t.integer :gallery_id
       t.integer :template_id
       t.integer :default_icon_id
-      t.timestamps
+      t.timestamps null: true
     end
     add_index :characters, :screenname, unique: true
     add_index :characters, :user_id

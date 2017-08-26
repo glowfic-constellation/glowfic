@@ -6,7 +6,7 @@ class CreateUsers < ActiveRecord::Migration
       t.integer :avatar_id
       t.integer :active_character_id
       t.integer :per_page, :default => 25
-      t.timestamps
+      t.timestamps null: true
     end
     add_index :users, :username, unique: true
   end

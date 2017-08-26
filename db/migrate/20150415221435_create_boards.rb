@@ -4,7 +4,7 @@ class CreateBoards < ActiveRecord::Migration
       t.string :name, :null => false
       t.integer :creator_id, :null => false
       t.integer :coauthor_id
-      t.timestamps
+      t.timestamps null: true
     end
   end
 end

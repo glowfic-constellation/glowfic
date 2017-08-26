@@ -4,7 +4,7 @@ class CreateIcons < ActiveRecord::Migration
       t.integer :user_id, :null => false
       t.string :url, :null => false
       t.string :keyword, :null => false
-      t.timestamps
+      t.timestamps null: true
     end
     add_index :icons, :user_id
     add_index :icons, :keyword

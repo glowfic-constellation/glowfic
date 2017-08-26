@@ -8,7 +8,7 @@ class CreatePosts < ActiveRecord::Migration
       t.integer :character_id
       t.integer :icon_id
       t.integer :privacy, :null => false, :default => 0
-      t.timestamps
+      t.timestamps null: true
     end
     add_index :posts, :board_id
     add_index :posts, :user_id
