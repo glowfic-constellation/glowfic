@@ -13,28 +13,31 @@
 
 %br
 %br
-.post-header
-  .padding-15
-    Organize Continuity Index
-    = link_to new_board_section_path params: {board_id: @board.id} do
-      .link-box.green + New Section
-    #loading.float-right.hidden
-      = image_tag '/images/loading.gif', title: 'Loading...', class: 'vmid', alt: '...'
-    #saveconf.float-right.hidden{style: 'padding-top: 4px;'}
-      = image_tag '/images/accept.png', title: 'Saved', class: 'vmid', alt: ''
-      Saved
-%table#section-table
-  - @board_sections.each do |section|
-    %tr{id: "section-#{section.section_order}", data: {section: section.id, type: section.class.to_s}}
-      %td.padding-5{class: cycle('even', 'odd')}
-        = link_to 'Section: ' + section.name, board_section_path(section)
-        .float-right
-          = image_tag "/images/arrow_up.png", class: "section-up pointer", data: {order: section.section_order}
-          = image_tag "/images/arrow_down.png", class: "section-down pointer", data: {order: section.section_order}
-          = link_to edit_board_section_path(section) do
-            = image_tag "/images/pencil.png"
-          = link_to board_section_path(section), method: :delete, data: { confirm: 'Are you sure you want to delete this board section?' } do
-            = image_tag "/images/cross.png"
-  - if @board_sections.empty?
+- reset_cycle
+%table#reorder-sections-table
+  %thead
     %tr
-      %td.centered.padding-10{ class: cycle('even','odd'), colspan: 6 } — No items yet —
+      %th.post-header
+        Organize Continuity Sections
+        = link_to new_board_section_path params: {board_id: @board.id} do
+          .link-box.green + New Section
+        #loading.float-right.hidden
+          = image_tag '/images/loading.gif', title: 'Loading...', class: 'vmid', alt: '...', style: 'width: 16px; height: 16px;'
+        #saveconf.float-right.hidden
+          = image_tag '/images/accept.png', title: 'Saved', class: 'vmid', alt: ''
+          Saved
+  %tbody
+    - @board_sections.each do |section|
+      %tr{class: 'section-ordered', data: {id: section.id, type: section.class.to_s, order: section.section_order}}
+        %td.padding-5{class: cycle('even', 'odd')}
+          = link_to 'Section: ' + section.name, board_section_path(section)
+          .float-right
+            = image_tag "/images/arrow_up.png", class: "section-up disabled-arrow"
+            = image_tag "/images/arrow_down.png", class: "section-down disabled-arrow"
+            = link_to edit_board_section_path(section) do
+              = image_tag "/images/pencil.png"
+            = link_to board_section_path(section), method: :delete, data: { confirm: 'Are you sure you want to delete this board section?' } do
+              = image_tag "/images/cross.png"
+    - if @board_sections.empty?
+      %tr
+        %td.centered.padding-10{ class: cycle('even','odd'), colspan: 6 } — No items yet —

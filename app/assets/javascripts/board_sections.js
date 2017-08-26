@@ -1,62 +1,67 @@
 $(document).ready(function() {
-  bindArrows();
+  bindArrows($("#reorder-sections-table"));
 });
 
-function bindArrows() {
-  $(".section-up").click(function() {
-    var old_order = parseInt($(this).attr('data-order'));
-    var new_order = old_order - 1;
-    if (old_order === 0) return false;
-    switchRows(old_order, new_order);
+// orderBox is the box the ordering is scoped to
+// so that a single page can have multiple separate ordering structures
+function bindArrows(orderBox) {
+  $(".section-up", orderBox).click(function() {
+    var sourceRow = $(this).closest('.section-ordered');
+    var targetRow = sourceRow.prev('.section-ordered');
+    if (targetRow.length === 0) return false;
+    moveRow(sourceRow, targetRow, orderBox);
     return false;
-  });
+  }).addClass('pointer').removeClass('disabled-arrow');
 
-  $(".section-down").click(function() {
-    var old_order = parseInt($(this).attr('data-order'));
-    var new_order = old_order + 1;
-    if (document.getElementById("section-"+new_order) === null) return false;
-    switchRows(old_order, new_order);
+  $(".section-down", orderBox).click(function() {
+    var sourceRow = $(this).closest('.section-ordered');
+    var targetRow = sourceRow.next('.section-ordered');
+    if (targetRow.length === 0) return false;
+    moveRow(sourceRow, targetRow, orderBox);
     return false;
-  });
+  }).addClass('pointer').removeClass('disabled-arrow');
+
+  $(".section-up", orderBox).first().addClass('disabled-arrow').removeClass('pointer');
+  $(".section-down", orderBox).last().addClass('disabled-arrow').removeClass('pointer');
 }
 
-function unbindArrows() {
-  $(".section-down").unbind();
-  $(".section-up").unbind();
+function unbindArrows(orderBox) {
+  $(".section-down", orderBox).unbind().addClass('disabled-arrow').removeClass('pointer');
+  $(".section-up", orderBox).unbind().addClass('disabled-arrow').removeClass('pointer');
 }
 
-function switchRows(old_order, new_order) {
-  unbindArrows(); // Reduce race conditions by only allowing one update at a time
-  $("#loading").show();
-  $("#saveconf").stop(true, true).hide();
+function reorderRows(orderBox) {
+  var arrowBox = $('tbody', orderBox);
+  var rows = $('.section-ordered', orderBox);
+  rows.sort(function(a, b) { return $(a).data('order') > $(b).data('order') ? 1 : -1; }).appendTo(arrowBox);
+  $("tr:even td", orderBox).removeClass('even').addClass('odd');
+  $("tr:odd td", orderBox).removeClass('odd').addClass('even');
+}
 
-  var this_row = $("#section-"+old_order);
-  var that_row = $("#section-"+new_order);
-  $("#section-"+old_order+" img").attr('data-order', new_order);
-  $("#section-"+new_order+" img").attr('data-order', old_order);
-  this_row.attr('id', "section-"+new_order);
-  that_row.attr('id', "section-"+old_order);
+function moveRow(sourceRow, targetRow, orderBox) {
+  unbindArrows(orderBox);
+  // Reduce race conditions by only allowing one update at a time
+  $("#loading", orderBox).show();
+  $("#saveconf", orderBox).stop(true, true).hide();
 
-  if (old_order > new_order) {
-    this_row.insertBefore(that_row);
-  } else {
-    this_row.insertAfter(that_row);
-  }
-  $("#section-table tr:odd td").removeClass('even').addClass("odd");
-  $("#section-table tr:even td").removeClass('odd').addClass("even");
+  var sourceOrder = sourceRow.data('order');
+  var targetOrder = targetRow.data('order');
+  sourceRow.data('order', targetOrder);
+  targetRow.data('order', sourceOrder);
+
+  reorderRows(orderBox);
 
   var json = {changes: {}};
-  json.changes[this_row.attr('data-section')] = {
-    type: this_row.attr('data-type'),
-    order: new_order
-  };
-  json.changes[that_row.attr('data-section')] = {
-    type: that_row.attr('data-type'),
-    order: old_order
-  };
+  sourceRow.add(targetRow).each(function() {
+    var row = $(this);
+    json.changes[row.data('id')] = {
+      type: row.data('type'),
+      order: row.data('order')
+    };
+  });
   $.post('/api/v1/board_sections/reorder', json, function() {
-    $("#loading").hide();
-    $("#saveconf").show().delay(2000).fadeOut();
-    bindArrows();
+    $("#loading", orderBox).hide();
+    $("#saveconf", orderBox).show().delay(2000).fadeOut();
+    bindArrows(orderBox);
   });
 }

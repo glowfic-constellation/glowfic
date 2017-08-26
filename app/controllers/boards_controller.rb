@@ -61,7 +61,7 @@ class BoardsController < ApplicationController
 
   def edit
     @page_title = 'Edit Continuity: ' + @board.name
-    use_javascript('board_sections')
+    use_javascript('boards/edit')
     @board_sections = @board.board_sections.order('section_order asc')
   end
 
@@ -118,7 +118,7 @@ class BoardsController < ApplicationController
       @authors -= [current_user]
       @cameos -= [current_user]
     end
-    use_javascript('boards')
+    use_javascript('boards/editor')
   end
 
   def find_board
