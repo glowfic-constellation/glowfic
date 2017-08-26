@@ -56,4 +56,7 @@
         - next unless post.visible_to?(current_user)
         = render partial: 'posts/list_item', locals: {post: post, hide_continuity: true}
 - else
+  - if @board.description.present?
+    - content_for :post_list_description do
+      = sanitize_written_content(@board.description).html_safe
   = render partial: 'posts/list', locals: {posts: @posts, hide_continuity: true, path: :board_path}
