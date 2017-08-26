@@ -68,7 +68,7 @@ RSpec.describe BoardSectionsController do
       section_name = 'ValidSection'
       post :create, board_section: {board_id: board.id, name: section_name}
       expect(response).to redirect_to(edit_board_url(board))
-      expect(flash[:success]).to eq("New #{board.name} section #{section_name} has been successfully created.")
+      expect(flash[:success]).to eq("New section, #{section_name}, has successfully been created for #{board.name}.")
       expect(assigns(:board_section).name).to eq(section_name)
     end
   end

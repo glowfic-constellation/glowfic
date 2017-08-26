@@ -65,6 +65,13 @@ button, .button {
 .auto { overflow: auto; }
 .semiopaque { opacity: 0.5; }
 
+/* For UI elements involving reordering */
+.disabled-arrow {
+  filter: gray; /* IE */
+  -webkit-filter: grayscale(1); /* Chrome, Safari, Opera */
+  filter: grayscale(1); /* Edge, Firefox */
+}
+
 /* Displaying forum threads */
 #content .bg { background-color: #e5dfd1; }
 #content .beige { background-color: #B9B6AD; }
