@@ -66,7 +66,7 @@ function bindAdd() {
 function addNewRow() {
   var newRow = $(".icon-row:last").clone();
   var index = newRow.data('index') + 1;
-  newRow.attr('data-index', index);
+  newRow.data('index', index);
 
   // clear all input values in the clone
   var inputs = newRow.find('input');
@@ -190,7 +190,7 @@ function cleanUpRows() {
     if (!anySet) $(this).remove();
   });
   $(".icon-row").each(function(index) {
-    $(this).attr('data-index', index);
+    $(this).data('index', index);
     $(this).find('input').first().attr('id', 'icons_'+index+'_url');
   });
   fixButtons();

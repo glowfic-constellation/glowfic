@@ -1,6 +1,6 @@
 $(document).ready(function() {
   $(".section-up").click(function() {
-    var oldOrder = parseInt($(this).attr('data-order'));
+    var oldOrder = parseInt($(this).data('order'));
     var newOrder = oldOrder - 1;
     if (oldOrder === 0) return false;
     switchRows(oldOrder, newOrder);
@@ -9,7 +9,7 @@ $(document).ready(function() {
   });
 
   $(".section-down").click(function() {
-    var oldOrder = parseInt($(this).attr('data-order'));
+    var oldOrder = parseInt($(this).data('order'));
     var newOrder = oldOrder + 1;
     if (document.getElementById("section-"+newOrder) === null) return false;
     switchRows(oldOrder, newOrder);
@@ -38,8 +38,8 @@ function switchRows(oldOrder, newOrder) {
   var targetRow = $("#section-"+newOrder);
   var targetGallery = $("#section-gallery-"+newOrder);
 
-  $("#section-"+oldOrder+" img").attr('data-order', newOrder);
-  $("#section-"+newOrder+" img").attr('data-order', oldOrder);
+  $("#section-"+oldOrder+" img").data('order', newOrder);
+  $("#section-"+newOrder+" img").data('order', oldOrder);
   sourceRow.attr('id', "section-"+newOrder);
   targetRow.attr('id', "section-"+oldOrder);
   sourceGallery.attr('id', "section-gallery-"+newOrder);
@@ -54,8 +54,8 @@ function switchRows(oldOrder, newOrder) {
   }
 
   var json = {changes: {}, commit: 'reorder'};
-  json.changes[sourceRow.attr('data-section')] = newOrder;
-  json.changes[targetRow.attr('data-section')] = oldOrder;
+  json.changes[sourceRow.data('section')] = newOrder;
+  json.changes[targetRow.data('section')] = oldOrder;
   $.post('/characters', json);
 }
 
