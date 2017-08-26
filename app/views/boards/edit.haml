@@ -41,3 +41,25 @@
     - if @board_sections.empty?
       %tr
         %td.centered.padding-10{ class: cycle('even','odd'), colspan: 6 } — No items yet —
+
+- if (!@board.open_to_anyone? || @board_sections.present?) && @unsectioned_posts.present?
+  %br
+  - reset_cycle
+  %table#reorder-posts-table
+    %thead
+      %tr
+        %th.post-header
+          Organize Unsectioned Posts
+          #loading.float-right.hidden
+            = image_tag '/images/loading.gif', title: 'Loading...', class: 'vmid', alt: '...', style: 'width: 16px; height: 16px;'
+          #saveconf.float-right.hidden
+            = image_tag '/images/accept.png', title: 'Saved', class: 'vmid', alt: ''
+            Saved
+    %tbody
+      - @unsectioned_posts.each do |post|
+        %tr{class: 'section-ordered', data: {id: post.id, type: post.class.to_s, order: post.section_order}}
+          %td.padding-5{class: cycle('even', 'odd')}
+            = link_to post.subject, post_path(post)
+            .float-right
+              = image_tag "/images/arrow_up.png", class: "section-up disabled-arrow"
+              = image_tag "/images/arrow_down.png", class: "section-down disabled-arrow"

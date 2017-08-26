@@ -52,17 +52,20 @@ class BoardsController < ApplicationController
   end
 
   def show
-    order = 'section_order asc, tagged_at asc'
-    order = 'tagged_at desc' if @board.open_to_anyone?
     @page_title = @board.name
-    @posts = posts_from_relation(@board.posts.where(section_id: nil).order(order), false)
     @board_sections = @board.board_sections.order('section_order asc')
+    order = 'section_order asc, tagged_at asc'
+    order = 'tagged_at desc' if @board.open_to_anyone? && @board_sections.empty?
+    @posts = posts_from_relation(@board.posts.where(section_id: nil).order(order), false)
   end
 
   def edit
     @page_title = 'Edit Continuity: ' + @board.name
     use_javascript('boards/edit')
     @board_sections = @board.board_sections.order('section_order asc')
+    unless @board.open_to_anyone? && @board_sections.empty?
+      @unsectioned_posts = @board.posts.where(section_id: nil).order('section_order asc')
+    end
   end
 
   def update

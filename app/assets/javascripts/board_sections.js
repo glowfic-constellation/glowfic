@@ -1,5 +1,5 @@
 $(document).ready(function() {
-  bindArrows($("#reorder-sections-table"));
+  bindArrows($("#reorder-posts-table"));
 });
 
 // orderBox is the box the ordering is scoped to
