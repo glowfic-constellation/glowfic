@@ -47,9 +47,6 @@ class Api::V1::PostsController < Api::ApiController
     post_section_ids = posts.pluck('distinct section_id')
     unless post_section_ids == [section_id] &&
       (section_id.nil? || BoardSection.where(id: section_id, board_id: board.id).exists?)
-      p post_section_ids
-      p section_id
-      p BoardSection.where(id: section_id, board_id: board.id)
       error = {message: 'Posts must be from one specified section in the board, or no section'}
       render json: {errors: [error]}, status: :unprocessable_entity and return
     end
