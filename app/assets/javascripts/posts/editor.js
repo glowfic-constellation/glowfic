@@ -325,12 +325,12 @@ function getAndSetCharacterData(characterId, options) {
     $("#post-editor #post-author-spacer").hide();
     $("#post-editor .post-character").show().data('character-id', characterId);
     $("#post-editor .post-character #name").html(resp.name);
-    var screennameBox = $("#post-editor .post-screenname")
-    if (!resp.screenname) {
-      screennameBox.hide().html('');
-    } else {
+    var screennameBox = $("#post-editor .post-screenname");
+    if (resp.screenname) {
       screennameBox.show().html(resp.screenname);
       resizeScreenname(screennameBox);
+    } else {
+      screennameBox.hide().html('');
     }
 
     // Display alias selector if relevant
