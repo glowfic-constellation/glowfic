@@ -87,7 +87,11 @@ function moveRow(sourceRow, targetRow, orderBox, path, param) {
     $("#loading", orderBox).hide();
     $("#saveerror", orderBox).show();
     if ($('.section-warning', orderBox).length === 0) {
-      var warning = $("<tr class='section-warning'>").append($("<td>").html('There was an error saving your changes! Please reload.'));
+      var specificMessage = '';
+      if (resp.status === 404) {
+        specificMessage = 'One or more of the items could not be found. ';
+      }
+      var warning = $("<tr class='section-warning'>").append($("<td>").html('There was an error saving your changes! ' + specificMessage + 'Please reload. <em>(' + resp.status + ')</em>'));
       orderBox.prepend(warning);
       console.log(resp.responseText);
     }
