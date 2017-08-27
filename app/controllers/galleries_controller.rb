@@ -4,6 +4,7 @@ class GalleriesController < ApplicationController
   before_filter :find_gallery, only: [:destroy, :edit, :update]
   before_filter :setup_new_icons, only: [:add, :icon]
   before_filter :set_s3_url, only: [:add, :icon]
+  before_filter :setup_editor, only: [:new, :edit]
 
   def index
     if params[:user_id].present?
@@ -33,10 +34,12 @@ class GalleriesController < ApplicationController
   def create
     @gallery = Gallery.new(gallery_params)
     @gallery.user = current_user
+    @gallery.build_new_tags_with(current_user)
 
     unless @gallery.save
       flash.now[:error] = "Your gallery could not be saved."
       @page_title = 'New Gallery'
+      setup_editor
       render :action => :new and return
     end
 
@@ -74,11 +77,15 @@ class GalleriesController < ApplicationController
   end
 
   def update
-    unless @gallery.update_attributes(gallery_params)
+    @gallery.assign_attributes(gallery_params)
+    @gallery.build_new_tags_with(current_user)
+
+    unless @gallery.save
       flash.now[:error] = {}
       flash.now[:error][:message] = "Gallery could not be saved."
       flash.now[:error][:array] = @gallery.errors.full_messages
       @page_title = 'Edit Gallery: ' + @gallery.name_was
+      setup_editor
       render action: :edit and return
     end
 
@@ -198,8 +205,17 @@ class GalleriesController < ApplicationController
       cache_control: 'public, max-age=31536000')
   end
 
+  def setup_editor
+    use_javascript('galleries/editor')
+    build_tags
+  end
+
+  def build_tags
+    @gallery_groups = @gallery.try(:gallery_groups) || []
+  end
+
   def gallery_params
-    params.fetch(:gallery, {}).permit(:name, galleries_icons_attributes: [:id, :_destroy, icon_attributes: [:url, :keyword, :credit, :id, :_destroy]], icon_ids: [])
+    params.fetch(:gallery, {}).permit(:name, galleries_icons_attributes: [:id, :_destroy, icon_attributes: [:url, :keyword, :credit, :id, :_destroy]], icon_ids: [], gallery_group_ids: [])
   end
 
   def icon_params(paramset)

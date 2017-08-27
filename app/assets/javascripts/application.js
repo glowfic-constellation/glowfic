@@ -18,6 +18,8 @@
 //= require select2
 /* global gon */
 
+var foundTags = {};
+
 $(document).ready(function() {
   $(".chosen-select").select2({
     width: '100%',
@@ -95,4 +97,65 @@ function resizeScreenname(screenameBox) {
 
   if (screenameBox.height() <= 20) return;
   screenameBox.css('font-size', "75%");
+}
+
+function saveExistingTags(selector, newTags) {
+  var newList = foundTags[selector].concat(newTags);
+  var ids = [];
+  foundTags[selector] = [];
+  // add tags, uniquely by ID
+  newList.forEach(function(tag) {
+    if (ids.indexOf(tag.id) >= 0) return;
+    ids.push(tag.id);
+    foundTags[selector].push(tag);
+  });
+}
+
+function createTagSelect(tagType, selector, formType) {
+  foundTags[selector] = [];
+  $("#"+formType+"_"+selector+"_ids").select2({
+    tags: true,
+    tokenSeparators: [','],
+    placeholder: 'Enter ' + selector.replace('_', ' ') + '(s) separated by commas',
+    ajax: {
+      delay: 200,
+      url: '/api/v1/tags',
+      dataType: 'json',
+      data: function(params) {
+        var data = {
+          q: params.term,
+          t: tagType,
+          page: params.page
+        };
+        return data;
+      },
+      processResults: function(data, params) {
+        params.page = params.page || 1;
+        var total = this._request.getResponseHeader('Total');
+        saveExistingTags(selector, data.results);
+        return {
+          results: data.results,
+          pagination: {
+            more: (params.page * 25) < total
+          }
+        };
+      },
+      cache: true
+    },
+    createTag: function(params) {
+      var term = $.trim(params.term);
+      if (term === '') return null;
+      var extantTag;
+      foundTags[selector].forEach(function(tag) {
+        if (tag.text.toUpperCase() === term.toUpperCase()) extantTag = tag;
+      });
+      if (extantTag) return extantTag;
+
+      return {
+        id: '_' + term,
+        text: term
+      };
+    },
+    width: '300px'
+  });
 }

@@ -1,6 +1,7 @@
 class CharactersGallery < ActiveRecord::Base
-  belongs_to :character
-  belongs_to :gallery
+  belongs_to :character, inverse_of: :characters_galleries
+  belongs_to :gallery, inverse_of: :characters_galleries
+  validates_presence_of :character, :gallery
 
   before_create :autofill_order
   after_destroy :reorder_others

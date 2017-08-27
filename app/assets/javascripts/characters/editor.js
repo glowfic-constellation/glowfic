@@ -1,4 +1,4 @@
-/* global gon */
+/* global gon, createTagSelect */
 var galleryIds;
 
 $(document).ready(function() {
@@ -11,7 +11,7 @@ $(document).ready(function() {
     tags: true
   });
 
-  $("#character_gallery_ids").select2({
+  $("#character_ungrouped_gallery_ids").select2({
     width: '100%',
     minimumResultsForSearch: 10,
     placeholder: 'Default Gallery'
@@ -51,6 +51,8 @@ $(document).ready(function() {
 
     if ($(".gallery #gallery" + newId).length === 0) displayGallery(newId);
   });
+
+  createTagSelect("GalleryGroup", "gallery_group", "character");
 });
 
 function displayGallery(newId) {
