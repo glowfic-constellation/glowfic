@@ -138,6 +138,10 @@ FactoryGirl.define do
     factory :content_warning, class: ContentWarning do
       type 'ContentWarning'
     end
+
+    factory :gallery_group, class: GalleryGroup do
+      type 'GalleryGroup'
+    end
   end
 
   factory :message do

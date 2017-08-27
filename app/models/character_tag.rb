@@ -15,14 +15,11 @@ class CharacterTag < ActiveRecord::Base
     galleries = gallery_group.galleries.where(user_id: character.user_id).where.not(id: joined_galleries.pluck(:id))
     galleries.each do |gallery|
       CharactersGallery.create(character_id: character.id, gallery_id: gallery.id, added_by_group: true)
-      puts "Adding gallery #{gallery.id} to character #{character.id}"
     end
   end
 
   def remove_galleries_from_character
-    puts "GOT REMOVED"
     return if gallery_group.nil? # skip non-gallery_groups
-    galleries = gallery_group.galleries.where(user_id: character.user_id)
-    CharactersGallery.where(character: character, gallery: galleries, added_by_group: true).destroy_all
+    character.remove_galleries_from_character(gallery_group)
   end
 end
