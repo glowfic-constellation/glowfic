@@ -350,7 +350,8 @@ CREATE TABLE characters_galleries (
     id integer NOT NULL,
     character_id integer NOT NULL,
     gallery_id integer NOT NULL,
-    section_order integer DEFAULT 0 NOT NULL
+    section_order integer DEFAULT 0 NOT NULL,
+    added_by_group boolean DEFAULT false
 );
 
 
@@ -517,6 +518,38 @@ CREATE SEQUENCE galleries_id_seq
 --
 
 ALTER SEQUENCE galleries_id_seq OWNED BY galleries.id;
+
+
+--
+-- Name: gallery_tags; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE gallery_tags (
+    id integer NOT NULL,
+    gallery_id integer NOT NULL,
+    tag_id integer NOT NULL,
+    created_at timestamp without time zone,
+    updated_at timestamp without time zone
+);
+
+
+--
+-- Name: gallery_tags_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE gallery_tags_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: gallery_tags_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE gallery_tags_id_seq OWNED BY gallery_tags.id;
 
 
 --
@@ -1112,6 +1145,13 @@ ALTER TABLE ONLY galleries_icons ALTER COLUMN id SET DEFAULT nextval('galleries_
 
 
 --
+-- Name: gallery_tags id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY gallery_tags ALTER COLUMN id SET DEFAULT nextval('gallery_tags_id_seq'::regclass);
+
+
+--
 -- Name: icons id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -1312,6 +1352,14 @@ ALTER TABLE ONLY galleries_icons
 
 ALTER TABLE ONLY galleries
     ADD CONSTRAINT galleries_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: gallery_tags gallery_tags_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY gallery_tags
+    ADD CONSTRAINT gallery_tags_pkey PRIMARY KEY (id);
 
 
 --
@@ -1584,6 +1632,20 @@ CREATE INDEX index_galleries_icons_on_icon_id ON galleries_icons USING btree (ic
 --
 
 CREATE INDEX index_galleries_on_user_id ON galleries USING btree (user_id);
+
+
+--
+-- Name: index_gallery_tags_on_gallery_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_gallery_tags_on_gallery_id ON gallery_tags USING btree (gallery_id);
+
+
+--
+-- Name: index_gallery_tags_on_tag_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_gallery_tags_on_tag_id ON gallery_tags USING btree (tag_id);
 
 
 --
@@ -1967,4 +2029,6 @@ INSERT INTO schema_migrations (version) VALUES ('20170814042150');
 INSERT INTO schema_migrations (version) VALUES ('20170819222420');
 
 INSERT INTO schema_migrations (version) VALUES ('20170821210336');
+
+INSERT INTO schema_migrations (version) VALUES ('20170826211901');
 
