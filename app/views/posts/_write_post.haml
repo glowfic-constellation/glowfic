@@ -14,13 +14,13 @@
       :id, :username, {selected: post.viewer_ids}, {multiple: true})
     %br
     = f.label :setting_ids, 'Setting:'
-    = f.select :setting_ids, options_from_collection_for_select(@settings, :id, :name, post.setting_ids || post.settings.map(&:id)), {}, {multiple: true}
+    = f.select :setting_ids, options_from_collection_for_select(@settings, :id_for_select, :name, post.setting_ids || post.settings.map(&:id)), {}, {multiple: true}
     %br
     = f.label :content_warning_ids, 'Content Warnings:'
-    = f.select :content_warning_ids, options_from_collection_for_select(@warnings, :id, :name, post.content_warning_ids || post.content_warnings.map(&:id)), {}, {multiple: true}
+    = f.select :content_warning_ids, options_from_collection_for_select(@warnings, :id_for_select, :name, post.content_warning_ids || post.content_warnings.map(&:id)), {}, {multiple: true}
     %br
     = f.label :label_ids, 'Labels:'
-    = f.select :label_ids, options_from_collection_for_select(@tags, :id, :name, post.label_ids || post.labels.map(&:id)), {}, {multiple: true}
+    = f.select :label_ids, options_from_collection_for_select(@tags, :id_for_select, :name, post.label_ids || post.labels.map(&:id)), {}, {multiple: true}
     %hr
     - unless post.id.present? && !post.editable_by?(current_user)
       .view-button#rtf{class: ('selected' if current_user.default_editor == 'rtf')} Rich Text

@@ -3,6 +3,7 @@ class Post < ActiveRecord::Base
   include Writable
   include Viewable
   include Orderable
+  include Taggable
   include PgSearch
 
   PRIVACY_PUBLIC = 0
@@ -27,13 +28,13 @@ class Post < ActiveRecord::Base
   has_many :viewers, through: :post_viewers, source: :user
   has_many :reply_drafts, dependent: :destroy
   has_many :post_tags, inverse_of: :post, dependent: :destroy
-  has_many :labels, through: :post_tags, source: :label
-  has_many :settings, through: :post_tags, source: :setting
-  has_many :content_warnings, through: :post_tags, source: :content_warning, after_add: :reset_warnings
+  has_many :labels, -> { order('name') }, through: :post_tags, source: :label
+  has_many :settings, -> { order('name') }, through: :post_tags, source: :setting
+  has_many :content_warnings, -> { order('name') }, through: :post_tags, source: :content_warning, after_add: :reset_warnings
   has_many :favorites, as: :favorite, dependent: :destroy
 
   attr_accessible :board, :board_id, :subject, :privacy, :viewer_ids, :description, :section_id, :label_ids, :content_warning_ids, :setting_ids, :section_order, :status, :authors_locked
-  attr_accessor :is_import, :label_ids, :content_warning_ids, :setting_ids
+  attr_accessor :is_import
   attr_writer :skip_edited
 
   validates_presence_of :board, :subject
@@ -43,6 +44,8 @@ class Post < ActiveRecord::Base
   before_create :set_last_user
   after_commit :notify_followers, on: :create
   after_save :update_tag_list
+
+  acts_as_tag :label, :content_warning, :setting
 
   audited except: [:last_reply_id, :last_user_id, :edited_at, :tagged_at, :section_id, :section_order]
   has_associated_audits
