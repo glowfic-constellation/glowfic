@@ -91,8 +91,7 @@ class PostsController < WritableController
     @post = Post.new(params[:post])
     @post.user = current_user
     preview and return if params[:button_preview].present?
-
-    create_new_tags if @post.valid?
+    @post.build_new_tags_with(current_user)
 
     if @post.save
       flash[:success] = "You have successfully posted."
@@ -143,7 +142,7 @@ class PostsController < WritableController
 
     preview and return if params[:button_preview].present?
 
-    create_new_tags if @post.valid?
+    @post.build_new_tags_with(current_user)
 
     if @post.save
       flash[:success] = "Your post has been updated."
@@ -337,50 +336,9 @@ class PostsController < WritableController
   end
 
   def build_tags
-    faked = Struct.new(:name, :id)
-    @settings = build_subtags(Setting, :setting_ids, faked)
-    @warnings = build_subtags(ContentWarning, :warning_ids, faked)
-    @tags = build_subtags(Label, :label_ids, faked)
-  end
-
-  def build_subtags(klass, method, faked)
-    return [] unless @post
-
-    existing_saved = @post.send(klass.to_s.underscore.pluralize) || []
-    return existing_saved unless @post.send(method)
-
-    existing_unsaved = klass.where(id: @post.send(method) - (existing_saved.map { |es| es.id.to_s }))
-    new_tags = @post.send(method).reject { |t| t.blank? || !t.to_i.zero? }
-    existing_saved + existing_unsaved + (new_tags.map { |t| faked.new(t, t) })
-  end
-
-  def create_new_tags
-    if @post.setting_ids.present?
-      tags = @post.setting_ids.select { |id| id.to_i.zero? }.reject(&:blank?).uniq
-      @post.setting_ids -= tags
-      existing_tags = Setting.where(name: tags)
-      @post.setting_ids += existing_tags.map(&:id)
-      tags -= existing_tags.map(&:name)
-      @post.setting_ids += tags.map { |tag| Setting.create(user: current_user, name: tag).id }
-    end
-
-    if @post.warning_ids.present?
-      tags = @post.warning_ids.select { |id| id.to_i.zero? }.reject(&:blank?).uniq
-      @post.warning_ids -= tags
-      existing_tags = ContentWarning.where(name: tags)
-      @post.warning_ids += existing_tags.map(&:id)
-      tags -= existing_tags.map(&:name)
-      @post.warning_ids += tags.map { |tag| ContentWarning.create(user: current_user, name: tag).id }
-    end
-
-    if @post.label_ids.present?
-      tags = @post.label_ids.select { |id| id.to_i.zero? }.reject(&:blank?).uniq
-      @post.label_ids -= tags
-      existing_tags = Label.where(name: tags)
-      @post.label_ids += existing_tags.map(&:id)
-      tags -= existing_tags.map(&:name)
-      @post.label_ids += tags.map { |tag| Label.create(user: current_user, name: tag).id }
-    end
+    @settings = @post.try(:settings) || []
+    @warnings = @post.try(:content_warnings) || []
+    @tags = @post.try(:labels) || []
   end
 
   def editor_setup

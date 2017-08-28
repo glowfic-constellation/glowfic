@@ -16,6 +16,10 @@ class Tag < ActiveRecord::Base
     {id: self.id, text: self.name}
   end
 
+  def id_for_select
+    id || "_#{name}"
+  end
+
   def merge_with(other_tag)
     transaction do
       PostTag.where(tag_id: other_tag.id).where(post_id: post_tags.pluck('distinct post_id')).delete_all
