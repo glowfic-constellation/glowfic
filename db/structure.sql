@@ -55,19 +55,19 @@ SET default_with_oids = false;
 CREATE TABLE audits (
     id integer NOT NULL,
     auditable_id integer,
-    auditable_type character varying,
+    auditable_type character varying(255),
     associated_id integer,
-    associated_type character varying,
+    associated_type character varying(255),
     user_id integer,
-    user_type character varying,
-    username character varying,
-    action character varying,
+    user_type character varying(255),
+    username character varying(255),
+    action character varying(255),
     audited_changes text,
     version integer DEFAULT 0,
-    comment character varying,
-    remote_address character varying,
+    comment character varying(255),
+    remote_address character varying(255),
     created_at timestamp without time zone,
-    request_uuid character varying
+    request_uuid character varying(255)
 );
 
 
@@ -130,7 +130,7 @@ ALTER SEQUENCE board_authors_id_seq OWNED BY board_authors.id;
 CREATE TABLE board_sections (
     id integer NOT NULL,
     board_id integer NOT NULL,
-    name character varying NOT NULL,
+    name character varying(255) NOT NULL,
     status integer DEFAULT 0 NOT NULL,
     section_order integer NOT NULL,
     created_at timestamp without time zone,
@@ -234,7 +234,7 @@ ALTER SEQUENCE boards_id_seq OWNED BY boards.id;
 CREATE TABLE character_aliases (
     id integer NOT NULL,
     character_id integer NOT NULL,
-    name character varying NOT NULL,
+    name character varying(255) NOT NULL,
     created_at timestamp without time zone,
     updated_at timestamp without time zone
 );
@@ -266,7 +266,7 @@ ALTER SEQUENCE character_aliases_id_seq OWNED BY character_aliases.id;
 CREATE TABLE character_groups (
     id integer NOT NULL,
     user_id integer NOT NULL,
-    name character varying NOT NULL
+    name character varying(255) NOT NULL
 );
 
 
@@ -329,15 +329,15 @@ CREATE TABLE characters (
     id integer NOT NULL,
     user_id integer NOT NULL,
     name citext NOT NULL,
-    template_name character varying,
-    screenname character varying,
+    template_name character varying(255),
+    screenname character varying(255),
     template_id integer,
     default_icon_id integer,
     created_at timestamp without time zone,
     updated_at timestamp without time zone,
-    pb character varying,
+    pb character varying(255),
     character_group_id integer,
-    setting character varying,
+    setting character varying(255),
     description text
 );
 
@@ -401,7 +401,7 @@ CREATE TABLE favorites (
     id integer NOT NULL,
     user_id integer NOT NULL,
     favorite_id integer NOT NULL,
-    favorite_type character varying NOT NULL,
+    favorite_type character varying(255) NOT NULL,
     created_at timestamp without time zone,
     updated_at timestamp without time zone
 );
@@ -465,7 +465,7 @@ ALTER SEQUENCE flat_posts_id_seq OWNED BY flat_posts.id;
 CREATE TABLE galleries (
     id integer NOT NULL,
     user_id integer NOT NULL,
-    name character varying NOT NULL,
+    name character varying(255) NOT NULL,
     created_at timestamp without time zone,
     updated_at timestamp without time zone
 );
@@ -559,11 +559,11 @@ ALTER SEQUENCE gallery_tags_id_seq OWNED BY gallery_tags.id;
 CREATE TABLE icons (
     id integer NOT NULL,
     user_id integer NOT NULL,
-    url character varying NOT NULL,
-    keyword character varying NOT NULL,
+    url character varying(255) NOT NULL,
+    keyword character varying(255) NOT NULL,
     created_at timestamp without time zone,
     updated_at timestamp without time zone,
-    credit character varying,
+    credit character varying(255),
     has_gallery boolean DEFAULT false
 );
 
@@ -597,7 +597,7 @@ CREATE TABLE messages (
     recipient_id integer NOT NULL,
     parent_id integer,
     thread_id integer,
-    subject character varying,
+    subject character varying(255),
     message text,
     unread boolean DEFAULT true,
     visible_inbox boolean DEFAULT true,
@@ -636,7 +636,7 @@ ALTER SEQUENCE messages_id_seq OWNED BY messages.id;
 CREATE TABLE password_resets (
     id integer NOT NULL,
     user_id integer NOT NULL,
-    auth_token character varying NOT NULL,
+    auth_token character varying(255) NOT NULL,
     used boolean DEFAULT false,
     created_at timestamp without time zone,
     updated_at timestamp without time zone
@@ -772,7 +772,7 @@ CREATE TABLE posts (
     id integer NOT NULL,
     board_id integer NOT NULL,
     user_id integer NOT NULL,
-    subject character varying NOT NULL,
+    subject character varying(255) NOT NULL,
     content text,
     character_id integer,
     icon_id integer,
@@ -782,7 +782,7 @@ CREATE TABLE posts (
     status integer DEFAULT 0,
     section_id integer,
     section_order integer,
-    description character varying,
+    description character varying(255),
     last_user_id integer,
     last_reply_id integer,
     edited_at timestamp without time zone,
@@ -922,7 +922,7 @@ ALTER SEQUENCE report_views_id_seq OWNED BY report_views.id;
 --
 
 CREATE TABLE schema_migrations (
-    version character varying NOT NULL
+    version character varying(255) NOT NULL
 );
 
 
@@ -936,7 +936,7 @@ CREATE TABLE tags (
     name citext NOT NULL,
     created_at timestamp without time zone,
     updated_at timestamp without time zone,
-    type character varying
+    type character varying(255)
 );
 
 
@@ -999,23 +999,23 @@ ALTER SEQUENCE templates_id_seq OWNED BY templates.id;
 CREATE TABLE users (
     id integer NOT NULL,
     username citext NOT NULL,
-    crypted character varying NOT NULL,
+    crypted character varying(255) NOT NULL,
     avatar_id integer,
     active_character_id integer,
     per_page integer DEFAULT 25,
     created_at timestamp without time zone,
     updated_at timestamp without time zone,
-    timezone character varying,
+    timezone character varying(255),
     email citext,
     email_notifications boolean,
     icon_picker_grouping boolean DEFAULT true,
-    moiety character varying,
-    layout character varying,
-    moiety_name character varying,
-    default_view character varying,
-    default_editor character varying DEFAULT 'rtf'::character varying,
-    time_display character varying DEFAULT '%b %d, %Y %l:%M %p'::character varying,
-    salt_uuid character varying,
+    moiety character varying(255),
+    layout character varying(255),
+    moiety_name character varying(255),
+    default_view character varying(255),
+    default_editor character varying(255) DEFAULT 'rtf'::character varying,
+    time_display character varying(255) DEFAULT '%b %d, %Y %l:%M %p'::character varying,
+    salt_uuid character varying(255),
     unread_opened boolean DEFAULT false,
     hide_hiatused_tags_owed boolean DEFAULT false,
     hide_warnings boolean DEFAULT false,
@@ -1023,7 +1023,7 @@ CREATE TABLE users (
     show_user_in_switcher boolean DEFAULT true,
     ignore_unread_daily_report boolean DEFAULT false,
     favorite_notifications boolean DEFAULT true,
-    default_character_split character varying DEFAULT 'template'::character varying
+    default_character_split character varying(255) DEFAULT 'template'::character varying
 );
 
 
@@ -2031,4 +2031,6 @@ INSERT INTO schema_migrations (version) VALUES ('20170819222420');
 INSERT INTO schema_migrations (version) VALUES ('20170821210336');
 
 INSERT INTO schema_migrations (version) VALUES ('20170826211901');
+
+INSERT INTO schema_migrations (version) VALUES ('20170828144608');
 

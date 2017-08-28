@@ -8,7 +8,5 @@ class AddGalleryTags < ActiveRecord::Migration
       t.index :gallery_id
       t.index :tag_id
     end
-
-    add_column :characters_galleries, :added_by_group, :boolean, default: false
   end
 end
