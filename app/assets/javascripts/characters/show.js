@@ -1,3 +1,4 @@
+//= require galleries/expander_old
 $(document).ready(function() {
   $(".section-up").click(function() {
     var oldOrder = parseInt($(this).data('order'));
@@ -15,18 +16,6 @@ $(document).ready(function() {
     switchRows(oldOrder, newOrder);
     setArrowsAbility();
     return false;
-  });
-
-  $('.gallery-minmax').click(function() {
-    var elem = $(this);
-    var id = elem.data('id');
-    if (elem.html().trim() === '-') {
-      $('#gallery' + id).hide();
-      elem.html('+');
-    } else {
-      $('#gallery' + id).show();
-      elem.html('-');
-    }
   });
 
   setArrowsAbility();

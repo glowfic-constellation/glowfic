@@ -4,6 +4,20 @@ $(document).ready(function() {
   // respect up/down key selections in a dropdown as a valid change() trigger
   $("#icon_dropdown").change(function() { setIconFromId($(this).val()); });
   $("#icon_dropdown").keyup(function() { setIconFromId($(this).val()); });
+
+  $('.gallery-minmax').click(function() {
+    var elem = $(this);
+    var id = elem.data('id');
+    if (elem.html().trim() === '-') {
+      $('#gallery' + id).hide();
+      $('#gallery-tags-' + id).hide();
+      elem.html('+');
+    } else {
+      $('#gallery' + id).show();
+      $('#gallery-tags-' + id).show();
+      elem.html('-');
+    }
+  });
 });
 
 function setIconFromId(id) {
