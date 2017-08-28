@@ -102,7 +102,7 @@ Rails.application.routes.draw do
         resources :replies, only: :index
         collection { post :reorder }
       end
-      resources :tags, only: :index
+      resources :tags, only: [:index, :show]
       resources :templates, only: :index
       resources :users, only: :index
     end

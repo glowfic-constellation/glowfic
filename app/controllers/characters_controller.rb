@@ -270,6 +270,7 @@ class CharactersController < ApplicationController
     gon.character_id = @character.try(:id) || ''
     gon.user_id = current_user.id
     @aliases = @character.aliases.order('name asc') if @character
+    gon.gallery_groups = @gallery_groups.map {|group| group.as_json(include: [:gallery_ids], user_id: current_user.id) }
   end
 
   def build_tags
