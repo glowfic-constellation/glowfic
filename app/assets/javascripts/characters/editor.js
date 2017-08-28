@@ -1,8 +1,8 @@
 /* global gon */
-var galleryIds = [];
+var galleryIds;
 
 $(document).ready(function() {
-  galleryIds = jQuery.map($(".gallery div"), function(el) { return el.dataset.id; });
+  galleryIds = $("#character_gallery_ids").val() || [];
 
   $("#character_setting_ids").select2({
     width: '100%',
@@ -34,22 +34,22 @@ $(document).ready(function() {
 
     // a gallery was removed
     if (galleryIds.length > newGalleryIds.length) {
-      var removedGallery = $(galleryIds).not(newGalleryIds).get();
+      var removedGallery = $(galleryIds).not(newGalleryIds).get(0);
       galleryIds = newGalleryIds;
       $(".gallery #gallery"+removedGallery).remove();
 
       // if no more galleries are left, display galleryless icons
-      if (galleryIds.length === 0) {
+      if ($(".gallery [id^='gallery']").length === 0) {
         displayGallery('0');
       }
       return;
     }
 
-    var newId = $(newGalleryIds).not(galleryIds).get();
+    var newId = $(newGalleryIds).not(galleryIds).get(0);
     galleryIds = newGalleryIds;
     $(".gallery #gallery0").remove();
 
-    displayGallery(newId);
+    if ($(".gallery #gallery" + newId).length === 0) displayGallery(newId);
   });
 });
 
