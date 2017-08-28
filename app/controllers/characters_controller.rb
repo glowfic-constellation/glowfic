@@ -304,6 +304,6 @@ class CharactersController < ApplicationController
   end
 
   def character_params
-    params.fetch(:character, {}).permit(:default_icon_id, :name, :template_name, :screenname, :setting, :template_id, :new_template_name, :pb, :description, gallery_ids: [], gallery_group_ids: [])
+    params.fetch(:character, {}).permit(:default_icon_id, :name, :template_name, :screenname, :setting, :template_id, :new_template_name, :pb, :description, ungrouped_gallery_ids: [], gallery_group_ids: [])
   end
 end

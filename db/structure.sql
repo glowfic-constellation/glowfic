@@ -350,7 +350,8 @@ CREATE TABLE characters_galleries (
     id integer NOT NULL,
     character_id integer NOT NULL,
     gallery_id integer NOT NULL,
-    section_order integer DEFAULT 0 NOT NULL
+    section_order integer DEFAULT 0 NOT NULL,
+    added_by_group boolean DEFAULT false
 );
 
 
@@ -2030,4 +2031,6 @@ INSERT INTO schema_migrations (version) VALUES ('20170819222420');
 INSERT INTO schema_migrations (version) VALUES ('20170821210336');
 
 INSERT INTO schema_migrations (version) VALUES ('20170826211901');
+
+INSERT INTO schema_migrations (version) VALUES ('20170828144608');
 

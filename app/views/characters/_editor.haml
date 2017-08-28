@@ -23,9 +23,9 @@
   %tr
     %th.sub Galleries
     %td{class: cycle('even', 'odd')}
-      = f.collection_select(:gallery_ids,
+      = f.collection_select(:ungrouped_gallery_ids,
       current_user.galleries.order('name asc'),
-      :id, :name, {selected: @character.galleries.pluck(:id)}, {multiple: true})
+      :id, :name, {selected: @character.ungrouped_gallery_ids}, {multiple: true})
   %tr
     %th.sub Gallery Groups
     %td{class: cycle('even', 'odd')}

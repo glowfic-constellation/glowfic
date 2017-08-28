@@ -1,4 +1,6 @@
 class Api::V1::TagsController < Api::ApiController
+  before_filter :find_tag, except: :index
+
   resource_description do
     description 'Viewing tags'
   end
@@ -14,10 +16,27 @@ class Api::V1::TagsController < Api::ApiController
     # gallery groups only searches groups the specified user has used
     if (user_id = params[:user_id]) && params[:t] == 'GalleryGroup'
       user_gal_tags = GalleryGroup.joins(gallery_tags: [:gallery]).where(galleries: {user_id: user_id}).pluck(:id)
-      queryset = queryset.where(id: user_gal_tags)
+      user_char_tags = GalleryGroup.joins(character_tags: [:character]).where(characters: {user_id: user_id}).pluck(:id)
+      queryset = queryset.where(id: user_gal_tags + user_char_tags)
     end
 
     tags = paginate queryset, per_page: 25
     render json: {results: tags}
+  end
+
+  api! 'Load a single tag as a JSON resource'
+  param :id, :number, required: true, desc: 'Tag ID'
+  def show
+    render json: @tag.as_json(include: [:gallery_ids], user_id: params[:user_id])
+  end
+
+  private
+
+  def find_tag
+    unless (@tag = Tag.find_by(id: params[:id]))
+      error = {message: 'Tag could not be found'}
+      render json: {errors: [error]}, status: :not_found and return
+    end
+    @tag = @tag.type.constantize.find_by(id: params[:id])
   end
 end

@@ -10,7 +10,7 @@ class Gallery < ActiveRecord::Base
   has_many :characters, through: :characters_galleries
 
   has_many :gallery_tags, inverse_of: :gallery, dependent: :destroy
-  has_many :gallery_groups, through: :gallery_tags, source: :gallery_group
+  has_many :gallery_groups, through: :gallery_tags, source: :gallery_group, after_remove: :remove_gallery_from_characters
 
   validates_presence_of :user, :name
 
@@ -47,5 +47,10 @@ class Gallery < ActiveRecord::Base
 
   def character_gallery_for(character)
     characters_galleries.where(character_id: character).first
+  end
+
+  def remove_gallery_from_characters(gallery_group)
+    characters = gallery_group.characters.where(user_id: user_id)
+    CharactersGallery.where(character: characters, gallery: self, added_by_group: true).destroy_all
   end
 end
