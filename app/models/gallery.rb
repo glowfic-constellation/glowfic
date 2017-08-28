@@ -13,7 +13,6 @@ class Gallery < ActiveRecord::Base
   has_many :gallery_groups, -> { order('name') }, through: :gallery_tags, source: :gallery_group, after_remove: :remove_gallery_from_characters
 
   validates_presence_of :user, :name
-  after_save :update_tag_list
 
   acts_as_tag :gallery_group
 
@@ -26,18 +25,6 @@ class Gallery < ActiveRecord::Base
 
   def character_gallery_for(character)
     characters_galleries.where(character_id: character).first
-  end
-
-  def update_tag_list
-    return unless gallery_group_ids.present?
-
-    updated_ids = ((gallery_group_ids || []) - ['']).map(&:to_i).reject(&:zero?).uniq.compact
-    existing_ids = gallery_tags.map(&:tag_id)
-
-    GalleryTag.where(gallery_id: id, tag_id: (existing_ids - updated_ids)).destroy_all
-    (updated_ids - existing_ids).each do |new_id|
-      GalleryTag.create(gallery_id: id, tag_id: new_id)
-    end
   end
 
   def remove_gallery_from_characters(gallery_group)

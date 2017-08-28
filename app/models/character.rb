@@ -26,7 +26,6 @@ class Character < ActiveRecord::Base
   attr_accessor :new_template_name, :group_name
 
   after_destroy :clear_char_ids
-  after_save :update_tag_list
 
   acts_as_tag :label, :setting, :gallery_group
 
@@ -134,17 +133,5 @@ class Character < ActiveRecord::Base
   def clear_char_ids
     Reply.where(character_id: id).update_all(character_id: nil)
     Post.where(character_id: id).update_all(character_id: nil)
-  end
-
-  def update_tag_list
-    return unless label_ids.present? || setting_ids.present? || gallery_group_ids.present?
-
-    updated_ids = ((label_ids || []) + (setting_ids || []) + (gallery_group_ids || []) - ['']).map(&:to_i).reject(&:zero?).uniq.compact
-    existing_ids = character_tags.map(&:tag_id)
-
-    CharacterTag.where(character_id: id, tag_id: (existing_ids - updated_ids)).destroy_all
-    (updated_ids - existing_ids).each do |new_id|
-      CharacterTag.create(character_id: id, tag_id: new_id)
-    end
   end
 end
