@@ -114,6 +114,25 @@
 .view-button .list-view { width: 20px; height: 17px; display: inline; margin: 0; padding: 0; top: 2px; position: relative; }
 .view-button .icon-view { width: 15px; height: 15px; display: inline; margin: 0; padding: 0; top: 2px; position: relative; }
 
+/* Tag label buttons, like seen on the gallery page */
+.tag-box {
+  display: inline;
+  margin-left: 5px;
+}
+.tag-item-link:hover {
+  color: unset;
+}
+.tag-item {
+  display: inline-block;
+  background-color: #B9B6AD;
+  color: #3F7055;
+  margin: 2px 0;
+  padding: 2px 8px;
+  border-radius: 5px;
+  font-size: 90%;
+  font-weight: normal;
+}
+
 /* The new object layout with the floating left info box and the right content area */
 #content .left-info-box { float: left; }
 #content .right-content-box { float: left; }
