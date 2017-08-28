@@ -49,4 +49,54 @@ RSpec.describe Tag do
       expect(tag.id_for_select).to eq('_tag')
     end
   end
+
+  describe "#post_count" do
+    def create_tags
+      tag1 = create(:label)
+      tag2 = create(:label)
+      create(:post, labels: [tag2])
+      tag3 = create(:label)
+      2.times { create(:post, labels: [tag3]) }
+      [tag1, tag2, tag3]
+    end
+
+    it "works with with_item_counts scope" do
+      tags = create_tags
+      fetched = Label.where(id: tags.map(&:id)).select(:id).with_item_counts
+      expect(fetched).to eq(tags)
+      expect(fetched.map(&:post_count)).to eq([0, 1, 2])
+    end
+
+    it "works without with_item_counts scope" do
+      tags = create_tags
+      fetched = Label.where(id: tags.map(&:id))
+      expect(fetched).to eq(tags)
+      expect(fetched.map(&:post_count)).to eq([0, 1, 2])
+    end
+  end
+
+  describe "#gallery_count" do
+    def create_tags
+      tag1 = create(:gallery_group)
+      tag2 = create(:gallery_group)
+      create(:gallery, gallery_groups: [tag2])
+      tag3 = create(:gallery_group)
+      2.times { create(:gallery, gallery_groups: [tag3]) }
+      [tag1, tag2, tag3]
+    end
+
+    it "works with with_item_counts scope" do
+      tags = create_tags
+      fetched = GalleryGroup.where(id: tags.map(&:id)).select(:id).with_item_counts
+      expect(fetched).to eq(tags)
+      expect(fetched.map(&:gallery_count)).to eq([0, 1, 2])
+    end
+
+    it "works without with_item_counts scope" do
+      tags = create_tags
+      fetched = GalleryGroup.where(id: tags.map(&:id))
+      expect(fetched).to eq(tags)
+      expect(fetched.map(&:gallery_count)).to eq([0, 1, 2])
+    end
+  end
 end
