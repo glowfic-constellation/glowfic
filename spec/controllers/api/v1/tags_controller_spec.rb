@@ -44,8 +44,28 @@ RSpec.describe Api::V1::TagsController do
     end
 
     context "when logged in" do
-      before(:each) { login }
+      let(:user) { create(:user) }
+      before(:each) { login_as(user) }
       it_behaves_like "index.json", false
+
+      context "in gallery group search with user_id" do
+        it "should not display unused tags" do
+          ungrouped_tag = create(:gallery_group)
+          get :index, q: ungrouped_tag.name, t: 'GalleryGroup', user_id: user.id
+          expect(response).to have_http_status(200)
+          expect(response.json).to have_key('results')
+          expect(response.json['results']).to eq([])
+        end
+
+        it "should display tags used on galleries" do
+          gal_grouped_tag = create(:gallery_group)
+          create(:gallery, user: user, gallery_groups: [gal_grouped_tag])
+          get :index, q: gal_grouped_tag.name, t: 'GalleryGroup', user_id: user.id
+          expect(response).to have_http_status(200)
+          expect(response.json).to have_key('results')
+          expect(response.json['results']).to contain_exactly(gal_grouped_tag.as_json.stringify_keys)
+        end
+      end
     end
 
     context "when logged out" do
