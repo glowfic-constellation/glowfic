@@ -4,6 +4,8 @@ class Tag < ActiveRecord::Base
   has_many :posts, through: :post_tags
   has_many :character_tags, dependent: :destroy
   has_many :characters, through: :character_tags
+  has_many :gallery_tags, dependent: :destroy
+  has_many :galleries, through: :gallery_tags
 
   validates_presence_of :user, :name, :type
   validates :name, uniqueness: { scope: :type }
@@ -26,6 +28,8 @@ class Tag < ActiveRecord::Base
       PostTag.where(tag_id: other_tag.id).update_all(tag_id: self.id)
       CharacterTag.where(tag_id: other_tag.id).where(character_id: character_tags.pluck('distinct character_id')).delete_all
       CharacterTag.where(tag_id: other_tag.id).update_all(tag_id: self.id)
+      GalleryTag.where(tag_id: other_tag.id).where(gallery_id: gallery_tags.pluck('distinct gallery_id')).delete_all
+      GalleryTag.where(tag_id: other_tag.id).update_all(tag_id: self.id)
       other_tag.destroy
     end
   end
