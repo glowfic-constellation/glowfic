@@ -10,6 +10,11 @@ class Tag < ActiveRecord::Base
   validates_presence_of :user, :name, :type
   validates :name, uniqueness: { scope: :type }
 
+  scope :with_item_counts, -> {
+    select('(SELECT COUNT(DISTINCT post_tags.post_id) FROM post_tags WHERE post_tags.tag_id = tags.id) AS post_count,
+    (SELECT COUNT(DISTINCT gallery_tags.gallery_id) FROM gallery_tags WHERE gallery_tags.tag_id = tags.id) AS gallery_count')
+  }
+
   def editable_by?(user)
     user.try(:admin?)
   end
@@ -20,6 +25,16 @@ class Tag < ActiveRecord::Base
 
   def id_for_select
     id || "_#{name}"
+  end
+
+  def post_count
+    return read_attribute(:post_count) if has_attribute?(:post_count)
+    posts.count
+  end
+
+  def gallery_count
+    return read_attribute(:gallery_count) if has_attribute?(:gallery_count)
+    galleries.count
   end
 
   def merge_with(other_tag)

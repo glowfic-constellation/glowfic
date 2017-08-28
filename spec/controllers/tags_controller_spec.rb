@@ -2,15 +2,34 @@ require "spec_helper"
 
 RSpec.describe TagsController do
   describe "GET index" do
-    it "succeeds when logged out" do
-      get :index
-      expect(response.status).to eq(200)
-    end
+    context "with views" do
+      render_views
+      def create_tags
+        # set up sample tags, empty and not
+        empty_tag = create(:label)
+        tag = create(:label)
+        create(:post, labels: [tag])
 
-    it "succeeds when logged in" do
-      login
-      get :index
-      expect(response.status).to eq(200)
+        empty_group = create(:gallery_group)
+        group = create(:gallery_group)
+        create(:gallery, gallery_groups: [group])
+        [empty_tag, tag, empty_group, group]
+      end
+
+      it "succeeds when logged out" do
+        tags = create_tags
+        get :index
+        expect(response.status).to eq(200)
+        expect(assigns(:tags)).to match_array(tags)
+      end
+
+      it "succeeds when logged in" do
+        tags = create_tags
+        login
+        get :index
+        expect(response.status).to eq(200)
+        expect(assigns(:tags)).to match_array(tags)
+      end
     end
   end
 
@@ -21,17 +40,41 @@ RSpec.describe TagsController do
       expect(flash[:error]).to eq("Tag could not be found.")
     end
 
-    it "succeeds with valid tag" do
-      tag = create(:label)
-      get :show, id: tag.id
-      expect(response.status).to eq(200)
-    end
+    context "with views" do
+      render_views
+      it "succeeds with valid post tag" do
+        tag = create(:label)
+        post = create(:post, labels: [tag])
+        get :show, id: tag.id
+        expect(response.status).to eq(200)
+        expect(assigns(:posts)).to match_array([post])
+      end
 
-    it "succeeds for logged in users with valid tag" do
-      tag = create(:label)
-      login
-      get :show, id: tag.id
-      expect(response.status).to eq(200)
+      it "succeeds for logged in users with valid post tag" do
+        tag = create(:label)
+        post = create(:post, labels: [tag])
+        login
+        get :show, id: tag.id
+        expect(response.status).to eq(200)
+        expect(assigns(:posts)).to match_array([post])
+      end
+
+      it "succeeds with valid gallery tag" do
+        group = create(:gallery_group)
+        gallery = create(:gallery, gallery_groups: [group])
+        get :show, id: group.id
+        expect(response.status).to eq(200)
+        expect(assigns(:galleries)).to match_array([gallery])
+      end
+
+      it "succeeds for logged in users with valid gallery tag" do
+        group = create(:gallery_group)
+        gallery = create(:gallery, gallery_groups: [group])
+        login
+        get :show, id: group.id
+        expect(response.status).to eq(200)
+        expect(assigns(:galleries)).to match_array([gallery])
+      end
     end
   end
 

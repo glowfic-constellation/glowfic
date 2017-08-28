@@ -6,11 +6,12 @@ class TagsController < ApplicationController
 
   def index
     @page_title = "Tags"
-    @tags = Tag.order('type desc, LOWER(name) asc').paginate(per_page: 25, page: page)
+    @tags = Tag.order('type desc, LOWER(name) asc').select('tags.*').with_item_counts.paginate(per_page: 25, page: page)
   end
 
   def show
     @posts = posts_from_relation(@tag.posts)
+    @galleries = @tag.galleries
     @page_title = @tag.name.to_s
   end
 
