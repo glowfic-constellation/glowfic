@@ -64,6 +64,7 @@ button, .button {
 .bold { font-weight: bold; }
 .auto { overflow: auto; }
 .semiopaque { opacity: 0.5; }
+.semiplusopaque { opacity: 0.6; }
 
 /* For UI elements involving reordering */
 .disabled-arrow {

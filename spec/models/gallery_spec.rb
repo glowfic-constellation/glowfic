@@ -103,4 +103,62 @@ RSpec.describe Gallery do
       end
     end
   end
+
+  describe "#gallery_groups_data" do
+    it "works without with_gallery_groups scope" do
+      group = create(:gallery_group)
+      gallery = create(:gallery, gallery_groups: [group])
+      galleries = Gallery.where(id: gallery.id).select(:id)
+      expect(galleries).to eq([gallery])
+      expect(galleries.first.gallery_groups_data).to match_array([group])
+    end
+
+    context "with scope" do
+      it "works for galleries without gallery groups" do
+        gallery1 = create(:gallery)
+        gallery2 = create(:gallery)
+        galleries = Gallery.where(id: [gallery1.id, gallery2.id]).select(:id).with_gallery_groups.order('id asc')
+        expect(galleries).to eq([gallery1, gallery2])
+        expect(galleries.map(&:gallery_groups_data)).to eq([[], []])
+      end
+
+      it "works for galleries with same gallery group" do
+        group = create(:gallery_group)
+        gallery1 = create(:gallery, gallery_groups: [group])
+        gallery2 = create(:gallery, gallery_groups: [group])
+        galleries = Gallery.where(id: [gallery1.id, gallery2.id]).select(:id).with_gallery_groups.order('id asc')
+        expect(galleries).to eq([gallery1, gallery2])
+        groups = galleries.map(&:gallery_groups_data)
+        expect(groups.first.map(&:id)).to eq([group.id])
+        expect(groups.first.map(&:name)).to eq([group.name])
+        expect(groups.last.map(&:id)).to eq([group.id])
+        expect(groups.last.map(&:name)).to eq([group.name])
+      end
+
+      it "works for galleries with different gallery groups" do
+        group1 = create(:gallery_group)
+        group2 = create(:gallery_group)
+        gallery1 = create(:gallery, gallery_groups: [group1])
+        gallery2 = create(:gallery, gallery_groups: [group2])
+        galleries = Gallery.where(id: [gallery1.id, gallery2.id]).select(:id).with_gallery_groups.order('id asc')
+        expect(galleries).to eq([gallery1, gallery2])
+        groups = galleries.map(&:gallery_groups_data)
+        expect(groups.first.map(&:id)).to eq([group1.id])
+        expect(groups.first.map(&:name)).to eq([group1.name])
+        expect(groups.last.map(&:id)).to eq([group2.id])
+        expect(groups.last.map(&:name)).to eq([group2.name])
+      end
+
+      it "works for galleries with multiple gallery groups" do
+        group1 = create(:gallery_group, name: 'Tag1')
+        group2 = create(:gallery_group, name: 'Tag2')
+        gallery = create(:gallery, name: 'Tag1', gallery_groups: [group1, group2])
+        galleries = Gallery.where(id: [gallery.id]).select(:id).with_gallery_groups
+        expect(galleries).to eq([gallery])
+        groups = galleries.map(&:gallery_groups_data)
+        expect(groups.first.map(&:id)).to eq([group1.id, group2.id])
+        expect(groups.first.map(&:name)).to eq([group1.name, group2.name])
+      end
+    end
+  end
 end

@@ -16,9 +16,9 @@ class Character < ActiveRecord::Base
   has_many :icons, -> { group('icons.id').order('LOWER(keyword)') }, through: :galleries
 
   has_many :character_tags, inverse_of: :character, dependent: :destroy
-  has_many :labels, -> { order('name') }, through: :character_tags, source: :label
-  has_many :settings, -> { order('name') }, through: :character_tags, source: :setting
-  has_many :gallery_groups, -> { order('name') }, through: :character_tags, source: :gallery_group, after_remove: :remove_galleries_from_character
+  has_many :labels, through: :character_tags, source: :label
+  has_many :settings, through: :character_tags, source: :setting
+  has_many :gallery_groups, through: :character_tags, source: :gallery_group, after_remove: :remove_galleries_from_character
 
   validates_presence_of :name, :user
   validate :valid_template, :valid_group, :valid_galleries, :valid_default_icon
