@@ -1,6 +1,5 @@
-/* global gon, tinymce, tinyMCE, resizeScreenname */
+/* global gon, tinymce, tinyMCE, resizeScreenname, createTagSelect */
 var tinyMCEInit = false;
-var foundTags = {};
 
 $(document).ready(function() {
   // SET UP POST METADATA EDITOR:
@@ -29,9 +28,9 @@ $(document).ready(function() {
     placeholder: 'Choose user(s) to view this post'
   });
 
-  createTagSelect("Label", "label");
-  createTagSelect("Setting", "setting");
-  createTagSelect("ContentWarning", "content_warning");
+  createTagSelect("Label", "label", "post");
+  createTagSelect("Setting", "setting", "post");
+  createTagSelect("ContentWarning", "content_warning", "post");
 
   if (String($("#post_privacy").val()) !== String(PRIVACY_ACCESS)) {
     $("#access_list").hide();
@@ -439,67 +438,6 @@ function setSections() {
       $("#section").hide();
     }
   }, 'json');
-}
-
-function saveExistingTags(selector, newTags) {
-  var newList = foundTags[selector].concat(newTags);
-  var ids = [];
-  foundTags[selector] = [];
-  // add tags, uniquely by ID
-  newList.forEach(function(tag) {
-    if (ids.indexOf(tag.id) >= 0) return;
-    ids.push(tag.id);
-    foundTags[selector].push(tag);
-  });
-}
-
-function createTagSelect(tagType, selector) {
-  foundTags[selector] = [];
-  $("#post_"+selector+"_ids").select2({
-    tags: true,
-    tokenSeparators: [','],
-    placeholder: 'Enter ' + selector.replace('_', ' ') + '(s) separated by commas',
-    ajax: {
-      delay: 200,
-      url: '/api/v1/tags',
-      dataType: 'json',
-      data: function(params) {
-        var data = {
-          q: params.term,
-          t: tagType,
-          page: params.page
-        };
-        return data;
-      },
-      processResults: function(data, params) {
-        params.page = params.page || 1;
-        var total = this._request.getResponseHeader('Total');
-        saveExistingTags(selector, data.results);
-        return {
-          results: data.results,
-          pagination: {
-            more: (params.page * 25) < total
-          }
-        };
-      },
-      cache: true
-    },
-    createTag: function(params) {
-      var term = $.trim(params.term);
-      if (term === '') return null;
-      var extantTag;
-      foundTags[selector].forEach(function(tag) {
-        if (tag.text.toUpperCase() === term.toUpperCase()) extantTag = tag;
-      });
-      if (extantTag) return extantTag;
-
-      return {
-        id: '_' + term,
-        text: term
-      };
-    },
-    width: '300px'
-  });
 }
 
 function setCharacterListSelected(characterId) {
