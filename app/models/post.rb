@@ -43,7 +43,6 @@ class Post < ActiveRecord::Base
   before_create :build_initial_flat_post
   before_create :set_last_user
   after_commit :notify_followers, on: :create
-  after_save :update_tag_list
 
   acts_as_tag :label, :content_warning, :setting
 
@@ -245,18 +244,6 @@ class Post < ActiveRecord::Base
   def valid_board_section
     if section.present? && section.board_id != board_id
       errors.add(:section, "must be in the post's board")
-    end
-  end
-
-  def update_tag_list
-    return unless label_ids.present? || setting_ids.present? || content_warning_ids.present?
-
-    updated_ids = ((label_ids || []) + (setting_ids || []) + (content_warning_ids || []) - ['']).map(&:to_i).reject(&:zero?).uniq.compact
-    existing_ids = post_tags.map(&:tag_id)
-
-    PostTag.where(post_id: id, tag_id: (existing_ids - updated_ids)).destroy_all
-    (updated_ids - existing_ids).each do |new_id|
-      PostTag.create(post_id: id, tag_id: new_id)
     end
   end
 
