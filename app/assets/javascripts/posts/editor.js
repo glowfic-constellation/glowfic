@@ -1,5 +1,6 @@
 /* global gon, tinymce, tinyMCE, resizeScreenname */
 var tinyMCEInit = false;
+var foundTags = {};
 
 $(document).ready(function() {
   // SET UP POST METADATA EDITOR:
@@ -440,7 +441,20 @@ function setSections() {
   }, 'json');
 }
 
+function saveExistingTags(selector, newTags) {
+  var newList = foundTags[selector].concat(newTags);
+  var ids = [];
+  foundTags[selector] = [];
+  // add tags, uniquely by ID
+  newList.forEach(function(tag) {
+    if (ids.indexOf(tag.id) >= 0) return;
+    ids.push(tag.id);
+    foundTags[selector].push(tag);
+  });
+}
+
 function createTagSelect(tagType, selector) {
+  foundTags[selector] = [];
   $("#post_"+selector+"_ids").select2({
     tags: true,
     tokenSeparators: [','],
@@ -460,6 +474,7 @@ function createTagSelect(tagType, selector) {
       processResults: function(data, params) {
         params.page = params.page || 1;
         var total = this._request.getResponseHeader('Total');
+        saveExistingTags(selector, data.results);
         return {
           results: data.results,
           pagination: {
@@ -472,6 +487,11 @@ function createTagSelect(tagType, selector) {
     createTag: function(params) {
       var term = $.trim(params.term);
       if (term === '') return null;
+      var extantTag;
+      foundTags[selector].forEach(function(tag) {
+        if (tag.text.toUpperCase() === term.toUpperCase()) extantTag = tag;
+      });
+      if (extantTag) return extantTag;
 
       return {
         id: '_' + term,
