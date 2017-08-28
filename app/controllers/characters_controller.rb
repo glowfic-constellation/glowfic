@@ -4,7 +4,7 @@ class CharactersController < ApplicationController
   before_filter :find_character, :only => [:show, :edit, :update, :duplicate, :destroy, :icon, :replace, :do_replace]
   before_filter :find_group, :only => :index
   before_filter :require_own_character, :only => [:edit, :update, :duplicate, :destroy, :icon, :replace, :do_replace]
-  before_filter :build_editor, :only => [:new, :create, :edit, :update]
+  before_filter :build_editor, :only => [:new, :edit]
 
   def index
     (return if login_required) unless params[:user_id].present?
@@ -40,6 +40,7 @@ class CharactersController < ApplicationController
     else
       @page_title = 'New Character'
       flash.now[:error] = "Your character could not be saved."
+      build_editor
       render :action => :new
     end
   end
@@ -52,7 +53,6 @@ class CharactersController < ApplicationController
 
   def edit
     @page_title = 'Edit Character: ' + @character.name
-    @aliases = @character.aliases.order('name asc')
   end
 
   def update
@@ -65,6 +65,7 @@ class CharactersController < ApplicationController
     else
       flash.now[:error] = "Your character could not be saved."
       @page_title = 'Edit Character: ' + @character.name
+      build_editor
       render :action => :edit
     end
   end
@@ -264,6 +265,7 @@ class CharactersController < ApplicationController
     @groups = current_user.character_groups.order('name asc') + [new_group]
     use_javascript('characters/editor')
     gon.character_id = @character.try(:id) || ''
+    @aliases = @character.aliases.order('name asc') if @character
   end
 
   def save_character_with_extras

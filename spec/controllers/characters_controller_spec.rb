@@ -297,8 +297,9 @@ RSpec.describe CharactersController do
       create(:template)
 
       login_as(character.user)
-      put :update, id: character.id, character: {}
+      put :update, id: character.id, character: {name: ''}
 
+      expect(response).to render_template(:edit)
       expect(controller.gon.character_id).to eq(character.id)
       expect(assigns(:templates).map(&:name)).to match_array(names)
     end
