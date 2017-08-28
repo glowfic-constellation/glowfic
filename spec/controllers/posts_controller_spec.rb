@@ -254,7 +254,7 @@ RSpec.describe PostsController do
       end
     end
 
-    it "creates new tags" do
+    it "creates new labels" do
       existing_name = create(:label)
       existing_case = create(:label)
       tags = ['_atag', '_atag', create(:label).id, '', '_' + existing_name.name, '_' + existing_case.name.upcase]
