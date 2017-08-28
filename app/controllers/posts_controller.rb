@@ -128,26 +128,13 @@ class PostsController < WritableController
   end
 
   def update
-    mark_unread and return if params[:unread].present?
-    mark_hidden and return if params[:hidden].present?
+    service = PostService.new(@post)
 
-    require_permission
-    return if performed?
-
-    change_status and return if params[:status].present?
-    change_authors_locked and return if params[:authors_locked].present?
-
-    @post.assign_attributes(params[:post])
-    @post.board ||= Board.find(3)
-
-    preview and return if params[:button_preview].present?
-
-    @post.build_new_tags_with(current_user)
-
-    if @post.save
+    begin
+      service.update_post!(params, current_user)
       flash[:success] = "Your post has been updated."
       redirect_to post_path(@post)
-    else
+    rescue ActiveRecord::RecordInvalid
       flash.now[:error] = {}
       flash.now[:error][:array] = @post.errors.full_messages
       flash.now[:error][:message] = "Your post could not be saved because of the following problems:"
