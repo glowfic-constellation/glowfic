@@ -719,10 +719,13 @@ RSpec.describe Post do
 
       it "uses extant tags with same name and type for #{type}" do
         tag = create(type)
+        old_user = tag.user
         taggable.send(type + '_ids=', ['_' + tag.name])
         taggable.save
         taggable.reload
-        expect(taggable.send(type + 's')).to match_array([tag])
+        tags = taggable.send(type + 's')
+        expect(tags).to match_array([tag])
+        expect(tags.map(&:user)).to match_array([old_user])
       end
 
       it "does not use extant tags of a different type with same name for #{type}" do
@@ -739,10 +742,13 @@ RSpec.describe Post do
 
       it "uses extant #{type} tags by id" do
         tag = create(type)
+        old_user = tag.user
         taggable.send(type + '_ids=', [tag.id.to_s])
         taggable.save
         taggable.reload
-        expect(taggable.send(type + 's')).to match_array([tag])
+        tags = taggable.send(type + 's')
+        expect(tags).to match_array([tag])
+        expect(tags.map(&:user)).to match_array([old_user])
       end
 
       it "removes #{type} tags when not in list given" do
@@ -755,6 +761,18 @@ RSpec.describe Post do
         taggable.save
         taggable.reload
         expect(taggable.send(type + 's')).to eq([])
+      end
+
+      it "only adds #{type} tags once if given multiple times" do
+        name = 'Example Tag'
+        tag = create(type, name: name)
+        old_user = tag.user
+        taggable.send(type + '_ids=', ['_' + name, '_' + name, tag.id.to_s, tag.id.to_s])
+        taggable.save
+        taggable.reload
+        tags = taggable.send(type + 's')
+        expect(tags).to match_array([tag])
+        expect(tags.map(&:user)).to match_array([old_user])
       end
     end
   end
