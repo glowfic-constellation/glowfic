@@ -52,7 +52,7 @@ $(document).ready(function() {
     if ($(".gallery #gallery" + newId).length === 0) displayGallery(newId);
   });
 
-  createTagSelect("GalleryGroup", "gallery_group", "character");
+  createTagSelect("GalleryGroup", "gallery_group", "character", {user_id: gon.user_id});
 });
 
 function displayGallery(newId) {

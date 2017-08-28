@@ -13,7 +13,9 @@ class Api::V1::TagsController < Api::ApiController
 
     # gallery groups only searches groups the current user has used
     if (user_id = params[:user_id]) && params[:t] == 'GalleryGroup'
-      queryset = queryset.where('(SELECT 1 FROM gallery_tags LEFT JOIN galleries ON gallery_tags.gallery_id = galleries.id WHERE galleries.user_id = ? LIMIT 1) IS NOT NULL', current_user.id)
+      user_char_tags = GalleryGroup.joins(character_tags: [:character]).where(characters: {user_id: user_id}).pluck(:id)
+      user_gal_tags = GalleryGroup.joins(gallery_tags: [:gallery]).where(galleries: {user_id: user_id}).pluck(:id)
+      queryset = queryset.where(id: user_char_tags + user_gal_tags)
     end
 
     tags = paginate queryset, per_page: 25

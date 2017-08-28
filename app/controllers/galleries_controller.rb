@@ -208,6 +208,7 @@ class GalleriesController < ApplicationController
   def setup_editor
     use_javascript('galleries/editor')
     build_tags
+    gon.user_id = current_user.id
   end
 
   def build_tags

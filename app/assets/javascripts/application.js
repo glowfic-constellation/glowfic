@@ -111,7 +111,7 @@ function saveExistingTags(selector, newTags) {
   });
 }
 
-function createTagSelect(tagType, selector, formType) {
+function createTagSelect(tagType, selector, formType, scope) {
   foundTags[selector] = [];
   $("#"+formType+"_"+selector+"_ids").select2({
     tags: true,
@@ -127,6 +127,7 @@ function createTagSelect(tagType, selector, formType) {
           t: tagType,
           page: params.page
         };
+        if (scope) Object.assign(data, scope);
         return data;
       },
       processResults: function(data, params) {
