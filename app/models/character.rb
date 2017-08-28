@@ -1,5 +1,6 @@
 class Character < ActiveRecord::Base
   include Presentable
+  include Taggable
 
   belongs_to :user
   belongs_to :template
@@ -16,6 +17,7 @@ class Character < ActiveRecord::Base
   has_many :character_tags, inverse_of: :character, dependent: :destroy
   has_many :labels, through: :character_tags, source: :label
   has_many :settings, through: :character_tags, source: :setting
+  has_many :gallery_groups, through: :character_tags, source: :gallery_group
 
   validates_presence_of :name, :user
   validate :valid_template, :valid_group, :valid_galleries, :valid_default_icon
@@ -23,6 +25,8 @@ class Character < ActiveRecord::Base
   attr_accessor :new_template_name, :group_name
 
   after_destroy :clear_char_ids
+
+  acts_as_tag :label, :setting, :gallery_group
 
   nilify_blanks
 

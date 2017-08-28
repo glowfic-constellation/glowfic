@@ -1,4 +1,4 @@
-/* global gon */
+/* global gon, createTagSelect */
 var galleryIds;
 
 $(document).ready(function() {
@@ -49,8 +49,11 @@ $(document).ready(function() {
     galleryIds = newGalleryIds;
     $(".gallery #gallery0").remove();
 
+    // display only if not visible (for gallery groups)
     if ($(".gallery #gallery" + newId).length === 0) displayGallery(newId);
   });
+
+  createTagSelect("GalleryGroup", "gallery_group", "character", {user_id: gon.user_id});
 });
 
 function displayGallery(newId) {
