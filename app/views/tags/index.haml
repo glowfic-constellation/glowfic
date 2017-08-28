@@ -27,4 +27,4 @@
   - if @tags.total_pages > 1
     %tfoot
       %tr
-        %td{colspan: 4}= render partial: 'posts/paginator', locals: { paginated: @tags }
+        %td{colspan: 5}= render partial: 'posts/paginator', locals: { paginated: @tags }
