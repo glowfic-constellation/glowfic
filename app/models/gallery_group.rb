@@ -1,0 +1,2 @@
+class GalleryGroup < Tag
+end

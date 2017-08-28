@@ -32,6 +32,7 @@ class CharactersController < ApplicationController
 
     @character = Character.new(character_params)
     @character.user = current_user
+    @character.build_new_tags_with(current_user)
 
     if @character.valid?
       save_character_with_extras
@@ -57,6 +58,7 @@ class CharactersController < ApplicationController
 
   def update
     @character.assign_attributes(character_params)
+    @character.build_new_tags_with(current_user)
 
     if @character.valid?
       save_character_with_extras
@@ -264,8 +266,15 @@ class CharactersController < ApplicationController
     new_group = faked.new('— Create New Group —', 0)
     @groups = current_user.character_groups.order('name asc') + [new_group]
     use_javascript('characters/editor')
+    build_tags
     gon.character_id = @character.try(:id) || ''
+    gon.user_id = current_user.id
     @aliases = @character.aliases.order('name asc') if @character
+    gon.gallery_groups = @gallery_groups.map {|group| group.as_json(include: [:gallery_ids], user_id: current_user.id) }
+  end
+
+  def build_tags
+    @gallery_groups = @character.try(:gallery_groups) || []
   end
 
   def save_character_with_extras
@@ -295,6 +304,6 @@ class CharactersController < ApplicationController
   end
 
   def character_params
-    params.fetch(:character, {}).permit(:default_icon_id, :name, :template_name, :screenname, :setting, :template_id, :new_template_name, :pb, :description, gallery_ids: [])
+    params.fetch(:character, {}).permit(:default_icon_id, :name, :template_name, :screenname, :setting, :template_id, :new_template_name, :pb, :description, ungrouped_gallery_ids: [], gallery_group_ids: [])
   end
 end

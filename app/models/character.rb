@@ -1,5 +1,6 @@
 class Character < ActiveRecord::Base
   include Presentable
+  include Taggable
 
   belongs_to :user
   belongs_to :template
@@ -9,13 +10,15 @@ class Character < ActiveRecord::Base
   has_many :posts
   has_many :aliases, class_name: CharacterAlias
 
-  has_many :characters_galleries
+  has_many :characters_galleries, inverse_of: :character
+  accepts_nested_attributes_for :characters_galleries, allow_destroy: true
   has_many :galleries, through: :characters_galleries, after_remove: :reorder_galleries
   has_many :icons, -> { group('icons.id').order('LOWER(keyword)') }, through: :galleries
 
   has_many :character_tags, inverse_of: :character, dependent: :destroy
   has_many :labels, through: :character_tags, source: :label
   has_many :settings, through: :character_tags, source: :setting
+  has_many :gallery_groups, through: :character_tags, source: :gallery_group, after_remove: :remove_galleries_from_character
 
   validates_presence_of :name, :user
   validate :valid_template, :valid_group, :valid_galleries, :valid_default_icon
@@ -23,6 +26,8 @@ class Character < ActiveRecord::Base
   attr_accessor :new_template_name, :group_name
 
   after_destroy :clear_char_ids
+
+  acts_as_tag :label, :setting, :gallery_group
 
   nilify_blanks
 
@@ -47,6 +52,47 @@ class Character < ActiveRecord::Base
       other.section_order = index
       other.save
     end
+  end
+
+  def ungrouped_gallery_ids
+    characters_galleries.where(added_by_group: false).pluck(:gallery_id)
+  end
+
+  def ungrouped_gallery_ids=(new_ids)
+    new_ids -= ['']
+    new_ids = new_ids.map(&:to_i)
+    old_ids = ungrouped_gallery_ids
+    rem_ids = old_ids - new_ids
+    group_gallery_ids = gallery_groups.joins(:gallery_tags).reorder('gallery_tags.gallery_id').pluck('distinct gallery_tags.gallery_id')
+    new_chargals = []
+    characters_galleries.each do |char_gal|
+      gallery_id = char_gal.gallery_id
+      if new_ids.include?(gallery_id)
+        # add relevant old galleries, making sure added_by_group is false
+        char_gal.added_by_group = false
+        new_chargals << char_gal.attributes
+        new_ids.delete(gallery_id)
+      elsif group_gallery_ids.include?(gallery_id)
+        # add relevant old group galleries, added_by_group being true
+        char_gal.added_by_group = true
+        new_chargals << char_gal.attributes
+        group_gallery_ids.delete(gallery_id)
+      else
+        # destroy joins that are not in the new set of IDs
+        new_chargals << char_gal.attributes.merge(_destroy: true)
+      end
+    end
+    new_ids.each do |gallery_id|
+      # add any leftover new galleries
+      new_chargals << {gallery_id: gallery_id, character_id: id, added_by_group: false}
+    end
+    # leftover galleries from gallery groups will be added by that model
+    self.characters_galleries_attributes = new_chargals
+  end
+
+  def remove_galleries_from_character(gallery_group)
+    galleries = gallery_group.galleries.where(user_id: user_id)
+    CharactersGallery.where(character: self, gallery: galleries, added_by_group: true).destroy_all
   end
 
   private

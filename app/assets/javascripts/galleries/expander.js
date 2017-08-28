@@ -33,4 +33,32 @@ $(document).ready(function() {
       });
     });
   });
+
+  $(".tag-item").hover(function mouseIn() {
+    $(this).removeClass('semiplusopaque');
+  }, function mouseOut() {
+    $(this).addClass('semiplusopaque');
+  });
+
+  // add ellipsis box for many (> 5) tags
+  $(".tag-box").each(function() {
+    var tagBox = $(this);
+    var tagBoxItems = $(".tag-item", tagBox);
+    if (tagBoxItems.length <= 5) return;
+    var hiddenTags = tagBoxItems.slice(4);
+    hiddenTags.hide();
+    var ellipsisBox = $("<span>").attr({class: 'tag-item semiopaque pointer', title: 'Click to show more tags…'}).append("...");
+    var recollapseBox = $("<span>").attr({class: 'tag-item semiopaque pointer', title: 'Click to hide extra tags…'}).append("←").hide();
+    tagBox.append(ellipsisBox).append(' ').append(recollapseBox); // inline-block cares about spaces for formatting
+    ellipsisBox.click(function() {
+      hiddenTags.show();
+      ellipsisBox.hide();
+      recollapseBox.show();
+    });
+    recollapseBox.click(function() {
+      hiddenTags.hide();
+      recollapseBox.hide();
+      ellipsisBox.show();
+    });
+  });
 });

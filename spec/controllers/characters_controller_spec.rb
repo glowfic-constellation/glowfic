@@ -95,12 +95,12 @@ RSpec.describe CharactersController do
       gallery = create(:gallery, user: user)
 
       login_as(user)
-      post :create, character: {name: test_name, template_name: 'TempName', screenname: 'just-a-test', setting: 'A World', template_id: template.id, pb: 'Facecast', description: 'Desc', gallery_ids: [gallery.id]}
+      post :create, character: {name: test_name, template_name: 'TempName', screenname: 'just-a-test', setting: 'A World', template_id: template.id, pb: 'Facecast', description: 'Desc', ungrouped_gallery_ids: [gallery.id]}
 
       expect(response).to redirect_to(assigns(:character))
       expect(flash[:success]).to eq("Character saved successfully.")
       expect(Character.count).to eq(1)
-      character = assigns(:character)
+      character = assigns(:character).reload
       expect(character.name).to eq(test_name)
       expect(character.user_id).to eq(user.id)
       expect(character.template_name).to eq('TempName')
@@ -265,7 +265,7 @@ RSpec.describe CharactersController do
       new_name = character.name + 'aaa'
       template = create(:template, user: user)
       gallery = create(:gallery, user: user)
-      put :update, id: character.id, character: {name: new_name, template_name: 'TemplateName', screenname: 'a-new-test', setting: 'Another World', template_id: template.id, pb: 'Actor', description: 'Description', gallery_ids: [gallery.id]}
+      put :update, id: character.id, character: {name: new_name, template_name: 'TemplateName', screenname: 'a-new-test', setting: 'Another World', template_id: template.id, pb: 'Actor', description: 'Description', ungrouped_gallery_ids: [gallery.id]}
 
       expect(response).to redirect_to(assigns(:character))
       expect(flash[:success]).to eq("Character saved successfully.")
@@ -316,7 +316,7 @@ RSpec.describe CharactersController do
       expect(g2_cg.section_order).to eq(1)
 
       login_as(character.user)
-      put :update, id: character.id, character: {gallery_ids: [g2.id.to_s]}
+      put :update, id: character.id, character: {ungrouped_gallery_ids: [g2.id.to_s]}
 
       expect(character.reload.galleries.pluck(:id)).to eq([g2.id])
       expect(g2_cg.reload.section_order).to eq(0)
