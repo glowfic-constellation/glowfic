@@ -91,6 +91,7 @@ $(document).ready(function() {
 
     var newId = $(newGalleryGroupIds).not(galleryGroupIds).get(0);
     galleryGroupIds = newGalleryGroupIds;
+    if (typeof newId === 'undefined') return;
     if (newId.substring(0, 1) === '_') return; // skip uncreated tags
 
     // fetch galleryGroup galleryIds
