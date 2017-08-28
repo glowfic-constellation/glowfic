@@ -704,6 +704,7 @@ RSpec.describe Post do
     expect(NotifyFollowersOfNewPostJob).to have_queued(post.id)
   end
 
+  # from Taggable concern; duplicated between PostSpec, CharacterSpec, GallerySpec
   context "tags" do
     let(:taggable) { create(:post) }
     ['label', 'setting', 'content_warning'].each do |type|

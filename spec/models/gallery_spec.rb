@@ -31,6 +31,7 @@ RSpec.describe Gallery do
     expect(gallery.icons.pluck(:keyword)).to eq(['xxx', 'yyy', 'zzz'])
   end
 
+  # from Taggable concern; duplicated between PostSpec, CharacterSpec, GallerySpec
   context "tags" do
     let(:taggable) { create(:gallery) }
     ['gallery_group'].each do |type|

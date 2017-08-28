@@ -161,6 +161,7 @@ RSpec.describe Character do
     end
   end
 
+  # from Taggable concern; duplicated between PostSpec, CharacterSpec, GallerySpec
   context "tags" do
     let(:taggable) { create(:character) }
     ['gallery_group'].each do |type|
