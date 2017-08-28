@@ -12,6 +12,7 @@ class Tag < ActiveRecord::Base
 
   scope :with_item_counts, -> {
     select('(SELECT COUNT(DISTINCT post_tags.post_id) FROM post_tags WHERE post_tags.tag_id = tags.id) AS post_count,
+    (SELECT COUNT(DISTINCT character_tags.character_id) FROM character_tags WHERE character_tags.tag_id = tags.id) AS character_count,
     (SELECT COUNT(DISTINCT gallery_tags.gallery_id) FROM gallery_tags WHERE gallery_tags.tag_id = tags.id) AS gallery_count')
   }
 
@@ -37,6 +38,11 @@ class Tag < ActiveRecord::Base
   def post_count
     return read_attribute(:post_count) if has_attribute?(:post_count)
     posts.count
+  end
+
+  def character_count
+    return read_attribute(:character_count) if has_attribute?(:character_count)
+    characters.count
   end
 
   def gallery_count

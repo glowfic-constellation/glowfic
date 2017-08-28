@@ -11,9 +11,16 @@ RSpec.describe TagsController do
         create(:post, labels: [tag])
 
         empty_group = create(:gallery_group)
-        group = create(:gallery_group)
-        create(:gallery, gallery_groups: [group])
-        [empty_tag, tag, empty_group, group]
+        group1 = create(:gallery_group)
+        create(:gallery, gallery_groups: [group1])
+
+        group2 = create(:gallery_group)
+        create(:gallery, gallery_groups: [group2])
+        create(:character, gallery_groups: [group2])
+
+        group3 = create(:gallery_group)
+        create(:character, gallery_groups: [group3])
+        [empty_tag, tag, empty_group, group1, group2, group3]
       end
 
       it "succeeds when logged out" do
@@ -74,6 +81,23 @@ RSpec.describe TagsController do
         get :show, id: group.id
         expect(response.status).to eq(200)
         expect(assigns(:galleries)).to match_array([gallery])
+      end
+
+      it "succeeds with valid character tag" do
+        group = create(:gallery_group)
+        character = create(:character, gallery_groups: [group])
+        get :show, id: group.id
+        expect(response.status).to eq(200)
+        expect(assigns(:characters)).to match_array([character])
+      end
+
+      it "succeeds for logged in users with valid character tag" do
+        group = create(:gallery_group)
+        character = create(:character, gallery_groups: [group])
+        login
+        get :show, id: group.id
+        expect(response.status).to eq(200)
+        expect(assigns(:characters)).to match_array([character])
       end
     end
   end

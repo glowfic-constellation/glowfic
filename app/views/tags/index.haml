@@ -1,13 +1,14 @@
 %table
   %thead
     %tr
-      %th{colspan: 5}
+      %th{colspan: 6}
         Tags
   %tbody
     %tr
       %th.sub Tag
       %th.sub Type
       %th.sub Posts
+      %th.sub Characters
       %th.sub Galleries
       %th.sub
     - @tags.each do |tag|
@@ -16,6 +17,7 @@
         %td{class: klass}= link_to tag.name, tag_path(tag)
         %td{class: klass}= (tag.type || 'Tag').titlecase
         %td{class: klass}= tag.post_count
+        %td{class: klass}= tag.character_count
         %td{class: klass}= tag.gallery_count
         %td.width-70.right-align{class: klass}
           - if tag.editable_by?(current_user)
@@ -27,4 +29,4 @@
   - if @tags.total_pages > 1
     %tfoot
       %tr
-        %td{colspan: 5}= render partial: 'posts/paginator', locals: { paginated: @tags }
+        %td{colspan: 6}= render partial: 'posts/paginator', locals: { paginated: @tags }

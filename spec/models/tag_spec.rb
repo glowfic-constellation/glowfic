@@ -75,6 +75,31 @@ RSpec.describe Tag do
     end
   end
 
+  describe "#character_count" do
+    def create_tags
+      tag1 = create(:gallery_group)
+      tag2 = create(:gallery_group)
+      create(:character, gallery_groups: [tag2])
+      tag3 = create(:gallery_group)
+      2.times { create(:character, gallery_groups: [tag3]) }
+      [tag1, tag2, tag3]
+    end
+
+    it "works with with_item_counts scope" do
+      tags = create_tags
+      fetched = GalleryGroup.where(id: tags.map(&:id)).select(:id).with_item_counts
+      expect(fetched).to eq(tags)
+      expect(fetched.map(&:character_count)).to eq([0, 1, 2])
+    end
+
+    it "works without with_item_counts scope" do
+      tags = create_tags
+      fetched = GalleryGroup.where(id: tags.map(&:id))
+      expect(fetched).to eq(tags)
+      expect(fetched.map(&:character_count)).to eq([0, 1, 2])
+    end
+  end
+
   describe "#gallery_count" do
     def create_tags
       tag1 = create(:gallery_group)
