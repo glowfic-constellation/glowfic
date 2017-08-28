@@ -45,6 +45,8 @@ class IconsController < ApplicationController
       arel = Post.arel_table
       where_calc = arel[:icon_id].eq(@icon.id).or(arel[:id].in(Reply.where(icon_id: @icon.id).pluck('distinct post_id')))
       @posts = posts_from_relation(Post.where(where_calc).order('tagged_at desc'))
+    elsif params[:view] == 'galleries'
+      use_javascript('galleries/expander_old')
     end
   end
 
