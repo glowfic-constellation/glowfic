@@ -52,10 +52,13 @@ RSpec.describe GalleriesController do
       expect(flash[:error]).to eq("You must be logged in to view that page.")
     end
 
-    it "successfully loads" do
-      login
-      get :new
-      expect(response.status).to eq(200)
+    context "with views" do
+      render_views
+      it "successfully loads" do
+        login
+        get :new
+        expect(response.status).to eq(200)
+      end
     end
   end
 
@@ -66,12 +69,21 @@ RSpec.describe GalleriesController do
       expect(flash[:error]).to eq("You must be logged in to view that page.")
     end
 
-    it "shows correct errors on failure" do
-      login
-      post :create
-      expect(response.status).to eq(200)
-      expect(assigns(:page_title)).to eq('New Gallery')
-      expect(flash[:error]).to eq('Your gallery could not be saved.')
+    context "with views" do
+      render_views
+      it "keeps variables on failed save" do
+        icon = create(:icon)
+        group = create(:gallery_group)
+        login_as(icon.user)
+        post :create, gallery: {gallery_group_ids: [group.id], icon_ids: [icon.id]}
+        expect(response.status).to eq(200)
+        expect(response).to render_template(:new)
+        expect(assigns(:page_title)).to eq('New Gallery')
+        expect(flash[:error]).to eq('Your gallery could not be saved.')
+        expect(assigns(:gallery).gallery_groups.map(&:id)).to eq([group.id])
+        expect(assigns(:gallery).icon_ids).to eq([icon.id])
+        expect(assigns(:gallery_groups)).to match_array([group])
+      end
     end
 
     it "does not set icon has_gallery on failure" do
@@ -87,15 +99,29 @@ RSpec.describe GalleriesController do
     it "succeeds" do
       expect(Gallery.count).to be_zero
       icon = create(:icon)
+      group = create(:gallery_group)
       login_as(icon.user)
-      post :create, gallery: {name: 'Test Gallery', icon_ids: [icon.id]}
+      post :create, gallery: {name: 'Test Gallery', icon_ids: [icon.id], gallery_group_ids: [group.id]}
       expect(Gallery.count).to eq(1)
       gallery = assigns(:gallery).reload
       expect(response).to redirect_to(gallery_url(gallery))
       expect(flash[:success]).to eq('Gallery saved successfully.')
       expect(gallery.name).to eq('Test Gallery')
-      expect(Gallery.first.icons).to match_array([icon])
+      expect(gallery.icons).to match_array([icon])
       expect(icon.reload.has_gallery).to be_true
+      expect(gallery.gallery_groups).to match_array([group])
+    end
+
+    it "creates new gallery groups" do
+      existing_name = create(:gallery_group)
+      existing_case = create(:gallery_group)
+      tags = ['_atag', '_atag', create(:gallery_group).id, '', '_' + existing_name.name, '_' + existing_case.name.upcase]
+      login
+      expect {
+        post :create, gallery: {name: 'a', gallery_group_ids: tags}
+      }.to change{GalleryGroup.count}.by(1)
+      expect(GalleryGroup.last.name).to eq('atag')
+      expect(assigns(:gallery).gallery_groups.count).to eq(4)
     end
   end
 
@@ -188,11 +214,16 @@ RSpec.describe GalleriesController do
       expect(flash[:error]).to eq("That is not your gallery.")
     end
 
-    it "successfully loads" do
-      user_id = login
-      gallery = create(:gallery, user_id: user_id)
-      get :edit, id: gallery.id
-      expect(response.status).to eq(200)
+    context "with views" do
+      render_views
+      it "sets relevant fields" do
+        user_id = login
+        group = create(:gallery_group)
+        gallery = create(:gallery, user_id: user_id, gallery_groups: [group])
+        get :edit, id: gallery.id
+        expect(response.status).to eq(200)
+        expect(assigns(:gallery_groups)).to match_array([group])
+      end
     end
   end
 
@@ -228,14 +259,43 @@ RSpec.describe GalleriesController do
       expect(flash[:error][:message]).to eq("Gallery could not be saved.")
     end
 
+    it "sets right variables on failed save" do
+      gallery = create(:gallery, name: 'Example Gallery')
+      login_as(gallery.user)
+      post :update, id: gallery.id, gallery: {name: ''}
+      expect(response.status).to eq(200)
+      expect(response).to render_template(:edit)
+      expect(assigns(:page_title)).to eq('Edit Gallery: Example Gallery')
+      expect(flash[:error][:message]).to eq('Gallery could not be saved.')
+    end
+
+    context "with views" do
+      render_views
+      it "keeps variables on failed save" do
+        user = create(:user)
+        gallery = create(:gallery, user: user)
+        icon = create(:icon, user: gallery.user)
+        group = create(:gallery_group)
+        login_as(gallery.user)
+        post :update, id: gallery.id, gallery: {name: '', gallery_group_ids: [group.id]}
+        expect(response.status).to eq(200)
+        expect(response).to render_template(:edit)
+        expect(assigns(:gallery).gallery_groups.map(&:id)).to eq([group.id])
+        expect(assigns(:gallery_groups)).to match_array([group])
+      end
+    end
+
     it "successfully updates" do
       user = create(:user)
       gallery = create(:gallery, user: user)
+      group = create(:gallery_group)
       login_as(user)
-      put :update, id: gallery.id, gallery: {name: 'NewGalleryName'}
+      put :update, id: gallery.id, gallery: {name: 'NewGalleryName', gallery_group_ids: [group.id]}
       expect(response).to redirect_to(edit_gallery_url(gallery))
       expect(flash[:success]).to eq('Gallery saved.')
-      expect(gallery.reload.name).to eq('NewGalleryName')
+      gallery.reload
+      expect(gallery.name).to eq('NewGalleryName')
+      expect(gallery.gallery_groups).to match_array([group])
     end
 
     it "can update a gallery icon" do
@@ -292,6 +352,19 @@ RSpec.describe GalleriesController do
       expect(flash[:success]).to eq('Gallery saved.')
       expect(gallery.reload.icons).to be_empty
       expect(Icon.find_by_id(icon.id)).to be_nil
+    end
+
+    it "creates new gallery groups" do
+      existing_name = create(:gallery_group)
+      existing_case = create(:gallery_group)
+      gallery = create(:gallery)
+      login_as(gallery.user)
+      tags = ['_atag', '_atag', create(:gallery_group).id, '', '_' + existing_name.name, '_' + existing_case.name.upcase]
+      expect {
+        post :update, id: gallery.id, gallery: {gallery_group_ids: tags}
+      }.to change{GalleryGroup.count}.by(1)
+      expect(GalleryGroup.last.name).to eq('atag')
+      expect(assigns(:gallery).gallery_groups.count).to eq(4)
     end
   end
 

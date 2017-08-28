@@ -5,11 +5,15 @@
       %th.centered{colspan: 2}New Gallery
     %tr
       %th.vtop.sub Name
-      %td.even= f.text_field :name, placeholder: "Gallery Name", class: 'text'
+      %td{class: cycle('even', 'odd')}= f.text_field :name, placeholder: "Gallery Name", class: 'text'
+    %tr
+      %th.vtop.sub Groups
+      %td{class: cycle('even', 'odd')}
+        = f.select :gallery_group_ids, options_from_collection_for_select(@gallery_groups, :id_for_select, :name, @gallery.gallery_group_ids || @gallery.gallery_groups.map(&:id)), {}, {multiple: true}
     - if icons_present
       %tr
         %th.vtop.sub Icons
-        %td.odd
+        %td{class: cycle('even', 'odd')}
           - current_user.galleryless_icons.each do |icon|
             = label_tag "gallery_icon_ids_#{icon.id}" do
               .gallery-icon

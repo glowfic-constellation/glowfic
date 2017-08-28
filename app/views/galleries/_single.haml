@@ -17,6 +17,16 @@
       .float-right
         = image_tag "/images/arrow_up.png", class: "section-up disabled-arrow", data: {order: section.section_order}
         = image_tag "/images/arrow_down.png", class: "section-down disabled-arrow", data: {order: section.section_order}
+- groups = gallery.gallery_groups_data
+  - if groups.present?
+  %tr.gallery-tags
+    %th.subber{id: "gallery-tags-#{gallery.id}"}
+      Groups:
+      .tag-box
+        - gallery.gallery_groups_data.each do |group|
+          = link_to tag_path(group.id), class: 'tag-item-link' do
+            %span.tag-item
+              = group.name
 - attrs = {id: "section-gallery-#{section.section_order}"} if attrs[:id]
 %tr.gallery-icons{**attrs}
   %td.green
