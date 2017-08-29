@@ -70,24 +70,24 @@ class Character < ActiveRecord::Base
       if new_ids.include?(gallery_id)
         # add relevant old galleries, making sure added_by_group is false
         char_gal.added_by_group = false
-        new_chargals << char_gal.attributes
+        new_chargals << char_gal
         new_ids.delete(gallery_id)
       elsif group_gallery_ids.include?(gallery_id)
         # add relevant old group galleries, added_by_group being true
         char_gal.added_by_group = true
-        new_chargals << char_gal.attributes
+        new_chargals << char_gal
         group_gallery_ids.delete(gallery_id)
       else
         # destroy joins that are not in the new set of IDs
-        new_chargals << char_gal.attributes.merge(_destroy: true)
+        char_gal.destroy
       end
     end
     new_ids.each do |gallery_id|
       # add any leftover new galleries
-      new_chargals << {gallery_id: gallery_id, character_id: id, added_by_group: false}
+      new_chargals << CharactersGallery.new(gallery_id: gallery_id, character_id: id, added_by_group: false)
     end
     # leftover galleries from gallery groups will be added by that model
-    self.characters_galleries_attributes = new_chargals
+    self.characters_galleries = new_chargals
   end
 
   def remove_galleries_from_character(gallery_group)
