@@ -48,7 +48,7 @@ body { color: #A2A2A2; }
   background-color: #7C867C;
   color: #C5C5C5;
 }
-.view-button {
+.view-button, .tag-item {
   background-color: #85837C;
   color: #DDDDDD;
 }

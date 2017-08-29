@@ -39,7 +39,7 @@ body { background-color: #6C697C; }
 
 #content .dark { background-color: #182152; color: #FEFEFE; }
 
-a { color: #666284; }
+a, .tag-item { color: #666284; }
 a:visited { color: #484357; }
 
 .flash.success, .flash.error, .flash.inbox { background-color: #9692A8; }
