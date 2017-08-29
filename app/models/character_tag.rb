@@ -11,10 +11,10 @@ class CharacterTag < ActiveRecord::Base
 
   def add_galleries_to_character
     return if gallery_group.nil? # skip non-gallery_groups
-    joined_galleries = gallery_group.galleries.joins(:characters_galleries).where(characters_galleries: {character_id: character.id})
+    joined_galleries = gallery_group.galleries.where(id: character.characters_galleries.map(&:gallery_id))
     galleries = gallery_group.galleries.where(user_id: character.user_id).where.not(id: joined_galleries.pluck(:id))
     galleries.each do |gallery|
-      CharactersGallery.create(character_id: character.id, gallery_id: gallery.id, added_by_group: true)
+      character.characters_galleries.create(gallery_id: gallery.id, added_by_group: true)
     end
   end
 

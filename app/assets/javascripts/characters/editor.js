@@ -78,9 +78,8 @@ $(document).ready(function() {
       group.gallery_ids.forEach(function(galleryId) {
         if (findGalleryInGroups(galleryId) || galleryIds.indexOf(galleryId.toString()) >= 0) return;
         $(".gallery #gallery" + galleryId).remove();
-        galleryIds = $(galleryIds).not([galleryId.toString()]);
+        galleryIds = $.makeArray($(galleryIds).not([galleryId.toString()]));
       });
-      galleryIds = $.makeArray(galleryIds);
 
       // if no more galleries remain, display galleryless icons
       if ($(".gallery [id^='gallery']").length === 0) {

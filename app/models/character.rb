@@ -63,7 +63,7 @@ class Character < ActiveRecord::Base
     new_ids = new_ids.map(&:to_i)
     old_ids = ungrouped_gallery_ids
     rem_ids = old_ids - new_ids
-    group_gallery_ids = gallery_groups.joins(:gallery_tags).reorder('gallery_tags.gallery_id').pluck('distinct gallery_tags.gallery_id')
+    group_gallery_ids = gallery_groups.joins(:gallery_tags).pluck('distinct gallery_tags.gallery_id')
     new_chargals = []
     characters_galleries.each do |char_gal|
       gallery_id = char_gal.gallery_id
@@ -92,7 +92,10 @@ class Character < ActiveRecord::Base
 
   def remove_galleries_from_character(gallery_group)
     galleries = gallery_group.galleries.where(user_id: user_id)
-    CharactersGallery.where(character: self, gallery: galleries, added_by_group: true).destroy_all
+    joined_group_galleries = gallery_groups.joins(:galleries).where(galleries: {user_id: user_id}).pluck(:gallery_id)
+    galleries = galleries.where.not(id: joined_group_galleries)
+    to_delete = characters_galleries.where(gallery: galleries, added_by_group: true).destroy_all
+    characters_galleries.reload
   end
 
   private

@@ -41,15 +41,10 @@ RSpec.describe Api::V1::TagsController do
         expect(response.json).to have_key('errors')
         expect(response.json['errors'].first).to include("Invalid parameter 't'")
       end
-    end
-
-    context "when logged in" do
-      let(:user) { create(:user) }
-      before(:each) { login_as(user) }
-      it_behaves_like "index.json", false
 
       context "in gallery group search with user_id" do
         it "should not display unused tags" do
+          user = create(:user)
           ungrouped_tag = create(:gallery_group)
           get :index, q: ungrouped_tag.name, t: 'GalleryGroup', user_id: user.id
           expect(response).to have_http_status(200)
@@ -58,6 +53,7 @@ RSpec.describe Api::V1::TagsController do
         end
 
         it "should display tags used on galleries" do
+          user = create(:user)
           gal_grouped_tag = create(:gallery_group)
           create(:gallery, user: user, gallery_groups: [gal_grouped_tag])
           get :index, q: gal_grouped_tag.name, t: 'GalleryGroup', user_id: user.id
@@ -67,6 +63,7 @@ RSpec.describe Api::V1::TagsController do
         end
 
         it "should display tags used on characters" do
+          user = create(:user)
           char_grouped_tag = create(:gallery_group)
           create(:character, user: user, gallery_groups: [char_grouped_tag])
           get :index, q: char_grouped_tag.name, t: 'GalleryGroup', user_id: user.id
@@ -77,8 +74,27 @@ RSpec.describe Api::V1::TagsController do
       end
     end
 
+    context "when logged in" do
+      before(:each) { login }
+      it_behaves_like "index.json", false
+    end
+
     context "when logged out" do
       it_behaves_like "index.json", true
+    end
+  end
+
+  describe "GET show" do
+    it "should support getting gallery groups with gallery IDs" do
+      user = create(:user)
+      group = create(:gallery_group)
+      galleries = Array.new(2) { create(:gallery, user: user, gallery_groups: [group]) }
+      create(:gallery, gallery_groups: [group])
+      get :show, id: group.id, user_id: user.id
+      expect(response).to have_http_status(200)
+      expect(response.json['id']).to eq(group.id)
+      expect(response.json['text']).to eq(group.name)
+      expect(response.json['gallery_ids']).to match_array(galleries.map(&:id))
     end
   end
 end
