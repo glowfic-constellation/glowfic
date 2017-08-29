@@ -171,6 +171,7 @@ RSpec.describe Character do
         taggable.save
         taggable.reload
         tags = taggable.send(type + 's')
+        tag_ids = taggable.send(type + '_ids')
         expect(tags.map(&:name)).to match_array(['tag'])
         expect(tags.map(&:user)).to match_array([taggable.user])
       end
@@ -193,9 +194,11 @@ RSpec.describe Character do
         taggable.save
         taggable.reload
         tags = taggable.send(type + 's')
+        tag_ids = taggable.send(type + '_ids')
         expect(tags.map(&:name)).to match_array([name])
         expect(tags.map(&:user)).to match_array([taggable.user])
         expect(tags).not_to include(tag)
+        expect(tag_ids).to match_array(tags.map(&:id))
       end
 
       it "uses extant #{type} tags by id" do
@@ -205,8 +208,10 @@ RSpec.describe Character do
         taggable.save
         taggable.reload
         tags = taggable.send(type + 's')
+        tag_ids = taggable.send(type + '_ids')
         expect(tags).to match_array([tag])
         expect(tags.map(&:user)).to match_array([old_user])
+        expect(tag_ids).to match_array([tag.id])
       end
 
       it "removes #{type} tags when not in list given" do
@@ -219,6 +224,7 @@ RSpec.describe Character do
         taggable.save
         taggable.reload
         expect(taggable.send(type + 's')).to eq([])
+        expect(taggable.send(type + '_ids')).to eq([])
       end
 
       it "only adds #{type} tags once if given multiple times" do
@@ -229,8 +235,10 @@ RSpec.describe Character do
         taggable.save
         taggable.reload
         tags = taggable.send(type + 's')
+        tag_ids = taggable.send(type + '_ids')
         expect(tags).to match_array([tag])
         expect(tags.map(&:user)).to match_array([old_user])
+        expect(tag_ids).to match_array([tag.id])
       end
     end
   end
