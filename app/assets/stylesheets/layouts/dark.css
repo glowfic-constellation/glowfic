@@ -2,18 +2,18 @@ html, body { background-color: #212121; }
 body { color: #A2A2A2; }
 #content { background-color: #212121; }
 #content .beige { background-color: #565656; }
+#content .dark { background-color: #333333; }
 #content table { border-color: #555; }
 #content .sub {
-  background-color: #3C3C3C;
+  background-color: #383838;
   color: #C9C9C9;
 }
 #content th {
-  background-color: #4A4A4A;
+  background-color: #424242;
   color: #c2c2c2;
 }
-#content a { color: #598D70; }
-#content a:hover { color: #838383; }
-#content a:visited { color: #598D70; }
+a, #content a, #content a:visited { color: #66997D; }
+#content a:hover, a:hover { color: #B3B3B3; }
 #header #nav-bottom, #header { background-color: #56554F; }
 #header #logo { background-color: #3B4841; }
 #header a, #header li a { color: #CCCCCC; }
@@ -24,7 +24,7 @@ body { color: #A2A2A2; }
   background-color: #474747;
 }
 .green { background-color: #444D3F; }
-#content .subber, .subber { background-color: #464646; }
+#content th.subber, #content .subber, .subber { background-color: #464646; color: #DDDDDD; }
 .post-subheader { background-color: #5D5D5D; }
 #post_content, #reply_content {
   background-color: #717171;
@@ -43,11 +43,12 @@ body { color: #A2A2A2; }
 .post-character { background-color: #595959; }
 .post-screenname { background-color: #515151; }
 .post-author { background-color: #4D4C4C; }
-.flash.success { background-color: #656F65; }
+.flash.success { background-color: #555E55; }
 .flash.inbox {
-  background-color: #7C867C;
+  background-color: #4B4B71;
   color: #C5C5C5;
 }
+.flash.error { background-color: #532D38; }
 .view-button, .tag-item {
   background-color: #85837C;
   color: #DDDDDD;
