@@ -40,7 +40,8 @@ body { background-color: #B0AFB7; }
 
 #content .dark { background-color: #645F8A; color: #FEFEFE; }
 
-a, .tag-item { color: #666284; }
+.tag-item { color: #444158; }
+a { color: #666284; }
 a:visited { color: #484357; }
 
 .flash.success, .flash.error, .flash.inbox { background-color: #CDC7E7; }
