@@ -47,9 +47,10 @@
       %td.padding-5{class: klass, style:'width:15%'}= character.setting
 
       %td.width-70.right-align{class: klass}
-        - if @user.id == current_user.try(:id)
-          = link_to edit_character_path(character) do
-            = image_tag "/images/pencil.png"
-          = link_to character_path(character), :method => :delete, data: { confirm: 'Are you sure you want to delete '+character.name+'?' } do
-            = image_tag "/images/cross.png"
-          &nbsp;
+        - unless local_assigns[:hide_buttons]
+          - if @user.id == current_user.try(:id)
+            = link_to edit_character_path(character) do
+              = image_tag "/images/pencil.png"
+            = link_to character_path(character), :method => :delete, data: { confirm: 'Are you sure you want to delete '+character.name+'?' } do
+              = image_tag "/images/cross.png"
+            &nbsp;

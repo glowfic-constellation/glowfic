@@ -12,6 +12,7 @@ class Tag < ActiveRecord::Base
 
   scope :with_item_counts, -> {
     select('(SELECT COUNT(DISTINCT post_tags.post_id) FROM post_tags WHERE post_tags.tag_id = tags.id) AS post_count,
+    (SELECT COUNT(DISTINCT character_tags.character_id) FROM character_tags WHERE character_tags.tag_id = tags.id) AS character_count,
     (SELECT COUNT(DISTINCT gallery_tags.gallery_id) FROM gallery_tags WHERE gallery_tags.tag_id = tags.id) AS gallery_count')
   }
 
@@ -19,8 +20,15 @@ class Tag < ActiveRecord::Base
     user.try(:admin?)
   end
 
-  def as_json(*)
-    {id: self.id, text: self.name}
+  def as_json(options={})
+    tag_json = {id: self.id, text: self.name}
+    return tag_json unless options[:include].present?
+    if options[:include].include?(:gallery_ids)
+      g_tags = gallery_tags.joins(:gallery)
+      g_tags = g_tags.where(galleries: {user_id: options[:user_id]}) if options[:user_id].present?
+      tag_json[:gallery_ids] = g_tags.pluck(:gallery_id)
+    end
+    tag_json
   end
 
   def id_for_select
@@ -30,6 +38,11 @@ class Tag < ActiveRecord::Base
   def post_count
     return read_attribute(:post_count) if has_attribute?(:post_count)
     posts.count
+  end
+
+  def character_count
+    return read_attribute(:character_count) if has_attribute?(:character_count)
+    characters.count
   end
 
   def gallery_count

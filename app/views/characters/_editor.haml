@@ -23,9 +23,13 @@
   %tr
     %th.sub Galleries
     %td{class: cycle('even', 'odd')}
-      = f.collection_select(:gallery_ids,
+      = f.collection_select(:ungrouped_gallery_ids,
       current_user.galleries.order('name asc'),
-      :id, :name, {selected: @character.galleries.pluck(:id)}, {multiple: true})
+      :id, :name, {selected: @character.ungrouped_gallery_ids}, {multiple: true})
+  %tr
+    %th.sub Gallery Groups
+    %td{class: cycle('even', 'odd')}
+      = f.select :gallery_group_ids, options_from_collection_for_select(@gallery_groups, :id_for_select, :name, @character.gallery_group_ids || @character.gallery_groups.map(&:id)), {}, {multiple: true}
 %tr
   %th.sub Facecast
   %td{class: cycle('even', 'odd')}= f.text_field :pb, placeholder: "Facecast", class: 'text'

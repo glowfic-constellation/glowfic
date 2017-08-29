@@ -37,7 +37,7 @@ module Taggable
           # set tag list to: [old tags] + [existing new tags] + [new tags]
           final_tags = (old_tags + existing_tags + new_tags).uniq
           self.public_send(tag_method_assign, final_tags)
-          self.instance_variable_set('@' + tag_ids_method + '_tags_todo', final_tags.map(&:id))
+          self.instance_variable_set('@' + tag_ids_method, final_tags.map(&:id_for_select))
         end
       end
     end

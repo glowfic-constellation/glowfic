@@ -37,3 +37,15 @@
           - klass = cycle('even', 'odd')
           %td.gallery-name{class: klass}= link_to gallery.name, gallery_path(gallery)
           %td.width-150.centered.gallery-icon-count{class: klass}= gallery.icon_count
+  %br
+
+- if @characters.present?
+  - reset_cycle
+  %table
+    %thead
+      %tr
+        %th{colspan: 6}
+          Characters Tagged: #{@tag.name}
+          - content_for :edit_box
+    %tbody
+      = render partial: 'characters/list_section', locals: {name: nil, characters: @characters.order('name asc'), hide_buttons: true}

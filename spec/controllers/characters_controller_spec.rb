@@ -51,18 +51,24 @@ RSpec.describe CharactersController do
       expect(response.status).to eq(200)
     end
 
-    it "sets correct variables" do
-      user = create(:user)
-      templates = Array.new(2) { create(:template, user: user) }
-      names = ['— Create New Template —'] + templates.map(&:name)
-      create(:template)
+    context "with views" do
+      render_views
+      it "sets correct variables" do
+        user = create(:user)
+        templates = Array.new(2) { create(:template, user: user) }
+        names = ['— Create New Template —'] + templates.map(&:name)
+        create(:template)
 
-      login_as(user)
-      get :new
+        login_as(user)
+        get :new
 
-      expect(assigns(:page_title)).to eq("New Character")
-      expect(controller.gon.character_id).to eq('')
-      expect(assigns(:templates).map(&:name)).to match_array(names)
+        expect(assigns(:page_title)).to eq("New Character")
+        expect(assigns(:templates).map(&:name)).to match_array(names)
+        expect(controller.gon.character_id).to eq('')
+        expect(controller.gon.user_id).to eq(user.id)
+        expect(controller.gon.gallery_groups).to eq([])
+        expect(assigns(:aliases)).to be_blank
+      end
     end
   end
 
@@ -95,12 +101,12 @@ RSpec.describe CharactersController do
       gallery = create(:gallery, user: user)
 
       login_as(user)
-      post :create, character: {name: test_name, template_name: 'TempName', screenname: 'just-a-test', setting: 'A World', template_id: template.id, pb: 'Facecast', description: 'Desc', gallery_ids: [gallery.id]}
+      post :create, character: {name: test_name, template_name: 'TempName', screenname: 'just-a-test', setting: 'A World', template_id: template.id, pb: 'Facecast', description: 'Desc', ungrouped_gallery_ids: [gallery.id]}
 
       expect(response).to redirect_to(assigns(:character))
       expect(flash[:success]).to eq("Character saved successfully.")
       expect(Character.count).to eq(1)
-      character = assigns(:character)
+      character = assigns(:character).reload
       expect(character.name).to eq(test_name)
       expect(character.user_id).to eq(user.id)
       expect(character.template_name).to eq('TempName')
@@ -121,57 +127,64 @@ RSpec.describe CharactersController do
       expect(assigns(:character).template_id).to eq(Template.first.id)
     end
 
-    it "sets correct variables when invalid" do
-      user = create(:user)
-      templates = Array.new(2) { create(:template, user: user) }
-      names = ['— Create New Template —'] + templates.map(&:name)
-      create(:template)
+    context "with views" do
+      render_views
+      it "sets correct variables when invalid" do
+        user = create(:user)
+        gallery = create(:gallery, user: user)
+        group = create(:gallery_group)
+        group_gallery = create(:gallery, user: user, gallery_groups: [group])
+        templates = Array.new(2) { create(:template, user: user) }
+        names = ['— Create New Template —'] + templates.map(&:name)
+        create(:template)
 
-      login_as(user)
-      post :create, character: {}
+        login_as(user)
+        post :create, character: {ungrouped_gallery_ids: [gallery.id, group_gallery.id], gallery_group_ids: [group.id]}
 
-      expect(controller.gon.character_id).to eq('')
-      expect(assigns(:templates).map(&:name)).to match_array(names)
+        expect(response).to render_template(:new)
+        expect(controller.gon.character_id).to eq('')
+        expect(assigns(:templates).map(&:name)).to match_array(names)
+        expect(assigns(:character).ungrouped_gallery_ids).to match_array([gallery.id, group_gallery.id])
+        expect(assigns(:character).gallery_group_ids).to eq([group.id])
+      end
     end
   end
 
   describe "GET show" do
-    context "html" do
-      it "requires valid character" do
-        get :show, id: -1
-        expect(response).to redirect_to(characters_url)
-        expect(flash[:error]).to eq("Character could not be found.")
-      end
+    it "requires valid character" do
+      get :show, id: -1
+      expect(response).to redirect_to(characters_url)
+      expect(flash[:error]).to eq("Character could not be found.")
+    end
 
-      it "should succeed when logged out" do
-        character = create(:character)
-        get :show, id: character.id
-        expect(response.status).to eq(200)
-      end
+    it "should succeed when logged out" do
+      character = create(:character)
+      get :show, id: character.id
+      expect(response.status).to eq(200)
+    end
 
-      it "should succeed when logged in" do
-        character = create(:character)
-        login
-        get :show, id: character.id
-        expect(response.status).to eq(200)
-      end
+    it "should succeed when logged in" do
+      character = create(:character)
+      login
+      get :show, id: character.id
+      expect(response.status).to eq(200)
+    end
 
-      it "should set correct variables" do
-        character = create(:character)
-        Array.new(26) { create(:post, character: character, user: character.user) }
-        get :show, id: character.id
-        expect(response.status).to eq(200)
-        expect(assigns(:page_title)).to eq(character.name)
-        expect(assigns(:posts).size).to eq(25)
-        expect(assigns(:posts)).to match_array(Post.where(character_id: character.id).order('tagged_at desc').limit(25))
-      end
+    it "should set correct variables" do
+      character = create(:character)
+      Array.new(26) { create(:post, character: character, user: character.user) }
+      get :show, id: character.id
+      expect(response.status).to eq(200)
+      expect(assigns(:page_title)).to eq(character.name)
+      expect(assigns(:posts).size).to eq(25)
+      expect(assigns(:posts)).to match_array(Post.where(character_id: character.id).order('tagged_at desc').limit(25))
+    end
 
-      it "should only show visible posts" do
-        character = create(:character)
-        create(:post, character: character, user: character.user, privacy: Post::PRIVACY_PRIVATE)
-        get :show, id: character.id
-        expect(assigns(:posts)).to be_blank
-      end
+    it "should only show visible posts" do
+      character = create(:character)
+      create(:post, character: character, user: character.user, privacy: Post::PRIVACY_PRIVATE)
+      get :show, id: character.id
+      expect(assigns(:posts)).to be_blank
     end
   end
 
@@ -203,19 +216,30 @@ RSpec.describe CharactersController do
       expect(response.status).to eq(200)
     end
 
-    it "sets correct variables" do
-      user = create(:user)
-      character = create(:character, user: user)
-      templates = Array.new(2) { create(:template, user: user) }
-      names = ['— Create New Template —'] + templates.map(&:name)
-      create(:template)
+    context "with views" do
+      render_views
+      it "sets correct variables" do
+        user = create(:user)
+        group = create(:gallery_group)
+        gallery = create(:gallery, user: user, gallery_groups: [group])
+        character = create(:character, user: user, gallery_groups: [group])
+        calias = create(:alias, character: character)
+        templates = Array.new(2) { create(:template, user: user) }
+        names = ['— Create New Template —'] + templates.map(&:name)
+        create(:template)
 
-      login_as(user)
-      get :edit, id: character.id
+        login_as(user)
+        get :edit, id: character.id
 
-      expect(assigns(:page_title)).to eq("Edit Character: #{character.name}")
-      expect(controller.gon.character_id).to eq(character.id)
-      expect(assigns(:templates).map(&:name)).to match_array(names)
+        expect(assigns(:page_title)).to eq("Edit Character: #{character.name}")
+        expect(controller.gon.character_id).to eq(character.id)
+        expect(controller.gon.user_id).to eq(user.id)
+        expect(controller.gon.gallery_groups.map{|g|g[:id]}).to eq([group.id])
+        expect(controller.gon.gallery_groups.map{|g|g[:gallery_ids]}).to eq([[gallery.id]])
+        expect(assigns(:gallery_groups)).to match_array([group])
+        expect(assigns(:templates).map(&:name)).to match_array(names)
+        expect(assigns(:aliases)).to match_array([calias])
+      end
     end
   end
 
@@ -265,7 +289,7 @@ RSpec.describe CharactersController do
       new_name = character.name + 'aaa'
       template = create(:template, user: user)
       gallery = create(:gallery, user: user)
-      put :update, id: character.id, character: {name: new_name, template_name: 'TemplateName', screenname: 'a-new-test', setting: 'Another World', template_id: template.id, pb: 'Actor', description: 'Description', gallery_ids: [gallery.id]}
+      put :update, id: character.id, character: {name: new_name, template_name: 'TemplateName', screenname: 'a-new-test', setting: 'Another World', template_id: template.id, pb: 'Actor', description: 'Description', ungrouped_gallery_ids: [gallery.id]}
 
       expect(response).to redirect_to(assigns(:character))
       expect(flash[:success]).to eq("Character saved successfully.")
@@ -280,6 +304,104 @@ RSpec.describe CharactersController do
       expect(character.galleries).to match_array([gallery])
     end
 
+    it "adds galleries by groups" do
+      user = create(:user)
+      group = create(:gallery_group)
+      gallery = create(:gallery, gallery_groups: [group], user: user)
+      character = create(:character, user: user)
+      login_as(user)
+      put :update, id: character.id, character: {gallery_group_ids: [group.id]}
+
+      expect(flash[:success]).to eq('Character saved successfully.')
+      character.reload
+      expect(character.gallery_groups).to match_array([group])
+      expect(character.galleries).to match_array([gallery])
+      expect(character.ungrouped_gallery_ids).to be_blank
+      expect(character.characters_galleries.first).to be_added_by_group
+    end
+
+    it "removes gallery only if not shared between groups" do
+      user = create(:user)
+      group1 = create(:gallery_group) # gallery1
+      group2 = create(:gallery_group) # -> gallery1
+      group3 = create(:gallery_group) # gallery2 ->
+      group4 = create(:gallery_group) # gallery2
+      gallery1 = create(:gallery, gallery_groups: [group1, group2], user: user)
+      gallery2 = create(:gallery, gallery_groups: [group3, group4], user: user)
+      character = create(:character, gallery_groups: [group1, group3, group4], user: user)
+      login_as(user)
+      put :update, id: character.id, character: {gallery_group_ids: [group2.id, group4.id]}
+
+      expect(flash[:success]).to eq('Character saved successfully.')
+      character.reload
+      expect(character.gallery_groups).to match_array([group2, group4])
+      expect(character.galleries).to match_array([gallery1, gallery2])
+      expect(character.ungrouped_gallery_ids).to be_blank
+      expect(character.characters_galleries.map(&:added_by_group)).to eq([true, true])
+    end
+
+    it "does not remove gallery if tethered by group" do
+      user = create(:user)
+      group = create(:gallery_group)
+      gallery = create(:gallery, gallery_groups: [group], user: user)
+      character = create(:character, gallery_groups: [group], user: user)
+      character.ungrouped_gallery_ids = [gallery.id]
+      character.save!
+      expect(character.characters_galleries.first).not_to be_added_by_group
+
+      login_as(user)
+      put :update, id: character.id, character: {ungrouped_gallery_ids: []}
+      expect(flash[:success]).to eq('Character saved successfully.')
+      character.reload
+      expect(character.gallery_groups).to match_array([group])
+      expect(character.galleries).to match_array([gallery])
+      expect(character.ungrouped_gallery_ids).to be_blank
+      expect(character.characters_galleries.first).to be_added_by_group
+    end
+
+    it "works when adding both group and gallery" do
+      user = create(:user)
+      group = create(:gallery_group)
+      gallery = create(:gallery, gallery_groups: [group], user: user)
+      character = create(:character, user: user)
+
+      login_as(user)
+      put :update, id: character.id, character: {gallery_group_ids: [group.id], ungrouped_gallery_ids: [gallery.id]}
+      expect(flash[:success]).to eq('Character saved successfully.')
+      character.reload
+      expect(character.gallery_groups).to match_array([group])
+      expect(character.galleries).to match_array([gallery])
+      expect(character.ungrouped_gallery_ids).to eq([gallery.id])
+      expect(character.characters_galleries.first).not_to be_added_by_group
+    end
+
+    it "does not add another user's galleries" do
+      group = create(:gallery_group)
+      gallery = create(:gallery, gallery_groups: [group])
+      character = create(:character)
+
+      login_as(character.user)
+      put :update, id: character.id, character: {gallery_group_ids: [group.id]}
+      expect(flash[:success]).to eq('Character saved successfully.')
+      character.reload
+      expect(character.gallery_groups).to match_array([group])
+      expect(character.galleries).to be_blank
+    end
+
+    it "removes untethered galleries when group goes" do
+      user = create(:user)
+      group = create(:gallery_group)
+      gallery = create(:gallery, gallery_groups: [group], user: user)
+      character = create(:character, gallery_groups: [group], user: user)
+
+      login_as(user)
+      put :update, id: character.id, character: {gallery_group_ids: []}
+      expect(flash[:success]).to eq('Character saved successfully.')
+      character.reload
+      expect(character.gallery_groups).to eq([])
+      expect(character.galleries).to eq([])
+    end
+
     it "creates new templates when specified" do
       expect(Template.count).to eq(0)
       character = create(:character)
@@ -290,18 +412,28 @@ RSpec.describe CharactersController do
       expect(character.reload.template_id).to eq(Template.first.id)
     end
 
-    it "sets correct variables when invalid" do
-      character = create(:character)
-      templates = Array.new(2) { create(:template, user: character.user) }
-      names = ['— Create New Template —'] + templates.map(&:name)
-      create(:template)
+    context "with views" do
+      render_views
+      it "sets correct variables when invalid" do
+        user = create(:user)
+        group = create(:gallery_group)
+        gallery = create(:gallery, user: user, gallery_groups: [group])
+        character = create(:character, user: user, gallery_groups: [group])
+        templates = Array.new(2) { create(:template, user: user) }
+        names = ['— Create New Template —'] + templates.map(&:name)
+        create(:template)
 
-      login_as(character.user)
-      put :update, id: character.id, character: {name: ''}
+        login_as(user)
+        put :update, id: character.id, character: {name: ''}
 
-      expect(response).to render_template(:edit)
-      expect(controller.gon.character_id).to eq(character.id)
-      expect(assigns(:templates).map(&:name)).to match_array(names)
+        expect(response).to render_template(:edit)
+        expect(controller.gon.character_id).to eq(character.id)
+        expect(controller.gon.user_id).to eq(user.id)
+        expect(controller.gon.gallery_groups.map{|g|g[:id]}).to eq([group.id])
+        expect(controller.gon.gallery_groups.map{|g|g[:gallery_ids]}).to eq([[gallery.id]])
+        expect(assigns(:gallery_groups)).to match_array([group])
+        expect(assigns(:templates).map(&:name)).to match_array(names)
+      end
     end
 
     it "reorders galleries as necessary" do
@@ -316,7 +448,7 @@ RSpec.describe CharactersController do
       expect(g2_cg.section_order).to eq(1)
 
       login_as(character.user)
-      put :update, id: character.id, character: {gallery_ids: [g2.id.to_s]}
+      put :update, id: character.id, character: {ungrouped_gallery_ids: [g2.id.to_s]}
 
       expect(character.reload.galleries.pluck(:id)).to eq([g2.id])
       expect(g2_cg.reload.section_order).to eq(0)
@@ -795,17 +927,26 @@ RSpec.describe CharactersController do
       template = create(:template, user: user)
       icon = create(:icon, user: user)
       gallery = create(:gallery, icons: [icon], user: user)
-      character = create(:character, template: template, galleries: [gallery], default_icon: icon, user: user)
+      group = create(:gallery_group)
+      gallery2 = create(:gallery, gallery_groups: [group], user: user)
+      gallery3 = create(:gallery, gallery_groups: [group], user: user)
+      character = create(:character, template: template, galleries: [gallery, gallery2], gallery_groups: [group], default_icon: icon, user: user)
       calias = create(:alias, character: character)
       char_post = create(:post, character: character, user: user)
       char_reply = create(:reply, character: character, user: user)
+
+      character.reload
+
+      expect(character.galleries).to match_array([gallery, gallery2, gallery3])
+      expect(character.ungrouped_gallery_ids).to match_array([gallery.id, gallery2.id])
+      expect(character.gallery_groups).to match_array([group])
 
       login_as(user)
       expect do
         post :duplicate, id: character.id
       end.to not_change {
-        [Template.count, Gallery.count, Icon.count, Reply.count, Post.count]
-      }.and change { Character.count }.by(1)
+        [Template.count, Gallery.count, Icon.count, Reply.count, Post.count, Tag.count]
+      }.and change { Character.count }.by(1).and change { CharactersGallery.count }.by(3).and change { CharacterTag.count }.by(1)
 
       dup = assigns(:dup)
       dup.reload
@@ -826,14 +967,18 @@ RSpec.describe CharactersController do
 
       # check character associations aren't changed
       expect(character.template).to eq(template)
-      expect(character.galleries).to match_array([gallery])
+      expect(character.galleries).to match_array([gallery, gallery2, gallery3])
+      expect(character.ungrouped_gallery_ids).to match_array([gallery.id, gallery2.id])
+      expect(character.gallery_groups).to match_array([group])
       expect(character.default_icon).to eq(icon)
       expect(character.user).to eq(user)
       expect(character.aliases.map(&:name)).to eq([calias.name])
 
       # check duplicate has appropriate associations
       expect(dup.template).to eq(template)
-      expect(dup.galleries).to match_array([gallery])
+      expect(dup.galleries).to match_array([gallery, gallery2, gallery3])
+      expect(dup.ungrouped_gallery_ids).to match_array([gallery.id, gallery2.id])
+      expect(dup.gallery_groups).to match_array([group])
       expect(dup.default_icon).to eq(icon)
       expect(dup.user).to eq(user)
       expect(dup.aliases.map(&:name)).to eq([calias.name])

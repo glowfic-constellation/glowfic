@@ -233,12 +233,27 @@ RSpec.describe PostsController do
       it "sets expected variables" do
         user = create(:user)
         login_as(user)
-        post :create, button_preview: true, post: {subject: 'test', content: 'orign'}
+        setting1 = create(:setting)
+        setting2 = create(:setting)
+        warning1 = create(:content_warning)
+        warning2 = create(:content_warning)
+        label1 = create(:label)
+        label2 = create(:label)
+        post :create, button_preview: true, post: {
+          subject: 'test',
+          content: 'orign',
+          setting_ids: [setting1.id, '_'+setting2.name, '_other'],
+          content_warning_ids: [warning1.id, '_'+warning2.name, '_other'],
+          label_ids: [label1.id, '_'+label2.name, '_other']
+        }
         expect(response).to render_template(:preview)
         expect(assigns(:written)).to be_an_instance_of(Post)
         expect(assigns(:written)).to be_a_new_record
         expect(assigns(:written).user).to eq(user)
         expect(assigns(:post)).to eq(assigns(:written))
+        expect(assigns(:post).setting_ids).to match_array([setting1.id, setting2.id, '_other'])
+        expect(assigns(:post).content_warning_ids).to match_array([warning1.id, warning2.id, '_other'])
+        expect(assigns(:post).label_ids).to match_array([label1.id, label2.id, '_other'])
         expect(assigns(:page_title)).to eq('Previewing: test')
         # TODO editor setup
       end
@@ -293,13 +308,28 @@ RSpec.describe PostsController do
     it "handles invalid posts" do
       user = create(:user)
       login_as(user)
-      post :create, post: {subject: 'asubjct', content: 'acontnt'}
+      setting1 = create(:setting)
+      setting2 = create(:setting)
+      warning1 = create(:content_warning)
+      warning2 = create(:content_warning)
+      label1 = create(:label)
+      label2 = create(:label)
+      post :create, post: {
+        subject: 'asubjct',
+        content: 'acontnt',
+        setting_ids: [setting1.id, '_'+setting2.name, '_other'],
+        content_warning_ids: [warning1.id, '_'+warning2.name, '_other'],
+        label_ids: [label1.id, '_'+label2.name, '_other']
+      }
       expect(response).to render_template(:new)
       expect(flash[:error][:message]).to eq("Your post could not be saved because of the following problems:")
       expect(assigns(:post)).not_to be_persisted
       expect(assigns(:post).user).to eq(user)
       expect(assigns(:post).subject).to eq('asubjct')
       expect(assigns(:post).content).to eq('acontnt')
+      expect(assigns(:post).setting_ids).to match_array([setting1.id, setting2.id, '_other'])
+      expect(assigns(:post).content_warning_ids).to match_array([warning1.id, warning2.id, '_other'])
+      expect(assigns(:post).label_ids).to match_array([label1.id, label2.id, '_other'])
       expect(assigns(:page_title)).to eq('New Post')
       # TODO editor_setup
     end
@@ -313,9 +343,29 @@ RSpec.describe PostsController do
       icon = create(:icon, user: user)
       calias = create(:alias, character: char)
       viewer = create(:user)
+      setting1 = create(:setting)
+      setting2 = create(:setting)
+      warning1 = create(:content_warning)
+      warning2 = create(:content_warning)
+      label1 = create(:label)
+      label2 = create(:label)
 
       expect {
-        post :create, post: {subject: 'asubjct', content: 'acontnt', description: 'adesc', board_id: board.id, section_id: section.id, character_id: char.id, icon_id: icon.id, character_alias_id: calias.id, privacy: Post::PRIVACY_LIST, viewer_ids: [viewer.id]}
+        post :create, post: {
+          subject: 'asubjct',
+          content: 'acontnt',
+          description: 'adesc',
+          board_id: board.id,
+          section_id: section.id,
+          character_id: char.id,
+          icon_id: icon.id,
+          character_alias_id: calias.id,
+          privacy: Post::PRIVACY_LIST,
+          viewer_ids: [viewer.id],
+          setting_ids: [setting1.id, '_'+setting2.name, '_other'],
+          content_warning_ids: [warning1.id, '_'+warning2.name, '_other'],
+          label_ids: [label1.id, '_'+label2.name, '_other']
+        }
       }.to change{Post.count}.by(1)
       expect(response).to redirect_to(post_path(assigns(:post)))
       expect(flash[:success]).to eq("You have successfully posted.")
@@ -334,6 +384,9 @@ RSpec.describe PostsController do
       expect(post.character_alias_id).to eq(calias.id)
       expect(post.privacy).to eq(Post::PRIVACY_LIST)
       expect(post.viewers).to match_array([viewer])
+      expect(post.setting_ids).to match_array([setting1.id, setting2.id, '_other'])
+      expect(post.content_warning_ids).to match_array([warning1.id, warning2.id, '_other'])
+      expect(post.label_ids).to match_array([label1.id, label2.id, '_other'])
       expect(post.reload).to be_visible_to(viewer)
       expect(post.reload).not_to be_visible_to(create(:user))
     end
@@ -1030,12 +1083,89 @@ RSpec.describe PostsController do
     end
 
     context "preview" do
+      it "sets expected variables" do
+        user = create(:user)
+        login_as(user)
+        post = create(:post, user: user)
+        setting1 = create(:setting)
+        setting2 = create(:setting)
+        warning1 = create(:content_warning)
+        warning2 = create(:content_warning)
+        label1 = create(:label)
+        label2 = create(:label)
+        put :update, id: post.id, button_preview: true, post: {
+          subject: 'test',
+          content: 'orign',
+          setting_ids: [setting1.id, '_'+setting2.name, '_other'],
+          content_warning_ids: [warning1.id, '_'+warning2.name, '_other'],
+          label_ids: [label1.id, '_'+label2.name, '_other']
+        }
+        expect(response).to render_template(:preview)
+        expect(assigns(:written)).to be_an_instance_of(Post)
+        expect(assigns(:written)).not_to be_a_new_record
+        expect(assigns(:written).user).to eq(user)
+        expect(assigns(:post)).to eq(assigns(:written))
+        expect(assigns(:post).setting_ids).to include(setting1.id, setting2.id)
+        expect(assigns(:post).settings.map(&:name)).to match_array([setting1.name, setting2.name, 'other'])
+        expect(assigns(:post).content_warning_ids).to include(warning1.id, warning2.id)
+        expect(assigns(:post).content_warnings.map(&:name)).to match_array([warning1.name, warning2.name, 'other'])
+        expect(assigns(:post).label_ids).to include(label1.id, label2.id)
+        expect(assigns(:post).labels.map(&:name)).to match_array([label1.name, label2.name, 'other'])
+        expect(assigns(:page_title)).to eq('Previewing: test')
+        # TODO editor setup
+      end
+
+      it "does not crash without arguments" do
+        user = create(:user)
+        login_as(user)
+        post = create(:post, user: user)
+        put :update, id: post.id, button_preview: true
+        expect(response).to render_template(:preview)
+        expect(assigns(:written).user).to eq(user)
+      end
+
+      it "saves a draft" do
+        skip "TODO"
+      end
+
       skip "TODO"
     end
 
     context "make changes" do
       it "creates new tags if needed" do
-        skip "TODO"
+        user = create(:user)
+        login_as(user)
+        post = create(:post, user: user)
+        setting_ids = ['_setting']
+        warning_ids = ['_warning']
+        label_ids = ['_label']
+        put :update, id: post.id, post: {setting_ids: setting_ids, content_warning_ids: warning_ids, label_ids: label_ids}
+        expect(response).to redirect_to(post_url(post))
+        post = assigns(:post)
+        expect(post.settings).to be_all(&:persisted?)
+        expect(post.settings.map(&:name)).to eq(['setting'])
+        expect(post.content_warnings).to be_all(&:persisted?)
+        expect(post.content_warnings.map(&:name)).to eq(['warning'])
+        expect(post.labels).to be_all(&:persisted?)
+        expect(post.labels.map(&:name)).to eq(['label'])
+      end
+
+      it "uses extant tags if available" do
+        user = create(:user)
+        login_as(user)
+        post = create(:post, user: user)
+        setting_ids = ['_setting']
+        setting = create(:setting, name: 'setting')
+        warning_ids = ['_warning']
+        warning = create(:content_warning, name: 'warning')
+        label_ids = ['_label']
+        tag = create(:label, name: 'label')
+        put :update, id: post.id, post: {setting_ids: setting_ids, content_warning_ids: warning_ids, label_ids: label_ids}
+        expect(response).to redirect_to(post_url(post))
+        post = assigns(:post)
+        expect(post.settings).to eq([setting])
+        expect(post.content_warnings).to eq([warning])
+        expect(post.labels).to eq([tag])
       end
 
       it "requires valid update" do
@@ -1060,8 +1190,11 @@ RSpec.describe PostsController do
         calias = create(:alias, character_id: char.id)
         icon = create(:icon, user: user)
         viewer = create(:user)
+        setting = create(:setting)
+        warning = create(:content_warning)
+        tag = create(:label)
 
-        put :update, id: post.id, post: {content: newcontent, subject: newsubj, description: 'desc', board_id: board.id, section_id: section.id, character_id: char.id, character_alias_id: calias.id, icon_id: icon.id, privacy: Post::PRIVACY_LIST, viewer_ids: [viewer.id]}
+        put :update, id: post.id, post: {content: newcontent, subject: newsubj, description: 'desc', board_id: board.id, section_id: section.id, character_id: char.id, character_alias_id: calias.id, icon_id: icon.id, privacy: Post::PRIVACY_LIST, viewer_ids: [viewer.id], setting_ids: [setting.id], content_warning_ids: [warning.id], label_ids: [tag.id]}
         expect(response).to redirect_to(post_url(post))
         expect(flash[:success]).to eq("Your post has been updated.")
 
@@ -1076,6 +1209,9 @@ RSpec.describe PostsController do
         expect(post.icon_id).to eq(icon.id)
         expect(post.privacy).to eq(Post::PRIVACY_LIST)
         expect(post.viewers).to match_array([viewer])
+        expect(post.settings).to eq([setting])
+        expect(post.content_warnings).to eq([warning])
+        expect(post.labels).to eq([tag])
         expect(post.reload).to be_visible_to(viewer)
         expect(post.reload).not_to be_visible_to(create(:user))
       end
