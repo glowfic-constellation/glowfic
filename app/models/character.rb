@@ -31,6 +31,12 @@ class Character < ActiveRecord::Base
 
   nilify_blanks
 
+  def editable_by?(user)
+    return false unless user
+    return true if user.admin?
+    user_id == user.id
+  end
+
   def recent_posts
     return @recent unless @recent.nil?
     reply_ids = replies.group(:post_id).pluck(:post_id)

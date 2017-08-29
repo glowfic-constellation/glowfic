@@ -41,6 +41,25 @@ RSpec.describe Character do
     expect(character.icons.map(&:id)).to eq([icon.id])
   end
 
+  describe "#editable_by?" do
+    it "should be false for random user" do
+      character = create(:character)
+      user = create(:user)
+      expect(character).not_to be_editable_by(user)
+    end
+
+    it "should be true for owner" do
+      character = create(:character)
+      expect(character).to be_editable_by(character.user)
+    end
+
+    it "should be true for admin" do
+      character = create(:character)
+      admin = create(:admin_user)
+      expect(character).to be_editable_by(admin)
+    end
+  end
+
   describe "#ungrouped_gallery_ids" do
     it "returns only galleries not added by groups" do
       user = create(:user)

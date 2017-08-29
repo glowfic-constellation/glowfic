@@ -28,8 +28,6 @@ class CharactersController < ApplicationController
   end
 
   def create
-    reorder_galleries and return if params[:commit] == "reorder"
-
     @character = Character.new(character_params)
     @character.user = current_user
     @character.build_new_tags_with(current_user)
@@ -254,7 +252,7 @@ class CharactersController < ApplicationController
   end
 
   def require_own_character
-    unless @character.user_id == current_user.id
+    unless @character.editable_by?(current_user)
       flash[:error] = "You do not have permission to edit that character."
       redirect_to characters_path and return
     end
@@ -290,18 +288,6 @@ class CharactersController < ApplicationController
       end
       @character.save
     end
-  end
-
-  def reorder_galleries
-    CharactersGallery.transaction do
-      params[:changes].each do |id, order|
-        cg = CharactersGallery.find_by_id(id)
-        next unless cg
-        cg.section_order = order
-        cg.save
-      end
-    end
-    render json: {}
   end
 
   def character_params

@@ -66,13 +66,22 @@
 
 - if params[:view] == 'galleries'
   - galleries = @character.galleries.ordered
-  %table.character-right-content-box
+  %table.character-right-content-box#reorder-galleries-table
     %thead
       %tr
-        %th Galleries
+        %th
+          Galleries
+          #loading.float-right.hidden
+            = image_tag '/images/loading.gif', title: 'Loading...', class: 'vmid', alt: '...', style: 'width: 16px; height: 16px;'
+          #saveerror.float-right.hidden
+            = image_tag '/images/exclamation.png', title: 'Error', class: 'vmid', alt: '!'
+            Error, please refresh
+          #saveconf.float-right.hidden
+            = image_tag '/images/accept.png', title: 'Saved', class: 'vmid', alt: ''
+            Saved
     %tbody
       - galleries.each do |gallery|
-        = render partial: 'galleries/single', locals: {gallery: gallery, klass: 'subber', skip_forms: true, section: gallery.character_gallery_for(@character)}
+        = render partial: 'galleries/single', locals: {gallery: gallery, klass: 'subber', skip_forms: true, character_gallery: gallery.character_gallery_for(@character)}
       - unless galleries.present?
         %tr
           %td.green
