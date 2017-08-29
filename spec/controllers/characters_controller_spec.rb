@@ -927,17 +927,26 @@ RSpec.describe CharactersController do
       template = create(:template, user: user)
       icon = create(:icon, user: user)
       gallery = create(:gallery, icons: [icon], user: user)
-      character = create(:character, template: template, galleries: [gallery], default_icon: icon, user: user)
+      group = create(:gallery_group)
+      gallery2 = create(:gallery, gallery_groups: [group], user: user)
+      gallery3 = create(:gallery, gallery_groups: [group], user: user)
+      character = create(:character, template: template, galleries: [gallery, gallery2], gallery_groups: [group], default_icon: icon, user: user)
       calias = create(:alias, character: character)
       char_post = create(:post, character: character, user: user)
       char_reply = create(:reply, character: character, user: user)
+
+      character.reload
+
+      expect(character.galleries).to match_array([gallery, gallery2, gallery3])
+      expect(character.ungrouped_gallery_ids).to match_array([gallery.id, gallery2.id])
+      expect(character.gallery_groups).to match_array([group])
 
       login_as(user)
       expect do
         post :duplicate, id: character.id
       end.to not_change {
-        [Template.count, Gallery.count, Icon.count, Reply.count, Post.count]
-      }.and change { Character.count }.by(1)
+        [Template.count, Gallery.count, Icon.count, Reply.count, Post.count, Tag.count]
+      }.and change { Character.count }.by(1).and change { CharactersGallery.count }.by(3).and change { CharacterTag.count }.by(1)
 
       dup = assigns(:dup)
       dup.reload
@@ -958,14 +967,18 @@ RSpec.describe CharactersController do
 
       # check character associations aren't changed
       expect(character.template).to eq(template)
-      expect(character.galleries).to match_array([gallery])
+      expect(character.galleries).to match_array([gallery, gallery2, gallery3])
+      expect(character.ungrouped_gallery_ids).to match_array([gallery.id, gallery2.id])
+      expect(character.gallery_groups).to match_array([group])
       expect(character.default_icon).to eq(icon)
       expect(character.user).to eq(user)
       expect(character.aliases.map(&:name)).to eq([calias.name])
 
       # check duplicate has appropriate associations
       expect(dup.template).to eq(template)
-      expect(dup.galleries).to match_array([gallery])
+      expect(dup.galleries).to match_array([gallery, gallery2, gallery3])
+      expect(dup.ungrouped_gallery_ids).to match_array([gallery.id, gallery2.id])
+      expect(dup.gallery_groups).to match_array([group])
       expect(dup.default_icon).to eq(icon)
       expect(dup.user).to eq(user)
       expect(dup.aliases.map(&:name)).to eq([calias.name])

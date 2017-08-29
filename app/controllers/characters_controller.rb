@@ -75,7 +75,8 @@ class CharactersController < ApplicationController
   def duplicate
     Character.transaction do
       @dup = @character.dup
-      @dup.galleries = @character.galleries
+      @dup.gallery_groups = @character.gallery_groups
+      @dup.ungrouped_gallery_ids = @character.ungrouped_gallery_ids
       @character.aliases.find_each do |calias|
         dupalias = calias.dup
         @dup.aliases << dupalias
