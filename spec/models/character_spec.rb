@@ -159,6 +159,86 @@ RSpec.describe Character do
       expect(character.gallery_ids).to match_array([gallery_manual.id, gallery_both.id, gallery_automatic.id])
       expect(character.ungrouped_gallery_ids).to match_array([gallery_manual.id, gallery_both.id])
     end
+
+    ['before', 'after'].each do |time|
+      context "combined #{time} gallery_group_ids" do
+        def process_changes(obj, gallery_group_ids, ungrouped_gallery_ids, time)
+          if time == 'before'
+            obj.ungrouped_gallery_ids = ungrouped_gallery_ids
+            obj.gallery_group_ids = gallery_group_ids
+          else
+            obj.gallery_group_ids = gallery_group_ids
+            obj.ungrouped_gallery_ids = ungrouped_gallery_ids
+          end
+        end
+
+        it "supports adding a gallery at the same time as removing its group" do
+          user = create(:user)
+          group = create(:gallery_group)
+          gallery = create(:gallery, user: user, gallery_groups: [group])
+          character = create(:character, user: user, gallery_groups: [group])
+          expect(character.reload.galleries).to match_array([gallery])
+
+          process_changes(character, [], [gallery.id], time)
+          character.save
+
+          character.reload
+          expect(character.galleries).to match_array([gallery])
+          expect(character.ungrouped_gallery_ids).to match_array([gallery.id])
+          expect(character.gallery_groups).to match_array([])
+        end
+
+        it "supports adding a gallery at the same time as swapping its group" do
+          user = create(:user)
+          group1 = create(:gallery_group)
+          group2 = create(:gallery_group)
+          gallery = create(:gallery, user: user, gallery_groups: [group1, group2])
+          character = create(:character, user: user, gallery_groups: [group1])
+          expect(character.reload.galleries).to match_array([gallery])
+
+          process_changes(character, [group2.id], [gallery.id], time)
+          character.save
+
+          character.reload
+          expect(character.galleries).to match_array([gallery])
+          expect(character.ungrouped_gallery_ids).to match_array([gallery.id])
+          expect(character.gallery_groups).to match_array([group2])
+        end
+
+        it "keeps a gallery when removing at the same time as adding its group" do
+          user = create(:user)
+          group = create(:gallery_group)
+          gallery = create(:gallery, user: user, gallery_groups: [group])
+          character = create(:character, user: user, galleries: [gallery])
+          expect(character.reload.galleries).to match_array([gallery])
+
+          process_changes(character, [group.id], [], time)
+          character.save
+
+          character.reload
+          expect(character.galleries).to match_array([gallery])
+          expect(character.ungrouped_gallery_ids).to match_array([])
+          expect(character.gallery_groups).to match_array([group])
+        end
+
+        it "keeps a gallery when removing at the same time as swapping its group" do
+          user = create(:user)
+          group1 = create(:gallery_group)
+          group2 = create(:gallery_group)
+          gallery = create(:gallery, user: user, gallery_groups: [group1, group2])
+          character = create(:character, user: user, galleries: [gallery], gallery_groups: [group1])
+          expect(character.reload.galleries).to match_array([gallery])
+
+          process_changes(character, [group2.id], [], time)
+          character.save
+
+          character.reload
+          expect(character.galleries).to match_array([gallery])
+          expect(character.ungrouped_gallery_ids).to match_array([])
+          expect(character.gallery_groups).to match_array([group2])
+        end
+      end
+    end
   end
 
   # from Taggable concern; duplicated between PostSpec, CharacterSpec, GallerySpec
