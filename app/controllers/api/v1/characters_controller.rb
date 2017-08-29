@@ -1,6 +1,6 @@
 class Api::V1::CharactersController < Api::ApiController
-  before_filter :login_required, only: :update
-  before_filter :find_character, except: :index
+  before_filter :login_required, only: [:update, :reorder]
+  before_filter :find_character, except: [:index, :reorder]
   before_filter :find_post, except: :update
   before_filter :require_permission, only: :update
 
@@ -55,6 +55,49 @@ class Api::V1::CharactersController < Api::ApiController
 
     @character.save
     render json: @character.as_json(include: [:default])
+  end
+
+  api! 'Update the order of galleries on a character. This is an unstable feature, and may be moved or renamed; it should not be trusted.'
+  error 401, "You must be logged in"
+  error 403, "Character is not editable by the user"
+  error 404, "CharactersGallery IDs could not be found"
+  error 422, "Invalid parameters provided"
+  param :ordered_characters_gallery_ids, Array, allow_blank: false
+  def reorder
+    section_ids = params[:ordered_characters_gallery_ids].map(&:to_i).uniq
+    sections = CharactersGallery.where(id: section_ids)
+    sections_count = sections.count
+    unless sections_count == section_ids.count
+      missing_sections = section_ids - sections.pluck(:id)
+      error = {message: "Some character galleries could not be found: #{missing_sections * ', '}"}
+      render json: {errors: [error]}, status: :not_found and return
+    end
+
+    characters = Character.where(id: sections.pluck('distinct character_id'))
+    unless characters.count == 1
+      error = {message: 'Character galleries must be from one character'}
+      render json: {errors: [error]}, status: :unprocessable_entity and return
+    end
+
+    character = characters.first
+    access_denied and return unless character.editable_by?(current_user)
+
+    CharactersGallery.transaction do
+      sections = sections.sort_by {|section| section_ids.index(section.id) }
+      sections.each_with_index do |section, index|
+        next if section.section_order == index
+        section.update_attributes(section_order: index)
+      end
+
+      other_sections = CharactersGallery.where(character_id: character.id).where.not(id: section_ids).order('section_order asc')
+      other_sections.each_with_index do |section, i|
+        index = i + sections_count
+        next if section.section_order == index
+        section.update_attributes(section_order: index)
+      end
+    end
+
+    render json: {characters_gallery_ids: CharactersGallery.where(character_id: character.id).order('section_order asc').pluck(:id)}
   end
 
   private

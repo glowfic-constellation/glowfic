@@ -59,7 +59,7 @@ class Api::V1::PostsController < Api::ApiController
         post.update_attributes(section_order: index)
       end
 
-      other_posts = Post.where(board_id: board.id, section_id: section_id).where('id NOT IN (?)', post_ids).order('section_order asc')
+      other_posts = Post.where(board_id: board.id, section_id: section_id).where.not(id: post_ids).order('section_order asc')
       other_posts.each_with_index do |post, i|
         index = i + posts_count
         next if post.section_order == index

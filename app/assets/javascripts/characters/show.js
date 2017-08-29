@@ -1,58 +1,41 @@
 //= require galleries/expander_old
+//= require reorder
+/* global moveRow */
 $(document).ready(function() {
-  $(".section-up").click(function() {
-    var oldOrder = parseInt($(this).data('order'));
-    var newOrder = oldOrder - 1;
-    if (oldOrder === 0) return false;
-    switchRows(oldOrder, newOrder);
-    setArrowsAbility();
-    return false;
-  });
-
-  $(".section-down").click(function() {
-    var oldOrder = parseInt($(this).data('order'));
-    var newOrder = oldOrder + 1;
-    if (document.getElementById("section-"+newOrder) === null) return false;
-    switchRows(oldOrder, newOrder);
-    setArrowsAbility();
-    return false;
-  });
-
-  setArrowsAbility();
+  bindArrows($("#reorder-galleries-table"), '/api/v1/characters/reorder', 'characters_gallery_ids');
 });
 
-function switchRows(oldOrder, newOrder) {
-  var sourceRow = $("#section-"+oldOrder);
-  var sourceGallery = $("#section-gallery-"+oldOrder);
-  var targetRow = $("#section-"+newOrder);
-  var targetGallery = $("#section-gallery-"+newOrder);
+// override standard reorder
+function bindArrows(orderBox, path, param) {
+  $(".section-up", orderBox).click(function() {
+    var sourceRow = $(this).closest('.section-ordered');
+    var targetRow = sourceRow.prevUntil('.section-ordered').last().prev();
+    console.log(sourceRow, targetRow);
+    if (targetRow.length === 0) return false;
+    moveRow(sourceRow, targetRow, orderBox, path, param);
+    return false;
+  }).addClass('pointer').removeClass('disabled-arrow');
 
-  $("#section-"+oldOrder+" img").data('order', newOrder);
-  $("#section-"+newOrder+" img").data('order', oldOrder);
-  sourceRow.attr('id', "section-"+newOrder);
-  targetRow.attr('id', "section-"+oldOrder);
-  sourceGallery.attr('id', "section-gallery-"+newOrder);
-  targetGallery.attr('id', "section-gallery-"+oldOrder);
+  $(".section-down", orderBox).click(function() {
+    var sourceRow = $(this).closest('.section-ordered');
+    var targetRow = sourceRow.nextUntil('.section-ordered').last().next();
+    console.log(sourceRow, targetRow);
+    if (targetRow.length === 0) return false;
+    moveRow(sourceRow, targetRow, orderBox, path, param);
+    return false;
+  }).addClass('pointer').removeClass('disabled-arrow');
 
-  if (oldOrder > newOrder) {
-    sourceRow.insertBefore(targetRow);
-    sourceGallery.insertBefore(targetRow);
-  } else {
-    sourceGallery.insertAfter(targetGallery);
-    sourceRow.insertAfter(targetGallery);
-  }
-
-  var json = {changes: {}, commit: 'reorder'};
-  json.changes[sourceRow.data('section')] = newOrder;
-  json.changes[targetRow.data('section')] = oldOrder;
-  $.post('/characters', json);
+  $(".section-up", orderBox).first().addClass('disabled-arrow').removeClass('pointer');
+  $(".section-down", orderBox).last().addClass('disabled-arrow').removeClass('pointer');
 }
 
-function setArrowsAbility() {
-  $(".gallery-header .section-up, .gallery-header .section-down").each(function() {
-    if (!$(this).hasClass('disabled-arrow')) return;
-    $(this).removeClass('disabled-arrow').addClass('pointer');
+// override standard reorder
+function reorderRows(orderBox) {
+  var arrowBox = $('tbody', orderBox);
+  var rows = $('.section-ordered', arrowBox);
+  var ordered = rows.sort(function(a, b) { return $(a).data('order') > $(b).data('order') ? 1 : -1; }).each(function() {
+    var attaches = $(this).nextUntil('.section-ordered');
+    arrowBox.append(this, attaches.get());
   });
-  $(".gallery-header .section-up").first().removeClass('pointer').addClass('disabled-arrow');
-  $(".gallery-header .section-down").last().removeClass('pointer').addClass('disabled-arrow');
+  return ordered;
 }

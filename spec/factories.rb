@@ -101,6 +101,11 @@ FactoryGirl.define do
     end
   end
 
+  factory :characters_gallery do
+    character
+    gallery
+  end
+
   factory :alias, class: CharacterAlias do
     character
     name 'Alias'

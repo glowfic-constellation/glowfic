@@ -1,5 +1,5 @@
 - attrs = {}
-- attrs = {id: "section-#{section.section_order}", data: {section: section.id}} if local_assigns[:section]
+- attrs = {class: 'section-ordered', data: {id: character_gallery.id, order: character_gallery.section_order}} if local_assigns[:character_gallery]
 %tr.gallery-header{**attrs}
   %th.padding-10{class: (klass if defined? klass)}
     = link_to gallery.name, gallery_path(gallery), class: 'gallery-title'
@@ -13,10 +13,10 @@
       = link_to gallery_path(gallery), method: :delete, data: { confirm: 'Are you sure you want to delete this gallery? (This will not delete the icons.)' }, class: 'gallery-delete' do
         .link-box.red x Delete Gallery
     .gallery-box.float-right.gallery-minmax{data: {id: gallery.id}} -
-    - if local_assigns[:section] && (gallery.user_id == current_user.try(:id) || current_user.try(:admin?))
+    - if local_assigns[:character_gallery] && (gallery.user_id == current_user.try(:id) || current_user.try(:admin?))
       .float-right
-        = image_tag "/images/arrow_up.png", class: "section-up disabled-arrow", data: {order: section.section_order}
-        = image_tag "/images/arrow_down.png", class: "section-down disabled-arrow", data: {order: section.section_order}
+        = image_tag "/images/arrow_up.png", class: "section-up disabled-arrow"
+        = image_tag "/images/arrow_down.png", class: "section-down disabled-arrow"
 - groups = gallery.gallery_groups_data
   - if groups.present?
   %tr.gallery-tags
@@ -27,8 +27,7 @@
           = link_to tag_path(group.id), class: 'tag-item-link' do
             %span.tag-item
               = group.name
-- attrs = {id: "section-gallery-#{section.section_order}"} if attrs[:id]
-%tr.gallery-icons{**attrs}
+%tr.gallery-icons{}
   %td.green
     .gallery{id: "gallery#{gallery.id.to_s}"}
       = form_tag delete_multiple_icons_path, method: :delete do

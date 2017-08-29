@@ -38,7 +38,7 @@ class Api::V1::BoardSectionsController < Api::ApiController
         section.update_attributes(section_order: index)
       end
 
-      other_sections = BoardSection.where(board_id: board.id).where('id NOT IN (?)', section_ids).order('section_order asc')
+      other_sections = BoardSection.where(board_id: board.id).where.not(id: section_ids).order('section_order asc')
       other_sections.each_with_index do |section, i|
         index = i + sections_count
         next if section.section_order == index
