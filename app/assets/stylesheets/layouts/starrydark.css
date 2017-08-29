@@ -55,6 +55,9 @@ body { background-color: #211E2F; color: #DADADA; }
 
 .green { background-color: #323232; }
 
+.tag-item { background-color: #241F4E; }
+.even .tag-item { background-color: #24252D; }
+.odd .tag-item { background-color: #1A1A22; }
 a, .tag-item { color: #B5AFCB; }
 a:visited { color: #9C9AA4; }
 .flash.success, .flash.error, .flash.inbox { background-color: #484357; color: #DADADA; }
