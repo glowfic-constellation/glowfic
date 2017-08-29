@@ -45,11 +45,21 @@ $(document).ready(function() {
     var tagBox = $(this);
     var tagBoxItems = $(".tag-item", tagBox);
     if (tagBoxItems.length <= 5) return;
+
     var hiddenTags = tagBoxItems.slice(4);
     hiddenTags.hide();
+
     var ellipsisBox = $("<span>").attr({class: 'tag-item semiopaque pointer', title: 'Click to show more tags…'}).append("...");
     var recollapseBox = $("<span>").attr({class: 'tag-item semiopaque pointer', title: 'Click to hide extra tags…'}).append("←").hide();
+
+    ellipsisBox.add(recollapseBox).hover(function mouseIn() {
+      $(this).removeClass('semiplusopaque');
+    }, function mouseOut() {
+      $(this).addClass('semiplusopaque');
+    });
+
     tagBox.append(ellipsisBox).append(' ').append(recollapseBox); // inline-block cares about spaces for formatting
+
     ellipsisBox.click(function() {
       hiddenTags.show();
       ellipsisBox.hide();
