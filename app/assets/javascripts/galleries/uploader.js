@@ -45,6 +45,14 @@ function bindFileInput(fileInput) {
 
       addUploadedIcon(url, data);
     },
+    progressall: function(e, data) {
+      var progressBox = fileInput.closest('td').find('.progressBox');
+      if (!progressBox) return;
+      var loaded = data.loaded;
+      var total = data.total;
+      var progress = parseInt(loaded / total * 100, 10);
+      progressBox.html(loaded.toString() + ' / ' + total.toString() + ' (' + progress + '%)');
+    },
     fail: function(e, data) {
       submitButton.prop('disabled', false);
       var response = data.response().jqXHR;
