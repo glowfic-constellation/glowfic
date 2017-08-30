@@ -784,7 +784,7 @@ RSpec.describe Post do
         expect(tag_ids).to match_array([tag.id])
       end
 
-      it "orders #{type} tags by order added to model" do
+      it "orders #{type} tag joins by order added to model" do
         tag1 = create(type)
         tag2 = create(type)
         tag3 = create(type)
@@ -793,7 +793,7 @@ RSpec.describe Post do
         taggable.send(type + '_ids=', [tag3.id, '_fake1', '_'+tag1.name, '_fake2', tag4.id])
         taggable.save
         taggable.reload
-        tags = taggable.send(type + 's')
+        tags = taggable.send(type + 's').order('post_tags.id')
         expect(tags[0]).to eq(tag3)
         expect(tags[2]).to eq(tag1)
         expect(tags[4]).to eq(tag4)
@@ -802,7 +802,7 @@ RSpec.describe Post do
         taggable.send(type + '_ids=', taggable.send(type + '_ids') + ['_'+tag2.name, '_fake3', '_fake4'])
         taggable.save
         taggable.reload
-        tags = taggable.send(type + 's')
+        tags = taggable.send(type + 's').order('post_tags.id')
         tag_ids = taggable.send(type + '_ids')
         expect(tags[0]).to eq(tag3)
         expect(tags[2]).to eq(tag1)
