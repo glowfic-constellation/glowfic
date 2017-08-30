@@ -17,7 +17,17 @@ module Taggable
         attr_reader tag_ids_method
         # on assignment of tag IDs, find relevant tag objects and new-ify unfound ones, then set local variable:
         define_method(tag_ids_method_assign) do |tag_ids|
-          tag_ids = tag_ids.uniq
+          tag_ids = tag_ids.uniq - ['']
+          match_ids = tag_ids.map do |id|
+            # map "_test" to "TEST"; 5 to 5; "5" to 5, for ease of matching order
+            if id.to_s.start_with?('_')
+              id.to_s.upcase[1..-1]
+            elsif id.to_i.to_s == id.to_s
+              id.to_i
+            else
+              id
+            end
+          end
           # fake tag IDs start with initial underscore
           fakes = tag_ids.select { |id| id.to_s.start_with?('_') }.uniq
           tag_ids -= fakes # remove them from proper list
@@ -35,7 +45,12 @@ module Taggable
           new_tags = fakes.map { |name| klass.new(user: user, name: name) }
 
           # set tag list to: [old tags] + [existing new tags] + [new tags]
+          # sort by input order
           final_tags = (old_tags + existing_tags + new_tags).uniq
+          final_tags.sort_by! do |x|
+            type = match_ids.index(x.name.upcase) || match_ids.index(x.id)
+            type
+          end
           self.public_send(tag_method_assign, final_tags)
           self.instance_variable_set('@' + tag_ids_method, final_tags.map(&:id_for_select))
         end
