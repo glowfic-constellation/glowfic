@@ -5,7 +5,7 @@ function bindArrows(orderBox, path, param) {
     var sourceRow = $(this).closest('.section-ordered');
     var targetRow = sourceRow.prev('.section-ordered');
     if (targetRow.length === 0) return false;
-    moveRow(sourceRow, targetRow, orderBox, path, param);
+    swapRows(sourceRow, targetRow, orderBox, path, param);
     return false;
   }).addClass('pointer').removeClass('disabled-arrow');
 
@@ -13,7 +13,7 @@ function bindArrows(orderBox, path, param) {
     var sourceRow = $(this).closest('.section-ordered');
     var targetRow = sourceRow.next('.section-ordered');
     if (targetRow.length === 0) return false;
-    moveRow(sourceRow, targetRow, orderBox, path, param);
+    swapRows(sourceRow, targetRow, orderBox, path, param);
     return false;
   }).addClass('pointer').removeClass('disabled-arrow');
 
@@ -35,17 +35,21 @@ function reorderRows(orderBox) {
   return ordered;
 }
 
-function moveRow(sourceRow, targetRow, orderBox, path, param) {
+function swapRows(sourceRow, targetRow, orderBox, path, param) {
+  var sourceOrder = sourceRow.data('order');
+  var targetOrder = targetRow.data('order');
+  sourceRow.data('order', targetOrder);
+  targetRow.data('order', sourceOrder);
+  syncRowOrders(orderBox, path, param);
+}
+
+function syncRowOrders(orderBox, path, param) {
   // Reduce race conditions by only allowing one update at a time
   unbindArrows(orderBox);
   $("#loading", orderBox).show();
   $("#saveconf", orderBox).stop(true, true).hide();
 
   // Switch the row order pre-emptively
-  var sourceOrder = sourceRow.data('order');
-  var targetOrder = targetRow.data('order');
-  sourceRow.data('order', targetOrder);
-  targetRow.data('order', sourceOrder);
   var orderedRows = reorderRows(orderBox);
 
   // Figure out the full desired order and send it to the server

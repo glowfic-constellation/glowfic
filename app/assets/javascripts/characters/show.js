@@ -10,18 +10,16 @@ function bindArrows(orderBox, path, param) {
   $(".section-up", orderBox).click(function() {
     var sourceRow = $(this).closest('.section-ordered');
     var targetRow = sourceRow.prevUntil('.section-ordered').last().prev();
-    console.log(sourceRow, targetRow);
     if (targetRow.length === 0) return false;
-    moveRow(sourceRow, targetRow, orderBox, path, param);
+    swapRows(sourceRow, targetRow, orderBox, path, param);
     return false;
   }).addClass('pointer').removeClass('disabled-arrow');
 
   $(".section-down", orderBox).click(function() {
     var sourceRow = $(this).closest('.section-ordered');
     var targetRow = sourceRow.nextUntil('.section-ordered').last().next();
-    console.log(sourceRow, targetRow);
     if (targetRow.length === 0) return false;
-    moveRow(sourceRow, targetRow, orderBox, path, param);
+    swapRows(sourceRow, targetRow, orderBox, path, param);
     return false;
   }).addClass('pointer').removeClass('disabled-arrow');
 
