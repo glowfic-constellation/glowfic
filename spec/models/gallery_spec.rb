@@ -110,6 +110,32 @@ RSpec.describe Gallery do
         expect(tags.map(&:user)).to match_array([old_user])
         expect(tag_ids).to match_array([tag.id])
       end
+
+      it "orders #{type} tags by order added to model" do
+        tag1 = create(type)
+        tag2 = create(type)
+        tag3 = create(type)
+        tag4 = create(type)
+
+        taggable.send(type + '_ids=', [tag3.id, '_fake1', '_'+tag1.name, '_fake2', tag4.id])
+        taggable.save
+        taggable.reload
+        tags = taggable.send(type + 's')
+        expect(tags[0]).to eq(tag3)
+        expect(tags[2]).to eq(tag1)
+        expect(tags[4]).to eq(tag4)
+        expect(tags.map(&:name)).to eq([tag3.name, 'fake1', tag1.name, 'fake2', tag4.name])
+
+        taggable.send(type + '_ids=', taggable.send(type + '_ids') + ['_'+tag2.name, '_fake3', '_fake4'])
+        taggable.save
+        taggable.reload
+        tags = taggable.send(type + 's')
+        tag_ids = taggable.send(type + '_ids')
+        expect(tags[0]).to eq(tag3)
+        expect(tags[2]).to eq(tag1)
+        expect(tags[5]).to eq(tag2)
+        expect(tags.map(&:name)).to eq([tag3.name, 'fake1', tag1.name, 'fake2', tag4.name, tag2.name, 'fake3', 'fake4'])
+      end
     end
   end
 
