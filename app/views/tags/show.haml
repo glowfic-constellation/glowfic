@@ -1,6 +1,9 @@
 - content_for :breadcrumbs do
   = link_to "Tags", tags_path
   &raquo;
+  - if @tag.type
+    = @tag.type.pluralize.titlecase
+    &raquo;
   %b= @tag.name
 
 - content_for :edit_box do
@@ -49,3 +52,14 @@
           - content_for :edit_box
     %tbody
       = render partial: 'characters/list_section', locals: {name: nil, characters: @characters.order('name asc'), hide_buttons: true}
+
+- unless [@posts, @galleries, @characters].any?(&:present?)
+  %table
+    %thead
+      %tr
+        %th
+          Items Tagged: #{@tag.name}
+          - content_for :edit_box
+    %tbody
+      %tr
+        %td.centered.padding-5{class: cycle('even', 'odd')} — No items yet —
