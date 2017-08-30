@@ -137,6 +137,7 @@ function bindFileInput(fileInput) {
 
       // create hidden field
       var iconIndex = addNewRow();
+      var row = $(".icon-row").filter(function() { return $(this).data('index') === iconIndex; });
       var urlInput = $("#icons_"+iconIndex+"_url");
       var urlCell = $(urlInput.parents('td:first'));
       urlInput.hide().val(url);
@@ -147,7 +148,7 @@ function bindFileInput(fileInput) {
       var fileExt = keyword.split('.').slice(-1)[0];
       if (fileExt !== keyword)
         keyword = keyword.replace('.'+fileExt, '');
-      $(".icon-row[data-index='" + iconIndex + "'] input[id$='_keyword']").val(keyword);
+      row.find("input[id$='_keyword']").val(keyword);
 
       var uploaded = ' Uploaded ' + data.files[0].name;
       urlCell.append("<span class='conf'><img src='/images/accept.png' alt='' title='Successfully uploaded' class='vmid' />"+uploaded+"</span>");
