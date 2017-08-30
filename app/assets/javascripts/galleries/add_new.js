@@ -64,8 +64,9 @@ function bindAdd() {
 }
 
 function addNewRow() {
-  var newRow = $(".icon-row:last").clone();
-  var index = newRow.data('index') + 1;
+  var oldRow = $(".icon-row:last");
+  var newRow = oldRow.clone();
+  var index = oldRow.data('index') + 1;
   newRow.data('index', index);
 
   // clear all input values in the clone
