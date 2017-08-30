@@ -1,6 +1,9 @@
 - content_for :breadcrumbs do
   = link_to "Tags", tags_path
   &raquo;
+  - if @tag.type
+    = @tag.type.pluralize.titlecase
+    &raquo;
   %b= @tag.name
 
 - content_for :edit_box do
