@@ -212,7 +212,8 @@ class GalleriesController < ApplicationController
   end
 
   def build_tags
-    @gallery_groups = @gallery.try(:gallery_groups) || []
+    @gallery_groups = @gallery.gallery_groups.order('gallery_tags.id asc') if @gallery.try(:persisted?)
+    @gallery_groups ||= @gallery.try(:gallery_groups) || []
   end
 
   def gallery_params
