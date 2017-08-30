@@ -26,7 +26,7 @@ class Gallery < ActiveRecord::Base
     # fetches an array of
     # galleries.map(&:gallery_groups).map{|group| [f1: group.id, f2: group.name]}
     # ordered by tag name
-    select("ARRAY(SELECT row_to_json(ROW(tags.id, tags.name)) FROM tags LEFT JOIN gallery_tags ON gallery_tags.tag_id = tags.id WHERE gallery_tags.gallery_id = galleries.id AND tags.type = 'GalleryGroup') AS gallery_groups_data_internal")
+    select("ARRAY(SELECT row_to_json(ROW(tags.id, tags.name)) FROM tags LEFT JOIN gallery_tags ON gallery_tags.tag_id = tags.id WHERE gallery_tags.gallery_id = galleries.id AND tags.type = 'GalleryGroup' ORDER BY gallery_tags.id ASC) AS gallery_groups_data_internal")
   }
 
   # Converts the internal [{'f1' => id, 'f2' => name}] structure of the retrieved data

@@ -212,7 +212,7 @@ class GalleriesController < ApplicationController
   end
 
   def build_tags
-    @gallery_groups = @gallery.try(:gallery_groups) || []
+    @gallery_groups = @gallery.try(:gallery_groups).try(:order, 'gallery_tags.id asc') || []
   end
 
   def gallery_params

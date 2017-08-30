@@ -273,7 +273,7 @@ class CharactersController < ApplicationController
   end
 
   def build_tags
-    @gallery_groups = @character.try(:gallery_groups) || []
+    @gallery_groups = @character.try(:gallery_groups).try(:order, 'character_tags.id asc') || []
   end
 
   def save_character_with_extras
