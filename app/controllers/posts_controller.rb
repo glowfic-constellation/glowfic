@@ -336,9 +336,14 @@ class PostsController < WritableController
   end
 
   def build_tags
-    @settings = @post.try(:settings).try(:order, 'post_tags.id asc') || []
-    @warnings = @post.try(:content_warnings).try(:order, 'post_tags.id asc') || []
-    @tags = @post.try(:labels).try(:order, 'post_tags.id asc') || []
+    if @post.try(:persisted?)
+      @settings = @post.settings.order('post_tags.id asc')
+      @warnings = @post.content_warnings.order('post_tags.id asc')
+      @tags = @post.labels.order('post_tags.id asc')
+    end
+    @settings ||= @post.try(:settings) || []
+    @warnings ||= @post.try(:content_warnings) || []
+    @tags ||= @post.try(:labels) || []
   end
 
   def editor_setup
