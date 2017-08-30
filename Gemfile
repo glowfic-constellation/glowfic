@@ -12,8 +12,9 @@ gem 'exception_notification'
 gem 'gon'
 gem 'haml-rails'
 gem 'httparty'
-gem "jquery-fileupload-rails"
+gem 'jquery-fileupload-rails'
 gem 'jquery-rails'
+gem 'jquery-ui-rails'
 gem 'newrelic_rpm'
 gem 'nilify_blanks'
 gem 'nokogiri'
@@ -59,7 +60,7 @@ group :development, :test do
 end
 
 group :test do
-  gem "codeclimate-test-reporter", "~> 1.0.0"
+  gem 'codeclimate-test-reporter', '~> 1.0.0'
   gem 'factory_girl_rails'
   gem 'json', '1.8.2'
   gem 'resque_spec'
