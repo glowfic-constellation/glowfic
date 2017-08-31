@@ -4,13 +4,13 @@
 
 body { background-color: #211E2F; color: #DADADA; }
 
-#content th, .post-header { background-color: #0D0B1E; }
+#content th, .list-header, .post-header { background-color: #0D0B1E; }
 #content .sub { color: #F3F3F3; }
 #content .sub, .post-navheader, .subber { background-color: #131937; }
 #content .subber, #content th.subber { background-color: #0D0B1E; color: #DADADA; }
 #content .beige { background-color: #484357; color: #DADADA; }
-#content .beige a, #content th a, .post-header a { color: #B5AFCB; }
-#content .beige a:visited, #content th a:visited, .post-header a:visited { color: #9C9AA4; }
+#content .beige a, #content th a, .list-header a, .post-header a { color: #B5AFCB; }
+#content .beige a:visited, #content th a:visited, .list-header a:visited, .post-header a:visited { color: #9C9AA4; }
 
 #post-menu-box { border-top: 1px solid #808080; border-top: 1px solid rgba(128,128,128,0.5); }
 #post-menu-box div { border-bottom: 1px solid #808080; border-bottom: 1px solid rgba(128,128,128,0.5); }
