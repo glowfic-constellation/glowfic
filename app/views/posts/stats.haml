@@ -8,7 +8,7 @@
   &raquo;
   = link_to @post.subject, post_path(@post)
   &raquo;
-  %b Stats
+  %b Metadata
 
 %table#stats
   %thead
@@ -16,34 +16,27 @@
       %th{colspan: 2}
         Stats:
         = link_to @post.subject, post_path(@post)
+    - if @post.description.present?
+      %tr
+        %td.post-subheader.padding-10{colspan: 2, style: 'width: unset;'}
+          %span= sanitize_post_description(@post.description).html_safe
   %tbody
     %tr
-      %td.sub.width-150 Authors
-      %td.even= @post.authors.sort_by { |author| author.username.downcase }.map { |author| link_to author.username, user_path(author) }.join(', ').html_safe
-    - if @post.settings.present?
-      %tr
-        %td.sub.width-150 Setting
-        %td{class: cycle('odd', 'even')}= @post.settings.map { |tag| link_to tag.name, tag_path(tag) }.join(', ').html_safe
-    %tr
-      %td.sub.width-150.vtop Characters
+      %td.sub.width-150 Status
       %td{class: cycle('odd', 'even')}
-        - if @post.characters.count > 2
-          %ul
-            - @post.characters.each do |character|
-              %li= link_to character.name, character_path(character)
-        - else
-          = @post.characters.map { |character| link_to character.name, character_path(character) }.join(', ').html_safe
-    - if @post.content_warnings.present?
-      %tr
-        %td.sub.width-150 Content Warnings
-        %td{class: cycle('odd', 'even')}= @post.content_warnings.map { |tag| link_to tag.name, tag_path(tag) }.join(', ').html_safe
-    - if @post.labels.present?
-      %tr
-        %td.sub.width-150 Labels
-        %td{class: cycle('odd', 'even')}= @post.labels.map { |tag| link_to tag.name, tag_path(tag) }.join(', ').html_safe
-    %tr
-      %td.sub.width-150 Word Count
-      %td{class: cycle('odd', 'even')}= @post.total_word_count
+        - case @post.status
+        - when Post::STATUS_ACTIVE
+          = image_tag "/images/book_open.png", class: 'vmid', title: "In Progress"
+          In Progress
+        - when Post::STATUS_COMPLETE
+          = image_tag "/images/book.png", class: 'vmid', title: "In Progress"
+          Complete
+        - when Post::STATUS_HIATUS
+          = image_tag "/images/hourglass.png", class: 'vmid', title: "In Progress"
+          On Hiatus
+        - when Post::STATUS_ABANDONED
+          = image_tag "/images/book_grey.png", class: 'vmid', title: "In Progress"
+          Abandoned
     %tr
       %td.sub.width-150 Audience
       %td{class: cycle('odd', 'even')}
@@ -67,24 +60,35 @@
           = image_tag "/images/lock.png", class: 'vmid', title: "Private"
           Private
     %tr
+      %td.sub.width-150 Authors
+      %td{class: cycle('odd', 'even')}= @post.authors.sort_by { |author| author.username.downcase }.map { |author| link_to author.username, user_path(author) }.join(', ').html_safe
+    %tr
+      %td.sub.width-150.vtop Characters
+      %td{class: cycle('odd', 'even')}
+        - if @post.characters.count > 2
+          %ul
+            - @post.characters.each do |character|
+              %li= link_to character.name, character_path(character)
+        - else
+          = @post.characters.map { |character| link_to character.name, character_path(character) }.join(', ').html_safe
+    - if @post.settings.present?
+      %tr
+        %td.sub.width-150 Setting
+        %td{class: cycle('odd', 'even')}= @post.settings.map { |tag| link_to tag.name, tag_path(tag) }.join(', ').html_safe
+    - if @post.content_warnings.present?
+      %tr
+        %td.sub.width-150 Content Warnings
+        %td{class: cycle('odd', 'even')}= @post.content_warnings.map { |tag| link_to tag.name, tag_path(tag) }.join(', ').html_safe
+    - if @post.labels.present?
+      %tr
+        %td.sub.width-150 Labels
+        %td{class: cycle('odd', 'even')}= @post.labels.map { |tag| link_to tag.name, tag_path(tag) }.join(', ').html_safe
+    %tr
+      %td.sub.width-150 Word Count
+      %td{class: cycle('odd', 'even')}= @post.total_word_count
+    %tr
       %td.sub.width-150 Time Begun
       %td{class: cycle('odd', 'even')}= pretty_time(@post.created_at)
     %tr
       %td.sub.width-150 Time Last Updated
       %td{class: cycle('odd', 'even')}= pretty_time(@post.tagged_at)
-    %tr
-      %td.sub.width-150 Status
-      %td{class: cycle('odd', 'even')}
-        - case @post.status
-        - when Post::STATUS_ACTIVE
-          = image_tag "/images/book_open.png", class: 'vmid', title: "In Progress"
-          In Progress
-        - when Post::STATUS_COMPLETE
-          = image_tag "/images/book.png", class: 'vmid', title: "In Progress"
-          Complete
-        - when Post::STATUS_HIATUS
-          = image_tag "/images/hourglass.png", class: 'vmid', title: "In Progress"
-          On Hiatus
-        - when Post::STATUS_ABANDONED
-          = image_tag "/images/book_grey.png", class: 'vmid', title: "In Progress"
-          Abandoned
