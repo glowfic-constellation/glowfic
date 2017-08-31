@@ -13,6 +13,7 @@
 //= require jquery
 //= require jquery_ujs
 //= require jquery-ui/widget
+//= require jquery-ui/widgets/sortable
 //= require jquery-fileupload/basic
 //= require tinymce-jquery
 //= require select2

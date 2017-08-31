@@ -14,33 +14,34 @@
 %br
 %br
 - reset_cycle
-%table#reorder-sections-table
-  %thead
-    %tr
-      %th.post-header
-        Organize Continuity Sections
-        = link_to new_board_section_path params: {board_id: @board.id} do
-          .link-box.green + New Section
-        #loading.float-right.hidden
-          = image_tag '/images/loading.gif', title: 'Loading...', class: 'vmid', alt: '...', style: 'width: 16px; height: 16px;'
-        #saveerror.float-right.hidden
-          = image_tag '/images/exclamation.png', title: 'Error', class: 'vmid', alt: '!'
-          Error, please refresh
-        #saveconf.float-right.hidden
-          = image_tag '/images/accept.png', title: 'Saved', class: 'vmid', alt: ''
-          Saved
-  %tbody
+.post-header
+
+#reorder-sections-table
+  .list-header
+    Organize Continuity Sections
+    = link_to new_board_section_path params: {board_id: @board.id} do
+      .link-box.green + New Section
+    #loading.float-right.hidden
+      = image_tag '/images/loading.gif', title: 'Loading...', class: 'vmid', alt: '...', style: 'width: 16px; height: 16px;'
+    #saveerror.float-right.hidden
+      = image_tag '/images/exclamation.png', title: 'Error', class: 'vmid', alt: '!'
+      Error, please refresh
+    #saveconf.float-right.hidden
+      = image_tag '/images/accept.png', title: 'Saved', class: 'vmid', alt: ''
+      Saved
+  %ul.sortable.table-list
     - @board_sections.each do |section|
-      %tr{class: 'section-ordered', data: {id: section.id, type: section.class.to_s, order: section.section_order}}
-        %td.padding-5{class: cycle('even', 'odd')}
-          = link_to section.name, board_section_path(section)
-          .float-right
-            = image_tag "/images/arrow_up.png", class: "section-up disabled-arrow"
-            = image_tag "/images/arrow_down.png", class: "section-down disabled-arrow"
-            = link_to edit_board_section_path(section) do
-              = image_tag "/images/pencil.png"
-            = link_to board_section_path(section), method: :delete, data: { confirm: 'Are you sure you want to delete this board section?' } do
-              = image_tag "/images/cross.png"
+      %li.padding-5.section-ordered{class: cycle('even', 'odd'), data: {id: section.id, type: section.class.to_s, order: section.section_order}}
+        .section-ordered-handle
+          = image_tag '/images/arrow_double.png', title: 'Reorder', class: 'disabled-arrow', alt: '↕'
+        = link_to section.name, board_section_path(section)
+        .float-right
+          = image_tag "/images/arrow_up.png", class: "section-up disabled-arrow"
+          = image_tag "/images/arrow_down.png", class: "section-down disabled-arrow"
+          = link_to edit_board_section_path(section) do
+            = image_tag "/images/pencil.png"
+          = link_to board_section_path(section), method: :delete, data: { confirm: 'Are you sure you want to delete this board section?' } do
+            = image_tag "/images/cross.png"
     - if @board_sections.empty?
       %tr
         %td.centered.padding-10{ class: cycle('even','odd'), colspan: 6 } — No items yet —
@@ -48,24 +49,23 @@
 - if (!@board.open_to_anyone? || @board_sections.present?) && @unsectioned_posts.present?
   %br
   - reset_cycle
-  %table#reorder-posts-table
-    %thead
-      %tr
-        %th.post-header
-          Organize Unsectioned Posts
-          #loading.float-right.hidden
-            = image_tag '/images/loading.gif', title: 'Loading...', class: 'vmid', alt: '...', style: 'width: 16px; height: 16px;'
-          #saveerror.float-right.hidden
-            = image_tag '/images/exclamation.png', title: 'Error', class: 'vmid', alt: '!'
-            Error, please refresh
-          #saveconf.float-right.hidden
-            = image_tag '/images/accept.png', title: 'Saved', class: 'vmid', alt: ''
-            Saved
-    %tbody
+  #reorder-posts-table
+    .list-header
+      Organize Unsectioned Posts
+      #loading.float-right.hidden
+        = image_tag '/images/loading.gif', title: 'Loading...', class: 'vmid', alt: '...', style: 'width: 16px; height: 16px;'
+      #saveerror.float-right.hidden
+        = image_tag '/images/exclamation.png', title: 'Error', class: 'vmid', alt: '!'
+        Error, please refresh
+      #saveconf.float-right.hidden
+        = image_tag '/images/accept.png', title: 'Saved', class: 'vmid', alt: ''
+        Saved
+    %ul.sortable.table-list
       - @unsectioned_posts.each do |post|
-        %tr{class: 'section-ordered', data: {id: post.id, type: post.class.to_s, order: post.section_order}}
-          %td.padding-5{class: cycle('even', 'odd')}
-            = link_to post.subject, post_path(post)
-            .float-right
-              = image_tag "/images/arrow_up.png", class: "section-up disabled-arrow"
-              = image_tag "/images/arrow_down.png", class: "section-down disabled-arrow"
+        %li.section-ordered{class: cycle('even', 'odd'), data: {id: post.id, type: post.class.to_s, order: post.section_order}}
+          .section-ordered-handle
+            = image_tag '/images/arrow_double.png', title: 'Reorder', class: 'disabled-arrow', alt: '↕'
+          = link_to post.subject, post_path(post)
+          .float-right
+            = image_tag "/images/arrow_up.png", class: "section-up disabled-arrow"
+            = image_tag "/images/arrow_down.png", class: "section-down disabled-arrow"

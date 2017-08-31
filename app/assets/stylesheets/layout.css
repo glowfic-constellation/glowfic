@@ -68,14 +68,17 @@
 
 /* List Tables */
 #content table { width: 100%; }
-#content th { background-color: #8B8687; color: #EEEEEE; padding: 15px; font-size: 18px; font-weight: normal; }
+#content th, .list-header { background-color: #8B8687; color: #EEEEEE; padding: 15px; font-size: 18px; font-weight: normal; }
 #content .sub { padding: 10px; font-size: 16px; color: #3E384F; }
 #content th.subber { padding: 10px 25px; color: black; font-size: 15px; font-weight: bold; }
 #content th.subber a, .subber a:visited { color: #FFFFFF; }
 #content th.subber input { margin: 0; }
 #content th.subber .link-box { font-size: 15px; }
-#content td { font-size: 14px; }
+#content td, ul.table-list li { font-size: 14px; }
 #content td.icon-box { padding: 10px 0 10px 10px; }
+
+.list-header { box-sizing: border-box; }
+ul.table-list { list-style: none; padding: 0; margin: 0; }
 
 /* Form Tables */
 #content table.form-table { text-align: center; width: 400px; margin: 0; border-spacing: 0; }
@@ -161,4 +164,6 @@ td.continuity-spacer { height: 20px; }
 .post-ignored { opacity: 0.3; }
 .time-loaded { font-size: 10px; position: absolute; top: 2px; right: 20px; }
 #loading img { height: 20px; width: 20px; }
-.section-warning td { background-color: rgb(208, 110, 110); background-color: rgba(255, 0, 0, 0.4); padding: 5px; }
+.section-warning { background-color: rgb(208, 110, 110); background-color: rgba(255, 0, 0, 0.4); padding: 5px; }
+.section-ordered-handle { cursor: move; display: inline-block; }
+.section-ordered-handle img { vertical-align: text-bottom; }
