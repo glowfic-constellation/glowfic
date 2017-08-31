@@ -16,6 +16,10 @@
       %th{colspan: 2}
         Stats:
         = link_to @post.subject, post_path(@post)
+    - if @post.description.present?
+      %tr
+        %td.post-subheader.padding-10{colspan: 2}
+          %span= sanitize_post_description(@post.description).html_safe
   %tbody
     %tr
       %td.sub.width-150 Status
