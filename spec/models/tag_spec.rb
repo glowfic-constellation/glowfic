@@ -62,14 +62,14 @@ RSpec.describe Tag do
 
     it "works with with_item_counts scope" do
       tags = create_tags
-      fetched = Label.where(id: tags.map(&:id)).select(:id).with_item_counts
+      fetched = Label.where(id: tags.map(&:id)).select(:id).order(:id).with_item_counts
       expect(fetched).to eq(tags)
       expect(fetched.map(&:post_count)).to eq([0, 1, 2])
     end
 
     it "works without with_item_counts scope" do
       tags = create_tags
-      fetched = Label.where(id: tags.map(&:id))
+      fetched = Label.where(id: tags.map(&:id)).order(:id)
       expect(fetched).to eq(tags)
       expect(fetched.map(&:post_count)).to eq([0, 1, 2])
     end
@@ -87,14 +87,14 @@ RSpec.describe Tag do
 
     it "works with with_item_counts scope" do
       tags = create_tags
-      fetched = GalleryGroup.where(id: tags.map(&:id)).select(:id).with_item_counts
+      fetched = GalleryGroup.where(id: tags.map(&:id)).select(:id).order(:id).with_item_counts
       expect(fetched).to eq(tags)
       expect(fetched.map(&:character_count)).to eq([0, 1, 2])
     end
 
     it "works without with_item_counts scope" do
       tags = create_tags
-      fetched = GalleryGroup.where(id: tags.map(&:id))
+      fetched = GalleryGroup.where(id: tags.map(&:id)).order(:id)
       expect(fetched).to eq(tags)
       expect(fetched.map(&:character_count)).to eq([0, 1, 2])
     end
@@ -112,14 +112,14 @@ RSpec.describe Tag do
 
     it "works with with_item_counts scope" do
       tags = create_tags
-      fetched = GalleryGroup.where(id: tags.map(&:id)).select(:id).with_item_counts
+      fetched = GalleryGroup.where(id: tags.map(&:id)).select(:id).order(:id).with_item_counts
       expect(fetched).to eq(tags)
       expect(fetched.map(&:gallery_count)).to eq([0, 1, 2])
     end
 
     it "works without with_item_counts scope" do
       tags = create_tags
-      fetched = GalleryGroup.where(id: tags.map(&:id))
+      fetched = GalleryGroup.where(id: tags.map(&:id)).order(:id)
       expect(fetched).to eq(tags)
       expect(fetched.map(&:gallery_count)).to eq([0, 1, 2])
     end
