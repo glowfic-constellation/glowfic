@@ -80,8 +80,7 @@
             = image_tag '/images/accept.png', title: 'Saved', class: 'vmid', alt: ''
             Saved
     %tbody
-      - galleries.each do |gallery|
-        = render partial: 'galleries/single', locals: {gallery: gallery, klass: 'subber', skip_forms: true, character_gallery: gallery.character_gallery_for(@character)}
+      = render partial: 'galleries/single', collection: galleries, as: :gallery, locals: {klass: 'subber', skip_forms: true, character_gallery: gallery.character_gallery_for(@character)}
       - unless galleries.present?
         %tr
           %td.green

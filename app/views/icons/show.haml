@@ -68,8 +68,7 @@
         %th Galleries
     %tbody
       - if @icon.galleries.exists?
-        - @icon.galleries.order(:name).each do |gallery|
-          = render partial: 'galleries/single', locals: {gallery: gallery, klass: 'subber', skip_forms: true}
+        = render partial: 'galleries/single', collection: @icon.galleries.order(:name), as: :gallery, locals: {klass: 'subber', skip_forms: true}
       - else
         %tr
           %td.even.centered — No galleries yet —
