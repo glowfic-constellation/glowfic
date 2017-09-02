@@ -221,6 +221,20 @@ class Post < ActiveRecord::Base
     word_count + contents.inject{|r, e| r + e.split.size}.to_i
   end
 
+  def word_count_for(user)
+    sum = 0
+    sum = word_count if user_id == user.id
+    return sum unless replies.where(user_id: user.id).exists?
+
+    contents = replies.where(user_id: user.id).pluck(:content)
+    contents[0] = contents[0].split.size
+    sum + contents.inject{|r, e| r + e.split.size}.to_i
+  end
+
+  def author_word_counts
+    authors.map { |author| [author.username, word_count_for(author)] }.sort_by{|a| -a[1] }
+  end
+
   def has_content_warnings?
     return read_attribute(:has_content_warnings) if has_attribute?(:has_content_warnings)
     content_warnings.exists?

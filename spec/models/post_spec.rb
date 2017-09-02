@@ -371,6 +371,46 @@ RSpec.describe Post do
       expect(post.word_count).to eq(5)
       expect(post.total_word_count).to eq(5)
     end
+
+    it "orders users correctly" do
+      post = create(:post, content: 'one')
+      two = create(:reply, post: post, content: 'two two')
+      three = create(:reply, post: post, content: 'three three three')
+      post = Post.find(post.id) # authors get cached
+      counts = post.author_word_counts
+      expect(counts[0][0]).to eq(three.user.username)
+      expect(counts[0][1]).to eq(3)
+      expect(counts[1][0]).to eq(two.user.username)
+      expect(counts[1][1]).to eq(2)
+      expect(counts[2][0]).to eq(post.user.username)
+      expect(counts[2][1]).to eq(1)
+    end
+
+    it "handles never posted users" do
+      post = create(:post)
+      expect(post.word_count_for(create(:user))).to eq(0)
+    end
+
+    it "handles posted no replies" do
+      post = create(:post, content: 'a a a a')
+      expect(post.word_count_for(post.user)).to eq(4)
+    end
+
+    it "handles posted + replies" do
+      post = create(:post, content: 'a a a a')
+      create(:reply, user: post.user, post: post, content: 'a a a')
+      create(:reply, post: post, user: post.user, content: 'a a')
+      create(:reply, post: post, content: 'c')
+      expect(post.word_count_for(post.user)).to eq(9)
+    end
+
+    it "handles only replies" do
+      post = create(:post, content: 'a a a a')
+      reply = create(:reply, post: post, content: 'b b b')
+      create(:reply, post: post, user: reply.user, content: 'b b')
+      create(:reply, post: post, content: 'c')
+      expect(post.word_count_for(reply.user)).to eq(5)
+    end
   end
 
   describe "#visible_to?" do
