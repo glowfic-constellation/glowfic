@@ -133,7 +133,7 @@
     .hidden
       = render partial: 'replies/single', locals: {reply: @post}
 - if @replies.present?
-  = render partial: 'posts/paginator', locals: { paginated: @replies, path: :post_path }
+  = render partial: 'posts/paginator', locals: { paginated: @replies }
 = render partial: 'replies/single', collection: @replies, as: :reply
 - if @post.completed? && (@replies.empty? || (@replies.last.id == @post.last_reply_id))
   .post-ender Here Ends This Thread
@@ -152,7 +152,7 @@
 - if @post.abandoned? && (@replies.empty? || (@replies.last.id == @post.last_reply_id))
   .post-ender This Thread Has Been Permanently Abandoned
 - if @replies.present?
-  = render partial: 'posts/paginator', locals: { paginated: @replies, path: :post_path }
+  = render partial: 'posts/paginator', locals: { paginated: @replies }
 - if logged_in? && @unread.nil?
   <a id="unread" class="noheight"> </a>
 - if @post.taggable_by?(current_user)

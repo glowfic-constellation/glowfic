@@ -54,4 +54,4 @@
 
 - content_for :posts_title do
   #{@user.username}'s Recent Posts
-= render partial: 'posts/list', locals: {posts: @posts, path: :user_path, table_class: 'user-right-content-box'}
+= render partial: 'posts/list', locals: {posts: @posts, table_class: 'user-right-content-box'}

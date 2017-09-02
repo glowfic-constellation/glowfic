@@ -87,7 +87,7 @@
             .centered.padding-5 — No galleries yet —
 - elsif params[:view] == 'posts'
   - content_for :posts_title do 'Recent Threads' end
-  = render partial: 'posts/list', locals: {posts: @posts, path: :character_path, table_class: 'character-right-content-box'}
+  = render partial: 'posts/list', locals: {posts: @posts, table_class: 'character-right-content-box'}
 - else
   - reset_cycle
   %table.character-right-content-box
