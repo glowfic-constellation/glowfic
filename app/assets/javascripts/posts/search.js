@@ -110,7 +110,12 @@ $(document).ready(function() {
       delay: 200,
       url: '/api/v1/templates',
       dataType: 'json',
-      data: queryTransform,
+      data: function(params) {
+        var data = queryTransform(params);
+        var authorId = $("#author_id").val();
+        if( authorId !== '' && authorId !== undefined) { data.user_id = authorId; }
+        return data;
+      },
       processResults: function(data, params) {
         var total = this._request.getResponseHeader('Total');
         return processResults(data, params, total, 'name');

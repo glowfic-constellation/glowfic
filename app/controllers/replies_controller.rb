@@ -21,7 +21,7 @@ class RepliesController < WritableController
     else
       @users = User.where(id: params[:author_id]) if params[:author_id].present?
       @characters = Character.where(id: params[:character_id]) if params[:character_id].present?
-      @templates = Template.order('name')
+      @templates = Template.order('name').limit(25)
       @boards = Board.where(id: params[:board_id]) if params[:board_id].present?
       if @post
         # post exists but post not visible
@@ -59,11 +59,13 @@ class RepliesController < WritableController
     end
 
     if params[:template_id].present?
-      template = Template.find_by_id(params[:template_id])
-      if template.present?
-        character_ids = Character.where(template_id: template.id).pluck(:id)
+      @templates = Template.where(id: params[:template_id])
+      if @templates.first.present?
+        character_ids = Character.where(template_id: @templates.first.id).pluck(:id)
         @search_results = @search_results.where(character_id: character_ids)
       end
+    else
+      @templates = @templates.where(user_id: params[:author_id]) if params[:author_id].present?
     end
 
     @search_results = @search_results

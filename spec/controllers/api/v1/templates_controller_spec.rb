@@ -31,5 +31,25 @@ RSpec.describe Api::V1::TemplatesController do
       get :index, page: 'b'
       expect(response).to have_http_status(422)
     end
+
+    it "raises error on invalid user", show_in_doc: true do
+      get :index, user_id: 'b'
+      expect(response).to have_http_status(422)
+    end
+
+    it "raises error on not found user", show_in_doc: true do
+      get :index, user_id: '12'
+      expect(response).to have_http_status(422)
+    end
+
+    it "finds only user's templates", show_in_doc: true do
+      user = create(:user)
+      notuser = create(:user)
+      template = create(:template, user: user)
+      nottemplate = create(:template, user: notuser)
+
+      get :index, user_id: template.user_id
+      expect(response.json['results'].count).to eq(1)
+    end
   end
 end

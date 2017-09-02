@@ -223,6 +223,8 @@ class CharactersController < ApplicationController
       # TODO display error if template is not user's
       @templates = Template.where(id: params[:template_id])
       @search_results = @search_results.where(template_id: params[:template_id])
+    else
+      @templates = Template.where(user_id: params[:author_id]).order('name asc').limit(25) if params[:author_id].present?
     end
 
     if params[:name].present?
