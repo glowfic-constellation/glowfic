@@ -78,7 +78,7 @@ class RepliesController < WritableController
     end
   end
 
-  def make_draft
+  def make_draft(show_message=true)
     if (draft = ReplyDraft.draft_for(params[:reply][:post_id], current_user.id))
       draft.assign_attributes(params[:reply])
     else
@@ -87,7 +87,7 @@ class RepliesController < WritableController
     end
 
     if draft.save
-      flash[:success] = "Draft saved!"
+      flash[:success] = "Draft saved!" if show_message
     else
       flash[:error] = {}
       flash[:error][:message] = "Your draft could not be saved because of the following problems:"
@@ -120,6 +120,19 @@ class RepliesController < WritableController
         flash.now[:error] = "There #{pluraled} since you last viewed this post."
         draft = make_draft
         preview(ReplyDraft.reply_from_draft(draft)) and return
+      end
+
+      if reply.user_id.present? && !params[:allow_dupe].present?
+        last_by_user = reply.post.replies.where(user_id: reply.user_id).order(id: :asc).last
+        if last_by_user.present?
+          match_attrs = ['content', 'icon_id', 'character_id', 'character_alias_id']
+          if last_by_user.attributes.slice(match_attrs) == reply.attributes.slice(match_attrs)
+            flash.now[:error] = "This looks like a duplicate. Did you attempt to post this twice?"
+            @allow_dupe = true
+            draft = make_draft(false)
+            preview(ReplyDraft.reply_from_draft(draft)) and return
+          end
+        end
       end
     end
 
