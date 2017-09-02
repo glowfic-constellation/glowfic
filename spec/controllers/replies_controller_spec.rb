@@ -110,6 +110,21 @@ RSpec.describe RepliesController do
       expect(flash[:error]).to eq("There have been 2 new replies since you last viewed this post.")
     end
 
+    it "handles multiple creations by user" do
+      reply_post = create(:post)
+      login_as(reply_post.user)
+      dupe_reply = create(:reply, user: reply_post.user, post: reply_post)
+      reply_post.mark_read(reply_post.user, dupe_reply.created_at + 1.second, true)
+
+      post :create, reply: {post_id: reply_post.id, user_id: reply_post.user_id, content: dupe_reply.content}
+      expect(response).to have_http_status(200)
+      expect(flash[:error]).to eq("This looks like a duplicate. Did you attempt to post this twice?")
+
+      post :create, reply: {post_id: reply_post.id, user_id: reply_post.user_id, content: dupe_reply.content}, allow_dupe: true
+      expect(response).to have_http_status(302)
+      expect(flash[:success]).to eq("Posted!")
+    end
+
     it "requires valid params if read" do
       user = create(:user)
       login_as(user)
