@@ -442,6 +442,7 @@ RSpec.describe RepliesController do
         expect(assigns(:users)).to be_nil # this will be dynamically loaded
         expect(assigns(:characters)).to be_nil # this will be dynamically loaded
         expect(assigns(:users)).to be_nil # this will be dynamically loaded
+        expect(assigns(:templates).size).to eq(2) # this will be dynamically loaded
       end
 
       it "works logged in" do
@@ -451,6 +452,14 @@ RSpec.describe RepliesController do
         expect(assigns(:page_title)).to eq('Search Replies')
         expect(assigns(:post)).to be_nil
         expect(assigns(:search_results)).to be_nil
+      end
+
+      it "sets templates by author" do
+        author = create(:user)
+        template = create(:template, user: author)
+        create(:template)
+        get :search, commit: true, author_id: author.id
+        expect(assigns(:templates)).to eq([template])
       end
 
       it "handles invalid post" do

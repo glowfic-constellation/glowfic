@@ -42,7 +42,7 @@ RSpec.describe Api::V1::TemplatesController do
       expect(response).to have_http_status(422)
     end
 
-    it "finds only user's templates" do
+    it "finds only user's templates", show_in_doc: true do
       user = create(:user)
       notuser = create(:user)
       template = create(:template, user: user)
