@@ -828,6 +828,7 @@ RSpec.describe CharactersController do
       get :search
       expect(response).to have_http_status(200)
       expect(assigns(:users)).to be_empty
+      expect(assigns(:templates)).to be_empty
     end
 
     it 'works logged out' do
@@ -844,6 +845,14 @@ RSpec.describe CharactersController do
       expect(response).to have_http_status(200)
       expect(assigns(:users)).to match_array([author])
       expect(assigns(:search_results)).to match_array([found])
+    end
+
+    it "sets templates by author" do
+      author = create(:user)
+      template = create(:template, user: author)
+      create(:template)
+      get :search, commit: true, author_id: author.id
+      expect(assigns(:templates)).to eq([template])
     end
 
     it 'searches template' do
