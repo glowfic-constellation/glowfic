@@ -18,8 +18,7 @@
       %td.padding-10.centered{class: cycle('even', 'odd'), colspan: 7} — No continuities hidden —
     %tr
       %th.subber{colspan: 7} Posts
-    - @hidden_posts.each do |post|
-      = render partial: 'posts/list_item', locals: {post: post, check_box_name: 'unhide_posts[]'}
+    = render partial: 'posts/list_item', collection: @hidden_posts, as: :post, locals: {check_box_name: 'unhide_posts[]'}
     - if @hidden_posts.empty?
       %td.padding-10.centered{class: cycle('even', 'odd'), colspan: 7} — No posts hidden —
     - if @hidden_posts.present? || @hidden_boardviews.present?

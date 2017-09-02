@@ -19,8 +19,7 @@
       %th.sub Authors
       %th.sub Last Updated
   %tbody
-    - @boards.each do |board|
-      = render partial: 'list_item', locals: {board: board}
+    = render partial: 'list_item', collection: @boards, as: :board
     - if @boards.empty?
       %tr
         %td.centered.padding-10.no-posts{ class: cycle('even','odd'), colspan: 3 } — No boards yet —
@@ -34,5 +33,4 @@
       %td.continuity-spacer
     %tr
       %th.sub{colspan: 3} Cameo Boards
-    - @cameo_boards.each do |board|
-      = render partial: 'list_item', locals: {board: board}
+    = render partial: 'list_item', collection: @cameo_boards, as: :board

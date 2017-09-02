@@ -80,15 +80,14 @@
             = image_tag '/images/accept.png', title: 'Saved', class: 'vmid', alt: ''
             Saved
     %tbody
-      - galleries.each do |gallery|
-        = render partial: 'galleries/single', locals: {gallery: gallery, klass: 'subber', skip_forms: true, character_gallery: gallery.character_gallery_for(@character)}
+      = render partial: 'galleries/single', collection: galleries, as: :gallery, locals: {klass: 'subber', skip_forms: true, character_gallery: gallery.character_gallery_for(@character)}
       - unless galleries.present?
         %tr
           %td.green
             .centered.padding-5 — No galleries yet —
 - elsif params[:view] == 'posts'
   - content_for :posts_title do 'Recent Threads' end
-  = render partial: 'posts/list', locals: {posts: @posts, path: :character_path, table_class: 'character-right-content-box'}
+  = render partial: 'posts/list', locals: {posts: @posts, table_class: 'character-right-content-box'}
 - else
   - reset_cycle
   %table.character-right-content-box

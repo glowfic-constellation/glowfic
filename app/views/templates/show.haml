@@ -36,4 +36,4 @@
 - if @posts.present?
   %br
   - content_for :posts_title do 'Posts with Template Instances' end
-  = render partial: 'posts/list', locals: {posts: @posts, path: :template_path}
+  = render partial: 'posts/list', locals: {posts: @posts}

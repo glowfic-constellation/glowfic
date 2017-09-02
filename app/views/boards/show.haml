@@ -43,20 +43,17 @@
       - @board_sections.each do |section|
         %tr
           %th.subber{colspan: 5}= link_to section.name, board_section_path(section)
-        - if section.posts.present?
-          - posts_from_relation(section.posts.order('section_order asc'), false, false).each do |post|
-            - next unless post.visible_to?(current_user)
-            = render partial: 'posts/list_item', locals: {post: post, hide_continuity: true}
+        - section_posts = posts_from_relation(section.posts.order('section_order asc'), false, false).select { |post| post.visible_to? (current_user) }
+        - if section_posts.present?
+          = render partial: 'posts/list_item', collection: section_posts, as: :post, locals: {hide_continuity: true}
         - else
           %tr
             %td.centered.padding-10.no-posts{ class: cycle('even','odd'), colspan: 6 } — No posts yet —
         %tr
           %td.continuity-spacer{colspan: 5}
-      - @posts.each do |post|
-        - next unless post.visible_to?(current_user)
-        = render partial: 'posts/list_item', locals: {post: post, hide_continuity: true}
+      = render partial: 'posts/list_item', collection: @posts.select { |post| post.visible_to? (current_user) }, as: :post, locals: {hide_continuity: true}
 - else
   - if @board.description.present?
     - content_for :post_list_description do
       = sanitize_written_content(@board.description).html_safe
-  = render partial: 'posts/list', locals: {posts: @posts, hide_continuity: true, path: :board_path}
+  = render partial: 'posts/list', locals: {posts: @posts, hide_continuity: true}
