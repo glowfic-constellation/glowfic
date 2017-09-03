@@ -1,5 +1,5 @@
 /* global gon, tinymce, tinyMCE, resizeScreenname, createTagSelect */
-var tinyMCEInit = false;
+var tinyMCEInit = false, shownIcons = [];
 
 $(document).ready(function() {
   // SET UP POST METADATA EDITOR:
@@ -233,6 +233,7 @@ function iconString(icon) {
   var imgId = icon.id;
   var imgUrl = icon.url;
   var imgKey = icon.keyword;
+  shownIcons.push(icon.id);
 
   if (!icon.skip_dropdown) $("#icon_dropdown").append($("<option>").attr({value: imgId}).append(imgKey));
   var iconImg = $("<img>").attr({src: imgUrl, id: imgId, alt: imgKey, title: imgKey, 'class': 'icon'});
@@ -277,6 +278,8 @@ function setupTinyMCE() {
 function getAndSetCharacterData(characterId, options) {
   var restoreIcon = false;
   var restoreAlias = false;
+  shownIcons = [];
+
   if (typeof options !== 'undefined') {
     restoreIcon = options.restore_icon;
     restoreAlias = options.restore_alias;
@@ -382,6 +385,7 @@ function getAndSetCharacterData(characterId, options) {
       $("#gallery").append(galleryString(resp.galleries[j], multiGallery));
     }
 
+    if(shownIcons.indexOf(resp.default.id) < 0) $("#gallery").append(iconString(resp.default));
     $("#gallery").append(iconString({id: '', url: '/images/no-icon.png', keyword: 'No Icon', skip_dropdown: true}));
     bindGallery();
     bindIcon();

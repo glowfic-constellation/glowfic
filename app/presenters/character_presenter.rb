@@ -42,12 +42,9 @@ class CharacterPresenter
   end
 
   def single_gallery_json
-    if character.galleries.present?
-      [{icons: character.icons}]
-    elsif character.default_icon.present?
-      [{icons: [character.default_icon]}]
-    else
-      []
-    end
+    icons = character.icons
+    icons |= [character.default_icon] if character.default_icon.present?
+    return [] unless icons.present?
+    [{icons: icons}]
   end
 end
