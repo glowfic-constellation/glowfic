@@ -213,16 +213,27 @@ class CharactersController < ApplicationController
     @search_results = Character.unscoped
 
     if params[:author_id].present?
-      # TODO display error if the user doesn't exist
       @users = User.where(id: params[:author_id])
-      @search_results = @search_results.where(user_id: params[:author_id])
+      if @users.present?
+        @search_results = @search_results.where(user_id: params[:author_id])
+      else
+        flash.now[:error] = "The specified author could not be found."
+      end
     end
 
     if params[:template_id].present?
-      # TODO display error if the template doesn't exist
-      # TODO display error if template is not user's
       @templates = Template.where(id: params[:template_id])
-      @search_results = @search_results.where(template_id: params[:template_id])
+      template = @templates.first
+      if template.present?
+        if @users.present? && template.user_id != @users.first.id
+          flash.now[:error] = "The specified author and template do not match; template filter will be ignored."
+          @templates = []
+        else
+          @search_results = @search_results.where(template_id: params[:template_id])
+        end
+      else
+        flash.now[:error] = "The specified template could not be found."
+      end
     else
       @templates = Template.where(user_id: params[:author_id]).order('name asc').limit(25) if params[:author_id].present?
     end
