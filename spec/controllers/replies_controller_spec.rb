@@ -161,6 +161,56 @@ RSpec.describe RepliesController do
       expect(reply.icon_id).to eq(icon.id)
       expect(reply.character_alias_id).to eq(calias.id)
     end
+
+    it "allows you to reply to a post you created" do
+      user = create(:user)
+      login_as(user)
+      reply_post = create(:post, user: user)
+      reply_post.mark_read(user, reply_post.created_at + 1.second, true)
+      expect(Reply.count).to eq(0)
+
+      post :create, reply: {post_id: reply_post.id, content: 'test content!'}
+      reply = Reply.first
+      expect(response).to redirect_to(reply_url(reply, anchor: "reply-#{reply.id}"))
+      expect(reply).not_to be_nil
+      expect(flash[:success]).to eq('Posted!')
+      expect(reply.user).to eq(user)
+      expect(reply.content).to eq('test content!')
+    end
+
+    it "allows you to reply to join a post you did not create" do
+      user = create(:user)
+      login_as(user)
+      reply_post = create(:post)
+      reply_post.mark_read(user, reply_post.created_at + 1.second, true)
+      expect(Reply.count).to eq(0)
+
+      post :create, reply: {post_id: reply_post.id, content: 'test content again!'}
+      reply = Reply.first
+      expect(response).to redirect_to(reply_url(reply, anchor: "reply-#{reply.id}"))
+      expect(reply).not_to be_nil
+      expect(flash[:success]).to eq('Posted!')
+      expect(reply.user).to eq(user)
+      expect(reply.content).to eq('test content again!')
+    end
+
+    it "allows you to reply to a post you already joined" do
+      user = create(:user)
+      login_as(user)
+      reply_post = create(:post)
+      reply_old = create(:reply, post: reply_post, user: user)
+      reply_post.mark_read(user, reply_old.created_at + 1.second, true)
+      expect(Reply.count).to eq(1)
+
+      post :create, reply: {post_id: reply_post.id, content: 'test content the third!'}
+      expect(Reply.count).to eq(2)
+      reply = Reply.order(id: :desc).first
+      expect(reply).not_to eq(reply_old)
+      expect(response).to redirect_to(reply_url(reply, anchor: "reply-#{reply.id}"))
+      expect(flash[:success]).to eq('Posted!')
+      expect(reply.user).to eq(user)
+      expect(reply.content).to eq('test content the third!')
+    end
   end
 
   describe "GET show" do
