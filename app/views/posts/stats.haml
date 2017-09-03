@@ -84,8 +84,14 @@
         %td.sub.width-150 Labels
         %td{class: cycle('odd', 'even')}= @post.labels.map { |tag| link_to tag.name, tag_path(tag) }.join(', ').html_safe
     %tr
-      %td.sub.width-150 Word Count
-      %td{class: cycle('odd', 'even')}= @post.total_word_count
+      %td.sub.width-150.vtop Word Count
+      %td{class: cycle('odd', 'even')}
+        = number_with_delimiter(@post.total_word_count)
+        %ul
+          - @post.author_word_counts.each do |username, count|
+            %li
+              = username + ':'
+              = number_with_delimiter(count)
     %tr
       %td.sub.width-150 Time Begun
       %td{class: cycle('odd', 'even')}= pretty_time(@post.created_at)
