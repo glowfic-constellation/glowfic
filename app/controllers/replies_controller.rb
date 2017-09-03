@@ -127,7 +127,7 @@ class RepliesController < WritableController
         if last_by_user.present?
           match_attrs = ['content', 'icon_id', 'character_id', 'character_alias_id']
           if last_by_user.attributes.slice(*match_attrs) == reply.attributes.slice(*match_attrs)
-            flash.now[:error] = "This looks like a duplicate. Did you attempt to post this twice?"
+            flash.now[:error] = "This looks like a duplicate. Did you attempt to post this twice? Please resubmit if this was intentional."
             @allow_dupe = true
             draft = make_draft(false)
             preview(ReplyDraft.reply_from_draft(draft)) and return

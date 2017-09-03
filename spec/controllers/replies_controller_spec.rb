@@ -118,7 +118,7 @@ RSpec.describe RepliesController do
 
       post :create, reply: {post_id: reply_post.id, user_id: reply_post.user_id, content: dupe_reply.content}
       expect(response).to have_http_status(200)
-      expect(flash[:error]).to eq("This looks like a duplicate. Did you attempt to post this twice?")
+      expect(flash[:error]).to eq("This looks like a duplicate. Did you attempt to post this twice? Please resubmit if this was intentional.")
 
       post :create, reply: {post_id: reply_post.id, user_id: reply_post.user_id, content: dupe_reply.content}, allow_dupe: true
       expect(response).to have_http_status(302)
