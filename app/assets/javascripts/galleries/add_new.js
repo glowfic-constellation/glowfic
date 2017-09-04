@@ -132,8 +132,8 @@ function bindFileInput(fileInput) {
       submitButton.prop('disabled', false);
 
       // extract key and generate URL from response
-      var key = $(data.jqXHR.responseXML).find("Key").text();
-      var url = 'https://d1anwqy6ci9o1i.cloudfront.net/' + key;
+      // replace https://glowfic-constellation.s3.amazonaws.com with Cloudfront URL
+      var url = $(data.jqXHR.responseXML).find("Location").text().replace(form.data('url'), 'https://d1anwqy6ci9o1i.cloudfront.net');
 
       // create hidden field
       var iconIndex = addNewRow();
