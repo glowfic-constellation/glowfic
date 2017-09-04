@@ -10,7 +10,7 @@
   &raquo;
   %b Edit
 
-= form_for @icon, :url => icon_path(@icon), :method => :put do |f|
+= form_for @icon, method: :put, html: {class: 'icon-upload'}, data: { 'form-data' => (@s3_direct_post.fields), url: @s3_direct_post.url, host: URI.parse(@s3_direct_post.url).host, limit: 1 } do |f|
   %table.form-table
     %tr
       %th.centered{colspan: 2}
@@ -20,17 +20,20 @@
     %tr
       %th.sub URL
       %td.even
-        - if @icon.uploaded?
+        #icon_conf{class: ('hidden' unless @icon.uploaded?)}
           = image_tag "/images/accept.png", class: 'vmid'
           Uploaded to site
-        - else
+        #icon_url_field{class: ('hidden' if @icon.uploaded?)}
           = f.text_field :url, :placeholder => "URL", :class => 'text'
     %tr
+      %th.sub Upload
+      %td.odd= file_field_tag :icon_files, id: "icon_files"
+    %tr
       %th.sub Keyword
-      %td.odd= f.text_field :keyword, :placeholder => "Keyword", :class => 'text'
+      %td.even= f.text_field :keyword, :placeholder => "Keyword", :class => 'text'
     %tr
       %th.sub Credit
-      %td.even= f.text_field :credit, :placeholder => "Credit", :class => 'text'
+      %td.odd= f.text_field :credit, :placeholder => "Credit", :class => 'text'
     %tr.submit-row
       %th.subber{colspan: 2}
         = submit_tag "Save", class: 'button'

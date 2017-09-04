@@ -11,16 +11,11 @@ class Icon < ActiveRecord::Base
   validate :uploaded_url_not_in_use
   nilify_blanks
 
-  after_destroy :clear_icon_ids
-  before_destroy :delete_from_s3
+  before_update :delete_from_s3
+  after_destroy :clear_icon_ids, :delete_from_s3
 
   def uploaded?
-    url.to_s.starts_with?('https://d1anwqy6ci9o1i.cloudfront.net/')
-  end
-
-  def s3_key
-    return unless uploaded?
-    url[url.index('net/')+4..-1]
+    self.class.uploaded_url?(url)
   end
 
   private
@@ -32,8 +27,9 @@ class Icon < ActiveRecord::Base
   end
 
   def delete_from_s3
-    return unless uploaded?
-    S3_BUCKET.delete_objects(delete: {objects: [{key: s3_key}], quiet: true})
+    return unless destroyed? || url_changed?
+    return unless self.class.uploaded_url?(url_was)
+    S3_BUCKET.delete_objects(delete: {objects: [{key: self.class.s3_key(url_was)}], quiet: true})
   end
 
   def uploaded_url_not_in_use
@@ -53,5 +49,14 @@ class Icon < ActiveRecord::Base
   end
 
   class UploadError < Exception
+  end
+
+  def self.uploaded_url?(url)
+    url.to_s.starts_with?('https://d1anwqy6ci9o1i.cloudfront.net/')
+  end
+
+  def self.s3_key(url)
+    return unless uploaded_url?(url)
+    url[url.index('net/')+4..-1]
   end
 end
