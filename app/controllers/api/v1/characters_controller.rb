@@ -125,6 +125,6 @@ class Api::V1::CharactersController < Api::ApiController
   end
 
   def character_params
-    params.fetch(:character, {}).permit(:default_icon_id, :name, :template_name, :screenname, :setting, :template_id, :new_template_name, :pb, :description, gallery_ids: [])
+    params.fetch(:character, {}).permit(:default_icon_id, :name, :template_name, :screenname, :setting, :template_id, :pb, :description, gallery_ids: [])
   end
 end

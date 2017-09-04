@@ -23,7 +23,7 @@ class Character < ActiveRecord::Base
   validates_presence_of :name, :user
   validate :valid_group, :valid_galleries, :valid_default_icon
 
-  attr_accessor :new_template_name, :group_name
+  attr_accessor :group_name
 
   after_destroy :clear_char_ids
 
