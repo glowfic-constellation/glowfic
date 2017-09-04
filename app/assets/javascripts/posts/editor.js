@@ -385,13 +385,19 @@ function getAndSetCharacterData(characterId, options) {
       $("#gallery").append(galleryString(resp.galleries[j], multiGallery));
     }
 
-    if(shownIcons.indexOf(resp.default.id) < 0) $("#gallery").append(iconString(resp.default));
+    // If no default and no icons in any galleries, remove pointer
+    if (!resp.default && shownIcons.length === 0) {
+      $("#current-icon").removeClass('pointer');
+      return;
+    }
+
+    if(resp.default && shownIcons.indexOf(resp.default.id) < 0) $("#gallery").append(iconString(resp.default));
     $("#gallery").append(iconString({id: '', url: '/images/no-icon.png', keyword: 'No Icon', skip_dropdown: true}));
     bindGallery();
     bindIcon();
     if (restoreIcon)
       setIconFromId(selectedIconID);
-    else
+    else if (resp.default)
       setIcon(resp.default.id, resp.default.url, resp.default.keyword, resp.default.keyword);
   });
 }
