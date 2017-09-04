@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 class CharactersController < ApplicationController
-  before_filter :login_required, :except => [:index, :show, :facecasts, :search]
-  before_filter :find_character, :only => [:show, :edit, :update, :duplicate, :destroy, :icon, :replace, :do_replace]
-  before_filter :find_group, :only => :index
-  before_filter :require_own_character, :only => [:edit, :update, :duplicate, :destroy, :icon, :replace, :do_replace]
-  before_filter :build_editor, :only => [:new, :edit]
+  before_filter :login_required, except: [:index, :show, :facecasts, :search]
+  before_filter :find_character, only: [:show, :edit, :update, :duplicate, :destroy, :icon, :replace, :do_replace]
+  before_filter :find_group, only: :index
+  before_filter :require_own_character, only: [:edit, :update, :duplicate, :destroy, :icon, :replace, :do_replace]
+  before_filter :build_editor, only: [:new, :edit]
 
   def index
     (return if login_required) unless params[:user_id].present?
@@ -25,23 +25,26 @@ class CharactersController < ApplicationController
   def new
     @page_title = 'New Character'
     @character = Character.new(template_id: params[:template_id])
+    @character.build_template(user: current_user)
   end
 
   def create
     @character = Character.new(character_params)
     @character.user = current_user
     @character.build_new_tags_with(current_user)
+    build_template
 
-    if @character.valid?
-      save_character_with_extras
+    if @character.save
       flash[:success] = "Character saved successfully."
-      redirect_to character_path(@character)
-    else
-      @page_title = 'New Character'
-      flash.now[:error] = "Your character could not be saved."
-      build_editor
-      render :action => :new
+      redirect_to character_path(@character) and return
     end
+
+    @page_title = "New Character"
+    flash.now[:error] = {}
+    flash.now[:error][:message] = "Your character could not be saved."
+    flash.now[:error][:array] = @character.errors.full_messages
+    build_editor
+    render action: :new
   end
 
   def show
@@ -57,17 +60,19 @@ class CharactersController < ApplicationController
   def update
     @character.assign_attributes(character_params)
     @character.build_new_tags_with(current_user)
+    build_template
 
-    if @character.valid?
-      save_character_with_extras
+    if @character.save
       flash[:success] = "Character saved successfully."
-      redirect_to character_path(@character)
-    else
-      flash.now[:error] = "Your character could not be saved."
-      @page_title = 'Edit Character: ' + @character.name
-      build_editor
-      render :action => :edit
+      redirect_to character_path(@character) and return
     end
+
+    @page_title = "Edit Character: " + @character.name
+    flash.now[:error] = {}
+    flash.now[:error][:message] = "Your character could not be saved."
+    flash.now[:error][:array] = @character.errors.full_messages
+    build_editor
+    render :action => :edit
   end
 
   def duplicate
@@ -273,13 +278,13 @@ class CharactersController < ApplicationController
 
   def build_editor
     faked = Struct.new(:name, :id)
-    new_template = faked.new('— Create New Template —', 0)
-    @templates = current_user.templates.order('name asc') + [new_template]
+    @templates = current_user.templates.order('name asc')
     new_group = faked.new('— Create New Group —', 0)
     @groups = current_user.character_groups.order('name asc') + [new_group]
     use_javascript('characters/editor')
     build_tags
     gon.character_id = @character.try(:id) || ''
+    @character.build_template(user: current_user) if @character && @character.template.nil?
     gon.user_id = current_user.id
     @aliases = @character.aliases.order('name asc') if @character
     gon.gallery_groups = @gallery_groups.map {|group| group.as_json(include: [:gallery_ids], user_id: current_user.id) }
@@ -290,21 +295,13 @@ class CharactersController < ApplicationController
     @gallery_groups ||= @character.try(:gallery_groups) || []
   end
 
-  def save_character_with_extras
-    Character.transaction do
-      if (template = @character.instance_variable_get('@template'))
-        template.save
-        @character.template = template
-      end
-      if (group = @character.instance_variable_get('@group'))
-        group.save
-        @character.character_group = group
-      end
-      @character.save
-    end
+  def build_template
+    return unless params[:new_template].present?
+    @character.build_template unless @character.template
+    @character.template.user = current_user 
   end
 
   def character_params
-    params.fetch(:character, {}).permit(:default_icon_id, :name, :template_name, :screenname, :setting, :template_id, :new_template_name, :pb, :description, ungrouped_gallery_ids: [], gallery_group_ids: [])
+    params.fetch(:character, {}).permit(:default_icon_id, :name, :template_name, :screenname, :setting, :template_id, :new_template_name, :pb, :description, ungrouped_gallery_ids: [], gallery_group_ids: [], template_attributes: [:name, :id])
   end
 end

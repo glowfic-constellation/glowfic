@@ -14,11 +14,16 @@
   /  Setting.all, :id, :name, {selected: @character.settings.pluck(:id)}, {multiple: true})
 %tr
   - klass = cycle('even', 'odd')
-  %th.sub Template
-  %td{class: klass}= f.collection_select :template_id, @templates, :id, :name, {include_blank: '— Choose Template —'}, {class: 'text chosen-select'}
-%tr#create_template{class: ('hidden' unless params[:character].try(:[], :template_id) == "0")}
+  %th.sub.vtop Template
+  %td{class: klass}
+    = f.collection_select :template_id, @templates, :id, :name, {include_blank: '— Choose Template —'}, {class: 'text chosen-select', disabled: params[:new_template].present?}
+    %br
+    = check_box_tag :new_template, '1', params[:new_template].present?
+    = label_tag :new_template, 'Create New Template'
+%tr#create_template{class: ('hidden' unless params[:new_template])}
   %th.sub &#8627; Name
-  %td{class: klass}= f.text_field :new_template_name, placeholder: "Template Name", class: 'text'
+  = f.fields_for :template do |ff|
+    %td{class: klass}= ff.text_field :name, placeholder: "Template Name", class: 'text'
 - if current_user.galleries.present?
   %tr
     %th.sub Galleries

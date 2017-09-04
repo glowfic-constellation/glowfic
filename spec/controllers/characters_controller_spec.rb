@@ -56,14 +56,13 @@ RSpec.describe CharactersController do
       it "sets correct variables" do
         user = create(:user)
         templates = Array.new(2) { create(:template, user: user) }
-        names = ['— Create New Template —'] + templates.map(&:name)
         create(:template)
 
         login_as(user)
         get :new
 
         expect(assigns(:page_title)).to eq("New Character")
-        expect(assigns(:templates).map(&:name)).to match_array(names)
+        expect(assigns(:templates).map(&:name)).to match_array(templates.map(&:name))
         expect(controller.gon.character_id).to eq('')
         expect(controller.gon.user_id).to eq(user.id)
         expect(controller.gon.gallery_groups).to eq([])
@@ -83,14 +82,14 @@ RSpec.describe CharactersController do
       login
       post :create
       expect(response.status).to eq(200)
-      expect(flash[:error]).to eq("Your character could not be saved.")
+      expect(flash[:error][:message]).to eq("Your character could not be saved.")
     end
 
     it "fails with invalid params" do
       login
       post :create, character: {}
       expect(response.status).to eq(200)
-      expect(flash[:error]).to eq("Your character could not be saved.")
+      expect(flash[:error][:message]).to eq("Your character could not be saved.")
     end
 
     it "succeeds when valid" do
@@ -121,7 +120,7 @@ RSpec.describe CharactersController do
     it "creates new templates when specified" do
       expect(Template.count).to eq(0)
       login
-      post :create, character: {template_id: 0, new_template_name: 'TemplateTest', name: 'Test'}
+      post :create, new_template: '1', character: {template_attributes: {name: 'TemplateTest'}, name: 'Test'}
       expect(Template.count).to eq(1)
       expect(Template.first.name).to eq('TemplateTest')
       expect(assigns(:character).template_id).to eq(Template.first.id)
@@ -135,7 +134,6 @@ RSpec.describe CharactersController do
         group = create(:gallery_group)
         group_gallery = create(:gallery, user: user, gallery_groups: [group])
         templates = Array.new(2) { create(:template, user: user) }
-        names = ['— Create New Template —'] + templates.map(&:name)
         create(:template)
 
         login_as(user)
@@ -143,7 +141,7 @@ RSpec.describe CharactersController do
 
         expect(response).to render_template(:new)
         expect(controller.gon.character_id).to eq('')
-        expect(assigns(:templates).map(&:name)).to match_array(names)
+        expect(assigns(:templates).map(&:name)).to match_array(templates.map(&:name))
         expect(assigns(:character).ungrouped_gallery_ids).to match_array([gallery.id, group_gallery.id])
         expect(assigns(:character).gallery_group_ids).to eq([group.id])
       end
@@ -225,7 +223,6 @@ RSpec.describe CharactersController do
         character = create(:character, user: user, gallery_groups: [group])
         calias = create(:alias, character: character)
         templates = Array.new(2) { create(:template, user: user) }
-        names = ['— Create New Template —'] + templates.map(&:name)
         create(:template)
 
         login_as(user)
@@ -237,7 +234,7 @@ RSpec.describe CharactersController do
         expect(controller.gon.gallery_groups.map{|g|g[:id]}).to eq([group.id])
         expect(controller.gon.gallery_groups.map{|g|g[:gallery_ids]}).to eq([[gallery.id]])
         expect(assigns(:gallery_groups)).to match_array([group])
-        expect(assigns(:templates).map(&:name)).to match_array(names)
+        expect(assigns(:templates).map(&:name)).to match_array(templates.map(&:name))
         expect(assigns(:aliases)).to match_array([calias])
       end
     end
@@ -269,16 +266,16 @@ RSpec.describe CharactersController do
       login_as(character.user)
       put :update, id: character.id, character: {name: ''}
       expect(response.status).to eq(200)
-      expect(flash[:error]).to eq("Your character could not be saved.")
+      expect(flash[:error][:message]).to eq("Your character could not be saved.")
     end
 
     it "fails with invalid template params" do
       character = create(:character)
       login_as(character.user)
       new_name = character.name + 'aaa'
-      put :update, id: character.id, character: {template_id: 0, new_template_name: '', name: new_name}
+      put :update, id: character.id, new_template: '1', character: {template_attributes: {name: ''}, name: new_name}
       expect(response.status).to eq(200)
-      expect(flash[:error]).to eq("Your character could not be saved.")
+      expect(flash[:error][:message]).to eq("Your character could not be saved.")
       expect(character.reload.name).not_to eq(new_name)
     end
 
@@ -318,6 +315,16 @@ RSpec.describe CharactersController do
       expect(character.galleries).to match_array([gallery])
       expect(character.ungrouped_gallery_ids).to be_blank
       expect(character.characters_galleries.first).to be_added_by_group
+    end
+
+    it "creates new templates when specified" do
+      expect(Template.count).to eq(0)
+      character = create(:character)
+      login_as(character.user)
+      put :update, id: character.id, new_template: '1', character: {template_attributes: {name: 'Test'}}
+      expect(Template.count).to eq(1)
+      expect(Template.first.name).to eq('Test')
+      expect(character.reload.template_id).to eq(Template.first.id)
     end
 
     it "removes gallery only if not shared between groups" do
@@ -406,7 +413,7 @@ RSpec.describe CharactersController do
       expect(Template.count).to eq(0)
       character = create(:character)
       login_as(character.user)
-      put :update, id: character.id, character: {template_id: 0, new_template_name: 'Test'}
+      put :update, id: character.id, new_template: '1', character: {template_attributes: {name: 'Test'}}
       expect(Template.count).to eq(1)
       expect(Template.first.name).to eq('Test')
       expect(character.reload.template_id).to eq(Template.first.id)
@@ -420,7 +427,6 @@ RSpec.describe CharactersController do
         gallery = create(:gallery, user: user, gallery_groups: [group])
         character = create(:character, user: user, gallery_groups: [group])
         templates = Array.new(2) { create(:template, user: user) }
-        names = ['— Create New Template —'] + templates.map(&:name)
         create(:template)
 
         login_as(user)
@@ -432,7 +438,7 @@ RSpec.describe CharactersController do
         expect(controller.gon.gallery_groups.map{|g|g[:id]}).to eq([group.id])
         expect(controller.gon.gallery_groups.map{|g|g[:gallery_ids]}).to eq([[gallery.id]])
         expect(assigns(:gallery_groups)).to match_array([group])
-        expect(assigns(:templates).map(&:name)).to match_array(names)
+        expect(assigns(:templates).map(&:name)).to match_array(templates.map(&:name))
       end
     end
 

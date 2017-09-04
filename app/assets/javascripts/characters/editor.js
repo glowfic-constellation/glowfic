@@ -1,5 +1,5 @@
 /* global gon, createTagSelect */
-var galleryIds;
+var galleryIds, oldTemplate;
 var galleryGroupIds = [];
 var galleryGroups = {};
 
@@ -25,11 +25,17 @@ $(document).ready(function() {
 
   bindIcons();
 
-  $("#character_template_id").change(function() {
-    if ($(this).val() === "0") {
+  oldTemplate = $("#character_template_id").val();
+  $("#new_template").change(function() {
+    if ($("#new_template").is(":checked")) {
+      $("#character_template_attributes_name").val('');
       $("#create_template").show();
+      oldTemplate = $("#character_template_id").val();
+      $("#character_template_id").attr("disabled", true).val('').trigger("change.select2");;
     } else {
       $("#create_template").hide();
+      $("#character_template_id").attr("disabled", false).val(oldTemplate).trigger("change.select2");
+      $("#character_template_attributes_name").val($("#character_template_id option:selected").text());
     }
   });
 

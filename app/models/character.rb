@@ -3,7 +3,7 @@ class Character < ActiveRecord::Base
   include Taggable
 
   belongs_to :user
-  belongs_to :template
+  belongs_to :template, inverse_of: :characters
   belongs_to :default_icon, class_name: Icon
   belongs_to :character_group
   has_many :replies
@@ -21,11 +21,13 @@ class Character < ActiveRecord::Base
   has_many :gallery_groups, through: :character_tags, source: :gallery_group, after_remove: :remove_galleries_from_character
 
   validates_presence_of :name, :user
-  validate :valid_template, :valid_group, :valid_galleries, :valid_default_icon
+  validate :valid_group, :valid_galleries, :valid_default_icon
 
   attr_accessor :new_template_name, :group_name
 
   after_destroy :clear_char_ids
+
+  accepts_nested_attributes_for :template, reject_if: :all_blank
 
   acts_as_tag :label, :setting, :gallery_group
 
@@ -115,18 +117,6 @@ class Character < ActiveRecord::Base
   end
 
   private
-
-  def valid_template
-    unless template_id == 0
-      errors.add(:template, "must be yours") if template.present? && template.user_id != user.id
-      return
-    end
-    @template = Template.new(user: user, name: new_template_name)
-    return if @template.valid?
-    @template.errors.messages.each do |k, v|
-      v.each { |val| errors.add('template '+k.to_s, val) }
-    end
-  end
 
   def valid_group
     return unless character_group_id == 0
