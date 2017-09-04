@@ -9,18 +9,7 @@
       - else
         = no_icon_tag id: 'current-icon', pointer: item.has_icons?, data: {icon_id: ''}
       #icon-overlay
-    #current-icon-dropdown
-      - if item.character
-        - if current_user.icon_picker_grouping? && item.character.galleries.count > 1
-          - icons = character_galleries.map(&:icons).flatten.map{|i| [i.keyword, i.id]}
-        - else
-          - icons = item.character.icons.map{|i| [i.keyword, i.id]}
-        - unless icons.present?
-          - icon = item.character.default_icon
-          - icons = [[icon.keyword, icon.id]] unless icon.nil?
-        = select_tag :icon_dropdown, options_for_select(icons, item.icon_id), prompt: "No Icon"
-      - elsif current_user.avatar
-        = select_tag :icon_dropdown, options_for_select([[current_user.avatar.keyword, current_user.avatar.id]], current_user.avatar.id), prompt: "No Icon"
+    #current-icon-dropdown= dropdown_icons(item, character_galleries)
     .post-info-text
       .post-character{class: ('hidden' unless item.character), data: {character_id: item.character_id || '', alias_id: item.character_alias_id || ''}}
         %span#name= item.name
@@ -51,34 +40,37 @@
             - recent_characters.each do |character|
               = character_icon_tag character
   #gallery.green
-    - if item.character.nil?
-      - if current_user.avatar
+    - if character_galleries.present?
+      - character_galleries.each do |gallery|
+        .gallery-group
+          .gallery-name= gallery.name
+          - gallery.icons.each do |icon|
+            .gallery-icon
+              = icon_tag icon, id: icon.id, pointer: true
+              %br>
+              = icon.keyword
+
+      - all_ids = item.character.icons.pluck(:id) # handle edge cases
+      - if item.character.default_icon && !all_ids.include?(item.character.default_icon_id)
         .gallery-icon
-          = icon_tag current_user.avatar, id: current_user.avatar.id, pointer: true
+          = icon_tag item.character.default_icon, id: item.character.default_icon_id, pointer: true
           %br>
-          = current_user.avatar.keyword
-    - elsif item.character.galleries.present?
-      - if current_user.icon_picker_grouping && item.character.galleries.count > 1
-        - character_galleries.each do |gallery|
-          .gallery-group
-            .gallery-name= gallery.name
-            - gallery.icons.each do |icon|
-              .gallery-icon
-                = icon_tag icon, id: icon.id, pointer: true
-                %br>
-                = icon.keyword
-      - else
-        - icons = item.character.icons
-        - icons.each do |icon|
-          .gallery-icon
-            = icon_tag icon, id: icon.id, pointer: true
-            %br>
-            = icon.keyword
-    - elsif item.character.default_icon.present?
-      .gallery-icon
-        = icon_tag item.character.default_icon, id: item.character.default_icon.id, pointer: true
-        %br>
-        = item.character.default_icon.keyword
+          = item.character.default_icon.keyword
+      - if item.icon && !all_ids.include?(item.icon_id)
+        .gallery-icon
+          = icon_tag item.icon, id: item.icon_id, pointer: true
+          %br>
+          = item.icon.keyword
+    - else
+      - icons = item.character.try(:icons) || []
+      - icons |= [item.character.default_icon] if item.character.try(:default_icon)
+      - icons |= [item.icon] if item.icon
+      - icons |= [current_user.avatar] if !item.character && current_user.avatar
+      - icons.each do |icon|
+        .gallery-icon
+          = icon_tag icon, id: icon.id, pointer: true
+          %br>
+          = icon.keyword
     .gallery-icon
       = no_icon_tag id: '', pointer: true
       %br> No Icon

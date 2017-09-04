@@ -128,6 +128,8 @@ RSpec.describe Api::V1::CharactersController do
       character = create(:character, user: user)
       character.galleries << create(:gallery, user: user)
       character.galleries << create(:gallery, user: user)
+      character.galleries[0].icons << create(:icon, user: user)
+      character.galleries[1].icons << create(:icon, user: user)
       get :show, id: character.id
       expect(response).to have_http_status(200)
       expect(response.json['galleries'].size).to eq(1)
