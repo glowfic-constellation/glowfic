@@ -87,7 +87,10 @@
             %li= link_to 'Tags Owed', owed_posts_path
           %li= link_to 'Contribute', contribute_path
           - if (day = DailyReport.unread_date_for(current_user)).present?
-            %li= link_to 'Daily Report', report_path(id: :daily, day: day), style: 'text-shadow: 0 0 0.8em #F87, 0 0 0.8em #F87'
+            %li
+              = link_to report_path(id: :daily, day: day), style: 'text-shadow: 0 0 0.8em #F87, 0 0 0.8em #F87' do
+                Daily Report
+                %em= '(' + Date.parse(day).strftime("%b %d, %Y") + ')'
           - else
             %li= link_to 'Daily Report', report_path(id: :daily)
     - if content_for?(:breadcrumbs)

@@ -6,11 +6,14 @@
       %th{colspan: 7}
         Daily Report -
         = @day.strftime("%b %d, %Y")
+        - if @day == Date.today
+          %em (Incomplete)
     %tr
       %th.sub{colspan: 7}
         - if @day < Date.today
           = link_to url_for(params.except(:page).merge(day: @day + 1.day)) do
-            .view-button &raquo; Next Day
+            - style = 'font-style: italic;' if @day + 1.day >= Date.today
+            .view-button{style: style} &raquo; Next Day
         = link_to url_for(params.except(:page).merge(day: @day - 1.day)) do
           .view-button.float-none &laquo; Previous Day
   - posts = DailyReport.new(@day).posts(sort, page, per_page)
