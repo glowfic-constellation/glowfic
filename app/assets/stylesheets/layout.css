@@ -137,7 +137,8 @@ ul.table-list { list-style: none; padding: 0; margin: 0; }
 }
 
 /* The new object layout with the floating left info box and the right content area */
-#content .left-info-box { float: left; }
+#content .left-info-box { float: left; overflow-wrap: break-word; word-wrap: break-word; }
+#content table.left-info-box { table-layout: fixed; }
 #content .right-content-box { float: left; }
 #content .user-info-box { width: 200px; }
 #content .icon-info-box { width: 150px; }
