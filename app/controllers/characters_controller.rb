@@ -255,8 +255,14 @@ class CharactersController < ApplicationController
     @search_results = @search_results.order('name asc').paginate(page: page, per_page: 25)
   end
 
+  # logic replicated from page_view
   def character_split
-    @character_split ||= params[:character_split] || current_user.try(:default_character_split) || 'template'
+    return @character_split if @character_split
+    if logged_in?
+      @character_split = params[:character_split] || current_user.default_character_split
+    else
+      @character_split = session[:character_split] = params[:character_split] || session[:character_split] || 'template'
+    end
   end
   helper_method :character_split
 
@@ -303,7 +309,7 @@ class CharactersController < ApplicationController
   def build_template
     return unless params[:new_template].present?
     @character.build_template unless @character.template
-    @character.template.user = current_user 
+    @character.template.user = current_user
   end
 
   def character_params

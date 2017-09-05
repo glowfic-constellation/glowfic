@@ -42,12 +42,14 @@ RSpec.describe CharactersController do
 
       it "successfully renders the page in template group" do
         character = create(:character)
+        character2 = create(:template_character, user: character.user)
         get :index, user_id: character.user_id, character_split: 'template'
         expect(response.status).to eq(200)
       end
 
       it "successfully renders the page with no group" do
         character = create(:character)
+        character2 = create(:template_character, user: character.user)
         get :index, user_id: character.user_id, character_split: 'none'
         expect(response.status).to eq(200)
       end
@@ -1047,6 +1049,57 @@ RSpec.describe CharactersController do
       char_reply.reload
       expect(char_post.character).to eq(character)
       expect(char_reply.character).to eq(character)
+    end
+  end
+
+  describe "#character_split" do
+    context "when logged out" do
+      it "works by default" do
+        expect(controller.send(:character_split)).to eq('template')
+      end
+
+      it "can be overridden with a parameter" do
+        controller.params[:character_split] = 'none'
+        expect(session[:character_split]).to be_nil
+        expect(controller.send(:character_split)).to eq('none')
+        expect(session[:character_split]).to eq('none')
+      end
+
+      it "uses session variable if it exists" do
+        session[:character_split] = 'none'
+        expect(controller.send(:character_split)).to eq('none')
+      end
+    end
+
+    context "when logged in" do
+      it "works by default" do
+        login
+        expect(controller.send(:character_split)).to eq('template')
+      end
+
+      it "uses account default if different" do
+        user = create(:user, default_character_split: 'none')
+        login_as(user)
+        expect(controller.send(:character_split)).to eq('none')
+      end
+
+      it "is not overridden by session" do
+        # also does not modify user default
+        user = create(:user, default_character_split: 'none')
+        login_as(user)
+        session[:character_split] = 'template'
+        expect(controller.send(:character_split)).to eq('none')
+        expect(user.reload.default_character_split).to eq('none')
+      end
+
+      it "can be overridden by params" do
+        # also does not modify user default
+        user = create(:user, default_character_split: 'none')
+        login_as(user)
+        controller.params[:character_split] = 'template'
+        expect(controller.send(:character_split)).to eq('template')
+        expect(user.reload.default_character_split).to eq('none')
+      end
     end
   end
 end
