@@ -19,11 +19,11 @@
             .link-box.green + New Template
         - else
           = @user.username + "'s Characters"
-      = link_to url_for(character_split: params[:character_split], view: 'icons') do
+      = link_to url_for(character_split: character_split, view: 'icons') do
         .view-button{class: (:selected unless page_view == 'list')}
           = image_tag '/images/grid.png', class: 'icon-view', alt: ''
           Icons
-      = link_to url_for(character_split: params[:character_split], view: 'list') do
+      = link_to url_for(character_split: character_split, view: 'list') do
         .view-button{class: (:selected if page_view == 'list')}
           = image_tag '/images/list.png', class: 'list-view', alt: ''
           List

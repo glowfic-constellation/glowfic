@@ -255,6 +255,11 @@ class CharactersController < ApplicationController
     @search_results = @search_results.order('name asc').paginate(page: page, per_page: 25)
   end
 
+  def character_split
+    @character_split ||= params[:character_split] || current_user.try(:default_character_split) || 'template'
+  end
+  helper_method :character_split
+
   private
 
   def find_character

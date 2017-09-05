@@ -36,6 +36,22 @@ RSpec.describe CharactersController do
     it "does something with character groups" do
       skip "Character groups need to be refactored"
     end
+
+    context "with render_views" do
+      render_views
+
+      it "successfully renders the page in template group" do
+        character = create(:character)
+        get :index, user_id: character.user_id, character_split: 'template'
+        expect(response.status).to eq(200)
+      end
+
+      it "successfully renders the page with no group" do
+        character = create(:character)
+        get :index, user_id: character.user_id, character_split: 'none'
+        expect(response.status).to eq(200)
+      end
+    end
   end
 
   describe "GET new" do
