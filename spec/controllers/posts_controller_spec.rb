@@ -463,6 +463,15 @@ RSpec.describe PostsController do
       expect(response).to render_template(:show)
     end
 
+    it "handles invalid unread page when logged out" do
+      post = create(:post)
+      get :show, id: post.id, page: 'unread'
+      expect(flash[:error]).to eq("You must be logged in to view unread posts.")
+      expect(assigns(:page)).to eq(1)
+      expect(response).to have_http_status(200)
+      expect(response).to render_template(:show)
+    end
+
     it "handles pages outside range" do
       post = create(:post)
       5.times { create(:reply, post: post) }
