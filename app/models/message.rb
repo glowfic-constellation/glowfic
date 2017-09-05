@@ -1,4 +1,5 @@
 class Message < ActiveRecord::Base
+  # TODO drop marked_*
   belongs_to :sender, class_name: User, inverse_of: :sent_messages
   belongs_to :recipient, class_name: User, inverse_of: :messages
   belongs_to :parent, class_name: Message
@@ -8,8 +9,6 @@ class Message < ActiveRecord::Base
   validates_presence_of :sender, if: Proc.new { |m| m.sender_id != 0 }
 
   after_create :set_thread_id, :notify_recipient
-
-  attr_accessible :recipient, :recipient_id, :parent, :parent_id, :thread, :thread_id, :subject, :message, :visible_inbox, :visible_outbox, :marked_inbox, :marked_outbox, :read_at, :unread # TODO: figure if marked still used
 
   def visible_to?(user)
     user_ids.include?(user.id)

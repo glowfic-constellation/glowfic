@@ -7,8 +7,6 @@ module Writable
     belongs_to :user
     belongs_to :character_alias
 
-    attr_accessible :character, :character_id, :user, :user_id, :icon, :icon_id, :content, :created_at, :updated_at, :character_alias_id
-
     validates_presence_of :user
     validate :character_ownership, :icon_ownership
 

@@ -3,7 +3,6 @@ class ReplyDraft < ActiveRecord::Base
 
   belongs_to :post, inverse_of: :reply_drafts
   validates_presence_of :post
-  attr_accessible :post, :post_id
 
   def self.draft_for(post_id, user_id)
     self.where(post_id: post_id, user_id: user_id).first

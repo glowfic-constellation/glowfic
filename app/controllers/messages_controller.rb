@@ -21,7 +21,7 @@ class MessagesController < ApplicationController
   end
 
   def create
-    @message = Message.new(params[:message])
+    @message = Message.new(message_params)
     @message.sender = current_user
     set_message_parent(params[:parent_id]) if params[:parent_id].present?
 
@@ -125,5 +125,13 @@ class MessagesController < ApplicationController
 
     @message.thread_id = @message.parent.thread_id
     @message.recipient_id = @message.parent.user_ids.detect { |id| id != current_user.id }
+  end
+
+  def message_params
+    params.fetch(:message, {}).permit(
+      :recipient_id,
+      :subject,
+      :message
+    )
   end
 end

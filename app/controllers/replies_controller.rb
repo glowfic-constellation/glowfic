@@ -80,9 +80,9 @@ class RepliesController < WritableController
 
   def make_draft(show_message=true)
     if (draft = ReplyDraft.draft_for(params[:reply][:post_id], current_user.id))
-      draft.assign_attributes(params[:reply])
+      draft.assign_attributes(reply_params)
     else
-      draft = ReplyDraft.new(params[:reply])
+      draft = ReplyDraft.new(reply_params)
       draft.user = current_user
     end
 
@@ -99,13 +99,14 @@ class RepliesController < WritableController
   def create
     if params[:button_draft]
       draft = make_draft
-      redirect_to post_path(draft.post, page: :unread, anchor: :unread) and return # TODO handle draft.post.nil?
+      redirect_to posts_path and return unless draft.post
+      redirect_to post_path(draft.post, page: :unread, anchor: :unread) and return
     elsif params[:button_preview]
       draft = make_draft
       preview(ReplyDraft.reply_from_draft(draft)) and return
     end
 
-    reply = Reply.new(params[:reply])
+    reply = Reply.new(reply_params)
     reply.user = current_user
 
     if reply.post.present?
@@ -163,7 +164,7 @@ class RepliesController < WritableController
   end
 
   def update
-    @reply.assign_attributes(params[:reply])
+    @reply.assign_attributes(reply_params)
     preview(@reply) and return if params[:button_preview]
 
     @reply.skip_post_update = true unless @reply.post.last_reply_id == @reply.id
@@ -217,5 +218,15 @@ class RepliesController < WritableController
 
     use_javascript('posts/editor')
     render action: :preview
+  end
+
+  def reply_params
+    params.fetch(:reply, {}).permit(
+      :post_id,
+      :content,
+      :character_id,
+      :icon_id,
+      :character_alias_id
+    )
   end
 end
