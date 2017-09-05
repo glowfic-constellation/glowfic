@@ -1,8 +1,9 @@
 # frozen_string_literal: true
-class IconsController < ApplicationController
+class IconsController < UploadingController
   before_filter :login_required, except: :show
   before_filter :find_icon, except: :delete_multiple
   before_filter :require_own_icon, only: [:edit, :update, :replace, :do_replace, :destroy, :avatar]
+  before_filter :set_s3_url, only: :edit
 
   def delete_multiple
     icon_ids = (params[:marked_ids] || []).map(&:to_i).reject(&:zero?)
@@ -52,6 +53,8 @@ class IconsController < ApplicationController
 
   def edit
     @page_title = 'Edit Icon: ' + @icon.keyword
+    use_javascript('galleries/update_existing')
+    use_javascript('galleries/uploader')
   end
 
   def update

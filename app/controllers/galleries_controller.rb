@@ -1,5 +1,5 @@
 # frozen_string_literal: true
-class GalleriesController < ApplicationController
+class GalleriesController < UploadingController
   before_filter :login_required, except: [:index, :show]
   before_filter :find_gallery, only: [:destroy, :edit, :update]
   before_filter :setup_new_icons, only: [:add, :icon]
@@ -180,29 +180,13 @@ class GalleriesController < ApplicationController
       use_javascript('galleries/add_existing')
     else
       use_javascript('galleries/add_new')
+      use_javascript('galleries/uploader')
     end
     @icons = []
     find_gallery if params[:id] != '0'
     @unassigned = current_user.galleryless_icons
     @page_title = "Add Icons"
     @page_title += ": " + @gallery.name unless @gallery.nil?
-  end
-
-  def set_s3_url
-    return if params[:type] == "existing"
-
-    if !Rails.env.production? && S3_BUCKET.nil?
-      logger.error "S3_BUCKET does not exist; icon upload will FAIL."
-      @s3_direct_post = Struct.new(:url, :fields).new('', nil)
-      return
-    end
-
-    @s3_direct_post = S3_BUCKET.presigned_post(
-      key: "users/#{current_user.id}/icons/#{SecureRandom.uuid}_${filename}",
-      success_action_status: '201',
-      acl: 'public-read',
-      content_type_starts_with: 'image/',
-      cache_control: 'public, max-age=31536000')
   end
 
   def setup_editor

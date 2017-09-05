@@ -53,4 +53,43 @@ RSpec.describe Icon do
       expect(reply.icon_id).to be_nil
     end
   end
+
+  describe "#delete_from_s3" do
+    def delete_key(url)
+      {delete: {objects: [{key: Icon.send(:s3_key, url)}], quiet: true}}
+    end
+
+    it "deletes uploaded on destroy" do
+      icon = create(:uploaded_icon)
+      expect(S3_BUCKET).to receive(:delete_objects).with(delete_key(icon.url))
+      icon.destroy
+    end
+
+    it "does not delete non-uploaded on destroy" do
+      icon = create(:icon)
+      expect(S3_BUCKET).not_to receive(:delete_objects)
+      icon.destroy
+    end
+
+    it "deletes uploaded on new uploaded update" do
+      icon = create(:uploaded_icon)
+      expect(S3_BUCKET).to receive(:delete_objects).with(delete_key(icon.url))
+      icon.url = "https://d1anwqy6ci9o1i.cloudfront.net/users/#{icon.user.id}/icons/nonsense-fakeimg2.png"
+      icon.save
+    end
+
+    it "deletes uploaded on new non-uploaded update" do
+      icon = create(:uploaded_icon)
+      expect(S3_BUCKET).to receive(:delete_objects).with(delete_key(icon.url))
+      icon.url = "https://fake.com/nonsense-fakeimg2.png"
+      icon.save
+    end
+
+    it "does not delete uploaded on non-url update" do
+      icon = create(:uploaded_icon)
+      expect(S3_BUCKET).not_to receive(:delete_objects)
+      icon.keyword = "not a url update"
+      icon.save
+    end
+  end
 end
