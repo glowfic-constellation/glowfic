@@ -68,11 +68,6 @@ RSpec.describe Post do
     expect(post.edited_at).to be_the_same_time_as(old_edited_at)
   end
 
-  it "should allow blank content" do
-    post = create(:post, content: '')
-    expect(post.id).not_to be_nil
-  end
-
   describe "#destroy" do
     it "should delete views" do
       post = create(:post)
@@ -354,6 +349,27 @@ RSpec.describe Post do
       expect(post.user).not_to eq(icon.user)
       post.icon = icon
       expect(post.valid?).not_to be_true
+    end
+
+    it "requires board the user can access" do
+      board = create(:board)
+      board.coauthors << create(:user)
+      post = create(:post)
+      expect(post.valid?).to be_true
+      post.board = board
+      expect(post.valid?).not_to be_true
+    end
+
+    it "requires board section matching board" do
+      post = create(:post)
+      expect(post.valid?).to be_true
+      post.section = create(:board_section)
+      expect(post.valid?).not_to be_true
+    end
+
+    it "should allow blank content" do
+      post = create(:post, content: '')
+      expect(post.id).not_to be_nil
     end
   end
 
