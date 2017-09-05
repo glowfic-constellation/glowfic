@@ -243,4 +243,55 @@ RSpec.describe ApplicationController do
       skip
     end
   end
+
+  describe "#page_view" do
+    context "when logged out" do
+      it "works by default" do
+        expect(controller.send(:page_view)).to eq('icon')
+      end
+
+      it "can be overridden with a parameter" do
+        controller.params[:view] = 'list'
+        expect(session[:view]).to be_nil
+        expect(controller.send(:page_view)).to eq('list')
+        expect(session[:view]).to eq('list')
+      end
+
+      it "uses session variable if it exists" do
+        session[:view] = 'list'
+        expect(controller.send(:page_view)).to eq('list')
+      end
+    end
+
+    context "when logged in" do
+      it "works by default" do
+        login
+        expect(controller.send(:page_view)).to eq('icon')
+      end
+
+      it "uses account default if different" do
+        user = create(:user, default_view: 'list')
+        login_as(user)
+        expect(controller.send(:page_view)).to eq('list')
+      end
+
+      it "is not overridden by session" do
+        # also does not modify user default
+        user = create(:user, default_view: 'list')
+        login_as(user)
+        session[:view] = 'icon'
+        expect(controller.send(:page_view)).to eq('list')
+        expect(user.reload.default_view).to eq('list')
+      end
+
+      it "can be overridden by params" do
+        # also does not modify user default
+        user = create(:user, default_view: 'list')
+        login_as(user)
+        controller.params[:view] = 'icon'
+        expect(controller.send(:page_view)).to eq('icon')
+        expect(user.reload.default_view).to eq('list')
+      end
+    end
+  end
 end
