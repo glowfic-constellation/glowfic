@@ -346,7 +346,7 @@ RSpec.describe Character do
         tag3 = create(type)
         tag4 = create(type)
 
-        taggable.send(type + '_ids=', [tag3.id, '_fake1', '_'+tag1.name, '_fake2', tag4.id])
+        taggable.send(type + '_ids=', [tag3.id, '_fake1', '_'+tag1.name, '_fake2', tag4.id, 'broken'])
         taggable.save
         taggable.reload
         tags = taggable.send(type + 's').order('character_tags.id')
