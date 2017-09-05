@@ -67,8 +67,8 @@
 .post-expander .info { padding: 5px; text-align: center; font-size: 14px; cursor: pointer; }
 .post-ender { min-height: 5px; padding: 5px; background-color: #3e384f; color: #FEFEFE; font-size: 16px; font-weight: bold; text-align: center; }
 
-.post-container { overflow: auto; }
-#content > .post-container { padding: 0; }
+/* Post content */
+#content > .post-container { padding: 0; overflow: auto; }
 .post-edit-box { float: right; margin-left: 10px; margin-bottom: 5px; padding: 5px; }
 .post-info-box {
   text-align: center;
