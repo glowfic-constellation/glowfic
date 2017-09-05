@@ -488,7 +488,10 @@ RSpec.describe GalleriesController do
     end
 
     it "doesn't support existing view for galleryless" do
-      skip "TODO not yet implemented"
+      login
+      get :add, id: 0, type: 'existing'
+      expect(response).to redirect_to(gallery_url(0))
+      expect(flash[:error]).to eq('Cannot add existing icons to galleryless. Please remove from existing galleries instead.')
     end
   end
 
