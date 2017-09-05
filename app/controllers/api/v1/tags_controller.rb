@@ -26,6 +26,7 @@ class Api::V1::TagsController < Api::ApiController
 
   api! 'Load a single tag as a JSON resource'
   param :id, :number, required: true, desc: 'Tag ID'
+  error 404, "Tag not found"
   def show
     render json: @tag.as_json(include: [:gallery_ids], user_id: params[:user_id])
   end

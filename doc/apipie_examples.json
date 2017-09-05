@@ -29,18 +29,18 @@
       "query": null,
       "request_data": {
         "ordered_section_ids": [
-          "2322",
-          "2320",
-          "2323",
-          "2321"
+          "3140",
+          "3138",
+          "3141",
+          "3139"
         ]
       },
       "response_data": {
         "section_ids": [
-          2322,
-          2320,
-          2323,
-          2321
+          3140,
+          3138,
+          3141,
+          3139
         ]
       },
       "code": "200",
@@ -56,16 +56,16 @@
       "query": null,
       "request_data": {
         "ordered_section_ids": [
-          "2327",
-          "2325"
+          "3145",
+          "3143"
         ]
       },
       "response_data": {
         "section_ids": [
-          2327,
-          2325,
-          2326,
-          2328
+          3145,
+          3143,
+          3144,
+          3146
         ]
       },
       "code": "200",
@@ -85,11 +85,11 @@
       "response_data": {
         "results": [
           {
-            "id": 44309,
+            "id": 55460,
             "name": "baa"
           },
           {
-            "id": 44313,
+            "id": 55464,
             "name": "BAAc"
           }
         ]
@@ -138,23 +138,23 @@
     },
     {
       "verb": "GET",
-      "path": "/api/v1/boards/44317",
+      "path": "/api/v1/boards/55468",
       "versions": [
         "1.0"
       ],
       "query": "",
       "request_data": null,
       "response_data": {
-        "id": 44317,
+        "id": 55468,
         "name": "test board",
         "board_sections": [
           {
-            "id": 2331,
+            "id": 3149,
             "name": "TestSection",
             "order": 0
           },
           {
-            "id": 2330,
+            "id": 3148,
             "name": "TestSection",
             "order": 1
           }
@@ -177,7 +177,7 @@
       "response_data": {
         "results": [
           {
-            "id": 12910,
+            "id": 18349,
             "name": "test character",
             "screenname": null
           }
@@ -198,7 +198,7 @@
       "response_data": {
         "results": [
           {
-            "id": 12911,
+            "id": 18350,
             "name": "search",
             "screenname": null
           }
@@ -233,7 +233,7 @@
       "versions": [
         "1.0"
       ],
-      "query": "post_id=44251",
+      "query": "post_id=55381",
       "request_data": null,
       "response_data": {
         "errors": [
@@ -252,12 +252,12 @@
       "versions": [
         "1.0"
       ],
-      "query": "post_id=44252",
+      "query": "post_id=55382",
       "request_data": null,
       "response_data": {
         "results": [
           {
-            "id": 12915,
+            "id": 18354,
             "name": "test character",
             "screenname": null
           }
@@ -298,18 +298,18 @@
       "query": null,
       "request_data": {
         "ordered_characters_gallery_ids": [
-          "2451",
-          "2449",
-          "2452",
-          "2450"
+          "4032",
+          "4030",
+          "4033",
+          "4031"
         ]
       },
       "response_data": {
         "characters_gallery_ids": [
-          2451,
-          2449,
-          2452,
-          2450
+          4032,
+          4030,
+          4033,
+          4031
         ]
       },
       "code": "200",
@@ -325,16 +325,16 @@
       "query": null,
       "request_data": {
         "ordered_characters_gallery_ids": [
-          "2456",
-          "2454"
+          "4037",
+          "4035"
         ]
       },
       "response_data": {
         "characters_gallery_ids": [
-          2456,
-          2454,
-          2455,
-          2457
+          4037,
+          4035,
+          4036,
+          4038
         ]
       },
       "code": "200",
@@ -364,20 +364,20 @@
     },
     {
       "verb": "GET",
-      "path": "/api/v1/characters/12917",
+      "path": "/api/v1/characters/18356",
       "versions": [
         "1.0"
       ],
       "query": "",
       "request_data": null,
       "response_data": {
-        "id": 12917,
+        "id": 18356,
         "name": "test character",
         "screenname": null,
         "default": null,
         "aliases": [
           {
-            "id": 1093,
+            "id": 1479,
             "name": "Alias"
           }
         ],
@@ -386,12 +386,12 @@
             "name": "test gallery",
             "icons": [
               {
-                "id": 7827,
+                "id": 9885,
                 "url": "http://www.fakeicon.com",
                 "keyword": "totally fake"
               },
               {
-                "id": 7828,
+                "id": 9886,
                 "url": "http://www.fakeicon.com",
                 "keyword": "totally fake"
               }
@@ -401,7 +401,7 @@
             "name": "test gallery",
             "icons": [
               {
-                "id": 7829,
+                "id": 9887,
                 "url": "http://www.fakeicon.com",
                 "keyword": "totally fake"
               }
@@ -415,7 +415,7 @@
     },
     {
       "verb": "GET",
-      "path": "/api/v1/characters/12918",
+      "path": "/api/v1/characters/18357",
       "versions": [
         "1.0"
       ],
@@ -434,11 +434,11 @@
     },
     {
       "verb": "GET",
-      "path": "/api/v1/characters/12919",
+      "path": "/api/v1/characters/18358",
       "versions": [
         "1.0"
       ],
-      "query": "post_id=44253",
+      "query": "post_id=55383",
       "request_data": null,
       "response_data": {
         "errors": [
@@ -453,21 +453,21 @@
     },
     {
       "verb": "GET",
-      "path": "/api/v1/characters/12920",
+      "path": "/api/v1/characters/18359",
       "versions": [
         "1.0"
       ],
-      "query": "post_id=44254",
+      "query": "post_id=55384",
       "request_data": null,
       "response_data": {
-        "id": 12920,
+        "id": 18359,
         "name": "test character",
         "screenname": null,
-        "alias_id_for_post": 1094,
+        "alias_id_for_post": 1480,
         "default": null,
         "aliases": [
           {
-            "id": 1094,
+            "id": 1480,
             "name": "Alias"
           }
         ],
@@ -523,7 +523,7 @@
     },
     {
       "verb": "PUT",
-      "path": "/api/v1/characters/12921",
+      "path": "/api/v1/characters/18360",
       "versions": [
         "1.0"
       ],
@@ -543,22 +543,22 @@
     },
     {
       "verb": "PUT",
-      "path": "/api/v1/characters/12922",
+      "path": "/api/v1/characters/18361",
       "versions": [
         "1.0"
       ],
       "query": null,
       "request_data": {
         "character": {
-          "default_icon_id": "7831"
+          "default_icon_id": "9889"
         }
       },
       "response_data": {
-        "id": 12922,
+        "id": 18361,
         "name": "test character",
         "screenname": null,
         "default": {
-          "id": 7831,
+          "id": 9889,
           "url": "http://www.fakeicon.com",
           "keyword": "totally fake"
         }
@@ -569,14 +569,14 @@
     },
     {
       "verb": "PUT",
-      "path": "/api/v1/characters/12923",
+      "path": "/api/v1/characters/18362",
       "versions": [
         "1.0"
       ],
       "query": null,
       "request_data": {
         "character": {
-          "default_icon_id": "7833",
+          "default_icon_id": "9891",
           "name": "",
           "user_id": null
         }
@@ -619,7 +619,7 @@
       "versions": [
         "1.0"
       ],
-      "query": "user_id=133486",
+      "query": "user_id=171338",
       "request_data": null,
       "response_data": {
         "name": "Galleryless",
@@ -652,7 +652,7 @@
     },
     {
       "verb": "GET",
-      "path": "/api/v1/galleries/4378",
+      "path": "/api/v1/galleries/6702",
       "versions": [
         "1.0"
       ],
@@ -662,7 +662,7 @@
         "name": "test gallery",
         "icons": [
           {
-            "id": 7834,
+            "id": 9892,
             "url": "http://www.fakeicon.com",
             "keyword": "totally fake"
           }
@@ -703,18 +703,18 @@
       "query": null,
       "request_data": {
         "ordered_post_ids": [
-          "44259",
-          "44257",
-          "44260",
-          "44258"
+          "55389",
+          "55387",
+          "55390",
+          "55388"
         ]
       },
       "response_data": {
         "post_ids": [
-          44259,
-          44257,
-          44260,
-          44258
+          55389,
+          55387,
+          55390,
+          55388
         ]
       },
       "code": "200",
@@ -730,16 +730,16 @@
       "query": null,
       "request_data": {
         "ordered_post_ids": [
-          "44264",
-          "44262"
+          "55394",
+          "55392"
         ]
       },
       "response_data": {
         "post_ids": [
-          44264,
-          44262,
-          44263,
-          44265
+          55394,
+          55392,
+          55393,
+          55395
         ]
       },
       "code": "200",
@@ -755,19 +755,19 @@
       "query": null,
       "request_data": {
         "ordered_post_ids": [
-          "44269",
-          "44267",
-          "44270",
-          "44268"
+          "55399",
+          "55397",
+          "55400",
+          "55398"
         ],
-        "section_id": "2332"
+        "section_id": "3150"
       },
       "response_data": {
         "post_ids": [
-          44269,
-          44267,
-          44270,
-          44268
+          55399,
+          55397,
+          55400,
+          55398
         ]
       },
       "code": "200",
@@ -783,17 +783,17 @@
       "query": null,
       "request_data": {
         "ordered_post_ids": [
-          "44274",
-          "44272"
+          "55404",
+          "55402"
         ],
-        "section_id": "2334"
+        "section_id": "3152"
       },
       "response_data": {
         "post_ids": [
-          44274,
-          44272,
-          44273,
-          44275
+          55404,
+          55402,
+          55403,
+          55405
         ]
       },
       "code": "200",
@@ -823,7 +823,7 @@
     },
     {
       "verb": "GET",
-      "path": "/api/v1/posts/44255",
+      "path": "/api/v1/posts/55385",
       "versions": [
         "1.0"
       ],
@@ -842,38 +842,38 @@
     },
     {
       "verb": "GET",
-      "path": "/api/v1/posts/44256",
+      "path": "/api/v1/posts/55386",
       "versions": [
         "1.0"
       ],
       "query": "",
       "request_data": null,
       "response_data": {
-        "id": 44256,
+        "id": 55386,
         "subject": "test subject",
         "content": "test content",
-        "created_at": "2017-09-02T15:43:54.275Z",
+        "created_at": "2017-09-05T14:31:01.918Z",
         "status": 0,
         "description": null,
-        "edited_at": "2017-09-02T15:43:54.275Z",
-        "tagged_at": "2017-09-02T15:43:54.275Z",
+        "edited_at": "2017-09-05T14:31:01.918Z",
+        "tagged_at": "2017-09-05T14:31:01.918Z",
         "board": {
-          "id": 44323,
+          "id": 55474,
           "name": "test board"
         },
         "section": null,
         "user": {
-          "id": 133490,
+          "id": 171342,
           "username": "JohnDoe53"
         },
         "character": {
-          "id": 12928,
+          "id": 18367,
           "name": "test character",
           "screenname": null
         },
         "character_name": "Alias",
         "icon": {
-          "id": 7835,
+          "id": 9893,
           "url": "http://www.fakeicon.com",
           "keyword": "totally fake"
         }
@@ -905,7 +905,7 @@
     },
     {
       "verb": "GET",
-      "path": "/api/v1/posts/44277/replies",
+      "path": "/api/v1/posts/55407/replies",
       "versions": [
         "1.0"
       ],
@@ -924,7 +924,7 @@
     },
     {
       "verb": "GET",
-      "path": "/api/v1/posts/44278/replies",
+      "path": "/api/v1/posts/55408/replies",
       "versions": [
         "1.0"
       ],
@@ -932,49 +932,49 @@
       "request_data": null,
       "response_data": [
         {
-          "id": 24798,
+          "id": 31030,
           "content": "test content",
-          "created_at": "2017-09-02T15:43:56.098Z",
-          "updated_at": "2017-09-02T15:43:56.098Z",
+          "created_at": "2017-09-05T14:31:03.582Z",
+          "updated_at": "2017-09-05T14:31:03.582Z",
           "character_name": null,
           "character": null,
           "icon": null,
           "user": {
-            "id": 133518,
+            "id": 171370,
             "username": "JohnDoe81"
           }
         },
         {
-          "id": 24799,
+          "id": 31031,
           "content": "test content",
-          "created_at": "2017-09-02T15:43:56.162Z",
-          "updated_at": "2017-09-02T15:43:56.162Z",
+          "created_at": "2017-09-05T14:31:03.640Z",
+          "updated_at": "2017-09-05T14:31:03.640Z",
           "character_name": null,
           "character": null,
           "icon": null,
           "user": {
-            "id": 133518,
+            "id": 171370,
             "username": "JohnDoe81"
           }
         },
         {
-          "id": 24800,
+          "id": 31032,
           "content": "test content",
-          "created_at": "2017-09-02T15:43:56.227Z",
-          "updated_at": "2017-09-02T15:43:56.227Z",
+          "created_at": "2017-09-05T14:31:03.714Z",
+          "updated_at": "2017-09-05T14:31:03.714Z",
           "character_name": "Alias",
           "character": {
-            "id": 12930,
+            "id": 18369,
             "name": "test character",
             "screenname": null
           },
           "icon": {
-            "id": 7837,
+            "id": 9895,
             "url": "http://www.fakeicon.com",
             "keyword": "totally fake"
           },
           "user": {
-            "id": 133520,
+            "id": 171372,
             "username": "JohnDoe83"
           }
         }
@@ -996,7 +996,7 @@
       "response_data": {
         "results": [
           {
-            "id": 2839,
+            "id": 6052,
             "text": "Tag1"
           }
         ]
@@ -1016,7 +1016,7 @@
       "response_data": {
         "results": [
           {
-            "id": 2840,
+            "id": 6053,
             "text": "Tag2"
           }
         ]
@@ -1036,7 +1036,7 @@
       "response_data": {
         "results": [
           {
-            "id": 2841,
+            "id": 6054,
             "text": "Tag3"
           }
         ]
@@ -1063,6 +1063,47 @@
       "recorded": true
     }
   ],
+  "tags#show": [
+    {
+      "verb": "GET",
+      "path": "/api/v1/tags/6055",
+      "versions": [
+        "1.0"
+      ],
+      "query": "user_id=171376",
+      "request_data": null,
+      "response_data": {
+        "id": 6055,
+        "text": "Tag4",
+        "gallery_ids": [
+          6704,
+          6703
+        ]
+      },
+      "code": "200",
+      "show_in_doc": 1,
+      "recorded": true
+    },
+    {
+      "verb": "GET",
+      "path": "/api/v1/tags/99",
+      "versions": [
+        "1.0"
+      ],
+      "query": "",
+      "request_data": null,
+      "response_data": {
+        "errors": [
+          {
+            "message": "Tag could not be found"
+          }
+        ]
+      },
+      "code": "404",
+      "show_in_doc": 1,
+      "recorded": true
+    }
+  ],
   "templates#index": [
     {
       "verb": "GET",
@@ -1075,11 +1116,11 @@
       "response_data": {
         "results": [
           {
-            "id": 3094,
+            "id": 4437,
             "name": "baa"
           },
           {
-            "id": 3098,
+            "id": 4441,
             "name": "BAAc"
           }
         ]
@@ -1147,12 +1188,12 @@
       "versions": [
         "1.0"
       ],
-      "query": "user_id=133532",
+      "query": "user_id=171387",
       "request_data": null,
       "response_data": {
         "results": [
           {
-            "id": 3102,
+            "id": 4445,
             "name": "test template"
           }
         ]
@@ -1174,11 +1215,11 @@
       "response_data": {
         "results": [
           {
-            "id": 133534,
+            "id": 171389,
             "username": "baa"
           },
           {
-            "id": 133538,
+            "id": 171393,
             "username": "BAAc"
           }
         ]

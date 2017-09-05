@@ -85,7 +85,7 @@ RSpec.describe Api::V1::TagsController do
   end
 
   describe "GET show" do
-    it "should support getting gallery groups with gallery IDs" do
+    it "should support getting gallery groups with gallery IDs", show_in_doc: true do
       user = create(:user)
       group = create(:gallery_group)
       galleries = Array.new(2) { create(:gallery, user: user, gallery_groups: [group]) }
@@ -95,6 +95,22 @@ RSpec.describe Api::V1::TagsController do
       expect(response.json['id']).to eq(group.id)
       expect(response.json['text']).to eq(group.name)
       expect(response.json['gallery_ids']).to match_array(galleries.map(&:id))
+    end
+
+    [:setting, :label, :content_warning].each do |type|
+      it "should support getting #{type} tags" do
+        tag = create(type)
+        get :show, id: tag.id
+        expect(response).to have_http_status(200)
+        expect(response.json['id']).to eq(tag.id)
+      end
+    end
+
+    it "should handle invalid tag", show_in_doc: true do
+      get :show, id: 99
+      expect(response).to have_http_status(404)
+      expect(response.json).to have_key('errors')
+      expect(response.json['errors'][0]['message']).to eq("Tag could not be found")
     end
   end
 end
