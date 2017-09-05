@@ -10,7 +10,7 @@ $(document).ready(function() {
 
   $(".post-expander").click(function() {
     $(this).children(".info").remove();
-    $(this).children(".hidden").show();
+    $(this).get(0).outerHTML = $(this).children('.hidden').html();
   });
 
   // Dropdown menu code
