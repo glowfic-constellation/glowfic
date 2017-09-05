@@ -129,7 +129,9 @@ RSpec.describe GalleriesController do
     context "with zero gallery id" do
       context "with user id" do
         it "requires valid user" do
-          skip "TODO not yet implemented"
+          get :show, id: '0', user_id: -1
+          expect(response).to redirect_to(root_url)
+          expect(flash[:error]).to eq('User could not be found.')
         end
 
         it "succeeds when logged in" do
@@ -486,7 +488,10 @@ RSpec.describe GalleriesController do
     end
 
     it "doesn't support existing view for galleryless" do
-      skip "TODO not yet implemented"
+      login
+      get :add, id: 0, type: 'existing'
+      expect(response).to redirect_to(gallery_url(0))
+      expect(flash[:error]).to eq('Cannot add existing icons to galleryless. Please remove from existing galleries instead.')
     end
   end
 

@@ -216,6 +216,6 @@ class RepliesController < WritableController
     @page_title = @post.subject
 
     use_javascript('posts/editor')
-    render :action => :preview
+    render action: :preview
   end
 end

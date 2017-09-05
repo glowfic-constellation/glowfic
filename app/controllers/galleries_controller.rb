@@ -48,12 +48,19 @@ class GalleriesController < UploadingController
   end
 
   def add
+    if params[:id] == '0' && params[:type] == 'existing'
+      flash[:error] = 'Cannot add existing icons to galleryless. Please remove from existing galleries instead.'
+      redirect_to gallery_path(0)
+    end
   end
 
   def show
     if params[:id].to_s == '0' # avoids casting nils to 0
       if params[:user_id].present?
-        @user = User.find_by_id(params[:user_id])
+        unless (@user = User.find_by_id(params[:user_id]))
+          flash[:error] = 'User could not be found.'
+          redirect_to root_path and return
+        end
       else
         return if login_required
         @user = current_user
@@ -183,7 +190,7 @@ class GalleriesController < UploadingController
       use_javascript('galleries/uploader')
     end
     @icons = []
-    find_gallery if params[:id] != '0'
+    find_gallery unless params[:id] == '0'
     @unassigned = current_user.galleryless_icons
     @page_title = "Add Icons"
     @page_title += ": " + @gallery.name unless @gallery.nil?
