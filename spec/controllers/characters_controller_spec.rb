@@ -42,12 +42,14 @@ RSpec.describe CharactersController do
 
       it "successfully renders the page in template group" do
         character = create(:character)
+        character2 = create(:template_character, user: character.user)
         get :index, user_id: character.user_id, character_split: 'template'
         expect(response.status).to eq(200)
       end
 
       it "successfully renders the page with no group" do
         character = create(:character)
+        character2 = create(:template_character, user: character.user)
         get :index, user_id: character.user_id, character_split: 'none'
         expect(response.status).to eq(200)
       end
