@@ -135,17 +135,36 @@ RSpec.describe PostsController do
 
     it "sets relevant fields" do
       user = create(:user)
-      character = create(:character, user: user)
-      user.update_attributes(active_character: character)
+      char1 = create(:character, user: user)
+      user.update_attributes(active_character: char1)
       user.reload
       login_as(user)
+
+      char2 = create(:character, user: user)
+      char3 = create(:template_character, user: user)
+      expect(controller).to receive(:editor_setup).and_call_original
 
       get :new
 
       expect(response).to have_http_status(200)
       expect(assigns(:post)).to be_new_record
-      expect(assigns(:post).character).to eq(character)
+      expect(assigns(:post).character).to eq(char1)
+
+      # editor_setup:
       expect(assigns(:javascripts)).to include('posts/editor')
+      expect(controller.gon.current_user).not_to be_nil
+      # templates
+      templates = assigns(:templates)
+      expect(templates.length).to eq(2)
+      template_chars = templates.first
+      expect(template_chars).to eq(char3.template)
+      templateless = templates.last
+      expect(templateless.name).to eq('Templateless')
+      expect(templateless.plucked_characters).to eq([[char1.id, char1.name], [char2.id, char2.name]])
+      # tags
+      expect(assigns(:settings)).to eq([])
+      expect(assigns(:warnings)).to eq([])
+      expect(assigns(:tags)).to eq([])
     end
 
     it "works for importer" do
@@ -239,12 +258,16 @@ RSpec.describe PostsController do
         warning2 = create(:content_warning)
         label1 = create(:label)
         label2 = create(:label)
+        char1 = create(:character, user: user)
+        char2 = create(:template_character, user: user)
+        expect(controller).to receive(:editor_setup).and_call_original
         post :create, button_preview: true, post: {
           subject: 'test',
           content: 'orign',
           setting_ids: [setting1.id, '_'+setting2.name, '_other'],
           content_warning_ids: [warning1.id, '_'+warning2.name, '_other'],
-          label_ids: [label1.id, '_'+label2.name, '_other']
+          label_ids: [label1.id, '_'+label2.name, '_other'],
+          character_id: char1.id
         }
         expect(response).to render_template(:preview)
         expect(assigns(:written)).to be_an_instance_of(Post)
@@ -255,7 +278,25 @@ RSpec.describe PostsController do
         expect(assigns(:post).content_warning_ids).to match_array([warning1.id, warning2.id, '_other'])
         expect(assigns(:post).label_ids).to match_array([label1.id, label2.id, '_other'])
         expect(assigns(:page_title)).to eq('Previewing: test')
-        # TODO editor setup
+
+        # editor_setup:
+        expect(assigns(:javascripts)).to include('posts/editor')
+        expect(controller.gon.current_user).not_to be_nil
+        # templates
+        templates = assigns(:templates)
+        expect(templates.length).to eq(3)
+        thread_chars = templates.first
+        expect(thread_chars.name).to eq('Thread characters')
+        expect(thread_chars.plucked_characters).to eq([[char1.id, char1.name]])
+        template_chars = templates[1]
+        expect(template_chars).to eq(char2.template)
+        templateless = templates.last
+        expect(templateless.name).to eq('Templateless')
+        expect(templateless.plucked_characters).to eq([[char1.id, char1.name]])
+        # tags
+        expect(assigns(:settings).map(&:id_for_select)).to match_array([setting1.id, setting2.id, '_other'])
+        expect(assigns(:warnings).map(&:id_for_select)).to match_array([warning1.id, warning2.id, '_other'])
+        expect(assigns(:tags).map(&:id_for_select)).to match_array([label1.id, label2.id, '_other'])
       end
 
       it "does not crash without arguments" do
@@ -314,12 +355,16 @@ RSpec.describe PostsController do
       warning2 = create(:content_warning)
       label1 = create(:label)
       label2 = create(:label)
+      char1 = create(:character, user: user)
+      char2 = create(:template_character, user: user)
+      expect(controller).to receive(:editor_setup).and_call_original
       post :create, post: {
         subject: 'asubjct',
         content: 'acontnt',
         setting_ids: [setting1.id, '_'+setting2.name, '_other'],
         content_warning_ids: [warning1.id, '_'+warning2.name, '_other'],
-        label_ids: [label1.id, '_'+label2.name, '_other']
+        label_ids: [label1.id, '_'+label2.name, '_other'],
+        character_id: char1.id
       }
       expect(response).to render_template(:new)
       expect(flash[:error][:message]).to eq("Your post could not be saved because of the following problems:")
@@ -331,7 +376,25 @@ RSpec.describe PostsController do
       expect(assigns(:post).content_warning_ids).to match_array([warning1.id, warning2.id, '_other'])
       expect(assigns(:post).label_ids).to match_array([label1.id, label2.id, '_other'])
       expect(assigns(:page_title)).to eq('New Post')
-      # TODO editor_setup
+
+      # editor_setup:
+      expect(assigns(:javascripts)).to include('posts/editor')
+      expect(controller.gon.current_user).not_to be_nil
+      # templates
+      templates = assigns(:templates)
+      expect(templates.length).to eq(3)
+      thread_chars = templates.first
+      expect(thread_chars.name).to eq('Thread characters')
+      expect(thread_chars.plucked_characters).to eq([[char1.id, char1.name]])
+      template_chars = templates[1]
+      expect(template_chars).to eq(char2.template)
+      templateless = templates.last
+      expect(templateless.name).to eq('Templateless')
+      expect(templateless.plucked_characters).to eq([[char1.id, char1.name]])
+      # tags
+      expect(assigns(:settings).map(&:id_for_select)).to match_array([setting1.id, setting2.id, '_other'])
+      expect(assigns(:warnings).map(&:id_for_select)).to match_array([warning1.id, warning2.id, '_other'])
+      expect(assigns(:tags).map(&:id_for_select)).to match_array([label1.id, label2.id, '_other'])
     end
 
     it "creates a post" do
@@ -781,17 +844,45 @@ RSpec.describe PostsController do
 
     it "sets relevant fields" do
       user = create(:user)
-      character = create(:character, user: user)
-      post = create(:post, user: user, character: character)
+      char1 = create(:character, user: user)
+      char2 = create(:character, user: user)
+      char3 = create(:template_character, user: user)
+      setting = create(:setting)
+      warning = create(:content_warning)
+      label = create(:label)
+      post = create(:post, user: user, character: char1, settings: [setting], content_warnings: [warning], labels: [label])
+      reply1 = create(:reply, user: user, post: post, character: char2)
+      create(:reply, post: post) # other user's post with character
       expect(post.icon).to be_nil
       login_as(user)
+
+      expect(controller).to receive(:editor_setup).and_call_original
 
       get :edit, id: post.id
 
       expect(response.status).to eq(200)
       expect(assigns(:post)).to eq(post)
-      expect(assigns(:post).character).to eq(character)
+      expect(assigns(:post).character).to eq(char1)
       expect(assigns(:post).icon).to be_nil
+
+      # editor_setup:
+      expect(assigns(:javascripts)).to include('posts/editor')
+      expect(controller.gon.current_user).not_to be_nil
+      # templates
+      templates = assigns(:templates)
+      expect(templates.length).to eq(3)
+      thread_chars = templates.first
+      expect(thread_chars.name).to eq('Thread characters')
+      expect(thread_chars.plucked_characters).to eq([[char1.id, char1.name], [char2.id, char2.name]])
+      template_chars = templates[1]
+      expect(template_chars).to eq(char3.template)
+      templateless = templates.last
+      expect(templateless.name).to eq('Templateless')
+      expect(templateless.plucked_characters).to eq([[char1.id, char1.name], [char2.id, char2.name]])
+      # tags
+      expect(assigns(:settings).map(&:id_for_select)).to match_array([setting.id])
+      expect(assigns(:warnings).map(&:id_for_select)).to match_array([warning.id])
+      expect(assigns(:tags).map(&:id_for_select)).to match_array([label.id])
     end
   end
 
@@ -1102,12 +1193,16 @@ RSpec.describe PostsController do
         warning2 = create(:content_warning)
         label1 = create(:label)
         label2 = create(:label)
+        char1 = create(:character, user: user)
+        char2 = create(:template_character, user: user)
+        expect(controller).to receive(:editor_setup).and_call_original
         put :update, id: post.id, button_preview: true, post: {
           subject: 'test',
           content: 'orign',
           setting_ids: [setting1.id, '_'+setting2.name, '_other'],
           content_warning_ids: [warning1.id, '_'+warning2.name, '_other'],
-          label_ids: [label1.id, '_'+label2.name, '_other']
+          label_ids: [label1.id, '_'+label2.name, '_other'],
+          character_id: char1.id
         }
         expect(response).to render_template(:preview)
         expect(assigns(:written)).to be_an_instance_of(Post)
@@ -1121,7 +1216,25 @@ RSpec.describe PostsController do
         expect(assigns(:post).label_ids).to include(label1.id, label2.id)
         expect(assigns(:post).labels.map(&:name)).to match_array([label1.name, label2.name, 'other'])
         expect(assigns(:page_title)).to eq('Previewing: test')
-        # TODO editor setup
+
+        # editor_setup:
+        expect(assigns(:javascripts)).to include('posts/editor')
+        expect(controller.gon.current_user).not_to be_nil
+        # templates
+        templates = assigns(:templates)
+        expect(templates.length).to eq(3)
+        thread_chars = templates.first
+        expect(thread_chars.name).to eq('Thread characters')
+        expect(thread_chars.plucked_characters).to eq([[char1.id, char1.name]])
+        template_chars = templates[1]
+        expect(template_chars).to eq(char2.template)
+        templateless = templates.last
+        expect(templateless.name).to eq('Templateless')
+        expect(templateless.plucked_characters).to eq([[char1.id, char1.name]])
+        # tags
+        expect(assigns(:settings).map(&:id_for_select)).to include(setting1.id, setting2.id)
+        expect(assigns(:warnings).map(&:id_for_select)).to include(warning1.id, warning2.id)
+        expect(assigns(:tags).map(&:id_for_select)).to include(label1.id, label2.id)
       end
 
       it "does not crash without arguments" do
@@ -1178,13 +1291,32 @@ RSpec.describe PostsController do
       end
 
       it "requires valid update" do
-        post = create(:post)
-        login_as(post.user)
+        user = create(:user)
+        post = create(:post, user: user)
+        login_as(user)
+        char1 = create(:character, user: user)
+        char2 = create(:template_character, user: user)
+        expect(controller).to receive(:editor_setup).and_call_original
         put :update, id: post.id, post: {subject: ''}
         expect(response).to render_template(:edit)
         expect(flash[:error][:message]).to eq("Your post could not be saved because of the following problems:")
         expect(post.reload.subject).not_to be_empty
-        # TODO check editor setup
+
+        # editor_setup:
+        expect(assigns(:javascripts)).to include('posts/editor')
+        expect(controller.gon.current_user).not_to be_nil
+        # templates
+        templates = assigns(:templates)
+        expect(templates.length).to eq(2)
+        template_chars = templates.first
+        expect(template_chars).to eq(char2.template)
+        templateless = templates.last
+        expect(templateless.name).to eq('Templateless')
+        expect(templateless.plucked_characters).to eq([[char1.id, char1.name]])
+        # tags
+        expect(assigns(:settings)).to eq([])
+        expect(assigns(:warnings)).to eq([])
+        expect(assigns(:tags)).to eq([])
       end
 
       it "works" do
