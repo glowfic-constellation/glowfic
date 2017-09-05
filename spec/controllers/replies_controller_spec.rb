@@ -10,11 +10,18 @@ RSpec.describe RepliesController do
 
     context "preview" do
       it "takes correct actions" do
-        reply_post = create(:post)
+        user = create(:user)
+        reply_post = create(:post, user: user)
         reply = create(:reply, post: reply_post)
-        reply_post.mark_read(reply_post.user)
-        login_as(reply_post.user)
+        reply_post.mark_read(user)
+        login_as(user)
         expect(ReplyDraft.count).to eq(0)
+
+        char1 = create(:character, user: user)
+        char2 = create(:template_character, user: user)
+        expect(controller).to receive(:build_template_groups).and_call_original
+        expect(controller).to receive(:make_draft).and_call_original
+
         post :create, button_preview: true, reply: {post_id: reply_post.id}
         expect(response).to render_template(:preview)
         expect(assigns(:javascripts)).to include('posts/editor')
@@ -27,7 +34,17 @@ RSpec.describe RepliesController do
         expect(draft.post).to eq(reply_post)
         expect(draft.user).to eq(reply_post.user)
         expect(flash[:success]).to eq('Draft saved!')
-        # TODO build_template_groups
+
+        # build_template_groups:
+        expect(controller.gon.current_user).not_to be_nil
+        # templates
+        templates = assigns(:templates)
+        expect(templates.length).to eq(2)
+        template_chars = templates.first
+        expect(template_chars).to eq(char2.template)
+        templateless = templates.last
+        expect(templateless.name).to eq('Templateless')
+        expect(templateless.plucked_characters).to eq([[char1.id, char1.name]])
       end
     end
 
@@ -332,14 +349,29 @@ RSpec.describe RepliesController do
     end
 
     it "works" do
-      reply = create(:reply)
-      login_as(reply.user)
+      user = create(:user)
+      reply = create(:reply, user: user)
+      login_as(user)
+      char1 = create(:character, user: user)
+      char2 = create(:template_character, user: user)
+      expect(controller).to receive(:build_template_groups).and_call_original
+
       get :edit, id: reply.id
       expect(response).to render_template(:edit)
       expect(assigns(:page_title)).to eq(reply.post.subject)
       expect(assigns(:reply)).to eq(reply)
       expect(assigns(:post)).to eq(reply.post)
-      # TODO expect it to call build_template_groups
+
+      # build_template_groups:
+      expect(controller.gon.current_user).not_to be_nil
+      # templates
+      templates = assigns(:templates)
+      expect(templates.length).to eq(2)
+      template_chars = templates.first
+      expect(template_chars).to eq(char2.template)
+      templateless = templates.last
+      expect(templateless.name).to eq('Templateless')
+      expect(templateless.plucked_characters).to eq([[char1.id, char1.name]])
     end
   end
 
