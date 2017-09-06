@@ -53,7 +53,7 @@ group :development, :test do
   gem 'database_cleaner'
   gem 'dotenv-rails'
   gem 'rake', '~> 12.0'
-  gem 'seed_dump', '~> 1.0'
+  gem 'seed_dump', '~> 2.0'
   gem 'thin'
   gem 'rspec-rails'
 end
