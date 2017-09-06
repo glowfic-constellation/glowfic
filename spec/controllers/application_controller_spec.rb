@@ -44,7 +44,7 @@ RSpec.describe ApplicationController do
       expect(user.salt_uuid).not_to be_nil
       controller.send(:show_password_warning) do
         expect(flash.now[:pass]).not_to eq("Because Marri accidentally made passwords a bit too secure, you must log back in to continue using the site.")
-        expect(controller.send(:logged_in?)).to be_true
+        expect(controller.send(:logged_in?)).to eq(true)
       end
     end
 
@@ -54,7 +54,7 @@ RSpec.describe ApplicationController do
       user.update_attribute(:salt_uuid, nil)
       controller.send(:show_password_warning) do
         expect(flash.now[:pass]).to eq("Because Marri accidentally made passwords a bit too secure, you must log back in to continue using the site.")
-        expect(controller.send(:logged_in?)).not_to be_true
+        expect(controller.send(:logged_in?)).not_to eq(true)
       end
     end
   end
@@ -135,9 +135,9 @@ RSpec.describe ApplicationController do
       fetched2 = fetched_posts[1]
       fetched3 = fetched_posts[2]
 
-      expect(fetched1.has_content_warnings?).not_to be_true
-      expect(fetched2.has_content_warnings?).to be_true
-      expect(fetched3.has_content_warnings?).to be_true
+      expect(fetched1.has_content_warnings?).not_to eq(true)
+      expect(fetched2.has_content_warnings?).to eq(true)
+      expect(fetched3.has_content_warnings?).to eq(true)
       expect(fetched2.content_warnings).to match_array([warning1])
       expect(fetched3.content_warnings).to match_array([warning1, warning2])
 

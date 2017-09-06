@@ -240,7 +240,7 @@ RSpec.describe RepliesController do
     it "requires post access" do
       reply = create(:reply)
       expect(reply.user_id).not_to eq(reply.post.user_id)
-      expect(reply.post.visible_to?(reply.user)).to be_true
+      expect(reply.post.visible_to?(reply.user)).to eq(true)
 
       reply.post.privacy = Post::PRIVACY_PRIVATE
       reply.post.save
@@ -283,7 +283,7 @@ RSpec.describe RepliesController do
     it "requires post access" do
       reply = create(:reply)
       expect(reply.user_id).not_to eq(reply.post.user_id)
-      expect(reply.post.visible_to?(reply.user)).to be_true
+      expect(reply.post.visible_to?(reply.user)).to eq(true)
 
       reply.post.privacy = Post::PRIVACY_PRIVATE
       reply.post.save
@@ -327,7 +327,7 @@ RSpec.describe RepliesController do
     it "requires post access" do
       reply = create(:reply)
       expect(reply.user_id).not_to eq(reply.post.user_id)
-      expect(reply.post.visible_to?(reply.user)).to be_true
+      expect(reply.post.visible_to?(reply.user)).to eq(true)
 
       reply.post.privacy = Post::PRIVACY_PRIVATE
       reply.post.save
@@ -392,7 +392,7 @@ RSpec.describe RepliesController do
     it "requires post access" do
       reply = create(:reply)
       expect(reply.user_id).not_to eq(reply.post.user_id)
-      expect(reply.post.visible_to?(reply.user)).to be_true
+      expect(reply.post.visible_to?(reply.user)).to eq(true)
 
       reply.post.privacy = Post::PRIVACY_PRIVATE
       reply.post.save
@@ -459,7 +459,7 @@ RSpec.describe RepliesController do
     it "requires post access" do
       reply = create(:reply)
       expect(reply.user_id).not_to eq(reply.post.user_id)
-      expect(reply.post.visible_to?(reply.user)).to be_true
+      expect(reply.post.visible_to?(reply.user)).to eq(true)
 
       reply.post.privacy = Post::PRIVACY_PRIVATE
       reply.post.save

@@ -8,8 +8,8 @@ RSpec.describe Gallery do
     gallery = build(:gallery, user: user)
     gallery.icon_ids = [icon.id]
     expect(gallery).to be_valid
-    expect(gallery.save).to be_true
-    expect(icon.reload.has_gallery).to be_true
+    expect(gallery.save).to eq(true)
+    expect(icon.reload.has_gallery).to eq(true)
   end
 
   it "only adds icons if it saves successfully" do

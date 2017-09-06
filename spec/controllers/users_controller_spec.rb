@@ -93,7 +93,7 @@ RSpec.describe UsersController do
       new_user = assigns(:current_user)
       expect(new_user).not_to be_nil
       expect(new_user.username).to eq(user[:username])
-      expect(new_user.authenticate(user[:password])).to be_true
+      expect(new_user.authenticate(user[:password])).to eq(true)
       expect(new_user.email).to eq(user[:email])
     end
 
@@ -107,7 +107,7 @@ RSpec.describe UsersController do
       expect(flash[:success]).to eq("User created! You have been logged in.")
       expect(assigns(:current_user)).not_to be_nil
       expect(assigns(:current_user).username).to eq(user['username'])
-      expect(assigns(:current_user).authenticate(pass)).to be_true
+      expect(assigns(:current_user).authenticate(pass)).to eq(true)
     end
   end
 
@@ -236,7 +236,7 @@ RSpec.describe UsersController do
     it "updates username and still allows login" do
       pass = 'password123'
       user = create(:user, username: 'user123', password: pass)
-      expect(user.authenticate(pass)).to be_true
+      expect(user.authenticate(pass)).to eq(true)
       login_as(user)
       put :update, id: user.id, user: {username: 'user124'}
       expect(response).to redirect_to(edit_user_url(user))
@@ -244,8 +244,8 @@ RSpec.describe UsersController do
 
       user.reload
       expect(user.username).to eq('user124')
-      expect(user.authenticate(pass)).to be_true
-      expect(user.authenticate(pass + '1')).not_to be_true
+      expect(user.authenticate(pass)).to eq(true)
+      expect(user.authenticate(pass + '1')).not_to eq(true)
     end
   end
 
@@ -262,13 +262,13 @@ RSpec.describe UsersController do
     it "finds user" do
       user = create(:user)
       post :username, username: user.username
-      expect(response.json['username_free']).not_to be_true
+      expect(response.json['username_free']).not_to eq(true)
     end
 
     it "finds free username" do
       user = create(:user)
       post :username, username: user.username + 'nope'
-      expect(response.json['username_free']).to be_true
+      expect(response.json['username_free']).to eq(true)
     end
   end
 
@@ -299,9 +299,9 @@ RSpec.describe UsersController do
       expect(response).to render_template(:edit)
       expect(flash[:error]).to eq('Incorrect password entered.')
       user.reload
-      expect(user.authenticate(pass)).to be_true
-      expect(user.authenticate(fakepass)).not_to be_true
-      expect(user.authenticate(newpass)).not_to be_true
+      expect(user.authenticate(pass)).to eq(true)
+      expect(user.authenticate(fakepass)).not_to eq(true)
+      expect(user.authenticate(newpass)).not_to eq(true)
     end
 
     it "requires valid password" do
@@ -314,8 +314,8 @@ RSpec.describe UsersController do
 
       expect(response).to render_template(:edit)
       expect(flash[:error][:message]).to eq('There was a problem with your changes.')
-      expect(user.authenticate(pass)).to be_true
-      expect(user.authenticate(newpass)).not_to be_true
+      expect(user.authenticate(pass)).to eq(true)
+      expect(user.authenticate(newpass)).not_to eq(true)
     end
 
     it "requires valid confirmation" do
@@ -329,8 +329,8 @@ RSpec.describe UsersController do
       expect(response).to render_template(:edit)
       expect(flash[:error][:message]).to eq('There was a problem with your changes.')
       user.reload
-      expect(user.authenticate(pass)).to be_true
-      expect(user.authenticate(newpass)).not_to be_true
+      expect(user.authenticate(pass)).to eq(true)
+      expect(user.authenticate(newpass)).not_to eq(true)
     end
 
     it "succeeds" do
@@ -344,8 +344,8 @@ RSpec.describe UsersController do
       expect(response).to redirect_to(edit_user_url(user))
       expect(flash[:success]).to eq('Changes saved successfully.')
       user.reload
-      expect(user.authenticate(pass)).not_to be_true
-      expect(user.authenticate(newpass)).to be_true
+      expect(user.authenticate(pass)).not_to eq(true)
+      expect(user.authenticate(newpass)).to eq(true)
     end
 
     it "has more tests" do

@@ -28,7 +28,7 @@ RSpec.describe Favorite do
 
       expect(f).to be_valid
       expect(f2).to be_valid
-      expect(f.save).to be_true
+      expect(f.save).to eq(true)
       expect(f2).not_to be_valid
     end
 
@@ -41,8 +41,8 @@ RSpec.describe Favorite do
 
       expect(f).to be_valid
       expect(f2).to be_valid
-      expect(f.save).to be_true
-      expect(f2.save).to be_true
+      expect(f.save).to eq(true)
+      expect(f2.save).to eq(true)
     end
 
     it "should allow you to favorite multiple things" do
