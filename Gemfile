@@ -56,6 +56,7 @@ group :development, :test do
   gem 'byebug'
   gem 'database_cleaner'
   gem 'dotenv-rails'
+  gem 'jasmine'
   gem 'rake', '~> 12.0'
   gem 'rspec-rails'
   gem 'seed_dump', '~> 3.2'
