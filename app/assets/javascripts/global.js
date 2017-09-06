@@ -1,7 +1,8 @@
 /* global gon */
 var foundTags = {};
+var loggedInKey = 'loggedIn';
 
-$(document).ready(function() {
+function globalReady() {
   $(".chosen-select").select2({
     width: '100%',
     minimumResultsForSearch: 10,
@@ -9,7 +10,6 @@ $(document).ready(function() {
 
   // Set localStorage if login status has changed
   // storage values are usually strings, cast to be sure
-  var loggedInKey = 'loggedIn';
   if (window.gon) {
     var wasLoggedIn = gon.logged_in.toString();
     if (localStorage.getItem(loggedInKey) !== wasLoggedIn) {
@@ -19,25 +19,29 @@ $(document).ready(function() {
 
   // Watch for login status change
   // Display warning prompting user to reload when it occurs
-  window.addEventListener('storage', function(e) {
-    // skip non-login-status changes
-    if (e.key !== loggedInKey) return;
-    // skip creation and deletion of storage key (when someone loads the site for the first time or clears cache)
-    if (e.oldValue === null || e.newValue === null) return;
+  window.addEventListener('storage', storageChanged);
+}
 
-    // find or create the warning box
-    var warningBox = $('#login_status_warning');
-    if (warningBox.length === 0) {
-      warningBox = $('<div class="flash inbox pointer" id="login_status_warning">');
-      warningBox.click(function() { $(this).remove(); });
-      $('#header').after(warningBox);
-    }
+$(document).ready(globalReady);
 
-    // set the relevant warning text
-    var msgText = 'logged ' + (e.newValue === 'true' ? 'in' : 'out');
-    warningBox.html('You have <strong>' + msgText + '</strong> in another tab. Please reload before submitting any forms.');
-  });
-});
+function storageChanged(e) {
+  // skip non-login-status changes
+  if (e.key !== loggedInKey) return;
+  // skip creation and deletion of storage key (when someone loads the site for the first time or clears cache)
+  if (e.oldValue === null || e.newValue === null) return;
+
+  // find or create the warning box
+  var warningBox = $('#login_status_warning');
+  if (warningBox.length === 0) {
+    warningBox = $('<div class="flash inbox pointer" id="login_status_warning">');
+    warningBox.click(function() { $(this).remove(); });
+    $('#header').after(warningBox);
+  }
+
+  // set the relevant warning text
+  var msgText = 'logged ' + (e.newValue === 'true' ? 'in' : 'out');
+  warningBox.html('You have <strong>' + msgText + '</strong> in another tab. Please reload before submitting any forms.');
+}
 
 function addParameter(url, param, value) {
   var hash = {};
