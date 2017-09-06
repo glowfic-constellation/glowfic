@@ -10,7 +10,7 @@ class BoardSectionsController < ApplicationController
   end
 
   def create
-    @board_section = BoardSection.new(params[:board_section])
+    @board_section = BoardSection.new(section_params)
     unless @board_section.board.editable_by?(current_user)
       flash[:error] = "You do not have permission to edit this continuity."
       redirect_to boards_path and return
@@ -40,7 +40,7 @@ class BoardSectionsController < ApplicationController
   end
 
   def update
-    @board_section.assign_attributes(params[:board_section])
+    @board_section.assign_attributes(section_params)
     require_permission
     return if performed?
     if @board_section.save
@@ -79,5 +79,12 @@ class BoardSectionsController < ApplicationController
       flash[:error] = "You do not have permission to edit this continuity."
       redirect_to boards_path and return
     end
+  end
+
+  def section_params
+    params.fetch(:board_section, {}).permit(
+      :board_id,
+      :name
+    )
   end
 end

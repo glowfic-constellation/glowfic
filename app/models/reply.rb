@@ -4,7 +4,6 @@ class Reply < ActiveRecord::Base
   include PgSearch
 
   belongs_to :post, inverse_of: :replies
-  attr_accessible :post, :post_id, :thread_id
   validates_presence_of :post, :user
   validate :author_can_write_in_post, on: :create
   audited associated_with: :post

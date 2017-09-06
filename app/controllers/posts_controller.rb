@@ -88,7 +88,7 @@ class PostsController < WritableController
   def create
     import_thread and return if params[:button_import].present?
 
-    @post = Post.new(params[:post])
+    @post = Post.new(post_params)
     @post.user = current_user
     preview and return if params[:button_preview].present?
     @post.build_new_tags_with(current_user)
@@ -137,7 +137,7 @@ class PostsController < WritableController
     change_status and return if params[:status].present?
     change_authors_locked and return if params[:authors_locked].present?
 
-    @post.assign_attributes(params[:post])
+    @post.assign_attributes(post_params)
     @post.board ||= Board.find(3)
 
     preview and return if params[:button_preview].present?
@@ -350,5 +350,23 @@ class PostsController < WritableController
     use_javascript('posts/editor')
     build_template_groups
     build_tags
+  end
+
+  def post_params
+    params.fetch(:post, {}).permit(
+      :board_id,
+      :section_id,
+      :privacy,
+      :subject,
+      :description,
+      :content,
+      :character_id,
+      :icon_id,
+      :character_alias_id,
+      viewer_ids: [],
+      setting_ids: [],
+      content_warning_ids: [],
+      label_ids: []
+    )
   end
 end

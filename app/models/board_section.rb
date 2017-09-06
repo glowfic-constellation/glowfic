@@ -7,8 +7,6 @@ class BoardSection < ActiveRecord::Base
 
   validates_presence_of :name, :board
 
-  attr_accessible :status, :board, :board_id, :name, :section_order
-
   after_destroy :clear_post_values
 
   private

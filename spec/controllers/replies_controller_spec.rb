@@ -52,10 +52,10 @@ RSpec.describe RepliesController do
       it "displays errors if relevant" do
         draft = create(:reply_draft)
         login_as(draft.user)
-        post :create, button_draft: true, reply: {post_id: draft.post.id, user_id: ''}
+        post :create, button_draft: true, reply: {post_id: ''}
         expect(flash[:error][:message]).to eq("Your draft could not be saved because of the following problems:")
-        expect(draft.reload.user_id).not_to be_nil
-        expect(response).to redirect_to(post_url(draft.post, page: :unread, anchor: :unread))
+        expect(draft.reload.post_id).not_to be_nil
+        expect(response).to redirect_to(posts_url)
       end
 
       it "creates a new draft if none exists" do

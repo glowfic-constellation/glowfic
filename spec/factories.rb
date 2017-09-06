@@ -1,10 +1,8 @@
 FactoryGirl.define do
-  sequence :username do |n|
-    "JohnDoe#{n}"
-  end
-
   factory :user, aliases: [:creator, :sender, :recipient] do
-    username
+    sequence :username do |n|
+      "JohnDoe#{n}"
+    end
     password "password"
     sequence :email do |n|
       "fake#{n}@faker.com"
@@ -17,11 +15,15 @@ FactoryGirl.define do
 
   factory :board do
     creator
-    name "test board"
+    sequence :name do |n|
+      "test board #{n}"
+    end
   end
 
   factory :board_section do
-    name "TestSection"
+    sequence :name do |n|
+      "TestSection#{n}"
+    end
     board
   end
 
@@ -34,7 +36,9 @@ FactoryGirl.define do
     user
     board
     content "test content"
-    subject "test subject"
+    sequence :subject do |n|
+      "test subject #{n}"
+    end
     before(:create) do |post, evaluator|
       post.character = create(:character, user: post.user) if evaluator.with_character
       post.icon = create(:icon, user: post.user) if evaluator.with_icon
@@ -92,7 +96,9 @@ FactoryGirl.define do
       with_default_icon false
     end
     user
-    name 'test character'
+    sequence :name do |n|
+      "test character #{n}"
+    end
     factory :template_character do
       template { build(:template, user: user) }
     end
@@ -108,7 +114,9 @@ FactoryGirl.define do
 
   factory :alias, class: CharacterAlias do
     character
-    name 'Alias'
+    sequence :name do |n|
+      "TestAlias#{n}"
+    end
   end
 
   factory :template do

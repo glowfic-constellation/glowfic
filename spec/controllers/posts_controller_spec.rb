@@ -135,12 +135,12 @@ RSpec.describe PostsController do
 
     it "sets relevant fields" do
       user = create(:user)
-      char1 = create(:character, user: user)
+      char1 = create(:character, user: user, name: 'alphafirst')
       user.update_attributes(active_character: char1)
       user.reload
       login_as(user)
 
-      char2 = create(:character, user: user)
+      char2 = create(:character, user: user, name: 'alphasecond')
       char3 = create(:template_character, user: user)
       expect(controller).to receive(:editor_setup).and_call_original
 
@@ -153,6 +153,7 @@ RSpec.describe PostsController do
       # editor_setup:
       expect(assigns(:javascripts)).to include('posts/editor')
       expect(controller.gon.current_user).not_to be_nil
+
       # templates
       templates = assigns(:templates)
       expect(templates.length).to eq(2)
@@ -161,6 +162,7 @@ RSpec.describe PostsController do
       templateless = templates.last
       expect(templateless.name).to eq('Templateless')
       expect(templateless.plucked_characters).to eq([[char1.id, char1.name], [char2.id, char2.name]])
+
       # tags
       expect(assigns(:settings)).to eq([])
       expect(assigns(:warnings)).to eq([])
