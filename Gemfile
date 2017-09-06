@@ -52,7 +52,7 @@ group :development, :test do
   gem 'cucumber-rails', require: false
   gem 'database_cleaner'
   gem 'dotenv-rails'
-  gem 'rake', '10.4.2'
+  gem 'rake', '~> 12.0'
   gem 'seed_dump', '0.5.3'
   gem 'thin'
   gem 'rspec-rails'
