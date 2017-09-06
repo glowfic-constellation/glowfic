@@ -93,7 +93,7 @@ RSpec.describe GalleriesController do
       expect(response).to have_http_status(200)
       expect(assigns(:page_title)).to eq('New Gallery')
       expect(flash[:error]).to eq('Your gallery could not be saved.')
-      expect(icon.reload.has_gallery).not_to be_true
+      expect(icon.reload.has_gallery).not_to eq(true)
     end
 
     it "succeeds" do
@@ -108,7 +108,7 @@ RSpec.describe GalleriesController do
       expect(flash[:success]).to eq('Gallery saved successfully.')
       expect(gallery.name).to eq('Test Gallery')
       expect(gallery.icons).to match_array([icon])
-      expect(icon.reload.has_gallery).to be_true
+      expect(icon.reload.has_gallery).to eq(true)
       expect(gallery.gallery_groups).to match_array([group])
     end
 
@@ -323,7 +323,7 @@ RSpec.describe GalleriesController do
       gallery = create(:gallery, user: user)
       icon = create(:icon, user: user)
       gallery.icons << icon
-      expect(icon.reload.has_gallery).to be_true
+      expect(icon.reload.has_gallery).to eq(true)
       login_as(user)
 
       icon_attributes = {id: icon.id}
@@ -335,7 +335,7 @@ RSpec.describe GalleriesController do
       expect(flash[:success]).to eq('Gallery saved.')
       expect(gallery.reload.icons).to be_empty
       expect(icon.reload).not_to be_nil
-      expect(icon.has_gallery).not_to be_true
+      expect(icon.has_gallery).not_to eq(true)
     end
 
     it "can delete a gallery icon" do
@@ -408,11 +408,11 @@ RSpec.describe GalleriesController do
       icon = create(:icon, user_id: user_id)
       gallery.icons << icon
       gallery.save
-      expect(icon.reload.has_gallery).to be_true
+      expect(icon.reload.has_gallery).to eq(true)
       delete :destroy, id: gallery.id
       expect(response).to redirect_to(galleries_url)
       expect(flash[:success]).to eq("Gallery deleted successfully.")
-      expect(icon.reload.has_gallery).not_to be_true
+      expect(icon.reload.has_gallery).not_to eq(true)
     end
   end
 
@@ -537,7 +537,7 @@ RSpec.describe GalleriesController do
         post :icon, id: gallery.id, image_ids: icon.id.to_s
         expect(response).to redirect_to(gallery_path(gallery))
         expect(flash[:success]).to eq('Icons added to gallery successfully.')
-        expect(icon.reload.has_gallery).not_to be_true
+        expect(icon.reload.has_gallery).not_to eq(true)
         expect(gallery.reload.icons).to be_empty
       end
 
@@ -551,7 +551,7 @@ RSpec.describe GalleriesController do
         post :icon, id: gallery.id, image_ids: icon.id.to_s
         expect(response).to redirect_to(gallery_path(gallery))
         expect(flash[:success]).to eq('Icons added to gallery successfully.')
-        expect(icon.reload.has_gallery).to be_true
+        expect(icon.reload.has_gallery).to eq(true)
         expect(gallery.reload.galleries_icons.count).to eq(1)
       end
 
@@ -560,15 +560,15 @@ RSpec.describe GalleriesController do
         icon1 = create(:icon, user_id: user.id)
         icon2 = create(:icon, user_id: user.id)
         gallery = create(:gallery, user_id: user.id)
-        expect(icon1.has_gallery).not_to be_true
-        expect(icon2.has_gallery).not_to be_true
+        expect(icon1.has_gallery).not_to eq(true)
+        expect(icon2.has_gallery).not_to eq(true)
 
         login_as(user)
         post :icon, id: gallery.id, image_ids: "#{icon1.id},#{icon2.id}"
         expect(response).to redirect_to(gallery_path(gallery))
         expect(flash[:success]).to eq('Icons added to gallery successfully.')
-        expect(icon1.reload.has_gallery).to be_true
-        expect(icon2.reload.has_gallery).to be_true
+        expect(icon1.reload.has_gallery).to eq(true)
+        expect(icon2.reload.has_gallery).to eq(true)
         expect(gallery.reload.icons).to match_array([icon1, icon2])
       end
 
@@ -585,8 +585,8 @@ RSpec.describe GalleriesController do
         post :icon, id: gallery2.id, image_ids: "#{icon1.id},#{icon2.id}"
         expect(response).to redirect_to(gallery_path(gallery2))
         expect(flash[:success]).to eq('Icons added to gallery successfully.')
-        expect(icon1.reload.has_gallery).to be_true
-        expect(icon2.reload.has_gallery).to be_true
+        expect(icon1.reload.has_gallery).to eq(true)
+        expect(icon2.reload.has_gallery).to eq(true)
         expect(gallery1.reload.icons).to match_array([icon1, icon2])
         expect(gallery2.reload.icons).to match_array([icon1, icon2])
       end
@@ -671,7 +671,7 @@ RSpec.describe GalleriesController do
         icon_objs = user.icons.order('keyword ASC')
         expect(icon_objs.length).to eq(2)
 
-        expect(icon_objs.any?(&:has_gallery)).not_to be_true
+        expect(icon_objs.any?(&:has_gallery)).not_to eq(true)
 
         expect(icon_objs.first.keyword).to eq(icons.first[:keyword])
         expect(icon_objs.first.url).to eq(icons.first[:url])

@@ -906,7 +906,7 @@ RSpec.describe PostsController do
       post = create(:post, privacy: Post::PRIVACY_PRIVATE)
       user = create(:user)
       login_as(user)
-      expect(post.visible_to?(user)).not_to be_true
+      expect(post.visible_to?(user)).not_to eq(true)
 
       put :update, id: post.id
       expect(response).to redirect_to(boards_url)
@@ -1034,7 +1034,7 @@ RSpec.describe PostsController do
             put :update, id: post.id, status: status
             expect(response).to redirect_to(post_url(post))
             expect(flash[:success]).to eq("Post has been marked #{status}.")
-            expect(post.reload.send("#{method}?")).to be_true
+            expect(post.reload.send("#{method}?")).to eq(true)
           end
 
           it "works for coauthor" do
@@ -1043,7 +1043,7 @@ RSpec.describe PostsController do
             put :update, id: post.id, status: status
             expect(response).to redirect_to(post_url(post))
             expect(flash[:success]).to eq("Post has been marked #{status}.")
-            expect(post.reload.send("#{method}?")).to be_true
+            expect(post.reload.send("#{method}?")).to eq(true)
           end
 
           it "works for admin" do
@@ -1051,7 +1051,7 @@ RSpec.describe PostsController do
             put :update, id: post.id, status: status
             expect(response).to redirect_to(post_url(post))
             expect(flash[:success]).to eq("Post has been marked #{status}.")
-            expect(post.reload.send("#{method}?")).to be_true
+            expect(post.reload.send("#{method}?")).to eq(true)
           end
         end
       end
@@ -1070,7 +1070,7 @@ RSpec.describe PostsController do
               put :update, id: post.id, status: status
               expect(response).to redirect_to(post_url(post))
               expect(flash[:success]).to eq("Post has been marked #{status}.")
-              expect(post.reload.send("on_hiatus?")).to be_true
+              expect(post.reload.send("on_hiatus?")).to eq(true)
               expect(post.reload.send("marked_hiatus?")).to eq(status == :hiatus)
             end
 
@@ -1080,7 +1080,7 @@ RSpec.describe PostsController do
               put :update, id: post.id, status: status
               expect(response).to redirect_to(post_url(post))
               expect(flash[:success]).to eq("Post has been marked #{status}.")
-              expect(post.reload.send("on_hiatus?")).to be_true
+              expect(post.reload.send("on_hiatus?")).to eq(true)
               expect(post.reload.send("marked_hiatus?")).to eq(status == :hiatus)
             end
 
@@ -1090,7 +1090,7 @@ RSpec.describe PostsController do
               put :update, id: post.id, status: status
               expect(response).to redirect_to(post_url(post))
               expect(flash[:success]).to eq("Post has been marked #{status}.")
-              expect(post.reload.send("on_hiatus?")).to be_true
+              expect(post.reload.send("on_hiatus?")).to eq(true)
               expect(post.reload.send("marked_hiatus?")).to eq(status == :hiatus)
             end
           end
@@ -1156,12 +1156,12 @@ RSpec.describe PostsController do
         time_read = post.reload.last_read(user)
 
         login_as(user)
-        expect(post.ignored_by?(user)).not_to be_true
+        expect(post.ignored_by?(user)).not_to eq(true)
 
         put :update, id: post.id, hidden: 'true'
         expect(response).to redirect_to(post_url(post))
         expect(flash[:success]).to eq("Post has been hidden")
-        expect(post.reload.ignored_by?(user)).to be_true
+        expect(post.reload.ignored_by?(user)).to eq(true)
         expect(post.last_read(user)).to be_the_same_time_as(time_read)
       end
 
@@ -1174,12 +1174,12 @@ RSpec.describe PostsController do
         time_read = post.reload.last_read(user)
 
         post.ignore(user)
-        expect(post.reload.ignored_by?(user)).to be_true
+        expect(post.reload.ignored_by?(user)).to eq(true)
 
         put :update, id: post.id, hidden: 'false'
         expect(response).to redirect_to(post_url(post))
         expect(flash[:success]).to eq("Post has been unhidden")
-        expect(post.reload.ignored_by?(user)).not_to be_true
+        expect(post.reload.ignored_by?(user)).not_to eq(true)
         expect(post.last_read(user)).to be_the_same_time_as(time_read)
       end
     end
@@ -1381,7 +1381,7 @@ RSpec.describe PostsController do
       post :warnings, id: warn_post.id, per_page: 10, page: 2
       expect(response).to redirect_to(post_url(warn_post, per_page: 10, page: 2))
       expect(flash[:success]).to eq("All content warnings have been hidden. Proceed at your own risk.")
-      expect(session[:ignore_warnings]).to be_true
+      expect(session[:ignore_warnings]).to eq(true)
     end
 
     it "works for logged in" do
@@ -1396,7 +1396,7 @@ RSpec.describe PostsController do
       expect(session[:ignore_warnings]).to be_nil
       view = warn_post.reload.send(:view_for, user)
       expect(view).not_to be_a_new_record
-      expect(view.warnings_hidden).to be_true
+      expect(view.warnings_hidden).to eq(true)
     end
   end
 
@@ -1535,10 +1535,10 @@ RSpec.describe PostsController do
       login
       get :unread
       expect(response).to have_http_status(200)
-      expect(assigns(:started)).not_to be_true
+      expect(assigns(:started)).not_to eq(true)
       expect(assigns(:page_title)).to eq('Unread Threads')
       expect(assigns(:posts)).to be_empty
-      expect(assigns(:hide_quicklinks)).to be_true
+      expect(assigns(:hide_quicklinks)).to eq(true)
     end
 
     it "shows appropriate posts" do
@@ -1578,20 +1578,20 @@ RSpec.describe PostsController do
       login_as(user)
       get :unread
       expect(response).to have_http_status(200)
-      expect(assigns(:started)).not_to be_true
+      expect(assigns(:started)).not_to eq(true)
       expect(assigns(:page_title)).to eq('Unread Threads')
       expect(assigns(:posts)).to match_array([unread_post, opened_post1, opened_post2])
-      expect(assigns(:hide_quicklinks)).to be_true
+      expect(assigns(:hide_quicklinks)).to eq(true)
     end
 
     context "opened" do
       it "accepts parameter to force opened mode" do
         user = create(:user)
-        expect(user.unread_opened).not_to be_true
+        expect(user.unread_opened).not_to eq(true)
         login_as(user)
         get :unread, started: 'true'
         expect(response).to have_http_status(200)
-        expect(assigns(:started)).to be_true
+        expect(assigns(:started)).to eq(true)
         expect(assigns(:page_title)).to eq('Opened Threads')
       end
 
@@ -1634,10 +1634,10 @@ RSpec.describe PostsController do
         login_as(user)
         get :unread
         expect(response).to have_http_status(200)
-        expect(assigns(:started)).to be_true
+        expect(assigns(:started)).to eq(true)
         expect(assigns(:page_title)).to eq('Opened Threads')
         expect(assigns(:posts)).to match_array([opened_post1, opened_post2])
-        expect(assigns(:hide_quicklinks)).to be_true
+        expect(assigns(:hide_quicklinks)).to eq(true)
       end
     end
   end
@@ -1653,7 +1653,7 @@ RSpec.describe PostsController do
       it "skips invisible post" do
         private_post = create(:post, privacy: Post::PRIVACY_PRIVATE)
         user = create(:user)
-        expect(private_post.visible_to?(user)).not_to be_true
+        expect(private_post.visible_to?(user)).not_to eq(true)
         login_as(user)
         post :mark, marked_ids: [private_post.id], commit: "Mark Read"
         expect(response).to redirect_to(unread_posts_url)
@@ -1683,12 +1683,12 @@ RSpec.describe PostsController do
       it "skips invisible post" do
         private_post = create(:post, privacy: Post::PRIVACY_PRIVATE)
         user = create(:user)
-        expect(private_post.visible_to?(user)).not_to be_true
+        expect(private_post.visible_to?(user)).not_to eq(true)
         login_as(user)
         post :mark, marked_ids: [private_post.id]
         expect(response).to redirect_to(unread_posts_url)
         expect(flash[:success]).to eq("0 posts hidden from this page.")
-        expect(private_post.reload.ignored_by?(user)).not_to be_true
+        expect(private_post.reload.ignored_by?(user)).not_to eq(true)
       end
 
       it "ignores posts" do
@@ -1697,15 +1697,15 @@ RSpec.describe PostsController do
         post2 = create(:post)
         login_as(user)
 
-        expect(post1.visible_to?(user)).to be_true
-        expect(post2.visible_to?(user)).to be_true
+        expect(post1.visible_to?(user)).to eq(true)
+        expect(post2.visible_to?(user)).to eq(true)
 
         post :mark, marked_ids: [post1.id.to_s, post2.id.to_s]
 
         expect(response).to redirect_to(unread_posts_url)
         expect(flash[:success]).to eq("2 posts hidden from this page.")
-        expect(post1.reload.ignored_by?(user)).to be_true
-        expect(post2.reload.ignored_by?(user)).to be_true
+        expect(post1.reload.ignored_by?(user)).to eq(true)
+        expect(post2.reload.ignored_by?(user)).to eq(true)
       end
 
       it "does not mess with read timestamps" do

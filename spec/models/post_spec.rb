@@ -290,12 +290,12 @@ RSpec.describe Post do
         user.reload
 
         expect(post.character).to be_nil
-        expect(post.has_icons?).to be_true
+        expect(post.has_icons?).to eq(true)
       end
 
       it "is false without avatar" do
         expect(post.character).to be_nil
-        expect(post.has_icons?).not_to be_true
+        expect(post.has_icons?).not_to eq(true)
       end
     end
 
@@ -306,23 +306,23 @@ RSpec.describe Post do
       it "is true with default icon" do
         icon = create(:icon, user: user)
         character.update_attributes(default_icon: icon)
-        expect(post.has_icons?).to be_true
+        expect(post.has_icons?).to eq(true)
       end
 
       it "is false without galleries" do
-        expect(post.has_icons?).not_to be_true
+        expect(post.has_icons?).not_to eq(true)
       end
 
       it "is true with icons in galleries" do
         gallery = create(:gallery, user: user)
         gallery.icons << create(:icon, user: user)
         character.galleries << gallery
-        expect(post.has_icons?).to be_true
+        expect(post.has_icons?).to eq(true)
       end
 
       it "is false without icons in galleries" do
         character.galleries << create(:gallery, user: user)
-        expect(post.has_icons?).not_to be_true
+        expect(post.has_icons?).not_to eq(true)
       end
     end
   end
@@ -330,9 +330,9 @@ RSpec.describe Post do
   describe "validations" do
     it "requires user" do
       post = create(:post)
-      expect(post.valid?).to be_true
+      expect(post.valid?).to eq(true)
       post.user = nil
-      expect(post.valid?).not_to be_true
+      expect(post.valid?).not_to eq(true)
     end
 
     it "requires user's character" do
@@ -340,7 +340,7 @@ RSpec.describe Post do
       character = create(:character)
       expect(post.user).not_to eq(character.user)
       post.character = character
-      expect(post.valid?).not_to be_true
+      expect(post.valid?).not_to eq(true)
     end
 
     it "requires user's icon" do
@@ -348,23 +348,23 @@ RSpec.describe Post do
       icon = create(:icon)
       expect(post.user).not_to eq(icon.user)
       post.icon = icon
-      expect(post.valid?).not_to be_true
+      expect(post.valid?).not_to eq(true)
     end
 
     it "requires board the user can access" do
       board = create(:board)
       board.coauthors << create(:user)
       post = create(:post)
-      expect(post.valid?).to be_true
+      expect(post.valid?).to eq(true)
       post.board = board
-      expect(post.valid?).not_to be_true
+      expect(post.valid?).not_to eq(true)
     end
 
     it "requires board section matching board" do
       post = create(:post)
-      expect(post.valid?).to be_true
+      expect(post.valid?).to eq(true)
       post.section = create(:board_section)
-      expect(post.valid?).not_to be_true
+      expect(post.valid?).not_to eq(true)
     end
 
     it "should allow blank content" do

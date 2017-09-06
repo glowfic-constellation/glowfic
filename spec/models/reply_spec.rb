@@ -13,12 +13,12 @@ RSpec.describe Reply do
         user.reload
 
         expect(reply.character).to be_nil
-        expect(reply.has_icons?).to be_true
+        expect(reply.has_icons?).to eq(true)
       end
 
       it "is false without avatar" do
         expect(reply.character).to be_nil
-        expect(reply.has_icons?).not_to be_true
+        expect(reply.has_icons?).not_to eq(true)
       end
     end
 
@@ -29,23 +29,23 @@ RSpec.describe Reply do
       it "is true with default icon" do
         icon = create(:icon, user: user)
         character.update_attributes(default_icon: icon)
-        expect(reply.has_icons?).to be_true
+        expect(reply.has_icons?).to eq(true)
       end
 
       it "is false without galleries" do
-        expect(reply.has_icons?).not_to be_true
+        expect(reply.has_icons?).not_to eq(true)
       end
 
       it "is true with icons in galleries" do
         gallery = create(:gallery, user: user)
         gallery.icons << create(:icon, user: user)
         character.galleries << gallery
-        expect(reply.has_icons?).to be_true
+        expect(reply.has_icons?).to eq(true)
       end
 
       it "is false without icons in galleries" do
         character.galleries << create(:gallery, user: user)
-        expect(reply.has_icons?).not_to be_true
+        expect(reply.has_icons?).not_to eq(true)
       end
     end
   end
@@ -81,7 +81,7 @@ RSpec.describe Reply do
 
     it "sends to all other active authors if previous reply wasn't yours" do
       post = create(:post)
-      expect(post.user.email_notifications).not_to be_true
+      expect(post.user.email_notifications).not_to eq(true)
 
       user = create(:user)
       user.update_attribute('email', nil)

@@ -6,7 +6,7 @@ RSpec.describe Message do
 
     it "sends" do
       message = create(:message)
-      expect(message.recipient.email_notifications).not_to be_true
+      expect(message.recipient.email_notifications).not_to eq(true)
 
       user = create(:user)
       user.update_attribute('email', nil)

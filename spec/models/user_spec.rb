@@ -7,13 +7,13 @@ RSpec.describe User do
       user.update_attribute(:salt_uuid, nil)
       user.update_attribute(:crypted, user.send(:old_crypted_password, 'test'))
       user.reload
-      expect(user.authenticate('test')).to be_true
+      expect(user.authenticate('test')).to eq(true)
     end
 
     it "should set and support salt_uuid" do
       user = create(:user, password: 'test')
       expect(user.salt_uuid).not_to be_nil
-      expect(user.authenticate('test')).to be_true
+      expect(user.authenticate('test')).to eq(true)
     end
   end
 

@@ -184,7 +184,7 @@ RSpec.describe MessagesController do
       get :show, id: message.id
       expect(response).to have_http_status(200)
       expect(assigns(:messages)).to eq([message])
-      expect(message.reload.unread?).to be_true
+      expect(message.reload.unread?).to eq(true)
     end
 
     it "works for recipient" do
@@ -193,7 +193,7 @@ RSpec.describe MessagesController do
       get :show, id: message.id
       expect(response).to have_http_status(200)
       expect(assigns(:messages)).to eq([message])
-      expect(message.reload.unread?).not_to be_true
+      expect(message.reload.unread?).not_to eq(true)
     end
 
     it "works for unread in thread" do
@@ -203,7 +203,7 @@ RSpec.describe MessagesController do
       login_as(message.recipient)
       get :show, id: subsequent.id
       expect(response).to have_http_status(200)
-      expect(message.reload.unread?).not_to be_true
+      expect(message.reload.unread?).not_to eq(true)
     end
 
     it "does not remark the message read" do
@@ -220,8 +220,8 @@ RSpec.describe MessagesController do
       login_as(message.recipient)
       get :show, id: subsequent.id
       expect(response).to have_http_status(200)
-      expect(message.reload.unread?).not_to be_true
-      expect(sender.reload.unread?).to be_true
+      expect(message.reload.unread?).not_to eq(true)
+      expect(sender.reload.unread?).to eq(true)
     end
   end
 
@@ -261,14 +261,14 @@ RSpec.describe MessagesController do
         message = create(:message, unread: true)
         login_as(message.recipient)
         post :mark, marked_ids: [message.id.to_s], commit: "Mark Read / Unread"
-        expect(message.reload.unread).not_to be_true
+        expect(message.reload.unread).not_to eq(true)
       end
 
       it "works unread for recipient" do
         message = create(:message, unread: false)
         login_as(message.recipient)
         post :mark, marked_ids: [message.id.to_s], commit: "Mark Read / Unread"
-        expect(message.reload.unread).to be_true
+        expect(message.reload.unread).to eq(true)
       end
     end
 
@@ -290,9 +290,9 @@ RSpec.describe MessagesController do
         it "works" do
           message = create(:message)
           login_as(message.sender)
-          expect(message.visible_outbox).to be_true
+          expect(message.visible_outbox).to eq(true)
           post :mark, marked_ids: [message.id.to_s], commit: "Delete"
-          expect(message.reload.visible_outbox).not_to be_true
+          expect(message.reload.visible_outbox).not_to eq(true)
         end
       end
 
@@ -300,9 +300,9 @@ RSpec.describe MessagesController do
         it "works" do
           message = create(:message)
           login_as(message.recipient)
-          expect(message.visible_inbox).to be_true
+          expect(message.visible_inbox).to eq(true)
           post :mark, marked_ids: [message.id.to_s], commit: "Delete"
-          expect(message.reload.visible_inbox).not_to be_true
+          expect(message.reload.visible_inbox).not_to eq(true)
         end
       end
     end

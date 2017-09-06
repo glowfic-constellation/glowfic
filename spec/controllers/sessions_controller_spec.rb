@@ -5,14 +5,14 @@ RSpec.describe SessionsController do
     it "works when logged out" do
       get :index
       expect(response.status).to eq(200)
-      expect(controller.gon.logged_in).not_to be_true
+      expect(controller.gon.logged_in).not_to eq(true)
     end
 
     it "works when logged in" do
       login
       get :index
       expect(response).to have_http_status(200)
-      expect(controller.gon.logged_in).to be_true
+      expect(controller.gon.logged_in).to eq(true)
     end
   end
 
@@ -44,7 +44,7 @@ RSpec.describe SessionsController do
       expect(User.find_by(username: nonusername)).to be_nil
       post :create, username: nonusername
       expect(flash[:error]).to eq("That username does not exist.")
-      expect(controller.send(:logged_in?)).not_to be_true
+      expect(controller.send(:logged_in?)).not_to eq(true)
     end
 
     it "disallows logins with old passwords when reset is pending" do
@@ -53,7 +53,7 @@ RSpec.describe SessionsController do
       expect(user.password_resets.active.unused).not_to be_empty
       post :create, username: user.username
       expect(flash[:error]).to eq("The password for this account has been reset. Please check your email.")
-      expect(controller.send(:logged_in?)).not_to be_true
+      expect(controller.send(:logged_in?)).not_to eq(true)
     end
 
     it "requires a valid password" do
@@ -61,19 +61,19 @@ RSpec.describe SessionsController do
       user = create(:user, password: password)
       post :create, username: user.username, password: password + "-not"
       expect(flash[:error]).to eq("You have entered an incorrect password.")
-      expect(controller.send(:logged_in?)).not_to be_true
+      expect(controller.send(:logged_in?)).not_to eq(true)
     end
 
     it "logs in successfully with salt_uuid" do
       password = 'password'
       user = create(:user, password: password)
       expect(session[:user_id]).to be_nil
-      expect(controller.send(:logged_in?)).not_to be_true
+      expect(controller.send(:logged_in?)).not_to eq(true)
 
       post :create, username: user.username, password: password
 
       expect(session[:user_id]).to eq(user.id)
-      expect(controller.send(:logged_in?)).to be_true
+      expect(controller.send(:logged_in?)).to eq(true)
       expect(flash[:success]).to eq("You are now logged in as #{user.username}. Welcome back!")
       expect(cookies.signed[:user_id]).to be_nil
     end
@@ -86,16 +86,16 @@ RSpec.describe SessionsController do
       user.reload
       expect(user.salt_uuid).to be_nil
       expect(session[:user_id]).to be_nil
-      expect(controller.send(:logged_in?)).not_to be_true
+      expect(controller.send(:logged_in?)).not_to eq(true)
 
       post :create, username: user.username, password: password
 
       expect(session[:user_id]).to eq(user.id)
-      expect(controller.send(:logged_in?)).to be_true
+      expect(controller.send(:logged_in?)).to eq(true)
       expect(flash[:success]).to eq("You are now logged in as #{user.username}. Welcome back!")
       expect(cookies.signed[:user_id]).to be_nil
       expect(user.reload.salt_uuid).not_to be_nil
-      expect(user.authenticate(password)).to be_true
+      expect(user.authenticate(password)).to eq(true)
     end
 
     it "creates permanent cookies when remember me is provided" do
@@ -103,7 +103,7 @@ RSpec.describe SessionsController do
       user = create(:user, password: password)
       expect(cookies.signed[:user_id]).to be_nil
       post :create, username: user.username, password: password, remember_me: true
-      expect(controller.send(:logged_in?)).to be_true
+      expect(controller.send(:logged_in?)).to eq(true)
       expect(cookies.signed[:user_id]).to eq(user.id)
     end
   end
@@ -118,7 +118,7 @@ RSpec.describe SessionsController do
     it "logs out" do
       login
       delete :destroy
-      expect(controller.send(:logged_in?)).not_to be_true
+      expect(controller.send(:logged_in?)).not_to eq(true)
       expect(flash[:success]).to eq("You have been logged out.")
       # TODO test session vars and cookies and redirect
     end
