@@ -60,6 +60,7 @@ group :development, :test do
   gem 'rake', '~> 12.0'
   gem 'rspec-rails'
   gem 'seed_dump', '~> 3.2'
+  gem 'teaspoon-jasmine'
   gem 'thin'
 end
 
