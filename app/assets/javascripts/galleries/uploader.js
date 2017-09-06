@@ -1,3 +1,4 @@
+/* global addUploadedIcon */
 $(document).ready(function() {
   bindFileInput($("#icon_files"));
 });
@@ -57,7 +58,7 @@ function bindFileInput(fileInput) {
         'file_name': data.files[0].name,
         'file_type': data.files[0].type,
       };
-      if (response.readyState == 0) {
+      if (response.readyState === 0) {
         alert("Upload of " + data.files[0].name + " failed due to a network error. Please check your connection and try again.");
       } else if (policyExpired) {
         alert("Your upload permissions appear to have expired. Please refresh the page and try again.");
@@ -68,11 +69,11 @@ function bindFileInput(fileInput) {
         alert("Upload of " + data.files[0].name + " failed, Marri has been notified.");
       }
     },
-  }
+  };
 
   // If specified, limit number of files
-  if (form.data('limit') !== undefined)
-    uploadArgs.maxNumberOfFiles = form.data('limit')
+  if (typeof form.data('limit') !== 'undefined')
+    uploadArgs.maxNumberOfFiles = form.data('limit');
 
   fileInput.fileupload(uploadArgs);
 }
