@@ -430,7 +430,7 @@ DEPENDENCIES
   rspec-rails
   sanitize
   sass-rails
-  seed_dump (~> 3.0)
+  seed_dump (~> 3.1)
   select2-rails
   simplecov
   test-unit (~> 3.0)
