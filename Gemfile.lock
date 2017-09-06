@@ -410,13 +410,13 @@ DEPENDENCIES
   newrelic_rpm
   nilify_blanks
   nokogiri
-  pg (= 0.21.0)
+  pg (~> 0.21.0)
   pg_search
   puma
   rack-cors
   rack-pratchett
   rack-timeout
-  rails (= 4.2.9)
+  rails (~> 4.2.9)
   rails_12factor
   rake (~> 12.0)
   redis-rails
