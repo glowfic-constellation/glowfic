@@ -46,13 +46,18 @@ GEM
     audited-activerecord (4.2.2)
       activerecord (~> 4.0)
       audited (= 4.2.2)
-    aws-sdk (2.10.40)
-      aws-sdk-resources (= 2.10.40)
-    aws-sdk-core (2.10.40)
+    aws-partitions (1.19.0)
+    aws-sdk-core (3.2.1)
+      aws-partitions (~> 1.0)
       aws-sigv4 (~> 1.0)
       jmespath (~> 1.0)
-    aws-sdk-resources (2.10.40)
-      aws-sdk-core (= 2.10.40)
+    aws-sdk-kms (1.1.0)
+      aws-sdk-core (~> 3)
+      aws-sigv4 (~> 1.0)
+    aws-sdk-s3 (1.1.0)
+      aws-sdk-core (~> 3)
+      aws-sdk-kms (~> 1)
+      aws-sigv4 (~> 1.0)
     aws-sigv4 (1.0.2)
     binding_of_caller (0.7.2)
       debug_inspector (>= 0.0.1)
@@ -392,7 +397,7 @@ DEPENDENCIES
   api-pagination
   apipie-rails
   audited-activerecord (~> 4.0)
-  aws-sdk (~> 2)
+  aws-sdk-s3 (~> 1)
   browser
   byebug
   codeclimate-test-reporter (~> 1.0.0)
