@@ -127,7 +127,7 @@ module ApplicationHelper
   end
 
   def sanitize_written_content(content)
-    content = (content.include?("<p>".freeze) || content[/<br ?\/?>/]) ? content : content.gsub("\n".freeze, "<br/>".freeze)
+    content = content.gsub("\n".freeze, "<br/>".freeze) unless content.include?("<p>".freeze) || content[/<br *\/?>/]
     Sanitize.fragment(content, Glowfic::POST_CONTENT_SANITIZER)
   end
 
