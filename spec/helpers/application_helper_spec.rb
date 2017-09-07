@@ -85,5 +85,17 @@ RSpec.describe ApplicationHelper do
       text = "<p>line1</p><p>line2\nline3</p>"
       expect(helper.sanitize_written_content(text)).to eq(text)
     end
+
+    it "defaults to old linebreak-to-br format when blockquote detected" do
+      text = "<blockquote>Blah. Blah.\r\nBlah.\r\n\r\nBlah blah.</blockquote>\r\nBlah."
+      expected = "<blockquote>Blah. Blah.\n<br>Blah.\n<br>\n<br>Blah blah.</blockquote>\n<br>Blah."
+      expect(helper.sanitize_written_content(text)).to eq(expected)
+    end
+
+    it "does not touch blockquotes if <br> or <p> detected" do
+      text = "<blockquote>Blah. Blah.<br />Blah.</blockquote>\r\n<blockquote>Blah blah.</blockquote>\r\n<p>Blah.</p>"
+      expected = "<blockquote>Blah. Blah.<br>Blah.</blockquote>\n<blockquote>Blah blah.</blockquote>\n<p>Blah.</p>"
+      expect(helper.sanitize_written_content(text)).to eq(expected)
+    end
   end
 end
