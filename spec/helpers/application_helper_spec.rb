@@ -34,24 +34,24 @@ RSpec.describe ApplicationHelper do
   end
 
   describe "#sanitize_written_content" do
-    it "remains blank if given blank" do
+    it "is blank if given blank" do
       text = ''
-      expect(helper.sanitize_written_content(text)).to eq(text)
+      expect(helper.sanitize_written_content(text)).to eq("<p>#{text}</p>")
     end
 
     it "does not malform plain text" do
       text = 'sample text'
-      expect(helper.sanitize_written_content(text)).to eq(text)
+      expect(helper.sanitize_written_content(text)).to eq("<p>#{text}</p>")
     end
 
     it "permits links" do
       text = 'here is <a href="http://example.com">a link</a>'
-      expect(helper.sanitize_written_content(text)).to eq(text)
+      expect(helper.sanitize_written_content(text)).to eq("<p>#{text}</p>")
     end
 
     it "removes unpermitted attributes" do
       text = '<a onclick="function(){ alert("bad!");}">test</a>'
-      expect(helper.sanitize_written_content(text)).to eq('<a>test</a>')
+      expect(helper.sanitize_written_content(text)).to eq('<p><a>test</a></p>')
     end
 
     it "removes unpermitted elements" do
@@ -61,12 +61,12 @@ RSpec.describe ApplicationHelper do
 
     it "fixes unending tags" do
       text = '<a>test'
-      expect(helper.sanitize_written_content(text)).to eq('<a>test</a>')
+      expect(helper.sanitize_written_content(text)).to eq('<p><a>test</a></p>')
     end
 
     it "automatically converts linebreaks in text without manual linebreaking" do
       text = "line1\nline2\n\nline3"
-      expect(helper.sanitize_written_content(text)).to eq('line1<br>line2<br><br>line3')
+      expect(helper.sanitize_written_content(text)).to eq("<p>line1\n<br>line2</p>\n\n<p>line3</p>")
     end
 
     it "does not convert linebreaks in text with <br> tags" do
