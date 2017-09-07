@@ -126,8 +126,11 @@ module ApplicationHelper
     Sanitize.fragment(desc, elements: ['a'], attributes: {'a' => ['href']})
   end
 
+  P_TAG = "<p>".freeze
+  BR_TAG = /<br *\/?>/
+
   def sanitize_written_content(content)
-    content = (content.include?("<p>".freeze) || content[/<br ?\/?>/]) ? content : content.gsub("\n".freeze, "<br/>".freeze)
+    content = simple_format(content, sanitize: false) unless content[P_TAG] || content[BR_TAG]
     Sanitize.fragment(content, Glowfic::POST_CONTENT_SANITIZER)
   end
 
