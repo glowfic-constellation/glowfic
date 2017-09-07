@@ -12,7 +12,7 @@
       %th{colspan: col_count}= content_for :posts_title
     - if content_for? :post_list_description
       %tr
-        %td.odd{colspan: col_count}= content_for :post_list_description
+        %td.odd.written-content{colspan: col_count}= content_for :post_list_description
       %tr
         %td.continuity-spacer{colspan: col_count}
     %tr
