@@ -69,6 +69,14 @@ RSpec.describe CharactersController do
       expect(response.status).to eq(200)
     end
 
+    it "sets correct variables with template_id" do
+      template = create(:template)
+      login_as(template.user)
+      get :new, template_id: template.id
+      expect(response.status).to eq(200)
+      expect(assigns(:character).template).to eq(template)
+    end
+
     context "with views" do
       render_views
       it "sets correct variables" do
