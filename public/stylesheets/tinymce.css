@@ -1,6 +1,10 @@
 body {
-    font-family: Helvetica, sans-serif;
-    font-size: 14px;
+  font-family: Helvetica, sans-serif;
+  font-size: 14px;
+}
+body.layout_starrydark {
+  background-color: #4D4B5B;
+  color: #DADADA;
 }
 blockquote {
   background-color: #E3E3E3;
