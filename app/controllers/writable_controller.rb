@@ -90,6 +90,7 @@ class WritableController < ApplicationController
     use_javascript('posts/show')
     if logged_in?
       use_javascript('posts/editor')
+      setup_layout_gon
 
       if @post.taggable_by?(current_user)
         build_template_groups

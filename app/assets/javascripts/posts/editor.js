@@ -260,6 +260,7 @@ function setupTinyMCE() {
       relative_urls: false,
       remove_script_host: true,
       document_base_url: "https://www.glowfic.com/",
+      body_class: gon.editor_class,
       setup: function(ed) {
         ed.on('init', function() {
           var rawContent = tinymce.activeEditor.getContent({format: 'raw'});

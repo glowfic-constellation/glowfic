@@ -294,4 +294,27 @@ RSpec.describe ApplicationController do
       end
     end
   end
+
+  describe "#setup_layout_gon" do
+    it "works when logged out" do
+      controller.send(:setup_layout_gon)
+    end
+
+    it "works when logged in with default theme" do
+      login
+      controller.send(:setup_layout_gon)
+      expect(gon.editor_class).to be_nil
+    end
+
+    context "with dark theme" do
+      ['dark', 'starrydark'].each do |theme|
+        it "works with theme '#{theme}'" do
+          user = create(:user, layout: theme)
+          login_as(user)
+          controller.send(:setup_layout_gon)
+          expect(gon.editor_class).to eq('tinymce_dark')
+        end
+      end
+    end
+  end
 end

@@ -21,6 +21,7 @@ RSpec.describe RepliesController do
         char2 = create(:template_character, user: user)
         expect(controller).to receive(:build_template_groups).and_call_original
         expect(controller).to receive(:make_draft).and_call_original
+        expect(controller).to receive(:setup_layout_gon).and_call_original
 
         post :create, button_preview: true, reply: {post_id: reply_post.id}
         expect(response).to render_template(:preview)
@@ -355,6 +356,7 @@ RSpec.describe RepliesController do
       char1 = create(:character, user: user)
       char2 = create(:template_character, user: user)
       expect(controller).to receive(:build_template_groups).and_call_original
+      expect(controller).to receive(:setup_layout_gon).and_call_original
 
       get :edit, id: reply.id
       expect(response).to render_template(:edit)

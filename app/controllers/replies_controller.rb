@@ -161,6 +161,7 @@ class RepliesController < WritableController
 
   def edit
     use_javascript('posts/editor')
+    setup_layout_gon
   end
 
   def update
@@ -217,6 +218,7 @@ class RepliesController < WritableController
     @page_title = @post.subject
 
     use_javascript('posts/editor')
+    setup_layout_gon
     render action: :preview
   end
 

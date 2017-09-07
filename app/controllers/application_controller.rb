@@ -111,6 +111,11 @@ class ApplicationController < ActionController::Base
     gon.logged_in = logged_in?
   end
 
+  def setup_layout_gon
+    return unless logged_in?
+    gon.editor_class = 'layout_' + current_user.layout if current_user.layout
+  end
+
   def post_or_reply_link(reply)
     return unless reply.id.present?
     if reply.is_a?(Reply)

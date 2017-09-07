@@ -350,6 +350,7 @@ class PostsController < WritableController
     use_javascript('posts/editor')
     build_template_groups
     build_tags
+    setup_layout_gon
   end
 
   def post_params
