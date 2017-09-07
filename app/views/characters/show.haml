@@ -121,4 +121,4 @@
       - if @character.description
         %tr
           %th.sub.vtop.width-150 Description
-          %td.character-description{class: cycle('even', 'odd')}= sanitize_written_content(@character.description).html_safe
+          %td.character-description.written-content{class: cycle('even', 'odd')}= sanitize_written_content(@character.description).html_safe

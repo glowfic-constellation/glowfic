@@ -67,7 +67,22 @@
 .post-expander .info { padding: 5px; text-align: center; font-size: 14px; cursor: pointer; }
 .post-ender { min-height: 5px; padding: 5px; background-color: #3e384f; color: #FEFEFE; font-size: 16px; font-weight: bold; text-align: center; }
 
-/* Post content */
+/* Written content */
+/* - Blockquotes */
+/* -- Color on even/odd background */
+.even blockquote, .beige blockquote, .post-post blockquote, .post-reply:nth-child(even) blockquote { background-color: #D8D8D8; }
+.odd blockquote, .post-reply:nth-child(odd) blockquote { background-color: #E3E3E3; }
+.post-content blockquote, .written-content blockquote, .message-content blockquote { margin: 0.5em 1.5em; padding: 0.5em; }
+.post-content img, .written-content img, .message-content img { max-width: 100%; height: auto; }
+
+/* - Paragraphs */
+.post-content > p:first-child, .written-content > p:first-child, .message-content > p:first-child { margin-top: 0; }
+.post-content > p:last-child, .written-content > p:last-child, .message-content > p:last-child { margin-bottom: 0; }
+/* -- Inside blockquotes */
+.post-content blockquote > p:first-child, .written-content blockquote > p:first-child, .message-content blockquote > p:first-child { margin-top: 0; }
+.post-content blockquote > p:last-child, .written-content blockquote > p:last-child, .message-content blockquote > p:last-child { margin-bottom: 0; }
+
+/* Post-specific content & editor */
 #content > .post-container { padding: 0; overflow: auto; }
 .post-edit-box { float: right; margin-left: 10px; margin-bottom: 5px; padding: 5px; }
 .post-info-box {
@@ -105,7 +120,14 @@ select.per-page { margin-top: 5px; margin-bottom: 5px; }
 #post-editor { position: relative; }
 .details { display: inline; font-size: 12px; font-style: italic; }
 
-/* Small icons for selecting characters in post-editor */
+/* - Blockquotes around .post-info-box */
+.post-content blockquote { margin-left: 5.5em; margin-right: 5.5em; }
+
+/* - Lists around .post-info-box */
+.post-content ul, .post-content ol { list-style-position: inside; padding-left: 30px; }
+.post-content ul ul, .post-content ul ol, .post-content ol ul, .post-content ol ol { overflow: auto; }
+
+/* - Character quick switcher - small icons for selecting characters in post-editor */
 .char-access-icon {
   height: 30px;
   width: 30px;
@@ -119,15 +141,7 @@ div.char-access-icon {
   background-color: rgba(128,128,128,0.3);
 }
 
-/* Blockquotes */
-.post-post blockquote, .post-reply:nth-child(even) blockquote { background-color: #D8D8D8; }
-.post-reply:nth-child(odd) blockquote { background-color: #E3E3E3; }
-.post-content blockquote { margin: 0.5em 5.5em; padding: 0.5em; }
-.post-content blockquote > p:first-child { margin-top: 0; }
-.post-content blockquote > p:last-child { margin-bottom: 0; }
-.post-content img { max-width: 100%; height: auto; }
-
-/* Narrow window display */
+/* - Narrow window display */
 @media (max-width: 600px) {
     .post-info-box { float: none; width: 100%; display: inline-block; }
     .post-icon { float: left; margin-right: 0; margin-bottom: 5px; }
@@ -136,7 +150,7 @@ div.char-access-icon {
     #character-selector { left: 0; }
     .post-character { background-color: #B9B6AD; }
     .post-author { background-color: #8B8687; }
-    .post-content blockquote { margin: 0.5em 1.5em; }
+    .post-content blockquote { margin-left: 1.5em; margin-right: 1.5em; }
 }
 
 /* Pagination */
@@ -173,15 +187,6 @@ div.char-access-icon {
 #post-menu-box a { color: #EEEEEE; }
 #post-menu-box img { margin-right: 3px; vertical-align: middle; margin-bottom: 4px; }
 #post-menu-box a:hover div { background-color: #B0BBA9; }
-
-/* Deal with RTF */
-.post-content > p:first-child { margin-top: 0; }
-.post-content > p:last-child { margin-bottom: 0; }
-
-/* Deal with ULs displaying weirdly around the post info box */
-.post-content ul, .post-content ol { list-style-position: inside; padding-left: 30px; }
-.post-content ul ul, .post-content ul ol, .post-content ol ul, .post-content ol ol { overflow: auto; }
-
 
 /* Handle post tables */
 .post-completed { text-align: center; width: 40px; }
