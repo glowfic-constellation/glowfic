@@ -127,6 +127,31 @@ module ApplicationHelper
     Sanitize.fragment(desc, elements: ['a'], attributes: {'a' => ['href']})
   end
 
+  # modified version of split_paragraphs that doesn't mangle large breaks
+  # https://apidock.com/rails/v4.2.7/ActionView/Helpers/TextHelper/split_paragraphs
+  def split_paragraphs_largebreak(text)
+    return [] if text.blank?
+    text.to_str.gsub(/\r\n?/, "\n").split(/\n\n/).map! do |t|
+      t.gsub!(/(^\n|[^\n]\n)(?=[^\n])/, '\1<br />') || t
+    end
+  end
+
+  # modified version of simple_format that doesn't mangle large breaks
+  # https://apidock.com/rails/ActionView/Helpers/TextHelper/simple_format
+  def simple_format_largebreak(text, options = {})
+    wrapper_tag = options.fetch(:wrapper_tag, :p)
+    text = sanitize(text) if options.fetch(:sanitize, true)
+    paragraphs = split_paragraphs_largebreak(text)
+
+    if paragraphs.empty?
+      content_tag(wrapper_tag, nil)
+    else
+      paragraphs.map! { |paragraph|
+        content_tag(wrapper_tag, raw(paragraph))
+      }.join("\n\n").html_safe
+    end
+  end
+
   P_TAG = "<p>".freeze
   BR_TAG = /<br *\/?>/
   BLOCKQUOTE_QUICK_SEARCH = '<blockquote'.freeze
@@ -140,7 +165,7 @@ module ApplicationHelper
       content = if content[BLOCKQUOTE_QUICK_SEARCH] && content[BLOCKQUOTE_TAG]
         content.gsub(LINEBREAK, BR)
       else
-        simple_format(content, sanitize: false)
+        simple_format_largebreak(content, sanitize: false)
       end
     end
     Sanitize.fragment(content, Glowfic::POST_CONTENT_SANITIZER)
