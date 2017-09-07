@@ -147,7 +147,11 @@ module ApplicationHelper
       content_tag(wrapper_tag, nil)
     else
       paragraphs.map! { |paragraph|
-        content_tag(wrapper_tag, raw(paragraph))
+        if paragraph.empty?
+          content_tag(wrapper_tag, '&nbsp;'.html_safe)
+        else
+          content_tag(wrapper_tag, raw(paragraph))
+        end
       }.join("\n\n").html_safe
     end
   end

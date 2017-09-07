@@ -104,7 +104,7 @@ RSpec.describe ApplicationHelper do
       expect(helper.sanitize_written_content(text)).to eq(expected)
 
       text = "line1\n\n\n\nline2"
-      expected = "<p>line1</p>\n\n<p></p>\n\n<p>line2</p>"
+      expected = "<p>line1</p>\n\n<p>\u00A0</p>\n\n<p>line2</p>" # U+00A0 is NBSP
       expect(helper.sanitize_written_content(text)).to eq(expected)
     end
   end
