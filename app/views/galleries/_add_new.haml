@@ -14,7 +14,7 @@
     %tr
       %th.subber.width-150.centered Upload Files
       %td.odd
-        = file_field_tag "icons[][file]", id: "icon_files", multiple: true
+        = file_field_tag "icons[][file]", id: "icon_files", class: 'icon_files', multiple: true
         %span.progress-box{style: 'margin-left: 5px;'}
   %table#icon-table
     %tr
@@ -35,6 +35,7 @@
             = text_field_tag "icons[][url]", url, placeholder: "URL", class: 'hidden', id: "icons_#{i}_url"
           - else
             = text_field_tag "icons[][url]", url, placeholder: "URL", id: "icons_#{i}_url"
+            = hidden_field_tag "icons[][s3_key]", @icons[i].try(:[], :s3_key)
         %td.padding-5{class: klass}
           = text_field_tag "icons[][keyword]", @icons[i].try(:[], :keyword), placeholder: "Keyword"
         %td.padding-5{class: klass}

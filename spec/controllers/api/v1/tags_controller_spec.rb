@@ -39,7 +39,7 @@ RSpec.describe Api::V1::TagsController do
         get :index, t: 'b'
         expect(response).to have_http_status(422)
         expect(response.json).to have_key('errors')
-        expect(response.json['errors'].first).to include("Invalid parameter 't'")
+        expect(response.json['errors'].first['message']).to include("Invalid parameter 't'")
       end
 
       context "in gallery group search with user_id" do

@@ -1,26 +1,26 @@
-/* global addUploadedIcon */
+/* global addUploadedIcon, originalUrl, setLoadingIcon, addCallback, failCallback */
+
+var uploadedIcons = {};
+
 $(document).ready(function() {
-  bindFileInput($("#icon_files"));
-});
-
-function updateBox(progressBox, done, total, failed) {
-  if (!progressBox) return;
-  var progress = parseInt(done / total * 100, 10);
-  progressBox.html(done.toString() + ' / ' + total.toString() + ' (' + progress + '%) ');
-  if (failed) {
-    progressBox.append($("<span style='color: #f00;'>").append(failed.toString() + " failed"));
-  }
-}
-
-function bindFileInput(fileInput) {
   var form = $('form.icon-upload');
   var submitButton = form.find('input[type="submit"]');
   var formData = form.data('form-data');
-  var progressBox = fileInput.closest('td').find('.progress-box');
-  var done = 0;
-  var total = 0;
-  var failed = 0;
 
+  $(".icon_files").each(function(fileInput) {
+    bindFileInput($(fileInput), form, submitButton, formData);
+  });
+
+  $("form.icon-upload").submit(function() {
+    var usedUrls = $.map($('form.icon-upload').find('input[id$=_url]'), function(input) { return $(input).val(); });
+    var uploadedUrls = $.map(uploadedIcons, function(value, key) { return key; });
+    var unusedUrls = uploadedUrls.filter(function(x) { return usedUrls.indexOf(x) < 0 });
+    if (unusedUrls.length < 1) return true;
+    deleteUnusedIcons($.map(unusedUrls, function(url) { return uploadedIcons[url]; }));
+  });
+});
+
+function bindFileInput(fileInput, form, submitButton, formData) {
   var uploadArgs = {
     fileInput: fileInput,
     url: form.data('url'),
@@ -35,13 +35,14 @@ function bindFileInput(fileInput) {
       var fileType = data.files[0].type;
       if (!fileType.startsWith('image/')) {
         alert("You must upload files with an image filetype such as .png or .jpg - please retry with a valid file.");
+        unsetLoadingIcon();
         return;
       } else if (fileType === 'image/tiff') {
         alert("Unfortunately, .tiff files are only supported by Safari - please retry with a valid file.");
+        unsetLoadingIcon();
         return;
       }
-      total += 1;
-      updateBox(progressBox, done, total, failed);
+      if (typeof addCallback !== 'undefined') addCallback();
 
       formData["Content-Type"] = fileType;
       data.formData = formData;
@@ -50,23 +51,23 @@ function bindFileInput(fileInput) {
     },
     start: function() {
       submitButton.prop('disabled', true);
+      setLoadingIcon();
     },
     done: function(e, data) {
       submitButton.prop('disabled', false);
-      done += 1;
-      updateBox(progressBox, done, total, failed);
 
       // extract key and generate URL from response
-      var key = $(data.jqXHR.responseXML).find("Key").text();
-      var url = 'https://d1anwqy6ci9o1i.cloudfront.net/' + key;
+      var s3Key = $(data.jqXHR.responseXML).find("Key").text();
+      var url = $(data.jqXHR.responseXML).find("Location").text();
+      uploadedIcons[url] = s3Key;
 
-      addUploadedIcon(url, data);
+      // Handled differently by different pages; handles UI and form updates
+      addUploadedIcon(url, s3Key, data, fileInput);
     },
     fail: function(e, data) {
       submitButton.prop('disabled', false);
-      failed += 1;
-      done += 1;
-      updateBox(progressBox, done, total, failed);
+      if (typeof failCallback !== 'undefined') failCallback();
+      unsetLoadingIcon();
       var response = data.response().jqXHR;
       var policyExpired = response.responseText.includes("Invalid according to Policy: Policy expired.");
       if (!policyExpired) policyExpired = response.responseText.includes("Idle connections will be closed.");
@@ -96,4 +97,15 @@ function bindFileInput(fileInput) {
     uploadArgs.maxNumberOfFiles = form.data('limit');
 
   fileInput.fileupload(uploadArgs);
+}
+
+function unsetLoadingIcon() {
+  if ($("#edit-icon").length)
+    $("#edit-icon").attr('src', originalUrl).css('height', '');
+}
+
+function deleteUnusedIcons(keys) {
+  $(keys).each(function(key) {
+    $.post('/api/v1/icons/s3_delete', {s3_key: key});
+  });
 }

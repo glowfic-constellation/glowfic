@@ -5,7 +5,7 @@
   &raquo;
   %b Edit
 
-= form_for @gallery, :url => gallery_path(@gallery), :method => :put do |f|
+= form_for @gallery, method: :put, html: {class: 'icon-upload'}, data: { 'form-data' => (@s3_direct_post.fields), url: @s3_direct_post.url, host: URI.parse(@s3_direct_post.url).host, limit: 1 } do |f|
   %table.form-table
     %tr
       %th.centered{colspan: 3}
@@ -21,18 +21,24 @@
       %th.subber{colspan: 3} Edit Icons
     = f.fields_for :galleries_icons, @gallery.galleries_icons.joins(:icon).order('LOWER(keyword)') do |gif|
       = gif.fields_for :icon do |i|
-        %tr
-          %td.green.centered{rowspan: 5}
-            = icon_tag i.object
+        %tr{id: "icon-row-#{i.object.id}"}
+          %td.green.centered{rowspan: 6}
+            = icon_tag i.object, id: "icon-#{i.object.id}"
             = i.hidden_field :id
           - klass = cycle('even','odd')
           %td.centered{class: klass} URL
           %td{class: klass}
-            - if i.object.uploaded?
+            .icon_conf{class: ('hidden' unless i.object.uploaded?)}
               = image_tag "/images/accept.png", class: 'vmid'
               Uploaded to site
-            - else
-              = i.text_field :url, :placeholder => "URL", :class => 'text'
+            .icon_url_field{class: ('hidden' if i.object.uploaded?)}
+              = i.text_field :url, placeholder: "URL", class: 'text'
+            = i.hidden_field :s3_key
+        %tr
+          - klass = cycle('even','odd')
+          - file_id = "icon_files_#{i.object.id}"
+          %td.centered{class: klass} Upload
+          %td{class: klass}= file_field_tag file_id, id: file_id, class: 'icon_files', data: {icon_id: i.object.id}
         %tr
           - klass = cycle('even','odd')
           %td.centered{class: klass} Keyword
