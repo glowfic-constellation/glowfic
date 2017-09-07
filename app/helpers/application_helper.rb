@@ -128,9 +128,20 @@ module ApplicationHelper
 
   P_TAG = "<p>".freeze
   BR_TAG = /<br *\/?>/
+  BLOCKQUOTE_QUICK_SEARCH = '<blockquote'.freeze
+  BLOCKQUOTE_TAG = /<blockquote( |>)/
+  LINEBREAK = "\n".freeze
+  BR = '<br>'.freeze
 
+  # specific blockquote handling is due to simple_format wanting to wrap a blockquote in a paragraph
   def sanitize_written_content(content)
-    content = simple_format(content, sanitize: false) unless content[P_TAG] || content[BR_TAG]
+    unless content[P_TAG] || content[BR_TAG]
+      content = if content[BLOCKQUOTE_QUICK_SEARCH] && content[BLOCKQUOTE_TAG]
+        content.gsub(LINEBREAK, BR)
+      else
+        simple_format(content, sanitize: false)
+      end
+    end
     Sanitize.fragment(content, Glowfic::POST_CONTENT_SANITIZER)
   end
 
