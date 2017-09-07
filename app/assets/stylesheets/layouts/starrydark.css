@@ -15,8 +15,8 @@ body { background-color: #211E2F; color: #DADADA; }
 #post-menu-box { border-top: 1px solid #808080; border-top: 1px solid rgba(128,128,128,0.5); }
 #post-menu-box div { border-bottom: 1px solid #808080; border-bottom: 1px solid rgba(128,128,128,0.5); }
 #post-menu-box a { color: inherit; }
-#content .even, .post-post, .post-reply:nth-child(even), #post-editor, .post-reply:nth-child(odd) blockquote { background-color: #31323B; }
-#content .odd, .post-reply:nth-child(odd), .post-post + #post-editor, .post-post + a + #post-editor, .post-post blockquote, .post-reply:nth-child(even) blockquote { background-color: #25262E; }
+#content .even, .post-post, .post-reply:nth-child(even), #post-editor, .odd blockquote, .post-reply:nth-child(odd) blockquote { background-color: #31323B; }
+#content .odd, .post-reply:nth-child(odd), .post-post + #post-editor, .post-post + a + #post-editor, .even blockquote, .post-post blockquote, .post-reply:nth-child(even) blockquote { background-color: #25262E; }
 
 .post-navheader .view-button, .view-button.selected, .view-button, .link-box.green, .link-box.blue, .link-box.red, .tag-item { background-color: #463C65; }
 #content .beige .link-box, #content .subber .link-box, .subber .link-box { background-color: #5C5778; }

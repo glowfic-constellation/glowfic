@@ -25,5 +25,5 @@ a:visited { color: #284150; }
 .post-character a, .post-character a:visited { color: #B3D3FF; }
 .post-footer { color: #717171; }
 #content .odd, #content .even, .post-post, .post-reply, #post-editor { background-color: #F3F3F3 !important; border-top: solid 1px #aaa; }
-.post-reply blockquote, .post-post blockquote { background-color: #E8E8E8 !important; }
+.post-reply blockquote, .post-post blockquote, .even blockquote, .odd blockquote { background-color: #E8E8E8 !important; }
 .tag-item { color: #3E526F; background-color: #D0CEC8; }
