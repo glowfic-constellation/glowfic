@@ -70,8 +70,9 @@
 /* Written content */
 /* - Blockquotes */
 /* -- Color on even/odd background */
-.even blockquote, .beige blockquote, .post-post blockquote, .post-reply:nth-child(even) blockquote { background-color: #D8D8D8; }
+.even blockquote, .post-post blockquote, .post-reply:nth-child(even) blockquote { background-color: #D8D8D8; }
 .odd blockquote, .post-reply:nth-child(odd) blockquote { background-color: #E3E3E3; }
+.beige blockquote { background-color: rgba(128, 128, 128, 0.3); }
 .post-content blockquote, .written-content blockquote, .message-content blockquote { margin: 0.5em 1.5em; padding: 0.5em; }
 .post-content img, .written-content img, .message-content img { max-width: 100%; height: auto; }
 
