@@ -143,6 +143,7 @@ RSpec.describe PostsController do
       char2 = create(:character, user: user, name: 'alphasecond')
       char3 = create(:template_character, user: user)
       expect(controller).to receive(:editor_setup).and_call_original
+      expect(controller).to receive(:setup_layout_gon).and_call_original
 
       get :new
 
@@ -263,6 +264,7 @@ RSpec.describe PostsController do
         char1 = create(:character, user: user)
         char2 = create(:template_character, user: user)
         expect(controller).to receive(:editor_setup).and_call_original
+        expect(controller).to receive(:setup_layout_gon).and_call_original
         post :create, button_preview: true, post: {
           subject: 'test',
           content: 'orign',
@@ -360,6 +362,7 @@ RSpec.describe PostsController do
       char1 = create(:character, user: user)
       char2 = create(:template_character, user: user)
       expect(controller).to receive(:editor_setup).and_call_original
+      expect(controller).to receive(:setup_layout_gon).and_call_original
       post :create, post: {
         subject: 'asubjct',
         content: 'acontnt',
@@ -724,6 +727,7 @@ RSpec.describe PostsController do
         login_as(user)
         expect(post).to be_taggable_by(user)
         expect(post).to receive(:build_new_reply_for).with(user).and_call_original
+        expect(controller).to receive(:setup_layout_gon).and_call_original
 
         get :show, id: post.id
         expect(response).to have_http_status(200)
@@ -859,6 +863,7 @@ RSpec.describe PostsController do
       login_as(user)
 
       expect(controller).to receive(:editor_setup).and_call_original
+      expect(controller).to receive(:setup_layout_gon).and_call_original
 
       get :edit, id: post.id
 
@@ -1198,6 +1203,7 @@ RSpec.describe PostsController do
         char1 = create(:character, user: user)
         char2 = create(:template_character, user: user)
         expect(controller).to receive(:editor_setup).and_call_original
+        expect(controller).to receive(:setup_layout_gon).and_call_original
         put :update, id: post.id, button_preview: true, post: {
           subject: 'test',
           content: 'orign',
@@ -1299,6 +1305,7 @@ RSpec.describe PostsController do
         char1 = create(:character, user: user)
         char2 = create(:template_character, user: user)
         expect(controller).to receive(:editor_setup).and_call_original
+        expect(controller).to receive(:setup_layout_gon).and_call_original
         put :update, id: post.id, post: {subject: ''}
         expect(response).to render_template(:edit)
         expect(flash[:error][:message]).to eq("Your post could not be saved because of the following problems:")
