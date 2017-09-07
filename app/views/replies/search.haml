@@ -50,7 +50,7 @@
                   - next unless reply.post.visible_to?(current_user)
                   - klass = cycle('even'.freeze, 'odd'.freeze)
                   %tr
-                    %td{class: klass}
+                    %td.vtop{class: klass}
                       .post-info-box
                         .post-info-text
                           - if reply.name.present?
