@@ -9,7 +9,7 @@ class Icon < ActiveRecord::Base
   validates_presence_of :url, :user, :keyword
   validate :url_is_url
   validate :uploaded_url_not_in_use
-  nilify_blanks
+  nilify_blanks types: [:string, :text, :citext] # nilify_blanks does not touch citext by default
 
   before_update :delete_from_s3
   after_destroy :clear_icon_ids, :delete_from_s3
