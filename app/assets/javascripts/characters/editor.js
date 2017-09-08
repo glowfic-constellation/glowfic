@@ -29,6 +29,7 @@ $(document).ready(function() {
   $("#new_template").change(function() {
     if ($("#new_template").is(":checked")) {
       $("#character_template_attributes_name").val('');
+      $("#character_template_attributes_id").val('');
       $("#create_template").show();
       oldTemplate = $("#character_template_id").val();
       $("#character_template_id").attr("disabled", true).val('').trigger("change.select2");
@@ -37,8 +38,17 @@ $(document).ready(function() {
       $("#character_template_id").attr("disabled", false).val(oldTemplate).trigger("change.select2");
       if (oldTemplate) {
         $("#character_template_attributes_name").val($("#character_template_id option:selected").text());
+        $("#character_template_attributes_id").val(oldTemplate);
+      } else {
+        $("#character_template_attributes_name").val('');
+        $("#character_template_attributes_id").val('');
       }
     }
+  });
+
+  $("#character_template_id").change(function() {
+    $("#character_template_attributes_id").val('');
+    $("#character_template_attributes_name").val('');
   });
 
   $("#character_ungrouped_gallery_ids").change(function() {
