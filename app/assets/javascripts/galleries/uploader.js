@@ -3,10 +3,23 @@ $(document).ready(function() {
   bindFileInput($("#icon_files"));
 });
 
+function updateBox(progressBox, done, total, failed) {
+  if (!progressBox) return;
+  var progress = parseInt(done / total * 100, 10);
+  progressBox.html(done.toString() + ' / ' + total.toString() + ' (' + progress + '%) ');
+  if (failed) {
+    progressBox.append($("<span style='color: #f00;'>").append(failed.toString() + " failed"));
+  }
+}
+
 function bindFileInput(fileInput) {
   var form = $('form.icon-upload');
   var submitButton = form.find('input[type="submit"]');
   var formData = form.data('form-data');
+  var progressBox = fileInput.closest('td').find('.progressBox');
+  var done = 0;
+  var total = 0;
+  var failed = 0;
 
   var uploadArgs = {
     fileInput: fileInput,
@@ -27,6 +40,8 @@ function bindFileInput(fileInput) {
         alert("Unfortunately, .tiff files are only supported by Safari - please retry with a valid file.");
         return;
       }
+      total += 1;
+      updateBox(progressBox, done, total, failed);
 
       formData["Content-Type"] = fileType;
       data.formData = formData;
@@ -38,6 +53,8 @@ function bindFileInput(fileInput) {
     },
     done: function(e, data) {
       submitButton.prop('disabled', false);
+      done += 1;
+      updateBox(progressBox, done, total, failed);
 
       // extract key and generate URL from response
       var key = $(data.jqXHR.responseXML).find("Key").text();
@@ -45,16 +62,10 @@ function bindFileInput(fileInput) {
 
       addUploadedIcon(url, data);
     },
-    progressall: function(e, data) {
-      var progressBox = fileInput.closest('td').find('.progressBox');
-      if (!progressBox) return;
-      var loaded = data.loaded;
-      var total = data.total;
-      var progress = parseInt(loaded / total * 100, 10);
-      progressBox.html(loaded.toString() + ' / ' + total.toString() + ' (' + progress + '%)');
-    },
     fail: function(e, data) {
       submitButton.prop('disabled', false);
+      failed += 1;
+      updateBox(progressBox, done, total, failed);
       var response = data.response().jqXHR;
       var policyExpired = response.responseText.includes("Invalid according to Policy: Policy expired.");
       if (!policyExpired) policyExpired = response.responseText.includes("Idle connections will be closed.");
