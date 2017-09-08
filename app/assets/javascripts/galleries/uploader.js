@@ -16,7 +16,7 @@ function bindFileInput(fileInput) {
   var form = $('form.icon-upload');
   var submitButton = form.find('input[type="submit"]');
   var formData = form.data('form-data');
-  var progressBox = fileInput.closest('td').find('.progressBox');
+  var progressBox = fileInput.closest('td').find('.progress-box');
   var done = 0;
   var total = 0;
   var failed = 0;
