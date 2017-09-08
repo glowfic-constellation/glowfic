@@ -25,7 +25,7 @@ class CharactersController < ApplicationController
   def new
     @page_title = 'New Character'
     @character = Character.new(template_id: params[:template_id])
-    @character.build_template(user: current_user)
+    @character.build_template(user: current_user) unless @character.template
   end
 
   def create
