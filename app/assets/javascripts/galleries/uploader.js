@@ -65,6 +65,7 @@ function bindFileInput(fileInput) {
     fail: function(e, data) {
       submitButton.prop('disabled', false);
       failed += 1;
+      done += 1;
       updateBox(progressBox, done, total, failed);
       var response = data.response().jqXHR;
       var policyExpired = response.responseText.includes("Invalid according to Policy: Policy expired.");
