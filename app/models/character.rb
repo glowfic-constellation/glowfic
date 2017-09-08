@@ -31,7 +31,7 @@ class Character < ActiveRecord::Base
 
   acts_as_tag :label, :setting, :gallery_group
 
-  nilify_blanks
+  nilify_blanks types: [:string, :text, :citext] # nilify_blanks does not touch citext by default
 
   def editable_by?(user)
     return false unless user
