@@ -31,11 +31,13 @@ $(document).ready(function() {
       $("#character_template_attributes_name").val('');
       $("#create_template").show();
       oldTemplate = $("#character_template_id").val();
-      $("#character_template_id").attr("disabled", true).val('').trigger("change.select2");;
+      $("#character_template_id").attr("disabled", true).val('').trigger("change.select2");
     } else {
       $("#create_template").hide();
       $("#character_template_id").attr("disabled", false).val(oldTemplate).trigger("change.select2");
-      $("#character_template_attributes_name").val($("#character_template_id option:selected").text());
+      if (oldTemplate) {
+        $("#character_template_attributes_name").val($("#character_template_id option:selected").text());
+      }
     }
   });
 
