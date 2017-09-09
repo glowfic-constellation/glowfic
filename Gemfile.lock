@@ -38,7 +38,7 @@ GEM
     addressable (2.5.2)
       public_suffix (>= 2.0.2, < 4.0)
     api-pagination (4.6.3)
-    apipie-rails (0.5.2)
+    apipie-rails (0.5.4)
       rails (>= 4.1)
     arel (6.0.4)
     audited (4.2.2)
@@ -46,15 +46,15 @@ GEM
     audited-activerecord (4.2.2)
       activerecord (~> 4.0)
       audited (= 4.2.2)
-    aws-partitions (1.19.0)
-    aws-sdk-core (3.2.1)
+    aws-partitions (1.20.0)
+    aws-sdk-core (3.3.0)
       aws-partitions (~> 1.0)
       aws-sigv4 (~> 1.0)
       jmespath (~> 1.0)
     aws-sdk-kms (1.1.0)
       aws-sdk-core (~> 3)
       aws-sigv4 (~> 1.0)
-    aws-sdk-s3 (1.1.0)
+    aws-sdk-s3 (1.2.0)
       aws-sdk-core (~> 3)
       aws-sdk-kms (~> 1)
       aws-sigv4 (~> 1.0)
@@ -452,4 +452,4 @@ RUBY VERSION
    ruby 2.4.1p111
 
 BUNDLED WITH
-   1.15.4
+   1.16.0.pre.2
