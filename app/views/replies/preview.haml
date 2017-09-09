@@ -12,8 +12,8 @@
 
 .post-header
   .padding-15= @post.subject
-- if @post.description
+- if @post.description.present?
   .post-subheader
     .padding-15= sanitize_post_description(@post.description).html_safe
 = render partial: 'replies/single', locals: {reply: @written, show_edit: false}
-= render partial: 'posts/write_reply', locals: { reply: @written }
+= render partial: 'write', locals: { reply: @written }

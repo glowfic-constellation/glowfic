@@ -157,11 +157,11 @@
   <a id="unread" class="noheight"> </a>
 - if @post.taggable_by?(current_user)
   - if @post.author_ids.include?(current_user.id) || (!@post.authors_locked? && !@reply.content.nil?)
-    = render partial: 'posts/write_reply', locals: { reply: @reply, url: replies_path, method: :post }
+    = render partial: 'replies/write', locals: { reply: @reply, url: replies_path, method: :post }
   - elsif !@post.authors_locked?
     .post-expander
       .info + Join Thread
       .hidden
-        = render partial: 'posts/write_reply', locals: { reply: @reply, url: replies_path, method: :post }
+        = render partial: 'replies/write', locals: { reply: @reply, url: replies_path, method: :post }
 
 .centered.margin-10= link_to 'Back to Top', '#'

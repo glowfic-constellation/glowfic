@@ -23,4 +23,4 @@
 - else
   .post-header
     .padding-15 Create a new post
-  = render partial: 'write_post', locals: { post: @post, url: posts_path, method: :post }
+  = render partial: 'write', locals: { post: @post, url: posts_path, method: :post }
