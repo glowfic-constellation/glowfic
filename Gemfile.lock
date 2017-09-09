@@ -38,7 +38,7 @@ GEM
     addressable (2.5.2)
       public_suffix (>= 2.0.2, < 4.0)
     api-pagination (4.6.3)
-    apipie-rails (0.5.2)
+    apipie-rails (0.5.4)
       rails (>= 4.1)
     arel (6.0.4)
     audited (4.2.2)
