@@ -41,3 +41,4 @@
 #content #icon-table td.icon-buttons { width: 40px; padding: 0 5px 0 0; }
 #content #icon-table td.icon-buttons img { display: inline-block; }
 #content #icon-table img.preview-icon { max-height: 27px; max-width: 27px; margin: 0px; }
+img.loading-icon { width: 16px; height: 16px; }

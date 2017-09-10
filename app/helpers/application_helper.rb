@@ -28,7 +28,7 @@ module ApplicationHelper
   def loading_tag(**args)
     klass = 'vmid loading-icon'
     klass += ' ' + args[:class] if args[:class]
-    image_tag '/images/loading.gif', title: 'Loading...', class: klass, alt: '...', style: 'width: 16px; height: 16px;', id: args[:id]
+    image_tag '/images/loading.gif', title: 'Loading...', class: klass, alt: '...', id: args[:id]
   end
 
   def quick_switch_tag(image_url, short_text, hover_name, char_id)

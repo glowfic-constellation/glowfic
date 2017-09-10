@@ -20,8 +20,7 @@
   #reorder-posts-table
     .list-header
       Organize Section Posts
-      #loading.float-right.hidden
-        = image_tag '/images/loading.gif', title: 'Loading...', class: 'vmid', alt: '...', style: 'width: 16px; height: 16px;'
+      #loading.float-right.hidden= loading_tag
       #saveerror.float-right.hidden
         = image_tag '/images/exclamation.png', title: 'Error', class: 'vmid', alt: '!'
         Error, please refresh
