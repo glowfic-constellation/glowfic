@@ -1,3 +1,8 @@
+/* global deleteUnusedIcons */
+var done = 0;
+var total = 0;
+var failed = 0;
+
 $(document).ready(function() {
   fixButtons();
   $(".icon-row td:has(input)").each(function() {
@@ -89,8 +94,10 @@ function addNewRow() {
 function bindRem() {
   $(".icon-row-rem").click(function() {
     var remRow = $(this).parent().parent();
+    var removingKey = $(remRow.find('input')[1]).val();
     remRow.remove();
     fixButtons();
+    if (removingKey !== '') { deleteUnusedIcons([removingKey]); }
   });
 }
 
@@ -113,13 +120,17 @@ function cleanUpRows() {
   fixButtons();
 }
 
-function addUploadedIcon(url, data) {
+function addUploadedIcon(url, key, data, fileInput) {
+  done += 1;
+  updateBox();
+
   // create hidden field
   var iconIndex = addNewRow();
   var row = $(".icon-row").filter(function() { return $(this).data('index') === iconIndex; });
   var urlInput = $("#icons_"+iconIndex+"_url");
   var urlCell = $(urlInput.parents('td:first'));
   urlInput.hide().val(url);
+  row.find("input[id$='_s3_key']").val(key);
   urlCell.find('.conf').remove();
 
   // update keyword box with data.files[0].name minus file extension
@@ -132,4 +143,25 @@ function addUploadedIcon(url, data) {
   var uploaded = ' Uploaded ' + data.files[0].name;
   urlCell.append("<span class='conf'><img src='/images/accept.png' alt='' title='Successfully uploaded' class='vmid' />"+uploaded+"</span>");
   cleanUpRows();
+}
+
+function addCallback() {
+  total += 1;
+  updateBox();
+}
+
+function failCallback() {
+  failed += 1;
+  done += 1;
+  updateBox();
+}
+
+function updateBox() {
+  var progressBox = $(".progress-box");
+  if (!progressBox) return;
+  var progress = parseInt(done / total * 100, 10);
+  progressBox.html(done.toString() + ' / ' + total.toString() + ' (' + progress + '%) ');
+  if (failed) {
+    progressBox.append($("<span style='color: #f00;'>").append(failed.toString() + " failed"));
+  }
 }

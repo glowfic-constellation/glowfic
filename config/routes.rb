@@ -100,6 +100,9 @@ Rails.application.routes.draw do
         collection { post :reorder }
       end
       resources :galleries, only: :show
+      resources :icons do
+        collection { post :s3_delete }
+      end
       resources :posts, only: :show do
         resources :replies, only: :index
         collection { post :reorder }

@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 9.6.4
--- Dumped by pg_dump version 9.6.4
+-- Dumped from database version 9.6.5
+-- Dumped by pg_dump version 9.6.5
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -564,7 +564,8 @@ CREATE TABLE icons (
     created_at timestamp without time zone,
     updated_at timestamp without time zone,
     credit character varying,
-    has_gallery boolean DEFAULT false
+    has_gallery boolean DEFAULT false,
+    s3_key character varying
 );
 
 
@@ -2033,4 +2034,6 @@ INSERT INTO schema_migrations (version) VALUES ('20170821210336');
 INSERT INTO schema_migrations (version) VALUES ('20170826211901');
 
 INSERT INTO schema_migrations (version) VALUES ('20170828144608');
+
+INSERT INTO schema_migrations (version) VALUES ('20170907180029');
 

@@ -67,7 +67,8 @@ FactoryGirl.define do
     keyword "totally fake"
 
     factory :uploaded_icon do
-      url { "https://d1anwqy6ci9o1i.cloudfront.net/users/#{user.id}/icons/nonsense-fakeimg.png" }
+      url { "https://d1anwqy6ci9o1i.cloudfront.net/users%2F#{user.id}%2Ficons%2Fnonsense-fakeimg.png" }
+      s3_key { "users/#{user.id}/icons/nonsense-fakeimg.png" }
     end
   end
 

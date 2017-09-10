@@ -607,10 +607,8 @@ RSpec.describe GalleriesController do
         login_as(gallery.user)
 
         icons = [
-          {keyword: 'test1', url: uploaded_icon.url, credit: ''},
-          {keyword: '',
-          url: 'http://example.com/image3141.png',
-          credit: ''},
+          {keyword: 'test1', url: uploaded_icon.url, s3_key: uploaded_icon.s3_key, credit: ''},
+          {keyword: '', url: 'http://example.com/image3141.png', credit: ''},
           {keyword: 'test2', url: '', credit: ''},
           {keyword: 'test3', url: 'fake', credit: ''},
           {keyword: '', url: '', credit: ''}
@@ -621,12 +619,13 @@ RSpec.describe GalleriesController do
         expect(flash[:error][:message]).to eq('Your icons could not be saved.')
         expect(assigns(:icons).length).to eq(icons.length-1) # removes blank icons
         expect(assigns(:icons).first[:url]).to be_empty # removes duplicate uploaded icon URLs
-        expect(flash.now[:error][:array]).to include(
+        expect(flash.now[:error][:array]).to match_array([
           "Icon 1: url has already been taken",
           "Icon 2: keyword can't be blank",
           "Icon 3: url can't be blank",
-          "Icon 3: url must be an actual fully qualified url (http://www.example.com)"
-        )
+          "Icon 3: url must be an actual fully qualified url (http://www.example.com)",
+          "Icon 4: url must be an actual fully qualified url (http://www.example.com)"
+        ])
       end
 
       it "succeeds with gallery" do

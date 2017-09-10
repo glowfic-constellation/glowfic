@@ -3,7 +3,7 @@ class GalleriesController < UploadingController
   before_filter :login_required, except: [:index, :show]
   before_filter :find_gallery, only: [:destroy, :edit, :update]
   before_filter :setup_new_icons, only: [:add, :icon]
-  before_filter :set_s3_url, only: [:add, :icon]
+  before_filter :set_s3_url, only: [:edit, :add, :icon]
   before_filter :setup_editor, only: [:new, :edit]
 
   def index
@@ -81,6 +81,8 @@ class GalleriesController < UploadingController
 
   def edit
     @page_title = 'Edit Gallery: ' + @gallery.name
+    use_javascript('galleries/uploader')
+    use_javascript('galleries/edit')
   end
 
   def update
@@ -92,7 +94,10 @@ class GalleriesController < UploadingController
       flash.now[:error][:message] = "Gallery could not be saved."
       flash.now[:error][:array] = @gallery.errors.full_messages
       @page_title = 'Edit Gallery: ' + @gallery.name_was
+      use_javascript('galleries/uploader')
+      use_javascript('galleries/edit')
       setup_editor
+      set_s3_url
       render action: :edit and return
     end
 
@@ -208,10 +213,10 @@ class GalleriesController < UploadingController
   end
 
   def gallery_params
-    params.fetch(:gallery, {}).permit(:name, galleries_icons_attributes: [:id, :_destroy, icon_attributes: [:url, :keyword, :credit, :id, :_destroy]], icon_ids: [], gallery_group_ids: [])
+    params.fetch(:gallery, {}).permit(:name, galleries_icons_attributes: [:id, :_destroy, icon_attributes: [:url, :keyword, :credit, :id, :_destroy, :s3_key]], icon_ids: [], gallery_group_ids: [])
   end
 
   def icon_params(paramset)
-    paramset.permit(:url, :keyword, :credit)
+    paramset.permit(:url, :keyword, :credit, :s3_key)
   end
 end

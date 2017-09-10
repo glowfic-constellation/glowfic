@@ -16,7 +16,9 @@
       %th.centered{colspan: 2}
         Edit Icon
     %tr
-      %td.green.centered{colspan: 2}= icon_tag @icon, id: 'edit-icon'
+      %td.green.centered{colspan: 2}
+        = icon_tag @icon, id: 'edit-icon'
+        = loading_tag class: 'hidden', id: "loading"
     %tr
       %th.sub URL
       %td.even
@@ -24,16 +26,17 @@
           = image_tag "/images/accept.png", class: 'vmid'
           Uploaded to site
         #icon_url_field{class: ('hidden' if @icon.uploaded?)}
-          = f.text_field :url, :placeholder => "URL", :class => 'text'
+          = f.text_field :url, placeholder: "URL", class: 'text'
+        = f.hidden_field :s3_key
     %tr
       %th.sub Upload
-      %td.odd= file_field_tag :icon_files, id: "icon_files"
+      %td.odd= file_field_tag :icon_files, id: "icon_files", class: "icon_files"
     %tr
       %th.sub Keyword
-      %td.even= f.text_field :keyword, :placeholder => "Keyword", :class => 'text'
+      %td.even= f.text_field :keyword, placeholder: "Keyword", class: 'text'
     %tr
       %th.sub Credit
-      %td.odd= f.text_field :credit, :placeholder => "Credit", :class => 'text'
+      %td.odd= f.text_field :credit, placeholder: "Credit", class: 'text'
     %tr.submit-row
       %th.subber{colspan: 2}
         = submit_tag "Save", class: 'button'
