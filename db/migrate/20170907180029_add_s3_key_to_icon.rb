@@ -5,7 +5,7 @@ class AddS3KeyToIcon < ActiveRecord::Migration
     add_column :icons, :s3_key, :string
 
     index = CLOUDFRONT_URL.size
-    Icon.where("url LIKE '%#{CLOUDFRONT_URL}'").each do |icon|
+    Icon.where("url LIKE '#{CLOUDFRONT_URL}%'").each do |icon|
       key = icon.url[index..-1]
       url = icon.url[0...index] + ERB::Util.url_encode(key)
 
