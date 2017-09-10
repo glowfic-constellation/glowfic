@@ -40,3 +40,4 @@
 #content #icon-table { margin: 0; text-align: center; }
 #content #icon-table td.icon-buttons { width: 40px; padding: 0 5px 0 0; }
 #content #icon-table td.icon-buttons img { display: inline-block; }
+#content #icon-table img.preview-icon { max-height: 27px; max-width: 27px; margin: 0px; }
