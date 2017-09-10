@@ -231,6 +231,17 @@ RSpec.describe BoardsController do
       get :edit, id: board.id
       expect(response.status).to eq(200)
     end
+
+    it "sets expected variables" do
+      board = create(:board)
+      sections = [create(:board_section, board: board), create(:board_section, board: board)]
+      posts = [create(:post, board: board), create(:post, board: board)]
+      board.coauthors << create(:user)
+      login_as(board.creator)
+      get :edit, id: board.id
+      expect(assigns(:board_sections)).to eq(sections)
+      expect(assigns(:unsectioned_posts)).to eq(posts)
+    end
   end
 
   describe "PUT update" do
