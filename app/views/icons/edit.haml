@@ -16,7 +16,9 @@
       %th.centered{colspan: 2}
         Edit Icon
     %tr
-      %td.green.centered{colspan: 2}= icon_tag @icon, id: 'edit-icon'
+      %td.green.centered{colspan: 2}
+        = icon_tag @icon, id: 'edit-icon'
+        = loading_tag class: 'hidden', id: "loading"
     %tr
       %th.sub URL
       %td.even

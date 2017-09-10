@@ -1,4 +1,4 @@
-/* global addUploadedIcon, originalUrl, setLoadingIcon, addCallback, failCallback */
+/* global addUploadedIcon, setLoadingIcon, addCallback, failCallback */
 
 var uploadedIcons = {};
 
@@ -7,7 +7,7 @@ $(document).ready(function() {
   var submitButton = form.find('input[type="submit"]');
   var formData = form.data('form-data');
 
-  $(".icon_files").each(function(fileInput) {
+  $(".icon_files").each(function(index, fileInput) {
     bindFileInput($(fileInput), form, submitButton, formData);
   });
 
@@ -51,7 +51,7 @@ function bindFileInput(fileInput, form, submitButton, formData) {
     },
     start: function() {
       submitButton.prop('disabled', true);
-      setLoadingIcon();
+      if (typeof setLoadingIcon !== 'undefined') setLoadingIcon(fileInput);
     },
     done: function(e, data) {
       submitButton.prop('disabled', false);
@@ -100,12 +100,12 @@ function bindFileInput(fileInput, form, submitButton, formData) {
 }
 
 function unsetLoadingIcon() {
-  if ($("#edit-icon").length)
-    $("#edit-icon").attr('src', originalUrl).css('height', '');
+  if ($(".loading-icon").length) $(".loading-icon").hide();
+  if ($(".uploading-icon").length) $(".uploading-icon").show().removeClass('uploading-icon');
 }
 
 function deleteUnusedIcons(keys) {
-  $(keys).each(function(key) {
+  $(keys).each(function(index, key) {
     $.post('/api/v1/icons/s3_delete', {s3_key: key});
   });
 }

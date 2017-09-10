@@ -25,6 +25,12 @@ module ApplicationHelper
     icon_mem_tag(NO_ICON_URL, NO_ICON, **args)
   end
 
+  def loading_tag(**args)
+    klass = 'vmid loading-icon'
+    klass += ' ' + args[:class] if args[:class]
+    image_tag '/images/loading.gif', title: 'Loading...', class: klass, alt: '...', style: 'width: 16px; height: 16px;', id: args[:id]
+  end
+
   def quick_switch_tag(image_url, short_text, hover_name, char_id)
     if image_url.nil?
       return content_tag :div, short_text, class: CHAR_ICON, title: hover_name, data: { character_id: char_id }

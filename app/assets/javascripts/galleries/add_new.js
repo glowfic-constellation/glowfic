@@ -165,5 +165,3 @@ function updateBox() {
     progressBox.append($("<span style='color: #f00;'>").append(failed.toString() + " failed"));
   }
 }
-
-function setLoadingIcon() {}

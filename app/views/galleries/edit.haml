@@ -25,6 +25,7 @@
           %td.green.centered{rowspan: 6}
             = icon_tag i.object, id: "icon-#{i.object.id}"
             = i.hidden_field :id
+            = loading_tag class: 'hidden', id: "loading-#{i.object.id}"
           - klass = cycle('even','odd')
           %td.centered{class: klass} URL
           %td{class: klass}
