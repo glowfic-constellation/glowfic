@@ -77,6 +77,9 @@ function addNewRow() {
   var inputs = newRow.find('input');
   inputs.val('');
 
+  // clear preview icon
+  newRow.find(".preview-icon").attr('src', '').attr('title', '').attr('alt', '');
+
   // handle the URL field specially
   // because uploads have special UI
   var urlField = inputs.first();
@@ -140,7 +143,11 @@ function addUploadedIcon(url, key, data, fileInput) {
     keyword = keyword.replace('.'+fileExt, '');
   row.find("input[id$='_keyword']").val(keyword);
 
+  // Display a preview of the uploaded icon for the user
+  row.find(".preview-icon").attr('src', url).attr('title', keyword).attr('alt', keyword);
+
   var uploaded = ' Uploaded ' + data.files[0].name;
+  row.find("input[id$='_filename']").val(data.files[0].name);
   urlCell.append("<span class='conf'><img src='/images/accept.png' alt='' title='Successfully uploaded' class='vmid' />"+uploaded+"</span>");
   cleanUpRows();
 }

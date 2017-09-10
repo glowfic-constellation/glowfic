@@ -133,7 +133,7 @@ class GalleriesController < UploadingController
     @icons = icons
     icons = []
     @icons.each_with_index do |icon, index|
-      icon = Icon.new(icon_params(icon.except('file')))
+      icon = Icon.new(icon_params(icon.except('filename', 'file')))
       icon.user = current_user
       unless icon.valid?
         @icons[index]['url'] = '' if icon.errors.messages[:url] && icon.errors.messages[:url].include?('has already been taken')
