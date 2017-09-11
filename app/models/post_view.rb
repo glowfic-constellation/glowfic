@@ -3,4 +3,5 @@ class PostView < ActiveRecord::Base
   belongs_to :user
 
   validates_presence_of :user, :post
+  validates :post, uniqueness: { scope: :user }
 end

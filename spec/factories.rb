@@ -175,4 +175,9 @@ FactoryGirl.define do
     user
     board
   end
+
+  factory :post_view do
+    user
+    post
+  end
 end
