@@ -8,7 +8,7 @@ $(document).ready(function() {
   if (window.location.hash === "#unread" && unreadElem.length > 0)
     shouldScrollToUnread = Math.abs(unreadElem.offset().top - $(window).scrollTop()) < 50;
 
-  $(".post-expander").click(function() {
+  $(".post-expander:not(.post-editor-expander)").click(function() {
     $(this).children(".info").remove();
     $(this).get(0).outerHTML = $(this).children('.hidden').html();
   });
