@@ -176,6 +176,7 @@ GEM
       nokogiri (>= 1.5.9)
     mail (2.6.6)
       mime-types (>= 1.16, < 4)
+    memory_profiler (0.9.8)
     mime-types (3.1)
       mime-types-data (~> 3.2015)
     mime-types-data (3.2016.0521)
@@ -204,6 +205,8 @@ GEM
     puma (3.10.0)
     rack (1.6.8)
     rack-cors (1.0.1)
+    rack-mini-profiler (0.10.5)
+      rack (>= 1.2.0)
     rack-pratchett (0.1.1)
     rack-protection (1.5.3)
       rack
@@ -414,6 +417,7 @@ DEPENDENCIES
   jquery-rails
   jquery-ui-rails
   json
+  memory_profiler
   newrelic_rpm
   nilify_blanks
   nokogiri
@@ -421,6 +425,7 @@ DEPENDENCIES
   pg_search
   puma
   rack-cors
+  rack-mini-profiler
   rack-pratchett
   rack-timeout
   rails (~> 4.2.9)
