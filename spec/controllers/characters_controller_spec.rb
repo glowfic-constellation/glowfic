@@ -497,21 +497,21 @@ RSpec.describe CharactersController do
     it "sets correct variables for facecast name sort" do
       chars = Array.new(3) { create(:character, pb: SecureRandom.urlsafe_base64) }
       get :facecasts
-      pbs = assigns(:pbs).map{|x| x[:pb]}
+      pbs = assigns(:pbs).map(&:pb)
       expect(pbs).to match_array(chars.map(&:pb))
     end
 
     it "sets correct variables for character name sort: character only" do
       chars = Array.new(3) { create(:character, pb: SecureRandom.urlsafe_base64) }
       get :facecasts, sort: 'name'
-      names = assigns(:pbs).map{|x| x[:item_name]}
+      names = assigns(:pbs).map(&:item_name)
       expect(names).to match_array(chars.map(&:name))
     end
 
     it "sets correct variables for character name sort: template only" do
       chars = Array.new(3) { create(:template_character, pb: SecureRandom.urlsafe_base64) }
       get :facecasts, sort: 'name'
-      names = assigns(:pbs).map{|x| x[:item_name]}
+      names = assigns(:pbs).map(&:item_name)
       expect(names).to match_array(chars.map(&:template).map(&:name))
     end
 
@@ -519,7 +519,7 @@ RSpec.describe CharactersController do
       chars = Array.new(3) { create(:template_character, pb: SecureRandom.urlsafe_base64) }
       chars += Array.new(3) { create(:character, pb: SecureRandom.urlsafe_base64) }
       get :facecasts, sort: 'name'
-      names = assigns(:pbs).map{|x| x[:item_name]}
+      names = assigns(:pbs).map(&:item_name)
       expect(names).to match_array(chars.map { |c| (c.template || c).name })
     end
 
@@ -527,7 +527,7 @@ RSpec.describe CharactersController do
       chars = Array.new(3) { create(:template_character, pb: SecureRandom.urlsafe_base64) }
       chars += Array.new(3) { create(:character, pb: SecureRandom.urlsafe_base64) }
       get :facecasts, sort: 'writer'
-      user_ids = assigns(:pbs).map{|x| x[:user_id]}
+      user_ids = assigns(:pbs).map(&:user_id)
       expect(user_ids).to match_array(chars.map(&:user).map(&:id))
     end
   end
