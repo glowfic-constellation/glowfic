@@ -1,6 +1,7 @@
 require "spec_helper"
 
 RSpec.describe NotifyFollowersOfNewPostJob do
+  before(:each) { ResqueSpec.reset! }
   it "does nothing with invalid post id" do
     expect(Favorite).not_to receive(:where)
     NotifyFollowersOfNewPostJob.perform(-1)
