@@ -497,33 +497,38 @@ RSpec.describe CharactersController do
     it "sets correct variables for facecast name sort" do
       chars = Array.new(3) { create(:character, pb: SecureRandom.urlsafe_base64) }
       get :facecasts
-      expect(assigns(:pbs).keys).to match_array(chars.map(&:pb))
+      pbs = assigns(:pbs).map{|x| x[:pb]}
+      expect(pbs).to match_array(chars.map(&:pb))
     end
 
     it "sets correct variables for character name sort: character only" do
       chars = Array.new(3) { create(:character, pb: SecureRandom.urlsafe_base64) }
       get :facecasts, sort: 'name'
-      expect(assigns(:pbs).keys).to match_array(chars)
+      names = assigns(:pbs).map{|x| x[:item_name]}
+      expect(names).to match_array(chars.map(&:name))
     end
 
     it "sets correct variables for character name sort: template only" do
       chars = Array.new(3) { create(:template_character, pb: SecureRandom.urlsafe_base64) }
       get :facecasts, sort: 'name'
-      expect(assigns(:pbs).keys).to match_array(chars.map(&:template))
+      names = assigns(:pbs).map{|x| x[:item_name]}
+      expect(names).to match_array(chars.map(&:template).map(&:name))
     end
 
     it "sets correct variables for character name sort: character and template mixed" do
       chars = Array.new(3) { create(:template_character, pb: SecureRandom.urlsafe_base64) }
       chars += Array.new(3) { create(:character, pb: SecureRandom.urlsafe_base64) }
       get :facecasts, sort: 'name'
-      expect(assigns(:pbs).keys).to match_array(chars.map { |c| c.template || c })
+      names = assigns(:pbs).map{|x| x[:item_name]}
+      expect(names).to match_array(chars.map { |c| (c.template || c).name })
     end
 
     it "sets correct variables for writer sort" do
       chars = Array.new(3) { create(:template_character, pb: SecureRandom.urlsafe_base64) }
       chars += Array.new(3) { create(:character, pb: SecureRandom.urlsafe_base64) }
       get :facecasts, sort: 'writer'
-      expect(assigns(:pbs).keys).to match_array(chars.map(&:user))
+      user_ids = assigns(:pbs).map{|x| x[:user_id]}
+      expect(user_ids).to match_array(chars.map(&:user).map(&:id))
     end
   end
 
