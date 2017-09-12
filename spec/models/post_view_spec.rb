@@ -30,6 +30,9 @@ RSpec.describe PostView do
       new_view = build(:post_view, user: view.user, post: view.post)
       expect(new_view).not_to be_valid
       expect(new_view.save).to eq(false)
+      expect {
+        new_view.save!(validate: false)
+      }.to raise_error(ActiveRecord::RecordNotUnique)
     end
 
     it "allows one user to have multiple post views" do
