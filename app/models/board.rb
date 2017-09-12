@@ -41,6 +41,10 @@ class Board < ActiveRecord::Base
     board_coauthors.where(user_id: user.id).exists?
   end
 
+  def ordered?
+    !open_to_anyone? || board_sections.exists?
+  end
+
   private
 
   def move_posts_to_sandbox

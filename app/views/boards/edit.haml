@@ -45,7 +45,7 @@
     - if @board_sections.empty?
       %li.centered.padding-10{class: cycle('even', 'odd')} — No items yet —
 
-- if (!@board.open_to_anyone? || @board_sections.present?) && @unsectioned_posts.present?
+- if @board.ordered? && @unsectioned_posts.present?
   %br
   - reset_cycle
   #reorder-posts-table
