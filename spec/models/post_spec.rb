@@ -752,6 +752,7 @@ RSpec.describe Post do
   end
 
   it "should enqueue a message after creation" do
+    ResqueSpec.reset!
     author = create(:user)
     notified = create(:user)
     create(:favorite, user: notified, favorite: author)
