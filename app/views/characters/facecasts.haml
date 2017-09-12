@@ -7,16 +7,19 @@
     %th.sub= link_to 'Name', url_for(sort: 'name')
     %th.sub= link_to 'Writer', url_for(sort: 'writer')
   - @pbs.each do |obj|
-    - item = obj[:item]
+    - item_id = obj[:item_id]
+    - item_name = obj[:item_name]
+    - type = obj[:type]
     - pb = obj[:pb]
-    - user = obj[:user]
+    - user_id = obj[:user_id]
+    - username = obj[:username]
     %tr
       - klass = cycle('even', 'odd')
       %td.padding-5{class: klass}= pb
-      %td.padding-5{class: klass}= item.class
+      %td.padding-5{class: klass}= type
       %td.padding-5{class: klass}
-        - if item.is_a? Character
-          = link_to item.name, character_path(item)
+        - if type == Character
+          = link_to item_name, character_path(item_id)
         - else
-          = link_to item.name, template_path(item)
-      %td.padding-5{class: klass}= link_to user.username, user_path(user)
+          = link_to item_name, template_path(item_id)
+      %td.padding-5{class: klass}= link_to username, user_path(user_id)

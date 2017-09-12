@@ -100,11 +100,20 @@ class CharactersController < ApplicationController
 
   def facecasts
     @page_title = 'Facecasts'
-    chars = Character.where('pb is not null').includes(:user, :template)
+    chars = Character.where('pb is not null')
+      .joins(:user)
+      .joins('LEFT OUTER JOIN templates ON characters.template_id = templates.id')
+      .pluck('characters.id, characters.name, characters.pb, users.id, users.username, templates.id, templates.name')
     @pbs = []
 
-    chars.each do |character|
-      @pbs << {item: character.template || character, pb: character.pb, user: character.user}
+    chars.each do |dataset|
+      id, name, pb, user_id, username, template_id, template_name = dataset
+      if template_id.present?
+        item_id, item_name, type = template_id, template_name, Template
+      else
+        item_id, item_name, type = id, name, Character
+      end
+      @pbs << {item_id: item_id, item_name: item_name, type: type, pb: pb, user_id: user_id, username: username}
     end
     @pbs.uniq!
 
