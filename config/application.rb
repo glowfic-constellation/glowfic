@@ -21,10 +21,22 @@ module Glowfic
     "blockquote" => %w(cite),
     "cite" => %w(href)
   }
-  POST_CONTENT_SANITIZER = Sanitize::Config.merge(Sanitize::Config::RELAXED,
-    :elements => ALLOWED_TAGS,
-    :attributes => ALLOWED_ATTRIBUTES
-  )
+
+  class WrittenScrubber < Rails::Html::PermitScrubber
+    def initialize
+      super
+      self.tags = ALLOWED_TAGS
+      self.attributes = ALLOWED_ATTRIBUTES.map{|_,x| x}.flatten.uniq # TODO: get more specific about allowed attributes
+    end
+  end
+
+  class DescriptionScrubber < Rails::Html::PermitScrubber
+    def initialize
+      super
+      self.tags = %w(a)
+      self.attributes = %w(href)
+    end
+  end
 
   class Application < Rails::Application
     # Settings in config/environments/* take precedence over those specified here.
