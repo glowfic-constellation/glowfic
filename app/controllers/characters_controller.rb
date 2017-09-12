@@ -100,26 +100,30 @@ class CharactersController < ApplicationController
 
   def facecasts
     @page_title = 'Facecasts'
-    chars = Character.where('pb is not null').includes(:user, :template)
-    @pbs = {}
+    chars = Character.where('pb is not null')
+      .joins(:user)
+      .joins('LEFT OUTER JOIN templates ON characters.template_id = templates.id')
+      .pluck('characters.id, characters.name, characters.pb, users.id, users.username, templates.id, templates.name')
+    @pbs = []
+
+    pb_struct = Struct.new(:item_id, :item_name, :type, :pb, :user_id, :username)
+    chars.each do |dataset|
+      id, name, pb, user_id, username, template_id, template_name = dataset
+      if template_id.present?
+        item_id, item_name, type = template_id, template_name, Template
+      else
+        item_id, item_name, type = id, name, Character
+      end
+      @pbs << pb_struct.new(item_id, item_name, type, pb, user_id, username)
+    end
+    @pbs.uniq!
 
     if params[:sort] == "name"
-      chars.each do |character|
-        key = character.template || character
-        @pbs[key] ||= []
-        @pbs[key] << character.pb
-      end
+      @pbs.sort_by! {|x| [x[:item_name].downcase, x[:pb].downcase, x[:username].downcase]}
     elsif params[:sort] == "writer"
-      chars.each do |character|
-        @pbs[character.user] ||= {}
-        @pbs[character.user][character.pb] ||= []
-        @pbs[character.user][character.pb] << (character.template || character)
-      end
+      @pbs.sort_by! {|x| [x[:username].downcase, x[:pb].downcase, x[:item_name].downcase]}
     else
-      chars.each do |character|
-        @pbs[character.pb] ||= []
-        @pbs[character.pb] << (character.template || character)
-      end
+      @pbs.sort_by! {|x| [x[:pb].downcase, x[:username].downcase, x[:item_name].downcase]}
     end
   end
 
