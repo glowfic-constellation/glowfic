@@ -75,6 +75,7 @@ RSpec.describe MessagesController do
         recents = messages[-5..-1].map(&:recipient)
         recents_data = recents.reverse.map{|x| [x.username, x.id] }
         users_data = messages.map(&:recipient).map{|x| [x.username, x.id]}
+        users_data.sort_by! {|x| x[0]}
         login_as(user)
         get :new
         expect(response).to have_http_status(200)
@@ -98,6 +99,7 @@ RSpec.describe MessagesController do
       recents_data = recents.reverse
       other_user = create(:user)
       users_data = recents + [[other_user.username, other_user.id]]
+      users_data.sort_by! {|x| x[0]}
 
       post :create, message: {}
       expect(response).to render_template(:new)
@@ -186,6 +188,7 @@ RSpec.describe MessagesController do
         recents_data = recents.reverse
         other_user = create(:user)
         users_data = recents + [[other_user.username, other_user.id]]
+        users_data.sort_by! {|x| x[0]}
 
         expect {
           post :create, message: {subject: 'Preview', message: 'example'}, button_preview: true
