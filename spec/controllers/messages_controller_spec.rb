@@ -8,26 +8,29 @@ RSpec.describe MessagesController do
       expect(flash[:error]).to eq("You must be logged in to view that page.")
     end
 
-    it "assigns correct inbox variables" do
-      user = create(:user)
-      login_as(user)
-      messages = Array.new(4) { create(:message, recipient: user) }
-      get :index
-      expect(response).to have_http_status(200)
-      expect(assigns(:view)).to eq('inbox')
-      expect(assigns(:page_title)).to eq('Inbox')
-      expect(assigns(:messages)).to match_array(messages)
-    end
+    context "with views" do
+      render_views
+      it "assigns correct inbox variables" do
+        user = create(:user)
+        login_as(user)
+        messages = Array.new(4) { create(:message, recipient: user) }
+        get :index
+        expect(response).to have_http_status(200)
+        expect(assigns(:view)).to eq('inbox')
+        expect(assigns(:page_title)).to eq('Inbox')
+        expect(assigns(:messages)).to match_array(messages)
+      end
 
-    it "assigns correct outbox variables" do
-      user = create(:user)
-      login_as(user)
-      messages = Array.new(4) { create(:message, sender: user) }
-      get :index, view: 'outbox'
-      expect(response).to have_http_status(200)
-      expect(assigns(:view)).to eq('outbox')
-      expect(assigns(:page_title)).to eq('Outbox')
-      expect(assigns(:messages)).to match_array(messages)
+      it "assigns correct outbox variables" do
+        user = create(:user)
+        login_as(user)
+        messages = Array.new(4) { create(:message, sender: user) }
+        get :index, view: 'outbox'
+        expect(response).to have_http_status(200)
+        expect(assigns(:view)).to eq('outbox')
+        expect(assigns(:page_title)).to eq('Outbox')
+        expect(assigns(:messages)).to match_array(messages)
+      end
     end
   end
 
@@ -53,13 +56,30 @@ RSpec.describe MessagesController do
       expect(assigns(:message).recipient_id).to eq(recipient.id)
     end
 
-    it "succeeds" do
-      login
-      get :new
-      expect(response.status).to eq(200)
-      expect(assigns(:page_title)).to eq('Compose Message')
-      expect(assigns(:message)).to be_an_instance_of(Message)
-      expect(assigns(:message)).to be_a_new_record
+    context "with views" do
+      render_views
+
+      it "succeeds" do
+        login
+        get :new
+        expect(response.status).to eq(200)
+        expect(assigns(:page_title)).to eq('Compose Message')
+        expect(assigns(:message)).to be_an_instance_of(Message)
+        expect(assigns(:message)).to be_a_new_record
+        expect(assigns(:javascripts)).to include('messages')
+      end
+
+      it "sets succeeds with previous messages" do
+        user = create(:user)
+        messages = Array.new(7) { create(:message, sender: user) }
+        recents = messages[-5..-1].map(&:recipient)
+        recents_data = recents.reverse.map{|x| [x.username, x.id] }
+        users_data = messages.map(&:recipient).map{|x| [x.username, x.id]}
+        login_as(user)
+        get :new
+        expect(response).to have_http_status(200)
+        expect(assigns(:select_items)).to eq({'Recently messaged': recents_data, 'Other users': users_data})
+      end
     end
   end
 
@@ -71,12 +91,21 @@ RSpec.describe MessagesController do
     end
 
     it "fails with invalid params" do
-      login
+      user = create(:user)
+      login_as(user)
+      messages = Array.new(2) { create(:message, sender: user) }
+      recents = messages.map(&:recipient).map{|x| [x.username, x.id]}
+      recents_data = recents.reverse
+      other_user = create(:user)
+      users_data = recents + [[other_user.username, other_user.id]]
+
       post :create, message: {}
       expect(response).to render_template(:new)
       expect(flash[:error][:message]).to eq("Your message could not be sent because of the following problems:")
       expect(assigns(:message)).not_to be_valid
       expect(assigns(:page_title)).to eq('Compose Message')
+      expect(assigns(:javascripts)).to include('messages')
+      expect(assigns(:select_items)).to eq({'Recently messaged': recents_data, 'Other users': users_data})
     end
 
     it "succeeds with valid recipient" do
@@ -104,6 +133,7 @@ RSpec.describe MessagesController do
       post :create, message: {subject: 'Re: Fake', message: 'response'}, parent_id: -1
       expect(flash[:error][:array]).to include('Message parent could not be found.')
       expect(assigns(:message).parent).to be_nil
+      expect(assigns(:javascripts)).to include('messages')
     end
 
     it "succeeds with valid parent" do
@@ -137,21 +167,32 @@ RSpec.describe MessagesController do
     end
 
     context "preview" do
+      render_views
       it "sets messages if in a thread" do
         previous = create(:message)
         login_as(previous.sender)
-        post :create, message: {subject: 'Preview', message: 'example'}, parent_id: previous.id, button_preview: true
-        expect(Message.count).to eq(1)
+        expect {
+          post :create, message: {subject: 'Preview', message: 'example'}, parent_id: previous.id, button_preview: true
+        }.not_to change { Message.count }
         expect(response).to render_template(:preview)
         expect(assigns(:messages)).to eq([previous])
       end
 
       it "succeeds" do
-        login
-        post :create, message: {subject: 'Preview', message: 'example'}, button_preview: true
-        expect(Message.count).to eq(0)
+        user = create(:user)
+        login_as(user)
+        messages = Array.new(2) { create(:message, sender: user) }
+        recents = messages.map(&:recipient).map{|x| [x.username, x.id]}
+        recents_data = recents.reverse
+        other_user = create(:user)
+        users_data = recents + [[other_user.username, other_user.id]]
+
+        expect {
+          post :create, message: {subject: 'Preview', message: 'example'}, button_preview: true
+        }.not_to change { Message.count }
         expect(response).to render_template(:preview)
         expect(assigns(:javascripts)).to include('messages')
+        expect(assigns(:select_items)).to eq({'Recently messaged': recents_data, 'Other users': users_data})
       end
     end
   end
@@ -178,32 +219,35 @@ RSpec.describe MessagesController do
       expect(flash[:error]).to eq("That is not your message!")
     end
 
-    it "works for sender" do
-      message = create(:message)
-      login_as(message.sender)
-      get :show, id: message.id
-      expect(response).to have_http_status(200)
-      expect(assigns(:messages)).to eq([message])
-      expect(message.reload.unread?).to eq(true)
-    end
+    context "with views" do
+      render_views
+      it "works for sender" do
+        message = create(:message)
+        login_as(message.sender)
+        get :show, id: message.id
+        expect(response).to have_http_status(200)
+        expect(assigns(:messages)).to eq([message])
+        expect(message.reload.unread?).to eq(true)
+      end
 
-    it "works for recipient" do
-      message = create(:message)
-      login_as(message.recipient)
-      get :show, id: message.id
-      expect(response).to have_http_status(200)
-      expect(assigns(:messages)).to eq([message])
-      expect(message.reload.unread?).not_to eq(true)
-    end
+      it "works for recipient" do
+        message = create(:message)
+        login_as(message.recipient)
+        get :show, id: message.id
+        expect(response).to have_http_status(200)
+        expect(assigns(:messages)).to eq([message])
+        expect(message.reload.unread?).not_to eq(true)
+      end
 
-    it "works for unread in thread" do
-      message = create(:message, unread: true)
-      create(:message, sender: message.recipient, recipient: message.sender, parent: message, thread_id: message.id, unread: false) # sender
-      subsequent = create(:message, sender: message.recipient, recipient: message.sender, parent: message, thread_id: message.id, unread: false)
-      login_as(message.recipient)
-      get :show, id: subsequent.id
-      expect(response).to have_http_status(200)
-      expect(message.reload.unread?).not_to eq(true)
+      it "works for unread in thread" do
+        message = create(:message, unread: true)
+        create(:message, sender: message.recipient, recipient: message.sender, parent: message, thread_id: message.id, unread: false) # sender
+        subsequent = create(:message, sender: message.recipient, recipient: message.sender, parent: message, thread_id: message.id, unread: false)
+        login_as(message.recipient)
+        get :show, id: subsequent.id
+        expect(response).to have_http_status(200)
+        expect(message.reload.unread?).not_to eq(true)
+      end
     end
 
     it "does not remark the message read" do
