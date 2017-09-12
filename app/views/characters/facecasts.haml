@@ -6,49 +6,17 @@
     %th.sub Type
     %th.sub= link_to 'Name', url_for(sort: 'name')
     %th.sub= link_to 'Writer', url_for(sort: 'writer')
-  - if params[:sort] == "name"
-    - characters = @pbs.keys.sort_by{ |char| char.name.downcase }
-    - characters.each do |character|
-      - pbs = @pbs[character].uniq
-      - pbs.each do |pb|
-        %tr
-          - klass = cycle('even','odd')
-          %td.padding-5{class: klass}= pb
-          %td.padding-5{class: klass}= character.class
-          %td.padding-5{class: klass}
-            - if character.is_a? Character
-              = link_to character.name, character_path(character)
-            - else
-              = link_to character.name, template_path(character)
-          %td.padding-5{class: klass}= link_to character.user.username, user_path(character.user)
-  - elsif params[:sort] == "writer"
-    - authors = @pbs.keys.sort_by{ |a| a.username.downcase }
-    - authors.each do |author|
-      - pbs = @pbs[author].sort
-      - pbs.each do |pb, characters|
-        - uniq_chars = characters.uniq
-        - uniq_chars.each do |character|
-          %tr
-            - klass = cycle('even','odd')
-            %td.padding-5{class: klass}= pb
-            %td.padding-5{class: klass}= character.class
-            %td.padding-5{class: klass}
-              - if character.is_a? Character
-                = link_to character.name, character_path(character)
-              - else
-                = link_to character.name, template_path(character)
-            %td.padding-5{class: klass}= link_to character.user.username, user_path(character.user)
-  - else
-    - @pbs.keys.sort_by(&:downcase).each do |pb|
-      - characters = @pbs[pb].uniq
-      - characters.each do |character|
-        %tr
-          - klass = cycle('even','odd')
-          %td.padding-5{class: klass}= pb
-          %td.padding-5{class: klass}= character.class
-          %td.padding-5{class: klass}
-            - if character.is_a? Character
-              = link_to character.name, character_path(character)
-            - else
-              = link_to character.name, template_path(character)
-          %td.padding-5{class: klass}= link_to character.user.username, user_path(character.user)
+  - @pbs.each do |obj|
+    - item = obj[:item]
+    - pb = obj[:pb]
+    - user = obj[:user]
+    %tr
+      - klass = cycle('even', 'odd')
+      %td.padding-5{class: klass}= pb
+      %td.padding-5{class: klass}= item.class
+      %td.padding-5{class: klass}
+        - if item.is_a? Character
+          = link_to item.name, character_path(item)
+        - else
+          = link_to item.name, template_path(item)
+      %td.padding-5{class: klass}= link_to user.username, user_path(user)

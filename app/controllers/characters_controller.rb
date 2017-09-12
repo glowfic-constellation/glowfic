@@ -101,25 +101,19 @@ class CharactersController < ApplicationController
   def facecasts
     @page_title = 'Facecasts'
     chars = Character.where('pb is not null').includes(:user, :template)
-    @pbs = {}
+    @pbs = []
+
+    chars.each do |character|
+      @pbs << {item: character.template || character, pb: character.pb, user: character.user}
+    end
+    @pbs.uniq!
 
     if params[:sort] == "name"
-      chars.each do |character|
-        key = character.template || character
-        @pbs[key] ||= []
-        @pbs[key] << character.pb
-      end
+      @pbs.sort_by! {|x| x[:item].name.downcase}
     elsif params[:sort] == "writer"
-      chars.each do |character|
-        @pbs[character.user] ||= {}
-        @pbs[character.user][character.pb] ||= []
-        @pbs[character.user][character.pb] << (character.template || character)
-      end
+      @pbs.sort_by! {|x| x[:user].username.downcase}
     else
-      chars.each do |character|
-        @pbs[character.pb] ||= []
-        @pbs[character.pb] << (character.template || character)
-      end
+      @pbs.sort_by! {|x| x[:pb].downcase}
     end
   end
 
