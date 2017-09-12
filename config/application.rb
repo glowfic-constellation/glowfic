@@ -26,7 +26,22 @@ module Glowfic
     def initialize
       super
       self.tags = ALLOWED_TAGS
-      self.attributes = ALLOWED_ATTRIBUTES.map{|_,x| x}.flatten.uniq # TODO: get more specific about allowed attributes
+    end
+
+    def scrub_attribute?(name, node)
+      node_name = node.name.downcase
+      name = name.downcase
+      return false if ALLOWED_ATTRIBUTES[:all].include?(name)
+      !ALLOWED_ATTRIBUTES[node_name].try(:include?, name)
+    end
+
+    def scrub_attributes(node)
+      node.attribute_nodes.each do |attr|
+        attr.remove if scrub_attribute?(attr.name, node)
+        scrub_attribute(node, attr)
+      end
+
+      scrub_css_attribute(node)
     end
   end
 

@@ -59,6 +59,12 @@ RSpec.describe ApplicationHelper do
       expect(helper.sanitize_written_content(text)).to eq('<b>test</b> alert("bad!"); <p>text</p>')
     end
 
+    it "permits some attributes on only some tags" do
+      text = '<p><a width="100%" href="https://example.com">test</a></p> <hr width="100%">'
+      expected = '<p><a href="https://example.com">test</a></p> <hr width="100%">'
+      expect(helper.sanitize_written_content(text)).to eq(expected)
+    end
+
     it "fixes unending tags" do
       text = '<a>test'
       expect(helper.sanitize_written_content(text)).to eq('<p><a>test</a></p>')
