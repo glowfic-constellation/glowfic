@@ -182,7 +182,7 @@ module ApplicationHelper
   end
 
   def generate_short(msg)
-    short_msg = Sanitize.fragment(msg) # strip all tags, replacing appropriately with spaces
+    short_msg = Rails::Html::FullSanitizer.new.sanitize(msg) # strip all tags, replacing appropriately with spaces
     return short_msg if short_msg.length <= 75
     short_msg[0...73] + '…' # make the absolute max length 75 characters
   end
