@@ -1,6 +1,8 @@
 class Api::V1::TagsController < Api::ApiController
   before_filter :find_tag, except: :index
 
+  TYPES = Tag.descendants
+
   resource_description do
     description 'Viewing tags'
   end
@@ -8,13 +10,14 @@ class Api::V1::TagsController < Api::ApiController
   api :GET, '/tags', 'Load all the tags of the specified type that match the given query, results ordered by name'
   param :q, String, required: false, desc: "Query string"
   param :page, :number, required: false, desc: 'Page in results (25 per page)'
-  param :t, ['Setting', 'Label', 'ContentWarning', 'GalleryGroup'], required: true, desc: 'Whether to search Settings, Content Warnings, Labels or Gallery Groups'
+  param :t, TYPES.map(&:name), required: true, desc: 'Type of the tag to search'
   error 422, "Invalid parameters provided"
   def index
-    queryset = params[:t].constantize.where("name LIKE ?", params[:q].to_s + '%').order('name')
+    type = find_type
+    queryset = type.where("name LIKE ?", params[:q].to_s + '%').order('name')
 
     # gallery groups only searches groups the specified user has used
-    if (user_id = params[:user_id]) && params[:t] == 'GalleryGroup'
+    if (user_id = params[:user_id]) && type == GalleryGroup
       user_gal_tags = GalleryGroup.joins(gallery_tags: [:gallery]).where(galleries: {user_id: user_id}).pluck(:id)
       user_char_tags = GalleryGroup.joins(character_tags: [:character]).where(characters: {user_id: user_id}).pluck(:id)
       queryset = queryset.where(id: user_gal_tags + user_char_tags)
@@ -38,6 +41,15 @@ class Api::V1::TagsController < Api::ApiController
       error = {message: 'Tag could not be found'}
       render json: {errors: [error]}, status: :not_found and return
     end
-    @tag = @tag.type.constantize.find_by(id: params[:id])
+    @tag = find_type(@tag.type).find_by(id: params[:id])
+  end
+
+  def find_type(type_string=nil)
+    type_string ||= params[:t]
+    unless (type = TYPES.detect {|x| x.name == type_string })
+      error = {message: 'Tag type could not be found'}
+      render json: {errors: [error]}, status: :unprocessable_entity and return
+    end
+    type
   end
 end

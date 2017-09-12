@@ -3,8 +3,11 @@ class ReportsController < ApplicationController
   def index
   end
 
+  REPORT_TYPES = ['daily', 'monthly']
+
   def show
-    unless ['daily', 'monthly'].include?(params[:id])
+    @report_type = REPORT_TYPES.detect {|x| x == params[:id] }
+    unless @report_type
       flash[:error] = "Could not identify the type of report."
       redirect_to reports_path
     end
