@@ -41,7 +41,7 @@
               = image_tag "/images/hourglass.png", class: 'vmid', title: "Thread On Hiatus"
             - if post.abandoned?
               = image_tag "/images/book_grey.png", class: 'vmid', title: "Thread Abandoned"
-            - if post.content_warnings.exists?
+            - if !current_user.try(:hide_warnings) && post.has_content_warnings?
               = image_tag "/images/exclamation.png", class: 'vmid', title: "Content Warning: " + post.content_warnings.pluck(:name).join(', '), alt: '!'
             - if post.created_at.beginning_of_day == @day.beginning_of_day
               = image_tag "/images/new.png", class: 'vmid', title: 'New Today', alt: 'New'
