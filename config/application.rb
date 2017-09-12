@@ -8,21 +8,22 @@ Bundler.require(*Rails.groups)
 
 module Glowfic
   ALLOWED_TAGS = %w(b i u sub sup del hr p br div span pre code h1 h2 h3 h4 h5 h6 ul ol li dl dt dd a img blockquote q table td th tr strike s strong em big small font cite abbr var samp kbd mark ruby rp rt bdo wbr)
+  ALLOWED_ATTRIBUTES = {
+    :all => %w(xml:lang class style title lang dir),
+    "hr" => %w(width),
+    "li" => %w(value),
+    "ol" => %w(reversed start type),
+    "a" => %w(href hreflang rel target type),
+    "del" => %w(cite datetime),
+    "table" => %w(width),
+    "td" => %w(abbr width),
+    "th" => %w(abbr width),
+    "blockquote" => %w(cite),
+    "cite" => %w(href)
+  }
   POST_CONTENT_SANITIZER = Sanitize::Config.merge(Sanitize::Config::RELAXED,
     :elements => ALLOWED_TAGS,
-    :attributes => {
-      :all => ["xml:lang", "class", "style", "title", "lang", "dir"],
-      "hr" => ["width"],
-      "li" => ["value"],
-      "ol" => ["reversed", "start", "type"],
-      "a" => ["href", "hreflang", "rel", "target", "type"],
-      "del" => ["cite", "datetime"],
-      "table" => ["width"],
-      "td" => ["abbr", "width"],
-      "th" => ["abbr", "width"],
-      "blockquote" => ["cite"],
-      "cite" => ["href"]
-    }
+    :attributes => ALLOWED_ATTRIBUTES
   )
 
   class Application < Rails::Application
