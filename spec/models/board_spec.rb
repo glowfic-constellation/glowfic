@@ -56,4 +56,26 @@ RSpec.describe Board do
     board.send(:fix_ordering)
     expect(board.posts.order('section_order asc').pluck(:section_order)).to eq([0, 1, 2, 3])
   end
+
+  describe "#ordered?" do
+    it "should be unordered for default board" do
+      expect(create(:board).ordered?).to eq(false)
+    end
+
+    it "should be ordered if board is not open to anyone" do
+      board = create(:board)
+      board.update_attributes(coauthors: [create(:user)])
+      expect(board.ordered?).to eq(true)
+      board.update_attributes(coauthors: [])
+      expect(board.ordered?).to eq(false)
+      board.update_attributes(cameos: [create(:user)])
+      expect(board.ordered?).to eq(true)
+    end
+
+    it "should be ordered if board has sections" do
+      board = create(:board)
+      create(:board_section, board: board)
+      expect(board.ordered?).to eq(true)
+    end
+  end
 end
