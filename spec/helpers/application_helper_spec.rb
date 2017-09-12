@@ -65,6 +65,12 @@ RSpec.describe ApplicationHelper do
       expect(helper.sanitize_written_content(text)).to eq(expected)
     end
 
+    it "permits valid CSS" do
+      text = '<p><a style="color: red;">test</a></p>'
+      expected = text
+      expect(helper.sanitize_written_content(text)).to eq(expected)
+    end
+
     it "fixes unending tags" do
       text = '<a>test'
       expect(helper.sanitize_written_content(text)).to eq('<p><a>test</a></p>')
