@@ -170,4 +170,14 @@ FactoryGirl.define do
   factory :favorite do
     user
   end
+
+  factory :board_view do
+    user
+    board
+  end
+
+  factory :post_view do
+    user
+    post
+  end
 end

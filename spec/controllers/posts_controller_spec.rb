@@ -227,6 +227,7 @@ RSpec.describe PostsController do
       end
 
       it "requires extant usernames" do
+        ResqueSpec.reset!
         user = create(:user, id: PostsController::SCRAPE_USERS.first)
         login_as(user)
         url = 'http://wild-pegasus-appeared.dreamwidth.org/403.html?style=site&view=flat'
@@ -240,6 +241,7 @@ RSpec.describe PostsController do
       end
 
       it "scrapes" do
+        ResqueSpec.reset!
         user = create(:user, id: PostsController::SCRAPE_USERS.first)
         login_as(user)
         url = 'http://www.dreamwidth.org'

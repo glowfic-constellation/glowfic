@@ -13,7 +13,7 @@
         - if @message.parent
           = link_to @message.recipient.try(:username), user_path(@message.recipient)
         - else
-          = f.collection_select :recipient_id, User.order('username asc').all - [current_user], :id, :username, prompt: true
+          = f.select :recipient_id, @select_items, prompt: true
     - unless @message.thread_id.present?
       %tr
         %th.sub.padding-10 Subject

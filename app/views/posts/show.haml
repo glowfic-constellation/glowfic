@@ -159,7 +159,7 @@
   - if @post.author_ids.include?(current_user.id) || (!@post.authors_locked? && !@reply.content.nil?)
     = render partial: 'replies/write', locals: { reply: @reply, url: replies_path, method: :post }
   - elsif !@post.authors_locked?
-    .post-expander
+    .post-expander.post-editor-expander
       .info + Join Thread
       .hidden
         = render partial: 'replies/write', locals: { reply: @reply, url: replies_path, method: :post }

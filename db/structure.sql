@@ -1534,7 +1534,7 @@ CREATE INDEX index_board_authors_on_user_id ON board_authors USING btree (user_i
 -- Name: index_board_views_on_user_id_and_board_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_board_views_on_user_id_and_board_id ON board_views USING btree (user_id, board_id);
+CREATE UNIQUE INDEX index_board_views_on_user_id_and_board_id ON board_views USING btree (user_id, board_id);
 
 
 --
@@ -1737,7 +1737,7 @@ CREATE INDEX index_post_viewers_on_post_id ON post_viewers USING btree (post_id)
 -- Name: index_post_views_on_user_id_and_post_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_post_views_on_user_id_and_post_id ON post_views USING btree (user_id, post_id);
+CREATE UNIQUE INDEX index_post_views_on_user_id_and_post_id ON post_views USING btree (user_id, post_id);
 
 
 --
@@ -2036,4 +2036,6 @@ INSERT INTO schema_migrations (version) VALUES ('20170826211901');
 INSERT INTO schema_migrations (version) VALUES ('20170828144608');
 
 INSERT INTO schema_migrations (version) VALUES ('20170907180029');
+
+INSERT INTO schema_migrations (version) VALUES ('20170911235423');
 

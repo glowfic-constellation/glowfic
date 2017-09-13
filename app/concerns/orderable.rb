@@ -11,7 +11,7 @@ module Orderable
     def reorder_others
       return unless destroyed? || order_change?
       board_checking = Board.find_by_id(board_id_was) || board
-      return if board_checking.open_to_anyone? && !board_checking.board_sections.exists?
+      return unless board_checking.ordered?
 
       other_where = Hash[ordered_attributes.map { |atr| [atr, send("#{atr}_was")] }]
       others = self.class.where(other_where).order('section_order asc')

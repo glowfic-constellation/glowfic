@@ -28,7 +28,6 @@ gem 'resque'
 gem 'resque_mailer'
 gem 'resque-retry'
 gem 'resque-web', require: 'resque_web'
-gem 'sanitize'
 gem 'sass-rails'
 gem 'select2-rails'
 gem 'test-unit', '~> 3.0' # required by Heroku for production console
@@ -46,6 +45,8 @@ end
 
 group :development do
   gem 'web-console', '~> 2.0'
+  gem 'rack-mini-profiler'
+  gem 'memory_profiler'
 end
 
 group :development, :test do

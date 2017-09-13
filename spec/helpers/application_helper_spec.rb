@@ -24,7 +24,7 @@ RSpec.describe ApplicationHelper do
 
     it "removes unpermitted elements" do
       text = '<b>test</b> <script type="text/javascript">alert("bad!");</script> <p>text</p>'
-      expect(helper.sanitize_post_description(text)).to eq('test alert("bad!");  text ')
+      expect(helper.sanitize_post_description(text)).to eq('test alert("bad!"); text')
     end
 
     it "fixes unending tags" do
@@ -59,6 +59,18 @@ RSpec.describe ApplicationHelper do
       expect(helper.sanitize_written_content(text)).to eq('<b>test</b> alert("bad!"); <p>text</p>')
     end
 
+    it "permits some attributes on only some tags" do
+      text = '<p><a width="100%" href="https://example.com">test</a></p> <hr width="100%">'
+      expected = '<p><a href="https://example.com">test</a></p> <hr width="100%">'
+      expect(helper.sanitize_written_content(text)).to eq(expected)
+    end
+
+    it "permits valid CSS" do
+      text = '<p><a style="color: red;">test</a></p>'
+      expected = text
+      expect(helper.sanitize_written_content(text)).to eq(expected)
+    end
+
     it "fixes unending tags" do
       text = '<a>test'
       expect(helper.sanitize_written_content(text)).to eq('<p><a>test</a></p>')
@@ -86,15 +98,20 @@ RSpec.describe ApplicationHelper do
       expect(helper.sanitize_written_content(text)).to eq(text)
     end
 
+    it "does not convert linbreaks in text with complicated <p> tags" do
+      text = "<p style=\"width: 100%;\">line1\nline2</p>"
+      expect(helper.sanitize_written_content(text)).to eq(text)
+    end
+
     it "defaults to old linebreak-to-br format when blockquote detected" do
       text = "<blockquote>Blah. Blah.\r\nBlah.\r\n\r\nBlah blah.</blockquote>\r\nBlah."
-      expected = "<blockquote>Blah. Blah.\n<br>Blah.\n<br>\n<br>Blah blah.</blockquote>\n<br>Blah."
+      expected = "<blockquote>Blah. Blah.<br>Blah.<br><br>Blah blah.</blockquote><br>Blah."
       expect(helper.sanitize_written_content(text)).to eq(expected)
     end
 
     it "does not touch blockquotes if <br> or <p> detected" do
       text = "<blockquote>Blah. Blah.<br />Blah.</blockquote>\r\n<blockquote>Blah blah.</blockquote>\r\n<p>Blah.</p>"
-      expected = "<blockquote>Blah. Blah.<br>Blah.</blockquote>\n<blockquote>Blah blah.</blockquote>\n<p>Blah.</p>"
+      expected = "<blockquote>Blah. Blah.<br>Blah.</blockquote>\r\n<blockquote>Blah blah.</blockquote>\r\n<p>Blah.</p>"
       expect(helper.sanitize_written_content(text)).to eq(expected)
     end
 

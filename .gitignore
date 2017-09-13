@@ -29,3 +29,6 @@ tmux-server-*
 
 # Ignore simplecov reports; generate locally as desired.
 coverage/*
+
+# Ignore rspec persistence file
+spec/examples.txt

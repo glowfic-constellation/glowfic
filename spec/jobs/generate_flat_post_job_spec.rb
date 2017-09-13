@@ -1,6 +1,7 @@
 require "spec_helper"
 
 RSpec.describe GenerateFlatPostJob do
+  before(:each) { ResqueSpec.reset! }
   it "does nothing with invalid post id" do
     expect($redis).not_to receive(:set)
     GenerateFlatPostJob.perform(-1)

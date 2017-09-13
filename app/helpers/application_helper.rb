@@ -130,7 +130,7 @@ module ApplicationHelper
   end
 
   def sanitize_post_description(desc)
-    Sanitize.fragment(desc, elements: ['a'], attributes: {'a' => ['href']})
+    sanitize desc, scrubber: Glowfic::DescriptionScrubber.new
   end
 
   # modified version of split_paragraphs that doesn't mangle large breaks
@@ -162,11 +162,11 @@ module ApplicationHelper
     end
   end
 
-  P_TAG = "<p>".freeze
+  P_TAG = /<p( [^>]*)?>/
   BR_TAG = /<br *\/?>/
   BLOCKQUOTE_QUICK_SEARCH = '<blockquote'.freeze
   BLOCKQUOTE_TAG = /<blockquote( |>)/
-  LINEBREAK = "\n".freeze
+  LINEBREAK = /\r?\n/
   BR = '<br>'.freeze
 
   # specific blockquote handling is due to simple_format wanting to wrap a blockquote in a paragraph
@@ -178,11 +178,11 @@ module ApplicationHelper
         simple_format_largebreak(content, sanitize: false)
       end
     end
-    Sanitize.fragment(content, Glowfic::POST_CONTENT_SANITIZER)
+    sanitize content, scrubber: Glowfic::WrittenScrubber.new
   end
 
   def generate_short(msg)
-    short_msg = Sanitize.fragment(msg) # strip all tags, replacing appropriately with spaces
+    short_msg = Rails::Html::FullSanitizer.new.sanitize(msg) # strip all tags, replacing appropriately with spaces
     return short_msg if short_msg.length <= 75
     short_msg[0...73] + '…' # make the absolute max length 75 characters
   end

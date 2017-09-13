@@ -18,6 +18,7 @@ class MessagesController < ApplicationController
   def new
     @message = Message.new
     @message.recipient = User.find_by_id(params[:recipient_id])
+    @page_title = 'Compose Message'
   end
 
   def create
@@ -28,6 +29,7 @@ class MessagesController < ApplicationController
     if params[:button_preview]
       @messages = Message.where(thread_id: @message.thread_id).order('id asc') if @message.thread_id
       editor_setup
+      @page_title = 'Compose Message'
       render action: :preview and return
     end
 
@@ -38,6 +40,7 @@ class MessagesController < ApplicationController
       flash.now[:error][:array] << cached_error if cached_error.present?
       flash.now[:error][:message] = "Your message could not be sent because of the following problems:"
       editor_setup
+      @page_title = 'Compose Message'
       render action: :new and return
     end
 
@@ -70,7 +73,7 @@ class MessagesController < ApplicationController
     end
     @message = Message.new
     set_message_parent(message.last_in_thread)
-    use_javascript('messages')
+    editor_setup
   end
 
   def mark
@@ -106,7 +109,16 @@ class MessagesController < ApplicationController
 
   def editor_setup
     use_javascript('messages')
-    @page_title = 'Compose Message'
+    unless @message.try(:parent)
+      recent_ids = Message.where(sender_id: current_user.id).order('MAX(id) desc').limit(5).group(:recipient_id).pluck(:recipient_id)
+      recents = User.where(id: recent_ids).pluck(:username, :id).sort_by{|x| recent_ids.index(x[1]) }
+      users = User.where.not(id: current_user.id).order(:username).pluck(:username, :id)
+      @select_items = if recents.present?
+        {:'Recently messaged' => recents, :'Other users' => users}
+      else
+        {Users: users}
+      end
+    end
   end
 
   def set_message_parent(parent_id)
