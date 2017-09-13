@@ -116,6 +116,13 @@ $(document).ready(function() {
   $("#icon_dropdown").change(function() { setIconFromId($(this).val()); });
   $("#icon_dropdown").keyup(function() { setIconFromId($(this).val()); });
 
+  var editorHelp = $("#editor-help-box");
+  editorHelp.dialog({
+    autoOpen: false,
+    title: 'Editor Help',
+    width: 400
+  });
+
   $('.view-button').click(function() {
     if (this.id === 'rtf') {
       $("#html").removeClass('selected');
@@ -133,10 +140,11 @@ $(document).ready(function() {
       $(this).addClass('selected');
       tinyMCE.execCommand('mceRemoveEditor', false, 'post_content');
       tinyMCE.execCommand('mceRemoveEditor', false, 'reply_content');
-    } else if (this.id === 'markup-allowed') {
-      $("#markup-allowed-box").toggle();
-      if ($("#markup-allowed-box").is(":visible")) {
-        $('html, body').scrollTop($("#markup-allowed-box").offset().top);
+    } else if (this.id === 'editor-help') {
+      if (editorHelp.dialog('isOpen')) {
+        editorHelp.dialog('close');
+      } else {
+        editorHelp.dialog('open');
       }
     }
   });

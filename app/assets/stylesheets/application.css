@@ -11,7 +11,12 @@
  * file per style scope.
  *
  *= require normalize
+ *= require jquery-ui/core
+ *= require jquery-ui/theme
+ *= require jquery-ui/resizable
  *= require jquery-ui/sortable
+ *= require jquery-ui/button
+ *= require jquery-ui/dialog
  *= require select2
  *= require global
  *= require characters
