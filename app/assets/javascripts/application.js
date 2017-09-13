@@ -12,8 +12,13 @@
 //
 //= require jquery
 //= require jquery_ujs
+//= require jquery-ui/core
 //= require jquery-ui/widget
+//= require jquery-ui/position
+//= require jquery-ui/widgets/resizable
 //= require jquery-ui/widgets/sortable
+//= require jquery-ui/widgets/button
+//= require jquery-ui/widgets/dialog
 //= require jquery-fileupload/basic
 //= require tinymce-jquery
 //= require select2

@@ -1,0 +1,67 @@
+#editor-help-box.hidden
+  %ul
+    %li= link_to 'General editor help', '#editor-help-general'
+    %li= link_to 'RTF editor', '#editor-help-rtf'
+    %li= link_to 'HTML editor', '#editor-help-html'
+  #editor-help-general
+    %h3 General editor help
+    %h4 Joining a thread
+    %p
+      To join a thread, press the "Join Thread" expander, then write a reply and submit it.
+    %p
+      Most threads
+      %strong are not
+      intended to be open to the public, so please ensure you only join threads where that's allowed – this
+      %strong does not
+      necessarily correspond to continuities that have "Anyone" as their listed authors.
+    %p
+      Note that just clicking the "Join Thread" expander will not cause you to join the thread, but will show the editor. You can safely reload the page and you will not have joined the thread. If you then submit the editor and reply to the thread, you will then be listed as one of its authors.
+    %h4 The info box
+    %p
+      The left panel (or upper panel, on mobile) offers information about the character you're posting with.
+    %p
+      The bottom bar is your username, and pressing the 'Choose Character' symbol in this bar allows you to swap to a character, or to your default user account. If the character you select has aliases attached, you can use the 'Choose Alias' symbol on the character's name bar to swap between those and the character's default name.
+    %p
+      The icon can be clicked to open a display of the galleries attached to the character. You can then click one of these icons to select it. Alternatively, you can use the keyword dropdown box to select an icon.
+    %h4 Quick switcher
+    %p
+      Once you have used a character in a thread, they can then be found under the info box by their default icon (or the first letters of their name, if no default icon is set). Clicking these boxes allows you to switch back between them more easily, or to your default user account. The user account can be hidden from this list in your account settings, and the number of characters shown here is limited to the ten most recent in the thread.
+  #editor-help-rtf
+    %h3 RTF editor
+    %p
+      The RTF editor (powered by TinyMCE) allows you to type your replies while showing you approximately how the reply will be displayed on the page. It also provides a toolbar for more formatting options, most of which are also accessible using standard keyboard shortcuts.
+    %p
+      Paragraphs are inserted using the Return key. Single linebreaks can be inserted by also holding the Shift key when you press the Return key.
+    %p
+      %strong Beware:
+      when pasting content into the editor, such as from another reply or from another website, you may accidentally transfer font or background formatting properties. Please instead paste without formatting (usually available on right-click) and re-format with bold, italics, underline (etc.) as necessary, to avoid breaking the display of your reply for users on other layouts.
+  #editor-help-html
+    %h3 HTML editor
+    %p
+      The HTML editor doesn't offer you the same functionality that the RTF editor does, but allows a simpler interface. It also permits more control over the formatting of your replies if you know HTML or CSS.
+    %p
+      The HTML tags permitted are listed below. If you use an unpermitted tag, it will not show when you use the preview button or save your reply.
+    %p
+      The site will automatically insert linebreak tags into the HTML when you use a manual linebreak in the editor. It will also wrap blocks of text split by an empty line in paragraphs, unless any of the text contains a
+      %code="<p>"
+      or a
+      %code="<br>"
+      tag.
+    %div#markup-allowed-tags
+      %strong Allowed tags:
+      %ul.inline-list
+        - Glowfic::ALLOWED_TAGS.sort.each do |tag|
+          %li <code>#{tag}</code>
+    %br
+    %div#markup-allowed-attributes
+      %strong Allowed attributes (by tag):
+      %ul
+      - Glowfic::ALLOWED_ATTRIBUTES.each do |tag_name, attrs|
+        %li
+          - if tag_name == :all
+            %strong #{tag_name}:
+          - else
+            %strong <code>#{tag_name}</code>:
+          %ul.inline-list
+            - attrs.each do |attribute|
+              %li <code>#{attribute}</code>

@@ -116,6 +116,16 @@ $(document).ready(function() {
   $("#icon_dropdown").change(function() { setIconFromId($(this).val()); });
   $("#icon_dropdown").keyup(function() { setIconFromId($(this).val()); });
 
+  var editorHelp = $("#editor-help-box");
+  var defaultHelpWidth = 500;
+  var defaultHelpHeight = 700;
+  editorHelp.dialog({
+    autoOpen: false,
+    title: 'Editor Help',
+    width: defaultHelpWidth,
+    height: defaultHelpHeight
+  });
+
   $('.view-button').click(function() {
     if (this.id === 'rtf') {
       $("#html").removeClass('selected');
@@ -133,6 +143,15 @@ $(document).ready(function() {
       $(this).addClass('selected');
       tinyMCE.execCommand('mceRemoveEditor', false, 'post_content');
       tinyMCE.execCommand('mceRemoveEditor', false, 'reply_content');
+    } else if (this.id === 'editor-help') {
+      if (editorHelp.dialog('isOpen')) {
+        editorHelp.dialog('close');
+      } else {
+        var width = Math.min($(window).width()-20, defaultHelpWidth);
+        var height = Math.min($(window).height()-20, defaultHelpHeight);
+        editorHelp.dialog('option', {width: width, height: height}).dialog('open');
+        editorHelp.dialog('open');
+      }
     }
   });
 

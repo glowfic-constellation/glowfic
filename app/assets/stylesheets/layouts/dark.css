@@ -55,3 +55,11 @@ a, #content a, #content a:visited { color: #66997D; }
 }
 .view-button.selected { background-color: #6A6A6A; }
 .link-box { color: #DDDDDD; }
+
+/* Hovering help box on post editor */
+.ui-widget-content { background-color: #333; color: #A2A2A2; }
+.ui-widget.ui-widget-content { border-color: #444; }
+.ui-widget-header { background-color: #2B2B2B; color: #C2C2C2; border-color: #262626; }
+.ui-state-default, .ui-widget-content .ui-state-default, .ui-widget-header .ui-state-default, .ui-button, html .ui-button.ui-state-disabled:hover, html .ui-button.ui-state-disabled:active { background-color: #383838; border-color: #484848; }
+.ui-state-hover, .ui-widget-content .ui-state-hover, .ui-widget-header .ui-state-hover, .ui-state-focus, .ui-widget-content .ui-state-focus, .ui-widget-header .ui-state-focus, .ui-button:hover, .ui-button:focus { background-color: #383838; border-color: #484848; }
+/* TODO: hover, click */

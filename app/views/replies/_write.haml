@@ -3,6 +3,7 @@
     %b Reply
     .view-button#rtf{class: ('selected' if (params[:editor_mode] || current_user.default_editor) == 'rtf')} Rich Text
     .view-button#html{class: ('selected' if (params[:editor_mode] || current_user.default_editor) == 'html')} HTML
+    .view-button#editor-help{title: 'Help'} ?
     %br
     = unread_warning.try(:html_safe)
     %br
@@ -20,5 +21,7 @@
       = submit_tag "Preview", class: 'button', id: 'preview_button', name: 'button_preview'
       - if reply.new_record?
         = submit_tag "Save Draft", class: 'button', id: 'draft_button', data: { disable_with: 'Saving...' }, name: 'button_draft'
+    %br
+    = render partial: 'posts/editor_help'
 
 = render partial: 'posts/editor', locals: {item: reply}

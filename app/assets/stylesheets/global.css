@@ -101,3 +101,7 @@ button, .button {
 .link-box.blue { background-color: #4455AA;}
 .link-box.orange { background-color: #EA8A40;}
 #post-form-wrapper { margin-top: 5px; }
+
+/* Inline lists */
+.inline-list { display: inline; padding-left: 0; }
+.inline-list li { display: inline; list-style-type: none; margin-right: 4px; }
