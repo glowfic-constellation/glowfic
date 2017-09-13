@@ -2,20 +2,25 @@
 $(document).ready(function() {
   $(".gallery-box").click(function() {
     // Update toggle +/-
-    var toggleBox = $(this).children('.view-button').first().children('img').first();
+    var elem = $(this);
+    var toggleBox = elem.children('.view-button').first().children('img').first();
     var wasVisible = (toggleBox.attr('src').includes("up"));
     toggleBox.attr('src', (wasVisible ? '/images/bullet_arrow_down.png' : '/images/bullet_arrow_up.png'));
 
     // Toggle display
-    var galleryId = $(this).data('id');
+    var galleryId = elem.data('id');
     $("#icons-" + galleryId).toggle();
 
     // Nothing more necessary if collapsing or already loaded
-    if (wasVisible) { return; }
-    if ($("#icons-" + galleryId + " .gallery").html().length > 0) { return; }
+    if (wasVisible) return;
+    if (elem.data('loading') || elem.data('loaded')) return;
 
     // Load and bind icons if they have not already been loaded
-    $.get("/api/v1/galleries/" + galleryId, {user_id: gon.user_id}, function(resp) {
+    elem.data('loading', true);
+    $.ajax({
+      url: "/api/v1/galleries/" + galleryId,
+      data: {user_id: gon.user_id}
+    }).done(function(resp) {
       $.each(resp.icons, function(index, icon) {
         var iconDiv = $("<div>").attr({class: 'gallery-icon'});
         var iconLink = $("<a>").attr({href: "/icons/" + icon.id});
@@ -31,6 +36,10 @@ $(document).ready(function() {
 
         $("#icons-" + galleryId + " .gallery").append(iconDiv);
       });
+      elem.data('loading', false).data('loaded', true);
+    }).fail(function() {
+      elem.data('loading', false).trigger('click');
+      // TODO: notify user?
     });
   });
 
