@@ -1,11 +1,16 @@
 #markup-allowed-box{style: 'display:none'}
-  %b Allowed tags in the HTML editor:
-  = Glowfic::ALLOWED_TAGS.sort * ', '
+  %div#markup-allowed-tags
+    %strong Allowed tags in the HTML editor:
+    %ul.comma-separated-list
+      - Glowfic::ALLOWED_TAGS.sort.each do |tag|
+        %li= tag
   %br
-  %br
-  %b Allowed attributes:
-  - Glowfic::ALLOWED_ATTRIBUTES.each do |tag_name, attrs|
-    = succeed ':' do
-      %b= tag_name
-    = attrs * ', '
-    %br
+  %div#markup-allowed-attributes
+    %strong Allowed attributes:
+    %ul
+    - Glowfic::ALLOWED_ATTRIBUTES.each do |tag_name, attrs|
+      %li
+        %strong #{tag_name}:
+        %ul.comma-separated-list
+          - attrs.each do |attribute|
+            %li= attribute
