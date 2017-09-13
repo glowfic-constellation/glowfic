@@ -162,7 +162,7 @@ module ApplicationHelper
     end
   end
 
-  P_TAG = "<p>".freeze
+  P_TAG = /<p( [^>]*)?>/
   BR_TAG = /<br *\/?>/
   BLOCKQUOTE_QUICK_SEARCH = '<blockquote'.freeze
   BLOCKQUOTE_TAG = /<blockquote( |>)/

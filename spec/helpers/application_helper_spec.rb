@@ -98,6 +98,11 @@ RSpec.describe ApplicationHelper do
       expect(helper.sanitize_written_content(text)).to eq(text)
     end
 
+    it "does not convert linbreaks in text with complicated <p> tags" do
+      text = "<p style=\"width: 100%;\">line1\nline2</p>"
+      expect(helper.sanitize_written_content(text)).to eq(text)
+    end
+
     it "defaults to old linebreak-to-br format when blockquote detected" do
       text = "<blockquote>Blah. Blah.\r\nBlah.\r\n\r\nBlah blah.</blockquote>\r\nBlah."
       expected = "<blockquote>Blah. Blah.<br>Blah.<br><br>Blah blah.</blockquote><br>Blah."
