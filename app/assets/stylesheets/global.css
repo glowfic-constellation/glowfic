@@ -102,8 +102,6 @@ button, .button {
 .link-box.orange { background-color: #EA8A40;}
 #post-form-wrapper { margin-top: 5px; }
 
-/* Comma-separated lists */
-.comma-separated-list { display: inline; padding-left: 0; }
-.comma-separated-list li { display: inline; list-style-type: none; }
-.comma-separated-list li:after { content: ', '; }
-.comma-separated-list li:last-child:after { content: ''; }
+/* Inline lists */
+.inline-list { display: inline; padding-left: 0; }
+.inline-list li { display: inline; list-style-type: none; margin-right: 4px; }

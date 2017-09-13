@@ -117,10 +117,13 @@ $(document).ready(function() {
   $("#icon_dropdown").keyup(function() { setIconFromId($(this).val()); });
 
   var editorHelp = $("#editor-help-box");
+  var defaultHelpWidth = 500;
+  var defaultHelpHeight = 700;
   editorHelp.dialog({
     autoOpen: false,
     title: 'Editor Help',
-    width: 400
+    width: defaultHelpWidth,
+    height: defaultHelpHeight
   });
 
   $('.view-button').click(function() {
@@ -144,6 +147,9 @@ $(document).ready(function() {
       if (editorHelp.dialog('isOpen')) {
         editorHelp.dialog('close');
       } else {
+        var width = Math.min($(window).width()-20, defaultHelpWidth);
+        var height = Math.min($(window).height()-20, defaultHelpHeight);
+        editorHelp.dialog('option', {width: width, height: height}).dialog('open');
         editorHelp.dialog('open');
       }
     }
