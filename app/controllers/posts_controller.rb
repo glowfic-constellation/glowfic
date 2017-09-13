@@ -226,26 +226,31 @@ class PostsController < WritableController
 
     return unless params[:commit].present?
 
-    arel = Post.arel_table
-    @search_results = Post.order('tagged_at desc').includes(:board)
+    @search_results = Post.order('tagged_at desc')
     @search_results = @search_results.where(board_id: params[:board_id]) if params[:board_id].present?
     @search_results = @search_results.where(id: Setting.find(params[:setting_id]).post_tags.pluck(:post_id)) if params[:setting_id].present?
     @search_results = @search_results.search(params[:subject]).where('LOWER(subject) LIKE ?', "%#{params[:subject].downcase}%") if params[:subject].present?
     @search_results = @search_results.where(status: Post::STATUS_COMPLETE) if params[:completed].present?
     if params[:author_id].present?
-      post_ids = Reply.where(user_id: params[:author_id]).pluck('distinct post_id')
-      where = arel[:user_id].eq(params[:author_id]).or(arel[:id].in(post_ids))
-      @search_results = @search_results.where(where)
+      post_ids = nil
+      params[:author_id].each do |author_id|
+        author_posts = Reply.where(user_id: author_id).pluck('distinct post_id') + Post.where(user_id: author_id).pluck(:id)
+        if post_ids.nil?
+          post_ids = author_posts
+        else
+          post_ids = post_ids & author_posts
+        end
+        break if post_ids.empty?
+      end
+      @search_results = @search_results.where(id: post_ids.uniq)
     end
     if params[:character_id].present?
+      arel = Post.arel_table
       post_ids = Reply.where(character_id: params[:character_id]).pluck('distinct post_id')
       where = arel[:character_id].eq(params[:character_id]).or(arel[:id].in(post_ids))
       @search_results = @search_results.where(where)
     end
-    @search_results = @search_results.paginate(page: page, per_page: 25)
-    if @search_results.total_pages <= 1
-      @search_results = @search_results.select {|post| post.visible_to?(current_user)}.paginate(page: page, per_page: 25)
-    end
+    @search_results = posts_from_relation(@search_results).paginate(page: page, per_page: 25)
   end
 
   def warnings

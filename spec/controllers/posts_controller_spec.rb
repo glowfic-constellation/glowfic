@@ -105,8 +105,31 @@ RSpec.describe PostsController do
         filtered_post = posts.last
         first_post = posts.first
         create(:reply, post: first_post, user: filtered_post.user)
-        get :search, commit: true, author_id: filtered_post.user_id
+        get :search, commit: true, author_id: [filtered_post.user_id]
         expect(assigns(:search_results)).to match_array([filtered_post, first_post])
+      end
+
+      it "filters by multiple authors" do
+        author1 = create(:user)
+        author2 = create(:user)
+        nonauthor = create(:user)
+
+        found_posts = []
+        create(:post, user: author1) # one author but not the other, post
+        post = create(:post, user: nonauthor) # one author but not the other, reply
+        create(:reply, user: author2, post: post)
+
+        post = create(:post, user: author1) # both authors, one post only
+        create(:reply, post: post, user: author2)
+        found_posts << post
+
+        post = create(:post, user: nonauthor) # both authors, replies only
+        create(:reply, post: post, user: author1)
+        create(:reply, post: post, user: author2)
+        found_posts << post
+
+        get :search, commit: true, author_id: [author1.id, author2.id]
+        expect(assigns(:search_results)).to match_array(found_posts)
       end
 
       it "filters by characters" do
