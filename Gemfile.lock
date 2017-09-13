@@ -84,7 +84,6 @@ GEM
     concurrent-ruby (1.0.5)
     crack (0.4.3)
       safe_yaml (~> 1.0.0)
-    crass (1.0.2)
     cucumber (2.4.0)
       builder (>= 2.1.2)
       cucumber-core (~> 1.5.0)
@@ -193,8 +192,6 @@ GEM
       activesupport (>= 3.0.0)
     nokogiri (1.8.0)
       mini_portile2 (~> 2.2.0)
-    nokogumbo (1.4.13)
-      nokogiri
     pg (0.21.0)
     pg_search (2.1.0)
       activerecord (>= 4.2)
@@ -318,10 +315,6 @@ GEM
     rufus-scheduler (3.4.2)
       et-orbi (~> 1.0)
     safe_yaml (1.0.4)
-    sanitize (4.5.0)
-      crass (~> 1.0.2)
-      nokogiri (>= 1.4.4)
-      nokogumbo (~> 1.4.1)
     sass (3.5.1)
       sass-listen (~> 4.0.0)
     sass-listen (4.0.0)
@@ -438,7 +431,6 @@ DEPENDENCIES
   resque_mailer
   resque_spec
   rspec-rails
-  sanitize
   sass-rails
   seed_dump (~> 3.2)
   select2-rails

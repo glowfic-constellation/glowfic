@@ -7,23 +7,51 @@ require 'rails/all'
 Bundler.require(*Rails.groups)
 
 module Glowfic
-  ALLOWED_TAGS = ["b", "i", "u", "sub", "sup", "del", "hr", "p", "br", "div", "span", "pre", "code", "h1", "h2", "h3", "h4", "h5", "h6", "ul", "ol", "li", "dl", "dt", "dd", "a", "img", "blockquote", "q", "table", "td", "th", "tr", "strike", "s", "strong", "em", "big", "small", "font", "cite", "abbr", "var", "samp", "kbd", "mark", "ruby", "rp", "rt", "bdo", "wbr"]
-  POST_CONTENT_SANITIZER = Sanitize::Config.merge(Sanitize::Config::RELAXED,
-    :elements => ALLOWED_TAGS,
-    :attributes => {
-      :all => ["xml:lang", "class", "style", "title", "lang", "dir"],
-      "hr" => ["width"],
-      "li" => ["value"],
-      "ol" => ["reversed", "start", "type"],
-      "a" => ["href", "hreflang", "rel", "target", "type"],
-      "del" => ["cite", "datetime"],
-      "table" => ["width"],
-      "td" => ["abbr", "width"],
-      "th" => ["abbr", "width"],
-      "blockquote" => ["cite"],
-      "cite" => ["href"]
-    }
-  )
+  ALLOWED_TAGS = %w(b i u sub sup del hr p br div span pre code h1 h2 h3 h4 h5 h6 ul ol li dl dt dd a img blockquote q table td th tr strike s strong em big small font cite abbr var samp kbd mark ruby rp rt bdo wbr)
+  ALLOWED_ATTRIBUTES = {
+    :all => %w(xml:lang class style title lang dir),
+    "hr" => %w(width),
+    "li" => %w(value),
+    "ol" => %w(reversed start type),
+    "a" => %w(href hreflang rel target type),
+    "del" => %w(cite datetime),
+    "table" => %w(width),
+    "td" => %w(abbr width),
+    "th" => %w(abbr width),
+    "blockquote" => %w(cite),
+    "cite" => %w(href)
+  }
+
+  class WrittenScrubber < Rails::Html::PermitScrubber
+    def initialize
+      super
+      self.tags = ALLOWED_TAGS
+    end
+
+    def scrub_attribute?(name, node)
+      node_name = node.name.downcase
+      name = name.downcase
+      return false if ALLOWED_ATTRIBUTES[:all].include?(name)
+      !ALLOWED_ATTRIBUTES[node_name].try(:include?, name)
+    end
+
+    def scrub_attributes(node)
+      node.attribute_nodes.each do |attr|
+        attr.remove if scrub_attribute?(attr.name, node)
+        scrub_attribute(node, attr)
+      end
+
+      scrub_css_attribute(node)
+    end
+  end
+
+  class DescriptionScrubber < Rails::Html::PermitScrubber
+    def initialize
+      super
+      self.tags = %w(a)
+      self.attributes = %w(href)
+    end
+  end
 
   class Application < Rails::Application
     # Settings in config/environments/* take precedence over those specified here.
