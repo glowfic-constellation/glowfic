@@ -46,10 +46,6 @@ class Api::V1::TagsController < Api::ApiController
 
   def find_type(type_string=nil)
     type_string ||= params[:t]
-    unless (type = TYPES.detect {|x| x.name == type_string })
-      error = {message: 'Tag type could not be found'}
-      render json: {errors: [error]}, status: :unprocessable_entity and return
-    end
-    type
+    TYPES.detect {|x| x.name == type_string }
   end
 end
