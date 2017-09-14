@@ -66,6 +66,7 @@ group :test do
   gem 'codeclimate-test-reporter', '~> 1.0.0'
   gem 'factory_girl_rails'
   gem 'json'
+  gem 'rails-controller-testing'
   gem 'resque_spec'
   gem 'simplecov'
   gem 'timecop'
