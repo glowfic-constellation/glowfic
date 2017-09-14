@@ -61,17 +61,25 @@ class ChangeTimestampsToUtc < ActiveRecord::Migration
 
   def up
     local_zone = fetch_zone
-    utc_zone = 'UTC'
+    target_zone = 'UTC'
+    if local_zone == target_zone
+      say "Skipping migration as local_zone (#{local_zone}) matches target_zone (#{target_zone})"
+      return
+    end
     TABLES.each do |table_name, cols|
-      execute sql_for_migrate(table_name, cols, local_zone, utc_zone)
+      execute sql_for_migrate(table_name, cols, local_zone, target_zone)
     end
   end
 
   def down
     local_zone = fetch_zone
-    utc_zone = 'UTC'
+    target_zone = 'UTC'
+    if local_zone == target_zone
+      say "Skipping migration as local_zone (#{local_zone}) matches target_zone (#{target_zone})"
+      return
+    end
     TABLES.reverse_each do |table_name, cols|
-      execute sql_for_migrate(table_name, cols, utc_zone, local_zone)
+      execute sql_for_migrate(table_name, cols, target_zone, local_zone)
     end
   end
 end
