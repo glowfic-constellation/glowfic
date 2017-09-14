@@ -12,7 +12,7 @@ body { color: #A2A2A2; }
   background-color: #424242;
   color: #c2c2c2;
 }
-a, #content a, #content a:visited { color: #66997D; }
+a, a:visited, #content a, #content a:visited { color: #66997D; }
 #content a:hover, a:hover { color: #B3B3B3; }
 #header #nav-bottom, #header { background-color: #56554F; }
 #header #logo { background-color: #3B4841; }
@@ -63,6 +63,7 @@ a, #content a, #content a:visited { color: #66997D; }
 .ui-widget-header { background-color: #2B2B2B; color: #C2C2C2; border-color: #262626; }
 .ui-state-default, .ui-widget-content .ui-state-default, .ui-widget-header .ui-state-default, .ui-button, html .ui-button.ui-state-disabled:hover, html .ui-button.ui-state-disabled:active { background-color: #383838; border-color: #484848; }
 .ui-state-hover, .ui-widget-content .ui-state-hover, .ui-widget-header .ui-state-hover, .ui-state-focus, .ui-widget-content .ui-state-focus, .ui-widget-header .ui-state-focus, .ui-button:hover, .ui-button:focus { background-color: #383838; border-color: #484848; }
+.ui-widget-content a { color: #66997D; }
 /* TODO: hover, click */
 
 /* Darken input boxes */
