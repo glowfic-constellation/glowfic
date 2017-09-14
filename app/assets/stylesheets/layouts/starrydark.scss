@@ -116,3 +116,5 @@ $SELECT2_SEARCH: $SELECT2_HIGHLIGHT;
 /* - default */
 #content .mce-panel, #content .mce-btn { background-color: $MCE_PANEL_BG; }
 #content .mce-ico { color: $FONT_COLOR; }
+/* footer: 'powered by' text */
+#content .mce-branding-powered-by { background-color: $MCE_PANEL_BG; border-color: $INPUT_BORDER; }
