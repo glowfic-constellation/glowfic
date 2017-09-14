@@ -1,7 +1,7 @@
 class Api::V1::TagsController < Api::ApiController
   before_filter :find_tag, except: :index
 
-  TYPES = Tag.descendants
+  TYPES = [Setting, Label, ContentWarning, GalleryGroup]
 
   resource_description do
     description 'Viewing tags'
@@ -46,10 +46,6 @@ class Api::V1::TagsController < Api::ApiController
 
   def find_type(type_string=nil)
     type_string ||= params[:t]
-    unless (type = TYPES.detect {|x| x.name == type_string })
-      error = {message: 'Tag type could not be found'}
-      render json: {errors: [error]}, status: :unprocessable_entity and return
-    end
-    type
+    TYPES.detect {|x| x.name == type_string }
   end
 end
