@@ -1,0 +1,116 @@
+html, body { background-color: #212121; }
+body { color: #A2A2A2; }
+#content { background-color: #212121; }
+#content .beige { background-color: #565656; }
+#content .dark { background-color: #333333; }
+#content table { border-color: #555; }
+#content .sub {
+  background-color: #383838;
+  color: #C9C9C9;
+}
+#content th, .list-header {
+  background-color: #424242;
+  color: #c2c2c2;
+}
+a, #content a, #content a:visited { color: #66997D; }
+#content a:hover, a:hover { color: #B3B3B3; }
+#header #nav-bottom, #header { background-color: #56554F; }
+#header #logo { background-color: #3B4841; }
+#header a, #header li a { color: #CCCCCC; }
+#content .even, .post-post, .post-reply:nth-child(even), #post-editor, .odd blockquote, .post-reply:nth-child(odd) blockquote {
+  background-color: #3E3E3E;
+}
+#content .odd, .post-reply:nth-child(odd), .post-post + #post-editor, .post-post + a + #post-editor, .even blockquote, .post-post blockquote, .post-reply:nth-child(even) blockquote {
+  background-color: #474747;
+}
+.green { background-color: #444D3F; }
+#content th.subber, #content .subber, .subber { background-color: #464646; color: #DDDDDD; }
+.post-subheader { background-color: #5D5D5D; }
+#post_content, #reply_content {
+  background-color: #717171;
+  color: #ccc;
+}
+.success {
+  background-color: #5B655B;
+  color: #bbb;
+}
+.post-header { background-color: #4A4848; }
+.post-navheader { background-color: #5F5D57; }
+.character-view-select { background-color: #666460; }
+.post-icon, #current-icon-dropdown { background-color: #444D3F; }
+#current-icon-dropdown { color: #111111; }
+.post-expander { background-color: #6F7769; }
+.post-character { background-color: #595959; }
+.post-screenname { background-color: #515151; }
+.post-author { background-color: #4D4C4C; }
+.flash.success { background-color: #555E55; }
+.flash.inbox {
+  background-color: #4B4B71;
+  color: #C5C5C5;
+}
+.flash.error { background-color: #532D38; }
+.view-button, .tag-item {
+  background-color: #85837C;
+  color: #DDDDDD;
+}
+.view-button.selected { background-color: #6A6A6A; }
+.link-box { color: #DDDDDD; }
+#swap-icon, #swap-alias { opacity: 0.7; } /* make the white less contrasty */
+
+/* Hovering help box on post editor */
+.ui-widget-content { background-color: #333; color: #A2A2A2; }
+.ui-widget.ui-widget-content { border-color: #444; }
+.ui-widget-header { background-color: #2B2B2B; color: #C2C2C2; border-color: #262626; }
+.ui-state-default, .ui-widget-content .ui-state-default, .ui-widget-header .ui-state-default, .ui-button, html .ui-button.ui-state-disabled:hover, html .ui-button.ui-state-disabled:active { background-color: #383838; border-color: #484848; }
+.ui-state-hover, .ui-widget-content .ui-state-hover, .ui-widget-header .ui-state-hover, .ui-state-focus, .ui-widget-content .ui-state-focus, .ui-widget-header .ui-state-focus, .ui-button:hover, .ui-button:focus { background-color: #383838; border-color: #484848; }
+/* TODO: hover, click */
+
+/* Darken input boxes */
+$INPUT_BG: #4D4D4D; /* for generic input boxes all over the place */
+$INPUT_BORDER: #666666;
+$INPUT_PLACEHOLDER: #888888;
+$MCE_PANEL_BG: #404040; /* MCE header & footer background */
+$SELECT2_HIGHLIGHT: #616161;
+$SELECT2_SELECTED: #454545;
+$SELECT2_SEARCH: $SELECT2_HIGHLIGHT;
+$FONT_COLOR: #BBB; /* TODO: standardize font color */
+
+/* - placeholders */
+::-webkit-input-placeholder { color: $INPUT_PLACEHOLDER; }
+:-moz-placeholder { color: $INPUT_PLACEHOLDER; opacity: 1; }
+::-moz-placeholder { color: $INPUT_PLACEHOLDER; opacity: 1; }
+:-ms-input-placeholder { color: $INPUT_PLACEHOLDER; }
+::-ms-input-placeholder { color: $INPUT_PLACEHOLDER; }
+::placeholder { color: $INPUT_PLACEHOLDER; }
+
+/* - account options, post editor */
+#content .form-table input:not([type='submit']), #content .form-table textarea, #icon-table input:not([type='submit']) { background-color: $INPUT_BG; color: $FONT_COLOR; border-color: $INPUT_BORDER; }
+/* - select2 */
+.select2-dropdown { background-color: $INPUT_BG; color: $FONT_COLOR; border-color: $INPUT_BORDER; }
+/* -- multiple / tag */
+.select2-container--default .select2-selection--multiple { background-color: $INPUT_BG; color: $FONT_COLOR; border-color: $INPUT_BORDER; }
+/* --- tag item */
+.select2-container--default .select2-selection--multiple .select2-selection__choice { background-color: $SELECT2_HIGHLIGHT; border-color: $INPUT_BORDER; }
+/* -- single */
+.select2-container--default .select2-selection--single { background-color: $INPUT_BG; color: $FONT_COLOR; border-color: $INPUT_BORDER; }
+.select2-container--default .select2-selection--single .select2-selection__rendered { color: $FONT_COLOR; }
+/* --- selected */
+.select2-container--default .select2-results__option[aria-selected=true] { background-color: $SELECT2_SELECTED; color: inherit; }
+/* --- hovered */
+.select2-container--default .select2-results__option--highlighted[aria-selected] { background-color: $SELECT2_HIGHLIGHT; color: inherit; }
+/* --- input */
+.select2-container--default .select2-search--dropdown .select2-search__field { background-color: $SELECT2_SEARCH; color: $FONT_COLOR; border-color: $INPUT_BORDER; }
+/* --- disabled input */
+.select2-container--default.select2-container--disabled .select2-selection--single { background-color: $MCE_PANEL_BG; color: $FONT_COLOR; border-color: $INPUT_BORDER; }
+
+/* HTML written editor */
+#post-editor input:not([type='submit']), #post-editor textarea, #message_form input:not([type='submit']), #message_form textarea { background-color: $INPUT_BG; color: $FONT_COLOR; border-color: $INPUT_BORDER; }
+/* RTF post editor – see tinymce.css for styling of the iframe itself */
+/* border: */
+#content .mce-panel { border-color: $INPUT_BORDER; }
+#content .mce-edit-area { border-top-color: $INPUT_BORDER; }
+#content .mce-statusbar { border-top-color: $INPUT_BORDER; }
+/* header & buttons: */
+/* - default */
+#content .mce-panel, #content .mce-btn { background-color: $MCE_PANEL_BG; }
+#content .mce-ico { color: $FONT_COLOR; }

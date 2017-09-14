@@ -48,7 +48,7 @@ module ApplicationHelper
 
   def swap_icon_url
     return '/images/swap.png' unless current_user
-    return '/images/swap.png' unless current_user.layout.to_s.start_with?('starry')
+    return '/images/swap.png' unless current_user.layout.to_s.start_with?('starry') || current_user.layout.to_s == 'dark'
     '/images/swapgray.png'
   end
 

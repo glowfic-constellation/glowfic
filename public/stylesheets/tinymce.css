@@ -6,6 +6,10 @@ body.layout_starrydark {
   background-color: #4D4B5B;
   color: #DADADA;
 }
+body.layout_dark {
+  background-color: #4D4D4D;
+  color: #DADADA;
+}
 blockquote {
   background-color: #E3E3E3;
   background-color: rgba(128, 128, 128, 0.2);
