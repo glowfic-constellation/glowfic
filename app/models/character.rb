@@ -1,4 +1,4 @@
-class Character < ActiveRecord::Base
+class Character < ApplicationRecord
   include Presentable
   include Taggable
 

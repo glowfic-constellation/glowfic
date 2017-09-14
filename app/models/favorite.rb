@@ -1,4 +1,4 @@
-class Favorite < ActiveRecord::Base
+class Favorite < ApplicationRecord
   belongs_to :user, inverse_of: :favorites
   belongs_to :favorite, polymorphic: true
 

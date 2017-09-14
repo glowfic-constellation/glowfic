@@ -1,4 +1,4 @@
-class BoardAuthor < ActiveRecord::Base
+class BoardAuthor < ApplicationRecord
   belongs_to :board
   belongs_to :user
 

@@ -1,4 +1,4 @@
-class Icon < ActiveRecord::Base
+class Icon < ApplicationRecord
   include Presentable
 
   S3_DOMAIN = '.s3.amazonaws.com'

@@ -1,4 +1,4 @@
-class PasswordReset < ActiveRecord::Base
+class PasswordReset < ApplicationRecord
   belongs_to :user, inverse_of: :password_resets
 
   validates_presence_of :user, :auth_token

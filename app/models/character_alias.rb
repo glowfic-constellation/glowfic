@@ -1,4 +1,4 @@
-class CharacterAlias < ActiveRecord::Base
+class CharacterAlias < ApplicationRecord
   belongs_to :character
   validates_presence_of :character, :name
   after_destroy :clear_alias_ids

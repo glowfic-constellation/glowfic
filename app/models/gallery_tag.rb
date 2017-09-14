@@ -1,4 +1,4 @@
-class GalleryTag < ActiveRecord::Base
+class GalleryTag < ApplicationRecord
   belongs_to :gallery, inverse_of: :gallery_tags
   belongs_to :tag
   belongs_to :gallery_group, foreign_key: :tag_id

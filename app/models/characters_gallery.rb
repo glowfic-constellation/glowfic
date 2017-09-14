@@ -1,4 +1,4 @@
-class CharactersGallery < ActiveRecord::Base
+class CharactersGallery < ApplicationRecord
   belongs_to :character, inverse_of: :characters_galleries
   belongs_to :gallery, inverse_of: :characters_galleries
   validates_presence_of :character, :gallery

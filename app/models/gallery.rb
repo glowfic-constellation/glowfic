@@ -1,4 +1,4 @@
-class Gallery < ActiveRecord::Base
+class Gallery < ApplicationRecord
   include Taggable
   belongs_to :user
 
