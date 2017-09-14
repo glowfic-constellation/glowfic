@@ -77,8 +77,6 @@ $SELECT2_HIGHLIGHT: #5B586B;
 $SELECT2_SELECTED: #3F3D4C;
 $SELECT2_SEARCH: $SELECT2_HIGHLIGHT;
 
-/* TODO: use: #post-form-wrapper textarea, .form-table input, .form-table textarea, #header-forms input, .gallery input, #post-editor input, #signup input, .chosen-container .chosen-results li.no-results, .chosen-container-multi .chosen-choices, .chosen-container .chosen-drop, .chosen-container-active.chosen-with-drop .chosen-single, .chosen-container-single .chosen-single, #icon-table input, input#icon_files, .select2-container--default .select2-selection--single, .select2-search input */
-
 /* - placeholders */
 ::-webkit-input-placeholder { color: $INPUT_PLACEHOLDER; }
 :-moz-placeholder { color: $INPUT_PLACEHOLDER; opacity: 1; }
@@ -107,7 +105,7 @@ $SELECT2_SEARCH: $SELECT2_HIGHLIGHT;
 /* --- disabled input */
 .select2-container--default.select2-container--disabled .select2-selection--single { background-color: $MCE_PANEL_BG; color: $FONT_COLOR; border-color: $INPUT_BORDER; } /* TODO: check with Aestrix at a better time */
 
-/* HTML written editor: TODO see also message_form and any other places we do written stuff */
+/* HTML written editor */
 #post-editor input:not([type='submit']), #post-editor textarea, #message_form input:not([type='submit']), #message_form textarea { background-color: $INPUT_BG; color: $FONT_COLOR; border-color: $INPUT_BORDER; }
 /* RTF post editor – see tinymce.css for styling of the iframe itself */
 /* border: */
