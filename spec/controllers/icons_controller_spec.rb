@@ -137,17 +137,39 @@ RSpec.describe IconsController do
         reply
       end
 
-      it "loads posts logged in" do
+      it "loads posts logged out" do
         get :show, id: icon.id, view: 'posts'
         expect(response).to have_http_status(200)
         expect(assigns(:posts)).to match_array([post, other_post])
       end
 
-      it "loads posts logged out" do
+      it "loads posts logged in" do
         login
         get :show, id: icon.id, view: 'posts'
         expect(response).to have_http_status(200)
         expect(assigns(:posts)).to match_array([post, other_post])
+      end
+    end
+
+    context "galleries view" do
+      render_views
+      let(:gallery) { create(:gallery) }
+      let(:icon) { create(:icon, galleries: [gallery], user: gallery.user) }
+      before(:each) do
+        icon
+      end
+
+      it "loads logged out" do
+        get :show, id: icon.id, view: 'galleries'
+        expect(response).to have_http_status(200)
+        expect(assigns(:javascripts)).to include('galleries/expander_old')
+      end
+
+      it "loads logged in" do
+        login
+        get :show, id: icon.id, view: 'galleries'
+        expect(response).to have_http_status(200)
+        expect(assigns(:javascripts)).to include('galleries/expander_old')
       end
     end
   end
