@@ -1,4 +1,4 @@
-class CreatePostView < ActiveRecord::Migration
+class CreatePostView < ActiveRecord::Migration[4.2]
   def change
     create_table :post_views do |t|
       t.integer :post_id, :null => false

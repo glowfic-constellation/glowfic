@@ -1,4 +1,4 @@
-class AddOrderToGalleries < ActiveRecord::Migration
+class AddOrderToGalleries < ActiveRecord::Migration[4.2]
   def up
     add_column :characters_galleries, :section_order, :integer, null: false, default: 0
     Character.all.each do |character|

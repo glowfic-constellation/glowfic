@@ -1,4 +1,4 @@
-class CreateJoinTableCharacterGallery < ActiveRecord::Migration
+class CreateJoinTableCharacterGallery < ActiveRecord::Migration[4.2]
   def change
     create_table :characters_galleries do |t|
       t.integer :character_id, null: false

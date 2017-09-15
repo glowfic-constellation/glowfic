@@ -1,4 +1,4 @@
-class MakeUsernamesEmailsCaseInsensitive < ActiveRecord::Migration
+class MakeUsernamesEmailsCaseInsensitive < ActiveRecord::Migration[4.2]
   def up
     change_column :users, :username, :citext
     change_column :users, :email, :citext

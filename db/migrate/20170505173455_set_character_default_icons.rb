@@ -1,4 +1,4 @@
-class SetCharacterDefaultIcons < ActiveRecord::Migration
+class SetCharacterDefaultIcons < ActiveRecord::Migration[4.2]
   def up
     Character.where(default_icon_id: nil).includes(:galleries).find_each do |char|
       next if char.galleries.blank?
