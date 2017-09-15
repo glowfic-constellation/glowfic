@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 class MessagesController < ApplicationController
-  before_filter :login_required
-  before_filter :editor_setup, only: :new
+  before_action :login_required
+  before_action :editor_setup, only: :new
 
   def index
     if params[:view] == 'outbox'

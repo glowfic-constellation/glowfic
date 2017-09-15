@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 class TemplatesController < ApplicationController
-  before_filter :login_required, except: :show
-  before_filter :find_template, :only => [:show, :destroy, :edit, :update]
-  before_filter :require_own_template, :only => [:edit, :update, :destroy]
+  before_action :login_required, except: :show
+  before_action :find_template, :only => [:show, :destroy, :edit, :update]
+  before_action :require_own_template, :only => [:edit, :update, :destroy]
 
   def new
     @template = Template.new

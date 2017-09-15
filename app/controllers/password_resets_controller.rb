@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 class PasswordResetsController < ApplicationController
-  before_filter :logout_required
-  before_filter :find_reset, only: [:show, :update]
+  before_action :logout_required
+  before_action :find_reset, only: [:show, :update]
 
   def new
     @page_title = 'Reset Password'

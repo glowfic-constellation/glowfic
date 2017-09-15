@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 class BoardSectionsController < ApplicationController
-  before_filter :login_required, except: :show
-  before_filter :find_section, except: [:new, :create]
-  before_filter :require_permission, except: [:show, :update]
+  before_action :login_required, except: :show
+  before_action :find_section, except: [:new, :create]
+  before_action :require_permission, except: [:show, :update]
 
   def new
     @board_section = BoardSection.new(board_id: params[:board_id])

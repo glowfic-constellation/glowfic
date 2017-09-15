@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 class AliasesController < ApplicationController
-  before_filter :login_required
-  before_filter :find_character
-  before_filter :find_alias, only: :destroy
+  before_action :login_required
+  before_action :find_character
+  before_action :find_alias, only: :destroy
 
   def new
     @page_title = "New Alias: " + @character.name

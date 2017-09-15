@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 class SessionsController < ApplicationController
-  before_filter :logout_required, only: [:new, :create]
-  before_filter :login_required, only: [:destroy]
+  before_action :logout_required, only: [:new, :create]
+  before_action :login_required, only: [:destroy]
 
   def index
   end

@@ -2,9 +2,9 @@ class Api::ApiController < ActionController::Base
   include Authentication
 
   protect_from_forgery with: :exception
-  before_filter :check_permanent_user
-  around_filter :set_timezone
-  around_filter :handle_param_validation
+  before_action :check_permanent_user
+  around_action :set_timezone
+  around_action :handle_param_validation
 
   resource_description do
     formats ['json']
