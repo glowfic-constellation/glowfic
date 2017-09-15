@@ -31,12 +31,12 @@
           Continuities
     %tr
       %td.centered{class: cycle('even', 'odd')}
-        = link_to search_posts_path(author_id: [@user.id], commit: 'Search') do
+        = link_to search_posts_path(author_id: [@user.id], commit: 'Search'), rel: 'nofollow' do
           = image_tag '/images/book_open.png', class: 'vmid'
           All Posts
     %tr
       %td.centered{class: cycle('even', 'odd')}
-        = link_to search_posts_path(author_id: [@user.id], commit: 'Search', completed: true) do
+        = link_to search_posts_path(author_id: [@user.id], commit: 'Search', completed: true), rel: 'nofollow' do
           = image_tag '/images/book.png', class: 'vmid'
           Completed Posts
     - if logged_in? && @user.id != current_user.id
