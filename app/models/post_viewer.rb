@@ -1,4 +1,4 @@
-class PostViewer < ActiveRecord::Base
+class PostViewer < ApplicationRecord
   belongs_to :post
   belongs_to :user
 

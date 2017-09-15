@@ -1,4 +1,4 @@
-class BoardSection < ActiveRecord::Base
+class BoardSection < ApplicationRecord
   include Orderable
   include Presentable
 

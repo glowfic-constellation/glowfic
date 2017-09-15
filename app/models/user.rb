@@ -1,4 +1,4 @@
-class User < ActiveRecord::Base
+class User < ApplicationRecord
   include Presentable
 
   MIN_USERNAME_LEN = 3

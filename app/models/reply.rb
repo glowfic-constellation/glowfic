@@ -1,4 +1,4 @@
-class Reply < ActiveRecord::Base
+class Reply < ApplicationRecord
   include Presentable
   include Writable
   include PgSearch

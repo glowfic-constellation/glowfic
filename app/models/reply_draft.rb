@@ -1,4 +1,4 @@
-class ReplyDraft < ActiveRecord::Base
+class ReplyDraft < ApplicationRecord
   include Writable
 
   belongs_to :post, inverse_of: :reply_drafts

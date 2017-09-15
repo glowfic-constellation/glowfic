@@ -1,4 +1,4 @@
-class CharacterTag < ActiveRecord::Base
+class CharacterTag < ApplicationRecord
   belongs_to :character, inverse_of: :character_tags
   belongs_to :tag
   belongs_to :label, foreign_key: :tag_id

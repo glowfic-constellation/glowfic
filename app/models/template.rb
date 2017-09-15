@@ -1,4 +1,4 @@
-class Template < ActiveRecord::Base
+class Template < ApplicationRecord
   include Presentable
 
   belongs_to :user, inverse_of: :templates

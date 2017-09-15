@@ -1,4 +1,4 @@
-class Message < ActiveRecord::Base
+class Message < ApplicationRecord
   # TODO drop marked_*
   belongs_to :sender, class_name: User, inverse_of: :sent_messages
   belongs_to :recipient, class_name: User, inverse_of: :messages

@@ -1,4 +1,4 @@
-class BoardView < ActiveRecord::Base
+class BoardView < ApplicationRecord
   belongs_to :board
   belongs_to :user
 
