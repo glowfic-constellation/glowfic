@@ -11,22 +11,22 @@
     %tr
       %th.sub{colspan: 7}
         - if @day < Date.today
-          = link_to url_for(params.except(:page).merge(day: @day + 1.day)) do
+          = link_to url_for(day: @day + 1.day, sort: params[:sort]) do
             - style = 'font-style: italic;' if @day + 1.day >= Date.today
             .view-button{style: style} &raquo; Next Day
-        = link_to url_for(params.except(:page).merge(day: @day - 1.day)) do
+        = link_to url_for(day: @day - 1.day, sort: params[:sort]) do
           .view-button.float-none &laquo; Previous Day
   - posts = DailyReport.new(@day).posts(sort, page, per_page)
   - if posts.present?
     %tbody
       %tr
         %th.subber.width-15
-        %th.subber= link_to 'Thread', url_for(params.merge(sort: 'subject'))
-        %th.subber= link_to 'Continuity', url_for(params.merge(sort: 'continuity'))
+        %th.subber= link_to 'Thread', url_for(day: params[:day], sort: 'subject')
+        %th.subber= link_to 'Continuity', url_for(day: params[:day], sort: 'continuity')
         %th.subber Authors
         %th.subber.width-70 Replies
         %th.subber.width-70 Today
-        %th.subber.width-70= link_to 'Updated', url_for(params.merge(sort: 'updated'))
+        %th.subber.width-70= link_to 'Updated', url_for(day: params[:day], sort: 'updated')
       - posts.each do |post|
         - next unless post.visible_to?(current_user)
         %tr
