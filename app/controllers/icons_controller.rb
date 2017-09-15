@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 class IconsController < UploadingController
-  before_filter :login_required, except: :show
-  before_filter :find_icon, except: :delete_multiple
-  before_filter :require_own_icon, only: [:edit, :update, :replace, :do_replace, :destroy, :avatar]
-  before_filter :set_s3_url, only: :edit
+  before_action :login_required, except: :show
+  before_action :find_icon, except: :delete_multiple
+  before_action :require_own_icon, only: [:edit, :update, :replace, :do_replace, :destroy, :avatar]
+  before_action :set_s3_url, only: :edit
 
   def delete_multiple
     icon_ids = (params[:marked_ids] || []).map(&:to_i).reject(&:zero?)

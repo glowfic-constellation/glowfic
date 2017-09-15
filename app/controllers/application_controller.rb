@@ -2,14 +2,14 @@
 class ApplicationController < ActionController::Base
   include Authentication
 
-  before_filter :clear_old_cookies
+  before_action :clear_old_cookies
   protect_from_forgery with: :exception
-  before_filter :check_permanent_user
-  before_filter :show_password_warning
-  before_filter :require_glowfic_domain
-  before_filter :set_login_gon
-  around_filter :set_timezone
-  after_filter :store_location
+  before_action :check_permanent_user
+  before_action :show_password_warning
+  before_action :require_glowfic_domain
+  before_action :set_login_gon
+  around_action :set_timezone
+  after_action :store_location
 
   protected
 

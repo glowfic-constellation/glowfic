@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 class TagsController < ApplicationController
-  before_filter :login_required, except: [:index, :show]
-  before_filter :find_tag, except: :index
-  before_filter :permission_required, except: [:index, :show]
+  before_action :login_required, except: [:index, :show]
+  before_action :find_tag, except: :index
+  before_action :permission_required, except: [:index, :show]
 
   def index
     @page_title = "Tags"

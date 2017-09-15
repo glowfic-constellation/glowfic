@@ -2,10 +2,10 @@
 require 'will_paginate/array'
 
 class RepliesController < WritableController
-  before_filter :login_required, except: [:search, :show, :history]
-  before_filter :find_reply, only: [:show, :history, :edit, :update, :destroy]
-  before_filter :build_template_groups, only: [:edit]
-  before_filter :require_permission, only: [:edit, :update, :destroy]
+  before_action :login_required, except: [:search, :show, :history]
+  before_action :find_reply, only: [:show, :history, :edit, :update, :destroy]
+  before_action :build_template_groups, only: [:edit]
+  before_action :require_permission, only: [:edit, :update, :destroy]
 
   def search
     @page_title = 'Search Replies'

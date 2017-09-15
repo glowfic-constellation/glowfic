@@ -1,5 +1,5 @@
 class Api::V1::IconsController < Api::ApiController
-  before_filter :login_required, only: :s3_delete
+  before_action :login_required, only: :s3_delete
 
   resource_description do
     description 'Processes S3 uploads that were not used'

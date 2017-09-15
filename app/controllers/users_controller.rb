@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 class UsersController < ApplicationController
-  before_filter :signup_prep, :only => :new
-  before_filter :login_required, :except => [:index, :show, :new, :create, :username, :search]
-  before_filter :logout_required, only: [:new, :create]
-  before_filter :require_own_user, only: [:edit, :update, :password]
+  before_action :signup_prep, :only => :new
+  before_action :login_required, :except => [:index, :show, :new, :create, :username, :search]
+  before_action :logout_required, only: [:new, :create]
+  before_action :require_own_user, only: [:edit, :update, :password]
 
   def index
     @page_title = 'Glowficcers'

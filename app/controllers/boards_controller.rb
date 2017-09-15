@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 class BoardsController < ApplicationController
-  before_filter :login_required, except: [:index, :show]
-  before_filter :find_board, only: [:show, :edit, :update, :destroy]
-  before_filter :set_available_cowriters, only: [:new, :edit]
-  before_filter :require_permission, only: [:edit, :update, :destroy]
+  before_action :login_required, except: [:index, :show]
+  before_action :find_board, only: [:show, :edit, :update, :destroy]
+  before_action :set_available_cowriters, only: [:new, :edit]
+  before_action :require_permission, only: [:edit, :update, :destroy]
 
   def index
     if params[:user_id].present?

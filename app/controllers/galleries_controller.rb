@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 class GalleriesController < UploadingController
-  before_filter :login_required, except: [:index, :show]
-  before_filter :find_gallery, only: [:destroy, :edit, :update]
-  before_filter :setup_new_icons, only: [:add, :icon]
-  before_filter :set_s3_url, only: [:edit, :add, :icon]
-  before_filter :setup_editor, only: [:new, :edit]
+  before_action :login_required, except: [:index, :show]
+  before_action :find_gallery, only: [:destroy, :edit, :update]
+  before_action :setup_new_icons, only: [:add, :icon]
+  before_action :set_s3_url, only: [:edit, :add, :icon]
+  before_action :setup_editor, only: [:new, :edit]
 
   def index
     if params[:user_id].present?

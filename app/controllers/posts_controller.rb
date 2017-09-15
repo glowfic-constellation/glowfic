@@ -3,10 +3,10 @@ require 'will_paginate/array'
 
 class PostsController < WritableController
   SCRAPE_USERS = [1, 2, 3, 8, 24, 31]
-  before_filter :login_required, except: [:index, :show, :history, :warnings, :search, :stats]
-  before_filter :find_post, only: [:show, :history, :stats, :warnings, :edit, :update, :destroy]
-  before_filter :require_permission, only: [:edit, :destroy]
-  before_filter :editor_setup, only: [:new, :edit]
+  before_action :login_required, except: [:index, :show, :history, :warnings, :search, :stats]
+  before_action :find_post, only: [:show, :history, :stats, :warnings, :edit, :update, :destroy]
+  before_action :require_permission, only: [:edit, :destroy]
+  before_action :editor_setup, only: [:new, :edit]
 
   def index
     @posts = posts_from_relation(Post.order('tagged_at desc'))

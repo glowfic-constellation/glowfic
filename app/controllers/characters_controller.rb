@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 class CharactersController < ApplicationController
-  before_filter :login_required, except: [:index, :show, :facecasts, :search]
-  before_filter :find_character, only: [:show, :edit, :update, :duplicate, :destroy, :icon, :replace, :do_replace]
-  before_filter :find_group, only: :index
-  before_filter :require_own_character, only: [:edit, :update, :duplicate, :destroy, :icon, :replace, :do_replace]
-  before_filter :build_editor, only: [:new, :edit]
+  before_action :login_required, except: [:index, :show, :facecasts, :search]
+  before_action :find_character, only: [:show, :edit, :update, :duplicate, :destroy, :icon, :replace, :do_replace]
+  before_action :find_group, only: :index
+  before_action :require_own_character, only: [:edit, :update, :duplicate, :destroy, :icon, :replace, :do_replace]
+  before_action :build_editor, only: [:new, :edit]
 
   def index
     (return if login_required) unless params[:user_id].present?

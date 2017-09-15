@@ -1,5 +1,5 @@
 class Api::V1::BoardSectionsController < Api::ApiController
-  before_filter :login_required
+  before_action :login_required
 
   resource_description do
     name 'Subcontinuities'

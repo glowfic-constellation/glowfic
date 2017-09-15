@@ -1,5 +1,5 @@
 class Api::V1::TagsController < Api::ApiController
-  before_filter :find_tag, except: :index
+  before_action :find_tag, except: :index
 
   TYPES = [Setting, Label, ContentWarning, GalleryGroup]
 

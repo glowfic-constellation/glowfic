@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 class FavoritesController < ApplicationController
-  before_filter :login_required
+  before_action :login_required
 
   def index
     unless current_user.favorites.present?

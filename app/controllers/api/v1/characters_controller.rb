@@ -1,8 +1,8 @@
 class Api::V1::CharactersController < Api::ApiController
-  before_filter :login_required, only: [:update, :reorder]
-  before_filter :find_character, except: [:index, :reorder]
-  before_filter :find_post, except: :update
-  before_filter :require_permission, only: :update
+  before_action :login_required, only: [:update, :reorder]
+  before_action :find_character, except: [:index, :reorder]
+  before_action :find_post, except: :update
+  before_action :require_permission, only: :update
 
   resource_description do
     description 'Viewing and editing characters'

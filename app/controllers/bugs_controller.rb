@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 class BugsController < ApplicationController
-  before_filter :login_required
+  before_action :login_required
 
   def create
     exception = Icon::UploadError.new
