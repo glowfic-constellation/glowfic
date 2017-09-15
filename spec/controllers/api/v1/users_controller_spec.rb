@@ -22,13 +22,13 @@ RSpec.describe Api::V1::UsersController do
 
     it "works logged out", show_in_doc: true do
       create_search_users
-      get :index, q: 'b'
+      get :index, params: { q: 'b' }
       expect(response).to have_http_status(200)
       expect(response.json['results'].count).to eq(2)
     end
 
     it "raises error on invalid page", show_in_doc: true do
-      get :index, page: 'b'
+      get :index, params: { page: 'b' }
       expect(response).to have_http_status(422)
     end
   end
