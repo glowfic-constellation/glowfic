@@ -18,7 +18,7 @@ RSpec.describe Api::V1::BoardSectionsController do
       section_ids = [board_section2.id, board_section1.id]
 
       login
-      post :reorder, ordered_section_ids: section_ids
+      post :reorder, params: { ordered_section_ids: section_ids }
       expect(response).to have_http_status(403)
       expect(board_section1.reload.section_order).to eq(0)
       expect(board_section2.reload.section_order).to eq(1)
@@ -38,7 +38,7 @@ RSpec.describe Api::V1::BoardSectionsController do
 
       section_ids = [board_section3.id, board_section2.id, board_section1.id]
       login_as(user)
-      post :reorder, ordered_section_ids: section_ids
+      post :reorder, params: { ordered_section_ids: section_ids }
       expect(response).to have_http_status(422)
       expect(response.json['errors'][0]['message']).to eq('Sections must be from one board')
       expect(board_section1.reload.section_order).to eq(0)
@@ -55,7 +55,7 @@ RSpec.describe Api::V1::BoardSectionsController do
       section_ids = [-1]
 
       login_as(board.creator)
-      post :reorder, ordered_section_ids: section_ids
+      post :reorder, params: { ordered_section_ids: section_ids }
       expect(response).to have_http_status(404)
       expect(response.json['errors'][0]['message']).to eq('Some sections could not be found: -1')
       expect(board_section1.reload.section_order).to eq(0)
@@ -80,7 +80,7 @@ RSpec.describe Api::V1::BoardSectionsController do
       section_ids = [board_section3.id, board_section1.id, board_section4.id, board_section2.id]
 
       login_as(board.creator)
-      post :reorder, ordered_section_ids: section_ids
+      post :reorder, params: { ordered_section_ids: section_ids }
       expect(response).to have_http_status(200)
       expect(response.json).to eq({'section_ids' => section_ids})
       expect(board_section1.reload.section_order).to eq(1)
@@ -108,7 +108,7 @@ RSpec.describe Api::V1::BoardSectionsController do
       section_ids = [board_section3.id, board_section1.id]
 
       login_as(board.creator)
-      post :reorder, ordered_section_ids: section_ids
+      post :reorder, params: { ordered_section_ids: section_ids }
       expect(response).to have_http_status(200)
       expect(response.json).to eq({'section_ids' => [board_section3.id, board_section1.id, board_section2.id, board_section4.id]})
       expect(board_section1.reload.section_order).to eq(1)
