@@ -138,7 +138,7 @@ end
 RSpec::Matchers.define_negated_matcher :not_change, :change
 
 # Monkey patches the controller response objects to return JSON
-module ActionController
+module ActionDispatch
   class TestResponse
     def json
       @json ||= JSON.parse(self.body)
