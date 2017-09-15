@@ -1,4 +1,4 @@
-class AddReadAtToViews < ActiveRecord::Migration
+class AddReadAtToViews < ActiveRecord::Migration[4.2]
   def change
     add_column :post_views, :read_at, :datetime
     add_column :board_views, :read_at, :datetime

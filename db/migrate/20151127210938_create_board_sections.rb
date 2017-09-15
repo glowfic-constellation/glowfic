@@ -1,4 +1,4 @@
-class CreateBoardSections < ActiveRecord::Migration
+class CreateBoardSections < ActiveRecord::Migration[4.2]
   def change
     create_table :board_sections do |t|
       t.integer :board_id, :null => false

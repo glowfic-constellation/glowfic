@@ -1,4 +1,4 @@
-class AddMoietyToUser < ActiveRecord::Migration
+class AddMoietyToUser < ActiveRecord::Migration[4.2]
   MOIETIES = {
     1 => 'AA0000',
     2 => '00BF80',

@@ -1,4 +1,4 @@
-class CreateCharacterAliases < ActiveRecord::Migration
+class CreateCharacterAliases < ActiveRecord::Migration[4.2]
   def change
     create_table :character_aliases do |t|
       t.integer :character_id, null: false

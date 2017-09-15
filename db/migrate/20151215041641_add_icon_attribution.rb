@@ -1,4 +1,4 @@
-class AddIconAttribution < ActiveRecord::Migration
+class AddIconAttribution < ActiveRecord::Migration[4.2]
   def change
     add_column :icons, :credit, :string
   end

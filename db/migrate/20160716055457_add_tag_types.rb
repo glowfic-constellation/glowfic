@@ -1,4 +1,4 @@
-class AddTagTypes < ActiveRecord::Migration
+class AddTagTypes < ActiveRecord::Migration[4.2]
   def change
     add_column :tags, :type, :string
     add_index :tags, :type

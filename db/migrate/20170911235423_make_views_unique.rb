@@ -1,4 +1,4 @@
-class MakeViewsUnique < ActiveRecord::Migration
+class MakeViewsUnique < ActiveRecord::Migration[4.2]
   def change
     remove_index :board_views, column: [:user_id, :board_id]
     add_index :board_views, [:user_id, :board_id], unique: true

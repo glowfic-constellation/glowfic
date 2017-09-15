@@ -1,4 +1,4 @@
-class AddTaggedAtToPosts < ActiveRecord::Migration
+class AddTaggedAtToPosts < ActiveRecord::Migration[4.2]
   def change
     add_column :posts, :tagged_at, :datetime
     ActiveRecord::Base.record_timestamps = false

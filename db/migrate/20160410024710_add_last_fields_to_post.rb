@@ -1,4 +1,4 @@
-class AddLastFieldsToPost < ActiveRecord::Migration
+class AddLastFieldsToPost < ActiveRecord::Migration[4.2]
   def change
     add_column :posts, :last_user_id, :integer
     add_column :posts, :last_reply_id, :integer
