@@ -1,4 +1,4 @@
-class AddS3KeyToIcon < ActiveRecord::Migration
+class AddS3KeyToIcon < ActiveRecord::Migration[4.2]
   CLOUDFRONT_URL = 'https://d1anwqy6ci9o1i.cloudfront.net/'
 
   def self.up

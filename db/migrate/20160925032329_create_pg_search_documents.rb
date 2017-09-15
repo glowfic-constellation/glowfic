@@ -1,4 +1,4 @@
-class CreatePgSearchDocuments < ActiveRecord::Migration
+class CreatePgSearchDocuments < ActiveRecord::Migration[4.2]
   def self.up
     execute "CREATE INDEX idx_fts_post_content ON posts USING gin(to_tsvector('english', coalesce(\"posts\".\"content\"::text, '')))"
     execute "CREATE INDEX idx_fts_post_subject ON posts USING gin(to_tsvector('english', coalesce(\"posts\".\"subject\"::text, '')))"

@@ -1,4 +1,4 @@
-class AddReportView < ActiveRecord::Migration
+class AddReportView < ActiveRecord::Migration[4.2]
   def change
     create_table :report_views do |t|
       t.integer :user_id, :null => false

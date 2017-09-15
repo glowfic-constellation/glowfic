@@ -1,4 +1,4 @@
-class UseCloudfrontUrl < ActiveRecord::Migration
+class UseCloudfrontUrl < ActiveRecord::Migration[4.2]
   def up
     uploaded_icons = Icon.where("url like 'http://glowfic-constellation.s3.amazonaws.com%'")
     uploaded_icons.each do |icon|

@@ -1,4 +1,4 @@
-class CreateIcons < ActiveRecord::Migration
+class CreateIcons < ActiveRecord::Migration[4.2]
   def up
     create_table :icons do |t|
       t.integer :user_id, :null => false

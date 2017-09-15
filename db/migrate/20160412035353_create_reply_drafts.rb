@@ -1,4 +1,4 @@
-class CreateReplyDrafts < ActiveRecord::Migration
+class CreateReplyDrafts < ActiveRecord::Migration[4.2]
   def change
     create_table :reply_drafts do |t|
       t.integer :post_id, :null => false
