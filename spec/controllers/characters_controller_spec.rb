@@ -383,7 +383,7 @@ RSpec.describe CharactersController do
       expect(character.characters_galleries.first).not_to be_added_by_group
 
       login_as(user)
-      put :update, id: character.id, character: {ungrouped_gallery_ids: []}
+      put :update, id: character.id, character: {ungrouped_gallery_ids: ['']}
       expect(flash[:success]).to eq('Character saved successfully.')
       character.reload
       expect(character.gallery_groups).to match_array([group])
@@ -428,7 +428,7 @@ RSpec.describe CharactersController do
       character = create(:character, gallery_groups: [group], user: user)
 
       login_as(user)
-      put :update, id: character.id, character: {gallery_group_ids: []}
+      put :update, id: character.id, character: {gallery_group_ids: ['']}
       expect(flash[:success]).to eq('Character saved successfully.')
       character.reload
       expect(character.gallery_groups).to eq([])
