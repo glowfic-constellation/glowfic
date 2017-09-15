@@ -14,7 +14,7 @@ RSpec.describe BoardSectionsController do
       expect(board.editable_by?(user)).to eq(false)
       login_as(user)
 
-      get :new, board_id: board.id
+      get :new, params: { board_id: board.id }
       expect(response).to redirect_to(boards_url)
       expect(flash[:error]).to eq("You do not have permission to edit this continuity.")
     end
@@ -22,7 +22,7 @@ RSpec.describe BoardSectionsController do
     it "works with board_id" do
       board = create(:board)
       login_as(board.creator)
-      get :new, board_id: board.id
+      get :new, params: { board_id: board.id }
       expect(response.status).to eq(200)
       expect(assigns(:page_title)).to eq("New Section")
     end
@@ -48,7 +48,7 @@ RSpec.describe BoardSectionsController do
       expect(board.editable_by?(user)).to eq(false)
       login_as(user)
 
-      post :create, board_section: {board_id: board.id}
+      post :create, params: { board_section: {board_id: board.id} }
       expect(response).to redirect_to(boards_url)
       expect(flash[:error]).to eq("You do not have permission to edit this continuity.")
     end
@@ -56,7 +56,7 @@ RSpec.describe BoardSectionsController do
     it "requires valid section" do
       board = create(:board)
       login_as(board.creator)
-      post :create, board_section: {board_id: board.id}
+      post :create, params: { board_section: {board_id: board.id} }
       expect(response).to have_http_status(200)
       expect(response).to render_template(:new)
       expect(flash[:error][:message]).to eq("Section could not be created.")
@@ -66,7 +66,7 @@ RSpec.describe BoardSectionsController do
       board = create(:board)
       login_as(board.creator)
       section_name = 'ValidSection'
-      post :create, board_section: {board_id: board.id, name: section_name}
+      post :create, params: { board_section: {board_id: board.id, name: section_name} }
       expect(response).to redirect_to(edit_board_url(board))
       expect(flash[:success]).to eq("New section, #{section_name}, has successfully been created for #{board.name}.")
       expect(assigns(:board_section).name).to eq(section_name)
@@ -75,7 +75,7 @@ RSpec.describe BoardSectionsController do
 
   describe "GET show" do
     it "requires valid section" do
-      get :show, id: -1
+      get :show, params: { id: -1 }
       expect(response).to redirect_to(boards_url)
       expect(flash[:error]).to eq("Section not found.")
     end
@@ -85,7 +85,7 @@ RSpec.describe BoardSectionsController do
       posts = Array.new(2) { create(:post, board: section.board, section: section) }
       create(:post)
       create(:post, board: section.board)
-      get :show, id: section.id
+      get :show, params: { id: section.id }
       expect(response).to have_http_status(200)
       expect(assigns(:page_title)).to eq(section.name)
       expect(assigns(:posts)).to match_array(posts)
@@ -96,7 +96,7 @@ RSpec.describe BoardSectionsController do
       posts = Array.new(2) { create(:post, board: section.board, section: section) }
       create(:post)
       create(:post, board: section.board)
-      get :show, id: section.id
+      get :show, params: { id: section.id }
       expect(response).to have_http_status(200)
       expect(assigns(:page_title)).to eq(section.name)
       expect(assigns(:posts)).to match_array(posts)
@@ -105,14 +105,14 @@ RSpec.describe BoardSectionsController do
 
   describe "GET edit" do
     it "requires login" do
-      get :edit, id: -1
+      get :edit, params: { id: -1 }
       expect(response).to redirect_to(root_url)
       expect(flash[:error]).to eq("You must be logged in to view that page.")
     end
 
     it "requires valid section" do
       login
-      get :edit, id: -1
+      get :edit, params: { id: -1 }
       expect(response).to redirect_to(boards_url)
       expect(flash[:error]).to eq("Section not found.")
     end
@@ -120,7 +120,7 @@ RSpec.describe BoardSectionsController do
     it "requires permission" do
       section = create(:board_section)
       login
-      get :edit, id: section.id
+      get :edit, params: { id: section.id }
       expect(response).to redirect_to(boards_url)
       expect(flash[:error]).to eq("You do not have permission to edit this continuity.")
     end
@@ -128,7 +128,7 @@ RSpec.describe BoardSectionsController do
     it "works" do
       section = create(:board_section)
       login_as(section.board.creator)
-      get :edit, id: section.id
+      get :edit, params: { id: section.id }
       expect(response).to have_http_status(200)
       expect(assigns(:page_title)).to eq("Edit #{section.name}")
       expect(assigns(:board_section)).to eq(section)
@@ -137,7 +137,7 @@ RSpec.describe BoardSectionsController do
 
   describe "PUT update" do
     it "requires login" do
-      put :update, id: -1
+      put :update, params: { id: -1 }
       expect(response).to redirect_to(root_url)
       expect(flash[:error]).to eq("You must be logged in to view that page.")
     end
@@ -148,7 +148,7 @@ RSpec.describe BoardSectionsController do
       board_section = create(:board_section)
       expect(board_section.board).not_to be_editable_by(user)
 
-      put :update, id: board_section.id
+      put :update, params: { id: board_section.id }
       expect(response).to redirect_to(boards_url)
       expect(flash[:error]).to eq("You do not have permission to edit this continuity.")
     end
@@ -156,7 +156,7 @@ RSpec.describe BoardSectionsController do
     it "requires valid params" do
       board_section = create(:board_section)
       login_as(board_section.board.creator)
-      put :update, id: board_section.id, board_section: {name: ''}
+      put :update, params: { id: board_section.id, board_section: {name: ''} }
       expect(response).to have_http_status(200)
       expect(response).to render_template(:edit)
       expect(flash[:error][:message]).to eq("Section could not be updated.")
@@ -166,7 +166,7 @@ RSpec.describe BoardSectionsController do
       board_section = create(:board_section, name: 'TestSection1')
       login_as(board_section.board.creator)
       section_name = 'TestSection2'
-      put :update, id: board_section.id, board_section: {name: section_name}
+      put :update, params: { id: board_section.id, board_section: {name: section_name} }
       expect(response).to redirect_to(board_section_path(board_section))
       expect(board_section.reload.name).to eq(section_name)
       expect(flash[:success]).to eq("#{section_name} has been successfully updated.")
@@ -175,14 +175,14 @@ RSpec.describe BoardSectionsController do
 
   describe "DELETE destroy" do
     it "requires login" do
-      delete :destroy, id: -1
+      delete :destroy, params: { id: -1 }
       expect(response).to redirect_to(root_url)
       expect(flash[:error]).to eq("You must be logged in to view that page.")
     end
 
     it "requires valid section" do
       login
-      delete :destroy, id: -1
+      delete :destroy, params: { id: -1 }
       expect(response).to redirect_to(boards_url)
       expect(flash[:error]).to eq("Section not found.")
     end
@@ -190,7 +190,7 @@ RSpec.describe BoardSectionsController do
     it "requires permission" do
       section = create(:board_section)
       login
-      delete :destroy, id: section.id
+      delete :destroy, params: { id: section.id }
       expect(response).to redirect_to(boards_url)
       expect(flash[:error]).to eq("You do not have permission to edit this continuity.")
     end
@@ -198,7 +198,7 @@ RSpec.describe BoardSectionsController do
     it "works" do
       section = create(:board_section)
       login_as(section.board.creator)
-      delete :destroy, id: section.id
+      delete :destroy, params: { id: section.id }
       expect(response).to redirect_to(edit_board_url(section.board))
       expect(flash[:success]).to eq("Section deleted.")
       expect(BoardSection.find_by_id(section.id)).to be_nil

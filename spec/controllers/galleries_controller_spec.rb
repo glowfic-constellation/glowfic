@@ -22,7 +22,7 @@ RSpec.describe GalleriesController do
     context "with a user_id" do
       it "does not require login" do
         user = create(:user)
-        get :index, user_id: user.id
+        get :index, params: { user_id: user.id }
         expect(response.status).to eq(200)
         expect(assigns(:user)).to eq(user)
         expect(assigns(:page_title)).to eq("#{user.username}'s Galleries")
@@ -31,14 +31,14 @@ RSpec.describe GalleriesController do
       it "defaults to current user if user id invalid" do
         user = create(:user)
         login_as(user)
-        get :index, user_id: -1
+        get :index, params: { user_id: -1 }
         expect(response.status).to eq(200)
         expect(assigns(:user)).to eq(user)
         expect(assigns(:page_title)).to eq('Your Galleries')
       end
 
       it "displays error if user id invalid and logged out" do
-        get :index, user_id: -1
+        get :index, params: { user_id: -1 }
         expect(flash[:error]).to eq('User could not be found.')
         expect(response).to redirect_to(root_url)
       end
@@ -75,7 +75,7 @@ RSpec.describe GalleriesController do
         icon = create(:icon)
         group = create(:gallery_group)
         login_as(icon.user)
-        post :create, gallery: {gallery_group_ids: [group.id], icon_ids: [icon.id]}
+        post :create, params: { gallery: {gallery_group_ids: [group.id], icon_ids: [icon.id]} }
         expect(response.status).to eq(200)
         expect(response).to render_template(:new)
         expect(assigns(:page_title)).to eq('New Gallery')
@@ -89,7 +89,7 @@ RSpec.describe GalleriesController do
     it "does not set icon has_gallery on failure" do
       icon = create(:icon)
       login_as(icon.user)
-      post :create, gallery: {icon_ids: [icon.id]}
+      post :create, params: { gallery: {icon_ids: [icon.id]} }
       expect(response).to have_http_status(200)
       expect(assigns(:page_title)).to eq('New Gallery')
       expect(flash[:error]).to eq('Your gallery could not be saved.')
@@ -101,7 +101,7 @@ RSpec.describe GalleriesController do
       icon = create(:icon)
       group = create(:gallery_group)
       login_as(icon.user)
-      post :create, gallery: {name: 'Test Gallery', icon_ids: [icon.id], gallery_group_ids: [group.id]}
+      post :create, params: { gallery: {name: 'Test Gallery', icon_ids: [icon.id], gallery_group_ids: [group.id]} }
       expect(Gallery.count).to eq(1)
       gallery = assigns(:gallery).reload
       expect(response).to redirect_to(gallery_url(gallery))
@@ -118,7 +118,7 @@ RSpec.describe GalleriesController do
       tags = ['_atag', '_atag', create(:gallery_group).id, '', '_' + existing_name.name, '_' + existing_case.name.upcase]
       login
       expect {
-        post :create, gallery: {name: 'a', gallery_group_ids: tags}
+        post :create, params: { gallery: {name: 'a', gallery_group_ids: tags} }
       }.to change{GalleryGroup.count}.by(1)
       expect(GalleryGroup.last.name).to eq('atag')
       expect(assigns(:gallery).gallery_groups.count).to eq(4)
@@ -129,7 +129,7 @@ RSpec.describe GalleriesController do
     context "with zero gallery id" do
       context "with user id" do
         it "requires valid user" do
-          get :show, id: '0', user_id: -1
+          get :show, params: { id: '0', user_id: -1 }
           expect(response).to redirect_to(root_url)
           expect(flash[:error]).to eq('User could not be found.')
         end
@@ -138,7 +138,7 @@ RSpec.describe GalleriesController do
           user = create(:user)
           gallery_user = create(:user)
           login_as(user)
-          get :show, id: '0', user_id: gallery_user.id
+          get :show, params: { id: '0', user_id: gallery_user.id }
           expect(response).to render_template('show')
           expect(assigns(:page_title)).to eq('Galleryless Icons')
           expect(assigns(:user)).to eq(gallery_user)
@@ -146,7 +146,7 @@ RSpec.describe GalleriesController do
 
         it "succeeds when logged out" do
           user = create(:user)
-          get :show, id: '0', user_id: user.id
+          get :show, params: { id: '0', user_id: user.id }
           expect(response).to render_template('show')
           expect(assigns(:page_title)).to eq('Galleryless Icons')
           expect(assigns(:user)).to eq(user)
@@ -155,7 +155,7 @@ RSpec.describe GalleriesController do
 
       context "without user id" do
         it "requires login" do
-          get :show, id: '0'
+          get :show, params: { id: '0' }
           expect(response).to redirect_to(root_url)
           expect(flash[:error]).to eq("You must be logged in to view that page.")
         end
@@ -163,7 +163,7 @@ RSpec.describe GalleriesController do
         it "succeeds when logged in" do
           user = create(:user)
           login_as(user)
-          get :show, id: '0'
+          get :show, params: { id: '0' }
           expect(response).to render_template('show')
           expect(assigns(:page_title)).to eq('Galleryless Icons')
           expect(assigns(:user)).to eq(user)
@@ -173,21 +173,21 @@ RSpec.describe GalleriesController do
 
     context "with normal gallery id" do
       it "requires valid gallery id" do
-        get :show, id: -1
+        get :show, params: { id: -1 }
         expect(response).to redirect_to(galleries_url)
         expect(flash[:error]).to eq('Gallery could not be found.')
       end
 
       it "successfully loads logged out" do
         gallery = create(:gallery)
-        get :show, id: gallery.id
+        get :show, params: { id: gallery.id }
         expect(response.status).to eq(200)
       end
 
       it "successfully loads logged in" do
         gallery = create(:gallery)
         login
-        get :show, id: gallery.id
+        get :show, params: { id: gallery.id }
         expect(response.status).to eq(200)
       end
     end
@@ -195,14 +195,14 @@ RSpec.describe GalleriesController do
 
   describe "GET edit" do
     it "requires login" do
-      get :edit, id: -1
+      get :edit, params: { id: -1 }
       expect(response).to redirect_to(root_url)
       expect(flash[:error]).to eq("You must be logged in to view that page.")
     end
 
     it "requires valid gallery" do
       login
-      get :edit, id: -1
+      get :edit, params: { id: -1 }
       expect(response).to redirect_to(galleries_url)
       expect(flash[:error]).to eq("Gallery could not be found.")
     end
@@ -211,7 +211,7 @@ RSpec.describe GalleriesController do
       user_id = login
       gallery = create(:gallery)
       expect(gallery.user_id).not_to eq(user_id)
-      get :edit, id: gallery.id
+      get :edit, params: { id: gallery.id }
       expect(response).to redirect_to(galleries_url)
       expect(flash[:error]).to eq("That is not your gallery.")
     end
@@ -222,7 +222,7 @@ RSpec.describe GalleriesController do
         user_id = login
         group = create(:gallery_group)
         gallery = create(:gallery, user_id: user_id, gallery_groups: [group])
-        get :edit, id: gallery.id
+        get :edit, params: { id: gallery.id }
         expect(response.status).to eq(200)
         expect(assigns(:gallery_groups)).to match_array([group])
       end
@@ -231,14 +231,14 @@ RSpec.describe GalleriesController do
 
   describe "PUT update" do
     it "requires login" do
-      put :update, id: -1
+      put :update, params: { id: -1 }
       expect(response).to redirect_to(root_url)
       expect(flash[:error]).to eq("You must be logged in to view that page.")
     end
 
     it "requires valid gallery" do
       login
-      put :update, id: -1
+      put :update, params: { id: -1 }
       expect(response).to redirect_to(galleries_url)
       expect(flash[:error]).to eq("Gallery could not be found.")
     end
@@ -247,7 +247,7 @@ RSpec.describe GalleriesController do
       user_id = login
       gallery = create(:gallery)
       expect(gallery.user_id).not_to eq(user_id)
-      put :update, id: gallery.id
+      put :update, params: { id: gallery.id }
       expect(response).to redirect_to(galleries_url)
       expect(flash[:error]).to eq("That is not your gallery.")
     end
@@ -256,7 +256,7 @@ RSpec.describe GalleriesController do
       user = create(:user)
       gallery = create(:gallery, user: user)
       login_as(user)
-      put :update, id: gallery.id, gallery: {name: ''}
+      put :update, params: { id: gallery.id, gallery: {name: ''} }
       expect(response).to render_template('edit')
       expect(flash[:error][:message]).to eq("Gallery could not be saved.")
     end
@@ -264,7 +264,7 @@ RSpec.describe GalleriesController do
     it "sets right variables on failed save" do
       gallery = create(:gallery, name: 'Example Gallery')
       login_as(gallery.user)
-      post :update, id: gallery.id, gallery: {name: ''}
+      post :update, params: { id: gallery.id, gallery: {name: ''} }
       expect(response.status).to eq(200)
       expect(response).to render_template(:edit)
       expect(assigns(:page_title)).to eq('Edit Gallery: Example Gallery')
@@ -279,7 +279,7 @@ RSpec.describe GalleriesController do
         icon = create(:icon, user: gallery.user)
         group = create(:gallery_group)
         login_as(gallery.user)
-        post :update, id: gallery.id, gallery: {name: '', gallery_group_ids: [group.id]}
+        post :update, params: { id: gallery.id, gallery: {name: '', gallery_group_ids: [group.id]} }
         expect(response.status).to eq(200)
         expect(response).to render_template(:edit)
         expect(assigns(:gallery).gallery_groups.map(&:id)).to eq([group.id])
@@ -292,7 +292,7 @@ RSpec.describe GalleriesController do
       gallery = create(:gallery, user: user)
       group = create(:gallery_group)
       login_as(user)
-      put :update, id: gallery.id, gallery: {name: 'NewGalleryName', gallery_group_ids: [group.id]}
+      put :update, params: { id: gallery.id, gallery: {name: 'NewGalleryName', gallery_group_ids: [group.id]} }
       expect(response).to redirect_to(edit_gallery_url(gallery))
       expect(flash[:success]).to eq('Gallery saved.')
       gallery.reload
@@ -312,7 +312,7 @@ RSpec.describe GalleriesController do
       gid = gallery.galleries_icons.first.id
       gallery_icon_attributes = {id: gid, icon_attributes: icon_attributes}
 
-      put :update, id: gallery.id, gallery: {galleries_icons_attributes: {gid.to_s => gallery_icon_attributes}}
+      put :update, params: { id: gallery.id, gallery: {galleries_icons_attributes: {gid.to_s => gallery_icon_attributes}} }
       expect(response).to redirect_to(edit_gallery_url(gallery))
       expect(flash[:success]).to eq('Gallery saved.')
       expect(icon.reload.keyword).to eq(newkey)
@@ -330,7 +330,7 @@ RSpec.describe GalleriesController do
       gid = gallery.galleries_icons.first.id
       gallery_icon_attributes = {id: gid, _destroy: '1', icon_attributes: icon_attributes}
 
-      put :update, id: gallery.id, gallery: {galleries_icons_attributes: {gid.to_s => gallery_icon_attributes}}
+      put :update, params: { id: gallery.id, gallery: {galleries_icons_attributes: {gid.to_s => gallery_icon_attributes}} }
       expect(response).to redirect_to(edit_gallery_url(gallery))
       expect(flash[:success]).to eq('Gallery saved.')
       expect(gallery.reload.icons).to be_empty
@@ -349,7 +349,7 @@ RSpec.describe GalleriesController do
       gid = gallery.galleries_icons.first.id
       gallery_icon_attributes = {id: gid, icon_attributes: icon_attributes}
 
-      put :update, id: gallery.id, gallery: {galleries_icons_attributes: {gid.to_s => gallery_icon_attributes}}
+      put :update, params: { id: gallery.id, gallery: {galleries_icons_attributes: {gid.to_s => gallery_icon_attributes}} }
       expect(response).to redirect_to(edit_gallery_url(gallery))
       expect(flash[:success]).to eq('Gallery saved.')
       expect(gallery.reload.icons).to be_empty
@@ -363,7 +363,7 @@ RSpec.describe GalleriesController do
       login_as(gallery.user)
       tags = ['_atag', '_atag', create(:gallery_group).id, '', '_' + existing_name.name, '_' + existing_case.name.upcase]
       expect {
-        post :update, id: gallery.id, gallery: {gallery_group_ids: tags}
+        post :update, params: { id: gallery.id, gallery: {gallery_group_ids: tags} }
       }.to change{GalleryGroup.count}.by(1)
       expect(GalleryGroup.last.name).to eq('atag')
       expect(assigns(:gallery).gallery_groups.count).to eq(4)
@@ -372,14 +372,14 @@ RSpec.describe GalleriesController do
 
   describe "DELETE destroy" do
     it "requires login" do
-      delete :destroy, id: -1
+      delete :destroy, params: { id: -1 }
       expect(response).to redirect_to(root_url)
       expect(flash[:error]).to eq("You must be logged in to view that page.")
     end
 
     it "requires valid gallery" do
       login
-      delete :destroy, id: -1
+      delete :destroy, params: { id: -1 }
       expect(response).to redirect_to(galleries_url)
       expect(flash[:error]).to eq("Gallery could not be found.")
     end
@@ -388,7 +388,7 @@ RSpec.describe GalleriesController do
       user_id = login
       gallery = create(:gallery)
       expect(gallery.user_id).not_to eq(user_id)
-      delete :destroy, id: gallery.id
+      delete :destroy, params: { id: gallery.id }
       expect(response).to redirect_to(galleries_url)
       expect(flash[:error]).to eq("That is not your gallery.")
     end
@@ -396,7 +396,7 @@ RSpec.describe GalleriesController do
     it "successfully destroys" do
       user_id = login
       gallery = create(:gallery, user_id: user_id)
-      delete :destroy, id: gallery.id
+      delete :destroy, params: { id: gallery.id }
       expect(response).to redirect_to(galleries_url)
       expect(flash[:success]).to eq("Gallery deleted successfully.")
       expect(Gallery.find_by_id(gallery.id)).to be_nil
@@ -409,7 +409,7 @@ RSpec.describe GalleriesController do
       gallery.icons << icon
       gallery.save
       expect(icon.reload.has_gallery).to eq(true)
-      delete :destroy, id: gallery.id
+      delete :destroy, params: { id: gallery.id }
       expect(response).to redirect_to(galleries_url)
       expect(flash[:success]).to eq("Gallery deleted successfully.")
       expect(icon.reload.has_gallery).not_to eq(true)
@@ -429,14 +429,14 @@ RSpec.describe GalleriesController do
     end
 
     it "requires login" do
-      get :add, id: -1
+      get :add, params: { id: -1 }
       expect(response).to redirect_to(root_url)
       expect(flash[:error]).to eq("You must be logged in to view that page.")
     end
 
     it "requires valid gallery" do
       login
-      get :add, id: -1
+      get :add, params: { id: -1 }
       expect(response).to redirect_to(galleries_url)
       expect(flash[:error]).to eq("Gallery could not be found.")
     end
@@ -445,7 +445,7 @@ RSpec.describe GalleriesController do
       user_id = login
       gallery = create(:gallery)
       expect(gallery.user_id).not_to eq(user_id)
-      get :add, id: gallery.id
+      get :add, params: { id: gallery.id }
       expect(response).to redirect_to(galleries_url)
       expect(flash[:error]).to eq("That is not your gallery.")
     end
@@ -453,7 +453,7 @@ RSpec.describe GalleriesController do
     it "correctly stubs S3 bucket for devs without local buckets" do
       stub_const("S3_BUCKET", nil)
       login
-      get :add, id: 0
+      get :add, params: { id: 0 }
       expect(response).to render_template('add')
       expect(assigns(:page_title)).to eq("Add Icons")
       expect(assigns(:s3_direct_post)).to be_a(Struct)
@@ -462,7 +462,7 @@ RSpec.describe GalleriesController do
     it "supports galleryless" do
       handle_s3_bucket
       login
-      get :add, id: 0
+      get :add, params: { id: 0 }
       expect(response).to render_template('add')
       expect(assigns(:page_title)).to eq("Add Icons")
       expect(assigns(:s3_direct_post)).not_to be_nil
@@ -472,7 +472,7 @@ RSpec.describe GalleriesController do
       handle_s3_bucket
       gallery = create(:gallery)
       login_as(gallery.user)
-      get :add, id: gallery.id
+      get :add, params: { id: gallery.id }
       expect(response).to render_template('add')
       expect(assigns(:page_title)).to eq("Add Icons: #{gallery.name}")
       expect(assigns(:s3_direct_post)).not_to be_nil
@@ -481,7 +481,7 @@ RSpec.describe GalleriesController do
     it "supports existing view for normal gallery" do
       gallery = create(:gallery)
       login_as(gallery.user)
-      get :add, id: gallery.id, type: 'existing'
+      get :add, params: { id: gallery.id, type: 'existing' }
       expect(response).to render_template('add')
       expect(assigns(:page_title)).to eq("Add Icons: #{gallery.name}")
       expect(assigns(:s3_direct_post)).to be_nil
@@ -489,7 +489,7 @@ RSpec.describe GalleriesController do
 
     it "doesn't support existing view for galleryless" do
       login
-      get :add, id: 0, type: 'existing'
+      get :add, params: { id: 0, type: 'existing' }
       expect(response).to redirect_to(gallery_url(0))
       expect(flash[:error]).to eq('Cannot add existing icons to galleryless. Please remove from existing galleries instead.')
     end
@@ -497,14 +497,14 @@ RSpec.describe GalleriesController do
 
   describe "POST icon" do
     it "requires login" do
-      post :icon, id: -1
+      post :icon, params: { id: -1 }
       expect(response).to redirect_to(root_url)
       expect(flash[:error]).to eq("You must be logged in to view that page.")
     end
 
     it "requires valid gallery" do
       login
-      post :icon, id: -1
+      post :icon, params: { id: -1 }
       expect(response).to redirect_to(galleries_url)
       expect(flash[:error]).to eq('Gallery could not be found.')
     end
@@ -512,7 +512,7 @@ RSpec.describe GalleriesController do
     it "requires your gallery" do
       gallery = create(:gallery)
       login
-      post :icon, id: gallery.id
+      post :icon, params: { id: gallery.id }
       expect(response).to redirect_to(galleries_url)
       expect(flash[:error]).to eq('That is not your gallery.')
     end
@@ -524,7 +524,7 @@ RSpec.describe GalleriesController do
         gallery = create(:gallery, user_id: user_id, icon_ids: [icon.id])
         expect(gallery.icons).to match_array([icon])
 
-        post :icon, id: 0, image_ids: icon.id.to_s
+        post :icon, params: { id: 0, image_ids: icon.id.to_s }
         expect(response).to redirect_to(galleries_url)
         expect(flash[:error]).to eq('Gallery could not be found.')
       end
@@ -534,7 +534,7 @@ RSpec.describe GalleriesController do
         gallery = create(:gallery)
         login_as(gallery.user)
 
-        post :icon, id: gallery.id, image_ids: icon.id.to_s
+        post :icon, params: { id: gallery.id, image_ids: icon.id.to_s }
         expect(response).to redirect_to(gallery_path(gallery))
         expect(flash[:success]).to eq('Icons added to gallery successfully.')
         expect(icon.reload.has_gallery).not_to eq(true)
@@ -548,7 +548,7 @@ RSpec.describe GalleriesController do
         expect(gallery.galleries_icons.count).to eq(1)
         login_as(gallery.user)
 
-        post :icon, id: gallery.id, image_ids: icon.id.to_s
+        post :icon, params: { id: gallery.id, image_ids: icon.id.to_s }
         expect(response).to redirect_to(gallery_path(gallery))
         expect(flash[:success]).to eq('Icons added to gallery successfully.')
         expect(icon.reload.has_gallery).to eq(true)
@@ -564,7 +564,7 @@ RSpec.describe GalleriesController do
         expect(icon2.has_gallery).not_to eq(true)
 
         login_as(user)
-        post :icon, id: gallery.id, image_ids: "#{icon1.id},#{icon2.id}"
+        post :icon, params: { id: gallery.id, image_ids: "#{icon1.id},#{icon2.id}" }
         expect(response).to redirect_to(gallery_path(gallery))
         expect(flash[:success]).to eq('Icons added to gallery successfully.')
         expect(icon1.reload.has_gallery).to eq(true)
@@ -582,7 +582,7 @@ RSpec.describe GalleriesController do
         expect(gallery2.icons).to be_empty
 
         login_as(user)
-        post :icon, id: gallery2.id, image_ids: "#{icon1.id},#{icon2.id}"
+        post :icon, params: { id: gallery2.id, image_ids: "#{icon1.id},#{icon2.id}" }
         expect(response).to redirect_to(gallery_path(gallery2))
         expect(flash[:success]).to eq('Icons added to gallery successfully.')
         expect(icon1.reload.has_gallery).to eq(true)
@@ -596,7 +596,7 @@ RSpec.describe GalleriesController do
       it "requires icons" do
         gallery = create(:gallery)
         login_as(gallery.user)
-        post :icon, id: gallery.id, icons: []
+        post :icon, params: { id: gallery.id, icons: [] }
         expect(response).to render_template(:add)
         expect(flash[:error]).to eq('You have to enter something.')
       end
@@ -614,7 +614,7 @@ RSpec.describe GalleriesController do
           {keyword: '', url: '', credit: ''}
         ]
 
-        post :icon, id: gallery.id, icons: icons
+        post :icon, params: { id: gallery.id, icons: icons }
         expect(response).to render_template(:add)
         expect(flash[:error][:message]).to eq('Your icons could not be saved.')
         expect(assigns(:icons).length).to eq(icons.length-1) # removes blank icons
@@ -637,7 +637,7 @@ RSpec.describe GalleriesController do
           {keyword: 'test2', url: "https://d1anwqy6ci9o1i.cloudfront.net/users/#{user.id}/icons/nonsense-fakeimg.png"}
         ]
 
-        post :icon, id: gallery.id, icons: icons
+        post :icon, params: { id: gallery.id, icons: icons }
         expect(response).to redirect_to(gallery_path(gallery))
         expect(flash[:success]).to eq('Icons saved successfully.')
 
@@ -662,7 +662,7 @@ RSpec.describe GalleriesController do
           {keyword: 'test2', url: "https://d1anwqy6ci9o1i.cloudfront.net/users/#{user.id}/icons/nonsense-fakeimg.png"}
         ]
 
-        post :icon, id: 0, icons: icons
+        post :icon, params: { id: 0, icons: icons }
         expect(response).to redirect_to(gallery_path(id: 0))
         expect(flash[:success]).to eq('Icons saved successfully.')
 

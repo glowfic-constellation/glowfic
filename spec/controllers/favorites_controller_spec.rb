@@ -123,21 +123,21 @@ RSpec.describe FavoritesController do
 
     it "requires valid user if given" do
       login
-      post :create, user_id: -1
+      post :create, params: { user_id: -1 }
       expect(response).to redirect_to(users_path)
       expect(flash[:error]).to eq('User could not be found.')
     end
 
     it "requires valid post if given" do
       login
-      post :create, post_id: -1
+      post :create, params: { post_id: -1 }
       expect(response).to redirect_to(posts_path)
       expect(flash[:error]).to eq('Post could not be found.')
     end
 
     it "requires valid board if given" do
       login
-      post :create, board_id: -1
+      post :create, params: { board_id: -1 }
       expect(response).to redirect_to(boards_path)
       expect(flash[:error]).to eq('Continuity could not be found.')
     end
@@ -146,7 +146,7 @@ RSpec.describe FavoritesController do
       user = create(:user)
       fav = create(:user)
       login_as(user)
-      post :create, user_id: fav.id
+      post :create, params: { user_id: fav.id }
       expect(Favorite.between(user, fav)).not_to be_nil
       expect(response).to redirect_to(user_url(fav))
       expect(flash[:success]).to eq("Your favorite has been saved.")
@@ -156,7 +156,7 @@ RSpec.describe FavoritesController do
       user = create(:user)
       fav = create(:post)
       login_as(user)
-      post :create, post_id: fav.id
+      post :create, params: { post_id: fav.id }
       expect(Favorite.between(user, fav)).not_to be_nil
       expect(response).to redirect_to(post_url(fav))
       expect(flash[:success]).to eq("Your favorite has been saved.")
@@ -166,7 +166,7 @@ RSpec.describe FavoritesController do
       user = create(:user)
       fav = create(:post)
       login_as(user)
-      post :create, post_id: fav.id, page: 3, per_page: 10
+      post :create, params: { post_id: fav.id, page: 3, per_page: 10 }
       expect(Favorite.between(user, fav)).not_to be_nil
       expect(response).to redirect_to(post_url(fav, page: 3, per_page: 10))
       expect(flash[:success]).to eq("Your favorite has been saved.")
@@ -176,7 +176,7 @@ RSpec.describe FavoritesController do
       user = create(:user)
       fav = create(:post)
       login_as(user)
-      post :create, post_id: fav.id, page: 1, per_page: 25
+      post :create, params: { post_id: fav.id, page: 1, per_page: 25 }
       expect(Favorite.between(user, fav)).not_to be_nil
       expect(response).to redirect_to(post_url(fav))
       expect(flash[:success]).to eq("Your favorite has been saved.")
@@ -186,7 +186,7 @@ RSpec.describe FavoritesController do
       user = create(:user)
       board = create(:board)
       login_as(user)
-      post :create, board_id: board.id
+      post :create, params: { board_id: board.id }
       expect(Favorite.between(user, board)).not_to be_nil
       expect(response).to redirect_to(board_url(board))
       expect(flash[:success]).to eq("Your favorite has been saved.")
@@ -195,21 +195,21 @@ RSpec.describe FavoritesController do
 
   describe "DELETE destroy" do
     it "requires login" do
-      delete :destroy, id: -1
+      delete :destroy, params: { id: -1 }
       expect(response).to redirect_to(root_url)
       expect(flash[:error]).to eq("You must be logged in to view that page.")
     end
 
     it "requires valid favorite" do
       login
-      delete :destroy, id: -1
+      delete :destroy, params: { id: -1 }
       expect(response).to redirect_to(favorites_url)
       expect(flash[:error]).to eq("Favorite could not be found.")
     end
 
     it "requires your favorite" do
       login
-      delete :destroy, id: create(:favorite, favorite: create(:user)).id
+      delete :destroy, params: { id: create(:favorite, favorite: create(:user)).id }
       expect(response).to redirect_to(favorites_url)
       expect(flash[:error]).to eq("That is not your favorite.")
     end
@@ -217,7 +217,7 @@ RSpec.describe FavoritesController do
     it "destroys board favorite" do
       favorite = create(:favorite, favorite: create(:board))
       login_as(favorite.user)
-      delete :destroy, id: favorite.id
+      delete :destroy, params: { id: favorite.id }
       expect(response).to redirect_to(board_url(favorite.favorite))
       expect(flash[:success]).to eq("Favorite removed.")
     end
@@ -225,7 +225,7 @@ RSpec.describe FavoritesController do
     it "destroys post favorite" do
       favorite = create(:favorite, favorite: create(:post))
       login_as(favorite.user)
-      delete :destroy, id: favorite.id
+      delete :destroy, params: { id: favorite.id }
       expect(response).to redirect_to(post_url(favorite.favorite))
       expect(flash[:success]).to eq("Favorite removed.")
     end
@@ -233,7 +233,7 @@ RSpec.describe FavoritesController do
     it "destroys user favorite" do
       favorite = create(:favorite, favorite: create(:user))
       login_as(favorite.user)
-      delete :destroy, id: favorite.id
+      delete :destroy, params: { id: favorite.id }
       expect(response).to redirect_to(user_url(favorite.favorite))
       expect(flash[:success]).to eq("Favorite removed.")
     end

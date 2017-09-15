@@ -54,7 +54,7 @@ RSpec.describe PostsController do
     context "searching" do
       it "finds all when no arguments given" do
         4.times do create(:post) end
-        get :search, commit: true
+        get :search, params: { commit: true }
         expect(assigns(:search_results)).to match_array(Post.all)
       end
 
@@ -62,7 +62,7 @@ RSpec.describe PostsController do
         post = create(:post)
         post2 = create(:post, board: post.board)
         create(:post)
-        get :search, commit: true, board_id: post.board_id
+        get :search, params: { commit: true, board_id: post.board_id }
         expect(assigns(:search_results)).to match_array([post, post2])
       end
 
@@ -71,7 +71,7 @@ RSpec.describe PostsController do
         post = create(:post)
         post.settings << setting
         create(:post)
-        get :search, commit: true, setting_id: setting.id
+        get :search, params: { commit: true, setting_id: setting.id }
         expect(assigns(:search_results)).to match_array([post])
       end
 
@@ -79,20 +79,20 @@ RSpec.describe PostsController do
         post1 = create(:post, subject: 'contains stars')
         post2 = create(:post, subject: 'contains Stars cased')
         create(:post, subject: 'unrelated')
-        get :search, commit: true, subject: 'stars'
+        get :search, params: { commit: true, subject: 'stars' }
         expect(assigns(:search_results)).to match_array([post1, post2])
       end
 
       it "does not mix up subject with content" do
         create(:post, subject: 'unrelated', content: 'contains stars')
-        get :search, commit: true, subject: 'stars'
+        get :search, params: { commit: true, subject: 'stars' }
         expect(assigns(:search_results)).to be_empty
       end
 
       it "restricts to visible posts" do
         create(:post, subject: 'contains stars', privacy: Post::PRIVACY_PRIVATE)
         post = create(:post, subject: 'visible contains stars')
-        get :search, commit: true, subject: 'stars'
+        get :search, params: { commit: true, subject: 'stars' }
         expect(assigns(:search_results)).to match_array([post])
       end
 
@@ -105,7 +105,7 @@ RSpec.describe PostsController do
         filtered_post = posts.last
         first_post = posts.first
         create(:reply, post: first_post, user: filtered_post.user)
-        get :search, commit: true, author_id: [filtered_post.user_id]
+        get :search, params: { commit: true, author_id: [filtered_post.user_id] }
         expect(assigns(:search_results)).to match_array([filtered_post, first_post])
       end
 
@@ -128,7 +128,7 @@ RSpec.describe PostsController do
         create(:reply, post: post, user: author2)
         found_posts << post
 
-        get :search, commit: true, author_id: [author1.id, author2.id]
+        get :search, params: { commit: true, author_id: [author1.id, author2.id] }
         expect(assigns(:search_results)).to match_array(found_posts)
       end
 
@@ -136,14 +136,14 @@ RSpec.describe PostsController do
         create(:reply, with_character: true)
         reply = create(:reply, with_character: true)
         post = create(:post, character: reply.character, user: reply.user)
-        get :search, commit: true, character_id: reply.character_id
+        get :search, params: { commit: true, character_id: reply.character_id }
         expect(assigns(:search_results)).to match_array([reply.post, post])
       end
 
       it "filters by completed" do
         create(:post)
         post = create(:post, status: Post::STATUS_COMPLETE)
-        get :search, commit: true, completed: true
+        get :search, params: { commit: true, completed: true }
         expect(assigns(:search_results)).to match_array(post)
       end
     end
@@ -195,7 +195,7 @@ RSpec.describe PostsController do
 
     it "works for importer" do
       login
-      get :new, view: :import
+      get :new, params: { view: :import }
       expect(response).to have_http_status(200)
     end
   end
@@ -211,7 +211,7 @@ RSpec.describe PostsController do
       it "requires valid user" do
         user = create(:user, id: PostsController::SCRAPE_USERS.max + 1)
         login_as(user)
-        post :create, button_import: true
+        post :create, params: { button_import: true }
         expect(response).to render_template(:new)
         expect(flash[:error]).to eq("You do not have access to this feature.")
       end
@@ -219,7 +219,7 @@ RSpec.describe PostsController do
       it "requires url" do
         user = create(:user, id: PostsController::SCRAPE_USERS.first)
         login_as(user)
-        post :create, button_import: true
+        post :create, params: { button_import: true }
         expect(response).to render_template(:new)
         expect(flash[:error]).to eq("Invalid URL provided.")
       end
@@ -227,7 +227,7 @@ RSpec.describe PostsController do
       it "requires dreamwidth url" do
         user = create(:user, id: PostsController::SCRAPE_USERS.first)
         login_as(user)
-        post :create, button_import: true, dreamwidth_url: 'http://www.google.com'
+        post :create, params: { button_import: true, dreamwidth_url: 'http://www.google.com' }
         expect(response).to render_template(:new)
         expect(flash[:error]).to eq("Invalid URL provided.")
       end
@@ -235,7 +235,7 @@ RSpec.describe PostsController do
       it "requires dreamwidth.org url" do
         user = create(:user, id: PostsController::SCRAPE_USERS.first)
         login_as(user)
-        post :create, button_import: true, dreamwidth_url: 'http://www.dreamwidth.com'
+        post :create, params: { button_import: true, dreamwidth_url: 'http://www.dreamwidth.com' }
         expect(response).to render_template(:new)
         expect(flash[:error]).to eq("Invalid URL provided.")
       end
@@ -244,7 +244,7 @@ RSpec.describe PostsController do
         user = create(:user, id: PostsController::SCRAPE_USERS.first)
         login_as(user)
         expect(URI).to receive(:parse).and_raise(URI::InvalidURIError)
-        post :create, button_import: true, dreamwidth_url: 'dreamwidth'
+        post :create, params: { button_import: true, dreamwidth_url: 'dreamwidth' }
         expect(response).to render_template(:new)
         expect(flash[:error]).to eq("Invalid URL provided.")
       end
@@ -256,7 +256,7 @@ RSpec.describe PostsController do
         url = 'http://wild-pegasus-appeared.dreamwidth.org/403.html?style=site&view=flat'
         file = File.join(Rails.root, 'spec', 'support', 'fixtures', 'scrape_no_replies.html')
         stub_request(:get, url).to_return(status: 200, body: File.new(file))
-        post :create, button_import: true, dreamwidth_url: url
+        post :create, params: { button_import: true, dreamwidth_url: url }
         expect(response).to render_template(:new)
         expect(flash[:error][:message]).to start_with("The following usernames were not recognized")
         expect(flash[:error][:array]).to include("wild_pegasus_appeared")
@@ -269,7 +269,7 @@ RSpec.describe PostsController do
         login_as(user)
         url = 'http://www.dreamwidth.org'
         stub_request(:get, url).to_return(status: 200, body: '')
-        post :create, button_import: true, dreamwidth_url: url
+        post :create, params: { button_import: true, dreamwidth_url: url }
         expect(response).to redirect_to(posts_url)
         expect(flash[:success]).to eq("Post has begun importing. You will be updated on progress via site message.")
         expect(ScrapePostJob).to have_queue_size_of(1)
@@ -290,13 +290,16 @@ RSpec.describe PostsController do
         char2 = create(:template_character, user: user)
         expect(controller).to receive(:editor_setup).and_call_original
         expect(controller).to receive(:setup_layout_gon).and_call_original
-        post :create, button_preview: true, post: {
-          subject: 'test',
-          content: 'orign',
-          setting_ids: [setting1.id, '_'+setting2.name, '_other'],
-          content_warning_ids: [warning1.id, '_'+warning2.name, '_other'],
-          label_ids: [label1.id, '_'+label2.name, '_other'],
-          character_id: char1.id
+        post :create, params: {
+          button_preview: true,
+          post: {
+            subject: 'test',
+            content: 'orign',
+            setting_ids: [setting1.id, '_'+setting2.name, '_other'],
+            content_warning_ids: [warning1.id, '_'+warning2.name, '_other'],
+            label_ids: [label1.id, '_'+label2.name, '_other'],
+            character_id: char1.id
+          }
         }
         expect(response).to render_template(:preview)
         expect(assigns(:written)).to be_an_instance_of(Post)
@@ -331,7 +334,7 @@ RSpec.describe PostsController do
       it "does not crash without arguments" do
         user = create(:user)
         login_as(user)
-        post :create, button_preview: true
+        post :create, params: { button_preview: true }
         expect(response).to render_template(:preview)
         expect(assigns(:written)).to be_an_instance_of(Post)
         expect(assigns(:written)).to be_a_new_record
@@ -345,7 +348,7 @@ RSpec.describe PostsController do
       tags = ['_atag', '_atag', create(:label).id, '', '_' + existing_name.name, '_' + existing_case.name.upcase]
       login
       expect {
-        post :create, post: {subject: 'a', board_id: create(:board).id, label_ids: tags}
+        post :create, params: { post: {subject: 'a', board_id: create(:board).id, label_ids: tags} }
       }.to change{Label.count}.by(1)
       expect(Label.last.name).to eq('atag')
       expect(assigns(:post).labels.count).to eq(4)
@@ -357,7 +360,7 @@ RSpec.describe PostsController do
       tags = ['_atag', '_atag', create(:setting).id, '', '_' + existing_name.name, '_' + existing_case.name.upcase]
       login
       expect {
-        post :create, post: {subject: 'a', board_id: create(:board).id, setting_ids: tags}
+        post :create, params: { post: {subject: 'a', board_id: create(:board).id, setting_ids: tags} }
       }.to change{Setting.count}.by(1)
       expect(Setting.last.name).to eq('atag')
       expect(assigns(:post).settings.count).to eq(4)
@@ -369,7 +372,7 @@ RSpec.describe PostsController do
       tags = ['_atag', '_atag', create(:content_warning).id, '', '_' + existing_name.name, '_' + existing_case.name.upcase]
       login
       expect {
-        post :create, post: {subject: 'a', board_id: create(:board).id, content_warning_ids: tags}
+        post :create, params: { post: {subject: 'a', board_id: create(:board).id, content_warning_ids: tags} }
       }.to change{ContentWarning.count}.by(1)
       expect(ContentWarning.last.name).to eq('atag')
       expect(assigns(:post).content_warnings.count).to eq(4)
@@ -388,13 +391,15 @@ RSpec.describe PostsController do
       char2 = create(:template_character, user: user)
       expect(controller).to receive(:editor_setup).and_call_original
       expect(controller).to receive(:setup_layout_gon).and_call_original
-      post :create, post: {
-        subject: 'asubjct',
-        content: 'acontnt',
-        setting_ids: [setting1.id, '_'+setting2.name, '_other'],
-        content_warning_ids: [warning1.id, '_'+warning2.name, '_other'],
-        label_ids: [label1.id, '_'+label2.name, '_other'],
-        character_id: char1.id
+      post :create, params: {
+        post: {
+          subject: 'asubjct',
+          content: 'acontnt',
+          setting_ids: [setting1.id, '_'+setting2.name, '_other'],
+          content_warning_ids: [warning1.id, '_'+warning2.name, '_other'],
+          label_ids: [label1.id, '_'+label2.name, '_other'],
+          character_id: char1.id
+        }
       }
       expect(response).to render_template(:new)
       expect(flash[:error][:message]).to eq("Your post could not be saved because of the following problems:")
@@ -444,20 +449,22 @@ RSpec.describe PostsController do
       label2 = create(:label)
 
       expect {
-        post :create, post: {
-          subject: 'asubjct',
-          content: 'acontnt',
-          description: 'adesc',
-          board_id: board.id,
-          section_id: section.id,
-          character_id: char.id,
-          icon_id: icon.id,
-          character_alias_id: calias.id,
-          privacy: Post::PRIVACY_LIST,
-          viewer_ids: [viewer.id],
-          setting_ids: [setting1.id, '_'+setting2.name, '_other'],
-          content_warning_ids: [warning1.id, '_'+warning2.name, '_other'],
-          label_ids: [label1.id, '_'+label2.name, '_other']
+        post :create, params: {
+          post: {
+            subject: 'asubjct',
+            content: 'acontnt',
+            description: 'adesc',
+            board_id: board.id,
+            section_id: section.id,
+            character_id: char.id,
+            icon_id: icon.id,
+            character_alias_id: calias.id,
+            privacy: Post::PRIVACY_LIST,
+            viewer_ids: [viewer.id],
+            setting_ids: [setting1.id, '_'+setting2.name, '_other'],
+            content_warning_ids: [warning1.id, '_'+warning2.name, '_other'],
+            label_ids: [label1.id, '_'+label2.name, '_other']
+          }
         }
       }.to change{Post.count}.by(1)
       expect(response).to redirect_to(post_path(assigns(:post)))
@@ -488,14 +495,14 @@ RSpec.describe PostsController do
   describe "GET show" do
     it "does not require login" do
       post = create(:post)
-      get :show, id: post.id
+      get :show, params: { id: post.id }
       expect(response).to have_http_status(200)
       expect(assigns(:javascripts)).to include('posts/show')
     end
 
     it "requires permission" do
       post = create(:post, privacy: Post::PRIVACY_PRIVATE)
-      get :show, id: post.id
+      get :show, params: { id: post.id }
       expect(response).to redirect_to(boards_url)
       expect(flash[:error]).to eq("You do not have permission to view this post.")
     end
@@ -503,7 +510,7 @@ RSpec.describe PostsController do
     it "works with login" do
       post = create(:post)
       login
-      get :show, id: post.id
+      get :show, params: { id: post.id }
       expect(response).to have_http_status(200)
       expect(assigns(:javascripts)).to include('posts/show')
     end
@@ -513,14 +520,14 @@ RSpec.describe PostsController do
       user = create(:user)
       login_as(user)
       expect(post.last_read(user)).to be_nil
-      get :show, id: post.id
+      get :show, params: { id: post.id }
       last_read = post.reload.last_read(user)
       expect(last_read).not_to be_nil
 
       Timecop.freeze(last_read + 1.second) do
         reply = create(:reply, post: post)
         expect(reply.created_at).not_to be_the_same_time_as(last_read)
-        get :show, id: post.id
+        get :show, params: { id: post.id }
         cur_read = post.reload.last_read(user)
         expect(last_read).not_to be_the_same_time_as(cur_read)
         expect(last_read.to_i).to be < cur_read.to_i
@@ -534,7 +541,7 @@ RSpec.describe PostsController do
       post.ignore(user)
       expect(post.reload.first_unread_for(user)).to eq(post)
 
-      get :show, id: post.id
+      get :show, params: { id: post.id }
       expect(post.reload.first_unread_for(user)).to be_nil
       last_read = post.last_read(user)
 
@@ -542,14 +549,14 @@ RSpec.describe PostsController do
         reply = create(:reply, post: post)
         expect(reply.created_at).not_to be_the_same_time_as(last_read)
         expect(post.reload.first_unread_for(user)).to eq(reply)
-        get :show, id: post.id
+        get :show, params: { id: post.id }
         expect(post.reload.first_unread_for(user)).to be_nil
       end
     end
 
     it "handles invalid pages" do
       post = create(:post)
-      get :show, id: post.id, page: 'invalid'
+      get :show, params: { id: post.id, page: 'invalid' }
       expect(flash[:error]).to eq('Page not recognized, defaulting to page 1.')
       expect(assigns(:page)).to eq(1)
       expect(response).to have_http_status(200)
@@ -558,7 +565,7 @@ RSpec.describe PostsController do
 
     it "handles invalid unread page when logged out" do
       post = create(:post)
-      get :show, id: post.id, page: 'unread'
+      get :show, params: { id: post.id, page: 'unread' }
       expect(flash[:error]).to eq("You must be logged in to view unread posts.")
       expect(assigns(:page)).to eq(1)
       expect(response).to have_http_status(200)
@@ -568,14 +575,14 @@ RSpec.describe PostsController do
     it "handles pages outside range" do
       post = create(:post)
       5.times { create(:reply, post: post) }
-      get :show, id: post.id, per_page: 1, page: 10
+      get :show, params: { id: post.id, per_page: 1, page: 10 }
       expect(response).to redirect_to(post_url(post, page: 5, per_page: 1))
     end
 
     it "handles page=last with replies" do
       post = create(:post)
       5.times { create(:reply, post: post) }
-      get :show, id: post.id, per_page: 1, page: 'last'
+      get :show, params: { id: post.id, per_page: 1, page: 'last' }
       expect(assigns(:page)).to eq(5)
       expect(response).to have_http_status(200)
       expect(response).to render_template(:show)
@@ -583,7 +590,7 @@ RSpec.describe PostsController do
 
     it "handles page=last with no replies" do
       post = create(:post)
-      get :show, id: post.id, page: 'last'
+      get :show, params: { id: post.id, page: 'last' }
       expect(assigns(:page)).to eq(1)
       expect(response).to have_http_status(200)
       expect(response).to render_template(:show)
@@ -595,7 +602,7 @@ RSpec.describe PostsController do
       it "renders HAML with additional attributes" do
         post = create(:post, with_icon: true, with_character: true)
         create(:reply, post: post, with_icon: true, with_character: true)
-        get :show, id: post.id
+        get :show, params: { id: post.id }
         expect(response.status).to eq(200)
         expect(response.body).to include(post.subject)
         expect(response.body).to include('header-right')
@@ -606,7 +613,7 @@ RSpec.describe PostsController do
         create(:reply, post: post)
         character = create(:character)
         login_as(character.user)
-        get :show, id: post.id
+        get :show, params: { id: post.id }
         expect(response.status).to eq(200)
         expect(response.body).to include('Join Thread')
       end
@@ -614,7 +621,7 @@ RSpec.describe PostsController do
       it "flat view renders HAML properly" do
         post = create(:post, with_icon: true, with_character: true)
         create(:reply, post: post, with_icon: true, with_character: true)
-        get :show, id: post.id, view: 'flat'
+        get :show, params: { id: post.id, view: 'flat' }
         expect(response.status).to eq(200)
         expect(response.body).to include(post.subject)
         expect(response.body).not_to include('header-right')
@@ -624,7 +631,7 @@ RSpec.describe PostsController do
         post = create(:post)
         reply = create(:reply, post: post, with_icon: true, with_character: true)
         login_as(reply.user)
-        get :show, id: post.id
+        get :show, params: { id: post.id }
         expect(response.status).to eq(200)
       end
     end
@@ -636,13 +643,13 @@ RSpec.describe PostsController do
       end
 
       it "shows error if reply not found" do
-        get :show, id: post.id, at_id: -1
+        get :show, params: { id: post.id, at_id: -1 }
         expect(flash[:error]).to eq("Could not locate specified reply, defaulting to first page.")
         expect(assigns(:replies).count).to eq(5)
       end
 
       it "shows error if unread not logged in" do
-        get :show, id: post.id, at_id: 'unread'
+        get :show, params: { id: post.id, at_id: 'unread' }
         expect(flash[:error]).to eq("Could not locate specified reply, defaulting to first page.")
         expect(assigns(:replies).count).to eq(5)
       end
@@ -651,20 +658,20 @@ RSpec.describe PostsController do
         user = create(:user)
         post.mark_read(user)
         login_as(user)
-        get :show, id: post.id, at_id: 'unread'
+        get :show, params: { id: post.id, at_id: 'unread' }
         expect(flash[:error]).to eq("Could not locate specified reply, defaulting to first page.")
         expect(assigns(:replies).count).to eq(5)
       end
 
       it "shows error when reply is wrong post" do
-        get :show, id: post.id, at_id: create(:reply).id
+        get :show, params: { id: post.id, at_id: create(:reply).id }
         expect(flash[:error]).to eq("Could not locate specified reply, defaulting to first page.")
         expect(assigns(:replies).count).to eq(5)
       end
 
       it "works for specified reply" do
         last_reply = post.replies.order('id asc').last
-        get :show, id: post.id, at_id: last_reply.id
+        get :show, params: { id: post.id, at_id: last_reply.id }
         expect(assigns(:replies)).to eq([last_reply])
         expect(assigns(:replies).current_page.to_i).to eq(1)
         expect(assigns(:replies).per_page).to eq(25)
@@ -672,7 +679,7 @@ RSpec.describe PostsController do
 
       it "works for specified reply with page settings" do
         second_last_reply = post.replies.order('id asc').last(2).first
-        get :show, id: post.id, at_id: second_last_reply.id, per_page: 1
+        get :show, params: { id: post.id, at_id: second_last_reply.id, per_page: 1 }
         expect(assigns(:replies)).to eq([second_last_reply])
         expect(assigns(:replies).current_page.to_i).to eq(1)
         expect(assigns(:replies).per_page).to eq(1)
@@ -681,7 +688,7 @@ RSpec.describe PostsController do
       it "works for specified reply with page settings" do
         last_reply = post.replies.order('id asc').last
         second_last_reply = post.replies.order('id asc').last(2).first
-        get :show, id: post.id, at_id: second_last_reply.id, per_page: 1, page: 2
+        get :show, params: { id: post.id, at_id: second_last_reply.id, per_page: 1, page: 2 }
         expect(assigns(:replies)).to eq([last_reply])
         expect(assigns(:replies).current_page.to_i).to eq(2)
         expect(assigns(:replies).per_page).to eq(1)
@@ -694,7 +701,7 @@ RSpec.describe PostsController do
         post.mark_read(user, third_reply.created_at)
         expect(post.first_unread_for(user)).to eq(second_last_reply)
         login_as(user)
-        get :show, id: post.id, at_id: 'unread', per_page: 1
+        get :show, params: { id: post.id, at_id: 'unread', per_page: 1 }
         expect(assigns(:replies)).to eq([second_last_reply])
         expect(assigns(:unread)).to eq(second_last_reply)
         expect(assigns(:paginate_params)['at_id']).to eq(second_last_reply.id)
@@ -708,7 +715,7 @@ RSpec.describe PostsController do
         user = create(:user)
         post.mark_read(user)
         login_as(user)
-        get :show, id: post.id, page: 'unread', per_page: 1
+        get :show, params: { id: post.id, page: 'unread', per_page: 1 }
         expect(assigns(:page)).to eq(3)
       end
 
@@ -716,7 +723,7 @@ RSpec.describe PostsController do
         post = create(:post)
         user = create(:user)
         login_as(user)
-        get :show, id: post.id, page: 'unread'
+        get :show, params: { id: post.id, page: 'unread' }
         expect(assigns(:page)).to eq(1)
       end
 
@@ -728,7 +735,7 @@ RSpec.describe PostsController do
         user = create(:user)
         post.mark_read(user, reply1.created_at)
         login_as(user)
-        get :show, id: post.id, page: 'unread', per_page: 1
+        get :show, params: { id: post.id, page: 'unread', per_page: 1 }
         expect(assigns(:page)).to eq(2)
       end
     end
@@ -737,7 +744,7 @@ RSpec.describe PostsController do
       it "works" do
         post = create(:post)
         login_as(post.user)
-        get :show, id: post.id
+        get :show, params: { id: post.id }
         expect(response).to have_http_status(200)
       end
 
@@ -754,7 +761,7 @@ RSpec.describe PostsController do
         expect(post).to receive(:build_new_reply_for).with(user).and_call_original
         expect(controller).to receive(:setup_layout_gon).and_call_original
 
-        get :show, id: post.id
+        get :show, params: { id: post.id }
         expect(response).to have_http_status(200)
         expect(assigns(:reply)).not_to be_nil
         expect(assigns(:javascripts)).to include('posts/show', 'posts/editor')
@@ -767,7 +774,7 @@ RSpec.describe PostsController do
         user = create(:user)
         login_as(user)
         expect(post).to be_taggable_by(user)
-        get :show, id: post.id
+        get :show, params: { id: post.id }
         expect(response).to have_http_status(200)
       end
 
@@ -783,7 +790,7 @@ RSpec.describe PostsController do
         expect(post).to be_taggable_by(user)
         expect(post).to receive(:build_new_reply_for).with(user).and_call_original
 
-        get :show, id: post.id
+        get :show, params: { id: post.id }
         expect(response).to have_http_status(200)
         expect(assigns(:reply)).not_to be_nil
       end
@@ -802,7 +809,7 @@ RSpec.describe PostsController do
         expect(post).not_to be_taggable_by(user)
         expect(post).not_to receive(:build_new_reply_for)
 
-        get :show, id: post.id
+        get :show, params: { id: post.id }
         expect(response).to have_http_status(200)
         expect(assigns(:reply)).to be_nil
       end
@@ -814,19 +821,19 @@ RSpec.describe PostsController do
   describe "GET history" do
     it "requires post" do
       login
-      get :history, id: -1
+      get :history, params: { id: -1 }
       expect(response).to redirect_to(boards_url)
       expect(flash[:error]).to eq("Post could not be found.")
     end
 
     it "works logged out" do
-      get :history, id: create(:post).id
+      get :history, params: { id: create(:post).id }
       expect(response.status).to eq(200)
     end
 
     it "works logged in" do
       login
-      get :history, id: create(:post).id
+      get :history, params: { id: create(:post).id }
       expect(response.status).to eq(200)
     end
   end
@@ -834,33 +841,33 @@ RSpec.describe PostsController do
   describe "GET stats" do
     it "requires post" do
       login
-      get :stats, id: -1
+      get :stats, params: { id: -1 }
       expect(response).to redirect_to(boards_url)
       expect(flash[:error]).to eq("Post could not be found.")
     end
 
     it "works logged out" do
-      get :stats, id: create(:post).id
+      get :stats, params: { id: create(:post).id }
       expect(response.status).to eq(200)
     end
 
     it "works logged in" do
       login
-      get :stats, id: create(:post).id
+      get :stats, params: { id: create(:post).id }
       expect(response.status).to eq(200)
     end
   end
 
   describe "GET edit" do
     it "requires login" do
-      get :edit, id: -1
+      get :edit, params: { id: -1 }
       expect(response).to redirect_to(root_url)
       expect(flash[:error]).to eq("You must be logged in to view that page.")
     end
 
     it "requires post" do
       login
-      get :edit, id: -1
+      get :edit, params: { id: -1 }
       expect(response).to redirect_to(boards_url)
       expect(flash[:error]).to eq("Post could not be found.")
     end
@@ -868,7 +875,7 @@ RSpec.describe PostsController do
     it "requires your post" do
       login
       post = create(:post)
-      get :edit, id: post.id
+      get :edit, params: { id: post.id }
       expect(response).to redirect_to(post_url(post))
       expect(flash[:error]).to eq("You do not have permission to modify this post.")
     end
@@ -890,7 +897,7 @@ RSpec.describe PostsController do
       expect(controller).to receive(:editor_setup).and_call_original
       expect(controller).to receive(:setup_layout_gon).and_call_original
 
-      get :edit, id: post.id
+      get :edit, params: { id: post.id }
 
       expect(response.status).to eq(200)
       expect(assigns(:post)).to eq(post)
@@ -920,14 +927,14 @@ RSpec.describe PostsController do
 
   describe "PUT update" do
     it "requires login" do
-      put :update, id: -1
+      put :update, params: { id: -1 }
       expect(response).to redirect_to(root_url)
       expect(flash[:error]).to eq("You must be logged in to view that page.")
     end
 
     it "requires valid post" do
       login
-      put :update, id: -1
+      put :update, params: { id: -1 }
       expect(response).to redirect_to(boards_url)
       expect(flash[:error]).to eq("Post could not be found.")
     end
@@ -938,7 +945,7 @@ RSpec.describe PostsController do
       login_as(user)
       expect(post.visible_to?(user)).not_to eq(true)
 
-      put :update, id: post.id
+      put :update, params: { id: post.id }
       expect(response).to redirect_to(boards_url)
       expect(flash[:error]).to eq("You do not have permission to view this post.")
     end
@@ -964,7 +971,7 @@ RSpec.describe PostsController do
         login_as(post.user)
         create(:admin_user) # to receive the alert message
         expect {
-          put :update, id: post.id, unread: true, at_id: unread_reply.id
+          put :update, params: { id: post.id, unread: true, at_id: unread_reply.id }
         }.to change{ Message.count }.by(1)
 
         expect(response).to redirect_to(unread_posts_url)
@@ -981,7 +988,7 @@ RSpec.describe PostsController do
         expect(post.last_read(post.user)).to be_the_same_time_as(time)
         login_as(post.user)
 
-        put :update, id: post.id, unread: true, at_id: unread_reply.id
+        put :update, params: { id: post.id, unread: true, at_id: unread_reply.id }
 
         expect(response).to redirect_to(unread_posts_url)
         expect(flash[:success]).to eq("Post has been marked as read until reply ##{unread_reply.id}.")
@@ -995,7 +1002,7 @@ RSpec.describe PostsController do
         expect(post.reload.send(:view_for, user)).not_to be_nil
         login_as(user)
 
-        put :update, id: post.id, unread: true
+        put :update, params: { id: post.id, unread: true }
 
         expect(response).to redirect_to(unread_posts_url)
         expect(flash[:success]).to eq("Post has been marked as unread")
@@ -1012,7 +1019,7 @@ RSpec.describe PostsController do
         expect(post.reload.first_unread_for(user)).to be_nil
         login_as(user)
 
-        put :update, id: post.id, unread: true, at_id: unread_reply.id
+        put :update, params: { id: post.id, unread: true, at_id: unread_reply.id }
 
         expect(response).to redirect_to(unread_posts_url)
         expect(flash[:success]).to eq("Post has been marked as read until reply ##{unread_reply.id}.")
@@ -1028,7 +1035,7 @@ RSpec.describe PostsController do
         expect(post.reload.first_unread_for(user)).to be_nil
         login_as(user)
 
-        put :update, id: post.id, unread: true
+        put :update, params: { id: post.id, unread: true }
 
         expect(response).to redirect_to(unread_posts_url)
         expect(flash[:success]).to eq("Post has been marked as unread")
@@ -1040,7 +1047,7 @@ RSpec.describe PostsController do
       it "requires permission" do
         post = create(:post)
         login
-        put :update, id: post.id, status: 'complete'
+        put :update, params: { id: post.id, status: 'complete' }
         expect(response).to redirect_to(post_url(post))
         expect(flash[:error]).to eq("You do not have permission to modify this post.")
         expect(post.reload).to be_active
@@ -1049,7 +1056,7 @@ RSpec.describe PostsController do
       it "requires valid status" do
         post = create(:post)
         login_as(post.user)
-        put :update, id: post.id, status: 'invalid'
+        put :update, params: { id: post.id, status: 'invalid' }
         expect(response).to redirect_to(post_url(post))
         expect(flash[:error]).to eq("Invalid status selected.")
         expect(post.reload).to be_active
@@ -1061,7 +1068,7 @@ RSpec.describe PostsController do
 
           it "works for creator" do
             login_as(post.user)
-            put :update, id: post.id, status: status
+            put :update, params: { id: post.id, status: status }
             expect(response).to redirect_to(post_url(post))
             expect(flash[:success]).to eq("Post has been marked #{status}.")
             expect(post.reload.send("#{method}?")).to eq(true)
@@ -1070,7 +1077,7 @@ RSpec.describe PostsController do
           it "works for coauthor" do
             reply = create(:reply, post: post)
             login_as(reply.user)
-            put :update, id: post.id, status: status
+            put :update, params: { id: post.id, status: status }
             expect(response).to redirect_to(post_url(post))
             expect(flash[:success]).to eq("Post has been marked #{status}.")
             expect(post.reload.send("#{method}?")).to eq(true)
@@ -1078,7 +1085,7 @@ RSpec.describe PostsController do
 
           it "works for admin" do
             login_as(create(:admin_user))
-            put :update, id: post.id, status: status
+            put :update, params: { id: post.id, status: status }
             expect(response).to redirect_to(post_url(post))
             expect(flash[:success]).to eq("Post has been marked #{status}.")
             expect(post.reload.send("#{method}?")).to eq(true)
@@ -1097,7 +1104,7 @@ RSpec.describe PostsController do
             it "works for creator" do
               login_as(post.user)
               expect(post.reload.tagged_at).to be_the_same_time_as(time)
-              put :update, id: post.id, status: status
+              put :update, params: { id: post.id, status: status }
               expect(response).to redirect_to(post_url(post))
               expect(flash[:success]).to eq("Post has been marked #{status}.")
               expect(post.reload.send("on_hiatus?")).to eq(true)
@@ -1107,7 +1114,7 @@ RSpec.describe PostsController do
             it "works for coauthor" do
               login_as(reply.user)
               expect(post.reload.tagged_at).to be_the_same_time_as(time)
-              put :update, id: post.id, status: status
+              put :update, params: { id: post.id, status: status }
               expect(response).to redirect_to(post_url(post))
               expect(flash[:success]).to eq("Post has been marked #{status}.")
               expect(post.reload.send("on_hiatus?")).to eq(true)
@@ -1117,7 +1124,7 @@ RSpec.describe PostsController do
             it "works for admin" do
               login_as(create(:admin_user))
               expect(post.reload.tagged_at).to be_the_same_time_as(time)
-              put :update, id: post.id, status: status
+              put :update, params: { id: post.id, status: status }
               expect(response).to redirect_to(post_url(post))
               expect(flash[:success]).to eq("Post has been marked #{status}.")
               expect(post.reload.send("on_hiatus?")).to eq(true)
@@ -1133,7 +1140,7 @@ RSpec.describe PostsController do
 
       it "requires permission" do
         login
-        put :update, id: post.id, authors_locked: 'true'
+        put :update, params: { id: post.id, authors_locked: 'true' }
         expect(response).to redirect_to(post_url(post))
         expect(flash[:error]).to eq("You do not have permission to modify this post.")
         expect(post.reload).not_to be_authors_locked
@@ -1141,12 +1148,12 @@ RSpec.describe PostsController do
 
       it "works for creator" do
         login_as(post.user)
-        put :update, id: post.id, authors_locked: 'true'
+        put :update, params: { id: post.id, authors_locked: 'true' }
         expect(response).to redirect_to(post_url(post))
         expect(flash[:success]).to eq("Post has been locked to current authors.")
         expect(post.reload).to be_authors_locked
 
-        put :update, id: post.id, authors_locked: 'false'
+        put :update, params: { id: post.id, authors_locked: 'false' }
         expect(flash[:success]).to eq("Post has been unlocked from current authors.")
         expect(post.reload).not_to be_authors_locked
       end
@@ -1154,24 +1161,24 @@ RSpec.describe PostsController do
       it "works for coauthor" do
         reply = create(:reply, post: post)
         login_as(reply.user)
-        put :update, id: post.id, authors_locked: 'true'
+        put :update, params: { id: post.id, authors_locked: 'true' }
         expect(response).to redirect_to(post_url(post))
         expect(flash[:success]).to eq("Post has been locked to current authors.")
         expect(post.reload).to be_authors_locked
 
-        put :update, id: post.id, authors_locked: 'false'
+        put :update, params: { id: post.id, authors_locked: 'false' }
         expect(flash[:success]).to eq("Post has been unlocked from current authors.")
         expect(post.reload).not_to be_authors_locked
       end
 
       it "works for admin" do
         login_as(create(:admin_user))
-        put :update, id: post.id, authors_locked: 'true'
+        put :update, params: { id: post.id, authors_locked: 'true' }
         expect(response).to redirect_to(post_url(post))
         expect(flash[:success]).to eq("Post has been locked to current authors.")
         expect(post.reload).to be_authors_locked
 
-        put :update, id: post.id, authors_locked: 'false'
+        put :update, params: { id: post.id, authors_locked: 'false' }
         expect(flash[:success]).to eq("Post has been unlocked from current authors.")
         expect(post.reload).not_to be_authors_locked
       end
@@ -1188,7 +1195,7 @@ RSpec.describe PostsController do
         login_as(user)
         expect(post.ignored_by?(user)).not_to eq(true)
 
-        put :update, id: post.id, hidden: 'true'
+        put :update, params: { id: post.id, hidden: 'true' }
         expect(response).to redirect_to(post_url(post))
         expect(flash[:success]).to eq("Post has been hidden")
         expect(post.reload.ignored_by?(user)).to eq(true)
@@ -1206,7 +1213,7 @@ RSpec.describe PostsController do
         post.ignore(user)
         expect(post.reload.ignored_by?(user)).to eq(true)
 
-        put :update, id: post.id, hidden: 'false'
+        put :update, params: { id: post.id, hidden: 'false' }
         expect(response).to redirect_to(post_url(post))
         expect(flash[:success]).to eq("Post has been unhidden")
         expect(post.reload.ignored_by?(user)).not_to eq(true)
@@ -1229,13 +1236,17 @@ RSpec.describe PostsController do
         char2 = create(:template_character, user: user)
         expect(controller).to receive(:editor_setup).and_call_original
         expect(controller).to receive(:setup_layout_gon).and_call_original
-        put :update, id: post.id, button_preview: true, post: {
-          subject: 'test',
-          content: 'orign',
-          setting_ids: [setting1.id, '_'+setting2.name, '_other'],
-          content_warning_ids: [warning1.id, '_'+warning2.name, '_other'],
-          label_ids: [label1.id, '_'+label2.name, '_other'],
-          character_id: char1.id
+        put :update, params: {
+          id: post.id,
+          button_preview: true,
+          post: {
+            subject: 'test',
+            content: 'orign',
+            setting_ids: [setting1.id, '_'+setting2.name, '_other'],
+            content_warning_ids: [warning1.id, '_'+warning2.name, '_other'],
+            label_ids: [label1.id, '_'+label2.name, '_other'],
+            character_id: char1.id
+          }
         }
         expect(response).to render_template(:preview)
         expect(assigns(:written)).to be_an_instance_of(Post)
@@ -1274,7 +1285,7 @@ RSpec.describe PostsController do
         user = create(:user)
         login_as(user)
         post = create(:post, user: user)
-        put :update, id: post.id, button_preview: true
+        put :update, params: { id: post.id, button_preview: true }
         expect(response).to render_template(:preview)
         expect(assigns(:written).user).to eq(user)
       end
@@ -1294,7 +1305,7 @@ RSpec.describe PostsController do
         setting_ids = ['_setting']
         warning_ids = ['_warning']
         label_ids = ['_label']
-        put :update, id: post.id, post: {setting_ids: setting_ids, content_warning_ids: warning_ids, label_ids: label_ids}
+        put :update, params: { id: post.id, post: {setting_ids: setting_ids, content_warning_ids: warning_ids, label_ids: label_ids} }
         expect(response).to redirect_to(post_url(post))
         post = assigns(:post)
         expect(post.settings).to be_all(&:persisted?)
@@ -1315,7 +1326,7 @@ RSpec.describe PostsController do
         warning = create(:content_warning, name: 'warning')
         label_ids = ['_label']
         tag = create(:label, name: 'label')
-        put :update, id: post.id, post: {setting_ids: setting_ids, content_warning_ids: warning_ids, label_ids: label_ids}
+        put :update, params: { id: post.id, post: {setting_ids: setting_ids, content_warning_ids: warning_ids, label_ids: label_ids} }
         expect(response).to redirect_to(post_url(post))
         post = assigns(:post)
         expect(post.settings).to eq([setting])
@@ -1331,7 +1342,7 @@ RSpec.describe PostsController do
         char2 = create(:template_character, user: user)
         expect(controller).to receive(:editor_setup).and_call_original
         expect(controller).to receive(:setup_layout_gon).and_call_original
-        put :update, id: post.id, post: {subject: ''}
+        put :update, params: { id: post.id, post: {subject: ''} }
         expect(response).to render_template(:edit)
         expect(flash[:error][:message]).to eq("Your post could not be saved because of the following problems:")
         expect(post.reload.subject).not_to be_empty
@@ -1369,7 +1380,7 @@ RSpec.describe PostsController do
         warning = create(:content_warning)
         tag = create(:label)
 
-        put :update, id: post.id, post: {content: newcontent, subject: newsubj, description: 'desc', board_id: board.id, section_id: section.id, character_id: char.id, character_alias_id: calias.id, icon_id: icon.id, privacy: Post::PRIVACY_LIST, viewer_ids: [viewer.id], setting_ids: [setting.id], content_warning_ids: [warning.id], label_ids: [tag.id]}
+        put :update, params: { id: post.id, post: {content: newcontent, subject: newsubj, description: 'desc', board_id: board.id, section_id: section.id, character_id: char.id, character_alias_id: calias.id, icon_id: icon.id, privacy: Post::PRIVACY_LIST, viewer_ids: [viewer.id], setting_ids: [setting.id], content_warning_ids: [warning.id], label_ids: [tag.id]} }
         expect(response).to redirect_to(post_url(post))
         expect(flash[:success]).to eq("Your post has been updated.")
 
@@ -1395,14 +1406,14 @@ RSpec.describe PostsController do
 
   describe "POST warnings" do
     it "requires a valid post" do
-      post :warnings, id: -1
+      post :warnings, params: { id: -1 }
       expect(response).to redirect_to(boards_url)
       expect(flash[:error]).to eq("Post could not be found.")
     end
 
     it "requires permission" do
       warn_post = create(:post, privacy: Post::PRIVACY_PRIVATE)
-      post :warnings, id: warn_post.id
+      post :warnings, params: { id: warn_post.id }
       expect(response).to redirect_to(boards_url)
       expect(flash[:error]).to eq("You do not have permission to view this post.")
     end
@@ -1410,7 +1421,7 @@ RSpec.describe PostsController do
     it "works for logged out" do
       warn_post = create(:post)
       expect(session[:ignore_warnings]).to be_nil
-      post :warnings, id: warn_post.id, per_page: 10, page: 2
+      post :warnings, params: { id: warn_post.id, per_page: 10, page: 2 }
       expect(response).to redirect_to(post_url(warn_post, per_page: 10, page: 2))
       expect(flash[:success]).to eq("All content warnings have been hidden. Proceed at your own risk.")
       expect(session[:ignore_warnings]).to eq(true)
@@ -1422,7 +1433,7 @@ RSpec.describe PostsController do
       expect(session[:ignore_warnings]).to be_nil
       expect(warn_post.send(:view_for, user)).to be_a_new_record
       login_as(user)
-      post :warnings, id: warn_post.id
+      post :warnings, params: { id: warn_post.id }
       expect(response).to redirect_to(post_url(warn_post))
       expect(flash[:success]).to start_with("Content warnings have been hidden for this thread. Proceed at your own risk.")
       expect(session[:ignore_warnings]).to be_nil
@@ -1434,14 +1445,14 @@ RSpec.describe PostsController do
 
   describe "DELETE destroy" do
     it "requires login" do
-      delete :destroy, id: -1
+      delete :destroy, params: { id: -1 }
       expect(response).to redirect_to(root_url)
       expect(flash[:error]).to eq("You must be logged in to view that page.")
     end
 
     it "requires valid post" do
       login
-      delete :destroy, id: -1
+      delete :destroy, params: { id: -1 }
       expect(response).to redirect_to(boards_url)
       expect(flash[:error]).to eq("Post could not be found.")
     end
@@ -1451,7 +1462,7 @@ RSpec.describe PostsController do
       login_as(user)
       post = create(:post)
       expect(post).not_to be_editable_by(user)
-      delete :destroy, id: post.id
+      delete :destroy, params: { id: post.id }
       expect(response).to redirect_to(post_url(post))
       expect(flash[:error]).to eq("You do not have permission to modify this post.")
     end
@@ -1459,7 +1470,7 @@ RSpec.describe PostsController do
     it "succeeds" do
       post = create(:post)
       login_as(post.user)
-      delete :destroy, id: post.id
+      delete :destroy, params: { id: post.id }
       expect(response).to redirect_to(boards_url)
       expect(flash[:success]).to eq("Post deleted.")
     end
@@ -1621,7 +1632,7 @@ RSpec.describe PostsController do
         user = create(:user)
         expect(user.unread_opened).not_to eq(true)
         login_as(user)
-        get :unread, started: 'true'
+        get :unread, params: { started: 'true' }
         expect(response).to have_http_status(200)
         expect(assigns(:started)).to eq(true)
         expect(assigns(:page_title)).to eq('Opened Threads')
@@ -1687,7 +1698,7 @@ RSpec.describe PostsController do
         user = create(:user)
         expect(private_post.visible_to?(user)).not_to eq(true)
         login_as(user)
-        post :mark, marked_ids: [private_post.id], commit: "Mark Read"
+        post :mark, params: { marked_ids: [private_post.id], commit: "Mark Read" }
         expect(response).to redirect_to(unread_posts_url)
         expect(flash[:success]).to eq("0 posts marked as read.")
         expect(private_post.reload.last_read(user)).to be_nil
@@ -1702,7 +1713,7 @@ RSpec.describe PostsController do
         expect(post1.last_read(user)).to be_nil
         expect(post2.last_read(user)).to be_nil
 
-        post :mark, marked_ids: [post1.id.to_s, post2.id.to_s], commit: "Mark Read"
+        post :mark, params: { marked_ids: [post1.id.to_s, post2.id.to_s], commit: "Mark Read" }
 
         expect(response).to redirect_to(unread_posts_url)
         expect(flash[:success]).to eq("2 posts marked as read.")
@@ -1717,7 +1728,7 @@ RSpec.describe PostsController do
         user = create(:user)
         expect(private_post.visible_to?(user)).not_to eq(true)
         login_as(user)
-        post :mark, marked_ids: [private_post.id]
+        post :mark, params: { marked_ids: [private_post.id] }
         expect(response).to redirect_to(unread_posts_url)
         expect(flash[:success]).to eq("0 posts hidden from this page.")
         expect(private_post.reload.ignored_by?(user)).not_to eq(true)
@@ -1732,7 +1743,7 @@ RSpec.describe PostsController do
         expect(post1.visible_to?(user)).to eq(true)
         expect(post2.visible_to?(user)).to eq(true)
 
-        post :mark, marked_ids: [post1.id.to_s, post2.id.to_s]
+        post :mark, params: { marked_ids: [post1.id.to_s, post2.id.to_s] }
 
         expect(response).to redirect_to(unread_posts_url)
         expect(flash[:success]).to eq("2 posts hidden from this page.")
@@ -1765,7 +1776,7 @@ RSpec.describe PostsController do
         expect(post2.reload.last_read(user)).to be_the_same_time_as(time2)
         expect(post3.reload.last_read(user)).to be_the_same_time_as(time3)
 
-        post :mark, marked_ids: [post1, post2, post3].map(&:id).map(&:to_s)
+        post :mark, params: { marked_ids: [post1, post2, post3].map(&:id).map(&:to_s) }
 
         expect(response).to redirect_to(unread_posts_url)
         expect(flash[:success]).to eq("3 posts hidden from this page.")
@@ -1840,7 +1851,7 @@ RSpec.describe PostsController do
       hidden_post.ignore(user)
       stay_hidden_post.ignore(user)
       login_as(user)
-      post :unhide, unhide_posts: [hidden_post.id]
+      post :unhide, params: { unhide_posts: [hidden_post.id] }
       expect(response).to redirect_to(hidden_posts_url)
       hidden_post.reload
       stay_hidden_post.reload
@@ -1855,7 +1866,7 @@ RSpec.describe PostsController do
       board.ignore(user)
       stay_hidden_board.ignore(user)
       login_as(user)
-      post :unhide, unhide_boards: [board.id]
+      post :unhide, params: { unhide_boards: [board.id] }
       expect(response).to redirect_to(hidden_posts_url)
       board.reload
       stay_hidden_board.reload
@@ -1871,7 +1882,7 @@ RSpec.describe PostsController do
       hidden_post.ignore(user)
       login_as(user)
 
-      post :unhide, unhide_boards: [board.id], unhide_posts: [hidden_post.id]
+      post :unhide, params: { unhide_boards: [board.id], unhide_posts: [hidden_post.id] }
 
       expect(response).to redirect_to(hidden_posts_url)
       board.reload

@@ -14,7 +14,7 @@ RSpec.describe BugsController do
       user = User.find(user_id)
       params = data.merge(controller: 'bugs', action: 'create', user_id: user.id).stringify_keys
       expect(ExceptionNotifier).to receive(:notify_exception).with(an_instance_of(Icon::UploadError), data: params)
-      post :create, data
+      post :create, params: data
       expect(response.status).to eq(200)
       expect(response.json).to eq({})
     end

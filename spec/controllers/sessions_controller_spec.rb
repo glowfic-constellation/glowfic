@@ -42,7 +42,7 @@ RSpec.describe SessionsController do
     it "requires an existing username" do
       nonusername = 'nonuser'
       expect(User.find_by(username: nonusername)).to be_nil
-      post :create, username: nonusername
+      post :create, params: { username: nonusername }
       expect(flash[:error]).to eq("That username does not exist.")
       expect(controller.send(:logged_in?)).not_to eq(true)
     end
@@ -51,7 +51,7 @@ RSpec.describe SessionsController do
       user = create(:user)
       create(:password_reset, user: user)
       expect(user.password_resets.active.unused).not_to be_empty
-      post :create, username: user.username
+      post :create, params: { username: user.username }
       expect(flash[:error]).to eq("The password for this account has been reset. Please check your email.")
       expect(controller.send(:logged_in?)).not_to eq(true)
     end
@@ -59,7 +59,7 @@ RSpec.describe SessionsController do
     it "requires a valid password" do
       password = 'password'
       user = create(:user, password: password)
-      post :create, username: user.username, password: password + "-not"
+      post :create, params: { username: user.username, password: password + "-not" }
       expect(flash[:error]).to eq("You have entered an incorrect password.")
       expect(controller.send(:logged_in?)).not_to eq(true)
     end
@@ -70,7 +70,7 @@ RSpec.describe SessionsController do
       expect(session[:user_id]).to be_nil
       expect(controller.send(:logged_in?)).not_to eq(true)
 
-      post :create, username: user.username, password: password
+      post :create, params: { username: user.username, password: password }
 
       expect(session[:user_id]).to eq(user.id)
       expect(controller.send(:logged_in?)).to eq(true)
@@ -88,7 +88,7 @@ RSpec.describe SessionsController do
       expect(session[:user_id]).to be_nil
       expect(controller.send(:logged_in?)).not_to eq(true)
 
-      post :create, username: user.username, password: password
+      post :create, params: { username: user.username, password: password }
 
       expect(session[:user_id]).to eq(user.id)
       expect(controller.send(:logged_in?)).to eq(true)
@@ -102,7 +102,7 @@ RSpec.describe SessionsController do
       password = 'password'
       user = create(:user, password: password)
       expect(cookies.signed[:user_id]).to be_nil
-      post :create, username: user.username, password: password, remember_me: true
+      post :create, params: { username: user.username, password: password, remember_me: true }
       expect(controller.send(:logged_in?)).to eq(true)
       expect(cookies.signed[:user_id]).to eq(user.id)
     end
