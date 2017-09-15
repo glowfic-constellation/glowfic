@@ -9,14 +9,14 @@ RSpec.describe CharactersController do
     end
 
     it "requires valid id" do
-      get :index, user_id: -1
+      get :index, params: { user_id: -1 }
       expect(response).to redirect_to(users_url)
       expect(flash[:error]).to eq("User could not be found.")
     end
 
     it "succeeds with an id" do
       user = create(:user)
-      get :index, user_id: user.id
+      get :index, params: { user_id: user.id }
       expect(response.status).to eq(200)
     end
 
@@ -29,7 +29,7 @@ RSpec.describe CharactersController do
     it "succeeds with an id when logged in" do
       user = create(:user)
       login
-      get :index, user_id: user.id
+      get :index, params: { user_id: user.id }
       expect(response.status).to eq(200)
     end
 
@@ -43,14 +43,14 @@ RSpec.describe CharactersController do
       it "successfully renders the page in template group" do
         character = create(:character)
         character2 = create(:template_character, user: character.user)
-        get :index, user_id: character.user_id, character_split: 'template'
+        get :index, params: { user_id: character.user_id, character_split: 'template' }
         expect(response.status).to eq(200)
       end
 
       it "successfully renders the page with no group" do
         character = create(:character)
         character2 = create(:template_character, user: character.user)
-        get :index, user_id: character.user_id, character_split: 'none'
+        get :index, params: { user_id: character.user_id, character_split: 'none' }
         expect(response.status).to eq(200)
       end
     end
@@ -72,7 +72,7 @@ RSpec.describe CharactersController do
     it "sets correct variables with template_id" do
       template = create(:template)
       login_as(template.user)
-      get :new, template_id: template.id
+      get :new, params: { template_id: template.id }
       expect(response.status).to eq(200)
       expect(assigns(:character).template).to eq(template)
     end
@@ -113,7 +113,7 @@ RSpec.describe CharactersController do
 
     it "fails with invalid params" do
       login
-      post :create, character: {}
+      post :create, params: { character: {} }
       expect(response.status).to eq(200)
       expect(flash[:error][:message]).to eq("Your character could not be saved.")
     end
@@ -126,7 +126,7 @@ RSpec.describe CharactersController do
       gallery = create(:gallery, user: user)
 
       login_as(user)
-      post :create, character: {name: test_name, template_name: 'TempName', screenname: 'just-a-test', setting: 'A World', template_id: template.id, pb: 'Facecast', description: 'Desc', ungrouped_gallery_ids: [gallery.id]}
+      post :create, params: { character: {name: test_name, template_name: 'TempName', screenname: 'just-a-test', setting: 'A World', template_id: template.id, pb: 'Facecast', description: 'Desc', ungrouped_gallery_ids: [gallery.id]} }
 
       expect(response).to redirect_to(assigns(:character))
       expect(flash[:success]).to eq("Character saved successfully.")
@@ -146,7 +146,7 @@ RSpec.describe CharactersController do
     it "creates new templates when specified" do
       expect(Template.count).to eq(0)
       login
-      post :create, new_template: '1', character: {template_attributes: {name: 'TemplateTest'}, name: 'Test'}
+      post :create, params: { new_template: '1', character: {template_attributes: {name: 'TemplateTest'}, name: 'Test'} }
       expect(Template.count).to eq(1)
       expect(Template.first.name).to eq('TemplateTest')
       expect(assigns(:character).template_id).to eq(Template.first.id)
@@ -163,7 +163,7 @@ RSpec.describe CharactersController do
         create(:template)
 
         login_as(user)
-        post :create, character: {ungrouped_gallery_ids: [gallery.id, group_gallery.id], gallery_group_ids: [group.id]}
+        post :create, params: { character: {ungrouped_gallery_ids: [gallery.id, group_gallery.id], gallery_group_ids: [group.id]} }
 
         expect(response).to render_template(:new)
         expect(controller.gon.character_id).to eq('')
@@ -176,28 +176,28 @@ RSpec.describe CharactersController do
 
   describe "GET show" do
     it "requires valid character" do
-      get :show, id: -1
+      get :show, params: { id: -1 }
       expect(response).to redirect_to(characters_url)
       expect(flash[:error]).to eq("Character could not be found.")
     end
 
     it "should succeed when logged out" do
       character = create(:character)
-      get :show, id: character.id
+      get :show, params: { id: character.id }
       expect(response.status).to eq(200)
     end
 
     it "should succeed when logged in" do
       character = create(:character)
       login
-      get :show, id: character.id
+      get :show, params: { id: character.id }
       expect(response.status).to eq(200)
     end
 
     it "should set correct variables" do
       character = create(:character)
       Array.new(26) { create(:post, character: character, user: character.user) }
-      get :show, id: character.id
+      get :show, params: { id: character.id }
       expect(response.status).to eq(200)
       expect(assigns(:page_title)).to eq(character.name)
       expect(assigns(:posts).size).to eq(25)
@@ -207,28 +207,28 @@ RSpec.describe CharactersController do
     it "should only show visible posts" do
       character = create(:character)
       create(:post, character: character, user: character.user, privacy: Post::PRIVACY_PRIVATE)
-      get :show, id: character.id
+      get :show, params: { id: character.id }
       expect(assigns(:posts)).to be_blank
     end
   end
 
   describe "GET edit" do
     it "requires login" do
-      get :edit, id: -1
+      get :edit, params: { id: -1 }
       expect(response).to redirect_to(root_url)
       expect(flash[:error]).to eq("You must be logged in to view that page.")
     end
 
     it "requires valid character id" do
       login
-      get :edit, id: -1
+      get :edit, params: { id: -1 }
       expect(response).to redirect_to(characters_url)
       expect(flash[:error]).to eq("Character could not be found.")
     end
 
     it "requires character with permissions" do
       login
-      get :edit, id: create(:character).id
+      get :edit, params: { id: create(:character).id }
       expect(response).to redirect_to(characters_url)
       expect(flash[:error]).to eq("You do not have permission to edit that character.")
     end
@@ -236,7 +236,7 @@ RSpec.describe CharactersController do
     it "succeeds when logged in" do
       character = create(:character)
       login_as(character.user)
-      get :edit, id: character.id
+      get :edit, params: { id: character.id }
       expect(response.status).to eq(200)
     end
 
@@ -252,7 +252,7 @@ RSpec.describe CharactersController do
         create(:template)
 
         login_as(user)
-        get :edit, id: character.id
+        get :edit, params: { id: character.id }
 
         expect(assigns(:page_title)).to eq("Edit Character: #{character.name}")
         expect(controller.gon.character_id).to eq(character.id)
@@ -268,21 +268,21 @@ RSpec.describe CharactersController do
 
   describe "PUT update" do
     it "requires login" do
-      put :update, id: -1
+      put :update, params: { id: -1 }
       expect(response).to redirect_to(root_url)
       expect(flash[:error]).to eq("You must be logged in to view that page.")
     end
 
     it "requires valid character id" do
       login
-      put :update, id: -1
+      put :update, params: { id: -1 }
       expect(response).to redirect_to(characters_url)
       expect(flash[:error]).to eq("Character could not be found.")
     end
 
     it "requires character with permissions" do
       login
-      put :update, id: create(:character).id
+      put :update, params: { id: create(:character).id }
       expect(response).to redirect_to(characters_url)
       expect(flash[:error]).to eq("You do not have permission to edit that character.")
     end
@@ -290,7 +290,7 @@ RSpec.describe CharactersController do
     it "fails with invalid params" do
       character = create(:character)
       login_as(character.user)
-      put :update, id: character.id, character: {name: ''}
+      put :update, params: { id: character.id, character: {name: ''} }
       expect(response.status).to eq(200)
       expect(flash[:error][:message]).to eq("Your character could not be saved.")
     end
@@ -299,7 +299,7 @@ RSpec.describe CharactersController do
       character = create(:character)
       login_as(character.user)
       new_name = character.name + 'aaa'
-      put :update, id: character.id, new_template: '1', character: {template_attributes: {name: ''}, name: new_name}
+      put :update, params: { id: character.id, new_template: '1', character: {template_attributes: {name: ''}, name: new_name} }
       expect(response.status).to eq(200)
       expect(flash[:error][:message]).to eq("Your character could not be saved.")
       expect(character.reload.name).not_to eq(new_name)
@@ -312,7 +312,7 @@ RSpec.describe CharactersController do
       new_name = character.name + 'aaa'
       template = create(:template, user: user)
       gallery = create(:gallery, user: user)
-      put :update, id: character.id, character: {name: new_name, template_name: 'TemplateName', screenname: 'a-new-test', setting: 'Another World', template_id: template.id, pb: 'Actor', description: 'Description', ungrouped_gallery_ids: [gallery.id]}
+      put :update, params: { id: character.id, character: {name: new_name, template_name: 'TemplateName', screenname: 'a-new-test', setting: 'Another World', template_id: template.id, pb: 'Actor', description: 'Description', ungrouped_gallery_ids: [gallery.id]} }
 
       expect(response).to redirect_to(assigns(:character))
       expect(flash[:success]).to eq("Character saved successfully.")
@@ -333,7 +333,7 @@ RSpec.describe CharactersController do
       gallery = create(:gallery, gallery_groups: [group], user: user)
       character = create(:character, user: user)
       login_as(user)
-      put :update, id: character.id, character: {gallery_group_ids: [group.id]}
+      put :update, params: { id: character.id, character: {gallery_group_ids: [group.id]} }
 
       expect(flash[:success]).to eq('Character saved successfully.')
       character.reload
@@ -347,7 +347,7 @@ RSpec.describe CharactersController do
       expect(Template.count).to eq(0)
       character = create(:character)
       login_as(character.user)
-      put :update, id: character.id, new_template: '1', character: {template_attributes: {name: 'Test'}}
+      put :update, params: { id: character.id, new_template: '1', character: {template_attributes: {name: 'Test'}} }
       expect(Template.count).to eq(1)
       expect(Template.first.name).to eq('Test')
       expect(character.reload.template_id).to eq(Template.first.id)
@@ -363,7 +363,7 @@ RSpec.describe CharactersController do
       gallery2 = create(:gallery, gallery_groups: [group3, group4], user: user)
       character = create(:character, gallery_groups: [group1, group3, group4], user: user)
       login_as(user)
-      put :update, id: character.id, character: {gallery_group_ids: [group2.id, group4.id]}
+      put :update, params: { id: character.id, character: {gallery_group_ids: [group2.id, group4.id]} }
 
       expect(flash[:success]).to eq('Character saved successfully.')
       character.reload
@@ -383,7 +383,7 @@ RSpec.describe CharactersController do
       expect(character.characters_galleries.first).not_to be_added_by_group
 
       login_as(user)
-      put :update, id: character.id, character: {ungrouped_gallery_ids: ['']}
+      put :update, params: { id: character.id, character: {ungrouped_gallery_ids: ['']} }
       expect(flash[:success]).to eq('Character saved successfully.')
       character.reload
       expect(character.gallery_groups).to match_array([group])
@@ -399,7 +399,7 @@ RSpec.describe CharactersController do
       character = create(:character, user: user)
 
       login_as(user)
-      put :update, id: character.id, character: {gallery_group_ids: [group.id], ungrouped_gallery_ids: [gallery.id]}
+      put :update, params: { id: character.id, character: {gallery_group_ids: [group.id], ungrouped_gallery_ids: [gallery.id]} }
       expect(flash[:success]).to eq('Character saved successfully.')
       character.reload
       expect(character.gallery_groups).to match_array([group])
@@ -414,7 +414,7 @@ RSpec.describe CharactersController do
       character = create(:character)
 
       login_as(character.user)
-      put :update, id: character.id, character: {gallery_group_ids: [group.id]}
+      put :update, params: { id: character.id, character: {gallery_group_ids: [group.id]} }
       expect(flash[:success]).to eq('Character saved successfully.')
       character.reload
       expect(character.gallery_groups).to match_array([group])
@@ -428,7 +428,7 @@ RSpec.describe CharactersController do
       character = create(:character, gallery_groups: [group], user: user)
 
       login_as(user)
-      put :update, id: character.id, character: {gallery_group_ids: ['']}
+      put :update, params: { id: character.id, character: {gallery_group_ids: ['']} }
       expect(flash[:success]).to eq('Character saved successfully.')
       character.reload
       expect(character.gallery_groups).to eq([])
@@ -439,7 +439,7 @@ RSpec.describe CharactersController do
       expect(Template.count).to eq(0)
       character = create(:character)
       login_as(character.user)
-      put :update, id: character.id, new_template: '1', character: {template_attributes: {name: 'Test'}}
+      put :update, params: { id: character.id, new_template: '1', character: {template_attributes: {name: 'Test'}} }
       expect(Template.count).to eq(1)
       expect(Template.first.name).to eq('Test')
       expect(character.reload.template_id).to eq(Template.first.id)
@@ -456,7 +456,7 @@ RSpec.describe CharactersController do
         create(:template)
 
         login_as(user)
-        put :update, id: character.id, character: {name: ''}
+        put :update, params: { id: character.id, character: {name: ''} }
 
         expect(response).to render_template(:edit)
         expect(controller.gon.character_id).to eq(character.id)
@@ -480,7 +480,7 @@ RSpec.describe CharactersController do
       expect(g2_cg.section_order).to eq(1)
 
       login_as(character.user)
-      put :update, id: character.id, character: {ungrouped_gallery_ids: [g2.id.to_s]}
+      put :update, params: { id: character.id, character: {ungrouped_gallery_ids: [g2.id.to_s]} }
 
       expect(character.reload.galleries.pluck(:id)).to eq([g2.id])
       expect(g2_cg.reload.section_order).to eq(0)
@@ -503,14 +503,14 @@ RSpec.describe CharactersController do
 
     it "sets correct variables for character name sort: character only" do
       chars = Array.new(3) { create(:character, pb: SecureRandom.urlsafe_base64) }
-      get :facecasts, sort: 'name'
+      get :facecasts, params: { sort: 'name' }
       names = assigns(:pbs).map(&:item_name)
       expect(names).to match_array(chars.map(&:name))
     end
 
     it "sets correct variables for character name sort: template only" do
       chars = Array.new(3) { create(:template_character, pb: SecureRandom.urlsafe_base64) }
-      get :facecasts, sort: 'name'
+      get :facecasts, params: { sort: 'name' }
       names = assigns(:pbs).map(&:item_name)
       expect(names).to match_array(chars.map(&:template).map(&:name))
     end
@@ -518,7 +518,7 @@ RSpec.describe CharactersController do
     it "sets correct variables for character name sort: character and template mixed" do
       chars = Array.new(3) { create(:template_character, pb: SecureRandom.urlsafe_base64) }
       chars += Array.new(3) { create(:character, pb: SecureRandom.urlsafe_base64) }
-      get :facecasts, sort: 'name'
+      get :facecasts, params: { sort: 'name' }
       names = assigns(:pbs).map(&:item_name)
       expect(names).to match_array(chars.map { |c| (c.template || c).name })
     end
@@ -526,7 +526,7 @@ RSpec.describe CharactersController do
     it "sets correct variables for writer sort" do
       chars = Array.new(3) { create(:template_character, pb: SecureRandom.urlsafe_base64) }
       chars += Array.new(3) { create(:character, pb: SecureRandom.urlsafe_base64) }
-      get :facecasts, sort: 'writer'
+      get :facecasts, params: { sort: 'writer' }
       user_ids = assigns(:pbs).map(&:user_id)
       expect(user_ids).to match_array(chars.map(&:user).map(&:id))
     end
@@ -534,14 +534,14 @@ RSpec.describe CharactersController do
 
   describe "DELETE destroy" do
     it "requires login" do
-      delete :destroy, id: -1
+      delete :destroy, params: { id: -1 }
       expect(response).to redirect_to(root_url)
       expect(flash[:error]).to eq("You must be logged in to view that page.")
     end
 
     it "requires valid character" do
       login
-      delete :destroy, id: -1
+      delete :destroy, params: { id: -1 }
       expect(response).to redirect_to(characters_url)
       expect(flash[:error]).to eq("Character could not be found.")
     end
@@ -551,7 +551,7 @@ RSpec.describe CharactersController do
       login_as(user)
       character = create(:character)
       expect(character.user_id).not_to eq(user.id)
-      delete :destroy, id: character.id
+      delete :destroy, params: { id: character.id }
       expect(response).to redirect_to(characters_url)
       expect(flash[:error]).to eq("You do not have permission to edit that character.")
     end
@@ -559,7 +559,7 @@ RSpec.describe CharactersController do
     it "succeeds" do
       character = create(:character)
       login_as(character.user)
-      delete :destroy, id: character.id
+      delete :destroy, params: { id: character.id }
       expect(response).to redirect_to(characters_url)
       expect(flash[:success]).to eq("Character deleted successfully.")
       expect(Character.find_by_id(character.id)).to be_nil
@@ -569,14 +569,14 @@ RSpec.describe CharactersController do
   describe "GET replace" do
     it "requires login" do
       character = create(:character)
-      get :replace, id: character.id
+      get :replace, params: { id: character.id }
       expect(response).to redirect_to(root_url)
       expect(flash[:error]).to eq('You must be logged in to view that page.')
     end
 
     it "requires valid character" do
       login
-      get :replace, id: -1
+      get :replace, params: { id: -1 }
       expect(response).to redirect_to(characters_path)
       expect(flash[:error]).to eq('Character could not be found.')
     end
@@ -584,7 +584,7 @@ RSpec.describe CharactersController do
     it "requires own character" do
       character = create(:character)
       login
-      get :replace, id: character.id
+      get :replace, params: { id: character.id }
       expect(response).to redirect_to(characters_path)
       expect(flash[:error]).to eq('You do not have permission to edit that character.')
     end
@@ -602,7 +602,7 @@ RSpec.describe CharactersController do
       char_reply2 = create(:reply, user: user, character: character) # other reply
 
       login_as(user)
-      get :replace, id: character.id
+      get :replace, params: { id: character.id }
       expect(response).to have_http_status(200)
       expect(assigns(:page_title)).to eq('Replace Character: ' + character.name)
 
@@ -620,7 +620,7 @@ RSpec.describe CharactersController do
         create(:character, user: user) # other character
 
         login_as(user)
-        get :replace, id: character.id
+        get :replace, params: { id: character.id }
         expect(response).to have_http_status(200)
         expect(assigns(:page_title)).to eq('Replace Character: ' + character.name)
         expect(assigns(:alts)).to match_array(alts)
@@ -634,7 +634,7 @@ RSpec.describe CharactersController do
         create(:character, user: user) # other character
 
         login_as(user)
-        get :replace, id: character.id
+        get :replace, params: { id: character.id }
         expect(response).to have_http_status(200)
         expect(assigns(:alts)).to match_array([character])
       end
@@ -649,7 +649,7 @@ RSpec.describe CharactersController do
         create(:character, user: user, template: template) # other character
 
         login_as(user)
-        get :replace, id: character.id
+        get :replace, params: { id: character.id }
         expect(response).to have_http_status(200)
         expect(assigns(:page_title)).to eq('Replace Character: ' + character.name)
         expect(assigns(:alts)).to match_array(alts)
@@ -663,7 +663,7 @@ RSpec.describe CharactersController do
         create(:character, user: user, template: template) # other character
 
         login_as(user)
-        get :replace, id: character.id
+        get :replace, params: { id: character.id }
         expect(response).to have_http_status(200)
         expect(assigns(:alts)).to match_array([character])
       end
@@ -673,14 +673,14 @@ RSpec.describe CharactersController do
   describe "POST do_replace" do
     it "requires login" do
       character = create(:character)
-      post :do_replace, id: character.id
+      post :do_replace, params: { id: character.id }
       expect(response).to redirect_to(root_url)
       expect(flash[:error]).to eq('You must be logged in to view that page.')
     end
 
     it "requires valid character" do
       login
-      post :do_replace, id: -1
+      post :do_replace, params: { id: -1 }
       expect(response).to redirect_to(characters_path)
       expect(flash[:error]).to eq('Character could not be found.')
     end
@@ -688,7 +688,7 @@ RSpec.describe CharactersController do
     it "requires own character" do
       character = create(:character)
       login
-      post :do_replace, id: character.id
+      post :do_replace, params: { id: character.id }
       expect(response).to redirect_to(characters_path)
       expect(flash[:error]).to eq('You do not have permission to edit that character.')
     end
@@ -696,7 +696,7 @@ RSpec.describe CharactersController do
     it "requires valid other character" do
       character = create(:character)
       login_as(character.user)
-      post :do_replace, id: character.id, icon_dropdown: -1
+      post :do_replace, params: { id: character.id, icon_dropdown: -1 }
       expect(response).to redirect_to(replace_character_path(character))
       expect(flash[:error]).to eq('Character could not be found.')
     end
@@ -705,7 +705,7 @@ RSpec.describe CharactersController do
       character = create(:character)
       other_char = create(:character)
       login_as(character.user)
-      post :do_replace, id: character.id, icon_dropdown: other_char.id
+      post :do_replace, params: { id: character.id, icon_dropdown: other_char.id }
       expect(response).to redirect_to(replace_character_path(character))
       expect(flash[:error]).to eq('That is not your character.')
     end
@@ -713,7 +713,7 @@ RSpec.describe CharactersController do
     it "requires valid new alias if parameter provided" do
       character = create(:character)
       login_as(character.user)
-      post :do_replace, id: character.id, alias_dropdown: -1
+      post :do_replace, params: { id: character.id, alias_dropdown: -1 }
       expect(response).to redirect_to(replace_character_path(character))
       expect(flash[:error]).to eq('Invalid new alias.')
     end
@@ -723,7 +723,7 @@ RSpec.describe CharactersController do
       other_char = create(:character, user: character.user)
       calias = create(:alias)
       login_as(character.user)
-      post :do_replace, id: character.id, alias_dropdown: calias.id, icon_dropdown: other_char.id
+      post :do_replace, params: { id: character.id, alias_dropdown: calias.id, icon_dropdown: other_char.id }
       expect(response).to redirect_to(replace_character_path(character))
       expect(flash[:error]).to eq('Invalid new alias.')
     end
@@ -731,7 +731,7 @@ RSpec.describe CharactersController do
     it "requires valid old alias if parameter provided" do
       character = create(:character)
       login_as(character.user)
-      post :do_replace, id: character.id, orig_alias: -1
+      post :do_replace, params: { id: character.id, orig_alias: -1 }
       expect(response).to redirect_to(replace_character_path(character))
       expect(flash[:error]).to eq('Invalid old alias.')
     end
@@ -740,7 +740,7 @@ RSpec.describe CharactersController do
       character = create(:character)
       calias = create(:alias)
       login_as(character.user)
-      post :do_replace, id: character.id, orig_alias: calias.id
+      post :do_replace, params: { id: character.id, orig_alias: calias.id }
       expect(response).to redirect_to(replace_character_path(character))
       expect(flash[:error]).to eq('Invalid old alias.')
     end
@@ -754,7 +754,7 @@ RSpec.describe CharactersController do
       reply_post_char = reply.post.character_id
 
       login_as(user)
-      post :do_replace, id: character.id, icon_dropdown: other_char.id
+      post :do_replace, params: { id: character.id, icon_dropdown: other_char.id }
       expect(response).to redirect_to(character_path(character))
       expect(flash[:success]).to eq('All uses of this character have been replaced.')
 
@@ -770,7 +770,7 @@ RSpec.describe CharactersController do
       reply = create(:reply, user: user, character: character)
 
       login_as(user)
-      post :do_replace, id: character.id
+      post :do_replace, params: { id: character.id }
       expect(response).to redirect_to(character_path(character))
       expect(flash[:success]).to eq('All uses of this character have been replaced.')
 
@@ -787,7 +787,7 @@ RSpec.describe CharactersController do
       reply = create(:reply, user: user, character: character)
 
       login_as(user)
-      post :do_replace, id: character.id, icon_dropdown: other_char.id, alias_dropdown: calias.id
+      post :do_replace, params: { id: character.id, icon_dropdown: other_char.id, alias_dropdown: calias.id }
 
       expect(char_post.reload.character_id).to eq(other_char.id)
       expect(reply.reload.character_id).to eq(other_char.id)
@@ -804,7 +804,7 @@ RSpec.describe CharactersController do
       other_post = create(:post, user: user, character: character)
 
       login_as(user)
-      post :do_replace, id: character.id, icon_dropdown: other_char.id, post_ids: [char_post.id, char_reply.post.id]
+      post :do_replace, params: { id: character.id, icon_dropdown: other_char.id, post_ids: [char_post.id, char_reply.post.id] }
       expect(response).to redirect_to(character_path(character))
       expect(flash[:success]).to eq('All uses of this character in the specified posts have been replaced.')
 
@@ -822,7 +822,7 @@ RSpec.describe CharactersController do
       char_reply = create(:reply, user: user, character: character, character_alias_id: calias.id)
 
       login_as(user)
-      post :do_replace, id: character.id, icon_dropdown: other_char.id, orig_alias: calias.id
+      post :do_replace, params: { id: character.id, icon_dropdown: other_char.id, orig_alias: calias.id }
 
       expect(char_post.reload.character_id).to eq(character.id)
       expect(char_reply.reload.character_id).to eq(other_char.id)
@@ -837,7 +837,7 @@ RSpec.describe CharactersController do
       char_reply = create(:reply, user: user, character: character, character_alias_id: calias.id)
 
       login_as(user)
-      post :do_replace, id: character.id, icon_dropdown: other_char.id, orig_alias: ''
+      post :do_replace, params: { id: character.id, icon_dropdown: other_char.id, orig_alias: '' }
 
       expect(char_post.reload.character_id).to eq(other_char.id)
       expect(char_reply.reload.character_id).to eq(character.id)
@@ -852,7 +852,7 @@ RSpec.describe CharactersController do
       char_reply = create(:reply, user: user, character: character, character_alias_id: calias.id)
 
       login_as(user)
-      post :do_replace, id: character.id, icon_dropdown: other_char.id, orig_alias: 'all'
+      post :do_replace, params: { id: character.id, icon_dropdown: other_char.id, orig_alias: 'all' }
 
       expect(char_post.reload.character_id).to eq(other_char.id)
       expect(char_reply.reload.character_id).to eq(other_char.id)
@@ -878,7 +878,7 @@ RSpec.describe CharactersController do
       author = create(:user)
       found = create(:character, user: author)
       notfound = create(:character, user: create(:user))
-      get :search, commit: true, author_id: author.id
+      get :search, params: { commit: true, author_id: author.id }
       expect(response).to have_http_status(200)
       expect(assigns(:users)).to match_array([author])
       expect(assigns(:search_results)).to match_array([found])
@@ -886,7 +886,7 @@ RSpec.describe CharactersController do
 
     it "doesn't search missing author" do
       character = create(:template_character)
-      get :search, commit: true, author_id: 9999
+      get :search, params: { commit: true, author_id: 9999 }
       expect(response).to have_http_status(200)
       expect(flash[:error]).to eq('The specified author could not be found.')
       expect(assigns(:users)).to be_empty
@@ -897,13 +897,13 @@ RSpec.describe CharactersController do
       author = create(:user)
       template = create(:template, user: author)
       create(:template)
-      get :search, commit: true, author_id: author.id
+      get :search, params: { commit: true, author_id: author.id }
       expect(assigns(:templates)).to eq([template])
     end
 
     it "doesn't search missing template" do
       character = create(:template_character)
-      get :search, commit: true, template_id: 9999
+      get :search, params: { commit: true, template_id: 9999 }
       expect(response).to have_http_status(200)
       expect(flash[:error]).to eq('The specified template could not be found.')
       expect(assigns(:templates)).to be_empty
@@ -913,7 +913,7 @@ RSpec.describe CharactersController do
     it "doesn't search author/template mismatch" do
       character = create(:template_character)
       character2 = create(:character)
-      get :search, commit: true, template_id: character.template_id, author_id: character2.user_id
+      get :search, params: { commit: true, template_id: character.template_id, author_id: character2.user_id }
       expect(response).to have_http_status(200)
       expect(flash[:error]).to eq('The specified author and template do not match; template filter will be ignored.')
       expect(assigns(:templates)).to be_empty
@@ -925,7 +925,7 @@ RSpec.describe CharactersController do
       template = create(:template, user: author)
       found = create(:character, user: author, template: template)
       notfound = create(:character, user: author, template: create(:template, user: author))
-      get :search, commit: true, template_id: template.id
+      get :search, params: { commit: true, template_id: template.id }
       expect(response).to have_http_status(200)
       expect(assigns(:templates)).to match_array([template])
       expect(assigns(:search_results)).to match_array([found])
@@ -939,37 +939,37 @@ RSpec.describe CharactersController do
       end
 
       it "searches names correctly" do
-        get :search, commit: true, name: 'a', search_name: true
+        get :search, params: { commit: true, name: 'a', search_name: true }
         expect(assigns(:search_results)).to match_array([@name])
       end
 
       it "searches screenname correctly" do
-        get :search, commit: true, name: 'a', search_screenname: true
+        get :search, params: { commit: true, name: 'a', search_screenname: true }
         expect(assigns(:search_results)).to match_array([@screenname])
       end
 
       it "searches nickname correctly" do
-        get :search, commit: true, name: 'a', search_nickname: true
+        get :search, params: { commit: true, name: 'a', search_nickname: true }
         expect(assigns(:search_results)).to match_array([@nickname])
       end
 
       it "searches name + screenname correctly" do
-        get :search, commit: true, name: 'a', search_name: true, search_screenname: true
+        get :search, params: { commit: true, name: 'a', search_name: true, search_screenname: true }
         expect(assigns(:search_results)).to match_array([@name, @screenname])
       end
 
       it "searches name + nickname correctly" do
-        get :search, commit: true, name: 'a', search_name: true, search_nickname: true
+        get :search, params: { commit: true, name: 'a', search_name: true, search_nickname: true }
         expect(assigns(:search_results)).to match_array([@name, @nickname])
       end
 
       it "searches nickname + screenname correctly" do
-        get :search, commit: true, name: 'a', search_nickname: true, search_screenname: true
+        get :search, params: { commit: true, name: 'a', search_nickname: true, search_screenname: true }
         expect(assigns(:search_results)).to match_array([@nickname, @screenname])
       end
 
       it "searches all correctly" do
-        get :search, commit: true, name: 'a', search_name: true, search_screenname: true, search_nickname: true
+        get :search, params: { commit: true, name: 'a', search_name: true, search_screenname: true, search_nickname: true }
         expect(assigns(:search_results)).to match_array([@name, @screenname, @nickname])
       end
     end
@@ -977,21 +977,21 @@ RSpec.describe CharactersController do
 
   describe "POST duplicate" do
     it "requires login" do
-      post :duplicate, id: -1
+      post :duplicate, params: { id: -1 }
       expect(response).to redirect_to(root_url)
       expect(flash[:error]).to eq('You must be logged in to view that page.')
     end
 
     it "requires valid character id" do
       login
-      post :duplicate, id: -1
+      post :duplicate, params: { id: -1 }
       expect(response).to redirect_to(characters_url)
       expect(flash[:error]).to eq('Character could not be found.')
     end
 
     it "requires character with permissions" do
       login
-      post :duplicate, id: create(:character).id
+      post :duplicate, params: { id: create(:character).id }
       expect(response).to redirect_to(characters_url)
       expect(flash[:error]).to eq('You do not have permission to edit that character.')
     end
@@ -1017,7 +1017,7 @@ RSpec.describe CharactersController do
 
       login_as(user)
       expect do
-        post :duplicate, id: character.id
+        post :duplicate, params: { id: character.id }
       end.to not_change {
         [Template.count, Gallery.count, Icon.count, Reply.count, Post.count, Tag.count]
       }.and change { Character.count }.by(1).and change { CharactersGallery.count }.by(3).and change { CharacterTag.count }.by(1)
