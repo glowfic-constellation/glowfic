@@ -905,12 +905,13 @@ RSpec.describe PostsController do
       expect(templates.length).to eq(3)
       thread_chars = templates.first
       expect(thread_chars.name).to eq('Thread characters')
-      expect(thread_chars.plucked_characters).to eq([[char1.id, char1.name], [char2.id, char2.name]])
+      expected = [char1, char2].sort_by{ |c| c.name.downcase }.map { |c| [c.id, c.name] }
+      expect(thread_chars.plucked_characters).to eq(expected)
       template_chars = templates[1]
       expect(template_chars).to eq(char3.template)
       templateless = templates.last
       expect(templateless.name).to eq('Templateless')
-      expect(templateless.plucked_characters).to eq([[char1.id, char1.name], [char2.id, char2.name]])
+      expect(templateless.plucked_characters).to eq(expected)
       # tags
       expect(assigns(:settings).map(&:id_for_select)).to match_array([setting.id])
       expect(assigns(:warnings).map(&:id_for_select)).to match_array([warning.id])
