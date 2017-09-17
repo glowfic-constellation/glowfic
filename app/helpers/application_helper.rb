@@ -130,7 +130,7 @@ module ApplicationHelper
   end
 
   def sanitize_post_description(desc)
-    sanitize desc, scrubber: Glowfic::DescriptionScrubber.new
+    Glowfic::Sanitizers.description(desc)
   end
 
   # modified version of split_paragraphs that doesn't mangle large breaks
@@ -178,11 +178,12 @@ module ApplicationHelper
         simple_format_largebreak(content, sanitize: false)
       end
     end
-    sanitize content, scrubber: Glowfic::WrittenScrubber.new
+
+    Glowfic::Sanitizers.written(content)
   end
 
   def generate_short(msg)
-    short_msg = Rails::Html::FullSanitizer.new.sanitize(msg) # strip all tags, replacing appropriately with spaces
+    short_msg = Glowfic::Sanitizers.full(msg) # strip all tags, replacing appropriately with spaces
     return short_msg if short_msg.length <= 75
     short_msg[0...73] + '…' # make the absolute max length 75 characters
   end

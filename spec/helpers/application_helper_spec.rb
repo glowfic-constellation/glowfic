@@ -24,7 +24,7 @@ RSpec.describe ApplicationHelper do
 
     it "removes unpermitted elements" do
       text = '<b>test</b> <script type="text/javascript">alert("bad!");</script> <p>text</p>'
-      expect(helper.sanitize_post_description(text)).to eq('test alert("bad!"); text')
+      expect(helper.sanitize_post_description(text)).to eq('test alert("bad!");  text ')
     end
 
     it "fixes unending tags" do
@@ -110,8 +110,8 @@ RSpec.describe ApplicationHelper do
     end
 
     it "does not touch blockquotes if <br> or <p> detected" do
-      text = "<blockquote>Blah. Blah.<br />Blah.</blockquote>\r\n<blockquote>Blah blah.</blockquote>\r\n<p>Blah.</p>"
-      expected = "<blockquote>Blah. Blah.<br>Blah.</blockquote>\r\n<blockquote>Blah blah.</blockquote>\r\n<p>Blah.</p>"
+      text = "<blockquote>Blah. Blah.<br />Blah.</blockquote>\n<blockquote>Blah blah.</blockquote>\n<p>Blah.</p>"
+      expected = "<blockquote>Blah. Blah.<br>Blah.</blockquote>\n<blockquote>Blah blah.</blockquote>\n<p>Blah.</p>"
       expect(helper.sanitize_written_content(text)).to eq(expected)
     end
 
@@ -131,7 +131,7 @@ RSpec.describe ApplicationHelper do
       expect(helper.sanitize_written_content(text)).to eq(expected)
 
       text = "line1<b>text\n\nline2</b>"
-      expected = "<p>line1<b>text</b></p>\n\n<p><b>line2</b></p>"
+      expected = "<p>line1<b>text</b></p><b>\n\n</b><p><b>line2</b></p>"
       expect(helper.sanitize_written_content(text)).to eq(expected)
     end
   end
