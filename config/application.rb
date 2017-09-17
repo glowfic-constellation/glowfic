@@ -22,34 +22,25 @@ module Glowfic
     "cite" => %w(href)
   }
 
-  class WrittenScrubber < Rails::Html::PermitScrubber
-    def initialize
-      super
-      self.tags = ALLOWED_TAGS
+  module Sanitizers
+    WRITTEN_CONF = Sanitize::Config.merge(Sanitize::Config::RELAXED,
+      elements: ALLOWED_TAGS,
+      attributes: ALLOWED_ATTRIBUTES
+    )
+    def self.written(text)
+      Sanitize.fragment(text, WRITTEN_CONF)
     end
 
-    def scrub_attribute?(name, node)
-      node_name = node.name.downcase
-      name = name.downcase
-      return false if ALLOWED_ATTRIBUTES[:all].include?(name)
-      !ALLOWED_ATTRIBUTES[node_name].try(:include?, name)
+    DESCRIPTION_CONF = Sanitize::Config.merge(Sanitize::Config::RELAXED,
+      elements: ['a'],
+      attributes: {'a' => ['href']}
+    )
+    def self.description(text)
+      Sanitize.fragment(text, DESCRIPTION_CONF)
     end
 
-    def scrub_attributes(node)
-      node.attribute_nodes.each do |attr|
-        attr.remove if scrub_attribute?(attr.name, node)
-        scrub_attribute(node, attr)
-      end
-
-      scrub_css_attribute(node)
-    end
-  end
-
-  class DescriptionScrubber < Rails::Html::PermitScrubber
-    def initialize
-      super
-      self.tags = %w(a)
-      self.attributes = %w(href)
+    def self.full(text)
+      Sanitize.fragment(text)
     end
   end
 
