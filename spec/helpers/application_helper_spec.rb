@@ -124,5 +124,15 @@ RSpec.describe ApplicationHelper do
       expected = "<p>line1</p>\n\n<p>\u00A0</p>\n\n<p>line2</p>" # U+00A0 is NBSP
       expect(helper.sanitize_written_content(text)).to eq(expected)
     end
+
+    it "does not mangle tags continuing over linebreaks in HTML mode" do
+      text = "line1<b>text\nline2</b>"
+      expected = "<p>line1<b>text\n<br>line2</b></p>"
+      expect(helper.sanitize_written_content(text)).to eq(expected)
+
+      text = "line1<b>text\n\nline2</b>"
+      expected = "<p>line1<b>text</b></p>\n\n<p><b>line2</b></p>"
+      expect(helper.sanitize_written_content(text)).to eq(expected)
+    end
   end
 end
