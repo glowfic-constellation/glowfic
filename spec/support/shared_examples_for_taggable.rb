@@ -62,6 +62,17 @@ RSpec.shared_examples "taggable" do |type, model_name|
     expect(taggable.send(type + '_ids')).to eq([])
   end
 
+  it "discards when #{type} tags given with invalid ID" do
+    # specifically when a string ID is used and doesn't have an underscore prefix
+    good_tag1 = create(type)
+    good_tag2 = create(type)
+    taggable.send(type + '_ids=', [good_tag1.id, 'broken', '_'+good_tag2.name])
+    taggable.save
+    taggable.reload
+    tags = taggable.send(type + 's')
+    expect(tags).to match_array([good_tag1, good_tag2])
+  end
+
   it "only adds #{type} tags once if given multiple times" do
     name = 'Example Tag'
     tag = create(type, name: name)
