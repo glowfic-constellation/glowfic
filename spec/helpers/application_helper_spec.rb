@@ -13,7 +13,7 @@ RSpec.describe ApplicationHelper do
     end
 
     it "permits links" do
-      text = 'here is <a href="http://example.com">a link</a>'
+      text = 'here is <a href="http://example.com">a link</a> <a href="https://example.com">another link</a> <a href="/characters/1">yet another link</a>'
       expect(helper.sanitize_post_description(text)).to eq(text)
     end
 
@@ -45,8 +45,13 @@ RSpec.describe ApplicationHelper do
     end
 
     it "permits links" do
-      text = 'here is <a href="http://example.com">a link</a>'
-      expect(helper.sanitize_written_content(text)).to eq("<p>#{text}</p>")
+      text = '<p>here is <a href="http://example.com">a link</a> <a href="https://example.com">another link</a> <a href="/characters/1">yet another link</a></p>'
+      expect(helper.sanitize_written_content(text)).to eq(text)
+    end
+
+    it "permits images" do
+      text = '<p>images: <img src="http://example.com/image.png"> <img src="https://example.com/image.jpg"> <img src="/image.gif"></p>'
+      expect(helper.sanitize_written_content(text)).to eq(text)
     end
 
     it "removes unpermitted attributes" do
