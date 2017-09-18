@@ -764,8 +764,8 @@ RSpec.describe Post do
 
   # from Taggable concern
   context "tags" do
-    it_behaves_like 'taggable', 'label', 'post'
-    it_behaves_like 'taggable', 'setting', 'post'
-    it_behaves_like 'taggable', 'content_warning', 'post'
+    it_behaves_like 'taggable', 'label'
+    it_behaves_like 'taggable', 'setting'
+    it_behaves_like 'taggable', 'content_warning'
   end
 end

@@ -1,4 +1,5 @@
-RSpec.shared_examples "taggable" do |type, model_name|
+RSpec.shared_examples "taggable" do |type|
+  let(:model_name) { described_class.name.underscore }
   let(:taggable) { create(model_name) }
   it "creates new #{type} tags if they don't exist" do
     taggable.send(type + '_ids=', ['_tag'])

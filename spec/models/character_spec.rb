@@ -263,6 +263,6 @@ RSpec.describe Character do
 
   # from Taggable concern
   context "tags" do
-    it_behaves_like 'taggable', 'gallery_group', 'character'
+    it_behaves_like 'taggable', 'gallery_group'
   end
 end

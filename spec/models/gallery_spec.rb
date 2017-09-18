@@ -34,7 +34,7 @@ RSpec.describe Gallery do
 
   # from Taggable concern
   context "tags" do
-    it_behaves_like 'taggable', 'gallery_group', 'gallery'
+    it_behaves_like 'taggable', 'gallery_group'
   end
 
   describe "#gallery_groups_data" do
