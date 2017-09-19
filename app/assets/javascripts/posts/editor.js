@@ -312,130 +312,127 @@ function setupTinyMCE() {
   }
 }
 
-function getAndSetCharacterData(characterId, options) {
+function setFormData(characterId, resp, options) {
   var restoreIcon = false;
   var restoreAlias = false;
-  shownIcons = [];
 
   if (typeof options !== 'undefined') {
     restoreIcon = options.restore_icon;
     restoreAlias = options.restore_alias;
   }
+  shownIcons = [];
 
-  // Handle page interactions
+  setCharacterListSelected(characterId);
+
   var selectedIconID = $("#reply_icon_id").val();
   var selectedAliasID = $("#reply_character_alias_id").val();
   $("#character-selector").hide();
   $("#current-icon-holder").unbind();
   $("#icon_dropdown").empty().append('<option value="">No Icon</option>');
 
-  setCharacterListSelected(characterId);
+  // Display the correct name/screenname fields
+  if (resp.name) {
+    $("#post-editor #post-author-spacer").hide();
+    $("#post-editor .post-character").show().data('character-id', characterId);
+    $("#post-editor .post-character #name").html(resp.name);
+  } else {
+    $("#post-editor #post-author-spacer").show();
+    $("#post-editor .post-character").hide().data('character-id', characterId);
+    $("#post-editor .post-character #name").html('');
+  }
+
+  $("#post-editor .post-character #name").html(resp.name);
+  var screennameBox = $("#post-editor .post-screenname");
+  if (resp.screenname) {
+    screennameBox.show().html(resp.screenname);
+    resizeScreenname(screennameBox);
+  } else {
+    screennameBox.hide().html('');
+  }
+
+  // Display alias selector if relevant
+  if (resp.aliases.length > 0) {
+    $("#swap-alias").show();
+    $("#character_alias").empty().append($("<option>").attr({value: ''}).append(resp.name));
+    for (var i=0; i<resp.aliases.length; i++) {
+      $("#character_alias").append($("<option>").attr({value: resp.aliases[i].id}).append(resp.aliases[i].name));
+    }
+    // Restore active alias, but only if not already restoring an alias
+    if (typeof resp.alias_id_for_post !== "undefined" && !restoreAlias) {
+      restoreAlias = true;
+      selectedAliasID = resp.alias_id_for_post;
+      $("#reply_character_alias_id").val(selectedAliasID);
+    }
+  } else {
+    $("#swap-alias").hide();
+  }
+
+  if (restoreAlias && selectedAliasID) {
+    var correctName = $("#character_alias option[value="+selectedAliasID+"]").text();
+    $("#post-editor .post-character #name").html(correctName);
+    $("#post-editor .post-character").data('alias-id', selectedAliasID);
+    $("#character_alias").val(selectedAliasID).trigger("change.select2");
+  } else {
+    $("#post-editor .post-character").data('alias-id', '');
+    $("#character_alias").val('').trigger("change.select2");
+    $("#reply_character_alias_id").val('');
+  }
+
+  $("#gallery").html('');
+
+  // Display no icon if no default set
+  if (!resp.default) {
+    setIcon('');
+    // Remove pointer and skip galleries if no galleries attached to character
+    if (resp.galleries.length === 0) {
+      $("#current-icon").removeClass('pointer');
+      return;
+    }
+  }
+
+  // Display default icon
+  $("#current-icon").addClass('pointer');
+
+  // Calculate new galleries
+  var multiGallery = resp.galleries.length > 1;
+  for (var j = 0; j < resp.galleries.length; j++) {
+    $("#gallery").append(galleryString(resp.galleries[j], multiGallery));
+  }
+
+  // If no default and no icons in any galleries, remove pointer
+  if (!resp.default && shownIcons.length === 0) {
+    $("#current-icon").removeClass('pointer');
+    return;
+  }
+
+  if (resp.default && shownIcons.indexOf(resp.default.id) < 0) $("#gallery").append(iconString(resp.default));
+  $("#gallery").append(iconString({id: '', url: '/images/no-icon.png', keyword: 'No Icon', skip_dropdown: true}));
+  bindGallery();
+  bindIcon();
+  if (restoreIcon)
+    setIconFromId(selectedIconID);
+  else if (resp.default)
+    setIcon(resp.default.id, resp.default.url, resp.default.keyword, resp.default.keyword);
+}
+
+function getAndSetCharacterData(characterId, options) {
+  // Handle page interactions
 
   // Handle special case where just setting to your base account
   if (characterId === '') {
-    $("#post-editor .post-character").hide().data('character-id', '').data('alias-id', '');
-    $("#post-editor .post-screenname").hide().html('');
-
     var avatar = gon.current_user.avatar;
-    if (avatar && avatar.url) {
-      var url = avatar.url;
-      var aid = avatar.id;
-      var keyword = avatar.keyword;
-      $("#gallery").html("");
-      $("#gallery").append(iconString({id: aid, url: url, keyword: keyword}));
-      $("#gallery").append(iconString({id: '', url: '/images/no-icon.png', keyword: 'No Icon', skip_dropdown: true}));
-      bindIcon();
-      bindGallery();
-      if (!restoreIcon) setIcon(aid, url, keyword, keyword);
-      $("#post-editor #post-author-spacer").show();
-    } else {
-      if (!restoreIcon) setIcon("");
-      $("#post-editor #post-author-spacer").hide();
+    var data = {aliases: [], galleries: []};
+    if (avatar) {
+      data.default = avatar;
+      data.galleries.push({icons: [avatar]});
     }
-    if (restoreIcon) setIconFromId(selectedIconID);
-    $("#character_alias").val('').trigger("change.select2");
-    $("#reply_character_alias_id").val('');
-
-    return; // Don't need to load data from server (TODO combine with below?)
+    setFormData(characterId, data, options);
+    return; // Don't need to load data from server
   }
 
   var postID = $("#reply_post_id").val();
   $.getJSON('/api/v1/characters/' + characterId, {post_id: postID}, function(resp) {
-    // Display the correct name/screenname fields
-    $("#post-editor #post-author-spacer").hide();
-    $("#post-editor .post-character").show().data('character-id', characterId);
-    $("#post-editor .post-character #name").html(resp.name);
-    var screennameBox = $("#post-editor .post-screenname");
-    if (resp.screenname) {
-      screennameBox.show().html(resp.screenname);
-      resizeScreenname(screennameBox);
-    } else {
-      screennameBox.hide().html('');
-    }
-
-    // Display alias selector if relevant
-    if (resp.aliases.length > 0) {
-      $("#swap-alias").show();
-      $("#character_alias").empty().append($("<option>").attr({value: ''}).append(resp.name));
-      for (var i=0; i<resp.aliases.length; i++) {
-        $("#character_alias").append($("<option>").attr({value: resp.aliases[i].id}).append(resp.aliases[i].name));
-      }
-      // Restore active alias, but only if not already restoring an alias
-      if (typeof resp.alias_id_for_post !== "undefined" && !restoreAlias) {
-        restoreAlias = true;
-        selectedAliasID = resp.alias_id_for_post;
-        $("#reply_character_alias_id").val(selectedAliasID);
-      }
-    } else {
-      $("#swap-alias").hide();
-    }
-
-    if (restoreAlias && selectedAliasID) {
-      var correctName = $("#character_alias option[value="+selectedAliasID+"]").text();
-      $("#post-editor .post-character #name").html(correctName);
-      $("#post-editor .post-character").data('alias-id', selectedAliasID);
-      $("#character_alias").val(selectedAliasID).trigger("change.select2");
-    } else {
-      $("#post-editor .post-character").data('alias-id', '');
-      $("#character_alias").val('').trigger("change.select2");
-      $("#reply_character_alias_id").val('');
-    }
-
-    $("#gallery").html('');
-
-    // Display no icon if no default set
-    if (!resp.default) {
-      setIcon('');
-      // Remove pointer and skip galleries if no galleries attached to character
-      if (resp.galleries.length === 0) {
-        $("#current-icon").removeClass('pointer');
-        return;
-      }
-    }
-
-    // Display default icon
-    $("#current-icon").addClass('pointer');
-
-    // Calculate new galleries
-    var multiGallery = resp.galleries.length > 1;
-    for (var j = 0; j < resp.galleries.length; j++) {
-      $("#gallery").append(galleryString(resp.galleries[j], multiGallery));
-    }
-
-    // If no default and no icons in any galleries, remove pointer
-    if (!resp.default && shownIcons.length === 0) {
-      $("#current-icon").removeClass('pointer');
-      return;
-    }
-
-    if (resp.default && shownIcons.indexOf(resp.default.id) < 0) $("#gallery").append(iconString(resp.default));
-    $("#gallery").append(iconString({id: '', url: '/images/no-icon.png', keyword: 'No Icon', skip_dropdown: true}));
-    bindGallery();
-    bindIcon();
-    if (restoreIcon)
-      setIconFromId(selectedIconID);
-    else if (resp.default)
-      setIcon(resp.default.id, resp.default.url, resp.default.keyword, resp.default.keyword);
+    setFormData(characterId, resp, options);
   });
 }
 
@@ -488,6 +485,7 @@ function setSections() {
 }
 
 function setCharacterListSelected(characterId) {
+  // for quick selector
   $(".char-access-icon.semiopaque").removeClass('semiopaque').addClass('pointer');
   $(".char-access-icon").each(function() {
     if (String($(this).data('character-id')) === String(characterId)) $(this).addClass('semiopaque').removeClass('pointer');
