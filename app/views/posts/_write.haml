@@ -42,7 +42,7 @@
         = f.hidden_field :icon_id, id: 'reply_icon_id'
         = f.hidden_field :character_alias_id, id: 'reply_character_alias_id'
         = submit_tag (post.new_record? ? 'Post' : 'Save'), class: 'button', id: 'submit_button', data: { disable_with: 'Saving...' }
-        = submit_tag "Preview", class: 'button', id: 'preview_button', name: 'button_preview'
+        = submit_tag "Preview", class: 'button', id: 'preview_button', name: 'button_preview', data: { disable_with: 'Previewing...' }
       %br
       = render partial: 'posts/editor_help'
 
