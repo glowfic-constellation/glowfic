@@ -5,14 +5,9 @@ var PRIVACY_ACCESS = 2; // TODO don't hardcode
 $(document).ready(function() {
   setupMetadataEditor();
 
-  $("#submit_button").click(function() {
-    $("#draft_button").removeAttr('data-disable-with').attr('disabled', 'disabled');
-    return true;
-  });
-
-  $("#draft_button").click(function() {
-    $("#submit_button").removeAttr('data-disable-with').attr('disabled', 'disabled');
-    return true;
+  var formButtons = $("#submit_button, #draft_button, #preview_button");
+  formButtons.click(function() {
+    formButtons.not(this).data('disable-with', '').prop('disabled', true);
   });
 
   if ($("#post-editor .view-button").length === 0) return; // Skip if there is no writable editor (no RTF/HTML buttons)
