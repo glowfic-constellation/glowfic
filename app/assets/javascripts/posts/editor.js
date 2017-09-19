@@ -320,7 +320,6 @@ function setFormData(characterId, resp, options) {
     restoreIcon = options.restore_icon;
     restoreAlias = options.restore_alias;
   }
-  shownIcons = [];
 
   setCharacterListSelected(characterId);
 
@@ -378,13 +377,24 @@ function setFormData(characterId, resp, options) {
     $("#reply_character_alias_id").val('');
   }
 
+  setGalleriesAndDefault(resp.galleries, resp.default);
+
+  if (restoreIcon)
+    setIconFromId(selectedIconID);
+  else if (resp.default)
+    setIcon(resp.default.id, resp.default.url, resp.default.keyword, resp.default.keyword);
+}
+
+function setGalleriesAndDefault(galleries, defaultIcon) {
+  shownIcons = [];
+
   $("#gallery").html('');
 
   // Display no icon if no default set
-  if (!resp.default) {
+  if (!defaultIcon) {
     setIcon('');
     // Remove pointer and skip galleries if no galleries attached to character
-    if (resp.galleries.length === 0) {
+    if (galleries.length === 0) {
       $("#current-icon").removeClass('pointer');
       return;
     }
@@ -394,25 +404,21 @@ function setFormData(characterId, resp, options) {
   $("#current-icon").addClass('pointer');
 
   // Calculate new galleries
-  var multiGallery = resp.galleries.length > 1;
-  for (var j = 0; j < resp.galleries.length; j++) {
-    $("#gallery").append(galleryString(resp.galleries[j], multiGallery));
+  var multiGallery = galleries.length > 1;
+  for (var j = 0; j < galleries.length; j++) {
+    $("#gallery").append(galleryString(galleries[j], multiGallery));
   }
 
   // If no default and no icons in any galleries, remove pointer
-  if (!resp.default && shownIcons.length === 0) {
+  if (!defaultIcon && shownIcons.length === 0) {
     $("#current-icon").removeClass('pointer');
     return;
   }
 
-  if (resp.default && shownIcons.indexOf(resp.default.id) < 0) $("#gallery").append(iconString(resp.default));
+  if (defaultIcon && shownIcons.indexOf(defaultIcon.id) < 0) $("#gallery").append(iconString(defaultIcon));
   $("#gallery").append(iconString({id: '', url: '/images/no-icon.png', keyword: 'No Icon', skip_dropdown: true}));
   bindGallery();
   bindIcon();
-  if (restoreIcon)
-    setIconFromId(selectedIconID);
-  else if (resp.default)
-    setIcon(resp.default.id, resp.default.url, resp.default.keyword, resp.default.keyword);
 }
 
 function getAndSetCharacterData(characterId, options) {
