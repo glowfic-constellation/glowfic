@@ -1,11 +1,26 @@
 /* global gon, tinymce, tinyMCE, resizeScreenname, createTagSelect */
 var tinyMCEInit = false, shownIcons = [];
+var PRIVACY_ACCESS = 2; // TODO don't hardcode
 
 $(document).ready(function() {
-  // SET UP POST METADATA EDITOR:
+  setupMetadataEditor();
 
-  var PRIVACY_ACCESS = 2; // TODO don't hardcode
+  $("#submit_button").click(function() {
+    $("#draft_button").removeAttr('data-disable-with').attr('disabled', 'disabled');
+    return true;
+  });
 
+  $("#draft_button").click(function() {
+    $("#submit_button").removeAttr('data-disable-with').attr('disabled', 'disabled');
+    return true;
+  });
+
+  if ($("#post-editor .view-button").length === 0) return; // Skip if there is no writable editor (no RTF/HTML buttons)
+
+  setupWritableEditor();
+});
+
+function setupMetadataEditor() {
   // Adding Select2 UI to relevant selects
   $("#post_board_id").select2({
     width: '200px',
@@ -46,19 +61,9 @@ $(document).ready(function() {
       $("#access_list").hide();
     }
   });
+}
 
-  $("#submit_button").click(function() {
-    $("#draft_button").removeAttr('data-disable-with').attr('disabled', 'disabled');
-    return true;
-  });
-
-  $("#draft_button").click(function() {
-    $("#submit_button").removeAttr('data-disable-with').attr('disabled', 'disabled');
-    return true;
-  });
-
-  if ($("#post-editor .view-button").length === 0) return; // Skip if there is no writable editor (no RTF/HTML buttons)
-
+function setupWritableEditor() {
   $('.post-editor-expander').click(function() {
     $(this).children(".info").hide();
     $(this).children(".hidden").show();
@@ -82,34 +87,7 @@ $(document).ready(function() {
     setupTinyMCE();
   }
 
-  // Hack to deal with Firefox's "helpful" caching of form values on soft refresh (now via IDs)
-  var selectedCharID = $("#reply_character_id").val();
-  var displayCharID = String($("#post-editor .post-character").data('character-id'));
-  var selectedIconID = $("#reply_icon_id").val();
-  var displayIconID = String($("#current-icon").data('icon-id'));
-  var selectedAliasID = $("#reply_character_alias_id").val();
-  var displayAliasID = String($("#post-editor .post-character").data('alias-id'));
-  if (selectedCharID !== displayCharID) {
-    getAndSetCharacterData(selectedCharID, {restore_icon: true, restore_alias: true});
-    $("#active_character").val(selectedCharID).trigger("change.select2");
-  } else {
-    if ($(".gallery-icon").length > 1) { /* Bind icon & gallery only if not resetting character, else it duplicate binds */
-      bindIcon();
-      bindGallery();
-    }
-    if (selectedIconID !== displayIconID) {
-      setIconFromId(selectedIconID); // Handle the case where just the icon was cached
-    }
-    if (selectedAliasID !== displayAliasID) {
-      var correctName = $("#character_alias option[value="+selectedAliasID+"]").text();
-      $("#post-editor .post-character #name").html(correctName);
-      $("#post-editor .post-character").data('alias-id', selectedAliasID);
-      $("#character_alias").val(selectedAliasID).trigger("change.select2");
-    }
-  }
-
-  // Set the quick-switcher's selected character
-  setCharacterListSelected(selectedCharID);
+  fixWritableFormCaching();
 
   // Bind both change() and keyup() in the icon keyword dropdown because Firefox doesn't
   // respect up/down key selections in a dropdown as a valid change() trigger
@@ -126,32 +104,15 @@ $(document).ready(function() {
     height: defaultHelpHeight
   });
 
-  $('.view-button').click(function() {
-    if (this.id === 'rtf') {
-      $("#html").removeClass('selected');
-      $("#editor_mode").val('rtf');
-      $(this).addClass('selected');
-      if (tinyMCEInit) {
-        tinyMCE.execCommand('mceAddEditor', true, 'post_content');
-        tinyMCE.execCommand('mceAddEditor', true, 'reply_content');
-      } else {
-        setupTinyMCE();
-      }
-    } else if (this.id === 'html') {
-      $("#rtf").removeClass('selected');
-      $("#editor_mode").val('html');
-      $(this).addClass('selected');
-      tinyMCE.execCommand('mceRemoveEditor', false, 'post_content');
-      tinyMCE.execCommand('mceRemoveEditor', false, 'reply_content');
-    } else if (this.id === 'editor-help') {
-      if (editorHelp.dialog('isOpen')) {
-        editorHelp.dialog('close');
-      } else {
-        var width = Math.min($(window).width()-20, defaultHelpWidth);
-        var height = Math.min($(window).height()-20, defaultHelpHeight);
-        editorHelp.dialog('option', {width: width, height: height}).dialog('open');
-        editorHelp.dialog('open');
-      }
+  $('#rtf, #html').click(toggleEditor);
+  $('#editor-help').click(function() {
+    if (editorHelp.dialog('isOpen')) {
+      editorHelp.dialog('close');
+    } else {
+      var width = Math.min($(window).width()-20, defaultHelpWidth);
+      var height = Math.min($(window).height()-20, defaultHelpHeight);
+      editorHelp.dialog('option', {width: width, height: height}).dialog('open');
+      editorHelp.dialog('open');
     }
   });
 
@@ -181,6 +142,7 @@ $(document).ready(function() {
   $(".char-access-icon").click(function() {
     var id = $(this).data('character-id');
     $("#reply_character_id").val(id);
+    $("#active_character").val(id).trigger('change.select2');
     getAndSetCharacterData(id);
   });
 
@@ -222,7 +184,55 @@ $(document).ready(function() {
       $('#character-selector').hide();
     }
   });
-});
+}
+
+function fixWritableFormCaching() {
+  // Hack to deal with Firefox's "helpful" caching of form values on soft refresh (now via IDs)
+  var selectedCharID = $("#reply_character_id").val();
+  var displayCharID = String($("#post-editor .post-character").data('character-id'));
+  var selectedIconID = $("#reply_icon_id").val();
+  var displayIconID = String($("#current-icon").data('icon-id'));
+  var selectedAliasID = $("#reply_character_alias_id").val();
+  var displayAliasID = String($("#post-editor .post-character").data('alias-id'));
+  if (selectedCharID === displayCharID) {
+    if ($(".gallery-icon").length > 1) { /* Bind icon & gallery only if not resetting character, else it duplicate binds */
+      bindIcon();
+      bindGallery();
+    }
+    if (selectedIconID !== displayIconID) {
+      setIconFromId(selectedIconID); // Handle the case where just the icon was cached
+    }
+    if (selectedAliasID !== displayAliasID) {
+      setAliasFromID(selectedAliasID);
+    }
+  } else {
+    getAndSetCharacterData(selectedCharID, {restore_icon: true, restore_alias: true});
+    $("#active_character").val(selectedCharID).trigger("change.select2");
+  }
+
+  // Set the quick-switcher's selected character
+  setSwitcherListSelected(selectedCharID);
+}
+
+function toggleEditor() {
+  if (this.id === 'rtf') {
+    $("#html").removeClass('selected');
+    $("#editor_mode").val('rtf');
+    $(this).addClass('selected');
+    if (tinyMCEInit) {
+      tinyMCE.execCommand('mceAddEditor', true, 'post_content');
+      tinyMCE.execCommand('mceAddEditor', true, 'reply_content');
+    } else {
+      setupTinyMCE();
+    }
+  } else if (this.id === 'html') {
+    $("#rtf").removeClass('selected');
+    $("#editor_mode").val('html');
+    $(this).addClass('selected');
+    tinyMCE.execCommand('mceRemoveEditor', false, 'post_content');
+    tinyMCE.execCommand('mceRemoveEditor', false, 'reply_content');
+  }
+}
 
 function bindGallery() {
   $("#gallery img").click(function() {
@@ -300,130 +310,137 @@ function setupTinyMCE() {
   }
 }
 
-function getAndSetCharacterData(characterId, options) {
+function setFormData(characterId, resp, options) {
   var restoreIcon = false;
   var restoreAlias = false;
-  shownIcons = [];
 
   if (typeof options !== 'undefined') {
     restoreIcon = options.restore_icon;
     restoreAlias = options.restore_alias;
   }
 
-  // Handle page interactions
+  setSwitcherListSelected(characterId);
+
   var selectedIconID = $("#reply_icon_id").val();
   var selectedAliasID = $("#reply_character_alias_id").val();
   $("#character-selector").hide();
+
+  setInfoBoxFields(characterId, resp.name, resp.screenname);
+
+  setAliases(resp.aliases, resp.name);
+  setAliasFromID('');
+  if (restoreAlias)
+    setAliasFromID(selectedAliasID);
+  else if (resp.alias_id_for_post)
+    setAliasFromID(resp.alias_id_for_post);
+
+  setGalleriesAndDefault(resp.galleries, resp.default);
+  setIcon('');
+  if (restoreIcon)
+    setIconFromId(selectedIconID);
+  else if (resp.default)
+    setIcon(resp.default.id, resp.default.url, resp.default.keyword, resp.default.keyword);
+}
+
+function setInfoBoxFields(characterId, name, screenname) {
+  // Display the correct name/screenname fields
+  var spacer = $("#post-editor #post-author-spacer");
+  var characterNameBox = $("#post-editor .post-character");
+  if (name) {
+    spacer.hide();
+    characterNameBox.show();
+  } else {
+    spacer.show();
+    characterNameBox.hide();
+  }
+  characterNameBox.data('character-id', characterId);
+  $("#post-editor .post-character #name").html(name);
+
+  var screennameBox = $("#post-editor .post-screenname");
+  if (screenname) {
+    screennameBox.show().html(screenname);
+    resizeScreenname(screennameBox);
+  } else {
+    screennameBox.hide().html(screenname);
+  }
+}
+
+function setAliases(aliases, name) {
+  // Display alias selector if relevant
+  var aliasList = $("#character_alias");
+  aliasList.empty();
+  aliasList.append($("<option>").attr({value: ''}).append(name));
+  if (aliases.length > 0) {
+    $("#swap-alias").show();
+    for (var i=0; i<aliases.length; i++) {
+      aliasList.append($("<option>").attr({value: aliases[i].id}).append(aliases[i].name));
+    }
+  } else {
+    $("#swap-alias").hide();
+  }
+}
+
+function setAliasFromID(selectedAliasID) {
+  var correctName = $("#character_alias option[value=\""+selectedAliasID+"\"]").text();
+  $("#post-editor .post-character #name").html(correctName);
+  $("#post-editor .post-character").data('alias-id', selectedAliasID);
+  $("#character_alias").val(selectedAliasID).trigger("change.select2");
+  $("#reply_character_alias_id").val(selectedAliasID);
+}
+
+function setGalleriesAndDefault(galleries, defaultIcon) {
+  shownIcons = [];
+
   $("#current-icon-holder").unbind();
   $("#icon_dropdown").empty().append('<option value="">No Icon</option>');
 
-  setCharacterListSelected(characterId);
+  $("#gallery").html('');
+
+  // Remove pointer and skip galleries if no galleries attached to character
+  if (galleries.length === 0 && !defaultIcon) {
+    $("#current-icon").removeClass('pointer');
+    return;
+  }
+
+  // Display default icon
+  $("#current-icon").addClass('pointer');
+
+  // Calculate new galleries
+  var multiGallery = galleries.length > 1;
+  for (var j = 0; j < galleries.length; j++) {
+    $("#gallery").append(galleryString(galleries[j], multiGallery));
+  }
+
+  // If no default and no icons in any galleries, remove pointer
+  if (!defaultIcon && shownIcons.length === 0) {
+    $("#current-icon").removeClass('pointer');
+    return;
+  }
+
+  if (defaultIcon && shownIcons.indexOf(defaultIcon.id) < 0) $("#gallery").append(iconString(defaultIcon));
+  $("#gallery").append(iconString({id: '', url: '/images/no-icon.png', keyword: 'No Icon', skip_dropdown: true}));
+  bindGallery();
+  bindIcon();
+}
+
+function getAndSetCharacterData(characterId, options) {
+  // Handle page interactions
 
   // Handle special case where just setting to your base account
   if (characterId === '') {
-    $("#post-editor .post-character").hide().data('character-id', '').data('alias-id', '');
-    $("#post-editor .post-screenname").hide().html('');
-
     var avatar = gon.current_user.avatar;
-    if (avatar && avatar.url !== null) {
-      var url = avatar.url;
-      var aid = avatar.id;
-      var keyword = avatar.keyword;
-      $("#gallery").html("");
-      $("#gallery").append(iconString({id: aid, url: url, keyword: keyword}));
-      $("#gallery").append(iconString({id: '', url: '/images/no-icon.png', keyword: 'No Icon', skip_dropdown: true}));
-      bindIcon();
-      bindGallery();
-      if (!restoreIcon) setIcon(aid, url, keyword, keyword);
-      $("#post-editor #post-author-spacer").show();
-    } else {
-      if (!restoreIcon) setIcon("");
-      $("#post-editor #post-author-spacer").hide();
+    var data = {aliases: [], galleries: []};
+    if (avatar) {
+      data.default = avatar;
+      data.galleries.push({icons: [avatar]});
     }
-    if (restoreIcon) setIconFromId(selectedIconID);
-    $("#character_alias").val('').trigger("change.select2");
-    $("#reply_character_alias_id").val('');
-
-    return; // Don't need to load data from server (TODO combine with below?)
+    setFormData(characterId, data, options);
+    return; // Don't need to load data from server
   }
 
   var postID = $("#reply_post_id").val();
   $.getJSON('/api/v1/characters/' + characterId, {post_id: postID}, function(resp) {
-    // Display the correct name/screenname fields
-    $("#post-editor #post-author-spacer").hide();
-    $("#post-editor .post-character").show().data('character-id', characterId);
-    $("#post-editor .post-character #name").html(resp.name);
-    var screennameBox = $("#post-editor .post-screenname");
-    if (resp.screenname) {
-      screennameBox.show().html(resp.screenname);
-      resizeScreenname(screennameBox);
-    } else {
-      screennameBox.hide().html('');
-    }
-
-    // Display alias selector if relevant
-    if (resp.aliases.length > 0) {
-      $("#swap-alias").show();
-      $("#character_alias").empty().append($("<option>").attr({value: ''}).append(resp.name));
-      for (var i=0; i<resp.aliases.length; i++) {
-        $("#character_alias").append($("<option>").attr({value: resp.aliases[i].id}).append(resp.aliases[i].name));
-      }
-      // Restore active alias, but only if not already restoring an alias
-      if (typeof resp.alias_id_for_post !== "undefined" && !restoreAlias) {
-        restoreAlias = true;
-        selectedAliasID = resp.alias_id_for_post;
-        $("#reply_character_alias_id").val(selectedAliasID);
-      }
-    } else {
-      $("#swap-alias").hide();
-    }
-
-    if (restoreAlias && selectedAliasID) {
-      var correctName = $("#character_alias option[value="+selectedAliasID+"]").text();
-      $("#post-editor .post-character #name").html(correctName);
-      $("#post-editor .post-character").data('alias-id', selectedAliasID);
-      $("#character_alias").val(selectedAliasID).trigger("change.select2");
-    } else {
-      $("#post-editor .post-character").data('alias-id', '');
-      $("#character_alias").val('').trigger("change.select2");
-      $("#reply_character_alias_id").val('');
-    }
-
-    $("#gallery").html('');
-
-    // Display no icon if no default set
-    if (!resp.default) {
-      setIcon('');
-      // Remove pointer and skip galleries if no galleries attached to character
-      if (resp.galleries.length === 0) {
-        $("#current-icon").removeClass('pointer');
-        return;
-      }
-    }
-
-    // Display default icon
-    $("#current-icon").addClass('pointer');
-
-    // Calculate new galleries
-    var multiGallery = resp.galleries.length > 1;
-    for (var j = 0; j < resp.galleries.length; j++) {
-      $("#gallery").append(galleryString(resp.galleries[j], multiGallery));
-    }
-
-    // If no default and no icons in any galleries, remove pointer
-    if (!resp.default && shownIcons.length === 0) {
-      $("#current-icon").removeClass('pointer');
-      return;
-    }
-
-    if(resp.default && shownIcons.indexOf(resp.default.id) < 0) $("#gallery").append(iconString(resp.default));
-    $("#gallery").append(iconString({id: '', url: '/images/no-icon.png', keyword: 'No Icon', skip_dropdown: true}));
-    bindGallery();
-    bindIcon();
-    if (restoreIcon)
-      setIconFromId(selectedIconID);
-    else if (resp.default)
-      setIcon(resp.default.id, resp.default.url, resp.default.keyword, resp.default.keyword);
+    setFormData(characterId, resp, options);
   });
 }
 
@@ -475,7 +492,8 @@ function setSections() {
   }, 'json');
 }
 
-function setCharacterListSelected(characterId) {
+function setSwitcherListSelected(characterId) {
+  // for quick selector
   $(".char-access-icon.semiopaque").removeClass('semiopaque').addClass('pointer');
   $(".char-access-icon").each(function() {
     if (String($(this).data('character-id')) === String(characterId)) $(this).addClass('semiopaque').removeClass('pointer');
