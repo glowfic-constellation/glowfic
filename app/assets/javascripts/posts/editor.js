@@ -142,6 +142,7 @@ function setupWritableEditor() {
   $(".char-access-icon").click(function() {
     var id = $(this).data('character-id');
     $("#reply_character_id").val(id);
+    $("#active_character").val(id).trigger('change.select2');
     getAndSetCharacterData(id);
   });
 
@@ -210,7 +211,7 @@ function fixWritableFormCaching() {
   }
 
   // Set the quick-switcher's selected character
-  setCharacterListSelected(selectedCharID);
+  setSwitcherListSelected(selectedCharID);
 }
 
 function toggleEditor() {
@@ -318,7 +319,7 @@ function setFormData(characterId, resp, options) {
     restoreAlias = options.restore_alias;
   }
 
-  setCharacterListSelected(characterId);
+  setSwitcherListSelected(characterId);
 
   var selectedIconID = $("#reply_icon_id").val();
   var selectedAliasID = $("#reply_character_alias_id").val();
@@ -491,7 +492,7 @@ function setSections() {
   }, 'json');
 }
 
-function setCharacterListSelected(characterId) {
+function setSwitcherListSelected(characterId) {
   // for quick selector
   $(".char-access-icon.semiopaque").removeClass('semiopaque').addClass('pointer');
   $(".char-access-icon").each(function() {
