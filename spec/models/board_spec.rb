@@ -52,9 +52,15 @@ RSpec.describe Board do
     post3 = create(:post, board: board)
     post4 = create(:post, board: board)
     post.update_attribute(:section_order, 2)
+    section = create(:board_section, board: board)
+    section2 = create(:board_section, board: board)
+    section3 = create(:board_section, board: board)
+    section.update_attribute(:section_order, 6)
     expect(board.posts.order('section_order asc').pluck(:section_order)).to eq([1, 2, 2, 3])
+    expect(board.board_sections.order('section_order asc').pluck(:section_order)).to eq([1, 2, 6])
     board.send(:fix_ordering)
     expect(board.posts.order('section_order asc').pluck(:section_order)).to eq([0, 1, 2, 3])
+    expect(board.board_sections.order('section_order asc').pluck(:section_order)).to eq([0, 1, 2])
   end
 
   describe "#ordered?" do
