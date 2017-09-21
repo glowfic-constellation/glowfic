@@ -431,6 +431,7 @@ DEPENDENCIES
   rails (~> 4.2.9)
   rails_12factor
   rake (~> 12.0)
+  redis (~> 3.0)
   redis-rails
   resque
   resque-retry
