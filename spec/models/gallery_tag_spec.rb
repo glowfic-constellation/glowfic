@@ -73,15 +73,18 @@ RSpec.describe GalleryTag do
         expect(gallery.characters_galleries.find_by(character_id: character_both.id)).not_to be_added_by_group
       end
 
-      it "does not destroy galleries when destroyed" do
+      it "does not destroy gallery groups when destroyed" do
         group = create(:gallery_group)
-        gallery = create(:gallery)
-        gallery.gallery_groups << group
-        gallery.save
+        gallery = create(:gallery, gallery_groups: [group])
+        other = create(:gallery, gallery_groups: [group])
         gallery.reload
-        expect(gallery.gallery_groups.count).to eq(1)
+        other.reload
+        expect(gallery.gallery_groups).to match_array([group])
+        expect(other.gallery_groups).to match_array([group])
+
         gallery.destroy
         group.reload
+        expect(other.reload.gallery_groups).to match_array([group])
       end
     end
   end
