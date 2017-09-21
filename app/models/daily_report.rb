@@ -10,13 +10,13 @@ class DailyReport < Report
     by_replies = Reply.where(created_at: day.beginning_of_day .. day.end_of_day).pluck(:post_id)
     all_post_ids = created_no_replies + by_replies
     Post.where(id: all_post_ids.uniq)
-      .select('posts.*,
+      .select("posts.*,
         max(boards.name) as board_name,
-        case date_trunc(\'day\', posts.created_at)
-          when \'' + day.beginning_of_day.strftime("%Y-%m-%d %H:%M:%S") + '\'
+        case
+        when (posts.created_at between #{ActiveRecord::Base.sanitize(day.beginning_of_day)} AND #{ActiveRecord::Base.sanitize(day.end_of_day)})
           then posts.created_at
           else coalesce(min(replies_today.created_at), posts.created_at)
-          end as first_updated_at')
+          end as first_updated_at")
       .joins(:board)
       .joins("LEFT JOIN replies AS replies_today ON replies_today.post_id = posts.id")
       .where("replies_today.created_at IS NULL OR (replies_today.created_at between ? AND ?)", day.beginning_of_day, day.end_of_day)
