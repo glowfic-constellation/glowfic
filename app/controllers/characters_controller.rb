@@ -190,6 +190,7 @@ class CharactersController < ApplicationController
       new_alias_id = new_alias.id
     end
 
+    success_msg = ''
     Post.transaction do
       replies = Reply.where(character_id: @character.id)
       posts = Post.where(character_id: @character.id)
@@ -197,6 +198,7 @@ class CharactersController < ApplicationController
       if params[:post_ids].present?
         replies = replies.where(post_id: params[:post_ids])
         posts = posts.where(id: params[:post_ids])
+        success_msg = " in the specified " + 'post'.pluralize(params[:post_ids].size)
       end
 
       if @character.aliases.exists? && params[:orig_alias] != 'all'
@@ -208,7 +210,7 @@ class CharactersController < ApplicationController
       replies.update_all(character_id: new_char.try(:id), character_alias_id: new_alias_id)
     end
 
-    flash[:success] = "All uses of this character have been replaced."
+    flash[:success] = "All uses of this character#{success_msg} have been replaced."
     redirect_to character_path(@character)
   end
 

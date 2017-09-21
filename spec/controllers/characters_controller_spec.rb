@@ -806,7 +806,7 @@ RSpec.describe CharactersController do
       login_as(user)
       post :do_replace, id: character.id, icon_dropdown: other_char.id, post_ids: [char_post.id, char_reply.post.id]
       expect(response).to redirect_to(character_path(character))
-      expect(flash[:success]).to eq('All uses of this character have been replaced.')
+      expect(flash[:success]).to eq('All uses of this character in the specified posts have been replaced.')
 
       expect(char_post.reload.character_id).to eq(other_char.id)
       expect(char_reply.reload.character_id).to eq(other_char.id)
