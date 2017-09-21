@@ -18,7 +18,7 @@ class Character < ApplicationRecord
   has_many :character_tags, inverse_of: :character, dependent: :destroy
   has_many :labels, through: :character_tags, source: :label
   has_many :settings, through: :character_tags, source: :setting
-  has_many :gallery_groups, through: :character_tags, source: :gallery_group, after_remove: :remove_galleries_from_character
+  has_many :gallery_groups, through: :character_tags, source: :gallery_group, dependent: :destroy
 
   validates_presence_of :name, :user
   validate :valid_group, :valid_galleries, :valid_default_icon
@@ -106,14 +106,6 @@ class Character < ApplicationRecord
         self.assign_attributes(characters_galleries: new_chargals)
       end
     end
-  end
-
-  def remove_galleries_from_character(gallery_group)
-    galleries = gallery_group.galleries.where(user_id: user_id)
-    joined_group_galleries = gallery_groups.joins(:galleries).where(galleries: {user_id: user_id}).pluck(:gallery_id)
-    galleries = galleries.where.not(id: joined_group_galleries)
-    to_delete = characters_galleries.where(gallery: galleries, added_by_group: true).destroy_all
-    characters_galleries.reload
   end
 
   private
