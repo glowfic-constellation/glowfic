@@ -17,6 +17,7 @@ class GalleryTag < ApplicationRecord
 
   def remove_gallery_from_characters
     return if gallery_group.nil? # skip non-gallery_groups
-    gallery.remove_gallery_from_characters(gallery_group)
+    characters = gallery_group.characters.where(user_id: gallery.user_id)
+    CharactersGallery.where(character: gallery.characters, gallery: gallery, added_by_group: true).destroy_all
   end
 end
