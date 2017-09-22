@@ -752,14 +752,17 @@ RSpec.describe Post do
     end
   end
 
-  it "should enqueue a message after creation" do
-    ResqueSpec.reset!
-    author = create(:user)
-    notified = create(:user)
-    create(:favorite, user: notified, favorite: author)
-    post = create(:post, user: author)
-    post.run_callbacks(:commit) # deal with tests running in a transaction
-    expect(NotifyFollowersOfNewPostJob).to have_queued(post.id)
+  context "callbacks" do
+    include ActiveJob::TestHelper
+    it "should enqueue a message after creation" do
+      clear_enqueued_jobs
+      author = create(:user)
+      notified = create(:user)
+      create(:favorite, user: notified, favorite: author)
+      post = create(:post, user: author)
+      post.run_callbacks(:commit) # deal with tests running in a transaction
+      expect(NotifyFollowersOfNewPostJob).to have_been_enqueued.with(post.id).on_queue('notifier')
+    end
   end
 
   # from Taggable concern

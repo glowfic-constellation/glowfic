@@ -1,9 +1,9 @@
-class NotifyFollowersOfNewPostJob < BaseJob
-  @queue = :notifier
+class NotifyFollowersOfNewPostJob < ApplicationJob
+  queue_as :notifier
   @retry_limit = 5
   @expire_retry_key_after = 3600
 
-  def self.process(post_id)
+  def perform(post_id)
     return unless (post = Post.find_by_id(post_id))
 
     users_favoriting_user = Favorite.where(favorite: post.user).pluck(:user_id)
@@ -23,7 +23,7 @@ class NotifyFollowersOfNewPostJob < BaseJob
     end
   end
 
-  def self.view_post(post_id)
+  def view_post(post_id)
     url = Rails.application.routes.url_helpers.post_url(post_id, host: ENV['DOMAIN_NAME'] || 'localhost:3000', protocol: 'https')
     "<a href='#{url}'>View it here</a>."
   end

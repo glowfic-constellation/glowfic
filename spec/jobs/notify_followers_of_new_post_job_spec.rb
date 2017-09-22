@@ -4,7 +4,7 @@ RSpec.describe NotifyFollowersOfNewPostJob do
   before(:each) { ResqueSpec.reset! }
   it "does nothing with invalid post id" do
     expect(Favorite).not_to receive(:where)
-    NotifyFollowersOfNewPostJob.perform(-1)
+    NotifyFollowersOfNewPostJob.perform_now(-1)
   end
 
   it "does not send twice if the user has favorited both the poster and the continuity" do
@@ -14,7 +14,7 @@ RSpec.describe NotifyFollowersOfNewPostJob do
     create(:favorite, user: notified, favorite: board)
     create(:favorite, user: notified, favorite: author)
     post = create(:post, user: author, board: board)
-    expect { NotifyFollowersOfNewPostJob.perform(post.id) }.to change { Message.count }.by(1)
+    expect { NotifyFollowersOfNewPostJob.perform_now(post.id) }.to change { Message.count }.by(1)
   end
 
   it "sends the right messages based on favorite type" do
@@ -25,7 +25,7 @@ RSpec.describe NotifyFollowersOfNewPostJob do
     create(:favorite, user: board_notified, favorite: board)
     create(:favorite, user: author_notified, favorite: author)
     post = create(:post, user: author, board: board)
-    expect { NotifyFollowersOfNewPostJob.perform(post.id) }.to change { Message.count }.by(2)
+    expect { NotifyFollowersOfNewPostJob.perform_now(post.id) }.to change { Message.count }.by(2)
     board_msg = Message.where(recipient: board_notified).last
     author_msg = Message.where(recipient: author_notified).last
     expect(board_msg.message).to include("in the #{board.name} continuity")
@@ -37,7 +37,7 @@ RSpec.describe NotifyFollowersOfNewPostJob do
     notified = create(:user)
     create(:favorite, user: notified, favorite: author)
     post = create(:post, user: author, privacy: Post::PRIVACY_PRIVATE)
-    expect { NotifyFollowersOfNewPostJob.perform(post.id) }.not_to change { Message.count }
+    expect { NotifyFollowersOfNewPostJob.perform_now(post.id) }.not_to change { Message.count }
   end
 
   it "does not send if reader has config disabled" do
@@ -45,7 +45,7 @@ RSpec.describe NotifyFollowersOfNewPostJob do
     notified = create(:user, favorite_notifications: false)
     create(:favorite, user: notified, favorite: author)
     post = create(:post, user: author)
-    expect { NotifyFollowersOfNewPostJob.perform(post.id) }.not_to change { Message.count }
+    expect { NotifyFollowersOfNewPostJob.perform_now(post.id) }.not_to change { Message.count }
   end
 
   it "does not send to the poster" do
@@ -53,6 +53,6 @@ RSpec.describe NotifyFollowersOfNewPostJob do
     author = create(:user)
     create(:favorite, user: author, favorite: board)
     post = create(:post, user: author, board: board)
-    expect { NotifyFollowersOfNewPostJob.perform(post.id) }.not_to change { Message.count }
+    expect { NotifyFollowersOfNewPostJob.perform_now(post.id) }.not_to change { Message.count }
   end
 end
