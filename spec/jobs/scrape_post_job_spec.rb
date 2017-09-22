@@ -1,8 +1,9 @@
 require "spec_helper"
 
 RSpec.describe ScrapePostJob do
+  include ActiveJob::TestHelper
   before(:each) do
-    ResqueSpec.reset!
+    clear_enqueued_jobs
     allow(STDOUT).to receive(:puts)
   end
 
@@ -12,7 +13,7 @@ RSpec.describe ScrapePostJob do
     stub_request(:get, url).to_return(status: 200, body: File.new(file))
     board = create(:board)
     create(:character, screenname: 'wild_pegasus_appeared')
-    ScrapePostJob.process(url, board.id, nil, Post::STATUS_COMPLETE, false, board.creator_id)
+    ScrapePostJob.perform_now(url, board.id, nil, Post::STATUS_COMPLETE, false, board.creator_id)
     expect(Message.count).to eq(1)
     expect(Message.first.subject).to eq("Post import succeeded")
     expect(Post.count).to eq(1)
@@ -25,8 +26,7 @@ RSpec.describe ScrapePostJob do
     board = create(:board)
 
     begin
-      Resque.enqueue(ScrapePostJob, url, board.id, nil, Post::STATUS_COMPLETE, false, board.creator_id)
-      ResqueSpec.perform_next(ScrapePostJob.queue)
+      ScrapePostJob.perform_now(url, board.id, nil, Post::STATUS_COMPLETE, false, board.creator_id)
     rescue UnrecognizedUsernameError => e
       ScrapePostJob.notify_exception(e, url, board.id, nil, Post::STATUS_COMPLETE, false, board.creator_id)
       expect(Message.count).to eq(1)
@@ -48,8 +48,7 @@ RSpec.describe ScrapePostJob do
     scraper.scrape!
 
     begin
-      Resque.enqueue(ScrapePostJob, url, board.id, nil, Post::STATUS_COMPLETE, false, board.creator_id)
-      ResqueSpec.perform_next(ScrapePostJob.queue)
+      ScrapePostJob.perform_now(url, board.id, nil, Post::STATUS_COMPLETE, false, board.creator_id)
     rescue AlreadyImportedError => e
       ScrapePostJob.notify_exception(e, url, board.id, nil, Post::STATUS_COMPLETE, false, board.creator_id)
       expect(Message.count).to eq(1)
