@@ -36,17 +36,18 @@ RSpec.describe GenerateFlatPostJob do
     post = create(:post)
     $redis.set(GenerateFlatPostJob.lock_key(post.id), true)
 
-    expect_any_instance_of(FlatPost).to receive(:save).and_raise(Exception)
+    exc = Exception
+    expect_any_instance_of(FlatPost).to receive(:save).and_raise(exc)
+    expect(ApplicationJob).to receive(:notify_exception).with(exc, post.id).and_call_original
     clear_enqueued_jobs
 
     begin
       GenerateFlatPostJob.perform_now(post.id)
     rescue Exception
     else
-      abort("must raise error")
+      raise "Error should be handled"
     end
 
-    expect(GenerateFlatPostJob).to have_been_enqueued.with(post.id).on_queue('high')
     expect($redis.get(GenerateFlatPostJob.lock_key(post.id))).to be_nil
   end
 end

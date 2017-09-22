@@ -1,7 +1,5 @@
 class GenerateFlatPostJob < ApplicationJob
   queue_as :high
-  @retry_limit = 5
-  @expire_retry_key_after = 3600
 
   def perform(post_id)
     Rails.logger.info("[GenerateFlatPostJob] updating flat post for post #{post_id}")

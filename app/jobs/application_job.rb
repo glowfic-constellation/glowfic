@@ -1,19 +1,20 @@
 require 'resque/errors'
 class ApplicationJob < ActiveJob::Base
-  extend Resque::Plugins::Retry
-
-  give_up_callback :notify_exception
-
-  give_up_callback do |e| puts e end
-  try_again_callback do |e| puts e end
-
   around_perform :retry_on_term
+  around_perform :notify_exception # rescue_from doesn't catch Exceptions in jobs
 
   def retry_on_term
     yield
   rescue Resque::TermException
     Rails.logger.error("Performing #{self.class} was terminated. Retrying...")
     retry_job
+  end
+
+  def notify_exception
+    yield
+  rescue Exception => e
+    self.class.notify_exception(e, *arguments)
+    raise e
   end
 
   def self.notify_exception(exception, *args)

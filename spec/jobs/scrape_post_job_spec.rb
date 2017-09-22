@@ -4,7 +4,7 @@ RSpec.describe ScrapePostJob do
   include ActiveJob::TestHelper
   before(:each) do
     clear_enqueued_jobs
-    allow(STDOUT).to receive(:puts)
+    allow(STDOUT).to receive(:puts).with("Importing thread 'linear b'")
   end
 
   it "creates the correct objects" do
@@ -25,10 +25,11 @@ RSpec.describe ScrapePostJob do
     stub_request(:get, url).to_return(status: 200, body: File.new(file))
     board = create(:board)
 
+    expect(ScrapePostJob).to receive(:notify_exception).with(an_instance_of(UnrecognizedUsernameError), url, board.id, nil, Post::STATUS_COMPLETE, false, board.creator_id).and_call_original
+
     begin
       ScrapePostJob.perform_now(url, board.id, nil, Post::STATUS_COMPLETE, false, board.creator_id)
     rescue UnrecognizedUsernameError => e
-      ScrapePostJob.notify_exception(e, url, board.id, nil, Post::STATUS_COMPLETE, false, board.creator_id)
       expect(Message.count).to eq(1)
       expect(Message.first.subject).to eq("Post import failed")
       expect(Message.first.message).to include("wild_pegasus_appeared")
@@ -47,10 +48,11 @@ RSpec.describe ScrapePostJob do
     scraper = PostScraper.new(url, board.id)
     scraper.scrape!
 
+    expect(ScrapePostJob).to receive(:notify_exception).with(an_instance_of(AlreadyImportedError), url, board.id, nil, Post::STATUS_COMPLETE, false, board.creator_id).and_call_original
+
     begin
       ScrapePostJob.perform_now(url, board.id, nil, Post::STATUS_COMPLETE, false, board.creator_id)
     rescue AlreadyImportedError => e
-      ScrapePostJob.notify_exception(e, url, board.id, nil, Post::STATUS_COMPLETE, false, board.creator_id)
       expect(Message.count).to eq(1)
       expect(Message.first.subject).to eq("Post import failed")
       expect(Message.first.message).to include("already imported")

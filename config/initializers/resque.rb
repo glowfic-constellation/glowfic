@@ -17,6 +17,6 @@ Resque::Mailer.error_handler = lambda { |mailer, message, error, action, args|
 Resque::Mailer.excluded_environments = [] # I explicitly want this to run in tests; don't exclude them.
 
 # only logs Resque failures when they are not retried
-require 'resque/failure/redis'
-Resque::Failure::MultipleWithRetrySuppression.classes = [Resque::Failure::Redis]
-Resque::Failure.backend = Resque::Failure::MultipleWithRetrySuppression
+# require 'resque/failure/redis'
+# Resque::Failure::MultipleWithRetrySuppression.classes = [Resque::Failure::Redis]
+# Resque::Failure.backend = Resque::Failure::MultipleWithRetrySuppression
