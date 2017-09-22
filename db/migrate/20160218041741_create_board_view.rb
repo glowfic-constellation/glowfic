@@ -1,4 +1,4 @@
-class CreateBoardView < ActiveRecord::Migration
+class CreateBoardView < ActiveRecord::Migration[4.2]
   def change
     create_table :board_views do |t|
       t.integer :board_id, :null => false

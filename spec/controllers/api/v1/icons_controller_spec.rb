@@ -22,7 +22,7 @@ RSpec.describe Api::V1::IconsController do
       login_as(user)
 
       expect(S3_BUCKET).not_to receive(:delete_objects)
-      post :s3_delete, s3_key: "users/#{user.id}1/icons/hash_name.png"
+      post :s3_delete, params: { s3_key: "users/#{user.id}1/icons/hash_name.png" }
 
       expect(response).to have_http_status(403)
       expect(response.json['errors'][0]['message']).to eq("That is not your icon.")
@@ -32,7 +32,7 @@ RSpec.describe Api::V1::IconsController do
       icon = create(:uploaded_icon)
       login_as(icon.user)
       expect(S3_BUCKET).not_to receive(:delete_objects)
-      post :s3_delete, s3_key: icon.s3_key
+      post :s3_delete, params: { s3_key: icon.s3_key }
       expect(response).to have_http_status(422)
       expect(response.json['errors'][0]['message']).to eq("Only unused icons can be deleted.")
     end
@@ -42,7 +42,7 @@ RSpec.describe Api::V1::IconsController do
       login_as(icon.user)
       delete_key = {delete: {objects: [{key: icon.s3_key}], quiet: true}}
       expect(S3_BUCKET).to receive(:delete_objects).with(delete_key)
-      post :s3_delete, s3_key: icon.s3_key
+      post :s3_delete, params: { s3_key: icon.s3_key }
       expect(response).to have_http_status(200)
       expect(response.json).to eq({})
     end

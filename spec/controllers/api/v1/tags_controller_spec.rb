@@ -5,7 +5,7 @@ RSpec.describe Api::V1::TagsController do
     shared_examples_for "index.json" do |in_doc|
       it "should support label search", show_in_doc: in_doc do
         tag = create(:label)
-        get :index, q: tag.name, t: 'Label'
+        get :index, params: { q: tag.name, t: 'Label' }
         expect(response).to have_http_status(200)
         expect(response.json).to have_key('results')
         expect(response.json['results']).to contain_exactly(tag.as_json.stringify_keys)
@@ -13,7 +13,7 @@ RSpec.describe Api::V1::TagsController do
 
       it "should support setting search", show_in_doc: in_doc do
         tag = create(:setting)
-        get :index, q: tag.name, t: 'Setting'
+        get :index, params: { q: tag.name, t: 'Setting' }
         expect(response).to have_http_status(200)
         expect(response.json).to have_key('results')
         expect(response.json['results']).to contain_exactly(tag.as_json.stringify_keys)
@@ -21,7 +21,7 @@ RSpec.describe Api::V1::TagsController do
 
       it "should support content warning search", show_in_doc: in_doc do
         tag = create(:content_warning)
-        get :index, q: tag.name, t: 'ContentWarning'
+        get :index, params: { q: tag.name, t: 'ContentWarning' }
         expect(response).to have_http_status(200)
         expect(response.json).to have_key('results')
         expect(response.json['results']).to contain_exactly(tag.as_json.stringify_keys)
@@ -29,14 +29,14 @@ RSpec.describe Api::V1::TagsController do
 
       it "should support gallery group search" do
         tag = create(:gallery_group)
-        get :index, q: tag.name, t: 'GalleryGroup'
+        get :index, params: { q: tag.name, t: 'GalleryGroup' }
         expect(response).to have_http_status(200)
         expect(response.json).to have_key('results')
         expect(response.json['results']).to contain_exactly(tag.as_json.stringify_keys)
       end
 
       it "should handle invalid input", show_in_doc: in_doc do
-        get :index, t: 'b'
+        get :index, params: { t: 'b' }
         expect(response).to have_http_status(422)
         expect(response.json).to have_key('errors')
         expect(response.json['errors'].first['message']).to include("Invalid parameter 't'")
@@ -46,7 +46,7 @@ RSpec.describe Api::V1::TagsController do
         it "should not display unused tags" do
           user = create(:user)
           ungrouped_tag = create(:gallery_group)
-          get :index, q: ungrouped_tag.name, t: 'GalleryGroup', user_id: user.id
+          get :index, params: { q: ungrouped_tag.name, t: 'GalleryGroup', user_id: user.id }
           expect(response).to have_http_status(200)
           expect(response.json).to have_key('results')
           expect(response.json['results']).to eq([])
@@ -56,7 +56,7 @@ RSpec.describe Api::V1::TagsController do
           user = create(:user)
           gal_grouped_tag = create(:gallery_group)
           create(:gallery, user: user, gallery_groups: [gal_grouped_tag])
-          get :index, q: gal_grouped_tag.name, t: 'GalleryGroup', user_id: user.id
+          get :index, params: { q: gal_grouped_tag.name, t: 'GalleryGroup', user_id: user.id }
           expect(response).to have_http_status(200)
           expect(response.json).to have_key('results')
           expect(response.json['results']).to contain_exactly(gal_grouped_tag.as_json.stringify_keys)
@@ -66,7 +66,7 @@ RSpec.describe Api::V1::TagsController do
           user = create(:user)
           char_grouped_tag = create(:gallery_group)
           create(:character, user: user, gallery_groups: [char_grouped_tag])
-          get :index, q: char_grouped_tag.name, t: 'GalleryGroup', user_id: user.id
+          get :index, params: { q: char_grouped_tag.name, t: 'GalleryGroup', user_id: user.id }
           expect(response).to have_http_status(200)
           expect(response.json).to have_key('results')
           expect(response.json['results']).to contain_exactly(char_grouped_tag.as_json.stringify_keys)
@@ -90,7 +90,7 @@ RSpec.describe Api::V1::TagsController do
       group = create(:gallery_group)
       galleries = Array.new(2) { create(:gallery, user: user, gallery_groups: [group]) }
       create(:gallery, gallery_groups: [group])
-      get :show, id: group.id, user_id: user.id
+      get :show, params: { id: group.id, user_id: user.id }
       expect(response).to have_http_status(200)
       expect(response.json['id']).to eq(group.id)
       expect(response.json['text']).to eq(group.name)
@@ -100,14 +100,14 @@ RSpec.describe Api::V1::TagsController do
     [:setting, :label, :content_warning].each do |type|
       it "should support getting #{type} tags" do
         tag = create(type)
-        get :show, id: tag.id
+        get :show, params: { id: tag.id }
         expect(response).to have_http_status(200)
         expect(response.json['id']).to eq(tag.id)
       end
     end
 
     it "should handle invalid tag", show_in_doc: true do
-      get :show, id: 99
+      get :show, params: { id: 99 }
       expect(response).to have_http_status(404)
       expect(response.json).to have_key('errors')
       expect(response.json['errors'][0]['message']).to eq("Tag could not be found")

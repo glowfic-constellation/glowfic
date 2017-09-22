@@ -1,4 +1,4 @@
-class AddGalleryTags < ActiveRecord::Migration
+class AddGalleryTags < ActiveRecord::Migration[4.2]
   def change
     create_table :gallery_tags do |t|
       t.integer :gallery_id, null: false

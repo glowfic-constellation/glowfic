@@ -1,4 +1,4 @@
-class CreateBoardAuthors < ActiveRecord::Migration
+class CreateBoardAuthors < ActiveRecord::Migration[4.2]
   def up
     create_table :board_authors do |t|
       t.integer :user_id, null: false

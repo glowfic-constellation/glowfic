@@ -1,4 +1,4 @@
-class CreateFavorites < ActiveRecord::Migration
+class CreateFavorites < ActiveRecord::Migration[4.2]
   def up
     create_table :favorites do |t|
       t.integer :user_id, null: false

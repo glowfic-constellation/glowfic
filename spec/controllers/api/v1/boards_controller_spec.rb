@@ -22,20 +22,20 @@ RSpec.describe Api::V1::BoardsController do
 
     it "works logged out", show_in_doc: true do
       create_search_boards
-      get :index, q: 'b'
+      get :index, params: { q: 'b' }
       expect(response).to have_http_status(200)
       expect(response.json['results'].count).to eq(2)
     end
 
     it "raises error on invalid page", show_in_doc: true do
-      get :index, page: 'b'
+      get :index, params: { page: 'b' }
       expect(response).to have_http_status(422)
     end
   end
 
   describe "GET show" do
     it "requires valid board", :show_in_doc do
-      get :show, id: 0
+      get :show, params: { id: 0 }
       expect(response).to have_http_status(404)
       expect(response.json['errors'].size).to eq(1)
       expect(response.json['errors'][0]['message']).to eq("Continuity could not be found.")
@@ -45,7 +45,7 @@ RSpec.describe Api::V1::BoardsController do
       board = create(:board)
       section1 = create(:board_section, board: board)
       section2 = create(:board_section, board: board)
-      get :show, id: board.id
+      get :show, params: { id: board.id }
       expect(response).to have_http_status(200)
       expect(response.json['id']).to eq(board.id)
       expect(response.json['board_sections'].size).to eq(2)
@@ -58,7 +58,7 @@ RSpec.describe Api::V1::BoardsController do
       board = create(:board)
       section1 = create(:board_section, board: board)
       section2 = create(:board_section, board: board)
-      get :show, id: board.id
+      get :show, params: { id: board.id }
       expect(response).to have_http_status(200)
       expect(response.json['id']).to eq(board.id)
       expect(response.json['board_sections'].size).to eq(2)
@@ -74,7 +74,7 @@ RSpec.describe Api::V1::BoardsController do
       section1.save
       section2.section_order = 0
       section2.save
-      get :show, id: board.id
+      get :show, params: { id: board.id }
       expect(response).to have_http_status(200)
       expect(response.json['id']).to eq(board.id)
       expect(response.json['board_sections'].size).to eq(2)

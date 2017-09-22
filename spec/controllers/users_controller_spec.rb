@@ -61,7 +61,7 @@ RSpec.describe UsersController do
     end
 
     it "requires valid fields" do
-      post :create, secret: "ALLHAILTHECOIN"
+      post :create, params: { secret: "ALLHAILTHECOIN" }
       expect(response).to render_template(:new)
       expect(flash[:error][:message]).to eq("There was a problem completing your sign up.")
       expect(assigns(:user)).not_to be_valid
@@ -72,7 +72,7 @@ RSpec.describe UsersController do
 
     it "rejects short passwords" do
       user = build(:user).attributes.with_indifferent_access.merge(password: 'short', password_confirmation: 'short')
-      post :create, secret: 'ALLHAILTHECOIN', user: user
+      post :create, params: { secret: 'ALLHAILTHECOIN' }.merge(user: user)
       expect(response).to render_template(:new)
       expect(flash[:error][:message]).to eq('There was a problem completing your sign up.')
       expect(flash[:error][:array]).to eq(['Password is too short (minimum is 6 characters)'])
@@ -85,7 +85,7 @@ RSpec.describe UsersController do
       user = build(:user).attributes.with_indifferent_access.merge(password: pass, password_confirmation: pass, email: 'testemail@example.com')
 
       expect {
-        post :create, {secret: "ALLHAILTHECOIN"}.merge(user: user)
+        post :create, params: { secret: "ALLHAILTHECOIN" }.merge(user: user)
       }.to change{User.count}.by(1)
       expect(response).to redirect_to(root_url)
       expect(flash[:success]).to eq("User created! You have been logged in.")
@@ -101,7 +101,7 @@ RSpec.describe UsersController do
       pass = 'this is a long password to test the password validation feature and to see if it accepts this'
       user = build(:user).attributes.with_indifferent_access.merge(password: pass, password_confirmation: pass)
       expect {
-        post :create, {secret: 'ALLHAILTHECOIN'}.merge(user: user)
+        post :create, params: { secret: 'ALLHAILTHECOIN' }.merge(user: user)
       }.to change{User.count}.by(1)
       expect(response).to redirect_to(root_url)
       expect(flash[:success]).to eq("User created! You have been logged in.")
@@ -113,28 +113,28 @@ RSpec.describe UsersController do
 
   describe "GET show" do
     it "requires valid user" do
-      get :show, id: -1
+      get :show, params: { id: -1 }
       expect(response).to redirect_to(users_url)
       expect(flash[:error]).to eq("User could not be found.")
     end
 
     it "works when logged out" do
       user = create(:user)
-      get :show, id: user.id
+      get :show, params: { id: user.id }
       expect(response.status).to eq(200)
     end
 
     it "works when logged in as someone else" do
       user = create(:user)
       login
-      get :show, id: user.id
+      get :show, params: { id: user.id }
       expect(response.status).to eq(200)
     end
 
     it "works when logged in as yourself" do
       user = create(:user)
       login_as(user)
-      get :show, id: user.id
+      get :show, params: { id: user.id }
       expect(response.status).to eq(200)
     end
 
@@ -142,7 +142,7 @@ RSpec.describe UsersController do
       user = create(:user)
       posts = Array.new(3) { create(:post, user: user) }
       create(:post)
-      get :show, id: user.id
+      get :show, params: { id: user.id }
       expect(assigns(:page_title)).to eq(user.username)
       expect(assigns(:posts).to_a).to match_array(posts)
     end
@@ -150,7 +150,7 @@ RSpec.describe UsersController do
 
   describe "GET edit" do
     it "requires login" do
-      get :edit, id: -1
+      get :edit, params: { id: -1 }
       expect(response).to redirect_to(root_url)
       expect(flash[:error]).to eq("You must be logged in to view that page.")
     end
@@ -158,14 +158,14 @@ RSpec.describe UsersController do
     it "requires own user" do
       user = create(:user)
       login
-      get :edit, id: user.id
+      get :edit, params: { id: user.id }
       expect(response).to redirect_to(boards_url)
       expect(flash[:error]).to eq('You do not have permission to edit that user.')
     end
 
     it "succeeds" do
       user_id = login
-      get :edit, id: user_id
+      get :edit, params: { id: user_id }
       expect(response.status).to eq(200)
     end
 
@@ -174,14 +174,14 @@ RSpec.describe UsersController do
 
       it "displays options" do
         user_id = login
-        get :edit, id: user_id
+        get :edit, params: { id: user_id }
       end
     end
   end
 
   describe "PUT update" do
     it "requires login" do
-      put :update, id: -1
+      put :update, params: { id: -1 }
       expect(response).to redirect_to(root_url)
       expect(flash[:error]).to eq("You must be logged in to view that page.")
     end
@@ -189,7 +189,7 @@ RSpec.describe UsersController do
     it "requires valid params" do
       user = create(:user)
       login_as(user)
-      put :update, id: user.id, user: {moiety: 'A'}
+      put :update, params: { id: user.id, user: {moiety: 'A'} }
       expect(response).to redirect_to(edit_user_url(user))
       expect(flash[:error]).to eq('There was a problem with your changes.')
     end
@@ -198,7 +198,7 @@ RSpec.describe UsersController do
       user1 = create(:user)
       user2 = create(:user)
       login_as(user1)
-      put :update, id: user2.id, user: {email: 'bademail@example.com'}
+      put :update, params: { id: user2.id, user: {email: 'bademail@example.com'} }
       expect(response).to redirect_to(boards_url)
       expect(flash[:error]).to eq('You do not have permission to edit that user.')
       expect(user2.reload.email).not_to eq('bademail@example.com')
@@ -223,7 +223,7 @@ RSpec.describe UsersController do
         expect(user.public_send(key)).not_to eq(value)
       end
 
-      put :update, id: user.id, user: user_details
+      put :update, params: { id: user.id, user: user_details }
       expect(response).to redirect_to(edit_user_url(user))
       expect(flash[:success]).to eq('Changes saved successfully.')
 
@@ -238,7 +238,7 @@ RSpec.describe UsersController do
       user = create(:user, username: 'user123', password: pass)
       expect(user.authenticate(pass)).to eq(true)
       login_as(user)
-      put :update, id: user.id, user: {username: 'user124'}
+      put :update, params: { id: user.id, user: {username: 'user124'} }
       expect(response).to redirect_to(edit_user_url(user))
       expect(flash[:success]).to eq('Changes saved successfully.')
 
@@ -261,20 +261,20 @@ RSpec.describe UsersController do
 
     it "finds user" do
       user = create(:user)
-      post :username, username: user.username
+      post :username, params: { username: user.username }
       expect(response.json['username_free']).not_to eq(true)
     end
 
     it "finds free username" do
       user = create(:user)
-      post :username, username: user.username + 'nope'
+      post :username, params: { username: user.username + 'nope' }
       expect(response.json['username_free']).to eq(true)
     end
   end
 
   describe "PUT password" do
     it "requires login" do
-      put :password, id: -1
+      put :password, params: { id: -1 }
       expect(response).to redirect_to(root_url)
       expect(flash[:error]).to eq("You must be logged in to view that page.")
     end
@@ -282,7 +282,7 @@ RSpec.describe UsersController do
     it "requires own user" do
       user = create(:user)
       login
-      put :password, id: user.id
+      put :password, params: { id: user.id }
       expect(response).to redirect_to(boards_url)
       expect(flash[:error]).to eq('You do not have permission to edit that user.')
     end
@@ -294,7 +294,7 @@ RSpec.describe UsersController do
       user = create(:user, password: 'testpass')
       login_as(user)
 
-      put :password, id: user.id, old_password: fakepass, user: {password: newpass, password_confirmation: newpass}
+      put :password, params: { id: user.id, old_password: fakepass, user: {password: newpass, password_confirmation: newpass} }
 
       expect(response).to render_template(:edit)
       expect(flash[:error]).to eq('Incorrect password entered.')
@@ -310,7 +310,7 @@ RSpec.describe UsersController do
       user = create(:user, password: pass)
       login_as(user)
 
-      put :password, id: user.id, old_password: pass, user: {password: newpass, password_confirmation: newpass}
+      put :password, params: { id: user.id, old_password: pass, user: {password: newpass, password_confirmation: newpass} }
 
       expect(response).to render_template(:edit)
       expect(flash[:error][:message]).to eq('There was a problem with your changes.')
@@ -324,7 +324,7 @@ RSpec.describe UsersController do
       user = create(:user, password: pass)
       login_as(user)
 
-      put :password, id: user.id, old_password: pass, user: {password: newpass, password_confirmation: 'wrongconfirmation'}
+      put :password, params: { id: user.id, old_password: pass, user: {password: newpass, password_confirmation: 'wrongconfirmation'} }
 
       expect(response).to render_template(:edit)
       expect(flash[:error][:message]).to eq('There was a problem with your changes.')
@@ -339,7 +339,7 @@ RSpec.describe UsersController do
       user = create(:user, password: pass)
       login_as(user)
 
-      put :password, id: user.id, old_password: pass, user: {password: newpass, password_confirmation: newpass}
+      put :password, params: { id: user.id, old_password: pass, user: {password: newpass, password_confirmation: newpass} }
 
       expect(response).to redirect_to(edit_user_url(user))
       expect(flash[:success]).to eq('Changes saved successfully.')
@@ -375,7 +375,7 @@ RSpec.describe UsersController do
       User.all.each do |user|
         create(:user, username: user.username.upcase + 'c')
       end
-      get :search, commit: 'Search', username: 'b'
+      get :search, params: { commit: 'Search', username: 'b' }
       expect(response).to have_http_status(200)
       expect(assigns(:search_results)).to be_present
       expect(assigns(:search_results).count).to eq(6)

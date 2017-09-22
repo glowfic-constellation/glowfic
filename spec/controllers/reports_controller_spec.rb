@@ -16,13 +16,13 @@ RSpec.describe ReportsController do
 
   describe "GET show" do
     it "requires valid type" do
-      get :show, id: -1
+      get :show, params: { id: -1 }
       expect(response).to redirect_to(reports_url)
       expect(flash[:error]).to eq("Could not identify the type of report.")
     end
 
     it "succeeds with daily" do
-      get :show, id: 'daily'
+      get :show, params: { id: 'daily' }
       expect(response).to have_http_status(200)
     end
 
@@ -32,7 +32,7 @@ RSpec.describe ReportsController do
       post.mark_read(user)
       time = post.last_read(user)
       login_as(user)
-      get :show, id: 'daily'
+      get :show, params: { id: 'daily' }
       expect(response).to have_http_status(200)
       expect(assigns(:board_views)).to be_empty
       expect(assigns(:opened_ids)).to match_array([post.id])
@@ -41,7 +41,7 @@ RSpec.describe ReportsController do
     end
 
     it "succeeds with monthly" do
-      get :show, id: 'monthly'
+      get :show, params: { id: 'monthly' }
       expect(response).to have_http_status(200)
     end
 
@@ -52,7 +52,7 @@ RSpec.describe ReportsController do
         3.times do create(:post) end
         Post.last.user.update_attributes(moiety: 'abcdef')
         create(:post, num_replies: 4, created_at: 2.days.ago)
-        get :show, id: 'daily'
+        get :show, params: { id: 'daily' }
       end
 
       it "works with logged in" do
@@ -60,7 +60,7 @@ RSpec.describe ReportsController do
         DailyReport.mark_read(user, 3.day.ago.to_date)
         PostView.create(user: user, post: create(:post))
         login_as(user)
-        get :show, id: 'daily'
+        get :show, params: { id: 'daily' }
       end
     end
 
@@ -75,7 +75,7 @@ RSpec.describe ReportsController do
           it "does not mark read for today's unfinished report" do
             expect(user.report_view).to be_nil
             login_as(user)
-            get :show, id: 'daily'
+            get :show, params: { id: 'daily' }
             expect(user.reload.report_view).to be_nil
           end
 
@@ -85,7 +85,7 @@ RSpec.describe ReportsController do
             viewed_time = 2.days.ago
             expect_time = viewed_time
 
-            get :show, id: 'daily', day: viewed_time.to_date.to_s
+            get :show, params: { id: 'daily', day: viewed_time.to_date.to_s }
 
             user.reload
             expect(user.report_view).not_to be_nil
@@ -96,7 +96,7 @@ RSpec.describe ReportsController do
             user.update_attributes(ignore_unread_daily_report: true)
             expect(user.report_view).to be_nil
             login_as(user)
-            get :show, id: 'daily', day: 2.days.ago.to_date.to_s
+            get :show, params: { id: 'daily', day: 2.days.ago.to_date.to_s }
             expect(user.report_view).to be_nil
           end
 
@@ -111,7 +111,7 @@ RSpec.describe ReportsController do
             end
 
             login_as(user)
-            get :show, id: 'daily', day: viewed_time.to_date.to_s
+            get :show, params: { id: 'daily', day: viewed_time.to_date.to_s }
 
             user.reload
             expect(user.report_view).not_to be_nil
@@ -129,7 +129,7 @@ RSpec.describe ReportsController do
             end
 
             login_as(user)
-            get :show, id: 'daily', day: viewed_time.to_date.to_s
+            get :show, params: { id: 'daily', day: viewed_time.to_date.to_s }
 
             user.reload
             expect(user.report_view).not_to be_nil

@@ -1,4 +1,4 @@
-class CreatePostViewers < ActiveRecord::Migration
+class CreatePostViewers < ActiveRecord::Migration[4.2]
   def change
     create_table :post_viewers do |t|
       t.integer :post_id, :null => false

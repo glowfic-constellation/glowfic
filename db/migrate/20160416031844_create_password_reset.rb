@@ -1,4 +1,4 @@
-class CreatePasswordReset < ActiveRecord::Migration
+class CreatePasswordReset < ActiveRecord::Migration[4.2]
   def change
     create_table :password_resets do |t|
       t.integer :user_id, null: false

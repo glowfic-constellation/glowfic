@@ -1,4 +1,4 @@
-class ChangeTimestampsToUtc < ActiveRecord::Migration
+class ChangeTimestampsToUtc < ActiveRecord::Migration[4.2]
   TABLES = {
     audits: [:created_at],
     board_authors: [:created_at, :updated_at],
