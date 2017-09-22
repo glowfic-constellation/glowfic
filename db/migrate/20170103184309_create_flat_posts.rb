@@ -13,7 +13,7 @@ class CreateFlatPosts < ActiveRecord::Migration[4.2]
       fp.save!
     end
     ids.each do |post_id|
-      Resque.enqueue(GenerateFlatPostJob, post_id)
+      GenerateFlatPostJob.perform_later(post_id)
     end
   end
 

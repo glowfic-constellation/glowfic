@@ -1,10 +1,11 @@
 require "spec_helper"
 
 RSpec.describe GenerateFlatPostJob do
-  before(:each) { ResqueSpec.reset! }
+  include ActiveJob::TestHelper
+  before(:each) { clear_enqueued_jobs }
   it "does nothing with invalid post id" do
     expect($redis).not_to receive(:set)
-    GenerateFlatPostJob.perform(-1)
+    GenerateFlatPostJob.perform_now(-1)
   end
 
   it "quits if lock present" do
@@ -25,7 +26,7 @@ RSpec.describe GenerateFlatPostJob do
     post = create(:post)
     expect(post.flat_post.content).to be_nil
 
-    GenerateFlatPostJob.perform(post.id)
+    GenerateFlatPostJob.perform_now(post.id)
 
     expect(post.flat_post.reload.content).not_to be_nil
     expect($redis.get(GenerateFlatPostJob.lock_key(post.id))).to be_nil
@@ -36,15 +37,16 @@ RSpec.describe GenerateFlatPostJob do
     $redis.set(GenerateFlatPostJob.lock_key(post.id), true)
 
     expect_any_instance_of(FlatPost).to receive(:save).and_raise(Exception)
-    ResqueSpec.reset!
-    Resque.enqueue(GenerateFlatPostJob, post.id)
+    clear_enqueued_jobs
 
     begin
-      ResqueSpec.perform_next(GenerateFlatPostJob.queue)
+      GenerateFlatPostJob.perform_now(post.id)
     rescue Exception
+    else
+      abort("must raise error")
     end
 
-    expect(GenerateFlatPostJob).to have_queued(post.id).in(:high)
+    expect(GenerateFlatPostJob).to have_been_enqueued.with(post.id).on_queue('high')
     expect($redis.get(GenerateFlatPostJob.lock_key(post.id))).to be_nil
   end
 end

@@ -1,13 +1,13 @@
-class GenerateFlatPostJob < BaseJob
-  @queue = :high
+class GenerateFlatPostJob < ApplicationJob
+  queue_as :high
   @retry_limit = 5
   @expire_retry_key_after = 3600
 
-  def self.process(post_id)
+  def perform(post_id)
     Rails.logger.info("[GenerateFlatPostJob] updating flat post for post #{post_id}")
     return unless (post = Post.find_by_id(post_id))
 
-    lock_key = self.lock_key(post_id)
+    lock_key = self.class.lock_key(post_id)
 
     begin
       replies = post.replies
