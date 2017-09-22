@@ -4,6 +4,9 @@ class ApplicationJob < ActiveJob::Base
 
   give_up_callback :notify_exception
 
+  give_up_callback do |e| puts e end
+  try_again_callback do |e| puts e end
+
   around_perform :retry_on_term
 
   def retry_on_term
