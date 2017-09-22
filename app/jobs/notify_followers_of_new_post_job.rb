@@ -1,7 +1,5 @@
 class NotifyFollowersOfNewPostJob < ApplicationJob
   queue_as :notifier
-  @retry_limit = 5
-  @expire_retry_key_after = 3600
 
   def perform(post_id)
     return unless (post = Post.find_by_id(post_id))

@@ -2,8 +2,6 @@ require "#{Rails.root}/lib/post_scraper"
 
 class ScrapePostJob < ApplicationJob
   queue_as :low
-  @retry_limit = 3
-  @expire_retry_key_after = 3600
 
   def perform(url, board_id, section_id, status, threaded, importer_id)
     scraper = PostScraper.new(url, board_id, section_id, status, threaded)
