@@ -12,9 +12,6 @@
 # the additional setup, and require it from the spec files that actually need
 # it.
 #
-# The `.rspec` file also contains a few flags that are not defaults but that
-# users commonly want.
-#
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 
 # Don't calculate coverage when running single tests or recording API examples
@@ -98,7 +95,7 @@ RSpec.configure do |config|
     # Use the documentation formatter for detailed output,
     # unless a formatter has already been configured
     # (e.g. via a command-line flag).
-    config.default_formatter = 'doc'
+    config.default_formatter = "doc"
   end
 =end
 
@@ -141,7 +138,7 @@ end
 RSpec::Matchers.define_negated_matcher :not_change, :change
 
 # Monkey patches the controller response objects to return JSON
-module ActionController
+module ActionDispatch
   class TestResponse
     def json
       @json ||= JSON.parse(self.body)

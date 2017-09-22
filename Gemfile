@@ -4,7 +4,7 @@ ruby '2.4.2'
 
 gem 'api-pagination'
 gem 'apipie-rails'
-gem 'audited-activerecord', '~> 4.0'
+gem 'audited', '~> 4.5'
 gem 'aws-sdk-s3', '~> 1'
 #gem 'aws-sdk-cloudfront', '~> 1'
 gem 'browser'
@@ -21,7 +21,7 @@ gem 'nilify_blanks'
 gem 'nokogiri'
 gem 'pg', '~> 0.21.0'
 gem 'pg_search'
-gem 'rails', '~> 4.2.9'
+gem 'rails', '~> 5.0.6'
 gem 'rack-pratchett'
 gem 'redis-rails'
 gem 'redis', '~> 3.0'
@@ -46,7 +46,7 @@ group :production do
 end
 
 group :development do
-  gem 'web-console', '~> 2.0'
+  gem 'web-console', '~> 3.0'
   gem 'rack-mini-profiler'
   gem 'memory_profiler'
 end
@@ -66,6 +66,7 @@ group :test do
   gem 'codeclimate-test-reporter', '~> 1.0.0'
   gem 'factory_girl_rails'
   gem 'json'
+  gem 'rails-controller-testing'
   gem 'resque_spec'
   gem 'simplecov'
   gem 'timecop'
