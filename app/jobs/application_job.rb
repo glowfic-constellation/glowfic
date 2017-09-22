@@ -4,7 +4,11 @@ class ApplicationJob < ActiveJob::Base
 
   give_up_callback :notify_exception
 
-  rescue_from(Resque::TermException) do
+  around_perform :retry_on_term
+
+  def retry_on_term
+    yield
+  rescue Resque::TermException
     Rails.logger.error("Performing #{self.class} was terminated. Retrying...")
     retry_job
   end
