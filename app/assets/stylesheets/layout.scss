@@ -1,67 +1,139 @@
+/* Variables */
+/* - font sizes */
+$font_size_header: 16px; /* header */
+$font_size_main: 16px; /* main content */
+$font_size_small: 14px; /* header-links (mobile mode), table elements */
+$font_size_mini: 10px; /* time-loaded */
+
+/* - font colors */
+$font_color_bright: #FEFEFE;
+$font_color_bright_hover: #8B8687;
+$font_color_dark: #444444;
+
+/* - background colors */
+$bg_color_header_logostrip: #3F7055; /* green strip for logo */
+$bg_color_header_midstrip: #3E384F; /* dark middle strip of header*/
+$bg_color_header_botstrip: #B9B6AD; /* bottom strip of header */
+
+$bg_color_flash_error: #FFDDDD;
+$bg_color_flash_success: #DDEEDD;
+$bg_color_flash_inbox: #DDDDEE;
+
 /* Header Menus */
-#header { background-color: #B9B6AD; color: #eae9e9; vertical-align: top; text-align: left; position: relative; overflow: hidden; }
-#header #user-info { float: left; text-align: center; background-color: #3e384f; padding: 0.5em; font-weight: bold; font-size: 16px; }
-#header #user-info .no-img { height: 100px; width: 100px; margin: 5px; display: block; padding: 0; }
-#header #user-info img { margin: 5px; width: 100px; height: 100px; }
-#header #header-right { overflow: hidden; }
-#header #logo { text-align: right; background-color: #3f7055; padding: 0.5em; overflow: hidden; }
-#header #logo img { padding: 0.5em 0.5em 0 0; }
-#header #nav-top { padding: 0.5em; background-color: #3e384f; padding-right: 1em; overflow: hidden; }
-#header #nav-top button, #header #nav-top .button { color: #444444; font-size: 13px; margin-right: 10px; }
-#header #nav-top input { margin: 0 0 0 10px; }
-#header #nav-top #remember_me { vertical-align: middle; }
-#header #header-logout { margin-left: 1em; }
-#header ul { font-size: 16px; padding: 0; text-align:left; margin-right: 0.5em; display: inline; vertical-align: middle; }
-#header li { display: inline; padding: 0; white-space: nowrap; }
-#header li { margin-left: 1em; }
-#header li a, #header a { color: #FEFEFE; font-weight: bold; font-size: 16px; }
-#header li a:hover { color: #8B8687; }
-#header #nav-bottom { color: #101010; text-align: left; padding: 0.5em 0; background-color: #B9B6AD; }
-#header #nav-bottom a { font-weight: normal; }
-#header #header-collaspe { display: none; }
+#header {
+  background-color: #B9B6AD;
+  color: $font_color_bright;
+  font-size: $font_size_header;
+  vertical-align: middle;
+  overflow: hidden;
 
-#header #header-forms, #header #header-remember, #header #header-buttons { display: inline; }
-#header #header-links { display: none; }
+  ul {
+    display: inline;
+    margin: 0 0.5em 0 0;
+    padding: 0;
+  }
+  li {
+    display: inline-block;
+    margin: 0 0 0 1em;
+    padding: 0;
+    white-space: nowrap;
+  }
 
-@media (max-width: 700px) {
-  #header #button-break { display: block; clear: both; }
-  #header #header-buttons { display: block; }
+  a { color: $font_color_bright; }
+  a:hover { color: $font_color_bright_hover; }
 }
-@media (max-width: 600px) {
-  #header { background-color: #3e384f; }
-  #header #nav-bottom { overflow: hidden; }
-  #header #nav-bottom ul { display: inline-block; margin: 0; }
-  #header #header-collapse { clear: both; }
-  #header #header-remember, #header #header-forms { display: block; }
+
+#logo {
+  background-color: $bg_color_header_logostrip;
+  padding: 0.5em;
+  overflow: hidden; /* so it contains the floating image */
+
+  img {
+    float: right;
+    padding: 0.5em 0.5em 0.3em 0;
+  }
 }
-@media (max-width: 500px) {
-  #header #header-logout:before { content: '\a'; white-space: pre; }
+
+#user-info {
+  float: left;
+  padding: 0.5em;
+  background-color: $bg_color_header_midstrip;
+  font-weight: bold;
+  text-align: center;
+
+  .no-img, img {
+    display: inline-block;
+    height: 100px;
+    width: 100px;
+    margin: 5px;
+    padding: 0;
+  }
 }
+
+#nav-top {
+  padding: 0.5em 1em 0.5em 0.5em;
+  background-color: $bg_color_header_midstrip;
+  font-weight: bold;
+
+  button, .button {
+    margin-right: 10px;
+    color: $font_color_dark;
+    font-size: 13px;
+    font-weight: bold; /* not redundant: used for login form */
+  }
+  input {
+    vertical-align: middle; /* for login form */
+  }
+}
+#header-logout { margin-left: 1em; }
+#header-form {
+  font-weight: normal;
+  display: inline;
+  input { margin: 2px 0; }
+  #header-remember, #header-forms { margin-right: 10px; }
+}
+#header-forms, #header-remember, #header-buttons, #header-buttons-links { display: inline; }
+#header-buttons-links, #header-remember { white-space: nowrap; }
+#header-buttons-links a { font-weight: bold; }
+
+#nav-bottom {
+  padding: 0.6em 0;
+  background-color: $bg_color_header_botstrip;
+  vertical-align: middle;
+}
+#header-links {
+  display: none; /* hidden by default, shows up on narrow screens */
+  vertical-align: middle;
+  font-size: $font_size_small;
+  height: 20px;
+  a { font-weight: bold; }
+}
+
 @media (max-width: 400px) {
-  #header #user-info img, #header #user-info .no-img { display: none; }
-  #header #header-forms, #header #header-remember, #header #header-buttons { display: none; }
-  #header #header-links { display: inline-block; height: 20px; }
-  #header #header-links a, #header #header-links span { vertical-align: middle; font-size: 14px; }
-  #header #logo { text-align: left; }
-  #header #logo img { padding-bottom: 2px; padding-top: 2px; height: 20px; float: right; }
-  #content table.form-table { width: 100%; }
+  #user-info img, #user-info .no-img { display: none; }
+  #header-form { display: none; }
+  #header-links { display: inline-block; }
+  #logo img { padding: 0.2em; height: 20px; }
 }
 
 /* Main Content */
-#content { padding: 20px; font-size: 16px; line-height: 20px; text-align: left; position: relative; }
+#content { padding: 20px; font-size: $font_size_main; line-height: 20px; text-align: left; position: relative; }
 @media (max-width: 600px) {
   #content { padding: 10px; }
 }
 @media (max-width: 500px) {
   #content { padding: 5px; }
 }
+@media (max-width: 400px) {
+  #content table.form-table { width: 100%; }
+}
 
 /* Flash Displays */
 .flash { padding: 10px 20px; }
-.flash.error { background-color: #FFDDDD; }
-.flash.error ul { margin: 0; margin-top: 5px; }
-.flash.success { background-color: #DDEEDD; }
-.flash.inbox { background-color: #DDDDEE; }
+.flash ul { margin: 0; margin-top: 5px; }
+.flash.error { background-color: $bg_color_flash_error; }
+.flash.success { background-color: $bg_color_flash_success; }
+.flash.inbox { background-color: $bg_color_flash_inbox; }
 
 /* Login / logout warning */
 #login_status_warning { position: absolute; top: 0; width: 100%; box-sizing: border-box; }
