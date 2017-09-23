@@ -208,6 +208,7 @@ RSpec.describe PostsController do
     end
 
     context "scrape" do
+      include ActiveJob::TestHelper
       it "requires valid user" do
         user = create(:user, id: PostsController::SCRAPE_USERS.max + 1)
         login_as(user)
@@ -250,7 +251,7 @@ RSpec.describe PostsController do
       end
 
       it "requires extant usernames" do
-        ResqueSpec.reset!
+        clear_enqueued_jobs
         user = create(:user, id: PostsController::SCRAPE_USERS.first)
         login_as(user)
         url = 'http://wild-pegasus-appeared.dreamwidth.org/403.html?style=site&view=flat'
@@ -260,11 +261,11 @@ RSpec.describe PostsController do
         expect(response).to render_template(:new)
         expect(flash[:error][:message]).to start_with("The following usernames were not recognized")
         expect(flash[:error][:array]).to include("wild_pegasus_appeared")
-        expect(ScrapePostJob).to have_queue_size_of(0)
+        expect(ScrapePostJob).not_to have_been_enqueued
       end
 
       it "scrapes" do
-        ResqueSpec.reset!
+        clear_enqueued_jobs
         user = create(:user, id: PostsController::SCRAPE_USERS.first)
         login_as(user)
         url = 'http://www.dreamwidth.org'
@@ -272,7 +273,7 @@ RSpec.describe PostsController do
         post :create, params: { button_import: true, dreamwidth_url: url }
         expect(response).to redirect_to(posts_url)
         expect(flash[:success]).to eq("Post has begun importing. You will be updated on progress via site message.")
-        expect(ScrapePostJob).to have_queue_size_of(1)
+        expect(ScrapePostJob).to have_been_enqueued.with(url, nil, nil, nil, nil, user.id).on_queue('low')
       end
     end
 

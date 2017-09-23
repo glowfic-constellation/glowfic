@@ -290,7 +290,7 @@ class PostsController < WritableController
       return render action: :new
     end
 
-    Resque.enqueue(ScrapePostJob, params[:dreamwidth_url], params[:board_id], params[:section_id], params[:status], params[:threaded], current_user.id)
+    ScrapePostJob.perform_later(params[:dreamwidth_url], params[:board_id], params[:section_id], params[:status], params[:threaded], current_user.id)
     flash[:success] = "Post has begun importing. You will be updated on progress via site message."
     redirect_to posts_path
   end

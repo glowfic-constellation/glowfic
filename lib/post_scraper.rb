@@ -42,7 +42,7 @@ class PostScraper < Object
       end
       finalize_post_data
     end
-    Resque.enqueue(GenerateFlatPostJob, @post.id)
+    GenerateFlatPostJob.perform_later(@post.id)
     @post
   end
 
@@ -69,7 +69,7 @@ class PostScraper < Object
       end
       finalize_post_data
     end
-    Resque.enqueue(GenerateFlatPostJob, @post.id)
+    GenerateFlatPostJob.perform_later(@post.id)
     @post
   end
 

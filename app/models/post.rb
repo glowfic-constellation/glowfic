@@ -297,6 +297,6 @@ class Post < ApplicationRecord
 
   def notify_followers
     return if is_import
-    Resque.enqueue(NotifyFollowersOfNewPostJob, self.id)
+    NotifyFollowersOfNewPostJob.perform_later(self.id)
   end
 end

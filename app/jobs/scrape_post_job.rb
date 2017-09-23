@@ -1,14 +1,12 @@
 require "#{Rails.root}/lib/post_scraper"
 
-class ScrapePostJob < BaseJob
-  @queue = :low
-  @retry_limit = 3
-  @expire_retry_key_after = 3600
+class ScrapePostJob < ApplicationJob
+  queue_as :low
 
-  def self.process(url, board_id, section_id, status, threaded, importer_id)
+  def perform(url, board_id, section_id, status, threaded, importer_id)
     scraper = PostScraper.new(url, board_id, section_id, status, threaded)
     scraped_post = scraper.scrape!
-    Message.send_site_message(importer_id, 'Post import succeeded', "Your post was successfully imported! #{view_post(scraped_post.id)}")
+    Message.send_site_message(importer_id, 'Post import succeeded', "Your post was successfully imported! #{self.class.view_post(scraped_post.id)}")
   end
 
   def self.notify_exception(exception, url, board_id, section_id, status, threaded, importer_id)

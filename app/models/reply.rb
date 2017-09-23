@@ -96,6 +96,6 @@ class Reply < ApplicationRecord
     return if $redis.get(lock_key)
     $redis.set(lock_key, true)
 
-    Resque.enqueue(GenerateFlatPostJob, post_id)
+    GenerateFlatPostJob.perform_later(post_id)
   end
 end
