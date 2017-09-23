@@ -1,23 +1,4 @@
-/* Variables */
-/* - font sizes */
-$font_size_header: 16px; /* header */
-$font_size_main: 16px; /* main content */
-$font_size_small: 14px; /* header-links (mobile mode), table elements */
-$font_size_mini: 10px; /* time-loaded */
-
-/* - font colors */
-$font_color_bright: #FEFEFE;
-$font_color_bright_hover: #8B8687;
-$font_color_dark: #444444;
-
-/* - background colors */
-$bg_color_header_logostrip: #3F7055; /* green strip for logo */
-$bg_color_header_midstrip: #3E384F; /* dark middle strip of header*/
-$bg_color_header_botstrip: #B9B6AD; /* bottom strip of header */
-
-$bg_color_flash_error: #FFDDDD;
-$bg_color_flash_success: #DDEEDD;
-$bg_color_flash_inbox: #DDDDEE;
+@import 'variables';
 
 /* Header Menus */
 #header {
