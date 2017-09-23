@@ -6,9 +6,9 @@ body { background-color: #6C697C; }
 #selected-gallery, .time-loaded { color: #DADADA; }
 
 #content th, .list-header, .post-header { background-color: #13132F; }
-#content .sub { color: #F3F3F3; }
-#content .sub, .post-navheader, .subber { background-color: #182152; }
-#content .subber, #content th.subber { background-color: #13132F; color: #F3F3F3; }
+.sub { color: #F3F3F3; }
+.sub, .post-navheader, .breadcrumbs { background-color: #182152; }
+.subber { background-color: #13132F; color: #F3F3F3; }
 #content .beige { background-color: #484357; color: #DADADA; }
 #content .beige a, #content th a, .list-header a, .post-header a { color: #B5AFCB; }
 #content .beige a:visited, #content th a:visited, .list-header a:visited, .post-header a:visited { color: #9C9AA4; }
@@ -21,7 +21,7 @@ body { background-color: #6C697C; }
 #content .odd, .post-reply:nth-child(odd), .post-post + #post-editor, .post-post + a + #post-editor, .even blockquote, .post-post blockquote, .post-reply:nth-child(even) blockquote { background-color: #D8D8D8; }
 
 .post-navheader .view-button, .view-button.selected, .view-button, .link-box.green, .link-box.blue, .link-box.red { background-color: #463C65; }
-#content .beige .link-box, #content .subber .link-box, .subber .link-box { background-color: #66608B; }
+#content .beige .link-box, .flash.breadcrumbs .link-box, .subber .link-box { background-color: #66608B; }
 .green { background-color: #D8D8D8; }
 #post-editor .green { background-color: #484357; color: #DADADA; }
 .post-subheader { background-color: #484357; color: #F3F3F3; }

@@ -115,23 +115,33 @@
 .flash.error { background-color: $bg_color_flash_error; }
 .flash.success { background-color: $bg_color_flash_success; }
 .flash.inbox { background-color: $bg_color_flash_inbox; }
+.flash.breadcrumbs { background-color: $bg_color_flash_breadcrumbs; }
 
 /* Login / logout warning */
 #login_status_warning { position: absolute; top: 0; width: 100%; box-sizing: border-box; }
 
 /* List Tables */
-#content table { width: 100%; }
-#content th, .list-header { background-color: #8B8687; color: #EEEEEE; padding: 15px; font-size: 18px; font-weight: normal; }
-#content .sub { padding: 10px; font-size: 16px; color: #3E384F; }
-#content th.subber { padding: 10px 25px; color: black; font-size: 15px; font-weight: bold; }
-#content th.subber a, .subber a:visited { color: #FFFFFF; }
-#content th.subber input { margin: 0; }
-#content th.subber .link-box { font-size: 15px; }
-#content td, ul.table-list li { font-size: 14px; }
-#content td.icon-box { padding: 10px 0 10px 10px; }
-
+table { width: 100%; }
+th, .list-header { background-color: #8B8687; color: #EEEEEE; padding: 15px; font-size: 18px; font-weight: normal; }
+td, .table-list li { font-size: 14px; }
 .list-header { box-sizing: border-box; }
-ul.table-list { list-style: none; padding: 0; margin: 0; }
+.table-list { list-style: none; padding: 0; margin: 0; }
+.sub {
+  padding: 10px;
+  background-color: $bg_color_sub;
+  color: #3E384F;
+  font-size: 16px;
+}
+.subber {
+  padding: 10px 25px;
+  background-color: $bg_color_subber;
+  color: black;
+  font-size: 15px;
+  font-weight: bold;
+  a, a:visited { color: #FFFFFF; }
+  input { margin: 0; }
+  .link-box { font-size: 15px; }
+}
 
 /* Form Tables */
 #content table.form-table { text-align: center; width: 400px; margin: 0; border-spacing: 0; }
@@ -212,7 +222,7 @@ ul.table-list { list-style: none; padding: 0; margin: 0; }
 .select2 ul { padding: 0; }
 .field_with_errors { display: inline-block; } /* Keeps forms from whitespacing weirdly when errors present */
 input.checkbox { height: 12px; margin: 0; vertical-align: middle; } /* Keeps unread table from padding excessively for the checkboxes */
-#signup th.sub { width: 90px; }
+#signup .sub { width: 90px; }
 #content table.form-table input[type='checkbox'] { margin: 0 1px; height: 18px; width: 18px; vertical-align: middle; }
 td.continuity-spacer { height: 20px; }
 .post-ignored { opacity: 0.3; }

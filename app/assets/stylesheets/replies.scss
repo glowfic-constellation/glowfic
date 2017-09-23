@@ -167,7 +167,7 @@ div.char-access-icon {
 .paginator .right-align a { color: black; }
 .paginator { color: black; }
 @media (max-width: 400px) {
-  #content .sub.paginator { padding: 0; }
+  .paginator { padding: 0; }
   .pagination a, .pagination .current, .pagination .disabled { padding: 5px; }
   .pagination .summary { padding-left: 5px; padding-right: 5px; }
 }

@@ -4,7 +4,7 @@ body { color: #A2A2A2; }
 #content .beige { background-color: #565656; }
 #content .dark { background-color: #333333; }
 #content table { border-color: #555; }
-#content .sub {
+.sub {
   background-color: #383838;
   color: #C9C9C9;
 }
@@ -24,7 +24,7 @@ a, a:visited, #content a, #content a:visited { color: #66997D; }
   background-color: #474747;
 }
 .green { background-color: #444D3F; }
-#content th.subber, #content .subber, .subber { background-color: #464646; color: #DDDDDD; }
+.subber, .flash.breadcrumbs { background-color: #464646; color: #DDDDDD; }
 .post-subheader { background-color: #5D5D5D; }
 #post_content, #reply_content {
   background-color: #717171;

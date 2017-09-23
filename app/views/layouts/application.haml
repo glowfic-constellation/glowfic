@@ -93,7 +93,7 @@
           - else
             %li= link_to 'Daily Report', report_path(id: :daily)
     - if content_for?(:breadcrumbs)
-      .flash.subber= content_for :breadcrumbs
+      .flash.breadcrumbs= content_for :breadcrumbs
     - if flash[:error].is_a?(Hash)
       .flash.error
         - if flash[:error].has_key? :image
