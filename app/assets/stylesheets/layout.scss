@@ -2,7 +2,7 @@
 
 /* Header Menus */
 #header {
-  background-color: #B9B6AD;
+  background-color: $bg_color_header_botstrip;
   color: $font_color_bright;
   font-size: $font_size_header;
   vertical-align: middle;
@@ -91,22 +91,27 @@
 }
 
 @media (max-width: 400px) {
-  #user-info img, #user-info .no-img { display: none; }
+  #user-info {
+    img, .no-img { display: none; }
+  }
   #header-form { display: none; }
   #header-links { display: inline-block; }
   #logo img { padding: 0.2em; height: 20px; }
 }
 
 /* Main Content */
-#content { padding: 20px; font-size: $font_size_main; line-height: 20px; text-align: left; position: relative; }
+#content {
+  padding: 20px;
+  font-size: $font_size_main;
+  line-height: 20px;
+  text-align: left;
+  position: relative;
+}
 @media (max-width: 600px) {
   #content { padding: 10px; }
 }
 @media (max-width: 500px) {
   #content { padding: 5px; }
-}
-@media (max-width: 400px) {
-  #content table.form-table { width: 100%; }
 }
 
 /* Flash Displays */
@@ -117,15 +122,35 @@
 .flash.inbox { background-color: $bg_color_flash_inbox; }
 .flash.breadcrumbs { background-color: $bg_color_flash_breadcrumbs; }
 
+/* Top-right timestamp on certain timestamped pages */
+.time-loaded {
+  font-size: 10px;
+  position: absolute;
+  top: 2px;
+  right: 20px;
+}
+
 /* Login / logout warning */
 #login_status_warning { position: absolute; top: 0; width: 100%; box-sizing: border-box; }
 
 /* List Tables */
 table { width: 100%; }
-th, .list-header { background-color: #8B8687; color: #EEEEEE; padding: 15px; font-size: 18px; font-weight: normal; }
-td, .table-list li { font-size: 14px; }
+.table-list { /* table-style ULs */
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+th, .list-header {
+  background-color: #8B8687;
+  color: #EEEEEE;
+  padding: 15px;
+  font-size: 18px;
+  font-weight: normal;
+}
 .list-header { box-sizing: border-box; }
-.table-list { list-style: none; padding: 0; margin: 0; }
+td, .table-list li { font-size: 14px; }
+
+/* Subs and subbers */
 .sub {
   padding: 10px;
   background-color: $bg_color_sub;
@@ -144,19 +169,52 @@ td, .table-list li { font-size: 14px; }
 }
 
 /* Form Tables */
-#content table.form-table { text-align: center; width: 400px; margin: 0; border-spacing: 0; }
-#content table.form-table td { text-align: left; padding: 5px; }
-#content table.form-table td input, table#icon-table td input {
-    margin: 0;
+.form-table {
+  text-align: center;
+  width: 400px;
+  margin: 0;
+  border-spacing: 0;
+
+  td {
+    padding: 5px;
+    text-align: left;
+
+    input {
+      margin: 0;
+      width: 100%;
+      -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+      -moz-box-sizing: border-box;    /* Firefox, other Gecko */
+      box-sizing: border-box;         /* Opera/IE 8+ */
+
+      &[type='checkbox'] {
+        margin: 0 1px;
+        height: 18px;
+        width: 18px;
+        vertical-align: middle;
+      }
+    }
+  }
+
+  textarea {
+    box-sizing: border-box;
+    height: 10em;
     width: 100%;
-    -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
-    -moz-box-sizing: border-box;    /* Firefox, other Gecko */
-    box-sizing: border-box;         /* Opera/IE 8+ */
+  }
+
+  .select2-container input { margin-top: 5px; }
 }
-#content table.form-table td .select2-container input, table#icon-table td .select2-container input { margin-top: 5px; }
-#content table.form-table td.spacer { height: 2px; padding: 0; }
+#icon-table { width: 100%; }
+#message_form textarea { height: 100px; }
 @media (max-width: 400px) {
-  #content table.form-table { width: 100%; }
+  .form-table { width: 100%; }
+}
+
+/* Miscellaneous inputs */
+.select2 {
+  &-container { margin: 3px 0; color: #333; }
+  &, &-dropdown { font-size: 13px; }
+  input { height: 20px; margin: 0; }
+  ul { padding: 0; }
 }
 
 /* Buttons like List View or Outbox View in top right of page */
@@ -174,11 +232,21 @@ td, .table-list li { font-size: 14px; }
     float: right;
     cursor: pointer;
     line-height: 1.3em;
+
+    &.selected { background-color: #9E9C93; }
+
+    a { color: white; }
 }
-.view-button.selected { background-color: #9E9C93; }
-.view-button a { color: white; }
-.view-button .list-view { width: 20px; height: 17px; display: inline; margin: 0; padding: 0; top: 2px; position: relative; }
-.view-button .icon-view { width: 15px; height: 15px; display: inline; margin: 0; padding: 0; top: 2px; position: relative; }
+
+.list-view, .icon-view {
+  display: inline;
+  margin: 0;
+  padding: 0;
+  top: 2px;
+  position: relative;
+}
+.list-view { width: 20px; height: 17px; }
+.icon-view { width: 15px; height: 15px; }
 
 /* Tag label buttons, like seen on the gallery page */
 .tag-box {
@@ -200,34 +268,35 @@ td, .table-list li { font-size: 14px; }
 }
 
 /* The new object layout with the floating left info box and the right content area */
-#content .left-info-box { float: left; overflow-wrap: break-word; word-wrap: break-word; }
-#content table.left-info-box { table-layout: fixed; }
-#content .right-content-box { float: left; }
-#content .user-info-box { width: 200px; }
-#content .icon-info-box { width: 150px; }
-#content .character-info-box { width: 175px; }
-#content .character-info-box .character-screenname { font-size: 85%; }
-#content .user-right-content-box { width: calc(100% - 200px); }
-#content .icon-right-content-box { width: calc(100% - 150px); }
-#content .character-right-content-box { width: calc(100% - 175px); }
-
-.new_character textarea, .edit_character textarea { height: 10em; box-sizing: border-box; width: 100%; }
+.left-info-box {
+  float: left;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  table-layout: fixed;
+}
+.right-content-box { float: left; }
+.user-info-box { width: 200px; }
+.icon-info-box { width: 150px; }
+.character-info-box { width: 175px; }
+.user-right-content-box { width: calc(100% - 200px); }
+.icon-right-content-box { width: calc(100% - 150px); }
+.character-right-content-box { width: calc(100% - 175px); }
 
 /* Not yet deserving of its own CSS file */
-#message_form textarea, .edit_board textarea, .new_board textarea, .new_template textarea, .edit_template textarea { height: 100px; }
 #stats ul { margin-top: 0; margin-bottom: 0; padding-left: 15px; }
-.select2-container { margin: 3px 0; color: #333; }
-.select2, .select2-dropdown { font-size: 13px !important; }
-.select2 input { height: 20px; margin: 0; }
-.select2 ul { padding: 0; }
-.field_with_errors { display: inline-block; } /* Keeps forms from whitespacing weirdly when errors present */
-input.checkbox { height: 12px; margin: 0; vertical-align: middle; } /* Keeps unread table from padding excessively for the checkboxes */
+.checkbox { height: 12px; margin: 0; vertical-align: middle; } /* Keeps unread table from padding excessively for the checkboxes */
 #signup .sub { width: 90px; }
-#content table.form-table input[type='checkbox'] { margin: 0 1px; height: 18px; width: 18px; vertical-align: middle; }
-td.continuity-spacer { height: 20px; }
+.continuity-spacer { height: 20px; }
 .post-ignored { opacity: 0.3; }
-.time-loaded { font-size: 10px; position: absolute; top: 2px; right: 20px; }
 #loading img { height: 20px; width: 20px; }
-.section-warning { background-color: rgb(208, 110, 110); background-color: rgba(255, 0, 0, 0.4); padding: 5px; }
-.section-ordered-handle { cursor: move; display: inline-block; }
-.section-ordered-handle img { vertical-align: text-bottom; }
+.section-warning {
+  background-color: rgb(208, 110, 110);
+  background-color: rgba(255, 0, 0, 0.4);
+  padding: 5px;
+}
+.section-ordered-handle {
+  cursor: move;
+  display: inline-block;
+
+  img { vertical-align: text-bottom; }
+}
