@@ -110,9 +110,7 @@
       /    = image_tag '/images/bell_add.png'
       /    Turn on notifications
 - if @post.description.present?
-  .post-subheader
-    .padding-10
-      %span= sanitize_post_description(@post.description).html_safe
+  .post-subheader= sanitize_post_description(@post.description).html_safe
 - if @prev_post || @next_post
   .post-navheader
     .padding-10
