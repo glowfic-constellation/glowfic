@@ -214,6 +214,16 @@ td, .table-list li { font-size: 14px; }
 
   .select2-container input { margin-top: 5px; }
 }
+.form-table-ender {
+  padding: 10px 25px;
+  background-color: $bg_color_subber;
+  color: $font_color_subber;
+  font-size: 15px;
+  font-weight: bold;
+  text-align: center;
+
+  input { margin: 0; }
+}
 @media (max-width: 400px) {
   .form-table { width: 100%; }
 }
@@ -308,4 +318,9 @@ td, .table-list li { font-size: 14px; }
   display: inline-block;
 
   img { vertical-align: text-bottom; }
+}
+.continuity-header {
+  padding: 10px 25px;
+  font-size: 15px;
+  font-weight: bold;
 }

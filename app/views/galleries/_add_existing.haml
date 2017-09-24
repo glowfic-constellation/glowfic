@@ -9,7 +9,7 @@
           Add New Icons &raquo;
   %table
     %tr
-      %th.subber.centered Click icons to select, then press Add Icons to Gallery at the bottom.
+      %th.form-table-ender Click icons to select, then press Add Icons to Gallery at the bottom.
     %tr
       %th.sub Galleryless Icons
     %tr
@@ -20,7 +20,7 @@
             %br
             %span.icon-keyword= icon.keyword
     %tr
-      %td.subber.centered.padding-5
+      %td.form-table-ender.padding-5
         = submit_tag "Add Icons to Gallery", class: 'button'
     - current_user.galleries.order('LOWER(name)').each do |gallery|
       - next if gallery.id == @gallery.try(:id)
@@ -31,5 +31,5 @@
       %tr
         %td.padding-5.hidden{class: cycle('even', 'odd'), id: "icons-#{gallery.id}"}
     %tr
-      %td.subber.centered.padding-5
+      %td.form-table-ender.padding-5
         = submit_tag "Add Icons to Gallery", class: 'button'

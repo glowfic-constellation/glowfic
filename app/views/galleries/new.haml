@@ -23,4 +23,4 @@
                 - box_selected = params[:gallery].try(:[], :icon_ids).try(:include?, icon.id.to_s)
                 .select-button= check_box_tag "gallery[icon_ids][]", icon.id, box_selected, id: "gallery_icon_ids_#{icon.id}"
     %tr
-      %th.subber{colspan: 2}= submit_tag "Create", class: 'button'
+      %th.form-table-ender{colspan: 2}= submit_tag "Create", class: 'button'

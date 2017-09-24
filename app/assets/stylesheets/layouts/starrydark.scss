@@ -9,8 +9,8 @@ body { background-color: #211E2F; color: $FONT_COLOR; }
 th, .content-header { background-color: #0D0B1E; }
 .sub { color: #F3F3F3; }
 .sub, .post-navheader, .flash.breadcrumbs { background-color: #131937; }
-.subber { background-color: #0D0B1E; color: $FONT_COLOR; }
-.selector-popup, .single-description { background-color: #484357; color: $FONT_COLOR; }
+.form-table-ender { background-color: #0D0B1E; color: $FONT_COLOR; }
+.selector-popup, .single-description, .subber { background-color: #484357; color: $FONT_COLOR; }
 th, .single-description, .content-header {
   a { color: #B5AFCB; }
   a:visited { color: #9C9AA4; }

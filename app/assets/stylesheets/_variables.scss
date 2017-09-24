@@ -83,6 +83,9 @@ $font_color_head: #EEEEEE;
 $font_color_sub: #3E384F;
 $font_color_subber: black;
 
+$bg_color_ender: $bg_color_subber; // form table footer with submit
+$font_color_ender: $font_color_subber;
+
 /* - select2 dropdown */
 $font_color_select2_container: $colors_dark;
 

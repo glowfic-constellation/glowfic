@@ -24,15 +24,15 @@
 %br
 
 = form_tag mark_boards_path, :method => :post do
-  %table.float-left.form-table
+  %table.float-left.form-table{style: 'margin-bottom: 10px;'}
     %tr
       %th Mark Entire Continuity
     %tr
       %td.even.padding-5.centered
-        = select_tag :board_id, 
+        = select_tag :board_id,
                      options_from_collection_for_select(Board.order('LOWER(name)'), :id, :name, params[:board_id]),
                      {class: 'chosen-select', prompt: '— Choose Continuity —'}
     %tr
-      %th.subber
+      %th.form-table-ender
         = submit_tag "Hide from Unread", class: 'button'
         = submit_tag "Mark Read", class: 'button'
