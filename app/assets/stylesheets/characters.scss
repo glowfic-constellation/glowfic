@@ -1,6 +1,12 @@
+@import 'variables';
 #selected-gallery {
   position: absolute;
   left: 450px;
   top: 20px;
 }
 .character-screenname { font-size: 85%; }
+.single-description {
+  // used for template descriptions
+  padding: 5px;
+  background-color: $bg_color_descriptions;
+}

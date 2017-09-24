@@ -1,24 +1,82 @@
 /* Variables */
-/* - font sizes */
+/* - global font sizes */
 $font_size_header: 16px; /* header */
 $font_size_main: 16px; /* main content */
 $font_size_small: 14px; /* header-links (mobile mode), table elements */
 $font_size_mini: 10px; /* time-loaded */
 
-/* - font colors */
-$font_color_bright: #FEFEFE;
-$font_color_bright_hover: #8B8687;
-$font_color_dark: #444444;
+/* - default color palette */
+// color palette used by the default style
+// do not use in CSS files; use a semantically relevant variable below that references a color here instead
+$colors_white: #FFFFFF;
+$colors_bright: #FEFEFE;
+$colors_dark: #444444;
+$colors_lightbrown: #B9B6AD;
+$colors_lightishbrown: #9E9C93;
+$colors_brown: #8B8687;
+$colors_greybrown: #A3A1A0;
+$colors_green: #3F7055;
 
-/* - background colors */
-$bg_color_header_logostrip: #3F7055; /* green strip for logo */
-$bg_color_header_midstrip: #3E384F; /* dark middle strip of header*/
-$bg_color_header_botstrip: #B9B6AD; /* bottom strip of header */
+/* Semantic colors */
+// colors listed here should be named according to where and how they are used, to allow layouts to better recolor the site
 
-$bg_color_subber: #A3A1A0;
-$bg_color_sub: #B9B6AD;
+/* - header */
+$font_color_header_link: $colors_bright; // header links
+$font_color_header_link_hover: $colors_brown; // header links (hover)
 
-$bg_color_flash_error: #FFDDDD;
-$bg_color_flash_success: #DDEEDD;
-$bg_color_flash_inbox: #DDDDEE;
-$bg_color_flash_breadcrumbs: $bg_color_subber;
+$bg_color_header_top: $colors_green; // top header strip for logo
+$bg_color_header_middle: #3E384F; // middle header strip with user items
+$bg_color_header_bottom: $colors_lightbrown; // bottom header strip with navigation
+
+/* - flashes */
+// these are the notifications that appear when you submit a form or get a message
+$bg_color_flash_error: #FFDDDD; // error
+$bg_color_flash_success: #DDEEDD; // success
+$bg_color_flash_inbox: #DDDDEE; // new message
+$bg_color_flash_breadcrumbs: $colors_greybrown; // breadcrumbs ("Continuities » Effulgence » make a wish » one enormous bruise")
+
+/* - main page */
+$bg_color_page: #E5DFD1; // overall page
+$font_color_page: #101010;
+
+$font_color_content: $colors_dark; // body
+
+/* - links */
+$font_color_link: $colors_green; // link
+$font_color_link_visited: #28503A; // link (visited)
+$font_color_link_hover: #FCFEFD; // link (hovered)
+
+/* - inputs */
+$bg_color_input: $colors_white; // regular <input>
+$font_color_input: $font_color_content;
+$border_color_input: #AAAAAA;
+
+$bg_color_button: $colors_white; // buttons; overridden by gradient TODO make modifiable
+$font_color_button: $font_color_content;
+$border_color_button: #AAAAAA;
+
+
+/* - other buttons */
+$bg_color_viewbutton: $colors_lightbrown;
+$bg_color_viewbutton_selected: $colors_lightishbrown;
+$font_color_viewbutton: $colors_white;
+
+/* - tag items */
+// varies by location TODO get more complete list from starries
+$bg_color_tag_item: $colors_lightbrown;
+$font_color_tag_item: $colors_green;
+
+/* - content headers */
+$bg_color_head: $colors_brown; // primary content header
+$bg_color_sub: $colors_lightbrown; // secondary content header
+$bg_color_subber: $colors_greybrown; // tertiary content header
+$font_color_head: #EEEEEE;
+$font_color_sub: #3E384F;
+$font_color_subber: black;
+
+/* - select2 dropdown */
+$font_color_select2_container: $colors_dark;
+
+/* - misc */
+$bg_color_descriptions: $colors_lightbrown; // description subheadings on templates page ("single-description"), *not* posts
+$bg_color_selectionpopup: $colors_lightbrown; // selection popups like character/alias on posts#editor

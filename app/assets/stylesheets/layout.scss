@@ -2,8 +2,8 @@
 
 /* Header Menus */
 #header {
-  background-color: $bg_color_header_botstrip;
-  color: $font_color_bright;
+  background-color: $bg_color_header_bottom;
+  color: $font_color_header_link;
   font-size: $font_size_header;
   vertical-align: middle;
   overflow: hidden;
@@ -20,12 +20,12 @@
     white-space: nowrap;
   }
 
-  a { color: $font_color_bright; }
-  a:hover { color: $font_color_bright_hover; }
+  a { color: $font_color_header_link; }
+  a:hover { color: $font_color_header_link_hover; }
 }
 
 #logo {
-  background-color: $bg_color_header_logostrip;
+  background-color: $bg_color_header_top;
   padding: 0.5em;
   overflow: hidden; /* so it contains the floating image */
 
@@ -38,7 +38,7 @@
 #user-info {
   float: left;
   padding: 0.5em;
-  background-color: $bg_color_header_midstrip;
+  background-color: $bg_color_header_middle;
   font-weight: bold;
   text-align: center;
 
@@ -53,12 +53,12 @@
 
 #nav-top {
   padding: 0.5em 1em 0.5em 0.5em;
-  background-color: $bg_color_header_midstrip;
+  background-color: $bg_color_header_middle;
   font-weight: bold;
 
   button, .button {
     margin-right: 10px;
-    color: $font_color_dark;
+    color: $font_color_button;
     font-size: 13px;
     font-weight: bold; /* not redundant: used for login form */
   }
@@ -79,7 +79,7 @@
 
 #nav-bottom {
   padding: 0.6em 0;
-  background-color: $bg_color_header_botstrip;
+  background-color: $bg_color_header_bottom;
   vertical-align: middle;
 }
 #header-links {
@@ -141,8 +141,8 @@ table { width: 100%; }
   margin: 0;
 }
 th, .list-header {
-  background-color: #8B8687;
-  color: #EEEEEE;
+  background-color: $bg_color_head;
+  color: $font_color_head;
   padding: 15px;
   font-size: 18px;
   font-weight: normal;
@@ -154,16 +154,15 @@ td, .table-list li { font-size: 14px; }
 .sub {
   padding: 10px;
   background-color: $bg_color_sub;
-  color: #3E384F;
+  color: $font_color_sub;
   font-size: 16px;
 }
 .subber {
   padding: 10px 25px;
   background-color: $bg_color_subber;
-  color: black;
+  color: $font_color_subber;
   font-size: 15px;
   font-weight: bold;
-  a, a:visited { color: #FFFFFF; }
   input { margin: 0; }
   .link-box { font-size: 15px; }
 }
@@ -211,7 +210,7 @@ td, .table-list li { font-size: 14px; }
 
 /* Miscellaneous inputs */
 .select2 {
-  &-container { margin: 3px 0; color: #333; }
+  &-container { margin: 3px 0; color: $font_color_select2_container; }
   &, &-dropdown { font-size: 13px; }
   input { height: 20px; margin: 0; }
   ul { padding: 0; }
@@ -219,23 +218,23 @@ td, .table-list li { font-size: 14px; }
 
 /* Buttons like List View or Outbox View in top right of page */
 .view-button {
-    display: inline-block;
-    background-color: #B9B6AD;
-    font-size: 18px;
-    margin: 0;
-    margin-left: 5px;
-    background-image: none;
-    border: 0;
-    color: #FFFFFF;
-    padding: 4px 12px;
-    border-radius: 5px;
-    float: right;
-    cursor: pointer;
-    line-height: 1.3em;
+  display: inline-block;
+  float: right;
+  margin: 0;
+  margin-left: 5px;
+  padding: 4px 12px;
+  background-image: none;
+  background-color: $bg_color_viewbutton;
+  color: $font_color_viewbutton;
+  font-size: 18px;
+  line-height: 1.3em;
+  border: 0;
+  border-radius: 5px;
+  cursor: pointer;
 
-    &.selected { background-color: #9E9C93; }
+  &.selected { background-color: $bg_color_viewbutton_selected; }
 
-    a { color: white; }
+  a { color: white; }
 }
 
 .list-view, .icon-view {
@@ -258,13 +257,13 @@ td, .table-list li { font-size: 14px; }
 }
 .tag-item {
   display: inline-block;
-  background-color: #B9B6AD;
-  color: #3F7055;
   margin: 2px 0;
   padding: 2px 8px;
-  border-radius: 5px;
+  background-color: $bg_color_tag_item;
+  color: $font_color_tag_item;
   font-size: 90%;
   font-weight: normal;
+  border-radius: 5px;
 }
 
 /* The new object layout with the floating left info box and the right content area */

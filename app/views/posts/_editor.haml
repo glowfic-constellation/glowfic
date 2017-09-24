@@ -14,7 +14,7 @@
       .post-character{class: ('hidden' unless item.character), data: {character_id: item.character_id || '', alias_id: item.character_alias_id || ''}}
         %span#name= item.name
         = image_tag swap_icon_url, id: 'swap-alias', alt: ">", title: 'Choose Alias', class: ('hidden' unless item.character.try(:aliases).present?)
-        #alias-selector.beige
+        #alias-selector.selector-popup
           %b Choose Alias
           = select_tag :character_alias, options_from_collection_for_select(item.character.try(:aliases).to_a, :id, :name, item.character_alias_id), prompt: item.character.try(:name), class: 'chosen-select'
       .post-screenname{class: ('hidden' unless item.character.try(:screenname))}= item.character.try(:screenname)
@@ -23,7 +23,7 @@
         = item.user.username
         - if current_user.characters.present?
           = image_tag swap_icon_url, id: 'swap-icon', alt: ">", title: 'Choose Character'
-          #character-selector.beige
+          #character-selector.selector-popup
             %b Choose Character
             = select_tag :active_character,
             option_groups_from_collection_for_select(@templates, :plucked_characters, :name, :first, :last, item.character_id),
