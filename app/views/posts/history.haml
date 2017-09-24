@@ -7,19 +7,19 @@
   &raquo;
   %b History
 
-.post-header
+.content-header
   .padding-15 Edit History (Oldest to Newest)
 .bg.spacer
 - audit = @post.audits.first
 - cur = Post.new(audit.audited_changes)
 - cur.created_at = audit.created_at
-.post-header
+.content-header
   .padding-15= cur.subject
 = render partial: 'replies/single', locals: { reply: cur }
 - @post.audits.where(action: 'update').each do |audit|
   - attrs = Hash[audit.audited_changes.map {|k, v| [k, v[1]] }]
   - cur.assign_attributes(attrs)
   - cur.created_at = audit.created_at
-  .post-header
+  .content-header
     .padding-15= cur.subject
   = render partial: 'replies/single', locals: { reply: cur }

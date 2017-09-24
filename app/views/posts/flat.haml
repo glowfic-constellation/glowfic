@@ -18,7 +18,7 @@
         Generated: #{pretty_time(@post.flat_post.updated_at)}
       .details
         Post last updated: #{pretty_time(@post.tagged_at)}
-      .post-header
+      .content-header
         .padding-15
           %span#post-title= @post.subject
       - if @post.description.present?

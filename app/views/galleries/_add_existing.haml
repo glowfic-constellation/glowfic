@@ -1,6 +1,6 @@
 = form_tag icon_gallery_path(@gallery), method: :post, id: 'add-gallery-icons' do
   = hidden_field_tag :image_ids
-  .post-header
+  .content-header
     .padding-15
       %span.vmid Add Existing Icons to Gallery: #{@gallery.try(:name) || 'Galleryless'}
       - if @gallery

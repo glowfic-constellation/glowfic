@@ -1,5 +1,5 @@
 - if @unseen_replies.present?
-  .post-header
+  .content-header
     .padding-15
       Unseen Replies
       = link_to unread_path(@post) do
@@ -10,7 +10,7 @@
     .post-ender ... and #{@unseen_replies.total_entries - @unseen_replies.per_page} more ...
   %br
 
-.post-header
+.content-header
   .padding-15= @post.subject
 - if @post.description.present?
   .post-subheader

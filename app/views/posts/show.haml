@@ -25,7 +25,7 @@
         - @warnings.each do |warning|
           %li= link_to warning.name, tag_path(warning)
 
-.post-header
+.content-header
   .padding-15
     %span#post-title= link_to @post.subject, post_path(@post)
     .view-button#post-menu
