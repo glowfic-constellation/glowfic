@@ -1,9 +1,11 @@
 /* global gon, tinymce, tinyMCE, resizeScreenname, createTagSelect */
 var tinyMCEInit = false, shownIcons = [];
 var PRIVACY_ACCESS = 2; // TODO don't hardcode
+var iconSelectBox;
 
 $(document).ready(function() {
   setupMetadataEditor();
+  iconSelectBox = $('#reply-icon-selector');
 
   var formButtons = $("#submit_button, #draft_button, #preview_button");
   formButtons.click(function() {
@@ -111,7 +113,7 @@ function setupWritableEditor() {
     }
   });
 
-  $("#swap-icon").click(function() {
+  $("#swap-character").click(function() {
     $('#character-selector').toggle();
     $('#alias-selector').hide();
     $('html, body').scrollTop($("#post-editor").offset().top);
@@ -156,7 +158,7 @@ function setupWritableEditor() {
     var charCode = e.which || e.keyCode;
     if (charCode === 27) {
       $('#icon-overlay').hide();
-      $('#gallery').hide();
+      iconSelectBox.hide();
       $('#character-selector').hide();
     }
   });
@@ -165,18 +167,20 @@ function setupWritableEditor() {
   $(document).click(function(e) {
     var target = e.target;
 
-    if (!$(target).is('#current-icon-holder') &&
-        !$(target).parents().is('#current-icon-holder') &&
-        !$(target).is('#gallery') &&
-        !$(target).parents().is('#gallery')) {
+    if (!$(target).closest('#current-icon-holder').length &&
+        !$(target).closest(iconSelectBox).length) {
       $('#icon-overlay').hide();
-      $('#gallery').hide();
+      iconSelectBox.hide();
     }
 
-    if (!$(target).is('#character-selector') &&
-        !$(target).is('#swap-icon') &&
-        !$(target).parents().is('#character-selector')) {
+    if (!$(target).closest('#character-selector').length &&
+        !$(target).closest('#swap-character').length) {
       $('#character-selector').hide();
+    }
+
+    if (!$(target).closest('#alias-selector').length &&
+        !$(target).closest('#swap-alias').length) {
+      $('#alias-selector').hide();
     }
   });
 }
@@ -230,7 +234,7 @@ function toggleEditor() {
 }
 
 function bindGallery() {
-  $("#gallery img").click(function() {
+  iconSelectBox.find('img').click(function() {
     var id = $(this).attr('id');
     setIconFromId(id, $(this));
   });
@@ -239,7 +243,7 @@ function bindGallery() {
 function bindIcon() {
   $('#current-icon-holder').click(function() {
     $('#icon-overlay').toggle();
-    $('#gallery').toggle();
+    iconSelectBox.toggle();
     $('html, body').scrollTop($("#post-editor").offset().top);
   });
 }
@@ -389,7 +393,7 @@ function setGalleriesAndDefault(galleries, defaultIcon) {
   $("#current-icon-holder").unbind();
   $("#icon_dropdown").empty().append('<option value="">No Icon</option>');
 
-  $("#gallery").html('');
+  iconSelectBox.html('');
 
   // Remove pointer and skip galleries if no galleries attached to character
   if (galleries.length === 0 && !defaultIcon) {
@@ -403,7 +407,7 @@ function setGalleriesAndDefault(galleries, defaultIcon) {
   // Calculate new galleries
   var multiGallery = galleries.length > 1;
   for (var j = 0; j < galleries.length; j++) {
-    $("#gallery").append(galleryString(galleries[j], multiGallery));
+    iconSelectBox.append(galleryString(galleries[j], multiGallery));
   }
 
   // If no default and no icons in any galleries, remove pointer
@@ -412,8 +416,8 @@ function setGalleriesAndDefault(galleries, defaultIcon) {
     return;
   }
 
-  if (defaultIcon && shownIcons.indexOf(defaultIcon.id) < 0) $("#gallery").append(iconString(defaultIcon));
-  $("#gallery").append(iconString({id: '', url: '/images/no-icon.png', keyword: 'No Icon', skip_dropdown: true}));
+  if (defaultIcon && shownIcons.indexOf(defaultIcon.id) < 0) iconSelectBox.append(iconString(defaultIcon));
+  iconSelectBox.append(iconString({id: '', url: '/images/no-icon.png', keyword: 'No Icon', skip_dropdown: true}));
   bindGallery();
   bindIcon();
 }
@@ -440,7 +444,7 @@ function getAndSetCharacterData(characterId, options) {
 }
 
 function setIconFromId(id, img) {
-  // Assumes the #gallery div is populated with icons with the correct values
+  // Assumes the icon selection box is populated with icons with the correct values
   if (id === "") return setIcon(id);
   if (typeof img === 'undefined') img = $("#"+id);
   return setIcon(id, img.attr('src'), img.attr('title'), img.attr('alt'));
@@ -456,7 +460,7 @@ function setIcon(id, url, title, alt) {
 
   // Hide icon UI elements
   $('#icon-overlay').hide();
-  $('#gallery').hide();
+  iconSelectBox.hide();
 
   // Set necessary form values
   $("#reply_icon_id").val(id);

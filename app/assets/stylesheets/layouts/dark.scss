@@ -55,7 +55,7 @@ a, a:visited, #content a, #content a:visited { color: #66997D; }
 }
 .view-button.selected { background-color: #6A6A6A; }
 .link-box { color: #DDDDDD; }
-#swap-icon, #swap-alias { opacity: 0.7; } /* make the white less contrasty */
+.selector-popup-button { opacity: 0.7; } /* make the white less contrasty */
 
 /* Hovering help box on post editor */
 .ui-widget-content { background-color: #333; color: #A2A2A2; }

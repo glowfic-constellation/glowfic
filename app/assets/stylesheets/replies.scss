@@ -18,18 +18,18 @@
 }
 
 /* Character selector */
-#swap-icon, #swap-alias {
+.selector-popup-button {
   width: 14px;
   height: 14px;
   position: relative;
   top: 1px;
   cursor: pointer;
 }
-#character-selector, #alias-selector {
+.selector-popup {
   position: absolute;
   top: 0;
   left: 150px;
-  padding:5px 20px 10px 20px;
+  padding: 5px 20px 10px 20px;
   z-index: 2;
   min-width: 200px;
   display: none;
@@ -37,12 +37,13 @@
 
   h4 {
     margin-bottom: 0;
-    margin-top: 0px;
+    margin-top: 0;
+    font-size: 90%;
   }
 }
 
 /* Icon selector */
-#gallery {
+#reply-icon-selector {
   display: none;
   position: absolute;
   top: 10px;
@@ -72,7 +73,7 @@
   }
 }
 @media (max-width: 700px) {
-    #gallery { left: 0; }
+  #reply-icon-selector { left: 0; }
 }
 .icon-holder .icon { margin: 0; }
 .icon {
