@@ -55,11 +55,20 @@ $bg_color_button: $colors_white; // buttons; overridden by gradient TODO make mo
 $font_color_button: $font_color_content;
 $border_color_button: #AAAAAA;
 
-
 /* - other buttons */
 $bg_color_viewbutton: $colors_lightbrown;
 $bg_color_viewbutton_selected: $colors_lightishbrown;
 $font_color_viewbutton: $colors_white;
+
+/* - icons */
+$border_color_icon_selected: $colors_green; // selected icon border
+
+/* - characters */
+$border_color_character_iconless: #666666; // in characters#show icon view when a character has no icon
+
+$bg_color_mini_delete: #E5DFD1; // mini delete buttons on characters#icon_view
+$border_color_mini_delete: #C00;
+$font_color_mini_delete: #C00;
 
 /* - tag items */
 // varies by location TODO get more complete list from starries
