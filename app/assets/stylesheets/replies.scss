@@ -96,6 +96,9 @@
   background-color: #A3A1A0;
 }
 .post-navheader {
+  box-sizing: border-box;
+  padding: 10px;
+  overflow: hidden;
   background-color: #B9B6AD;
 
   .view-button { background-color: #a3a1a0; }
