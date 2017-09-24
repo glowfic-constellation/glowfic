@@ -129,10 +129,10 @@
 /* - Blockquotes */
 /* -- Color on even/odd background */
 .even, .post-post, .post-reply:nth-child(even) {
-  blockquote { background-color: #D8D8D8; }
+  blockquote { background-color: $bg_color_even_blockquote; }
 }
 .odd, .post-reply:nth-child(odd) {
-  blockquote { background-color: #E3E3E3; }
+  blockquote { background-color: $bg_color_odd_blockquote; }
 }
 .single-description blockquote { background-color: rgba(128, 128, 128, 0.3); }
 

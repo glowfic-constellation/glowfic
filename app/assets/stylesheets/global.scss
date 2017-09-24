@@ -82,8 +82,15 @@ button, .button {
 /* Displaying forum threads */
 .green { background-color: #B0BBA9; }
 .dark { background-color: #8B8687; }
-.even, .post-post, .post-reply:nth-child(even), #post-editor { background-color: #E3E3E3; padding: 5px; }
-.odd, .post-reply:nth-child(odd), .post-post + #post-editor, .post-post + a + #post-editor { background-color: #D8D8D8; padding: 5px; }
+.even, .odd, .post-post, .post-reply, #post-editor {
+  padding: 5px;
+}
+.even, .post-post, .post-reply:nth-child(even), #post-editor {
+  background-color: $bg_color_even;
+}
+.odd, .post-reply:nth-child(odd), .post-post + #post-editor, .post-post + a + #post-editor {
+  background-color: $bg_color_odd;
+}
 
 /* UI Links */
 .link-box {

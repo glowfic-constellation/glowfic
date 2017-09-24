@@ -86,6 +86,46 @@ $font_color_subber: black;
 $bg_color_ender: $bg_color_subber; // form table footer with submit
 $font_color_ender: $font_color_subber;
 
+/* - content */
+$bg_color_even: #E3E3E3;
+$bg_color_odd: #D8D8D8;
+
+// target: #D8D8D8;
+// from: #E3E3E3;
+// opacity: 0.5;
+// from + (given-from) * opacity = target
+// (1-opacity) * from + given * opacity = target
+// given * opacity = (1 - opacity) * from - target
+// given = ((1-opacity)*from - target)/opacity
+// so that's (1-opacity)/opacity of from, and -1/opacity of the other
+// so that's a ratio of
+// (1-opacity)/opacity : -1/opacity
+// 1-opacity : -1
+// so we want to bias to the left side by opacity-1
+// to the from by opacity-1
+
+// mix colors X and Y with weight W (favoring Y, allowing values outside 0 and 1)
+@function mix-allow-heavy($color1, $color2, $value) {
+  // @return (1 - $value) * $color1 + ($color2 * $value);
+  $red: (1-$value) * red($color1) + (red($color2) * $value);
+  $green: (1-$value) * green($color1) + (green($color2) * $value);
+  $blue: (1-$value) * blue($color1) + (blue($color2) * $value);
+  @return rgb($red, $green, $blue);
+}
+
+// produces the semi-transparent color needed to lay over $from to produce $target, at $opacity opacity
+// do not provide this function an opacity of 0.
+@function calculate-transparent-color($from, $target, $opacity) {
+  @return rgba(mix-allow-heavy($target, $from, ($opacity - 1) / $opacity), $opacity);
+}
+
+$opacity_blockquote: 0.2;
+$bg_color_even_blockquote_target: #D8D8D8; // target color for blockquotes on even backgrounds
+$bg_color_odd_blockquote_target: #E3E3E3;
+// semi-transparent version to allow nested blockquotes:
+$bg_color_even_blockquote: calculate-transparent-color($bg_color_even, $bg_color_even_blockquote_target, $opacity_blockquote);
+$bg_color_odd_blockquote: calculate-transparent-color($bg_color_odd, $bg_color_odd_blockquote_target, $opacity_blockquote);
+
 /* - select2 dropdown */
 $font_color_select2_container: $colors_dark;
 
