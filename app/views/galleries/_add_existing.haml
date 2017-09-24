@@ -1,13 +1,12 @@
 = form_tag icon_gallery_path(@gallery), method: :post, id: 'add-gallery-icons' do
   = hidden_field_tag :image_ids
   .content-header
-    .padding-15
-      %span.vmid Add Existing Icons to Gallery: #{@gallery.try(:name) || 'Galleryless'}
-      - if @gallery
-        = link_to add_gallery_path(@gallery) do
-          .view-button
-            = image_tag '/images/list.png', class: 'list-view', alt: ''
-            Add New Icons &raquo;
+    %span.vmid Add Existing Icons to Gallery: #{@gallery.try(:name) || 'Galleryless'}
+    - if @gallery
+      = link_to add_gallery_path(@gallery) do
+        .view-button
+          = image_tag '/images/list.png', class: 'list-view', alt: ''
+          Add New Icons &raquo;
   %table
     %tr
       %th.subber.centered Click icons to select, then press Add Icons to Gallery at the bottom.

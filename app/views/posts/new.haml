@@ -1,6 +1,5 @@
 - if params[:view] == 'import'
-  .content-header
-    .padding-15 Import a post
+  .content-header Import a post
   .post-container.post-post
     .padding-10
       = form_tag posts_path(view: 'import') do
@@ -21,6 +20,5 @@
         %br
         = submit_tag "Import", class: 'button', id: 'import_button', name: 'button_import'
 - else
-  .content-header
-    .padding-15 Create a new post
+  .content-header Create a new post
   = render partial: 'write', locals: { post: @post, url: posts_path, method: :post }

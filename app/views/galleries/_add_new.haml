@@ -3,13 +3,12 @@
   class: 'icon-upload',
   data: { 'form-data' => (@s3_direct_post.fields), url: @s3_direct_post.url, host: URI.parse(@s3_direct_post.url).host } do
   .content-header
-    .padding-15
-      %span.vmid Add New Icons to Gallery: #{@gallery.try(:name) || 'Galleryless'}
-      - if @gallery
-        = link_to add_gallery_path(@gallery, type: 'existing') do
-          .view-button
-            = image_tag '/images/grid.png', class: 'icon-view', alt: ''
-            Add Existing Icons &raquo;
+    %span.vmid Add New Icons to Gallery: #{@gallery.try(:name) || 'Galleryless'}
+    - if @gallery
+      = link_to add_gallery_path(@gallery, type: 'existing') do
+        .view-button
+          = image_tag '/images/grid.png', class: 'icon-view', alt: ''
+          Add Existing Icons &raquo;
   %table
     %tr
       %th.subber.width-150.centered Upload Files

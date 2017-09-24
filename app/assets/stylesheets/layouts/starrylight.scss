@@ -4,12 +4,12 @@
 
 body { background-color: #B0AFB7; }
 
-#content th, .list-header, .content-header { background-color: #42416E; }
+#content th, .content-header { background-color: #42416E; }
 .sub { color: #F3F3F3; }
 .sub, .post-navheader, .flash.breadcrumbs { background-color: #8287A2; }
 .selector-popup, .single-description, .subber { background-color: #6F658D; color: #DADADA; }
-.single-description a, #content th a, .list-header a, .content-header a { color: #F3F3F3; }
-.single-description a:visited, #content th a:visited, .list-header a:visited { color: #C6C6E5; }
+.single-description a, #content th a, .content-header a { color: #F3F3F3; }
+.single-description a:visited, #content th a:visited, .content-header a:visited { color: #C6C6E5; }
 
 #post-menu-box { border-top: 1px solid #808080; border-top: 1px solid rgba(128,128,128,0.5); background-color: #BCBCBC; }
 #post-menu-box a:hover div { background-color: #D3D3D3; }

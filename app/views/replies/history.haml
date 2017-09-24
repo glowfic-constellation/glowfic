@@ -7,8 +7,7 @@
   &raquo;
   %b History
 
-.content-header
-  .padding-15 Edit History (Oldest to Newest)
+.content-header Edit History (Oldest to Newest)
 - audit = @reply.audits.first
 - cur = Reply.new(audit.audited_changes)
 - cur.created_at = audit.created_at

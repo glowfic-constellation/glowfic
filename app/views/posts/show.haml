@@ -26,10 +26,9 @@
           %li= link_to warning.name, tag_path(warning)
 
 .content-header
-  .padding-15
-    %span#post-title= link_to @post.subject, post_path(@post)
-    .view-button#post-menu
-      = image_tag ((current_user.try(:layout) == 'starrydark'.freeze or current_user.try(:layout) == 'starry'.freeze or current_user.try(:layout) == 'starrylight'.freeze) ? '/images/menugray.png'.freeze : '/images/menu.png'.freeze), class: 'icon-view'.freeze
+  %span#post-title= link_to @post.subject, post_path(@post)
+  .view-button#post-menu
+    = image_tag ((current_user.try(:layout) == 'starrydark'.freeze or current_user.try(:layout) == 'starry'.freeze or current_user.try(:layout) == 'starrylight'.freeze) ? '/images/menugray.png'.freeze : '/images/menu.png'.freeze), class: 'icon-view'.freeze
 #post-menu-holder
   #post-menu-box.hidden
     / TODO Throne3d is writing an ePub downloader

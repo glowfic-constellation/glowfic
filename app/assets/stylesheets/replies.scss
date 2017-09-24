@@ -84,36 +84,18 @@
 }
 
 /* Main content headers */
-.content-header {
+.post-subheader, .post-navheader {
   width: 100%;
-  background-color: #8B8687;
-  color: #eeeeee;
-  padding: 0;
-  font-size: 18px;
+  font-size: 15px;
 
-  span {
-    line-height: 28px;
-    a {
-      color: #eeeeee;
-      &:hover { color: #dddddd; }
-    }
-  }
-
-  & > div { overflow: hidden; }
+  span { line-height: 14px; }
 }
 .post-subheader {
-  width: 100%;
-  background-color: #a3a1a0;
-  font-size: 15px;
-
-  span { line-height: 14px; }
+  background-color: #A3A1A0;
 }
 .post-navheader {
-  width: 100%;
   background-color: #B9B6AD;
-  font-size: 15px;
 
-  span { line-height: 14px; }
   .view-button { background-color: #a3a1a0; }
 }
 .post-expander {

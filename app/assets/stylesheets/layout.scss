@@ -140,14 +140,27 @@ table { width: 100%; }
   padding: 0;
   margin: 0;
 }
-th, .list-header {
+th, .content-header {
   background-color: $bg_color_head;
   color: $font_color_head;
   padding: 15px;
   font-size: 18px;
   font-weight: normal;
 }
-.list-header { box-sizing: border-box; }
+.content-header {
+  box-sizing: border-box;
+  width: 100%;
+
+  span {
+    line-height: 28px;
+    a {
+      color: #eeeeee;
+      &:hover { color: #dddddd; }
+    }
+  }
+
+  & > div { overflow: hidden; }
+}
 td, .table-list li { font-size: 14px; }
 
 /* Subs and subbers */

@@ -19,8 +19,7 @@
       .details
         Post last updated: #{pretty_time(@post.tagged_at)}
       .content-header
-        .padding-15
-          %span#post-title= @post.subject
+        %span#post-title= @post.subject
       - if @post.description.present?
         .post-subheader
           .padding-10
