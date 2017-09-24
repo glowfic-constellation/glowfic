@@ -10,9 +10,9 @@ body { background-color: #211E2F; color: $FONT_COLOR; }
 .sub { color: #F3F3F3; }
 .sub, .post-navheader, .flash.breadcrumbs { background-color: #131937; }
 .subber { background-color: #0D0B1E; color: $FONT_COLOR; }
-#content .beige { background-color: #484357; color: $FONT_COLOR; }
-#content .beige a, #content th a, .list-header a, .post-header a { color: #B5AFCB; }
-#content .beige a:visited, #content th a:visited, .list-header a:visited, .post-header a:visited { color: #9C9AA4; }
+.selector-popup, .single-description { background-color: #484357; color: $FONT_COLOR; }
+.single-description a, #content th a, .list-header a, .post-header a { color: #B5AFCB; }
+.single-description a:visited, #content th a:visited, .list-header a:visited, .post-header a:visited { color: #9C9AA4; }
 
 #post-menu-box { border-top: 1px solid #808080; border-top: 1px solid rgba(128,128,128,0.5); }
 #post-menu-box div { border-bottom: 1px solid #808080; border-bottom: 1px solid rgba(128,128,128,0.5); }
@@ -21,7 +21,7 @@ body { background-color: #211E2F; color: $FONT_COLOR; }
 #content .odd, .post-reply:nth-child(odd), .post-post + #post-editor, .post-post + a + #post-editor, .even blockquote, .post-post blockquote, .post-reply:nth-child(even) blockquote { background-color: #25262E; }
 
 .post-navheader .view-button, .view-button.selected, .view-button, .link-box.green, .link-box.blue, .link-box.red, .tag-item { background-color: #463C65; }
-#content .beige .link-box, .flash.breadcrumbs .link-box, .subber .link-box { background-color: #5C5778; }
+.flash.breadcrumbs .link-box, .subber .link-box { background-color: #5C5778; }
 #post-editor .green { background-color: #484357; color: $FONT_COLOR; }
 .post-subheader { background-color: #484357; color: #F3F3F3; }
 
