@@ -169,14 +169,13 @@ td, .table-list li { font-size: 14px; }
 
 /* Form Tables */
 .form-table {
-  text-align: center;
   width: 400px;
   margin: 0;
   border-spacing: 0;
 
+  th { text-align: center; }
   td {
     padding: 5px;
-    text-align: left;
 
     input {
       margin: 0;

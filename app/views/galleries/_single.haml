@@ -28,7 +28,7 @@
           = link_to tag_path(group.id), class: 'tag-item-link' do
             %span.tag-item
               = group.name
-%tr.gallery-icons{}
+%tr.gallery-icons
   %td.green
     .gallery{id: "gallery#{gallery.id.to_s}"}
       = form_tag delete_multiple_icons_path, method: :delete do

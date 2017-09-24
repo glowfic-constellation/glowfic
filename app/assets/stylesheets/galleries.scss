@@ -7,7 +7,6 @@
 /* The + / - symbol to minimize a gallery */
 .gallery-minmax, .add-gallery-icon { cursor: pointer; }
 .gallery-title { height: 5px; } /* So that when a gallery is minimized there is spacing */
-.character-icon { width: 100px; height: 100px; }
 .selected-icon {
   border: 10px $border_color_icon_selected solid;
   width: 80px;
@@ -17,8 +16,8 @@
 
 /* Basic gallery and gallery icon formatting */
 .gallery { padding: 10px; }
-.gallery img { margin: 5px; }
-.gallery-icon {
+.gallery .icon { margin: 5px; }
+.gallery-icon, .character-icon-item {
   display: inline-block;
   margin-bottom: 10px;
   position: relative;
@@ -29,13 +28,6 @@
   word-wrap: break-word;
   vertical-align: top;
 }
-.gallery-no-icon {
-  width: 100px;
-  height: 100px;
-  border: 1px $border_color_character_iconless solid;
-  margin: 5px;
-  display: inline-block;
-}
 
 /* Tiny buttons that hover over icons to allow deleting or selecting a checkbox for editing */
 .delete-button, .select-button {
@@ -45,46 +37,39 @@
   cursor: pointer;
 }
 .delete-button {
-  height: 1em;
-  width: 1em;
+  box-sizing: border-box;
+  height: 1.5em;
+  width: 1.5em;
+  padding: 0.2em;
   background-color: $bg_color_mini_delete;
   border: 1px $border_color_mini_delete solid;
   color: $font_color_mini_delete;
-  padding: 3px;
+  line-height: 1em;
 
   a, a:visited, a:hover { color: $font_color_mini_delete; }
 }
-.select-button {
-  width: 20px;
-  height: 20px;
-  border: 0;
-  padding: 0;
-  background-color: transparent;
-
-  input {
-    height: 20px;
-    width: 20px;
-    margin: 0;
-  }
+.select-button input {
+  width: 1.5em;
+  height: 1.5em;
+  margin: 0;
 }
 
 /* The table in galleries/add to add multiple icons at once */
 #icon-table {
   margin: 0;
   width: 100%;
-  text-align: center;
 
   .icon-buttons {
     width: 40px;
     padding: 0 5px 0 0;
 
-    img { display: inline-block; }
+    img { vertical-align: middle; }
   }
 
-  img.preview-icon {
+  .preview-icon {
     max-height: 27px;
     max-width: 27px;
-    margin: 0px;
+    margin: 0;
   }
 }
-img.loading-icon { width: 16px; height: 16px; }
+.loading-icon { width: 16px; height: 16px; }
