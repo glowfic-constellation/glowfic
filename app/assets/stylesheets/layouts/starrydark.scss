@@ -6,13 +6,15 @@ $FONT_COLOR: #DADADA;
 $FONT_COLOR_DARK: #444444;
 body { background-color: #211E2F; color: $FONT_COLOR; }
 
-#content th, .content-header { background-color: #0D0B1E; }
+th, .content-header { background-color: #0D0B1E; }
 .sub { color: #F3F3F3; }
 .sub, .post-navheader, .flash.breadcrumbs { background-color: #131937; }
 .subber { background-color: #0D0B1E; color: $FONT_COLOR; }
 .selector-popup, .single-description { background-color: #484357; color: $FONT_COLOR; }
-.single-description a, #content th a, .content-header a { color: #B5AFCB; }
-.single-description a:visited, #content th a:visited, .content-header a:visited { color: #9C9AA4; }
+th, .single-description, .content-header {
+  a { color: #B5AFCB; }
+  a:visited { color: #9C9AA4; }
+}
 
 #post-menu-box { border-top: 1px solid #808080; border-top: 1px solid rgba(128,128,128,0.5); }
 #post-menu-box div { border-bottom: 1px solid #808080; border-bottom: 1px solid rgba(128,128,128,0.5); }
@@ -25,8 +27,10 @@ body { background-color: #211E2F; color: $FONT_COLOR; }
 #post-editor .green { background-color: #484357; color: $FONT_COLOR; }
 .post-subheader { background-color: #484357; color: #F3F3F3; }
 
-.subber, .subber a, .subber a:visited { color: #9C9AA4; }
-.subber b { color: #F3F3F3; }
+.subber, .flash.breadcrumbs {
+  &, a, a:visited { color: #9C9AA4; }
+  b { color: #F3F3F3; }
+}
 .post-expander { background-color: #25262E; }
 
 .selector-popup { font-weight: normal; }
