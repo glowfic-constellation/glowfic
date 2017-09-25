@@ -18,7 +18,7 @@ class Reply < ApplicationRecord
   pg_search_scope(
     :search,
     against: %i(content),
-    using: {tsearch: { dictionary: "english", highlight: {max_fragments: 10} } }
+    using: {tsearch: { dictionary: "english", highlight: {MaxFragments: 10} } }
   )
 
   def post_page(per=25)
