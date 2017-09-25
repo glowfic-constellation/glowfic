@@ -190,6 +190,7 @@ module ApplicationHelper
   end
 
   def breakable_text(text)
+    return text if text.nil?
     h(text).gsub('_', '_<wbr>').html_safe
   end
 
