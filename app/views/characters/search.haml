@@ -41,7 +41,7 @@
                     %br
                     = check_box_tag :search_aliases, true, params[:commit] ? params[:search_aliases] : true, {class: 'vmid no-margin', style: 'margin-bottom: 3px;'}
                     = label_tag :search_aliases, "Aliases"
-              - # TODO: setting search, facecast search  
+              - # TODO: setting search, facecast search
               %tr
                 %td.centered{colspan: 2}= submit_tag "Search", class: 'button'
           %td.vtop
@@ -67,7 +67,7 @@
                     %tr
                       %td.padding-5{class: klass}= link_to character.name, character_path(character)
                       %td.padding-5{class: klass, style:'width:20%'}= character.template_name
-                      %td.padding-5{class: klass, style:'width:20%'}= character.screenname
+                      %td.padding-5{class: klass, style:'width:20%'}= breakable_text(character.screenname)
                       %td.padding-5{class: klass, style:'width:25%'}= character.pb
 
     - if @search_results && @search_results.total_pages > 1

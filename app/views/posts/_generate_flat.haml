@@ -11,7 +11,7 @@
             - if reply.character_id
               .post-character= reply.name
               - if reply.screenname
-                .post-screenname= reply.screenname
+                .post-screenname= breakable_text(reply.screenname)
             - else
               .dark.spacer
             .post-author= reply.username

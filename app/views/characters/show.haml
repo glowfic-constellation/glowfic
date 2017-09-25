@@ -25,7 +25,7 @@
         %span.character-name= @character.name
         - if @character.screenname
           %br
-          %span.character-screenname= @character.screenname
+          %span.character-screenname= breakable_text(@character.screenname)
   %tbody
     - if @character.default_icon
       %tr

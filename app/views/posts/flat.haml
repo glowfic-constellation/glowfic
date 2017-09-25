@@ -31,7 +31,7 @@
               - if @post.character
                 .post-character= @post.name
                 - if @post.character.screenname
-                  .post-screenname= @post.character.screenname
+                  .post-screenname= breakable_text(@post.character.screenname)
               - else
                 .dark.spacer
               .post-author= @post.user.username

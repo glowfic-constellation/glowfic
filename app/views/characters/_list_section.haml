@@ -42,7 +42,7 @@
       %td.padding-5{class: klass}
         = link_to character.name, character_path(character)
       %td.padding-5{class: klass, style:'width:15%'}= character.template_name
-      %td.padding-5{class: klass, style:'width:15%'}= character.screenname
+      %td.padding-5{class: klass, style:'width:15%'}= breakable_text(character.screenname)
       %td.padding-5{class: klass, style:'width:20%'}= character.pb
       %td.padding-5{class: klass, style:'width:15%'}= character.setting
 
