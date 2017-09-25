@@ -18,8 +18,7 @@
         = link_to @post.subject, post_path(@post)
     - if @post.description.present?
       %tr
-        %td.post-subheader.padding-10{colspan: 2, style: 'width: unset;'}
-          %span= sanitize_post_description(@post.description).html_safe
+        %td.post-subheader{colspan: 2, style: 'width: unset;'}= sanitize_post_description(@post.description).html_safe
   %tbody
     %tr
       %td.sub.width-150 Status

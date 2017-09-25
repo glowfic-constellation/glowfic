@@ -4,7 +4,7 @@ require 'will_paginate/array'
 class RepliesController < WritableController
   before_action :login_required, except: [:search, :show, :history]
   before_action :find_reply, only: [:show, :history, :edit, :update, :destroy]
-  before_action :build_template_groups, only: [:edit]
+  before_action :editor_setup, only: [:edit]
   before_action :require_permission, only: [:edit, :update, :destroy]
 
   def search
@@ -160,8 +160,6 @@ class RepliesController < WritableController
   end
 
   def edit
-    use_javascript('posts/editor')
-    setup_layout_gon
   end
 
   def update
@@ -209,16 +207,13 @@ class RepliesController < WritableController
   end
 
   def preview(written)
-    build_template_groups
-
     @written = written
     @post = @written.post
     @written.user = current_user
 
     @page_title = @post.subject
 
-    use_javascript('posts/editor')
-    setup_layout_gon
+    editor_setup
     render action: :preview
   end
 

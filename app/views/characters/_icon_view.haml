@@ -1,6 +1,6 @@
 - if @template.nil? && name.present?
   %tr
-    %td.beige.padding-10{colspan: 6}
+    %td.subber.padding-10{colspan: 6}
       - if name.is_a? ActiveRecord::Base::Template
         %b
           Template:
@@ -18,23 +18,20 @@
         %b= name
 - if @template && @template.description.present?
   %tr
-    %td.beige.padding-5.written-content{colspan: 6}= sanitize_written_content(@template.description).html_safe
+    %td.single-description.written-content{colspan: 6}= sanitize_written_content(@template.description).html_safe
 %tr
   %td.green.left-align
-    .gallery
+    .character-icon-list
       - characters.includes(:default_icon).each do |character|
-        .gallery-icon
+        .character-icon-item
           = link_to character_path(character) do
             - if character.default_icon
               = icon_tag character.default_icon
-              %br
             - else
-              <div class='icon gallery-no-icon'>&nbsp;</div>
-              %br
-            %span.character-name= character.name
+              .icon.character-no-icon &nbsp;
+            .character-name= character.name
             - if character.screenname.present?
-              %br
-              %span.character-screenname= surround('(', ')') { sanitize(character.screenname).gsub('_', '_<wbr>') }
+              .character-screenname= surround('(', ')') { sanitize(character.screenname).gsub('_', '_<wbr>') }
           - if character.user_id == current_user.try(:id)
             .delete-button{ id: character.id }
               = link_to '×', character_path(character), :method => :delete, data: { confirm: 'Are you sure you want to delete '+character.name+'?' }

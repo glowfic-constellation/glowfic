@@ -2,8 +2,10 @@
 var galleryIds, oldTemplate;
 var galleryGroupIds = [];
 var galleryGroups = {};
+var characterIconsBox;
 
 $(document).ready(function() {
+  characterIconsBox = $('#character-icon-selector .character-galleries-simple');
   gon.gallery_groups.forEach(function(galleryGroup) {
     galleryGroups[galleryGroup.id] = galleryGroup;
   });
@@ -61,10 +63,10 @@ $(document).ready(function() {
       var removedGallery = $(galleryIds).not(newGalleryIds).get(0);
       galleryIds = newGalleryIds;
       if (findGalleryInGroups(removedGallery)) return;
-      $(".gallery #gallery"+removedGallery).remove();
+      characterIconsBox.find("#gallery"+removedGallery).remove();
 
       // if no more galleries are left, display galleryless icons
-      if ($(".gallery [id^='gallery']").length === 0) {
+      if (characterIconsBox.find("[id^='gallery']").length === 0) {
         displayGallery('0');
       }
       return;
@@ -72,10 +74,10 @@ $(document).ready(function() {
 
     var newId = $(newGalleryIds).not(galleryIds).get(0);
     galleryIds = newGalleryIds;
-    $(".gallery #gallery0").remove();
+    characterIconsBox.find("#gallery0").remove();
 
     // display only if not visible (for gallery groups)
-    if ($(".gallery #gallery" + newId).length === 0) displayGallery(newId);
+    if (characterIconsBox.find("#gallery" + newId).length === 0) displayGallery(newId);
   });
 
   $("#character_gallery_group_ids").change(function() {
@@ -95,12 +97,12 @@ $(document).ready(function() {
       // delete unfound galleries from icons list
       group.gallery_ids.forEach(function(galleryId) {
         if (findGalleryInGroups(galleryId) || galleryIds.indexOf(galleryId.toString()) >= 0) return;
-        $(".gallery #gallery" + galleryId).remove();
+        characterIconsBox.find("#gallery" + galleryId).remove();
         galleryIds = $.makeArray($(galleryIds).not([galleryId.toString()]));
       });
 
       // if no more galleries remain, display galleryless icons
-      if ($(".gallery [id^='gallery']").length === 0) {
+      if (characterIconsBox.find("[id^='gallery']").length === 0) {
         displayGallery('0');
       }
       return;
@@ -118,9 +120,9 @@ $(document).ready(function() {
 
       if (ids.length === 0) return; // return if empty
 
-      $(".gallery #gallery0").remove();
+      characterIconsBox.find("#gallery0").remove();
       ids.forEach(function(id) {
-        if ($(".gallery #gallery" + id).length === 0) {
+        if (characterIconsBox.find("#gallery" + id).length === 0) {
           displayGallery(id);
         }
       });
@@ -154,7 +156,7 @@ function displayGallery(newId) {
       var galleryIcon = $("<img>").attr({src: url, alt: keyword, title: keyword, class: 'icon character-icon'}).data('id', id);
       galleryIcons.append(galleryIcon);
     }
-    $("#selected-gallery .gallery").append(galleryObj);
+    characterIconsBox.append(galleryObj);
     bindIcons(galleryObj);
   }, 'json');
 }

@@ -13,11 +13,10 @@
 
 %br
 %br
-- reset_cycle
-.post-header
 
+- reset_cycle
 #reorder-sections-table
-  .list-header
+  .content-header
     Organize Continuity Sections
     = link_to new_board_section_path params: {board_id: @board.id} do
       .link-box.green + New Section
@@ -48,7 +47,7 @@
   %br
   - reset_cycle
   #reorder-posts-table
-    .list-header
+    .content-header
       Organize Unsectioned Posts
       #loading.float-right.hidden
         = image_tag '/images/loading.gif', title: 'Loading...', class: 'vmid', alt: '...', style: 'width: 16px; height: 16px;'

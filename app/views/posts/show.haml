@@ -25,18 +25,17 @@
         - @warnings.each do |warning|
           %li= link_to warning.name, tag_path(warning)
 
-.post-header
-  .padding-15
-    %span#post-title= link_to @post.subject, post_path(@post)
-    .view-button#post-menu
-      = image_tag ((current_user.try(:layout) == 'starrydark'.freeze or current_user.try(:layout) == 'starry'.freeze or current_user.try(:layout) == 'starrylight'.freeze) ? '/images/menugray.png'.freeze : '/images/menu.png'.freeze), class: 'icon-view'.freeze
+.content-header
+  %span#post-title= link_to @post.subject, post_path(@post)
+  .view-button#post-menu
+    = image_tag ((current_user.try(:layout) == 'starrydark'.freeze or current_user.try(:layout) == 'starry'.freeze or current_user.try(:layout) == 'starrylight'.freeze) ? '/images/menugray.png'.freeze : '/images/menu.png'.freeze), class: 'icon-view'.freeze
 #post-menu-holder
   #post-menu-box.hidden
-    / TODO Throne3d is writing an ePub downloader
-    /= link_to post_path(@post, completed: false), method: :put do
-    /  %div
-    /    = image_tag '/images/book_go.png'
-    /    Download as ePub
+    -# TODO ePub downloader
+    -#= link_to post_path(@post, completed: false), method: :put do
+    -#  %div
+    -#    = image_tag '/images/book_go.png'
+    -#    Download as ePub
     = link_to post_path(@post, view: 'flat'.freeze), rel: 'nofollow noindex'.freeze do
       %div
         = image_tag '/images/page_world.png'.freeze
@@ -105,26 +104,21 @@
             %div
               = image_tag '/images/lock.png'.freeze
               Lock Authors
-      / TODO need more dynos before I can create this feature
-      /= link_to users_path do
-      /  %div
-      /    = image_tag '/images/bell_add.png'
-      /    Turn on notifications
+      -# TODO need more dynos
+      -#= link_to users_path do
+      -#  %div
+      -#    = image_tag '/images/bell_add.png'
+      -#    Turn on notifications
 - if @post.description.present?
-  .post-subheader
-    .padding-10
-      %span= sanitize_post_description(@post.description).html_safe
+  .post-subheader= sanitize_post_description(@post.description).html_safe
 - if @prev_post || @next_post
   .post-navheader
-    .padding-10
-      - if @next_post
-        = link_to post_path(@next_post) do
-          .view-button Next Post &raquo;
-      - if @prev_post
-        = link_to post_path(@prev_post) do
-          .view-button.float-none &laquo; Previous Post
-      .clear
-
+    - if @next_post
+      = link_to post_path(@next_post) do
+        .view-button Next Post &raquo;
+    - if @prev_post
+      = link_to post_path(@prev_post) do
+        .view-button.float-none &laquo; Previous Post
 - if page.to_i == 1
   = render partial: 'replies/single', locals: {reply: @post}
 - else
@@ -139,14 +133,12 @@
   .post-ender Here Ends This Thread
   - if @prev_post || @next_post
     .post-navheader
-      .padding-10
-        - if @next_post
-          = link_to post_path(@next_post) do
-            .view-button Next Post &raquo;
-        - if @prev_post
-          = link_to post_path(@prev_post) do
-            .view-button.float-none &laquo; Previous Post
-        .clear
+      - if @next_post
+        = link_to post_path(@next_post) do
+          .view-button Next Post &raquo;
+      - if @prev_post
+        = link_to post_path(@prev_post) do
+          .view-button.float-none &laquo; Previous Post
 - if @post.on_hiatus? && (@replies.empty? || (@replies.last.id == @post.last_reply_id))
   .post-ender This Thread Is On Hiatus
 - if @post.abandoned? && (@replies.empty? || (@replies.last.id == @post.last_reply_id))

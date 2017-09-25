@@ -106,7 +106,7 @@ function getOrCreateWarningBox(orderBox) {
       sectionWarning = $("<td class='section-warning'>").appendTo(outerBox);
       orderBox.prepend(outerBox);
     } else {
-      var aboveBox = $('.list-header', orderBox);
+      var aboveBox = $('.content-header', orderBox);
       sectionWarning = $("<div class='section-warning'>");
       aboveBox.after(sectionWarning);
     }

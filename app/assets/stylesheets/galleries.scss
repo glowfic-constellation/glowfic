@@ -1,0 +1,75 @@
+@import 'variables';
+.gallery-box {
+  cursor: pointer;
+  width: 20px;
+  text-align: center;
+}
+/* The + / - symbol to minimize a gallery */
+.gallery-minmax, .add-gallery-icon { cursor: pointer; }
+.gallery-title { height: 5px; } /* So that when a gallery is minimized there is spacing */
+.selected-icon {
+  border: 10px $border_color_icon_selected solid;
+  width: 80px;
+  height: 80px;
+}
+.form-table .icon { vertical-align: middle; }
+
+/* Basic gallery and gallery icon formatting */
+.gallery { padding: 10px; }
+.gallery .icon { margin: 5px; }
+.gallery-icon, .character-icon-item {
+  display: inline-block;
+  margin-bottom: 10px;
+  position: relative;
+  width: 130px;
+  min-height: 130px;
+  text-align: center;
+  line-height: 14px;
+  word-wrap: break-word;
+  vertical-align: top;
+}
+
+/* Tiny buttons that hover over icons to allow deleting or selecting a checkbox for editing */
+.delete-button, .select-button {
+  position: absolute;
+  top: 0;
+  right: 12px;
+  cursor: pointer;
+}
+.delete-button {
+  box-sizing: border-box;
+  height: 1.5em;
+  width: 1.5em;
+  padding: 0.2em;
+  background-color: $bg_color_mini_delete;
+  border: 1px $border_color_mini_delete solid;
+  color: $font_color_mini_delete;
+  line-height: 1em;
+
+  a, a:visited, a:hover { color: $font_color_mini_delete; }
+}
+.select-button input {
+  width: 1.5em;
+  height: 1.5em;
+  margin: 0;
+}
+
+/* The table in galleries/add to add multiple icons at once */
+#icon-table {
+  margin: 0;
+  width: 100%;
+
+  .icon-buttons {
+    width: 40px;
+    padding: 0 5px 0 0;
+
+    img { vertical-align: middle; }
+  }
+
+  .preview-icon {
+    max-height: 27px;
+    max-width: 27px;
+    margin: 0;
+  }
+}
+.loading-icon { width: 16px; height: 16px; }

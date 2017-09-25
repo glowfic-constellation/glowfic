@@ -1,0 +1,326 @@
+@import 'variables';
+
+/* Header Menus */
+#header {
+  background-color: $bg_color_header_bottom;
+  color: $font_color_header_link;
+  font-size: $font_size_header;
+  vertical-align: middle;
+  overflow: hidden;
+
+  ul {
+    display: inline;
+    margin: 0 0.5em 0 0;
+    padding: 0;
+  }
+  li {
+    display: inline-block;
+    margin: 0 0 0 1em;
+    padding: 0;
+    white-space: nowrap;
+  }
+
+  a { color: $font_color_header_link; }
+  a:hover { color: $font_color_header_link_hover; }
+}
+
+#logo {
+  background-color: $bg_color_header_top;
+  padding: 0.5em;
+  overflow: hidden; /* so it contains the floating image */
+
+  img {
+    float: right;
+    padding: 0.5em 0.5em 0.3em 0;
+  }
+}
+
+#user-info {
+  float: left;
+  padding: 0.5em;
+  background-color: $bg_color_header_middle;
+  font-weight: bold;
+  text-align: center;
+
+  .no-img, img {
+    display: inline-block;
+    height: 100px;
+    width: 100px;
+    margin: 5px;
+    padding: 0;
+  }
+}
+
+#nav-top {
+  padding: 0.5em 1em 0.5em 0.5em;
+  background-color: $bg_color_header_middle;
+  font-weight: bold;
+
+  button, .button {
+    margin-right: 10px;
+    color: $font_color_button;
+    font-size: 13px;
+    font-weight: bold; /* not redundant: used for login form */
+  }
+  input {
+    vertical-align: middle; /* for login form */
+  }
+}
+#header-logout { margin-left: 1em; }
+#header-form {
+  font-weight: normal;
+  display: inline;
+  input { margin: 2px 0; }
+  #header-remember, #header-forms { margin-right: 10px; }
+}
+#header-forms, #header-remember, #header-buttons, #header-buttons-links { display: inline; }
+#header-buttons-links, #header-remember { white-space: nowrap; }
+#header-buttons-links a { font-weight: bold; }
+
+#nav-bottom {
+  padding: 0.6em 0;
+  background-color: $bg_color_header_bottom;
+  vertical-align: middle;
+}
+#header-links {
+  display: none; /* hidden by default, shows up on narrow screens */
+  vertical-align: middle;
+  font-size: $font_size_small;
+  height: 20px;
+  a { font-weight: bold; }
+}
+
+@media (max-width: 400px) {
+  #user-info {
+    img, .no-img { display: none; }
+  }
+  #header-form { display: none; }
+  #header-links { display: inline-block; }
+  #logo img { padding: 0.2em; height: 20px; }
+}
+
+/* Main Content */
+#content {
+  padding: 20px;
+  font-size: $font_size_main;
+  line-height: 20px;
+  text-align: left;
+  position: relative;
+}
+@media (max-width: 600px) {
+  #content { padding: 10px; }
+}
+@media (max-width: 500px) {
+  #content { padding: 5px; }
+}
+
+/* Flash Displays */
+.flash { padding: 10px 20px; }
+.flash ul { margin: 0; margin-top: 5px; }
+.flash.error { background-color: $bg_color_flash_error; }
+.flash.success { background-color: $bg_color_flash_success; }
+.flash.inbox { background-color: $bg_color_flash_inbox; }
+.flash.breadcrumbs { background-color: $bg_color_flash_breadcrumbs; }
+
+/* Top-right timestamp on certain timestamped pages */
+.time-loaded {
+  font-size: 10px;
+  position: absolute;
+  top: 2px;
+  right: 20px;
+}
+
+/* Login / logout warning */
+#login_status_warning { position: absolute; top: 0; width: 100%; box-sizing: border-box; }
+
+/* List Tables */
+table { width: 100%; }
+.table-list { /* table-style ULs */
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+th, .content-header {
+  background-color: $bg_color_head;
+  color: $font_color_head;
+  padding: 15px;
+  font-size: 18px;
+  font-weight: normal;
+}
+.content-header {
+  box-sizing: border-box;
+  width: 100%;
+
+  span {
+    line-height: 28px;
+    a {
+      color: #eeeeee;
+      &:hover { color: #dddddd; }
+    }
+  }
+
+  & > div { overflow: hidden; }
+}
+td, .table-list li { font-size: 14px; }
+
+/* Subs and subbers */
+.sub {
+  padding: 10px;
+  background-color: $bg_color_sub;
+  color: $font_color_sub;
+  font-size: 16px;
+}
+.subber {
+  padding: 10px 25px;
+  background-color: $bg_color_subber;
+  color: $font_color_subber;
+  font-size: 15px;
+  font-weight: bold;
+  input { margin: 0; }
+  .link-box { font-size: 15px; }
+}
+
+/* Form Tables */
+.form-table {
+  width: 400px;
+  margin: 0;
+  border-spacing: 0;
+
+  th { text-align: center; }
+  td {
+    padding: 5px;
+
+    input {
+      margin: 0;
+      width: 100%;
+      -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+      -moz-box-sizing: border-box;    /* Firefox, other Gecko */
+      box-sizing: border-box;         /* Opera/IE 8+ */
+
+      &[type='checkbox'] {
+        margin: 0 1px;
+        height: 18px;
+        width: 18px;
+        vertical-align: middle;
+      }
+    }
+  }
+
+  textarea {
+    box-sizing: border-box;
+    height: 10em;
+    width: 100%;
+  }
+
+  .select2-container input { margin-top: 5px; }
+}
+.form-table-ender {
+  padding: 10px 25px;
+  background-color: $bg_color_subber;
+  color: $font_color_subber;
+  font-size: 15px;
+  font-weight: bold;
+  text-align: center;
+
+  input { margin: 0; }
+}
+@media (max-width: 400px) {
+  .form-table { width: 100%; }
+}
+
+/* Miscellaneous inputs */
+.select2 {
+  &-container { margin: 3px 0; color: $font_color_select2_container; }
+  &, &-dropdown { font-size: 13px; }
+  input { height: 20px; margin: 0; }
+  ul { padding: 0; }
+}
+
+/* Buttons like List View or Outbox View in top right of page */
+.view-button {
+  display: inline-block;
+  float: right;
+  margin: 0;
+  margin-left: 5px;
+  padding: 4px 12px;
+  background-image: none;
+  background-color: $bg_color_viewbutton;
+  color: $font_color_viewbutton;
+  font-size: 18px;
+  line-height: 1.3em;
+  border: 0;
+  border-radius: 5px;
+  cursor: pointer;
+
+  &.selected { background-color: $bg_color_viewbutton_selected; }
+
+  a { color: white; }
+}
+
+.list-view, .icon-view {
+  display: inline;
+  margin: 0;
+  padding: 0;
+  top: 2px;
+  position: relative;
+}
+.list-view { width: 20px; height: 17px; }
+.icon-view { width: 15px; height: 15px; }
+
+/* Tag label buttons, like seen on the gallery page */
+.tag-box {
+  display: inline;
+  margin-left: 5px;
+}
+.tag-item-link:hover {
+  color: unset;
+}
+.tag-item {
+  display: inline-block;
+  margin: 2px 0;
+  padding: 2px 8px;
+  background-color: $bg_color_tag_item;
+  color: $font_color_tag_item;
+  font-size: 90%;
+  font-weight: normal;
+  border-radius: 5px;
+}
+
+/* The new object layout with the floating left info box and the right content area */
+.left-info-box {
+  float: left;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  table-layout: fixed;
+}
+.right-content-box { float: left; }
+.user-info-box { width: 200px; }
+.icon-info-box { width: 150px; }
+.character-info-box { width: 175px; }
+.user-right-content-box { width: calc(100% - 200px); }
+.icon-right-content-box { width: calc(100% - 150px); }
+.character-right-content-box { width: calc(100% - 175px); }
+
+/* Not yet deserving of its own CSS file */
+#stats ul { margin-top: 0; margin-bottom: 0; padding-left: 15px; }
+.checkbox { height: 12px; margin: 0; vertical-align: middle; } /* Keeps unread table from padding excessively for the checkboxes */
+#signup .sub { width: 90px; }
+.continuity-spacer { height: 20px; }
+.post-ignored { opacity: 0.3; }
+#loading img { height: 20px; width: 20px; }
+.section-warning {
+  background-color: rgb(208, 110, 110);
+  background-color: rgba(255, 0, 0, 0.4);
+  padding: 5px;
+}
+.section-ordered-handle {
+  cursor: move;
+  display: inline-block;
+
+  img { vertical-align: text-bottom; }
+}
+.continuity-header {
+  padding: 10px 25px;
+  font-size: 15px;
+  font-weight: bold;
+}

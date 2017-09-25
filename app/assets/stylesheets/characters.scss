@@ -1,0 +1,29 @@
+@import 'variables';
+
+// default icon selector
+#character-icon-selector {
+  position: absolute;
+  left: 450px;
+  top: 20px;
+}
+.character-galleries-simple { padding: 10px; }
+.character-screenname { font-size: 85%; }
+
+// template descriptions on templates#show
+.single-description {
+  padding: 5px;
+  background-color: $bg_color_descriptions;
+}
+
+// character icon view
+.character-icon-list { padding: 10px; }
+.character-icon { width: 100px; height: 100px; }
+.character-icon-item .icon { margin: 5px; }
+.character-no-icon {
+  @extend .character-icon;
+  border: 1px $border_color_character_iconless solid;
+  display: inline-block;
+}
+
+// character list view
+.character-list-template { padding: 10px; }

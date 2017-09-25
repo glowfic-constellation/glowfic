@@ -84,7 +84,7 @@
         = f.check_box :show_user_in_switcher, class: 'width-15 vmid'
         = f.label :show_user_in_switcher, "Show user character"
     %tr
-      %th.centered.subber{colspan: 2}= submit_tag "Save", class: 'button'
+      %th.form-table-ender{colspan: 2}= submit_tag "Save", class: 'button'
 
 %br
 = form_for current_user, :url => password_user_path(current_user), :method => :put do |f|
@@ -101,4 +101,4 @@
       %th.sub Confirm
       %td{class: cycle('even', 'odd')}= f.password_field :password_confirmation, :placeholder => "Confirm Password", :class => 'text', :value => (params[:user]||{})[:password_confirmation]
     %tr
-      %th.centered.subber{colspan: 2}= submit_tag "Save", class: 'button'
+      %th.form-table-ender{colspan: 2}= submit_tag "Save", class: 'button'

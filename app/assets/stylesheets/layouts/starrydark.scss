@@ -1,35 +1,62 @@
-﻿#header { background-image: url("/images/starry.jpg"); background-position: right top; }
+@import 'variables';
+#header { background-image: url("/images/starry.jpg"); background-position: right top; }
 #logo, #nav-bottom { background-color: transparent !important; }
-#header #user-info, #header #nav-top { background-color: #05050F; background-color: rgba(5, 5, 15, 0.9); }
+#user-info, #nav-top { background-color: #05050F; background-color: rgba(5, 5, 15, 0.9); }
 
 $FONT_COLOR: #DADADA;
 $FONT_COLOR_DARK: #444444;
 body { background-color: #211E2F; color: $FONT_COLOR; }
 
-#content th, .list-header, .post-header { background-color: #0D0B1E; }
-#content .sub { color: #F3F3F3; }
-#content .sub, .post-navheader, .subber { background-color: #131937; }
-#content .subber, #content th.subber { background-color: #0D0B1E; color: $FONT_COLOR; }
-#content .beige { background-color: #484357; color: $FONT_COLOR; }
-#content .beige a, #content th a, .list-header a, .post-header a { color: #B5AFCB; }
-#content .beige a:visited, #content th a:visited, .list-header a:visited, .post-header a:visited { color: #9C9AA4; }
+th, .content-header { background-color: #0D0B1E; }
+.sub { color: #F3F3F3; }
+.sub, .post-navheader, .flash.breadcrumbs { background-color: #131937; }
+.form-table-ender { background-color: #0D0B1E; color: $FONT_COLOR; }
+.selector-popup, .single-description, .subber { background-color: #484357; color: $FONT_COLOR; }
+th, .single-description, .content-header {
+  a { color: #B5AFCB; }
+  a:visited { color: #9C9AA4; }
+}
 
-#post-menu-box { border-top: 1px solid #808080; border-top: 1px solid rgba(128,128,128,0.5); }
-#post-menu-box div { border-bottom: 1px solid #808080; border-bottom: 1px solid rgba(128,128,128,0.5); }
-#post-menu-box a { color: inherit; }
-#content .even, .post-post, .post-reply:nth-child(even), #post-editor, .odd blockquote, .post-reply:nth-child(odd) blockquote { background-color: #31323B; }
-#content .odd, .post-reply:nth-child(odd), .post-post + #post-editor, .post-post + a + #post-editor, .even blockquote, .post-post blockquote, .post-reply:nth-child(even) blockquote { background-color: #25262E; }
+$EVEN_COLOR: #31323B;
+$ODD_COLOR: #25262E;
+
+#post-menu-box {
+  border-top: 1px solid #808080;
+  border-top: 1px solid rgba(128,128,128,0.5);
+
+  a { color: inherit; }
+  div {
+    border-bottom: 1px solid #808080;
+    border-bottom: 1px solid rgba(128,128,128,0.5);
+  }
+}
+.even, .post-post, .post-reply:nth-child(even), #post-editor {
+  background-color: $EVEN_COLOR;
+
+  blockquote {
+    background-color: calculate-transparent-color($EVEN_COLOR, $ODD_COLOR, 0.2);
+  }
+}
+.odd, .post-reply:nth-child(odd), .post-post + #post-editor, .post-post + a + #post-editor {
+  background-color: $ODD_COLOR;
+
+  blockquote {
+    background-color: calculate-transparent-color($ODD_COLOR, $EVEN_COLOR, 0.2);
+  }
+}
 
 .post-navheader .view-button, .view-button.selected, .view-button, .link-box.green, .link-box.blue, .link-box.red, .tag-item { background-color: #463C65; }
-#content .beige .link-box, #content .subber .link-box, .subber .link-box { background-color: #5C5778; }
+.flash.breadcrumbs .link-box, .subber .link-box { background-color: #5C5778; }
 #post-editor .green { background-color: #484357; color: $FONT_COLOR; }
 .post-subheader { background-color: #484357; color: #F3F3F3; }
 
-.subber, .subber a, .subber a:visited { color: #9C9AA4; }
-.subber b { color: #F3F3F3; }
+.subber, .flash.breadcrumbs {
+  &, a, a:visited { color: #9C9AA4; }
+  b { color: #F3F3F3; }
+}
 .post-expander { background-color: #25262E; }
 
-#character-selector { font-weight: normal; }
+.selector-popup { font-weight: normal; }
 .post-icon, #current-icon-dropdown, .post-author { background-color: #0E0B1E; }
 #current-icon-dropdown { color: #111111; }
 .post-character, .post-screenname, .post-author { font-weight: bold; }

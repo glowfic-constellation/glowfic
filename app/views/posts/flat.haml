@@ -18,13 +18,10 @@
         Generated: #{pretty_time(@post.flat_post.updated_at)}
       .details
         Post last updated: #{pretty_time(@post.tagged_at)}
-      .post-header
-        .padding-15
-          %span#post-title= @post.subject
+      .content-header
+        %span#post-title= @post.subject
       - if @post.description.present?
-        .post-subheader
-          .padding-10
-            %span= sanitize_post_description(@post.description).html_safe
+        .post-subheader= sanitize_post_description(@post.description).html_safe
       .post-container{class: 'odd'}
         .padding-10
           .post-info-box

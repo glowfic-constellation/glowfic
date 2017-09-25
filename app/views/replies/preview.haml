@@ -1,5 +1,5 @@
 - if @unseen_replies.present?
-  .post-header
+  .content-header
     .padding-15
       Unseen Replies
       = link_to unread_path(@post) do
@@ -10,10 +10,8 @@
     .post-ender ... and #{@unseen_replies.total_entries - @unseen_replies.per_page} more ...
   %br
 
-.post-header
-  .padding-15= @post.subject
+.content-header= @post.subject
 - if @post.description.present?
-  .post-subheader
-    .padding-15= sanitize_post_description(@post.description).html_safe
+  .post-subheader= sanitize_post_description(@post.description).html_safe
 = render partial: 'replies/single', locals: {reply: @written, show_edit: false}
 = render partial: 'write', locals: { reply: @written }

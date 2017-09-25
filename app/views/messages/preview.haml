@@ -9,9 +9,8 @@
     &raquo;
     %b New Message
 
-.post-header
-  .padding-15
-    %span= @message.unempty_subject
+.content-header
+  %span= @message.unempty_subject
 - if @messages.present?
   = render partial: 'single', collection: @messages, as: :message, locals: {all_collapse: true}
 = render partial: 'single', locals: { message: @message }

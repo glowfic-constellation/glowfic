@@ -116,4 +116,17 @@ class WritableController < ApplicationController
     return true unless current_user
     @post.show_warnings_for?(current_user)
   end
+
+  def editor_setup
+    use_javascript('posts/editor')
+    build_template_groups
+    setup_layout_gon
+  end
+
+  def setup_layout_gon
+    return unless logged_in?
+    gon.base_url = ENV['DOMAIN_NAME'] ? "https://#{ENV['DOMAIN_NAME']}/" : '/'
+    gon.editor_class = 'layout_' + current_user.layout if current_user.layout
+    gon.tinymce_css_path = helpers.stylesheet_path('tinymce')
+  end
 end

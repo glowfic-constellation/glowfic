@@ -1,30 +1,50 @@
-html, body { background-color: #212121; }
-body { color: #A2A2A2; }
-#content { background-color: #212121; }
-#content .beige { background-color: #565656; }
+@import 'variables';
+html, body, #content { background-color: #212121; color: #A2A2A2; }
+.selector-popup, .single-description { background-color: #565656; }
 #content .dark { background-color: #333333; }
-#content table { border-color: #555; }
-#content .sub {
+table { border-color: #555; }
+.sub {
   background-color: #383838;
   color: #C9C9C9;
 }
-#content th, .list-header {
+th, .content-header {
   background-color: #424242;
   color: #c2c2c2;
 }
-a, a:visited, #content a, #content a:visited { color: #66997D; }
-#content a:hover, a:hover { color: #B3B3B3; }
-#header #nav-bottom, #header { background-color: #56554F; }
-#header #logo { background-color: #3B4841; }
-#header a, #header li a { color: #CCCCCC; }
-#content .even, .post-post, .post-reply:nth-child(even), #post-editor, .odd blockquote, .post-reply:nth-child(odd) blockquote {
-  background-color: #3E3E3E;
+a, a:visited { color: #66997D; }
+a:hover { color: #B3B3B3; }
+#header, #nav-bottom { background-color: #56554F; }
+#header {
+  a { color: #CCC; }
 }
-#content .odd, .post-reply:nth-child(odd), .post-post + #post-editor, .post-post + a + #post-editor, .even blockquote, .post-post blockquote, .post-reply:nth-child(even) blockquote {
-  background-color: #474747;
+#logo { background-color: #3B4841; }
+
+$EVEN_COLOR: #3E3E3E;
+$ODD_COLOR: #474747;
+.even, .post-post, .post-reply:nth-child(even), #post-editor {
+  background-color: $EVEN_COLOR;
+
+  blockquote {
+    background-color: calculate-transparent-color($EVEN_COLOR, $ODD_COLOR, 0.2);
+  }
 }
+.odd, .post-reply:nth-child(odd), .post-post + #post-editor, .post-post + a + #post-editor {
+  background-color: $ODD_COLOR;
+
+  blockquote {
+    background-color: calculate-transparent-color($ODD_COLOR, $EVEN_COLOR, 0.2);
+  }
+}
+
 .green { background-color: #444D3F; }
-#content th.subber, #content .subber, .subber { background-color: #464646; color: #DDDDDD; }
+.subber, .flash.breadcrumbs, .form-table-ender {
+  background-color: #464646;
+  color: #DDDDDD;
+}
+.flash {
+  a, a:visited { color: #DDD; }
+  a:hover { color: #BBB; }
+}
 .post-subheader { background-color: #5D5D5D; }
 #post_content, #reply_content {
   background-color: #717171;
@@ -34,7 +54,6 @@ a, a:visited, #content a, #content a:visited { color: #66997D; }
   background-color: #5B655B;
   color: #bbb;
 }
-.post-header { background-color: #4A4848; }
 .post-navheader { background-color: #5F5D57; }
 .character-view-select { background-color: #666460; }
 .post-icon, #current-icon-dropdown { background-color: #444D3F; }
@@ -55,7 +74,7 @@ a, a:visited, #content a, #content a:visited { color: #66997D; }
 }
 .view-button.selected { background-color: #6A6A6A; }
 .link-box { color: #DDDDDD; }
-#swap-icon, #swap-alias { opacity: 0.7; } /* make the white less contrasty */
+.selector-popup-button { opacity: 0.7; } /* make the white less contrasty */
 
 /* Hovering help box on post editor */
 .ui-widget-content { background-color: #333; color: #A2A2A2; }

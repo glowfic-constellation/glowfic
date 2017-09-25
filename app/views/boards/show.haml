@@ -42,7 +42,7 @@
         %td.continuity-spacer{colspan: 5}
       - @board_sections.each do |section|
         %tr
-          %th.subber{colspan: 5}= link_to section.name, board_section_path(section)
+          %th.sub.continuity-header{colspan: 5}= link_to section.name, board_section_path(section)
         - section_posts = posts_from_relation(section.posts.order('section_order asc'), false, false).select { |post| post.visible_to? (current_user) }
         - if section_posts.present?
           = render partial: 'posts/list_item', collection: section_posts, as: :post, locals: {hide_continuity: true}

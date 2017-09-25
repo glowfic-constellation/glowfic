@@ -42,14 +42,14 @@
   %th.sub Description
   %td{class: cycle('even', 'odd')}= f.text_area :description, placeholder: 'Description', class: 'text', cols: 35
 %tr
-  %th.centered.subber{colspan: 2}= submit_tag "Save", class: 'button'
+  %th.form-table-ender{colspan: 2}= submit_tag "Save", class: 'button'
 
-#selected-gallery
-  %b Images
+#character-icon-selector
+  %strong Icons
   %br
-  Pick Default Icon (Optional):
+  Pick default icon (optional):
   %br
-  .gallery
+  .character-galleries-simple
     - galleries = @character.galleries.present? ? @character.galleries.ordered : [Struct.new(:id, :name, :icons).new(0, 'Galleryless', current_user.galleryless_icons || [])]
     - if galleries.present?
       - galleries.each do |gallery|

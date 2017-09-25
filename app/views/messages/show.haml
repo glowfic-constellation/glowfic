@@ -3,9 +3,8 @@
   &raquo;
   %b= @page_title
 
-.post-header
-  .padding-15
-    %span= @page_title
+.content-header
+  %span= @page_title
 
 = render partial: 'single', collection: @messages, as: :message
 %br

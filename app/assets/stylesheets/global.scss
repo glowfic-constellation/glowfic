@@ -1,36 +1,42 @@
+@import 'variables';
+
 body, html { height: 100%; }
 body {
     margin: 0 0 0 0;
     font-family: Helvetica, Verdana, sans-serif;
-    color: #101010;
-    background-color: #e5dfd1;
+    background-color: $bg_color_page;
+    color: $font_color_page;
 }
 
 /* Links */
-a { text-decoration: none; color: #3F7055; }
-a:visited { color: #28503a; }
-a:hover { color: #fcfefd; }
+a {
+  text-decoration: none;
+  color: $font_color_link;
+  &:visited { color: $font_color_link_visited; }
+  &:hover { color: $font_color_link_hover; }
+}
 
 /* Inputs */
 input, textarea, button {
   font-size: 13px;
   height: 23px;
   border-radius: 5px;
-  background-color: #FFFFFF;
-  color: #444444;
+  background-color: $bg_color_input;
+  color: $font_color_input;
   padding: 0 8px;
-  border: 1px solid #AAAAAA;
+  border: 1px solid $border_color_input;
   margin: 5px 0;
 }
 textarea { padding: 5px; }
 button, .button {
-  background-color: #FFFFFF;
+  background-color: $bg_color_button;
   background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(20%, #ffffff), color-stop(50%, #f6f6f6), color-stop(52%, #eeeeee), color-stop(100%, #f4f4f4));
   background: -webkit-linear-gradient(top, #ffffff 20%, #f6f6f6 50%, #eeeeee 52%, #f4f4f4 100%);
   background: -moz-linear-gradient(top, #ffffff 20%, #f6f6f6 50%, #eeeeee 52%, #f4f4f4 100%);
   background: -o-linear-gradient(top, #ffffff 20%, #f6f6f6 50%, #eeeeee 52%, #f4f4f4 100%);
   background: linear-gradient(top, #ffffff 20%, #f6f6f6 50%, #eeeeee 52%, #f4f4f4 100%);
   background-clip: padding-box;
+  border-color: $border_color_button;
   height: 25px;
 }
 
@@ -49,7 +55,7 @@ button, .button {
 .width-150 { width: 150px; }
 .width-250 { width: 250px; }
 .width-300 { width: 300px; }
-.spacer { height: 2px; }
+.spacer { height: 2px; padding: 0; }
 .centered { text-align: center !important; }
 .left-align { text-align: left; }
 .right-align { text-align: right; }
@@ -74,14 +80,17 @@ button, .button {
 }
 
 /* Displaying forum threads */
-#content .bg { background-color: #e5dfd1; }
-#content .beige { background-color: #B9B6AD; }
 .green { background-color: #B0BBA9; }
-#content .dark { background-color: #8B8687; }
-#content .even, .post-post, .post-reply:nth-child(even), #post-editor { background-color: #E3E3E3; padding: 5px; }
-#content .odd, .post-reply:nth-child(odd), .post-post + #post-editor, .post-post + a + #post-editor { background-color: #D8D8D8; padding: 5px; }
-#content .subber, .subber { background-color: #a3a1a0; }
-#content .sub { background-color: #B9B6AD; }
+.dark { background-color: #8B8687; }
+.even, .odd, .post-post, .post-reply, #post-editor {
+  padding: 5px;
+}
+.even, .post-post, .post-reply:nth-child(even), #post-editor {
+  background-color: $bg_color_even;
+}
+.odd, .post-reply:nth-child(odd), .post-post + #post-editor, .post-post + a + #post-editor {
+  background-color: $bg_color_odd;
+}
 
 /* UI Links */
 .link-box {

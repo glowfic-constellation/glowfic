@@ -1,0 +1,134 @@
+/* Variables */
+/* - global font sizes */
+$font_size_header: 16px; /* header */
+$font_size_main: 16px; /* main content */
+$font_size_small: 14px; /* header-links (mobile mode), table elements */
+$font_size_mini: 10px; /* time-loaded */
+
+/* - default color palette */
+// color palette used by the default style
+// do not use in CSS files; use a semantically relevant variable below that references a color here instead
+$colors_white: #FFFFFF;
+$colors_bright: #FEFEFE;
+$colors_dark: #444444;
+$colors_lightbrown: #B9B6AD;
+$colors_lightishbrown: #9E9C93;
+$colors_brown: #8B8687;
+$colors_greybrown: #A3A1A0;
+$colors_green: #3F7055;
+
+/* Semantic colors */
+// colors listed here should be named according to where and how they are used, to allow layouts to better recolor the site
+
+/* - header */
+$font_color_header_link: $colors_bright; // header links
+$font_color_header_link_hover: $colors_brown; // header links (hover)
+
+$bg_color_header_top: $colors_green; // top header strip for logo
+$bg_color_header_middle: #3E384F; // middle header strip with user items
+$bg_color_header_bottom: $colors_lightbrown; // bottom header strip with navigation
+
+/* - flashes */
+// these are the notifications that appear when you submit a form or get a message
+$bg_color_flash_error: #FFDDDD; // error
+$bg_color_flash_success: #DDEEDD; // success
+$bg_color_flash_inbox: #DDDDEE; // new message
+$bg_color_flash_breadcrumbs: $colors_greybrown; // breadcrumbs ("Continuities » Effulgence » make a wish » one enormous bruise")
+
+/* - main page */
+$bg_color_page: #E5DFD1; // overall page
+$font_color_page: #101010;
+
+$font_color_content: $colors_dark; // body
+
+/* - links */
+$font_color_link: $colors_green; // link
+$font_color_link_visited: #28503A; // link (visited)
+$font_color_link_hover: #FCFEFD; // link (hovered)
+
+/* - inputs */
+$bg_color_input: $colors_white; // regular <input>
+$font_color_input: $font_color_content;
+$border_color_input: #AAAAAA;
+
+$bg_color_button: $colors_white; // buttons; overridden by gradient TODO make modifiable
+$font_color_button: $font_color_content;
+$border_color_button: #AAAAAA;
+
+/* - other buttons */
+$bg_color_viewbutton: $colors_lightbrown;
+$bg_color_viewbutton_selected: $colors_lightishbrown;
+$font_color_viewbutton: $colors_white;
+
+/* - icons */
+$border_color_icon_selected: $colors_green; // selected icon border
+
+/* - characters */
+$border_color_character_iconless: #666666; // in characters#show icon view when a character has no icon
+
+$bg_color_mini_delete: #E5DFD1; // mini delete buttons on characters#icon_view
+$border_color_mini_delete: #C00;
+$font_color_mini_delete: #C00;
+
+/* - tag items */
+// varies by location TODO get more complete list from starries
+$bg_color_tag_item: $colors_lightbrown;
+$font_color_tag_item: $colors_green;
+
+/* - content headers */
+$bg_color_head: $colors_brown; // primary content header
+$bg_color_sub: $colors_lightbrown; // secondary content header
+$bg_color_subber: $colors_greybrown; // tertiary content header
+$font_color_head: #EEEEEE;
+$font_color_sub: #3E384F;
+$font_color_subber: black;
+
+$bg_color_ender: $bg_color_subber; // form table footer with submit
+$font_color_ender: $font_color_subber;
+
+/* - content */
+$bg_color_even: #E3E3E3;
+$bg_color_odd: #D8D8D8;
+
+// target: #D8D8D8;
+// from: #E3E3E3;
+// opacity: 0.5;
+// from + (given-from) * opacity = target
+// (1-opacity) * from + given * opacity = target
+// given * opacity = (1 - opacity) * from - target
+// given = ((1-opacity)*from - target)/opacity
+// so that's (1-opacity)/opacity of from, and -1/opacity of the other
+// so that's a ratio of
+// (1-opacity)/opacity : -1/opacity
+// 1-opacity : -1
+// so we want to bias to the left side by opacity-1
+// to the from by opacity-1
+
+// mix colors X and Y with weight W (favoring Y, allowing values outside 0 and 1)
+@function mix-allow-heavy($color1, $color2, $value) {
+  // @return (1 - $value) * $color1 + ($color2 * $value);
+  $red: (1-$value) * red($color1) + (red($color2) * $value);
+  $green: (1-$value) * green($color1) + (green($color2) * $value);
+  $blue: (1-$value) * blue($color1) + (blue($color2) * $value);
+  @return rgb($red, $green, $blue);
+}
+
+// produces the semi-transparent color needed to lay over $from to produce $target, at $opacity opacity
+// do not provide this function an opacity of 0.
+@function calculate-transparent-color($from, $target, $opacity) {
+  @return rgba(mix-allow-heavy($target, $from, ($opacity - 1) / $opacity), $opacity);
+}
+
+$opacity_blockquote: 0.2;
+$bg_color_even_blockquote_target: #D8D8D8; // target color for blockquotes on even backgrounds
+$bg_color_odd_blockquote_target: #E3E3E3;
+// semi-transparent version to allow nested blockquotes:
+$bg_color_even_blockquote: calculate-transparent-color($bg_color_even, $bg_color_even_blockquote_target, $opacity_blockquote);
+$bg_color_odd_blockquote: calculate-transparent-color($bg_color_odd, $bg_color_odd_blockquote_target, $opacity_blockquote);
+
+/* - select2 dropdown */
+$font_color_select2_container: $colors_dark;
+
+/* - misc */
+$bg_color_descriptions: $colors_lightbrown; // description subheadings on templates page ("single-description"), *not* posts
+$bg_color_selectionpopup: $colors_lightbrown; // selection popups like character/alias on posts#editor
