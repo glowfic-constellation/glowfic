@@ -283,7 +283,7 @@ function setupTinyMCE() {
       toolbar: ["bold italic underline strikethrough | link image | blockquote hr bullist numlist | undo redo"],
       plugins: "image,hr,link,autoresize",
       custom_undo_redo_levels: 10,
-      content_css: "/stylesheets/tinymce.css",
+      content_css: gon.tinymce_css_path,
       statusbar: true,
       elementpath: false,
       theme_advanced_resizing: true,

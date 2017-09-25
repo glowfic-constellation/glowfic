@@ -1,3 +1,4 @@
+@import 'variables';
 html, body, #content { background-color: #212121; color: #A2A2A2; }
 .selector-popup, .single-description { background-color: #565656; }
 #content .dark { background-color: #333333; }
@@ -17,12 +18,24 @@ a:hover { color: #B3B3B3; }
   a { color: #CCC; }
 }
 #logo { background-color: #3B4841; }
-#content .even, .post-post, .post-reply:nth-child(even), #post-editor, .odd blockquote, .post-reply:nth-child(odd) blockquote {
-  background-color: #3E3E3E;
+
+$EVEN_COLOR: #3E3E3E;
+$ODD_COLOR: #474747;
+.even, .post-post, .post-reply:nth-child(even), #post-editor {
+  background-color: $EVEN_COLOR;
+
+  blockquote {
+    background-color: calculate-transparent-color($EVEN_COLOR, $ODD_COLOR, 0.2);
+  }
 }
-#content .odd, .post-reply:nth-child(odd), .post-post + #post-editor, .post-post + a + #post-editor, .even blockquote, .post-post blockquote, .post-reply:nth-child(even) blockquote {
-  background-color: #474747;
+.odd, .post-reply:nth-child(odd), .post-post + #post-editor, .post-post + a + #post-editor {
+  background-color: $ODD_COLOR;
+
+  blockquote {
+    background-color: calculate-transparent-color($ODD_COLOR, $EVEN_COLOR, 0.2);
+  }
 }
+
 .green { background-color: #444D3F; }
 .subber, .flash.breadcrumbs, .form-table-ender {
   background-color: #464646;

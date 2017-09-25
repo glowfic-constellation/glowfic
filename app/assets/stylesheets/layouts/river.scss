@@ -1,3 +1,4 @@
+@import 'variables';
 /* Original doc CSS overlaps with monochrome */
 body { background-color: #E0E0E0; }
 .flash.success, .flash.inbox { background-color: #ECECEC; }
@@ -27,6 +28,6 @@ a:visited { color: #284150; }
 .post-footer { color: #717171; }
 #content .odd, #content .even, .post-post, .post-reply, #post-editor { background-color: #F3F3F3 !important; border-top: solid 1px #aaa; }
 .post-reply, .post-post, .even, .odd {
-  blockquote { background-color: #E8E8E8 !important; }
+  blockquote { background-color: calculate-transparent-color(#F3F3F3, #E8E8E8, 0.2) !important; }
 }
 .tag-item { color: #3E526F; background-color: #D0CEC8; }

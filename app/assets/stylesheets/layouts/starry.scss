@@ -1,6 +1,7 @@
+@import 'variables';
 #header { background-image: url("/images/starry.jpg"); background-position: right top; }
 #logo, #nav-bottom { background-color: transparent !important; }
-#header #user-info, #header #nav-top { background-color: #05050F; background-color: rgba(5, 5, 15, 0.9); }
+#user-info, #nav-top { background-color: #05050F; background-color: rgba(5, 5, 15, 0.9); }
 
 body { background-color: #6C697C; }
 #character-icon-selector, .time-loaded { color: #DADADA; }
@@ -15,12 +16,36 @@ th, .single-description, .content-header {
   a:visited { color: #9C9AA4; }
 }
 
-#post-menu-box { border-top: 1px solid #808080; border-top: 1px solid rgba(128,128,128,0.5); background-color: #BCBCBC; color: #101010; }
-#post-menu-box a:hover div { background-color: #D3D3D3; }
-#post-menu-box div { border-bottom: 1px solid #808080; border-bottom: 1px solid rgba(128,128,128,0.5); }
-#post-menu-box a { color: inherit; }
-#content .even, .post-post, .post-reply:nth-child(even), #post-editor, .odd blockquote, .post-reply:nth-child(odd) blockquote { background-color: #E3E3E3; }
-#content .odd, .post-reply:nth-child(odd), .post-post + #post-editor, .post-post + a + #post-editor, .even blockquote, .post-post blockquote, .post-reply:nth-child(even) blockquote { background-color: #D8D8D8; }
+$EVEN_COLOR: #E3E3E3;
+$ODD_COLOR: #D8D8D8;
+
+#post-menu-box {
+  border-top: 1px solid #808080;
+  border-top: 1px solid rgba(128,128,128,0.5);
+  background-color: #BCBCBC;
+  color: #101010;
+
+  a { color: inherit; }
+  a:hover div { background-color: #D3D3D3; }
+  div {
+    border-bottom: 1px solid #808080;
+    border-bottom: 1px solid rgba(128,128,128,0.5);
+  }
+}
+.even, .post-post, .post-reply:nth-child(even), #post-editor {
+  background-color: $EVEN_COLOR;
+
+  blockquote {
+    background-color: calculate-transparent-color($EVEN_COLOR, $ODD_COLOR, 0.2);
+  }
+}
+.odd, .post-reply:nth-child(odd), .post-post + #post-editor, .post-post + a + #post-editor {
+  background-color: $ODD_COLOR;
+
+  blockquote {
+    background-color: calculate-transparent-color($ODD_COLOR, $EVEN_COLOR, 0.2);
+  }
+}
 
 .post-navheader .view-button, .view-button.selected, .view-button, .link-box.green, .link-box.blue, .link-box.red { background-color: #463C65; }
 .flash.breadcrumbs .link-box, .subber .link-box { background-color: #66608B; }
