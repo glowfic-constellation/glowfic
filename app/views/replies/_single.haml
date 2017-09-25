@@ -15,7 +15,7 @@
           .post-character
             = link_to reply.name, character_path(reply.character_id)
           - if reply.screenname
-            .post-screenname= reply.screenname
+            .post-screenname= breakable_text(reply.screenname)
         - else
           .dark.spacer
         .post-author

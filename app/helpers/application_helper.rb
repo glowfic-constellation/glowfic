@@ -189,6 +189,11 @@ module ApplicationHelper
     short_msg[0...73] + '…' # make the absolute max length 75 characters
   end
 
+  def breakable_text(text)
+    return text if text.nil?
+    h(text).gsub('_', '_<wbr>').html_safe
+  end
+
   def post_privacy_settings
     { 'Public'              => Post::PRIVACY_PUBLIC,
       'Constellation Users' => Post::PRIVACY_REGISTERED,
