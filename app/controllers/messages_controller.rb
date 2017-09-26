@@ -7,11 +7,11 @@ class MessagesController < ApplicationController
     if params[:view] == 'outbox'
       @view = 'outbox'
       @page_title = 'Outbox'
-      @messages = current_user.sent_messages.where(visible_outbox: true).order('id desc').uniq!(&:thread_id)
+      @messages = current_user.sent_messages.where(visible_outbox: true).order('id desc').distinct!(&:thread_id)
     else
       @view = 'inbox'
       @page_title = 'Inbox'
-      @messages = current_user.messages.where(visible_inbox: true).order('id desc').uniq!(&:thread_id)
+      @messages = current_user.messages.where(visible_inbox: true).order('id desc').distinct!(&:thread_id)
     end
   end
 
