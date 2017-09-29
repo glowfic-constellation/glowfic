@@ -1,6 +1,8 @@
 require "spec_helper"
 
 RSpec.describe Icon do
+  include ActiveJob::TestHelper
+
   describe "#validations" do
     it "requires url" do
       icon = build(:icon, url: nil)
@@ -56,43 +58,43 @@ RSpec.describe Icon do
   end
 
   describe "#delete_from_s3" do
-    def delete_key(key)
-      {delete: {objects: [{key: key}], quiet: true}}
-    end
+    before(:each) { clear_enqueued_jobs }
 
     it "deletes uploaded on destroy" do
       icon = create(:uploaded_icon)
-      expect(S3_BUCKET).to receive(:delete_objects).with(delete_key(icon.s3_key))
       icon.destroy
+      expect(DeleteIconFromS3Job).to have_been_enqueued.with(icon.s3_key).on_queue('high')
     end
 
     it "does not delete non-uploaded on destroy" do
       icon = create(:icon)
-      expect(S3_BUCKET).not_to receive(:delete_objects)
       icon.destroy
+      expect(DeleteIconFromS3Job).not_to have_been_enqueued
     end
 
     it "deletes uploaded on new uploaded update" do
       icon = create(:uploaded_icon)
-      expect(S3_BUCKET).to receive(:delete_objects).with(delete_key(icon.s3_key))
+      old_key = icon.s3_key
       icon.url = "https://d1anwqy6ci9o1i.cloudfront.net/users/#{icon.user.id}/icons/nonsense-fakeimg2.png"
       icon.s3_key = "/users/#{icon.user.id}/icons/nonsense-fakeimg2.png"
       icon.save
+      expect(DeleteIconFromS3Job).to have_been_enqueued.with(old_key).on_queue('high')
     end
 
     it "deletes uploaded on new non-uploaded update" do
       icon = create(:uploaded_icon)
-      expect(S3_BUCKET).to receive(:delete_objects).with(delete_key(icon.s3_key))
+      old_key = icon.s3_key
       icon.url = "https://fake.com/nonsense-fakeimg2.png"
       icon.s3_key = "/users/#{icon.user.id}/icons/nonsense-fakeimg2.png"
       icon.save
+      expect(DeleteIconFromS3Job).to have_been_enqueued.with(old_key).on_queue('high')
     end
 
     it "does not delete uploaded on non-url update" do
       icon = create(:uploaded_icon)
-      expect(S3_BUCKET).not_to receive(:delete_objects)
       icon.keyword = "not a url update"
       icon.save
+      expect(DeleteIconFromS3Job).not_to have_been_enqueued
     end
   end
 

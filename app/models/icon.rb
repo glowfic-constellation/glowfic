@@ -40,8 +40,7 @@ class Icon < ApplicationRecord
   def delete_from_s3
     return unless destroyed? || s3_key_changed?
     return unless s3_key_was.present?
-    Rails.logger.info("Deleting S3 object: #{s3_key_was}")
-    S3_BUCKET.delete_objects(delete: {objects: [{key: s3_key_was}], quiet: true})
+    DeleteIconFromS3Job.perform_later(s3_key_was)
   end
 
   def uploaded_url_not_in_use
