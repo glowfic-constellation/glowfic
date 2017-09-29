@@ -28,6 +28,7 @@ end
 require 'factory_girl_rails'
 require 'rails_helper'
 require 'support/spec_test_helper'
+require 'support/spec_feature_helper'
 require "#{Rails.root}/features/support/fix_boards.rb"
 
 RSpec.configure do |config|
@@ -56,6 +57,7 @@ RSpec.configure do |config|
 
   config.include FactoryGirl::Syntax::Methods
   config.include SpecTestHelper, :type => :controller
+  config.include SpecFeatureHelper, :type => :feature
 
   config.filter_run :show_in_doc => true if ENV['APIPIE_RECORD']
 

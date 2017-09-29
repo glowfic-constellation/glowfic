@@ -3,6 +3,7 @@ class FavoritesController < ApplicationController
   before_action :login_required
 
   def index
+    return if params[:view] == 'bucket'
     unless current_user.favorites.present?
       @posts = []
       return
