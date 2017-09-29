@@ -64,12 +64,13 @@
     %tr
       %td.sub.width-150.vtop Characters
       %td{class: cycle('odd', 'even')}
-        - if @post.characters.count > 2
-          %ul
-            - @post.characters.each do |character|
-              %li= link_to character.name, character_path(character)
-        - else
-          = @post.characters.map { |character| link_to character.name, character_path(character) }.join(', ').html_safe
+        %ul
+          - @post.character_appearance_counts.each do |character, count|
+            %li
+              = link_to character.name, character_path(character)
+              = surround '(', ')' do
+                = link_to "#{count} times", search_replies_path(post_id: @post.id, character_id: character.id, commit: true)
+
     - if @post.settings.present?
       %tr
         %td.sub.width-150 Setting
@@ -86,11 +87,12 @@
       %td.sub.width-150.vtop Word Count
       %td{class: cycle('odd', 'even')}
         = number_with_delimiter(@post.total_word_count)
-        %ul
-          - @post.author_word_counts.each do |username, count|
-            %li
-              = username + ':'
-              = number_with_delimiter(count)
+        - if @post.authors.count > 1
+          %ul
+            - @post.author_word_counts.each do |username, count|
+              %li
+                = username + ':'
+                = number_with_delimiter(count)
     %tr
       %td.sub.width-150 Time Begun
       %td{class: cycle('odd', 'even')}= pretty_time(@post.created_at)
