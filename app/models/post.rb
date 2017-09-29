@@ -201,10 +201,6 @@ class Post < ApplicationRecord
     author_ids.include?(user.id)
   end
 
-  def characters
-    @chars ||= Character.where(id: ([character_id] + replies.group(:character_id).pluck(:character_id)).compact).sort_by(&:name)
-  end
-
   def taggable_by?(user)
     return false unless user
     return false if completed? || abandoned?
@@ -232,6 +228,12 @@ class Post < ApplicationRecord
 
   def author_word_counts
     authors.map { |author| [author.username, word_count_for(author)] }.sort_by{|a| -a[1] }
+  end
+
+  def character_appearance_counts
+    reply_counts = replies.joins(:character).group(:character_id).count
+    reply_counts[character_id] = reply_counts[character_id].to_i + 1
+    Character.where(id: reply_counts.keys).map { |c| [c, reply_counts[c.id]]}.sort_by{|a| -a[1] }
   end
 
   def has_content_warnings?
