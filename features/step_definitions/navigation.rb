@@ -10,10 +10,6 @@ Given(/^I am logged in$/) do
   click_button "Log in"
 end
 
-Given(/^I have (\d) galleryless icons?$/) do |num|
-  num.to_i.times do create(:icon, user: current_user) end
-end
-
 Given(/^I have (\d) unread posts?$/) do |num|
   num.to_i.times do
     unread = create(:post)
@@ -44,14 +40,6 @@ Given(/^my account uses the (.+) layout$/) do |layout|
   user = current_user
   user.layout = layout_name
   user.save!
-end
-
-When(/^I start a new post$/) do
-  visit new_post_path
-end
-
-When(/^I go to create a new character$/) do
-  visit new_character_path
 end
 
 When(/^I view my unread posts$/) do
