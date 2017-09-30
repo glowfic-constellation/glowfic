@@ -252,6 +252,7 @@ td, .table-list li { font-size: 14px; }
   border: 0;
   border-radius: 5px;
   cursor: pointer;
+  height: 21px;
 
   &.selected { background-color: $bg_color_viewbutton_selected; }
 
