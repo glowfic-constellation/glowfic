@@ -7,12 +7,12 @@ class MessagesController < ApplicationController
     if params[:view] == 'outbox'
       @view = 'outbox'
       @page_title = 'Outbox'
-      @message_threads = current_user.sent_messages.where(visible_outbox: true).group(:thread_id).paginate(per_page: 25, page: page)
+      @message_threads = current_user.sent_messages.where(visible_outbox: true).order(thread_id: :desc).group(:thread_id).paginate(per_page: 25, page: page)
       @messages = Message.where(id: @message_threads.pluck(:thread_id)).order(id: :desc)
     else
       @view = 'inbox'
       @page_title = 'Inbox'
-      @message_threads = current_user.messages.where(visible_inbox: true).group(:thread_id).paginate(per_page: 25, page: page)
+      @message_threads = current_user.messages.where(visible_inbox: true).order(thread_id: :desc).group(:thread_id).paginate(per_page: 25, page: page)
       @messages = Message.where(id: @message_threads.pluck(:thread_id)).order(id: :desc)
     end
   end
