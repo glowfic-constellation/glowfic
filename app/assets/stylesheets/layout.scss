@@ -150,6 +150,7 @@ th, .content-header {
 .content-header {
   box-sizing: border-box;
   width: 100%;
+  overflow: hidden;
 
   span {
     line-height: 28px;
