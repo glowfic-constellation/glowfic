@@ -1,5 +1,9 @@
 @import 'variables';
-#header { background-image: url("/images/starry.jpg"); background-position: right top; }
+#header {
+  background-color: #6F658D;
+  background-image: url("/images/starry.jpg");
+  background-position: right top;
+}
 #logo, #nav-bottom { background-color: transparent !important; }
 #user-info, #nav-top { background-color: #41416E; background-color: rgba(65, 65, 110, 0.9); }
 
