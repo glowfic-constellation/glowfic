@@ -30,12 +30,6 @@ require 'rails_helper'
 require 'support/spec_test_helper'
 require 'support/spec_feature_helper'
 
-# prevent site testing from breaking tests
-board_user = create(:user)
-5.times { create(:board, user: board_user).destroy }
-
-require "#{Rails.root}/features/support/fix_boards.rb"
-
 RSpec.configure do |config|
   # rspec-expectations config goes here. You can use an alternate
   # assertion/expectation library such as wrong or the stdlib/minitest
@@ -122,6 +116,16 @@ RSpec.configure do |config|
   # test failures related to randomization by passing the same `--seed` value
   # as the one that triggered the failure.
   Kernel.srand config.seed
+
+  config.before(:suite) do
+    # make 5 boards so site_testing doesn't screw up tests
+    user = FactoryGirl.create(:user)
+    5.times do
+      board = FactoryGirl.create(:board, creator: user)
+      board.destroy
+    end
+    user.destroy
+  end
 end
 
 RSpec::Matchers.define :be_the_same_time_as do |expected|
