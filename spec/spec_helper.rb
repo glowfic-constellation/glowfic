@@ -29,6 +29,11 @@ require 'factory_girl_rails'
 require 'rails_helper'
 require 'support/spec_test_helper'
 require 'support/spec_feature_helper'
+
+# prevent site testing from breaking tests
+board_user = create(:user)
+5.times { create(:board, user: board_user).destroy }
+
 require "#{Rails.root}/features/support/fix_boards.rb"
 
 RSpec.configure do |config|
