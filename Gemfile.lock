@@ -84,23 +84,6 @@ GEM
     crack (0.4.3)
       safe_yaml (~> 1.0.0)
     crass (1.0.2)
-    cucumber (2.4.0)
-      builder (>= 2.1.2)
-      cucumber-core (~> 1.5.0)
-      cucumber-wire (~> 0.0.1)
-      diff-lcs (>= 1.1.3)
-      gherkin (~> 4.0)
-      multi_json (>= 1.7.5, < 2.0)
-      multi_test (>= 0.1.2)
-    cucumber-core (1.5.0)
-      gherkin (~> 4.0)
-    cucumber-rails (1.5.0)
-      capybara (>= 1.1.2, < 3)
-      cucumber (>= 1.3.8, < 4)
-      mime-types (>= 1.17, < 4)
-      nokogiri (~> 1.5)
-      railties (>= 4, < 5.2)
-    cucumber-wire (0.0.1)
     daemons (1.2.4)
     database_cleaner (1.6.1)
     diff-lcs (1.3)
@@ -125,7 +108,6 @@ GEM
     ffi (1.9.18)
     font-awesome-sass (4.7.0)
       sass (>= 3.2)
-    gherkin (4.1.3)
     globalid (0.4.0)
       activesupport (>= 4.2.0)
     gon (6.1.0)
@@ -184,7 +166,6 @@ GEM
     minitest (5.10.3)
     mono_logger (1.1.0)
     multi_json (1.12.2)
-    multi_test (0.1.2)
     multi_xml (0.6.0)
     mustermann (1.0.1)
     newrelic_rpm (4.4.0.336)
@@ -407,9 +388,9 @@ DEPENDENCIES
   aws-sdk-s3 (~> 1)
   browser
   byebug
+  capybara
   codeclimate-test-reporter (~> 1.0.0)
   coffee-rails
-  cucumber-rails
   database_cleaner
   dotenv-rails
   exception_notification

@@ -14,7 +14,6 @@ before_script:
 script:
   - RAILS_ENV=test bundle exec rails db:migrate --trace
   - bundle exec rspec spec
-  - bundle exec cucumber
 branches:
   only:
   - master

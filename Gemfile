@@ -53,7 +53,6 @@ end
 
 group :development, :test do
   gem 'byebug'
-  gem 'cucumber-rails', require: false
   gem 'database_cleaner'
   gem 'dotenv-rails'
   gem 'rake', '~> 12.0'
@@ -63,6 +62,7 @@ group :development, :test do
 end
 
 group :test do
+  gem 'capybara'
   gem 'codeclimate-test-reporter', '~> 1.0.0'
   gem 'factory_girl_rails'
   gem 'json'
