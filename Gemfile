@@ -62,6 +62,7 @@ group :development, :test do
 end
 
 group :test do
+  gem 'capybara'
   gem 'codeclimate-test-reporter', '~> 1.0.0'
   gem 'factory_girl_rails'
   gem 'json'
