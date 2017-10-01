@@ -150,6 +150,7 @@ th, .content-header {
 .content-header {
   box-sizing: border-box;
   width: 100%;
+  overflow: hidden;
 
   span {
     line-height: 28px;
@@ -251,6 +252,7 @@ td, .table-list li { font-size: 14px; }
   border: 0;
   border-radius: 5px;
   cursor: pointer;
+  height: 21px;
 
   &.selected { background-color: $bg_color_viewbutton_selected; }
 
@@ -323,4 +325,7 @@ td, .table-list li { font-size: 14px; }
   padding: 10px 25px;
   font-size: 15px;
   font-weight: bold;
+}
+#homepage-content {
+  padding: 20px;
 }

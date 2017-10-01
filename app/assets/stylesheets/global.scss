@@ -104,6 +104,9 @@ button, .button {
   padding: 4px 12px;
   border-radius: 5px;
   font-weight: normal;
+  height: 20px;
+
+  img { vertical-align: text-top; }
 }
 .link-box.green { background-color: #3f7055; }
 .link-box.red { background-color: #880000; }
