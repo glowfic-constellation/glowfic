@@ -342,15 +342,29 @@
 
     a { color: black; }
   }
+
+  .normal-pagination { display: block; }
+  .mobile-pagination { display: none; }
 }
-@media (max-width: 400px) {
-  .paginator { padding: 0; }
+@mixin mobile-paginator {
+  padding: 0;
+
   .pagination {
-    a, .current, .disabled { padding: 5px; }
+    a, .disabled { padding: 5px; }
     .summary {
       padding-left: 5px;
       padding-right: 5px;
     }
+  }
+  .normal-pagination { display: none; }
+  .mobile-pagination { display: block; }
+}
+.mobile-paginator {
+  @include mobile-paginator;
+}
+@media (max-width: 400px) {
+  .paginator {
+    @include mobile-paginator;
   }
 }
 

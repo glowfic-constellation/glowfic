@@ -68,22 +68,27 @@ $(document).ready(function() {
 
 function reflowPaginator(paginator) {
   paginator = $(paginator);
+  var pagination = paginator.find('.normal-pagination');
   var narrowClear = paginator.find('.narrow-clear');
 
   narrowClear.css('clear', 'none');
+  paginator.removeClass('mobile-paginator');
 
   var innerWindow = 4;
   var outerBoundary = 2;
-  hidePaginatorLinks(paginator, innerWindow, outerBoundary);
+  hidePaginatorLinks(pagination, innerWindow, outerBoundary);
   if (paginator.height() < 60) return;
 
   narrowClear.css('clear', 'both');
 
   if (paginator.height() < 100) return;
   while (paginator.height() >= 100 && innerWindow > 0) {
-    hidePaginatorLinks(paginator, innerWindow, outerBoundary);
+    hidePaginatorLinks(pagination, innerWindow, outerBoundary);
     innerWindow -= 1;
   }
+
+  if (paginator.height() < 100) return;
+  paginator.addClass('mobile-paginator');
 }
 
 function pageAsNumber(page) {
