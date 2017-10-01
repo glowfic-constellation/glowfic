@@ -1,33 +1,4 @@
-/* global gon */
-function queryTransform(params) {
-  var data = {
-    q: params.term,
-    page: params.page
-  };
-  return data;
-}
-
-function processResults(data, params, total, textKey) {
-  params.page = params.page || 1;
-  var processed = {
-    results: data.results,
-    pagination: {more: (params.page * 25) < total}
-  };
-  if (textKey) {
-    // Reformat response data
-    var formatted = [];
-    for (var i=0; i < data.results.length; i++) {
-      var result = data.results[i];
-      formatted[i] = {
-        id: result.id,
-        text: result[textKey]
-      };
-    }
-    processed.results = formatted;
-  }
-  return processed;
-}
-
+/* global gon, processResults, queryTransform */
 $(document).ready(function() {
   $("#setting_id").select2({
     ajax: {

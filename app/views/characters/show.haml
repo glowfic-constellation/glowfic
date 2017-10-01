@@ -113,10 +113,10 @@
       %tr
         %th.sub.vtop.width-150 Facecast
         %td.character-pb{class: cycle('even', 'odd')}= @character.pb
-      - if @character.setting.present?
+      - if @character.settings.present?
         %tr
           %th.sub.vtop.width-150 Setting
-          %td.character-setting{class: cycle('even', 'odd')}= @character.setting
+          %td.character-setting{class: cycle('even', 'odd')}= @character.settings.map { |setting| link_to(setting.name, tag_path(setting)) }.join(', ').html_safe
       - if @character.description
         %tr
           %th.sub.vtop.width-150 Description
