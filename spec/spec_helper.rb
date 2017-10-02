@@ -23,6 +23,7 @@ unless ENV['SKIP_COVERAGE']
     add_group "Concerns", "app/concerns"
     add_group "API", "app/controllers/api"
   end
+  SimpleCov.minimum_coverage 98.68
 end
 
 require 'factory_girl_rails'
