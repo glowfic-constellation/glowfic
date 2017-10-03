@@ -51,7 +51,7 @@
           Characters Tagged: #{@tag.name}
           - content_for :edit_box
     %tbody
-      = render partial: 'characters/list_section', locals: {name: nil, characters: @characters.order('name asc'), hide_buttons: true}
+      = render partial: 'characters/list_section', locals: {name: nil, characters: @characters.order('name asc'), hide_buttons: true, show_user: true}
 
 - unless [@posts, @galleries, @characters].any?(&:present?)
   %table
