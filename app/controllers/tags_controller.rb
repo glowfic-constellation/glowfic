@@ -11,7 +11,7 @@ class TagsController < ApplicationController
 
   def show
     @posts = posts_from_relation(@tag.posts)
-    @characters = @tag.characters
+    @characters = @tag.characters.includes(:user)
     @galleries = @tag.galleries
     @page_title = @tag.name.to_s
   end

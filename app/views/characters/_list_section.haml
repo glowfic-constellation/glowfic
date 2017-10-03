@@ -34,7 +34,10 @@
     %td.padding-5{class: klass}
       %b Facecast
     %td.padding-5{class: klass}
-      %b Setting
+      - if local_assigns[:show_user]
+        %b User
+      - else
+        %b Setting
     %td.padding-5{class: klass}
   - characters.order('name asc').each do |character|
     - klass = cycle('even', 'odd')
@@ -44,7 +47,11 @@
       %td.padding-5{class: klass, style:'width:15%'}= character.template_name
       %td.padding-5{class: klass, style:'width:15%'}= breakable_text(character.screenname)
       %td.padding-5{class: klass, style:'width:20%'}= character.pb
-      %td.padding-5{class: klass, style:'width:15%'}= character.settings.map { |setting| link_to(setting.name, tag_path(setting)) }.join(', ').html_safe
+      %td.padding-5{class: klass, style:'width:15%'}
+        - if local_assigns[:show_user]
+          = link_to character.user.username, character.user
+        - else
+          = character.settings.map { |setting| link_to(setting.name, tag_path(setting)) }.join(', ').html_safe
 
       %td.width-70.right-align{class: klass}
         - unless local_assigns[:hide_buttons]
