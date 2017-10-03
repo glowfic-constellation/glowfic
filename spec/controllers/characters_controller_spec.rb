@@ -124,9 +124,10 @@ RSpec.describe CharactersController do
       user = create(:user)
       template = create(:template, user: user)
       gallery = create(:gallery, user: user)
+      setting = create(:setting, user: user, name: 'A World')
 
       login_as(user)
-      post :create, params: { character: {name: test_name, template_name: 'TempName', screenname: 'just-a-test', setting: 'A World', template_id: template.id, pb: 'Facecast', description: 'Desc', ungrouped_gallery_ids: [gallery.id]} }
+      post :create, params: { character: {name: test_name, template_name: 'TempName', screenname: 'just-a-test', setting_ids: [setting.id], template_id: template.id, pb: 'Facecast', description: 'Desc', ungrouped_gallery_ids: [gallery.id]} }
 
       expect(response).to redirect_to(assigns(:character))
       expect(flash[:success]).to eq("Character saved successfully.")
@@ -136,7 +137,7 @@ RSpec.describe CharactersController do
       expect(character.user_id).to eq(user.id)
       expect(character.template_name).to eq('TempName')
       expect(character.screenname).to eq('just-a-test')
-      expect(character.setting).to eq('A World')
+      expect(character.settings.pluck(:name)).to eq(['A World'])
       expect(character.template).to eq(template)
       expect(character.pb).to eq('Facecast')
       expect(character.description).to eq('Desc')
@@ -312,7 +313,8 @@ RSpec.describe CharactersController do
       new_name = character.name + 'aaa'
       template = create(:template, user: user)
       gallery = create(:gallery, user: user)
-      put :update, params: { id: character.id, character: {name: new_name, template_name: 'TemplateName', screenname: 'a-new-test', setting: 'Another World', template_id: template.id, pb: 'Actor', description: 'Description', ungrouped_gallery_ids: [gallery.id]} }
+      setting = create(:setting, name: 'Another World')
+      put :update, params: { id: character.id, character: {name: new_name, template_name: 'TemplateName', screenname: 'a-new-test', setting_ids: [setting.id], template_id: template.id, pb: 'Actor', description: 'Description', ungrouped_gallery_ids: [gallery.id]} }
 
       expect(response).to redirect_to(assigns(:character))
       expect(flash[:success]).to eq("Character saved successfully.")
@@ -320,7 +322,7 @@ RSpec.describe CharactersController do
       expect(character.name).to eq(new_name)
       expect(character.template_name).to eq('TemplateName')
       expect(character.screenname).to eq('a-new-test')
-      expect(character.setting).to eq('Another World')
+      expect(character.settings.pluck(:name)).to eq(['Another World'])
       expect(character.template).to eq(template)
       expect(character.pb).to eq('Actor')
       expect(character.description).to eq('Description')

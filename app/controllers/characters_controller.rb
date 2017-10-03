@@ -151,7 +151,7 @@ class CharactersController < ApplicationController
       name = alt.name
       name += ' | ' + alt.screenname if alt.screenname
       name += ' | ' + alt.template_name if alt.template_name
-      name += ' | ' + alt.setting if alt.setting
+      name += ' | ' + alt.settings.pluck(:name).join(' & ') if alt.settings.present?
       [name, alt.id]
     end
     @alt = @alts.first
@@ -310,6 +310,9 @@ class CharactersController < ApplicationController
   def build_tags
     @gallery_groups = @character.gallery_groups.order('character_tags.id asc') if @character.try(:persisted?)
     @gallery_groups ||= @character.try(:gallery_groups) || []
+
+    @settings = @character.settings.order('character_tags.id asc') if @character.try(:persisted?)
+    @settings ||= @character.try(:settings) || []
   end
 
   def build_template
@@ -319,6 +322,18 @@ class CharactersController < ApplicationController
   end
 
   def character_params
-    params.fetch(:character, {}).permit(:default_icon_id, :name, :template_name, :screenname, :setting, :template_id, :pb, :description, ungrouped_gallery_ids: [], gallery_group_ids: [], template_attributes: [:name, :id])
+    params.fetch(:character, {}).permit(
+      :default_icon_id,
+      :name,
+      :template_name,
+      :screenname,
+      :template_id,
+      :pb,
+      :description,
+      setting_ids: [],
+      ungrouped_gallery_ids: [],
+      gallery_group_ids: [],
+      template_attributes: [:name, :id]
+    )
   end
 end

@@ -92,6 +92,35 @@ function saveExistingTags(selector, newTags) {
   });
 }
 
+function queryTransform(params) {
+  var data = {
+    q: params.term,
+    page: params.page
+  };
+  return data;
+}
+
+function processResults(data, params, total, textKey) {
+  params.page = params.page || 1;
+  var processed = {
+    results: data.results,
+    pagination: {more: (params.page * 25) < total}
+  };
+  if (textKey) {
+    // Reformat response data
+    var formatted = [];
+    for (var i=0; i < data.results.length; i++) {
+      var result = data.results[i];
+      formatted[i] = {
+        id: result.id,
+        text: result[textKey]
+      };
+    }
+    processed.results = formatted;
+  }
+  return processed;
+}
+
 function createTagSelect(tagType, selector, formType, scope) {
   foundTags[selector] = [];
   $("#"+formType+"_"+selector+"_ids").select2({
@@ -103,24 +132,17 @@ function createTagSelect(tagType, selector, formType, scope) {
       url: '/api/v1/tags',
       dataType: 'json',
       data: function(params) {
-        var data = {
-          q: params.term,
-          t: tagType,
-          page: params.page
-        };
+        var data = queryTransform(params);
+        data.t = tagType;
         if (scope) Object.assign(data, scope);
         return data;
       },
       processResults: function(data, params) {
         params.page = params.page || 1;
         var total = this._request.getResponseHeader('Total');
+        var results = processResults(data, params, total);
         saveExistingTags(selector, data.results);
-        return {
-          results: data.results,
-          pagination: {
-            more: (params.page * 25) < total
-          }
-        };
+        return results;
       },
       cache: true
     },

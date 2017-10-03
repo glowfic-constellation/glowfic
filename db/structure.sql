@@ -349,7 +349,6 @@ CREATE TABLE characters (
     updated_at timestamp without time zone,
     pb character varying,
     character_group_id integer,
-    setting character varying,
     description text
 );
 
@@ -1988,6 +1987,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20170828144608'),
 ('20170907180029'),
 ('20170911235423'),
-('20170914191425');
+('20170914191425'),
+('20171001035221');
 
 
