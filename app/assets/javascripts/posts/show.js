@@ -50,15 +50,17 @@ $(document).ready(function() {
 
   // horrible hack to make the paginator center-aligned when it's forced to a second line
   // the timeout in the resize event acts as a debounce so we don't re-render on each pixel change of the resize
-  var paginators = $('.paginator');
-  paginators.each(function() { reflowPaginator(this); });
-  var resizeDebounce = null;
-  $(window).resize(function() {
-    window.cancelAnimationFrame(resizeDebounce);
-    resizeDebounce = window.requestAnimationFrame(function() {
-      paginators.each(function() { reflowPaginator(this); });
+  if($(".normal-pagination").length > 0) {
+    var paginators = $('.paginator');
+    paginators.each(function() { reflowPaginator(this); });
+    var resizeDebounce = null;
+    $(window).resize(function() {
+      window.cancelAnimationFrame(resizeDebounce);
+      resizeDebounce = window.requestAnimationFrame(function() {
+        paginators.each(function() { reflowPaginator(this); });
+      });
     });
-  });
+  }
 
   // Now that we've finished the scripts that change page locations, scroll to #unread
   // if we determined on page load that we should.
