@@ -3,34 +3,38 @@
 # Do not hesitate to tweak this to your needs
 
 puts "Seeding database..."
+
+puts "Creating users..."
 marri = User.create(username: 'Marri', password: 'nikari', email: "dummy1@example.com")
 alicorn = User.create(username: 'Alicorn', password: 'alicorn', email: "dummy2@example.com")
 kappa = User.create(username: 'Kappa', password: 'pythbox', email: "dummy3@example.com")
 aestrix = User.create(username: 'Aestrix', password: 'aestrix', email: "dummy4@example.com")
 throne = User.create(username: 'Throne3d', password: 'throne3d', email: "dummy5@example.com")
 
+puts "Creating avatars..."
 Icon.create!([
   { :user_id => 1, :url => "https://pbs.twimg.com/profile_images/482603626/avatar.png", :keyword => "avatar" },
   { :user_id => 2, :url => "https://33.media.tumblr.com/avatar_ddf517a261d8_64.png", :keyword => "avatar" },
   { :user_id => 3, :url => "http://i.imgur.com/OJSBRcp.jpg", :keyword => "avatar" },
+  { :user_id => 5, :url => "https://i.imgur.com/7aXnrK1.jpg", :keyword => "avatar" },
 ])
-
 marri.update_attributes(avatar_id: 1)
 alicorn.update_attributes(avatar_id: 2)
 kappa.update_attributes(avatar_id: 3)
+throne.update_attributes(avatar_id: 4)
 
+puts "Creating continuities..."
 Board.create!([
   { name: 'Effulgence', creator: alicorn, coauthors: [kappa] },
   { name: 'Incandescence', creator: alicorn, coauthors: [aestrix] },
   { name: 'Pixiethreads', creator: kappa, coauthors: [aestrix] },
-  { name: 'Witchlight', creator: alicorn, coauthors: [marri] },
+  { name: 'Site testing', creator: marri },
   { name: 'Sandboxes', creator: marri, pinned: true },
+  { name: 'Witchlight', creator: alicorn, coauthors: [marri] },
 ])
 
-
-
+puts "Creating icons..."
 Icon.create!([
-  { :user_id => 1, :url => "http://v.dreamwidth.org/8465676/2338276", :keyword => "a1", :created_at => "2015-10-06 15:47:24", :updated_at => "2015-10-06 15:47:24", },
   { :user_id => 1, :url => "http://v.dreamwidth.org/8101920/2295419", :keyword => "a2", :created_at => "2015-10-06 15:47:24", :updated_at => "2015-10-06 15:47:24", },
   { :user_id => 1, :url => "http://v.dreamwidth.org/8465673/2338276", :keyword => "a3", :created_at => "2015-10-06 15:47:24", :updated_at => "2015-10-06 15:47:24", },
   { :user_id => 1, :url => "http://v.dreamwidth.org/8465698/2338276", :keyword => "a4", :created_at => "2015-10-06 15:47:25", :updated_at => "2015-10-06 15:47:25", },
@@ -4231,10 +4235,10 @@ Icon.create!([
   { :user_id => 1, :url => "http://v.dreamwidth.org/8088145/2293704", :keyword => "crying", :created_at => "2015-11-30 05:15:48", :updated_at => "2015-11-30 05:15:48", },
   { :user_id => 1, :url => "http://v.dreamwidth.org/8088154/2293704", :keyword => "suuure", :created_at => "2015-11-30 05:15:48", :updated_at => "2015-11-30 05:15:48", },
   { :user_id => 1, :url => "http://v.dreamwidth.org/8114012/2293704", :keyword => "thinking", :created_at => "2015-11-30 05:15:48", :updated_at => "2015-11-30 05:15:48", },
+  { :user_id => 1, :url => "http://v.dreamwidth.org/8465676/2338276", :keyword => "a1", :created_at => "2015-10-06 15:47:24", :updated_at => "2015-10-06 15:47:24", },
 ])
 
-
-
+puts "Creating templates..."
 Template.create!([
   { :user_id => 1, :name => "Alli", :created_at => "2015-11-30 05:10:08", :updated_at => "2015-11-30 05:10:08" },
   { :user_id => 1, :name => "Emma", :created_at => "2015-11-30 05:10:08", :updated_at => "2015-11-30 05:10:08" },
@@ -4279,8 +4283,7 @@ Template.create!([
   { :user_id => 3, :name => "Darcy", :created_at => "2015-11-30 07:08:26", :updated_at => "2015-11-30 07:08:26" }
 ])
 
-
-
+puts "Creating characters..."
 Character.create!([
   { :user_id => 3, :name => "Sierulyperinon | Arcane", :template_name => nil, :screenname => "infinitely_stranger", :template_id => 4, :default_icon_id => 2643, :created_at => "2015-10-06 15:47:25", :updated_at => "2015-10-06 15:47:25", :pb => nil },
   { :user_id => 2, :name => "Jann of Raxwell", :template_name => nil, :screenname => "abeance", :template_id => 18, :default_icon_id => 102, :created_at => "2015-11-30 05:10:14", :updated_at => "2015-11-30 06:39:41", :pb => nil },
@@ -4602,8 +4605,7 @@ Character.create!([
   { :user_id => 3, :name => "on ne voit bien qu'", :template_name => nil, :screenname => "avec_le_coeur", :template_id => 33, :default_icon_id => 1900, :created_at => "2015-11-30 05:11:57", :updated_at => "2015-11-30 02:42:54", :pb => nil }
 ])
 
-
-
+puts "Creating galleries..."
 Gallery.create!([
   { :user_id => 1, :name => "Alli - Alexandra Daddario", :created_at => "2015-10-06 15:47:24", :updated_at => "2015-11-30 05:27:54" },
   { :user_id => 1, :name => "Emma - Shailene Woodley", :created_at => "2015-10-06 15:47:25", :updated_at => "2015-10-06 15:47:25" },
@@ -4895,8 +4897,7 @@ Gallery.create!([
   { :user_id => 1, :name => "Henry", :created_at => "2015-11-30 05:15:29", :updated_at => "2015-11-30 05:34:34" }
 ])
 
-
-
+puts "Assigning galleries to characters..."
 CharactersGallery.create!([
   { :character_id => 2, :gallery_id => 16 },
   { :character_id => 64, :gallery_id => 17 },
@@ -5167,12 +5168,11 @@ CharactersGallery.create!([
   { :character_id => 3, :gallery_id => 282 }
 ])
 
-
-
+puts "Populating galleries with icons..."
 GalleriesIcon.create!([
   { :icon_id => 59, :gallery_id => 5 },
   { :icon_id => 60, :gallery_id => 6 },
-  { :icon_id => 4, :gallery_id => 1 },
+  { :icon_id => 4205, :gallery_id => 1 },
   { :icon_id => 5, :gallery_id => 1 },
   { :icon_id => 6, :gallery_id => 1 },
   { :icon_id => 7, :gallery_id => 1 },
@@ -9363,8 +9363,3 @@ GalleriesIcon.create!([
   { :icon_id => 90, :gallery_id => 287 },
   { :icon_id => 84, :gallery_id => 286 }
 ])
-
-
-
-throne_avatar = Icon.create!({ :user_id => 5, :url => "https://i.imgur.com/7aXnrK1.jpg", :keyword => "avatar" })
-throne.update_attributes(avatar_id: throne_avatar)

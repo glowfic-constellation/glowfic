@@ -9,10 +9,10 @@ RSpec.describe BugsController do
     end
 
     it "succeeds when logged in" do
-      data = {fake: 'abc'}
+      data = {response_text: 'abc', file_type: 'png', file_name: 'testfile.png', response_status: '200', response_body: '{}'}
       user_id = login
       user = User.find(user_id)
-      params = data.merge(controller: 'bugs', action: 'create', user_id: user.id).stringify_keys
+      params = data.merge(user_id: user.id)
       expect(ExceptionNotifier).to receive(:notify_exception).with(an_instance_of(Icon::UploadError), data: params)
       post :create, params: data
       expect(response.status).to eq(200)

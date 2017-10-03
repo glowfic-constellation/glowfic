@@ -15,7 +15,7 @@
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 
 # Don't calculate coverage when running single tests or recording API examples
-unless ENV['SKIP_COVERAGE']
+unless ENV['SKIP_COVERAGE'] || ENV['APIPIE_RECORD'] || RSpec.configuration.files_to_run.count <= 1
   require 'simplecov'
   SimpleCov.start 'rails' do
     add_group("Controllers") {|src| src.filename.include?('app/controllers') and not src.filename.include?('app/controllers/api') }
@@ -23,6 +23,7 @@ unless ENV['SKIP_COVERAGE']
     add_group "Concerns", "app/concerns"
     add_group "API", "app/controllers/api"
   end
+  SimpleCov.minimum_coverage 98.68
 end
 
 require 'factory_girl_rails'
