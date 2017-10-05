@@ -5,16 +5,15 @@ class MessagesController < ApplicationController
 
   def index
     if params[:view] == 'outbox'
-      @view = 'outbox'
       @page_title = 'Outbox'
-      @message_threads = current_user.sent_messages.where(visible_outbox: true).order(thread_id: :desc).group(:thread_id).paginate(per_page: 25, page: page)
-      @messages = Message.where(id: @message_threads.pluck(:thread_id)).order(id: :desc)
+      from_table = current_user.sent_messages.where(visible_outbox: true).order('thread_id, id desc').select('distinct on (thread_id) messages.*')
+      @messages = Message.from(from_table).select('*').order('subquery.id desc').paginate(per_page: 25, page: page)
     else
-      @view = 'inbox'
       @page_title = 'Inbox'
-      @message_threads = current_user.messages.where(visible_inbox: true).order(thread_id: :desc).group(:thread_id).paginate(per_page: 25, page: page)
-      @messages = Message.where(id: @message_threads.pluck(:thread_id)).order(id: :desc)
+      from_table = current_user.messages.where(visible_outbox: true).order('thread_id, id desc').select('distinct on (thread_id) messages.*')
+      @messages = Message.from(from_table).select('*').order('subquery.id desc').paginate(per_page: 25, page: page)
     end
+    @view = @page_title.downcase
   end
 
   def new
