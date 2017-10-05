@@ -1,38 +1,40 @@
 = form_tag mark_messages_path, method: :post do
   %table
-    = render partial: @view.dup
-    - if @messages.empty?
-      %tr
-        %td.centered.odd.padding-10 — No messages yet —
-    - else
-      %tr
-        %th.sub.width-15
-        %th.sub Subject
-        %th.sub= @view == 'inbox' ? 'Sender' : 'Recipient'
-        %th.sub Sent
-        %th.sub.width-15
-      - @messages.each do |message|
+    %thead
+      = render partial: @view.dup
+    %tbody
+      - if @messages.empty?
         %tr
-          - klass = cycle('even', 'odd')
-          - klass += ' bold' if @view == 'inbox' and message.unread?
-          %td.padding-left-5{class: klass}= # just padding
-          %td{class: klass}
-            = link_to message.unempty_subject, message_path(message)
-            - if message.num_in_thread.to_i > 1
-              (#{message.num_in_thread})
-          %td{class: klass}
+          %td.centered.odd.padding-10 — No messages yet —
+      - else
+        %tr
+          %th.sub.width-15
+          %th.sub Subject
+          %th.sub= @view == 'inbox' ? 'Sender' : 'Recipient'
+          %th.sub Sent
+          %th.sub.width-15
+        - @messages.each do |message|
+          %tr.message-row
+            - klass = cycle('even', 'odd')
+            - klass += ' bold' if @view == 'inbox' and message.unread?
+            %td.padding-left-5{class: klass}= # just padding
+            %td{class: klass}
+              = link_to message.unempty_subject, message_path(message)
+              - if message.num_in_thread.to_i > 1
+                (#{message.num_in_thread})
+            %td{class: klass}
+              - if @view == 'inbox'
+                = message_sender(message)
+              - else
+                = link_to message.recipient.username, user_path(message.recipient)
+            %td{class: klass}= pretty_time(message.last_in_thread.created_at)
+            %td{class: klass}= check_box_tag :"marked_ids[]", message.id
+        %tr
+          %td.right-align.padding-5{colspan: 5, class: cycle('even', 'odd')}
             - if @view == 'inbox'
-              = message_sender(message)
-            - else
-              = link_to message.recipient.username, user_path(message.recipient)
-          %td{class: klass}= pretty_time(message.last_in_thread.created_at)
-          %td{class: klass}= check_box_tag :"marked_ids[]", message.id
-      %tr
-        %td.right-align.padding-5{colspan: 5, class: cycle('even', 'odd')}
-          - if @view == 'inbox'
-            = submit_tag "Mark Read / Unread", class: 'button'
-          = submit_tag "Delete", class: 'button', data: { confirm: "Are you sure you want to delete these messages?" }
-    - if @message_threads.total_pages > 1
+              = submit_tag "Mark Read / Unread", class: 'button'
+            = submit_tag "Delete", class: 'button', data: { confirm: "Are you sure you want to delete these messages?" }
+    - if @messages.total_pages > 1
       %tfoot
         %tr
-          %td{colspan: 5}= render partial: 'posts/paginator', locals: { paginated: @message_threads }
+          %td{colspan: 5}= render partial: 'posts/paginator', locals: { paginated: @messages }
