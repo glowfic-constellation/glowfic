@@ -32,14 +32,14 @@
   %td.green
     .gallery{id: "gallery#{gallery.id.to_s}"}
       = form_tag delete_multiple_icons_path, method: :delete do
-        - gallery.icons.each do |icon|
+        - gallery.icons.pluck(:id, :keyword, :url).each do |icon_id, keyword, url|
           .gallery-icon
-            = link_to icon_path(icon) do
-              = icon_tag icon
+            = link_to icon_path(id: icon_id) do
+              = icon_mem_tag url, keyword
               %br
-              %span.icon-keyword= icon.keyword
+              %span.icon-keyword= keyword
             - if gallery.user_id == current_user.try(:id) and not defined? skip_forms
-              .select-button= check_box_tag :"marked_ids[]", icon.id
+              .select-button= check_box_tag :"marked_ids[]", icon_id
         - if gallery.icons.empty?
           .centered.no-icons — No icons yet —
         - elsif gallery.user_id == current_user.try(:id) and not defined? skip_forms
