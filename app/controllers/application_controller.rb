@@ -1,6 +1,9 @@
+require "#{Rails.root}/lib/memorylogic"
+
 # frozen_string_literal: true
 class ApplicationController < ActionController::Base
   include Authentication
+  include Memorylogic
 
   before_action :clear_old_cookies
   protect_from_forgery with: :exception
