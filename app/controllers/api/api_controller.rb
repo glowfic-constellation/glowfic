@@ -37,6 +37,15 @@ class Api::ApiController < ActionController::Base
     render json: {errors: [error]}, status: :forbidden
   end
 
+  def find_object(klass, param=:id, status=:not_found)
+    object = klass.find_by_id(params[param])
+    unless object
+      error = {message: klass.to_s + " could not be found."}
+      render json: {errors: [error]}, status: status and return
+    end
+    object
+  end
+
   def per_page
     per = params[:per_page].to_i
     return 25 if per < 1

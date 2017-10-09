@@ -1,7 +1,7 @@
 class Api::V1::CharactersController < Api::ApiController
   before_action :login_required, only: [:update, :reorder]
   before_action :find_character, except: [:index, :reorder]
-  before_action :find_post, except: :update
+  before_action :find_post, except: [:update, :reorder]
   before_action :require_permission, only: :update
 
   resource_description do
@@ -103,21 +103,13 @@ class Api::V1::CharactersController < Api::ApiController
   private
 
   def find_character
-    unless (@character = Character.find_by_id(params[:id]))
-      error = {message: "Character could not be found."}
-      render json: {errors: [error]}, status: :not_found and return
-    end
+    @character = find_object(Character)
   end
 
   def find_post
     return unless params[:post_id].present?
-
-    unless (@post = Post.find_by_id(params[:post_id]))
-      error = {message: "Post could not be found."}
-      render json: {errors: [error]}, status: :unprocessable_entity and return
-    end
-
-    access_denied and return unless @post.visible_to?(current_user)
+    return unless (@post = find_object(Post, :post_id, :unprocessable_entity))
+    access_denied unless @post.visible_to?(current_user)
   end
 
   def require_permission
