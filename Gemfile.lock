@@ -417,7 +417,6 @@ DEPENDENCIES
   rails-controller-testing
   rails_12factor
   rake (~> 12.0)
-  redis (~> 3.0)
   redis-rails
   resque
   resque-scheduler
