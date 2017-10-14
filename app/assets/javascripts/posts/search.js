@@ -33,7 +33,7 @@ $(document).ready(function() {
       },
       processResults: function(data, params) {
         var total = this._request.getResponseHeader('Total');
-        return processResults(data, params, total, 'name');
+        return processResults(data, params, total, 'selector_name');
       },
       cache: true
     },

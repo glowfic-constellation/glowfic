@@ -8,7 +8,7 @@ RSpec.describe Api::V1::CharactersController do
         get :index
         expect(response).to have_http_status(200)
         expect(response.json).to have_key('results')
-        expect(response.json['results']).to contain_exactly(char.as_json.stringify_keys)
+        expect(response.json['results']).to contain_exactly(char.as_json(include: [:selector_name]).stringify_keys)
       end
 
       it "should support search", show_in_doc: in_doc do
@@ -17,7 +17,7 @@ RSpec.describe Api::V1::CharactersController do
         get :index, params: { q: 'se' }
         expect(response).to have_http_status(200)
         expect(response.json).to have_key('results')
-        expect(response.json['results']).to contain_exactly(char.as_json.stringify_keys)
+        expect(response.json['results']).to contain_exactly(char.as_json(include: [:selector_name]).stringify_keys)
       end
 
       it "requires valid post id if provided", show_in_doc: in_doc do
@@ -43,7 +43,7 @@ RSpec.describe Api::V1::CharactersController do
         get :index, params: { post_id: post.id }
         expect(response).to have_http_status(200)
         expect(response.json).to have_key('results')
-        expect(response.json['results']).to contain_exactly(char.as_json.stringify_keys)
+        expect(response.json['results']).to contain_exactly(char.as_json(include: [:selector_name]).stringify_keys)
       end
     end
 

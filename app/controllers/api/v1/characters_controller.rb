@@ -22,7 +22,7 @@ class Api::V1::CharactersController < Api::ApiController
     end
 
     characters = paginate queryset, per_page: 25
-    render json: {results: characters}
+    render json: {results: characters.as_json(include: [:selector_name])}
   end
 
   api! 'Load a single character as a JSON resource'
