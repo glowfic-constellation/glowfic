@@ -15,7 +15,14 @@ module Authentication
     helper_method :logged_in?
 
     def current_user
-      @current_user ||= User.find_by_id(session[:user_id]) if logged_in?
+      return unless logged_in?
+      @current_user ||= User.find_by_id(session[:user_id])
+      return @current_user if @current_user
+
+      # logout - something has gone wrong, and the user id stored in session does not exist
+      reset_session
+      cookies.delete(:user_id, domain: '.glowfic.com')
+      @current_user = nil
     end
     helper_method :current_user
   end
