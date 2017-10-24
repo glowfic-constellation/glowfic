@@ -39,15 +39,8 @@
     %tr
       %td.sub.width-150 Audience
       %td{class: cycle('odd', 'even')}
-        - case @post.privacy
-        - when Post::PRIVACY_PUBLIC
-          = image_tag "/images/world.png", class: 'vmid', title: "Public"
-          Public
-        - when Post::PRIVACY_REGISTERED
-          = image_tag "/images/star.png", class: 'vmid', title: "Constellation Users"
-          Constellation Users
-        - when Post::PRIVACY_LIST
-          = image_tag "/images/group.png", class: 'vmid', title: "Access list"
+        = privacy_state(@post.privacy)
+        - if @post.privacy == Post::PRIVACY_LIST
           Access List -
           - @post.post_viewers.each_with_index do |viewer, i|
             - if i < @post.post_viewers.count - 1
@@ -55,9 +48,6 @@
                 = link_to viewer.user.username, user_path(viewer.user)
             - else
               = link_to viewer.user.username, user_path(viewer.user)
-        - else
-          = image_tag "/images/lock.png", class: 'vmid', title: "Private"
-          Private
     %tr
       %td.sub.width-150 Authors
       %td{class: cycle('odd', 'even')}= @post.authors.sort_by { |author| author.username.downcase }.map { |author| link_to author.username, user_path(author) }.join(', ').html_safe

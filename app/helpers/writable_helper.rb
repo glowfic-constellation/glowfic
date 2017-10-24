@@ -32,4 +32,17 @@ module WritableHelper
     return '' unless icons.present?
     select_tag :icon_dropdown, options_for_select(icons.map{|i| [i.keyword, i.id]}, selected_id), prompt: "No Icon"
   end
+
+  PRIVACY_MAP = {
+    Post::PRIVACY_PUBLIC => ['Public', 'world'],
+    Post::PRIVACY_REGISTERED => ['Constellation Users', 'star'],
+    Post::PRIVACY_LIST => ['Access List', 'group'],
+    Post::PRIVACY_PRIVATE => ['Private', 'lock'],
+  }
+
+  def privacy_state(privacy)
+    name = PRIVACY_MAP[privacy][0]
+    img = PRIVACY_MAP[privacy][1]
+    image_tag("/images/#{img}.png", class: 'vmid', title: name) + ' ' + name
+  end
 end

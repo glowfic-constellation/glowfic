@@ -85,11 +85,11 @@
 
 /* Main content headers */
 .post-subheader, .post-navheader {
-  width: 100%;
   font-size: 15px;
 
   span { line-height: 14px; }
 }
+div.post-subheader { width: 100%; }
 .post-subheader {
   box-sizing: border-box;
   padding: 10px;
@@ -414,4 +414,9 @@
 
 .selector-popup {
   background-color: $bg_color_selectionpopup;
+}
+
+.history-header { width: 150px; }
+@media (max-width: 600px) {
+  .history-header { width: 75px; }
 }

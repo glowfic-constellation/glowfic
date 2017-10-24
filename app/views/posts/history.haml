@@ -8,15 +8,60 @@
   %b History
 
 .content-header Edit History (Oldest to Newest)
-.bg.spacer
-- audit = @post.audits.first
-- cur = Post.new(audit.audited_changes)
-- cur.created_at = audit.created_at
-.content-header= cur.subject
-= render partial: 'replies/single', locals: { reply: cur }
-- @post.audits.where(action: 'update').each do |audit|
-  - attrs = Hash[audit.audited_changes.map {|k, v| [k, v[1]] }]
-  - cur.assign_attributes(attrs)
-  - cur.created_at = audit.created_at
-  .content-header= cur.subject
-  = render partial: 'replies/single', locals: { reply: cur }
+%table
+  %tbody
+    - audits = @post.audits.paginate(per_page: 25, page: page)
+    - if audits.total_pages > 1
+      %tr
+        %td{colspan: 2}= render partial: 'posts/paginator', locals: { paginated: audits }
+
+    - audits.each do |audit|
+      - cur = @post.revision(audit.version)
+      - cur.id = nil # hides the permalink buttons
+      - reset_cycle
+      %tr.bg.spacer{style: 'height:20px;'}
+      %tr
+        %th{colspan: 2} Version: #{audit.version}
+      - if audit.comment.present?
+        %tr
+          %td.post-subheader{colspan: 2}
+            = image_tag asset_path('icons/shield.png'), class: 'vmid', alt: '', title: 'Moderator edit'
+            Moderator note from
+            = succeed ' - ' do
+              = link_to audit.user.username, user_path(audit.user)
+            = surround '"' do
+              = audit.comment
+      %tr
+        %th.history-header.sub Fields Changed
+        %td{class: cycle('even', 'odd')}
+          - if audit.version == 1
+            (Original)
+          - else
+            = audit.audited_changes.keys.map{|k| k.gsub('_id', '')}.join(', ').capitalize
+      %tr
+        %th.sub Updated
+        %td{class: cycle('even', 'odd')}= pretty_time(audit.created_at)
+      - if audit.version > 1 && audit.audited_changes.keys.include?('board_id')
+        %tr
+          %th.sub Continuity
+          %td{class: cycle('even', 'odd')}
+            Changed from
+            %b= link_to Board.find_by_id(audit.audited_changes['board_id'][0]).try(:name) || '(deleted)', board_path(id: audit.audited_changes['board_id'][0])
+            to
+            %b= link_to cur.board.try(:name) || '(deleted)', board_path(cur.board)
+      - if audit.version > 1 && audit.audited_changes.keys.include?('privacy')
+        %tr
+          %th.sub Privacy
+          %td{colspan: 3, class: cycle('even', 'odd')}
+            Changed from
+            %b= privacy_state(audit.audited_changes['privacy'][0])
+            to
+            %b= privacy_state(cur.privacy)
+      - if audit.version == 1 || (audit.audited_changes.keys & %w(character_alias_id character_id content description icon_id suject)).present?
+        %tr
+          %th.sub.vtop Post
+          %td{class: cycle('even', 'odd')}
+            .content-header= cur.subject
+            - if cur.description.present?
+              .post-subheader= sanitize_post_description(cur.description).html_safe
+            = render partial: 'replies/single', locals: {reply: cur, hide_footer: true}
