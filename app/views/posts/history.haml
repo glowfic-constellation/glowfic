@@ -37,7 +37,7 @@
           - if audit.version == 1
             (Original)
           - else
-            = audit.audited_changes.keys.map{|k| k.gsub('_id', '')}.join(', ').capitalize
+            = audit.audited_changes.keys.map{|k| k.gsub('_id', '').gsub('_', ' ')}.join(', ').capitalize
       %tr
         %th.sub Updated
         %td{class: cycle('even', 'odd')}= pretty_time(audit.created_at)
@@ -57,7 +57,7 @@
             %b= privacy_state(audit.audited_changes['privacy'][0])
             to
             %b= privacy_state(cur.privacy)
-      - if audit.version == 1 || (audit.audited_changes.keys & %w(character_alias_id character_id content description icon_id suject)).present?
+      - if audit.version == 1 || (audit.audited_changes.keys & %w(character_alias_id character_id content description icon_id subject)).present?
         %tr
           %th.sub.vtop Post
           %td{class: cycle('even', 'odd')}
