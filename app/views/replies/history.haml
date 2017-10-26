@@ -7,13 +7,4 @@
   &raquo;
   %b History
 
-.content-header Edit History (Oldest to Newest)
-- audit = @reply.audits.first
-- cur = Reply.new(audit.audited_changes)
-- cur.created_at = audit.created_at
-= render partial: 'single', locals: { reply: cur }
-- @reply.audits.where(action: 'update').each do |audit|
-  - attrs = Hash[audit.audited_changes.map {|k, v| [k, v[1]] }]
-  - cur.assign_attributes(attrs)
-  - cur.created_at = audit.created_at
-  = render partial: 'single', locals: { reply: cur }
+= render partial: 'writable/history', locals: { audited: @reply }

@@ -3,9 +3,10 @@ $(document).ready(function() {
   $(".gallery-box").click(function() {
     // Update toggle +/-
     var elem = $(this);
-    var toggleBox = elem.children('.view-button').first().children('img').first();
-    var wasVisible = (toggleBox.attr('src').includes("up"));
-    toggleBox.attr('src', (wasVisible ? '/images/bullet_arrow_down.png' : '/images/bullet_arrow_up.png'));
+    var toggleBox = elem.children('.view-button').first();
+    var wasVisible = toggleBox.children('img.up-arrow').is(':visible');
+    toggleBox.children('img.down-arrow').first().toggle();
+    toggleBox.children('img.up-arrow').first().toggle();
 
     // Toggle display
     var galleryId = elem.data('id');

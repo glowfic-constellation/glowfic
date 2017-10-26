@@ -27,7 +27,7 @@
         = calias.name
         .float-right
           = link_to character_alias_path(@character, calias), method: :delete, confirm: 'Are you sure you want to delete this alias?' do
-            = image_tag "/images/cross.png"
+            = image_tag "icons/cross.png"
   - if @aliases.empty?
     %tr
       %td.centered.padding-10{ class: cycle('even','odd'), colspan: 6 } — No items yet —

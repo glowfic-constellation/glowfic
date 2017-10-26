@@ -1,28 +1,28 @@
 /* global gon */
 $(document).ready(function() {
   $("#user_username").blur(function() {
-    $("#username .alert").remove();
+    $("#username .alert").hide();
     validateUsername();
   });
 
   $("#user_email").blur(function() {
-    $("#email .alert").remove();
+    $("#email .alert").hide();
     validateEmail();
   });
 
   $("#user_password").blur(function() {
-    $("#password .alert").remove();
+    $("#password .alert").hide();
     validatePassword();
   });
 
   $("#user_password_confirmation").blur(function() {
-    $("#conf .alert").remove();
+    $("#conf .alert").hide();
     validateConfirmation();
   });
 
   $("#new_user").submit(function() {
     // Clear existing alerts before validating
-    $(".alert").remove();
+    $(".alert").hide();
 
     // Do not submit if any validation fails
     var usernameValid = validateUsername();
@@ -39,16 +39,16 @@ $(document).ready(function() {
 function validateUsername() {
   var username = $("#user_username").val();
   if (username === '') {
-    addAlertAfter('user_username', 'Please choose a username.');
+    addAlertAfter('username', 'Please choose a username.');
     return false;
   } else if (username.length < gon.min || username.length > gon.max) {
-    addAlertAfter('user_username', "Your username must be between "+gon.min+" and "+gon.max+" characters long.");
+    addAlertAfter('username', "Your username must be between "+gon.min+" and "+gon.max+" characters long.");
     return false;
   }
 
   $.post('/users/username', {'username': username}, function(resp) {
     if (!resp.username_free) {
-      addAlertAfter('user_username', 'That username has already been taken.');
+      addAlertAfter('username', 'That username has already been taken.');
       return false; // TODO: actually return false from validateUsername
     }
   });
@@ -59,7 +59,7 @@ function validateUsername() {
 function validateEmail() {
   var email = $("#user_email").val();
   if (email === '') {
-    addAlertAfter('user_email', 'Please enter an email address.');
+    addAlertAfter('email', 'Please enter an email address.');
     return false;
   }
   return true;
@@ -70,12 +70,11 @@ function validatePassword() {
   var conf = $("#user_password_confirmation").val();
   var success = true;
   if (password === '') {
-    addAlertAfter('user_password', 'Please choose a password.');
+    addAlertAfter('password', 'Please choose a password.');
     success = false;
   }
   if (conf !== password) {
-    $("#conf .alert").remove();
-    addAlertAfter('user_password_confirmation', 'Your passwords do not match.');
+    addAlertAfter('conf', 'Your passwords do not match.');
     success = false;
   }
   return success;
@@ -86,17 +85,17 @@ function validateConfirmation() {
   var conf = $("#user_password_confirmation").val();
   var success = true;
   if (conf === '') {
-    addAlertAfter('user_password_confirmation', 'Please confirm your password.');
+    addAlertAfter('conf', 'Please confirm your password.');
     success = false;
   }
   if (conf !== password) {
-    addAlertAfter('user_password_confirmation', 'Your passwords do not match.');
+    addAlertAfter('conf', 'Your passwords do not match.');
     success = false;
   }
   return success;
 }
 
 function addAlertAfter(id, message) {
-  var image = "<img src='/images/exclamation.png' alt='!' title='' class='vmid' /> ";
-  $("#"+id).after("<div class='alert' style='margin: 2px 0px;'>" + image + message + "</div>");
+  $("#" + id + " .alert span.msg").text(message);
+  $("#" + id + " .alert").show();
 }

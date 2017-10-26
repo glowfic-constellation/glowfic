@@ -1,7 +1,7 @@
 module ApplicationHelper
   ICON = 'icon'.freeze
   NO_ICON = 'No Icon'.freeze
-  NO_ICON_URL = '/images/no-icon.png'.freeze
+  NO_ICON_URL = 'icons/no-icon.png'.freeze
   TIME_FORMAT = '%b %d, %Y %l:%M %p'.freeze
   CHAR_ICON = 'char-access-icon pointer'.freeze
   CHAR_ICON_FAKE = 'char-access-icon char-access-fake pointer'.freeze
@@ -29,7 +29,7 @@ module ApplicationHelper
   def loading_tag(**args)
     klass = 'vmid loading-icon'
     klass += ' ' + args[:class] if args[:class]
-    image_tag '/images/loading.gif', title: 'Loading...', class: klass, alt: '...', id: args[:id]
+    image_tag 'icons/loading.gif', title: 'Loading...', class: klass, alt: '...', id: args[:id]
   end
 
   def quick_switch_tag(image_url, short_text, hover_name, char_id)
@@ -48,9 +48,9 @@ module ApplicationHelper
   end
 
   def swap_icon_url
-    return '/images/swap.png' unless current_user
-    return '/images/swap.png' unless current_user.layout.to_s.start_with?('starry') || current_user.layout.to_s == 'dark'
-    '/images/swapgray.png'
+    return 'icons/swap.png' unless current_user.try(:layout)
+    return 'icons/swap.png' unless current_user.layout.start_with?('starry') || current_user.layout == 'dark'
+    'icons/swapgray.png'
   end
 
   def pretty_time(time, format=nil)
@@ -69,17 +69,17 @@ module ApplicationHelper
   end
 
   def unread_img
-    return '/images/note_go.png' unless current_user
-    return '/images/note_go.png' unless current_user.layout
-    return '/images/note_go.png' unless current_user.layout.include?('dark')
-    '/images/bullet_go.png'
+    return 'icons/note_go.png' unless current_user
+    return 'icons/note_go.png' unless current_user.layout
+    return 'icons/note_go.png' unless current_user.layout.include?('dark')
+    'icons/bullet_go.png'
   end
 
   def lastlink_img
-    return '/images/note_go_strong.png' unless current_user
-    return '/images/note_go_strong.png' unless current_user.layout
-    return '/images/note_go_strong.png' unless current_user.layout.include?('dark')
-    '/images/bullet_go_strong.png'
+    return 'icons/note_go_strong.png' unless current_user
+    return 'icons/note_go_strong.png' unless current_user.layout
+    return 'icons/note_go_strong.png' unless current_user.layout.include?('dark')
+    'icons/bullet_go_strong.png'
   end
 
   def path_for(obj, path)

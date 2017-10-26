@@ -21,11 +21,11 @@
           = @user.username + "'s Characters"
       = link_to url_for(character_split: character_split, view: 'icons') do
         .view-button{class: (:selected unless page_view == 'list')}
-          = image_tag '/images/grid.png', class: 'icon-view', alt: ''
+          = image_tag "icons/grid.png", class: 'icon-view', alt: ''
           Icons
       = link_to url_for(character_split: character_split, view: 'list') do
         .view-button{class: (:selected if page_view == 'list')}
-          = image_tag '/images/list.png', class: 'list-view', alt: ''
+          = image_tag "icons/list.png", class: 'list-view', alt: ''
           List
       - if character_split == 'template'
         = link_to url_for(character_split: 'none', view: params[:view]) do

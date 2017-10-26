@@ -83,7 +83,8 @@ function addNewRow() {
   // handle the URL field specially
   // because uploads have special UI
   var urlField = inputs.first();
-  newRow.find('.conf').remove();
+  newRow.find('.conf').hide();
+  newRow.find('.conf .filename').text('');
   urlField.show();
   urlField.attr('id', 'icons_'+index+'_url');
 
@@ -107,7 +108,7 @@ function bindRem() {
 function cleanUpRows() {
   $(".icon-row").each(function() {
     var anySet = false;
-    if ($(this).find('.conf').length > 0) return;
+    if ($(this).find('.conf .filename').text() !== '') return;
     $(this).find('input').each(function() {
       if ($(this).val() !== '') {
         anySet = true;
@@ -134,7 +135,6 @@ function addUploadedIcon(url, key, data, fileInput) {
   var urlCell = $(urlInput.parents('td:first'));
   urlInput.hide().val(url);
   row.find("input[id$='_s3_key']").val(key);
-  urlCell.find('.conf').remove();
 
   // update keyword box with data.files[0].name minus file extension
   var keyword = data.files[0].name;
@@ -146,9 +146,11 @@ function addUploadedIcon(url, key, data, fileInput) {
   // Display a preview of the uploaded icon for the user
   row.find(".preview-icon").attr('src', url).attr('title', keyword).attr('alt', keyword);
 
-  var uploaded = ' Uploaded ' + data.files[0].name;
+  // Update and display confirmation box
   row.find("input[id$='_filename']").val(data.files[0].name);
-  urlCell.append("<span class='conf'><img src='/images/accept.png' alt='' title='Successfully uploaded' class='vmid' />"+uploaded+"</span>");
+  urlCell.find('.conf .filename').text(data.files[0].name);
+  urlCell.find('.conf').show();
+
   cleanUpRows();
 }
 

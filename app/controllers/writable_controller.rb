@@ -128,5 +128,6 @@ class WritableController < ApplicationController
     gon.base_url = ENV['DOMAIN_NAME'] ? "https://#{ENV['DOMAIN_NAME']}/" : '/'
     gon.editor_class = 'layout_' + current_user.layout if current_user.layout
     gon.tinymce_css_path = helpers.stylesheet_path('tinymce')
+    gon.no_icon_path = view_context.image_path('icons/no-icon.png')
   end
 end

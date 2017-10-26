@@ -8,7 +8,7 @@
         .link-box.green + Add Icons
       = link_to edit_gallery_path(gallery), class: 'gallery-edit' do
         .link-box.blue
-          = image_tag "/images/pencil.png"
+          = image_tag "icons/pencil.png"
           Edit Gallery
       = link_to gallery_path(gallery), method: :delete, data: { confirm: 'Are you sure you want to delete this gallery? (This will not delete the icons.)' }, class: 'gallery-delete' do
         .link-box.red x Delete Gallery
@@ -16,8 +16,8 @@
       .gallery-box.float-right.gallery-minmax{data: {id: gallery.id}} -
     - if local_assigns[:character_gallery] && (gallery.user_id == current_user.try(:id) || current_user.try(:admin?))
       .float-right
-        = image_tag "/images/arrow_up.png", class: "section-up disabled-arrow"
-        = image_tag "/images/arrow_down.png", class: "section-down disabled-arrow"
+        = image_tag "icons/arrow_up.png", class: "section-up disabled-arrow"
+        = image_tag "icons/arrow_down.png", class: "section-down disabled-arrow"
 - groups = gallery.gallery_groups_data
   - if groups.present?
   %tr.gallery-tags

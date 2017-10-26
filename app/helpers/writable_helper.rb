@@ -43,6 +43,11 @@ module WritableHelper
   def privacy_state(privacy)
     name = PRIVACY_MAP[privacy][0]
     img = PRIVACY_MAP[privacy][1]
-    image_tag("/images/#{img}.png", class: 'vmid', title: name) + ' ' + name
+    image_tag("icons/#{img}.png", class: 'vmid', title: name) + ' ' + name
+  end
+
+  def menu_img
+    return 'icons/menu.png' unless current_user.try(:layout).to_s.start_with?('starry')
+    'icons/menugray.png'
   end
 end

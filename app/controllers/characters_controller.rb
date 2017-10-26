@@ -141,11 +141,11 @@ class CharactersController < ApplicationController
       if alt.default_icon.present?
         [alt.id, {url: alt.default_icon.url, keyword: alt.default_icon.keyword, aliases: alt.aliases.as_json}]
       else
-        [alt.id, {url: '/images/no-icon.png', keyword: 'No Icon', aliases: alt.aliases.as_json}]
+        [alt.id, {url: view_context.image_path('icons/no-icon.png'), keyword: 'No Icon', aliases: alt.aliases.as_json}]
       end
     end
     gon.gallery = Hash[icons]
-    gon.gallery[''] = {url: '/images/no-icon.png', keyword: 'No Character'}
+    gon.gallery[''] = {url: view_context.image_path('icons/no-icon.png'), keyword: 'No Character'}
 
     @alt_dropdown = @alts.map do |alt|
       name = alt.name

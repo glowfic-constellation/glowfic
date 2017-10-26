@@ -417,7 +417,7 @@ function setGalleriesAndDefault(galleries, defaultIcon) {
   }
 
   if (defaultIcon && shownIcons.indexOf(defaultIcon.id) < 0) iconSelectBox.append(iconString(defaultIcon));
-  iconSelectBox.append(iconString({id: '', url: '/images/no-icon.png', keyword: 'No Icon', skip_dropdown: true}));
+  iconSelectBox.append(iconString({id: '', url: gon.no_icon_path, keyword: 'No Icon', skip_dropdown: true}));
   bindGallery();
   bindIcon();
 }
@@ -453,7 +453,7 @@ function setIconFromId(id, img) {
 function setIcon(id, url, title, alt) {
   // Handle No Icon case
   if (id === "") {
-    url = "/images/no-icon.png";
+    url = gon.no_icon_path;
     title = "No Icon";
     alt = "";
   }

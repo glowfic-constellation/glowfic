@@ -7,8 +7,8 @@
     = stylesheet_link_tag 'application'
     - if current_user.try(:layout).present?
       = stylesheet_link_tag "layouts/#{current_user.layout}"
-    <link rel="icon" type="image/png" sizes="32x32" href="https://www.glowfic.com/images/favicon-32x32.png?v=3">
-    <link rel="icon" type="image/png" sizes="16x16" href="https://www.glowfic.com/images/favicon-16x16.png?v=3">
+    = favicon_link_tag 'favicons/favicon-32x32.png', type: 'image/png', rel: 'icon', sizes: '32x32'
+    = favicon_link_tag 'favicons/favicon-16x16.png', type: 'image/png', rel: 'icon', sizes: '16x16'
   %body
     #content
       = link_to post_path(@post) do
@@ -37,9 +37,9 @@
               .post-author= @post.user.username
           .post-edit-box
             = link_to post_path(@post), rel: 'alternate' do
-              = image_tag "/images/link.png", title: 'Permalink', alt: 'Permalink'
+              = image_tag "icons/link.png", title: 'Permalink', alt: 'Permalink'
             = link_to post_path(@post, unread: true), method: :put do
-              = image_tag '/images/eye.png', title: 'Mark Unread Here', alt: 'Eye'
+              = image_tag "icons/eye.png", title: 'Mark Unread Here', alt: 'Eye'
           .post-content= sanitize_written_content(@post.content.to_s).html_safe
         .post-footer
           .right-align>

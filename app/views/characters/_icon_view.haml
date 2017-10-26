@@ -12,7 +12,7 @@
             .link-box.green{style: 'font-size: 14px'} + New Instance
           = link_to edit_template_path(name) do
             .link-box.blue{style: 'font-size: 14px'}
-              = image_tag '/images/pencil.png', class: 'vmid'
+              = image_tag "icons/pencil.png", class: 'vmid'
               Edit
           = link_to template_path(name), method: :delete, data: { confirm: 'Are you sure you want to delete this template?' } do
             .link-box.red{style: 'font-size: 14px'} x Delete
