@@ -264,6 +264,20 @@ RSpec.describe PostsController do
         expect(ScrapePostJob).not_to have_been_enqueued
       end
 
+      it "scrapes with - char usernames" do
+        clear_enqueued_jobs
+        user = create(:user, id: PostsController::SCRAPE_USERS.first)
+        create(:character, user: user, screenname: 'wild-pegasus-appeared')
+        login_as(user)
+        url = 'http://wild-pegasus-appeared.dreamwidth.org/403.html?style=site&view=flat'
+        file = File.join(Rails.root, 'spec', 'support', 'fixtures', 'scrape_no_replies.html')
+        stub_request(:get, url).to_return(status: 200, body: File.new(file))
+        post :create, params: { button_import: true, dreamwidth_url: url }
+        expect(response).to redirect_to(posts_url)
+        expect(flash[:success]).to eq("Post has begun importing. You will be updated on progress via site message.")
+        expect(ScrapePostJob).to have_been_enqueued.with(url, nil, nil, nil, nil, user.id).on_queue('low')
+      end
+
       it "scrapes" do
         clear_enqueued_jobs
         user = create(:user, id: PostsController::SCRAPE_USERS.first)

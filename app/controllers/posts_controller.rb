@@ -302,7 +302,8 @@ class PostsController < WritableController
     usernames -= PostScraper::BASE_ACCOUNTS.keys
     poster_names = doc.css('.entry-poster span.ljuser b')
     usernames -= [poster_names.last.text] if poster_names.count > 1
-    usernames - Character.where(screenname: usernames).pluck(:screenname)
+    usernames -= Character.where(screenname: usernames).pluck(:screenname)
+    usernames - Character.where(screenname: usernames.map { |u| u.gsub("_", "-")}).pluck(:screenname).map { |u| u.gsub('-', '_')}
   end
 
   def valid_dreamwidth_url?(url)
