@@ -30,7 +30,7 @@
           %td.centered{class: klass} URL
           %td{class: klass}
             .icon_conf{class: ('hidden' unless i.object.uploaded?)}
-              = image_tag "/images/accept.png", class: 'vmid'
+              = image_tag "icons/accept.png", class: 'vmid'
               Uploaded to site
             .icon_url_field{class: ('hidden' if i.object.uploaded?)}
               = i.text_field :url, placeholder: "URL", class: 'text'

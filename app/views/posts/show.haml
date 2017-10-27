@@ -19,7 +19,7 @@
       - else
         = link_to warnings_post_path(@post, page: page, per_page: per_page), method: :post, data: { confirm: 'Are you sure? You will not see content warnings again until you restart your browser!'.freeze } do
           .link-box.red.float-right Dismiss all content warnings
-      = image_tag "/images/exclamation.png".freeze, class: 'vmid'.freeze
+      = image_tag "icons/exclamation.png".freeze, class: 'vmid'.freeze
       This post has the following content warnings:
       %ul
         - @warnings.each do |warning|
@@ -28,86 +28,86 @@
 .content-header
   %span#post-title= link_to @post.subject, post_path(@post)
   .view-button#post-menu
-    = image_tag ((current_user.try(:layout) == 'starrydark'.freeze or current_user.try(:layout) == 'starry'.freeze or current_user.try(:layout) == 'starrylight'.freeze) ? '/images/menugray.png'.freeze : '/images/menu.png'.freeze), class: 'icon-view'.freeze
+    = image_tag menu_img, class: 'icon-view'.freeze
 #post-menu-holder
   #post-menu-box.hidden
     -# TODO ePub downloader
     -#= link_to post_path(@post, completed: false), method: :put do
     -#  %div
-    -#    = image_tag '/images/book_go.png'
+    -#    = image_tag "icons/book_go.png"
     -#    Download as ePub
     = link_to post_path(@post, view: 'flat'.freeze), rel: 'nofollow noindex'.freeze do
       %div
-        = image_tag '/images/page_world.png'.freeze
+        = image_tag "icons/page_world.png".freeze
         View Flat HTML
     = link_to stats_post_path(@post) do
       %div
-        = image_tag '/images/chart_bar.png'.freeze
+        = image_tag "icons/chart_bar.png".freeze
         View Metadata
     = link_to search_replies_path(post_id: @post.id) do
       %div
-        = image_tag '/images/magnifier.png'.freeze
+        = image_tag "icons/magnifier.png".freeze
         Search Post
     - if logged_in?
       = link_to post_path(@post, unread: true), method: :put do
         %div
-          = image_tag '/images/eye.png'.freeze, class: 'vmid'.freeze, style: 'margin-bottom: 3px;'.freeze
+          = image_tag "icons/eye.png".freeze, class: 'vmid'.freeze, style: 'margin-bottom: 3px;'.freeze
           Mark Unread
       - if @post.ignored_by?(current_user)
         = link_to post_path(@post, hidden: false), method: :put do
           %div
-            = image_tag '/images/weather_cloudy.png'.freeze, class: 'vmid'.freeze, style: 'margin-bottom: 3px;'.freeze
+            = image_tag "icons/weather_cloudy.png".freeze, class: 'vmid'.freeze, style: 'margin-bottom: 3px;'.freeze
             Unhide
       - else
         = link_to post_path(@post, hidden: true), method: :put do
           %div
-            = image_tag '/images/weather_clouds.png'.freeze, class: 'vmid'.freeze, style: 'margin-bottom: 3px;'.freeze
+            = image_tag "icons/weather_clouds.png".freeze, class: 'vmid'.freeze, style: 'margin-bottom: 3px;'.freeze
             Hide
       - if fav = Favorite.between(current_user, @post)
         = link_to favorite_path(fav), method: :delete do
           %div
-            = image_tag '/images/star_delete.png'.freeze, class: 'vmid'.freeze, style: 'margin-bottom: 3px;'.freeze
+            = image_tag "icons/star_delete.png".freeze, class: 'vmid'.freeze, style: 'margin-bottom: 3px;'.freeze
             Unfavorite
       - else
         = link_to favorites_path(post_id: @post.id, page: page, per_page: per_page), method: :post do
           %div
-            = image_tag '/images/star_add.png'.freeze, class: 'vmid'.freeze, style: 'margin-bottom: 3px;'.freeze
+            = image_tag "icons/star_add.png".freeze, class: 'vmid'.freeze, style: 'margin-bottom: 3px;'.freeze
             Favorite
       - if @post.metadata_editable_by?(current_user)
         - unless @post.completed?
           = link_to post_path(@post, status: 'complete'.freeze), method: :put do
             %div
-              = image_tag '/images/book.png'.freeze
+              = image_tag "icons/book.png".freeze
               Mark Complete
         - unless @post.marked_hiatus?
           = link_to post_path(@post, status: 'hiatus'.freeze), method: :put do
             %div
-              = image_tag '/images/hourglass.png'.freeze
+              = image_tag "icons/hourglass.png".freeze
               Mark On Hiatus
         - unless @post.active?
           = link_to post_path(@post, status: 'active'.freeze), method: :put do
             %div
-              = image_tag '/images/book_open.png'.freeze
+              = image_tag "icons/book_open.png".freeze
               Mark In Progress
         - unless @post.abandoned?
           = link_to post_path(@post, status: 'abandoned'.freeze), method: :put do
             %div
-              = image_tag '/images/book_grey.png'.freeze
+              = image_tag "icons/book_grey.png".freeze
               Mark Abandoned
         - if @post.authors_locked?
           = link_to post_path(@post, authors_locked: 'false'.freeze), method: :put do
             %div
-              = image_tag '/images/lock_open.png'.freeze
+              = image_tag "icons/lock_open.png".freeze
               Unlock Authors
         - else
           = link_to post_path(@post, authors_locked: 'true'.freeze), method: :put do
             %div
-              = image_tag '/images/lock.png'.freeze
+              = image_tag "icons/lock.png".freeze
               Lock Authors
       -# TODO need more dynos
       -#= link_to users_path do
       -#  %div
-      -#    = image_tag '/images/bell_add.png'
+      -#    = image_tag "icons/bell_add.png"
       -#    Turn on notifications
 - if @post.description.present?
   .post-subheader= sanitize_post_description(@post.description).html_safe

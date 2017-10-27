@@ -80,7 +80,7 @@ class IconsController < UploadingController
     @alts = all_icons.sort_by{|i| i.keyword.downcase }
     use_javascript('icons')
     gon.gallery = Hash[all_icons.map { |i| [i.id, {url: i.url, keyword: i.keyword}] }]
-    gon.gallery[''] = {url: '/images/no-icon.png', keyword: 'No Icon'}
+    gon.gallery[''] = {url: view_context.image_path('icons/no-icon.png'), keyword: 'No Icon'}
 
     all_posts = Post.where(icon_id: @icon.id) + Post.where(id: Reply.where(icon_id: @icon.id).pluck('distinct post_id'))
     @posts = all_posts.uniq

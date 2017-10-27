@@ -36,15 +36,15 @@
           - linked = linked_for(@day, post, replies_today)
           %td.vtop.post-completed{class: klass.dup.push(post.completed? ? 'post-complete' : 'post-incomplete')}
             - if post.completed?
-              = image_tag "/images/book.png", class: 'vmid', title: "Thread Complete"
+              = image_tag "icons/book.png", class: 'vmid', title: "Thread Complete"
             - if post.on_hiatus?
-              = image_tag "/images/hourglass.png", class: 'vmid', title: "Thread On Hiatus"
+              = image_tag "icons/hourglass.png", class: 'vmid', title: "Thread On Hiatus"
             - if post.abandoned?
-              = image_tag "/images/book_grey.png", class: 'vmid', title: "Thread Abandoned"
+              = image_tag "icons/book_grey.png", class: 'vmid', title: "Thread Abandoned"
             - if !current_user.try(:hide_warnings) && post.has_content_warnings?
-              = image_tag "/images/exclamation.png", class: 'vmid', title: "Content Warning: " + post.content_warnings.pluck(:name).join(', '), alt: '!'
+              = image_tag "icons/exclamation.png", class: 'vmid', title: "Content Warning: " + post.content_warnings.pluck(:name).join(', '), alt: '!'
             - if post.created_at.beginning_of_day == @day.beginning_of_day
-              = image_tag "/images/new.png", class: 'vmid', title: 'New Today', alt: 'New'
+              = image_tag "icons/new.png", class: 'vmid', title: 'New Today', alt: 'New'
           %td.post-subject{class: klass}
             - if has_unread?(post)
               = link_to unread_path(post) do

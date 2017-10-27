@@ -22,17 +22,17 @@
       Organize Section Posts
       #loading.float-right.hidden= loading_tag
       #saveerror.float-right.hidden
-        = image_tag '/images/exclamation.png', title: 'Error', class: 'vmid', alt: '!'
+        = image_tag "icons/exclamation.png", title: 'Error', class: 'vmid', alt: '!'
         Error, please refresh
       #saveconf.float-right.hidden
-        = image_tag '/images/accept.png', title: 'Saved', class: 'vmid', alt: ''
+        = image_tag "icons/accept.png", title: 'Saved', class: 'vmid', alt: ''
         Saved
     %ul.sortable.table-list
       - @board_section.posts.order('section_order asc').each do |post|
         %li.section-ordered{class: cycle('even', 'odd'), data: {id: post.id, type: post.class.to_s, order: post.section_order}}
           .section-ordered-handle
-            = image_tag '/images/arrow_double.png', title: 'Reorder', class: 'disabled-arrow', alt: '↕'
+            = image_tag "icons/arrow_double.png", title: 'Reorder', class: 'disabled-arrow', alt: '↕'
           = link_to post.subject, post_path(post)
           .float-right
-            = image_tag "/images/arrow_up.png", class: "section-up disabled-arrow"
-            = image_tag "/images/arrow_down.png", class: "section-down disabled-arrow"
+            = image_tag "icons/arrow_up.png", class: "section-up disabled-arrow"
+            = image_tag "icons/arrow_down.png", class: "section-down disabled-arrow"
