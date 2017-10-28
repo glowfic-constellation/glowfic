@@ -600,6 +600,110 @@ ALTER SEQUENCE icons_id_seq OWNED BY icons.id;
 
 
 --
+-- Name: index_posts; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE index_posts (
+    id integer NOT NULL,
+    post_id integer NOT NULL,
+    index_id integer NOT NULL,
+    index_section_id integer,
+    description text,
+    section_order integer,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
+-- Name: index_posts_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE index_posts_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: index_posts_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE index_posts_id_seq OWNED BY index_posts.id;
+
+
+--
+-- Name: index_sections; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE index_sections (
+    id integer NOT NULL,
+    index_id integer NOT NULL,
+    name citext NOT NULL,
+    description text,
+    section_order integer,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
+-- Name: index_sections_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE index_sections_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: index_sections_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE index_sections_id_seq OWNED BY index_sections.id;
+
+
+--
+-- Name: indexes; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE indexes (
+    id integer NOT NULL,
+    user_id integer NOT NULL,
+    name citext NOT NULL,
+    description text,
+    privacy integer DEFAULT 0 NOT NULL,
+    open_to_anyone boolean DEFAULT false NOT NULL,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
+-- Name: indexes_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE indexes_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: indexes_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE indexes_id_seq OWNED BY indexes.id;
+
+
+--
 -- Name: messages; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -1171,6 +1275,27 @@ ALTER TABLE ONLY icons ALTER COLUMN id SET DEFAULT nextval('icons_id_seq'::regcl
 
 
 --
+-- Name: index_posts id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY index_posts ALTER COLUMN id SET DEFAULT nextval('index_posts_id_seq'::regclass);
+
+
+--
+-- Name: index_sections id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY index_sections ALTER COLUMN id SET DEFAULT nextval('index_sections_id_seq'::regclass);
+
+
+--
+-- Name: indexes id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY indexes ALTER COLUMN id SET DEFAULT nextval('indexes_id_seq'::regclass);
+
+
+--
 -- Name: messages id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -1388,6 +1513,30 @@ ALTER TABLE ONLY gallery_tags
 
 ALTER TABLE ONLY icons
     ADD CONSTRAINT icons_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: index_posts index_posts_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY index_posts
+    ADD CONSTRAINT index_posts_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: index_sections index_sections_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY index_sections
+    ADD CONSTRAINT index_sections_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: indexes indexes_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY indexes
+    ADD CONSTRAINT indexes_pkey PRIMARY KEY (id);
 
 
 --
@@ -1705,6 +1854,34 @@ CREATE INDEX index_icons_on_user_id ON icons USING btree (user_id);
 
 
 --
+-- Name: index_index_posts_on_index_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_index_posts_on_index_id ON index_posts USING btree (index_id);
+
+
+--
+-- Name: index_index_posts_on_post_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_index_posts_on_post_id ON index_posts USING btree (post_id);
+
+
+--
+-- Name: index_index_sections_on_index_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_index_sections_on_index_id ON index_sections USING btree (index_id);
+
+
+--
+-- Name: index_indexes_on_user_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_indexes_on_user_id ON indexes USING btree (user_id);
+
+
+--
 -- Name: index_messages_on_recipient_id_and_unread; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -1988,6 +2165,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20170907180029'),
 ('20170911235423'),
 ('20170914191425'),
-('20171001035221');
+('20171001035221'),
+('20171027225408');
 
 

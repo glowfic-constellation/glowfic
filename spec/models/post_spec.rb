@@ -432,7 +432,7 @@ RSpec.describe Post do
 
   describe "#visible_to?" do
     context "public" do
-      let(:post) { create(:post, privacy: Post::PRIVACY_PUBLIC) }
+      let(:post) { create(:post, privacy: Concealable::PUBLIC) }
 
       it "is visible to poster" do
         expect(post).to be_visible_to(post.user)
@@ -453,7 +453,7 @@ RSpec.describe Post do
     end
 
     context "private" do
-      let(:post) { create(:post, privacy: Post::PRIVACY_PRIVATE) }
+      let(:post) { create(:post, privacy: Concealable::PRIVATE) }
 
       it "is visible to poster" do
         expect(post).to be_visible_to(post.user)
@@ -474,7 +474,7 @@ RSpec.describe Post do
     end
 
     context "list" do
-      let(:post) { create(:post, privacy: Post::PRIVACY_LIST) }
+      let(:post) { create(:post, privacy: Concealable::ACCESS_LIST) }
 
       it "is visible to poster" do
         expect(post).to be_visible_to(post.user)
@@ -501,7 +501,7 @@ RSpec.describe Post do
     end
 
     context "registered" do
-      let(:post) { create(:post, privacy: Post::PRIVACY_REGISTERED) }
+      let(:post) { create(:post, privacy: Concealable::REGISTERED) }
       it "is visible to poster" do
         expect(post).to be_visible_to(post.user)
       end

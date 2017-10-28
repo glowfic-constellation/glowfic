@@ -1,15 +1,11 @@
 class Post < ApplicationRecord
-  include Presentable
-  include Writable
-  include Viewable
+  include Concealable
   include Orderable
-  include Taggable
   include PgSearch
-
-  PRIVACY_PUBLIC = 0
-  PRIVACY_PRIVATE = 1
-  PRIVACY_LIST = 2
-  PRIVACY_REGISTERED = 3
+  include Presentable
+  include Taggable
+  include Viewable
+  include Writable
 
   STATUS_ACTIVE = 0
   STATUS_COMPLETE = 1
@@ -32,6 +28,9 @@ class Post < ApplicationRecord
   has_many :settings, through: :post_tags, source: :setting
   has_many :content_warnings, through: :post_tags, source: :content_warning, after_add: :reset_warnings
   has_many :favorites, as: :favorite, dependent: :destroy
+  has_many :index_posts, inverse_of: :post
+  has_many :indexes, inverse_of: :posts, through: :index_posts
+  has_many :index_sections, inverse_of: :posts, through: :index_posts
 
   attr_accessor :is_import
   attr_writer :skip_edited
@@ -74,11 +73,11 @@ class Post < ApplicationRecord
   }
 
   def visible_to?(user)
-    return true if privacy == PRIVACY_PUBLIC
+    return true if public?
     return false unless user
-    return true if privacy == PRIVACY_REGISTERED
+    return true if registered_users?
     return true if user.admin?
-    return user.id == user_id if privacy == PRIVACY_PRIVATE
+    return user.id == user_id if private?
     (post_viewers.pluck(:user_id) + [user_id]).include?(user.id)
   end
 

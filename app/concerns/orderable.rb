@@ -10,8 +10,11 @@ module Orderable
 
     def reorder_others
       return unless destroyed? || order_change?
-      board_checking = Board.find_by_id(board_id_was) || board
-      return unless board_checking.ordered?
+
+      if has_attribute?(:board_id) # all indexes are ordered
+        board_checking = Board.find_by_id(board_id_was) || board
+        return unless board_checking.ordered?
+      end
 
       other_where = Hash[ordered_attributes.map { |atr| [atr, send("#{atr}_was")] }]
       others = self.class.where(other_where).order('section_order asc')
@@ -30,6 +33,7 @@ module Orderable
     end
 
     def order_change?
+      return if new_record? # otherwise we will reorder on create
       ordered_attributes.any? { |atr| send("#{atr}_changed?") }
     end
 

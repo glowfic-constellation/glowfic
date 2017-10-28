@@ -23,7 +23,7 @@ unless ENV['SKIP_COVERAGE'] || ENV['APIPIE_RECORD'] || RSpec.configuration.files
     add_group "Concerns", "app/concerns"
     add_group "API", "app/controllers/api"
   end
-  SimpleCov.minimum_coverage 98.68
+  SimpleCov.minimum_coverage 98.75
 end
 
 require 'factory_girl_rails'

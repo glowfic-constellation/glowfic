@@ -180,4 +180,18 @@ FactoryGirl.define do
     user
     post
   end
+
+  factory :index do
+    user
+    sequence :name do |n|
+      "Index#{n}"
+    end
+  end
+
+  factory :index_section do
+    index
+    sequence :name do |n|
+      "IndexSection#{n}"
+    end
+  end
 end
