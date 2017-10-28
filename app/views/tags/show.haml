@@ -28,18 +28,11 @@
   %table
     %thead
       %tr
-        %th.padding-10{colspan: 2}
+        %th.padding-10{colspan: 4}
           Galleries Tagged: #{@tag.name}
           - content_for :edit_box
     %tbody
-      %tr
-        %th.sub Name
-        %th.sub # of Icons
-      - @galleries.with_icon_count.order('name asc').each do |gallery|
-        %tr
-          - klass = cycle('even', 'odd')
-          %td.gallery-name{class: klass}= link_to gallery.name, gallery_path(gallery)
-          %td.width-150.centered.gallery-icon-count{class: klass}= gallery.icon_count
+      = render partial: 'galleries/expandable', collection: @galleries, as: :gallery
   %br
 
 - if @characters.present?

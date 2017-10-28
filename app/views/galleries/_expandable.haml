@@ -1,0 +1,34 @@
+%tr{id: "gallery-#{gallery.id}"}
+  - klass = cycle('even', 'odd')
+  %td.gallery-name{class: klass}
+    = link_to gallery.name, gallery_path(gallery)
+    .tag-box
+      - gallery.gallery_groups_data.each do |group|
+        - next if group == @tag
+        = link_to tag_path(group.id), class: 'tag-item-link' do
+          %span.tag-item.semiplusopaque
+            = group.name
+  %td.width-150.centered.gallery-icon-count{class: klass}= gallery.icon_count
+  %td.width-70.gallery-buttons{class: klass}
+    - if gallery.user_id == current_user.try(:id)
+      = link_to add_gallery_path(gallery), title: "Add Icons", class: 'gallery-add' do
+        = image_tag "icons/add.png"
+      = link_to edit_gallery_path(gallery), title: "Edit Gallery", class: 'gallery-edit' do
+        = image_tag "icons/pencil.png"
+      = link_to gallery_path(gallery), title: "Delete Gallery", method: :delete, data: { confirm: "Are you sure you want to delete #{gallery.name}?" }, class: 'gallery-delete' do
+        = image_tag "icons/cross.png"
+  %td.centered.width-70{class: klass}
+    .gallery-box.vmid{id: "minmax-#{gallery.id}", style: 'display: inline-block;', data: {id: gallery.id}}
+      .view-button{style: 'padding: 5px 7px;'}
+        = image_tag "icons/bullet_arrow_down.png", class: 'vmid down-arrow'
+        = image_tag "icons/bullet_arrow_up.png", class: 'vmid hidden up-arrow'
+%tr
+  %td.padding-5.hidden{class: klass, id: "icons-#{gallery.id}", colspan: 4}
+    = form_tag delete_multiple_icons_path, method: :delete do
+      .gallery{style: 'padding: 0px;'}
+      - if gallery.user_id == current_user.try(:id)
+        .clear.centered.icons-remove
+          = hidden_field_tag :gallery_id, gallery.id
+          = hidden_field_tag :return_to, 'index' # TODO not on gallery group page
+          = submit_tag "- Remove selected icons from gallery", name: 'gallery_delete'
+          = submit_tag "x Delete selected icons permanently", data: { confirm: "Are you sure? These icons will be gone from the site!" }
