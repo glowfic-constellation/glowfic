@@ -12,8 +12,9 @@ class TagsController < ApplicationController
   def show
     @posts = posts_from_relation(@tag.posts)
     @characters = @tag.characters.includes(:user)
-    @galleries = @tag.galleries
+    @galleries = @tag.galleries.with_icon_count.order('name asc')
     @page_title = @tag.name.to_s
+    use_javascript('galleries/expander') if @tag.is_a?(GalleryGroup)
   end
 
   def edit

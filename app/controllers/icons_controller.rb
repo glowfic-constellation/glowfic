@@ -6,6 +6,7 @@ class IconsController < UploadingController
   before_action :set_s3_url, only: :edit
 
   def delete_multiple
+    gallery = Gallery.find_by_id(params[:gallery_id])
     icon_ids = (params[:marked_ids] || []).map(&:to_i).reject(&:zero?)
     if icon_ids.empty? || (icons = Icon.where(id: icon_ids)).empty?
       flash[:error] = "No icons selected."
@@ -13,7 +14,6 @@ class IconsController < UploadingController
     end
 
     if params[:gallery_delete]
-      gallery = Gallery.find_by_id(params[:gallery_id])
       unless gallery
         flash[:error] = "Gallery could not be found."
         redirect_to galleries_path and return
@@ -28,8 +28,9 @@ class IconsController < UploadingController
         next unless icon.user_id == current_user.id
         gallery.icons.destroy(icon)
       end
+
       flash[:success] = "Icons removed from gallery."
-      redirect_to gallery_path(gallery) and return
+      icon_redirect(gallery) and return
     end
 
     icons.each do |icon|
@@ -37,7 +38,7 @@ class IconsController < UploadingController
       icon.destroy
     end
     flash[:success] = "Icons deleted."
-    redirect_to gallery_path(id: params[:gallery_id] || 0)
+    icon_redirect(gallery) and return
   end
 
   def show
@@ -141,6 +142,16 @@ class IconsController < UploadingController
     if @icon.user_id != current_user.id
       flash[:error] = "That is not your icon."
       redirect_to galleries_path
+    end
+  end
+
+  def icon_redirect(gallery)
+    if params[:return_to] == 'index'
+      redirect_to galleries_path(anchor: "gallery-#{gallery.id}")
+    elsif params[:return_tag].present? && (tag = Tag.find_by_id(params[:return_tag]))
+      redirect_to tag_path(tag, anchor: "gallery-#{gallery.id}")
+    else
+      redirect_to gallery_path(id: gallery.try(:id) || 0)
     end
   end
 

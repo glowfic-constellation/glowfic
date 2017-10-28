@@ -75,6 +75,28 @@ RSpec.describe IconsController do
         expect(response).to redirect_to(gallery_url(gallery))
         expect(flash[:success]).to eq("Icons removed from gallery.")
       end
+
+      it "goes back to index page if given" do
+        icon = create(:icon, user: user)
+        gallery = create(:gallery, user: user)
+        gallery.icons << icon
+        expect(icon.galleries.count).to eq(1)
+        delete :delete_multiple, params: { marked_ids: [icon.id.to_s], gallery_id: gallery.id, gallery_delete: true, return_to: 'index' }
+        expect(icon.galleries.count).to eq(0)
+        expect(response).to redirect_to(galleries_url(anchor: "gallery-#{gallery.id}"))
+      end
+
+      it "goes back to index page if given" do
+        icon = create(:icon, user: user)
+        gallery = create(:gallery, user: user)
+        group = create(:gallery_group, user: user)
+        group.galleries << gallery
+        gallery.icons << icon
+        expect(icon.galleries.count).to eq(1)
+        delete :delete_multiple, params: { marked_ids: [icon.id.to_s], gallery_id: gallery.id, gallery_delete: true, return_tag: group.id }
+        expect(icon.galleries.count).to eq(0)
+        expect(response).to redirect_to(tag_url(group, anchor: "gallery-#{gallery.id}"))
+      end
     end
 
     context "deleting icons from the site" do
@@ -99,6 +121,27 @@ RSpec.describe IconsController do
         delete :delete_multiple, params: { marked_ids: [icon.id.to_s, icon2.id.to_s] }
         expect(Icon.find_by_id(icon.id)).to be_nil
         expect(Icon.find_by_id(icon2.id)).to be_nil
+        expect(response).to redirect_to(gallery_url(id: 0))
+      end
+
+      it "goes back to index page if given" do
+        icon = create(:icon, user: user)
+        gallery = create(:gallery, user: user)
+        gallery.icons << icon
+        delete :delete_multiple, params: { marked_ids: [icon.id], gallery_id: gallery.id, return_to: 'index' }
+        expect(Icon.find_by_id(icon.id)).to be_nil
+        expect(response).to redirect_to(galleries_url(anchor: "gallery-#{gallery.id}"))
+      end
+
+      it "goes back to index page if given" do
+        icon = create(:icon, user: user)
+        gallery = create(:gallery, user: user)
+        group = create(:gallery_group, user: user)
+        group.galleries << gallery
+        gallery.icons << icon
+        delete :delete_multiple, params: { marked_ids: [icon.id], gallery_id: gallery.id, return_tag: group.id }
+        expect(Icon.find_by_id(icon.id)).to be_nil
+        expect(response).to redirect_to(tag_url(group, anchor: "gallery-#{gallery.id}"))
       end
     end
   end
