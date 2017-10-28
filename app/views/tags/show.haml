@@ -32,7 +32,7 @@
           Galleries Tagged: #{@tag.name}
           - content_for :edit_box
     %tbody
-      = render partial: 'galleries/expandable', collection: @galleries, as: :gallery
+      = render partial: 'galleries/expandable', collection: @galleries, as: :gallery, locals: {tag: @tag}
   %br
 
 - if @characters.present?
