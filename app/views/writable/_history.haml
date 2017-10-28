@@ -37,9 +37,15 @@
           %th.sub Continuity
           %td{class: cycle('even', 'odd')}
             Changed from
-            %b= link_to Board.find_by_id(audit.audited_changes['board_id'][0]).try(:name) || '(deleted)', board_path(id: audit.audited_changes['board_id'][0])
+            - if (board = Board.find_by_id(audit.audited_changes['board_id'][0]))
+              %b= link_to board.name, board_path(board)
+            - else
+              %b [Deleted]
             to
-            %b= link_to cur.board.try(:name) || '(deleted)', board_path(cur.board)
+            - if cur.board
+              %b= link_to cur.board.name, board_path(cur.board)
+            - else
+              %b [Deleted]
       - if audit.version > 1 && audit.audited_changes.keys.include?('privacy')
         %tr
           %th.sub Privacy
