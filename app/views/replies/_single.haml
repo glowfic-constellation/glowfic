@@ -6,14 +6,17 @@
       %a#unread.unread-marker First unread marker
   .padding-10
     .post-info-box
-      - if reply.icon_id
+      - if reply.icon_id && reply.keyword
         .post-icon
           = link_to icon_path(reply.icon_id) do
             = icon_mem_tag reply.url, reply.keyword
       .post-info-text
         - if reply.character_id
           .post-character
-            = link_to reply.name, character_path(reply.character_id)
+            - if reply.name
+              = link_to reply.name, character_path(reply.character_id)
+            - else
+              [Deleted]
           - if reply.screenname
             .post-screenname= breakable_text(reply.screenname)
         - else
@@ -41,7 +44,7 @@
           - if reply.created_at
             = precede 'Posted '.freeze do
               %span.post-posted=pretty_time(reply.created_at)
-          - if reply.id.present? && reply.created_at.to_i != reply.last_updated.to_i
+          - if reply.id.present? && reply.audits.count > 0
             = surround ' | Updated '.freeze, ' | '.freeze do
               %span.post-updated=pretty_time(reply.last_updated)
             = link_to 'See History'.freeze, path_for(reply, 'history_%s'), class: 'post-history'.freeze

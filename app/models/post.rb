@@ -12,8 +12,6 @@ class Post < ApplicationRecord
   STATUS_HIATUS = 2
   STATUS_ABANDONED = 3
 
-  EDITED_ATTRS = %w(subject content icon_id character_id)
-
   belongs_to :board, inverse_of: :posts
   belongs_to :section, class_name: BoardSection, inverse_of: :posts
   belongs_to :last_user, class_name: User
@@ -44,7 +42,8 @@ class Post < ApplicationRecord
 
   acts_as_tag :label, :content_warning, :setting
 
-  audited except: [:last_reply_id, :last_user_id, :edited_at, :tagged_at, :section_id, :section_order]
+  NON_EDITED_ATTRS = %w(id created_at updated_at edited_at tagged_at last_user_id last_reply_id section_order)
+  audited except: NON_EDITED_ATTRS
   has_associated_audits
 
   pg_search_scope(
@@ -276,7 +275,7 @@ class Post < ApplicationRecord
   end
 
   def skip_edited
-    @skip_edited || EDITED_ATTRS.none? { |edit| send(edit + "_changed?") }
+    @skip_edited || (changed_attributes.keys - NON_EDITED_ATTRS).empty?
   end
 
   def timestamp_attributes_for_create
