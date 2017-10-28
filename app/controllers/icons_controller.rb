@@ -29,6 +29,7 @@ class IconsController < UploadingController
         gallery.icons.destroy(icon)
       end
       flash[:success] = "Icons removed from gallery."
+      redirect_to galleries_path(anchor: "gallery-#{gallery.id}") and return if params[:return_to] == 'index'
       redirect_to gallery_path(gallery) and return
     end
 
