@@ -28,7 +28,7 @@ class Post < ApplicationRecord
   has_many :settings, through: :post_tags, source: :setting
   has_many :content_warnings, through: :post_tags, source: :content_warning, after_add: :reset_warnings
   has_many :favorites, as: :favorite, dependent: :destroy
-  has_many :index_posts, inverse_of: :post
+  has_many :index_posts, inverse_of: :post, dependent: :destroy
   has_many :indexes, inverse_of: :posts, through: :index_posts
   has_many :index_sections, inverse_of: :posts, through: :index_posts
 

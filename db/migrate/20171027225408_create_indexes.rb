@@ -11,21 +11,21 @@ class CreateIndexes < ActiveRecord::Migration[5.0]
     add_index :indexes, :user_id
 
     create_table :index_sections do |t|
-    	t.integer :index_id, null: false
-    	t.citext :name, null: false
-    	t.text :description
-    	t.integer :section_order
-    	t.timestamps null: false
+      t.integer :index_id, null: false
+      t.citext :name, null: false
+      t.text :description
+      t.integer :section_order
+      t.timestamps null: false
     end
     add_index :index_sections, :index_id
 
     create_table :index_posts do |t|
-    	t.integer :post_id, null: false
-    	t.integer :index_id, null: false
+      t.integer :post_id, null: false
+      t.integer :index_id, null: false
       t.integer :index_section_id
       t.text :description
-    	t.integer :section_order
-    	t.timestamps null: false
+      t.integer :section_order
+      t.timestamps null: false
     end
     add_index :index_posts, :index_id
     add_index :index_posts, :post_id
