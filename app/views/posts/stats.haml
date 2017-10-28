@@ -40,8 +40,8 @@
       %td.sub.width-150 Audience
       %td{class: cycle('odd', 'even')}
         = privacy_state(@post.privacy)
-        - if @post.privacy == Post::PRIVACY_LIST
-          Access List -
+        - if @post.access_list?
+          \-
           - @post.post_viewers.each_with_index do |viewer, i|
             - if i < @post.post_viewers.count - 1
               = succeed ',' do

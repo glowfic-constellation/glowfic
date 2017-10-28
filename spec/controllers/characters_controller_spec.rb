@@ -207,7 +207,7 @@ RSpec.describe CharactersController do
 
     it "should only show visible posts" do
       character = create(:character)
-      create(:post, character: character, user: character.user, privacy: Post::PRIVACY_PRIVATE)
+      create(:post, character: character, user: character.user, privacy: Concealable::PRIVATE)
       get :show, params: { id: character.id }
       expect(assigns(:posts)).to be_blank
     end

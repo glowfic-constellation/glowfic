@@ -155,7 +155,7 @@ RSpec.describe ApplicationController do
 
     context "when logged in" do
       it "returns empty array if no visible posts" do
-        hidden_post = create(:post, privacy: Post::PRIVACY_PRIVATE)
+        hidden_post = create(:post, privacy: Concealable::PRIVATE)
         user = create(:user)
         login_as(user)
         expect(hidden_post).not_to be_visible_to(user)
@@ -166,10 +166,10 @@ RSpec.describe ApplicationController do
       end
 
       it "filters array if mixed visible and not visible posts" do
-        hidden_post = create(:post, privacy: Post::PRIVACY_PRIVATE)
-        public_post = create(:post, privacy: Post::PRIVACY_PUBLIC)
+        hidden_post = create(:post, privacy: Concealable::PRIVATE)
+        public_post = create(:post, privacy: Concealable::PUBLIC)
         user = create(:user)
-        own_post = create(:post, user: user, privacy: Post::PRIVACY_PUBLIC)
+        own_post = create(:post, user: user, privacy: Concealable::PUBLIC)
         login_as(user)
 
         relation = Post.where(id: [hidden_post.id, public_post.id, own_post.id])
@@ -221,7 +221,7 @@ RSpec.describe ApplicationController do
 
     context "when logged out" do
       it "returns empty array if no visible posts" do
-        hidden_post = create(:post, privacy: Post::PRIVACY_PRIVATE)
+        hidden_post = create(:post, privacy: Concealable::PRIVATE)
 
         relation = Post.where(id: hidden_post.id)
         fetched_posts = controller.send(:posts_from_relation, relation)
@@ -229,9 +229,9 @@ RSpec.describe ApplicationController do
       end
 
       it "filters array if mixed visible and not visible posts" do
-        hidden_post = create(:post, privacy: Post::PRIVACY_PRIVATE)
-        public_post = create(:post, privacy: Post::PRIVACY_PUBLIC)
-        conste_post = create(:post, privacy: Post::PRIVACY_REGISTERED)
+        hidden_post = create(:post, privacy: Concealable::PRIVATE)
+        public_post = create(:post, privacy: Concealable::PUBLIC)
+        conste_post = create(:post, privacy: Concealable::REGISTERED)
 
         relation = Post.where(id: [hidden_post.id, public_post.id, conste_post.id])
         fetched_posts = controller.send(:posts_from_relation, relation)

@@ -195,10 +195,10 @@ module ApplicationHelper
   end
 
   def post_privacy_settings
-    { 'Public'              => Post::PRIVACY_PUBLIC,
-      'Constellation Users' => Post::PRIVACY_REGISTERED,
-      'Access List'         => Post::PRIVACY_LIST,
-      'Private'             => Post::PRIVACY_PRIVATE }
+    { 'Public'              => Concealable::PUBLIC,
+      'Constellation Users' => Concealable::REGISTERED,
+      'Access List'         => Concealable::ACCESS_LIST,
+      'Private'             => Concealable::PRIVATE }
   end
 
   def unread_post?(post, unread_ids)

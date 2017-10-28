@@ -36,7 +36,7 @@ RSpec.describe NotifyFollowersOfNewPostJob do
     author = create(:user)
     notified = create(:user)
     create(:favorite, user: notified, favorite: author)
-    post = create(:post, user: author, privacy: Post::PRIVACY_PRIVATE)
+    post = create(:post, user: author, privacy: Concealable::PRIVATE)
     expect { NotifyFollowersOfNewPostJob.perform_now(post.id) }.not_to change { Message.count }
   end
 
