@@ -28,6 +28,7 @@ input, textarea, button {
   margin: 5px 0;
 }
 textarea { padding: 5px; }
+.form-table td input[type="radio"] { width: unset; }
 button, .button {
   background-color: $bg_color_button;
   background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(20%, #ffffff), color-stop(50%, #f6f6f6), color-stop(52%, #eeeeee), color-stop(100%, #f4f4f4));

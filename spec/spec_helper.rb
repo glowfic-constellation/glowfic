@@ -22,6 +22,15 @@ unless ENV['SKIP_COVERAGE'] || ENV['APIPIE_RECORD'] || RSpec.configuration.files
     add_group "Presenters", "app/presenters"
     add_group "Concerns", "app/concerns"
     add_group "API", "app/controllers/api"
+    changed_files = `git status --untracked=all --porcelain`
+    if changed_files.length > 0
+      add_group 'Changed' do |source_file|
+        changed_files.split("\n").detect do |status_and_filename|
+          _, filename = status_and_filename.split(' ', 2)
+          source_file.filename.ends_with?(filename)
+        end
+      end
+    end
   end
   SimpleCov.minimum_coverage 98.75
 end
@@ -104,7 +113,7 @@ RSpec.configure do |config|
   # Print the 10 slowest examples and example groups at the
   # end of the spec run, to help surface which specs are running
   # particularly slow.
-  config.profile_examples = 10
+  config.profile_examples = (ENV['NUM_PROFILE'] || 10).to_i
 
   # Run specs in random order to surface order dependencies. If you find an
   # order dependency and want to debug it, you can fix the order by providing

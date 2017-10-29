@@ -1,0 +1,12 @@
+- content_for :breadcrumbs do
+  = link_to "Indexes", indexes_path
+  &raquo;
+  = link_to @index.name, index_path(@index)
+  &raquo;
+  %b Edit
+
+= form_for @index, method: :put do |f|
+  %table.form-table
+    %tr
+      %th.centered{colspan: 2} Edit Index
+    = render partial: 'editor', locals: {f: f}

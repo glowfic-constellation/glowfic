@@ -1,7 +1,18 @@
 class Api::V1::PostsController < Api::ApiController
-  before_action :login_required, except: :show
+  before_action :login_required, except: [:index, :show]
   resource_description do
     description 'Viewing and editing posts'
+  end
+
+  api! 'Load all posts optionally filtered by subject'
+  param :q, String, required: false, desc: 'Subject search term'
+  def index
+    queryset = Post.order('LOWER(subject) asc')
+    queryset = queryset.where('LOWER(subject) LIKE ?', "%#{params[:q].downcase}%") if params[:q].present?
+
+    posts = paginate queryset, per_page: 25
+    posts = posts.select { |post| post.visible_to?(current_user) }
+    render json: {results: posts.as_json(min: true)}
   end
 
   api! 'Load a single post as a JSON resource'

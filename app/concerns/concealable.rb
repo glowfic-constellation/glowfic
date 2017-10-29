@@ -19,4 +19,13 @@ module Concealable
   def private?
     privacy == PRIVATE
   end
+
+  def visible_to?(user)
+    # does not support access lists at this time
+    return true if public?
+    return false unless user
+    return true if registered_users?
+    return true if user.admin?
+    user.id == user_id
+  end
 end

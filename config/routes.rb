@@ -90,6 +90,11 @@ Rails.application.routes.draw do
   end
   resources :tags, except: [:new, :create]
 
+  # Indexes
+  resources :indexes
+  resources :index_sections, except: [:index]
+  resources :index_posts, only: [:new, :create, :destroy]
+
   # API
   namespace :api do
     namespace :v1 do
@@ -104,7 +109,7 @@ Rails.application.routes.draw do
       resources :icons do
         collection { post :s3_delete }
       end
-      resources :posts, only: :show do
+      resources :posts, only: [:index, :show] do
         resources :replies, only: :index
         collection { post :reorder }
       end

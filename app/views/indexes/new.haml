@@ -1,0 +1,11 @@
+- content_for :breadcrumbs do
+  = link_to "Indexes", indexes_path
+  &raquo;
+  %b New
+
+
+= form_for @index, url: indexes_path, method: :post do |f|
+  %table.form-table
+    %tr
+      %th.centered{colspan: 2} Create Index
+    = render partial: 'editor', locals: {f: f}

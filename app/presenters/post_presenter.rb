@@ -7,6 +7,7 @@ class PostPresenter
 
   def as_json(_options={})
     return {} unless post
+    return post.as_json_without_presenter(only: [:id, :subject]) if _options[:min]
 
     attrs = %w(id status subject description content created_at edited_at tagged_at)
     post_json = post.as_json_without_presenter(only: attrs)
