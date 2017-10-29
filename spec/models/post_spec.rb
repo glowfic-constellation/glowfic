@@ -554,6 +554,23 @@ RSpec.describe Post do
         unread = create(:reply, post: post)
         expect(post.first_unread_for(post.user)).to eq(unread)
       end
+
+      it "handles status changes" do
+        post.mark_read(post.user)
+        unread = create(:reply, post: post)
+        expect(post.first_unread_for(post.user)).to eq(unread)
+        expect(post.read_time_for(post.replies)).to be_the_same_time_as(unread.created_at)
+
+        Timecop.freeze(unread.created_at + 1.day) do
+          post.status = Post::STATUS_COMPLETE
+          post.save
+        end
+
+        post.reload
+        expect(post.edited_at).to be > unread.updated_at
+        expect(post.first_unread_for(post.user)).to eq(unread)
+        expect(post.read_time_for(post.replies)).to be_the_same_time_as(post.edited_at)
+      end
     end
 
     context "without replies" do
