@@ -1,0 +1,29 @@
+%table
+  %thead
+    %tr
+      %th{colspan: 3}
+        Indexes
+        - if logged_in? && current_user.admin?
+          = link_to new_index_path do
+            .link-box.green + New Index
+  %tbody
+    %tr
+      %th.sub Name
+      %th.sub Posts
+      %th.sub
+    - @indexes.each do |index|
+      - klass = cycle('even', 'odd')
+      %tr
+        %td{class: klass}= link_to index.name, index_path(index)
+        %td{class: klass}= index.posts.count
+        %td.width-70.right-align{class: klass}
+          - if true#index.editable_by?(current_user)
+            = link_to edit_index_path(index) do
+              = image_tag "icons/pencil.png"
+            = link_to index_path(index), method: :delete, confirm: 'Are you sure you want to delete '+index.name+'?' do
+              = image_tag "icons/cross.png"
+            &nbsp;
+  - if @indexes.total_pages > 1
+    %tfoot
+      %tr
+        %td{colspan: 6}= render partial: 'posts/paginator', locals: { paginated: @indexes }

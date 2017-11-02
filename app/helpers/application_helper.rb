@@ -201,6 +201,12 @@ module ApplicationHelper
       'Private'             => Concealable::PRIVATE }
   end
 
+  def index_privacy_settings
+    { 'Public'              => Concealable::PUBLIC,
+      'Constellation Users' => Concealable::REGISTERED,
+      'Private'             => Concealable::PRIVATE }
+  end
+
   def unread_post?(post, unread_ids)
     return false unless post
     return false unless unread_ids

@@ -1,0 +1,13 @@
+- content_for :breadcrumbs do
+  = link_to "Indexes", indexes_path
+  &raquo;
+  = link_to @section.index.name, index_path(@section.index)
+  &raquo;
+  %b New Section
+
+
+= form_for @section, url: index_sections_path, method: :post do |f|
+  %table.form-table
+    %tr
+      %th.centered{colspan: 2}= "Create #{@index.try(:name)} Section"
+    = render partial: 'editor', locals: {f: f}

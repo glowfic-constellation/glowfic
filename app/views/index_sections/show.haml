@@ -1,0 +1,10 @@
+- content_for :breadcrumbs do
+  = link_to "Indexes", indexes_path
+  &raquo;
+  = link_to @section.index.name, index_path(@section.index)
+  &raquo;
+  %b= @section.name
+
+%table
+  %tbody
+    = render partial: 'single', locals: {section: @section}

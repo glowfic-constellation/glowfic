@@ -1,7 +1,7 @@
 %tr
   - klass = cycle('even', 'odd')
   - replies_count = post.reply_count
-  %td.post-completed{class: [klass, (post.completed? ? 'post-complete' : 'post-incomplete')]}
+  %td.post-completed.vtop{class: [klass, (post.completed? ? 'post-complete' : 'post-incomplete')]}
     - if post.completed?
       = image_tag "icons/book.png", class: 'vmid', title: "Thread Complete"
     - if post.on_hiatus?
@@ -10,7 +10,7 @@
       = image_tag "icons/book_grey.png", class: 'vmid', title: "Thread Abandoned"
     - if !current_user.try(:hide_warnings) && post.has_content_warnings?
       = image_tag "icons/exclamation.png", class: 'vmid', title: "Content Warning: " + post.content_warnings.pluck(:name).join(', '), alt: '!'
-  %td.post-subject{class: klass}
+  %td.post-subject.vtop{class: klass}
     - if logged_in?
       - if unread_post?(post, unread_ids) || (@show_unread && !opened_post?(post, opened_ids))
         = link_to unread_path(post) do
@@ -38,9 +38,12 @@
             \...
             - (total_pages-2).upto(total_pages) do |index|
               = link_to (index), post_path(post, page: index)
+    - if post.respond_to?(:index_description)
+      %br
+      %span.details= sanitize_post_description(post.index_description).html_safe
   - unless local_assigns[:hide_continuity]
-    %td.post-board{class: klass}= link_to post.board_name, board_path(post.board_id)
-  %td.post-authors{class: klass}
+    %td.post-board.vtop{class: klass}= link_to post.board_name, board_path(post.board_id)
+  %td.post-authors.vtop{class: klass}
     - authors = post.authors.sort_by { |author| author.username.downcase }
     - if authors.length < 4
       = authors.map { |author| link_to author.username, user_path(author) }.join(', ').html_safe
@@ -48,14 +51,14 @@
       = link_to post.user.username, user_path(post.user)
       and
       = link_to "#{authors.length-1} others", stats_post_path(post)
-  %td.width-70.post-replies{class: klass}= link_to replies_count, stats_post_path(post)
+  %td.width-70.post-replies.vtop{class: klass}= link_to replies_count, stats_post_path(post)
   - if logged_in? && local_assigns[:show_unread_count]
-    %td.width-70{class: klass}
+    %td.width-70.vtop{class: klass}
       - if @opened_ids.include?(post.id) && unread_ids.include?(post.id)
         = Reply.where(post_id: post.id).where('created_at > ?', post.last_read(current_user)).count
       - else
         \-
-  %td.post-time{class: klass}
+  %td.post-time.vtop{class: klass}
     = pretty_time(post.tagged_at)
     by
     = link_to post.last_user_name, user_path(post.last_user_id)

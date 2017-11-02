@@ -124,9 +124,9 @@ class ApplicationController < ActionController::Base
   end
   helper_method :post_or_reply_link
 
-  def posts_from_relation(relation, no_tests=true, with_pagination=true)
+  def posts_from_relation(relation, no_tests=true, with_pagination=true, select='')
     posts = relation
-      .select('posts.*, boards.name as board_name, users.username as last_user_name')
+      .select('posts.*, boards.name as board_name, users.username as last_user_name'+ select)
       .joins(:board)
       .joins(:last_user)
       .with_has_content_warnings

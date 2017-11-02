@@ -4,7 +4,7 @@ require "#{Rails.root}/lib/post_scraper"
 require 'pp'
 
 section_number = ARGV[0].to_i # only-process-this section number
-board_id = (ARGV[1] || 3).to_i
+board_id = (ARGV[1] || Board.where(name: 'Incandescence').first.try(:id)).to_i
 section_index = 0
 
 # processes the Incandescence index
@@ -30,7 +30,7 @@ main_list.each do |section|
   board_section = BoardSection.create!(board_id: board_id, name: section_title, section_order: section_index, status: 1)
   links.each do |link|
     url = link.at_css('a').attribute('href').value
-    scraper = PostScraper.new(url, board_id, board_section.id)
-    scraper.scrape
+    scraper = PostScraper.new(url, board_id, board_section.id, nil, false, true)
+    scraper.scrape!
   end
 end
