@@ -2,7 +2,7 @@
 require 'will_paginate/array'
 
 class PostsController < WritableController
-  SCRAPE_USERS = [1, 2, 3, 8, 24, 31]
+  SCRAPE_USERS = [1, 2, 3, 8, 19, 24, 31]
   before_action :login_required, except: [:index, :show, :history, :warnings, :search, :stats]
   before_action :find_post, only: [:show, :history, :stats, :warnings, :edit, :update, :destroy]
   before_action :require_permission, only: [:edit, :destroy]
