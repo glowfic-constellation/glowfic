@@ -131,6 +131,7 @@ $(document).ready(function() {
 
   createTagSelect("GalleryGroup", "gallery_group", "character", {user_id: gon.user_id});
   createTagSelect("Setting", "setting", "character");
+  createTagSelect("Canon", "canon", "character");
 });
 
 function findGalleryInGroups(galleryId) {

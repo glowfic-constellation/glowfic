@@ -1043,6 +1043,39 @@ CREATE TABLE schema_migrations (
 
 
 --
+-- Name: tag_tags; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE tag_tags (
+    id integer NOT NULL,
+    tagged_id integer NOT NULL,
+    tag_id integer NOT NULL,
+    suggested boolean DEFAULT false,
+    created_at timestamp without time zone,
+    updated_at timestamp without time zone
+);
+
+
+--
+-- Name: tag_tags_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE tag_tags_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: tag_tags_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE tag_tags_id_seq OWNED BY tag_tags.id;
+
+
+--
 -- Name: tags; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -1052,7 +1085,8 @@ CREATE TABLE tags (
     name citext NOT NULL,
     created_at timestamp without time zone,
     updated_at timestamp without time zone,
-    type character varying
+    type character varying,
+    description text
 );
 
 
@@ -1359,6 +1393,13 @@ ALTER TABLE ONLY report_views ALTER COLUMN id SET DEFAULT nextval('report_views_
 
 
 --
+-- Name: tag_tags id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY tag_tags ALTER COLUMN id SET DEFAULT nextval('tag_tags_id_seq'::regclass);
+
+
+--
 -- Name: tags id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -1617,6 +1658,14 @@ ALTER TABLE ONLY report_views
 
 ALTER TABLE ONLY schema_migrations
     ADD CONSTRAINT schema_migrations_pkey PRIMARY KEY (version);
+
+
+--
+-- Name: tag_tags tag_tags_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY tag_tags
+    ADD CONSTRAINT tag_tags_pkey PRIMARY KEY (id);
 
 
 --
@@ -2043,6 +2092,20 @@ CREATE INDEX index_report_views_on_user_id ON report_views USING btree (user_id)
 
 
 --
+-- Name: index_tag_tags_on_tag_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_tag_tags_on_tag_id ON tag_tags USING btree (tag_id);
+
+
+--
+-- Name: index_tag_tags_on_tagged_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_tag_tags_on_tagged_id ON tag_tags USING btree (tagged_id);
+
+
+--
 -- Name: index_tags_on_name; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -2166,6 +2229,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20170911235423'),
 ('20170914191425'),
 ('20171001035221'),
-('20171027225408');
+('20171027225408'),
+('20171104140915');
 
 

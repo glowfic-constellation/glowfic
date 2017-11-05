@@ -1,4 +1,5 @@
 require "spec_helper"
+require "support/shared_examples_for_taggable"
 
 RSpec.describe Tag do
   describe "#merge_with" do
@@ -123,5 +124,12 @@ RSpec.describe Tag do
       expect(fetched).to eq(tags)
       expect(fetched.map(&:gallery_count)).to eq([0, 1, 2])
     end
+  end
+end
+
+RSpec.describe Setting do
+  # from Taggable concern
+  context "tags" do
+    it_behaves_like 'taggable', 'canon'
   end
 end

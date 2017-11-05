@@ -93,11 +93,12 @@ RSpec.shared_examples "taggable" do |type|
     tag2 = create(type)
     tag3 = create(type)
     tag4 = create(type)
+    tag_table = model_name == 'setting' ? 'tag' : model_name
 
     taggable.send(type + '_ids=', [tag3.id, '_fake1', '_'+tag1.name, '_fake2', tag4.id])
     taggable.save
     taggable.reload
-    tags = taggable.send(type + 's').order(model_name + '_tags.id')
+    tags = taggable.send(type + 's').order(tag_table + '_tags.id')
     expect(tags[0]).to eq(tag3)
     expect(tags[2]).to eq(tag1)
     expect(tags[4]).to eq(tag4)
@@ -106,7 +107,7 @@ RSpec.shared_examples "taggable" do |type|
     taggable.send(type + '_ids=', taggable.send(type + '_ids') + ['_'+tag2.name, '_fake3', '_fake4'])
     taggable.save
     taggable.reload
-    tags = taggable.send(type + 's').order(model_name + '_tags.id')
+    tags = taggable.send(type + 's').order(tag_table + '_tags.id')
     tag_ids = taggable.send(type + '_ids')
     expect(tags[0]).to eq(tag3)
     expect(tags[2]).to eq(tag1)

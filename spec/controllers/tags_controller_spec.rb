@@ -27,6 +27,7 @@ RSpec.describe TagsController do
         tags = create_tags
         get :index
         expect(response.status).to eq(200)
+        tags.reject! { |tag| tag.is_a?(GalleryGroup) }
         expect(assigns(:tags)).to match_array(tags)
       end
 
@@ -35,6 +36,7 @@ RSpec.describe TagsController do
         login
         get :index
         expect(response.status).to eq(200)
+        tags.reject! { |tag| tag.is_a?(GalleryGroup) }
         expect(assigns(:tags)).to match_array(tags)
       end
     end
@@ -58,12 +60,19 @@ RSpec.describe TagsController do
       end
 
       it "succeeds for logged in users with valid post tag" do
-        tag = create(:label)
-        post = create(:post, labels: [tag])
+        tag = create(:setting)
+        post = create(:post, settings: [tag])
         login
         get :show, params: { id: tag.id }
         expect(response.status).to eq(200)
         expect(assigns(:posts)).to match_array([post])
+      end
+
+      it 'succeeds for canons with settings' do
+        tag = create(:canon)
+        tag.settings << create(:setting)
+        get :show, params: { id: tag.id }
+        expect(response).to have_http_status(200)
       end
 
       it "succeeds with valid gallery tag" do

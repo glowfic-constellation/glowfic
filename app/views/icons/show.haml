@@ -6,6 +6,11 @@
     &raquo;
     = link_to "#{@icon.user.username}'s Galleries", user_galleries_path(@icon.user)
   &raquo;
+  - if @icon.galleries.count == 1
+    = link_to @icon.galleries.first.name, gallery_path(@icon.galleries.first)
+  - else
+    = link_to_if params[:view] != 'galleries', "(#{@icon.galleries.count} Galleries)", icon_path(@icon, view: 'galleries')
+  &raquo;
   = link_to_if params[:view].present?, @icon.keyword, icon_path(@icon)
   &raquo;
   - if params[:view] == 'galleries'

@@ -1,7 +1,7 @@
 class Api::V1::TagsController < Api::ApiController
   before_action :find_tag, except: :index
 
-  TYPES = [Setting, Label, ContentWarning, GalleryGroup]
+  TYPES = [Setting, Label, ContentWarning, GalleryGroup, Canon]
 
   resource_description do
     description 'Viewing tags'

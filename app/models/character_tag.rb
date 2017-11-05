@@ -4,6 +4,7 @@ class CharacterTag < ApplicationRecord
   belongs_to :label, foreign_key: :tag_id
   belongs_to :setting, foreign_key: :tag_id
   belongs_to :gallery_group, foreign_key: :tag_id
+  belongs_to :canon, foreign_key: :tag_id
   validates_presence_of :character
 
   after_create :add_galleries_to_character

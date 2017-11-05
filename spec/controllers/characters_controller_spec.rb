@@ -1010,6 +1010,8 @@ RSpec.describe CharactersController do
       calias = create(:alias, character: character)
       char_post = create(:post, character: character, user: user)
       char_reply = create(:reply, character: character, user: user)
+      character.settings << create(:setting)
+      character.canons << create(:canon)
 
       character.reload
 
@@ -1022,7 +1024,7 @@ RSpec.describe CharactersController do
         post :duplicate, params: { id: character.id }
       end.to not_change {
         [Template.count, Gallery.count, Icon.count, Reply.count, Post.count, Tag.count]
-      }.and change { Character.count }.by(1).and change { CharactersGallery.count }.by(3).and change { CharacterTag.count }.by(1)
+      }.and change { Character.count }.by(1).and change { CharactersGallery.count }.by(3).and change { CharacterTag.count }.by(3)
 
       dup = assigns(:dup)
       dup.reload

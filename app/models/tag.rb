@@ -12,12 +12,13 @@ class Tag < ApplicationRecord
 
   scope :with_item_counts, -> {
     select('(SELECT COUNT(DISTINCT post_tags.post_id) FROM post_tags WHERE post_tags.tag_id = tags.id) AS post_count,
-    (SELECT COUNT(DISTINCT character_tags.character_id) FROM character_tags WHERE character_tags.tag_id = tags.id) AS character_count,
-    (SELECT COUNT(DISTINCT gallery_tags.gallery_id) FROM gallery_tags WHERE gallery_tags.tag_id = tags.id) AS gallery_count')
+    (SELECT COUNT(DISTINCT character_tags.character_id) FROM character_tags WHERE character_tags.tag_id = tags.id) AS character_count')
   }
 
   def editable_by?(user)
-    user.try(:admin?)
+    return false unless user
+    return true if user.admin?
+    user.id == user_id
   end
 
   def as_json(options={})
@@ -48,6 +49,10 @@ class Tag < ApplicationRecord
   def gallery_count
     return read_attribute(:gallery_count) if has_attribute?(:gallery_count)
     galleries.count
+  end
+
+  def has_items?
+    post_count + character_count + gallery_count > 0
   end
 
   def merge_with(other_tag)

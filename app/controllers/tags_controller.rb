@@ -6,7 +6,7 @@ class TagsController < ApplicationController
 
   def index
     @page_title = "Tags"
-    @tags = Tag.order('type desc, LOWER(name) asc').select('tags.*').with_item_counts.paginate(per_page: 25, page: page)
+    @tags = Tag.where.not(type: 'GalleryGroup').order('type desc, LOWER(name) asc').select('tags.*').with_item_counts.paginate(per_page: 25, page: page)
   end
 
   def show
@@ -19,6 +19,7 @@ class TagsController < ApplicationController
 
   def edit
     @page_title = "Edit Tag: #{@tag.name}"
+    build_editor
   end
 
   def update
@@ -27,6 +28,7 @@ class TagsController < ApplicationController
       flash.now[:error][:message] = "Tag could not be saved because of the following problems:"
       flash.now[:error][:array] = @tag.errors.full_messages
       @page_title = "Edit Tag: #{@tag.name}"
+      build_editor
       render action: :edit and return
     end
 
@@ -56,7 +58,16 @@ class TagsController < ApplicationController
     end
   end
 
+  def build_editor
+    # n.b. this method is unsafe for unpersisted tags (in case we ever add tags#new)
+    return unless @tag.is_a?(Setting)
+    @canons = @tag.canons.order('tag_tags.id asc') || []
+    use_javascript('tags/edit')
+  end
+
   def tag_params
-    params.fetch(:tag, {}).permit(:name, :type)
+    permitted = [:type, :description, canon_ids: []]
+    permitted.insert(0, :name) if current_user.admin?
+    params.fetch(:tag, {}).permit(permitted)
   end
 end

@@ -1,7 +1,7 @@
 %table
   %thead
     %tr
-      %th{colspan: 6}
+      %th{colspan: 5}
         Tags
   %tbody
     %tr
@@ -9,7 +9,6 @@
       %th.sub Type
       %th.sub Posts
       %th.sub Characters
-      %th.sub Galleries
       %th.sub
     - @tags.each do |tag|
       - klass = cycle('even', 'odd')
@@ -18,7 +17,6 @@
         %td{class: klass}= (tag.type || 'Tag').titlecase
         %td{class: klass}= tag.post_count
         %td{class: klass}= tag.character_count
-        %td{class: klass}= tag.gallery_count
         %td.width-70.right-align{class: klass}
           - if tag.editable_by?(current_user)
             = link_to edit_tag_path(tag) do
