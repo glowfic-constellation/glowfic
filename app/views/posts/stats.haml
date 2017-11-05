@@ -64,15 +64,15 @@
     - if @post.settings.present?
       %tr
         %td.sub.width-150 Setting
-        %td{class: cycle('odd', 'even')}= @post.settings.map { |tag| link_to tag.name, tag_path(tag) }.join(', ').html_safe
+        %td{class: cycle('odd', 'even')}= @post.settings.order('post_tags.id asc').map { |tag| link_to tag.name, tag_path(tag) }.join(', ').html_safe
     - if @post.content_warnings.present?
       %tr
         %td.sub.width-150 Content Warnings
-        %td{class: cycle('odd', 'even')}= @post.content_warnings.map { |tag| link_to tag.name, tag_path(tag) }.join(', ').html_safe
+        %td{class: cycle('odd', 'even')}= @post.content_warnings.order('post_tags.id asc').map { |tag| link_to tag.name, tag_path(tag) }.join(', ').html_safe
     - if @post.labels.present?
       %tr
         %td.sub.width-150 Labels
-        %td{class: cycle('odd', 'even')}= @post.labels.map { |tag| link_to tag.name, tag_path(tag) }.join(', ').html_safe
+        %td{class: cycle('odd', 'even')}= @post.labels.order('post_tags.id asc').map { |tag| link_to tag.name, tag_path(tag) }.join(', ').html_safe
     %tr
       %td.sub.width-150.vtop Word Count
       %td{class: cycle('odd', 'even')}
