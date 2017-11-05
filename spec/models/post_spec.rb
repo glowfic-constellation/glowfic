@@ -564,6 +564,9 @@ RSpec.describe Post do
         Timecop.freeze(unread.created_at + 1.day) do
           post.status = Post::STATUS_COMPLETE
           post.save
+
+          post.description = 'new description to add another audit'
+          post.save
         end
 
         post.reload

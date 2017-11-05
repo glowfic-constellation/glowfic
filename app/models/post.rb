@@ -193,9 +193,9 @@ class Post < ApplicationRecord
     return most_recent.updated_at if most_recent.updated_at > edited_at
 
     # testing for case where the post was changed in status more recently than the last reply
-    audit = audits.last
-    return most_recent.updated_at unless audit.action == 'update'
-    return most_recent.updated_at unless audit.audited_changes.keys.include?('status')
+    audits_since_last_reply = audits.where('created_at > ?', most_recent.created_at)
+    audit = audits_since_last_reply.detect { |a| a.audited_changes.keys.include?('status') }
+    return most_recent.updated_at unless audit
     self.edited_at
   end
 
