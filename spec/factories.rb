@@ -156,6 +156,10 @@ FactoryGirl.define do
     factory :gallery_group, class: GalleryGroup do
       type 'GalleryGroup'
     end
+
+    factory :canon, class: Canon do
+      type 'Canon'
+    end
   end
 
   factory :message do

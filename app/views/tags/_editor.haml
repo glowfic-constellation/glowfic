@@ -1,5 +1,17 @@
 %tr
   %th.sub Name
-  %td.even= f.text_field :name, placeholder: "Tag Name", class: 'text'
+  %td{class: cycle('even', 'odd')}
+    - if current_user.admin?
+      = f.text_field :name, placeholder: "Tag Name", class: 'text'
+    - else
+      = f.object.name
+- if f.object.is_a?(Setting)
+  %tr
+    %th.sub Canon
+    %td{class: cycle('even', 'odd')}= f.select :canon_ids, options_from_collection_for_select(@canons, :id_for_select, :name, f.object.canon_ids || f.object.canons.pluck(:id)), {}, {multiple: true}
+- if [Setting, Canon].include?(f.object.class)
+  %tr
+    %th.sub.vtop Description
+    %td{class: cycle('even', 'odd')}= f.text_area :description, placeholder: 'Description', cols: 35
 %tr
   %th.form-table-ender{colspan: 2}= submit_tag "Save", class: 'button'

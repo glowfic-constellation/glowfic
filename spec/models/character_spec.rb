@@ -265,5 +265,6 @@ RSpec.describe Character do
   context "tags" do
     it_behaves_like 'taggable', 'gallery_group'
     it_behaves_like 'taggable', 'setting'
+    it_behaves_like 'taggable', 'canon'
   end
 end

@@ -11,6 +11,9 @@
   %th.sub Setting
   %td{class: cycle('even', 'odd')}= f.select :setting_ids, options_from_collection_for_select(@settings, :id_for_select, :name, @character.setting_ids || @character.settings.pluck(:id)), {}, {multiple: true}
 %tr
+  %th.sub Canon
+  %td{class: cycle('even', 'odd')}= f.select :canon_ids, options_from_collection_for_select(@canons, :id_for_select, :name, @character.canon_ids || @character.canons.pluck(:id)), {}, {multiple: true}
+%tr
   - klass = cycle('even', 'odd')
   %th.sub.vtop Template
   %td{class: klass}
