@@ -126,7 +126,7 @@ RSpec.describe TagsController do
     end
 
     it "requires permission" do
-      tag = create(:label)
+      tag = create(:label, owned: true)
       login
       get :edit, params: { id: tag.id }
       expect(response).to redirect_to(tag_url(tag))
@@ -157,7 +157,7 @@ RSpec.describe TagsController do
 
     it "requires permission" do
       login
-      tag = create(:label)
+      tag = create(:label, owned: true)
       put :update, params: { id: tag.id }
       expect(response).to redirect_to(tag_url(tag))
       expect(flash[:error]).to eq("You do not have permission to edit this tag.")
@@ -197,7 +197,7 @@ RSpec.describe TagsController do
     end
 
     it "requires permission" do
-      tag = create(:label)
+      tag = create(:label, owned: true)
       login
       delete :destroy, params: { id: tag.id }
       expect(response).to redirect_to(tag_url(tag))

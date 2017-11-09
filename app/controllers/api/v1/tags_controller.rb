@@ -1,8 +1,6 @@
 class Api::V1::TagsController < Api::ApiController
   before_action :find_tag, except: :index
 
-  TYPES = [Setting, Label, ContentWarning, GalleryGroup, Canon]
-
   resource_description do
     description 'Viewing tags'
   end
@@ -10,7 +8,7 @@ class Api::V1::TagsController < Api::ApiController
   api :GET, '/tags', 'Load all the tags of the specified type that match the given query, results ordered by name'
   param :q, String, required: false, desc: "Query string"
   param :page, :number, required: false, desc: 'Page in results (25 per page)'
-  param :t, TYPES.map(&:name), required: true, desc: 'Type of the tag to search'
+  param :t, Tag::TYPES, required: true, desc: 'Type of the tag to search'
   error 422, "Invalid parameters provided"
   def index
     type = find_type
@@ -46,6 +44,6 @@ class Api::V1::TagsController < Api::ApiController
 
   def find_type(type_string=nil)
     type_string ||= params[:t]
-    TYPES.detect {|x| x.name == type_string }
+    Tag::TYPES.detect {|x| x == type_string }
   end
 end

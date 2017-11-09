@@ -7,6 +7,8 @@ class Tag < ApplicationRecord
   has_many :gallery_tags, dependent: :destroy
   has_many :galleries, through: :gallery_tags
 
+  TYPES = %w(Setting Label ContentWarning GalleryGroup Canon)
+
   validates_presence_of :user, :name, :type
   validates :name, uniqueness: { scope: :type }
 

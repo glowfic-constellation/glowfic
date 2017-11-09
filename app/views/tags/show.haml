@@ -1,7 +1,7 @@
 - content_for :breadcrumbs do
   = link_to "Tags", tags_path
   &raquo;
-  = @tag.type.pluralize.titlecase
+  = link_to @tag.type.pluralize.titlecase, tags_path(view: @tag.type)
   &raquo;
   %b= @tag.name
 

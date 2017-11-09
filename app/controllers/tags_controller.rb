@@ -6,7 +6,22 @@ class TagsController < ApplicationController
 
   def index
     @page_title = "Tags"
-    @tags = Tag.where.not(type: 'GalleryGroup').order('type desc, LOWER(name) asc').select('tags.*').with_item_counts.paginate(per_page: 25, page: page)
+
+    if params[:view].present?
+      unless Tag::TYPES.include?(params[:view])
+        flash[:error] = "Invalid filter"
+        redirect_to tags_path and return
+      end
+      @view = params[:view]
+    end
+
+    @tags = Tag.order('type desc, LOWER(name) asc').select('tags.*')
+    if @view.present?
+      @tags = @tags.where(type: @view)
+    else
+      @tags = @tags.where.not(type: 'GalleryGroup')
+    end
+    @tags = @tags.with_item_counts.paginate(per_page: 25, page: page)
   end
 
   def show

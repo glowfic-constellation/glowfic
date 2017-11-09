@@ -33,7 +33,7 @@ module Taggable
           tag_ids -= fakes # remove them from proper list
           old_tags = klass.where(id: tag_ids)
 
-          fakes.map! { |name| name[1..-1] } # trim names
+          fakes.map! { |name| name[1..-1].strip } # trim names
 
           # find existing tags by same name
           existing_tags = klass.where(name: fakes)
