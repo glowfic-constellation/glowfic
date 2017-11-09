@@ -81,7 +81,7 @@ class TagsController < ApplicationController
   end
 
   def tag_params
-    permitted = [:type, :description, canon_ids: []]
+    permitted = [:type, :description, :owned, canon_ids: []]
     permitted.insert(0, :name) if current_user.admin?
     permitted.insert(0, :user_id) if current_user.admin? || @tag.user == current_user
     params.fetch(:tag, {}).permit(permitted)
