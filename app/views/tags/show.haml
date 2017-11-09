@@ -20,7 +20,7 @@
   %tbody
     - if @tag.is_a?(Setting) && @tag.canons.present?
       %tr
-        %th.centered.sub= 'Canon'.pluralize(@tag.canons.count)
+        %th.centered.sub.width-150= 'Canon'.pluralize(@tag.canons.count)
         %td{class: cycle('even', 'odd')}= @tag.canons.map { |c| link_to(c.name, tag_path(c))}.join(', ').html_safe
     - if @tag.description.present?
       %tr
