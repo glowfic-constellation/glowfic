@@ -9,18 +9,12 @@ RSpec.describe TagsController do
         empty_tag = create(:label)
         tag = create(:label)
         create(:post, labels: [tag])
+        setting = create(:setting)
 
         empty_group = create(:gallery_group)
         group1 = create(:gallery_group)
         create(:gallery, gallery_groups: [group1])
-
-        group2 = create(:gallery_group)
-        create(:gallery, gallery_groups: [group2])
-        create(:character, gallery_groups: [group2])
-
-        group3 = create(:gallery_group)
-        create(:character, gallery_groups: [group3])
-        [empty_tag, tag, empty_group, group1, group2, group3]
+        [empty_tag, tag, empty_group, group1, setting]
       end
 
       it "succeeds when logged out" do
@@ -29,6 +23,13 @@ RSpec.describe TagsController do
         expect(response.status).to eq(200)
         tags.reject! { |tag| tag.is_a?(GalleryGroup) }
         expect(assigns(:tags)).to match_array(tags)
+      end
+
+      it "succeeds with filter" do
+        tags = create_tags
+        get :index, params: { view: 'Setting' }
+        expect(response).to have_http_status(200)
+        expect(assigns(:tags).size).to eq(1)
       end
 
       it "succeeds when logged in" do
@@ -164,7 +165,7 @@ RSpec.describe TagsController do
     end
 
     it "requires valid params" do
-      tag = create(:label)
+      tag = create(:setting)
       login_as(create(:admin_user))
       put :update, params: { id: tag.id, tag: {name: nil} }
       expect(response.status).to eq(200)
