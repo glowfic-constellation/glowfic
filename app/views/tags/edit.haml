@@ -9,5 +9,5 @@
   - f.object = @tag.becomes(@tag.class) # handles the STI with Tag/Setting/ContentWarning properly
   %table.form-table
     %tr
-      %th.centered{colspan: 2} Edit Tag
+      %th.centered{colspan: 2} Edit #{@tag.type.titlecase}
     = render partial: 'editor', locals: {f: f}

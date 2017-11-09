@@ -9,7 +9,7 @@
   %thead
     %tr
       %th{colspan: 2}
-        #{@tag.type}: #{@tag.name}
+        #{@tag.type.titlecase}: #{@tag.name}
         - if @tag.editable_by?(current_user)
           = link_to edit_tag_path(@tag) do
             .link-box.blue

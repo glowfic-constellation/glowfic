@@ -18,6 +18,7 @@ class Tag < ApplicationRecord
   def editable_by?(user)
     return false unless user
     return true if user.admin?
+    return true unless owned?
     user.id == user_id
   end
 
