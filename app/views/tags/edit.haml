@@ -1,6 +1,8 @@
 - content_for :breadcrumbs do
   = link_to "Tags", tags_path
   &raquo;
+  = link_to @tag.type.pluralize.titlecase, tags_path(view: @tag.type)
+  &raquo;
   = link_to @tag.name, tag_path(@tag)
   &raquo;
   %b Edit
@@ -9,5 +11,5 @@
   - f.object = @tag.becomes(@tag.class) # handles the STI with Tag/Setting/ContentWarning properly
   %table.form-table
     %tr
-      %th.centered{colspan: 2} Edit Tag
+      %th.centered{colspan: 2} Edit #{@tag.type.titlecase}
     = render partial: 'editor', locals: {f: f}

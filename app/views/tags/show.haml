@@ -1,7 +1,7 @@
 - content_for :breadcrumbs do
   = link_to "Tags", tags_path
   &raquo;
-  = @tag.type.pluralize.titlecase
+  = link_to @tag.type.pluralize.titlecase, tags_path(view: @tag.type)
   &raquo;
   %b= @tag.name
 
@@ -9,7 +9,7 @@
   %thead
     %tr
       %th{colspan: 2}
-        #{@tag.type}: #{@tag.name}
+        #{@tag.type.titlecase}: #{@tag.name}
         - if @tag.editable_by?(current_user)
           = link_to edit_tag_path(@tag) do
             .link-box.blue

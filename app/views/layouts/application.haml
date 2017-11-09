@@ -85,6 +85,7 @@
             %li= link_to 'Unread', unread_posts_path
             %li= link_to 'Tags Owed', owed_posts_path
           %li= link_to 'Contribute', contribute_path
+          %li= link_to 'Tags', tags_path
           - if (day = DailyReport.unread_date_for(current_user)).present?
             %li
               = link_to report_path(id: :daily, day: day), style: 'text-shadow: 0 0 0.8em #F87, 0 0 0.8em #F87' do

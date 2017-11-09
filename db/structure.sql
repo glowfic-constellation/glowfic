@@ -1086,7 +1086,8 @@ CREATE TABLE tags (
     created_at timestamp without time zone,
     updated_at timestamp without time zone,
     type character varying,
-    description text
+    description text,
+    owned boolean DEFAULT false
 );
 
 
@@ -2230,6 +2231,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20170914191425'),
 ('20171001035221'),
 ('20171027225408'),
-('20171104140915');
+('20171104140915'),
+('20171109031527');
 
 

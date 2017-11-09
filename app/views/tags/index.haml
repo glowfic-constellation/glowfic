@@ -1,12 +1,19 @@
+- if @view.present?
+  - content_for :breadcrumbs do
+    = link_to "Tags", tags_path
+    &raquo;
+    %b= @view.pluralize.titlecase
+
 %table
   %thead
     %tr
       %th{colspan: 5}
-        Tags
+        = @view ? @view.titlecase.pluralize : 'Tags'
   %tbody
     %tr
-      %th.sub Tag
-      %th.sub Type
+      %th.sub= @view ? @view.titlecase : 'Tag'
+      - unless @view.present?
+        %th.sub Type
       %th.sub Posts
       %th.sub Characters
       %th.sub
@@ -14,7 +21,8 @@
       - klass = cycle('even', 'odd')
       %tr
         %td{class: klass}= link_to tag.name, tag_path(tag)
-        %td{class: klass}= (tag.type || 'Tag').titlecase
+        - unless @view.present?
+          %td{class: klass}= link_to tag.type.titlecase, tags_path(view: tag.type)
         %td{class: klass}= tag.post_count
         %td{class: klass}= tag.character_count
         %td.width-70.right-align{class: klass}
