@@ -54,7 +54,7 @@ class TagsController < ApplicationController
   def destroy
     unless @tag.deletable_by?(current_user)
       flash[:error] = "You do not have permission to edit this tag."
-      redirect_to tag_path(@tag)
+      redirect_to tag_path(@tag) and return
     end
 
     @tag.destroy
