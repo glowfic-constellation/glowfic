@@ -19,7 +19,7 @@ class TagsController < ApplicationController
     if @view.present?
       @tags = @tags.where(type: @view)
     else
-      @tags = @tags.where.not(type: ['GalleryGroup', 'Canon'])
+      @tags = @tags.where.not(type: 'GalleryGroup')
     end
     @tags = @tags.with_item_counts.paginate(per_page: 25, page: page)
   end

@@ -18,7 +18,6 @@ class Character < ApplicationRecord
   has_many :character_tags, inverse_of: :character, dependent: :destroy
   has_many :labels, through: :character_tags, source: :label
   has_many :settings, through: :character_tags, source: :setting
-  has_many :canons, through: :character_tags, source: :canon
   has_many :gallery_groups, through: :character_tags, source: :gallery_group, dependent: :destroy
 
   validates_presence_of :name, :user
@@ -30,7 +29,7 @@ class Character < ApplicationRecord
 
   accepts_nested_attributes_for :template, reject_if: :all_blank
 
-  acts_as_tag :label, :setting, :gallery_group, :canon
+  acts_as_tag :label, :setting, :gallery_group
 
   nilify_blanks types: [:string, :text, :citext] # nilify_blanks does not touch citext by default
 
