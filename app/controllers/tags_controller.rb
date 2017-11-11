@@ -2,7 +2,7 @@
 class TagsController < ApplicationController
   before_action :login_required, except: [:index, :show]
   before_action :find_tag, except: :index
-  before_action :permission_required, except: [:index, :show]
+  before_action :permission_required, except: [:index, :show, :destroy]
 
   def index
     @page_title = "Tags"
@@ -52,6 +52,11 @@ class TagsController < ApplicationController
   end
 
   def destroy
+    unless @tag.deletable_by?(current_user)
+      flash[:error] = "You do not have permission to edit this tag."
+      redirect_to tag_path(@tag)
+    end
+
     @tag.destroy
     flash[:success] = "Tag deleted."
 
