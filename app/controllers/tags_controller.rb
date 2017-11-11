@@ -54,7 +54,11 @@ class TagsController < ApplicationController
   def destroy
     @tag.destroy
     flash[:success] = "Tag deleted."
-    redirect_to tags_path
+
+    url_params = {}
+    url_params[:page] = page if params[:page].present?
+    url_params[:view] = params[:view] if params[:view].present?
+    redirect_to tags_path(url_params)
   end
 
   private
