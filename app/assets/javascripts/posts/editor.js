@@ -274,11 +274,13 @@ function iconString(icon) {
 }
 
 function setupTinyMCE() {
+  var selector = 'textarea.tinymce';
   if (typeof tinyMCE === 'undefined') {
     setTimeout(arguments.callee, 50);
   } else {
+    var height = ($(selector).height() + 15) || 150;
     tinyMCE.init({
-      selector: "textarea.tinymce",
+      selector: selector,
       menubar: false,
       toolbar: ["bold italic underline strikethrough | link image | blockquote hr bullist numlist | undo redo"],
       plugins: "image,hr,link,autoresize",
@@ -289,6 +291,7 @@ function setupTinyMCE() {
       theme_advanced_resizing: true,
       theme_advanced_resize_horizontal: false,
       autoresize_bottom_margin: 15,
+      autoresize_min_height: height,
       browser_spellcheck: true,
       relative_urls: false,
       remove_script_host: true,
