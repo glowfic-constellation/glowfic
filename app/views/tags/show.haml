@@ -58,6 +58,7 @@
         %th{colspan: 6} Characters Tagged: #{@tag.name}
     %tbody
       = render partial: 'characters/list_section', locals: {name: nil, characters: @characters.order('name asc'), hide_buttons: true, show_user: true}
+  %br
 
 - if @tag.is_a?(Setting)
   - reset_cycle

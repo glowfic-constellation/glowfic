@@ -1,2 +1,0 @@
-class Canon < Tag
-end

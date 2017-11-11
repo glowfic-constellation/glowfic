@@ -1,7 +1,7 @@
 %tr
   %th.sub Name
   %td{class: cycle('even', 'odd')}
-    - if current_user.admin? # TODO or owned owner
+    - if current_user.admin? || f.object.user_id == current_user.id
       = f.text_field :name, placeholder: "Tag Name", class: 'text'
     - else
       = f.object.name

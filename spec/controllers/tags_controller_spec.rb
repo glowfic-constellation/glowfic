@@ -34,7 +34,7 @@ RSpec.describe TagsController do
 
       it "succeeds when logged in" do
         tags = create_tags
-        login
+        login_as(tags.first.user)
         get :index
         expect(response.status).to eq(200)
         tags.reject! { |tag| tag.is_a?(GalleryGroup) }

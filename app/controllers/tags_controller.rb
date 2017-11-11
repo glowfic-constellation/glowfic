@@ -2,7 +2,7 @@
 class TagsController < ApplicationController
   before_action :login_required, except: [:index, :show]
   before_action :find_tag, except: :index
-  before_action :permission_required, except: [:index, :show]
+  before_action :permission_required, except: [:index, :show, :destroy]
 
   def index
     @page_title = "Tags"
@@ -19,7 +19,7 @@ class TagsController < ApplicationController
     if @view.present?
       @tags = @tags.where(type: @view)
     else
-      @tags = @tags.where.not(type: ['GalleryGroup', 'Canon'])
+      @tags = @tags.where.not(type: 'GalleryGroup')
     end
     @tags = @tags.with_item_counts.paginate(per_page: 25, page: page)
   end
@@ -52,9 +52,18 @@ class TagsController < ApplicationController
   end
 
   def destroy
+    unless @tag.deletable_by?(current_user)
+      flash[:error] = "You do not have permission to edit this tag."
+      redirect_to tag_path(@tag) and return
+    end
+
     @tag.destroy
     flash[:success] = "Tag deleted."
-    redirect_to tags_path
+
+    url_params = {}
+    url_params[:page] = page if params[:page].present?
+    url_params[:view] = params[:view] if params[:view].present?
+    redirect_to tags_path(url_params)
   end
 
   private
@@ -82,8 +91,7 @@ class TagsController < ApplicationController
 
   def tag_params
     permitted = [:type, :description, :owned, parent_setting_ids: []]
-    permitted.insert(0, :name) if current_user.admin?
-    permitted.insert(0, :user_id) if current_user.admin? || @tag.user == current_user
+    permitted.insert(0, :name, :user_id) if current_user.admin? || @tag.user == current_user
     params.fetch(:tag, {}).permit(permitted)
   end
 end

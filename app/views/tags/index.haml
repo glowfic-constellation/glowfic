@@ -29,7 +29,8 @@
           - if tag.editable_by?(current_user)
             = link_to edit_tag_path(tag) do
               = image_tag "icons/pencil.png"
-            = link_to tag_path(tag), method: :delete, confirm: 'Are you sure you want to delete '+tag.name+'?' do # TODO takes you back to the same view/page
+          - if tag.deletable_by?(current_user)
+            = link_to delete_path(tag), method: :delete, data: { confirm: 'Are you sure you want to delete '+tag.name+'?' } do
               = image_tag "icons/cross.png"
             &nbsp;
   - if @tags.total_pages > 1
