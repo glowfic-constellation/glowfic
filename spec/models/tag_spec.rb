@@ -126,10 +126,3 @@ RSpec.describe Tag do
     end
   end
 end
-
-RSpec.describe Setting do
-  # from Taggable concern
-  context "tags" do
-    it_behaves_like 'taggable', 'canon'
-  end
-end

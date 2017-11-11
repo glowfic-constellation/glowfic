@@ -80,7 +80,6 @@ class CharactersController < ApplicationController
       @dup = @character.dup
       @dup.gallery_groups = @character.gallery_groups
       @dup.settings = @character.settings
-      @dup.canons = @character.canons
       @dup.ungrouped_gallery_ids = @character.ungrouped_gallery_ids
       @character.aliases.find_each do |calias|
         dupalias = calias.dup
@@ -315,9 +314,6 @@ class CharactersController < ApplicationController
 
     @settings = @character.settings.order('character_tags.id asc') if @character.try(:persisted?)
     @settings ||= @character.try(:settings) || []
-
-    @canons = @character.canons.order('character_tags.id asc') if @character.try(:persisted?)
-    @canons ||= @character.try(:canons) || []
   end
 
   def build_template
@@ -336,7 +332,6 @@ class CharactersController < ApplicationController
       :pb,
       :description,
       setting_ids: [],
-      canon_ids: [],
       ungrouped_gallery_ids: [],
       gallery_group_ids: [],
       template_attributes: [:name, :id]

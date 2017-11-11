@@ -19,7 +19,7 @@ class TagsController < ApplicationController
     if @view.present?
       @tags = @tags.where(type: @view)
     else
-      @tags = @tags.where.not(type: 'GalleryGroup')
+      @tags = @tags.where.not(type: ['GalleryGroup', 'Canon'])
     end
     @tags = @tags.with_item_counts.paginate(per_page: 25, page: page)
   end
@@ -76,12 +76,12 @@ class TagsController < ApplicationController
   def build_editor
     # n.b. this method is unsafe for unpersisted tags (in case we ever add tags#new)
     return unless @tag.is_a?(Setting)
-    @canons = @tag.canons.order('tag_tags.id asc') || []
+    @parent_settings = @tag.parent_settings.order('tag_tags.id asc') || []
     use_javascript('tags/edit')
   end
 
   def tag_params
-    permitted = [:type, :description, :owned, canon_ids: []]
+    permitted = [:type, :description, :owned, parent_setting_ids: []]
     permitted.insert(0, :name) if current_user.admin?
     permitted.insert(0, :user_id) if current_user.admin? || @tag.user == current_user
     params.fetch(:tag, {}).permit(permitted)

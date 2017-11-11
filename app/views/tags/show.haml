@@ -18,10 +18,10 @@
           = link_to tag_path(@tag), method: :delete, data: { confirm: 'Are you sure you want to delete this tag?' } do
             .link-box.red x Delete
   %tbody
-    - if @tag.is_a?(Setting) && @tag.canons.present?
+    - if @tag.is_a?(Setting) && @tag.parent_settings.present?
       %tr
-        %th.centered.sub.width-150= 'Canon'.pluralize(@tag.canons.count)
-        %td{class: cycle('even', 'odd')}= @tag.canons.map { |c| link_to(c.name, tag_path(c))}.join(', ').html_safe
+        %th.centered.sub.width-150= 'Parent Setting'.pluralize(@tag.parent_settings.count)
+        %td{class: cycle('even', 'odd')}= @tag.parent_settings.map { |c| link_to(c.name, tag_path(c))}.join(', ').html_safe
     - if @tag.description.present?
       %tr
         %th.centered.sub.width-150.vtop Description
@@ -59,13 +59,13 @@
     %tbody
       = render partial: 'characters/list_section', locals: {name: nil, characters: @characters.order('name asc'), hide_buttons: true, show_user: true}
 
-- if @tag.is_a?(Canon)
+- if @tag.is_a?(Setting)
   - reset_cycle
   %table
     %thead
       %tr
         %th{colspan: 6} Settings Tagged: #{@tag.name}
     %tbody
-      - @tag.settings.each do |setting|
+      - @tag.child_settings.each do |setting|
         %tr
           %td{class: cycle('even', 'odd')}= link_to setting.name, tag_path(setting)

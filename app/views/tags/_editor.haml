@@ -1,7 +1,7 @@
 %tr
   %th.sub Name
   %td{class: cycle('even', 'odd')}
-    - if current_user.admin?
+    - if current_user.admin? # TODO or owned owner
       = f.text_field :name, placeholder: "Tag Name", class: 'text'
     - else
       = f.object.name
@@ -19,9 +19,8 @@
     = f.label :owned, 'Tag belongs to owner'
 - if f.object.is_a?(Setting)
   %tr
-    %th.sub Canon
-    %td{class: cycle('even', 'odd')}= f.select :canon_ids, options_from_collection_for_select(@canons, :id_for_select, :name, f.object.canon_ids || f.object.canons.pluck(:id)), {}, {multiple: true}
-- if [Setting, Canon].include?(f.object.class)
+    %th.sub Parent Settings
+    %td{class: cycle('even', 'odd')}= f.select :parent_setting_ids, options_from_collection_for_select(@parent_settings, :id_for_select, :name, f.object.parent_setting_ids || f.object.parent_settings.pluck(:id)), {}, {multiple: true, data: {tag_id: f.object.id}}
   %tr
     %th.sub.vtop Description
     %td{class: cycle('even', 'odd')}= f.text_area :description, placeholder: 'Description', cols: 35

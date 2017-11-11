@@ -70,8 +70,8 @@ RSpec.describe TagsController do
       end
 
       it 'succeeds for canons with settings' do
-        tag = create(:canon)
-        tag.settings << create(:setting)
+        tag = create(:setting)
+        tag.child_settings << create(:setting)
         get :show, params: { id: tag.id }
         expect(response).to have_http_status(200)
       end

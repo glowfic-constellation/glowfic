@@ -1,4 +1,4 @@
-RSpec.shared_examples "taggable" do |type|
+RSpec.shared_examples "taggable" do |type, klass|
   let(:model_name) { described_class.name.underscore }
   let(:taggable) { create(model_name) }
   it "creates new #{type} tags if they don't exist" do
@@ -13,7 +13,7 @@ RSpec.shared_examples "taggable" do |type|
   end
 
   it "uses extant tags with same name and type for #{type}" do
-    tag = create(type)
+    tag = create(klass || type)
     old_user = tag.user
     taggable.send(type + '_ids=', ['_' + tag.name])
     taggable.save
@@ -38,7 +38,7 @@ RSpec.shared_examples "taggable" do |type|
   end
 
   it "uses extant #{type} tags by id" do
-    tag = create(type)
+    tag = create(klass || type)
     old_user = tag.user
     taggable.send(type + '_ids=', [tag.id.to_s])
     taggable.save
@@ -51,7 +51,7 @@ RSpec.shared_examples "taggable" do |type|
   end
 
   it "removes #{type} tags when not in list given" do
-    tag = create(type)
+    tag = create(klass || type)
     taggable.send(type + 's=', [tag])
     taggable.save
     taggable.reload
@@ -65,8 +65,8 @@ RSpec.shared_examples "taggable" do |type|
 
   it "discards when #{type} tags given with invalid ID" do
     # specifically when a string ID is used and doesn't have an underscore prefix
-    good_tag1 = create(type)
-    good_tag2 = create(type)
+    good_tag1 = create(klass || type)
+    good_tag2 = create(klass || type)
     taggable.send(type + '_ids=', [good_tag1.id, 'broken', '_'+good_tag2.name])
     taggable.save
     taggable.reload
@@ -76,7 +76,7 @@ RSpec.shared_examples "taggable" do |type|
 
   it "only adds #{type} tags once if given multiple times" do
     name = 'Example Tag'
-    tag = create(type, name: name)
+    tag = create(klass || type, name: name)
     old_user = tag.user
     taggable.send(type + '_ids=', ['_' + name, '_' + name, tag.id.to_s, tag.id.to_s])
     taggable.save
@@ -89,10 +89,10 @@ RSpec.shared_examples "taggable" do |type|
   end
 
   it "orders #{type} tag joins by order added to model" do
-    tag1 = create(type)
-    tag2 = create(type)
-    tag3 = create(type)
-    tag4 = create(type)
+    tag1 = create(klass || type)
+    tag2 = create(klass || type)
+    tag3 = create(klass || type)
+    tag4 = create(klass || type)
     tag_table = model_name == 'setting' ? 'tag' : model_name
 
     taggable.send(type + '_ids=', [tag3.id, '_fake1', '_'+tag1.name, '_fake2', tag4.id])

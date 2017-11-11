@@ -7,7 +7,7 @@ class Tag < ApplicationRecord
   has_many :gallery_tags, dependent: :destroy
   has_many :galleries, through: :gallery_tags
 
-  TYPES = %w(Setting Label ContentWarning GalleryGroup Canon)
+  TYPES = %w(Setting Label ContentWarning GalleryGroup)
 
   validates_presence_of :user, :name, :type
   validates :name, uniqueness: { scope: :type }
@@ -54,12 +54,12 @@ class Tag < ApplicationRecord
     galleries.count
   end
 
-  def has_items?
+  def has_items? # TODO auto destroy when false, and also maybe fix with settings/canons
     post_count + character_count + gallery_count > 0
   end
 
   def merge_with(other_tag)
-    transaction do
+    transaction do # TODO tagtag for setting/canon
       PostTag.where(tag_id: other_tag.id).where(post_id: post_tags.pluck('distinct post_id')).delete_all
       PostTag.where(tag_id: other_tag.id).update_all(tag_id: self.id)
       CharacterTag.where(tag_id: other_tag.id).where(character_id: character_tags.pluck('distinct character_id')).delete_all

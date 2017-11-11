@@ -24,6 +24,7 @@
         = link_to user_galleries_path(@user), class: 'user-galleries' do
           = image_tag "icons/photos.png", class: 'vmid'
           Galleries
+    -# TODO tags
     %tr
       %td.centered{class: cycle('even', 'odd')}
         = link_to user_boards_path(@user) do

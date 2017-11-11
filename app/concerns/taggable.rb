@@ -2,14 +2,14 @@ module Taggable
   extend ActiveSupport::Concern
 
   included do
-    def self.acts_as_tag(*tag_names)
+    def self.acts_as_tag(*tag_names, **options)
       # for each tag name, create a getter and a custom setter for tag_name_ids, so that it updates the relevant association and stays up to date
       # will be outdated if you set the IDs then update the tag list directly without setting the IDs again
       # defaults to building new tags with `user`, but can be modified before saving with `build_new_tags_with`
       @acts_as_tags = tag_names
       tag_names.each do |tag_name|
         base = tag_name.to_s # setting, content_warning
-        klass = base.camelize.constantize # Setting, ContentWarning
+        klass = options[:klass] || base.camelize.constantize # Setting, ContentWarning
         tag_method = base + 's' # settings, content_warnings
         tag_method_assign = tag_method + '='
         tag_ids_method = base + '_ids' # setting_ids, content_warning_ids
