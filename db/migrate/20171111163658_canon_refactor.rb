@@ -1,6 +1,6 @@
 class CanonRefactor < ActiveRecord::Migration[5.0]
   def up
-    Canon.all.each do |canon|
+    Tag.where(type: "Canon").each do |canon|
       # find or create a setting with the same name
       setting = Setting.where(name: canon.name.strip).first
       setting ||= Setting.create!(
