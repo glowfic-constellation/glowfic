@@ -65,13 +65,17 @@ class Tag < ApplicationRecord
   end
 
   def merge_with(other_tag)
-    transaction do # TODO tagtag for setting/canon
+    transaction do
       PostTag.where(tag_id: other_tag.id).where(post_id: post_tags.pluck('distinct post_id')).delete_all
       PostTag.where(tag_id: other_tag.id).update_all(tag_id: self.id)
       CharacterTag.where(tag_id: other_tag.id).where(character_id: character_tags.pluck('distinct character_id')).delete_all
       CharacterTag.where(tag_id: other_tag.id).update_all(tag_id: self.id)
       GalleryTag.where(tag_id: other_tag.id).where(gallery_id: gallery_tags.pluck('distinct gallery_id')).delete_all
       GalleryTag.where(tag_id: other_tag.id).update_all(tag_id: self.id)
+      TagTag.where(tag_id: other_tag.id, tagged_id: self.id).delete_all
+      TagTag.where(tag_id: self.id, tagged_id: other_tag.id).delete_all
+      TagTag.where(tag_id: other_tag.id).update_all(tag_id: self.id)
+      TagTag.where(tagged_id: other_tag.id).update_all(tagged_id: self.id)
       other_tag.destroy
     end
   end
