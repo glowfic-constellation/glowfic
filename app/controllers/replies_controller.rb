@@ -142,7 +142,7 @@ class RepliesController < WritableController
       redirect_to reply_path(reply, anchor: "reply-#{reply.id}")
     else
       flash[:error] = {}
-      flash[:error][:message] = "Your post could not be saved because of the following problems:"
+      flash[:error][:message] = "Your reply could not be saved because of the following problems:"
       flash[:error][:array] = reply.errors.full_messages
       redirect_to posts_path and return unless reply.post
       redirect_to post_path(reply.post)
@@ -166,8 +166,22 @@ class RepliesController < WritableController
     @reply.assign_attributes(reply_params)
     preview(@reply) and return if params[:button_preview]
 
-    @reply.skip_post_update = true unless @reply.post.last_reply_id == @reply.id
-    @reply.save
+    if current_user.id != @reply.user_id && @reply.audit_comment.blank?
+      flash[:error] = "You must provide a reason for your moderator edit."
+      editor_setup
+      render action: :edit and return
+    end
+
+    @reply.audit_comment = nil if @reply.changes.empty? # don't save an audit for a note and no changes
+    @reply.skip_post_update = true unless @reply.post.try(:last_reply_id) == @reply.id
+    unless @reply.save
+      flash[:error] = {}
+      flash[:error][:message] = "Your reply could not be saved because of the following problems:"
+      flash[:error][:array] = @reply.errors.full_messages
+      editor_setup
+      render action: :edit and return
+    end
+
     flash[:success] = "Post updated"
     redirect_to reply_path(@reply, anchor: "reply-#{@reply.id}")
   end
@@ -223,6 +237,7 @@ class RepliesController < WritableController
       :content,
       :character_id,
       :icon_id,
+      :audit_comment,
       :character_alias_id
     )
   end

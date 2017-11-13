@@ -17,6 +17,11 @@
       = hidden_field_tag :per_page, params[:per_page]
     #post-form-wrapper
       = f.text_area :content, class: 'tinymce'
+      - unless current_user.id == reply.user_id
+        %b Moderator note
+        %br
+        = f.text_area :audit_comment, placeholder: 'Explain reason for moderation here', class: 'mod'
+        %br
       = submit_tag (reply.new_record? ? 'Post' : 'Save'), class: 'button', id: 'submit_button', data: { disable_with: 'Saving...' }
       = submit_tag "Preview", class: 'button', id: 'preview_button', name: 'button_preview', data: { disable_with: 'Previewing...' }
       - if reply.new_record?

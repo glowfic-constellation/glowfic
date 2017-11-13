@@ -96,7 +96,7 @@ RSpec.describe RepliesController do
       login
       post :create
       expect(response).to redirect_to(posts_url)
-      expect(flash[:error][:message]).to eq("Your post could not be saved because of the following problems:")
+      expect(flash[:error][:message]).to eq("Your reply could not be saved because of the following problems:")
     end
 
     it "requires post read" do
@@ -153,7 +153,7 @@ RSpec.describe RepliesController do
       expect(character.user_id).not_to eq(user.id)
       post :create, params: { reply: {character_id: character.id, post_id: reply_post.id} }
       expect(response).to redirect_to(post_url(reply_post))
-      expect(flash[:error][:message]).to eq("Your post could not be saved because of the following problems:")
+      expect(flash[:error][:message]).to eq("Your reply could not be saved because of the following problems:")
     end
 
     it "saves a new reply successfully if read" do
@@ -415,8 +415,20 @@ RSpec.describe RepliesController do
       expect(flash[:error]).to eq("You do not have permission to modify this post.")
     end
 
+    it "requires notes from moderators" do
+      reply = create(:reply)
+      login_as(create(:admin_user))
+      put :update, params: { id: reply.id }
+      expect(response).to render_template(:edit)
+      expect(flash[:error]).to eq('You must provide a reason for your moderator edit.')
+    end
+
     it "fails when invalid" do
-      skip "TODO not yet implemented"
+      reply = create(:reply)
+      login_as(reply.user)
+      put :update, params: { id: reply.id, reply: { post_id: nil } }
+      expect(response).to render_template(:edit)
+      expect(flash[:error][:message]).to eq("Your reply could not be saved because of the following problems:")
     end
 
     it "succeeds" do

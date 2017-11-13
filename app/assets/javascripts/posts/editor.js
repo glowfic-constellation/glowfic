@@ -12,9 +12,7 @@ $(document).ready(function() {
     formButtons.not(this).data('disable-with', '').prop('disabled', true);
   });
 
-  if ($("#post-editor .view-button").length === 0) return; // Skip if there is no writable editor (no RTF/HTML buttons)
-
-  setupWritableEditor();
+  if ($("#post-editor .view-button").length > 0) setupWritableEditor();
 });
 
 function setupMetadataEditor() {
