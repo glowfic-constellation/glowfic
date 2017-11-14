@@ -19,7 +19,8 @@ module Writable
 
     def editable_by?(editor)
       return false unless editor
-      editor.id == user_id || editor.admin?
+      return true if editor.id == user_id
+      editor.has_permission?(:edit_replies)
     end
 
     def word_count

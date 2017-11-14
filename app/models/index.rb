@@ -11,7 +11,7 @@ class Index < ApplicationRecord
   def editable_by?(user)
     return false unless user
     return true if open_to_anyone?
-    return true if user.admin?
-    user_id == user.id
+    return true if user.id == user_id
+    user.has_permission?(:edit_indexes)
   end
 end

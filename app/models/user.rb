@@ -1,5 +1,6 @@
 class User < ApplicationRecord
   include Presentable
+  include Permissible
 
   MIN_USERNAME_LEN = 3
   MAX_USERNAME_LEN = 80
@@ -54,10 +55,6 @@ class User < ApplicationRecord
 
   def writes_in?(continuity)
     continuity.open_to?(self)
-  end
-
-  def admin?
-    id == 1
   end
 
   def galleryless_icons

@@ -9,7 +9,11 @@ FactoryGirl.define do
     end
 
     factory :admin_user do
-      id 1
+      role_id 1
+    end
+
+    factory :mod_user do
+      role_id 2
     end
   end
 
