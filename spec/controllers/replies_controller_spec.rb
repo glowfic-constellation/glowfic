@@ -37,7 +37,7 @@ RSpec.describe RepliesController do
         expect(flash[:success]).to eq('Draft saved!')
 
         # build_template_groups:
-        expect(controller.gon.current_user).not_to be_nil
+        expect(controller.gon.editor_user).not_to be_nil
         # templates
         templates = assigns(:templates)
         expect(templates.length).to eq(2)
@@ -365,7 +365,7 @@ RSpec.describe RepliesController do
       expect(assigns(:post)).to eq(reply.post)
 
       # build_template_groups:
-      expect(controller.gon.current_user).not_to be_nil
+      expect(controller.gon.editor_user).not_to be_nil
       # templates
       templates = assigns(:templates)
       expect(templates.length).to eq(2)
@@ -421,6 +421,16 @@ RSpec.describe RepliesController do
       put :update, params: { id: reply.id }
       expect(response).to render_template(:edit)
       expect(flash[:error]).to eq('You must provide a reason for your moderator edit.')
+    end
+
+    it "stores note from moderators" do
+      reply = create(:reply, content: 'a')
+      admin = create(:admin_user)
+      login_as(admin)
+      put :update, params: { id: reply.id, reply: { content: 'b', audit_comment: 'note' } }
+      expect(flash[:success]).to eq("Post updated")
+      expect(reply.reload.content).to eq('b')
+      expect(reply.audits.last.comment).to eq('note')
     end
 
     it "fails when invalid" do

@@ -425,7 +425,7 @@ function getAndSetCharacterData(characterId, options) {
 
   // Handle special case where just setting to your base account
   if (characterId === '') {
-    var avatar = gon.current_user.avatar;
+    var avatar = gon.editor_user.avatar;
     var data = {aliases: [], galleries: []};
     if (avatar) {
       data.default = avatar;
