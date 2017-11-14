@@ -176,7 +176,7 @@ RSpec.describe PostsController do
 
       # editor_setup:
       expect(assigns(:javascripts)).to include('posts/editor')
-      expect(controller.gon.current_user).not_to be_nil
+      expect(controller.gon.editor_user).not_to be_nil
 
       # templates
       templates = assigns(:templates)
@@ -328,7 +328,7 @@ RSpec.describe PostsController do
 
         # editor_setup:
         expect(assigns(:javascripts)).to include('posts/editor')
-        expect(controller.gon.current_user).not_to be_nil
+        expect(controller.gon.editor_user).not_to be_nil
         # templates
         templates = assigns(:templates)
         expect(templates.length).to eq(3)
@@ -429,7 +429,7 @@ RSpec.describe PostsController do
 
       # editor_setup:
       expect(assigns(:javascripts)).to include('posts/editor')
-      expect(controller.gon.current_user).not_to be_nil
+      expect(controller.gon.editor_user).not_to be_nil
       # templates
       templates = assigns(:templates)
       expect(templates.length).to eq(3)
@@ -921,7 +921,7 @@ RSpec.describe PostsController do
 
       # editor_setup:
       expect(assigns(:javascripts)).to include('posts/editor')
-      expect(controller.gon.current_user).not_to be_nil
+      expect(controller.gon.editor_user).not_to be_nil
       # templates
       templates = assigns(:templates)
       expect(templates.length).to eq(3)
@@ -1279,7 +1279,7 @@ RSpec.describe PostsController do
 
         # editor_setup:
         expect(assigns(:javascripts)).to include('posts/editor')
-        expect(controller.gon.current_user).not_to be_nil
+        expect(controller.gon.editor_user).not_to be_nil
         # templates
         templates = assigns(:templates)
         expect(templates.length).to eq(3)
@@ -1365,7 +1365,7 @@ RSpec.describe PostsController do
 
         # editor_setup:
         expect(assigns(:javascripts)).to include('posts/editor')
-        expect(controller.gon.current_user).not_to be_nil
+        expect(controller.gon.editor_user).not_to be_nil
         # templates
         templates = assigns(:templates)
         expect(templates.length).to eq(2)
