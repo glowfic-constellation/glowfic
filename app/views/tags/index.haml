@@ -11,7 +11,7 @@
         = @view ? @view.titlecase.pluralize : 'Tags'
   %tbody
     %tr
-      %th.sub= @view ? @view.titlecase : 'Tag'
+      %th.sub Name
       - unless @view.present?
         %th.sub Type
       %th.sub Posts

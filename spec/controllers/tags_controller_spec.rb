@@ -30,6 +30,7 @@ RSpec.describe TagsController do
         get :index, params: { view: 'Setting' }
         expect(response).to have_http_status(200)
         expect(assigns(:tags).size).to eq(1)
+        expect(assigns(:page_title)).to eq('Settings')
       end
 
       it "succeeds when logged in" do
