@@ -93,38 +93,42 @@ RSpec.describe TagsController do
         expect(assigns(:galleries)).to match_array([gallery])
       end
 
-      it "gallery group succeeds with valid character tag" do
-        group = create(:gallery_group)
-        character = create(:character, gallery_groups: [group])
-        get :show, params: { id: group.id }
-        expect(response.status).to eq(200)
-        expect(assigns(:characters)).to match_array([character])
+      context "gallery group" do
+        it "succeeds with valid character tag" do
+          group = create(:gallery_group)
+          character = create(:character, gallery_groups: [group])
+          get :show, params: { id: group.id }
+          expect(response.status).to eq(200)
+          expect(assigns(:characters)).to match_array([character])
+        end
+
+        it "succeeds for logged in users with valid character tag" do
+          group = create(:gallery_group)
+          character = create(:character, gallery_groups: [group])
+          login
+          get :show, params: { id: group.id }
+          expect(response.status).to eq(200)
+          expect(assigns(:characters)).to match_array([character])
+        end
       end
 
-      it "gallery group succeeds for logged in users with valid character tag" do
-        group = create(:gallery_group)
-        character = create(:character, gallery_groups: [group])
-        login
-        get :show, params: { id: group.id }
-        expect(response.status).to eq(200)
-        expect(assigns(:characters)).to match_array([character])
-      end
+      context "setting" do
+        it "succeeds with valid character tag" do
+          setting = create(:setting)
+          character = create(:character, settings: [setting])
+          get :show, params: { id: setting.id }
+          expect(response.status).to eq(200)
+          expect(assigns(:characters)).to match_array([character])
+        end
 
-      it "setting succeeds with valid character tag" do
-        setting = create(:setting)
-        character = create(:character, settings: [setting])
-        get :show, params: { id: setting.id }
-        expect(response.status).to eq(200)
-        expect(assigns(:characters)).to match_array([character])
-      end
-
-      it "setting succeeds for logged in users with valid character tag" do
-        setting = create(:setting)
-        character = create(:character, settings: [setting])
-        login
-        get :show, params: { id: setting.id }
-        expect(response.status).to eq(200)
-        expect(assigns(:characters)).to match_array([character])
+        it "succeeds for logged in users with valid character tag" do
+          setting = create(:setting)
+          character = create(:character, settings: [setting])
+          login
+          get :show, params: { id: setting.id }
+          expect(response.status).to eq(200)
+          expect(assigns(:characters)).to match_array([character])
+        end
       end
     end
   end
