@@ -60,4 +60,4 @@
       %tr
         %td.centered.padding-5{class: cycle('even', 'odd'), colspan: colspan} — No characters yet —
   - else
-    = render partial: partial_type, locals: {name: nil, characters: @user.characters.includes(:settings).order('name asc')}
+    = render partial: partial_type, locals: {name: nil, characters: @user.characters.includes(:settings, :template).order('name asc'), show_template: true}
