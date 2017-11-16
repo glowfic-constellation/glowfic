@@ -10,11 +10,12 @@ RSpec.describe TagsController do
         tag = create(:label)
         create(:post, labels: [tag])
         setting = create(:setting)
+        owned_setting = create(:setting, owned: true)
 
         empty_group = create(:gallery_group)
         group1 = create(:gallery_group)
         create(:gallery, gallery_groups: [group1])
-        [empty_tag, tag, empty_group, group1, setting]
+        [empty_tag, tag, empty_group, group1, setting, owned_setting]
       end
 
       it "succeeds when logged out" do
@@ -29,7 +30,7 @@ RSpec.describe TagsController do
         tags = create_tags
         get :index, params: { view: 'Setting' }
         expect(response).to have_http_status(200)
-        expect(assigns(:tags).size).to eq(1)
+        expect(assigns(:tags)).to match_array(tags[-2..-1])
         expect(assigns(:page_title)).to eq('Settings')
       end
 
