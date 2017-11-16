@@ -5,7 +5,6 @@ class TagsController < ApplicationController
   before_action :permission_required, except: [:index, :show, :destroy]
 
   def index
-    @page_title = "Tags"
 
     if params[:view].present?
       unless Tag::TYPES.include?(params[:view])
@@ -13,6 +12,9 @@ class TagsController < ApplicationController
         redirect_to tags_path and return
       end
       @view = params[:view]
+      @page_title = @view.titlecase.pluralize
+    else
+      @page_title = "Tags"
     end
 
     @tags = Tag.order('type desc, LOWER(name) asc').select('tags.*')
