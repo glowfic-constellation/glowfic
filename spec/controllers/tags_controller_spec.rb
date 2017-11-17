@@ -131,6 +131,19 @@ RSpec.describe TagsController do
           expect(response.status).to eq(200)
           expect(assigns(:characters)).to match_array([character])
         end
+
+        it "succeeds for owned settings" do
+          setting = create(:setting, owned: true)
+          get :show, params: { id: setting.id }
+          expect(response.status).to eq(200)
+        end
+
+        it "succeeds for settings without characters" do
+          setting = create(:setting)
+          get :show, params: { id: setting.id }
+          expect(response.status).to eq(200)
+          expect(assigns(:characters)).to be_empty
+        end
       end
     end
   end
