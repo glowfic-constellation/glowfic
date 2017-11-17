@@ -6,7 +6,7 @@ class UsersController < ApplicationController
   before_action :require_own_user, only: [:edit, :update, :password]
 
   def index
-    @page_title = 'Glowficcers'
+    @page_title = 'Users'
   end
 
   def show
