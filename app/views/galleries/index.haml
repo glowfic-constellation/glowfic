@@ -21,11 +21,7 @@
       %th.sub.width-70 Manage
       %th.sub.width-70 Expand
     %tr
-      %td.odd.gallery-name
-        - if @user.id == current_user.try(:id)
-          = link_to '[Galleryless]', gallery_path(id: 0)
-        - else
-          = link_to '[Galleryless]', user_gallery_path(id: 0, user_id: @user.id)
+      %td.odd.gallery-name= link_to '[Galleryless]', user_gallery_path(id: 0, user_id: @user.id)
       %td.width-150.centered.odd.gallery-icon-count= @user.icons.where(has_gallery: false).count
       %td.width-70.odd.gallery-buttons
         - if @user.id == current_user.try(:id)

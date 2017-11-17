@@ -1,9 +1,6 @@
 %tr.gallery-header
   %th.padding-10.subber
-    - if params[:user_id].present?
-      = link_to 'Galleryless icons', user_gallery_path(id: 0, user_id: @user.id), class: 'gallery-title'
-    - else
-      = link_to 'Galleryless icons', gallery_path(id: 0), class: 'gallery-title'
+    = link_to 'Galleryless icons', user_gallery_path(id: 0, user_id: @user.id), class: 'gallery-title'
     - if @user.id == current_user.try(:id)
       = link_to add_gallery_path(id: 0), class: 'gallery-add' do
         .link-box.green
