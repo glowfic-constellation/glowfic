@@ -14,7 +14,7 @@
       %tr
         %td.width-300.padding-10.vtop.dark
           = form_tag search_characters_path, :method => :get do
-            %table
+            %table.search-form
               %tr
                 %td= label_tag :author_id, 'Author'
                 %td= select_tag :author_id, options_from_collection_for_select(@users, :id, :username, params[:author_id]), {class: 'chosen-select', prompt: '— Choose Author —'}
