@@ -14,7 +14,7 @@
     %tr
       %td.width-300.padding-10.vtop.dark#search_form
         = form_tag search_posts_path, :method => :get do
-          %table#signup
+          %table
             %tr
               %td.width-70= label_tag :board_id, 'Continuity'
               %td= select_tag :board_id, options_from_collection_for_select(@board || [], :id, :name, params[:board_id]), {class: 'chosen-select', prompt: '— Choose Continuity —'}

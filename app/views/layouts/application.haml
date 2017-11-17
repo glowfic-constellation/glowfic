@@ -39,7 +39,7 @@
               = image_tag current_user.avatar.url, class: 'icon', id: 'user-icon'
             - else
               .no-img
-            #username= current_user.username
+            #user-username= current_user.username
       #header-right
         #logo
           - unless logged_in?
