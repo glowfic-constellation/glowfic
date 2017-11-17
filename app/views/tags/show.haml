@@ -22,6 +22,15 @@
       %tr
         %th.centered.sub.width-150= 'Parent Setting'.pluralize(@tag.parent_settings.count)
         %td{class: cycle('even', 'odd')}= @tag.parent_settings.map { |c| link_to(c.name, tag_path(c))}.join(', ').html_safe
+    - if @tag.is_a?(Setting)
+      %tr
+        %th.centered.sub.width-150 Owner
+        %td{class: cycle('even', 'odd'), title: ('This setting is not marked as owned' unless @tag.owned?)}
+          = link_to @tag.user do
+            - if @tag.owned?
+              = @tag.user.username
+            - else
+              %em= @tag.user.username
     - if @tag.description.present?
       %tr
         %th.centered.sub.width-150.vtop Description
