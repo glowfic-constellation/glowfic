@@ -1503,7 +1503,7 @@ RSpec.describe PostsController do
       login
       get :owed
       expect(response.status).to eq(200)
-      expect(assigns(:page_title)).to eq('Tags Owed')
+      expect(assigns(:page_title)).to eq('Replies Owed')
     end
 
     context "with posts" do

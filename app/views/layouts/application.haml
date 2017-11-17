@@ -83,7 +83,7 @@
           %li= link_to 'Facecasts', facecasts_characters_path
           - if logged_in?
             %li= link_to 'Unread', unread_posts_path
-            %li= link_to 'Tags Owed', owed_posts_path
+            %li= link_to 'Replies Owed', owed_posts_path
           %li= link_to 'Contribute', contribute_path
           %li= link_to 'Tags', tags_path
           - if (day = DailyReport.unread_date_for(current_user)).present?

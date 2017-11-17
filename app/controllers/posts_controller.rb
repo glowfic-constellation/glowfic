@@ -22,7 +22,7 @@ class PostsController < WritableController
     @posts = posts_from_relation(@posts.order('tagged_at desc'))
     @show_unread = true
     @hide_quicklinks = true
-    @page_title = 'Tags Owed'
+    @page_title = 'Replies Owed'
   end
 
   def unread
