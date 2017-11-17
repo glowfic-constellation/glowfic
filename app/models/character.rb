@@ -35,8 +35,8 @@ class Character < ApplicationRecord
 
   def editable_by?(user)
     return false unless user
-    return true if user.admin?
-    user_id == user.id
+    return true if user_id == user.id
+    user.has_permission?(:edit_characters)
   end
 
   def recent_posts

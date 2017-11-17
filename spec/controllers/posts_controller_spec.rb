@@ -985,7 +985,7 @@ RSpec.describe PostsController do
         post.board.mark_read(post.user, time)
 
         login_as(post.user)
-        create(:admin_user) # to receive the alert message
+        create(:user, id: 1) # to receive the alert message
         expect {
           put :update, params: { id: post.id, unread: true, at_id: unread_reply.id }
         }.to change{ Message.count }.by(1)
