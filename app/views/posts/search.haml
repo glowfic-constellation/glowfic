@@ -12,23 +12,23 @@
           = render partial: 'paginator', locals: {paginated: @search_results}
   %tbody
     %tr
-      %td.width-300.padding-10.vtop.dark
+      %td.width-300.padding-10.vtop.dark#search_form
         = form_tag search_posts_path, :method => :get do
           %table#signup
             %tr
-              %td.width-70 Continuity
+              %td.width-70= label_tag :board_id, 'Continuity'
               %td= select_tag :board_id, options_from_collection_for_select(@board || [], :id, :name, params[:board_id]), {class: 'chosen-select', prompt: '— Choose Continuity —'}
             %tr
-              %td Author
+              %td= label_tag :author_id, 'Author'
               %td= select_tag :author_id, options_from_collection_for_select(@user || [], :id, :username, params[:author_id]), {class: 'chosen-select', prompt: '— Choose Author —', multiple: true}
             %tr
-              %td Character
+              %td= label_tag :character_id, 'Character'
               %td= select_tag :character_id, options_from_collection_for_select(@character || [], :id, :selector_name, params[:character_id]), {prompt: '— Choose Character —'}
             %tr
-              %td Setting
+              %td= label_tag :setting_id, 'Setting'
               %td= select_tag :setting_id, options_from_collection_for_select(@setting || [], :id, :name, params[:setting_id]), {prompt: '— Choose Setting —'}
             %tr
-              %td Subject
+              %td= label_tag :subject, 'Subject'
               %td= text_field_tag :subject, params[:subject], style: 'width: 100%; margin: 5px 0px; box-sizing: border-box;'
             %tr
               %td Completed
@@ -37,20 +37,20 @@
                 = label_tag :completed, "Completed Only"
             %tr
               %td.centered{colspan: 2}= submit_tag "Search", class: 'button'
-        %td.vtop
-          - if @search_results.present?
-            %table
-              %thead
-                %tr
-                  %th.sub
-                  %th.sub Thread
-                  %th.sub Continuity
-                  %th.sub Authors
-                  %th.sub Replies
-                  %th.sub Last Updated
-              %tbody
-                - visible_posts = @search_results.select { |post| post.visible_to?(current_user) }
-                = render partial: 'posts/list_item', collection: visible_posts, as: :post
+      %td.vtop#search_results
+        - if @search_results.present?
+          %table
+            %thead
+              %tr
+                %th.sub
+                %th.sub Thread
+                %th.sub Continuity
+                %th.sub Authors
+                %th.sub Replies
+                %th.sub Last Updated
+            %tbody
+              - visible_posts = @search_results.select { |post| post.visible_to?(current_user) }
+              = render partial: 'posts/list_item', collection: visible_posts, as: :post
 
   - if @search_results && @search_results.total_pages > 1
     %tfoot
