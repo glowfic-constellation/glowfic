@@ -20,6 +20,7 @@ class TagsController < ApplicationController
     @tags = Tag.order('type desc, LOWER(name) asc').select('tags.*')
     if @view.present?
       @tags = @tags.where(type: @view)
+      @tags = @tags.includes(:user) if @view == 'Setting'
     else
       @tags = @tags.where.not(type: 'GalleryGroup')
     end
