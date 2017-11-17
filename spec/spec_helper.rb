@@ -35,7 +35,7 @@ unless ENV['SKIP_COVERAGE'] || ENV['APIPIE_RECORD'] || RSpec.configuration.files
   SimpleCov.minimum_coverage 98.75
 end
 
-require 'factory_girl_rails'
+require 'factory_bot_rails'
 require 'rails_helper'
 require 'support/spec_test_helper'
 require 'support/spec_feature_helper'
@@ -64,7 +64,7 @@ RSpec.configure do |config|
     mocks.verify_partial_doubles = true
   end
 
-  config.include FactoryGirl::Syntax::Methods
+  config.include FactoryBot::Syntax::Methods
   config.include SpecTestHelper, :type => :controller
   config.include SpecFeatureHelper, :type => :feature
 
@@ -129,9 +129,9 @@ RSpec.configure do |config|
 
   config.before(:suite) do
     # make 5 boards so site_testing doesn't screw up tests
-    user = FactoryGirl.create(:user)
+    user = FactoryBot.create(:user)
     5.times do
-      board = FactoryGirl.create(:board, creator: user)
+      board = FactoryBot.create(:board, creator: user)
       board.destroy
     end
     user.destroy
