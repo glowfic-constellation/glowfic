@@ -121,7 +121,7 @@ RSpec.describe IconsController do
         delete :delete_multiple, params: { marked_ids: [icon.id.to_s, icon2.id.to_s] }
         expect(Icon.find_by_id(icon.id)).to be_nil
         expect(Icon.find_by_id(icon2.id)).to be_nil
-        expect(response).to redirect_to(gallery_url(id: 0))
+        expect(response).to redirect_to(user_gallery_path(id: 0, user_id: user.id))
       end
 
       it "goes back to index page if given" do

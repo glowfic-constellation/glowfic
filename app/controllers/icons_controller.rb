@@ -150,8 +150,10 @@ class IconsController < UploadingController
       redirect_to galleries_path(anchor: "gallery-#{gallery.id}")
     elsif params[:return_tag].present? && (tag = Tag.find_by_id(params[:return_tag]))
       redirect_to tag_path(tag, anchor: "gallery-#{gallery.id}")
+    elsif gallery
+      redirect_to gallery_path(id: gallery.id)
     else
-      redirect_to gallery_path(id: gallery.try(:id) || 0)
+      redirect_to user_gallery_path(id: 0, user_id: current_user.id)
     end
   end
 

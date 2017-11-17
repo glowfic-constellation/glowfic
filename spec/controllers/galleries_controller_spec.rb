@@ -488,9 +488,9 @@ RSpec.describe GalleriesController do
     end
 
     it "doesn't support existing view for galleryless" do
-      login
+      user_id = login
       get :add, params: { id: 0, type: 'existing' }
-      expect(response).to redirect_to(gallery_url(0))
+      expect(response).to redirect_to(user_gallery_path(id: 0, user_id: user_id))
       expect(flash[:error]).to eq('Cannot add existing icons to galleryless. Please remove from existing galleries instead.')
     end
   end
@@ -663,7 +663,7 @@ RSpec.describe GalleriesController do
         ]
 
         post :icon, params: { id: 0, icons: icons }
-        expect(response).to redirect_to(gallery_path(id: 0))
+        expect(response).to redirect_to(user_gallery_path(id: 0, user_id: user.id))
         expect(flash[:success]).to eq('Icons saved successfully.')
 
         user.reload

@@ -50,7 +50,7 @@ class GalleriesController < UploadingController
   def add
     if params[:id] == '0' && params[:type] == 'existing'
       flash[:error] = 'Cannot add existing icons to galleryless. Please remove from existing galleries instead.'
-      redirect_to gallery_path(0)
+      redirect_to user_gallery_path(id: 0, user_id: current_user.id)
     end
   end
 
@@ -158,7 +158,7 @@ class GalleriesController < UploadingController
         icons.each do |icon| @gallery.icons << icon end
         redirect_to gallery_path(@gallery) and return
       end
-      redirect_to gallery_path(id: 0)
+      redirect_to user_gallery_path(id: 0, user_id: current_user.id)
     else
       flash.now[:error] = "Your icons could not be saved."
       render :action => :add
