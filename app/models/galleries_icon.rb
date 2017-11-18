@@ -1,6 +1,6 @@
 class GalleriesIcon < ApplicationRecord
-  belongs_to :icon
-  belongs_to :gallery
+  belongs_to :icon, optional: false
+  belongs_to :gallery, optional: false
   accepts_nested_attributes_for :icon, allow_destroy: true
 
   after_create :set_has_gallery

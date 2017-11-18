@@ -7,7 +7,7 @@ class Board < ApplicationRecord
   has_many :posts
   has_many :board_sections, dependent: :destroy
   has_many :favorites, as: :favorite, dependent: :destroy
-  belongs_to :creator, class_name: User
+  belongs_to :creator, class_name: User, optional: false
 
   has_many :board_authors
   has_many :board_coauthors, -> { where(cameo: false) }, class_name: BoardAuthor
@@ -15,7 +15,7 @@ class Board < ApplicationRecord
   has_many :board_cameos, -> { where(cameo: true) }, class_name: BoardAuthor
   has_many :cameos, class_name: User, through: :board_cameos, source: :user
 
-  validates_presence_of :name, :creator
+  validates_presence_of :name
 
   after_destroy :move_posts_to_sandbox
 

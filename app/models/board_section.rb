@@ -2,10 +2,10 @@ class BoardSection < ApplicationRecord
   include Orderable
   include Presentable
 
-  belongs_to :board, inverse_of: :board_sections
+  belongs_to :board, inverse_of: :board_sections, optional: false
   has_many :posts, inverse_of: :section, foreign_key: :section_id
 
-  validates_presence_of :name, :board
+  validates_presence_of :name
 
   after_destroy :clear_post_values
 

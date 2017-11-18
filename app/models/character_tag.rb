@@ -1,10 +1,9 @@
 class CharacterTag < ApplicationRecord
-  belongs_to :character, inverse_of: :character_tags
-  belongs_to :tag
-  belongs_to :label, foreign_key: :tag_id
-  belongs_to :setting, foreign_key: :tag_id
-  belongs_to :gallery_group, foreign_key: :tag_id
-  validates_presence_of :character
+  belongs_to :character, inverse_of: :character_tags, optional: false
+  belongs_to :tag, optional: false
+  belongs_to :label, foreign_key: :tag_id, optional: true
+  belongs_to :setting, foreign_key: :tag_id, optional: true
+  belongs_to :gallery_group, foreign_key: :tag_id, optional: true
 
   after_create :add_galleries_to_character
   after_destroy :remove_galleries_from_character

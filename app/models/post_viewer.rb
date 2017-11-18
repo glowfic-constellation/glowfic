@@ -1,6 +1,4 @@
 class PostViewer < ApplicationRecord
-  belongs_to :post
-  belongs_to :user
-
-  validates_presence_of :user, :post
+  belongs_to :post, optional: false
+  belongs_to :user, optional: false
 end

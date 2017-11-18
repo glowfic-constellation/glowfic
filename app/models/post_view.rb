@@ -1,7 +1,6 @@
 class PostView < ApplicationRecord
-  belongs_to :post
-  belongs_to :user
+  belongs_to :post, optional: false
+  belongs_to :user, optional: false
 
-  validates_presence_of :user, :post
   validates :post, uniqueness: { scope: :user }
 end

@@ -1,7 +1,6 @@
 class BoardView < ApplicationRecord
-  belongs_to :board
-  belongs_to :user
+  belongs_to :board, optional: false
+  belongs_to :user, optional: false
 
-  validates_presence_of :user, :board
   validates :board, uniqueness: { scope: :user }
 end

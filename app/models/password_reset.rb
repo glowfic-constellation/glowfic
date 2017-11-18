@@ -1,7 +1,7 @@
 class PasswordReset < ApplicationRecord
-  belongs_to :user, inverse_of: :password_resets
+  belongs_to :user, inverse_of: :password_resets, optional: false
 
-  validates_presence_of :user, :auth_token
+  validates_presence_of :auth_token
   validates_uniqueness_of :auth_token
 
   before_validation :generate_unique_auth_token

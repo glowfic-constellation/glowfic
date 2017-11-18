@@ -1,11 +1,10 @@
 class Message < ApplicationRecord
   # TODO drop marked_*
-  belongs_to :sender, class_name: User, inverse_of: :sent_messages
-  belongs_to :recipient, class_name: User, inverse_of: :messages
-  belongs_to :parent, class_name: Message
-  belongs_to :first_thread, class_name: Message, foreign_key: :thread_id
+  belongs_to :sender, class_name: User, inverse_of: :sent_messages, optional: true
+  belongs_to :recipient, class_name: User, inverse_of: :messages, optional: false
+  belongs_to :parent, class_name: Message, optional: true
+  belongs_to :first_thread, class_name: Message, foreign_key: :thread_id, optional: false
 
-  validates_presence_of :recipient
   validates_presence_of :sender, if: Proc.new { |m| m.sender_id != 0 }
 
   after_create :set_thread_id, :notify_recipient

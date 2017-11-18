@@ -3,8 +3,7 @@ class Reply < ApplicationRecord
   include Writable
   include PgSearch
 
-  belongs_to :post, inverse_of: :replies
-  validates_presence_of :post, :user
+  belongs_to :post, inverse_of: :replies, optional: false
   validate :author_can_write_in_post, on: :create
   audited associated_with: :post
 

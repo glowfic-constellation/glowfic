@@ -1,7 +1,6 @@
 class CharactersGallery < ApplicationRecord
-  belongs_to :character, inverse_of: :characters_galleries
-  belongs_to :gallery, inverse_of: :characters_galleries
-  validates_presence_of :character, :gallery
+  belongs_to :character, inverse_of: :characters_galleries, optional: false
+  belongs_to :gallery, inverse_of: :characters_galleries, optional: false
 
   before_create :autofill_order
   after_destroy :reorder_others

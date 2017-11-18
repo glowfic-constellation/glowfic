@@ -1,11 +1,10 @@
 class IndexPost < ApplicationRecord
   include Orderable
 
-  belongs_to :post, inverse_of: :index_posts
-  belongs_to :index, inverse_of: :index_posts
-  belongs_to :index_section, inverse_of: :index_posts
+  belongs_to :post, inverse_of: :index_posts, optional: false
+  belongs_to :index, inverse_of: :index_posts, optional: false
+  belongs_to :index_section, inverse_of: :index_posts, optional: true
 
-  validates_presence_of :post, :index
   validate :section_in_index
 
   before_validation :populate_index
