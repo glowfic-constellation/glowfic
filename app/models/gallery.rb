@@ -2,7 +2,7 @@ class Gallery < ApplicationRecord
   include Taggable
   belongs_to :user, optional: false
 
-  has_many :galleries_icons, dependent: :destroy
+  has_many :galleries_icons, dependent: :destroy, inverse_of: :gallery
   accepts_nested_attributes_for :galleries_icons, allow_destroy: true
   has_many :icons, -> { order('LOWER(keyword)') }, through: :galleries_icons
 

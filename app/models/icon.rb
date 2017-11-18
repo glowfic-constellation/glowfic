@@ -7,7 +7,8 @@ class Icon < ApplicationRecord
   has_many :posts
   has_many :replies
   has_many :reply_drafts
-  has_and_belongs_to_many :galleries
+  has_many :galleries_icons, dependent: :destroy, inverse_of: :icon
+  has_many :galleries, through: :galleries_icons
 
   validates_presence_of :url, :keyword
   validate :url_is_url
