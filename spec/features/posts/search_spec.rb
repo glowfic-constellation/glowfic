@@ -4,8 +4,9 @@ RSpec.feature "Searching posts", :type => :feature do
   scenario "Searching a mixture of posts" do
     post = create(:post, subject: 'First post')
 
+    visit search_posts_path
+
     def perform_search
-      visit search_posts_path
       within('#search_form') do
         fill_in 'Subject', with: 'post'
       end
@@ -22,17 +23,16 @@ RSpec.feature "Searching posts", :type => :feature do
 
     # check the post is hidden when private
     post.update_attributes(privacy: Concealable::PRIVATE)
-
     perform_search
     within('#search_results') do
-      expect(page).not_to have_selector('.post-subject', text: 'First post')
+      expect(page).to have_no_selector('.post-subject', text: 'First post')
     end
 
     # check the post is still hidden when there are two pages of results
     2.upto(26) { |i| create(:post, subject: 'post ' + i.to_s, privacy: Concealable::PRIVATE) }
     perform_search
     within('#search_results') do
-      expect(page).not_to have_selector('.post-subject')
+      expect(page).to have_no_selector('.post-subject')
     end
 
     # check a new post shows up
