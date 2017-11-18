@@ -5,68 +5,97 @@ RSpec.describe Post do
   it "should have the right timestamps" do
     # creation
     post = create(:post)
+    reply = reply2 = nil # to handle variable scoping issues with Timecop
     expect(post.edited_at).to be_the_same_time_as(post.created_at)
     expect(post.tagged_at).to be_the_same_time_as(post.created_at)
+    old_edited_at = post.edited_at
+    old_tagged_at = post.tagged_at
 
     # edited with no replies updates edit and tag
-    post.content = 'new content'
-    post.save
-    expect(post.tagged_at).to be_the_same_time_as(post.edited_at)
-    expect(post.tagged_at).to be > post.created_at
-    old_edited_at = post.edited_at
-    old_tagged_at = post.tagged_at
+    Timecop.freeze(old_tagged_at + 1.hour) do
+      post.content = 'new content'
+      post.save
+      expect(post.tagged_at).to be_the_same_time_as(post.edited_at)
+      expect(post.tagged_at).to be > post.created_at
+      old_edited_at = post.edited_at
+      old_tagged_at = post.tagged_at
+    end
 
     # invalid edit field with no replies updates nothing
-    post.status = Post::STATUS_COMPLETE
-    post.save
-    expect(post.tagged_at).to be_the_same_time_as(old_tagged_at)
-    expect(post.edited_at).to be_the_same_time_as(old_edited_at)
+    Timecop.freeze(old_tagged_at + 2.hours) do
+      post.section_order = post.section_order + 1
+      post.save
+      expect(post.tagged_at).to be_the_same_time_as(old_tagged_at)
+      expect(post.edited_at).to be_the_same_time_as(old_edited_at)
+    end
 
     # reply created updates tag but not edit
-    reply = create(:reply, post: post)
-    post.reload
-    expect(post.tagged_at).to be_the_same_time_as(reply.created_at)
-    expect(post.edited_at).to be_the_same_time_as(old_edited_at)
-    expect(post.tagged_at).to be > post.edited_at
-    old_tagged_at = post.tagged_at
+    Timecop.freeze(old_tagged_at + 3.hours) do
+      reply = create(:reply, post: post)
+      post.reload
+      expect(post.tagged_at).to be_the_same_time_as(reply.created_at)
+      expect(post.edited_at).to be_the_same_time_as(old_edited_at)
+      expect(post.tagged_at).to be > post.edited_at
+      old_tagged_at = post.tagged_at
+    end
 
     # edited with replies updates edit but not tag
-    post.content = 'newer content'
-    post.save
-    expect(post.tagged_at).to be_the_same_time_as(old_tagged_at)
-    expect(post.edited_at).to be > old_edited_at
-    old_edited_at = post.edited_at
+    Timecop.freeze(old_tagged_at + 4.hours) do
+      post.content = 'newer content'
+      post.save
+      expect(post.tagged_at).to be_the_same_time_as(old_tagged_at)
+      expect(post.edited_at).to be > old_edited_at
+      old_edited_at = post.edited_at
+    end
+
+    # edited status with replies updates edit and tag
+    Timecop.freeze(old_tagged_at + 5.hours) do
+      post.status = Post::STATUS_COMPLETE
+      post.save
+      expect(post.tagged_at).to be > old_tagged_at
+      expect(post.edited_at).to be > old_edited_at
+      old_edited_at = post.edited_at
+      old_tagged_at = post.tagged_at
+    end
 
     # invalid edit field with replies updates nothing
-    post.status = Post::STATUS_ACTIVE
-    post.save
-    expect(post.tagged_at).to be_the_same_time_as(old_tagged_at)
-    expect(post.edited_at).to be_the_same_time_as(old_edited_at)
+    Timecop.freeze(old_tagged_at + 6.hours) do
+      post.section_order = post.section_order + 1
+      post.save
+      expect(post.tagged_at).to be_the_same_time_as(old_tagged_at)
+      expect(post.edited_at).to be_the_same_time_as(old_edited_at)
+    end
 
     # second reply created updates tag but not edit
-    reply2 = create(:reply, post: post)
-    post.reload
-    expect(post.tagged_at).to be_the_same_time_as(reply2.created_at)
-    expect(post.updated_at).to be >= reply2.created_at
-    expect(post.tagged_at).to be > post.edited_at
-    old_tagged_at = post.tagged_at
-    old_edited_at = post.edited_at
+    Timecop.freeze(old_tagged_at + 7.hours) do
+      reply2 = create(:reply, post: post)
+      post.reload
+      expect(post.tagged_at).to be_the_same_time_as(reply2.created_at)
+      expect(post.updated_at).to be >= reply2.created_at
+      expect(post.tagged_at).to be > post.edited_at
+      old_tagged_at = post.tagged_at
+      old_edited_at = post.edited_at
+    end
 
     # first reply updated updates nothing
-    reply.content = 'new content'
-    reply.skip_post_update = true unless reply.post.last_reply_id == reply.id
-    reply.save
-    post.reload
-    expect(post.tagged_at).to be_the_same_time_as(old_tagged_at) # BAD
-    expect(post.edited_at).to be_the_same_time_as(old_edited_at)
+    Timecop.freeze(old_tagged_at + 8.hours) do
+      reply.content = 'new content'
+      reply.skip_post_update = true unless reply.post.last_reply_id == reply.id
+      reply.save
+      post.reload
+      expect(post.tagged_at).to be_the_same_time_as(old_tagged_at) # BAD
+      expect(post.edited_at).to be_the_same_time_as(old_edited_at)
+    end
 
     # second reply updated updates tag but not edit
-    reply2.content = 'new content'
-    reply2.skip_post_update = true unless reply2.post.last_reply_id == reply2.id
-    reply2.save
-    post.reload
-    expect(post.tagged_at).to be_the_same_time_as(reply2.updated_at)
-    expect(post.edited_at).to be_the_same_time_as(old_edited_at)
+    Timecop.freeze(old_tagged_at + 9.hours) do
+      reply2.content = 'new content'
+      reply2.skip_post_update = true unless reply2.post.last_reply_id == reply2.id
+      reply2.save
+      post.reload
+      expect(post.tagged_at).to be_the_same_time_as(reply2.updated_at)
+      expect(post.edited_at).to be_the_same_time_as(old_edited_at)
+    end
   end
 
   describe "#destroy" do
