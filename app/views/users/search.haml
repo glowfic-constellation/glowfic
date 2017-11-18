@@ -14,27 +14,27 @@
     %tr
       %td.width-300.padding-10.vtop.dark
         = form_tag search_users_path, method: :get do
-          %table#signup
+          %table.search-form
             %tr
-              %td.width-70 Username
+              %td.width-70= label_tag :username, 'Username'
               %td= text_field_tag :username, params[:username], style: 'width: 100%; margin: 5px 0px; box-sizing: border-box;'
             %tr
               %td.centered{colspan: 2}= submit_tag "Search", class: 'button'
-        %td.vtop
-          - if @search_results.present?
-            %table
-              %thead
+      %td.vtop
+        - if @search_results.present?
+          %table
+            %thead
+              %tr
+                %th.sub Name
+                %th.width-70.sub.centered Moiety
+                %th.sub Date Joined
+            %tbody
+              - @search_results.each do |user|
                 %tr
-                  %th.sub Name
-                  %th.width-70.sub.centered Moiety
-                  %th.sub Date Joined
-              %tbody
-                - @search_results.each do |user|
-                  %tr
-                    - klass = cycle('even','odd')
-                    %td.padding-10.username{class: klass}= link_to user.username, user_path(user)
-                    %td.padding-10.user-moiety.centered.width-70{class: klass}= color_block(user)
-                    %td.padding-10.user-date{class: klass}= pretty_time(user.created_at)
+                  - klass = cycle('even','odd')
+                  %td.padding-10.username{class: klass}= link_to user.username, user_path(user)
+                  %td.padding-10.user-moiety.centered.width-70{class: klass}= color_block(user)
+                  %td.padding-10.user-date{class: klass}= pretty_time(user.created_at)
 
   - if @search_results && @search_results.total_pages > 1
     %tfoot

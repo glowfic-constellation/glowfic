@@ -14,15 +14,15 @@
       %tr
         %td.width-300.padding-10.vtop.dark
           = form_tag search_characters_path, :method => :get do
-            %table#signup
+            %table.search-form
               %tr
-                %td Author
+                %td= label_tag :author_id, 'Author'
                 %td= select_tag :author_id, options_from_collection_for_select(@users, :id, :username, params[:author_id]), {class: 'chosen-select', prompt: '— Choose Author —'}
               %tr
-                %td Template
+                %td= label_tag :template_id, 'Template'
                 %td= select_tag :template_id, options_from_collection_for_select(@templates, :id, :name, params[:template_id]), {class: 'chosen-select', prompt: '— Choose Template —'}
               %tr
-                %td Name
+                %td= label_tag :name, 'Name'
                 %td= text_field_tag :name, params[:name], style: 'width: 100%; margin: 5px 0px; box-sizing: border-box;'
               %tr
                 %td
@@ -44,31 +44,31 @@
               - # TODO: setting search, facecast search
               %tr
                 %td.centered{colspan: 2}= submit_tag "Search", class: 'button'
-          %td.vtop
-            - if @search_results.present?
-              %table
-                %thead
+        %td.vtop
+          - if @search_results.present?
+            %table
+              %thead
+                %tr
+                  - klass = cycle('even'.freeze, 'odd'.freeze)
+                  %td.padding-5{class: klass}
+                    %b Name
+                  %td.padding-5{class: klass}
+                    %b Nickname
+                  %td.padding-5{class: klass}
+                    %b Screenname
+                  %td.padding-5{class: klass}
+                    %b Facecast
+                  - if false # TODO once setting is fixed for characters
+                    %td.padding-5{class: klass}
+                      %b Setting
+              %tbody
+                - @search_results.each do |character|
+                  - klass = cycle('even'.freeze, 'odd'.freeze)
                   %tr
-                    - klass = cycle('even'.freeze, 'odd'.freeze)
-                    %td.padding-5{class: klass}
-                      %b Name
-                    %td.padding-5{class: klass}
-                      %b Nickname
-                    %td.padding-5{class: klass}
-                      %b Screenname
-                    %td.padding-5{class: klass}
-                      %b Facecast
-                    - if false # TODO once setting is fixed for characters
-                      %td.padding-5{class: klass}
-                        %b Setting
-                %tbody
-                  - @search_results.each do |character|
-                    - klass = cycle('even'.freeze, 'odd'.freeze)
-                    %tr
-                      %td.padding-5{class: klass}= link_to character.name, character_path(character)
-                      %td.padding-5{class: klass, style:'width:20%'}= character.template_name
-                      %td.padding-5{class: klass, style:'width:20%'}= breakable_text(character.screenname)
-                      %td.padding-5{class: klass, style:'width:25%'}= character.pb
+                    %td.padding-5{class: klass}= link_to character.name, character_path(character)
+                    %td.padding-5{class: klass, style:'width:20%'}= character.template_name
+                    %td.padding-5{class: klass, style:'width:20%'}= breakable_text(character.screenname)
+                    %td.padding-5{class: klass, style:'width:25%'}= character.pb
 
     - if @search_results && @search_results.total_pages > 1
       %tfoot

@@ -116,8 +116,12 @@ $SELECT2_SEARCH: $SELECT2_HIGHLIGHT;
 ::-ms-input-placeholder { color: $INPUT_PLACEHOLDER; }
 ::placeholder { color: $INPUT_PLACEHOLDER; }
 
-/* - account options, post editor */
-#content .form-table input:not([type='submit']), #content .form-table textarea, #icon-table input:not([type='submit']) { background-color: $INPUT_BG; color: $FONT_COLOR; border-color: $INPUT_BORDER; }
+/* - account options, post editor, search */
+#content .form-table, #icon-table, .search-form {
+  input:not([type='submit']), textarea {
+    background-color: $INPUT_BG; color: $FONT_COLOR; border-color: $INPUT_BORDER;
+  }
+}
 /* - select2 */
 .select2-dropdown { background-color: $INPUT_BG; color: $FONT_COLOR; border-color: $INPUT_BORDER; }
 /* -- multiple / tag */
