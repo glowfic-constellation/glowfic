@@ -7,7 +7,8 @@ class Message < ApplicationRecord
 
   validates_presence_of :sender, if: Proc.new { |m| m.sender_id != 0 }
 
-  after_create :set_thread_id, :notify_recipient
+  before_validation :set_thread_id
+  after_create :notify_recipient
 
   def visible_to?(user)
     user_ids.include?(user.id)
@@ -55,7 +56,7 @@ class Message < ApplicationRecord
 
   def set_thread_id
     return unless thread_id.blank?
-    update_attributes(thread_id: id)
+    self.first_thread = self
   end
 
   def notify_recipient

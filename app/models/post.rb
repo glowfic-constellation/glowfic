@@ -39,7 +39,7 @@ class Post < ApplicationRecord
   validate :valid_board, :valid_board_section
 
   before_create :build_initial_flat_post
-  before_create :set_last_user
+  before_validation :set_last_user, on: :create
   after_commit :notify_followers, on: :create
 
   acts_as_tag :label, :content_warning, :setting
