@@ -44,6 +44,11 @@
       = link_to icon_path(@icon, view: 'posts') do
         = image_tag "icons/book_open.png"
         Posts
+  %tr
+    %td.centered{class: cycle('even', 'odd')}
+      = link_to search_replies_path(commit: true, icon_id: @icon.id) do
+        = image_tag "icons/table_multiple.png"
+        Replies
   - if @icon.user_id == current_user.try(:id)
     %tr
       %td.centered{class: cycle('even', 'odd')}
