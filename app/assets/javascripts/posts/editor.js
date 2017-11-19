@@ -276,7 +276,7 @@ function setupTinyMCE() {
   if (typeof tinyMCE === 'undefined') {
     setTimeout(arguments.callee, 50);
   } else {
-    var height = ($(selector).height() + 15) || 150;
+    var height = ($(selector).height() || 150) + 15;
     tinyMCE.init({
       selector: selector,
       menubar: false,

@@ -31,7 +31,7 @@ gem 'sanitize'
 gem 'sass-rails'
 gem 'select2-rails'
 gem 'test-unit', '~> 3.0' # required by Heroku for production console
-gem 'tinymce-rails'
+gem 'tinymce-rails', '~> 4.6.7'
 gem 'uglifier'
 gem 'will_paginate'
 
