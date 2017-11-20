@@ -14,9 +14,9 @@
         - if @user.id == current_user.try(:id)
           Your Characters
           = link_to new_character_path(character_group_id: @group.try(:id)) do
-            .link-box.green + New Character
+            .link-box.action-new + New Character
           = link_to new_template_path do
-            .link-box.green + New Template
+            .link-box.action-new + New Template
         - else
           = @user.username + "'s Characters"
       = link_to url_for(character_split: character_split, view: 'icons') do

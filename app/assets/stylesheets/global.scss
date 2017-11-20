@@ -109,10 +109,12 @@ button, .button {
 
   img { vertical-align: text-top; }
 }
-.link-box.green { background-color: #3f7055; }
-.link-box.red { background-color: #880000; }
-.link-box.blue { background-color: #4455AA;}
-.link-box.orange { background-color: #EA8A40;}
+.link-box.action-new { background-color: #3f7055; }
+.link-box.action-delete { background-color: #880000; }
+.link-box.action-edit { background-color: #4455AA;}
+.link-box.orange { background-color: #EA8A40;} // TODO: This does not appear to be used anywhere
+.link-box.action-favorite { background-color: #4455AA;}
+.link-box.action-dismiss { background-color: #880000; }
 #post-form-wrapper { margin-top: 5px; }
 
 /* Inline lists */
