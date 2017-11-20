@@ -136,7 +136,9 @@ class PostScraper < Object
 
     set_from_icon(@post, img_url, img_keyword)
 
-    @post.save!
+    Audited.audit_class.as_user(@post.user) do
+      @post.save!
+    end
   end
 
   def import_replies_from_doc(doc)
@@ -165,7 +167,9 @@ class PostScraper < Object
       @reply.skip_post_update = true
       @reply.skip_regenerate = true
       @reply.is_import = true
-      @reply.save!
+      Audited.audit_class.as_user(@reply.user) do
+        @reply.save!
+      end
     end
   end
 

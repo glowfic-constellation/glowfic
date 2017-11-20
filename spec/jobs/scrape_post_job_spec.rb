@@ -19,7 +19,7 @@ RSpec.describe ScrapePostJob do
     expect(Message.first.subject).to eq("Post import succeeded")
     expect(Post.count).to eq(1)
     expect(Audited::Audit.count).to eq(1)
-    expect(Audited::Audit.last.user_id).to eq(board.creator_id)
+    expect(Audited::Audit.last.user_id).to eq(Post.last.user_id)
     Post.auditing_enabled = false
   end
 
