@@ -5,7 +5,7 @@ class PostsController < WritableController
   SCRAPE_USERS = [1, 2, 3, 8, 19, 24, 31]
   before_action :login_required, except: [:index, :show, :history, :warnings, :search, :stats]
   before_action :find_post, only: [:show, :history, :stats, :warnings, :edit, :update, :destroy]
-  before_action :require_permission, only: [:edit, :destroy]
+  before_action :require_permission, only: [:edit]
   before_action :editor_setup, only: [:new, :edit]
 
   def index
@@ -216,6 +216,11 @@ class PostsController < WritableController
   end
 
   def destroy
+    unless @post.deletable_by?(current_user)
+      flash[:error] = "You do not have permission to modify this post."
+      redirect_to post_path(@post) and return
+    end
+
     @post.destroy
     flash[:success] = "Post deleted."
     redirect_to boards_path

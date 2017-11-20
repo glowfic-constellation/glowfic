@@ -5,7 +5,7 @@ class RepliesController < WritableController
   before_action :login_required, except: [:search, :show, :history]
   before_action :find_reply, only: [:show, :history, :edit, :update, :destroy]
   before_action :editor_setup, only: [:edit]
-  before_action :require_permission, only: [:edit, :update, :destroy]
+  before_action :require_permission, only: [:edit, :update]
 
   def search
     @page_title = 'Search Replies'
@@ -187,6 +187,11 @@ class RepliesController < WritableController
   end
 
   def destroy
+    unless @reply.deletable_by?(current_user)
+      flash[:error] = "You do not have permission to modify this post."
+      redirect_to post_path(@reply.post) and return
+    end
+
     previous_reply = @reply.send(:previous_reply)
     to_page = previous_reply.try(:post_page, per_page) || 1
     @reply.destroy # to destroy subsequent ones, do @reply.destroy_subsequent_replies
