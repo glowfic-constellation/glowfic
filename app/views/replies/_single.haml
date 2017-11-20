@@ -20,7 +20,7 @@
           - if reply.screenname
             .post-screenname= breakable_text(reply.screenname)
         - else
-          .dark.spacer
+          .spacer-alt
         .post-author
           = link_to reply.username, user_path(reply.user_id)
     .post-edit-box

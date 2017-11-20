@@ -33,7 +33,7 @@
                 - if @post.character.screenname
                   .post-screenname= breakable_text(@post.character.screenname)
               - else
-                .dark.spacer
+                .spacer-alt
               .post-author= @post.user.username
           .post-edit-box
             = link_to post_path(@post), rel: 'alternate' do
