@@ -1,4 +1,5 @@
 require "spec_helper"
+require "support/s3_bucket_helper"
 
 RSpec.describe GalleriesController do
   describe "GET index" do
@@ -417,17 +418,6 @@ RSpec.describe GalleriesController do
   end
 
   describe "GET add" do
-    def handle_s3_bucket
-      # compensates for developers not having S3 buckets set up locally
-      return unless S3_BUCKET.nil?
-      struct = Struct.new(:url) do
-        def presigned_post(_args)
-          1
-        end
-      end
-      stub_const("S3_BUCKET", struct.new(''))
-    end
-
     it "requires login" do
       get :add, params: { id: -1 }
       expect(response).to redirect_to(root_url)
