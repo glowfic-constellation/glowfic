@@ -46,6 +46,13 @@ $font_color_link: $colors_green; // link
 $font_color_link_visited: #28503A; // link (visited)
 $font_color_link_hover: #FCFEFD; // link (hovered)
 
+/* - link-boxes */
+$bg_color_linkbox_new: #3f7055;
+$bg_color_linkbox_edit: #4455AA;
+$bg_color_linkbox_fav: #4455AA;
+$bg_color_linkbox_del: #880000;
+$bg_color_linkbox_dismiss: #880000;
+
 /* - inputs */
 $bg_color_input: $colors_white; // regular <input>
 $font_color_input: $font_color_content;
@@ -62,6 +69,9 @@ $font_color_viewbutton: $colors_white;
 
 /* - icons */
 $border_color_icon_selected: $colors_green; // selected icon border
+$bg_color_icon: #B0BBA9;
+$bg_color_icon_credit: #B0BBA9;
+$bg_color_icon_selector: #B0BBA9;
 
 /* - characters */
 $border_color_character_iconless: #666666; // in characters#show icon view when a character has no icon
@@ -132,3 +142,38 @@ $font_color_select2_container: $colors_dark;
 /* - misc */
 $bg_color_descriptions: $colors_lightbrown; // description subheadings on templates page ("single-description"), *not* posts
 $bg_color_selectionpopup: $colors_lightbrown; // selection popups like character/alias on posts#editor
+$bg_color_spacer_alt: #8B8687;
+$bg_color_search_box: #8B8687;
+
+/* - replies.scss */
+$bg_color_icon_overlay: #000000; // box displaying current icon
+
+$bg_color_expander: #B0BBA9; // expander on posts
+
+$bg_color_ender_post: #3E384F;
+$font_color_ender_post: $colors_bright;
+
+$bg_color_post_character: $colors_brown;
+$bg_color_post_screenname: $colors_greybrown;
+$bg_color_post_author: $colors_lightbrown;
+
+$bg_color_post_character_narrow: $colors_lightbrown;
+$bg_color_post_author_narrow: $colors_brown; // these are flipped from not-narrow mode to make the quick-switcher blend in
+
+$font_color_paginate_link: #EEEEEE;
+$bg_color_paginate_link_hover: $colors_greybrown;
+$font_color_paginate_link_visited: $colors_brown;
+$bg_color_page_current: $colors_green;
+$font_color_page_disabled: #101010;
+$bg_color_post_icon: #B0BBA9;
+
+$font_color_menu_link: #EEEEEE;
+$bg_color_menu_link_hover: #B0BBA9;
+
+/* - post headers */
+$bg_color_post_description: $colors_greybrown;
+$bg_color_navheader: $colors_lightbrown;
+$bg_color_navbutton: $colors_greybrown;
+
+$bg_color_post_menu: $colors_brown;
+$border_color_post_menu: $colors_greybrown;

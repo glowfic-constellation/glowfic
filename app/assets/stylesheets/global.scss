@@ -57,7 +57,7 @@ button, .button {
 .width-250 { width: 250px; }
 .width-300 { width: 300px; }
 .spacer, .spacer-alt { height: 2px; padding: 0; }
-.spacer-alt { background-color: #8B8687; }
+.spacer-alt { background-color: $bg_color_spacer_alt; }
 .centered { text-align: center !important; }
 .left-align { text-align: left; }
 .right-align { text-align: right; }
@@ -109,12 +109,12 @@ button, .button {
 
   img { vertical-align: baseline; }
 }
-.link-box.action-new { background-color: #3f7055; }
-.link-box.action-delete { background-color: #880000; }
-.link-box.action-edit { background-color: #4455AA;}
+.link-box.action-new { background-color: $bg_color_linkbox_new; }
+.link-box.action-delete { background-color: $bg_color_linkbox_del; }
+.link-box.action-edit { background-color: $bg_color_linkbox_edit;}
 .link-box.orange { background-color: #EA8A40;} // TODO: This does not appear to be used anywhere
-.link-box.action-favorite { background-color: #4455AA;}
-.link-box.action-dismiss { background-color: #880000; }
+.link-box.action-favorite { background-color: $bg_color_linkbox_fav; }
+.link-box.action-dismiss { background-color: $bg_color_linkbox_dismiss; }
 #post-form-wrapper { margin-top: 5px; }
 
 /* Inline lists */
