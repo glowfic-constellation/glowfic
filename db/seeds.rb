@@ -5,7 +5,7 @@
 puts "Seeding database..."
 
 puts "Creating users..."
-marri = User.create(username: 'Marri', password: 'nikari', email: "dummy1@example.com")
+marri = User.create(username: 'Marri', password: 'nikari', email: "dummy1@example.com", role_id: 1)
 alicorn = User.create(username: 'Alicorn', password: 'alicorn', email: "dummy2@example.com")
 kappa = User.create(username: 'Kappa', password: 'pythbox', email: "dummy3@example.com")
 aestrix = User.create(username: 'Aestrix', password: 'aestrix', email: "dummy4@example.com")

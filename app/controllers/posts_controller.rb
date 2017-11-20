@@ -144,6 +144,13 @@ class PostsController < WritableController
 
     @post.build_new_tags_with(current_user)
 
+    if current_user.id != @post.user_id && @post.audit_comment.blank?
+      flash[:error] = "You must provide a reason for your moderator edit."
+      editor_setup
+      render action: :edit and return
+    end
+    @post.audit_comment = nil if @post.changes.empty? # don't save an audit for a note and no changes
+
     if @post.save
       flash[:success] = "Your post has been updated."
       redirect_to post_path(@post)
@@ -368,6 +375,7 @@ class PostsController < WritableController
       :character_id,
       :icon_id,
       :character_alias_id,
+      :audit_comment,
       viewer_ids: [],
       setting_ids: [],
       content_warning_ids: [],
