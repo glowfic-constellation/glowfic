@@ -33,6 +33,8 @@ class Character < ApplicationRecord
 
   nilify_blanks types: [:string, :text, :citext] # nilify_blanks does not touch citext by default
 
+  audited on: :update, mod_only: true
+
   def editable_by?(user)
     return false unless user
     return true if user_id == user.id

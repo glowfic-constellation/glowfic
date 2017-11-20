@@ -169,3 +169,8 @@ end
 
 require 'webmock/rspec'
 WebMock.disable_net_connect!(allow_localhost: true)
+
+# disable auditing by default unless specifically turned on for a test
+Post.auditing_enabled = false
+Reply.auditing_enabled = false
+Character.auditing_enabled = false

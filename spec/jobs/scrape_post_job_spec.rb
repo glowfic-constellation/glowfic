@@ -8,6 +8,7 @@ RSpec.describe ScrapePostJob do
   end
 
   it "creates the correct objects" do
+    Post.auditing_enabled = true
     url = 'http://wild-pegasus-appeared.dreamwidth.org/403.html?style=site&view=flat'
     file = File.join(Rails.root, 'spec', 'support', 'fixtures', 'scrape_no_replies.html')
     stub_request(:get, url).to_return(status: 200, body: File.new(file))
@@ -17,6 +18,9 @@ RSpec.describe ScrapePostJob do
     expect(Message.count).to eq(1)
     expect(Message.first.subject).to eq("Post import succeeded")
     expect(Post.count).to eq(1)
+    expect(Audited::Audit.count).to eq(1)
+    expect(Audited::Audit.last.user_id).to eq(board.creator_id)
+    Post.auditing_enabled = false
   end
 
   it "sends messages on username exceptions" do

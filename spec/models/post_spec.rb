@@ -585,6 +585,7 @@ RSpec.describe Post do
       end
 
       it "handles status changes" do
+        Post.auditing_enabled = true
         post.mark_read(post.user)
         unread = create(:reply, post: post)
         expect(post.first_unread_for(post.user)).to eq(unread)
@@ -602,6 +603,7 @@ RSpec.describe Post do
         expect(post.edited_at).to be > unread.updated_at
         expect(post.first_unread_for(post.user)).to eq(unread)
         expect(post.read_time_for(post.replies)).to be_the_same_time_as(post.edited_at)
+        Post.auditing_enabled = false
       end
     end
 

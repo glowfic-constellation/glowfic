@@ -5,7 +5,9 @@ class ScrapePostJob < ApplicationJob
 
   def perform(url, board_id, section_id, status, threaded, importer_id)
     scraper = PostScraper.new(url, board_id, section_id, status, threaded)
-    scraped_post = scraper.scrape!
+    scraped_post = Audited.audit_class.as_user(User.find_by_id(importer_id)) do
+      scraper.scrape!
+    end
     Message.send_site_message(importer_id, 'Post import succeeded', "Your post was successfully imported! #{self.class.view_post(scraped_post.id)}")
   end
 

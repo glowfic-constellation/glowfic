@@ -266,4 +266,37 @@ RSpec.describe Character do
     it_behaves_like 'taggable', 'gallery_group'
     it_behaves_like 'taggable', 'setting'
   end
+
+  describe "audits" do
+    before(:each) do
+      Character.auditing_enabled = true
+      expect(Audited::Audit.count).to eq(0)
+    end
+    after(:each) { Character.auditing_enabled = false }
+
+    it "is not created on create" do
+      create(:character)
+      Audited.audit_class.as_user(create(:user)) { create(:character) }
+      expect(Audited::Audit.count).to eq(0)
+    end
+
+    it "is only created on mod update" do
+      character = create(:character)
+      Audited.audit_class.as_user(character.user) do
+        character.update_attributes(name: character.name + 'notmod')
+      end
+      Audited.audit_class.as_user(create(:user)) do
+        character.update_attributes(name: character.name + 'mod', audit_comment: 'mod')
+      end
+      expect(Audited::Audit.count).to eq(1)
+    end
+
+    it "is not created on destroy" do
+      character = create(:character)
+      Audited.audit_class.as_user(create(:user)) do
+        character.destroy
+      end
+      expect(Audited::Audit.count).to eq(0)
+    end
+  end
 end

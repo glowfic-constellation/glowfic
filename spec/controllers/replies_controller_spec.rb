@@ -424,6 +424,7 @@ RSpec.describe RepliesController do
     end
 
     it "stores note from moderators" do
+      Reply.auditing_enabled = true
       reply = create(:reply, content: 'a')
       admin = create(:admin_user)
       login_as(admin)
@@ -431,6 +432,7 @@ RSpec.describe RepliesController do
       expect(flash[:success]).to eq("Post updated")
       expect(reply.reload.content).to eq('b')
       expect(reply.audits.last.comment).to eq('note')
+      Reply.auditing_enabled = false
     end
 
     it "fails when invalid" do
