@@ -7,8 +7,10 @@ module Audited
         self.audit_comment = nil
         run_callbacks(:audit) do
           audit = audits.build(attrs)
-          if audited_options[:mod_only] && audit.audit_user.try(:id) == self.user_id
-            audits.delete(audit) # otherwise the unsaved audit is persisted on model.save
+          if audited_options[:mod_only]
+            if audit.audit_user.nil? || audit.audit_user.id == self.user_id
+              audits.delete(audit) # otherwise the unsaved audit is persisted on model.save
+            end
           else
             audit.save # required to persist on model.destroy
           end

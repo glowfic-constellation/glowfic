@@ -268,7 +268,11 @@ RSpec.describe Character do
   end
 
   describe "audits" do
-    before(:each) { expect(Audited::Audit.count).to eq(0) }
+    before(:each) do
+      Character.auditing_enabled = true
+      expect(Audited::Audit.count).to eq(0)
+    end
+    after(:each) { Character.auditing_enabled = false }
 
     it "is not created on create" do
       create(:character)
@@ -287,19 +291,12 @@ RSpec.describe Character do
       expect(Audited::Audit.count).to eq(1)
     end
 
-    it "is only created on mod destroy" do
+    it "is not created on destroy" do
       character = create(:character)
-      Audited.audit_class.as_user(character.user) do
+      Audited.audit_class.as_user(create(:user)) do
         character.destroy
       end
       expect(Audited::Audit.count).to eq(0)
-
-      character2 = create(:character)
-      character2.audit_comment = 'mod delete'
-      Audited.audit_class.as_user(character.user) do
-        character2.destroy
-      end
-      expect(Audited::Audit.count).to eq(1)
     end
   end
 end
