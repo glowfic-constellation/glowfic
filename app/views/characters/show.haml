@@ -29,7 +29,7 @@
   %tbody
     - if @character.default_icon
       %tr
-        %td.green.centered.character-icon
+        %td.character-icon.icons-box
           = link_to icon_path(@character.default_icon) do
             = icon_tag @character.default_icon
     %tr
@@ -90,7 +90,7 @@
         = render partial: 'galleries/single', locals: {gallery: gallery, klass: 'subber', skip_forms: true, character_gallery: gallery.character_gallery_for(@character)}
       - unless galleries.present?
         %tr
-          %td.green
+          %td.icon-box
             .centered.padding-5 — No galleries yet —
 - elsif params[:view] == 'posts'
   - content_for :posts_title do 'Recent Threads' end

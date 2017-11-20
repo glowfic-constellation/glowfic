@@ -10,7 +10,7 @@
   %tr.gallery-subheader
     %th.sub Unsorted icons without a gallery will appear here. They can still be individually assigned to a character with no galleries.
 %tr.gallery-icons
-  %td.green.gallery-title
+  %td.icons-box.gallery-title
     .gallery{id: "gallery0"}
       = form_tag delete_multiple_icons_path, method: :delete do
         - icons = @user.galleryless_icons

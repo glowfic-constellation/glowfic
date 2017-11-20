@@ -51,7 +51,7 @@ $ODD_COLOR: #25262E;
 
 .post-navheader .view-button, .view-button.selected, .view-button, .link-box.action-new, .link-box.action-edit, .link-box.action-favorite, .link-box.action-delete, .link-box.action-dismiss, .tag-item { background-color: #463C65; }
 .flash.breadcrumbs .link-box, .subber .link-box { background-color: #5C5778; }
-#post-editor .green { background-color: #484357; color: $FONT_COLOR; }
+#reply-icon-selector { background-color: #484357; color: $FONT_COLOR; }
 .post-subheader { background-color: #484357; color: #F3F3F3; }
 
 .subber, .flash.breadcrumbs {
@@ -84,7 +84,7 @@ $ODD_COLOR: #25262E;
 
 #post-menu-box, #content .even, #content .odd, .post-post, .post-reply { color: $FONT_COLOR; }
 
-.green { background-color: #323232; }
+.replace-icon, .icons-box, .icon-credit { background-color: #323232; }
 
 .tag-item { background-color: #241F4E; }
 .even .tag-item { background-color: #24252D; }

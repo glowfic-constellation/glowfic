@@ -20,7 +20,7 @@
   %tr
     %td.single-description.written-content{colspan: 6}= sanitize_written_content(@template.description).html_safe
 %tr
-  %td.green.left-align
+  %td.icons-box.left-align
     .character-icon-list
       - characters.includes(:default_icon).each do |character|
         .character-icon-item

@@ -72,3 +72,21 @@
   margin: 0;
 }
 .loading-icon { width: 16px; height: 16px; }
+
+/* Various tables with icons in previously styled with .green */
+.icons-box {
+  background-color: #B0BBA9;
+}
+
+/* Icon credit, previously styled with .green */
+.icon-credit {
+  background-color: #B0BBA9;
+  text-align: center;
+}
+
+/* The preview icon boxes on replace icon and replace character */
+.replace-icon {
+  @extend .icons-box;
+  width: 150px;
+  text-align: center;
+}
