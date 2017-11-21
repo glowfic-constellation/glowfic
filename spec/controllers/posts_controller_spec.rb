@@ -966,6 +966,26 @@ RSpec.describe PostsController do
       expect(flash[:error]).to eq("You do not have permission to view this post.")
     end
 
+    it "requires notes from moderators" do
+      post = create(:post, privacy: Concealable::PRIVATE)
+      login_as(create(:admin_user))
+      put :update, params: { id: post.id }
+      expect(response).to render_template(:edit)
+      expect(flash[:error]).to eq('You must provide a reason for your moderator edit.')
+    end
+
+    it "stores note from moderators" do
+      Post.auditing_enabled = true
+      post = create(:post, privacy: Concealable::PRIVATE)
+      admin = create(:admin_user)
+      login_as(admin)
+      put :update, params: { id: post.id, post: { content: 'b', audit_comment: 'note' } }
+      expect(flash[:success]).to eq("Your post has been updated.")
+      expect(post.reload.content).to eq('b')
+      expect(post.audits.last.comment).to eq('note')
+      Post.auditing_enabled = false
+    end
+
     context "mark unread" do
       it "requires valid at_id" do
         skip "TODO does not notify"

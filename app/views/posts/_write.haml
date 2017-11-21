@@ -38,6 +38,11 @@
       %br
       #post-form-wrapper
         = f.text_area :content, class: 'tinymce'
+        - unless current_user.id == post.user_id
+          %b Moderator note
+          %br
+          = f.text_area :audit_comment, placeholder: 'Explain reason for moderation here', class: 'mod'
+          %br
         = f.hidden_field :character_id, id: 'reply_character_id'
         = f.hidden_field :icon_id, id: 'reply_icon_id'
         = f.hidden_field :character_alias_id, id: 'reply_character_alias_id'

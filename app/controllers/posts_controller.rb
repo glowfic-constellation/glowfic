@@ -5,7 +5,7 @@ class PostsController < WritableController
   SCRAPE_USERS = [1, 2, 3, 8, 19, 24, 31]
   before_action :login_required, except: [:index, :show, :history, :warnings, :search, :stats]
   before_action :find_post, only: [:show, :history, :stats, :warnings, :edit, :update, :destroy]
-  before_action :require_permission, only: [:edit, :destroy]
+  before_action :require_permission, only: [:edit]
   before_action :editor_setup, only: [:new, :edit]
 
   def index
@@ -144,6 +144,13 @@ class PostsController < WritableController
 
     @post.build_new_tags_with(current_user)
 
+    if current_user.id != @post.user_id && @post.audit_comment.blank?
+      flash[:error] = "You must provide a reason for your moderator edit."
+      editor_setup
+      render action: :edit and return
+    end
+    @post.audit_comment = nil if @post.changes.empty? # don't save an audit for a note and no changes
+
     if @post.save
       flash[:success] = "Your post has been updated."
       redirect_to post_path(@post)
@@ -209,6 +216,11 @@ class PostsController < WritableController
   end
 
   def destroy
+    unless @post.deletable_by?(current_user)
+      flash[:error] = "You do not have permission to modify this post."
+      redirect_to post_path(@post) and return
+    end
+
     @post.destroy
     flash[:success] = "Post deleted."
     redirect_to boards_path
@@ -368,6 +380,7 @@ class PostsController < WritableController
       :character_id,
       :icon_id,
       :character_alias_id,
+      :audit_comment,
       viewer_ids: [],
       setting_ids: [],
       content_warning_ids: [],

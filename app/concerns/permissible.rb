@@ -3,8 +3,8 @@ module Permissible
   MOD = 2
 
   MOD_PERMS = [
-    # :edit_posts,
-    # :edit_replies,
+    :edit_posts,
+    :edit_replies,
     # :edit_characters,
     # :edit_tags,
     # :delete_tags,
