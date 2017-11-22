@@ -41,6 +41,12 @@ class Character < ApplicationRecord
     user.has_permission?(:edit_characters)
   end
 
+  def deletable_by?(user)
+    return false unless user
+    return true if user_id == user.id
+    user.has_permission?(:delete_characters)
+  end
+
   def recent_posts
     return @recent unless @recent.nil?
     reply_ids = replies.group(:post_id).pluck(:post_id)

@@ -32,7 +32,7 @@
             .character-name= character.name
             - if character.screenname
               .character-screenname= surround('(', ')') { breakable_text(character.screenname) }
-          - if character.user_id == current_user.try(:id)
+          - if character.deletable_by?(current_user)
             .delete-button{ id: character.id }
               = link_to '×', character_path(character), :method => :delete, data: { confirm: 'Are you sure you want to delete '+character.name+'?' }
       - unless characters.present?

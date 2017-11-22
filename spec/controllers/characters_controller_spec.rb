@@ -306,6 +306,26 @@ RSpec.describe CharactersController do
       expect(character.reload.name).not_to eq(new_name)
     end
 
+    it "requires notes from moderators" do
+      character = create(:character)
+      login_as(create(:mod_user))
+      put :update, params: { id: character.id }
+      expect(response).to render_template(:edit)
+      expect(flash[:error]).to eq('You must provide a reason for your moderator edit.')
+    end
+
+    it "stores note from moderators" do
+      Character.auditing_enabled = true
+      character = create(:character, name: 'a')
+      admin = create(:admin_user)
+      login_as(admin)
+      put :update, params: { id: character.id, character: { name: 'b', audit_comment: 'note' } }
+      expect(flash[:success]).to eq("Character saved successfully.")
+      expect(character.reload.name).to eq('b')
+      expect(character.audits.last.comment).to eq('note')
+      Character.auditing_enabled = false
+    end
+
     it "succeeds when valid" do
       character = create(:character)
       user = character.user

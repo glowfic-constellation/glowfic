@@ -163,6 +163,7 @@ function displayGallery(newId) {
 }
 
 function bindIcons(obj) {
+  if(gon.mod_editing) return; // Mods can't change icons, so don't present the UI
   obj = obj || window.body;
   $(".character-icon", obj).click(function() {
     if ($(this).hasClass('selected-icon')) {
