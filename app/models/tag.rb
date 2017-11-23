@@ -43,7 +43,8 @@ class Tag < ApplicationRecord
   end
 
   def id_for_select
-    id || "_#{name}"
+    return id if persisted? # id present on unpersisted records when associated record is invalid
+    "_#{name}"
   end
 
   def post_count

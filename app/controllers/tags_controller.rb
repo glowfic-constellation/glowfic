@@ -1,11 +1,12 @@
 # frozen_string_literal: true
 class TagsController < ApplicationController
+  include Taggable
+
   before_action :login_required, except: [:index, :show]
   before_action :find_tag, except: :index
   before_action :permission_required, except: [:index, :show, :destroy]
 
   def index
-
     if params[:view].present?
       unless Tag::TYPES.include?(params[:view])
         flash[:error] = "Invalid filter"
@@ -41,17 +42,25 @@ class TagsController < ApplicationController
   end
 
   def update
-    unless @tag.update_attributes(tag_params)
+    @tag.assign_attributes(tag_params)
+
+    begin
+      Tag.transaction do
+        @tag.parent_settings = process_tags(Setting, :tag, :parent_setting_ids) if @tag.is_a?(Setting)
+        @tag.save!
+      end
+
+      flash[:success] = "Tag saved!"
+      redirect_to tag_path(@tag)
+
+    rescue ActiveRecord::RecordInvalid
       flash.now[:error] = {}
       flash.now[:error][:message] = "Tag could not be saved because of the following problems:"
       flash.now[:error][:array] = @tag.errors.full_messages
       @page_title = "Edit Tag: #{@tag.name}"
-      build_editor
+      build_editor(false)
       render action: :edit and return
     end
-
-    flash[:success] = "Tag saved!"
-    redirect_to tag_path(@tag)
   end
 
   def destroy
@@ -85,15 +94,19 @@ class TagsController < ApplicationController
     end
   end
 
-  def build_editor
+  def build_editor(with_tags=true)
     # n.b. this method is unsafe for unpersisted tags (in case we ever add tags#new)
     return unless @tag.is_a?(Setting)
-    @parent_settings = @tag.parent_settings.order('tag_tags.id asc') || []
     use_javascript('tags/edit')
+    build_tags if with_tags
+  end
+
+  def build_tags
+    @parent_settings = @tag.parent_settings.order('tag_tags.id asc') || []
   end
 
   def tag_params
-    permitted = [:type, :description, :owned, parent_setting_ids: []]
+    permitted = [:type, :description, :owned]
     permitted.insert(0, :name, :user_id) if current_user.admin? || @tag.user == current_user
     params.fetch(:tag, {}).permit(permitted)
   end

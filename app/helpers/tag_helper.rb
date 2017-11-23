@@ -5,4 +5,17 @@ module TagHelper
     url_params[:view] = @view if @view.present?
     tag_path(tag, url_params)
   end
+
+  def tag_select(form, assoc, opts={})
+    attr_name = assoc.to_s.singularize + "_ids"
+    collection = form.object.send(assoc)
+    ids = collection.map(&:id_for_select)
+
+    form.select(
+      attr_name,
+      options_from_collection_for_select(collection, :id_for_select, :name, ids),
+      {},
+      {multiple: true}.merge(opts)
+    )
+  end
 end

@@ -20,7 +20,7 @@
 - if f.object.is_a?(Setting)
   %tr
     %th.sub Parent Settings
-    %td{class: cycle('even', 'odd')}= f.select :parent_setting_ids, options_from_collection_for_select(@parent_settings, :id_for_select, :name, f.object.parent_setting_ids || f.object.parent_settings.pluck(:id)), {}, {multiple: true, data: {tag_id: f.object.id}}
+    %td{class: cycle('even', 'odd')}= tag_select(f, :parent_settings, data: {tag_id: form.object.id})
   %tr
     %th.sub.vtop Description
     %td{class: cycle('even', 'odd')}= f.text_area :description, placeholder: 'Description', cols: 35

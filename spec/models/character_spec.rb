@@ -1,5 +1,4 @@
 require "spec_helper"
-require "support/shared_examples_for_taggable"
 
 RSpec.describe Character do
   describe "validations" do
@@ -259,12 +258,6 @@ RSpec.describe Character do
         end
       end
     end
-  end
-
-  # from Taggable concern
-  context "tags" do
-    it_behaves_like 'taggable', 'gallery_group'
-    it_behaves_like 'taggable', 'setting'
   end
 
   describe "audits" do

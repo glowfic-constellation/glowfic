@@ -1,6 +1,5 @@
 class Character < ApplicationRecord
   include Presentable
-  include Taggable
 
   belongs_to :user, optional: false
   belongs_to :template, inverse_of: :characters, optional: true
@@ -16,9 +15,8 @@ class Character < ApplicationRecord
   has_many :icons, -> { group('icons.id').order('LOWER(keyword)') }, through: :galleries
 
   has_many :character_tags, inverse_of: :character, dependent: :destroy
-  has_many :labels, through: :character_tags, source: :label
-  has_many :settings, through: :character_tags, source: :setting
-  has_many :gallery_groups, through: :character_tags, source: :gallery_group, dependent: :destroy
+  has_many :settings, -> { order('character_tags.id ASC') }, through: :character_tags, source: :setting
+  has_many :gallery_groups, -> { order('character_tags.id ASC') }, through: :character_tags, source: :gallery_group, dependent: :destroy
 
   validates_presence_of :name
   validate :valid_group, :valid_galleries, :valid_default_icon
@@ -28,8 +26,6 @@ class Character < ApplicationRecord
   after_destroy :clear_char_ids
 
   accepts_nested_attributes_for :template, reject_if: :all_blank
-
-  acts_as_tag :label, :setting, :gallery_group
 
   nilify_blanks types: [:string, :text, :citext] # nilify_blanks does not touch citext by default
 
@@ -82,7 +78,7 @@ class Character < ApplicationRecord
     new_ids = new_ids.map(&:to_i)
     old_ids = ungrouped_gallery_ids
     rem_ids = old_ids - new_ids
-    group_gallery_ids = gallery_groups.joins(:gallery_tags).pluck('distinct gallery_tags.gallery_id')
+    group_gallery_ids = gallery_groups.joins(:gallery_tags).except(:order).pluck('distinct gallery_tags.gallery_id')
     new_chargals = []
     transaction do
       characters_galleries.each do |char_gal|

@@ -9,7 +9,7 @@
   %td{class: cycle('even', 'odd')}= f.text_field :screenname, placeholder: "Screen Name", class: 'text'
 %tr
   %th.sub Setting
-  %td{class: cycle('even', 'odd')}= f.select :setting_ids, options_from_collection_for_select(@settings, :id_for_select, :name, @character.setting_ids || @character.settings.pluck(:id)), {}, {multiple: true}
+  %td{class: cycle('even', 'odd')}= tag_select(f, :settings)
 %tr
   - klass = cycle('even', 'odd')
   %th.sub.vtop Template
@@ -33,8 +33,7 @@
       :id, :name, {selected: @character.ungrouped_gallery_ids}, {multiple: true})
   %tr
     %th.sub Gallery Groups
-    %td{class: cycle('even', 'odd')}
-      = f.select :gallery_group_ids, options_from_collection_for_select(@gallery_groups, :id_for_select, :name, @character.gallery_group_ids || @character.gallery_groups.map(&:id)), {}, {multiple: true}
+    %td{class: cycle('even', 'odd')}= tag_select(f, :gallery_groups)
 %tr
   %th.sub Facecast
   %td{class: cycle('even', 'odd')}= f.text_field :pb, placeholder: "Facecast", class: 'text'

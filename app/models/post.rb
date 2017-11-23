@@ -3,7 +3,6 @@ class Post < ApplicationRecord
   include Orderable
   include PgSearch
   include Presentable
-  include Taggable
   include Viewable
   include Writable
 
@@ -24,9 +23,10 @@ class Post < ApplicationRecord
   has_many :favorites, as: :favorite, dependent: :destroy
 
   has_many :post_tags, inverse_of: :post, dependent: :destroy
-  has_many :labels, through: :post_tags, source: :label
-  has_many :settings, through: :post_tags, source: :setting
-  has_many :content_warnings, through: :post_tags, source: :content_warning, after_add: :reset_warnings
+  has_many :labels, -> { order('post_tags.id ASC') }, through: :post_tags, source: :label
+  has_many :settings, -> { order('post_tags.id ASC') }, through: :post_tags, source: :setting
+  has_many :content_warnings, -> { order('post_tags.id ASC') }, through: :post_tags, source: :content_warning, after_add: :reset_warnings
+  has_many :favorites, as: :favorite, dependent: :destroy
 
   has_many :index_posts, inverse_of: :post, dependent: :destroy
   has_many :indexes, inverse_of: :posts, through: :index_posts
@@ -41,8 +41,6 @@ class Post < ApplicationRecord
   before_create :build_initial_flat_post
   before_validation :set_last_user, on: :create
   after_commit :notify_followers, on: :create
-
-  acts_as_tag :label, :content_warning, :setting
 
   NON_EDITED_ATTRS = %w(id created_at updated_at edited_at tagged_at last_user_id last_reply_id section_order)
   audited except: NON_EDITED_ATTRS
