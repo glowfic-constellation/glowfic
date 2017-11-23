@@ -12,6 +12,7 @@ class RepliesController < WritableController
     use_javascript('posts/search')
 
     @post = Post.find_by_id(params[:post_id]) if params[:post_id].present?
+    @icon = Icon.find_by_id(params[:icon_id]) if params[:icon_id].present?
     if @post.try(:visible_to?, current_user)
       @users = @post.authors
       char_ids = @post.replies.pluck('distinct character_id') + [@post.character_id]

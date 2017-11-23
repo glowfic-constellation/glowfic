@@ -65,11 +65,10 @@
 
     img { vertical-align: middle; }
   }
-
-  .preview-icon {
-    max-height: 27px;
-    max-width: 27px;
-    margin: 0;
-  }
+}
+.icon.preview-icon, #icon-table .preview-icon {
+  max-height: 27px;
+  max-width: 27px;
+  margin: 0;
 }
 .loading-icon { width: 16px; height: 16px; }
