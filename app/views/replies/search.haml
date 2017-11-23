@@ -44,8 +44,8 @@
               %tr
                 %td= label_tag :icon_id, 'Icon'
                 %td
-                  = icon_tag @icon, class: 'preview-icon'
-                  = @icon.keyword
+                  = icon_tag @icon, class: 'preview-icon search-icon-preview'
+                  %span.search-icon-keyword= @icon.keyword
             %tr
               %td.centered{colspan: 2}= submit_tag "Search", class: 'button'
       %td.vtop
