@@ -5,7 +5,7 @@ module Permissible
   MOD_PERMS = [
     :edit_posts,
     :edit_replies,
-    # :edit_characters,
+    :edit_characters,
     # :edit_tags,
     # :delete_tags,
     # :edit_continuities

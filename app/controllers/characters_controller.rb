@@ -3,7 +3,7 @@ class CharactersController < ApplicationController
   before_action :login_required, except: [:index, :show, :facecasts, :search]
   before_action :find_character, only: [:show, :edit, :update, :duplicate, :destroy, :icon, :replace, :do_replace]
   before_action :find_group, only: :index
-  before_action :require_own_character, only: [:edit, :update, :duplicate, :destroy, :icon, :replace, :do_replace]
+  before_action :require_own_character, only: [:edit, :update, :duplicate, :icon, :replace, :do_replace]
   before_action :build_editor, only: [:new, :edit]
 
   def index
@@ -24,13 +24,13 @@ class CharactersController < ApplicationController
 
   def new
     @page_title = 'New Character'
-    @character = Character.new(template_id: params[:template_id])
+    @character = Character.new(template_id: params[:template_id], user: current_user)
     @character.build_template(user: current_user) unless @character.template
   end
 
   def create
-    @character = Character.new(character_params)
-    @character.user = current_user
+    @character = Character.new(user: current_user)
+    @character.assign_attributes(character_params)
     @character.build_new_tags_with(current_user)
     build_template
 
@@ -61,6 +61,15 @@ class CharactersController < ApplicationController
     @character.assign_attributes(character_params)
     @character.build_new_tags_with(current_user)
     build_template
+
+    # TODO once assign_attributes doesn't save
+    # @character.audit_comment = nil if @character.changes.empty?
+
+    if current_user.id != @character.user_id && params.fetch(:character, {})[:audit_comment].blank?
+      flash[:error] = "You must provide a reason for your moderator edit."
+      build_editor
+      render action: :edit and return
+    end
 
     if @character.save
       flash[:success] = "Character saved successfully."
@@ -94,6 +103,11 @@ class CharactersController < ApplicationController
   end
 
   def destroy
+    unless @character.deletable_by?(current_user)
+      flash[:error] = "You do not have permission to edit that character."
+      redirect_to characters_path and return
+    end
+
     @character.destroy
     flash[:success] = "Character deleted successfully."
     redirect_to characters_path
@@ -296,16 +310,20 @@ class CharactersController < ApplicationController
 
   def build_editor
     faked = Struct.new(:name, :id)
-    @templates = current_user.templates.order('name asc')
+    user = @character.try(:user) || current_user
+    @templates = user.templates.order('name asc')
     new_group = faked.new('— Create New Group —', 0)
-    @groups = current_user.character_groups.order('name asc') + [new_group]
+    @groups = user.character_groups.order('name asc') + [new_group]
     use_javascript('characters/editor')
     build_tags
     gon.character_id = @character.try(:id) || ''
-    @character.build_template(user: current_user) if @character && @character.template.nil?
-    gon.user_id = current_user.id
+    if @character && @character.template.nil? && @character.user == current_user
+      @character.build_template(user: user)
+    end
+    gon.user_id = user.id
     @aliases = @character.aliases.order('name asc') if @character
-    gon.gallery_groups = @gallery_groups.map {|group| group.as_json(include: [:gallery_ids], user_id: current_user.id) }
+    gon.mod_editing = (user != current_user)
+    gon.gallery_groups = @gallery_groups.map {|group| group.as_json(include: [:gallery_ids], user_id: user.id) }
   end
 
   def build_tags
@@ -318,23 +336,28 @@ class CharactersController < ApplicationController
 
   def build_template
     return unless params[:new_template].present?
+    return unless @character.user == current_user
     @character.build_template unless @character.template
     @character.template.user = current_user
   end
 
   def character_params
-    params.fetch(:character, {}).permit(
-      :default_icon_id,
+    permitted = [
       :name,
       :template_name,
       :screenname,
       :template_id,
       :pb,
       :description,
+      :audit_comment,
       setting_ids: [],
       ungrouped_gallery_ids: [],
-      gallery_group_ids: [],
-      template_attributes: [:name, :id]
-    )
+      gallery_group_ids: []
+    ]
+    if @character.user == current_user
+      permitted.last[:template_attributes] = [:name, :id]
+      permitted.insert(0, :default_icon_id)
+    end
+    params.fetch(:character, {}).permit(permitted)
   end
 end

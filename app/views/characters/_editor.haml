@@ -15,19 +15,21 @@
   %th.sub.vtop Template
   %td{class: klass}
     = f.collection_select :template_id, @templates, :id, :name, {include_blank: '— Choose Template —'}, {class: 'text chosen-select', disabled: params[:new_template].present?}
-    %br
-    = check_box_tag :new_template, '1', params[:new_template].present?
-    = label_tag :new_template, 'Create New Template'
-%tr#create_template{class: ('hidden' unless params[:new_template])}
-  %th.sub &#8627; Name
-  = f.fields_for :template do |ff|
-    %td{class: klass}= ff.text_field :name, placeholder: "Template Name", class: 'text'
-- if current_user.galleries.present?
+    - if @character.user == current_user
+      %br
+      = check_box_tag :new_template, '1', params[:new_template].present?
+      = label_tag :new_template, 'Create New Template'
+- if @character.user == current_user
+  %tr#create_template{class: ('hidden' unless params[:new_template])}
+    %th.sub &#8627; Name
+    = f.fields_for :template do |ff|
+      %td{class: klass}= ff.text_field :name, placeholder: "Template Name", class: 'text'
+- if @character.user.galleries.present?
   %tr
     %th.sub Galleries
     %td{class: cycle('even', 'odd')}
       = f.collection_select(:ungrouped_gallery_ids,
-      current_user.galleries.order('name asc'),
+      @character.user.galleries.order('name asc'),
       :id, :name, {selected: @character.ungrouped_gallery_ids}, {multiple: true})
   %tr
     %th.sub Gallery Groups
@@ -39,6 +41,10 @@
 %tr
   %th.sub.vtop Description
   %td{class: cycle('even', 'odd')}= f.text_area :description, placeholder: 'Description', class: 'text', cols: 35
+- if current_user.id != @character.user_id
+  %tr
+    %th.sub.vtop Moderator Note
+    %td{class: cycle('even', 'odd')}= f.text_area :audit_comment, placeholder: 'Explain reason for moderation here', class: 'text', cols: 35
 %tr
   %th.form-table-ender{colspan: 2}= submit_tag "Save", class: 'button'
 
@@ -48,7 +54,7 @@
   Pick default icon (optional):
   %br
   .character-galleries-simple
-    - galleries = @character.galleries.present? ? @character.galleries.ordered : [Struct.new(:id, :name, :icons).new(0, 'Galleryless', current_user.galleryless_icons || [])]
+    - galleries = @character.galleries.present? ? @character.galleries.ordered : [Struct.new(:id, :name, :icons).new(0, 'Galleryless', @character.user.galleryless_icons || [])]
     - if galleries.present?
       - galleries.each do |gallery|
         %div{id: "gallery#{gallery.id}", :'data-id' => gallery.id }

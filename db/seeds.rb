@@ -9,7 +9,7 @@ marri = User.create(username: 'Marri', password: 'nikari', email: "dummy1@exampl
 alicorn = User.create(username: 'Alicorn', password: 'alicorn', email: "dummy2@example.com")
 kappa = User.create(username: 'Kappa', password: 'pythbox', email: "dummy3@example.com")
 aestrix = User.create(username: 'Aestrix', password: 'aestrix', email: "dummy4@example.com")
-throne = User.create(username: 'Throne3d', password: 'throne3d', email: "dummy5@example.com")
+throne = User.create(username: 'Throne3d', password: 'throne3d', email: "dummy5@example.com", role_id: 2)
 
 puts "Creating avatars..."
 Icon.create!([
