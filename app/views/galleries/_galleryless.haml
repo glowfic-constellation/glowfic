@@ -3,14 +3,14 @@
     = link_to 'Galleryless icons', user_gallery_path(id: 0, user_id: @user.id), class: 'gallery-title'
     - if @user.id == current_user.try(:id)
       = link_to add_gallery_path(id: 0), class: 'gallery-add' do
-        .link-box.green
+        .link-box.action-new
           + Add Icons
     .gallery-box.float-right.gallery-minmax{id: 0} -
 - if @user.id == current_user.try(:id)
   %tr.gallery-subheader
     %th.sub Unsorted icons without a gallery will appear here. They can still be individually assigned to a character with no galleries.
 %tr.gallery-icons
-  %td.green.gallery-title
+  %td.icons-box.gallery-title
     .gallery{id: "gallery0"}
       = form_tag delete_multiple_icons_path, method: :delete do
         - icons = @user.galleryless_icons

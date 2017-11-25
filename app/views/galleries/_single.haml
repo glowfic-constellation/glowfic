@@ -5,13 +5,13 @@
     = link_to gallery.name, gallery_path(gallery), class: 'gallery-title'
     - if gallery.user_id == current_user.try(:id) and not defined? skip_forms
       = link_to add_gallery_path(gallery), class: 'gallery-add' do
-        .link-box.green + Add Icons
+        .link-box.action-new + Add Icons
       = link_to edit_gallery_path(gallery), class: 'gallery-edit' do
-        .link-box.blue
+        .link-box.action-edit
           = image_tag "icons/pencil.png"
           Edit Gallery
       = link_to gallery_path(gallery), method: :delete, data: { confirm: 'Are you sure you want to delete this gallery? (This will not delete the icons.)' }, class: 'gallery-delete' do
-        .link-box.red x Delete Gallery
+        .link-box.action-delete x Delete Gallery
     - unless local_assigns[:hide_minmax]
       .gallery-box.float-right.gallery-minmax{data: {id: gallery.id}} -
     - if local_assigns[:character_gallery] && (gallery.user_id == current_user.try(:id) || current_user.try(:admin?))
@@ -29,7 +29,7 @@
             %span.tag-item
               = group.name
 %tr.gallery-icons
-  %td.green
+  %td.icons-box
     .gallery{id: "gallery#{gallery.id.to_s}"}
       = form_tag delete_multiple_icons_path, method: :delete do
         - gallery.icons.pluck(:id, :keyword, :url).each do |icon_id, keyword, url|

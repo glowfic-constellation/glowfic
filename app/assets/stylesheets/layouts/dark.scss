@@ -1,7 +1,8 @@
 @import 'variables';
 html, body, #content { background-color: #212121; color: #A2A2A2; }
 .selector-popup, .single-description { background-color: #565656; }
-#content .dark { background-color: #333333; }
+.search-box { background-color: #333333; }
+.spacer-alt { background-color: #333333; }
 table { border-color: #555; }
 .sub {
   background-color: #383838;
@@ -36,7 +37,7 @@ $ODD_COLOR: #474747;
   }
 }
 
-.green { background-color: #444D3F; }
+#reply-icon-selector, .replace-icon, .icons-box, .icon-credit { background-color: #444D3F; }
 .subber, .flash.breadcrumbs, .form-table-ender {
   background-color: #464646;
   color: #DDDDDD;

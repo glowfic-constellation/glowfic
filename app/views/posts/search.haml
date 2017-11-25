@@ -12,7 +12,7 @@
           = render partial: 'paginator', locals: {paginated: @search_results}
   %tbody
     %tr
-      %td.width-300.padding-10.vtop.dark#search_form
+      %td.search-box
         = form_tag search_posts_path, :method => :get do
           %table.search-form
             %tr

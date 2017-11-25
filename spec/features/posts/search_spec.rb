@@ -7,7 +7,7 @@ RSpec.feature "Searching posts", :type => :feature do
     visit search_posts_path
 
     def perform_search
-      within('#search_form') do
+      within('.search-form') do
         fill_in 'Subject', with: 'post'
       end
       click_button 'Search'

@@ -24,10 +24,10 @@
   %tr
     %th.centered.icon-keyword= @icon.keyword
   %tr
-    %td.green.centered.icon-icon= icon_tag @icon
+    %td.icons-box.centered.icon-icon= icon_tag @icon
   - if @icon.credit
     %tr
-      %td.green.centered
+      %td.icon-credit
         .details= @icon.credit
   %tr
     %td.centered{class: cycle('even', 'odd')}

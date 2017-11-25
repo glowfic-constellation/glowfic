@@ -20,7 +20,7 @@
           %h4 Choose Alias
           = select_tag :character_alias, options_from_collection_for_select(item.character.try(:aliases).to_a, :id, :name, item.character_alias_id), prompt: item.character.try(:name), class: 'chosen-select'
       .post-screenname{class: ('hidden' unless item.character.try(:screenname))}= item.character.try(:screenname)
-      #post-author-spacer.dark.spacer{class: ('hidden' if item.character)}
+      #post-author-spacer.spacer-alt{class: ('hidden' if item.character)}
       .post-author
         = item.user.username
         - if current_user.characters.present?
@@ -41,7 +41,7 @@
           - if recent_characters.present?
             - recent_characters.each do |character|
               = character_icon_tag character
-  #reply-icon-selector.green
+  #reply-icon-selector
     - if character_galleries.present?
       - character_galleries.each do |gallery|
         .gallery-group

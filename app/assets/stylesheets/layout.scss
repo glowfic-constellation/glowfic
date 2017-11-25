@@ -302,6 +302,7 @@ td, .table-list li { font-size: 14px; }
 .user-right-content-box { width: calc(100% - 200px); }
 .icon-right-content-box { width: calc(100% - 150px); }
 .character-right-content-box { width: calc(100% - 175px); }
+#user-avatar { text-align: center; }
 
 /* Not yet deserving of its own CSS file */
 #stats ul { margin-top: 0; margin-bottom: 0; padding-left: 15px; }
@@ -328,6 +329,14 @@ td, .table-list li { font-size: 14px; }
 }
 #homepage-content {
   padding: 20px;
+}
+
+/* Search Input */
+.search-box {
+  width: 300px;
+  padding: 10px;
+  vertical-align: top;
+  background-color: #8B8687;
 }
 .search-icon-preview { vertical-align: middle; }
 .search-icon-keyword { padding-left: 5px; }

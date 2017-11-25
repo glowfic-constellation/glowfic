@@ -11,7 +11,7 @@
         - if @user.id == current_user.try(:id)
           Your Galleries
           = link_to new_gallery_path, class: 'gallery-new' do
-            .link-box.green + New Gallery
+            .link-box.action-new + New Gallery
         - else
           = @user.username + "'s Galleries"
   %tbody

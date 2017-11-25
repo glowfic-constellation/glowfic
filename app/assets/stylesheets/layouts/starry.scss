@@ -51,10 +51,10 @@ $ODD_COLOR: #D8D8D8;
   }
 }
 
-.post-navheader .view-button, .view-button.selected, .view-button, .link-box.green, .link-box.blue, .link-box.red { background-color: #463C65; }
+.post-navheader .view-button, .view-button.selected, .view-button, .link-box.action-new, .link-box.action-edit, .link-box.action-favorite, .link-box.action-delete, .link-box.action-dismiss { background-color: #463C65; }
 .flash.breadcrumbs .link-box, .subber .link-box { background-color: #66608B; }
-.green { background-color: #D8D8D8; }
-#post-editor .green { background-color: #484357; color: #DADADA; }
+.replace-icon, .icons-box, .icon-credit { background-color: #D8D8D8; }
+#reply-icon-selector { background-color: #484357; color: #DADADA; }
 .post-subheader { background-color: #484357; color: #F3F3F3; }
 
 .subber, .flash.breadcrumbs {
@@ -70,7 +70,8 @@ $ODD_COLOR: #D8D8D8;
 .post-screenname, .post-screenname a, .post-screenname a:visited { color: #9C9AA4; }
 .post-character, .post-character a, .post-character a:visited, .post-author, .post-author a, .post-author a:visited { color: #F3F3F3; }
 
-#content .dark { background-color: #182152; color: #FEFEFE; }
+.search-box { background-color: #182152; color: #FEFEFE; }
+.spacer-alt { background-color: #182152; color: #FEFEFE; }
 
 tr.gallery-tags .tag-item { background-color: #2C2C5D; color: #F7F7F7; }
 .tag-item { color: #444158; }

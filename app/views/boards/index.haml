@@ -13,7 +13,7 @@
         = @page_title
         - if logged_in? && (@user.nil? || @user.id == current_user.id)
           = link_to new_board_path do
-            .link-box.green + New Continuity
+            .link-box.action-new + New Continuity
     %tr
       %th.sub Name
       %th.sub Authors

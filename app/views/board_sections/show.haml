@@ -9,13 +9,13 @@
   = @board_section.name
   - if @board_section.board.open_to?(current_user)
     = link_to new_post_path params: {board_id: @board_section.board.id, section_id: @board_section.id} do
-      .link-box.green + New Post
+      .link-box.action-new + New Post
   - if @board_section.board.editable_by?(current_user)
     = link_to edit_board_section_path(@board_section) do
-      .link-box.blue
+      .link-box.action-edit
         = image_tag "icons/pencil.png"
         Edit
     = link_to board_section_path(@board_section), :method => :delete, data: { confirm: 'Are you sure you want to delete this section?' } do
-      .link-box.red x Delete
+      .link-box.action-delete x Delete
 
 = render partial: 'posts/list', locals: {posts: @posts, hide_continuity: true}

@@ -20,7 +20,7 @@
     %th.centered
       Aliases and Pseudonyms
       = link_to new_character_alias_path(@character) do
-        .link-box.green + New Alias
+        .link-box.action-new + New Alias
   - @aliases.each do |calias|
     %tr
       %td.padding-5{class: cycle('even', 'odd')}

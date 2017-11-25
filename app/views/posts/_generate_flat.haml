@@ -12,7 +12,7 @@
               - if reply.screenname
                 .post-screenname= breakable_text(reply.screenname)
             - else
-              .dark.spacer
+              .spacer-alt
             .post-author= reply.username
         .post-edit-box
           = link_to Rails.application.routes.url_helpers.reply_path(reply, anchor: "reply-#{reply.id}"), rel: 'alternate'.freeze do

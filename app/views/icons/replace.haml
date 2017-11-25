@@ -13,11 +13,11 @@
       %th.sub Current
       %th.sub New
     %tr
-      %td.green.width-150.centered.vtop
+      %td.replace-icon.vtop
         = icon_tag @icon
         %br
         = @icon.keyword
-      %td.green.width-150.centered
+      %td.replace-icon
         - if @alts.first
           = icon_tag @alts.first, id: 'new_icon'
         - else
