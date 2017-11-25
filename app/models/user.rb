@@ -22,8 +22,8 @@ class User < ApplicationRecord
   has_many :replies
   has_many :indexes
   has_one :report_view
-  belongs_to :avatar, :class_name => Icon
-  belongs_to :active_character, :class_name => Character
+  belongs_to :avatar, :class_name => Icon, optional: true
+  belongs_to :active_character, :class_name => Character, optional: true
 
   validates_presence_of :username, :crypted
   validates_presence_of :email, on: :create

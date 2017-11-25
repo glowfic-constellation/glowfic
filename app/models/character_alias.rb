@@ -1,6 +1,6 @@
 class CharacterAlias < ApplicationRecord
-  belongs_to :character
-  validates_presence_of :character, :name
+  belongs_to :character, optional: false
+  validates_presence_of :name
   after_destroy :clear_alias_ids
 
   def as_json(_options={})

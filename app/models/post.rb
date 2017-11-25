@@ -12,20 +12,22 @@ class Post < ApplicationRecord
   STATUS_HIATUS = 2
   STATUS_ABANDONED = 3
 
-  belongs_to :board, inverse_of: :posts
-  belongs_to :section, class_name: BoardSection, inverse_of: :posts
-  belongs_to :last_user, class_name: User
-  belongs_to :last_reply, class_name: Reply
+  belongs_to :board, inverse_of: :posts, optional: false
+  belongs_to :section, class_name: BoardSection, inverse_of: :posts, optional: true
+  belongs_to :last_user, class_name: User, optional: false
+  belongs_to :last_reply, class_name: Reply, optional: true
   has_one :flat_post
   has_many :replies, inverse_of: :post, dependent: :destroy
   has_many :post_viewers, inverse_of: :post, dependent: :destroy
   has_many :viewers, through: :post_viewers, source: :user
   has_many :reply_drafts, dependent: :destroy
+  has_many :favorites, as: :favorite, dependent: :destroy
+
   has_many :post_tags, inverse_of: :post, dependent: :destroy
   has_many :labels, through: :post_tags, source: :label
   has_many :settings, through: :post_tags, source: :setting
   has_many :content_warnings, through: :post_tags, source: :content_warning, after_add: :reset_warnings
-  has_many :favorites, as: :favorite, dependent: :destroy
+
   has_many :index_posts, inverse_of: :post, dependent: :destroy
   has_many :indexes, inverse_of: :posts, through: :index_posts
   has_many :index_sections, inverse_of: :posts, through: :index_posts
@@ -33,11 +35,11 @@ class Post < ApplicationRecord
   attr_accessor :is_import
   attr_writer :skip_edited
 
-  validates_presence_of :board, :subject
+  validates_presence_of :subject
   validate :valid_board, :valid_board_section
 
   before_create :build_initial_flat_post
-  before_create :set_last_user
+  before_validation :set_last_user, on: :create
   after_commit :notify_followers, on: :create
 
   acts_as_tag :label, :content_warning, :setting

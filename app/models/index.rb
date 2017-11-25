@@ -4,9 +4,9 @@ class Index < ApplicationRecord
   has_many :index_posts, inverse_of: :index, dependent: :destroy
   has_many :posts, through: :index_posts
   has_many :index_sections, inverse_of: :index, dependent: :destroy
-  belongs_to :user, inverse_of: :indexes
+  belongs_to :user, inverse_of: :indexes, optional: false
 
-  validates_presence_of :user, :name
+  validates_presence_of :name
 
   def editable_by?(user)
     return false unless user

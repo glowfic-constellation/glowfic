@@ -2,10 +2,10 @@ class Character < ApplicationRecord
   include Presentable
   include Taggable
 
-  belongs_to :user
-  belongs_to :template, inverse_of: :characters
-  belongs_to :default_icon, class_name: Icon
-  belongs_to :character_group
+  belongs_to :user, optional: false
+  belongs_to :template, inverse_of: :characters, optional: true
+  belongs_to :default_icon, class_name: Icon, optional: true
+  belongs_to :character_group, optional: true
   has_many :replies
   has_many :posts
   has_many :aliases, class_name: CharacterAlias, dependent: :destroy
@@ -20,7 +20,7 @@ class Character < ApplicationRecord
   has_many :settings, through: :character_tags, source: :setting
   has_many :gallery_groups, through: :character_tags, source: :gallery_group, dependent: :destroy
 
-  validates_presence_of :name, :user
+  validates_presence_of :name
   validate :valid_group, :valid_galleries, :valid_default_icon
 
   attr_accessor :group_name

@@ -3,13 +3,14 @@ class Icon < ApplicationRecord
 
   S3_DOMAIN = '.s3.amazonaws.com'
 
-  belongs_to :user
+  belongs_to :user, optional: false
   has_many :posts
   has_many :replies
   has_many :reply_drafts
-  has_and_belongs_to_many :galleries
+  has_many :galleries_icons, dependent: :destroy, inverse_of: :icon
+  has_many :galleries, through: :galleries_icons
 
-  validates_presence_of :url, :user, :keyword
+  validates_presence_of :url, :keyword
   validate :url_is_url
   validate :uploaded_url_not_in_use
   nilify_blanks types: [:string, :text, :citext] # nilify_blanks does not touch citext by default

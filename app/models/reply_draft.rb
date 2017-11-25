@@ -1,8 +1,7 @@
 class ReplyDraft < ApplicationRecord
   include Writable
 
-  belongs_to :post, inverse_of: :reply_drafts
-  validates_presence_of :post
+  belongs_to :post, inverse_of: :reply_drafts, optional: false
 
   def self.draft_for(post_id, user_id)
     self.where(post_id: post_id, user_id: user_id).first

@@ -1,8 +1,8 @@
 class Gallery < ApplicationRecord
   include Taggable
-  belongs_to :user
+  belongs_to :user, optional: false
 
-  has_many :galleries_icons, dependent: :destroy
+  has_many :galleries_icons, dependent: :destroy, inverse_of: :gallery
   accepts_nested_attributes_for :galleries_icons, allow_destroy: true
   has_many :icons, -> { order('LOWER(keyword)') }, through: :galleries_icons
 
@@ -12,7 +12,7 @@ class Gallery < ApplicationRecord
   has_many :gallery_tags, inverse_of: :gallery, dependent: :destroy
   has_many :gallery_groups, through: :gallery_tags, source: :gallery_group, dependent: :destroy
 
-  validates_presence_of :user, :name
+  validates_presence_of :name
 
   acts_as_tag :gallery_group
 

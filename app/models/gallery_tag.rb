@@ -1,7 +1,7 @@
 class GalleryTag < ApplicationRecord
-  belongs_to :gallery, inverse_of: :gallery_tags
-  belongs_to :tag
-  belongs_to :gallery_group, foreign_key: :tag_id
+  belongs_to :gallery, inverse_of: :gallery_tags, optional: false
+  belongs_to :tag, inverse_of: :gallery_tags, optional: true # TODO: This is required, fix bug around validation if it is set as such
+  belongs_to :gallery_group, foreign_key: :tag_id, optional: false # This is currently required but may not continue to be
 
   after_create :add_gallery_to_characters
   after_destroy :remove_gallery_from_characters

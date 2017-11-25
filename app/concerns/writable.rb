@@ -2,12 +2,11 @@ module Writable
   extend ActiveSupport::Concern
 
   included do
-    belongs_to :character
-    belongs_to :icon
-    belongs_to :user
-    belongs_to :character_alias
+    belongs_to :character, optional: true
+    belongs_to :icon, optional: true
+    belongs_to :user, optional: false
+    belongs_to :character_alias, optional: true
 
-    validates_presence_of :user
     validate :character_ownership, :icon_ownership
 
     def has_icons?

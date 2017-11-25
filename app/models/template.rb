@@ -1,10 +1,10 @@
 class Template < ApplicationRecord
   include Presentable
 
-  belongs_to :user, inverse_of: :templates
+  belongs_to :user, inverse_of: :templates, optional: false
   has_many :characters, -> { order('LOWER(name) ASC') }, inverse_of: :template
 
-  validates_presence_of :name, :user
+  validates_presence_of :name
 
   after_destroy :clear_character_templates
 
