@@ -31,8 +31,8 @@ class CharactersController < ApplicationController
   end
 
   def create
-    @character = Character.new(character_params)
-    @character.user = current_user
+    @character = Character.new(user: current_user)
+    @character.assign_attributes(character_params)
     @character.settings = process_tags(Setting, :character, :setting_ids)
     @character.gallery_groups = process_tags(GalleryGroup, :character, :gallery_group_ids)
     build_template
