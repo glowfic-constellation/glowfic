@@ -58,7 +58,7 @@ class TagsController < ApplicationController
       flash.now[:error][:message] = "Tag could not be saved because of the following problems:"
       flash.now[:error][:array] = @tag.errors.full_messages
       @page_title = "Edit Tag: #{@tag.name}"
-      build_editor(false)
+      build_editor
       render action: :edit and return
     end
   end
@@ -94,15 +94,9 @@ class TagsController < ApplicationController
     end
   end
 
-  def build_editor(with_tags=true)
-    # n.b. this method is unsafe for unpersisted tags (in case we ever add tags#new)
+  def build_editor
     return unless @tag.is_a?(Setting)
     use_javascript('tags/edit')
-    build_tags if with_tags
-  end
-
-  def build_tags
-    @parent_settings = @tag.parent_settings.order('tag_tags.id asc') || []
   end
 
   def tag_params

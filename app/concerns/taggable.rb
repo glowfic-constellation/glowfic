@@ -6,7 +6,7 @@ module Taggable
     return [] unless ids.present?
 
     # store formatted for creation-order sorting later
-    match_ids = ids.map { |id| id.upcase[1..-1].strip if id.start_with?('_') }
+    match_ids = ids.map { |id| id.start_with?('_') ? id.upcase[1..-1].strip : id }
 
     # separate existing tags from new tags which start with _
     new_names = ids.select { |id| id.start_with?('_') }

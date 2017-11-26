@@ -14,13 +14,13 @@
       :id, :username, {selected: post.viewer_ids}, {multiple: true})
     %br
     = f.label :setting_ids, 'Setting:'
-    = tag_select(f, :settings)
+    = tag_select(post, f, :settings)
     %br
     = f.label :content_warning_ids, 'Content Warnings:'
-    = tag_select(f, :content_warnings)
+    = tag_select(post, f, :content_warnings)
     %br
     = f.label :label_ids, 'Labels:'
-    = tag_select(f, :labels)
+    = tag_select(post, f, :labels)
     %hr
     - unless post.id.present? && !post.editable_by?(current_user)
       .view-button#rtf{class: ('selected' if current_user.default_editor == 'rtf')} Rich Text

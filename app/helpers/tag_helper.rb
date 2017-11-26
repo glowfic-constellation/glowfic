@@ -6,9 +6,9 @@ module TagHelper
     tag_path(tag, url_params)
   end
 
-  def tag_select(form, assoc, opts={})
+  def tag_select(obj, form, assoc, opts={})
     attr_name = assoc.to_s.singularize + "_ids"
-    collection = form.object.send(assoc)
+    collection = obj.send(assoc) # form.object != obj
     ids = collection.map(&:id_for_select)
 
     form.select(
