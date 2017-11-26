@@ -1000,6 +1000,16 @@ RSpec.describe PostsController do
       expect(flash[:error]).to eq('You must provide a reason for your moderator edit.')
     end
 
+    it 'does not require note from coauthors' do
+      post = create(:post, privacy: Concealable::ACCESS_LIST)
+      user = create(:user)
+      post.viewers << user
+      create(:reply, user: user, post: post)
+      login_as(user)
+      put :update, params: { id: post.id }
+      expect(flash[:error]).not_to eq('You must provide a reason for your moderator edit.')
+    end
+
     it "stores note from moderators" do
       Post.auditing_enabled = true
       post = create(:post, privacy: Concealable::PRIVATE)
