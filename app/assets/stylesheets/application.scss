@@ -10,8 +10,6 @@
  * defined in the other CSS/SCSS files in this directory. It is generally better to create a new
  * file per style scope.
  *
- @import 'bootstrap-sockets';
- @import 'bootstrap';
  *= require normalize
  *= require jquery-ui/core
  *= require jquery-ui/theme
@@ -20,6 +18,7 @@
  *= require jquery-ui/button
  *= require jquery-ui/dialog
  *= require select2
+ *= require bootstrap-ui
  *= require layout
  *= require global
  *= require characters

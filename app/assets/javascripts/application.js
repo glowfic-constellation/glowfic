@@ -20,7 +20,8 @@
 //= require jquery-ui/widgets/button
 //= require jquery-ui/widgets/dialog
 //= require jquery-fileupload/basic
-//= require bootstrap
+//= require popper
+//= require bootstrap.min
 //= require tinymce-jquery
 //= require select2
 //= require global
