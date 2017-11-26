@@ -1,5 +1,4 @@
 class Gallery < ApplicationRecord
-  include Taggable
   belongs_to :user, optional: false
 
   has_many :galleries_icons, dependent: :destroy, inverse_of: :gallery
@@ -10,11 +9,9 @@ class Gallery < ApplicationRecord
   has_many :characters, through: :characters_galleries
 
   has_many :gallery_tags, inverse_of: :gallery, dependent: :destroy
-  has_many :gallery_groups, through: :gallery_tags, source: :gallery_group, dependent: :destroy
+  has_many :gallery_groups, -> { order('gallery_tags.id ASC') }, through: :gallery_tags, source: :gallery_group, dependent: :destroy
 
   validates_presence_of :name
-
-  acts_as_tag :gallery_group
 
   scope :ordered, -> { order('characters_galleries.section_order ASC') }
   scope :with_icon_count, -> {

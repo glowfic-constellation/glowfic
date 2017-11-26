@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 class CharactersController < ApplicationController
+  include Taggable
+
   before_action :login_required, except: [:index, :show, :facecasts, :search]
   before_action :find_character, only: [:show, :edit, :update, :duplicate, :destroy, :icon, :replace, :do_replace]
   before_action :find_group, only: :index
@@ -31,7 +33,8 @@ class CharactersController < ApplicationController
   def create
     @character = Character.new(user: current_user)
     @character.assign_attributes(character_params)
-    @character.build_new_tags_with(current_user)
+    @character.settings = process_tags(Setting, :character, :setting_ids)
+    @character.gallery_groups = process_tags(GalleryGroup, :character, :gallery_group_ids)
     build_template
 
     if @character.save
@@ -59,29 +62,34 @@ class CharactersController < ApplicationController
 
   def update
     @character.assign_attributes(character_params)
-    @character.build_new_tags_with(current_user)
     build_template
 
-    # TODO once assign_attributes doesn't save
-    # @character.audit_comment = nil if @character.changes.empty?
-
+    # TODO once assign_attributes doesn't save, use @character.audit_comment and uncomment clearing
     if current_user.id != @character.user_id && params.fetch(:character, {})[:audit_comment].blank?
       flash[:error] = "You must provide a reason for your moderator edit."
       build_editor
       render action: :edit and return
     end
+    # @character.audit_comment = nil if @character.changes.empty?
 
-    if @character.save
+    begin
+      Character.transaction do
+        @character.settings = process_tags(Setting, :character, :setting_ids)
+        @character.gallery_groups = process_tags(GalleryGroup, :character, :gallery_group_ids)
+        @character.save!
+      end
+
       flash[:success] = "Character saved successfully."
-      redirect_to character_path(@character) and return
-    end
+      redirect_to character_path(@character)
 
-    @page_title = "Edit Character: " + @character.name
-    flash.now[:error] = {}
-    flash.now[:error][:message] = "Your character could not be saved."
-    flash.now[:error][:array] = @character.errors.full_messages
-    build_editor
-    render :action => :edit
+    rescue ActiveRecord::RecordInvalid
+      @page_title = "Edit Character: " + @character.name
+      flash.now[:error] = {}
+      flash.now[:error][:message] = "Your character could not be saved."
+      flash.now[:error][:array] = @character.errors.full_messages
+      build_editor
+      render :action => :edit
+    end
   end
 
   def duplicate
@@ -315,7 +323,6 @@ class CharactersController < ApplicationController
     new_group = faked.new('— Create New Group —', 0)
     @groups = user.character_groups.order('name asc') + [new_group]
     use_javascript('characters/editor')
-    build_tags
     gon.character_id = @character.try(:id) || ''
     if @character && @character.template.nil? && @character.user == current_user
       @character.build_template(user: user)
@@ -323,15 +330,8 @@ class CharactersController < ApplicationController
     gon.user_id = user.id
     @aliases = @character.aliases.order('name asc') if @character
     gon.mod_editing = (user != current_user)
-    gon.gallery_groups = @gallery_groups.map {|group| group.as_json(include: [:gallery_ids], user_id: user.id) }
-  end
-
-  def build_tags
-    @gallery_groups = @character.gallery_groups.order('character_tags.id asc') if @character.try(:persisted?)
-    @gallery_groups ||= @character.try(:gallery_groups) || []
-
-    @settings = @character.settings.order('character_tags.id asc') if @character.try(:persisted?)
-    @settings ||= @character.try(:settings) || []
+    groups = @character.try(:gallery_groups) || []
+    gon.gallery_groups = groups.map {|group| group.as_json(include: [:gallery_ids], user_id: user.id) }
   end
 
   def build_template
@@ -350,9 +350,7 @@ class CharactersController < ApplicationController
       :pb,
       :description,
       :audit_comment,
-      setting_ids: [],
       ungrouped_gallery_ids: [],
-      gallery_group_ids: []
     ]
     if @character.user == current_user
       permitted.last[:template_attributes] = [:name, :id]

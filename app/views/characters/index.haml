@@ -39,25 +39,25 @@
   - colspan = (page_view == 'list') ? 6 : 1
   - if character_split == 'template'
     - if @group
-      = render partial: 'group', locals: {characters: @group.characters.includes(:settings), page_view: page_view}
+      = render partial: 'group', locals: {characters: @group.characters, page_view: page_view}
     - elsif @user.character_groups.exists?
       - @user.character_groups.order('id asc').each do |group|
         %tr
           %th.sub{colspan: colspan}
             Group:
             = group.name
-        = render partial: 'group', locals: {characters: group.characters.includes(:settings), page_view: page_view}
+        = render partial: 'group', locals: {characters: group.characters, page_view: page_view}
       - if @user.characters.where(character_group_id: nil).exists?
         %tr
           %th.sub{colspan: colspan} Ungrouped Characters
-        = render partial: 'group', locals: {characters: @user.characters.where(character_group_id: nil).includes(:settings), skip_grouped_templates: true, page_view: page_view}
+        = render partial: 'group', locals: {characters: @user.characters.where(character_group_id: nil), skip_grouped_templates: true, page_view: page_view}
     - elsif @user.characters.exists?
       - @user.templates.order('name asc').each do |template|
-        = render partial: partial_type, locals: {name: template, characters: template.characters.includes(:settings).order('name asc')}
+        = render partial: partial_type, locals: {name: template, characters: template.characters.order('characters.name asc')}
       - if @user.characters.where(template_id: nil).exists?
-        = render partial: partial_type, locals: {name: "No Template", characters: @user.characters.includes(:settings).where(template_id: nil).order('name asc')}
+        = render partial: partial_type, locals: {name: "No Template", characters: @user.characters.where(template_id: nil).order('name asc')}
     - else
       %tr
         %td.centered.padding-5{class: cycle('even', 'odd'), colspan: colspan} — No characters yet —
   - else
-    = render partial: partial_type, locals: {name: nil, characters: @user.characters.includes(:settings, :template).order('name asc'), show_template: true}
+    = render partial: partial_type, locals: {name: nil, characters: @user.characters.includes(:template).order('name asc'), show_template: true}

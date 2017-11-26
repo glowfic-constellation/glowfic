@@ -83,7 +83,6 @@ RSpec.describe GalleriesController do
         expect(flash[:error]).to eq('Your gallery could not be saved.')
         expect(assigns(:gallery).gallery_groups.map(&:id)).to eq([group.id])
         expect(assigns(:gallery).icon_ids).to eq([icon.id])
-        expect(assigns(:gallery_groups)).to match_array([group])
       end
     end
 
@@ -225,7 +224,7 @@ RSpec.describe GalleriesController do
         gallery = create(:gallery, user_id: user_id, gallery_groups: [group])
         get :edit, params: { id: gallery.id }
         expect(response.status).to eq(200)
-        expect(assigns(:gallery_groups)).to match_array([group])
+        expect(assigns(:javascripts)).to include('galleries/editor')
       end
     end
   end
@@ -284,7 +283,6 @@ RSpec.describe GalleriesController do
         expect(response.status).to eq(200)
         expect(response).to render_template(:edit)
         expect(assigns(:gallery).gallery_groups.map(&:id)).to eq([group.id])
-        expect(assigns(:gallery_groups)).to match_array([group])
       end
     end
 

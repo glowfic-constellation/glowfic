@@ -1,5 +1,4 @@
 require "spec_helper"
-require "support/shared_examples_for_taggable"
 
 RSpec.describe Tag do
   describe "#merge_with" do

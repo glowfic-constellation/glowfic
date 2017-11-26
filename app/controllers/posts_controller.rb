@@ -2,6 +2,8 @@
 require 'will_paginate/array'
 
 class PostsController < WritableController
+  include Taggable
+
   SCRAPE_USERS = [1, 2, 3, 8, 19, 24, 31]
   before_action :login_required, except: [:index, :show, :history, :warnings, :search, :stats]
   before_action :find_post, only: [:show, :history, :stats, :warnings, :edit, :update, :destroy]
@@ -89,9 +91,11 @@ class PostsController < WritableController
     import_thread and return if params[:button_import].present?
 
     @post = Post.new(post_params)
+    @post.settings = process_tags(Setting, :post, :setting_ids)
+    @post.content_warnings = process_tags(ContentWarning, :post, :content_warning_ids)
+    @post.labels = process_tags(Label, :post, :label_ids)
     @post.user = current_user
     preview and return if params[:button_preview].present?
-    @post.build_new_tags_with(current_user)
 
     if @post.save
       flash[:success] = "You have successfully posted."
@@ -139,10 +143,19 @@ class PostsController < WritableController
 
     @post.assign_attributes(post_params)
     @post.board ||= Board.find(3)
+    settings = process_tags(Setting, :post, :setting_ids)
+    warnings = process_tags(ContentWarning, :post, :content_warning_ids)
+    labels = process_tags(Label, :post, :label_ids)
 
-    preview and return if params[:button_preview].present?
-
-    @post.build_new_tags_with(current_user)
+    if params[:button_preview].present?
+      @post.association(:settings).target = []
+      @post.association(:content_warnings).target = []
+      @post.association(:labels).target = []
+      settings.each { |s| @post.association(:settings).add_to_target(s) }
+      warnings.each { |w| @post.association(:content_warnings).add_to_target(w) }
+      labels.each { |l| @post.association(:labels).add_to_target(l) }
+      preview and return
+    end
 
     if current_user.id != @post.user_id && @post.audit_comment.blank?
       flash[:error] = "You must provide a reason for your moderator edit."
@@ -151,10 +164,17 @@ class PostsController < WritableController
     end
     @post.audit_comment = nil if @post.changes.empty? # don't save an audit for a note and no changes
 
-    if @post.save
+    begin
+      Post.transaction do
+        @post.settings = settings
+        @post.content_warnings = warnings
+        @post.labels = labels
+        @post.save!
+      end
+
       flash[:success] = "Your post has been updated."
       redirect_to post_path(@post)
-    else
+    rescue ActiveRecord::RecordInvalid
       flash.now[:error] = {}
       flash.now[:error][:array] = @post.errors.full_messages
       flash.now[:error][:message] = "Your post could not be saved because of the following problems:"
@@ -353,22 +373,6 @@ class PostsController < WritableController
     end
   end
 
-  def build_tags
-    if @post.try(:persisted?)
-      @settings = @post.settings.order('post_tags.id asc')
-      @warnings = @post.content_warnings.order('post_tags.id asc')
-      @tags = @post.labels.order('post_tags.id asc')
-    end
-    @settings ||= @post.try(:settings) || []
-    @warnings ||= @post.try(:content_warnings) || []
-    @tags ||= @post.try(:labels) || []
-  end
-
-  def editor_setup
-    build_tags
-    super
-  end
-
   def post_params
     params.fetch(:post, {}).permit(
       :board_id,
@@ -382,9 +386,6 @@ class PostsController < WritableController
       :character_alias_id,
       :audit_comment,
       viewer_ids: [],
-      setting_ids: [],
-      content_warning_ids: [],
-      label_ids: []
     )
   end
 end

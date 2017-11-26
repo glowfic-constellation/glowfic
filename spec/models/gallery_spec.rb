@@ -1,5 +1,4 @@
 require "spec_helper"
-require "support/shared_examples_for_taggable"
 
 RSpec.describe Gallery do
   it "adds icons if it saves successfully" do
@@ -30,11 +29,6 @@ RSpec.describe Gallery do
     gallery.icons << create(:icon, keyword: 'yyy', user: gallery.user)
     gallery.icons << create(:icon, keyword: 'xxx', user: gallery.user)
     expect(gallery.icons.pluck(:keyword)).to eq(['xxx', 'yyy', 'zzz'])
-  end
-
-  # from Taggable concern
-  context "tags" do
-    it_behaves_like 'taggable', 'gallery_group'
   end
 
   describe "#gallery_groups_data" do

@@ -15,8 +15,7 @@
       %td{class: cycle('even', 'odd'), colspan: 2}= f.text_field :name, placeholder: "Gallery Name", class: 'text'
     %tr
       %th.vtop.sub Groups
-      %td{class: cycle('even', 'odd'), colspan: 2}
-        = f.select :gallery_group_ids, options_from_collection_for_select(@gallery_groups, :id_for_select, :name, @gallery.gallery_group_ids || @gallery.gallery_groups.map(&:id)), {}, {multiple: true}
+      %td{class: cycle('even', 'odd'), colspan: 2}= tag_select(@gallery, f, :gallery_groups)
     %tr
       %th.subber{colspan: 3} Edit Icons
     = f.fields_for :galleries_icons, @gallery.galleries_icons.joins(:icon).order('LOWER(keyword)') do |gif|

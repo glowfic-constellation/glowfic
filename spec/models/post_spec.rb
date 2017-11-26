@@ -1,5 +1,4 @@
 require "spec_helper"
-require "support/shared_examples_for_taggable"
 
 RSpec.describe Post do
   it "should have the right timestamps" do
@@ -814,12 +813,5 @@ RSpec.describe Post do
       post.run_callbacks(:commit) # deal with tests running in a transaction
       expect(NotifyFollowersOfNewPostJob).to have_been_enqueued.with(post.id).on_queue('notifier')
     end
-  end
-
-  # from Taggable concern
-  context "tags" do
-    it_behaves_like 'taggable', 'label'
-    it_behaves_like 'taggable', 'setting'
-    it_behaves_like 'taggable', 'content_warning'
   end
 end

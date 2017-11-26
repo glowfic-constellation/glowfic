@@ -260,7 +260,7 @@ RSpec.describe CharactersController do
         expect(controller.gon.user_id).to eq(user.id)
         expect(controller.gon.gallery_groups.map{|g|g[:id]}).to eq([group.id])
         expect(controller.gon.gallery_groups.map{|g|g[:gallery_ids]}).to eq([[gallery.id]])
-        expect(assigns(:gallery_groups)).to match_array([group])
+        expect(assigns(:character).gallery_groups).to match_array([group])
         expect(assigns(:templates).map(&:name)).to match_array(templates.map(&:name))
         expect(assigns(:aliases)).to match_array([calias])
       end
@@ -405,7 +405,7 @@ RSpec.describe CharactersController do
       expect(character.characters_galleries.first).not_to be_added_by_group
 
       login_as(user)
-      put :update, params: { id: character.id, character: {ungrouped_gallery_ids: ['']} }
+      put :update, params: { id: character.id, character: {ungrouped_gallery_ids: [''], gallery_group_ids: [group.id]} }
       expect(flash[:success]).to eq('Character saved successfully.')
       character.reload
       expect(character.gallery_groups).to match_array([group])
@@ -478,14 +478,14 @@ RSpec.describe CharactersController do
         create(:template)
 
         login_as(user)
-        put :update, params: { id: character.id, character: {name: ''} }
+        put :update, params: { id: character.id, character: {name: '', gallery_group_ids: [group.id]} }
 
         expect(response).to render_template(:edit)
         expect(controller.gon.character_id).to eq(character.id)
         expect(controller.gon.user_id).to eq(user.id)
         expect(controller.gon.gallery_groups.map{|g|g[:id]}).to eq([group.id])
         expect(controller.gon.gallery_groups.map{|g|g[:gallery_ids]}).to eq([[gallery.id]])
-        expect(assigns(:gallery_groups)).to match_array([group])
+        expect(assigns(:character).gallery_groups).to match_array([group])
         expect(assigns(:templates).map(&:name)).to match_array(templates.map(&:name))
       end
     end
