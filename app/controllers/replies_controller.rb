@@ -48,8 +48,14 @@ class RepliesController < WritableController
           @search_results = @search_results.where("replies.content LIKE ?", "%#{phrase}%")
         end
       end
-    else
-      @search_results = @search_results.order('replies.id DESC')
+    end
+
+    if params[:sort] == 'created_new'
+      @search_results = @search_results.except(:order).order('replies.created_at DESC')
+    elsif params[:sort] == 'created_old'
+      @search_results = @search_results.except(:order).order('replies.created_at ASC')
+    elsif params[:subj_content].blank?
+      @search_results = @search_results.order('replies.created_at DESC')
     end
 
     if @post
@@ -70,10 +76,11 @@ class RepliesController < WritableController
     end
 
     @search_results = @search_results
-      .select('replies.*, characters.name, characters.screenname, users.username, posts.subject')
-      .joins(:user, :post)
+      .select('replies.*, characters.name, characters.screenname, users.username')
+      .joins(:user)
       .joins("LEFT OUTER JOIN characters ON characters.id = replies.character_id")
       .paginate(page: page, per_page: 25)
+      .includes(:post)
     if @search_results.total_pages <= 1
       @search_results = @search_results.select {|reply| reply.post.visible_to?(current_user)}.paginate(page: page, per_page: 25)
     end

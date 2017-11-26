@@ -34,6 +34,9 @@
             %tr
               %td= label_tag :subj_content, 'Content'
               %td= text_field_tag :subj_content, params[:subj_content], style: 'width: 100%; margin: 5px 0px; box-sizing: border-box;'
+            %tr
+              %td= label_tag :sort, 'Sort'
+              %td= select_tag :sort, options_for_select([['Best match', 'rank'], ['Newest first', 'created_new'], ['Oldest first', 'created_old']], params[:sort]), {class: 'chosen-select'}
             - if @post.present?
               %tr
                 %td Post
@@ -62,8 +65,9 @@
                         - if reply.name.present?
                           .post-character= link_to reply.name, character_path(reply.character_id)
                         .post-author= link_to reply.username, user_path(reply.user_id)
+                        = pretty_time(reply.created_at)
                   %td.vtop{class: klass}
-                    %b= link_to reply.subject, reply_path(reply, anchor: "reply-#{reply.id}")
+                    %b= link_to reply.post.subject, reply_path(reply, anchor: "reply-#{reply.id}")
                     %br
                     - if params[:subj_content].present?
                       = reply.pg_search_highlight.html_safe

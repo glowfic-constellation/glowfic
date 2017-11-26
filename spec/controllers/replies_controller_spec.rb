@@ -698,6 +698,24 @@ RSpec.describe RepliesController do
         get :search, params: { commit: true, template_id: character.template_id }
         expect(assigns(:search_results)).to match_array([reply])
       end
+
+      it "sorts by created desc" do
+        reply = create(:reply)
+        reply2 = Timecop.freeze(reply.created_at + 2.minutes) do
+          create(:reply)
+        end
+        get :search, params: { commit: true, sort: 'created_new' }
+        expect(assigns(:search_results)).to eq([reply2, reply])
+      end
+
+      it "sorts by created asc" do
+        reply = create(:reply)
+        reply2 = Timecop.freeze(reply.created_at + 2.minutes) do
+          create(:reply)
+        end
+        get :search, params: { commit: true, sort: 'created_old' }
+        expect(assigns(:search_results)).to eq([reply, reply2])
+      end
     end
   end
 end
