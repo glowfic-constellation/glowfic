@@ -99,18 +99,20 @@
 }
 
 /* Main Content */
-#content {
+#holder { min-height: 100%; position: relative; }
+#content, #tos {
   padding: 20px;
   font-size: $font_size_main;
   line-height: 20px;
   text-align: left;
   position: relative;
+  padding-bottom: 35px;
 }
 @media (max-width: 600px) {
-  #content { padding: 10px; }
+  #content, #tos { padding: 10px; padding-bottom: 35px; }
 }
 @media (max-width: 500px) {
-  #content { padding: 5px; }
+  #content, #tos { padding: 5px; padding-bottom: 35px; }
 }
 
 /* Flash Displays */
@@ -359,4 +361,19 @@ td, .table-list li { font-size: 14px; }
 
 .user-moiety {
   font-size: 80%;
+}
+
+
+#footer {
+  font-size: $font_size_small;
+  background-color: $bg_color_header_middle;
+  color: $font_color_header_link;
+  position: absolute;
+  left: 0px;
+  bottom: 0px;
+  width: 100%;
+
+  a { color: $font_color_header_link; }
+  a:hover { color: $font_color_header_link_hover; }
+  div { padding: 5px; padding-left: 20px; }
 }

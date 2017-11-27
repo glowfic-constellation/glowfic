@@ -29,7 +29,8 @@ $(document).ready(function() {
     var passwordValid = validatePassword();
     var confirmationValid = validateConfirmation();
     var emailValid = validateEmail();
-    if (!(usernameValid && passwordValid && confirmationValid && emailValid)) {
+    var tosValid = validateTosAccepted();
+    if (!(usernameValid && passwordValid && confirmationValid && emailValid && tosValid)) {
       return false;
     }
     return true;
@@ -93,6 +94,12 @@ function validateConfirmation() {
     addAlertAfter('conf', 'Your passwords do not match.');
     success = false;
   }
+  return success;
+}
+
+function validateTosAccepted() {
+  var success = $("#tos").is(':checked');
+  if (!success) addAlertAfter('terms', 'You must accept the Terms of Service to use the Constellation.');
   return success;
 }
 

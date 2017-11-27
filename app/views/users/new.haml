@@ -36,5 +36,17 @@
         %th.sub.vtop Secret
         %td.even
           = text_field_tag :secret, params[:secret], placeholder: "Secret"
+      %tr#terms
+        %th.sub.vtop Terms
+        %td.odd
+          = check_box_tag :tos, true, params[:tos].present?
+          = label_tag :tos do
+            I have read and agree to the
+            = link_to 'Terms of Service', tos_path
+            and the
+            = link_to 'Privacy Policy', privacy_path
+          .alert.hidden{style: 'margin: 2px 0px;'}
+            = image_tag 'icons/exclamation.png', alt: '!', title: '', class: 'vmid'
+            %span.msg
     %tr
       %th.form-table-ender{colspan: 2}= submit_tag "Sign Up", class: 'button'

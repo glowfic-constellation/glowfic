@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 class SessionsController < ApplicationController
-  before_action :logout_required, only: [:new, :create]
+  before_action :logout_required, only: [:new, :create, :confirm_tos]
   before_action :login_required, only: [:destroy]
 
   def index
@@ -31,6 +31,11 @@ class SessionsController < ApplicationController
     else
       flash[:error] = "You have entered an incorrect password."
     end
+    redirect_to session[:previous_url] || root_url
+  end
+
+  def confirm_tos
+    cookies.permanent[:accepted_tos] = cookie_hash(User::CURRENT_TOS_VERSION)
     redirect_to session[:previous_url] || root_url
   end
 

@@ -50,8 +50,18 @@ RSpec.describe UsersController do
       expect(flash[:error]).to eq('You are already logged in.')
     end
 
-    it "requires beta secret" do
+    it "requires tos acceptance" do
       post :create
+      expect(response).to render_template(:new)
+      expect(flash[:error]).to eq("You must accept the Terms and Conditions to use the Constellation.")
+      expect(assigns(:user)).not_to be_valid
+      expect(assigns(:page_title)).to eq('Sign Up')
+      expect(controller.gon.min).to eq(User::MIN_USERNAME_LEN)
+      expect(controller.gon.max).to eq(User::MAX_USERNAME_LEN)
+    end
+
+    it "requires beta secret" do
+      post :create, params: {tos: true}
       expect(response).to render_template(:new)
       expect(flash[:error]).to eq("This is in beta. Please ask someone in the community for the (not very) secret beta code.")
       expect(assigns(:user)).not_to be_valid
@@ -61,7 +71,7 @@ RSpec.describe UsersController do
     end
 
     it "requires valid fields" do
-      post :create, params: { secret: "ALLHAILTHECOIN" }
+      post :create, params: { secret: "ALLHAILTHECOIN", tos: true }
       expect(response).to render_template(:new)
       expect(flash[:error][:message]).to eq("There was a problem completing your sign up.")
       expect(assigns(:user)).not_to be_valid
@@ -72,7 +82,7 @@ RSpec.describe UsersController do
 
     it "rejects short passwords" do
       user = build(:user).attributes.with_indifferent_access.merge(password: 'short', password_confirmation: 'short')
-      post :create, params: { secret: 'ALLHAILTHECOIN' }.merge(user: user)
+      post :create, params: { secret: 'ALLHAILTHECOIN', tos: true }.merge(user: user)
       expect(response).to render_template(:new)
       expect(flash[:error][:message]).to eq('There was a problem completing your sign up.')
       expect(flash[:error][:array]).to eq(['Password is too short (minimum is 6 characters)'])
@@ -85,7 +95,7 @@ RSpec.describe UsersController do
       user = build(:user).attributes.with_indifferent_access.merge(password: pass, password_confirmation: pass, email: 'testemail@example.com')
 
       expect {
-        post :create, params: { secret: "ALLHAILTHECOIN" }.merge(user: user)
+        post :create, params: { secret: "ALLHAILTHECOIN", tos: true }.merge(user: user)
       }.to change{User.count}.by(1)
       expect(response).to redirect_to(root_url)
       expect(flash[:success]).to eq("User created! You have been logged in.")
@@ -101,7 +111,7 @@ RSpec.describe UsersController do
       pass = 'this is a long password to test the password validation feature and to see if it accepts this'
       user = build(:user).attributes.with_indifferent_access.merge(password: pass, password_confirmation: pass)
       expect {
-        post :create, params: { secret: 'ALLHAILTHECOIN' }.merge(user: user)
+        post :create, params: { secret: 'ALLHAILTHECOIN', tos: true }.merge(user: user)
       }.to change{User.count}.by(1)
       expect(response).to redirect_to(root_url)
       expect(flash[:success]).to eq("User created! You have been logged in.")
@@ -113,7 +123,7 @@ RSpec.describe UsersController do
     it "strips spaces" do
       user = build(:user, username: 'withspace ').attributes
       user = user.with_indifferent_access.merge(password: 'password', password_confirmation: 'password')
-      post :create, params: { secret: 'ALLHAILTHECOIN' }.merge(user: user)
+      post :create, params: { secret: 'ALLHAILTHECOIN', tos: true }.merge(user: user)
       expect(flash[:success]).to eq("User created! You have been logged in.")
       expect(assigns(:current_user).username).to eq('withspace')
     end
@@ -267,6 +277,27 @@ RSpec.describe UsersController do
       expect(user.username).to eq('user124')
       expect(user.authenticate(pass)).to eq(true)
       expect(user.authenticate(pass + '1')).not_to eq(true)
+    end
+
+    context "tos" do
+      it "saves update" do
+        user = create(:user, tos_version: nil)
+        login_as(user)
+        put :update, params: { id: user.id, tos_check: true }
+        expect(user.reload.tos_version).to eq(User::CURRENT_TOS_VERSION)
+        expect(flash[:success]).to eq('Acceptance saved successfully. Thank you!')
+        expect(response).to redirect_to(root_url)
+      end
+
+      it "handles failures" do
+        user = create(:user, tos_version: nil)
+        login_as(user)
+        user.update_columns(username: 'a') # too short to validate
+        put :update, params: { id: user.id, tos_check: true }
+        expect(user.reload.tos_version).to be_nil
+        expect(flash[:error]).to eq('There was an error saving your changes. Please try again.')
+        expect(response).to render_template('about/accept_tos')
+      end
     end
   end
 

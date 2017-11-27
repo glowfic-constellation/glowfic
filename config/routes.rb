@@ -10,6 +10,7 @@ Rails.application.routes.draw do
   match '/login' => 'sessions#new', :as => :login, :via => :get
   match '/login' => 'sessions#create', :via => :post
   match '/logout' => 'sessions#destroy', :as => :logout, :via => :delete
+  match '/confirm_tos' => 'sessions#confirm_tos', as: :confirm_tos, via: :patch
   match '/users/:id/templates' => redirect('/users/%{id}/characters'), via: :get
   resources :users do
     resources :characters, only: :index
@@ -123,6 +124,10 @@ Rails.application.routes.draw do
   resources :reports, only: [:index, :show]
   resources :bugs, only: :create
   resources :favorites, only: [:index, :create, :destroy]
+  match '/tos' => 'about#tos', as: :tos, via: :get
+  match '/privacy' => 'about#privacy', as: :privacy, via: :get
+  match '/contact' => 'about#contact', as: :contact, via: :get
+  match '/dmca' => 'about#dmca', as: :dmca, via: :get
   match '/contribute' => 'contribute#index', as: :contribute, via: :get
   mount ResqueWeb::Engine => "/resque_web"
 end
