@@ -22,6 +22,8 @@ module Glowfic
     "cite" => %w(href)
   }
 
+  DISCORD_LINK = 'https://discord.gg/Ss6fRFj'
+
   module Sanitizers
     WRITTEN_CONF = Sanitize::Config.merge(Sanitize::Config::RELAXED,
       elements: ALLOWED_TAGS,

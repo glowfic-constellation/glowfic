@@ -6,6 +6,7 @@ class ApplicationController < ActionController::Base
   include Memorylogic
 
   protect_from_forgery with: :exception
+  before_action :check_tos
   before_action :check_permanent_user
   before_action :show_password_warning
   before_action :require_glowfic_domain
@@ -102,6 +103,27 @@ class ApplicationController < ActionController::Base
   def set_login_gon
     gon.logged_in = logged_in?
   end
+
+  def check_tos
+    return if tos_skippable?
+
+    store_location
+    @page_title = 'Accept the TOS'
+    render 'about/accept_tos' and return if logged_in?
+    use_javascript('accept_tos')
+  end
+
+  def tos_skippable?
+    return true if Rails.env.test? && params[:force_tos].nil?
+    return true if request.xhr?
+    return true unless request.get?
+    return true if params[:tos_check].present?
+    return true if ['about', 'sessions'].include?(params[:controller])
+
+    tos_version = logged_in? ? current_user.tos_version : cookies[:accepted_tos]
+    tos_version.to_i >= User::CURRENT_TOS_VERSION
+  end
+  helper_method :tos_skippable?
 
   def post_or_reply_link(reply)
     return unless reply.id.present?

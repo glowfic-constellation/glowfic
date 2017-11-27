@@ -14,6 +14,13 @@ RSpec.describe SessionsController do
       expect(response).to have_http_status(200)
       expect(controller.gon.logged_in).to eq(true)
     end
+
+    it "does not show TOS prompt" do
+      user = create(:user, tos_version: nil)
+      login_as(user)
+      get :index
+      expect(response).not_to render_template('about/accept_tos')
+    end
   end
 
   describe "GET new" do
@@ -104,6 +111,22 @@ RSpec.describe SessionsController do
       post :create, params: { username: user.username, password: password, remember_me: true }
       expect(controller.send(:logged_in?)).to eq(true)
       expect(cookies.signed[:user_id]).to eq(user.id)
+    end
+  end
+
+  describe "PATCH confirm_tos" do
+    it "redirects when logged in" do
+      login
+      patch :confirm_tos
+      expect(response).to redirect_to(boards_url)
+      expect(flash[:error]).to eq("You are already logged in.")
+    end
+
+    it "creates cookie" do
+      expect(cookies[:accepted_tos]).to be_nil
+      patch :confirm_tos
+      expect(response).to redirect_to(root_url)
+      expect(cookies[:accepted_tos]).to eq(User::CURRENT_TOS_VERSION)
     end
   end
 

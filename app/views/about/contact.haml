@@ -1,0 +1,12 @@
+#contact-content.odd{style: 'padding: 15px;'}
+  %h1 Contact the Constellation
+
+  %p
+    Currently, to contact the Constellation for help or to report a violation of our
+    = succeed ',' do
+      = link_to 'Terms of Service', tos_path
+    you may visit us in the #constellation channel of the
+    = link_to "Glowfic Discord", Glowfic::DISCORD_LINK, target: '_blank'
+    or email us at
+    = succeed '.' do
+      = link_to 'glowfic.constellation@gmail.com', 'mailto:glowfic.constellation@gmail.com'

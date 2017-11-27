@@ -1,0 +1,22 @@
+- content_for :tos_form do
+  %table#signup.form-table
+    %thead
+      %tr
+        %th Accept our Terms of Service
+    %tbody
+      %tr#terms
+        %td.odd{style: 'padding: 15px;'}
+          Our Terms of Service have recently changed!
+          Please read and agree to the
+          = link_to 'Terms of Service', tos_path
+          and the
+          = link_to 'Privacy Policy', privacy_path
+      %tr
+        %th.form-table-ender{colspan: 2}= submit_tag "I agree/consent to the terms", class: 'button', name: :tos_check, id: :tos_check
+
+- if logged_in?
+  = form_for current_user, url: user_path(current_user), method: :put, name: :tos_form do |f|
+    = content_for :tos_form
+- else
+  = form_tag confirm_tos_path, method: :patch do
+    = content_for :tos_form

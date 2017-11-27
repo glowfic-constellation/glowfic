@@ -31,6 +31,13 @@ class UsersController < ApplicationController
     @user = User.new(user_params)
     @user.validate_password = true
 
+    unless params[:tos].present?
+      signup_prep
+      flash.now[:error] = "You must accept the Terms and Conditions to use the Constellation."
+      render action: :new and return
+    end
+    @user.tos_version = User::CURRENT_TOS_VERSION
+
     if params[:secret] != "ALLHAILTHECOIN"
       signup_prep
       flash.now[:error] = "This is in beta. Please ask someone in the community for the (not very) secret beta code."
@@ -57,6 +64,8 @@ class UsersController < ApplicationController
   end
 
   def update
+    store_tos and return if params[:tos_check]
+
     params[:user][:per_page] = -1 if params[:user].try(:[], :per_page) == 'all'
     if current_user.update(user_params)
       flash[:success] = "Changes saved successfully."
@@ -152,5 +161,16 @@ class UsersController < ApplicationController
       :favorite_notifications,
       :show_user_in_switcher,
     )
+  end
+
+  def store_tos
+    current_user.tos_version = User::CURRENT_TOS_VERSION
+    unless current_user.save
+      flash.now[:error] = 'There was an error saving your changes. Please try again.'
+      return render 'about/accept_tos'
+    end
+
+    flash[:success] = "Acceptance saved successfully. Thank you!"
+    redirect_to session[:previous_url] || root_url
   end
 end
