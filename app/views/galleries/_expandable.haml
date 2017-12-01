@@ -27,7 +27,7 @@
     = form_tag delete_multiple_icons_path, method: :delete do
       .gallery{style: 'padding: 0px;'}
       - if gallery.user_id == current_user.try(:id)
-        .clear.centered.icons-remove
+        .icons-remove
           = hidden_field_tag :gallery_id, gallery.id, id: nil
           - if local_assigns[:tag]
             = hidden_field_tag :return_tag, local_assigns[:tag].id, id: nil
