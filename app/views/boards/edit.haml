@@ -42,7 +42,7 @@
           = link_to board_section_path(section), method: :delete, data: { confirm: 'Are you sure you want to delete this board section?' } do
             = image_tag "icons/cross.png"
     - if @board_sections.empty?
-      %li.centered.padding-10{class: cycle('even', 'odd')} — No items yet —
+      %li.no-items{class: cycle('even', 'odd')} — No items yet —
 
 - if @board.ordered? && @unsectioned_posts.present?
   %br

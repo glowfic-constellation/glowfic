@@ -31,7 +31,7 @@
     = render partial: 'posts/list_item', collection: posts, as: :post, locals: post_args
     - if posts.empty?
       %tr
-        %td.centered.padding-10.no-posts{ class: cycle('even', 'odd'), colspan: col_count } — No posts yet —
+        %td.no-items{ class: cycle('even', 'odd'), colspan: col_count } — No posts yet —
   - if posts.methods.include?(:total_pages) && posts.total_pages > 1
     %tfoot
       %tr

@@ -36,6 +36,6 @@
                     = image_tag "icons/cross.png"
         - if @aliases.empty?
           %tr
-            %td.centered.padding-10{ class: cycle('even', 'odd'), colspan: 6 } — No aliases yet —
+            %td.no-items{ class: cycle('even', 'odd'), colspan: 6 } — No aliases yet —
 
   = render 'icon_selector'

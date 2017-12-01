@@ -12,7 +12,7 @@
     %tbody
       - if @messages.empty?
         %tr
-          %td.centered.padding-10 — No messages yet —
+          %td.odd.no-items — No messages yet —
       - else
         - @messages.each do |message|
           %tr.message-row
