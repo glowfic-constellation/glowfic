@@ -9,7 +9,7 @@
           %span.tag-item.semiplusopaque
             = group.name
   %td.width-150.centered.gallery-icon-count{class: klass}= gallery.icon_count
-  %td.width-70.gallery-buttons{class: klass}
+  %td.gallery-buttons{class: klass}
     - if gallery.user_id == current_user.try(:id)
       = link_to add_gallery_path(gallery), title: "Add Icons", class: 'gallery-add' do
         = image_tag "icons/add.png"
