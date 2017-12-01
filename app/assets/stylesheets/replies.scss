@@ -562,3 +562,8 @@ div.post-subheader { width: 100%; }
 }
 
 .user-date { padding: 10px; }
+
+.optionbox {
+  width: 15px !important; //TODO: check if removing !important breaks anything
+  vertical-align: middle;
+}

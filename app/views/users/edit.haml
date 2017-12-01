@@ -13,10 +13,10 @@
       %tr
         %th.sub Notifications
         %td{class: cycle('even', 'odd')}
-          = f.check_box :email_notifications, class: 'width-15 vmid'
+          = f.check_box :email_notifications, class: 'optionbox'
           = f.label :email_notifications, "Email about new tags"
           %br
-          = f.check_box :favorite_notifications, class: 'width-15 vmid'
+          = f.check_box :favorite_notifications, class: 'optionbox'
           = f.label :favorite_notifications, 'Notify when a favorited author makes a new post'
       - unless current_user.avatar.present?
         %tr
@@ -32,7 +32,7 @@
       %tr
         %th.sub Split icon picker
         %td{class: cycle('even', 'odd')}
-          = f.check_box :icon_picker_grouping, class: 'width-15 vmid'
+          = f.check_box :icon_picker_grouping, class: 'optionbox'
           = f.label :icon_picker_grouping, "Group the icon picker by gallery"
       %tr
         %th.sub Default view
@@ -60,30 +60,30 @@
       %tr
         %th.sub Unread
         %td{class: cycle('even', 'odd')}
-          = f.check_box :unread_opened, class: 'width-15 vmid'
+          = f.check_box :unread_opened, class: 'optionbox'
           = f.label :unread_opened, "Display opened threads only"
           %br
-          = f.check_box :visible_unread, class: 'width-15 vmid'
+          = f.check_box :visible_unread, class: 'optionbox'
           = f.label :visible_unread, "Outline when jumping to unread"
       %tr
         %th.sub Daily Report
         %td{class: cycle('even', 'odd')}
-          = f.check_box :ignore_unread_daily_report, class: 'width-15 vmid'
+          = f.check_box :ignore_unread_daily_report, class: 'optionbox'
           = f.label :ignore_unread_daily_report, "Hide unread notice"
       %tr
         %th.sub Warnings
         %td{class: cycle('even', 'odd')}
-          = f.check_box :hide_warnings, class: 'width-15 vmid'
+          = f.check_box :hide_warnings, class: 'optionbox'
           = f.label :hide_warnings, "Hide content warnings"
       %tr
         %th.sub Replies Owed
         %td{class: cycle('even', 'odd')}
-          = f.check_box :hide_hiatused_tags_owed, class: 'width-15 vmid'
+          = f.check_box :hide_hiatused_tags_owed, class: 'optionbox'
           = f.label :hide_hiatused_tags_owed, "Hide hiatused threads"
       %tr
         %th.sub Character Quick Switcher
         %td{class: cycle('even', 'odd')}
-          = f.check_box :show_user_in_switcher, class: 'width-15 vmid'
+          = f.check_box :show_user_in_switcher, class: 'optionbox'
           = f.label :show_user_in_switcher, "Show user character"
     %tfoot
       %tr

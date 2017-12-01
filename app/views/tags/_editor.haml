@@ -16,7 +16,7 @@
   %tr
     %th.sub Owned?
     %td{class: cycle('even', 'odd')}
-      = f.check_box :owned, class: 'vmid width-15'
+      = f.check_box :owned, class: 'optionbox'
       = f.label :owned, 'Tag belongs to owner'
   - if f.object.is_a?(Setting)
     %tr
