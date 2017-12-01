@@ -29,7 +29,7 @@
     %td.single-description.written-content{colspan: col_count}= sanitize_written_content(name.description)
 - if characters.empty?
   %tr
-    %td.centered.padding-5{class: cycle('even', 'odd'), colspan: col_count} — No characters yet —
+    %td.no-items-alt{class: cycle('even', 'odd'), colspan: col_count} — No characters yet —
 - else
   %tr
     - klass = cycle('even', 'odd')

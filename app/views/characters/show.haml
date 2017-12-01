@@ -97,7 +97,7 @@
       %tbody
         %tr
           %td.icon-box
-            .centered.padding-5 — No galleries yet —
+            .no-items-alt — No galleries yet —
 - elsif params[:view] == 'posts'
   - content_for :posts_title do 'Recent Threads' end
   = render 'posts/list', posts: @posts, table_class: 'character-right-content-box'
