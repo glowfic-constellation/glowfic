@@ -548,6 +548,12 @@ div.post-subheader { width: 100%; }
   text-align: center;
 }
 
+// Link at the bottom of threads to the top
+#post-top-link {
+  margin: 10px;
+  text-align: center;
+}
+
 // TODO: These should probably be in a users-related file
 .user-moiety {
   padding: 10px;
