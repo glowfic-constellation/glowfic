@@ -18,7 +18,7 @@
         - klass = cycle('even', 'odd')
         %td.padding-10.username{class: klass}= link_to user.username, user_path(user)
         %td.user-moiety{class: klass}= color_block(user)
-        %td.padding-10.user-date{class: klass}= pretty_time(user.created_at)
+        %td.user-date{class: klass}= pretty_time(user.created_at)
   - if @users.total_pages > 1
     %tfoot
       %tr

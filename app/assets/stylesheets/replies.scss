@@ -543,9 +543,11 @@ div.post-subheader { width: 100%; }
   text-align: center;
 }
 
-// These should probably be in a users-related file
+// TODO: These should probably be in a users-related file
 .user-moiety {
   padding: 10px;
   width: 70px;
   text-align: center;
 }
+
+.user-date { padding: 10px; }
