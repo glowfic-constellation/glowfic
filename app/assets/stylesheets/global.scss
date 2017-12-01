@@ -56,32 +56,27 @@ button, .button {
 }
 
 /* Display Helpers */
-.no-margin { margin: 0; }
-.noheight { font-size: 0; }
-.margin-10 { margin: 10px; }
-.padding-5 { padding: 5px 10px; }
+.no-margin { margin: 0; } // not currently used
+.noheight { font-size: 0; } // not currently used
+.margin-10 { margin: 10px; } // all instances cleaned up (was used once, on thread link to top)
+.padding-5 { padding: 5px 10px; } // primarily used on various tds
 .padding-10 { padding: 10px; }
-.padding-15 { padding: 15px; }
-.padding-left-5 { padding-left: 5px; }
-.padding-right-10 { padding-right: 10px; }
-.width-15 { width: 15px !important; }
+.padding-15 { padding: 15px; } // currently used once, on replies#preview
+.padding-left-5 { padding-left: 5px; } // currently used once, on messages#index
+.padding-right-10 { padding-right: 10px; } // currently used once, for a checkbox in the post _list_items
+.width-15 { width: 15px !important; } // currently used 8x, on galleries _add_new, and checkboxes in tags#_editor and users#edit
 .width-70 { width: 70px; }
 
+ // primarily used on searches and lists of information
 .width-150 {
   width: 150px;
-
-  &.subber {
-    width: 200px;
-  }
+  &.subber { width: 200px; }
 }
 
 .spacer {
   padding: 0px !important;
   height: 2px;
-
-  .gallery-icon-editor & {
-    height: 12px;
-  }
+  .gallery-icon-editor & { height: 12px; }
 }
 
 .spacer-alt {
@@ -90,20 +85,20 @@ button, .button {
 }
 
 .centered { text-align: center !important; }
-.left-align { text-align: left; }
+.left-align { text-align: left; } // currently used 2x, on the paginator and character _icon_view partial
 .right-align { text-align: right; }
 .hidden { display: none; }
-.float-left { float: left; }
+.float-left { float: left; } // currently used 3x: messages#_single, posts#unread, and replies#preview
 .float-right { float: right; }
-.float-none { float: none !important; }
-.clear { clear: both; }
-.pointer { cursor: pointer; }
+.float-none { float: none !important; } // currently used 3x, on posts#show and reports#_daily
+.clear { clear: both; } // currently used 2x, on the posts _editor and _paginator partials
+.pointer { cursor: pointer; } // not currently used
 .vtop { vertical-align: top; }
-.vmid { vertical-align: middle; }
-.bold { font-weight: bold; }
-.auto { overflow: auto; }
-.semiopaque { opacity: 0.5; }
-.semiplusopaque { opacity: 0.6; }
+.vmid { vertical-align: middle; } // currently used 4x, on various galleries things
+.bold { font-weight: bold; } // not currently used
+.auto { overflow: auto; } // not currently used
+.semiopaque { opacity: 0.5; } // currently seems to only be referenced in javascript?
+.semiplusopaque { opacity: 0.6; } // currently used once, on .tag-box .tag-item in _expandable
 
 /* For UI elements involving reordering */
 .disabled-arrow {
