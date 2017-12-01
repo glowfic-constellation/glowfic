@@ -22,7 +22,7 @@
   %tbody
     %tr
       %td.odd.gallery-name= link_to '[Galleryless]', user_gallery_path(id: 0, user_id: @user.id)
-      %td.width-150.centered.odd.gallery-icon-count= @user.icons.where(has_gallery: false).count
+      %td.odd.gallery-icon-count= @user.icons.where(has_gallery: false).count
       %td.odd.gallery-buttons
         - if @user.id == current_user.try(:id)
           = link_to add_gallery_path(id: 0), title: "Add Icons", class: 'gallery-add' do

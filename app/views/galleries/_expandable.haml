@@ -8,7 +8,7 @@
         = link_to tag_path(group.id), class: 'tag-item-link' do
           %span.tag-item.semiplusopaque
             = group.name
-  %td.width-150.centered.gallery-icon-count{class: klass}= gallery.icon_count
+  %td.gallery-icon-count{class: klass}= gallery.icon_count
   %td.gallery-buttons{class: klass}
     - if gallery.user_id == current_user.try(:id)
       = link_to add_gallery_path(gallery), title: "Add Icons", class: 'gallery-add' do
