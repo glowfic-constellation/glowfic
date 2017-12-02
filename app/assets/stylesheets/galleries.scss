@@ -142,3 +142,9 @@
   width: 150px;
   text-align: center;
 }
+
+/* Preview icon box on galleries _add_new */
+#preview-box {
+  padding: 0px;
+  width: 15px !important;  // TODO: check if removing !important breaks anything
+}
