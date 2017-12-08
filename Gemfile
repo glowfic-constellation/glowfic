@@ -47,9 +47,10 @@ group :production do
 end
 
 group :development do
-  gem 'web-console', '~> 3.0'
-  gem 'rack-mini-profiler'
+  gem 'listen'
   gem 'memory_profiler'
+  gem 'rack-mini-profiler'
+  gem 'web-console', '~> 3.0'
 end
 
 group :development, :test do
