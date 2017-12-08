@@ -12,9 +12,9 @@ class Post < ApplicationRecord
   STATUS_ABANDONED = 3
 
   belongs_to :board, inverse_of: :posts, optional: false
-  belongs_to :section, class_name: BoardSection, inverse_of: :posts, optional: true
-  belongs_to :last_user, class_name: User, optional: false
-  belongs_to :last_reply, class_name: Reply, optional: true
+  belongs_to :section, class_name: 'BoardSection', inverse_of: :posts, optional: true
+  belongs_to :last_user, class_name: 'User', optional: false
+  belongs_to :last_reply, class_name: 'Reply', optional: true
   has_one :flat_post
   has_many :replies, inverse_of: :post, dependent: :destroy
   has_many :post_viewers, inverse_of: :post, dependent: :destroy
