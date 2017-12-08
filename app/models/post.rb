@@ -38,7 +38,8 @@ class Post < ApplicationRecord
   validates_presence_of :subject
   validate :valid_board, :valid_board_section
 
-  before_create :build_initial_flat_post
+  before_create :build_initial_flat_post, :set_timestamps
+  before_update :set_timestamps
   before_validation :set_last_user, on: :create
   after_commit :notify_followers, on: :create
 
@@ -275,22 +276,17 @@ class Post < ApplicationRecord
     self.last_user = user
   end
 
-  def timestamp_attributes_for_update
-    # Makes Rails treat edited_at as a timestamp identical to updated_at
-    # if specific attributes are updated. Also uses tagged_at if there
-    # are no replies yet or if the status has changed.
-    # Be VERY CAREFUL editing this!
-    return super if skip_edited
-    return super + [:edited_at] if replies.exists? && !status_changed?
-    super + [:edited_at, :tagged_at]
+  # timestamps start existing between before_save and before_create/update
+  # TODO: ensure tested
+  def set_timestamps
+    return if skip_edited
+    self.edited_at = self.updated_at
+    return if replies.exists? && !status_changed?
+    self.tagged_at = self.updated_at
   end
 
   def skip_edited
     @skip_edited || (changed_attributes.keys - NON_EDITED_ATTRS).empty?
-  end
-
-  def timestamp_attributes_for_create
-    super + [:tagged_at]
   end
 
   def ordered_attributes
