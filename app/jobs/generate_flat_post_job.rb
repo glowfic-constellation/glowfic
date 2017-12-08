@@ -11,8 +11,8 @@ class GenerateFlatPostJob < ApplicationJob
       replies = post.replies
         .select('replies.*, characters.name, characters.screenname, icons.keyword, icons.url, users.username')
         .joins(:user)
-        .joins("LEFT OUTER JOIN characters ON characters.id = replies.character_id")
-        .joins("LEFT OUTER JOIN icons ON icons.id = replies.icon_id")
+        .left_outer_joins(:character)
+        .left_outer_joins(:icon)
         .order('id asc')
 
       view = ActionView::Base.new(ActionController::Base.view_paths, {})

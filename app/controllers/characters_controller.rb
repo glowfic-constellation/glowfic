@@ -125,7 +125,7 @@ class CharactersController < ApplicationController
     @page_title = 'Facecasts'
     chars = Character.where('pb is not null')
       .joins(:user)
-      .joins('LEFT OUTER JOIN templates ON characters.template_id = templates.id')
+      .left_outer_joins(:template)
       .pluck('characters.id, characters.name, characters.pb, users.id, users.username, templates.id, templates.name')
     @pbs = []
 

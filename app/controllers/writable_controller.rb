@@ -69,9 +69,9 @@ class WritableController < ApplicationController
     @replies = @replies
       .select('replies.*, characters.name, characters.screenname, icons.keyword, icons.url, users.username, character_aliases.name as alias')
       .joins(:user)
-      .joins("LEFT OUTER JOIN characters ON characters.id = replies.character_id")
-      .joins("LEFT OUTER JOIN icons ON icons.id = replies.icon_id")
-      .joins("LEFT OUTER JOIN character_aliases ON character_aliases.id = replies.character_alias_id")
+      .left_outer_joins(:character)
+      .left_outer_joins(:icon)
+      .left_outer_joins(:character_alias)
       .order('id asc')
       .paginate(page: cur_page, per_page: per)
     redirect_to post_path(@post, page: @replies.total_pages, per_page: per) and return if cur_page > @replies.total_pages
