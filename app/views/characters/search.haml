@@ -1,6 +1,6 @@
 = render partial: 'search/breadcrumbs'
 
-%table
+%table.search-collapsible
   %thead
     %tr
       %th.width-150
@@ -73,5 +73,5 @@
     - if @search_results && @search_results.total_pages > 1
       %tfoot
         %tr
-          %th.width-150
+          %th.width-150.empty
           %th= render partial: 'posts/paginator', locals: {paginated: @search_results, no_per: true}

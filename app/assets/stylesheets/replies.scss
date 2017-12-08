@@ -364,6 +364,7 @@ div.post-subheader { width: 100%; }
   @include mobile-paginator;
 }
 @media (max-width: 400px) {
+  .paginator-meta { display: none; }
   .paginator {
     @include mobile-paginator;
   }
