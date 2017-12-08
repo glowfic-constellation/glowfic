@@ -13,7 +13,7 @@ class DailyReport < Report
       .select("posts.*,
         max(boards.name) as board_name,
         case
-        when (posts.created_at between #{ActiveRecord::Base.sanitize(day.beginning_of_day)} AND #{ActiveRecord::Base.sanitize(day.end_of_day)})
+        when (posts.created_at between #{ActiveRecord::Base.connection.quote(day.beginning_of_day)} AND #{ActiveRecord::Base.connection.quote(day.end_of_day)})
           then posts.created_at
           else coalesce(min(replies_today.created_at), posts.created_at)
           end as first_updated_at")
