@@ -344,7 +344,8 @@ td, .table-list li { font-size: 14px; }
 /* Collapsible tables on search pages for mobile view */
 @media (max-width: 600px) {
   .search-collapsible {
-    > thead > tr > th, > tbody > tr > td {
+    .empty { display: none; }
+    > thead > tr > th, > tbody > tr > td, > tfoot > tr > th {
       box-sizing: border-box;
       display: block;
       width: 100%;
