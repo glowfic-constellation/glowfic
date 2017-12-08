@@ -22,7 +22,7 @@ gem 'nilify_blanks'
 gem 'nokogiri'
 gem 'pg', '~> 0.21.0'
 gem 'pg_search'
-gem 'rails', '~> 5.0.6'
+gem 'rails', '~> 5.1.4'
 gem 'rack-pratchett'
 gem 'redis', '~> 3.3.5' # until resque updates to support Redis 4
 gem 'redis-rails'
