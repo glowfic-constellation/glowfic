@@ -16,7 +16,7 @@
         = form_tag search_replies_path, :method => :get do
           %table.search-form
             %tr
-              %td.width-70= label_tag :board_id, 'Continuity'
+              %td{style: 'width: 80px;'}= label_tag :board_id, 'Continuity'
               %td
                 - if @post
                   %b= @post.board.name
@@ -50,6 +50,11 @@
                   = icon_tag @icon, class: 'preview-icon search-icon-preview'
                   %span.search-icon-keyword= @icon.keyword
             %tr
+              %td= label_tag :condensed, 'Condensed'
+              %td
+                = check_box_tag :condensed, nil, true, class: 'vmid'
+                = label_tag :condensed, 'Hide screennames and icons'
+            %tr
               %td.centered{colspan: 2}= submit_tag "Search", class: 'button'
       %td.vtop
         - if @search_results.present?
@@ -61,9 +66,15 @@
                 %tr
                   %td.vtop{class: klass}
                     .post-info-box
+                      - if reply.icon_id && reply.keyword && !params[:condensed]
+                        .post-icon
+                          = link_to icon_path(reply.icon_id) do
+                            = icon_mem_tag reply.url, reply.keyword
                       .post-info-text
                         - if reply.name.present?
                           .post-character= link_to reply.name, character_path(reply.character_id)
+                        - unless params[:condensed]
+                          .post-screenname= breakable_text(reply.screenname)
                         .post-author= link_to reply.username, user_path(reply.user_id)
                     .post-edit-box
                       = link_to reply_path(reply, anchor: "reply-#{reply.id}") do

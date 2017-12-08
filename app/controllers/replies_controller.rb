@@ -81,6 +81,7 @@ class RepliesController < WritableController
       .joins("LEFT OUTER JOIN characters ON characters.id = replies.character_id")
       .paginate(page: page, per_page: 25)
       .includes(:post)
+    @search_results = @search_results.select('icons.keyword, icons.url').joins("LEFT OUTER JOIN icons ON icons.id = replies.icon_id") unless params[:condensed]
     if @search_results.total_pages <= 1
       @search_results = @search_results.select {|reply| reply.post.visible_to?(current_user)}.paginate(page: page, per_page: 25)
     end
