@@ -47,7 +47,7 @@ class Icon < ApplicationRecord
   def uploaded_url_not_in_use
     return unless uploaded?
     check = Icon.where(s3_key: s3_key)
-    check = check.where('id != ?', id) unless new_record?
+    check = check.where.not(id: id) unless new_record?
     return unless check.exists?
     self.url = url_was
     self.s3_key = s3_key_was
