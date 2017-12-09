@@ -24,6 +24,7 @@ gem 'pg', '~> 0.21.0'
 gem 'pg_search'
 gem 'rails', '~> 5.0.6'
 gem 'rack-pratchett'
+gem 'redis', '~> 3.3.5' # until resque updates to support Redis 4
 gem 'redis-rails'
 gem 'resque'
 gem 'resque_mailer'
