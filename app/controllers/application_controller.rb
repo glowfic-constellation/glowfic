@@ -5,7 +5,6 @@ class ApplicationController < ActionController::Base
   include Authentication
   include Memorylogic
 
-  before_action :clear_old_cookies
   protect_from_forgery with: :exception
   before_action :check_permanent_user
   before_action :show_password_warning
@@ -15,14 +14,6 @@ class ApplicationController < ActionController::Base
   after_action :store_location
 
   protected
-
-  def clear_old_cookies
-    # historical stuff I should kill for safety vs conflicts
-    [:_glowfic_session, :_glowfic_session_production].each do |key|
-      cookies.delete(key, domain: 'glowfic.com')
-      cookies.delete(key, domain: 'www.glowfic.com')
-    end
-  end
 
   def login_required
     unless logged_in?
@@ -42,7 +33,7 @@ class ApplicationController < ActionController::Base
     return unless logged_in?
     return unless current_user.salt_uuid.nil?
     reset_session
-    cookies.delete(:user_id)
+    cookies.delete(:user_id, domain: '.glowfic.com')
     @current_user = nil
     flash.now[:pass] = "Because Marri accidentally made passwords a bit too secure, you must log back in to continue using the site."
   end
