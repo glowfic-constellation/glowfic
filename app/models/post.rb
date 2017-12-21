@@ -32,6 +32,12 @@ class Post < ApplicationRecord
   has_many :indexes, inverse_of: :posts, through: :index_posts
   has_many :index_sections, inverse_of: :posts, through: :index_posts
 
+  has_many :post_authors, inverse_of: :post
+  has_many :post_coauthors, -> { where(cameo: false) }, class_name: PostAuthor, inverse_of: :post
+  has_many :coauthors, class_name: User, through: :post_coauthors, source: :user
+  has_many :post_cameos, -> { where(cameo: true) }, class_name: PostAuthor, inverse_of: :post
+  has_many :cameos, class_name: User, through: :post_cameos, source: :user
+
   attr_accessor :is_import
   attr_writer :skip_edited
 
