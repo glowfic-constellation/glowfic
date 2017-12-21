@@ -105,8 +105,9 @@ button, .button {
   border-radius: 5px;
   font-weight: normal;
   height: 20px;
+  vertical-align: middle;
 
-  img { vertical-align: text-top; }
+  img { vertical-align: baseline; }
 }
 .link-box.action-new { background-color: #3f7055; }
 .link-box.action-delete { background-color: #880000; }
