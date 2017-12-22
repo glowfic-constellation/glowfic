@@ -264,6 +264,34 @@ RSpec.describe CharactersController do
         expect(assigns(:templates).map(&:name)).to match_array(templates.map(&:name))
         expect(assigns(:aliases)).to match_array([calias])
       end
+
+      it "works for moderator with untemplated character" do
+        user = create(:mod_user)
+        login_as(user)
+        character = create(:character)
+        template = create(:template, user: character.user)
+
+        get :edit, params: { id: character.id }
+
+        expect(assigns(:page_title)).to eq("Edit Character: #{character.name}")
+        expect(controller.gon.character_id).to eq(character.id)
+        expect(controller.gon.user_id).to eq(character.user.id)
+        expect(assigns(:templates)).to match_array([template])
+      end
+
+      it "works for moderator with templated character" do
+        user = create(:mod_user)
+        login_as(user)
+        character = create(:template_character)
+        template = create(:template, user: character.user)
+
+        get :edit, params: { id: character.id }
+
+        expect(assigns(:page_title)).to eq("Edit Character: #{character.name}")
+        expect(controller.gon.character_id).to eq(character.id)
+        expect(controller.gon.user_id).to eq(character.user.id)
+        expect(assigns(:templates)).to match_array([character.template, template])
+      end
     end
   end
 
