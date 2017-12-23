@@ -82,7 +82,24 @@ class PostScraper < Object
   private
 
   def doc_from_url(url)
-    Nokogiri::HTML(HTTParty.get(url).body)
+    # download URL, trying up to 3 times
+    max_try = 3
+    retried = 0
+    data = begin
+      sleep 0.25
+      HTTParty.get(url).body
+    rescue Net::OpenTimeout => e
+      retried += 1
+      if retried < max_try
+        logger.debug "Failed to get #{url}: #{e.message}; retrying (tried #{retried} #{'time'.pluralize(retried)})"
+        retry
+      else
+        logger.warn "Failed to get #{url}: #{e.message}"
+        raise
+      end
+    end
+
+    Nokogiri::HTML(data)
   end
 
   def page_links
