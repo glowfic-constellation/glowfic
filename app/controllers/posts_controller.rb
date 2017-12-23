@@ -329,7 +329,9 @@ class PostsController < WritableController
 
   def missing_usernames(url)
     require "#{Rails.root}/lib/post_scraper"
-    doc = Nokogiri::HTML(HTTParty.get(url).body)
+    data = HTTParty.get(url).body
+    logger.debug "Downloaded #{url} for scraping"
+    doc = Nokogiri::HTML(data)
     usernames = doc.css('.poster span.ljuser b').map(&:text).uniq
     usernames -= PostScraper::BASE_ACCOUNTS.keys
     poster_names = doc.css('.entry-poster span.ljuser b')
