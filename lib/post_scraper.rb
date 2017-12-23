@@ -38,7 +38,9 @@ class PostScraper < Object
     Post.transaction do
       import_post_from_doc(@html_doc)
       import_replies_from_doc(@html_doc)
-      page_links.each do |link|
+      links = page_links
+      links.each_with_index do |link, i|
+        logger.debug "Scraping '#{@post.subject}': page #{i+1}/#{links.count}"
         doc = doc_from_url(link)
         import_replies_from_doc(doc)
       end
@@ -64,7 +66,9 @@ class PostScraper < Object
         @html_doc = doc_from_url(thread)
         import_replies_from_doc(@html_doc)
         old_count = @post.replies.count
-        page_links.each do |link|
+        links = page_links
+        links.each_with_index do |link, i|
+          logger.debug "Scraping '#{@post.subject}': page #{i+1}/#{links.count}"
           doc = doc_from_url(link)
           import_replies_from_doc(doc)
         end
@@ -89,26 +93,29 @@ class PostScraper < Object
   end
 
   def threaded_page_links
-    last_index = @html_doc.at_css('#comments').css('.comment-thread').last.attribute('class').value.split.last.gsub("comment-depth-", "").to_i
-    index = 26
+    # gets pages after the first page
+    # does not work based on depths as sometimes mistakes over depth are made during threading (two replies made on the same depth)
+    comments = @html_doc.at_css('#comments').css('.comment-thread')
+    # 0..24 are in full on the first page
+    # fetch 25..49, …, on the other pages
     links = []
-    while true
-      next_reply = @html_doc.at_css(".comment-depth-#{index}")
-      return links unless next_reply.present?
-      url = next_reply.at_css('.comment-title').at_css('a').attribute('href').value
-      unless url['style=site']
+    1.upto((comments.count-1) / 25.0).collect do |index|
+      first_reply_in_batch = comments[index * 25]
+      puts "it's nil!" unless first_reply_in_batch
+      url = first_reply_in_batch.at_css('.comment-title').at_css('a').attribute('href').value
+      if url[/(\?|&)style=site/]
+        url
+      else
         url_obj = URI.parse(url)
-        url_obj.query += ('&' unless url_obj.query.empty?) + 'style=site'
-        url = url_obj.to_s
+        url_obj.query += ('&' unless url_obj.query.blank?) + 'style=site'
+        url_obj.to_s
       end
-      links << url
-      index += 25
     end
   end
 
   def import_post_from_doc(doc)
     subject = @subject || doc.at_css('.entry .entry-title').text.strip
-    puts "Importing thread '#{subject}'"
+    logger.info "Importing thread '#{subject}'"
 
     username = doc.at_css('.entry-poster b').inner_html
     img_url = doc.at_css('.entry .userpic img').try(:attribute, 'src').try(:value)
@@ -266,6 +273,10 @@ class PostScraper < Object
     return content unless content.ends_with?("</div>")
     index = content.index('edittime')
     content[0..index-13]
+  end
+
+  def logger
+    Resque.logger
   end
 end
 

@@ -2,6 +2,12 @@ require "spec_helper"
 require "#{Rails.root}/lib/post_scraper"
 
 RSpec.describe PostScraper do
+  def stub_fixture(url, filename)
+    url = url.gsub(/\#cmt\d+$/, '')
+    file = File.join(Rails.root, 'spec', 'support', 'fixtures', filename + '.html')
+    stub_request(:get, url).to_return(status: 200, body: File.new(file))
+  end
+
   it "should add view to url" do
     scraper = PostScraper.new('http://wild-pegasus-appeared.dreamwidth.org/403.html')
     expect(scraper.url).to include('view=flat')
@@ -28,15 +34,14 @@ RSpec.describe PostScraper do
 
   it "should scrape properly when nothing is created" do
     url = 'http://wild-pegasus-appeared.dreamwidth.org/403.html?style=site&view=flat'
-    file = File.join(Rails.root, 'spec', 'support', 'fixtures', 'scrape_single_page.html')
-    stub_request(:get, url).to_return(status: 200, body: File.new(file))
+    stub_fixture(url, 'scrape_single_page')
     user = create(:user, username: "Marri")
     board = create(:board, creator: user)
 
     scraper = PostScraper.new(url, board.id)
     allow(scraper).to receive(:prompt_for_user) { user }
     allow(scraper).to receive(:set_from_icon) { nil }
-    expect(scraper).to receive(:puts).with("Importing thread 'linear b'")
+    expect(scraper.send(:logger)).to receive(:info).with("Importing thread 'linear b'")
 
     scraper.scrape!
 
@@ -52,17 +57,15 @@ RSpec.describe PostScraper do
   it "should scrape multiple pages" do
     url = 'http://wild-pegasus-appeared.dreamwidth.org/403.html?style=site&view=flat'
     url_page_2 = 'http://wild-pegasus-appeared.dreamwidth.org/403.html?style=site&view=flat&page=2'
-    file = File.join(Rails.root, 'spec', 'support', 'fixtures', 'scrape_multi_page.html')
-    file_page_2 = File.join(Rails.root, 'spec', 'support', 'fixtures', 'scrape_single_page.html')
-    stub_request(:get, url).to_return(status: 200, body: File.new(file))
-    stub_request(:get, url_page_2).to_return(status: 200, body: File.new(file_page_2))
+    stub_fixture(url, 'scrape_multi_page')
+    stub_fixture(url_page_2, 'scrape_single_page')
     user = create(:user, username: "Marri")
     board = create(:board, creator: user)
 
     scraper = PostScraper.new(url, board.id)
     allow(scraper).to receive(:prompt_for_user) { user }
     allow(scraper).to receive(:set_from_icon) { nil }
-    expect(scraper).to receive(:puts).with("Importing thread 'linear b'")
+    expect(scraper.send(:logger)).to receive(:info).with("Importing thread 'linear b'")
 
     scraper.scrape!
 
@@ -77,19 +80,28 @@ RSpec.describe PostScraper do
 
   it "should detect all threaded pages" do
     url = 'http://alicornutopia.dreamwidth.org/9596.html?thread=4077436&style=site#cmt4077436'
-    file = File.join(Rails.root, 'spec', 'support', 'fixtures', 'scrape_threaded.html')
-    stub_request(:get, url.gsub("#cmt4077436", "")).to_return(status: 200, body: File.new(file))
+    stub_fixture(url, 'scrape_threaded')
     scraper = PostScraper.new(url, nil, nil, nil, true)
     scraper.instance_variable_set('@html_doc', scraper.send(:doc_from_url, url))
     expect(scraper.send(:page_links).size).to eq(2)
   end
 
+  it "should detect all threaded pages even if there's a single broken-depth comment" do
+    url = 'https://alicornutopia.dreamwidth.org/22671.html?thread=14698127&style=site#cmt14698127'
+    stub_fixture(url, 'scrape_threaded_broken_depth')
+    scraper = PostScraper.new(url, nil, nil, nil, true)
+    scraper.instance_variable_set('@html_doc', scraper.send(:doc_from_url, url))
+    expect(scraper.send(:page_links)).to eq([
+      'https://alicornutopia.dreamwidth.org/22671.html?thread=14705039&style=site#cmt14705039',
+      'https://alicornutopia.dreamwidth.org/22671.html?thread=14711695&style=site#cmt14711695'
+    ])
+  end
+
   it "should raise an error when an unexpected character is found" do
     url = 'http://wild-pegasus-appeared.dreamwidth.org/403.html?style=site&view=flat'
-    file = File.join(Rails.root, 'spec', 'support', 'fixtures', 'scrape_no_replies.html')
-    stub_request(:get, url).to_return(status: 200, body: File.new(file))
+    stub_fixture(url, 'scrape_no_replies')
     scraper = PostScraper.new(url)
-    expect(scraper).to receive(:puts).with("Importing thread 'linear b'")
+    expect(scraper.send(:logger)).to receive(:info).with("Importing thread 'linear b'")
     expect { scraper.scrape! }.to raise_error(UnrecognizedUsernameError)
   end
 
@@ -97,10 +109,9 @@ RSpec.describe PostScraper do
     board = create(:board)
     create(:character, screenname: 'wild_pegasus_appeared', user: board.creator)
     url = 'http://wild-pegasus-appeared.dreamwidth.org/403.html?style=site&view=flat'
-    file = File.join(Rails.root, 'spec', 'support', 'fixtures', 'scrape_no_replies.html')
-    stub_request(:get, url).to_return(status: 200, body: File.new(file))
+    stub_fixture(url, 'scrape_no_replies')
     scraper = PostScraper.new(url, board.id)
-    allow(scraper).to receive(:puts).with("Importing thread 'linear b'")
+    allow(scraper.send(:logger)).to receive(:info).with("Importing thread 'linear b'")
     expect { scraper.scrape! }.to change { Post.count }.by(1)
     expect { scraper.scrape! }.to raise_error(AlreadyImportedError)
     expect(Post.count).to eq(1)
@@ -111,24 +122,22 @@ RSpec.describe PostScraper do
     board = create(:board)
     post = create(:post, board: board, subject: new_title)
     url = 'http://wild-pegasus-appeared.dreamwidth.org/403.html?style=site&view=flat'
-    file = File.join(Rails.root, 'spec', 'support', 'fixtures', 'scrape_no_replies.html')
-    stub_request(:get, url).to_return(status: 200, body: File.new(file))
+    stub_fixture(url, 'scrape_no_replies')
     scraper = PostScraper.new(url, board.id, nil, nil, false, false, new_title)
-    allow(scraper).to receive(:puts).with("Importing thread '#{new_title}'")
+    allow(scraper.send(:logger)).to receive(:info).with("Importing thread '#{new_title}'")
     expect { scraper.scrape! }.to raise_error(AlreadyImportedError)
     expect(Post.count).to eq(1)
   end
 
   it "should scrape character, user and icon properly" do
     url = 'http://wild-pegasus-appeared.dreamwidth.org/403.html?style=site&view=flat'
-    file = File.join(Rails.root, 'spec', 'support', 'fixtures', 'scrape_no_replies.html')
-    stub_request(:get, url).to_return(status: 200, body: File.new(file))
+    stub_fixture(url, 'scrape_no_replies')
     user = create(:user, username: "Marri")
     board = create(:board, creator: user)
 
     scraper = PostScraper.new(url, board.id, nil, nil, false, true)
     allow(STDIN).to receive(:gets).and_return(user.username)
-    expect(scraper).to receive(:puts).with("Importing thread 'linear b'")
+    expect(scraper.send(:logger)).to receive(:info).with("Importing thread 'linear b'")
     expect(scraper).to receive(:print).with("User ID or username for wild_pegasus_appeared? ")
 
     scraper.scrape!
@@ -170,7 +179,7 @@ RSpec.describe PostScraper do
     characters.each { |data| create(:character, data) }
 
     scraper = PostScraper.new(urls.first, board.id, nil, nil, true, false)
-    expect(scraper).to receive(:puts).with("Importing thread 'repealing'")
+    expect(scraper.send(:logger)).to receive(:info).with("Importing thread 'repealing'")
     scraper.scrape_threads!(threads)
     expect(Post.count).to eq(1)
     expect(Post.first.subject).to eq('repealing')
@@ -182,8 +191,7 @@ RSpec.describe PostScraper do
 
   it "doesn't recreate characters and icons if they exist" do
     url = 'http://wild-pegasus-appeared.dreamwidth.org/403.html?style=site&view=flat'
-    file = File.join(Rails.root, 'spec', 'support', 'fixtures', 'scrape_no_replies.html')
-    stub_request(:get, url).to_return(status: 200, body: File.new(file))
+    stub_fixture(url, 'scrape_no_replies')
 
     user = create(:user, username: "Marri")
     board = create(:board, creator: user)
@@ -199,7 +207,7 @@ RSpec.describe PostScraper do
 
     scraper = PostScraper.new(url, board.id)
     expect(scraper).not_to receive(:print).with("User ID or username for wild_pegasus_appeared? ")
-    expect(scraper).to receive(:puts).with("Importing thread 'linear b'") # just to quiet it
+    expect(scraper.send(:logger)).to receive(:info).with("Importing thread 'linear b'") # just to quiet it
 
     scraper.scrape!
     expect(User.count).to eq(1)
@@ -209,8 +217,7 @@ RSpec.describe PostScraper do
 
   it "doesn't recreate icons if they already exist for that character with new urls" do
     url = 'http://wild-pegasus-appeared.dreamwidth.org/403.html?style=site&view=flat'
-    file = File.join(Rails.root, 'spec', 'support', 'fixtures', 'scrape_no_replies.html')
-    stub_request(:get, url).to_return(status: 200, body: File.new(file))
+    stub_fixture(url, 'scrape_no_replies')
 
     user = create(:user, username: "Marri")
     board = create(:board, creator: user)
@@ -226,7 +233,7 @@ RSpec.describe PostScraper do
 
     scraper = PostScraper.new(url, board.id)
     expect(scraper).not_to receive(:print).with("User ID or username for wild_pegasus_appeared? ")
-    expect(scraper).to receive(:puts).with("Importing thread 'linear b'") # just to quiet it
+    expect(scraper.send(:logger)).to receive(:info).with("Importing thread 'linear b'") # just to quiet it
 
     scraper.scrape!
     expect(User.count).to eq(1)
