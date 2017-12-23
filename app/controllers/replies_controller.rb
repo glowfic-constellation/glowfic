@@ -188,7 +188,6 @@ class RepliesController < WritableController
     end
 
     @reply.audit_comment = nil if @reply.changes.empty? # don't save an audit for a note and no changes
-    @reply.skip_post_update = true unless @reply.post.try(:last_reply_id) == @reply.id
     unless @reply.save
       flash[:error] = {}
       flash[:error][:message] = "Your reply could not be saved because of the following problems:"
