@@ -99,18 +99,27 @@ class PostScraper < Object
     # 0..24 are in full on the first page
     # fetch 25..49, …, on the other pages
     links = []
-    1.upto((comments.count-1) / 25.0).collect do |index|
-      first_reply_in_batch = comments[index * 25]
-      puts "it's nil!" unless first_reply_in_batch
+    index = 25
+    while index < comments.count
+      first_reply_in_batch = comments[index]
       url = first_reply_in_batch.at_css('.comment-title').at_css('a').attribute('href').value
-      if url[/(\?|&)style=site/]
-        url
-      else
+      unless url[/(\?|&)style=site/]
         url_obj = URI.parse(url)
         url_obj.query += ('&' unless url_obj.query.blank?) + 'style=site'
-        url_obj.to_s
+        url = url_obj.to_s
+      end
+      links << url
+      depth = first_reply_in_batch[:class][/comment-depth-\d+/].sub('comment-depth-', '').to_i
+
+      # check for accidental comment at same depth, if so go mark it as a new page too
+      next_comment = comments[index+1]
+      if next_comment && next_comment[:class][/comment-depth-\d+/].sub('comment-depth-', '').to_i == depth
+        index += 1
+      else
+        index += 25
       end
     end
+    links
   end
 
   def import_post_from_doc(doc)

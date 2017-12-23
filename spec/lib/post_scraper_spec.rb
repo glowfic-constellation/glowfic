@@ -97,6 +97,18 @@ RSpec.describe PostScraper do
     ])
   end
 
+  it "should detect all threaded pages even if there's a broken-depth comment at the 25-per-page boundary" do
+    url = 'https://alicornutopia.dreamwidth.org/22671.html?thread=14691983#cmt14691983'
+    stub_fixture(url, 'scrape_threaded_broken_boundary_depth')
+    scraper = PostScraper.new(url, nil, nil, nil, true)
+    scraper.instance_variable_set('@html_doc', scraper.send(:doc_from_url, url))
+    expect(scraper.send(:page_links)).to eq([
+      'https://alicornutopia.dreamwidth.org/22671.html?thread=14698383&style=site#cmt14698383',
+      'https://alicornutopia.dreamwidth.org/22671.html?thread=14698639&style=site#cmt14698639',
+      'https://alicornutopia.dreamwidth.org/22671.html?thread=14705551&style=site#cmt14705551'
+    ])
+  end
+
   it "should raise an error when an unexpected character is found" do
     url = 'http://wild-pegasus-appeared.dreamwidth.org/403.html?style=site&view=flat'
     stub_fixture(url, 'scrape_no_replies')
