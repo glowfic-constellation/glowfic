@@ -297,4 +297,15 @@ RSpec.describe PostScraper do
     expect(Icon.count).to eq(1)
     expect(tag.icon_id).to eq(icon.id)
   end
+
+  it "handles retrying and failing of downloads" do
+    url = 'http://wild-pegasus-appeared.dreamwidth.org/403.html?style=site&view=flat'
+    scraper = PostScraper.new(url)
+
+    expect(HTTParty).to receive(:get).with(url).exactly(3).times.and_raise(Net::OpenTimeout, 'example failure')
+
+    expect {
+      scraper.send(:doc_from_url, url)
+    }.to raise_error(Net::OpenTimeout, 'example failure')
+  end
 end
