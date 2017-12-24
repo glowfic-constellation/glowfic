@@ -110,10 +110,10 @@ button, .button {
   img { vertical-align: baseline; }
 }
 .link-box.action-new { background-color: $bg_color_linkbox_new; }
-.link-box.action-delete { background-color: $bg_color_linkbox_del; }
+.link-box.action-delete { background-color: $bg_color_linkbox_delete; }
 .link-box.action-edit { background-color: $bg_color_linkbox_edit;}
 .link-box.orange { background-color: #EA8A40;} // TODO: This does not appear to be used anywhere
-.link-box.action-favorite { background-color: $bg_color_linkbox_fav; }
+.link-box.action-favorite { background-color: $bg_color_linkbox_favorite; }
 .link-box.action-dismiss { background-color: $bg_color_linkbox_dismiss; }
 #post-form-wrapper { margin-top: 5px; }
 

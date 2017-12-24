@@ -55,8 +55,8 @@ $font_color_link_hover: #FCFEFD; // link (hovered)
 /* - link-boxes */
 $bg_color_linkbox_new: $colors_green;
 $bg_color_linkbox_edit: $colors_blue;
-$bg_color_linkbox_fav: $colors_blue;
-$bg_color_linkbox_del: $colors_red;
+$bg_color_linkbox_favorite: $colors_blue;
+$bg_color_linkbox_delete: $colors_red;
 $bg_color_linkbox_dismiss: $colors_red;
 
 /* - inputs */
@@ -168,7 +168,7 @@ $bg_color_post_author_narrow: $colors_brown; // these are flipped from not-narro
 
 $font_color_paginate_link: $colors_lightgrey;
 $bg_color_paginate_link_hover: $colors_greybrown;
-$font_color_paginate_link_visited: $colors_brown;
+$font_color_page_visited: $colors_brown;
 $bg_color_page_current: $colors_green;
 $font_color_page_disabled: $colors_black;
 $bg_color_post_icon: $colors_greygreen;

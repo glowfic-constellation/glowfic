@@ -322,7 +322,7 @@ div.post-subheader { width: 100%; }
   a {
     color: $font_color_paginate_link;
     &:hover { background-color: $bg_color_paginate_link_hover; }
-    &:visited { color: $font_color_paginate_link_visited; }
+    &:visited { color: $font_color_page_visited; }
   }
   .summary {
     padding-left: 10px;
