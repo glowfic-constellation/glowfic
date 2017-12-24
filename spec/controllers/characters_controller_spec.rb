@@ -1,6 +1,8 @@
 require "spec_helper"
 
 RSpec.describe CharactersController do
+  include ActiveJob::TestHelper
+
   describe "GET index" do
     it "requires login without an id" do
       get :index
@@ -804,9 +806,11 @@ RSpec.describe CharactersController do
       reply_post_char = reply.post.character_id
 
       login_as(user)
-      post :do_replace, params: { id: character.id, icon_dropdown: other_char.id }
+      perform_enqueued_jobs(only: UpdateModelJob) do
+        post :do_replace, params: { id: character.id, icon_dropdown: other_char.id }
+      end
       expect(response).to redirect_to(character_path(character))
-      expect(flash[:success]).to eq('All uses of this character have been replaced.')
+      expect(flash[:success]).to eq('All uses of this character will be replaced.')
 
       expect(char_post.reload.character_id).to eq(other_char.id)
       expect(reply.reload.character_id).to eq(other_char.id)
@@ -820,9 +824,11 @@ RSpec.describe CharactersController do
       reply = create(:reply, user: user, character: character)
 
       login_as(user)
-      post :do_replace, params: { id: character.id }
+      perform_enqueued_jobs(only: UpdateModelJob) do
+        post :do_replace, params: { id: character.id }
+      end
       expect(response).to redirect_to(character_path(character))
-      expect(flash[:success]).to eq('All uses of this character have been replaced.')
+      expect(flash[:success]).to eq('All uses of this character will be replaced.')
 
       expect(char_post.reload.character_id).to be_nil
       expect(reply.reload.character_id).to be_nil
@@ -837,7 +843,9 @@ RSpec.describe CharactersController do
       reply = create(:reply, user: user, character: character)
 
       login_as(user)
-      post :do_replace, params: { id: character.id, icon_dropdown: other_char.id, alias_dropdown: calias.id }
+      perform_enqueued_jobs(only: UpdateModelJob) do
+        post :do_replace, params: { id: character.id, icon_dropdown: other_char.id, alias_dropdown: calias.id }
+      end
 
       expect(char_post.reload.character_id).to eq(other_char.id)
       expect(reply.reload.character_id).to eq(other_char.id)
@@ -854,9 +862,11 @@ RSpec.describe CharactersController do
       other_post = create(:post, user: user, character: character)
 
       login_as(user)
-      post :do_replace, params: { id: character.id, icon_dropdown: other_char.id, post_ids: [char_post.id, char_reply.post.id] }
+      perform_enqueued_jobs(only: UpdateModelJob) do
+        post :do_replace, params: { id: character.id, icon_dropdown: other_char.id, post_ids: [char_post.id, char_reply.post.id] }
+      end
       expect(response).to redirect_to(character_path(character))
-      expect(flash[:success]).to eq('All uses of this character in the specified posts have been replaced.')
+      expect(flash[:success]).to eq('All uses of this character in the specified posts will be replaced.')
 
       expect(char_post.reload.character_id).to eq(other_char.id)
       expect(char_reply.reload.character_id).to eq(other_char.id)
@@ -872,7 +882,9 @@ RSpec.describe CharactersController do
       char_reply = create(:reply, user: user, character: character, character_alias_id: calias.id)
 
       login_as(user)
-      post :do_replace, params: { id: character.id, icon_dropdown: other_char.id, orig_alias: calias.id }
+      perform_enqueued_jobs(only: UpdateModelJob) do
+        post :do_replace, params: { id: character.id, icon_dropdown: other_char.id, orig_alias: calias.id }
+      end
 
       expect(char_post.reload.character_id).to eq(character.id)
       expect(char_reply.reload.character_id).to eq(other_char.id)
@@ -887,7 +899,9 @@ RSpec.describe CharactersController do
       char_reply = create(:reply, user: user, character: character, character_alias_id: calias.id)
 
       login_as(user)
-      post :do_replace, params: { id: character.id, icon_dropdown: other_char.id, orig_alias: '' }
+      perform_enqueued_jobs(only: UpdateModelJob) do
+        post :do_replace, params: { id: character.id, icon_dropdown: other_char.id, orig_alias: '' }
+      end
 
       expect(char_post.reload.character_id).to eq(other_char.id)
       expect(char_reply.reload.character_id).to eq(character.id)
@@ -902,7 +916,9 @@ RSpec.describe CharactersController do
       char_reply = create(:reply, user: user, character: character, character_alias_id: calias.id)
 
       login_as(user)
-      post :do_replace, params: { id: character.id, icon_dropdown: other_char.id, orig_alias: 'all' }
+      perform_enqueued_jobs(only: UpdateModelJob) do
+        post :do_replace, params: { id: character.id, icon_dropdown: other_char.id, orig_alias: 'all' }
+      end
 
       expect(char_post.reload.character_id).to eq(other_char.id)
       expect(char_reply.reload.character_id).to eq(other_char.id)

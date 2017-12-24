@@ -1,6 +1,8 @@
 require "spec_helper"
 
 RSpec.describe Board do
+  include ActiveJob::TestHelper
+
   it "should allow everyone to post if open to anyone" do
     board = create(:board)
     user = create(:user)
@@ -83,5 +85,19 @@ RSpec.describe Board do
       create(:board_section, board: board)
       expect(board.ordered?).to eq(true)
     end
+  end
+
+  it "deletes sections but moves posts to sandboxes" do
+    board = create(:board)
+    sandbox = create(:board, id: 3)
+    section = create(:board_section, board: board)
+    post = create(:post, board: board, section: section)
+    perform_enqueued_jobs(only: UpdateModelJob) do
+      board.destroy
+    end
+    post.reload
+    expect(post.board_id).to eq(3)
+    expect(post.section).to be_nil
+    expect(BoardSection.find_by_id(section.id)).to be_nil
   end
 end

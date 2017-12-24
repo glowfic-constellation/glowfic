@@ -49,8 +49,7 @@ class Board < ApplicationRecord
 
   def move_posts_to_sandbox
     # TODO don't hard code sandbox board_id
-    # TODO / WARNING this doesn't trigger callbacks
-    posts.update_all(board_id: 3, section_id: nil)
+    UpdateModelJob.perform_later(Post.to_s, {board_id: id}, {board_id: 3, section_id: nil})
   end
 
   def fix_ordering

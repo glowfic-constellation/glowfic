@@ -214,26 +214,24 @@ class CharactersController < ApplicationController
     end
 
     success_msg = ''
-    Post.transaction do
-      replies = Reply.where(character_id: @character.id)
-      posts = Post.where(character_id: @character.id)
+    wheres = {character_id: @character.id}
+    updates = {character_id: new_char.try(:id), character_alias_id: new_alias_id}
 
-      if params[:post_ids].present?
-        replies = replies.where(post_id: params[:post_ids])
-        posts = posts.where(id: params[:post_ids])
-        success_msg = " in the specified " + 'post'.pluralize(params[:post_ids].size)
-      end
-
-      if @character.aliases.exists? && params[:orig_alias] != 'all'
-        replies = replies.where(character_alias_id: orig_alias.try(:id))
-        posts = posts.where(character_alias_id: orig_alias.try(:id))
-      end
-
-      posts.update_all(character_id: new_char.try(:id), character_alias_id: new_alias_id)
-      replies.update_all(character_id: new_char.try(:id), character_alias_id: new_alias_id)
+    if params[:post_ids].present?
+      wheres[:post_id] = params[:post_ids]
+      success_msg = " in the specified " + 'post'.pluralize(params[:post_ids].size)
     end
 
-    flash[:success] = "All uses of this character#{success_msg} have been replaced."
+    if @character.aliases.exists? && params[:orig_alias] != 'all'
+      wheres[:character_alias_id] = orig_alias.try(:id)
+    end
+
+    UpdateModelJob.perform_later(Reply.to_s, wheres, updates)
+    wheres[:id] = wheres.delete(:post_id) if params[:post_ids].present?
+    UpdateModelJob.perform_later(Post.to_s, wheres, updates)
+
+
+    flash[:success] = "All uses of this character#{success_msg} will be replaced."
     redirect_to character_path(@character)
   end
 

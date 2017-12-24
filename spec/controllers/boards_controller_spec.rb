@@ -1,6 +1,8 @@
 require "spec_helper"
 
 RSpec.describe BoardsController do
+  include ActiveJob::TestHelper
+
   describe "GET index" do
     context "without a user_id" do
       it "succeeds when logged out" do
@@ -330,10 +332,13 @@ RSpec.describe BoardsController do
 
     it "moves posts to sandboxes" do
       board = create(:board)
+      sandbox = create(:board, id: 3)
       section = create(:board_section, board: board)
       post = create(:post, board: board, section: section)
       login_as(board.creator)
-      delete :destroy, params: { id: board.id }
+      perform_enqueued_jobs(only: UpdateModelJob) do
+        delete :destroy, params: { id: board.id }
+      end
       expect(response).to redirect_to(boards_url)
       expect(flash[:success]).to eq('Continuity deleted.')
       post.reload
