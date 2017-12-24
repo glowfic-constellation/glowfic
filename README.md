@@ -4,7 +4,7 @@
 
 ### Dependencies
 
-*   [Ruby](https://www.ruby-lang.org/en/) 2.4.2
+*   [Ruby](https://www.ruby-lang.org/en/) 2.4.3
 *   [Rails](http://rubyonrails.org/) 5.0.6
 *   [Redis](https://redis.io/topics/quickstart)
 *   [PostgreSQL](https://www.postgresql.org/) (guide to set this up [later](#setting-up-postgresql))
@@ -66,8 +66,8 @@ With GNOME Terminal, go to Edit > Profile Preferences, Command, and then check '
 Now go to the 'glowfic' directory (`cd ~/Documents/glowfic`), and to get the appropriate version of Ruby, run:
 
 *   `rvm get master`
-*   `rvm install 2.4.2`
-*   `rvm use 2.4.2`
+*   `rvm install 2.4.3`
+*   `rvm use 2.4.3`
 
 ##### rbenv
 
@@ -192,7 +192,7 @@ First, go to the glowfic folder and download the latest code:
 *   `git pull`
 
 Then look at this README again, to make sure the version of Ruby hasn't changed; alternatively, in case this file is not up to date, look at the top of the `Gemfile` file, where it states the version of ruby.
-As of writing, this is `ruby '2.4.2'`.
+As of writing, this is `ruby '2.4.3'`.
 If it has changed, install the latest version along with `bundler`. With RVM, this is done with:
 
 *   `rvm install x.y.z`, replacing `x.y.z` with the numbers shown in the file
