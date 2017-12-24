@@ -1,6 +1,8 @@
 require "spec_helper"
 
 RSpec.describe IconsController do
+  include ActiveJob::TestHelper
+
   describe "DELETE delete_multiple" do
     it "requires login" do
       delete :delete_multiple
@@ -505,9 +507,11 @@ RSpec.describe IconsController do
       reply_post_icon = reply.post.icon_id
 
       login_as(user)
-      post :do_replace, params: { id: icon.id, icon_dropdown: other_icon.id }
+      perform_enqueued_jobs(only: UpdateModelJob) do
+        post :do_replace, params: { id: icon.id, icon_dropdown: other_icon.id }
+      end
       expect(response).to redirect_to(icon_path(icon))
-      expect(flash[:success]).to eq('All uses of this icon have been replaced.')
+      expect(flash[:success]).to eq('All uses of this icon will be replaced.')
 
       expect(icon_post.reload.icon_id).to eq(other_icon.id)
       expect(reply.reload.icon_id).to eq(other_icon.id)
@@ -521,9 +525,11 @@ RSpec.describe IconsController do
       reply = create(:reply, user: user, icon: icon)
 
       login_as(user)
-      post :do_replace, params: { id: icon.id }
+      perform_enqueued_jobs(only: UpdateModelJob) do
+        post :do_replace, params: { id: icon.id }
+      end
       expect(response).to redirect_to(icon_path(icon))
-      expect(flash[:success]).to eq('All uses of this icon have been replaced.')
+      expect(flash[:success]).to eq('All uses of this icon will be replaced.')
 
       expect(icon_post.reload.icon_id).to be_nil
       expect(reply.reload.icon_id).to be_nil
@@ -538,9 +544,11 @@ RSpec.describe IconsController do
       other_post = create(:post, user: user, icon: icon)
 
       login_as(user)
-      post :do_replace, params: { id: icon.id, icon_dropdown: other_icon.id, post_ids: [icon_post.id, icon_reply.post.id] }
+      perform_enqueued_jobs(only: UpdateModelJob) do
+        post :do_replace, params: { id: icon.id, icon_dropdown: other_icon.id, post_ids: [icon_post.id, icon_reply.post.id] }
+      end
       expect(response).to redirect_to(icon_path(icon))
-      expect(flash[:success]).to eq('All uses of this icon have been replaced.')
+      expect(flash[:success]).to eq('All uses of this icon will be replaced.')
 
       expect(icon_post.reload.icon_id).to eq(other_icon.id)
       expect(icon_reply.reload.icon_id).to eq(other_icon.id)

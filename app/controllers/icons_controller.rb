@@ -98,17 +98,13 @@ class IconsController < UploadingController
       redirect_to replace_icon_path(@icon) and return
     end
 
-    Post.transaction do
-      replies = Reply.where(icon_id: @icon.id)
-      replies = replies.where(post_id: params[:post_ids]) if params[:post_ids].present?
-      replies.update_all(icon_id: new_icon.try(:id))
+    wheres = {icon_id: @icon.id}
+    wheres[:post_id] = params[:post_ids] if params[:post_ids].present?
+    UpdateModelJob.perform_later(Reply.to_s, wheres, {icon_id: new_icon.try(:id)})
+    wheres[:id] = wheres.delete(:post_id) if params[:post_ids].present?
+    UpdateModelJob.perform_later(Post.to_s, wheres, {icon_id: new_icon.try(:id)})
 
-      posts = Post.where(icon_id: @icon.id)
-      posts = posts.where(id: params[:post_ids]) if params[:post_ids].present?
-      posts.update_all(icon_id: new_icon.try(:id))
-    end
-
-    flash[:success] = "All uses of this icon have been replaced."
+    flash[:success] = "All uses of this icon will be replaced."
     redirect_to icon_path(@icon)
   end
 

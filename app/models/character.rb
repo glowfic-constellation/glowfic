@@ -136,7 +136,9 @@ class Character < ApplicationRecord
   end
 
   def clear_char_ids
-    Reply.where(character_id: id).update_all(character_id: nil)
-    Post.where(character_id: id).update_all(character_id: nil)
+    UpdateModelJob.perform_later(Post.to_s, {character_id: id}, {character_id: nil})
+    UpdateModelJob.perform_later(Reply.to_s, {character_id: id}, {character_id: nil})
+    ReplyDraft.where(character_id: id).update_all(character_id: nil)
+    User.where(active_character_id: id).update_all(active_character_id: nil)
   end
 end

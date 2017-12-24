@@ -1,6 +1,8 @@
 require "spec_helper"
 
 RSpec.describe AliasesController do
+  include ActiveJob::TestHelper
+
   describe "GET new" do
     it "requires login" do
       get :new, params: { character_id: -1 }
@@ -142,10 +144,14 @@ RSpec.describe AliasesController do
     it "succeeds" do
       calias = create(:alias)
       reply = create(:reply, user: calias.character.user, character: calias.character, character_alias: calias)
+      draft = create(:reply_draft, user: calias.character.user, character: calias.character, character_alias: calias)
       login_as(calias.character.user)
-      delete :destroy, params: { id: calias.id, character_id: calias.character_id }
+      perform_enqueued_jobs(only: UpdateModelJob) do
+        delete :destroy, params: { id: calias.id, character_id: calias.character_id }
+      end
       expect(response).to redirect_to(edit_character_url(calias.character))
       expect(flash[:success]).to eq("Alias removed.")
+      expect(draft.reload.character_alias_id).to be_nil
       expect(reply.reload.character_alias_id).to be_nil
     end
   end
