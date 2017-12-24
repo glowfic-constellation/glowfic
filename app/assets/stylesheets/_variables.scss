@@ -16,6 +16,12 @@ $colors_lightishbrown: #9E9C93;
 $colors_brown: #8B8687;
 $colors_greybrown: #A3A1A0;
 $colors_green: #3F7055;
+$colors_blue: #4455AA;
+$colors_red: #880000;
+$colors_greygreen: #B0BBA9;
+$colors_lightgrey: #EEEEEE;
+$colors_darkpurple: #3E384F;
+$colors_black: #101010;
 
 /* Semantic colors */
 // colors listed here should be named according to where and how they are used, to allow layouts to better recolor the site
@@ -25,7 +31,7 @@ $font_color_header_link: $colors_bright; // header links
 $font_color_header_link_hover: $colors_brown; // header links (hover)
 
 $bg_color_header_top: $colors_green; // top header strip for logo
-$bg_color_header_middle: #3E384F; // middle header strip with user items
+$bg_color_header_middle: $colors_darkpurple; // middle header strip with user items
 $bg_color_header_bottom: $colors_lightbrown; // bottom header strip with navigation
 
 /* - flashes */
@@ -37,7 +43,7 @@ $bg_color_flash_breadcrumbs: $colors_greybrown; // breadcrumbs ("Continuities »
 
 /* - main page */
 $bg_color_page: #E5DFD1; // overall page
-$font_color_page: #101010;
+$font_color_page: $colors_black;
 
 $font_color_content: $colors_dark; // body
 
@@ -45,6 +51,13 @@ $font_color_content: $colors_dark; // body
 $font_color_link: $colors_green; // link
 $font_color_link_visited: #28503A; // link (visited)
 $font_color_link_hover: #FCFEFD; // link (hovered)
+
+/* - link-boxes */
+$bg_color_linkbox_new: $colors_green;
+$bg_color_linkbox_edit: $colors_blue;
+$bg_color_linkbox_favorite: $colors_blue;
+$bg_color_linkbox_delete: $colors_red;
+$bg_color_linkbox_dismiss: $colors_red;
 
 /* - inputs */
 $bg_color_input: $colors_white; // regular <input>
@@ -62,6 +75,9 @@ $font_color_viewbutton: $colors_white;
 
 /* - icons */
 $border_color_icon_selected: $colors_green; // selected icon border
+$bg_color_icon: $colors_greygreen;
+$bg_color_icon_credit: $colors_greygreen;
+$bg_color_icon_selector: $colors_greygreen;
 
 /* - characters */
 $border_color_character_iconless: #666666; // in characters#show icon view when a character has no icon
@@ -79,8 +95,8 @@ $font_color_tag_item: $colors_green;
 $bg_color_head: $colors_brown; // primary content header
 $bg_color_sub: $colors_lightbrown; // secondary content header
 $bg_color_subber: $colors_greybrown; // tertiary content header
-$font_color_head: #EEEEEE;
-$font_color_sub: #3E384F;
+$font_color_head: $colors_lightgrey;
+$font_color_sub: $colors_darkpurple;
 $font_color_subber: black;
 
 $bg_color_ender: $bg_color_subber; // form table footer with submit
@@ -132,3 +148,38 @@ $font_color_select2_container: $colors_dark;
 /* - misc */
 $bg_color_descriptions: $colors_lightbrown; // description subheadings on templates page ("single-description"), *not* posts
 $bg_color_selectionpopup: $colors_lightbrown; // selection popups like character/alias on posts#editor
+$bg_color_spacer_alt: $colors_brown;
+$bg_color_search_box: $colors_brown;
+
+/* - replies.scss */
+$bg_color_icon_overlay: #000000; // box displaying current icon
+
+$bg_color_expander: $colors_greygreen; // expander on posts
+
+$bg_color_ender_post: $colors_darkpurple;
+$font_color_ender_post: $colors_bright;
+
+$bg_color_post_character: $colors_brown;
+$bg_color_post_screenname: $colors_greybrown;
+$bg_color_post_author: $colors_lightbrown;
+
+$bg_color_post_character_narrow: $colors_lightbrown;
+$bg_color_post_author_narrow: $colors_brown; // these are flipped from not-narrow mode to make the quick-switcher blend in
+
+$font_color_paginate_link: $colors_lightgrey;
+$bg_color_paginate_link_hover: $colors_greybrown;
+$font_color_page_visited: $colors_brown;
+$bg_color_page_current: $colors_green;
+$font_color_page_disabled: $colors_black;
+$bg_color_post_icon: $colors_greygreen;
+
+$font_color_menu_link: $colors_lightgrey;
+$bg_color_menu_link_hover: $colors_greygreen;
+
+/* - post headers */
+$bg_color_post_description: $colors_greybrown;
+$bg_color_navheader: $colors_lightbrown;
+$bg_color_navbutton: $colors_greybrown;
+
+$bg_color_post_menu: $colors_brown;
+$border_color_post_menu: $colors_greybrown;
