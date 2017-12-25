@@ -27,7 +27,7 @@ class Character < ApplicationRecord
 
   accepts_nested_attributes_for :template, reject_if: :all_blank
 
-  nilify_blanks types: [:string, :text, :citext] # nilify_blanks does not touch citext by default
+  nilify_blanks
 
   audited on: :update, mod_only: true
 
