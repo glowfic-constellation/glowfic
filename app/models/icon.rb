@@ -13,7 +13,7 @@ class Icon < ApplicationRecord
   validates_presence_of :url, :keyword
   validate :url_is_url
   validate :uploaded_url_not_in_use
-  nilify_blanks types: [:string, :text, :citext] # nilify_blanks does not touch citext by default
+  nilify_blanks
 
   before_validation :use_icon_host
   before_update :delete_from_s3

@@ -38,7 +38,7 @@ class User < ApplicationRecord
   before_validation :encrypt_password
   after_save :clear_password
 
-  nilify_blanks types: [:string, :text, :citext] # nilify_blanks does not touch citext by default
+  nilify_blanks
 
   def authenticate(password)
     return crypted == crypted_password(password) if salt_uuid.present?
