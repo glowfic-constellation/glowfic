@@ -1,6 +1,15 @@
 class GenerateFlatPostJob < ApplicationJob
   queue_as :high
 
+  def self.enqueue(post_id)
+    # frequent tag check
+    lock_key = lock_key(post_id)
+    return if $redis.get(lock_key)
+    $redis.set(lock_key, true)
+
+    perform_later(post_id)
+  end
+
   def perform(post_id)
     Rails.logger.info("[GenerateFlatPostJob] updating flat post for post #{post_id}")
     return unless (post = Post.find_by_id(post_id))

@@ -93,12 +93,6 @@ class Reply < ApplicationRecord
 
   def update_flat_post
     return if skip_regenerate
-
-    # frequent tag check
-    lock_key = GenerateFlatPostJob.lock_key(post_id)
-    return if $redis.get(lock_key)
-    $redis.set(lock_key, true)
-
-    GenerateFlatPostJob.perform_later(post_id)
+    GenerateFlatPostJob.enqueue(post_id)
   end
 end
