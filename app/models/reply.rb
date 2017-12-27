@@ -30,6 +30,11 @@ class Reply < ApplicationRecord
     updated_at
   end
 
+  def has_edit_audits?
+    return read_attribute(:has_edit_audits) if has_attribute?(:has_edit_audits)
+    audits.count > 1
+  end
+
   private
 
   def set_last_reply

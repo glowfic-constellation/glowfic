@@ -67,7 +67,7 @@ class WritableController < ApplicationController
     end
 
     @replies = @replies
-      .select('replies.*, characters.name, characters.screenname, icons.keyword, icons.url, users.username, character_aliases.name as alias')
+      .select("replies.*, characters.name, characters.screenname, icons.keyword, icons.url, users.username, character_aliases.name as alias, (SELECT COUNT(*) FROM audits WHERE audits.auditable_id = replies.id AND audits.auditable_type = 'Reply') > 1 AS has_edit_audits")
       .joins(:user)
       .left_outer_joins(:character)
       .left_outer_joins(:icon)
