@@ -17,26 +17,26 @@ class Post < ApplicationRecord
   belongs_to :last_reply, class_name: Reply, optional: true
   has_one :flat_post
   has_many :replies, inverse_of: :post, dependent: :destroy
+  has_many :reply_drafts, dependent: :destroy
+
   has_many :post_viewers, inverse_of: :post, dependent: :destroy
   has_many :viewers, through: :post_viewers, source: :user
-  has_many :reply_drafts, dependent: :destroy
   has_many :favorites, as: :favorite, dependent: :destroy
 
   has_many :post_tags, inverse_of: :post, dependent: :destroy
   has_many :labels, -> { order('post_tags.id ASC') }, through: :post_tags, source: :label
   has_many :settings, -> { order('post_tags.id ASC') }, through: :post_tags, source: :setting
   has_many :content_warnings, -> { order('post_tags.id ASC') }, through: :post_tags, source: :content_warning, after_add: :reset_warnings
-  has_many :favorites, as: :favorite, dependent: :destroy
 
   has_many :index_posts, inverse_of: :post, dependent: :destroy
   has_many :indexes, inverse_of: :posts, through: :index_posts
   has_many :index_sections, inverse_of: :posts, through: :index_posts
 
-  has_many :post_authors, inverse_of: :post
-  has_many :post_coauthors, -> { where(cameo: false) }, class_name: PostAuthor, inverse_of: :post
-  has_many :coauthors, class_name: User, through: :post_coauthors, source: :user
-  has_many :post_cameos, -> { where(cameo: true) }, class_name: PostAuthor, inverse_of: :post
-  has_many :cameos, class_name: User, through: :post_cameos, source: :user
+  has_many :post_authors, inverse_of: :post, dependent: :destroy
+  has_many :tagging_post_authors, -> { where(can_owe: true) }, class_name: 'PostAuthor', inverse_of: :post
+  has_many :tagging_authors, class_name: 'User', through: :tagging_post_authors, source: :user
+  has_many :joined_post_authors, -> { where(joined: true) }, class_name: 'PostAuthor', inverse_of: :post
+  has_many :joined_authors, class_name: 'User', through: :joined_post_authors, source: :user
 
   attr_accessor :is_import
   attr_writer :skip_edited
@@ -208,7 +208,8 @@ class Post < ApplicationRecord
   def metadata_editable_by?(user)
     return false unless user
     return true if user.has_permission?(:edit_posts)
-    author_ids.include?(user.id)
+    # TODO: if the post is open (and so is the board), only let the main author edit the metadata?
+    tagging_author_ids.include?(user.id)
   end
 
   def taggable_by?(user)
@@ -216,7 +217,7 @@ class Post < ApplicationRecord
     return false if completed? || abandoned?
     return false unless user.writes_in?(board)
     return true unless authors_locked?
-    author_ids.include?(user.id)
+    tagging_author_ids.include?(user.id)
   end
 
   def total_word_count
