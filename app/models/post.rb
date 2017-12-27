@@ -45,6 +45,7 @@ class Post < ApplicationRecord
   validate :valid_board, :valid_board_section
 
   before_create :build_initial_flat_post
+  before_save :update_board_cameos
   before_validation :set_last_user, on: :create
   after_create :update_post_authors
   after_commit :notify_followers, on: :create
@@ -275,6 +276,16 @@ class Post < ApplicationRecord
     post_author.save!
 
     # TODO: logic and callbacks for someone joining a post
+  end
+
+  # if the board is not open to anyone, add non-authors in the post author list to the board cameos list
+  def update_board_cameos
+    return if board.open_to_anyone?
+    non_authors = tagging_author_ids - board.writer_ids
+    return if non_authors.empty?
+    non_authors.each do |non_author_id|
+      BoardAuthor.create!(board_id: board_id, user_id: non_author_id)
+    end
   end
 
   private
