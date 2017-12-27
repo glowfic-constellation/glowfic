@@ -12,7 +12,7 @@ class CreatePostAuthors < ActiveRecord::Migration[5.0]
     add_index :post_authors, :post_id
     add_index :post_authors, :user_id
 
-    Post.with_author_ids.find_each do |post|
+    Post.select('posts.*').with_author_ids.find_each do |post|
       first_items = Reply.where(id: Reply.select('MIN(id)').where(post_id: post.id).group(:user_id)).index_by(&:user_id)
       first_items[post.user_id] = post
 
