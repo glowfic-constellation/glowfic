@@ -46,7 +46,7 @@ $bg_color_header_middle: #212135; // middle header strip with user items
 $bg_color_header_bottom: #ADB5B9; // bottom header strip with navigation
 
 #logo { background-color: $bg_color_header_top; }
-#header, #nav-bottom { background-color: $bg_color_header_bottom; }
+#header { background-color: $bg_color_header_bottom; }
 #nav-top, #user-info { background-color: $bg_color_header_middle; }
 
 /* - links */
