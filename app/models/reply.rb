@@ -20,6 +20,10 @@ class Reply < ApplicationRecord
     using: {tsearch: { dictionary: "english", highlight: {MaxFragments: 10} } }
   )
 
+  scope :with_edit_audit_counts, -> {
+    select("(SELECT COUNT(*) FROM audits WHERE audits.auditable_id = replies.id AND audits.auditable_type = 'Reply') > 1 AS has_edit_audits")
+  }
+
   def post_page(per=25)
     per_page = per > 0 ? per : post.replies.count
     index = post.replies.where('id < ?', self.id).count

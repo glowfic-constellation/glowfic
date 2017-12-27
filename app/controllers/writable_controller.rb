@@ -67,11 +67,12 @@ class WritableController < ApplicationController
     end
 
     @replies = @replies
-      .select("replies.*, characters.name, characters.screenname, icons.keyword, icons.url, users.username, character_aliases.name as alias, (SELECT COUNT(*) FROM audits WHERE audits.auditable_id = replies.id AND audits.auditable_type = 'Reply') > 1 AS has_edit_audits")
+      .select("replies.*, characters.name, characters.screenname, icons.keyword, icons.url, users.username, character_aliases.name as alias")
       .joins(:user)
       .left_outer_joins(:character)
       .left_outer_joins(:icon)
       .left_outer_joins(:character_alias)
+      .with_edit_audit_counts
       .order('id asc')
       .paginate(page: cur_page, per_page: per)
     redirect_to post_path(@post, page: @replies.total_pages, per_page: per) and return if cur_page > @replies.total_pages
