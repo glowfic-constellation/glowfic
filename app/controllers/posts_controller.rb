@@ -16,9 +16,7 @@ class PostsController < WritableController
   end
 
   def owed
-    posts_started = Post.where(user_id: current_user.id).pluck('distinct id')
-    posts_in = Reply.where(user_id: current_user.id).pluck('distinct post_id')
-    ids = (posts_in + posts_started).uniq
+    ids = PostAuthor.where(user_id: current_user.id, can_owe: true).group(:post_id).select(:post_id)
     @posts = Post.where(id: ids).where.not(status: [Post::STATUS_COMPLETE, Post::STATUS_ABANDONED]).where.not(last_user: current_user)
     @posts = @posts.where.not(status: Post::STATUS_HIATUS).where('tagged_at > ?', 1.month.ago) if current_user.hide_hiatused_tags_owed?
     @posts = posts_from_relation(@posts.order('tagged_at desc'))
