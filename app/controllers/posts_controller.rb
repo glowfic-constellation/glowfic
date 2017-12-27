@@ -16,9 +16,7 @@ class PostsController < WritableController
   end
 
   def owed
-    posts_started = Post.where(user_id: current_user.id).pluck('distinct id')
-    posts_in = Reply.where(user_id: current_user.id).pluck('distinct post_id')
-    ids = (posts_in + posts_started).uniq
+    ids = PostAuthor.where(user_id: current_user.id, can_owe: true).group(:post_id).select(:post_id)
     @posts = Post.where(id: ids).where.not(status: [Post::STATUS_COMPLETE, Post::STATUS_ABANDONED]).where.not(last_user: current_user)
     @posts = @posts.where.not(status: Post::STATUS_HIATUS).where('tagged_at > ?', 1.month.ago) if current_user.hide_hiatused_tags_owed?
     @posts = posts_from_relation(@posts.order('tagged_at desc'))
@@ -85,6 +83,9 @@ class PostsController < WritableController
     @post.section_id = params[:section_id]
     @post.icon_id = (current_user.active_character ? current_user.active_character.default_icon.try(:id) : current_user.avatar_id)
     @page_title = 'New Post'
+
+    @author_ids = [current_user.id]
+    @author_ids = @post.board.author_ids if @post.board && !@post.board.open_to_anyone?
   end
 
   def create
@@ -141,6 +142,8 @@ class PostsController < WritableController
     change_status and return if params[:status].present?
     change_authors_locked and return if params[:authors_locked].present?
 
+    tagging_author_ids = post_params.delete(:tagging_author_ids) || []
+
     @post.assign_attributes(post_params)
     @post.board ||= Board.find(3)
     settings = process_tags(Setting, :post, :setting_ids)
@@ -169,6 +172,7 @@ class PostsController < WritableController
         @post.settings = settings
         @post.content_warnings = warnings
         @post.labels = labels
+        process_new_tagging_authors(tagging_author_ids)
         @post.save!
       end
 
@@ -301,6 +305,12 @@ class PostsController < WritableController
 
   private
 
+  def editor_setup
+    super
+    @permitted_authors = User.order(:username)
+    @author_ids = @post.try(:tagging_author_ids) || []
+  end
+
   def import_thread
     unless valid_dreamwidth_url?(params[:dreamwidth_url])
       flash[:error] = "Invalid URL provided."
@@ -374,6 +384,32 @@ class PostsController < WritableController
     unless current_user.has_permission?(:import_posts)
       flash[:error] = "You do not have access to this feature."
       redirect_to new_post_path
+    end
+  end
+
+  def process_new_tagging_authors(tagging_author_ids)
+    old_tagging_author_ids = @post.tagging_author_ids
+    removed_ids = old_tagging_author_ids - tagging_author_ids
+    new_ids = tagging_author_ids - old_tagging_author_ids
+
+    # remove from tagging list authors removed
+    @post.tagging_post_authors.each do |post_author|
+      next unless removed_ids.include?(post_author.user_id)
+      post_author.update_attributes(can_owe: false)
+    end
+
+    # add to list authors who can
+    # TODO: invite authors by email if applicable
+    new_ids.each do |user_id|
+      post_author = @post.post_authors.find_or_create_by(user_id: user_id)
+      post_author.can_owe = true
+
+      unless post_author.joined?
+        post_author.invited_at = Time.now
+        post_author.invited_by = current_user.id
+      end
+
+      post_author.save
     end
   end
 

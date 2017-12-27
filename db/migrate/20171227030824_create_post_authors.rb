@@ -11,13 +11,13 @@ class CreatePostAuthors < ActiveRecord::Migration[5.0]
     end
     add_index :post_authors, :post_id
     add_index :post_authors, :user_id
-    Post.with_author_ids.find_each do |post|
+
+    Post.select('posts.*').with_author_ids.find_each do |post|
+      first_items = Reply.where(id: Reply.select('MIN(id)').where(post_id: post.id).group(:user_id)).index_by(&:user_id)
+      first_items[post.user_id] = post
+
       post.author_ids.each do |author_id|
-        first_item = if post.user_id == author_id
-          post
-        else
-          post.replies.where(user_id: author_id).order(id: :asc).first
-        end
+        first_item = first_items[author_id]
         PostAuthor.create!(post_id: post.id, user_id: author_id, can_owe: true, joined: true, joined_at: first_item.created_at)
       end
     end

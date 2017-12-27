@@ -38,6 +38,12 @@ function setupMetadataEditor() {
     placeholder: 'Choose user(s) to view this post'
   });
 
+  $("#post_tagging_author_ids").select2({
+    width: '300px',
+    minimumResultsForSearch: 20,
+    placeholder: 'Choose user(s) to view this post'
+  });
+
   createTagSelect("Label", "label", "post");
   createTagSelect("Setting", "setting", "post");
   createTagSelect("ContentWarning", "content_warning", "post");

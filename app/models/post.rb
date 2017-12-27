@@ -17,26 +17,26 @@ class Post < ApplicationRecord
   belongs_to :last_reply, class_name: 'Reply', optional: true
   has_one :flat_post
   has_many :replies, inverse_of: :post, dependent: :destroy
+  has_many :reply_drafts, dependent: :destroy
+
   has_many :post_viewers, inverse_of: :post, dependent: :destroy
   has_many :viewers, through: :post_viewers, source: :user
-  has_many :reply_drafts, dependent: :destroy
   has_many :favorites, as: :favorite, dependent: :destroy
 
   has_many :post_tags, inverse_of: :post, dependent: :destroy
   has_many :labels, -> { order('post_tags.id ASC') }, through: :post_tags, source: :label
   has_many :settings, -> { order('post_tags.id ASC') }, through: :post_tags, source: :setting
   has_many :content_warnings, -> { order('post_tags.id ASC') }, through: :post_tags, source: :content_warning, after_add: :reset_warnings
-  has_many :favorites, as: :favorite, dependent: :destroy
 
   has_many :index_posts, inverse_of: :post, dependent: :destroy
   has_many :indexes, inverse_of: :posts, through: :index_posts
   has_many :index_sections, inverse_of: :posts, through: :index_posts
 
-  has_many :post_authors, inverse_of: :post
-  has_many :post_coauthors, -> { where(cameo: false) }, class_name: PostAuthor, inverse_of: :post
-  has_many :coauthors, class_name: User, through: :post_coauthors, source: :user
-  has_many :post_cameos, -> { where(cameo: true) }, class_name: PostAuthor, inverse_of: :post
-  has_many :cameos, class_name: User, through: :post_cameos, source: :user
+  has_many :post_authors, inverse_of: :post, dependent: :destroy
+  has_many :tagging_post_authors, -> { where(can_owe: true) }, class_name: 'PostAuthor', inverse_of: :post
+  has_many :tagging_authors, class_name: 'User', through: :tagging_post_authors, source: :user
+  has_many :joined_post_authors, -> { where(joined: true) }, class_name: 'PostAuthor', inverse_of: :post
+  has_many :joined_authors, class_name: 'User', through: :joined_post_authors, source: :user
 
   attr_accessor :is_import
   attr_writer :skip_edited
@@ -46,7 +46,9 @@ class Post < ApplicationRecord
 
   before_create :build_initial_flat_post, :set_timestamps
   before_update :set_timestamps
+  before_save :update_board_cameos
   before_validation :set_last_user, on: :create
+  after_create :update_post_authors
   after_commit :notify_followers, on: :create
 
   NON_EDITED_ATTRS = %w(id created_at updated_at edited_at tagged_at last_user_id last_reply_id section_order)
@@ -61,7 +63,7 @@ class Post < ApplicationRecord
     ),
     using: {tsearch: { dictionary: "english" } }
   )
-  scope :no_tests, -> { where('posts.board_id != ?', Board::ID_SITETESTING) }
+  scope :no_tests, -> { where.not(board_id: Board::ID_SITETESTING) }
 
   scope :with_has_content_warnings, -> {
     select("(SELECT tags.id IS NOT NULL FROM tags LEFT JOIN post_tags ON tags.id = post_tags.tag_id WHERE tags.type = 'ContentWarning' AND post_tags.post_id = posts.id LIMIT 1) AS has_content_warnings")
@@ -71,7 +73,7 @@ class Post < ApplicationRecord
     # fetches replies.map(&:user_id).uniq
     # then appends post.user_id
     # then unions distinctly, and re-converts to an array
-    select('ARRAY(SELECT posts.user_id UNION SELECT replies.user_id FROM replies WHERE replies.post_id = posts.id GROUP BY replies.user_id) AS author_ids')
+    select('ARRAY(SELECT user_id FROM post_authors WHERE post_authors.post_id = posts.id) AS author_ids')
   }
 
   scope :with_reply_count, -> {
@@ -95,7 +97,7 @@ class Post < ApplicationRecord
 
   def author_ids
     return read_attribute(:author_ids) if has_attribute?(:author_ids)
-    @author_ids ||= (replies.group(:user_id).pluck(:user_id) + [user_id]).uniq
+    @author_ids ||= joined_post_author_ids
   end
 
   def build_new_reply_for(user)
@@ -209,7 +211,8 @@ class Post < ApplicationRecord
   def metadata_editable_by?(user)
     return false unless user
     return true if user.has_permission?(:edit_posts)
-    author_ids.include?(user.id)
+    # TODO: if the post is open (and so is the board), only let the main author edit the metadata?
+    tagging_author_ids.include?(user.id)
   end
 
   def taggable_by?(user)
@@ -217,7 +220,7 @@ class Post < ApplicationRecord
     return false if completed? || abandoned?
     return false unless user.writes_in?(board)
     return true unless authors_locked?
-    author_ids.include?(user.id)
+    tagging_author_ids.include?(user.id)
   end
 
   def total_word_count
@@ -260,6 +263,36 @@ class Post < ApplicationRecord
   def has_edit_audits?
     return read_attribute(:has_edit_audits) if has_attribute?(:has_edit_audits)
     audits.count > 1
+  end
+
+  def update_post_authors
+    set_author_joined(user_id, created_at)
+  end
+
+  # used when a user makes an entry in a post.
+  # if they are not already in the post, join them to the authors list, set the timestamp, and perform relevant callbacks.
+  def set_author_joined(user_id, timestamp)
+    post_author = post_authors.find_or_create_by(user_id: user_id)
+    return if post_author.joined?
+
+    # user joins thread: now owes tags and can write in it, until permissions later revoked / willingly given up
+    post_author.can_owe = true
+    post_author.joined = true
+    post_author.joined_at = timestamp
+    post_author.save
+
+    # TODO: logic and callbacks for someone joining a post
+>>>>>>> Update post authors when a user posts in a thread
+  end
+
+  # if the board is not open to anyone, add non-authors in the post author list to the board cameos list
+  def update_board_cameos
+    return if board.open_to_anyone?
+    non_authors = tagging_author_ids - board.writer_ids
+    return if non_authors.empty?
+    non_authors.each do |non_author_id|
+      BoardAuthor.create!(board_id: board_id, user_id: non_author_id)
+    end
   end
 
   private

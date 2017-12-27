@@ -49,8 +49,18 @@
             - else
               = link_to viewer.user.username, user_path(viewer.user)
     %tr
-      %th.sub.width-150 Authors
-      %td{class: cycle('odd', 'even')}= @post.authors.sort_by { |author| author.username.downcase }.map { |author| link_to author.username, user_path(author) }.join(', ').html_safe
+      %td.sub.width-150 Authors
+      %td{class: cycle('odd', 'even')}
+        -# put authors who can owe and have joined first, then those who have just joined
+        - post_authors = @post.post_authors.joins(:user).order('LOWER(users.username) asc')
+        %ul
+          - post_authors.each do |post_author|
+            - author = post_author.user
+            %li
+              = link_to author.username, user_path(author)
+              %em
+                = surround '(', ')' do
+                  = [('can owe tags' if post_author.can_owe?), ('has joined thread' if post_author.joined?)].compact.join(', ')
     %tr
       %th.sub.width-150.vtop Characters
       %td{class: cycle('odd', 'even')}
