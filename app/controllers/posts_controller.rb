@@ -299,6 +299,12 @@ class PostsController < WritableController
 
   private
 
+  def editor_setup
+    super
+    @author_ids = @post.tagging_authors.pluck(:user_id)
+    @permitted_authors = User.order(:username)
+  end
+
   def import_thread
     unless SCRAPE_USERS.include?(current_user.id)
       flash[:error] = "You do not have access to this feature."
@@ -386,6 +392,7 @@ class PostsController < WritableController
       :character_alias_id,
       :audit_comment,
       viewer_ids: [],
+      tagging_author_ids: [],
     )
   end
 end

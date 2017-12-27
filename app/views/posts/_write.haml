@@ -13,10 +13,10 @@
       = f.collection_select(:viewer_ids, User.where.not(id: post.user_id).order('username asc'),
       :id, :username, {selected: post.viewer_ids}, {multiple: true})
     %br
-      = f.label :author_ids Authors
-      = f.collection_select(:author_ids, @authors, :id, :username, {selected: @post.coauthors.pluck(:user_id)}, {multiple: true})
-      = f.label :open 'Open?'
-      = f.checkbox :open
+      = f.label :author_ids, 'Authors'
+      = f.collection_select(:tagging_author_ids, @permitted_authors, :id, :username, {selected: @author_ids}, {multiple: true})
+      = f.label :authors_locked, 'Locked?', title: 'If a post is locked, it doesn\'t accept new authors. Current authors can still reply.'
+      = f.check_box :authors_locked
     %br
     = f.label :setting_ids, 'Setting:'
     = tag_select(post, f, :settings)
