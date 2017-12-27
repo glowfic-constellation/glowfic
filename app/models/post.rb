@@ -273,7 +273,7 @@ class Post < ApplicationRecord
     post_author.can_owe = true
     post_author.joined = true
     post_author.joined_at = timestamp
-    post_author.save!
+    post_author.save
 
     # TODO: logic and callbacks for someone joining a post
   end

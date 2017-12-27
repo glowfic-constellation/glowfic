@@ -83,6 +83,9 @@ class PostsController < WritableController
     @post.section_id = params[:section_id]
     @post.icon_id = (current_user.active_character ? current_user.active_character.default_icon.try(:id) : current_user.avatar_id)
     @page_title = 'New Post'
+
+    @author_ids = [current_user.id]
+    @author_ids = @post.board.author_ids if @post.board && !@post.board.open_to_anyone?
   end
 
   def create
@@ -139,6 +142,8 @@ class PostsController < WritableController
     change_status and return if params[:status].present?
     change_authors_locked and return if params[:authors_locked].present?
 
+    tagging_author_ids = post_params.delete(:tagging_author_ids) || []
+
     @post.assign_attributes(post_params)
     @post.board ||= Board.find(3)
     settings = process_tags(Setting, :post, :setting_ids)
@@ -167,6 +172,7 @@ class PostsController < WritableController
         @post.settings = settings
         @post.content_warnings = warnings
         @post.labels = labels
+        process_new_tagging_authors(tagging_author_ids)
         @post.save!
       end
 
@@ -301,8 +307,8 @@ class PostsController < WritableController
 
   def editor_setup
     super
-    @author_ids = @post.tagging_authors.pluck(:user_id)
     @permitted_authors = User.order(:username)
+    @author_ids = @post.try(:tagging_author_ids) || []
   end
 
   def import_thread
@@ -379,6 +385,32 @@ class PostsController < WritableController
     end
   end
 
+  def process_new_tagging_authors(tagging_author_ids)
+    old_tagging_author_ids = @post.tagging_author_ids
+    removed_ids = old_tagging_author_ids - tagging_author_ids
+    new_ids = tagging_author_ids - old_tagging_author_ids
+
+    # remove from tagging list authors removed
+    @post.tagging_post_authors.each do |post_author|
+      next unless removed_ids.include?(post_author.user_id)
+      post_author.update_attributes(can_owe: false)
+    end
+
+    # add to list authors who can
+    # TODO: invite authors by email if applicable
+    new_ids.each do |user_id|
+      post_author = @post.post_authors.find_or_create_by(user_id: user_id)
+      post_author.can_owe = true
+
+      unless post_author.joined?
+        post_author.invited_at = Time.now
+        post_author.invited_by = current_user.id
+      end
+
+      post_author.save
+    end
+  end
+
   def post_params
     params.fetch(:post, {}).permit(
       :board_id,
@@ -392,7 +424,6 @@ class PostsController < WritableController
       :character_alias_id,
       :audit_comment,
       viewer_ids: [],
-      tagging_author_ids: [],
     )
   end
 end
