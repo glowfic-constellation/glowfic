@@ -1,157 +1,294 @@
 @import 'variables';
+
+/* - header */
+$bg_color_header_top: transparent; // top header strip for logo
+$bg_color_header_middle: #05050F; // middle header strip with user items
+$bg_color_header_bottom: #484357; // bottom header strip with navigation
+
 #header {
-  background-color: #484357;
+  background-color: $bg_color_header_bottom;
   background-image: url(image-path("layouts/starry.jpg"));
   background-position: right top;
 }
-#logo, #nav-bottom { background-color: transparent !important; }
-#user-info, #nav-top { background-color: #05050F; background-color: rgba(5, 5, 15, 0.9); }
+#logo { background-color: $bg_color_header_top !important; }
+#user-info, #nav-top { background-color: $bg_color_header_middle; background-color: rgba($bg_color_header_middle, 0.9); }
 
-$FONT_COLOR: #DADADA;
-$FONT_COLOR_DARK: #444444;
-body { background-color: #211E2F; color: $FONT_COLOR; }
+/* - links */
+$font_color_link: #B5AFCB; // link
+$font_color_link_visited: #9C9AA4;
 
-th, .content-header { background-color: #0D0B1E; }
-.sub { color: #F3F3F3; }
-.sub, .post-navheader, .flash.breadcrumbs { background-color: #131937; }
-.form-table-ender { background-color: #0D0B1E; color: $FONT_COLOR; }
-.selector-popup, .single-description, .subber { background-color: #484357; color: $FONT_COLOR; }
-th, .single-description, .content-header {
-  a { color: #B5AFCB; }
-  a:visited { color: #9C9AA4; }
+a { color: $font_color_link; }
+a:visited { color: $font_color_link_visited; }
+
+/* - flashes */
+// these are the notifications that appear when you submit a form or get a message
+// TODO: See if we can differentiate these
+$bg_color_flash_error: #484357; // error
+$bg_color_flash_success: #484357; // success
+$bg_color_flash_inbox: #484357; // new message
+$bg_color_flash_breadcrumbs: #131937; // breadcrumbs ("Continuities » Continuity » Section » Thread")
+$font_color_flash: #DADADA;
+$font_color_breadcrumbs_bold: #F3F3F3;
+
+.flash.breadcrumbs {
+  background-color: $bg_color_flash_breadcrumbs;
+  &, a, a:visited { color: $font_color_link_visited; }
+  b { color: $font_color_breadcrumbs_bold; } // TODO: Investigate why this is differentiated
+}
+.flash.success { background-color: $bg_color_flash_success; color: $font_color_flash; }
+.flash.error { background-color: $bg_color_flash_error; color: $font_color_flash; }
+.flash.inbox { background-color: $bg_color_flash_inbox; color: $font_color_flash; }
+
+/* - main page */
+$bg_color_page: #211E2F; // overall page
+$font_color_page: #DADADA;
+
+body { background-color: $bg_color_page; color: $font_color_page; }
+
+$bg_color_spacer_alt: #131937;
+$font_color_search_box: #FEFEFE;
+$bg_color_search_box: #131937;
+
+.search-box { background-color: $bg_color_search_box; color: $font_color_search_box; }
+.spacer-alt { background-color: $bg_color_spacer_alt; }
+
+/* - misc */
+$font_color_descriptions: #DADADA;
+$bg_color_descriptions: #484357; // description subheadings on templates page ("single-description"), *not* posts
+.single-description {
+  background-color: $bg_color_descriptions;
+  color: $font_color_descriptions;
+  a { color: $font_color_link; }
+  a:visited { color: $font_color_link_visited; }
 }
 
-$EVEN_COLOR: #31323B;
-$ODD_COLOR: #25262E;
+/* - content headers */
+$bg_color_head: #0D0B1E; // primary content header
+$bg_color_sub: #131937; // secondary content header
+$bg_color_subber: #484357; // tertiary content header
+$bg_color_ender: #0D0B1E; // form table footer with submit
+$font_color_ender: #DADADA;
+$font_color_sub: #F3F3F3;
+$font_color_subber: #DADADA;
+$font_color_subber_bold: #F3F3F3;
 
-#post-menu-box {
-  border-top: 1px solid #808080;
-  border-top: 1px solid rgba(128,128,128,0.5);
-
-  a { color: inherit; }
-  div {
-    border-bottom: 1px solid #808080;
-    border-bottom: 1px solid rgba(128,128,128,0.5);
-  }
+th, .content-header {
+  background-color: $bg_color_head;
+  a { color: $font_color_link; }
+  a:visited { color: $font_color_link_visited; }
 }
+.sub { color: $font_color_sub; background-color: $bg_color_sub; }
+.form-table-ender { background-color: $bg_color_ender; color: $font_color_ender; }
+
+.subber {
+  background-color: $bg_color_subber;
+  color: $font_color_subber;
+  &, a, a:visited { color: $font_color_link_visited; }
+  b { color: $font_color_subber_bold; }
+}
+
+/* - content */
+$bg_color_even: #31323B;
+$bg_color_odd: #25262E;
+$opacity_blockquote: 0.2;
+
 .even, .post-post, .post-reply:nth-child(even), #post-editor {
-  background-color: $EVEN_COLOR;
+  background-color: $bg_color_even;
+  color: $font_color_page;
 
   blockquote {
-    background-color: calculate-transparent-color($EVEN_COLOR, $ODD_COLOR, 0.2);
+    background-color: calculate-transparent-color($bg_color_even, $bg_color_odd, $opacity_blockquote);
   }
 }
 .odd, .post-reply:nth-child(odd), .post-post + #post-editor, .post-post + a + #post-editor {
-  background-color: $ODD_COLOR;
+  background-color: $bg_color_odd;
+  color: $font_color_page;
 
   blockquote {
-    background-color: calculate-transparent-color($ODD_COLOR, $EVEN_COLOR, 0.2);
+    background-color: calculate-transparent-color($bg_color_odd, $bg_color_even, $opacity_blockquote);
   }
 }
 
-.post-navheader .view-button, .view-button.selected, .view-button, .link-box.action-new, .link-box.action-edit, .link-box.action-favorite, .link-box.action-delete, .link-box.action-dismiss, .tag-item { background-color: #463C65; }
-.flash.breadcrumbs .link-box, .subber .link-box { background-color: #5C5778; }
-#reply-icon-selector { background-color: #484357; color: $FONT_COLOR; }
-.post-subheader { background-color: #484357; color: #F3F3F3; }
+/* - replies.scss */
 
-.subber, .flash.breadcrumbs {
-  &, a, a:visited { color: #9C9AA4; }
-  b { color: #F3F3F3; }
+$bg_color_post_description: #484357;
+$font_color_post_description: #F3F3F3;
+$bg_color_navheader: #131937;
+
+.post-subheader { background-color: $bg_color_post_description; color: $font_color_post_description; }
+.post-navheader { background-color: $bg_color_navheader; }
+
+$font_color_post_menu: #DADADA;
+$bg_color_post_menu: #191919;
+$border_color_post_menu: #808080;
+$bg_color_menu_link_hover: #252525;
+
+#post-menu-box {
+  color: $font_color_post_menu;
+  background-color: $bg_color_post_menu;
+  border-top: 1px solid $border_color_post_menu;
+  border-top: 1px solid rgba($border_color_post_menu, 0.5);
+
+  a { color: inherit; }
+  a:hover div { background-color: $bg_color_menu_link_hover; }
+  div {
+    border-bottom: 1px solid $border_color_post_menu;
+    border-bottom: 1px solid rgba($border_color_post_menu, 0.5);
+  }
 }
-.post-expander { background-color: #25262E; }
 
-.selector-popup { font-weight: normal; }
-.post-icon, #current-icon-dropdown, .post-author { background-color: #0E0B1E; }
-#current-icon-dropdown { color: #111111; }
-.post-character, .post-screenname, .post-author { font-weight: bold; }
-.post-screenname, .post-screenname a, .post-screenname a:visited { color: #9C9AA4; }
-.post-character, .post-character a, .post-character a:visited, .post-author, .post-author a, .post-author a:visited { color: #F3F3F3; }
+$bg_color_selectionpopup: #484357; // selection popups like character/alias on posts#editor
+$font_color_selectionpopup: #DADADA;
+$bg_color_expander: #25262E; // expander on posts
 
-.selected-icon { border-color: #B9BBEB; }
+.selector-popup { background-color: $bg_color_selectionpopup; color: $font_color_selectionpopup; font-weight: normal; }
+.post-expander { background-color: $bg_color_expander; }
 
-.search-box { background-color: #131937; color: #FEFEFE; }
-.spacer-alt { background-color: #131937; color: #FEFEFE; }
+$bg_color_post_icon: #0E0B1E;
+$bg_color_icon_selector: #484357;
+$font_color_icon_dropdown: #111111;
+$font_color_icon_selector: #DADADA;
 
-.pagination .current { background-color: #484357; }
-.pagination a { color: #F3F3F3; }
-.pagination a:visited { color: #9C9AA4; }
-.pagination .disabled { color: #58546B; }
+.post-icon { background-color: $bg_color_post_icon; }
+#current-icon-dropdown { background-color: $bg_color_post_icon; color: $font_color_icon_dropdown; }
+#reply-icon-selector { background-color: $bg_color_icon_selector; color: $font_color_icon_selector; }
 
-.post-character, .post-screenname { background-color: #111842; }
+$bg_color_post_character: #111842;
+$bg_color_post_screenname: #111842;
+$bg_color_post_author: #0E0B1E;
+//$bg_color_post_character_narrow: $colors_lightbrown;
+//$bg_color_post_author_narrow: $colors_brown; // these are flipped from not-narrow mode to make the quick-switcher blend in
+// TODO: Should these flip on starries too?
+$font_color_post_info: #F3F3F3;
+$font_color_post_screenname: #9C9AA4;
 
-#post-menu-box { background-color: #191919; }
-#post-menu-box a:hover div { background-color: #252525; }
+.post-character { font-weight: bold; background-color: $bg_color_post_character; }
+.post-character, .post-character a, .post-character a:visited { color: $font_color_post_info; }
+.post-screenname { font-weight: bold; background-color: $bg_color_post_screenname; }
+.post-screenname, .post-screenname a, .post-screenname a:visited { color: $font_color_post_screenname; } // TODO: clean this up when messages are fixed to not use it
+.post-author { font-weight: bold; background-color: $bg_color_post_author;  }
+.post-author, .post-author a, .post-author a:visited { color: $font_color_post_info; }
 
-#post-menu-box, #content .even, #content .odd, .post-post, .post-reply { color: $FONT_COLOR; }
+$font_color_paginate_link: #F3F3F3;
+$font_color_page_visited: $font_color_link_visited;
+$bg_color_page_current: #484357;
+$font_color_page_disabled: #58546B;
 
-.replace-icon, .icons-box, .icon-credit { background-color: #323232; }
+.pagination .current { background-color: $bg_color_page_current; }
+.pagination a { color: $font_color_paginate_link; }
+.pagination a:visited { color: $font_color_page_visited; }
+.pagination .disabled { color: $font_color_page_disabled; }
 
-.tag-item { background-color: #241F4E; }
-.even .tag-item { background-color: #24252D; }
-.odd .tag-item { background-color: #1A1A22; }
-a, .tag-item { color: #B5AFCB; }
-a:visited { color: #9C9AA4; }
-.flash.success, .flash.error, .flash.inbox { background-color: #484357; color: $FONT_COLOR; }
+/* - icons */
+$border_color_icon_selected: #B9BBEB; // selected icon border
+$bg_color_icon: #323232;
+$bg_color_icon_credit: #323232;
+
+.selected-icon { border-color: $border_color_icon_selected; }
+.replace-icon, .icons-box { background-color: $bg_color_icon; }
+.icon-credit { background-color: $bg_color_icon_credit; }
+
+#character-icon-selector, .time-loaded { color: $font_color_page; }
+
+/* - tag items */
+$bg_color_tag_item: #241F4E;
+$bg_color_tag_item_even: #24252D;
+$bg_color_tag_item_odd: #1A1A22;
+
+.tag-item { background-color: $bg_color_tag_item; color: $font_color_link; }
+.even .tag-item { background-color: $bg_color_tag_item_even; }
+.odd .tag-item { background-color: $bg_color_tag_item_odd; }
 
 /* Hovering help box on post editor */
-.ui-widget-content { background-color: #211E2F; color: $FONT_COLOR; }
-.ui-widget.ui-widget-content { border-color: $FONT_COLOR_DARK; }
-.ui-widget-header { background-color: #0D0B1E; color: #EEEEEE; border-color: #28225D; }
+$bg_color_popup_header: #0D0B1E;
+$font_color_popup_header: #EEEEEE;
+$border_color_popup_header: #28225D;
+$bg_color_popup_content: #211E2F;
+$font_color_popup_content: #DADADA;
+$border_color_popup: #444444;
+
+.ui-widget-header { background-color: $bg_color_popup_header; color: $font_color_popup_header; border-color: $border_color_popup_header; }
+.ui-widget-content { background-color: $bg_color_popup_content; color: $font_color_popup_content; }
+.ui-widget.ui-widget-content { border-color: $border_color_popup; }
 /* TODO: style 'X' button on hover when all the other forms are done */
 
+/* - link-boxes */
+// TODO: See if we can differentiate link box colors on starries
+$bg_color_linkbox_new: #463C65;
+$bg_color_linkbox_edit: #463C65;
+$bg_color_linkbox_favorite: #463C65;
+$bg_color_linkbox_delete: #463C65;
+$bg_color_linkbox_dismiss: #463C65;
+$bg_color_linkbox_subber: #5C5778;
+
+.link-box.action-new { background-color: $bg_color_linkbox_new; }
+.link-box.action-edit { background-color: $bg_color_linkbox_edit; }
+.link-box.action-favorite { background-color: $bg_color_linkbox_favorite; }
+.link-box.action-delete { background-color: $bg_color_linkbox_delete; }
+.link-box.action-dismiss { background-color: $bg_color_linkbox_dismiss; }
+
+.subber .link-box { background-color: $bg_color_linkbox_subber; }
+
+/* - other buttons */
+$bg_color_viewbutton: #463C65;
+$bg_color_viewbutton_selected: #463C65;
+
+.view-button, .post-navheader .view-button { background-color: $bg_color_viewbutton; }
+.view-button.selected { background-color: $bg_color_viewbutton_selected; }
 
 /* Darken input boxes */
-$INPUT_BG: #4D4B5B; /* for generic input boxes all over the place */
-$INPUT_BORDER: #625F73;
-$INPUT_PLACEHOLDER: #8884A0;
-$MCE_PANEL_BG: #3B394A; /* MCE header & footer background */
-$SELECT2_HIGHLIGHT: #5B586B;
-$SELECT2_SELECTED: #3F3D4C;
-$SELECT2_SEARCH: $SELECT2_HIGHLIGHT;
+$font_color_input: #DADADA;
+$bg_color_input: #4D4B5B; // regular <input> /* for generic input boxes all over the place */
+$border_color_input: #625F73;
+$font_color_input_placeholder: #8884A0;
+$bg_color_mce_panel: #3B394A; /* MCE header & footer background */
+$bg_color_select2_highlight: #5B586B;
+$bg_color_select2_selected: #3F3D4C;
+$bg_color_select2_search: $bg_color_select2_highlight;
 
 /* - placeholders */
-::-webkit-input-placeholder { color: $INPUT_PLACEHOLDER; }
-:-moz-placeholder { color: $INPUT_PLACEHOLDER; opacity: 1; }
-::-moz-placeholder { color: $INPUT_PLACEHOLDER; opacity: 1; }
-:-ms-input-placeholder { color: $INPUT_PLACEHOLDER; }
-::-ms-input-placeholder { color: $INPUT_PLACEHOLDER; }
-::placeholder { color: $INPUT_PLACEHOLDER; }
+::-webkit-input-placeholder { color: $font_color_input_placeholder; }
+:-moz-placeholder { color: $font_color_input_placeholder; opacity: 1; }
+::-moz-placeholder { color: $font_color_input_placeholder; opacity: 1; }
+:-ms-input-placeholder { color: $font_color_input_placeholder; }
+::-ms-input-placeholder { color: $font_color_input_placeholder; }
+::placeholder { color: $font_color_input_placeholder; }
 
 /* - account options, post editor, search */
 #content .form-table, #icon-table, .search-form {
   input:not([type='submit']), textarea {
-    background-color: $INPUT_BG; color: $FONT_COLOR; border-color: $INPUT_BORDER;
+    background-color: $bg_color_input; color: $font_color_input; border-color: $border_color_input;
   }
 }
 /* - select2 */
-.select2-dropdown { background-color: $INPUT_BG; color: $FONT_COLOR; border-color: $INPUT_BORDER; }
+.select2-dropdown { background-color: $bg_color_input; color: $font_color_input; border-color: $border_color_input; }
 /* -- multiple / tag */
-.select2-container--default .select2-selection--multiple { background-color: $INPUT_BG; color: $FONT_COLOR; border-color: $INPUT_BORDER; }
+.select2-container--default .select2-selection--multiple { background-color: $bg_color_input; color: $font_color_input; border-color: $border_color_input; }
 /* --- tag item */
-.select2-container--default .select2-selection--multiple .select2-selection__choice { background-color: $SELECT2_HIGHLIGHT; border-color: $INPUT_BORDER; } /* TODO: check with Aestrix at a better time */
+.select2-container--default .select2-selection--multiple .select2-selection__choice { background-color: $bg_color_select2_highlight; border-color: $border_color_input; } /* TODO: check with Aestrix at a better time */
 /* -- single */
-.select2-container--default .select2-selection--single { background-color: $INPUT_BG; color: $FONT_COLOR; border-color: $INPUT_BORDER; }
-.select2-container--default .select2-selection--single .select2-selection__rendered { color: $FONT_COLOR; }
+.select2-container--default .select2-selection--single { background-color: $bg_color_input; color: $font_color_input; border-color: $border_color_input; }
+.select2-container--default .select2-selection--single .select2-selection__rendered { color: $font_color_input; }
 /* --- selected */
-.select2-container--default .select2-results__option[aria-selected=true] { background-color: $SELECT2_SELECTED; color: inherit; }
+.select2-container--default .select2-results__option[aria-selected=true] { background-color: $bg_color_select2_selected; color: inherit; }
 /* --- hovered */
-.select2-container--default .select2-results__option--highlighted[aria-selected] { background-color: $SELECT2_HIGHLIGHT; color: inherit; }
+.select2-container--default .select2-results__option--highlighted[aria-selected] { background-color: $bg_color_select2_highlight; color: inherit; }
 /* --- input */
-.select2-container--default .select2-search--dropdown .select2-search__field { background-color: $SELECT2_SEARCH; color: $FONT_COLOR; border-color: $INPUT_BORDER; }
+.select2-container--default .select2-search--dropdown .select2-search__field { background-color: $bg_color_select2_search; color: $font_color_input; border-color: $border_color_input; }
 /* --- disabled input */
-.select2-container--default.select2-container--disabled .select2-selection--single { background-color: $MCE_PANEL_BG; color: $FONT_COLOR; border-color: $INPUT_BORDER; } /* TODO: check with Aestrix at a better time */
+.select2-container--default.select2-container--disabled .select2-selection--single { background-color: $bg_color_mce_panel; color: $font_color_input; border-color: $border_color_input; } /* TODO: check with Aestrix at a better time */
 
 /* HTML written editor */
-#post-editor input:not([type='submit']), #post-editor textarea, #message_form input:not([type='submit']), #message_form textarea { background-color: $INPUT_BG; color: $FONT_COLOR; border-color: $INPUT_BORDER; }
+#post-editor input:not([type='submit']), #post-editor textarea, #message_form input:not([type='submit']), #message_form textarea { background-color: $bg_color_input; color: $font_color_input; border-color: $border_color_input; }
 /* RTF post editor – see tinymce.css for styling of the iframe itself */
 /* border: */
-#content .mce-panel { border-color: $INPUT_BORDER; }
-#content .mce-edit-area { border-top-color: $INPUT_BORDER; }
-#content .mce-statusbar { border-top-color: $INPUT_BORDER; }
+#content .mce-panel { border-color: $border_color_input; }
+#content .mce-edit-area { border-top-color: $border_color_input; }
+#content .mce-statusbar { border-top-color: $border_color_input; }
 /* header & buttons: */
 /* - default */
-#content .mce-panel, #content .mce-btn { background-color: $MCE_PANEL_BG; }
-#content .mce-ico { color: $FONT_COLOR; }
+#content .mce-panel, #content .mce-btn { background-color: $bg_color_mce_panel; }
+#content .mce-ico { color: $font_color_input; }
 /* footer: 'powered by' text */
-#content .mce-branding-powered-by { background-color: $MCE_PANEL_BG; border-color: $INPUT_BORDER; }
-#content .mce-label { color: rgba($FONT_COLOR, 0.8); text-shadow: none; }
+#content .mce-branding-powered-by { background-color: $bg_color_mce_panel; border-color: $border_color_input; }
+#content .mce-label { color: rgba($font_color_input, 0.8); text-shadow: none; }

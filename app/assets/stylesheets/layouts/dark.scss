@@ -11,8 +11,8 @@ $bg_color_header_top: #3B4841; // top header strip for logo
 $bg_color_header_bottom: #56554F; // bottom header strip with navigation
 $font_color_header_link: #CCCCCC;  // header links
 
-#header, #nav-bottom { background-color: $bg_color_header_bottom; }
 #header {
+  background-color: $bg_color_header_bottom;
   a { color: $font_color_header_link; }
 }
 #logo { background-color: $bg_color_header_top; }
