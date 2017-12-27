@@ -46,6 +46,7 @@ class Post < ApplicationRecord
 
   before_create :build_initial_flat_post
   before_validation :set_last_user, on: :create
+  after_create :update_post_authors
   after_commit :notify_followers, on: :create
 
   NON_EDITED_ATTRS = %w(id created_at updated_at edited_at tagged_at last_user_id last_reply_id section_order)
@@ -255,6 +256,25 @@ class Post < ApplicationRecord
   def reply_count
     return read_attribute(:reply_count) if has_attribute?(:reply_count)
     replies.count
+  end
+
+  def update_post_authors
+    set_author_joined(user_id, created_at)
+  end
+
+  # used when a user makes an entry in a post.
+  # if they are not already in the post, join them to the authors list, set the timestamp, and perform relevant callbacks.
+  def set_author_joined(user_id, timestamp)
+    post_author = post_authors.find_or_create(user_id: user_id)
+    return if post_author.joined?
+
+    # user joins thread: now owes tags and can write in it, until permissions later revoked / willingly given up
+    post_author.can_owe = true
+    post_author.joined = true
+    post_author.joined_at = timestamp
+    post_author.save!
+
+    # TODO: logic and callbacks for someone joining a post
   end
 
   private
