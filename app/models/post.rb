@@ -72,7 +72,7 @@ class Post < ApplicationRecord
     # fetches replies.map(&:user_id).uniq
     # then appends post.user_id
     # then unions distinctly, and re-converts to an array
-    select('ARRAY(SELECT posts.user_id UNION SELECT replies.user_id FROM replies WHERE replies.post_id = posts.id GROUP BY replies.user_id) AS author_ids')
+    select('ARRAY(SELECT user_id FROM post_authors WHERE post_authors.post_id = posts.id) AS author_ids')
   }
 
   scope :with_reply_count, -> {
@@ -96,7 +96,7 @@ class Post < ApplicationRecord
 
   def author_ids
     return read_attribute(:author_ids) if has_attribute?(:author_ids)
-    @author_ids ||= (replies.group(:user_id).pluck(:user_id) + [user_id]).uniq
+    @author_ids ||= joined_post_author_ids
   end
 
   def build_new_reply_for(user)
@@ -266,7 +266,7 @@ class Post < ApplicationRecord
   # used when a user makes an entry in a post.
   # if they are not already in the post, join them to the authors list, set the timestamp, and perform relevant callbacks.
   def set_author_joined(user_id, timestamp)
-    post_author = post_authors.find_or_create(user_id: user_id)
+    post_author = post_authors.find_or_create_by(user_id: user_id)
     return if post_author.joined?
 
     # user joins thread: now owes tags and can write in it, until permissions later revoked / willingly given up
