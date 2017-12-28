@@ -198,6 +198,11 @@ FactoryBot.define do
     board
   end
 
+  factory :post_author do
+    user
+    post
+  end
+
   factory :post_view do
     user
     post
