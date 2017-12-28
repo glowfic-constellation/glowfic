@@ -1625,6 +1625,60 @@ RSpec.describe PostsController do
         expect(post.reload).to be_visible_to(viewer)
         expect(post.reload).not_to be_visible_to(create(:user))
       end
+
+      it 'sets correct paramters on adding new authors' do
+        user = create(:user)
+        other_user = create(:user)
+        login_as(user)
+        post = create(:post, user: user)
+        put :update, params: {
+          id: post.id,
+          post: {
+            tagging_author_ids: [user.id, other_user.id]
+          }
+        }
+        expect(response).to redirect_to(post_url(post))
+        Post.find_by_id(assigns(:post).id)
+        newauthor = post.tagging_post_authors.detect {|a| a.user != user }
+        expect(newauthor.can_owe).to eq(true)
+        expect(newauthor.joined).to eq(false)
+        expect(newauthor.invited_at).not_to be_nil
+        expect(newauthor.invited_by).to eq(user)
+      end
+
+      it 'only sets can_owe on adding existing authors' do
+        user = create(:user)
+        other_user = create(:user)
+        login_as(user)
+        post = create(:post, user: user)
+        put :update, params: {
+          id: post.id,
+          post: {
+            tagging_author_ids: [user.id, other_user.id]
+          }
+        }
+        other_post_user = post.tagging_post_authors.detect {|a| a.user != user }
+        expect(other_post_user.joined).to eq(false)
+        expect(other_post_user.invited_at).not_to be_nil
+        expect(other_post_user.invited_by).to eq(user)
+        invited_at = other_post_user.invited_at
+        invited_by = other_post_user.invited_by
+        put :update, params: {
+          id: post.id,
+          post: {
+            tagging_author_ids: [user.id]
+          }
+        }
+        expect(other_post_user.can_owe).to eq(false)
+        put :update, params: {
+          id: post.id,
+          post: {
+            tagging_author_ids: [user.id, other_user.id]
+          }
+        }
+        expect(other_post_user.invited_at).to eq(invited_at)
+        expect(other_post_user.invited_by).to eq(invited_by)
+      end
     end
   end
 
