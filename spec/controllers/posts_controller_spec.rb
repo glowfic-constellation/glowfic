@@ -595,6 +595,23 @@ RSpec.describe PostsController do
       expect(board.coauthors).to match_array([other_user])
       expect(board.cameos).to match_array([third_user])
     end
+
+    it 'does not add to cameos of open boards' do
+      user = create(:user)
+      other_user = create(:user)
+      board = create(:board)
+      expect(board.cameos).to be_empty
+      login_as(user)
+      post :create, params: {
+        post: {
+          subject: 'a', user: user, board_id: board.id, tagging_author_ids: [user, other_user]
+        }
+      }
+      post = assigns(:post).reload
+      expect(post.tagging_authors).to match_array([user, other_user])
+      board.reload
+      expect(board.cameos).to be_empty
+    end
   end
 
   describe "GET show" do
@@ -1784,6 +1801,25 @@ RSpec.describe PostsController do
         board.reload
         expect(post.tagging_post_authors.count).to eq(3)
         expect(board.cameos).to eq([third_user])
+      end
+
+      it 'does not add to cameos of open boards' do
+        user = create(:user)
+        other_user = create(:user)
+        login_as(user)
+        board = create(:board)
+        expect(board.cameos).to be_empty
+        post = create(:post, user: user, board: board)
+        expect(post.tagging_authors).to eq([user])
+        put :update, params: {
+          id: post.id,
+          post: {
+            tagging_author_ids: [user.id, other_user.id]
+          }
+        }
+        board.reload
+        expect(post.tagging_post_authors.count).to eq(2)
+        expect(board.cameos).to be_empty
       end
     end
   end
