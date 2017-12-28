@@ -595,16 +595,21 @@ RSpec.describe PostsController do
       other_user = create(:user)
       third_user = create(:user)
       board = create(:board, creator: user, coauthors: [other_user])
+
       login_as(user)
       post :create, params: {
         post: {
-          subject: 'a', user: user, board_id: create(:board).id, tagging_author_ids: [user, other_user, third_user]
+          subject: 'a', user: user, board_id: board.id, tagging_author_ids: [user, other_user, third_user]
         }
       }
+
       post = assigns(:post).reload
+      expect(post.tagging_authors).to match_array([user, other_user, third_user])
+
       board.reload
-      expect(post.tagging_post_authors.count).to eq(3)
-      expect(board.cameos.first).to eq(third_user)
+      expect(board.creator).to eq(user)
+      expect(board.coauthors).to match_array([other_user])
+      expect(board.cameos).to match_array([third_user])
     end
   end
 
