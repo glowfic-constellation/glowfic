@@ -1643,7 +1643,7 @@ RSpec.describe PostsController do
         }
         expect(response).to redirect_to(post_url(post))
         post.reload
-        new_author = post.tagging_post_authors.where.not(user: user).first
+        new_author = post.tagging_post_authors.find_by(user: other_user)
         expect(new_author.can_owe).to eq(true)
         expect(new_author.joined).to eq(false)
         expect(new_author.invited_at).not_to be_nil
@@ -1682,8 +1682,9 @@ RSpec.describe PostsController do
             tagging_author_ids: [user.id, other_user.id]
           }
         }
-        other_post_user = post.tagging_post_authors.detect {|a| a.user != user }
-        expect(other_post_user.joined).to eq(false)
+        create(:reply, user: other_user, post: post)
+        other_post_user = post.tagging_post_authors.find_by(user: other_user)
+        expect(other_post_user.joined).to eq(true)
         expect(other_post_user.invited_at).not_to be_nil
         expect(other_post_user.invited_by).to eq(user)
         invited_at = other_post_user.invited_at
