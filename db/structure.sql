@@ -812,6 +812,7 @@ CREATE TABLE post_authors (
     can_owe boolean DEFAULT true,
     joined boolean DEFAULT false,
     invited_at timestamp without time zone,
+    invited_by_id integer,
     joined_at timestamp without time zone
 );
 
