@@ -430,47 +430,7 @@ RSpec.describe PostsController do
       expect(ContentWarning.last.name).to eq('atag')
       expect(assigns(:post).content_warnings.count).to eq(4)
     end
-
-    it "sets the main user as an author" do
-      user = create(:user)
-      login_as(user)
-      post :create, params: {
-        post: {
-          subject: 'a', user: user, board_id: create(:board).id
-        }
-      }
-      post = assigns(:post)
-      expect(post.tagging_post_authors.count).to eq(1)
-      expect(post.tagging_post_authors[0].user).to eq(user)
-      post_author = post.tagging_post_authors.find_by(user: user)
-      expect(post_author.can_owe).to eq(true)
-      expect(post_author.joined).to eq(true)
-      expect(post_author.invited_by).to be_nil
-    end
-
-    it "sets board authors as authors" do
-      user = create(:user)
-      other_user = create(:user)
-      board = create(:board, creator: other_user, coauthors: [user])
-      login_as(user)
-      post :create, params: {
-        post: {
-          subject: 'a', user: user, board_id: board.id
-        }
-      }
-      post = assigns(:post)
-      debugger
-      expect(post.tagging_post_authors.count).to eq(2)
-      post_author = post.tagging_post_authors.find_by(user: user)
-      other_post_author = post.tagging_post_authors.find_by(user: other_user)
-      expect(post_author.can_owe).to eq(true)
-      expect(other_post_author.can_owe).to eq(true)
-      expect(post_author.joined).to eq(true)
-      expect(other_post_author.joined).to eq(false)
-      expect(other_post_author.invited_by).to eq(user)
-      expect(other_post_author.invited_at).not_to be_nil
-    end
-
+    
     it "creates new post authors correctly" do
       user = create(:user)
       other_user = create(:user)
@@ -622,6 +582,23 @@ RSpec.describe PostsController do
       expect(ContentWarning.count).to eq(3)
       expect(Label.count).to eq(3)
       expect(PostTag.count).to eq(9)
+    end
+
+    it "adds new post authors to board cameo" do
+      user = create(:user)
+      other_user = create(:user)
+      third_user = create(:user)
+      board = create(:board, creator: user, coauthors: [other_user])
+      login_as(user)
+      post :create, params: {
+        post: {
+          subject: 'a', user: user, board_id: create(:board).id, tagging_author_ids: [user, other_user, third_user]
+        }
+      }
+      post = assigns(:post).reload
+      board.reload
+      expect(post.tagging_post_authors.count).to eq(3)
+      expect(board.cameos.first).to eq(third_user)
     end
   end
 
