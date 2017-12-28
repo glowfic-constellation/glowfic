@@ -404,7 +404,7 @@ class PostsController < WritableController
 
       unless post_author.joined?
         post_author.invited_at = Time.now
-        post_author.invited_by = current_user.id
+        post_author.invited_by = current_user
       end
 
       post_author.save
