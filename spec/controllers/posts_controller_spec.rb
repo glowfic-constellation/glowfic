@@ -202,6 +202,27 @@ RSpec.describe PostsController do
         expect(response).to have_http_status(200)
       end
     end
+
+    it "defaults authors to be the current user in open boards" do
+      user = create(:user)
+      login_as(user)
+      user2 = create(:user)
+      board = create(:board, coauthors: [])
+      get :new, params: { board_id: board.id }
+      expect(assigns(:post).board).to eq(board)
+      expect(assigns(:author_ids)).to eq([user.id])
+    end
+
+    it "defaults authors to be board authors in closed boards" do
+      user = create(:user)
+      login_as(user)
+      user2 = create(:user)
+      user3 = create(:user)
+      board = create(:board, creator: user, coauthors: [user2])
+      get :new, params: { board_id: board.id }
+      expect(assigns(:post).board).to eq(board)
+      expect(assigns(:author_ids)).to match_array([user.id, user2.id])
+    end
   end
 
   describe "POST create" do
@@ -1654,6 +1675,60 @@ RSpec.describe PostsController do
         expect(post.reload).to be_visible_to(viewer)
         expect(post.reload).not_to be_visible_to(create(:user))
       end
+
+      it 'sets correct paramters on adding new authors' do
+        user = create(:user)
+        other_user = create(:user)
+        login_as(user)
+        post = create(:post, user: user)
+        put :update, params: {
+          id: post.id,
+          post: {
+            tagging_author_ids: [user.id, other_user.id]
+          }
+        }
+        expect(response).to redirect_to(post_url(post))
+        Post.find_by_id(assigns(:post).id)
+        newauthor = post.tagging_post_authors.detect {|a| a.user != user }
+        expect(newauthor.can_owe).to eq(true)
+        expect(newauthor.joined).to eq(false)
+        expect(newauthor.invited_at).not_to be_nil
+        expect(newauthor.invited_by).to eq(user)
+      end
+
+      it 'only sets can_owe on adding existing authors' do
+        user = create(:user)
+        other_user = create(:user)
+        login_as(user)
+        post = create(:post, user: user)
+        put :update, params: {
+          id: post.id,
+          post: {
+            tagging_author_ids: [user.id, other_user.id]
+          }
+        }
+        other_post_user = post.tagging_post_authors.detect {|a| a.user != user }
+        expect(other_post_user.joined).to eq(false)
+        expect(other_post_user.invited_at).not_to be_nil
+        expect(other_post_user.invited_by).to eq(user)
+        invited_at = other_post_user.invited_at
+        invited_by = other_post_user.invited_by
+        put :update, params: {
+          id: post.id,
+          post: {
+            tagging_author_ids: [user.id]
+          }
+        }
+        expect(other_post_user.can_owe).to eq(false)
+        put :update, params: {
+          id: post.id,
+          post: {
+            tagging_author_ids: [user.id, other_user.id]
+          }
+        }
+        expect(other_post_user.invited_at).to eq(invited_at)
+        expect(other_post_user.invited_by).to eq(invited_by)
+      end
     end
   end
 
@@ -1811,6 +1886,24 @@ RSpec.describe PostsController do
 
         user.hide_hiatused_tags_owed = true
         user.save
+        get :owed
+        expect(response.status).to eq(200)
+        expect(assigns(:posts)).to be_empty
+      end
+
+      it "shows threads the user has been invited to" do
+        post = create(:post, user_id: other_user.id)
+        post.tagging_author_ids += [user.id]
+        get :owed
+        expect(response.status).to eq(200)
+        expect(assigns(:posts)).to match_array([post])
+      end
+
+      it "hides threads the user has manually removed themselves from" do
+        post = create(:post, user_id: other_user.id)
+        create(:reply, post_id: post.id, user_id: user.id)
+        create(:reply, post_id: post.id, user_id: other_user.id)
+        post.tagging_author_ids -= [user.id]
         get :owed
         expect(response.status).to eq(200)
         expect(assigns(:posts)).to be_empty

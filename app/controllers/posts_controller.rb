@@ -85,7 +85,7 @@ class PostsController < WritableController
     @page_title = 'New Post'
 
     @author_ids = [current_user.id]
-    @author_ids = @post.board.author_ids if @post.board && !@post.board.open_to_anyone?
+    @author_ids = @post.board.writer_ids if @post.board && !@post.board.open_to_anyone?
   end
 
   def create
@@ -406,7 +406,7 @@ class PostsController < WritableController
 
       unless post_author.joined?
         post_author.invited_at = Time.now
-        post_author.invited_by = current_user.id
+        post_author.invited_by = current_user
       end
 
       post_author.save
@@ -425,6 +425,7 @@ class PostsController < WritableController
       :icon_id,
       :character_alias_id,
       :audit_comment,
+      tagging_author_ids: [],
       viewer_ids: [],
     )
   end
