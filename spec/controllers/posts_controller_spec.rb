@@ -584,6 +584,23 @@ RSpec.describe PostsController do
       expect(Label.count).to eq(3)
       expect(PostTag.count).to eq(9)
     end
+
+    it "adds new post authors to board cameo" do
+      user = create(:user)
+      other_user = create(:user)
+      third_user = create(:user)
+      board = create(:board, creator: user, coauthors: [other_user])
+      login_as(user)
+      post :create, params: {
+        post: {
+          subject: 'a', user: user, board_id: create(:board).id, tagging_author_ids: [user, other_user, third_user]
+        }
+      }
+      post = assigns(:post).reload
+      board.reload
+      expect(post.tagging_post_authors.count).to eq(3)
+      expect(board.cameos.first).to eq(third_user)
+    end
   end
 
   describe "GET show" do
