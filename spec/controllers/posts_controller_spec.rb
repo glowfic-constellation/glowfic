@@ -1786,6 +1786,24 @@ RSpec.describe PostsController do
         expect(response.status).to eq(200)
         expect(assigns(:posts)).to be_empty
       end
+
+      it "shows threads the user has been invited to" do
+        post = create(:post, user_id: other_user.id)
+        post.tagging_author_ids += [user.id]
+        get :owed
+        expect(response.status).to eq(200)
+        expect(assigns(:posts)).to match_array([post])
+      end
+
+      it "hides threads the user has manually removed themselves from" do
+        post = create(:post, user_id: other_user.id)
+        create(:reply, post_id: post.id, user_id: user.id)
+        create(:reply, post_id: post.id, user_id: other_user.id)
+        post.tagging_author_ids -= [user.id]
+        get :owed
+        expect(response.status).to eq(200)
+        expect(assigns(:posts)).to be_empty
+      end
     end
 
     # TODO more tests
