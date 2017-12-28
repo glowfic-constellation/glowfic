@@ -275,7 +275,7 @@ class Post < ApplicationRecord
     non_authors = tagging_author_ids - board.writer_ids
     return if non_authors.empty?
     non_authors.each do |non_author_id|
-      BoardAuthor.create!(board_id: board_id, user_id: non_author_id)
+      BoardAuthor.create!(board_id: board_id, user_id: non_author_id, cameo: true)
     end
   end
 
