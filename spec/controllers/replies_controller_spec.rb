@@ -596,12 +596,16 @@ RSpec.describe RepliesController do
       it "handles valid post" do
         templateless_char = Character.where(template_id: nil).first
         post = create(:post, character: templateless_char, user: templateless_char.user)
+        create(:reply, post: post)
+        user_ignoring_tags = create(:user)
+        create(:reply, post: post, user: user_ignoring_tags)
+        post.post_authors.find_by(user: user_ignoring_tags).update_attributes(can_owe: false)
         get :search, params: { post_id: post.id }
         expect(response).to have_http_status(200)
         expect(assigns(:page_title)).to eq('Search Replies')
         expect(assigns(:post)).to eq(post)
         expect(assigns(:search_results)).to be_nil
-        expect(assigns(:users)).to match_array(post.authors)
+        expect(assigns(:users)).to match_array(post.joined_authors)
         expect(assigns(:characters)).to match_array([post.character])
         expect(assigns(:templates)).to be_empty
       end
