@@ -33,6 +33,7 @@ class Post < ApplicationRecord
   has_many :index_sections, inverse_of: :posts, through: :index_posts
 
   has_many :post_authors, inverse_of: :post, dependent: :destroy
+  has_many :authors, class_name: 'User', through: :post_authors, source: :user
   has_many :tagging_post_authors, -> { where(can_owe: true) }, class_name: 'PostAuthor', inverse_of: :post
   has_many :tagging_authors, class_name: 'User', through: :tagging_post_authors, source: :user
   has_many :joined_post_authors, -> { where(joined: true) }, class_name: 'PostAuthor', inverse_of: :post
@@ -86,17 +87,6 @@ class Post < ApplicationRecord
     return true if user.admin?
     return user.id == user_id if private?
     (post_viewers.pluck(:user_id) + [user_id]).include?(user.id)
-  end
-
-  def authors
-    return @authors if @authors
-    return @authors = [user] if author_ids.count == 1
-    @authors = User.where(id: author_ids).to_a
-  end
-
-  def author_ids
-    return read_attribute(:author_ids) if has_attribute?(:author_ids)
-    @author_ids ||= joined_post_author_ids
   end
 
   def build_new_reply_for(user)
