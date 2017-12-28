@@ -423,6 +423,7 @@ class PostsController < WritableController
       :icon_id,
       :character_alias_id,
       :audit_comment,
+      tagging_author_ids: [],
       viewer_ids: [],
     )
   end
