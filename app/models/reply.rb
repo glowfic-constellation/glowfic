@@ -72,7 +72,7 @@ class Reply < ApplicationRecord
   def notify_other_authors
     return if skip_notify
     return if (previous_reply || post).user_id == user_id
-    post.authors.each do |author|
+    post.tagging_authors.each do |author|
       next if author.id == user_id
       next unless author.email.present?
       next unless author.email_notifications?

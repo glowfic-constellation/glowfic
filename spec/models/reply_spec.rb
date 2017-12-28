@@ -93,6 +93,11 @@ RSpec.describe Reply do
       another_notified_user = create(:user, email_notifications: true)
       create(:reply, user: another_notified_user, post: post, skip_notify: true)
 
+      # skips users who have the post set as ignored for tags owed purposes (or who can't tag)
+      a_user_who_doesnt_owe = create(:user, email_notifications: true)
+      create(:reply, user: a_user_who_doesnt_owe, post: post, skip_notify: true)
+      post.post_authors.find_by(user: a_user_who_doesnt_owe).update_attributes(can_owe: false)
+
       reply = create(:reply, post: post)
       expect(UserMailer).to have_queue_size_of(2)
       expect(UserMailer).to have_queued(:post_has_new_reply, [notified_user.id, reply.id])
