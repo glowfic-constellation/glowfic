@@ -277,7 +277,6 @@ class Post < ApplicationRecord
   end
 
   # timestamps start existing between before_save and before_create/update
-  # TODO: ensure tested
   def set_timestamps
     return if skip_edited
     self.edited_at = self.updated_at
