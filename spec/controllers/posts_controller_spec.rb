@@ -1772,15 +1772,16 @@ RSpec.describe PostsController do
         other_user = create(:user)
         third_user = create(:user)
         login_as(user)
-        board = board(:create, creator: user, coauthors: [other_user])
-        post = post(:create, user: user)
+        board = create(:board, creator: user, coauthors: [other_user])
+        post = create(:post, user: user, board: board)
         expect(post.tagging_authors).to eq([user])
         put :update, params: {
           id: post.id,
           post: {
-            tagging_author_ids: [user.id, other_user.id, third_user_id]
+            tagging_author_ids: [user.id, other_user.id, third_user.id]
           }
         }
+        board.reload
         expect(post.tagging_post_authors.count).to eq(3)
         expect(board.cameos).to eq([third_user])
       end
