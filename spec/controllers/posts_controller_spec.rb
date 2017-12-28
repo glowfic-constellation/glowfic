@@ -414,27 +414,33 @@ RSpec.describe PostsController do
       expect(ContentWarning.last.name).to eq('atag')
       expect(assigns(:post).content_warnings.count).to eq(4)
     end
-    
+
     it "creates new post authors correctly" do
       user = create(:user)
       other_user = create(:user)
       login_as(user)
-      post :create, params: {
-        post: {
-          subject: 'a', user: user, board_id: create(:board).id, tagging_author_ids: [user, other_user]
+      time = Time.now
+      Timecop.freeze(time) do
+        post :create, params: {
+          post: {
+            subject: 'a', user_id: user.id, board_id: create(:board).id, tagging_author_ids: [user.id, other_user.id]
+          }
         }
-      }
+      end
       post = assigns(:post).reload
       expect(post.tagging_post_authors.count).to eq(2)
+
       post_author = post.tagging_post_authors.find_by(user: user)
-      other_post_author = post.tagging_post_authors.find_by(user: other_user)
       expect(post_author.can_owe).to eq(true)
-      expect(other_post_author.can_owe).to eq(true)
       expect(post_author.joined).to eq(true)
       expect(post_author.invited_by).to be_nil
+      expect(post_author.invited_at).to be_nil
+
+      other_post_author = post.tagging_post_authors.find_by(user: other_user)
+      expect(other_post_author.can_owe).to eq(true)
       expect(other_post_author.joined).to eq(false)
       expect(other_post_author.invited_by).to eq(user)
-      expect(other_post_author.invited_at).not_to be_nil
+      expect(other_post_author.invited_at).to be_the_same_time_as(time)
     end
 
     it "handles invalid posts" do
