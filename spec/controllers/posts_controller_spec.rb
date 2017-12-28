@@ -464,7 +464,7 @@ RSpec.describe PostsController do
           subject: 'a', user: user, board_id: create(:board).id, tagging_author_ids: [user, other_user]
         }
       }
-      post = assigns(:post)
+      post = assigns(:post).reload
       expect(post.tagging_post_authors.count).to eq(2)
       post_author = post.tagging_post_authors.find_by(user: user)
       other_post_author = post.tagging_post_authors.find_by(user: other_user)
@@ -1714,23 +1714,35 @@ RSpec.describe PostsController do
 
       it 'correctly updates on removing an author' do
         user = create(:user)
-        other_user = create(:user)
+        removed_user = create(:user)
+
         login_as(user)
-        post = create(:post, user: user, tagging_author_ids: [user.id, other_user.id])
-        post_author = post.tagging_post_authors.find_by(user: user)
-        other_post_author = post.tagging_post_authors.find_by(user: other_user)
+        post = create(:post, user: user, tagging_author_ids: [user.id, removed_user.id])
+
+        expect(post.post_authors.count).to eq(2)
+
+        post_author = post.post_authors.find_by(user: user)
         expect(post_author.can_owe).to eq(true)
         expect(post_author.joined).to eq(true)
-        expect(other_post_author.can_owe).to eq(true)
-        expect(post.post_authors.count).to eq(2)
+
+        removed_post_author = post.post_authors.find_by(user: removed_user)
+        expect(removed_post_author.can_owe).to eq(true)
+        expect(removed_post_author.joined).to eq(false)
+
         put :update, params: {
           id: post.id,
           post: {
             tagging_author_ids: []
           }
         }
+        expect(response).to redirect_to(post_url(post))
+        expect(flash[:success]).to eq('Your post has been updated.')
+
+        post.reload
+        post_author.reload
         expect(post.post_authors).to match_array([post_author])
         expect(post_author.can_owe).to eq(false)
+        expect(post_author.joined).to eq(true)
       end
 
       it 'only sets can_owe on adding existing authors' do
