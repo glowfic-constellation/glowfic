@@ -431,6 +431,27 @@ RSpec.describe PostsController do
       expect(assigns(:post).content_warnings.count).to eq(4)
     end
 
+    it "creates new post authors correctly" do
+      user = create(:user)
+      other_user = create(:user)
+      login_as(user)
+      post :create, params: {
+        post: {
+          subject: 'a', user: user, board_id: create(:board).id, tagging_author_ids: [user, other_user]
+        }
+      }
+      post = assigns(:post)
+      expect(post.tagging_post_authors.count).to eq(2)
+      post_author = post.tagging_post_authors.find_by(user: user)
+      other_post_author = post.tagging_post_authors.find_by(user: other_user)
+      expect(post_author.can_owe).to eq(true)
+      expect(other_post_author.can_owe).to eq(true)
+      expect(post_author.joined).to eq(true)
+      expect(other_post_author.joined).to eq(false)
+      expect(other_post_author.invited_by).to eq(user)
+      expect(other_post_author.invited_at).not_to be_nil
+    end
+
     it "handles invalid posts" do
       user = create(:user)
       login_as(user)
@@ -1676,7 +1697,7 @@ RSpec.describe PostsController do
         expect(post.reload).not_to be_visible_to(create(:user))
       end
 
-      it 'sets correct paramters on adding new authors' do
+      it 'creates new PostAuthor as expected when adding new author' do
         user = create(:user)
         other_user = create(:user)
         login_as(user)
@@ -1688,12 +1709,33 @@ RSpec.describe PostsController do
           }
         }
         expect(response).to redirect_to(post_url(post))
-        Post.find_by_id(assigns(:post).id)
-        newauthor = post.tagging_post_authors.detect {|a| a.user != user }
-        expect(newauthor.can_owe).to eq(true)
-        expect(newauthor.joined).to eq(false)
-        expect(newauthor.invited_at).not_to be_nil
-        expect(newauthor.invited_by).to eq(user)
+        post.reload
+        new_author = post.tagging_post_authors.find_by(user: other_user)
+        expect(new_author.can_owe).to eq(true)
+        expect(new_author.joined).to eq(false)
+        expect(new_author.invited_at).not_to be_nil
+        expect(new_author.invited_by).to eq(user)
+      end
+
+      it 'correctly updates on removing an author' do
+        user = create(:user)
+        other_user = create(:user)
+        login_as(user)
+        post = create(:post, user: user, tagging_author_ids: [user.id, other_user.id])
+        post_author = post.tagging_post_authors.find_by(user: user)
+        other_post_author = post.tagging_post_authors.find_by(user: other_user)
+        expect(post_author.can_owe).to eq(true)
+        expect(post_author.joined).to eq(true)
+        expect(other_post_author.can_owe).to eq(true)
+        expect(post.post_authors.count).to eq(2)
+        put :update, params: {
+          id: post.id,
+          post: {
+            tagging_author_ids: []
+          }
+        }
+        expect(post.post_authors).to match_array([post_author])
+        expect(post_author.can_owe).to eq(false)
       end
 
       it 'only sets can_owe on adding existing authors' do
@@ -1707,8 +1749,9 @@ RSpec.describe PostsController do
             tagging_author_ids: [user.id, other_user.id]
           }
         }
-        other_post_user = post.tagging_post_authors.detect {|a| a.user != user }
-        expect(other_post_user.joined).to eq(false)
+        create(:reply, user: other_user, post: post)
+        other_post_user = post.tagging_post_authors.find_by(user: other_user)
+        expect(other_post_user.joined).to eq(true)
         expect(other_post_user.invited_at).not_to be_nil
         expect(other_post_user.invited_by).to eq(user)
         invited_at = other_post_user.invited_at
@@ -1719,7 +1762,6 @@ RSpec.describe PostsController do
             tagging_author_ids: [user.id]
           }
         }
-        expect(other_post_user.can_owe).to eq(false)
         put :update, params: {
           id: post.id,
           post: {
