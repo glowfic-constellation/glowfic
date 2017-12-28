@@ -193,14 +193,17 @@ RSpec.describe PostsController do
       get :new, params: { view: :import }
       expect(response).to have_http_status(200)
     end
+
     it "defaults authors to be the current user in open boards" do
       user = create(:user)
       login_as(user)
       user2 = create(:user)
       board = create(:board, coauthors: [])
       get :new, params: { board_id: board.id }
-      expect(assigns(:author_ids)).to eq ([user.id])
+      expect(assigns(:post).board).to eq(board)
+      expect(assigns(:author_ids)).to eq([user.id])
     end
+
     it "defaults authors to be board authors in closed boards" do
       user = create(:user)
       login_as(user)
@@ -208,7 +211,8 @@ RSpec.describe PostsController do
       user3 = create(:user)
       board = create(:board, creator: user, coauthors: [user2])
       get :new, params: { board_id: board.id }
-      expect(assigns(:author_ids)).to match_array ([user.id, user2.id])
+      expect(assigns(:post).board).to eq(board)
+      expect(assigns(:author_ids)).to match_array([user.id, user2.id])
     end
   end
 
