@@ -91,6 +91,7 @@ class PostsController < WritableController
   def create
     import_thread and return if params[:button_import].present?
 
+    tagging_author_ids = post_params.delete(:tagging_author_ids) || []
     @post = Post.new(post_params)
     @post.settings = process_tags(Setting, :post, :setting_ids)
     @post.content_warnings = process_tags(ContentWarning, :post, :content_warning_ids)
@@ -98,10 +99,15 @@ class PostsController < WritableController
     @post.user = current_user
     preview and return if params[:button_preview].present?
 
-    if @post.save
+    begin
+      Post.transaction do
+        @post.save!
+        process_new_tagging_authors(tagging_author_ids)
+      end
+
       flash[:success] = "You have successfully posted."
       redirect_to post_path(@post)
-    else
+    rescue ActiveRecord::RecordInvalid
       flash.now[:error] = {}
       flash.now[:error][:array] = @post.errors.full_messages
       flash.now[:error][:message] = "Your post could not be saved because of the following problems:"
@@ -395,21 +401,26 @@ class PostsController < WritableController
     # remove from tagging list authors removed
     @post.tagging_post_authors.each do |post_author|
       next unless removed_ids.include?(post_author.user_id)
-      post_author.update_attributes(can_owe: false)
+      if post_author.joined?
+        post_author.update_attributes!(can_owe: false, invited_at: nil, invited_by: nil)
+      else
+        # not relevantly a post author (can't owe, hasn't joined), so destroy
+        post_author.destroy!
+      end
     end
 
     # add to list authors who can
     # TODO: invite authors by email if applicable
     new_ids.each do |user_id|
-      post_author = @post.post_authors.find_or_create_by(user_id: user_id)
+      post_author = @post.post_authors.find_or_create_by!(user_id: user_id)
       post_author.can_owe = true
 
-      unless post_author.joined?
+      unless post_author.joined? || user_id == current_user.id
         post_author.invited_at = Time.now
         post_author.invited_by = current_user
       end
 
-      post_author.save
+      post_author.save!
     end
   end
 
