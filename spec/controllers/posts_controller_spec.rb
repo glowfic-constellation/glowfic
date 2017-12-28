@@ -432,29 +432,6 @@ RSpec.describe PostsController do
       expect(post_author.invited_by).to be_nil
     end
 
-    it "sets board authors as authors" do
-      user = create(:user)
-      other_user = create(:user)
-      board = create(:board, creator: other_user, coauthors: [user])
-      login_as(user)
-      post :create, params: {
-        post: {
-          subject: 'a', user: user, board_id: board.id
-        }
-      }
-      post = assigns(:post)
-      debugger
-      expect(post.tagging_post_authors.count).to eq(2)
-      post_author = post.tagging_post_authors.find_by(user: user)
-      other_post_author = post.tagging_post_authors.find_by(user: other_user)
-      expect(post_author.can_owe).to eq(true)
-      expect(other_post_author.can_owe).to eq(true)
-      expect(post_author.joined).to eq(true)
-      expect(other_post_author.joined).to eq(false)
-      expect(other_post_author.invited_by).to eq(user)
-      expect(other_post_author.invited_at).not_to be_nil
-    end
-
     it "creates new post authors correctly" do
       user = create(:user)
       other_user = create(:user)
