@@ -1807,6 +1807,24 @@ RSpec.describe PostsController do
         expect(other_post_user.invited_at).to eq(invited_at)
         expect(other_post_user.invited_by).to eq(invited_by)
       end
+
+      it 'updates board cameos if necessary' do
+        user = create(:user)
+        other_user = create(:user)
+        third_user = create(:user)
+        login_as(user)
+        board = board(:create, creator: user, coauthors: [other_user])
+        post = post(:create, user: user)
+        expect(post.tagging_authors).to eq([user])
+        put :update, params: {
+          id: post.id,
+          post: {
+            tagging_author_ids: [user.id, other_user.id, third_user_id]
+          }
+        }
+        expect(post.tagging_post_authors.count).to eq(3)
+        expect(board.cameos).to eq([third_user])
+      end
     end
   end
 
