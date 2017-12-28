@@ -1650,6 +1650,22 @@ RSpec.describe PostsController do
         expect(newauthor.invited_by).to eq(user)
       end
 
+      it 'sets can_owe to false on removing an author' do
+        user = create(:user)
+        other_user = create(:user)
+        login_as(user)
+        post = create(:post, user: user, tagging_author_ids: [user.id, other_user.id])
+        other_post_user = post.tagging_post_authors.where.not(user: user).first
+        expect(other_post_user.can_owe).to eq(true)
+        put :update, params: {
+          id: post.id,
+          post: {
+            tagging_author_ids: [user.id]
+          }
+        }
+        expect(other_post_user.can_owe).to eq(false)
+      end
+
       it 'only sets can_owe on adding existing authors' do
         user = create(:user)
         other_user = create(:user)
@@ -1673,7 +1689,6 @@ RSpec.describe PostsController do
             tagging_author_ids: [user.id]
           }
         }
-        expect(other_post_user.can_owe).to eq(false)
         put :update, params: {
           id: post.id,
           post: {
