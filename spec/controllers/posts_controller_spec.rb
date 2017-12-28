@@ -1630,7 +1630,7 @@ RSpec.describe PostsController do
         expect(post.reload).not_to be_visible_to(create(:user))
       end
 
-      it 'sets correct paramters on adding new authors' do
+      it 'creates new PostAuthor as expected when adding new author' do
         user = create(:user)
         other_user = create(:user)
         login_as(user)
@@ -1642,12 +1642,12 @@ RSpec.describe PostsController do
           }
         }
         expect(response).to redirect_to(post_url(post))
-        Post.find_by_id(assigns(:post).id)
-        newauthor = post.tagging_post_authors.detect {|a| a.user != user }
-        expect(newauthor.can_owe).to eq(true)
-        expect(newauthor.joined).to eq(false)
-        expect(newauthor.invited_at).not_to be_nil
-        expect(newauthor.invited_by).to eq(user)
+        post.reload
+        new_author = post.tagging_post_authors.where.not(user: user).first
+        expect(new_author.can_owe).to eq(true)
+        expect(new_author.joined).to eq(false)
+        expect(new_author.invited_at).not_to be_nil
+        expect(new_author.invited_by).to eq(user)
       end
 
       it 'sets can_owe to false on removing an author' do
