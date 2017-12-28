@@ -85,7 +85,7 @@ class PostsController < WritableController
     @page_title = 'New Post'
 
     @author_ids = [current_user.id]
-    @author_ids = @post.board.author_ids if @post.board && !@post.board.open_to_anyone?
+    @author_ids = @post.board.writer_ids if @post.board && !@post.board.open_to_anyone?
   end
 
   def create
