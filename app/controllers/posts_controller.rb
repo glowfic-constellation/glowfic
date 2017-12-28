@@ -160,7 +160,7 @@ class PostsController < WritableController
       preview and return
     end
 
-    if current_user.id != @post.user_id && @post.audit_comment.blank? && !@post.author_ids.include?(current_user.id)
+    if !@post.tagging_author_ids.include?(current_user.id) && @post.audit_comment.blank?
       flash[:error] = "You must provide a reason for your moderator edit."
       editor_setup
       render action: :edit and return

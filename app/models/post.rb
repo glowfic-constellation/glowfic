@@ -33,6 +33,7 @@ class Post < ApplicationRecord
   has_many :index_sections, inverse_of: :posts, through: :index_posts
 
   has_many :post_authors, inverse_of: :post, dependent: :destroy
+  has_many :authors, class_name: 'User', through: :post_authors, source: :user
   has_many :tagging_post_authors, -> { where(can_owe: true) }, class_name: 'PostAuthor', inverse_of: :post
   has_many :tagging_authors, class_name: 'User', through: :tagging_post_authors, source: :user
   has_many :joined_post_authors, -> { where(joined: true) }, class_name: 'PostAuthor', inverse_of: :post
@@ -87,17 +88,6 @@ class Post < ApplicationRecord
     return true if user.admin?
     return user.id == user_id if private?
     (post_viewers.pluck(:user_id) + [user_id]).include?(user.id)
-  end
-
-  def authors
-    return @authors if @authors
-    return @authors = [user] if author_ids.count == 1
-    @authors = User.where(id: author_ids).to_a
-  end
-
-  def author_ids
-    return read_attribute(:author_ids) if has_attribute?(:author_ids)
-    @author_ids ||= joined_post_author_ids
   end
 
   def build_new_reply_for(user)
@@ -240,8 +230,9 @@ class Post < ApplicationRecord
     sum + contents.inject{|r, e| r + e.split.size}.to_i
   end
 
+  # only returns for authors who have written in the post (it's zero for authors who have not joined)
   def author_word_counts
-    authors.map { |author| [author.username, word_count_for(author)] }.sort_by{|a| -a[1] }
+    joined_authors.map { |author| [author.username, word_count_for(author)] }.sort_by{|a| -a[1] }
   end
 
   def character_appearance_counts

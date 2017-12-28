@@ -81,7 +81,7 @@ class Reply < ApplicationRecord
   def notify_other_authors
     return if skip_notify
     return if (previous_reply || post).user_id == user_id
-    post.authors.each do |author|
+    post.tagging_authors.each do |author|
       next if author.id == user_id
       next unless author.email.present?
       next unless author.email_notifications?
@@ -97,7 +97,7 @@ class Reply < ApplicationRecord
     return unless post && user
     errors.add(:user, "#{user.username} is not a valid continuity author for #{post.board.name}") unless user.writes_in?(post.board)
     return unless post.authors_locked?
-    errors.add(:post, 'is not a valid post author') unless post.author_ids.include?(user_id)
+    errors.add(:post, 'is not a valid post author') unless post.tagging_author_ids.include?(user_id)
   end
 
   def update_flat_post
