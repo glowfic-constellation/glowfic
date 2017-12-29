@@ -8,6 +8,7 @@ RSpec.describe CreatePostAuthors do
 
   describe "#up" do
     before(:each) do
+      skip "TODO remove"
       migration.migrate(:down)
 
       Post.reset_column_information
