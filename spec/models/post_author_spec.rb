@@ -2,6 +2,28 @@ require "spec_helper"
 
 RSpec.describe PostAuthor do
   describe "validations" do
+    it 'succeeds' do
+      expect(create(:post_author)).to be_valid
+    end
+
+    it 'suceeds with multiple posts and one user' do
+      user = create(:user)
+      post1 = create(:post, user: user)
+      post2 = create(:post, user: user)
+      expect(post1.tagging_authors).to eq([user])
+      expect(post2.tagging_authors).to eq([user])
+      expect(post1.tagging_post_authors.first).to be_valid
+      expect(post2.tagging_post_authors.first).to be_valid
+    end
+
+    it 'succeeds with one post and multiple users' do
+      user = create(:user)
+      other_user = create(:user)
+      post = create(:post, user: user, tagging_authors: [user, other_user])
+      expect(post.tagging_post_authors.find_by(user: user)).to be_valid
+      expect(post.tagging_post_authors.find_by(user: other_user)).to be_valid
+    end
+
     it "should require a user" do
       post_author = build(:post_author, user: nil)
       expect(post_author).not_to be_valid
