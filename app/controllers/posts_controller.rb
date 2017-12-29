@@ -392,9 +392,7 @@ class PostsController < WritableController
   end
 
   def process_new_tagging_authors!(tagging_author_ids)
-    tagging_author_ids = tagging_author_ids.reject(&:blank?)
     old_tagging_author_ids = @post.tagging_author_ids
-
     removed_ids = old_tagging_author_ids - tagging_author_ids
     new_ids = tagging_author_ids - old_tagging_author_ids
 

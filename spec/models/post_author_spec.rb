@@ -34,25 +34,31 @@ RSpec.describe PostAuthor do
       old_time = Time.now
       old_user = create(:user)
       author = create(:post_author, invited_at: old_time, invited_by: old_user, can_owe: false)
-      expect(author.invite_by!(author.post.user)).to eq(false)
+      expect(
+        author.invite_by!(author.post.user)
+      ).to eq(false)
       author.reload
       expect(author.can_owe).to eq(false)
       expect(author.invited_at).to be_the_same_time_as(old_time)
       expect(author.invited_by).to eq(old_user)
     end
 
-    it "skips update if inviting self" do
+    it "only sets can_owe if inviting self" do
       author = create(:post_author, can_owe: false)
-      expect(author.invite_by!(author.user)).to eq(false)
+      expect(
+        author.invite_by!(author.user)
+      ).to eq(true)
       author.reload
-      expect(author.can_owe).to eq(false)
+      expect(author.can_owe).to eq(true)
       expect(author.invited_at).to be_nil
       expect(author.invited_by).to be_nil
     end
 
-    it "sets can_owe if already joined" do
+    it "only sets can_owe if already joined" do
       author = create(:post_author, joined: true, can_owe: false)
-      expect(author.invite_by!(author.post.user)).to eq(true)
+      expect(
+        author.invite_by!(author.post.user)
+      ).to eq(true)
       author.reload
       expect(author.joined).to eq(true)
       expect(author.can_owe).to eq(true)

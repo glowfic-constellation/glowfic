@@ -6,9 +6,8 @@ class PostAuthor < ApplicationRecord
   validates :user_id, uniqueness: { scope: :post_id }
 
   def invite_by!(other)
-    return false if invited_at.present?
-    return false if other.id == user_id
     update_attributes!(can_owe: true)
+    return true if other.id == user_id
     return true if joined?
     update_attributes!(invited_at: Time.now, invited_by: other)
   end

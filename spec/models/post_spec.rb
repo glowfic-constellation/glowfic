@@ -842,20 +842,20 @@ RSpec.describe Post do
       expect(invited_post_author.invited_by).to be_nil
     end
 
-    it "refuses to invite a user by themselves" do
+    it "sets permissions but doesn't invite a user when inviting self" do
       create(:reply, user: invited, post: post)
       post.uninvite!(invited.id)
 
       expect(
         post.invite!(invited.id, by: invited)
-      ).to eq(false)
+      ).to eq(true)
 
       post.reload
       expect(post.authors).to match_array([author, invited])
 
       post_author = post.post_authors.find_by(user: invited)
       expect(post_author.joined).to eq(true)
-      expect(post_author.can_owe).to eq(false)
+      expect(post_author.can_owe).to eq(true)
       expect(post_author.invited_at).to be_nil
       expect(post_author.invited_by).to be_nil
     end
