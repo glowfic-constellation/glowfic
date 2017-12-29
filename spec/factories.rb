@@ -165,7 +165,6 @@ FactoryBot.define do
     user
   end
 
-
   factory :message do
     sender
     recipient

@@ -1272,8 +1272,7 @@ CREATE TABLE users (
     ignore_unread_daily_report boolean DEFAULT false,
     favorite_notifications boolean DEFAULT true,
     default_character_split character varying DEFAULT 'template'::character varying,
-    role_id integer,
-    tos_accepted_at timestamp without time zone
+    role_id integer
 );
 
 
@@ -2414,7 +2413,6 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20171109031527'),
 ('20171111163658'),
 ('20171114013113'),
-('20171127031443'),
 ('20171228032635');
 
 
