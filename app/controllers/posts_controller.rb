@@ -147,12 +147,9 @@ class PostsController < WritableController
     change_status and return if params[:status].present?
     change_authors_locked and return if params[:authors_locked].present?
 
-    parameters = post_params
-    tagging_author_ids = parameters.delete(:tagging_author_ids) || []
-    tagging_author_ids = tagging_author_ids.reject(&:blank?).map(&:to_i)
     old_tagging_author_ids = @post.tagging_author_ids
 
-    @post.assign_attributes(parameters)
+    @post.assign_attributes(post_params.except(:tagging_author_ids))
     @post.board ||= Board.find(3)
     settings = process_tags(Setting, :post, :setting_ids)
     warnings = process_tags(ContentWarning, :post, :content_warning_ids)
@@ -180,6 +177,7 @@ class PostsController < WritableController
         @post.settings = settings
         @post.content_warnings = warnings
         @post.labels = labels
+        tagging_author_ids = post_params.fetch(:tagging_author_ids, []).reject(&:blank?).map(&:to_i)
         process_tagging_authors_on_update!(tagging_author_ids, old_tagging_author_ids)
         @post.save!
       end
