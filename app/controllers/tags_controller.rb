@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 class TagsController < ApplicationController
-  include Taggable
-
   before_action :login_required, except: [:index, :show]
   before_action :find_tag, except: :index
   before_action :permission_required, except: [:index, :show, :destroy]
