@@ -9,13 +9,11 @@ RSpec.describe TagsController do
         empty_tag = create(:label)
         tag = create(:label)
         create(:post, labels: [tag])
-        setting = create(:setting)
-        owned_setting = create(:setting, owned: true)
 
         empty_group = create(:gallery_group)
         group1 = create(:gallery_group)
         create(:gallery, gallery_groups: [group1])
-        [empty_tag, tag, empty_group, group1, setting, owned_setting]
+        [empty_tag, tag, empty_group, group1]
       end
 
       it "succeeds when logged out" do
@@ -28,10 +26,10 @@ RSpec.describe TagsController do
 
       it "succeeds with filter" do
         tags = create_tags
-        get :index, params: { view: 'Setting' }
+        get :index, params: { view: 'Label' }
         expect(response).to have_http_status(200)
-        expect(assigns(:tags)).to match_array(tags[-2..-1])
-        expect(assigns(:page_title)).to eq('Settings')
+        expect(assigns(:tags)).to match_array(tags[0..1])
+        expect(assigns(:page_title)).to eq('Labels')
       end
 
       it "succeeds when logged in" do
@@ -41,6 +39,12 @@ RSpec.describe TagsController do
         expect(response.status).to eq(200)
         tags.reject! { |tag| tag.is_a?(GalleryGroup) }
         expect(assigns(:tags)).to match_array(tags)
+      end
+
+      it 'requires valid filter' do
+        get :index, params: { view: 'nonexistent' }
+        expect(flash[:error]).to eq('Invalid filter')
+        expect(response).to redirect_to(tags_url)
       end
     end
   end
@@ -63,19 +67,12 @@ RSpec.describe TagsController do
       end
 
       it "succeeds for logged in users with valid post tag" do
-        tag = create(:setting)
-        post = create(:post, settings: [tag])
+        tag = create(:label)
+        post = create(:post, labels: [tag])
         login
         get :show, params: { id: tag.id }
         expect(response.status).to eq(200)
         expect(assigns(:posts)).to match_array([post])
-      end
-
-      it 'succeeds for canons with settings' do
-        tag = create(:setting)
-        tag.child_settings << create(:setting)
-        get :show, params: { id: tag.id }
-        expect(response).to have_http_status(200)
       end
 
       it "succeeds with valid gallery tag" do
@@ -113,38 +110,6 @@ RSpec.describe TagsController do
           expect(assigns(:characters)).to match_array([character])
         end
       end
-
-      context "setting" do
-        it "succeeds with valid character tag" do
-          setting = create(:setting)
-          character = create(:character, settings: [setting])
-          get :show, params: { id: setting.id }
-          expect(response.status).to eq(200)
-          expect(assigns(:characters)).to match_array([character])
-        end
-
-        it "succeeds for logged in users with valid character tag" do
-          setting = create(:setting)
-          character = create(:character, settings: [setting])
-          login
-          get :show, params: { id: setting.id }
-          expect(response.status).to eq(200)
-          expect(assigns(:characters)).to match_array([character])
-        end
-
-        it "succeeds for owned settings" do
-          setting = create(:setting, owned: true)
-          get :show, params: { id: setting.id }
-          expect(response.status).to eq(200)
-        end
-
-        it "succeeds for settings without characters" do
-          setting = create(:setting)
-          get :show, params: { id: setting.id }
-          expect(response.status).to eq(200)
-          expect(assigns(:characters)).to be_empty
-        end
-      end
     end
   end
 
@@ -163,8 +128,9 @@ RSpec.describe TagsController do
     end
 
     it "requires permission" do
-      tag = create(:label, owned: true)
-      login
+      tag = create(:label)
+      mod = create(:mod_user)
+      login_as(mod)
       get :edit, params: { id: tag.id }
       expect(response).to redirect_to(tag_url(tag))
       expect(flash[:error]).to eq("You do not have permission to edit this tag.")
@@ -201,15 +167,16 @@ RSpec.describe TagsController do
     end
 
     it "requires permission" do
-      login
-      tag = create(:label, owned: true)
+      tag = create(:label)
+      mod = create(:mod_user)
+      login_as(mod)
       put :update, params: { id: tag.id }
       expect(response).to redirect_to(tag_url(tag))
       expect(flash[:error]).to eq("You do not have permission to edit this tag.")
     end
 
     it "requires valid params" do
-      tag = create(:setting)
+      tag = create(:content_warning)
       login_as(create(:admin_user))
       put :update, params: { id: tag.id, tag: {name: nil} }
       expect(response.status).to eq(200)
@@ -242,8 +209,9 @@ RSpec.describe TagsController do
     end
 
     it "requires permission" do
-      tag = create(:label, owned: true)
-      login
+      tag = create(:label)
+      mod = create(:mod_user)
+      login_as(mod)
       delete :destroy, params: { id: tag.id }
       expect(response).to redirect_to(tag_url(tag))
       expect(flash[:error]).to eq("You do not have permission to edit this tag.")

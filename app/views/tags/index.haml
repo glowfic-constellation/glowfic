@@ -1,6 +1,5 @@
 - col_count = 4
 - col_count += 1 unless @view.present?
-- col_count += 1 if @view == 'Setting'
 
 - if @view.present?
   - content_for :breadcrumbs do
@@ -18,8 +17,6 @@
       %th.sub Name
       - unless @view.present?
         %th.sub Type
-      - if @view == 'Setting'
-        %th.sub Owner
       %th.sub Posts
       %th.sub Characters
       %th.sub
@@ -29,13 +26,6 @@
         %td{class: klass}= link_to tag.name, tag_path(tag)
         - unless @view.present?
           %td{class: klass}= link_to tag.type.titlecase, tags_path(view: tag.type)
-        - if @view == 'Setting'
-          %td{class: klass}
-            = link_to tag.user do
-              - if tag.owned?
-                = tag.user.username
-              - else
-                %em= tag.user.username
         %td{class: klass}= tag.post_count
         %td{class: klass}= tag.character_count
         %td.width-70.right-align{class: klass}

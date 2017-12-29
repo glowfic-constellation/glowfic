@@ -24,8 +24,9 @@ class Post < ApplicationRecord
 
   has_many :post_tags, inverse_of: :post, dependent: :destroy
   has_many :labels, -> { order('post_tags.id ASC') }, through: :post_tags, source: :label
-  has_many :settings, -> { order('post_tags.id ASC') }, through: :post_tags, source: :setting
   has_many :content_warnings, -> { order('post_tags.id ASC') }, through: :post_tags, source: :content_warning, after_add: :reset_warnings
+  has_many :post_settings, inverse_of: :post, dependent: :destroy
+  has_many :settings, -> { order('post_settings.id ASC') }, through: :post_settings
   has_many :favorites, as: :favorite, dependent: :destroy
 
   has_many :index_posts, inverse_of: :post, dependent: :destroy

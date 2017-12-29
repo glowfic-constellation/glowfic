@@ -89,6 +89,7 @@ Rails.application.routes.draw do
     collection { get :search }
   end
   resources :tags, except: [:new, :create]
+  resources :settings, except: [:new, :create]
 
   # Indexes
   resources :indexes
@@ -113,6 +114,7 @@ Rails.application.routes.draw do
         resources :replies, only: :index
         collection { post :reorder }
       end
+      resources :settings, only: [:index, :show]
       resources :tags, only: [:index, :show]
       resources :templates, only: :index
       resources :users, only: :index

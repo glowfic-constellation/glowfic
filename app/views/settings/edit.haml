@@ -1,0 +1,12 @@
+- content_for :breadcrumbs do
+  = link_to 'Settings', settings_path
+  &raquo;
+  = link_to @setting.name, setting_path(@setting)
+  &raquo;
+  %b Edit
+
+= form_for @setting do |f|
+  %table.form-table
+    %tr
+      %th.centered{colspan: 2} Edit Setting
+    = render partial: 'editor', locals: {f: f}

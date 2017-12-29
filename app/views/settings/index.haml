@@ -1,0 +1,35 @@
+%table
+  %thead
+    %tr
+      %th{colspan: 5} Settings
+  %tbody
+    %tr
+      %th.sub Name
+      %th.sub Owner
+      %th.sub Posts
+      %th.sub Characters
+      %th.sub
+    - @settings.each do |tag|
+      - klass = cycle('even', 'odd')
+      %tr
+        %td{class: klass}= link_to tag.name, setting_path(tag)
+        %td{class: klass}
+          = link_to tag.user do
+            - if tag.owned?
+              = tag.user.username
+            - else
+              %em= tag.user.username
+        %td{class: klass}= tag.post_count
+        %td{class: klass}= tag.character_count
+        %td.width-70.right-align{class: klass}
+          - if tag.editable_by?(current_user)
+            = link_to edit_setting_path(tag) do
+              = image_tag "icons/pencil.png"
+          - if tag.deletable_by?(current_user)
+            = link_to setting_path(tag), method: :delete, data: { confirm: 'Are you sure you want to delete '+tag.name+'?' } do # bwuh?
+              = image_tag "icons/cross.png"
+            &nbsp;
+  - if @settings.total_pages > 1
+    %tfoot
+      %tr
+        %td{colspan: 6}= render partial: 'posts/paginator', locals: { paginated: @settings }

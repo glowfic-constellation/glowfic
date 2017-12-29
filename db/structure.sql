@@ -302,6 +302,38 @@ ALTER SEQUENCE character_groups_id_seq OWNED BY character_groups.id;
 
 
 --
+-- Name: character_settings; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE character_settings (
+    id integer NOT NULL,
+    character_id integer NOT NULL,
+    setting_id integer NOT NULL,
+    created_at timestamp without time zone,
+    updated_at timestamp without time zone
+);
+
+
+--
+-- Name: character_settings_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE character_settings_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: character_settings_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE character_settings_id_seq OWNED BY character_settings.id;
+
+
+--
 -- Name: character_tags; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -779,6 +811,39 @@ ALTER SEQUENCE password_resets_id_seq OWNED BY password_resets.id;
 
 
 --
+-- Name: post_settings; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE post_settings (
+    id integer NOT NULL,
+    post_id integer NOT NULL,
+    setting_id integer NOT NULL,
+    suggested boolean DEFAULT false,
+    created_at timestamp without time zone,
+    updated_at timestamp without time zone
+);
+
+
+--
+-- Name: post_settings_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE post_settings_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: post_settings_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE post_settings_id_seq OWNED BY post_settings.id;
+
+
+--
 -- Name: post_tags; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -1043,6 +1108,40 @@ CREATE TABLE schema_migrations (
 
 
 --
+-- Name: settings; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE settings (
+    id integer NOT NULL,
+    user_id integer NOT NULL,
+    name citext NOT NULL,
+    description text,
+    owned boolean DEFAULT false,
+    created_at timestamp without time zone,
+    updated_at timestamp without time zone
+);
+
+
+--
+-- Name: settings_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE settings_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: settings_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE settings_id_seq OWNED BY settings.id;
+
+
+--
 -- Name: tag_tags; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -1085,9 +1184,7 @@ CREATE TABLE tags (
     name citext NOT NULL,
     created_at timestamp without time zone,
     updated_at timestamp without time zone,
-    type character varying,
-    description text,
-    owned boolean DEFAULT false
+    type character varying
 );
 
 
@@ -1248,6 +1345,13 @@ ALTER TABLE ONLY character_groups ALTER COLUMN id SET DEFAULT nextval('character
 
 
 --
+-- Name: character_settings id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY character_settings ALTER COLUMN id SET DEFAULT nextval('character_settings_id_seq'::regclass);
+
+
+--
 -- Name: character_tags id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -1346,6 +1450,13 @@ ALTER TABLE ONLY password_resets ALTER COLUMN id SET DEFAULT nextval('password_r
 
 
 --
+-- Name: post_settings id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY post_settings ALTER COLUMN id SET DEFAULT nextval('post_settings_id_seq'::regclass);
+
+
+--
 -- Name: post_tags id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -1392,6 +1503,13 @@ ALTER TABLE ONLY reply_drafts ALTER COLUMN id SET DEFAULT nextval('reply_drafts_
 --
 
 ALTER TABLE ONLY report_views ALTER COLUMN id SET DEFAULT nextval('report_views_id_seq'::regclass);
+
+
+--
+-- Name: settings id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY settings ALTER COLUMN id SET DEFAULT nextval('settings_id_seq'::regclass);
 
 
 --
@@ -1484,6 +1602,14 @@ ALTER TABLE ONLY character_aliases
 
 ALTER TABLE ONLY character_groups
     ADD CONSTRAINT character_groups_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: character_settings character_settings_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY character_settings
+    ADD CONSTRAINT character_settings_pkey PRIMARY KEY (id);
 
 
 --
@@ -1599,6 +1725,14 @@ ALTER TABLE ONLY password_resets
 
 
 --
+-- Name: post_settings post_settings_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY post_settings
+    ADD CONSTRAINT post_settings_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: post_tags post_tags_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1660,6 +1794,14 @@ ALTER TABLE ONLY report_views
 
 ALTER TABLE ONLY schema_migrations
     ADD CONSTRAINT schema_migrations_pkey PRIMARY KEY (version);
+
+
+--
+-- Name: settings settings_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY settings
+    ADD CONSTRAINT settings_pkey PRIMARY KEY (id);
 
 
 --
@@ -1769,6 +1911,20 @@ CREATE UNIQUE INDEX index_board_views_on_user_id_and_board_id ON board_views USI
 --
 
 CREATE INDEX index_character_aliases_on_character_id ON character_aliases USING btree (character_id);
+
+
+--
+-- Name: index_character_settings_on_character_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_character_settings_on_character_id ON character_settings USING btree (character_id);
+
+
+--
+-- Name: index_character_settings_on_setting_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_character_settings_on_setting_id ON character_settings USING btree (setting_id);
 
 
 --
@@ -1968,6 +2124,20 @@ CREATE INDEX index_password_resets_on_user_id_and_created_at ON password_resets 
 
 
 --
+-- Name: index_post_settings_on_post_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_post_settings_on_post_id ON post_settings USING btree (post_id);
+
+
+--
+-- Name: index_post_settings_on_setting_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_post_settings_on_setting_id ON post_settings USING btree (setting_id);
+
+
+--
 -- Name: index_post_tags_on_post_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -2091,6 +2261,13 @@ CREATE INDEX index_reply_drafts_on_post_id_and_user_id ON reply_drafts USING btr
 --
 
 CREATE INDEX index_report_views_on_user_id ON report_views USING btree (user_id);
+
+
+--
+-- Name: index_settings_on_name; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_settings_on_name ON settings USING btree (name);
 
 
 --
@@ -2235,6 +2412,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20171104140915'),
 ('20171109031527'),
 ('20171111163658'),
-('20171114013113');
+('20171114013113'),
+('20171228032635');
 
 

@@ -15,8 +15,9 @@ class Character < ApplicationRecord
   has_many :icons, -> { group('icons.id').order('LOWER(keyword)') }, through: :galleries
 
   has_many :character_tags, inverse_of: :character, dependent: :destroy
-  has_many :settings, -> { order('character_tags.id ASC') }, through: :character_tags, source: :setting
   has_many :gallery_groups, -> { order('character_tags.id ASC') }, through: :character_tags, source: :gallery_group, dependent: :destroy
+  has_many :character_settings, inverse_of: :character, dependent: :destroy
+  has_many :settings, -> { order('character_settings.id ASC') }, through: :character_settings
 
   validates_presence_of :name
   validate :valid_group, :valid_galleries, :valid_default_icon
