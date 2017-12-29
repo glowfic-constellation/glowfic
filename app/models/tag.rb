@@ -7,7 +7,7 @@ class Tag < ApplicationRecord
   has_many :gallery_tags, dependent: :destroy, inverse_of: :tag
   has_many :galleries, through: :gallery_tags
 
-  TYPES = %w(Setting Label ContentWarning GalleryGroup)
+  TYPES = %w(Label ContentWarning GalleryGroup)
 
   validates_presence_of :name, :type
   validates :name, uniqueness: { scope: :type }
@@ -20,9 +20,7 @@ class Tag < ApplicationRecord
   def editable_by?(user)
     return false unless user
     return true if deletable_by?(user)
-    return true if user.has_permission?(:edit_tags)
-    return false unless is_a?(Setting)
-    !owned?
+    user.has_permission?(:edit_tags)
   end
 
   def deletable_by?(user)
@@ -62,7 +60,7 @@ class Tag < ApplicationRecord
     galleries.count
   end
 
-  def has_items? # TODO auto destroy when false, and also maybe fix with settings/canons
+  def has_items? # TODO auto destroy when false
     post_count + character_count + gallery_count > 0
   end
 

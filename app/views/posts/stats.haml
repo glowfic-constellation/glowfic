@@ -64,7 +64,7 @@
     - if @post.settings.present?
       %tr
         %td.sub.width-150 Setting
-        %td{class: cycle('odd', 'even')}= @post.settings.order('post_tags.id asc').map { |tag| link_to tag.name, tag_path(tag) }.join(', ').html_safe
+        %td{class: cycle('odd', 'even')}= @post.settings.order('post_settings.id asc').map { |tag| link_to tag.name, setting_path(tag) }.join(', ').html_safe
     - if @post.content_warnings.present?
       %tr
         %td.sub.width-150 Content Warnings

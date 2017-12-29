@@ -38,18 +38,13 @@ class TagsController < ApplicationController
 
   def edit
     @page_title = "Edit Tag: #{@tag.name}"
-    build_editor
   end
 
   def update
     @tag.assign_attributes(tag_params)
 
     begin
-      Tag.transaction do
-        @tag.parent_settings = process_tags(Setting, :tag, :parent_setting_ids) if @tag.is_a?(Setting)
-        @tag.save!
-      end
-
+      @tag.save!
       flash[:success] = "Tag saved!"
       redirect_to tag_path(@tag)
 
@@ -58,7 +53,6 @@ class TagsController < ApplicationController
       flash.now[:error][:message] = "Tag could not be saved because of the following problems:"
       flash.now[:error][:array] = @tag.errors.full_messages
       @page_title = "Edit Tag: #{@tag.name}"
-      build_editor
       render action: :edit and return
     end
   end
@@ -92,11 +86,6 @@ class TagsController < ApplicationController
       flash[:error] = "You do not have permission to edit this tag."
       redirect_to tag_path(@tag)
     end
-  end
-
-  def build_editor
-    return unless @tag.is_a?(Setting)
-    use_javascript('tags/edit')
   end
 
   def tag_params

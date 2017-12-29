@@ -123,13 +123,15 @@ function processResults(data, params, total, textKey) {
 
 function createTagSelect(tagType, selector, formType, scope) {
   foundTags[selector] = [];
+  url = '/api/v1/tags'
+  if(tagType == 'Setting') url = '/api/v1/settings'
   $("#"+formType+"_"+selector+"_ids").select2({
     tags: true,
     tokenSeparators: [','],
     placeholder: 'Enter ' + selector.replace('_', ' ') + '(s) separated by commas',
     ajax: {
       delay: 200,
-      url: '/api/v1/tags',
+      url: url,
       dataType: 'json',
       data: function(params) {
         var data = queryTransform(params);
