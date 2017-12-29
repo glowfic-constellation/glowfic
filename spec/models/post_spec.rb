@@ -947,10 +947,10 @@ RSpec.describe Post do
     end
   end
 
-  describe "uninvite!" do
+  describe "#uninvite!" do
     let(:author) { create(:user) }
     let(:invited) { create(:user) }
-    let(:post) { create(:post, user: author) }
+    let(:post) { create(:post, user: author, tagging_authors: [author]) }
 
     it "can revoke privileges of coauthor" do
       create(:reply, post: post, user: invited)
@@ -972,6 +972,7 @@ RSpec.describe Post do
 
     it "can revoke privileges of invited user" do
       post.invite!(invited.id, by: author)
+      post.reload
       expect(post.tagging_authors).to match_array([author, invited])
       expect(
         post.uninvite!(invited.id)
