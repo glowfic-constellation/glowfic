@@ -91,7 +91,6 @@ class PostsController < WritableController
   def create
     import_thread and return if params[:button_import].present?
 
-    tagging_author_ids = post_params.delete(:tagging_author_ids) || []
     @post = Post.new(post_params)
     @post.settings = process_tags(Setting, :post, :setting_ids)
     @post.content_warnings = process_tags(ContentWarning, :post, :content_warning_ids)
@@ -101,8 +100,8 @@ class PostsController < WritableController
 
     begin
       Post.transaction do
+        process_tagging_authors_on_create
         @post.save!
-        process_new_tagging_authors!(tagging_author_ids)
       end
 
       flash[:success] = "You have successfully posted."
@@ -148,9 +147,9 @@ class PostsController < WritableController
     change_status and return if params[:status].present?
     change_authors_locked and return if params[:authors_locked].present?
 
-    tagging_author_ids = post_params.delete(:tagging_author_ids) || []
+    old_tagging_author_ids = @post.tagging_author_ids
 
-    @post.assign_attributes(post_params)
+    @post.assign_attributes(post_params.except(:tagging_author_ids))
     @post.board ||= Board.find(3)
     settings = process_tags(Setting, :post, :setting_ids)
     warnings = process_tags(ContentWarning, :post, :content_warning_ids)
@@ -166,7 +165,7 @@ class PostsController < WritableController
       preview and return
     end
 
-    if !@post.tagging_author_ids.include?(current_user.id) && @post.audit_comment.blank?
+    if @post.user_id_was != current_user.id && !old_tagging_author_ids.include?(current_user.id) && @post.audit_comment.blank?
       flash[:error] = "You must provide a reason for your moderator edit."
       editor_setup
       render action: :edit and return
@@ -178,8 +177,9 @@ class PostsController < WritableController
         @post.settings = settings
         @post.content_warnings = warnings
         @post.labels = labels
+        tagging_author_ids = post_params.fetch(:tagging_author_ids, []).reject(&:blank?).map(&:to_i)
+        process_tagging_authors_on_update!(tagging_author_ids, old_tagging_author_ids)
         @post.save!
-        process_new_tagging_authors!(tagging_author_ids)
       end
 
       flash[:success] = "Your post has been updated."
@@ -314,7 +314,8 @@ class PostsController < WritableController
   def editor_setup
     super
     @permitted_authors = User.order(:username)
-    @author_ids = @post.try(:tagging_author_ids) || []
+    @author_ids = post_params[:tagging_author_ids].reject(&:blank?).map(&:to_i) if post_params.key?(:tagging_author_ids)
+    @author_ids ||= @post.try(:tagging_author_ids) || []
   end
 
   def import_thread
@@ -393,21 +394,28 @@ class PostsController < WritableController
     end
   end
 
-  def process_new_tagging_authors!(tagging_author_ids)
-    tagging_author_ids = tagging_author_ids.reject(&:blank?)
-    old_tagging_author_ids = @post.tagging_author_ids
+  def process_tagging_authors_on_create
+    @post.tagging_post_authors.each do |post_author|
+      post_author.build_invited_by(current_user)
+    end
+  end
 
+  def process_tagging_authors_on_update!(tagging_author_ids, old_tagging_author_ids)
     removed_ids = old_tagging_author_ids - tagging_author_ids
     new_ids = tagging_author_ids - old_tagging_author_ids
 
     # remove from tagging list authors removed
-    @post.tagging_post_authors.where(user_id: removed_ids).each(&:uninvite!)
+    @post.tagging_post_authors.each do |post_author|
+      next unless removed_ids.include?(post_author.user_id)
+      post_author.uninvite!
+    end
 
     # add to list authors who can
     # TODO: invite authors by email if applicable
     new_ids.each do |user_id|
       @post.invite!(user_id, by: current_user)
     end
+    @post.tagging_author_ids = tagging_author_ids
   end
 
   def post_params
