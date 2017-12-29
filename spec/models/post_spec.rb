@@ -894,7 +894,7 @@ RSpec.describe Post do
 
     it "can revoke privileges of coauthor" do
       create(:reply, post: post, user: invited)
-      expect(post.tagging_authors).to match_array([author, invited])
+      expect(post.reload.tagging_authors).to match_array([author, invited])
       expect(
         post.uninvite!(invited.id)
       ).to eq(true)
