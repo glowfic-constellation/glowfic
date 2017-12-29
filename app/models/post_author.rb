@@ -19,6 +19,7 @@ class PostAuthor < ApplicationRecord
     else
       # no longer relevantly a post author (can't owe, hasn't joined), so destroy
       destroy!
+      destroyed?
     end
   end
 
