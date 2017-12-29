@@ -859,6 +859,142 @@ RSpec.describe Post do
     end
   end
 
+  describe "#invite!" do
+    let(:author) { create(:user) }
+    let(:invited) { create(:user) }
+    let(:post) { create(:post, user: author) }
+
+    it "invites a user who was previously not an author" do
+      expect(post.authors).to match_array([author])
+
+      time = Time.now
+      Timecop.freeze(time) do
+        expect(
+          post.invite!(invited.id, by: author)
+        ).to eq(true)
+      end
+
+      post.reload
+      expect(post.authors).to match_array([author, invited])
+
+      invited_post_author = post.post_authors.find_by(user: invited)
+      expect(invited_post_author.joined).to eq(false)
+      expect(invited_post_author.can_owe).to eq(true)
+      expect(invited_post_author.invited_at).to be_the_same_time_as(time)
+      expect(invited_post_author.invited_by).to eq(author)
+    end
+
+    it "allows a previous author to post but does not re-invite them" do
+      create(:reply, user: invited, post: post)
+      expect(post.reload.authors).to match_array([author, invited])
+
+      expect(
+        post.invite!(invited.id, by: author)
+      ).to eq(true)
+
+      post.reload
+      expect(post.authors).to match_array([author, invited])
+
+      invited_post_author = post.post_authors.find_by(user: invited)
+      expect(invited_post_author.joined).to eq(true)
+      expect(invited_post_author.can_owe).to eq(true)
+      expect(invited_post_author.invited_at).to be_nil
+      expect(invited_post_author.invited_by).to be_nil
+    end
+
+    it "sets permissions but doesn't invite a user when inviting self" do
+      create(:reply, user: invited, post: post)
+      post.uninvite!(invited.id)
+
+      expect(
+        post.invite!(invited.id, by: invited)
+      ).to eq(true)
+
+      post.reload
+      expect(post.authors).to match_array([author, invited])
+
+      post_author = post.post_authors.find_by(user: invited)
+      expect(post_author.joined).to eq(true)
+      expect(post_author.can_owe).to eq(true)
+      expect(post_author.invited_at).to be_nil
+      expect(post_author.invited_by).to be_nil
+    end
+
+    it "does nothing if a user was previously invited" do
+      other_author = create(:user)
+      create(:reply, user: other_author, post: post)
+
+      time = Time.now
+      Timecop.freeze(time) do
+        post.invite!(invited.id, by: other_author)
+      end
+
+      Timecop.freeze(time + 1.second) do
+        expect(
+          post.invite!(invited.id, by: author)
+        ).to eq(false)
+      end
+
+      post.reload
+      expect(post.authors).to match_array([author, other_author, invited])
+
+      invited_post_author = post.post_authors.find_by(user: invited)
+      expect(invited_post_author.joined).to eq(false)
+      expect(invited_post_author.can_owe).to eq(true)
+      expect(invited_post_author.invited_at).to be_the_same_time_as(time)
+      expect(invited_post_author.invited_by).to eq(other_author)
+    end
+  end
+
+  describe "uninvite!" do
+    let(:author) { create(:user) }
+    let(:invited) { create(:user) }
+    let(:post) { create(:post, user: author) }
+
+    it "can revoke privileges of coauthor" do
+      create(:reply, post: post, user: invited)
+      expect(post.tagging_authors).to match_array([author, invited])
+      expect(
+        post.uninvite!(invited.id)
+      ).to eq(true)
+
+      post.reload
+      expect(post.authors).to match_array([author, invited])
+      expect(post.tagging_authors).to match_array([author])
+
+      post_author = post.post_authors.find_by(user: invited)
+      expect(post_author.joined).to eq(true)
+      expect(post_author.can_owe).to eq(false)
+      expect(post_author.invited_at).to be_nil
+      expect(post_author.invited_by).to be_nil
+    end
+
+    it "can revoke privileges of invited user" do
+      post.invite!(invited.id, by: author)
+      expect(post.tagging_authors).to match_array([author, invited])
+      expect(
+        post.uninvite!(invited.id)
+      ).to eq(true)
+
+      post.reload
+      expect(post.authors).to match_array([author])
+      expect(post.tagging_authors).to match_array([author])
+      expect(post.post_authors.find_by(user: invited)).to be_nil
+    end
+
+    it "does not fail to uninvite a user who has not been invited" do
+      expect(post.tagging_authors).to match_array([author])
+      expect(
+        post.uninvite!(invited.id)
+      ).to be_nil
+
+      post.reload
+      expect(post.authors).to match_array([author])
+      expect(post.tagging_authors).to match_array([author])
+      expect(post.post_authors.find_by(user: invited)).to be_nil
+    end
+  end
+
   context "callbacks" do
     include ActiveJob::TestHelper
     it "should enqueue a message after creation" do

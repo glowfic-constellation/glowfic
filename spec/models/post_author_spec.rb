@@ -16,11 +16,100 @@ RSpec.describe PostAuthor do
       expect(post_author).to be_valid
     end
 
-    it "should not allow creating twice for the same data" do
+    it "should enforce uniqueness for a specific user and post" do
       user = create(:user)
       post = create(:post)
       post_author = create(:post_author, user: user, post: post)
-      expect{create(:post_author, user: user, post: post)}.to raise_error(ActiveRecord::RecordInvalid)
+
+      new_author = build(:post_author, user: user, post: post)
+      expect(new_author).not_to be_valid
+      expect {
+        new_author.save!
+      }.to raise_error(ActiveRecord::RecordInvalid)
+    end
+  end
+
+  describe "#invite_by!" do
+    it "skips update if already invited" do
+      old_time = Time.now
+      old_user = create(:user)
+      author = create(:post_author, invited_at: old_time, invited_by: old_user, can_owe: false)
+      expect(
+        author.invite_by!(author.post.user)
+      ).to eq(false)
+      author.reload
+      expect(author.can_owe).to eq(false)
+      expect(author.invited_at).to be_the_same_time_as(old_time)
+      expect(author.invited_by).to eq(old_user)
+    end
+
+    it "only sets can_owe if inviting self" do
+      author = create(:post_author, can_owe: false)
+      expect(
+        author.invite_by!(author.user)
+      ).to eq(true)
+      author.reload
+      expect(author.can_owe).to eq(true)
+      expect(author.invited_at).to be_nil
+      expect(author.invited_by).to be_nil
+    end
+
+    it "only sets can_owe if already joined" do
+      author = create(:post_author, joined: true, can_owe: false)
+      expect(
+        author.invite_by!(author.post.user)
+      ).to eq(true)
+      author.reload
+      expect(author.joined).to eq(true)
+      expect(author.can_owe).to eq(true)
+      expect(author.invited_at).to be_nil
+      expect(author.invited_by).to be_nil
+    end
+
+    it "succeeds" do
+      author = create(:post_author)
+      time = Time.now + 1.hour
+      Timecop.freeze(time) do
+        expect(author.invite_by!(author.post.user)).to eq(true)
+      end
+      author.reload
+      expect(author.joined).to eq(false)
+      expect(author.can_owe).to eq(true)
+      expect(author.invited_at).to be_the_same_time_as(time)
+      expect(author.invited_by).to eq(author.post.user)
+    end
+  end
+
+  describe "#uninvite!" do
+    it "revokes permission even if user has joined post" do
+      post_author = create(:post_author, joined: true, can_owe: true, invited_at: Time.now, invited_by: create(:user))
+      post_author.uninvite!
+      post_author.reload
+      expect(post_author.joined).to eq(true)
+      expect(post_author.can_owe).to eq(false)
+      expect(post_author.invited_at).to be_nil
+      expect(post_author.invited_by).to be_nil
+    end
+
+    it "destroys object if user has not joined" do
+      post_author = create(:post_author, joined: false, can_owe: true, invited_at: Time.now, invited_by: create(:user))
+      post_author.uninvite!
+      expect(post_author.destroyed?).to eq(true)
+      expect(PostAuthor.find_by(id: post_author.id)).to be_nil
+    end
+  end
+
+  describe "#opt_out_of_owed!" do
+    it "removes owedness if user previously could owe" do
+      post_author = create(:post_author, can_owe: true)
+      post_author.opt_out_of_owed!
+      expect(post_author.reload.can_owe).to eq(false)
+    end
+
+    it "keeps user opted out if they were previously opted out" do
+      post_author = create(:post_author, can_owe: false)
+      post_author.opt_out_of_owed!
+      expect(post_author.reload.can_owe).to eq(false)
     end
   end
 end
