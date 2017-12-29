@@ -251,21 +251,17 @@ class Post < ApplicationRecord
   end
 
   def update_post_authors
-    set_author_joined(user_id, created_at)
+    unless (post_author = post_authors.find_by(user_id: user_id))
+      # if the user doesn't already have an author association, they're not in the tagging list, so preserve that
+      post_author = post_authors.create(user_id: user_id, can_owe: false)
+    end
+
+    post_author.update_attributes(joined: true, joined_at: created_at)
+
+    user_joined(user)
   end
 
-  # used when a user makes an entry in a post.
-  # if they are not already in the post, join them to the authors list, set the timestamp, and perform relevant callbacks.
-  def set_author_joined(user_id, timestamp)
-    post_author = post_authors.find_or_create_by(user_id: user_id)
-    return if post_author.joined?
-
-    # user joins thread: now owes tags and can write in it, until permissions later revoked / willingly given up
-    post_author.can_owe = true
-    post_author.joined = true
-    post_author.joined_at = timestamp
-    post_author.save
-
+  def user_joined(user)
     # TODO: logic and callbacks for someone joining a post
   end
 

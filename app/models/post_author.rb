@@ -5,6 +5,12 @@ class PostAuthor < ApplicationRecord
 
   validates :user_id, uniqueness: { scope: :post_id }
 
+  def build_invited_by(other)
+    return if user_id == other.id
+    self.invited_at = Time.now
+    self.invited_by = other
+  end
+
   def invite_by!(other)
     # return false if can_owe? && !updated_at.nil?
     update_attributes!(can_owe: true)

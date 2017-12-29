@@ -97,6 +97,13 @@ class Reply < ApplicationRecord
   end
 
   def update_post_authors
-    post.set_author_joined(user_id, created_at)
+    unless (post_author = post.post_authors.find_by(user_id: user_id))
+      post_author = post.post_authors.create(user_id: user_id, can_owe: true)
+    end
+    return if post_author.joined?
+
+    post_author.update_attributes(joined: true, joined_at: created_at)
+
+    post.user_joined(user)
   end
 end
