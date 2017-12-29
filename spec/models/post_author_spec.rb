@@ -8,20 +8,26 @@ RSpec.describe PostAuthor do
 
     it 'suceeds with multiple posts and one user' do
       user = create(:user)
-      post1 = create(:post, user: user)
-      post2 = create(:post, user: user)
-      expect(post1.tagging_authors).to eq([user])
-      expect(post2.tagging_authors).to eq([user])
-      expect(post1.tagging_post_authors.first).to be_valid
-      expect(post2.tagging_post_authors.first).to be_valid
+      post1 = create(:post)
+      post2 = create(:post)
+      create(:post_author, user: user, post: post1)
+      second = build(:post_author, user: user, post: post2)
+      expect(second).to be_valid
+      expect {
+        second.save!
+      }.not_to raise_error
     end
 
     it 'succeeds with one post and multiple users' do
-      user = create(:user)
-      other_user = create(:user)
-      post = create(:post, user: user, tagging_authors: [user, other_user])
-      expect(post.tagging_post_authors.find_by(user: user)).to be_valid
-      expect(post.tagging_post_authors.find_by(user: other_user)).to be_valid
+      user1 = create(:user)
+      user2 = create(:user)
+      post = create(:post)
+      create(:post_author, user: user1, post: post)
+      second = build(:post_author, user: user2, post: post)
+      expect(second).to be_valid
+      expect {
+        second.save!
+      }.not_to raise_error
     end
 
     it "should require a user" do
