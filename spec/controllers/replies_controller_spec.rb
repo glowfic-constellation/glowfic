@@ -229,6 +229,65 @@ RSpec.describe RepliesController do
       expect(reply.user).to eq(user)
       expect(reply.content).to eq('test content the third!')
     end
+
+    it "allows replies from authors in a closed post" do
+      user = create(:user)
+      other_user = create(:user)
+      login_as(user)
+      reply_post = create(:post, user: other_user, tagging_authors: [user, other_user], authors_locked: true)
+      post :create, params: { reply: {post_id: reply_post.id, content: 'test content!'} }
+      expect(Reply.count).to eq(1)
+      other_post = create(:post, user: user, tagging_authors: [user, other_user], authors_locked: true)
+      post :create, params: { reply: {post_id: other_post.id, content: 'more test content!'} }
+      expect(Reply.count).to eq(2)
+    end
+
+    it "adds authors correctly when a user replies to an open thread" do
+      user = create(:user)
+      login_as(user)
+      reply_post = create(:post)
+      post :create, params: { reply: {post_id: reply_post.id, content: 'test content!'} }
+      expect(Reply.count).to eq(1)
+      expect(reply_post.tagging_authors).to include(user)
+      expect(reply_post.tagging_post_authors.count).to eq(2)
+      post_author = reply_post.tagging_post_authors.find_by(user: user)
+      expect(post_author.user).to eq(user)
+      expect(post_author.joined).to eq(true)
+      expect(post_author.can_owe).to eq(true)
+    end
+
+    it "handles multiple replies to an open thread correctly" do
+      user = create(:user)
+      login_as(user)
+      reply_post = create(:post)
+      expect(reply_post.tagging_authors.count).to eq(1)
+      old_reply = create(:reply, post: reply_post, user: user)
+      reply_post.reload
+      expect(reply_post.tagging_authors).to include(user)
+      expect(reply_post.tagging_authors.count).to eq(2)
+      expect(reply_post.joined_authors).to include(user)
+      expect(reply_post.joined_authors.count).to eq(2)
+      expect(Reply.count).to eq(1)
+      reply_post.mark_read(user, old_reply.created_at + 1.second, true)
+      post :create, params: { reply: {post_id: reply_post.id, content: 'test content the third!'} }
+      expect(Reply.count).to eq(2)
+      expect(reply_post.tagging_authors.count).to eq(2)
+      expect(reply_post.joined_authors.count).to eq(2)
+    end
+
+    it "handles a reply from an author who has marked themselves not can_owe correctly in an open post" do
+      user = create(:user)
+      login_as(user)
+      reply_post = create(:post)
+      old_reply = create(:reply, post: reply_post, user: user)
+      reply_post.reload
+      post_author = reply_post.tagging_post_authors.find_by(user: user)
+      expect(post_author.can_owe).to eq(true)
+      expect(post_author.joined).to eq(true)
+      reply_post.tagging_authors -= [user]
+      post_author.reload
+      expect(post_author.can_owe).to eq(false)
+    end
   end
 
   describe "GET show" do
