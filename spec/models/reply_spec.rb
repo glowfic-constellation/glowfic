@@ -96,7 +96,7 @@ RSpec.describe Reply do
       # skips users who have the post set as ignored for tags owed purposes (or who can't tag)
       a_user_who_doesnt_owe = create(:user, email_notifications: true)
       create(:reply, user: a_user_who_doesnt_owe, post: post, skip_notify: true)
-      post.post_authors.find_by(user: a_user_who_doesnt_owe).update_attributes(can_owe: false)
+      post.post_authors.find_by(user: a_user_who_doesnt_owe).opt_out_of_owed!
 
       reply = create(:reply, post: post)
       expect(UserMailer).to have_queue_size_of(2)

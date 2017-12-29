@@ -599,7 +599,8 @@ RSpec.describe RepliesController do
         create(:reply, post: post)
         user_ignoring_tags = create(:user)
         create(:reply, post: post, user: user_ignoring_tags)
-        post.post_authors.find_by(user: user_ignoring_tags).update_attributes(can_owe: false)
+        post.post_authors.find_by(user: user_ignoring_tags).opt_out_of_owed!
+
         get :search, params: { post_id: post.id }
         expect(response).to have_http_status(200)
         expect(assigns(:page_title)).to eq('Search Replies')

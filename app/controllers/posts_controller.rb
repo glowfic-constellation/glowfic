@@ -102,7 +102,7 @@ class PostsController < WritableController
     begin
       Post.transaction do
         @post.save!
-        process_new_tagging_authors(tagging_author_ids)
+        process_new_tagging_authors!(tagging_author_ids)
       end
 
       flash[:success] = "You have successfully posted."
@@ -178,8 +178,8 @@ class PostsController < WritableController
         @post.settings = settings
         @post.content_warnings = warnings
         @post.labels = labels
-        process_new_tagging_authors(tagging_author_ids)
         @post.save!
+        process_new_tagging_authors!(tagging_author_ids)
       end
 
       flash[:success] = "Your post has been updated."
@@ -391,34 +391,18 @@ class PostsController < WritableController
     end
   end
 
-  def process_new_tagging_authors(tagging_author_ids)
+  def process_new_tagging_authors!(tagging_author_ids)
     old_tagging_author_ids = @post.tagging_author_ids
     removed_ids = old_tagging_author_ids - tagging_author_ids
     new_ids = tagging_author_ids - old_tagging_author_ids
 
     # remove from tagging list authors removed
-    @post.tagging_post_authors.each do |post_author|
-      next unless removed_ids.include?(post_author.user_id)
-      if post_author.joined?
-        post_author.update_attributes!(can_owe: false, invited_at: nil, invited_by: nil)
-      else
-        # not relevantly a post author (can't owe, hasn't joined), so destroy
-        post_author.destroy!
-      end
-    end
+    @post.tagging_post_authors.where(user_id: removed_ids).each(&:uninvite!)
 
     # add to list authors who can
     # TODO: invite authors by email if applicable
     new_ids.each do |user_id|
-      post_author = @post.post_authors.find_or_create_by!(user_id: user_id)
-      post_author.can_owe = true
-
-      unless post_author.joined? || user_id == current_user.id
-        post_author.invited_at = Time.now
-        post_author.invited_by = current_user
-      end
-
-      post_author.save!
+      @post.invite!(user_id, by: current_user)
     end
   end
 
