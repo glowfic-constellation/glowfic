@@ -1,0 +1,402 @@
+@import 'variables';
+
+$theme: 'starrylight' !default;
+
+/* - header */
+@if $theme == 'starrylight' {
+  $bg_color_header_middle: #41416E !global; // middle header strip with user items
+  $bg_color_header_bottom: #6F658D !global; // bottom header strip with navigation
+} @else if $theme == 'starrydark' or $theme == 'starrynil' {
+  $bg_color_header_middle: #05050F !global; // middle header strip with user items
+  $bg_color_header_bottom: #484357 !global; // bottom header strip with navigation
+}
+#header {
+  background-color: transparent;
+  background-image: url(image-path("layouts/starry.jpg"));
+  background-position: right top;
+}
+#logo { background-color: transparent !important; }
+#user-info, #nav-top { background-color: $bg_color_header_middle; background-color: rgba($bg_color_header_middle, 0.9); }
+
+/* - links */
+@if $theme == 'starrylight' or $theme == 'starrynil' {
+  $font_color_link: #666284; // link
+  $font_color_link_visited: #484357;
+}
+@if $theme == 'starrylight' {
+  $font_color_link_visited_alt: #C6C6E5 !global;
+} @else if $theme == 'starrydark' {
+  $font_color_link: #B5AFCB !global; // link
+  $font_color_link_visited: #9C9AA4 !global;
+  $font_color_link_visited_alt: #9C9AA4 !global;
+} @else if $theme == 'starrynil' {
+  $font_color_link_visited_alt: #9C9AA4 !global;
+}
+a { color: $font_color_link; }
+a:visited { color: $font_color_link_visited; }
+
+/* - flashes */
+// these are the notifications that appear when you submit a form or get a message
+// TODO: See if we can differentiate these
+$font_color_breadcrumbs_bold: #F3F3F3;
+@if $theme == 'starrylight' {
+  $bg_color_flash_error: #CDC7E7 !global; // error
+  $bg_color_flash_success: #CDC7E7 !global; // success
+  $bg_color_flash_inbox: #CDC7E7 !global; // new message
+  $bg_color_flash_breadcrumbs: #8689B7 !global; // breadcrumbs ("Continuities » Continuity » Section » Thread")
+} @else if $theme == 'starrydark' {
+  $bg_color_flash_error: #484357 !global; // error
+  $bg_color_flash_success: #484357 !global; // success
+  $bg_color_flash_inbox: #484357 !global; // new message
+  $bg_color_flash_breadcrumbs: #131937 !global; // breadcrumbs ("Continuities » Continuity » Section » Thread")
+  $font_color_flash: #DADADA !global;
+} @else if $theme == 'starrynil' {
+  $bg_color_flash_error: #9692A8 !global; // error
+  $bg_color_flash_success: #9692A8 !global; // success
+  $bg_color_flash_inbox: #9692A8 !global; // new message // TODO: See if we can differentiate these
+  $bg_color_flash_breadcrumbs: #182152 !global; // breadcrumbs ("Continuities » Continuity » Section » Thread")
+}
+.flash.breadcrumbs {
+  background-color: $bg_color_flash_breadcrumbs;
+  &, a, a:visited { color: $font_color_link_visited_alt; }
+  b { color: $font_color_breadcrumbs_bold; } // TODO: Investigate why this is differentiated
+}
+.flash.success { background-color: $bg_color_flash_success;  }
+.flash.error { background-color: $bg_color_flash_error; }
+.flash.inbox { background-color: $bg_color_flash_inbox; }
+@if $theme == 'starrydark' {
+  .flash.success, .flash.error, .flash.inbox { color: $font_color_flash; }
+} // TODO: find and set $font_color_flash for others
+
+/* - main page */
+$font_color_page: #DADADA;
+@if $theme == 'starrylight' {
+  $bg_color_page: #B0AFB7 !global; // overall page
+} @else if $theme == 'starrydark' {
+  $bg_color_page: #211E2F !global; // overall page
+} @else if $theme == 'starrynil' {
+  $bg_color_page: #6C697C !global; // overall page
+}
+
+body {
+  background-color: $bg_color_page;
+  @if $theme == 'starrydark' {
+    color: $font_color_page;
+  }
+}
+
+$font_color_search_box: #FEFEFE;
+@if $theme == 'starrylight' {
+  $bg_color_spacer_alt: #645F8A !global;
+  $bg_color_search_box: #645F8A !global;
+} @else if $theme == 'starrydark' {
+  $bg_color_spacer_alt: #131937 !global;
+  $bg_color_search_box: #131937 !global;
+} @else if $theme == 'starrynil' {
+  $bg_color_spacer_alt: #182152 !global;
+  $bg_color_search_box: #182152 !global;
+}
+.search-box { background-color: $bg_color_search_box; color: $font_color_search_box; }
+.spacer-alt { background-color: $bg_color_spacer_alt; }
+
+/* - misc */
+@if $theme == 'starrylight' {
+  $bg_color_descriptions: #6F658D !global; // description subheadings on templates page ("single-description"), *not* posts
+  $font_color_descriptions_link: #F3F3F3 !global;
+} @else if $theme == 'starrydark' or $theme == 'starrynil' {
+  $font_color_descriptions_link: #B5AFCB !global;
+  $bg_color_descriptions: #484357 !global; // description subheadings on templates page ("single-description"), *not* posts
+}
+.single-description {
+  background-color: $bg_color_descriptions;
+  color: $font_color_page;
+  a { color: $font_color_descriptions_link; }
+  a:visited { color: $font_color_link_visited_alt; }
+}
+
+/* - content headers */
+$font_color_sub: #F3F3F3;
+$font_color_subber_bold: #F3F3F3;
+@if $theme == 'starrylight' {
+  $bg_color_head: #42416E !global; // primary content header
+  $font_color_head_link: #F3F3F3 !global;
+  $bg_color_sub: #8287A2 !global; // secondary content header
+  $bg_color_subber: #6F658D !global; // tertiary content header
+  $bg_color_ender:  #6F658D !global; // form table footer with submit
+  $font_color_ender: #DADADA !global;
+} @else if $theme == 'starrydark' {
+  $bg_color_head: #0D0B1E !global; // primary content header
+  $bg_color_sub: #131937 !global; // secondary content header
+  $bg_color_ender: #0D0B1E !global; // form table footer with submit
+} @else if $theme == 'starrynil' {
+  $bg_color_head: #13132F !global; // primary content header
+  $bg_color_sub: #182152 !global; // secondary content header
+  $bg_color_ender: #13132F !global; // form table footer with submit
+  $font_color_ender: #F3F3F3 !global;
+}
+@if $theme == 'starrydark' or $theme == 'starrynil' {
+  $font_color_head_link: #B5AFCB !global; // TODO: check this
+  $bg_color_subber: #484357 !global; // tertiary content header
+}
+th, .content-header {
+  background-color: $bg_color_head;
+  a { color: $font_color_head_link; }
+  a:visited { color: $font_color_link_visited_alt; }
+}
+.sub { color: $font_color_sub; background-color: $bg_color_sub; }
+.form-table-ender { background-color: $bg_color_ender; color: $font_color_ender; }
+.subber {
+  background-color: $bg_color_subber;
+  color: $font_color_page;
+  &, a, a:visited { color: $font_color_link_visited_alt; }
+  b { color: $font_color_subber_bold; }
+}
+
+/* - content */
+@if $theme == 'starrylight' or $theme == 'starrynil' {
+  $bg_color_even: #E3E3E3 !global;
+  $bg_color_odd: #D8D8D8 !global;
+} @else if $theme == 'starrydark' {
+  $bg_color_even: #31323B !global;
+  $bg_color_odd: #25262E !global;
+}
+$opacity_blockquote: 0.2;
+.even, .post-post, .post-reply:nth-child(even), #post-editor {
+  background-color: $bg_color_even;
+  @if $theme == 'starrydark' {
+    color: $font_color_page;
+  }
+  blockquote {
+    background-color: calculate-transparent-color($bg_color_even, $bg_color_odd, $opacity_blockquote);
+  }
+}
+.odd, .post-reply:nth-child(odd), .post-post + #post-editor, .post-post + a + #post-editor {
+  background-color: $bg_color_odd;
+  @if $theme == 'starrydark' {
+    color: $font_color_page;
+  }
+  blockquote {
+    background-color: calculate-transparent-color($bg_color_odd, $bg_color_even, $opacity_blockquote);
+  }
+}
+
+/* - replies.scss */
+$font_color_post_description: #F3F3F3;
+@if $theme == 'starrylight' {
+  $bg_color_navheader: #8287A2 !global;
+  $bg_color_post_description: #9692A8 !global;
+} @else if $theme == 'starrydark' {
+  $bg_color_navheader: #131937 !global;
+} @else if $theme == 'starrynil' {
+  $bg_color_navheader: #182152 !global;
+}
+@if $theme == 'starrydark' or $theme == 'starrynil' {
+  $bg_color_post_description: #484357 !global;
+}
+.post-subheader { background-color: $bg_color_post_description; color: $font_color_post_description; }
+.post-navheader { background-color: $bg_color_navheader; }
+
+$border_color_post_menu: #808080;
+@if $theme == 'starrylight' or $theme == 'starrynil' {
+  $bg_color_post_menu: #BCBCBC !global;
+  $bg_color_menu_link_hover: #D3D3D3 !global;
+} @else if $theme == 'starrydark' {
+  $bg_color_post_menu: #191919 !global;
+  $bg_color_menu_link_hover: #252525 !global;
+  $font_color_post_menu: #DADADA !global;
+}
+@if $theme == 'starrynil' {
+  $font_color_menu: #101010 !global;
+}
+#post-menu-box {
+  @if $theme == 'starrydark' or $theme == 'starrynil' {
+    color: $font_color_post_menu;
+  }
+  background-color: $bg_color_post_menu;
+  border-top: 1px solid $border_color_post_menu;
+  border-top: 1px solid rgba($border_color_post_menu, 0.5);
+
+  a { color: inherit; }
+  a:hover div { background-color: $bg_color_menu_link_hover; }
+  div {
+    border-bottom: 1px solid $border_color_post_menu;
+    border-bottom: 1px solid rgba($border_color_post_menu, 0.5);
+  }
+}
+
+@if $theme == 'starrylight' {
+  $bg_color_selectionpopup: #6F658D !global; // selection popups like character/alias on posts#editor
+  $bg_color_expander: #D8D8D8 !global; // expander on posts
+} @else if $theme == 'starrydark' {
+  $bg_color_expander: #25262E !global; // expander on posts
+} @else if $theme == 'starrynil' {
+  $bg_color_expander: #9692A8 !global; // expander on posts
+}
+@if $theme == 'starrydark' or $theme == 'starrynil' {
+  $bg_color_selectionpopup: #484357 !global; // selection popups like character/alias on posts#editor
+}
+.selector-popup { background-color: $bg_color_selectionpopup; color: $font_color_page; }
+@if $theme == 'starrydark' {
+  .selector-popup { font-weight: normal; }
+}
+.post-expander { background-color: $bg_color_expander; }
+
+@if $theme == 'starrylight' {
+  $bg_color_post_icon: #9498AC !global;
+  $bg_color_icon_selector: #9692A8 !global;
+} @else if $theme == 'starrydark' {
+  $bg_color_post_icon: #0E0B1E !global;
+  $font_color_icon_dropdown: #111111 !global;
+} @else if $theme == 'starrynil' {
+  $bg_color_post_icon: #13132F !global;
+}
+@if $theme == 'starrydark' or $theme == 'starrynil' {
+  $bg_color_icon_selector: #484357 !global;
+}
+.post-icon { background-color: $bg_color_post_icon; }
+#current-icon-dropdown { background-color: $bg_color_post_icon; }
+@if $theme == 'starrydark' {
+  #current-icon-dropdown { color: $font_color_icon_dropdown; }
+}
+#reply-icon-selector { background-color: $bg_color_icon_selector; color: $font_color_page; }
+
+$font_color_post_info: #F3F3F3;
+@if $theme == 'starrylight' {
+  $bg_color_post_character: #645F8A !global;
+  $bg_color_post_screenname: #645F8A !global;
+  $bg_color_post_author: #42416E !global;
+  //$bg_color_post_character_narrow: $colors_lightbrown;
+  //$bg_color_post_author_narrow: $colors_brown;
+  // these are flipped from not-narrow mode to make the quick-switcher blend in
+  // TODO: Should these flip on starries too?
+  $font_color_post_screenname: #C6C6E5 !global;
+  $font_weight_post_info: normal !global;
+} @else if $theme == 'starrydark' {
+  $bg_color_post_character: #111842 !global;
+  $bg_color_post_screenname: #111842 !global;
+  $bg_color_post_author: #0E0B1E !global;
+} @else if $theme == 'starrynil' {
+  $bg_color_post_character: #484357 !global;
+  $bg_color_post_screenname: #484357 !global;
+  $bg_color_post_author: #13132F !global;
+}
+@if $theme == 'starrydark' or $theme == 'starrynil' {
+  $font_weight_post_info: bold !global;
+  $font_color_post_screenname: #9C9AA4 !global;
+}
+.post-character { font-weight: $font_weight_post_info; background-color: $bg_color_post_character; }
+.post-character, .post-character a, .post-character a:visited, { color: $font_color_post_info; }
+.post-screenname { font-weight: $font_weight_post_info; background-color: $bg_color_post_screenname; }
+.post-screenname, .post-screenname a, .post-screenname a:visited { color: $font_color_post_screenname; } // TODO: clean this up when messages are fixed to not use it
+@if $theme == 'starrylight' {
+  .post-screenname, .post-screenname a, .post-screenname a:visited { font-style: italic; }
+}
+.post-author { font-weight: $font_weight_post_info; background-color: $bg_color_post_author; }
+.post-author, .post-author a, .post-author a:visited { color: $font_color_post_info; }
+
+$font_color_paginate_link: #F3F3F3;
+$font_color_paginate_link_visited: $font_color_link_visited_alt; //TODO: very replace this which even is it???
+$font_color_paginate_link_disabled: #58546B;
+@if $theme == 'starrylight' {
+  $bg_color_paginate_link_hover: #9498AC !global;
+  $bg_color_paginate_current_page: #9692A8 !global;
+} @else if $theme == 'starrydark' or $theme == 'starrynil' {
+  $bg_color_paginate_current_page: #484357 !global;
+}
+.pagination .current { background-color: $bg_color_paginate_current_page; }
+.pagination a { color: $font_color_paginate_link; }
+.pagination a:visited { color: $font_color_paginate_link_visited; }
+.pagination .disabled { color: $font_color_paginate_link_disabled; }
+@if $theme == 'starrylight' {
+  .pagination a:hover { background-color: $bg_color_paginate_link_hover; }
+}
+
+/* - icons */
+@if $theme == 'starrylight' or $theme == 'starrynil' {
+  $bg_color_icon: #D8D8D8 !global;
+  $bg_color_icon_credit: #D8D8D8 !global;
+} @else if $theme == 'starrydark' {
+  $border_color_icon_selected: #B9BBEB !global; // selected icon border
+  $bg_color_icon: #25262E !global;
+  $bg_color_icon_credit: #25262E !global;
+}
+@if $theme == 'starrydark' {
+  .selected-icon { border-color: $border_color_icon_selected; }
+}
+.replace-icon, .icons-box { background-color: $bg_color_icon; }
+.icon-credit { background-color: $bg_color_icon_credit; }
+
+@if $theme == 'starrynil' {
+  #character-icon-selector, .time-loaded { color: $font_color_page; }
+}
+@if $theme == 'starrydark' {
+  #character-icon-selector, .time-loaded { color: $font_color_page; }
+}
+
+/* - tag items */
+@if $theme == 'starrylight' or $theme == 'starrynil' {
+  $font_color_tag_item: #444158 !global;
+  $font_color_tag_item_gallery: #F7F7F7 !global;
+}
+@if $theme == 'starrylight' {
+  $bg_color_tag_item: #968BB4 !global;
+} @else if $theme == 'starrydark' {
+  $bg_color_tag_item: #241F4E !global;
+  $bg_color_tag_item_even: #24252D !global;
+  $bg_color_tag_item_odd: #1A1A22 !global;
+} @else if $theme == 'starrynil' {
+  $bg_color_tag_item: #2C2C5D !global;
+}
+@if $theme == 'starrydark' {
+  .tag-item { background-color: $bg_color_tag_item; color: $font_color_link; }
+  .even .tag-item { background-color: $bg_color_tag_item_even; }
+  .odd .tag-item { background-color: $bg_color_tag_item_odd; }
+}
+@if $theme == 'starrylight' or $theme == 'starrynil' {
+  tr.gallery-tags .tag-item { background-color: $bg_color_tag_item; color: $font_color_tag_item_gallery; }
+  .tag-item { color: $font_color_tag_item; }
+}
+
+/* - link-boxes */
+// TODO: See if we can differentiate link box colors on starries
+@if $theme == 'starrylight' {
+  $bg_color_linkbox_new: #6565AE !global;
+  $bg_color_linkbox_edit: #6565AE !global;
+  $bg_color_linkbox_favorite: #6565AE !global;
+  $bg_color_linkbox_delete: #6565AE !global;
+  $bg_color_linkbox_dismiss: #6565AE !global;
+  $bg_color_linkbox_subber: #8689B7 !global;
+} @else if $theme == 'starrydark' {
+  $bg_color_linkbox_subber: #5C5778 !global;
+} @else if $theme == 'starrynil' {
+  $bg_color_linkbox_subber: #66608B !global;
+}
+@if $theme == 'starrydark' or $theme == 'starrynil' {
+  $bg_color_linkbox_new: #463C65 !global;
+  $bg_color_linkbox_edit: #463C65 !global;
+  $bg_color_linkbox_favorite: #463C65 !global;
+  $bg_color_linkbox_delete: #463C65 !global;
+  $bg_color_linkbox_dismiss: #463C65 !global;
+}
+.link-box.action-new { background-color: $bg_color_linkbox_new; }
+.link-box.action-edit { background-color: $bg_color_linkbox_edit; }
+.link-box.action-favorite { background-color: $bg_color_linkbox_favorite; }
+.link-box.action-delete { background-color: $bg_color_linkbox_delete; }
+.link-box.action-dismiss { background-color: $bg_color_linkbox_dismiss; }
+
+.subber .link-box { background-color: $bg_color_linkbox_subber; }
+
+@if $theme == 'starrylight' or $theme == 'starrynil' {
+  #character-selector { font-weight: normal; } //TODO: this doesn't seem to exist in starrydark
+}
+
+/* - other buttons */
+@if $theme == 'starrylight' {
+  $bg_color_viewbutton: #6565AE !global;
+  $bg_color_viewbutton_selected: #6565AE !global;
+} @else if $theme == 'starrydark' or $theme == 'starrynil' {
+  $bg_color_viewbutton: #463C65 !global;
+  $bg_color_viewbutton_selected: #463C65 !global;
+}
+.view-button, .post-navheader .view-button { background-color: $bg_color_viewbutton; }
+.view-button.selected { background-color: $bg_color_viewbutton_selected; }
