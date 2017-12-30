@@ -26,4 +26,109 @@ RSpec.describe WritableController do
       end
     end
   end
+
+  describe "#og_data_for_post" do
+    it "succeeds" do
+      board = create(:board, name: 'Test')
+      user = create(:user, username: 'Tester')
+      post = create(:post, subject: 'Temp', board: board, user: user)
+
+      data = controller.send(:og_data_for_post, post, 1, 5, 25)
+      expect(data).to eq({
+        title: 'Temp · Test',
+        description: '(Tester – page 1 of 5)'
+      })
+    end
+
+    it "works with description" do
+      board = create(:board, name: 'Test')
+      user = create(:user, username: 'Tester')
+      post = create(:post, subject: 'Temp', description: 'More.', board: board, user: user)
+
+      data = controller.send(:og_data_for_post, post, 1, 5, 25)
+      expect(data).to eq({
+        title: 'Temp · Test',
+        description: 'More. (Tester – page 1 of 5)'
+      })
+    end
+
+    it "strips tags from description" do
+      board = create(:board, name: 'Test')
+      user = create(:user, username: 'Tester')
+      post = create(:post, subject: 'Temp', description: 'With an <a href="/characters/1">Alli</a>.', board: board, user: user)
+
+      data = controller.send(:og_data_for_post, post, 1, 5, 25)
+      expect(data).to eq({
+        title: 'Temp · Test',
+        description: 'With an Alli. (Tester – page 1 of 5)'
+      })
+    end
+
+    it "works with section" do
+      board = create(:board, name: 'Test')
+      section = create(:board_section, board: board, name: 'Further')
+      user = create(:user, username: 'Tester')
+      post = create(:post, subject: 'Temp', description: 'More.', board: board, section: section, user: user)
+
+      data = controller.send(:og_data_for_post, post, 1, 5, 25)
+      expect(data).to eq({
+        title: 'Temp · Test » Further',
+        description: 'More. (Tester – page 1 of 5)'
+      })
+    end
+
+    it "works with two authors" do
+      board = create(:board, name: 'Test')
+      user = create(:user, username: 'Tester')
+      user2 = create(:user, username: 'Friend')
+      post = create(:post, subject: 'Temp', description: 'More.', board: board, user: user)
+      create(:reply, post: post, user: user2)
+
+      data = controller.send(:og_data_for_post, post, 1, 5, 25)
+      expect(data).to eq({
+        title: 'Temp · Test',
+        description: 'More. (Tester, Friend – page 1 of 5)'
+      })
+    end
+
+    it "works with pages that are not the first" do
+      board = create(:board, name: 'Test')
+      user = create(:user, username: 'Tester')
+      post = create(:post, subject: 'Temp', board: board, user: user)
+
+      data = controller.send(:og_data_for_post, post, 2, 2, 25)
+      expect(data).to eq({
+        title: 'Temp · Test',
+        description: '(Tester – page 2 of 2)'
+      })
+    end
+
+    it "works with many authors" do
+      board = create(:board, name: 'Test')
+      user = create(:user, username: 'Tester')
+      post = create(:post, subject: 'Temp', board: board, user: user)
+      5.times do |i|
+        user2 = create(:user, username: "Friend #{i}")
+        create(:reply, post: post, user: user2)
+      end
+
+      data = controller.send(:og_data_for_post, Post.find_by(id: post.id), 1, 5, 25)
+      expect(data).to eq({
+        title: 'Temp · Test',
+        description: '(Tester and 5 others – page 1 of 5)'
+      })
+    end
+
+    it "works with non-standard per_page" do
+      board = create(:board, name: 'Test')
+      user = create(:user, username: 'Tester')
+      post = create(:post, subject: 'Temp', board: board, user: user)
+
+      data = controller.send(:og_data_for_post, post, 1, 5, 5)
+      expect(data).to eq({
+        title: 'Temp · Test',
+        description: '(Tester – page 1 of 5, 5/page)'
+      })
+    end
+  end
 end

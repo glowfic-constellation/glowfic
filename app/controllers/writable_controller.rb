@@ -90,27 +90,8 @@ class WritableController < ApplicationController
     @meta_canonical = post_url(@post, canon_params)
 
     # show <meta property="og:..." content="..."> – for embed data
-    post_location = @post.board.name
-    post_location += ' » ' + @post.section.name if @post.section.present?
-
-    post_description = generate_short(@post.description)
-    post_description += ' ('
-    if @post.authors.length < 4
-      post_description += @post.authors.map(&:username).join(', ')
-    else
-      post_description += "#{@post.user.username} and #{@post.authors.length-1} others"
-    end
-    post_description += " – page #{self.page} of #{@replies.total_pages}"
-    unless per == 25
-      post_description += ", #{per}/page"
-    end
-    post_description += ')'
-
-    @meta_og = {
-      title: @post.subject + ' · ' + post_location,
-      description: post_description,
-      url: @meta_canonical
-    }
+    @meta_og = og_data_for_post(@post, self.page, @replies.total_pages, per)
+    @meta_og[:url] = @meta_canonical
 
     use_javascript('posts/show')
     if logged_in?
@@ -154,5 +135,29 @@ class WritableController < ApplicationController
     gon.editor_class = 'layout_' + current_user.layout if current_user.layout
     gon.tinymce_css_path = helpers.stylesheet_path('tinymce')
     gon.no_icon_path = view_context.image_path('icons/no-icon.png')
+  end
+
+  def og_data_for_post(post, page, total_pages, per_page)
+    post_location = post.board.name
+    post_location += ' » ' + post.section.name if post.section.present?
+
+    post_description = generate_short(post.description)
+    post_description += ' ('
+    if post.authors.length < 4
+      post_description += post.authors.map(&:username).join(', ')
+    else
+      post_description += "#{post.user.username} and #{post.authors.length-1} others"
+    end
+    post_description += " – page #{page} of #{total_pages}"
+    unless per_page == 25
+      post_description += ", #{per_page}/page"
+    end
+    post_description += ')'
+    post_description.strip!
+
+    @meta_og = {
+      title: post.subject + ' · ' + post_location,
+      description: post_description,
+    }
   end
 end
