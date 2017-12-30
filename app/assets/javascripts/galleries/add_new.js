@@ -171,6 +171,6 @@ function updateBox() {
   var progress = parseInt(done / total * 100, 10);
   progressBox.html(done.toString() + ' / ' + total.toString() + ' (' + progress + '%) ');
   if (failed) {
-    progressBox.append($("<span style='color: #f00;'>").append(failed.toString() + " failed"));
+    progressBox.append($("<span style='color: #F00;'>").append(failed.toString() + " failed"));
   }
 }
