@@ -183,12 +183,6 @@ module ApplicationHelper
     Glowfic::Sanitizers.written(content)
   end
 
-  def generate_short(msg)
-    short_msg = Glowfic::Sanitizers.full(msg) # strip all tags, replacing appropriately with spaces
-    return short_msg if short_msg.length <= 75
-    short_msg[0...73] + '…' # make the absolute max length 75 characters
-  end
-
   def breakable_text(text)
     return text if text.nil?
     h(text).gsub('_', '_<wbr>').html_safe

@@ -89,6 +89,29 @@ class WritableController < ApplicationController
     canon_params[:page] = cur_page unless cur_page == 1
     @meta_canonical = post_url(@post, canon_params)
 
+    # show <meta property="og:..." content="..."> – for embed data
+    post_location = @post.board.name
+    post_location += ' » ' + @post.section.name if @post.section.present?
+
+    post_description = generate_short(@post.description)
+    post_description += ' ('
+    if @post.authors.length < 4
+      post_description += @post.authors.map(&:username).join(', ')
+    else
+      post_description += "#{@post.user.username} and #{@post.authors.length-1} others"
+    end
+    post_description += " – page #{self.page} of #{@replies.total_pages}"
+    unless per == 25
+      post_description += ", #{per}/page"
+    end
+    post_description += ')'
+
+    @meta_og = {
+      title: @post.subject + ' · ' + post_location,
+      description: post_description,
+      url: @meta_canonical
+    }
+
     use_javascript('posts/show')
     if logged_in?
       use_javascript('posts/editor')
