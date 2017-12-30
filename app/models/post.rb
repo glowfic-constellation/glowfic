@@ -276,11 +276,13 @@ class Post < ApplicationRecord
   end
 
   def invite!(user_id, by: nil)
-    post_authors.find_or_create_by!(user_id: user_id).invite_by!(by)
+    user = user_id.is_a?(User) ? user : User.find_by(id: user_id)
+    post_authors.find_or_create_by!(user: user).invite_by!(by)
   end
 
-  def uninvite!(user_id)
-    post_authors.find_by(user_id: user_id).try(:uninvite!)
+  def uninvite!(user)
+    user = user_id.is_a?(User) ? user : User.find_by(id: user_id)
+    post_authors.find_by(user: user).try(:uninvite!)
   end
 
   private
