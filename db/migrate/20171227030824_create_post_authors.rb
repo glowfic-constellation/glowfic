@@ -6,8 +6,6 @@ class CreatePostAuthors < ActiveRecord::Migration[5.0]
       t.timestamps null: true
       t.boolean :can_owe, default: true
       t.boolean :joined, default: false
-      t.datetime :invited_at, null: true
-      t.integer :invited_by_id, null: true
       t.datetime :joined_at, null: true
     end
     add_index :post_authors, :post_id

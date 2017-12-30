@@ -804,7 +804,6 @@ CREATE TABLE post_authors (
     updated_at timestamp without time zone,
     can_owe boolean DEFAULT true,
     joined boolean DEFAULT false,
-    invited_at timestamp without time zone,
     joined_at timestamp without time zone
 );
 
@@ -2328,5 +2327,3 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20171111163658'),
 ('20171114013113'),
 ('20171227030824');
-
-

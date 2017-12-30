@@ -1,3 +1,22 @@
 - content_for :posts_title do
-  Threads You Owe Tags In
-= render partial: 'list', locals: {posts: @posts}
+  - if params[:view] == 'hidden'
+    Threads with Replies Owed Disabled
+    = link_to owed_posts_path do
+      .view-button
+        &laquo; Owed
+  - else
+    Threads You Owe Replies In
+    = link_to owed_posts_path(view: 'hidden') do
+      .view-button
+        Hidden &raquo;
+
+= form_tag mark_posts_path do
+  = render partial: 'posts/list', locals: {posts: @posts, check_box_name: 'marked_ids[]'}
+  - unless @posts.empty?
+    %table
+      %tr
+        %td.right-align.padding-5{colspan: 7, class: cycle('even', 'odd')}
+          -if params[:view] == 'hidden'
+            = submit_tag 'Show in Replies Owed', class: 'button'
+          - else
+            = submit_tag "Remove from Replies Owed", class: 'button'

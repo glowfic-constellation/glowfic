@@ -97,7 +97,7 @@ class Reply < ApplicationRecord
     return unless post && user
     errors.add(:user, "#{user.username} is not a valid continuity author for #{post.board.name}") unless user.writes_in?(post.board)
     return unless post.authors_locked?
-    errors.add(:post, 'is not a valid post author') unless post.tagging_author_ids.include?(user_id)
+    errors.add(:post, 'is not a valid post author') unless post.author_ids.include?(user_id)
   end
 
   def update_flat_post
@@ -106,13 +106,16 @@ class Reply < ApplicationRecord
   end
 
   def update_post_authors
-    unless (post_author = post.post_authors.find_by(user_id: user_id))
-      post_author = post.post_authors.create(user_id: user_id, can_owe: true)
+    post_author = post.author_for(user)
+    return if post_author&.joined?
+
+    if post_author
+      post_author.update_attributes(joined: true, joined_at: created_at)
+    else
+      post.post_authors.create(user_id: user_id, joined: true, joined_at: created_at)
     end
-    return if post_author.joined?
 
-    post_author.update_attributes(joined: true, joined_at: created_at)
-
+    return if is_import
     post.user_joined(user)
   end
 end

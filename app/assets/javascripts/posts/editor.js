@@ -38,10 +38,10 @@ function setupMetadataEditor() {
     placeholder: 'Choose user(s) to view this post'
   });
 
-  $("#post_tagging_author_ids").select2({
+  $("#post_unjoined_author_ids").select2({
     width: '300px',
     minimumResultsForSearch: 20,
-    placeholder: 'Choose user(s) to view this post'
+    placeholder: 'Choose user(s) to invite to reply to this post'
   });
 
   createTagSelect("Label", "label", "post");

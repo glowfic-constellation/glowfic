@@ -28,6 +28,9 @@
             - else
               = link_to favorite_rec.favorite.subject, post_path(favorite_rec.favorite)
           %td{class: klass}= favorite_rec.favorite_type == 'Board' ? 'Continuity' : favorite_rec.favorite_type
+      - if current_user.favorites.empty?
+        %tr
+          %td.centered.no-posts{class: 'odd', colspan: 2} — No favorites yet —
 
 - else
   = render partial: 'posts/list', locals: {posts: @posts, show_unread_count: true}

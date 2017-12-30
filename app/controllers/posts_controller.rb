@@ -16,13 +16,19 @@ class PostsController < WritableController
   end
 
   def owed
-    ids = PostAuthor.where(user_id: current_user.id, can_owe: true).group(:post_id).select(:post_id)
-    @posts = Post.where(id: ids).where.not(status: [Post::STATUS_COMPLETE, Post::STATUS_ABANDONED]).where.not(last_user: current_user)
-    @posts = @posts.where.not(status: Post::STATUS_HIATUS).where('tagged_at > ?', 1.month.ago) if current_user.hide_hiatused_tags_owed?
-    @posts = posts_from_relation(@posts.order('tagged_at desc'))
     @show_unread = true
     @hide_quicklinks = true
     @page_title = 'Replies Owed'
+
+    if params[:view] == 'hidden'
+      ids = PostAuthor.where(user_id: current_user.id, can_owe: false).group(:post_id).pluck(:post_id)
+      @posts = posts_from_relation(Post.where(id: ids)) and return
+    end
+
+    ids = PostAuthor.where(user_id: current_user.id, can_owe: true).group(:post_id).pluck(:post_id)
+    @posts = Post.where(id: ids).where.not(status: [Post::STATUS_COMPLETE, Post::STATUS_ABANDONED]).where.not(last_user: current_user)
+    @posts = @posts.where.not(status: Post::STATUS_HIATUS).where('tagged_at > ?', 1.month.ago) if current_user.hide_hiatused_tags_owed?
+    @posts = posts_from_relation(@posts.order('tagged_at desc'))
   end
 
   def unread
@@ -44,12 +50,21 @@ class PostsController < WritableController
     posts = posts.select do |post|
       post.visible_to?(current_user)
     end
+
     if params[:commit] == "Mark Read"
       posts.each { |post| post.mark_read(current_user) }
-      flash[:success] = posts.size.to_s + " posts marked as read."
+      flash[:success] = "#{posts.size} #{'post'.pluralize(posts.size)} marked as read."
+    elsif params[:commit] == "Remove from Replies Owed"
+      posts.each { |post| post.opt_out_of_owed(current_user) }
+      flash[:success] = "#{posts.size} #{'post'.pluralize(posts.size)} removed from replies owed."
+      redirect_to owed_posts_path and return
+    elsif params[:commit] == "Show in Replies Owed"
+      posts.each { |post| post.opt_in_to_owed(current_user) }
+      flash[:success] = "#{posts.size} #{'post'.pluralize(posts.size)} added to replies owed."
+      redirect_to owed_posts_path and return
     else
       posts.each { |post| post.ignore(current_user) }
-      flash[:success] = posts.size.to_s + " posts hidden from this page."
+      flash[:success] = "#{posts.size} #{'post'.pluralize(posts.size)} hidden from this page."
     end
     redirect_to unread_posts_path
   end
@@ -84,36 +99,31 @@ class PostsController < WritableController
     @post.icon_id = (current_user.active_character ? current_user.active_character.default_icon.try(:id) : current_user.avatar_id)
     @page_title = 'New Post'
 
-    @author_ids = [current_user.id]
-    @author_ids = @post.board.writer_ids if @post.board && !@post.board.open_to_anyone?
+    @permitted_authors -= [current_user]
+    @author_ids = @post.board.writer_ids - [current_user.id] if @post.board && !@post.board.open_to_anyone?
   end
 
   def create
     import_thread and return if params[:button_import].present?
+    preview and return if params[:button_preview].present?
 
     @post = Post.new(post_params)
     @post.settings = process_tags(Setting, :post, :setting_ids)
     @post.content_warnings = process_tags(ContentWarning, :post, :content_warning_ids)
     @post.labels = process_tags(Label, :post, :label_ids)
     @post.user = current_user
-    preview and return if params[:button_preview].present?
 
-    begin
-      Post.transaction do
-        process_tagging_authors_on_create
-        @post.save!
-      end
-
-      flash[:success] = "You have successfully posted."
-      redirect_to post_path(@post)
-    rescue ActiveRecord::RecordInvalid
+    unless @post.save
       flash.now[:error] = {}
       flash.now[:error][:array] = @post.errors.full_messages
       flash.now[:error][:message] = "Your post could not be saved because of the following problems:"
       editor_setup
       @page_title = 'New Post'
-      render :action => :new
+      render :action => :new and return
     end
+
+    flash[:success] = "You have successfully posted."
+    redirect_to post_path(@post)
   end
 
   def show
@@ -128,6 +138,16 @@ class PostsController < WritableController
   end
 
   def preview
+    @post ||= Post.new(user: current_user)
+    @post.assign_attributes(post_params(false))
+    @post.board ||= Board.find_by_id(3)
+
+    @author_ids = params.fetch(:post, {}).fetch(:unjoined_author_ids, [])
+    @viewer_ids = params.fetch(:post, {}).fetch(:viewer_ids, [])
+    @settings = process_tags(Setting, :post, :setting_ids)
+    @content_warnings = process_tags(ContentWarning, :post, :content_warning_ids)
+    @labels = process_tags(Label, :post, :label_ids)
+
     @written = @post
     editor_setup
     @page_title = 'Previewing: ' + @post.subject.to_s
@@ -146,26 +166,15 @@ class PostsController < WritableController
 
     change_status and return if params[:status].present?
     change_authors_locked and return if params[:authors_locked].present?
+    preview and return if params[:button_preview].present?
 
-    old_tagging_author_ids = @post.tagging_author_ids
-
-    @post.assign_attributes(post_params.except(:tagging_author_ids))
+    @post.assign_attributes(post_params)
     @post.board ||= Board.find(3)
     settings = process_tags(Setting, :post, :setting_ids)
     warnings = process_tags(ContentWarning, :post, :content_warning_ids)
     labels = process_tags(Label, :post, :label_ids)
 
-    if params[:button_preview].present?
-      @post.association(:settings).target = []
-      @post.association(:content_warnings).target = []
-      @post.association(:labels).target = []
-      settings.each { |s| @post.association(:settings).add_to_target(s) }
-      warnings.each { |w| @post.association(:content_warnings).add_to_target(w) }
-      labels.each { |l| @post.association(:labels).add_to_target(l) }
-      preview and return
-    end
-
-    if @post.user_id_was != current_user.id && !old_tagging_author_ids.include?(current_user.id) && @post.audit_comment.blank?
+    if current_user.id != @post.user_id && @post.audit_comment.blank? && !@post.author_ids.include?(current_user.id)
       flash[:error] = "You must provide a reason for your moderator edit."
       editor_setup
       render action: :edit and return
@@ -177,8 +186,6 @@ class PostsController < WritableController
         @post.settings = settings
         @post.content_warnings = warnings
         @post.labels = labels
-        tagging_author_ids = post_params.fetch(:tagging_author_ids, []).reject(&:blank?).map(&:to_i)
-        process_tagging_authors_on_update!(tagging_author_ids, old_tagging_author_ids)
         @post.save!
       end
 
@@ -313,9 +320,9 @@ class PostsController < WritableController
 
   def editor_setup
     super
-    @permitted_authors = User.order(:username)
-    @author_ids = post_params[:tagging_author_ids].reject(&:blank?).map(&:to_i) if post_params.key?(:tagging_author_ids)
-    @author_ids ||= @post.try(:tagging_author_ids) || []
+    @permitted_authors = User.order(:username) - (@post.try(:joined_authors) || [])
+    @author_ids = post_params[:unjoined_author_ids].reject(&:blank?).map(&:to_i) if post_params.key?(:unjoined_author_ids)
+    @author_ids ||= @post.try(:unjoined_author_ids) || []
   end
 
   def import_thread
@@ -394,32 +401,8 @@ class PostsController < WritableController
     end
   end
 
-  def process_tagging_authors_on_create
-    @post.tagging_post_authors.each do |post_author|
-      post_author.build_invited_by(current_user)
-    end
-  end
-
-  def process_tagging_authors_on_update!(tagging_author_ids, old_tagging_author_ids)
-    removed_ids = old_tagging_author_ids - tagging_author_ids
-    new_ids = tagging_author_ids - old_tagging_author_ids
-
-    # remove from tagging list authors removed
-    @post.tagging_post_authors.each do |post_author|
-      next unless removed_ids.include?(post_author.user_id)
-      post_author.uninvite!
-    end
-
-    # add to list authors who can
-    # TODO: invite authors by email if applicable
-    new_ids.each do |user_id|
-      @post.invite!(user_id, by: current_user)
-    end
-    @post.tagging_author_ids = tagging_author_ids
-  end
-
-  def post_params
-    params.fetch(:post, {}).permit(
+  def post_params(include_associations=true)
+    allowed_params = [
       :board_id,
       :section_id,
       :privacy,
@@ -429,9 +412,17 @@ class PostsController < WritableController
       :character_id,
       :icon_id,
       :character_alias_id,
-      :audit_comment,
-      tagging_author_ids: [],
-      viewer_ids: [],
-    )
+      :authors_locked,
+      :audit_comment]
+
+    # prevents us from setting (and saving) associations on preview()
+    if include_associations
+      allowed_params << {
+        unjoined_author_ids: [],
+        viewer_ids: []
+      }
+    end
+
+    params.fetch(:post, {}).permit(allowed_params)
   end
 end

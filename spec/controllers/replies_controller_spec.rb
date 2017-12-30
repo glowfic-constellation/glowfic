@@ -296,47 +296,13 @@ RSpec.describe RepliesController do
       expect(reply_post.joined_authors.count).to eq(2)
     end
 
-    it "handles a reply from an author who has marked themselves not can_owe correctly in an open post" do
-      user = create(:user)
-      login_as(user)
-      reply_post = create(:post)
-      old_reply = create(:reply, post: reply_post, user: user)
-      reply_post.reload
-      expect(Reply.count).to eq(1)
-      reply_post.mark_read(user, old_reply.created_at + 1.second, true)
-      post_author = reply_post.tagging_post_authors.find_by(user: user)
-      expect(post_author.can_owe).to eq(true)
-      expect(post_author.joined).to eq(true)
-      reply_post.uninvite!(user.id)
-      post_author.reload
-      expect(post_author.can_owe).to eq(false)
-      post :create, params: { reply: {post_id: reply_post.id, content: 'test content!'} }
-      expect(Reply.count).to eq(2)
-      expect(post_author.can_owe).to eq(false)
-    end
-
     it "handles trying to reply to a closed thread as a non-author correctly" do
       user = create(:user)
       login_as(user)
       reply_post = create(:post, authors_locked: true)
       post :create, params: { reply: {post_id: reply_post.id, content: 'test'} }
-      expect(flash[:error]).to eq({:message=>"Your reply could not be saved because of the following problems:", :array=>["Post is not a valid post author"]})
-    end
-
-    it "handles trying to reply to a closed thread as an author without can_owe true correctly" do
-      user = create(:user)
-      other_user = create(:user)
-      login_as(user)
-      reply_post = create(:post, user: other_user, tagging_authors: [user, other_user], authors_locked: true)
-      old_reply = create(:reply, post: reply_post, user: user)
-      reply_post.mark_read(user, old_reply.created_at + 1.second, true)
-      expect(reply_post.tagging_authors).to match_array([user, other_user])
-      expect(reply_post.joined_authors).to match_array([user, other_user])
-      reply_post.uninvite!(user.id)
-      reply_post.reload
-      expect(reply_post.tagging_authors).to eq([other_user])
-      post :create, params: { reply: {post_id: reply_post.id, content: 'test'} }
-      expect(flash[:error]).to eq({:message=>"Your reply could not be saved because of the following problems:", :array=>["Post is not a valid post author"]})
+      expect(flash[:error][:message]).to eq("Your reply could not be saved because of the following problems:")
+      expect(flash[:error][:array]).to eq(["Post is not a valid post author"])
     end
   end
 
@@ -812,7 +778,7 @@ RSpec.describe RepliesController do
         create(:reply, post: post)
         user_ignoring_tags = create(:user)
         create(:reply, post: post, user: user_ignoring_tags)
-        post.post_authors.find_by(user: user_ignoring_tags).opt_out_of_owed!
+        post.opt_out_of_owed(user_ignoring_tags)
 
         get :search, params: { post_id: post.id }
         expect(response).to have_http_status(200)

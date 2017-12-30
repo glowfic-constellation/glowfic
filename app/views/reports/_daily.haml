@@ -58,13 +58,13 @@
               %span.details= sanitize_post_description(post.description).html_safe
           %td.vtop.post-board{class: klass}= link_to post.board_name, board_path(post.board_id)
           %td.vtop.post-authors{class: klass}
-            - authors = post.joined_authors.order('LOWER(users.username)')
-            - if authors.count < 4
+            - authors = post.authors.sort_by { |author| author.username.downcase }
+            - if authors.length < 4
               = authors.map { |author| link_to fun_name(author), user_path(author) }.join(', ').html_safe
             - else
               = link_to fun_name(post.user), user_path(post.user)
               and
-              = link_to "#{authors.count-1} others", stats_post_path(post)
+              = link_to "#{authors.length-1} others", stats_post_path(post)
           %td.vtop.centered.post-replies{class: klass}= link_to post.reply_count, stats_post_path(post)
           %td.vtop.centered.post-replies{class: klass}= link_to replies_today.count, post_or_reply_link(linked)
           %td.vtop.centered.post-time{class: klass}= linked.created_at.strftime("%l:%M %p")
