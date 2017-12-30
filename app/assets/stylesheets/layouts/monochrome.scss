@@ -60,11 +60,11 @@ $bg_color_post_author: #BBBBBB;
 .post-screenname { background-color: $bg_color_post_screenname; }
 .post-author { background-color: $bg_color_post_author; }
 
-$font_color_page_visited: #3A3A3A;
-$bg_color_page_current: #616161;
+$font_color_paginate_link_visited: #3A3A3A;
+$bg_color_paginate_current_page: #616161;
 
-.pagination .current { background-color: $bg_color_page_current; }
-.pagination a:visited { color: $font_color_page_visited; }
+.pagination .current { background-color: $bg_color_paginate_current_page; }
+.pagination a:visited { color: $font_color_paginate_link_visited; }
 
 /* - icons */
 $bg_color_icon: #BDBDBD;

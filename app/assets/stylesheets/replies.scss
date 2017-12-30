@@ -309,20 +309,20 @@ div.post-subheader { width: 100%; }
   .current {
     font-weight: bold;
     font-style: normal;
-    background-color: $bg_color_page_current;
+    background-color: $bg_color_paginate_current_page;
   }
   a, .current, .disabled {
     display: inline-block;
     padding: 5px 10px;
   }
   .disabled {
-    color: $font_color_page_disabled;
+    color: $font_color_paginate_link_disabled;
     text-align: left;
   }
   a {
     color: $font_color_paginate_link;
     &:hover { background-color: $bg_color_paginate_link_hover; }
-    &:visited { color: $font_color_page_visited; }
+    &:visited { color: $font_color_paginate_link_visited; }
   }
   .summary {
     padding-left: 10px;
