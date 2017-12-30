@@ -16,9 +16,7 @@ class PostsController < WritableController
   end
 
   def owed
-    posts_started = Post.where(user_id: current_user.id).pluck('distinct id')
-    posts_in = Reply.where(user_id: current_user.id).pluck('distinct post_id')
-    ids = (posts_in + posts_started).uniq
+    ids = PostAuthor.where(user_id: current_user.id, can_owe: true).group(:post_id).select(:post_id)
     @posts = Post.where(id: ids).where.not(status: [Post::STATUS_COMPLETE, Post::STATUS_ABANDONED]).where.not(last_user: current_user)
     @posts = @posts.where.not(status: Post::STATUS_HIATUS).where('tagged_at > ?', 1.month.ago) if current_user.hide_hiatused_tags_owed?
     @posts = posts_from_relation(@posts.order('tagged_at desc'))
@@ -85,6 +83,9 @@ class PostsController < WritableController
     @post.section_id = params[:section_id]
     @post.icon_id = (current_user.active_character ? current_user.active_character.default_icon.try(:id) : current_user.avatar_id)
     @page_title = 'New Post'
+
+    @author_ids = [current_user.id]
+    @author_ids = @post.board.writer_ids if @post.board && !@post.board.open_to_anyone?
   end
 
   def create
@@ -97,10 +98,15 @@ class PostsController < WritableController
     @post.user = current_user
     preview and return if params[:button_preview].present?
 
-    if @post.save
+    begin
+      Post.transaction do
+        process_tagging_authors_on_create
+        @post.save!
+      end
+
       flash[:success] = "You have successfully posted."
       redirect_to post_path(@post)
-    else
+    rescue ActiveRecord::RecordInvalid
       flash.now[:error] = {}
       flash.now[:error][:array] = @post.errors.full_messages
       flash.now[:error][:message] = "Your post could not be saved because of the following problems:"
@@ -141,7 +147,9 @@ class PostsController < WritableController
     change_status and return if params[:status].present?
     change_authors_locked and return if params[:authors_locked].present?
 
-    @post.assign_attributes(post_params)
+    old_tagging_author_ids = @post.tagging_author_ids
+
+    @post.assign_attributes(post_params.except(:tagging_author_ids))
     @post.board ||= Board.find(3)
     settings = process_tags(Setting, :post, :setting_ids)
     warnings = process_tags(ContentWarning, :post, :content_warning_ids)
@@ -157,7 +165,7 @@ class PostsController < WritableController
       preview and return
     end
 
-    if current_user.id != @post.user_id && @post.audit_comment.blank? && !@post.author_ids.include?(current_user.id)
+    if @post.user_id_was != current_user.id && !old_tagging_author_ids.include?(current_user.id) && @post.audit_comment.blank?
       flash[:error] = "You must provide a reason for your moderator edit."
       editor_setup
       render action: :edit and return
@@ -169,6 +177,8 @@ class PostsController < WritableController
         @post.settings = settings
         @post.content_warnings = warnings
         @post.labels = labels
+        tagging_author_ids = post_params.fetch(:tagging_author_ids, []).reject(&:blank?).map(&:to_i)
+        process_tagging_authors_on_update!(tagging_author_ids, old_tagging_author_ids)
         @post.save!
       end
 
@@ -301,6 +311,13 @@ class PostsController < WritableController
 
   private
 
+  def editor_setup
+    super
+    @permitted_authors = User.order(:username)
+    @author_ids = post_params[:tagging_author_ids].reject(&:blank?).map(&:to_i) if post_params.key?(:tagging_author_ids)
+    @author_ids ||= @post.try(:tagging_author_ids) || []
+  end
+
   def import_thread
     unless SCRAPE_USERS.include?(current_user.id)
       flash[:error] = "You do not have access to this feature."
@@ -375,6 +392,30 @@ class PostsController < WritableController
     end
   end
 
+  def process_tagging_authors_on_create
+    @post.tagging_post_authors.each do |post_author|
+      post_author.build_invited_by(current_user)
+    end
+  end
+
+  def process_tagging_authors_on_update!(tagging_author_ids, old_tagging_author_ids)
+    removed_ids = old_tagging_author_ids - tagging_author_ids
+    new_ids = tagging_author_ids - old_tagging_author_ids
+
+    # remove from tagging list authors removed
+    @post.tagging_post_authors.each do |post_author|
+      next unless removed_ids.include?(post_author.user_id)
+      post_author.uninvite!
+    end
+
+    # add to list authors who can
+    # TODO: invite authors by email if applicable
+    new_ids.each do |user_id|
+      @post.invite!(user_id, by: current_user)
+    end
+    @post.tagging_author_ids = tagging_author_ids
+  end
+
   def post_params
     params.fetch(:post, {}).permit(
       :board_id,
@@ -387,6 +428,7 @@ class PostsController < WritableController
       :icon_id,
       :character_alias_id,
       :audit_comment,
+      tagging_author_ids: [],
       viewer_ids: [],
     )
   end

@@ -193,6 +193,28 @@ RSpec.describe PostsController do
       get :new, params: { view: :import }
       expect(response).to have_http_status(200)
     end
+
+    it "defaults authors to be the current user in open boards" do
+      user = create(:user)
+      login_as(user)
+      create(:user) # user not in the board
+      board_creator = create(:user) # user in the board
+      board = create(:board, creator: board_creator, coauthors: [])
+      get :new, params: { board_id: board.id }
+      expect(assigns(:post).board).to eq(board)
+      expect(assigns(:author_ids)).to eq([user.id])
+    end
+
+    it "defaults authors to be board authors in closed boards" do
+      user = create(:user)
+      login_as(user)
+      coauthor = create(:user)
+      other_user = create(:user)
+      board = create(:board, creator: user, coauthors: [coauthor])
+      get :new, params: { board_id: board.id }
+      expect(assigns(:post).board).to eq(board)
+      expect(assigns(:author_ids)).to match_array([user.id, coauthor.id])
+    end
   end
 
   describe "POST create" do
@@ -298,6 +320,7 @@ RSpec.describe PostsController do
         label2 = create(:label)
         char1 = create(:character, user: user)
         char2 = create(:template_character, user: user)
+        coauthor = create(:user)
         expect(controller).to receive(:editor_setup).and_call_original
         expect(controller).to receive(:setup_layout_gon).and_call_original
         post :create, params: {
@@ -308,7 +331,8 @@ RSpec.describe PostsController do
             setting_ids: [setting1.id, '_'+setting2.name, '_other'],
             content_warning_ids: [warning1.id, '_'+warning2.name, '_other'],
             label_ids: [label1.id, '_'+label2.name, '_other'],
-            character_id: char1.id
+            character_id: char1.id,
+            tagging_author_ids: [user.id, coauthor.id]
           }
         }
         expect(response).to render_template(:preview)
@@ -317,6 +341,7 @@ RSpec.describe PostsController do
         expect(assigns(:written).user).to eq(user)
         expect(assigns(:post)).to eq(assigns(:written))
         expect(assigns(:page_title)).to eq('Previewing: test')
+        expect(assigns(:author_ids)).to match_array([user.id, coauthor.id])
 
         # tags
         expect(assigns(:post).settings.size).to eq(3)
@@ -394,6 +419,133 @@ RSpec.describe PostsController do
       expect(assigns(:post).content_warnings.count).to eq(4)
     end
 
+    it "creates new post authors correctly" do
+      user = create(:user)
+      other_user = create(:user)
+      create(:user) # user should not be author
+      board_creator = create(:user) # user should not be author
+      board = create(:board, creator: board_creator)
+      login_as(user)
+
+      time = Time.now - 5.minutes
+      Timecop.freeze(time) do
+        expect {
+          post :create, params: {
+            post: {
+              subject: 'a',
+              user_id: user.id,
+              board_id: board.id,
+              tagging_author_ids: [user.id, other_user.id]
+            }
+          }
+        }.to change { PostAuthor.count }.by(2)
+      end
+
+      post = assigns(:post).reload
+      expect(post.tagging_authors).to match_array([user, other_user])
+
+      post_author = post.tagging_post_authors.find_by(user: user)
+      expect(post_author.can_owe).to eq(true)
+      expect(post_author.joined).to eq(true)
+      expect(post_author.joined_at).to be_the_same_time_as(time)
+      expect(post_author.invited_by).to be_nil
+      expect(post_author.invited_at).to be_nil
+
+      other_post_author = post.tagging_post_authors.find_by(user: other_user)
+      expect(other_post_author.can_owe).to eq(true)
+      expect(other_post_author.joined).to eq(false)
+      expect(other_post_author.joined_at).to be_nil
+      expect(other_post_author.invited_by).to eq(user)
+      expect(other_post_author.invited_at).to be_the_same_time_as(time)
+    end
+
+    it "handles post submitted with no authors" do
+      user = create(:user)
+      create(:user) # non-author
+      board_creator = create(:user)
+      board = create(:board, creator: board_creator)
+      login_as(user)
+
+      time = Time.now - 5.minutes
+      Timecop.freeze(time) do
+        expect {
+          post :create, params: {
+            post: {
+              subject: 'a',
+              user_id: user.id,
+              board_id: board.id,
+              tagging_author_ids: []
+            }
+          }
+        }.to change { PostAuthor.count }.by(1)
+      end
+
+      post = assigns(:post).reload
+      expect(post.tagging_authors).to eq([])
+      expect(post.authors).to match_array([user])
+
+      post_author = post.post_authors.first
+      expect(post_author.can_owe).to eq(false)
+      expect(post_author.joined).to eq(true)
+      expect(post_author.joined_at).to be_the_same_time_as(time)
+      expect(post_author.invited_at).to be_nil
+      expect(post_author.invited_by).to be_nil
+    end
+
+    it "adds new post authors to board cameo" do
+      user = create(:user)
+      other_user = create(:user)
+      third_user = create(:user)
+      create(:user) # separate user
+      board = create(:board, creator: user, coauthors: [other_user])
+
+      login_as(user)
+      expect {
+        post :create, params: {
+          post: {
+            subject: 'a',
+            user_id: user.id,
+            board_id: board.id,
+            tagging_author_ids: [user.id, other_user.id, third_user.id]
+          }
+        }
+      }.to change { BoardAuthor.count }.by(1)
+
+      post = assigns(:post).reload
+      expect(post.tagging_authors).to match_array([user, other_user, third_user])
+
+      board.reload
+      expect(board.creator).to eq(user)
+      expect(board.coauthors).to match_array([other_user])
+      expect(board.cameos).to match_array([third_user])
+    end
+
+    it "does not add to cameos of open boards" do
+      user = create(:user)
+      other_user = create(:user)
+      board = create(:board)
+      expect(board.cameos).to be_empty
+
+      login_as(user)
+      expect {
+        post :create, params: {
+          post: {
+            subject: 'a',
+            user_id: user.id,
+            board_id: board.id,
+            tagging_author_ids: [user.id, other_user.id]
+          }
+        }
+      }.not_to change { BoardAuthor.count }
+
+      post = assigns(:post).reload
+      expect(post.tagging_authors).to match_array([user, other_user])
+
+      board.reload
+      expect(board.coauthors).to be_empty
+      expect(board.cameos).to be_empty
+    end
+
     it "handles invalid posts" do
       user = create(:user)
       login_as(user)
@@ -405,6 +557,7 @@ RSpec.describe PostsController do
       label2 = create(:label)
       char1 = create(:character, user: user)
       char2 = create(:template_character, user: user)
+      coauthor = create(:user)
       expect(controller).to receive(:editor_setup).and_call_original
       expect(controller).to receive(:setup_layout_gon).and_call_original
 
@@ -416,7 +569,8 @@ RSpec.describe PostsController do
           setting_ids: [setting1.id, '_'+setting2.name, '_other'],
           content_warning_ids: [warning1.id, '_'+warning2.name, '_other'],
           label_ids: [label1.id, '_'+label2.name, '_other'],
-          character_id: char1.id
+          character_id: char1.id,
+          tagging_author_ids: [user.id, coauthor.id]
         }
       }
 
@@ -427,6 +581,7 @@ RSpec.describe PostsController do
       expect(assigns(:post).subject).to eq('asubjct')
       expect(assigns(:post).content).to eq('acontnt')
       expect(assigns(:page_title)).to eq('New Post')
+      expect(assigns(:author_ids)).to match_array([user.id, coauthor.id])
 
       # editor_setup:
       expect(assigns(:javascripts)).to include('posts/editor')
@@ -472,6 +627,7 @@ RSpec.describe PostsController do
       warning2 = create(:content_warning)
       label1 = create(:label)
       label2 = create(:label)
+      coauthor = create(:user)
 
       expect {
         post :create, params: {
@@ -488,7 +644,8 @@ RSpec.describe PostsController do
             viewer_ids: [viewer.id],
             setting_ids: [setting1.id, '_'+setting2.name, '_other'],
             content_warning_ids: [warning1.id, '_'+warning2.name, '_other'],
-            label_ids: [label1.id, '_'+label2.name, '_other']
+            label_ids: [label1.id, '_'+label2.name, '_other'],
+            tagging_author_ids: [user.id, coauthor.id]
           }
         }
       }.to change{Post.count}.by(1)
@@ -512,13 +669,17 @@ RSpec.describe PostsController do
       expect(post.reload).to be_visible_to(viewer)
       expect(post.reload).not_to be_visible_to(create(:user))
 
+      expect(post.authors).to match_array([user, coauthor])
+      expect(post.tagging_authors).to match_array([user, coauthor])
+      expect(post.joined_authors).to match_array([user])
+
       # tags
-      expect(assigns(:post).settings.size).to eq(3)
-      expect(assigns(:post).content_warnings.size).to eq(3)
-      expect(assigns(:post).labels.size).to eq(3)
-      expect(assigns(:post).settings.map(&:id_for_select)).to match_array([setting1.id, setting2.id, Setting.last.id])
-      expect(assigns(:post).content_warnings.map(&:id_for_select)).to match_array([warning1.id, warning2.id, ContentWarning.last.id])
-      expect(assigns(:post).labels.map(&:id_for_select)).to match_array([label1.id, label2.id, Label.last.id])
+      expect(post.settings.size).to eq(3)
+      expect(post.content_warnings.size).to eq(3)
+      expect(post.labels.size).to eq(3)
+      expect(post.settings.map(&:id_for_select)).to match_array([setting1.id, setting2.id, Setting.last.id])
+      expect(post.content_warnings.map(&:id_for_select)).to match_array([warning1.id, warning2.id, ContentWarning.last.id])
+      expect(post.labels.map(&:id_for_select)).to match_array([label1.id, label2.id, Label.last.id])
       expect(Setting.count).to eq(3)
       expect(ContentWarning.count).to eq(3)
       expect(Label.count).to eq(3)
@@ -922,16 +1083,32 @@ RSpec.describe PostsController do
       setting = create(:setting)
       warning = create(:content_warning)
       label = create(:label)
-      post = create(:post, user: user, character: char1, settings: [setting], content_warnings: [warning], labels: [label])
-      reply1 = create(:reply, user: user, post: post, character: char2)
-      create(:reply, post: post) # other user's post with character
+      post = create(:post,
+        user: user,
+        character: char1,
+        settings: [setting],
+        content_warnings: [warning],
+        labels: [label],
+        tagging_authors: [user]
+      )
       expect(post.icon).to be_nil
+
+      reply1 = create(:reply, user: user, post: post, character: char2)
+
+      coauthor = create(:user)
+      create(:reply, user: coauthor, post: post) # other user's post
+
+      ignored_author = create(:user)
+      create(:reply, user: ignored_author, post: post) # ignored user's post
+      post.uninvite!(ignored_author.id)
+
       login_as(user)
 
       # extras to not be in the array
       create(:setting)
       create(:content_warning)
       create(:label)
+      create(:user)
 
       expect(controller).to receive(:editor_setup).and_call_original
       expect(controller).to receive(:setup_layout_gon).and_call_original
@@ -946,6 +1123,7 @@ RSpec.describe PostsController do
       # editor_setup:
       expect(assigns(:javascripts)).to include('posts/editor')
       expect(controller.gon.editor_user).not_to be_nil
+      expect(assigns(:author_ids)).to match_array([user.id, coauthor.id])
 
       # templates
       templates = assigns(:templates)
@@ -1000,7 +1178,7 @@ RSpec.describe PostsController do
       expect(flash[:error]).to eq('You must provide a reason for your moderator edit.')
     end
 
-    it 'does not require note from coauthors' do
+    it "does not require note from coauthors" do
       post = create(:post, privacy: Concealable::ACCESS_LIST)
       user = create(:user)
       post.viewers << user
@@ -1359,6 +1537,7 @@ RSpec.describe PostsController do
         label2 = create(:label)
         char1 = create(:character, user: user)
         char2 = create(:template_character, user: user)
+        coauthor = create(:user)
         expect(controller).to receive(:editor_setup).and_call_original
         expect(controller).to receive(:setup_layout_gon).and_call_original
         put :update, params: {
@@ -1370,7 +1549,8 @@ RSpec.describe PostsController do
             setting_ids: [setting1.id, '_'+setting2.name, '_other'],
             content_warning_ids: [warning1.id, '_'+warning2.name, '_other'],
             label_ids: [label1.id, '_'+label2.name, '_other'],
-            character_id: char1.id
+            character_id: char1.id,
+            tagging_author_ids: [user.id, coauthor.id]
           }
         }
         expect(response).to render_template(:preview)
@@ -1389,6 +1569,9 @@ RSpec.describe PostsController do
         # editor_setup:
         expect(assigns(:javascripts)).to include('posts/editor')
         expect(controller.gon.editor_user).not_to be_nil
+        expect(assigns(:author_ids)).to match_array([user.id, coauthor.id])
+        # ensure it doesn't change the actual post:
+        expect(Post.find_by(id: assigns(:post).id).tagging_authors).to match_array([])
 
         # templates
         templates = assigns(:templates)
@@ -1499,6 +1682,178 @@ RSpec.describe PostsController do
         expect(post.labels).to eq([tag])
       end
 
+      it "correctly updates when adding new authors" do
+        user = create(:user)
+        other_user = create(:user)
+        login_as(user)
+        post = create(:post, user: user, tagging_authors: [])
+
+        time = Time.now + 5.minutes
+        Timecop.freeze(time) do
+          expect {
+            put :update, params: {
+              id: post.id,
+              post: {
+                tagging_author_ids: [user.id, other_user.id]
+              }
+            }
+          }.to change { PostAuthor.count }.by(1)
+        end
+
+        expect(response).to redirect_to(post_url(post))
+        post.reload
+        expect(post.tagging_authors).to match_array([user, other_user])
+
+        # doesn't change joined time or invited status when inviting main user
+        main_author = post.post_authors.find_by(user: user)
+        expect(main_author.can_owe).to eq(true)
+        expect(main_author.joined).to eq(true)
+        expect(main_author.joined_at).to be_the_same_time_as(post.created_at)
+        expect(main_author.invited_at).to be_nil
+        expect(main_author.invited_by).to be_nil
+
+        # doesn't set joined time but does set invited status when inviting new user
+        new_author = post.post_authors.find_by(user: other_user)
+        expect(new_author.can_owe).to eq(true)
+        expect(new_author.joined).to eq(false)
+        expect(new_author.joined_at).to be_nil
+        expect(new_author.invited_at).to be_the_same_time_as(time)
+        expect(new_author.invited_by).to eq(user)
+      end
+
+      it "correctly updates when removing authors" do
+        user = create(:user)
+        invited_user = create(:user)
+        joined_user = create(:user)
+
+        login_as(user)
+        time = Time.now - 5.minutes
+        post = nil
+        Timecop.freeze(time) do
+          post = create(:post, user: user)
+          post.invite!(user.id, by: user)
+          post.invite!(invited_user.id, by: user)
+          post.invite!(joined_user.id, by: user)
+        end
+        reply = create(:reply, user: joined_user, post: post)
+
+        post.reload
+        expect(post.authors).to match_array([user, invited_user, joined_user])
+        expect(post.joined_authors).to match_array([user, joined_user])
+
+        post_author = post.post_authors.find_by(user: user)
+        expect(post_author.joined).to eq(true)
+        expect(post_author.joined_at).to be_the_same_time_as(post.created_at)
+
+        invited_post_author = post.post_authors.find_by(user: invited_user)
+        expect(invited_post_author.joined).to eq(false)
+        expect(invited_post_author.invited_at).to be_the_same_time_as(time)
+
+        joined_post_author = post.post_authors.find_by(user: joined_user)
+        expect(joined_post_author.joined).to eq(true)
+        expect(joined_post_author.joined_at).to be_the_same_time_as(reply.created_at)
+        expect(joined_post_author.invited_at).to be_the_same_time_as(time)
+
+        put :update, params: {
+          id: post.id,
+          post: {
+            tagging_author_ids: []
+          }
+        }
+        expect(response).to redirect_to(post_url(post))
+        expect(flash[:success]).to eq('Your post has been updated.')
+
+        post.reload
+        expect(post.authors).to match_array([user, joined_user])
+        expect(post.joined_authors).to match_array([user, joined_user])
+        expect(post.tagging_authors).to match_array([])
+
+        post_author.reload
+        expect(post_author.can_owe).to eq(false)
+        expect(post_author.joined).to eq(true)
+        expect(post_author.joined_at).to be_the_same_time_as(post.created_at)
+
+        expect(PostAuthor.find_by(id: invited_post_author.id)).to be_nil
+
+        joined_post_author.reload
+        expect(joined_post_author.can_owe).to eq(false)
+        expect(joined_post_author.joined).to eq(true)
+        expect(joined_post_author.joined_at).to be_the_same_time_as(reply.created_at)
+      end
+
+      it "only sets can_owe when adding existing authors" do
+        user = create(:user)
+        other_user = create(:user)
+        post = create(:post, user: user, tagging_authors: [])
+        reply = create(:reply, user: other_user, post: post)
+        expect(post.tagging_authors).to match_array([])
+        expect(post.joined_authors).to match_array([user, other_user])
+
+        login_as(user)
+        put :update, params: {
+          id: post.id,
+          post: {
+            tagging_author_ids: [user.id, other_user.id]
+          }
+        }
+
+        post.reload
+        expect(post.tagging_authors).to match_array([user, other_user])
+        expect(post.joined_authors).to match_array([user, other_user])
+
+        user_author = post.post_authors.find_by(user: user)
+        expect(user_author.can_owe).to eq(true)
+        expect(user_author.joined).to eq(true)
+        expect(user_author.joined_at).to be_the_same_time_as(post.created_at)
+        expect(user_author.invited_at).to be_nil
+        expect(user_author.invited_by).to be_nil
+
+        other_author = post.post_authors.find_by(user: other_user)
+        expect(other_author.can_owe).to eq(true)
+        expect(other_author.joined).to eq(true)
+        expect(other_author.joined_at).to be_the_same_time_as(reply.created_at)
+        expect(other_author.invited_at).to be_nil
+        expect(other_author.invited_by).to be_nil
+      end
+
+      it "updates board cameos if necessary" do
+        user = create(:user)
+        other_user = create(:user)
+        third_user = create(:user)
+        login_as(user)
+        board = create(:board, creator: user, coauthors: [other_user])
+        post = create(:post, user: user, board: board)
+        put :update, params: {
+          id: post.id,
+          post: {
+            tagging_author_ids: [user.id, other_user.id, third_user.id]
+          }
+        }
+        post.reload
+        board.reload
+        expect(post.tagging_authors).to match_array([user, other_user, third_user])
+        expect(board.cameos).to match_array([third_user])
+      end
+
+      it "does not add to cameos of open boards" do
+        user = create(:user)
+        other_user = create(:user)
+        login_as(user)
+        board = create(:board)
+        expect(board.cameos).to be_empty
+        post = create(:post, user: user, board: board)
+        put :update, params: {
+          id: post.id,
+          post: {
+            tagging_author_ids: [user.id, other_user.id]
+          }
+        }
+        post.reload
+        board.reload
+        expect(post.tagging_authors).to match_array([user, other_user])
+        expect(board.cameos).to be_empty
+      end
+
       it "requires valid update" do
         setting = create(:setting)
         rems = create(:setting)
@@ -1521,6 +1876,9 @@ RSpec.describe PostsController do
 
         char1 = create(:character, user: user)
         char2 = create(:template_character, user: user)
+
+        coauthor = create(:user)
+
         expect(controller).to receive(:editor_setup).and_call_original
         expect(controller).to receive(:setup_layout_gon).and_call_original
 
@@ -1534,7 +1892,9 @@ RSpec.describe PostsController do
             subject: '',
             setting_ids: setting_ids,
             content_warning_ids: warning_ids,
-            label_ids: label_ids}
+            label_ids: label_ids,
+            tagging_author_ids: [user.id, coauthor.id]
+          }
         }
 
         expect(response).to render_template(:edit)
@@ -1544,6 +1904,7 @@ RSpec.describe PostsController do
         # editor_setup:
         expect(assigns(:javascripts)).to include('posts/editor')
         expect(controller.gon.editor_user).not_to be_nil
+        expect(assigns(:author_ids)).to match_array([user.id, coauthor.id])
 
         # templates
         templates = assigns(:templates)
@@ -1573,7 +1934,13 @@ RSpec.describe PostsController do
 
       it "works" do
         user = create(:user)
+        removed_author = create(:user)
+        joined_author = create(:user)
         post = create(:post, user: user)
+        post.invite!(user.id, by: user)
+        post.invite!(removed_author.id, by: user)
+        post.invite!(joined_author.id, by: user)
+        create(:reply, user: joined_author, post: post)
         newcontent = post.content + 'new'
         newsubj = post.subject + 'new'
         login_as(user)
@@ -1586,8 +1953,31 @@ RSpec.describe PostsController do
         setting = create(:setting)
         warning = create(:content_warning)
         tag = create(:label)
+        coauthor = create(:user)
 
-        put :update, params: { id: post.id, post: {content: newcontent, subject: newsubj, description: 'desc', board_id: board.id, section_id: section.id, character_id: char.id, character_alias_id: calias.id, icon_id: icon.id, privacy: Concealable::ACCESS_LIST, viewer_ids: [viewer.id], setting_ids: [setting.id], content_warning_ids: [warning.id], label_ids: [tag.id]} }
+        post.reload
+        expect(post.tagging_authors).to match_array([user, removed_author, joined_author])
+        expect(post.joined_authors).to match_array([user, joined_author])
+
+        put :update, params: {
+          id: post.id,
+          post: {
+            content: newcontent,
+            subject: newsubj,
+            description: 'desc',
+            board_id: board.id,
+            section_id: section.id,
+            character_id: char.id,
+            character_alias_id: calias.id,
+            icon_id: icon.id,
+            privacy: Concealable::ACCESS_LIST,
+            viewer_ids: [viewer.id],
+            setting_ids: [setting.id],
+            content_warning_ids: [warning.id],
+            label_ids: [tag.id],
+            tagging_author_ids: [user.id, coauthor.id]
+          }
+        }
         expect(response).to redirect_to(post_url(post))
         expect(flash[:success]).to eq("Your post has been updated.")
 
@@ -1607,6 +1997,9 @@ RSpec.describe PostsController do
         expect(post.labels).to eq([tag])
         expect(post.reload).to be_visible_to(viewer)
         expect(post.reload).not_to be_visible_to(create(:user))
+        expect(post.tagging_authors).to match_array([user, coauthor])
+        expect(post.joined_authors).to match_array([user, joined_author])
+        expect(post.authors).to match_array([user, coauthor, joined_author])
       end
     end
   end
@@ -1700,13 +2093,13 @@ RSpec.describe PostsController do
     context "with posts" do
       let(:user) { create(:user) }
       let(:other_user) { create(:user) }
+      let(:post) { create(:post, user: user, tagging_authors: [user]) }
       before(:each) do
         other_user
         login_as(user)
       end
 
       it "shows a post if replied to by someone else" do
-        post = create(:post, user_id: user.id)
         create(:reply, post_id: post.id, user_id: other_user.id)
 
         get :owed
@@ -1715,7 +2108,6 @@ RSpec.describe PostsController do
       end
 
       it "hides a post if you reply to it" do
-        post = create(:post, user_id: user.id)
         create(:reply, post_id: post.id, user_id: other_user.id)
         create(:reply, post_id: post.id, user_id: user.id)
 
@@ -1729,7 +2121,6 @@ RSpec.describe PostsController do
       end
 
       it "hides completed and abandoned threads" do
-        post = create(:post, user_id: user.id)
         create(:reply, post_id: post.id, user_id: other_user.id)
 
         post.update_attributes(status: Post::STATUS_COMPLETE)
@@ -1749,7 +2140,6 @@ RSpec.describe PostsController do
       end
 
       it "show hiatused threads by default" do
-        post = create(:post, user_id: user.id)
         create(:reply, post_id: post.id, user_id: other_user.id)
         post.update_attributes(status: Post::STATUS_HIATUS)
 
@@ -1759,7 +2149,6 @@ RSpec.describe PostsController do
       end
 
       it "optionally hides hiatused threads" do
-        post = create(:post, user_id: user.id)
         create(:reply, post_id: post.id, user_id: other_user.id)
         post.update_attributes(status: Post::STATUS_HIATUS)
 
@@ -1768,6 +2157,24 @@ RSpec.describe PostsController do
         get :owed
         expect(response.status).to eq(200)
         expect(assigns(:posts)).to be_empty
+      end
+
+      it "shows threads the user has been invited to" do
+        post = create(:post, user: other_user)
+        post.invite!(user.id, by: other_user)
+        get :owed
+        expect(response.status).to eq(200)
+        expect(assigns(:posts)).to match_array([post])
+      end
+
+      it "hides threads the user has manually removed themselves from" do
+        post = create(:post, user: other_user, tagging_authors: [other_user])
+        create(:reply, post: post, user: user)
+        create(:reply, post: post, user: other_user)
+        post.post_authors.find_by(user: user).opt_out_of_owed!
+        get :owed
+        expect(response.status).to eq(200)
+        expect(assigns(:posts)).to match_array([])
       end
     end
 

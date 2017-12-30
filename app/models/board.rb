@@ -23,6 +23,10 @@ class Board < ApplicationRecord
     @writers ||= coauthors + [creator]
   end
 
+  def writer_ids
+    coauthor_ids + [creator_id]
+  end
+
   def open_to?(user)
     return false unless user
     return true if open_to_anyone?

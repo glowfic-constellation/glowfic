@@ -124,6 +124,7 @@ RSpec.describe ApplicationController do
       post3_user3 = create(:user)
       25.times { |i| create(:reply, post: post3, user: post3_user2) }
       10.times { |i| create(:reply, post: post3, user: post3_user3)}
+      post3.post_authors.find_by(user_id: post3_user3.id).update_attributes(can_owe: false)
 
       id_list = [post1.id, post2.id, post3.id]
       relation = Post.where(id: id_list).order('id asc')
@@ -145,12 +146,12 @@ RSpec.describe ApplicationController do
       expect(fetched2.reply_count).to eq(1)
       expect(fetched3.reply_count).to eq(35)
 
-      expect(fetched1.authors).to match_array([post1.user])
-      expect(fetched2.authors).to match_array([post2.user, post2_reply.user])
-      expect(fetched3.authors).to match_array([post3.user, post3_user2, post3_user3])
-      expect(fetched1.author_ids).to match_array([post1.user_id])
-      expect(fetched2.author_ids).to match_array([post2.user_id, post2_reply.user_id])
-      expect(fetched3.author_ids).to match_array([post3.user_id, post3_user2.id, post3_user3.id])
+      expect(fetched1.joined_authors).to match_array([post1.user])
+      expect(fetched2.joined_authors).to match_array([post2.user, post2_reply.user])
+      expect(fetched3.joined_authors).to match_array([post3.user, post3_user2, post3_user3])
+      expect(fetched1.joined_author_ids).to match_array([post1.user_id])
+      expect(fetched2.joined_author_ids).to match_array([post2.user_id, post2_reply.user_id])
+      expect(fetched3.joined_author_ids).to match_array([post3.user_id, post3_user2.id, post3_user3.id])
     end
 
     context "when logged in" do

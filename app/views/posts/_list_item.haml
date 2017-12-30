@@ -41,13 +41,13 @@
   - unless local_assigns[:hide_continuity]
     %td.post-board.vtop{class: klass}= link_to post.board_name, board_path(post.board_id)
   %td.post-authors.vtop{class: klass}
-    - authors = post.authors.sort_by { |author| author.username.downcase }
-    - if authors.length < 4
+    - authors = post.joined_authors.order('LOWER(users.username)')
+    - if authors.count < 4
       = authors.map { |author| link_to author.username, user_path(author) }.join(', ').html_safe
     - else
       = link_to post.user.username, user_path(post.user)
       and
-      = link_to "#{authors.length-1} others", stats_post_path(post)
+      = link_to "#{authors.count-1} others", stats_post_path(post)
   %td.width-70.post-replies.vtop{class: klass}= link_to replies_count, stats_post_path(post)
   - if logged_in? && local_assigns[:show_unread_count]
     %td.width-70.vtop{class: klass}
