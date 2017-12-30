@@ -111,4 +111,80 @@ RSpec.describe Reply do
       expect(UserMailer).to have_queued(:post_has_new_reply, [another_notified_user.id, reply.id])
     end
   end
+
+  describe "#has_edit_audits?" do
+    shared_examples 'has_edit_audits' do |get_has_edit_audits|
+      let(:user) { create(:user) }
+      before(:each) { Reply.auditing_enabled = true }
+      it "is false if reply has never been edited" do
+        reply = nil
+        Audited.audit_class.as_user(user) do
+          reply = create(:reply, content: 'original', user: user)
+        end
+        expect(get_has_edit_audits.call(reply.id)).to eq(false)
+      end
+
+      it "is false if reply has just been touched" do
+        reply = nil
+        Audited.audit_class.as_user(user) do
+          reply = create(:reply, content: 'original', user: user)
+          reply.touch
+        end
+        expect(get_has_edit_audits.call(reply.id)).to eq(false)
+      end
+
+      it "is true if reply has been edited in content" do
+        reply = nil
+        Audited.audit_class.as_user(user) do
+          reply = create(:reply, content: 'original', user: user)
+          reply.update_attributes!(content: 'blah')
+        end
+        expect(get_has_edit_audits.call(reply.id)).to eq(true)
+      end
+
+      it "is true if reply has been edited in character" do
+        reply = nil
+        Audited.audit_class.as_user(user) do
+          reply = create(:reply, content: 'original', user: user)
+          char = create(:character, user: user)
+          reply.update_attributes!(character: char)
+        end
+        expect(get_has_edit_audits.call(reply.id)).to eq(true)
+      end
+
+      it "is true if reply has been edited many times" do
+        reply = nil
+        Audited.audit_class.as_user(user) do
+          reply = create(:reply, content: 'original', user: user)
+          1.upto(5) { |i| reply.update_attributes!(content: 'message' + i.to_s) }
+        end
+        expect(get_has_edit_audits.call(reply.id)).to eq(true)
+      end
+
+      it "is true if reply has been edited by moderator" do
+        reply = nil
+        Audited.audit_class.as_user(user) do
+          reply = create(:reply, content: 'original')
+        end
+        Audited.audit_class.as_user(create(:mod_user)) do
+          reply.update_attributes!(content: 'blah')
+        end
+        expect(get_has_edit_audits.call(reply.id)).to eq(true)
+      end
+    end
+
+    context "with 'edit audit count' scope" do
+      method = Proc.new do |reply_id|
+        Reply.with_edit_audit_counts.find_by(id: reply_id).has_edit_audits?
+      end
+      include_examples 'has_edit_audits', method
+    end
+
+    context "without 'edit audit count' scope" do
+      method = Proc.new do |reply_id|
+        Reply.find_by(id: reply_id).has_edit_audits?
+      end
+      include_examples 'has_edit_audits', method
+    end
+  end
 end

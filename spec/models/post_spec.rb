@@ -799,6 +799,66 @@ RSpec.describe Post do
     end
   end
 
+  describe "#has_edit_audits?" do
+    let(:user) { create(:user) }
+    before(:each) { Post.auditing_enabled = true }
+    it "is false if post has never been edited" do
+      post = nil
+      Audited.audit_class.as_user(user) do
+        post = create(:post, content: 'original', user: user)
+      end
+      expect(post.reload.has_edit_audits?).to eq(false)
+    end
+
+    it "is false if post has just been touched" do
+      post = nil
+      Audited.audit_class.as_user(user) do
+        post = create(:post, content: 'original', user: user)
+        post.touch
+      end
+      expect(post.reload.has_edit_audits?).to eq(false)
+    end
+
+    it "is true if post has been edited in content" do
+      post = nil
+      Audited.audit_class.as_user(user) do
+        post = create(:post, content: 'original', user: user)
+        post.update_attributes!(content: 'blah')
+      end
+      expect(post.reload.has_edit_audits?).to eq(true)
+    end
+
+    it "is true if post has been edited in character" do
+      post = nil
+      Audited.audit_class.as_user(user) do
+        post = create(:post, content: 'original', user: user)
+        char = create(:character, user: user)
+        post.update_attributes!(character: char)
+      end
+      expect(post.reload.has_edit_audits?).to eq(true)
+    end
+
+    it "is true if post has been edited many times" do
+      post = nil
+      Audited.audit_class.as_user(user) do
+        post = create(:post, content: 'original', user: user)
+        1.upto(5) { |i| post.update_attributes!(content: 'message' + i.to_s) }
+      end
+      expect(post.reload.has_edit_audits?).to eq(true)
+    end
+
+    it "is true if post has been edited by moderator" do
+      post = nil
+      Audited.audit_class.as_user(user) do
+        post = create(:post, content: 'original')
+      end
+      Audited.audit_class.as_user(create(:mod_user)) do
+        post.update_attributes!(content: 'blah')
+      end
+      expect(post.reload.has_edit_audits?).to eq(true)
+    end
+  end
+
   context "callbacks" do
     include ActiveJob::TestHelper
     it "should enqueue a message after creation" do
