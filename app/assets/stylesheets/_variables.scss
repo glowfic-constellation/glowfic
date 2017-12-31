@@ -157,6 +157,7 @@ $bg_color_odd_blockquote: calculate-transparent-color($bg_color_odd, $bg_color_e
 
 /* - select2 dropdown */
 $font_color_select2_container: $colors_dark;
+/* Most of this is currently styled by gem files */
 $bg_color_select2_highlight: #E4E4E4;
 $bg_color_select2_selected: #DDDDDD;
 $bg_color_select2_search: $colors_white;
