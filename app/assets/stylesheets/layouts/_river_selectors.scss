@@ -1,0 +1,68 @@
+@import 'defaults';
+/* Original doc CSS overlaps with monochrome */
+
+/* - main page */
+body { background-color: $bg_color_page; }
+
+//$bg_color_flash_error: #484357; // error
+.flash.success { background-color: $bg_color_flash_success; }
+.flash.inbox { background-color: $bg_color_flash_inbox; }
+
+.pagination a:visited { color: $font_color_paginate_link_visited; }
+
+.post-navheader { background-color: $bg_color_navheader; }
+
+.link-box.action-edit { background-color: $bg_color_linkbox_edit; }
+.link-box.action-favorite { background-color: $bg_color_linkbox_favorite; }
+.link-box.action-delete { background-color: $bg_color_linkbox_delete; }
+.link-box.action-dismiss { background-color: $bg_color_linkbox_dismiss; }
+
+.post-character { background-color: $bg_color_post_character; }
+.post-screenname { background-color: $bg_color_post_screenname; }
+.post-author { background-color: $bg_color_post_author; }
+
+.sub { background-color: $bg_color_sub; }
+
+/* Rest of Milky River */
+
+#logo { background-color: $bg_color_header_top; }
+#header { background-color: $bg_color_header_bottom; }
+#nav-top, #user-info { background-color: $bg_color_header_middle; }
+
+/* - links */
+a { color: $font_color_link; }
+a:visited { color: $font_color_link_visited; }
+
+.flash.breadcrumbs { background-color: $bg_color_flash_breadcrumbs; }
+
+.post-expander { background-color: $bg_color_expander; }
+
+.pagination .current { background-color: $bg_color_paginate_current_page; }
+
+.post-icon { background-color: $bg_color_post_icon; }
+#current-icon-dropdown { background-color: $bg_color_post_icon; }
+#reply-icon-selector { background-color: $bg_color_icon_selector; }
+
+/* - icons */
+.replace-icon, .icons-box { background-color: $bg_color_icon; }
+.icon-credit { background-color: $bg_color_icon_credit; }
+
+.form-table-ender { background-color: $bg_color_ender; }
+.subber { background-color: $bg_color_subber; }
+
+.link-box.action-new { background-color: $bg_color_linkbox_new; }
+
+/* - content */
+#content .odd, #content .even, .post-post, .post-reply, #post-editor {
+  background-color: $bg_color_even !important;
+  border-top: solid 1px $bg_color_content_border;
+  blockquote { background-color: calculate-transparent-color($bg_color_even, $bg_color_odd, 0.2) !important; }
+}
+
+.post-edit-box img { width: 1em; height: 1em; }
+
+.post-character a, .post-character a:visited { color: $font_color_post_info; }
+
+.post-footer { color: $font_color_reply_footer; }
+
+.tag-item { color: $bg_color_tag_item; background-color: $font_color_tag_item; }
