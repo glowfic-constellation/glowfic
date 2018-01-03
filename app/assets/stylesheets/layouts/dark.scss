@@ -1,20 +1,20 @@
 @import 'variables';
 
-/* - main page */
+// main page
 $bg_color_page: #212121; // overall page
 $font_color_page: #A2A2A2;
 
-/* - header */
+// header
 $bg_color_header_top: #3B4841; // top header strip for logo
 $bg_color_header_bottom: #56554F; // bottom header strip with navigation
 $font_color_header_link: #CCCCCC;  // header links
 
-/* - links */
+// links
 $font_color_link: #66997D; // link
 $font_color_link_visited: #66997D; // TODO: why the heck are these set the same
 $font_color_link_hover: #B3B3B3; // link (hovered)
 
-/* - flashes */
+// flashes
 // these are the notifications that appear when you submit a form or get a message
 $bg_color_flash_success: #555E55; // success
 $font_color_flash_success: #BBBBBB;
@@ -30,10 +30,10 @@ $bg_color_spacer_alt: #333333;
 $bg_color_search_box: #333333;
 $font_color_search_box: #A2A2A2;
 
-/* - misc */
+// misc
 $bg_color_descriptions: #565656; // description subheadings on templates page ("single-description"), *not* posts
 
-/* - content headers */
+// content headers
 $bg_color_head: #424242; // primary content header
 $bg_color_sub: #383838; // secondary content header
 $bg_color_subber: #464646; // tertiary content header
@@ -41,7 +41,7 @@ $font_color_head: #C2C2C2;
 $font_color_sub: #C9C9C9;
 $font_color_subber: #DDDDDD;
 
-/* - content */
+// content
 $bg_color_even: #3E3E3E;
 $bg_color_odd: #474747;
 
@@ -68,15 +68,15 @@ $font_color_post_info: #A2A2A2;
 
 $font_color_post_menu: #A2A2A2;
 
-/* - icons */
+// icons
 $bg_color_icon: #444D3F;
 $bg_color_icon_credit: #444D3F;
 
-/* - tag items */
+// tag items
 $bg_color_tag_item: #85837C;
 $font_color_tag_item: #DDDDDD;
 
-/* - other buttons */
+// other buttons
 $bg_color_viewbutton: #85837C;
 $bg_color_viewbutton_selected: #6A6A6A;
 $font_color_viewbutton: #DDDDDD;
@@ -84,7 +84,7 @@ $font_color_viewbutton: #DDDDDD;
 $bg_color_reply_content: #717171;
 $font_color_reply_content: #CCCCCC;
 
-/* Hovering help box on post editor */
+// Hovering help box on post editor
 $bg_color_popup_header: #2B2B2B;
 $font_color_popup_header: #C2C2C2;
 $border_color_popup_header: #262626;
@@ -95,12 +95,12 @@ $bg_color_popup_button: #383838;
 $border_color_popup_button: #484848;
 $font_color_popup_link: #66997D;
 
-/* Darken input boxes */
-$font_color_input: #BBB; /* TODO: standardize font color */
-$bg_color_input: #4D4D4D; /* for generic input boxes all over the place */
+// Darken input boxes
+$font_color_input: #BBB; // TODO: standardize font color
+$bg_color_input: #4D4D4D; // for generic input boxes all over the place
 $border_color_input: #666666;
 $font_color_input_placeholder: #888888;
-$bg_color_mce_panel: #404040; /* MCE header & footer background */
+$bg_color_mce_panel: #404040; // MCE header & footer background
 $bg_color_select2_highlight: #616161;
 $bg_color_select2_selected: #454545;
 $bg_color_select2_search: $bg_color_select2_highlight;

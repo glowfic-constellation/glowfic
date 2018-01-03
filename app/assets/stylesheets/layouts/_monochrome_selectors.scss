@@ -1,8 +1,8 @@
 @import 'defaults';
 
 /* - header */
-#header #logo { background-color: $bg_color_header_top; }
-#header #user-info, #header #nav-top { background-color: $bg_color_header_middle; }
+#logo { background-color: $bg_color_header_top; }
+#user-info, #nav-top { background-color: $bg_color_header_middle; }
 
 /* - links */
 a { color: $font_color_link; }
@@ -10,18 +10,19 @@ a:visited { color: $font_color_link_visited; }
 
 /* - flashes */
 // these are the notifications that appear when you submit a form or get a message
+.flash.breadcrumbs { background-color: $bg_color_flash_breadcrumbs; }
 .flash.success { background-color: $bg_color_flash_success; }
 .flash.inbox { background-color: $bg_color_flash_inbox; }
-.flash.breadcrumbs { background-color: $bg_color_flash_breadcrumbs; }
 
 /* - main page */
 body { background-color: $bg_color_page; }
 
 /* - content headers */
 .sub { background-color: $bg_color_sub; }
-.form-table-ender { background-color: $bg_color_subber; }
 .subber { background-color: $bg_color_subber; }
+.form-table-ender { background-color: $bg_color_subber; }
 
+/* - content */
 .post-navheader { background-color: $bg_color_navheader; }
 
 .post-expander { background-color: $bg_color_expander; }
@@ -34,6 +35,7 @@ body { background-color: $bg_color_page; }
 .post-screenname { background-color: $bg_color_post_screenname; }
 .post-author { background-color: $bg_color_post_author; }
 
+// TODO: Check pagination displays fine in this theme
 .pagination .current { background-color: $bg_color_paginate_current_page; }
 .pagination a:visited { color: $font_color_paginate_link_visited; }
 
@@ -41,6 +43,7 @@ body { background-color: $bg_color_page; }
 .replace-icon, .icons-box { background-color: $bg_color_icon; }
 .icon-credit { background-color: $bg_color_icon_credit; }
 
+/* - tag items */
 .tag-item { color: $bg_color_tag_item; }
 
 /* - link-boxes */

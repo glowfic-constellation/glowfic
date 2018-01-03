@@ -1,23 +1,23 @@
 @import 'variables';
 
-/* - header */
+// header
 $bg_color_header_top: #757575; // top header strip for logo
 $bg_color_header_middle: #4A4A4A; // middle header strip with user items
 
-/* - links */
+// links
 $font_color_link: #6F6F6F; // link
 $font_color_link_visited: #484848;
 
-/* - flashes */
+// flashes
 // these are the notifications that appear when you submit a form or get a message
 $bg_color_flash_success: #ECECEC; // success
 $bg_color_flash_inbox: #ECECEC; // new message
 $bg_color_flash_breadcrumbs: #ADADAD; // breadcrumbs ("Continuities » Continuity » Section » Thread")
 
-/* - main page */
+// main page
 $bg_color_page: #E0E0E0; // overall page
 
-/* - content headers */
+// content headers
 $bg_color_sub: #BDBDBD; // secondary content header
 $bg_color_subber: #ADADAD; // tertiary content header
 
@@ -39,13 +39,13 @@ $bg_color_post_author: #BBBBBB;
 $font_color_paginate_link_visited: #3A3A3A;
 $bg_color_paginate_current_page: #616161;
 
-/* - icons */
+// icons
 $bg_color_icon: #BDBDBD;
 $bg_color_icon_credit: #BDBDBD;
 
 $bg_color_tag_item: #575757;
 
-/* - link-boxes */
+// link-boxes
 $bg_color_linkbox_new: #5A5A5A;
 $bg_color_linkbox_edit: #545A79;
 $bg_color_linkbox_favorite: #545A79;
