@@ -4,6 +4,9 @@
 #logo { background-color: $bg_color_header_top; }
 #user-info, #nav-top { background-color: $bg_color_header_middle; }
 
+/* - main page */
+body { background-color: $bg_color_page; }
+
 /* - links */
 a { color: $font_color_link; }
 a:visited { color: $font_color_link_visited; }
@@ -13,9 +16,6 @@ a:visited { color: $font_color_link_visited; }
 .flash.breadcrumbs { background-color: $bg_color_flash_breadcrumbs; }
 .flash.success { background-color: $bg_color_flash_success; }
 .flash.inbox { background-color: $bg_color_flash_inbox; }
-
-/* - main page */
-body { background-color: $bg_color_page; }
 
 /* - content headers */
 .sub { background-color: $bg_color_sub; }
