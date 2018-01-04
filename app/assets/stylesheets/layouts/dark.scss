@@ -3,6 +3,7 @@
 // main page
 $bg_color_page: #212121; // overall page
 $font_color_page: #A2A2A2;
+$font_color_content: #A2A2A2; // body
 
 // header
 $bg_color_header_top: #3B4841; // top header strip for logo
@@ -61,7 +62,9 @@ $font_color_icon_selector: #111111;
 $bg_color_post_character: #595959;
 $bg_color_post_screenname: #515151;
 $bg_color_post_author: #4D4C4C;
-//$bg_color_post_author_narrow: $colors_brown; // these are flipped from not-narrow mode to make the quick-switcher blend in // TODO: Should these flip on dark too?
+//$bg_color_post_author_narrow: $colors_brown;
+// these are flipped from not-narrow mode to make the quick-switcher blend in
+// TODO: Should these flip on dark too?
 $font_color_post_info: #A2A2A2;
 
 // TODO: Check pagination displays fine in this theme
@@ -75,6 +78,13 @@ $bg_color_icon_credit: #444D3F;
 // tag items
 $bg_color_tag_item: #85837C;
 $font_color_tag_item: #DDDDDD;
+
+// link-boxes
+$font_color_linkbox_new: #DDDDDD;
+$font_color_linkbox_edit: #DDDDDD;
+$font_color_linkbox_favorite: #DDDDDD;
+$font_color_linkbox_delete: #DDDDDD;
+$font_color_linkbox_dismiss: #DDDDDD;
 
 // other buttons
 $bg_color_viewbutton: #85837C;
