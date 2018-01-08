@@ -482,6 +482,63 @@ RSpec.describe RepliesController do
     end
 
     context "preview" do
+      it "takes correct actions" do
+        user = create(:user)
+        reply_post = create(:post, user: user)
+        reply = create(:reply, post: reply_post, user: user)
+        login_as(user)
+        expect(ReplyDraft.count).to eq(0)
+
+        char = create(:character, user: user)
+        icon = create(:icon)
+        calias = create(:alias, character: char)
+        char2 = create(:template_character, user: user)
+        newcontent = reply.content + 'new'
+        expect(controller).to receive(:build_template_groups).and_call_original
+        expect(controller).to receive(:setup_layout_gon).and_call_original
+
+        post :update, params: {
+          id: reply.id,
+          button_preview: true,
+          reply: {
+            content: newcontent,
+            character_id: char.id,
+            icon_id: icon.id,
+            character_alias_id: calias.id
+          }
+        }
+
+        expect(response).to render_template(:preview)
+        expect(assigns(:javascripts)).to include('posts/editor')
+        expect(assigns(:page_title)).to eq(reply_post.subject)
+        written = assigns(:written)
+        expect(written).not_to be_a_new_record
+        expect(written.user).to eq(reply_post.user)
+        expect(written.character).to eq(char)
+        expect(written.icon).to eq(icon)
+        expect(written.character_alias).to eq(calias)
+
+        # check it still remembers its current attributes, since this is a preview
+        persisted = written.reload
+        expect(persisted.user).to eq(reply_post.user)
+        expect(persisted.character).to be_nil
+        expect(persisted.icon).to be_nil
+        expect(persisted.character_alias).to be_nil
+        expect(assigns(:post)).to eq(reply_post)
+        expect(assigns(:reply)).to eq(reply)
+
+        # build_template_groups:
+        expect(controller.gon.editor_user).not_to be_nil
+        # templates
+        templates = assigns(:templates)
+        expect(templates.length).to eq(2)
+        template_chars = templates.first
+        expect(template_chars).to eq(char2.template)
+        templateless = templates.last
+        expect(templateless.name).to eq('Templateless')
+        expect(templateless.plucked_characters).to eq([[char.id, char.name]])
+      end
+
       skip
     end
   end
