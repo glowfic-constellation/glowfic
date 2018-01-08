@@ -4,18 +4,10 @@
 %tr
   %th.sub.vtop Description
   %td.odd= f.text_area :description
-%tr
-  %th.sub.vtop Characters
-  %td.even
-    - unless @template.new_record?
-      - @template.characters.each do |char|
-        = check_box_tag "template[character_ids][]", char.id, true, id: "template_character_ids_#{char.id}"
-        = label_tag "template_character_ids_#{char.id}", char.name
-        %br
-    - current_user.characters.where(template_id: nil).order('LOWER(name)').each do |char|
-      = check_box_tag "template[character_ids][]", char.id, false, id: "template_character_ids_#{char.id}"
-      = label_tag "template_character_ids_#{char.id}", char.name
-      %br
-    =# collection_check_boxes :template, :characters, @template.characters + current_user.characters.where(template_id: nil), :id, :name
+- if @selectable_characters.present?
+  %tr
+    %th.sub.vtop Characters
+    %td.even
+      = collection_check_boxes :template, :character_ids, @selectable_characters, :id, :name, selected: @character_ids
 %tr
   %th.form-table-ender{colspan: 2}= submit_tag "Save", class: 'button'
