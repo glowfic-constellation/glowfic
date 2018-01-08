@@ -1,8 +1,9 @@
 # frozen_string_literal: true
 class TemplatesController < ApplicationController
   before_action :login_required, except: :show
-  before_action :find_template, :only => [:show, :destroy, :edit, :update]
-  before_action :require_own_template, :only => [:edit, :update, :destroy]
+  before_action :find_template, only: [:show, :destroy, :edit, :update]
+  before_action :require_own_template, only: [:edit, :update, :destroy]
+  before_action :editor_setup, only: [:new, :edit]
 
   def new
     @template = Template.new
@@ -17,6 +18,7 @@ class TemplatesController < ApplicationController
       redirect_to template_path(@template)
     else
       flash.now[:error] = "Your template could not be saved."
+      editor_setup
       @page_title = "New Template"
       render :action => :new
     end
@@ -39,6 +41,7 @@ class TemplatesController < ApplicationController
   def update
     unless @template.update_attributes(template_params)
       flash.now[:error] = "Your template could not be saved."
+      editor_setup
       @page_title = 'Edit Template: ' + @template.name_was
       render :action => :edit and return
     end
@@ -54,6 +57,14 @@ class TemplatesController < ApplicationController
   end
 
   private
+
+  def editor_setup
+    @selectable_characters = @template.try(:characters) || []
+    @selectable_characters += current_user.characters.where(template_id: nil).order('LOWER(name)')
+    @selectable_characters.uniq!
+    @character_ids = template_params[:character_ids] if template_params.key?(:character_ids)
+    @character_ids ||= @template.try(:character_ids) || []
+  end
 
   def find_template
     unless (@template = Template.find_by_id(params[:id]))
