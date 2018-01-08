@@ -3,6 +3,9 @@
     %td.subber.padding-10{colspan: 6}
       - if name.is_a? String
         %b= name
+        - if local_assigns[:show_new_character_button]
+          = link_to new_character_path do
+            .link-box.action-new{style: 'font-size: 14px'} + New Character
       - else
         %b
           Template:
