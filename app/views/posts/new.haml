@@ -1,24 +1,5 @@
 - if params[:view] == 'import'
-  .content-header Import a post
-  .post-container.post-post
-    .padding-10
-      = form_tag posts_path(view: 'import') do
-        = label_tag :dreamwidth_url, "Dreamwidth URL", style: "width: 150px; display: inline-block;"
-        = text_field_tag :dreamwidth_url, params[:dreamwidth_url], style: 'width: 400px; margin-bottom: 5px;'
-        %br
-        = label_tag :board_id, "Continuity", style: "width: 150px; display: inline-block;"
-        = select_tag :board_id, options_from_collection_for_select(Board.order('pinned DESC, LOWER(name)').select {|b| current_user.writes_in?(b) }, :id, :name, params[:board_id]), id: 'post_board_id'
-        #section{class: ('hidden' unless params[:board_id].present? && (board = Board.find_by_id(params[:board_id])) && board.board_sections.exists?)}
-          = label_tag :section_id, 'Subsection', style: "width: 150px; display: inline-block;"
-          = select_tag :section_id, options_from_collection_for_select(BoardSection.where(board_id: params[:board_id]).order('section_order asc'), :id, :name, params[:section_id]), include_blank: '— Choose Section —', id: 'post_section_id'
-        %br
-        = label_tag :status, "Status", style: "width: 150px; display: inline-block;"
-        = select_tag :status, options_for_select([['In Progress',Post::STATUS_ACTIVE],['Complete',Post::STATUS_COMPLETE],['On Hiatus', Post::STATUS_HIATUS],['Abandoned', Post::STATUS_ABANDONED]], params[:status] || Post::STATUS_COMPLETE), style: 'margin-top: 5px;'
-        %br
-        = label_tag :threaded, "Threaded?", style: "width: 150px; display: inline-block;"
-        = check_box_tag :threaded, "1", params[:threaded].present?
-        %br
-        = submit_tag "Import", class: 'button', id: 'import_button', name: 'button_import'
+  = render partial: 'import'
 - else
   .content-header Create a new post
   = render partial: 'write', locals: { post: @post, url: posts_path, method: :post }
