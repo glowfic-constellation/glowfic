@@ -1,5 +1,9 @@
 - if params[:view] == 'import'
   = render partial: 'import'
 - else
-  .content-header Create a new post
+  .content-header
+    Create a new post
+    - if PostsController::SCRAPE_USERS.include?(current_user.id)
+      = link_to new_post_path(view: :import) do
+        .view-button Import &raquo;
   = render partial: 'write', locals: { post: @post, url: posts_path, method: :post }
