@@ -4,7 +4,6 @@ require 'will_paginate/array'
 class PostsController < WritableController
   include Taggable
 
-  SCRAPE_USERS = [1, 2, 3, 8, 19, 24, 31]
   before_action :login_required, except: [:index, :show, :history, :warnings, :search, :stats]
   before_action :find_post, only: [:show, :history, :stats, :warnings, :edit, :update, :destroy]
   before_action :require_permission, only: [:edit]
@@ -80,6 +79,11 @@ class PostsController < WritableController
   end
 
   def new
+    if params[:view] == 'import'
+      require_import_permission
+      return if performed?
+    end
+
     @post = Post.new(character: current_user.active_character, user: current_user)
     @post.board_id = params[:board_id]
     @post.section_id = params[:section_id]
@@ -88,7 +92,10 @@ class PostsController < WritableController
   end
 
   def create
-    import_thread and return if params[:button_import].present?
+    if params[:button_import].present?
+      import_thread
+      return
+    end
 
     @post = Post.new(post_params)
     @post.settings = process_tags(Setting, :post, :setting_ids)
@@ -302,11 +309,8 @@ class PostsController < WritableController
   private
 
   def import_thread
-    unless SCRAPE_USERS.include?(current_user.id)
-      flash[:error] = "You do not have access to this feature."
-      editor_setup
-      return render action: :new
-    end
+    require_import_permission
+    return if performed?
 
     unless valid_dreamwidth_url?(params[:dreamwidth_url])
       flash[:error] = "Invalid URL provided."
@@ -372,6 +376,13 @@ class PostsController < WritableController
     unless @post.editable_by?(current_user) || @post.metadata_editable_by?(current_user)
       flash[:error] = "You do not have permission to modify this post."
       redirect_to post_path(@post)
+    end
+  end
+
+  def require_import_permission
+    unless current_user.has_permission?(:import_posts)
+      flash[:error] = "You do not have access to this feature."
+      redirect_to new_post_path
     end
   end
 

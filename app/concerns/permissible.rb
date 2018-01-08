@@ -1,11 +1,13 @@
 module Permissible
   ADMIN = 1
   MOD = 2
+  IMPORTER = 3
 
   MOD_PERMS = [
     :edit_posts,
     :edit_replies,
     :edit_characters,
+    :import_posts,
     # :edit_tags,
     # :delete_tags,
     # :edit_continuities
@@ -14,6 +16,7 @@ module Permissible
   def has_permission?(permission)
     return false unless role_id
     return true if admin?
+    return true if importer? && permission == :import_posts
     return false unless mod?
     MOD_PERMS.include?(permission)
   end
@@ -24,5 +27,9 @@ module Permissible
 
   def mod?
     role_id == MOD
+  end
+
+  def importer?
+    role_id == IMPORTER
   end
 end
