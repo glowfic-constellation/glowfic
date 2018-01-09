@@ -19,7 +19,7 @@ class Api::V1::RepliesController < Api::ApiController
       .left_outer_joins(:character)
       .left_outer_joins(:icon)
       .left_outer_joins(:character_alias)
-      .order('id asc')
+      .ordered
     paginate json: replies, per_page: per_page
   end
 end

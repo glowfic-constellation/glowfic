@@ -104,7 +104,7 @@ class Reply < ApplicationRecord
   end
 
   def previous_reply
-    @prev ||= post.replies.where('id < ?', id).order('id desc').first
+    @prev ||= post.replies.find_by(reply_order: reply_order - 1)
   end
 
   def author_can_write_in_post

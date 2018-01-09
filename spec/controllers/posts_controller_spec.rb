@@ -888,7 +888,7 @@ RSpec.describe PostsController do
       end
 
       it "works for specified reply" do
-        last_reply = post.replies.order('id asc').last
+        last_reply = post.replies.ordered.last
         get :show, params: { id: post.id, at_id: last_reply.id }
         expect(assigns(:replies)).to eq([last_reply])
         expect(assigns(:replies).current_page.to_i).to eq(1)
@@ -896,7 +896,7 @@ RSpec.describe PostsController do
       end
 
       it "works for specified reply with page settings" do
-        second_last_reply = post.replies.order('id asc').last(2).first
+        second_last_reply = post.replies.ordered.last(2).first
         get :show, params: { id: post.id, at_id: second_last_reply.id, per_page: 1 }
         expect(assigns(:replies)).to eq([second_last_reply])
         expect(assigns(:replies).current_page.to_i).to eq(1)
@@ -904,8 +904,8 @@ RSpec.describe PostsController do
       end
 
       it "works for specified reply with page settings" do
-        last_reply = post.replies.order('id asc').last
-        second_last_reply = post.replies.order('id asc').last(2).first
+        last_reply = post.replies.ordered.last
+        second_last_reply = post.replies.ordered.last(2).first
         get :show, params: { id: post.id, at_id: second_last_reply.id, per_page: 1, page: 2 }
         expect(assigns(:replies)).to eq([last_reply])
         expect(assigns(:replies).current_page.to_i).to eq(2)
@@ -913,8 +913,8 @@ RSpec.describe PostsController do
       end
 
       it "works for unread" do
-        third_reply = post.replies.order('id asc').limit(3).last
-        second_last_reply = post.replies.order('id asc').last(2).first
+        third_reply = post.replies.ordered.limit(3).last
+        second_last_reply = post.replies.ordered.last(2).first
         user = create(:user)
         post.mark_read(user, third_reply.created_at)
         expect(post.first_unread_for(user)).to eq(second_last_reply)

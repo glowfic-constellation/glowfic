@@ -22,7 +22,7 @@ class GenerateFlatPostJob < ApplicationJob
         .joins(:user)
         .left_outer_joins(:character)
         .left_outer_joins(:icon)
-        .order('id asc')
+        .ordered
 
       view = ActionView::Base.new(ActionController::Base.view_paths, {})
       view.extend ApplicationHelper

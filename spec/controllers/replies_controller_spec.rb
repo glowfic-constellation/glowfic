@@ -243,7 +243,7 @@ RSpec.describe RepliesController do
 
       post :create, params: { reply: {post_id: reply_post.id, content: 'test content the third!'} }
       expect(Reply.count).to eq(2)
-      reply = Reply.order(id: :desc).first
+      reply = Reply.ordered.last
       expect(reply).not_to eq(reply_old)
       expect(response).to redirect_to(reply_url(reply, anchor: "reply-#{reply.id}"))
       expect(flash[:success]).to eq('Posted!')

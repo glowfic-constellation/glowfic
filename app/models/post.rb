@@ -81,7 +81,7 @@ class Post < ApplicationRecord
     return draft if draft.present?
 
     reply = Reply.new(post: self, user: user)
-    user_replies = replies.where(user_id: user.id).order('id asc')
+    user_replies = replies.where(user_id: user.id).ordered
 
     if user_replies.exists?
       last_user_reply = user_replies.last
@@ -108,7 +108,7 @@ class Post < ApplicationRecord
     viewed_at = last_read(user) || board.last_read(user)
     return @first_unread = self unless viewed_at
     return unless replies.exists?
-    reply = replies.where('created_at > ?', viewed_at).order('id asc').first
+    reply = replies.where('created_at > ?', viewed_at).ordered.first
     @first_unread ||= reply
   end
 
@@ -117,7 +117,7 @@ class Post < ApplicationRecord
     return unless replies.exists? # unlike first_unread_for we don't care about the post
     viewed_at = last_read(user) || board.last_read(user)
     return unless viewed_at
-    reply = replies.where('created_at <= ?', viewed_at).order('id desc').first
+    reply = replies.where('created_at <= ?', viewed_at).ordered.last
     @last_seen = reply
   end
 
@@ -172,8 +172,8 @@ class Post < ApplicationRecord
   def read_time_for(viewing_replies)
     return self.edited_at if viewing_replies.empty?
 
-    most_recent = viewing_replies.max_by(&:id)
-    most_recent_id = replies.select(:id).order('id desc').first.id
+    most_recent = viewing_replies.max_by(&:reply_order)
+    most_recent_id = replies.select(:id).ordered.last.id
     return most_recent.created_at unless most_recent.id == most_recent_id # not on last page
     return most_recent.updated_at if most_recent.updated_at > edited_at
 
