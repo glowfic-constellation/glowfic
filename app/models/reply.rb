@@ -25,7 +25,9 @@ class Reply < ApplicationRecord
     select("(SELECT COUNT(*) FROM audits WHERE audits.auditable_id = replies.id AND audits.auditable_type = 'Reply') > 1 AS has_edit_audits")
   }
 
-  scope :ordered_manually, -> { order(reply_order: :asc) }
+  scope :ordered, -> { order(reply_order: :asc) }
+
+  scope :ordered_manually, -> { ordered }
 
   def post_page(per=25)
     per_page = per > 0 ? per : post.replies.count
