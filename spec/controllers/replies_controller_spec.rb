@@ -270,7 +270,6 @@ RSpec.describe RepliesController do
       expect(reply.content).to eq('test content the third!')
     end
 
-
     it "allows replies from authors in a closed post" do
       user = create(:user)
       other_user = create(:user)
@@ -330,6 +329,41 @@ RSpec.describe RepliesController do
       post :create, params: { reply: {post_id: reply_post.id, content: 'test'} }
       expect(flash[:error][:message]).to eq("Your reply could not be saved because of the following problems:")
       expect(flash[:error][:array]).to eq(["User #{user.username} cannot write in this post"])
+    end
+
+    it "sets reply_order correctly on the first reply" do
+      reply_post = create(:post)
+      login_as(reply_post.user)
+      searchable = 'searchable content'
+      post :create, params: { reply: {post_id: reply_post.id, content: searchable} }
+      reply = reply_post.replies.ordered.last
+      expect(reply.content).to eq(searchable)
+      expect(reply.reply_order).to eq(0)
+    end
+
+    it "sets reply_order correctly with an existing reply" do
+      reply_post = create(:post)
+      login_as(reply_post.user)
+      create(:reply, post: reply_post)
+      reply_post.mark_read(reply_post.user)
+      searchable = 'searchable content'
+      post :create, params: { reply: {post_id: reply_post.id, content: searchable} }
+      reply = reply_post.replies.ordered.last
+      expect(reply.content).to eq(searchable)
+      expect(reply.reply_order).to eq(1)
+    end
+
+    it "sets reply_order correctly with multiple existing replies" do
+      reply_post = create(:post)
+      login_as(reply_post.user)
+      create(:reply, post: reply_post)
+      create(:reply, post: reply_post)
+      reply_post.mark_read(reply_post.user)
+      searchable = 'searchable content'
+      post :create, params: { reply: {post_id: reply_post.id, content: searchable} }
+      reply = reply_post.replies.ordered.last
+      expect(reply.content).to eq(searchable)
+      expect(reply.reply_order).to eq(2)
     end
   end
 
@@ -581,6 +615,20 @@ RSpec.describe RepliesController do
       expect(reply.character_id).to eq(char.id)
       expect(reply.icon_id).to eq(icon.id)
       expect(reply.character_alias_id).to eq(calias.id)
+    end
+
+    it "preserves reply_order" do
+      reply_post = create(:post)
+      login_as(reply_post.user)
+      create(:reply, post: reply_post)
+      reply = create(:reply, post: reply_post)
+      expect(reply.reply_order).to eq(1)
+      expect(reply_post.replies.ordered.last).to eq(reply)
+      create(:reply, post: reply_post)
+      expect(reply_post.replies.ordered.last).not_to eq(reply)
+      reply_post.mark_read(reply_post.user)
+      put :update, params: { id: reply.id, reply: {content: 'new content'} }
+      expect(reply.reload.reply_order).to eq(1)
     end
 
     context "preview" do
