@@ -6,6 +6,16 @@ module Orderable
     after_save :reorder_others_after
     after_destroy :reorder_others_before
 
+    scope :ordered_manually, -> { order('section_order asc') }
+
+    def order
+      section_order
+    end
+
+    def order=(val)
+      self.section_order = val
+    end
+
     private
 
     def reorder_others(is_after)
@@ -20,12 +30,12 @@ module Orderable
       other_where = Hash[ordered_attributes.map do |atr|
         [atr, send(is_after ? "#{atr}_before_last_save" : "#{atr}_was")]
       end]
-      others = self.class.where(other_where).order('section_order asc')
+      others = self.class.where(other_where).ordered_manually
       return unless others.present?
 
       others.each_with_index do |other, index|
-        next if other.section_order == index
-        other.section_order = index
+        next if other.order == index
+        other.order = index
         other.save
       end
     end
@@ -40,7 +50,7 @@ module Orderable
 
     def autofill_order
       return unless new_record? || order_change?(false)
-      self.section_order = ordered_items.count
+      self.order = ordered_items.count
     end
 
     def order_change?(is_after)
