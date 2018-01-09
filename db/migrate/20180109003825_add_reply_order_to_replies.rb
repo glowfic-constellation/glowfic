@@ -1,11 +1,16 @@
 class AddReplyOrderToReplies < ActiveRecord::Migration[5.1]
   def up
     add_column :replies, :reply_order, :integer
-    Post.find_each do |post|
-      post.replies.order(id: :asc).each_with_index do |reply, i|
-        reply.update_attributes(reply_order: i)
-      end
-    end
+    execute <<-SQL
+WITH v_replies AS
+(
+  SELECT ROW_NUMBER() OVER(PARTITION BY replies.post_id ORDER BY replies.id asc) AS rn, id FROM replies
+)
+UPDATE replies
+SET reply_order = v_replies.rn-1
+FROM v_replies
+WHERE replies.id = v_replies.id;
+    SQL
   end
 
   def down

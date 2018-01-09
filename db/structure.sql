@@ -1007,7 +1007,8 @@ CREATE TABLE reply_drafts (
     thread_id integer,
     created_at timestamp without time zone,
     updated_at timestamp without time zone,
-    character_alias_id integer
+    character_alias_id integer,
+    reply_order integer
 );
 
 
@@ -2294,4 +2295,5 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20171109031527'),
 ('20171111163658'),
 ('20171114013113'),
-('20171227030824');
+('20171227030824'),
+('20180109003825');
