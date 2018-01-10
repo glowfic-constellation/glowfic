@@ -55,7 +55,7 @@ a:visited { color: $font_color_link_visited; }
 .icon-credit { background-color: $bg_color_icon_credit; }
 
 /* - tag items */
-.tag-item { color: $bg_color_tag_item; background-color: $font_color_tag_item; }
+.tag-item, tr.gallery-tags .tag-item { color: $bg_color_tag_item; background-color: $font_color_tag_item; }
 
 /* - link-boxes */
 .link-box.action-new { background-color: $bg_color_linkbox_new; }

@@ -87,7 +87,7 @@ table { border-color: #555; } // TODO: what does this style
 .icon-credit { background-color: $bg_color_icon_credit; }
 
 /* - tag items */
-.tag-item { background-color: $bg_color_tag_item; color: $font_color_tag_item; }
+.tag-item, tr.gallery-tags .tag-item { background-color: $bg_color_tag_item; color: $font_color_tag_item; }
 
 /* - link-boxes */
 .link-box.action-new { color: $font_color_linkbox_new; }
