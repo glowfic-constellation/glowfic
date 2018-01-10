@@ -54,7 +54,9 @@ FactoryBot.define do
 
   factory :gallery do
     user
-    name "test gallery"
+    sequence :name do |n|
+      "test gallery #{n}"
+    end
     transient do
       icon_count 0
     end
@@ -68,11 +70,17 @@ FactoryBot.define do
   factory :icon do
     user
     url "http://www.fakeicon.com"
-    keyword "totally fake"
+    sequence :keyword do |n|
+      "totally fake #{n}"
+    end
 
     factory :uploaded_icon do
-      url { "https://d1anwqy6ci9o1i.cloudfront.net/users%2F#{user.id}%2Ficons%2Fnonsense-fakeimg.png" }
-      s3_key { "users/#{user.id}/icons/nonsense-fakeimg.png" }
+      sequence :url do |n|
+        "https://d1anwqy6ci9o1i.cloudfront.net/users%2F#{user.id}%2Ficons%2Fnonsense-fakeimg-#{n}.png"
+      end
+      sequence :s3_key do |n|
+        "users/#{user.id}/icons/nonsense-fakeimg-#{n}.png"
+      end
     end
   end
 
@@ -83,7 +91,9 @@ FactoryBot.define do
     end
     user
     post
-    content "test content"
+    sequence :content do |n|
+      "test content #{n}"
+    end
     before(:create) do |reply, evaluator|
       reply.character = create(:character, user: reply.user) if evaluator.with_character
       reply.icon = create(:icon, user: reply.user) if evaluator.with_icon
@@ -93,7 +103,9 @@ FactoryBot.define do
   factory :reply_draft do
     user
     post
-    content "test draft"
+    sequence :content do |n|
+      "test draft #{n}"
+    end
   end
 
   factory :character do
@@ -126,7 +138,9 @@ FactoryBot.define do
 
   factory :template do
     user
-    name 'test template'
+    sequence :name do |n|
+      "test template #{n}"
+    end
   end
 
   factory :password_reset do
