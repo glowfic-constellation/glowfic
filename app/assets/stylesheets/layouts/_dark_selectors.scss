@@ -143,11 +143,7 @@ table { border-color: #555555; } // TODO: what does this style
 
 /* - link-boxes */
 .link-box {
-  &.action-new { color: $font_color_linkbox_new; }
-  &.action-edit { color: $font_color_linkbox_edit; }
-  &.action-favorite { color: $font_color_linkbox_favorite; }
-  &.action-delete { color: $font_color_linkbox_delete; }
-  &.action-dismiss { color: $font_color_linkbox_dismiss; }
+  color: $font_color_linkbox;
 }
 
 /* - other buttons */

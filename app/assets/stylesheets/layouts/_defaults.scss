@@ -69,11 +69,7 @@ $bg_color_linkbox_dismiss: $colors_red !default;
 $bg_color_linkbox_subber: default !default; // this is not styled differently on non-starries, where linkboxes are all colored the same, but is a necessary variable there
 // This is definitely not actually right but not possible to get right; TODO consider splitting variable
 
-$font_color_linkbox_new: $colors_black !default; //TODO: check this
-$font_color_linkbox_edit: $colors_black !default;
-$font_color_linkbox_favorite: $colors_black !default;
-$font_color_linkbox_delete: $colors_black !default;
-$font_color_linkbox_dismiss: $colors_black !default;
+$font_color_linkbox: $colors_white !default;
 
 // inputs
 $bg_color_input: $colors_white !default; // regular <input>
