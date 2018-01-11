@@ -124,7 +124,6 @@ button, .button {
   &.action-edit { background-color: $bg_color_linkbox_edit;}
   &.action-favorite { background-color: $bg_color_linkbox_favorite; }
   &.action-dismiss { background-color: $bg_color_linkbox_dismiss; }
-  &.orange { background-color: #EA8A40; } // TODO: This does not appear to be used anywhere
 }
 
 #post-form-wrapper { margin-top: 5px; }
