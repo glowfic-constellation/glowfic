@@ -179,8 +179,8 @@ th, .content-header {
     line-height: 28px;
 
     a {
-      color: #EEEEEE;
-      &:hover { color: #DDDDDD; }
+      color: $font_color_head_link;
+      &:hover { color: $font_color_head_link_hover; }
     }
   }
 

@@ -108,7 +108,8 @@ $font_color_tag_item_gallery: $font_color_tag_item;
 
 /* - content headers */
 $bg_color_head: $colors_brown; // primary content header
-$font_color_head_link: $colors_lightgrey; /* TODO: Fix how this and hover are actually unstripped from layout.scss */
+$font_color_head_link: $colors_lightgrey;
+$font_color_head_link_hover: #DDDDDD;
 $bg_color_sub: $colors_lightbrown; // secondary content header
 $bg_color_subber: $colors_greybrown; // tertiary content header
 $font_color_head: $colors_lightgrey;
