@@ -1,6 +1,6 @@
 AllCops:
-  TargetRubyVersion: 2.3
-  TargetRailsVersion: 4.1
+  TargetRubyVersion: 2.4
+  TargetRailsVersion: 5.1
   DisabledByDefault: true
   Exclude:
     - 'config/initializers/resque.rb'
