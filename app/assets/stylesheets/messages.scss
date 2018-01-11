@@ -1,28 +1,28 @@
 #message-row {
   width: 75%;
-  max-width: 900px;
   min-width: 300px;
+  max-width: 900px;
 }
 
 #message_form textarea {
+  width: 100%;
   min-width: 200px;
   height: 100px;
-  width: 100%;
-  box-sizing: border-box;
   min-height: 250px;
+  box-sizing: border-box;
 }
 
 .message-collapse {
   .message {
-    margin-left: 10px;
     float: left;
+    margin-left: 10px;
     max-width: 80%;
   }
 
   .author {
     float: left;
-    width: 100px;
     padding-bottom: 10px;
+    width: 100px;
     text-align: center;
     word-wrap: break-word;
   }
@@ -41,9 +41,9 @@
   box-sizing: border-box;
 
   .text {
+    margin-bottom: 5px;
     width: 55%;
     text-align: right;
-    margin-bottom: 5px;
   }
 }
 
@@ -61,8 +61,8 @@
   .message-menu { overflow: overlay; } /* to get it to redraw the boundaries */
 
   .message-menu .text {
-    text-align: left;
     margin: 0 10px;
     width: auto;
+    text-align: left;
   }
 }

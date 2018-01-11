@@ -1,13 +1,13 @@
 @import 'variables';
 
 body {
+  background-color: $bg_color_input;
   font-family: Helvetica, sans-serif;
   font-size: 14px;
-  background-color: $bg_color_input;
 
   blockquote {
-    background-color: calculate-transparent-color($bg_color_input, #EAEAEA, 0.2);
     margin: 0.5em 1.5em;
+    background-color: calculate-transparent-color($bg_color_input, #EAEAEA, 0.2);
     padding: 0.5em;
 
     & > p:first-child { margin-top: 0; }

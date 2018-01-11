@@ -3,10 +3,10 @@
 body, html { height: 100%; }
 
 body {
-    margin: 0 0 0 0;
-    font-family: Helvetica, Verdana, sans-serif;
-    background-color: $bg_color_page;
-    color: $font_color_page;
+  margin: 0;
+  background-color: $bg_color_page;
+  color: $font_color_page;
+  font-family: Helvetica, Verdana, sans-serif;
 }
 
 /* Links */
@@ -19,21 +19,22 @@ a {
 
 /* Inputs */
 input, textarea, button {
-  font-size: 13px;
-  height: 23px;
+  margin: 5px 0;
+  border: 1px solid $border_color_input;
   border-radius: 5px;
   background-color: $bg_color_input;
-  color: $font_color_input;
   padding: 0 8px;
-  border: 1px solid $border_color_input;
-  margin: 5px 0;
+  height: 23px;
+  color: $font_color_input;
+  font-size: 13px;
 }
 
 textarea { padding: 5px; }
-.form-table td input[type="radio"] { width: unset; }
 
+.form-table td input[type='radio'] { width: unset; }
 
 button, .button {
+  border-color: $border_color_button;
   background-color: $bg_color_button;
   background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(20%, #FFFFFF), color-stop(50%, #F6F6F6), color-stop(52%, #EEEEEE), color-stop(100%, #F4F4F4));
   background: -webkit-linear-gradient(top, #FFFFFF 20%, #F6F6F6 50%, #EEEEEE 52%, #F4F4F4 100%);
@@ -41,7 +42,6 @@ button, .button {
   background: -o-linear-gradient(top, #FFFFFF 20%, #F6F6F6 50%, #EEEEEE 52%, #F4F4F4 100%);
   background: linear-gradient(top, #FFFFFF 20%, #F6F6F6 50%, #EEEEEE 52%, #F4F4F4 100%);
   background-clip: padding-box;
-  border-color: $border_color_button;
   height: 25px;
 }
 
@@ -105,17 +105,17 @@ button, .button {
 /* UI Links */
 .link-box {
   display: inline-block;
-  font-size: 18px;
   margin: 0;
   margin-left: 5px;
-  background-image: none;
   border: 0;
-  color: white;
-  padding: 4px 12px;
   border-radius: 5px;
-  font-weight: normal;
+  background-image: none;
+  padding: 4px 12px;
   height: 20px;
   vertical-align: middle;
+  color: #FFFFFF;
+  font-size: 18px;
+  font-weight: normal;
 
   img { vertical-align: baseline; }
 
