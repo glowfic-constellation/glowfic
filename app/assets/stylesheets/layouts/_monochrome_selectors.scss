@@ -13,9 +13,11 @@ a:visited { color: $font_color_link_visited; }
 
 /* - flashes */
 // these are the notifications that appear when you submit a form or get a message
-.flash.breadcrumbs { background-color: $bg_color_flash_breadcrumbs; }
-.flash.success { background-color: $bg_color_flash_success; }
-.flash.inbox { background-color: $bg_color_flash_inbox; }
+.flash {
+  &.breadcrumbs { background-color: $bg_color_flash_breadcrumbs; }
+  &.success { background-color: $bg_color_flash_success; }
+  &.inbox { background-color: $bg_color_flash_inbox; }
+}
 
 /* - content headers */
 .sub { background-color: $bg_color_sub; }
@@ -36,19 +38,22 @@ a:visited { color: $font_color_link_visited; }
 .post-author { background-color: $bg_color_post_author; }
 
 // TODO: Check pagination displays fine in this theme
-.pagination .current { background-color: $bg_color_paginate_current_page; }
-.pagination a:visited { color: $font_color_paginate_link_visited; }
-
+.pagination {
+  .current { background-color: $bg_color_paginate_current_page; }
+  a:visited { color: $font_color_paginate_link_visited; }
+}
 /* - icons */
 .replace-icon, .icons-box { background-color: $bg_color_icon; }
 .icon-credit { background-color: $bg_color_icon_credit; }
 
 /* - tag items */
-.tag-item, tr.gallery-tags .tag-item { color: $bg_color_tag_item; }
+.tag-item, .gallery-tags .tag-item { color: $bg_color_tag_item; }
 
 /* - link-boxes */
-.link-box.action-new { background-color: $bg_color_linkbox_new; }
-.link-box.action-edit { background-color: $bg_color_linkbox_edit; }
-.link-box.action-favorite { background-color: $bg_color_linkbox_favorite; }
-.link-box.action-delete { background-color: $bg_color_linkbox_delete; }
-.link-box.action-dismiss { background-color: $bg_color_linkbox_dismiss; }
+.link-box {
+  &.action-new { background-color: $bg_color_linkbox_new; }
+  &.action-edit { background-color: $bg_color_linkbox_edit; }
+  &.action-favorite { background-color: $bg_color_linkbox_favorite; }
+  &.action-delete { background-color: $bg_color_linkbox_delete; }
+  &.action-dismiss { background-color: $bg_color_linkbox_dismiss; }
+}

@@ -1,14 +1,31 @@
 @import 'defaults';
 
 /* Hovering help box on post editor */
-.ui-widget-header { background-color: $bg_color_popup_header; color: $font_color_popup_header; border-color: $border_color_popup_header; }
-.ui-widget-content { background-color: $bg_color_popup_content; color: $font_color_popup_content; }
+.ui-widget-header {
+  background-color: $bg_color_popup_header;
+  border-color: $border_color_popup_header;
+  color: $font_color_popup_header;
+}
+
+.ui-widget-content {
+  background-color: $bg_color_popup_content;
+  color: $font_color_popup_content;
+}
+
 .ui-widget.ui-widget-content { border-color: $border_color_popup; }
 
 /* - placeholders */
 ::-webkit-input-placeholder { color: $font_color_input_placeholder; }
-:-moz-placeholder { color: $font_color_input_placeholder; opacity: 1; }
-::-moz-placeholder { color: $font_color_input_placeholder; opacity: 1; }
+
+:-moz-placeholder {
+  color: $font_color_input_placeholder;
+  opacity: 1;
+}
+s
+::-moz-placeholder {
+  color: $font_color_input_placeholder;
+  opacity: 1;
+}
 :-ms-input-placeholder { color: $font_color_input_placeholder; }
 ::-ms-input-placeholder { color: $font_color_input_placeholder; }
 ::placeholder { color: $font_color_input_placeholder; }
@@ -16,29 +33,71 @@
 /* - account options, post editor, search */
 #content .form-table, #icon-table, .search-form {
   input:not([type='submit']), textarea {
-    background-color: $bg_color_input; color: $font_color_input; border-color: $border_color_input;
+    background-color: $bg_color_input;
+    border-color: $border_color_input;
+    color: $font_color_input;
   }
 }
 /* - select2 */
-.select2-dropdown { background-color: $bg_color_input; color: $font_color_input; border-color: $border_color_input; }
+.select2-dropdown {
+  background-color: $bg_color_input;
+  border-color: $border_color_input;
+  color: $font_color_input;
+}
+
 /* -- multiple / tag */
-.select2-container--default .select2-selection--multiple { background-color: $bg_color_input; color: $font_color_input; border-color: $border_color_input; }
+.select2-container--default .select2-selection--multiple {
+  background-color: $bg_color_input;
+  border-color: $border_color_input;
+  color: $font_color_input;
+}
+
 /* --- tag item */
-.select2-container--default .select2-selection--multiple .select2-selection__choice { background-color: $bg_color_select2_highlight; border-color: $border_color_input; }
+.select2-container--default .select2-selection--multiple .select2-selection__choice {
+  background-color: $bg_color_select2_highlight;
+  border-color: $border_color_input;
+}
+
 /* -- single */
-.select2-container--default .select2-selection--single { background-color: $bg_color_input; color: $font_color_input; border-color: $border_color_input; }
+.select2-container--default .select2-selection--single {
+  background-color: $bg_color_input;
+  border-color: $border_color_input;
+  color: $font_color_input;
+}
 .select2-container--default .select2-selection--single .select2-selection__rendered { color: $font_color_input; }
+
 /* --- selected */
-.select2-container--default .select2-results__option[aria-selected=true] { background-color: $bg_color_select2_selected; color: inherit; }
+.select2-container--default .select2-results__option[aria-selected=true] {
+  background-color: $bg_color_select2_selected;
+  color: inherit;
+}
+
 /* --- hovered */
-.select2-container--default .select2-results__option--highlighted[aria-selected] { background-color: $bg_color_select2_highlight; color: inherit; }
+.select2-container--default .select2-results__option--highlighted[aria-selected] {
+  background-color: $bg_color_select2_highlight;
+  color: inherit;
+}
+
 /* --- input */
-.select2-container--default .select2-search--dropdown .select2-search__field { background-color: $bg_color_select2_search; color: $font_color_input; border-color: $border_color_input; }
+.select2-container--default .select2-search--dropdown .select2-search__field {
+  background-color: $bg_color_select2_search;
+  border-color: $border_color_input;
+  color: $font_color_input;
+}
+
 /* --- disabled input */
-.select2-container--default.select2-container--disabled .select2-selection--single { background-color: $bg_color_mce_panel; color: $font_color_input; border-color: $border_color_input; }
+.select2-container--default.select2-container--disabled .select2-selection--single {
+  background-color: $bg_color_mce_panel;
+  border-color: $border_color_input;
+  color: $font_color_input;
+}
 
 /* HTML written editor */
-#post-editor input:not([type='submit']), #post-editor textarea, #message_form input:not([type='submit']), #message_form textarea { background-color: $bg_color_input; color: $font_color_input; border-color: $border_color_input; }
+#post-editor input:not([type='submit']), #post-editor textarea, #message_form input:not([type='submit']), #message_form textarea {
+  background-color: $bg_color_input;
+  border-color: $border_color_input;
+  color: $font_color_input;
+ }
 /* RTF post editor – see tinymce.css for styling of the iframe itself */
 /* border: */
 #content .mce-panel { border-color: $border_color_input; }
@@ -49,5 +108,12 @@
 #content .mce-panel, #content .mce-btn { background-color: $bg_color_mce_panel; }
 #content .mce-ico { color: $font_color_input; }
 /* footer: 'powered by' text */
-#content .mce-branding-powered-by { background-color: $bg_color_mce_panel; border-color: $border_color_input; }
-#content .mce-label { color: rgba($font_color_input, $opacity_mce_label); text-shadow: none; }
+#content .mce-branding-powered-by {
+  background-color: $bg_color_mce_panel;
+  border-color: $border_color_input;
+}
+
+#content .mce-label {
+  color: rgba($font_color_input, $opacity_mce_label);
+  text-shadow: none;
+}

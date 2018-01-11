@@ -29,19 +29,19 @@ a:hover { color: $font_color_link_hover; }
   a, a:visited { color: $font_color_flash_link; }
   a:hover { color: $font_color_flash_hover; }
 
-  .breadcrumbs {
+  &.breadcrumbs {
     background-color: $bg_color_flash_breadcrumbs;
     color: $font_color_flash_breadcrumbs;
   }
 
-  .success {
+  &.success {
     background-color: $bg_color_flash_success;
     color: $font_color_flash_success;
   }
 
-  .error { background-color: $bg_color_flash_error; }
+  &.error { background-color: $bg_color_flash_error; }
 
-  .inbox {
+  &.inbox {
     background-color: $bg_color_flash_inbox;
     color: $font_color_flash_inbox;
   }
@@ -132,18 +132,18 @@ table { border-color: #555; } // TODO: what does this style
 
 /* - link-boxes */
 .link-box {
-  .action-new { color: $font_color_linkbox_new; }
-  .action-edit { color: $font_color_linkbox_edit; }
-  .action-favorite { color: $font_color_linkbox_favorite; }
-  .action-delete { color: $font_color_linkbox_delete; }
-  .action-dismiss { color: $font_color_linkbox_dismiss; }
+  &.action-new { color: $font_color_linkbox_new; }
+  &.action-edit { color: $font_color_linkbox_edit; }
+  &.action-favorite { color: $font_color_linkbox_favorite; }
+  &.action-delete { color: $font_color_linkbox_delete; }
+  &.action-dismiss { color: $font_color_linkbox_dismiss; }
 }
 
 /* - other buttons */
 .view-button {
   background-color: $bg_color_viewbutton;
   color: $font_color_viewbutton;
-  .selected { background-color: $bg_color_viewbutton_selected; }
+  &.selected { background-color: $bg_color_viewbutton_selected; }
 }
 
 #post_content, #reply_content {
@@ -156,7 +156,15 @@ table { border-color: #555; } // TODO: what does this style
 @import 'dark_themes_selectors';
 
 /* TODO: do this for starrydark */
-.ui-state-default, .ui-widget-content .ui-state-default, .ui-widget-header .ui-state-default, .ui-button, html .ui-button.ui-state-disabled:hover, html .ui-button.ui-state-disabled:active { background-color: $bg_color_popup_button; border-color: $border_color_popup_button; }
-.ui-state-hover, .ui-widget-content .ui-state-hover, .ui-widget-header .ui-state-hover, .ui-state-focus, .ui-widget-content .ui-state-focus, .ui-widget-header .ui-state-focus, .ui-button:hover, .ui-button:focus { background-color: $bg_color_popup_button; border-color: $border_color_popup_button; }
+.ui-state-default, .ui-widget-content .ui-state-default, .ui-widget-header .ui-state-default, .ui-button, html .ui-button.ui-state-disabled:hover, html .ui-button.ui-state-disabled:active {
+  border-color: $border_color_popup_button;
+  background-color: $bg_color_popup_button;
+}
+
+.ui-state-hover, .ui-widget-content .ui-state-hover, .ui-widget-header .ui-state-hover, .ui-state-focus, .ui-widget-content .ui-state-focus, .ui-widget-header .ui-state-focus, .ui-button:hover, .ui-button:focus {
+  border-color: $border_color_popup_button;
+  background-color: $bg_color_popup_button;
+}
+
 .ui-widget-content a { color: $font_color_popup_link; }
 /* TODO: hover, click */
