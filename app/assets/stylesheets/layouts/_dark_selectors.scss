@@ -110,9 +110,20 @@ th, .content-header {
 }
 #reply-icon-selector { background-color: $bg_color_icon_selector; }
 
-.post-character { background-color: $bg_color_post_character; color: $font_color_post_info; }
-.post-screenname { background-color: $bg_color_post_screenname; color: $font_color_post_info; }
-.post-author { background-color: $bg_color_post_author; color: $font_color_post_info; }
+.post-character {
+  background-color: $bg_color_post_character;
+  color: $font_color_post_info;
+}
+
+.post-screenname {
+  background-color: $bg_color_post_screenname;
+  color: $font_color_post_info;
+}
+
+.post-author {
+  background-color: $bg_color_post_author;
+  color: $font_color_post_info;
+}
 
 #post-menu-box { color: $font_color_post_menu }
 
