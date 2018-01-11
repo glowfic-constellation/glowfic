@@ -320,8 +320,8 @@ div.post-subheader { width: 100%; }
 }
 
 .char-access-fake {
-  background-color: #A0A0A0;
-  background-color: rgba(128, 128, 128, 0.3);
+  background-color: $font_color_char_switcher;
+  background-color: $font_color_char_switcher_alpha;
   padding: 5px 0px;
   font-size: 80%;
 }
@@ -391,7 +391,7 @@ div.post-subheader { width: 100%; }
 }
 
 .paginator {
-  color: #000000;
+  color: $font_color_paginate;
 
   .left-align {
     float: left;
@@ -403,7 +403,7 @@ div.post-subheader { width: 100%; }
     padding: 2px;
     padding-right: 10px;
 
-    a { color: #000000; }
+    a { color: $font_color_paginate; }
   }
 
   .normal-pagination { display: block; }
@@ -482,7 +482,11 @@ div.post-subheader { width: 100%; }
   font-size: 70%;
 }
 
-.reply-highlighted { border: 1px #FF0000 solid; }
+.reply-highlighted {
+  border-width: 1px;
+  border-style: solid;
+  border-color: $border_color_unread_reply;
+}
 
 .history-header { width: 150px; }
 @media (max-width: 600px) {

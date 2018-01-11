@@ -163,6 +163,12 @@ $opacity_blockquote: 0.2 !default;
 $bg_color_even_blockquote: calculate-transparent-color($bg_color_even, $bg_color_odd, $opacity_blockquote) !default;
 $bg_color_odd_blockquote: calculate-transparent-color($bg_color_odd, $bg_color_even, $opacity_blockquote) !default;
 
+// Warnings for when errors occur due to altering sections in another tab
+$bg_color_section_warning: #D06E6E !default;
+$bg_color_section_warning_alpha: rgba(255, 0, 0, 0.4) !default;
+
+$bg_color_message_expander: #000000 !default;
+
 // select2 dropdown
 $font_color_select2_container: $colors_dark !default;
 // Most of this is currently styled by gem files
@@ -189,12 +195,16 @@ $font_color_popup_link: #333333 !default;
 
 // misc
 $bg_color_descriptions: $colors_lightbrown !default; // description subheadings on templates page ("single-description"), *not* posts
+$bg_color_descriptions_blockquote: #808080;
 $font_color_descriptions_link: $colors_green !default;
 $font_color_descriptions_link_visited: #28503A !default;
 $bg_color_selectionpopup: $colors_lightbrown !default; // selection popups like character/alias on posts#editor
 $bg_color_spacer_alt: $colors_brown !default;
 $bg_color_search_box: $colors_brown !default;
 $font_color_search_box: $colors_black !default;
+
+$font_color_char_switcher: #A0A0A0 !default;
+$font_color_char_switcher_alpha: rgba(128, 128, 128, 0.3) !default;
 
 // replies.scss
 $bg_color_icon_overlay: #000000 !default; // box displaying current icon
@@ -214,6 +224,9 @@ $font_color_post_screenname: $colors_black !default;
 $bg_color_post_character_narrow: $colors_lightbrown !default;
 $bg_color_post_author_narrow: $colors_brown !default; // these are flipped from not-narrow mode to make the quick-switcher blend in
 
+$border_color_unread_reply: #FF0000 !default;
+
+$font_color_paginate: #000000 !default;
 $font_color_paginate_link: $colors_lightgrey !default;
 $bg_color_paginate_link_hover: $colors_greybrown !default;
 $font_color_paginate_link_visited: $colors_brown !default;

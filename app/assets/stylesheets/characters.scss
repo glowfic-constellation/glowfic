@@ -15,7 +15,7 @@
   padding: 5px;
   a { color: $font_color_descriptions_link; }
   a:visited { color: $font_color_descriptions_link_visited; }
-  blockquote { background-color: rgba(128, 128, 128, 0.3); } // TODO: Investigate if this even comes up
+  blockquote { background-color: rgba($bg_color_descriptions_blockquote, 0.3); } // TODO: Investigate if this even comes up
 }
 
 // character icon view

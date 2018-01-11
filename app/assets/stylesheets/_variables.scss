@@ -157,6 +157,12 @@ $opacity_blockquote: 0.2;
 $bg_color_even_blockquote: calculate-transparent-color($bg_color_even, $bg_color_odd, $opacity_blockquote);
 $bg_color_odd_blockquote: calculate-transparent-color($bg_color_odd, $bg_color_even, $opacity_blockquote);
 
+// Warnings for when errors occur due to altering sections in another tab
+$bg_color_section_warning: #D06E6E;
+$bg_color_section_warning_alpha: rgba(255, 0, 0, 0.4);
+
+$bg_color_message_expander: #000000;
+
 /* - select2 dropdown */
 $font_color_select2_container: $colors_dark;
 /* Most of this is currently styled by gem files */
@@ -182,12 +188,16 @@ $font_color_popup_link: #333333;
 
 /* - misc */
 $bg_color_descriptions: $colors_lightbrown; // description subheadings on templates page ("single-description"), *not* posts
+$bg_color_descriptions_blockquote: #808080;
 $font_color_descriptions_link: $font_color_link;
 $font_color_descriptions_link_visited: $font_color_link_visited;
 $bg_color_selectionpopup: $colors_lightbrown; // selection popups like character/alias on posts#editor
 $bg_color_spacer_alt: $colors_brown;
 $bg_color_search_box: $colors_brown;
 $font_color_search_box: $font_color_page;
+
+$font_color_char_switcher: #A0A0A0;
+$font_color_char_switcher_alpha: rgba(128, 128, 128, 0.3);
 
 /* - replies.scss */
 $bg_color_icon_overlay: #000000; // box displaying current icon
@@ -206,6 +216,9 @@ $font_color_post_screenname: $font_color_post_info;
 $bg_color_post_character_narrow: $colors_lightbrown;
 $bg_color_post_author_narrow: $colors_brown; // these are flipped from not-narrow mode to make the quick-switcher blend in
 
+$border_color_unread_reply: #FF0000;
+
+$font_color_paginate: #000000;
 $font_color_paginate_link: $colors_lightgrey;
 $bg_color_paginate_link_hover: $colors_greybrown;
 $font_color_paginate_link_visited: $colors_brown;
