@@ -34,6 +34,7 @@ textarea { padding: 5px; }
 .form-table td input[type='radio'] { width: unset; }
 
 button, .button {
+  // sass-lint:disable-block property-sort-order no-duplicate-properties no-color-literals
   border-color: $border_color_button;
   background-color: $bg_color_button;
   background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(20%, #FFFFFF), color-stop(50%, #F6F6F6), color-stop(52%, #EEEEEE), color-stop(100%, #F4F4F4));
