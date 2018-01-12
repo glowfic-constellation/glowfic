@@ -127,7 +127,7 @@ RSpec.describe ApplicationController do
       post3.post_authors.find_by(user_id: post3_user3.id).update_attributes(can_owe: false)
 
       id_list = [post1.id, post2.id, post3.id]
-      relation = Post.where(id: id_list).order('id asc')
+      relation = Post.where(id: id_list).ordered_by_id
       fetched_posts = controller.send(:posts_from_relation, relation)
       expect(fetched_posts.count).to eq(3)
       expect(fetched_posts.map(&:id)).to match_array(id_list)

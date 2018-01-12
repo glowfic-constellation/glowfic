@@ -55,9 +55,13 @@ class BoardsController < ApplicationController
   def show
     @page_title = @board.name
     @board_sections = @board.board_sections.order('section_order asc')
-    order = 'section_order asc, tagged_at asc'
-    order = 'tagged_at desc' unless @board.ordered?
-    @posts = posts_from_relation(@board.posts.where(section_id: nil).order(order), false)
+    board_posts = @board.posts.where(section_id: nil)
+    if @board.ordered?
+      board_posts = board_posts.ordered_in_section
+    else
+      board_posts = board_posts.ordered
+    end
+    @posts = posts_from_relation(board_posts, false)
   end
 
   def edit
@@ -65,7 +69,7 @@ class BoardsController < ApplicationController
     use_javascript('boards/edit')
     @board_sections = @board.board_sections.order('section_order asc')
     unless @board.open_to_anyone? && @board_sections.empty?
-      @unsectioned_posts = @board.posts.where(section_id: nil).order('section_order asc')
+      @unsectioned_posts = @board.posts.where(section_id: nil).ordered_in_section
     end
   end
 

@@ -220,6 +220,20 @@ RSpec.describe CharactersController do
       get :show, params: { id: character.id }
       expect(assigns(:posts)).to be_blank
     end
+
+    it "orders recent posts" do
+      character = create(:character)
+      post3 = create(:post)
+      post1 = create(:post, user: character.user, character: character)
+      post4 = create(:post, user: character.user, character: character)
+      post2 = create(:post)
+      create(:reply, post: post4)
+      create(:reply, post: post3, user: character.user, character: character)
+      create(:reply, post: post2, user: character.user, character: character)
+      create(:reply, post: post1)
+      get :show, params: { id: character.id }
+      expect(assigns(:posts)).to eq([post1, post2, post3, post4])
+    end
   end
 
   describe "GET edit" do

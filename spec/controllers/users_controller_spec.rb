@@ -154,6 +154,19 @@ RSpec.describe UsersController do
       expect(assigns(:page_title)).to eq(user.username)
       expect(assigns(:posts).to_a).to match_array(posts)
     end
+
+    it "sorts posts correctly" do
+      user = create(:user)
+      post1 = create(:post)
+      post2 = create(:post, user: user)
+      post3 = create(:post)
+      create(:reply, post: post3, user: user)
+      create(:reply, post: post2)
+      create(:reply, post: post1, user: user)
+      create(:post)
+      get :show, params: { id: user.id }
+      expect(assigns(:posts).to_a).to eq([post1, post2, post3])
+    end
   end
 
   describe "GET edit" do

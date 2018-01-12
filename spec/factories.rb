@@ -221,4 +221,9 @@ FactoryBot.define do
       "IndexSection#{n}"
     end
   end
+
+  factory :index_post do
+    index
+    post
+  end
 end

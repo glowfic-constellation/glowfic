@@ -72,10 +72,10 @@ RSpec.describe Board do
     create(:board_section, board: board) # section2
     create(:board_section, board: board) # section3
     section.update_columns(section_order: 6)
-    expect(board.posts.order('section_order asc').pluck(:section_order)).to eq([1, 2, 2, 3])
+    expect(board.posts.ordered_in_section.pluck(:section_order)).to eq([1, 2, 2, 3])
     expect(board.board_sections.order('section_order asc').pluck(:section_order)).to eq([1, 2, 6])
     board.send(:fix_ordering)
-    expect(board.posts.order('section_order asc').pluck(:section_order)).to eq([0, 1, 2, 3])
+    expect(board.posts.ordered_in_section.pluck(:section_order)).to eq([0, 1, 2, 3])
     expect(board.board_sections.order('section_order asc').pluck(:section_order)).to eq([0, 1, 2])
   end
 

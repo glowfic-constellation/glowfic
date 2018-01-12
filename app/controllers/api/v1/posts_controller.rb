@@ -66,7 +66,7 @@ class Api::V1::PostsController < Api::ApiController
         post.update_attributes(section_order: index)
       end
 
-      other_posts = Post.where(board_id: board.id, section_id: section_id).where.not(id: post_ids).order('section_order asc')
+      other_posts = Post.where(board_id: board.id, section_id: section_id).where.not(id: post_ids).ordered_in_section
       other_posts.each_with_index do |post, i|
         index = i + posts_count
         next if post.section_order == index
@@ -75,6 +75,6 @@ class Api::V1::PostsController < Api::ApiController
     end
 
     posts = Post.where(board_id: board.id, section_id: section_id)
-    render json: {post_ids: posts.order('section_order asc').pluck(:id)}
+    render json: {post_ids: posts.ordered_in_section.pluck(:id)}
   end
 end

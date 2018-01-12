@@ -82,6 +82,18 @@ RSpec.describe IndexesController do
       get :show, params: { id: index.id }
       expect(response).to have_http_status(200)
     end
+
+    it "orders sectionless posts correctly" do
+      index = create(:index)
+      post1 = create(:index_post, index: index)
+      post2 = create(:index_post, index: index)
+      post3 = create(:index_post, index: index)
+      post2.update_attributes(section_order: 0)
+      post3.update_attributes(section_order: 1)
+      post1.update_attributes(section_order: 2)
+      get :show, params: { id: index.id }
+      expect(assigns(:sectionless)).to eq([post2.post, post3.post, post1.post])
+    end
   end
 
   describe "GET edit" do

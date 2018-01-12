@@ -30,7 +30,7 @@ class TemplatesController < ApplicationController
     post_ids = Reply.where(character_id: character_ids).pluck('distinct post_id')
     arel = Post.arel_table
     where = arel[:character_id].in(character_ids).or(arel[:id].in(post_ids))
-    @posts = posts_from_relation(Post.where(where).order('tagged_at desc'))
+    @posts = posts_from_relation(Post.where(where).ordered)
     @page_title = @template.name
   end
 
