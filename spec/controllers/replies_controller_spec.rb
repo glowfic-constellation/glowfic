@@ -906,6 +906,33 @@ RSpec.describe RepliesController do
         expect(assigns(:characters)).to match_array([post.character])
         expect(assigns(:templates)).to be_empty
       end
+
+      it "sorts templates" do
+        user = create(:user)
+        login_as(user)
+        template3 = create(:template, user: user, name: "c")
+        template1 = create(:template, user: user, name: "a")
+        template2 = create(:template, user: user, name: "b")
+        get :search, params: { commit: true, author_id: user.id }
+        expect(assigns(:templates)).to eq([template1, template2, template3])
+      end
+
+      it "sorts characters and templates when a post is given" do
+        user = create(:user)
+        login_as(user)
+        template3 = create(:template, user: user, name: "c")
+        template1 = create(:template, user: user, name: "a")
+        template2 = create(:template, user: user, name: "b")
+        char3 = create(:character, template: template3, user: user, name: "c")
+        char1 = create(:character, template: template1, user: user, name: "a")
+        char2 = create(:character, template: template2, user: user, name: "b")
+        post = create(:post, user: user, character: char2)
+        create(:reply, user: user, post: post, character: char1)
+        create(:reply, user: user, post: post, character: char3)
+        get :search, params: { post_id: post.id }
+        expect(assigns(:templates)).to eq([template1, template2, template3])
+        expect(assigns(:characters)).to eq([char1, char2, char3])
+      end
     end
 
     context "searching" do

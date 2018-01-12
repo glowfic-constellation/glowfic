@@ -16,13 +16,13 @@ class RepliesController < WritableController
     if @post.try(:visible_to?, current_user)
       @users = @post.authors
       char_ids = @post.replies.pluck('distinct character_id') + [@post.character_id]
-      @templates = Template.where(id: @characters.map(&:template_id).uniq.compact).order('name')
       @characters = Character.where(id: char_ids).ordered
+      @templates = Template.where(id: @characters.map(&:template_id).uniq.compact).ordered
       gon.post_id = @post.id
     else
       @users = User.where(id: params[:author_id]) if params[:author_id].present?
       @characters = Character.where(id: params[:character_id]) if params[:character_id].present?
-      @templates = Template.order('name').limit(25)
+      @templates = Template.ordered.limit(25)
       @boards = Board.where(id: params[:board_id]) if params[:board_id].present?
       if @post
         # post exists but post not visible

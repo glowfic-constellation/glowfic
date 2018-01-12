@@ -982,10 +982,12 @@ RSpec.describe CharactersController do
 
     it "sets templates by author" do
       author = create(:user)
-      template = create(:template, user: author)
+      template2 = create(:template, user: author, name: 'b')
+      template = create(:template, user: author, name: 'a')
+      template3 = create(:template, user: author, name: 'c')
       create(:template)
       get :search, params: { commit: true, author_id: author.id }
-      expect(assigns(:templates)).to eq([template])
+      expect(assigns(:templates)).to eq([template, template2, template3])
     end
 
     it "doesn't search missing template" do

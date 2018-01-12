@@ -8,6 +8,8 @@ class Template < ApplicationRecord
 
   after_destroy :clear_character_templates
 
+  scope :ordered, -> { order(name: :asc, created_at: :asc, id: :asc) }
+
   def plucked_characters
     characters.pluck("id, concat_ws(' | ', name, template_name, screenname)")
   end

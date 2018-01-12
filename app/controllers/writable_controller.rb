@@ -8,8 +8,8 @@ class WritableController < ApplicationController
 
     faked = Struct.new(:name, :id, :plucked_characters)
     pluck = "id, concat_ws(' | ', name, template_name, screenname)"
-    templates = user.templates.order('LOWER(name)')
-    templateless = faked.new('Templateless', nil, user.characters.where(template_id: nil).order('LOWER(name) ASC').pluck(pluck))
+    templates = user.templates.ordered
+    templateless = faked.new('Templateless', nil, user.characters.where(template_id: nil).ordered.pluck(pluck))
     @templates = templates + [templateless]
 
     if @post

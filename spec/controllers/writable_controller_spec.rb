@@ -131,4 +131,54 @@ RSpec.describe WritableController do
       })
     end
   end
+
+  describe "#build_template_groups" do
+    it "orders templates correctly" do
+      user = create(:user)
+      template2 = create(:template, user: user, name: "b")
+      template3 = create(:template, user: user, name: "c")
+      template1 = create(:template, user: user, name: "a")
+      create(:character, user: user, template: template1)
+      create(:character, user: user, template: template2)
+      create(:character, user: user, template: template3)
+      login_as(user)
+      controller.send(:build_template_groups)
+      expect(assigns(:templates)).not_to be_empty
+      expect(assigns(:templates)).to eq([template1, template2, template3])
+    end
+
+    it "orders templateless characters correctly" do
+      user = create(:user)
+      char2 = create(:character, user: user, name: "b")
+      char3 = create(:character, user: user, name: "c")
+      char1 = create(:character, user: user, name: "a")
+      login_as(user)
+      controller.send(:build_template_groups)
+      templates = assigns(:templates)
+      expect(templates.count).to eq(1)
+      expect(templates.first.plucked_characters.map(&:first)).to eq([char1, char2, char3].map(&:id))
+    end
+
+    describe "with post" do
+      it "orders thread characters correctly" do
+        user = create(:user)
+        login_as(user)
+        char3 = create(:character, user: user, name: 'c')
+        char1 = create(:character, user: user, name: 'a')
+        char2 = create(:character, user: user, name: 'b')
+        create(:character, user: user)
+        post = create(:post, user: user, character: char2)
+        create(:reply, post: post, user: user, character: char3)
+        create(:reply, post: post, user: user, character: char1)
+        controller.instance_variable_set(:@post, post)
+        controller.send(:build_template_groups)
+        templates = assigns(:templates)
+        expect(templates.count).to eq(2)
+        expect(templates.first.plucked_characters.map(&:first)).to eq([char1, char2, char3].map(&:id))
+      end
+    end
+    it "has more tests" do
+      skip
+    end
+  end
 end

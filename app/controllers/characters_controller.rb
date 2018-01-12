@@ -265,7 +265,7 @@ class CharactersController < ApplicationController
         flash.now[:error] = "The specified template could not be found."
       end
     elsif params[:author_id].present?
-      @templates = Template.where(user_id: params[:author_id]).order('name asc').limit(25)
+      @templates = Template.where(user_id: params[:author_id]).ordered.limit(25)
     end
 
     if params[:name].present?
@@ -319,7 +319,7 @@ class CharactersController < ApplicationController
   def build_editor
     faked = Struct.new(:name, :id)
     user = @character.try(:user) || current_user
-    @templates = user.templates.order('name asc')
+    @templates = user.templates.ordered
     new_group = faked.new('— Create New Group —', 0)
     @groups = user.character_groups.order('name asc') + [new_group]
     use_javascript('characters/editor')
