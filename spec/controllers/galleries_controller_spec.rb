@@ -662,7 +662,7 @@ RSpec.describe GalleriesController do
         expect(flash[:success]).to eq('Icons saved successfully.')
 
         user.reload
-        icon_objs = user.icons.order('keyword ASC')
+        icon_objs = user.icons.ordered
         expect(icon_objs.length).to eq(2)
 
         expect(icon_objs.any?(&:has_gallery)).not_to eq(true)

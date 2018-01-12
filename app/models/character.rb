@@ -12,7 +12,7 @@ class Character < ApplicationRecord
   has_many :characters_galleries, inverse_of: :character, dependent: :destroy
   accepts_nested_attributes_for :characters_galleries, allow_destroy: true
   has_many :galleries, through: :characters_galleries, dependent: :destroy
-  has_many :icons, -> { group('icons.id').order('LOWER(keyword)') }, through: :galleries
+  has_many :icons, -> { group('icons.id').ordered }, through: :galleries
 
   has_many :character_tags, inverse_of: :character, dependent: :destroy
   has_many :settings, -> { order('character_tags.id ASC') }, through: :character_tags, source: :setting

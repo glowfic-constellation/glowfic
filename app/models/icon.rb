@@ -19,6 +19,8 @@ class Icon < ApplicationRecord
   before_update :delete_from_s3
   after_destroy :clear_icon_ids, :delete_from_s3
 
+  scope :ordered, -> { order('lower(keyword) asc', created_at: :asc, id: :asc) }
+
   def uploaded?
     s3_key.present?
   end

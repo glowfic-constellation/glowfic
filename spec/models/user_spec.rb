@@ -63,4 +63,13 @@ RSpec.describe User do
       }.not_to raise_error
     end
   end
+
+  it "orders galleryless icons" do
+    user = create(:user)
+    icon3 = create(:icon, user: user, keyword: "c")
+    icon4 = create(:icon, user: user, keyword: "d")
+    icon1 = create(:icon, user: user, keyword: "a")
+    icon2 = create(:icon, user: user, keyword: "b")
+    expect(user.galleryless_icons).to eq([icon1, icon2, icon3, icon4])
+  end
 end

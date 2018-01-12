@@ -62,7 +62,7 @@ class User < ApplicationRecord
   end
 
   def galleryless_icons
-    icons.where(has_gallery: false).order('LOWER(keyword)')
+    icons.where(has_gallery: false).ordered
   end
 
   def default_view
