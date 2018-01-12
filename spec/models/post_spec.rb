@@ -199,7 +199,7 @@ RSpec.describe Post do
       post = create(:post, board_id: board.id)
       expect(post.section_order).to eq(2)
 
-      board.board_sections.order('section_order asc').each_with_index do |s, i|
+      board.board_sections.ordered.each_with_index do |s, i|
         expect(s.section_order).to eq(i)
       end
 

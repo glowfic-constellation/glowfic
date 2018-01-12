@@ -9,6 +9,8 @@ class BoardSection < ApplicationRecord
 
   after_destroy :clear_post_values
 
+  scope :ordered, -> { order(section_order: :asc) }
+
   private
 
   def clear_post_values

@@ -11,6 +11,6 @@ class BoardPresenter
     return board_json unless options[:include].present?
     return board_json unless options[:include].include?(:board_sections)
     # TODO what if lots of sections?
-    board_json.merge(board_sections: board.board_sections.order('section_order asc'))
+    board_json.merge(board_sections: board.board_sections.ordered)
   end
 end

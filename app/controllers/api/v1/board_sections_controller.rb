@@ -38,7 +38,7 @@ class Api::V1::BoardSectionsController < Api::ApiController
         section.update_attributes(section_order: index)
       end
 
-      other_sections = BoardSection.where(board_id: board.id).where.not(id: section_ids).order('section_order asc')
+      other_sections = BoardSection.where(board_id: board.id).where.not(id: section_ids).ordered
       other_sections.each_with_index do |section, i|
         index = i + sections_count
         next if section.section_order == index
@@ -46,6 +46,6 @@ class Api::V1::BoardSectionsController < Api::ApiController
       end
     end
 
-    render json: {section_ids: BoardSection.where(board_id: board.id).order('section_order asc').pluck(:id)}
+    render json: {section_ids: BoardSection.where(board_id: board.id).ordered.pluck(:id)}
   end
 end

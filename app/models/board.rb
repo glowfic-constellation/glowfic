@@ -60,7 +60,7 @@ class Board < ApplicationRecord
 
   def fix_ordering
     # this should ONLY be called by an admin for emergency fixes
-    board_sections.order('section_order asc').each_with_index do |section, index|
+    board_sections.ordered.each_with_index do |section, index|
       next if section.section_order == index
       section.update_columns(section_order: index)
     end
