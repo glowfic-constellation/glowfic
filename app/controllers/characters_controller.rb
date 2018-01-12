@@ -277,7 +277,7 @@ class CharactersController < ApplicationController
       @search_results = @search_results.where(where_calc.join(' OR '), *(['%' + params[:name].to_s + '%'] * where_calc.length))
     end
 
-    @search_results = @search_results.order('name asc').paginate(page: page, per_page: 25)
+    @search_results = @search_results.ordered.paginate(page: page, per_page: 25)
   end
 
   # logic replicated from page_view

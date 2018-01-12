@@ -211,7 +211,7 @@ RSpec.describe CharactersController do
       expect(response.status).to eq(200)
       expect(assigns(:page_title)).to eq(character.name)
       expect(assigns(:posts).size).to eq(25)
-      expect(assigns(:posts)).to match_array(Post.where(character_id: character.id).order('tagged_at desc').limit(25))
+      expect(assigns(:posts)).to match_array(Post.where(character_id: character.id).ordered.limit(25))
     end
 
     it "should only show visible posts" do
@@ -1045,6 +1045,27 @@ RSpec.describe CharactersController do
         get :search, params: { commit: true, name: 'a', search_name: true, search_screenname: true, search_nickname: true }
         expect(assigns(:search_results)).to match_array([@name, @screenname, @nickname])
       end
+
+      it "orders results correctly" do
+        template = create(:template)
+        user = template.user
+        char4 = create(:character, user: user, template: template, name: 'd')
+        char2 = create(:character, user: user, name: 'b')
+        char1 = create(:character, user: user, template: template, name: 'a')
+        char5 = create(:character, user: user, name: 'e')
+        char3 = create(:character, user: user, name: 'c')
+        get :search, params: { commit: true, author_id: user.id }
+        expect(assigns(:search_results)).to eq([char1, char2, char3, char4, char5])
+      end
+
+      it "paginates correctly" do
+        user = create(:user)
+        26.times do |i|
+          create(:character, user: user, name: "character#{i}")
+        end
+        get :search, params: { commit: true, author_id: user.id }
+        expect(assigns(:search_results).length).to eq(25)
+      end
     end
   end
 
@@ -1188,5 +1209,19 @@ RSpec.describe CharactersController do
         expect(user.reload.default_character_split).to eq('none')
       end
     end
+  end
+
+  describe "#build_editor" do
+    it "orders characters correctly" do
+      user = create(:user)
+      login_as(user)
+      template4 = create(:template, user: user, name: "d")
+      template2 = create(:template, user: user, name: "b")
+      template1 = create(:template, user: user, name: "a")
+      template3 = create(:template, user: user, name: "c")
+      controller.send(:build_editor)
+      expect(assigns(:templates)).to eq([template1, template2, template3, template4])
+    end
+    skip "has more tests"
   end
 end

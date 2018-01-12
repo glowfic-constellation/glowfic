@@ -200,4 +200,20 @@ RSpec.describe TemplatesController do
       expect(flash[:success]).to eq("Template deleted successfully.")
     end
   end
+
+  describe "#editor_setup" do
+    it "orders untemplated characters correctly" do
+      user = create(:user)
+      login_as(user)
+      char2 = create(:character, user: user, name: 'b')
+      char3 = create(:character, user: user, name: 'c')
+      char1 = create(:character, user: user, name: 'a')
+      controller.send(:editor_setup)
+      expect(assigns(:selectable_characters)).to eq([char1, char2, char3])
+    end
+
+    it "has more tests" do
+      skip
+    end
+  end
 end

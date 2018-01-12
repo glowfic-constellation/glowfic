@@ -25,6 +25,8 @@ class Character < ApplicationRecord
 
   after_destroy :clear_char_ids
 
+  scope :ordered, -> { order(name: :asc).order('lower(screenname) asc', created_at: :asc, id: :asc) }
+
   accepts_nested_attributes_for :template, reject_if: :all_blank
 
   nilify_blanks

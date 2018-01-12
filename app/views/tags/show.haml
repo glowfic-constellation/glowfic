@@ -66,7 +66,7 @@
       %tr
         %th{colspan: 7} Characters Tagged: #{@tag.name}
     %tbody
-      = render partial: 'characters/list_section', locals: {name: nil, characters: @characters.order('name asc'), hide_buttons: true, show_user: true, show_template: true}
+      = render partial: 'characters/list_section', locals: {name: nil, characters: @characters.ordered, hide_buttons: true, show_user: true, show_template: true}
   %br
 
 - if @tag.is_a?(Setting) && @tag.child_settings.present?

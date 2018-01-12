@@ -16,8 +16,8 @@ class RepliesController < WritableController
     if @post.try(:visible_to?, current_user)
       @users = @post.authors
       char_ids = @post.replies.pluck('distinct character_id') + [@post.character_id]
-      @characters = Character.where(id: char_ids).order('name')
       @templates = Template.where(id: @characters.map(&:template_id).uniq.compact).order('name')
+      @characters = Character.where(id: char_ids).ordered
       gon.post_id = @post.id
     else
       @users = User.where(id: params[:author_id]) if params[:author_id].present?

@@ -60,7 +60,7 @@ class TemplatesController < ApplicationController
 
   def editor_setup
     @selectable_characters = @template.try(:characters) || []
-    @selectable_characters += current_user.characters.where(template_id: nil).order('LOWER(name)')
+    @selectable_characters += current_user.characters.where(template_id: nil).ordered
     @selectable_characters.uniq!
     @character_ids = template_params[:character_ids] if template_params.key?(:character_ids)
     @character_ids ||= @template.try(:character_ids) || []

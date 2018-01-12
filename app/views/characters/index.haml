@@ -55,9 +55,9 @@
       - @user.templates.order('name asc').each do |template|
         = render partial: partial_type, locals: {name: template, characters: template.characters.order('characters.name asc')}
       - if @user.characters.where(template_id: nil).exists?
-        = render partial: partial_type, locals: {name: "No Template", characters: @user.characters.where(template_id: nil).order('name asc'), show_new_character_button: @user.id == current_user&.id}
+        = render partial: partial_type, locals: {name: "No Template", characters: @user.characters.where(template_id: nil).ordered, show_new_character_button: @user.id == current_user&.id}
     - else
       %tr
         %td.centered.padding-5{class: cycle('even', 'odd'), colspan: colspan} — No characters yet —
   - else
-    = render partial: partial_type, locals: {name: nil, characters: @user.characters.includes(:template).order('name asc'), show_template: true}
+    = render partial: partial_type, locals: {name: nil, characters: @user.characters.includes(:template).ordered, show_template: true}
