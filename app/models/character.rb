@@ -15,8 +15,8 @@ class Character < ApplicationRecord
   has_many :icons, -> { group('icons.id').ordered }, through: :galleries
 
   has_many :character_tags, inverse_of: :character, dependent: :destroy
-  has_many :settings, -> { order('character_tags.id ASC') }, through: :character_tags, source: :setting
-  has_many :gallery_groups, -> { order('character_tags.id ASC') }, through: :character_tags, source: :gallery_group, dependent: :destroy
+  has_many :settings, -> { ordered_by_char_tag }, through: :character_tags, source: :setting
+  has_many :gallery_groups, -> { ordered_by_char_tag }, through: :character_tags, source: :gallery_group, dependent: :destroy
 
   validates :name, presence: true
   validate :valid_group, :valid_galleries, :valid_default_icon
@@ -58,7 +58,7 @@ class Character < ApplicationRecord
 
   def reorder_galleries(_gallery=nil)
     # public so that it can be called from CharactersGallery.after_destroy
-    galleries = CharactersGallery.where(character_id: id).order('section_order asc')
+    galleries = CharactersGallery.where(character_id: id).ordered
     return unless galleries.present?
 
     galleries.each_with_index do |other, index|

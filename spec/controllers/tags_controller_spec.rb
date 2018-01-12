@@ -43,6 +43,17 @@ RSpec.describe TagsController do
         expect(assigns(:tags)).to match_array(tags)
       end
     end
+
+    it "orders tags by type and then name" do
+      tag2 = create(:label, name: "b")
+      tag1 = create(:label, name: "a")
+      setting1 = create(:setting, name: "a")
+      setting2 = create(:setting, owned: true, name: "b")
+      warning2 = create(:content_warning, name: "b")
+      warning1 = create(:content_warning, name: "a")
+      get :index
+      expect(assigns(:tags)).to eq([setting1, setting2, tag1, tag2, warning1, warning2])
+    end
   end
 
   describe "GET show" do

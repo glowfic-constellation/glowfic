@@ -24,7 +24,7 @@
     %th.subber{id: "gallery-tags-#{gallery.id}"}
       Groups:
       .tag-box
-        - gallery.gallery_groups_data.each do |group|
+        - gallery.gallery_groups_data.ordered_by_gallery_tag.each do |group|
           = link_to tag_path(group.id), class: 'tag-item-link' do
             %span.tag-item
               = group.name

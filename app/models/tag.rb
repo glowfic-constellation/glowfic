@@ -12,6 +12,20 @@ class Tag < ApplicationRecord
   validates :name, :type, presence: true
   validates :name, uniqueness: { scope: :type }
 
+  scope :ordered_by_type, -> { order(type: :desc, name: :asc) }
+
+  scope :ordered_by_name, -> { order(name: :asc) }
+
+  scope :ordered_by_id, -> { order(id: :asc) }
+
+  scope :ordered_by_char_tag, -> { order('character_tags.id ASC') }
+
+  scope :ordered_by_gallery_tag, -> { order('gallery_tags.id ASC') }
+
+  scope :ordered_by_post_tag, -> { order('post_tags.id ASC') }
+
+  scope :ordered_by_tag_tag, -> { order('tag_tags.id ASC') }
+
   scope :with_item_counts, -> {
     select('(SELECT COUNT(DISTINCT post_tags.post_id) FROM post_tags WHERE post_tags.tag_id = tags.id) AS post_count,
     (SELECT COUNT(DISTINCT character_tags.character_id) FROM character_tags WHERE character_tags.tag_id = tags.id) AS character_count')

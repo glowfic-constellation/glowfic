@@ -1869,6 +1869,34 @@ RSpec.describe PostsController do
         expect(board.cameos).to be_empty
       end
 
+      it "orders tags" do
+        user = create(:user)
+        login_as(user)
+        post = create(:post, user: user)
+        setting2 = create(:setting)
+        setting3 = create(:setting)
+        setting1 = create(:setting)
+        warning1 = create(:content_warning)
+        warning3 = create(:content_warning)
+        warning2 = create(:content_warning)
+        tag3 = create(:label)
+        tag1 = create(:label)
+        tag2 = create(:label)
+        put :update, params: {
+          id: post.id,
+          post: {
+            setting_ids: [setting1, setting2, setting3].map(&:id),
+            content_warning_ids: [warning1, warning2, warning3].map(&:id),
+            label_ids: [tag1, tag2, tag3].map(&:id)
+          }
+        }
+        expect(response).to redirect_to(post_url(post))
+        post = assigns(:post)
+        expect(post.settings).to eq([setting1, setting2, setting3])
+        expect(post.content_warnings).to eq([warning1, warning2, warning3])
+        expect(post.labels).to eq([tag1, tag2, tag3])
+      end
+
       it "requires valid update" do
         setting = create(:setting)
         rems = create(:setting)
