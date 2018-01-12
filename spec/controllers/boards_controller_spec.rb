@@ -68,6 +68,21 @@ RSpec.describe BoardsController do
         expect(assigns(:boards)).to match_array([owned_board2])
         expect(assigns(:cameo_boards)).to match_array([owned_board3])
       end
+
+      it "orders boards correctly" do
+        user = create(:user)
+        owned_board1 = create(:board, creator_id: user.id, name: 'd')
+        owned_board2 = create(:board, creator_id: user.id, name: 'b')
+        author_board1 = create(:board, coauthors: [user], name: 'a')
+        author_board2 = create(:board, coauthors: [user], name: 'c')
+        cameo_board1 = create(:board, cameos: [user], name: 'b')
+        cameo_board2 = create(:board, cameos: [user], name: 'a')
+        cameo_board3 = create(:board, cameos: [user], name: 'c')
+
+        get :index, params: { user_id: user.id }
+        expect(assigns(:boards)).to eq([author_board1, owned_board2, author_board2, owned_board1])
+        expect(assigns(:cameo_boards)).to eq([cameo_board2, cameo_board1, cameo_board3])
+      end
     end
   end
 
@@ -195,11 +210,40 @@ RSpec.describe BoardsController do
       expect(assigns(:posts).size).to eq(25)
     end
 
-    it "orders the posts by updated_at" do
+    it "orders the posts by tagged_at in unordered boards" do
       board = create(:board)
       3.times do create(:post, board: board, tagged_at: Time.now + rand(5..30).hours) end
       get :show, params: { id: board.id }
       expect(assigns(:posts)).to eq(assigns(:posts).sort_by(&:tagged_at).reverse)
+    end
+
+    it "orders the posts correctly in ordered boards" do
+      board = create(:board)
+      section2 = create(:board_section, board: board)
+      section1 = create(:board_section, board: board)
+      section1.update_attributes(section_order: 0)
+      section2.update_attributes(section_order: 1)
+      post1 = create(:post, board: board, section: section1, tagged_at: Time.now + rand(5..30).hours)
+      post2 = create(:post, board: board, section: section1, tagged_at: Time.now + rand(5..30).hours)
+      post3 = create(:post, board: board, section: section1, tagged_at: Time.now + rand(5..30).hours)
+      post4 = create(:post, board: board, section: section2, tagged_at: Time.now + rand(5..30).hours)
+      post5 = create(:post, board: board, section: section2, tagged_at: Time.now + rand(5..30).hours)
+      post6 = create(:post, board: board, section: section2, tagged_at: Time.now + rand(5..30).hours)
+      post7 = create(:post, board: board, tagged_at: Time.now + rand(5..30).hours)
+      post8 = create(:post, board: board, tagged_at: Time.now + rand(5..30).hours)
+      post9 = create(:post, board: board, tagged_at: Time.now + rand(5..30).hours)
+      post1.update_attributes(section_order: 0)
+      post2.update_attributes(section_order: 1)
+      post3.update_attributes(section_order: 2)
+      post4.update_attributes(section_order: 0)
+      post5.update_attributes(section_order: 1)
+      post6.update_attributes(section_order: 2)
+      post7.update_attributes(section_order: 0)
+      post8.update_attributes(section_order: 1)
+      post9.update_attributes(section_order: 2)
+      get :show, params: { id: board.id }
+      expect(assigns(:board_sections).map(&:posts)).to eq([[post1, post2, post3], [post4, post5, post6]])
+      expect(assigns(:posts)).to eq([post7, post8, post9])
     end
   end
 
@@ -237,11 +281,13 @@ RSpec.describe BoardsController do
     it "sets expected variables" do
       board = create(:board)
       sections = [create(:board_section, board: board), create(:board_section, board: board)]
-      posts = [create(:post, board: board), create(:post, board: board)]
+      posts = [create(:post, board: board, tagged_at: Time.now + 5.minutes), create(:post, board: board)]
+      sections[0].update_attributes(section_order: 1)
+      sections[1].update_attributes(section_order: 0)
       board.coauthors << create(:user)
       login_as(board.creator)
       get :edit, params: { id: board.id }
-      expect(assigns(:board_sections)).to eq(sections)
+      expect(assigns(:board_sections)).to eq(sections.reverse)
       expect(assigns(:unsectioned_posts)).to eq(posts)
     end
   end

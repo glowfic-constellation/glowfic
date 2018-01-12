@@ -21,11 +21,11 @@ class BoardsController < ApplicationController
       board_ids = BoardAuthor.where(user_id: @user.id, cameo: false).pluck('distinct board_id')
       arel = Board.arel_table
       where = arel[:creator_id].eq(@user.id).or(arel[:id].in(board_ids))
-      @boards = Board.where(where).order('pinned DESC, LOWER(name)')
-      @cameo_boards = Board.where(id: BoardAuthor.where(user_id: @user.id, cameo: true).pluck('distinct board_id')).order('pinned DESC, LOWER(name)')
+      @boards = Board.where(where).ordered
+      @cameo_boards = Board.where(id: BoardAuthor.where(user_id: @user.id, cameo: true).pluck('distinct board_id')).ordered
     else
       @page_title = 'Continuities'
-      @boards = Board.order('pinned DESC, LOWER(name)').paginate(page: page, per_page: 25)
+      @boards = Board.ordered.paginate(page: page, per_page: 25)
     end
   end
 
