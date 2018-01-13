@@ -238,6 +238,28 @@ RSpec.describe ApplicationController do
       end
     end
 
+    it 'preserves post order' do
+      post1 = create(:post)
+      post2 = create(:post)
+      post3 = create(:post)
+      post4 = create(:post)
+
+      expect(controller.send(:posts_from_relation, Post.all.order(tagged_at: :asc))).to eq([post1, post2, post3, post4])
+      expect(controller.send(:posts_from_relation, Post.all.ordered)).to eq([post4, post3, post2, post1])
+    end
+
+    it 'preserves post order with pagination' do
+      relation = Post.where(id: default_post_ids)
+      expect(controller.send(:posts_from_relation, relation.order(tagged_at: :asc)).map(&:id)).to eq(default_post_ids[0..24])
+      expect(controller.send(:posts_from_relation, relation.ordered).map(&:id)).to eq(default_post_ids.reverse[0..24])
+    end
+
+    it 'preserves post order with pagination disabled' do
+      relation = Post.where(id: default_post_ids)
+      expect(controller.send(:posts_from_relation, relation.order(tagged_at: :asc), true, false).map(&:id)).to eq(default_post_ids)
+      expect(controller.send(:posts_from_relation, relation.order(tagged_at: :desc), true, false).map(&:id)).to eq(default_post_ids.reverse)
+    end
+
     it "has more tests" do
       skip
     end
