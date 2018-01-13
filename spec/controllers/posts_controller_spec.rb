@@ -298,6 +298,8 @@ RSpec.describe PostsController do
         label2 = create(:label)
         char1 = create(:character, user: user)
         char2 = create(:template_character, user: user)
+        icon = create(:icon)
+        calias = create(:alias, character: char1)
         expect(controller).to receive(:editor_setup).and_call_original
         expect(controller).to receive(:setup_layout_gon).and_call_original
         post :create, params: {
@@ -305,16 +307,21 @@ RSpec.describe PostsController do
           post: {
             subject: 'test',
             content: 'orign',
+            character_id: char1.id,
+            icon_id: icon.id,
+            character_alias_id: calias.id,
             setting_ids: [setting1.id, '_'+setting2.name, '_other'],
             content_warning_ids: [warning1.id, '_'+warning2.name, '_other'],
-            label_ids: [label1.id, '_'+label2.name, '_other'],
-            character_id: char1.id
+            label_ids: [label1.id, '_'+label2.name, '_other']
           }
         }
         expect(response).to render_template(:preview)
         expect(assigns(:written)).to be_an_instance_of(Post)
         expect(assigns(:written)).to be_a_new_record
         expect(assigns(:written).user).to eq(user)
+        expect(assigns(:written).character).to eq(char1)
+        expect(assigns(:written).icon).to eq(icon)
+        expect(assigns(:written).character_alias).to eq(calias)
         expect(assigns(:post)).to eq(assigns(:written))
         expect(assigns(:page_title)).to eq('Previewing: test')
 
@@ -1362,7 +1369,7 @@ RSpec.describe PostsController do
       it "sets expected variables" do
         user = create(:user)
         login_as(user)
-        post = create(:post, user: user)
+        post = create(:post, user: user, subject: 'old', content: 'example')
         setting1 = create(:setting)
         setting2 = create(:setting)
         warning1 = create(:content_warning)
@@ -1371,6 +1378,8 @@ RSpec.describe PostsController do
         label2 = create(:label)
         char1 = create(:character, user: user)
         char2 = create(:template_character, user: user)
+        icon = create(:icon, user: user)
+        calias = create(:alias, character: char1)
         expect(controller).to receive(:editor_setup).and_call_original
         expect(controller).to receive(:setup_layout_gon).and_call_original
         put :update, params: {
@@ -1379,17 +1388,24 @@ RSpec.describe PostsController do
           post: {
             subject: 'test',
             content: 'orign',
+            character_id: char1.id,
+            icon_id: icon.id,
+            character_alias_id: calias.id,
             setting_ids: [setting1.id, '_'+setting2.name, '_other'],
             content_warning_ids: [warning1.id, '_'+warning2.name, '_other'],
-            label_ids: [label1.id, '_'+label2.name, '_other'],
-            character_id: char1.id
+            label_ids: [label1.id, '_'+label2.name, '_other']
           }
         }
         expect(response).to render_template(:preview)
         expect(assigns(:written)).to be_an_instance_of(Post)
         expect(assigns(:written)).not_to be_a_new_record
-        expect(assigns(:written).user).to eq(user)
         expect(assigns(:post)).to eq(assigns(:written))
+        expect(assigns(:post).user).to eq(user)
+        expect(assigns(:post).subject).to eq('test')
+        expect(assigns(:post).content).to eq('orign')
+        expect(assigns(:post).character).to eq(char1)
+        expect(assigns(:post).icon).to eq(icon)
+        expect(assigns(:post).character_alias).to eq(calias)
         expect(assigns(:post).setting_ids).to include(setting1.id, setting2.id)
         expect(assigns(:post).settings.map(&:name)).to match_array([setting1.name, setting2.name, 'other'])
         expect(assigns(:post).content_warning_ids).to include(warning1.id, warning2.id)
@@ -1425,6 +1441,15 @@ RSpec.describe PostsController do
         expect(ContentWarning.count).to eq(2)
         expect(Label.count).to eq(2)
         expect(PostTag.count).to eq(0)
+
+        # in storage
+        post = assigns(:post).reload
+        expect(post.user).to eq(user)
+        expect(post.subject).to eq('old')
+        expect(post.content).to eq('example')
+        expect(post.character).to be_nil
+        expect(post.icon).to be_nil
+        expect(post.character_alias).to be_nil
       end
 
       it "does not crash without arguments" do
