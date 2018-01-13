@@ -114,7 +114,7 @@ RSpec.describe RepliesController do
       reply_post = create(:post)
       login_as(reply_post.user)
       reply_post.mark_read(reply_post.user)
-      last_seen = create(:reply, post: reply_post)
+      create(:reply, post: reply_post) # last seen
 
       post :create, params: { reply: {post_id: reply_post.id, user_id: reply_post.user_id} }
       expect(response.status).to eq(200)
