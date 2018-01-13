@@ -7,4 +7,8 @@ module SpecFeatureHelper
     click_button "Log in"
     user
   end
+
+  def row_for(title)
+    find('tr') { |x| x.has_selector?('th', text: title) }
+  end
 end

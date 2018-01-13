@@ -66,8 +66,7 @@ RSpec.feature "Creating a new template", :type => :feature do
     within('.form-table') do
       expect(page).to have_field('Template Name')
       fill_in 'template_description', with: 'Example template description'
-      characters_row = find('tr') { |x| x.has_selector?('th', text: 'Characters') }
-      within(characters_row) do
+      within(row_for('Characters')) do
         check('Character1')
         check('Character5')
       end
@@ -82,8 +81,7 @@ RSpec.feature "Creating a new template", :type => :feature do
     within('.form-table') do
       expect(page).to have_field('Template Name', with: '')
       expect(page).to have_field('template_description', with: 'Example template description')
-      characters_row = find('tr') { |x| x.has_selector?('th', text: 'Characters') }
-      within(characters_row) do
+      within(row_for('Characters')) do
         expect(page).to have_checked_field('Character1')
         expect(page).to have_unchecked_field('Character2')
         expect(page).to have_unchecked_field('Character3')
