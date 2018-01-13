@@ -12,37 +12,58 @@ RSpec.describe RepliesController do
       it "takes correct actions" do
         user = create(:user)
         reply_post = create(:post, user: user)
-        reply = create(:reply, post: reply_post)
+        create(:reply, post: reply_post) # another reply
         reply_post.mark_read(user)
         login_as(user)
         expect(ReplyDraft.count).to eq(0)
 
         char1 = create(:character, user: user)
+        icon = create(:icon, user: user)
+        calias = create(:alias, character: char1)
         char2 = create(:template_character, user: user)
         expect(controller).to receive(:build_template_groups).and_call_original
         expect(controller).to receive(:make_draft).and_call_original
         expect(controller).to receive(:setup_layout_gon).and_call_original
 
-        post :create, params: { button_preview: true, reply: {post_id: reply_post.id} }
+        post :create, params: {
+          button_preview: true,
+          reply: {
+            content: 'example',
+            character_id: char1.id,
+            icon_id: icon.id,
+            character_alias_id: calias.id,
+            post_id: reply_post.id
+          }
+        }
         expect(response).to render_template(:preview)
         expect(assigns(:javascripts)).to include('posts/editor')
         expect(assigns(:page_title)).to eq(reply_post.subject)
         expect(assigns(:written)).to be_a_new_record
+        expect(assigns(:written).post).to eq(reply_post)
         expect(assigns(:written).user).to eq(reply_post.user)
+        expect(assigns(:written).content).to eq('example')
+        expect(assigns(:written).character).to eq(char1)
+        expect(assigns(:written).icon).to eq(icon)
+        expect(assigns(:written).character_alias).to eq(calias)
         expect(assigns(:post)).to eq(reply_post)
         expect(ReplyDraft.count).to eq(1)
         draft = ReplyDraft.last
+
         expect(draft.post).to eq(reply_post)
         expect(draft.user).to eq(reply_post.user)
+        expect(draft.content).to eq('example')
+        expect(draft.character).to eq(char1)
+        expect(draft.icon).to eq(icon)
+        expect(draft.character_alias).to eq(calias)
         expect(flash[:success]).to eq('Draft saved!')
 
         # build_template_groups:
-        expect(controller.gon.editor_user).not_to be_nil
+        expect(controller.gon.editor_user[:username]).to eq(user.username)
         # templates
         templates = assigns(:templates)
         expect(templates.length).to eq(2)
-        template_chars = templates.first
-        expect(template_chars).to eq(char2.template)
+        template = templates.first
+        expect(template).to eq(char2.template)
         templateless = templates.last
         expect(templateless.name).to eq('Templateless')
         expect(templateless.plucked_characters).to eq([[char1.id, char1.name]])
