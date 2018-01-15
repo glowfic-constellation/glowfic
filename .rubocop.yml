@@ -11,6 +11,9 @@ AllCops:
     - 'features/support/env.rb'
     - 'spec/spec_helper.rb'
 
+Rails:
+  Enabled: true
+
 #################### Bundler ################################
 
 Bundler/DuplicatedGem:
@@ -713,7 +716,7 @@ Naming/MethodName:
 Naming/PredicateName:
   Description: 'Check the names of predicate methods.'
   StyleGuide: 'https://github.com/bbatsov/ruby-style-guide#bool-methods-qmark'
-  Enabled: true
+  Enabled: false
 
 Naming/VariableName:
   Description: 'Use the configured style when naming variables.'
@@ -836,6 +839,7 @@ Rails/ActiveSupportAliases:
 
 Rails/Blank:
   Enabled: true
+  UnlessPresent: false
 
 Rails/Date:
   Description: >-
@@ -852,6 +856,9 @@ Rails/DelegateAllowBlank:
 
 Rails/DynamicFindBy:
   Enabled: true
+  Whitelist:
+    - find_by_sql
+    - find_by_id
 
 Rails/Exit:
   Enabled: true
@@ -924,6 +931,8 @@ Rails/TimeZone:
   StyleGuide: 'https://github.com/bbatsov/rails-style-guide#time'
   Reference: 'http://danilenko.org/2012/7/6/rails_timezones'
   Enabled: true
+  Exclude:
+    - 'spec/**/*'
 
 Rails/UniqBeforePluck:
   Enabled: true
@@ -1498,13 +1507,13 @@ Style/TrailingCommaInArguments:
   Description: 'Checks for trailing comma in parameter lists.'
   StyleGuide: 'https://github.com/bbatsov/ruby-style-guide#no-trailing-params-comma'
   Enabled: true
-  EnforcedStyleForMultiline: 'no_comma'
+  EnforcedStyleForMultiline: 'comma'
 
 Style/TrailingCommaInLiteral:
   Description: 'Checks for trailing comma in literals.'
   StyleGuide: 'https://github.com/bbatsov/ruby-style-guide#no-trailing-array-commas'
   Enabled: false
-  EnforcedStyleForMultiline: 'no_comma'
+  EnforcedStyleForMultiline: 'comma'
 
 Style/TrailingUnderscoreVariable:
   Description: >-
