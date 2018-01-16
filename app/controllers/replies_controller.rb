@@ -72,8 +72,8 @@ class RepliesController < WritableController
         character_ids = Character.where(template_id: @templates.first.id).pluck(:id)
         @search_results = @search_results.where(character_id: character_ids)
       end
-    else
-      @templates = @templates.where(user_id: params[:author_id]) if params[:author_id].present?
+    elsif params[:author_id].present?
+      @templates = @templates.where(user_id: params[:author_id])
     end
 
     @search_results = @search_results

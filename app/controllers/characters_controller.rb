@@ -264,8 +264,8 @@ class CharactersController < ApplicationController
       else
         flash.now[:error] = "The specified template could not be found."
       end
-    else
-      @templates = Template.where(user_id: params[:author_id]).order('name asc').limit(25) if params[:author_id].present?
+    elsif params[:author_id].present?
+      @templates = Template.where(user_id: params[:author_id]).order('name asc').limit(25)
     end
 
     if params[:name].present?
