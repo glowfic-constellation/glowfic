@@ -2,7 +2,7 @@ require "spec_helper"
 
 class StubJob < ApplicationJob
   queue_as :high
-  def perform(*args)
+  def perform(*_args)
     raise NotImplementedError
   end
 end
