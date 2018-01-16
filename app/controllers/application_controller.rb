@@ -1,6 +1,6 @@
+# frozen_string_literal: true
 require Rails.root.join('lib', 'memorylogic')
 
-# frozen_string_literal: true
 class ApplicationController < ActionController::Base
   include Authentication
   include Memorylogic
