@@ -117,12 +117,28 @@ Layout/TrailingBlankLines:
 
 #################### Lint ################################
 
+Lint/AmbiguousBlockAssociation:
+  Exclude:
+    - 'spec/**/*'
+
 Lint/EndAlignment:
   Enabled: true
   EnforcedStyleAlignWith: 'variable'
 
+Lint/HandleExceptions:
+  Exclude:
+    - 'spec/jobs/application_job_spec.rb'
+    - 'spec/jobs/generate_flat_post_job_spec.rb'
+
 Lint/ParenthesesAsGroupedExpression:
   Enabled: false
+
+Lint/RescueException:
+  Exclude:
+    - 'app/jobs/application_job.rb'
+    - 'app/jobs/generate_flat_post_job.rb'
+    - 'spec/jobs/application_job_spec.rb'
+    - 'spec/jobs/generate_flat_post_job_spec.rb'
 
 ###################### Metrics ####################################
 
@@ -183,6 +199,10 @@ Rails/DynamicFindBy:
   Whitelist:
     - find_by_sql
     - find_by_id
+
+Rails/HasManyOrHasOneDependent:
+  Exclude:
+    - 'app/models/user.rb'
 
 Rails/SaveBang:
   Enabled: true
