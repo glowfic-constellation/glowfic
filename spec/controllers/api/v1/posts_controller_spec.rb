@@ -70,14 +70,13 @@ RSpec.describe Api::V1::PostsController do
   end
 
   describe "POST reorder" do
-  describe "GET show" do
     it "requires login", :show_in_doc do
       post :reorder
       expect(response).to have_http_status(401)
       expect(response.json['errors'][0]['message']).to eq("You must be logged in to view that page.")
     end
 
-    context "without section_id"
+    context "without section_id" do
       it "requires a board you have access to" do
         board = create(:board)
         board_post1 = create(:post, board_id: board.id)
