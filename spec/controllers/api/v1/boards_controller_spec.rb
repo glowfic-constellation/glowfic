@@ -3,10 +3,10 @@ require "spec_helper"
 RSpec.describe Api::V1::BoardsController do
   describe "GET index" do
     def create_search_boards
-      firstuser = create(:board, name: 'baa')
-      miduser = create(:board, name: 'aba')
-      enduser = create(:board, name: 'aab')
-      notuser = create(:board, name: 'aaa')
+      create(:board, name: 'baa') # firstuser
+      create(:board, name: 'aba') # miduser
+      create(:board, name: 'aab') # enduser
+      create(:board, name: 'aaa') # notuser
       Board.all.each do |board|
         create(:board, name: board.name.upcase + 'c')
       end

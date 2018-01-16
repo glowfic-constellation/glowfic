@@ -5,8 +5,8 @@ RSpec.feature "Message threads", :type => :feature do
     user = login
 
     first = create(:message, sender: user)
-    second = create(:message, thread_id: first.id, sender: first.recipient, recipient: user)
-    third = create(:message, thread_id: first.id, sender: user, recipient: first.recipient)
+    create(:message, thread_id: first.id, sender: first.recipient, recipient: user) # second
+    create(:message, thread_id: first.id, sender: user, recipient: first.recipient) # third
 
     visit messages_path(view: 'inbox')
     expect(page).to have_selector('tr.message-row', count: 1)
@@ -15,7 +15,7 @@ RSpec.feature "Message threads", :type => :feature do
     end
     expect(page).to have_selector('.message-collapse', count: 3)
 
-    long = create(:message, thread_id: first.id, sender: user, recipient: first.recipient, message: "abcde" * 22)
+    create(:message, thread_id: first.id, sender: user, recipient: first.recipient, message: "abcde" * 22) # long
     visit messages_path(view: 'outbox')
     within("table") do
       click_link first.unempty_subject
@@ -29,7 +29,7 @@ RSpec.feature "Message threads", :type => :feature do
   scenario "ordering of inbox messages within threading" do
     user = login
     first = create(:message, recipient: user, subject: 'first')
-    second = create(:message, recipient: user, subject: 'second')
+    create(:message, recipient: user, subject: 'second') # second
 
     visit messages_path(view: 'inbox')
     expect(page).to have_selector('tr.message-row', count: 2)
@@ -37,7 +37,7 @@ RSpec.feature "Message threads", :type => :feature do
     expect(table_rows[0]).to have_text('second')
     expect(table_rows[1]).to have_text('first')
 
-    third = create(:message, thread_id: first.id, recipient: user, sender: first.sender)
+    create(:message, thread_id: first.id, recipient: user, sender: first.sender) # third
     visit messages_path(view: 'inbox')
     expect(page).to have_selector('tr.message-row', count: 2)
     table_rows = page.all(:css, 'tr.message-row')
@@ -48,7 +48,7 @@ RSpec.feature "Message threads", :type => :feature do
   scenario "ordering of outbox messages within threading" do
     user = login
     first = create(:message, sender: user, subject: 'first')
-    second = create(:message, sender: user, subject: 'second')
+    create(:message, sender: user, subject: 'second') # second
 
     visit messages_path(view: 'outbox')
     expect(page).to have_selector('tr.message-row', count: 2)
@@ -56,7 +56,7 @@ RSpec.feature "Message threads", :type => :feature do
     expect(table_rows[0]).to have_text('second')
     expect(table_rows[1]).to have_text('first')
 
-    third = create(:message, thread_id: first.id, recipient: first.recipient, sender: user)
+    create(:message, thread_id: first.id, recipient: first.recipient, sender: user) # third
     visit messages_path(view: 'outbox')
     expect(page).to have_selector('tr.message-row', count: 2)
     table_rows = page.all(:css, 'tr.message-row')

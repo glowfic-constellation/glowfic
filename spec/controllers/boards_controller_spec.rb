@@ -332,7 +332,7 @@ RSpec.describe BoardsController do
 
     it "moves posts to sandboxes" do
       board = create(:board)
-      sandbox = create(:board, id: 3)
+      create(:board, id: 3) # sandbox
       section = create(:board_section, board: board)
       post = create(:post, board: board, section: section)
       login_as(board.creator)

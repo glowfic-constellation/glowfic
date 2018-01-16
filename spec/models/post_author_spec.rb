@@ -47,7 +47,7 @@ RSpec.describe PostAuthor do
     it "should enforce uniqueness for a specific user and post" do
       user = create(:user)
       post = create(:post)
-      post_author = create(:post_author, user: user, post: post)
+      create(:post_author, user: user, post: post) # post_author
 
       new_author = build(:post_author, user: user, post: post)
       expect(new_author).not_to be_valid

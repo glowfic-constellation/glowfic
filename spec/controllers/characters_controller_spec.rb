@@ -44,14 +44,14 @@ RSpec.describe CharactersController do
 
       it "successfully renders the page in template group" do
         character = create(:character)
-        character2 = create(:template_character, user: character.user)
+        create(:template_character, user: character.user) # character2
         get :index, params: { user_id: character.user_id, character_split: 'template' }
         expect(response.status).to eq(200)
       end
 
       it "successfully renders the page with no group" do
         character = create(:character)
-        character2 = create(:template_character, user: character.user)
+        create(:template_character, user: character.user) # character2
         get :index, params: { user_id: character.user_id, character_split: 'none' }
         expect(response.status).to eq(200)
       end
@@ -462,7 +462,7 @@ RSpec.describe CharactersController do
 
     it "does not add another user's galleries" do
       group = create(:gallery_group)
-      gallery = create(:gallery, gallery_groups: [group])
+      create(:gallery, gallery_groups: [group]) # gallery
       character = create(:character)
 
       login_as(character.user)
@@ -476,7 +476,7 @@ RSpec.describe CharactersController do
     it "removes untethered galleries when group goes" do
       user = create(:user)
       group = create(:gallery_group)
-      gallery = create(:gallery, gallery_groups: [group], user: user)
+      create(:gallery, gallery_groups: [group], user: user) # gallery
       character = create(:character, gallery_groups: [group], user: user)
 
       login_as(user)
@@ -943,7 +943,7 @@ RSpec.describe CharactersController do
     it 'searches author' do
       author = create(:user)
       found = create(:character, user: author)
-      notfound = create(:character, user: create(:user))
+      create(:character) # notfound
       get :search, params: { commit: true, author_id: author.id }
       expect(response).to have_http_status(200)
       expect(assigns(:users)).to match_array([author])
@@ -990,7 +990,7 @@ RSpec.describe CharactersController do
       author = create(:user)
       template = create(:template, user: author)
       found = create(:character, user: author, template: template)
-      notfound = create(:character, user: author, template: create(:template, user: author))
+      create(:character, user: author, template: create(:template, user: author)) # notfound
       get :search, params: { commit: true, template_id: template.id }
       expect(response).to have_http_status(200)
       expect(assigns(:templates)).to match_array([template])

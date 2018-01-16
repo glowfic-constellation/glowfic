@@ -13,7 +13,7 @@ RSpec.describe Api::V1::PostsController do
 
       it "should support search", show_in_doc: in_doc do
         post = create(:post, subject: 'search')
-        post2 = create(:post, subject: 'no')
+        create(:post, subject: 'no') # post2
         get :index, params: { q: 'se' }
         expect(response).to have_http_status(200)
         expect(response.json).to have_key('results')
