@@ -49,10 +49,8 @@ class TagsController < ApplicationController
         @tag.parent_settings = process_tags(Setting, :tag, :parent_setting_ids) if @tag.is_a?(Setting)
         @tag.save!
       end
-
       flash[:success] = "Tag saved!"
       redirect_to tag_path(@tag)
-
     rescue ActiveRecord::RecordInvalid
       flash.now[:error] = {}
       flash.now[:error][:message] = "Tag could not be saved because of the following problems:"
