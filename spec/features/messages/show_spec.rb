@@ -37,7 +37,7 @@ RSpec.feature "Message threads", :type => :feature do
     expect(table_rows[0]).to have_text('second')
     expect(table_rows[1]).to have_text('first')
 
-    third = create(:message, thread_id: first.id, recipient:user, sender: first.sender)
+    third = create(:message, thread_id: first.id, recipient: user, sender: first.sender)
     visit messages_path(view: 'inbox')
     expect(page).to have_selector('tr.message-row', count: 2)
     table_rows = page.all(:css, 'tr.message-row')
