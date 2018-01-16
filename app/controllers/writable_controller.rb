@@ -149,9 +149,7 @@ class WritableController < ApplicationController
       post_description += "#{post.user.username} and #{post.authors.length-1} others"
     end
     post_description += " – page #{page} of #{total_pages}"
-    unless per_page == 25
-      post_description += ", #{per_page}/page"
-    end
+    post_description += ", #{per_page}/page" unless per_page == 25
     post_description += ')'
     post_description.strip!
 
