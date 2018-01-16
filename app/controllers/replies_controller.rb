@@ -77,7 +77,7 @@ class RepliesController < WritableController
     end
 
     @search_results = @search_results
-      .select('characters.name, characters.screenname, users.username')
+      .select('replies.*, characters.name, characters.screenname, users.username')
       .joins(:user)
       .left_outer_joins(:character)
       .with_edit_audit_counts
