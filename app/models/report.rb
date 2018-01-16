@@ -23,9 +23,11 @@ class Report < Object
     view_for(user).read_at
   end
 
-  protected
+  class << self
+    protected
 
-  def self.view_for(user)
-    ReportView.where(user_id: user.id).first_or_initialize
+    def view_for(user)
+      ReportView.where(user_id: user.id).first_or_initialize
+    end
   end
 end
