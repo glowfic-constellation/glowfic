@@ -69,7 +69,8 @@ RSpec.describe Api::V1::PostsController do
     end
   end
 
-  describe "POST reorder" do  describe "GET show" do
+  describe "POST reorder" do
+  describe "GET show" do
     it "requires login", :show_in_doc do
       post :reorder
       expect(response).to have_http_status(401)
