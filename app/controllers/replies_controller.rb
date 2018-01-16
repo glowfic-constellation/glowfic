@@ -51,9 +51,9 @@ class RepliesController < WritableController
     end
 
     if params[:sort] == 'created_new'
-      @search_results = @search_results.except(:order).order('replies.created_at DESC')
+      @search_results = @search_results.except(:order).order('replies.created_at DESC, rank DESC')
     elsif params[:sort] == 'created_old'
-      @search_results = @search_results.except(:order).order('replies.created_at ASC')
+      @search_results = @search_results.except(:order).order('replies.created_at ASC, rank DESC')
     elsif params[:subj_content].blank?
       @search_results = @search_results.order('replies.created_at DESC')
     end
@@ -76,9 +76,10 @@ class RepliesController < WritableController
     end
 
     @search_results = @search_results
-      .select('replies.*, characters.name, characters.screenname, users.username')
+      .select('characters.name, characters.screenname, users.username')
       .joins(:user)
       .left_outer_joins(:character)
+      .with_edit_audit_counts
       .paginate(page: page, per_page: 25)
       .includes(:post)
 
