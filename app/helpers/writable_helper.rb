@@ -17,10 +17,10 @@ module WritableHelper
 
     if item.character
       icons = if galleries.present?
-                galleries.map(&:icons).flatten
-              else
-                item.character.icons
-              end
+        galleries.map(&:icons).flatten
+      else
+        item.character.icons
+      end
       icons |= [item.character.default_icon] if item.character.default_icon
       icons |= [item.icon] if item.icon
       selected_id = item.icon_id
