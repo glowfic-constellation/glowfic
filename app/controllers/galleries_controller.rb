@@ -141,7 +141,7 @@ class GalleriesController < UploadingController
       icon = Icon.new(icon_params(icon.except('filename', 'file')))
       icon.user = current_user
       unless icon.valid?
-        @icons[index]['url'] = '' if icon.errors.messages[:url] && icon.errors.messages[:url].include?('has already been taken')
+        @icons[index]['url'] = '' if icon.errors.messages[:url]&.include?('has already been taken')
         flash.now[:error] ||= {}
         flash.now[:error][:array] ||= []
         flash.now[:error][:array] += icon.errors.full_messages.map{|m| "Icon "+(index+1).to_s+": "+m.downcase}

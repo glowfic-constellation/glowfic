@@ -320,7 +320,7 @@ class CharactersController < ApplicationController
     @groups = user.character_groups.order('name asc') + [new_group]
     use_javascript('characters/editor')
     gon.character_id = @character.try(:id) || ''
-    if @character && @character.template.nil? && @character.user == current_user
+    if @character.present? && @character.template.nil? && @character.user == current_user
       @character.build_template(user: user)
     end
     gon.user_id = user.id
