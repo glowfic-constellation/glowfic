@@ -16,9 +16,9 @@ module Memorylogic
 
   private
 
-    def log_memory_usage
-      if logger
-        logger.warn("Memory usage in #{params[:controller]}\##{params[:action]}: #{Memorylogic.memory_usage} | PID: #{Process.pid}")
-      end
+  def log_memory_usage
+    if logger
+      logger.warn("Memory usage in #{params[:controller]}\##{params[:action]}: #{Memorylogic.memory_usage} | PID: #{Process.pid}")
     end
+  end
 end
