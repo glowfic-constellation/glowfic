@@ -62,7 +62,8 @@ class Tag < ApplicationRecord
     galleries.count
   end
 
-  def has_items? # TODO auto destroy when false, and also maybe fix with settings/canons
+  def has_items?
+    # TODO auto destroy when false, and also maybe fix with settings/canons
     post_count + character_count + gallery_count > 0
   end
 
