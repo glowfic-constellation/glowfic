@@ -55,7 +55,7 @@ class Post < ApplicationRecord
       subject
       content
     ),
-    using: {tsearch: { dictionary: "english" } }
+    using: { tsearch: { dictionary: "english" } },
   )
   scope :no_tests, -> { where.not(board_id: Board::ID_SITETESTING) }
 

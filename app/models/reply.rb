@@ -17,7 +17,7 @@ class Reply < ApplicationRecord
   pg_search_scope(
     :search,
     against: %i(content),
-    using: {tsearch: { dictionary: "english", highlight: {MaxFragments: 10} } }
+    using: { tsearch: { dictionary: "english", highlight: {MaxFragments: 10} } },
   )
 
   scope :with_edit_audit_counts, -> {

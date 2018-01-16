@@ -1113,7 +1113,7 @@ RSpec.describe PostsController do
         settings: [setting],
         content_warnings: [warning],
         labels: [label],
-        unjoined_authors: [unjoined]
+        unjoined_authors: [unjoined],
       )
       expect(post.icon).to be_nil
 

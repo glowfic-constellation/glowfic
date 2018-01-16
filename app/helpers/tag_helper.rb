@@ -21,7 +21,7 @@ module TagHelper
       attr_name,
       options_from_collection_for_select(collection, :id_for_select, :name, selected_ids),
       {},
-      {multiple: true}.merge(opts)
+      {multiple: true}.merge(opts),
     )
   end
 end

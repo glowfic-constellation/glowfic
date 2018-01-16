@@ -144,7 +144,7 @@ class MessagesController < ApplicationController
     params.fetch(:message, {}).permit(
       :recipient_id,
       :subject,
-      :message
+      :message,
     )
   end
 end

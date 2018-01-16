@@ -134,7 +134,7 @@ class UsersController < ApplicationController
       :ignore_unread_daily_report,
       :visible_unread,
       :favorite_notifications,
-      :show_user_in_switcher
+      :show_user_in_switcher,
     )
   end
 end
