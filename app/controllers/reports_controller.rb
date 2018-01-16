@@ -17,7 +17,7 @@ class ReportsController < ApplicationController
     if params[:day].present?
       @day = begin
          params[:day].in_time_zone(Time.zone).to_date
-       rescue
+       rescue NoMethodError # invalid time stamps processed with .in_time_zone return nil
          Time.zone.now.to_date
        end
     else
