@@ -562,6 +562,33 @@ RSpec.describe RepliesController do
         expect(templateless.plucked_characters).to eq([[char.id, char.name]])
       end
 
+      it "takes correct actions for moderators" do
+        user = create(:user)
+        reply_post = create(:post, user: user)
+        reply = create(:reply, post: reply_post, user: user)
+        char = create(:template_character, user: user)
+        login_as(create(:mod_user))
+
+        newcontent = reply.content + 'new'
+
+        post :update, params: {
+          id: reply.id,
+          button_preview: true,
+          reply: {
+            content: newcontent,
+            audit_comment: 'note'
+          }
+        }
+
+        expect(response).to render_template(:preview)
+        expect(assigns(:written).user).to eq(reply.user)
+        expect(assigns(:written).audit_comment).to eq('note')
+        expect(assigns(:written).content).to eq(newcontent)
+
+        expect(controller.gon.editor_user[:username]).to eq(user.username)
+        expect(assigns(:templates)).to eq([char.template])
+      end
+
       skip
     end
   end

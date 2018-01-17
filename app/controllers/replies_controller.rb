@@ -244,7 +244,7 @@ class RepliesController < WritableController
   def preview(written)
     @written = written
     @post = @written.post
-    @written.user = current_user
+    @written.user = current_user unless @written.user
 
     @page_title = @post.subject
 

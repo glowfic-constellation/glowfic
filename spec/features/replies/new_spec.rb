@@ -24,7 +24,7 @@ RSpec.feature "Creating replies", :type => :feature do
     end
 
     expect(page).to have_no_selector('.error')
-    expect(page).to have_selector('.success', text: 'Posted!')
+    expect(page).to have_selector('.success', exact_text: 'Posted!')
     expect(page).to have_selector('.post-container', count: 2)
     within('.post-reply') do
       expect(page).to have_selector('.post-author', exact_text: user.username)
@@ -56,7 +56,7 @@ RSpec.feature "Creating replies", :type => :feature do
     end
 
     expect(page).to have_no_selector('.error')
-    expect(page).to have_selector('.success', text: 'Posted!')
+    expect(page).to have_selector('.success', exact_text: 'Posted!')
     expect(page).to have_selector('.post-container', count: 2)
     within('.post-reply') do
       expect(page).to have_selector('.post-author', exact_text: user.username)

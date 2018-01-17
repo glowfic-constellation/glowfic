@@ -30,7 +30,7 @@ RSpec.feature "Editing posts", :type => :feature do
     end
 
     expect(page).to have_no_selector('.error')
-    expect(page).to have_selector('.content-header', text: 'Edit post')
+    expect(page).to have_selector('.content-header', exact_text: 'Edit post')
     expect(page).to have_no_selector('.post-container')
     within('#post-editor') do
       fill_in 'Subject', with: 'other subject'
@@ -57,7 +57,7 @@ RSpec.feature "Editing posts", :type => :feature do
 
     # first changes, then preview
     expect(page).to have_no_selector('.error')
-    expect(page).to have_selector('.content-header', text: 'Edit post')
+    expect(page).to have_selector('.content-header', exact_text: 'Edit post')
     expect(page).to have_no_selector('.post-container')
     within('#post-editor') do
       fill_in 'Subject', with: 'other subject'
@@ -66,7 +66,7 @@ RSpec.feature "Editing posts", :type => :feature do
 
     # verify preview, change again
     expect(page).to have_no_selector('.error')
-    expect(page).to have_selector('.content-header', text: 'other subject')
+    expect(page).to have_selector('.content-header', exact_text: 'other subject')
     expect(page).to have_selector('.post-container', count: 1)
     expect(page).to have_selector('#post-editor')
     within('#post-editor') do
@@ -110,7 +110,7 @@ RSpec.feature "Editing posts", :type => :feature do
     end
 
     expect(page).to have_no_selector('.error')
-    expect(page).to have_selector('.content-header', text: 'Edit post')
+    expect(page).to have_selector('.content-header', exact_text: 'Edit post')
     expect(page).to have_no_selector('.post-container')
     within('#post-editor') do
       fill_in 'Subject', with: 'other subject'
@@ -126,5 +126,46 @@ RSpec.feature "Editing posts", :type => :feature do
       # must not change post's user
       expect(page).to have_selector('.post-author', exact_text: user.username)
     end
+  end
+
+  scenario "Moderator edits a post with preview" do
+    user = create(:user, password: 'known')
+    post = create(:post, user: user, subject: 'test subject')
+
+    login(create(:mod_user, password: 'known'), 'known')
+
+    visit post_path(post)
+    expect(page).to have_selector('.post-container', count: 1)
+    within('.post-container') do
+      click_link 'Edit'
+    end
+
+    # first changes, then preview
+    expect(page).to have_no_selector('.error')
+    expect(page).to have_selector('.content-header', exact_text: 'Edit post')
+    expect(page).to have_no_selector('.post-container')
+    within('#post-editor') do
+      fill_in 'Subject', with: 'other subject'
+      fill_in 'Moderator note', with: 'example edit'
+      click_button 'Preview'
+    end
+
+    # verify preview, change again
+    expect(page).to have_no_selector('.error')
+    expect(page).to have_selector('.content-header', exact_text: 'other subject')
+    expect(page).to have_selector('.post-container', count: 1)
+    expect(page).to have_selector('#post-editor')
+    within('#post-editor') do
+      expect(page).to have_field('Subject', with: 'other subject')
+      expect(page).to have_field('Moderator note', with: 'example edit')
+      fill_in 'Subject', with: 'third subject'
+      fill_in 'Moderator note', with: 'another edit'
+      click_button 'Save'
+    end
+
+    expect(page).to have_no_selector('.error')
+    expect(page).to have_selector('.success', text: 'has been updated.')
+    expect(page).to have_selector('.post-container', count: 1)
+    expect(page).to have_selector('#post-title', exact_text: 'third subject')
   end
 end
