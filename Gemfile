@@ -50,7 +50,6 @@ group :development do
   gem 'listen'
   gem 'memory_profiler'
   gem 'rack-mini-profiler'
-  gem 'rubocop'
   gem 'web-console', '~> 3.0'
 end
 
@@ -69,8 +68,10 @@ group :test do
   gem 'codeclimate-test-reporter', '~> 1.0.0'
   gem 'factory_bot_rails'
   gem 'json'
+  gem 'poltergeist'
   gem 'rails-controller-testing'
   gem 'resque_spec'
+  gem 'rspec-page-regression'
   gem 'simplecov'
   gem 'timecop'
   gem 'webmock'

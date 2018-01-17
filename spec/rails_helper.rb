@@ -25,6 +25,58 @@ require 'rspec/rails'
 # Checks for pending migration and applies them before tests are run.
 # If you are not using ActiveRecord, you can remove this line.
 ActiveRecord::Migration.maintain_test_schema!
+require 'rspec/page-regression'
+
+# monkey patch rspec-page-regression after Rails 5.1 upgrade
+module RSpec::PageRegression
+  class FilePaths
+    def initialize(example, expected_path = nil)
+      expected_path = Pathname.new(expected_path) if expected_path
+
+      descriptions = description_ancestry(example.metadata[:example_group])
+      descriptions.push example.description unless example.description.parameterize(separator: '_') =~ %r{
+       ^
+       (then_+)?
+       ( (expect_+) (page_+) (to_+) (not_+)? | (page_+) (should_+)? )
+       match_expectation
+       (_#{Regexp.escape(expected_path.to_s)})?
+         $
+      }xi
+      canonical_path = descriptions.map{|s| s.parameterize(separator: '_')}.inject(Pathname.new(""), &:+)
+
+      app_root = Pathname.new(example.metadata[:file_path]).realpath.each_filename.take_while{|c| c != "spec"}.inject(Pathname.new("/"), &:+)
+      expected_root = app_root + "spec" + "expectation"
+      test_root = app_root + "tmp" + "spec" + "expectation"
+      cwd = Pathname.getwd
+
+      @expected_image = expected_path || (expected_root + canonical_path + "expected.png").relative_path_from(cwd)
+      @test_image = (test_root + canonical_path + "test.png").relative_path_from cwd
+      @difference_image = (test_root + canonical_path + "difference.png").relative_path_from cwd
+    end
+
+    private
+
+    def description_ancestry(metadata)
+      return [] if metadata.nil?
+      description_ancestry(metadata[:parent_example_group]) << metadata[:description].parameterize(separator: '_')
+    end
+  end
+end
+
+module Helpers
+  def example_path(example)
+    group_path(example.metadata[:example_group]) + example.description.parameterize(separator: "_")
+  end
+
+  def group_path(metadata)
+    return Pathname.new("") if metadata.nil?
+    group_path(metadata[:parent_example_group]) + metadata[:description].parameterize(separator: "_")
+  end
+end
+
+require 'capybara/rspec'
+require 'capybara/poltergeist'
+Capybara.javascript_driver = :poltergeist
 
 RSpec.configure do |config|
   # Remove this line if you're not using ActiveRecord or ActiveRecord fixtures
@@ -33,7 +85,7 @@ RSpec.configure do |config|
   # If you're not using ActiveRecord, or you'd prefer not to run each of your
   # examples within a transaction, remove the following line or assign false
   # instead of true.
-  config.use_transactional_fixtures = true
+  config.use_transactional_fixtures = false
 
   # RSpec Rails can automatically mix in different behaviours to your tests
   # based on their file location, for example enabling you to call `get` and

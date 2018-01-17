@@ -1,17 +1,10 @@
 module SpecFeatureHelper
-  # if given a user, the password must be 'known' or given as a parameter
-  # otherwise, the helper will create a user with a given password
-  # returns the user it logs in as, navigates to root_path
-  def login(user = nil, password = 'known')
-    user = create(:user, password: password) unless user
+  def login
+    user = create(:user, password: 'known')
     visit root_path
-    fill_in "Username", with: user.username
-    fill_in "Password", with: password
+    fill_in "username", with: user.username
+    fill_in "password", with: 'known'
     click_button "Log in"
     user
-  end
-
-  def row_for(title)
-    find('tr') { |x| x.has_selector?('th', text: title) }
   end
 end
