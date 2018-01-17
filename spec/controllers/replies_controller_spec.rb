@@ -563,8 +563,10 @@ RSpec.describe RepliesController do
       end
 
       it "takes correct actions for moderators" do
-        reply_post = create(:post)
-        reply = create(:reply, post: reply_post, user: reply_post.user)
+        user = create(:user)
+        reply_post = create(:post, user: user)
+        reply = create(:reply, post: reply_post, user: user)
+        char = create(:template_character, user: user)
         login_as(create(:mod_user))
 
         newcontent = reply.content + 'new'
@@ -582,6 +584,9 @@ RSpec.describe RepliesController do
         expect(assigns(:written).user).to eq(reply.user)
         expect(assigns(:written).audit_comment).to eq('note')
         expect(assigns(:written).content).to eq(newcontent)
+
+        expect(controller.gon.editor_user[:username]).to eq(user.username)
+        expect(assigns(:templates)).to eq([char.template])
       end
 
       skip
