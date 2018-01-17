@@ -30,7 +30,7 @@ RSpec.feature "Editing posts", :type => :feature do
     end
 
     expect(page).to have_no_selector('.error')
-    expect(page).to have_selector('.content-header', text: 'Edit post')
+    expect(page).to have_selector('.content-header', exact_text: 'Edit post')
     expect(page).to have_no_selector('.post-container')
     within('#post-editor') do
       fill_in 'Subject', with: 'other subject'
@@ -57,7 +57,7 @@ RSpec.feature "Editing posts", :type => :feature do
 
     # first changes, then preview
     expect(page).to have_no_selector('.error')
-    expect(page).to have_selector('.content-header', text: 'Edit post')
+    expect(page).to have_selector('.content-header', exact_text: 'Edit post')
     expect(page).to have_no_selector('.post-container')
     within('#post-editor') do
       fill_in 'Subject', with: 'other subject'
@@ -66,7 +66,7 @@ RSpec.feature "Editing posts", :type => :feature do
 
     # verify preview, change again
     expect(page).to have_no_selector('.error')
-    expect(page).to have_selector('.content-header', text: 'other subject')
+    expect(page).to have_selector('.content-header', exact_text: 'other subject')
     expect(page).to have_selector('.post-container', count: 1)
     expect(page).to have_selector('#post-editor')
     within('#post-editor') do
@@ -110,7 +110,7 @@ RSpec.feature "Editing posts", :type => :feature do
     end
 
     expect(page).to have_no_selector('.error')
-    expect(page).to have_selector('.content-header', text: 'Edit post')
+    expect(page).to have_selector('.content-header', exact_text: 'Edit post')
     expect(page).to have_no_selector('.post-container')
     within('#post-editor') do
       fill_in 'Subject', with: 'other subject'
@@ -142,7 +142,7 @@ RSpec.feature "Editing posts", :type => :feature do
 
     # first changes, then preview
     expect(page).to have_no_selector('.error')
-    expect(page).to have_selector('.content-header', text: 'Edit post')
+    expect(page).to have_selector('.content-header', exact_text: 'Edit post')
     expect(page).to have_no_selector('.post-container')
     within('#post-editor') do
       fill_in 'Subject', with: 'other subject'
@@ -152,7 +152,7 @@ RSpec.feature "Editing posts", :type => :feature do
 
     # verify preview, change again
     expect(page).to have_no_selector('.error')
-    expect(page).to have_selector('.content-header', text: 'other subject')
+    expect(page).to have_selector('.content-header', exact_text: 'other subject')
     expect(page).to have_selector('.post-container', count: 1)
     expect(page).to have_selector('#post-editor')
     within('#post-editor') do
