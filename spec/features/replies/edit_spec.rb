@@ -134,4 +134,53 @@ RSpec.feature "Creating replies", :type => :feature do
       expect(page).to have_selector('.post-author', exact_text: user.username)
     end
   end
+
+  scenario "Moderator edits a reply with preview" do
+    user = create(:user, password: 'known')
+    reply = create(:reply, user: user, content: 'example text')
+
+    login(create(:mod_user, password: 'known'), 'known')
+
+    visit reply_path(reply)
+    expect(page).to have_selector('.post-container', count: 2)
+    within(find_reply_on_page(reply)) do
+      click_link 'Edit'
+    end
+
+    # first changes, then preview
+    expect(page).to have_no_selector('.error')
+    expect(page).to have_selector('.content-header', exact_text: 'Edit post')
+    expect(page).to have_no_selector('.post-container')
+    within('#post-editor') do
+      fill_in 'reply_content', with: 'other text'
+      fill_in 'Moderator note', with: 'example edit'
+      click_button 'Preview'
+    end
+
+    # verify preview, change again
+    expect(page).to have_no_selector('.error')
+    expect(page).to have_no_selector('.success')
+    expect(page).to have_selector('.content-header', exact_text: reply.post.subject)
+    expect(page).to have_selector('.post-container', count: 1)
+    within('.post-container') do
+      expect(page).to have_selector('.post-content', exact_text: 'other text')
+      expect(page).to have_selector('.post-author', exact_text: user.username)
+    end
+
+    within('#post-editor') do
+      expect(page).to have_field('reply_content', with: 'other text')
+      expect(page).to have_field('Moderator note', with: 'example edit')
+      fill_in 'reply_content', with: 'third text'
+      fill_in 'Moderator note', with: 'another edit'
+      click_button 'Save'
+    end
+
+    expect(page).to have_no_selector('.error')
+    expect(page).to have_selector('.success', exact_text: 'Post updated')
+    expect(page).to have_selector('.post-container', count: 2)
+    within(find_reply_on_page(reply)) do
+      expect(page).to have_selector('.post-content', exact_text: 'third text')
+      expect(page).to have_selector('.post-author', exact_text: user.username)
+    end
+  end
 end
