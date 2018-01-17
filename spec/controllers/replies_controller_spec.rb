@@ -490,7 +490,7 @@ RSpec.describe RepliesController do
         expect(ReplyDraft.count).to eq(0)
 
         char = create(:character, user: user)
-        icon = create(:icon)
+        icon = create(:icon, user: user)
         calias = create(:alias, character: char)
         char2 = create(:template_character, user: user)
         newcontent = reply.content + 'new'
@@ -511,6 +511,10 @@ RSpec.describe RepliesController do
         expect(response).to render_template(:preview)
         expect(assigns(:javascripts)).to include('posts/editor')
         expect(assigns(:page_title)).to eq(reply_post.subject)
+        expect(assigns(:post)).to eq(reply_post)
+        expect(assigns(:reply)).to eq(reply)
+        expect(ReplyDraft.count).to eq(0)
+
         written = assigns(:written)
         expect(written).not_to be_a_new_record
         expect(written.user).to eq(reply_post.user)
@@ -524,11 +528,9 @@ RSpec.describe RepliesController do
         expect(persisted.character).to be_nil
         expect(persisted.icon).to be_nil
         expect(persisted.character_alias).to be_nil
-        expect(assigns(:post)).to eq(reply_post)
-        expect(assigns(:reply)).to eq(reply)
 
         # build_template_groups:
-        expect(controller.gon.editor_user).not_to be_nil
+        expect(controller.gon.editor_user[:username]).to eq(user.username)
         # templates
         templates = assigns(:templates)
         expect(templates.length).to eq(2)
