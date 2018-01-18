@@ -124,7 +124,7 @@ RSpec.describe ApplicationController do
       post3_user3 = create(:user)
       25.times { create(:reply, post: post3, user: post3_user2) }
       10.times { create(:reply, post: post3, user: post3_user3)}
-      post3.post_authors.find_by(user_id: post3_user3.id).update_attributes(can_owe: false)
+      post3.post_authors.find_by(user_id: post3_user3.id).update_attributes!(can_owe: false)
 
       id_list = [post1.id, post2.id, post3.id]
       relation = Post.where(id: id_list).ordered_by_id

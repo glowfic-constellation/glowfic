@@ -86,11 +86,11 @@ RSpec.describe Board do
 
     it "should be ordered if board is not open to anyone" do
       board = create(:board)
-      board.update_attributes(coauthors: [create(:user)])
+      board.update_attributes!(coauthors: [create(:user)])
       expect(board.ordered?).to eq(true)
-      board.update_attributes(coauthors: [])
+      board.update_attributes!(coauthors: [])
       expect(board.ordered?).to eq(false)
-      board.update_attributes(cameos: [create(:user)])
+      board.update_attributes!(cameos: [create(:user)])
       expect(board.ordered?).to eq(true)
     end
 

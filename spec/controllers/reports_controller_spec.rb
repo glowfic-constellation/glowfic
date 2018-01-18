@@ -50,7 +50,7 @@ RSpec.describe ReportsController do
 
       it "works" do
         3.times do create(:post) end
-        Post.last.user.update_attributes(moiety: 'abcdef')
+        Post.last.user.update_attributes!(moiety: 'abcdef')
         create(:post, num_replies: 4, created_at: 2.days.ago)
         get :show, params: { id: 'daily' }
       end
@@ -93,7 +93,7 @@ RSpec.describe ReportsController do
           end
 
           it "does not mark read for ignoring users" do
-            user.update_attributes(ignore_unread_daily_report: true)
+            user.update_attributes!(ignore_unread_daily_report: true)
             expect(user.report_view).to be_nil
             login_as(user)
             get :show, params: { id: 'daily', day: 2.days.ago.to_date.to_s }

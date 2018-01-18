@@ -245,7 +245,7 @@ RSpec.describe Post do
       expect(post.section_order).to eq(0)
       create(:post, board_id: board.id)
       create(:post, board_id: board.id)
-      post.update_attributes(content: 'new content')
+      post.update_attributes!(content: 'new content')
       post.reload
       expect(post.section_order).to eq(0)
     end
@@ -334,7 +334,7 @@ RSpec.describe Post do
 
       it "is true with avatar" do
         icon = create(:icon, user: user)
-        user.update_attributes(avatar: icon)
+        user.update_attributes!(avatar: icon)
         user.reload
 
         expect(post.character).to be_nil
@@ -353,7 +353,7 @@ RSpec.describe Post do
 
       it "is true with default icon" do
         icon = create(:icon, user: user)
-        character.update_attributes(default_icon: icon)
+        character.update_attributes!(default_icon: icon)
         expect(post.has_icons?).to eq(true)
       end
 
