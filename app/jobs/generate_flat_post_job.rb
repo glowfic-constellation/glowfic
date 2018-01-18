@@ -30,7 +30,7 @@ class GenerateFlatPostJob < ApplicationJob
 
       flat_post = post.flat_post
       flat_post.content = content
-      flat_post.save
+      flat_post.save!
 
       $redis.del(lock_key)
     rescue Exception => e
