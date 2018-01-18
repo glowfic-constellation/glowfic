@@ -99,7 +99,7 @@ RSpec.describe Api::V1::TagsController do
 
     [:setting, :label, :content_warning].each do |type|
       it "should support getting #{type} tags" do
-        tag = create(type)
+        tag = create(type) # rubocop:disable Rails/SaveBang
         get :show, params: { id: tag.id }
         expect(response).to have_http_status(200)
         expect(response.json['id']).to eq(tag.id)
