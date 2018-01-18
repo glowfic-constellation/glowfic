@@ -53,7 +53,7 @@ class Api::V1::CharactersController < Api::ApiController
     errors += @character.errors.full_messages.map { |msg| {message: msg} } unless @character.valid?
     render json: {errors: errors}, status: :unprocessable_entity and return unless errors.empty?
 
-    @character.save
+    @character.save!
     render json: @character.as_json(include: [:default])
   end
 

@@ -243,7 +243,7 @@ class PostsController < WritableController
       flash[:error] = "Invalid status selected."
     else
       @post.status = new_status
-      @post.save
+      @post.save!
       flash[:success] = "Post has been marked #{params[:status]}."
     end
     redirect_to post_path(@post)
@@ -251,7 +251,7 @@ class PostsController < WritableController
 
   def change_authors_locked
     @post.authors_locked = (params[:authors_locked] == 'true')
-    @post.save
+    @post.save!
     flash[:success] = "Post has been #{@post.authors_locked? ? 'locked to' : 'unlocked from'} current authors."
     redirect_to post_path(@post)
   end

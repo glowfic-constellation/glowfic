@@ -44,7 +44,7 @@ class MessagesController < ApplicationController
       render action: :new and return
     end
 
-    @message.save
+    @message.save!
     flash[:success] = "Message sent!"
     redirect_to messages_path(view: 'inbox')
   end
