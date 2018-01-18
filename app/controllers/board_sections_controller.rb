@@ -58,7 +58,7 @@ class BoardSectionsController < ApplicationController
   end
 
   def destroy
-    @board_section.destroy
+    @board_section.destroy!
     flash[:success] = "Section deleted."
     redirect_to edit_board_path(@board_section.board)
   end

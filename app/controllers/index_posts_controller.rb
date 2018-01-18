@@ -50,7 +50,7 @@ class IndexPostsController < ApplicationController
       redirect_to index_path(index_post.index) and return
     end
 
-    index_post.destroy
+    index_post.destroy!
     flash[:success] = "Post removed from index."
     redirect_to index_path(index_post.index)
   end

@@ -88,7 +88,7 @@ class FavoritesController < ApplicationController
       redirect_to favorites_path and return
     end
 
-    fav.destroy
+    fav.destroy!
     flash[:success] = "Favorite removed."
     if fav.favorite_type == User.to_s
       redirect_to user_path(fav.favorite)

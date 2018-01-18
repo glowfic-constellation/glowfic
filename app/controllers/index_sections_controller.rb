@@ -61,7 +61,7 @@ class IndexSectionsController < ApplicationController
   end
 
   def destroy
-    @section.destroy
+    @section.destroy!
     flash[:success] = "Index section deleted."
     redirect_to index_path(@section.index)
   end

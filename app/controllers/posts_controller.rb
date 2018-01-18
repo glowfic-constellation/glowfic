@@ -262,7 +262,7 @@ class PostsController < WritableController
       redirect_to post_path(@post) and return
     end
 
-    @post.destroy
+    @post.destroy!
     flash[:success] = "Post deleted."
     redirect_to boards_path
   end

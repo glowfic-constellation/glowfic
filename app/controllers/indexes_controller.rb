@@ -61,7 +61,7 @@ class IndexesController < ApplicationController
   end
 
   def destroy
-    @index.destroy
+    @index.destroy!
     flash[:success] = "Index deleted."
     redirect_to indexes_path
   end

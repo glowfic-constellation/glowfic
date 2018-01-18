@@ -67,7 +67,7 @@ class TagsController < ApplicationController
       redirect_to tag_path(@tag) and return
     end
 
-    @tag.destroy
+    @tag.destroy!
     flash[:success] = "Tag deleted."
 
     url_params = {}

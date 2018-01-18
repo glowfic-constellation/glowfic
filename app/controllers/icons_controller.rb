@@ -110,7 +110,7 @@ class IconsController < UploadingController
 
   def destroy
     gallery = @icon.galleries.first if @icon.galleries.count == 1
-    @icon.destroy
+    @icon.destroy!
     flash[:success] = "Icon deleted successfully."
     redirect_to gallery_path(gallery) and return if gallery
     redirect_to user_galleries_path(current_user)

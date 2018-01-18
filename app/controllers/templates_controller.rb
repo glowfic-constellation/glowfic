@@ -51,7 +51,7 @@ class TemplatesController < ApplicationController
   end
 
   def destroy
-    @template.destroy
+    @template.destroy!
     flash[:success] = "Template deleted successfully."
     redirect_to user_characters_path(current_user)
   end

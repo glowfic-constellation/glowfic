@@ -26,7 +26,7 @@ class AliasesController < ApplicationController
   end
 
   def destroy
-    @alias.destroy
+    @alias.destroy!
     flash[:success] = "Alias removed."
     redirect_to edit_character_path(@character)
   end
