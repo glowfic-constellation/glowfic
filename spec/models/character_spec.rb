@@ -67,8 +67,8 @@ RSpec.describe Character do
       gallery1 = create(:gallery, user: user)
       gallery2 = create(:gallery, user: user)
 
-      CharactersGallery.create(character: character, gallery: gallery1)
-      CharactersGallery.create(character: character, gallery: gallery2, added_by_group: true)
+      CharactersGallery.create!(character: character, gallery: gallery1)
+      CharactersGallery.create!(character: character, gallery: gallery2, added_by_group: true)
 
       character.reload
       expect(character.gallery_ids).to match_array([gallery1.id, gallery2.id])
@@ -124,7 +124,7 @@ RSpec.describe Character do
       gallery_both = create(:gallery, gallery_groups: [group], user: user)
       gallery_automatic = create(:gallery, gallery_groups: [group], user: user)
 
-      CharactersGallery.create(character: character, gallery: gallery_manual)
+      CharactersGallery.create!(character: character, gallery: gallery_manual)
       character.characters_galleries.where(gallery_id: gallery_both.id).update_all(added_by_group: false)
 
       character.reload
@@ -164,7 +164,7 @@ RSpec.describe Character do
       gallery_both = create(:gallery, gallery_groups: [group], user: user)
       gallery_automatic = create(:gallery, gallery_groups: [group], user: user)
 
-      CharactersGallery.create(character: character, gallery: gallery_manual)
+      CharactersGallery.create!(character: character, gallery: gallery_manual)
       character.characters_galleries.where(gallery_id: gallery_both.id).update_all(added_by_group: false)
 
       character.reload
