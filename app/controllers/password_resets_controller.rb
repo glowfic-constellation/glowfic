@@ -61,7 +61,7 @@ class PasswordResetsController < ApplicationController
       render :show and return
     end
 
-    @password_reset.update_attributes(used: true)
+    @password_reset.update_attributes!(used: true)
     flash[:success] = "Password successfully changed."
     redirect_to root_url
   end
