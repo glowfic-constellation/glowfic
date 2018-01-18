@@ -76,8 +76,6 @@ class Character < ApplicationRecord
   def ungrouped_gallery_ids=(new_ids)
     new_ids -= ['']
     new_ids = new_ids.map(&:to_i)
-    old_ids = ungrouped_gallery_ids
-    rem_ids = old_ids - new_ids
     group_gallery_ids = gallery_groups.joins(:gallery_tags).except(:order).pluck('distinct gallery_tags.gallery_id')
     new_chargals = []
     transaction do

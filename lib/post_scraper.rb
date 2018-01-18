@@ -66,7 +66,6 @@ class PostScraper < Object
       threads.each do |thread|
         @html_doc = doc_from_url(thread)
         import_replies_from_doc(@html_doc)
-        old_count = @post.replies.count
         links = page_links
         links.each_with_index do |link, i|
           logger.debug "Scraping '#{@post.subject}': page #{i+1}/#{links.count}"
