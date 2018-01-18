@@ -380,7 +380,7 @@ RSpec.describe RepliesController do
       expect(reply.post.visible_to?(reply.user)).to eq(true)
 
       reply.post.privacy = Concealable::PRIVATE
-      reply.post.save
+      reply.post.save!
       reply.reload
       expect(reply.post.visible_to?(reply.user)).to eq(false)
 
@@ -441,7 +441,7 @@ RSpec.describe RepliesController do
       expect(reply.post.visible_to?(reply.user)).to eq(true)
 
       reply.post.privacy = Concealable::PRIVATE
-      reply.post.save
+      reply.post.save!
       reply.reload
       expect(reply.post.visible_to?(reply.user)).to eq(false)
 
@@ -485,7 +485,7 @@ RSpec.describe RepliesController do
       expect(reply.post.visible_to?(reply.user)).to eq(true)
 
       reply.post.privacy = Concealable::PRIVATE
-      reply.post.save
+      reply.post.save!
       reply.reload
       expect(reply.post.visible_to?(reply.user)).to eq(false)
 
@@ -551,7 +551,7 @@ RSpec.describe RepliesController do
       expect(reply.post.visible_to?(reply.user)).to eq(true)
 
       reply.post.privacy = Concealable::PRIVATE
-      reply.post.save
+      reply.post.save!
       reply.reload
       expect(reply.post.visible_to?(reply.user)).to eq(false)
 
@@ -742,7 +742,7 @@ RSpec.describe RepliesController do
       expect(reply.post.visible_to?(reply.user)).to eq(true)
 
       reply.post.privacy = Concealable::PRIVATE
-      reply.post.save
+      reply.post.save!
       reply.reload
       expect(reply.post.visible_to?(reply.user)).to eq(false)
 

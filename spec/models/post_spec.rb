@@ -13,7 +13,7 @@ RSpec.describe Post do
     # edited with no replies updates edit and tag
     Timecop.freeze(old_tagged_at + 1.hour) do
       post.content = 'new content'
-      post.save
+      post.save!
       expect(post.tagged_at).to be_the_same_time_as(post.edited_at)
       expect(post.tagged_at).to be > post.created_at
       old_edited_at = post.edited_at
@@ -23,7 +23,7 @@ RSpec.describe Post do
     # invalid edit field with no replies updates nothing
     Timecop.freeze(old_tagged_at + 2.hours) do
       post.section_order = post.section_order + 1
-      post.save
+      post.save!
       expect(post.tagged_at).to be_the_same_time_as(old_tagged_at)
       expect(post.edited_at).to be_the_same_time_as(old_edited_at)
     end
@@ -41,7 +41,7 @@ RSpec.describe Post do
     # edited with replies updates edit but not tag
     Timecop.freeze(old_tagged_at + 4.hours) do
       post.content = 'newer content'
-      post.save
+      post.save!
       expect(post.tagged_at).to be_the_same_time_as(old_tagged_at)
       expect(post.edited_at).to be > old_edited_at
       old_edited_at = post.edited_at
@@ -50,7 +50,7 @@ RSpec.describe Post do
     # edited status with replies updates edit and tag
     Timecop.freeze(old_tagged_at + 5.hours) do
       post.status = Post::STATUS_COMPLETE
-      post.save
+      post.save!
       expect(post.tagged_at).to be > old_tagged_at
       expect(post.edited_at).to be > old_edited_at
       old_edited_at = post.edited_at
@@ -60,7 +60,7 @@ RSpec.describe Post do
     # invalid edit field with replies updates nothing
     Timecop.freeze(old_tagged_at + 6.hours) do
       post.section_order = post.section_order + 1
-      post.save
+      post.save!
       expect(post.tagged_at).to be_the_same_time_as(old_tagged_at)
       expect(post.edited_at).to be_the_same_time_as(old_edited_at)
     end
@@ -78,7 +78,7 @@ RSpec.describe Post do
     # first reply updated updates nothing
     Timecop.freeze(old_tagged_at + 8.hours) do
       reply.content = 'new content'
-      reply.save
+      reply.save!
       post.reload
       expect(post.tagged_at).to be_the_same_time_as(old_tagged_at)
       expect(post.edited_at).to be_the_same_time_as(old_edited_at)
@@ -87,7 +87,7 @@ RSpec.describe Post do
     # second reply updated updates tag but not edit
     Timecop.freeze(old_tagged_at + 9.hours) do
       reply2.content = 'new content'
-      reply2.save
+      reply2.save!
       post.reload
       expect(post.tagged_at).to be_the_same_time_as(reply2.updated_at)
       expect(post.edited_at).to be_the_same_time_as(old_edited_at)
@@ -111,7 +111,7 @@ RSpec.describe Post do
       post = create(:post)
       expect(post.edited_at).to eq(post.created_at)
       post.content = 'new content now'
-      post.save
+      post.save!
       expect(post.edited_at).not_to eq(post.created_at)
     end
 
@@ -120,7 +120,7 @@ RSpec.describe Post do
       expect(post.edited_at).to eq(post.created_at)
       post.content = 'new content now'
       post.description = 'description'
-      post.save
+      post.save!
       expect(post.edited_at).not_to eq(post.created_at)
     end
 
@@ -221,7 +221,7 @@ RSpec.describe Post do
       expect(post.section_order).to eq(1)
       section = create(:board_section, board_id: board.id)
       post.section_id = section.id
-      post.save
+      post.save!
       post.reload
       expect(post.section_order).to eq(0)
     end
@@ -234,7 +234,7 @@ RSpec.describe Post do
       expect(post.section_order).to eq(2)
       board = create(:board)
       post.board = board
-      post.save
+      post.save!
       post.reload
       expect(post.section_order).to eq(0)
     end
@@ -279,7 +279,7 @@ RSpec.describe Post do
       post3 = create(:post, board_id: board.id, user: board.creator)
       expect(post3.section_order).to eq(3)
       post1.board = create(:board)
-      post1.save
+      post1.save!
       expect(post0.reload.section_order).to eq(0)
       expect(post2.reload.section_order).to eq(1)
       expect(post3.reload.section_order).to eq(2)
@@ -297,7 +297,7 @@ RSpec.describe Post do
 
       post2.board_id = board.id
       post2.skip_edited = true
-      post2.save
+      post2.save!
 
       expect(post0.section_order).to eq(0)
       expect(post1.section_order).to eq(1)
@@ -318,7 +318,7 @@ RSpec.describe Post do
 
       post.board_id = board2.id
       post.skip_edited = true
-      post.save
+      post.save!
 
       expect(post.reload.section_order).to eq(0)
       expect(section1.reload.section_order).to eq(0)
@@ -611,10 +611,10 @@ RSpec.describe Post do
 
         Timecop.freeze(unread.created_at + 1.day) do
           post.status = Post::STATUS_COMPLETE
-          post.save
+          post.save!
 
           post.description = 'new description to add another audit'
-          post.save
+          post.save!
         end
 
         post.reload
@@ -712,7 +712,7 @@ RSpec.describe Post do
 
     it "does not reset on update" do
       post.content = 'new content'
-      post.save
+      post.save!
       expect(post.reload).not_to be_show_warnings_for(user)
     end
 
@@ -744,7 +744,7 @@ RSpec.describe Post do
       post = create(:post)
       last_reply = create(:reply, post: post, with_character: true, with_icon: true)
       last_reply.character.default_icon = create(:icon, user: last_reply.user)
-      last_reply.character.save
+      last_reply.character.save!
       last_reply.reload
       reply = post.build_new_reply_for(last_reply.user)
       expect(reply).to be_a_new_record
@@ -766,7 +766,7 @@ RSpec.describe Post do
       post = create(:post)
       character = create(:character, with_default_icon: true)
       character.user.active_character = character
-      character.user.save
+      character.user.save!
 
       reply = post.build_new_reply_for(character.user)
 
@@ -784,7 +784,7 @@ RSpec.describe Post do
       user = icon.user
       user.avatar = icon
       user.active_character = character
-      user.save
+      user.save!
 
       reply = post.build_new_reply_for(user)
 
@@ -798,7 +798,7 @@ RSpec.describe Post do
       post = create(:post)
       icon = create(:icon)
       icon.user.avatar = icon
-      icon.user.save
+      icon.user.save!
 
       reply = post.build_new_reply_for(icon.user)
 

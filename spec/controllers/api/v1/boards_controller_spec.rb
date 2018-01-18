@@ -71,9 +71,9 @@ RSpec.describe Api::V1::BoardsController do
       section1 = create(:board_section, board: board)
       section2 = create(:board_section, board: board)
       section1.section_order = 1
-      section1.save
+      section1.save!
       section2.section_order = 0
-      section2.save
+      section2.save!
       get :show, params: { id: board.id }
       expect(response).to have_http_status(200)
       expect(response.json['id']).to eq(board.id)

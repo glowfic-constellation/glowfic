@@ -697,7 +697,7 @@ RSpec.describe CharactersController do
       character = create(:character, user: user)
       other_char = create(:character, user: user)
       other_char.default_icon = create(:icon, user: user)
-      other_char.save
+      other_char.save!
       calias = create(:alias, character: other_char)
       char_post = create(:post, user: user, character: character)
       create(:reply, user: user, post: char_post, character: character) # reply

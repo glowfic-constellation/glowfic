@@ -2275,7 +2275,7 @@ RSpec.describe PostsController do
         post.update_attributes(status: Post::STATUS_HIATUS)
 
         user.hide_hiatused_tags_owed = true
-        user.save
+        user.save!
         get :owed
         expect(response.status).to eq(200)
         expect(assigns(:posts)).to be_empty

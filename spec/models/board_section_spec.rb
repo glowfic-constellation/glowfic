@@ -65,7 +65,7 @@ RSpec.describe BoardSection do
     section3 = create(:board_section, board_id: board.id)
     expect(section3.section_order).to eq(3)
     section1.board = create(:board)
-    section1.save
+    section1.save!
     expect(section0.reload.section_order).to eq(0)
     expect(section2.reload.section_order).to eq(1)
     expect(section3.reload.section_order).to eq(2)

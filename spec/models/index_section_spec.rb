@@ -54,7 +54,7 @@ RSpec.describe IndexSection do
     section3 = create(:index_section, index: index)
     expect(section3.section_order).to eq(3)
     section1.index = create(:index)
-    section1.save
+    section1.save!
     expect(section0.reload.section_order).to eq(0)
     expect(section2.reload.section_order).to eq(1)
     expect(section3.reload.section_order).to eq(2)

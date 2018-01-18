@@ -9,7 +9,7 @@ RSpec.describe GalleryTag do
 
         gallery = create(:gallery)
         gallery.gallery_groups << group
-        gallery.save
+        gallery.save!
         expect(character.reload.galleries).to match_array([])
       end
 
@@ -24,14 +24,14 @@ RSpec.describe GalleryTag do
 
         gallery = create(:gallery, user: user, characters: [character1])
         gallery.gallery_groups << group
-        gallery.save
+        gallery.save!
         gallery.reload
         expect(gallery.characters).to match_array([character1, character2])
         expect(gallery.characters_galleries.find_by(character_id: character1.id)).not_to be_added_by_group
         expect(gallery.characters_galleries.find_by(character_id: character2.id)).to be_added_by_group
 
         gallery.gallery_groups << group2
-        gallery.save
+        gallery.save!
         gallery.reload
         expect(gallery.characters).to match_array([character1, character2])
         expect(gallery.characters_galleries.find_by(character_id: character1.id)).not_to be_added_by_group
@@ -46,7 +46,7 @@ RSpec.describe GalleryTag do
 
         gallery = create(:gallery, user: user)
         gallery.gallery_groups << group
-        gallery.save
+        gallery.save!
         gallery.reload
         expect(gallery.characters).to match_array([character1, character2])
         expect(gallery.characters_galleries.map(&:added_by_group?)).to eq([true, true])

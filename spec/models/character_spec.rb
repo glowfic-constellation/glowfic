@@ -199,7 +199,7 @@ RSpec.describe Character do
           expect(character.reload.galleries).to match_array([gallery])
 
           process_changes(character, [], [gallery.id], time)
-          character.save
+          character.save!
 
           character.reload
           expect(character.galleries).to match_array([gallery])
@@ -216,7 +216,7 @@ RSpec.describe Character do
           expect(character.reload.galleries).to match_array([gallery])
 
           process_changes(character, [group2.id], [gallery.id], time)
-          character.save
+          character.save!
 
           character.reload
           expect(character.galleries).to match_array([gallery])
@@ -232,7 +232,7 @@ RSpec.describe Character do
           expect(character.reload.galleries).to match_array([gallery])
 
           process_changes(character, [group.id], [], time)
-          character.save
+          character.save!
 
           character.reload
           expect(character.galleries).to match_array([gallery])
@@ -249,7 +249,7 @@ RSpec.describe Character do
           expect(character.reload.galleries).to match_array([gallery])
 
           process_changes(character, [group2.id], [], time)
-          character.save
+          character.save!
 
           character.reload
           expect(character.galleries).to match_array([gallery])
