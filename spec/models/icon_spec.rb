@@ -64,13 +64,13 @@ RSpec.describe Icon do
 
     it "deletes uploaded on destroy" do
       icon = create(:uploaded_icon)
-      icon.destroy
+      icon.destroy!
       expect(DeleteIconFromS3Job).to have_been_enqueued.with(icon.s3_key).on_queue('high')
     end
 
     it "does not delete non-uploaded on destroy" do
       icon = create(:icon)
-      icon.destroy
+      icon.destroy!
       expect(DeleteIconFromS3Job).not_to have_been_enqueued
     end
 

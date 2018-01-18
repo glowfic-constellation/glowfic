@@ -101,7 +101,7 @@ RSpec.describe Post do
       expect(PostView.count).to be_zero
       post.mark_read(user)
       expect(PostView.count).not_to be_zero
-      post.destroy
+      post.destroy!
       expect(PostView.count).to be_zero
     end
   end
@@ -261,7 +261,7 @@ RSpec.describe Post do
       expect(post2.section_order).to eq(2)
       post3 = create(:post, board_id: board.id, user: board.creator)
       expect(post3.section_order).to eq(3)
-      post1.destroy
+      post1.destroy!
       expect(post0.reload.section_order).to eq(0)
       expect(post2.reload.section_order).to eq(1)
       expect(post3.reload.section_order).to eq(2)

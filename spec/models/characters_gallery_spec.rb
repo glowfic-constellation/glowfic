@@ -13,7 +13,7 @@ RSpec.describe CharactersGallery do
     cg2 = CharactersGallery.create(character: character, gallery: gallery)
     expect(cg2.section_order).to eq(2)
 
-    cg1.destroy
+    cg1.destroy!
 
     expect(cg0.reload.section_order).to eq(0)
     expect(cg2.reload.section_order).to eq(1)

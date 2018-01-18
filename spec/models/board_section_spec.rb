@@ -10,7 +10,7 @@ RSpec.describe BoardSection do
     expect(post.section_id).not_to be_nil
     expect(post.section_order).to eq(0)
     expect(section2.section_order).to eq(2)
-    section.destroy
+    section.destroy!
     post.reload
     expect(post.section_id).to be_nil
     expect(post.section_order).to eq(0)
@@ -48,7 +48,7 @@ RSpec.describe BoardSection do
     expect(section2.section_order).to eq(2)
     section3 = create(:board_section, board_id: board.id)
     expect(section3.section_order).to eq(3)
-    section1.destroy
+    section1.destroy!
     expect(section0.reload.section_order).to eq(0)
     expect(section2.reload.section_order).to eq(1)
     expect(section3.reload.section_order).to eq(2)

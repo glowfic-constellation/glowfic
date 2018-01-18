@@ -37,7 +37,7 @@ RSpec.describe IndexSection do
     expect(section2.section_order).to eq(2)
     section3 = create(:index_section, index: index)
     expect(section3.section_order).to eq(3)
-    section1.destroy
+    section1.destroy!
     expect(section0.reload.section_order).to eq(0)
     expect(section2.reload.section_order).to eq(1)
     expect(section3.reload.section_order).to eq(2)

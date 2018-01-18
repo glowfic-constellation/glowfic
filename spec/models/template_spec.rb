@@ -62,7 +62,7 @@ RSpec.describe Template do
     create(:character, template: template)
     create(:character, template: template)
     old_id = template.id
-    template.destroy
+    template.destroy!
     expect(Character.where(template_id: old_id)).to be_empty
   end
 end

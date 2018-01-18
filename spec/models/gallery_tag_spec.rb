@@ -83,7 +83,7 @@ RSpec.describe GalleryTag do
       expect(gallery.gallery_groups).to match_array([group])
       expect(other.gallery_groups).to match_array([group])
 
-      gallery.destroy
+      gallery.destroy!
       group.reload
       expect(other.reload.gallery_groups).to match_array([group])
     end

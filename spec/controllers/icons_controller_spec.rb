@@ -19,7 +19,7 @@ RSpec.describe IconsController do
 
     it "requires valid icons" do
       icon = create(:icon)
-      icon.destroy
+      icon.destroy!
       user_id = login
       delete :delete_multiple, params: { marked_ids: [0, '0', 'abc', -1, '-1', icon.id] }
       expect(response).to redirect_to(user_galleries_url(user_id))
