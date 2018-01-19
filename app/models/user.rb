@@ -25,7 +25,6 @@ class User < ApplicationRecord
   belongs_to :avatar, class_name: 'Icon', optional: true
   belongs_to :active_character, class_name: 'Character', optional: true
 
-  validates_confirmation_of :password, if: :validate_password?
   validates :username, :crypted, presence: true
   validates :email, presence: { on: :create }
   validates :username, uniqueness: true
@@ -33,6 +32,7 @@ class User < ApplicationRecord
   validates :username, length: { in: MIN_USERNAME_LEN..MAX_USERNAME_LEN, allow_blank: true }
   validates :moiety, length: { in: 3..6, allow_blank: true }
   validates :password, length: { minimum: 6, if: :validate_password? }
+  validates :password, confirmation: { if: :validate_password? }
   validates :password, :password_confirmation, presence: { if: :validate_password? }
 
   before_validation :encrypt_password, :strip_spaces
