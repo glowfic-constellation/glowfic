@@ -9,7 +9,7 @@ RSpec.describe Message do
       expect(message.recipient.email_notifications).not_to eq(true)
 
       user = create(:user)
-      user.update_attribute('email', nil)
+      user.update(email: nil)
       create(:message, recipient: user)
 
       notified_user = create(:user, email_notifications: true)

@@ -51,7 +51,7 @@ RSpec.describe ApplicationController do
     it "shows warning if salt_uuid not set" do
       user = create(:user)
       login_as(user)
-      user.update_attribute(:salt_uuid, nil)
+      user.update(salt_uuid: nil)
       controller.send(:show_password_warning) do
         expect(flash.now[:pass]).to eq("Because Marri accidentally made passwords a bit too secure, you must log back in to continue using the site.")
         expect(controller.send(:logged_in?)).not_to eq(true)

@@ -4,8 +4,8 @@ RSpec.describe User do
   describe "password encryption" do
     it "should support nil salt_uuid" do
       user = create(:user)
-      user.update_attribute(:salt_uuid, nil)
-      user.update_attribute(:crypted, user.send(:old_crypted_password, 'test'))
+      user.update(salt_uuid: nil)
+      user.update(crypted: user.send(:old_crypted_password, 'test'))
       user.reload
       expect(user.authenticate('test')).to eq(true)
     end

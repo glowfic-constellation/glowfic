@@ -67,11 +67,11 @@ RSpec.describe Board do
     create(:post, board: board) # post2
     create(:post, board: board) # post3
     create(:post, board: board) # post4
-    post.update_attribute(:section_order, 2)
+    post.update(section_order: 2)
     section = create(:board_section, board: board)
     create(:board_section, board: board) # section2
     create(:board_section, board: board) # section3
-    section.update_attribute(:section_order, 6)
+    section.update(section_order: 6)
     expect(board.posts.order('section_order asc').pluck(:section_order)).to eq([1, 2, 2, 3])
     expect(board.board_sections.order('section_order asc').pluck(:section_order)).to eq([1, 2, 6])
     board.send(:fix_ordering)

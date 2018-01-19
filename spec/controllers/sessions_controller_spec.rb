@@ -81,8 +81,8 @@ RSpec.describe SessionsController do
     it "logs in successfully without salt_uuid and sets it" do
       password = 'password'
       user = create(:user)
-      user.update_attribute(:salt_uuid, nil)
-      user.update_attribute(:crypted, user.send(:old_crypted_password, password))
+      user.update(salt_uuid: nil)
+      user.update(crypted: user.send(:old_crypted_password, password))
       user.reload
       expect(user.salt_uuid).to be_nil
       expect(session[:user_id]).to be_nil
