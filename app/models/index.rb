@@ -6,7 +6,7 @@ class Index < ApplicationRecord
   has_many :index_sections, inverse_of: :index, dependent: :destroy
   belongs_to :user, inverse_of: :indexes, optional: false
 
-  validates_presence_of :name
+  validates :name, presence: true
 
   def editable_by?(user)
     return false unless user

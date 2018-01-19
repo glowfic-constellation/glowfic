@@ -5,7 +5,7 @@ class Message < ApplicationRecord
   belongs_to :parent, class_name: 'Message', optional: true
   belongs_to :first_thread, class_name: 'Message', foreign_key: :thread_id, optional: false
 
-  validates_presence_of :sender, if: Proc.new { |m| m.sender_id != 0 }
+  validates :sender, presence: { if: Proc.new { |m| m.sender_id != 0 } }
 
   before_validation :set_thread_id
   after_create :notify_recipient

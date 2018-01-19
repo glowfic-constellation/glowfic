@@ -5,7 +5,7 @@ class IndexSection < ApplicationRecord
   has_many :index_posts, inverse_of: :index_section, dependent: :destroy
   has_many :posts, through: :index_posts
 
-  validates_presence_of :name
+  validates :name, presence: true
 
   private
 

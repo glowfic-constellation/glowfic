@@ -15,7 +15,7 @@ class Board < ApplicationRecord
   has_many :board_cameos, -> { where(cameo: true) }, class_name: 'BoardAuthor', inverse_of: :board
   has_many :cameos, class_name: 'User', through: :board_cameos, source: :user
 
-  validates_presence_of :name
+  validates :name, presence: true
 
   after_destroy :move_posts_to_sandbox
 

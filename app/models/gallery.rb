@@ -11,7 +11,7 @@ class Gallery < ApplicationRecord
   has_many :gallery_tags, inverse_of: :gallery, dependent: :destroy
   has_many :gallery_groups, -> { order('gallery_tags.id ASC') }, through: :gallery_tags, source: :gallery_group, dependent: :destroy
 
-  validates_presence_of :name
+  validates :name, presence: true
 
   scope :ordered, -> { order('characters_galleries.section_order ASC') }
   scope :with_icon_count, -> {
