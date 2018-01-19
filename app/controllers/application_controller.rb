@@ -1,4 +1,4 @@
-require "#{Rails.root}/lib/memorylogic"
+require Rails.root.join('lib', 'memorylogic')
 
 # frozen_string_literal: true
 class ApplicationController < ActionController::Base
