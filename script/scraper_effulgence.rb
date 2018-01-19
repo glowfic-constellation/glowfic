@@ -87,7 +87,7 @@ main_list.children.each do |section|
     url = threads.first
     scraper = PostScraper.new(url, board_id, board_section.id, Post::STATUS_COMPLETE, true)
     post = scraper.scrape_threads!(threads)
-    post.update_attribute(:subject, 'guest list')
+    post.update(subject: 'guest list')
     puts "Renamed thread to 'guest list'"
 
     # import the second ordered list separately
