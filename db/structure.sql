@@ -970,7 +970,8 @@ CREATE TABLE replies (
     thread_id integer,
     created_at timestamp without time zone,
     updated_at timestamp without time zone,
-    character_alias_id integer
+    character_alias_id integer,
+    reply_order integer
 );
 
 
@@ -1007,8 +1008,7 @@ CREATE TABLE reply_drafts (
     thread_id integer,
     created_at timestamp without time zone,
     updated_at timestamp without time zone,
-    character_alias_id integer,
-    reply_order integer
+    character_alias_id integer
 );
 
 
@@ -2122,6 +2122,13 @@ CREATE INDEX index_replies_on_icon_id ON replies USING btree (icon_id);
 --
 
 CREATE INDEX index_replies_on_post_id ON replies USING btree (post_id);
+
+
+--
+-- Name: index_replies_on_reply_order; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_replies_on_reply_order ON replies USING btree (reply_order);
 
 
 --

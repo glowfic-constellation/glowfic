@@ -1,6 +1,7 @@
 class AddReplyOrderToReplies < ActiveRecord::Migration[5.1]
   def up
     add_column :replies, :reply_order, :integer
+    add_index :replies, :reply_order
     execute <<-SQL
 WITH v_replies AS
 (
