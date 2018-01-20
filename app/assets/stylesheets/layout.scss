@@ -288,7 +288,8 @@ td, .table-list li { font-size: 14px; }
 }
 .even .tag-item { background-color: $bg_color_tag_item_even; }
 .odd .tag-item { background-color: $bg_color_tag_item_odd; }
-tr.gallery-tags .tag-item { color: $font_color_tag_item_gallery; }
+// tr.gallery-tags .tag-item { color: $font_color_tag_item_gallery; }
+// This is presently inherited from .tag-item in non-starry themes, and thus adding this to the base file overrides font color styling there.
 
 /* The new object layout with the floating left info box and the right content area */
 .left-info-box {
