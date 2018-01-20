@@ -49,13 +49,20 @@ $font_color_flash_hover: #BBBBBB;
 
 $bg_color_spacer_alt: #333333;
 $bg_color_search_box: #333333;
+$font_color_search_box: #A2A2A2;
 
-.search-box { background-color: $bg_color_search_box; } // TODO: check text on search box is readable
+.search-box { background-color: $bg_color_search_box; color: $font_color_search_box; } // TODO: check text on search box is readable
 .spacer-alt { background-color: $bg_color_spacer_alt; }
 
 /* - misc */
 $bg_color_descriptions: #565656; // description subheadings on templates page ("single-description"), *not* posts
-.single-description { background-color: $bg_color_descriptions; }
+$font_color_descriptions_link: #66997D;
+$font_color_descriptions_link_visited: #66997D;
+.single-description {
+  background-color: $bg_color_descriptions;
+  a { color: $font_color_descriptions_link; }
+  a:visited { color: $font_color_descriptions_link_visited; }
+}
 
 /* - content headers */
 $bg_color_head: #424242; // primary content header
@@ -89,9 +96,10 @@ $bg_color_odd: #474747;
 }
 
 $bg_color_post_description: #5D5D5D;
+$font_color_post_description: #A2A2A2;
 $bg_color_navheader: #5F5D57;
 
-.post-subheader { background-color: $bg_color_post_description; }
+.post-subheader { background-color: $bg_color_post_description; color: $font_color_post_description; }
 .post-navheader { background-color: $bg_color_navheader; }
 
 // TODO: darken post-menu-box to fit with the rest of this theme
@@ -115,12 +123,17 @@ $bg_color_post_character: #595959;
 $bg_color_post_screenname: #515151;
 $bg_color_post_author: #4D4C4C;
 //$bg_color_post_author_narrow: $colors_brown; // these are flipped from not-narrow mode to make the quick-switcher blend in // TODO: Should these flip on dark too?
+$font_color_post_info: #A2A2A2;
 
-.post-character { background-color: $bg_color_post_character; }
-.post-screenname { background-color: $bg_color_post_screenname; }
-.post-author { background-color: $bg_color_post_author; }
+.post-character { background-color: $bg_color_post_character; color: $font_color_post_info; }
+.post-screenname { background-color: $bg_color_post_screenname; color: $font_color_post_info; }
+.post-author { background-color: $bg_color_post_author; color: $font_color_post_info; }
 
 // TODO: Check pagination displays fine in this theme
+
+$font_color_post_menu: #A2A2A2;
+
+#post-menu-box { color: $font_color_post_menu }
 
 table { border-color: #555; } // TODO: what does this style
 
@@ -160,13 +173,23 @@ $font_color_reply_content: #CCCCCC;
 
 .character-view-select { background-color: #666460; } // TODO: what does this do? it seems to only appear here
 
-/* Hovering help box on post editor */ //TODO: Color-strip this
-.ui-widget-content { background-color: #333; color: #A2A2A2; }
-.ui-widget.ui-widget-content { border-color: #444; }
-.ui-widget-header { background-color: #2B2B2B; color: #C2C2C2; border-color: #262626; }
-.ui-state-default, .ui-widget-content .ui-state-default, .ui-widget-header .ui-state-default, .ui-button, html .ui-button.ui-state-disabled:hover, html .ui-button.ui-state-disabled:active { background-color: #383838; border-color: #484848; }
-.ui-state-hover, .ui-widget-content .ui-state-hover, .ui-widget-header .ui-state-hover, .ui-state-focus, .ui-widget-content .ui-state-focus, .ui-widget-header .ui-state-focus, .ui-button:hover, .ui-button:focus { background-color: #383838; border-color: #484848; }
-.ui-widget-content a { color: #66997D; }
+/* Hovering help box on post editor */
+$bg_color_popup_header: #2B2B2B;
+$font_color_popup_header: #C2C2C2;
+$border_color_popup_header: #262626;
+$bg_color_popup_content: #333333;
+$font_color_popup_content: #A2A2A2;
+$border_color_popup: #444444;
+$bg_color_popup_button: #383838;
+$border_color_popup_button: #484848;
+$font_color_popup_link: #66997D;
+
+.ui-widget-content { background-color: $bg_color_popup_content; color: $font_color_popup_content; }
+.ui-widget.ui-widget-content { border-color: $border_color_popup; }
+.ui-widget-header { background-color: $bg_color_popup_header; color: $font_color_popup_header; border-color: $border_color_popup_header; }
+.ui-state-default, .ui-widget-content .ui-state-default, .ui-widget-header .ui-state-default, .ui-button, html .ui-button.ui-state-disabled:hover, html .ui-button.ui-state-disabled:active { background-color: $bg_color_popup_button; border-color: $border_color_popup_button; }
+.ui-state-hover, .ui-widget-content .ui-state-hover, .ui-widget-header .ui-state-hover, .ui-state-focus, .ui-widget-content .ui-state-focus, .ui-widget-header .ui-state-focus, .ui-button:hover, .ui-button:focus { background-color: $bg_color_popup_button; border-color: $border_color_popup_button; }
+.ui-widget-content a { color: $font_color_popup_link; }
 /* TODO: hover, click */
 
 /* Darken input boxes */

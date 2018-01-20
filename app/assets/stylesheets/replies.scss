@@ -12,9 +12,12 @@
   cursor: pointer;
 }
 #current-icon-holder { position: relative; }
-#current-icon-dropdown select {
-  width: 100px;
-  margin-bottom: 10px;
+#current-icon-dropdown {
+  color: $font_color_icon_selector;
+  select {
+    width: 100px;
+    margin-bottom: 10px;
+  }
 }
 
 /* Character selector */
@@ -95,6 +98,7 @@ div.post-subheader { width: 100%; }
   box-sizing: border-box;
   padding: 10px;
   background-color: $bg_color_post_description;
+  color: $font_color_post_description;
 }
 .post-navheader {
   box-sizing: border-box;
@@ -193,11 +197,13 @@ div.post-subheader { width: 100%; }
 }
 .post-character {
   background-color: $bg_color_post_character;
+  color: $font_color_post_info;
   padding: 4px;
   position: relative;
 }
 .post-screenname {
   background-color: $bg_color_post_screenname;
+  color: $font_color_post_screenname;
   padding: 4px;
   overflow-wrap: break-word;
   word-wrap: break-word;
@@ -205,6 +211,7 @@ div.post-subheader { width: 100%; }
 .post-author {
   padding: 5px;
   background-color: $bg_color_post_author;
+  color: $font_color_post_info;
   position: relative;
 }
 .post-footer {
@@ -269,7 +276,7 @@ div.post-subheader { width: 100%; }
 .char-access-fake {
   padding: 5px 0;
   font-size: 80%;
-  background-color: #aaa;
+  background-color: #AAA;
   background-color: rgba(128,128,128,0.3);
 }
 
@@ -309,20 +316,20 @@ div.post-subheader { width: 100%; }
   .current {
     font-weight: bold;
     font-style: normal;
-    background-color: $bg_color_page_current;
+    background-color: $bg_color_paginate_current_page;
   }
   a, .current, .disabled {
     display: inline-block;
     padding: 5px 10px;
   }
   .disabled {
-    color: $font_color_page_disabled;
+    color: $font_color_paginate_link_disabled;
     text-align: left;
   }
   a {
     color: $font_color_paginate_link;
     &:hover { background-color: $bg_color_paginate_link_hover; }
-    &:visited { color: $font_color_page_visited; }
+    &:visited { color: $font_color_paginate_link_visited; }
   }
   .summary {
     padding-left: 10px;
@@ -378,6 +385,7 @@ div.post-subheader { width: 100%; }
   top: 0;
   right: 0;
   z-index: 99;
+  color: $font_color_post_menu;
   background-color: $bg_color_post_menu;
   border-top: 1px solid $border_color_post_menu;
   div {

@@ -34,13 +34,6 @@ $bg_color_header_top: $colors_green; // top header strip for logo
 $bg_color_header_middle: $colors_darkpurple; // middle header strip with user items
 $bg_color_header_bottom: $colors_lightbrown; // bottom header strip with navigation
 
-/* - flashes */
-// these are the notifications that appear when you submit a form or get a message
-$bg_color_flash_error: #FFDDDD; // error
-$bg_color_flash_success: #DDEEDD; // success
-$bg_color_flash_inbox: #DDDDEE; // new message
-$bg_color_flash_breadcrumbs: $colors_greybrown; // breadcrumbs ("Continuities » Effulgence » make a wish » one enormous bruise")
-
 /* - main page */
 $bg_color_page: #E5DFD1; // overall page
 $font_color_page: $colors_black;
@@ -50,7 +43,22 @@ $font_color_content: $colors_dark; // body
 /* - links */
 $font_color_link: $colors_green; // link
 $font_color_link_visited: #28503A; // link (visited)
+$font_color_link_visited_alt: $font_color_link_visited; // starry has an alternate link visited color in some places
 $font_color_link_hover: #FCFEFD; // link (hovered)
+
+/* - flashes */
+// these are the notifications that appear when you submit a form or get a message
+$bg_color_flash_error: #FFDDDD; // error
+$font_color_flash_error: $font_color_page;
+$bg_color_flash_success: #DDEEDD; // success
+$font_color_flash_success: $font_color_page;
+$bg_color_flash_inbox: #DDDDEE; // new message
+$font_color_flash_inbox: $font_color_page;
+$bg_color_flash_breadcrumbs: $colors_greybrown; // breadcrumbs ("Continuities » Effulgence » make a wish » one enormous bruise")
+$font_color_flash_breadcrumbs: $font_color_page;
+$font_color_breadcrumbs_bold: $font_color_flash_breadcrumbs;
+$font_color_flash_link: $font_color_link;
+$font_color_flash_hover: $font_color_link_hover;
 
 /* - link-boxes */
 $bg_color_linkbox_new: $colors_green;
@@ -58,6 +66,7 @@ $bg_color_linkbox_edit: $colors_blue;
 $bg_color_linkbox_favorite: $colors_blue;
 $bg_color_linkbox_delete: $colors_red;
 $bg_color_linkbox_dismiss: $colors_red;
+//$bg_color_linkbox_subber /* this is not styled differently on non-starries, where linkboxes are all colored the same, but is a necessary variable there */
 
 /* - inputs */
 $bg_color_input: $colors_white; // regular <input>
@@ -78,6 +87,8 @@ $border_color_icon_selected: $colors_green; // selected icon border
 $bg_color_icon: $colors_greygreen;
 $bg_color_icon_credit: $colors_greygreen;
 $bg_color_icon_selector: $colors_greygreen;
+$font_color_icon_selector: $font_color_page; // used in different places on dark.scss and starries
+$font_color_icon_dropdown: $font_color_page;
 
 /* - characters */
 $border_color_character_iconless: #666666; // in characters#show icon view when a character has no icon
@@ -89,10 +100,14 @@ $font_color_mini_delete: #C00;
 /* - tag items */
 // varies by location TODO get more complete list from starries
 $bg_color_tag_item: $colors_lightbrown;
+$bg_color_tag_item_odd: $bg_color_tag_item;
+$bg_color_tag_item_even: $bg_color_tag_item;
 $font_color_tag_item: $colors_green;
+$font_color_tag_item_gallery: $font_color_tag_item;
 
 /* - content headers */
 $bg_color_head: $colors_brown; // primary content header
+$font_color_head_link: $colors_lightgrey; /* TODO: Fix how this and hover are actually unstripped from layout.scss */
 $bg_color_sub: $colors_lightbrown; // secondary content header
 $bg_color_subber: $colors_greybrown; // tertiary content header
 $font_color_head: $colors_lightgrey;
@@ -136,20 +151,41 @@ $bg_color_odd: #D8D8D8;
 }
 
 $opacity_blockquote: 0.2;
-$bg_color_even_blockquote_target: #D8D8D8; // target color for blockquotes on even backgrounds
-$bg_color_odd_blockquote_target: #E3E3E3;
 // semi-transparent version to allow nested blockquotes:
-$bg_color_even_blockquote: calculate-transparent-color($bg_color_even, $bg_color_even_blockquote_target, $opacity_blockquote);
-$bg_color_odd_blockquote: calculate-transparent-color($bg_color_odd, $bg_color_odd_blockquote_target, $opacity_blockquote);
+$bg_color_even_blockquote: calculate-transparent-color($bg_color_even, $bg_color_odd, $opacity_blockquote);
+$bg_color_odd_blockquote: calculate-transparent-color($bg_color_odd, $bg_color_even, $opacity_blockquote);
 
 /* - select2 dropdown */
 $font_color_select2_container: $colors_dark;
+/* Most of this is currently styled by gem files */
+$bg_color_select2_highlight: #E4E4E4;
+$bg_color_select2_selected: #DDDDDD;
+$bg_color_select2_search: $colors_white;
+
+/* rtf editor */
+$font_color_input_placeholder: default;
+$bg_color_mce_panel: #F0F0F0; /* MCE header & footer background */
+$bg_color_reply_content: $colors_white;
+$font_color_reply_content: $colors_dark;
+
+$bg_color_popup_header: #E9E9E9;
+$font_color_popup_header: #333333;
+$border_color_popup_header: #DDDDDD;
+$bg_color_popup_content: $colors_white;
+$font_color_popup_content: #333333;
+$border_color_popup: #C5C5C5;
+$bg_color_popup_button: #F6F6F6;
+$border_color_popup_button: #C5C5C5;
+$font_color_popup_link: #333333;
 
 /* - misc */
 $bg_color_descriptions: $colors_lightbrown; // description subheadings on templates page ("single-description"), *not* posts
+$font_color_descriptions_link: $font_color_link;
+$font_color_descriptions_link_visited: $font_color_link_visited;
 $bg_color_selectionpopup: $colors_lightbrown; // selection popups like character/alias on posts#editor
 $bg_color_spacer_alt: $colors_brown;
 $bg_color_search_box: $colors_brown;
+$font_color_search_box: $font_color_page;
 
 /* - replies.scss */
 $bg_color_icon_overlay: #000000; // box displaying current icon
@@ -162,15 +198,17 @@ $font_color_ender_post: $colors_bright;
 $bg_color_post_character: $colors_brown;
 $bg_color_post_screenname: $colors_greybrown;
 $bg_color_post_author: $colors_lightbrown;
+$font_color_post_info: $font_color_page;
+$font_color_post_screenname: $font_color_post_info;
 
 $bg_color_post_character_narrow: $colors_lightbrown;
 $bg_color_post_author_narrow: $colors_brown; // these are flipped from not-narrow mode to make the quick-switcher blend in
 
 $font_color_paginate_link: $colors_lightgrey;
 $bg_color_paginate_link_hover: $colors_greybrown;
-$font_color_page_visited: $colors_brown;
-$bg_color_page_current: $colors_green;
-$font_color_page_disabled: $colors_black;
+$font_color_paginate_link_visited: $colors_brown;
+$bg_color_paginate_current_page: $colors_green;
+$font_color_paginate_link_disabled: $colors_black;
 $bg_color_post_icon: $colors_greygreen;
 
 $font_color_menu_link: $colors_lightgrey;
@@ -178,8 +216,10 @@ $bg_color_menu_link_hover: $colors_greygreen;
 
 /* - post headers */
 $bg_color_post_description: $colors_greybrown;
+$font_color_post_description: $font_color_page;
 $bg_color_navheader: $colors_lightbrown;
 $bg_color_navbutton: $colors_greybrown;
 
 $bg_color_post_menu: $colors_brown;
 $border_color_post_menu: $colors_greybrown;
+$font_color_post_menu: $font_color_page;

@@ -170,14 +170,14 @@ $font_color_post_screenname: #9C9AA4;
 .post-author, .post-author a, .post-author a:visited { color: $font_color_post_info; }
 
 $font_color_paginate_link: #F3F3F3;
-$font_color_page_visited: $font_color_link_visited;
-$bg_color_page_current: #484357;
-$font_color_page_disabled: #58546B;
+$font_color_paginate_link_visited: $font_color_link_visited;
+$bg_color_paginate_current_page: #484357;
+$font_color_paginate_link_disabled: #58546B;
 
-.pagination .current { background-color: $bg_color_page_current; }
+.pagination .current { background-color: $bg_color_paginate_current_page; }
 .pagination a { color: $font_color_paginate_link; }
-.pagination a:visited { color: $font_color_page_visited; }
-.pagination .disabled { color: $font_color_page_disabled; }
+.pagination a:visited { color: $font_color_paginate_link_visited; }
+.pagination .disabled { color: $font_color_paginate_link_disabled; }
 
 /* - icons */
 $border_color_icon_selected: #B9BBEB; // selected icon border

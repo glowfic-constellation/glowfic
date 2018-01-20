@@ -1,7 +1,7 @@
-%div{style: 'width: 500px; margin: 0px auto; background-color: #8B8687; color:#eeeeee; padding: 0px; font-size: 18px;'}
+%div{style: 'width: 500px; margin: 0px auto; background-color: #8B8687; color:#EEEEEE; padding: 0px; font-size: 18px;'}
   %div{style: 'padding: 15px; overflow: hidden;'}
     %span{style: 'line-height: 28px;'}
-      = link_to @message.unempty_subject, message_url(@message, host: current_host, protocol: 'https'), style: 'color: #eeeeee;'
+      = link_to @message.unempty_subject, message_url(@message, host: current_host, protocol: 'https'), style: 'color: #EEEEEE;'
 
 %div{style: 'background-color: #D8D8D8; color:#101010; overflow: auto; width: 500px; margin: 0px auto;'}
   %div{style: 'padding: 10px; text-align: left;'}
@@ -12,7 +12,7 @@
       %div{style: 'background-color: #8B8687; padding: 4px;'}
         %b From:
         = @message.sender_name
-      %div{style: 'background-color: #a3a1a0; padding: 4px;'}
+      %div{style: 'background-color: #A3A1A0; padding: 4px;'}
         %b To:
         = @message.recipient.username
     = sanitize_written_content(@message.message).html_safe

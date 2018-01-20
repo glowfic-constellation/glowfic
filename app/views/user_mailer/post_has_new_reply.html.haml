@@ -1,8 +1,8 @@
-%div{style: 'width: 500px; margin: 0px auto; background-color: #8B8687; color:#eeeeee; padding: 0px; font-size: 18px;'}
+%div{style: 'width: 500px; margin: 0px auto; background-color: #8B8687; color:#EEEEEE; padding: 0px; font-size: 18px;'}
   %div{style: 'padding: 15px; overflow: hidden;'}
     %span{style: 'line-height: 28px;'}
       New reply in
-      = link_to @reply.post.subject, reply_url(@reply, host: current_host, protocol: 'https'), style: 'color: #eeeeee;'
+      = link_to @reply.post.subject, reply_url(@reply, host: current_host, protocol: 'https'), style: 'color: #EEEEEE;'
 
 %div{style: 'background-color: #D8D8D8; color:#101010; overflow: auto; width: 500px; margin: 0px auto;'}
   %div{style: 'padding: 10px; text-align: left;'}
@@ -14,7 +14,7 @@
         %div{style: 'background-color: #8B8687; padding: 4px; position: relative;'}
           = @reply.name
         - if @reply.character.screenname
-          %div{style: 'background-color: #a3a1a0; padding: 4px; overflow-wrap: break-word; word-wrap: break-word;'}
+          %div{style: 'background-color: #A3A1A0; padding: 4px; overflow-wrap: break-word; word-wrap: break-word;'}
             = @reply.character.screenname
       - else
         %div{style: 'height: 2px; background-color: #8B8687;'}

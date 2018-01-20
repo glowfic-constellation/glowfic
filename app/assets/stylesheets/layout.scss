@@ -154,8 +154,8 @@ th, .content-header {
   span {
     line-height: 28px;
     a {
-      color: #eeeeee;
-      &:hover { color: #dddddd; }
+      color: #EEEEEE;
+      &:hover { color: #DDDDDD; }
     }
   }
 
@@ -286,6 +286,10 @@ td, .table-list li { font-size: 14px; }
   font-weight: normal;
   border-radius: 5px;
 }
+.even .tag-item { background-color: $bg_color_tag_item_even; }
+.odd .tag-item { background-color: $bg_color_tag_item_odd; }
+// tr.gallery-tags .tag-item { color: $font_color_tag_item_gallery; }
+// This is presently inherited from .tag-item in non-starry themes, and thus adding this to the base file overrides font color styling there.
 
 /* The new object layout with the floating left info box and the right content area */
 .left-info-box {
@@ -336,6 +340,7 @@ td, .table-list li { font-size: 14px; }
   padding: 10px;
   vertical-align: top;
   background-color: $bg_color_search_box;
+  color: $font_color_search_box;
 }
 .search-icon-preview { vertical-align: middle; }
 .search-icon-keyword { padding-left: 5px; }
