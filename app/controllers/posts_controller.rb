@@ -7,6 +7,7 @@ class PostsController < WritableController
   before_action :login_required, except: [:index, :show, :history, :warnings, :search, :stats]
   before_action :find_post, only: [:show, :history, :stats, :warnings, :edit, :update, :destroy]
   before_action :require_permission, only: [:edit]
+  before_action :require_import_permission, only: [:new, :create]
   before_action :editor_setup, only: [:new, :edit]
 
   def index
@@ -79,11 +80,6 @@ class PostsController < WritableController
   end
 
   def new
-    if params[:view] == 'import'
-      require_import_permission
-      return if performed?
-    end
-
     @post = Post.new(character: current_user.active_character, user: current_user)
     @post.board_id = params[:board_id]
     @post.section_id = params[:section_id]
@@ -92,10 +88,7 @@ class PostsController < WritableController
   end
 
   def create
-    if params[:button_import].present?
-      import_thread
-      return
-    end
+    import_thread and return if params[:button_import].present?
 
     @post = Post.new(post_params)
     @post.settings = process_tags(Setting, :post, :setting_ids)
@@ -309,9 +302,6 @@ class PostsController < WritableController
   private
 
   def import_thread
-    require_import_permission
-    return if performed?
-
     unless valid_dreamwidth_url?(params[:dreamwidth_url])
       flash[:error] = "Invalid URL provided."
       params[:view] = 'import'
@@ -380,6 +370,7 @@ class PostsController < WritableController
   end
 
   def require_import_permission
+    return unless params[:view] == 'import' || params[:button_import].present?
     unless current_user.has_permission?(:import_posts)
       flash[:error] = "You do not have access to this feature."
       redirect_to new_post_path
