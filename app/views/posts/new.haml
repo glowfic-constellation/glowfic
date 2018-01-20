@@ -3,7 +3,7 @@
 - else
   .content-header
     Create a new post
-    - if PostsController::SCRAPE_USERS.include?(current_user.id)
+    - if current_user.has_permission?(:import_posts)
       = link_to new_post_path(view: :import) do
         .view-button Import &raquo;
   = render partial: 'write', locals: { post: @post, url: posts_path, method: :post }

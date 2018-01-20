@@ -188,10 +188,19 @@ RSpec.describe PostsController do
       expect(templateless.plucked_characters).to eq([[char1.id, char1.name], [char2.id, char2.name]])
     end
 
-    it "works for importer" do
-      login
-      get :new, params: { view: :import }
-      expect(response).to have_http_status(200)
+    context "import" do
+      it "requires import permission" do
+        login
+        get :new, params: { view: :import }
+        expect(response).to redirect_to(new_post_path)
+        expect(flash[:error]).to eq('You do not have access to this feature.')
+      end
+
+      it "works for importer" do
+        login_as(create(:importing_user))
+        get :new, params: { view: :import }
+        expect(response).to have_http_status(200)
+      end
     end
   end
 
@@ -205,15 +214,15 @@ RSpec.describe PostsController do
     context "scrape" do
       include ActiveJob::TestHelper
       it "requires valid user" do
-        user = create(:user, id: PostsController::SCRAPE_USERS.max + 1)
+        user = create(:user)
         login_as(user)
         post :create, params: { button_import: true }
-        expect(response).to render_template(:new)
+        expect(response).to redirect_to(new_post_path)
         expect(flash[:error]).to eq("You do not have access to this feature.")
       end
 
       it "requires url" do
-        user = create(:user, id: PostsController::SCRAPE_USERS.first)
+        user = create(:importing_user)
         login_as(user)
         post :create, params: { button_import: true }
         expect(response).to render_template(:new)
@@ -221,7 +230,7 @@ RSpec.describe PostsController do
       end
 
       it "requires dreamwidth url" do
-        user = create(:user, id: PostsController::SCRAPE_USERS.first)
+        user = create(:importing_user)
         login_as(user)
         post :create, params: { button_import: true, dreamwidth_url: 'http://www.google.com' }
         expect(response).to render_template(:new)
@@ -229,7 +238,7 @@ RSpec.describe PostsController do
       end
 
       it "requires dreamwidth.org url" do
-        user = create(:user, id: PostsController::SCRAPE_USERS.first)
+        user = create(:importing_user)
         login_as(user)
         post :create, params: { button_import: true, dreamwidth_url: 'http://www.dreamwidth.com' }
         expect(response).to render_template(:new)
@@ -237,7 +246,7 @@ RSpec.describe PostsController do
       end
 
       it "requires well formed url" do
-        user = create(:user, id: PostsController::SCRAPE_USERS.first)
+        user = create(:importing_user)
         login_as(user)
         expect(URI).to receive(:parse).and_raise(URI::InvalidURIError)
         post :create, params: { button_import: true, dreamwidth_url: 'dreamwidth' }
@@ -247,7 +256,7 @@ RSpec.describe PostsController do
 
       it "requires extant usernames" do
         clear_enqueued_jobs
-        user = create(:user, id: PostsController::SCRAPE_USERS.first)
+        user = create(:importing_user)
         login_as(user)
         url = 'http://wild-pegasus-appeared.dreamwidth.org/403.html?style=site&view=flat'
         file = File.join(Rails.root, 'spec', 'support', 'fixtures', 'scrape_no_replies.html')
@@ -261,7 +270,7 @@ RSpec.describe PostsController do
 
       it "scrapes with - char usernames" do
         clear_enqueued_jobs
-        user = create(:user, id: PostsController::SCRAPE_USERS.first)
+        user = create(:importing_user)
         create(:character, user: user, screenname: 'wild-pegasus-appeared')
         login_as(user)
         url = 'http://wild-pegasus-appeared.dreamwidth.org/403.html?style=site&view=flat'
@@ -275,7 +284,7 @@ RSpec.describe PostsController do
 
       it "scrapes" do
         clear_enqueued_jobs
-        user = create(:user, id: PostsController::SCRAPE_USERS.first)
+        user = create(:importing_user)
         login_as(user)
         url = 'http://www.dreamwidth.org'
         stub_request(:get, url).to_return(status: 200, body: '')

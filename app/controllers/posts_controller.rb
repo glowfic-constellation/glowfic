@@ -4,10 +4,10 @@ require 'will_paginate/array'
 class PostsController < WritableController
   include Taggable
 
-  SCRAPE_USERS = [1, 2, 3, 8, 19, 24, 31]
   before_action :login_required, except: [:index, :show, :history, :warnings, :search, :stats]
   before_action :find_post, only: [:show, :history, :stats, :warnings, :edit, :update, :destroy]
   before_action :require_permission, only: [:edit]
+  before_action :require_import_permission, only: [:new, :create]
   before_action :editor_setup, only: [:new, :edit]
 
   def index
@@ -302,12 +302,6 @@ class PostsController < WritableController
   private
 
   def import_thread
-    unless SCRAPE_USERS.include?(current_user.id)
-      flash[:error] = "You do not have access to this feature."
-      editor_setup
-      return render action: :new
-    end
-
     unless valid_dreamwidth_url?(params[:dreamwidth_url])
       flash[:error] = "Invalid URL provided."
       params[:view] = 'import'
@@ -372,6 +366,14 @@ class PostsController < WritableController
     unless @post.editable_by?(current_user) || @post.metadata_editable_by?(current_user)
       flash[:error] = "You do not have permission to modify this post."
       redirect_to post_path(@post)
+    end
+  end
+
+  def require_import_permission
+    return unless params[:view] == 'import' || params[:button_import].present?
+    unless current_user.has_permission?(:import_posts)
+      flash[:error] = "You do not have access to this feature."
+      redirect_to new_post_path
     end
   end
 
