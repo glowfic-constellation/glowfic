@@ -723,6 +723,33 @@ RSpec.describe RepliesController do
       delete :destroy, params: { id: reply.id, per_page: 2 }
       expect(response).to redirect_to(post_url(reply.post, page: 2))
     end
+
+    it "deletes post author on deleting only reply in open posts" do
+      user = create(:user)
+      post = create(:post)
+      expect(post.authors_locked).to eq(false)
+      login_as(user)
+      reply = create(:reply, post: post, user: user)
+      post_user = post.post_authors.find_by(user: user)
+      id = post_user.id
+      expect(post_user.joined).to eq(true)
+      delete :destroy, params: { id: reply.id }
+      expect(PostAuthor.find_by(id: id)).to be_nil
+    end
+
+    it "sets joined to false on deleting only reply when invited" do
+      user = create(:user)
+      other_user = create(:user)
+      post = create(:post, user: other_user, authors: [user, other_user], authors_locked: true)
+      expect(post.authors_locked).to eq(true)
+      expect(post.post_authors.find_by(user: user)).not_to be_nil
+      login_as(user)
+      reply = create(:reply, post: post, user: user)
+      post_user = post.post_authors.find_by(user: user)
+      expect(post_user.joined).to eq(true)
+      delete :destroy, params: { id: reply.id }
+      expect(post_user.joined).to eq(false)
+    end
   end
 
   describe "GET search" do

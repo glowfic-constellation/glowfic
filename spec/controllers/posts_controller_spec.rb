@@ -1207,9 +1207,10 @@ RSpec.describe PostsController do
       post = create(:post, privacy: Concealable::ACCESS_LIST)
       user = create(:user)
       post.viewers << user
-      create(:reply, user: user, post: post)
+      post.authors << user
       login_as(user)
       put :update, params: { id: post.id }
+      expect(flash[:success]).not_to be_nil
       expect(flash[:error]).not_to eq('You must provide a reason for your moderator edit.')
     end
 
@@ -1998,6 +1999,16 @@ RSpec.describe PostsController do
         expect(post.joined_authors).to match_array([user, joined_author])
         expect(post.authors).to match_array([user, coauthor, joined_author])
       end
+
+      it "works as a coauthor" do
+        user = create(:user)
+        post = create(:post)
+        post.authors << user
+        post_user = post.post_authors.find_by(user: user)
+        expect(post_user.joined).to be(false)
+        put :update, params: { id: post.id }
+        expect(flash[:success]).not_to be_nil
+      end
     end
   end
 
@@ -2070,6 +2081,18 @@ RSpec.describe PostsController do
       delete :destroy, params: { id: post.id }
       expect(response).to redirect_to(boards_url)
       expect(flash[:success]).to eq("Post deleted.")
+    end
+
+    it "deletes PostAuthors" do
+      user = create(:user)
+      login_as(user)
+      other_user = create(:user)
+      post = create(:post, user: user, authors: [user, other_user])
+      id1 = post.post_authors[0].id
+      id2 = post.post_authors[1].id
+      delete :destroy, params: { id: post.id }
+      expect(PostAuthor.find_by(id: id1)).to be_nil
+      expect(PostAuthor.find_by(id: id2)).to be_nil
     end
   end
 
