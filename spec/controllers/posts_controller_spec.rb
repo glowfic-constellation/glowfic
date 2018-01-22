@@ -345,7 +345,6 @@ RSpec.describe PostsController do
             setting_ids: [setting1.id, '_'+setting2.name, '_other'],
             content_warning_ids: [warning1.id, '_'+warning2.name, '_other'],
             label_ids: [label1.id, '_'+label2.name, '_other'],
-            character_id: char1.id,
             unjoined_author_ids: [user.id, coauthor.id]
           }
         }
@@ -1578,7 +1577,6 @@ RSpec.describe PostsController do
             setting_ids: [setting1.id, '_'+setting2.name, '_other'],
             content_warning_ids: [warning1.id, '_'+warning2.name, '_other'],
             label_ids: [label1.id, '_'+label2.name, '_other'],
-            character_id: char1.id,
             unjoined_author_ids: [coauthor.id],
             viewer_ids: [viewer.id]
           }
@@ -2006,6 +2004,7 @@ RSpec.describe PostsController do
         post.authors << user
         post_user = post.post_authors.find_by(user: user)
         expect(post_user.joined).to be(false)
+        login_as(user)
         put :update, params: { id: post.id }
         expect(flash[:success]).not_to be_nil
       end

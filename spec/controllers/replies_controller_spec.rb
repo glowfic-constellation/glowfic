@@ -258,22 +258,30 @@ RSpec.describe RepliesController do
       reply_post = create(:post, user: other_user, tagging_authors: [user, other_user], authors_locked: true)
       post :create, params: { reply: {post_id: reply_post.id, content: 'test content!'} }
       expect(Reply.count).to eq(1)
+    end
+
+    it "allows replies from owner in a closed post" do
+      user = create(:user)
+      other_user = create(:user)
+      login_as(user)
       other_post = create(:post, user: user, tagging_authors: [user, other_user], authors_locked: true)
       post :create, params: { reply: {post_id: other_post.id, content: 'more test content!'} }
-      expect(Reply.count).to eq(2)
+      expect(Reply.count).to eq(1)
     end
 
     it "adds authors correctly when a user replies to an open thread" do
       user = create(:user)
       login_as(user)
       reply_post = create(:post)
-      post :create, params: { reply: {post_id: reply_post.id, content: 'test content!'} }
+      Timecop.freeze(Time.now) do
+        post :create, params: { reply: {post_id: reply_post.id, content: 'test content!'} }
+      end
       expect(Reply.count).to eq(1)
-      expect(reply_post.tagging_authors).to include(user)
-      expect(reply_post.tagging_post_authors.count).to eq(2)
+      expect(reply_post.tagging_authors).to match_array([user, reply_post.user])
       post_author = reply_post.tagging_post_authors.find_by(user: user)
       expect(post_author.user).to eq(user)
       expect(post_author.joined).to eq(true)
+      expect(post_author.joined_at).to be_the_same_time_as(Reply.last.created_at)
       expect(post_author.can_owe).to eq(true)
     end
 
@@ -292,8 +300,7 @@ RSpec.describe RepliesController do
       reply_post.mark_read(user, old_reply.created_at + 1.second, true)
       post :create, params: { reply: {post_id: reply_post.id, content: 'test content!'} }
       expect(Reply.count).to eq(2)
-      expect(reply_post.tagging_authors.count).to eq(2)
-      expect(reply_post.joined_authors.count).to eq(2)
+      expect(reply_post.tagging_authors).to match_array([user, reply_post.user])
     end
 
     it "handles trying to reply to a closed thread as a non-author correctly" do

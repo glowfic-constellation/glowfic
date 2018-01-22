@@ -862,7 +862,6 @@ RSpec.describe Post do
   describe "authors" do
     it "automatically creates an author on creation" do
       post = create(:post)
-      expect(post.authors.count).to eq(1)
       expect(post.authors).to eq([post.user])
       author = post.post_authors.first
       expect(author.joined).to eq(true)
@@ -872,7 +871,7 @@ RSpec.describe Post do
     it "invites coauthors on creation" do
       invited = create(:user)
       post = create(:post, unjoined_author_ids: [invited.id])
-      expect(post.authors.count).to eq(2)
+      expect(post.authors).to match_array([post.user, invited])
       invited_author = post.author_for(invited)
       expect(invited_author.can_owe).to be true
       expect(invited_author.joined).to be false
@@ -880,9 +879,9 @@ RSpec.describe Post do
 
     it "automatically adds to (joined) authors upon reply" do
       post = create(:post)
-      expect(post.authors.count).to eq(1)
+      expect(post.authors).to eq([post.user])
       reply = create(:reply, post: post)
-      expect(post.authors.count).to eq(2)
+      expect(post.authors.reload).to match_array([post.user, reply.user])
       expect(post.authors.count).to eq(post.joined_authors.count)
     end
   end

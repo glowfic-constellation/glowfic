@@ -198,17 +198,17 @@ RSpec.describe Reply do
       post = create(:post)
       reply = create(:reply, post: post)
 
-      expect(post.author_for(reply.user).can_owe).to be true
+      expect(post.author_for(reply.user).can_owe).to be(true)
       create(:reply, user: reply.user, post: post)
-      expect(post.author_for(reply.user).can_owe).to be true
+      expect(post.author_for(reply.user).can_owe).to be(true)
 
       author = post.author_for(reply.user)
       author.can_owe = false
       author.save
 
-      expect(post.author_for(reply.user).can_owe).to be false
+      expect(post.author_for(reply.user).can_owe).to be(false)
       create(:reply, user: reply.user, post: post)
-      expect(post.author_for(reply.user).can_owe).to be false
+      expect(post.author_for(reply.user).can_owe).to be(false)
     end
   end
 end

@@ -49,7 +49,7 @@
             - else
               = link_to viewer.user.username, user_path(viewer.user)
     %tr
-      %td.sub.width-150 Authors
+      %th.sub.width-150 Authors
       %td{class: cycle('odd', 'even')}
         - post_authors = @post.post_authors.joins(:user).order('LOWER(users.username) asc')
         %ul
