@@ -10,7 +10,7 @@ class Reply < ApplicationRecord
   after_create :notify_other_authors, :destroy_draft, :update_active_char, :set_last_reply, :update_post, :update_post_authors
   after_save :update_flat_post
   after_update :update_post
-  after_destroy :set_previous_reply_to_last
+  after_destroy :set_previous_reply_to_last, :remove_post_author
 
   attr_accessor :skip_notify, :skip_post_update, :is_import, :skip_regenerate
 
@@ -117,5 +117,16 @@ class Reply < ApplicationRecord
 
     return if is_import
     post.user_joined(user)
+  end
+
+  def remove_post_author
+    return if post.user == user
+    return return if post.replies.where(user: user).exists?
+    post_author = post.post_authors.find_by(user: user)
+    if post.authors_locked?
+      post_author.update_attributes(joined: false)
+    else
+      post_author.destroy
+    end
   end
 end

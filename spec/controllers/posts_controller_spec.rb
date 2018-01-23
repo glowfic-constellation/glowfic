@@ -2000,6 +2000,7 @@ RSpec.describe PostsController do
 
       it "works as a coauthor" do
         user = create(:user)
+        login_as(user)
         post = create(:post)
         post.authors << user
         post_user = post.post_authors.find_by(user: user)

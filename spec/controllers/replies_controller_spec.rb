@@ -755,7 +755,22 @@ RSpec.describe RepliesController do
       post_user = post.post_authors.find_by(user: user)
       expect(post_user.joined).to eq(true)
       delete :destroy, params: { id: reply.id }
+      post_user.reload
       expect(post_user.joined).to eq(false)
+    end
+
+    it "does not clean up post author when other replies exist" do
+      user = create(:user)
+      post = create(:post)
+      expect(post.authors_locked).to eq(false)
+      login_as(user)
+      create(:reply, post: post, user: user) # remaining reply
+      reply = create(:reply, post: post, user: user)
+      post_user = post.post_authors.find_by(user: user)
+      expect(post_user.joined).to eq(true)
+      delete :destroy, params: { id: reply.id }
+      post_user.reload
+      expect(post_user.joined).to eq(true)
     end
   end
 
