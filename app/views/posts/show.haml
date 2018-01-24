@@ -161,7 +161,8 @@
 - if @post.taggable_by?(current_user)
   - post_open = !@post.authors_locked?
   - draft_exists = !@reply.content.nil?
-  - if (post_open && draft_exists) || @post.author_ids.include?(current_user.id)
+  - post_author = @post.post_authors.find_by(user: current_user.id)
+  - if (post_open && draft_exists) || post_user.exists? && post_user.can_reply = true
     = render partial: 'replies/write', locals: { reply: @reply, url: replies_path, method: :post }
   - elsif post_open
     .post-expander.post-editor-expander

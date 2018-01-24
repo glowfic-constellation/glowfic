@@ -309,7 +309,7 @@ RSpec.describe RepliesController do
       reply_post = create(:post, authors_locked: true)
       post :create, params: { reply: {post_id: reply_post.id, content: 'test'} }
       expect(flash[:error][:message]).to eq("Your reply could not be saved because of the following problems:")
-      expect(flash[:error][:array]).to eq(["Post is not a valid post author"])
+      expect(flash[:error][:array]).to eq(["User #{user.username} cannot write in this post"])
     end
   end
 

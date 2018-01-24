@@ -81,7 +81,6 @@ CREATE TABLE audits (
 --
 
 CREATE SEQUENCE audits_id_seq
-    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -115,7 +114,6 @@ CREATE TABLE board_authors (
 --
 
 CREATE SEQUENCE board_authors_id_seq
-    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -150,7 +148,6 @@ CREATE TABLE board_sections (
 --
 
 CREATE SEQUENCE board_sections_id_seq
-    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -187,7 +184,6 @@ CREATE TABLE board_views (
 --
 
 CREATE SEQUENCE board_views_id_seq
-    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -222,7 +218,6 @@ CREATE TABLE boards (
 --
 
 CREATE SEQUENCE boards_id_seq
-    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -255,7 +250,6 @@ CREATE TABLE character_aliases (
 --
 
 CREATE SEQUENCE character_aliases_id_seq
-    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -286,7 +280,6 @@ CREATE TABLE character_groups (
 --
 
 CREATE SEQUENCE character_groups_id_seq
-    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -319,7 +312,6 @@ CREATE TABLE character_tags (
 --
 
 CREATE SEQUENCE character_tags_id_seq
-    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -372,7 +364,6 @@ CREATE TABLE characters_galleries (
 --
 
 CREATE SEQUENCE characters_galleries_id_seq
-    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -392,7 +383,6 @@ ALTER SEQUENCE characters_galleries_id_seq OWNED BY characters_galleries.id;
 --
 
 CREATE SEQUENCE characters_id_seq
-    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -426,7 +416,6 @@ CREATE TABLE favorites (
 --
 
 CREATE SEQUENCE favorites_id_seq
-    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -459,7 +448,6 @@ CREATE TABLE flat_posts (
 --
 
 CREATE SEQUENCE flat_posts_id_seq
-    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -503,7 +491,6 @@ CREATE TABLE galleries_icons (
 --
 
 CREATE SEQUENCE galleries_icons_id_seq
-    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -523,7 +510,6 @@ ALTER SEQUENCE galleries_icons_id_seq OWNED BY galleries_icons.id;
 --
 
 CREATE SEQUENCE galleries_id_seq
-    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -556,7 +542,6 @@ CREATE TABLE gallery_tags (
 --
 
 CREATE SEQUENCE gallery_tags_id_seq
-    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -593,7 +578,6 @@ CREATE TABLE icons (
 --
 
 CREATE SEQUENCE icons_id_seq
-    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -629,7 +613,6 @@ CREATE TABLE index_posts (
 --
 
 CREATE SEQUENCE index_posts_id_seq
-    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -664,7 +647,6 @@ CREATE TABLE index_sections (
 --
 
 CREATE SEQUENCE index_sections_id_seq
-    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -700,7 +682,6 @@ CREATE TABLE indexes (
 --
 
 CREATE SEQUENCE indexes_id_seq
-    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -743,7 +724,6 @@ CREATE TABLE messages (
 --
 
 CREATE SEQUENCE messages_id_seq
-    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -777,7 +757,6 @@ CREATE TABLE password_resets (
 --
 
 CREATE SEQUENCE password_resets_id_seq
-    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -803,6 +782,7 @@ CREATE TABLE post_authors (
     created_at timestamp without time zone,
     updated_at timestamp without time zone,
     can_owe boolean DEFAULT true,
+    can_reply boolean DEFAULT true,
     joined boolean DEFAULT false,
     joined_at timestamp without time zone
 );
@@ -813,7 +793,6 @@ CREATE TABLE post_authors (
 --
 
 CREATE SEQUENCE post_authors_id_seq
-    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -847,7 +826,6 @@ CREATE TABLE post_tags (
 --
 
 CREATE SEQUENCE post_tags_id_seq
-    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -880,7 +858,6 @@ CREATE TABLE post_viewers (
 --
 
 CREATE SEQUENCE post_viewers_id_seq
-    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -918,7 +895,6 @@ CREATE TABLE post_views (
 --
 
 CREATE SEQUENCE post_views_id_seq
-    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -966,7 +942,6 @@ CREATE TABLE posts (
 --
 
 CREATE SEQUENCE posts_id_seq
-    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -1004,7 +979,6 @@ CREATE TABLE replies (
 --
 
 CREATE SEQUENCE replies_id_seq
-    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -1042,7 +1016,6 @@ CREATE TABLE reply_drafts (
 --
 
 CREATE SEQUENCE reply_drafts_id_seq
-    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -1075,7 +1048,6 @@ CREATE TABLE report_views (
 --
 
 CREATE SEQUENCE report_views_id_seq
-    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -1118,7 +1090,6 @@ CREATE TABLE tag_tags (
 --
 
 CREATE SEQUENCE tag_tags_id_seq
-    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -1154,7 +1125,6 @@ CREATE TABLE tags (
 --
 
 CREATE SEQUENCE tags_id_seq
-    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -1188,7 +1158,6 @@ CREATE TABLE templates (
 --
 
 CREATE SEQUENCE templates_id_seq
-    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -1244,7 +1213,6 @@ CREATE TABLE users (
 --
 
 CREATE SEQUENCE users_id_seq
-    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
