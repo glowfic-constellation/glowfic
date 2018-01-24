@@ -6,7 +6,7 @@
     - next if skip_grouped_templates && template.characters.where('character_group_id is not null').exists?
     = render partial: partial_type, locals: {name: template, characters: template.characters.order('name asc')}
   - if characters.where(template_id: nil).exists?
-    = render partial: partial_type, locals: {name: 'No Template', characters: characters.where(template_id: nil).order('name asc'), show_new_character_button: true}
+    = render partial: partial_type, locals: {name: 'No Template', characters: characters.where(template_id: nil).order('name asc'), show_new_character_button: @user.id == current_user&.id}
 - else
   %tr
     %td.centered.padding-5{class: cycle('even', 'odd'), colspan: 6} — No characters yet —
