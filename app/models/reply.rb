@@ -120,9 +120,14 @@ class Reply < ApplicationRecord
   end
 
   def remove_post_author
-    return if post.user == user
-    return return if post.replies.where(user: user).exists?
-    post_author = post.post_authors.find_by(user: user)
+    return if post.user_id == user_id
+    return if post.replies.where(user: user).exists?
+
+    # assume that if the post is author locked,
+    # the user joined too early / is backtracking / etc
+    # and should be unmarked as joined rather than
+    # joined the wrong post outright and should be removed
+    post_author = post.author_for(user)
     if post.authors_locked?
       post_author.update_attributes(joined: false)
     else
