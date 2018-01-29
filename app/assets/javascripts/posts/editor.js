@@ -62,6 +62,11 @@ function setupMetadataEditor() {
       $("#access_list").hide();
     }
   });
+
+  $("#post_unjoined_author_ids").change(function() {
+    var numAuthors = $("#post_unjoined_author_ids :selected").length;
+    $("#post_authors_locked").prop('checked', (numAuthors > 0));
+  });
 }
 
 function setupWritableEditor() {
