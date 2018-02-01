@@ -286,7 +286,7 @@ class PostsController < WritableController
     if params[:author_id].present?
       post_ids = nil
       params[:author_id].each do |author_id|
-        author_posts = Reply.where(user_id: author_id).pluck('distinct post_id') + Post.where(user_id: author_id).pluck(:id)
+        author_posts = PostAuthor.where(user_id: author_id, joined: true).pluck(:post_id)
         if post_ids.nil?
           post_ids = author_posts
         else
