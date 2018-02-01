@@ -87,7 +87,7 @@ RSpec.describe WritableController do
       data = controller.send(:og_data_for_post, post, 1, 5, 25)
       expect(data).to eq({
         title: 'Temp · Test',
-        description: 'More. (Tester, Friend – page 1 of 5)'
+        description: 'More. (Friend, Tester – page 1 of 5)'
       })
     end
 
