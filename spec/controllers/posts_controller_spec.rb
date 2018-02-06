@@ -1998,16 +1998,71 @@ RSpec.describe PostsController do
         expect(post.authors).to match_array([user, coauthor, joined_author])
       end
 
-      it "works as a coauthor" do
+      it "does not allow coauthors to edit post text" do
+        skip "Is not currently implemented on saving data"
         user = create(:user)
-        login_as(user)
-        post = create(:post)
-        post.authors << user
-        post_user = post.post_authors.find_by(user: user)
-        expect(post_user.joined).to be(false)
-        login_as(user)
-        put :update, params: { id: post.id }
-        expect(flash[:success]).not_to be_nil
+        coauthor = create(:user)
+        login_as(coauthor)
+        post = create(:post, user: user, authors: [user, coauthor], authors_locked: true)
+        put :update, params: {
+          id: post.id,
+          post: {
+            content: "newtext"
+          }
+        }
+        expect(response).to redirect_to(post_url(post))
+        expect(flash[:error]).to eq("You do not have permission to modify this post.")
+      end
+    end
+
+    context "metadata" do
+      it "allows coauthors" do
+        coauthor = create(:user)
+        login_as(coauthor)
+        post = create(:post, subject: "test subject")
+        create(:reply, post: post, user: coauthor)
+        put :update, params: {
+          id: post.id,
+          post: {
+            subject: "new subject"
+          }
+        }
+        expect(response).to redirect_to(post_url(post))
+        expect(flash[:success]).to eq("Your post has been updated.")
+        post.reload
+        expect(post.subject).to eq("new subject")
+      end
+
+      it "allows invited coauthors before they reply" do
+        user = create(:user)
+        coauthor = create(:user)
+        login_as(coauthor)
+        post = create(:post, user: user, authors: [user, coauthor], authors_locked: true, subject: "test subject")
+        put :update, params: {
+          id: post.id,
+          post: {
+            subject: "new subject"
+          }
+        }
+        expect(response).to redirect_to(post_url(post))
+        expect(flash[:success]).to eq("Your post has been updated.")
+        post.reload
+        expect(post.subject).to eq("new subject")
+      end
+
+      it "does not allow non-coauthors" do
+        login
+        post = create(:post, subject: "test subject")
+        put :update, params: {
+          id: post.id,
+          post: {
+            subject: "new subject"
+          }
+        }
+        expect(response).to redirect_to(post_url(post))
+        expect(flash[:error]).to eq("You do not have permission to modify this post.")
+        post.reload
+        expect(post.subject).to eq("test subject")
       end
     end
   end

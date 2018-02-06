@@ -251,6 +251,26 @@ RSpec.describe RepliesController do
       expect(reply.content).to eq('test content the third!')
     end
 
+    it "allows you to reply to a closed post you already joined" do
+      user = create(:user)
+      login_as(user)
+      reply_post = create(:post)
+      reply_old = create(:reply, post: reply_post, user: user)
+      reply_post.mark_read(user, reply_old.created_at + 1.second, true)
+      expect(Reply.count).to eq(1)
+      reply_post.update_attributes!(authors_locked: true)
+
+      post :create, params: { reply: {post_id: reply_post.id, content: 'test content the third!'} }
+      expect(Reply.count).to eq(2)
+      reply = Reply.order(id: :desc).first
+      expect(reply).not_to eq(reply_old)
+      expect(response).to redirect_to(reply_url(reply, anchor: "reply-#{reply.id}"))
+      expect(flash[:success]).to eq('Posted!')
+      expect(reply.user).to eq(user)
+      expect(reply.content).to eq('test content the third!')
+    end
+
+
     it "allows replies from authors in a closed post" do
       user = create(:user)
       other_user = create(:user)

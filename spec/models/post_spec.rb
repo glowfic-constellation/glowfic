@@ -903,6 +903,56 @@ RSpec.describe Post do
     end
   end
 
+  describe "#taggable_by" do
+    let(:poster) { create(:user) }
+    let(:coauthor) { create(:user) }
+
+    shared_examples "common taggable tests" do
+      it "should allow post creator" do
+        expect(post).to be_taggable_by(poster)
+      end
+
+      it "should allow invited coauthors" do
+        expect(post).to be_taggable_by(coauthor)
+      end
+
+      it "should allow joined coauthors" do
+        create(:reply, user: coauthor, post: post)
+        expect(post).to be_taggable_by(coauthor)
+      end
+
+      it "should allow coauthors who have opted out of owing" do
+        create(:reply, user: coauthor, post: post)
+        post.opt_out_of_owed(coauthor)
+        expect(post).to be_taggable_by(coauthor)
+      end
+    end
+
+    context "with open post" do
+      let(:post) { create(:post, user: poster, joined_authors: [poster], unjoined_authors: [coauthor], authors_locked: false) }
+
+      include_examples "common taggable tests"
+
+      it "should allow non-authors to reply" do
+        expect(post).to be_taggable_by(create(:user))
+      end
+    end
+
+    context "with closed post" do
+      let(:post) { create(:post, user: poster, joined_authors: [poster], unjoined_authors: [coauthor], authors_locked: true) }
+
+      include_examples "common taggable tests"
+
+      it "should not allow non-authors" do
+        expect(post).not_to be_taggable_by(create(:user))
+      end
+
+      it "should not allow removed couathors" do
+        skip "TODO Not currently implemented"
+      end
+    end
+  end
+
   context "callbacks" do
     include ActiveJob::TestHelper
 
