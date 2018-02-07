@@ -2,7 +2,7 @@ require "spec_helper"
 
 RSpec.describe GalleryTag do
   describe "callbacks" do
-    context "when gallery group added" do
+    context "when gallery group added to gallery" do
       it "does not add to other users' characters" do
         group = create(:gallery_group)
         character = create(:character, gallery_groups: [group])
@@ -51,41 +51,41 @@ RSpec.describe GalleryTag do
         expect(gallery.characters).to match_array([character1, character2])
         expect(gallery.characters_galleries.map(&:added_by_group?)).to eq([true, true])
       end
+    end
 
-      it "does right things when gallery group removed" do
-        # does not touch unrelated characters
-        # does not touch characters that have been otherwise tethered
-        # removes from characters that are not otherwise tethered
-        group = create(:gallery_group)
-        user = create(:user)
-        other_character = create(:character, user: user)
-        gallery = create(:gallery, user: user, gallery_groups: [group], characters: [other_character])
-        character_auto = create(:character, user: user, gallery_groups: [group])
-        character_both = create(:character, user: user, gallery_groups: [group])
-        gallery.reload
-        gallery.characters_galleries.find_by(character_id: character_both.id).update_attributes(added_by_group: false)
-        expect(gallery.characters).to match_array([other_character, character_auto, character_both])
-        expect(gallery.characters_galleries.find_by(character_id: character_auto.id)).to be_added_by_group
+    it "does right things when gallery group removed from gallery" do
+      # does not touch unrelated characters
+      # does not touch characters that have been otherwise tethered
+      # removes from characters that are not otherwise tethered
+      group = create(:gallery_group)
+      user = create(:user)
+      other_character = create(:character, user: user)
+      gallery = create(:gallery, user: user, gallery_groups: [group], characters: [other_character])
+      character_auto = create(:character, user: user, gallery_groups: [group])
+      character_both = create(:character, user: user, gallery_groups: [group])
+      gallery.reload
+      gallery.characters_galleries.find_by(character_id: character_both.id).update_attributes(added_by_group: false)
+      expect(gallery.characters).to match_array([other_character, character_auto, character_both])
+      expect(gallery.characters_galleries.find_by(character_id: character_auto.id)).to be_added_by_group
 
-        gallery.update_attributes(gallery_groups: [])
-        gallery.reload
-        expect(gallery.characters).to match_array([other_character, character_both])
-        expect(gallery.characters_galleries.find_by(character_id: character_both.id)).not_to be_added_by_group
-      end
+      gallery.update_attributes(gallery_groups: [])
+      gallery.reload
+      expect(gallery.characters).to match_array([other_character, character_both])
+      expect(gallery.characters_galleries.find_by(character_id: character_both.id)).not_to be_added_by_group
+    end
 
-      it "does not destroy gallery groups when destroyed" do
-        group = create(:gallery_group)
-        gallery = create(:gallery, gallery_groups: [group])
-        other = create(:gallery, gallery_groups: [group])
-        gallery.reload
-        other.reload
-        expect(gallery.gallery_groups).to match_array([group])
-        expect(other.gallery_groups).to match_array([group])
+    it "does not destroy gallery groups when destroyed" do
+      group = create(:gallery_group)
+      gallery = create(:gallery, gallery_groups: [group])
+      other = create(:gallery, gallery_groups: [group])
+      gallery.reload
+      other.reload
+      expect(gallery.gallery_groups).to match_array([group])
+      expect(other.gallery_groups).to match_array([group])
 
-        gallery.destroy
-        group.reload
-        expect(other.reload.gallery_groups).to match_array([group])
-      end
+      gallery.destroy
+      group.reload
+      expect(other.reload.gallery_groups).to match_array([group])
     end
   end
 end

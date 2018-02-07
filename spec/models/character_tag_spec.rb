@@ -2,7 +2,7 @@ require "spec_helper"
 
 RSpec.describe CharacterTag do
   describe "callbacks" do
-    context "when gallery group added" do
+    context "when gallery group added to character" do
       it "does not add other users' galleries" do
         group = create(:gallery_group)
         gallery = create(:gallery, gallery_groups: [group])
@@ -51,41 +51,41 @@ RSpec.describe CharacterTag do
         expect(character.galleries).to match_array([gallery1, gallery2])
         expect(character.characters_galleries.map(&:added_by_group?)).to eq([true, true])
       end
+    end
 
-      it "does right things when gallery group removed" do
-        # does not touch unrelated galleries
-        # does not touch galleries that have been otherwise tethered
-        # removes galleries that are not otherwise tethered
-        group = create(:gallery_group)
-        user = create(:user)
-        other_gallery = create(:gallery, user: user)
-        character = create(:character, user: user, gallery_groups: [group], galleries: [other_gallery])
-        gallery_auto = create(:gallery, user: user, gallery_groups: [group])
-        gallery_both = create(:gallery, user: user, gallery_groups: [group])
-        character.reload
-        character.characters_galleries.find_by(gallery_id: gallery_both.id).update_attributes(added_by_group: false)
-        expect(character.galleries).to match_array([other_gallery, gallery_auto, gallery_both])
-        expect(character.characters_galleries.find_by(gallery_id: gallery_auto.id)).to be_added_by_group
+    it "does right things when gallery group removed from character" do
+      # does not touch unrelated galleries
+      # does not touch galleries that have been otherwise tethered
+      # removes galleries that are not otherwise tethered
+      group = create(:gallery_group)
+      user = create(:user)
+      other_gallery = create(:gallery, user: user)
+      character = create(:character, user: user, gallery_groups: [group], galleries: [other_gallery])
+      gallery_auto = create(:gallery, user: user, gallery_groups: [group])
+      gallery_both = create(:gallery, user: user, gallery_groups: [group])
+      character.reload
+      character.characters_galleries.find_by(gallery_id: gallery_both.id).update_attributes(added_by_group: false)
+      expect(character.galleries).to match_array([other_gallery, gallery_auto, gallery_both])
+      expect(character.characters_galleries.find_by(gallery_id: gallery_auto.id)).to be_added_by_group
 
-        character.update_attributes(gallery_groups: [])
-        character.reload
-        expect(character.galleries).to match_array([other_gallery, gallery_both])
-        expect(character.characters_galleries.find_by(gallery_id: gallery_both.id)).not_to be_added_by_group
-      end
+      character.update_attributes(gallery_groups: [])
+      character.reload
+      expect(character.galleries).to match_array([other_gallery, gallery_both])
+      expect(character.characters_galleries.find_by(gallery_id: gallery_both.id)).not_to be_added_by_group
+    end
 
-      it "does not destroy gallery groups when destroyed" do
-        group = create(:gallery_group)
-        character = create(:character, gallery_groups: [group])
-        other = create(:character, gallery_groups: [group])
-        character.reload
-        other.reload
-        expect(character.gallery_groups).to match_array([group])
-        expect(other.gallery_groups).to match_array([group])
+    it "does not destroy gallery groups when destroyed" do
+      group = create(:gallery_group)
+      character = create(:character, gallery_groups: [group])
+      other = create(:character, gallery_groups: [group])
+      character.reload
+      other.reload
+      expect(character.gallery_groups).to match_array([group])
+      expect(other.gallery_groups).to match_array([group])
 
-        character.destroy
-        group.reload
-        expect(other.reload.gallery_groups).to match_array([group])
-      end
+      character.destroy
+      group.reload
+      expect(other.reload.gallery_groups).to match_array([group])
     end
   end
 end
