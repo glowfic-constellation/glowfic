@@ -37,7 +37,7 @@ RSpec.describe GenerateFlatPostJob do
     $redis.set(GenerateFlatPostJob.lock_key(post.id), true)
 
     exc = Exception
-    expect_any_instance_of(FlatPost).to receive(:save).and_raise(exc)
+    expect_any_instance_of(FlatPost).to receive(:save!).and_raise(exc)
     expect(ApplicationJob).to receive(:notify_exception).with(exc, post.id).and_call_original
     clear_enqueued_jobs
 
