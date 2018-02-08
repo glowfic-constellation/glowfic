@@ -772,6 +772,42 @@ ALTER SEQUENCE password_resets_id_seq OWNED BY password_resets.id;
 
 
 --
+-- Name: post_authors; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE post_authors (
+    id integer NOT NULL,
+    user_id integer NOT NULL,
+    post_id integer NOT NULL,
+    created_at timestamp without time zone,
+    updated_at timestamp without time zone,
+    can_owe boolean DEFAULT true,
+    can_reply boolean DEFAULT true,
+    joined boolean DEFAULT false,
+    joined_at timestamp without time zone
+);
+
+
+--
+-- Name: post_authors_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE post_authors_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: post_authors_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE post_authors_id_seq OWNED BY post_authors.id;
+
+
+--
 -- Name: post_tags; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -1339,6 +1375,13 @@ ALTER TABLE ONLY password_resets ALTER COLUMN id SET DEFAULT nextval('password_r
 
 
 --
+-- Name: post_authors id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY post_authors ALTER COLUMN id SET DEFAULT nextval('post_authors_id_seq'::regclass);
+
+
+--
 -- Name: post_tags id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -1589,6 +1632,14 @@ ALTER TABLE ONLY messages
 
 ALTER TABLE ONLY password_resets
     ADD CONSTRAINT password_resets_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: post_authors post_authors_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY post_authors
+    ADD CONSTRAINT post_authors_pkey PRIMARY KEY (id);
 
 
 --
@@ -1961,6 +2012,20 @@ CREATE INDEX index_password_resets_on_user_id_and_created_at ON password_resets 
 
 
 --
+-- Name: index_post_authors_on_post_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_post_authors_on_post_id ON post_authors USING btree (post_id);
+
+
+--
+-- Name: index_post_authors_on_user_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_post_authors_on_user_id ON post_authors USING btree (user_id);
+
+
+--
 -- Name: index_post_tags_on_post_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -2228,6 +2293,5 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20171104140915'),
 ('20171109031527'),
 ('20171111163658'),
-('20171114013113');
-
-
+('20171114013113'),
+('20171227030824');

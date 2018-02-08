@@ -144,7 +144,7 @@ class WritableController < ApplicationController
     post_description = generate_short(post.description)
     post_description += ' ('
     if post.authors.length < 4
-      post_description += post.authors.map(&:username).join(', ')
+      post_description += post.authors.map(&:username).sort.join(', ')
     else
       post_description += "#{post.user.username} and #{post.authors.length-1} others"
     end

@@ -38,6 +38,12 @@ function setupMetadataEditor() {
     placeholder: 'Choose user(s) to view this post'
   });
 
+  $("#post_unjoined_author_ids").select2({
+    width: '300px',
+    minimumResultsForSearch: 20,
+    placeholder: 'Choose user(s) to invite to reply to this post'
+  });
+
   createTagSelect("Label", "label", "post");
   createTagSelect("Setting", "setting", "post");
   createTagSelect("ContentWarning", "content_warning", "post");
@@ -55,6 +61,11 @@ function setupMetadataEditor() {
     } else {
       $("#access_list").hide();
     }
+  });
+
+  $("#post_unjoined_author_ids").change(function() {
+    var numAuthors = $("#post_unjoined_author_ids :selected").length;
+    $("#post_authors_locked").prop('checked', (numAuthors > 0));
   });
 }
 

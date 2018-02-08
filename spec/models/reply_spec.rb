@@ -93,6 +93,11 @@ RSpec.describe Reply do
       another_notified_user = create(:user, email_notifications: true)
       create(:reply, user: another_notified_user, post: post, skip_notify: true)
 
+      # skips users who have the post set as ignored for tags owed purposes (or who can't tag)
+      a_user_who_doesnt_owe = create(:user, email_notifications: true)
+      create(:reply, user: a_user_who_doesnt_owe, post: post, skip_notify: true)
+      post.opt_out_of_owed(a_user_who_doesnt_owe)
+
       reply = create(:reply, post: post)
       expect(UserMailer).to have_queue_size_of(2)
       expect(UserMailer).to have_queued(:post_has_new_reply, [notified_user.id, reply.id])
@@ -185,6 +190,25 @@ RSpec.describe Reply do
         Reply.find_by(id: reply_id).has_edit_audits?
       end
       include_examples 'has_edit_audits', method
+    end
+  end
+
+  describe "authors interactions" do
+    it "does not update can_owe upon creating a reply" do
+      post = create(:post)
+      reply = create(:reply, post: post)
+
+      expect(post.author_for(reply.user).can_owe).to be(true)
+      create(:reply, user: reply.user, post: post)
+      expect(post.author_for(reply.user).can_owe).to be(true)
+
+      author = post.author_for(reply.user)
+      author.can_owe = false
+      author.save
+
+      expect(post.author_for(reply.user).can_owe).to be(false)
+      create(:reply, user: reply.user, post: post)
+      expect(post.author_for(reply.user).can_owe).to be(false)
     end
   end
 end

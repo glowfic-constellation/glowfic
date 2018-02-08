@@ -250,6 +250,87 @@ RSpec.describe RepliesController do
       expect(reply.user).to eq(user)
       expect(reply.content).to eq('test content the third!')
     end
+
+    it "allows you to reply to a closed post you already joined" do
+      user = create(:user)
+      login_as(user)
+      reply_post = create(:post)
+      reply_old = create(:reply, post: reply_post, user: user)
+      reply_post.mark_read(user, reply_old.created_at + 1.second, true)
+      expect(Reply.count).to eq(1)
+      reply_post.update_attributes!(authors_locked: true)
+
+      post :create, params: { reply: {post_id: reply_post.id, content: 'test content the third!'} }
+      expect(Reply.count).to eq(2)
+      reply = Reply.order(id: :desc).first
+      expect(reply).not_to eq(reply_old)
+      expect(response).to redirect_to(reply_url(reply, anchor: "reply-#{reply.id}"))
+      expect(flash[:success]).to eq('Posted!')
+      expect(reply.user).to eq(user)
+      expect(reply.content).to eq('test content the third!')
+    end
+
+
+    it "allows replies from authors in a closed post" do
+      user = create(:user)
+      other_user = create(:user)
+      login_as(user)
+      reply_post = create(:post, user: other_user, tagging_authors: [user, other_user], authors_locked: true)
+      post :create, params: { reply: {post_id: reply_post.id, content: 'test content!'} }
+      expect(Reply.count).to eq(1)
+    end
+
+    it "allows replies from owner in a closed post" do
+      user = create(:user)
+      other_user = create(:user)
+      login_as(user)
+      other_post = create(:post, user: user, tagging_authors: [user, other_user], authors_locked: true)
+      post :create, params: { reply: {post_id: other_post.id, content: 'more test content!'} }
+      expect(Reply.count).to eq(1)
+    end
+
+    it "adds authors correctly when a user replies to an open thread" do
+      user = create(:user)
+      login_as(user)
+      reply_post = create(:post)
+      Timecop.freeze(Time.now) do
+        post :create, params: { reply: {post_id: reply_post.id, content: 'test content!'} }
+      end
+      expect(Reply.count).to eq(1)
+      expect(reply_post.tagging_authors).to match_array([user, reply_post.user])
+      post_author = reply_post.tagging_post_authors.find_by(user: user)
+      expect(post_author.user).to eq(user)
+      expect(post_author.joined).to eq(true)
+      expect(post_author.joined_at).to be_the_same_time_as(Reply.last.created_at)
+      expect(post_author.can_owe).to eq(true)
+    end
+
+    it "handles multiple replies to an open thread correctly" do
+      user = create(:user)
+      login_as(user)
+      reply_post = create(:post)
+      expect(reply_post.tagging_authors.count).to eq(1)
+      old_reply = create(:reply, post: reply_post, user: user)
+      reply_post.reload
+      expect(reply_post.tagging_authors).to include(user)
+      expect(reply_post.tagging_authors.count).to eq(2)
+      expect(reply_post.joined_authors).to include(user)
+      expect(reply_post.joined_authors.count).to eq(2)
+      expect(Reply.count).to eq(1)
+      reply_post.mark_read(user, old_reply.created_at + 1.second, true)
+      post :create, params: { reply: {post_id: reply_post.id, content: 'test content!'} }
+      expect(Reply.count).to eq(2)
+      expect(reply_post.tagging_authors).to match_array([user, reply_post.user])
+    end
+
+    it "handles trying to reply to a closed thread as a non-author correctly" do
+      user = create(:user)
+      login_as(user)
+      reply_post = create(:post, authors_locked: true)
+      post :create, params: { reply: {post_id: reply_post.id, content: 'test'} }
+      expect(flash[:error][:message]).to eq("Your reply could not be saved because of the following problems:")
+      expect(flash[:error][:array]).to eq(["User #{user.username} cannot write in this post"])
+    end
   end
 
   describe "GET show" do
@@ -669,6 +750,48 @@ RSpec.describe RepliesController do
       delete :destroy, params: { id: reply.id, per_page: 2 }
       expect(response).to redirect_to(post_url(reply.post, page: 2))
     end
+
+    it "deletes post author on deleting only reply in open posts" do
+      user = create(:user)
+      post = create(:post)
+      expect(post.authors_locked).to eq(false)
+      login_as(user)
+      reply = create(:reply, post: post, user: user)
+      post_user = post.post_authors.find_by(user: user)
+      id = post_user.id
+      expect(post_user.joined).to eq(true)
+      delete :destroy, params: { id: reply.id }
+      expect(PostAuthor.find_by(id: id)).to be_nil
+    end
+
+    it "sets joined to false on deleting only reply when invited" do
+      user = create(:user)
+      other_user = create(:user)
+      post = create(:post, user: other_user, authors: [user, other_user], authors_locked: true)
+      expect(post.authors_locked).to eq(true)
+      expect(post.post_authors.find_by(user: user)).not_to be_nil
+      login_as(user)
+      reply = create(:reply, post: post, user: user)
+      post_user = post.post_authors.find_by(user: user)
+      expect(post_user.joined).to eq(true)
+      delete :destroy, params: { id: reply.id }
+      post_user.reload
+      expect(post_user.joined).to eq(false)
+    end
+
+    it "does not clean up post author when other replies exist" do
+      user = create(:user)
+      post = create(:post)
+      expect(post.authors_locked).to eq(false)
+      login_as(user)
+      create(:reply, post: post, user: user) # remaining reply
+      reply = create(:reply, post: post, user: user)
+      post_user = post.post_authors.find_by(user: user)
+      expect(post_user.joined).to eq(true)
+      delete :destroy, params: { id: reply.id }
+      post_user.reload
+      expect(post_user.joined).to eq(true)
+    end
   end
 
   describe "GET search" do
@@ -721,12 +844,17 @@ RSpec.describe RepliesController do
       it "handles valid post" do
         templateless_char = Character.where(template_id: nil).first
         post = create(:post, character: templateless_char, user: templateless_char.user)
+        create(:reply, post: post)
+        user_ignoring_tags = create(:user)
+        create(:reply, post: post, user: user_ignoring_tags)
+        post.opt_out_of_owed(user_ignoring_tags)
+
         get :search, params: { post_id: post.id }
         expect(response).to have_http_status(200)
         expect(assigns(:page_title)).to eq('Search Replies')
         expect(assigns(:post)).to eq(post)
         expect(assigns(:search_results)).to be_nil
-        expect(assigns(:users)).to match_array(post.authors)
+        expect(assigns(:users)).to match_array(post.joined_authors)
         expect(assigns(:characters)).to match_array([post.character])
         expect(assigns(:templates)).to be_empty
       end

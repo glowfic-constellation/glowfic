@@ -7,10 +7,10 @@ class Reply < ApplicationRecord
   validate :author_can_write_in_post, on: :create
   audited associated_with: :post
 
-  after_create :notify_other_authors, :destroy_draft, :update_active_char, :set_last_reply, :update_post
+  after_create :notify_other_authors, :destroy_draft, :update_active_char, :set_last_reply, :update_post, :update_post_authors
   after_save :update_flat_post
   after_update :update_post
-  after_destroy :set_previous_reply_to_last
+  after_destroy :set_previous_reply_to_last, :remove_post_author
 
   attr_accessor :skip_notify, :skip_post_update, :is_import, :skip_regenerate
 
@@ -81,7 +81,7 @@ class Reply < ApplicationRecord
   def notify_other_authors
     return if skip_notify
     return if (previous_reply || post).user_id == user_id
-    post.authors.each do |author|
+    post.tagging_authors.each do |author|
       next if author.id == user_id
       next unless author.email.present?
       next unless author.email_notifications?
@@ -97,11 +97,41 @@ class Reply < ApplicationRecord
     return unless post && user
     errors.add(:user, "#{user.username} is not a valid continuity author for #{post.board.name}") unless user.writes_in?(post.board)
     return unless post.authors_locked?
-    errors.add(:post, 'is not a valid post author') unless post.author_ids.include?(user_id)
+    errors.add(:user, "#{user.username} cannot write in this post") unless post.author_for(user)&.can_reply
   end
 
   def update_flat_post
     return if skip_regenerate
     GenerateFlatPostJob.enqueue(post_id)
+  end
+
+  def update_post_authors
+    post_author = post.author_for(user)
+    return if post_author&.joined?
+
+    if post_author
+      post_author.update_attributes(joined: true, joined_at: created_at)
+    else
+      post.post_authors.create(user_id: user_id, joined: true, joined_at: created_at)
+    end
+
+    return if is_import
+    post.user_joined(user)
+  end
+
+  def remove_post_author
+    return if post.user_id == user_id
+    return if post.replies.where(user: user).exists?
+
+    # assume that if the post is author locked,
+    # the user joined too early / is backtracking / etc
+    # and should be unmarked as joined rather than
+    # joined the wrong post outright and should be removed
+    post_author = post.author_for(user)
+    if post.authors_locked?
+      post_author.update_attributes(joined: false)
+    else
+      post_author.destroy
+    end
   end
 end

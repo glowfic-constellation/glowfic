@@ -16,9 +16,8 @@ class FavoritesController < ApplicationController
     current_user.favorites.each do |favorite_rec|
       new_calc = nil
       if favorite_rec.favorite_type == User.to_s
-        new_calc = arel[:user_id].eq(favorite_rec.favorite_id)
-        reply_ids = Reply.where(user_id: favorite_rec.favorite_id).pluck('distinct post_id')
-        new_calc = new_calc.or(arel[:id].in(reply_ids))
+        post_ids = PostAuthor.where(user_id: favorite_rec.favorite_id).where(joined: true).pluck(:post_id)
+        new_calc = arel[:id].in(post_ids)
       elsif favorite_rec.favorite_type == Post.to_s
         new_calc = arel[:id].eq(favorite_rec.favorite_id)
       elsif favorite_rec.favorite_type == Board.to_s

@@ -15,9 +15,7 @@ class UsersController < ApplicationController
       redirect_to users_path and return
     end
 
-    post_ids = Post.where(user_id: @user.id).order('tagged_at desc').pluck(:id)
-    reply_ids = Reply.where(user_id: @user.id).pluck('distinct post_id')
-    ids = (post_ids + reply_ids).uniq
+    ids = PostAuthor.where(user_id: @user.id, joined: true).pluck(:post_id)
     @posts = posts_from_relation(Post.where(id: ids).order('tagged_at desc'))
     @page_title = @user.username
   end

@@ -1,6 +1,7 @@
 class Post < ApplicationRecord
   include Concealable
   include Orderable
+  include Owable
   include PgSearch
   include Presentable
   include Viewable
@@ -17,16 +18,16 @@ class Post < ApplicationRecord
   belongs_to :last_reply, class_name: 'Reply', optional: true
   has_one :flat_post
   has_many :replies, inverse_of: :post, dependent: :destroy
+  has_many :reply_drafts, dependent: :destroy
+
   has_many :post_viewers, inverse_of: :post, dependent: :destroy
   has_many :viewers, through: :post_viewers, source: :user
-  has_many :reply_drafts, dependent: :destroy
   has_many :favorites, as: :favorite, dependent: :destroy
 
   has_many :post_tags, inverse_of: :post, dependent: :destroy
   has_many :labels, -> { order('post_tags.id ASC') }, through: :post_tags, source: :label
   has_many :settings, -> { order('post_tags.id ASC') }, through: :post_tags, source: :setting
   has_many :content_warnings, -> { order('post_tags.id ASC') }, through: :post_tags, source: :content_warning, after_add: :reset_warnings
-  has_many :favorites, as: :favorite, dependent: :destroy
 
   has_many :index_posts, inverse_of: :post, dependent: :destroy
   has_many :indexes, inverse_of: :posts, through: :index_posts
@@ -55,17 +56,10 @@ class Post < ApplicationRecord
     ),
     using: {tsearch: { dictionary: "english" } }
   )
-  scope :no_tests, -> { where('posts.board_id != ?', Board::ID_SITETESTING) }
+  scope :no_tests, -> { where.not(board_id: Board::ID_SITETESTING) }
 
   scope :with_has_content_warnings, -> {
     select("(SELECT tags.id IS NOT NULL FROM tags LEFT JOIN post_tags ON tags.id = post_tags.tag_id WHERE tags.type = 'ContentWarning' AND post_tags.post_id = posts.id LIMIT 1) AS has_content_warnings")
-  }
-
-  scope :with_author_ids, -> {
-    # fetches replies.map(&:user_id).uniq
-    # then appends post.user_id
-    # then unions distinctly, and re-converts to an array
-    select('ARRAY(SELECT posts.user_id UNION SELECT replies.user_id FROM replies WHERE replies.post_id = posts.id GROUP BY replies.user_id) AS author_ids')
   }
 
   scope :with_reply_count, -> {
@@ -79,17 +73,6 @@ class Post < ApplicationRecord
     return true if user.admin?
     return user.id == user_id if private?
     (post_viewers.pluck(:user_id) + [user_id]).include?(user.id)
-  end
-
-  def authors
-    return @authors if @authors
-    return @authors = [user] if author_ids.count == 1
-    @authors = User.where(id: author_ids).to_a
-  end
-
-  def author_ids
-    return read_attribute(:author_ids) if has_attribute?(:author_ids)
-    @author_ids ||= (replies.group(:user_id).pluck(:user_id) + [user_id]).uniq
   end
 
   def build_new_reply_for(user)
@@ -202,6 +185,7 @@ class Post < ApplicationRecord
 
   def metadata_editable_by?(user)
     return false unless user
+    return true if user == self.user
     return true if user.has_permission?(:edit_posts)
     author_ids.include?(user.id)
   end
@@ -231,8 +215,9 @@ class Post < ApplicationRecord
     sum + contents.inject{|r, e| r + e.split.size}.to_i
   end
 
+  # only returns for authors who have written in the post (it's zero for authors who have not joined)
   def author_word_counts
-    authors.map { |author| [author.username, word_count_for(author)] }.sort_by{|a| -a[1] }
+    joined_authors.map { |author| [author.username, word_count_for(author)] }.sort_by{|a| -a[1] }
   end
 
   def character_appearance_counts
@@ -254,6 +239,10 @@ class Post < ApplicationRecord
   def has_edit_audits?
     return read_attribute(:has_edit_audits) if has_attribute?(:has_edit_audits)
     audits.count > 1
+  end
+
+  def user_joined(user)
+    NotifyFollowersOfNewPostJob.perform_later(self.id, user.id)
   end
 
   private
@@ -303,6 +292,6 @@ class Post < ApplicationRecord
 
   def notify_followers
     return if is_import
-    NotifyFollowersOfNewPostJob.perform_later(self.id)
+    NotifyFollowersOfNewPostJob.perform_later(self.id, user_id)
   end
 end

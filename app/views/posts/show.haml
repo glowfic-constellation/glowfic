@@ -104,6 +104,17 @@
             %div
               = image_tag "icons/lock.png".freeze
               Lock Authors
+        - author = @post.author_for(current_user)
+        - if author&.can_owe?
+          = link_to mark_posts_path(marked_ids: [@post.id], commit: "Remove from Replies Owed"), method: :post do
+            %div
+              = image_tag "icons/bell_delete.png".freeze
+              Remove from Replies Owed
+        - elsif author.present?
+          = link_to mark_posts_path(marked_ids: [@post.id], commit: "Show in Replies Owed"), method: :post do
+            %div
+              = image_tag "icons/bell_add.png".freeze
+              Show in Replies Owed
       -# TODO need more dynos
       -#= link_to users_path do
       -#  %div
@@ -148,9 +159,11 @@
 - if logged_in? && @unread.nil?
   <a id="unread" class="noheight"> </a>
 - if @post.taggable_by?(current_user)
-  - if @post.author_ids.include?(current_user.id) || (!@post.authors_locked? && !@reply.content.nil?)
+  - post_open = !@post.authors_locked?
+  - draft_exists = !@reply.content.nil?
+  - if (post_open && draft_exists) || @post.author_for(current_user)&.can_reply?
     = render partial: 'replies/write', locals: { reply: @reply, url: replies_path, method: :post }
-  - elsif !@post.authors_locked?
+  - elsif post_open
     .post-expander.post-editor-expander
       .info + Join Thread
       .hidden
