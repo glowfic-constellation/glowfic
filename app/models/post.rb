@@ -157,9 +157,6 @@ class Post < ApplicationRecord
       last_user_reply = user_replies.last
       reply.character_id = last_user_reply.character_id
       reply.character_alias_id = last_user_reply.character_alias_id
-    elsif self.user == user
-      reply.character_id = self.character_id
-      reply.character_alias_id = self.character_alias_id
     elsif user.active_character_id.present?
       reply.character_id = user.active_character_id
     end
@@ -204,9 +201,6 @@ class Post < ApplicationRecord
         .order(Arel.sql('MAX(created_at) desc'))
         .pluck(:character_id)
     end
-
-    # add the post's character_id to the last one if it's not over the limit
-    recent_ids << character_id if character_id.present? && user_id == user.id && recent_ids.length < count && recent_ids.exclude?(character_id)
 
     # fetch the relevant characters and sort by their index in the recent list
     Character.where(id: recent_ids).includes(:default_icon).sort_by do |x|
@@ -274,7 +268,6 @@ class Post < ApplicationRecord
 
   def character_appearance_counts
     reply_counts = replies.joins(:character).group(:character_id).count
-    reply_counts[character_id] = reply_counts[character_id].to_i + 1
     Character.where(id: reply_counts.keys).map { |c| [c, reply_counts[c.id]] }.sort_by { |a| -a[1] }
   end
 

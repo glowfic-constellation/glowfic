@@ -72,9 +72,7 @@ class Character < ApplicationRecord
 
   def recent_posts
     return @recent unless @recent.nil?
-    reply_ids = replies.group(:post_id).pluck(:post_id)
-    post_ids = posts.pluck(:id)
-    @recent ||= Post.where(id: (post_ids + reply_ids).uniq).ordered
+    @recent ||= Post.where(id: replies.select(:post_id).distinct.pluck(:post_id)).ordered
   end
 
   def selector_name(include_settings: false)
@@ -182,7 +180,6 @@ class Character < ApplicationRecord
   end
 
   def clear_char_ids
-    UpdateModelJob.perform_later(Post.to_s, { character_id: id }, { character_id: nil }, audited_user_id)
     UpdateModelJob.perform_later(Reply.to_s, { character_id: id }, { character_id: nil }, audited_user_id)
   end
 
