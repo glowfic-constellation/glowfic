@@ -47,17 +47,15 @@ class Post < ApplicationRecord
   validates :description, length: { maximum: 255 }
   validate :valid_board, :valid_board_section
 
+  after_initialize :create_written, if: :new_record?
   before_validation :set_last_user, on: :create
   before_create :build_initial_flat_post, :set_timestamps
-  after_create :create_written
   before_update :set_timestamps
-  after_update :update_written
   after_commit :notify_followers, on: :create
   after_commit :invalidate_caches, on: :update
 
   NON_EDITED_ATTRS = %w(id created_at updated_at edited_at tagged_at last_user_id last_reply_id section_order)
   NON_TAGGED_ATTRS = %w(icon_id character_alias_id character_id)
-  WRITTEN_ATTRS = %w(content icon_id character_alias_id character_id)
 
   audited except: NON_EDITED_ATTRS, update_with_comment_only: false
   has_associated_audits
@@ -356,33 +354,6 @@ class Post < ApplicationRecord
   end
 
   def create_written
-    return if skip_written
-    self.written = Reply.create!(
-      post: self,
-      reply_order: 0,
-      user: user,
-      content: content,
-      icon: icon,
-      character: character,
-      character_alias: character_alias,
-      created_at: created_at,
-      updated_at: edited_at,
-      skip_regenerate: true,
-      skip_post_update: true,
-      is_import: true,
-    )
-  end
-
-  def update_written
-    return unless written.present?
-    return if self.slice(WRITTEN_ATTRS) == written.slice(WRITTEN_ATTRS)
-    written.update!(
-      content: content,
-      icon: icon,
-      character: character,
-      character_alias: character_alias,
-      updated_at: edited_at,
-      skip_post_update: true,
-    )
+    self.written ||= self.replies.build(reply_order: 0, user: self.user)
   end
 end

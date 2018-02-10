@@ -118,10 +118,12 @@ class PostsController < WritableController
   end
 
   def new
-    @post = Post.new(character: current_user.active_character, user: current_user, authors_locked: true, editor_mode: current_user.default_editor)
+    @post = Post.new(user: current_user, authors_locked: true)
     @post.board_id = params[:board_id]
     @post.section_id = params[:section_id]
-    @post.icon_id = (current_user.active_character ? current_user.active_character.default_icon.try(:id) : current_user.avatar_id)
+    @post.written.character = current_user.active_character
+    @post.written.icon_id = (current_user.active_character ? current_user.active_character.default_icon.try(:id) : current_user.avatar_id)
+    @post.written.editor_mode = current_user.default_editor
     @page_title = 'New Post'
 
     @permitted_authors -= [current_user]
@@ -136,6 +138,8 @@ class PostsController < WritableController
     preview and return if params[:button_preview].present?
 
     @post = current_user.posts.new(permitted_params)
+    @post.written.assign_attributes(written_params)
+
     @post.settings = process_tags(Setting, obj_param: :post, id_param: :setting_ids)
     @post.content_warnings = process_tags(ContentWarning, obj_param: :post, id_param: :content_warning_ids)
     @post.labels = process_tags(Label, obj_param: :post, id_param: :label_ids)
