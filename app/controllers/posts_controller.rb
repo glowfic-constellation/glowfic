@@ -359,6 +359,14 @@ class PostsController < WritableController
   def preview
     @post ||= Post.new(user: current_user)
     @post.assign_attributes(permitted_params(false))
+    if @post.written
+      @written = @post.written
+    elsif @post.replies.first
+      @written = @post.replies.first
+    else
+      @written = @post.replies.new(user: current_user)
+    end
+    @written.assign_attributes(written_params)
     @post.board ||= Board.find_by_id(3)
 
     process_npc(@post, permitted_character_params)
@@ -368,8 +376,6 @@ class PostsController < WritableController
     @settings = process_tags(Setting, obj_param: :post, id_param: :setting_ids)
     @content_warnings = process_tags(ContentWarning, obj_param: :post, id_param: :content_warning_ids)
     @labels = process_tags(Label, obj_param: :post, id_param: :label_ids)
-
-    @written = @post
 
     @audits = { post: @post.audits.count } if @post.id.present?
 
