@@ -171,15 +171,15 @@
       = link_to post_path(@prev_post), class: 'view-button-link' do
         .view-button.float-none &laquo; Previous Post
 - if page.to_i == 1
-  = render 'replies/single', reply: @post, split_ui: split_ui
+  = render 'replies/single', reply: @post.replies.find_by(reply_order: 0), split_ui: split_ui
 - else
   .post-expander
     .info + Show First Post
     .hidden
-      = render 'replies/single', reply: @post, split_ui: split_ui
+      = render 'replies/single', reply: @post.replies.find_by(reply_order: 0), split_ui: split_ui
 - if @replies.present?
   = render 'posts/paginator', paginated: @replies
-= render partial: 'replies/single', collection: @replies, as: :reply, locals: { split_ui: split_ui }
+= render partial: 'replies/single', collection: @replies.where.not(reply_order: 0), as: :reply, locals: { split_ui: split_ui }
 - if @post.complete? && (@replies.empty? || (@replies.last.id == @post.last_reply_id))
   .post-ender Here Ends This Thread
   - if @prev_post || @next_post
