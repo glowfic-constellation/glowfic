@@ -7,9 +7,9 @@ class Post < ApplicationRecord
   include Post::Status
   include Presentable
   include Viewable
-  include Writable
 
   belongs_to :board, inverse_of: :posts, optional: false
+  belongs_to :user, optional: false
   belongs_to :section, class_name: 'BoardSection', inverse_of: :posts, optional: true
   belongs_to :last_user, class_name: 'User', inverse_of: false, optional: false
   belongs_to :last_reply, class_name: 'Reply', inverse_of: false, optional: true
@@ -286,6 +286,18 @@ class Post < ApplicationRecord
 
   def next_post(user)
     adjacent_posts_for(user) { |relation| relation.find_by('section_order > ?', self.section_order) }
+  end
+
+  def editable_by?(editor)
+    return false unless editor
+    return true if editor.id == user_id
+    editor.has_permission?(:edit_replies)
+  end
+
+  def deletable_by?(editor)
+    return false unless editor
+    return true if editor.id == user_id
+    editor.has_permission?(:delete_replies)
   end
 
   private
