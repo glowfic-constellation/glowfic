@@ -150,9 +150,6 @@ class Post < ApplicationRecord
       last_user_reply = user_replies.last
       reply.character_id = last_user_reply.character_id
       reply.character_alias_id = last_user_reply.character_alias_id
-    elsif self.user == user
-      reply.character_id = self.character_id
-      reply.character_alias_id = self.character_alias_id
     elsif user.active_character_id.present?
       reply.character_id = user.active_character_id
     end
@@ -193,9 +190,6 @@ class Post < ApplicationRecord
       .select('DISTINCT character_id, MAX(id)')
       .order(Arel.sql('MAX(id) desc'))
       .pluck(:character_id)
-
-    # add the post's character_id to the last one if it's not over the limit
-    recent_ids << character_id if character_id.present? && user_id == user.id && recent_ids.length < count && recent_ids.exclude?(character_id)
 
     # fetch the relevant characters and sort by their index in the recent list
     Character.where(id: recent_ids).includes(:default_icon).sort_by do |x|
@@ -248,19 +242,15 @@ class Post < ApplicationRecord
   end
 
   def total_word_count
-    return word_count unless replies.exists?
     contents = replies.pluck(:content)
     full_sanitizer = Rails::Html::FullSanitizer.new
-    word_count + contents.inject(0) { |r, e| r + full_sanitizer.sanitize(e).split.size }.to_i
+    contents.inject(0) { |r, e| r + full_sanitizer.sanitize(e).split.size }.to_i
   end
 
   def word_count_for(user)
-    sum = 0
-    sum = word_count if user_id == user.id
-
     contents = replies.where(user_id: user.id).pluck(:content)
     full_sanitizer = Rails::Html::FullSanitizer.new
-    sum + contents.inject(0) { |r, e| r + full_sanitizer.sanitize(e).split.size }.to_i
+    contents.inject(0) { |r, e| r + full_sanitizer.sanitize(e).split.size }.to_i
   end
 
   # only returns for authors who have written in the post (it's zero for authors who have not joined)
@@ -270,7 +260,6 @@ class Post < ApplicationRecord
 
   def character_appearance_counts
     reply_counts = replies.joins(:character).group(:character_id).count
-    reply_counts[character_id] = reply_counts[character_id].to_i + 1
     Character.where(id: reply_counts.keys).map { |c| [c, reply_counts[c.id]] }.sort_by { |a| -a[1] }
   end
 

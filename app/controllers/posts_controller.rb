@@ -214,6 +214,7 @@ class PostsController < WritableController
     preview and return if params[:button_preview].present?
 
     @post.assign_attributes(permitted_params)
+    @post.written.assign_attributes(written_params)
     @post.board ||= Board.find_by(id: Board::ID_SANDBOX)
     settings = process_tags(Setting, obj_param: :post, id_param: :setting_ids)
     warnings = process_tags(ContentWarning, obj_param: :post, id_param: :content_warning_ids)
@@ -234,6 +235,7 @@ class PostsController < WritableController
         process_npc(@post, permitted_character_params)
         @post.save!
         @post.author_for(current_user).update!(private_note: @post.private_note) if is_author
+        @post.written.save!
       end
     rescue ActiveRecord::RecordInvalid => e
       render_errors(@post, action: 'updated', now: true, err: e)
@@ -302,7 +304,7 @@ class PostsController < WritableController
     end
     if params[:character_id].present?
       post_ids = Reply.where(character_id: params[:character_id]).select(:post_id).distinct.pluck(:post_id)
-      @search_results = @search_results.where(character_id: params[:character_id]).or(@search_results.where(id: post_ids))
+      @search_results = @search_results.where(id: post_ids)
     end
     @search_results = posts_from_relation(@search_results, show_blocked: !!params[:show_blocked], no_tests: no_tests)
   end
