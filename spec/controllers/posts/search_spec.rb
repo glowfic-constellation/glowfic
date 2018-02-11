@@ -71,12 +71,6 @@ RSpec.describe PostsController, 'GET search' do
       end
     end
 
-    it "does not mix up subject with content" do
-      create(:post, subject: 'unrelated', content: 'contains stars')
-      get :search, params: { commit: true, subject: 'stars' }
-      expect(assigns(:search_results)).to be_empty
-    end
-
     it "restricts to visible posts" do
       create(:post, subject: 'contains stars', privacy: :private)
       post = create(:post, subject: 'visible contains stars')

@@ -170,27 +170,6 @@ RSpec.describe Post do
       create(:reply, post: post, user: post.user)
       expect(post.edited_at).to eq(post.created_at)
     end
-
-    it "should update correctly when characters are edited" do
-      Post.auditing_enabled = true
-      time = Time.zone.now
-      post = Timecop.freeze(time - 5.minutes) do
-        create(:post)
-      end
-      expect(post.edited_at).to be_the_same_time_as(time - 5.minutes)
-      expect(post.updated_at).to be_the_same_time_as(time - 5.minutes)
-      expect(post.audits.count).to eq(1)
-
-      Timecop.freeze(time) do
-        post.update!(character: create(:character, user: post.user))
-      end
-
-      # editing a post's character changes edit and makes audit but does not tag
-      expect(post.edited_at).to be_the_same_time_as(time)
-      expect(post.audits.count).to eq(2)
-      expect(post.tagged_at).to be_the_same_time_as(time - 5.minutes)
-      Post.auditing_enabled = false
-    end
   end
 
   describe "#section_order" do
@@ -354,76 +333,11 @@ RSpec.describe Post do
     end
   end
 
-  describe "#has_icons?" do
-    let(:user) { create(:user) }
-
-    context "without character" do
-      let(:post) { create(:post, user: user) }
-
-      it "is true with avatar" do
-        icon = create(:icon, user: user)
-        user.update!(avatar: icon)
-        user.reload
-
-        expect(post.character).to be_nil
-        expect(post.has_icons?).to eq(true)
-      end
-
-      it "is false without avatar" do
-        expect(post.character).to be_nil
-        expect(post.has_icons?).not_to eq(true)
-      end
-    end
-
-    context "with character" do
-      let(:character) { create(:character, user: user) }
-      let(:post) { create(:post, user: user, character: character) }
-
-      it "is true with default icon" do
-        icon = create(:icon, user: user)
-        character.update!(default_icon: icon)
-        expect(post.has_icons?).to eq(true)
-      end
-
-      it "is false without galleries" do
-        expect(post.has_icons?).not_to eq(true)
-      end
-
-      it "is true with icons in galleries" do
-        gallery = create(:gallery, user: user)
-        gallery.icons << create(:icon, user: user)
-        character.galleries << gallery
-        expect(post.has_icons?).to eq(true)
-      end
-
-      it "is false without icons in galleries" do
-        character.galleries << create(:gallery, user: user)
-        expect(post.has_icons?).not_to eq(true)
-      end
-    end
-  end
-
   describe "validations" do
     it "requires user" do
       post = create(:post)
       expect(post.valid?).to eq(true)
       post.user = nil
-      expect(post.valid?).not_to eq(true)
-    end
-
-    it "requires user's character" do
-      post = create(:post)
-      character = create(:character)
-      expect(post.user).not_to eq(character.user)
-      post.character = character
-      expect(post.valid?).not_to eq(true)
-    end
-
-    it "requires user's icon" do
-      post = create(:post)
-      icon = create(:icon)
-      expect(post.user).not_to eq(icon.user)
-      post.icon = icon
       expect(post.valid?).not_to eq(true)
     end
 
@@ -731,12 +645,6 @@ RSpec.describe Post do
       expect(post.recent_characters_for(user, 4)).to be_blank
     end
 
-    it "includes the post character if relevant" do
-      char = create(:character)
-      post = create(:post, user: char.user, character: char)
-      expect(post.recent_characters_for(char.user, 4)).to match_array([char])
-    end
-
     it "only includes characters for specified author" do
       other_char1 = create(:character)
       other_char2 = create(:character)
@@ -833,15 +741,6 @@ RSpec.describe Post do
       expect(reply.user).to eq(last_reply.user)
       expect(reply.icon_id).to eq(last_reply.character.default_icon_id)
       expect(reply.character_id).to eq(last_reply.character_id)
-    end
-
-    it "copies post details if it belongs to the user" do
-      post = create(:post, with_character: true, with_icon: true)
-      reply = post.build_new_reply_for(post.user)
-      expect(reply).to be_a_new_record
-      expect(reply.user).to eq(post.user)
-      expect(reply.icon_id).to eq(post.character.default_icon_id)
-      expect(reply.character_id).to eq(post.character_id)
     end
 
     it "uses active character if available" do
