@@ -144,8 +144,9 @@ RSpec.describe Post do
     it "should update when a field is changed" do
       post = create(:post)
       expect(post.edited_at).to eq(post.created_at)
-      post.update!(content: 'new content now')
-      expect(post.edited_at).not_to eq(post.created_at)
+      post.written.update!(content: 'new content now')
+      expect(post.edited_at).to eq(post.created_at)
+      expect(post.written.edited_at).not_to eq(post.created_at)
     end
 
     it "should update when multiple fields are changed" do
@@ -254,7 +255,7 @@ RSpec.describe Post do
       expect(post.section_order).to eq(0)
       create(:post, board_id: board.id)
       create(:post, board_id: board.id)
-      post.update!(content: 'new content')
+      post.written.update!(content: 'new content')
       post.reload
       expect(post.section_order).to eq(0)
     end
@@ -367,13 +368,13 @@ RSpec.describe Post do
       post = create(:post, content: 'one two three four five')
       create(:reply, post: post, content: 'six seven')
       create(:reply, post: post, content: 'eight')
-      expect(post.word_count).to eq(5)
+      expect(post.written.word_count).to eq(5)
       expect(post.total_word_count).to eq(8)
     end
 
     it "guesses correctly without replies" do
       post = create(:post, content: 'one two three four five')
-      expect(post.word_count).to eq(5)
+      expect(post.written.word_count).to eq(5)
       expect(post.total_word_count).to eq(5)
     end
 

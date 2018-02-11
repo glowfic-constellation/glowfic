@@ -384,7 +384,8 @@ RSpec.describe CharactersController do
       expect(response.status).to eq(200)
       expect(assigns(:page_title)).to eq(character.name)
       expect(assigns(:posts).size).to eq(25)
-      expect(assigns(:posts)).to match_array(Post.where(character_id: character.id).ordered.limit(25))
+      expected_posts = Post.where(id: Reply.where(character_id: character.id).select(:post_id).distinct.pluck(:post_id)).ordered.limit(25)
+      expect(assigns(:posts)).to match_array(expected_posts)
     end
 
     it "should only show visible posts" do
@@ -1155,7 +1156,7 @@ RSpec.describe CharactersController do
         other_char = create(:character, user: user)
         char_post = create(:post, user: user, character: character)
         reply = create(:reply, user: user, character: character)
-        reply_post_char = reply.post.character_id
+        reply_post_char = reply.post.written.character_id
 
         login_as(user)
         perform_enqueued_jobs(only: UpdateModelJob) do
@@ -1164,9 +1165,9 @@ RSpec.describe CharactersController do
         expect(response).to redirect_to(character_path(character))
         expect(flash[:success]).to eq('All uses of this character will be replaced.')
 
-        expect(char_post.reload.character_id).to eq(other_char.id)
+        expect(char_post.written.reload.character_id).to eq(other_char.id)
         expect(reply.reload.character_id).to eq(other_char.id)
-        expect(reply.post.reload.character_id).to eq(reply_post_char) # check it doesn't replace all replies in a post
+        expect(reply.post.written.reload.character_id).to eq(reply_post_char) # check it doesn't replace all replies in a post
 
         audit = reply.audits.where(action: 'update').first
         expect(audit).not_to be_nil
@@ -1187,7 +1188,7 @@ RSpec.describe CharactersController do
       expect(response).to redirect_to(character_path(character))
       expect(flash[:success]).to eq('All uses of this character will be replaced.')
 
-      expect(char_post.reload.character_id).to be_nil
+      expect(char_post.written.reload.character_id).to be_nil
       expect(reply.reload.character_id).to be_nil
     end
 
@@ -1204,9 +1205,9 @@ RSpec.describe CharactersController do
         post :do_replace, params: { id: character.id, icon_dropdown: other_char.id, alias_dropdown: calias.id }
       end
 
-      expect(char_post.reload.character_id).to eq(other_char.id)
+      expect(char_post.written.reload.character_id).to eq(other_char.id)
       expect(reply.reload.character_id).to eq(other_char.id)
-      expect(char_post.reload.character_alias_id).to eq(calias.id)
+      expect(char_post.written.reload.character_alias_id).to eq(calias.id)
       expect(reply.reload.character_alias_id).to eq(calias.id)
     end
 
@@ -1229,9 +1230,9 @@ RSpec.describe CharactersController do
       expect(response).to redirect_to(character_path(character))
       expect(flash[:success]).to eq('All uses of this character in the specified posts will be replaced.')
 
-      expect(char_post.reload.character_id).to eq(other_char.id)
+      expect(char_post.written.reload.character_id).to eq(other_char.id)
       expect(char_reply.reload.character_id).to eq(other_char.id)
-      expect(other_post.reload.character_id).to eq(character.id)
+      expect(other_post.written.reload.character_id).to eq(character.id)
     end
 
     it "filters to alias if given" do
@@ -1247,7 +1248,7 @@ RSpec.describe CharactersController do
         post :do_replace, params: { id: character.id, icon_dropdown: other_char.id, orig_alias: calias.id }
       end
 
-      expect(char_post.reload.character_id).to eq(character.id)
+      expect(char_post.written.reload.character_id).to eq(character.id)
       expect(char_reply.reload.character_id).to eq(other_char.id)
     end
 
@@ -1264,7 +1265,7 @@ RSpec.describe CharactersController do
         post :do_replace, params: { id: character.id, icon_dropdown: other_char.id, orig_alias: '' }
       end
 
-      expect(char_post.reload.character_id).to eq(other_char.id)
+      expect(char_post.written.reload.character_id).to eq(other_char.id)
       expect(char_reply.reload.character_id).to eq(character.id)
     end
 
@@ -1281,7 +1282,7 @@ RSpec.describe CharactersController do
         post :do_replace, params: { id: character.id, icon_dropdown: other_char.id, orig_alias: 'all' }
       end
 
-      expect(char_post.reload.character_id).to eq(other_char.id)
+      expect(char_post.written.reload.character_id).to eq(other_char.id)
       expect(char_reply.reload.character_id).to eq(other_char.id)
     end
   end
@@ -1522,9 +1523,9 @@ RSpec.describe CharactersController do
       expect(dupe.aliases.map(&:name)).to eq([calias.name])
 
       # check old posts and replies have old attributes
-      char_post.reload
+      char_post.written.reload
       char_reply.reload
-      expect(char_post.character).to eq(character)
+      expect(char_post.written.character).to eq(character)
       expect(char_reply.character).to eq(character)
     end
 

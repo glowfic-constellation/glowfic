@@ -470,15 +470,15 @@ RSpec.describe PostsController, 'PUT update' do
       }
 
       expect(response).to render_template(:preview)
-      expect(assigns(:written)).to be_an_instance_of(Post)
+      expect(assigns(:written)).to be_an_instance_of(Reply)
       expect(assigns(:written)).not_to be_a_new_record
-      expect(assigns(:post)).to eq(assigns(:written))
+      expect(assigns(:post).written).to eq(assigns(:written))
       expect(assigns(:post).user).to eq(user)
       expect(assigns(:post).subject).to eq('test')
-      expect(assigns(:post).content).to eq('orign')
-      expect(assigns(:post).character).to eq(templateless_character)
-      expect(assigns(:post).icon).to eq(icon)
-      expect(assigns(:post).character_alias).to eq(character_alias)
+      expect(assigns(:post).written.content).to eq('orign')
+      expect(assigns(:post).written.character).to eq(templateless_character)
+      expect(assigns(:post).written.icon).to eq(icon)
+      expect(assigns(:post).written.character_alias).to eq(character_alias)
       expect(assigns(:page_title)).to eq('Previewing: test')
       expect(assigns(:audits)).to eq({ post: 1 })
 
@@ -517,10 +517,10 @@ RSpec.describe PostsController, 'PUT update' do
       post = assigns(:post).reload
       expect(post.user).to eq(user)
       expect(post.subject).to eq('old')
-      expect(post.content).to eq('example')
-      expect(post.character).to be_nil
-      expect(post.icon).to be_nil
-      expect(post.character_alias).to be_nil
+      expect(post.written.content).to eq('example')
+      expect(post.written.character).to be_nil
+      expect(post.written.icon).to be_nil
+      expect(post.written.character_alias).to be_nil
       Post.auditing_enabled = false
     end
 
@@ -823,7 +823,7 @@ RSpec.describe PostsController, 'PUT update' do
       post = create(:post, user: user, unjoined_authors: [invited_user])
       create(:reply, user: joined_user, post: post)
 
-      newcontent = post.content + 'new'
+      newcontent = post.written.content + 'new'
       newsubj = post.subject + 'new'
       section = create(:board_section, board: board)
 
@@ -855,14 +855,14 @@ RSpec.describe PostsController, 'PUT update' do
       expect(flash[:success]).to eq("Post updated.")
 
       post.reload
-      expect(post.content).to eq(newcontent)
+      expect(post.written.content).to eq(newcontent)
       expect(post.subject).to eq(newsubj)
       expect(post.description).to eq('desc')
       expect(post.board_id).to eq(board.id)
       expect(post.section_id).to eq(section.id)
-      expect(post.character_id).to eq(templateless_character.id)
-      expect(post.character_alias_id).to eq(character_alias.id)
-      expect(post.icon_id).to eq(icon.id)
+      expect(post.written.character_id).to eq(templateless_character.id)
+      expect(post.written.character_alias_id).to eq(character_alias.id)
+      expect(post.written.icon_id).to eq(icon.id)
       expect(post).to be_privacy_access_list
       expect(post.viewers).to match_array([viewer])
       expect(post.settings).to eq([setting])
@@ -897,13 +897,15 @@ RSpec.describe PostsController, 'PUT update' do
       expect(flash[:success]).to eq("Post updated.")
 
       post = assigns(:post).reload
-      expect(post.character_id).not_to eq(templateless_character.id)
-      expect(post.icon_id).to eq(icon.id)
-      expect(post.character.name).to eq('NPC')
-      expect(post.character).to be_npc
-      expect(post.character.default_icon_id).to eq(icon.id)
-      expect(post.character.nickname).to eq(post.subject)
-      expect(post.character.settings).to eq([setting])
+      expect(post.written.character_id).not_to eq(templateless_character.id)
+      expect(post.written.icon_id).to eq(icon.id)
+
+      character = post.written.character.reload
+      expect(character).to be_npc
+      expect(character.name).to eq('NPC')
+      expect(character.default_icon_id).to eq(icon.id)
+      expect(character.nickname).to eq(post.subject)
+      expect(character.settings).to eq([setting])
     end
 
     it "does not allow coauthors to edit post text" do
@@ -992,7 +994,7 @@ RSpec.describe PostsController, 'PUT update' do
         },
       }
       expect(Post.find_by_id(post.id).author_for(post.user).private_note).not_to be_nil
-      expect(post.reload.content).to eq('new')
+      expect(post.reload.written.content).to eq('new')
     end
 
     it "updates with coauthor" do
