@@ -65,7 +65,7 @@ RSpec.describe RepliesController, 'GET search' do
       expect(assigns(:post)).to eq(post)
       expect(assigns(:search_results)).to be_nil
       expect(assigns(:users)).to match_array(post.joined_authors)
-      expect(assigns(:characters)).to match_array([post.character])
+      expect(assigns(:characters)).to match_array([post.written.character])
       expect(assigns(:templates)).to be_empty
     end
 
