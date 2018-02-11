@@ -104,14 +104,16 @@ RSpec.describe PostsController, 'POST create' do
         button_preview: true,
         post: {
           subject: 'test',
-          content: 'orign',
-          character_id: templateless_character.id,
-          icon_id: icon.id,
-          character_alias_id: character_alias.id,
           setting_ids: setting_ids,
           content_warning_ids: warning_ids,
           label_ids: label_ids,
           unjoined_author_ids: [user.id, coauthor.id],
+        },
+        reply: {
+          content: 'orign',
+          character_id: templateless_character.id,
+          icon_id: icon.id,
+          character_alias_id: character_alias.id,
         },
       }
       expect(response).to render_template(:preview)
@@ -172,6 +174,8 @@ RSpec.describe PostsController, 'POST create' do
             board_id: board.id,
             unjoined_author_ids: [coauthor.id],
             viewer_ids: [coauthor.id, create(:user).id],
+          },
+          reply: {
             content: 'test content',
           },
         }
@@ -342,12 +346,14 @@ RSpec.describe PostsController, 'POST create' do
       post :create, params: {
         post: {
           subject: 'asubjct',
-          content: 'acontnt',
           setting_ids: setting_ids,
           content_warning_ids: warning_ids,
           label_ids: label_ids,
-          character_id: templateless_character.id,
           unjoined_author_ids: [user.id, coauthor.id],
+        },
+        reply: {
+          content: 'acontnt',
+          character_id: templateless_character.id,
         },
       }
 
@@ -396,19 +402,21 @@ RSpec.describe PostsController, 'POST create' do
         post :create, params: {
           post: {
             subject: 'asubjct',
-            content: 'acontnt',
             description: 'adesc',
             board_id: board.id,
             section_id: section.id,
-            character_id: templateless_character.id,
-            icon_id: icon.id,
-            character_alias_id: character_alias.id,
             privacy: :access_list,
             viewer_ids: [viewer.id],
             setting_ids: setting_ids,
             content_warning_ids: warning_ids,
             label_ids: label_ids,
             unjoined_author_ids: [coauthor.id],
+          },
+          reply: {
+            content: 'acontnt',
+            character_id: templateless_character.id,
+            icon_id: icon.id,
+            character_alias_id: character_alias.id,
           },
         }
       }.to change { Post.count }.by(1)
@@ -456,9 +464,11 @@ RSpec.describe PostsController, 'POST create' do
           post: {
             subject: 'asubjct',
             board_id: board.id,
+            setting_ids: setting_ids,
+          },
+          reply: {
             character_id: nil,
             icon_id: icon.id,
-            setting_ids: setting_ids,
           },
           character: {
             name: 'NPC',
@@ -488,6 +498,8 @@ RSpec.describe PostsController, 'POST create' do
           subject: 'subject',
           board_id: board.id,
           privacy: :registered,
+        },
+        reply: {
           content: 'content',
         },
       }
