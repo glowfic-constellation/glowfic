@@ -457,15 +457,17 @@ RSpec.describe PostsController, 'PUT update' do
         button_preview: true,
         post: {
           subject: 'test',
-          content: 'orign',
-          character_id: templateless_character.id,
-          icon_id: icon.id,
-          character_alias_id: character_alias.id,
           setting_ids: setting_ids,
           content_warning_ids: warning_ids,
           label_ids: label_ids,
           unjoined_author_ids: [coauthor.id],
           viewer_ids: [viewer.id],
+        },
+        reply: {
+          content: 'orign',
+          character_id: templateless_character.id,
+          icon_id: icon.id,
+          character_alias_id: character_alias.id,
         },
       }
 
@@ -835,20 +837,22 @@ RSpec.describe PostsController, 'PUT update' do
       put :update, params: {
         id: post.id,
         post: {
-          content: newcontent,
           subject: newsubj,
           description: 'desc',
           board_id: board.id,
           section_id: section.id,
-          character_id: templateless_character.id,
-          character_alias_id: character_alias.id,
-          icon_id: icon.id,
           privacy: :access_list,
           viewer_ids: [viewer.id],
           setting_ids: [setting.id],
           content_warning_ids: [warning.id],
           label_ids: [label.id],
           unjoined_author_ids: [coauthor.id],
+        },
+        reply: {
+          content: newcontent,
+          character_id: templateless_character.id,
+          character_alias_id: character_alias.id,
+          icon_id: icon.id,
         },
       }
       expect(response).to redirect_to(post_url(post))
@@ -914,7 +918,7 @@ RSpec.describe PostsController, 'PUT update' do
       post = create(:post, user: user, authors: [user, coauthor], authors_locked: true)
       put :update, params: {
         id: post.id,
-        post: {
+        reply: {
           content: "newtext",
         },
       }
@@ -990,6 +994,8 @@ RSpec.describe PostsController, 'PUT update' do
         id: post.id,
         post: {
           private_note: 'look a note!',
+        },
+        reply: {
           content: 'new',
         },
       }
