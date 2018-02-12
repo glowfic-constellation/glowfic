@@ -275,6 +275,7 @@ RSpec.describe RepliesController do
       other_user = create(:user)
       login_as(user)
       reply_post = create(:post, user: other_user, tagging_authors: [user, other_user], authors_locked: true)
+      reply_post.mark_read(user)
       post :create, params: { reply: {post_id: reply_post.id, content: 'test content!'} }
       expect(Reply.count).to eq(1)
     end
@@ -284,6 +285,7 @@ RSpec.describe RepliesController do
       other_user = create(:user)
       login_as(user)
       other_post = create(:post, user: user, tagging_authors: [user, other_user], authors_locked: true)
+      other_post.mark_read(user)
       post :create, params: { reply: {post_id: other_post.id, content: 'more test content!'} }
       expect(Reply.count).to eq(1)
     end
@@ -292,6 +294,7 @@ RSpec.describe RepliesController do
       user = create(:user)
       login_as(user)
       reply_post = create(:post)
+      reply_post.mark_read(user)
       Timecop.freeze(Time.zone.now) do
         post :create, params: { reply: {post_id: reply_post.id, content: 'test content!'} }
       end
@@ -326,6 +329,7 @@ RSpec.describe RepliesController do
       user = create(:user)
       login_as(user)
       reply_post = create(:post, authors_locked: true)
+      reply_post.mark_read(user)
       post :create, params: { reply: {post_id: reply_post.id, content: 'test'} }
       expect(flash[:error][:message]).to eq("Your reply could not be saved because of the following problems:")
       expect(flash[:error][:array]).to eq(["User #{user.username} cannot write in this post"])
@@ -334,6 +338,7 @@ RSpec.describe RepliesController do
     it "sets reply_order correctly on the first reply" do
       reply_post = create(:post)
       login_as(reply_post.user)
+      reply_post.mark_read(reply_post.user)
       searchable = 'searchable content'
       post :create, params: { reply: {post_id: reply_post.id, content: searchable} }
       reply = reply_post.replies.ordered.last
