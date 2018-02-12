@@ -40,7 +40,7 @@ class WritableController < ApplicationController
       end
 
       if reply && reply.post_id == @post.id
-        @replies = @replies.where('replies.id >= ?', reply.id)
+        @replies = @replies.where('replies.reply_order >= ?', reply.reply_order)
         self.page = cur_page = cur_page.to_i
       else
         flash[:error] = "Could not locate specified reply, defaulting to first page."

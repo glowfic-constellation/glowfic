@@ -127,9 +127,9 @@ class RepliesController < WritableController
     reply.user = current_user
 
     if reply.post.present?
-      last_seen_reply_id = reply.post.last_seen_reply_for(current_user).try(:id)
+      last_seen_reply_order = reply.post.last_seen_reply_for(current_user).try(:reply_order)
       @unseen_replies = reply.post.replies.ordered.paginate(page: 1, per_page: 10)
-      @unseen_replies = @unseen_replies.where('id > ?', last_seen_reply_id) if last_seen_reply_id.present?
+      @unseen_replies = @unseen_replies.where('reply_order > ?', last_seen_reply_order) if last_seen_reply_order.present?
       most_recent_unseen_reply = @unseen_replies.last
       if most_recent_unseen_reply.present?
         reply.post.mark_read(current_user, reply.post.read_time_for(@unseen_replies))

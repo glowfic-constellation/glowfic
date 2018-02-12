@@ -31,7 +31,7 @@ class Reply < ApplicationRecord
 
   def post_page(per=25)
     per_page = per > 0 ? per : post.replies.count
-    index = post.replies.where('id < ?', self.id).count
+    index = post.replies.where('reply_order < ?', self.reply_order).count
     (index / per_page) + 1
   end
 
