@@ -108,7 +108,7 @@ RSpec.describe RepliesController, 'GET search' do
       replies = create_list(:reply, 4)
       filtered_reply = replies.last
       get :search, params: { commit: true, author_id: filtered_reply.user_id }
-      expect(assigns(:search_results)).to match_array([filtered_reply])
+      expect(assigns(:search_results)).to match_array([filtered_reply.post.written, filtered_reply])
     end
 
     it "filters by icon" do
@@ -177,7 +177,7 @@ RSpec.describe RepliesController, 'GET search' do
       create(:post, num_replies: 1) # wrong post
       filtered_reply = continuity_post.replies.last
       get :search, params: { commit: true, board_id: continuity_post.board_id }
-      expect(assigns(:search_results)).to match_array([filtered_reply])
+      expect(assigns(:search_results)).to match_array([continuity_post.written, filtered_reply])
     end
 
     it "filters by template" do
@@ -190,18 +190,18 @@ RSpec.describe RepliesController, 'GET search' do
     end
 
     it "sorts by created desc" do
-      reply = create(:reply)
+      reply = create(:post).written
       reply2 = Timecop.freeze(reply.created_at + 2.minutes) do
-        create(:reply)
+        create(:post).written
       end
       get :search, params: { commit: true, sort: 'created_new' }
       expect(assigns(:search_results)).to eq([reply2, reply])
     end
 
     it "sorts by created asc" do
-      reply = create(:reply)
+      reply = create(:post).written
       reply2 = Timecop.freeze(reply.created_at + 2.minutes) do
-        create(:reply)
+        create(:post).written
       end
       get :search, params: { commit: true, sort: 'created_old' }
       expect(assigns(:search_results)).to eq([reply, reply2])
