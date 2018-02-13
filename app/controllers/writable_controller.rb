@@ -19,6 +19,7 @@ class WritableController < ApplicationController
 
     if @post
       uniq_chars_ids = @post.replies.where(user_id: user.id).where.not(character_id: nil).group(:character_id).pluck(:character_id)
+      uniq_chars_ids << @reply.character_id unless @reply.nil? || @reply.character_id.nil? || uniq_chars_ids.include?(@reply.character_id)
       uniq_chars = Character.non_npcs.where(id: uniq_chars_ids).ordered.pluck(Template::CHAR_PLUCK)
       threadchars = faked.new('Post characters', nil, uniq_chars)
       @templates.insert(0, threadchars)
