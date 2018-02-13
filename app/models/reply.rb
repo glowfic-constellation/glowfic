@@ -110,7 +110,7 @@ class Reply < ApplicationRecord
   end
 
   def author_can_write_in_post
-    return unless post && user
+    return unless post && user && post.id
     errors.add(:user, "#{user.username} is not a valid continuity author for #{post.board.name}") unless user.writes_in?(post.board)
     return unless post.authors_locked?
     errors.add(:user, "#{user.username} cannot write in this post") unless post.author_for(user)&.can_reply
