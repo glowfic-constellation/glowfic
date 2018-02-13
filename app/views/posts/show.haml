@@ -178,7 +178,7 @@
     .hidden
       = render 'replies/single', reply: @post.replies.find_by(reply_order: 0), split_ui: split_ui
 - if @replies.present?
-  = render 'posts/paginator', paginated: @replies
+  = render 'posts/paginator', paginated: @replies.where.not(reply_order: 0)
 = render partial: 'replies/single', collection: @replies.where.not(reply_order: 0), as: :reply, locals: { split_ui: split_ui }
 - if @post.complete? && (@replies.empty? || (@replies.last.id == @post.last_reply_id))
   .post-ender Here Ends This Thread
@@ -195,7 +195,7 @@
 - if @post.abandoned? && (@replies.empty? || (@replies.last.id == @post.last_reply_id))
   .post-ender This Thread Has Been Permanently Abandoned
 - if @replies.present?
-  = render 'posts/paginator', paginated: @replies
+  = render 'posts/paginator', paginated: @replies.where.not(reply_order: 0)
 - if logged_in? && @unread.nil?
   %a.noheight{id: "unread"}= " "
 - if @post.taggable_by?(current_user) && !split_ui
