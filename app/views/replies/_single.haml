@@ -1,11 +1,9 @@
 -# locals: ( reply:, hide_footer: false, split_ui: false )
 
-- if reply.is_a?(Post)
+- if reply.reply_order == 0
   - write = 'post-post'.freeze
-- elsif reply.is_a?(Reply)
-  - write = 'post-reply'.freeze
 - else
-  - write = ''.freeze
+  - write = 'post-reply'.freeze
 .post-container{class: [write, (reply == @unread && current_user.try(:visible_unread?)) ? 'reply-highlighted' : '']}
   - if reply.is_a?(Reply) && reply.id.present?
     %a.noheight{id: "reply-#{reply.id}"}= " "
@@ -41,13 +39,19 @@
         - else
           = link_to post_or_reply_link(reply), rel: 'alternate'.freeze do
             = image_tag "icons/link.png".freeze, title: 'Permalink'.freeze, alt: 'Permalink'.freeze
-          - if reply.editable_by?(current_user) || (reply.is_a?(Post) && reply.metadata_editable_by?(current_user))
+          - if reply.order == 0 && reply.post.metadata_editable_by?(current_user)
+            = link_to path_for(reply.post, 'edit_%s') do
+              = image_tag "icons/pencil.png".freeze, title: 'Edit'.freeze, alt: 'Edit'.freeze
+          - elsif reply.editable_by?(current_user)
             = link_to path_for(reply, 'edit_%s') do
               = image_tag "icons/pencil.png".freeze, title: 'Edit'.freeze, alt: 'Edit'.freeze
-          - if reply.deletable_by?(current_user)
+          - if reply.reply_order == 0 && reply.post.deletable_by?(current_user)
+            = link_to path_for(reply.post, '%s'), method: :delete, data: { confirm: "Are you sure you wish to delete this #{reply.post.class.to_s.downcase}?" } do
+              = image_tag "icons/cross.png".freeze, title: 'Delete'.freeze, alt: 'Delete'.freeze
+          - elsif reply.deletable_by?(current_user)
             = link_to path_for(reply, '%s'), method: :delete, data: { confirm: "Are you sure you wish to delete this #{reply.class.to_s.downcase}?" } do
               = image_tag "icons/cross.png".freeze, title: 'Delete'.freeze, alt: 'Delete'.freeze
-          - if reply.is_a?(Reply) && logged_in?
+          - if reply.reply_order != 0 && logged_in?
             - if (bookmark = reply.bookmark_by(current_user))
               = link_to bookmark_path(bookmark), method: :delete do
                 = image_tag "icons/bookmark_delete.png".freeze, title: 'Remove Bookmark'.freeze, alt: 'Remove Bookmark'.freeze
