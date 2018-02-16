@@ -180,9 +180,11 @@ RSpec.describe RepliesController, 'PUT update' do
       expect(controller.gon.editor_user[:username]).to eq(user.username)
       # templates
       templates = assigns(:templates)
-      expect(templates.length).to eq(2)
-      template_chars = templates.first
-      expect(template_chars).to eq(char2.template)
+      expect(templates.length).to eq(3)
+      used = templates.first
+      expect(used.name).to eq("Thread characters")
+      expect(used.plucked_characters).to eq([[char.id, char.name]])
+      expect(templates[1]).to eq(char2.template)
       templateless = templates.last
       expect(templateless.name).to eq('Templateless')
       expect(templateless.plucked_characters).to eq([[char.id, char.name]])
