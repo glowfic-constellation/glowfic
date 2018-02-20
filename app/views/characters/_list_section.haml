@@ -24,6 +24,9 @@
 - if @template && @template.description.present?
   %tr
     %td.single-description.written-content{colspan: col_count}= sanitize_written_content(@template.description).html_safe
+- elsif @template.nil? && name.present? && name.is_a?(::Template) && name.description.present?
+  %tr
+    %td.single-description.written-content{colspan: col_count}= sanitize_written_content(name.description).html_safe
 - if characters.empty?
   %tr
     %td.centered.padding-5{class: cycle('even', 'odd'), colspan: col_count} — No characters yet —

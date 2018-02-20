@@ -15,7 +15,8 @@ class PostScraper < Object
     'rockeye-stonetoe' => 'Rockeye',
     'rockeye_stonetoe' => 'Rockeye',
     'maggie-of-the-owls' => 'MaggieoftheOwls',
-    'maggie_of_the_owls' => 'MaggieoftheOwls' # have both - and _ versions cause Dreamwidth supports both
+    'maggie_of_the_owls' => 'MaggieoftheOwls', # have both - and _ versions cause Dreamwidth supports both
+    'nemoconsequentiae' => 'Nemo',
   }
 
   attr_accessor :url, :post, :html_doc

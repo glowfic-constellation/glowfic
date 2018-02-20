@@ -138,6 +138,21 @@ RSpec.describe Post do
       create(:reply, post: post, user: post.user)
       expect(post.edited_at).to eq(post.created_at)
     end
+
+    it 'should update correctly when characters are edited' do
+      post = create(:post)
+      old_tag = post.tagged_at
+      expect(post.edited_at).to eq(post.created_at)
+      expect(post.audits.count).to eq(1)
+
+      post.character = create(:character, user: post.user)
+      post.save
+
+      # editing a post's character changes edit and makes audit but does not tag
+      expect(post.edited_at).not_to be_the_same_time_as(post.created_at)
+      expect(post.audits.count).to eq(2)
+      expect(post.tagged_at).to be_the_same_time_as(old_tag)
+    end
   end
 
   describe "#section_order" do
