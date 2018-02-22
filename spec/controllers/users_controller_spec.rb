@@ -109,6 +109,14 @@ RSpec.describe UsersController do
       expect(assigns(:current_user).username).to eq(user['username'])
       expect(assigns(:current_user).authenticate(pass)).to eq(true)
     end
+
+    it "strips spaces" do
+      user = build(:user, username: 'withspace ').attributes
+      user = user.with_indifferent_access.merge(password: 'password', password_confirmation: 'password')
+      post :create, params: { secret: 'ALLHAILTHECOIN' }.merge(user: user)
+      expect(flash[:success]).to eq("User created! You have been logged in.")
+      expect(assigns(:current_user).username).to eq('withspace')
+    end
   end
 
   describe "GET show" do

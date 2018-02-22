@@ -45,6 +45,7 @@ class Post < ApplicationRecord
   after_commit :notify_followers, on: :create
 
   NON_EDITED_ATTRS = %w(id created_at updated_at edited_at tagged_at last_user_id last_reply_id section_order)
+  NON_TAGGED_ATTRS = %w(icon_id character_alias_id character_id)
   audited except: NON_EDITED_ATTRS
   has_associated_audits
 
@@ -269,12 +270,17 @@ class Post < ApplicationRecord
   def set_timestamps
     return if skip_edited
     self.edited_at = self.updated_at
+    return if skip_tagged
     return if replies.exists? && !status_changed?
     self.tagged_at = self.updated_at
   end
 
   def skip_edited
     @skip_edited || (changed_attributes.keys - NON_EDITED_ATTRS).empty?
+  end
+
+  def skip_tagged
+    (changed_attributes.keys - NON_TAGGED_ATTRS - NON_EDITED_ATTRS).empty?
   end
 
   def ordered_attributes

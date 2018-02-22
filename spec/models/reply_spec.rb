@@ -121,6 +121,7 @@ RSpec.describe Reply do
     shared_examples 'has_edit_audits' do |get_has_edit_audits|
       let(:user) { create(:user) }
       before(:each) { Reply.auditing_enabled = true }
+      after(:each) { Reply.auditing_enabled = false }
       it "is false if reply has never been edited" do
         reply = nil
         Audited.audit_class.as_user(user) do

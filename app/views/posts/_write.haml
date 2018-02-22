@@ -25,7 +25,7 @@
 
     %div{title: 'If a post is locked, it doesn\'t accept new authors. Current or invited authors can still reply.'}
       = f.label :authors_locked, 'Lock post to authors?'
-      = f.check_box :authors_locked, class: 'vmid', checked: @authors_from_board
+      = f.check_box :authors_locked, class: 'vmid', checked: @authors_from_board || @post.authors_locked
 
     = f.label :setting_ids, 'Setting:'
     = tag_select(post, f, :settings)

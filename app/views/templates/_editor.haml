@@ -8,6 +8,9 @@
   %tr
     %th.sub.vtop Characters
     %td.even
-      = collection_check_boxes :template, :character_ids, @selectable_characters, :id, :name, selected: @character_ids
+      = collection_check_boxes :template, :character_ids, @selectable_characters, :id, :name, selected: @character_ids do |box|
+        = box.check_box
+        = box.label
+        %br
 %tr
   %th.form-table-ender{colspan: 2}= submit_tag "Save", class: 'button'

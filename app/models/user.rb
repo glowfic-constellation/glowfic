@@ -35,7 +35,7 @@ class User < ApplicationRecord
   validates_confirmation_of :password, if: :validate_password?
   validates_presence_of :password, :password_confirmation, if: :validate_password?
 
-  before_validation :encrypt_password
+  before_validation :encrypt_password, :strip_spaces
   after_save :clear_password
 
   nilify_blanks
@@ -66,6 +66,10 @@ class User < ApplicationRecord
   end
 
   private
+
+  def strip_spaces
+    self.username = self.username.strip if self.username.present?
+  end
 
   def encrypt_password
     if password.present?
