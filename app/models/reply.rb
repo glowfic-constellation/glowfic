@@ -49,7 +49,7 @@ class Reply < ApplicationRecord
 
   def update_post
     return if post.last_reply_id != id || skip_post_update
-    return if (changed_attributes.keys - Post::NON_TAGGED_ATTRS - ['updated_at']).empty?
+    return if (saved_changes.keys - Post::NON_TAGGED_ATTRS - ['updated_at']).empty?
     post.tagged_at = updated_at
     post.status = Post::STATUS_ACTIVE if post.on_hiatus?
     post.save

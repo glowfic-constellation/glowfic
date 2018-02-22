@@ -139,19 +139,26 @@ RSpec.describe Post do
       expect(post.edited_at).to eq(post.created_at)
     end
 
-    it 'should update correctly when characters are edited' do
-      post = create(:post)
-      old_tag = post.tagged_at
-      expect(post.edited_at).to eq(post.created_at)
+    it "should update correctly when characters are edited" do
+      Post.auditing_enabled = true
+      time = Time.now
+      post = Timecop.freeze(time - 5.minutes) do
+        create(:post)
+      end
+      expect(post.edited_at).to be_the_same_time_as(time - 5.minutes)
+      expect(post.updated_at).to be_the_same_time_as(time - 5.minutes)
       expect(post.audits.count).to eq(1)
 
       post.character = create(:character, user: post.user)
-      post.save
+      Timecop.freeze(time) do
+        post.save!
+      end
 
       # editing a post's character changes edit and makes audit but does not tag
-      expect(post.edited_at).not_to be_the_same_time_as(post.created_at)
+      expect(post.edited_at).to be_the_same_time_as(time)
       expect(post.audits.count).to eq(2)
-      expect(post.tagged_at).to be_the_same_time_as(old_tag)
+      expect(post.tagged_at).to be_the_same_time_as(time - 5.minutes)
+      Post.auditing_enabled = false
     end
   end
 
@@ -817,6 +824,7 @@ RSpec.describe Post do
   describe "#has_edit_audits?" do
     let(:user) { create(:user) }
     before(:each) { Post.auditing_enabled = true }
+    after(:each) { Post.auditing_enabled = false }
     it "is false if post has never been edited" do
       post = nil
       Audited.audit_class.as_user(user) do
