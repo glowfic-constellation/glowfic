@@ -30,7 +30,7 @@
     %tr
       %td.even.padding-5.centered
         = select_tag :board_id,
-                     options_from_collection_for_select(Board.order('LOWER(name)'), :id, :name, params[:board_id]),
+                     options_from_collection_for_select(Board.where(id: params[:board_id]), :id, :name, params[:board_id]),
                      {class: 'chosen-select', prompt: '— Choose Continuity —'}
     %tr
       %th.form-table-ender

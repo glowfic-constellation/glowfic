@@ -43,6 +43,7 @@ class PostsController < WritableController
     @posts = @posts.paginate(per_page: 25, page: page)
     @hide_quicklinks = true
     @page_title = @started ? 'Opened Threads' : 'Unread Threads'
+    use_javascript('posts/unread')
   end
 
   def mark
