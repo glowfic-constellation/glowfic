@@ -9,7 +9,7 @@ class Board < ApplicationRecord
   has_many :favorites, as: :favorite, dependent: :destroy
   belongs_to :creator, class_name: 'User', optional: false
 
-  has_many :board_authors, inverse_of: :board
+  has_many :board_authors, inverse_of: :board, dependent: :destroy
   has_many :board_coauthors, -> { where(cameo: false) }, class_name: 'BoardAuthor', inverse_of: :board
   has_many :coauthors, class_name: 'User', through: :board_coauthors, source: :user
   has_many :board_cameos, -> { where(cameo: true) }, class_name: 'BoardAuthor', inverse_of: :board

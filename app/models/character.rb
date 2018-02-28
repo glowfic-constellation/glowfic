@@ -9,7 +9,7 @@ class Character < ApplicationRecord
   has_many :posts
   has_many :aliases, class_name: 'CharacterAlias', dependent: :destroy
 
-  has_many :characters_galleries, inverse_of: :character
+  has_many :characters_galleries, inverse_of: :character, dependent: :destroy
   accepts_nested_attributes_for :characters_galleries, allow_destroy: true
   has_many :galleries, through: :characters_galleries, after_remove: :reorder_galleries
   has_many :icons, -> { group('icons.id').order('LOWER(keyword)') }, through: :galleries
