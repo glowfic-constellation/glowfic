@@ -4,9 +4,9 @@ class Icon < ApplicationRecord
   S3_DOMAIN = '.s3.amazonaws.com'
 
   belongs_to :user, optional: false
-  has_many :posts
-  has_many :replies
-  has_many :reply_drafts
+  has_many :posts, dependent: nil
+  has_many :replies, dependent: nil
+  has_many :reply_drafts, dependent: nil # These are handled in callbacks
   has_many :galleries_icons, dependent: :destroy, inverse_of: :icon
   has_many :galleries, through: :galleries_icons
 
