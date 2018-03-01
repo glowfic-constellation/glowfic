@@ -5,8 +5,8 @@ class Character < ApplicationRecord
   belongs_to :template, inverse_of: :characters, optional: true
   belongs_to :default_icon, class_name: 'Icon', optional: true
   belongs_to :character_group, optional: true
-  has_many :replies, dependent: nil
-  has_many :posts, dependent: nil # These are handled in callbacks
+  has_many :replies, dependent: false
+  has_many :posts, dependent: false # These are handled in callbacks
   has_many :aliases, class_name: 'CharacterAlias', dependent: :destroy
 
   has_many :characters_galleries, inverse_of: :character, dependent: :destroy

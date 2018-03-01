@@ -4,7 +4,7 @@ class Board < ApplicationRecord
 
   ID_SITETESTING = 4
 
-  has_many :posts, dependent: nil # This is handled in callbacks
+  has_many :posts, dependent: false # This is handled in callbacks
   has_many :board_sections, dependent: :destroy
   has_many :favorites, as: :favorite, dependent: :destroy
   belongs_to :creator, class_name: 'User', optional: false
