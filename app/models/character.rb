@@ -7,7 +7,7 @@ class Character < ApplicationRecord
   belongs_to :character_group, optional: true
   has_many :replies, dependent: false
   has_many :posts, dependent: false # These are handled in callbacks
-  has_many :aliases, class_name: 'CharacterAlias', dependent: :destroy
+  has_many :aliases, class_name: 'CharacterAlias', inverse_of: :character, dependent: :destroy
 
   has_many :characters_galleries, inverse_of: :character, dependent: :destroy
   accepts_nested_attributes_for :characters_galleries, allow_destroy: true
