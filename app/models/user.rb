@@ -25,14 +25,18 @@ class User < ApplicationRecord
   belongs_to :avatar, class_name: 'Icon', optional: true
   belongs_to :active_character, class_name: 'Character', optional: true
 
-  validates :username, :crypted, presence: true
-  validates :email, presence: { on: :create }
-  validates :username, uniqueness: true
-  validates :email, uniqueness: { allow_blank: true }
-  validates :username, length: { in: MIN_USERNAME_LEN..MAX_USERNAME_LEN, allow_blank: true }
+  validates :crypted, presence: true
+  validates :email,
+    presence: { on: :create },
+    uniqueness: { allow_blank: true }
+  validates :username,
+    presence: true,
+    uniqueness: true,
+    length: { in: MIN_USERNAME_LEN..MAX_USERNAME_LEN, allow_blank: true }
+  validates :password,
+    length: { minimum: 6, if: :validate_password? },
+    confirmation: { if: :validate_password? }
   validates :moiety, length: { in: 3..6, allow_blank: true }
-  validates :password, length: { minimum: 6, if: :validate_password? }
-  validates :password, confirmation: { if: :validate_password? }
   validates :password, :password_confirmation, presence: { if: :validate_password? }
 
   before_validation :encrypt_password, :strip_spaces
