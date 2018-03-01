@@ -4,7 +4,7 @@ class Template < ApplicationRecord
   belongs_to :user, inverse_of: :templates, optional: false
   has_many :characters, -> { order('LOWER(name) ASC') }, inverse_of: :template
 
-  validates_presence_of :name
+  validates :name, presence: true
 
   after_destroy :clear_character_templates
 

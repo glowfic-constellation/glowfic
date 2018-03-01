@@ -2,5 +2,5 @@ class CharacterGroup < ApplicationRecord
   has_many :characters
   has_many :templates
   belongs_to :user, optional: false
-  validates_presence_of :name
+  validates :name, presence: true
 end

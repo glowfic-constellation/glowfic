@@ -9,7 +9,7 @@ class Tag < ApplicationRecord
 
   TYPES = %w(Setting Label ContentWarning GalleryGroup)
 
-  validates_presence_of :name, :type
+  validates :name, :type, presence: true
   validates :name, uniqueness: { scope: :type }
 
   scope :with_item_counts, -> {

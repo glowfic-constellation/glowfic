@@ -5,7 +5,7 @@ class BoardSection < ApplicationRecord
   belongs_to :board, inverse_of: :board_sections, optional: false
   has_many :posts, inverse_of: :section, foreign_key: :section_id
 
-  validates_presence_of :name
+  validates :name, presence: true
 
   after_destroy :clear_post_values
 

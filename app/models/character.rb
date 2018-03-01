@@ -18,7 +18,7 @@ class Character < ApplicationRecord
   has_many :settings, -> { order('character_tags.id ASC') }, through: :character_tags, source: :setting
   has_many :gallery_groups, -> { order('character_tags.id ASC') }, through: :character_tags, source: :gallery_group, dependent: :destroy
 
-  validates_presence_of :name
+  validates :name, presence: true
   validate :valid_group, :valid_galleries, :valid_default_icon
 
   attr_accessor :group_name

@@ -36,7 +36,7 @@ class Post < ApplicationRecord
   attr_accessor :is_import
   attr_writer :skip_edited
 
-  validates_presence_of :subject
+  validates :subject, presence: true
   validate :valid_board, :valid_board_section
 
   before_create :build_initial_flat_post, :set_timestamps
