@@ -1,10 +1,10 @@
 require "spec_helper"
-require "#{Rails.root}/lib/post_scraper"
+require Rails.root.join('lib', 'post_scraper')
 
 RSpec.describe PostScraper do
   def stub_fixture(url, filename)
     url = url.gsub(/\#cmt\d+$/, '')
-    file = File.join(Rails.root, 'spec', 'support', 'fixtures', filename + '.html')
+    file = Rails.root.join('spec', 'support', 'fixtures', filename + '.html')
     stub_request(:get, url).to_return(status: 200, body: File.new(file))
   end
 
@@ -164,10 +164,10 @@ RSpec.describe PostScraper do
 
   it "should only scrape specified threads if given" do
     stubs = {
-      'https://mind-game.dreamwidth.org/1073.html?style=site' => File.join(Rails.root, 'spec', 'support', 'fixtures', 'scrape_specific_threads.html'),
-      'https://mind-game.dreamwidth.org/1073.html?thread=6961&style=site#cmt6961' => File.join(Rails.root, 'spec', 'support', 'fixtures', 'scrape_specific_threads_thread1.html'),
-      'https://mind-game.dreamwidth.org/1073.html?thread=16689&style=site#cmt16689' => File.join(Rails.root, 'spec', 'support', 'fixtures', 'scrape_specific_threads_thread2_1.html'),
-      'https://mind-game.dreamwidth.org/1073.html?thread=48177&style=site#cmt48177' => File.join(Rails.root, 'spec', 'support', 'fixtures', 'scrape_specific_threads_thread2_2.html')
+      'https://mind-game.dreamwidth.org/1073.html?style=site' => Rails.root.join('spec', 'support', 'fixtures', 'scrape_specific_threads.html'),
+      'https://mind-game.dreamwidth.org/1073.html?thread=6961&style=site#cmt6961' => Rails.root.join('spec', 'support', 'fixtures', 'scrape_specific_threads_thread1.html'),
+      'https://mind-game.dreamwidth.org/1073.html?thread=16689&style=site#cmt16689' => Rails.root.join('spec', 'support', 'fixtures', 'scrape_specific_threads_thread2_1.html'),
+      'https://mind-game.dreamwidth.org/1073.html?thread=48177&style=site#cmt48177' => Rails.root.join('spec', 'support', 'fixtures', 'scrape_specific_threads_thread2_2.html')
     }
     stubs.each do |url, file|
       stub_request(:get, url.split('#').first).to_return(status: 200, body: File.new(file))

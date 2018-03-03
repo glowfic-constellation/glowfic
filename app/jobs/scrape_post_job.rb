@@ -1,4 +1,4 @@
-require "#{Rails.root}/lib/post_scraper"
+require Rails.root.join('lib', 'post_scraper')
 
 class ScrapePostJob < ApplicationJob
   queue_as :low

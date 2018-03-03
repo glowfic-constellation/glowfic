@@ -350,7 +350,7 @@ class PostsController < WritableController
   end
 
   def missing_usernames(url)
-    require "#{Rails.root}/lib/post_scraper"
+    require Rails.root.join('lib', 'post_scraper')
     data = HTTParty.get(url).body
     logger.debug "Downloaded #{url} for scraping"
     doc = Nokogiri::HTML(data)
