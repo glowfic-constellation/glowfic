@@ -6,7 +6,7 @@ class Board < ApplicationRecord
 
   has_many :posts, dependent: false # This is handled in callbacks
   has_many :board_sections, dependent: :destroy
-  has_many :favorites, as: :favorite, dependent: :destroy
+  has_many :favorites, as: :favorite, inverse_of: :favorite, dependent: :destroy
   belongs_to :creator, class_name: 'User', inverse_of: false, optional: false
 
   has_many :board_authors, inverse_of: :board, dependent: :destroy

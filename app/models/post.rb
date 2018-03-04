@@ -22,7 +22,7 @@ class Post < ApplicationRecord
 
   has_many :post_viewers, inverse_of: :post, dependent: :destroy
   has_many :viewers, through: :post_viewers, source: :user
-  has_many :favorites, as: :favorite, dependent: :destroy
+  has_many :favorites, as: :favorite, inverse_of: :favorite, dependent: :destroy
 
   has_many :post_tags, inverse_of: :post, dependent: :destroy
   has_many :labels, -> { order('post_tags.id ASC') }, through: :post_tags, source: :label

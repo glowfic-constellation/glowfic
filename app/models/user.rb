@@ -17,7 +17,7 @@ class User < ApplicationRecord
   has_many :messages, foreign_key: 'recipient_id', inverse_of: :recipient
   has_many :password_resets
   has_many :favorites
-  has_many :favoriteds, as: :favorite, class_name: 'Favorite'
+  has_many :favoriteds, as: :favorite, class_name: 'Favorite', inverse_of: :favorite
   has_many :posts
   has_many :replies
   has_many :indexes
