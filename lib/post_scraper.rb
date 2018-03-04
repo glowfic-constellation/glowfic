@@ -220,7 +220,7 @@ class PostScraper < Object
       return
     end
 
-    character = Character.find_by(screenname: username.gsub("-", "_")) || Character.find_by(screenname: username.gsub("_", "-"))
+    character = Character.find_by(screenname: username.tr("-", "_")) || Character.find_by(screenname: username.tr("_", "-"))
     unless character
       user = prompt_for_user(username)
       character = Character.create!(user: user, name: username, screenname: username)
