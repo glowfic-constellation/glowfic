@@ -14,7 +14,7 @@ class MoveSettingToTags < ActiveRecord::Migration[5.0]
     print "\nDone!\n\n"
     remove_column :characters, :setting
   end
-  
+
   def down
     add_column :characters, :setting, :text
     Setting.all.each do |setting|

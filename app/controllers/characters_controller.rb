@@ -78,10 +78,8 @@ class CharactersController < ApplicationController
         @character.gallery_groups = process_tags(GalleryGroup, :character, :gallery_group_ids)
         @character.save!
       end
-
       flash[:success] = "Character saved successfully."
       redirect_to character_path(@character)
-
     rescue ActiveRecord::RecordInvalid
       @page_title = "Edit Character: " + @character.name
       flash.now[:error] = {}

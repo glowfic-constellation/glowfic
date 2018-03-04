@@ -95,10 +95,8 @@ class GalleriesController < UploadingController
         @gallery.gallery_groups = process_tags(GalleryGroup, :gallery, :gallery_group_ids)
         @gallery.save!
       end
-
       flash[:success] = "Gallery saved."
       redirect_to edit_gallery_path(@gallery)
-
     rescue ActiveRecord::RecordInvalid
       flash.now[:error] = {}
       flash.now[:error][:message] = "Gallery could not be saved."
