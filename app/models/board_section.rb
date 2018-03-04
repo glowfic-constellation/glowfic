@@ -3,7 +3,7 @@ class BoardSection < ApplicationRecord
   include Presentable
 
   belongs_to :board, inverse_of: :board_sections, optional: false
-  has_many :posts, inverse_of: :section, foreign_key: :section_id
+  has_many :posts, inverse_of: :section, foreign_key: :section_id, dependent: false # This is handled in callbacks
 
   validates :name, presence: true
 

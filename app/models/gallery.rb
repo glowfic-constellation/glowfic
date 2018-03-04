@@ -5,8 +5,8 @@ class Gallery < ApplicationRecord
   accepts_nested_attributes_for :galleries_icons, allow_destroy: true
   has_many :icons, -> { order('LOWER(keyword)') }, through: :galleries_icons
 
-  has_many :characters_galleries, inverse_of: :gallery
-  has_many :characters, through: :characters_galleries
+  has_many :characters_galleries, inverse_of: :gallery, dependent: :destroy
+  has_many :characters, through: :characters_galleries, dependent: :destroy
 
   has_many :gallery_tags, inverse_of: :gallery, dependent: :destroy
   has_many :gallery_groups, -> { order('gallery_tags.id ASC') }, through: :gallery_tags, source: :gallery_group, dependent: :destroy
@@ -43,6 +43,6 @@ class Gallery < ApplicationRecord
   end
 
   def character_gallery_for(character)
-    characters_galleries.where(character_id: character).first
+    characters_galleries.find_by(character_id: character)
   end
 end
