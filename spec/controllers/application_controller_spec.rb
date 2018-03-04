@@ -182,8 +182,8 @@ RSpec.describe ApplicationController do
         user = create(:user)
         login_as(user)
         time = Time.now - 5.minutes
-        unopened1, unopened2, partread, read1, read2, hidden_unread, hidden_partread = posts = Timecop.freeze(time) do
-          unopened1 = create(:post) # post
+        unopened2, partread, read1, read2, hidden_unread, hidden_partread = posts = Timecop.freeze(time) do
+          create(:post) # post; unopened1
           unopened2 = create(:post) # post, reply
           partread = create(:post) # post, reply
           read1 = create(:post) # post
@@ -195,18 +195,16 @@ RSpec.describe ApplicationController do
           read1.mark_read(user)
           hidden_partread.mark_read(user)
 
-          [unopened1, unopened2, partread, read1, read2, hidden_unread, hidden_partread]
+          [unopened2, partread, read1, read2, hidden_unread, hidden_partread]
         end
 
-        unopened2_reply, partread_reply, read2_reply, hidden_partread_reply = Timecop.freeze(time + 1.minute) do
-          unopened2_reply = create(:reply, post: unopened2)
-          partread_reply = create(:reply, post: partread)
-          read2_reply = create(:reply, post: read2)
-          hidden_partread_reply = create(:reply, post: hidden_partread)
+        Timecop.freeze(time + 1.minute) do
+          create(:reply, post: unopened2) # unopened2_reply
+          create(:reply, post: partread) # partread_reply
+          create(:reply, post: read2) # read2_reply
+          create(:reply, post: hidden_partread) # hidden_partread_reply
 
           read2.mark_read(user)
-
-          [unopened2_reply, partread_reply, read2_reply, hidden_partread_reply]
         end
 
         hidden_unread.ignore(user)

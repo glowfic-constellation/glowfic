@@ -36,7 +36,7 @@ RSpec.feature "Searching posts", :type => :feature do
     end
 
     # check a new post shows up
-    post2 = create(:post, subject: 'Last post')
+    create(:post, subject: 'Last post') # post2
     perform_search
     within('#search_results') do
       expect(page).to have_selector('.post-subject', count: 1)

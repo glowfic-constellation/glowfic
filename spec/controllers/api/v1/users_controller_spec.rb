@@ -3,10 +3,10 @@ require "spec_helper"
 RSpec.describe Api::V1::UsersController do
   describe "GET index" do
     def create_search_users
-      firstuser = create(:user, username: 'baa')
-      miduser = create(:user, username: 'aba')
-      enduser = create(:user, username: 'aab')
-      notuser = create(:user, username: 'aaa')
+      create(:user, username: 'baa') # firstuser
+      create(:user, username: 'aba') # miduser
+      create(:user, username: 'aab') # enduser
+      create(:user, username: 'aaa') # notuser
       User.all.each do |user|
         create(:user, username: user.username.upcase + 'c')
       end

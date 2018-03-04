@@ -33,7 +33,7 @@ class Gallery < ApplicationRecord
     if has_attribute?(:gallery_groups_data_internal)
       data_internal = read_attribute(:gallery_groups_data_internal)
       faked = Struct.new(:id, :name)
-      @gallery_groups_data = gallery_groups_data_internal.map do |old|
+      @gallery_groups_data = data_internal.map do |old|
         faked.new(old['f1'], old['f2'])
       end
     else

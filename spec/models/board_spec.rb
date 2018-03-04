@@ -15,7 +15,7 @@ RSpec.describe Board do
       board = create(:board)
       coauthor = create(:user)
       cameo = create(:user)
-      not_board = create(:user)
+      create(:user) # not_board
       board.board_authors.create!(user: coauthor)
       board.board_authors.create!(user: cameo, cameo: true)
       board.reload
@@ -64,13 +64,13 @@ RSpec.describe Board do
   it "should be fixable via admin method" do
     board = create(:board)
     post = create(:post, board: board)
-    post2 = create(:post, board: board)
-    post3 = create(:post, board: board)
-    post4 = create(:post, board: board)
+    create(:post, board: board) # post2
+    create(:post, board: board) # post3
+    create(:post, board: board) # post4
     post.update_attribute(:section_order, 2)
     section = create(:board_section, board: board)
-    section2 = create(:board_section, board: board)
-    section3 = create(:board_section, board: board)
+    create(:board_section, board: board) # section2
+    create(:board_section, board: board) # section3
     section.update_attribute(:section_order, 6)
     expect(board.posts.order('section_order asc').pluck(:section_order)).to eq([1, 2, 2, 3])
     expect(board.board_sections.order('section_order asc').pluck(:section_order)).to eq([1, 2, 6])
@@ -103,7 +103,7 @@ RSpec.describe Board do
 
   it "deletes sections but moves posts to sandboxes" do
     board = create(:board)
-    sandbox = create(:board, id: 3)
+    create(:board, id: 3) # sandbox
     section = create(:board_section, board: board)
     post = create(:post, board: board, section: section)
     perform_enqueued_jobs(only: UpdateModelJob) do

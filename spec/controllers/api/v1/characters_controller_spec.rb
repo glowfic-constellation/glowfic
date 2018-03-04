@@ -13,7 +13,7 @@ RSpec.describe Api::V1::CharactersController do
 
       it "should support search", show_in_doc: in_doc do
         char = create(:character, name: 'search')
-        char2 = create(:character, name: 'no')
+        create(:character, name: 'no') # char2
         get :index, params: { q: 'se' }
         expect(response).to have_http_status(200)
         expect(response.json).to have_key('results')
@@ -21,7 +21,7 @@ RSpec.describe Api::V1::CharactersController do
       end
 
       it "requires valid post id if provided", show_in_doc: in_doc do
-        char = create(:character)
+        create(:character) # char
         get :index, params: { post_id: -1 }
         expect(response).to have_http_status(:unprocessable_entity)
         expect(response.json['errors'].size).to eq(1)
@@ -38,7 +38,7 @@ RSpec.describe Api::V1::CharactersController do
 
       it "filters by post", show_in_doc: in_doc do
         char = create(:character)
-        char2 = create(:character)
+        create(:character) # char2
         post = create(:post, character: char, user: char.user)
         get :index, params: { post_id: post.id }
         expect(response).to have_http_status(200)
@@ -174,7 +174,7 @@ RSpec.describe Api::V1::CharactersController do
       calias = create(:alias)
       character = calias.character
       post = create(:post, user: character.user, character: character)
-      reply = create(:reply, post: post, user: character.user, character: character, character_alias_id: calias.id)
+      create(:reply, post: post, user: character.user, character: character, character_alias_id: calias.id) # reply
       get :show, params: { id: character.id, post_id: post.id }
       expect(response).to have_http_status(200)
       expect(response.json).to have_key('alias_id_for_post')

@@ -276,7 +276,7 @@ RSpec.describe GalleriesController do
       it "keeps variables on failed save" do
         user = create(:user)
         gallery = create(:gallery, user: user)
-        icon = create(:icon, user: gallery.user)
+        create(:icon, user: gallery.user) # icon
         group = create(:gallery_group)
         login_as(gallery.user)
         post :update, params: { id: gallery.id, gallery: {name: '', gallery_group_ids: [group.id]} }

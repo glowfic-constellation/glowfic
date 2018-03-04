@@ -33,7 +33,7 @@ RSpec.describe ScrapePostJob do
 
     begin
       ScrapePostJob.perform_now(url, board.id, nil, Post::STATUS_COMPLETE, false, board.creator_id)
-    rescue UnrecognizedUsernameError => e
+    rescue UnrecognizedUsernameError
       expect(Message.count).to eq(1)
       expect(Message.first.subject).to eq("Post import failed")
       expect(Message.first.message).to include("wild_pegasus_appeared")
@@ -56,7 +56,7 @@ RSpec.describe ScrapePostJob do
 
     begin
       ScrapePostJob.perform_now(url, board.id, nil, Post::STATUS_COMPLETE, false, board.creator_id)
-    rescue AlreadyImportedError => e
+    rescue AlreadyImportedError
       expect(Message.count).to eq(1)
       expect(Message.first.subject).to eq("Post import failed")
       expect(Message.first.message).to include("already imported")

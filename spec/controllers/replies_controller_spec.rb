@@ -12,7 +12,7 @@ RSpec.describe RepliesController do
       it "takes correct actions" do
         user = create(:user)
         reply_post = create(:post, user: user)
-        create(:reply, post: reply_post) # another reply
+        create(:reply, post: reply_post) # reply
         reply_post.mark_read(user)
         login_as(user)
         expect(ReplyDraft.count).to eq(0)
@@ -135,7 +135,7 @@ RSpec.describe RepliesController do
       reply_post = create(:post)
       login_as(reply_post.user)
       reply_post.mark_read(reply_post.user)
-      create(:reply, post: reply_post) # last seen
+      create(:reply, post: reply_post) # last_seen
 
       post :create, params: { reply: {post_id: reply_post.id, user_id: reply_post.user_id} }
       expect(response.status).to eq(200)

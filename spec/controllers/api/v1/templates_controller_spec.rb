@@ -3,10 +3,10 @@ require "spec_helper"
 RSpec.describe Api::V1::TemplatesController do
   describe "GET index" do
     def create_search_templates
-      firsttemplate = create(:template, name: 'baa')
-      midtemplate = create(:template, name: 'aba')
-      endtemplate = create(:template, name: 'aab')
-      nottemplate = create(:template, name: 'aaa')
+      create(:template, name: 'baa') # firsttemplate
+      create(:template, name: 'aba') # midtemplate
+      create(:template, name: 'aab') # endtemplate
+      create(:template, name: 'aaa') # nottemplate
       Template.all.each do |template|
         create(:template, name: template.name.upcase + 'c')
       end
@@ -46,7 +46,7 @@ RSpec.describe Api::V1::TemplatesController do
       user = create(:user)
       notuser = create(:user)
       template = create(:template, user: user)
-      nottemplate = create(:template, user: notuser)
+      create(:template, user: notuser) # nottemplate
 
       get :index, params: { user_id: template.user_id }
       expect(response.json['results'].count).to eq(1)

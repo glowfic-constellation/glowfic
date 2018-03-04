@@ -173,7 +173,7 @@ RSpec.describe NotifyFollowersOfNewPostJob do
       notified = create(:user)
       create(:favorite, user: notified, favorite: author)
       post = create(:post, privacy: Concealable::ACCESS_LIST, viewers: [author])
-      reply = create(:reply, post: post, user: author)
+      create(:reply, post: post, user: author) # reply
       expect { NotifyFollowersOfNewPostJob.perform_now(post.id, author.id) }.not_to change { Message.count }
     end
 
@@ -182,7 +182,7 @@ RSpec.describe NotifyFollowersOfNewPostJob do
       notified = create(:user, favorite_notifications: false)
       create(:favorite, user: notified, favorite: author)
       post = create(:post)
-      reply = create(:reply, post: post, user: author)
+      create(:reply, post: post, user: author) # reply
       expect { NotifyFollowersOfNewPostJob.perform_now(post.id, author.id) }.not_to change { Message.count }
     end
 
@@ -191,7 +191,7 @@ RSpec.describe NotifyFollowersOfNewPostJob do
       favorite = create(:user)
       create(:favorite, user: author, favorite: favorite)
       post = create(:post, user: author)
-      reply = create(:reply, post: post, user: favorite)
+      create(:reply, post: post, user: favorite) # reply
       expect { NotifyFollowersOfNewPostJob.perform_now(post.id, favorite.id) }.not_to change { Message.count }
     end
   end

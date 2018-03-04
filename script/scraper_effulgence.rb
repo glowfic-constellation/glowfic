@@ -57,7 +57,7 @@ main_list.children.each do |section|
       if (sub_list = link.at_css('ul, ol'))
         sub_links = sub_list.css('> li')
         # import sub-threads with #{post_title}: before their title
-        threads = process_ordered(sub_links, section_active, board_id, board_section, true, title + ': ')
+        threads = process_ordered(sub_links, section_active, board_id, board_section, true, title + ': ') # TODO: do something with threads here
         next
       end
 

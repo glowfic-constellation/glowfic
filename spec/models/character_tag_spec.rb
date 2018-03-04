@@ -5,7 +5,7 @@ RSpec.describe CharacterTag do
     context "when gallery group added to character" do
       it "does not add other users' galleries" do
         group = create(:gallery_group)
-        gallery = create(:gallery, gallery_groups: [group])
+        create(:gallery, gallery_groups: [group]) # gallery
 
         character = create(:character)
         character.gallery_groups << group

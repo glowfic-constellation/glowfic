@@ -23,7 +23,6 @@ module Taggable
     new_tags = new_names.map { |name| klass.new(user: current_user, name: name) }
 
     # consolidate, sort and purge duplicates (locale unfriendly)
-    original_order = ids.map { |id| id.to_s.upcase }
     all_tags = existing_tags + matched_new_tags + new_tags
     all_tags.sort_by! do |tag|
       match_ids.index(tag.name.upcase) || match_ids.index(tag.id.to_s)
