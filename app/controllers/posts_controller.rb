@@ -291,7 +291,7 @@ class PostsController < WritableController
         if post_ids.nil?
           post_ids = author_posts
         else
-          post_ids = post_ids & author_posts
+          post_ids &= author_posts
         end
         break if post_ids.empty?
       end

@@ -7,12 +7,11 @@ class MessagesController < ApplicationController
     if params[:view] == 'outbox'
       @page_title = 'Outbox'
       from_table = current_user.sent_messages.where(visible_outbox: true).order('thread_id, id desc').select('distinct on (thread_id) messages.*')
-      @messages = Message.from(from_table).select('*').order('subquery.id desc').paginate(per_page: 25, page: page)
     else
       @page_title = 'Inbox'
       from_table = current_user.messages.where(visible_outbox: true).order('thread_id, id desc').select('distinct on (thread_id) messages.*')
-      @messages = Message.from(from_table).select('*').order('subquery.id desc').paginate(per_page: 25, page: page)
     end
+    @messages = Message.from(from_table).select('*').order('subquery.id desc').paginate(per_page: 25, page: page)
     @view = @page_title.downcase
   end
 
@@ -144,7 +143,7 @@ class MessagesController < ApplicationController
     params.fetch(:message, {}).permit(
       :recipient_id,
       :subject,
-      :message
+      :message,
     )
   end
 end

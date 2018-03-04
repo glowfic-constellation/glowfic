@@ -3,7 +3,7 @@ module SpecFeatureHelper
   # otherwise, the helper will create a user with a given password
   # returns the user it logs in as, navigates to root_path
   def login(user = nil, password = 'known')
-    user = create(:user, password: password) unless user
+    user ||= create(:user, password: password)
     visit root_path
     fill_in "Username", with: user.username
     fill_in "Password", with: password

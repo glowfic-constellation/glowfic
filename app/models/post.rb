@@ -55,7 +55,7 @@ class Post < ApplicationRecord
       subject
       content
     ),
-    using: {tsearch: { dictionary: "english" } }
+    using: { tsearch: { dictionary: "english" } },
   )
   scope :no_tests, -> { where.not(board_id: Board::ID_SITETESTING) }
 
@@ -251,15 +251,14 @@ class Post < ApplicationRecord
   def valid_board
     return unless board_id.present?
     return unless new_record? || board_id_changed?
-    unless board.open_to?(user)
-      errors.add(:board, "is invalid – you must be able to write in it")
-    end
+    return if board.open_to?(user)
+    errors.add(:board, "is invalid – you must be able to write in it")
   end
 
   def valid_board_section
-    if section.present? && section.board_id != board_id
-      errors.add(:section, "must be in the post's board")
-    end
+    return unless section.present?
+    return if section.board_id == board_id
+    errors.add(:section, "must be in the post's board")
   end
 
   def set_last_user

@@ -56,9 +56,7 @@ class ApplicationController < ActionController::Base
   end
   helper_method :page
 
-  def page=(val)
-    @page = val
-  end
+  attr_writer :page
 
   def per_page
     default = 25 # browser.mobile? ? -1 : 25
@@ -146,16 +144,9 @@ class ApplicationController < ActionController::Base
   end
   helper_method :posts_from_relation
 
-  def unread_ids
-    # does not necessarily include fully unread posts
-    @unread_ids
-  end
-  helper_method :unread_ids
-
-  def opened_ids
-    @opened_ids
-  end
-  helper_method :opened_ids
+  attr_reader :unread_ids, :opened_ids
+  # unread_ids does not necessarily include fully unread posts
+  helper_method :unread_ids, :opened_ids
 
   def generate_short(msg)
     short_msg = Glowfic::Sanitizers.full(msg) # strip all tags, replacing appropriately with spaces

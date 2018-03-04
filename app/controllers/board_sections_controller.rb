@@ -84,7 +84,7 @@ class BoardSectionsController < ApplicationController
   def section_params
     params.fetch(:board_section, {}).permit(
       :board_id,
-      :name
+      :name,
     )
   end
 end

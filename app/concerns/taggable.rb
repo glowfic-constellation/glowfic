@@ -19,7 +19,7 @@ module Taggable
     new_names.reject! { |name| matched_new_names.include?(name.upcase) }
 
     # create anything case-insensitively (locale unfriendly) unique that remains
-    new_names = new_names.uniq { |name| name.upcase }
+    new_names = new_names.uniq(&:upcase)
     new_tags = new_names.map { |name| klass.new(user: current_user, name: name) }
 
     # consolidate, sort and purge duplicates (locale unfriendly)

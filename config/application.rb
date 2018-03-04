@@ -25,7 +25,7 @@ module Glowfic
   module Sanitizers
     WRITTEN_CONF = Sanitize::Config.merge(Sanitize::Config::RELAXED,
       elements: ALLOWED_TAGS,
-      attributes: ALLOWED_ATTRIBUTES
+      attributes: ALLOWED_ATTRIBUTES,
     )
     def self.written(text)
       Sanitize.fragment(text, WRITTEN_CONF)
@@ -33,7 +33,7 @@ module Glowfic
 
     DESCRIPTION_CONF = Sanitize::Config.merge(Sanitize::Config::RELAXED,
       elements: ['a'],
-      attributes: {'a' => ['href']}
+      attributes: {'a' => ['href']},
     )
     def self.description(text)
       Sanitize.fragment(text, DESCRIPTION_CONF)

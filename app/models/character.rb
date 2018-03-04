@@ -132,9 +132,9 @@ class Character < ApplicationRecord
   end
 
   def valid_default_icon
-    if default_icon.present? && default_icon.user_id != user_id
-      errors.add(:default_icon, "must be yours")
-    end
+    return unless default_icon.present?
+    return if default_icon.user_id == user_id
+    errors.add(:default_icon, "must be yours")
   end
 
   def clear_char_ids
