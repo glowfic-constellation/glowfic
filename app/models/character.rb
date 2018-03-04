@@ -11,7 +11,7 @@ class Character < ApplicationRecord
 
   has_many :characters_galleries, inverse_of: :character, dependent: :destroy
   accepts_nested_attributes_for :characters_galleries, allow_destroy: true
-  has_many :galleries, through: :characters_galleries, after_remove: :reorder_galleries
+  has_many :galleries, through: :characters_galleries, dependent: :destroy
   has_many :icons, -> { group('icons.id').order('LOWER(keyword)') }, through: :galleries
 
   has_many :character_tags, inverse_of: :character, dependent: :destroy
@@ -110,6 +110,10 @@ class Character < ApplicationRecord
         self.assign_attributes(characters_galleries: new_chargals)
       end
     end
+  end
+
+  def character_gallery_for(gallery)
+    characters_galleries.find_by(gallery_id: gallery)
   end
 
   private

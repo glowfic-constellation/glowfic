@@ -292,4 +292,30 @@ RSpec.describe Character do
       expect(Audited::Audit.count).to eq(0)
     end
   end
+
+  describe "#galleries" do
+    it "updates order when adding galleries" do
+      user = create(:user)
+      gallery1 = create(:gallery, user: user)
+      gallery2 = create(:gallery, user: user)
+      char = create(:character, user: user)
+      char.update(galleries: [gallery1, gallery2])
+      expect(char.character_gallery_for(gallery1.id).section_order).to eq(0)
+      expect(char.character_gallery_for(gallery2.id).section_order).to eq(1)
+    end
+
+    it "updates order when removing galleries" do
+      user = create(:user)
+      gallery1 = create(:gallery, user: user)
+      gallery2 = create(:gallery, user: user)
+      gallery3 = create(:gallery, user: user)
+      char = create(:character, user: user, galleries: [gallery1, gallery2, gallery3])
+      char.update(galleries: [gallery1, gallery3])
+      expect(char.character_gallery_for(gallery1.id).section_order).to eq(0)
+      expect(char.character_gallery_for(gallery3.id).section_order).to eq(1)
+      expect(char.character_gallery_for(gallery2.id)).to be_nil
+      # make sure it didn't destroy the removed gallery
+      expect(Gallery.find_by(id: gallery2.id)).to eq(gallery2)
+    end
+  end
 end
