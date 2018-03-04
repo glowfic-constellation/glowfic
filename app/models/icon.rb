@@ -61,6 +61,6 @@ class Icon < ApplicationRecord
     UpdateModelJob.perform_later(Reply.to_s, {icon_id: id}, {icon_id: nil})
   end
 
-  class UploadError < Exception
+  class UploadError < RuntimeError
   end
 end
