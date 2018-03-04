@@ -32,3 +32,6 @@ coverage/*
 
 # Ignore rspec persistence file
 spec/examples.txt
+
+# Ignore DB backups
+/db/backups/*
