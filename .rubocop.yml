@@ -46,6 +46,10 @@ Layout/EmptyLinesAroundAccessModifier:
 Layout/EmptyLinesAroundExceptionHandlingKeywords:
   Enabled: true
 
+Layout/EndAlignment:
+  Enabled: true
+  EnforcedStyleAlignWith: 'variable'
+
 Layout/EndOfLine:
   Enabled: false
 
@@ -115,10 +119,6 @@ Lint/AmbiguousBlockAssociation:
   Exclude:
     - 'spec/**/*'
 
-Lint/EndAlignment:
-  Enabled: true
-  EnforcedStyleAlignWith: 'variable'
-
 Lint/HandleExceptions:
   Exclude:
     - 'spec/jobs/application_job_spec.rb'
@@ -176,11 +176,21 @@ Naming/AccessorMethodName:
 Naming/AsciiIdentifiers:
   Enabled: false
 
+Naming/MemoizedInstanceVariableName:
+  Enabled: false
+
 Naming/PredicateName:
   Enabled: false
 
 Naming/VariableNumber:
   Enabled: false
+
+Naming/UncommunicativeMethodParamName:
+  AllowedNames:
+    - io
+    - id
+    - to
+    - js
 
 ##################### Rails ##################################
 
@@ -339,7 +349,11 @@ Style/TrailingCommaInArguments:
   Enabled: true
   EnforcedStyleForMultiline: 'comma'
 
-Style/TrailingCommaInLiteral:
+Style/TrailingCommaInArrayLiteral:
+  Enabled: false
+  EnforcedStyleForMultiline: 'comma'
+
+Style/TrailingCommaInHashLiteral:
   Enabled: false
   EnforcedStyleForMultiline: 'comma'
 

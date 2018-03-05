@@ -50,7 +50,7 @@ group :development do
   gem 'listen'
   gem 'memory_profiler'
   gem 'rack-mini-profiler'
-  gem 'rubocop', '~> 0.52.0'
+  gem 'rubocop', '~> 0.54.0'
   gem 'web-console', '~> 3.0'
 end
 
