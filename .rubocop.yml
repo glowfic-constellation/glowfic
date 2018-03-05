@@ -5,17 +5,11 @@ AllCops:
   Exclude:
     - 'bin/*'
     - 'config/environments/*'
-    - 'config/initializers/audited.rb'
-    - 'config/initializers/aws.rb'
-    - 'config/initializers/resque.rb'
-    - 'config/initializers/rack_cors.rb'
-    - 'config/initializers/will_paginate.rb'
+    - 'config/initializers/*'
     - 'db/migrate/2015*'
     - 'db/migrate/2016*'
     - 'db/migrate/2017*'
     - 'db/seeds.rb'
-    - 'features/support/env.rb'
-    - 'lib/tasks/cucumber.rake'
     - 'spec/spec_helper.rb'
 
 Rails:
