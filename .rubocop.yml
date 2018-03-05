@@ -201,9 +201,6 @@ Rails/HasManyOrHasOneDependent:
 Rails/SaveBang:
   Enabled: true
 
-Rails/ScopeArgs:
-  Enabled: false
-
 Rails/TimeZone:
   Enabled: true
   Exclude:
