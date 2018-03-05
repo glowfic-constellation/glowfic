@@ -84,7 +84,7 @@ RSpec.describe Reply do
       expect(post.user.email_notifications).not_to eq(true)
 
       user = create(:user)
-      user.update_attribute('email', nil)
+      user.update_columns(email: nil)
       create(:reply, user: user, post: post, skip_notify: true)
 
       notified_user = create(:user, email_notifications: true)
