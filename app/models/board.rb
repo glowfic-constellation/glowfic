@@ -60,11 +60,11 @@ class Board < ApplicationRecord
     # this should ONLY be called by an admin for emergency fixes
     board_sections.order('section_order asc').each_with_index do |section, index|
       next if section.section_order == index
-      section.update_attribute(:section_order, index)
+      section.update_columns(section_order: index)
     end
     posts.where(section_id: nil).order('section_order asc').each_with_index do |post, index|
       next if post.section_order == index
-      post.update_attribute(:section_order, index)
+      post.update_columns(section_order: index)
     end
   end
 end
