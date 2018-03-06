@@ -246,7 +246,9 @@ class PostsController < WritableController
       if @post.save
         flash[:success] = "Post has been marked #{params[:status]}."
       else
-        flash[:error] = "Status could not be updated."
+        flash[:error] = {}
+        flash[:error][:message] = "Status could not be updated."
+        flash[:error][:array] = @post.errors.full_messages
       end
     end
     redirect_to post_path(@post)
@@ -257,7 +259,9 @@ class PostsController < WritableController
     if @post.save
       flash[:success] = "Post has been #{@post.authors_locked? ? 'locked to' : 'unlocked from'} current authors."
     else
-      flash[:error] = "Post could not be updated."
+      flash[:error] = {}
+      flash[:error][:message] = "Post could not be updated."
+      flash[:error][:array] = @post.errors.full_messages
     end
     redirect_to post_path(@post)
   end
