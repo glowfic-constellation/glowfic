@@ -2196,6 +2196,17 @@ RSpec.describe PostsController do
       expect(PostAuthor.find_by(id: id1)).to be_nil
       expect(PostAuthor.find_by(id: id2)).to be_nil
     end
+
+    it "handles destroy failure" do
+      post = create(:post)
+      reply = create(:reply, user: post.user, post: post)
+      login_as(post.user)
+      expect_any_instance_of(Post).to receive(:destroy!).and_raise(ActiveRecord::RecordNotDestroyed, 'fake error')
+      delete :destroy, params: { id: post.id }
+      expect(response).to redirect_to(post_url(post))
+      expect(flash[:error]).to eq({message: "Post could not be deleted.", array: []})
+      expect(reply.reload.post).to eq(post)
+    end
   end
 
   describe "GET owed" do

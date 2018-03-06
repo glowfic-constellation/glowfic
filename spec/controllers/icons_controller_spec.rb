@@ -355,6 +355,17 @@ RSpec.describe IconsController do
       expect(flash[:success]).to eq("Icon deleted successfully.")
       expect(Icon.find_by_id(icon.id)).to be_nil
     end
+
+    it "handles destroy failure" do
+      icon = create(:icon)
+      post = create(:post, user: icon.user, icon: icon)
+      login_as(icon.user)
+      expect_any_instance_of(Icon).to receive(:destroy!).and_raise(ActiveRecord::RecordNotDestroyed, 'fake error')
+      delete :destroy, params: { id: icon.id }
+      expect(response).to redirect_to(icon_url(icon))
+      expect(flash[:error]).to eq({message: "Icon could not be deleted.", array: []})
+      expect(post.reload.icon).to eq(icon)
+    end
   end
 
   describe "POST avatar" do

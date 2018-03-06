@@ -194,5 +194,16 @@ RSpec.describe IndexSectionsController do
       expect(flash[:success]).to eq("Index section deleted.")
       expect(IndexSection.find_by_id(section.id)).to be_nil
     end
+
+    it "handles destroy failure" do
+      section = create(:index_section)
+      index = section.index
+      login_as(index.user)
+      expect_any_instance_of(IndexSection).to receive(:destroy!).and_raise(ActiveRecord::RecordNotDestroyed, 'fake error')
+      delete :destroy, params: { id: section.id }
+      expect(response).to redirect_to(index_url(index))
+      expect(flash[:error]).to eq({message: "Index section could not be deleted.", array: []})
+      expect(index.reload.index_sections).to eq([section])
+    end
   end
 end

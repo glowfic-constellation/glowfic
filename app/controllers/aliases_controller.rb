@@ -26,8 +26,14 @@ class AliasesController < ApplicationController
   end
 
   def destroy
-    @alias.destroy!
-    flash[:success] = "Alias removed."
+    begin
+      @alias.destroy!
+      flash[:success] = "Alias removed."
+    rescue ActiveRecord::RecordNotDestroyed
+      flash[:error] = {}
+      flash[:error][:message] = "Alias could not be deleted."
+      flash[:error][:array] = @alias.errors.full_messages
+    end
     redirect_to edit_character_path(@character)
   end
 

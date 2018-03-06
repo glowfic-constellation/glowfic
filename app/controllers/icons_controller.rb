@@ -110,10 +110,17 @@ class IconsController < UploadingController
 
   def destroy
     gallery = @icon.galleries.first if @icon.galleries.count == 1
-    @icon.destroy!
-    flash[:success] = "Icon deleted successfully."
-    redirect_to gallery_path(gallery) and return if gallery
-    redirect_to user_galleries_path(current_user)
+    begin
+      @icon.destroy!
+      flash[:success] = "Icon deleted successfully."
+      redirect_to gallery_path(gallery) and return if gallery
+      redirect_to user_galleries_path(current_user)
+    rescue ActiveRecord::RecordNotDestroyed
+      flash[:error] = {}
+      flash[:error][:message] = "Icon could not be deleted."
+      flash[:error][:array] = @icon.errors.full_messages
+      redirect_to icon_path(@icon)
+    end
   end
 
   def avatar

@@ -199,5 +199,16 @@ RSpec.describe IndexesController do
       expect(flash[:success]).to eq("Index deleted.")
       expect(Index.find_by_id(index.id)).to be_nil
     end
+
+    it "handles destroy failure" do
+      index = create(:index)
+      section = create(:index_section, index: index)
+      login_as(index.user)
+      expect_any_instance_of(Index).to receive(:destroy!).and_raise(ActiveRecord::RecordNotDestroyed, 'fake error')
+      delete :destroy, params: { id: index.id }
+      expect(response).to redirect_to(index_url(index))
+      expect(flash[:error]).to eq({message: "Index could not be deleted.", array: []})
+      expect(section.reload.index).to eq(index)
+    end
   end
 end

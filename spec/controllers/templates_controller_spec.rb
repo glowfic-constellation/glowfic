@@ -199,6 +199,17 @@ RSpec.describe TemplatesController do
       expect(response).to redirect_to(user_characters_url(template.user_id))
       expect(flash[:success]).to eq("Template deleted successfully.")
     end
+
+    it "handles destroy failure" do
+      template = create(:template)
+      character = create(:character, user: template.user, template: template)
+      login_as(template.user)
+      expect_any_instance_of(Template).to receive(:destroy!).and_raise(ActiveRecord::RecordNotDestroyed, 'fake error')
+      delete :destroy, params: { id: template.id }
+      expect(response).to redirect_to(template_url(template))
+      expect(flash[:error]).to eq({message: "Template could not be deleted.", array: []})
+      expect(character.reload.template).to eq(template)
+    end
   end
 
   describe "#editor_setup" do

@@ -248,5 +248,15 @@ RSpec.describe FavoritesController do
       expect(response).to redirect_to(user_url(favorite.favorite))
       expect(flash[:success]).to eq("Favorite removed.")
     end
+
+    it "handles destroy failure" do
+      favorite = create(:favorite, favorite: create(:post))
+      login_as(favorite.user)
+      expect_any_instance_of(Favorite).to receive(:destroy!).and_raise(ActiveRecord::RecordNotDestroyed, 'fake error')
+      delete :destroy, params: { id: favorite.id }
+      expect(response).to redirect_to(favorites_path)
+      expect(flash[:error]).to eq({message: "Favorite could not be deleted.", array: []})
+      expect(Favorite.find_by(id: favorite.id)).not_to be_nil
+    end
   end
 end

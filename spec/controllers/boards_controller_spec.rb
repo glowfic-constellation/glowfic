@@ -392,6 +392,17 @@ RSpec.describe BoardsController do
       expect(post.section).to be_nil
       expect(BoardSection.find_by_id(section.id)).to be_nil
     end
+
+    it "handles destroy failure" do
+      board = create(:board)
+      post = create(:post, user: board.creator, board: board)
+      login_as(board.creator)
+      expect_any_instance_of(Board).to receive(:destroy!).and_raise(ActiveRecord::RecordNotDestroyed, 'fake error')
+      delete :destroy, params: { id: board.id }
+      expect(response).to redirect_to(board_url(board))
+      expect(flash[:error]).to eq({message: "Continuity could not be deleted.", array: []})
+      expect(post.reload.board).to eq(board)
+    end
   end
 
   describe "POST mark" do

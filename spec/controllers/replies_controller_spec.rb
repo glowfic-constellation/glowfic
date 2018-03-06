@@ -765,7 +765,7 @@ RSpec.describe RepliesController do
       login_as(reply.user)
       delete :destroy, params: { id: reply.id }
       expect(response).to redirect_to(post_url(reply.post, page: 1))
-      expect(flash[:success]).to eq("Post deleted.")
+      expect(flash[:success]).to eq("Reply deleted.")
       expect(Reply.find_by_id(reply.id)).to be_nil
     end
 
@@ -774,7 +774,7 @@ RSpec.describe RepliesController do
       login_as(create(:admin_user))
       delete :destroy, params: { id: reply.id }
       expect(response).to redirect_to(post_url(reply.post, page: 1))
-      expect(flash[:success]).to eq("Post deleted.")
+      expect(flash[:success]).to eq("Reply deleted.")
       expect(Reply.find_by_id(reply.id)).to be_nil
     end
 
@@ -839,6 +839,17 @@ RSpec.describe RepliesController do
       delete :destroy, params: { id: reply.id }
       post_user.reload
       expect(post_user.joined).to eq(true)
+    end
+
+    it "handles destroy failure" do
+      post = create(:post)
+      reply = create(:reply, user: post.user, post: post)
+      login_as(post.user)
+      expect_any_instance_of(Reply).to receive(:destroy!).and_raise(ActiveRecord::RecordNotDestroyed, 'fake error')
+      delete :destroy, params: { id: reply.id }
+      expect(response).to redirect_to(reply_url(reply, anchor: "reply-#{reply.id}"))
+      expect(flash[:error]).to eq({message: "Reply could not be deleted.", array: []})
+      expect(post.reload.replies).to eq([reply])
     end
   end
 
