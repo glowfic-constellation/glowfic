@@ -33,7 +33,10 @@ class MessagesController < ApplicationController
       render action: :preview and return
     end
 
-    unless @message.valid? && flash.now[:error].nil?
+    if flash.now[:error].nil? && @message.save
+      flash[:success] = "Message sent!"
+      redirect_to messages_path(view: 'inbox')
+    else
       cached_error = flash.now[:error] # preserves errors from setting an invalid parent
       flash.now[:error] = {}
       flash.now[:error][:array] = @message.errors.full_messages
@@ -43,10 +46,6 @@ class MessagesController < ApplicationController
       @page_title = 'Compose Message'
       render action: :new and return
     end
-
-    @message.save!
-    flash[:success] = "Message sent!"
-    redirect_to messages_path(view: 'inbox')
   end
 
   def show
