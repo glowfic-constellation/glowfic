@@ -406,7 +406,7 @@ Icon.create!([
   { id: 3280, user_id: 3, url: "http://v.dreamwidth.org/755831/706192", keyword: "^ thoth" },
   { id: 3281, user_id: 3, url: "http://v.dreamwidth.org/755832/706192", keyword: "^ iris" },
   { id: 3282, user_id: 3, url: "http://v.dreamwidth.org/755833/706192", keyword: "@ muninn" },
-  { id: 3283, user_id: 3, url: "http://v.dreamwidth.org/755834/706192", keyword: "@ horus" }
+  { id: 3283, user_id: 3, url: "http://v.dreamwidth.org/755834/706192", keyword: "@ horus" },
   { id: 3284, user_id: 3, url: "http://v.dreamwidth.org/755835/706192", keyword: "^ minerva" },
   { id: 3285, user_id: 3, url: "http://v.dreamwidth.org/755836/706192", keyword: "_ hades" },
   { id: 3286, user_id: 3, url: "http://v.dreamwidth.org/755837/706192", keyword: "_ aita" },
@@ -623,7 +623,7 @@ Character.create!([
   { id: 292, user_id: 2, name: "Isabella Marie Swan Ø \"Pattern\"", template_name: "Pattern", screenname: "bellfounding", template_id: 3, default_icon_id: 264, pb: "Kristen Stewart" },
   { id: 302, user_id: 2, name: "Isabella Marie Swan Cullen ☼ \"Golden\"", template_name: "Golden", screenname: "luminous_regnant", template_id: 3, default_icon_id: 988, pb: "Kristen Stewart" },
   { id: 307, user_id: 2, name: "Isabella Marie Swan ✴ \"Stella\"", template_name: "Stella", screenname: "self_composed", template_id: 3, default_icon_id: 1386, pb: "Kristen Stewart" },
-  { id: 311, user_id: 2, name: "Isabella Mariel Swan ∀ \"Glass\"", template_name: "Glass", screenname: "thaumobabble", template_id: 3, default_icon_id: 1669, pb: "Kristen Stewart" }
+  { id: 311, user_id: 2, name: "Isabella Mariel Swan ∀ \"Glass\"", template_name: "Glass", screenname: "thaumobabble", template_id: 3, default_icon_id: 1669, pb: "Kristen Stewart" },
   { id: 319, user_id: 3, name: "Jokes", screenname: "manofmyword", template_id: 6, default_icon_id: 2900, pb: "Heath Ledger" },
 ])
 
@@ -688,7 +688,7 @@ CharactersGallery.create!([
   { id: 162, character_id: 199, gallery_id: 177 },
   { id: 219, character_id: 212, gallery_id: 234 },
   { id: 248, character_id: 231, gallery_id: 263 },
-  { id: 251, character_id: 275, gallery_id: 266 }
+  { id: 251, character_id: 275, gallery_id: 266 },
   { id: 268, character_id: 319, gallery_id: 209 },
   { id: 269, character_id: 274, gallery_id: 271, section_order: 0, added_by_group: true },
   { id: 270, character_id: 274, gallery_id: 272, section_order: 1, added_by_group: true },
