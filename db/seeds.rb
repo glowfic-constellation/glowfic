@@ -228,7 +228,7 @@ CharactersGallery.create!([
   { id: 5, character_id: 25, gallery_id: 1 },
   { id: 6, character_id: 33, gallery_id: 7 },
   { id: 7, character_id: 22, gallery_id: 1 },
-  { id: 8, character_id: 237, gallery_id: 1 }
+  { id: 8, character_id: 237, gallery_id: 1 },
   { id: 13, character_id: 292, gallery_id: 28 },
   { id: 33, character_id: 113, gallery_id: 48 },
   { id: 42, character_id: 79, gallery_id: 57 },
