@@ -154,9 +154,9 @@ puts "Creating characters..."
 Character.create!([
   { id: 21, user_id: 1, name: "Cass Cutler", screenname: "undercover_talent", default_icon_id: 82, pb: "Michelle Rodriguez" },
   { id: 22, user_id: 1, name: "Alli Kowalski", screenname: "witch_perfect", template_id: 1, default_icon_id: 7, pb: "Alexandra Daddario" },
-  { id: 25, user_id: 1, name: "Alli Kowalski", screenname: "witch_please", template_id: 1, default_icon_id: 71, pb: "Alexandra Daddario" },
+  { id: 25, user_id: 1, name: "Alli Kowalski", screenname: "witch_please", template_id: 1, default_icon_id: 5, pb: "Alexandra Daddario" },
   { id: 29, user_id: 1, name: "Emma Miller Anderson", template_name: "Anderson", screenname: "ipsam_custodem", template_id: 2, default_icon_id: 37, pb: "Shailene Woodley" },
-  { id: 31, user_id: 1, name: "Emma Mason", template_name: "Mason", screenname: "parental_guidance", template_id: 2, pb: "Shailene Woodley" },
+  { id: 31, user_id: 1, name: "Emma Mason", template_name: "Mason", screenname: "parental_guidance", template_id: 2, default_icon_id: 13, pb: "Shailene Woodley" },
   { id: 33, user_id: 1, name: "Genevieve O'Meara", template_name: "O'Meara", screenname: "metamorphmaga", template_id: 5, default_icon_id: 62, pb: "Christina Aguilera" },
   { id: 36, user_id: 1, name: "Jenny Marino", template_name: "Jenny", screenname: "bright_and_beautiful", template_id: 5, default_icon_id: 61, pb: "Christina Aguilera" },
   { id: 45, user_id: 1, name: "Eleanor Miller", default_icon_id: 85, pb: "Diane Lane" },
@@ -189,7 +189,7 @@ Character.create!([
 
 puts "Creating galleries..."
 Gallery.create!([
-  { id: 1, user_id: 1, name: "Alli - Alexandra Daddario" },
+  { id: 1, user_id: 1, name: "Alli" },
   { id: 2, user_id: 1, name: "Emma - Shailene Woodley" },
   { id: 3, user_id: 1, name: "Emma - Shailene Woodley (Short Hair)" },
   { id: 7, user_id: 1, name: "Jenny" },
@@ -221,6 +221,14 @@ Gallery.create!([
 
 puts "Assigning galleries to characters..."
 CharactersGallery.create!([
+  { id: 1, character_id: 31, gallery_id: 2 },
+  { id: 2, character_id: 29, gallery_id: 2, section_order: 0 },
+  { id: 3, character_id: 29, gallery_id: 3, section_order: 1 },
+  { id: 4, character_id: 36, gallery_id: 7 },
+  { id: 5, character_id: 25, gallery_id: 1 },
+  { id: 6, character_id: 33, gallery_id: 7 },
+  { id: 7, character_id: 22, gallery_id: 1 },
+  { id: 8, character_id: 237, gallery_id: 1 }
   { id: 13, character_id: 292, gallery_id: 28 },
   { id: 33, character_id: 113, gallery_id: 48 },
   { id: 42, character_id: 79, gallery_id: 57 },
@@ -352,7 +360,8 @@ Setting.create!([
   { id: 5, user_id: 2, name: "Aurum", type: "Setting" },
   { id: 6, user_id: 2, name: "Harmonics", type: "Setting" },
   { id: 7, user_id: 2, name: "Quinn", type: "Setting" },
-  { id: 8, user_id: 2, name: "Dreamward", type: "Setting" }
+  { id: 8, user_id: 2, name: "Dreamward", type: "Setting" },
+  { id: 10, user_id: 3, name: "Buffy", type: "Setting" },
 ])
 GalleryGroup.create!([
   { id: 2, user_id: 3, name: "JokerSherlock (SS)", type: "GalleryGroup" }
