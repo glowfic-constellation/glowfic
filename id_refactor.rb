@@ -1,11 +1,33 @@
-arrangements = {
+@arrangements = {
   Template: {
     Character: :template_id,
   },
   Icon: {
     Character: :default_icon_id,
-    GalleriesIcon: :icon_id
+    GalleriesIcon: :icon_id,
+    Reply: :icon_id,
+    Post: :icon_id,
+    User: :avatar
   },
+  Character: {
+    CharactersGallery: :character_id,
+    CharacterTag: :charater_id,
+    Reply: :character_id,
+    Post: :character_id
+  },
+  Gallery: {
+    CharactersGallery: :gallery_id,
+    GalleriesIcon: :gallery_id,
+    GalleryTag: :gallery_id
+  },
+  Setting: {
+    CharacterTag: :tag_id,
+    PostTag: :tag_id
+  },
+  GalleryGroup: {
+    CharacterTag: :tag_id,
+    GalleryTag: :tag_id
+  }
 }
 
 def update_models(model, key, old_id, new_id)
@@ -21,19 +43,25 @@ def copy_object(object, exp_id)
   copy.id
 end
 
+def check_object(object, model, exp_id)
+  old_id = object.id
+  puts "\tOld id: #{old_id}, Expected new id: #{exp_id}"
+  return if old_id == exp_id
+  new_id = copy_object(object, exp_id)
+  if @arrangements.key?(model)
+    @arrangements[model].for_each do |key, value|
+      puts "\t\t Updating #{key} with new #{value}, #{exp_id}..."
+      update_models(key, value, old_id, new_id)
+    end
+  end
+  object.destroy!
+end
+
 def iterate_model(model)
   model.transaction do
-    puts "Reassigning #{model.pluralize}..."
+    puts "Reassigning #{model}s..."
     model.order(:id).all.each_with_index do |object, i|
-      exp_id = i + 1
-      old_id = object.id
-      puts "\tOld id: #{old_id}, Expected new id: #{exp_id}"
-      next if old_id == exp_id
-      new_id = copy_object(object, exp_id)
-      arrangements[model].for_each do |key, value|
-        update_models(key, value, old_id, new_id)
-      end
-      object.destroy!
+      check_object(object, model, i + 1)
     end
   end
 end
@@ -46,23 +74,15 @@ Tag.transaction do
   puts "Reassigning tags..."
   Tag.for_each_with_index do |_n, i|
     exp_id = i + 1
-    GalleryGroup.order(:id).all.each do |tag|
-      old_id = tag.id
-      puts "\tOld id: #{old_id}, Expected new id: #{exp_id}"
-      next if old_id == exp_id
-      new_id = copy_object(tag, exp_id)
-      update_models(CharactersTag, :tag_id, old_id, new_id)
-      update_models(GalleryTag, :tag_id, old_id, new_id)
-      tag.destroy!
-    end
     Setting.order(:id).all.each do |tag|
-      exp_id = i + 1
-      old_id = tag.id
-      puts "\tOld id: #{old_id}, Expected new id: #{exp_id}"
-      next if old_id == exp_id
-      new_id = copy_object(tag, exp_id)
-      update_models(CharactersTag, :tag_id, old_id, new_id)
-      tag.destroy!
+      check_object(tag, Setting, exp_id)
+    end
+    GalleryGroup.order(:id).all.each do |tag|
+      check_object(tag, GalleryGroup, exp_id)
     end
   end
 end
+iterate_model(CharactersGallery)
+iterate_model(GalleriesIcon)
+iterate_model(CharacterTag)
+iterate_model(GalleryTag)
