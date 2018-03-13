@@ -159,7 +159,7 @@ Character.create!([
   { id: 31, user_id: 1, name: "Emma Mason", template_name: "Mason", screenname: "parental_guidance", template_id: 2, default_icon_id: 13, pb: "Shailene Woodley" },
   { id: 33, user_id: 1, name: "Genevieve O'Meara", template_name: "O'Meara", screenname: "metamorphmaga", template_id: 5, default_icon_id: 62, pb: "Christina Aguilera" },
   { id: 36, user_id: 1, name: "Jenny Marino", template_name: "Jenny", screenname: "bright_and_beautiful", template_id: 5, default_icon_id: 61, pb: "Christina Aguilera" },
-  { id: 45, user_id: 1, name: "Eleanor Miller", default_icon_id: 85, pb: "Diane Lane" },
+  { id: 45, user_id: 1, name: "Eleanor Miller", pb: "Diane Lane" },
   { id: 52, user_id: 1, name: "William Miller", screenname: "hidebound", default_icon_id: 76, pb: "George Newbern" },
   { id: 79, user_id: 2, name: "Elspeth Annarose Cullen", template_name: "Elspeth", screenname: "her_imperial_radiance", template_id: 43, default_icon_id: 689, pb: "Astrid Bergès-Frisbey" },
   { id: 82, user_id: 3, name: "Sherlock Holmes", screenname: "calendarofcrime", template_id: 4, default_icon_id: 1994, pb: "Hayley Atwell" },
