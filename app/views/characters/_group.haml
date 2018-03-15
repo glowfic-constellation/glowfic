@@ -2,7 +2,7 @@
 - skip_grouped_templates = false unless defined?(:skip_grouped_templates)
 - if characters.try(:exists?)
   - template_ids = characters.group(:template_id).pluck(:template_id).uniq.compact
-  - templates = ActiveRecord::Base::Template.where(id: template_ids).order('name asc').each do |template|
+  - templates = ::Template.where(id: template_ids).order('name asc').each do |template|
     - next if skip_grouped_templates && template.characters.where('character_group_id is not null').exists?
     = render partial: partial_type, locals: {name: template, characters: template.characters.order('name asc')}
   - if characters.where(template_id: nil).exists?
