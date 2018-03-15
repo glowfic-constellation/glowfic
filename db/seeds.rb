@@ -365,12 +365,12 @@ GalleryGroup.create!([
 ])
 Setting.create!([
   { user_id: 3, name: "Earth", type: "Setting" },
-  { user_id: 3, name: "Sunnyverse", type: "Setting" },
+  { user_id: 3, name: "Sunnyverse", type: "Setting", owned: true },
   { user_id: 3, name: "Nexus", type: "Setting" },
-  { user_id: 2, name: "Aurum", type: "Setting" },
-  { user_id: 2, name: "Harmonics", type: "Setting" },
+  { user_id: 2, name: "Aurum", type: "Setting", owned: true },
+  { user_id: 2, name: "Harmonics", type: "Setting", owned: true },
   { user_id: 2, name: "Quinn", type: "Setting" },
-  { user_id: 2, name: "Dreamward", type: "Setting" },
+  { user_id: 2, name: "Dreamward", type: "Setting", owned: true },
   { user_id: 3, name: "Buffy", type: "Setting" }
 ])
 
@@ -401,4 +401,11 @@ GalleryTag.create!([
   { gallery_id: 26, tag_id: 1 },
   { gallery_id: 28, tag_id: 1 },
   { gallery_id: 27, tag_id: 1 }
+])
+
+puts "Attaching settings to each other..."
+TagTag.create!([
+  { tagged_id: 3, tag_id: 9 },
+  { tagged_id: 9, tag_id: 2 },
+  { tagged_id: 5, tag_id: 2 }
 ])
