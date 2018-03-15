@@ -970,7 +970,8 @@ CREATE TABLE replies (
     thread_id integer,
     created_at timestamp without time zone,
     updated_at timestamp without time zone,
-    character_alias_id integer
+    character_alias_id integer,
+    reply_order integer
 );
 
 
@@ -2124,6 +2125,13 @@ CREATE INDEX index_replies_on_post_id ON replies USING btree (post_id);
 
 
 --
+-- Name: index_replies_on_reply_order; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_replies_on_reply_order ON replies USING btree (reply_order);
+
+
+--
 -- Name: index_replies_on_thread_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -2294,4 +2302,5 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20171109031527'),
 ('20171111163658'),
 ('20171114013113'),
-('20171227030824');
+('20171227030824'),
+('20180109003825');
