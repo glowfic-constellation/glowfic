@@ -3,11 +3,11 @@ class Character < ApplicationRecord
 
   belongs_to :user, optional: false
   belongs_to :template, inverse_of: :characters, optional: true
-  belongs_to :default_icon, class_name: 'Icon', optional: true
+  belongs_to :default_icon, class_name: 'Icon', inverse_of: false, optional: true
   belongs_to :character_group, optional: true
   has_many :replies, dependent: false
   has_many :posts, dependent: false # These are handled in callbacks
-  has_many :aliases, class_name: 'CharacterAlias', dependent: :destroy
+  has_many :aliases, class_name: 'CharacterAlias', inverse_of: :character, dependent: :destroy
 
   has_many :characters_galleries, inverse_of: :character, dependent: :destroy
   accepts_nested_attributes_for :characters_galleries, allow_destroy: true
