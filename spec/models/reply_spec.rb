@@ -212,4 +212,33 @@ RSpec.describe Reply do
       expect(post.author_for(reply.user).can_owe).to be(false)
     end
   end
+
+  describe ".ordered" do
+    let(:post) { create(:post) }
+
+    it "orders replies" do
+      first_reply = create(:reply, post: post)
+      second_reply = create(:reply, post: post)
+      third_reply = create(:reply, post: post)
+      expect(post.replies.ordered).to eq([first_reply, second_reply, third_reply])
+    end
+
+    it "orders replies by reply_order, not created_at" do
+      first_reply = create(:reply, post: post)
+      second_reply = Timecop.freeze(first_reply.created_at - 5.seconds) { create(:reply, post: post) }
+      third_reply = Timecop.freeze(first_reply.created_at - 3.seconds) { create(:reply, post: post) }
+      expect(post.replies.ordered).not_to eq(post.replies.order(:created_at))
+      expect(post.replies.order(:created_at)).to eq([second_reply, third_reply, first_reply])
+      expect(post.replies.ordered).to eq([first_reply, second_reply, third_reply])
+    end
+
+    it "orders replies by reply order not ID" do
+      first_reply = create(:reply, post: post)
+      second_reply = create(:reply, post: post)
+      third_reply = create(:reply, post: post)
+      second_reply.update_columns(reply_order: 2)
+      third_reply.update_columns(reply_order: 1)
+      expect(post.replies.ordered).to eq([first_reply, third_reply, second_reply])
+    end
+  end
 end

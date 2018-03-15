@@ -127,9 +127,9 @@ class RepliesController < WritableController
     reply.user = current_user
 
     if reply.post.present?
-      last_seen_reply_id = reply.post.last_seen_reply_for(current_user).try(:id)
-      @unseen_replies = reply.post.replies.order('id asc').paginate(page: 1, per_page: 10)
-      @unseen_replies = @unseen_replies.where('id > ?', last_seen_reply_id) if last_seen_reply_id.present?
+      last_seen_reply_order = reply.post.last_seen_reply_for(current_user).try(:reply_order)
+      @unseen_replies = reply.post.replies.ordered.paginate(page: 1, per_page: 10)
+      @unseen_replies = @unseen_replies.where('reply_order > ?', last_seen_reply_order) if last_seen_reply_order.present?
       most_recent_unseen_reply = @unseen_replies.last
       if most_recent_unseen_reply.present?
         reply.post.mark_read(current_user, reply.post.read_time_for(@unseen_replies))
@@ -141,7 +141,7 @@ class RepliesController < WritableController
       end
 
       if reply.user_id.present? && !params[:allow_dupe].present?
-        last_by_user = reply.post.replies.where(user_id: reply.user_id).order(id: :asc).last
+        last_by_user = reply.post.replies.where(user_id: reply.user_id).ordered.last
         if last_by_user.present?
           match_attrs = ['content', 'icon_id', 'character_id', 'character_alias_id']
           if last_by_user.attributes.slice(*match_attrs) == reply.attributes.slice(*match_attrs)

@@ -2,6 +2,7 @@ class Reply < ApplicationRecord
   include Presentable
   include Writable
   include PgSearch
+  include Orderable
 
   belongs_to :post, inverse_of: :replies, optional: false
   validate :author_can_write_in_post, on: :create
@@ -24,9 +25,13 @@ class Reply < ApplicationRecord
     select("(SELECT COUNT(*) FROM audits WHERE audits.auditable_id = replies.id AND audits.auditable_type = 'Reply') > 1 AS has_edit_audits")
   }
 
+  scope :ordered, -> { order(reply_order: :asc) }
+
+  scope :ordered_manually, -> { ordered }
+
   def post_page(per=25)
     per_page = per > 0 ? per : post.replies.count
-    index = post.replies.where('id < ?', self.id).count
+    index = post.replies.where('reply_order < ?', self.reply_order).count
     (index / per_page) + 1
   end
 
@@ -37,6 +42,14 @@ class Reply < ApplicationRecord
   def has_edit_audits?
     return read_attribute(:has_edit_audits) if has_attribute?(:has_edit_audits)
     audits.count > 1
+  end
+
+  def order
+    reply_order
+  end
+
+  def order=(val)
+    self.reply_order = val
   end
 
   private
@@ -91,7 +104,7 @@ class Reply < ApplicationRecord
   end
 
   def previous_reply
-    @prev ||= post.replies.where('id < ?', id).order('id desc').first
+    @prev ||= post.replies.find_by(reply_order: reply_order - 1)
   end
 
   def author_can_write_in_post
@@ -134,5 +147,9 @@ class Reply < ApplicationRecord
     else
       post_author.destroy
     end
+  end
+
+  def ordered_attributes
+    [:post_id]
   end
 end

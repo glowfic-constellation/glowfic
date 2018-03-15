@@ -40,7 +40,7 @@ class WritableController < ApplicationController
       end
 
       if reply && reply.post_id == @post.id
-        @replies = @replies.where('replies.id >= ?', reply.id)
+        @replies = @replies.where('replies.reply_order >= ?', reply.reply_order)
         self.page = cur_page = cur_page.to_i
       else
         flash[:error] = "Could not locate specified reply, defaulting to first page."
@@ -73,7 +73,7 @@ class WritableController < ApplicationController
       .left_outer_joins(:icon)
       .left_outer_joins(:character_alias)
       .with_edit_audit_counts
-      .order('id asc')
+      .ordered
       .paginate(page: cur_page, per_page: per)
     redirect_to post_path(@post, page: @replies.total_pages, per_page: per) and return if cur_page > @replies.total_pages
     use_javascript('paginator')
