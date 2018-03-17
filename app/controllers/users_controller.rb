@@ -7,6 +7,7 @@ class UsersController < ApplicationController
 
   def index
     @page_title = 'Users'
+    @users = User.order('username asc').paginate(page: page, per_page: 25)
   end
 
   def show
