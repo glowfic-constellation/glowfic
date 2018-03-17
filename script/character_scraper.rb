@@ -27,7 +27,7 @@ characters.each do |username|
 
   gallery = Gallery.find_or_create_by!(user: user, name: username)
 
-  unless (character = Character.where(user: user, screenname: username).first)
+  unless (character = Character.find_by(user: user, screenname: username))
     character = Character.create!(user: user, name: name, screenname: username)
   end
 
