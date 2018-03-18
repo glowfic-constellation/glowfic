@@ -36,9 +36,7 @@ class SessionsController < ApplicationController
 
   def destroy
     url = session[:previous_url] || root_url
-    reset_session
-    cookies.delete(:user_id, domain: '.glowfic.com')
-    @current_user = nil
+    logout
     flash[:success] = "You have been logged out."
     redirect_to url
   end
