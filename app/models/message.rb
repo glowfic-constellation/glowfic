@@ -10,6 +10,9 @@ class Message < ApplicationRecord
   before_validation :set_thread_id
   after_create :notify_recipient
 
+  scope :ordered_by_id, -> { order(id: :asc) }
+  scope :ordered_by_thread, -> { order(thread_id: :asc, id: :desc) }
+
   def visible_to?(user)
     user_ids.include?(user.id)
   end
@@ -22,7 +25,7 @@ class Message < ApplicationRecord
 
   def last_in_thread
     return self if thread_id == id
-    @last ||= self.class.where(thread_id: thread_id).order('id desc').first
+    @last ||= self.class.where(thread_id: thread_id).ordered_by_id.first
   end
 
   def box(user)

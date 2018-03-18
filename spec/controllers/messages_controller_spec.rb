@@ -32,6 +32,10 @@ RSpec.describe MessagesController do
         expect(assigns(:messages)).to match_array(messages)
       end
     end
+
+    it "orders messages correctly" do
+      skip "TODO: test ordering"
+    end
   end
 
   describe "GET new" do
@@ -180,6 +184,10 @@ RSpec.describe MessagesController do
         expect(assigns(:messages)).to eq([previous])
       end
 
+      it "orders messages correctly" do
+        skip "TODO: should order a thread by id, check it does"
+      end
+
       it "succeeds" do
         user = create(:user)
         login_as(user)
@@ -269,6 +277,10 @@ RSpec.describe MessagesController do
       expect(response).to have_http_status(200)
       expect(message.reload.unread?).not_to eq(true)
       expect(sender.reload.unread?).to eq(true)
+    end
+
+    it "correctly orders messages" do
+      skip "TODO: should check messages in a thread are ordered by id"
     end
   end
 
