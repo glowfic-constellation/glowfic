@@ -102,7 +102,7 @@
       %tr
         %th{colspan: 2} Info
     %tbody
-      - nicknames = ([@character.template_name] + @character.aliases.order('name asc').pluck(:name)).compact
+      - nicknames = ([@character.template_name] + @character.aliases.ordered.pluck(:name)).compact
       - if nicknames.present?
         %tr
           %th.sub.vtop.width-150 Nickname(s)

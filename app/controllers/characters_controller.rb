@@ -328,7 +328,7 @@ class CharactersController < ApplicationController
       @character.build_template(user: user)
     end
     gon.user_id = user.id
-    @aliases = @character.aliases.order('name asc') if @character
+    @aliases = @character.aliases.ordered if @character
     gon.mod_editing = (user != current_user)
     groups = @character.try(:gallery_groups) || []
     gon.gallery_groups = groups.map {|group| group.as_json(include: [:gallery_ids], user_id: user.id) }
