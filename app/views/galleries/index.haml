@@ -39,4 +39,4 @@
           - if @user.id == current_user.try(:id)
             .clear.centered.icons-remove
               = submit_tag "x Delete selected icons permanently", data: { confirm: "Are you sure? These icons will be gone from the site!" }
-    = render partial: 'galleries/expandable', collection: @user.galleries.with_icon_count.with_gallery_groups.order('name asc'), as: :gallery
+    = render partial: 'galleries/expandable', collection: @user.galleries.with_icon_count.with_gallery_groups.ordered_by_name, as: :gallery

@@ -22,7 +22,7 @@
     %tr
       %td.form-table-ender.padding-5
         = submit_tag "Add Icons to Gallery", class: 'button'
-    - current_user.galleries.order('LOWER(name)').each do |gallery|
+    - current_user.galleries.ordered_by_name.each do |gallery|
       - next if gallery.id == @gallery.try(:id)
       %tr
         %th.sub.gallery-minmax{data: {id: gallery.id}}

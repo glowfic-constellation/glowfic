@@ -123,6 +123,16 @@ RSpec.describe TagsController do
           expect(response.status).to eq(200)
           expect(assigns(:characters)).to match_array([character])
         end
+
+        it "orders galleries correctly" do
+          group = create(:gallery_group)
+          gallery2 = create(:gallery, gallery_groups: [group], name: "b")
+          gallery3 = create(:gallery, gallery_groups: [group], name: "c")
+          gallery1 = create(:gallery, gallery_groups: [group], name: "a")
+          get :show, params: { id: group.id }
+          expect(response.status).to eq(200)
+          expect(assigns(:galleries)).to match_array([gallery1, gallery2, gallery3])
+        end
       end
 
       context "setting" do
