@@ -8,6 +8,9 @@ module SpecFeatureHelper
     fill_in "Username", with: user.username
     fill_in "Password", with: password
     click_button "Log in"
+    if page.all('.flash.error').present?
+      raise(RuntimeError, "Failed to log in as '#{user.username}':\n" + page.find('.flash.error').text)
+    end
     user
   end
 
