@@ -11,18 +11,18 @@ RSpec.describe IconsController do
     end
 
     it "requires icons" do
-      login
+      user_id = login
       delete :delete_multiple
-      expect(response).to redirect_to(galleries_url)
+      expect(response).to redirect_to(user_galleries_url(user_id))
       expect(flash[:error]).to eq("No icons selected.")
     end
 
     it "requires valid icons" do
       icon = create(:icon)
       icon.destroy
-      login
+      user_id = login
       delete :delete_multiple, params: { marked_ids: [0, '0', 'abc', -1, '-1', icon.id] }
-      expect(response).to redirect_to(galleries_url)
+      expect(response).to redirect_to(user_galleries_url(user_id))
       expect(flash[:error]).to eq("No icons selected.")
     end
 
@@ -33,7 +33,7 @@ RSpec.describe IconsController do
       it "requires gallery" do
         icon = create(:icon, user: user)
         delete :delete_multiple, params: { marked_ids: [icon.id], gallery_delete: true }
-        expect(response).to redirect_to(galleries_url)
+        expect(response).to redirect_to(user_galleries_url(user.id))
         expect(flash[:error]).to eq("Gallery could not be found.")
       end
 
@@ -41,7 +41,7 @@ RSpec.describe IconsController do
         icon = create(:icon, user: user)
         gallery = create(:gallery)
         delete :delete_multiple, params: { marked_ids: [icon.id], gallery_id: gallery.id, gallery_delete: true }
-        expect(response).to redirect_to(galleries_url)
+        expect(response).to redirect_to(user_galleries_url(user.id))
         expect(flash[:error]).to eq("That is not your gallery.")
       end
 
@@ -85,7 +85,7 @@ RSpec.describe IconsController do
         expect(icon.galleries.count).to eq(1)
         delete :delete_multiple, params: { marked_ids: [icon.id.to_s], gallery_id: gallery.id, gallery_delete: true, return_to: 'index' }
         expect(icon.galleries.count).to eq(0)
-        expect(response).to redirect_to(galleries_url(anchor: "gallery-#{gallery.id}"))
+        expect(response).to redirect_to(user_galleries_url(user.id, anchor: "gallery-#{gallery.id}"))
       end
 
       it "goes back to index page if given" do
@@ -132,7 +132,7 @@ RSpec.describe IconsController do
         gallery.icons << icon
         delete :delete_multiple, params: { marked_ids: [icon.id], gallery_id: gallery.id, return_to: 'index' }
         expect(Icon.find_by_id(icon.id)).to be_nil
-        expect(response).to redirect_to(galleries_url(anchor: "gallery-#{gallery.id}"))
+        expect(response).to redirect_to(user_galleries_url(user.id, anchor: "gallery-#{gallery.id}"))
       end
 
       it "goes back to index page if given" do
@@ -149,9 +149,16 @@ RSpec.describe IconsController do
   end
 
   describe "GET show" do
-    it "requires valid icon" do
+    it "requires valid icon logged out" do
       get :show, params: { id: -1 }
-      expect(response).to redirect_to(galleries_url)
+      expect(response).to redirect_to(root_url)
+      expect(flash[:error]).to eq("Icon could not be found.")
+    end
+
+    it "requires valid icon logged in" do
+      user_id = login
+      get :show, params: { id: -1 }
+      expect(response).to redirect_to(user_galleries_url(user_id))
       expect(flash[:error]).to eq("Icon could not be found.")
     end
 
@@ -227,18 +234,18 @@ RSpec.describe IconsController do
     end
 
     it "requires valid icon" do
-      login
+      user_id = login
       get :edit, params: { id: -1 }
       expect(response.status).to eq(302)
-      expect(response.redirect_url).to eq(galleries_url)
+      expect(response.redirect_url).to eq(user_galleries_url(user_id))
       expect(flash[:error]).to eq("Icon could not be found.")
     end
 
     it "requires your icon" do
-      login
+      user_id = login
       get :edit, params: { id: create(:icon).id }
       expect(response.status).to eq(302)
-      expect(response.redirect_url).to eq(galleries_url)
+      expect(response.redirect_url).to eq(user_galleries_url(user_id))
       expect(flash[:error]).to eq("That is not your icon.")
     end
 
@@ -258,16 +265,16 @@ RSpec.describe IconsController do
     end
 
     it "requires valid icon" do
-      login
+      user_id = login
       put :update, params: { id: -1 }
-      expect(response).to redirect_to(galleries_url)
+      expect(response).to redirect_to(user_galleries_url(user_id))
       expect(flash[:error]).to eq("Icon could not be found.")
     end
 
     it "requires your icon" do
-      login
+      user_id = login
       put :update, params: { id: create(:icon).id }
-      expect(response).to redirect_to(galleries_url)
+      expect(response).to redirect_to(user_galleries_url(user_id))
       expect(flash[:error]).to eq("That is not your icon.")
     end
 
@@ -301,18 +308,18 @@ RSpec.describe IconsController do
     end
 
     it "requires valid icon" do
-      login
+      user_id = login
       delete :destroy, params: { id: -1 }
       expect(response.status).to eq(302)
-      expect(response.redirect_url).to eq(galleries_url)
+      expect(response.redirect_url).to eq(user_galleries_url(user_id))
       expect(flash[:error]).to eq("Icon could not be found.")
     end
 
     it "requires your icon" do
-      login
+      user_id = login
       delete :destroy, params: { id: create(:icon).id }
       expect(response.status).to eq(302)
-      expect(response.redirect_url).to eq(galleries_url)
+      expect(response.redirect_url).to eq(user_galleries_url(user_id))
       expect(flash[:error]).to eq("That is not your icon.")
     end
 
@@ -321,7 +328,7 @@ RSpec.describe IconsController do
       icon = create(:icon, user_id: user_id)
       delete :destroy, params: { id: icon.id }
       expect(response.status).to eq(302)
-      expect(response.redirect_url).to eq(galleries_url)
+      expect(response.redirect_url).to eq(user_galleries_url(user_id))
       expect(flash[:success]).to eq("Icon deleted successfully.")
       expect(Icon.find_by_id(icon.id)).to be_nil
     end
@@ -347,16 +354,16 @@ RSpec.describe IconsController do
     end
 
     it "requires valid icon" do
-      login
+      user_id = login
       post :avatar, params: { id: -1 }
-      expect(response).to redirect_to(galleries_url)
+      expect(response).to redirect_to(user_galleries_url(user_id))
       expect(flash[:error]).to eq("Icon could not be found.")
     end
 
     it "requires your icon" do
-      login
+      user_id = login
       post :avatar, params: { id: create(:icon).id }
-      expect(response).to redirect_to(galleries_url)
+      expect(response).to redirect_to(user_galleries_url(user_id))
       expect(flash[:error]).to eq("That is not your icon.")
     end
 
@@ -396,16 +403,16 @@ RSpec.describe IconsController do
     end
 
     it "requires valid icon" do
-      login
+      user_id = login
       get :replace, params: { id: -1 }
-      expect(response).to redirect_to(galleries_url)
+      expect(response).to redirect_to(user_galleries_url(user_id))
       expect(flash[:error]).to eq("Icon could not be found.")
     end
 
     it "requires your icon" do
-      login
+      user_id = login
       get :replace, params: { id: create(:icon).id }
-      expect(response).to redirect_to(galleries_url)
+      expect(response).to redirect_to(user_galleries_url(user_id))
       expect(flash[:error]).to eq("That is not your icon.")
     end
 
@@ -468,16 +475,16 @@ RSpec.describe IconsController do
     end
 
     it "requires valid icon" do
-      login
+      user_id = login
       post :do_replace, params: { id: -1 }
-      expect(response).to redirect_to(galleries_url)
+      expect(response).to redirect_to(user_galleries_url(user_id))
       expect(flash[:error]).to eq("Icon could not be found.")
     end
 
     it "requires your icon" do
-      login
+      user_id = login
       post :do_replace, params: { id: create(:icon).id }
-      expect(response).to redirect_to(galleries_url)
+      expect(response).to redirect_to(user_galleries_url(user_id))
       expect(flash[:error]).to eq("That is not your icon.")
     end
 

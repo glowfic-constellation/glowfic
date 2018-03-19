@@ -74,7 +74,11 @@ class GalleriesController < UploadingController
     @gallery = Gallery.find_by_id(params[:id])
     unless @gallery
       flash[:error] = "Gallery could not be found."
-      redirect_to galleries_path and return
+      if logged_in?
+        redirect_to user_galleries_path(current_user) and return
+      else
+        redirect_to root_path and return
+      end
     end
 
     @user = @gallery.user
@@ -114,7 +118,7 @@ class GalleriesController < UploadingController
     if params[:image_ids].present?
       unless @gallery # gallery required for adding icons from other galleries
         flash[:error] = "Gallery could not be found."
-        redirect_to galleries_path and return
+        redirect_to user_galleries_path(current_user) and return
       end
 
       icon_ids = params[:image_ids].split(',').map(&:to_i).reject(&:zero?)
@@ -173,7 +177,7 @@ class GalleriesController < UploadingController
   def destroy
     @gallery.destroy
     flash[:success] = "Gallery deleted successfully."
-    redirect_to galleries_path
+    redirect_to user_galleries_path(current_user)
   end
 
   private
@@ -183,12 +187,20 @@ class GalleriesController < UploadingController
 
     unless @gallery
       flash[:error] = "Gallery could not be found."
-      redirect_to galleries_path and return
+      if logged_in?
+        redirect_to user_galleries_path(current_user) and return
+      else
+        redirect_to root_path and return
+      end
     end
 
     unless @gallery.user_id == current_user.id
       flash[:error] = "That is not your gallery."
-      redirect_to galleries_path and return
+      if logged_in?
+        redirect_to user_galleries_path(current_user) and return
+      else
+        redirect_to root_path and return
+      end
     end
   end
 

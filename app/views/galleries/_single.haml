@@ -19,7 +19,7 @@
         = image_tag "icons/arrow_up.png", class: "section-up disabled-arrow"
         = image_tag "icons/arrow_down.png", class: "section-down disabled-arrow"
 - groups = gallery.gallery_groups_data
-  - if groups.present?
+- if groups.present?
   %tr.gallery-tags
     %th.subber{id: "gallery-tags-#{gallery.id}"}
       Groups:

@@ -10,18 +10,18 @@ class IconsController < UploadingController
     icon_ids = (params[:marked_ids] || []).map(&:to_i).reject(&:zero?)
     if icon_ids.empty? || (icons = Icon.where(id: icon_ids)).empty?
       flash[:error] = "No icons selected."
-      redirect_to galleries_path and return
+      redirect_to user_galleries_path(current_user) and return
     end
 
     if params[:gallery_delete]
       unless gallery
         flash[:error] = "Gallery could not be found."
-        redirect_to galleries_path and return
+        redirect_to user_galleries_path(current_user) and return
       end
 
       unless gallery.user_id == current_user.id
         flash[:error] = "That is not your gallery."
-        redirect_to galleries_path and return
+        redirect_to user_galleries_path(current_user) and return
       end
 
       icons.each do |icon|
@@ -113,7 +113,7 @@ class IconsController < UploadingController
     @icon.destroy
     flash[:success] = "Icon deleted successfully."
     redirect_to gallery_path(gallery) and return if gallery
-    redirect_to galleries_path
+    redirect_to user_galleries_path(current_user)
   end
 
   def avatar
@@ -130,20 +130,24 @@ class IconsController < UploadingController
   def find_icon
     unless (@icon = Icon.find_by_id(params[:id]))
       flash[:error] = "Icon could not be found."
-      redirect_to galleries_path
+      if logged_in?
+        redirect_to user_galleries_path(current_user)
+      else
+        redirect_to root_path
+      end
     end
   end
 
   def require_own_icon
     if @icon.user_id != current_user.id
       flash[:error] = "That is not your icon."
-      redirect_to galleries_path
+      redirect_to user_galleries_path(current_user)
     end
   end
 
   def icon_redirect(gallery)
     if params[:return_to] == 'index'
-      redirect_to galleries_path(anchor: "gallery-#{gallery.id}")
+      redirect_to user_galleries_path(current_user, anchor: "gallery-#{gallery.id}")
     elsif params[:return_tag].present? && (tag = Tag.find_by_id(params[:return_tag]))
       redirect_to tag_path(tag, anchor: "gallery-#{gallery.id}")
     elsif gallery

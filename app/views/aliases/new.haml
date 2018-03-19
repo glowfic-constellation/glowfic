@@ -1,5 +1,5 @@
 - content_for :breadcrumbs do
-  = link_to "Characters", characters_path
+  = link_to "Characters", user_characters_path(current_user)
   - if @character.template
     &raquo;
     = link_to @character.template.name, template_path(@character.template)

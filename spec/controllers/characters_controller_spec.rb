@@ -178,9 +178,16 @@ RSpec.describe CharactersController do
   end
 
   describe "GET show" do
-    it "requires valid character" do
+    it "requires valid character logged out" do
       get :show, params: { id: -1 }
-      expect(response).to redirect_to(characters_url)
+      expect(response).to redirect_to(root_url)
+      expect(flash[:error]).to eq("Character could not be found.")
+    end
+
+    it "requires valid character logged in" do
+      user_id = login
+      get :show, params: { id: -1 }
+      expect(response).to redirect_to(user_characters_url(user_id))
       expect(flash[:error]).to eq("Character could not be found.")
     end
 
@@ -223,16 +230,16 @@ RSpec.describe CharactersController do
     end
 
     it "requires valid character id" do
-      login
+      user_id = login
       get :edit, params: { id: -1 }
-      expect(response).to redirect_to(characters_url)
+      expect(response).to redirect_to(user_characters_url(user_id))
       expect(flash[:error]).to eq("Character could not be found.")
     end
 
     it "requires character with permissions" do
-      login
+      user_id = login
       get :edit, params: { id: create(:character).id }
-      expect(response).to redirect_to(characters_url)
+      expect(response).to redirect_to(user_characters_url(user_id))
       expect(flash[:error]).to eq("You do not have permission to edit that character.")
     end
 
@@ -305,16 +312,16 @@ RSpec.describe CharactersController do
     end
 
     it "requires valid character id" do
-      login
+      user_id = login
       put :update, params: { id: -1 }
-      expect(response).to redirect_to(characters_url)
+      expect(response).to redirect_to(user_characters_url(user_id))
       expect(flash[:error]).to eq("Character could not be found.")
     end
 
     it "requires character with permissions" do
-      login
+      user_id = login
       put :update, params: { id: create(:character).id }
-      expect(response).to redirect_to(characters_url)
+      expect(response).to redirect_to(user_characters_url(user_id))
       expect(flash[:error]).to eq("You do not have permission to edit that character.")
     end
 
@@ -592,9 +599,9 @@ RSpec.describe CharactersController do
     end
 
     it "requires valid character" do
-      login
+      user_id = login
       delete :destroy, params: { id: -1 }
-      expect(response).to redirect_to(characters_url)
+      expect(response).to redirect_to(user_characters_url(user_id))
       expect(flash[:error]).to eq("Character could not be found.")
     end
 
@@ -604,7 +611,7 @@ RSpec.describe CharactersController do
       character = create(:character)
       expect(character.user_id).not_to eq(user.id)
       delete :destroy, params: { id: character.id }
-      expect(response).to redirect_to(characters_url)
+      expect(response).to redirect_to(user_characters_url(user.id))
       expect(flash[:error]).to eq("You do not have permission to edit that character.")
     end
 
@@ -612,7 +619,7 @@ RSpec.describe CharactersController do
       character = create(:character)
       login_as(character.user)
       delete :destroy, params: { id: character.id }
-      expect(response).to redirect_to(characters_url)
+      expect(response).to redirect_to(user_characters_url(character.user_id))
       expect(flash[:success]).to eq("Character deleted successfully.")
       expect(Character.find_by_id(character.id)).to be_nil
     end
@@ -627,17 +634,17 @@ RSpec.describe CharactersController do
     end
 
     it "requires valid character" do
-      login
+      user_id = login
       get :replace, params: { id: -1 }
-      expect(response).to redirect_to(characters_path)
+      expect(response).to redirect_to(user_characters_url(user_id))
       expect(flash[:error]).to eq('Character could not be found.')
     end
 
     it "requires own character" do
       character = create(:character)
-      login
+      user_id = login
       get :replace, params: { id: character.id }
-      expect(response).to redirect_to(characters_path)
+      expect(response).to redirect_to(user_characters_url(user_id))
       expect(flash[:error]).to eq('You do not have permission to edit that character.')
     end
 
@@ -731,17 +738,17 @@ RSpec.describe CharactersController do
     end
 
     it "requires valid character" do
-      login
+      user_id = login
       post :do_replace, params: { id: -1 }
-      expect(response).to redirect_to(characters_path)
+      expect(response).to redirect_to(user_characters_url(user_id))
       expect(flash[:error]).to eq('Character could not be found.')
     end
 
     it "requires own character" do
       character = create(:character)
-      login
+      user_id = login
       post :do_replace, params: { id: character.id }
-      expect(response).to redirect_to(characters_path)
+      expect(response).to redirect_to(user_characters_url(user_id))
       expect(flash[:error]).to eq('You do not have permission to edit that character.')
     end
 
@@ -1049,16 +1056,16 @@ RSpec.describe CharactersController do
     end
 
     it "requires valid character id" do
-      login
+      user_id = login
       post :duplicate, params: { id: -1 }
-      expect(response).to redirect_to(characters_url)
+      expect(response).to redirect_to(user_characters_url(user_id))
       expect(flash[:error]).to eq('Character could not be found.')
     end
 
     it "requires character with permissions" do
-      login
+      user_id = login
       post :duplicate, params: { id: create(:character).id }
-      expect(response).to redirect_to(characters_url)
+      expect(response).to redirect_to(user_characters_url(user_id))
       expect(flash[:error]).to eq('You do not have permission to edit that character.')
     end
 

@@ -36,12 +36,12 @@ class AliasesController < ApplicationController
   def find_character
     unless (@character = Character.find_by_id(params[:character_id]))
       flash[:error] = "Character could not be found."
-      redirect_to characters_path and return
+      redirect_to user_characters_path(current_user) and return
     end
 
     unless @character.user == current_user
       flash[:error] = "That is not your character."
-      redirect_to characters_path and return
+      redirect_to user_characters_path(current_user) and return
     end
   end
 

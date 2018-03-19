@@ -48,9 +48,16 @@ RSpec.describe TemplatesController do
   end
 
   describe "GET show" do
-    it "requires valid template" do
+    it "requires valid template logged out" do
       get :show, params: { id: -1 }
-      expect(response).to redirect_to(characters_url)
+      expect(response).to redirect_to(root_url)
+      expect(flash[:error]).to eq("Template could not be found.")
+    end
+
+    it "requires valid template logged in" do
+      user_id = login
+      get :show, params: { id: -1 }
+      expect(response).to redirect_to(user_characters_url(user_id))
       expect(flash[:error]).to eq("Template could not be found.")
     end
 
@@ -90,17 +97,17 @@ RSpec.describe TemplatesController do
     end
 
     it "requires valid template" do
-      login
+      user_id = login
       get :edit, params: { id: -1 }
-      expect(response).to redirect_to(characters_url)
+      expect(response).to redirect_to(user_characters_url(user_id))
       expect(flash[:error]).to eq("Template could not be found.")
     end
 
     it "requires your template" do
       template = create(:template)
-      login
+      user_id = login
       get :edit, params: { id: template.id }
-      expect(response).to redirect_to(characters_url)
+      expect(response).to redirect_to(user_characters_url(user_id))
       expect(flash[:error]).to eq("That is not your template.")
     end
 
@@ -122,17 +129,17 @@ RSpec.describe TemplatesController do
     end
 
     it "requires valid template" do
-      login
+      user_id = login
       put :update, params: { id: -1 }
-      expect(response).to redirect_to(characters_url)
+      expect(response).to redirect_to(user_characters_url(user_id))
       expect(flash[:error]).to eq("Template could not be found.")
     end
 
     it "requires your template" do
       template = create(:template)
-      login
+      user_id = login
       put :update, params: { id: template.id }
-      expect(response).to redirect_to(characters_url)
+      expect(response).to redirect_to(user_characters_url(user_id))
       expect(flash[:error]).to eq("That is not your template.")
     end
 
@@ -170,9 +177,9 @@ RSpec.describe TemplatesController do
     end
 
     it "requires valid template" do
-      login
+      user_id = login
       delete :destroy, params: { id: -1 }
-      expect(response).to redirect_to(characters_url)
+      expect(response).to redirect_to(user_characters_url(user_id))
       expect(flash[:error]).to eq("Template could not be found.")
     end
 
@@ -181,7 +188,7 @@ RSpec.describe TemplatesController do
       login_as(user)
       template = create(:template)
       delete :destroy, params: { id: template.id }
-      expect(response).to redirect_to(characters_url)
+      expect(response).to redirect_to(user_characters_url(user.id))
       expect(flash[:error]).to eq("That is not your template.")
     end
 
@@ -189,7 +196,7 @@ RSpec.describe TemplatesController do
       template = create(:template)
       login_as(template.user)
       delete :destroy, params: { id: template.id }
-      expect(response).to redirect_to(characters_url)
+      expect(response).to redirect_to(user_characters_url(template.user_id))
       expect(flash[:success]).to eq("Template deleted successfully.")
     end
   end

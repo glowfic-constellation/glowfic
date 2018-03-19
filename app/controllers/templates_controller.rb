@@ -53,7 +53,7 @@ class TemplatesController < ApplicationController
   def destroy
     @template.destroy
     flash[:success] = "Template deleted successfully."
-    redirect_to characters_path
+    redirect_to user_characters_path(current_user)
   end
 
   private
@@ -69,14 +69,18 @@ class TemplatesController < ApplicationController
   def find_template
     unless (@template = Template.find_by_id(params[:id]))
       flash[:error] = "Template could not be found."
-      redirect_to characters_path and return
+      if logged_in?
+        redirect_to user_characters_path(current_user)
+      else
+        redirect_to root_path
+      end
     end
   end
 
   def require_own_template
     return true if @template.user_id == current_user.id
     flash[:error] = "That is not your template."
-    redirect_to characters_path
+    redirect_to user_characters_path(current_user)
   end
 
   def template_params

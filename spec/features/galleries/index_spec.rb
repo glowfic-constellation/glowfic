@@ -34,7 +34,7 @@ RSpec.feature "Show a list of galleries", :type => :feature do
 
   scenario "View a user's list of galleries while logged out" do
     user = setup_sample_data
-    visit galleries_path(user_id: user.id)
+    visit user_galleries_path(user_id: user.id)
 
     expect(page).to have_selector('th',text: "Test user's Galleries")
     expect(page).to have_no_selector('.gallery-new')
@@ -54,7 +54,7 @@ RSpec.feature "Show a list of galleries", :type => :feature do
   scenario "View another user's list of galleries while logged in" do
     user = setup_sample_data
     login
-    visit galleries_path(user_id: user.id)
+    visit user_galleries_path(user_id: user.id)
 
     expect(page).to have_selector('th', text: "Test user's Galleries")
     expect(page).to have_no_selector('.gallery-new')
@@ -74,7 +74,7 @@ RSpec.feature "Show a list of galleries", :type => :feature do
   scenario "View own list of galleries" do
     user = setup_sample_data
     login(user, 'known')
-    visit galleries_path(user_id: user.id)
+    visit user_galleries_path(user_id: user.id)
 
     expect(page).to have_selector('th', text: "Your Galleries")
     expect(page).to have_selector('.gallery-new')

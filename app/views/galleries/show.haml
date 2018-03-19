@@ -3,7 +3,7 @@
     = render partial: 'single', locals: {gallery: @gallery, hide_minmax: true}
     - content_for :breadcrumbs do
       - if @user.id == current_user.try(:id)
-        = link_to "Galleries", galleries_path
+        = link_to "Galleries", user_galleries_path(current_user)
       - else
         = link_to "#{@user.username}", user_path(@user)
         &raquo;
@@ -14,7 +14,7 @@
     = render partial: 'galleryless'
     - content_for :breadcrumbs do
       - if @user.id == current_user.try(:id)
-        = link_to "Galleries", galleries_path
+        = link_to "Galleries", user_galleries_path(current_user)
       - else
         = link_to "#{@user.username}", user_path(@user)
         &raquo;
