@@ -401,5 +401,13 @@ RSpec.describe UsersController do
       expect(assigns(:search_results)).to be_present
       expect(assigns(:search_results).count).to eq(6)
     end
+
+    it "orders users correctly" do
+      create(:user, username: 'baa')
+      create(:user, username: 'aba')
+      create(:user, username: 'aab')
+      get :search, params: { commit: 'Search', username: 'b' }
+      expect(assigns(:search_results).map(&:username)).to eq(['aab', 'aba', 'baa'])
+    end
   end
 end

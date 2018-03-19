@@ -445,4 +445,36 @@ RSpec.describe BoardsController do
       expect(flash[:success]).to eq("#{board.name} hidden from this page.")
     end
   end
+
+  describe "#set_available_cowriters" do
+    it "gets the correct set of available cowriters" do
+      login
+      users = Array.new(3) { create(:user) }
+      controller.send(:set_available_cowriters)
+      expect(assigns(:cameos)).to match_array(users)
+      expect(assigns(:authors)).to match_array(users)
+    end
+
+    it "gets the correct set of available cowriters on an existing board" do
+      users = Array.new(3) { create(:user) }
+      coauthors = [create(:user)]
+      cameos = [create(:user), create(:user)]
+      board = create(:board, coauthors: coauthors, cameos: cameos)
+      login_as(board.creator)
+      controller.instance_variable_set(:@board, board)
+      controller.send(:set_available_cowriters)
+      expect(assigns(:cameos)).to match_array(users + cameos)
+      expect(assigns(:authors)).to match_array(users + coauthors)
+    end
+
+    it "orders them correctly" do
+      login
+      user2 = create(:user, username: 'user2')
+      user1 = create(:user, username: 'user1')
+      user3 = create(:user, username: 'user3')
+      controller.send(:set_available_cowriters)
+      expect(assigns(:cameos)).to eq([user1, user2, user3])
+      expect(assigns(:authors)).to eq([user1, user2, user3])
+    end
+  end
 end

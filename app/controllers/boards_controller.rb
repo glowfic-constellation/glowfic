@@ -116,7 +116,7 @@ class BoardsController < ApplicationController
   private
 
   def set_available_cowriters
-    @authors = @cameos = User.order(:username)
+    @authors = @cameos = User.ordered
     if @board
       @authors -= @board.cameos
       @cameos -= @board.coauthors

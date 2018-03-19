@@ -8,7 +8,7 @@ class Api::V1::UsersController < Api::ApiController
   param :page, :number, required: false, desc: 'Page in results (25 per page)'
   error 422, "Invalid parameters provided"
   def index
-    queryset = User.where("username LIKE ?", params[:q].to_s + '%').order('username asc')
+    queryset = User.where("username LIKE ?", params[:q].to_s + '%').ordered
     users = paginate queryset, per_page: 25
     render json: {results: users}
   end
