@@ -111,12 +111,12 @@ class CharactersController < ApplicationController
   def destroy
     unless @character.deletable_by?(current_user)
       flash[:error] = "You do not have permission to edit that character."
-      redirect_to characters_path and return
+      redirect_to user_characters_path(current_user) and return
     end
 
     @character.destroy
     flash[:success] = "Character deleted successfully."
-    redirect_to characters_path
+    redirect_to user_characters_path(current_user)
   end
 
   def facecasts
@@ -296,7 +296,11 @@ class CharactersController < ApplicationController
   def find_character
     unless (@character = Character.find_by_id(params[:id]))
       flash[:error] = "Character could not be found."
-      redirect_to characters_path and return
+      if logged_in?
+        redirect_to user_characters_path(current_user)
+      else
+        redirect_to root_path
+      end
     end
   end
 
@@ -308,7 +312,7 @@ class CharactersController < ApplicationController
   def require_own_character
     unless @character.editable_by?(current_user)
       flash[:error] = "You do not have permission to edit that character."
-      redirect_to characters_path and return
+      redirect_to user_characters_path(current_user) and return
     end
   end
 

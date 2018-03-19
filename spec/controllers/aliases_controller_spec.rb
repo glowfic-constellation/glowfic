@@ -11,9 +11,9 @@ RSpec.describe AliasesController do
     end
 
     it "requires valid character" do
-      login
+      user_id = login
       get :new, params: { character_id: -1 }
-      expect(response).to redirect_to(characters_url)
+      expect(response).to redirect_to(user_characters_url(user_id))
       expect(flash[:error]).to eq("Character could not be found.")
     end
 
@@ -23,7 +23,7 @@ RSpec.describe AliasesController do
       character = create(:character)
       expect(character.user_id).not_to eq(user.id)
       get :new, params: { character_id: character.id }
-      expect(response).to redirect_to(characters_url)
+      expect(response).to redirect_to(user_characters_url(user.id))
       expect(flash[:error]).to eq("That is not your character.")
     end
 
@@ -46,9 +46,9 @@ RSpec.describe AliasesController do
     end
 
     it "requires valid character" do
-      login
+      user_id = login
       post :create, params: { character_id: -1 }
-      expect(response).to redirect_to(characters_url)
+      expect(response).to redirect_to(user_characters_url(user_id))
       expect(flash[:error]).to eq("Character could not be found.")
     end
 
@@ -58,7 +58,7 @@ RSpec.describe AliasesController do
       character = create(:character)
       expect(character.user_id).not_to eq(user.id)
       post :create, params: { character_id: character.id }
-      expect(response).to redirect_to(characters_url)
+      expect(response).to redirect_to(user_characters_url(user.id))
       expect(flash[:error]).to eq("That is not your character.")
     end
 
@@ -107,9 +107,9 @@ RSpec.describe AliasesController do
     end
 
     it "requires valid character" do
-      login
+      user_id = login
       delete :destroy, params: { id: -1, character_id: -1 }
-      expect(response).to redirect_to(characters_url)
+      expect(response).to redirect_to(user_characters_url(user_id))
       expect(flash[:error]).to eq("Character could not be found.")
     end
 
@@ -119,7 +119,7 @@ RSpec.describe AliasesController do
       character = create(:character)
       expect(character.user_id).not_to eq(user.id)
       delete :destroy, params: { id: -1, character_id: character.id }
-      expect(response).to redirect_to(characters_url)
+      expect(response).to redirect_to(user_characters_url(user.id))
       expect(flash[:error]).to eq("That is not your character.")
     end
 
