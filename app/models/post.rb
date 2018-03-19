@@ -6,6 +6,7 @@ class Post < ApplicationRecord
   include Presentable
   include Viewable
   include Writable
+  extend Splitable
 
   STATUS_ACTIVE = 0
   STATUS_COMPLETE = 1
