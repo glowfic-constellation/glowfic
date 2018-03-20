@@ -374,6 +374,20 @@ RSpec.describe GalleriesController do
       expect(GalleryGroup.last.name).to eq('atag')
       expect(assigns(:gallery).gallery_groups.count).to eq(4)
     end
+
+    it "orders gallery groups" do
+      user = create(:user)
+      login_as(user)
+      gallery = create(:gallery, user: user)
+      group3 = create(:gallery_group, user: user)
+      group1 = create(:gallery_group, user: user)
+      group2 = create(:gallery_group, user: user)
+      post :update, params: {
+        id: gallery.id,
+        gallery: { gallery_group_ids: [group1, group2, group3].map(&:id) }
+      }
+      expect(gallery.gallery_groups).to eq([group1, group2, group3])
+    end
   end
 
   describe "DELETE destroy" do
@@ -662,7 +676,7 @@ RSpec.describe GalleriesController do
         expect(flash[:success]).to eq('Icons saved successfully.')
 
         user.reload
-        icon_objs = user.icons.order('keyword ASC')
+        icon_objs = user.icons.ordered
         expect(icon_objs.length).to eq(2)
 
         expect(icon_objs.any?(&:has_gallery)).not_to eq(true)

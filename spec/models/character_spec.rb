@@ -318,4 +318,17 @@ RSpec.describe Character do
       expect(Gallery.find_by(id: gallery2.id)).to eq(gallery2)
     end
   end
+
+  it "orders icons by default" do
+    user = create(:user)
+    char = create(:character, user: user)
+    gallery1 = create(:gallery, user: user)
+    gallery2 = create(:gallery, user: user)
+    char.update_attributes(galleries: [gallery1, gallery2])
+    icon2 = create(:icon, user: user, keyword: 'b', galleries: [gallery1])
+    icon3 = create(:icon, user: user, keyword: 'c', galleries: [gallery2, gallery1])
+    icon4 = create(:icon, user: user, keyword: 'd', galleries: [gallery1, gallery2])
+    icon1 = create(:icon, user: user, keyword: 'a', galleries: [gallery2])
+    expect(char.icons).to eq([icon1, icon2, icon3, icon4])
+  end
 end

@@ -30,7 +30,7 @@ class BoardSectionsController < ApplicationController
 
   def show
     @page_title = @board_section.name
-    @posts = posts_from_relation(@board_section.posts.order('section_order asc'))
+    @posts = posts_from_relation(@board_section.posts.ordered_in_section)
   end
 
   def edit

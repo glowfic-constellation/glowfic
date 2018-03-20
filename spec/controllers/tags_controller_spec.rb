@@ -43,6 +43,17 @@ RSpec.describe TagsController do
         expect(assigns(:tags)).to match_array(tags)
       end
     end
+
+    it "orders tags by type and then name" do
+      tag2 = create(:label, name: "b")
+      tag1 = create(:label, name: "a")
+      setting1 = create(:setting, name: "a")
+      setting2 = create(:setting, owned: true, name: "b")
+      warning2 = create(:content_warning, name: "b")
+      warning1 = create(:content_warning, name: "a")
+      get :index
+      expect(assigns(:tags)).to eq([setting1, setting2, tag1, tag2, warning1, warning2])
+    end
   end
 
   describe "GET show" do
@@ -111,6 +122,16 @@ RSpec.describe TagsController do
           get :show, params: { id: group.id }
           expect(response.status).to eq(200)
           expect(assigns(:characters)).to match_array([character])
+        end
+
+        it "orders galleries correctly" do
+          group = create(:gallery_group)
+          gallery2 = create(:gallery, gallery_groups: [group], name: "b")
+          gallery3 = create(:gallery, gallery_groups: [group], name: "c")
+          gallery1 = create(:gallery, gallery_groups: [group], name: "a")
+          get :show, params: { id: group.id }
+          expect(response.status).to eq(200)
+          expect(assigns(:galleries)).to match_array([gallery1, gallery2, gallery3])
         end
       end
 

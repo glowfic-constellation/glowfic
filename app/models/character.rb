@@ -12,11 +12,11 @@ class Character < ApplicationRecord
   has_many :characters_galleries, inverse_of: :character, dependent: :destroy
   accepts_nested_attributes_for :characters_galleries, allow_destroy: true
   has_many :galleries, through: :characters_galleries, dependent: :destroy
-  has_many :icons, -> { group('icons.id').order('LOWER(keyword)') }, through: :galleries
+  has_many :icons, -> { group('icons.id').ordered }, through: :galleries
 
   has_many :character_tags, inverse_of: :character, dependent: :destroy
-  has_many :settings, -> { order('character_tags.id ASC') }, through: :character_tags, source: :setting
-  has_many :gallery_groups, -> { order('character_tags.id ASC') }, through: :character_tags, source: :gallery_group, dependent: :destroy
+  has_many :settings, -> { ordered_by_char_tag }, through: :character_tags, source: :setting
+  has_many :gallery_groups, -> { ordered_by_char_tag }, through: :character_tags, source: :gallery_group, dependent: :destroy
 
   validates :name, presence: true
   validate :valid_group, :valid_galleries, :valid_default_icon
@@ -24,6 +24,8 @@ class Character < ApplicationRecord
   attr_accessor :group_name
 
   after_destroy :clear_char_ids
+
+  scope :ordered, -> { order(name: :asc).order('lower(screenname) asc', created_at: :asc, id: :asc) }
 
   accepts_nested_attributes_for :template, reject_if: :all_blank
 
@@ -47,7 +49,7 @@ class Character < ApplicationRecord
     return @recent unless @recent.nil?
     reply_ids = replies.group(:post_id).pluck(:post_id)
     post_ids = posts.select(:id).map(&:id)
-    @recent ||= Post.where(id: (post_ids + reply_ids).uniq).order('tagged_at desc')
+    @recent ||= Post.where(id: (post_ids + reply_ids).uniq).ordered
   end
 
   def selector_name
@@ -56,7 +58,7 @@ class Character < ApplicationRecord
 
   def reorder_galleries(_gallery=nil)
     # public so that it can be called from CharactersGallery.after_destroy
-    galleries = CharactersGallery.where(character_id: id).order('section_order asc')
+    galleries = CharactersGallery.where(character_id: id).ordered
     return unless galleries.present?
 
     galleries.each_with_index do |other, index|

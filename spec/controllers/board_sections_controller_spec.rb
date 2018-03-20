@@ -101,6 +101,25 @@ RSpec.describe BoardSectionsController do
       expect(assigns(:page_title)).to eq(section.name)
       expect(assigns(:posts)).to match_array(posts)
     end
+
+    it "orders posts correctly" do
+      board = create(:board)
+      section = create(:board_section, board: board)
+      post5 = create(:post, board: board, section: section)
+      post1 = create(:post, board: board, section: section)
+      post4 = create(:post, board: board, section: section)
+      post3 = create(:post, board: board, section: section)
+      post2 = create(:post, board: board, section: section)
+      post1.update_attributes(section_order: 1)
+      post2.update_attributes(section_order: 2)
+      post3.update_attributes(section_order: 3)
+      post4.update_attributes(section_order: 4)
+      post5.update_attributes(section_order: 5)
+      get :show, params: { id: section.id }
+      expect(response).to have_http_status(200)
+      expect(assigns(:page_title)).to eq(section.name)
+      expect(assigns(:posts)).to eq([post1, post2, post3, post4, post5])
+    end
   end
 
   describe "GET edit" do

@@ -265,7 +265,7 @@ class CharactersController < ApplicationController
         flash.now[:error] = "The specified template could not be found."
       end
     elsif params[:author_id].present?
-      @templates = Template.where(user_id: params[:author_id]).order('name asc').limit(25)
+      @templates = Template.where(user_id: params[:author_id]).ordered.limit(25)
     end
 
     if params[:name].present?
@@ -277,7 +277,7 @@ class CharactersController < ApplicationController
       @search_results = @search_results.where(where_calc.join(' OR '), *(['%' + params[:name].to_s + '%'] * where_calc.length))
     end
 
-    @search_results = @search_results.order('name asc').paginate(page: page, per_page: 25)
+    @search_results = @search_results.ordered.paginate(page: page, per_page: 25)
   end
 
   # logic replicated from page_view
@@ -319,7 +319,7 @@ class CharactersController < ApplicationController
   def build_editor
     faked = Struct.new(:name, :id)
     user = @character.try(:user) || current_user
-    @templates = user.templates.order('name asc')
+    @templates = user.templates.ordered
     new_group = faked.new('— Create New Group —', 0)
     @groups = user.character_groups.order('name asc') + [new_group]
     use_javascript('characters/editor')
@@ -328,7 +328,7 @@ class CharactersController < ApplicationController
       @character.build_template(user: user)
     end
     gon.user_id = user.id
-    @aliases = @character.aliases.order('name asc') if @character
+    @aliases = @character.aliases.ordered if @character
     gon.mod_editing = (user != current_user)
     groups = @character.try(:gallery_groups) || []
     gon.gallery_groups = groups.map {|group| group.as_json(include: [:gallery_ids], user_id: user.id) }

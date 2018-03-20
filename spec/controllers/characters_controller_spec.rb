@@ -211,7 +211,7 @@ RSpec.describe CharactersController do
       expect(response.status).to eq(200)
       expect(assigns(:page_title)).to eq(character.name)
       expect(assigns(:posts).size).to eq(25)
-      expect(assigns(:posts)).to match_array(Post.where(character_id: character.id).order('tagged_at desc').limit(25))
+      expect(assigns(:posts)).to match_array(Post.where(character_id: character.id).ordered.limit(25))
     end
 
     it "should only show visible posts" do
@@ -219,6 +219,20 @@ RSpec.describe CharactersController do
       create(:post, character: character, user: character.user, privacy: Concealable::PRIVATE)
       get :show, params: { id: character.id }
       expect(assigns(:posts)).to be_blank
+    end
+
+    it "orders recent posts" do
+      character = create(:character)
+      post3 = create(:post)
+      post1 = create(:post, user: character.user, character: character)
+      post4 = create(:post, user: character.user, character: character)
+      post2 = create(:post)
+      create(:reply, post: post4)
+      create(:reply, post: post3, user: character.user, character: character)
+      create(:reply, post: post2, user: character.user, character: character)
+      create(:reply, post: post1)
+      get :show, params: { id: character.id }
+      expect(assigns(:posts)).to eq([post1, post2, post3, post4])
     end
   end
 
@@ -543,6 +557,36 @@ RSpec.describe CharactersController do
 
       expect(character.reload.galleries.pluck(:id)).to eq([g2.id])
       expect(g2_cg.reload.section_order).to eq(0)
+    end
+
+    it "orders settings by default" do
+      char = create(:character)
+      login_as(char.user)
+      setting1 = create(:setting)
+      setting3 = create(:setting)
+      setting2 = create(:setting)
+      put :update, params: {
+        id: char.id,
+        character: {setting_ids: [setting1, setting2, setting3].map(&:id)}
+      }
+      expect(flash[:success]).to eq('Character saved successfully.')
+      expect(char.settings).to eq([setting1, setting2, setting3])
+    end
+
+    it "orders gallery groups by default" do
+      user = create(:user)
+      login_as(user)
+      char = create(:character, user: user)
+      group4 = create(:gallery_group, user: user)
+      group1 = create(:gallery_group, user: user)
+      group3 = create(:gallery_group, user: user)
+      group2 = create(:gallery_group, user: user)
+      put :update, params: {
+        id: char.id,
+        character: {gallery_group_ids: [group1, group2, group3, group4].map(&:id)}
+      }
+      expect(flash[:success]).to eq('Character saved successfully.')
+      expect(char.gallery_groups).to eq([group1, group2, group3, group4])
     end
   end
 
@@ -968,10 +1012,12 @@ RSpec.describe CharactersController do
 
     it "sets templates by author" do
       author = create(:user)
-      template = create(:template, user: author)
+      template2 = create(:template, user: author, name: 'b')
+      template = create(:template, user: author, name: 'a')
+      template3 = create(:template, user: author, name: 'c')
       create(:template)
       get :search, params: { commit: true, author_id: author.id }
-      expect(assigns(:templates)).to eq([template])
+      expect(assigns(:templates)).to eq([template, template2, template3])
     end
 
     it "doesn't search missing template" do
@@ -1044,6 +1090,27 @@ RSpec.describe CharactersController do
       it "searches all correctly" do
         get :search, params: { commit: true, name: 'a', search_name: true, search_screenname: true, search_nickname: true }
         expect(assigns(:search_results)).to match_array([@name, @screenname, @nickname])
+      end
+
+      it "orders results correctly" do
+        template = create(:template)
+        user = template.user
+        char4 = create(:character, user: user, template: template, name: 'd')
+        char2 = create(:character, user: user, name: 'b')
+        char1 = create(:character, user: user, template: template, name: 'a')
+        char5 = create(:character, user: user, name: 'e')
+        char3 = create(:character, user: user, name: 'c')
+        get :search, params: { commit: true, author_id: user.id }
+        expect(assigns(:search_results)).to eq([char1, char2, char3, char4, char5])
+      end
+
+      it "paginates correctly" do
+        user = create(:user)
+        26.times do |i|
+          create(:character, user: user, name: "character#{i}")
+        end
+        get :search, params: { commit: true, author_id: user.id }
+        expect(assigns(:search_results).length).to eq(25)
       end
     end
   end
@@ -1188,5 +1255,19 @@ RSpec.describe CharactersController do
         expect(user.reload.default_character_split).to eq('none')
       end
     end
+  end
+
+  describe "#build_editor" do
+    it "orders characters correctly" do
+      user = create(:user)
+      login_as(user)
+      template4 = create(:template, user: user, name: "d")
+      template2 = create(:template, user: user, name: "b")
+      template1 = create(:template, user: user, name: "a")
+      template3 = create(:template, user: user, name: "c")
+      controller.send(:build_editor)
+      expect(assigns(:templates)).to eq([template1, template2, template3, template4])
+    end
+    skip "has more tests"
   end
 end

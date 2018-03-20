@@ -154,6 +154,19 @@ RSpec.describe UsersController do
       expect(assigns(:page_title)).to eq(user.username)
       expect(assigns(:posts).to_a).to match_array(posts)
     end
+
+    it "sorts posts correctly" do
+      user = create(:user)
+      post1 = create(:post)
+      post2 = create(:post, user: user)
+      post3 = create(:post)
+      create(:reply, post: post3, user: user)
+      create(:reply, post: post2)
+      create(:reply, post: post1, user: user)
+      create(:post)
+      get :show, params: { id: user.id }
+      expect(assigns(:posts).to_a).to eq([post1, post2, post3])
+    end
   end
 
   describe "GET edit" do
@@ -387,6 +400,14 @@ RSpec.describe UsersController do
       expect(response).to have_http_status(200)
       expect(assigns(:search_results)).to be_present
       expect(assigns(:search_results).count).to eq(6)
+    end
+
+    it "orders users correctly" do
+      create(:user, username: 'baa')
+      create(:user, username: 'aba')
+      create(:user, username: 'aab')
+      get :search, params: { commit: 'Search', username: 'b' }
+      expect(assigns(:search_results).map(&:username)).to eq(['aab', 'aba', 'baa'])
     end
   end
 end

@@ -18,7 +18,7 @@ class TagsController < ApplicationController
       @page_title = "Tags"
     end
 
-    @tags = Tag.order('type desc, LOWER(name) asc').select('tags.*')
+    @tags = Tag.ordered_by_type.select('tags.*')
     if @view.present?
       @tags = @tags.where(type: @view)
       @tags = @tags.includes(:user) if @view == 'Setting'
@@ -31,7 +31,7 @@ class TagsController < ApplicationController
   def show
     @posts = posts_from_relation(@tag.posts)
     @characters = @tag.characters.includes(:user, :template)
-    @galleries = @tag.galleries.with_icon_count.order('name asc')
+    @galleries = @tag.galleries.with_icon_count.ordered_by_name
     @page_title = @tag.name.to_s
     use_javascript('galleries/expander') if @tag.is_a?(GalleryGroup)
   end

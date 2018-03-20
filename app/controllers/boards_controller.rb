@@ -21,11 +21,11 @@ class BoardsController < ApplicationController
       board_ids = BoardAuthor.where(user_id: @user.id, cameo: false).pluck('distinct board_id')
       arel = Board.arel_table
       where = arel[:creator_id].eq(@user.id).or(arel[:id].in(board_ids))
-      @boards = Board.where(where).order('pinned DESC, LOWER(name)')
-      @cameo_boards = Board.where(id: BoardAuthor.where(user_id: @user.id, cameo: true).pluck('distinct board_id')).order('pinned DESC, LOWER(name)')
+      @boards = Board.where(where).ordered
+      @cameo_boards = Board.where(id: BoardAuthor.where(user_id: @user.id, cameo: true).pluck('distinct board_id')).ordered
     else
       @page_title = 'Continuities'
-      @boards = Board.order('pinned DESC, LOWER(name)').paginate(page: page, per_page: 25)
+      @boards = Board.ordered.paginate(page: page, per_page: 25)
     end
   end
 
@@ -54,18 +54,22 @@ class BoardsController < ApplicationController
 
   def show
     @page_title = @board.name
-    @board_sections = @board.board_sections.order('section_order asc')
-    order = 'section_order asc, tagged_at asc'
-    order = 'tagged_at desc' unless @board.ordered?
-    @posts = posts_from_relation(@board.posts.where(section_id: nil).order(order), false)
+    @board_sections = @board.board_sections.ordered
+    board_posts = @board.posts.where(section_id: nil)
+    if @board.ordered?
+      board_posts = board_posts.ordered_in_section
+    else
+      board_posts = board_posts.ordered
+    end
+    @posts = posts_from_relation(board_posts, false)
   end
 
   def edit
     @page_title = 'Edit Continuity: ' + @board.name
     use_javascript('boards/edit')
-    @board_sections = @board.board_sections.order('section_order asc')
+    @board_sections = @board.board_sections.ordered
     unless @board.open_to_anyone? && @board_sections.empty?
-      @unsectioned_posts = @board.posts.where(section_id: nil).order('section_order asc')
+      @unsectioned_posts = @board.posts.where(section_id: nil).ordered_in_section
     end
   end
 
@@ -80,7 +84,7 @@ class BoardsController < ApplicationController
       @page_title = 'Edit Continuity: ' + @board.name_was
       set_available_cowriters
       use_javascript('board_sections')
-      @board_sections = @board.board_sections.order('section_order')
+      @board_sections = @board.board_sections.ordered
       render :action => :edit
     end
   end
@@ -112,7 +116,7 @@ class BoardsController < ApplicationController
   private
 
   def set_available_cowriters
-    @authors = @cameos = User.order(:username)
+    @authors = @cameos = User.ordered
     if @board
       @authors -= @board.cameos
       @cameos -= @board.coauthors

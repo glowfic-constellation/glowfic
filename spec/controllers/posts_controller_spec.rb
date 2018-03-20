@@ -16,7 +16,7 @@ RSpec.describe PostsController do
 
     it "only fetches most recent threads" do
       26.times do create(:post) end
-      oldest = Post.order('id asc').first
+      oldest = Post.ordered_by_id.first
       get :index
       ids_fetched = controller.instance_variable_get('@posts').map(&:id)
       expect(ids_fetched).not_to include(oldest.id)
@@ -24,12 +24,23 @@ RSpec.describe PostsController do
 
     it "only fetches most recent threads based on updated_at" do
       26.times do create(:post) end
-      oldest = Post.order('id asc').first
-      next_oldest = Post.order('id asc').second
+      oldest = Post.ordered_by_id.first
+      next_oldest = Post.ordered_by_id.second
       oldest.update_attributes(content: "just to make it update")
       get :index
       ids_fetched = controller.instance_variable_get('@posts').map(&:id)
       expect(ids_fetched).not_to include(next_oldest.id)
+    end
+
+    it "orders posts by tagged_at" do
+      post2 = Timecop.freeze(Time.now - 8.minutes) { create(:post) }
+      post5 = Timecop.freeze(Time.now - 2.minutes) { create(:post) }
+      post1 = Timecop.freeze(Time.now - 10.minutes) { create(:post) }
+      post4 = Timecop.freeze(Time.now - 4.minutes) { create(:post) }
+      post3 = Timecop.freeze(Time.now - 6.minutes) { create(:post) }
+      get :index
+      ids_fetched = controller.instance_variable_get('@posts').map(&:id)
+      expect(ids_fetched).to eq([post5.id, post4.id, post3.id, post2.id, post1.id])
     end
   end
 
@@ -145,6 +156,14 @@ RSpec.describe PostsController do
         post = create(:post, status: Post::STATUS_COMPLETE)
         get :search, params: { commit: true, completed: true }
         expect(assigns(:search_results)).to match_array(post)
+      end
+
+      it "sorts posts by tagged_at" do
+        posts = Array.new(4) do create(:post) end
+        create(:reply, post: posts[2])
+        create(:reply, post: posts[1])
+        get :search, params: { commit: true }
+        expect(assigns(:search_results)).to eq([posts[1], posts[2], posts[3], posts[0]])
       end
     end
   end
@@ -1850,6 +1869,34 @@ RSpec.describe PostsController do
         expect(board.cameos).to be_empty
       end
 
+      it "orders tags" do
+        user = create(:user)
+        login_as(user)
+        post = create(:post, user: user)
+        setting2 = create(:setting)
+        setting3 = create(:setting)
+        setting1 = create(:setting)
+        warning1 = create(:content_warning)
+        warning3 = create(:content_warning)
+        warning2 = create(:content_warning)
+        tag3 = create(:label)
+        tag1 = create(:label)
+        tag2 = create(:label)
+        put :update, params: {
+          id: post.id,
+          post: {
+            setting_ids: [setting1, setting2, setting3].map(&:id),
+            content_warning_ids: [warning1, warning2, warning3].map(&:id),
+            label_ids: [tag1, tag2, tag3].map(&:id)
+          }
+        }
+        expect(response).to redirect_to(post_url(post))
+        post = assigns(:post)
+        expect(post.settings).to eq([setting1, setting2, setting3])
+        expect(post.content_warnings).to eq([warning1, warning2, warning3])
+        expect(post.labels).to eq([tag1, tag2, tag3])
+      end
+
       it "requires valid update" do
         setting = create(:setting)
         rems = create(:setting)
@@ -2250,6 +2297,17 @@ RSpec.describe PostsController do
         expect(response.status).to eq(200)
         expect(assigns(:posts)).to match_array([])
       end
+
+      it "orders posts by tagged_at" do
+        post2 = create(:post, user_id: user.id)
+        post3 = create(:post, user_id: user.id)
+        post1 = create(:post, user_id: user.id)
+        create(:reply, post_id: post3.id, user_id: other_user.id)
+        create(:reply, post_id: post2.id, user_id: other_user.id)
+        create(:reply, post_id: post1.id, user_id: other_user.id)
+        get :owed
+        expect(assigns(:posts)).to eq([post1, post2, post3])
+      end
     end
 
     # TODO more tests
@@ -2313,6 +2371,18 @@ RSpec.describe PostsController do
       expect(assigns(:page_title)).to eq('Unread Threads')
       expect(assigns(:posts)).to match_array([unread_post, opened_post1, opened_post2])
       expect(assigns(:hide_quicklinks)).to eq(true)
+    end
+
+    it "orders posts by tagged_at" do
+      login
+      post2 = create(:post)
+      post3 = create(:post)
+      post1 = create(:post)
+      create(:reply, post: post2)
+      create(:reply, post: post1)
+
+      get :unread
+      expect(assigns(:posts)).to eq([post1, post2, post3])
     end
 
     context "opened" do

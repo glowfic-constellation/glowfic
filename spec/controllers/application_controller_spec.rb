@@ -127,7 +127,7 @@ RSpec.describe ApplicationController do
       post3.post_authors.find_by(user_id: post3_user3.id).update_attributes(can_owe: false)
 
       id_list = [post1.id, post2.id, post3.id]
-      relation = Post.where(id: id_list).order('id asc')
+      relation = Post.where(id: id_list).ordered_by_id
       fetched_posts = controller.send(:posts_from_relation, relation)
       expect(fetched_posts.count).to eq(3)
       expect(fetched_posts.map(&:id)).to match_array(id_list)
@@ -236,6 +236,28 @@ RSpec.describe ApplicationController do
         fetched_posts = controller.send(:posts_from_relation, relation)
         expect(fetched_posts).to match_array([public_post])
       end
+    end
+
+    it 'preserves post order' do
+      post1 = create(:post)
+      post2 = create(:post)
+      post3 = create(:post)
+      post4 = create(:post)
+
+      expect(controller.send(:posts_from_relation, Post.all.order(tagged_at: :asc))).to eq([post1, post2, post3, post4])
+      expect(controller.send(:posts_from_relation, Post.all.ordered)).to eq([post4, post3, post2, post1])
+    end
+
+    it 'preserves post order with pagination' do
+      relation = Post.where(id: default_post_ids)
+      expect(controller.send(:posts_from_relation, relation.order(tagged_at: :asc)).map(&:id)).to eq(default_post_ids[0..24])
+      expect(controller.send(:posts_from_relation, relation.ordered).map(&:id)).to eq(default_post_ids.reverse[0..24])
+    end
+
+    it 'preserves post order with pagination disabled' do
+      relation = Post.where(id: default_post_ids)
+      expect(controller.send(:posts_from_relation, relation.order(tagged_at: :asc), true, false).map(&:id)).to eq(default_post_ids)
+      expect(controller.send(:posts_from_relation, relation.order(tagged_at: :desc), true, false).map(&:id)).to eq(default_post_ids.reverse)
     end
 
     it "has more tests" do

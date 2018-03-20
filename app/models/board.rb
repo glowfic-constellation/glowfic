@@ -19,6 +19,8 @@ class Board < ApplicationRecord
 
   after_destroy :move_posts_to_sandbox
 
+  scope :ordered, -> { order(pinned: :desc, name: :asc) }
+
   def writers
     @writers ||= coauthors + [creator]
   end
@@ -58,11 +60,11 @@ class Board < ApplicationRecord
 
   def fix_ordering
     # this should ONLY be called by an admin for emergency fixes
-    board_sections.order('section_order asc').each_with_index do |section, index|
+    board_sections.ordered.each_with_index do |section, index|
       next if section.section_order == index
       section.update_columns(section_order: index)
     end
-    posts.where(section_id: nil).order('section_order asc').each_with_index do |post, index|
+    posts.where(section_id: nil).ordered_in_section.each_with_index do |post, index|
       next if post.section_order == index
       post.update_columns(section_order: index)
     end

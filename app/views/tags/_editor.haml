@@ -9,7 +9,7 @@
   %th.sub Owner
   %td{class: cycle('even', 'odd')}
     - if current_user.admin? || f.object.user_id == current_user.id
-      = f.select :user_id, options_from_collection_for_select(User.order('username asc'), :id, :username, f.object.user_id), {}, {class: 'chosen-select'}
+      = f.select :user_id, options_from_collection_for_select(User.ordered, :id, :username, f.object.user_id), {}, {class: 'chosen-select'}
     - else
       = link_to f.object.user.username, user_path(f.object.user)
 %tr

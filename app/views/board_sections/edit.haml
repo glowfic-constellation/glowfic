@@ -28,7 +28,7 @@
         = image_tag "icons/accept.png", title: 'Saved', class: 'vmid', alt: ''
         Saved
     %ul.sortable.table-list
-      - @board_section.posts.order('section_order asc').each do |post|
+      - @board_section.posts.ordered_in_section.each do |post|
         %li.section-ordered{class: cycle('even', 'odd'), data: {id: post.id, type: post.class.to_s, order: post.section_order}}
           .section-ordered-handle
             = image_tag "icons/arrow_double.png", title: 'Reorder', class: 'disabled-arrow', alt: '↕'

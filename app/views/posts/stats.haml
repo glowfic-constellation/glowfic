@@ -72,15 +72,15 @@
     - if @post.settings.present?
       %tr
         %th.sub.width-150 Setting
-        %td{class: cycle('odd', 'even')}= @post.settings.order('post_tags.id asc').map { |tag| link_to tag.name, tag_path(tag) }.join(', ').html_safe
+        %td{class: cycle('odd', 'even')}= @post.settings.ordered_by_post_tag.map { |tag| link_to tag.name, tag_path(tag) }.join(', ').html_safe
     - if @post.content_warnings.present?
       %tr
         %th.sub.width-150 Content Warnings
-        %td{class: cycle('odd', 'even')}= @post.content_warnings.order('post_tags.id asc').map { |tag| link_to tag.name, tag_path(tag) }.join(', ').html_safe
+        %td{class: cycle('odd', 'even')}= @post.content_warnings.ordered_by_post_tag.map { |tag| link_to tag.name, tag_path(tag) }.join(', ').html_safe
     - if @post.labels.present?
       %tr
         %th.sub.width-150 Labels
-        %td{class: cycle('odd', 'even')}= @post.labels.order('post_tags.id asc').map { |tag| link_to tag.name, tag_path(tag) }.join(', ').html_safe
+        %td{class: cycle('odd', 'even')}= @post.labels.ordered_by_post_tag.map { |tag| link_to tag.name, tag_path(tag) }.join(', ').html_safe
     %tr
       %th.sub.width-150.vtop Word Count
       %td{class: cycle('odd', 'even')}

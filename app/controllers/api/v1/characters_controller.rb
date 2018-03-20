@@ -15,7 +15,7 @@ class Api::V1::CharactersController < Api::ApiController
   error 403, "Post is not visible to the user"
   error 422, "Invalid parameters provided"
   def index
-    queryset = Character.where("name LIKE ?", params[:q].to_s + '%').order('name')
+    queryset = Character.where("name LIKE ?", params[:q].to_s + '%').ordered
     if @post
       char_ids = @post.replies.pluck('distinct character_id') + [@post.character_id]
       queryset = queryset.where(id: char_ids)
@@ -89,7 +89,7 @@ class Api::V1::CharactersController < Api::ApiController
         section.update_attributes(section_order: index)
       end
 
-      other_sections = CharactersGallery.where(character_id: character.id).where.not(id: section_ids).order('section_order asc')
+      other_sections = CharactersGallery.where(character_id: character.id).where.not(id: section_ids).ordered
       other_sections.each_with_index do |section, i|
         index = i + sections_count
         next if section.section_order == index
@@ -97,7 +97,7 @@ class Api::V1::CharactersController < Api::ApiController
       end
     end
 
-    render json: {characters_gallery_ids: CharactersGallery.where(character_id: character.id).order('section_order asc').pluck(:id)}
+    render json: {characters_gallery_ids: CharactersGallery.where(character_id: character.id).ordered.pluck(:id)}
   end
 
   private

@@ -32,6 +32,10 @@ RSpec.describe MessagesController do
         expect(assigns(:messages)).to match_array(messages)
       end
     end
+
+    it "orders messages correctly" do
+      skip "TODO: test ordering"
+    end
   end
 
   describe "GET new" do
@@ -180,6 +184,10 @@ RSpec.describe MessagesController do
         expect(assigns(:messages)).to eq([previous])
       end
 
+      it "orders messages correctly" do
+        skip "TODO: should order a thread by id, check it does"
+      end
+
       it "succeeds" do
         user = create(:user)
         login_as(user)
@@ -270,6 +278,10 @@ RSpec.describe MessagesController do
       expect(message.reload.unread?).not_to eq(true)
       expect(sender.reload.unread?).to eq(true)
     end
+
+    it "correctly orders messages" do
+      skip "TODO: should check messages in a thread are ordered by id"
+    end
   end
 
   describe "POST mark" do
@@ -352,6 +364,18 @@ RSpec.describe MessagesController do
           expect(message.reload.visible_inbox).not_to eq(true)
         end
       end
+    end
+  end
+
+  describe "#editor_setup" do
+    it "correctly finds and orders users not the current one" do
+      login
+      user3 = create(:user, username: 'user3')
+      user2 = create(:user, username: 'user2')
+      user4 = create(:user, username: 'user4')
+      user1 = create(:user, username: 'user1')
+      controller.send(:editor_setup)
+      expect(assigns(:select_items)).to eq({:Users => [[user1.username, user1.id], [user2.username, user2.id], [user3.username, user3.id], [user4.username, user4.id]]})
     end
   end
 end

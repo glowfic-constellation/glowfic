@@ -1,22 +1,22 @@
 - content_for :form do
   = form_for post, :html => { :id => 'post_form' } do |f|
     = f.label :board_id, 'Continuity:'
-    = f.select :board_id, options_from_collection_for_select(Board.order('pinned DESC, LOWER(name)').select {|b| current_user.writes_in?(b) }, :id, :name, post.board_id)
+    = f.select :board_id, options_from_collection_for_select(Board.ordered.select {|b| current_user.writes_in?(b) }, :id, :name, post.board_id)
     %br
     #section{class: ('hidden' unless post.board && post.board.board_sections.exists?)}
       = f.label :section_id, 'Continuity section:'
-      = f.select :section_id, options_from_collection_for_select(BoardSection.where(board_id: post.board_id).order('section_order asc'), :id, :name, post.section_id), include_blank: '— Choose Section —'
+      = f.select :section_id, options_from_collection_for_select(BoardSection.where(board_id: post.board_id).ordered, :id, :name, post.section_id), include_blank: '— Choose Section —'
     = f.label :privacy, 'Privacy:'
     = f.select :privacy, options_from_collection_for_select(post_privacy_settings.to_a, :second, :first, post.privacy)
     #access_list
       = f.label :viewer_ids, '&#8627; Who can view this post? '.html_safe
-      = f.collection_select(:viewer_ids, User.where.not(id: post.user_id).order('username asc'),
+      = f.collection_select(:viewer_ids, User.where.not(id: post.user_id).ordered,
       :id, :username, {selected: @viewer_ids.nil? ? post.viewer_ids : @viewer_ids}, {multiple: true})
 
     - if post.persisted?
       #current_authors
         = f.label :joined_author_ids, 'Current authors:'
-        - authors = post.joined_authors.order('LOWER(users.username)')
+        - authors = post.joined_authors.ordered
         = authors.map { |author| link_to author.username, user_path(author) }.join(', ').html_safe
 
     %div{title: 'Invite users to be authors in this post. Once they post, they will be removed from this section and moved to a Current Authors section. Invited authors will have this post show on their Replies Owed page, even if they have not yet joined the post. If the post is locked, invited users will have permission to reply. This field will not override privacy settings. You are automatically added as an author when you create a new post.'}

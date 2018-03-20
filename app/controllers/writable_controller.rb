@@ -8,14 +8,14 @@ class WritableController < ApplicationController
 
     faked = Struct.new(:name, :id, :plucked_characters)
     pluck = "id, concat_ws(' | ', name, template_name, screenname)"
-    templates = user.templates.order('LOWER(name)')
-    templateless = faked.new('Templateless', nil, user.characters.where(template_id: nil).order('LOWER(name) ASC').pluck(pluck))
+    templates = user.templates.ordered
+    templateless = faked.new('Templateless', nil, user.characters.where(template_id: nil).ordered.pluck(pluck))
     @templates = templates + [templateless]
 
     if @post
       uniq_chars_ids = @post.replies.where(user_id: user.id).where('character_id is not null').group(:character_id).pluck(:character_id)
       uniq_chars_ids << @post.character_id if @post.user_id == user.id && @post.character_id.present?
-      uniq_chars = Character.where(id: uniq_chars_ids).order('LOWER(name)').pluck(pluck)
+      uniq_chars = Character.where(id: uniq_chars_ids).ordered.pluck(pluck)
       threadchars = faked.new('Thread characters', nil, uniq_chars)
       @templates.insert(0, threadchars)
     end

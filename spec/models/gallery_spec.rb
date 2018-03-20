@@ -44,7 +44,7 @@ RSpec.describe Gallery do
       it "works for galleries without gallery groups" do
         gallery1 = create(:gallery)
         gallery2 = create(:gallery)
-        galleries = Gallery.where(id: [gallery1.id, gallery2.id]).select(:id).with_gallery_groups.order('id asc')
+        galleries = Gallery.where(id: [gallery1.id, gallery2.id]).select(:id).with_gallery_groups.ordered_by_id
         expect(galleries).to eq([gallery1, gallery2])
         expect(galleries.map(&:gallery_groups_data)).to eq([[], []])
       end
@@ -53,7 +53,7 @@ RSpec.describe Gallery do
         group = create(:gallery_group)
         gallery1 = create(:gallery, gallery_groups: [group])
         gallery2 = create(:gallery, gallery_groups: [group])
-        galleries = Gallery.where(id: [gallery1.id, gallery2.id]).select(:id).with_gallery_groups.order('id asc')
+        galleries = Gallery.where(id: [gallery1.id, gallery2.id]).select(:id).with_gallery_groups.ordered_by_id
         expect(galleries).to eq([gallery1, gallery2])
         groups = galleries.map(&:gallery_groups_data)
         expect(groups.first.map(&:id)).to eq([group.id])
@@ -67,7 +67,7 @@ RSpec.describe Gallery do
         group2 = create(:gallery_group)
         gallery1 = create(:gallery, gallery_groups: [group1])
         gallery2 = create(:gallery, gallery_groups: [group2])
-        galleries = Gallery.where(id: [gallery1.id, gallery2.id]).select(:id).with_gallery_groups.order('id asc')
+        galleries = Gallery.where(id: [gallery1.id, gallery2.id]).select(:id).with_gallery_groups.ordered_by_id
         expect(galleries).to eq([gallery1, gallery2])
         groups = galleries.map(&:gallery_groups_data)
         expect(groups.first.map(&:id)).to eq([group1.id])

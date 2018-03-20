@@ -11,7 +11,7 @@ class PostsController < WritableController
   before_action :editor_setup, only: [:new, :edit]
 
   def index
-    @posts = posts_from_relation(Post.order('tagged_at desc'))
+    @posts = posts_from_relation(Post.ordered)
     @page_title = 'Recent Threads'
   end
 
@@ -28,7 +28,7 @@ class PostsController < WritableController
     ids = PostAuthor.where(user_id: current_user.id, can_owe: true).group(:post_id).pluck(:post_id)
     @posts = Post.where(id: ids).where.not(status: [Post::STATUS_COMPLETE, Post::STATUS_ABANDONED]).where.not(last_user: current_user)
     @posts = @posts.where.not(status: Post::STATUS_HIATUS).where('tagged_at > ?', 1.month.ago) if current_user.hide_hiatused_tags_owed?
-    @posts = posts_from_relation(@posts.order('tagged_at desc'))
+    @posts = posts_from_relation(@posts.ordered)
   end
 
   def unread
@@ -37,7 +37,7 @@ class PostsController < WritableController
     @posts = @posts.joins("LEFT JOIN board_views on board_views.board_id = posts.board_id AND board_views.user_id = #{current_user.id}")
     @posts = @posts.where("post_views.user_id IS NULL OR  ((post_views.read_at IS NULL OR (date_trunc('second', post_views.read_at) < date_trunc('second', posts.tagged_at))) AND post_views.ignored = '0')")
     @posts = @posts.where("board_views.user_id IS NULL OR ((board_views.read_at IS NULL OR (date_trunc('second', board_views.read_at) < date_trunc('second', posts.tagged_at))) AND board_views.ignored = '0')")
-    @posts = posts_from_relation(@posts.order('tagged_at desc'), true, false)
+    @posts = posts_from_relation(@posts.ordered, true, false)
     @posts = @posts.select { |p| p.visible_to?(current_user) }
     @posts = @posts.select { |p| @opened_ids.include?(p.id) } if @started
     @posts = @posts.paginate(per_page: 25, page: page)
@@ -279,7 +279,7 @@ class PostsController < WritableController
 
     return unless params[:commit].present?
 
-    @search_results = Post.order('tagged_at desc')
+    @search_results = Post.ordered
     @search_results = @search_results.where(board_id: params[:board_id]) if params[:board_id].present?
     @search_results = @search_results.where(id: Setting.find(params[:setting_id]).post_tags.pluck(:post_id)) if params[:setting_id].present?
     @search_results = @search_results.search(params[:subject]).where('LOWER(subject) LIKE ?', "%#{params[:subject].downcase}%") if params[:subject].present?
@@ -324,7 +324,7 @@ class PostsController < WritableController
 
   def editor_setup
     super
-    @permitted_authors = User.order(:username) - (@post.try(:joined_authors) || [])
+    @permitted_authors = User.ordered - (@post.try(:joined_authors) || [])
     @author_ids = post_params[:unjoined_author_ids].reject(&:blank?).map(&:to_i) if post_params.key?(:unjoined_author_ids)
     @author_ids ||= @post.try(:unjoined_author_ids) || []
   end
