@@ -454,7 +454,7 @@ DEPENDENCIES
   resque_mailer
   resque_spec
   rspec-rails
-  rubocop (~> 0.52)
+  rubocop (~> 0.52.0)
   sanitize
   sass-rails
   seed_dump (~> 3.2)
