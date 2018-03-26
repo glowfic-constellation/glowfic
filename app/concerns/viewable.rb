@@ -12,17 +12,17 @@ module Viewable
         return view.save
       end
 
-      return view.update_attributes(read_at: Time.now.in_time_zone) unless at_time.present?
+      return view.update(read_at: Time.now.in_time_zone) unless at_time.present?
       return true if view.read_at && at_time <= view.read_at && !force
-      view.update_attributes(read_at: at_time)
+      view.update(read_at: at_time)
     end
 
     def ignore(user)
-      view_for(user).update_attributes(ignored: true)
+      view_for(user).update(ignored: true)
     end
 
     def unignore(user)
-      view_for(user).update_attributes(ignored: false)
+      view_for(user).update(ignored: false)
     end
 
     def ignored_by?(user)
