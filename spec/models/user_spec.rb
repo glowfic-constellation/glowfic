@@ -64,6 +64,47 @@ RSpec.describe User do
     end
   end
 
+  describe "moieties" do
+    it "allows blank moieties" do
+      user = build(:user, moiety: '')
+      expect(user).to be_valid
+    end
+
+    it "rejects invalid sizes" do
+      user1 = build(:user, moiety: '12')
+      expect(user1).not_to be_valid
+
+      user2 = build(:user, moiety: '1234')
+      expect(user2).not_to be_valid
+
+      user3 = build(:user, moiety: '1234567')
+      expect(user3).not_to be_valid
+    end
+
+    it "rejects invalid characters" do
+      user1 = build(:user, moiety: '12345Z')
+      expect(user1).not_to be_valid
+
+      user2 = build(:user, moiety: '123 456')
+      expect(user2).not_to be_valid
+    end
+
+    it "allows short moieties" do
+      user = build(:user, moiety: 'ABC')
+      expect(user).to be_valid
+    end
+
+    it "allows long moieties" do
+      user = build(:user, moiety: '123ABC')
+      expect(user).to be_valid
+    end
+
+    it "allows lowercase" do
+      user = build(:user, moiety: '123abc')
+      expect(user).to be_valid
+    end
+  end
+
   it "orders galleryless icons" do
     user = create(:user)
     icon3 = create(:icon, user: user, keyword: "c")

@@ -1,7 +1,12 @@
 %table.left-info-box.user-info-box
   %thead
     %tr
-      %th.centered.username= @user.username
+      %th.centered
+        .username= @user.username
+        - if @user.moiety
+          .user-moiety
+            = color_block(@user)
+            = @user.moiety_name
   %tbody
     - if @user.avatar
       %tr
