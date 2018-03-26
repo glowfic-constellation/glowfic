@@ -258,7 +258,7 @@ RSpec.describe RepliesController do
       reply_old = create(:reply, post: reply_post, user: user)
       reply_post.mark_read(user, reply_old.created_at + 1.second, true)
       expect(Reply.count).to eq(1)
-      reply_post.update_attributes!(authors_locked: true)
+      reply_post.update!(authors_locked: true)
 
       post :create, params: { reply: {post_id: reply_post.id, content: 'test content the third!'} }
       expect(Reply.count).to eq(2)
@@ -998,7 +998,7 @@ RSpec.describe RepliesController do
       it "only shows from visible posts" do
         reply1 = create(:reply, content: 'contains forks')
         reply2 = create(:reply, content: 'visible contains forks')
-        reply1.post.update_attributes!(privacy: Concealable::PRIVATE)
+        reply1.post.update!(privacy: Concealable::PRIVATE)
         expect(reply1.post.reload).not_to be_visible_to(nil) # logged out, not visible
         expect(reply2.post.reload).to be_visible_to(nil)
         get :search, params: { commit: true, subj_content: 'forks' }
@@ -1014,7 +1014,7 @@ RSpec.describe RepliesController do
 
       it "requires visible post if given" do
         reply1 = create(:reply)
-        reply1.post.update_attributes!(privacy: Concealable::PRIVATE)
+        reply1.post.update!(privacy: Concealable::PRIVATE)
         expect(reply1.post.reload).not_to be_visible_to(nil)
         get :search, params: { commit: true, post_id: reply1.post_id }
         expect(assigns(:search_results)).to be_nil
