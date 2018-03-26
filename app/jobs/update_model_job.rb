@@ -8,7 +8,7 @@ class UpdateModelJob < ApplicationJob
 
   def perform(klass, where_vals, new_attrs)
     klass.constantize.where(where_vals).find_each do |model|
-      model.update_attributes(new_attrs)
+      model.update(new_attrs)
     end
   end
 end
