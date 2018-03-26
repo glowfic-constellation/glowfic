@@ -48,7 +48,7 @@ class IndexesController < ApplicationController
   end
 
   def update
-    unless @index.update_attributes(index_params)
+    unless @index.update(index_params)
       flash.now[:error] = {}
       flash.now[:error][:message] = "Index could not be saved because of the following problems:"
       flash.now[:error][:array] = @index.errors.full_messages

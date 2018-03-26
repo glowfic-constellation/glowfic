@@ -48,7 +48,7 @@ class IndexSectionsController < ApplicationController
   end
 
   def update
-    unless @section.update_attributes(index_params)
+    unless @section.update(index_params)
       flash.now[:error] = {}
       flash.now[:error][:message] = "Index section could not be saved because of the following problems:"
       flash.now[:error][:array] = @section.errors.full_messages

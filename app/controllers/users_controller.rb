@@ -56,7 +56,7 @@ class UsersController < ApplicationController
 
   def update
     params[:user][:per_page] = -1 if params[:user].try(:[], :per_page) == 'all'
-    if current_user.update_attributes(user_params)
+    if current_user.update(user_params)
       flash[:success] = "Changes saved successfully."
     else
       flash[:error] = "There was a problem with your changes."
@@ -72,7 +72,7 @@ class UsersController < ApplicationController
     end
 
     current_user.validate_password = true
-    if current_user.update_attributes(user_params)
+    if current_user.update(user_params)
       flash[:success] = "Changes saved successfully."
       redirect_to edit_user_path(current_user)
     else

@@ -39,7 +39,7 @@ class TemplatesController < ApplicationController
   end
 
   def update
-    unless @template.update_attributes(template_params)
+    unless @template.update(template_params)
       flash.now[:error] = "Your template could not be saved."
       editor_setup
       @page_title = 'Edit Template: ' + @template.name_was
