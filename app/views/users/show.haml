@@ -1,13 +1,13 @@
 %table.left-info-box.user-info-box
   %thead
     %tr
-      %th.centered
-        .username= @user.username
-        - if @user.moiety
-          .user-moiety
-            = color_block(@user)
-            = @user.moiety_name
+      %th.centered.username= @user.username
   %tbody
+    - if @user.moiety
+      %tr
+        - klass = moiety_class(@user.moiety)
+        %td.centered#user-moiety{style: "background-color: ##{@user.moiety}; padding: 2px;", class: klass}
+          = @user.moiety_name || '&nbsp;'.html_safe
     - if @user.avatar
       %tr
         %td.icons-box#user-avatar

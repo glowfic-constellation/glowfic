@@ -194,4 +194,22 @@ RSpec.describe ApplicationHelper do
       expect(helper.send(:breakable_text, text)).to eq(expected)
     end
   end
+
+  describe "#moiety_class" do
+    it "returns nil for invalid strings" do
+      expect(helper.send(:moiety_class, 'A')).to be_nil
+    end
+
+    it "returns nil for reasonably bright colors" do
+      expect(helper.send(:moiety_class, '0080FF')).to be_nil
+    end
+
+    it "returns light for light colors" do
+      expect(helper.send(:moiety_class, 'FFFFFF')).to eq('moiety-light')
+    end
+
+    it "returns dark for dark colors" do
+      expect(helper.send(:moiety_class, '000000')).to eq('moiety-dark')
+    end
+  end
 end

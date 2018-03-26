@@ -5,6 +5,8 @@ class User < ApplicationRecord
   MIN_USERNAME_LEN = 3
   MAX_USERNAME_LEN = 80
 
+  MOIETY_REGEX = /\A([0-9A-F]{3}){0,2}\z/i
+
   attr_accessor :password, :password_confirmation
   attr_writer :validate_password
 
@@ -36,7 +38,7 @@ class User < ApplicationRecord
   validates :password,
     length: { minimum: 6, if: :validate_password? },
     confirmation: { if: :validate_password? }
-  validates :moiety, format: { with: /\A([0-9A-F]{3}){0,2}\z/i }
+  validates :moiety, format: { with: MOIETY_REGEX }
   validates :password, :password_confirmation, presence: { if: :validate_password? }
 
   before_validation :encrypt_password, :strip_spaces

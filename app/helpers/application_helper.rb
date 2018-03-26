@@ -217,4 +217,36 @@ module ApplicationHelper
     return message.sender_name if message.site_message?
     link_to(message.sender_name, user_path(message.sender))
   end
+
+  def css_color_to_rgb(csscol)
+    return unless csscol.match?(User::MOIETY_REGEX)
+    # split the color into three groups, and process into the numeric values
+    # "AB" is treated as a standard hex, "A" is treated as "AA"
+    split_colors = csscol.chars.in_groups(3).map {|x| x.reduce(:+) }
+    # "ABCDEF" -> ["AB", "CD", "EF"]
+    split_colors.map do |val|
+      val *= 2 if val.length == 1 # fix short colors, so e.g. "A" -> "AA"
+      val.to_i(16) # convert to hex
+      # -> [171, 205, 239] = R, G, B
+    end
+  end
+
+  def rgb_to_lum(rgb)
+    (rgb.max + rgb.min) / 255.0 / 2.0
+  end
+
+  # returns "moiety-light" if luminosity >= 75%
+  # returns "moiety-dark" if luminosity <= 25%
+  # returns nil if invalid moiety or 25% < lum(moiety) < 75%
+  def moiety_class(moiety)
+    rgb = css_color_to_rgb(moiety)
+    if rgb
+      lum = rgb_to_lum(rgb)
+      if lum >= 0.75
+        'moiety-light'.freeze
+      elsif lum <= 0.25
+        'moiety-dark'.freeze
+      end
+    end
+  end
 end

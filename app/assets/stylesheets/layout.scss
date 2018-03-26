@@ -357,6 +357,5 @@ td, .table-list li { font-size: 14px; }
   }
 }
 
-.user-moiety {
-  font-size: 80%;
-}
+.moiety-light { color: $font_color_moiety_light; }
+.moiety-dark { color: $font_color_moiety_dark; }
