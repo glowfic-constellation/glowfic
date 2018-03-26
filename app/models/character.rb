@@ -105,7 +105,7 @@ class Character < ApplicationRecord
       # leftover galleries from gallery groups will be added by that model
       self.characters_galleries = new_chargals
       if persisted?
-        self.update_attributes(characters_galleries: new_chargals)
+        self.update(characters_galleries: new_chargals)
       else
         self.assign_attributes(characters_galleries: new_chargals)
       end

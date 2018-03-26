@@ -146,7 +146,7 @@ class Post < ApplicationRecord
   end
 
   def hide_warnings_for(user)
-    view_for(user).update_attributes(warnings_hidden: true)
+    view_for(user).update(warnings_hidden: true)
   end
 
   def show_warnings_for?(user)
