@@ -66,7 +66,7 @@ class PasswordResetsController < ApplicationController
       flash.now[:error][:array] = @password_reset.user.errors.full_messages
       flash.now[:error][:array] += @password_reset.errors.full_messages
       @page_title = 'Change Password'
-      render :show and return
+      render :show
     end
   end
 

@@ -35,17 +35,17 @@ class MessagesController < ApplicationController
 
     if flash.now[:error].nil? && @message.save
       flash[:success] = "Message sent!"
-      redirect_to messages_path(view: 'inbox')
-    else
-      cached_error = flash.now[:error] # preserves errors from setting an invalid parent
-      flash.now[:error] = {}
-      flash.now[:error][:array] = @message.errors.full_messages
-      flash.now[:error][:array] << cached_error if cached_error.present?
-      flash.now[:error][:message] = "Your message could not be sent because of the following problems:"
-      editor_setup
-      @page_title = 'Compose Message'
-      render action: :new and return
+      redirect_to messages_path(view: 'inbox') and return
     end
+
+    cached_error = flash.now[:error] # preserves errors from setting an invalid parent
+    flash.now[:error] = {}
+    flash.now[:error][:array] = @message.errors.full_messages
+    flash.now[:error][:array] << cached_error if cached_error.present?
+    flash.now[:error][:message] = "Your message could not be sent because of the following problems:"
+    editor_setup
+    @page_title = 'Compose Message'
+    render action: :new
   end
 
   def show
