@@ -16,6 +16,11 @@
       %th{colspan: 2}
         Metadata:
         = link_to @post.subject, post_path(@post)
+        - if @post.metadata_editable_by?(current_user)
+          = link_to edit_post_path(@post) do
+            .link-box.action-edit
+              = image_tag "icons/pencil.png"
+              Edit Post
     - if @post.description.present?
       %tr
         %td.post-subheader{colspan: 2, style: 'width: unset;'}= sanitize_post_description(@post.description).html_safe
