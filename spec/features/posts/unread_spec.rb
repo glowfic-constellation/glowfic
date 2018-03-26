@@ -29,7 +29,7 @@ RSpec.feature "Unread posts", :type => :feature do
     expect(page).to have_selector('.post-subject', count: 5)
     expect(page).to have_xpath("//img[contains(@src, 'note')]")
 
-    user.update_attributes!(layout: 'starrydark')
+    user.update!(layout: 'starrydark')
     click_link "Opened Threads »"
     expect(page).to have_selector('.post-subject', count: 3)
     expect(page).to have_xpath("//img[contains(@src, 'bullet')]")
