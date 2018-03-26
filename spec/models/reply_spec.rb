@@ -9,7 +9,7 @@ RSpec.describe Reply do
 
       it "is true with avatar" do
         icon = create(:icon, user: user)
-        user.update_attributes!(avatar: icon)
+        user.update!(avatar: icon)
         user.reload
 
         expect(reply.character).to be_nil
@@ -28,7 +28,7 @@ RSpec.describe Reply do
 
       it "is true with default icon" do
         icon = create(:icon, user: user)
-        character.update_attributes!(default_icon: icon)
+        character.update!(default_icon: icon)
         expect(reply.has_icons?).to eq(true)
       end
 
@@ -143,7 +143,7 @@ RSpec.describe Reply do
         reply = nil
         Audited.audit_class.as_user(user) do
           reply = create(:reply, content: 'original', user: user)
-          reply.update_attributes!(content: 'blah')
+          reply.update!(content: 'blah')
         end
         expect(get_has_edit_audits.call(reply.id)).to eq(true)
       end
@@ -153,7 +153,7 @@ RSpec.describe Reply do
         Audited.audit_class.as_user(user) do
           reply = create(:reply, content: 'original', user: user)
           char = create(:character, user: user)
-          reply.update_attributes!(character: char)
+          reply.update!(character: char)
         end
         expect(get_has_edit_audits.call(reply.id)).to eq(true)
       end
@@ -162,7 +162,7 @@ RSpec.describe Reply do
         reply = nil
         Audited.audit_class.as_user(user) do
           reply = create(:reply, content: 'original', user: user)
-          1.upto(5) { |i| reply.update_attributes!(content: 'message' + i.to_s) }
+          1.upto(5) { |i| reply.update!(content: 'message' + i.to_s) }
         end
         expect(get_has_edit_audits.call(reply.id)).to eq(true)
       end
@@ -173,7 +173,7 @@ RSpec.describe Reply do
           reply = create(:reply, content: 'original')
         end
         Audited.audit_class.as_user(create(:mod_user)) do
-          reply.update_attributes!(content: 'blah')
+          reply.update!(content: 'blah')
         end
         expect(get_has_edit_audits.call(reply.id)).to eq(true)
       end

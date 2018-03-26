@@ -245,7 +245,7 @@ RSpec.describe Post do
       expect(post.section_order).to eq(0)
       create(:post, board_id: board.id)
       create(:post, board_id: board.id)
-      post.update_attributes!(content: 'new content')
+      post.update!(content: 'new content')
       post.reload
       expect(post.section_order).to eq(0)
     end
@@ -334,7 +334,7 @@ RSpec.describe Post do
 
       it "is true with avatar" do
         icon = create(:icon, user: user)
-        user.update_attributes!(avatar: icon)
+        user.update!(avatar: icon)
         user.reload
 
         expect(post.character).to be_nil
@@ -353,7 +353,7 @@ RSpec.describe Post do
 
       it "is true with default icon" do
         icon = create(:icon, user: user)
-        character.update_attributes!(default_icon: icon)
+        character.update!(default_icon: icon)
         expect(post.has_icons?).to eq(true)
       end
 
@@ -846,7 +846,7 @@ RSpec.describe Post do
       post = nil
       Audited.audit_class.as_user(user) do
         post = create(:post, content: 'original', user: user)
-        post.update_attributes!(content: 'blah')
+        post.update!(content: 'blah')
       end
       expect(post.reload.has_edit_audits?).to eq(true)
     end
@@ -856,7 +856,7 @@ RSpec.describe Post do
       Audited.audit_class.as_user(user) do
         post = create(:post, content: 'original', user: user)
         char = create(:character, user: user)
-        post.update_attributes!(character: char)
+        post.update!(character: char)
       end
       expect(post.reload.has_edit_audits?).to eq(true)
     end
@@ -865,7 +865,7 @@ RSpec.describe Post do
       post = nil
       Audited.audit_class.as_user(user) do
         post = create(:post, content: 'original', user: user)
-        1.upto(5) { |i| post.update_attributes!(content: 'message' + i.to_s) }
+        1.upto(5) { |i| post.update!(content: 'message' + i.to_s) }
       end
       expect(post.reload.has_edit_audits?).to eq(true)
     end
@@ -876,7 +876,7 @@ RSpec.describe Post do
         post = create(:post, content: 'original')
       end
       Audited.audit_class.as_user(create(:mod_user)) do
-        post.update_attributes!(content: 'blah')
+        post.update!(content: 'blah')
       end
       expect(post.reload.has_edit_audits?).to eq(true)
     end

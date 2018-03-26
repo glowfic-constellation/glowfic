@@ -64,11 +64,11 @@ RSpec.describe GalleryTag do
       character_auto = create(:character, user: user, gallery_groups: [group])
       character_both = create(:character, user: user, gallery_groups: [group])
       gallery.reload
-      gallery.characters_galleries.find_by(character_id: character_both.id).update_attributes!(added_by_group: false)
+      gallery.characters_galleries.find_by(character_id: character_both.id).update!(added_by_group: false)
       expect(gallery.characters).to match_array([other_character, character_auto, character_both])
       expect(gallery.characters_galleries.find_by(character_id: character_auto.id)).to be_added_by_group
 
-      gallery.update_attributes!(gallery_groups: [])
+      gallery.update!(gallery_groups: [])
       gallery.reload
       expect(gallery.characters).to match_array([other_character, character_both])
       expect(gallery.characters_galleries.find_by(character_id: character_both.id)).not_to be_added_by_group
