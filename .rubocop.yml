@@ -4,8 +4,7 @@ AllCops:
   DisabledByDefault: false
   Exclude:
     - 'bin/*'
-    - 'config/environments/*'
-    - 'config/initializers/*'
+    - 'config/**/*'
     - 'db/migrate/2015*'
     - 'db/migrate/2016*'
     - 'db/migrate/2017*'
