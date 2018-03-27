@@ -24,7 +24,7 @@ class NotifyFollowersOfNewPostJob < ApplicationJob
       next unless post.visible_to?(user)
       message = "#{new_user.username} has just posted a new post entitled #{post.subject}"
       message += " in the #{post.board.name} continuity" if users_favoriting_continuity.include?(user.id)
-      message += " with " + (post.authors - [new_user]).map(&:username).join(", ")
+      message += " with " + (post.authors - [new_user]).map(&:username).join(", ") if post.authors.count > 1
       message += ". #{view_post(post.id)}"
       Message.send_site_message(user.id, 'New post by ' + post.user.username, message)
     end
