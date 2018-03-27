@@ -30,6 +30,10 @@ Layout/CaseIndentation:
 Layout/ClosingParenthesisIndentation:
   Enabled: false
 
+Layout/EmptyComment:
+  AllowBorderComment: false
+  AllowMarginComment: false
+
 Layout/EmptyLineAfterMagicComment:
   Enabled: false
 
