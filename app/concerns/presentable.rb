@@ -1,8 +1,8 @@
 # include Presentable in a model Model to have it automatically use app/presenters/ModelPresenter.rb to generate its JSON.
-#
+
 # Can safely be included on classes with no presenter file;
 # it will fall back to the default / inherited as_json method.
-#
+
 # Limitations:
 # - Presenter must have an initializer that takes the model as an argument
 # - Presenter must implement as_json(options={})
