@@ -46,6 +46,19 @@ RSpec.describe NotifyFollowersOfNewPostJob do
       expect(author_msg.message).to include(" with #{expected.username}")
     end
 
+    it "works for self-threads" do
+      author = create(:user)
+      author_notified = create(:user)
+      create(:favorite, user: author_notified, favorite: author)
+      post = create(:post, user: author, unjoined_authors: [], subject: 'test')
+
+      expect { NotifyFollowersOfNewPostJob.perform_now(post.id, post.user_id) }.to change { Message.count }.by(1)
+
+      author_msg = Message.where(recipient: author_notified).last
+      expect(author_msg.subject).to eq("New post by #{author.username}")
+      expect(author_msg.message).to include("#{author.username} has just posted a new post entitled test.")
+    end
+
     it "does not send unless visible" do
       author = create(:user)
       notified = create(:user)

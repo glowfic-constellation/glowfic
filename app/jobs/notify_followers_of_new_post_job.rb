@@ -12,21 +12,22 @@ class NotifyFollowersOfNewPostJob < ApplicationJob
     end
   end
 
-  def notify_of_post_creation(post, new_user)
-    users_favoriting_user = Favorite.where(favorite: new_user).pluck(:user_id)
+  def notify_of_post_creation(post, post_user)
+    users_favoriting_user = Favorite.where(favorite: post_user).pluck(:user_id)
     users_favoriting_continuity = Favorite.where(favorite: post.board).pluck(:user_id)
-    user_ids = (users_favoriting_continuity + users_favoriting_user).uniq - [post.user_id]
+    user_ids = (users_favoriting_continuity + users_favoriting_user).uniq - [post_user.id]
     return unless user_ids.present?
     users = User.where(id: user_ids)
 
     users.each do |user|
       next unless user.favorite_notifications?
       next unless post.visible_to?(user)
-      message = "#{new_user.username} has just posted a new post entitled #{post.subject}"
+      message = "#{post_user.username} has just posted a new post entitled #{post.subject}"
       message += " in the #{post.board.name} continuity" if users_favoriting_continuity.include?(user.id)
-      message += " with " + (post.authors - [new_user]).map(&:username).join(", ")
+      other_authors = post.authors.where.not(id: post_user.id)
+      message += " with " + other_authors.pluck(:username).join(', ') if other_authors.exists?
       message += ". #{view_post(post.id)}"
-      Message.send_site_message(user.id, 'New post by ' + post.user.username, message)
+      Message.send_site_message(user.id, "New post by #{post_user.username}", message)
     end
   end
 
@@ -35,14 +36,14 @@ class NotifyFollowersOfNewPostJob < ApplicationJob
     return unless user_ids.present?
     users = User.where(id: user_ids)
 
-    subject = new_user.username + ' has joined a new thread'
+    subject = "#{new_user.username} has joined a new thread"
 
     users.each do |user|
       next unless user.favorite_notifications?
       next unless post.visible_to?(user)
       next if already_notified_about?(post, user)
       message = "#{new_user.username} has just joined the post entitled #{post.subject} with "
-      message += (post.joined_authors - [new_user]).map(&:username).join(", ")
+      message += post.joined_authors.where.not(id: new_user.id).pluck(:username).join(', ')
       message += ". #{view_post(post.id)}"
       Message.send_site_message(user.id, subject, message)
     end
