@@ -64,13 +64,13 @@ RSpec.describe Icon do
 
     it "deletes uploaded on destroy" do
       icon = create(:uploaded_icon)
-      icon.destroy
+      icon.destroy!
       expect(DeleteIconFromS3Job).to have_been_enqueued.with(icon.s3_key).on_queue('high')
     end
 
     it "does not delete non-uploaded on destroy" do
       icon = create(:icon)
-      icon.destroy
+      icon.destroy!
       expect(DeleteIconFromS3Job).not_to have_been_enqueued
     end
 
@@ -79,7 +79,7 @@ RSpec.describe Icon do
       old_key = icon.s3_key
       icon.url = "https://d1anwqy6ci9o1i.cloudfront.net/users/#{icon.user.id}/icons/nonsense-fakeimg2.png"
       icon.s3_key = "/users/#{icon.user.id}/icons/nonsense-fakeimg2.png"
-      icon.save
+      icon.save!
       expect(DeleteIconFromS3Job).to have_been_enqueued.with(old_key).on_queue('high')
     end
 
@@ -88,14 +88,14 @@ RSpec.describe Icon do
       old_key = icon.s3_key
       icon.url = "https://fake.com/nonsense-fakeimg2.png"
       icon.s3_key = "/users/#{icon.user.id}/icons/nonsense-fakeimg2.png"
-      icon.save
+      icon.save!
       expect(DeleteIconFromS3Job).to have_been_enqueued.with(old_key).on_queue('high')
     end
 
     it "does not delete uploaded on non-url update" do
       icon = create(:uploaded_icon)
       icon.keyword = "not a url update"
-      icon.save
+      icon.save!
       expect(DeleteIconFromS3Job).not_to have_been_enqueued
     end
   end
@@ -110,7 +110,7 @@ RSpec.describe Icon do
       icon = build(:icon)
       icon.s3_key = 'users/1/icons/fake_test.png'
       icon.url = 'https://glowfic-bucket.s3.amazonaws.com/users%2F1%2Ficons%2Ffake_test.png'
-      icon.save
+      icon.save!
       expect(icon.reload.url).to eq('https://glowfic-bucket.s3.amazonaws.com/users%2F1%2Ficons%2Ffake_test.png')
     end
 
@@ -119,7 +119,7 @@ RSpec.describe Icon do
       icon = build(:icon)
       icon.s3_key = nil
       icon.url = 'https://glowfic-bucket.s3.amazonaws.com/users%2F1%2Ficons%2Ffake_test.png'
-      icon.save
+      icon.save!
       expect(icon.reload.url).to eq('https://glowfic-bucket.s3.amazonaws.com/users%2F1%2Ficons%2Ffake_test.png')
     end
 
@@ -128,7 +128,7 @@ RSpec.describe Icon do
       icon = build(:icon)
       icon.s3_key = 'users/1/icons/fake_test.png'
       icon.url = asset_host + '/users%2F1%2Ficons%2Ffake_test.png'
-      icon.save
+      icon.save!
       expect(icon.reload.url).to eq(asset_host + '/users%2F1%2Ficons%2Ffake_test.png')
     end
 
@@ -137,7 +137,7 @@ RSpec.describe Icon do
       icon = build(:icon)
       icon.s3_key = 'users/1/icons/fake_test.png'
       icon.url = 'https://glowfic-bucket.s3.amazonaws.com/users%2F1%2Ficons%2Ffake_test.png'
-      icon.save
+      icon.save!
       expect(icon.reload.url).to eq(asset_host + '/users%2F1%2Ficons%2Ffake_test.png')
     end
   end

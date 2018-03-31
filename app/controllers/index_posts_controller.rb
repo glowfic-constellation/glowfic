@@ -50,8 +50,14 @@ class IndexPostsController < ApplicationController
       redirect_to index_path(index_post.index) and return
     end
 
-    index_post.destroy
-    flash[:success] = "Post removed from index."
+    begin
+      index_post.destroy!
+      flash[:success] = "Post removed from index."
+    rescue ActiveRecord::RecordNotDestroyed
+      flash[:error] = {}
+      flash[:error][:message] = "Post could not be removed from index."
+      flash[:error][:array] = index_post.errors.full_messages
+    end
     redirect_to index_path(index_post.index)
   end
 

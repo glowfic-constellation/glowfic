@@ -9,7 +9,7 @@ RSpec.describe Reply do
 
       it "is true with avatar" do
         icon = create(:icon, user: user)
-        user.update_attributes(avatar: icon)
+        user.update_attributes!(avatar: icon)
         user.reload
 
         expect(reply.character).to be_nil
@@ -28,7 +28,7 @@ RSpec.describe Reply do
 
       it "is true with default icon" do
         icon = create(:icon, user: user)
-        character.update_attributes(default_icon: icon)
+        character.update_attributes!(default_icon: icon)
         expect(reply.has_icons?).to eq(true)
       end
 
@@ -205,7 +205,7 @@ RSpec.describe Reply do
 
       author = post.author_for(reply.user)
       author.can_owe = false
-      author.save
+      author.save!
 
       expect(post.author_for(reply.user).can_owe).to be(false)
       create(:reply, user: reply.user, post: post)

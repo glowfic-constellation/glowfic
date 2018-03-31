@@ -110,11 +110,11 @@ RSpec.describe BoardSectionsController do
       post4 = create(:post, board: board, section: section)
       post3 = create(:post, board: board, section: section)
       post2 = create(:post, board: board, section: section)
-      post1.update_attributes(section_order: 1)
-      post2.update_attributes(section_order: 2)
-      post3.update_attributes(section_order: 3)
-      post4.update_attributes(section_order: 4)
-      post5.update_attributes(section_order: 5)
+      post1.update_attributes!(section_order: 1)
+      post2.update_attributes!(section_order: 2)
+      post3.update_attributes!(section_order: 3)
+      post4.update_attributes!(section_order: 4)
+      post5.update_attributes!(section_order: 5)
       get :show, params: { id: section.id }
       expect(response).to have_http_status(200)
       expect(assigns(:page_title)).to eq(section.name)
@@ -221,6 +221,17 @@ RSpec.describe BoardSectionsController do
       expect(response).to redirect_to(edit_board_url(section.board))
       expect(flash[:success]).to eq("Section deleted.")
       expect(BoardSection.find_by_id(section.id)).to be_nil
+    end
+
+    it "handles destroy failure" do
+      section = create(:board_section)
+      post = create(:post, user: section.board.creator, board: section.board, section: section)
+      login_as(section.board.creator)
+      expect_any_instance_of(BoardSection).to receive(:destroy!).and_raise(ActiveRecord::RecordNotDestroyed, 'fake error')
+      delete :destroy, params: { id: section.id }
+      expect(response).to redirect_to(board_section_url(section))
+      expect(flash[:error]).to eq({message: "Section could not be deleted.", array: []})
+      expect(post.reload.section).to eq(section)
     end
   end
 end

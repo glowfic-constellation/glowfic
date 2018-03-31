@@ -9,7 +9,7 @@ RSpec.describe CharacterTag do
 
         character = create(:character)
         character.gallery_groups << group
-        character.save
+        character.save!
         expect(character.reload.galleries).to match_array([])
       end
 
@@ -24,14 +24,14 @@ RSpec.describe CharacterTag do
 
         character = create(:character, user: user, galleries: [gallery1])
         character.gallery_groups << group
-        character.save
+        character.save!
         character.reload
         expect(character.galleries).to match_array([gallery1, gallery2])
         expect(character.characters_galleries.find_by(gallery_id: gallery1.id)).not_to be_added_by_group
         expect(character.characters_galleries.find_by(gallery_id: gallery2.id)).to be_added_by_group
 
         character.gallery_groups << group2
-        character.save
+        character.save!
         character.reload
         expect(character.galleries).to match_array([gallery1, gallery2])
         expect(character.characters_galleries.find_by(gallery_id: gallery1.id)).not_to be_added_by_group
@@ -46,7 +46,7 @@ RSpec.describe CharacterTag do
 
         character = create(:character, user: user)
         character.gallery_groups << group
-        character.save
+        character.save!
         character.reload
         expect(character.galleries).to match_array([gallery1, gallery2])
         expect(character.characters_galleries.map(&:added_by_group?)).to eq([true, true])
@@ -64,11 +64,11 @@ RSpec.describe CharacterTag do
       gallery_auto = create(:gallery, user: user, gallery_groups: [group])
       gallery_both = create(:gallery, user: user, gallery_groups: [group])
       character.reload
-      character.characters_galleries.find_by(gallery_id: gallery_both.id).update_attributes(added_by_group: false)
+      character.characters_galleries.find_by(gallery_id: gallery_both.id).update_attributes!(added_by_group: false)
       expect(character.galleries).to match_array([other_gallery, gallery_auto, gallery_both])
       expect(character.characters_galleries.find_by(gallery_id: gallery_auto.id)).to be_added_by_group
 
-      character.update_attributes(gallery_groups: [])
+      character.update_attributes!(gallery_groups: [])
       character.reload
       expect(character.galleries).to match_array([other_gallery, gallery_both])
       expect(character.characters_galleries.find_by(gallery_id: gallery_both.id)).not_to be_added_by_group
@@ -83,7 +83,7 @@ RSpec.describe CharacterTag do
       expect(character.gallery_groups).to match_array([group])
       expect(other.gallery_groups).to match_array([group])
 
-      character.destroy
+      character.destroy!
       group.reload
       expect(other.reload.gallery_groups).to match_array([group])
     end

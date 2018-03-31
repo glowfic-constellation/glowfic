@@ -243,16 +243,26 @@ class PostsController < WritableController
       flash[:error] = "Invalid status selected."
     else
       @post.status = new_status
-      @post.save
-      flash[:success] = "Post has been marked #{params[:status]}."
+      if @post.save
+        flash[:success] = "Post has been marked #{params[:status]}."
+      else
+        flash[:error] = {}
+        flash[:error][:message] = "Status could not be updated."
+        flash[:error][:array] = @post.errors.full_messages
+      end
     end
     redirect_to post_path(@post)
   end
 
   def change_authors_locked
     @post.authors_locked = (params[:authors_locked] == 'true')
-    @post.save
-    flash[:success] = "Post has been #{@post.authors_locked? ? 'locked to' : 'unlocked from'} current authors."
+    if @post.save
+      flash[:success] = "Post has been #{@post.authors_locked? ? 'locked to' : 'unlocked from'} current authors."
+    else
+      flash[:error] = {}
+      flash[:error][:message] = "Post could not be updated."
+      flash[:error][:array] = @post.errors.full_messages
+    end
     redirect_to post_path(@post)
   end
 
@@ -262,9 +272,16 @@ class PostsController < WritableController
       redirect_to post_path(@post) and return
     end
 
-    @post.destroy
-    flash[:success] = "Post deleted."
-    redirect_to boards_path
+    begin
+      @post.destroy!
+      flash[:success] = "Post deleted."
+      redirect_to boards_path
+    rescue ActiveRecord::RecordNotDestroyed
+      flash[:error] = {}
+      flash[:error][:message] = "Post could not be deleted."
+      flash[:error][:array] = @post.errors.full_messages
+      redirect_to post_path(@post)
+    end
   end
 
   def search

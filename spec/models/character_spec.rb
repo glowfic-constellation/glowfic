@@ -67,8 +67,8 @@ RSpec.describe Character do
       gallery1 = create(:gallery, user: user)
       gallery2 = create(:gallery, user: user)
 
-      CharactersGallery.create(character: character, gallery: gallery1)
-      CharactersGallery.create(character: character, gallery: gallery2, added_by_group: true)
+      CharactersGallery.create!(character: character, gallery: gallery1)
+      CharactersGallery.create!(character: character, gallery: gallery2, added_by_group: true)
 
       character.reload
       expect(character.gallery_ids).to match_array([gallery1.id, gallery2.id])
@@ -124,7 +124,7 @@ RSpec.describe Character do
       gallery_both = create(:gallery, gallery_groups: [group], user: user)
       gallery_automatic = create(:gallery, gallery_groups: [group], user: user)
 
-      CharactersGallery.create(character: character, gallery: gallery_manual)
+      CharactersGallery.create!(character: character, gallery: gallery_manual)
       character.characters_galleries.where(gallery_id: gallery_both.id).update_all(added_by_group: false)
 
       character.reload
@@ -164,7 +164,7 @@ RSpec.describe Character do
       gallery_both = create(:gallery, gallery_groups: [group], user: user)
       gallery_automatic = create(:gallery, gallery_groups: [group], user: user)
 
-      CharactersGallery.create(character: character, gallery: gallery_manual)
+      CharactersGallery.create!(character: character, gallery: gallery_manual)
       character.characters_galleries.where(gallery_id: gallery_both.id).update_all(added_by_group: false)
 
       character.reload
@@ -199,7 +199,7 @@ RSpec.describe Character do
           expect(character.reload.galleries).to match_array([gallery])
 
           process_changes(character, [], [gallery.id], time)
-          character.save
+          character.save!
 
           character.reload
           expect(character.galleries).to match_array([gallery])
@@ -216,7 +216,7 @@ RSpec.describe Character do
           expect(character.reload.galleries).to match_array([gallery])
 
           process_changes(character, [group2.id], [gallery.id], time)
-          character.save
+          character.save!
 
           character.reload
           expect(character.galleries).to match_array([gallery])
@@ -232,7 +232,7 @@ RSpec.describe Character do
           expect(character.reload.galleries).to match_array([gallery])
 
           process_changes(character, [group.id], [], time)
-          character.save
+          character.save!
 
           character.reload
           expect(character.galleries).to match_array([gallery])
@@ -249,7 +249,7 @@ RSpec.describe Character do
           expect(character.reload.galleries).to match_array([gallery])
 
           process_changes(character, [group2.id], [], time)
-          character.save
+          character.save!
 
           character.reload
           expect(character.galleries).to match_array([gallery])
@@ -299,7 +299,7 @@ RSpec.describe Character do
       gallery1 = create(:gallery, user: user)
       gallery2 = create(:gallery, user: user)
       char = create(:character, user: user)
-      char.update(galleries: [gallery1, gallery2])
+      char.update!(galleries: [gallery1, gallery2])
       expect(char.character_gallery_for(gallery1.id).section_order).to eq(0)
       expect(char.character_gallery_for(gallery2.id).section_order).to eq(1)
     end
@@ -310,7 +310,7 @@ RSpec.describe Character do
       gallery2 = create(:gallery, user: user)
       gallery3 = create(:gallery, user: user)
       char = create(:character, user: user, galleries: [gallery1, gallery2, gallery3])
-      char.update(galleries: [gallery1, gallery3])
+      char.update!(galleries: [gallery1, gallery3])
       expect(char.character_gallery_for(gallery1.id).section_order).to eq(0)
       expect(char.character_gallery_for(gallery3.id).section_order).to eq(1)
       expect(char.character_gallery_for(gallery2.id)).to be_nil
@@ -324,7 +324,7 @@ RSpec.describe Character do
     char = create(:character, user: user)
     gallery1 = create(:gallery, user: user)
     gallery2 = create(:gallery, user: user)
-    char.update_attributes(galleries: [gallery1, gallery2])
+    char.update_attributes!(galleries: [gallery1, gallery2])
     icon2 = create(:icon, user: user, keyword: 'b', galleries: [gallery1])
     icon3 = create(:icon, user: user, keyword: 'c', galleries: [gallery2, gallery1])
     icon4 = create(:icon, user: user, keyword: 'd', galleries: [gallery1, gallery2])

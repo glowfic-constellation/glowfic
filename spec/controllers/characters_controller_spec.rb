@@ -667,6 +667,17 @@ RSpec.describe CharactersController do
       expect(flash[:success]).to eq("Character deleted successfully.")
       expect(Character.find_by_id(character.id)).to be_nil
     end
+
+    it "handles destroy failure" do
+      character = create(:character)
+      post = create(:post, user: character.user, character: character)
+      login_as(character.user)
+      expect_any_instance_of(Character).to receive(:destroy!).and_raise(ActiveRecord::RecordNotDestroyed, 'fake error')
+      delete :destroy, params: { id: character.id }
+      expect(response).to redirect_to(character_url(character))
+      expect(flash[:error]).to eq({message: "Character could not be deleted.", array: []})
+      expect(post.reload.character).to eq(character)
+    end
   end
 
   describe "GET replace" do
@@ -697,7 +708,7 @@ RSpec.describe CharactersController do
       character = create(:character, user: user)
       other_char = create(:character, user: user)
       other_char.default_icon = create(:icon, user: user)
-      other_char.save
+      other_char.save!
       calias = create(:alias, character: other_char)
       char_post = create(:post, user: user, character: character)
       create(:reply, user: user, post: char_post, character: character) # reply

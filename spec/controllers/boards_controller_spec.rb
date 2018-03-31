@@ -221,8 +221,8 @@ RSpec.describe BoardsController do
       board = create(:board)
       section2 = create(:board_section, board: board)
       section1 = create(:board_section, board: board)
-      section1.update_attributes(section_order: 0)
-      section2.update_attributes(section_order: 1)
+      section1.update_attributes!(section_order: 0)
+      section2.update_attributes!(section_order: 1)
       post1 = create(:post, board: board, section: section1, tagged_at: Time.now + rand(5..30).hours)
       post2 = create(:post, board: board, section: section1, tagged_at: Time.now + rand(5..30).hours)
       post3 = create(:post, board: board, section: section1, tagged_at: Time.now + rand(5..30).hours)
@@ -232,15 +232,15 @@ RSpec.describe BoardsController do
       post7 = create(:post, board: board, tagged_at: Time.now + rand(5..30).hours)
       post8 = create(:post, board: board, tagged_at: Time.now + rand(5..30).hours)
       post9 = create(:post, board: board, tagged_at: Time.now + rand(5..30).hours)
-      post1.update_attributes(section_order: 0)
-      post2.update_attributes(section_order: 1)
-      post3.update_attributes(section_order: 2)
-      post4.update_attributes(section_order: 0)
-      post5.update_attributes(section_order: 1)
-      post6.update_attributes(section_order: 2)
-      post7.update_attributes(section_order: 0)
-      post8.update_attributes(section_order: 1)
-      post9.update_attributes(section_order: 2)
+      post1.update_attributes!(section_order: 0)
+      post2.update_attributes!(section_order: 1)
+      post3.update_attributes!(section_order: 2)
+      post4.update_attributes!(section_order: 0)
+      post5.update_attributes!(section_order: 1)
+      post6.update_attributes!(section_order: 2)
+      post7.update_attributes!(section_order: 0)
+      post8.update_attributes!(section_order: 1)
+      post9.update_attributes!(section_order: 2)
       get :show, params: { id: board.id }
       expect(assigns(:board_sections).map(&:posts)).to eq([[post1, post2, post3], [post4, post5, post6]])
       expect(assigns(:posts)).to eq([post7, post8, post9])
@@ -282,8 +282,8 @@ RSpec.describe BoardsController do
       board = create(:board)
       sections = [create(:board_section, board: board), create(:board_section, board: board)]
       posts = [create(:post, board: board, tagged_at: Time.now + 5.minutes), create(:post, board: board)]
-      sections[0].update_attributes(section_order: 1)
-      sections[1].update_attributes(section_order: 0)
+      sections[0].update_attributes!(section_order: 1)
+      sections[1].update_attributes!(section_order: 0)
       board.coauthors << create(:user)
       login_as(board.creator)
       get :edit, params: { id: board.id }
@@ -391,6 +391,17 @@ RSpec.describe BoardsController do
       expect(post.board_id).to eq(3)
       expect(post.section).to be_nil
       expect(BoardSection.find_by_id(section.id)).to be_nil
+    end
+
+    it "handles destroy failure" do
+      board = create(:board)
+      post = create(:post, user: board.creator, board: board)
+      login_as(board.creator)
+      expect_any_instance_of(Board).to receive(:destroy!).and_raise(ActiveRecord::RecordNotDestroyed, 'fake error')
+      delete :destroy, params: { id: board.id }
+      expect(response).to redirect_to(board_url(board))
+      expect(flash[:error]).to eq({message: "Continuity could not be deleted.", array: []})
+      expect(post.reload.board).to eq(board)
     end
   end
 

@@ -114,9 +114,16 @@ class CharactersController < ApplicationController
       redirect_to user_characters_path(current_user) and return
     end
 
-    @character.destroy
-    flash[:success] = "Character deleted successfully."
-    redirect_to user_characters_path(current_user)
+    begin
+      @character.destroy!
+      flash[:success] = "Character deleted successfully."
+      redirect_to user_characters_path(current_user)
+    rescue ActiveRecord::RecordNotDestroyed
+      flash[:error] = {}
+      flash[:error][:message] = "Character could not be deleted."
+      flash[:error][:array] = @character.errors.full_messages
+      redirect_to character_path(@character)
+    end
   end
 
   def facecasts

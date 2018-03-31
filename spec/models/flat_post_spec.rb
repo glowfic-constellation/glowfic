@@ -32,7 +32,7 @@ RSpec.describe FlatPost do
 
       reply = build(:reply, post: post)
       reply.skip_regenerate = true
-      reply.save
+      reply.save!
 
       delete_lock(post)
       delete_lock(nonpost)

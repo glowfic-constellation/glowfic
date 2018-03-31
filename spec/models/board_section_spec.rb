@@ -3,14 +3,14 @@ require "spec_helper"
 RSpec.describe BoardSection do
   it "should reset section_* fields in posts after deletion" do
     board = create(:board)
-    BoardSection.create(board: board, name: 'Test')
-    section = BoardSection.create(board: board, name: 'Test')
-    section2 = BoardSection.create(board: board, name: 'Test')
+    BoardSection.create!(board: board, name: 'Test')
+    section = BoardSection.create!(board: board, name: 'Test')
+    section2 = BoardSection.create!(board: board, name: 'Test')
     post = create(:post, board: board, section_id: section.id)
     expect(post.section_id).not_to be_nil
     expect(post.section_order).to eq(0)
     expect(section2.section_order).to eq(2)
-    section.destroy
+    section.destroy!
     post.reload
     expect(post.section_id).to be_nil
     expect(post.section_order).to eq(0)
@@ -19,7 +19,7 @@ RSpec.describe BoardSection do
 
   it "should autofill post section order when not specified" do
     board = create(:board)
-    section = BoardSection.create(board: board, name: 'Test')
+    section = BoardSection.create!(board: board, name: 'Test')
     post0 = create(:post, board: board, section_id: section.id)
     post1 = create(:post, board: board, section_id: section.id)
     post2 = create(:post, board: board, section_id: section.id)
@@ -30,9 +30,9 @@ RSpec.describe BoardSection do
 
   it "should autofill board section order when not specified" do
     board = create(:board)
-    section0 = BoardSection.create(board_id: board.id, name: 'Test')
-    section1 = BoardSection.create(board_id: board.id, name: 'Test')
-    section2 = BoardSection.create(board_id: board.id, name: 'Test')
+    section0 = BoardSection.create!(board_id: board.id, name: 'Test')
+    section1 = BoardSection.create!(board_id: board.id, name: 'Test')
+    section2 = BoardSection.create!(board_id: board.id, name: 'Test')
     expect(section0.section_order).to eq(0)
     expect(section1.section_order).to eq(1)
     expect(section2.section_order).to eq(2)
@@ -48,7 +48,7 @@ RSpec.describe BoardSection do
     expect(section2.section_order).to eq(2)
     section3 = create(:board_section, board_id: board.id)
     expect(section3.section_order).to eq(3)
-    section1.destroy
+    section1.destroy!
     expect(section0.reload.section_order).to eq(0)
     expect(section2.reload.section_order).to eq(1)
     expect(section3.reload.section_order).to eq(2)
@@ -65,7 +65,7 @@ RSpec.describe BoardSection do
     section3 = create(:board_section, board_id: board.id)
     expect(section3.section_order).to eq(3)
     section1.board = create(:board)
-    section1.save
+    section1.save!
     expect(section0.reload.section_order).to eq(0)
     expect(section2.reload.section_order).to eq(1)
     expect(section3.reload.section_order).to eq(2)

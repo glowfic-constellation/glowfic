@@ -91,7 +91,7 @@ RSpec.describe Api::V1::CharactersController do
     it "has single gallery when icon present" do
       character = create(:character)
       character.default_icon = create(:icon, user: character.user)
-      character.save
+      character.save!
       get :show, params: { id: character.id }
       expect(response).to have_http_status(200)
       expect(response.json['galleries'].size).to eq(1)

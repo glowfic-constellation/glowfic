@@ -51,9 +51,14 @@ class TemplatesController < ApplicationController
   end
 
   def destroy
-    @template.destroy
+    @template.destroy!
     flash[:success] = "Template deleted successfully."
     redirect_to user_characters_path(current_user)
+  rescue ActiveRecord::RecordNotDestroyed
+    flash[:error] = {}
+    flash[:error][:message] = "Template could not be deleted."
+    flash[:error][:array] = @template.errors.full_messages
+    redirect_to template_path(@template)
   end
 
   private

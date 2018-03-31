@@ -124,9 +124,9 @@ class Reply < ApplicationRecord
     return if post_author&.joined?
 
     if post_author
-      post_author.update_attributes(joined: true, joined_at: created_at)
+      post_author.update_attributes!(joined: true, joined_at: created_at)
     else
-      post.post_authors.create(user_id: user_id, joined: true, joined_at: created_at)
+      post.post_authors.create!(user_id: user_id, joined: true, joined_at: created_at)
     end
 
     return if is_import

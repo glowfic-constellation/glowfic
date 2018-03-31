@@ -104,5 +104,18 @@ RSpec.describe IndexPostsController do
       expect(flash[:success]).to eq("Post removed from index.")
       expect(IndexPost.count).to eq(0)
     end
+
+    it "handles destroy failure" do
+      index = create(:index)
+      post = create(:post, user: index.user)
+      index.posts << post
+      login_as(index.user)
+      expect_any_instance_of(IndexPost).to receive(:destroy!).and_raise(ActiveRecord::RecordNotDestroyed, 'fake error')
+      index_post = index.index_posts.first
+      delete :destroy, params: { id: index_post.id }
+      expect(response).to redirect_to(index_url(index))
+      expect(flash[:error]).to eq({message: "Post could not be removed from index.", array: []})
+      expect(index.reload.index_posts).to eq([index_post])
+    end
   end
 end

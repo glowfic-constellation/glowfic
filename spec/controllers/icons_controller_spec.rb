@@ -19,7 +19,7 @@ RSpec.describe IconsController do
 
     it "requires valid icons" do
       icon = create(:icon)
-      icon.destroy
+      icon.destroy!
       user_id = login
       delete :delete_multiple, params: { marked_ids: [0, '0', 'abc', -1, '-1', icon.id] }
       expect(response).to redirect_to(user_galleries_url(user_id))
@@ -205,10 +205,10 @@ RSpec.describe IconsController do
       it "orders posts correctly" do
         post3 = create(:post, icon: icon, user: icon.user)
         post4 = create(:post, icon: icon, user: icon.user)
-        post.update_attributes(tagged_at: Time.now - 5.minutes)
-        other_post.update_attributes(tagged_at: Time.now - 2.minutes)
-        post3.update_attributes(tagged_at: Time.now - 8.minutes)
-        post4.update_attributes(tagged_at: Time.now - 4.minutes)
+        post.update_attributes!(tagged_at: Time.now - 5.minutes)
+        other_post.update_attributes!(tagged_at: Time.now - 2.minutes)
+        post3.update_attributes!(tagged_at: Time.now - 8.minutes)
+        post4.update_attributes!(tagged_at: Time.now - 4.minutes)
         get :show, params: { id: icon.id, view: 'posts' }
         expect(assigns(:posts)).to eq([other_post, post4, post, post3])
       end
@@ -354,6 +354,17 @@ RSpec.describe IconsController do
       expect(response.redirect_url).to eq(gallery_url(gallery))
       expect(flash[:success]).to eq("Icon deleted successfully.")
       expect(Icon.find_by_id(icon.id)).to be_nil
+    end
+
+    it "handles destroy failure" do
+      icon = create(:icon)
+      post = create(:post, user: icon.user, icon: icon)
+      login_as(icon.user)
+      expect_any_instance_of(Icon).to receive(:destroy!).and_raise(ActiveRecord::RecordNotDestroyed, 'fake error')
+      delete :destroy, params: { id: icon.id }
+      expect(response).to redirect_to(icon_url(icon))
+      expect(flash[:error]).to eq({message: "Icon could not be deleted.", array: []})
+      expect(post.reload.icon).to eq(icon)
     end
   end
 

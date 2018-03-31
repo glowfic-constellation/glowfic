@@ -25,17 +25,13 @@ characters.each do |username|
   html_doc = Nokogiri::HTML(response.body)
   name = html_doc.at_css('#basics_body .profile td').content.strip
 
-  unless (gallery = Gallery.where(name: username).first)
-    gallery = Gallery.create!(user: user, name: username)
-  end
+  gallery = Gallery.find_or_create_by!(user: user, name: username)
 
-  unless (character = Character.where(screenname: username).first)
+  unless (character = Character.find_by(user: user, screenname: username))
     character = Character.create!(user: user, name: name, screenname: username)
   end
 
-  unless CharactersGallery.where(gallery_id: gallery.id, character_id: character.id).exists?
-    CharactersGallery.create(character_id: character.id, gallery_id: gallery.id)
-  end
+  CharactersGallery.find_or_create_by!(character_id: character.id, gallery_id: gallery.id)
 
   response = HTTParty.get("http://#{url_name}.dreamwidth.org/icons")
   html_doc = Nokogiri::HTML(response.body)

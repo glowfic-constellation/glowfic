@@ -380,7 +380,7 @@ RSpec.describe RepliesController do
       expect(reply.post.visible_to?(reply.user)).to eq(true)
 
       reply.post.privacy = Concealable::PRIVATE
-      reply.post.save
+      reply.post.save!
       reply.reload
       expect(reply.post.visible_to?(reply.user)).to eq(false)
 
@@ -441,7 +441,7 @@ RSpec.describe RepliesController do
       expect(reply.post.visible_to?(reply.user)).to eq(true)
 
       reply.post.privacy = Concealable::PRIVATE
-      reply.post.save
+      reply.post.save!
       reply.reload
       expect(reply.post.visible_to?(reply.user)).to eq(false)
 
@@ -485,7 +485,7 @@ RSpec.describe RepliesController do
       expect(reply.post.visible_to?(reply.user)).to eq(true)
 
       reply.post.privacy = Concealable::PRIVATE
-      reply.post.save
+      reply.post.save!
       reply.reload
       expect(reply.post.visible_to?(reply.user)).to eq(false)
 
@@ -551,7 +551,7 @@ RSpec.describe RepliesController do
       expect(reply.post.visible_to?(reply.user)).to eq(true)
 
       reply.post.privacy = Concealable::PRIVATE
-      reply.post.save
+      reply.post.save!
       reply.reload
       expect(reply.post.visible_to?(reply.user)).to eq(false)
 
@@ -742,7 +742,7 @@ RSpec.describe RepliesController do
       expect(reply.post.visible_to?(reply.user)).to eq(true)
 
       reply.post.privacy = Concealable::PRIVATE
-      reply.post.save
+      reply.post.save!
       reply.reload
       expect(reply.post.visible_to?(reply.user)).to eq(false)
 
@@ -765,7 +765,7 @@ RSpec.describe RepliesController do
       login_as(reply.user)
       delete :destroy, params: { id: reply.id }
       expect(response).to redirect_to(post_url(reply.post, page: 1))
-      expect(flash[:success]).to eq("Post deleted.")
+      expect(flash[:success]).to eq("Reply deleted.")
       expect(Reply.find_by_id(reply.id)).to be_nil
     end
 
@@ -774,7 +774,7 @@ RSpec.describe RepliesController do
       login_as(create(:admin_user))
       delete :destroy, params: { id: reply.id }
       expect(response).to redirect_to(post_url(reply.post, page: 1))
-      expect(flash[:success]).to eq("Post deleted.")
+      expect(flash[:success]).to eq("Reply deleted.")
       expect(Reply.find_by_id(reply.id)).to be_nil
     end
 
@@ -839,6 +839,17 @@ RSpec.describe RepliesController do
       delete :destroy, params: { id: reply.id }
       post_user.reload
       expect(post_user.joined).to eq(true)
+    end
+
+    it "handles destroy failure" do
+      post = create(:post)
+      reply = create(:reply, user: post.user, post: post)
+      login_as(post.user)
+      expect_any_instance_of(Reply).to receive(:destroy!).and_raise(ActiveRecord::RecordNotDestroyed, 'fake error')
+      delete :destroy, params: { id: reply.id }
+      expect(response).to redirect_to(reply_url(reply, anchor: "reply-#{reply.id}"))
+      expect(flash[:error]).to eq({message: "Reply could not be deleted.", array: []})
+      expect(post.reload.replies).to eq([reply])
     end
   end
 
@@ -987,7 +998,7 @@ RSpec.describe RepliesController do
       it "only shows from visible posts" do
         reply1 = create(:reply, content: 'contains forks')
         reply2 = create(:reply, content: 'visible contains forks')
-        reply1.post.update_attributes(privacy: Concealable::PRIVATE)
+        reply1.post.update_attributes!(privacy: Concealable::PRIVATE)
         expect(reply1.post.reload).not_to be_visible_to(nil) # logged out, not visible
         expect(reply2.post.reload).to be_visible_to(nil)
         get :search, params: { commit: true, subj_content: 'forks' }
@@ -1003,7 +1014,7 @@ RSpec.describe RepliesController do
 
       it "requires visible post if given" do
         reply1 = create(:reply)
-        reply1.post.update_attributes(privacy: Concealable::PRIVATE)
+        reply1.post.update_attributes!(privacy: Concealable::PRIVATE)
         expect(reply1.post.reload).not_to be_visible_to(nil)
         get :search, params: { commit: true, post_id: reply1.post_id }
         expect(assigns(:search_results)).to be_nil

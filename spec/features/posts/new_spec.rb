@@ -39,7 +39,7 @@ RSpec.feature "Creating posts", :type => :feature do
     end
 
     icon = create(:icon, user: user)
-    user.update_attributes(avatar: icon)
+    user.update_attributes!(avatar: icon)
     visit new_post_path
     within("#current-icon-holder") do
       expect(page).to have_xpath(".//img[contains(@src, '#{icon.url}')]")
@@ -47,7 +47,7 @@ RSpec.feature "Creating posts", :type => :feature do
 
     icon2 = create(:icon, user: user)
     character = create(:character, user: user, default_icon: icon2)
-    user.update_attributes(active_character: character)
+    user.update_attributes!(active_character: character)
     visit new_post_path
     within("#current-icon-holder") do
       expect(page).to have_xpath(".//img[contains(@src, '#{icon2.url}')]")

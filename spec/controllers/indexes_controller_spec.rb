@@ -88,9 +88,9 @@ RSpec.describe IndexesController do
       post1 = create(:index_post, index: index)
       post2 = create(:index_post, index: index)
       post3 = create(:index_post, index: index)
-      post2.update_attributes(section_order: 0)
-      post3.update_attributes(section_order: 1)
-      post1.update_attributes(section_order: 2)
+      post2.update_attributes!(section_order: 0)
+      post3.update_attributes!(section_order: 1)
+      post1.update_attributes!(section_order: 2)
       get :show, params: { id: index.id }
       expect(assigns(:sectionless)).to eq([post2.post, post3.post, post1.post])
     end
@@ -198,6 +198,17 @@ RSpec.describe IndexesController do
       expect(response).to redirect_to(indexes_url)
       expect(flash[:success]).to eq("Index deleted.")
       expect(Index.find_by_id(index.id)).to be_nil
+    end
+
+    it "handles destroy failure" do
+      index = create(:index)
+      section = create(:index_section, index: index)
+      login_as(index.user)
+      expect_any_instance_of(Index).to receive(:destroy!).and_raise(ActiveRecord::RecordNotDestroyed, 'fake error')
+      delete :destroy, params: { id: index.id }
+      expect(response).to redirect_to(index_url(index))
+      expect(flash[:error]).to eq({message: "Index could not be deleted.", array: []})
+      expect(section.reload.index).to eq(index)
     end
   end
 end

@@ -58,9 +58,14 @@ class BoardSectionsController < ApplicationController
   end
 
   def destroy
-    @board_section.destroy
+    @board_section.destroy!
     flash[:success] = "Section deleted."
     redirect_to edit_board_path(@board_section.board)
+  rescue ActiveRecord::RecordNotDestroyed
+    flash[:error] = {}
+    flash[:error][:message] = "Section could not be deleted."
+    flash[:error][:array] = @board_section.errors.full_messages
+    redirect_to board_section_path(@board_section)
   end
 
   private

@@ -90,9 +90,14 @@ class BoardsController < ApplicationController
   end
 
   def destroy
-    @board.destroy
+    @board.destroy!
     flash[:success] = "Continuity deleted."
     redirect_to boards_path
+  rescue ActiveRecord::RecordNotDestroyed
+    flash[:error] = {}
+    flash[:error][:message] = "Continuity could not be deleted."
+    flash[:error][:array] = @board.errors.full_messages
+    redirect_to board_path(@board)
   end
 
   def mark

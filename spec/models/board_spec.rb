@@ -51,9 +51,9 @@ RSpec.describe Board do
       board2 = create(:board)
       coauthor = create(:user)
       cameo = create(:user) # FIXME: unused
-      board.board_authors.create(user: coauthor)
-      board.board_authors.create(user: coauthor)
-      board2.board_authors.create(user: coauthor)
+      board.board_authors.create!(user: coauthor)
+      expect { board.board_authors.create!(user: coauthor) }.to raise_error(ActiveRecord::RecordInvalid)
+      board2.board_authors.create!(user: coauthor)
       board.reload
       board2.reload
       expect(board.board_authors.count).to eq(1)
@@ -86,11 +86,11 @@ RSpec.describe Board do
 
     it "should be ordered if board is not open to anyone" do
       board = create(:board)
-      board.update_attributes(coauthors: [create(:user)])
+      board.update_attributes!(coauthors: [create(:user)])
       expect(board.ordered?).to eq(true)
-      board.update_attributes(coauthors: [])
+      board.update_attributes!(coauthors: [])
       expect(board.ordered?).to eq(false)
-      board.update_attributes(cameos: [create(:user)])
+      board.update_attributes!(cameos: [create(:user)])
       expect(board.ordered?).to eq(true)
     end
 
