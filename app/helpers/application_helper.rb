@@ -131,6 +131,10 @@ module ApplicationHelper
     options_for_select(time_displays, default)
   end
 
+  def sanitize_credit(credit)
+    Glowfic::Sanitizers.description(credit)
+  end
+
   def sanitize_post_description(desc)
     Glowfic::Sanitizers.description(desc)
   end
