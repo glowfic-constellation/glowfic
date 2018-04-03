@@ -131,12 +131,8 @@ module ApplicationHelper
     options_for_select(time_displays, default)
   end
 
-  def sanitize_credit(credit)
-    Glowfic::Sanitizers.description(credit)
-  end
-
-  def sanitize_post_description(desc)
-    Glowfic::Sanitizers.description(desc)
+  def sanitize_simple_link_text(text)
+    Glowfic::Sanitizers.description(text)
   end
 
   # modified version of split_paragraphs that doesn't mangle large breaks

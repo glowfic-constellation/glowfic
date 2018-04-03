@@ -48,7 +48,7 @@
               = link_to post.subject, post_path(post)
             - if post.description.present?
               %br
-              %span.details= sanitize_post_description(post.description).html_safe
+              %span.details= sanitize_simple_link_text(post.description).html_safe
           %td.vtop.post-board{class: klass}= link_to post.board_name, board_path(post.board_id)
           %td.vtop.post-authors{class: klass}= author_links(post, colored: true).html_safe
           %td.vtop.centered.post-replies{class: klass}= link_to post.reply_count, stats_post_path(post)

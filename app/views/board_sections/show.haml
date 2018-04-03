@@ -20,6 +20,6 @@
 
 - if @board_section.description.present?
   - content_for :post_list_description do
-    = sanitize_post_description(@board_section.description).html_safe
+    = sanitize_simple_link_text(@board_section.description).html_safe
 
 = render 'posts/list', posts: @posts, hide_continuity: true

@@ -29,7 +29,7 @@
   - if @icon.credit
     %tr
       %td.icon-credit
-        .details= sanitize_credit(@icon.credit).html_safe
+        .details= sanitize_simple_link_text(@icon.credit).html_safe
   %tr
     %td.centered{class: cycle('even', 'odd')}
       = link_to icon_path(@icon, view: 'stats') do

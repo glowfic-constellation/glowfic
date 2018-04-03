@@ -21,7 +21,7 @@
       .content-header
         %span#post-title= @post.subject
       - if @post.description.present?
-        .post-subheader= sanitize_post_description(@post.description).html_safe
+        .post-subheader= sanitize_simple_link_text(@post.description).html_safe
       .post-container.post-post
         .padding-10
           .post-info-box

@@ -1,35 +1,35 @@
 require "spec_helper"
 
 RSpec.describe ApplicationHelper do
-  describe "#sanitize_post_description" do
+  describe "#sanitize_simple_link_text" do
     it "remains blank if given blank" do
       text = ''
-      expect(helper.sanitize_post_description(text)).to eq(text)
+      expect(helper.sanitize_simple_link_text(text)).to eq(text)
     end
 
     it "does not malform plain text" do
       text = 'sample text'
-      expect(helper.sanitize_post_description(text)).to eq(text)
+      expect(helper.sanitize_simple_link_text(text)).to eq(text)
     end
 
     it "permits links" do
       text = 'here is <a href="http://example.com">a link</a> <a href="https://example.com">another link</a> <a href="/characters/1">yet another link</a>'
-      expect(helper.sanitize_post_description(text)).to eq(text)
+      expect(helper.sanitize_simple_link_text(text)).to eq(text)
     end
 
     it "removes unpermitted attributes" do
       text = '<a onclick="function(){ alert("bad!");}">test</a>'
-      expect(helper.sanitize_post_description(text)).to eq('<a>test</a>')
+      expect(helper.sanitize_simple_link_text(text)).to eq('<a>test</a>')
     end
 
     it "removes unpermitted elements" do
       text = '<b>test</b> <script type="text/javascript">alert("bad!");</script> <p>text</p>'
-      expect(helper.sanitize_post_description(text)).to eq('test alert("bad!");  text ')
+      expect(helper.sanitize_simple_link_text(text)).to eq('test alert("bad!");  text ')
     end
 
     it "fixes unending tags" do
       text = '<a>test'
-      expect(helper.sanitize_post_description(text)).to eq('<a>test</a>')
+      expect(helper.sanitize_simple_link_text(text)).to eq('<a>test</a>')
     end
   end
 
