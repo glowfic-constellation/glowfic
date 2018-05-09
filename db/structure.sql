@@ -1303,7 +1303,8 @@ CREATE TABLE public.users (
     favorite_notifications boolean DEFAULT true,
     default_character_split character varying DEFAULT 'template'::character varying,
     role_id integer,
-    tos_version integer
+    tos_version integer,
+    deleted boolean DEFAULT false
 );
 
 
@@ -2469,6 +2470,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20171127031443'),
 ('20171227030824'),
 ('20180109003825'),
+('20180509172128'),
 ('20180928230642'),
 ('20181113044923'),
 ('20181127010456'),
