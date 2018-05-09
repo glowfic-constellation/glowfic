@@ -144,6 +144,13 @@ RSpec.describe UsersController do
       expect(flash[:error]).to eq("User could not be found.")
     end
 
+    it "requires non-deleted user" do
+      user = create(:user, deleted: true)
+      get :show, params: { id: user.id }
+      expect(response).to redirect_to(users_url)
+      expect(flash[:error]).to eq("User could not be found.")
+    end
+
     it "works when logged out" do
       user = create(:user)
       get :show, params: { id: user.id }
