@@ -9,7 +9,7 @@ class UsersController < ApplicationController
 
   def index
     @page_title = 'Users'
-    @users = User.ordered.paginate(page: page, per_page: 25)
+    @users = User.where(deleted: false).ordered.paginate(page: page, per_page: 25)
   end
 
   def show
@@ -104,7 +104,7 @@ class UsersController < ApplicationController
     @page_title = 'Search Users'
     return unless params[:commit].present?
     username = '%' + params[:username].to_s + '%'
-    @search_results = User.where("username LIKE ?", username).ordered.paginate(per_page: 25, page: page)
+    @search_results = User.where(deleted: false).where("username LIKE ?", username).ordered.paginate(per_page: 25, page: page)
   end
 
   def output
