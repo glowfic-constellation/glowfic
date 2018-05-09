@@ -13,6 +13,14 @@ RSpec.describe UsersController do
       expect(response).to have_http_status(200)
     end
 
+    it "does not return deleted users" do
+      user = create(:user, deleted: true)
+      4.times do create(:user) end
+      get :index
+      expect(assigns(:users).length).to eq(4)
+      expect(assigns(:users)).not_to include(user)
+    end
+
     context "with moieties" do
       render_views
 
@@ -416,6 +424,21 @@ RSpec.describe UsersController do
       create(:user, username: 'aab')
       get :search, params: { commit: 'Search', username: 'b' }
       expect(assigns(:search_results).map(&:username)).to eq(['aab', 'aba', 'baa'])
+    end
+
+    it "does not include deleted users" do
+      user = create(:user, deleted: true)
+      4.times do create(:user) end
+      get :search, params: { commit: 'Search', username: 'Doe' }
+      expect(assigns(:search_results).length).to eq(4)
+      expect(assigns(:search_results)).not_to include(user)
+    end
+
+    it "does not include deleted users even on exact match" do
+      create(:user, username: "testUser", deleted: true)
+      4.times do create(:user) end
+      get :search, params: { commit: 'Search', username: "testUser" }
+      expect(assigns(:search_results)).to be_empty
     end
   end
 
