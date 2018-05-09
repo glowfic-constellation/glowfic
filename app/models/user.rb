@@ -74,6 +74,14 @@ class User < ApplicationRecord
     super || 'icon'
   end
 
+  def username
+    if deleted?
+      "N/A"
+    else
+      self[:username]
+    end
+  end
+
   private
 
   def strip_spaces
