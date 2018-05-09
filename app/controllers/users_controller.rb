@@ -13,7 +13,7 @@ class UsersController < ApplicationController
   end
 
   def show
-    unless (@user = User.find_by_id(params[:id]))
+    unless (@user = User.find_by_id(params[:id]) && !@user.deleted?)
       flash[:error] = "User could not be found."
       redirect_to users_path and return
     end
