@@ -82,6 +82,15 @@ class User < ApplicationRecord
     end
   end
 
+  def archive
+    User.transaction do
+      self.update!(email_notifications: false, deleted: true)
+      Setting.where(user_id: self.id).where(owned: true).find_each do |setting|
+        setting.update!(owned: false)
+      end
+    end
+  end
+
   private
 
   def strip_spaces
