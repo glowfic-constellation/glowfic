@@ -13,7 +13,7 @@ class SessionsController < ApplicationController
   def create
     user = User.find_by(username: params[:username])
 
-    if !user
+    if !user or user.deleted?
       flash[:error] = "That username does not exist."
     elsif user.suspended?
       flash[:error] = "You could not be logged in."
