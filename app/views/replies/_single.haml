@@ -28,8 +28,8 @@
         - else
           .spacer-alt
         .post-author
-          - if reply.user.deleted?
-            %span reply.username
+          - if reply.user_deleted?
+            N/A
           - else
             = link_to reply.username, user_path(reply.user_id)
     .post-edit-box

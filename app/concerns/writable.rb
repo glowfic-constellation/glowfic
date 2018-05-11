@@ -64,6 +64,11 @@ module Writable
       user.username
     end
 
+    def user_deleted?
+      return read_attribute(:user_deleted) if has_attribute?(:user_deleted)
+      user.deleted?
+    end
+
     private
 
     def character_ownership
