@@ -12,4 +12,24 @@ RSpec.feature "Viewing posts", :type => :feature do
     visit post_path(post)
     expect(page).to have_xpath("//img[contains(@src, 'menugray-')]")
   end
+
+  scenario "with an archived author" do
+    user = create(:user)
+    post = create(:post, user: user)
+    reply = create(:reply, post: post)
+    create(:reply, post: post, user: user)
+    user.archive
+    visit post_path(post)
+
+    within('.post-post') do
+      expect(page).to have_selector('.post-author', exact_text: 'N/A')
+    end
+    replies = page.all('.post-reply')
+    within(replies[0]) do
+      expect(page).to have_selector('.post-author', exact_text: reply.user.username)
+    end
+    within(replies[1]) do
+      expect(page).to have_selector('.post-author', exact_text: 'N/A')
+    end
+  end
 end
