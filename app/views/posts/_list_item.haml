@@ -43,7 +43,7 @@
   %td.post-authors.vtop{class: klass}
     - authors = post.authors.sort_by { |author| author.username.downcase }
     - if authors.length < 4
-      = authors.map { |author| link_to author.username, user_path(author) }.join(', ').html_safe
+      = authors.sort_by(&:deleted?).map { |author| user_link(author) }.join(', ').html_safe
     - else
       = link_to post.user.username, user_path(post.user)
       and
@@ -58,7 +58,10 @@
   %td.post-time.vtop{class: klass}
     = pretty_time(post.tagged_at)
     by
-    = link_to post.last_user_name, user_path(post.last_user_id)
+    - if post.last_user.deleted?
+      (deleted user)
+    - else
+      = link_to post.last_user_name, user_path(post.last_user_id)
   - if local_assigns[:check_box_name]
     %td.post-check-box{class: klass}= check_box_tag check_box_name, post.id, false, class: 'checkbox'
 - if post.respond_to?(:index_description)
