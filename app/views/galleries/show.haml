@@ -5,7 +5,7 @@
       - if @user.id == current_user.try(:id)
         = link_to "Galleries", user_galleries_path(current_user)
       - elsif @user.deleted?
-        %span Archived
+        %em (deleted user)
       - else
         = link_to @user.username, user_path(@user)
         &raquo;
@@ -17,6 +17,8 @@
     - content_for :breadcrumbs do
       - if @user.id == current_user.try(:id)
         = link_to "Galleries", user_galleries_path(current_user)
+      - elsif @user.deleted?
+        %em (deleted user)
       - else
         = link_to @user.username, user_path(@user)
         &raquo;

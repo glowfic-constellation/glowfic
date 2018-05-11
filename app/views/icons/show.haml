@@ -2,7 +2,7 @@
   - if @icon.user_id == current_user.try(:id)
     = link_to "Galleries", user_galleries_path(current_user)
   - elsif @icon.user.deleted?
-    %span Archived
+    %em (deleted user)
   - else
     = link_to @icon.user.username, user_path(@icon.user)
     &raquo;
