@@ -61,9 +61,12 @@
           - post_authors.each do |post_author|
             - author = post_author.user
             %li
-              = link_to author.username, user_path(author)
-              - unless post_author.joined?
-                (invited)
+              - if author.deleted?
+                %em (deleted user)
+              - else
+                = link_to author.username, user_path(author)
+                - unless post_author.joined?
+                  (invited)
     %tr
       %th.sub.width-150.vtop Characters
       %td{class: cycle('odd', 'even')}
