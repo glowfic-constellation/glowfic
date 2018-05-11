@@ -119,6 +119,13 @@ RSpec.describe SessionsController do
       expect(controller.send(:logged_in?)).to eq(true)
       expect(cookies.signed[:user_id]).to eq(user.id)
     end
+
+    it "disallows logins from deleted users" do
+      user = create(:user, deleted: true)
+      post :create, params: { username: user.username }
+      expect(flash[:error]).to eq("That username does not exist.")
+      expect(controller.send(:logged_in?)).not_to eq(true)
+    end
   end
 
   describe "PATCH confirm_tos" do
