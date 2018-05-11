@@ -14,7 +14,8 @@
             - else
               .spacer-alt
             - if reply.user_deleted?
-              .post_author="N/A"
+              .post_author
+                %em (deleted user)
             - else
               .post-author= reply.username
         .post-edit-box
