@@ -167,6 +167,19 @@ RSpec.feature "Creating a new character", :type => :feature do
     end
   end
 
+  scenario "View an archived character" do
+    user = create(:user, deleted: true)
+    char = create(:character, user: user, name: "Test char")
+
+    visit character_path(char)
+
+    expect(page).to have_selector('.breadcrumbs', text: 'Test char » ')
+    within('.breadcrumbs') do
+      expect(page).to have_no_link(href: user_path(user))
+      expect(page).to have_text("Archived » ")
+    end
+  end
+
   scenario "View a complex character" do
     user = create(:user, username: 'Example user', password: 'known')
     icon2_1 = create(:icon, user: user, keyword: 'Test B')
