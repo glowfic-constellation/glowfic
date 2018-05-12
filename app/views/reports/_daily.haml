@@ -52,9 +52,9 @@
           %td.vtop.post-authors{class: klass}
             - authors = post.authors.sort_by { |author| author.username.downcase }
             - if authors.length < 4
-              = authors.map { |author| link_to fun_name(author), user_path(author) }.join(', ').html_safe
+              = authors.map { |author| user_link(author, fun_name(author)) }.join(', ').html_safe
             - else
-              = link_to fun_name(post.user), user_path(post.user)
+              = link_to user_link(post.user, fun_name(post.user))
               and
               = link_to "#{authors.length-1} others", stats_post_path(post)
           %td.vtop.centered.post-replies{class: klass}= link_to post.reply_count, stats_post_path(post)
