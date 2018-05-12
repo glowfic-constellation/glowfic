@@ -12,7 +12,7 @@ class CharactersController < ApplicationController
     (return if login_required) unless params[:user_id].present?
 
     @user = User.find_by_id(params[:user_id]) || current_user
-    unless @user
+    unless @user && !@user.deleted?
       flash[:error] = "User could not be found."
       redirect_to users_path and return
     end
