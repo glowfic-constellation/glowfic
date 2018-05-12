@@ -153,5 +153,12 @@ RSpec.describe User do
       expect(user.deleted).to be(true)
       expect(setting.reload.owned).to be(false)
     end
+
+    it "does not change username when persisted" do
+      user = create(:user, username: 'test')
+      user.archive
+      user.reload
+      expect(user.send(:[], :username)).to eq('test')
+    end
   end
 end
