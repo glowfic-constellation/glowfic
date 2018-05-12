@@ -55,22 +55,22 @@ RSpec.feature "Show a single continuity", :type => :feature do
     expect(page).to have_selector('.post-subject', count: 4)
     within("tbody tr:nth-child(4)") do
       expect(page).to have_selector('.post-subject', exact_text: post1.subject)
-      expect(page).to have_selector('.post-authors', text: 'Poe, (deleted user)')
+      expect(page).to have_selector('.post-authors', text: 'Poe and 1 deleted user')
       expect(page).to have_selector('.post-time', text: 'Poe')
     end
     within("tbody tr:nth-child(3)") do
       expect(page).to have_selector('.post-subject', exact_text: post2.subject)
-      expect(page).to have_selector('.post-authors', text: '(deleted user)')
+      expect(page).to have_selector('.post-authors', text: '1 deleted user')
       expect(page).to have_selector('.post-time', text: '(deleted user)')
     end
     within("tbody tr:nth-child(2)") do
       expect(page).to have_selector('.post-subject', exact_text: post3.subject)
-      expect(page).to have_selector('.post-authors', text: '(deleted user), 3 others')
+      expect(page).to have_selector('.post-authors', text: '(deleted user) and 4 others')
       expect(page).to have_selector('.post-time', text: 'Bob')
     end
     within("tbody tr:nth-child(1)") do
       expect(page).to have_selector('.post-subject', exact_text: post4.subject)
-      expect(page).to have_selector('.post-authors', text: 'Alice, Poe, (deleted user)')
+      expect(page).to have_selector('.post-authors', text: 'Alice, Poe, and 1 deleted user')
       expect(page).to have_selector('.post-time', text: '(deleted user)')
     end
   end

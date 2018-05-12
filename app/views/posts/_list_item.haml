@@ -43,7 +43,16 @@
   %td.post-authors.vtop{class: klass}
     - authors = post.authors.sort_by { |author| author.username.downcase }
     - if authors.length < 4
-      = authors.sort_by(&:deleted?).map { |author| user_link(author) }.join(', ').html_safe
+      - active_authors = authors.reject(&:deleted?)
+      - author_list = active_authors.map { |author| user_link(author) }.join(', ')
+      - if authors.any?(&:deleted?)
+        - deleted_authors = pluralize(authors.select(&:deleted?).length, 'deleted user')
+        - temp_list = [author_list, deleted_authors].select(&:present?)
+        - if active_authors.length == 1
+          - author_list = temp_list.join(' and ')
+        - else
+          - author_list = temp_list.join(', and ')
+      = author_list.html_safe
     - else
       = link_to user_link(post.user)
       and
