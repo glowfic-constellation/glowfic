@@ -215,6 +215,7 @@ module ApplicationHelper
 
   def message_sender(message)
     return message.sender_name if message.site_message?
+    return "(deleted user)" if message.sender.deleted?
     link_to(message.sender_name, user_path(message.sender))
   end
 
