@@ -71,7 +71,7 @@
                     %td.padding-5{class: klass, style: 'width:15%'}= character.template_name
                     %td.padding-5{class: klass, style: 'width:15%'}= breakable_text(character.screenname)
                     %td.padding-5{class: klass, style: 'width:25%'}= character.pb
-                    %td.padding-5{class: klass, style: 'width:15%'}= link_to character.user.username, user_path(character.user)
+                    %td.padding-5{class: klass, style: 'width:15%'}= user_link(character.user)
 
     - if @search_results && @search_results.total_pages > 1
       %tfoot
