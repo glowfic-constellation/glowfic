@@ -176,7 +176,7 @@ RSpec.feature "Creating a new character", :type => :feature do
     expect(page).to have_selector('.breadcrumbs', text: 'Test char » ')
     within('.breadcrumbs') do
       expect(page).to have_no_link(href: user_path(user))
-      expect(page).to have_text("Archived » ")
+      expect(page).to have_text("(deleted user) » ")
     end
   end
 
