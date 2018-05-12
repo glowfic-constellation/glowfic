@@ -19,7 +19,7 @@
             = image_tag 'icons/shield.png', class: 'vmid', alt: '', title: 'Moderator edit'
             Moderator note from
             = succeed ' - ' do
-              = link_to audit.user.username, user_path(audit.user)
+              = user_link(audit.user)
             = surround '"' do
               = audit.comment
       %tr
