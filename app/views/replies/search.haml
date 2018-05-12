@@ -76,7 +76,7 @@
                           .post-screenname= breakable_text(reply.screenname)
                         .post-author
                           - if reply.user_deleted?
-                            %i (deleted user)
+                            %em (deleted user)
                           - else
                             = link_to reply.username, user_path(reply.user_id)
                     .post-edit-box
