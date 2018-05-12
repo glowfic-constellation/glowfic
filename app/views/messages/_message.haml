@@ -34,7 +34,7 @@
         .post-screenname
           %b To:
           - if message.recipient
-            = link_to(message.recipient.username, user_path(message.recipient))
+            = user_link(message.recipient)
     .message-content= sanitize_written_content(message.message).html_safe
   .post-footer
     .right-align>

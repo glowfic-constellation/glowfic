@@ -11,7 +11,7 @@
       %th.sub.padding-10.width-150 Recipient
       %td.even.padding-10
         - if @message.parent
-          = link_to @message.recipient.try(:username), user_path(@message.recipient)
+          = user_link(@message.recipient) if @message.recipient
         - else
           = f.select :recipient_id, @select_items, prompt: true
     - unless @message.thread_id.present?
