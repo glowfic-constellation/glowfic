@@ -51,7 +51,7 @@
       = f.label :joined_author_ids, 'Current authors:'
       - if post.persisted?
         - authors = post.joined_authors.ordered
-        = authors.map { |author| link_to author.username, user_path(author) }.join(', ').html_safe
+        = authors.map { |author| link_to user_link(author) }.join(', ').html_safe
       - else
         = link_to current_user.username, user_path(current_user)
 
