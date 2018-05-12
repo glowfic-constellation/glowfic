@@ -16,4 +16,4 @@
           = link_to obj.item_name, character_path(obj.item_id)
         - else
           = link_to obj.item_name, template_path(obj.item_id)
-      %td.padding-5{class: klass}= link_to obj.username, user_path(obj.user_id)
+      %td.padding-5{class: klass}= user_link(obj.user)
