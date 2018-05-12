@@ -22,14 +22,14 @@ RSpec.feature "Viewing posts", :type => :feature do
     visit post_path(post)
 
     within('.post-post') do
-      expect(page).to have_selector('.post-author', exact_text: 'N/A')
+      expect(page).to have_selector('.post-author', exact_text: '(deleted user)')
     end
     replies = page.all('.post-reply')
     within(replies[0]) do
       expect(page).to have_selector('.post-author', exact_text: reply.user.username)
     end
     within(replies[1]) do
-      expect(page).to have_selector('.post-author', exact_text: 'N/A')
+      expect(page).to have_selector('.post-author', exact_text: '(deleted user)')
     end
   end
 end
