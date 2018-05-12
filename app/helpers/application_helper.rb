@@ -218,8 +218,9 @@ module ApplicationHelper
     link_to(message.sender_name, user_path(message.sender))
   end
 
-  def user_link(user)
+  def user_link(user, text = nil)
     return '(deleted user)'.html_safe if user.deleted?
+    link_to text, user_path(user) if text
     link_to user.username, user_path(user)
   end
 end
