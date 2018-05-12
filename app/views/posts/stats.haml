@@ -50,9 +50,9 @@
           - @post.post_viewers.each_with_index do |viewer, i|
             - if i < @post.post_viewers.count - 1
               = succeed ',' do
-                = link_to viewer.user.username, user_path(viewer.user)
+                = user_link(viewer.user)
             - else
-              = link_to viewer.user.username, user_path(viewer.user)
+              = user_link(viewer.user)
     %tr
       %th.sub.width-150 Authors
       %td{class: cycle('odd', 'even')}
