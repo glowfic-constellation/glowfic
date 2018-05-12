@@ -22,7 +22,7 @@
           - klass = cycle('even', 'odd')
           %td{class: klass}
             - if favorite_rec.favorite.is_a? User
-              = link_to favorite_rec.favorite.username, user_path(favorite_rec.favorite)
+              = user_link(favorite_rec.favorite)
             - elsif favorite_rec.favorite.is_a? Board
               = link_to favorite_rec.favorite.name, board_path(favorite_rec.favorite)
             - else
