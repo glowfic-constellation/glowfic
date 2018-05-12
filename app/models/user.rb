@@ -74,14 +74,6 @@ class User < ApplicationRecord
     super || 'icon'
   end
 
-  def username
-    if deleted?
-      "(deleted user)"
-    else
-      self[:username]
-    end
-  end
-
   def archive
     User.transaction do
       self.update!(email_notifications: false, deleted: true)
