@@ -31,5 +31,12 @@ RSpec.describe Api::V1::UsersController do
       get :index, params: { page: 'b' }
       expect(response).to have_http_status(422)
     end
+
+    it "supports exact match", show_in_doc: true do
+      create(:user, username: 'alicorn')
+      create(:user, username: 'ali')
+      get :index, params: { q: 'ali', match: 'exact' }
+      expect(response.json['results'].count).to eq(1)
+    end
   end
 end

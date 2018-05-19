@@ -270,29 +270,6 @@ RSpec.describe UsersController do
     end
   end
 
-  describe "POST username" do
-    it "complains when logged in" do
-      skip "TODO not yet implemented"
-    end
-
-    it "requires username" do
-      post :username
-      expect(response.json['error']).to eq("No username provided.")
-    end
-
-    it "finds user" do
-      user = create(:user)
-      post :username, params: { username: user.username }
-      expect(response.json['username_free']).not_to eq(true)
-    end
-
-    it "finds free username" do
-      user = create(:user)
-      post :username, params: { username: user.username + 'nope' }
-      expect(response.json['username_free']).to eq(true)
-    end
-  end
-
   describe "PUT password" do
     it "requires login" do
       put :password, params: { id: -1 }
