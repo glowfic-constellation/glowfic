@@ -17,7 +17,6 @@ Rails.application.routes.draw do
     resources :boards, only: :index
     collection do
       get :search
-      post :username
     end
     member do
       put :password

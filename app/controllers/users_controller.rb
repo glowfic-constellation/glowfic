@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 class UsersController < ApplicationController
   before_action :signup_prep, :only => :new
-  before_action :login_required, :except => [:index, :show, :new, :create, :username, :search]
+  before_action :login_required, :except => [:index, :show, :new, :create, :search]
   before_action :logout_required, only: [:new, :create]
   before_action :require_own_user, only: [:edit, :update, :password]
 
@@ -82,11 +82,6 @@ class UsersController < ApplicationController
       @page_title = 'Edit Account'
       render action: :edit
     end
-  end
-
-  def username
-    render :json => { :error => "No username provided." } and return unless params[:username]
-    render :json => { :username_free => User.find_by(username: params[:username]).nil? }
   end
 
   def search
