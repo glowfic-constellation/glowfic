@@ -53,7 +53,7 @@ RSpec.describe UsersController do
     it "requires beta secret" do
       post :create
       expect(response).to render_template(:new)
-      expect(flash[:error]).to eq("This is in beta. Please come back later.")
+      expect(flash[:error]).to eq("This is in beta. Please ask someone in the community for the (not very) secret beta code.")
       expect(assigns(:user)).not_to be_valid
       expect(assigns(:page_title)).to eq('Sign Up')
       expect(controller.gon.min).to eq(User::MIN_USERNAME_LEN)
