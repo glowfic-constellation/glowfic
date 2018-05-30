@@ -31,7 +31,7 @@ class UsersController < ApplicationController
 
     if params[:secret] != "ALLHAILTHECOIN"
       signup_prep
-      flash.now[:error] = "This is in beta. Please come back later."
+      flash.now[:error] = "This is in beta. Please ask someone in the community for the (not very) secret beta code."
       render :action => :new and return
     end
 
