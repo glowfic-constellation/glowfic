@@ -266,6 +266,22 @@ div.post-subheader { width: 100%; }
   }
 }
 
+/* - Tables in post-content */
+.post-content {
+  th {
+    color: unset;
+    background-color: unset;
+    padding: 5px;
+    font-size: unset;
+  }
+  td {
+    padding: 5px;
+  }
+  th, td {
+    border: 1px solid #999;
+  }
+}
+
 /* - Character quick switcher - small icons for selecting characters in post-editor */
 .char-access-icon {
   height: 30px;
