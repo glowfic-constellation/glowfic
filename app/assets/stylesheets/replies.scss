@@ -269,10 +269,11 @@ div.post-subheader { width: 100%; }
 /* - Tables in post-content */
 .post-content {
   th {
-    color: unset;
-    background-color: unset;
     padding: 5px;
+    background-color: unset;
+    color: unset;
     font-size: unset;
+    font-weight: bold;
   }
   td {
     padding: 5px;
