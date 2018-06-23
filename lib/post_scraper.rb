@@ -211,6 +211,7 @@ class PostScraper < Object
     @post.last_user_id = @reply.try(:user_id) || @post.user_id
     @post.last_reply_id = @reply.try(:id)
     @post.tagged_at = @reply.try(:created_at) || @post.created_at
+    @post.authors_locked = true
     @post.save!
   end
 
