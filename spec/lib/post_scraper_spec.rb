@@ -195,6 +195,7 @@ RSpec.describe PostScraper do
     scraper.scrape_threads!(threads)
     expect(Post.count).to eq(1)
     expect(Post.first.subject).to eq('repealing')
+    expect(Post.first.authors_locked).to eq(true)
     expect(Reply.count).to eq(55)
     expect(User.count).to eq(2)
     expect(Icon.count).to eq(30)
