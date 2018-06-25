@@ -47,7 +47,10 @@ a:hover { color: $font_color_link_hover; }
   }
 }
 
-.search-box { background-color: $bg_color_search_box; color: $font_color_search_box; }
+.search-box {
+  background-color: $bg_color_search_box;
+  color: $font_color_search_box;
+}
 .spacer-alt { background-color: $bg_color_spacer_alt; }
 
 /* - misc */
@@ -125,7 +128,7 @@ th, .content-header {
   color: $font_color_post_info;
 }
 
-#post-menu-box { color: $font_color_post_menu }
+#post-menu-box { color: $font_color_post_menu; }
 
 table { border-color: #555555; } // TODO: what does this style
 
