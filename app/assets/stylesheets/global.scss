@@ -1,6 +1,7 @@
 @import 'variables';
 
 body, html { height: 100%; }
+
 body {
     margin: 0 0 0 0;
     font-family: Helvetica, Verdana, sans-serif;
@@ -27,8 +28,11 @@ input, textarea, button {
   border: 1px solid $border_color_input;
   margin: 5px 0;
 }
+
 textarea { padding: 5px; }
 .form-table td input[type="radio"] { width: unset; }
+
+
 button, .button {
   background-color: $bg_color_button;
   background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(20%, #FFFFFF), color-stop(50%, #F6F6F6), color-stop(52%, #EEEEEE), color-stop(100%, #F4F4F4));
@@ -56,7 +60,11 @@ button, .button {
 .width-150 { width: 150px; }
 .width-250 { width: 250px; }
 .width-300 { width: 300px; }
-.spacer, .spacer-alt { height: 2px; padding: 0; }
+
+.spacer, .spacer-alt {
+  padding: 0;
+  height: 2px;
+}
 .spacer-alt { background-color: $bg_color_spacer_alt; }
 .centered { text-align: center !important; }
 .left-align { text-align: left; }
@@ -76,7 +84,7 @@ button, .button {
 
 /* For UI elements involving reordering */
 .disabled-arrow {
-  filter: gray; /* IE */
+  filter: #808080; /* IE */
   -webkit-filter: grayscale(1); /* Chrome, Safari, Opera */
   filter: grayscale(1); /* Edge, Firefox */
 }
@@ -85,9 +93,11 @@ button, .button {
 .even, .odd, .post-post, .post-reply, #post-editor {
   padding: 5px;
 }
+
 .even, .post-post, .post-reply:nth-child(even), #post-editor {
   background-color: $bg_color_even;
 }
+
 .odd, .post-reply:nth-child(odd), .post-post + #post-editor, .post-post + a + #post-editor {
   background-color: $bg_color_odd;
 }
@@ -108,15 +118,25 @@ button, .button {
   vertical-align: middle;
 
   img { vertical-align: baseline; }
+
+  &.action-new { background-color: $bg_color_linkbox_new; }
+  &.action-delete { background-color: $bg_color_linkbox_delete; }
+  &.action-edit { background-color: $bg_color_linkbox_edit;}
+  &.action-favorite { background-color: $bg_color_linkbox_favorite; }
+  &.action-dismiss { background-color: $bg_color_linkbox_dismiss; }
+  &.orange { background-color: #EA8A40; } // TODO: This does not appear to be used anywhere
 }
-.link-box.action-new { background-color: $bg_color_linkbox_new; }
-.link-box.action-delete { background-color: $bg_color_linkbox_delete; }
-.link-box.action-edit { background-color: $bg_color_linkbox_edit;}
-.link-box.orange { background-color: #EA8A40;} // TODO: This does not appear to be used anywhere
-.link-box.action-favorite { background-color: $bg_color_linkbox_favorite; }
-.link-box.action-dismiss { background-color: $bg_color_linkbox_dismiss; }
+
 #post-form-wrapper { margin-top: 5px; }
 
 /* Inline lists */
-.inline-list { display: inline; padding-left: 0; }
-.inline-list li { display: inline; list-style-type: none; margin-right: 4px; }
+.inline-list {
+  display: inline;
+  padding-left: 0;
+
+  li {
+    display: inline;
+    margin-right: 4px;
+    list-style-type: none;
+  }
+}

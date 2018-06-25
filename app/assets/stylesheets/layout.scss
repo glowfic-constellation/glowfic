@@ -13,6 +13,7 @@
     margin: 0 0.5em 0 0;
     padding: 0;
   }
+
   li {
     display: inline-block;
     margin: 0 0 0 1em;
@@ -62,11 +63,14 @@
     font-size: 13px;
     font-weight: bold; /* not redundant: used for login form */
   }
+
   input {
     vertical-align: middle; /* for login form */
   }
 }
+
 #header-logout { margin-left: 1em; }
+
 #header-form {
   font-weight: normal;
   display: inline;
@@ -81,6 +85,7 @@
   padding: 0.6em 0;
   vertical-align: middle;
 }
+
 #header-links {
   display: none; /* hidden by default, shows up on narrow screens */
   vertical-align: middle;
@@ -95,7 +100,11 @@
   }
   #header-form { display: none; }
   #header-links { display: inline-block; }
-  #logo img { padding: 0.2em; height: 20px; }
+
+  #logo img {
+    padding: 0.2em;
+    height: 20px;
+  }
 }
 
 /* Main Content */
@@ -114,12 +123,19 @@
 }
 
 /* Flash Displays */
-.flash { padding: 10px 20px; }
-.flash ul { margin: 0; margin-top: 5px; }
-.flash.error { background-color: $bg_color_flash_error; }
-.flash.success { background-color: $bg_color_flash_success; }
-.flash.inbox { background-color: $bg_color_flash_inbox; }
-.flash.breadcrumbs { background-color: $bg_color_flash_breadcrumbs; }
+.flash {
+  padding: 10px 20px;
+
+  ul {
+    margin: 0;
+    margin-top: 5px;
+  }
+  &.error { background-color: $bg_color_flash_error; }
+  &.success { background-color: $bg_color_flash_success; }
+  &.inbox { background-color: $bg_color_flash_inbox; }
+  &.breadcrumbs { background-color: $bg_color_flash_breadcrumbs; }
+}
+
 
 /* Top-right timestamp on certain timestamped pages */
 .time-loaded {
@@ -130,15 +146,22 @@
 }
 
 /* Login / logout warning */
-#login_status_warning { position: absolute; top: 0; width: 100%; box-sizing: border-box; }
+#login_status_warning {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  box-sizing: border-box;
+}
 
 /* List Tables */
 table { width: 100%; }
+
 .table-list { /* table-style ULs */
   list-style: none;
   padding: 0;
   margin: 0;
 }
+
 th, .content-header {
   background-color: $bg_color_head;
   color: $font_color_head;
@@ -146,6 +169,7 @@ th, .content-header {
   font-size: 18px;
   font-weight: normal;
 }
+
 .content-header {
   box-sizing: border-box;
   width: 100%;
@@ -153,6 +177,7 @@ th, .content-header {
 
   span {
     line-height: 28px;
+
     a {
       color: #EEEEEE;
       &:hover { color: #DDDDDD; }
@@ -161,6 +186,7 @@ th, .content-header {
 
   & > div { overflow: hidden; }
 }
+
 td, .table-list li { font-size: 14px; }
 
 /* Subs and subbers */
@@ -170,6 +196,7 @@ td, .table-list li { font-size: 14px; }
   color: $font_color_sub;
   font-size: 16px;
 }
+
 .subber {
   padding: 10px 25px;
   background-color: $bg_color_subber;
@@ -187,6 +214,7 @@ td, .table-list li { font-size: 14px; }
   border-spacing: 0;
 
   th { text-align: center; }
+
   td {
     padding: 5px;
 
@@ -214,6 +242,7 @@ td, .table-list li { font-size: 14px; }
 
   .select2-container input { margin-top: 5px; }
 }
+
 .form-table-ender {
   padding: 10px 25px;
   background-color: $bg_color_subber;
@@ -224,15 +253,24 @@ td, .table-list li { font-size: 14px; }
 
   input { margin: 0; }
 }
+
 @media (max-width: 400px) {
   .form-table { width: 100%; }
 }
 
 /* Miscellaneous inputs */
 .select2 {
-  &-container { margin: 3px 0; color: $font_color_select2_container; }
+  &-container {
+    margin: 3px 0;
+    color: $font_color_select2_container;
+  }
+
   &, &-dropdown { font-size: 13px; }
-  input { height: 20px; margin: 0; }
+
+  input {
+    margin: 0;
+    height: 20px;
+  }
   ul { padding: 0; }
 }
 
@@ -255,7 +293,7 @@ td, .table-list li { font-size: 14px; }
 
   &.selected { background-color: $bg_color_viewbutton_selected; }
 
-  a { color: white; }
+  a { color: #FFFFFF; }
 }
 
 .list-view, .icon-view {
@@ -265,17 +303,27 @@ td, .table-list li { font-size: 14px; }
   top: 2px;
   position: relative;
 }
-.list-view { width: 20px; height: 17px; }
-.icon-view { width: 15px; height: 15px; }
+
+.list-view {
+  width: 20px;
+  height: 17px;
+}
+
+.icon-view {
+  width: 15px;
+  height: 15px;
+}
 
 /* Tag label buttons, like seen on the gallery page */
 .tag-box {
   display: inline;
   margin-left: 5px;
 }
+
 .tag-item-link:hover {
   color: unset;
 }
+
 .tag-item {
   display: inline-block;
   margin: 2px 0;
@@ -286,6 +334,7 @@ td, .table-list li { font-size: 14px; }
   font-weight: normal;
   border-radius: 5px;
 }
+
 .even .tag-item { background-color: $bg_color_tag_item_even; }
 .odd .tag-item { background-color: $bg_color_tag_item_odd; }
 // tr.gallery-tags .tag-item { color: $font_color_tag_item_gallery; }
@@ -308,28 +357,47 @@ td, .table-list li { font-size: 14px; }
 #user-avatar { text-align: center; }
 
 /* Not yet deserving of its own CSS file */
-#stats ul { margin-top: 0; margin-bottom: 0; padding-left: 15px; }
-.checkbox { height: 12px; margin: 0; vertical-align: middle; } /* Keeps unread table from padding excessively for the checkboxes */
+#stats ul {
+  margin-top: 0;
+  margin-bottom: 0;
+  padding-left: 15px;
+}
+
+/* Keeps unread table from padding excessively for the checkboxes */
+.checkbox {
+  margin: 0;
+  height: 12px;
+  vertical-align: middle;
+}
+
 #signup .sub { width: 90px; }
 .continuity-spacer { height: 20px; }
 .post-ignored { opacity: 0.3; }
-#loading img { height: 20px; width: 20px; }
+
+#loading img {
+  width: 20px;
+  height: 20px;
+}
+
 .section-warning {
   background-color: rgb(208, 110, 110);
   background-color: rgba(255, 0, 0, 0.4);
   padding: 5px;
 }
+
 .section-ordered-handle {
   cursor: move;
   display: inline-block;
 
   img { vertical-align: text-bottom; }
 }
+
 .continuity-header {
   padding: 10px 25px;
   font-size: 15px;
   font-weight: bold;
 }
+
 #homepage-content {
   padding: 20px;
 }
@@ -349,6 +417,7 @@ td, .table-list li { font-size: 14px; }
 @media (max-width: 600px) {
   .search-collapsible {
     .empty { display: none; }
+
     > thead > tr > th, > tbody > tr > td, > tfoot > tr > th {
       box-sizing: border-box;
       display: block;

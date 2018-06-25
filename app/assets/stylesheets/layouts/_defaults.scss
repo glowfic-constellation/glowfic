@@ -101,8 +101,8 @@ $font_color_icon_dropdown: $colors_black !default;
 $border_color_character_iconless: #666666 !default; // in characters#show icon view when a character has no icon
 
 $bg_color_mini_delete: #E5DFD1 !default; // mini delete buttons on characters#icon_view
-$border_color_mini_delete: #C00 !default;
-$font_color_mini_delete: #C00 !default;
+$border_color_mini_delete: #C00000 !default;
+$font_color_mini_delete: #C00000 !default;
 
 // tag items
 // varies by location TODO get more complete list from starries
@@ -121,11 +121,11 @@ $bg_color_subber: $colors_greybrown !default; // tertiary content header
 $font_color_head: $colors_lightgrey !default;
 $font_color_sub: $colors_darkpurple !default;
 $font_color_subber_link_visited: #28503A !default;
-$font_color_subber: black !default;
-$font_color_subber_bold: black !default; // TODO: confirm
+$font_color_subber: #000000 !default;
+$font_color_subber_bold: #000000 !default; // TODO: confirm
 
 $bg_color_ender: $bg_color_subber !default; // form table footer with submit
-$font_color_ender: black !default;
+$font_color_ender: #000000 !default;
 
 // content
 $bg_color_even: #E3E3E3 !default;
@@ -149,9 +149,9 @@ $bg_color_content_border: transparent !default; // from river, is 0-width in def
 // mix colors X and Y with weight W (favoring Y, allowing values outside 0 and 1)
 @function mix-allow-heavy($color1, $color2, $value) {
   // @return (1 - $value) * $color1 + ($color2 * $value);
-  $red: (1-$value) * red($color1) + (red($color2) * $value);
-  $green: (1-$value) * green($color1) + (green($color2) * $value);
-  $blue: (1-$value) * blue($color1) + (blue($color2) * $value);
+  $red: (1 - $value) * red($color1) + (red($color2) * $value);
+  $green: (1 - $value) * green($color1) + (green($color2) * $value);
+  $blue: (1 - $value) * blue($color1) + (blue($color2) * $value);
   @return rgb($red, $green, $blue);
 }
 

@@ -38,6 +38,7 @@ s
     color: $font_color_input;
   }
 }
+
 /* - select2 */
 .select2-dropdown {
   background-color: $bg_color_input;
@@ -107,6 +108,7 @@ s
 /* - default */
 #content .mce-panel, #content .mce-btn { background-color: $bg_color_mce_panel; }
 #content .mce-ico { color: $font_color_input; }
+
 /* footer: 'powered by' text */
 #content .mce-branding-powered-by {
   background-color: $bg_color_mce_panel;

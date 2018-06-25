@@ -19,8 +19,15 @@
 
 // character icon view
 .character-icon-list { padding: 10px; }
-.character-icon { width: 100px; height: 100px; text-align: center; }
+
+.character-icon {
+  width: 100px;
+  height: 100px;
+  text-align: center;
+}
+
 .character-icon-item .icon { margin: 5px; }
+
 .character-no-icon {
   @extend .character-icon;
   border: 1px $border_color_character_iconless solid;

@@ -94,8 +94,8 @@ $font_color_icon_dropdown: $font_color_page;
 $border_color_character_iconless: #666666; // in characters#show icon view when a character has no icon
 
 $bg_color_mini_delete: #E5DFD1; // mini delete buttons on characters#icon_view
-$border_color_mini_delete: #C00;
-$font_color_mini_delete: #C00;
+$border_color_mini_delete: #C00000;
+$font_color_mini_delete: #C00000;
 
 /* - tag items */
 // varies by location TODO get more complete list from starries
@@ -112,7 +112,7 @@ $bg_color_sub: $colors_lightbrown; // secondary content header
 $bg_color_subber: $colors_greybrown; // tertiary content header
 $font_color_head: $colors_lightgrey;
 $font_color_sub: $colors_darkpurple;
-$font_color_subber: black;
+$font_color_subber: #000000;
 
 $bg_color_ender: $bg_color_subber; // form table footer with submit
 $font_color_ender: $font_color_subber;
@@ -138,9 +138,9 @@ $bg_color_odd: #D8D8D8;
 // mix colors X and Y with weight W (favoring Y, allowing values outside 0 and 1)
 @function mix-allow-heavy($color1, $color2, $value) {
   // @return (1 - $value) * $color1 + ($color2 * $value);
-  $red: (1-$value) * red($color1) + (red($color2) * $value);
-  $green: (1-$value) * green($color1) + (green($color2) * $value);
-  $blue: (1-$value) * blue($color1) + (blue($color2) * $value);
+  $red: (1 - $value) * red($color1) + (red($color2) * $value);
+  $green: (1 - $value) * green($color1) + (green($color2) * $value);
+  $blue: (1 - $value) * blue($color1) + (blue($color2) * $value);
   @return rgb($red, $green, $blue);
 }
 

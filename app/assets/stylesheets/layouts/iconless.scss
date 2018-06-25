@@ -1,12 +1,14 @@
 .post-container .post-icon {
-    display: none;
+  display: none;
 }
+
 #reply-icon-selector .gallery-icon {
-    min-height: 50px;
+  min-height: 50px;
 }
+
 #post-editor img#current-icon, #reply-icon-selector img {
-    max-width: 20px;
-    max-height: 20px;
+  max-width: 20px;
+  max-height: 20px;
 }
 .post-icon { height: 40px; }
 #icon-overlay {
