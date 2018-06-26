@@ -1,27 +1,27 @@
 // Variables
 // global font sizes
-$font_size_header: 16px; // header
-$font_size_main: 16px; // main content
-$font_size_small: 14px; // header-links (mobile mode), table elements
-$font_size_mini: 10px; // time-loaded
+$font_size_header: 16px !default; // header
+$font_size_main: 16px !default; // main content
+$font_size_small: 14px !default; // header-links (mobile mode), table elements
+$font_size_mini: 10px !default; // time-loaded
 
 // default color palette
 // color palette used by the default style
 // do not use in CSS files; use a semantically relevant variable below that references a color here instead
-$colors_white: #FFFFFF;
-$colors_bright: #FEFEFE;
-$colors_dark: #444444;
-$colors_lightbrown: #B9B6AD;
-$colors_lightishbrown: #9E9C93;
-$colors_brown: #8B8687;
-$colors_greybrown: #A3A1A0;
-$colors_green: #3F7055;
-$colors_blue: #4455AA;
-$colors_red: #880000;
-$colors_greygreen: #B0BBA9;
-$colors_lightgrey: #EEEEEE;
-$colors_darkpurple: #3E384F;
-$colors_black: #101010;
+$colors_white: #FFFFFF !default;
+$colors_bright: #FEFEFE !default;
+$colors_dark: #444444 !default;
+$colors_lightbrown: #B9B6AD !default;
+$colors_lightishbrown: #9E9C93 !default;
+$colors_brown: #8B8687 !default;
+$colors_greybrown: #A3A1A0 !default;
+$colors_green: #3F7055 !default;
+$colors_blue: #4455AA !default;
+$colors_red: #880000 !default;
+$colors_greygreen: #B0BBA9 !default;
+$colors_lightgrey: #EEEEEE !default;
+$colors_darkpurple: #3E384F !default;
+$colors_black: #101010 !default;
 
 // Semantic colors
 // colors listed here should be named according to where and how they are used, to allow layouts to better recolor the site
