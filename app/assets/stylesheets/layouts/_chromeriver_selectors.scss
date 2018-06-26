@@ -2,91 +2,42 @@
 
 $theme: '' !default;
 
-@if $theme == 'monochrome' {
-  /* - main page */
-  body { background-color: $bg_color_page; }
+/* - main page */
+body { background-color: $bg_color_page; }
 
-  /* - header */
-  #logo { background-color: $bg_color_header_top; }
-  #user-info, #nav-top { background-color: $bg_color_header_middle; }
+/* - header */
+#logo { background-color: $bg_color_header_top; }
+#user-info, #nav-top { background-color: $bg_color_header_middle; }
+@if $theme == 'river' {
+  #header { background-color: $bg_color_header_bottom; }
+}
 
-  /* - links */
-  a { color: $font_color_link; }
-  a:visited { color: $font_color_link_visited; }
+/* - links */
+a { color: $font_color_link; }
+a:visited { color: $font_color_link_visited; }
 
-  /* - flashes */
-  // these are the notifications that appear when you submit a form or get a message
-  .flash {
-    &.breadcrumbs { background-color: $bg_color_flash_breadcrumbs; }
-    &.success { background-color: $bg_color_flash_success; }
-    &.inbox { background-color: $bg_color_flash_inbox; }
+/* - flashes */
+// these are the notifications that appear when you submit a form or get a message
+.flash {
+  &.breadcrumbs { background-color: $bg_color_flash_breadcrumbs; }
+  &.success { background-color: $bg_color_flash_success; }
+  &.inbox { background-color: $bg_color_flash_inbox; }
+}
+
+/* - content headers */
+.sub { background-color: $bg_color_sub; }
+.subber { background-color: $bg_color_subber; }
+
+.form-table-ender {
+  @if $theme == 'monochrome' {
+    background-color: $bg_color_subber;
   }
-
-  /* - content headers */
-  .sub { background-color: $bg_color_sub; }
-  .subber { background-color: $bg_color_subber; }
-  .form-table-ender { background-color: $bg_color_subber; }
-
-  /* - content */
-  .post-navheader { background-color: $bg_color_navheader; }
-
-  .post-expander { background-color: $bg_color_expander; }
-
-  .post-icon { background-color: $bg_color_post_icon; }
-  #current-icon-dropdown { background-color: $bg_color_post_icon; }
-  #reply-icon-selector { background-color: $bg_color_icon_selector; }
-
-  .post-character { background-color: $bg_color_post_character; }
-  .post-screenname { background-color: $bg_color_post_screenname; }
-  .post-author { background-color: $bg_color_post_author; }
-
-  // TODO: Check pagination displays fine in this theme
-  .pagination {
-    .current { background-color: $bg_color_paginate_current_page; }
-    a:visited { color: $font_color_paginate_link_visited; }
-  }
-  /* - icons */
-  .replace-icon, .icons-box { background-color: $bg_color_icon; }
-  .icon-credit { background-color: $bg_color_icon_credit; }
-
-  /* - tag items */
-  .tag-item, .gallery-tags .tag-item { color: $bg_color_tag_item; }
-
-  /* - link-boxes */
-  .link-box {
-    &.action-new { background-color: $bg_color_linkbox_new; }
-    &.action-edit { background-color: $bg_color_linkbox_edit; }
-    &.action-favorite { background-color: $bg_color_linkbox_favorite; }
-    &.action-delete { background-color: $bg_color_linkbox_delete; }
-    &.action-dismiss { background-color: $bg_color_linkbox_dismiss; }
+  @if $theme == 'river' {
+    background-color: $bg_color_ender;
   }
 }
+
 @if $theme == 'river' {
-  /* - main page */
-  body { background-color: $bg_color_page; }
-
-  /* - header */
-  #header { background-color: $bg_color_header_bottom; }
-  #logo { background-color: $bg_color_header_top; }
-  #user-info, #nav-top { background-color: $bg_color_header_middle; }
-
-  /* - links */
-  a { color: $font_color_link; }
-  a:visited { color: $font_color_link_visited; }
-
-  /* - flashes */
-  // these are the notifications that appear when you submit a form or get a message
-  .flash {
-    &.breadcrumbs { background-color: $bg_color_flash_breadcrumbs; }
-    &.success { background-color: $bg_color_flash_success; }
-    &.inbox { background-color: $bg_color_flash_inbox; }
-  }
-
-  /* - content headers */
-  .sub { background-color: $bg_color_sub; }
-  .subber { background-color: $bg_color_subber; }
-  .form-table-ender { background-color: $bg_color_ender; }
-
   /* - content */
   #content .odd, #content .even, .post-post, .post-reply, #post-editor {
     border-top: solid 1px $bg_color_content_border;
@@ -100,42 +51,45 @@ $theme: '' !default;
   }
 
   .post-footer { color: $font_color_reply_footer; }
+}
 
-  .post-navheader { background-color: $bg_color_navheader; }
+.post-navheader { background-color: $bg_color_navheader; }
 
-  .post-expander { background-color: $bg_color_expander; }
+.post-expander { background-color: $bg_color_expander; }
 
-  .post-icon { background-color: $bg_color_post_icon; }
-  #current-icon-dropdown { background-color: $bg_color_post_icon; }
-  #reply-icon-selector { background-color: $bg_color_icon_selector; }
+.post-icon { background-color: $bg_color_post_icon; }
+#current-icon-dropdown { background-color: $bg_color_post_icon; }
+#reply-icon-selector { background-color: $bg_color_icon_selector; }
 
-  .post-character { background-color: $bg_color_post_character; }
+.post-character { background-color: $bg_color_post_character; }
+@if $theme == 'river' {
   .post-character a, .post-character a:visited { color: $font_color_post_info; }
-  .post-screenname { background-color: $bg_color_post_screenname; }
-  .post-author { background-color: $bg_color_post_author; }
+}
+.post-screenname { background-color: $bg_color_post_screenname; }
+.post-author { background-color: $bg_color_post_author; }
 
-  // TODO: Check pagination displays fine in this theme
-  .pagination {
-    .current { background-color: $bg_color_paginate_current_page; }
-    a:visited { color: $font_color_paginate_link_visited; }
-  }
+// TODO: Check pagination displays fine in this theme
+.pagination {
+  .current { background-color: $bg_color_paginate_current_page; }
+  a:visited { color: $font_color_paginate_link_visited; }
+}
 
-  /* - icons */
-  .replace-icon, .icons-box { background-color: $bg_color_icon; }
-  .icon-credit { background-color: $bg_color_icon_credit; }
+/* - icons */
+.replace-icon, .icons-box { background-color: $bg_color_icon; }
+.icon-credit { background-color: $bg_color_icon_credit; }
 
-  /* - tag items */
-  .tag-item, .gallery-tags .tag-item {
-    background-color: $font_color_tag_item;
+/* - tag items */
+.tag-item, .gallery-tags .tag-item {
+  background-color: $font_color_tag_item;
+  @if $theme == 'river' {
     color: $bg_color_tag_item;
   }
+}
 
-  /* - link-boxes */
-  .link-box {
-    &.action-new { background-color: $bg_color_linkbox_new; }
-    &.action-edit { background-color: $bg_color_linkbox_edit; }
-    &.action-favorite { background-color: $bg_color_linkbox_favorite; }
-    &.action-delete { background-color: $bg_color_linkbox_delete; }
-    &.action-dismiss { background-color: $bg_color_linkbox_dismiss; }
-  }
+.link-box {
+  &.action-new { background-color: $bg_color_linkbox_new; }
+  &.action-edit { background-color: $bg_color_linkbox_edit; }
+  &.action-favorite { background-color: $bg_color_linkbox_favorite; }
+  &.action-delete { background-color: $bg_color_linkbox_delete; }
+  &.action-dismiss { background-color: $bg_color_linkbox_dismiss; }
 }
