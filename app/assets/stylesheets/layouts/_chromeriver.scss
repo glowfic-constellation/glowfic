@@ -51,7 +51,7 @@ $bg_color_sub: #BDBDBD; // secondary content header
 @if $theme == 'river' {
   $bg_color_even: #F3F3F3;
   $bg_color_odd: #E8E8E8;
-  $bg_color_content_border: #AAAAAA;
+  $border_color_content: #AAAAAA;
 
   $font_color_reply_footer: #717171;
 }

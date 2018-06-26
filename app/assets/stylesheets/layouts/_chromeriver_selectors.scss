@@ -40,7 +40,7 @@ a:visited { color: $font_color_link_visited; }
 /* - content */
 @if $theme == 'river' {
   #content .odd, #content .even, .post-post, .post-reply, #post-editor {
-    border-top: solid 1px $bg_color_content_border;
+    border-top: solid 1px $border_color_content;
     background-color: $bg_color_even !important; // sass-lint:disable-line no-important
     blockquote { background-color: calculate-transparent-color($bg_color_even, $bg_color_odd, 0.2) !important; } // sass-lint:disable-line no-important
   }
