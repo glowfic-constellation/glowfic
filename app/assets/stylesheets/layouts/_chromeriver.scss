@@ -1,5 +1,7 @@
 @import 'variables';
 
+$theme: '' !default;
+
 // header
 @if $theme == 'monochrome' {
   $bg_color_header_top: #757575; // top header strip for logo

@@ -37,8 +37,8 @@ a:visited { color: $font_color_link_visited; }
   }
 }
 
+/* - content */
 @if $theme == 'river' {
-  /* - content */
   #content .odd, #content .even, .post-post, .post-reply, #post-editor {
     border-top: solid 1px $bg_color_content_border;
     background-color: $bg_color_even !important; // sass-lint:disable-line no-important
