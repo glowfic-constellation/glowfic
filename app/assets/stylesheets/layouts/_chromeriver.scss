@@ -1,122 +1,120 @@
 @import 'variables';
 
+// header
 @if $theme == 'monochrome' {
-  // header
   $bg_color_header_top: #757575; // top header strip for logo
   $bg_color_header_middle: #4A4A4A; // middle header strip with user items
-
-  // main page
-  $bg_color_page: #E0E0E0; // overall page
-
-  // links
-  $font_color_link: #6F6F6F; // link
-  $font_color_link_visited: #484848;
-
-  // flashes
-  // these are the notifications that appear when you submit a form or get a message
-  $bg_color_flash_success: #ECECEC; // success
-  $bg_color_flash_inbox: #ECECEC; // new message
-  $bg_color_flash_breadcrumbs: #ADADAD; // breadcrumbs ("Continuities » Continuity » Section » Thread")
-
-  // content headers
-  $bg_color_sub: #BDBDBD; // secondary content header
-  $bg_color_subber: #ADADAD; // tertiary content header
-
-  $bg_color_navheader: #BDBDBD;
-
-  $bg_color_expander: #A0A0A0; // expander on posts
-
-  $bg_color_post_icon: #BDBDBD;
-  $bg_color_icon_selector: #BDBDBD;
-
-  $bg_color_post_character: #929292;
-  $bg_color_post_screenname: #A5A5A5;
-  $bg_color_post_author: #BBBBBB;
-  //$bg_color_post_character_narrow: $colors_lightbrown;
-  //$bg_color_post_author_narrow: $colors_brown;
-  // these are flipped from not-narrow mode to make the quick-switcher blend in
-  // TODO: Should these flip on other themes?
-
-  $font_color_paginate_link_visited: #3A3A3A;
-  $bg_color_paginate_current_page: #616161;
-
-  // icons
-  $bg_color_icon: #BDBDBD;
-  $bg_color_icon_credit: #BDBDBD;
-
-  $bg_color_tag_item: #575757;
-
-  // link-boxes
-  $bg_color_linkbox_new: #5A5A5A;
-  $bg_color_linkbox_edit: #545A79;
-  $bg_color_linkbox_favorite: #545A79;
-  $bg_color_linkbox_delete: #503636;
-  $bg_color_linkbox_dismiss: #503636;
 }
-
 @if $theme == 'river' {
-  // main page
-  $bg_color_page: #E0E0E0; // overall page
-
-  // header
   $bg_color_header_top: #434D73; // top header strip for logo
   $bg_color_header_middle: #212135; // middle header strip with user items
   $bg_color_header_bottom: #ADB5B9; // bottom header strip with navigation
+}
 
-  // links
+// main page
+$bg_color_page: #E0E0E0; // overall page
+
+// links
+@if $theme == 'monochrome' {
+  $font_color_link: #6F6F6F; // link
+  $font_color_link_visited: #484848;
+}
+@if $theme == 'river' {
   $font_color_link: #3F5970; // link
   $font_color_link_visited: #284150;
+}
 
-  // flashes
-  $bg_color_flash_success: #ECECEC; // success
-  $bg_color_flash_inbox: #ECECEC; // new message
+// flashes
+// these are the notifications that appear when you submit a form or get a message
+$bg_color_flash_success: #ECECEC; // success
+$bg_color_flash_inbox: #ECECEC; // new message
+@if $theme == 'monochrome' {
+  $bg_color_flash_breadcrumbs: #ADADAD; // breadcrumbs ("Continuities » Continuity » Section » Thread")
+}
+@if $theme == 'river' {
   $bg_color_flash_breadcrumbs: #A3A8A9; // breadcrumbs ("Continuities » Continuity » Section » Thread")
+}
 
-  // content headers
-  $bg_color_sub: #BDBDBD; // secondary content header
+// content headers
+$bg_color_sub: #BDBDBD; // secondary content header
+@if $theme == 'monochrome' {
+  $bg_color_subber: #ADADAD; // tertiary content header
+}
+@if $theme == 'river' {
   $bg_color_subber: #B9B6AD; // tertiary content header
   $bg_color_ender: #A3A8A9; // form table footer with submit
+}
 
-  // content
+// content
+@if $theme == 'river' {
   $bg_color_even: #F3F3F3;
   $bg_color_odd: #E8E8E8;
   $bg_color_content_border: #AAAAAA;
 
   $font_color_reply_footer: #717171;
+}
+$bg_color_navheader: #BDBDBD;
+@if $theme == 'monochrome' {
+  $bg_color_expander: #A0A0A0; // expander on posts
 
-  $bg_color_navheader: #BDBDBD;
-
-  $font_color_paginate_link_visited: #3A3A3A;
-  $bg_color_paginate_current_page: #718EB9;
-
+  $bg_color_post_icon: #BDBDBD;
+  $bg_color_icon_selector: #BDBDBD;
+}
+@if $theme == 'river' {
   $bg_color_expander: #A4B0BD; // expander on posts
 
   $bg_color_post_icon: #A9B4BB;
   $bg_color_icon_selector: #A9B4BB;
+}
 
-  $bg_color_post_character: #929292;
-  $bg_color_post_screenname: #A5A5A5;
-  $bg_color_post_author: #BBBBBB;
-  //$bg_color_post_character_narrow: $colors_lightbrown;
-  //$bg_color_post_author_narrow: $colors_brown;
-  // these are flipped from not-narrow mode to make the quick-switcher blend in
-  // TODO: Should these flip on other themes?
+$bg_color_post_character: #929292;
+$bg_color_post_screenname: #A5A5A5;
+$bg_color_post_author: #BBBBBB;
+//$bg_color_post_character_narrow: $colors_lightbrown;
+//$bg_color_post_author_narrow: $colors_brown;
+// these are flipped from not-narrow mode to make the quick-switcher blend in
+// TODO: Should these flip on other themes?
+@if $theme == 'river' {
   $font_color_post_info: #B3D3FF;
+}
 
-  // icons
+$font_color_paginate_link_visited: #3A3A3A;
+@if $theme == 'monochrome' {
+  $bg_color_paginate_current_page: #616161;
+}
+@if $theme == 'river' {
+  $bg_color_paginate_current_page: #718EB9;
+}
+
+// icons
+@if $theme == 'monochrome' {
+  $bg_color_icon: #BDBDBD;
+  $bg_color_icon_credit: #BDBDBD;
+}
+@if $theme == 'river' {
   $bg_color_icon: #A9B4BB;
   $bg_color_icon_credit: #A9B4BB;
+}
 
-  // tag items
+// tag items
+@if $theme == 'monochrome' {
+  $bg_color_tag_item: #575757;
+}
+@if $theme == 'river' {
   $bg_color_tag_item: #3E526F;
   $font_color_tag_item: #D0CEC8;
-
-  // link-boxes
-  $bg_color_linkbox_new: #3F5370;
-  $bg_color_linkbox_edit: #545A79;
-  $bg_color_linkbox_favorite: #545A79;
-  $bg_color_linkbox_delete: #503636;
-  $bg_color_linkbox_dismiss: #503636;
 }
+
+// link-boxes
+@if $theme == 'monochrome' {
+  $bg_color_linkbox_new: #5A5A5A;
+}
+@if $theme == 'river' {
+  $bg_color_linkbox_new: #3F5370;
+}
+$bg_color_linkbox_edit: #545A79;
+$bg_color_linkbox_favorite: #545A79;
+$bg_color_linkbox_delete: #503636;
+$bg_color_linkbox_dismiss: #503636;
 
 @import 'chromeriver_selectors';
