@@ -100,11 +100,11 @@ $font_color_paginate_link_visited: #3A3A3A;
 
 // tag items
 @if $theme == 'monochrome' {
-  $bg_color_tag_item: #575757 !global;
+  $font_color_tag_item: #575757 !global;
 }
 @if $theme == 'river' {
-  $bg_color_tag_item: #3E526F !global;
-  $font_color_tag_item: #D0CEC8 !global;
+  $font_color_tag_item: #3E526F !global;
+  $bg_color_tag_item: #D0CEC8 !global;
 }
 
 // link-boxes
