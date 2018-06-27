@@ -50,18 +50,24 @@ a:visited { color: $font_color_link_visited; }
 }
 
 /* - content headers */
-.table-title, .content-header, .info-box-header, .editor-title, .search-params-header, .search-results-header, .gallery-table-title {
-  background-color: $bg_color_head;
+@mixin header-links {
   a { color: $font_color_head_link; }
   a:visited { color: $font_color_head_link_visited; }
 }
 
+.table-title, .content-header, .info-box-header, .editor-title, .search-params-header, .search-results-header, .gallery-table-title {
+  @include header-links;
+  background-color: $bg_color_head;
+}
+
 .sub {
+  @include header-links;
   color: $font_color_sub;
   background-color: $bg_color_sub;
 }
 
 .form-table-ender {
+  @include header-links;
   background-color: $bg_color_ender;
   color: $font_color_ender;
 }
