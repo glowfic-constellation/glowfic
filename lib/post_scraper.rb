@@ -216,7 +216,7 @@ class PostScraper < Object
   end
 
   def set_from_username(tag, username)
-    if BASE_ACCOUNTS.keys.include?(username)
+    if BASE_ACCOUNTS.key?(username)
       tag.user = User.find_by(username: BASE_ACCOUNTS[username])
       return
     end
