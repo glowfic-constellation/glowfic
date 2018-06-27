@@ -223,6 +223,7 @@ td, .table-list li { font-size: $font_size_small; }
   background-color: $bg_color_sub;
   color: $font_color_sub;
   font-size: $font_size_main;
+  font-weight: normal;
   &.width-150 { width: 170px; }
 }
 
