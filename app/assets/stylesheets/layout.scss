@@ -199,6 +199,11 @@ table { width: 100%; }
   width: 150px;
 }
 
+.gallery-table-title {
+  @extend .table-title;
+  &, &.subber { padding: 10px; }
+}
+
 .content-header {
   width: 100%;
   overflow: hidden;
