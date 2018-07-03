@@ -1,8 +1,86 @@
-@import 'variables';
-$theme: 'starrydark';
 @import 'starry_default_variables';
 
-/* Hovering help box on post editor */
+// links
+$font_color_link: $colors_logan; // link
+$font_color_link_visited: $colors_santasgrey;
+
+// flashes
+$bg_color_flash_error: $colors_gunpowder; // error
+$bg_color_flash_success: $colors_gunpowder; // success
+$bg_color_flash_inbox: $colors_gunpowder; // new message
+$bg_color_flash_breadcrumbs: $colors_bigstone; // breadcrumbs ("Continuities » Continuity » Section » Thread")
+$font_color_flash: $colors_alto_brighter;
+
+// main page
+$bg_color_page: #211E2F; // overall page
+
+$bg_color_spacer_alt: $colors_bigstone;
+$bg_color_search_box: $colors_bigstone;
+
+// content headers
+$bg_color_head: $colors_blackcurrant_blacker; // primary content header
+$bg_color_sub: $colors_bigstone; // secondary content header
+$bg_color_ender: $colors_blackcurrant_blacker; // form table footer with submit
+
+// content
+$bg_color_even: #31323B;
+$bg_color_odd: $colors_shark;
+
+// posts
+$bg_color_navheader: $colors_bigstone;
+
+$bg_color_post_menu: #191919;
+$bg_color_menu_link_hover: #252525;
+$font_color_post_menu: $colors_alto_brighter;
+
+$bg_color_expander: $colors_shark; // expander on posts
+
+$bg_color_post_icon: $colors_blackcurrant_redder;
+$font_color_icon_dropdown: #111111;
+
+$bg_color_post_character: $colors_bunting_darker;
+$bg_color_post_screenname: $colors_bunting_darker;
+$bg_color_post_author: $colors_blackcurrant_redder;
+
+// icons
+$border_color_icon_selected: #B9BBEB; // selected icon border
+$bg_color_icon: $colors_shark;
+$bg_color_icon_credit: $colors_shark;
+
+// tag items
+$bg_color_tag_item: #241F4E;
+$bg_color_tag_item_even: #24252D;
+$bg_color_tag_item_odd: #1A1A22;
+
+// link-boxes
+$bg_color_linkbox_subber: #5C5778;
+
+@import 'starry_default_selectors';
+
+.flash.success, .flash.error, .flash.inbox { color: $font_color_flash; }
+
+body, .even, .odd, .post-post, .post-reply, #post-editor { color: $font_color_page; }
+
+// posts
+#post-menu-box {
+  color: $font_color_post_menu;
+}
+
+.selector-popup { font-weight: normal; }
+
+#current-icon-dropdown { color: $font_color_icon_dropdown; }
+
+// icons
+.selected-icon { border-color: $border_color_icon_selected; }
+
+#character-icon-selector, .time-loaded { color: $font_color_page; }
+
+// tag items
+.tag-item { background-color: $bg_color_tag_item; color: $font_color_link; }
+.even .tag-item { background-color: $bg_color_tag_item_even; }
+.odd .tag-item { background-color: $bg_color_tag_item_odd; }
+
+// Hovering help box on post editor
 $bg_color_popup_header: #0D0B1E;
 $font_color_popup_header: #EEEEEE;
 $border_color_popup_header: #28225D;
@@ -10,16 +88,16 @@ $bg_color_popup_content: #211E2F;
 $font_color_popup_content: #DADADA;
 $border_color_popup: #444444;
 
-/* Darken input boxes */
+// Darken input boxes
 $font_color_input: #DADADA;
-$bg_color_input: #4D4B5B; // regular <input> /* for generic input boxes all over the place */
-$border_color_input: #625F73; /* TODO: check with Aestrix at a better time */
+$bg_color_input: #4D4B5B; // for generic input boxes all over the place
+$border_color_input: #625F73; // TODO: check with Aestrix at a better time
 $font_color_input_placeholder: #8884A0;
-$bg_color_mce_panel: #3B394A; /* MCE header & footer background */
-/* TODO: check with Aestrix at a better time */
+$bg_color_mce_panel: #3B394A; // MCE header & footer background
+// TODO: check with Aestrix at a better time
 $bg_color_select2_highlight: #5B586B;
 $bg_color_select2_selected: #3F3D4C;
 $bg_color_select2_search: $bg_color_select2_highlight;
 $opacity_mce_label: 0.8;
 
-@import '_dark_themes_selectors'
+@import 'dark_themes_selectors'

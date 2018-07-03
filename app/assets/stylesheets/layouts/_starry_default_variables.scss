@@ -1,7 +1,3 @@
-@import 'variables';
-
-$theme: '' !default;
-
 $colors_bright: #FEFEFE;
 $colors_black: #101010;
 $colors_gunpowder: #484357;
@@ -29,257 +25,78 @@ $colors_wildblueyonder: #8689B7;
 $colors_fiord: #42416E;
 $colors_shark: #25262E;
 
-/* - header */
-@if $theme == 'starrylight' {
-  $bg_color_header_middle: #41416E !global; // middle header strip with user items
-  $bg_color_header_bottom: $colors_rum !global; // bottom header strip with navigation
-} @else if $theme == 'starrydark' or $theme == 'starrynil' {
-  $bg_color_header_middle: #05050F !global; // middle header strip with user items
-  $bg_color_header_bottom: $colors_gunpowder !global; // bottom header strip with navigation
-}
+// header
+$bg_color_header_middle: #05050F !default; // middle header strip with user items
+$bg_color_header_bottom: $colors_gunpowder !default; // bottom header strip with navigation
 
-/* - links */
-@if $theme == 'starrylight' or $theme == 'starrynil' {
-  $font_color_link: #666284; // link
-  $font_color_link_visited: $colors_gunpowder;
-}
-@if $theme == 'starrylight' {
-  $font_color_link_visited_alt: $colors_periwinklegrey !global;
-} @else if $theme == 'starrydark' {
-  $font_color_link: $colors_logan !global; // link
-  $font_color_link_visited: $colors_santasgrey !global;
-  $font_color_link_visited_alt: $colors_santasgrey !global;
-} @else if $theme == 'starrynil' {
-  $font_color_link_visited_alt: $colors_santasgrey !global;
-}
+// links
+$font_color_link: #666284 !default; // link
+$font_color_link_visited: $colors_gunpowder !default;
 
-/* - flashes */
+// flashes
 // these are the notifications that appear when you submit a form or get a message
-// TODO: See if we can differentiate these
 $font_color_breadcrumbs_bold: $colors_concrete;
-@if $theme == 'starrylight' {
-  $bg_color_flash_error: $colors_prelude !global; // error
-  $bg_color_flash_success: $colors_prelude !global; // success
-  $bg_color_flash_inbox: $colors_prelude !global; // new message
-  $bg_color_flash_breadcrumbs: $colors_wildblueyonder !global; // breadcrumbs ("Continuities » Continuity » Section » Thread")
-} @else if $theme == 'starrydark' {
-  $bg_color_flash_error: $colors_gunpowder !global; // error
-  $bg_color_flash_success: $colors_gunpowder !global; // success
-  $bg_color_flash_inbox: $colors_gunpowder !global; // new message
-  $bg_color_flash_breadcrumbs: $colors_bigstone !global; // breadcrumbs ("Continuities » Continuity » Section » Thread")
-  $font_color_flash: $colors_alto_brighter !global; // TODO: find and set $font_color_flash for others
-} @else if $theme == 'starrynil' {
-  $bg_color_flash_error: $colors_manatee_lighter !global; // error
-  $bg_color_flash_success: $colors_manatee_lighter !global; // success
-  $bg_color_flash_inbox: $colors_manatee_lighter !global; // new message
-  $bg_color_flash_breadcrumbs: $colors_bunting_brighter !global; // breadcrumbs ("Continuities » Continuity » Section » Thread")
-}
+$font_color_breadcrumbs_link_visited: $colors_santasgrey !default;
 
-/* - main page */
+// main page
 $font_color_page: $colors_alto_brighter;
-@if $theme == 'starrylight' {
-  $bg_color_page: #B0AFB7 !global; // overall page
-} @else if $theme == 'starrydark' {
-  $bg_color_page: #211E2F !global; // overall page
-} @else if $theme == 'starrynil' {
-  $bg_color_page: #6C697C !global; // overall page
-}
 
 $font_color_search_box: $colors_bright;
-@if $theme == 'starrylight' {
-  $bg_color_spacer_alt: $colors_dolphin !global;
-  $bg_color_search_box: $colors_dolphin !global;
-} @else if $theme == 'starrydark' {
-  $bg_color_spacer_alt: $colors_bigstone !global;
-  $bg_color_search_box: $colors_bigstone !global;
-} @else if $theme == 'starrynil' {
-  $bg_color_spacer_alt: $colors_bunting_brighter !global;
-  $bg_color_search_box: $colors_bunting_brighter !global;
-}
 
-/* - misc */
-@if $theme == 'starrylight' {
-  $bg_color_descriptions: $colors_rum !global; // description subheadings on templates page ("single-description"), *not* posts
-  $font_color_descriptions_link: $colors_concrete !global;
-} @else if $theme == 'starrydark' or $theme == 'starrynil' {
-  $font_color_descriptions_link: $colors_logan !global;
-  $bg_color_descriptions: $colors_gunpowder !global; // description subheadings on templates page ("single-description"), *not* posts
-}
+// misc
+$font_color_descriptions_link: $colors_logan !default;
+$font_color_descriptions_link_visited: $colors_santasgrey !default;
+$bg_color_descriptions: $colors_gunpowder !default; // description subheadings on templates page ("single-description"), *not* posts
 
-/* - content headers */
+// content headers
 $font_color_sub: $colors_concrete;
 $font_color_subber_bold: $colors_concrete;
-@if $theme == 'starrylight' {
-  $bg_color_head: $colors_fiord !global; // primary content header
-  $font_color_head_link: $colors_concrete !global;
-  $bg_color_sub: $colors_manatee_darker !global; // secondary content header
-  $bg_color_subber: $colors_rum !global; // tertiary content header
-  $bg_color_ender:  $colors_rum !global; // form table footer with submit
-  $font_color_ender: $colors_alto_brighter !global;
-} @else if $theme == 'starrydark' {
-  $bg_color_head: $colors_blackcurrant_blacker !global; // primary content header
-  $bg_color_sub: $colors_bigstone !global; // secondary content header
-  $bg_color_ender: $colors_blackcurrant_blacker !global; // form table footer with submit
-} @else if $theme == 'starrynil' {
-  $bg_color_head: $colors_ebony !global; // primary content header
-  $bg_color_sub: $colors_bunting_brighter !global; // secondary content header
-  $bg_color_ender: $colors_ebony !global; // form table footer with submit
-  $font_color_ender: $colors_concrete !global;
-}
-@if $theme == 'starrydark' or $theme == 'starrynil' {
-  $font_color_head_link: $colors_logan !global; // TODO: check this
-  $bg_color_subber: $colors_gunpowder !global; // tertiary content header
-}
 
-/* - content */
-@if $theme == 'starrylight' or $theme == 'starrynil' {
-  $bg_color_even: #E3E3E3 !global;
-  $bg_color_odd: $colors_alto_darker !global;
-} @else if $theme == 'starrydark' {
-  $bg_color_even: #31323B !global;
-  $bg_color_odd: $colors_shark !global;
-}
+$font_color_head_link: $colors_logan !default; // TODO: check this
+$font_color_head_link_visited: $colors_santasgrey !default;
+$bg_color_subber: $colors_gunpowder !default; // tertiary content header
+$font_color_subber_link_visited: $colors_santasgrey !default;
+
+// content
+$bg_color_even: #E3E3E3 !default;
+$bg_color_odd: $colors_alto_darker !default;
 $opacity_blockquote: 0.2;
 
-/* - replies.scss */
-$font_color_post_description: $colors_concrete;
-@if $theme == 'starrylight' {
-  $bg_color_navheader: $colors_manatee_darker !global;
-  $bg_color_post_description: $colors_manatee_lighter !global;
-} @else if $theme == 'starrydark' {
-  $bg_color_navheader: $colors_bigstone !global;
-} @else if $theme == 'starrynil' {
-  $bg_color_navheader: $colors_bunting_brighter !global;
-}
-@if $theme == 'starrydark' or $theme == 'starrynil' {
-  $bg_color_post_description: $colors_gunpowder !global;
-}
+// posts
+$font_color_post_description: $colors_concrete !default;
+$bg_color_post_description: $colors_gunpowder !default;
 
 $border_color_post_menu: #808080;
-@if $theme == 'starrylight' or $theme == 'starrynil' {
-  $bg_color_post_menu: #BCBCBC !global;
-  $bg_color_menu_link_hover: #D3D3D3 !global;
-} @else if $theme == 'starrydark' {
-  $bg_color_post_menu: #191919 !global;
-  $bg_color_menu_link_hover: #252525 !global;
-  $font_color_post_menu: $colors_alto_brighter !global;
-}
-@if $theme == 'starrynil' {
-  $font_color_post_menu: $colors_black !global;
-}
+$bg_color_post_menu: #BCBCBC !default;
+$bg_color_menu_link_hover: #D3D3D3 !default;
 
-@if $theme == 'starrylight' {
-  $bg_color_selectionpopup: $colors_rum !global; // selection popups like character/alias on posts#editor
-  $bg_color_expander: $colors_alto_darker !global; // expander on posts
-} @else if $theme == 'starrydark' {
-  $bg_color_expander: $colors_shark !global; // expander on posts
-} @else if $theme == 'starrynil' {
-  $bg_color_expander: $colors_manatee_lighter !global; // expander on posts
-}
-@if $theme == 'starrydark' or $theme == 'starrynil' {
-  $bg_color_selectionpopup: $colors_gunpowder !global; // selection popups like character/alias on posts#editor
-}
-@if $theme == 'starrylight' {
-  $bg_color_post_icon: $colors_santasgrey_bluer !global;
-  $bg_color_icon_selector: $colors_manatee_lighter !global;
-} @else if $theme == 'starrydark' {
-  $bg_color_post_icon: $colors_blackcurrant_redder !global;
-  $font_color_icon_dropdown: #111111 !global;
-} @else if $theme == 'starrynil' {
-  $bg_color_post_icon: $colors_ebony !global;
-}
-@if $theme == 'starrydark' or $theme == 'starrynil' {
-  $bg_color_icon_selector: $colors_gunpowder !global;
-}
+$bg_color_selectionpopup: $colors_gunpowder !default; // selection popups like character/alias on posts#editor
+$bg_color_icon_selector: $colors_gunpowder !default;
+
 $font_color_post_info: $colors_concrete;
-@if $theme == 'starrylight' {
-  $bg_color_post_character: $colors_dolphin !global;
-  $bg_color_post_screenname: $colors_dolphin !global;
-  $bg_color_post_author: $colors_fiord !global;
-  //$bg_color_post_character_narrow: $colors_lightbrown;
-  //$bg_color_post_author_narrow: $colors_brown;
-  // these are flipped from not-narrow mode to make the quick-switcher blend in
-  // TODO: Should these flip on starries too?
-  $font_color_post_screenname: $colors_periwinklegrey !global;
-  $font_weight_post_info: normal !global;
-} @else if $theme == 'starrydark' {
-  $bg_color_post_character: $colors_bunting_darker !global;
-  $bg_color_post_screenname: $colors_bunting_darker !global;
-  $bg_color_post_author: $colors_blackcurrant_redder !global;
-} @else if $theme == 'starrynil' {
-  $bg_color_post_character: $colors_gunpowder !global;
-  $bg_color_post_screenname: $colors_gunpowder !global;
-  $bg_color_post_author: $colors_ebony !global;
-}
-@if $theme == 'starrydark' or $theme == 'starrynil' {
-  $font_weight_post_info: bold !global;
-  $font_color_post_screenname: $colors_santasgrey !global;
-}
+$font_weight_post_info: bold !default;
+$font_color_post_screenname: $colors_santasgrey !default;
 
 $font_color_paginate_link: $colors_concrete;
-$font_color_paginate_link_visited: $font_color_link_visited_alt; //TODO: very replace this which even is it???
+$font_color_paginate_link_visited: $colors_santasgrey !default;
 $font_color_paginate_link_disabled: #58546B;
-@if $theme == 'starrylight' {
-  $bg_color_paginate_link_hover: $colors_santasgrey_bluer !global;
-  $bg_color_paginate_current_page: $colors_manatee_lighter !global;
-} @else if $theme == 'starrydark' or $theme == 'starrynil' {
-  $bg_color_paginate_current_page: $colors_gunpowder !global;
-}
+$bg_color_paginate_current_page: $colors_gunpowder !default;
 
-/* - icons */
-@if $theme == 'starrylight' or $theme == 'starrynil' {
-  $bg_color_icon: $colors_alto_darker !global;
-  $bg_color_icon_credit: $colors_alto_darker !global;
-} @else if $theme == 'starrydark' {
-  $border_color_icon_selected: #B9BBEB !global; // selected icon border
-  $bg_color_icon: $colors_shark !global;
-  $bg_color_icon_credit: $colors_shark !global;
-}
+// icons
+$bg_color_icon: $colors_alto_darker !default;
+$bg_color_icon_credit: $colors_alto_darker !default;
 
-/* - tag items */
-@if $theme == 'starrylight' or $theme == 'starrynil' {
-  $font_color_tag_item: #444158 !global;
-  $font_color_tag_item_gallery: #F7F7F7 !global;
-}
-@if $theme == 'starrylight' {
-  $bg_color_tag_item: #968BB4 !global;
-} @else if $theme == 'starrydark' {
-  $bg_color_tag_item: #241F4E !global;
-  $bg_color_tag_item_even: #24252D !global;
-  $bg_color_tag_item_odd: #1A1A22 !global;
-} @else if $theme == 'starrynil' {
-  $bg_color_tag_item: #2C2C5D !global;
-}
+// tag items
+$font_color_tag_item: #444158 !default;
+$font_color_tag_item_gallery: #F7F7F7 !default;
 
-/* - link-boxes */
-// TODO: See if we can differentiate link box colors on starries
-@if $theme == 'starrylight' {
-  $bg_color_linkbox_new: $colors_scampi !global;
-  $bg_color_linkbox_edit: $colors_scampi !global;
-  $bg_color_linkbox_favorite: $colors_scampi !global;
-  $bg_color_linkbox_delete: $colors_scampi !global;
-  $bg_color_linkbox_dismiss: $colors_scampi !global;
-  $bg_color_linkbox_subber: $colors_wildblueyonder !global;
-} @else if $theme == 'starrydark' {
-  $bg_color_linkbox_subber: #5C5778 !global;
-} @else if $theme == 'starrynil' {
-  $bg_color_linkbox_subber: #66608B !global;
-}
-@if $theme == 'starrydark' or $theme == 'starrynil' {
-  $bg_color_linkbox_new: $colors_mulledwine !global;
-  $bg_color_linkbox_edit: $colors_mulledwine !global;
-  $bg_color_linkbox_favorite: $colors_mulledwine !global;
-  $bg_color_linkbox_delete: $colors_mulledwine !global;
-  $bg_color_linkbox_dismiss: $colors_mulledwine !global;
-}
+// link-boxes
+$bg_color_linkbox_new: $colors_mulledwine !default;
+$bg_color_linkbox_edit: $colors_mulledwine !default;
+$bg_color_linkbox_favorite: $colors_mulledwine !default;
+$bg_color_linkbox_delete: $colors_mulledwine !default;
+$bg_color_linkbox_dismiss: $colors_mulledwine !default;
 
-/* - other buttons */
-@if $theme == 'starrylight' {
-  $bg_color_viewbutton: $colors_scampi !global;
-  $bg_color_viewbutton_selected: $colors_scampi !global;
-} @else if $theme == 'starrydark' or $theme == 'starrynil' {
-  $bg_color_viewbutton: $colors_mulledwine !global;
-  $bg_color_viewbutton_selected: $colors_mulledwine !global;
-}
-
-@import "starry_default_selectors"
+// other buttons
+$bg_color_viewbutton: $colors_mulledwine !default;
+$bg_color_viewbutton_selected: $colors_mulledwine !default;

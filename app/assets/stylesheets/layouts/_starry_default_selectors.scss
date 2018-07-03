@@ -1,7 +1,5 @@
 @import 'defaults';
 
-$theme: '' !default;
-
 /* - header */
 #header {
   background-color: transparent;
@@ -19,22 +17,16 @@ a:visited { color: $font_color_link_visited; }
 // these are the notifications that appear when you submit a form or get a message
 .flash.breadcrumbs {
   background-color: $bg_color_flash_breadcrumbs;
-  &, a, a:visited { color: $font_color_link_visited_alt; } // TODO: replace this
-  b { color: $font_color_breadcrumbs_bold; } // TODO: Investigate why this is differentiated
+  &, a, a:visited { color: $font_color_breadcrumbs_link_visited; }
+  b { color: $font_color_breadcrumbs_bold; }
 }
 .flash.success { background-color: $bg_color_flash_success;  }
 .flash.error { background-color: $bg_color_flash_error; }
 .flash.inbox { background-color: $bg_color_flash_inbox; }
-@if $theme == 'starrydark' {
-  .flash.success, .flash.error, .flash.inbox { color: $font_color_flash; }
-} // TODO: find and set $font_color_flash for others
 
 /* - main page */
 body {
   background-color: $bg_color_page;
-  @if $theme == 'starrydark' {
-    color: $font_color_page;
-  }
 }
 
 .search-box { background-color: $bg_color_search_box; color: $font_color_search_box; }
@@ -45,39 +37,33 @@ body {
   background-color: $bg_color_descriptions;
   color: $font_color_page;
   a { color: $font_color_descriptions_link; }
-  a:visited { color: $font_color_link_visited_alt; } //TODO: replace this
+  a:visited { color: $font_color_descriptions_link_visited; }
 }
 
 /* - content headers */
 th, .content-header {
   background-color: $bg_color_head;
   a { color: $font_color_head_link; }
-  a:visited { color: $font_color_link_visited_alt; } // TODO: Replace this
+  a:visited { color: $font_color_head_link_visited; }
 }
 .sub { color: $font_color_sub; background-color: $bg_color_sub; }
 .form-table-ender { background-color: $bg_color_ender; color: $font_color_ender; }
 .subber {
   background-color: $bg_color_subber;
   color: $font_color_page;
-  &, a, a:visited { color: $font_color_link_visited_alt; } // TODO: replace this
+  &, a, a:visited { color: $font_color_subber_link_visited; }
   b { color: $font_color_subber_bold; }
 }
 
 /* - content */
 .even, .post-post, .post-reply:nth-child(even), #post-editor {
   background-color: $bg_color_even;
-  @if $theme == 'starrydark' {
-    color: $font_color_page;
-  }
   blockquote {
     background-color: calculate-transparent-color($bg_color_even, $bg_color_odd, $opacity_blockquote);
   }
 }
 .odd, .post-reply:nth-child(odd), .post-post + #post-editor, .post-post + a + #post-editor {
   background-color: $bg_color_odd;
-  @if $theme == 'starrydark' {
-    color: $font_color_page;
-  }
   blockquote {
     background-color: calculate-transparent-color($bg_color_odd, $bg_color_even, $opacity_blockquote);
   }
@@ -88,9 +74,6 @@ th, .content-header {
 .post-navheader { background-color: $bg_color_navheader; }
 
 #post-menu-box {
-  @if $theme == 'starrydark' or $theme == 'starrynil' {
-    color: $font_color_post_menu;
-  }
   background-color: $bg_color_post_menu;
   border-top: 1px solid $border_color_post_menu;
   border-top: 1px solid rgba($border_color_post_menu, 0.5);
@@ -104,25 +87,16 @@ th, .content-header {
 }
 
 .selector-popup { background-color: $bg_color_selectionpopup; color: $font_color_page; }
-@if $theme == 'starrydark' {
-  .selector-popup { font-weight: normal; }
-}
 .post-expander { background-color: $bg_color_expander; }
 
 .post-icon { background-color: $bg_color_post_icon; }
 #current-icon-dropdown { background-color: $bg_color_post_icon; }
-@if $theme == 'starrydark' {
-  #current-icon-dropdown { color: $font_color_icon_dropdown; }
-}
 #reply-icon-selector { background-color: $bg_color_icon_selector; color: $font_color_page; }
 
 .post-character { font-weight: $font_weight_post_info; background-color: $bg_color_post_character; }
 .post-character, .post-character a, .post-character a:visited, { color: $font_color_post_info; }
 .post-screenname { font-weight: $font_weight_post_info; background-color: $bg_color_post_screenname; }
-.post-screenname, .post-screenname a, .post-screenname a:visited { color: $font_color_post_screenname; } // TODO: clean this up when messages are fixed to not use it
-@if $theme == 'starrylight' {
-  .post-screenname, .post-screenname a, .post-screenname a:visited { font-style: italic; }
-}
+.post-screenname, .post-screenname a, .post-screenname a:visited { color: $font_color_post_screenname; }
 .post-author { font-weight: $font_weight_post_info; background-color: $bg_color_post_author; }
 .post-author, .post-author a, .post-author a:visited { color: $font_color_post_info; }
 
@@ -130,34 +104,12 @@ th, .content-header {
 .pagination a { color: $font_color_paginate_link; }
 .pagination a:visited { color: $font_color_paginate_link_visited; }
 .pagination .disabled { color: $font_color_paginate_link_disabled; }
-@if $theme == 'starrylight' {
-  .pagination a:hover { background-color: $bg_color_paginate_link_hover; }
-}
 
 /* - icons */
-@if $theme == 'starrydark' {
-  .selected-icon { border-color: $border_color_icon_selected; }
-}
 .replace-icon, .icons-box { background-color: $bg_color_icon; }
 .icon-credit { background-color: $bg_color_icon_credit; }
 
-@if $theme == 'starrynil' or $theme == 'starrydark' {
-  #character-icon-selector, .time-loaded { color: $font_color_page; }
-}
-
-/* - tag items */
-@if $theme == 'starrydark' {
-  .tag-item { background-color: $bg_color_tag_item; color: $font_color_link; }
-  .even .tag-item { background-color: $bg_color_tag_item_even; }
-  .odd .tag-item { background-color: $bg_color_tag_item_odd; }
-}
-@if $theme == 'starrylight' or $theme == 'starrynil' {
-  tr.gallery-tags .tag-item { background-color: $bg_color_tag_item; color: $font_color_tag_item_gallery; }
-  .tag-item { color: $font_color_tag_item; }
-}
-
 /* - link-boxes */
-// TODO: See if we can differentiate link box colors on starries
 .link-box.action-new { background-color: $bg_color_linkbox_new; }
 .link-box.action-edit { background-color: $bg_color_linkbox_edit; }
 .link-box.action-favorite { background-color: $bg_color_linkbox_favorite; }
@@ -165,10 +117,6 @@ th, .content-header {
 .link-box.action-dismiss { background-color: $bg_color_linkbox_dismiss; }
 
 .subber .link-box { background-color: $bg_color_linkbox_subber; }
-
-@if $theme == 'starrylight' or $theme == 'starrynil' {
-  #character-selector { font-weight: normal; } //TODO: this doesn't seem to exist in starrydark
-}
 
 /* - other buttons */
 .view-button, .post-navheader .view-button { background-color: $bg_color_viewbutton; }

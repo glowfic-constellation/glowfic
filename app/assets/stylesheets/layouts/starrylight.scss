@@ -1,3 +1,82 @@
-@import 'variables';
-$theme: 'starrylight';
 @import 'starry_default_variables';
+
+// header
+$bg_color_header_middle: #41416E; // middle header strip with user items
+$bg_color_header_bottom: $colors_rum; // bottom header strip with navigation
+
+// flashes
+$bg_color_flash_error: $colors_prelude; // error
+$bg_color_flash_success: $colors_prelude; // success
+$bg_color_flash_inbox: $colors_prelude; // new message
+$bg_color_flash_breadcrumbs: $colors_wildblueyonder; // breadcrumbs ("Continuities » Continuity » Section » Thread")
+$font_color_breadcrumbs_link_visited: $colors_periwinklegrey;
+
+// main page
+$bg_color_page: #B0AFB7; // overall page
+
+$bg_color_spacer_alt: $colors_dolphin !global;
+$bg_color_search_box: $colors_dolphin !global;
+
+//misc
+$bg_color_descriptions: $colors_rum; // description subheadings on templates page ("single-description"), *not* posts
+$font_color_descriptions_link_visited: $colors_periwinklegrey;
+$font_color_descriptions_link: $colors_concrete;
+
+// content headers
+$bg_color_head: $colors_fiord; // primary content header
+$font_color_head_link: $colors_concrete;
+$font_color_head_link_visited: $colors_periwinklegrey;
+$bg_color_sub: $colors_manatee_darker; // secondary content header
+$bg_color_subber: $colors_rum; // tertiary content header
+$font_color_subber_link_visited: $colors_periwinklegrey;
+$bg_color_ender:  $colors_rum; // form table footer with submit
+$font_color_ender: $colors_alto_brighter;
+
+// posts
+$bg_color_navheader: $colors_manatee_darker;
+$bg_color_post_description: $colors_manatee_lighter;
+
+$bg_color_selectionpopup: $colors_rum; // selection popups like character/alias on posts#editor
+$bg_color_expander: $colors_alto_darker; // expander on posts
+
+$bg_color_post_icon: $colors_santasgrey_bluer;
+$bg_color_icon_selector: $colors_manatee_lighter;
+
+$bg_color_post_character: $colors_dolphin;
+$bg_color_post_screenname: $colors_dolphin;
+$bg_color_post_author: $colors_fiord;
+$font_color_post_screenname: $colors_periwinklegrey;
+$font_weight_post_info: normal;
+
+$bg_color_paginate_link_hover: $colors_santasgrey_bluer;
+$bg_color_paginate_current_page: $colors_manatee_lighter;
+$font_color_paginate_link_visited: $colors_periwinklegrey;
+
+// tag items
+$bg_color_tag_item: #968BB4;
+
+// link boxes
+$bg_color_linkbox_new: $colors_scampi;
+$bg_color_linkbox_edit: $colors_scampi;
+$bg_color_linkbox_favorite: $colors_scampi;
+$bg_color_linkbox_delete: $colors_scampi;
+$bg_color_linkbox_dismiss: $colors_scampi;
+$bg_color_linkbox_subber: $colors_wildblueyonder;
+
+// other Buttons
+$bg_color_viewbutton: $colors_scampi;
+$bg_color_viewbutton_selected: $colors_scampi;
+
+@import 'starry_default_selectors';
+
+// posts
+.post-screenname, .post-screenname a, .post-screenname a:visited { font-style: italic; }
+
+.pagination a:hover { background-color: $bg_color_paginate_link_hover; }
+
+// tag items
+tr.gallery-tags .tag-item { background-color: $bg_color_tag_item; color: $font_color_tag_item_gallery; }
+.tag-item { color: $font_color_tag_item; }
+
+// ???
+#character-selector { font-weight: normal; }

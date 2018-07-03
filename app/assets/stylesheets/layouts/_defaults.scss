@@ -43,7 +43,6 @@ $font_color_content: $colors_dark !default; // body
 /* - links */
 $font_color_link: $colors_green !default; // link
 $font_color_link_visited: #28503A !default; // link (visited)
-$font_color_link_visited_alt: #28503A !default; // starry has an alternate link visited color in some places
 $font_color_link_hover: #FCFEFD !default; // link (hovered)
 
 /* - flashes */
@@ -57,6 +56,7 @@ $font_color_flash_inbox: $colors_black !default;
 $bg_color_flash_breadcrumbs: $colors_greybrown !default; // breadcrumbs ("Continuities » Effulgence » make a wish » one enormous bruise")
 $font_color_flash_breadcrumbs: $colors_black !default;
 $font_color_breadcrumbs_bold: $colors_greybrown !default;
+$font_color_breadcrumbs_link_visited: #28503A !default;
 $font_color_flash_link: $colors_green !default;
 $font_color_flash_hover: #FCFEFD !default;
 
@@ -115,10 +115,12 @@ $font_color_tag_item_gallery: $colors_lightbrown !default;
 /* - content headers */
 $bg_color_head: $colors_brown !default; // primary content header
 $font_color_head_link: $colors_lightgrey !default; /* TODO: Fix how this and hover are actually unstripped from layout.scss */
+$font_color_head_link_visited: #28503A !default;
 $bg_color_sub: $colors_lightbrown !default; // secondary content header
 $bg_color_subber: $colors_greybrown !default; // tertiary content header
 $font_color_head: $colors_lightgrey !default;
 $font_color_sub: $colors_darkpurple !default;
+$font_color_subber_link_visited: #28503A !default;
 $font_color_subber: black !default;
 $font_color_subber_bold: black !default; // TODO: confirm
 
