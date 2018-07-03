@@ -18,10 +18,10 @@ Icon.create!([
   { user_id: 3, url: "http://i.imgur.com/OJSBRcp.jpg", keyword: "avatar" },
   { user_id: 5, url: "https://i.imgur.com/7aXnrK1.jpg", keyword: "avatar" },
 ])
-marri.update_attributes(avatar_id: 1)
-alicorn.update_attributes(avatar_id: 2)
-kappa.update_attributes(avatar_id: 3)
-throne.update_attributes(avatar_id: 4)
+marri.update(avatar_id: 1)
+alicorn.update(avatar_id: 2)
+kappa.update(avatar_id: 3)
+throne.update(avatar_id: 4)
 
 puts "Creating continuities..."
 Board.create!([
