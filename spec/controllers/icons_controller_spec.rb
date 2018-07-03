@@ -395,7 +395,7 @@ RSpec.describe IconsController do
       expect(user.avatar_id).to be_nil
       login_as(user)
 
-      expect_any_instance_of(User).to receive(:update_attributes).and_return(false)
+      expect_any_instance_of(User).to receive(:update).and_return(false)
       post :avatar, params: { id: icon.id }
 
       expect(response).to redirect_to(icon_url(icon))
