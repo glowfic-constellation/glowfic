@@ -26,7 +26,7 @@ RSpec.describe PostsController do
       26.times do create(:post) end
       oldest = Post.ordered_by_id.first
       next_oldest = Post.ordered_by_id.second
-      oldest.update_attributes!(content: "just to make it update")
+      oldest.update!(content: "just to make it update")
       get :index
       ids_fetched = controller.instance_variable_get('@posts').map(&:id)
       expect(ids_fetched).not_to include(next_oldest.id)
@@ -178,7 +178,7 @@ RSpec.describe PostsController do
     it "sets relevant fields" do
       user = create(:user)
       char1 = create(:character, user: user, name: 'alphafirst')
-      user.update_attributes!(active_character: char1)
+      user.update!(active_character: char1)
       user.reload
       login_as(user)
 
@@ -2256,17 +2256,17 @@ RSpec.describe PostsController do
       it "hides completed and abandoned threads" do
         create(:reply, post_id: post.id, user_id: other_user.id)
 
-        post.update_attributes!(status: Post::STATUS_COMPLETE)
+        post.update!(status: Post::STATUS_COMPLETE)
         get :owed
         expect(response.status).to eq(200)
         expect(assigns(:posts)).to be_empty
 
-        post.update_attributes!(status: Post::STATUS_ACTIVE)
+        post.update!(status: Post::STATUS_ACTIVE)
         get :owed
         expect(response.status).to eq(200)
         expect(assigns(:posts)).to match_array([post])
 
-        post.update_attributes!(status: Post::STATUS_ABANDONED)
+        post.update!(status: Post::STATUS_ABANDONED)
         get :owed
         expect(response.status).to eq(200)
         expect(assigns(:posts)).to be_empty
@@ -2274,7 +2274,7 @@ RSpec.describe PostsController do
 
       it "show hiatused threads by default" do
         create(:reply, post_id: post.id, user_id: other_user.id)
-        post.update_attributes!(status: Post::STATUS_HIATUS)
+        post.update!(status: Post::STATUS_HIATUS)
 
         get :owed
         expect(response.status).to eq(200)
@@ -2283,7 +2283,7 @@ RSpec.describe PostsController do
 
       it "optionally hides hiatused threads" do
         create(:reply, post_id: post.id, user_id: other_user.id)
-        post.update_attributes!(status: Post::STATUS_HIATUS)
+        post.update!(status: Post::STATUS_HIATUS)
 
         user.hide_hiatused_tags_owed = true
         user.save!
@@ -2598,7 +2598,7 @@ RSpec.describe PostsController do
         user = create(:user)
         private_post = create(:post, privacy: Concealable::PRIVATE, authors: [user])
         expect(private_post.visible_to?(user)).not_to eq(true)
-        private_post.author_for(user).update_attributes!(can_owe: false)
+        private_post.author_for(user).update!(can_owe: false)
         login_as(user)
         post :mark, params: { marked_ids: [private_post.id], commit: 'Show in Replies Owed' }
         expect(response).to redirect_to(owed_posts_url)

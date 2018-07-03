@@ -81,13 +81,13 @@ class PostsController < WritableController
     if params[:unhide_boards].present?
       board_ids = params[:unhide_boards].map(&:to_i).compact.uniq
       views_to_update = BoardView.where(user_id: current_user.id).where(board_id: board_ids)
-      views_to_update.each do |view| view.update_attributes(ignored: false) end
+      views_to_update.each do |view| view.update(ignored: false) end
     end
 
     if params[:unhide_posts].present?
       post_ids = params[:unhide_posts].map(&:to_i).compact.uniq
       views_to_update = PostView.where(user_id: current_user.id).where(post_id: post_ids)
-      views_to_update.each do |view| view.update_attributes(ignored: false) end
+      views_to_update.each do |view| view.update(ignored: false) end
     end
 
     redirect_to hidden_posts_path
@@ -220,7 +220,7 @@ class PostsController < WritableController
       return redirect_to unread_posts_path
     end
 
-    @post.views.where(user_id: current_user.id).first.try(:update_attributes, read_at: nil)
+    @post.views.where(user_id: current_user.id).first.try(:update, read_at: nil)
     flash[:success] = "Post has been marked as unread"
     redirect_to unread_posts_path
   end

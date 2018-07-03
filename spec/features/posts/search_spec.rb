@@ -22,7 +22,7 @@ RSpec.feature "Searching posts", :type => :feature do
     end
 
     # check the post is hidden when private
-    post.update_attributes!(privacy: Concealable::PRIVATE)
+    post.update!(privacy: Concealable::PRIVATE)
     perform_search
     within('#search_results') do
       expect(page).to have_no_selector('.post-subject', text: 'First post')

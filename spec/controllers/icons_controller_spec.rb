@@ -205,10 +205,10 @@ RSpec.describe IconsController do
       it "orders posts correctly" do
         post3 = create(:post, icon: icon, user: icon.user)
         post4 = create(:post, icon: icon, user: icon.user)
-        post.update_attributes!(tagged_at: Time.now - 5.minutes)
-        other_post.update_attributes!(tagged_at: Time.now - 2.minutes)
-        post3.update_attributes!(tagged_at: Time.now - 8.minutes)
-        post4.update_attributes!(tagged_at: Time.now - 4.minutes)
+        post.update!(tagged_at: Time.now - 5.minutes)
+        other_post.update!(tagged_at: Time.now - 2.minutes)
+        post3.update!(tagged_at: Time.now - 8.minutes)
+        post4.update!(tagged_at: Time.now - 4.minutes)
         get :show, params: { id: icon.id, view: 'posts' }
         expect(assigns(:posts)).to eq([other_post, post4, post, post3])
       end
@@ -395,7 +395,7 @@ RSpec.describe IconsController do
       expect(user.avatar_id).to be_nil
       login_as(user)
 
-      expect_any_instance_of(User).to receive(:update_attributes).and_return(false)
+      expect_any_instance_of(User).to receive(:update).and_return(false)
       post :avatar, params: { id: icon.id }
 
       expect(response).to redirect_to(icon_url(icon))

@@ -9,11 +9,11 @@ class GalleriesIcon < ApplicationRecord
 
   def unset_has_gallery
     return if icon.galleries.present?
-    icon.update_attributes(has_gallery: false)
+    icon.update(has_gallery: false)
   end
 
   def set_has_gallery
     return if icon.has_gallery?
-    icon.update_attributes(has_gallery: true)
+    icon.update(has_gallery: true)
   end
 end

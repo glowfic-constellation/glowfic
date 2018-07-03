@@ -70,7 +70,7 @@ class Reply < ApplicationRecord
 
   def update_active_char
     return if is_import
-    user.update_attributes(:active_character => character)
+    user.update(:active_character => character)
   end
 
   def destroy_subsequent_replies
@@ -124,7 +124,7 @@ class Reply < ApplicationRecord
     return if post_author&.joined?
 
     if post_author
-      post_author.update_attributes!(joined: true, joined_at: created_at)
+      post_author.update!(joined: true, joined_at: created_at)
     else
       post.post_authors.create!(user_id: user_id, joined: true, joined_at: created_at)
     end
@@ -143,7 +143,7 @@ class Reply < ApplicationRecord
     # joined the wrong post outright and should be removed
     post_author = post.author_for(user)
     if post.authors_locked?
-      post_author.update_attributes(joined: false)
+      post_author.update(joined: false)
     else
       post_author.destroy
     end

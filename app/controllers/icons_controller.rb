@@ -59,7 +59,7 @@ class IconsController < UploadingController
   end
 
   def update
-    unless @icon.update_attributes(icon_params)
+    unless @icon.update(icon_params)
       flash.now[:error] = {}
       flash.now[:error][:message] = "Your icon could not be saved due to the following problems:"
       flash.now[:error][:array] = @icon.errors.full_messages
@@ -124,7 +124,7 @@ class IconsController < UploadingController
   end
 
   def avatar
-    if current_user.update_attributes(avatar: @icon)
+    if current_user.update(avatar: @icon)
       flash[:success] = "Avatar has been set!"
     else
       flash[:error] = "Something went wrong."

@@ -74,7 +74,7 @@ class BoardsController < ApplicationController
   end
 
   def update
-    if @board.update_attributes(board_params)
+    if @board.update(board_params)
       flash[:success] = "Continuity saved!"
       redirect_to board_path(@board)
     else

@@ -276,10 +276,10 @@ RSpec.describe Character do
     it "is only created on mod update" do
       character = create(:character)
       Audited.audit_class.as_user(character.user) do
-        character.update_attributes(name: character.name + 'notmod')
+        character.update(name: character.name + 'notmod')
       end
       Audited.audit_class.as_user(create(:user)) do
-        character.update_attributes(name: character.name + 'mod', audit_comment: 'mod')
+        character.update(name: character.name + 'mod', audit_comment: 'mod')
       end
       expect(Audited::Audit.count).to eq(1)
     end
@@ -324,7 +324,7 @@ RSpec.describe Character do
     char = create(:character, user: user)
     gallery1 = create(:gallery, user: user)
     gallery2 = create(:gallery, user: user)
-    char.update_attributes!(galleries: [gallery1, gallery2])
+    char.update!(galleries: [gallery1, gallery2])
     icon2 = create(:icon, user: user, keyword: 'b', galleries: [gallery1])
     icon3 = create(:icon, user: user, keyword: 'c', galleries: [gallery2, gallery1])
     icon4 = create(:icon, user: user, keyword: 'd', galleries: [gallery1, gallery2])
