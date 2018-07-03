@@ -27,6 +27,11 @@ Layout/CaseIndentation:
   EnforcedStyle: 'end'
   IndentOneStep: true
 
+Layout/ClosingHeredocIndentation:
+  Enabled: true
+  Exclude:
+    - 'db/migrate/**/*'
+
 Layout/ClosingParenthesisIndentation:
   Enabled: false
 
@@ -66,6 +71,11 @@ Layout/IndentArray:
 Layout/IndentHash:
   Enabled: true
   EnforcedStyle: 'consistent'
+
+Layout/IndentHeredoc:
+  Enabled: true
+  Exclude:
+    - 'db/migrate/**/*'
 
 Layout/MultilineHashBraceLayout:
   Enabled: false
