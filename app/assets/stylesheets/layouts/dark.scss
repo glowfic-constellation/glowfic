@@ -1,32 +1,21 @@
 @import 'variables';
 
-/* - main page */
+// main page
 $bg_color_page: #212121; // overall page
 $font_color_page: #A2A2A2;
+$font_color_content: #A2A2A2; // body
 
-html, body, #content { background-color: $bg_color_page; color: $font_color_page; } //TODO: 'html' and '#content' flags here are unnessecary
-
-/* - header */
+// header
 $bg_color_header_top: #3B4841; // top header strip for logo
 $bg_color_header_bottom: #56554F; // bottom header strip with navigation
 $font_color_header_link: #CCCCCC;  // header links
 
-#header {
-  background-color: $bg_color_header_bottom;
-  a { color: $font_color_header_link; }
-}
-#logo { background-color: $bg_color_header_top; }
-
-/* - links */
+// links
 $font_color_link: #66997D; // link
 $font_color_link_visited: #66997D; // TODO: why the heck are these set the same
 $font_color_link_hover: #B3B3B3; // link (hovered)
 
-a { color: $font_color_link; }
-a:visited { color: $font_color_link_visited; }
-a:hover { color: $font_color_link_hover; }
-
-/* - flashes */
+// flashes
 // these are the notifications that appear when you submit a form or get a message
 $bg_color_flash_success: #555E55; // success
 $font_color_flash_success: #BBBBBB;
@@ -38,33 +27,14 @@ $font_color_flash_breadcrumbs: #DDDDDD;
 $font_color_flash_link: #DDDDDD;
 $font_color_flash_hover: #BBBBBB;
 
-.flash {
-  a, a:visited { color: $font_color_flash_link; }
-  a:hover { color: $font_color_flash_hover; }
-}
-.flash.breadcrumbs { background-color: $bg_color_flash_breadcrumbs; color: $font_color_flash_breadcrumbs; }
-.flash.success { background-color: $bg_color_flash_success; color: $font_color_flash_success; }
-.flash.error { background-color: $bg_color_flash_error; }
-.flash.inbox { background-color: $bg_color_flash_inbox; color: $font_color_flash_inbox; }
-
 $bg_color_spacer_alt: #333333;
 $bg_color_search_box: #333333;
 $font_color_search_box: #A2A2A2;
 
-.search-box { background-color: $bg_color_search_box; color: $font_color_search_box; } // TODO: check text on search box is readable
-.spacer-alt { background-color: $bg_color_spacer_alt; }
-
-/* - misc */
+// misc
 $bg_color_descriptions: #565656; // description subheadings on templates page ("single-description"), *not* posts
-$font_color_descriptions_link: #66997D;
-$font_color_descriptions_link_visited: #66997D;
-.single-description {
-  background-color: $bg_color_descriptions;
-  a { color: $font_color_descriptions_link; }
-  a:visited { color: $font_color_descriptions_link_visited; }
-}
 
-/* - content headers */
+// content headers
 $bg_color_head: #424242; // primary content header
 $bg_color_sub: #383838; // secondary content header
 $bg_color_subber: #464646; // tertiary content header
@@ -72,108 +42,59 @@ $font_color_head: #C2C2C2;
 $font_color_sub: #C9C9C9;
 $font_color_subber: #DDDDDD;
 
-th, .content-header { background-color: $bg_color_head; color: $font_color_head; }
-.sub { background-color: $bg_color_sub; color: $font_color_sub; }
-.subber, .form-table-ender { background-color: $bg_color_subber; color: $font_color_subber; }
-
-/* - content */
+// content
 $bg_color_even: #3E3E3E;
 $bg_color_odd: #474747;
-
-.even, .post-post, .post-reply:nth-child(even), #post-editor {
-  background-color: $bg_color_even;
-
-  blockquote {
-    background-color: calculate-transparent-color($bg_color_even, $bg_color_odd, 0.2);
-  }
-}
-.odd, .post-reply:nth-child(odd), .post-post + #post-editor, .post-post + a + #post-editor {
-  background-color: $bg_color_odd;
-
-  blockquote {
-    background-color: calculate-transparent-color($bg_color_odd, $bg_color_even, 0.2);
-  }
-}
 
 $bg_color_post_description: #5D5D5D;
 $font_color_post_description: #A2A2A2;
 $bg_color_navheader: #5F5D57;
-
-.post-subheader { background-color: $bg_color_post_description; color: $font_color_post_description; }
-.post-navheader { background-color: $bg_color_navheader; }
 
 // TODO: darken post-menu-box to fit with the rest of this theme
 
 $bg_color_selectionpopup: #565656; // selection popups like character/alias on posts#editor
 $bg_color_expander: #6F7769; // expander on posts
 
-.selector-popup { background-color: $bg_color_selectionpopup; }
-.selector-popup-button { opacity: 0.7; } /* make the white less contrasty */
-.post-expander { background-color: $bg_color_expander; }
-
 $bg_color_post_icon: #444D3F;
 $bg_color_icon_selector: #444D3F;
 $font_color_icon_selector: #111111;
 
-.post-icon { background-color: $bg_color_post_icon; }
-#current-icon-dropdown { background-color: $bg_color_post_icon; color: $font_color_icon_selector; }
-#reply-icon-selector { background-color: $bg_color_icon_selector; }
-
 $bg_color_post_character: #595959;
 $bg_color_post_screenname: #515151;
 $bg_color_post_author: #4D4C4C;
-//$bg_color_post_author_narrow: $colors_brown; // these are flipped from not-narrow mode to make the quick-switcher blend in // TODO: Should these flip on dark too?
+//$bg_color_post_author_narrow: $colors_brown;
+// these are flipped from not-narrow mode to make the quick-switcher blend in
+// TODO: Should these flip on dark too?
 $font_color_post_info: #A2A2A2;
-
-.post-character { background-color: $bg_color_post_character; color: $font_color_post_info; }
-.post-screenname { background-color: $bg_color_post_screenname; color: $font_color_post_info; }
-.post-author { background-color: $bg_color_post_author; color: $font_color_post_info; }
 
 // TODO: Check pagination displays fine in this theme
 
 $font_color_post_menu: #A2A2A2;
 
-#post-menu-box { color: $font_color_post_menu }
-
-table { border-color: #555; } // TODO: what does this style
-
-/* - icons */
+// icons
 $bg_color_icon: #444D3F;
 $bg_color_icon_credit: #444D3F;
 
-.replace-icon, .icons-box { background-color: $bg_color_icon; }
-.icon-credit { background-color: $bg_color_icon_credit; }
-
-/* - tag items */
+// tag items
 $bg_color_tag_item: #85837C;
 $font_color_tag_item: #DDDDDD;
 
-.tag-item { background-color: $bg_color_tag_item; color: $font_color_tag_item; }
+// link-boxes
+$font_color_linkbox_new: #DDDDDD;
+$font_color_linkbox_edit: #DDDDDD;
+$font_color_linkbox_favorite: #DDDDDD;
+$font_color_linkbox_delete: #DDDDDD;
+$font_color_linkbox_dismiss: #DDDDDD;
 
-.link-box { color: #DDDDDD; }
-
-/* - other buttons */
+// other buttons
 $bg_color_viewbutton: #85837C;
 $bg_color_viewbutton_selected: #6A6A6A;
 $font_color_viewbutton: #DDDDDD;
 
-.view-button {
-  background-color: $bg_color_viewbutton;
-  color: $font_color_viewbutton;
-}
-.view-button.selected { background-color: $bg_color_viewbutton_selected; }
-
 $bg_color_reply_content: #717171;
 $font_color_reply_content: #CCCCCC;
 
-#post_content, #reply_content {
-  background-color: $bg_color_reply_content;
-  color: $font_color_reply_content;
-}
-
-.character-view-select { background-color: #666460; } // TODO: what does this do? it seems to only appear here
-
-/* Hovering help box on post editor */
+// Hovering help box on post editor
 $bg_color_popup_header: #2B2B2B;
 $font_color_popup_header: #C2C2C2;
 $border_color_popup_header: #262626;
@@ -184,67 +105,15 @@ $bg_color_popup_button: #383838;
 $border_color_popup_button: #484848;
 $font_color_popup_link: #66997D;
 
-.ui-widget-content { background-color: $bg_color_popup_content; color: $font_color_popup_content; }
-.ui-widget.ui-widget-content { border-color: $border_color_popup; }
-.ui-widget-header { background-color: $bg_color_popup_header; color: $font_color_popup_header; border-color: $border_color_popup_header; }
-.ui-state-default, .ui-widget-content .ui-state-default, .ui-widget-header .ui-state-default, .ui-button, html .ui-button.ui-state-disabled:hover, html .ui-button.ui-state-disabled:active { background-color: $bg_color_popup_button; border-color: $border_color_popup_button; }
-.ui-state-hover, .ui-widget-content .ui-state-hover, .ui-widget-header .ui-state-hover, .ui-state-focus, .ui-widget-content .ui-state-focus, .ui-widget-header .ui-state-focus, .ui-button:hover, .ui-button:focus { background-color: $bg_color_popup_button; border-color: $border_color_popup_button; }
-.ui-widget-content a { color: $font_color_popup_link; }
-/* TODO: hover, click */
-
-/* Darken input boxes */
-$font_color_input: #BBB; /* TODO: standardize font color */
-$bg_color_input: #4D4D4D; /* for generic input boxes all over the place */
+// Darken input boxes
+$font_color_input: #BBB; // TODO: standardize font color
+$bg_color_input: #4D4D4D; // for generic input boxes all over the place
 $border_color_input: #666666;
 $font_color_input_placeholder: #888888;
-$bg_color_mce_panel: #404040; /* MCE header & footer background */
+$bg_color_mce_panel: #404040; // MCE header & footer background
 $bg_color_select2_highlight: #616161;
 $bg_color_select2_selected: #454545;
 $bg_color_select2_search: $bg_color_select2_highlight;
+$opacity_mce_label: 1;
 
-/* - placeholders */
-::-webkit-input-placeholder { color: $font_color_input_placeholder; }
-:-moz-placeholder { color: $font_color_input_placeholder; opacity: 1; }
-::-moz-placeholder { color: $font_color_input_placeholder; opacity: 1; }
-:-ms-input-placeholder { color: $font_color_input_placeholder; }
-::-ms-input-placeholder { color: $font_color_input_placeholder; }
-::placeholder { color: $font_color_input_placeholder; }
-
-/* - account options, post editor, search */
-#content .form-table, #icon-table, .search-form {
-  input:not([type='submit']), textarea {
-    background-color: $bg_color_input; color: $font_color_input; border-color: $border_color_input;
-  }
-}
-/* - select2 */
-.select2-dropdown { background-color: $bg_color_input; color: $font_color_input; border-color: $border_color_input; }
-/* -- multiple / tag */
-.select2-container--default .select2-selection--multiple { background-color: $bg_color_input; color: $font_color_input; border-color: $border_color_input; }
-/* --- tag item */
-.select2-container--default .select2-selection--multiple .select2-selection__choice { background-color: $bg_color_select2_highlight; border-color: $border_color_input; }
-/* -- single */
-.select2-container--default .select2-selection--single { background-color: $bg_color_input; color: $font_color_input; border-color: $border_color_input; }
-.select2-container--default .select2-selection--single .select2-selection__rendered { color: $font_color_input; }
-/* --- selected */
-.select2-container--default .select2-results__option[aria-selected=true] { background-color: $bg_color_select2_selected; color: inherit; }
-/* --- hovered */
-.select2-container--default .select2-results__option--highlighted[aria-selected] { background-color: $bg_color_select2_highlight; color: inherit; }
-/* --- input */
-.select2-container--default .select2-search--dropdown .select2-search__field { background-color: $bg_color_select2_search; color: $font_color_input; border-color: $border_color_input; }
-/* --- disabled input */
-.select2-container--default.select2-container--disabled .select2-selection--single { background-color: $bg_color_mce_panel; color: $font_color_input; border-color: $border_color_input; }
-
-/* HTML written editor */
-#post-editor input:not([type='submit']), #post-editor textarea, #message_form input:not([type='submit']), #message_form textarea { background-color: $bg_color_input; color: $font_color_input; border-color: $border_color_input; }
-/* RTF post editor – see tinymce.css for styling of the iframe itself */
-/* border: */
-#content .mce-panel { border-color: $border_color_input; }
-#content .mce-edit-area { border-top-color: $border_color_input; }
-#content .mce-statusbar { border-top-color: $border_color_input; }
-/* header & buttons: */
-/* - default */
-#content .mce-panel, #content .mce-btn { background-color: $bg_color_mce_panel; }
-#content .mce-ico { color: $font_color_input; }
-/* footer: 'powered by' text */
-#content .mce-branding-powered-by { background-color: $bg_color_mce_panel; border-color: $border_color_input; }
-#content .mce-label { color: $font_color_input; text-shadow: none; }
+@import '_dark_selectors.scss'

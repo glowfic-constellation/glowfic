@@ -9,6 +9,12 @@
 #logo { background-color: transparent !important; }
 #user-info, #nav-top { background-color: $bg_color_header_middle; background-color: rgba($bg_color_header_middle, 0.9); }
 
+/* - main page */
+body { background-color: $bg_color_page; }
+
+.search-box { background-color: $bg_color_search_box; color: $font_color_search_box; }
+.spacer-alt { background-color: $bg_color_spacer_alt; }
+
 /* - links */
 a { color: $font_color_link; }
 a:visited { color: $font_color_link_visited; }
@@ -23,14 +29,6 @@ a:visited { color: $font_color_link_visited; }
 .flash.success { background-color: $bg_color_flash_success;  }
 .flash.error { background-color: $bg_color_flash_error; }
 .flash.inbox { background-color: $bg_color_flash_inbox; }
-
-/* - main page */
-body {
-  background-color: $bg_color_page;
-}
-
-.search-box { background-color: $bg_color_search_box; color: $font_color_search_box; }
-.spacer-alt { background-color: $bg_color_spacer_alt; }
 
 /* - misc */
 .single-description {

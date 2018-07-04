@@ -1,90 +1,55 @@
 @import 'variables';
 
-/* - header */
+// header
 $bg_color_header_top: #757575; // top header strip for logo
 $bg_color_header_middle: #4A4A4A; // middle header strip with user items
 
-#header #logo { background-color: $bg_color_header_top; }
-#header #user-info, #header #nav-top { background-color: $bg_color_header_middle; }
+// main page
+$bg_color_page: #E0E0E0; // overall page
 
-/* - links */
+// links
 $font_color_link: #6F6F6F; // link
 $font_color_link_visited: #484848;
 
-a { color: $font_color_link; }
-a:visited { color: $font_color_link_visited; }
-
-/* - flashes */
+// flashes
 // these are the notifications that appear when you submit a form or get a message
 $bg_color_flash_success: #ECECEC; // success
 $bg_color_flash_inbox: #ECECEC; // new message
 $bg_color_flash_breadcrumbs: #ADADAD; // breadcrumbs ("Continuities » Continuity » Section » Thread")
 
-.flash.success { background-color: $bg_color_flash_success; }
-.flash.inbox { background-color: $bg_color_flash_inbox; }
-.flash.breadcrumbs { background-color: $bg_color_flash_breadcrumbs; }
-
-/* - main page */
-$bg_color_page: #E0E0E0; // overall page
-
-body { background-color: $bg_color_page; }
-
-/* - content headers */
+// content headers
 $bg_color_sub: #BDBDBD; // secondary content header
 $bg_color_subber: #ADADAD; // tertiary content header
 
-.sub { background-color: $bg_color_sub; }
-.form-table-ender { background-color: $bg_color_subber; }
-.subber { background-color: $bg_color_subber; }
-
 $bg_color_navheader: #BDBDBD;
-.post-navheader { background-color: $bg_color_navheader; }
 
 $bg_color_expander: #A0A0A0; // expander on posts
-.post-expander { background-color: $bg_color_expander; }
 
 $bg_color_post_icon: #BDBDBD;
 $bg_color_icon_selector: #BDBDBD;
-
-.post-icon { background-color: $bg_color_post_icon; }
-#current-icon-dropdown { background-color: $bg_color_post_icon; }
-#reply-icon-selector { background-color: $bg_color_icon_selector; }
 
 $bg_color_post_character: #929292;
 $bg_color_post_screenname: #A5A5A5;
 $bg_color_post_author: #BBBBBB;
 //$bg_color_post_character_narrow: $colors_lightbrown;
-//$bg_color_post_author_narrow: $colors_brown; // these are flipped from not-narrow mode to make the quick-switcher blend in // TODO: Should these flip on other themes?
-
-.post-character { background-color: $bg_color_post_character; }
-.post-screenname { background-color: $bg_color_post_screenname; }
-.post-author { background-color: $bg_color_post_author; }
+//$bg_color_post_author_narrow: $colors_brown;
+// these are flipped from not-narrow mode to make the quick-switcher blend in
+// TODO: Should these flip on other themes?
 
 $font_color_paginate_link_visited: #3A3A3A;
 $bg_color_paginate_current_page: #616161;
 
-.pagination .current { background-color: $bg_color_paginate_current_page; }
-.pagination a:visited { color: $font_color_paginate_link_visited; }
-
-/* - icons */
+// icons
 $bg_color_icon: #BDBDBD;
 $bg_color_icon_credit: #BDBDBD;
 
-.replace-icon, .icons-box { background-color: $bg_color_icon; }
-.icon-credit { background-color: $bg_color_icon_credit; }
-
 $bg_color_tag_item: #575757;
-.tag-item { color: $bg_color_tag_item; }
 
-/* - link-boxes */
+// link-boxes
 $bg_color_linkbox_new: #5A5A5A;
 $bg_color_linkbox_edit: #545A79;
 $bg_color_linkbox_favorite: #545A79;
 $bg_color_linkbox_delete: #503636;
 $bg_color_linkbox_dismiss: #503636;
 
-.link-box.action-new { background-color: $bg_color_linkbox_new; }
-.link-box.action-edit { background-color: $bg_color_linkbox_edit; }
-.link-box.action-favorite { background-color: $bg_color_linkbox_favorite; }
-.link-box.action-delete { background-color: $bg_color_linkbox_delete; }
-.link-box.action-dismiss { background-color: $bg_color_linkbox_dismiss; }
+@import '_monochrome_selectors'

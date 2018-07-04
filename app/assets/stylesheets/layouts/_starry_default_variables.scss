@@ -29,6 +29,11 @@ $colors_shark: #25262E;
 $bg_color_header_middle: #05050F !default; // middle header strip with user items
 $bg_color_header_bottom: $colors_gunpowder !default; // bottom header strip with navigation
 
+// main page
+$font_color_page: $colors_alto_brighter;
+
+$font_color_search_box: $colors_bright;
+
 // links
 $font_color_link: #666284 !default; // link
 $font_color_link_visited: $colors_gunpowder !default;
@@ -37,11 +42,6 @@ $font_color_link_visited: $colors_gunpowder !default;
 // these are the notifications that appear when you submit a form or get a message
 $font_color_breadcrumbs_bold: $colors_concrete;
 $font_color_breadcrumbs_link_visited: $colors_santasgrey !default;
-
-// main page
-$font_color_page: $colors_alto_brighter;
-
-$font_color_search_box: $colors_bright;
 
 // misc
 $font_color_descriptions_link: $colors_logan !default;

@@ -1,5 +1,11 @@
 @import 'starry_default_variables';
 
+// main page
+$bg_color_page: #211E2F; // overall page
+
+$bg_color_spacer_alt: $colors_bigstone;
+$bg_color_search_box: $colors_bigstone;
+
 // links
 $font_color_link: $colors_logan; // link
 $font_color_link_visited: $colors_santasgrey;
@@ -10,12 +16,6 @@ $bg_color_flash_success: $colors_gunpowder; // success
 $bg_color_flash_inbox: $colors_gunpowder; // new message
 $bg_color_flash_breadcrumbs: $colors_bigstone; // breadcrumbs ("Continuities » Continuity » Section » Thread")
 $font_color_flash: $colors_alto_brighter;
-
-// main page
-$bg_color_page: #211E2F; // overall page
-
-$bg_color_spacer_alt: $colors_bigstone;
-$bg_color_search_box: $colors_bigstone;
 
 // content headers
 $bg_color_head: $colors_blackcurrant_blacker; // primary content header
@@ -76,7 +76,7 @@ body, .even, .odd, .post-post, .post-reply, #post-editor { color: $font_color_pa
 #character-icon-selector, .time-loaded { color: $font_color_page; }
 
 // tag items
-.tag-item { background-color: $bg_color_tag_item; color: $font_color_link; }
+.tag-item, tr.gallery-tags .tag-item { background-color: $bg_color_tag_item; color: $font_color_link; }
 .even .tag-item { background-color: $bg_color_tag_item_even; }
 .odd .tag-item { background-color: $bg_color_tag_item_odd; }
 

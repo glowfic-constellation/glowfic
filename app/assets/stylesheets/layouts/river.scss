@@ -1,111 +1,66 @@
 @import 'variables';
-/* Original doc CSS overlaps with monochrome */
 
-/* - main page */
+// main page
 $bg_color_page: #E0E0E0; // overall page
 
-body { background-color: $bg_color_page; }
+// header
+$bg_color_header_top: #434D73; // top header strip for logo
+$bg_color_header_middle: #212135; // middle header strip with user items
+$bg_color_header_bottom: #ADB5B9; // bottom header strip with navigation
 
-//$bg_color_flash_error: #484357; // error
+// links
+$font_color_link: #3F5970; // link
+$font_color_link_visited: #284150;
+
+// flashes
 $bg_color_flash_success: #ECECEC; // success
 $bg_color_flash_inbox: #ECECEC; // new message
-.flash.success { background-color: $bg_color_flash_success; }
-.flash.inbox { background-color: $bg_color_flash_inbox; }
+$bg_color_flash_breadcrumbs: #A3A8A9; // breadcrumbs ("Continuities » Continuity » Section » Thread")
 
-$font_color_paginate_link_visited: #3A3A3A;
-.pagination a:visited { color: $font_color_paginate_link_visited; }
+// content headers
+$bg_color_sub: #BDBDBD; // secondary content header
+$bg_color_subber: #B9B6AD; // tertiary content header
+$bg_color_ender: #A3A8A9; // form table footer with submit
+
+// content
+$bg_color_even: #F3F3F3;
+$bg_color_odd: #E8E8E8;
+$bg_color_content_border: #AAAAAA;
+
+$font_color_reply_footer: #717171;
 
 $bg_color_navheader: #BDBDBD;
-.post-navheader { background-color: $bg_color_navheader; }
 
-$bg_color_linkbox_edit: #545A79;
-$bg_color_linkbox_favorite: #545A79;
-$bg_color_linkbox_delete: #503636;
-$bg_color_linkbox_dismiss: #503636;
-.link-box.action-edit { background-color: $bg_color_linkbox_edit; }
-.link-box.action-favorite { background-color: $bg_color_linkbox_favorite; }
-.link-box.action-delete { background-color: $bg_color_linkbox_delete; }
-.link-box.action-dismiss { background-color: $bg_color_linkbox_dismiss; }
+$font_color_paginate_link_visited: #3A3A3A;
+$bg_color_paginate_current_page: #718EB9;
+
+$bg_color_expander: #A4B0BD; // expander on posts
+
+$bg_color_post_icon: #A9B4BB;
+$bg_color_icon_selector: #A9B4BB;
 
 $bg_color_post_character: #929292;
 $bg_color_post_screenname: #A5A5A5;
 $bg_color_post_author: #BBBBBB;
 //$bg_color_post_character_narrow: $colors_lightbrown;
-//$bg_color_post_author_narrow: $colors_brown; // these are flipped from not-narrow mode to make the quick-switcher blend in // TODO: Should these flip on other themes?
+//$bg_color_post_author_narrow: $colors_brown;
+// these are flipped from not-narrow mode to make the quick-switcher blend in
+// TODO: Should these flip on other themes?
+$font_color_post_info: #B3D3FF;
 
-.post-character { background-color: $bg_color_post_character; }
-.post-screenname { background-color: $bg_color_post_screenname; }
-.post-author { background-color: $bg_color_post_author; }
-
-$bg_color_sub: #BDBDBD; // secondary content header
-.sub { background-color: $bg_color_sub; }
-
-/* Rest of Milky River */
-$bg_color_header_top: #434D73; // top header strip for logo
-$bg_color_header_middle: #212135; // middle header strip with user items
-$bg_color_header_bottom: #ADB5B9; // bottom header strip with navigation
-
-#logo { background-color: $bg_color_header_top; }
-#header { background-color: $bg_color_header_bottom; }
-#nav-top, #user-info { background-color: $bg_color_header_middle; }
-
-/* - links */
-$font_color_link: #3F5970; // link
-$font_color_link_visited: #284150;
-a { color: $font_color_link; }
-a:visited { color: $font_color_link_visited; }
-
-$bg_color_flash_breadcrumbs: #A3A8A9; // breadcrumbs ("Continuities » Continuity » Section » Thread")
-.flash.breadcrumbs { background-color: $bg_color_flash_breadcrumbs; }
-
-$bg_color_expander: #A4B0BD; // expander on posts
-.post-expander { background-color: $bg_color_expander; }
-
-$bg_color_paginate_current_page: #718EB9;
-.pagination .current { background-color: $bg_color_paginate_current_page; }
-
-$bg_color_post_icon: #A9B4BB;
-$bg_color_icon_selector: #A9B4BB;
-
-.post-icon { background-color: $bg_color_post_icon; }
-#current-icon-dropdown { background-color: $bg_color_post_icon; }
-#reply-icon-selector { background-color: $bg_color_icon_selector; }
-
-/* - icons */
+// icons
 $bg_color_icon: #A9B4BB;
 $bg_color_icon_credit: #A9B4BB;
 
-.replace-icon, .icons-box { background-color: $bg_color_icon; }
-.icon-credit { background-color: $bg_color_icon_credit; }
-
-$bg_color_subber: #B9B6AD; // tertiary content header
-$bg_color_ender: #A3A8A9; // form table footer with submit
-
-.form-table-ender { background-color: $bg_color_ender; }
-.subber { background-color: $bg_color_subber; }
-
-$bg_color_linkbox_new: #3F5370;
-.link-box.action-new { background-color: $bg_color_linkbox_new; }
-
-/* - content */
-$bg_color_even: #F3F3F3;
-$bg_color_odd: #E8E8E8;
-$bg_color_content_border: #AAAAAA;
-
-#content .odd, #content .even, .post-post, .post-reply, #post-editor {
-  background-color: $bg_color_even !important;
-  border-top: solid 1px $bg_color_content_border;
-  blockquote { background-color: calculate-transparent-color($bg_color_even, $bg_color_odd, 0.2) !important; }
-}
-
-.post-edit-box img { width: 1em; height: 1em; }
-
-$font_color_post_info: #B3D3FF;
-.post-character a, .post-character a:visited { color: $font_color_post_info; }
-
-$font_color_reply_footer: #717171;
-.post-footer { color: $font_color_reply_footer; }
-
+// tag items
 $bg_color_tag_item: #3E526F;
 $font_color_tag_item: #D0CEC8;
-.tag-item { color: $bg_color_tag_item; background-color: $font_color_tag_item; }
+
+// link-boxes
+$bg_color_linkbox_new: #3F5370;
+$bg_color_linkbox_edit: #545A79;
+$bg_color_linkbox_favorite: #545A79;
+$bg_color_linkbox_delete: #503636;
+$bg_color_linkbox_dismiss: #503636;
+
+@import "_river_selectors"

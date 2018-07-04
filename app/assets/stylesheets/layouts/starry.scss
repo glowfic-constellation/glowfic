@@ -1,16 +1,16 @@
 @import 'starry_default_variables';
 
-// flashes
-$bg_color_flash_error: $colors_manatee_lighter; // error
-$bg_color_flash_success: $colors_manatee_lighter; // success
-$bg_color_flash_inbox: $colors_manatee_lighter; // new message
-$bg_color_flash_breadcrumbs: $colors_bunting_brighter; // breadcrumbs ("Continuities » Continuity » Section » Thread")
-
 // main page
 $bg_color_page: #6C697C; // overall page
 
 $bg_color_spacer_alt: $colors_bunting_brighter;
 $bg_color_search_box: $colors_bunting_brighter;
+
+// flashes
+$bg_color_flash_error: $colors_manatee_lighter; // error
+$bg_color_flash_success: $colors_manatee_lighter; // success
+$bg_color_flash_inbox: $colors_manatee_lighter; // new message
+$bg_color_flash_breadcrumbs: $colors_bunting_brighter; // breadcrumbs ("Continuities » Continuity » Section » Thread")
 
 // content headers
 $bg_color_head: $colors_ebony; // primary content header
