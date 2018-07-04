@@ -1,0 +1,241 @@
+/* Variables */
+/* - global font sizes */
+$font_size_header: 16px; /* header */
+$font_size_main: 16px; /* main content */
+$font_size_small: 14px; /* header-links (mobile mode), table elements */
+$font_size_mini: 10px; /* time-loaded */
+
+/* - default color palette */
+// color palette used by the default style
+// do not use in CSS files; use a semantically relevant variable below that references a color here instead
+$colors_white: #FFFFFF;
+$colors_bright: #FEFEFE;
+$colors_dark: #444444;
+$colors_lightbrown: #B9B6AD;
+$colors_lightishbrown: #9E9C93;
+$colors_brown: #8B8687;
+$colors_greybrown: #A3A1A0;
+$colors_green: #3F7055;
+$colors_blue: #4455AA;
+$colors_red: #880000;
+$colors_greygreen: #B0BBA9;
+$colors_lightgrey: #EEEEEE;
+$colors_darkpurple: #3E384F;
+$colors_black: #101010;
+
+/* Semantic colors */
+// colors listed here should be named according to where and how they are used, to allow layouts to better recolor the site
+
+/* - header */
+$font_color_header_link: $colors_bright !default; // header links
+$font_color_header_link_hover: $colors_brown !default; // header links (hover)
+
+$bg_color_header_top: $colors_green !default; // top header strip for logo
+$bg_color_header_middle: $colors_darkpurple !default; // middle header strip with user items
+$bg_color_header_bottom: $colors_lightbrown !default; // bottom header strip with navigation
+
+/* - main page */
+$bg_color_page: #E5DFD1 !default; // overall page
+$font_color_page: $colors_black !default;
+
+$font_color_content: $colors_dark !default; // body
+
+/* - links */
+$font_color_link: $colors_green !default; // link
+$font_color_link_visited: #28503A !default; // link (visited)
+$font_color_link_hover: #FCFEFD !default; // link (hovered)
+
+/* - flashes */
+// these are the notifications that appear when you submit a form or get a message
+$bg_color_flash_error: #FFDDDD !default; // error
+$font_color_flash_error: $colors_black !default;
+$bg_color_flash_success: #DDEEDD !default; // success
+$font_color_flash_success: $colors_black !default;
+$bg_color_flash_inbox: #DDDDEE !default; // new message
+$font_color_flash_inbox: $colors_black !default;
+$bg_color_flash_breadcrumbs: $colors_greybrown !default; // breadcrumbs ("Continuities » Effulgence » make a wish » one enormous bruise")
+$font_color_flash_breadcrumbs: $colors_black !default;
+$font_color_breadcrumbs_bold: $colors_greybrown !default;
+$font_color_breadcrumbs_link_visited: #28503A !default;
+$font_color_flash_link: $colors_green !default;
+$font_color_flash_hover: #FCFEFD !default;
+
+/* - link-boxes */
+$bg_color_linkbox_new: $colors_green !default;
+$bg_color_linkbox_edit: $colors_blue !default;
+$bg_color_linkbox_favorite: $colors_blue !default;
+$bg_color_linkbox_delete: $colors_red !default;
+$bg_color_linkbox_dismiss: $colors_red !default;
+$bg_color_linkbox_subber: default !default; /* this is not styled differently on non-starries, where linkboxes are all colored the same, but is a necessary variable there */
+// This is definitely not actually right but not possible to get right; TODO consider splitting variable
+
+$font_color_linkbox_new: $colors_black !default; //TODO: check this
+$font_color_linkbox_edit: $colors_black !default;
+$font_color_linkbox_favorite: $colors_black !default;
+$font_color_linkbox_delete: $colors_black !default;
+$font_color_linkbox_dismiss: $colors_black !default;
+
+/* - inputs */
+$bg_color_input: $colors_white !default; // regular <input>
+$font_color_input: $colors_dark !default;
+$border_color_input: #AAAAAA !default;
+
+$bg_color_button: $colors_white !default; // buttons; overridden by gradient TODO make modifiable
+$font_color_button: $colors_dark !default;
+$border_color_button: #AAAAAA !default;
+
+/* - other buttons */
+$bg_color_viewbutton: $colors_lightbrown !default;
+$bg_color_viewbutton_selected: $colors_lightishbrown !default;
+$font_color_viewbutton: $colors_white !default;
+
+/* - icons */
+$border_color_icon_selected: $colors_green !default; // selected icon border
+$bg_color_icon: $colors_greygreen !default;
+$bg_color_icon_credit: $colors_greygreen !default;
+$bg_color_icon_selector: $colors_greygreen !default;
+$font_color_icon_selector: $colors_black !default; // used in different places on dark.scss and starries
+$font_color_icon_dropdown: $colors_black !default;
+
+/* - characters */
+$border_color_character_iconless: #666666 !default; // in characters#show icon view when a character has no icon
+
+$bg_color_mini_delete: #E5DFD1 !default; // mini delete buttons on characters#icon_view
+$border_color_mini_delete: #C00 !default;
+$font_color_mini_delete: #C00 !default;
+
+/* - tag items */
+// varies by location TODO get more complete list from starries
+$bg_color_tag_item: $colors_lightbrown !default;
+$bg_color_tag_item_odd: $colors_lightbrown !default;
+$bg_color_tag_item_even: $colors_lightbrown !default;
+$font_color_tag_item: $colors_green !default;
+$font_color_tag_item_gallery: $colors_lightbrown !default;
+
+/* - content headers */
+$bg_color_head: $colors_brown !default; // primary content header
+$font_color_head_link: $colors_lightgrey !default; /* TODO: Fix how this and hover are actually unstripped from layout.scss */
+$font_color_head_link_visited: #28503A !default;
+$bg_color_sub: $colors_lightbrown !default; // secondary content header
+$bg_color_subber: $colors_greybrown !default; // tertiary content header
+$font_color_head: $colors_lightgrey !default;
+$font_color_sub: $colors_darkpurple !default;
+$font_color_subber_link_visited: #28503A !default;
+$font_color_subber: black !default;
+$font_color_subber_bold: black !default; // TODO: confirm
+
+$bg_color_ender: $bg_color_subber !default; // form table footer with submit
+$font_color_ender: black !default;
+
+/* - content */
+$bg_color_even: #E3E3E3 !default;
+$bg_color_odd: #D8D8D8 !default;
+$bg_color_content_border: transparent !default; // from river, is 0-width in default
+
+// target: #D8D8D8;
+// from: #E3E3E3;
+// opacity: 0.5;
+// from + (given-from) * opacity = target
+// (1-opacity) * from + given * opacity = target
+// given * opacity = (1 - opacity) * from - target
+// given = ((1-opacity)*from - target)/opacity
+// so that's (1-opacity)/opacity of from, and -1/opacity of the other
+// so that's a ratio of
+// (1-opacity)/opacity : -1/opacity
+// 1-opacity : -1
+// so we want to bias to the left side by opacity-1
+// to the from by opacity-1
+
+// mix colors X and Y with weight W (favoring Y, allowing values outside 0 and 1)
+@function mix-allow-heavy($color1, $color2, $value) {
+  // @return (1 - $value) * $color1 + ($color2 * $value);
+  $red: (1-$value) * red($color1) + (red($color2) * $value);
+  $green: (1-$value) * green($color1) + (green($color2) * $value);
+  $blue: (1-$value) * blue($color1) + (blue($color2) * $value);
+  @return rgb($red, $green, $blue);
+}
+
+// produces the semi-transparent color needed to lay over $from to produce $target, at $opacity opacity
+// do not provide this function an opacity of 0.
+@function calculate-transparent-color($from, $target, $opacity) {
+  @return rgba(mix-allow-heavy($target, $from, ($opacity - 1) / $opacity), $opacity);
+}
+
+$opacity_blockquote: 0.2 !default;
+// semi-transparent version to allow nested blockquotes:
+$bg_color_even_blockquote: calculate-transparent-color($bg_color_even, $bg_color_odd, $opacity_blockquote) !default;
+$bg_color_odd_blockquote: calculate-transparent-color($bg_color_odd, $bg_color_even, $opacity_blockquote) !default;
+
+/* - select2 dropdown */
+$font_color_select2_container: $colors_dark !default;
+/* Most of this is currently styled by gem files */
+$bg_color_select2_highlight: #E4E4E4 !default;
+$bg_color_select2_selected: #DDDDDD !default;
+$bg_color_select2_search: $colors_white !default;
+
+/* rtf editor */
+$font_color_input_placeholder: default !default;
+$bg_color_mce_panel: #F0F0F0 !default; /* MCE header & footer background */
+$opacity_mce_label: 1 !default; //TODO: check this
+$bg_color_reply_content: $colors_white !default;
+$font_color_reply_content: $colors_dark !default;
+
+$bg_color_popup_header: #E9E9E9 !default;
+$font_color_popup_header: #333333 !default;
+$border_color_popup_header: #DDDDDD !default;
+$bg_color_popup_content: $colors_white !default;
+$font_color_popup_content: #333333 !default;
+$border_color_popup: #C5C5C5 !default;
+$bg_color_popup_button: #F6F6F6 !default;
+$border_color_popup_button: #C5C5C5 !default;
+$font_color_popup_link: #333333 !default;
+
+/* - misc */
+$bg_color_descriptions: $colors_lightbrown !default; // description subheadings on templates page ("single-description"), *not* posts
+$font_color_descriptions_link: $colors_green !default;
+$font_color_descriptions_link_visited: #28503A !default;
+$bg_color_selectionpopup: $colors_lightbrown !default; // selection popups like character/alias on posts#editor
+$bg_color_spacer_alt: $colors_brown !default;
+$bg_color_search_box: $colors_brown !default;
+$font_color_search_box: $colors_black !default;
+
+/* - replies.scss */
+$bg_color_icon_overlay: #000000 !default; // box displaying current icon
+
+$bg_color_expander: $colors_greygreen !default; // expander on posts
+
+$bg_color_ender_post: $colors_darkpurple !default;
+$font_color_ender_post: $colors_bright !default;
+
+$bg_color_post_character: $colors_brown !default;
+$bg_color_post_screenname: $colors_greybrown !default;
+$bg_color_post_author: $colors_lightbrown !default;
+$font_color_post_info: $colors_black !default;
+$font_weight_post_info: default !default; // TODO: this is probably not actually right
+$font_color_post_screenname: $colors_black !default;
+
+$bg_color_post_character_narrow: $colors_lightbrown !default;
+$bg_color_post_author_narrow: $colors_brown !default; // these are flipped from not-narrow mode to make the quick-switcher blend in
+
+$font_color_paginate_link: $colors_lightgrey !default;
+$bg_color_paginate_link_hover: $colors_greybrown !default;
+$font_color_paginate_link_visited: $colors_brown !default;
+$bg_color_paginate_current_page: $colors_green !default;
+$font_color_paginate_link_disabled: $colors_black !default;
+$bg_color_post_icon: $colors_greygreen !default;
+
+$font_color_menu_link: $colors_lightgrey !default;
+$bg_color_menu_link_hover: $colors_greygreen !default;
+
+/* - post headers */
+$bg_color_post_description: $colors_greybrown !default;
+$font_color_post_description: $colors_black !default;
+$bg_color_navheader: $colors_lightbrown !default;
+$bg_color_navbutton: $colors_greybrown !default;
+
+$bg_color_post_menu: $colors_brown !default;
+$border_color_post_menu: $colors_greybrown !default;
+$font_color_post_menu: $colors_black !default;
+
+
+$font_color_reply_footer: default !default; // from river // TODO: fix

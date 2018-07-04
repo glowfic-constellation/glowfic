@@ -1,0 +1,102 @@
+$colors_bright: #FEFEFE;
+$colors_black: #101010;
+$colors_gunpowder: #484357;
+$colors_concrete: #F3F3F3;
+$colors_manatee_lighter: #9692A8;
+$colors_manatee_darker: #8287A2;
+$colors_scampi: #6565AE;
+$colors_mulledwine: #463C65;
+$colors_rum: #6F658D;
+$colors_bunting_brighter: #182152;
+$colors_bunting_darker: #111842;
+$colors_bigstone: #131937;
+$colors_alto_brighter: #DADADA;
+$colors_alto_darker: #D8D8D8;
+$colors_santasgrey: #9C9AA4;
+$colors_santasgrey_bluer: #9498AC;
+$colors_dolphin: #645F8A;
+$colors_ebony: #13132F;
+$colors_blackcurrant_redder: #0E0B1E;
+$colors_blackcurrant_blacker: #0D0B1E;
+$colors_prelude: #CDC7E7;
+$colors_logan: #B5AFCB;
+$colors_periwinklegrey: #C6C6E5;
+$colors_wildblueyonder: #8689B7;
+$colors_fiord: #42416E;
+$colors_shark: #25262E;
+
+// header
+$bg_color_header_middle: #05050F !default; // middle header strip with user items
+$bg_color_header_bottom: $colors_gunpowder !default; // bottom header strip with navigation
+
+// links
+$font_color_link: #666284 !default; // link
+$font_color_link_visited: $colors_gunpowder !default;
+
+// flashes
+// these are the notifications that appear when you submit a form or get a message
+$font_color_breadcrumbs_bold: $colors_concrete;
+$font_color_breadcrumbs_link_visited: $colors_santasgrey !default;
+
+// main page
+$font_color_page: $colors_alto_brighter;
+
+$font_color_search_box: $colors_bright;
+
+// misc
+$font_color_descriptions_link: $colors_logan !default;
+$font_color_descriptions_link_visited: $colors_santasgrey !default;
+$bg_color_descriptions: $colors_gunpowder !default; // description subheadings on templates page ("single-description"), *not* posts
+
+// content headers
+$font_color_sub: $colors_concrete;
+$font_color_subber_bold: $colors_concrete;
+
+$font_color_head_link: $colors_logan !default; // TODO: check this
+$font_color_head_link_visited: $colors_santasgrey !default;
+$bg_color_subber: $colors_gunpowder !default; // tertiary content header
+$font_color_subber_link_visited: $colors_santasgrey !default;
+
+// content
+$bg_color_even: #E3E3E3 !default;
+$bg_color_odd: $colors_alto_darker !default;
+$opacity_blockquote: 0.2;
+
+// posts
+$font_color_post_description: $colors_concrete !default;
+$bg_color_post_description: $colors_gunpowder !default;
+
+$border_color_post_menu: #808080;
+$bg_color_post_menu: #BCBCBC !default;
+$bg_color_menu_link_hover: #D3D3D3 !default;
+
+$bg_color_selectionpopup: $colors_gunpowder !default; // selection popups like character/alias on posts#editor
+$bg_color_icon_selector: $colors_gunpowder !default;
+
+$font_color_post_info: $colors_concrete;
+$font_weight_post_info: bold !default;
+$font_color_post_screenname: $colors_santasgrey !default;
+
+$font_color_paginate_link: $colors_concrete;
+$font_color_paginate_link_visited: $colors_santasgrey !default;
+$font_color_paginate_link_disabled: #58546B;
+$bg_color_paginate_current_page: $colors_gunpowder !default;
+
+// icons
+$bg_color_icon: $colors_alto_darker !default;
+$bg_color_icon_credit: $colors_alto_darker !default;
+
+// tag items
+$font_color_tag_item: #444158 !default;
+$font_color_tag_item_gallery: #F7F7F7 !default;
+
+// link-boxes
+$bg_color_linkbox_new: $colors_mulledwine !default;
+$bg_color_linkbox_edit: $colors_mulledwine !default;
+$bg_color_linkbox_favorite: $colors_mulledwine !default;
+$bg_color_linkbox_delete: $colors_mulledwine !default;
+$bg_color_linkbox_dismiss: $colors_mulledwine !default;
+
+// other buttons
+$bg_color_viewbutton: $colors_mulledwine !default;
+$bg_color_viewbutton_selected: $colors_mulledwine !default;
