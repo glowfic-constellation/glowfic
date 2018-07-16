@@ -1,7 +1,7 @@
 %table.tag-right-content-box
   %thead
     %tr
-      %th{colspan: 4} Galleries Tagged: #{@tag.name}
+      %th.table-title{colspan: 4} Galleries Tagged: #{@tag.name}
   %tbody
     - if @galleries.present?
       = render partial: 'galleries/expandable', collection: @galleries, as: :gallery, locals: {tag: @tag}

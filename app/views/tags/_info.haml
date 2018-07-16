@@ -1,7 +1,7 @@
 %table.tag-right-content-box
   %thead
     %tr
-      %th{colspan: 2} Info
+      %th.table-title{colspan: 2} Info
   %tbody
     - if @tag.is_a?(Setting) && @tag.parent_settings.present?
       %tr

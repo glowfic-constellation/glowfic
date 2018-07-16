@@ -3,7 +3,7 @@
 %table
   %thead
     %tr
-      %th{colspan: 7}
+      %th.table-title{colspan: 7}
         Daily Report -
         = @day.strftime("%b %d, %Y")
         - if @day == Time.zone.today

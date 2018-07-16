@@ -1,7 +1,7 @@
 %table.tag-right-content-box
   %thead
     %tr
-      %th{colspan: 6} Settings Tagged: #{@tag.name}
+      %th.table-title{colspan: 6} Settings Tagged: #{@tag.name}
   %tbody
     - @tag.child_settings.each do |setting|
       %tr

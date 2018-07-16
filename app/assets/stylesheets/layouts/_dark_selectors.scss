@@ -63,7 +63,7 @@ a:hover { color: $font_color_link_hover; }
 }
 
 /* - content headers */
-th, .content-header, .search-results-header {
+.table-title, .content-header, .search-results-header {
   background-color: $bg_color_head;
   color: $font_color_head;
 }

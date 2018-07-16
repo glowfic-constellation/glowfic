@@ -12,7 +12,7 @@
 %table
   %thead
     %tr
-      %th{colspan: 6}
+      %th.table-title{colspan: 6}
         Template: #{@template.name}
         - if @template.user_id == current_user.try(:id)
           = link_to new_character_path(template_id: @template.id) do

@@ -13,7 +13,7 @@
 %table#stats
   %thead
     %tr
-      %th{colspan: 2}
+      %th.table-title{colspan: 2}
         Metadata:
         = link_to @post.subject, post_path(@post)
         - if @post.metadata_editable_by?(current_user)
