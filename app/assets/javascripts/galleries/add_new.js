@@ -20,6 +20,9 @@ function processDirectionalKey(event) {
   if (input.get(0).type !== 'text') return;
 
   var caret = input.get(0).selectionStart;
+  var caretEnd = input.get(0).selectionEnd;
+  if (caret !== caretEnd) return; // skip processing if user has text selected
+
   var length = input.val().length;
   var index = $(this).closest('td').index();
 
