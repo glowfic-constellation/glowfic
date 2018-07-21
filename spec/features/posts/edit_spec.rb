@@ -187,7 +187,7 @@ RSpec.feature "Editing posts", :type => :feature do
     expect(page).to have_no_selector('.error')
     expect(page).to have_selector('.content-header', exact_text: 'Edit post')
     expect(page).to have_no_selector('.post-container')
-    expect(page).to have_field('Continuity:', with: board.id, disabled: :all, visible: :all)
+    expect(page).to have_field('Continuity:', with: board.id)
     within('#post-editor') do
       click_button 'Preview'
     end
@@ -196,7 +196,7 @@ RSpec.feature "Editing posts", :type => :feature do
     expect(page).to have_no_selector('.error')
     expect(page).to have_selector('.content-header', exact_text: 'test subject')
     expect(page).to have_selector('.post-container', count: 1)
-    expect(page).to have_field('Continuity:', with: board.id, disabled: :all, visible: :all)
+    expect(page).to have_field('Continuity:', with: board.id)
     expect(page).to have_selector('#post-editor')
     within('#post-editor') do
       fill_in 'Moderator note', with: 'test edit'
