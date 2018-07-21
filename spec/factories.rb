@@ -43,6 +43,7 @@ FactoryBot.define do
     end
     user
     board
+    description ""
     content "test content"
     sequence :subject do |n|
       "test subject #{n}"
