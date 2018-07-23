@@ -350,7 +350,7 @@ class PostsController < WritableController
     unless valid_dreamwidth_url?(params[:dreamwidth_url])
       flash[:error] = "Invalid URL provided."
       params[:view] = 'import'
-      use_javascript('posts')
+      editor_setup
       return render action: :new
     end
 
