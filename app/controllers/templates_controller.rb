@@ -36,6 +36,7 @@ class TemplatesController < ApplicationController
     posts = Post.where(character_id: character_ids).or(Post.where(id: post_ids))
     @posts = posts_from_relation(posts.ordered)
     @page_title = @template.name
+    @meta_og = og_data
   end
 
   def edit
@@ -102,6 +103,20 @@ class TemplatesController < ApplicationController
     return true if @template.user_id == current_user.id
     flash[:error] = "That is not your template."
     redirect_to user_characters_path(current_user)
+  end
+
+  def og_data
+    desc = []
+    character_count = @template.characters.count
+    desc << generate_short(@template.description) if @template.description.present?
+    desc << "#{character_count} " + "character".pluralize(character_count)
+    title = [@template.name]
+    title.prepend(@template.user.username) unless @template.user.deleted?
+    {
+      url: template_url(@template),
+      title: title.join(' » '),
+      description: desc.join("\n"),
+    }
   end
 
   def template_params

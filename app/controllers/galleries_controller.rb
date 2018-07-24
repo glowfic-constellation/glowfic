@@ -86,6 +86,7 @@ class GalleriesController < UploadingController
 
       @user = @gallery.user
       @page_title = @gallery.name + ' (Gallery)'
+      @meta_og = og_data
     end
     icons = @gallery ? @gallery.icons : @user.galleryless_icons
     render :show, locals: { icons: icons }
@@ -231,6 +232,21 @@ class GalleriesController < UploadingController
   def setup_editor
     use_javascript('galleries/editor')
     gon.user_id = current_user.id
+  end
+
+  def og_data
+    icon_count = @gallery.icons.count
+    desc = ["#{icon_count} " + "icon".pluralize(icon_count)]
+    tags = @gallery.gallery_groups_data.pluck(:name)
+    tag_count = tags.count
+    desc << "Tag".pluralize(tag_count) + ": " + generate_short(tags.join(', ')) if tag_count > 0
+    title = [@gallery.name]
+    title.prepend(@gallery.user.username) unless @gallery.user.deleted?
+    {
+      url: gallery_url(@gallery),
+      title: title.join(' » '),
+      description: desc.join("\n"),
+    }
   end
 
   def gallery_params

@@ -21,6 +21,7 @@ class UsersController < ApplicationController
     ids = PostAuthor.where(user_id: @user.id, joined: true).pluck(:post_id)
     @posts = posts_from_relation(Post.where(id: ids).ordered)
     @page_title = @user.username
+    @meta_og = og_data
   end
 
   def new
@@ -151,6 +152,30 @@ class UsersController < ApplicationController
     gon.max = User::MAX_USERNAME_LEN
     gon.min = User::MIN_USERNAME_LEN
     @page_title = 'Sign Up'
+  end
+
+  def og_data
+    board_ids = BoardAuthor.where(user_id: @user.id, cameo: false).select(:board_id).distinct.pluck(:board_id)
+    boards = Board.where(creator: @user).or(Board.where(id: board_ids))
+    board_count = boards.count
+    if board_count > 0
+      desc = "Continuity".pluralize(board_count) + ": " + generate_short(boards.pluck(:name) * ', ')
+    else
+      desc = "No continuities."
+    end
+    data = {
+      url: user_url(@user),
+      title: @user.username,
+      description: desc,
+    }
+    if @user.avatar.present?
+      data[:image] = {
+        src: @user.avatar.url,
+        width: '75',
+        height: '75',
+      }
+    end
+    data
   end
 
   def user_params

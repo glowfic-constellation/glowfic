@@ -36,6 +36,7 @@ class NewsController < ApplicationController
   end
 
   def show
+    @meta_og = og_data
     redirect_to paged_news_url(@news)
   end
 
@@ -109,5 +110,13 @@ class NewsController < ApplicationController
     page_num = News.where('id >= ?', news.id).count
     page_num = nil unless page_num > 1
     news_index_path(page: page_num)
+  end
+
+  def og_data
+    {
+      url: paged_news_url(@news),
+      title: "News Post for #{@news.created_at.strftime('%b %d, %Y')}",
+      description: generate_short(@news.content),
+    }
   end
 end

@@ -55,6 +55,7 @@ class IconsController < UploadingController
       @times_used = (posts_using.count + replies_using.count)
       @posts_used = (posts_using.pluck(:id) + replies_using.select(:post_id).distinct.pluck(:post_id)).uniq.count
     end
+    @meta_og = og_data
   end
 
   def edit
@@ -176,6 +177,26 @@ class IconsController < UploadingController
     else
       redirect_to user_gallery_path(id: 0, user_id: current_user.id)
     end
+  end
+
+  def og_data
+    galleries = @icon.galleries.pluck(:name)
+    if galleries.present?
+      desc = "Gallery".pluralize(galleries.count) + ": " + galleries.join(', ')
+    else
+      desc = "Galleryless"
+    end
+    desc += ". By #{@icon.credit}" if @icon.credit
+    {
+      url: icon_url(@icon),
+      title: @icon.keyword,
+      description: desc,
+      image: {
+        src: @icon.url,
+        width: '75',
+        height: '75',
+      }
+    }
   end
 
   def icon_params
