@@ -31,6 +31,8 @@ class ReportsController < ApplicationController
 
       DailyReport.mark_read(current_user, @day) if !current_user.ignore_unread_daily_report? && @day.to_date < Time.zone.now.to_date
     end
+
+    @meta_og = og_data
   end
 
   private
@@ -83,4 +85,22 @@ class ReportsController < ApplicationController
     end
   end
   helper_method :sort
+
+  def og_data
+    data = { title: "#{@report_type.titlecase} Report" }
+    if params[:day].present?
+      data[:url] = report_url(id: @report_type, day: @day)
+      data[:title] += " for "
+      if @report_type == 'daily'
+        data[:title] += @day.strftime("%b %d, %Y")
+      elsif @report_type == 'monthly'
+        data[:title] += @day.strftime("%B %Y")
+      end
+    else
+      data[:url] = report_url(id: @report_type)
+    end
+    post_count = DailyReport.new(@day).posts.count
+    data[:description] = "#{post_count} " + "post".pluralize(post_count) + " updated."
+    data
+  end
 end
