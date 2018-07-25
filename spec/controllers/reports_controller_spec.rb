@@ -45,6 +45,28 @@ RSpec.describe ReportsController do
       expect(response).to have_http_status(200)
     end
 
+    it "calculates OpenGraph meta for reports page" do
+      create_list(:post, 8)
+      get :show, params: { id: 'daily' }
+
+      meta_og = assigns(:meta_og)
+      expect(meta_og[:url]).to eq(report_url(:daily))
+      expect(meta_og[:title]).to eq("Daily Report")
+      expect(meta_og[:description]).to eq('8 posts updated.')
+    end
+
+    it "calculates OpenGraph meta for specific report" do
+      create_list(:post, 8)
+      date = Time.zone.now.strftime("%Y-%m-%d")
+
+      get :show, params: { id: 'daily', day: date }
+
+      meta_og = assigns(:meta_og)
+      expect(meta_og[:url]).to eq(report_url(:daily, day: date))
+      expect(meta_og[:title]).to eq("Daily Report for #{Time.zone.now.strftime('%b %d, %Y')}")
+      expect(meta_og[:description]).to eq('8 posts updated.')
+    end
+
     context "with views" do
       render_views
 
