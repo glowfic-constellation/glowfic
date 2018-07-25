@@ -129,6 +129,20 @@ RSpec.describe BoardSectionsController do
       expect(assigns(:page_title)).to eq(section.name)
       expect(assigns(:posts)).to eq([post1, post2, post3, post4, post5])
     end
+
+    it "calculates OpenGraph data" do
+      user = create(:user, username: 'John Doe')
+      board = create(:board, name: 'board', creator: user, coauthors: [create(:user, username: 'Jane Doe')])
+      section = create(:board_section, name: 'section', board: board, description: "test description")
+      create(:post, subject: 'title', user: user, board: board, section: section)
+      get :show, params: { id: section.id }
+
+      meta_og = assigns(:meta_og)
+      expect(meta_og.keys).to match_array([:url, :title, :description])
+      expect(meta_og[:url]).to eq(board_section_url(section))
+      expect(meta_og[:title]).to eq('board » section')
+      expect(meta_og[:description]).to eq("Jane Doe, John Doe – 1 post\ntest description")
+    end
   end
 
   describe "GET edit" do

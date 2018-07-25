@@ -177,6 +177,25 @@ RSpec.describe IconsController do
       expect(assigns(:posts)).to be_nil
     end
 
+    it "calculates OpenGraph meta" do
+      user = create(:user, username: 'user')
+      gallery1 = create(:gallery, name: 'gallery 1', user: user)
+      gallery2 = create(:gallery, name: 'gallery 2', user: user)
+      icon = create(:icon, keyword: 'icon', credit: "sample credit", gallery_ids: [gallery1.id, gallery2.id], user: user)
+
+      get :show, params: { id: icon.id }
+
+      meta_og = assigns(:meta_og)
+      expect(meta_og.keys).to match_array([:url, :title, :description, :image])
+      expect(meta_og[:url]).to eq(icon_url(icon))
+      expect(meta_og[:title]).to eq('icon')
+      expect(meta_og[:description]).to eq('Galleries: gallery 1, gallery 2. By sample credit')
+      expect(meta_og[:image].keys).to match_array([:src, :width, :height])
+      expect(meta_og[:image][:src]).to eq(icon.url)
+      expect(meta_og[:image][:width]).to eq('75')
+      expect(meta_og[:image][:width]).to eq('75')
+    end
+
     context "post view" do
       let(:icon) { create(:icon) }
       let(:post) { create(:post, icon: icon, user: icon.user) }

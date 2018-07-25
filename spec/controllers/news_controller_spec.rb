@@ -111,6 +111,21 @@ RSpec.describe NewsController do
       get :show, params: {id: news.id}
       expect(response).to redirect_to(news_index_url)
     end
+
+    it "generates og data" do
+      news = Timecop.freeze(Time.zone.local(2018, 12, 20)) { create(:news, content: "sample content") }
+      create(:news)
+
+      get :show, params: { id: news.id }
+
+      meta_og = assigns(:meta_og)
+      expect(meta_og.keys).to match_array([:url, :title, :description])
+      expect(meta_og[:url]).to eq(news_index_path(page: 2))
+      expect(meta_og[:title]).to eq('News Post for Dec 20, 2018')
+      expect(meta_og[:description]).to eq('sample content')
+
+
+    end
   end
 
   describe "GET edit" do
