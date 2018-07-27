@@ -124,7 +124,16 @@ rules:
     - 1
     - allowed-shorthands: [1, 2]
   url-quotes: 1
-  variable-for-property: 1
+  variable-for-property:
+    - 1
+    -
+      properties:
+        - color
+        - background-color
+        - border-color
+      allowed-functions:
+        - 'rgba'
+        - 'calculate-transparent-color'
   zero-unit: 1
 
   # Inner Spacing
