@@ -20,6 +20,7 @@
 .single-description {
   a { color: $font_color_descriptions_link; }
   a:visited { color: $font_color_descriptions_link_visited; }
+  blockquote { background-color: rgba(128, 128, 128, 0.3); }
   padding: 5px;
   background-color: $bg_color_descriptions;
 }

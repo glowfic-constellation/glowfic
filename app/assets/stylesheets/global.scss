@@ -145,24 +145,23 @@ button, .button {
   height: 28px;
   vertical-align: middle;
   img { vertical-align: baseline; }
+  &.action-new { background-color: $bg_color_linkbox_new; }
+  &.action-delete { background-color: $bg_color_linkbox_delete; }
+  &.action-edit { background-color: $bg_color_linkbox_edit;}
+  &.action-favorite { background-color: $bg_color_linkbox_favorite; }
+  &.action-dismiss { background-color: $bg_color_linkbox_dismiss; }
 }
-
-.link-box.action-new { background-color: $bg_color_linkbox_new; }
-.link-box.action-delete { background-color: $bg_color_linkbox_delete; }
-.link-box.action-edit { background-color: $bg_color_linkbox_edit;}
-.link-box.action-favorite { background-color: $bg_color_linkbox_favorite; }
-.link-box.action-dismiss { background-color: $bg_color_linkbox_dismiss; }
 
 /* Inline lists */
 .inline-list {
   display: inline;
   padding-left: 0;
-}
-
-.inline-list li {
-  display: inline;
-  list-style-type: none;
-  margin-right: 4px;
+  
+  li {
+    display: inline;
+    list-style-type: none;
+    margin-right: 4px;
+  }
 }
 
 /* Bootstrap tweaks */

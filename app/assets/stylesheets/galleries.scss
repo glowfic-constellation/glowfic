@@ -12,8 +12,10 @@
 .form-table .icon { vertical-align: middle; }
 
 /* Basic gallery and gallery icon formatting */
-.gallery { padding: 10px; }
-.gallery .icon { margin: 5px; }
+.gallery {
+  padding: 10px;
+  .icon { margin: 5px; }
+}
 
 .gallery-icon, .character-icon-item {
   display: inline-block;

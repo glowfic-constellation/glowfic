@@ -21,8 +21,10 @@
     white-space: nowrap;
   }
 
-  a { color: $font_color_header_link; }
-  a:hover { color: $font_color_header_link_hover; }
+  a {
+    color: $font_color_header_link;
+    &:hover { color: $font_color_header_link_hover; }
+  }
 }
 
 #logo {
@@ -146,17 +148,16 @@
 .flash {
   padding: 10px 20px;
   line-height: normal;
-}
 
-.flash ul {
-  margin: 0;
-  margin-top: 5px;
+  ul {
+    margin: 0;
+    margin-top: 5px;
+  }
+  &.error { background-color: $bg_color_flash_error; }
+  &.success { background-color: $bg_color_flash_success; }
+  &.inbox { background-color: $bg_color_flash_inbox; }
+  &.breadcrumbs { background-color: $bg_color_flash_breadcrumbs; }
 }
-
-.flash.error { background-color: $bg_color_flash_error; }
-.flash.success { background-color: $bg_color_flash_success; }
-.flash.inbox { background-color: $bg_color_flash_inbox; }
-.flash.breadcrumbs { background-color: $bg_color_flash_breadcrumbs; }
 
 /* Top-right timestamp on certain timestamped pages */
 .time-loaded {

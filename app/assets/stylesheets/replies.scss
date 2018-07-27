@@ -42,6 +42,7 @@
   min-width: 200px;
   display: none;
   text-align: left;
+  background-color: $bg_color_selectionpopup;
 
   h4 {
     margin-bottom: 0;
@@ -153,8 +154,6 @@ div.post-subheader { width: 100%; }
 .odd, .post-reply:nth-child(odd) {
   blockquote { background-color: $bg_color_odd_blockquote; }
 }
-
-.single-description blockquote { background-color: rgba(128, 128, 128, 0.3); }
 
 .post-content, .written-content, .message-content {
   blockquote {
@@ -330,10 +329,8 @@ div.post-subheader { width: 100%; }
 
     ul, ol { overflow: auto; }
   }
-}
 
-/* - Tables in post-content */
-.post-content {
+  /* - Tables in post-content */
   th {
     padding: 5px;
     background-color: unset;
@@ -531,11 +528,6 @@ div.post-subheader { width: 100%; }
 
 .reply-highlighted { border: 1px red solid; }
 
-.selector-popup {
-  background-color: $bg_color_selectionpopup;
-}
-
-/* History page */
 .history-header { width: 170px; }
 @media (max-width: 600px) {
   .history-header { width: 75px; }
