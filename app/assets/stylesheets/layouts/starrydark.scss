@@ -76,7 +76,10 @@ body, .even, .odd, .post-post, .post-reply, #post-editor { color: $font_color_pa
 #character-icon-selector, .time-loaded { color: $font_color_page; }
 
 // tag items
-.tag-item, tr.gallery-tags .tag-item { background-color: $bg_color_tag_item; color: $font_color_link; }
+.tag-item, tr.gallery-tags .tag-item {
+  background-color: $bg_color_tag_item;
+  color: $font_color_link;
+}
 .even .tag-item { background-color: $bg_color_tag_item_even; }
 .odd .tag-item { background-color: $bg_color_tag_item_odd; }
 
