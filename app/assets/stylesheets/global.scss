@@ -112,7 +112,7 @@ button, .button {
 /* For UI elements involving reordering */
 .disabled-arrow {
   -webkit-filter: grayscale(1); /* Chrome, Safari, Opera */
-  filter: gray; /* IE */
+  filter: #808080; /* IE */
   filter: grayscale(1); /* Edge, Firefox */
 }
 
@@ -141,7 +141,7 @@ button, .button {
   height: 28px;
   vertical-align: middle;
   line-height: 1.25rem;
-  color: white;
+  color: #FFFFFF;
   font-size: $font_size_large;
   font-weight: normal;
   img { vertical-align: baseline; }
