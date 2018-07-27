@@ -64,12 +64,13 @@ rules:
   # Name Formats
   class-name-format:
     - 1
-    - convention: ^[_\-a-z0-9]+$
-  function-name-format: 1
+    - convention: ^[_\-a-z0-9]+$ # hyphenatedlowercase is preferred but rails defaults to using an underscore
   id-name-format:
     - 1
-    - convention: ^[_\-a-z]+$
-  mixin-name-format: 1
+    - convention: ^[_\-a-z]+$ # hyphenatedlowercase is preferred but rails defaults to using an underscore
+  mixin-name-format:
+    - 1
+    - convention: hyphenatedlowercase
   placeholder-name-format: 1
   variable-name-format:
     - 1
