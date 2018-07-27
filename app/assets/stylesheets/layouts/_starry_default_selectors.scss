@@ -3,7 +3,7 @@
 /* - header */
 #header {
   background-color: transparent;
-  background-image: url(image-path("layouts/starry.jpg"));
+  background-image: url(image-path('layouts/starry.jpg'));
   background-position: right top;
   a:hover { color: $font_color_header_link_hover; }
 }
