@@ -428,7 +428,7 @@ div.post-subheader { width: 100%; }
 }
 
 .paginator {
-  color: black;
+  color: #000000;
 
   .left-align {
     float: left;
@@ -439,7 +439,7 @@ div.post-subheader { width: 100%; }
     padding: 2px;
     padding-right: 10px;
     float: right;
-    a { color: black; }
+    a { color: #000000; }
   }
 
   .normal-pagination { display: block; }
@@ -529,7 +529,7 @@ div.post-subheader { width: 100%; }
   font-size: 70%;
 }
 
-.reply-highlighted { border: 1px red solid; }
+.reply-highlighted { border: 1px #FF0000 solid; }
 
 .selector-popup {
   background-color: $bg_color_selectionpopup;

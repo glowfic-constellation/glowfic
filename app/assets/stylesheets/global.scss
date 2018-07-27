@@ -111,7 +111,7 @@ button, .button {
 
 /* For UI elements involving reordering */
 .disabled-arrow {
-  filter: gray; /* IE */
+  filter: #808080; /* IE */
   -webkit-filter: grayscale(1); /* Chrome, Safari, Opera */
   filter: grayscale(1); /* Edge, Firefox */
 }
@@ -138,7 +138,7 @@ button, .button {
   margin-left: 5px;
   background-image: none;
   border: 0;
-  color: white;
+  color: #FFFFFF;
   padding: 4px 12px;
   border-radius: 5px;
   font-weight: normal;
