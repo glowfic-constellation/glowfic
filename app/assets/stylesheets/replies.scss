@@ -83,6 +83,7 @@
     margin-left: 10px;
   }
 }
+
 @media (max-width: 700px) {
   #reply-icon-selector { left: 0; }
 }
@@ -199,6 +200,7 @@ div.post-subheader { width: 100%; }
 }
 
 .post-icon, #current-icon-dropdown { background-color: $bg_color_post_icon; }
+
 .post-icon {
   padding: 0;
   height: 120px;
@@ -370,20 +372,24 @@ div.post-subheader { width: 100%; }
     width: 100%;
     display: inline-block;
   }
+
   .post-icon {
     float: left;
     margin-right: 0;
     margin-bottom: 5px;
   }
+
   .post-info-text {
     float: left;
     margin-right: 10px;
     margin-bottom: 5px;
   }
+
   #post-form-wrapper { margin-left: 0; }
   #character-selector { left: 0; }
   .post-character { background-color: $bg_color_post_character_narrow; }
   .post-author { background-color: $bg_color_post_author_narrow; }
+
   .post-content blockquote {
     margin-left: 1.5em;
     margin-right: 1.5em;
@@ -442,6 +448,7 @@ div.post-subheader { width: 100%; }
   .normal-pagination { display: block; }
   .mobile-pagination { display: none; }
 }
+
 @mixin mobile-paginator {
   padding: 0;
 
@@ -463,6 +470,7 @@ div.post-subheader { width: 100%; }
 
 @media (max-width: 400px) {
   .paginator-meta { display: none; }
+
   .paginator {
     @include mobile-paginator;
   }
@@ -485,6 +493,7 @@ div.post-subheader { width: 100%; }
     padding: 10px 20px;
     border-bottom: 1px solid $border_color_post_menu;
   }
+
   a { color: $font_color_menu_link; }
   a:hover div { background-color: $bg_color_menu_link_hover; }
 
@@ -534,6 +543,7 @@ div.post-subheader { width: 100%; }
 }
 
 .index-description p { margin: 0px; }
+
 .mod {
   width: 100%;
   height: 50px;

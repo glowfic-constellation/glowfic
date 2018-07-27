@@ -57,6 +57,7 @@ a {
 /* - content headers */
 th, .content-header {
   background-color: $bg_color_head;
+
   a {
     color: $font_color_head_link;
     &:visited { color: $font_color_head_link_visited; }
