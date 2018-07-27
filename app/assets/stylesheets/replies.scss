@@ -309,12 +309,6 @@ div.post-subheader { width: 100%; }
   font-style: italic;
 }
 
-/* - Blockquotes around .post-info-box */
-.post-content blockquote {
-  margin-right: 5.5em;
-  margin-left: 5.5em;
-}
-
 .post-content {
   /* - Lists around .post-info-box */
   ul, ol {
@@ -322,6 +316,12 @@ div.post-subheader { width: 100%; }
     list-style-position: inside;
 
     ul, ol { overflow: auto; }
+  }
+
+  /* - Blockquotes around .post-info-box */
+  blockquote {
+    margin-right: 5.5em;
+    margin-left: 5.5em;
   }
 
   /* - Tables in post-content */
