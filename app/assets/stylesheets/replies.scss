@@ -154,7 +154,7 @@ div.post-subheader { width: 100%; }
   blockquote { background-color: $bg_color_odd_blockquote; }
 }
 
-.single-description blockquote { background-color: rgba(#808080, 0.3); }
+.single-description blockquote { background-color: rgba($bg_color_descriptions_blockquote, 0.3); }
 
 .post-content, .written-content, .message-content {
   blockquote {
@@ -347,7 +347,7 @@ div.post-subheader { width: 100%; }
   }
 
   th, td {
-    border: 1px solid #999999;
+    border: 1px solid $border_color_reply_table;
   }
 }
 
@@ -362,8 +362,8 @@ div.post-subheader { width: 100%; }
 .char-access-fake {
   padding: 5px 0;
   font-size: 80%;
-  background-color: #AAAAAA;
-  background-color: rgba(#808080, 0.3);
+  background-color: $font_color_char_switcher;
+  background-color: rgba($font_color_char_switcher_alpha, 0.3);
 }
 
 /* - Narrow window display */
@@ -428,7 +428,7 @@ div.post-subheader { width: 100%; }
 }
 
 .paginator {
-  color: #000000;
+  color: $font_color_paginate;
 
   .left-align {
     float: left;
@@ -439,7 +439,7 @@ div.post-subheader { width: 100%; }
     padding: 2px;
     padding-right: 10px;
     float: right;
-    a { color: #000000; }
+    a { color: $font_color_paginate; }
   }
 
   .normal-pagination { display: block; }
@@ -529,7 +529,7 @@ div.post-subheader { width: 100%; }
   font-size: 70%;
 }
 
-.reply-highlighted { border: 1px #FF0000 solid; }
+.reply-highlighted { border: 1px $border_color_unread_reply solid; }
 
 .selector-popup {
   background-color: $bg_color_selectionpopup;

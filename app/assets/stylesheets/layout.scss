@@ -200,8 +200,8 @@ th, .content-header {
     line-height: 28px;
 
     a {
-      color: #EEEEEE;
-      &:hover { color: #DDDDDD; }
+      color: $font_color_head_link;
+      &:hover { color: $font_color_head_link_hover; }
     }
   }
 
@@ -316,7 +316,7 @@ td, .table-list li { font-size: $font_size_small; }
 
   &.selected { background-color: $bg_color_viewbutton_selected; }
 
-  a { color: #FFFFFF; }
+  a { color: $font_color_viewbutton; }
 }
 
 .list-view, .icon-view {
@@ -404,8 +404,8 @@ td, .table-list li { font-size: $font_size_small; }
 }
 
 .section-warning {
-  background-color: #D06E6E;
-  background-color: rgba(#FF0000, 0.4);
+  background-color: $bg_color_section_warning;
+  background-color: rgba($bg_color_section_warning_alpha, 0.4);
   padding: 5px;
 }
 
