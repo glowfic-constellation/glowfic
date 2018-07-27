@@ -30,8 +30,8 @@ a {
 /* - content */
 #content .odd, #content .even, .post-post, .post-reply, #post-editor {
   border-top: solid 1px $bg_color_content_border;
-  background-color: $bg_color_even !important;
-  blockquote { background-color: calculate-transparent-color($bg_color_even, $bg_color_odd, 0.2) !important; }
+  background-color: $bg_color_even !important; // sass-lint:disable-line no-important
+  blockquote { background-color: calculate-transparent-color($bg_color_even, $bg_color_odd, 0.2) !important; } // sass-lint:disable-line no-important
 }
 
 .post-edit-box img {
