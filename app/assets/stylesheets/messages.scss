@@ -1,3 +1,5 @@
+@import 'variables';
+
 #message-row {
   width: 75%;
   min-width: 300px;
@@ -32,7 +34,7 @@
 
 .message-expand {
   z-index: 0;
-  background-color: rgba(0, 0, 0, 0.1);
+  background-color: rgba($bg_color_message_expander, 0.1);
 }
 
 .message-menu {

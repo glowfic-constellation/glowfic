@@ -48,12 +48,12 @@ textarea { padding: 5px; }
 
 button, .button {
   border-color: $border_color_button;
-  background-color: $bg_color_button;
-  background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(20%, #FFFFFF), color-stop(50%, #F6F6F6), color-stop(52%, #EEEEEE), color-stop(100%, #F4F4F4));
-  background: -webkit-linear-gradient(to bottom, #FFFFFF 20%, #F6F6F6 50%, #EEEEEE 52%, #F4F4F4 100%);
-  background: -moz-linear-gradient(to bottom, #FFFFFF 20%, #F6F6F6 50%, #EEEEEE 52%, #F4F4F4 100%);
-  background: -o-linear-gradient(to bottom, #FFFFFF 20%, #F6F6F6 50%, #EEEEEE 52%, #F4F4F4 100%);
-  background: linear-gradient(to bottom, #FFFFFF 20%, #F6F6F6 50%, #EEEEEE 52%, #F4F4F4 100%);
+  background: $bg_color_button;
+  background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(20%, $bg_color_button_20), color-stop(50%, $bg_color_button_50), color-stop(52%, $bg_color_button_52), color-stop(100%, $bg_color_button_100));
+  background: -webkit-linear-gradient(to bottom, $bg_color_button_20 20%, $bg_color_button_50 50%, $bg_color_button_52 52%, $bg_color_button_100 100%);
+  background: -moz-linear-gradient(to bottom, $bg_color_button_20 20%, $bg_color_button_50 50%, $bg_color_button_52 52%, $bg_color_button_100 100%);
+  background: -o-linear-gradient(to bottom, $bg_color_button_20 20%, $bg_color_button_50 50%, $bg_color_button_52 52%, $bg_color_button_100 100%);
+  background: linear-gradient(to bottom, $bg_color_button_20 20%, $bg_color_button_50 50%, $bg_color_button_52 52%, $bg_color_button_100 100%);
   background-clip: padding-box;
   height: 25px;
   line-height: normal;
@@ -112,7 +112,7 @@ button, .button {
 /* For UI elements involving reordering */
 .disabled-arrow {
   -webkit-filter: grayscale(1); /* Chrome, Safari, Opera */
-  filter: #808080; /* IE */
+  filter: $filter_disabled; /* IE */
   filter: grayscale(1); /* Edge, Firefox */
 }
 
@@ -141,7 +141,7 @@ button, .button {
   height: 28px;
   vertical-align: middle;
   line-height: 1.25rem;
-  color: #FFFFFF;
+  color: $font_color_linkbox;
   font-size: $font_size_large;
   font-weight: normal;
   img { vertical-align: baseline; }
