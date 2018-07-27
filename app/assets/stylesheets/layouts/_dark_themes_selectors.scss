@@ -17,19 +17,12 @@
 /* - placeholders */
 ::-webkit-input-placeholder { color: $font_color_input_placeholder; }
 
-:-moz-placeholder {
+:-moz-placeholder, ::-moz-placeholder {
   opacity: 1;
   color: $font_color_input_placeholder;
 }
 
-::-moz-placeholder {
-  opacity: 1;
-  color: $font_color_input_placeholder;
-}
-
-:-ms-input-placeholder { color: $font_color_input_placeholder; }
-::-ms-input-placeholder { color: $font_color_input_placeholder; }
-::placeholder { color: $font_color_input_placeholder; }
+:-ms-input-placeholder, ::-ms-input-placeholder, ::placeholder { color: $font_color_input_placeholder; }
 
 /* - account options, post editor, search */
 #content .form-table, #icon-table, .search-form, .post-info-box {
