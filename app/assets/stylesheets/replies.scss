@@ -333,13 +333,8 @@ div.post-subheader { width: 100%; }
     font-weight: bold;
   }
 
-  td {
-    padding: 5px;
-  }
-
-  th, td {
-    border: 1px solid $border_color_reply_table;
-  }
+  td { padding: 5px; }
+  th, td { border: 1px solid $border_color_reply_table; }
 }
 
 /* - Character quick switcher - small icons for selecting characters in post-editor */
