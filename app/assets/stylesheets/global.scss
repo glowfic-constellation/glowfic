@@ -4,14 +4,14 @@ body, html { height: 100%; }
 
 body {
   margin: 0 0 0 0;
-  font-family: Helvetica, Verdana, sans-serif;
   background-color: $bg_color_page;
   color: $font_color_page;
+  font-family: Helvetica, Verdana, sans-serif;
 }
 
 html {
-  box-sizing: border-box;
   font-size: 16px;
+  box-sizing: border-box;
 }
 
 *, ::before, ::after {
@@ -25,21 +25,21 @@ a {
   &:visited { color: $font_color_link_visited; }
 
   &:hover {
-    color: $font_color_link_hover;
     text-decoration: none;
+    color: $font_color_link_hover;
   }
 }
 
 /* Inputs */
 input, textarea, button {
-  font-size: $font_size_smallerish;
-  height: 25px;
+  margin: 5px 0;
+  border: 1px solid $border_color_input;
   border-radius: 5px;
   background-color: $bg_color_input;
-  color: $font_color_input;
   padding: 0 8px;
-  border: 1px solid $border_color_input;
-  margin: 5px 0;
+  height: 25px;
+  color: $font_color_input;
+  font-size: $font_size_smallerish;
 }
 
 input[type="checkbox"] { height: 23px; }
@@ -47,6 +47,7 @@ textarea { padding: 5px; }
 .form-table td input[type="radio"] { width: unset; }
 
 button, .button {
+  border-color: $border_color_button;
   background-color: $bg_color_button;
   background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(20%, #FFFFFF), color-stop(50%, #F6F6F6), color-stop(52%, #EEEEEE), color-stop(100%, #F4F4F4));
   background: -webkit-linear-gradient(to bottom, #FFFFFF 20%, #F6F6F6 50%, #EEEEEE 52%, #F4F4F4 100%);
@@ -54,9 +55,8 @@ button, .button {
   background: -o-linear-gradient(to bottom, #FFFFFF 20%, #F6F6F6 50%, #EEEEEE 52%, #F4F4F4 100%);
   background: linear-gradient(to bottom, #FFFFFF 20%, #F6F6F6 50%, #EEEEEE 52%, #F4F4F4 100%);
   background-clip: padding-box;
-  border-color: $border_color_button;
-  line-height: normal;
   height: 25px;
+  line-height: normal;
 }
 
 /* Display Helpers */
@@ -111,8 +111,8 @@ button, .button {
 
 /* For UI elements involving reordering */
 .disabled-arrow {
-  filter: gray; /* IE */
   -webkit-filter: grayscale(1); /* Chrome, Safari, Opera */
+  filter: gray; /* IE */
   filter: grayscale(1); /* Edge, Firefox */
 }
 
@@ -132,18 +132,18 @@ button, .button {
 /* UI Links */
 .link-box {
   display: inline-block;
-  font-size: $font_size_large;
-  line-height: 1.25rem;
   margin: 0;
   margin-left: 5px;
-  background-image: none;
   border: 0;
-  color: white;
-  padding: 4px 12px;
   border-radius: 5px;
-  font-weight: normal;
+  background-image: none;
+  padding: 4px 12px;
   height: 28px;
   vertical-align: middle;
+  line-height: 1.25rem;
+  color: white;
+  font-size: $font_size_large;
+  font-weight: normal;
   img { vertical-align: baseline; }
   &.action-new { background-color: $bg_color_linkbox_new; }
   &.action-delete { background-color: $bg_color_linkbox_delete; }
@@ -159,8 +159,8 @@ button, .button {
 
   li {
     display: inline;
-    list-style-type: none;
     margin-right: 4px;
+    list-style-type: none;
   }
 }
 
@@ -170,9 +170,9 @@ button, .button {
 span.badge {
   position: relative;
   bottom: 1px;
-  background-color: $bg_color_badge;
-  color: $font_color_badge;
-  border: 0.5px solid $border_color_badge;
-  text-shadow: 0 0 2px $shadow_color_badge, 0 0 2px $shadow_color_badge;
   margin: 2px;
+  border: 0.5px solid $border_color_badge;
+  background-color: $bg_color_badge;
+  text-shadow: 0 0 2px $shadow_color_badge, 0 0 2px $shadow_color_badge;
+  color: $font_color_badge;
 }

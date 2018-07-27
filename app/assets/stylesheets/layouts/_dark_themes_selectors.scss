@@ -2,9 +2,9 @@
 
 /* Hovering help box on post editor */
 .ui-widget-header {
+  border-color: $border_color_popup_header;
   background-color: $bg_color_popup_header;
   color: $font_color_popup_header;
-  border-color: $border_color_popup_header;
 }
 
 .ui-widget-content {
@@ -18,13 +18,13 @@
 ::-webkit-input-placeholder { color: $font_color_input_placeholder; }
 
 :-moz-placeholder {
-  color: $font_color_input_placeholder;
   opacity: 1;
+  color: $font_color_input_placeholder;
 }
 
 ::-moz-placeholder {
-  color: $font_color_input_placeholder;
   opacity: 1;
+  color: $font_color_input_placeholder;
 }
 
 :-ms-input-placeholder { color: $font_color_input_placeholder; }
@@ -34,38 +34,38 @@
 /* - account options, post editor, search */
 #content .form-table, #icon-table, .search-form, .post-info-box {
   input:not([type='submit']), textarea, select {
+    border-color: $border_color_input;
     background-color: $bg_color_input;
     color: $font_color_input;
-    border-color: $border_color_input;
   }
 }
 
 /* - select2 */
 .select2-dropdown {
+  border-color: $border_color_input;
   background-color: $bg_color_input;
   color: $font_color_input;
-  border-color: $border_color_input;
 }
 
 .select2-container--default {
   /* -- multiple / tag */
   .select2-selection--multiple {
+    border-color: $border_color_input;
     background-color: $bg_color_input;
     color: $font_color_input;
-    border-color: $border_color_input;
 
     /* --- tag item */
     .select2-selection__choice {
-      background-color: $bg_color_select2_highlight;
       border-color: $border_color_input;
+      background-color: $bg_color_select2_highlight;
     }
   }
 
   /* -- single */
   .select2-selection--single {
+    border-color: $border_color_input;
     background-color: $bg_color_input;
     color: $font_color_input;
-    border-color: $border_color_input;
 
     .select2-selection__rendered { color: $font_color_input; }
   }
@@ -84,16 +84,16 @@
 
   /* --- input */
   .select2-search--dropdown .select2-search__field {
+    border-color: $border_color_input;
     background-color: $bg_color_select2_search;
     color: $font_color_input;
-    border-color: $border_color_input;
   }
 
   /* --- disabled input */
   &.select2-container--disabled .select2-selection--single {
+    border-color: $border_color_input;
     background-color: $bg_color_mce_panel;
     color: $font_color_input;
-    border-color: $border_color_input;
   }
 }
 
@@ -101,9 +101,9 @@
 
 /* HTML written editor */
 #post-editor input:not([type='submit']), #post-editor textarea, #message_form input:not([type='submit']), #message_form textarea {
+  border-color: $border_color_input;
   background-color: $bg_color_input;
   color: $font_color_input;
-  border-color: $border_color_input;
 }
 
 /* RTF post editor – see tinymce.css for styling of the iframe itself */
@@ -119,13 +119,13 @@
 
   /* footer: 'powered by' text */
   .mce-branding-powered-by {
-    background-color: $bg_color_mce_panel;
     border-color: $border_color_input;
+    background-color: $bg_color_mce_panel;
   }
 
   .mce-label {
-    color: rgba($font_color_input, $opacity_mce_label);
     text-shadow: none;
+    color: rgba($font_color_input, $opacity_mce_label);
   }
 }
 

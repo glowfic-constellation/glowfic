@@ -3,10 +3,10 @@
 /* Header Menus */
 #header {
   background-color: $bg_color_header_bottom;
+  overflow: hidden;
+  vertical-align: middle;
   color: $font_color_header_link;
   font-size: $font_size_header;
-  vertical-align: middle;
-  overflow: hidden;
 
   ul {
     display: inline;
@@ -40,24 +40,24 @@
 
 #user-info {
   float: left;
-  padding: 0.5em;
   background-color: $bg_color_header_middle;
-  font-weight: bold;
+  padding: 0.5em;
   text-align: center;
   line-height: normal;
+  font-weight: bold;
 
   .no-img, img {
     display: inline-block;
-    height: 100px;
-    width: 100px;
     margin: 5px;
     padding: 0;
+    width: 100px;
+    height: 100px;
   }
 }
 
 #nav-top {
-  padding: 0.5em 1em 0.5em 0.5em;
   background-color: $bg_color_header_middle;
+  padding: 0.5em 1em 0.5em 0.5em;
   font-weight: bold;
 
   button, .button {
@@ -75,8 +75,8 @@
 #header-logout { margin-left: 1em; }
 
 #header-form {
-  font-weight: normal;
   display: inline;
+  font-weight: normal;
   input { margin: 2px 0; }
   #header-remember, #header-forms { margin-right: 10px; }
 }
@@ -93,9 +93,9 @@
 
 #header-links {
   display: none; /* hidden by default, shows up on narrow screens */
+  height: 20px;
   vertical-align: middle;
   font-size: $font_size_small;
-  height: 20px;
   a { font-weight: bold; }
 }
 
@@ -115,17 +115,16 @@
 
 /* Main Content */
 #holder {
-  min-height: 100%;
   position: relative;
+  min-height: 100%;
 }
 
 #content, #tos {
-  padding: 20px;
-  font-size: $font_size_main;
-  line-height: 1.25em;
-  text-align: left;
   position: relative;
-  padding-bottom: 35px;
+  padding: 20px;
+  text-align: left;
+  line-height: 1.25em;
+  font-size: $font_size_main;
 }
 
 #content h1 { line-height: normal; }
@@ -162,10 +161,10 @@
 
 /* Top-right timestamp on certain timestamped pages */
 .time-loaded {
-  font-size: $font_size_mini;
   position: absolute;
   top: 2px;
   right: 20px;
+  font-size: $font_size_mini;
 }
 
 /* Login / logout warning */
@@ -180,23 +179,23 @@
 table { width: 100%; }
 
 .table-list { /* table-style ULs */
-  list-style: none;
-  padding: 0;
   margin: 0;
+  padding: 0;
+  list-style: none;
 }
 
 th, .content-header {
   background-color: $bg_color_head;
-  color: $font_color_head;
   padding: 15px;
+  color: $font_color_head;
   font-size: $font_size_large;
   font-weight: normal;
 }
 
 .content-header {
-  box-sizing: border-box;
   width: 100%;
   overflow: hidden;
+  box-sizing: border-box;
 
   span {
     line-height: 28px;
@@ -214,8 +213,8 @@ td, .table-list li { font-size: $font_size_small; }
 
 /* Subs and subbers */
 .sub {
-  padding: 10px;
   background-color: $bg_color_sub;
+  padding: 10px;
   color: $font_color_sub;
   font-size: $font_size_main;
 
@@ -223,8 +222,8 @@ td, .table-list li { font-size: $font_size_small; }
 }
 
 .subber {
-  padding: 10px 25px;
   background-color: $bg_color_subber;
+  padding: 10px 25px;
   color: $font_color_subber;
   font-size: $font_size_smallish;
   font-weight: bold;
@@ -234,8 +233,8 @@ td, .table-list li { font-size: $font_size_small; }
 
 /* Form Tables */
 .form-table {
-  width: 400px;
   margin: 0;
+  width: 400px;
   border-spacing: 0;
 
   th { text-align: center; }
@@ -252,29 +251,29 @@ td, .table-list li { font-size: $font_size_small; }
 
       &[type='checkbox'] {
         margin: 0 1px;
-        height: 18px;
         width: 18px;
+        height: 18px;
         vertical-align: middle;
       }
     }
   }
 
   textarea {
-    box-sizing: border-box;
-    height: 10em;
     width: 100%;
+    height: 10em;
+    box-sizing: border-box;
   }
 
   .select2-container input { margin-top: 5px; }
 }
 
 .form-table-ender {
-  padding: 10px 25px;
   background-color: $bg_color_subber;
+  padding: 10px 25px;
+  text-align: center;
   color: $font_color_subber;
   font-size: $font_size_smallish;
   font-weight: bold;
-  text-align: center;
 
   input { margin: 0; }
 }
@@ -293,8 +292,8 @@ td, .table-list li { font-size: $font_size_small; }
   &, &-dropdown { font-size: $font_size_smallerish; }
 
   input {
-    height: 20px;
     margin: 0;
+    height: 20px;
   }
 
   ul { padding: 0; }
@@ -306,16 +305,16 @@ td, .table-list li { font-size: $font_size_small; }
   float: right;
   margin: 0;
   margin-left: 5px;
-  padding: 4px 12px;
-  background-image: none;
-  background-color: $bg_color_viewbutton;
-  color: $font_color_viewbutton;
-  font-size: $font_size_large;
-  line-height: 1.3em;
   border: 0;
   border-radius: 5px;
+  background-color: $bg_color_viewbutton;
+  background-image: none;
   cursor: pointer;
+  padding: 4px 12px;
   height: 29px;
+  line-height: 1.3em;
+  color: $font_color_viewbutton;
+  font-size: $font_size_large;
 
   &.selected { background-color: $bg_color_viewbutton_selected; }
 
@@ -324,10 +323,10 @@ td, .table-list li { font-size: $font_size_small; }
 
 .list-view, .icon-view {
   display: inline;
+  position: relative;
+  top: 2px;
   margin: 0;
   padding: 0;
-  top: 2px;
-  position: relative;
 }
 
 .list-view {
@@ -353,12 +352,12 @@ td, .table-list li { font-size: $font_size_small; }
 .tag-item {
   display: inline-block;
   margin: 2px 0;
-  padding: 2px 8px;
+  border-radius: 5px;
   background-color: $bg_color_tag_item;
+  padding: 2px 8px;
   color: $font_color_tag_item;
   font-size: 90%;
   font-weight: normal;
-  border-radius: 5px;
 }
 
 .even .tag-item { background-color: $bg_color_tag_item_even; }
@@ -369,9 +368,9 @@ td, .table-list li { font-size: $font_size_small; }
 /* The new object layout with the floating left info box and the right content area */
 .left-info-box {
   float: left;
+  table-layout: fixed;
   overflow-wrap: break-word;
   word-wrap: break-word;
-  table-layout: fixed;
 }
 
 .right-content-box { float: left; }
@@ -403,8 +402,8 @@ td, .table-list li { font-size: $font_size_small; }
 .post-ignored { opacity: 0.3; }
 
 #loading img {
-  height: 20px;
   width: 20px;
+  height: 20px;
 }
 
 .section-warning {
@@ -414,8 +413,8 @@ td, .table-list li { font-size: $font_size_small; }
 }
 
 .section-ordered-handle {
-  cursor: move;
   display: inline-block;
+  cursor: move;
 
   img { vertical-align: text-bottom; }
 }
@@ -432,10 +431,10 @@ td, .table-list li { font-size: $font_size_small; }
 
 /* Search Input */
 .search-box {
-  width: 320px;
-  padding: 10px;
-  vertical-align: top;
   background-color: $bg_color_search_box;
+  padding: 10px;
+  width: 320px;
+  vertical-align: top;
   color: $font_color_search_box;
 }
 
@@ -448,9 +447,9 @@ td, .table-list li { font-size: $font_size_small; }
     .empty { display: none; }
 
     > thead > tr > th, > tbody > tr > td, > tfoot > tr > th {
-      box-sizing: border-box;
       display: block;
       width: 100%;
+      box-sizing: border-box;
     }
   }
 }
@@ -458,13 +457,13 @@ td, .table-list li { font-size: $font_size_small; }
 .user-moiety { font-size: 80%; }
 
 #footer {
-  font-size: $font_size_small;
-  background-color: $bg_color_header_middle;
-  color: $font_color_header_link;
   position: absolute;
-  left: 0px;
   bottom: 0px;
+  left: 0px;
+  background-color: $bg_color_header_middle;
   width: 100%;
+  color: $font_color_header_link;
+  font-size: $font_size_small;
 
   a { color: $font_color_header_link; }
   a:hover { color: $font_color_header_link_hover; }
@@ -479,18 +478,19 @@ td, .table-list li { font-size: $font_size_small; }
 Styles for the user output page to handle copy/pasting text
 The copy box can't be invisible/hidden or copy fails but opacity works
 */
+
 #select-output {
   margin: 0px;
-  font-weight: bold;
   height: 20px;
+  font-weight: bold;
 }
 
 #_hiddenCopyText_ {
-  height: 0px;
-  width: 0px;
   opacity: 0;
-  padding: 0px;
   margin: 0px;
+  padding: 0px;
+  width: 0px;
+  height: 0px;
 }
 
 #tag-search-name {

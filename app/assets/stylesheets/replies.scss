@@ -2,15 +2,15 @@
 
 /* Box displaying current icon */
 #icon-overlay {
-  background-color: $bg_color_icon_overlay;
-  height: 100px;
-  width: 100px;
+  display: none;
   position: absolute;
   top: 0;
   left: 15px;
   opacity: 0.4;
-  display: none;
+  background-color: $bg_color_icon_overlay;
   cursor: pointer;
+  width: 100px;
+  height: 100px;
 }
 
 #current-icon-holder { position: relative; }
@@ -19,34 +19,34 @@
   color: $font_color_icon_selector;
 
   select {
-    width: 100px;
     margin-bottom: 10px;
+    width: 100px;
   }
 }
 
 /* Character selector */
 .selector-popup-button {
-  width: 14px;
-  height: 14px;
   position: relative;
   top: 1px;
   cursor: pointer;
+  width: 14px;
+  height: 14px;
 }
 
 .selector-popup {
+  display: none;
   position: absolute;
   top: 0;
   left: 150px;
-  padding: 5px 20px 10px 20px;
   z-index: 2;
-  min-width: 200px;
-  display: none;
-  text-align: left;
   background-color: $bg_color_selectionpopup;
+  padding: 5px 20px 10px 20px;
+  min-width: 200px;
+  text-align: left;
 
   h4 {
-    margin-bottom: 0;
     margin-top: 0;
+    margin-bottom: 0;
     font-size: 90%;
   }
 }
@@ -57,30 +57,29 @@
   position: absolute;
   top: 10px;
   left: 160px;
-  min-height: 101px;
-  padding: 10px;
-  margin: 0;
   z-index: 4;
+  margin: 0;
   background-color: $bg_color_icon_selector;
+  padding: 10px;
+  min-height: 101px;
 
   img { cursor: pointer; }
 
   .gallery-icon {
-    min-height: 130px;
     display: inline-block;
+    position: relative;
+    margin-bottom: 10px;
+    width: 130px;
+    min-height: 130px;
     text-align: center;
     line-height: 14px;
-    margin-bottom: 10px;
-    position: relative;
-    width: 130px;
     word-wrap: break-word;
-    display: inline-block;
   }
 
   .gallery-name {
-    font-weight: bold;
     margin-bottom: 5px;
     margin-left: 10px;
+    font-weight: bold;
   }
 }
 
@@ -92,9 +91,9 @@
 
 .icon {
   position: relative;
+  margin: 5px;
   max-width: 100px;
   max-height: 100px;
-  margin: 5px;
 }
 
 /* Main content headers */
@@ -107,42 +106,42 @@
 div.post-subheader { width: 100%; }
 
 .post-subheader {
-  box-sizing: border-box;
-  padding: 10px;
   background-color: $bg_color_post_description;
+  padding: 10px;
   color: $font_color_post_description;
+  box-sizing: border-box;
 }
 
 .post-navheader {
-  box-sizing: border-box;
+  background-color: $bg_color_navheader;
   padding: 10px;
   overflow: hidden;
-  background-color: $bg_color_navheader;
+  box-sizing: border-box;
 
   .view-button { background-color: $bg_color_navbutton; }
 }
 
 .post-expander {
-  min-height: 5px;
   background-color: $bg_color_expander;
   padding: 0;
+  min-height: 5px;
 
   .info {
+    cursor: pointer;
     padding: 5px;
     text-align: center;
     font-size: $font_size_small;
-    cursor: pointer;
   }
 }
 
 .post-ender {
-  min-height: 5px;
-  padding: 5px;
   background-color: $bg_color_ender_post;
+  padding: 5px;
+  min-height: 5px;
+  text-align: center;
   color: $font_color_ender_post;
   font-size: $font_size_main;
   font-weight: bold;
-  text-align: center;
 }
 
 /* Written content */
@@ -183,19 +182,19 @@ div.post-subheader { width: 100%; }
 
 .post-edit-box {
   float: right;
-  margin-left: 10px;
   margin-bottom: 5px;
+  margin-left: 10px;
   padding: 5px;
 }
 
 .post-info-box {
-  text-align: center;
-  padding: 0;
   float: left;
   margin-right: 10px;
   margin-bottom: 5px;
+  padding: 0;
   width: 150px;
   overflow: visible;
+  text-align: center;
   overflow-wrap: break-word;
 }
 
@@ -218,30 +217,30 @@ div.post-subheader { width: 100%; }
 }
 
 .post-character {
-  background-color: $bg_color_post_character;
-  color: $font_color_post_info;
-  padding: 4px;
   position: relative;
+  background-color: $bg_color_post_character;
+  padding: 4px;
+  color: $font_color_post_info;
 }
 
 .post-screenname {
   background-color: $bg_color_post_screenname;
-  color: $font_color_post_screenname;
   padding: 4px;
+  color: $font_color_post_screenname;
   overflow-wrap: break-word;
   word-wrap: break-word;
 }
 
 .post-author {
-  padding: 5px;
-  background-color: $bg_color_post_author;
-  color: $font_color_post_info;
   position: relative;
+  background-color: $bg_color_post_author;
+  padding: 5px;
+  color: $font_color_post_info;
 }
 
 .post-footer {
-  padding: 0;
   clear: both;
+  padding: 0;
 
   .right-align {
     width: 100%;
@@ -255,15 +254,15 @@ div.post-subheader { width: 100%; }
 }
 
 #post-icon-filler {
-  width: 100px;
-  height: 100px;
   display: inline-block;
   background-color: #8B8687;
+  width: 100px;
+  height: 100px;
 }
 
 #post_content, #reply_content {
-  width: 100%;
   display: block;
+  width: 100%;
 }
 
 #reply_content { height: 130px; }
@@ -271,12 +270,12 @@ div.post-subheader { width: 100%; }
 
 #post-form-wrapper {
   margin-top: 5px;
-  margin-left: 160px;
   margin-right: 10px;
+  margin-left: 160px;
   background-image: url(image-path('icons/loading.gif'));
+  background-repeat: no-repeat;
   background-position: 50% 30%;
   background-size: 30px;
-  background-repeat: no-repeat;
 }
 
 #reply_content, .mce-panel { box-sizing: content-box; }
@@ -284,9 +283,9 @@ div.post-subheader { width: 100%; }
 
 #post_form {
   label {
+    display: inline-block;
     margin-left: 5px;
     min-width: 155px;
-    display: inline-block;
     &.no-margin { margin-left: 0; }
   }
 
@@ -300,14 +299,14 @@ div.post-subheader { width: 100%; }
   .clear { height: 1px; }
 
   input[type="checkbox"] {
-    margin-left: 5px;
     position: relative;
     bottom: 2px;
+    margin-left: 5px;
   }
 
   #current_authors a {
-    margin: 5px 0;
     display: inline-block;
+    margin: 5px 0;
   }
 }
 
@@ -319,23 +318,23 @@ div.post-subheader { width: 100%; }
 
 /* - Blockquotes around .post-info-box */
 .post-content blockquote {
-  margin-left: 5.5em;
   margin-right: 5.5em;
+  margin-left: 5.5em;
 }
 
 /* - Lists around .post-info-box */
 .post-content {
   ul, ol {
-    list-style-position: inside;
     padding-left: 30px;
+    list-style-position: inside;
 
     ul, ol { overflow: auto; }
   }
 
   /* - Tables in post-content */
   th {
-    padding: 5px;
     background-color: unset;
+    padding: 5px;
     color: unset;
     font-size: unset;
     font-weight: bold;
@@ -352,25 +351,25 @@ div.post-subheader { width: 100%; }
 
 /* - Character quick switcher - small icons for selecting characters in post-editor */
 .char-access-icon {
-  height: 30px;
-  width: 30px;
   float: left;
+  width: 30px;
+  height: 30px;
   box-sizing: border-box;
 }
 
 .char-access-fake {
-  padding: 5px 0;
-  font-size: 80%;
   background-color: #AAA;
   background-color: rgba(128,128,128,0.3);
+  padding: 5px 0;
+  font-size: 80%;
 }
 
 /* - Narrow window display */
 @media (max-width: 600px) {
   .post-info-box {
+    display: inline-block;
     float: none;
     width: 100%;
-    display: inline-block;
   }
 
   .post-icon {
@@ -391,21 +390,21 @@ div.post-subheader { width: 100%; }
   .post-author { background-color: $bg_color_post_author_narrow; }
 
   .post-content blockquote {
-    margin-left: 1.5em;
     margin-right: 1.5em;
+    margin-left: 1.5em;
   }
 }
 
 /* Pagination */
 .pagination {
-  font-size: $font_size_small;
-  padding: 5px;
   display: inline-block;
+  padding: 5px;
+  font-size: $font_size_small;
 
   .current {
+    background-color: $bg_color_paginate_current_page;
     font-weight: bold;
     font-style: normal;
-    background-color: $bg_color_paginate_current_page;
   }
 
   a, .current, .disabled {
@@ -414,8 +413,8 @@ div.post-subheader { width: 100%; }
   }
 
   .disabled {
-    color: $font_color_paginate_link_disabled;
     text-align: left;
+    color: $font_color_paginate_link_disabled;
   }
 
   a {
@@ -425,8 +424,8 @@ div.post-subheader { width: 100%; }
   }
 
   .summary {
-    padding-left: 10px;
     padding-right: 10px;
+    padding-left: 10px;
   }
 }
 
@@ -439,9 +438,9 @@ div.post-subheader { width: 100%; }
   }
 
   .right-align {
+    float: right;
     padding: 2px;
     padding-right: 10px;
-    float: right;
     a { color: black; }
   }
 
@@ -456,8 +455,8 @@ div.post-subheader { width: 100%; }
     a, .disabled { padding: 5px; }
 
     .summary {
-      padding-left: 5px;
       padding-right: 5px;
+      padding-left: 5px;
     }
   }
   .normal-pagination { display: none; }
@@ -480,18 +479,18 @@ div.post-subheader { width: 100%; }
 #post-menu-holder { position: relative; }
 
 #post-menu-box {
-  text-align: left;
   position: absolute;
   top: 0;
   right: 0;
   z-index: 99;
-  color: $font_color_post_menu;
-  background-color: $bg_color_post_menu;
   border-top: 1px solid $border_color_post_menu;
+  background-color: $bg_color_post_menu;
+  text-align: left;
+  color: $font_color_post_menu;
 
   div {
-    padding: 10px 20px;
     border-bottom: 1px solid $border_color_post_menu;
+    padding: 10px 20px;
   }
 
   a { color: $font_color_menu_link; }
@@ -499,25 +498,25 @@ div.post-subheader { width: 100%; }
 
   img {
     margin-right: 3px;
-    vertical-align: middle;
     margin-bottom: 4px;
+    vertical-align: middle;
   }
 }
 
 /* Handle post tables */
 .post-completed {
-  text-align: center;
   width: 50px;
+  text-align: center;
 }
 
 .post-check-box {
-  width: 30px;
   padding-right: 10px;
+  width: 30px;
 
   /* Keeps unread table from padding excessively for the checkboxes */
   input.checkbox {
-    height: 13px;
     margin: 0px;
+    height: 13px;
     vertical-align: middle;
   }
 }
@@ -528,10 +527,10 @@ div.post-subheader { width: 100%; }
 }
 
 .unread-marker {
-  background-color: transparent;
-  color: transparent !important;
   position: absolute;
   top: -5px;
+  background-color: transparent;
+  color: transparent !important;
   font-size: 70%;
 }
 

@@ -20,14 +20,14 @@
 
 .gallery-icon, .character-icon-item {
   display: inline-block;
-  margin-bottom: 10px;
   position: relative;
+  margin-bottom: 10px;
   width: 130px;
   min-height: 130px;
+  vertical-align: top;
   text-align: center;
   line-height: 14px;
   word-wrap: break-word;
-  vertical-align: top;
 }
 .gallery-icon-editor input, .gallery-editor #gallery_name { height: 23px; }
 
@@ -40,21 +40,21 @@
 }
 
 .delete-button {
-  box-sizing: border-box;
-  height: 1.5em;
-  width: 1.5em;
-  padding: 0.2em;
-  background-color: $bg_color_mini_delete;
   border: 1px $border_color_mini_delete solid;
-  color: $font_color_mini_delete;
+  background-color: $bg_color_mini_delete;
+  padding: 0.2em;
+  width: 1.5em;
+  height: 1.5em;
   line-height: 1em;
+  color: $font_color_mini_delete;
+  box-sizing: border-box;
   a, a:visited, a:hover { color: $font_color_mini_delete; }
 }
 
 .select-button input {
+  margin: 0;
   width: 1.5em;
   height: 1.5em;
-  margin: 0;
 }
 
 /* The table in galleries/add to add multiple icons at once */
@@ -63,17 +63,17 @@
   width: 100%;
 
   .icon-buttons {
-    width: 45px;
     padding: 0 5px 0 0;
+    width: 45px;
 
     img { vertical-align: middle; }
   }
 }
 
 .icon.preview-icon, #icon-table .preview-icon {
-  max-height: 27px;
-  max-width: 27px;
   margin: 0;
+  max-width: 27px;
+  max-height: 27px;
 }
 
 .loading-icon {

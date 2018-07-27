@@ -180,13 +180,13 @@ table { border-color: #555; } // TODO: what does this style
 
 /* TODO: do this for starrydark */
 .ui-state-default, .ui-widget-content .ui-state-default, .ui-widget-header .ui-state-default, .ui-button, html .ui-button.ui-state-disabled:hover, html .ui-button.ui-state-disabled:active {
-  background-color: $bg_color_popup_button;
   border-color: $border_color_popup_button;
+  background-color: $bg_color_popup_button;
 }
 
 .ui-state-hover, .ui-widget-content .ui-state-hover, .ui-widget-header .ui-state-hover, .ui-state-focus, .ui-widget-content .ui-state-focus, .ui-widget-header .ui-state-focus, .ui-button:hover, .ui-button:focus {
-  background-color: $bg_color_popup_button;
   border-color: $border_color_popup_button;
+  background-color: $bg_color_popup_button;
 }
 
 .ui-widget-content a { color: $font_color_popup_link; }
