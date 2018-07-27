@@ -515,7 +515,7 @@ div.post-subheader { width: 100%; }
 
   /* Keeps unread table from padding excessively for the checkboxes */
   input.checkbox {
-    margin: 0px;
+    margin: 0;
     height: 13px;
     vertical-align: middle;
   }
@@ -541,7 +541,7 @@ div.post-subheader { width: 100%; }
   .history-header { width: 75px; }
 }
 
-.index-description p { margin: 0px; }
+.index-description p { margin: 0; }
 
 .mod {
   width: 100%;

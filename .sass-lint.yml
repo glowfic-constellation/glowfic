@@ -100,7 +100,7 @@ rules:
     - allowed-shorthands: [1, 2]
   url-quotes: 1
   variable-for-property: 1
-  zero-unit: 0
+  zero-unit: 1
 
   # Inner Spacing
   space-after-comma: 1

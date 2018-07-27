@@ -458,8 +458,8 @@ td, .table-list li { font-size: $font_size_small; }
 
 #footer {
   position: absolute;
-  bottom: 0px;
-  left: 0px;
+  bottom: 0;
+  left: 0;
   background-color: $bg_color_header_middle;
   width: 100%;
   color: $font_color_header_link;
@@ -480,21 +480,21 @@ The copy box can't be invisible/hidden or copy fails but opacity works
 */
 
 #select-output {
-  margin: 0px;
+  margin: 0;
   height: 20px;
   font-weight: bold;
 }
 
 #_hiddenCopyText_ {
   opacity: 0;
-  margin: 0px;
-  padding: 0px;
-  width: 0px;
-  height: 0px;
+  margin: 0;
+  padding: 0;
+  width: 0;
+  height: 0;
 }
 
 #tag-search-name {
-  margin: 0px 5px;
+  margin: 0 5px;
   width: 210px;
 }
 
