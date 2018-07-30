@@ -1052,6 +1052,99 @@ RSpec.describe PostsController do
       end
     end
 
+    it "gives correct next and previous posts" do
+      user = create(:user)
+      board = create(:board, creator: user)
+      section = create(:board_section, board: board)
+      create(:post, user: user, board: board, section: section)
+      prev = create(:post, user: user, board: board, section: section)
+      post = create(:post, user: user, board: board, section: section)
+      nextp = create(:post, user: user, board: board, section: section)
+      create(:post, user: user, board: board, section: section)
+      expect([prev, post, nextp].map(&:section_order)).to eq([1, 2, 3])
+
+      get :show, params: { id: post.id }
+
+      expect(assigns(:prev_post)).to eq(prev)
+      expect(assigns(:next_post)).to eq(nextp)
+
+    end
+
+    it "gives the correct previous post with an intermediate private post" do
+      user = create(:user)
+      board = create(:board, creator: user)
+      section = create(:board_section, board: board)
+      extra = create(:post, user: user, board: board, section: section)
+      prev = create(:post, user: user, board: board, section: section)
+      hidden = create(:post, board: board, section: section, privacy: Concealable::PRIVATE)
+      post = create(:post, user: user, board: board, section: section)
+      expect([extra, prev, hidden, post].map(&:section_order)).to eq([0, 1, 2, 3])
+
+      get :show, params: { id: post.id }
+
+      expect(assigns(:prev_post)).to eq(prev)
+      expect(assigns(:next_post)).to be_nil
+    end
+
+    it "gives the correct next post with an intermediate private post" do
+      user = create(:user)
+      board = create(:board, creator: user)
+      section = create(:board_section, board: board)
+      post = create(:post, user: user, board: board, section: section)
+      hidden = create(:post, board: board, section: section, privacy: Concealable::PRIVATE)
+      nextp = create(:post, user: user, board: board, section: section)
+      extra = create(:post, user: user, board: board, section: section)
+      expect([post, hidden, nextp, extra].map(&:section_order)).to eq([0, 1, 2, 3])
+
+      get :show, params: { id: post.id }
+
+      expect(assigns(:next_post)).to eq(nextp)
+      expect(assigns(:prev_post)).to be_nil
+    end
+
+    it "does not give previous with only a non-visible post in section" do
+      user = create(:user)
+      board = create(:board, creator: user)
+      section = create(:board_section, board: board)
+      hidden = create(:post, board: board, section: section, privacy: Concealable::PRIVATE)
+      post = create(:post, user: user, board: board, section: section)
+      hidden.update!(section_order: 0)
+      post.update!(section_order: 1)
+
+      get :show, params: { id: post.id }
+
+      expect(assigns(:prev_post)).to be_nil
+    end
+
+    it "does not give next with only a non-visible post in section" do
+      user = create(:user)
+      board = create(:board, creator: user)
+      section = create(:board_section, board: board)
+      post = create(:post, user: user, board: board, section: section)
+      hidden = create(:post, board: board, section: section, privacy: Concealable::PRIVATE)
+      post.update!(section_order: 0)
+      hidden.update!(section_order: 1)
+
+      get :show, params: { id: post.id }
+
+      expect(assigns(:next_post)).to be_nil
+    end
+
+    it "handles very large mostly-hidden sections as expected" do
+      user = create(:user)
+      board = create(:board, creator: user)
+      section = create(:board_section, board: board)
+      create(:post, user: user, board: board, section: section)
+      create_list(:post, 10, board: board, section: section, privacy: Concealable::PRIVATE)
+      post = create(:post, user: user, board: board, section: section)
+      create_list(:post, 10, board: board, section: section, privacy: Concealable::PRIVATE)
+      create(:post, user: user, board: board, section: section)
+
+      get :show, params: { id: post.id }
+
+      expect(assigns(:prev_post)).to be_nil
+      expect(assigns(:next_post)).to be_nil
+    end
     # TODO WAY more tests
   end
 
