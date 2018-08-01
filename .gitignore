@@ -35,3 +35,4 @@ spec/examples.txt
 
 # Ignore DB backups
 /db/backups/*
+/db/storage
