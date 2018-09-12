@@ -130,15 +130,15 @@ function calculateVisiblePages(innerWindow, outerBoundary, totalPages, currentNu
     left = range(1, outerBoundary+1);
     left.push('gap');
   } else {
-    left = range(1, middle[0]);
+    left = range(1, middle[0]-1);
   }
 
   var right;
   if (totalPages - outerBoundary - 2 > middle[middle.length-1]) {
     right = range(totalPages - outerBoundary, totalPages);
+    right.unshift('gap');
   } else {
     right = range(middle[middle.length-1] + 1, totalPages);
-    right.unshift('gap');
   }
 
   return left.concat(middle).concat(right);
