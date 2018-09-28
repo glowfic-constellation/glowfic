@@ -12,7 +12,7 @@
 If you are not acquainted with Rails, it may help to go through the [Getting Started with Rails](http://guides.rubyonrails.org/v5.1/getting_started.html) tutorial for Rails 5.1.
 If you wish to learn Ruby, try out the [quickstart](https://www.ruby-lang.org/en/documentation/quickstart/) guide provided on their website, or if you are already acquainted with various programming languages, try the [Learn X in Y minutes](https://learnxinyminutes.com/docs/ruby/) tutorial for Ruby.
 
-This README mostly focuses on how to get started developing this project with Docker -- in any environment with Docker installed you should be able to have the Glowfic server up and running.
+This README mostly focuses on how to get started developing this project with Docker – in any environment with Docker installed you should be able to have the Glowfic server up and running.
 
 ### Setup Process
 
@@ -39,7 +39,7 @@ This README mostly focuses on how to get started developing this project with Do
 
 If you haven't already, [start by installing Docker](https://docs.docker.com/install/).
 
-Then run `docker-compose up -d` within the glowfic directory.
+Then run `docker-compose up` within the glowfic directory.
 This will set up a Postgres server, a Redis server, and a Glowfic app server which can talk to both of them.
 
 There are some scripts for interacting with the Glowfic server in bin-docker.
@@ -68,7 +68,7 @@ You will need to re-run `bin-docker/rake db:migrate`.
 
 ### Executing the server
 
-The server should have started itself when you ran `docker-compose up -d`.
+The server should have started itself when you ran `docker-compose up`.
 When it's started, go to [http://localhost:3000/](http://localhost:3000/), where you should see a local copy of the Constellation.
 To stop the server, either close the Terminal or use `Ctrl+C` to stop the process.
 
@@ -102,7 +102,7 @@ If it has changed, you can rebuild the glowfic image with:
 
 *   `docker-compose stop`
 *   `docker-compose build`
-*   `docker-compose up -d`
+*   `docker-compose up`
 
 Now, update the gems used for the project:
 
