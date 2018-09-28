@@ -1,18 +1,14 @@
 class CreateBlocks < ActiveRecord::Migration[5.1]
-  def up
+  def change
     create_table :blocks do |t|
-      t.integer :blocking_user
-      t.integer :blocked_user
-      t.boolean :no_interact
-      t.boolean :no_posts
-      t.boolean :no_content
-      t.boolean :invisible
+      t.integer :blocking_user, null: false
+      t.integer :blocked_user, null: false
+      t.boolean :no_interact, default: true
+      t.boolean :no_posts, default: false
+      t.boolean :no_content, default: false
+      t.boolean :invisible, default: false
 
       t.timestamps
     end
-  end
-
-  def down
-    drop_table :blocks
   end
 end
