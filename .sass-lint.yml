@@ -46,7 +46,9 @@ rules:
   no-url-protocols: 1
   no-vendor-prefixes: 0
   no-warn: 1
-  property-units: 1
+  property-units:
+    - 1
+    - per-property: { font-size: ['em', 'rem', '%'] }
 
   # Nesting
   declarations-before-nesting: 1
