@@ -1,7 +1,7 @@
 @import 'variables';
 body {
   font-family: Helvetica, sans-serif;
-  font-size: 14px;
+  font-size: $font_size_small;
   background-color: $bg_color_input;
 
   blockquote {
