@@ -59,7 +59,7 @@
   button, .button {
     margin-right: 10px;
     color: $font_color_button;
-    font-size: 13px;
+    font-size: $font_size_smallerish;
     font-weight: bold; /* not redundant: used for login form */
   }
   input {
@@ -126,7 +126,7 @@
 
 /* Top-right timestamp on certain timestamped pages */
 .time-loaded {
-  font-size: 10px;
+  font-size: $font_size_mini;
   position: absolute;
   top: 2px;
   right: 20px;
@@ -146,7 +146,7 @@ th, .content-header {
   background-color: $bg_color_head;
   color: $font_color_head;
   padding: 15px;
-  font-size: 18px;
+  font-size: $font_size_large;
   font-weight: normal;
 }
 .content-header {
@@ -164,23 +164,23 @@ th, .content-header {
 
   & > div { overflow: hidden; }
 }
-td, .table-list li { font-size: 14px; }
+td, .table-list li { font-size: $font_size_small; }
 
 /* Subs and subbers */
 .sub {
   padding: 10px;
   background-color: $bg_color_sub;
   color: $font_color_sub;
-  font-size: 16px;
+  font-size: $font_size_main;
 }
 .subber {
   padding: 10px 25px;
   background-color: $bg_color_subber;
   color: $font_color_subber;
-  font-size: 15px;
+  font-size: $font_size_smallish;
   font-weight: bold;
   input { margin: 0; }
-  .link-box { font-size: 15px; }
+  .link-box { font-size: $font_size_smallish; }
 }
 
 /* Form Tables */
@@ -221,7 +221,7 @@ td, .table-list li { font-size: 14px; }
   padding: 10px 25px;
   background-color: $bg_color_subber;
   color: $font_color_subber;
-  font-size: 15px;
+  font-size: $font_size_smallish;
   font-weight: bold;
   text-align: center;
 
@@ -234,7 +234,7 @@ td, .table-list li { font-size: 14px; }
 /* Miscellaneous inputs */
 .select2 {
   &-container { margin: 3px 0; color: $font_color_select2_container; }
-  &, &-dropdown { font-size: 13px; }
+  &, &-dropdown { font-size: $font_size_smallerish; }
   input { height: 20px; margin: 0; }
   ul { padding: 0; }
 }
@@ -249,7 +249,7 @@ td, .table-list li { font-size: 14px; }
   background-image: none;
   background-color: $bg_color_viewbutton;
   color: $font_color_viewbutton;
-  font-size: 18px;
+  font-size: $font_size_large;
   line-height: 1.3em;
   border: 0;
   border-radius: 5px;
@@ -330,7 +330,7 @@ td, .table-list li { font-size: 14px; }
 }
 .continuity-header {
   padding: 10px 25px;
-  font-size: 15px;
+  font-size: $font_size_smallish;
   font-weight: bold;
 }
 #homepage-content {

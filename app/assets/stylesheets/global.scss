@@ -18,7 +18,7 @@ a {
 
 /* Inputs */
 input, textarea, button {
-  font-size: 13px;
+  font-size: $font_size_smallerish;
   height: 23px;
   border-radius: 5px;
   background-color: $bg_color_input;
@@ -95,7 +95,7 @@ button, .button {
 /* UI Links */
 .link-box {
   display: inline-block;
-  font-size: 18px;
+  font-size: $font_size_large;
   margin: 0;
   margin-left: 5px;
   background-image: none;

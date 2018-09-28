@@ -89,7 +89,7 @@
 
 /* Main content headers */
 .post-subheader, .post-navheader {
-  font-size: 15px;
+  font-size: $font_size_smallish;
 
   span { line-height: 14px; }
 }
@@ -116,7 +116,7 @@ div.post-subheader { width: 100%; }
   .info {
     padding: 5px;
     text-align: center;
-    font-size: 14px;
+    font-size: $font_size_small;
     cursor: pointer;
   }
 }
@@ -125,7 +125,7 @@ div.post-subheader { width: 100%; }
   padding: 5px;
   background-color: $bg_color_ender_post;
   color: $font_color_ender_post;
-  font-size: 16px;
+  font-size: $font_size_main;
   font-weight: bold;
   text-align: center;
 }
@@ -219,7 +219,7 @@ div.post-subheader { width: 100%; }
   clear: both;
   .right-align {
     width: 100%;
-    font-size: 14px;
+    font-size: $font_size_small;
   }
 }
 .per-page {
@@ -246,7 +246,7 @@ div.post-subheader { width: 100%; }
 #post-editor { position: relative; }
 .details {
   display: inline;
-  font-size: 12px;
+  font-size: $font_size_smaller;
   font-style: italic;
 }
 
@@ -326,7 +326,7 @@ div.post-subheader { width: 100%; }
 
 /* Pagination */
 .pagination {
-  font-size: 14px;
+  font-size: $font_size_small;
   padding: 5px;
   display: inline-block;
 
