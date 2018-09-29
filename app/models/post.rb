@@ -77,7 +77,7 @@ class Post < ApplicationRecord
   }
 
   def visible_to?(user)
-    return false if user && self.user.posts_visible_to?(user) == false
+    return false if user && !self.user.posts_visible_to?(user)
     return true if public?
     return false unless user
     return true if registered_users?
