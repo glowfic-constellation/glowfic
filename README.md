@@ -83,7 +83,7 @@ This will go through the [rspec](http://rspec.info/) tests.
 If you encounter a `PG::UndefinedTable` error, mentioning that a relation doesn't exist, ensure you've also migrated your test database.
 This can be done with:
 
-*   `RAILS_ENV=test bin-docker/rake db:migrate`
+*   `docker-compose run -e RAILS_ENV=test web rake db:migrate`
 
 After this, you should be able to re-run the tests.
 
