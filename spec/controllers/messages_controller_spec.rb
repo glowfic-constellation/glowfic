@@ -192,7 +192,6 @@ RSpec.describe MessagesController do
       expect(flash[:error]).not_to be_nil
       expect(flash[:error][:message]).to eq("Your message could not be sent because of the following problems:")
       expect(assigns(:message)).not_to be_valid
-      expect(assigns(:message).recipient).to be_nil
       expect(assigns(:javascripts)).to include('messages')
     end
 
@@ -203,7 +202,6 @@ RSpec.describe MessagesController do
       expect(flash[:error]).not_to be_nil
       expect(flash[:error][:message]).to eq("Your message could not be sent because of the following problems:")
       expect(assigns(:message)).not_to be_valid
-      expect(assigns(:message).recipient).to be_nil
       expect(assigns(:javascripts)).to include('messages')
     end
 
