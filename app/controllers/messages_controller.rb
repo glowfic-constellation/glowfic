@@ -17,8 +17,8 @@ class MessagesController < ApplicationController
 
   def new
     @message = Message.new
-    recipent = User.find_by_id(params[:recipient_id])
-    @message.recipient = recipent if recpient.can_interact_with(current_user)
+    recipient = User.find_by_id(params[:recipient_id])
+    @message.recipient = recipient if recipient.can_interact_with(current_user)
     @page_title = 'Compose Message'
   end
 
