@@ -10,5 +10,8 @@ class CreateBlocks < ActiveRecord::Migration[5.1]
 
       t.timestamps
     end
+
+    add_index :blocks, :blocking_user_id
+    add_index :blocks, :blocked_user_id
   end
 end
