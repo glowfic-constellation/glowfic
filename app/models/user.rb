@@ -24,6 +24,7 @@ class User < ApplicationRecord
   has_one :report_view
   belongs_to :avatar, class_name: 'Icon', inverse_of: :user, optional: true
   belongs_to :active_character, class_name: 'Character', inverse_of: :user, optional: true
+  has_many :blocks, inverse_of: :blocking_user
 
   validates :crypted, presence: true
   validates :email,
