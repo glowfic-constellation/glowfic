@@ -17,7 +17,7 @@
 - if section.description.present?
   %tr
     %th.subber.index-description{colspan: 6}= sanitize_written_content(section.description).html_safe
-- section_posts = posts_from_relation(section.posts.ordered_by_index, with_pagination: !in_collection, select: ', index_posts.description as index_description').select { |post| post.visible_to? (current_user) }
+- section_posts = posts_from_relation(section.posts.ordered_by_index, with_pagination: !in_collection, select: ', index_posts.description as index_description').select { |post| post.visible_to?(current_user, !!params[:show_blocked]) }
 - if section_posts.present?
   = render partial: 'posts/list_item', collection: section_posts, as: :post
 - else

@@ -28,7 +28,7 @@
         %th.subber.width-70 Today
         %th.subber.width-70= link_to 'Updated', url_for(day: params[:day], sort: 'updated')
       - posts.each do |post|
-        - next unless post.visible_to?(current_user)
+        - next unless post.visible_to?(current_user, !!params[:show_blocked])
         %tr
           - klass = [cycle('even', 'odd')]
           - klass << 'post-ignored' if ignored?(post)

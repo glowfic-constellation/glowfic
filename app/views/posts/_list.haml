@@ -28,7 +28,7 @@
       - if local_assigns[:check_box_name]
         %th.sub
   %tbody
-    - visible_posts = posts.select { |post| post.visible_to?(current_user) }
+    - visible_posts = posts.select { |post| post.visible_to?(current_user, !!params[:show_blocked]) }
     = render partial: 'posts/list_item', collection: visible_posts, as: :post, locals: post_args
     - if visible_posts.empty?
       %tr

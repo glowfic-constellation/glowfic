@@ -49,7 +49,7 @@
                 %th.sub Replies
                 %th.sub Last Updated
             %tbody
-              - visible_posts = @search_results.select { |post| post.visible_to?(current_user) }
+              - visible_posts = @search_results.select { |post| post.visible_to?(current_user, !!params[:show_blocked]) }
               = render partial: 'posts/list_item', collection: visible_posts, as: :post
 
   - if @search_results && @search_results.total_pages > 1
