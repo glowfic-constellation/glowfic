@@ -74,21 +74,21 @@ class User < ApplicationRecord
 
   def posts_visible_to?(user)
     yours, theirs = blocks_with(user)
-    return false if yours.invisible
-    return false if theirs.no_posts
+    return false if yours&.invisible
+    return false if theirs&.no_posts
     true
   end
 
   def content_visible_to?(user)
     yours, theirs = blocks_with(user)
-    return false if yours.invisible
-    return false if theirs.no_content
+    return false if yours&.invisible
+    return false if theirs&.no_content
     true
   end
 
   def can_interact_with?(user)
     yours, theirs = blocks_with(user)
-    return false if yours.no_interact || theirs.no_interact
+    return false if yours&.no_interact || theirs&.no_interact
     true
   end
 
