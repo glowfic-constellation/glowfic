@@ -6,6 +6,7 @@ class Message < ApplicationRecord
   belongs_to :first_thread, class_name: 'Message', foreign_key: :thread_id, inverse_of: false, optional: false
 
   validates :sender, presence: { if: Proc.new { |m| m.sender_id != 0 } }
+  validate :valid_recipient
 
   before_validation :set_thread_id
   after_create :notify_recipient
@@ -67,5 +68,11 @@ class Message < ApplicationRecord
     return unless recipient.email.present?
     return unless recipient.email_notifications?
     UserMailer.new_message(self.id).deliver
+  end
+
+  def valid_recipient
+    return unless sender && recipient
+    return if sender.can_interact_with?(recipient)
+    errors.add(:recipient, "cannot be messaged")
   end
 end
