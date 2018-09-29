@@ -72,27 +72,39 @@ class User < ApplicationRecord
     super || 'icon'
   end
 
-  def posts_visible_to?(user)
-    yours, theirs = blocks_with(user)
-    !yours&.invisible && !theirs&.no_posts
+  def author_blocked?(post)
+    return false unless post.authors_locked
+    post.author_ids.any?{ |author| self.blocked_post_users.include?(author) }
   end
 
-  def content_visible_to?(user)
-    yours, theirs = blocks_with(user)
-    !yours&.invisible && !theirs&.no_content
+  def author_blocking?(post, author_ids)
+    return false unless post.authors_locked
+    author_ids.any?{ |author| self.blocking_content_users.include?(author) }
   end
 
-  def can_interact_with?(user)
-    yours, theirs = blocks_with(user)
-    !yours&.no_interact && !theirs&.no_interact
+  def blocked_interaction
+    blocks = Block.where(no_interact: true)
+    (blocks.where(blocking_user: self).pluck(:blocked_user_id) + blocks.where(blocked_user: self).pluck(:blocking_user_id)).uniq
   end
 
-  def blocked?(user)
-    self.blocks.exists?(blocked_user: user)
+  def hidden_post_users
+    (blocking_content_users + blocked_post_users).uniq
   end
 
-  def blocked_by?(user)
-    user.blocks.exists?(blocked_user: self)
+  def hidden_content_users
+    (blocking_content_users + blocked_post_users).uniq
+  end
+
+  def blocking_content_users
+    Block.where(invisible: true, blocked_user: self).pluck(:blocking_user_id)
+  end
+
+  def blocked_post_users
+    Block.where(no_posts: true, blocking_user: self).pluck(:blocked_user_id)
+  end
+
+  def blocked_content_users
+    Block.where(no_content: true, blocking_user: self).pluck(blocked_user_id)
   end
 
   private
