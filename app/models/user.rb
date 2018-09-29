@@ -139,6 +139,6 @@ class User < ApplicationRecord
   end
 
   def blocks_with(user)
-    [Blocks.find_by(blocking_user: self, blocked_user: user), Blocks.find_by(blocking_user: user, blocked_user: self)]
+    [Block.find_by(blocking_user: self, blocked_user: user), Block.find_by(blocking_user: user, blocked_user: self)]
   end
 end
