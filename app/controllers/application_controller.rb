@@ -130,7 +130,7 @@ class ApplicationController < ActionController::Base
     end
 
     if logged_in?
-      posts = posts.select { |post| !current_user.author_blocked?(post) }
+      posts = posts.reject { |post| current_user.author_blocked?(post) }
       @opened_ids ||= PostView.where(user_id: current_user.id).where('read_at IS NOT NULL').pluck(:post_id)
 
       opened_posts = PostView.where(user_id: current_user.id).where('read_at IS NOT NULL').where(post_id: posts.map(&:id)).select([:post_id, :read_at])
