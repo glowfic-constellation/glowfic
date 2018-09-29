@@ -60,6 +60,33 @@ RSpec.describe MessagesController do
       expect(assigns(:message).recipient_id).to eq(recipient.id)
     end
 
+    it "handles provided blocked user" do
+      block = create(:block)
+      login_as(block.blocking_user)
+      get :new, params: { recipient_id: block.blocked_user_id }
+      expect(response.status).to eq(200)
+      expect(assigns(:message).recipient_id).to be_nil
+    end
+
+    it "handles provided blocking user" do
+      block = create(:block)
+      login_as(block.blocked_user)
+      get :new, params: { recipient_id: block.blocking_user_id }
+      expect(response.status).to eq(200)
+      expect(assigns(:message).recipient_id).to be_nil
+    end
+
+    it "hides blocked users" do
+      user = create(:user)
+      login_as(user)
+      create_list(:block, 2, blocked_user: user)
+      create_list(:block, 2, blocking_user: user)
+      other_users = create_list(:user, 2).sort_by!(&:username).pluck(:username, :id)
+      get :new
+      expect(response.status).to eq(200)
+      expect(assigns(:select_items)).to match_array(Users: other_users)
+    end
+
     context "with views" do
       render_views
 
@@ -156,6 +183,28 @@ RSpec.describe MessagesController do
       expect(message.message).to eq('response')
       expect(message.subject).to eq('Re: ' + previous.subject)
       expect(message.parent).to eq(previous)
+    end
+
+    it "fails with blocking recipient" do
+      block = create(:block)
+      login_as(block.blocked_user)
+      post :create, params: { message: {subject: 'test', message: 'testing', recipient_id: block.blocking_user } }
+      expect(flash[:error]).not_to be_nil
+      expect(flash[:error][:message]).to eq("Your message could not be sent because of the following problems:")
+      expect(assigns(:message)).not_to be_valid
+      expect(assigns(:message).recipient).to be_nil
+      expect(assigns(:javascripts)).to include('messages')
+    end
+
+    it "fails with blocked recipient" do
+      block = create(:block)
+      login_as(block.blocking_user)
+      post :create, params: { message: {subject: 'test', message: 'testing', recipient_id: block.blocked_user } }
+      expect(flash[:error]).not_to be_nil
+      expect(flash[:error][:message]).to eq("Your message could not be sent because of the following problems:")
+      expect(assigns(:message)).not_to be_valid
+      expect(assigns(:message).recipient).to be_nil
+      expect(assigns(:javascripts)).to include('messages')
     end
 
     it "succeeds when replying to own message" do
