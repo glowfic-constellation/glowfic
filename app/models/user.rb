@@ -72,9 +72,9 @@ class User < ApplicationRecord
     super || 'icon'
   end
 
-  def author_blocked?(post)
+  def author_hidden?(post, author_ids)
     return false unless post.authors_locked
-    post.author_ids.any?{ |author| self.blocked_post_users.include?(author) }
+    author_ids.any?{ |author| self.hidden_post_users.include?(author) }
   end
 
   def author_blocking?(post, author_ids)

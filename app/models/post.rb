@@ -76,8 +76,9 @@ class Post < ApplicationRecord
     select('(SELECT COUNT(*) FROM replies WHERE replies.post_id = posts.id) AS reply_count')
   }
 
-  def visible_to?(user)
-    return false if user&.author_blocking?(self, author_ids)
+  def visible_to?(user, show_blocked=false)
+    return false if !show_blocked && user&.author_hidden?(self, author_ids)
+    return false if show_blocked && user&.author_blocking?(self, author_ids)
     return true if public?
     return false unless user
     return true if registered_users?

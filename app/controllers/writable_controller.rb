@@ -82,18 +82,18 @@ class WritableController < ApplicationController
       next_post = @post.next_post
       9.times do
         break unless next_post
-        break if next_post.visible_to?(current_user)
+        break if next_post.visible_to?(current_user, true)
         next_post = next_post.next_post
       end
-      @next_post = next_post&.visible_to?(current_user) ? next_post : nil
+      @next_post = next_post&.visible_to?(current_user, true) ? next_post : nil
 
       prev_post = @post.prev_post
       9.times do
         break unless prev_post
-        break if prev_post.visible_to?(current_user)
+        break if prev_post.visible_to?(current_user, true)
         prev_post = prev_post.prev_post
       end
-      @prev_post = prev_post&.visible_to?(current_user) ? prev_post : nil
+      @prev_post = prev_post&.visible_to?(current_user, true) ? prev_post : nil
     end
 
     # show <link rel="canonical"> – for SEO stuff

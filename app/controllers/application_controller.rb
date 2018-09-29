@@ -113,7 +113,7 @@ class ApplicationController < ActionController::Base
   end
   helper_method :post_or_reply_link
 
-  def posts_from_relation(relation, no_tests: true, with_pagination: true, select: '')
+  def posts_from_relation(relation, no_tests: true, with_pagination: true, select: '', show_blocked: false)
     posts = relation
       .select('posts.*, boards.name as board_name, users.username as last_user_name'+ select)
       .joins(:board)
@@ -126,11 +126,10 @@ class ApplicationController < ActionController::Base
     posts = posts.no_tests if no_tests
 
     if (with_pagination && posts.total_pages <= 1) || posts.count(:all) <= 25
-      posts = posts.select {|post| post.visible_to?(current_user)}
+      posts = posts.select {|post| post.visible_to?(current_user, show_blocked)}
     end
 
     if logged_in?
-      posts = posts.reject { |post| current_user.author_blocked?(post) }
       @opened_ids ||= PostView.where(user_id: current_user.id).where('read_at IS NOT NULL').pluck(:post_id)
 
       opened_posts = PostView.where(user_id: current_user.id).where('read_at IS NOT NULL').where(post_id: posts.map(&:id)).select([:post_id, :read_at])

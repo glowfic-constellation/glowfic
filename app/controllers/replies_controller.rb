@@ -13,7 +13,7 @@ class RepliesController < WritableController
 
     @post = Post.find_by_id(params[:post_id]) if params[:post_id].present?
     @icon = Icon.find_by_id(params[:icon_id]) if params[:icon_id].present?
-    if @post.try(:visible_to?, current_user)
+    if @post.try(:visible_to?, current_user, !!params[:show_blocked])
       @users = @post.authors
       char_ids = @post.replies.pluck('distinct character_id') + [@post.character_id]
       @characters = Character.where(id: char_ids).ordered
@@ -91,7 +91,7 @@ class RepliesController < WritableController
     end
 
     if @search_results.total_pages <= 1
-      @search_results = @search_results.select {|reply| reply.post.visible_to?(current_user)}.paginate(page: page, per_page: 25)
+      @search_results = @search_results.select {|reply| reply.post.visible_to?(current_user, !!params[:show_blocked])}.paginate(page: page, per_page: 25)
     end
   end
 
@@ -235,7 +235,7 @@ class RepliesController < WritableController
     end
 
     @post = @reply.post
-    unless @post.visible_to?(current_user)
+    unless @post.visible_to?(current_user, true)
       flash[:error] = "You do not have permission to view this post."
       redirect_to boards_path and return
     end
