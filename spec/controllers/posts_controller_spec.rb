@@ -2837,4 +2837,38 @@ RSpec.describe PostsController do
       expect(response).to redirect_to(hidden_posts_url)
     end
   end
+
+  describe "post_list" do
+    shared_examples "post list" do
+      it "does not show user-only posts when not logged in" do
+        posts = create_list(:post, 2)
+        create_list(:post, 2, privacy: REGISTERED)
+        get show
+        expect(response.status).to eq(200)
+        expect(assigns(:posts)).to match_array(posts)
+      end
+
+      it "does not show access-locked or private threads" do
+        skip
+      end
+
+      it "shows access-locked and private threads if you have access" do
+        skip
+      end
+
+      it "does not show posts with blocked or blocking authors" do
+        skip
+      end
+
+      it "shows posts with a blocked (but not blocking) author with show_blocked=true" do
+        skip
+      end
+    end
+
+    context "GET index" do
+      let(:show) { ":index" }
+
+      include_examples "post list"
+    end
+  end
 end
