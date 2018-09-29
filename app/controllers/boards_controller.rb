@@ -61,7 +61,7 @@ class BoardsController < ApplicationController
     else
       board_posts = board_posts.ordered
     end
-    @posts = posts_from_relation(board_posts, false)
+    @posts = posts_from_relation(board_posts, no_tests: false)
   end
 
   def edit
