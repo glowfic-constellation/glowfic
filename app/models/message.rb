@@ -73,6 +73,6 @@ class Message < ApplicationRecord
   def valid_recipient
     return unless sender && recipient
     return if sender.can_interact_with?(recipient)
-    errors.add(:recipient, "cannot interact with")
+    errors.add(:recipient, "cannot be messaged")
   end
 end
