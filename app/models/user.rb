@@ -72,6 +72,28 @@ class User < ApplicationRecord
     super || 'icon'
   end
 
+  def posts_visible_to?(user)
+    yours, theirs = blocks_with(user)
+    return false if yours.invisible
+    return false if theirs.no_posts
+    true
+  end
+
+  def content_visible_to?(user)
+    yours, theirs = blocks_with(user)
+    return false if yours.invisible
+    return false if theirs.no_content
+    true
+  end
+
+  def blocked?(user)
+    self.blocks.exists?(blocked_user: user)
+  end
+
+  def blocked_by?(user)
+    user.blocks.exists?(blocked_user: self)
+  end
+
   private
 
   def strip_spaces
@@ -108,5 +130,9 @@ class User < ApplicationRecord
 
   def validate_password?
     !!@validate_password
+  end
+
+  def blocks_with(user)
+    [Blocks.find_by(blocking_user: self, blocked_user: user), Blocks.find_by(blocking_user: user, blocked_user: self)]
   end
 end
