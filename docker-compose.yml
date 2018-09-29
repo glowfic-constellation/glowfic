@@ -6,6 +6,7 @@ services:
       - "3000:3000"
     volumes:
       - .:/code
+      - bundler-volume:/usr/local/bundle
     links:
       - redis
       - postgres
@@ -24,3 +25,6 @@ services:
     image: postgres:9-alpine
     volumes:
       - "./db/storage/:/var/lib/postgresql/data"
+
+volumes:
+  bundler-volume:
