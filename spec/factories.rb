@@ -3,21 +3,21 @@ FactoryBot.define do
     sequence :username do |n|
       "JohnDoe#{n}"
     end
-    password "password"
+    password { "password" }
     sequence :email do |n|
       "fake#{n}@faker.com"
     end
 
     factory :admin_user do
-      role_id 1
+      role_id { 1 }
     end
 
     factory :mod_user do
-      role_id 2
+      role_id { 2 }
     end
 
     factory :importing_user do
-      role_id 3
+      role_id { 3 }
     end
   end
 
@@ -37,14 +37,14 @@ FactoryBot.define do
 
   factory :post do
     transient do
-      with_icon false
-      with_character false
-      num_replies 0
+      with_icon { false }
+      with_character { false }
+      num_replies { 0 }
     end
     user
     board
-    description ""
-    content "test content"
+    description { "" }
+    content { "test content" }
     sequence :subject do |n|
       "test subject #{n}"
     end
@@ -63,7 +63,7 @@ FactoryBot.define do
       "test gallery #{n}"
     end
     transient do
-      icon_count 0
+      icon_count { 0 }
     end
     after(:create) do |gallery, evaluator|
       evaluator.icon_count.times do
@@ -74,7 +74,7 @@ FactoryBot.define do
 
   factory :icon do
     user
-    url "http://www.fakeicon.com"
+    url { "http://www.fakeicon.com" }
     sequence :keyword do |n|
       "totally fake #{n}"
     end
@@ -91,8 +91,8 @@ FactoryBot.define do
 
   factory :reply do
     transient do
-      with_icon false
-      with_character false
+      with_icon { false }
+      with_character { false }
     end
     user
     post
@@ -115,7 +115,7 @@ FactoryBot.define do
 
   factory :character do
     transient do
-      with_default_icon false
+      with_default_icon { false }
     end
     user
     sequence :name do |n|
@@ -154,7 +154,7 @@ FactoryBot.define do
       created_at { 3.days.ago }
     end
     factory :used_password_reset do
-      used true
+      used { true }
     end
   end
 
@@ -165,26 +165,26 @@ FactoryBot.define do
     user
 
     factory :label, class: Label do
-      type 'Label'
+      type { 'Label' }
     end
 
     factory :setting, class: Setting do
-      type 'Setting'
+      type { 'Setting' }
     end
 
     factory :content_warning, class: ContentWarning do
-      type 'ContentWarning'
+      type { 'ContentWarning' }
     end
 
     factory :gallery_group, class: GalleryGroup do
-      type 'GalleryGroup'
+      type { 'GalleryGroup' }
     end
   end
 
   factory :message do
     sender
     recipient
-    message 'test message'
+    message { 'test message' }
     sequence :subject do |n|
       "Message#{n}"
     end
