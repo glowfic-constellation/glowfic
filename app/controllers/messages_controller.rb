@@ -113,7 +113,7 @@ class MessagesController < ApplicationController
       recent_ids = Message.where(sender_id: current_user.id).order('MAX(id) desc').limit(5).group(:recipient_id).pluck(:recipient_id)
       base_users = User.where.not(id: current_user.id).select{ |u| u.can_interact_with?(current_user) }
       recents = base_users.where(id: recent_ids).pluck(:username, :id).sort_by{|x| recent_ids.index(x[1]) }
-      users = base_uers.ordered.pluck(:username, :id)
+      users = base_users.ordered.pluck(:username, :id)
       @select_items = if recents.present?
         {:'Recently messaged' => recents, :'Other users' => users}
       else
