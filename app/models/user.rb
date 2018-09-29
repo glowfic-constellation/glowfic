@@ -86,6 +86,12 @@ class User < ApplicationRecord
     true
   end
 
+  def can_interact_with?(user)
+    yours, theirs = blocks_with(user)
+    return false if yours.no_interact || theirs.no_interact
+    true
+  end
+
   def blocked?(user)
     self.blocks.exists?(blocked_user: user)
   end
