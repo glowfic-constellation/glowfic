@@ -1,0 +1,30 @@
+version: "3"
+services:
+  web:
+    build: .
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/code
+      - bundler-volume:/usr/local/bundle
+    links:
+      - redis
+      - postgres
+    working_dir: /code
+    command: script/rails s
+    environment:
+      - REDIS_URL=redis://redis
+      - GLOWFIC_DATABASE_HOST=postgres
+      - GLOWFIC_DATABASE_USER=postgres
+      - GLOWFIC_DATABASE_PASS=postgres
+  redis:
+    image: redis:3.2-alpine
+  postgres:
+    environment:
+      - POSTGRES_PASSWORD=postgres
+    image: postgres:9-alpine
+    volumes:
+      - "./db/storage/:/var/lib/postgresql/data"
+
+volumes:
+  bundler-volume:
