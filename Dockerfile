@@ -1,7 +1,6 @@
 FROM ruby:2.5.1
 
-ADD Gemfile /code/Gemfile
-ADD Gemfile.lock /code/Gemfile.lock
+ADD Gemfile* /code/
 
 WORKDIR /code
 
