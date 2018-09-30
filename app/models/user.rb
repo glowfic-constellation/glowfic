@@ -87,7 +87,7 @@ class User < ApplicationRecord
   end
 
   def blocked_interaction_users
-    blocks = Block.where(no_interact: true)
+    blocks = Block.where(block_interactions: true)
     (blocks.where(blocking_user: self).pluck(:blocked_user_id) + blocks.where(blocked_user: self).pluck(:blocking_user_id)).uniq
   end
 
@@ -100,15 +100,15 @@ class User < ApplicationRecord
   end
 
   def blocking_content_users
-    Block.where(invisible: true, blocked_user: self).pluck(:blocking_user_id)
+    Block.where(hide_my_content: true, blocked_user: self).pluck(:blocking_user_id)
   end
 
   def blocked_post_users
-    Block.where(no_posts: true, blocking_user: self).pluck(:blocked_user_id)
+    Block.where(hide_their_posts: true, blocking_user: self).pluck(:blocked_user_id)
   end
 
   def blocked_content_users
-    Block.where(no_content: true, blocking_user: self).pluck(blocked_user_id)
+    Block.where(hide_their_content: true, blocking_user: self).pluck(blocked_user_id)
   end
 
   private
