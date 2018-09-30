@@ -2838,37 +2838,70 @@ RSpec.describe PostsController do
     end
   end
 
-  describe "post_list" do
-    shared_examples "post list" do
-      it "does not show user-only posts when not logged in" do
-        posts = create_list(:post, 2)
-        create_list(:post, 2, privacy: REGISTERED)
-        get show
-        expect(response.status).to eq(200)
-        expect(assigns(:posts)).to match_array(posts)
-      end
+  shared_examples "logged out post list" do
+    it "does not show user-only posts when not logged in" do
+      posts = create_list(:post, 2)
+      create_list(:post, 2, privacy: Concealable::REGISTERED)
+      get controller_action, params: params
+      expect(response.status).to eq(200)
+      expect(Post.all.count).to eq(4)
+      expect(assigns(:posts)).to match_array(posts)
+    end
+  end
 
-      it "does not show access-locked or private threads" do
-        skip
-      end
+  shared_examples "post list" do
+    let(:user) { create(:user) }
+    let(:posts) { create_list(:post, 3) }
 
-      it "shows access-locked and private threads if you have access" do
-        skip
-      end
+    before(:each) {
+      login_as(user)
+      posts
+    }
 
-      it "does not show posts with blocked or blocking authors" do
-        skip
-      end
-
-      it "shows posts with a blocked (but not blocking) author with show_blocked=true" do
-        skip
-      end
+    it "does not show access-locked or private threads" do
+      create(:post, privacy: Concealable::PRIVATE)
+      create(:post, privacy: Concealable::ACCESS_LIST)
+      get controller_action, params: params
+      expect(response.status).to eq(200)
+      expect(assigns(assign_variable)).to match_array(posts)
     end
 
-    context "GET index" do
-      let(:show) { ":index" }
-
-      include_examples "post list"
+    it "shows access-locked and private threads if you have access" do
+      skip
     end
+
+    it "does not show posts with blocked or blocking authors" do
+      skip
+    end
+
+    it "shows posts with a blocked (but not blocking) author with show_blocked=true" do
+      skip
+    end
+  end
+
+  context "GET index" do
+    let(:controller_action) { "index" }
+    let(:params) { { } }
+    let(:assign_variable) { :posts }
+
+    include_examples "logged out post list"
+    include_examples "post list"
+  end
+
+  context "GET unread" do
+    let(:controller_action) { "unread" }
+    let(:params) { { } }
+    let(:assign_variable) { :posts }
+
+    include_examples "post list"
+  end
+
+  context "GET search" do
+    let(:controller_action) { "search" }
+    let(:params) { { commit: true } }
+    let(:assign_variable) { :search_results }
+
+    include_examples "logged out post list"
+    include_examples "post list"
   end
 end
