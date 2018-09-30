@@ -2839,17 +2839,17 @@ RSpec.describe PostsController do
   end
 
   shared_examples "logged out post list" do
-    it "does not show user-only posts when not logged in" do
+    it "does not show user-only posts" do
       posts = create_list(:post, 2)
       create_list(:post, 2, privacy: Concealable::REGISTERED)
       get controller_action, params: params
       expect(response.status).to eq(200)
       expect(Post.all.count).to eq(4)
-      expect(assigns(:posts)).to match_array(posts)
+      expect(assigns(assign_variable)).to match_array(posts)
     end
   end
 
-  shared_examples "post list" do
+  shared_examples "logged in post list" do
     let(:user) { create(:user) }
     let(:posts) { create_list(:post, 3) }
 
@@ -2867,15 +2867,33 @@ RSpec.describe PostsController do
     end
 
     it "shows access-locked and private threads if you have access" do
-      skip
+      posts << create(:post, user: user, privacy: Concealable::PRIVATE)
+      posts << create(:post, user: user, privacy: Concealable::ACCESS_LIST)
+      get controller_action, params: params
+      expect(response.status).to eq(200)
+      expect(assigns(assign_variable)).to match_array(posts)
     end
 
     it "does not show posts with blocked or blocking authors" do
-      skip
+      post1 = create(:post)
+      post2 = create(:post)
+      create(:block, blocking_user: user, blocked_user: post1.user, no_posts: true)
+      create(:block, blocking_user: post2.user, blocked_user: user, invisible: true)
+      get controller_action, params: params
+      expect(response.status).to eq(200)
+      expect(assigns(assign_variable)).to match_array(posts)
     end
 
     it "shows posts with a blocked (but not blocking) author with show_blocked=true" do
-      skip
+      post1 = create(:post)
+      post2 = create(:post)
+      create(:block, blocking_user: user, blocked_user: post1.user, no_posts: true)
+      create(:block, blocking_user: post2.user, blocked_user: user, invisible: true)
+      params[:show_blocked] = true
+      posts << post1
+      get controller_action, params: params
+      expect(response.status).to eq(200)
+      expect(assigns(assign_variable)).to match_array(posts)
     end
   end
 
@@ -2884,8 +2902,12 @@ RSpec.describe PostsController do
     let(:params) { { } }
     let(:assign_variable) { :posts }
 
-    include_examples "logged out post list"
-    include_examples "post list"
+    context "when logged out" do
+      include_examples "logged out post list"
+    end
+    context "when logged in" do
+      include_examples "logged in post list"
+    end
   end
 
   context "GET unread" do
@@ -2893,7 +2915,9 @@ RSpec.describe PostsController do
     let(:params) { { } }
     let(:assign_variable) { :posts }
 
-    include_examples "post list"
+    context "when logged in" do
+      include_examples "logged in post list"
+    end
   end
 
   context "GET search" do
@@ -2901,7 +2925,11 @@ RSpec.describe PostsController do
     let(:params) { { commit: true } }
     let(:assign_variable) { :search_results }
 
-    include_examples "logged out post list"
-    include_examples "post list"
+    context "when logged out" do
+      include_examples "logged out post list"
+    end
+    context "when logged in" do
+      include_examples "logged in post list"
+    end
   end
 end
