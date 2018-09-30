@@ -1,6 +1,8 @@
 default: &default
   adapter: postgresql
-  host: localhost
+  host: <%= ENV['GLOWFIC_DATABASE_HOST'] || 'localhost' %>
+  username: <%= ENV['GLOWFIC_DATABASE_USER'] %>
+  password: <%= ENV['GLOWFIC_DATABASE_PASS'] %>
 
 development:
   <<: *default
