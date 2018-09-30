@@ -2875,8 +2875,8 @@ RSpec.describe PostsController do
     end
 
     it "does not show posts with blocked or blocking authors" do
-      post1 = create(:post)
-      post2 = create(:post)
+      post1 = create(:post, authors_locked: true)
+      post2 = create(:post, authors_locked: true)
       create(:block, blocking_user: user, blocked_user: post1.user, no_posts: true)
       create(:block, blocking_user: post2.user, blocked_user: user, invisible: true)
       get controller_action, params: params
@@ -2884,9 +2884,9 @@ RSpec.describe PostsController do
       expect(assigns(assign_variable)).to match_array(posts)
     end
 
-    it "shows posts with a blocked (but not blocking) author with show_blocked=true" do
-      post1 = create(:post)
-      post2 = create(:post)
+    it "shows posts with a blocked (but not blocking) author with show_blocked" do
+      post1 = create(:post, authors_locked: true)
+      post2 = create(:post, authors_locked: true)
       create(:block, blocking_user: user, blocked_user: post1.user, no_posts: true)
       create(:block, blocking_user: post2.user, blocked_user: user, invisible: true)
       params[:show_blocked] = true
