@@ -15,7 +15,7 @@ class Gallery < ApplicationRecord
 
   scope :ordered, -> { order('characters_galleries.section_order ASC') }
 
-  scope :ordered_by_name, -> { order('lower(name) asc', id: :asc) }
+  scope :ordered_by_name, -> { order(Arel.sql('lower(name) asc'), id: :asc) }
 
   scope :ordered_by_id, -> { order(id: :asc) }
 

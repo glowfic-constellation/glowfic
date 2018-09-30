@@ -109,7 +109,7 @@ class MessagesController < ApplicationController
   def editor_setup
     use_javascript('messages')
     unless @message.try(:parent)
-      recent_ids = Message.where(sender_id: current_user.id).order('MAX(id) desc').limit(5).group(:recipient_id).pluck(:recipient_id)
+      recent_ids = Message.where(sender_id: current_user.id).order(Arel.sql('MAX(id) desc')).limit(5).group(:recipient_id).pluck(:recipient_id)
       recents = User.where(id: recent_ids).pluck(:username, :id).sort_by{|x| recent_ids.index(x[1]) }
       users = User.where.not(id: current_user.id).ordered.pluck(:username, :id)
       @select_items = if recents.present?

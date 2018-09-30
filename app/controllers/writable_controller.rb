@@ -7,7 +7,7 @@ class WritableController < ApplicationController
     user ||= current_user
 
     faked = Struct.new(:name, :id, :plucked_characters)
-    pluck = "id, concat_ws(' | ', name, template_name, screenname)"
+    pluck = Arel.sql("id, concat_ws(' | ', name, template_name, screenname)")
     templates = user.templates.ordered
     templateless = faked.new('Templateless', nil, user.characters.where(template_id: nil).ordered.pluck(pluck))
     @templates = templates + [templateless]
