@@ -11,7 +11,7 @@ class Template < ApplicationRecord
   scope :ordered, -> { order(name: :asc, created_at: :asc, id: :asc) }
 
   def plucked_characters
-    characters.pluck("id, concat_ws(' | ', name, template_name, screenname)")
+    characters.pluck(Arel.sql("id, concat_ws(' | ', name, template_name, screenname)"))
   end
 
   private

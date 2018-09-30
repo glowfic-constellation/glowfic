@@ -27,7 +27,7 @@ class Character < ApplicationRecord
 
   after_destroy :clear_char_ids
 
-  scope :ordered, -> { order(name: :asc).order('lower(screenname) asc', created_at: :asc, id: :asc) }
+  scope :ordered, -> { order(name: :asc).order(Arel.sql('lower(screenname) asc'), created_at: :asc, id: :asc) }
 
   accepts_nested_attributes_for :template, reject_if: :all_blank
 
@@ -80,7 +80,7 @@ class Character < ApplicationRecord
   def ungrouped_gallery_ids=(new_ids)
     new_ids -= ['']
     new_ids = new_ids.map(&:to_i)
-    group_gallery_ids = gallery_groups.joins(:gallery_tags).except(:order).pluck('distinct gallery_tags.gallery_id')
+    group_gallery_ids = gallery_groups.joins(:gallery_tags).except(:order).pluck(Arel.sql('distinct gallery_tags.gallery_id'))
     new_chargals = []
     transaction do
       characters_galleries.each do |char_gal|

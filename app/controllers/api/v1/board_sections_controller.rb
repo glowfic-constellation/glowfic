@@ -22,7 +22,7 @@ class Api::V1::BoardSectionsController < Api::ApiController
       render json: {errors: [error]}, status: :not_found and return
     end
 
-    boards = Board.where(id: sections.pluck('distinct board_id'))
+    boards = Board.where(id: sections.pluck(Arel.sql('distinct board_id')))
     unless boards.count == 1
       error = {message: 'Sections must be from one board'}
       render json: {errors: [error]}, status: :unprocessable_entity and return

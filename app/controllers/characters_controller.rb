@@ -184,7 +184,7 @@ class CharactersController < ApplicationController
     end
     @alt = @alts.first
 
-    all_posts = Post.where(character_id: @character.id) + Post.where(id: Reply.where(character_id: @character.id).pluck('distinct post_id'))
+    all_posts = Post.where(character_id: @character.id) + Post.where(id: Reply.where(character_id: @character.id).pluck(Arel.sql('distinct post_id')))
     @posts = all_posts.uniq
   end
 

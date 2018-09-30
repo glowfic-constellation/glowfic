@@ -3,7 +3,7 @@ class CharacterAlias < ApplicationRecord
   validates :name, presence: true
   after_destroy :clear_alias_ids
 
-  scope :ordered, -> { order('lower(name) asc', created_at: :asc, id: :asc) }
+  scope :ordered, -> { order(Arel.sql('lower(name) asc'), created_at: :asc, id: :asc) }
 
   def as_json(_options={})
     { id: id, name: name }

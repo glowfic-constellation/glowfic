@@ -56,7 +56,7 @@
     %tr
       %th.sub.width-150 Authors
       %td{class: cycle('odd', 'even')}
-        - post_authors = @post.post_authors.joins(:user).order('LOWER(users.username) asc')
+        - post_authors = @post.post_authors.joins(:user).order(Arel.sql('LOWER(users.username) asc'))
         %ul
           - post_authors.each do |post_author|
             - author = post_author.user

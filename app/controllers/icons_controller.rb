@@ -45,7 +45,7 @@ class IconsController < UploadingController
     @page_title = @icon.keyword
     if params[:view] == 'posts'
       arel = Post.arel_table
-      where_calc = arel[:icon_id].eq(@icon.id).or(arel[:id].in(Reply.where(icon_id: @icon.id).pluck('distinct post_id')))
+      where_calc = arel[:icon_id].eq(@icon.id).or(arel[:id].in(Reply.where(icon_id: @icon.id).pluck(Arel.sql('distinct post_id'))))
       @posts = posts_from_relation(Post.where(where_calc).ordered)
     elsif params[:view] == 'galleries'
       use_javascript('galleries/expander_old')
@@ -86,7 +86,7 @@ class IconsController < UploadingController
     gon.gallery = Hash[all_icons.map { |i| [i.id, {url: i.url, keyword: i.keyword}] }]
     gon.gallery[''] = {url: view_context.image_path('icons/no-icon.png'), keyword: 'No Icon'}
 
-    all_posts = Post.where(icon_id: @icon.id) + Post.where(id: Reply.where(icon_id: @icon.id).pluck('distinct post_id'))
+    all_posts = Post.where(icon_id: @icon.id) + Post.where(id: Reply.where(icon_id: @icon.id).pluck(Arel.sql('distinct post_id')))
     @posts = all_posts.uniq
   end
 

@@ -20,7 +20,7 @@
         %td{class: cycle('even', 'odd'), colspan: 2}= tag_select(@gallery, f, :gallery_groups)
       %tr
         %th.subber{colspan: 3} Edit Icons
-    = f.fields_for :galleries_icons, @gallery.galleries_icons.joins(:icon).order('LOWER(keyword)') do |gif|
+    = f.fields_for :galleries_icons, @gallery.galleries_icons.joins(:icon).order(Arel.sql('LOWER(keyword)')) do |gif|
       %tbody.gallery-icon-editor
         = gif.fields_for :icon do |i|
           %tr.gallery-icon-url{id: "icon-row-#{i.object.id}"}

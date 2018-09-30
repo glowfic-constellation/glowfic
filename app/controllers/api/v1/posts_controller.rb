@@ -7,7 +7,7 @@ class Api::V1::PostsController < Api::ApiController
   api :GET, '/posts', 'Load all posts optionally filtered by subject'
   param :q, String, required: false, desc: 'Subject search term'
   def index
-    queryset = Post.order('LOWER(subject) asc')
+    queryset = Post.order(Arel.sql('LOWER(subject) asc'))
     queryset = queryset.where('LOWER(subject) LIKE ?', "%#{params[:q].downcase}%") if params[:q].present?
 
     posts = paginate queryset, per_page: 25
@@ -43,7 +43,7 @@ class Api::V1::PostsController < Api::ApiController
       render json: {errors: [error]}, status: :not_found and return
     end
 
-    boards = Board.where(id: posts.pluck('distinct board_id'))
+    boards = Board.where(id: posts.pluck(Arel.sql('distinct board_id')))
     unless boards.count == 1
       error = {message: 'Posts must be from one board'}
       render json: {errors: [error]}, status: :unprocessable_entity and return
@@ -52,7 +52,7 @@ class Api::V1::PostsController < Api::ApiController
     board = boards.first
     access_denied and return unless board.editable_by?(current_user)
 
-    post_section_ids = posts.pluck('distinct section_id')
+    post_section_ids = posts.pluck(Arel.sql('distinct section_id'))
     unless post_section_ids == [section_id] &&
       (section_id.nil? || BoardSection.where(id: section_id, board_id: board.id).exists?)
       error = {message: 'Posts must be from one specified section in the board, or no section'}
