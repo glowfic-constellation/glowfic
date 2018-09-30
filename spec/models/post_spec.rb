@@ -985,7 +985,6 @@ RSpec.describe Post do
       notified = create(:user)
       create(:favorite, user: notified, favorite: author)
       post = create(:post, user: author)
-      post.run_callbacks(:commit) # deal with tests running in a transaction
       expect(NotifyFollowersOfNewPostJob).to have_been_enqueued.with(post.id, post.user_id).on_queue('notifier')
     end
 
@@ -995,7 +994,6 @@ RSpec.describe Post do
 
       # first post triggers job
       post = create(:post, user: author)
-      post.run_callbacks(:commit)
       expect(NotifyFollowersOfNewPostJob).to have_been_enqueued.with(post.id, post.user_id).on_queue('notifier')
 
       # original author posting again does not trigger job

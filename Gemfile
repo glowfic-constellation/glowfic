@@ -23,7 +23,7 @@ gem 'nokogiri'
 gem 'pg', '~> 0.21.0'
 gem 'pg_search'
 gem 'rack-pratchett'
-gem 'rails', '~> 5.1.4'
+gem 'rails', '~> 5.2.0'
 gem 'redis', '~> 3.3.5' # until resque updates to support Redis 4
 gem 'redis-rails'
 gem 'resque'
