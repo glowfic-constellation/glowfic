@@ -1,0 +1,5 @@
+= form_for @block, url: blocks_path, method: :post do |f|
+  %table.form-table
+    %tr
+      %th.centered{colspan: 2} Block User
+      = render partial: 'editor', locals: {f: f, blocked_user: nil}
