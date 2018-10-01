@@ -13,7 +13,7 @@ class Api::V1::BoardSectionsController < Api::ApiController
   error 422, "Invalid parameters provided"
   param :ordered_section_ids, Array, allow_blank: false
   def reorder
-    section_ids = params[:ordered_section_ids].map(&:to_i).uniq
+    section_ids = params[:ordered_section_ids].map(&:to_i).uniq!
     sections = BoardSection.where(id: section_ids)
     sections_count = sections.count
     unless sections_count == section_ids.count

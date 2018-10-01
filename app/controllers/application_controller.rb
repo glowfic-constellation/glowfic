@@ -137,7 +137,7 @@ class ApplicationController < ActionController::Base
       @unread_ids += opened_posts.select do |view|
         post = posts.detect { |p| p.id == view.post_id }
         post && view.read_at < post.tagged_at
-      end.map(&:post_id)
+      end.map!(&:post_id)
     end
 
     posts
