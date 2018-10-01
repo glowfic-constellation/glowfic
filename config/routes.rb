@@ -96,6 +96,9 @@ Rails.application.routes.draw do
   resources :index_sections, except: [:index]
   resources :index_posts, only: [:new, :create, :destroy]
 
+  # Blocks
+  resources :blocks, except: [:show]
+
   # API
   namespace :api do
     namespace :v1 do
