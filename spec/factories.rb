@@ -1,5 +1,5 @@
 FactoryBot.define do
-  factory :user, aliases: [:creator, :sender, :recipient] do
+  factory :user, aliases: [:creator, :sender, :recipient, :blocking_user, :blocked_user] do
     sequence :username do |n|
       "JohnDoe#{n}"
     end
@@ -227,5 +227,10 @@ FactoryBot.define do
   factory :index_post do
     index
     post
+  end
+
+  factory :block do
+    blocking_user
+    blocked_user
   end
 end
