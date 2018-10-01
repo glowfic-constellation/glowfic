@@ -38,5 +38,23 @@ RSpec.describe Api::V1::UsersController do
       get :index, params: { q: 'ali', match: 'exact' }
       expect(response.json['results'].count).to eq(1)
     end
+
+    it "handles hiding unblockable users" do
+      user = create(:user)
+      login_as(user)
+      create_list(:block, 2, blocking_user: user)
+      create_list(:user, 3)
+      get :index, params: { hide_unblockable: true }
+      expect(response.json['results'].count).to eq(3)
+    end
+
+    it "does not hide unblockable users unless that parameter is sent" do
+      user = create(:user)
+      login_as(user)
+      create_list(:block, 2, blocking_user: user)
+      create_list(:user, 3)
+      get :index
+      expect(response.json['results'].count).to eq(6)
+    end
   end
 end
