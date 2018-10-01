@@ -17,7 +17,7 @@ puts "Importing #{user.username} characters from the #{comm_name} community"
 
 response = HTTParty.get("http://#{comm_name}.dreamwidth.org/profile")
 html_doc = Nokogiri::HTML(response.body)
-characters = html_doc.at_css('#members_people_body').css('a').map(&:content).map(&:strip)
+characters = html_doc.at_css('#members_people_body').css('a').map(&:content).map!(&:strip)
 characters.each do |username|
   puts "  -" + username
   url_name = username.tr('_', '-')

@@ -48,7 +48,7 @@ class Character < ApplicationRecord
   def recent_posts
     return @recent unless @recent.nil?
     reply_ids = replies.group(:post_id).pluck(:post_id)
-    post_ids = posts.select(:id).map(&:id)
+    post_ids = posts.select(:id).map!(&:id)
     @recent ||= Post.where(id: (post_ids + reply_ids).uniq).ordered
   end
 
@@ -69,7 +69,7 @@ class Character < ApplicationRecord
   end
 
   def ungrouped_gallery_ids
-    characters_galleries.reject(&:added_by_group?).map(&:gallery_id)
+    characters_galleries.reject(&:added_by_group?).map!(&:gallery_id)
   end
 
   # WARNING: this method *will make changes* when used, not just when saved!!!

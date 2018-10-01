@@ -17,7 +17,7 @@ module WritableHelper
 
     if item.character
       icons = if galleries.present?
-        galleries.map(&:icons).flatten
+        galleries.map(&:icons).flatten!
       else
         item.character.icons
       end
