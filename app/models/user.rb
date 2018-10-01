@@ -78,7 +78,7 @@ class User < ApplicationRecord
   end
 
   def blocked_interaction_users
-    blocks = Block.where(no_interact: true)
+    blocks = Block.where(block_interactions: true)
     (blocks.where(blocking_user: self).pluck(:blocked_user_id) + blocks.where(blocked_user: self).pluck(:blocking_user_id)).uniq
   end
 
