@@ -7,7 +7,8 @@ class IconsController < UploadingController
 
   def delete_multiple
     gallery = Gallery.find_by_id(params[:gallery_id])
-    icon_ids = (params[:marked_ids] || []).map(&:to_i).reject!(&:zero?)
+    icon_ids = (params[:marked_ids] || []).map(&:to_i)
+    icon_ids.reject!(&:zero?)
     if icon_ids.empty? || (icons = Icon.where(id: icon_ids)).empty?
       flash[:error] = "No icons selected."
       redirect_to user_galleries_path(current_user) and return
