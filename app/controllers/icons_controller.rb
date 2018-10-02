@@ -34,14 +34,15 @@ class IconsController < UploadingController
     end
     failed_destroys = icons.reject do |icon|
       next unless icon.user_id == current_user.id
-      return icon.destroy
+      next icon.destroy
     end
     if failed_destroys.present?
       flash.now[:error] = {}
-      flash.now[:error][:message] = "Icon removal failed."
+      flash.now[:error][:message] = "Icon deletion failed."
       flash.now[:error][:array] = failed_destroys.map(&:errors).map!(&:full_messages).flatten!.uniq!
+    else
+      flash[:success] = "Icons deleted."
     end
-    flash[:success] = "Icons deleted."
     icon_redirect(gallery) and return
   end
 
