@@ -74,7 +74,7 @@ class IconsController < UploadingController
   def replace
     @page_title = "Replace Icon: " + @icon.keyword
     all_icons = if @icon.has_gallery?
-      @icon.galleries.map(&:icons).flatten!.uniq!.compact! - [@icon]
+      @icon.galleries.map(&:icons).flatten!.tap(&:uniq!).compact! - [@icon]
     else
       current_user.galleryless_icons - [@icon]
     end

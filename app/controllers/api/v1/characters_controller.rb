@@ -64,7 +64,7 @@ class Api::V1::CharactersController < Api::ApiController
   error 422, "Invalid parameters provided"
   param :ordered_characters_gallery_ids, Array, allow_blank: false
   def reorder
-    section_ids = params[:ordered_characters_gallery_ids].map(&:to_i).uniq!
+    section_ids = params[:ordered_characters_gallery_ids].map(&:to_i).tap(&:uniq!)
     sections = CharactersGallery.where(id: section_ids)
     sections_count = sections.count
     unless sections_count == section_ids.count

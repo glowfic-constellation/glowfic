@@ -79,13 +79,13 @@ class PostsController < WritableController
 
   def unhide
     if params[:unhide_boards].present?
-      board_ids = params[:unhide_boards].map(&:to_i).compact!.uniq!
+      board_ids = params[:unhide_boards].map(&:to_i).compact!.tap(&:uniq!)
       views_to_update = BoardView.where(user_id: current_user.id).where(board_id: board_ids)
       views_to_update.each do |view| view.update(ignored: false) end
     end
 
     if params[:unhide_posts].present?
-      post_ids = params[:unhide_posts].map(&:to_i).compact!.uniq!
+      post_ids = params[:unhide_posts].map(&:to_i).compact!.tap(&:uniq!)
       views_to_update = PostView.where(user_id: current_user.id).where(post_id: post_ids)
       views_to_update.each do |view| view.update(ignored: false) end
     end
@@ -371,7 +371,7 @@ class PostsController < WritableController
     data = HTTParty.get(url).body
     logger.debug "Downloaded #{url} for scraping"
     doc = Nokogiri::HTML(data)
-    usernames = doc.css('.poster span.ljuser b').map(&:text).uniq!
+    usernames = doc.css('.poster span.ljuser b').map(&:text).tap(&:uniq!)
     usernames -= PostScraper::BASE_ACCOUNTS.keys
     poster_names = doc.css('.entry-poster span.ljuser b')
     usernames -= [poster_names.last.text] if poster_names.count > 1
