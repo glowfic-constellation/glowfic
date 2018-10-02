@@ -103,6 +103,11 @@ class CharactersController < ApplicationController
         dupalias.save!
       end
       dupe.save!
+    rescue ActiveRecord::RecordNotSaved
+      flash[:error] = {}
+      flash[:error][:message] = "Character could not be duplicated."
+      flash[:error][:array] = @dup.errors.full_messages
+      redirect_to character_path(@character)
     end
 
     flash[:success] = "Character duplicated successfully. You are now editing the new character."
