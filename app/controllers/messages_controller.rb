@@ -68,10 +68,15 @@ class MessagesController < ApplicationController
 
     @messages = Message.where(thread_id: message.thread_id).ordered_by_id
     if @messages.any? { |m| m.recipient_id == current_user.id && m.unread? }
-      @messages.each do |m|
+      failed_messages = @messages.reject do |m|
         next unless m.unread?
         next unless m.recipient_id == current_user.id
-        m.update(unread: false)
+        return m.update(unread: false) # Explict return to convince rubocop this is checked
+      end
+      if failed_messages.present?
+        flash.now[:error] = {}
+        flash.now[:error][:message] = "Unread status failed to update."
+        flash.now[:error][:array] = failed_messages.map(&:errors).map!(&:full_messages).flatten!.uniq!
       end
     end
     @message = Message.new
@@ -86,9 +91,14 @@ class MessagesController < ApplicationController
     end
 
     if params[:commit] == "Mark Read / Unread"
-      messages.each do |message|
+      failed_messages = messages.reject do |message|
         box ||= message.box(current_user)
-        message.update(unread: !message.unread?)
+        return message.update(unread: !message.unread?) # Explict return to convince rubocop this is checked
+      end
+      if failed_messages.present?
+        flash.now[:error] = {}
+        flash.now[:error][:message] = "Unread status failed to update."
+        flash.now[:error][:array] = failed_messages.map(&:errors).map!(&:full_messages).flatten!.uniq!
       end
     elsif params[:commit] == "Delete"
       messages.each do |message|
