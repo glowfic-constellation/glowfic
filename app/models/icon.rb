@@ -10,7 +10,10 @@ class Icon < ApplicationRecord
   has_many :galleries_icons, dependent: :destroy, inverse_of: :icon
   has_many :galleries, through: :galleries_icons
 
-  validates :url, :keyword, presence: true
+  validates :keyword, presence: true
+  validates :url,
+    presence: true,
+    length: { maximum: 255 }
   validate :url_is_url
   validate :uploaded_url_not_in_use
   nilify_blanks
