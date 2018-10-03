@@ -93,7 +93,7 @@ class Tag < ApplicationRecord
       TagTag.where(tag_id: self.id, tagged_id: other_tag.id).delete_all
       TagTag.where(tag_id: other_tag.id).update_all(tag_id: self.id)
       TagTag.where(tagged_id: other_tag.id).update_all(tagged_id: self.id)
-      other_tag.destroy
+      other_tag.destroy!
     end
   end
 end

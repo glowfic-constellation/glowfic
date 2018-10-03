@@ -67,7 +67,7 @@ class Character < ApplicationRecord
     galleries.each_with_index do |other, index|
       next if other.section_order == index
       other.section_order = index
-      other.save
+      other.save!
     end
   end
 
