@@ -40,7 +40,7 @@ module Owable
 
     def add_creator_to_authors
       return if author_ids.include?(user_id)
-      return post_authors.create(user: user, joined: true, joined_at: created_at)
+      post_authors.create!(user: user, joined: true, joined_at: created_at)
     end
 
     def update_board_cameos
