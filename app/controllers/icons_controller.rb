@@ -33,7 +33,7 @@ class IconsController < UploadingController
       icon_redirect(gallery) and return
     end
     failed_destroys = icons.reject do |icon|
-      next unless icon.user_id == current_user.id
+      next true unless icon.user_id == current_user.id
       next icon.destroy
     end
     if failed_destroys.present?

@@ -69,8 +69,8 @@ class MessagesController < ApplicationController
     @messages = Message.where(thread_id: message.thread_id).ordered_by_id
     if @messages.any? { |m| m.recipient_id == current_user.id && m.unread? }
       failed_messages = @messages.reject do |m|
-        next unless m.unread?
-        next unless m.recipient_id == current_user.id
+        next true unless m.unread?
+        next true unless m.recipient_id == current_user.id
         next m.update(unread: false)
       end
       if failed_messages.present?
