@@ -21,15 +21,15 @@ module Owable
     after_save :update_board_cameos
 
     def opt_out_of_owed(user)
-      return unless (author = author_for(user))
+      return true unless (author = author_for(user))
       return author.destroy unless author.joined?
       return author.update(can_owe: false)
     end
 
     def opt_in_to_owed(user)
-      return unless (author = author_for(user))
-      return if author.can_owe?
-      author.update!(can_owe: true)
+      return true unless (author = author_for(user))
+      return true if author.can_owe?
+      return author.update(can_owe: true)
     end
 
     def author_for(user)
