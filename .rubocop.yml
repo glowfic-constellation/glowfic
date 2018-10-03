@@ -1,3 +1,5 @@
+inherit_from: .rubocop_todo.yml
+
 AllCops:
   TargetRubyVersion: 2.5
   TargetRailsVersion: 5.1
@@ -42,6 +44,9 @@ Layout/EmptyLineBetweenDefs:
   Enabled: false
 
 Layout/EmptyLines:
+  Enabled: false
+
+Layout/EmptyLineAfterGuardClause:
   Enabled: false
 
 Layout/EmptyLinesAroundAccessModifier:
@@ -200,6 +205,12 @@ Naming/UncommunicativeMethodParamName:
     - id
     - to
     - js
+
+
+####################### Performance ################################
+
+Performance/ChainArrayAllocation:
+  Enabled: true
 
 ##################### Rails ##################################
 

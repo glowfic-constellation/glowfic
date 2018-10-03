@@ -17,7 +17,7 @@ class RepliesController < WritableController
       @users = @post.authors
       char_ids = @post.replies.pluck('distinct character_id') + [@post.character_id]
       @characters = Character.where(id: char_ids).ordered
-      @templates = Template.where(id: @characters.map(&:template_id).uniq.compact).ordered
+      @templates = Template.where(id: @characters.map(&:template_id).tap(&:uniq!).tap(&:compact!)).ordered
       gon.post_id = @post.id
     else
       @users = User.where(id: params[:author_id]) if params[:author_id].present?

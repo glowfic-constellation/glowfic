@@ -2638,7 +2638,7 @@ RSpec.describe PostsController do
         expect(post2.reload.last_read(user)).to be_the_same_time_as(time2)
         expect(post3.reload.last_read(user)).to be_the_same_time_as(time3)
 
-        post :mark, params: { marked_ids: [post1, post2, post3].map(&:id).map(&:to_s) }
+        post :mark, params: { marked_ids: [post1, post2, post3].map(&:id).map!(&:to_s) }
 
         expect(response).to redirect_to(unread_posts_url)
         expect(flash[:success]).to eq("3 posts hidden from this page.")

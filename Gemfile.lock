@@ -189,7 +189,7 @@ GEM
     nokogumbo (1.5.0)
       nokogiri
     parallel (1.12.1)
-    parser (2.5.1.0)
+    parser (2.5.1.2)
       ast (~> 2.4.0)
     pg (0.21.0)
     pg_search (2.1.2)
@@ -311,15 +311,15 @@ GEM
       rspec-mocks (~> 3.7.0)
       rspec-support (~> 3.7.0)
     rspec-support (3.7.1)
-    rubocop (0.57.2)
+    rubocop (0.59.2)
       jaro_winkler (~> 1.5.1)
       parallel (~> 1.10)
-      parser (>= 2.5)
+      parser (>= 2.5, != 2.5.1.1)
       powerpack (~> 0.1)
       rainbow (>= 2.2.2, < 4.0)
       ruby-progressbar (~> 1.7)
       unicode-display_width (~> 1.0, >= 1.0.1)
-    ruby-progressbar (1.9.0)
+    ruby-progressbar (1.10.0)
     ruby_dep (1.5.0)
     ruby_parser (3.11.0)
       sexp_processor (~> 4.9)
@@ -456,7 +456,7 @@ DEPENDENCIES
   resque_mailer
   resque_spec
   rspec-rails
-  rubocop (~> 0.57.0)
+  rubocop (~> 0.59.0)
   sanitize
   sass-rails
   seed_dump (~> 3.2)
@@ -476,4 +476,4 @@ RUBY VERSION
    ruby 2.5.1p57
 
 BUNDLED WITH
-   1.16.2
+   1.16.5

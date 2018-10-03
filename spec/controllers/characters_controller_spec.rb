@@ -615,7 +615,7 @@ RSpec.describe CharactersController do
       chars = Array.new(3) { create(:template_character, pb: SecureRandom.urlsafe_base64) }
       get :facecasts, params: { sort: 'name' }
       names = assigns(:pbs).map(&:item_name)
-      expect(names).to match_array(chars.map(&:template).map(&:name))
+      expect(names).to match_array(chars.map(&:template).map!(&:name))
     end
 
     it "sets correct variables for character name sort: character and template mixed" do
@@ -631,7 +631,7 @@ RSpec.describe CharactersController do
       chars += Array.new(3) { create(:character, pb: SecureRandom.urlsafe_base64) }
       get :facecasts, params: { sort: 'writer' }
       user_ids = assigns(:pbs).map(&:user_id)
-      expect(user_ids).to match_array(chars.map(&:user).map(&:id))
+      expect(user_ids).to match_array(chars.map(&:user).map!(&:id))
     end
   end
 
