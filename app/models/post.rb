@@ -37,6 +37,7 @@ class Post < ApplicationRecord
   attr_writer :skip_edited
 
   validates :subject, presence: true
+  validates :description, length: { maximum: 255 }
   validate :valid_board, :valid_board_section
 
   before_create :build_initial_flat_post, :set_timestamps

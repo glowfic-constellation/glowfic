@@ -18,7 +18,9 @@ class Character < ApplicationRecord
   has_many :settings, -> { ordered_by_char_tag }, through: :character_tags, source: :setting
   has_many :gallery_groups, -> { ordered_by_char_tag }, through: :character_tags, source: :gallery_group, dependent: :destroy
 
-  validates :name, presence: true
+  validates :name,
+    presence: true,
+    length: { maximum: 255 }
   validate :valid_group, :valid_galleries, :valid_default_icon
 
   attr_accessor :group_name
