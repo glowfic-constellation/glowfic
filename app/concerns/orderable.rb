@@ -36,7 +36,7 @@ module Orderable
       others.each_with_index do |other, index|
         next if other.order == index
         other.order = index
-        other.save
+        other.save!
       end
     end
 
