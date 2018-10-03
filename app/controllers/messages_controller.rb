@@ -74,9 +74,10 @@ class MessagesController < ApplicationController
         next m.update(unread: false)
       end
       if failed_messages.present?
-        flash.now[:error] = {}
-        flash.now[:error][:message] = "Unread status failed to update."
-        flash.now[:error][:array] = failed_messages.map(&:errors).flat_map(&:full_messages).tap(:uniq!)
+        flash.now[:error] = {
+          message: "Unread status failed to update.",
+          array: failed_messages.map(&:errors).flat_map(&:full_messages).tap(:uniq!)
+        }
       end
     end
     @message = Message.new
@@ -96,9 +97,10 @@ class MessagesController < ApplicationController
         next message.update(unread: !message.unread?)
       end
       if failed_messages.present?
-        flash.now[:error] = {}
-        flash.now[:error][:message] = "Unread status failed to update."
-        flash.now[:error][:array] = failed_messages.map(&:errors).flat_map(&:full_messages).tap(:uniq!)
+        flash.now[:error] = {
+          message: "Unread status failed to update.",
+          array: failed_messages.map(&:errors).flat_map(&:full_messages).tap(:uniq!)
+        }
       end
     elsif params[:commit] == "Delete"
       messages.each do |message|
