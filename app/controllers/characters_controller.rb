@@ -104,9 +104,10 @@ class CharactersController < ApplicationController
       end
       dupe.save!
     rescue ActiveRecord::RecordNotSaved
-      flash[:error] = {}
-      flash[:error][:message] = "Character could not be duplicated."
-      flash[:error][:array] = @dup.errors.full_messages
+      flash[:error] = {
+        message: "Character could not be duplicated.",
+        array: @dup.errors.full_messages
+      }
       redirect_to character_path(@character)
     end
 
