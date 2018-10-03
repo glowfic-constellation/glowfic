@@ -59,15 +59,15 @@ group :development, :test do
   gem 'database_cleaner'
   gem 'dotenv-rails'
   gem 'rake', '~> 12.0'
-  gem 'rspec-rails'
+  gem 'rspec-rails', '~> 3.7.2'
   gem 'seed_dump', '~> 3.2'
   gem 'thin'
 end
 
 group :test do
-  gem 'capybara'
+  gem 'capybara', '~> 2.18'
   gem 'codeclimate-test-reporter', '~> 1.0.0'
-  gem 'factory_bot_rails'
+  gem 'factory_bot_rails', '~> 4.8.2'
   gem 'json'
   gem 'rails-controller-testing'
   gem 'resque_spec'
