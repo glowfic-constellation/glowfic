@@ -37,9 +37,10 @@ class IconsController < UploadingController
       next icon.destroy
     end
     if failed_destroys.present?
-      flash.now[:error] = {}
-      flash.now[:error][:message] = "Icon deletion failed."
-      flash.now[:error][:array] = failed_destroys.map(&:errors).flat_map(&:full_messages).tap(:uniq!)
+      flash.now[:error] = {
+        message: "Icon deletion failed.",
+        array: failed_destroys.map(&:errors).flat_map(&:full_messages).tap(:uniq!)
+      }
     else
       flash[:success] = "Icons deleted."
     end
