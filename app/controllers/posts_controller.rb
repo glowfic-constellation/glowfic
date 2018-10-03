@@ -55,9 +55,10 @@ class PostsController < WritableController
     elsif params[:commit] == "Remove from Replies Owed"
       failures = posts.reject { |post| post.opt_out_of_owed(current_user) }
       if failures.present?
-        flash.now[:error] = {}
-        flash.now[:error][:message] = "Status failed to update."
-        flash.now[:error][:array] = failures.map(&:errors).flat_map(&:full_messages).tap(:uniq!)
+        flash.now[:error] = {
+          message: "Status failed to update.",
+          array: failures.map(&:errors).flat_map(&:full_messages).tap(:uniq!)
+        }
       else
         flash[:success] = "#{posts.size} #{'post'.pluralize(posts.size)} removed from replies owed."
       end
@@ -65,9 +66,10 @@ class PostsController < WritableController
     elsif params[:commit] == "Show in Replies Owed"
       failures = posts.reject { |post| post.opt_in_to_owed(current_user) }
       if failures.present?
-        flash.now[:error] = {}
-        flash.now[:error][:message] = "Status failed to update."
-        flash.now[:error][:array] = failures.map(&:errors).flat_map(&:full_messages).tap(:uniq!)
+        flash.now[:error] = {
+          message: "Status failed to update.",
+          array: failures.map(&:errors).flat_map(&:full_messages).tap(:uniq!)
+        }
       else
         flash[:success] = "#{posts.size} #{'post'.pluralize(posts.size)} added to replies owed."
       end
