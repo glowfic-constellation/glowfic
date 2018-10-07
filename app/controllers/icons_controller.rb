@@ -64,6 +64,9 @@ class IconsController < UploadingController
       flash.now[:error][:message] = "Your icon could not be saved due to the following problems:"
       flash.now[:error][:array] = @icon.errors.full_messages
       @page_title = 'Edit icon: ' + @icon.keyword_was
+      use_javascript('galleries/update_existing')
+      use_javascript('galleries/uploader')
+      set_s3_url
       render action: :edit and return
     end
 
