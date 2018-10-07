@@ -36,4 +36,5 @@ chdir APP_ROOT do
   system! 'git remote rename heroku prod'
   system! 'heroku git:remote -a glowfic-staging'
   system! 'git remote rename heroku staging'
+  system! 'git config heroku.remote staging'
 end
