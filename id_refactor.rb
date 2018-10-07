@@ -27,6 +27,17 @@ Arrangements = {
   GalleryGroup: {
     CharacterTag: :tag_id,
     GalleryTag: :tag_id
+  },
+  Board: {
+    Post: :board_id,
+    BoardSection: :board_id
+  },
+  BoardSection: {
+    Post: :section_id
+  },
+  Post: {
+    Reply: :post_id,
+    PostTag: :post_id
   }
 }
 
@@ -91,3 +102,5 @@ iterate_model(CharactersGallery)
 iterate_model(GalleriesIcon)
 iterate_model(CharacterTag)
 iterate_model(GalleryTag)
+iterate_model(BoardSection)
+iterate_model(Post)
