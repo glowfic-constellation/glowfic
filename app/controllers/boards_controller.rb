@@ -18,11 +18,11 @@ class BoardsController < ApplicationController
         @user.username + "'s Continuities"
       end
 
-      board_ids = BoardAuthor.where(user_id: @user.id, cameo: false).pluck(Arel.sql('distinct board_id'))
+      board_ids = BoardAuthor.where(user_id: @user.id, cameo: false).select(:board_id).distinct.pluck(:board_id)
       arel = Board.arel_table
       where = arel[:creator_id].eq(@user.id).or(arel[:id].in(board_ids))
       @boards = Board.where(where).ordered
-      @cameo_boards = Board.where(id: BoardAuthor.where(user_id: @user.id, cameo: true).pluck(Arel.sql('distinct board_id'))).ordered
+      @cameo_boards = Board.where(id: BoardAuthor.where(user_id: @user.id, cameo: true).select(:board_id).distinct.pluck(:board_id)).ordered
     else
       @page_title = 'Continuities'
       @boards = Board.ordered.paginate(page: page, per_page: 25)

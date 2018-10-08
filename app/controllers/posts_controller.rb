@@ -72,7 +72,7 @@ class PostsController < WritableController
 
   def hidden
     @hidden_boardviews = BoardView.where(user_id: current_user.id).where(ignored: true).includes(:board)
-    hidden_post_ids = PostView.where(user_id: current_user.id).where(ignored: true).pluck(Arel.sql('distinct post_id'))
+    hidden_post_ids = PostView.where(user_id: current_user.id).where(ignored: true).select(:post_id).distinct.pluck(:post_id)
     @hidden_posts = posts_from_relation(Post.where(id: hidden_post_ids))
     @page_title = 'Hidden Posts & Boards'
   end
@@ -316,7 +316,7 @@ class PostsController < WritableController
     end
     if params[:character_id].present?
       arel = Post.arel_table
-      post_ids = Reply.where(character_id: params[:character_id]).pluck(Arel.sql('distinct post_id'))
+      post_ids = Reply.where(character_id: params[:character_id]).select(:post_id).distinct.pluck(:post_id)
       where = arel[:character_id].eq(params[:character_id]).or(arel[:id].in(post_ids))
       @search_results = @search_results.where(where)
     end

@@ -17,7 +17,7 @@ class Api::V1::CharactersController < Api::ApiController
   def index
     queryset = Character.where("name LIKE ?", params[:q].to_s + '%').ordered
     if @post
-      char_ids = @post.replies.pluck(Arel.sql('distinct character_id')) + [@post.character_id]
+      char_ids = @post.replies.select(:character_id).distinct.pluck(:character_id) + [@post.character_id]
       queryset = queryset.where(id: char_ids)
     end
 
@@ -73,7 +73,7 @@ class Api::V1::CharactersController < Api::ApiController
       render json: {errors: [error]}, status: :not_found and return
     end
 
-    characters = Character.where(id: sections.pluck(Arel.sql('distinct character_id')))
+    characters = Character.where(id: sections.select(:character_id).distinct.pluck(:character_id))
     unless characters.count == 1
       error = {message: 'Character galleries must be from one character'}
       render json: {errors: [error]}, status: :unprocessable_entity and return
