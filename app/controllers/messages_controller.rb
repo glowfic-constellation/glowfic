@@ -32,6 +32,12 @@ class MessagesController < ApplicationController
       @page_title = 'Compose Message'
       render action: :preview and return
     end
+    
+    # protect Anya TODO block system
+    if @message.recipient_id == 7 && @message.sender_id == 116
+      @message.unread = false
+      @message.visible_inbox = false
+    end
 
     if flash.now[:error].nil? && @message.save
       flash[:success] = "Message sent!"
