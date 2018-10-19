@@ -3,7 +3,7 @@ class Api::V1::RepliesController < Api::ApiController
     description 'Viewing replies to a post'
   end
 
-  api! 'Load all the replies for a given post as JSON resources'
+  api :GET, '/replies', 'Load all the replies for a given post as JSON resources'
   param :post_id, :number, required: true, desc: "Post ID"
   param :page, :number, required: false, desc: 'Page in results'
   param :per_page, :number, required: false, desc: 'Number of replies to load per page. Defaults to 25, accepts values from 1-100 inclusive.'

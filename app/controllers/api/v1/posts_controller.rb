@@ -4,7 +4,7 @@ class Api::V1::PostsController < Api::ApiController
     description 'Viewing and editing posts'
   end
 
-  api! 'Load all posts optionally filtered by subject'
+  api :GET, '/posts', 'Load all posts optionally filtered by subject'
   param :q, String, required: false, desc: 'Subject search term'
   def index
     queryset = Post.order('LOWER(subject) asc')
@@ -15,7 +15,7 @@ class Api::V1::PostsController < Api::ApiController
     render json: {results: posts.as_json(min: true)}
   end
 
-  api! 'Load a single post as a JSON resource'
+  api :GET, '/posts/:id', 'Load a single post as a JSON resource'
   param :id, :number, required: true, desc: "Post ID"
   error 403, "Post is not visible to the user"
   error 404, "Post not found"
@@ -25,7 +25,7 @@ class Api::V1::PostsController < Api::ApiController
     render json: post
   end
 
-  api! 'Update the order of posts. This is an unstable feature, and may be moved or renamed; it should not be trusted.'
+  api :POST, '/posts/reorder', 'Update the order of posts. This is an unstable feature, and may be moved or renamed; it should not be trusted.'
   error 401, "You must be logged in"
   error 403, "Board is not editable by the user"
   error 404, "Post IDs could not be found"

@@ -14,7 +14,7 @@ class Api::V1::BoardsController < Api::ApiController
     render json: {results: boards}
   end
 
-  api! 'Load a single continuity as a JSON resource.'
+  api :GET, '/boards/:id', 'Load a single continuity as a JSON resource.'
   param :id, :number, required: true, desc: 'Continuity ID'
   error 404, "Continuity not found"
   def show

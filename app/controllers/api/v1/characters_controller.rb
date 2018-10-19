@@ -8,7 +8,7 @@ class Api::V1::CharactersController < Api::ApiController
     description 'Viewing and editing characters'
   end
 
-  api! 'Load all the characters that match the given query, results ordered by name'
+  api :GET, '/characters', 'Load all the characters that match the given query, results ordered by name'
   param :q, String, required: false, desc: "Query string"
   param :page, :number, required: false, desc: 'Page in results (25 per page)'
   param :post_id, :number, required: false, desc: 'If provided, will return only characters that appear in the provided post'
@@ -25,7 +25,7 @@ class Api::V1::CharactersController < Api::ApiController
     render json: {results: characters.as_json(include: [:selector_name])}
   end
 
-  api! 'Load a single character as a JSON resource'
+  api :GET, '/characters/:id', 'Load a single character as a JSON resource'
   param :id, :number, required: true, desc: 'Character ID'
   param :post_id, :number, required: false, desc: 'If provided, will return an additional alias_id_for_post param to represent most recently used alias for this character in the provided post'
   error 403, "Post is not visible to the user"
@@ -35,7 +35,7 @@ class Api::V1::CharactersController < Api::ApiController
     render json: @character.as_json(include: [:galleries, :default, :aliases], post_for_alias: @post)
   end
 
-  api! 'Update a given character'
+  api :PATCH, '/characters/:id', 'Update a given character'
   param :id, :number, required: true, desc: 'Character ID'
   error 401, "You must be logged in"
   error 403, "Character is not editable by the user"
@@ -57,7 +57,7 @@ class Api::V1::CharactersController < Api::ApiController
     render json: @character.as_json(include: [:default])
   end
 
-  api! 'Update the order of galleries on a character. This is an unstable feature, and may be moved or renamed; it should not be trusted.'
+  api :POST, '/characters/reorder', 'Update the order of galleries on a character. This is an unstable feature, and may be moved or renamed; it should not be trusted.'
   error 401, "You must be logged in"
   error 403, "Character is not editable by the user"
   error 404, "CharactersGallery IDs could not be found"
