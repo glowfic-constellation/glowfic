@@ -7,12 +7,12 @@
         %td{colspan: 2}= render partial: 'posts/paginator', locals: { paginated: audits }
 
     - audits.each do |audit|
-      - cur = audited.revision(audit.version)
+      - cur = audited.revision(audit.audit_version)
       - cur.id = nil # hides the permalink buttons
       - reset_cycle
       %tr.bg.spacer{style: 'height:20px;'}
       %tr
-        %th{colspan: 2} Version: #{audit.version}
+        %th{colspan: 2} Version: #{audit.audit_version}
       - if audit.comment.present?
         %tr
           %td.post-subheader{colspan: 2}
@@ -25,14 +25,14 @@
       %tr
         %th.history-header.sub Fields Changed
         %td{class: cycle('even', 'odd')}
-          - if audit.version == 1
+          - if audit.audit_version == 1
             (Original)
           - else
             = audit.audited_changes.keys.map{|k| k.gsub('_id', '').gsub('_', ' ')}.join(', ').capitalize
       %tr
         %th.sub Updated
         %td{class: cycle('even', 'odd')}= pretty_time(audit.created_at)
-      - if audit.version > 1 && audit.audited_changes.keys.include?('board_id')
+      - if audit.audit_version > 1 && audit.audited_changes.keys.include?('board_id')
         %tr
           %th.sub Continuity
           %td{class: cycle('even', 'odd')}
@@ -46,7 +46,7 @@
               %b= link_to cur.board.name, board_path(cur.board)
             - else
               %b [Deleted]
-      - if audit.version > 1 && audit.audited_changes.keys.include?('privacy')
+      - if audit.audit_version > 1 && audit.audited_changes.keys.include?('privacy')
         %tr
           %th.sub Privacy
           %td{colspan: 3, class: cycle('even', 'odd')}
@@ -54,7 +54,7 @@
             %b= privacy_state(audit.audited_changes['privacy'][0])
             to
             %b= privacy_state(cur.privacy)
-      - if audit.version == 1 || (audit.audited_changes.keys & %w(character_alias_id character_id content description icon_id subject)).present?
+      - if audit.audit_version == 1 || (audit.audited_changes.keys & %w(character_alias_id character_id content description icon_id subject)).present?
         %tr
           %th.sub.vtop Content
           %td{class: cycle('even', 'odd')}
