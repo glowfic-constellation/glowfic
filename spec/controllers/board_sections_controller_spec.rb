@@ -62,6 +62,15 @@ RSpec.describe BoardSectionsController do
       expect(flash[:error][:message]).to eq("Section could not be created.")
     end
 
+    it "requires valid board for section" do
+      board = create(:board)
+      login_as(board.creator)
+      post :create, params: { board_section: {name: 'fake'} }
+      expect(response).to have_http_status(200)
+      expect(response).to render_template(:new)
+      expect(flash[:error][:message]).to eq("Section could not be created.")
+    end
+
     it "succeeds" do
       board = create(:board)
       login_as(board.creator)
