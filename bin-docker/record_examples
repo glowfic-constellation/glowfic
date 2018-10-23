@@ -1,0 +1,3 @@
+#!/bin/bash
+
+docker-compose run -e "APIPIE_RECORD=examples" web bundle exec rspec spec/controllers/api

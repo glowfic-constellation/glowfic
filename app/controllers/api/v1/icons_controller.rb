@@ -5,7 +5,7 @@ class Api::V1::IconsController < Api::ApiController
     description 'Processes S3 uploads that were not used'
   end
 
-  api! 'Given an S3 key that the user has not turned into an icon, deletes the file from S3'
+  api :POST, '/icons/s3_delete', 'Given an S3 key that the user has not turned into an icon, deletes the file from S3'
   param :s3_key, String, required: true, desc: 'S3 object key'
   error 401, "You must be logged in"
   error 403, "Icon does not belong to the user"

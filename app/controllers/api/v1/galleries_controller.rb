@@ -3,7 +3,7 @@ class Api::V1::GalleriesController < Api::ApiController
     description 'Viewing and editing galleries'
   end
 
-  api! 'Load a single gallery as a JSON resource'
+  api :GET, '/galleries/:id', 'Load a single gallery as a JSON resource'
   param :id, :number, required: true, desc: 'Gallery ID. May pass 0 to represent icons without a gallery.'
   param :user_id, :number, required: false, desc: 'User ID required when accessing galleryless icons while logged out.'
   error 404, "Gallery not found"

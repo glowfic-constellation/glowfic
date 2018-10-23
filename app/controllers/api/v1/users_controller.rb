@@ -3,7 +3,7 @@ class Api::V1::UsersController < Api::ApiController
     description 'Viewing and searching users'
   end
 
-  api! 'Load all the users that match the given query, results ordered by username'
+  api :GET, '/users', 'Load all the users that match the given query, results ordered by username'
   param :q, String, required: false, desc: "Query string"
   param :match, String, required: false, desc: "If set to 'exact', requires exact username match on q instead of prefix match"
   param :page, :number, required: false, desc: 'Page in results (25 per page)'
