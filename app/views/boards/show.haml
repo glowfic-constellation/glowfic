@@ -43,7 +43,7 @@
       - @board_sections.each do |section|
         %tr
           %th.sub.continuity-header{colspan: 5}= link_to section.name, board_section_path(section)
-        - section_posts = posts_from_relation(section.posts.ordered_in_section, not_tests: false, with_pagination: false).select { |post| post.visible_to? (current_user) }
+        - section_posts = posts_from_relation(section.posts.ordered_in_section, no_tests: false, with_pagination: false).select { |post| post.visible_to? (current_user) }
         - if section_posts.present?
           = render partial: 'posts/list_item', collection: section_posts, as: :post, locals: {hide_continuity: true}
         - else
