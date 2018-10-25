@@ -22,7 +22,7 @@ services:
   postgres:
     environment:
       - POSTGRES_PASSWORD=postgres
-    image: postgres:9-alpine
+    image: postgres:9.4-alpine
     volumes:
       - "./db/storage/:/var/lib/postgresql/data"
 
