@@ -93,6 +93,41 @@ ALTER SEQUENCE public.audits_id_seq OWNED BY public.audits.id;
 
 
 --
+-- Name: blocks; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE public.blocks (
+    id bigint NOT NULL,
+    blocking_user_id integer NOT NULL,
+    blocked_user_id integer NOT NULL,
+    block_interactions boolean DEFAULT true,
+    hide_them integer DEFAULT 0,
+    hide_me integer DEFAULT 0,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
+-- Name: blocks_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.blocks_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: blocks_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.blocks_id_seq OWNED BY public.blocks.id;
+
+
+--
 -- Name: board_authors; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -1202,7 +1237,8 @@ CREATE TABLE public.users (
     ignore_unread_daily_report boolean DEFAULT false,
     favorite_notifications boolean DEFAULT true,
     default_character_split character varying DEFAULT 'template'::character varying,
-    role_id integer
+    role_id integer,
+    tos_version integer
 );
 
 
@@ -1230,6 +1266,13 @@ ALTER SEQUENCE public.users_id_seq OWNED BY public.users.id;
 --
 
 ALTER TABLE ONLY public.audits ALTER COLUMN id SET DEFAULT nextval('public.audits_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.blocks ALTER COLUMN id SET DEFAULT nextval('public.blocks_id_seq'::regclass);
 
 
 --
@@ -1470,6 +1513,14 @@ ALTER TABLE ONLY public.ar_internal_metadata
 
 ALTER TABLE ONLY public.audits
     ADD CONSTRAINT audits_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: blocks_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY public.blocks
+    ADD CONSTRAINT blocks_pkey PRIMARY KEY (id);
 
 
 --
@@ -1783,6 +1834,20 @@ CREATE INDEX index_audits_on_created_at ON public.audits USING btree (created_at
 --
 
 CREATE INDEX index_audits_on_request_uuid ON public.audits USING btree (request_uuid);
+
+
+--
+-- Name: index_blocks_on_blocked_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_blocks_on_blocked_user_id ON public.blocks USING btree (blocked_user_id);
+
+
+--
+-- Name: index_blocks_on_blocking_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_blocks_on_blocking_user_id ON public.blocks USING btree (blocking_user_id);
 
 
 --
@@ -2299,7 +2364,9 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20171109031527'),
 ('20171111163658'),
 ('20171114013113'),
+('20171127031443'),
 ('20171227030824'),
-('20180109003825');
+('20180109003825'),
+('20180928230642');
 
 
