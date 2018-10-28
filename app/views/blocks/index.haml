@@ -10,25 +10,21 @@
     %tr
       %th{colspan: 5}
         = @page_title
-        - if logged_in?
-          = link_to new_block_path do
-            .link-box.action-new + Block User
+        = link_to new_block_path do
+          .link-box.action-new + Block User
     %tr
       %th.sub Blocked User
       %th.sub Blocked Interaction
       %th.sub Hidden (Theirs)
       %th.sub Hidden (Yours)
+      %th.sub
   %tbody
     - @blocks.ordered.each do |block|
       - klass = cycle('even', 'odd')
       %tr
         %td.padding-5{class: klass}
           = link_to block.blocked_user.username, user_path(block.blocked_user)
-        %td.padding-5{class: klass}
-          - if block.block_interactions
-            Yes
-          - else
-            No
+        %td.padding-5{class: klass}= block.block_interactions? ? 'Yes' : 'No'
         %td.padding-5{class: klass}
           - if block.hide_their_content?
             All
@@ -44,13 +40,11 @@
           - else
             None
         %td.width-70.right-align{class: klass}
-          - unless local_assigns[:hide_buttons]
-            - if block.editable_by?(current_user)
-              = link_to edit_block_path(block) do
-                = image_tag "icons/pencil.png"
-              = link_to block_path(block), :method => :delete, data: { confirm: 'Are you sure you want to unblock '+block.blocked_user.username+'?' } do
-                = image_tag "icons/cross.png"
-              &nbsp;
+          = link_to edit_block_path(block) do
+            = image_tag "icons/pencil.png"
+          = link_to block_path(block), :method => :delete, data: { confirm: 'Are you sure you want to unblock '+block.blocked_user.username+'?' } do
+            = image_tag "icons/cross.png"
+          &nbsp;
     - if @blocks.empty?
       %tr
         %td.centered.padding-10.no-posts{ class: cycle('even','odd'), colspan: 5 } — No blocks yet —

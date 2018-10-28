@@ -28,7 +28,8 @@ class BlocksController < ApplicationController
       flash.now[:error] = {}
       flash.now[:error][:message] = "User could not be blocked."
       flash.now[:error][:array] = @block.errors.full_messages
-      @users = [User.find_by(id: params.fetch(:block, {})[:blocked_user_id])]
+      editor_setup
+      @users = [@block.blocked_user].compact
       @page_title = 'Block User'
       render :action => :new
     end
@@ -46,6 +47,7 @@ class BlocksController < ApplicationController
       flash.now[:error] = {}
       flash.now[:error][:message] = "Block could not be saved."
       flash.now[:error][:array] = @block.errors.full_messages
+      editor_setup
       @page_title = 'Edit Block: ' + @block.blocked_user.username
       render :action => :edit
     end

@@ -48,6 +48,12 @@ RSpec.describe Block, type: :model do
       }.to raise_error(ActiveRecord::RecordInvalid)
     end
 
+    it "should require an option to be set" do
+      block = build(:block, hide_me: 0, hide_them: 0, block_interactions: false)
+      expect(block).not_to be_valid
+      expect { block.save! }.to raise_error(ActiveRecord::RecordInvalid)
+    end
+
     it 'suceeds with multiple blocked users and one blocking user' do
       blocker = create(:user)
       blocked1 = create(:user)
