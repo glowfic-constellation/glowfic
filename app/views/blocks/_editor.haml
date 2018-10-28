@@ -1,23 +1,27 @@
 - klass = cycle('even', 'odd')
 %tr
-  %th.sub Blocked User
+  %th.sub User
   %td{class: klass}
     - if blocked_user
       = blocked_user.username
     - else
       = f.select :blocked_user_id, options_from_collection_for_select(@users, :id, :username,  params.fetch(:block, {})[:blocked_user_id]), {class: 'text chosen-select', prompt: '— Choose User —'}
 %tr
-  %th.sub Block Interaction
+  %th.sub Interactions
   %td{class: klass}
     = f.check_box :block_interactions
     = f.label :block_interactions, "Prevent them from interacting with you?"
 %tr
-  %th.sub Hide Them
+  %th.sub Hide them
   %td{class: klass}
+    Prevent you from seeing their:
+    %br
     = f.select :hide_them, options_from_collection_for_select(@options.to_a, :second, :first, @block.hide_them), {class: 'text chosen-select'}
 %tr
-  %th.sub Hide You
+  %th.sub Hide yourself
   %td{class: klass}
+    Prevent them from seeing your:
+    %br
     = f.select :hide_me, options_from_collection_for_select(@options.to_a, :second, :first, @block.hide_me), {class: 'text chosen-select'}
 %tr
   %th.form-table-ender{colspan: 2}= submit_tag "Save", class: 'button'

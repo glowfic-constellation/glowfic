@@ -5,6 +5,7 @@ class Block < ApplicationRecord
   validates :blocking_user_id, uniqueness: { scope: :blocked_user_id }
   validates :hide_them, :hide_me, inclusion: { in: 0..2 }
   validate :not_blocking_self
+  validate :option_chosen
 
   scope :ordered, -> { includes(:blocked_user).sort_by { |block| [block.blocked_user.username.downcase] } }
 
@@ -14,7 +15,7 @@ class Block < ApplicationRecord
 
   def editable_by?(user)
     return false unless user
-    self.blocking_user.id == user.id
+    self.blocking_user_id == user.id
   end
 
   def hide_my_posts?
@@ -38,5 +39,10 @@ class Block < ApplicationRecord
   def not_blocking_self
     return unless blocking_user == blocked_user
     errors.add(:user, "cannot block themself")
+  end
+
+  def option_chosen
+    return if hide_my_posts? || hide_their_posts? || block_interactions?
+    errors.add(:block, "must choose at least one action to prevent")
   end
 end
