@@ -43,7 +43,6 @@ group :production do
   gem 'rack-cors'
   gem 'rack-timeout'
   gem 'rails_12factor'
-  gem 'tunemygc'
 end
 
 group :development do
