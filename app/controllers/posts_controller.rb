@@ -347,48 +347,15 @@ class PostsController < WritableController
   end
 
   def import_thread
-    unless valid_dreamwidth_url?(params[:dreamwidth_url])
-      flash[:error] = "Invalid URL provided."
-      params[:view] = 'import'
-      editor_setup
-      return render action: :new
-    end
-
-    if (missing = missing_usernames(params[:dreamwidth_url])).present?
-      flash[:error] = {}
-      flash[:error][:message] = "The following usernames were not recognized. Please have the correct author create a character with the correct screenname, or contact Marri if you wish to map a particular screenname to 'your base account posting without a character'."
-      flash[:error][:array] = missing
-      return render action: :new
-    end
-
-    ScrapePostJob.perform_later(params[:dreamwidth_url], params[:board_id], params[:section_id], params[:status], params[:threaded], current_user.id)
+    importer = PostImporter.new(params[:dreamwidth_url])
+    importer.import(params[:board_id], params[:section_id], params[:status], params[:threaded], current_user.id)
     flash[:success] = "Post has begun importing. You will be updated on progress via site message."
     redirect_to posts_path
-  end
-
-  def missing_usernames(url)
-    require Rails.root.join('lib', 'post_scraper')
-    data = HTTParty.get(url).body
-    logger.debug "Downloaded #{url} for scraping"
-    doc = Nokogiri::HTML(data)
-    usernames = doc.css('.poster span.ljuser b').map(&:text).uniq
-    usernames -= PostScraper::BASE_ACCOUNTS.keys
-    poster_names = doc.css('.entry-poster span.ljuser b')
-    usernames -= [poster_names.last.text] if poster_names.count > 1
-    usernames -= Character.where(screenname: usernames).pluck(:screenname)
-    usernames - Character.where(screenname: usernames.map { |u| u.tr("_", "-")}).pluck(:screenname).map { |u| u.tr('-', '_')}
-  end
-
-  def valid_dreamwidth_url?(url)
-    # this is simply checking for a properly formatted Dreamwidth URL
-    # errors when actually querying the URL are handled by ScrapePostJob
-    return false if url.blank?
-    return false unless params[:dreamwidth_url].include?('dreamwidth')
-    parsed_url = URI.parse(url)
-    return false unless parsed_url.host
-    parsed_url.host.ends_with?('dreamwidth.org')
-  rescue URI::InvalidURIError
-    false
+  rescue PostImportError => e
+    flash.now[:error] = e.api_error
+    params[:view] = 'import'
+    editor_setup
+    render action: :new
   end
 
   def find_post
