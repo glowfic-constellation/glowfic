@@ -40,6 +40,16 @@ RSpec.describe ReportsController do
       expect(assigns(:opened_posts).first.read_at).to be_the_same_time_as(time)
     end
 
+    it "handles invalid day argument" do
+      get :show, params: { id: 'daily', day: 'asdf' }
+      expect(response).to have_http_status(200)
+    end
+
+    it "handles out of range argument" do
+      get :show, params: { id: 'daily', day: '2018-28-10' }
+      expect(response).to have_http_status(200)
+    end
+
     it "succeeds with monthly" do
       get :show, params: { id: 'monthly' }
       expect(response).to have_http_status(200)
