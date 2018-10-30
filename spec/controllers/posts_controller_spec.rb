@@ -262,35 +262,10 @@ RSpec.describe PostsController do
         expect(flash[:error]).to eq("You do not have access to this feature.")
       end
 
-      it "requires url" do
-        user = create(:importing_user)
-        login_as(user)
-        post :create, params: { button_import: true }
-        expect(response).to render_template(:new)
-        expect(flash[:error]).to eq("Invalid URL provided.")
-      end
-
-      it "requires dreamwidth url" do
+      it "requires valid dreamwidth url" do
         user = create(:importing_user)
         login_as(user)
         post :create, params: { button_import: true, dreamwidth_url: 'http://www.google.com' }
-        expect(response).to render_template(:new)
-        expect(flash[:error]).to eq("Invalid URL provided.")
-      end
-
-      it "requires dreamwidth.org url" do
-        user = create(:importing_user)
-        login_as(user)
-        post :create, params: { button_import: true, dreamwidth_url: 'http://www.dreamwidth.com' }
-        expect(response).to render_template(:new)
-        expect(flash[:error]).to eq("Invalid URL provided.")
-      end
-
-      it "requires well formed url" do
-        user = create(:importing_user)
-        login_as(user)
-        expect(URI).to receive(:parse).and_raise(URI::InvalidURIError)
-        post :create, params: { button_import: true, dreamwidth_url: 'dreamwidth' }
         expect(response).to render_template(:new)
         expect(flash[:error]).to eq("Invalid URL provided.")
       end
@@ -300,27 +275,12 @@ RSpec.describe PostsController do
         user = create(:importing_user)
         login_as(user)
         url = 'http://wild-pegasus-appeared.dreamwidth.org/403.html?style=site&view=flat'
-        file = Rails.root.join('spec', 'support', 'fixtures', 'scrape_no_replies.html')
-        stub_request(:get, url).to_return(status: 200, body: File.new(file))
+        stub_fixture(url, 'scrape_no_replies')
         post :create, params: { button_import: true, dreamwidth_url: url }
         expect(response).to render_template(:new)
         expect(flash[:error][:message]).to start_with("The following usernames were not recognized")
         expect(flash[:error][:array]).to include("wild_pegasus_appeared")
         expect(ScrapePostJob).not_to have_been_enqueued
-      end
-
-      it "scrapes with - char usernames" do
-        clear_enqueued_jobs
-        user = create(:importing_user)
-        create(:character, user: user, screenname: 'wild-pegasus-appeared')
-        login_as(user)
-        url = 'http://wild-pegasus-appeared.dreamwidth.org/403.html?style=site&view=flat'
-        file = Rails.root.join('spec', 'support', 'fixtures', 'scrape_no_replies.html')
-        stub_request(:get, url).to_return(status: 200, body: File.new(file))
-        post :create, params: { button_import: true, dreamwidth_url: url }
-        expect(response).to redirect_to(posts_url)
-        expect(flash[:success]).to eq("Post has begun importing. You will be updated on progress via site message.")
-        expect(ScrapePostJob).to have_been_enqueued.with(url, nil, nil, nil, nil, user.id).on_queue('low')
       end
 
       it "scrapes" do
@@ -329,8 +289,7 @@ RSpec.describe PostsController do
         login_as(user)
         create(:character, user: user, screenname: 'wild-pegasus-appeared')
         url = 'http://wild-pegasus-appeared.dreamwidth.org/403.html?style=site&view=flat'
-        file = Rails.root.join('spec', 'support', 'fixtures', 'scrape_no_replies.html')
-        stub_request(:get, url).to_return(status: 200, body: File.new(file))
+        stub_fixture(url, 'scrape_no_replies')
         post :create, params: { button_import: true, dreamwidth_url: url }
         expect(response).to redirect_to(posts_url)
         expect(flash[:success]).to eq("Post has begun importing. You will be updated on progress via site message.")

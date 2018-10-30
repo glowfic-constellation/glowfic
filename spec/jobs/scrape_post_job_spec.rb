@@ -10,8 +10,7 @@ RSpec.describe ScrapePostJob do
   it "creates the correct objects" do
     Post.auditing_enabled = true
     url = 'http://wild-pegasus-appeared.dreamwidth.org/403.html?style=site&view=flat'
-    file = Rails.root.join('spec', 'support', 'fixtures', 'scrape_no_replies.html')
-    stub_request(:get, url).to_return(status: 200, body: File.new(file))
+    stub_fixture(url, 'scrape_no_replies')
     board = create(:board)
     create(:character, screenname: 'wild_pegasus_appeared')
     ScrapePostJob.perform_now(url, board.id, nil, Post::STATUS_COMPLETE, false, board.creator_id)
@@ -27,8 +26,7 @@ RSpec.describe ScrapePostJob do
 
   it "sends messages on username exceptions" do
     url = 'http://wild-pegasus-appeared.dreamwidth.org/403.html?style=site&view=flat'
-    file = Rails.root.join('spec', 'support', 'fixtures', 'scrape_no_replies.html')
-    stub_request(:get, url).to_return(status: 200, body: File.new(file))
+    stub_fixture(url, 'scrape_no_replies')
     board = create(:board)
 
     expect(ScrapePostJob).to receive(:notify_exception).with(an_instance_of(UnrecognizedUsernameError), url, board.id, nil, Post::STATUS_COMPLETE, false, board.creator_id).and_call_original
@@ -47,8 +45,7 @@ RSpec.describe ScrapePostJob do
 
   it "sends messages on imported exceptions" do
     url = 'http://wild-pegasus-appeared.dreamwidth.org/403.html?style=site&view=flat'
-    file = Rails.root.join('spec', 'support', 'fixtures', 'scrape_no_replies.html')
-    stub_request(:get, url).to_return(status: 200, body: File.new(file))
+    stub_fixture(url, 'scrape_no_replies')
     board = create(:board)
     create(:character, screenname: 'wild_pegasus_appeared', user: board.creator)
     scraper = PostScraper.new(url, board.id)
