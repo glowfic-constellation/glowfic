@@ -45,7 +45,6 @@ class PostImporter < Object
 
   def dreamwidth_doc
     return @dreamwidth_doc if @dreamwidth_doc.present?
-    require Rails.root.join('lib', 'post_scraper')
     data = HTTParty.get(@url).body
     Rails.logger.debug "Downloaded #{@url} for scraping"
     @dreamwidth_doc = Nokogiri::HTML(data)

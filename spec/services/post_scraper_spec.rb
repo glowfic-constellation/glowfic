@@ -1,5 +1,4 @@
 require "spec_helper"
-require Rails.root.join('lib', 'post_scraper')
 
 RSpec.describe PostScraper do
   def stub_fixture(url, filename)

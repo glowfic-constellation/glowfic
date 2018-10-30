@@ -1,6 +1,5 @@
 #!/usr/bin/env ruby
 
-require Rails.root.join('lib', 'post_scraper')
 require 'pp'
 
 section_number = ARGV[0].to_i # only-process-this section number
