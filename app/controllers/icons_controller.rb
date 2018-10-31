@@ -50,6 +50,11 @@ class IconsController < UploadingController
       @posts = posts_from_relation(Post.where(where_calc).ordered)
     elsif params[:view] == 'galleries'
       use_javascript('galleries/expander_old')
+    else
+      posts_using = Post.where(icon_id: @icon.id)
+      replies_using = Reply.where(icon_id: @icon.id)
+      @times_used = (posts_using.count + replies_using.count)
+      @posts_used = (posts_using.pluck(:id) + replies_using.pluck('distinct post_id')).uniq.count
     end
   end
 
