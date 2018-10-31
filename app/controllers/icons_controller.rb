@@ -53,6 +53,15 @@ class IconsController < UploadingController
     else
       posts_using = Post.where(icon_id: @icon.id)
       replies_using = Reply.where(icon_id: @icon.id)
+      if logged_in?
+        unless @icon.user == current_user
+          posts_using = posts_using.where(privacy: [Concealable::PUBLIC, Concealable::REGISTERED])
+          replies_using = replies_using.where(posts: {privacy: [Concealable::PUBLIC, Concealable::REGISTERED]}).joins(:post)
+        end
+      else
+        posts_using = posts_using.where(privacy: Concealable::PUBLIC)
+        replies_using = replies_using.where(posts: {privacy: Concealable::PUBLIC}).joins(:post)
+      end
       @times_used = (posts_using.count + replies_using.count)
       @posts_used = (posts_using.pluck(:id) + replies_using.pluck('distinct post_id')).uniq.count
     end
