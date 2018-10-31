@@ -87,8 +87,6 @@
     Posts Containing Icon
   = render 'posts/list', posts: @posts, table_class: 'icon-right-content-box'
 - else
-  - posts_using = Post.where(icon_id: @icon.id)
-  - replies_using = Reply.where(icon_id: @icon.id)
   %table.icon-right-content-box
     %thead
       %tr
@@ -96,7 +94,7 @@
     %tbody
       %tr
         %th.sub.width-150 Times Used
-        %td.even=(posts_using.count + replies_using.count).to_s
+        %td.even= @times_used.to_s
       %tr
         %th.sub.width-150 Posts In
-        %td.even= (posts_using.pluck(:id) + replies_using.pluck('distinct post_id')).uniq.count
+        %td.even= @posts_used
