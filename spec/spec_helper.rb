@@ -175,3 +175,4 @@ WebMock.disable_net_connect!(allow_localhost: true)
 Post.auditing_enabled = false
 Reply.auditing_enabled = false
 Character.auditing_enabled = false
+Block.auditing_enabled = false
