@@ -6,6 +6,7 @@ class Message < ApplicationRecord
   belongs_to :first_thread, class_name: 'Message', foreign_key: :thread_id, inverse_of: false, optional: false
 
   validates :sender, presence: { if: Proc.new { |m| m.sender_id != 0 } }
+  validate :unblocked_recipient
 
   before_validation :set_thread_id
   before_create :validate_recipient
@@ -76,5 +77,11 @@ class Message < ApplicationRecord
     return unless recipient.email.present?
     return unless recipient.email_notifications?
     UserMailer.new_message(self.id).deliver
+  end
+
+  def unblocked_recipient
+    return unless sender && recipient
+    return unless sender.has_interaction_blocked?(recipient)
+    errors.add(:recipient, "must not be blocked by you")
   end
 end
