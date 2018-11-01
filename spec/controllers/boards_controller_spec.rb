@@ -71,13 +71,13 @@ RSpec.describe BoardsController do
 
       it "orders boards correctly" do
         user = create(:user)
-        owned_board1 = create(:board, creator_id: user.id, name: 'd')
-        owned_board2 = create(:board, creator_id: user.id, name: 'b')
-        author_board1 = create(:board, coauthors: [user], name: 'a')
-        author_board2 = create(:board, coauthors: [user], name: 'c')
-        cameo_board1 = create(:board, cameos: [user], name: 'b')
-        cameo_board2 = create(:board, cameos: [user], name: 'a')
-        cameo_board3 = create(:board, cameos: [user], name: 'c')
+        owned_board1 = create(:board, creator_id: user.id, name: 'da')
+        owned_board2 = create(:board, creator_id: user.id, name: 'ba')
+        author_board1 = create(:board, coauthors: [user], name: 'aa')
+        author_board2 = create(:board, coauthors: [user], name: 'ca')
+        cameo_board1 = create(:board, cameos: [user], name: 'bb')
+        cameo_board2 = create(:board, cameos: [user], name: 'ab')
+        cameo_board3 = create(:board, cameos: [user], name: 'cb')
 
         get :index, params: { user_id: user.id }
         expect(assigns(:boards)).to eq([author_board1, owned_board2, author_board2, owned_board1])
