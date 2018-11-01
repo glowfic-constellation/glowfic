@@ -286,9 +286,9 @@ class Post < ApplicationRecord
     return if self.user.blocked_interaction_users.empty? && self.joined_authors.empty?
     self.unjoined_authors.each do |unjoined|
       next if unjoined.blocked_interaction_users.empty?
-      errors.add(:post_author, "must not be blocked") unless self.user.can_interact_with?(unjoined)
+      errors.add(:post_author, "cannot be added") unless self.user.can_interact_with?(unjoined)
       self.joined_authors.each do |author|
-        errors.add(:post_author, "must not be blocked") unless author.can_interact_with?(unjoined)
+        errors.add(:post_author, "cannot be added") unless author.can_interact_with?(unjoined)
       end
     end
   end
