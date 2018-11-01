@@ -283,9 +283,13 @@ class Post < ApplicationRecord
 
   def valid_coauthors
     return if self.unjoined_authors.empty?
-    return if self.user.blocked_interaction_users.empty?
-    self.unjoined_authors.each do |coauthor|
-      errors.add(:post_author, "must not be blocked") unless coauthor.can_interact_with?(self.user)
+    return if self.user.blocked_interaction_users.empty? && self.joined_authors.empty?
+    self.unjoined_authors.each do |unjoined|
+      next if unjoined.blocked_interaction_users.empty?
+      errors.add(:post_author, "must not be blocked") unless self.user.can_interact_with?(unjoined)
+      self.joined_authors.each do |author|
+        errors.add(:post_author, "must not be blocked") unless author.can_interact_with?(unjoined)
+      end
     end
   end
 
