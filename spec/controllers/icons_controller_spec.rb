@@ -235,6 +235,43 @@ RSpec.describe IconsController do
         expect(assigns(:javascripts)).to include('galleries/expander_old')
       end
     end
+
+    context "stats view" do
+      let(:icon) { create(:icon) }
+      let(:post) { create(:post, icon: icon, user: icon.user) }
+      let(:reply) { create(:reply, icon: icon, user: icon.user, post: create(:post)) }
+      let(:private_post) { create(:post, icon: icon, user: icon.user, privacy: Concealable::PRIVATE) }
+      let(:registered_post) { create(:post, icon: icon, user: icon.user, privacy: Concealable::REGISTERED) }
+      before(:each) do
+        create(:reply, post: post, user: icon.user, icon: icon)
+        reply
+        private_post
+        registered_post
+      end
+
+      it "fetches correct counts for icon owner" do
+        login_as(icon.user)
+        get :show, params: { id: icon.id }
+        expect(response).to have_http_status(200)
+        expect(assigns(:times_used)).to eq(5)
+        expect(assigns(:posts_used)).to eq(4)
+      end
+
+      it "fetches correct counts when logged out" do
+        login
+        get :show, params: { id: icon.id }
+        expect(response).to have_http_status(200)
+        expect(assigns(:times_used)).to eq(4)
+        expect(assigns(:posts_used)).to eq(3)
+      end
+
+      it "fetches corect counts when logged in" do
+        get :show, params: { id: icon.id }
+        expect(response).to have_http_status(200)
+        expect(assigns(:times_used)).to eq(3)
+        expect(assigns(:posts_used)).to eq(2)
+      end
+    end
   end
 
   describe "GET edit" do
