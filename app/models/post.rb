@@ -38,7 +38,7 @@ class Post < ApplicationRecord
 
   validates :subject, presence: true
   validates :description, length: { maximum: 255 }
-  validate :valid_board, :valid_board_section
+  validate :valid_board, :valid_board_section, :valid_coauthors
 
   before_create :build_initial_flat_post, :set_timestamps
   before_update :set_timestamps
@@ -279,6 +279,14 @@ class Post < ApplicationRecord
     return unless section.present?
     return if section.board_id == board_id
     errors.add(:section, "must be in the post's board")
+  end
+
+  def valid_coauthors
+    return if self.unjoined_authors.empty?
+    return if self.user.blocked_interaction_users.empty?
+    self.unjoined_authors.each do |coauthor|
+      errors.add(:post_author, "must not be blocked") unless coauthor.can_interact_with?(self.user)
+    end
   end
 
   def set_last_user
