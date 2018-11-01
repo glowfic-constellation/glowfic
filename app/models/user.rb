@@ -77,6 +77,10 @@ class User < ApplicationRecord
     !block_interaction_users.include?(user.id)
   end
 
+  def has_interaction_blocked?(user)
+    blocked_interaction_users.include?(user.id)
+  end
+
   def block_interaction_users
     (blocking_interaction_users + blocked_interaction_users).uniq
   end
