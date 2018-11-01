@@ -15,7 +15,7 @@ RSpec.describe Api::V1::RepliesController do
     end
 
     it "succeeds with valid post", :show_in_doc do
-      post = create(:post, num_replies: 2, with_icon: true, with_character: true)
+      post = create(:post, num_replies: 1, with_icon: true, with_character: true)
       calias = create(:alias)
       reply = create(:reply, post: post, user: calias.character.user, character: calias.character, character_alias: calias, with_icon: true)
       expect(calias.name).not_to eq(reply.character.name)
@@ -30,7 +30,7 @@ RSpec.describe Api::V1::RepliesController do
     end
 
     it "paginates" do
-      post = create(:post, num_replies: 5, with_icon: true, with_character: true)
+      post = create(:post, num_replies: 4, with_icon: true, with_character: true)
       get :index, params: { post_id: post.id, per_page: 2, page: 3 }
       expect(response).to have_http_status(200)
       expect(response.headers['Per-Page'].to_i).to eq(2)
