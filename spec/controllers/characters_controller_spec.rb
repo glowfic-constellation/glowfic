@@ -944,7 +944,7 @@ RSpec.describe CharactersController do
 
     it "handles destroy failure" do
       character = create(:character)
-      post = create(:post, user: character.user, character: character)
+      reply = create(:reply, user: character.user, character: character)
       login_as(character.user)
 
       allow(Character).to receive(:find_by).and_call_original
@@ -956,7 +956,7 @@ RSpec.describe CharactersController do
 
       expect(response).to redirect_to(character_url(character))
       expect(flash[:error]).to eq("Character could not be deleted.")
-      expect(post.reload.character).to eq(character)
+      expect(reply.reload.character).to eq(character)
     end
   end
 
