@@ -31,5 +31,24 @@ RSpec.describe Message do
       expect(message).to be_valid
       expect(message.sender_name).to eq('Glowfic Constellation')
     end
+
+    it "does not notify blocking recipients" do
+      sender = create(:user)
+      recipient = create(:user)
+      create(:block, blocking_user: recipient, blocked_user: sender, block_interactions: true)
+      message = create(:message, sender: sender, recipient: recipient)
+      expect(message.visible_inbox).to eq(false)
+      expect(UserMailer).to have_queue_size_of(0)
+    end
+  end
+
+  it "validates recipient" do
+    sender = create(:user)
+    recipient = create(:user)
+    create(:block, blocking_user: recipient, blocked_user: sender, block_interactions: true)
+    message = build(:message, sender: sender, recipient: recipient)
+    expect(message).to be_valid
+    message.save!
+    expect(message.visible_inbox).to eq(false)
   end
 end

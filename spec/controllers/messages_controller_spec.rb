@@ -196,28 +196,6 @@ RSpec.describe MessagesController do
       expect(message.parent).to eq(previous)
     end
 
-    it "fails with blocking recipient" do
-      block = create(:block)
-      login_as(block.blocked_user)
-      post :create, params: { message: {subject: 'test', message: 'testing', recipient_id: block.blocking_user } }
-      expect(flash[:error]).not_to be_nil
-      expect(flash[:error][:message]).to eq("Your message could not be sent because of the following problems:")
-      expect(flash[:error][:array]).to include('Recipient cannot be messaged')
-      expect(assigns(:message)).not_to be_valid
-      expect(assigns(:javascripts)).to include('messages')
-    end
-
-    it "fails with blocked recipient" do
-      block = create(:block)
-      login_as(block.blocking_user)
-      post :create, params: { message: {subject: 'test', message: 'testing', recipient_id: block.blocked_user } }
-      expect(flash[:error]).not_to be_nil
-      expect(flash[:error][:message]).to eq("Your message could not be sent because of the following problems:")
-      expect(flash[:error][:array]).to include('Recipient cannot be messaged')
-      expect(assigns(:message)).not_to be_valid
-      expect(assigns(:javascripts)).to include('messages')
-    end
-
     it "succeeds when replying to own message" do
       previous = create(:message)
       login_as(previous.sender)
