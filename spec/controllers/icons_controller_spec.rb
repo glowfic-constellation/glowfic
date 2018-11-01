@@ -470,7 +470,7 @@ RSpec.describe IconsController do
 
     it "handles destroy failure" do
       icon = create(:icon)
-      post = create(:post, user: icon.user, icon: icon)
+      reply = create(:reply, user: icon.user, icon: icon)
       login_as(icon.user)
 
       allow(Icon).to receive(:find_by).and_call_original
@@ -482,7 +482,7 @@ RSpec.describe IconsController do
 
       expect(response).to redirect_to(icon_url(icon))
       expect(flash[:error]).to eq("Icon could not be deleted.")
-      expect(post.reload.icon).to eq(icon)
+      expect(reply.reload.icon).to eq(icon)
     end
   end
 
