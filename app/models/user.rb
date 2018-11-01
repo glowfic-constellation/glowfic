@@ -78,11 +78,18 @@ class User < ApplicationRecord
   end
 
   def block_interaction_users
-    blocks = Block.where(block_interactions: true)
-    (blocks.where(blocking_user: self).pluck(:blocked_user_id) + blocks.where(blocked_user: self).pluck(:blocking_user_id)).uniq
+    (blocking_interaction_users + blocked_interaction_users).uniq
   end
 
   private
+
+  def blocking_interaction_users
+    Block.where(block_interactions: true, blocked_user: self).pluck(:blocking_user_id)
+  end
+
+  def blocked_interaction_users
+    Block.where(block_interactions: true, blocking_user: self).pluck(:blocked_user_id)
+  end
 
   def strip_spaces
     self.username = self.username.strip if self.username.present?
