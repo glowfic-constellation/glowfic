@@ -419,6 +419,22 @@ RSpec.describe Post do
       post = create(:post, content: '')
       expect(post.id).not_to be_nil
     end
+
+    it "should not allowed blocking coauthor" do
+      author = create(:user)
+      coauthor = create(:user)
+      create(:block, blocking_user: coauthor, blocked_user: author, block_interactions: true)
+      post = build(:post, user: author, unjoined_authors: [coauthor])
+      expect(post).not_to be_valid
+    end
+
+    it "should not allow blocked coauthor" do
+      author = create(:user)
+      coauthor = create(:user)
+      create(:block, blocking_user: author, blocked_user: coauthor, block_interactions: true)
+      post = build(:post, user: author, unjoined_authors: [coauthor])
+      expect(post).not_to be_valid
+    end
   end
 
   describe "#word_count" do
