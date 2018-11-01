@@ -3,6 +3,35 @@ require "spec_helper"
 RSpec.describe Board do
   include ActiveJob::TestHelper
 
+  describe "validations" do
+    it "succeeds" do
+      expect(create(:board)).to be_valid
+    end
+
+    it "succeeds with multiple boards with a single creator" do
+      user = create(:user)
+      create(:board, creator: user)
+      second = build(:board, creator: user)
+      expect(second).to be_valid
+      expect { second.save! }.not_to raise_error
+    end
+
+    it "should require a name" do
+      board = build(:board, name: '')
+      expect(board).not_to be_valid
+      board.name = 'Name'
+      expect(board).to be_valid
+    end
+
+    it "should require a unique name" do
+      create(:board, name: 'Test Board')
+      board = build(:board, name: 'Test Board')
+      expect(board).not_to be_valid
+      board.name = 'Name'
+      expect(board).to be_valid
+    end
+  end
+
   it "should allow everyone to post if open to anyone" do
     board = create(:board)
     user = create(:user)
