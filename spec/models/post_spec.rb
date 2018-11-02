@@ -1,96 +1,134 @@
 require "spec_helper"
 
 RSpec.describe Post do
-  it "should have the right timestamps" do
-    # creation
-    post = create(:post)
-    reply = reply2 = nil # to handle variable scoping issues with Timecop
-    expect(post.edited_at).to be_the_same_time_as(post.created_at)
-    expect(post.tagged_at).to be_the_same_time_as(post.created_at)
-    old_edited_at = post.edited_at
-    old_tagged_at = post.tagged_at
+  describe "timestamps" do
+    let(:post) { create(:post) }
+    let(:old_edited_at) { post.edited_at }
+    let(:old_tagged_at) { post.tagged_at }
+    let(:time) { post.edited_at + 1.hour }
 
-    # edited with no replies updates edit and tag
-    Timecop.freeze(old_tagged_at + 1.hour) do
-      post.content = 'new content'
-      post.save!
-      expect(post.tagged_at).to be_the_same_time_as(post.edited_at)
-      expect(post.tagged_at).to be > post.created_at
-      old_edited_at = post.edited_at
-      old_tagged_at = post.tagged_at
+    before(:each) { old_edited_at }
+
+    it "should be correct on creation" do
+      expect(post.edited_at).to be_the_same_time_as(post.created_at)
+      expect(post.tagged_at).to be_the_same_time_as(post.created_at)
     end
 
-    # invalid edit field with no replies updates nothing
-    Timecop.freeze(old_tagged_at + 2.hours) do
-      post.section_order = post.section_order + 1
-      post.save!
-      expect(post.tagged_at).to be_the_same_time_as(old_tagged_at)
-      expect(post.edited_at).to be_the_same_time_as(old_edited_at)
+    describe "with no replies" do
+      before(:each) { old_tagged_at }
+
+      it "should update edited_at and tagged_at when edited" do
+        Timecop.freeze(time) do
+          post.content = 'new content'
+          post.save!
+          expect(post.tagged_at).to be_the_same_time_as(post.edited_at)
+          expect(post.tagged_at).to be > post.created_at
+        end
+      end
+
+      it "should not update with invalid edit" do
+        Timecop.freeze(time) do
+          post.section_order = post.section_order + 1
+          post.save!
+          expect(post.tagged_at).to be_the_same_time_as(old_tagged_at)
+          expect(post.edited_at).to be_the_same_time_as(old_edited_at)
+        end
+      end
     end
 
-    # reply created updates tag but not edit
-    Timecop.freeze(old_tagged_at + 3.hours) do
-      reply = create(:reply, post: post)
-      post.reload
-      expect(post.tagged_at).to be_the_same_time_as(reply.created_at)
-      expect(post.edited_at).to be_the_same_time_as(old_edited_at)
-      expect(post.tagged_at).to be > post.edited_at
-      old_tagged_at = post.tagged_at
+    it "should update tagged_at but not edited_at when reply created" do
+      Timecop.freeze(time) do
+        reply = create(:reply, post: post)
+        post.reload
+        expect(post.tagged_at).to be_the_same_time_as(reply.created_at)
+        expect(post.edited_at).to be_the_same_time_as(old_edited_at)
+        expect(post.tagged_at).to be > post.edited_at
+      end
     end
 
-    # edited with replies updates edit but not tag
-    Timecop.freeze(old_tagged_at + 4.hours) do
-      post.content = 'newer content'
-      post.save!
-      expect(post.tagged_at).to be_the_same_time_as(old_tagged_at)
-      expect(post.edited_at).to be > old_edited_at
-      old_edited_at = post.edited_at
-    end
+    describe "with replies" do
+      let (:reply) {
+        Timecop.freeze(post.edited_at + 15.minutes) do
+          create(:reply, post: post)
+        end
+      }
 
-    # edited status with replies updates edit and tag
-    Timecop.freeze(old_tagged_at + 5.hours) do
-      post.status = Post::STATUS_COMPLETE
-      post.save!
-      expect(post.tagged_at).to be > old_tagged_at
-      expect(post.edited_at).to be > old_edited_at
-      old_edited_at = post.edited_at
-      old_tagged_at = post.tagged_at
-    end
+      before(:each) {
+        reply
+        old_tagged_at
+      }
 
-    # invalid edit field with replies updates nothing
-    Timecop.freeze(old_tagged_at + 6.hours) do
-      post.section_order = post.section_order + 1
-      post.save!
-      expect(post.tagged_at).to be_the_same_time_as(old_tagged_at)
-      expect(post.edited_at).to be_the_same_time_as(old_edited_at)
-    end
+      it "should update edited_at but not tagged_at when content edited" do
+        Timecop.freeze(time) do
+          post.content = 'newer content'
+          post.save!
+          expect(post.tagged_at).to be_the_same_time_as(old_tagged_at)
+          expect(post.edited_at).to be > old_edited_at
+        end
+      end
 
-    # second reply created updates tag but not edit
-    Timecop.freeze(old_tagged_at + 7.hours) do
-      reply2 = create(:reply, post: post)
-      post.reload
-      expect(post.tagged_at).to be_the_same_time_as(reply2.created_at)
-      expect(post.updated_at).to be >= reply2.created_at
-      expect(post.tagged_at).to be > post.edited_at
-      old_tagged_at = post.tagged_at
-    end
+      it "should update edited_at and tagged_at when status edited" do
+        Timecop.freeze(time) do
+          post.status = Post::STATUS_COMPLETE
+          post.save!
+          expect(post.tagged_at).to be > old_tagged_at
+          expect(post.edited_at).to be > old_edited_at
+        end
+      end
 
-    # first reply updated updates nothing
-    Timecop.freeze(old_tagged_at + 8.hours) do
-      reply.content = 'new content'
-      reply.save!
-      post.reload
-      expect(post.tagged_at).to be_the_same_time_as(old_tagged_at)
-      expect(post.edited_at).to be_the_same_time_as(old_edited_at)
-    end
+      it "should not update on invalid edit" do
+        Timecop.freeze(time) do
+          post.section_order = post.section_order + 1
+          post.save!
+          expect(post.tagged_at).to be_the_same_time_as(old_tagged_at)
+          expect(post.edited_at).to be_the_same_time_as(old_edited_at)
+        end
+      end
 
-    # second reply updated updates tag but not edit
-    Timecop.freeze(old_tagged_at + 9.hours) do
-      reply2.content = 'new content'
-      reply2.save!
-      post.reload
-      expect(post.tagged_at).to be_the_same_time_as(reply2.updated_at)
-      expect(post.edited_at).to be_the_same_time_as(old_edited_at)
+      it "should update tagged_at but not edited_at with a second reply" do
+        Timecop.freeze(time) do
+          reply2 = create(:reply, post: post)
+          post.reload
+          expect(reply2.reply_order).to eq(1)
+          expect(post.tagged_at).to be_the_same_time_as(reply2.created_at)
+          expect(post.updated_at).to be_the_same_time_as(reply2.created_at)
+          expect(post.tagged_at).to be > post.edited_at
+        end
+      end
+
+      describe "two" do
+        let (:reply2) {
+          Timecop.freeze(post.edited_at + 30.minutes) do
+            create(:reply, post: post)
+          end
+        }
+
+        before(:each) {
+          reply
+          reply2
+        }
+
+        it "should not update if first reply edited" do
+          old_tagged_at = post.tagged_at
+          Timecop.freeze(time) do
+            reply.content = 'new content'
+            reply.save!
+            post.reload
+            expect(post.tagged_at).to be_the_same_time_as(old_tagged_at)
+            expect(post.edited_at).to be_the_same_time_as(old_edited_at)
+          end
+        end
+
+        it "should update tagged_at but not edited_at if second reply edited" do
+          Timecop.freeze(time) do
+            reply2.content = 'new content'
+            reply2.save!
+            post.reload
+            expect(post.tagged_at).to be_the_same_time_as(reply2.updated_at)
+            expect(post.edited_at).to be_the_same_time_as(old_edited_at)
+          end
+        end
+      end
     end
   end
 
