@@ -87,6 +87,7 @@ class WritableController < ApplicationController
 
     @replies = @replies
       .select(select)
+      .where('replies.reply_order > 0')
       .joins(:user)
       .left_outer_joins(:character)
       .left_outer_joins(:icon)
