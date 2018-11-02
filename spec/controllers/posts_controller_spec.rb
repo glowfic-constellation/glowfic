@@ -688,6 +688,21 @@ RSpec.describe PostsController do
       expect(Label.count).to eq(3)
       expect(PostTag.count).to eq(9)
     end
+
+    it "generates a flat post" do
+      user = create(:user)
+      login_as(user)
+      post :create, params: {
+        post: {
+          subject: 'subject',
+          board_id: create(:board).id,
+          privacy: Concealable::REGISTERED,
+          content: 'content',
+        }
+      }
+      post = assigns(:post)
+      expect(post.flat_post).not_to be_nil
+    end
   end
 
   describe "GET show" do
