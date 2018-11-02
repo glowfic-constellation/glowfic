@@ -1355,11 +1355,15 @@ RSpec.describe PostsController do
 
       it "works with at_id" do
         post = create(:post)
-        unread_reply = create(:reply, post: post)
-        create(:reply, post: post)
-        time = Time.zone.now
-        post.mark_read(post.user, time)
-        expect(post.last_read(post.user)).to be_the_same_time_as(time)
+        unread_reply = build(:reply, post: post)
+        Timecop.freeze(post.created_at + 1.minute) do
+          unread_reply.save!
+          create(:reply, post: post)
+        end
+        Timecop.freeze(post.created_at + 2.minutes) do
+          post.mark_read(post.user)
+        end
+        expect(post.last_read(post.user)).to be_the_same_time_as(post.created_at + 2.minutes)\
         login_as(post.user)
 
         put :update, params: { id: post.id, unread: true, at_id: unread_reply.id }
@@ -1367,6 +1371,7 @@ RSpec.describe PostsController do
         expect(response).to redirect_to(unread_posts_url)
         expect(flash[:success]).to eq("Post has been marked as read until reply ##{unread_reply.id}.")
         expect(post.reload.last_read(post.user)).to be_the_same_time_as((unread_reply.created_at - 1.second))
+        expect(post.reload.first_unread_for(post.user)).to eq(unread_reply)
       end
 
       it "works without at_id" do
@@ -1386,10 +1391,15 @@ RSpec.describe PostsController do
       it "works when ignored with at_id" do
         user = create(:user)
         post = create(:post)
-        unread_reply = create(:reply, post: post)
-        create(:reply, post: post)
-        post.mark_read(user)
-        post.ignore(user)
+        unread_reply = build(:reply, post: post)
+        Timecop.freeze(post.created_at + 1.minute) do
+          unread_reply.save!
+          create(:reply, post: post)
+        end
+        Timecop.freeze(post.created_at + 2.minutes) do
+          post.mark_read(user)
+          post.ignore(user)
+        end
         expect(post.reload.first_unread_for(user)).to be_nil
         login_as(user)
 
@@ -1397,6 +1407,7 @@ RSpec.describe PostsController do
 
         expect(response).to redirect_to(unread_posts_url)
         expect(flash[:success]).to eq("Post has been marked as read until reply ##{unread_reply.id}.")
+        expect(post.reload.last_read(user)).to be_the_same_time_as((unread_reply.created_at - 1.second))
         expect(post.reload.first_unread_for(user)).to eq(unread_reply)
         expect(post).to be_ignored_by(user)
       end
