@@ -48,8 +48,9 @@ RSpec.describe FlatPost do
 
     it "regenerates only matching flat posts with arguments" do
       post = create(:post)
-      nonpost = create(:post)
-
+      nonpost = Timecop.freeze(Time.current) do
+        create(:post)
+      end
       reply = build(:reply, post: post)
       reply.skip_regenerate = true
       reply.save!
