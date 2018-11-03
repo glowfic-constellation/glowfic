@@ -19,7 +19,7 @@ RSpec.feature "Editing posts", :type => :feature do
 
   scenario "User edits a post" do
     user = create(:user, password: 'known')
-    post = create(:post, user: user, subject: 'test subject')
+    post = create(:post, user: user, subject: 'test subject', content: 'test content')
 
     login(user, 'known')
 
@@ -33,6 +33,8 @@ RSpec.feature "Editing posts", :type => :feature do
     expect(page).to have_selector('.content-header', exact_text: 'Edit post')
     expect(page).to have_no_selector('.post-container')
     within('#post-editor') do
+      expect(page).to have_field('Subject', with: 'test subject')
+      expect(page).to have_field('post_content', with: 'test content')
       fill_in 'Subject', with: 'other subject'
       fill_in "post_content", with: "other content"
     end
@@ -111,7 +113,7 @@ RSpec.feature "Editing posts", :type => :feature do
 
   scenario "Moderator edits a post" do
     user = create(:user)
-    post = create(:post, user: user, subject: 'test subject')
+    post = create(:post, user: user, subject: 'test subject', content: 'test content')
 
     login(create(:mod_user, password: 'known'), 'known')
 
@@ -125,6 +127,8 @@ RSpec.feature "Editing posts", :type => :feature do
     expect(page).to have_selector('.content-header', exact_text: 'Edit post')
     expect(page).to have_no_selector('.post-container')
     within('#post-editor') do
+      expect(page).to have_field('Subject', with: 'test subject')
+      expect(page).to have_field('post_content', with: 'test content')
       fill_in 'Subject', with: 'other subject'
       fill_in "post_content", with: "other content"
       fill_in 'Moderator note', with: 'example edit'
