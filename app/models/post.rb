@@ -287,10 +287,6 @@ class Post < ApplicationRecord
     adjacent_posts_for(user) { |relation| relation.find_by('section_order > ?', self.section_order) }
   end
 
-  def written
-    self.replies.find_by(reply_order: 0)
-  end
-
   def editable_by?(editor)
     return false unless editor
     return true if editor.id == user_id
