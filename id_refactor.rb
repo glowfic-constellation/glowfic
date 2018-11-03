@@ -37,20 +37,23 @@ Arrangements = {
   },
   Post: {
     Reply: :post_id,
-    PostTag: :post_id
+    PostTag: :post_id,
+    PostAuthor: :post_id,
+    PostView: :post_id,
   }
 }
 
 def update_models(model, key, old_id, new_id)
+  model = Reply.unscoped if model == Reply
   model.where(key => old_id).find_each do |object|
-    object.update(key => new_id)
+    object.update_columns(key => new_id)
   end
 end
 
 def copy_object(object, exp_id)
   copy = object.dup
   copy.id = exp_id
-  object.delete
+  #object.delete
   copy.save!
   copy.id
 end
@@ -79,6 +82,8 @@ def iterate_model(model)
   end
 end
 
+Reply.auditing_enabled = false
+Post.auditing_enabled = false
 iterate_model(Template)
 iterate_model(Icon)
 iterate_model(Character)
