@@ -29,7 +29,7 @@ RSpec.describe PostsController, 'GET new' do
 
     expect(response).to have_http_status(200)
     expect(assigns(:post)).to be_new_record
-    expect(assigns(:post).written.character).to eq(char1)
+    expect(assigns(:written).character).to eq(char1)
     expect(assigns(:post).authors_locked).to eq(true)
 
     # editor_setup:
