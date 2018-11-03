@@ -233,4 +233,37 @@ RSpec.feature "Editing posts", :type => :feature do
       expect(page).to have_no_selector('.post-updated')
     end
   end
+
+  scenario "Fields are preserved on failed post#update" do
+    user = login
+    post = create(:post, user: user, subject: 'test subject', content: 'test content')
+
+    visit post_path(post)
+    expect(page).to have_selector('.post-container', count: 1)
+    within('.post-container') do
+      click_link 'Edit'
+    end
+
+    expect(page).to have_no_selector('.error')
+    expect(page).to have_selector('.content-header', exact_text: 'Edit post')
+    expect(page).to have_no_selector('.post-container')
+    within('#post-editor') do
+      expect(page).to have_field('Subject', with: 'test subject')
+      expect(page).to have_field('post_content', with: 'test content')
+      fill_in 'Subject', with: ''
+      fill_in "Description", with: "test description"
+      fill_in "post_content", with: "other content"
+      click_button 'Save'
+    end
+
+    expect(page).to have_no_selector('.post-container')
+    expect(page).to have_selector('.error', text: "Subject can't be blank")
+
+    expect(page).to have_selector('#post-editor')
+    within('#post-editor') do
+      expect(page).to have_field('Subject', with: '')
+      expect(page).to have_field('Description', with: 'test description')
+      expect(page).to have_field('post_content', with: 'other content')
+    end
+  end
 end
