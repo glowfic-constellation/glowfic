@@ -17,15 +17,19 @@ RSpec.feature "Creating posts", :type => :feature do
     expect(page).to have_selector(".content-header", text: "Create a new post")
 
     fill_in "post_subject", with: "test subject"
+    fill_in "post_content", with: "test content"
     click_button "Post"
     expect(page).to have_no_selector(".error")
     expect(page).to have_selector('.success', text: 'successfully posted.')
     expect(page).to have_selector('.post-container', count: 1)
     expect(page).to have_selector('#post-title', exact_text: 'test subject')
 
+    within('.post-content') do
+      expect(page).to have_selector('p', exact_text: 'test content')
+    end
+
     within('.post-container') do
       expect(page).to have_selector('.post-author', exact_text: user.username)
-      expect(page).to have_selector('.post-content', exact_text: '')
     end
   end
 
