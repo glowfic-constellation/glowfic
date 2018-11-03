@@ -33,6 +33,44 @@ RSpec.feature "Creating posts", :type => :feature do
     end
   end
 
+  scenario "User creates a post with preview" do
+    user = login
+    create(:board)
+
+    visit new_post_path
+    expect(page).to have_no_selector(".error")
+    expect(page).to have_selector(".content-header", text: "Create a new post")
+
+    fill_in "post_subject", with: "test subject"
+    fill_in "post_content", with: "test content"
+    click_button 'Preview'
+
+    # verify preview, change
+    expect(page).to have_no_selector('.error')
+    expect(page).to have_selector('.content-header', exact_text: 'test subject')
+    expect(page).to have_selector('.post-container', count: 1)
+    expect(page).to have_selector('#post-editor')
+    within('#post-editor') do
+      expect(page).to have_field('Subject', with: 'test subject')
+      expect(page).to have_field('post_content', with: 'test content')
+      fill_in 'Subject', with: 'other subject'
+      fill_in "post_content", with: "other content"
+      click_button 'Post'
+    end
+    expect(page).to have_no_selector(".error")
+    expect(page).to have_selector('.success', text: 'successfully posted.')
+    expect(page).to have_selector('.post-container', count: 1)
+    expect(page).to have_selector('#post-title', exact_text: 'other subject')
+
+    within('.post-content') do
+      expect(page).to have_selector('p', exact_text: 'other content')
+    end
+
+    within('.post-container') do
+      expect(page).to have_selector('.post-author', exact_text: user.username)
+    end
+  end
+
   scenario "User sees different editor settings" do
     user = login
     create(:board)
