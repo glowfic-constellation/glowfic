@@ -71,6 +71,24 @@ RSpec.feature "Creating posts", :type => :feature do
     end
   end
 
+  scenario "Fields are preserved on failed post#create" do
+    login
+    visit new_post_path
+    expect(page).to have_no_selector(".error")
+    expect(page).to have_selector(".content-header", text: "Create a new post")
+
+    fill_in "post_subject", with: "test subject"
+    fill_in "post_content", with: "test content"
+    click_button "Post"
+
+    expect(page).to have_selector('.error', text: 'Your post could not be saved because of the following problems: Board must exist')
+    expect(page).to have_selector('#post-editor')
+    within('#post-editor') do
+      expect(page).to have_field('Subject', with: 'test subject')
+      expect(page).to have_field('post_content', with: 'test content')
+    end
+  end
+
   scenario "User sees different editor settings" do
     user = login
     create(:board)
