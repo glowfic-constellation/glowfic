@@ -362,7 +362,7 @@ RSpec.describe PostsController, 'POST create' do
       expect(assigns(:post)).not_to be_persisted
       expect(assigns(:post).user).to eq(user)
       expect(assigns(:post).subject).to eq('asubjct')
-      expect(assigns(:post).written.content).to eq('acontnt')
+      expect(assigns(:written).content).to eq('acontnt')
       expect(assigns(:page_title)).to eq('New Post')
       expect(assigns(:author_ids)).to match_array([user.id, coauthor.id])
 

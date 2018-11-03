@@ -288,7 +288,7 @@ class Post < ApplicationRecord
   end
 
   def written
-    self.replies.ordered.first
+    self.replies.find_by(reply_order: 0)
   end
 
   def editable_by?(editor)
