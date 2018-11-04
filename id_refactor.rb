@@ -12,6 +12,7 @@ Arrangements = {
   Character: {
     CharactersGallery: :character_id,
     CharacterTag: :character_id,
+    CharacterAlias: :character_id,
     Reply: :character_id,
     Post: :character_id
   },
