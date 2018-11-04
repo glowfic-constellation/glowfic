@@ -40,7 +40,7 @@ BoardSection.create!([
   { board_id: 1, name: "make a wish", status: 1, section_order: 0 },
   { board_id: 1, name: "hexes", status: 1, section_order: 1 },
   { board_id: 1, name: "parable of the talents", status: 1, section_order: 2 },
-  { board_id: 1, name: "an art project", status: 0, section_order: 3 }
+  { board_id: 1, name: "an art project", status: 0, section_order: 3 },
 ])
 
 puts "Creating icons..."
@@ -157,7 +157,7 @@ Template.create!([
   { user_id: 2, name: "Olympian" },
   { user_id: 3, name: "Mark" },
   { user_id: 3, name: "Miles" },
-  { user_id: 2, name: "Elspeth" }
+  { user_id: 2, name: "Elspeth" },
 ])
 
 puts "Creating characters..."
@@ -201,7 +201,7 @@ puts "Creating character aliases..."
 CharacterAlias.create!([
   { character_id: 6, name: "Jenny O'Meara" },
   { character_id: 19, name: "Laney" },
-  { character_id: 19, name: "Whistle" }
+  { character_id: 19, name: "Whistle" },
 ])
 
 puts "Creating galleries..."
@@ -233,7 +233,7 @@ Gallery.create!([
   { user_id: 3, name: "thisvorlunatic" },
   { user_id: 3, name: "unmarred" },
   { user_id: 3, name: "unmired" },
-  { user_id: 3, name: "unmirrored" }
+  { user_id: 3, name: "unmirrored" },
 ])
 
 puts "Assigning galleries to characters..."
@@ -366,12 +366,12 @@ GalleriesIcon.create!([
   { icon_id: 97, gallery_id: 28 },
   { icon_id: 98, gallery_id: 1 },
   { icon_id: 101, gallery_id: 2 },
-  { icon_id: 99, gallery_id: 4 }
+  { icon_id: 99, gallery_id: 4 },
 ])
 
 puts "Creating tags..."
 GalleryGroup.create!([
-  { user_id: 3, name: "JokerSherlock (SS)", type: "GalleryGroup" }
+  { user_id: 3, name: "JokerSherlock (SS)", type: "GalleryGroup" },
 ])
 Setting.create!([
   { user_id: 3, name: "Earth", type: "Setting" },
@@ -382,7 +382,7 @@ Setting.create!([
   { user_id: 2, name: "Quinn", type: "Setting" },
   { user_id: 2, name: "Dreamward", type: "Setting", owned: true },
   { user_id: 3, name: "Buffy", type: "Setting" },
-  { user_id: 3, name: "Eos", type: "Setting" }
+  { user_id: 3, name: "Eos", type: "Setting" },
 ])
 
 puts "Assigning tags to characters..."
@@ -407,21 +407,21 @@ CharacterTag.create!([
   { character_id: 19, tag_id: 10 },
   { character_id: 12, tag_id: 8 },
   { character_id: 17, tag_id: 5 },
-  { character_id: 18, tag_id: 7 }
+  { character_id: 18, tag_id: 7 },
 ])
 
 puts "Assigning tags to galleries..."
 GalleryTag.create!([
   { gallery_id: 26, tag_id: 1 },
   { gallery_id: 28, tag_id: 1 },
-  { gallery_id: 27, tag_id: 1 }
+  { gallery_id: 27, tag_id: 1 },
 ])
 
 puts "Attaching settings to each other..."
 TagTag.create!([
   { tagged_id: 3, tag_id: 9 },
   { tagged_id: 9, tag_id: 2 },
-  { tagged_id: 5, tag_id: 2 }
+  { tagged_id: 5, tag_id: 2 },
 ])
 
 puts "Creating posts..."
@@ -451,7 +451,7 @@ Post.create!([
   { board_id: 1, user_id: 2, subject: "who are you when you're alone?", privacy: 0, status: 1, section_id: 2, section_order: 12, character_id: 31, icon_id: 42, content: "A week later, Bella receives a fancy acceptance letter from Stanford.  Squee!<br><br>[I'm in,] she tells Alice merrily." },
   { board_id: 1, user_id: 2, subject: "high school is kind of boring really", privacy: 0, status: 1, section_id: 3, section_order: 0, character_id: 31, icon_id: 43, content: "School plods along.  Bella is native-quality fluent in Spanish, professor-level at math, well and thoroughly versed in the workings of the United States government, capable of doing actual independent research projects in biology, and she's been speaking English since she was <em>one</em>.  Alas, these skills only make classes easier for a short time.  After the novelty wears off they're just tedious.  Bella winds up squaring her homework done more often than not so she can work out the kinks in her design for telekinesis, or play music, or attend soccer practice, or write little computer games, or read, or just fly around.  This works out fine.  Magic is pretty good at homework.<br><br>She winds up not attending most of the dances, but she does want to go to the end of year one, as she will be leaving Forks High School forever and it has some good points.  Alice promised her a dress..." },
   { board_id: 1, user_id: 2, subject: "good morning", privacy: 0, status: 1, section_id: 3, section_order: 1, character_id: 31, content: "The next morning, Charlie leaves late for work so he and Bella can have breakfast together, but then he does go.<br><br>Bella sees him off.<br><br>And heads for the lair, humming, all nerves." },
-  { board_id: 1, user_id: 2, subject: "introduction to being a college student", privacy: 0, status: 1, section_id: 3, section_order: 2, character_id: 31, content: "Bella packs light.  (She can conjure whatever she wants, mooch off Alice for anything she wants to <em>buy</em>.  She's wearing her riding gear and riding Tegu and only has a few other favorite-things she'd like to retain in their original forms.  The black dress is one of them.)  Her swag goes in saddlebags and she goes to Stanford.<br><br>It's a road trip; she wants to be able to account for her time, and besides, she likes her motorcycle.  She checks into crappy little motels and once spends four minutes watching someone try and fail to disassemble her bike, from her window.  (The fellow gives up eventually.  Tegu does not want to come apart or move.)<br><br>At Stanford, she is there before her new roommate, who is reportedly named \"Janine\".  Bella unpacks, and since no one's there yet, she wishes up some decorations too.  She introduces herself to the RA, Maureen, and then loiters in the hall lounge, waiting for more people to meet." }
+  { board_id: 1, user_id: 2, subject: "introduction to being a college student", privacy: 0, status: 1, section_id: 3, section_order: 2, character_id: 31, content: "Bella packs light.  (She can conjure whatever she wants, mooch off Alice for anything she wants to <em>buy</em>.  She's wearing her riding gear and riding Tegu and only has a few other favorite-things she'd like to retain in their original forms.  The black dress is one of them.)  Her swag goes in saddlebags and she goes to Stanford.<br><br>It's a road trip; she wants to be able to account for her time, and besides, she likes her motorcycle.  She checks into crappy little motels and once spends four minutes watching someone try and fail to disassemble her bike, from her window.  (The fellow gives up eventually.  Tegu does not want to come apart or move.)<br><br>At Stanford, she is there before her new roommate, who is reportedly named \"Janine\".  Bella unpacks, and since no one's there yet, she wishes up some decorations too.  She introduces herself to the RA, Maureen, and then loiters in the hall lounge, waiting for more people to meet." },
   { board_id: 1, user_id: 2, subject: "dress for success", privacy: 0, status: 1, section_id: 3, section_order: 3, character_id: 31, icon_id: 42, content: "By the time when Alice first shows up at Stanford <em>visibly</em> (as opposed to lurking around the ceiling at Bella's classes, making smart remarks in her head), Janine has put in a request, and so have four other girls on the hall.  (Lillian wants a summery floral dress, Tasha wants a midnight blue evening gown, Ruth has expressed a fondness for polka dots, and Kuo wants something gothy.  Bella politely makes no remarks about <em>anyone's</em> taste.)<br><br>Bella likes all her teachers okay, and also the orchestra conductor and her soccer coach.  Life is good." },
   { board_id: 1, user_id: 2, subject: "interesting rich people", privacy: 0, status: 1, section_id: 3, section_order: 4, character_id: 31, icon_id: 42, content: "The party guest list includes a wide range of interestingnesses of rich people.  There's a fellow who sits on various boards of various faceless corporations; there's two who started startups and swept up a few million dollars that way; there's a small handful of professional philanthropists, who have oodles of money from various sources and make a hobby of distributing the interest to worthy pet causes; there is a congresswoman, and a state senator, both from New York but apparently willing to travel to the West Coast on occasion.  There's also a lot of dull old money who do this sort of thing and nothing but all the time, but they still concentrate a lot of financial leverage, and Bella would rather have ins with them than <em>not</em>, as long as she can.<br><br>She bikes up - speeding shamefully, hexing herself radar detection, and cutting the trip in half from its estimated time to just eight hours on the road.  Tegu can go <em>very very fast</em>.<br><br>Alice made her a new dress for the occasion - this one's autumny, mostly a dark red-brown, with leaf patterns in deep gold and burnt orange swirling up around and soft ruffles in the same colors around her knees and puffing out over one shoulder.  It stands out more than the little black dress - which is fine.  She would like attention, and just being the hostess's son's girlfriend will not quite get her there at a rich people party, she thinks." },
   { board_id: 1, user_id: 2, subject: "for my birthday i become a real person", privacy: 0, status: 1, section_id: 3, section_order: 5, character_id: 31, icon_id: 42, content: "The eighteenth birthday is the best one.  Bella is no longer A Minor.  She no longer needs Charlie's or Renée's permission to do random things that real people are allowed to do.  She still can't drink, but she doesn't feel like throwing her cognitive edge out a window anyway.<br><br>Also, she is going to get a cake." },
@@ -929,7 +929,7 @@ Reply.create!([
   { post_id: 2, user_id: 3, content: "Delaney ignores both of them. Bounce. Bounce.<br><br>Ms. Finch takes a look at the accumulated evidence, raises her eyebrows, and holds out her hand to accept it.<br><br>\"You must be the Swan kid,\" she says. \"Hi. Nice to meet you... and your medical record.\"<br><br>(Delaney snickers. So he <em>is</em> listening.)", character_id: 19, reply_order: 2 },
   { post_id: 2, user_id: 2, content: "\"It's only the receipts; you'll have to take my word on what they're for, or call my mom, but at least they substantiate that I'm in and out of the doctor's office regularly,\" says Bella with a tight smile.  \"There's probably some way to get the actual medical record if necessary.  What's on the menu for today?\"", character_id: 31, reply_order: 3 },
   { post_id: 2, user_id: 3, content: "\"Volleyball,\" says Ms. Finch, flipping through the receipts. \"Good God.\" (She's reached the broken toes.) \"I wouldn't put you in a volleyball game if you paid me,\" she says as she stacks everything back together and hands it back to Bella. \"You can sit out. Grab a mat and do whatever you can do without breaking any bones in my gym. If I think you're slacking off, I'll let you know.\"", character_id: 19, reply_order: 4 },
-  { post_id: 2, user_id: 2, content: "\"<em>Thank</em> you,\" says Bella warmly, putting away the papers.  She goes and fetches a mat.<br><br>They're right next to where Delaney is bouncing his ball.  Sigh.  She doesn't look directly at him, and he seems pretty good at actually catching the projectile so she's not especially worried about getting clobbered, but she doesn't know what is <em>up</em> with him yet.<br><br>Maybe she'll ask Ms. Finch.  Ms. Finch seems like a sensible person, and has him in one of her classes.", character_id: 31, icon_id: 42, reply_order: 5 }
+  { post_id: 2, user_id: 2, content: "\"<em>Thank</em> you,\" says Bella warmly, putting away the papers.  She goes and fetches a mat.<br><br>They're right next to where Delaney is bouncing his ball.  Sigh.  She doesn't look directly at him, and he seems pretty good at actually catching the projectile so she's not especially worried about getting clobbered, but she doesn't know what is <em>up</em> with him yet.<br><br>Maybe she'll ask Ms. Finch.  Ms. Finch seems like a sensible person, and has him in one of her classes.", character_id: 31, icon_id: 42, reply_order: 5 },
   { post_id: 2, user_id: 3, content: "Ms. Finch's last words on the subject are a wry, \"You're welcome.\"<br><br>The rhythm of the ball is pretty even - bounce, bounce, bounce. Bounce.<br><br>When Bella approaches, it stops.<br><br>Delaney turns his head to look at her; his jaw and the side of his face are already starting to show bruises from earlier.<br><br>\"Hey,\" he says amicably.", character_id: 19, icon_id: 104, reply_order: 6 },
   { post_id: 2, user_id: 2, content: "Oh.  Greetings.  Splendid.<br><br>\"Hello.\"  She hauls a mat from where the mats are, and looks for a place that isn't going to be in harm's way when volleyball happens.<br><br>All such places, except for right in front of the door where people are going to start pouring in soon, are also near Delaney.<br><br>Grand.", character_id: 31, icon_id: 102, reply_order: 7 },
   { post_id: 2, user_id: 3, content: "He observes her looking around.<br><br>\"Do you want me to move?\" he asks, drumming his fingers idly on the basketball, which is now balanced on his chest.", character_id: 19, reply_order: 8 },
@@ -1002,5 +1002,5 @@ PostTag.create!([
   { post_id: 2, tag_id: 10 },
   { post_id: 2, tag_id: 2 },
   { post_id: 3, tag_id: 2 },
-  { post_id: 3, tag_id: 10 }
+  { post_id: 3, tag_id: 10 },
 ])
