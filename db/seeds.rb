@@ -51,9 +51,6 @@ puts "Creating icons..."
 load 'seeds/icon.rb'
 
 puts "Creating templates..."
-load 'seeds/template.rb'
-
-puts "Creating characters..."
 load 'seeds/character.rb'
 
 puts "Creating galleries..."
