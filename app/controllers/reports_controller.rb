@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 class ReportsController < ApplicationController
+  include DateSelectable
+
   def index
   end
 
@@ -14,18 +16,7 @@ class ReportsController < ApplicationController
 
     @page_title = params[:id].capitalize + " Report"
     @hide_quicklinks = true
-    if params[:day].present?
-      @day = begin
-         params[:day].in_time_zone(Time.zone).to_date
-
-       # invalid time stamps processed with .in_time_zone return nil and raise NoMethodError
-       # whereas out of range timestamps like January 32nd raise ArgumentError
-       rescue NoMethodError, ArgumentError
-         Time.zone.now.to_date
-       end
-    else
-      @day = Time.zone.now.to_date
-    end
+    @day = calculate_day
 
     if logged_in?
       @opened_posts = PostView.where(user_id: current_user.id).select([:post_id, :read_at, :ignored])

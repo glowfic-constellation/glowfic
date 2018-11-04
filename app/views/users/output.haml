@@ -1,0 +1,9 @@
+.content-header Your Daily Ouput: #{@total} words
+.sub= render partial: 'reports/date_nav'
+.even
+  - @posts.each do |p|
+    %p= p
+  - @replies.each do |r|
+    %p= r
+  - if @posts.empty? && @replies.empty?
+    .centered — Nothing written today —

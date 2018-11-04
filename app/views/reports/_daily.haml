@@ -9,13 +9,7 @@
         - if @day == Date.today
           %em (Incomplete)
     %tr
-      %th.sub{colspan: 7}
-        - if @day < Date.today
-          = link_to url_for(day: @day + 1.day, sort: params[:sort]) do
-            - style = 'font-style: italic;' if @day + 1.day >= Date.today
-            .view-button{style: style} &raquo; Next Day
-        = link_to url_for(day: @day - 1.day, sort: params[:sort]) do
-          .view-button.float-none &laquo; Previous Day
+      %th.sub{colspan: 7}= render partial: 'date_nav'
   - posts = DailyReport.new(@day).posts(sort, page, per_page)
   - if posts.present?
     %tbody

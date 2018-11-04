@@ -20,6 +20,7 @@ Rails.application.routes.draw do
     end
     member do
       put :password
+      get :output
     end
   end
   resources :password_resets, only: [:new, :create, :show, :update]

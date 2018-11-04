@@ -387,4 +387,60 @@ RSpec.describe UsersController do
       expect(assigns(:search_results).map(&:username)).to eq(['aab', 'aba', 'baa'])
     end
   end
+
+  describe "GET output" do
+    let(:user) { create(:user) }
+
+    it "requires login" do
+      get :output, params: { id: user.id }
+      expect(response).to redirect_to(root_url)
+      expect(flash[:error]).to eq("You must be logged in to view that page.")
+    end
+
+    it "handles invalid date" do
+      login_as(user)
+      get :output, params: { id: user.id, day: 'asdf' }
+      expect(response).to have_http_status(200)
+      expect(flash[:error]).to eq('Please note that this page does not include edit history.')
+      expect(assigns(:total)).to eq(0)
+    end
+
+    it "handles out of range date" do
+      login_as(user)
+      get :output, params: { id: user.id, day: '2018-28-10' }
+      expect(response).to have_http_status(200)
+      expect(flash[:error]).to eq('Please note that this page does not include edit history.')
+      expect(assigns(:total)).to eq(0)
+    end
+
+    it "works for default of today" do
+      login_as(user)
+
+      Timecop.freeze(Time.zone.now) do
+        post = create(:post, user: user, content: 'two words')
+        create_list(:reply, 2, user: user, post: post, content: 'three words each')
+        get :output, params: { id: user.id }
+      end
+
+      expect(response).to have_http_status(200)
+      expect(flash[:error]).to eq('Please note that this page does not include edit history.')
+      expect(assigns(:total)).to eq(8)
+    end
+
+    it "works for previous days" do
+      login_as(user)
+
+      day = Time.zone.now.to_date - 1.day
+      Timecop.freeze(day) do
+        post = create(:post, user: user, content: 'two words')
+        create_list(:reply, 2, user: user, post: post, content: 'three words each')
+      end
+      create(:post, user: user, content: 'not in word count')
+
+      get :output, params: { id: user.id, day: day.to_s }
+      expect(response).to have_http_status(200)
+      expect(flash[:error]).to eq('Please note that this page does not include edit history.')
+      expect(assigns(:total)).to eq(8)
+    end
+  end
 end
