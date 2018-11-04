@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 class UsersController < ApplicationController
+  include DateSelectable
+
   before_action :signup_prep, :only => :new
   before_action :login_required, :except => [:index, :show, :new, :create, :search]
   before_action :logout_required, only: [:new, :create]
@@ -89,6 +91,24 @@ class UsersController < ApplicationController
     return unless params[:commit].present?
     username = '%' + params[:username].to_s + '%'
     @search_results = User.where("username LIKE ?", username).ordered.paginate(per_page: 25, page: page)
+  end
+
+  def output
+    flash.now[:error] = 'Please note that this page does not include edit history.'
+
+    @day = calculate_day
+    daystart = ActiveRecord::Base.connection.quote(@day.beginning_of_day)
+    dayend = ActiveRecord::Base.connection.quote(@day.end_of_day)
+    @posts = Post.where(user: current_user).where('created_at between ? AND ?', daystart, dayend).pluck(:content)
+    @replies = Reply.where(user: current_user).where('created_at between ? AND ?', daystart, dayend).pluck(:content)
+
+    @total = @posts + @replies
+    if @total.empty?
+      @total = 0
+    else
+      @total[0] = @total[0].split.size
+      @total = @total.inject{|r, e| r + e.split.size}.to_i
+    end
   end
 
   private
