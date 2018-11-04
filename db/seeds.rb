@@ -12,6 +12,8 @@ alicorn = User.create(username: 'Alicorn', password: 'alicorn', email: "dummy2@e
 kappa = User.create(username: 'Kappa', password: 'pythbox', email: "dummy3@example.com")
 aestrix = User.create(username: 'Aestrix', password: 'aestrix', email: "dummy4@example.com")
 throne = User.create(username: 'Throne3d', password: 'throne3d', email: "dummy5@example.com", role_id: 2)
+teceler = User.create(username: 'Teceler', password: 'teceler', email: "dummy6@example.com", role_id: 2, default_editor: 'html',
+                    layout: 'starrydark', ignore_unread_daily_report: true)
 
 puts "Creating avatars..."
 Icon.create!([
@@ -19,11 +21,13 @@ Icon.create!([
   { user_id: 2, url: "https://33.media.tumblr.com/avatar_ddf517a261d8_64.png", keyword: "avatar" },
   { user_id: 3, url: "http://i.imgur.com/OJSBRcp.jpg", keyword: "avatar" },
   { user_id: 5, url: "https://i.imgur.com/7aXnrK1.jpg", keyword: "avatar" },
+  { user_id: 6, url: "https://i.imgur.com/WA1r2Fu.png", keyword: "avatar" }
 ])
 marri.update(avatar_id: 1)
 alicorn.update(avatar_id: 2)
 kappa.update(avatar_id: 3)
 throne.update(avatar_id: 4)
+teceler.update(avatar_id: 5)
 
 puts "Creating continuities..."
 Board.create!([
@@ -45,7 +49,6 @@ BoardSection.create!([
 
 puts "Creating icons..."
 Icon.create!([
-  { user_id: 1, url: "http://v.dreamwidth.org/8101920/2295419", keyword: "a2" },
   { user_id: 1, url: "http://v.dreamwidth.org/8465698/2338276", keyword: "a4" },
   { user_id: 1, url: "http://v.dreamwidth.org/8063783/2291446", keyword: "e1" },
   { user_id: 1, url: "http://v.dreamwidth.org/8459269/2337418", keyword: "e1" },
@@ -142,6 +145,7 @@ Icon.create!([
   { user_id: 1, url: "http://v.dreamwidth.org/8060718/2291089", keyword: "sad" },
   { user_id: 1, url: "http://v.dreamwidth.org/9756024/2464861", keyword: "suuure" },
   { user_id: 1, url: "http://v.dreamwidth.org/8121332/2297261", keyword: "pleased" },
+  { user_id: 1, url: "http://v.dreamwidth.org/8101920/2295419", keyword: "a2" },
 ])
 
 puts "Creating templates..."
@@ -164,7 +168,7 @@ puts "Creating characters..."
 Character.create!([
   { user_id: 1, name: "Cass Cutler", screenname: "undercover_talent", default_icon_id: 13, pb: "Michelle Rodriguez" },
   { user_id: 1, name: "Alli Kowalski", screenname: "witch_perfect", template_id: 1, default_icon_id: 6, pb: "Alexandra Daddario" },
-  { user_id: 1, name: "Alli Kowalski", screenname: "witch_please", template_id: 1, default_icon_id: 5, pb: "Alexandra Daddario" },
+  { user_id: 1, name: "Alli Kowalski", screenname: "witch_please", template_id: 1, default_icon_id: 102, pb: "Alexandra Daddario" },
   { user_id: 1, name: "Emma Miller Anderson", template_name: "Anderson", screenname: "ipsam_custodem", template_id: 2, default_icon_id: 8, pb: "Shailene Woodley" },
   { user_id: 1, name: "Emma Mason", template_name: "Mason", screenname: "parental_guidance", template_id: 2, default_icon_id: 7, pb: "Shailene Woodley" },
   { user_id: 1, name: "Genevieve O'Meara", template_name: "O'Meara", screenname: "metamorphmaga", template_id: 5, default_icon_id: 11, pb: "Christina Aguilera" },
@@ -274,7 +278,7 @@ CharactersGallery.create!([
 
 puts "Populating galleries with icons..."
 GalleriesIcon.create!([
-  { icon_id: 5, gallery_id: 1 },
+  { icon_id: 102, gallery_id: 1 },
   { icon_id: 6, gallery_id: 1 },
   { icon_id: 7, gallery_id: 2 },
   { icon_id: 8, gallery_id: 3 },
