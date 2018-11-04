@@ -238,30 +238,38 @@ Gallery.create!([
 
 puts "Assigning galleries to characters..."
 CharactersGallery.create!([
+  { character_id: 5, gallery_id: 2 },
+  { character_id: 4, gallery_id: 2, section_order: 0 },
+  { character_id: 4, gallery_id: 3, section_order: 1 },
+  { character_id: 7, gallery_id: 4 },
+  { character_id: 3, gallery_id: 1 },
+  { character_id: 6, gallery_id: 4 },
+  { character_id: 2, gallery_id: 1 },
+  { character_id: 25, gallery_id: 1 },
+  { character_id: 29, gallery_id: 5 },
+  { character_id: 17, gallery_id: 6 },
   { character_id: 10, gallery_id: 7 },
+  { character_id: 12, gallery_id: 8 },
   { character_id: 28, gallery_id: 9 },
+  { character_id: 15, gallery_id: 10 },
+  { character_id: 14, gallery_id: 11 },
+  { character_id: 30, gallery_id: 12 },
+  { character_id: 13, gallery_id: 13 },
+  { character_id: 16, gallery_id: 14 },
+  { character_id: 18, gallery_id: 15 },
   { character_id: 31, gallery_id: 16 },
+  { character_id: 32, gallery_id: 17 },
+  { character_id: 20, gallery_id: 18 },
+  { character_id: 11, gallery_id: 19 },
   { character_id: 19, gallery_id: 20 },
+  { character_id: 21, gallery_id: 21 },
+  { character_id: 22, gallery_id: 23 },
+  { character_id: 24, gallery_id: 24 },
   { character_id: 27, gallery_id: 25 },
   { character_id: 33, gallery_id: 22 },
   { character_id: 26, gallery_id: 26, section_order: 0, added_by_group: true },
   { character_id: 26, gallery_id: 27, section_order: 1, added_by_group: true },
   { character_id: 26, gallery_id: 28, section_order: 2, added_by_group: true },
-  { character_id: 24, gallery_id: 24 },
-  { character_id: 21, gallery_id: 21 },
-  { character_id: 20, gallery_id: 18 },
-  { character_id: 11, gallery_id: 19 },
-  { character_id: 22, gallery_id: 23 }
-  { character_id: 14, gallery_id: 11 },
-  { character_id: 16, gallery_id: 14 },
-  { character_id: 15, gallery_id: 10 },
-  { character_id: 32, gallery_id: 17 },
-  { character_id: 30, gallery_id: 12 },
-  { character_id: 29, gallery_id: 5 },
-  { character_id: 18, gallery_id: 15 },
-  { character_id: 17, gallery_id: 6 },
-  { character_id: 12, gallery_id: 8 },
-  { character_id: 13, gallery_id: 13 },
 ])
 
 puts "Populating galleries with icons..."
@@ -380,19 +388,26 @@ Setting.create!([
 puts "Assigning tags to characters..."
 CharacterTag.create!([
   { character_id: 19, tag_id: 2 },
+  { character_id: 20, tag_id: 3 },
+  { character_id: 22, tag_id: 2 },
   { character_id: 27, tag_id: 4 },
   { character_id: 26, tag_id: 4 },
-  { character_id: 33, tag_id: 2 }
+  { character_id: 21, tag_id: 2 },
+  { character_id: 33, tag_id: 2 },
   { character_id: 26, tag_id: 1 },
   { character_id: 10, tag_id: 5 },
+  { character_id: 14, tag_id: 7 },
+  { character_id: 15, tag_id: 2 },
+  { character_id: 16, tag_id: 2 },
+  { character_id: 30, tag_id: 5 },
   { character_id: 31, tag_id: 2 },
   { character_id: 28, tag_id: 4 },
   { character_id: 31, tag_id: 10 },
   { character_id: 29, tag_id: 2 },
-  { character_id: 30, tag_id: 5 },
-  { character_id: 17, tag_id: 5 },
   { character_id: 19, tag_id: 10 },
   { character_id: 12, tag_id: 8 },
+  { character_id: 17, tag_id: 5 },
+  { character_id: 18, tag_id: 7 }
 ])
 
 puts "Assigning tags to galleries..."
