@@ -199,9 +199,9 @@ Character.create!([
 
 puts "Creating character aliases..."
 CharacterAlias.create!([
-  { character_id: 6, name: "Jenny O'Meara", created_at: "2018-03-14 22:43:02", updated_at: "2018-03-14 22:43:02" },
-  { character_id: 19, name: "Laney", created_at: "2018-03-14 22:53:03", updated_at: "2018-03-14 22:53:03" },
-  { character_id: 19, name: "Whistle", created_at: "2018-03-14 22:53:17", updated_at: "2018-03-14 22:53:17" }
+  { character_id: 6, name: "Jenny O'Meara" },
+  { character_id: 19, name: "Laney" },
+  { character_id: 19, name: "Whistle" }
 ])
 
 puts "Creating galleries..."
