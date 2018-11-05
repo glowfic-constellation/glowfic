@@ -265,6 +265,17 @@ RSpec.describe ApplicationController do
     end
   end
 
+  describe "#require_glowfic_domain" do
+    it "redirects on valid requests" do
+      ENV['DOMAIN_NAME'] ||= 'domaintest.host'
+      expect(controller.request.method).to eq('GET')
+      expect(controller.request.xhr?).to be_nil
+      expect(controller.request.host).not_to include('glowfic')
+      expect(controller).to receive(:redirect_to).with("https://domaintest.host", status: :moved_permanently)
+      controller.send(:check_domain)
+    end
+  end
+
   describe "#page_view" do
     context "when logged out" do
       it "works by default" do
