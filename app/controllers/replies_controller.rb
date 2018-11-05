@@ -116,7 +116,8 @@ class RepliesController < WritableController
       redirect_to post_path(post_id, page: :unread, anchor: :unread) and return
     elsif params[:button_preview]
       draft = make_draft
-      preview(ReplyDraft.reply_from_draft(draft)) and return
+      @reply = ReplyDraft.reply_from_draft(draft)
+      preview and return
     end
 
     reply = Reply.new(permitted_params)
@@ -139,10 +140,12 @@ class RepliesController < WritableController
           flash.now[:error] = "This looks like a duplicate. Did you attempt to post this twice? Please resubmit if this was intentional."
           @allow_dupe = true
           if most_recent_unseen_reply.nil? || (most_recent_unseen_reply.id == last_by_user.id && @unseen_replies.count == 1)
-            preview(reply)
+            @reply = reply
+            preview
           else
             draft = make_draft(false)
-            preview(ReplyDraft.reply_from_draft(draft))
+            @reply = ReplyDraft.reply_from_draft(draft)
+            preview
           end
           return
         end
@@ -154,7 +157,8 @@ class RepliesController < WritableController
         pluraled = num > 1 ? "have been #{num} new replies" : "has been 1 new reply"
         flash.now[:error] = "There #{pluraled} since you last viewed this post."
         draft = make_draft
-        preview(ReplyDraft.reply_from_draft(draft)) and return
+        @reply = ReplyDraft.reply_from_draft(draft)
+        preview and return
       end
     end
 
@@ -187,7 +191,7 @@ class RepliesController < WritableController
   def update
     @reply.assign_attributes(permitted_params)
     process_npc(@reply, permitted_character_params)
-    preview(@reply) and return if params[:button_preview]
+    preview and return if params[:button_preview]
 
     if current_user.id != @reply.user_id && @reply.audit_comment.blank?
       flash[:error] = "You must provide a reason for your moderator edit."
@@ -297,12 +301,9 @@ class RepliesController < WritableController
     redirect_to post_path(@reply.post)
   end
 
-  def preview(written)
-    @written = written
-    @post = @written.post
-    @written.user = current_user unless @written.user
-    @audits = @written.id.present? ? { @written.id => @written.audits.count } : {}
-
+  def preview
+    @post = @reply.post
+    @audits = @reply.id.present? ? { @reply.id => @reply.audits.count } : {}
     @page_title = @post.subject
 
     editor_setup

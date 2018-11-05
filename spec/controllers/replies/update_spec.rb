@@ -162,7 +162,7 @@ RSpec.describe RepliesController, 'PUT update' do
       expect(ReplyDraft.count).to eq(0)
       expect(assigns(:audits)).to eq({ reply.id => 1 })
 
-      written = assigns(:written)
+      written = assigns(:reply)
       expect(written).not_to be_a_new_record
       expect(written.user).to eq(reply_post.user)
       expect(written.character).to eq(char)
@@ -232,9 +232,9 @@ RSpec.describe RepliesController, 'PUT update' do
       }
 
       expect(response).to render_template(:preview)
-      expect(assigns(:written).user).to eq(reply.user)
-      expect(assigns(:written).audit_comment).to eq('note')
-      expect(assigns(:written).content).to eq(newcontent)
+      expect(assigns(:reply).user).to eq(reply.user)
+      expect(assigns(:reply).audit_comment).to eq('note')
+      expect(assigns(:reply).content).to eq(newcontent)
 
       expect(controller.gon.editor_user[:username]).to eq(user.username)
       expect(assigns(:templates)).to eq([char.template])

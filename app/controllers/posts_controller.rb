@@ -135,11 +135,11 @@ class PostsController < WritableController
 
   def create
     import_thread and return if params[:button_import].present?
-    preview and return if params[:button_preview].present?
 
     @post = current_user.posts.new(permitted_params)
     @post.written.assign_attributes(written_params)
 
+    preview and return if params[:button_preview].present?
     @post.settings = process_tags(Setting, obj_param: :post, id_param: :setting_ids)
     @post.content_warnings = process_tags(ContentWarning, obj_param: :post, id_param: :content_warning_ids)
     @post.labels = process_tags(Label, obj_param: :post, id_param: :label_ids)
@@ -215,10 +215,11 @@ class PostsController < WritableController
 
     change_status and return if params[:status].present?
     change_authors_locked and return if params[:authors_locked].present?
-    preview and return if params[:button_preview].present?
 
     @post.assign_attributes(permitted_params)
     @post.written.assign_attributes(written_params)
+    preview and return if params[:button_preview].present?
+
     @post.board ||= Board.find_by(id: Board::ID_SANDBOX)
     settings = process_tags(Setting, obj_param: :post, id_param: :setting_ids)
     warnings = process_tags(ContentWarning, obj_param: :post, id_param: :content_warning_ids)
@@ -357,16 +358,6 @@ class PostsController < WritableController
   private
 
   def preview
-    @post ||= Post.new(user: current_user)
-    @post.assign_attributes(permitted_params(false))
-    if @post.written
-      @written = @post.written
-    elsif @post.replies.first
-      @written = @post.replies.first
-    else
-      @written = @post.replies.new(user: current_user)
-    end
-    @written.assign_attributes(written_params)
     @post.board ||= Board.find_by_id(3)
 
     process_npc(@post, permitted_character_params)
