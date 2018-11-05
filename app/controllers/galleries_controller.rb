@@ -3,7 +3,7 @@ class GalleriesController < UploadingController
   include Taggable
 
   before_action :login_required, except: [:index, :show]
-  before_action :find_gallery, only: [:destroy, :edit, :update]
+  before_action :find_gallery, only: [:destroy, :edit, :update] # assumes login_required
   before_action :setup_new_icons, only: [:add, :icon]
   before_action :set_s3_url, only: [:edit, :add, :icon]
   before_action :setup_editor, only: [:new, :edit]
@@ -195,20 +195,12 @@ class GalleriesController < UploadingController
 
     unless @gallery
       flash[:error] = "Gallery could not be found."
-      if logged_in?
-        redirect_to user_galleries_path(current_user) and return
-      else
-        redirect_to root_path and return
-      end
+      redirect_to user_galleries_path(current_user) and return
     end
 
     unless @gallery.user_id == current_user.id
       flash[:error] = "That is not your gallery."
-      if logged_in?
-        redirect_to user_galleries_path(current_user) and return
-      else
-        redirect_to root_path and return
-      end
+      redirect_to user_galleries_path(current_user) and return
     end
   end
 
