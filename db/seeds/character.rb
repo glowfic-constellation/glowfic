@@ -286,16 +286,7 @@ Character.create!([
 
 puts "Creating character aliases..."
 CharacterAlias.create!([
-  {
-    character_id: 6,
-    name: "Jenny O'Meara"
-  },
-  {
-    character_id: 19,
-    name: "Laney"
-  },
-  {
-    character_id: 19,
-    name: "Whistle"
-  },
+  { character_id: 6, name: "Jenny O'Meara" },
+  { character_id: 19, name: "Laney" },
+  { character_id: 19, name: "Whistle" },
 ])
