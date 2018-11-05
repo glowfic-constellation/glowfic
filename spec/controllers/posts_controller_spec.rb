@@ -2277,6 +2277,60 @@ RSpec.describe PostsController do
       expect(assigns(:page_title)).to eq('Replies Owed')
     end
 
+    context "with views" do
+      render_views
+
+      def create_owed(user)
+        post = create(:post, user: user)
+        create(:reply, post: post)
+        post.mark_read(user)
+      end
+
+      it "succeeds" do
+        user = create(:user)
+        login_as(user)
+        create_owed(user)
+        get :owed
+        expect(response.status).to eq(200)
+        expect(response.body).to include('note_go_strong')
+      end
+
+      it "succeeds with dark" do
+        user = create(:user, layout: 'starrydark')
+        login_as(user)
+        create_owed(user)
+        get :owed
+        expect(response.status).to eq(200)
+        expect(response.body).to include('bullet_go_strong')
+      end
+    end
+
+    context "with hidden" do
+      let(:user) { create(:user) }
+
+      before(:each) do
+        login_as(user)
+
+        @unhidden_post = create(:post, user: user)
+        create(:reply, post: @unhidden_post)
+
+        @hidden_post = create(:post, user: user)
+        create(:reply, post: @hidden_post)
+        author = @hidden_post.post_authors.where(user_id: user.id).first
+        author.update_attributes(can_owe: false)
+      end
+
+      it "does not show hidden without arg" do
+        get :owed
+        expect(assigns(:posts)).to eq([@unhidden_post])
+      end
+
+      it "shows only hidden with arg" do
+        get :owed, params: {view: 'hidden'}
+        expect(assigns(:posts)).to eq([@hidden_post])
+      end
+    end
+
     context "with posts" do
       let(:user) { create(:user) }
       let(:other_user) { create(:user) }
