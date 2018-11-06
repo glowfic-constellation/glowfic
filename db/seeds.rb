@@ -48,21 +48,21 @@ BoardSection.create!([
 ])
 
 puts "Creating icons..."
-load 'seeds/icon.rb'
+load Rails.root.join('db', 'seeds', 'icon.rb')
 
 puts "Creating templates..."
-load 'seeds/character.rb'
+load Rails.root.join('db', 'seeds', 'character.rb')
 
 puts "Creating galleries..."
-load 'seeds/gallery.rb'
+load Rails.root.join('db', 'seeds', 'gallery.rb')
 
 puts "Creating posts..."
-load 'seeds/post.rb'
+load Rails.root.join('db', 'seeds', 'post.rb')
 
 puts "Creating replies..."
-load 'seeds/replies.rb'
+load Rails.root.join('db', 'seeds', 'reply.rb')
 
 Post.all.each { |p| p.update_columns(authors_locked: true) }
 
 puts "Creating tags..."
-load 'seeds/tag.rb'
+load Rails.root.join('db', 'seeds', 'tag.rb')
