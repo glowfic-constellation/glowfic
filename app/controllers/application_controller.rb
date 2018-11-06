@@ -33,7 +33,7 @@ class ApplicationController < ActionController::Base
     return unless logged_in?
     return unless current_user.salt_uuid.nil?
     reset_session
-    cookies.delete(:user_id, domain: '.glowfic.com')
+    cookies.delete(:user_id, cookie_delete_options)
     @current_user = nil
     flash.now[:pass] = "Because Marri accidentally made passwords a bit too secure, you must log back in to continue using the site."
   end
