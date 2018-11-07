@@ -1321,7 +1321,7 @@ RSpec.describe CharactersController do
       character = create(:template_character)
       get :search, params: { commit: true, author_id: 9999 }
       expect(response).to have_http_status(200)
-      expect(flash[:error]).to eq('The specified author could not be found.')
+      expect(flash[:error]).to eq('User could not be found.')
       expect(assigns(:users)).to be_empty
       expect(assigns(:search_results)).to match_array([character])
     end
@@ -1340,7 +1340,7 @@ RSpec.describe CharactersController do
       character = create(:template_character)
       get :search, params: { commit: true, template_id: 9999 }
       expect(response).to have_http_status(200)
-      expect(flash[:error]).to eq('The specified template could not be found.')
+      expect(flash[:error]).to eq('Template could not be found.')
       expect(assigns(:templates)).to be_empty
       expect(assigns(:search_results)).to match_array([character])
     end
