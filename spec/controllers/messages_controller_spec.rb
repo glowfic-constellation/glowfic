@@ -79,9 +79,10 @@ RSpec.describe MessagesController do
     it "hides blocked users" do
       user = create(:user)
       login_as(user)
-      create_list(:block, 2, blocked_user: user)
+      blocking = create_list(:block, 2, blocked_user: user).pluck(:blocking_user_id)
       create_list(:block, 2, blocking_user: user)
-      other_users = create_list(:user, 2).sort_by!(&:username).pluck(:username, :id)
+      other_users = create_list(:user, 2) + User.find(blocking)
+      other_users = other_users.sort_by!(&:username).pluck(:username, :id)
       get :new
       expect(response.status).to eq(200)
       expect(assigns(:select_items)).to match_array(Users: other_users)
