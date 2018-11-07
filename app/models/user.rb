@@ -74,26 +74,29 @@ class User < ApplicationRecord
   end
 
   def can_interact_with?(user)
-    !block_interaction_users.include?(user.id)
+    !blocked_interaction_users(reciever_direction: 'either').include?(user.id)
   end
 
   def has_interaction_blocked?(user)
-    blocked_interaction_users.include?(user.id)
+    blocked_interaction_users(reciever_direction: 'blocking').include?(user.id)
   end
 
-  def block_interaction_users
-    (blocking_interaction_users + blocked_interaction_users).uniq
+  def blocked_interaction_users(reciever_direction:)
+    unless ['blocked', 'blocking', 'either'].include?(reciever_direction)
+      throw ArgumentError("Must pass one of 'blocked', blocking', 'either'")
+    end
+    if ['blocked', 'either'].include?(reciever_direction)
+      blocking_users = Block.where(block_interactions: true, blocked_user: self).pluck(:blocking_user_id)
+      return blocking_users if reciever_direction == "blocked"
+    end
+    if ['blocking', 'either'].include?(reciever_direction)
+      blocked_users = Block.where(block_interactions: true, blocking_user: self).pluck(:blocked_user_id)
+      return blocked_users if reciever_direction == 'blocking'
+    end
+    (blocking_users + blocked_users).uniq if reciever_direction == 'either'
   end
 
   private
-
-  def blocking_interaction_users
-    Block.where(block_interactions: true, blocked_user: self).pluck(:blocking_user_id)
-  end
-
-  def blocked_interaction_users
-    Block.where(block_interactions: true, blocking_user: self).pluck(:blocked_user_id)
-  end
 
   def strip_spaces
     self.username = self.username.strip if self.username.present?
