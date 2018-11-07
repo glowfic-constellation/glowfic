@@ -9,7 +9,7 @@ class Message < ApplicationRecord
   validate :unblocked_recipient
 
   before_validation :set_thread_id
-  before_create :validate_recipient
+  before_create :check_recipient
   after_create :notify_recipient
 
   scope :ordered_by_id, -> { order(id: :asc) }
@@ -64,7 +64,7 @@ class Message < ApplicationRecord
     self.first_thread = self
   end
 
-  def validate_recipient
+  def check_recipient
     return unless sender && recipient
     return if sender.can_interact_with?(recipient)
     self.visible_inbox = false
