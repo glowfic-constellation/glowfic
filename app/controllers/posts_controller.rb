@@ -348,7 +348,7 @@ class PostsController < WritableController
 
   def import_thread
     importer = PostImporter.new(params[:dreamwidth_url])
-    importer.import(params[:board_id], params[:section_id], params[:status], params[:threaded], current_user.id)
+    importer.import(params[:board_id], current_user.id, section_id: params[:section_id], status: params[:status], threaded: params[:threaded])
     flash[:success] = "Post has begun importing. You will be updated on progress via site message."
     redirect_to posts_path
   rescue PostImportError => e

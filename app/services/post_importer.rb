@@ -3,11 +3,12 @@ class PostImporter < Object
     @url = url
   end
 
-  def import(board_id, section_id, status, threaded, importer_id)
+  def import(board_id, importer_id, section_id: nil, status: Post::STATUS_COMPLETE, threaded: false)
     validate_url!
     validate_duplicate!(board_id) unless threaded
     validate_usernames!
 
+    # note that the arg order for this import method does not match the order of ScrapePostJob
     ScrapePostJob.perform_later(@url, board_id, section_id, status, threaded, importer_id)
   end
 
