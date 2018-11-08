@@ -1,10 +1,6 @@
 class Reply::Searcher < Generic::Searcher
-  attr_reader :templates, :users
-
   def initialize(search=Reply.unscoped, templates:, users:)
-    @templates = templates
-    @users = users
-    super(search)
+    super
   end
 
   def search(params, post:, page: 1)
