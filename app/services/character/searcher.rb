@@ -1,5 +1,5 @@
 class Character::Searcher < Generic::Searcher
-  def initialize(search=Character.unscoped, templates:, users:)
+  def initialize(search=Character.unscoped, templates:, users: [])
     super
   end
 
@@ -7,6 +7,7 @@ class Character::Searcher < Generic::Searcher
     search_users(params[:author_id]) if params[:author_id].present?
     search_templates(params[:template_id], params[:author_id]) if params[:template_id].present? || params[:author_id].present?
     search_names(params) if params[:name].present?
+    select_templates
     @search_results.ordered.paginate(page: page, per_page: 25) unless errors.present?
     @search_results
   end
@@ -25,12 +26,12 @@ class Character::Searcher < Generic::Searcher
   def search_templates(template_id)
     template = Template.find_by(id: template_id)
     if template.present?
-      if @users.present? && template.user_id != @users.first.id
-        errors.add(:base, "The specified author and template do not match; template filter will be ignored.")
-        @templates = []
-      else
+      if @users.blank? || template.user_id == @users.first.id
         @search_results = @search_results.where(template_id: template_id)
         @templates = [template]
+      else
+        errors.add(:base, "The specified author and template do not match; template filter will be ignored.")
+        @templates = []
       end
     else
       errors.add(:template, "could not be found.")
