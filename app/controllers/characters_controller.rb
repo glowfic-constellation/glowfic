@@ -248,6 +248,16 @@ class CharactersController < ApplicationController
 
     searcher = Character::Searcher.new(templates: @templates, users: @users)
     @search_results = searcher.search(params, page: page)
+    if searcher.errors.present?
+      if searcher.errors.count == 1
+        flash.now[:error] = searcher.errors.full_messages.first
+      else
+        flash.now[:error] = {
+          message: "Search could not be completed.",
+          array: searcher.errors.full_messages
+        }
+      end
+    end
     @templates = searcher.templates
     @users = searcher.users
   end

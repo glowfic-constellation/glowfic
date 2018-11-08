@@ -11,7 +11,8 @@ class Character::Searcher < Generic::Searcher
     search_users(params[:author_id]) if params[:author_id].present?
     search_templates(params[:template_id], params[:author_id]) if params[:template_id].present? || params[:author_id].present?
     search_names(params) if params[:name].present?
-    @search_results.ordered.paginate(page: page, per_page: 25)
+    @search_results.ordered.paginate(page: page, per_page: 25) unless errors.present?
+    @search_results
   end
 
   private
@@ -21,22 +22,23 @@ class Character::Searcher < Generic::Searcher
     if @users.present?
       @search_results = @search_results.where(user_id: user_id)
     else
-      flash.now[:error] = "The specified author could not be found."
+      errors.add(:user, "could not be found.")
     end
   end
 
   def search_templates(template_id)
-    @templates = Template.where(id: template_id)
-    template = @templates.first
+    template = Template.find_by(id: template_id)
     if template.present?
       if @users.present? && template.user_id != @users.first.id
-        flash.now[:error] = "The specified author and template do not match; template filter will be ignored."
+        errors.add(:base, "The specified author and template do not match; template filter will be ignored.")
         @templates = []
       else
         @search_results = @search_results.where(template_id: template_id)
+        @templates = [template]
       end
     else
-      flash.now[:error] = "The specified template could not be found."
+      errors.add(:template, "could not be found.")
+      @templates = []
     end
   end
 
