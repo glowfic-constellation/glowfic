@@ -51,3 +51,10 @@
 /* footer: 'powered by' text */
 #content .mce-branding-powered-by { background-color: $bg_color_mce_panel; border-color: $border_color_input; }
 #content .mce-label { color: rgba($font_color_input, $opacity_mce_label); text-shadow: none; }
+
+#footer {
+  background-color: $bg_color_header_middle;
+  color: $font_color_header_link;
+  a { color: $font_color_header_link; }
+  a:hover { color: $font_color_header_link_hover; }
+}

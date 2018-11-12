@@ -63,3 +63,10 @@ a:visited { color: $font_color_link_visited; }
 .link-box.action-favorite { background-color: $bg_color_linkbox_favorite; }
 .link-box.action-delete { background-color: $bg_color_linkbox_delete; }
 .link-box.action-dismiss { background-color: $bg_color_linkbox_dismiss; }
+
+#footer {
+  background-color: $bg_color_header_middle;
+  color: $font_color_header_link;
+  a { color: $font_color_header_link; }
+  a:hover { color: $font_color_header_link_hover; }
+}
