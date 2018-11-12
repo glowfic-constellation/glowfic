@@ -80,3 +80,10 @@ tr.gallery-tags .tag-item { background-color: $bg_color_tag_item; color: $font_c
 
 // ???
 #character-selector { font-weight: normal; }
+
+#footer {
+  background-color: $bg_color_header_middle;
+  color: $font_color_header_link;
+  a { color: $font_color_header_link; }
+  a:hover { color: $font_color_header_link_hover; }
+}
