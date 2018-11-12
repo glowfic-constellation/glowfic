@@ -136,7 +136,9 @@
               = link_to message.unempty_subject, message_path(message)
       - unless logged_in? || tos_skippable?
         #tos.hidden= render partial: 'about/accept_tos'
-      #content= yield
+      #content
+        = yield
+        .clear
       #footer
         %div
           = link_to 'Terms of Service', tos_path
