@@ -108,6 +108,7 @@
   position: relative;
   padding-bottom: 35px;
 }
+#content h1 { line-height: normal;}
 @media (max-width: 600px) {
   #content, #tos { padding: 10px; padding-bottom: 35px; }
 }
