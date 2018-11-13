@@ -12,8 +12,14 @@
   %thead
     %tr
       %th{colspan: col_count}
-        = @view ? @view.titlecase.pluralize : 'Tags'
-  %tbody
+        = @view.present? ? @view.titlecase.pluralize : 'Tags'
+    %tr
+      %th.subber.padding-10{colspan: col_count}
+        = form_tag tags_path, method: :get do
+          Search for a tag:
+          = text_field_tag :name, params[:name], id: 'tag-search-name', placeholder: 'Exact name (case-insensitive)'
+          = select_tag :view, options_for_select(@tag_options, @view), include_blank: '— Choose Type —', id: 'tag-view'
+          = submit_tag "Search", class: 'button', id: 'tag-search'
     %tr
       %th.sub Name
       - unless @view.present?
@@ -23,6 +29,7 @@
       %th.sub Posts
       %th.sub Characters
       %th.sub
+  %tbody
     - @tags.each do |tag|
       - klass = cycle('even', 'odd')
       %tr
@@ -46,6 +53,9 @@
             = link_to delete_path(tag), method: :delete, data: { confirm: 'Are you sure you want to delete '+tag.name+'?' } do
               = image_tag "icons/cross.png"
             &nbsp;
+    - if @tags.empty?
+      %tr
+        %td.centered.padding-10{ class: cycle('even','odd'), colspan: col_count } — No matching tags —
   - if @tags.total_pages > 1
     %tfoot
       %tr
