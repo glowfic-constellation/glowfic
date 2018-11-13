@@ -171,7 +171,8 @@ CREATE TABLE public.board_sections (
     status integer DEFAULT 0 NOT NULL,
     section_order integer NOT NULL,
     created_at timestamp without time zone,
-    updated_at timestamp without time zone
+    updated_at timestamp without time zone,
+    description text
 );
 
 
@@ -2367,6 +2368,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20171127031443'),
 ('20171227030824'),
 ('20180109003825'),
-('20180928230642');
+('20180928230642'),
+('20181113044923');
 
 
