@@ -7,6 +7,11 @@ $(document).ready(function() {
     minimumResultsForSearch: 10,
   });
 
+  $(".flash-dismiss").click(function() {
+    $(this).closest('.flash').slideUp(200);
+    return false;
+  });
+
   // Set localStorage if login status has changed
   // storage values are usually strings, cast to be sure
   var loggedInKey = 'loggedIn';

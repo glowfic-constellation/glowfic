@@ -67,11 +67,16 @@ class UsersController < ApplicationController
     store_tos and return if params[:tos_check]
 
     params[:user][:per_page] = -1 if params[:user].try(:[], :per_page) == 'all'
-    if current_user.update(user_params)
-      flash[:success] = "Changes saved successfully."
-    else
-      flash[:error] = "There was a problem with your changes."
+    unless current_user.update(user_params)
+      flash.now[:error] = {}
+      flash.now[:error][:message] = "There was a problem updating your account."
+      flash.now[:error][:array] = current_user.errors.full_messages
+      use_javascript('users/edit')
+      @page_title = 'Edit Account'
+      render action: :edit and return
     end
+
+    flash[:success] = "Changes saved successfully."
     redirect_to edit_user_path(current_user)
   end
 

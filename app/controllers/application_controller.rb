@@ -36,7 +36,7 @@ class ApplicationController < ActionController::Base
     reset_session
     cookies.delete(:user_id, cookie_delete_options)
     @current_user = nil
-    flash.now[:pass] = "Because Marri accidentally made passwords a bit too secure, you must log back in to continue using the site."
+    flash.now[:error] = "Because Marri accidentally made passwords a bit too secure, you must log back in to continue using the site."
   end
 
   def use_javascript(js)

@@ -34,7 +34,7 @@ RSpec.describe ApplicationController do
   describe "#show_password_warning" do
     it "shows no warning if logged out" do
       controller.send(:show_password_warning) do
-        expect(flash.now[:pass]).not_to eq("Because Marri accidentally made passwords a bit too secure, you must log back in to continue using the site.")
+        expect(flash.now[:error]).not_to eq("Because Marri accidentally made passwords a bit too secure, you must log back in to continue using the site.")
       end
     end
 
@@ -43,7 +43,7 @@ RSpec.describe ApplicationController do
       login_as(user)
       expect(user.salt_uuid).not_to be_nil
       controller.send(:show_password_warning) do
-        expect(flash.now[:pass]).not_to eq("Because Marri accidentally made passwords a bit too secure, you must log back in to continue using the site.")
+        expect(flash.now[:error]).not_to eq("Because Marri accidentally made passwords a bit too secure, you must log back in to continue using the site.")
         expect(controller.send(:logged_in?)).to eq(true)
       end
     end
@@ -53,7 +53,7 @@ RSpec.describe ApplicationController do
       login_as(user)
       user.update_columns(salt_uuid: nil)
       controller.send(:show_password_warning) do
-        expect(flash.now[:pass]).to eq("Because Marri accidentally made passwords a bit too secure, you must log back in to continue using the site.")
+        expect(flash.now[:error]).to eq("Because Marri accidentally made passwords a bit too secure, you must log back in to continue using the site.")
         expect(controller.send(:logged_in?)).not_to eq(true)
       end
     end

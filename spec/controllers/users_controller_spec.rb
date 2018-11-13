@@ -221,8 +221,8 @@ RSpec.describe UsersController do
       user = create(:user)
       login_as(user)
       put :update, params: { id: user.id, user: {moiety: 'A'} }
-      expect(response).to redirect_to(edit_user_url(user))
-      expect(flash[:error]).to eq('There was a problem with your changes.')
+      expect(response).to render_template(:edit)
+      expect(flash[:error][:message]).to eq('There was a problem updating your account.')
     end
 
     it "does not update another user" do
