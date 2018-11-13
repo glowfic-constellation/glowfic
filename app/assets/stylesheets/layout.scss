@@ -394,3 +394,8 @@ The copy box can't be invisible/hidden or copy fails but opacity works
   height: 20px;
 }
 #_hiddenCopyText_ { height: 0px; width: 0px; opacity: 0; padding: 0px; margin: 0px; }
+#tag-search-name {
+  margin: 0px 5px;
+  width: 210px;
+}
+#tag-search { margin-left: 5px; }

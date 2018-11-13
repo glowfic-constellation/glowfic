@@ -7,25 +7,14 @@ class TagsController < ApplicationController
   before_action :permission_required, except: [:index, :show, :destroy]
 
   def index
-    if params[:view].present?
-      unless Tag::TYPES.include?(params[:view])
-        flash[:error] = "Invalid filter"
-        redirect_to tags_path and return
-      end
-      @view = params[:view]
-      @page_title = @view.titlecase.pluralize
-    else
-      @page_title = "Tags"
-    end
-
-    @tags = Tag.ordered_by_type.select('tags.*')
-    if @view.present?
-      @tags = @tags.where(type: @view)
-      @tags = @tags.includes(:user) if @view == 'Setting'
-    else
-      @tags = @tags.where.not(type: 'GalleryGroup')
-    end
-    @tags = @tags.with_item_counts.paginate(per_page: 25, page: page)
+    @tags = TagSearcher.new.search(tag_name: params[:name], tag_type: params[:view], page: page)
+    @view = params[:view]
+    @page_title = @view.present? ? @view.titlecase.pluralize : 'Tags'
+    @tag_options = Hash[*((Tag::TYPES - ['GalleryGroup']).sort.reverse.map{|t| [t.titlecase, t]}.flatten)]
+    use_javascript('tags/index')
+  rescue InvalidTagType => e
+    flash[:error] = e.api_error
+    redirect_to tags_path
   end
 
   def show

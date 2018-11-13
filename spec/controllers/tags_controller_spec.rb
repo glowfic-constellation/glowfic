@@ -6,10 +6,10 @@ RSpec.describe TagsController do
       render_views
       def create_tags
         # set up sample tags, empty and not
-        empty_tag = create(:label)
+        empty_tag = create(:label, name: 'Empty')
         tag = create(:label)
         create(:post, labels: [tag])
-        setting = create(:setting)
+        setting = create(:setting, name: 'Empty')
         owned_setting = create(:setting, owned: true)
 
         empty_group = create(:gallery_group)
@@ -26,12 +26,20 @@ RSpec.describe TagsController do
         expect(assigns(:tags)).to match_array(tags)
       end
 
-      it "succeeds with filter" do
+      it "succeeds with type filter" do
         tags = create_tags
         get :index, params: { view: 'Setting' }
         expect(response).to have_http_status(200)
         expect(assigns(:tags)).to match_array(tags[-2..-1])
         expect(assigns(:page_title)).to eq('Settings')
+      end
+
+      it "succeeds with name filter" do
+        tags = create_tags
+        get :index, params: {name: 'Empty'}
+        expect(response).to have_http_status(200)
+        expect(assigns(:tags)).to match_array([tags[0], tags[4]])
+        expect(assigns(:page_title)).to eq('Tags')
       end
 
       it "succeeds when logged in" do
