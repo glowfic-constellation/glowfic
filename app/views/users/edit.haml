@@ -1,4 +1,4 @@
-= form_for current_user, :url => user_path(current_user), :method => :put do |f|
+= form_for current_user do |f|
   %table.form-table
     %tr
       %th.centered{colspan: 2} Account Settings
@@ -87,7 +87,7 @@
       %th.form-table-ender{colspan: 2}= submit_tag "Save", class: 'button'
 
 %br
-= form_for current_user, :url => password_user_path(current_user), :method => :put do |f|
+= form_for current_user, url: password_user_path(current_user), method: :put, html: {id: 'change_password_form'} do |f|
   %table.form-table#change-password
     %tr
       %th.centered{colspan: 2} Change Password
