@@ -63,10 +63,8 @@ class Reply::Searcher < Generic::Searcher
     end
   end
 
-  def search_templates(template_id)
-    @templates = Template.where(id: template_id)
-    return unless @templates.first.present?
-    character_ids = Character.where(template_id: @templates.first.id).pluck(:id)
+  def do_search_templates(template)
+    character_ids = Character.where(template_id: template.id).pluck(:id)
     @search_results = @search_results.where(character_id: character_ids)
   end
 
