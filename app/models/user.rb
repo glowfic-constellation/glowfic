@@ -74,14 +74,14 @@ class User < ApplicationRecord
   end
 
   def can_interact_with?(user)
-    !blocked_interaction_users(receiver_direction: 'either').include?(user.id)
+    !blocked_interaction_user_ids(receiver_direction: 'either').include?(user.id)
   end
 
   def has_interaction_blocked?(user)
-    blocked_interaction_users(receiver_direction: 'blocking').include?(user.id)
+    blocked_interaction_user_ids(receiver_direction: 'blocking').include?(user.id)
   end
 
-  def blocked_interaction_users(receiver_direction:)
+  def blocked_interaction_user_ids(receiver_direction:)
     unless ['blocked', 'blocking', 'either'].include?(receiver_direction)
       throw ArgumentError("Must pass one of 'blocked', blocking', 'either'")
     end
