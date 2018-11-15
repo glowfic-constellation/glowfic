@@ -83,7 +83,7 @@ class User < ApplicationRecord
 
   def blocked_interaction_user_ids(receiver_direction:)
     unless ['blocked', 'blocking', 'either'].include?(receiver_direction)
-      throw ArgumentError("Must pass one of 'blocked', blocking', 'either'")
+      raise ArgumentError("Must pass one of 'blocked', blocking', 'either'")
     end
     if ['blocked', 'either'].include?(receiver_direction)
       blocking_users = Block.where(block_interactions: true, blocked_user: self).pluck(:blocking_user_id)
@@ -93,7 +93,7 @@ class User < ApplicationRecord
       blocked_users = Block.where(block_interactions: true, blocking_user: self).pluck(:blocked_user_id)
       return blocked_users if receiver_direction == 'blocking'
     end
-    (blocking_users + blocked_users).uniq if receiver_direction == 'either'
+    (blocking_users + blocked_users).uniq
   end
 
   private
