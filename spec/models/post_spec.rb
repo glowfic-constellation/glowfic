@@ -420,7 +420,7 @@ RSpec.describe Post do
       expect(post.id).not_to be_nil
     end
 
-    it "should not allowed blocking coauthor" do
+    it "should not allow adding a coauthor who's blocked you" do
       author = create(:user)
       coauthor = create(:user)
       create(:block, blocking_user: coauthor, blocked_user: author, block_interactions: true)
@@ -428,7 +428,7 @@ RSpec.describe Post do
       expect(post).not_to be_valid
     end
 
-    it "should not allow blocked coauthor" do
+    it "should not allow adding a coauthor you've blocked" do
       author = create(:user)
       coauthor = create(:user)
       create(:block, blocking_user: author, blocked_user: coauthor, block_interactions: true)
