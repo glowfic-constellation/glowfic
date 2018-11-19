@@ -125,7 +125,7 @@ RSpec.describe User do
       expect(blocker.can_interact_with?(unblocked)).to be(true)
       expect(blocker.can_interact_with?(only_posts)).to be(true)
       expect(blocker.can_interact_with?(blockees.first)).to be(false)
-      expect(blocker.blocked_interaction_user_ids(reciever_direction: 'either')).to match_array(blockees.map(&:id))
+      expect(blocker.blocked_interaction_user_ids(receiver_direction: 'either')).to match_array(blockees.map(&:id))
     end
   end
 end
