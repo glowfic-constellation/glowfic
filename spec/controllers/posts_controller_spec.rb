@@ -2307,27 +2307,25 @@ RSpec.describe PostsController do
 
     context "with hidden" do
       let(:user) { create(:user) }
+      let(:unhidden_post) { create(:post, user: user) }
+      let(:hidden_post) { create(:post, user: user) }
 
       before(:each) do
         login_as(user)
-
-        @unhidden_post = create(:post, user: user)
-        create(:reply, post: @unhidden_post)
-
-        @hidden_post = create(:post, user: user)
-        create(:reply, post: @hidden_post)
-        author = @hidden_post.post_authors.where(user_id: user.id).first
+        create(:reply, post: unhidden_post)
+        create(:reply, post: hidden_post)
+        author = hidden_post.post_authors.where(user_id: user.id).first
         author.update_attributes(can_owe: false)
       end
 
       it "does not show hidden without arg" do
         get :owed
-        expect(assigns(:posts)).to eq([@unhidden_post])
+        expect(assigns(:posts)).to eq([unhidden_post])
       end
 
       it "shows only hidden with arg" do
         get :owed, params: {view: 'hidden'}
-        expect(assigns(:posts)).to eq([@hidden_post])
+        expect(assigns(:posts)).to eq([hidden_post])
       end
     end
 
@@ -2358,7 +2356,17 @@ RSpec.describe PostsController do
       end
 
       it "does not show posts from site_testing" do
-        skip "not sure how to create a board with a particular ID"
+        site_test = build(:board)
+        site_test.id = Board::ID_SITETESTING
+        site_test.save
+
+        post.board = site_test
+        post.save
+        create(:reply, post_id: post.id, user_id: other_user.id)
+
+        get :owed
+        expect(response.status).to eq(200)
+        expect(assigns(:posts)).to be_empty
       end
 
       it "hides completed and abandoned threads" do
