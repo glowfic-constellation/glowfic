@@ -91,10 +91,7 @@ class ApplicationController < ActionController::Base
   end
 
   def require_glowfic_domain
-    check_domain if Rails.env.production? # for testability
-  end
-
-  def check_domain
+    return unless Rails.env.production? || params[:force_domain] # for testability
     return unless request.get?
     return if request.xhr?
     return if request.host.include?('glowfic.com')
