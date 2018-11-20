@@ -23,6 +23,7 @@ unless ENV['SKIP_COVERAGE'] || ENV['APIPIE_RECORD'] || RSpec.configuration.files
     add_group "Concerns", "app/concerns"
     add_group "API", "app/controllers/api"
     add_group "Services", "app/services"
+    add_group "Exceptions", "app/exceptions"
     changed_files = `git status --untracked=all --porcelain`
     if changed_files.length > 0
       add_group 'Changed' do |source_file|
