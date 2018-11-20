@@ -3,22 +3,6 @@ require "support/s3_bucket_helper"
 
 RSpec.describe GalleriesController do
   describe "GET index" do
-    context "TOS" do # does not belong here but... tbh I don't have a better idea
-      render_views
-
-      it "shows TOS prompt to logged in users" do
-        user = create(:user, tos_version: nil)
-        login_as(user)
-        get :index, params: {force_tos: true}
-        expect(response).to render_template('about/accept_tos')
-      end
-
-      it "shows TOS prompt to logged out users" do
-        get :index, params: {force_tos: true, user_id: create(:user).id }
-        expect(response).to render_template(partial: 'about/_accept_tos')
-      end
-    end
-
     context "without a user_id" do
       it "requires login" do
         get :index

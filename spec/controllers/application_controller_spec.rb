@@ -1,65 +1,77 @@
 require "spec_helper"
 
 RSpec.describe ApplicationController do
+  controller do
+    def index
+      render json: {zone: Time.zone.name}
+    end
+
+    def create
+      render json: {}
+    end
+
+    def show
+      render template: 'sessions/index' # used by check_tos for a GET with a layout
+    end
+  end
+
   describe "#set_timezone" do
     it "uses the user's time zone within the block" do
       current_zone = Time.zone.name
-      different_zone = ActiveSupport::TimeZone.all.detect { |z| z.name != Time.zone.name }.name
-      session[:user_id] = create(:user, timezone: different_zone).id
+      different_zone = ActiveSupport::TimeZone.all.detect { |z| z.name != current_zone }.name
+      login_as(create(:user, timezone: different_zone))
 
-      expect(Time.zone.name).to eq(current_zone)
-      controller.send(:set_timezone) do
-        expect(Time.zone.name).to eq(different_zone)
-      end
+      get :index
+      expect(response.json['zone']).to eq(different_zone)
     end
 
     it "succeeds when logged out" do
       current_zone = Time.zone.name
-      expect(Time.zone.name).to eq(current_zone)
-      controller.send(:set_timezone) do
-        expect(Time.zone.name).to eq(current_zone)
-      end
+      get :index
+      expect(response.json['zone']).to eq(current_zone)
     end
 
     it "succeeds when logged in user has no zone set" do
       current_zone = Time.zone.name
-      session[:user_id] = create(:user, timezone: nil).id
-      expect(Time.zone.name).to eq(current_zone)
-      controller.send(:set_timezone) do
-        expect(Time.zone.name).to eq(current_zone)
-      end
+      login_as(create(:user, timezone: nil))
+      get :index
+      expect(response.json['zone']).to eq(current_zone)
     end
   end
 
   describe "#show_password_warning" do
+    let(:warning) { "Because Marri accidentally made passwords a bit too secure, you must log back in to continue using the site." }
+
     it "shows no warning if logged out" do
-      controller.send(:show_password_warning) do
-        expect(flash.now[:error]).not_to eq("Because Marri accidentally made passwords a bit too secure, you must log back in to continue using the site.")
-      end
+      get :index
+      expect(flash.now[:error]).not_to eq(warning)
     end
 
     it "shows no warning for users with salt_uuid" do
       user = create(:user)
       login_as(user)
       expect(user.salt_uuid).not_to be_nil
-      controller.send(:show_password_warning) do
-        expect(flash.now[:error]).not_to eq("Because Marri accidentally made passwords a bit too secure, you must log back in to continue using the site.")
-        expect(controller.send(:logged_in?)).to eq(true)
-      end
+      get :index
+      expect(flash.now[:error]).not_to eq(warning)
     end
 
     it "shows warning if salt_uuid not set" do
       user = create(:user)
       login_as(user)
       user.update_columns(salt_uuid: nil)
-      controller.send(:show_password_warning) do
-        expect(flash.now[:error]).to eq("Because Marri accidentally made passwords a bit too secure, you must log back in to continue using the site.")
-        expect(controller.send(:logged_in?)).not_to eq(true)
-      end
+      get :index
+      expect(flash.now[:error]).to eq(warning)
     end
   end
 
   describe "#posts_from_relation" do
+    let(:site_testing) {
+        site_test = build(:board)
+        site_test.id = Board::ID_SITETESTING
+        site_test.save
+        site_test
+    }
+
     it "gets posts" do
       post = create(:post)
       relation = Post.where('posts.id IS NOT NULL')
@@ -73,23 +85,16 @@ RSpec.describe ApplicationController do
     end
 
     it "skips posts in site testing" do
-      skip "stubbing constants does not seem to work well with scopes"
-
       post = create(:post, board: site_testing)
-      stub_const("Board::ID_SITETESTING", site_testing.id)
-      expect(Post.where(id: post.id).no_tests).to be_blank # fails
+      expect(Post.where(id: post.id).no_tests).to be_blank
       relation = Post.where(id: post.id)
-      expect(controller.send(:posts_from_relation, relation), true).to be_blank # so this fails
+      expect(controller.send(:posts_from_relation, relation, no_tests: true)).to be_blank
     end
 
     it "can be made to show site testing posts" do
-      skip "stubbing constants does not seem to work well with scopes"
-
-      site_testing = create(:board)
-      stub_const("Board::ID_SITETESTING", site_testing.id)
       post = create(:post, board: site_testing)
       relation = Post.where(id: post.id)
-      expect(controller.send(:posts_from_relation, relation), false).not_to be_blank
+      expect(controller.send(:posts_from_relation, relation, no_tests: false)).not_to be_blank
     end
 
     let(:default_post_ids) { Array.new(26) do create(:post).id end }
@@ -268,11 +273,36 @@ RSpec.describe ApplicationController do
   describe "#require_glowfic_domain" do
     it "redirects on valid requests" do
       ENV['DOMAIN_NAME'] ||= 'domaintest.host'
-      expect(controller.request.method).to eq('GET')
-      expect(controller.request.xhr?).to be_nil
-      expect(controller.request.host).not_to include('glowfic')
-      expect(controller).to receive(:redirect_to).with("https://domaintest.host", status: :moved_permanently)
-      controller.send(:check_domain)
+      get :index, params: {force_domain: true}
+      expect(response).to have_http_status(:moved_permanently)
+      expect(response).to redirect_to('https://domaintest.host/anonymous?force_domain=true')
+    end
+
+    it "does not redirect on post requests" do
+      post :create, params: {force_domain: true}
+      expect(response).to have_http_status(:ok)
+    end
+
+    it "does not redirect unless forced" do
+      get :index
+      expect(response).to have_http_status(:ok)
+    end
+
+    it "does not redirect API requests" do
+      get :index, params: {force_domain: true}, xhr: true
+      expect(response).to have_http_status(:ok)
+    end
+
+    it "does not redirect glowfic.com requests" do
+      request.host = 'glowfic.com'
+      get :index, params: {force_domain: true}
+      expect(response).to have_http_status(:ok)
+    end
+
+    it "does not redirect staging requests" do
+      request.host = 'glowfic-staging.herokuapp.com'
+      get :index, params: {force_domain: true}
+      expect(response).to have_http_status(:ok)
     end
   end
 
@@ -324,6 +354,22 @@ RSpec.describe ApplicationController do
         expect(controller.send(:page_view)).to eq('icon')
         expect(user.reload.default_view).to eq('list')
       end
+    end
+  end
+
+  describe "#check_tos" do
+    render_views
+
+    it "shows TOS prompt to logged in users" do
+      user = create(:user, tos_version: nil)
+      login_as(user)
+      get :show, params: {force_tos: true, id: 1}
+      expect(response).to render_template('about/accept_tos')
+    end
+
+    it "shows TOS prompt to logged out users" do
+      get :show, params: {force_tos: true, id: 1}
+      expect(response).to render_template(partial: 'about/_accept_tos')
     end
   end
 end
