@@ -74,26 +74,23 @@ class User < ApplicationRecord
   end
 
   def can_interact_with?(user)
-    !blocked_interaction_user_ids(receiver_direction: 'either').include?(user.id)
+    !user_ids_uninteractable.include?(user.id)
   end
 
   def has_interaction_blocked?(user)
-    blocked_interaction_user_ids(receiver_direction: 'blocking').include?(user.id)
+    user_ids_blocked_interaction.include?(user.id)
   end
 
-  def blocked_interaction_user_ids(receiver_direction:)
-    unless ['blocked', 'blocking', 'either'].include?(receiver_direction)
-      raise ArgumentError("Must pass one of 'blocked', blocking', 'either'")
-    end
-    if ['blocked', 'either'].include?(receiver_direction)
-      blocking_users = Block.where(block_interactions: true, blocked_user: self).pluck(:blocking_user_id)
-      return blocking_users if receiver_direction == "blocked"
-    end
-    if ['blocking', 'either'].include?(receiver_direction)
-      blocked_users = Block.where(block_interactions: true, blocking_user: self).pluck(:blocked_user_id)
-      return blocked_users if receiver_direction == 'blocking'
-    end
-    (blocking_users + blocked_users).uniq
+  def user_ids_blocked_interaction
+    Block.where(block_interactions: true, blocking_user: self).pluck(:blocked_user_id)
+  end
+
+  def user_ids_blocking_interaction
+    Block.where(block_interactions: true, blocked_user: self).pluck(:blocking_user_id)
+  end
+
+  def user_ids_uninteractable
+    (user_ids_blocking_interaction + user_ids_blocked_interaction).uniq
   end
 
   private

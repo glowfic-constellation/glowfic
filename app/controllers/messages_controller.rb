@@ -18,7 +18,7 @@ class MessagesController < ApplicationController
   def new
     @message = Message.new
     recipient = User.find_by_id(params[:recipient_id])
-    @message.recipient = recipient unless recipient&.has_interaction_blocked?(current_user)
+    @message.recipient = recipient unless recipient && current_user.has_interaction_blocked?(recipient)
     @page_title = 'Compose Message'
   end
 
@@ -116,7 +116,7 @@ class MessagesController < ApplicationController
     use_javascript('messages')
     unless @message.try(:parent)
       recent_ids = Message.where(sender_id: current_user.id).order(Arel.sql('MAX(id) desc')).limit(5).group(:recipient_id).pluck(:recipient_id)
-      base_users = User.where.not(id: [current_user.id] + current_user.blocked_interaction_user_ids(receiver_direction: 'blocking'))
+      base_users = User.where.not(id: [current_user.id] + current_user.user_ids_blocked_interaction)
       recents = base_users.where(id: recent_ids).pluck(:username, :id).sort_by{|x| recent_ids.index(x[1]) }
       users = base_users.ordered.pluck(:username, :id)
       @select_items = if recents.present?
