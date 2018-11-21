@@ -73,7 +73,7 @@ RSpec.describe MessagesController do
       login_as(block.blocked_user)
       get :new, params: { recipient_id: block.blocking_user_id }
       expect(response.status).to eq(200)
-      expect(assigns(:message).recipient_id).to be_nil
+      expect(assigns(:message).recipient_id).to be(block.blocking_user_id)
     end
 
     it "hides blocked users" do
