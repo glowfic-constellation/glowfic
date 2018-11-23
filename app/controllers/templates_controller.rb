@@ -61,6 +61,9 @@ class TemplatesController < ApplicationController
     redirect_to template_path(@template)
   end
 
+  def search
+  end
+
   private
 
   def editor_setup

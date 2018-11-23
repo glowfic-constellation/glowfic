@@ -185,6 +185,9 @@ class GalleriesController < UploadingController
     redirect_to gallery_path(@gallery)
   end
 
+  def search
+  end
+
   private
 
   def find_gallery

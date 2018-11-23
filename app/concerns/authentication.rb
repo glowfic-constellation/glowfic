@@ -27,10 +27,10 @@ module Authentication
       cookies.delete(:user_id, cookie_delete_options)
       @current_user = nil
     end
-  end
 
-  def cookie_delete_options
-    return {domain: '.glowfic.com'} if Rails.env.production?
-    {}
+    def cookie_delete_options
+      return {domain: '.glowfic.com'} if Rails.env.production?
+      {}
+    end
   end
 end

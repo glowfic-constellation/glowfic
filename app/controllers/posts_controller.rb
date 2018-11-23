@@ -141,23 +141,6 @@ class PostsController < WritableController
   def stats
   end
 
-  def preview
-    @post ||= Post.new(user: current_user)
-    @post.assign_attributes(post_params(false))
-    @post.board ||= Board.find_by_id(3)
-
-    @author_ids = params.fetch(:post, {}).fetch(:unjoined_author_ids, [])
-    @viewer_ids = params.fetch(:post, {}).fetch(:viewer_ids, [])
-    @settings = process_tags(Setting, :post, :setting_ids)
-    @content_warnings = process_tags(ContentWarning, :post, :content_warning_ids)
-    @labels = process_tags(Label, :post, :label_ids)
-
-    @written = @post
-    editor_setup
-    @page_title = 'Previewing: ' + @post.subject.to_s
-    render action: :preview
-  end
-
   def edit
   end
 
@@ -202,68 +185,6 @@ class PostsController < WritableController
       editor_setup
       render :action => :edit
     end
-  end
-
-  def mark_unread
-    if params[:at_id].present?
-      reply = Reply.find(params[:at_id])
-      if reply && reply.post == @post
-        board_read = @post.board.last_read(current_user)
-        if board_read && board_read > reply.created_at
-          flash[:error] = "You have marked this continuity read more recently than that reply was written; it will not appear in your Unread posts."
-          Message.send_site_message(1, 'Unread at failure', "#{current_user.username} tried to mark post #{@post.id} unread at reply #{reply.id}")
-        else
-          @post.mark_read(current_user, reply.created_at - 1.second, true)
-          flash[:success] = "Post has been marked as read until reply ##{reply.id}."
-        end
-      end
-      return redirect_to unread_posts_path
-    end
-
-    @post.views.where(user_id: current_user.id).first.try(:update, read_at: nil)
-    flash[:success] = "Post has been marked as unread"
-    redirect_to unread_posts_path
-  end
-
-  def mark_hidden
-    if params[:hidden].to_s == 'true'
-      @post.ignore(current_user)
-      flash[:success] = "Post has been hidden"
-    else
-      @post.unignore(current_user)
-      flash[:success] = "Post has been unhidden"
-    end
-    redirect_to post_path(@post)
-  end
-
-  def change_status
-    begin
-      new_status = Post.const_get('STATUS_'+params[:status].upcase)
-    rescue NameError
-      flash[:error] = "Invalid status selected."
-    else
-      @post.status = new_status
-      if @post.save
-        flash[:success] = "Post has been marked #{params[:status]}."
-      else
-        flash[:error] = {}
-        flash[:error][:message] = "Status could not be updated."
-        flash[:error][:array] = @post.errors.full_messages
-      end
-    end
-    redirect_to post_path(@post)
-  end
-
-  def change_authors_locked
-    @post.authors_locked = (params[:authors_locked] == 'true')
-    if @post.save
-      flash[:success] = "Post has been #{@post.authors_locked? ? 'locked to' : 'unlocked from'} current authors."
-    else
-      flash[:error] = {}
-      flash[:error][:message] = "Post could not be updated."
-      flash[:error][:array] = @post.errors.full_messages
-    end
-    redirect_to post_path(@post)
   end
 
   def destroy
@@ -338,6 +259,85 @@ class PostsController < WritableController
   end
 
   private
+
+  def preview
+    @post ||= Post.new(user: current_user)
+    @post.assign_attributes(post_params(false))
+    @post.board ||= Board.find_by_id(3)
+
+    @author_ids = params.fetch(:post, {}).fetch(:unjoined_author_ids, [])
+    @viewer_ids = params.fetch(:post, {}).fetch(:viewer_ids, [])
+    @settings = process_tags(Setting, :post, :setting_ids)
+    @content_warnings = process_tags(ContentWarning, :post, :content_warning_ids)
+    @labels = process_tags(Label, :post, :label_ids)
+
+    @written = @post
+    editor_setup
+    @page_title = 'Previewing: ' + @post.subject.to_s
+    render action: :preview
+  end
+
+  def mark_unread
+    if params[:at_id].present?
+      reply = Reply.find(params[:at_id])
+      if reply && reply.post == @post
+        board_read = @post.board.last_read(current_user)
+        if board_read && board_read > reply.created_at
+          flash[:error] = "You have marked this continuity read more recently than that reply was written; it will not appear in your Unread posts."
+          Message.send_site_message(1, 'Unread at failure', "#{current_user.username} tried to mark post #{@post.id} unread at reply #{reply.id}")
+        else
+          @post.mark_read(current_user, reply.created_at - 1.second, true)
+          flash[:success] = "Post has been marked as read until reply ##{reply.id}."
+        end
+      end
+      return redirect_to unread_posts_path
+    end
+
+    @post.views.where(user_id: current_user.id).first.try(:update, read_at: nil)
+    flash[:success] = "Post has been marked as unread"
+    redirect_to unread_posts_path
+  end
+
+  def mark_hidden
+    if params[:hidden].to_s == 'true'
+      @post.ignore(current_user)
+      flash[:success] = "Post has been hidden"
+    else
+      @post.unignore(current_user)
+      flash[:success] = "Post has been unhidden"
+    end
+    redirect_to post_path(@post)
+  end
+
+  def change_status
+    begin
+      new_status = Post.const_get('STATUS_'+params[:status].upcase)
+    rescue NameError
+      flash[:error] = "Invalid status selected."
+    else
+      @post.status = new_status
+      if @post.save
+        flash[:success] = "Post has been marked #{params[:status]}."
+      else
+        flash[:error] = {}
+        flash[:error][:message] = "Status could not be updated."
+        flash[:error][:array] = @post.errors.full_messages
+      end
+    end
+    redirect_to post_path(@post)
+  end
+
+  def change_authors_locked
+    @post.authors_locked = (params[:authors_locked] == 'true')
+    if @post.save
+      flash[:success] = "Post has been #{@post.authors_locked? ? 'locked to' : 'unlocked from'} current authors."
+    else
+      flash[:error] = {}
+      flash[:error][:message] = "Post could not be updated."
+      flash[:error][:array] = @post.errors.full_messages
+    end
+    redirect_to post_path(@post)
+  end
 
   def editor_setup
     super

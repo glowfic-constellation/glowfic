@@ -1,4 +1,6 @@
 module DateSelectable
+  private
+
   def calculate_day
     return Time.zone.now.to_date unless params[:day].present?
 

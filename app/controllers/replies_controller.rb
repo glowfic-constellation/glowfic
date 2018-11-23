@@ -95,24 +95,6 @@ class RepliesController < WritableController
     end
   end
 
-  def make_draft(show_message=true)
-    if (draft = ReplyDraft.draft_for(params[:reply][:post_id], current_user.id))
-      draft.assign_attributes(reply_params)
-    else
-      draft = ReplyDraft.new(reply_params)
-      draft.user = current_user
-    end
-
-    if draft.save
-      flash[:success] = "Draft saved!" if show_message
-    else
-      flash[:error] = {}
-      flash[:error][:message] = "Your draft could not be saved because of the following problems:"
-      flash[:error][:array] = draft.errors.full_messages
-    end
-    draft
-  end
-
   def create
     if params[:button_draft]
       draft = make_draft
@@ -270,5 +252,23 @@ class RepliesController < WritableController
       :audit_comment,
       :character_alias_id,
     )
+  end
+
+  def make_draft(show_message=true)
+    if (draft = ReplyDraft.draft_for(params[:reply][:post_id], current_user.id))
+      draft.assign_attributes(reply_params)
+    else
+      draft = ReplyDraft.new(reply_params)
+      draft.user = current_user
+    end
+
+    if draft.save
+      flash[:success] = "Draft saved!" if show_message
+    else
+      flash[:error] = {}
+      flash[:error][:message] = "Your draft could not be saved because of the following problems:"
+      flash[:error][:array] = draft.errors.full_messages
+    end
+    draft
   end
 end
