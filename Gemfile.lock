@@ -394,6 +394,8 @@ GEM
     timecop (0.9.1)
     tinymce-rails (4.6.7)
       railties (>= 3.1.1)
+    traceroute (0.8.0)
+      rails (>= 3.0.0)
     twitter-bootstrap-rails (4.0.0)
       actionpack (~> 5.0, >= 5.0.1)
       execjs (~> 2.7)
@@ -482,6 +484,7 @@ DEPENDENCIES
   thin
   timecop
   tinymce-rails (~> 4.6.7)
+  traceroute
   uglifier
   web-console (~> 3.0)
   webmock

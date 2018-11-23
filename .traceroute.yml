@@ -1,0 +1,7 @@
+ignore_unused_routes:
+- ^apipie\/
+- ^resque_web\/
+ignore_unreachable_actions:
+- ^apipie\/
+- ^api.*#apipie_validations
+- ^resque_web\/
