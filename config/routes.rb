@@ -103,7 +103,7 @@ Rails.application.routes.draw do
   # Indexes
   resources :indexes
   resources :index_sections, except: [:index]
-  resources :index_posts, only: [:new, :create, :destroy]
+  resources :index_posts, only: [:new, :create, :edit, :update, :destroy]
 
   # Blocks
   resources :blocks, except: [:show]
@@ -123,6 +123,12 @@ Rails.application.routes.draw do
       resources :galleries, only: :show
       resources :icons, only: [] do
         collection { post :s3_delete }
+      end
+      resources :index_posts, only: [] do
+        collection { post :reorder }
+      end
+      resources :index_sections, only: [] do
+        collection { post :reorder }
       end
       resources :posts, only: [:index, :show] do
         resources :replies, only: :index

@@ -1,0 +1,21 @@
+- reset_cycle
+#reorder-posts-table
+  .content-header
+    Organize Unsectioned Posts
+    #loading.float-right.hidden
+      = image_tag 'icons/loading.gif', title: 'Loading...', class: 'vmid', alt: '...', style: 'width: 16px; height: 16px;'
+    #saveerror.float-right.hidden
+      = image_tag "icons/exclamation.png", title: 'Error', class: 'vmid', alt: '!'
+      Error, please refresh
+    .saveconf.float-right.hidden
+      = image_tag "icons/accept.png", title: 'Saved', class: 'vmid', alt: ''
+      Saved
+  %ul.sortable.table-list
+    - unsectioned_posts.each do |post|
+      %li.section-ordered{class: cycle('even', 'odd'), data: {id: post.send(local_assigns[:id] || :id), order: post.section_order}}
+        .section-ordered-handle
+          = image_tag "icons/arrow_double.png", title: 'Reorder', class: 'disabled-arrow', alt: '↕'
+        = link_to post.subject, post_path(post)
+        .float-right
+          = image_tag "icons/arrow_up.png", class: "section-up disabled-arrow", alt: 'Move Up'
+          = image_tag "icons/arrow_down.png", class: "section-down disabled-arrow", alt: 'Move Down'
