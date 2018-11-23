@@ -12,7 +12,7 @@ Rails.application.routes.draw do
   match '/logout' => 'sessions#destroy', :as => :logout, :via => :delete
   match '/confirm_tos' => 'sessions#confirm_tos', as: :confirm_tos, via: :patch
   match '/users/:id/templates' => redirect('/users/%{id}/characters'), via: :get
-  resources :users do
+  resources :users, except: :destroy do
     resources :characters, only: :index
     resources :galleries, only: [:index, :show]
     resources :boards, only: :index
@@ -100,14 +100,14 @@ Rails.application.routes.draw do
   namespace :api do
     namespace :v1 do
       resources :boards, only: [:index, :show]
-      resources :board_sections do # TODO other types
+      resources :board_sections, only: [] do
         collection { post :reorder }
       end
       resources :characters, only: [:index, :show, :update] do
         collection { post :reorder }
       end
       resources :galleries, only: :show
-      resources :icons do
+      resources :icons, only: [] do
         collection { post :s3_delete }
       end
       resources :posts, only: [:index, :show] do
