@@ -6,7 +6,7 @@
 
 %table
   %tr
-    %th{colspan: 6}
+    %th{colspan: (character_split == 'none' ? 7 : 6)}
       - if @group
         Character Group:
         = @group.name
