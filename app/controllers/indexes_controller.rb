@@ -42,7 +42,7 @@ class IndexesController < ApplicationController
     @page_title = @index.name.to_s
     @sectionless = @index.posts.where(index_posts: {index_section_id: nil})
     @sectionless = @sectionless.ordered_by_index
-    @sectionless = posts_from_relation(@sectionless, with_pagination: false, select: ', index_posts.description as index_description')
+    @sectionless = posts_from_relation(@sectionless, with_pagination: false, select: ', index_posts.description as index_description, index_posts.id as index_post_id')
     @sectionless = @sectionless.select { |p| p.visible_to?(current_user) }
   end
 
