@@ -32,10 +32,10 @@ textarea { padding: 5px; }
 button, .button {
   background-color: $bg_color_button;
   background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(20%, #FFFFFF), color-stop(50%, #F6F6F6), color-stop(52%, #EEEEEE), color-stop(100%, #F4F4F4));
-  background: -webkit-linear-gradient(top, #FFFFFF 20%, #F6F6F6 50%, #EEEEEE 52%, #F4F4F4 100%);
-  background: -moz-linear-gradient(top, #FFFFFF 20%, #F6F6F6 50%, #EEEEEE 52%, #F4F4F4 100%);
-  background: -o-linear-gradient(top, #FFFFFF 20%, #F6F6F6 50%, #EEEEEE 52%, #F4F4F4 100%);
-  background: linear-gradient(top, #FFFFFF 20%, #F6F6F6 50%, #EEEEEE 52%, #F4F4F4 100%);
+  background: -webkit-linear-gradient(to bottom, #FFFFFF 20%, #F6F6F6 50%, #EEEEEE 52%, #F4F4F4 100%);
+  background: -moz-linear-gradient(to bottom, #FFFFFF 20%, #F6F6F6 50%, #EEEEEE 52%, #F4F4F4 100%);
+  background: -o-linear-gradient(to bottom, #FFFFFF 20%, #F6F6F6 50%, #EEEEEE 52%, #F4F4F4 100%);
+  background: linear-gradient(to bottom, #FFFFFF 20%, #F6F6F6 50%, #EEEEEE 52%, #F4F4F4 100%);
   background-clip: padding-box;
   border-color: $border_color_button;
   height: 25px;
