@@ -142,6 +142,17 @@ RSpec.describe MessagesController do
       expect(assigns(:javascripts)).to include('messages')
     end
 
+    it "fails with someone else's parent" do
+      message = create(:message)
+      user = create(:user)
+      login_as(user)
+      expect(message.visible_to?(user)).to eq(false)
+      post :create, params: { message: {subject: 'Re: Fake', message: 'response'}, parent_id: message.id }
+      expect(flash[:error][:array]).to include('You do not have permission to reply to that message.')
+      expect(assigns(:message).parent).to be_nil
+      expect(assigns(:javascripts)).to include('messages')
+    end
+
     it "succeeds with valid parent" do
       previous = create(:message)
       login_as(previous.recipient)
