@@ -13,7 +13,7 @@ a {
   text-decoration: none;
   color: $font_color_link;
   &:visited { color: $font_color_link_visited; }
-  &:hover { color: $font_color_link_hover; }
+  &:hover { color: $font_color_link_hover; text-decoration: none; }
 }
 
 /* Inputs */
@@ -96,6 +96,7 @@ button, .button {
 .link-box {
   display: inline-block;
   font-size: $font_size_large;
+  line-height: 1.25rem;
   margin: 0;
   margin-left: 5px;
   background-image: none;
@@ -104,7 +105,7 @@ button, .button {
   padding: 4px 12px;
   border-radius: 5px;
   font-weight: normal;
-  height: 20px;
+  height: 28px;
   vertical-align: middle;
 
   img { vertical-align: baseline; }
@@ -120,3 +121,6 @@ button, .button {
 /* Inline lists */
 .inline-list { display: inline; padding-left: 0; }
 .inline-list li { display: inline; list-style-type: none; margin-right: 4px; }
+
+/* Bootstrap tweaks */
+.view-button img, #swap-alias, #swap-character, #header img { vertical-align: baseline; }
