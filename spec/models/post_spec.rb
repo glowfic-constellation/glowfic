@@ -435,6 +435,14 @@ RSpec.describe Post do
       post = build(:post, user: author, unjoined_authors: [coauthor])
       expect(post).not_to be_valid
     end
+
+    it "should not allow adding two coauthors who have blocked each other" do
+      coauthor1 = create(:user)
+      coauthor2 = create(:user)
+      create(:block, blocking_user: coauthor1, blocked_user: coauthor2, block_interactions: true)
+      post = build(:post, unjoined_authors: [coauthor1, coauthor2])
+      expect(post).not_to be_valid
+    end
   end
 
   describe "#word_count" do
