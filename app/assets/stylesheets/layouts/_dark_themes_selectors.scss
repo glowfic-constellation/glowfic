@@ -33,19 +33,19 @@
   }
 }
 
-/* - select2 */
-.select2-dropdown {
+%input {
   border-color: $border_color_input;
   background-color: $bg_color_input;
   color: $font_color_input;
 }
 
+/* - select2 */
+.select2-dropdown { @extend %input; }
+
 .select2-container--default {
   /* -- multiple / tag */
   .select2-selection--multiple {
-    border-color: $border_color_input;
-    background-color: $bg_color_input;
-    color: $font_color_input;
+    @extend %input;
 
     /* --- tag item */
     .select2-selection__choice {
@@ -56,9 +56,7 @@
 
   /* -- single */
   .select2-selection--single {
-    border-color: $border_color_input;
-    background-color: $bg_color_input;
-    color: $font_color_input;
+    @extend %input;
 
     .select2-selection__rendered { color: $font_color_input; }
   }
@@ -94,9 +92,7 @@
 
 /* HTML written editor */
 #post-editor input:not([type='submit']), #post-editor textarea, #message_form input:not([type='submit']), #message_form textarea {
-  border-color: $border_color_input;
-  background-color: $bg_color_input;
-  color: $font_color_input;
+  @extend %input;
 }
 
 /* RTF post editor – see tinymce.css for styling of the iframe itself */
