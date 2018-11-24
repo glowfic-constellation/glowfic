@@ -150,3 +150,9 @@ button, .button {
 
 /* Bootstrap tweaks */
 .view-button img, #swap-alias, #swap-character, #header img { vertical-align: baseline; }
+span.badge {
+  position: relative;
+  bottom: 1px;
+  background-color: $bg_color_badge;
+  color: $font_color_badge;
+}

@@ -59,3 +59,8 @@ a:visited { color: $font_color_link_visited; }
   a { color: $font_color_header_link; }
   a:hover { color: $font_color_header_link_hover; }
 }
+
+span.badge {
+  background-color: $bg_color_badge;
+  color: $font_color_badge;
+}

@@ -119,3 +119,7 @@ th, .content-header {
 /* - other buttons */
 .view-button, .post-navheader .view-button { background-color: $bg_color_viewbutton; }
 .view-button.selected { background-color: $bg_color_viewbutton_selected; }
+span.badge {
+  background-color: $bg_color_badge;
+  color: $font_color_badge;
+}

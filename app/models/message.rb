@@ -14,6 +14,7 @@ class Message < ApplicationRecord
 
   scope :ordered_by_id, -> { order(id: :asc) }
   scope :ordered_by_thread, -> { order(thread_id: :asc, id: :desc) }
+  scope :unread, -> { where(unread: true) }
 
   def visible_to?(user)
     user_ids.include?(user.id)
