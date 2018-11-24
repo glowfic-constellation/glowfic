@@ -153,6 +153,14 @@ RSpec.describe FavoritesController do
       expect(flash[:error]).to eq('Continuity could not be found.')
     end
 
+    it "handles invalid favorite" do
+      user = create(:user)
+      login_as(user)
+      post :create, params: { user_id: user.id }
+      expect(response).to redirect_to(user_path(user))
+      expect(flash[:error][:message]).to eq('Your favorite could not be saved because of the following problems:')
+    end
+
     it "favorites a user" do
       user = create(:user)
       fav = create(:user)
