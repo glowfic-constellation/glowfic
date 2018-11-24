@@ -283,7 +283,7 @@ class Post < ApplicationRecord
 
   def valid_coauthors
     return if self.unjoined_authors.empty?
-    return if self.user.user_ids_uninteractable.empty? && self.authors == 1
+    return if self.user.user_ids_uninteractable.empty? && self.authors.length == 1
     new_ids = self.unjoined_post_authors.reject(&:persisted?).pluck(:user_id)
     new_users = User.where(id: new_ids)
     new_users.each_with_index do |unjoined, i|
