@@ -11,6 +11,10 @@ body { background-color: $bg_color_page; color: $font_color_page; }
   a { color: $font_color_header_link; }
 }
 #logo { background-color: $bg_color_header_top; }
+span.badge {
+  background-color: $bg_color_badge;
+  color: $font_color_badge;
+}
 
 /* - links */
 a { color: $font_color_link; }

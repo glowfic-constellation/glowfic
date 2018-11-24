@@ -68,7 +68,11 @@
             - if logged_in?
               %ul
                 %li= link_to 'Account', edit_user_path(current_user)
-                %li= link_to 'Inbox', messages_path
+                %li
+                  = link_to messages_path do
+                    Inbox
+                    - if current_user.messages.unread.exists?
+                      %span.badge.badge-primary= current_user.messages.unread.count
                 %li= link_to "Characters", user_characters_path(current_user)
                 %li= link_to "Galleries", user_galleries_path(current_user)
                 %li= link_to 'Favorites', favorites_path
@@ -128,14 +132,6 @@
           = flash[key]
       - if content_for?(:flashes)
         = content_for :flashes
-      - if logged_in?
-        - if current_user.messages.where(unread: true).exists?
-          - current_user.messages.where(unread: true).each do |message|
-            .flash.inbox
-              New message from
-              = message_sender(message)
-              &ndash;
-              = link_to message.unempty_subject, message_path(message)
       - unless logged_in? || tos_skippable?
         #tos.hidden= render 'about/accept_tos'
       #content
