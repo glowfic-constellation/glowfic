@@ -184,6 +184,16 @@ RSpec.describe BlocksController, type: :controller do
       expect(flash[:error]).to eq("Block could not be found.")
     end
 
+    it "handles failure" do
+      block = create(:block)
+      login_as(block.blocking_user)
+      expect_any_instance_of(Block).to receive(:destroy).and_return(false)
+      delete :destroy, params: {id: block.id}
+      expect(response).to redirect_to(blocks_url)
+      expect(flash[:error][:message]).to eq("User could not be unblocked.")
+      expect(Block.find_by(id: block.id)).to eq(block)
+    end
+
     it "succeeds" do
       block = create(:block)
       login_as(block.blocking_user)
