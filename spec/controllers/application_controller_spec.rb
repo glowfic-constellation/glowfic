@@ -65,12 +65,7 @@ RSpec.describe ApplicationController do
   end
 
   describe "#posts_from_relation" do
-    let(:site_testing) {
-        site_test = build(:board)
-        site_test.id = Board::ID_SITETESTING
-        site_test.save
-        site_test
-    }
+    let(:site_testing) { create(:board, id: Board::ID_SITETESTING) }
 
     it "gets posts" do
       post = create(:post)

@@ -2356,9 +2356,7 @@ RSpec.describe PostsController do
       end
 
       it "does not show posts from site_testing" do
-        site_test = build(:board)
-        site_test.id = Board::ID_SITETESTING
-        site_test.save
+        site_test = create(:board, id: Board::ID_SITETESTING)
 
         post.board = site_test
         post.save
