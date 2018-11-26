@@ -39,9 +39,9 @@ paths:
   board_show_open:
     path: /boards/5
     selector: '[id=content]'
-  #board_show_sections:
-    #path:
-    #selector: '[id=content]'
+  board_show_sections:
+    path: /boards/1
+    selector: '[id=content]'
 
   characters_icon_split:
     path: /users/3/characters?character_split=none&view=icons
@@ -91,10 +91,10 @@ paths:
 
   posts:
     path: /posts
-    selector: '[id=content]'
+    before_capture: 'javascript/only-content.js'
   post_show:
     path: /posts/1
-    selector: '[id=content]'
+    before_capture: 'javascript/only-content.js'
   post_menu:
     path: /posts/1
     selector: '[id=post-menu-box]'
@@ -145,7 +145,7 @@ paths:
 
 
 # (optional) JavaScript file to execute before taking screenshot of every path. Default: nil
-before_capture: 'javascript/wait--casper.js'
+before_capture: 'javascript/accept_tos.js'
 
 # (required) Screen widths (and optional height) to resize the browser to before taking the screenshot.
 screen_widths:
