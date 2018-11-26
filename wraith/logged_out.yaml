@@ -32,6 +32,12 @@ paths:
   home:
     path: /
     selector: '[id=content]'
+  footer:
+    path: /
+    selector: '[id=footer]'
+  breadcrumbs:
+    path: /boards
+    selector: '[class=flash]'
 
   boards:
     path: /boards
@@ -41,7 +47,7 @@ paths:
     selector: '[id=content]'
   board_show_sections:
     path: /boards/1
-    selector: '[id=content]'
+    before_capture: 'javascript/only-content.js'
 
   characters_icon_split:
     path: /users/3/characters?character_split=none&view=icons
