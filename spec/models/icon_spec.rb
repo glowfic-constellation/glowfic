@@ -59,6 +59,28 @@ RSpec.describe Icon do
     end
   end
 
+  describe "#use_https" do
+    it "does not update sites that might not support HTTPS" do
+      icon = build(:icon, url: 'http://www.example.com')
+      icon.save
+      expect(icon.reload.url).to start_with('http:')
+    end
+
+    it "does update HTTP Dreamwidth icons on update" do
+      icon = create(:icon, url: 'http://www.example.com')
+      expect(icon.reload.url).to start_with('http:')
+      icon.url = 'http://www.dreamwidth.org'
+      icon.save
+      expect(icon.reload.url).to start_with('https:')
+    end
+
+    it "does update HTTP Imgur icons on create" do
+      icon = build(:icon, url: 'http://i.imgur.com')
+      icon.save
+      expect(icon.reload.url).to start_with('https:')
+    end
+  end
+
   describe "#delete_from_s3" do
     before(:each) { clear_enqueued_jobs }
 
