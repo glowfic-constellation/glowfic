@@ -7,11 +7,8 @@ domains:
 
 # Screen widths (and optional height) to resize the browser to before taking the screenshot.
 screen_widths:
-  - 320x740
-  - 600x768
-  - 768x1280
-  - 1024x600
-  - 1280x800
+  - 750x1334
+  - 1024x768
   - 1920x1080
 
 # Resize to each screen width (efficient), or reload at each screen width (costly). Default: 'reload'
@@ -59,7 +56,7 @@ paths:
     path: /
     selector: '[id=footer]'
   breadcrumbs:
-    path: /boards
+    path: /boards/1
     selector: '[class=flash]'
 
   boards:
@@ -165,6 +162,8 @@ paths:
   user_show:
     path: /users/3
     selector: '[id=content]'
+  user_edit:
+    path: /user/5/edit
   user_boards:
     path: /users/3/boards
     selector: '[id=content]'
