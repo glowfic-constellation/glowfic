@@ -19,6 +19,7 @@ class Icon < ApplicationRecord
   nilify_blanks
 
   before_validation :use_icon_host
+  before_save :use_https
   before_update :delete_from_s3
   after_destroy :clear_icon_ids, :delete_from_s3
 
@@ -41,6 +42,13 @@ class Icon < ApplicationRecord
     return unless ENV['ICON_HOST'].present?
     return if url.to_s.include?(ENV['ICON_HOST'])
     self.url = ENV['ICON_HOST'] + url[(url.index(S3_DOMAIN).to_i + S3_DOMAIN.length)..-1]
+  end
+
+  def use_https
+    return if uploaded?
+    return unless url.starts_with?('http://')
+    return unless url.include?("imgur.com") || url.include?("dreamwidth.org")
+    self.url = url.sub('http:', 'https:')
   end
 
   def delete_from_s3
