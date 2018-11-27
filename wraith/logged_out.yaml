@@ -166,10 +166,10 @@ screen_widths:
 resize_or_reload: 'resize'
 
 # (required for history mode, otherwise optional) The directory that your base screenshots will be stored in.
-history_dir: 'out_then'
+history_dir: 'then/out'
 
 # (required) The directory that your latest screenshots will be stored in
-directory: 'out_now'
+directory: 'now/out'
 
 # (required) Amount of fuzz ImageMagick will use when comparing images. A higher fuzz makes the comparison less strict.
 fuzz: '20%'
