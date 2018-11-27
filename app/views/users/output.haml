@@ -1,9 +1,13 @@
-.content-header Your Daily Ouput: #{@total} words
+.content-header
+  Your Daily Ouput: #{@total} words
+  = link_to '#' do
+    %button.float-right#select-output Copy All
 .sub= render partial: 'reports/date_nav'
-.even
+.even#copy-output
   - @posts.each do |post|
     %p= sanitize_written_content(post).html_safe
   - @replies.each do |r|
     %p= sanitize_written_content(r).html_safe
   - if @posts.empty? && @replies.empty?
     .centered — Nothing written today —
+= text_area_tag :_hiddenCopyText_, nil

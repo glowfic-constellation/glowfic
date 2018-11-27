@@ -377,3 +377,14 @@ td, .table-list li { font-size: $font_size_small; }
   a:hover { color: $font_color_header_link_hover; }
   div { padding: 5px; padding-left: 20px; }
 }
+
+/*
+Styles for the user output page to handle copy/pasting text
+The copy box can't be invisible/hidden or copy fails but opacity works
+*/
+#select-output {
+  margin: 0px;
+  font-weight: bold;
+  height: 20px;
+}
+#_hiddenCopyText_ { height: 0px; width: 0px; opacity: 0; padding: 0px; margin: 0px; }

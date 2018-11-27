@@ -109,6 +109,7 @@ class UsersController < ApplicationController
 
   def output
     flash.now[:error] = 'Please note that this page does not include edit history.'
+    use_javascript('users/output')
 
     @day = calculate_day
     daystart = ActiveRecord::Base.connection.quote(@day.beginning_of_day)
