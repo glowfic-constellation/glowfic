@@ -27,11 +27,10 @@
 tmux-client-*
 tmux-server-*
 
-# Ignore simplecov reports; generate locally as desired.
+# Ignore test files
 coverage/*
-
-# Ignore rspec persistence file
 spec/examples.txt
+wraith/now/*
 
 # Ignore DB backups
 /db/backups/*
