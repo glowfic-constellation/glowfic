@@ -15,7 +15,7 @@ class Api::V1::CharactersController < Api::ApiController
   error 403, "Post is not visible to the user"
   error 422, "Invalid parameters provided"
   def index
-    queryset = Character.where("name LIKE ?", params[:q].to_s + '%').ordered
+    queryset = Character.with_name(params[:q].to_s).ordered
     if @post
       char_ids = @post.replies.select(:character_id).distinct.pluck(:character_id) + [@post.character_id]
       queryset = queryset.where(id: char_ids)

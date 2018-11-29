@@ -45,6 +45,46 @@ RSpec.describe Api::V1::CharactersController do
         expect(response.json).to have_key('results')
         expect(response.json['results']).to contain_exactly(char.as_json(include: [:selector_name]).stringify_keys)
       end
+
+      it "matches lowercase" do
+        char = create(:character, name: 'Upcase')
+        get :index, params: { q: 'upcase' }
+        expect(response).to have_http_status(200)
+        expect(response.json).to have_key('results')
+        expect(response.json['results']).to contain_exactly(char.as_json(include: [:selector_name]).stringify_keys)
+      end
+
+      it "matches uppercase" do
+        char = create(:character, name: 'downcase')
+        get :index, params: { q: 'DOWNcase' }
+        expect(response).to have_http_status(200)
+        expect(response.json).to have_key('results')
+        expect(response.json['results']).to contain_exactly(char.as_json(include: [:selector_name]).stringify_keys)
+      end
+
+      it "matches nickname" do
+        char = create(:character, name: 'a', template_name: 'b', screenname: 'c')
+        get :index, params: { q: 'b' }
+        expect(response).to have_http_status(200)
+        expect(response.json).to have_key('results')
+        expect(response.json['results']).to contain_exactly(char.as_json(include: [:selector_name]).stringify_keys)
+      end
+
+      it "matches screenname" do
+        char = create(:character, name: 'a', template_name: 'b', screenname: 'c')
+        get :index, params: { q: 'c' }
+        expect(response).to have_http_status(200)
+        expect(response.json).to have_key('results')
+        expect(response.json['results']).to contain_exactly(char.as_json(include: [:selector_name]).stringify_keys)
+      end
+
+      it "matches midword" do
+        char = create(:character, name: 'abcdefg')
+        get :index, params: { q: 'cde' }
+        expect(response).to have_http_status(200)
+        expect(response.json).to have_key('results')
+        expect(response.json['results']).to contain_exactly(char.as_json(include: [:selector_name]).stringify_keys)
+      end
     end
 
     context "when logged in" do
