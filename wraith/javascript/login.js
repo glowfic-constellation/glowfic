@@ -1,15 +1,19 @@
 module.exports = function (casper, ready) {
-  url = casper.getCurrentUrl()
+  casper.options.verbose = true;
+  casper.options.logLevel = "debug"
+
   if (casper.exists("#header-form")) {
     casper.fill ( '#header-forms', {
-      'username' : "Throne3d"
-      'password' : "throne3d"
+      'username': 'Throne3d',
+      'password': 'throne3d'
     });
 
     casper.click('#nav-top #header-form input.button');
-  }
 
-  casper.thenOpen(url);
+    casper.wait(10000);
+
+    casper.thenOpen(casper.page.url);
+  }
 
   ready();
 }
