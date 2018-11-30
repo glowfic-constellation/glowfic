@@ -16,7 +16,7 @@ RSpec.describe GenerateFlatPostJob do
   end
 
   it "deletes key when retry gives up" do
-    exc = Exception.new
+    exc = StandardError.new
     $redis.set(GenerateFlatPostJob.lock_key(2), true)
     GenerateFlatPostJob.notify_exception(exc, 2)
     expect($redis.get(GenerateFlatPostJob.lock_key(2))).to be_nil
@@ -36,14 +36,14 @@ RSpec.describe GenerateFlatPostJob do
     post = create(:post)
     $redis.set(GenerateFlatPostJob.lock_key(post.id), true)
 
-    exc = Exception
+    exc = StandardError
     expect_any_instance_of(FlatPost).to receive(:save!).and_raise(exc)
     expect(ApplicationJob).to receive(:notify_exception).with(exc, post.id).and_call_original
     clear_enqueued_jobs
 
     begin
       GenerateFlatPostJob.perform_now(post.id)
-    rescue Exception
+    rescue StandardError
     else
       raise "Error should be handled"
     end

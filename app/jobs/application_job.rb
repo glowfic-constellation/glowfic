@@ -12,7 +12,7 @@ class ApplicationJob < ActiveJob::Base
 
   def notify_exception
     yield
-  rescue Exception => e
+  rescue => e
     self.class.notify_exception(e, *arguments)
     raise e
   end
