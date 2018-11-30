@@ -40,6 +40,11 @@ services:
     image: postgres:11-alpine
     volumes:
       - postgres-data:/var/lib/postgresql/data
+  wraith:
+    image: bbcnews/wraith
+    working_dir: /wraithy
+    volumes:
+      - "./wraith/:/wraithy"
 
 volumes:
   bundler-volume:
