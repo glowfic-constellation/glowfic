@@ -42,7 +42,7 @@ class GalleriesController < UploadingController
       flash.now[:error] = "Your gallery could not be saved."
       @page_title = 'New Gallery'
       setup_editor
-      render :action => :new and return
+      render :new and return
     end
 
     flash[:success] = "Gallery saved successfully."
@@ -110,7 +110,7 @@ class GalleriesController < UploadingController
       use_javascript('galleries/edit')
       setup_editor
       set_s3_url
-      render action: :edit
+      render :edit
     end
   end
 
@@ -135,7 +135,7 @@ class GalleriesController < UploadingController
     icons = (params[:icons] || []).reject { |icon| icon.values.all?(&:blank?) }
     if icons.empty?
       flash.now[:error] = "You have to enter something."
-      render :action => :add and return
+      render :add and return
     end
 
     failed = false
@@ -156,11 +156,11 @@ class GalleriesController < UploadingController
 
     if failed
       flash.now[:error][:message] = "Your icons could not be saved."
-      render :action => :add and return
+      render :add and return
     elsif icons.empty?
       @icons = []
       flash.now[:error] = "Your icons could not be saved."
-      render :action => :add
+      render :add
     elsif icons.all?(&:save)
       flash[:success] = "Icons saved successfully."
       if @gallery
@@ -170,7 +170,7 @@ class GalleriesController < UploadingController
       redirect_to user_gallery_path(id: 0, user_id: current_user.id)
     else
       flash.now[:error] = "Your icons could not be saved."
-      render :action => :add
+      render :add
     end
   end
 

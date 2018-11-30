@@ -34,14 +34,14 @@ class UsersController < ApplicationController
     unless params[:tos].present?
       signup_prep
       flash.now[:error] = "You must accept the Terms and Conditions to use the Constellation."
-      render action: :new and return
+      render :new and return
     end
     @user.tos_version = User::CURRENT_TOS_VERSION
 
     if params[:secret] != "ALLHAILTHECOIN"
       signup_prep
       flash.now[:error] = "This is in beta. Please ask someone in the community for the (not very) secret beta code."
-      render :action => :new and return
+      render :new and return
     end
 
     unless @user.save
@@ -49,7 +49,7 @@ class UsersController < ApplicationController
       flash.now[:error] = {}
       flash.now[:error][:message] = "There was a problem completing your sign up."
       flash.now[:error][:array] = @user.errors.full_messages
-      render :action => :new and return
+      render :new and return
     end
 
     flash[:success] = "User created! You have been logged in."
@@ -73,7 +73,7 @@ class UsersController < ApplicationController
       flash.now[:error][:array] = current_user.errors.full_messages
       use_javascript('users/edit')
       @page_title = 'Edit Account'
-      render action: :edit and return
+      render :edit and return
     end
 
     flash[:success] = "Changes saved successfully."
@@ -84,7 +84,7 @@ class UsersController < ApplicationController
     unless current_user.authenticate(params[:old_password])
       flash.now[:error] = "Incorrect password entered."
       @page_title = 'Edit Account'
-      render action: :edit and return
+      render :edit and return
     end
 
     current_user.validate_password = true
@@ -96,7 +96,7 @@ class UsersController < ApplicationController
       flash.now[:error][:message] = "There was a problem with your changes."
       flash.now[:error][:array] = current_user.errors.full_messages
       @page_title = 'Edit Account'
-      render action: :edit
+      render :edit
     end
   end
 

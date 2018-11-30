@@ -57,7 +57,7 @@ class TagsController < ApplicationController
       flash.now[:error][:array] = @tag.errors.full_messages
       @page_title = "Edit Tag: #{@tag.name}"
       build_editor
-      render action: :edit and return
+      render :edit and return
     end
   end
 

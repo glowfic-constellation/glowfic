@@ -47,7 +47,7 @@ class CharactersController < ApplicationController
     flash.now[:error][:message] = "Your character could not be saved."
     flash.now[:error][:array] = @character.errors.full_messages
     build_editor
-    render action: :new
+    render :new
   end
 
   def show
@@ -68,7 +68,7 @@ class CharactersController < ApplicationController
     if current_user.id != @character.user_id && params.fetch(:character, {})[:audit_comment].blank?
       flash[:error] = "You must provide a reason for your moderator edit."
       build_editor
-      render action: :edit and return
+      render :edit and return
     end
     # @character.audit_comment = nil if @character.changes.empty?
 
@@ -86,26 +86,27 @@ class CharactersController < ApplicationController
       flash.now[:error][:message] = "Your character could not be saved."
       flash.now[:error][:array] = @character.errors.full_messages
       build_editor
-      render :action => :edit
+      render :edit
     end
   end
 
   def duplicate
+    dupe = @character.dup
+
     Character.transaction do
-      @dup = @character.dup
-      @dup.gallery_groups = @character.gallery_groups
-      @dup.settings = @character.settings
-      @dup.ungrouped_gallery_ids = @character.ungrouped_gallery_ids
+      dupe.gallery_groups = @character.gallery_groups
+      dupe.settings = @character.settings
+      dupe.ungrouped_gallery_ids = @character.ungrouped_gallery_ids
       @character.aliases.find_each do |calias|
         dupalias = calias.dup
-        @dup.aliases << dupalias
-        dupalias.save
+        dupe.aliases << dupalias
+        dupalias.save!
       end
-      @dup.save
+      dupe.save!
     end
 
     flash[:success] = "Character duplicated successfully. You are now editing the new character."
-    redirect_to edit_character_path(@dup)
+    redirect_to edit_character_path(dupe)
   end
 
   def destroy

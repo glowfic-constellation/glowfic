@@ -49,7 +49,7 @@ class BoardsController < ApplicationController
     flash.now[:error][:array] = @board.errors.full_messages
     @page_title = 'New Continuity'
     set_available_cowriters
-    render :action => :new
+    render :new
   end
 
   def show
@@ -86,7 +86,7 @@ class BoardsController < ApplicationController
       set_available_cowriters
       use_javascript('board_sections')
       @board_sections = @board.board_sections.ordered
-      render :action => :edit
+      render :edit
     end
   end
 

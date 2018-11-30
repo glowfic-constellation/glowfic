@@ -27,7 +27,7 @@ class IndexesController < ApplicationController
     flash.now[:error][:message] = "Index could not be created."
     flash.now[:error][:array] = @index.errors.full_messages
     @page_title = 'New Index'
-    render :action => :new
+    render :new
   end
 
   def show
@@ -53,7 +53,7 @@ class IndexesController < ApplicationController
       flash.now[:error][:message] = "Index could not be saved because of the following problems:"
       flash.now[:error][:array] = @index.errors.full_messages
       @page_title = "Edit Index: #{@index.name}"
-      render action: :edit and return
+      render :edit and return
     end
 
     flash[:success] = "Index saved!"

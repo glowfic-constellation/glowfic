@@ -36,7 +36,7 @@ class IndexSectionsController < ApplicationController
     flash.now[:error][:message] = "Index section could not be created."
     flash.now[:error][:array] = @section.errors.full_messages
     @page_title = 'New Index Section'
-    render :action => :new
+    render :new
   end
 
   def show
@@ -53,7 +53,7 @@ class IndexSectionsController < ApplicationController
       flash.now[:error][:message] = "Index section could not be saved because of the following problems:"
       flash.now[:error][:array] = @section.errors.full_messages
       @page_title = "Edit Index Section: #{@section.name}"
-      render action: :edit and return
+      render :edit and return
     end
 
     flash[:success] = "Index section saved!"

@@ -31,7 +31,7 @@ class BlocksController < ApplicationController
       editor_setup
       @users = [@block.blocked_user].compact
       @page_title = 'Block User'
-      render :action => :new
+      render :new
     end
   end
 
@@ -49,7 +49,7 @@ class BlocksController < ApplicationController
       flash.now[:error][:array] = @block.errors.full_messages
       editor_setup
       @page_title = 'Edit Block: ' + @block.blocked_user.username
-      render :action => :edit
+      render :edit
     end
   end
 

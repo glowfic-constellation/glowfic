@@ -20,7 +20,7 @@ class TemplatesController < ApplicationController
       flash.now[:error] = "Your template could not be saved."
       editor_setup
       @page_title = "New Template"
-      render :action => :new
+      render :new
     end
   end
 
@@ -43,7 +43,7 @@ class TemplatesController < ApplicationController
       flash.now[:error] = "Your template could not be saved."
       editor_setup
       @page_title = 'Edit Template: ' + @template.name_was
-      render :action => :edit and return
+      render :edit and return
     end
 
     flash[:success] = "Template saved successfully."
