@@ -34,7 +34,7 @@ class MessagesController < ApplicationController
       @messages = Message.where(thread_id: @message.thread_id).ordered_by_id if @message.thread_id
       editor_setup
       @page_title = 'Compose Message'
-      render action: :preview and return
+      render :preview and return
     end
 
     if flash.now[:error].nil? && @message.save
@@ -49,7 +49,7 @@ class MessagesController < ApplicationController
     flash.now[:error][:message] = "Your message could not be sent because of the following problems:"
     editor_setup
     @page_title = 'Compose Message'
-    render action: :new
+    render :new
   end
 
   def show

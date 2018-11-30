@@ -68,7 +68,7 @@ class IconsController < UploadingController
       use_javascript('galleries/update_existing')
       use_javascript('galleries/uploader')
       set_s3_url
-      render action: :edit and return
+      render :edit and return
     end
 
     flash[:success] = "Icon updated."

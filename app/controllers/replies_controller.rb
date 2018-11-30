@@ -168,7 +168,7 @@ class RepliesController < WritableController
     if current_user.id != @reply.user_id && @reply.audit_comment.blank?
       flash[:error] = "You must provide a reason for your moderator edit."
       editor_setup
-      render action: :edit and return
+      render :edit and return
     end
 
     @reply.audit_comment = nil if @reply.changes.empty? # don't save an audit for a note and no changes
@@ -177,7 +177,7 @@ class RepliesController < WritableController
       flash[:error][:message] = "Your reply could not be saved because of the following problems:"
       flash[:error][:array] = @reply.errors.full_messages
       editor_setup
-      render action: :edit and return
+      render :edit and return
     end
 
     flash[:success] = "Post updated"
@@ -240,7 +240,7 @@ class RepliesController < WritableController
     @page_title = @post.subject
 
     editor_setup
-    render action: :preview
+    render :preview
   end
 
   def reply_params

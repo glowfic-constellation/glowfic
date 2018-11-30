@@ -24,7 +24,7 @@ class BoardSectionsController < ApplicationController
       flash.now[:error][:message] = "Section could not be created."
       flash.now[:error][:array] = @board_section.errors.full_messages
       @page_title = 'New Section'
-      render action: :new
+      render :new
     end
   end
 
@@ -53,7 +53,7 @@ class BoardSectionsController < ApplicationController
       @page_title = 'Edit ' + @board_section.name_was
       use_javascript('board_sections')
       gon.section_id = @board_section.id
-      render action: :edit
+      render :edit
     end
   end
 

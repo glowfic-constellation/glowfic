@@ -18,7 +18,7 @@ class AliasesController < ApplicationController
       flash.now[:error][:message] = "Alias could not be created."
       flash.now[:error][:array] = @alias.errors.full_messages
       @page_title = "New Alias: " + @character.name
-      render action: :new and return
+      render :new and return
     end
 
     flash[:success] = "Alias created."

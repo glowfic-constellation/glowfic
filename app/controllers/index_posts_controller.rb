@@ -36,7 +36,7 @@ class IndexPostsController < ApplicationController
     flash.now[:error][:array] = @index_post.errors.full_messages
     @page_title = 'Add Posts to Index'
     use_javascript('posts/index_post_new')
-    render :action => :new
+    render :new
   end
 
   def destroy

@@ -1174,16 +1174,15 @@ RSpec.describe CharactersController do
         [Template.count, Gallery.count, Icon.count, Reply.count, Post.count, Tag.count]
       }.and change { Character.count }.by(1).and change { CharactersGallery.count }.by(3).and change { CharacterTag.count }.by(2)
 
-      dup = assigns(:dup)
-      dup.reload
+      dupe = Character.last
       character.reload
-      expect(response).to redirect_to(edit_character_url(dup))
+      expect(response).to redirect_to(edit_character_url(dupe))
       expect(flash[:success]).to eq('Character duplicated successfully. You are now editing the new character.')
 
-      expect(dup).not_to eq(character)
+      expect(dupe).not_to eq(character)
 
       # check all attrs but id, created_at and updated_at are same
-      dup_attrs = dup.attributes.clone
+      dup_attrs = dupe.attributes.clone
       char_attrs = character.attributes.clone
       ['id', 'created_at', 'updated_at'].each do |val|
         dup_attrs.delete(val)
@@ -1201,13 +1200,13 @@ RSpec.describe CharactersController do
       expect(character.aliases.map(&:name)).to eq([calias.name])
 
       # check duplicate has appropriate associations
-      expect(dup.template).to eq(template)
-      expect(dup.galleries).to match_array([gallery, gallery2, gallery3])
-      expect(dup.ungrouped_gallery_ids).to match_array([gallery.id, gallery2.id])
-      expect(dup.gallery_groups).to match_array([group])
-      expect(dup.default_icon).to eq(icon)
-      expect(dup.user).to eq(user)
-      expect(dup.aliases.map(&:name)).to eq([calias.name])
+      expect(dupe.template).to eq(template)
+      expect(dupe.galleries).to match_array([gallery, gallery2, gallery3])
+      expect(dupe.ungrouped_gallery_ids).to match_array([gallery.id, gallery2.id])
+      expect(dupe.gallery_groups).to match_array([group])
+      expect(dupe.default_icon).to eq(icon)
+      expect(dupe.user).to eq(user)
+      expect(dupe.aliases.map(&:name)).to eq([calias.name])
 
       # check old posts and replies have old attributes
       char_post.reload

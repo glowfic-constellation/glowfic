@@ -110,11 +110,10 @@ class PostsController < WritableController
     import_thread and return if params[:button_import].present?
     preview and return if params[:button_preview].present?
 
-    @post = Post.new(post_params)
+    @post = current_user.posts.new(post_params)
     @post.settings = process_tags(Setting, :post, :setting_ids)
     @post.content_warnings = process_tags(ContentWarning, :post, :content_warning_ids)
     @post.labels = process_tags(Label, :post, :label_ids)
-    @post.user = current_user
 
     unless @post.save
       flash.now[:error] = {}
@@ -122,7 +121,7 @@ class PostsController < WritableController
       flash.now[:error][:message] = "Your post could not be saved because of the following problems:"
       editor_setup
       @page_title = 'New Post'
-      render :action => :new and return
+      render :new and return
     end
 
     flash[:success] = "You have successfully posted."
@@ -130,7 +129,7 @@ class PostsController < WritableController
   end
 
   def show
-    render action: :flat, layout: false and return if params[:view] == 'flat'
+    render :flat, layout: false and return if params[:view] == 'flat'
     show_post
   end
 
@@ -163,7 +162,7 @@ class PostsController < WritableController
     if current_user.id != @post.user_id && @post.audit_comment.blank? && !@post.author_ids.include?(current_user.id)
       flash[:error] = "You must provide a reason for your moderator edit."
       editor_setup
-      render action: :edit and return
+      render :edit and return
     end
     @post.audit_comment = nil if @post.changes.empty? # don't save an audit for a note and no changes
 
@@ -182,7 +181,7 @@ class PostsController < WritableController
       flash.now[:error][:array] = @post.errors.full_messages
       flash.now[:error][:message] = "Your post could not be saved because of the following problems:"
       editor_setup
-      render :action => :edit
+      render :edit
     end
   end
 
@@ -273,7 +272,7 @@ class PostsController < WritableController
     @written = @post
     editor_setup
     @page_title = 'Previewing: ' + @post.subject.to_s
-    render action: :preview
+    render :preview
   end
 
   def mark_unread
@@ -354,7 +353,7 @@ class PostsController < WritableController
     flash.now[:error] = e.api_error
     params[:view] = 'import'
     editor_setup
-    render action: :new
+    render :new
   end
 
   def find_post
