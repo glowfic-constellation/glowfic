@@ -45,6 +45,8 @@ services:
     working_dir: /wraithy
     volumes:
       - "./wraith/:/wraithy"
+    depends_on:
+      - web
 
 volumes:
   bundler-volume:
