@@ -6,7 +6,7 @@
 .content-header
   %span= @page_title
 
-= render partial: 'single', collection: @messages, as: :message
+= render @messages
 %br
 - unless @message.parent.site_message?
-  = render partial: 'editor'
+  = render 'editor'

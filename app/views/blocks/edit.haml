@@ -2,4 +2,4 @@
   %table.form-table
     %tr
       %th.centered{colspan: 2} Edit Block
-    = render partial: 'editor', locals: {f: f, blocked_user: @block.blocked_user}
+    = render 'editor', f: f, blocked_user: @block.blocked_user

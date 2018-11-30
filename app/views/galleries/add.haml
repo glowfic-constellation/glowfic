@@ -1,4 +1,4 @@
-- if @gallery && params[:type] == "existing"
-  = render partial: "add_existing"
+- if @gallery && params[:type] == 'existing'
+  = render 'add_existing'
 - else
-  = render partial: "add_new"
+  = render 'add_new'

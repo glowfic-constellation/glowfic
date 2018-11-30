@@ -4,8 +4,8 @@
   %b New
 
 
-= form_for @index, url: indexes_path, method: :post do |f|
+= form_for @index do |f|
   %table.form-table
     %tr
       %th.centered{colspan: 2} Create Index
-    = render partial: 'editor', locals: {f: f}
+    = render 'editor', f: f

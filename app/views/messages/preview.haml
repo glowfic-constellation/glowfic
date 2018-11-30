@@ -12,7 +12,7 @@
 .content-header
   %span= @message.unempty_subject
 - if @messages.present?
-  = render partial: 'single', collection: @messages, as: :message, locals: {all_collapse: true}
-= render partial: 'single', locals: { message: @message }
+  = render @messages, all_collapse: true
+= render @message
 %br
-= render partial: 'editor'
+= render 'editor'
