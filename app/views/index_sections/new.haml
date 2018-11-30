@@ -10,4 +10,4 @@
   %table.form-table
     %tr
       %th.centered{colspan: 2}= "Create #{@index.try(:name)} Section"
-    = render partial: 'editor', locals: {f: f}
+    = render 'editor', f: f

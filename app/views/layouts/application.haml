@@ -137,7 +137,7 @@
               &ndash;
               = link_to message.unempty_subject, message_path(message)
       - unless logged_in? || tos_skippable?
-        #tos.hidden= render partial: 'about/accept_tos'
+        #tos.hidden= render 'about/accept_tos'
       #content
         = yield
         .clear &nbsp;

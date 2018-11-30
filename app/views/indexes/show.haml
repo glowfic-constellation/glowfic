@@ -25,7 +25,7 @@
       %tr
         %td.odd.written-content{colspan: 6}= sanitize_written_content(@index.description).html_safe
   %tbody
-    = render partial: 'index_sections/single', collection:@index.index_sections.ordered, as: :section
+    = render partial: 'index_sections/single', collection: @index.index_sections.ordered, as: :section
     - if @sectionless.present?
       %tr
         %td.continuity-spacer{colspan: 6}

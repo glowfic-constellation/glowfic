@@ -2,4 +2,4 @@
   %table.form-table
     %tr
       %th.centered{colspan: 2}= "Create #{@board_section&.board&.name} Section"
-    = render partial: 'editor', locals: {f: f}
+    = render 'editor', f: f

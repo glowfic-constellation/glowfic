@@ -15,11 +15,11 @@
       .link-box.action-edit
         = image_tag "icons/pencil.png"
         Edit
-    = link_to board_section_path(@board_section), :method => :delete, data: { confirm: 'Are you sure you want to delete this section?' } do
+    = link_to board_section_path(@board_section), method: :delete, data: { confirm: 'Are you sure you want to delete this section?' } do
       .link-box.action-delete x Delete
 
 - if @board_section.description.present?
   - content_for :post_list_description do
     = sanitize_post_description(@board_section.description).html_safe
 
-= render partial: 'posts/list', locals: {posts: @posts, hide_continuity: true}
+= render 'posts/list', posts: @posts, hide_continuity: true
