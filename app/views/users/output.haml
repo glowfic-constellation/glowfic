@@ -10,4 +10,3 @@
     %p= sanitize_written_content(r).html_safe
   - if @posts.empty? && @replies.empty?
     .centered — Nothing written today —
-= text_area_tag :_hiddenCopyText_, nil

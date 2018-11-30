@@ -8,7 +8,8 @@ $(document).ready(function() {
 function copyToClipboard(elem) {
     // set up content in hidden textarea
     var currentFocus = document.activeElement;
-    var target = document.getElementById("_hiddenCopyText_");
+    var inserted = $("<textarea id='_hiddenCopyText_'>").insertAfter(elem);
+    var target = inserted[0]; // must be DOM not JQuery object for select range functions
     target.textContent = $.trim(elem.text());
     var end = target.value.length;
 
@@ -22,6 +23,7 @@ function copyToClipboard(elem) {
         document.execCommand("copy");
     } catch(e) {}
 
-    // restore original focus
+    // clean up page
     if (currentFocus && typeof currentFocus.focus === "function") { currentFocus.focus(); }
+    inserted.remove();
 }
