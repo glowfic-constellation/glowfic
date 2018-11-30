@@ -10,6 +10,7 @@ end
 RSpec.describe ApplicationJob do
   include ActiveJob::TestHelper
   before(:each) { clear_enqueued_jobs }
+
   it "retries on sigterm" do
     exception = Resque::TermException.new(15)
     expect_any_instance_of(StubJob).to receive(:perform).and_raise(exception)
@@ -24,7 +25,7 @@ RSpec.describe ApplicationJob do
   end
 
   it "sends email when retry gives up" do
-    exc = Exception.new
+    exc = StandardError.new
     expect(StubJob).to receive(:notify_exception).with(exc, 2, :test).and_call_original
     expect(ExceptionNotifier).to receive(:notify_exception).with(exc, data: {job: StubJob.name, args: [2, :test]})
 
