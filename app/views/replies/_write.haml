@@ -27,6 +27,6 @@
       - if reply.new_record?
         = submit_tag "Save Draft", class: 'button', id: 'draft_button', data: { disable_with: 'Drafting...' }, name: 'button_draft'
     %br
-    = render partial: 'posts/editor_help'
+    = render 'posts/editor_help'
 
-= render partial: 'posts/editor', locals: {item: reply}
+= render 'posts/editor', item: reply

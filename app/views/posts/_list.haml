@@ -35,4 +35,4 @@
   - if posts.methods.include?(:total_pages) && posts.total_pages > 1
     %tfoot
       %tr
-        %td{colspan: col_count}= render partial: 'posts/paginator', locals: { paginated: posts }
+        %td{colspan: col_count}= render 'posts/paginator',  paginated: posts

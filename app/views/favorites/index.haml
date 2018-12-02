@@ -33,4 +33,4 @@
           %td.centered.no-posts{class: 'odd', colspan: 2} — No favorites yet —
 
 - else
-  = render partial: 'posts/list', locals: {posts: @posts, show_unread_count: true}
+  = render 'posts/list', posts: @posts, show_unread_count: true

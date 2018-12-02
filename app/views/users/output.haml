@@ -2,7 +2,7 @@
   Your Daily Ouput: #{@total} words
   = link_to '#' do
     %button.float-right#select-output Copy All
-.sub= render partial: 'reports/date_nav'
+.sub= render 'reports/date_nav'
 .even#copy-output
   - @posts.each do |post|
     %p= sanitize_written_content(post).html_safe

@@ -4,9 +4,9 @@
   - template_ids = characters.group(:template_id).pluck(:template_id).uniq.compact
   - templates = ::Template.where(id: template_ids).ordered.each do |template|
     - next if skip_grouped_templates && template.characters.where('character_group_id is not null').exists?
-    = render partial: partial_type, locals: {name: template, characters: template.characters.ordered}
+    = render partial_type, name: template, characters: template.characters.ordered
   - if characters.where(template_id: nil).exists?
-    = render partial: partial_type, locals: {name: 'No Template', characters: characters.where(template_id: nil).ordered, show_new_character_button: @user.id == current_user&.id}
+    = render partial_type, name: 'No Template', characters: characters.where(template_id: nil).ordered, show_new_character_button: @user.id == current_user&.id
 - else
   %tr
     %td.centered.padding-5{class: cycle('even', 'odd'), colspan: 6} — No characters yet —

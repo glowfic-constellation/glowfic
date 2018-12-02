@@ -11,7 +11,7 @@
   %table.form-table
     %tr
       %th.centered{colspan: 2}= "Edit #{@board_section.name}"
-    = render partial: 'editor', locals: {f: f}
+    = render 'editor', f: f
 
 - if @board_section.posts.present?
   %br

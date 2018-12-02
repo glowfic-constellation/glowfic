@@ -9,7 +9,7 @@
         - if @day == Date.today
           %em (Incomplete)
     %tr
-      %th.sub{colspan: 7}= render partial: 'date_nav'
+      %th.sub{colspan: 7}= render 'date_nav'
   - posts = DailyReport.new(@day).posts(sort, page, per_page)
   - if posts.present?
     %tbody
@@ -64,7 +64,7 @@
           %td.vtop.centered.post-time{class: klass}= linked.created_at.strftime("%l:%M %p")
     %tfoot
       %tr
-        %td{colspan: 7}= render partial: 'posts/paginator', locals: {paginated: posts}
+        %td{colspan: 7}= render 'posts/paginator', paginated: posts
   - else
     %tr
       %td.centered.even{colspan: 7} — No posts yet —
