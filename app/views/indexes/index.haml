@@ -26,4 +26,4 @@
   - if @indexes.total_pages > 1
     %tfoot
       %tr
-        %td{colspan: 6}= render partial: 'posts/paginator', locals: { paginated: @indexes }
+        %td{colspan: 6}= render 'posts/paginator', paginated: @indexes

@@ -22,4 +22,4 @@
   - if @users.total_pages > 1
     %tfoot
       %tr
-        %td{colspan: 3}= render partial: 'posts/paginator', locals: { paginated: @users }
+        %td{colspan: 3}= render 'posts/paginator', paginated: @users

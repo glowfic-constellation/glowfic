@@ -11,7 +11,7 @@
         Hidden &raquo;
 
 = form_tag mark_posts_path do
-  = render partial: 'posts/list', locals: {posts: @posts, check_box_name: 'marked_ids[]'}
+  = render 'posts/list', posts: @posts, check_box_name: 'marked_ids[]'
   - unless @posts.empty?
     %table
       %tr

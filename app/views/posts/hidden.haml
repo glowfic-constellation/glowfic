@@ -28,4 +28,4 @@
       - if @hidden_posts.methods.include?(:total_pages) && @hidden_posts.total_pages > 1
         %tfoot
           %tr
-            %td{colspan: 7}= render partial: 'posts/paginator', locals: { paginated: @hidden_posts }
+            %td{colspan: 7}= render 'posts/paginator',  paginated: @hidden_posts

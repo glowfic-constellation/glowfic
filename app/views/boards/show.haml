@@ -59,4 +59,4 @@
   - if @board.description.present?
     - content_for :post_list_description do
       = sanitize_written_content(@board.description).html_safe
-  = render partial: 'posts/list', locals: {posts: @posts, hide_continuity: true}
+  = render 'posts/list', posts: @posts, hide_continuity: true

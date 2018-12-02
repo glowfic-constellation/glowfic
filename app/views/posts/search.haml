@@ -1,4 +1,4 @@
-= render partial: 'search/breadcrumbs'
+= render 'search/breadcrumbs'
 
 %table.search-collapsible
   %thead
@@ -9,7 +9,7 @@
           = '- ' + @search_results.total_entries.to_s + ' results'
       %th
         - if @search_results
-          = render partial: 'paginator', locals: {paginated: @search_results}
+          = render 'paginator', paginated: @search_results
   %tbody
     %tr
       %td.search-box
@@ -56,4 +56,4 @@
     %tfoot
       %tr
         %th.width-150.empty
-        %th= render partial: 'paginator', locals: {paginated: @search_results}
+        %th= render 'paginator', paginated: @search_results

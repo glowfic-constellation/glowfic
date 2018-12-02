@@ -85,7 +85,7 @@
 - elsif params[:view] == 'posts'
   - content_for :posts_title do
     Posts Containing Icon
-  = render partial: 'posts/list', locals: {posts: @posts, table_class: 'icon-right-content-box'}
+  = render 'posts/list', posts: @posts, table_class: 'icon-right-content-box'
 - else
   - posts_using = Post.where(icon_id: @icon.id)
   - replies_using = Reply.where(icon_id: @icon.id)

@@ -1,7 +1,7 @@
 = form_tag mark_messages_path, method: :post do
   %table
     %thead
-      = render partial: @view.dup
+      = render @view
     %tbody
       - if @messages.empty?
         %tr
@@ -37,4 +37,4 @@
     - if @messages.total_pages > 1
       %tfoot
         %tr
-          %td{colspan: 5}= render partial: 'posts/paginator', locals: { paginated: @messages }
+          %td{colspan: 5}= render 'posts/paginator',  paginated: @messages
