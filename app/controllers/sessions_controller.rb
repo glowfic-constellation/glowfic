@@ -49,6 +49,7 @@ class SessionsController < ApplicationController
   private
 
   def cookie_hash(value)
+    return {value: value, domain: 'glowfic-staging.herokuapp.com'} if request.host.include?('staging')
     return {value: value, domain: '.glowfic.com', tld_length: 2} if Rails.env.production?
     {value: value}
   end

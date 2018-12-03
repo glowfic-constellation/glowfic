@@ -29,6 +29,7 @@ module Authentication
     end
 
     def cookie_delete_options
+      return {domain: 'glowfic-staging.herokuapp.com'} if request.host.include?('staging')
       return {domain: '.glowfic.com'} if Rails.env.production?
       {}
     end
