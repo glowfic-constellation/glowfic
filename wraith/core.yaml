@@ -3,7 +3,8 @@ browser: "casperjs"
 
 # The domain to take screenshots of.
 domains:
-  glowfic: "https://glowfic-staging.herokuapp.com"
+  glowfic: "http://web:3000" # Docker friendly
+  # glowfic: "http://localhost:3000" uncomment for local non-Docker environment
 
 # Screen widths (and optional height) to resize the browser to before taking the screenshot.
 screen_widths:
