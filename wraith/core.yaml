@@ -42,6 +42,9 @@ phantomjs_options: '--ssl-protocol=tlsv1'
 # values can lead to server connection issues. Set to around 1.5 the available CPU cores for best performance. Default: 8
 threads: 6
 
+# JavaScript file to execute before taking screenshot of every path.
+before_capture: 'javascript/login.js'
+
 # The paths to capture.
 paths:
   header:
