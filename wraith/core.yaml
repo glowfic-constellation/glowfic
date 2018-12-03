@@ -3,8 +3,8 @@ browser: "casperjs"
 
 # The domain to take screenshots of.
 domains:
-  glowfic: "http://web:3000" # Docker friendly
-  # glowfic: "http://localhost:3000" uncomment for local non-Docker environment
+  # glowfic: "http://web:3000" # Docker friendly
+  glowfic: "http://localhost:3000" # uncomment for local non-Docker environment
 
 # Screen widths (and optional height) to resize the browser to before taking the screenshot.
 screen_widths:
@@ -124,6 +124,7 @@ paths:
     before_capture: 'javascript/only-content.js'
   post_menu:
     path: /posts/1
+    before_capture: 'javascript/post-menu.js'
     selector: '[id=post-menu-box]'
   posts_search:
     path: /posts/search?character_id=165&author_id[]=3&author_id[]=2&subject=a&commit=Search
