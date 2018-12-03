@@ -49,7 +49,8 @@ paths:
     selector: '[id=header]'
   flash_error:
     path: /boards/-1
-    selector: '[class=flash]'
+    selector: '.flash'
+    before_capture: 'javascript/flash-error.js'
   home:
     path: /
     selector: '[id=content]'
@@ -58,7 +59,7 @@ paths:
     selector: '[id=footer]'
   breadcrumbs:
     path: /boards/1
-    selector: '[class=flash]'
+    selector: '.flash'
 
   boards:
     path: /boards
