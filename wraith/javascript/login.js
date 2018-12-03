@@ -7,7 +7,7 @@ module.exports = function (casper, ready) {
 
     casper.click('#nav-top #header-form input.button');
 
-    casper.wait(10000);
+    casper.wait(5000);
 
     casper.thenOpen(casper.page.url);
   }
