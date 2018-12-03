@@ -47,9 +47,9 @@ paths:
   header:
     path: /
     selector: '[id=header]'
-  #flash_error:
-  #  path: /posts/new
-  #  selector: '[class=flash]'
+  flash_error:
+    path: /boards/-1
+    selector: '[class=flash]'
   home:
     path: /
     selector: '[id=content]'
@@ -92,7 +92,7 @@ paths:
     path: /characters/27?view=posts
     selector: '[id=content]'
   characters_search:
-    path: /characters/search
+    path: /characters/search?author_id=1&name=a&search_name=true&search_screenname=true&search_nickname=true&commit=Search
     selector: '[id=content]'
   characters_facecasts:
     path: /characters/facecasts
@@ -126,11 +126,11 @@ paths:
     path: /posts/1
     selector: '[id=post-menu-box]'
   posts_search:
-    path: /posts/search
+    path: /posts/search?character_id=165&author_id[]=3&author_id[]=2&subject=a&commit=Search
     selector: '[id=content]'
 
   replies_search:
-    path: /replies/search
+    path: /replies/search?author_id=3&subj_content=a&sort=rank&condensed=on&commit=Search
     selector: '[id=content]'
 
   report_daily:
@@ -153,9 +153,9 @@ paths:
   template_list:
     path: /templates/11?view=list
     selector: '[id=content]'
-  templates_search:
-    path: /templates/search
-    selector: '[id=content]'
+  #templates_search:
+  #  path: /templates/search
+  #  selector: '[id=content]'
 
   users:
     path: /users
@@ -169,5 +169,5 @@ paths:
     path: /users/3/boards
     selector: '[id=content]'
   users_search:
-    path: /users/search
+    path: /users/search?username=a&commit=Search
     selector: '[id=content]'
