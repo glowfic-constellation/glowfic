@@ -1,4 +1,7 @@
 module.exports = function (casper, ready) {
+  casper.options.verbose = true;
+  casper.options.logLevel = "debug"
+
   if (casper.exists("#header-form")) {
     casper.fill ( '#header-forms', {
       'username': 'Throne3d',
@@ -7,9 +10,9 @@ module.exports = function (casper, ready) {
 
     casper.click('#nav-top #header-form input.button');
 
-    casper.wait(5000);
+    casper.wait(100);
 
-    casper.thenOpen(casper.page.url);
+    casper.thenOpen(casper.cli.get(0)); // redirect to original page
   }
 
   ready();

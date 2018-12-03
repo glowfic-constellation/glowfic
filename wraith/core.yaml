@@ -50,7 +50,7 @@ paths:
   flash_error:
     path: /boards/-1
     selector: '.flash'
-    before_capture: 'javascript/flash-error.js'
+    before_capture: 'javascript/login.js'
   home:
     path: /
     selector: '[id=content]'
