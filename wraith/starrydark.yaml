@@ -1,0 +1,10 @@
+imports: "core.yaml"
+
+# JavaScript file to execute before taking screenshot of every path.
+before_capture: 'javascript/login.js'
+
+# The directory that your base screenshots will be stored in.
+history_dir: 'then/starrydark'
+
+# The directory that your latest screenshots will be stored in
+directory: 'now/starrydark'
