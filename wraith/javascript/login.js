@@ -12,7 +12,9 @@ module.exports = function (casper, ready) {
 
     casper.wait(100);
 
-    casper.thenOpen(casper.cli.get(0)); // redirect to original page
+    if (casper.getCurrentUrl() != casper.cli.get(0)) {
+      casper.thenOpen(casper.cli.get(0)); // redirect to original page
+    }
   }
 
   ready();
