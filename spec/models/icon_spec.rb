@@ -154,6 +154,12 @@ RSpec.describe Icon do
       expect(icon.reload.url).to eq(asset_host + '/users%2F1%2Ficons%2Ffake_test.png')
     end
 
+    it "handles weird URL-less AWS edge case" do
+      ENV['ICON_HOST'] = asset_host
+      icon = build(:uploaded_icon, url: '')
+      expect(icon.save).to eq(false)
+    end
+
     it "updates the s3 domain to the asset host domain" do
       ENV['ICON_HOST'] = asset_host
       icon = build(:icon)
