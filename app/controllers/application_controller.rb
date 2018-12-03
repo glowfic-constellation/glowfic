@@ -119,6 +119,7 @@ class ApplicationController < ActionController::Base
     return true unless request.get?
     return true if params[:tos_check].present?
     return true if ['about', 'sessions'].include?(params[:controller])
+    return true if params[:controller] == 'users' && params[:action] == 'new'
 
     tos_version = logged_in? ? current_user.tos_version : cookies[:accepted_tos]
     tos_version.to_i >= User::CURRENT_TOS_VERSION
