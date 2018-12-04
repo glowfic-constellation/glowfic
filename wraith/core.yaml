@@ -90,7 +90,7 @@ paths:
     path: /characters/27
     selector: '[id=content]'
   character_new:
-    path: /character/new
+    path: /characters/new
     selector: '[id=content]'
   character_galleries:
     path: /characters/27?view=galleries
