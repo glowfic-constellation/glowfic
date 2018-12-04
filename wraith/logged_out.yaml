@@ -155,11 +155,8 @@ before_capture: 'javascript/accept_tos.js'
 
 # (required) Screen widths (and optional height) to resize the browser to before taking the screenshot.
 screen_widths:
-  - 320x740
-  - 600x768
-  - 768x1280
-  - 1024x600
-  - 1280x800
+  - 750x1334
+  - 1024x768
   - 1920x1080
 
 # (optional) Resize to each screen width (efficient), or reload at each screen width (costly). Default: 'reload'
