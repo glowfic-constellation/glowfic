@@ -1,0 +1,7 @@
+imports: "core.yaml"
+
+# The directory that your base screenshots will be stored in.
+history_dir: 'then/iconless'
+
+# The directory that your latest screenshots will be stored in
+directory: 'now/iconless'
