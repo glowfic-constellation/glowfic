@@ -72,7 +72,7 @@ paths:
     selector: '[id=content]'
   board_show_sections:
     path: /boards/1
-    before_capture: 'javascript/only-content.js'
+    selector: '[id=content]'
 
   characters_icon_split:
     path: /users/3/characters?character_split=none&view=icons
@@ -122,10 +122,10 @@ paths:
 
   posts:
     path: /posts
-    before_capture: 'javascript/only-content.js'
+    selector: '[id=content]'
   post_show:
     path: /posts/1
-    before_capture: 'javascript/only-content.js'
+    selector: '[id=content]'
   post_menu:
     path: /posts/1
     before_capture: 'javascript/post-menu.js'
