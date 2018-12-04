@@ -1,7 +1,4 @@
 module.exports = function (casper, ready) {
-  casper.options.verbose = true;
-  casper.options.logLevel = "debug"
-
   if (casper.exists("#header-form")) {
     casper.fill ( '#header-forms', {
       'username': 'Throne3d',
