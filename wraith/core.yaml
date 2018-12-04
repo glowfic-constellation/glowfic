@@ -43,7 +43,7 @@ phantomjs_options: '--ssl-protocol=tlsv1'
 threads: 6
 
 # JavaScript file to execute before taking screenshot of every path.
-before_capture: 'javascript/login.js'
+before_capture: 'wraith/javascript/login.js'
 
 # The paths to capture.
 paths:
@@ -53,7 +53,7 @@ paths:
   flash_error:
     path: /boards/-1
     selector: '.flash'
-    before_capture: 'javascript/login.js'
+    before_capture: 'wraith/javascript/login.js'
   home:
     path: /
     selector: '[id=content]'
@@ -134,7 +134,7 @@ paths:
     selector: '[id=content]'
   post_menu:
     path: /posts/1
-    before_capture: 'javascript/post-menu.js'
+    before_capture: 'wraith/javascript/post-menu.js'
     selector: '[id=post-menu-box]'
   posts_search:
     path: /posts/search?character_id=165&author_id[]=3&author_id[]=2&subject=a&commit=Search

@@ -1,7 +1,7 @@
 imports: "core.yaml"
 
 # The directory that your base screenshots will be stored in.
-history_dir: 'then/monochrome'
+history_dir: 'wraith/then/monochrome'
 
 # The directory that your latest screenshots will be stored in
-directory: 'now/monochrome'
+directory: 'wraith/now/monochrome'

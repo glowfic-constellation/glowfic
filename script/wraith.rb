@@ -15,6 +15,5 @@ layouts.each do |layout|
   else
     user.update!(layout: layout)
   end
-  `cd #{WRAITH_DIR}`
-  puts `#{wraith} #{command} #{layout}`
+  puts `#{wraith} #{command} wraith/#{layout}.yaml`
 end
