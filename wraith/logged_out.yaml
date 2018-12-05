@@ -3,7 +3,8 @@ browser: "casperjs"
 
 # The domain to take screenshots of.
 domains:
-  glowfic: "http://127.0.0.1:3000"
+  # glowfic: "http://web:3000" # uncomment for Docker
+  glowfic: "http://localhost:3000" # for non-Docker environment
 
 # The paths to capture. This particular config is using casperjs, so we can take screenshots of selectors rather than the entire page.
 paths:
@@ -177,10 +178,10 @@ screen_widths:
 resize_or_reload: 'resize'
 
 # The directory that your base screenshots will be stored in.
-history_dir: 'then/out'
+history_dir: 'wraith/then/logged_out'
 
 # The directory that your latest screenshots will be stored in
-directory: 'now/out'
+directory: 'wraith/now/logged_out'
 
 # Amount of fuzz ImageMagick will use when comparing images. A higher fuzz makes the comparison less strict.
 fuzz: '20%'
@@ -204,7 +205,7 @@ verbose: false
 highlight_color: red
 
 # Parameters to pass to Phantom/Casper command line. Default: '--ignore-ssl-errors=true --ssl-protocol=tlsv1'
-phantomjs_options: ''
+phantomjs_options: '--ssl-protocol=tlsv1'
 
 # Set the number of threads to use when saving images. Raising this value can improve performance, but very high
 # values can lead to server connection issues. Set to around 1.5 the available CPU cores for best performance. Default: 8
