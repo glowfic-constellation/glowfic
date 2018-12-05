@@ -53,6 +53,9 @@ paths:
   flash_error:
     path: /boards/-1
     selector: '.flash'
+  flash_success:
+    path: /
+    selector: '.flash'
   home:
     path: /
   footer:
