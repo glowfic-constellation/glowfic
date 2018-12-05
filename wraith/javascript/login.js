@@ -14,14 +14,21 @@ module.exports = function (casper, ready) {
     }
   }
 
-  if (casper.exists(".time-loaded")) {
-    casper.then(function() {
-      console.log("found time-loaded selector")
+  casper.then(function() {
+    if (casper.exists(".time-loaded")) {
       casper.evaluate(function() {
         $(".time-loaded").hide();
       });
+    }
+    casper.evaluate(function() {
+      $(".profiler-result").hide();
     });
-  }
+    if (casper.cli.get(3) == "[id=content]") {
+      casper.evaluate(function() {
+        $("#footer").hide();
+      });
+    }
+  });
 
   ready();
 }
