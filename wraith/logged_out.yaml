@@ -42,7 +42,10 @@ paths:
     selector: '[id=content]'
   board_show_sections:
     path: /boards/1
-    before_capture: 'javascript/only-content.js'
+    selector: '[id=content]'
+  board_section:
+    path: /board_sections/1
+    selector: '[id=content]'
 
   characters_icon_split:
     path: /users/3/characters?character_split=none&view=icons
