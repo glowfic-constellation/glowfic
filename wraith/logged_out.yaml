@@ -26,9 +26,6 @@ paths:
   header:
     path: /
     selector: '[id=header]'
-  #flash_error:
-  #  path: /posts/new
-  #  selector: '[class=flash]'
   home:
     path: /
     selector: '[id=content]'
@@ -38,6 +35,19 @@ paths:
   breadcrumbs:
     path: /boards
     selector: '[class=flash]'
+
+  about_tos:
+    path: /tos
+    selector: '[id=content]'
+  about_dmca:
+    path: /dmca
+    selector: '[id=content]'
+  about_contact:
+    path: /contact
+    selector: '[id=content]'
+  about_privacy:
+    path: /privacy
+    selector: '[id=content]'
 
   boards:
     path: /boards
@@ -95,17 +105,34 @@ paths:
     path: /icons/93
     selector: '[id=content]'
 
+  login:
+    path: /login
+    selector: '[id=content]'
+
+  password_reset:
+    path: /password_resets/new
+    selector: '[id=content]'
+
   posts:
     path: /posts
     before_capture: 'javascript/only-content.js'
   post_show:
     path: /posts/1
     before_capture: 'javascript/only-content.js'
+  post_flat:
+    path: /posts/1?view=flat
+    selector: '[id=content]'
   post_menu:
     path: /posts/1
     selector: '[id=post-menu-box]'
   posts_search:
     path: /posts/search
+    selector: '[id=content]'
+  post_stats:
+    path: /posts/1/stats
+    selector: '[id=content]'
+  post_history:
+    path: /posts/1/history
     selector: '[id=content]'
 
   replies_search:
@@ -138,6 +165,9 @@ paths:
 
   users:
     path: /users
+    selector: '[id=content]'
+  users_new:
+    path: /users/new
     selector: '[id=content]'
   user_show:
     path: /users/3
