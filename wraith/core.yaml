@@ -53,10 +53,8 @@ paths:
   flash_error:
     path: /boards/-1
     selector: '.flash'
-    before_capture: 'wraith/javascript/login.js'
   home:
     path: /
-    selector: '[id=content]'
   footer:
     path: /
     selector: '[id=footer]'
@@ -75,7 +73,7 @@ paths:
     selector: '[id=content]'
 
   characters_icon_split:
-    path: /users/3/characters?character_split=none&view=icons
+    path: /users/3/characters?character_split=template&view=icons
     selector: '[id=content]'
   characters_icon_combined:
     path: /users/3/characters?character_split=none&view=icons
@@ -129,6 +127,7 @@ paths:
   post_new:
     path: /posts/new
     selector: '[id=content]'
+    before_capture: 'wraith/javascript/wait.js'
   post_show:
     path: /posts/1
     selector: '[id=content]'
@@ -145,7 +144,7 @@ paths:
     selector: '[id=content]'
 
   report_daily:
-    path: /reports/daily
+    path: /reports/daily?day=2018-11-04
     selector: '[id=content]'
 
   tags:
@@ -175,7 +174,8 @@ paths:
     path: /users/3
     selector: '[id=content]'
   user_edit:
-    path: /user/5/edit
+    path: /users/5/edit
+    selector: '[id=content]'
   user_boards:
     path: /users/3/boards
     selector: '[id=content]'
