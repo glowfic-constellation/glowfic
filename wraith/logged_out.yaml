@@ -126,7 +126,16 @@ paths:
   replies_search:
     path: /replies/search
     selector: '[id=content]'
+  reply_history:
+    path: /replies/514/history
+    selector: '[id=content]'
 
+  reports:
+    path: /reports
+    selector: '[id=content]'
+  report_monthly:
+    path: /reports/monthly
+    selector: '[id=content]'
   report_daily:
     path: /reports/daily
     selector: '[id=content]'

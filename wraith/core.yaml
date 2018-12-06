@@ -148,7 +148,16 @@ paths:
   replies_search:
     path: /replies/search?author_id=3&subj_content=a&sort=rank&condensed=on&commit=Search
     selector: '[id=content]'
+  reply_history:
+    path: /replies/514/history
+    selector: '[id=content]'
 
+  reports:
+    path: /reports
+    selector: '[id=content]'
+  report_monthly:
+    path: /reports/monthly
+    selector: '[id=content]'
   report_daily:
     path: /reports/daily?day=2018-11-04
     selector: '[id=content]'
