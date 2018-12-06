@@ -62,6 +62,7 @@ class BoardsController < ApplicationController
       board_posts = board_posts.ordered
     end
     @posts = posts_from_relation(board_posts, no_tests: false)
+    use_javascript('boards/show')
   end
 
   def edit

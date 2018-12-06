@@ -50,4 +50,12 @@ module WritableHelper
     return 'icons/menu.png' unless current_user.try(:layout).to_s.start_with?('starry')
     'icons/menugray.png'
   end
+
+  def shortened_desc(desc, id)
+    return sanitize_post_description(desc) if desc.length <= 255
+    sanitize_post_description(desc[0...255]).html_safe +
+      content_tag(:span, '... ', id: "dots-#{id}") +
+      content_tag(:span, sanitize_post_description(desc[255..-1]).html_safe, class: 'hidden', id: "desc-#{id}") +
+      content_tag(:a, 'more &raquo;'.html_safe, href: '#', id: "expanddesc-#{id}", class: 'expanddesc')
+  end
 end
