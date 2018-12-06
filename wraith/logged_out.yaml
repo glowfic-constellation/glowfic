@@ -69,7 +69,7 @@ paths:
     path: /characters/27?view=posts
     selector: '[id=content]'
   characters_search:
-    path: /characters/search
+    path: /characters/search?author_id=1&name=a&search_name=true&search_screenname=true&search_nickname=true&commit=Search
     selector: '[id=content]'
   characters_facecasts:
     path: /characters/facecasts
@@ -115,7 +115,7 @@ paths:
     before_capture: 'wraith/javascript/post-menu.js'
     selector: '[id=post-menu-box]'
   posts_search:
-    path: /posts/search
+    path: /posts/search?character_id=19&author_id[]=3&author_id[]=2&subject=a
     selector: '[id=content]'
   post_stats:
     path: /posts/1/stats
@@ -125,7 +125,7 @@ paths:
     selector: '[id=content]'
 
   replies_search:
-    path: /replies/search
+    path: /replies/search?author_id=3&subj_content=a&sort=rank&condensed=on&commit=Search
     selector: '[id=content]'
   reply_history:
     path: /replies/514/history
@@ -174,7 +174,7 @@ paths:
     path: /users/3/boards
     selector: '[id=content]'
   users_search:
-    path: /users/search
+    path: /users/search?username=a&commit=Search
     selector: '[id=content]'
 
 
