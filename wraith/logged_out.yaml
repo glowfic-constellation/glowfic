@@ -208,7 +208,7 @@ gallery:
   thumb_height: 200
 
 # Choose which results are displayed in the gallery, and in what order. Default: alphanumeric
-mode: diffs_first
+mode: diffs_only
 
 # Choose to run Wraith in verbose mode, for easier debugging. Default: false
 verbose: false
