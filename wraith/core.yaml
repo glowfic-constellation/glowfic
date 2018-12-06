@@ -72,14 +72,27 @@ paths:
   boards:
     path: /boards
     selector: '[id=content]'
+  board_new:
+    path: /boards/new
+    selector: '[id=content]'
   board_show_open:
     path: /boards/5
+    selector: '[id=content]'
+  board_edit:
+    path: /boards/1/edit
     selector: '[id=content]'
   board_show_sections:
     path: /boards/1
     selector: '[id=content]'
-  board_section:
+
+  board_section_new:
+    path: /board_sections/new?board_id=1
+    selector: '[id=content]'
+  board_section_show:
     path: /board_sections/1
+    selector: '[id=content]'
+  board_section_edit:
+    path: /board_sections/1/edit
     selector: '[id=content]'
 
   characters_icon_split:
@@ -121,6 +134,10 @@ paths:
     path: /characters/facecasts
     selector: '[id=content]'
 
+  alias_new:
+    path: /characters/27/aliases/new
+    selector: '[id=content]'
+
   galleries:
     path: /users/3/galleries
     selector: '[id=content]'
@@ -157,6 +174,19 @@ paths:
   posts:
     path: /posts
     selector: '[id=content]'
+  posts_search:
+    path: /posts/search?character_id=165&author_id[]=3&author_id[]=2&subject=a&commit=Search
+    selector: '[id=content]'
+  posts_unread:
+    path: /posts/unread
+    selector: '[id=content]'
+  posts_hidden:
+    path: /posts/hidden
+    selector: '[id=content]'
+  posts_owed:
+    path: /posts/owed
+    selector: '[id=content]'
+
   post_new:
     path: /posts/new
     selector: '[id=content]'
@@ -167,19 +197,20 @@ paths:
   post_edit:
     path: /posts/1/edit
     selector: '[id=content]'
+
   post_menu:
     path: /posts/1
     before_capture: 'wraith/javascript/post-menu.js'
     selector: '[id=post-menu-box]'
-  posts_search:
-    path: /posts/search?character_id=165&author_id[]=3&author_id[]=2&subject=a&commit=Search
-    selector: '[id=content]'
 
   replies_search:
     path: /replies/search?author_id=3&subj_content=a&sort=rank&condensed=on&commit=Search
     selector: '[id=content]'
   reply_history:
     path: /replies/514/history
+    selector: '[id=content]'
+  reply_edit:
+    path: /replies/2/edit
     selector: '[id=content]'
 
   reports:
@@ -205,8 +236,14 @@ paths:
     path: /tags/2/edit
     selector: '[id=content]'
 
+  template_new:
+    path: /templates/new
+    selector: '[id=content]'
   template_show:
     path: /templates/11
+    selector: '[id=content]'
+  template_edit:
+    path: /templates/11/edit
     selector: '[id=content]'
   template_list:
     path: /templates/11?view=list
