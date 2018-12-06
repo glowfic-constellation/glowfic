@@ -94,11 +94,19 @@ paths:
   characters_list_combined:
     path: /users/3/characters?character_split=none&view=list
     selector: '[id=content]'
-  character_show:
-    path: /characters/27
-    selector: '[id=content]'
+
   character_new:
     path: /characters/new
+    selector: '[id=content]'
+  character_edit:
+    path: /characters/27/edit
+    selector: '[id=content]'
+  character_replace:
+    path: /characters/27/replace
+    selector: '[id=content]'
+
+  character_show:
+    path: /characters/27
     selector: '[id=content]'
   character_galleries:
     path: /characters/27?view=galleries
@@ -116,15 +124,37 @@ paths:
   galleries:
     path: /users/3/galleries
     selector: '[id=content]'
-  gallery_show:
-    path: /galleries/26
-    selector: '[id=content]'
   galleries_search:
     path: /galleries/search
     selector: '[id=content]'
 
+  gallery_new:
+    path: /galleries/new
+    selector: '[id=content]'
+  gallery_add:
+    path: /galleries/0/add
+    selector: '[id=content]'
+  gallery_show:
+    path: /galleries/26
+    selector: '[id=content]'
+  galleryless_show:
+    path: /galleries/0
+    selector: '[id=content]'
+  gallery_edit:
+    path: /galleries/26/edit
+    selector: '[id=content]'
+
   icon_show:
     path: /icons/93
+    selector: '[id=content]'
+  icon_edit:
+    path: /icons/93/edit
+    selector: '[id=content]'
+  icon_show:
+    path: /icons/93/show
+    selector: '[id=content]'
+  icon_replace:
+    path: /icons/93/replace
     selector: '[id=content]'
 
   posts:
@@ -136,6 +166,9 @@ paths:
     before_capture: 'wraith/javascript/wait.js'
   post_show:
     path: /posts/1
+    selector: '[id=content]'
+  post_edit:
+    path: /posts/1/edit
     selector: '[id=content]'
   post_menu:
     path: /posts/1
@@ -170,6 +203,9 @@ paths:
     selector: '[id=content]'
   tag_show:
     path: /tags/2
+    selector: '[id=content]'
+  tag_edit:
+    path: /tags/2/edit
     selector: '[id=content]'
 
   template_show:
