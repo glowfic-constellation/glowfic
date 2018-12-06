@@ -16,7 +16,7 @@ def run(layout, wraith, command)
   else
     index = output.index("WARN")
     if index.nil?
-      puts output.lines("\n")[-10..-1].join('\n')
+      puts output.lines("\n")[-10..-1].join
     else
       puts output.from(index)
     end
