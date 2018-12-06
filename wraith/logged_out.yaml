@@ -200,7 +200,7 @@ directory: 'wraith/now/logged_out'
 fuzz: '20%'
 
 # The maximum acceptable level of difference (in %) between two images before Wraith reports a failure. Default: 0
-threshold: 5
+threshold: 1
 
 # Specify the template (and generated thumbnail sizes) for the gallery output.
 gallery:
