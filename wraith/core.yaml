@@ -150,9 +150,6 @@ paths:
   icon_edit:
     path: /icons/93/edit
     selector: '[id=content]'
-  icon_show:
-    path: /icons/93/show
-    selector: '[id=content]'
   icon_replace:
     path: /icons/93/replace
     selector: '[id=content]'
