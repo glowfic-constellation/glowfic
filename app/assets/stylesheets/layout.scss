@@ -41,6 +41,7 @@
   background-color: $bg_color_header_middle;
   font-weight: bold;
   text-align: center;
+  line-height: normal;
 
   .no-img, img {
     display: inline-block;
@@ -80,6 +81,7 @@
 #nav-bottom {
   padding: 0.6em 0;
   vertical-align: middle;
+  line-height: normal;
 }
 #header-links {
   display: none; /* hidden by default, shows up on narrow screens */
@@ -103,12 +105,12 @@
 #content, #tos {
   padding: 20px;
   font-size: $font_size_main;
-  line-height: 20px;
+  line-height: 1.25em;
   text-align: left;
   position: relative;
   padding-bottom: 35px;
 }
-#content h1 { line-height: normal;}
+#content h1 { line-height: normal; }
 @media (max-width: 600px) {
   #content, #tos { padding: 10px; padding-bottom: 35px; }
 }
@@ -117,7 +119,10 @@
 }
 
 /* Flash Displays */
-.flash { padding: 10px 20px; }
+.flash {
+  padding: 10px 20px;
+  line-height: normal;
+}
 .flash ul { margin: 0; margin-top: 5px; }
 .flash.error { background-color: $bg_color_flash_error; }
 .flash.success { background-color: $bg_color_flash_success; }
@@ -172,6 +177,8 @@ td, .table-list li { font-size: $font_size_small; }
   background-color: $bg_color_sub;
   color: $font_color_sub;
   font-size: $font_size_main;
+
+  &.width-150 { width: 170px; }
 }
 .subber {
   padding: 10px 25px;

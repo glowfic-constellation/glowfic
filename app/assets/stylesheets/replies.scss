@@ -234,8 +234,9 @@ div.post-subheader { width: 100%; }
 }
 #post_content, #reply_content { width: 100%; display: block; }
 #reply_content { height: 130px; }
-#post_content { height: 300px; }
+#post_content { height: 312px; }
 #post-form-wrapper {
+  margin-top: 5px;
   margin-left: 160px;
   margin-right: 10px;
   background-image: url(image-path('icons/loading.gif'));
@@ -243,6 +244,7 @@ div.post-subheader { width: 100%; }
   background-size: 30px;
   background-repeat: no-repeat;
 }
+#reply_content, .mce-panel { box-sizing: content-box; }
 #post-editor { position: relative; }
 .details {
   display: inline;
@@ -421,7 +423,7 @@ div.post-subheader { width: 100%; }
 /* Handle post tables */
 .post-completed {
   text-align: center;
-  width: 40px;
+  width: 50px;
 }
 
 /* Unread marker on posts */
