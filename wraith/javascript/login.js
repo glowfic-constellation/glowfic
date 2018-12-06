@@ -1,8 +1,8 @@
 module.exports = function (casper, ready) {
   if (casper.exists("#header-form")) {
     casper.fill ( '#header-forms', {
-      'username': 'Throne3d',
-      'password': 'throne3d'
+      'username': 'Kappa',
+      'password': 'pythbox'
     });
 
     casper.click('#nav-top #header-form input.button');
@@ -20,15 +20,17 @@ module.exports = function (casper, ready) {
         $(".time-loaded").hide();
       });
     }
-    casper.evaluate(function() {
-      $(".profiler-result").hide();
-    });
     if (casper.cli.get(3) == "[id=content]") {
       casper.evaluate(function() {
         $("#footer").hide();
       });
     }
+
+    casper.wait(100);
+    casper.evaluate(function() {
+      $(".profiler-result").hide();
+    });
   });
 
-  ready();
+  casper.wait(5000, ready);
 }

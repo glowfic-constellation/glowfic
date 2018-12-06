@@ -5,7 +5,7 @@ command = ARGV[1] || 'latest'
 
 WRAITH_DIR = 'wraith'
 
-user = User.find_by(username: "Throne3d")
+user = User.find_by(username: "Kappa")
 
 layouts = ['default', 'dark', 'iconless', 'starry', 'starrydark', 'starrylight', 'monochrome', 'river']
 
@@ -15,5 +15,7 @@ layouts.each do |layout|
   else
     user.update!(layout: layout)
   end
-  puts `#{wraith} #{command} wraith/#{layout}.yaml`
+  puts `#{wraith} #{command} wraith/#{layout}`
 end
+
+puts `#{wraith} #{command} wraith/logged_out`
