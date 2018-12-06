@@ -9,10 +9,10 @@ domains:
 # The paths to capture. This particular config is using casperjs, so we can take screenshots of selectors rather than the entire page.
 paths:
   header:
-    path: /
+    path: /?pp=skip
     selector: '[id=header]'
   home:
-    path: /
+    path: /?pp=skip
     selector: '[id=content]'
   footer:
     path: /

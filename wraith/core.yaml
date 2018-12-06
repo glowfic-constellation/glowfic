@@ -48,7 +48,7 @@ before_capture: 'wraith/javascript/login.js'
 # The paths to capture.
 paths:
   header:
-    path: /
+    path: /?pp=skip
     selector: '[id=header]'
   flash_error:
     path: /boards/-1
@@ -57,7 +57,7 @@ paths:
     path: /
     selector: '.flash'
   home:
-    path: /
+    path: /?pp=skip
   footer:
     path: /
     selector: '[id=footer]'
