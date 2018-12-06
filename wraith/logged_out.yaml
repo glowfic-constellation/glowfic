@@ -112,6 +112,7 @@ paths:
     selector: '[id=content]'
   post_menu:
     path: /posts/1
+    before_capture: 'wraith/javascript/post-menu.js'
     selector: '[id=post-menu-box]'
   posts_search:
     path: /posts/search
