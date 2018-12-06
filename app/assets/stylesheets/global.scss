@@ -8,6 +8,14 @@ body {
     color: $font_color_page;
 }
 
+html {
+  box-sizing: border-box;
+}
+
+*, ::before, ::after {
+  box-sizing: inherit;
+}
+
 /* Links */
 a {
   text-decoration: none;
@@ -19,7 +27,7 @@ a {
 /* Inputs */
 input, textarea, button {
   font-size: $font_size_smallerish;
-  height: 23px;
+  height: 25px;
   border-radius: 5px;
   background-color: $bg_color_input;
   color: $font_color_input;
@@ -27,6 +35,7 @@ input, textarea, button {
   border: 1px solid $border_color_input;
   margin: 5px 0;
 }
+input[type="checkbox"] { height: 23px; }
 textarea { padding: 5px; }
 .form-table td input[type="radio"] { width: unset; }
 button, .button {
@@ -38,13 +47,13 @@ button, .button {
   background: linear-gradient(to bottom, #FFFFFF 20%, #F6F6F6 50%, #EEEEEE 52%, #F4F4F4 100%);
   background-clip: padding-box;
   border-color: $border_color_button;
+  line-height: normal;
   height: 25px;
 }
 
 /* Display Helpers */
 .no-margin { margin: 0; }
 .noheight { font-size: 0; }
-.margin-5 { margin: 5px; }
 .margin-10 { margin: 10px; }
 .padding-5 { padding: 5px 10px; }
 .padding-10 { padding: 10px; }
@@ -54,8 +63,6 @@ button, .button {
 .width-15 { width: 15px !important; }
 .width-70 { width: 70px; }
 .width-150 { width: 150px; }
-.width-250 { width: 250px; }
-.width-300 { width: 300px; }
 .spacer, .spacer-alt { height: 2px; padding: 0; }
 .spacer-alt { background-color: $bg_color_spacer_alt; }
 .centered { text-align: center !important; }
@@ -113,10 +120,8 @@ button, .button {
 .link-box.action-new { background-color: $bg_color_linkbox_new; }
 .link-box.action-delete { background-color: $bg_color_linkbox_delete; }
 .link-box.action-edit { background-color: $bg_color_linkbox_edit;}
-.link-box.orange { background-color: #EA8A40;} // TODO: This does not appear to be used anywhere
 .link-box.action-favorite { background-color: $bg_color_linkbox_favorite; }
 .link-box.action-dismiss { background-color: $bg_color_linkbox_dismiss; }
-#post-form-wrapper { margin-top: 5px; }
 
 /* Inline lists */
 .inline-list { display: inline; padding-left: 0; }

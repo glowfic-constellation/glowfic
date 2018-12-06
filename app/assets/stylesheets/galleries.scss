@@ -7,11 +7,7 @@
 /* The + / - symbol to minimize a gallery */
 .gallery-minmax, .add-gallery-icon { cursor: pointer; }
 .gallery-title { height: 5px; } /* So that when a gallery is minimized there is spacing */
-.selected-icon {
-  border: 10px $border_color_icon_selected solid;
-  width: 80px;
-  height: 80px;
-}
+.selected-icon { border: 10px $border_color_icon_selected solid; }
 .form-table .icon { vertical-align: middle; }
 
 /* Basic gallery and gallery icon formatting */
