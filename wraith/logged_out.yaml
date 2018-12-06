@@ -18,8 +18,8 @@ paths:
     path: /
     selector: '[id=footer]'
   breadcrumbs:
-    path: /boards
-    selector: '[class=flash]'
+    path: /boards/1
+    selector: '.flash'
 
   about_tos:
     path: /tos
@@ -103,10 +103,10 @@ paths:
 
   posts:
     path: /posts
-    before_capture: 'javascript/only-content.js'
+    selector: '[id=content]'
   post_show:
     path: /posts/1
-    before_capture: 'javascript/only-content.js'
+    selector: '[id=content]'
   post_flat:
     path: /posts/1?view=flat
     selector: '[id=content]'
@@ -156,9 +156,9 @@ paths:
   template_list:
     path: /templates/11?view=list
     selector: '[id=content]'
-  templates_search:
-    path: /templates/search
-    selector: '[id=content]'
+  #templates_search:
+  #  path: /templates/search
+  #  selector: '[id=content]'
 
   users:
     path: /users
@@ -178,7 +178,7 @@ paths:
 
 
 # JavaScript file to execute before taking screenshot of every path. Default: nil
-before_capture: 'javascript/accept_tos.js'
+before_capture: 'wraith/javascript/accept_tos.js'
 
 # Screen widths (and optional height) to resize the browser to before taking the screenshot.
 screen_widths:
