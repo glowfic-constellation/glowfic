@@ -175,7 +175,7 @@ paths:
     path: /posts
     selector: '[id=content]'
   posts_search:
-    path: /posts/search?character_id=165&author_id[]=3&author_id[]=2&subject=a&commit=Search
+    path: /posts/search?character_id=19&author_id[]=3&author_id[]=2&subject=a
     selector: '[id=content]'
   posts_unread:
     path: /posts/unread
