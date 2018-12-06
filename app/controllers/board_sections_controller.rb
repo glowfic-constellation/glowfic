@@ -90,6 +90,7 @@ class BoardSectionsController < ApplicationController
     params.fetch(:board_section, {}).permit(
       :board_id,
       :name,
+      :description,
     )
   end
 end
