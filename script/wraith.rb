@@ -9,13 +9,23 @@ user = User.find_by(username: "Kappa")
 
 layouts = ['default', 'dark', 'iconless', 'starry', 'starrydark', 'starrylight', 'monochrome', 'river']
 
+def run(layout, wraith, command)
+  output = `#{wraith} #{command} wraith/#{layout}`
+  if $?.exitstatus.zero?
+    puts "#{layout} successful"
+  else
+    index = output.index("WARN")
+    puts output.from(index)
+  end
+end
+
 layouts.each do |layout|
   if layout == 'default'
     user.update!(layout: nil)
   else
     user.update!(layout: layout)
   end
-  puts `#{wraith} #{command} wraith/#{layout}`
+  run(layout, wraith, command)
 end
 
-puts `#{wraith} #{command} wraith/logged_out`
+run('logged_out', wraith, command)
