@@ -449,7 +449,8 @@ div.post-subheader { width: 100%; }
   background-color: $bg_color_selectionpopup;
 }
 
-.history-header { width: 150px; }
+/* History page */
+.history-header { width: 170px; }
 @media (max-width: 600px) {
   .history-header { width: 75px; }
 }
