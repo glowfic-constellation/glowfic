@@ -425,6 +425,11 @@ div.post-subheader { width: 100%; }
   text-align: center;
   width: 50px;
 }
+.post-check-box {
+  width: 30px;
+  padding-right: 10px;
+  input.checkbox { height: 13px; margin: 0px; vertical-align: middle; } /* Keeps unread table from padding excessively for the checkboxes */
+}
 
 /* Unread marker on posts */
 .unread-marker-container {

@@ -60,7 +60,7 @@
     by
     = link_to post.last_user_name, user_path(post.last_user_id)
   - if local_assigns[:check_box_name]
-    %td.padding-right-10{class: klass}= check_box_tag check_box_name, post.id, false, class: 'checkbox'
+    %td.post-check-box{class: klass}= check_box_tag check_box_name, post.id, false, class: 'checkbox'
 - if post.respond_to?(:index_description)
   %tr
     %td{class: klass}
