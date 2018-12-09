@@ -14,8 +14,8 @@
 ::placeholder { color: $font_color_input_placeholder; }
 
 /* - account options, post editor, search */
-#content .form-table, #icon-table, .search-form {
-  input:not([type='submit']), textarea {
+#content .form-table, #icon-table, .search-form, .post-info-box {
+  input:not([type='submit']), textarea, select {
     background-color: $bg_color_input; color: $font_color_input; border-color: $border_color_input;
   }
 }
