@@ -118,4 +118,11 @@ RSpec.describe Block, type: :model do
       expect(block.hide_their_posts?).to be(false)
     end
   end
+
+  it "should hide messages when first blocking" do
+    message = create(:message)
+    expect(message).to be_unread
+    create(:block, blocking_user: message.recipient, blocked_user: message.sender, block_interactions: true)
+    expect(message.reload).not_to be_unread
+  end
 end

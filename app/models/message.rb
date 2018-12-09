@@ -6,7 +6,7 @@ class Message < ApplicationRecord
   belongs_to :first_thread, class_name: 'Message', foreign_key: :thread_id, inverse_of: false, optional: false
 
   validates :sender, presence: { if: Proc.new { |m| m.sender_id != 0 } }
-  validate :unblocked_recipient
+  validate :unblocked_recipient, on: :create
 
   before_validation :set_thread_id
   before_create :check_recipient

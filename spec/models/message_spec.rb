@@ -54,4 +54,11 @@ RSpec.describe Message do
     expect(message.save).to eq(false)
     expect(message.errors.full_messages.first).to eq("Recipient must not be blocked by you")
   end
+
+  it "does not error to blocked user if updating an existing message" do
+    message = create(:message)
+    block = create(:block, blocking_user: message.sender, blocked_user: message.recipient)
+    message.unread = false
+    message.save!
+  end
 end

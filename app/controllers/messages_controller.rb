@@ -4,12 +4,15 @@ class MessagesController < ApplicationController
   before_action :editor_setup, only: :new
 
   def index
+    blocked_ids = Block.where(blocking_user: current_user).select(:blocked_user_id)
     if params[:view] == 'outbox'
       @page_title = 'Outbox'
       from_table = current_user.sent_messages.where(visible_outbox: true).ordered_by_thread.select('distinct on (thread_id) messages.*')
+      from_table = from_table.where.not(recipient_id: blocked_ids)
     else
       @page_title = 'Inbox'
-      from_table = current_user.messages.where(visible_outbox: true).ordered_by_thread.select('distinct on (thread_id) messages.*')
+      from_table = current_user.messages.where(visible_inbox: true).ordered_by_thread.select('distinct on (thread_id) messages.*')
+      from_table = from_table.where.not(sender_id: blocked_ids)
     end
     @messages = Message.from(from_table).select('*').order('subquery.id desc').paginate(per_page: 25, page: page)
     @view = @page_title.downcase

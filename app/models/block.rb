@@ -11,6 +11,8 @@ class Block < ApplicationRecord
 
   scope :ordered, -> { includes(:blocked_user).sort_by { |block| [block.blocked_user.username.downcase] } }
 
+  after_create :mark_messages_read
+
   NONE = 0
   POSTS = 1
   ALL = 2
@@ -46,5 +48,12 @@ class Block < ApplicationRecord
   def option_chosen
     return if hide_my_posts? || hide_their_posts? || block_interactions?
     errors.add(:block, "must choose at least one action to prevent")
+  end
+
+  def mark_messages_read
+    Message.where(unread: true, sender_id: blocked_user_id, recipient_id: blocking_user_id).each do |message|
+      message.unread = false
+      message.save
+    end
   end
 end

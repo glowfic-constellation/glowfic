@@ -33,6 +33,40 @@ RSpec.describe MessagesController do
       end
     end
 
+    context "blocking" do
+      let(:m1) { create(:message) }
+      let(:m2) { create(:message, sender: m1.sender, recipient: m1.recipient, unread: false) }
+      let(:m3) { create(:message, sender: m1.recipient, recipient: m1.sender, thread_id: m2.id) }
+      let(:m4) { create(:message, recipient: m1.sender, sender: m1.recipient) }
+      let(:m5) { create(:message, recipient: m1.sender, sender: m1.recipient, unread: false) }
+      let(:m6) { create(:message, recipient: m1.recipient, sender: m1.sender, thread_id: m5.id) }
+      let(:m7) { create(:message, sender: m1.sender, recipient: m1.recipient, unread: false) }
+      let(:m8) { create(:message, sender: m1.recipient, recipient: m1.sender, thread_id: m7.id, unread: false) }
+      let(:m9) { create(:message, sender: m1.sender, recipient: m1.recipient, thread_id: m7.id) }
+
+      before(:each) { [m1, m2, m3, m4, m5, m6, m7, m8, m9] }
+
+      it "excludes blocked messages in inbox" do
+        login_as(m1.recipient)
+        get :index
+        expect(assigns(:messages).count).to eq(4)
+        expect(assigns(:messages).map(&:thread_id)).to match_array([m1.id, m2.id, m5.id, m7.id])
+        create(:block, blocking_user: m1.recipient, blocked_user: m1.sender)
+        get :index
+        expect(assigns(:messages).count).to eq(0)
+      end
+
+      it "excludes blocked messages in outbox" do
+        login_as(m1.recipient)
+        get :index, params: { view: 'outbox' }
+        expect(assigns(:messages).count).to eq(4) # m2/3, m4, m5/6, m7/8/9
+        expect(assigns(:messages).map(&:thread_id)).to match_array([m2.id, m4.id, m5.id, m7.id])
+        create(:block, blocking_user: m1.recipient, blocked_user: m1.sender)
+        get :index, params: { view: 'outbox' }
+        expect(assigns(:messages).count).to eq(0)
+      end
+    end
+
     it "orders messages correctly" do
       skip "TODO: test ordering"
     end
