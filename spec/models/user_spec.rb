@@ -113,4 +113,21 @@ RSpec.describe User do
     icon2 = create(:icon, user: user, keyword: "b")
     expect(user.galleryless_icons).to eq([icon1, icon2, icon3, icon4])
   end
+
+  describe "blocking" do
+    it "correctly catches blocked interaction users" do
+      blocker = create(:user)
+      unblocked = create(:user)
+      only_posts = create(:user)
+      create(:block, blocking_user: blocker, blocked_user: only_posts, hide_them: Block::POSTS, block_interactions: false)
+      blockees = create_list(:user, 3)
+      blockees.each { |b| create(:block, blocking_user: blocker, blocked_user: b, block_interactions: true) }
+      expect(blocker.can_interact_with?(unblocked)).to be(true)
+      expect(blocker.can_interact_with?(only_posts)).to be(true)
+      expect(blocker.can_interact_with?(blockees.first)).to be(false)
+      expect(blocker.user_ids_uninteractable).to match_array(blockees.map(&:id))
+      expect(blocker).not_to have_interaction_blocked(only_posts)
+      expect(blocker).to have_interaction_blocked(blockees.first)
+    end
+  end
 end
