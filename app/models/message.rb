@@ -6,8 +6,10 @@ class Message < ApplicationRecord
   belongs_to :first_thread, class_name: 'Message', foreign_key: :thread_id, inverse_of: false, optional: false
 
   validates :sender, presence: { if: Proc.new { |m| m.sender_id != 0 } }
+  validate :unblocked_recipient
 
   before_validation :set_thread_id
+  before_create :check_recipient
   after_create :notify_recipient
 
   scope :ordered_by_id, -> { order(id: :asc) }
@@ -62,10 +64,24 @@ class Message < ApplicationRecord
     self.first_thread = self
   end
 
+  def check_recipient
+    return unless sender && recipient
+    return if sender.can_interact_with?(recipient)
+    self.visible_inbox = false
+    self.unread = false
+  end
+
   def notify_recipient
     return if recipient_id == sender_id
+    return unless visible_inbox
     return unless recipient.email.present?
     return unless recipient.email_notifications?
     UserMailer.new_message(self.id).deliver
+  end
+
+  def unblocked_recipient
+    return unless sender && recipient
+    return unless sender.has_interaction_blocked?(recipient)
+    errors.add(:recipient, "must not be blocked by you")
   end
 end
