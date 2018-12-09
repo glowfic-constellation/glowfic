@@ -405,7 +405,7 @@ class PostsController < WritableController
 
   def editor_setup
     super
-    @permitted_authors = User.active.ordered.where.not(id: current_user.block_interaction_users) - (@post.try(:joined_authors) || [])
+    @permitted_authors = User.active.ordered.where.not(id: current_user.blocked_interaction_user_ids(receiver_direction: 'either')) - (@post.try(:joined_authors) || [])
     @author_ids = permitted_params[:unjoined_author_ids].compact_blank.map(&:to_i) if permitted_params.key?(:unjoined_author_ids)
     @author_ids ||= @post.try(:unjoined_author_ids) || []
   end
