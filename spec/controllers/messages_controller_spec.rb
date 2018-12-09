@@ -60,6 +60,34 @@ RSpec.describe MessagesController do
       expect(assigns(:message).recipient_id).to eq(recipient.id)
     end
 
+    it "handles provided blocked user" do
+      block = create(:block)
+      login_as(block.blocking_user)
+      get :new, params: { recipient_id: block.blocked_user_id }
+      expect(response.status).to eq(200)
+      expect(assigns(:message).recipient_id).to be_nil
+    end
+
+    it "handles provided blocking user" do
+      block = create(:block)
+      login_as(block.blocked_user)
+      get :new, params: { recipient_id: block.blocking_user_id }
+      expect(response.status).to eq(200)
+      expect(assigns(:message).recipient_id).to be(block.blocking_user_id)
+    end
+
+    it "hides blocked users" do
+      user = create(:user)
+      login_as(user)
+      blocking_users = create_list(:block, 2, blocked_user: user)
+      create_list(:block, 2, blocking_user: user)
+      other_users = create_list(:user, 2) + blocking_users.map(&:blocking_user)
+      other_users = other_users.sort_by!(&:username).pluck(:username, :id)
+      get :new
+      expect(response.status).to eq(200)
+      expect(assigns(:select_items)).to eq(Users: other_users)
+    end
+
     context "with views" do
       render_views
 
