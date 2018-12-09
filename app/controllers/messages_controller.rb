@@ -27,11 +27,6 @@ class MessagesController < ApplicationController
     @message.sender = current_user
     set_message_parent(params[:parent_id]) if params[:parent_id].present?
 
-    if @message.recipient_id == 94 && @message.sender_id == 162
-      @message.unread = false
-      @message.visible_inbox = false
-    end
-
     if params[:button_preview]
       @messages = Message.where(thread_id: @message.thread_id).ordered_by_id if @message.thread_id
       editor_setup

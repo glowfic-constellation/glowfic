@@ -33,22 +33,25 @@ RSpec.describe Message do
     end
 
     it "does not notify blocking recipients" do
-      sender = create(:user)
-      recipient = create(:user)
-      create(:block, blocking_user: recipient, blocked_user: sender, block_interactions: true)
-      message = create(:message, sender: sender, recipient: recipient)
-      expect(message.visible_inbox).to eq(false)
+      recipient = create(:user, email_notifications: true)
+      block = create(:block, block_interactions: true, blocking_user: recipient)
+      message = create(:message, sender: block.blocked_user, recipient: recipient)
       expect(UserMailer).to have_queue_size_of(0)
     end
   end
 
-  it "validates recipient" do
-    sender = create(:user)
-    recipient = create(:user)
-    create(:block, blocking_user: recipient, blocked_user: sender, block_interactions: true)
-    message = build(:message, sender: sender, recipient: recipient)
-    expect(message).to be_valid
-    message.save!
+  it "hides blocked messages from recipient without erroring to sender" do
+    block = create(:block, block_interactions: true)
+    message = build(:message, sender: block.blocked_user, recipient: block.blocking_user)
+    expect(message.save).to be true
     expect(message.visible_inbox).to eq(false)
+    expect(message.unread).to eq(false)
+  end
+
+  it "errors to sender if messaging a blocked user" do
+    block = create(:block, block_interactions: true)
+    message = build(:message, sender: block.blocking_user, recipient: block.blocked_user)
+    expect(message.save).to eq(false)
+    expect(message.errors.full_messages.first).to eq("Recipient must not be blocked by you")
   end
 end
