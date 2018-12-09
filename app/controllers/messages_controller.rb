@@ -26,7 +26,8 @@ class MessagesController < ApplicationController
     @message.sender = current_user
     set_message_parent(params[:parent_id]) if params[:parent_id].present?
 
-    if @message.recipient_id == 94 && @message.sender_id == 162
+    # Pending block system
+    if @message.recipient_id == 94
       @message.unread = false
       @message.visible_inbox = false
     end
