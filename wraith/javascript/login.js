@@ -5,7 +5,7 @@ module.exports = function (casper, ready) {
       'password': 'pythbox'
     });
 
-    casper.click('#nav-top #header-form input.button');
+    casper.click('#header-form input.button');
 
     casper.wait(100);
 
@@ -25,11 +25,6 @@ module.exports = function (casper, ready) {
         $("#footer").hide();
       });
     }
-
-    casper.wait(100);
-    casper.evaluate(function() {
-      $(".profiler-result").hide();
-    });
   });
 
   casper.wait(5000, ready);
