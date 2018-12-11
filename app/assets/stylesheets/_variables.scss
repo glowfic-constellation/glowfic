@@ -29,6 +29,10 @@ $colors_lightgrey: #EEEEEE;
 $colors_darkpurple: #3E384F;
 $colors_black: #101010;
 $colors_blacker: #000000;
+$colors_golden: #FDE295;
+$colors_cinnamon: #7B3F00;
+$colors_confetti: #C8A528;
+$colors_lemon: #FFFACD;
 
 // Semantic colors
 // colors listed here should be named according to where and how they are used, to allow layouts to better recolor the site
@@ -56,16 +60,16 @@ $font_color_link_hover: $colors_narvik !default; // link (hovered)
 // flashes
 // these are the notifications that appear when you submit a form or get a message
 $bg_color_flash_error: #FFDDDD !default; // error
-$font_color_flash_error: $font_color_page !default;
+$font_color_flash_error: $colors_black !default;
 $bg_color_flash_success: #DDEEDD !default; // success
-$font_color_flash_success: $font_color_page !default;
+$font_color_flash_success: $colors_black !default;
 $bg_color_flash_inbox: #DDDDEE !default; // new message
-$font_color_flash_inbox: $font_color_page !default;
+$font_color_flash_inbox: $colors_black !default;
 $bg_color_flash_breadcrumbs: $colors_greybrown !default; // breadcrumbs ("Continuities » Effulgence » make a wish » one enormous bruise")
-$font_color_flash_breadcrumbs: $font_color_page !default;
-$font_color_breadcrumbs_bold: $font_color_flash_breadcrumbs !default;
-$font_color_flash_link: $font_color_link !default;
-$font_color_flash_hover: $font_color_link_hover !default;
+$font_color_flash_breadcrumbs: $colors_black !default;
+$font_color_breadcrumbs_bold: $colors_black !default;
+$font_color_flash_link: $colors_green !default;
+$font_color_flash_hover: $colors_narvik !default;
 
 // link-boxes
 $bg_color_linkbox_new: $colors_green !default;
@@ -77,11 +81,11 @@ $bg_color_linkbox_dismiss: $colors_red !default;
 
 // inputs
 $bg_color_input: $colors_white !default; // regular <input>
-$font_color_input: $font_color_content !default;
+$font_color_input: $colors_dark !default;
 $border_color_input: #AAAAAA !default;
 
 $bg_color_button: $colors_white !default; // buttons; overridden by gradient TODO make modifiable
-$font_color_button: $font_color_content !default;
+$font_color_button: $colors_dark !default;
 $border_color_button: #AAAAAA !default;
 
 // other buttons
@@ -94,8 +98,8 @@ $border_color_icon_selected: $colors_green !default; // selected icon border
 $bg_color_icon: $colors_greygreen !default;
 $bg_color_icon_credit: $colors_greygreen !default;
 $bg_color_icon_selector: $colors_greygreen !default;
-$font_color_icon_selector: $font_color_page !default; // used in different places on dark.scss and starries
-$font_color_icon_dropdown: $font_color_page !default;
+$font_color_icon_selector: $colors_black !default; // used in different places on dark.scss and starries
+$font_color_icon_dropdown: $colors_black !default;
 
 // characters
 $border_color_character_iconless: #666666 !default; // in characters#show icon view when a character has no icon
@@ -107,10 +111,10 @@ $font_color_mini_delete: #C00 !default;
 // tag items
 // varies by location TODO get more complete list from starries
 $bg_color_tag_item: $colors_lightbrown !default;
-$bg_color_tag_item_odd: $bg_color_tag_item !default;
-$bg_color_tag_item_even: $bg_color_tag_item !default;
+$bg_color_tag_item_odd: $colors_lightbrown !default;
+$bg_color_tag_item_even: $colors_lightbrown !default;
 $font_color_tag_item: $colors_green !default;
-$font_color_tag_item_gallery: $font_color_tag_item !default;
+$font_color_tag_item_gallery: $colors_lightbrown !default;
 
 // content headers
 $bg_color_head: $colors_brown !default; // primary content header
@@ -122,7 +126,7 @@ $font_color_sub: $colors_darkpurple !default;
 $font_color_subber: $colors_blacker !default;
 
 $bg_color_ender: $bg_color_subber !default; // form table footer with submit
-$font_color_ender: $font_color_subber !default;
+$font_color_ender: $colors_blacker !default;
 
 // content
 $bg_color_even: #E3E3E3 !default;
@@ -187,12 +191,12 @@ $font_color_popup_link: #333333 !default;
 
 // misc
 $bg_color_descriptions: $colors_lightbrown !default; // description subheadings on templates page ("single-description"), *not* posts
-$font_color_descriptions_link: $font_color_link !default;
-$font_color_descriptions_link_visited: $font_color_link_visited !default;
+$font_color_descriptions_link: $colors_green !default;
+$font_color_descriptions_link_visited: $colors_plantation !default;
 $bg_color_selectionpopup: $colors_lightbrown !default; // selection popups like character/alias on posts#editor
 $bg_color_spacer_alt: $colors_brown !default;
 $bg_color_search_box: $colors_brown !default;
-$font_color_search_box: $font_color_page !default;
+$font_color_search_box: $colors_black !default;
 
 // replies.scss
 $bg_color_icon_overlay: #000000 !default; // box displaying current icon
@@ -205,8 +209,8 @@ $font_color_ender_post: $colors_bright !default;
 $bg_color_post_character: $colors_brown !default;
 $bg_color_post_screenname: $colors_greybrown !default;
 $bg_color_post_author: $colors_lightbrown !default;
-$font_color_post_info: $font_color_page !default;
-$font_color_post_screenname: $font_color_post_info !default;
+$font_color_post_info: $colors_black !default;
+$font_color_post_screenname: $colors_black !default;
 
 $bg_color_post_character_narrow: $colors_lightbrown !default;
 $bg_color_post_author_narrow: $colors_brown !default; // these are flipped from not-narrow mode to make the quick-switcher blend in
@@ -223,15 +227,15 @@ $bg_color_menu_link_hover: $colors_greygreen !default;
 
 // post headers
 $bg_color_post_description: $colors_greybrown !default;
-$font_color_post_description: $font_color_page !default;
+$font_color_post_description: $colors_black !default;
 $bg_color_navheader: $colors_lightbrown !default;
 $bg_color_navbutton: $colors_greybrown !default;
 
 $bg_color_post_menu: $colors_brown !default;
 $border_color_post_menu: $colors_greybrown !default;
-$font_color_post_menu: $font_color_page !default;
+$font_color_post_menu: $colors_black !default;
 
-$bg_color_badge: #FDE295 !default;
-$font_color_badge: #7B3F00 !default;
-$border_color_badge: #C8A528 !default;
-$shadow_color_badge: #FFFACD !default;
+$bg_color_badge: $colors_golden !default;
+$font_color_badge: $colors_cinnamon !default;
+$border_color_badge: $colors_confetti !default;
+$shadow_color_badge: $colors_lemon !default;
