@@ -1,9 +1,13 @@
 // Variables
 // global font sizes
-$font_size_header: 16px; // header
-$font_size_main: 16px; // main content
-$font_size_small: 14px; // header-links (mobile mode), table elements
-$font_size_mini: 10px; // time-loaded
+$font_size_header: 1rem; // header
+$font_size_large: 1.125rem;
+$font_size_main: 1rem; // main content
+$font_size_smallish: 0.9375rem;
+$font_size_small: 0.875rem; // header-links (mobile mode), table elements
+$font_size_smallerish: 0.8125rem;
+$font_size_smaller: 0.75rem;
+$font_size_mini: 0.625rem; // time-loaded
 
 // default color palette
 // color palette used by the default style
