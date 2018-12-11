@@ -68,6 +68,7 @@ $font_color_flash_inbox: $colors_black !default;
 $bg_color_flash_breadcrumbs: $colors_greybrown !default; // breadcrumbs ("Continuities » Effulgence » make a wish » one enormous bruise")
 $font_color_flash_breadcrumbs: $colors_black !default;
 $font_color_breadcrumbs_bold: $colors_black !default;
+$font_color_breadcrumbs_link_visited: $colors_plantation !default;
 $font_color_flash_link: $colors_green !default;
 $font_color_flash_hover: $colors_narvik !default;
 
@@ -77,7 +78,14 @@ $bg_color_linkbox_edit: $colors_blue !default;
 $bg_color_linkbox_favorite: $colors_blue !default;
 $bg_color_linkbox_delete: $colors_red !default;
 $bg_color_linkbox_dismiss: $colors_red !default;
-//$bg_color_linkbox_subber // this is not styled differently on non-starries, where linkboxes are all colored the same, but is a necessary variable there
+$bg_color_linkbox_subber: default !default; // this is not styled differently on non-starries, where linkboxes are all colored the same, but is a necessary variable there
+// This is definitely not actually right but not possible to get right; TODO consider splitting variable
+
+$font_color_linkbox_new: $colors_black !default; //TODO: check this
+$font_color_linkbox_edit: $colors_black !default;
+$font_color_linkbox_favorite: $colors_black !default;
+$font_color_linkbox_delete: $colors_black !default;
+$font_color_linkbox_dismiss: $colors_black !default;
 
 // inputs
 $bg_color_input: $colors_white !default; // regular <input>
@@ -119,11 +127,14 @@ $font_color_tag_item_gallery: $colors_lightbrown !default;
 // content headers
 $bg_color_head: $colors_brown !default; // primary content header
 $font_color_head_link: $colors_lightgrey !default; // TODO: Fix how this and hover are actually unstripped from layout.scss
+$font_color_head_link_visited: $colors_plantation !default;
 $bg_color_sub: $colors_lightbrown !default; // secondary content header
 $bg_color_subber: $colors_greybrown !default; // tertiary content header
 $font_color_head: $colors_lightgrey !default;
 $font_color_sub: $colors_darkpurple !default;
+$font_color_subber_link_visited: $colors_plantation !default;
 $font_color_subber: $colors_blacker !default;
+$font_color_subber_bold: $colors_blacker !default; // TODO: confirm
 
 $bg_color_ender: $bg_color_subber !default; // form table footer with submit
 $font_color_ender: $colors_blacker !default;
@@ -131,6 +142,7 @@ $font_color_ender: $colors_blacker !default;
 // content
 $bg_color_even: #E3E3E3 !default;
 $bg_color_odd: #D8D8D8 !default;
+$bg_color_content_border: transparent !default; // from river, is 0-width in default
 
 // target: #D8D8D8;
 // from: #E3E3E3;
@@ -176,6 +188,7 @@ $bg_color_select2_search: $colors_white !default;
 // rtf editor
 $font_color_input_placeholder: default !default;
 $bg_color_mce_panel: #F0F0F0 !default; // MCE header & footer background
+$opacity_mce_label: 1 !default; //TODO: check this
 $bg_color_reply_content: $colors_white !default;
 $font_color_reply_content: $colors_dark !default;
 
@@ -210,6 +223,7 @@ $bg_color_post_character: $colors_brown !default;
 $bg_color_post_screenname: $colors_greybrown !default;
 $bg_color_post_author: $colors_lightbrown !default;
 $font_color_post_info: $colors_black !default;
+$font_weight_post_info: default !default; // TODO: this is probably not actually right
 $font_color_post_screenname: $colors_black !default;
 
 $bg_color_post_character_narrow: $colors_lightbrown !default;
@@ -239,3 +253,5 @@ $bg_color_badge: $colors_golden !default;
 $font_color_badge: $colors_cinnamon !default;
 $border_color_badge: $colors_confetti !default;
 $shadow_color_badge: $colors_lemon !default;
+
+$font_color_reply_footer: default !default; // from river // TODO: fix
