@@ -13,6 +13,7 @@ $font_size_mini: 0.625rem; // time-loaded
 // color palette used by the default style
 // do not use in CSS files; use a semantically relevant variable below that references a color here instead
 $colors_white: #FFFFFF;
+$colors_narvik: #FCFEFD;
 $colors_bright: #FEFEFE;
 $colors_dark: #444444;
 $colors_lightbrown: #B9B6AD;
@@ -20,12 +21,14 @@ $colors_lightishbrown: #9E9C93;
 $colors_brown: #8B8687;
 $colors_greybrown: #A3A1A0;
 $colors_green: #3F7055;
+$colors_plantation: #28503A;
 $colors_blue: #4455AA;
 $colors_red: #880000;
 $colors_greygreen: #B0BBA9;
 $colors_lightgrey: #EEEEEE;
 $colors_darkpurple: #3E384F;
 $colors_black: #101010;
+$colors_blacker: #000000;
 
 // Semantic colors
 // colors listed here should be named according to where and how they are used, to allow layouts to better recolor the site
@@ -46,9 +49,9 @@ $font_color_content: $colors_dark !default; // body
 
 // links
 $font_color_link: $colors_green !default; // link
-$font_color_link_visited: #28503A !default; // link (visited)
-$font_color_link_visited_alt: $font_color_link_visited !default; // starry has an alternate link visited color in some places
-$font_color_link_hover: #FCFEFD !default; // link (hovered)
+$font_color_link_visited: $colors_plantation !default; // link (visited)
+$font_color_link_visited_alt: $colors_plantation !default; // starry has an alternate link visited color in some places
+$font_color_link_hover: $colors_narvik !default; // link (hovered)
 
 // flashes
 // these are the notifications that appear when you submit a form or get a message
@@ -116,7 +119,7 @@ $bg_color_sub: $colors_lightbrown !default; // secondary content header
 $bg_color_subber: $colors_greybrown !default; // tertiary content header
 $font_color_head: $colors_lightgrey !default;
 $font_color_sub: $colors_darkpurple !default;
-$font_color_subber: black !default;
+$font_color_subber: $colors_blacker !default;
 
 $bg_color_ender: $bg_color_subber !default; // form table footer with submit
 $font_color_ender: $font_color_subber !default;
