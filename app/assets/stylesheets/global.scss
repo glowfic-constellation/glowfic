@@ -64,8 +64,21 @@ button, .button {
 .width-15 { width: 15px !important; }
 .width-70 { width: 70px; }
 .width-150 { width: 150px; }
-.spacer, .spacer-alt { height: 2px; padding: 0px !important; }
-.spacer-alt { background-color: $bg_color_spacer_alt; }
+
+.spacer {
+  padding: 0px !important;
+  height: 2px;
+
+  .gallery-icon-editor & {
+    height: 12px;
+  }
+}
+
+.spacer-alt {
+  @extend .spacer;
+  background-color: $bg_color_spacer_alt;
+}
+
 .centered { text-align: center !important; }
 .left-align { text-align: left; }
 .right-align { text-align: right; }
