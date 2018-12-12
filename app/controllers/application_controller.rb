@@ -138,6 +138,7 @@ class ApplicationController < ActionController::Base
 
   def posts_from_relation(relation, no_tests: true, with_pagination: true, select: '')
     posts = relation
+      .visible_to(current_user)
       .select('posts.*, boards.name as board_name, users.username as last_user_name'+ select)
       .joins(:board)
       .joins(:last_user)
@@ -147,10 +148,6 @@ class ApplicationController < ActionController::Base
 
     posts = posts.paginate(page: page, per_page: 25) if with_pagination
     posts = posts.no_tests if no_tests
-
-    if (with_pagination && posts.total_pages <= 1) || posts.count(:all) <= 25
-      posts = posts.select {|post| post.visible_to?(current_user)}
-    end
 
     if logged_in?
       @opened_ids ||= PostView.where(user_id: current_user.id).where('read_at IS NOT NULL').pluck(:post_id)
