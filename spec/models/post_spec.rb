@@ -976,6 +976,52 @@ RSpec.describe Post do
     end
   end
 
+  describe "#visible_to" do
+
+    it "logged out only shows public posts" do
+      create(:post, privacy: Concealable::PRIVATE)
+      create_list(:post, 2, privacy: Concealable::ACCESS_LIST)
+      create_list(:post, 2, privacy: Concealable::REGISTERED)
+      posts = create_list(:post, 3, privacy: Concealable::PUBLIC)
+      expect(Post.visible_to(nil)).to match_array(posts)
+    end
+
+    describe "logged in" do
+      let(:user) { create(:user) }
+
+      it "shows constellation-only posts" do
+        posts = create_list(:post, 2, privacy: Concealable::REGISTERED)
+        expect(Post.visible_to(user)).to match_array(posts)
+      end
+
+      it "shows own access-listed posts" do
+        posts = create_list(:post, 2, privacy: Concealable::ACCESS_LIST, user_id: user.id)
+        expect(Post.visible_to(user)).to match_array(posts)
+      end
+
+      it "shows access-listed posts with access" do
+        post = create(:post, privacy: Concealable::ACCESS_LIST)
+        PostViewer.create!(post: post, user: user)
+        expect(Post.visible_to(user)).to eq([post])
+      end
+
+      it "does not show other access-listed posts" do
+        create_list(:post, 2, privacy: Concealable::ACCESS_LIST)
+        expect(Post.visible_to(user)).to be_empty
+      end
+
+      it "shows own private posts" do
+        posts = create_list(:post, 2, privacy: Concealable::PRIVATE, user_id: user.id)
+        expect(Post.visible_to(user)).to match_array(posts)
+      end
+
+      it "does not show other private posts" do
+        create_list(:post, 2, privacy: Concealable::PRIVATE)
+        expect(Post.visible_to(user)).to be_empty
+      end
+    end
+  end
+
   context "callbacks" do
     include ActiveJob::TestHelper
 
