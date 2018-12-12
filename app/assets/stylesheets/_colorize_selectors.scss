@@ -20,7 +20,7 @@ button, .button {
   background: -webkit-linear-gradient(to bottom, #FFFFFF 20%, #F6F6F6 50%, #EEEEEE 52%, #F4F4F4 100%);
   background: -moz-linear-gradient(to bottom, #FFFFFF 20%, #F6F6F6 50%, #EEEEEE 52%, #F4F4F4 100%);
   background: -o-linear-gradient(to bottom, #FFFFFF 20%, #F6F6F6 50%, #EEEEEE 52%, #F4F4F4 100%);
-  background: linear-gradient(to bottom, #FFFFFF 20%, #F6F6F6 50%, #EEEEEE 52%, #F4F4F4 100%); // TODO parameterize
+  background: linear-gradient(to bottom, #FFFFFF 20%, #F6F6F6 50%, #EEEEEE 52%, #F4F4F4 100%);
   border: 1px solid $border_color_button;
   color: $font_color_input;
 }
@@ -31,7 +31,7 @@ button, .button {
 .odd, .post-reply:nth-child(odd), .post-post + #post-editor, .post-post + a + #post-editor {
   background-color: $bg_color_odd;
 }
-.link-box { color: white; } // TODO parameterize
+.link-box { color: white; }
 .link-box.action-new { background-color: $bg_color_linkbox_new; }
 .link-box.action-delete { background-color: $bg_color_linkbox_delete; }
 .link-box.action-edit { background-color: $bg_color_linkbox_edit;}
@@ -62,8 +62,8 @@ th, .content-header {
 .content-header {
   span {
     a {
-      color: #EEEEEE; // TODO parameterize
-      &:hover { color: #DDDDDD; } // TODO parameterize
+      color: #EEEEEE;
+      &:hover { color: #DDDDDD; }
     }
   }
 }
@@ -88,7 +88,7 @@ th, .content-header {
 
   &.selected { background-color: $bg_color_viewbutton_selected; }
 
-  a { color: white; } // TODO parameterize
+  a { color: white; }
 }
 .tag-item-link:hover {
   color: unset; // TODO ?
@@ -102,8 +102,8 @@ th, .content-header {
 // tr.gallery-tags .tag-item { color: $font_color_tag_item_gallery; }
 // This is presently inherited from .tag-item in non-starry themes, and thus adding this to the base file overrides font color styling there.
 .section-warning {
-  background-color: rgb(208, 110, 110); // TODO parameterize
-  background-color: rgba(255, 0, 0, 0.4); // TODO parameterize
+  background-color: rgb(208, 110, 110);
+  background-color: rgba(255, 0, 0, 0.4);
 }
 .search-box {
   background-color: $bg_color_search_box;
