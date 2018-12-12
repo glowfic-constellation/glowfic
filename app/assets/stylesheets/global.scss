@@ -63,7 +63,14 @@ button, .button {
 .padding-right-10 { padding-right: 10px; }
 .width-15 { width: 15px !important; }
 .width-70 { width: 70px; }
-.width-150 { width: 150px; }
+
+.width-150 {
+  width: 150px;
+
+  &.subber {
+    width: 200px;
+  }
+}
 
 .spacer {
   padding: 0px !important;
