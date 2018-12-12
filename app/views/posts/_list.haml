@@ -28,9 +28,8 @@
       - if local_assigns[:check_box_name]
         %th.sub
   %tbody
-    - visible_posts = posts.select { |post| post.visible_to?(current_user) }
-    = render partial: 'posts/list_item', collection: visible_posts, as: :post, locals: post_args
-    - if visible_posts.empty?
+    = render partial: 'posts/list_item', collection: posts, as: :post, locals: post_args
+    - if posts.empty?
       %tr
         %td.centered.padding-10.no-posts{ class: cycle('even','odd'), colspan: col_count } — No posts yet —
   - if posts.methods.include?(:total_pages) && posts.total_pages > 1
