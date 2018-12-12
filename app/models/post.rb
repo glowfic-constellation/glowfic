@@ -77,6 +77,18 @@ class Post < ApplicationRecord
     select('(SELECT COUNT(*) FROM replies WHERE replies.post_id = posts.id) AS reply_count')
   }
 
+  scope :visible_to, ->(user) {
+    if user
+      where(privacy: Concealable::PUBLIC)
+      .or(where(privacy: Concealable::REGISTERED))
+      .or(where(privacy: Concealable::ACCESS_LIST, user_id: user.id))
+      .or(where(privacy: Concealable::ACCESS_LIST, id: PostViewer.where(user_id: user.id).select(:id)))
+      .or(where(privacy: Concealable::PRIVATE, user_id: user.id))
+    else
+      where(privacy: Concealable::PUBLIC)
+    end
+  }
+
   def visible_to?(user)
     return true if public?
     return false unless user
