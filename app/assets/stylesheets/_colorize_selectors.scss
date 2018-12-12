@@ -22,7 +22,7 @@ button, .button {
   background: -o-linear-gradient(to bottom, #FFFFFF 20%, #F6F6F6 50%, #EEEEEE 52%, #F4F4F4 100%);
   background: linear-gradient(to bottom, #FFFFFF 20%, #F6F6F6 50%, #EEEEEE 52%, #F4F4F4 100%); // TODO parameterize
   border: 1px solid $border_color_button;
-  color: $font_color_input; // TODO unduplicate
+  color: $font_color_input;
 }
 .spacer-alt { background-color: $bg_color_spacer_alt; }
 .even, .post-post, .post-reply:nth-child(even), #post-editor {
@@ -44,10 +44,10 @@ button, .button {
   a { color: $font_color_header_link; }
   a:hover { color: $font_color_header_link_hover; }
 }
-#logo { background-color: $bg_color_header_top; } // TODO unduplicate
-#user-info { background-color: $bg_color_header_middle; } // TODO unduplicate
+#logo { background-color: $bg_color_header_top; }
+#user-info { background-color: $bg_color_header_middle; }
 #nav-top {
-  background-color: $bg_color_header_middle; // TODO unduplicate
+  background-color: $bg_color_header_middle;
 
   button, .button { color: $font_color_button; }
 }
@@ -110,9 +110,9 @@ th, .content-header {
   color: $font_color_search_box;
 }
 #footer {
-  background-color: $bg_color_header_middle; // TODO unduplicate
-  color: $font_color_header_link; // TODO unduplicate
+  background-color: $bg_color_header_middle;
+  color: $font_color_header_link;
 
-  a { color: $font_color_header_link; } // TODO unduplicate
-  a:hover { color: $font_color_header_link_hover; } // TODO unduplicate
+  a { color: $font_color_header_link; }
+  a:hover { color: $font_color_header_link_hover; }
 }
