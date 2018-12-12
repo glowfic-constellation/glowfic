@@ -25,7 +25,7 @@
         = @character.name
         - if @character.aliases.exists?
           = select_tag :orig_alias, options_for_select({'— Any Alias —': 'all'}, 'all') + options_from_collection_for_select(@character.aliases, :id, :name), prompt: '— No alias —'
-      %td.replace-icon
+      %td.replace-icon.vtop
         - if @alts.first.try(:default_icon)
           = icon_tag @alts.first.default_icon, id: 'new_icon'
         - else
