@@ -197,6 +197,9 @@ paths:
   post_edit:
     path: /posts/1/edit
     selector: '[id=content]'
+  post_flat:
+    path: /posts/1?view=flat&pp=skip
+    selector: '[id=content]'
 
   post_menu:
     path: /posts/1
