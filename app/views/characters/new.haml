@@ -1,6 +1,9 @@
 = form_for @character, url: characters_path, method: :post do |f|
   = f.hidden_field :default_icon_id
-  %table.form-table
-    %tr
-      %th.centered{colspan: 2} New Character
-    = render partial: 'editor', locals: {f: f}
+  .character-form
+    %table.form-table
+      %tr
+        %th.centered{colspan: 2} New Character
+      = render 'editor', f: f
+
+  = render 'icon_selector'

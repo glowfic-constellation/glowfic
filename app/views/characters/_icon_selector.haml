@@ -1,0 +1,18 @@
+#character-icon-selector
+  %strong Icons
+  %br
+  Pick default icon (optional):
+  %br
+  .character-galleries-simple
+    - galleries = @character.galleries.present? ? @character.galleries.ordered : [Struct.new(:id, :name, :icons).new(0, 'Galleryless', @character.user.galleryless_icons || [])]
+    - if galleries.present?
+      - galleries.each do |gallery|
+        %div{id: "gallery#{gallery.id}", :'data-id' => gallery.id }
+          %br
+          %b.gallery-name= gallery.name
+          %br
+          .gallery-icons
+            - gallery.icons.each do |icon|
+              - klass = 'icon character-icon'
+              - klass += ' selected-icon' if icon == @character.default_icon
+              = icon_tag icon, class: klass, data: { id: icon.id }

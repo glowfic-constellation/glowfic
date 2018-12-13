@@ -1,13 +1,10 @@
 @import 'variables';
 
 // default icon selector
-#character-icon-selector {
-  position: absolute;
-  left: 450px;
-  top: 20px;
-}
+#character-icon-selector { display: inline-block; vertical-align: top; margin-left: 5px; }
 .character-galleries-simple { padding: 10px; }
 .character-screenname { font-size: 85%; }
+.character-form { display: inline-block; vertical-align: top; }
 
 // template descriptions on templates#show
 .single-description {
