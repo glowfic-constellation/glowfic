@@ -19,11 +19,6 @@ module.exports = function (casper, ready) {
         $("#footer").hide();
       });
     }
-
-    casper.wait(100);
-    casper.evaluate(function() {
-      $(".profiler-result").hide();
-    });
   });
 
   casper.wait(1000, ready);
