@@ -1,5 +1,38 @@
-- content_for :form do
-  = form_for post, :html => { :id => 'post_form' } do |f|
+= form_for post, html: {id: 'post_form'} do |f|
+  - content_for :form do
+    - unless post.id.present? && !post.editable_by?(current_user)
+      .view-button#rtf{class: ('selected' if current_user.default_editor == 'rtf')} Rich Text
+      .view-button#html{class: ('selected' if current_user.default_editor == 'html')} HTML
+      .view-button#editor-help{title: 'Help'} ?
+    = f.label :subject, 'Subject:'
+    = f.text_field :subject, placeholder: 'Subject'
+    %br
+    = f.label :description, 'Description:'
+    = f.text_field :description, placeholder: 'Description'
+    .details (Optional: describe the thread's setting and major players, e.g. A Bell and Vorkosigans in Chronicle)
+    - if !(post.id.present? && !post.editable_by?(current_user))
+      %br
+      #post-form-wrapper
+        = f.text_area :content, class: 'tinymce'
+        - unless current_user.id == post.user_id
+          %b= f.label :audit_comment, 'Moderator note'
+          %br
+          = f.text_area :audit_comment, placeholder: 'Explain reason for moderation here', class: 'mod'
+          %br
+        = f.hidden_field :character_id, id: 'reply_character_id'
+        = f.hidden_field :icon_id, id: 'reply_icon_id'
+        = f.hidden_field :character_alias_id, id: 'reply_character_alias_id'
+      = render 'posts/editor_help'
+  - content_for :buttons do
+    - if post.id.present? && !post.editable_by?(current_user)
+      = submit_tag 'Save', class: 'button', id: 'submit_button', data: { disable_with: 'Saving...' }
+    - else
+      = submit_tag (post.new_record? ? 'Post' : 'Save'), class: 'button', id: 'submit_button', data: { disable_with: 'Saving...' }
+      = submit_tag "Preview", class: 'button', id: 'preview_button', name: 'button_preview', data: { disable_with: 'Previewing...' }
+
+
+  .subber Metadata
+  .even
     - boards = Board.ordered.select {|b| b.id == post.board_id || current_user.writes_in?(b) }
     = f.label :board_id, 'Continuity:'
     = f.select :board_id, options_from_collection_for_select(boards, :id, :name, post.board_id)
@@ -14,11 +47,14 @@
       = f.collection_select(:viewer_ids, User.where.not(id: post.user_id).ordered,
       :id, :username, {selected: @viewer_ids.nil? ? post.viewer_ids : @viewer_ids}, {multiple: true})
 
-    - if post.persisted?
-      #current_authors
-        = f.label :joined_author_ids, 'Current authors:'
+    #current_authors
+      = f.label :joined_author_ids, 'Current authors:'
+      - if post.persisted?
         - authors = post.joined_authors.ordered
         = authors.map { |author| link_to author.username, user_path(author) }.join(', ').html_safe
+      - else
+        = link_to current_user.username, user_path(current_user)
+
 
     %div{title: 'Invite users to be authors in this post. Once they post, they will be removed from this section and moved to a Current Authors section. Invited authors will have this post show on their Replies Owed page, even if they have not yet joined the post. If the post is locked, invited users will have permission to reply. This field will not override privacy settings. You are automatically added as an author when you create a new post.'}
       = f.label :unjoined_author_ids, 'Invite coauthors:'
@@ -27,6 +63,7 @@
     %div{title: 'If a post is locked, it doesn\'t accept new authors. Current or invited authors can still reply.'}
       = f.label :authors_locked, 'Lock post to authors?'
       = f.check_box :authors_locked, class: 'vmid', checked: @authors_from_board || @post.authors_locked
+      = f.label :authors_locked, 'Only allow current or invited authors to reply to this post', class: 'no-margin'
 
     = f.label :setting_ids, 'Setting:'
     = tag_select(post, f, :settings)
@@ -36,37 +73,10 @@
     %br
     = f.label :label_ids, 'Labels:'
     = tag_select(post, f, :labels)
-    %hr
-    - unless post.id.present? && !post.editable_by?(current_user)
-      .view-button#rtf{class: ('selected' if current_user.default_editor == 'rtf')} Rich Text
-      .view-button#html{class: ('selected' if current_user.default_editor == 'html')} HTML
-      .view-button#editor-help{title: 'Help'} ?
-    = f.label :subject, 'Subject:'
-    = f.text_field :subject, placeholder: 'Subject'
-    %br
-    = f.label :description, 'Description:'
-    = f.text_field :description, placeholder: 'Description'
-    .details (Optional: describe the thread's setting and major players, e.g. A Bell and Vorkosigans in Chronicle)
-    - if post.id.present? && !post.editable_by?(current_user)
-      = submit_tag 'Save', class: 'button', id: 'submit_button', data: { disable_with: 'Saving...' }
-    - else
-      %br
-      #post-form-wrapper
-        = f.text_area :content, class: 'tinymce'
-        - unless current_user.id == post.user_id
-          %b= f.label :audit_comment, 'Moderator note'
-          %br
-          = f.text_area :audit_comment, placeholder: 'Explain reason for moderation here', class: 'mod'
-          %br
-        = f.hidden_field :character_id, id: 'reply_character_id'
-        = f.hidden_field :icon_id, id: 'reply_icon_id'
-        = f.hidden_field :character_alias_id, id: 'reply_character_alias_id'
-        = submit_tag (post.new_record? ? 'Post' : 'Save'), class: 'button', id: 'submit_button', data: { disable_with: 'Saving...' }
-        = submit_tag "Preview", class: 'button', id: 'preview_button', name: 'button_preview', data: { disable_with: 'Previewing...' }
-      %br
-      = render 'posts/editor_help'
 
-- if post.id.present? && !post.editable_by?(current_user)
-  #post-editor.padding-10= yield :form
-- else
-  = render 'editor', item: post
+  .subber Content
+  - if post.id.present? && !post.editable_by?(current_user)
+    #post-editor.padding-10= yield :form
+    .subber.centered= yield :buttons
+  - else
+    = render 'editor', item: post
