@@ -34,8 +34,8 @@ RSpec.feature "Editing posts", :type => :feature do
     expect(page).to have_no_selector('.post-container')
     within('#post-editor') do
       fill_in 'Subject', with: 'other subject'
-      click_button 'Save'
     end
+    click_button 'Save'
 
     expect(page).to have_no_selector('.error')
     expect(page).to have_selector('.success', text: 'has been updated.')
@@ -61,8 +61,8 @@ RSpec.feature "Editing posts", :type => :feature do
     expect(page).to have_no_selector('.post-container')
     within('#post-editor') do
       fill_in 'Subject', with: 'other subject'
-      click_button 'Preview'
     end
+    click_button 'Preview'
 
     # verify preview, change again
     expect(page).to have_no_selector('.error')
@@ -72,8 +72,8 @@ RSpec.feature "Editing posts", :type => :feature do
     within('#post-editor') do
       expect(page).to have_field('Subject', with: 'other subject')
       fill_in 'Subject', with: 'third subject'
-      click_button 'Save'
     end
+    click_button 'Save'
 
     expect(page).to have_no_selector('.error')
     expect(page).to have_selector('.success', text: 'has been updated.')
@@ -115,8 +115,8 @@ RSpec.feature "Editing posts", :type => :feature do
     within('#post-editor') do
       fill_in 'Subject', with: 'other subject'
       fill_in 'Moderator note', with: 'example edit'
-      click_button 'Save'
     end
+    click_button 'Save'
 
     expect(page).to have_no_selector('.error')
     expect(page).to have_selector('.success', text: 'has been updated.')
@@ -147,8 +147,8 @@ RSpec.feature "Editing posts", :type => :feature do
     within('#post-editor') do
       fill_in 'Subject', with: 'other subject'
       fill_in 'Moderator note', with: 'example edit'
-      click_button 'Preview'
     end
+    click_button 'Preview'
 
     # verify preview, change again
     expect(page).to have_no_selector('.error')
@@ -160,8 +160,8 @@ RSpec.feature "Editing posts", :type => :feature do
       expect(page).to have_field('Moderator note', with: 'example edit')
       fill_in 'Subject', with: 'third subject'
       fill_in 'Moderator note', with: 'another edit'
-      click_button 'Save'
     end
+    click_button 'Save'
 
     expect(page).to have_no_selector('.error')
     expect(page).to have_selector('.success', text: 'has been updated.')
@@ -188,9 +188,7 @@ RSpec.feature "Editing posts", :type => :feature do
     expect(page).to have_selector('.content-header', exact_text: 'Edit post')
     expect(page).to have_no_selector('.post-container')
     expect(page).to have_field('Continuity:', with: board.id)
-    within('#post-editor') do
-      click_button 'Preview'
-    end
+    click_button 'Preview'
 
     # verify preview, change again
     expect(page).to have_no_selector('.error')
@@ -200,8 +198,8 @@ RSpec.feature "Editing posts", :type => :feature do
     expect(page).to have_selector('#post-editor')
     within('#post-editor') do
       fill_in 'Moderator note', with: 'test edit'
-      click_button 'Save'
     end
+    click_button 'Save'
 
     expect(page).to have_no_selector('.error')
     expect(page).to have_selector('.success', text: 'has been updated.')

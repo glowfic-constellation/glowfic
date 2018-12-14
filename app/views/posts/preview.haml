@@ -2,4 +2,6 @@
 - if @post.description.present?
   .post-subheader= sanitize_post_description(@post.description).html_safe
 = render 'replies/single', reply: @written, show_edit: false
+%br
+.content-header Edit previewed post
 = render 'write', post: @post
