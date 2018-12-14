@@ -8,9 +8,8 @@ class Reply < ApplicationRecord
   validate :author_can_write_in_post, on: :create
   audited associated_with: :post, except: :reply_order
 
-  after_create :notify_other_authors, :destroy_draft, :update_active_char, :set_last_reply, :update_post, :update_post_authors
-  after_save :update_flat_post
-  after_update :update_post
+  after_create :notify_other_authors, :destroy_draft, :update_active_char, :set_last_reply, :update_post, :update_post_authors, :append_flat_post
+  after_update :update_post, :update_flat_post
   after_destroy :set_previous_reply_to_last, :remove_post_author
 
   attr_accessor :skip_notify, :skip_post_update, :is_import, :skip_regenerate
@@ -117,6 +116,11 @@ class Reply < ApplicationRecord
   def update_flat_post
     return if skip_regenerate
     GenerateFlatPostJob.enqueue(post_id)
+  end
+
+  def append_flat_post
+    return if skip_regenerate
+    GenerateFlatPostJob.enqueue(post_id, reply_id: self.id)
   end
 
   def update_post_authors

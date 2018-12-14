@@ -1,37 +1,23 @@
 class GenerateFlatPostJob < ApplicationJob
   queue_as :high
 
-  def self.enqueue(post_id)
+  def self.enqueue(post_id, reply_id: nil)
     # frequent tag check
     lock_key = lock_key(post_id)
     return if $redis.get(lock_key)
     $redis.set(lock_key, true)
 
-    perform_later(post_id)
+    perform_later(post_id, reply_id)
   end
 
-  def perform(post_id)
+  def perform(post_id, reply_id: nil)
     Rails.logger.info("[GenerateFlatPostJob] updating flat post for post #{post_id}")
     return unless (post = Post.find_by_id(post_id))
 
     lock_key = self.class.lock_key(post_id)
 
     begin
-      replies = post.replies
-        .select('replies.*, characters.name, characters.screenname, icons.keyword, icons.url, users.username')
-        .joins(:user)
-        .left_outer_joins(:character)
-        .left_outer_joins(:icon)
-        .ordered
-
-      view = ActionView::Base.new(ActionController::Base.view_paths, {})
-      view.extend ApplicationHelper
-      content = view.render(partial: 'posts/generate_flat', locals: {replies: replies})
-
-      flat_post = post.flat_post
-      flat_post.content = content
-      flat_post.save!
-
+      PostFlatten.new(post_id, reply_id: reply_id).update
       $redis.del(lock_key)
     rescue Exception => e
       $redis.del(lock_key)

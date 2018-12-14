@@ -1,6 +1,6 @@
 require "spec_helper"
 
-RSpec.describe FlatPost do
+RSpec.describe PostFlatten do
   include ActiveJob::TestHelper
 
   describe ".regenerate_all" do
@@ -12,7 +12,7 @@ RSpec.describe FlatPost do
     it "regenerates all flat posts" do
       post = create(:post)
       delete_lock(post)
-      FlatPost.regenerate_all
+      PostFlatten.regenerate_all
       expect(GenerateFlatPostJob).to have_been_enqueued.with(post.id).on_queue('high')
     end
 
@@ -21,7 +21,7 @@ RSpec.describe FlatPost do
       nonpost = Timecop.freeze(post.tagged_at + 2.hours) { create(:post) }
       delete_lock(post)
       delete_lock(nonpost)
-      FlatPost.regenerate_all(post.tagged_at + 1.hours)
+      PostFlatten.regenerate_all(post.tagged_at + 1.hours)
       expect(GenerateFlatPostJob).to have_been_enqueued.with(post.id).on_queue('high')
       expect(GenerateFlatPostJob).not_to have_been_enqueued.with(nonpost.id).on_queue('high')
     end
@@ -36,7 +36,7 @@ RSpec.describe FlatPost do
 
       delete_lock(post)
       delete_lock(nonpost)
-      FlatPost.regenerate_all(nil, false)
+      PostFlatten.regenerate_all(nil, false)
       expect(GenerateFlatPostJob).to have_been_enqueued.with(post.id).on_queue('high')
       expect(GenerateFlatPostJob).not_to have_been_enqueued.with(nonpost.id).on_queue('high')
     end
@@ -45,8 +45,21 @@ RSpec.describe FlatPost do
       post = create(:post)
       post.flat_post.delete
       delete_lock(post)
-      FlatPost.regenerate_all
+      PostFlatten.regenerate_all
       expect(GenerateFlatPostJob).to have_been_enqueued.with(post.id).on_queue('high')
+    end
+  end
+
+  describe "#update" do
+    context "appending a reply" do
+      it "only calls a single partial" do
+        post = create(:post)
+        reply = create(:reply, post: post)
+        PostFlatten.new(post.id, reply_id: reply.id).update
+      end
+    end
+
+    context "regenerating entire post" do
     end
   end
 end
