@@ -20,6 +20,9 @@ module Owable
     after_create :add_creator_to_authors
     after_save :update_board_cameos
 
+    validate :valid_coauthors, on: :create
+    validate :valid_new_coauthors, on: :update
+
     attr_accessor :private_note
 
     def opt_out_of_owed(user)
@@ -60,6 +63,21 @@ module Owable
     end
 
     def valid_coauthors
+      return if self.unjoined_authors.empty?
+      return if self.user.user_ids_uninteractable.empty? && self.authors.empty?
+      self.unjoined_authors.each_with_index do |user, i|
+        next if user.user_ids_uninteractable.empty?
+        authors = self.user + self.unjoined_authors[i + 1, -1]
+        authors.each do |author|
+          unless author.can_interact_with?(unjoined)
+            errors.add(:post_author, "cannot be added")
+            break
+          end
+        end
+      end
+    end
+
+    def valid_new_coauthors
       return if self.unjoined_authors.empty?
       return if self.user.user_ids_uninteractable.empty? && self.authors.length == 1
       new_ids = self.unjoined_post_authors.reject(&:persisted?).pluck(:user_id)
