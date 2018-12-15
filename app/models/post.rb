@@ -36,7 +36,7 @@ class Post < ApplicationRecord
 
   validates :subject, presence: true
   validates :description, length: { maximum: 255 }
-  validate :valid_board, :valid_board_section, :valid_coauthors
+  validate :valid_board, :valid_board_section
 
   before_validation :set_last_user, on: :create
   before_create :build_initial_flat_post, :set_timestamps
@@ -296,25 +296,6 @@ class Post < ApplicationRecord
     return unless section.present?
     return if section.board_id == board_id
     errors.add(:section, "must be in the post's board")
-  end
-
-  def valid_coauthors
-    return if self.unjoined_authors.empty?
-    return if self.user.user_ids_uninteractable.empty? && self.authors.length == 1
-    new_ids = self.unjoined_post_authors.reject(&:persisted?).pluck(:user_id)
-    new_users = User.where(id: new_ids)
-    new_users.each_with_index do |unjoined, i|
-      next if unjoined.user_ids_uninteractable.empty?
-      authors = User.where(self.post_authors.select(&:persisted?).pluck(:user_id))
-      unchecked = new_users[i + 1, -1]
-      authors += unchecked if unchecked.present?
-      authors.each do |author|
-        unless author.can_interact_with?(unjoined)
-          errors.add(:post_author, "cannot be added")
-          break
-        end
-      end
-    end
   end
 
   def set_last_user
