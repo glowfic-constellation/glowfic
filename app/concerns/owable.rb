@@ -20,8 +20,7 @@ module Owable
     after_create :add_creator_to_authors
     after_save :update_board_cameos
 
-    validate :valid_coauthors, on: :create
-    validate :valid_new_coauthors, on: :update
+    validate :valid_coauthors
 
     attr_accessor :private_note
 
@@ -63,37 +62,18 @@ module Owable
     end
 
     def valid_coauthors
-      return if self.unjoined_authors.empty?
-      return if self.user.user_ids_uninteractable.empty? && self.authors.empty?
-      self.unjoined_authors.each_with_index do |user, i|
-        next if user.user_ids_uninteractable.empty?
-        authors = self.user + self.unjoined_authors[i + 1, -1]
-        authors.each do |author|
-          unless author.can_interact_with?(unjoined)
-            errors.add(:post_author, "cannot be added")
-            break
-          end
-        end
-      end
-    end
+      new_author_ids = self.unjoined_post_authors.reject(&:persisted?).map(&:user_id)
+      return if new_author_ids.empty?
 
-    def valid_new_coauthors
-      return if self.unjoined_authors.empty?
-      return if self.user.user_ids_uninteractable.empty? && self.authors.length == 1
-      new_ids = self.unjoined_post_authors.reject(&:persisted?).pluck(:user_id)
-      new_users = User.where(id: new_ids)
-      new_users.each_with_index do |unjoined, i|
-        next if unjoined.user_ids_uninteractable.empty?
-        authors = User.where(self.post_authors.select(&:persisted?).pluck(:user_id))
-        unchecked = new_users[i + 1, -1]
-        authors += unchecked if unchecked.present?
-        authors.each do |author|
-          unless author.can_interact_with?(unjoined)
-            errors.add(:post_author, "cannot be added")
-            break
-          end
-        end
-      end
+      blocked_ids = User.where(id: new_author_ids).map do |author|
+        author.user_ids_uninteractable
+      end.flatten
+      return if blocked_ids.empty?
+
+      all_author_ids = new_author_ids + self.author_ids + [self.user_id]
+      self.authors.reset # clear association cache
+      return if (all_author_ids & blocked_ids).empty?
+      errors.add(:post_author, "cannot be added")
     end
   end
 end
