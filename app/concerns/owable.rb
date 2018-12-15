@@ -65,9 +65,7 @@ module Owable
       new_author_ids = self.unjoined_post_authors.reject(&:persisted?).map(&:user_id)
       return if new_author_ids.empty?
 
-      blocked_ids = User.where(id: new_author_ids).map do |author|
-        author.user_ids_uninteractable
-      end.flatten
+      blocked_ids = User.where(id: new_author_ids).map(&:user_ids_uninteractable).flatten
       return if blocked_ids.empty?
 
       all_author_ids = new_author_ids + self.author_ids + [self.user_id]
