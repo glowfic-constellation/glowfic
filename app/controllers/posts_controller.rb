@@ -22,7 +22,7 @@ class PostsController < WritableController
 
     if params[:view] == 'hidden'
       ids = PostAuthor.where(user_id: current_user.id, can_owe: false).group(:post_id).pluck(:post_id)
-      @posts = posts_from_relation(Post.where(id: ids)) and return
+      @posts = posts_from_relation(Post.where(id: ids).ordered) and return
     end
 
     ids = PostAuthor.where(user_id: current_user.id, can_owe: true).group(:post_id).pluck(:post_id)
