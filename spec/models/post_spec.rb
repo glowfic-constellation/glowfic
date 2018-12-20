@@ -473,6 +473,7 @@ RSpec.describe Post do
       create(:block, blocking_user: joined, blocked_user: add, block_interactions: true)
       post = create(:post)
       create(:reply, post: post, user: joined)
+      post.reload
       post.unjoined_authors = [add]
       expect(post).not_to be_valid
     end
@@ -483,6 +484,7 @@ RSpec.describe Post do
       create(:block, blocking_user: add, blocked_user: joined, block_interactions: true)
       post = create(:post)
       create(:reply, post: post, user: joined)
+      post.reload
       post.unjoined_authors = [add]
       expect(post).not_to be_valid
     end
