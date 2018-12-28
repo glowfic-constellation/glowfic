@@ -19,9 +19,9 @@
         = link_to unread_path(post) do
           = image_tag lastlink_img, class: 'vmid', title: 'First Unread'
     - if logged_in? && @opened_ids.present? && !@opened_ids.include?(post.id)
-      %b= link_to post.subject, post_path(post), title: strip_tags(post.description)
+      %b= link_to post.subject, post_path(post), title: strip_tags(post.description).html_safe
     - else
-      = link_to post.subject, post_path(post), title: strip_tags(post.description)
+      = link_to post.subject, post_path(post), title: strip_tags(post.description).html_safe
     - if !@hide_quicklinks && (!logged_in? || per_page > 0)
       - total_pages = (replies_count.to_f / per_page).ceil
       - if total_pages > 1

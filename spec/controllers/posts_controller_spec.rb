@@ -42,6 +42,18 @@ RSpec.describe PostsController do
       ids_fetched = controller.instance_variable_get('@posts').map(&:id)
       expect(ids_fetched).to eq([post5.id, post4.id, post3.id, post2.id, post1.id])
     end
+
+    context "with views" do
+      render_views
+
+      it "sanitizes post descriptions" do
+        post1 = create(:post, description: "<a href=\"/characters/1\">Name</a> and <a href=\"/characters/2\">Other Name</a> do a thing.")
+        post2 = create(:post, description: "A & B do a thing")
+        get :index
+        expect(response.body).to include('title="Name and Other Name do a thing."')
+        expect(response.body).to include('title="A &amp; B do a thing"')
+      end
+    end
   end
 
   describe "GET search" do
