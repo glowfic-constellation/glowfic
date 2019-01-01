@@ -5,11 +5,10 @@ AllCops:
   Exclude:
     - 'bin/*'
     - 'config/**/*'
-    - 'db/migrate/2015*'
-    - 'db/migrate/2016*'
-    - 'db/migrate/2017*'
+    - 'db/migrate/*'
     - 'db/seeds.rb'
     - 'spec/spec_helper.rb'
+    - 'wraith/*'
 
 Rails:
   Enabled: true
