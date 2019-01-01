@@ -141,37 +141,11 @@ class ApplicationController < ActionController::Base
   end
   helper_method :post_or_reply_link
 
-  def posts_from_relation(relation, no_tests: true, with_pagination: true, select: '', max: false)
-    if max
-      posts = relation.select('posts.*, max(boards.name) as board_name, max(users.username) as last_user_name'+ select)
-    else
-      posts = relation.select('posts.*, boards.name as board_name, users.username as last_user_name'+ select)
-    end
-
-    posts = posts
-      .visible_to(current_user)
-      .joins(:board)
-      .joins(:last_user)
-      .includes(:authors)
-      .with_has_content_warnings
-      .with_reply_count
-
-    posts = posts.paginate(page: page, per_page: 25) if with_pagination
-    posts = posts.no_tests if no_tests
-
-    if logged_in?
-      @opened_ids ||= PostView.where(user_id: current_user.id).where('read_at IS NOT NULL').pluck(:post_id)
-
-      opened_posts = PostView.where(user_id: current_user.id).where('read_at IS NOT NULL').where(post_id: posts.map(&:id)).select([:post_id, :read_at])
-      @unread_ids ||= []
-      @unread_ids += opened_posts.select do |view|
-        post = posts.detect { |p| p.id == view.post_id }
-        post && view.read_at < post.tagged_at
-      end.map(&:post_id)
-    end
-
-    posts
+  def posts_from_relation(relation, no_tests: true, with_pagination: true, select: '')
+    PostList.new(relation, no_tests: no_tests, with_pagination: with_pagination, select: select)
+    PostList.posts
   end
+
   helper_method :posts_from_relation
 
   attr_reader :unread_ids, :opened_ids
