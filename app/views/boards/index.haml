@@ -26,7 +26,7 @@
   - if @boards.methods.include?(:total_pages) && @boards.total_pages > 1
     %tfoot
       %tr
-        %td{colspan: 3}= render 'posts/paginator',  paginated: @boards
+        %td{colspan: 3}= render 'posts/paginator', paginated: @boards
 
   - if @cameo_boards.present?
     %tr

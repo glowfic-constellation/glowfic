@@ -3,7 +3,7 @@
     %tr
       %th{colspan: 7}
         Hidden from Unread
-        = link_to unread_posts_path  do
+        = link_to unread_posts_path do
           .view-button Unread &raquo;
     %tr
       %th.subber{colspan: 7} Continuities
@@ -28,4 +28,4 @@
       - if @hidden_posts.methods.include?(:total_pages) && @hidden_posts.total_pages > 1
         %tfoot
           %tr
-            %td{colspan: 7}= render 'posts/paginator',  paginated: @hidden_posts
+            %td{colspan: 7}= render 'posts/paginator', paginated: @hidden_posts
