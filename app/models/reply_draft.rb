@@ -4,7 +4,7 @@ class ReplyDraft < ApplicationRecord
   belongs_to :post, inverse_of: :reply_drafts, optional: false
 
   def self.draft_for(post_id, user_id)
-    self.where(post_id: post_id, user_id: user_id).first
+    self.find_by(post_id: post_id, user_id: user_id)
   end
 
   def self.draft_reply_for(post, user)

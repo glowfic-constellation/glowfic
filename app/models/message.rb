@@ -61,7 +61,7 @@ class Message < ApplicationRecord
   private
 
   def set_thread_id
-    return unless thread_id.blank?
+    return if thread_id.present?
     self.first_thread = self
   end
 

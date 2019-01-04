@@ -288,6 +288,9 @@ class CharactersController < ApplicationController
     @search_results = @search_results.ordered.paginate(page: page, per_page: 25)
   end
 
+  def icon
+  end
+
   private
 
   def find_character

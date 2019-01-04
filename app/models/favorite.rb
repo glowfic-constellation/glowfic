@@ -7,7 +7,7 @@ class Favorite < ApplicationRecord
 
   def self.between(user, favorite)
     return unless user && favorite
-    Favorite.where(user_id: user.id, favorite_id: favorite.id, favorite_type: favorite.class.to_s).first
+    Favorite.find_by(user_id: user.id, favorite_id: favorite.id, favorite_type: favorite.class.to_s)
   end
 
   private

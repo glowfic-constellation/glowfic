@@ -12,6 +12,18 @@ class PostImporter < Object
     ScrapePostJob.perform_later(@url, board_id, section_id, status, threaded, importer_id)
   end
 
+  def self.valid_dreamwidth_url?(url)
+    # this is simply checking for a properly formatted Dreamwidth URL
+    # errors when actually querying the URL are handled by ScrapePostJob
+    return false if url.blank?
+    return false unless url.include?('dreamwidth')
+    parsed_url = URI.parse(url)
+    return false unless parsed_url.host
+    parsed_url.host.ends_with?('dreamwidth.org')
+  rescue URI::InvalidURIError
+    false
+  end
+
   private
 
   def validate_url!
@@ -49,18 +61,6 @@ class PostImporter < Object
     data = HTTParty.get(@url).body
     Rails.logger.debug "Downloaded #{@url} for scraping"
     @dreamwidth_doc = Nokogiri::HTML(data)
-  end
-
-  def self.valid_dreamwidth_url?(url)
-    # this is simply checking for a properly formatted Dreamwidth URL
-    # errors when actually querying the URL are handled by ScrapePostJob
-    return false if url.blank?
-    return false unless url.include?('dreamwidth')
-    parsed_url = URI.parse(url)
-    return false unless parsed_url.host
-    parsed_url.host.ends_with?('dreamwidth.org')
-  rescue URI::InvalidURIError
-    false
   end
 end
 

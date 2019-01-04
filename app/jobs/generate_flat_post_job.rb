@@ -33,7 +33,7 @@ class GenerateFlatPostJob < ApplicationJob
       flat_post.save!
 
       $redis.del(lock_key)
-    rescue => e
+    rescue StandardError => e
       $redis.del(lock_key)
       raise e # jobs are automatically retried
     end
