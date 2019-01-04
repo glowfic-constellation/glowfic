@@ -4,7 +4,7 @@ $(document).ready(function() {
     if ($(this).text()[0] == "m") {
       $("#desc-"+id).show();
       $("#dots-"+id).hide();
-      $(this).html('&laquo; less');
+      $(this).html(' &laquo; less');
     } else {
       $("#desc-"+id).hide();
       $("#dots-"+id).show();
