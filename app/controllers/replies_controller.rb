@@ -122,7 +122,7 @@ class RepliesController < WritableController
         preview(ReplyDraft.reply_from_draft(draft)) and return
       end
 
-      if reply.user_id.present? && !params[:allow_dupe].present?
+      if reply.user_id.present? && params[:allow_dupe].blank?
         last_by_user = reply.post.replies.where(user_id: reply.user_id).ordered.last
         if last_by_user.present?
           match_attrs = ['content', 'icon_id', 'character_id', 'character_alias_id']

@@ -14,7 +14,7 @@ class BoardSection < ApplicationRecord
   private
 
   def clear_post_values
-    Post.where(section_id: id).each do |post|
+    Post.where(section_id: id).find_each do |post|
       post.section_id = nil
       post.save
     end
