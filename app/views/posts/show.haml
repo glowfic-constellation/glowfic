@@ -138,7 +138,7 @@
     .hidden
       = render 'replies/single', reply: @post
 - if @replies.present?
-  = render 'posts/paginator',  paginated: @replies
+  = render 'posts/paginator', paginated: @replies
 = render partial: 'replies/single', collection: @replies, as: :reply
 - if @post.completed? && (@replies.empty? || (@replies.last.id == @post.last_reply_id))
   .post-ender Here Ends This Thread
@@ -155,18 +155,18 @@
 - if @post.abandoned? && (@replies.empty? || (@replies.last.id == @post.last_reply_id))
   .post-ender This Thread Has Been Permanently Abandoned
 - if @replies.present?
-  = render 'posts/paginator',  paginated: @replies
+  = render 'posts/paginator', paginated: @replies
 - if logged_in? && @unread.nil?
   <a id="unread" class="noheight"> </a>
 - if @post.taggable_by?(current_user)
   - post_open = !@post.authors_locked?
   - draft_exists = !@reply.content.nil?
   - if (post_open && draft_exists) || @post.author_for(current_user)&.can_reply?
-    = render 'replies/write',  reply: @reply, url: replies_path, method: :post
+    = render 'replies/write', reply: @reply, url: replies_path, method: :post
   - elsif post_open
     .post-expander.post-editor-expander
       .info + Join Thread
       .hidden
-        = render 'replies/write',  reply: @reply, url: replies_path, method: :post
+        = render 'replies/write', reply: @reply, url: replies_path, method: :post
 
 .centered.margin-10= link_to 'Back to Top', '#'

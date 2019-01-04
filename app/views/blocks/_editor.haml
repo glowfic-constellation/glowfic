@@ -5,7 +5,7 @@
     - if local_assigns[:blocked_user]
       = blocked_user.username
     - else
-      = f.select :blocked_user_id, options_from_collection_for_select(@users, :id, :username,  params.fetch(:block, {})[:blocked_user_id]), {class: 'text chosen-select', prompt: '— Choose User —'}
+      = f.select :blocked_user_id, options_from_collection_for_select(@users, :id, :username, params.fetch(:block, {})[:blocked_user_id]), {class: 'text chosen-select', prompt: '— Choose User —'}
 %tr
   %th.sub Interactions
   %td{class: klass}

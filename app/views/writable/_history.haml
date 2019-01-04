@@ -4,7 +4,7 @@
     - audits = audited.audits.paginate(per_page: 25, page: page)
     - if audits.total_pages > 1
       %tr
-        %td{colspan: 2}= render 'posts/paginator',  paginated: audits
+        %td{colspan: 2}= render 'posts/paginator', paginated: audits
 
     - audits.each do |audit|
       - cur = audited.revision(audit.version)
