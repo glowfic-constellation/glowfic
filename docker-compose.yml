@@ -11,7 +11,7 @@ services:
       - redis
       - postgres
     working_dir: /code
-    command: script/rails s
+    command: bin/rails s
     environment:
       - REDIS_URL=redis://redis
       - GLOWFIC_DATABASE_HOST=postgres
