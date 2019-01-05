@@ -141,11 +141,13 @@ class ApplicationController < ActionController::Base
   end
   helper_method :post_or_reply_link
 
-  def posts_from_relation(relation, no_tests: true, with_pagination: true, select: '')
-    PostList.new(relation, no_tests: no_tests, with_pagination: with_pagination, select: select)
-    PostList.posts
+  def posts_from_relation(relation, no_tests: true, with_pagination: true, select: '', max: false)
+    post_list = PostList.new(relation, no_tests: no_tests, select: select, user: current_user, max: max)
+    posts = post_list.format_posts(with_pagination: with_pagination, page: page)
+    @opened_ids = post_list.opened_ids
+    @unread_ids = post_list.unread_ids
+    posts
   end
-
   helper_method :posts_from_relation
 
   attr_reader :unread_ids, :opened_ids
