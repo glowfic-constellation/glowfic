@@ -3,9 +3,9 @@ class CharactersController < ApplicationController
   include Taggable
 
   before_action :login_required, except: [:index, :show, :facecasts, :search]
-  before_action :find_character, only: [:show, :edit, :update, :duplicate, :destroy, :icon, :replace, :do_replace]
+  before_action :find_character, only: [:show, :edit, :update, :duplicate, :destroy, :replace, :do_replace]
   before_action :find_group, only: :index
-  before_action :require_own_character, only: [:edit, :update, :duplicate, :icon, :replace, :do_replace]
+  before_action :require_own_character, only: [:edit, :update, :duplicate, :replace, :do_replace]
   before_action :build_editor, only: [:new, :edit]
 
   def index
@@ -286,9 +286,6 @@ class CharactersController < ApplicationController
     end
 
     @search_results = @search_results.ordered.paginate(page: page, per_page: 25)
-  end
-
-  def icon
   end
 
   private
