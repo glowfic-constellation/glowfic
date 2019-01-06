@@ -130,6 +130,7 @@ class PostsController < WritableController
     preview and return if params[:button_preview].present?
 
     @post = current_user.posts.new(post_params)
+    @post.assign_attributes(association_params)
     @post.settings = process_tags(Setting, :post, :setting_ids)
     @post.content_warnings = process_tags(ContentWarning, :post, :content_warning_ids)
     @post.labels = process_tags(Label, :post, :label_ids)
@@ -192,7 +193,7 @@ class PostsController < WritableController
         @post.settings = settings
         @post.content_warnings = warnings
         @post.labels = labels
-        @post.save!
+        @post.update!(association_params)
       end
     rescue ActiveRecord::RecordInvalid
       flash.now[:error] = {
@@ -282,11 +283,11 @@ class PostsController < WritableController
 
   def preview
     @post ||= Post.new(user: current_user)
-    @post.assign_attributes(post_params(false))
+    @post.assign_attributes(post_params)
     @post.board ||= Board.find_by_id(3)
 
-    @author_ids = params.fetch(:post, {}).fetch(:unjoined_author_ids, [])
-    @viewer_ids = params.fetch(:post, {}).fetch(:viewer_ids, [])
+    @author_ids = association_params[:unjoined_author_ids]
+    @viewer_ids = association_params[:viewer_ids]
     @settings = process_tags(Setting, :post, :setting_ids)
     @content_warnings = process_tags(ContentWarning, :post, :content_warning_ids)
     @labels = process_tags(Label, :post, :label_ids)
@@ -412,8 +413,8 @@ class PostsController < WritableController
     end
   end
 
-  def post_params(include_associations=true)
-    allowed_params = [
+  def post_params
+    params.fetch(:post, {}).permit(
       :board_id,
       :section_id,
       :privacy,
@@ -425,16 +426,10 @@ class PostsController < WritableController
       :character_alias_id,
       :authors_locked,
       :audit_comment
-    ]
+    )
+  end
 
-    # prevents us from setting (and saving) associations on preview()
-    if include_associations
-      allowed_params << {
-        unjoined_author_ids: [],
-        viewer_ids: []
-      }
-    end
-
-    params.fetch(:post, {}).permit(allowed_params)
+  def association_params
+    params.fetch(:post, {}).permit(unjoined_author_ids: [], viewer_ids: [])
   end
 end

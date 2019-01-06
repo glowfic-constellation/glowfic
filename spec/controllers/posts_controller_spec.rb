@@ -349,7 +349,7 @@ RSpec.describe PostsController do
         expect(assigns(:written).character_alias).to eq(calias)
         expect(assigns(:post)).to eq(assigns(:written))
         expect(assigns(:page_title)).to eq('Previewing: test')
-        expect(assigns(:author_ids)).to match_array([user.id, coauthor.id])
+        expect(assigns(:author_ids).map(&:to_i)).to match_array([user.id, coauthor.id])
 
         # tags
         expect(assigns(:post).settings.size).to eq(0)
@@ -1732,7 +1732,7 @@ RSpec.describe PostsController do
         # editor_setup:
         expect(assigns(:javascripts)).to include('posts/editor')
         expect(controller.gon.editor_user[:username]).to eq(user.username)
-        expect(assigns(:author_ids)).to match_array([coauthor.id])
+        expect(assigns(:author_ids).map(&:to_i)).to match_array([coauthor.id])
         # ensure it doesn't change the actual post:
         expect(post.reload.tagging_authors).to match_array([user])
         expect(post.viewer_ids).to be_empty
@@ -2033,6 +2033,8 @@ RSpec.describe PostsController do
         expect(ContentWarning.count).to eq(3)
         expect(Label.count).to eq(3)
         expect(PostTag.count).to eq(6)
+        expect(PostAuthor.count).to eq(1)
+        expect(PostViewer.count).to eq(0)
 
         char1 = create(:character, user: user)
         char2 = create(:template_character, user: user)
@@ -2053,7 +2055,8 @@ RSpec.describe PostsController do
             setting_ids: setting_ids,
             content_warning_ids: warning_ids,
             label_ids: label_ids,
-            unjoined_author_ids: [coauthor.id]
+            unjoined_author_ids: [coauthor.id],
+            viewer_ids: [coauthor.id],
           }
         }
 
@@ -2090,6 +2093,10 @@ RSpec.describe PostsController do
         expect(PostTag.where(post: post, tag: [setting, warning, label]).count).to eq(3)
         expect(PostTag.where(post: post, tag: [dupes, dupew, dupel]).count).to eq(0)
         expect(PostTag.where(post: post, tag: [reml, remw, rems]).count).to eq(3)
+
+        # does not save associations
+        expect(PostAuthor.count).to eq(1)
+        expect(PostViewer.count).to eq(0)
       end
 
       it "works" do
