@@ -23,14 +23,6 @@ class Character::Searcher < Generic::Searcher
     end
   end
 
-  def do_search_templates(template)
-    @search_results = @search_results.where(template_id: template.id)
-  end
-
-  def select_templates(user_id)
-    @templates = Template.where(user_id: user_id).ordered.limit(25)
-  end
-
   def search_names(params)
     where_calc = []
     where_calc << "name ILIKE ?" if params[:search_name].present?

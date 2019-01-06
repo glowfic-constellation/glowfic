@@ -62,13 +62,4 @@ class Reply::Searcher < Generic::Searcher
       @search_results = @search_results.where(post_id: post_ids)
     end
   end
-
-  def do_search_templates(template)
-    character_ids = Character.where(template_id: template.id).pluck(:id)
-    @search_results = @search_results.where(character_id: character_ids)
-  end
-
-  def select_templates
-    @templates = @templates.where(user_id: params[:author_id])
-  end
 end
