@@ -1,6 +1,6 @@
-- if @day < Date.today
+- if @day < Time.zone.today
   = link_to url_for(day: @day + 1.day, sort: params[:sort]) do
-    - style = 'font-style: italic;' if @day + 1.day >= Date.today
+    - style = 'font-style: italic;' if @day + 1.day >= Time.zone.today
     .view-button{style: style} &raquo; Next Day
 = link_to url_for(day: @day - 1.day, sort: params[:sort]) do
   .view-button.float-none &laquo; Previous Day
