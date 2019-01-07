@@ -292,7 +292,7 @@ RSpec.describe RepliesController do
       user = create(:user)
       login_as(user)
       reply_post = create(:post)
-      Timecop.freeze(Time.now) do
+      Timecop.freeze(Time.zone.now) do
         post :create, params: { reply: {post_id: reply_post.id, content: 'test content!'} }
       end
       expect(Reply.count).to eq(1)

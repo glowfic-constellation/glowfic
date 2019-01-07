@@ -33,11 +33,11 @@ RSpec.describe PostsController do
     end
 
     it "orders posts by tagged_at" do
-      post2 = Timecop.freeze(Time.now - 8.minutes) { create(:post) }
-      post5 = Timecop.freeze(Time.now - 2.minutes) { create(:post) }
-      post1 = Timecop.freeze(Time.now - 10.minutes) { create(:post) }
-      post4 = Timecop.freeze(Time.now - 4.minutes) { create(:post) }
-      post3 = Timecop.freeze(Time.now - 6.minutes) { create(:post) }
+      post2 = Timecop.freeze(Time.zone.now - 8.minutes) { create(:post) }
+      post5 = Timecop.freeze(Time.zone.now - 2.minutes) { create(:post) }
+      post1 = Timecop.freeze(Time.zone.now - 10.minutes) { create(:post) }
+      post4 = Timecop.freeze(Time.zone.now - 4.minutes) { create(:post) }
+      post3 = Timecop.freeze(Time.zone.now - 6.minutes) { create(:post) }
       get :index
       ids_fetched = controller.instance_variable_get('@posts').map(&:id)
       expect(ids_fetched).to eq([post5.id, post4.id, post3.id, post2.id, post1.id])
@@ -435,7 +435,7 @@ RSpec.describe PostsController do
       board = create(:board, creator: board_creator)
       login_as(user)
 
-      time = Time.now - 5.minutes
+      time = Time.zone.now - 5.minutes
       Timecop.freeze(time) do
         expect {
           post :create, params: {
@@ -470,7 +470,7 @@ RSpec.describe PostsController do
       board = create(:board, creator: board_creator)
       login_as(user)
 
-      time = Time.now - 5.minutes
+      time = Time.zone.now - 5.minutes
       Timecop.freeze(time) do
         expect {
           post :create, params: {
@@ -1325,7 +1325,7 @@ RSpec.describe PostsController do
         post.mark_read(post.user, post.created_at)
         unread_reply = create(:reply, post: post)
         create(:reply, post: post)
-        time = Time.now
+        time = Time.zone.now
         post.board.mark_read(post.user, time)
 
         login_as(post.user)
@@ -1343,7 +1343,7 @@ RSpec.describe PostsController do
         post = create(:post)
         unread_reply = create(:reply, post: post)
         create(:reply, post: post)
-        time = Time.now
+        time = Time.zone.now
         post.mark_read(post.user, time)
         expect(post.last_read(post.user)).to be_the_same_time_as(time)
         login_as(post.user)
@@ -1811,7 +1811,7 @@ RSpec.describe PostsController do
         login_as(user)
         post = create(:post, user: user)
 
-        time = Time.now + 5.minutes
+        time = Time.zone.now + 5.minutes
         Timecop.freeze(time) do
           expect {
             put :update, params: {
@@ -1848,7 +1848,7 @@ RSpec.describe PostsController do
         joined_user = create(:user)
 
         login_as(user)
-        time = Time.now - 5.minutes
+        time = Time.zone.now - 5.minutes
         post = reply = nil
         Timecop.freeze(time) do
           post = create(:post, user: user, unjoined_authors: [invited_user])
@@ -2469,7 +2469,7 @@ RSpec.describe PostsController do
 
     it "shows appropriate posts" do
       user = create(:user)
-      time = Time.now - 10.minutes
+      time = Time.zone.now - 10.minutes
 
       unread_post = create(:post) # post
       opened_post1, opened_post2, read_post1, read_post2, hidden_post = Timecop.freeze(time) do
@@ -2535,7 +2535,7 @@ RSpec.describe PostsController do
 
       it "shows appropriate posts" do
         user = create(:user, unread_opened: true)
-        time = Time.now - 10.minutes
+        time = Time.zone.now - 10.minutes
 
         unread_post = create(:post) # post
         opened_post1, opened_post2, read_post1, read_post2, hidden_post = Timecop.freeze(time) do
@@ -2649,7 +2649,7 @@ RSpec.describe PostsController do
       it "does not mess with read timestamps" do
         user = create(:user)
 
-        time = Time.now - 10.minutes
+        time = Time.zone.now - 10.minutes
         post1 = create(:post, created_at: time, updated_at: time) # unread
         post2 = create(:post, created_at: time, updated_at: time) # partially read
         post3 = create(:post, created_at: time, updated_at: time) # fully read

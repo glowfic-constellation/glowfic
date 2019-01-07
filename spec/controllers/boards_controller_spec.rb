@@ -212,7 +212,7 @@ RSpec.describe BoardsController do
 
     it "orders the posts by tagged_at in unordered boards" do
       board = create(:board)
-      3.times do create(:post, board: board, tagged_at: Time.now + rand(5..30).hours) end
+      3.times do create(:post, board: board, tagged_at: Time.zone.now + rand(5..30).hours) end
       get :show, params: { id: board.id }
       expect(assigns(:posts)).to eq(assigns(:posts).sort_by(&:tagged_at).reverse)
     end
@@ -223,15 +223,15 @@ RSpec.describe BoardsController do
       section1 = create(:board_section, board: board)
       section1.update!(section_order: 0)
       section2.update!(section_order: 1)
-      post1 = create(:post, board: board, section: section1, tagged_at: Time.now + rand(5..30).hours)
-      post2 = create(:post, board: board, section: section1, tagged_at: Time.now + rand(5..30).hours)
-      post3 = create(:post, board: board, section: section1, tagged_at: Time.now + rand(5..30).hours)
-      post4 = create(:post, board: board, section: section2, tagged_at: Time.now + rand(5..30).hours)
-      post5 = create(:post, board: board, section: section2, tagged_at: Time.now + rand(5..30).hours)
-      post6 = create(:post, board: board, section: section2, tagged_at: Time.now + rand(5..30).hours)
-      post7 = create(:post, board: board, tagged_at: Time.now + rand(5..30).hours)
-      post8 = create(:post, board: board, tagged_at: Time.now + rand(5..30).hours)
-      post9 = create(:post, board: board, tagged_at: Time.now + rand(5..30).hours)
+      post1 = create(:post, board: board, section: section1, tagged_at: Time.zone.now + rand(5..30).hours)
+      post2 = create(:post, board: board, section: section1, tagged_at: Time.zone.now + rand(5..30).hours)
+      post3 = create(:post, board: board, section: section1, tagged_at: Time.zone.now + rand(5..30).hours)
+      post4 = create(:post, board: board, section: section2, tagged_at: Time.zone.now + rand(5..30).hours)
+      post5 = create(:post, board: board, section: section2, tagged_at: Time.zone.now + rand(5..30).hours)
+      post6 = create(:post, board: board, section: section2, tagged_at: Time.zone.now + rand(5..30).hours)
+      post7 = create(:post, board: board, tagged_at: Time.zone.now + rand(5..30).hours)
+      post8 = create(:post, board: board, tagged_at: Time.zone.now + rand(5..30).hours)
+      post9 = create(:post, board: board, tagged_at: Time.zone.now + rand(5..30).hours)
       post1.update!(section_order: 0)
       post2.update!(section_order: 1)
       post3.update!(section_order: 2)
@@ -281,7 +281,7 @@ RSpec.describe BoardsController do
     it "sets expected variables" do
       board = create(:board)
       sections = [create(:board_section, board: board), create(:board_section, board: board)]
-      posts = [create(:post, board: board, tagged_at: Time.now + 5.minutes), create(:post, board: board)]
+      posts = [create(:post, board: board, tagged_at: Time.zone.now + 5.minutes), create(:post, board: board)]
       sections[0].update!(section_order: 1)
       sections[1].update!(section_order: 0)
       board.coauthors << create(:user)
@@ -437,7 +437,7 @@ RSpec.describe BoardsController do
       board = create(:board)
       user = create(:user)
       login_as(user)
-      now = Time.now
+      now = Time.zone.now
       expect(board.last_read(user)).to be_nil
       post :mark, params: { board_id: board.id, commit: "Mark Read" }
       expect(Board.find(board.id).last_read(user)).to be >= now # reload to reset cached @view

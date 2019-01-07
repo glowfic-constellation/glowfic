@@ -181,7 +181,7 @@ RSpec.describe ApplicationController do
       it "sets opened_ids and unread_ids properly" do
         user = create(:user)
         login_as(user)
-        time = Time.now - 5.minutes
+        time = Time.zone.now - 5.minutes
         unopened2, partread, read1, read2, hidden_unread, hidden_partread = posts = Timecop.freeze(time) do
           create(:post) # post; unopened1
           unopened2 = create(:post) # post, reply

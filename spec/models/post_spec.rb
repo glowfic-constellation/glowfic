@@ -179,7 +179,7 @@ RSpec.describe Post do
 
     it "should update correctly when characters are edited" do
       Post.auditing_enabled = true
-      time = Time.now
+      time = Time.zone.now
       post = Timecop.freeze(time - 5.minutes) do
         create(:post)
       end
@@ -1015,7 +1015,6 @@ RSpec.describe Post do
   end
 
   describe "#visible_to" do
-
     it "logged out only shows public posts" do
       create(:post, privacy: Concealable::PRIVATE)
       create_list(:post, 2, privacy: Concealable::ACCESS_LIST)
