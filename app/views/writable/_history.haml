@@ -32,7 +32,7 @@
       %tr
         %th.sub Updated
         %td{class: cycle('even', 'odd')}= pretty_time(audit.created_at)
-      - if audit.version > 1 && audit.audited_changes.keys.include?('board_id')
+      - if audit.version > 1 && audit.audited_changes.key?('board_id')
         %tr
           %th.sub Continuity
           %td{class: cycle('even', 'odd')}
@@ -46,7 +46,7 @@
               %b= link_to cur.board.name, board_path(cur.board)
             - else
               %b [Deleted]
-      - if audit.version > 1 && audit.audited_changes.keys.include?('privacy')
+      - if audit.version > 1 && audit.audited_changes.key?('privacy')
         %tr
           %th.sub Privacy
           %td{colspan: 3, class: cycle('even', 'odd')}
