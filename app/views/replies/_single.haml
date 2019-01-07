@@ -1,4 +1,10 @@
-.post-container{class: [reply.is_a?(Post) ? 'post-post'.freeze : (reply.is_a?(Reply) ? 'post-reply'.freeze : ''), (reply == @unread && current_user.try(:visible_unread?)) ? 'reply-highlighted' : '']}
+- if reply.is_a?(Post)
+  - write = 'post-post'.freeze
+- elsif reply.is_a?(Reply)
+  - write = 'post-reply'.freeze
+- else
+  - write = ''.freeze
+.post-container{class: [write, (reply == @unread && current_user.try(:visible_unread?)) ? 'reply-highlighted' : '']}
   - if reply.is_a?(Reply) && reply.id.present?
     <a id="reply-#{reply.id}" class="noheight"> </a>
   - if reply == @unread

@@ -1,5 +1,5 @@
 - col_count = 5
-- col_count += 1 if !local_assigns[:hide_continuity] # Include continuity name
+- col_count += 1 unless local_assigns[:hide_continuity] # Include continuity name
 - col_count += 1 if local_assigns[:show_unread_count] # Include # Unread
 - col_count += 1 if local_assigns.has_key? :check_box_name # Include form check box tags
 - post_args = local_assigns.except(:posts, :list)

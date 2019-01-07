@@ -63,7 +63,7 @@
           %div
             = image_tag "icons/weather_clouds.png".freeze, class: 'vmid'.freeze, style: 'margin-bottom: 3px;'.freeze
             Hide
-      - if fav = Favorite.between(current_user, @post)
+      - if (fav = Favorite.between(current_user, @post))
         = link_to favorite_path(fav), method: :delete do
           %div
             = image_tag "icons/star_delete.png".freeze, class: 'vmid'.freeze, style: 'margin-bottom: 3px;'.freeze
