@@ -6,7 +6,7 @@
       %th{colspan: 7}
         Daily Report -
         = @day.strftime("%b %d, %Y")
-        - if @day == Date.today
+        - if @day == Time.zone.today
           %em (Incomplete)
     %tr
       %th.sub{colspan: 7}= render 'date_nav'
