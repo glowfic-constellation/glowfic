@@ -13,7 +13,7 @@ RSpec.feature "Unread posts", :type => :feature do
 
     2.times { create(:post) }
     3.times do
-      unread = Timecop.freeze(Time.now - 1.day) do
+      unread = Timecop.freeze(Time.zone.now - 1.day) do
         unread = create(:post)
         unread.mark_read(user)
         unread

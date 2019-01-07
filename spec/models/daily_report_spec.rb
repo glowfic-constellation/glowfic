@@ -57,7 +57,7 @@ RSpec.describe DailyReport do
 
     it "does not multiply reply_count" do
       # okay so it kinda multiples it, but it's divided in the view
-      now = Time.now
+      now = Time.zone.now
       post = nil
       Timecop.freeze(now - 2.days) do
         post = create(:post)
@@ -73,7 +73,7 @@ RSpec.describe DailyReport do
     it "calculates today posts with replies timestamp correctly" do
       old = Time.zone
       Time.zone = "Eastern Time (US & Canada)"
-      now = Time.now.end_of_day - 1.hour # ensure no issues running near midnight
+      now = Time.zone.now.end_of_day - 1.hour # ensure no issues running near midnight
       post = nil
 
       Timecop.freeze(now) do
