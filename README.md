@@ -5,7 +5,7 @@
 ### Dependencies
 
 *   [Ruby](https://www.ruby-lang.org/en/) 2.5.3
-*   [Rails](http://rubyonrails.org/) 5.1.6
+*   [Rails](http://rubyonrails.org/) 5.2
 *   [Redis](https://redis.io/topics/quickstart)
 *   [PostgreSQL](https://www.postgresql.org/) (guide to set this up [later](#setting-up-postgresql))
 
