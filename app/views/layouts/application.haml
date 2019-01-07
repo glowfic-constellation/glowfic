@@ -117,10 +117,10 @@
         .flash.error
           = link_to '#' do
             = image_tag 'icons/cross.png', class: 'float-right flash-dismiss'
-          - if flash[:error].has_key? :image
+          - if flash[:error].key?(:image)
             = image_tag flash[:error][:image], class: 'vmid'.freeze
           = flash[:error][:message]
-          - if flash[:error].has_key? :array
+          - if flash[:error].key?(:array)
             %ul
               - flash[:error][:array].each do |error|
                 %li= error
