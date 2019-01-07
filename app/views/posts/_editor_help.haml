@@ -61,13 +61,13 @@
       or a
       %code="<br>"
       tag.
-    %div#markup-allowed-tags
+    #markup-allowed-tags
       %strong Allowed tags:
       %ul.inline-list
         - Glowfic::ALLOWED_TAGS.sort.each do |tag|
           %li <code>#{tag}</code>
     %br
-    %div#markup-allowed-attributes
+    #markup-allowed-attributes
       %strong Allowed attributes (by tag):
       %ul
       - Glowfic::ALLOWED_ATTRIBUTES.each do |tag_name, attrs|
