@@ -1,0 +1,57 @@
+linters:
+  AltText:
+    enabled: true
+
+  ClassesBeforeIds:
+    enabled: false
+
+  ConsecutiveComments:
+    enabled: false
+
+  ConsecutiveSilentScripts:
+    enabled: false
+
+  IdNames:
+    enabled: false
+
+  InlineStyles:
+    exclude: app/views/user_mailer/*
+
+  InstanceVariables:
+    enabled: false
+
+  LineLength:
+    enabled: false
+
+  RuboCop:
+    ignored_cops:
+      - Lint/BlockAlignment
+      - Lint/EndAlignment
+      - Lint/Void
+      - Layout/AlignHash
+      - Layout/AlignParameters
+      - Layout/CaseIndentation
+      - Layout/ElseAlignment
+      - Layout/EndOfLine
+      - Layout/IndentationWidth
+      - Layout/LeadingCommentSpace
+      - Layout/TrailingBlankLines
+      - Layout/TrailingWhitespace
+      - Metrics/BlockLength
+      - Metrics/BlockNesting
+      - Metrics/LineLength
+      - Naming/FileName
+      - Rails/OutputSafety
+      - Style/FrozenStringLiteralComment
+      - Style/IfUnlessModifier
+      - Style/Next
+      - Style/WhileUntilModifier
+
+  SpaceBeforeScript:
+    enabled: false
+
+  SpaceInsideHashAttributes:
+    enabled: false
+
+  ViewLength:
+    enabled: false
