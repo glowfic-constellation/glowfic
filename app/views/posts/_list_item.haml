@@ -37,7 +37,7 @@
             = link_to 3, post_path(post, page: 3)
             \...
             - (total_pages-2).upto(total_pages) do |index|
-              = link_to (index), post_path(post, page: index)
+              = link_to index, post_path(post, page: index)
   - unless local_assigns[:hide_continuity]
     %td.post-board.vtop{class: klass}= link_to post.board_name, board_path(post.board_id)
   %td.post-authors.vtop{class: klass}

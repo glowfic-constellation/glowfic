@@ -5,7 +5,7 @@
   &raquo;
   %b= link_to 'Replace', replace_icon_path(@icon)
 
-= form_for @icon, url: do_replace_icon_path(@icon), method: :post do |f|
+= form_for @icon, url: do_replace_icon_path(@icon), method: :post do
   %table.form-table
     %tr
       %th.centered{colspan: 2} Replace All Uses of Icon
