@@ -30,7 +30,7 @@
               = group.name
 %tr.gallery-icons
   %td.icons-box
-    .gallery{id: "gallery#{gallery.id.to_s}"}
+    .gallery{id: "gallery#{gallery.id}"}
       = form_tag delete_multiple_icons_path, method: :delete do
         - gallery.icons.pluck(:id, :keyword, :url).each do |icon_id, keyword, url|
           .gallery-icon

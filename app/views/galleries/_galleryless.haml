@@ -15,7 +15,7 @@
       = form_tag delete_multiple_icons_path, method: :delete do
         - icons = @user.galleryless_icons
         - icons.each do |icon|
-          .gallery-icon{id: "icon#{icon.id.to_s}"}
+          .gallery-icon{id: "icon#{icon.id}"}
             = link_to icon_path(icon) do
               = icon_tag icon
               %br
