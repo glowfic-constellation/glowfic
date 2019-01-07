@@ -29,6 +29,8 @@ class Reply < ApplicationRecord
 
   scope :ordered_manually, -> { ordered }
 
+  scope :visible_to, ->(user) { where(post_id: Post.visible_to(user).select(:id)) }
+
   def post_page(per=25)
     per_page = per > 0 ? per : post.replies.count
     index = post.replies.where('reply_order < ?', self.reply_order).count

@@ -19,5 +19,4 @@
           %th.sub Replies
           %th.sub Last Updated
         - posts.each do |post|
-          - next unless post.visible_to?(current_user)
           = render 'posts/list_item', post: post, hide_continuity: false
