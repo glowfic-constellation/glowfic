@@ -30,7 +30,7 @@
           %td{class: klass}= favorite_rec.favorite_type == 'Board' ? 'Continuity' : favorite_rec.favorite_type
       - if current_user.favorites.empty?
         %tr
-          %td.centered.no-posts{class: 'odd', colspan: 2} — No favorites yet —
+          %td.centered.no-posts.odd{colspan: 2} — No favorites yet —
 
 - else
   = render 'posts/list', posts: @posts, show_unread_count: true

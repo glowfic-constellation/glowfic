@@ -1,6 +1,6 @@
 - 1.upto((replies.count(:all) / 250.0).ceil).each do |index|
   - replies.paginate(per_page: 250, page: index).each do |reply|
-    .post-container{class: 'post-reply'}
+    .post-container.post-reply
       <a id="reply-#{reply.id}" class="noheight"> </a>
       .padding-10
         .post-info-box

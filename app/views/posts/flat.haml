@@ -22,7 +22,7 @@
         %span#post-title= @post.subject
       - if @post.description.present?
         .post-subheader= sanitize_post_description(@post.description).html_safe
-      .post-container{class: 'post-post'}
+      .post-container.post-post
         .padding-10
           .post-info-box
             - if @post.icon
