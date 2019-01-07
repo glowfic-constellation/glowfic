@@ -47,9 +47,7 @@ class PostsController < WritableController
 
   def mark
     posts = Post.where(id: params[:marked_ids])
-    posts = posts.select do |post|
-      post.visible_to?(current_user)
-    end
+    posts = posts.visible_to(current_user)
 
     if params[:commit] == "Mark Read"
       posts.each { |post| post.mark_read(current_user) }

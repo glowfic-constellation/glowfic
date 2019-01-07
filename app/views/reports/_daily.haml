@@ -10,7 +10,7 @@
           %em (Incomplete)
     %tr
       %th.sub{colspan: 7}= render 'date_nav'
-  - posts = DailyReport.new(@day).posts(sort, page, per_page)
+  - posts = DailyReport.new(@day).posts(sort, page, per_page).visible_to(current_user)
   - if posts.present?
     %tbody
       %tr
@@ -22,7 +22,6 @@
         %th.subber.width-70 Today
         %th.subber.width-70= link_to 'Updated', url_for(day: params[:day], sort: 'updated')
       - posts.each do |post|
-        - next unless post.visible_to?(current_user)
         %tr
           - klass = [cycle('even', 'odd')]
           - klass << 'post-ignored' if ignored?(post)
