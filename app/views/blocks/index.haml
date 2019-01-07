@@ -4,7 +4,7 @@
   .flash.error
     = image_tag "icons/exclamation.png".freeze, class: 'vmid'.freeze
     Warning: blocking is not currently implemented. This page should remember any blocks you have created, but they will not take effect yet.
-    
+
 %table
   %thead
     %tr
@@ -47,4 +47,4 @@
           &nbsp;
     - if @blocks.empty?
       %tr
-        %td.centered.padding-10.no-posts{ class: cycle('even','odd'), colspan: 5 } — No blocks yet —
+        %td.centered.padding-10.no-posts{ class: cycle('even', 'odd'), colspan: 5 } — No blocks yet —
