@@ -48,7 +48,7 @@
     - if logged_in? && @user.id != current_user.id
       %tr
         %td.centered{class: cycle('even', 'odd')}
-          - if fav = Favorite.between(current_user, @user)
+          - if (fav = Favorite.between(current_user, @user))
             = link_to favorite_path(fav), method: :delete do
               = image_tag "icons/star_delete.png", class: 'vmid'
               Unfavorite

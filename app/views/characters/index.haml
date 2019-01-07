@@ -10,15 +10,14 @@
       - if @group
         Character Group:
         = @group.name
+      - elsif @user.id == current_user&.id
+        Your Characters
+        = link_to new_character_path(character_group_id: @group.try(:id)) do
+          .link-box.action-new + New Character
+        = link_to new_template_path do
+          .link-box.action-new + New Template
       - else
-        - if @user.id == current_user&.id
-          Your Characters
-          = link_to new_character_path(character_group_id: @group.try(:id)) do
-            .link-box.action-new + New Character
-          = link_to new_template_path do
-            .link-box.action-new + New Template
-        - else
-          = @user.username + "'s Characters"
+        = @user.username + "'s Characters"
       = link_to url_for(character_split: character_split, view: 'icons') do
         .view-button{class: (:selected unless page_view == 'list')}
           = image_tag "icons/grid.png", class: 'icon-view', alt: ''
