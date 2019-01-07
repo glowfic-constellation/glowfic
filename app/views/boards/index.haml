@@ -1,6 +1,6 @@
 - if @user.present? && @user.id != current_user.try(:id)
   - content_for :breadcrumbs do
-    = link_to "#{@user.username}", user_path(@user)
+    = link_to @user.username, user_path(@user)
     &raquo;
     %b #{@user.username}'s Continuities
 

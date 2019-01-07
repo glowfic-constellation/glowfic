@@ -1,6 +1,6 @@
 - content_for :breadcrumbs do
   - unless @user.id == current_user.try(:id)
-    = link_to "#{@user.username}", user_path(@user)
+    = link_to @user.username, user_path(@user)
     &raquo;
     %b #{@user.username}'s Characters
 

@@ -2,7 +2,7 @@
   - if @template.user_id == current_user.try(:id)
     = link_to "Characters", user_characters_path(current_user)
   - else
-    = link_to "#{@template.user.username}", user_path(@template.user)
+    = link_to @template.user.username, user_path(@template.user)
     &raquo;
     = link_to "#{@template.user.username}'s Characters", user_characters_path(@template.user)
   &raquo;

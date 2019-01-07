@@ -10,7 +10,7 @@
 = form_for @board_section, url: board_section_path(@board_section), method: :put do |f|
   %table.form-table
     %tr
-      %th.centered{colspan: 2}= "Edit #{@board_section.name}"
+      %th.centered{colspan: 2} Edit #{@board_section.name}
     = render 'editor', f: f
 
 - if @board_section.posts.present?

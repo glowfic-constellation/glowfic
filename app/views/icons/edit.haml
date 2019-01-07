@@ -2,7 +2,7 @@
   - if @icon.user_id == current_user.try(:id)
     = link_to "Galleries", user_galleries_path(current_user)
   - else
-    = link_to "#{@icon.user.username}", user_path(@icon.user)
+    = link_to @icon.user.username, user_path(@icon.user)
     &raquo;
     = link_to "#{@icon.user.username}'s Galleries", user_galleries_path(@icon.user)
   &raquo;
