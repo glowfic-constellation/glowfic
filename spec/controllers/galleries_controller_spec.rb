@@ -387,7 +387,12 @@ RSpec.describe GalleriesController do
       gid = gallery.galleries_icons.first.id
       gallery_icon_attributes = {id: gid, icon_attributes: icon_attributes}
 
-      put :update, params: { id: gallery.id, gallery: {galleries_icons_attributes: {gid.to_s => gallery_icon_attributes}} }
+      put :update, params: {
+        id: gallery.id,
+        gallery: {
+          galleries_icons_attributes: {gid.to_s => gallery_icon_attributes}
+        }
+      }
       expect(response).to redirect_to(edit_gallery_url(gallery))
       expect(flash[:success]).to eq('Gallery saved.')
       expect(icon.reload.keyword).to eq(newkey)
@@ -405,7 +410,12 @@ RSpec.describe GalleriesController do
       gid = gallery.galleries_icons.first.id
       gallery_icon_attributes = {id: gid, _destroy: '1', icon_attributes: icon_attributes}
 
-      put :update, params: { id: gallery.id, gallery: {galleries_icons_attributes: {gid.to_s => gallery_icon_attributes}} }
+      put :update, params: {
+        id: gallery.id,
+        gallery: {
+          galleries_icons_attributes: {gid.to_s => gallery_icon_attributes}
+        }
+      }
       expect(response).to redirect_to(edit_gallery_url(gallery))
       expect(flash[:success]).to eq('Gallery saved.')
       expect(gallery.reload.icons).to be_empty
@@ -424,7 +434,12 @@ RSpec.describe GalleriesController do
       gid = gallery.galleries_icons.first.id
       gallery_icon_attributes = {id: gid, icon_attributes: icon_attributes}
 
-      put :update, params: { id: gallery.id, gallery: {galleries_icons_attributes: {gid.to_s => gallery_icon_attributes}} }
+      put :update, params: {
+        id: gallery.id,
+        gallery: {
+          galleries_icons_attributes: {gid.to_s => gallery_icon_attributes}
+        }
+      }
       expect(response).to redirect_to(edit_gallery_url(gallery))
       expect(flash[:success]).to eq('Gallery saved.')
       expect(gallery.reload.icons).to be_empty

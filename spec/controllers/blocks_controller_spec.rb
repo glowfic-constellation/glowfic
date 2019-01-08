@@ -80,7 +80,14 @@ RSpec.describe BlocksController, type: :controller do
       blockee = create(:user)
       login_as(blocker)
       expect {
-        post :create, params: { block: { blocked_user_id: blockee.id, block_interactions: false, hide_them: Block::POSTS, hide_me: Block::ALL } }
+        post :create, params: {
+          block: {
+            blocked_user_id: blockee.id,
+            block_interactions: false,
+            hide_them: Block::POSTS,
+            hide_me: Block::ALL
+          }
+        }
       }.to change { Block.count }.by(1)
       expect(response).to redirect_to(blocks_url)
       expect(flash[:success]).to eq("User blocked!")
@@ -146,7 +153,14 @@ RSpec.describe BlocksController, type: :controller do
     it "suceeds" do
       block = create(:block)
       login_as(block.blocking_user)
-      put :update, params: { id: block.id, block: { block_interactions: false, hide_them: Block::POSTS, hide_me: Block::ALL } }
+      put :update, params: {
+        id: block.id,
+        block: {
+          block_interactions: false,
+          hide_them: Block::POSTS,
+          hide_me: Block::ALL
+        }
+      }
       expect(response).to redirect_to(blocks_url)
       expect(flash[:success]).to eq("Block updated!")
       new_block = block.reload

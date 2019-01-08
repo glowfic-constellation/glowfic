@@ -84,7 +84,12 @@ RSpec.describe IconsController do
         gallery = create(:gallery, user: user)
         gallery.icons << icon
         expect(icon.galleries.count).to eq(1)
-        delete :delete_multiple, params: { marked_ids: [icon.id.to_s], gallery_id: gallery.id, gallery_delete: true, return_to: 'index' }
+        delete :delete_multiple, params: {
+          marked_ids: [icon.id.to_s],
+          gallery_id: gallery.id,
+          gallery_delete: true,
+          return_to: 'index'
+        }
         expect(icon.galleries.count).to eq(0)
         expect(response).to redirect_to(user_galleries_url(user.id, anchor: "gallery-#{gallery.id}"))
       end
@@ -96,7 +101,12 @@ RSpec.describe IconsController do
         group.galleries << gallery
         gallery.icons << icon
         expect(icon.galleries.count).to eq(1)
-        delete :delete_multiple, params: { marked_ids: [icon.id.to_s], gallery_id: gallery.id, gallery_delete: true, return_tag: group.id }
+        delete :delete_multiple, params: {
+          marked_ids: [icon.id.to_s],
+          gallery_id: gallery.id,
+          gallery_delete: true,
+          return_tag: group.id
+        }
         expect(icon.galleries.count).to eq(0)
         expect(response).to redirect_to(tag_url(group, anchor: "gallery-#{gallery.id}"))
       end
@@ -634,7 +644,11 @@ RSpec.describe IconsController do
 
       login_as(user)
       perform_enqueued_jobs(only: UpdateModelJob) do
-        post :do_replace, params: { id: icon.id, icon_dropdown: other_icon.id, post_ids: [icon_post.id, icon_reply.post.id] }
+        post :do_replace, params: {
+          id: icon.id,
+          icon_dropdown: other_icon.id,
+          post_ids: [icon_post.id, icon_reply.post.id]
+        }
       end
       expect(response).to redirect_to(icon_path(icon))
       expect(flash[:success]).to eq('All uses of this icon will be replaced.')

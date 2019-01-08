@@ -205,7 +205,10 @@ RSpec.describe MessagesController do
       previous = create(:message)
       other_user = create(:user)
       login_as(previous.recipient)
-      post :create, params: { message: {subject: 'Re: ' + previous.subject, message: 'response', recipient_id: other_user.id}, parent_id: previous.id }
+      post :create, params: {
+        message: {subject: 'Re: ' + previous.subject, message: 'response', recipient_id: other_user.id},
+        parent_id: previous.id
+      }
       expect(assigns(:message).recipient_id).to eq(previous.sender_id)
     end
 
@@ -232,7 +235,10 @@ RSpec.describe MessagesController do
       previous = create(:message)
       login_as(previous.recipient)
       expect(Message.count).to eq(1)
-      post :create, params: { message: {subject: 'Re: ' + previous.subject, message: 'response'}, parent_id: previous.id }
+      post :create, params: {
+        message: {subject: 'Re: ' + previous.subject, message: 'response'},
+        parent_id: previous.id
+      }
       expect(Message.count).to eq(2)
       expect(response).to redirect_to(messages_path(view: 'inbox'))
       message = assigns(:message).reload
@@ -248,7 +254,10 @@ RSpec.describe MessagesController do
       previous = create(:message)
       login_as(previous.sender)
       expect(Message.count).to eq(1)
-      post :create, params: { message: {subject: 'Re: ' + previous.subject, message: 'response'}, parent_id: previous.id }
+      post :create, params: {
+        message: {subject: 'Re: ' + previous.subject, message: 'response'},
+        parent_id: previous.id
+      }
       expect(Message.count).to eq(2)
       expect(response).to redirect_to(messages_path(view: 'inbox'))
       expect(flash[:success]).to eq('Message sent!')
@@ -264,7 +273,11 @@ RSpec.describe MessagesController do
         previous = create(:message)
         login_as(previous.sender)
         expect {
-          post :create, params: { message: {subject: 'Preview', message: 'example'}, parent_id: previous.id, button_preview: true }
+          post :create, params: {
+            message: {subject: 'Preview', message: 'example'},
+            parent_id: previous.id,
+            button_preview: true
+          }
         }.not_to change { Message.count }
         expect(response).to render_template(:preview)
         expect(assigns(:messages)).to eq([previous])
