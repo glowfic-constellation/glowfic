@@ -144,7 +144,13 @@ class Post < ApplicationRecord
 
   def recent_characters_for(user, count)
     # fetch the (count) most recent non-nil character_ids for user in post
-    recent_ids = replies.where(user_id: user.id).where('character_id IS NOT NULL').limit(count).group('character_id').select('DISTINCT character_id, MAX(id)').order(Arel.sql('MAX(id) desc')).pluck(:character_id)
+    recent_ids = replies.where(user_id: user.id)
+      .where.not(character_id: nil)
+      .limit(count)
+      .group('character_id')
+      .select('DISTINCT character_id, MAX(id)')
+      .order(Arel.sql('MAX(id) desc'))
+      .pluck(:character_id)
 
     # add the post's character_id to the last one if it's not over the limit
     if character_id.present? && user_id == user.id && recent_ids.length < count && !recent_ids.include?(character_id)
