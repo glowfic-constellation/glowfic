@@ -173,9 +173,9 @@ class ApplicationController < ActionController::Base
     posts = posts.no_tests if no_tests
 
     if logged_in?
-      @opened_ids ||= PostView.where(user_id: current_user.id).where('read_at IS NOT NULL').pluck(:post_id)
+      @opened_ids ||= PostView.where(user_id: current_user.id).where.not(read_at: nil).pluck(:post_id)
 
-      opened_posts = PostView.where(user_id: current_user.id).where('read_at IS NOT NULL').where(post_id: posts.map(&:id)).select([:post_id, :read_at])
+      opened_posts = PostView.where(user_id: current_user.id).where.not(read_at: nil).where(post_id: posts.map(&:id)).select([:post_id, :read_at])
       @unread_ids ||= []
       @unread_ids += opened_posts.select do |view|
         post = posts.detect { |p| p.id == view.post_id }
