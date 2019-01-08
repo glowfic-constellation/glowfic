@@ -531,7 +531,13 @@ RSpec.describe MessagesController do
       user4 = create(:user, username: 'user4')
       user1 = create(:user, username: 'user1')
       controller.send(:editor_setup)
-      expect(assigns(:select_items)).to eq({:Users => [[user1.username, user1.id], [user2.username, user2.id], [user3.username, user3.id], [user4.username, user4.id]]})
+      info = {:Users => [
+        [user1.username, user1.id],
+        [user2.username, user2.id],
+        [user3.username, user3.id],
+        [user4.username, user4.id]
+      ]}
+      expect(assigns(:select_items)).to eq(info)
     end
   end
 end

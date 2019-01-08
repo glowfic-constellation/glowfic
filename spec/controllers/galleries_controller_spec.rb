@@ -108,7 +108,14 @@ RSpec.describe GalleriesController do
     it "creates new gallery groups" do
       existing_name = create(:gallery_group)
       existing_case = create(:gallery_group)
-      tags = ['_atag', '_atag', create(:gallery_group).id, '', '_' + existing_name.name, '_' + existing_case.name.upcase]
+      tags = [
+        '_atag',
+        '_atag',
+        create(:gallery_group).id,
+        '',
+        '_' + existing_name.name,
+        '_' + existing_case.name.upcase
+      ]
       login
       expect {
         post :create, params: { gallery: {name: 'a', gallery_group_ids: tags} }
@@ -451,7 +458,14 @@ RSpec.describe GalleriesController do
       existing_case = create(:gallery_group)
       gallery = create(:gallery)
       login_as(gallery.user)
-      tags = ['_atag', '_atag', create(:gallery_group).id, '', '_' + existing_name.name, '_' + existing_case.name.upcase]
+      tags = [
+        '_atag',
+        '_atag',
+        create(:gallery_group).id,
+        '',
+        '_' + existing_name.name,
+        '_' + existing_case.name.upcase
+      ]
       expect {
         post :update, params: { id: gallery.id, gallery: {gallery_group_ids: tags} }
       }.to change{GalleryGroup.count}.by(1)

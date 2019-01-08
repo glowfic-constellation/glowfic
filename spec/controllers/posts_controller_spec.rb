@@ -406,7 +406,14 @@ RSpec.describe PostsController do
     it "creates new settings" do
       existing_name = create(:setting)
       existing_case = create(:setting)
-      tags = ['_atag', '_atag', create(:setting).id, '', '_' + existing_name.name, '_' + existing_case.name.upcase]
+      tags = [
+        '_atag',
+        '_atag',
+        create(:setting).id,
+        '',
+        '_' + existing_name.name,
+        '_' + existing_case.name.upcase
+      ]
       login
       expect {
         post :create, params: { post: {subject: 'a', board_id: create(:board).id, setting_ids: tags} }
@@ -418,7 +425,14 @@ RSpec.describe PostsController do
     it "creates new content warnings" do
       existing_name = create(:content_warning)
       existing_case = create(:content_warning)
-      tags = ['_atag', '_atag', create(:content_warning).id, '', '_' + existing_name.name, '_' + existing_case.name.upcase]
+      tags = [
+        '_atag',
+        '_atag',
+        create(:content_warning).id,
+        '',
+        '_' + existing_name.name,
+        '_' + existing_case.name.upcase
+      ]
       login
       expect {
         post :create, params: {

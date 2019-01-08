@@ -9,7 +9,13 @@ RSpec.describe BugsController do
     end
 
     it "succeeds when logged in" do
-      data = {response_text: 'abc', file_type: 'png', file_name: 'testfile.png', response_status: '200', response_body: '{}'}
+      data = {
+        response_text: 'abc',
+        file_type: 'png',
+        file_name: 'testfile.png',
+        response_status: '200',
+        response_body: '{}'
+      }
       user_id = login
       user = User.find(user_id)
       params = data.merge(user_id: user.id)

@@ -124,8 +124,10 @@ RSpec.describe CharacterHelper do
 
       it "when showing templates" do
         expected = [
-          [character1.id, 'Test Character 1', 'Nickname 1', 'screenname_one', 'Facecast 1', user.id, 'John Doe', false, template1.id, "Test Template 1"],
-          [character2.id, 'Test Character 2', 'Nickname 2', 'screenname_two', 'Facecast 2', user.id, 'John Doe', false, template2.id, "Test Template 2"]
+          [character1.id, 'Test Character 1', 'Nickname 1', 'screenname_one',
+           'Facecast 1', user.id, 'John Doe', false, template1.id, "Test Template 1"],
+          [character2.id, 'Test Character 2', 'Nickname 2', 'screenname_two',
+           'Facecast 2', user.id, 'John Doe', false, template2.id, "Test Template 2"]
         ]
         expect(helper.characters_list(assoc, true)).to match_array(expected)
       end
