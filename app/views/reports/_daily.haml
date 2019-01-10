@@ -10,8 +10,7 @@
           %em (Incomplete)
     %tr
       %th.sub{colspan: 7}= render 'date_nav'
-  - posts = DailyReport.new(@day).posts(sort, page, per_page).visible_to(current_user)
-  - if posts.present?
+  - if @posts.present?
     %tbody
       %tr
         %th.subber.width-15
@@ -21,7 +20,7 @@
         %th.subber.width-70 Replies
         %th.subber.width-70 Today
         %th.subber.width-70= link_to 'Updated', url_for(day: params[:day], sort: 'updated')
-      - posts.each do |post|
+      - @posts.each do |post|
         %tr
           - klass = [cycle('even', 'odd')]
           - klass << 'post-ignored' if ignored?(post)
@@ -63,7 +62,7 @@
           %td.vtop.centered.post-time{class: klass}= linked.created_at.strftime("%l:%M %p")
     %tfoot
       %tr
-        %td{colspan: 7}= render 'posts/paginator', paginated: posts
+        %td{colspan: 7}= render 'posts/paginator', paginated: @posts
   - else
     %tr
       %td.centered.even{colspan: 7} — No posts yet —
