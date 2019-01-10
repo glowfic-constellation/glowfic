@@ -16,7 +16,6 @@ class Reply::Searcher < Generic::Searcher
 
     @search_results = @search_results
       .select('replies.*, characters.name, characters.screenname, users.username, users.deleted as user_deleted')
-      .visible_to(current_user)
       .joins(:user)
       .left_outer_joins(:character)
       .paginate(page: page)
