@@ -27,7 +27,8 @@ class ReportsController < ApplicationController
     end
 
     if @report_type == 'daily'
-      @posts = DailyReport.new(@day).posts(sort, page, per_page).visible_to(current_user)
+      @posts = DailyReport.new(@day).posts(sort)
+      @posts = posts_from_relation(@posts)
     end
   end
 
