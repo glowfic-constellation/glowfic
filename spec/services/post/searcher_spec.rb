@@ -1,24 +1,24 @@
 RSpec.describe Post::Searcher do
   it "finds all when no arguments given" do
     create_list(:post, 4)
-    get :search, params: { commit: true }
-    expect(assigns(:search_results)).to match_array(Post.all)
+    results = Post::Searcher.new.search(params: {})
+    expect(results).to match_array(Post.all)
   end
 
   it "filters by continuity" do
     board = create(:board)
     posts = create_list(:post, 2, board: board)
     create(:post)
-    get :search, params: { commit: true, board_id: board.id }
-    expect(assigns(:search_results)).to match_array(posts)
+    results = Post::Searcher.new.search(params: { board_id: post.board_id })
+    expect(results).to match_array(posts)
   end
 
   it "filters by setting" do
     setting = create(:setting)
     post = create(:post, settings: [setting])
     create(:post)
-    get :search, params: { commit: true, setting_id: setting.id }
-    expect(assigns(:search_results)).to match_array([post])
+    results = Post::Searcher.new.search(params: { setting_id: setting.id })
+    expect(results).to match_array([post])
   end
 
   context "filters by subject" do
@@ -28,14 +28,14 @@ RSpec.describe Post::Searcher do
     before(:each) { create(:post, subject: 'unrelated') }
 
     it "successfully" do
-      get :search, params: { commit: true, subject: 'stars' }
-      expect(assigns(:search_results)).to match_array([post1, post2])
+      results = Post::Searcher.new.search(params: { subject: 'stars' })
+      expect(results).to match_array([post1, post2])
     end
 
     it "acronym" do
       post3 = create(:post, subject: 'Case starlight')
-      get :search, params: { commit: true, subject: 'cs', abbrev: true }
-      expect(assigns(:search_results)).to match_array([post1, post2, post3])
+      results = Post::Searcher.new.search(params: { subject: 'cs', abbrev: true })
+      expect(results).to match_array([post1, post2, post3])
     end
 
     it "exact match" do
@@ -45,8 +45,8 @@ RSpec.describe Post::Searcher do
 
   it "does not mix up subject with content" do
     create(:post, subject: 'unrelated', content: 'contains stars')
-    get :search, params: { commit: true, subject: 'stars' }
-    expect(assigns(:search_results)).to be_empty
+    results = Post::Searcher.new.search(params: { subject: 'stars' })
+    expect(results).to be_empty
   end
 
   context "filters by authors" do
@@ -66,13 +66,13 @@ RSpec.describe Post::Searcher do
     end
 
     it "one author" do
-      get :search, params: { commit: true, author_id: [author1.id] }
-      expect(assigns(:search_results)).to match_array([post1, post3, post4])
+      results = Post::Searcher.new.search(params: { author_id: [author1.id] })
+      expect(results).to match_array([post1, post3, post4])
     end
 
     it "multiple authors" do
-      get :search, params: { commit: true, author_id: [author1.id, author2.id] }
-      expect(assigns(:search_results)).to match_array([post3, post4])
+      results = Post::Searcher.new.search(params: { author_id: [author1.id, author2.id] })
+      expect(results).to match_array([post3, post4])
     end
   end
 
@@ -80,22 +80,22 @@ RSpec.describe Post::Searcher do
     create(:reply, with_character: true)
     reply = create(:reply, with_character: true)
     post = create(:post, character: reply.character, user: reply.user)
-    get :search, params: { commit: true, character_id: reply.character_id }
-    expect(assigns(:search_results)).to match_array([reply.post, post])
+    results = Post::Searcher.new.search(params: { commit: true, character_id: reply.character_id })
+    expect(results).to match_array([reply.post, post])
   end
 
   it "filters by completed" do
     create(:post)
     post = create(:post, status: :complete)
-    get :search, params: { commit: true, completed: true }
-    expect(assigns(:search_results)).to match_array(post)
+    results = Post::Searcher.new.search(params: { completed: true })
+    expect(results).to match_array(post)
   end
 
   it "sorts posts by tagged_at" do
     posts = create_list(:post, 4)
     create(:reply, post: posts[2])
     create(:reply, post: posts[1])
-    get :search, params: { commit: true }
-    expect(assigns(:search_results)).to eq([posts[1], posts[2], posts[3], posts[0]])
+    results = Post::Searcher.new.search(params: {})
+    expect(results).to eq([posts[1], posts[2], posts[3], posts[0]])
   end
 end
