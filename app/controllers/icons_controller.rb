@@ -54,7 +54,7 @@ class IconsController < UploadingController
       posts_using = Post.where(icon_id: @icon.id).visible_to(current_user)
       replies_using = Reply.where(icon_id: @icon.id).visible_to(current_user)
       @times_used = (posts_using.count + replies_using.count)
-      @posts_used = (posts_using.pluck(:id) + replies_using.pluck('distinct post_id')).uniq.count
+      @posts_used = (posts_using.pluck(:id) + replies_using.select(:post_id).distinct.pluck(:post_id)).uniq.count
     end
   end
 
