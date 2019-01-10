@@ -25,6 +25,10 @@ class ReportsController < ApplicationController
 
       DailyReport.mark_read(current_user, @day) if !current_user.ignore_unread_daily_report? && @day.to_date < Time.zone.now.to_date
     end
+
+    if @report_type == 'daily'
+      @posts = DailyReport.new(@day).posts(sort, page, per_page).visible_to(current_user)
+    end
   end
 
   private
