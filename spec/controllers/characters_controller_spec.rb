@@ -1315,6 +1315,20 @@ RSpec.describe CharactersController do
       expect(assigns(:search_results)).to match_array([found])
     end
 
+    it 'handles failure' do
+      create(:character, name: 'a')
+      get :search, params: { commit: true, name: 'a', search_name: true, author_id: -1 }
+      expect(flash[:error]).to eq("User could not be found.")
+    end
+
+    it 'handles multiple failures' do
+      create(:character, name: 'a')
+      get :search, params: { commit: true, name: 'a', search_name: true, author_id: -1, template_id: -1 }
+      expect(flash[:error][:message]).to eq("Search could not be completed.")
+      expect(flash[:error][:array]).to match_array(["User could not be found.", "Template could not be found."])
+    end
+  end
+
   describe "POST duplicate" do
     it "requires login" do
       post :duplicate, params: { id: -1 }
