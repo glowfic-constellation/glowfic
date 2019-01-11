@@ -136,10 +136,15 @@ class ApplicationController < ActionController::Base
   end
   helper_method :post_or_reply_link
 
-  def posts_from_relation(relation, no_tests: true, with_pagination: true, select: '')
-    posts = relation
+  def posts_from_relation(relation, no_tests: true, with_pagination: true, select: '', max: false)
+    if max
+      posts = relation.select('posts.*, max(boards.name) as board_name, max(users.username) as last_user_name'+ select)
+    else
+      posts = relation.select('posts.*, boards.name as board_name, users.username as last_user_name'+ select)
+    end
+
+    posts = posts
       .visible_to(current_user)
-      .select('posts.*, boards.name as board_name, users.username as last_user_name'+ select)
       .joins(:board)
       .joins(:last_user)
       .includes(:authors)
