@@ -28,14 +28,8 @@ Layout/AlignParameters:
   EnforcedStyle: 'with_fixed_indentation'
 
 Layout/CaseIndentation:
-  Enabled: true
   EnforcedStyle: 'end'
   IndentOneStep: true
-
-Layout/ClosingHeredocIndentation:
-  Enabled: true
-  Exclude:
-    - 'db/migrate/**/*'
 
 Layout/EmptyLineAfterMagicComment:
   Enabled: false
