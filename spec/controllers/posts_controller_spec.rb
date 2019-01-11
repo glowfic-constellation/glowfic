@@ -1663,7 +1663,8 @@ RSpec.describe PostsController do
           post: {
             setting_ids: setting_ids,
             content_warning_ids: warning_ids,
-            label_ids: label_ids}
+            label_ids: label_ids
+          }
         }
         expect(response).to render_template(:preview)
         post = assigns(:post)
@@ -1818,7 +1819,8 @@ RSpec.describe PostsController do
           post: {
             setting_ids: setting_ids,
             content_warning_ids: warning_ids,
-            label_ids: label_ids}
+            label_ids: label_ids
+          }
         }
         expect(response).to redirect_to(post_url(post))
         post = assigns(:post)

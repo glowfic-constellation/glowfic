@@ -79,9 +79,6 @@ Layout/IndentHeredoc:
   Exclude:
     - 'db/migrate/**/*'
 
-Layout/MultilineHashBraceLayout:
-  Enabled: false
-
 Layout/MultilineMethodCallBraceLayout:
   Enabled: false
 
