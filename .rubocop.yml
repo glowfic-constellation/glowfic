@@ -37,9 +37,6 @@ Layout/ClosingHeredocIndentation:
   Exclude:
     - 'db/migrate/**/*'
 
-Layout/ClosingParenthesisIndentation:
-  Enabled: false
-
 Layout/EmptyLineAfterMagicComment:
   Enabled: false
 
@@ -51,9 +48,6 @@ Layout/EndAlignment:
 
 Layout/EndOfLine:
   EnforcedStyle: lf
-
-Layout/IndentFirstArgument:
-  Enabled: false
 
 Layout/IndentationWidth:
   Enabled: true
@@ -78,9 +72,6 @@ Layout/MultilineMethodCallIndentation:
   Exclude:
     - 'app/models/post.rb'
 
-Layout/MultilineMethodDefinitionBraceLayout:
-  Enabled: false
-
 Layout/MultilineOperationIndentation:
   Enabled: false
 
@@ -102,13 +93,7 @@ Layout/SpaceInsideBlockBraces:
 Layout/SpaceInsideHashLiteralBraces:
   Enabled: false
 
-Layout/SpaceInsidePercentLiteralDelimiters:
-  Enabled: false
-
 Layout/SpaceInsideRangeLiteral:
-  Enabled: false
-
-Layout/TrailingBlankLines:
   Enabled: false
 
 #################### Lint ################################
@@ -172,9 +157,6 @@ Metrics/PerceivedComplexity:
 Naming/AccessorMethodName:
   Enabled: false
 
-Naming/AsciiIdentifiers:
-  Enabled: false
-
 Naming/MemoizedInstanceVariableName:
   Enabled: false
 
@@ -225,12 +207,7 @@ Rails/Output:
 
 ################## Style #################################
 
-Style/Alias:
-  Enabled: false
-
 Style/AndOr:
-  Enabled: false
-
   EnforcedStyle: 'conditionals'
 
 Style/AsciiComments:
@@ -238,9 +215,6 @@ Style/AsciiComments:
 
 Style/AutoResourceCleanup:
   Enabled: true
-
-Style/BeginBlock:
-  Enabled: false
 
 Style/BlockDelimiters:
   Enabled: false
@@ -250,9 +224,6 @@ Style/BracesAroundHashParameters:
 
 Style/ClassAndModuleChildren:
   EnforcedStyle: 'compact'
-
-Style/CommandLiteral:
-  Enabled: false
 
 Style/CommentAnnotation:
   Enabled: false
@@ -269,15 +240,6 @@ Style/DoubleNegation:
 Style/EmptyMethod:
   Enabled: false
 
-Style/Encoding:
-  Enabled: false
-
-Style/FormatString:
-  Enabled: false
-
-Style/FormatStringToken:
-  Enabled: false
-
 Style/FrozenStringLiteralComment:
   Enabled: false
 
@@ -290,19 +252,7 @@ Style/GuardClause:
 Style/HashSyntax:
   Enabled: false
 
-Style/IfWithSemicolon:
-  Enabled: false
-
-Style/InfiniteLoop:
-  Enabled: false
-
 Style/Lambda:
-  Enabled: false
-
-Style/ModuleFunction:
-  Enabled: false
-
-Style/MultilineMemoization:
   Enabled: false
 
 Style/MutableConstant:
@@ -314,16 +264,10 @@ Style/NumericLiterals:
 Style/NumericPredicate:
   Enabled: false
 
-Style/OneLineConditional:
-  Enabled: false
-
 Style/ParallelAssignment:
   Enabled: false
 
 Style/PercentLiteralDelimiters:
-  Enabled: false
-
-Style/PercentQLiterals:
   Enabled: false
 
 Style/Proc:
@@ -344,12 +288,6 @@ Style/RedundantSelf:
 Style/RegexpLiteral:
   EnforcedStyle: 'slashes'
   AllowInnerSlashes: true
-
-Style/SignalException:
-  Enabled: false
-
-Style/SingleLineMethods:
-  Enabled: false
 
 Style/StringLiterals:
   Enabled: false
@@ -372,21 +310,6 @@ Style/TrailingCommaInArrayLiteral:
 Style/TrailingCommaInHashLiteral:
   Enabled: false
   EnforcedStyleForMultiline: 'comma'
-
-Style/TrailingUnderscoreVariable:
-  Enabled: true
-
-Style/UnneededCapitalW:
-  Enabled: false
-
-Style/VariableInterpolation:
-  Enabled: false
-
-Style/WhenThen:
-  Enabled: false
-
-Style/WhileUntilModifier:
-  Enabled: false
 
 Style/WordArray:
   Enabled: false
