@@ -91,9 +91,6 @@ Layout/MultilineMethodDefinitionBraceLayout:
 Layout/MultilineOperationIndentation:
   Enabled: false
 
-Layout/SpaceAroundBlockParameters:
-  Enabled: false
-
 Layout/SpaceAroundEqualsInParameterDefault:
   Enabled: false
 
