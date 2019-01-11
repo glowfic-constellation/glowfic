@@ -28,7 +28,7 @@ class ReportsController < ApplicationController
 
     if @report_type == 'daily'
       @posts = DailyReport.new(@day).posts(sort)
-      @posts = posts_from_relation(@posts)
+      @posts = posts_from_relation(@posts, max: true)
     end
   end
 
