@@ -1,24 +1,24 @@
 class PostScraper < Object
   SANDBOX_ID = Rails.env.production? ? 3 : 5
   BASE_ACCOUNTS = {
-    'alicornucopia' => 'Alicorn',
-    'pythbox' => 'Kappa',
-    'lintamande' => 'lintamande',
-    'marrinikari' => 'Marri',
-    'peterxy' => 'Pedro',
-    'peterverse' => 'Pedro',
-    'curiousdiscoverer' => 'CuriousDiscoverer',
-    'aestrix' => 'Aestrix',
-    'unbitwise' => 'Unbitwise',
-    'erinflight' => 'ErinFlight',
-    'andaisq' => 'andaisq',
-    'rockeye-stonetoe' => 'Rockeye',
-    'rockeye_stonetoe' => 'Rockeye',
+    'alicornucopia'      => 'Alicorn',
+    'pythbox'            => 'Kappa',
+    'lintamande'         => 'lintamande',
+    'marrinikari'        => 'Marri',
+    'peterxy'            => 'Pedro',
+    'peterverse'         => 'Pedro',
+    'curiousdiscoverer'  => 'CuriousDiscoverer',
+    'aestrix'            => 'Aestrix',
+    'unbitwise'          => 'Unbitwise',
+    'erinflight'         => 'ErinFlight',
+    'andaisq'            => 'andaisq',
+    'rockeye-stonetoe'   => 'Rockeye',
+    'rockeye_stonetoe'   => 'Rockeye',
     'maggie-of-the-owls' => 'MaggieoftheOwls',
     'maggie_of_the_owls' => 'MaggieoftheOwls', # have both - and _ versions cause Dreamwidth supports both
-    'nemoconsequentiae' => 'Nemo',
-    'armokgob' => 'Armok',
-    'timepoof' => 'Timepoof',
+    'nemoconsequentiae'  => 'Nemo',
+    'armokgob'           => 'Armok',
+    'timepoof'           => 'Timepoof',
   }
 
   attr_accessor :url, :post, :html_doc
