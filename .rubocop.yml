@@ -43,9 +43,6 @@ Layout/ClosingParenthesisIndentation:
 Layout/EmptyLineAfterMagicComment:
   Enabled: false
 
-Layout/EmptyLines:
-  Enabled: false
-
 Layout/EmptyLineAfterGuardClause:
   Enabled: false
 
