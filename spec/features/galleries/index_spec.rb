@@ -36,7 +36,7 @@ RSpec.feature "Show a list of galleries", :type => :feature do
     user = setup_sample_data
     visit user_galleries_path(user_id: user.id)
 
-    expect(page).to have_selector('th',text: "Test user's Galleries")
+    expect(page).to have_selector('th', text: "Test user's Galleries")
     expect(page).to have_no_selector('.gallery-new')
 
     within('#content tbody') do
