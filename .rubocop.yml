@@ -57,7 +57,7 @@ Layout/EndAlignment:
   EnforcedStyleAlignWith: 'variable'
 
 Layout/EndOfLine:
-  Enabled: false
+  EnforcedStyle: lf
 
 Layout/IndentFirstArgument:
   Enabled: false
