@@ -1040,7 +1040,6 @@ RSpec.describe PostsController do
 
       expect(assigns(:prev_post)).to eq(prev)
       expect(assigns(:next_post)).to eq(nextp)
-
     end
 
     it "gives the correct previous post with an intermediate private post" do
