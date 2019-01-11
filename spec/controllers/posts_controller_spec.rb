@@ -2327,7 +2327,7 @@ RSpec.describe PostsController do
         create(:reply, post: unhidden_post)
         create(:reply, post: hidden_post)
         author = hidden_post.post_authors.where(user_id: user.id).first
-        author.update_attributes(can_owe: false)
+        author.update!(can_owe: false)
       end
 
       it "does not show hidden without arg" do
@@ -2371,7 +2371,7 @@ RSpec.describe PostsController do
         site_test = create(:board, id: Board::ID_SITETESTING)
 
         post.board = site_test
-        post.save
+        post.save!
         create(:reply, post_id: post.id, user_id: other_user.id)
 
         get :owed
