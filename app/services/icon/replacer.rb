@@ -5,30 +5,25 @@ class Icon::Replacer < Generic::Replacer
 
   def setup(user:, no_icon_url:)
     all_icons = if @icon.has_gallery?
-      @icon.galleries.map(&:icons).flatten.uniq.compact - [@icon]
+      @icon.galleries.flat_map(&:icons).uniq.compact - [@icon]
     else
-      current_user.galleryless_icons - [@icon]
+      user.galleryless_icons - [@icon]
     end
     @alts = all_icons.sort_by { |i| i.keyword.downcase }
 
     @gallery = all_icons.to_h { |i| [i.id, { url: i.url, keyword: i.keyword }] }
-    @gallery[''] = { url: view_context.image_path('icons/no-icon.png'), keyword: 'No Icon' }
+    @gallery[''] = { url: no_icon_url, keyword: 'No Icon' }
 
     post_ids = Reply.where(icon_id: @icon.id).select(:post_id).distinct.pluck(:post_id)
-    all_posts = Post.where(icon_id: @icon.id) + Post.where(id: post_ids)
-    @posts = all_posts.uniq
+    @posts = Post.where(icon_id: @icon.id).or(Post.where(id: post_ids)).distinct
   end
 
   def replace(params, user:)
     unless params[:icon_dropdown].blank? || (new_icon = Icon.find_by_id(params[:icon_dropdown]))
-      flash[:error] = "Icon could not be found."
-      redirect_to replace_icon_path(@icon) and return
+      @errors.add(:icon, "could not be found.") && return
     end
 
-    if new_icon && new_icon.user_id != current_user.id
-      flash[:error] = "You do not have permission to modify this icon."
-      redirect_to replace_icon_path(@icon) and return
-    end
+    @errors.add(:base, "You do not have permission to modify this icon.") && return if new_icon && new_icon.user_id != user.id
 
     wheres = { icon_id: @icon.id }
     wheres[:post_id] = params[:post_ids] if params[:post_ids].present?
