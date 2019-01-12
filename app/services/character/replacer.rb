@@ -17,35 +17,21 @@ class Character::Replacer < Generic::Replacer
   end
 
   def replace(params, user:)
-    unless params[:icon_dropdown].blank? || (new_char = Character.find_by_id(params[:icon_dropdown]))
-      @errors.add(:character, "could not be found.")
-    end
+    new_char = check_target(params[:icon_dropdown], user: user)
+    return if @errors.present?
 
-    @errors.add(:base, "You do not have permission to modify this character.") && return if new_char && new_char.user_id != user.id
+    orig_alias = check_alias(params[:orig_alias], state: 'old') if params[:orig_alias] != 'all'
+    new_alias = check_alias(params[:alias_dropdown], character: new_char, state: 'new')
+    return if @errors.present?
 
-    orig_alias = nil
-    if params[:orig_alias].present? && params[:orig_alias] != 'all'
-      orig_alias = CharacterAlias.find_by_id(params[:orig_alias])
-      @errors.add(:base, "Invalid old alias.") unless orig_alias && orig_alias.character_id == @character.id
-    end
+    @success_msg = params[:post_ids].present? ? " in the specified " + 'post'.pluralize(params[:post_ids].size) : ''
 
-    new_alias_id = nil
-    if params[:alias_dropdown].present?
-      new_alias = CharacterAlias.find_by_id(params[:alias_dropdown])
-      @errors.add(:base, "Invalid new alias.") unless new_alias && new_alias.character_id == new_char.try(:id)
-      new_alias_id = new_alias.id
-    end
-
-    @success_msg = ''
     wheres = { character_id: @character.id }
-    updates = { character_id: new_char.try(:id), character_alias_id: new_alias_id }
-
-    if params[:post_ids].present?
-      wheres[:post_id] = params[:post_ids]
-      @success_msg = " in the specified " + 'post'.pluralize(params[:post_ids].size)
-    end
-
+    wheres[:post_id] = params[:post_ids] if params[:post_ids].present?
     wheres[:character_alias_id] = orig_alias.try(:id) if @character.aliases.exists? && params[:orig_alias] != 'all'
+
+    updates = { character_id: new_char.try(:id) }
+    updates[:character_alias_id] = new_alias.id if new_alias.present?
 
     UpdateModelJob.perform_later(Reply.to_s, wheres, updates)
     wheres[:id] = wheres.delete(:post_id) if params[:post_ids].present?
@@ -90,5 +76,19 @@ class Character::Replacer < Generic::Replacer
   def find_posts
     reply_post_ids = Reply.where(character_id: @character.id).select(:post_id).distinct.pluck(:post_id)
     (Post.where(character_id: @character.id) + Post.where(id: reply_post_ids)).uniq
+  end
+
+  def check_target(id, user:)
+    @errors.add(:character, "could not be found.") unless id.blank? || (new_char = Character.find_by(id: id))
+    @errors.add(:base, "You do not have permission to modify this character.")) if new_char && new_char.user_id != user.id
+    new_char
+  end
+
+  def check_alias(alias_id, character: @character, state:)
+    if alias_id.present?
+      alias_obj = CharacterAlias.find_by(id: alias_id)
+      @errors.add(:base, "Invalid #{state} alias.") unless alias_obj && alias_obj.character_id == character.id
+      alias_obj
+    end
   end
 end
