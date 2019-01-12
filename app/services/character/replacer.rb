@@ -7,35 +7,13 @@ class Character::Replacer < Generic::Replacer
   end
 
   def setup(no_icon_url)
-    if @character.template
-      @alts = @character.template.characters
-    else
-      @alts = @character.user.characters.where(template_id: nil)
-    end
-    @alts -= [@character] unless @alts.size <= 1 || @character.aliases.exists?
+    @alts = find_alts
+    @gallery = construct_gallery(no_icon_url)
 
-    icons = @alts.map do |alt|
-      if alt.default_icon.present?
-        [alt.id, { url: alt.default_icon.url, keyword: alt.default_icon.keyword, aliases: alt.aliases.as_json }]
-      else
-        [alt.id, { url: no_icon_url, keyword: 'No Icon', aliases: alt.aliases.as_json }]
-      end
-    end
-    @gallery = icons.to_h
-    @gallery[''] = { url: no_icon_url, keyword: 'No Character' }
-
-    @alt_dropdown = @alts.map do |alt|
-      name = alt.name
-      name += ' | ' + alt.screenname if alt.screenname
-      name += ' | ' + alt.template_name if alt.template_name
-      name += ' | ' + alt.settings.pluck(:name).join(' & ') if alt.settings.present?
-      [name, alt.id]
-    end
+    @alt_dropdown = construct_dropdown
     @alt = @alts.first
 
-    reply_post_ids = Reply.where(character_id: @character.id).select(:post_id).distinct.pluck(:post_id)
-    all_posts = Post.where(character_id: @character.id) + Post.where(id: reply_post_ids)
-    @posts = all_posts.uniq
+    @posts = find_posts
   end
 
   def replace(params, user:)
@@ -43,9 +21,7 @@ class Character::Replacer < Generic::Replacer
       @errors.add(:character, "could not be found.")
     end
 
-    if new_char && new_char.user_id != current_user.id
-      @errors.add(:base, "You do not have permission to modify this character.") && return
-    end
+    @errors.add(:base, "You do not have permission to modify this character.") && return if new_char && new_char.user_id != user.id
 
     orig_alias = nil
     if params[:orig_alias].present? && params[:orig_alias] != 'all'
@@ -74,5 +50,45 @@ class Character::Replacer < Generic::Replacer
     UpdateModelJob.perform_later(Reply.to_s, wheres, updates)
     wheres[:id] = wheres.delete(:post_id) if params[:post_ids].present?
     UpdateModelJob.perform_later(Post.to_s, wheres, updates)
+  end
+
+  private
+
+  def find_alts
+    if @character.template
+      alts = @character.template.characters
+    else
+      alts = @character.user.characters.where(template_id: nil)
+    end
+    alts -= [@character] unless @alts.size <= 1 || @character.aliases.exists?
+    alts
+  end
+
+  def construct_gallery(no_icon_url)
+    icons = @alts.map do |alt|
+      if alt.default_icon.present?
+        [alt.id, { url: alt.default_icon.url, keyword: alt.default_icon.keyword, aliases: alt.aliases.as_json }]
+      else
+        [alt.id, { url: no_icon_url, keyword: 'No Icon', aliases: alt.aliases.as_json }]
+      end
+    end
+    gallery = icons.to_h
+    gallery[''] = { url: no_icon_url, keyword: 'No Character' }
+    gallery
+  end
+
+  def construct_dropdown
+    @alts.map do |alt|
+      name = alt.name
+      name += ' | ' + alt.screenname if alt.screenname
+      name += ' | ' + alt.template_name if alt.template_name
+      name += ' | ' + alt.settings.pluck(:name).join(' & ') if alt.settings.present?
+      [name, alt.id]
+    end
+  end
+
+  def find_posts
+    reply_post_ids = Reply.where(character_id: @character.id).select(:post_id).distinct.pluck(:post_id)
+    (Post.where(character_id: @character.id) + Post.where(id: reply_post_ids)).uniq
   end
 end
