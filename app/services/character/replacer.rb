@@ -3,9 +3,10 @@ class Character::Replacer < Generic::Replacer
 
   def initialize(character)
     @character = character
+    super()
   end
 
-  def setup(noicon_url)
+  def setup(no_icon_url)
     if @character.template
       @alts = @character.template.characters
     else
@@ -17,11 +18,11 @@ class Character::Replacer < Generic::Replacer
       if alt.default_icon.present?
         [alt.id, { url: alt.default_icon.url, keyword: alt.default_icon.keyword, aliases: alt.aliases.as_json }]
       else
-        [alt.id, { url: view_context.image_path('icons/no-icon.png'), keyword: 'No Icon', aliases: alt.aliases.as_json }]
+        [alt.id, { url: no_icon_url, keyword: 'No Icon', aliases: alt.aliases.as_json }]
       end
     end
     @gallery = icons.to_h
-    @gallery[''] = { url: view_context.image_path('icons/no-icon.png'), keyword: 'No Character' }
+    @gallery[''] = { url: no_icon_url, keyword: 'No Character' }
 
     @alt_dropdown = @alts.map do |alt|
       name = alt.name
@@ -39,41 +40,33 @@ class Character::Replacer < Generic::Replacer
 
   def replace(params, user:)
     unless params[:icon_dropdown].blank? || (new_char = Character.find_by_id(params[:icon_dropdown]))
-      flash[:error] = "Character could not be found."
-      redirect_to replace_character_path(@character) and return
+      @errors.add(:character, "could not be found.")
     end
 
     if new_char && new_char.user_id != current_user.id
-      flash[:error] = "You do not have permission to modify this character."
-      redirect_to replace_character_path(@character) and return
+      @errors.add(:base, "You do not have permission to modify this character.") && return
     end
 
     orig_alias = nil
     if params[:orig_alias].present? && params[:orig_alias] != 'all'
       orig_alias = CharacterAlias.find_by_id(params[:orig_alias])
-      unless orig_alias && orig_alias.character_id == @character.id
-        flash[:error] = "Invalid old alias."
-        redirect_to replace_character_path(@character) and return
-      end
+      @errors.add(:base, "Invalid old alias.") unless orig_alias && orig_alias.character_id == @character.id
     end
 
     new_alias_id = nil
     if params[:alias_dropdown].present?
       new_alias = CharacterAlias.find_by_id(params[:alias_dropdown])
-      unless new_alias && new_alias.character_id == new_char.try(:id)
-        flash[:error] = "Invalid new alias."
-        redirect_to replace_character_path(@character) and return
-      end
+      @errors.add(:base, "Invalid new alias.") unless new_alias && new_alias.character_id == new_char.try(:id)
       new_alias_id = new_alias.id
     end
 
-    success_msg = ''
+    @success_msg = ''
     wheres = { character_id: @character.id }
     updates = { character_id: new_char.try(:id), character_alias_id: new_alias_id }
 
     if params[:post_ids].present?
       wheres[:post_id] = params[:post_ids]
-      success_msg = " in the specified " + 'post'.pluralize(params[:post_ids].size)
+      @success_msg = " in the specified " + 'post'.pluralize(params[:post_ids].size)
     end
 
     wheres[:character_alias_id] = orig_alias.try(:id) if @character.aliases.exists? && params[:orig_alias] != 'all'
