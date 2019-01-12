@@ -21,7 +21,7 @@ RSpec.describe FlatPost do
       nonpost = Timecop.freeze(post.tagged_at + 2.hours) { create(:post) }
       delete_lock(post)
       delete_lock(nonpost)
-      FlatPost.regenerate_all(post.tagged_at + 1.hours)
+      FlatPost.regenerate_all(post.tagged_at + 1.hour)
       expect(GenerateFlatPostJob).to have_been_enqueued.with(post.id).on_queue('high')
       expect(GenerateFlatPostJob).not_to have_been_enqueued.with(nonpost.id).on_queue('high')
     end
