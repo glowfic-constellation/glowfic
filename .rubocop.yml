@@ -317,6 +317,9 @@ Style/MultilineMemoization:
 Style/MutableConstant:
   Enabled: false
 
+Style/NumericLiterals:
+  Enabled: false
+
 Style/NumericPredicate:
   Enabled: false
 
