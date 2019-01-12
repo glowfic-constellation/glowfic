@@ -35,7 +35,7 @@ RSpec.describe Message do
     it "does not notify blocking recipients" do
       recipient = create(:user, email_notifications: true)
       block = create(:block, block_interactions: true, blocking_user: recipient)
-      message = create(:message, sender: block.blocked_user, recipient: recipient)
+      create(:message, sender: block.blocked_user, recipient: recipient)
       expect(UserMailer).to have_queue_size_of(0)
     end
   end
@@ -57,7 +57,7 @@ RSpec.describe Message do
 
   it "does not error to blocked user if updating an existing message" do
     message = create(:message)
-    block = create(:block, blocking_user: message.sender, blocked_user: message.recipient)
+    create(:block, blocking_user: message.sender, blocked_user: message.recipient)
     message.unread = false
     message.save!
   end
