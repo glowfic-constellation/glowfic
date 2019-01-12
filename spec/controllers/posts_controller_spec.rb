@@ -47,8 +47,8 @@ RSpec.describe PostsController do
       render_views
 
       it "sanitizes post descriptions" do
-        post1 = create(:post, description: "<a href=\"/characters/1\">Name</a> and <a href=\"/characters/2\">Other Name</a> do a thing.")
-        post2 = create(:post, description: "A & B do a thing")
+        create(:post, description: "<a href=\"/characters/1\">Name</a> and <a href=\"/characters/2\">Other Name</a> do a thing.")
+        create(:post, description: "A & B do a thing")
         get :index
         expect(response.body).to include('title="Name and Other Name do a thing."')
         expect(response.body).to include('title="A &amp; B do a thing"')
