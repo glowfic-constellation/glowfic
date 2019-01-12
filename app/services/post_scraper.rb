@@ -123,7 +123,7 @@ class PostScraper < Object
       url = first_reply_in_batch.at_css('.comment-title').at_css('a').attribute('href').value
       unless url[/(\?|&)style=site/]
         url_obj = URI.parse(url)
-        url_obj.query += ('&' unless url_obj.query.blank?) + 'style=site'
+        url_obj.query += ('&' if url_obj.query.present?) + 'style=site'
         url = url_obj.to_s
       end
       links << url
