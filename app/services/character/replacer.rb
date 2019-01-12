@@ -7,13 +7,8 @@ class Character::Replacer < Generic::Replacer
   end
 
   def setup(no_icon_url)
-    @alts = find_alts
-    @gallery = construct_gallery(no_icon_url)
-
+    super
     @alt_dropdown = construct_dropdown
-    @alt = @alts.first
-
-    @posts = find_posts
   end
 
   def replace(params, user:)
@@ -33,9 +28,7 @@ class Character::Replacer < Generic::Replacer
     updates = { character_id: new_char.try(:id) }
     updates[:character_alias_id] = new_alias.id if new_alias.present?
 
-    UpdateModelJob.perform_later(Reply.to_s, wheres, updates)
-    wheres[:id] = wheres.delete(:post_id) if params[:post_ids].present?
-    UpdateModelJob.perform_later(Post.to_s, wheres, updates)
+    replace_jobs(wheres: wheres, updates: updates, post_ids: params[:post_ids])
   end
 
   private
@@ -80,15 +73,14 @@ class Character::Replacer < Generic::Replacer
 
   def check_target(id, user:)
     @errors.add(:character, "could not be found.") unless id.blank? || (new_char = Character.find_by(id: id))
-    @errors.add(:base, "You do not have permission to modify this character.")) if new_char && new_char.user_id != user.id
+    @errors.add(:base, "You do not have permission to modify this character.") if new_char && new_char.user_id != user.id
     new_char
   end
 
   def check_alias(alias_id, character: @character, state:)
-    if alias_id.present?
-      alias_obj = CharacterAlias.find_by(id: alias_id)
-      @errors.add(:base, "Invalid #{state} alias.") unless alias_obj && alias_obj.character_id == character.id
-      alias_obj
-    end
+    return unless alias_id.present?
+    alias_obj = CharacterAlias.find_by(id: alias_id)
+    @errors.add(:base, "Invalid #{state} alias.") unless alias_obj && alias_obj.character_id == character.id
+    alias_obj
   end
 end
