@@ -51,7 +51,7 @@ module ApplicationHelper
     'icons/swapgray.png'
   end
 
-  def pretty_time(time, format=nil)
+  def pretty_time(time, format: nil)
     return unless time
     time.strftime(format || current_user.try(:time_display) || TIME_FORMAT)
   end
