@@ -156,7 +156,7 @@ RSpec.describe DailyReport do
       user = create(:user)
 
       Time.use_zone('UTC') do
-        DailyReport.mark_read(user, date.to_date)
+        DailyReport.mark_read(user, at_time: date.to_date)
       end
 
       Timecop.freeze(later_date) do

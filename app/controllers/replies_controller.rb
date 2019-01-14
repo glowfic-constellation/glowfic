@@ -130,7 +130,7 @@ class RepliesController < WritableController
       end
 
       if most_recent_unseen_reply.present?
-        reply.post.mark_read(current_user, reply.post.read_time_for(@unseen_replies))
+        reply.post.mark_read(current_user, at_time: reply.post.read_time_for(@unseen_replies))
         num = @unseen_replies.count
         pluraled = num > 1 ? "have been #{num} new replies" : "has been 1 new reply"
         flash.now[:error] = "There #{pluraled} since you last viewed this post."

@@ -321,7 +321,7 @@ class PostsController < WritableController
     if params[:at_id].present?
       reply = Reply.find(params[:at_id])
       if reply && reply.post == @post
-        @post.mark_read(current_user, reply.created_at - 1.second, true)
+        @post.mark_read(current_user, at_time: reply.created_at - 1.second, force: true)
         flash[:success] = "Post has been marked as read until reply ##{reply.id}."
       end
       return redirect_to unread_posts_path
@@ -352,7 +352,7 @@ class PostsController < WritableController
     begin
       Post.transaction do
         @post.update!(status: params[:status])
-        @post.mark_read(current_user, @post.tagged_at)
+        @post.mark_read(current_user, at_time: @post.tagged_at)
       end
     rescue ActiveRecord::RecordInvalid
       flash[:error] = {

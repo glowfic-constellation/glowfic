@@ -478,9 +478,9 @@ RSpec.describe BoardsController do
       board = create(:board)
       user = create(:user)
       read_post = create(:post, user: user, board: board)
-      read_post.mark_read(user, now - 1.day, true)
+      read_post.mark_read(user, at_time: now - 1.day, force: true)
       unread_post = create(:post, user: user, board: board)
-      unread_post.mark_read(create(:user), now - 1.day, true)
+      unread_post.mark_read(create(:user), at_time: now - 1.day, force: true)
 
       expect(Board.find(board.id).last_read(user)).to be_nil # reload to reset cached @view
       expect(Post.find(read_post.id).last_read(user)).to be_the_same_time_as(now - 1.day)

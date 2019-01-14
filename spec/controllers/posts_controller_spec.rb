@@ -989,7 +989,7 @@ RSpec.describe PostsController do
         third_reply = post.replies.ordered[2]
         second_last_reply = post.replies.ordered[-2]
         user = create(:user)
-        post.mark_read(user, third_reply.created_at)
+        post.mark_read(user, at_time: third_reply.created_at)
         expect(post.first_unread_for(user)).to eq(second_last_reply)
         login_as(user)
         get :show, params: { id: post.id, at_id: 'unread', per_page: 1 }
@@ -1024,7 +1024,7 @@ RSpec.describe PostsController do
         Timecop.freeze(reply1.created_at + 1.second) do create(:reply, post: post, user: post.user) end # second reply
         Timecop.freeze(reply1.created_at + 2.seconds) do create(:reply, post: post, user: post.user) end # third reply
         user = create(:user)
-        post.mark_read(user, reply1.created_at)
+        post.mark_read(user, at_time: reply1.created_at)
         login_as(user)
         get :show, params: { id: post.id, page: 'unread', per_page: 1 }
         expect(assigns(:page)).to eq(2)
@@ -1638,7 +1638,7 @@ RSpec.describe PostsController do
         post = create(:post)
         reply = create(:reply, post: post)
         user = create(:user)
-        post.mark_read(user, post.read_time_for([reply]))
+        post.mark_read(user, at_time: post.read_time_for([reply]))
         time_read = post.reload.last_read(user)
 
         login_as(user)
@@ -1656,7 +1656,7 @@ RSpec.describe PostsController do
         reply = create(:reply, post: post)
         user = create(:user)
         login_as(user)
-        post.mark_read(user, post.read_time_for([reply]))
+        post.mark_read(user, at_time: post.read_time_for([reply]))
         time_read = post.reload.last_read(user)
 
         post.ignore(user)
@@ -2710,8 +2710,8 @@ RSpec.describe PostsController do
         [reply2, reply3]
       end
 
-      opened_post1.mark_read(user, time)
-      opened_post2.mark_read(user, time)
+      opened_post1.mark_read(user, at_time: time)
+      opened_post2.mark_read(user, at_time: time)
       read_post1.mark_read(user)
       read_post2.mark_read(user)
       hidden_post.ignore(user)
@@ -2752,25 +2752,25 @@ RSpec.describe PostsController do
 
       # only post view exists
       post_unread_post = create(:post)
-      post_unread_post.mark_read(user, post_unread_post.created_at - 1.second, true)
+      post_unread_post.mark_read(user, at_time: post_unread_post.created_at - 1.second, force: true)
       post_read_post = create(:post)
       post_read_post.mark_read(user)
 
       # only board view exists
       board_unread_post = create(:post)
-      board_unread_post.board.mark_read(user, board_unread_post.created_at - 1.second, true)
+      board_unread_post.board.mark_read(user, at_time: board_unread_post.created_at - 1.second, force: true)
       board_read_post = create(:post)
       board_read_post.board.mark_read(user)
 
       # both exist
       both_unread_post = create(:post)
-      both_unread_post.mark_read(user, both_unread_post.created_at - 1.second, true)
-      both_unread_post.board.mark_read(user, both_unread_post.created_at - 1.second, true)
+      both_unread_post.mark_read(user, at_time: both_unread_post.created_at - 1.second, force: true)
+      both_unread_post.board.mark_read(user, at_time: both_unread_post.created_at - 1.second, force: true)
       both_board_read_post = create(:post)
-      both_board_read_post.mark_read(user, both_unread_post.created_at - 1.second, true)
+      both_board_read_post.mark_read(user, at_time: both_unread_post.created_at - 1.second, force: true)
       both_board_read_post.board.mark_read(user)
       both_post_read_post = create(:post)
-      both_post_read_post.board.mark_read(user, both_unread_post.created_at - 1.second, true)
+      both_post_read_post.board.mark_read(user, at_time: both_unread_post.created_at - 1.second, force: true)
       both_post_read_post.mark_read(user)
       both_read_post = create(:post)
       both_read_post.mark_read(user)
@@ -2778,7 +2778,7 @@ RSpec.describe PostsController do
 
       # board ignored
       board_ignored = create(:post)
-      board_ignored.mark_read(user, both_unread_post.created_at - 1.second, true)
+      board_ignored.mark_read(user, at_time: both_unread_post.created_at - 1.second, force: true)
       board_ignored.board.ignore(user)
 
       login_as(user)
@@ -2819,11 +2819,11 @@ RSpec.describe PostsController do
           [reply2, reply3]
         end
 
-        opened_post1.mark_read(user, time)
-        opened_post2.mark_read(user, time)
+        opened_post1.mark_read(user, at_time: time)
+        opened_post2.mark_read(user, at_time: time)
         read_post1.mark_read(user)
         read_post2.mark_read(user)
-        hidden_post.mark_read(user, time)
+        hidden_post.mark_read(user, at_time: time)
         hidden_post.ignore(user)
 
         expect(unread_post.reload.first_unread_for(user)).to eq(unread_post)
@@ -2928,8 +2928,8 @@ RSpec.describe PostsController do
 
         time2 = replies2.first.updated_at
         time3 = replies3.last.updated_at
-        post2.mark_read(user, time2)
-        post3.mark_read(user, time3)
+        post2.mark_read(user, at_time: time2)
+        post3.mark_read(user, at_time: time3)
 
         expect(post1.reload.last_read(user)).to be_nil
         expect(post2.reload.last_read(user)).to be_the_same_time_as(time2)
