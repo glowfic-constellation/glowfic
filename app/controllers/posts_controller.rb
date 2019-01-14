@@ -216,7 +216,7 @@ class PostsController < WritableController
     change_status and return if params[:status].present?
     change_authors_locked and return if params[:authors_locked].present?
 
-    @post.assign_attributes(permitted_params)
+    @post.assign_attributes(permitted_params(params[:button_preview].blank?))
     @post.written.assign_attributes(written_params)
     preview and return if params[:button_preview].present?
 
