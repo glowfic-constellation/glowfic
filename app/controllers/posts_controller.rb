@@ -2,8 +2,6 @@
 require 'will_paginate/array'
 
 class PostsController < WritableController
-  include Taggable
-
   before_action :login_required, except: [:index, :show, :history, :warnings, :search, :stats]
   before_action :find_post, only: [:show, :history, :stats, :warnings, :edit, :update, :destroy]
   before_action :require_permission, only: [:edit]
@@ -118,13 +116,11 @@ class PostsController < WritableController
     import_thread and return if params[:button_import].present?
     preview and return if params[:button_preview].present?
 
-    @post = current_user.posts.new(post_params)
-    @post.settings = process_tags(Setting, :post, :setting_ids)
-    @post.content_warnings = process_tags(ContentWarning, :post, :content_warning_ids)
-    @post.labels = process_tags(Label, :post, :label_ids)
+    @post = current_user.posts.new
+    creater = Post::Saver.new(@post, user: current_user, params: params)
 
     begin
-      @post.save!
+      creater.create!
     rescue ActiveRecord::RecordInvalid
       flash.now[:error] = {
         array: @post.errors.full_messages,
@@ -164,31 +160,19 @@ class PostsController < WritableController
     change_authors_locked and return if params[:authors_locked].present?
     preview and return if params[:button_preview].present?
 
-    @post.assign_attributes(post_params)
-    @post.board ||= Board.find(3)
-    settings = process_tags(Setting, :post, :setting_ids)
-    warnings = process_tags(ContentWarning, :post, :content_warning_ids)
-    labels = process_tags(Label, :post, :label_ids)
-
-    if current_user.id != @post.user_id && @post.audit_comment.blank? && !@post.author_ids.include?(current_user.id)
-      flash[:error] = "You must provide a reason for your moderator edit."
-      editor_setup
-      render :edit and return
-    end
-    @post.audit_comment = nil if @post.changes.empty? # don't save an audit for a note and no changes
+    updater = Post::Saver.new(@post, user: current_user, params: params)
 
     begin
-      Post.transaction do
-        @post.settings = settings
-        @post.content_warnings = warnings
-        @post.labels = labels
-        @post.save!
+      updater.update!
+    rescue ActiveRecord::RecordInvalid, NoModNoteError => e
+      if e.class == NoModNoteError
+        flash.now[:error] = e.message
+      else
+        flash.now[:error] = {
+          message: "Your post could not be saved because of the following problems:",
+          array: @post.errors.full_messages,
+        }
       end
-    rescue ActiveRecord::RecordInvalid
-      flash.now[:error] = {
-        array: @post.errors.full_messages,
-        message: "Your post could not be saved because of the following problems:"
-      }
       editor_setup
       render :edit
     else
@@ -271,15 +255,16 @@ class PostsController < WritableController
   private
 
   def preview
-    @post ||= Post.new(user: current_user)
-    @post.assign_attributes(post_params(false))
-    @post.board ||= Board.find_by_id(3)
+    @post ||= current_user.posts.new
 
-    @author_ids = params.fetch(:post, {}).fetch(:unjoined_author_ids, [])
-    @viewer_ids = params.fetch(:post, {}).fetch(:viewer_ids, [])
-    @settings = process_tags(Setting, :post, :setting_ids)
-    @content_warnings = process_tags(ContentWarning, :post, :content_warning_ids)
-    @labels = process_tags(Label, :post, :label_ids)
+    previewer = Post::Previewer.new(@post, user: current_user, params: params)
+    previewer.perform
+
+    @author_ids = previewer.author_ids
+    @viewer_ids = previewer.viewer_ids
+    @settings = previewer.settings
+    @content_warnings = previewer.warnings
+    @labels = previewer.labels
 
     @written = @post
     editor_setup
@@ -358,7 +343,7 @@ class PostsController < WritableController
   def editor_setup
     super
     @permitted_authors = User.active.ordered - (@post.try(:joined_authors) || [])
-    @author_ids = post_params[:unjoined_author_ids].reject(&:blank?).map(&:to_i) if post_params.key?(:unjoined_author_ids)
+    @author_ids = params[:unjoined_author_ids].reject(&:blank?).map(&:to_i) if params.key?(:unjoined_author_ids)
     @author_ids ||= @post.try(:unjoined_author_ids) || []
   end
 
@@ -406,31 +391,5 @@ class PostsController < WritableController
       flash[:error] = "You do not have access to this feature."
       redirect_to new_post_path
     end
-  end
-
-  def post_params(include_associations=true)
-    allowed_params = [
-      :board_id,
-      :section_id,
-      :privacy,
-      :subject,
-      :description,
-      :content,
-      :character_id,
-      :icon_id,
-      :character_alias_id,
-      :authors_locked,
-      :audit_comment
-    ]
-
-    # prevents us from setting (and saving) associations on preview()
-    if include_associations
-      allowed_params << {
-        unjoined_author_ids: [],
-        viewer_ids: []
-      }
-    end
-
-    params.fetch(:post, {}).permit(allowed_params)
   end
 end
