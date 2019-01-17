@@ -17,7 +17,7 @@ class Post < ApplicationRecord
   belongs_to :last_user, class_name: 'User', inverse_of: false, optional: false
   belongs_to :last_reply, class_name: 'Reply', inverse_of: false, optional: true
   has_one :flat_post, dependent: :destroy
-  has_many :replies, inverse_of: :post, dependent: :destroy
+  has_many :replies, inverse_of: :post, dependent: :destroy, before_remove: :skip_reply_callbacks
   has_many :reply_drafts, dependent: :destroy
 
   has_many :post_viewers, inverse_of: :post, dependent: :destroy
@@ -330,5 +330,9 @@ class Post < ApplicationRecord
   def notify_followers
     return if is_import
     NotifyFollowersOfNewPostJob.perform_later(self.id, user_id)
+  end
+
+  def skip_reply_callbacks(reply)
+    reply.skip_destroy_callbacks = true
   end
 end

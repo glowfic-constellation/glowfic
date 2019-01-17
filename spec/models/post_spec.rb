@@ -142,6 +142,12 @@ RSpec.describe Post do
       post.destroy!
       expect(PostView.count).to be_zero
     end
+
+    it "should not hang on massive reply reordering" do
+      post = create(:post)
+      create_list(:reply, 500, post: post, user: post.user)
+      post.destroy
+    end
   end
 
   describe "#edited_at" do

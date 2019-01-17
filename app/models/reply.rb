@@ -1,8 +1,8 @@
 class Reply < ApplicationRecord
+  include Orderable
+  include PgSearch
   include Presentable
   include Writable
-  include PgSearch
-  include Orderable
 
   belongs_to :post, inverse_of: :replies, optional: false
   validate :author_can_write_in_post, on: :create
@@ -11,7 +11,8 @@ class Reply < ApplicationRecord
   after_create :notify_other_authors, :destroy_draft, :update_active_char, :set_last_reply, :update_post, :update_post_authors
   after_save :update_flat_post
   after_update :update_post
-  after_destroy :set_previous_reply_to_last, :remove_post_author
+  after_destroy :set_previous_reply_to_last, unless: :skip_destroy_callbacks
+  after_destroy :remove_post_author, unless: :skip_destroy_callbacks
 
   attr_accessor :skip_notify, :skip_post_update, :is_import, :skip_regenerate
 

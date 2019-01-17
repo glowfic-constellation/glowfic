@@ -2,9 +2,11 @@ module Orderable
   extend ActiveSupport::Concern
 
   included do
+    include DestroyableDependent
+
     before_save :autofill_order
     after_save :reorder_others_after
-    after_destroy :reorder_others_before
+    after_destroy :reorder_others_before, unless: :skip_destroy_callbacks
 
     scope :ordered_manually, -> { order('section_order asc') }
 
