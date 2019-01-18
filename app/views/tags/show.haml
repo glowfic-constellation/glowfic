@@ -5,77 +5,51 @@
   &raquo;
   %b= @tag.name
 
-%table
+%table.left-info-box.tag-info-box
   %thead
     %tr
-      %th{colspan: 2}
-        #{@tag.type.titlecase}: #{@tag.name}
-        - if @tag.editable_by?(current_user)
-          = link_to edit_tag_path(@tag) do
-            .link-box.action-edit
-              = image_tag "icons/pencil.png"
-              Edit
-          = link_to tag_path(@tag), method: :delete, data: { confirm: 'Are you sure you want to delete this tag?' } do
-            .link-box.action-delete x Delete
+      %th.centered
+        %span.character-name #{@tag.type.titlecase}: #{@tag.name}
   %tbody
-    - if @tag.is_a?(Setting) && @tag.parent_settings.present?
+    %tr
+      %td.centered{class: cycle('even', 'odd')}
+        = link_to tag_path(@tag) do
+          = image_tag "icons/chart_bar.png", class: 'vmid'
+          Info
+    - if @tag.is_a?(GalleryGroup)
       %tr
-        %th.centered.sub.width-150= 'Parent Setting'.pluralize(@tag.parent_settings.count)
-        %td{class: cycle('even', 'odd')}= @tag.parent_settings.map { |c| link_to(c.name, tag_path(c))}.join(', ').html_safe
-    - if @tag.is_a?(Setting)
+        %td.centered{class: cycle('even', 'odd')}
+          = link_to tag_path(@tag, view: 'galleries') do
+            = image_tag "icons/photos.png", class: 'vmid'
+            Galleries
+    - else
       %tr
-        %th.centered.sub.width-150 Owner
-        %td{class: cycle('even', 'odd'), title: ('This setting is not marked as owned' unless @tag.owned?)}
-          = link_to @tag.user do
-            - if @tag.owned?
-              = @tag.user.username
-            - else
-              %em= @tag.user.username
-    - if @tag.description.present?
+        %td.centered{class: cycle('even', 'odd')}
+          = link_to tag_path(@tag, view: 'posts') do
+            = image_tag "icons/book_open.png", class: 'vmid'
+            Posts
+    %tr
+      %td.centered{class: cycle('even', 'odd')}
+        = link_to tag_path(@tag, view: 'characters') do
+          = image_tag "icons/group.png", class: 'vmid'
+          Characters
+    - if @tag.is_a?(Setting) && @tag.child_settings.present?
       %tr
-        %th.centered.sub.width-150.vtop Description
-        %td.written-content{class: cycle('even', 'odd')}= sanitize_written_content(@tag.description).html_safe
-    - unless @tag.has_items?
+        %td.centered{class: cycle('even', 'odd')}
+          = link_to tag_path(@tag, view: 'settings') do
+            = image_tag "icons/world.png", class: 'vmid'
+            Settings
+    - if @tag.editable_by?(current_user)
       %tr
-        %td.centered{class: cycle('even', 'odd'), colspan: 2} — No items yet —
+        %td.centered{class: cycle('even', 'odd')}
+          = link_to edit_tag_path(@tag) do
+            = image_tag "icons/pencil.png", class: 'vmid'
+            Edit #{@tag.type.titlecase}
+    - if @tag.deletable_by?(current_user)
+      %tr
+        %td.centered{class: cycle('even', 'odd')}
+          = link_to tag_path(@tag), method: :delete, data: { confirm: 'Are you sure you want to delete this tag?' } do
+            = image_tag "icons/cross.png", class: 'vmid'
+            Delete #{@tag.type.titlecase}
 
-%br
-
-- if @posts.present?
-  - reset_cycle
-  - content_for :posts_title do
-    Posts Tagged: #{@tag.name}
-
-  = render 'posts/list', posts: @posts
-  %br
-
-- if @galleries.present?
-  - reset_cycle
-  %table
-    %thead
-      %tr
-        %th.padding-10{colspan: 4} Galleries Tagged: #{@tag.name}
-    %tbody
-      = render partial: 'galleries/expandable', collection: @galleries, as: :gallery, locals: {tag: @tag}
-  %br
-
-- if @characters.present?
-  - reset_cycle
-  %table
-    %thead
-      %tr
-        %th{colspan: 7} Characters Tagged: #{@tag.name}
-    %tbody
-      = render 'characters/list_section', name: nil, characters: @characters.ordered, hide_buttons: true, show_user: true, show_template: true
-  %br
-
-- if @tag.is_a?(Setting) && @tag.child_settings.present?
-  - reset_cycle
-  %table
-    %thead
-      %tr
-        %th{colspan: 6} Settings Tagged: #{@tag.name}
-    %tbody
-      - @tag.child_settings.each do |setting|
-        %tr
-          %td{class: cycle('even', 'odd')}= link_to setting.name, tag_path(setting)
+= render @view

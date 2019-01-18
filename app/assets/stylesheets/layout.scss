@@ -312,9 +312,11 @@ td, .table-list li { font-size: $font_size_small; }
 .user-info-box { width: 200px; }
 .icon-info-box { width: 150px; }
 .character-info-box { width: 175px; }
+.tag-info-box { width: 200px; }
 .user-right-content-box { width: calc(100% - 200px); }
 .icon-right-content-box { width: calc(100% - 150px); }
 .character-right-content-box { width: calc(100% - 175px); }
+.tag-right-content-box { width: calc(100% - 200px); }
 #user-avatar { text-align: center; }
 
 /* Not yet deserving of its own CSS file */
