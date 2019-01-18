@@ -12,7 +12,7 @@
           %th.sub Subject
           %th.sub= @view == 'inbox' ? 'Sender' : 'Recipient'
           %th.sub Sent
-          %th.sub.width-15
+          %th.sub#select-all-cell= check_box_tag :select_all, false
         - @messages.each do |message|
           %tr.message-row
             - klass = cycle('even', 'odd')
@@ -28,7 +28,7 @@
               - else
                 = link_to message.recipient.username, user_path(message.recipient)
             %td{class: klass}= pretty_time(message.last_in_thread.created_at)
-            %td{class: klass}= check_box_tag :"marked_ids[]", message.id
+            %td{class: klass}= check_box_tag :"marked_ids[]", message.id, false, class: 'select-all-box'
         %tr
           %td.right-align.padding-5{colspan: 5, class: cycle('even', 'odd')}
             - if @view == 'inbox'
