@@ -155,4 +155,7 @@ span.badge {
   bottom: 1px;
   background-color: $bg_color_badge;
   color: $font_color_badge;
+  border: 0.5px solid $border_color_badge;
+  text-shadow: 0 0 2px $shadow_color_badge, 0 0 2px $shadow_color_badge;
+  margin: 2px;
 }
