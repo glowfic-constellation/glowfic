@@ -1,0 +1,4 @@
+- content_for :posts_title do
+  Posts Tagged: #{@tag.name}
+
+= render 'posts/list', posts: @posts, table_class: 'tag-right-content-box'

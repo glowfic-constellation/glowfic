@@ -76,7 +76,7 @@ RSpec.describe TagsController do
       it "succeeds with valid post tag" do
         tag = create(:label)
         post = create(:post, labels: [tag])
-        get :show, params: { id: tag.id }
+        get :show, params: { id: tag.id, view: 'posts' }
         expect(response.status).to eq(200)
         expect(assigns(:posts)).to match_array([post])
       end
@@ -85,7 +85,7 @@ RSpec.describe TagsController do
         tag = create(:setting)
         post = create(:post, settings: [tag])
         login
-        get :show, params: { id: tag.id }
+        get :show, params: { id: tag.id, view: 'posts' }
         expect(response.status).to eq(200)
         expect(assigns(:posts)).to match_array([post])
       end
@@ -93,14 +93,14 @@ RSpec.describe TagsController do
       it 'succeeds for canons with settings' do
         tag = create(:setting)
         tag.child_settings << create(:setting)
-        get :show, params: { id: tag.id }
+        get :show, params: { id: tag.id, view: 'settings' }
         expect(response).to have_http_status(200)
       end
 
       it "succeeds with valid gallery tag" do
         group = create(:gallery_group)
         gallery = create(:gallery, gallery_groups: [group])
-        get :show, params: { id: group.id }
+        get :show, params: { id: group.id, view: 'galleries' }
         expect(response.status).to eq(200)
         expect(assigns(:galleries)).to match_array([gallery])
       end
@@ -109,7 +109,7 @@ RSpec.describe TagsController do
         group = create(:gallery_group)
         gallery = create(:gallery, gallery_groups: [group])
         login
-        get :show, params: { id: group.id }
+        get :show, params: { id: group.id, view: 'galleries' }
         expect(response.status).to eq(200)
         expect(assigns(:galleries)).to match_array([gallery])
       end
@@ -118,7 +118,7 @@ RSpec.describe TagsController do
         it "succeeds with valid character tag" do
           group = create(:gallery_group)
           character = create(:character, gallery_groups: [group])
-          get :show, params: { id: group.id }
+          get :show, params: { id: group.id, view: 'characters' }
           expect(response.status).to eq(200)
           expect(assigns(:characters)).to match_array([character])
         end
@@ -127,7 +127,7 @@ RSpec.describe TagsController do
           group = create(:gallery_group)
           character = create(:character, gallery_groups: [group])
           login
-          get :show, params: { id: group.id }
+          get :show, params: { id: group.id, view: 'characters' }
           expect(response.status).to eq(200)
           expect(assigns(:characters)).to match_array([character])
         end
@@ -137,7 +137,7 @@ RSpec.describe TagsController do
           gallery2 = create(:gallery, gallery_groups: [group], name: "b")
           gallery3 = create(:gallery, gallery_groups: [group], name: "c")
           gallery1 = create(:gallery, gallery_groups: [group], name: "a")
-          get :show, params: { id: group.id }
+          get :show, params: { id: group.id, view: 'galleries' }
           expect(response.status).to eq(200)
           expect(assigns(:galleries)).to match_array([gallery1, gallery2, gallery3])
         end
@@ -147,7 +147,7 @@ RSpec.describe TagsController do
         it "succeeds with valid character tag" do
           setting = create(:setting)
           character = create(:character, settings: [setting])
-          get :show, params: { id: setting.id }
+          get :show, params: { id: setting.id, view: 'characters' }
           expect(response.status).to eq(200)
           expect(assigns(:characters)).to match_array([character])
         end
@@ -156,7 +156,7 @@ RSpec.describe TagsController do
           setting = create(:setting)
           character = create(:character, settings: [setting])
           login
-          get :show, params: { id: setting.id }
+          get :show, params: { id: setting.id, view: 'characters' }
           expect(response.status).to eq(200)
           expect(assigns(:characters)).to match_array([character])
         end
@@ -169,7 +169,7 @@ RSpec.describe TagsController do
 
         it "succeeds for settings without characters" do
           setting = create(:setting)
-          get :show, params: { id: setting.id }
+          get :show, params: { id: setting.id, view: 'characters' }
           expect(response.status).to eq(200)
           expect(assigns(:characters)).to be_empty
         end

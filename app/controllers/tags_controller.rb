@@ -10,7 +10,7 @@ class TagsController < ApplicationController
     @tags = TagSearcher.new.search(tag_name: params[:name], tag_type: params[:view], page: page)
     @view = params[:view]
     @page_title = @view.present? ? @view.titlecase.pluralize : 'Tags'
-    @tag_options = Hash[*((Tag::TYPES - ['GalleryGroup']).sort.reverse.map{|t| [t.titlecase, t]}.flatten)]
+    @tag_options = (Tag::TYPES - ['GalleryGroup']).sort.reverse.map{|t| [t.titlecase, t]}.to_h
     use_javascript('tags/index')
   rescue InvalidTagType => e
     flash[:error] = e.api_error
@@ -18,11 +18,19 @@ class TagsController < ApplicationController
   end
 
   def show
-    @posts = posts_from_relation(@tag.posts)
-    @characters = @tag.characters.includes(:user, :template)
-    @galleries = @tag.galleries.with_icon_count.ordered_by_name
     @page_title = @tag.name.to_s
-    use_javascript('galleries/expander') if @tag.is_a?(GalleryGroup)
+    @view = params[:view]
+
+    if @view == 'posts'
+      @posts = posts_from_relation(@tag.posts)
+    elsif @view == 'characters'
+      @characters = @tag.characters.includes(:user, :template)
+    elsif @view == 'galleries'
+      @galleries = @tag.galleries.with_icon_count.ordered_by_name
+      use_javascript('galleries/expander')
+    elsif @view != 'settings'
+      @view = 'info'
+    end
   end
 
   def edit
