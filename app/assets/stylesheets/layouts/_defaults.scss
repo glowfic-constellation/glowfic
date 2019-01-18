@@ -239,5 +239,7 @@ $font_color_post_menu: $colors_black !default;
 
 
 $font_color_reply_footer: default !default; // from river // TODO: fix
-$bg_color_badge: $font_color_header_link;
-$font_color_badge: $bg_color_header_middle;
+$bg_color_badge: #FDE295 !default;
+$font_color_badge: #7B3F00 !default;
+$border_color_badge: #C8A528 !default;
+$shadow_color_badge: #FFFACD !default;
