@@ -12,6 +12,10 @@ $(document).ready(function() {
     return false;
   });
 
+  $("#select_all").click(function () {
+    $(".select-all-box").prop('checked', this.checked);
+  });
+
   // Set localStorage if login status has changed
   // storage values are usually strings, cast to be sure
   var loggedInKey = 'loggedIn';
