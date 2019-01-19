@@ -47,6 +47,7 @@ group :production do
 end
 
 group :development do
+  gem 'haml-lint', require: false
   gem 'listen'
   gem 'memory_profiler'
   gem 'rack-mini-profiler'
