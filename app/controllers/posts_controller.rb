@@ -20,13 +20,17 @@ class PostsController < WritableController
     @hide_quicklinks = true
     @page_title = 'Replies Owed'
 
+    ids = PostAuthor.where(user_id: current_user.id)
+
     if params[:view] == 'hidden'
-      ids = PostAuthor.where(user_id: current_user.id, can_owe: false).group(:post_id).pluck(:post_id)
-      @posts = posts_from_relation(Post.where(id: ids).ordered) and return
+      ids = ids.where(can_owe: false)
+    else
+      ids = ids.where(can_owe: true)
     end
 
-    ids = PostAuthor.where(user_id: current_user.id, can_owe: true).group(:post_id).pluck(:post_id)
-    @posts = Post.where(id: ids).where.not(status: [Post::STATUS_COMPLETE, Post::STATUS_ABANDONED]).where.not(last_user: current_user)
+    ids = ids.group(:post_id).pluck(:post_id)
+    @posts = Post.where(id: ids).where.not(status: [Post::STATUS_COMPLETE, Post::STATUS_ABANDONED])
+    @posts = @posts.where.not(last_user: current_user) unless params[:view] == 'hidden'
     @posts = @posts.where.not(status: Post::STATUS_HIATUS).where('tagged_at > ?', 1.month.ago) if current_user.hide_hiatused_tags_owed?
     @posts = posts_from_relation(@posts.ordered)
   end
