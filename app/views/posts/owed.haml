@@ -1,14 +1,27 @@
 - content_for :posts_title do
   - if params[:view] == 'hidden'
     All Threads With Replies Owed Disabled
+  - elsif params[:view] == 'hiatused'
+    Hiatused Threads You Owe Replies In
+  - else
+    Threads You Owe Replies In
+
+  - if params[:view] == 'hidden'
     = link_to owed_posts_path do
       .view-button
         &laquo; Owed
   - else
-    Threads You Owe Replies In
     = link_to owed_posts_path(view: 'hidden') do
       .view-button
         Hidden &raquo;
+  - if params[:view] == 'hiatused'
+    = link_to owed_posts_path do
+      .view-button
+        &laquo; Active
+  - elsif @hiatused_exist
+    = link_to owed_posts_path(view: 'hiatused') do
+      .view-button
+        Inactive &raquo;
 
 = form_tag mark_posts_path do
   = render 'posts/list', posts: @posts, check_box_name: 'marked_ids[]'
