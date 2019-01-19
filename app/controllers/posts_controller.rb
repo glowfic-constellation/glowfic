@@ -31,7 +31,16 @@ class PostsController < WritableController
     ids = ids.group(:post_id).pluck(:post_id)
     @posts = Post.where(id: ids).where.not(status: [Post::STATUS_COMPLETE, Post::STATUS_ABANDONED])
     @posts = @posts.where.not(last_user: current_user) unless params[:view] == 'hidden'
-    @posts = @posts.where.not(status: Post::STATUS_HIATUS).where('tagged_at > ?', 1.month.ago) if current_user.hide_hiatused_tags_owed?
+
+    hiatused = @posts.where(status: Post::STATUS_HIATUS).or(@posts.where('tagged_at < ?', 1.month.ago))
+
+    if params[:view] == 'hiatused'
+      @posts = hiatused
+    elsif current_user.hide_hiatused_tags_owed?
+      @posts = @posts.where.not(status: Post::STATUS_HIATUS).where('tagged_at > ?', 1.month.ago)
+      @hiatused_exist = true if hiatused.count > 0
+    end
+
     @posts = posts_from_relation(@posts.ordered)
   end
 
