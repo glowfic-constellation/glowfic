@@ -2366,6 +2366,36 @@ RSpec.describe PostsController do
       end
     end
 
+    context "with hiatused" do
+      let(:user) { create(:user) }
+      let(:other_user) { create(:user) }
+      before(:each) {
+        login_as(user)
+        create(:post)
+      }
+
+      it "shows hiatused posts" do
+        post = create(:post, user: user)
+        create(:reply, post: post, user: other_user)
+        post.update!(status: Post::STATUS_HIATUS)
+
+        get :owed, params: {view: 'hiatused'}
+        expect(response.status).to eq(200)
+        expect(assigns(:posts)).to eq([post])
+      end
+
+      it "shows auto-hiatused posts" do
+        post = nil
+        Timecop.freeze(Time.zone.now - 1.month) do
+          post = create(:post, user: user)
+          create(:reply, post: post, user: other_user)
+        end
+        get :owed, params: {view: 'hiatused'}
+        expect(response.status).to eq(200)
+        expect(assigns(:posts)).to eq([post])
+      end
+    end
+
     context "with posts" do
       let(:user) { create(:user) }
       let(:other_user) { create(:user) }
@@ -2469,6 +2499,28 @@ RSpec.describe PostsController do
         create(:reply, post_id: post1.id, user_id: other_user.id)
         get :owed
         expect(assigns(:posts)).to eq([post1, post2, post3])
+      end
+
+      it "shows threads with existing drafts" do
+        create(:reply, post: post, user: other_user)
+        create(:reply, post: post, user: user)
+        create(:reply_draft, post: post, user: user)
+        get :owed
+        expect(response.status).to eq(200)
+        expect(assigns(:posts)).to match_array([post])
+      end
+
+      it "shows solo threads" do
+        create(:reply, user: user, post: post)
+        get :owed
+        expect(response.status).to eq(200)
+        expect(assigns(:posts)).to match_array([post])
+      end
+
+      it "does not show top-posts by user" do
+        get :owed
+        expect(response.status).to eq(200)
+        expect(assigns(:posts)).to be_empty
       end
     end
 
