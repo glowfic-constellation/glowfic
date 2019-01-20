@@ -32,7 +32,8 @@ class PostsController < WritableController
     @posts = Post.where(id: ids)
     unless params[:view] == 'hidden'
       drafts = ReplyDraft.where(post_id: @posts.select(:id))
-      @posts = @posts.where.not(last_user: current_user).or(@posts.where(id: drafts.select(:post_id)))
+      solo = PostAuthor.where(post_id: ids).group(:post_id).having('count(post_id) < 2').count.keys
+      @posts = @posts.where.not(last_user: current_user).or(@posts.where(id: drafts.select(:post_id))).or(Post.where(id: solo))
     end
     @posts = @posts.where.not(status: [Post::STATUS_COMPLETE, Post::STATUS_ABANDONED])
     hiatused = @posts.where(status: Post::STATUS_HIATUS).or(@posts.where('tagged_at < ?', 1.month.ago))
