@@ -5,6 +5,7 @@
   display: inline-block;
   vertical-align: top;
   margin-left: 5px;
+  max-width: calc(100% - 450px);
 }
 .character-galleries-simple { padding: 10px; }
 .character-screenname { font-size: 85%; }
