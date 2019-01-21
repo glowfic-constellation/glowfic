@@ -28,7 +28,7 @@
           - if audit.version == 1
             (Original)
           - else
-            = audit.audited_changes.keys.map{|k| k.sub('_id', '').tr('_', ' ')}.join(', ').capitalize
+            = audit.audited_changes.keys.map(&:humanize).join(', ').capitalize
       %tr
         %th.sub Updated
         %td{class: cycle('even', 'odd')}= pretty_time(audit.created_at)
