@@ -1363,7 +1363,7 @@ RSpec.describe PostsController do
         Timecop.freeze(post.created_at + 2.minutes) do
           post.mark_read(post.user)
         end
-        expect(post.last_read(post.user)).to be_the_same_time_as(post.created_at + 2.minutes)\
+        expect(post.last_read(post.user)).to be_the_same_time_as(post.created_at + 2.minutes)
         login_as(post.user)
 
         put :update, params: { id: post.id, unread: true, at_id: unread_reply.id }
