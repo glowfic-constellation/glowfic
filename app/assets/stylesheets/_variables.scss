@@ -171,9 +171,9 @@ $font_color_popup_header: #333333 !default;
 $border_color_popup_header: #DDDDDD !default;
 $bg_color_popup_content: $colors_white !default;
 $font_color_popup_content: #333333 !default;
-$border_color_popup: #C5C5C5 !default;
+$border_color_popup: $colors_silver !default;
 $bg_color_popup_button: #F6F6F6 !default;
-$border_color_popup_button: #C5C5C5 !default;
+$border_color_popup_button: $colors_silver !default;
 $font_color_popup_link: #333333 !default;
 
 // misc
@@ -229,3 +229,4 @@ $border_color_badge: $colors_confetti !default;
 $shadow_color_badge: $colors_lemon !default;
 
 $font_color_reply_footer: default !default; // from river // TODO: fix
+$shadow_color_nav: $colors_bunker !default;

@@ -5,9 +5,11 @@
   background-color: transparent;
   background-image: url(image-path("layouts/starry.jpg"));
   background-position: right top;
+  a:hover { color: $font_color_header_link_hover; }
 }
 #logo { background-color: transparent !important; }
 #user-info, #nav-top { background-color: $bg_color_header_middle; background-color: rgba($bg_color_header_middle, 0.9); }
+#nav-bottom a { text-shadow: 0 0 3px $shadow_color_nav, 0 0 3px $shadow_color_nav; }
 
 /* - main page */
 body { background-color: $bg_color_page; }
