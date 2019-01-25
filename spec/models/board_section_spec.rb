@@ -17,6 +17,20 @@ RSpec.describe BoardSection do
     expect(section2.reload.section_order).to eq(1)
   end
 
+  it "should sql" do
+    board = create(:board)
+    s1 = create(:board_section, board: board)
+    s2 = create(:board_section, board: board)
+    s3 = create(:board_section, board: board)
+    s4 = create(:board_section, board: board)
+    s5 = create(:board_section, board: board)
+    s2.destroy
+    expect(s1.reload.section_order).to eq(0)
+    expect(s3.reload.section_order).to eq(1)
+    expect(s4.reload.section_order).to eq(2)
+    expect(s5.reload.section_order).to eq(3)
+  end
+
   it "should autofill post section order when not specified" do
     board = create(:board)
     section = BoardSection.create!(board: board, name: 'Test')

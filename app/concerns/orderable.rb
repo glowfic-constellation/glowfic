@@ -6,15 +6,14 @@ module Orderable
     after_save :reorder_others_after
     after_destroy :reorder_others_before
 
-    scope :ordered_manually, -> { order('section_order asc') }
-
-    def order
-      section_order
-    end
-
     def order=(val)
-      self.section_order = val
+      self.send("#{self.class.order_column}=", val)
     end
+
+    def self.order_column
+      'section_order'
+    end
+    scope :ordered_manually, -> { order(self.order_column + ' asc') }
 
     private
 
@@ -33,11 +32,28 @@ module Orderable
       others = self.class.where(other_where).ordered_manually
       return unless others.present?
 
-      others.each_with_index do |other, index|
-        next if other.order == index
-        other.order = index
-        other.save
-      end
+      sql_where = where_to_sql(other_where)
+      sql = """
+      WITH v_sections AS
+      (
+        SELECT ROW_NUMBER() OVER (
+          PARTITION BY #{self.send(:ordered_attributes).join(', ')} ORDER BY #{self.class.order_column} ASC
+        ) AS rn, id FROM #{self.class.table_name} WHERE #{sql_where}
+      )
+      UPDATE #{self.class.table_name}
+      SET #{self.class.order_column} = v_sections.rn-1
+      FROM v_sections
+      WHERE #{self.class.table_name}.id = v_sections.id
+      """
+      sql += "AND #{sql_where};"
+      self.class.connection.execute(sql)
+    end
+
+    def where_to_sql(where_hash)
+      where_hash.map do |column, value|
+        next "#{column} is NULL" unless value
+        "#{column} = #{value}"
+      end.join(' AND ')
     end
 
     def reorder_others_after

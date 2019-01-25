@@ -27,8 +27,6 @@ class Reply < ApplicationRecord
 
   scope :ordered, -> { order(reply_order: :asc) }
 
-  scope :ordered_manually, -> { ordered }
-
   scope :visible_to, ->(user) { where(post_id: Post.visible_to(user).select(:id)) }
 
   def post_page(per=25)
@@ -46,12 +44,8 @@ class Reply < ApplicationRecord
     audits.count > 1
   end
 
-  def order
-    reply_order
-  end
-
-  def order=(val)
-    self.reply_order = val
+  def self.order_column
+    'reply_order'
   end
 
   private
