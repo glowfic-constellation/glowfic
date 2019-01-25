@@ -29,22 +29,16 @@ $(document).ready(function() {
 
   oldTemplate = $("#character_template_id").val();
   $("#new_template").change(function() {
+    $("#character_template_attributes_name").val('');
+    $("#character_template_attributes_id").val('');
+
     if ($("#new_template").is(":checked")) {
-      $("#character_template_attributes_name").val('');
-      $("#character_template_attributes_id").val('');
       $("#create_template").show();
       oldTemplate = $("#character_template_id").val();
       $("#character_template_id").attr("disabled", true).val('').trigger("change.select2");
     } else {
       $("#create_template").hide();
       $("#character_template_id").attr("disabled", false).val(oldTemplate).trigger("change.select2");
-      if (oldTemplate) {
-        $("#character_template_attributes_name").val($("#character_template_id option:selected").text());
-        $("#character_template_attributes_id").val(oldTemplate);
-      } else {
-        $("#character_template_attributes_name").val('');
-        $("#character_template_attributes_id").val('');
-      }
     }
   });
 
