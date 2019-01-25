@@ -55,8 +55,9 @@ RSpec.feature "Creating posts", :type => :feature do
       expect(page).to have_field('post_content', with: 'test content')
       fill_in 'Subject', with: 'other subject'
       fill_in "post_content", with: "other content"
-      click_button 'Post'
     end
+    click_button 'Post'
+
     expect(page).to have_no_selector(".error")
     expect(page).to have_selector('.success', text: 'successfully posted.')
     expect(page).to have_selector('.post-container', count: 1)

@@ -257,8 +257,8 @@ RSpec.feature "Editing posts", :type => :feature do
       fill_in 'Subject', with: ''
       fill_in "Description", with: "test description"
       fill_in "post_content", with: "other content"
-      click_button 'Save'
     end
+    click_button 'Save'
 
     expect(page).to have_no_selector('.post-container')
     expect(page).to have_selector('.error', text: "Subject can't be blank")
