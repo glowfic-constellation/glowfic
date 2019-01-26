@@ -175,14 +175,32 @@ table { border-color: #555555; } // TODO: what does this style
 @import 'dark_themes_selectors';
 
 /* TODO: do this for starrydark */
-.ui-state-default, .ui-widget-content .ui-state-default, .ui-widget-header .ui-state-default, .ui-button, html .ui-button.ui-state-disabled:hover, html .ui-button.ui-state-disabled:active {
+
+%ui {
   border-color: $border_color_popup_button;
   background-color: $bg_color_popup_button;
 }
 
-.ui-state-hover, .ui-widget-content .ui-state-hover, .ui-widget-header .ui-state-hover, .ui-state-focus, .ui-widget-content .ui-state-focus, .ui-widget-header .ui-state-focus, .ui-button:hover, .ui-button:focus {
-  border-color: $border_color_popup_button;
-  background-color: $bg_color_popup_button;
+.ui-state {
+  &-default {
+    &, .ui-widget-content &, .ui-widget-header & { @extend %ui; }
+  }
+
+  &-hover {
+    &, .ui-widget-content &, .ui-widget-header & { @extend %ui; }
+  }
+
+  &-focus {
+    &, .ui-widget-content &, .ui-widget-header & { @extend %ui; }
+  }
+}
+
+.ui-button {
+  &, &:hover, &:focus { @extend %ui; }
+
+  html &.ui-state-disabled {
+    &:hover, &:active { @extend %ui; }
+  }
 }
 
 .ui-widget-content a { color: $font_color_popup_link; }
