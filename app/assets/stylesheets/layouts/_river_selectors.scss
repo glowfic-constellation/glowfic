@@ -62,8 +62,8 @@ a:visited { color: $font_color_link_visited; }
 
 /* - tag items */
 .tag-item, tr.gallery-tags .tag-item {
-  color: $bg_color_tag_item;
-  background-color: $font_color_tag_item;
+  color: $font_color_tag_item;
+  background-color: $bg_color_tag_item;
 }
 
 /* - link-boxes */
