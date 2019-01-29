@@ -154,11 +154,7 @@ table { border-color: #555555; } // TODO: what does this style
 }
 
 /* - link-boxes */
-.link-box.action-new { color: $font_color_linkbox_new; }
-.link-box.action-edit { color: $font_color_linkbox_edit; }
-.link-box.action-favorite { color: $font_color_linkbox_favorite; }
-.link-box.action-delete { color: $font_color_linkbox_delete; }
-.link-box.action-dismiss { color: $font_color_linkbox_dismiss; }
+.link-box { color: $font_color_linkbox; }
 
 /* - other buttons */
 .view-button {
