@@ -20,20 +20,13 @@ class PostsController < WritableController
     @hide_quicklinks = true
     @page_title = 'Replies Owed'
 
-    ids = PostAuthor.where(user_id: current_user.id)
-
-    if params[:view] == 'hidden'
-      ids = ids.where(can_owe: false)
-    else
-      ids = ids.where(can_owe: true)
-    end
-
-    ids = ids.group(:post_id).pluck(:post_id)
+    can_owe = (params[:view] != 'hidden')
+    ids = PostAuthor.where(user_id: current_user.id, can_owe: can_owe).group(:post_id).pluck(:post_id)
     @posts = Post.where(id: ids)
     unless params[:view] == 'hidden'
-      drafts = ReplyDraft.where(post_id: @posts.select(:id))
-      solo = PostAuthor.where(post_id: ids).group(:post_id).having('count(post_id) < 2').count.keys
-      @posts = @posts.where.not(last_user: current_user).or(@posts.where(id: drafts.select(:post_id))).or(Post.where(id: solo))
+      drafts = ReplyDraft.where(post_id: @posts.select(:id)).pluck(:post_id)
+      solo = PostAuthor.where(post_id: ids).group(:post_id).having('count(post_id) < 2').pluck(:post_id)
+      @posts = @posts.where.not(last_user: current_user).or(@posts.where(id: (drafts + solo).uniq))
     end
     @posts = @posts.where.not(status: [Post::STATUS_COMPLETE, Post::STATUS_ABANDONED])
     hiatused = @posts.where(status: Post::STATUS_HIATUS).or(@posts.where('tagged_at < ?', 1.month.ago))
