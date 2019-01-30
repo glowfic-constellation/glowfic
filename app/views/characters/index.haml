@@ -59,4 +59,7 @@
       %tr
         %td.centered.padding-5{class: cycle('even', 'odd'), colspan: colspan} — No characters yet —
   - else
-    = render partial_type, name: nil, characters: @user.characters.includes(:template).ordered, show_template: true
+    - characters = @user.characters.includes(:template).ordered
+    - if page_view == 'list' && character_split == 'none'
+      - characters = characters.paginate(per_page: 25, page: page)
+    = render partial_type, name: nil, characters: characters, show_template: true
