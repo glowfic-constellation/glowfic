@@ -5,6 +5,7 @@ class PostImporter < Object
 
   def import(board_id, importer_id, section_id: nil, status: Post::STATUS_COMPLETE, threaded: false)
     validate_url!
+    validate_content!
     validate_duplicate!(board_id) unless threaded
     validate_usernames!
 
@@ -29,6 +30,24 @@ class PostImporter < Object
 
   def validate_url!
     raise InvalidDreamwidthURL.new('Invalid URL provided.') unless self.class.valid_dreamwidth_url?(@url)
+  end
+
+  def validate_content!
+    title_elem = dreamwidth_doc.at_css('.entry .entry-title')
+    return if title_elem # if this exists, we're pretty safe
+
+    discretion_elem = dreamwidth_doc.at_css('.callout h1')
+    handle_discretion_advised and return if discretion_elem&.text == 'Discretion Advised'
+
+    raise UnparseableDreamwidthURL.new('Could not parse the response from the provided URL into a valid glowfic thread.')
+  end
+
+  def handle_discretion_advised
+    @mechanize ||= Mechanize.new
+    first_page = @mechanize.get(@url)
+    actual_page = first_page.form.submit
+    @dreamwidth_doc = Nokogiri::HTML(actual_page.content)
+    return true
   end
 
   def validate_duplicate!(board_id)
@@ -69,3 +88,4 @@ class PostImportError < ApiError; end
 class MissingUsernames < PostImportError; end
 class AlreadyImported < PostImportError; end
 class InvalidDreamwidthURL < PostImportError; end
+class UnparseableDreamwidthURL < PostImportError; end
