@@ -18,6 +18,7 @@ class PostScraper < Object
     'maggie_of_the_owls' => 'MaggieoftheOwls', # have both - and _ versions cause Dreamwidth supports both
     'nemoconsequentiae' => 'Nemo',
     'armokgob' => 'Armok',
+    'timepoof' => 'Timepoof',
   }
 
   attr_accessor :url, :post, :html_doc
