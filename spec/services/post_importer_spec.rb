@@ -37,6 +37,32 @@ RSpec.describe PostImporter do
         expect { importer.import(nil, nil) }.to raise_error(InvalidDreamwidthURL)
         expect(ScrapePostJob).not_to have_been_enqueued
       end
+
+      context "with double-paste problem" do
+        it "catches http" do
+          importer = PostImporter.new('http://alicornutopia.dreamwidth.org/3251.htmlhttp://alicornutopia.dreamwidth.org/10136.html')
+          expect { importer.import(nil, nil) }.to raise_error(InvalidDreamwidthURL)
+          expect(ScrapePostJob).not_to have_been_enqueued
+        end
+
+        it "catches https" do
+          importer = PostImporter.new('https://alicornutopia.dreamwidth.org/3251.htmlhttps://alicornutopia.dreamwidth.org/10136.html')
+          expect { importer.import(nil, nil) }.to raise_error(InvalidDreamwidthURL)
+          expect(ScrapePostJob).not_to have_been_enqueued
+        end
+
+        it "catches http first" do
+          importer = PostImporter.new('http://alicornutopia.dreamwidth.org/3251.htmlhttps://alicornutopia.dreamwidth.org/10136.html')
+          expect { importer.import(nil, nil) }.to raise_error(InvalidDreamwidthURL)
+          expect(ScrapePostJob).not_to have_been_enqueued
+        end
+
+        it "catches http second" do
+          importer = PostImporter.new('https://alicornutopia.dreamwidth.org/3251.htmlhttp://alicornutopia.dreamwidth.org/10136.html')
+          expect { importer.import(nil, nil) }.to raise_error(InvalidDreamwidthURL)
+          expect(ScrapePostJob).not_to have_been_enqueued
+        end
+      end
     end
 
     context "when validating duplicate imports" do

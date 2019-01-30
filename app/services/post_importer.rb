@@ -17,6 +17,7 @@ class PostImporter < Object
     # errors when actually querying the URL are handled by ScrapePostJob
     return false if url.blank?
     return false unless url.include?('dreamwidth')
+    return false if url.scan(/https?:\/\//).count > 1 # accidentally double-pasting is Valid per URI.parse
     parsed_url = URI.parse(url)
     return false unless parsed_url.host
     parsed_url.host.ends_with?('dreamwidth.org')
