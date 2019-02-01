@@ -2510,6 +2510,15 @@ RSpec.describe PostsController do
         expect(assigns(:posts)).to match_array([post])
       end
 
+      it "does not show threads with drafts by coauthors" do
+        create(:reply, post: post, user: other_user)
+        create(:reply, post: post, user: user)
+        create(:reply_draft, post: post, user: other_user)
+        get :owed
+        expect(response.status).to eq(200)
+        expect(assigns(:posts)).to be_empty
+      end
+
       it "shows solo threads" do
         create(:reply, user: user, post: post)
         get :owed
