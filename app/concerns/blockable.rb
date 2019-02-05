@@ -13,6 +13,11 @@ module Blockable
     user_ids_blocked_interaction.include?(user.id)
   end
 
+  def author_blocking?(post, author_ids)
+    return false unless post.authors_locked
+    Block.where(blocking_user_id: author_ids, blocked_user: self).where("hide_me >= ?", Block::POSTS).exists?
+  end
+
   def user_ids_blocked_interaction
     Block.where(block_interactions: true, blocking_user: self).pluck(:blocked_user_id)
   end
@@ -23,5 +28,13 @@ module Blockable
 
   def user_ids_uninteractable
     (user_ids_blocking_interaction + user_ids_blocked_interaction).uniq
+  end
+
+  def hidden_post_users
+    (blocking_post_users + Block.where(blocking_user: self).where("hide_them >= ?", Block::POSTS).pluck(:blocked_user_id)).uniq
+  end
+
+  def blocking_post_users
+    Block.where(blocked_user: self).where("hide_me >= ?", Block::POSTS).pluck(:blocking_user_id)
   end
 end

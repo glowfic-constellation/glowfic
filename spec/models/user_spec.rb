@@ -139,6 +139,33 @@ RSpec.describe User do
       expect(blocker).not_to have_interaction_blocked(only_posts)
       expect(blocker).to have_interaction_blocked(blockees.first)
     end
+
+    describe "content" do
+      let(:user) { create(:user) }
+      let(:blocking_post_user) { create(:user) }
+      let(:blocking_content_user) { create(:user) }
+      let(:blocked_post_user) { create(:user) }
+      let(:blocked_content_user) { create(:user) }
+      let(:irrelevant_blocker1) { create(:user) }
+      let(:irrelevant_blocker2) { create(:user) }
+
+      before(:each) {
+        create(:block, blocking_user: blocking_post_user, blocked_user: user, hide_me: Block::POSTS)
+        create(:block, blocking_user: blocking_content_user, blocked_user: user, hide_me: Block::ALL)
+        create(:block, blocking_user: user, blocked_user: blocked_post_user, hide_them: Block::POSTS)
+        create(:block, blocking_user: user, blocked_user: blocked_content_user, hide_them: Block::ALL)
+        create(:block, blocking_user: irrelevant_blocker1, blocked_user: user, block_interactions: true)
+        create(:block, blocking_user: irrelevant_blocker2, blocked_user: user, hide_them: Block::POSTS)
+      }
+
+      it "correctly handles all hidden post users" do
+        expect(user.hidden_post_users).to match_array([blocking_post_user, blocking_content_user, blocked_post_user, blocked_content_user].map(&:id))
+      end
+
+      it "correctly handles just blocking post users" do
+        expect(user.blocking_post_users).to match_array([blocking_post_user, blocking_content_user].map(&:id))
+      end
+    end
   end
 
   describe "archive" do
