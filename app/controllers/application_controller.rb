@@ -90,15 +90,15 @@ class ApplicationController < ActionController::Base
   end
   helper_method :tos_skippable?
 
-  def posts_from_relation(relation, no_tests: true, with_pagination: true, select: '', max: false, with_unread: false)
-    posts = posts_list_relation(relation, no_tests: no_tests, select: select, max: max)
+  def posts_from_relation(relation, no_tests: true, with_pagination: true, select: '', max: false, with_unread: false, show_blocked: false)
+    posts = posts_list_relation(relation, no_tests: no_tests, select: select, max: max, show_blocked: show_blocked)
     posts = posts.paginate(page: page) if with_pagination
     calculate_view_status(posts, with_unread: with_unread) if logged_in?
     posts
   end
   helper_method :posts_from_relation
 
-  def posts_list_relation(relation, no_tests: true, select: '', max: false)
+  def posts_list_relation(relation, no_tests: true, select: '', max: false, show_blocked: false)
     select = if max
       <<~SQL
         posts.*,
@@ -126,6 +126,7 @@ class ApplicationController < ActionController::Base
       .with_has_content_warnings
       .with_reply_count
 
+    posts = posts.where_not_hidden(current_user) unless show_blocked
     posts = posts.no_tests if no_tests
     posts
   end

@@ -9,7 +9,7 @@ class PostsController < WritableController
   before_action :editor_setup, only: [:new, :edit]
 
   def index
-    @posts = posts_from_relation(Post.ordered)
+    @posts = posts_from_relation(Post.ordered, show_blocked: !!params[:show_blocked])
     @page_title = 'Recent Threads'
   end
 
@@ -59,7 +59,7 @@ class PostsController < WritableController
       .or(with_post_view.where("date_trunc('second', post_views.read_at) < date_trunc('second', posts.tagged_at)"))
 
     @posts = with_post_view.or(no_post_view)
-    @posts = posts_from_relation(@posts.ordered, with_unread: true)
+    @posts = posts_from_relation(@posts.ordered, with_unread: true, show_blocked: !!params[:show_blocked])
 
     @hide_quicklinks = true
     @page_title = @started ? 'Opened Threads' : 'Unread Threads'
@@ -280,7 +280,7 @@ class PostsController < WritableController
       post_ids = Reply.where(character_id: params[:character_id]).select(:post_id).distinct.pluck(:post_id)
       @search_results = @search_results.where(character_id: params[:character_id]).or(@search_results.where(id: post_ids))
     end
-    @search_results = posts_from_relation(@search_results)
+    @search_results = posts_from_relation(@search_results, show_blocked: !!params[:show_blocked])
   end
 
   def warnings
