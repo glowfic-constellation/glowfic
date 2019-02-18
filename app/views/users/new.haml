@@ -8,28 +8,28 @@
         %th.sub.vtop Username
         %td.even
           = f.text_field :username, placeholder: "Username"
-          .alert.hidden{style: 'margin: 2px 0px;'}
+          .user-alert.hidden
             = image_tag 'icons/exclamation.png', alt: '!', title: '', class: 'vmid'
             %span.msg
       %tr#email
         %th.sub.vtop Email
         %td.odd
           = f.text_field :email, placeholder: "Email address"
-          .alert.hidden{style: 'margin: 2px 0px;'}
+          .user-alert.hidden
             = image_tag 'icons/exclamation.png', alt: '!', title: '', class: 'vmid'
             %span.msg
       %tr#password
         %th.sub.vtop Password
         %td.even
           = f.password_field :password, placeholder: "Password"
-          .alert.hidden{style: 'margin: 2px 0px;'}
+          .user-alert.hidden
             = image_tag 'icons/exclamation.png', alt: '!', title: '', class: 'vmid'
             %span.msg
       %tr#conf
         %th.sub.vtop Confirm
         %td.odd
           = f.password_field :password_confirmation, placeholder: "Confirm Password"
-          .alert.hidden{style: 'margin: 2px 0px;'}
+          .user-alert.hidden
             = image_tag 'icons/exclamation.png', alt: '!', title: '', class: 'vmid'
             %span.msg
       %tr#secret
@@ -45,7 +45,7 @@
             = link_to 'Terms of Service', tos_path
             and the
             = link_to 'Privacy Policy', privacy_path
-          .alert.hidden{style: 'margin: 2px 0px;'}
+          .user-alert.hidden
             = image_tag 'icons/exclamation.png', alt: '!', title: '', class: 'vmid'
             %span.msg
     %tr

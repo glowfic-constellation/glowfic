@@ -1,28 +1,28 @@
 /* global gon */
 $(document).ready(function() {
   $("#user_username").blur(function() {
-    $("#username .alert").hide();
+    $("#username .user-alert").hide();
     validateUsername();
   });
 
   $("#user_email").blur(function() {
-    $("#email .alert").hide();
+    $("#email .user-alert").hide();
     validateEmail();
   });
 
   $("#user_password").blur(function() {
-    $("#password .alert").hide();
+    $("#password .user-alert").hide();
     validatePassword();
   });
 
   $("#user_password_confirmation").blur(function() {
-    $("#conf .alert").hide();
+    $("#conf .user-alert").hide();
     validateConfirmation();
   });
 
   $("#new_user").submit(function() {
     // Clear existing alerts before validating
-    $(".alert").hide();
+    $(".user-alert").hide();
 
     // Do not submit if any validation fails
     var usernameValid = validateUsername();
@@ -104,6 +104,6 @@ function validateTosAccepted() {
 }
 
 function addAlertAfter(id, message) {
-  $("#" + id + " .alert span.msg").text(message);
-  $("#" + id + " .alert").show();
+  $("#" + id + " .user-alert span.msg").text(message);
+  $("#" + id + " .user-alert").show();
 }

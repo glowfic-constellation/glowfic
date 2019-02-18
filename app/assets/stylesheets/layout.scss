@@ -321,7 +321,11 @@ td, .table-list li { font-size: $font_size_small; }
 
 /* Not yet deserving of its own CSS file */
 #stats ul { margin-top: 0; margin-bottom: 0; padding-left: 15px; }
-#signup .sub { width: 90px; }
+#signup {
+  .sub { width: 90px; }
+  .user-alert { margin: 7px 0 2px 0; }
+  .msg { vertical-align: middle; }
+}
 .continuity-spacer { height: 20px; }
 .post-ignored { opacity: 0.3; }
 #loading img { height: 20px; width: 20px; }
@@ -368,9 +372,7 @@ td, .table-list li { font-size: $font_size_small; }
   }
 }
 
-.user-moiety {
-  font-size: 80%;
-}
+.user-moiety { font-size: 80%; }
 
 #footer {
   font-size: $font_size_small;
@@ -396,6 +398,7 @@ The copy box can't be invisible/hidden or copy fails but opacity works
   height: 20px;
 }
 #_hiddenCopyText_ { height: 0px; width: 0px; opacity: 0; padding: 0px; margin: 0px; }
+
 #tag-search-name {
   margin: 0px 5px;
   width: 210px;
