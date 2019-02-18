@@ -119,7 +119,7 @@ function syncRowOrders(orderBox, path, param) {
   unbindArrows(orderBox);
   disableSortable(orderBox);
   $("#loading", orderBox).show();
-  $("#saveconf", orderBox).stop(true, true).hide();
+  $(".saveconf", orderBox).stop(true, true).hide();
 
   // Switch the row order pre-emptively
   var orderedRows = reorderRows(orderBox);
@@ -152,7 +152,7 @@ function syncRowOrders(orderBox, path, param) {
 
     // Re-enable the buttons
     $("#loading", orderBox).hide();
-    $("#saveconf", orderBox).show().delay(2000).fadeOut();
+    $(".saveconf", orderBox).show().delay(2000).fadeOut();
     bindArrows(orderBox, path, param);
     enableSortable(orderBox);
   }).fail(function(resp) {
