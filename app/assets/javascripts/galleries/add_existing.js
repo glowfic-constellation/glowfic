@@ -3,6 +3,14 @@ var skipWarning = false;
 $(document).ready(function() {
   bindGalleryIcons(".add-gallery-icon");
 
+  $(".select-all").click(function () {
+    var galleryId = $(this).val();
+    var icons = $("#icons-"+galleryId+" .gallery-icon img");
+    $.each(icons, function(index, icon) {
+      selectIcon(icon);
+    });
+  });
+
   $("#add-gallery-icons").submit(function() {
     if (imageIds.length < 1) return false;
     $("#image_ids").val(imageIds);
@@ -23,7 +31,7 @@ $(document).ready(function() {
     // Show icons if they're hidden
     $("#icons-" + galleryId).show();
     $("#minmax-" + galleryId).text("-");
-    if ($("#icons-" + galleryId).html().length > 0) { return; }
+    if ($("#icons-" + galleryId + " .icon").length > 0) { return; }
 
     // Load and bind icons if they have not already been loaded
     $.get("/api/v1/galleries/" + galleryId, {}, function(resp) {
@@ -45,11 +53,15 @@ $(window).on('beforeunload', function() {
 
 function bindGalleryIcons(selector) {
   $(selector).click(function() {
-    $(this).toggleClass('selected-icon');
-    if ($(this).hasClass('selected-icon')) {
-      imageIds.push(this.dataset.id);
-    } else {
-      imageIds.pop(this.dataset.id);
-    }
+    selectIcon(this);
   });
+}
+
+function selectIcon(icon) {
+  $(icon).toggleClass('selected-icon');
+  if ($(icon).hasClass('selected-icon')) {
+    imageIds.push(icon.dataset.id);
+  } else {
+    imageIds.pop(icon.dataset.id);
+  }
 }
