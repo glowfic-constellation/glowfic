@@ -371,36 +371,75 @@ RSpec.describe MessagesController do
       expect(flash[:error]).to eq("Could not perform unknown action.")
     end
 
-    context "marking read/unread" do
+    context "marking unread" do
       it "handles invalid message ids" do
         login
         expect_any_instance_of(Message).not_to receive(:update)
-        post :mark, params: { marked_ids: ['nope', -1, '0'], commit: "Mark Read / Unread" }
+        post :mark, params: { marked_ids: ['nope', -1, '0'], commit: "Mark Unread" }
       end
 
       it "does not work for users without access" do
         message = create(:message)
         login
         expect_any_instance_of(Message).not_to receive(:update)
-        post :mark, params: { marked_ids: [message.id.to_s], commit: "Mark Read / Unread" }
+        post :mark, params: { marked_ids: [message.id.to_s], commit: "Mark Unread" }
       end
 
       it "does not work for sender" do
-        skip "not yet implemented"
+        message = create(:message, unread: false)
+        login_as(message.sender)
+        post :mark, params: { marked_ids: [message.id.to_s], commit: "Mark Unread" }
+        expect(message.reload.unread).to eq(false)
       end
 
       it "works read for recipient" do
         message = create(:message, unread: true)
         login_as(message.recipient)
-        post :mark, params: { marked_ids: [message.id.to_s], commit: "Mark Read / Unread" }
-        expect(message.reload.unread).not_to eq(true)
+        post :mark, params: { marked_ids: [message.id.to_s], commit: "Mark Unread" }
+        expect(message.reload.unread).to eq(true)
       end
 
       it "works unread for recipient" do
         message = create(:message, unread: false)
         login_as(message.recipient)
-        post :mark, params: { marked_ids: [message.id.to_s], commit: "Mark Read / Unread" }
+        post :mark, params: { marked_ids: [message.id.to_s], commit: "Mark Unread" }
         expect(message.reload.unread).to eq(true)
+      end
+    end
+
+    context "marking read" do
+      it "handles invalid message ids" do
+        login
+        expect_any_instance_of(Message).not_to receive(:update)
+        post :mark, params: { marked_ids: ['nope', -1, '0'], commit: "Mark Read" }
+      end
+
+      it "does not work for users without access" do
+        message = create(:message)
+        login
+        expect_any_instance_of(Message).not_to receive(:update)
+        post :mark, params: { marked_ids: [message.id.to_s], commit: "Mark Read" }
+      end
+
+      it "does not work for sender" do
+        message = create(:message, unread: true)
+        login_as(message.sender)
+        post :mark, params: { marked_ids: [message.id.to_s], commit: "Mark Read" }
+        expect(message.reload.unread).to eq(true)
+      end
+
+      it "works read for recipient" do
+        message = create(:message, unread: true)
+        login_as(message.recipient)
+        post :mark, params: { marked_ids: [message.id.to_s], commit: "Mark Read" }
+        expect(message.reload.unread).to eq(false)
+      end
+
+      it "works unread for recipient" do
+        message = create(:message, unread: false)
+        login_as(message.recipient)
+        post :mark, params: { marked_ids: [message.id.to_s], commit: "Mark Read" }
+        expect(message.reload.unread).to eq(false)
       end
     end
 
