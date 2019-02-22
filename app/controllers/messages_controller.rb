@@ -82,17 +82,22 @@ class MessagesController < ApplicationController
   def mark
     box = nil
     messages = Message.where(id: params[:marked_ids]).select do |message|
+      box ||= message.box(current_user)
       message.visible_to?(current_user)
     end
 
-    if params[:commit] == "Mark Read / Unread"
+    if params[:commit] == "Mark Read"
       messages.each do |message|
-        box ||= message.box(current_user)
-        message.update(unread: !message.unread?)
+        next unless message.recipient_id == current_user.id
+        message.update(unread: false)
+      end
+    elsif params[:commit] == "Mark Unread"
+      messages.each do |message|
+        next unless message.recipient_id == current_user.id
+        message.update(unread: true)
       end
     elsif params[:commit] == "Delete"
       messages.each do |message|
-        box ||= message.box(current_user)
         box_attr = "visible_#{box}"
         user_id_attr = (box == 'inbox') ? 'recipient_id' : 'sender_id'
         Message.where(thread_id: message.thread_id, "#{user_id_attr}": current_user.id).each do |thread_message|
