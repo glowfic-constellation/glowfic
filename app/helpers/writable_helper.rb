@@ -11,6 +11,11 @@ module WritableHelper
     post_path(post, page: 'unread', anchor: 'unread', **kwargs)
   end
 
+  def anchored_board_path(post)
+    return board_path(post.board_id) unless post.section_id.present?
+    board_path(post.board_id, anchor: "section-#{post.section_id}")
+  end
+
   def dropdown_icons(item, galleries=nil)
     icons = []
     selected_id = nil
