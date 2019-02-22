@@ -42,7 +42,7 @@
         %td.continuity-spacer{colspan: 5}
       - @board_sections.each do |section|
         %tr
-          %th.sub.continuity-header{colspan: 5}= link_to section.name, board_section_path(section)
+          %th.sub.continuity-header{colspan: 5, id: "section-#{section.id}"}= link_to section.name, board_section_path(section)
         - if section.description.present?
           %tr
             %td.written-content{colspan: 5, class: cycle('even', 'odd')}= shortened_desc(section.description, section.id).html_safe
