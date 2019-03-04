@@ -159,9 +159,10 @@ function createTagSelect(tagType, selector, formType, scope) {
       var term = $.trim(params.term);
       if (term === '') return null;
 
-      foundTags[selector].forEach(function(tag) {
+      for(var i = 0; i < foundTags[selector].length; i++) {
+        var tag = foundTags[selector][i];
         if (tag.text.toUpperCase() === term.toUpperCase()) return null;
-      });
+      }
 
       return {
         id: '_' + term,
