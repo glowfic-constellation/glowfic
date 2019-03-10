@@ -2,6 +2,7 @@ module Permissible
   ADMIN = 1
   MOD = 2
   IMPORTER = 3
+  SUSPENDED = 4
 
   MOD_PERMS = [
     :edit_posts,
@@ -31,5 +32,9 @@ module Permissible
 
   def importer?
     role_id == IMPORTER
+  end
+
+  def suspended?
+    role_id == SUSPENDED
   end
 end

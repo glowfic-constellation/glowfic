@@ -17,8 +17,8 @@ module Authentication
     def current_user
       return unless logged_in?
       @current_user ||= User.find_by_id(session[:user_id])
-      return @current_user if @current_user
-      logout # the user id stored in session does not exist, probably due to staging db reset
+      return @current_user if @current_user && !@current_user.suspended?
+      logout # nil means the user id stored in session does not exist, probably due to staging db reset
     end
     helper_method :current_user
 

@@ -33,9 +33,7 @@ class ApplicationController < ActionController::Base
   def show_password_warning
     return unless logged_in?
     return unless current_user.salt_uuid.nil?
-    reset_session
-    cookies.delete(:user_id, cookie_delete_options)
-    @current_user = nil
+    logout
     flash.now[:error] = "Because Marri accidentally made passwords a bit too secure, you must log back in to continue using the site."
   end
 
