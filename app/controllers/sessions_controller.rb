@@ -15,6 +15,9 @@ class SessionsController < ApplicationController
 
     if !user
       flash[:error] = "That username does not exist."
+    elsif user.suspended?
+      flash[:error] = "You could not be logged in."
+      raise ValueError.new("Login attempt by suspended user #{user.id}")
     elsif user.password_resets.active.unused.exists?
       flash[:error] = "The password for this account has been reset. Please check your email."
     elsif user.authenticate(params[:password])
