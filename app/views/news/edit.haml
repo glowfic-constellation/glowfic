@@ -1,0 +1,10 @@
+- content_for :breadcrumbs do
+  = link_to "News", news_index_path
+  &raquo;
+  %b Edit
+
+= form_for @news do |f|
+  %table.form-table
+    %tr
+      %th.centered{colspan: 2} Edit News Post
+    = render 'editor', f: f

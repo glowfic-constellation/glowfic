@@ -810,9 +810,9 @@ ALTER SEQUENCE public.news_id_seq OWNED BY public.news.id;
 CREATE TABLE public.news_views (
     id bigint NOT NULL,
     user_id integer NOT NULL,
-    read_at timestamp without time zone,
     created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    updated_at timestamp without time zone NOT NULL,
+    news_id integer
 );
 
 
@@ -2472,6 +2472,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20180928230642'),
 ('20181113044923'),
 ('20181127010456'),
-('20190122034907');
+('20190122034907'),
+('20190331223926');
 
 

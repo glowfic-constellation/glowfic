@@ -42,7 +42,6 @@ module Viewable
     private
 
     def view_for(user)
-      raise("view_for(#{user.id}) but @view.user_id is #{@view.user_id}") if @view && user.id != @view.user_id
       @view ||= views.where(user_id: user.id).first_or_initialize
     end
   end

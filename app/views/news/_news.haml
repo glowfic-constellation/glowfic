@@ -1,0 +1,16 @@
+- # TODO consolidate this view code with replies#_single and message#_message
+.post-container.news-container{class: cycle('even', 'odd')}
+  .padding-10
+    .post-edit-box
+      - if news.editable_by?(current_user)
+        = link_to edit_news_path(news) do
+          = image_tag "icons/pencil.png".freeze, title: 'Edit'.freeze, alt: 'Edit'.freeze
+      - if news.deletable_by?(current_user)
+        = link_to news_path(news), method: :delete, data: { confirm: "Are you sure you wish to delete this news post?" } do
+          = image_tag "icons/cross.png".freeze, title: 'Delete'.freeze, alt: 'Delete'.freeze
+    .message-content= sanitize_written_content(news.content).html_safe
+  .subber
+    Posted on
+    = pretty_time(news.created_at)
+    by
+    = link_to news.user.username, user_path(news.user)

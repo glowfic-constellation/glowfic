@@ -123,14 +123,17 @@ Rails.application.routes.draw do
     end
   end
 
-  # Miscellaneous
-  resources :reports, only: [:index, :show]
-  resources :bugs, only: :create
-  resources :favorites, only: [:index, :create, :destroy]
+  # Legalese
   match '/tos' => 'about#tos', as: :tos, via: :get
   match '/privacy' => 'about#privacy', as: :privacy, via: :get
   match '/contact' => 'about#contact', as: :contact, via: :get
   match '/dmca' => 'about#dmca', as: :dmca, via: :get
+
+  # Miscellaneous
+  resources :reports, only: [:index, :show]
+  resources :news
+  resources :bugs, only: :create
+  resources :favorites, only: [:index, :create, :destroy]
   match '/contribute' => 'contribute#index', as: :contribute, via: :get
   mount ResqueWeb::Engine => "/resque_web"
 end

@@ -23,6 +23,7 @@ class User < ApplicationRecord
   has_many :posts
   has_many :replies
   has_many :indexes
+  has_many :news
   has_one :report_view
   belongs_to :avatar, class_name: 'Icon', inverse_of: :user, optional: true
   belongs_to :active_character, class_name: 'Character', inverse_of: :user, optional: true
