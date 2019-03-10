@@ -233,4 +233,11 @@ FactoryBot.define do
     blocking_user
     blocked_user
   end
+
+  factory :news do
+    user { create(:mod_user) }
+    sequence :content do |n|
+      "content for news post #{n}"
+    end
+  end
 end

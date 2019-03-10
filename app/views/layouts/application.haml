@@ -148,6 +148,12 @@
           = link_to 'Contact Us', contact_path
           &bull;
           = link_to 'Contribute', contribute_path
+          &bull;
+          - news_count = News.num_unread_for(current_user)
+          = link_to news_index_path(page: (news_count > 1 ? news_count : nil)) do
+            News
+            - if news_count > 0
+              %span.badge.badge-primary= news_count
 
   = javascript_include_tag 'application'.freeze
   - (@javascripts || []).each do |javascript|
