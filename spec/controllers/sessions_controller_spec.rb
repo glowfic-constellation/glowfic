@@ -54,6 +54,13 @@ RSpec.describe SessionsController do
       expect(controller.send(:logged_in?)).not_to eq(true)
     end
 
+    it "requires unsuspended user" do
+      user = create(:user, role_id: Permissible::SUSPENDED)
+      post :create, params: { username: user.username }
+      expect(flash[:error]).to eq("You could not be logged in.")
+      expect(controller.send(:logged_in?)).not_to eq(true)
+    end
+
     it "disallows logins with old passwords when reset is pending" do
       user = create(:user)
       create(:password_reset, user: user)

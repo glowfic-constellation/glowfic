@@ -367,4 +367,27 @@ RSpec.describe ApplicationController do
       expect(response).to render_template(partial: 'about/_accept_tos')
     end
   end
+
+  describe "#check_suspension" do
+    controller do
+      def index
+        render json: {logged_in: current_user.present?}
+      end
+    end
+
+    it "does not log out unsuspended" do
+      user = create(:user)
+      login_as(user)
+      get :index
+      expect(response.json['logged_in']).to be(true)
+    end
+
+    it "logs out suspended" do
+      user = create(:user)
+      user.role_id = Permissible::SUSPENDED
+      user.save
+      get :index
+      expect(response.json['logged_in']).to eq(false)
+    end
+  end
 end
