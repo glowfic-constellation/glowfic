@@ -30,7 +30,10 @@ a:visited { color: $font_color_link_visited; }
   blockquote { background-color: calculate-transparent-color($bg_color_even, $bg_color_odd, 0.2) !important; }
 }
 
-.post-edit-box img { width: 1em; height: 1em; }
+.post-edit-box img {
+  width: 1em;
+  height: 1em;
+}
 .post-footer { color: $font_color_reply_footer; }
 
 .post-navheader { background-color: $bg_color_navheader; }
@@ -55,7 +58,10 @@ a:visited { color: $font_color_link_visited; }
 .icon-credit { background-color: $bg_color_icon_credit; }
 
 /* - tag items */
-.tag-item, tr.gallery-tags .tag-item { color: $bg_color_tag_item; background-color: $font_color_tag_item; }
+.tag-item, tr.gallery-tags .tag-item {
+  color: $bg_color_tag_item;
+  background-color: $font_color_tag_item;
+}
 
 /* - link-boxes */
 .link-box.action-new { background-color: $bg_color_linkbox_new; }

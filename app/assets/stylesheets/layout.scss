@@ -97,11 +97,17 @@
   }
   #header-form { display: none; }
   #header-links { display: inline-block; }
-  #logo img { padding: 0.2em; height: 20px; }
+  #logo img {
+    padding: 0.2em;
+    height: 20px;
+  }
 }
 
 /* Main Content */
-#holder { min-height: 100%; position: relative; }
+#holder {
+  min-height: 100%;
+  position: relative;
+}
 #content, #tos {
   padding: 20px;
   font-size: $font_size_main;
@@ -112,10 +118,16 @@
 }
 #content h1 { line-height: normal; }
 @media (max-width: 600px) {
-  #content, #tos { padding: 10px; padding-bottom: 35px; }
+  #content, #tos {
+    padding: 10px;
+    padding-bottom: 35px;
+  }
 }
 @media (max-width: 500px) {
-  #content, #tos { padding: 5px; padding-bottom: 35px; }
+  #content, #tos {
+    padding: 5px;
+    padding-bottom: 35px;
+  }
 }
 
 /* Flash Displays */
@@ -123,7 +135,10 @@
   padding: 10px 20px;
   line-height: normal;
 }
-.flash ul { margin: 0; margin-top: 5px; }
+.flash ul {
+  margin: 0;
+  margin-top: 5px;
+}
 .flash.error { background-color: $bg_color_flash_error; }
 .flash.success { background-color: $bg_color_flash_success; }
 .flash.inbox { background-color: $bg_color_flash_inbox; }
@@ -138,7 +153,12 @@
 }
 
 /* Login / logout warning */
-#login_status_warning { position: absolute; top: 0; width: 100%; box-sizing: border-box; }
+#login_status_warning {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  box-sizing: border-box;
+}
 
 /* List Tables */
 table { width: 100%; }
@@ -240,9 +260,15 @@ td, .table-list li { font-size: $font_size_small; }
 
 /* Miscellaneous inputs */
 .select2 {
-  &-container { margin: 3px 0; color: $font_color_select2_container; }
+  &-container {
+    margin: 3px 0;
+    color: $font_color_select2_container;
+  }
   &, &-dropdown { font-size: $font_size_smallerish; }
-  input { height: 20px; margin: 0; }
+  input {
+    height: 20px;
+    margin: 0;
+  }
   ul { padding: 0; }
 }
 
@@ -275,9 +301,16 @@ td, .table-list li { font-size: $font_size_small; }
   top: 2px;
   position: relative;
 }
-.list-view { width: 20px; height: 17px; }
-.icon-view { width: 15px; height: 15px; }
 
+.list-view {
+  width: 20px;
+  height: 17px;
+}
+
+.icon-view {
+  width: 15px;
+  height: 15px;
+}
 /* Tag label buttons, like seen on the gallery page */
 .tag-box {
   display: inline;
@@ -320,7 +353,11 @@ td, .table-list li { font-size: $font_size_small; }
 #user-avatar { text-align: center; }
 
 /* Not yet deserving of its own CSS file */
-#stats ul { margin-top: 0; margin-bottom: 0; padding-left: 15px; }
+#stats ul {
+  margin-top: 0;
+  margin-bottom: 0;
+  padding-left: 15px;
+}
 #signup {
   .sub { width: 90px; }
   .user-alert { margin: 7px 0 2px 0; }
@@ -329,7 +366,10 @@ td, .table-list li { font-size: $font_size_small; }
 }
 .continuity-spacer { height: 20px; }
 .post-ignored { opacity: 0.3; }
-#loading img { height: 20px; width: 20px; }
+#loading img {
+  height: 20px;
+  width: 20px;
+}
 .section-warning {
   background-color: rgb(208, 110, 110);
   background-color: rgba(255, 0, 0, 0.4);
@@ -386,7 +426,10 @@ td, .table-list li { font-size: $font_size_small; }
 
   a { color: $font_color_header_link; }
   a:hover { color: $font_color_header_link_hover; }
-  div { padding: 5px; padding-left: 20px; }
+  div {
+    padding: 5px;
+    padding-left: 20px;
+  }
 }
 
 /*
@@ -398,8 +441,14 @@ The copy box can't be invisible/hidden or copy fails but opacity works
   font-weight: bold;
   height: 20px;
 }
-#_hiddenCopyText_ { height: 0px; width: 0px; opacity: 0; padding: 0px; margin: 0px; }
 
+#_hiddenCopyText_ {
+  height: 0px;
+  width: 0px;
+  opacity: 0;
+  padding: 0px;
+  margin: 0px;
+}
 #tag-search-name {
   margin: 0px 5px;
   width: 210px;

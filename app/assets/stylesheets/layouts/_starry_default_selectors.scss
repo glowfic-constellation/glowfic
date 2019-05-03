@@ -8,13 +8,19 @@
   a:hover { color: $font_color_header_link_hover; }
 }
 #logo { background-color: transparent !important; }
-#user-info, #nav-top { background-color: $bg_color_header_middle; background-color: rgba($bg_color_header_middle, 0.9); }
+#user-info, #nav-top {
+  background-color: $bg_color_header_middle;
+  background-color: rgba($bg_color_header_middle, 0.9);
+}
 #nav-bottom a { text-shadow: 0 0 3px $shadow_color_nav, 0 0 3px $shadow_color_nav; }
 
 /* - main page */
 body { background-color: $bg_color_page; }
 
-.search-box { background-color: $bg_color_search_box; color: $font_color_search_box; }
+.search-box {
+  background-color: $bg_color_search_box;
+  color: $font_color_search_box;
+}
 .spacer-alt { background-color: $bg_color_spacer_alt; }
 
 /* - links */
@@ -46,8 +52,15 @@ th, .content-header {
   a { color: $font_color_head_link; }
   a:visited { color: $font_color_head_link_visited; }
 }
-.sub { color: $font_color_sub; background-color: $bg_color_sub; }
-.form-table-ender { background-color: $bg_color_ender; color: $font_color_ender; }
+
+.sub {
+  color: $font_color_sub;
+  background-color: $bg_color_sub;
+}
+.form-table-ender {
+  background-color: $bg_color_ender;
+  color: $font_color_ender;
+}
 .subber {
   background-color: $bg_color_subber;
   color: $font_color_page;
@@ -70,7 +83,10 @@ th, .content-header {
 }
 
 /* - replies.scss */
-.post-subheader { background-color: $bg_color_post_description; color: $font_color_post_description; }
+.post-subheader {
+  background-color: $bg_color_post_description;
+  color: $font_color_post_description;
+}
 .post-navheader { background-color: $bg_color_navheader; }
 
 #post-menu-box {
@@ -86,18 +102,34 @@ th, .content-header {
   }
 }
 
-.selector-popup { background-color: $bg_color_selectionpopup; color: $font_color_page; }
+.selector-popup {
+  background-color: $bg_color_selectionpopup;
+  color: $font_color_page;
+}
 .post-expander { background-color: $bg_color_expander; }
 
 .post-icon { background-color: $bg_color_post_icon; }
 #current-icon-dropdown { background-color: $bg_color_post_icon; }
-#reply-icon-selector { background-color: $bg_color_icon_selector; color: $font_color_page; }
 
-.post-character { font-weight: $font_weight_post_info; background-color: $bg_color_post_character; }
+#reply-icon-selector {
+  background-color: $bg_color_icon_selector;
+  color: $font_color_page;
+}
+
+.post-character {
+  font-weight: $font_weight_post_info;
+  background-color: $bg_color_post_character;
+}
 .post-character, .post-character a, .post-character a:visited, { color: $font_color_post_info; }
-.post-screenname { font-weight: $font_weight_post_info; background-color: $bg_color_post_screenname; }
+.post-screenname {
+  font-weight: $font_weight_post_info;
+  background-color: $bg_color_post_screenname;
+}
 .post-screenname, .post-screenname a, .post-screenname a:visited { color: $font_color_post_screenname; }
-.post-author { font-weight: $font_weight_post_info; background-color: $bg_color_post_author; }
+.post-author {
+  font-weight: $font_weight_post_info;
+  background-color: $bg_color_post_author;
+}
 .post-author, .post-author a, .post-author a:visited { color: $font_color_post_info; }
 
 .pagination .current { background-color: $bg_color_paginate_current_page; }
