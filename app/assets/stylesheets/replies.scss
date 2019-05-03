@@ -324,29 +324,29 @@ div.post-subheader { width: 100%; }
 
 /* - Narrow window display */
 @media (max-width: 600px) {
-    .post-info-box {
-      float: none;
-      width: 100%;
-      display: inline-block;
-    }
-    .post-icon {
-      float: left;
-      margin-right: 0;
-      margin-bottom: 5px;
-    }
-    .post-info-text {
-      float: left;
-      margin-right: 10px;
-      margin-bottom: 5px;
-    }
-    #post-form-wrapper { margin-left: 0; }
-    #character-selector { left: 0; }
-    .post-character { background-color: $bg_color_post_character_narrow; }
-    .post-author { background-color: $bg_color_post_author_narrow; }
-    .post-content blockquote {
-      margin-left: 1.5em;
-      margin-right: 1.5em;
-    }
+  .post-info-box {
+    float: none;
+    width: 100%;
+    display: inline-block;
+  }
+  .post-icon {
+    float: left;
+    margin-right: 0;
+    margin-bottom: 5px;
+  }
+  .post-info-text {
+    float: left;
+    margin-right: 10px;
+    margin-bottom: 5px;
+  }
+  #post-form-wrapper { margin-left: 0; }
+  #character-selector { left: 0; }
+  .post-character { background-color: $bg_color_post_character_narrow; }
+  .post-author { background-color: $bg_color_post_author_narrow; }
+  .post-content blockquote {
+    margin-left: 1.5em;
+    margin-right: 1.5em;
+  }
 }
 
 /* Pagination */
