@@ -7,11 +7,14 @@
   background-position: right top;
   a:hover { color: $font_color_header_link_hover; }
 }
+
 #logo { background-color: transparent !important; }
+
 #user-info, #nav-top {
   background-color: $bg_color_header_middle;
   background-color: rgba($bg_color_header_middle, 0.9);
 }
+
 #nav-bottom a { text-shadow: 0 0 3px $shadow_color_nav, 0 0 3px $shadow_color_nav; }
 
 /* - main page */
@@ -21,6 +24,7 @@ body { background-color: $bg_color_page; }
   background-color: $bg_color_search_box;
   color: $font_color_search_box;
 }
+
 .spacer-alt { background-color: $bg_color_spacer_alt; }
 
 /* - links */
@@ -57,10 +61,12 @@ th, .content-header {
   color: $font_color_sub;
   background-color: $bg_color_sub;
 }
+
 .form-table-ender {
   background-color: $bg_color_ender;
   color: $font_color_ender;
 }
+
 .subber {
   background-color: $bg_color_subber;
   color: $font_color_page;
@@ -71,12 +77,15 @@ th, .content-header {
 /* - content */
 .even, .post-post, .post-reply:nth-child(even), #post-editor {
   background-color: $bg_color_even;
+
   blockquote {
     background-color: calculate-transparent-color($bg_color_even, $bg_color_odd, $opacity_blockquote);
   }
 }
+
 .odd, .post-reply:nth-child(odd), .post-post + #post-editor, .post-post + a + #post-editor {
   background-color: $bg_color_odd;
+
   blockquote {
     background-color: calculate-transparent-color($bg_color_odd, $bg_color_even, $opacity_blockquote);
   }
@@ -87,6 +96,7 @@ th, .content-header {
   background-color: $bg_color_post_description;
   color: $font_color_post_description;
 }
+
 .post-navheader { background-color: $bg_color_navheader; }
 
 #post-menu-box {
@@ -96,6 +106,7 @@ th, .content-header {
 
   a { color: inherit; }
   a:hover div { background-color: $bg_color_menu_link_hover; }
+
   div {
     border-bottom: 1px solid $border_color_post_menu;
     border-bottom: 1px solid rgba($border_color_post_menu, 0.5);
@@ -106,6 +117,7 @@ th, .content-header {
   background-color: $bg_color_selectionpopup;
   color: $font_color_page;
 }
+
 .post-expander { background-color: $bg_color_expander; }
 
 .post-icon { background-color: $bg_color_post_icon; }
@@ -120,16 +132,21 @@ th, .content-header {
   font-weight: $font_weight_post_info;
   background-color: $bg_color_post_character;
 }
+
 .post-character, .post-character a, .post-character a:visited, { color: $font_color_post_info; }
+
 .post-screenname {
   font-weight: $font_weight_post_info;
   background-color: $bg_color_post_screenname;
 }
+
 .post-screenname, .post-screenname a, .post-screenname a:visited { color: $font_color_post_screenname; }
+
 .post-author {
   font-weight: $font_weight_post_info;
   background-color: $bg_color_post_author;
 }
+
 .post-author, .post-author a, .post-author a:visited { color: $font_color_post_info; }
 
 .pagination .current { background-color: $bg_color_paginate_current_page; }
@@ -153,6 +170,7 @@ th, .content-header {
 /* - other buttons */
 .view-button, .post-navheader .view-button { background-color: $bg_color_viewbutton; }
 .view-button.selected { background-color: $bg_color_viewbutton_selected; }
+
 span.badge {
   background-color: $bg_color_badge;
   color: $font_color_badge;

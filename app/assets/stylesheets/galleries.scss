@@ -1,4 +1,5 @@
 @import 'variables';
+
 .gallery-box {
   cursor: pointer;
   width: 20px;
@@ -13,6 +14,7 @@
 /* Basic gallery and gallery icon formatting */
 .gallery { padding: 10px; }
 .gallery .icon { margin: 5px; }
+
 .gallery-icon, .character-icon-item {
   display: inline-block;
   margin-bottom: 10px;
@@ -33,6 +35,7 @@
   right: 12px;
   cursor: pointer;
 }
+
 .delete-button {
   box-sizing: border-box;
   height: 1.5em;
@@ -42,9 +45,9 @@
   border: 1px $border_color_mini_delete solid;
   color: $font_color_mini_delete;
   line-height: 1em;
-
   a, a:visited, a:hover { color: $font_color_mini_delete; }
 }
+
 .select-button input {
   width: 1.5em;
   height: 1.5em;
@@ -63,11 +66,13 @@
     img { vertical-align: middle; }
   }
 }
+
 .icon.preview-icon, #icon-table .preview-icon {
   max-height: 27px;
   max-width: 27px;
   margin: 0;
 }
+
 .loading-icon {
   width: 16px;
   height: 16px;

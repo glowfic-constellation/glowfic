@@ -1,4 +1,5 @@
 @import 'variables';
+
 /* Box displaying current icon */
 #icon-overlay {
   background-color: $bg_color_icon_overlay;
@@ -11,9 +12,12 @@
   display: none;
   cursor: pointer;
 }
+
 #current-icon-holder { position: relative; }
+
 #current-icon-dropdown {
   color: $font_color_icon_selector;
+
   select {
     width: 100px;
     margin-bottom: 10px;
@@ -28,6 +32,7 @@
   top: 1px;
   cursor: pointer;
 }
+
 .selector-popup {
   position: absolute;
   top: 0;
@@ -58,6 +63,7 @@
   background-color: $bg_color_icon_selector;
 
   img { cursor: pointer; }
+
   .gallery-icon {
     min-height: 130px;
     display: inline-block;
@@ -79,7 +85,9 @@
 @media (max-width: 700px) {
   #reply-icon-selector { left: 0; }
 }
+
 .icon-holder .icon { margin: 0; }
+
 .icon {
   position: relative;
   max-width: 100px;
@@ -93,13 +101,16 @@
 
   span { line-height: 14px; }
 }
+
 div.post-subheader { width: 100%; }
+
 .post-subheader {
   box-sizing: border-box;
   padding: 10px;
   background-color: $bg_color_post_description;
   color: $font_color_post_description;
 }
+
 .post-navheader {
   box-sizing: border-box;
   padding: 10px;
@@ -108,6 +119,7 @@ div.post-subheader { width: 100%; }
 
   .view-button { background-color: $bg_color_navbutton; }
 }
+
 .post-expander {
   min-height: 5px;
   background-color: $bg_color_expander;
@@ -120,6 +132,7 @@ div.post-subheader { width: 100%; }
     cursor: pointer;
   }
 }
+
 .post-ender {
   min-height: 5px;
   padding: 5px;
@@ -136,9 +149,11 @@ div.post-subheader { width: 100%; }
 .even, .post-post, .post-reply:nth-child(even) {
   blockquote { background-color: $bg_color_even_blockquote; }
 }
+
 .odd, .post-reply:nth-child(odd) {
   blockquote { background-color: $bg_color_odd_blockquote; }
 }
+
 .single-description blockquote { background-color: rgba(128, 128, 128, 0.3); }
 
 .post-content, .written-content, .message-content {
@@ -146,6 +161,7 @@ div.post-subheader { width: 100%; }
     margin: 0.5em 1.5em;
     padding: 0.5em;
   }
+
   img {
     max-width: 100%;
     height: auto;
@@ -164,12 +180,14 @@ div.post-subheader { width: 100%; }
   padding: 0;
   overflow: auto;
 }
+
 .post-edit-box {
   float: right;
   margin-left: 10px;
   margin-bottom: 5px;
   padding: 5px;
 }
+
 .post-info-box {
   text-align: center;
   padding: 0;
@@ -180,6 +198,7 @@ div.post-subheader { width: 100%; }
   overflow: visible;
   overflow-wrap: break-word;
 }
+
 .post-icon, #current-icon-dropdown { background-color: $bg_color_post_icon; }
 .post-icon {
   padding: 0;
@@ -190,17 +209,20 @@ div.post-subheader { width: 100%; }
     margin-right: 10px;
     margin-left: 10px;
   }
+
   img {
     margin-bottom: 10px;
     vertical-align: middle;
   }
 }
+
 .post-character {
   background-color: $bg_color_post_character;
   color: $font_color_post_info;
   padding: 4px;
   position: relative;
 }
+
 .post-screenname {
   background-color: $bg_color_post_screenname;
   color: $font_color_post_screenname;
@@ -208,36 +230,44 @@ div.post-subheader { width: 100%; }
   overflow-wrap: break-word;
   word-wrap: break-word;
 }
+
 .post-author {
   padding: 5px;
   background-color: $bg_color_post_author;
   color: $font_color_post_info;
   position: relative;
 }
+
 .post-footer {
   padding: 0;
   clear: both;
+
   .right-align {
     width: 100%;
     font-size: $font_size_small;
   }
 }
+
 .per-page {
   margin-top: 5px;
   margin-bottom: 5px;
 }
+
 #post-icon-filler {
   width: 100px;
   height: 100px;
   display: inline-block;
   background-color: #8B8687;
 }
+
 #post_content, #reply_content {
   width: 100%;
   display: block;
 }
+
 #reply_content { height: 130px; }
 #post_content { height: 312px; }
+
 #post-form-wrapper {
   margin-top: 5px;
   margin-left: 160px;
@@ -247,8 +277,10 @@ div.post-subheader { width: 100%; }
   background-size: 30px;
   background-repeat: no-repeat;
 }
+
 #reply_content, .mce-panel { box-sizing: content-box; }
 #post-editor { position: relative; }
+
 #post_form {
   label {
     margin-left: 5px;
@@ -256,22 +288,28 @@ div.post-subheader { width: 100%; }
     display: inline-block;
     &.no-margin { margin-left: 0; }
   }
+
   .subber { padding: 10px; }
+
   #post-editor {
     input[type="text"] { width: 250px; }
     label { min-width: 95px; }
   }
+
   .clear { height: 1px; }
+
   input[type="checkbox"] {
     margin-left: 5px;
     position: relative;
     bottom: 2px;
   }
+
   #current_authors a {
     margin: 5px 0;
     display: inline-block;
   }
 }
+
 .details {
   display: inline;
   font-size: $font_size_smaller;
@@ -303,9 +341,11 @@ div.post-subheader { width: 100%; }
     font-size: unset;
     font-weight: bold;
   }
+
   td {
     padding: 5px;
   }
+
   th, td {
     border: 1px solid #999;
   }
@@ -318,6 +358,7 @@ div.post-subheader { width: 100%; }
   float: left;
   box-sizing: border-box;
 }
+
 .char-access-fake {
   padding: 5px 0;
   font-size: 80%;
@@ -363,19 +404,23 @@ div.post-subheader { width: 100%; }
     font-style: normal;
     background-color: $bg_color_paginate_current_page;
   }
+
   a, .current, .disabled {
     display: inline-block;
     padding: 5px 10px;
   }
+
   .disabled {
     color: $font_color_paginate_link_disabled;
     text-align: left;
   }
+
   a {
     color: $font_color_paginate_link;
     &:hover { background-color: $bg_color_paginate_link_hover; }
     &:visited { color: $font_color_paginate_link_visited; }
   }
+
   .summary {
     padding-left: 10px;
     padding-right: 10px;
@@ -384,15 +429,16 @@ div.post-subheader { width: 100%; }
 
 .paginator {
   color: black;
+
   .left-align {
     float: left;
     padding: 10px;
   }
+
   .right-align {
     padding: 2px;
     padding-right: 10px;
     float: right;
-
     a { color: black; }
   }
 
@@ -404,6 +450,7 @@ div.post-subheader { width: 100%; }
 
   .pagination {
     a, .disabled { padding: 5px; }
+
     .summary {
       padding-left: 5px;
       padding-right: 5px;
@@ -412,9 +459,11 @@ div.post-subheader { width: 100%; }
   .normal-pagination { display: none; }
   .mobile-pagination { display: block; }
 }
+
 .mobile-paginator {
   @include mobile-paginator;
 }
+
 @media (max-width: 400px) {
   .paginator-meta { display: none; }
   .paginator {
@@ -424,6 +473,7 @@ div.post-subheader { width: 100%; }
 
 /* Post dropdown menu */
 #post-menu-holder { position: relative; }
+
 #post-menu-box {
   text-align: left;
   position: absolute;
@@ -433,12 +483,14 @@ div.post-subheader { width: 100%; }
   color: $font_color_post_menu;
   background-color: $bg_color_post_menu;
   border-top: 1px solid $border_color_post_menu;
+
   div {
     padding: 10px 20px;
     border-bottom: 1px solid $border_color_post_menu;
   }
   a { color: $font_color_menu_link; }
   a:hover div { background-color: $bg_color_menu_link_hover; }
+
   img {
     margin-right: 3px;
     vertical-align: middle;
@@ -451,9 +503,11 @@ div.post-subheader { width: 100%; }
   text-align: center;
   width: 50px;
 }
+
 .post-check-box {
   width: 30px;
   padding-right: 10px;
+
   /* Keeps unread table from padding excessively for the checkboxes */
   input.checkbox {
     height: 13px;
@@ -466,6 +520,7 @@ div.post-subheader { width: 100%; }
 .unread-marker-container {
   position: relative;
 }
+
 .unread-marker {
   background-color: transparent;
   color: transparent !important;

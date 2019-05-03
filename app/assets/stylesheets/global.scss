@@ -1,6 +1,7 @@
 @import 'variables';
 
 body, html { height: 100%; }
+
 body {
   margin: 0 0 0 0;
   font-family: Helvetica, Verdana, sans-serif;
@@ -22,6 +23,7 @@ a {
   text-decoration: none;
   color: $font_color_link;
   &:visited { color: $font_color_link_visited; }
+
   &:hover {
     color: $font_color_link_hover;
     text-decoration: none;
@@ -39,9 +41,11 @@ input, textarea, button {
   border: 1px solid $border_color_input;
   margin: 5px 0;
 }
+
 input[type="checkbox"] { height: 23px; }
 textarea { padding: 5px; }
 .form-table td input[type="radio"] { width: unset; }
+
 button, .button {
   background-color: $bg_color_button;
   background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(20%, #FFFFFF), color-stop(50%, #F6F6F6), color-stop(52%, #EEEEEE), color-stop(100%, #F4F4F4));
@@ -116,9 +120,11 @@ button, .button {
 .even, .odd, .post-post, .post-reply, #post-editor {
   padding: 5px;
 }
+
 .even, .post-post, .post-reply:nth-child(even), #post-editor {
   background-color: $bg_color_even;
 }
+
 .odd, .post-reply:nth-child(odd), .post-post + #post-editor, .post-post + a + #post-editor {
   background-color: $bg_color_odd;
 }
@@ -138,9 +144,9 @@ button, .button {
   font-weight: normal;
   height: 28px;
   vertical-align: middle;
-
   img { vertical-align: baseline; }
 }
+
 .link-box.action-new { background-color: $bg_color_linkbox_new; }
 .link-box.action-delete { background-color: $bg_color_linkbox_delete; }
 .link-box.action-edit { background-color: $bg_color_linkbox_edit;}
@@ -161,6 +167,7 @@ button, .button {
 
 /* Bootstrap tweaks */
 .view-button img, #swap-alias, #swap-character, #header img { vertical-align: baseline; }
+
 span.badge {
   position: relative;
   bottom: 1px;
