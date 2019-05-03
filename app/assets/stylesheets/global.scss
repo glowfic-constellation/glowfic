@@ -22,7 +22,10 @@ a {
   text-decoration: none;
   color: $font_color_link;
   &:visited { color: $font_color_link_visited; }
-  &:hover { color: $font_color_link_hover; text-decoration: none; }
+  &:hover {
+    color: $font_color_link_hover;
+    text-decoration: none;
+  }
 }
 
 /* Inputs */
@@ -145,8 +148,16 @@ button, .button {
 .link-box.action-dismiss { background-color: $bg_color_linkbox_dismiss; }
 
 /* Inline lists */
-.inline-list { display: inline; padding-left: 0; }
-.inline-list li { display: inline; list-style-type: none; margin-right: 4px; }
+.inline-list {
+  display: inline;
+  padding-left: 0;
+}
+
+.inline-list li {
+  display: inline;
+  list-style-type: none;
+  margin-right: 4px;
+}
 
 /* Bootstrap tweaks */
 .view-button img, #swap-alias, #swap-character, #header img { vertical-align: baseline; }

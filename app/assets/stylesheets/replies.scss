@@ -232,7 +232,10 @@ div.post-subheader { width: 100%; }
   display: inline-block;
   background-color: #8B8687;
 }
-#post_content, #reply_content { width: 100%; display: block; }
+#post_content, #reply_content {
+  width: 100%;
+  display: block;
+}
 #reply_content { height: 130px; }
 #post_content { height: 312px; }
 #post-form-wrapper {
@@ -451,7 +454,12 @@ div.post-subheader { width: 100%; }
 .post-check-box {
   width: 30px;
   padding-right: 10px;
-  input.checkbox { height: 13px; margin: 0px; vertical-align: middle; } /* Keeps unread table from padding excessively for the checkboxes */
+  /* Keeps unread table from padding excessively for the checkboxes */
+  input.checkbox {
+    height: 13px;
+    margin: 0px;
+    vertical-align: middle;
+  }
 }
 
 /* Unread marker on posts */
