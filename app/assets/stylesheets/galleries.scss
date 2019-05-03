@@ -26,7 +26,26 @@
   word-wrap: break-word;
   vertical-align: top;
 }
-.gallery-icon-editor input, .gallery-editor #gallery_name { height: 23px; }
+
+.gallery-icon-editor {
+  display: inline-flex;
+  align-items: stretch;
+  margin: 9px 18px 9px 0px;
+  border: 3px solid $border_color_icon_editor;
+  input { height: 23px; }
+  input[type='text'], input[type='file'] { width: 225px; }
+}
+
+.gallery-editor #gallery_name { height: 23px; }
+
+.gallery-edit-form { width: 100%; }
+
+.gallery-icons-edit {
+  display: flex;
+  flex-flow: row wrap;
+}
+
+.gallery-icon-table.form-table { width: unset; }
 
 /* Tiny buttons that hover over icons to allow deleting or selecting a checkbox for editing */
 .delete-button, .select-button {
@@ -80,6 +99,9 @@
 
 /* Various tables with icons in previously styled with .green */
 .icons-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   background-color: $bg_color_icon;
 }
 

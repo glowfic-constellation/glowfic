@@ -144,6 +144,7 @@ table { border-color: #555; } // TODO: what does this style
 // TODO: Check pagination displays fine in this theme
 
 /* - icons */
+.gallery-icon-editor { border-color: $border_color_icon_editor; }
 .replace-icon, .icons-box { background-color: $bg_color_icon; }
 .icon-credit { background-color: $bg_color_icon_credit; }
 
