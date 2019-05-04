@@ -342,6 +342,7 @@ RSpec.describe PostsController, 'POST create' do
       expect(controller).to receive(:setup_layout_gon).and_call_original
 
       # valid post requires a board_id
+
       post :create, params: {
         post: {
           subject: 'asubjct',
@@ -391,6 +392,10 @@ RSpec.describe PostsController, 'POST create' do
       expect(ContentWarning.count).to eq(2)
       expect(Label.count).to eq(2)
       expect(PostTag.count).to eq(0)
+    end
+
+    skip "handles invalid first reply" do
+      # TODO: Add a test for this if it becomes possible to have an invalid reply here
     end
 
     it "creates a post" do
