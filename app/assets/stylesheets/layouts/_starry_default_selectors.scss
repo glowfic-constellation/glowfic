@@ -155,9 +155,13 @@ th, .content-header {
 .pagination .disabled { color: $font_color_paginate_link_disabled; }
 
 /* - icons */
-.gallery-icon-editor { border-color: $border_color_icon_editor; }
 .replace-icon, .icons-box { background-color: $bg_color_icon; }
 .icon-credit { background-color: $bg_color_icon_credit; }
+
+.gallery-icon-editor {
+  border-color: $border_color_icon_editor;
+  background-color: $bg_color_icon_editor;
+}
 
 /* - link-boxes */
 .link-box.action-new { background-color: $bg_color_linkbox_new; }

@@ -30,8 +30,11 @@
 .gallery-icon-editor {
   display: inline-flex;
   align-items: stretch;
-  margin: 9px 18px 9px 0px;
-  border: 3px solid $border_color_icon_editor;
+  margin: 18px 18px 0px 0px;
+  border: solid $border_color_icon_editor;
+  border-width: 15px 1.5px 5px 1.5px;
+  background-color: $bg_color_icon_editor;
+  padding: 5px;
   input { height: 23px; }
   input[type='text'], input[type='file'] { width: 225px; }
 }

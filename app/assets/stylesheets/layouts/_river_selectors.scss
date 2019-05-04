@@ -55,9 +55,13 @@ a:visited { color: $font_color_link_visited; }
 .pagination a:visited { color: $font_color_paginate_link_visited; }
 
 /* - icons */
-.gallery-icon-editor { border-color: $border_color_icon_editor; }
 .replace-icon, .icons-box { background-color: $bg_color_icon; }
 .icon-credit { background-color: $bg_color_icon_credit; }
+
+.gallery-icon-editor {
+  border-color: $border_color_icon_editor;
+  background-color: $bg_color_icon_editor;
+}
 
 /* - tag items */
 .tag-item, tr.gallery-tags .tag-item {
