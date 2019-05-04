@@ -59,18 +59,18 @@ Layout/EndAlignment:
 Layout/EndOfLine:
   Enabled: false
 
-Layout/FirstParameterIndentation:
+Layout/IndentFirstArgument:
   Enabled: false
 
 Layout/IndentationWidth:
   Enabled: true
   Width: 2
 
-Layout/IndentArray:
+Layout/IndentFirstArrayElement:
   Enabled: true
   EnforcedStyle: 'consistent'
 
-Layout/IndentHash:
+Layout/IndentFirstHashElement:
   Enabled: true
   EnforcedStyle: 'consistent'
 
