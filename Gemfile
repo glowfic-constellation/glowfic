@@ -52,6 +52,7 @@ group :development do
   gem 'memory_profiler'
   gem 'rack-mini-profiler'
   gem 'rubocop', '~> 0.68.1'
+  gem 'rubocop-performance', '~> 1.2.0'
   gem 'traceroute'
   gem 'web-console', '~> 3.0'
 end
