@@ -148,6 +148,7 @@ class PostsController < WritableController
     begin
       @post.save!
     rescue ActiveRecord::RecordInvalid => e
+      @post.errors.merge!(@post.written)
       render_errors(@post, action: 'created', now: true, err: e)
 
       editor_setup
@@ -243,6 +244,7 @@ class PostsController < WritableController
         @post.written.save!
       end
     rescue ActiveRecord::RecordInvalid => e
+      @post.errors.merge!(@post.written)
       render_errors(@post, action: 'updated', now: true, err: e)
 
       @audits = { post: @post.audits.count }
