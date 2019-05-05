@@ -2,7 +2,7 @@ module Viewable
   extend ActiveSupport::Concern
 
   included do
-    has_many :views, class_name: self.name + 'View', dependent: :destroy
+    has_many :views, class_name: self.name + 'View', dependent: :destroy # rubocop:disable Rails/ReflectionClassName
 
     def mark_read(user, at_time=nil, force=false)
       view = view_for(user)
