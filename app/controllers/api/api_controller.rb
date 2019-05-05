@@ -27,8 +27,8 @@ class Api::ApiController < ActionController::Base
 
   def handle_param_validation
     yield
-  rescue Apipie::ParamMissing, Apipie::ParamInvalid => error
-    error_hash = {message: Glowfic::Sanitizers.full(error.message.tr('"', "'"))}
+  rescue Apipie::ParamMissing, Apipie::ParamInvalid => e
+    error_hash = {message: Glowfic::Sanitizers.full(e.message.tr('"', "'"))}
     render json: {errors: [error_hash]}, status: :unprocessable_entity
   end
 
