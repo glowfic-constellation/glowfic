@@ -203,10 +203,6 @@ class Post < ApplicationRecord
     !view_for(user).try(:warnings_hidden)
   end
 
-  def last_updated
-    edited_at
-  end
-
   def read_time_for(viewing_replies)
     return self.edited_at if viewing_replies.empty?
 
