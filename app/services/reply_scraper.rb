@@ -41,6 +41,7 @@ class ReplyScraper < Object
     end
 
     @reply.content = strip_content(content)
+    @reply.editor_mode = 'html'
     @reply.created_at = @reply.updated_at = created_at
 
     set_from_username(@reply, username)
