@@ -90,7 +90,7 @@ RSpec.describe NewsController do
   describe "GET show" do
     it "errors without news post" do
       login_as(create(:admin_user))
-      patch :update, params: {id: -1}
+      get :show, params: {id: -1}
       expect(response).to redirect_to(news_index_url)
       expect(flash[:error]).to eq("News post could not be found.")
     end
