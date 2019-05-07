@@ -33,6 +33,6 @@ class News < ApplicationRecord
     view = NewsView.find_by(user_id: user.id)
     return News.count unless view
 
-    News.where('id > ?', view.news_id).order(id: :asc).count
+    News.where('id > ?', view.news_id).count
   end
 end
