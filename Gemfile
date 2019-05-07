@@ -32,7 +32,7 @@ gem 'resque-scheduler'
 gem 'resque-web', require: 'resque_web'
 gem 'resque_mailer'
 gem 'sanitize'
-gem 'sass-rails'
+gem 'sassc-rails'
 gem 'select2-rails'
 gem 'test-unit', '~> 3.0' # required by Heroku for production console
 gem 'tinymce-rails', '~> 4.6.7'
