@@ -8,6 +8,8 @@ services:
   - postgresql
 cache: bundler
 before_install:
+  - gem update --system
+  - gem --version
   - gem install bundler -v 1.15.2
 before_script:
   - psql -c 'create database glowfic_test;' -U postgres
