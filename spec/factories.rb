@@ -7,7 +7,7 @@ FactoryBot.define do
     sequence :email do |n|
       "fake#{n}@faker.com"
     end
-    tos_version User::CURRENT_TOS_VERSION
+    tos_version { User::CURRENT_TOS_VERSION }
 
     factory :admin_user do
       role_id { 1 }
