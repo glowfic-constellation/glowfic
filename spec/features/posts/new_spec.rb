@@ -82,7 +82,7 @@ RSpec.feature "Creating posts", :type => :feature do
     fill_in "post_content", with: "test content"
     click_button "Post"
 
-    expect(page).to have_selector('.error', text: 'Your post could not be saved because of the following problems: Board must exist')
+    expect(page).to have_selector('.error', text: "Your post could not be saved because of the following problems:\nBoard must exist")
     expect(page).to have_selector('#post-editor')
     within('#post-editor') do
       expect(page).to have_field('Subject', with: 'test subject')
