@@ -61,9 +61,9 @@ module Orderable
     end
 
     def ordered_items
-      id = ordered_attributes.detect { |a| send(a).present? }
+      id = ordered_attributes.detect { |a| self[a].present? }
       ordered_for = send(id.to_s[0..-4])
-      where_attr = Hash[ordered_attributes.map { |a| [a, send(a)] }]
+      where_attr = Hash[ordered_attributes.map { |a| [a, self[a]] }]
       ordered_for.send(self.class.to_s.tableize).where(where_attr)
     end
   end
