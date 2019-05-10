@@ -28,7 +28,7 @@ module Orderable
       end
 
       other_where = Hash[ordered_attributes.map do |atr|
-        [atr, send(is_after ? "#{atr}_before_last_save" : "#{atr}_was")]
+        [atr, is_after ? attribute_before_last_save(atr) : attribute_was(atr)]
       end]
       others = self.class.where(other_where).ordered_manually
       return unless others.present?
@@ -36,7 +36,7 @@ module Orderable
       others.each_with_index do |other, index|
         next if other.order == index
         other.order = index
-        other.save
+        other.save!
       end
     end
 
@@ -56,8 +56,7 @@ module Orderable
     def order_change?(is_after)
       return if new_record? # otherwise we will reorder on create
       ordered_attributes.any? do |atr|
-        method = is_after ? "saved_change_to_#{atr}?" : "#{atr}_changed?"
-        send(method)
+        is_after ? saved_change_to_attribute?(atr) : attribute_changed?(atr)
       end
     end
 
