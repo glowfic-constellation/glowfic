@@ -23,9 +23,10 @@ RSpec.describe ReplyDraft do
     end
 
     it "works when valid" do
-      draft = build(:reply_draft)
-      draft.icon = create(:icon, user: draft.user)
-      draft.character = create(:character, user: draft.user)
+      user = create(:user)
+      icon = create(:icon, user: user)
+      character = create(:character, user: user)
+      draft = build(:reply_draft, icon: icon, character: character, user: user)
       expect(draft).to be_valid
     end
   end

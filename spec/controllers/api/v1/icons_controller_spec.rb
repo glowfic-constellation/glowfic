@@ -44,8 +44,9 @@ RSpec.describe Api::V1::IconsController do
 
     it "should delete the URL" do
       handle_s3_bucket
-      icon = build(:uploaded_icon)
-      login_as(icon.user)
+      user = create(:user)
+      icon = build(:uploaded_icon, user: user)
+      login_as(user)
       delete_key = {delete: {objects: [{key: icon.s3_key}], quiet: true}}
       expect(S3_BUCKET).to receive(:delete_objects).with(delete_key)
       post :s3_delete, params: { s3_key: icon.s3_key }
