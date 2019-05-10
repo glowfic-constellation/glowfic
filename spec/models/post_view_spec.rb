@@ -15,9 +15,9 @@ RSpec.describe PostView do
     end
 
     it "works with both user and post" do
-      view = build(:post_view)
-      user = view.user
-      post = view.post
+      user = create(:user)
+      post = create(:post)
+      view = build(:post_view, user: user, post: post)
       expect(view).to be_valid
       expect(view.save).to eq(true)
       view.reload
@@ -38,7 +38,7 @@ RSpec.describe PostView do
     it "allows one user to have multiple post views" do
       user = create(:user)
       view = create(:post_view, user: user)
-      new_view = build(:post_view, user: user)
+      new_view = build(:post_view, user: user, post: create(:post))
       expect(new_view.post).not_to eq(view.post)
       expect(new_view).to be_valid
       expect(new_view.save).to eq(true)
