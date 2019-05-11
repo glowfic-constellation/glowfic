@@ -30,8 +30,6 @@ class Reply::Saver < Generic::Saver
   def update!
     build
 
-    preview(@reply) and return if @params[:button_preview]
-
     raise NoModNote if @user.id != @reply.user_id && @reply.audit_comment.blank?
 
     @reply.audit_comment = nil if @reply.changes.empty? # don't save an audit for a note and no changes

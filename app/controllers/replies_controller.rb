@@ -93,9 +93,7 @@ class RepliesController < WritableController
   end
 
   def create
-    if params[:button_draft] || params[:button_preview]
-      draft = make_draft
-    end
+    draft = make_draft if params[:button_draft] || params[:button_preview]
     if params[:button_draft]
       redirect_to posts_path and return unless draft.post
       redirect_to post_path(draft.post, page: :unread, anchor: :unread) and return
@@ -108,8 +106,9 @@ class RepliesController < WritableController
 
     begin
       creater.create!
-    rescue ApiError => e
-      @allow_dupe = true if e.name == DuplicateReplyError
+    rescue DuplicateReplyError, UnseenRepliesError => e
+      @allow_dupe = true if e.class == DuplicateReplyError
+      flash[:error] = e.message
       draft = make_draft
       preview(ReplyDraft.reply_from_draft(draft))
     rescue ActiveRecord::RecordInvalid
@@ -211,13 +210,15 @@ class RepliesController < WritableController
     end
   end
 
-  def preview(reply=nil)
-    unless reply
+  def preview(written=nil)
+    if written.nil?
       previewer = Reply::Previewer.new(@reply, user: current_user, params: params)
       previewer.perform
-      reply = @reply
+      @written = @reply
+    else
+      @written = written
     end
-    @post = reply.post
+    @post = @written.post
 
     @page_title = @post.subject
     editor_setup
@@ -225,14 +226,14 @@ class RepliesController < WritableController
   end
 
   def make_draft(show_message=true)
-    drafter = Reply::Drafter.new(params, user: user)
+    drafter = Reply::Drafter.new(params, user: current_user)
 
     begin
       drafter.save!
     rescue ActiveRecord::RecordInvalid
       flash[:error] = {
         message: "Your draft could not be saved because of the following problems:",
-        array: draft.errors.full_messages
+        array: drafter.draft.errors.full_messages
       }
     else
       flash[:success] = "Draft saved!" if show_message
