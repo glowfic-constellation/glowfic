@@ -139,6 +139,8 @@ class RepliesController < WritableController
   end
 
   def update
+    preview and return if params[:button_preview]
+
     updater = Reply::Saver.new(@reply, user: current_user, params: params)
     begin
       updater.update!
@@ -209,13 +211,15 @@ class RepliesController < WritableController
     end
   end
 
-  def preview(written)
-    @written = written
-    @post = @written.post
-    @written.user = current_user unless @written.user
+  def preview(reply=nil)
+    unless reply
+      previewer = Reply::Previewer.new(@reply, user: current_user, params: params)
+      previewer.perform
+      reply = @reply
+    end
+    @post = reply.post
 
     @page_title = @post.subject
-
     editor_setup
     render :preview
   end
