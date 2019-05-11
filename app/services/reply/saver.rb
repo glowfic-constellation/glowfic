@@ -11,22 +11,16 @@ class Reply::Saver < Generic::Saver
       last_seen_reply_order = @reply.post.last_seen_reply_for(@user).try(:reply_order)
       @unseen_replies = @reply.post.replies.ordered.paginate(page: 1, per_page: 10)
       @unseen_replies = @unseen_replies.where('reply_order > ?', last_seen_reply_order) if last_seen_reply_order.present?
-      most_recent_unseen_reply = @unseen_replies.last
-      if most_recent_unseen_reply.present?
+      if @unseen_replies.present?
         @reply.post.mark_read(@user, @reply.post.read_time_for(@unseen_replies))
         num = @unseen_replies.count
-        pluraled = num > 1 ? "have been #{num} new replies" : "has been 1 new reply"
-        raise UnseenRepliesError, "There #{pluraled} since you last viewed this post."
+        raise UnseenRepliesError, "There #{'has'.pluralize(num)} been #{num} new #{'reply'.pluralize(num)} since you last viewed this post."
       end
 
       if @reply.user_id.present? && @params[:allow_dupe].blank?
         last_by_user = @reply.post.replies.where(user_id: @reply.user_id).ordered.last
-        if last_by_user.present?
-          match_attrs = ['content', 'icon_id', 'character_id', 'character_alias_id']
-          if last_by_user.attributes.slice(*match_attrs) == @reply.attributes.slice(*match_attrs)
-            raise DuplicateReplyError, "This looks like a duplicate. Did you attempt to post this twice? Please resubmit if this was intentional."
-          end
-        end
+        match_attrs = ['content', 'icon_id', 'character_id', 'character_alias_id']
+        raise DuplicateReplyError if last_by_user.present? && last_by_user.attributes.slice(*match_attrs) == @reply.attributes.slice(*match_attrs)
       end
     end
 
@@ -63,4 +57,7 @@ class UnseenRepliesError < ApiError
 end
 
 class DuplicateReplyError < ApiError
+  def initialize(msg="This looks like a duplicate. Did you attempt to post this twice? Please resubmit if this was intentional.")
+    super(msg)
+  end
 end
