@@ -225,15 +225,10 @@ class RepliesController < WritableController
   end
 
   def make_draft(show_message=true)
-    if (draft = ReplyDraft.draft_for(params[:reply][:post_id], current_user.id))
-      draft.assign_attributes(reply_params)
-    else
-      draft = ReplyDraft.new(reply_params)
-      draft.user = current_user
-    end
+    drafter = Reply::Drafter.new(params, user: user)
 
     begin
-      draft.save!
+      drafter.save!
     rescue ActiveRecord::RecordInvalid
       flash[:error] = {
         message: "Your draft could not be saved because of the following problems:",
@@ -242,6 +237,6 @@ class RepliesController < WritableController
     else
       flash[:success] = "Draft saved!" if show_message
     end
-    draft
+    drafter.draft
   end
 end
