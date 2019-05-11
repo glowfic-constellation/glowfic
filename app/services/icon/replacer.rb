@@ -26,8 +26,7 @@ class Icon::Replacer < Generic::Replacer
   end
 
   def find_posts
-    post_ids = Reply.where(icon_id: @icon.id).select(:post_id).distinct.pluck(:post_id)
-    Post.where(icon_id: @icon.id).or(Post.where(id: post_ids)).distinct
+    super({icon_id: @icon.id})
   end
 
   def construct_gallery(no_icon_url)

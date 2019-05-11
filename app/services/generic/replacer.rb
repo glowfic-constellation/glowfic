@@ -19,4 +19,9 @@ class Generic::Replacer < Generic::Service
     wheres[:id] = wheres.delete(:post_id) if post_ids.present?
     UpdateModelJob.perform_later(Post.to_s, wheres, updates)
   end
+
+  def find_posts(wheres)
+    post_ids = Reply.where(wheres).select(:post_id).distinct.pluck(:post_id)
+    Post.where(wheres).or(Post.where(id: post_ids)).distinct
+  end
 end

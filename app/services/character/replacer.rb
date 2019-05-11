@@ -67,8 +67,7 @@ class Character::Replacer < Generic::Replacer
   end
 
   def find_posts
-    reply_post_ids = Reply.where(character_id: @character.id).select(:post_id).distinct.pluck(:post_id)
-    (Post.where(character_id: @character.id) + Post.where(id: reply_post_ids)).uniq
+    super({character_id: @character.id})
   end
 
   def check_target(id, user:)
