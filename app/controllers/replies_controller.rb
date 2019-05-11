@@ -93,31 +93,35 @@ class RepliesController < WritableController
   end
 
   def create
-    if params[:button_draft]
+    if params[:button_draft] || params[:button_preview]
       draft = make_draft
+    end
+    if params[:button_draft]
       redirect_to posts_path and return unless draft.post
       redirect_to post_path(draft.post, page: :unread, anchor: :unread) and return
     elsif params[:button_preview]
-      draft = make_draft
       preview(ReplyDraft.reply_from_draft(draft)) and return
     end
 
-    reply = Reply.new(user: current_user)
-
-    creater = Reply::Saver.new(reply, user: current_user, params: params)
+    @reply = Reply.new(user: current_user)
+    creater = Reply::Saver.new(@reply, user: current_user, params: params)
 
     begin
-      creater.create
+      creater.create!
+    rescue ApiError => e
+      @allow_dupe = true if e.name == DuplicateReplyError
+      draft = make_draft
+      preview(ReplyDraft.reply_from_draft(draft))
     rescue ActiveRecord::RecordInvalid
       flash[:error] = {
         message: "Your reply could not be saved because of the following problems:",
-        array: reply.errors.full_messages
+        array: @reply.errors.full_messages
       }
-      redirect_to posts_path and return unless reply.post
-      redirect_to post_path(reply.post)
+      redirect_to posts_path unless @reply.post
+      redirect_to post_path(@reply.post)
     else
       flash[:success] = "Posted!"
-      redirect_to reply_path(reply, anchor: "reply-#{reply.id}")
+      redirect_to reply_path(@reply, anchor: "reply-#{@reply.id}")
     end
   end
 
@@ -137,12 +141,16 @@ class RepliesController < WritableController
   def update
     updater = Reply::Saver.new(@reply, user: current_user, params: params)
     begin
-      updater.update
-    rescue ActiveRecord::RecordInvalid
-      flash[:error] = {
-        message: "Your reply could not be saved because of the following problems:",
-        array: @reply.errors.full_messages
-      }
+      updater.update!
+    rescue NoModNoteError, ActiveRecord::RecordInvalid => e
+      if e.class == NoModNoteError
+        flash[:error] = e.message
+      else
+        flash[:error] = {
+          message: "Your reply could not be saved because of the following problems:",
+          array: @reply.errors.full_messages
+        }
+      end
       editor_setup
       render :edit
     else
