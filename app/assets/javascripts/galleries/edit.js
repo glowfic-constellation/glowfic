@@ -1,7 +1,7 @@
 var editForm;
 $(document).ready(function() {
   editForm = $('.gallery-edit-form');
-  var submitButton = $('tfoot input[type="submit"]', editForm);
+  var submitButton = $('.submit-button input', editForm);
   submitButton.on('mousedown', warnIfDeleting);
 });
 
