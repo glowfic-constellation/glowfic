@@ -1,7 +1,5 @@
-var editForm;
 $(document).ready(function() {
-  editForm = $('.gallery-edit-form');
-  var submitButton = $('.submit-button input', editForm);
+  var submitButton = $('.submit-button input');
   submitButton.on('mousedown', warnIfDeleting);
 });
 
@@ -23,7 +21,7 @@ function setLoadingIcon(fileInput) {
 }
 
 function warnIfDeleting() {
-  var icons = $('.gallery-icon-editor', editForm);
+  var icons = $('.gallery-icon-editor');
   var deletingIcons = icons.filter(function() {
     var destroyInput = $('.gallery-icon-destroy input[type="checkbox"]', this);
     return destroyInput.prop('checked');
