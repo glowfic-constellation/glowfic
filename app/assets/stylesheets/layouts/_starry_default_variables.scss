@@ -25,12 +25,13 @@ $font_color_descriptions_link_visited: $colors_santasgrey !default;
 $bg_color_descriptions: $colors_gunpowder !default; // description subheadings on templates page ("single-description"), *not* posts
 
 // content headers
-$font_color_sub: $colors_concrete !default;
-$font_color_subber_bold: $colors_concrete !default;
-
 $font_color_head_link: $colors_logan !default; // TODO: check this
 $font_color_head_link_visited: $colors_santasgrey !default;
+
+$font_color_sub: $colors_concrete !default;
+
 $bg_color_subber: $colors_gunpowder !default; // tertiary content header
+$font_color_subber_bold: $colors_concrete !default;
 $font_color_subber_link_visited: $colors_santasgrey !default;
 
 // content

@@ -106,18 +106,20 @@ $font_color_tag_item_gallery: $colors_green !default;
 
 // content headers
 $bg_color_head: $colors_brown !default; // primary content header
+$font_color_head: $colors_lightgrey !default;
 $font_color_head_link: $colors_lightgrey !default;
 $font_color_head_link_hover: $colors_alto !default;
 $font_color_head_link_visited: $colors_plantation !default;
+
 $bg_color_sub: $colors_lightbrown !default; // secondary content header
-$bg_color_subber: $colors_greybrown !default; // tertiary content header
-$font_color_head: $colors_lightgrey !default;
 $font_color_sub: $colors_darkpurple !default;
-$font_color_subber_link_visited: $colors_plantation !default;
+
+$bg_color_subber: $colors_greybrown !default; // tertiary content header
 $font_color_subber: $colors_blacker !default;
+$font_color_subber_link_visited: $colors_plantation !default;
 $font_color_subber_bold: $colors_blacker !default; // TODO: confirm
 
-$bg_color_ender: $bg_color_subber !default; // form table footer with submit
+$bg_color_ender: $colors_greybrown !default; // form table footer with submit
 $font_color_ender: $colors_blacker !default;
 
 // content

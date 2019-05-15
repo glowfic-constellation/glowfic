@@ -31,10 +31,6 @@ $bg_color_icon_selector: $colors_silver_darker;
 $bg_color_post_character: #929292;
 $bg_color_post_screenname: #A5A5A5;
 $bg_color_post_author: $colors_silver_again;
-//$bg_color_post_character_narrow: $colors_lightbrown;
-//$bg_color_post_author_narrow: $colors_brown;
-// these are flipped from not-narrow mode to make the quick-switcher blend in
-// TODO: Should these flip on other themes?
 
 $font_color_paginate_link_visited: #3A3A3A;
 $bg_color_paginate_current_page: #616161;
@@ -56,6 +52,5 @@ $bg_color_linkbox_delete: $colors_rock;
 $bg_color_linkbox_dismiss: $colors_rock;
 
 $bg_color_badge: #E5D8AF;
-$border_color_badge: #6F6A61;
 
 @import 'monochrome_selectors'

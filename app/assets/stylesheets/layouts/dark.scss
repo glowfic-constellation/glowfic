@@ -34,10 +34,12 @@ $bg_color_descriptions: #565656; // description subheadings on templates page ("
 
 // content headers
 $bg_color_head: #424242; // primary content header
-$bg_color_sub: #383838; // secondary content header
-$bg_color_subber: #464646; // tertiary content header
 $font_color_head: #C2C2C2;
+
+$bg_color_sub: #383838; // secondary content header
 $font_color_sub: #C9C9C9;
+
+$bg_color_subber: #464646; // tertiary content header
 $font_color_subber: $colors_alto;
 
 $bg_color_ender: #464646;
@@ -51,8 +53,6 @@ $bg_color_post_description: #5D5D5D;
 $font_color_post_description: $colors_silver_chalice;
 $bg_color_navheader: #5F5D57;
 
-// TODO: darken post-menu-box to fit with the rest of this theme
-
 $bg_color_selectionpopup: #565656; // selection popups like character/alias on posts#editor
 $bg_color_expander: #6F7769; // expander on posts
 
@@ -63,9 +63,6 @@ $font_color_icon_selector: #111111;
 $bg_color_post_character: #595959;
 $bg_color_post_screenname: #515151;
 $bg_color_post_author: #4D4C4C;
-//$bg_color_post_author_narrow: $colors_brown;
-// these are flipped from not-narrow mode to make the quick-switcher blend in
-// TODO: Should these flip on dark too?
 $font_color_post_info: $colors_silver_chalice;
 $font_color_post_screenname: $colors_silver_chalice;
 
