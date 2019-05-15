@@ -5,6 +5,7 @@
   width: 20px;
   text-align: center;
 }
+
 /* The + / - symbol to minimize a gallery */
 .gallery-minmax, .add-gallery-icon { cursor: pointer; }
 .gallery-title { height: 5px; } /* So that when a gallery is minimized there is spacing */
@@ -32,6 +33,7 @@
   align-items: stretch;
   input { height: 23px; }
   input[type='text'], input[type='file'] { width: 209px; }
+
   .icons-box {
     display: flex;
     align-items: center;

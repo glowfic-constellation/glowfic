@@ -205,6 +205,7 @@ th, .content-header {
 
   & > div { overflow: hidden; }
 }
+
 td, .table-list li { font-size: $font_size_small; }
 
 /* Subs and subbers */
@@ -364,6 +365,7 @@ td, .table-list li { font-size: $font_size_small; }
   word-wrap: break-word;
   table-layout: fixed;
 }
+
 .right-content-box { float: left; }
 .user-info-box { width: 200px; }
 .icon-info-box { width: 150px; }
@@ -428,6 +430,7 @@ td, .table-list li { font-size: $font_size_small; }
   background-color: $bg_color_search_box;
   color: $font_color_search_box;
 }
+
 .search-icon-preview { vertical-align: middle; }
 .search-icon-keyword { padding-left: 5px; }
 
@@ -485,6 +488,7 @@ The copy box can't be invisible/hidden or copy fails but opacity works
   margin: 0px 5px;
   width: 210px;
 }
+
 #tag-search { margin-left: 5px; }
 
 #remember-link {
