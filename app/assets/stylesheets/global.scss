@@ -42,9 +42,9 @@ input, textarea, button {
   margin: 5px 0;
 }
 
-input[type="checkbox"] { height: 23px; }
+input[type='checkbox'] { height: 23px; }
 textarea { padding: 5px; }
-.form-table td input[type="radio"] { width: unset; }
+.form-table td input[type='radio'] { width: unset; }
 
 button, .button {
   background-color: $bg_color_button;
