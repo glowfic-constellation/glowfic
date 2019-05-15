@@ -13,7 +13,6 @@ $font_color_link_visited: $colors_santasgrey;
 // flashes
 $bg_color_flash_error: $colors_gunpowder; // error
 $bg_color_flash_success: $colors_gunpowder; // success
-$bg_color_flash_inbox: $colors_gunpowder; // new message
 $bg_color_flash_breadcrumbs: $colors_bigstone; // breadcrumbs ("Continuities » Continuity » Section » Thread")
 $font_color_flash: $colors_alto_brighter;
 
@@ -58,7 +57,7 @@ $bg_color_linkbox_subber: #5C5778;
 
 @import 'starry_default_selectors';
 
-.flash.success, .flash.error, .flash.inbox { color: $font_color_flash; }
+.flash.success, .flash.error { color: $font_color_flash; }
 
 body, .even, .odd, .post-post, .post-reply, #post-editor { color: $font_color_page; }
 
