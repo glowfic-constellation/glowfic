@@ -214,7 +214,6 @@ td, .table-list li { font-size: $font_size_small; }
   background-color: $bg_color_sub;
   color: $font_color_sub;
   font-size: $font_size_main;
-
   &.width-150 { width: 170px; }
 }
 
@@ -267,7 +266,6 @@ td, .table-list li { font-size: $font_size_small; }
   font-size: $font_size_smallish;
   font-weight: bold;
   text-align: center;
-
   input { margin: 0; }
 }
 
@@ -308,9 +306,7 @@ td, .table-list li { font-size: $font_size_small; }
   border-radius: 5px;
   cursor: pointer;
   height: 29px;
-
   &.selected { background-color: $bg_color_viewbutton_selected; }
-
   a { color: $font_color_viewbutton; }
 }
 
@@ -456,7 +452,6 @@ td, .table-list li { font-size: $font_size_small; }
   left: 0px;
   bottom: 0px;
   width: 100%;
-
   a { color: $font_color_header_link; }
   a:hover { color: $font_color_header_link_hover; }
 
