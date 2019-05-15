@@ -71,9 +71,9 @@ $bg_color_button: $colors_white !default; // buttons; overridden by gradient
 $font_color_button: $colors_dark !default;
 $border_color_button: #AAAAAA !default;
 // color steps on the gradient
-$bg_color_button_20: #FFFFFF !default;
+$bg_color_button_20: $colors_white !default;
 $bg_color_button_50: #F6F6F6 !default;
-$bg_color_button_52: #EEEEEE !default;
+$bg_color_button_52: $colors_lightgrey !default;
 $bg_color_button_100: #F4F4F4 !default;
 
 // other buttons
@@ -109,7 +109,7 @@ $font_color_tag_item_gallery: $colors_lightbrown !default;
 // content headers
 $bg_color_head: $colors_brown !default; // primary content header
 $font_color_head_link: $colors_lightgrey !default;
-$font_color_head_link_hover: #DDDDDD !default;
+$font_color_head_link_hover: $colors_alto !default;
 $font_color_head_link_visited: $colors_plantation !default;
 $bg_color_sub: $colors_lightbrown !default; // secondary content header
 $bg_color_subber: $colors_greybrown !default; // tertiary content header
@@ -167,13 +167,13 @@ $bg_color_odd_blockquote: calculate-transparent-color($bg_color_odd, $bg_color_e
 $bg_color_section_warning: #D06E6E !default;
 $bg_color_section_warning_alpha: #FF0000 !default;
 
-$bg_color_message_expander: #000000 !default;
+$bg_color_message_expander: $colors_blacker !default;
 
 // select2 dropdown
 $font_color_select2_container: $colors_dark !default;
 // Most of this is currently styled by gem files
 $bg_color_select2_highlight: #E4E4E4 !default;
-$bg_color_select2_selected: #DDDDDD !default;
+$bg_color_select2_selected: $colors_alto !default;
 $bg_color_select2_search: $colors_white !default;
 
 // rtf editor
@@ -185,7 +185,7 @@ $font_color_reply_content: $colors_dark !default;
 
 $bg_color_popup_header: #E9E9E9 !default;
 $font_color_popup_header: #333333 !default;
-$border_color_popup_header: #DDDDDD !default;
+$border_color_popup_header: $colors_alto !default;
 $bg_color_popup_content: $colors_white !default;
 $font_color_popup_content: #333333 !default;
 $border_color_popup: $colors_silver !default;
@@ -207,7 +207,7 @@ $font_color_char_switcher: #AAAAAA !default;
 $font_color_char_switcher_alpha: #808080 !default;
 
 // replies.scss
-$bg_color_icon_overlay: #000000 !default; // box displaying current icon
+$bg_color_icon_overlay: $colors_blacker !default; // box displaying current icon
 
 $bg_color_expander: $colors_greygreen !default; // expander on posts
 
@@ -228,7 +228,7 @@ $bg_color_post_author_narrow: $colors_brown !default; // these are flipped from 
 
 $border_color_unread_reply: #FF0000 !default;
 
-$font_color_paginate: #000000 !default;
+$font_color_paginate: $colors_blacker !default;
 $font_color_paginate_link: $colors_lightgrey !default;
 $bg_color_paginate_link_hover: $colors_greybrown !default;
 $font_color_paginate_link_visited: $colors_brown !default;

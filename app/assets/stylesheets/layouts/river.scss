@@ -13,12 +13,12 @@ $font_color_link: #3F5970; // link
 $font_color_link_visited: #284150;
 
 // flashes
-$bg_color_flash_success: #ECECEC; // success
-$bg_color_flash_inbox: #ECECEC; // new message
+$bg_color_flash_success: $colors_gallery; // success
+$bg_color_flash_inbox: $colors_gallery; // new message
 $bg_color_flash_breadcrumbs: #A3A8A9; // breadcrumbs ("Continuities » Continuity » Section » Thread")
 
 // content headers
-$bg_color_sub: #BDBDBD; // secondary content header
+$bg_color_sub: $colors_silver_darker; // secondary content header
 $bg_color_subber: #B9B6AD; // tertiary content header
 $bg_color_ender: #A3A8A9; // form table footer with submit
 
@@ -29,19 +29,19 @@ $bg_color_content_border: #AAAAAA;
 
 $font_color_reply_footer: #717171;
 
-$bg_color_navheader: #BDBDBD;
+$bg_color_navheader: $colors_silver_darker;
 
 $font_color_paginate_link_visited: #3A3A3A;
 $bg_color_paginate_current_page: #718EB9;
 
 $bg_color_expander: #A4B0BD; // expander on posts
 
-$bg_color_post_icon: #A9B4BB;
-$bg_color_icon_selector: #A9B4BB;
+$bg_color_post_icon: $colors_hit_gray;
+$bg_color_icon_selector: $colors_hit_gray;
 
 $bg_color_post_character: #929292;
 $bg_color_post_screenname: #A5A5A5;
-$bg_color_post_author: #BBBBBB;
+$bg_color_post_author: $colors_silver_again;
 //$bg_color_post_character_narrow: $colors_lightbrown;
 //$bg_color_post_author_narrow: $colors_brown;
 // these are flipped from not-narrow mode to make the quick-switcher blend in
@@ -49,10 +49,10 @@ $bg_color_post_author: #BBBBBB;
 $font_color_post_info: #B3D3FF;
 
 // icons
-$bg_color_icon: #A9B4BB;
-$bg_color_icon_credit: #A9B4BB;
+$bg_color_icon: $colors_hit_gray;
+$bg_color_icon_credit: $colors_hit_gray;
 $border_color_icon_editor: #B9B6AD;
-$bg_color_icon_editor: #A9B4BB;
+$bg_color_icon_editor: $colors_hit_gray;
 
 // tag items
 $bg_color_tag_item: #3E526F;
@@ -60,9 +60,9 @@ $font_color_tag_item: #D0CEC8;
 
 // link-boxes
 $bg_color_linkbox_new: #3F5370;
-$bg_color_linkbox_edit: #545A79;
-$bg_color_linkbox_favorite: #545A79;
-$bg_color_linkbox_delete: #503636;
-$bg_color_linkbox_dismiss: #503636;
+$bg_color_linkbox_edit: $colors_comet;
+$bg_color_linkbox_favorite: $colors_comet;
+$bg_color_linkbox_delete: $colors_rock;
+$bg_color_linkbox_dismiss: $colors_rock;
 
 @import "_river_selectors"
