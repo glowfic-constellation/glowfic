@@ -73,9 +73,14 @@ a:hover { color: $font_color_link_hover; }
   color: $font_color_sub;
 }
 
-.subber, .form-table-ender {
+.subber {
   background-color: $bg_color_subber;
   color: $font_color_subber;
+}
+
+.form-table-ender {
+  background-color: $bg_color_ender;
+  color: $font_color_ender;
 }
 
 /* - content */
@@ -124,12 +129,16 @@ a:hover { color: $font_color_link_hover; }
 
 .post-screenname {
   background-color: $bg_color_post_screenname;
-  color: $font_color_post_info;
+  color: $font_color_post_screenname;
 }
 
 .post-author {
   background-color: $bg_color_post_author;
   color: $font_color_post_info;
+}
+
+.paginator {
+  &, .right-align a { color: $font_color_paginate; }
 }
 
 #post-menu-box { color: $font_color_post_menu; }
@@ -148,9 +157,14 @@ table { border-color: #555555; } // TODO: what does this style
 }
 
 /* - tag items */
-.tag-item, tr.gallery-tags .tag-item {
+.tag-item {
   background-color: $bg_color_tag_item;
   color: $font_color_tag_item;
+}
+
+tr.gallery-tags .tag-item {
+  background-color: $bg_color_tag_item;
+  color: $font_color_tag_item_gallery;
 }
 
 /* - link-boxes */

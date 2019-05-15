@@ -61,8 +61,13 @@ a:visited { color: $font_color_link_visited; }
 }
 
 /* - tag items */
-.tag-item, tr.gallery-tags .tag-item {
+.tag-item {
   color: $font_color_tag_item;
+  background-color: $bg_color_tag_item;
+}
+
+tr.gallery-tags .tag-item {
+  color: $font_color_tag_item_gallery;
   background-color: $bg_color_tag_item;
 }
 

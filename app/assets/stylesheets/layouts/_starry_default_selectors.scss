@@ -113,7 +113,7 @@ a:visited { color: $font_color_link_visited; }
 
 .selector-popup {
   background-color: $bg_color_selectionpopup;
-  color: $font_color_page;
+  color: $font_color_selectionpopup;
 }
 
 .post-expander { background-color: $bg_color_expander; }
@@ -122,7 +122,7 @@ a:visited { color: $font_color_link_visited; }
 
 #reply-icon-selector {
   background-color: $bg_color_icon_selector;
-  color: $font_color_page;
+  color: $font_color_icon_selector;
 }
 
 .post-character {
@@ -148,6 +148,10 @@ a:visited { color: $font_color_link_visited; }
 .pagination a:visited { color: $font_color_paginate_link_visited; }
 .pagination .disabled { color: $font_color_paginate_link_disabled; }
 
+.paginator {
+  &, .right-align a { color: $font_color_paginate; }
+}
+
 /* - icons */
 .replace-icon, .icons-box { background-color: $bg_color_icon; }
 .icon-credit { background-color: $bg_color_icon_credit; }
@@ -172,8 +176,9 @@ tr.gallery-tags .tag-item {
 .subber .link-box { background-color: $bg_color_linkbox_subber; }
 
 /* - other buttons */
-.view-button, .post-navheader .view-button { background-color: $bg_color_viewbutton; }
+.view-button { background-color: $bg_color_viewbutton; }
 .view-button.selected { background-color: $bg_color_viewbutton_selected; }
+.post-navheader .view-button { background-color: $bg_color_navbutton; }
 
 span.badge {
   background-color: $bg_color_badge;

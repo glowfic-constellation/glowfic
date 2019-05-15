@@ -40,6 +40,9 @@ $font_color_head: #C2C2C2;
 $font_color_sub: #C9C9C9;
 $font_color_subber: $colors_alto;
 
+$bg_color_ender: #464646;
+$font_color_ender: $colors_alto;
+
 // content
 $bg_color_even: #3E3E3E;
 $bg_color_odd: #474747;
@@ -64,8 +67,9 @@ $bg_color_post_author: #4D4C4C;
 // these are flipped from not-narrow mode to make the quick-switcher blend in
 // TODO: Should these flip on dark too?
 $font_color_post_info: $colors_silver_chalice;
+$font_color_post_screenname: $colors_silver_chalice;
 
-// TODO: Check pagination displays fine in this theme
+$font_color_paginate: #C9C9C9;
 
 $font_color_post_menu: $colors_silver_chalice;
 
@@ -78,6 +82,7 @@ $bg_color_icon_editor: $colors_cabbage_pont;
 // tag items
 $bg_color_tag_item: #85837C;
 $font_color_tag_item: $colors_alto;
+$font_color_tag_item_gallery: $colors_alto;
 
 // link-boxes
 $font_color_linkbox: $colors_alto;

@@ -84,6 +84,7 @@ $border_color_icon_selected: $colors_green !default; // selected icon border
 $bg_color_icon: $colors_greygreen !default;
 $bg_color_icon_credit: $colors_greygreen !default;
 $bg_color_icon_selector: $colors_greygreen !default;
+$font_color_icon_selector: $colors_black !default;
 $font_color_icon_selector: $colors_black !default; // used in different places on dark.scss and starries
 $font_color_icon_dropdown: $colors_black !default;
 $border_color_icon_editor: $colors_greybrown !default;
@@ -97,12 +98,11 @@ $border_color_mini_delete: #CC0000 !default;
 $font_color_mini_delete: #CC0000 !default;
 
 // tag items
-// varies by location TODO get more complete list from starries
 $bg_color_tag_item: $colors_lightbrown !default;
 $bg_color_tag_item_odd: $colors_lightbrown !default;
 $bg_color_tag_item_even: $colors_lightbrown !default;
 $font_color_tag_item: $colors_green !default;
-$font_color_tag_item_gallery: $colors_lightbrown !default;
+$font_color_tag_item_gallery: $colors_green !default;
 
 // content headers
 $bg_color_head: $colors_brown !default; // primary content header
@@ -157,9 +157,6 @@ $bg_color_content_border: transparent !default; // from river, is 0-width in def
 }
 
 $opacity_blockquote: 0.2 !default;
-// semi-transparent version to allow nested blockquotes:
-$bg_color_even_blockquote: calculate-transparent-color($bg_color_even, $bg_color_odd, $opacity_blockquote) !default;
-$bg_color_odd_blockquote: calculate-transparent-color($bg_color_odd, $bg_color_even, $opacity_blockquote) !default;
 
 // Warnings for when errors occur due to altering sections in another tab
 $bg_color_section_warning: #D06E6E !default;
@@ -197,6 +194,8 @@ $bg_color_descriptions_blockquote: #808080 !default;
 $font_color_descriptions_link: $colors_green !default;
 $font_color_descriptions_link_visited: $colors_plantation !default;
 $bg_color_selectionpopup: $colors_lightbrown !default; // selection popups like character/alias on posts#editor
+$font_color_selectionpopup: $colors_black !default;
+
 $bg_color_spacer_alt: $colors_brown !default;
 $bg_color_search_box: $colors_brown !default;
 $font_color_search_box: $colors_black !default;
