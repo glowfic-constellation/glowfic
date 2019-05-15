@@ -113,17 +113,11 @@ button, .button {
 }
 
 /* Displaying forum threads */
-.even, .odd, .post-post, .post-reply, #post-editor {
-  padding: 5px;
-}
+.even, .odd, .post-post, .post-reply, #post-editor { padding: 5px; }
 
-.even, .post-post, .post-reply:nth-child(even), #post-editor {
-  background-color: $bg_color_even;
-}
+.even, .post-post, .post-reply:nth-child(even), #post-editor { background-color: $bg_color_even; }
 
-.odd, .post-reply:nth-child(odd), .post-post + #post-editor, .post-post + a + #post-editor {
-  background-color: $bg_color_odd;
-}
+.odd, .post-reply:nth-child(odd), .post-post + #post-editor, .post-post + a + #post-editor { background-color: $bg_color_odd; }
 
 /* UI Links */
 .link-box {

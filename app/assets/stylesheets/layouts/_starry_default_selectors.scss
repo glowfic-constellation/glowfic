@@ -77,18 +77,12 @@ th, .content-header {
 /* - content */
 .even, .post-post, .post-reply:nth-child(even), #post-editor {
   background-color: $bg_color_even;
-
-  blockquote {
-    background-color: calculate-transparent-color($bg_color_even, $bg_color_odd, $opacity_blockquote);
-  }
+  blockquote { background-color: calculate-transparent-color($bg_color_even, $bg_color_odd, $opacity_blockquote); }
 }
 
 .odd, .post-reply:nth-child(odd), .post-post + #post-editor, .post-post + a + #post-editor {
   background-color: $bg_color_odd;
-
-  blockquote {
-    background-color: calculate-transparent-color($bg_color_odd, $bg_color_even, $opacity_blockquote);
-  }
+  blockquote { background-color: calculate-transparent-color($bg_color_odd, $bg_color_even, $opacity_blockquote); }
 }
 
 /* - replies.scss */
