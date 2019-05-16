@@ -232,8 +232,14 @@ paths:
   tags_settings:
     path: /tags?view=Setting
     selector: '[id=content]'
-  tag_show:
+  tag_show_info:
     path: /tags/2
+    selector: '[id=content]'
+  tag_show_posts:
+    path: /tags/2?view=posts
+    selector: '[id=content]'
+  tag_show_characters:
+    path: /tags/2?view=characters
     selector: '[id=content]'
   tag_edit:
     path: /tags/2/edit
