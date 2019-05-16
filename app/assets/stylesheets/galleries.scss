@@ -37,6 +37,12 @@
   padding: 5px;
   input { height: 23px; }
   input[type='text'], input[type='file'] { width: 225px; }
+
+  .icons-box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 }
 
 .gallery-editor #gallery_name { height: 23px; }
@@ -100,15 +106,8 @@
   height: 16px;
 }
 
-/* Various tables with icons in previously styled with .green */
-.icons-box {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: $bg_color_icon;
-}
+.icons-box { background-color: $bg_color_icon; }
 
-/* Icon credit, previously styled with .green */
 .icon-credit {
   background-color: $bg_color_icon_credit;
   text-align: center;
