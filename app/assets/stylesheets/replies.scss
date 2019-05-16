@@ -154,7 +154,7 @@ div.post-subheader { width: 100%; }
   blockquote { background-color: $bg_color_odd_blockquote; }
 }
 
-.single-description blockquote { background-color: rgba(128, 128, 128, 0.3); }
+.single-description blockquote { background-color: rgba(#808080, 0.3); }
 
 .post-content, .written-content, .message-content {
   blockquote {
@@ -363,7 +363,7 @@ div.post-subheader { width: 100%; }
   padding: 5px 0;
   font-size: 80%;
   background-color: #AAAAAA;
-  background-color: rgba(128,128,128,0.3);
+  background-color: rgba(#808080, 0.3);
 }
 
 /* - Narrow window display */
