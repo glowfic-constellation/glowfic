@@ -10,7 +10,7 @@ user = User.find_by(username: "Kappa")
 layouts = ['default', 'dark', 'iconless', 'starry', 'starrydark', 'starrylight', 'monochrome', 'river']
 
 def run(layout, wraith, command)
-  output = `#{wraith} #{command} wraith/#{layout}`
+  output = `#{wraith} #{command} #{WRAITH_DIR}/#{layout}`
   if $?.exitstatus.zero?
     puts "#{layout} successful"
   else
