@@ -109,8 +109,8 @@
   username: nil,
   action: "update",
   audited_changes: {
-   "character_id"=>[nil, 6],
-   "icon_id"=>[1, 11]
+    "character_id"=>[nil, 6],
+    "icon_id"=>[1, 11]
   },
   version: 2,
   comment: nil,
@@ -128,7 +128,7 @@
   username: nil,
   action: "update",
   audited_changes: {
-   "content"=>["reply", "edited reply"]
+    "content"=>["reply", "edited reply"]
   },
   version: 3,
   comment: nil,
