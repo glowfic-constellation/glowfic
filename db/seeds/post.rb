@@ -299,4 +299,13 @@ Post.create!([
     content: "<p>Miles-toting is a reasonably fun part of Elli's job. She is privy to such secrets as \"where he is being toted from\" and \"who he will be when picked up to be toted\",
     so she's the one who fetches Miles Vorkosigan, watches over his transformation into Miles Naismith, and accompanies the latter to his destination, pretending this time to be business partners (she Sales And Marketing, he eccentrically Development, product Top Secret).<br /><br />Currently they're sliding back into their ranks and uniforms - she's got her Dendarii pants on already and lovely scarlet accessories to turn them into shiny silver fashion statements. But before they fully reintegrate with their outfit and she dons the rest of <em>her</em> outfit there is a hospital visit to make.<br /><br />The survivors of the incident, such as they are, aren't in great shape. Miles knows how the dead-and-irrecoverable wanted to be disposed of; he knows his obligations to the crippled, likewise, and he discharges them with all the gravity and generosity that could be wished. Quinn wants his job, so she watches him do it, even this least lovely part. Reminds her a little of the news that her face was getting artistically replaced. But that doesn't mean she doesn't wonder why he has to get that up close and personal with Aziz, who after all probably can't understand a word he says.<br /><br />Miles demurs with something about a fascinated fear of the loss of mind, and Elli lets it go.<br /><br />They get good news about Marilac, about the value of their work there.<br /><br />They split up so that he can shower, and she can get into her greys, and then there's going to be the usual meeting.</p>"
   },
+  {
+    board_id: 5,
+    user_id: 5,
+    subject: "sample thread",
+    status: 0,
+    section_order: 1,
+    icon_id: 4,
+    content: ""
+  },
 ])
