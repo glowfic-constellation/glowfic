@@ -171,6 +171,11 @@ paths:
     path: /icons/93/replace
     selector: '[id=content]'
 
+  icon_selector:
+    path: /posts/new
+    before_capture: 'wraith/javascript/icon-selector.js'
+    selector: '[id=reply-icon-selector]'
+
   posts:
     path: /posts
     selector: '[id=content]'
