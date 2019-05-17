@@ -57,12 +57,19 @@ def copy_object(object, exp_id)
   copy.id = exp_id
   #object.delete
   copy.save!
+  copy.update_columns(created_at: object.created_at)
+  copy.update_columns(updated_at: object.updated_at)
+  if object.is_a(Post)
+    copy.update_columns(edited_at: object.edited_at)
+    copy.update_columns(tagged_at: object.tagged_at)
+    copy.update_columns(section_order: object.section_order)
+  end
   copy.id
 end
 
 def check_object(object, model, exp_id)
   old_id = object.id
-  puts "\tOld id: #{old_id}, New id: #{exp_id}"
+  puts "\tOld id: #{old_id}, New id: #{exp_id}" if old_id != exp_id
   return if old_id == exp_id
   new_id = copy_object(object, exp_id)
   symbol = model.to_s.to_sym
