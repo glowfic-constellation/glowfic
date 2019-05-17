@@ -16,6 +16,7 @@ TABLES = {
   GalleryTag: ['created_at', 'updated_at'],
   TagTag: ['created_at', 'updated_at', 'suggested'],
   PostTag: ['created_at', 'updated_at', 'suggested'],
+  "Auditable::Audit": [],
 }
 
 MODELS = [Icon, Template, Character, CharacterAlias, Gallery, CharactersGallery, GalleriesIcon, Post, Reply, GalleryGroup, Setting, CharacterTag, GalleryTag, TagTag, PostTag]
