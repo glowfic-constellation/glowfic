@@ -41,7 +41,8 @@ Arrangements = {
     PostTag: :post_id,
     PostAuthor: :post_id,
     PostView: :post_id,
-  }
+  },
+  Reply: { }
 }
 
 def update_models(model, key, old_id, new_id)
@@ -71,7 +72,7 @@ def check_object(object, model, exp_id)
       update_models(key.to_s.constantize, value, old_id, new_id)
     end
   end
-  object.destroy!
+  object.delete
 end
 
 def iterate_model(model)
@@ -110,3 +111,4 @@ iterate_model(CharacterTag)
 iterate_model(GalleryTag)
 iterate_model(BoardSection)
 iterate_model(Post)
+iterate_model(Reply)
