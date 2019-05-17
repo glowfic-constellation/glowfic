@@ -24,6 +24,7 @@
   version: 1,
   comment: nil,
   remote_address: "127.0.0.1",
+  created_at: "2018-11-27 02:25:53",
   request_uuid: "7c24e660-fc3e-4aee-a401-04ea95e4797c"
 },
 {
@@ -47,6 +48,7 @@
   version: 1,
   comment: nil,
   remote_address: "127.0.0.1",
+  created_at: "2018-11-27 04:53:37",
   request_uuid: "2b3f836c-a6a6-4cd6-960d-0bca7794a9e1"
 },
 {
@@ -70,6 +72,7 @@
   version: 1,
   comment: nil,
   remote_address: "127.0.0.1",
+  created_at: "2018-11-27 04:53:50",
   request_uuid: "f0061941-b7df-4435-96c8-932a127926fe"
 },
 {
@@ -79,7 +82,8 @@
   associated_type: "Post",
   user_id: 1,
   user_type: "User",
-  username: nil, action: "create",
+  username: nil,
+  action: "create",
   audited_changes: {
     "post_id"=>51,
     "user_id"=>1,
@@ -92,6 +96,7 @@
   version: 1,
   comment: nil,
   remote_address: "127.0.0.1",
+  created_at: "2018-12-06 00:04:35",
   request_uuid: "e72b914c-a206-48b9-968d-2b9d9418d2cd"
 },
 {
@@ -110,6 +115,7 @@
   version: 2,
   comment: nil,
   remote_address: "127.0.0.1",
+  created_at: "2018-12-06 00:05:05",
   request_uuid: "a9e1edc6-549f-4fa5-8e62-e669e81315dc"
 },
 {
@@ -127,5 +133,6 @@
   version: 3,
   comment: nil,
   remote_address: "127.0.0.1",
+  created_at: "2018-12-06 00:05:13",
   request_uuid: "fe533fd1-87fe-4269-94c9-aa20fd486a8b"
 },
