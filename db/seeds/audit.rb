@@ -1,5 +1,5 @@
 {
-  auditable_id: 51,
+  auditable_id: 1,
   auditable_type: "Post",
   associated_id: nil,
   associated_type: nil,
@@ -27,9 +27,9 @@
   request_uuid: "7c24e660-fc3e-4aee-a401-04ea95e4797c"
 },
 {
-  auditable_id: 512,
+  auditable_id: 1,
   auditable_type: "Reply",
-  associated_id: 51,
+  associated_id: 1,
   associated_type: "Post",
   user_id: 5,
   user_type: "User",
@@ -50,9 +50,9 @@
   request_uuid: "2b3f836c-a6a6-4cd6-960d-0bca7794a9e1"
 },
 {
-  auditable_id: 513,
+  auditable_id: 2,
   auditable_type: "Reply",
-  associated_id: 51,
+  associated_id: 1,
   associated_type: "Post",
   user_id: 5,
   user_type: "User",
@@ -73,9 +73,9 @@
   request_uuid: "f0061941-b7df-4435-96c8-932a127926fe"
 },
 {
-  auditable_id: 514,
+  auditable_id: 3,
   auditable_type: "Reply",
-  associated_id: 51,
+  associated_id: 1,
   associated_type: "Post",
   user_id: 1,
   user_type: "User",
@@ -95,9 +95,9 @@
   request_uuid: "e72b914c-a206-48b9-968d-2b9d9418d2cd"
 },
 {
-  auditable_id: 514,
+  auditable_id: 3,
   auditable_type: "Reply",
-  associated_id: 51,
+  associated_id: 1,
   associated_type: "Post",
   user_id: 1,
   user_type: "User",
@@ -113,9 +113,9 @@
   request_uuid: "a9e1edc6-549f-4fa5-8e62-e669e81315dc"
 },
 {
-  auditable_id: 514,
+  auditable_id: 3,
   auditable_type: "Reply",
-  associated_id: 51,
+  associated_id: 1,
   associated_type: "Post",
   user_id: 1,
   user_type: "User",
@@ -128,27 +128,4 @@
   comment: nil,
   remote_address: "127.0.0.1",
   request_uuid: "fe533fd1-87fe-4269-94c9-aa20fd486a8b"
-},
-{
-  auditable_id: 640,
-  auditable_type: "Reply",
-  associated_id: 51,
-  associated_type: "Post",
-  user_id: 3,
-  user_type: "User",
-  username: nil, action: "create",
-  audited_changes: {
-    "post_id"=>51,
-    "user_id"=>3,
-    "content"=>"<p>test reply</p>",
-    "character_id"=>20,
-    "icon_id"=>48,
-    "thread_id"=>nil,
-    "character_alias_id"=>nil,
-    "editor_mode"=>"rtf"
-  },
-  version: 1,
-  comment: nil,
-  remote_address: "127.0.0.1",
-  request_uuid: "c2fd2bb8-c88c-47ef-8a52-8231b210d09b"
 },
