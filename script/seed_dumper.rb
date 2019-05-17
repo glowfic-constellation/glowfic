@@ -8,24 +8,26 @@ TABLES = {
   Gallery: ['created_at', 'updated_at'],
   CharactersGallery: ['created_at', 'updated_at'],
   GalleriesIcon: ['created_at', 'updated_at'],
-  Post: ['created_at', 'updated_at', 'tagged_at', 'edited_at', 'description', 'last_user_id', 'last_reply_id', 'authors_locked', 'privacy'],
-  Reply: ['created_at', 'updated_at', 'reply_order', 'thread_id'],
+  Post: ['authors_locked', 'privacy'],
+  Reply: ['reply_order', 'thread_id'],
   GalleryGroup: ['created_at', 'updated_at', 'description'],
   Setting: ['created_at', 'updated_at', 'description'],
   CharacterTag: ['created_at', 'updated_at'],
   GalleryTag: ['created_at', 'updated_at'],
   TagTag: ['created_at', 'updated_at', 'suggested'],
   PostTag: ['created_at', 'updated_at', 'suggested'],
-  "Auditable::Audit": [],
+  'Audited::Audit': [],
+  PostAuthor: ['created_at', 'updated_at']
 }
 
-MODELS = [Icon, Template, Character, CharacterAlias, Gallery, CharactersGallery, GalleriesIcon, Post, Reply, GalleryGroup, Setting, CharacterTag, GalleryTag, TagTag, PostTag]
+MODELS = [Icon, Template, Character, CharacterAlias, Gallery, CharactersGallery, GalleriesIcon, Post, Reply, GalleryGroup, Setting, CharacterTag, GalleryTag, TagTag, PostTag, Audited::Audited, PostAuthor]
 
 FILES = {
+  Audit: [Audited::Audit],
   Icon: [Icon],
   Character: [Template, 'puts "Creating characters..."', Character, 'puts "Creating character aliases..."', CharacterAlias],
   Gallery: [Gallery, 'puts "Assigning galleries to characters..."', CharactersGallery, 'puts "Populating galleries with icons..."', GalleriesIcon],
-  Post: [Post],
+  Post: [Post, 'puts "Assigning users to threads..."', PostAuthor],
   Reply: [Reply],
   Tag: [GalleryGroup, Setting, 'puts "Assigning tags to characters..."', CharacterTag, 'puts "Assigning tags to galleries..."', GalleryTag, 'puts "Attaching settings to each other..."', TagTag, 'puts "Attaching tags to posts..."', PostTag]
 }
@@ -33,7 +35,7 @@ FILES = {
 def dump(model)
   puts "Dumping #{model.name}..."
   exclude = TABLES[model.name.to_sym].join(',')
-  file = Rails.root.join('db', 'seeds', model.name.underscore + '.rb')
+  file = Rails.root.join('db', 'seeds', model.name.demodulize.underscore + '.rb')
   `rake db:seed:dump MODEL=#{model.name} EXCLUDE=#{exclude} FILE=#{file}`
   file
 end
@@ -65,6 +67,11 @@ def clean(file, expand = false)
     line.gsub!(", character_id: nil", "")
     line.gsub!(", character_alias_id: nil", "")
     line.gsub!(", icon_id: nil", "")
+    line.gsub!(", description: \"\"", "")
+    line.gsub!(", description: nil", "")
+    line.gsub!(", last_user_id: nil", "")
+    line.gsub!(", last_reply_id: nil", "")
+    # line.gsub!(", ", "")
     if expand
       line.gsub!("{", "{\n   ")
       line.gsub!("}", "\n  }")
@@ -84,8 +91,10 @@ def clean(file, expand = false)
 end
 
 MODELS.each do |model|
+  next if model.count == 0
+  puts "#{model.count} #{model.name.humanize.pluralize(model.count)}"
   file = dump(model)
-  expand = true if [Character, Post, Reply].include?(model)
+  expand = true if [Character, Post, Reply, Audited::Audit].include?(model)
   clean(file, expand)
 end
 
@@ -99,7 +108,8 @@ FILES.each do |key, value|
         f.puts part
       end
     else
-      part_file = Rails.root.join('db', 'seeds', part.name.underscore + '.rb')
+      part_file = Rails.root.join('db', 'seeds', part.name.demodulize.underscore + '.rb')
+      next unless part_file.exist?
       `cat #{part_file} >> #{file}`
       `rm #{part_file}`
     end
