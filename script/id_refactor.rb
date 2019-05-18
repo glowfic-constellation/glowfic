@@ -7,7 +7,7 @@ Arrangements = {
     GalleriesIcon: :icon_id,
     Reply: :icon_id,
     Post: :icon_id,
-    User: :avatar
+    User: :avatar_id
   },
   Character: {
     CharactersGallery: :character_id,
@@ -59,7 +59,7 @@ def copy_object(object, exp_id)
   copy.save!
   copy.update_columns(created_at: object.created_at)
   copy.update_columns(updated_at: object.updated_at)
-  if object.is_a(Post)
+  if object.is_a?(Post)
     copy.update_columns(edited_at: object.edited_at)
     copy.update_columns(tagged_at: object.tagged_at)
     copy.update_columns(section_order: object.section_order)
