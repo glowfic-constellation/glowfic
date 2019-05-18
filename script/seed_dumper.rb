@@ -20,17 +20,19 @@ TABLES = {
   'Audited::Audit': [],
   PostAuthor: ['created_at', 'updated_at'],
   Message: ['created_at', 'updated_at'],
+  PostView: ['created_at', 'updated_at', 'ignored', 'notify_message', 'notify_email', 'warnings_hidden'],
 }
 
 MODELS = [Icon, Template, Character, CharacterAlias, Gallery, CharactersGallery, GalleriesIcon, Post, Reply, ContentWarning, GalleryGroup,
-          Setting, CharacterTag, GalleryTag, TagTag, PostTag, Audited::Audit, PostAuthor, Message]
+          Setting, CharacterTag, GalleryTag, TagTag, PostTag, Audited::Audit, PostAuthor, Message, PostView]
 
 FILES = {
   Audit: [Audited::Audit],
   Icon: [Icon],
   Character: [Template, 'puts "Creating characters..."', Character, 'puts "Creating character aliases..."', CharacterAlias],
   Gallery: [Gallery, 'puts "Assigning galleries to characters..."', CharactersGallery, 'puts "Populating galleries with icons..."', GalleriesIcon],
-  Post: [Post, 'puts "Assigning users to threads..."', 'ActiveRecord::Base.connection.execute("TRUNCATE TABLE PostAuthor RESTART IDENTITY")', PostAuthor],
+  Post: [Post, 'puts "Assigning users to threads..."', 'ActiveRecord::Base.connection.execute("TRUNCATE TABLE PostAuthor RESTART IDENTITY")',
+         PostAuthor, "Setting up post views...", PostView],
   Reply: [Reply],
   Tag: [ContentWarning, GalleryGroup, Setting, 'puts "Assigning tags to characters..."', CharacterTag, 'puts "Assigning tags to galleries..."',
         GalleryTag, 'puts "Attaching settings to each other..."', TagTag, 'puts "Attaching tags to posts..."', PostTag]

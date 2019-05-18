@@ -581,3 +581,12 @@ PostAuthor.create!([
   { user_id: 2, post_id: 31, can_owe: true, can_reply: true, joined: true, joined_at: "2012-10-12 16:02:00" },
   { user_id: 3, post_id: 31, can_owe: true, can_reply: true, joined: false },
 ])
+
+"Setting up post views..."
+PostView.create!([
+  { post_id: 1, user_id: 5, read_at: "2018-12-06 00:05:13" },
+  { post_id: 1, user_id: 1, read_at: "2018-12-06 00:05:13" },
+  { post_id: 1, user_id: 3, read_at: "2019-05-06 23:07:00" },
+  { post_id: 2, user_id: 3, read_at: "2019-05-17 21:17:38" },
+  { post_id: 4, user_id: 3 }
+])
