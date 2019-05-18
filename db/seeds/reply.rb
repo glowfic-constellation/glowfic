@@ -3,7 +3,7 @@ Reply.create!([
     post_id: 1,
     user_id: 5,
     content: "<p>reply</p>",
-    icon_id: 4,
+    icon_id: 5,
     created_at: "2018-11-27 04:53:37",
     updated_at: "2018-11-27 04:53:37"
   },
@@ -11,7 +11,7 @@ Reply.create!([
     post_id: 1,
     user_id: 5,
     content: "<p>reply</p>",
-    icon_id: 4,
+    icon_id: 5,
     created_at: "2018-11-27 04:53:50",
     updated_at: "2018-11-27 04:53:50"
   },
@@ -43,7 +43,7 @@ Reply.create!([
     user_id: 3,
     content: "\"Good,\" he says, smiling, at the news and at the positive effect it seems to have had on Elena's mood.",
     character_id: 27,
-    icon_id: 88,
+    icon_id: 89,
     created_at: "2015-07-22 21:46:00",
     updated_at: "2015-07-22 21:46:00"
   },
@@ -285,7 +285,7 @@ Reply.create!([
     user_id: 2,
     content: "And he's still among the general population.  Grand.  She wonders if Charlie knows.  \"Does he do 'this' to everyone, or just people who eat my weight in protein powder for breakfast?  Not that he's not obviously getting the worse end of things, now, but if he just pushes people into sharp corners at random...\"",
     character_id: 31,
-    icon_id: 41,
+    icon_id: 42,
     created_at: "2012-09-13 01:24:00",
     updated_at: "2012-09-13 01:24:00"
   },
@@ -302,7 +302,7 @@ Reply.create!([
     user_id: 2,
     content: "Bella decides that she's going to inform a teacher, and Charlie, anyway, because she has <em>heard</em> of the bystander effect.  She also decides that she's just going to have to be late to class in case she's the only person in the hallway with the presence of mind to make sure the idiot doesn't drown in his own blood or choke on a tooth or something.  She produces a pocket-size notebook and writes down <em>screw the first rule of Fight Club</em>.  \"I'm going to stay here in case he needs an emergency vehicle,\" she tells Eric.  \"I'm one of, like, two people in town who can get ahold of one <em>faster</em> than the 911 dispatcher.  Can you repeat the directions to building four again?  I don't want to keep you.\"",
     character_id: 31,
-    icon_id: 41,
+    icon_id: 42,
     created_at: "2012-09-13 01:32:00",
     updated_at: "2012-09-13 01:32:00"
   },
@@ -311,7 +311,7 @@ Reply.create!([
     user_id: 3,
     content: "Eric obligingly recites the appropriate directions, although he keeps getting distracted by the ongoing spectacle.<br><br>The ongoing spectacle... goes on. The boy on top is slowing down, though, issuing more scowls than punches.",
     character_id: 19,
-    icon_id: 65,
+    icon_id: 66,
     created_at: "2012-09-13 01:37:00",
     updated_at: "2012-09-13 01:37:00"
   },
@@ -352,7 +352,7 @@ Reply.create!([
     user_id: 2,
     content: "\"Do <em>you</em> know his last name?\" Bella asks Eric, exasperated, as she lets the traffic pull her along with him to her next class.  She's had various aspects of what makes witnesses annoying inculcated into her head from a young age, and knowing only the name \"Dave\" would be one of them.<br><br>She also writes, <em>Delaney dislikes word 'freak'.  Word does not appear to have provoked push into locker (?)</em>",
     character_id: 31,
-    icon_id: 41,
+    icon_id: 42,
     created_at: "2012-09-13 01:53:00",
     updated_at: "2012-09-13 01:53:00"
   },
@@ -361,7 +361,7 @@ Reply.create!([
     user_id: 3,
     content: "\"Sure,\" says the ever-helpful Eric. \"That's David Farber.\"<br><br>If there is anything else he knows about David Farber, he is not volunteering it.<br><br>(Delaney turns a corner in front of them; the sound of his cheerful humming recedes into the distance.)",
     character_id: 19,
-    icon_id: 64,
+    icon_id: 65,
     created_at: "2012-09-13 01:58:00",
     updated_at: "2012-09-13 01:58:00"
   },
@@ -370,7 +370,7 @@ Reply.create!([
     user_id: 2,
     content: "<em>David Farber.  Felony assault?  (Does provocation invalidate that?)</em> Bella writes.  \"Thanks,\" she says, and she moves on to class.",
     character_id: 31,
-    icon_id: 42,
+    icon_id: 43,
     created_at: "2012-09-13 02:00:00",
     updated_at: "2012-09-13 02:00:00"
   },
@@ -387,7 +387,7 @@ Reply.create!([
     user_id: 2,
     content: "Bella notes Delaney, notes that it would be very easy for him to push her and make it look like it was her fault, and soldiers on nonetheless.  \"Hello, Ms. Finch,\" says Bella.  \"I'm new.  Do you have a minute?  I need to talk to you about accommodations.  I don't have a condition name or anything - my last doctor thought inner ear but couldn't pin anything down; I haven't seen one here yet - but I'm ridiculously clumsy and someone <em>will</em> get hurt, probably me, if I do a majority of gym class activities.\"  She produces her note from her prior teacher and the packet of receipts.  \"You probably get people trying to be excused from things all the time, so I brought these.  If you need to talk to my father about it - or my mother, though that would be a long distance call - you're welcome to.  I can do some things reasonably safely, like most exercise machines and situps; I'm not trying to get out of exercise in general, just injuries.\"",
     character_id: 31,
-    icon_id: 41,
+    icon_id: 42,
     created_at: "2012-09-13 18:18:00",
     updated_at: "2012-09-13 18:18:00"
   },
@@ -420,7 +420,7 @@ Reply.create!([
     user_id: 2,
     content: "\"<em>Thank</em> you,\" says Bella warmly, putting away the papers.  She goes and fetches a mat.<br><br>They're right next to where Delaney is bouncing his ball.  Sigh.  She doesn't look directly at him, and he seems pretty good at actually catching the projectile so she's not especially worried about getting clobbered, but she doesn't know what is <em>up</em> with him yet.<br><br>Maybe she'll ask Ms. Finch.  Ms. Finch seems like a sensible person, and has him in one of her classes.",
     character_id: 31,
-    icon_id: 41,
+    icon_id: 42,
     created_at: "2012-09-13 18:37:00",
     updated_at: "2012-09-13 18:37:00"
   },
@@ -503,7 +503,7 @@ Reply.create!([
     user_id: 2,
     content: "\"Until I made some inquiries, what I saw could have been a bunch of things, and some of those things could have hurt me,\" she says, switching to stretching the other leg.  \"Your... friend... Farber could be a murderer waiting to happen.  I haven't ruled that out - he <em>still</em> would go to prison for a damn long time if he killed you, no matter how many times you shoved him, and you'd still be dead if he did.  You could have some kind of untreated or undertreated mental illness - I haven't ruled that out either, although I don't know what kind it could be.  There could be come complicated hierarchy of violence in the school, which might or might not want to include me, which I'd have to learn about to navigate or safely dismantle.\"  She shrugs.",
     character_id: 31,
-    icon_id: 41,
+    icon_id: 42,
     created_at: "2012-09-13 19:08:00",
     updated_at: "2012-09-13 19:08:00"
   },
@@ -520,7 +520,7 @@ Reply.create!([
     user_id: 2,
     content: "\"I'm not actually sure if masochism is still classified as a mental illness,\" Bella says neutrally.  \"Though if you're going to describe it that way I suppose it could be classified as a bizarre form of cosmetic surgery addiction.  Still, operating via provocation of teenagers with bad impulse control - instead of, I don't know, awaiting the age of majority if you haven't attained it already and then paying a dominatrix - is rather risky.  If you die you don't <em>get</em> to decide whether to press charges, and some kid who's not very bright but could easily have gone his whole life without murdering anyone spends many years in jail.  Do you know how long it's been since there was a murder in Forks?\"",
     character_id: 31,
-    icon_id: 42,
+    icon_id: 43,
     created_at: "2012-09-13 19:19:00",
     updated_at: "2012-09-13 19:19:00"
   },
@@ -537,7 +537,7 @@ Reply.create!([
     user_id: 2,
     content: "\"Thirty-seven years.\"  Charlie routinely brags about this.  \"And that one wasn't by <em>or</em> of a resident, it was some people from Port Angeles who were here for some reason.\"",
     character_id: 31,
-    icon_id: 42,
+    icon_id: 43,
     created_at: "2012-09-13 19:25:00",
     updated_at: "2012-09-13 19:25:00"
   },
@@ -562,7 +562,7 @@ Reply.create!([
     user_id: 3,
     content: "\"Mm, but what if I like getting the crap beaten out of me in front of an <em>audience</em>,\" he says, grinning at her. \"What then?\"",
     character_id: 19,
-    icon_id: 65,
+    icon_id: 66,
     created_at: "2012-09-13 19:34:00",
     updated_at: "2012-09-13 19:34:00"
   },
@@ -571,7 +571,7 @@ Reply.create!([
     user_id: 2,
     content: "\"Become a professional wrestler?\" suggests Bella.  \"Pay somebody to pretend they want to kill you in the hallway, and stop at some defined quantity of blood loss?  Hire the dominatrix, set up a video camera, put it on the Internet.\"",
     character_id: 31,
-    icon_id: 41,
+    icon_id: 42,
     created_at: "2012-09-13 19:36:00",
     updated_at: "2012-09-13 19:36:00"
   },
@@ -604,7 +604,7 @@ Reply.create!([
     user_id: 2,
     content: "Bella puts her mat away and looks out the window.  She doesn't really think it will stop raining, but it would sound like something she could think if anyone asks.  If Delaney doesn't leave before this begins to look particularly idiotic, she'll have to give up on talking to Ms. Finch about him until later.",
     character_id: 31,
-    icon_id: 41,
+    icon_id: 42,
     created_at: "2012-09-13 20:03:00",
     updated_at: "2012-09-13 20:03:00"
   },
@@ -613,7 +613,7 @@ Reply.create!([
     user_id: 3,
     content: "As the last few students clear out, Ms. Finch looks over at Bella and raises her eyebrows again. Then she cuts Delaney off mid-gesticulation and jerks her thumb at the door. He throws her a mocking salute and leaves.",
     character_id: 19,
-    icon_id: 65,
+    icon_id: 66,
     created_at: "2012-09-13 20:09:00",
     updated_at: "2012-09-13 20:09:00"
   },
@@ -622,7 +622,7 @@ Reply.create!([
     user_id: 2,
     content: "Bella trots up to Ms. Finch.  \"First, thanks again for not making me play volleyball.  Second, you seem like you're probably in a position to know more about Delaney than anyone else.  Do you know about the fights he get into?  And why there doesn't seem to have been faculty intervention?\"",
     character_id: 31,
-    icon_id: 41,
+    icon_id: 42,
     created_at: "2012-09-13 20:10:00",
     updated_at: "2012-09-13 20:10:00"
   },
@@ -631,7 +631,7 @@ Reply.create!([
     user_id: 3,
     content: "...Ms. Finch sighs.<br><br>\"There is not a lot the faculty can do about that kid,\" she says. \"Between you and me, I wonder why he bothers showing up to school at all. He comes to class when he feels like it, he doesn't show up to detention, and the one time he got suspended, he came to Art anyway and I had to kick him out. Not to mention, it seems kind of backwards to punish a kid for <em>getting</em> beat up, even if he gleefully claims to have started it.\"",
     character_id: 19,
-    icon_id: 64,
+    icon_id: 65,
     created_at: "2012-09-13 20:21:00",
     updated_at: "2012-09-13 20:21:00"
   },
@@ -640,7 +640,7 @@ Reply.create!([
     user_id: 2,
     content: "\"He <em>did</em> start the one I saw this morning.  He shoved Dave Farber into a locker.  If someone shoved <em>me</em> into a locker, I'd get a teacher, but the fact that Dave doesn't have very good problem solving skills <em>or</em> a sense of proportion doesn't mean it's swell that he's getting pushed.  If detentions and suspensions don't work, what about his parents?  Don't they do anything?\"",
     character_id: 31,
-    icon_id: 41,
+    icon_id: 42,
     created_at: "2012-09-13 20:24:00",
     updated_at: "2012-09-13 20:24:00"
   },
@@ -649,7 +649,7 @@ Reply.create!([
     user_id: 3,
     content: "\"I am... not the person to talk to about Hammond's parents,\" says Ms. Finch, looking the least comfortable she has in the short time Bella has known her.",
     character_id: 19,
-    icon_id: 64,
+    icon_id: 65,
     created_at: "2012-09-13 20:27:00",
     updated_at: "2012-09-13 20:27:00"
   },
@@ -666,7 +666,7 @@ Reply.create!([
     user_id: 3,
     content: "\"See ya,\" the teacher agrees, turning away. Conversation closed.",
     character_id: 19,
-    icon_id: 64,
+    icon_id: 65,
     created_at: "2012-09-13 20:32:00",
     updated_at: "2012-09-13 20:32:00"
   },
@@ -683,7 +683,7 @@ Reply.create!([
     user_id: 2,
     content: "\"Good afternoon,\" she says.  \"How did you break your ribs?\"",
     character_id: 31,
-    icon_id: 41,
+    icon_id: 42,
     created_at: "2012-09-13 20:59:00",
     updated_at: "2012-09-13 20:59:00"
   },
@@ -700,7 +700,7 @@ Reply.create!([
     user_id: 2,
     content: "\"Because I don't know the answer,\" Bella says, working a cramp out of her hand acquired via notetaking.  \"And it doesn't fit what else I know, oddly enough.\"",
     character_id: 31,
-    icon_id: 42,
+    icon_id: 43,
     created_at: "2012-09-13 21:02:00",
     updated_at: "2012-09-13 21:02:00"
   },
@@ -725,7 +725,7 @@ Reply.create!([
     user_id: 3,
     content: "\"Maybe they asked r<em>eee</em>ally nicely,\" he suggests, distorting the word to at least three times its normal length and adding a wink to make his intended meaning more clear.",
     character_id: 19,
-    icon_id: 65,
+    icon_id: 66,
     created_at: "2012-09-13 21:15:00",
     updated_at: "2012-09-13 21:15:00"
   },
@@ -790,7 +790,7 @@ Reply.create!([
     user_id: 3,
     content: "\"Oooh, now <em>that's</em> kinky.\" He laughs. \"Nope. Nice try, though.\" Generously, \"I didn't pay anybody for it, either.\"",
     character_id: 19,
-    icon_id: 65,
+    icon_id: 66,
     created_at: "2012-09-13 21:45:00",
     updated_at: "2012-09-13 21:45:00"
   },
@@ -799,7 +799,7 @@ Reply.create!([
     user_id: 2,
     content: "\"I do think you are clever enough to avoid the problem of conspicuously saying 'no, no, no, plead the fifth, no',\" Bella says.  \"If you aren't going to produce a competing explanation, your denials are the whistling of the wind.\"",
     character_id: 31,
-    icon_id: 41,
+    icon_id: 42,
     created_at: "2012-09-13 21:47:00",
     updated_at: "2012-09-13 21:47:00"
   },
@@ -832,7 +832,7 @@ Reply.create!([
     user_id: 2,
     content: "\"Oh?  You do both kinds of pissing people off, then?  I suppose there'd be no point to deliberately annoying someone who demonstrably,\" she gestures at the mat, \"cannot beat you up.\"",
     character_id: 31,
-    icon_id: 41,
+    icon_id: 42,
     created_at: "2012-09-13 21:56:00",
     updated_at: "2012-09-13 21:56:00"
   },
@@ -865,7 +865,7 @@ Reply.create!([
     user_id: 2,
     content: "\"Mm.\"  She changes the subject.  \"My dad knows your housekeeper.  Hilary.  They're friends.\"",
     character_id: 31,
-    icon_id: 41,
+    icon_id: 42,
     created_at: "2012-09-13 22:02:00",
     updated_at: "2012-09-13 22:02:00"
   },
@@ -882,7 +882,7 @@ Reply.create!([
     user_id: 2,
     content: "Bella brought her lunch today and is already sitting down, waiting for Jessica or Angela or Eric or someone to appear and sit with her.  Oh look.  A distraction.  This is probably going to be the most visually arresting thing in the room presently anyway; she directs her attention away from the door and towards Delaney and the person who does not like him for probably perfectly good reasons.",
     character_id: 31,
-    icon_id: 41,
+    icon_id: 42,
     created_at: "2012-09-13 22:27:00",
     updated_at: "2012-09-13 22:27:00"
   },
@@ -939,7 +939,7 @@ Reply.create!([
     user_id: 3,
     content: "The cafeteria ladies look at each other, then at the brawling boys. By some unspoken consensus, one of them turns and disappears through the door behind the counter.",
     character_id: 19,
-    icon_id: 64,
+    icon_id: 65,
     created_at: "2012-09-13 22:49:00",
     updated_at: "2012-09-13 22:49:00"
   },
@@ -972,7 +972,7 @@ Reply.create!([
     user_id: 3,
     content: "...Delaney starts laughing.<br><br>The other guy shoots Bella an incredulous glance, of which Delaney does not take immediate advantage with violence.<br><br>This leaves them not fighting anymore, and it is not a state they seem inclined to resume.<br><br><br><br>From the door comes the sound of slow, measured applause.",
     character_id: 19,
-    icon_id: 65,
+    icon_id: 66,
     created_at: "2012-09-13 23:00:00",
     updated_at: "2012-09-13 23:00:00"
   },
@@ -1013,7 +1013,7 @@ Reply.create!([
     user_id: 2,
     content: "Bella is reasonably sure that <em>she</em> is not responsible for cleanup.  She sits back down in her seat and eats her little package of popcorn.",
     character_id: 31,
-    icon_id: 42,
+    icon_id: 43,
     created_at: "2012-09-13 23:14:00",
     updated_at: "2012-09-13 23:14:00"
   },
@@ -1030,7 +1030,7 @@ Reply.create!([
     user_id: 2,
     content: "Bella has eaten three kernels of popcorn before Jessica finishes her own lunch transaction, plops into the seat at Bella's left, and demands a word-for-word recap.<br><br>Bella sighs very quietly and provides.",
     character_id: 31,
-    icon_id: 42,
+    icon_id: 43,
     created_at: "2012-09-13 23:20:00",
     updated_at: "2012-09-13 23:20:00"
   },
@@ -1047,7 +1047,7 @@ Reply.create!([
     user_id: 2,
     content: "Bella waves back.<br><br>That's all a wave calls for, really.",
     character_id: 31,
-    icon_id: 41,
+    icon_id: 42,
     created_at: "2012-09-13 23:31:00",
     updated_at: "2012-09-13 23:31:00"
   },
@@ -1064,7 +1064,7 @@ Reply.create!([
     user_id: 2,
     content: "\"Yeah, move-in present,\" she acknowledges, patting the car.  She unlocks the driver's side door.",
     character_id: 31,
-    icon_id: 41,
+    icon_id: 42,
     created_at: "2012-09-13 23:33:00",
     updated_at: "2012-09-13 23:33:00"
   },
@@ -1081,7 +1081,7 @@ Reply.create!([
     user_id: 2,
     content: "\"Yep.\"  This appears to be turning into a conversation.  \"I expected to have to get rides in the police cruiser until I could find a carpool.\"",
     character_id: 31,
-    icon_id: 41,
+    icon_id: 42,
     created_at: "2012-09-13 23:36:00",
     updated_at: "2012-09-13 23:36:00"
   },
@@ -1098,7 +1098,7 @@ Reply.create!([
     user_id: 2,
     content: "\"He doesn't have another car,\" she says.",
     character_id: 31,
-    icon_id: 41,
+    icon_id: 42,
     created_at: "2012-09-13 23:43:00",
     updated_at: "2012-09-13 23:43:00"
   },
@@ -1115,7 +1115,7 @@ Reply.create!([
     user_id: 2,
     content: "\"I was getting the impression I didn't have to say anything beyond possibly my last name,\" says Bella.  \"Small town, and everything; people keep picking up on it without being told.  He's the chief of police.\"",
     character_id: 31,
-    icon_id: 41,
+    icon_id: 42,
     created_at: "2012-09-13 23:45:00",
     updated_at: "2012-09-13 23:45:00"
   },
@@ -1140,7 +1140,7 @@ Reply.create!([
     user_id: 3,
     content: "\"Yep,\" he agrees, \"you did. Then I forgot it.\"",
     character_id: 19,
-    icon_id: 65,
+    icon_id: 66,
     created_at: "2012-09-13 23:50:00",
     updated_at: "2012-09-13 23:50:00"
   },
@@ -1165,7 +1165,7 @@ Reply.create!([
     user_id: 2,
     content: "\"What should I call you?  Jessica was only able to produce one of your middle names but assures me there are two.  There's 'Hammond'.  Or 'Junior',\" Bella says amiably.",
     character_id: 31,
-    icon_id: 41,
+    icon_id: 42,
     created_at: "2012-09-13 23:53:00",
     updated_at: "2012-09-13 23:53:00"
   },
@@ -1182,7 +1182,7 @@ Reply.create!([
     user_id: 2,
     content: "\"The one she knows is 'Kermit'.  I'm not entirely sure if she has been pranked or not, with that one.  And haven't gone to the office to inquire.\"",
     character_id: 31,
-    icon_id: 41,
+    icon_id: 42,
     created_at: "2012-09-13 23:55:00",
     updated_at: "2012-09-13 23:55:00"
   },
@@ -1207,7 +1207,7 @@ Reply.create!([
     user_id: 3,
     content: "He mulls this over for a few seconds, grinning.<br><br>Then he says, definitively: \"Alice.\"",
     character_id: 19,
-    icon_id: 65,
+    icon_id: 66,
     created_at: "2012-09-13 23:59:00",
     updated_at: "2012-09-13 23:59:00"
   },
@@ -1232,7 +1232,7 @@ Reply.create!([
     user_id: 2,
     content: "\"I'm not actually sure I could bring myself to yell 'Alice' when referring to you in the first place.  It's pretty hard to scream in a crowded room at all, and the difficulty increases when what one wishes to scream will predictably seem strange to the audience.  Maybe I'll just call you Alice when talking at a normal volume, like this, and I'll call you 'belligerent idiot' if I have to break up another fight.\"",
     character_id: 31,
-    icon_id: 41,
+    icon_id: 42,
     created_at: "2012-09-14 00:06:00",
     updated_at: "2012-09-14 00:06:00"
   },
@@ -1249,7 +1249,7 @@ Reply.create!([
     user_id: 2,
     content: "\"Well,\" she says.  \"Now we know each other's names.  And nicknames.  See you around, Alice.\"  She mocks a salute, and hops into her car.",
     character_id: 31,
-    icon_id: 41,
+    icon_id: 42,
     created_at: "2012-09-14 00:08:00",
     updated_at: "2012-09-14 00:08:00"
   },

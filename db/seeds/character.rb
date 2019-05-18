@@ -19,7 +19,7 @@ Character.create!([
     user_id: 1,
     name: "Cass Cutler",
     screenname: "undercover_talent",
-    default_icon_id: 12,
+    default_icon_id: 13,
     pb: "Michelle Rodriguez"
   },
   {
@@ -27,7 +27,7 @@ Character.create!([
     name: "Alli Kowalski",
     screenname: "witch_perfect",
     template_id: 1,
-    default_icon_id: 5,
+    default_icon_id: 6,
     pb: "Alexandra Daddario"
   },
   {
@@ -35,7 +35,7 @@ Character.create!([
     name: "Alli Kowalski",
     screenname: "witch_please",
     template_id: 1,
-    default_icon_id: 101,
+    default_icon_id: 102,
     pb: "Alexandra Daddario"
   },
   {
@@ -44,7 +44,7 @@ Character.create!([
     template_name: "Anderson",
     screenname: "ipsam_custodem",
     template_id: 2,
-    default_icon_id: 7,
+    default_icon_id: 8,
     pb: "Shailene Woodley"
   },
   {
@@ -53,7 +53,7 @@ Character.create!([
     template_name: "Mason",
     screenname: "parental_guidance",
     template_id: 2,
-    default_icon_id: 6,
+    default_icon_id: 7,
     pb: "Shailene Woodley"
   },
   {
@@ -62,7 +62,7 @@ Character.create!([
     template_name: "O'Meara",
     screenname: "metamorphmaga",
     template_id: 5,
-    default_icon_id: 10,
+    default_icon_id: 11,
     pb: "Christina Aguilera"
   },
   {
@@ -71,7 +71,7 @@ Character.create!([
     template_name: "Jenny",
     screenname: "bright_and_beautiful",
     template_id: 5,
-    default_icon_id: 9,
+    default_icon_id: 10,
     pb: "Christina Aguilera"
   },
   {
@@ -83,7 +83,7 @@ Character.create!([
     user_id: 1,
     name: "William Miller",
     screenname: "hidebound",
-    default_icon_id: 11,
+    default_icon_id: 12,
     pb: "George Newbern"
   },
   {
@@ -92,7 +92,7 @@ Character.create!([
     template_name: "Elspeth",
     screenname: "her_imperial_radiance",
     template_id: 12,
-    default_icon_id: 17,
+    default_icon_id: 18,
     pb: "Astrid Bergès-Frisbey"
   },
   {
@@ -100,21 +100,21 @@ Character.create!([
     name: "Sherlock Holmes",
     screenname: "calendarofcrime",
     template_id: 4,
-    default_icon_id: 57,
+    default_icon_id: 58,
     pb: "Hayley Atwell"
   },
   {
     user_id: 2,
     name: "Holly / Crystal",
     screenname: "inourhead",
-    default_icon_id: 18,
+    default_icon_id: 19,
     pb: "Aisha Dee"
   },
   {
     user_id: 2,
     name: "Jane",
     screenname: "mind_game",
-    default_icon_id: 31
+    default_icon_id: 32
   },
   {
     user_id: 2,
@@ -122,7 +122,7 @@ Character.create!([
     template_name: "Aleko",
     screenname: "liakoura",
     template_id: 8,
-    default_icon_id: 27,
+    default_icon_id: 28,
     pb: "Dylan O'Brien"
   },
   {
@@ -131,7 +131,7 @@ Character.create!([
     template_name: "Lexi",
     screenname: "lexicality",
     template_id: 8,
-    default_icon_id: 25,
+    default_icon_id: 26,
     pb: "Christie Burke"
   },
   {
@@ -140,7 +140,7 @@ Character.create!([
     template_name: "Andi",
     screenname: "pandion",
     template_id: 8,
-    default_icon_id: 38,
+    default_icon_id: 39,
     pb: "Christie Burke"
   },
   {
@@ -148,21 +148,21 @@ Character.create!([
     name: "Zeus Bartholomew Norton",
     screenname: "floofcoaster",
     template_id: 9,
-    default_icon_id: 15
+    default_icon_id: 16
   },
   {
     user_id: 2,
     name: "Patience Frothen",
     screenname: "salt_of_the",
     template_id: 9,
-    default_icon_id: 39
+    default_icon_id: 40
   },
   {
     user_id: 3,
     name: "Alice",
     screenname: "edgeofyourseat",
     template_id: 6,
-    default_icon_id: 64,
+    default_icon_id: 65,
     pb: "Heath Ledger"
   },
   {
@@ -170,7 +170,7 @@ Character.create!([
     name: "Sherlock Holmes",
     screenname: "bitofafiction",
     template_id: 4,
-    default_icon_id: 47,
+    default_icon_id: 48,
     pb: "Robert Downey Jr"
   },
   {
@@ -179,7 +179,7 @@ Character.create!([
     template_name: "Solvei",
     screenname: "gloriousdawn",
     template_id: 11,
-    default_icon_id: 66,
+    default_icon_id: 67,
     pb: "Rosario Dawson"
   },
   {
@@ -191,7 +191,7 @@ Character.create!([
     user_id: 3,
     name: "Pyth",
     screenname: "pythbox",
-    default_icon_id: 3
+    default_icon_id: 4
   },
   {
     user_id: 3,
@@ -199,7 +199,7 @@ Character.create!([
     template_name: "Sigyn",
     screenname: "thevictorious",
     template_id: 10,
-    default_icon_id: 85,
+    default_icon_id: 86,
     pb: "Willy Cartier"
   },
   {
@@ -208,7 +208,7 @@ Character.create!([
     template_name: "Alianora",
     screenname: "raging_firewitch",
     template_id: 1,
-    default_icon_id: 99,
+    default_icon_id: 100,
     pb: "Darby Stanchfield"
   },
   {
@@ -217,7 +217,7 @@ Character.create!([
     template_name: "Mark",
     screenname: "unmarred",
     template_id: 10,
-    default_icon_id: 90,
+    default_icon_id: 91,
     pb: "Sebastian Stan"
   },
   {
@@ -226,7 +226,7 @@ Character.create!([
     template_name: "Miles",
     screenname: "thisvorlunatic",
     template_id: 11,
-    default_icon_id: 88,
+    default_icon_id: 89,
     pb: "Sebastian Stan"
   },
   {
@@ -235,7 +235,7 @@ Character.create!([
     template_name: "Linya",
     screenname: "isthisart",
     template_id: 3,
-    default_icon_id: 20,
+    default_icon_id: 21,
     pb: "Kristen Stewart"
   },
   {
@@ -244,7 +244,7 @@ Character.create!([
     template_name: "Pattern",
     screenname: "bellfounding",
     template_id: 3,
-    default_icon_id: 13,
+    default_icon_id: 14,
     pb: "Kristen Stewart"
   },
   {
@@ -253,7 +253,7 @@ Character.create!([
     template_name: "Golden",
     screenname: "luminous_regnant",
     template_id: 3,
-    default_icon_id: 29,
+    default_icon_id: 30,
     pb: "Kristen Stewart"
   },
   {
@@ -262,7 +262,7 @@ Character.create!([
     template_name: "Stella",
     screenname: "self_composed",
     template_id: 3,
-    default_icon_id: 41,
+    default_icon_id: 42,
     pb: "Kristen Stewart"
   },
   {
@@ -271,7 +271,7 @@ Character.create!([
     template_name: "Glass",
     screenname: "thaumobabble",
     template_id: 3,
-    default_icon_id: 46,
+    default_icon_id: 47,
     pb: "Kristen Stewart"
   },
   {
@@ -279,7 +279,7 @@ Character.create!([
     name: "Jokes",
     screenname: "manofmyword",
     template_id: 6,
-    default_icon_id: 71,
+    default_icon_id: 72,
     pb: "Heath Ledger"
   },
 ])
