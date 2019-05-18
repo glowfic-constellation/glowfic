@@ -582,7 +582,7 @@ PostAuthor.create!([
   { user_id: 3, post_id: 31, can_owe: true, can_reply: true, joined: false },
 ])
 
-"Setting up post views..."
+puts "Setting up post views..."
 PostView.create!([
   { post_id: 1, user_id: 5, read_at: "2018-12-06 00:05:13" },
   { post_id: 1, user_id: 1, read_at: "2018-12-06 00:05:13" },

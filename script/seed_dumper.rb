@@ -8,7 +8,7 @@ TABLES = {
   Gallery: ['created_at', 'updated_at'],
   CharactersGallery: ['created_at', 'updated_at'],
   GalleriesIcon: ['created_at', 'updated_at'],
-  Post: ['authors_locked', 'privacy'],
+  Post: ['privacy'],
   Reply: ['reply_order', 'thread_id'],
   ContentWarning: ['created_at', 'updated_at', 'description'],
   GalleryGroup: ['created_at', 'updated_at', 'description'],
@@ -32,7 +32,7 @@ FILES = {
   Character: [Template, 'puts "Creating characters..."', Character, 'puts "Creating character aliases..."', CharacterAlias],
   Gallery: [Gallery, 'puts "Assigning galleries to characters..."', CharactersGallery, 'puts "Populating galleries with icons..."', GalleriesIcon],
   Post: [Post, 'puts "Assigning users to threads..."', 'ActiveRecord::Base.connection.execute("TRUNCATE TABLE PostAuthor RESTART IDENTITY")',
-         PostAuthor, "Setting up post views...", PostView],
+         PostAuthor, 'puts '"Setting up post views..."'', PostView],
   Reply: [Reply],
   Tag: [ContentWarning, GalleryGroup, Setting, 'puts "Assigning tags to characters..."', CharacterTag, 'puts "Assigning tags to galleries..."',
         GalleryTag, 'puts "Attaching settings to each other..."', TagTag, 'puts "Attaching tags to posts..."', PostTag]

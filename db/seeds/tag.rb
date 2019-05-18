@@ -1,7 +1,7 @@
 ContentWarning.create!([
   { user_id: 5, name: "warning 1", type: "ContentWarning" },
   { user_id: 5, name: "warning 2", type: "ContentWarning" },
-  { user_id: 5, name: "warning 3", type: "ContentWarning" }
+  { user_id: 5, name: "warning 3", type: "ContentWarning" },
 ])
 GalleryGroup.create!([
   { user_id: 3, name: "JokerSherlock (SS)", type: "GalleryGroup" },
