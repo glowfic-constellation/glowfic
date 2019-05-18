@@ -10,6 +10,7 @@ TABLES = {
   GalleriesIcon: ['created_at', 'updated_at'],
   Post: ['authors_locked', 'privacy'],
   Reply: ['reply_order', 'thread_id'],
+  ContentWarning: ['created_at', 'updated_at', 'description'],
   GalleryGroup: ['created_at', 'updated_at', 'description'],
   Setting: ['created_at', 'updated_at', 'description'],
   CharacterTag: ['created_at', 'updated_at'],
@@ -20,7 +21,8 @@ TABLES = {
   PostAuthor: ['created_at', 'updated_at']
 }
 
-MODELS = [Icon, Template, Character, CharacterAlias, Gallery, CharactersGallery, GalleriesIcon, Post, Reply, GalleryGroup, Setting, CharacterTag, GalleryTag, TagTag, PostTag, Audited::Audited, PostAuthor]
+MODELS = [Icon, Template, Character, CharacterAlias, Gallery, CharactersGallery, GalleriesIcon, Post, Reply, ContentWarning, GalleryGroup,
+          Setting, CharacterTag, GalleryTag, TagTag, PostTag, Audited::Audit, PostAuthor]
 
 FILES = {
   Audit: [Audited::Audit],
@@ -29,7 +31,8 @@ FILES = {
   Gallery: [Gallery, 'puts "Assigning galleries to characters..."', CharactersGallery, 'puts "Populating galleries with icons..."', GalleriesIcon],
   Post: [Post, 'puts "Assigning users to threads..."', 'ActiveRecord::Base.connection.execute("TRUNCATE TABLE PostAuthor RESTART IDENTITY")', PostAuthor],
   Reply: [Reply],
-  Tag: [GalleryGroup, Setting, 'puts "Assigning tags to characters..."', CharacterTag, 'puts "Assigning tags to galleries..."', GalleryTag, 'puts "Attaching settings to each other..."', TagTag, 'puts "Attaching tags to posts..."', PostTag]
+  Tag: [ContentWarning, GalleryGroup, Setting, 'puts "Assigning tags to characters..."', CharacterTag, 'puts "Assigning tags to galleries..."',
+        GalleryTag, 'puts "Attaching settings to each other..."', TagTag, 'puts "Attaching tags to posts..."', PostTag]
 }
 
 def dump(model)

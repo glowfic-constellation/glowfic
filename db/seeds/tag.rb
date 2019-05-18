@@ -1,3 +1,8 @@
+ContentWarning.create!([
+  {id: 1, user_id: 5, name: "warning 1", created_at: "2019-05-17 19:25:29", updated_at: "2019-05-17 19:25:29", type: "ContentWarning", description: nil, owned: false},
+  {id: 2, user_id: 5, name: "warning 2", created_at: "2019-05-17 19:25:29", updated_at: "2019-05-17 19:25:29", type: "ContentWarning", description: nil, owned: false},
+  {id: 3, user_id: 5, name: "warning 3", created_at: "2019-05-17 19:25:29", updated_at: "2019-05-17 19:25:29", type: "ContentWarning", description: nil, owned: false}
+])
 GalleryGroup.create!([
   { user_id: 3, name: "JokerSherlock (SS)", type: "GalleryGroup" },
 ])
