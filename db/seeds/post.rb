@@ -516,7 +516,7 @@ Post.create!([
 ])
 
 puts "Assigning users to threads..."
-ActiveRecord::Base.connection.execute("TRUNCATE TABLE PostAuthor RESTART IDENTITY")
+ActiveRecord::Base.connection.execute("TRUNCATE TABLE post_authors RESTART IDENTITY")
 PostAuthor.create!([
   { user_id: 5, post_id: 1, can_owe: true, can_reply: true, joined: true, joined_at: "2018-11-27 02:25:52" },
   { user_id: 1, post_id: 1, can_owe: true, can_reply: true, joined: true, joined_at: "2018-12-06 00:04:35" },

@@ -19,7 +19,7 @@ TABLES = {
   PostTag: ['created_at', 'updated_at', 'suggested'],
   'Audited::Audit': [],
   PostAuthor: ['created_at', 'updated_at'],
-  Message: ['created_at', 'updated_at'],
+  Message: ['created_at', 'updated_at', 'thread_id'],
   PostView: ['created_at', 'updated_at', 'ignored', 'notify_message', 'notify_email', 'warnings_hidden'],
 }
 
