@@ -18,11 +18,12 @@ TABLES = {
   TagTag: ['created_at', 'updated_at', 'suggested'],
   PostTag: ['created_at', 'updated_at', 'suggested'],
   'Audited::Audit': [],
-  PostAuthor: ['created_at', 'updated_at']
+  PostAuthor: ['created_at', 'updated_at'],
+  Message: ['created_at', 'updated_at'],
 }
 
 MODELS = [Icon, Template, Character, CharacterAlias, Gallery, CharactersGallery, GalleriesIcon, Post, Reply, ContentWarning, GalleryGroup,
-          Setting, CharacterTag, GalleryTag, TagTag, PostTag, Audited::Audit, PostAuthor]
+          Setting, CharacterTag, GalleryTag, TagTag, PostTag, Audited::Audit, PostAuthor, Message]
 
 FILES = {
   Audit: [Audited::Audit],
