@@ -24,3 +24,4 @@
 //= require tinymce-jquery
 //= require select2
 //= require global
+//= require activestorage
