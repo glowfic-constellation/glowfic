@@ -255,13 +255,13 @@ class GalleriesController < UploadingController
       galleries_icons_attributes: [
         :id,
         :_destroy,
-        icon_attributes: [:url, :keyword, :credit, :id, :_destroy, :s3_key]
+        icon_attributes: [:url, :keyword, :credit, :id, :_destroy, :s3_key, :image]
       ],
       icon_ids: [],
     )
   end
 
   def icon_params(paramset)
-    paramset.permit(:url, :keyword, :credit, :s3_key)
+    paramset.permit(:url, :keyword, :credit, :s3_key, :image)
   end
 end

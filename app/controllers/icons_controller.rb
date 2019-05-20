@@ -200,6 +200,6 @@ class IconsController < UploadingController
   end
 
   def icon_params
-    params.fetch(:icon, {}).permit(:url, :keyword, :credit, :s3_key)
+    params.fetch(:icon, {}).permit(:url, :keyword, :credit, :s3_key, :image)
   end
 end
