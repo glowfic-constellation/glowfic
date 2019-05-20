@@ -81,4 +81,6 @@ Rails.application.configure do
 
   # raise an error if assets aren't found
   config.assets.unknown_asset_fallback = false
+
+  routes.default_url_options[:host] = 'localhost:3000'
 end
