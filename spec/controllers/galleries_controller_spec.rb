@@ -347,6 +347,53 @@ RSpec.describe GalleriesController do
       expect(icon.reload.keyword).to eq(newkey)
     end
 
+    it "can upload an icon" do
+      user = create(:user)
+      login_as(user)
+      gallery = create(:gallery, user: user)
+      icon = create(:icon, user: user)
+      gallery.icons << icon
+      gid = gallery.galleries_icons.find_by(icon: icon).id
+      icon_attributes = { id: icon.id, image: fixture_file_upload('app/assets/images/icons/note_go_strong.png', 'image/png') }
+      gallery_icon_attributes = { id: gid, icon_attributes: icon_attributes }
+      put :update, params: {
+        id: gallery.id,
+        gallery: { galleries_icons_attributes: { gid.to_s => gallery_icon_attributes } }
+      }
+      icon.reload
+      expect(icon.image).to be_attached
+      expect(icon.url).to include('note_go_strong.png')
+    end
+
+    it "can upload multiple icons" do
+      user = create(:user)
+      login_as(user)
+      gallery = create(:gallery, user: user)
+      icon1 = create(:icon, user: user)
+      icon2 = create(:icon, user: user, image: fixture_file_upload('app/assets/images/icons/note_go_strong.png', 'image/png'))
+      gallery.icons << icon1
+      gallery.icons << icon2
+      gid1 = gallery.galleries_icons.find_by(icon: icon1).id
+      gid2 = gallery.galleries_icons.find_by(icon: icon2).id
+      icon1_attributes = { id: icon1.id, image: fixture_file_upload('app/assets/images/icons/add.png', 'image/png') }
+      icon2_attributes = { id: icon2.id, image: fixture_file_upload('app/assets/images/icons/arrow_up.png', 'image/png') }
+      put :update, params: {
+        id: gallery.id,
+        gallery: {
+          galleries_icons_attributes: {
+            gid1.to_s => { id: gid1, icon_attributes: icon1_attributes },
+            gid2.to_s => { id: gid2, icon_attributes: icon2_attributes }
+          }
+        }
+      }
+      icon1.reload
+      icon2.reload
+      expect(icon1.image).to be_attached
+      expect(icon2.image).to be_attached
+      expect(icon1.url).to include('add.png')
+      expect(icon2.url).to include('arrow_up.png')
+    end
+
     it "can remove a gallery icon from the gallery" do
       user = create(:user)
       gallery = create(:gallery, user: user)
