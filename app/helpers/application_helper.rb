@@ -8,7 +8,7 @@ module ApplicationHelper
 
   def icon_tag(icon, **args)
     return '' if icon.nil?
-    icon_mem_tag(icon.url, icon.keyword, **args)
+    icon_mem_tag(icon.image.attached? ? icon.image : icon.url, icon.keyword, **args)
   end
 
   def icon_mem_tag(url, keyword, **args)
