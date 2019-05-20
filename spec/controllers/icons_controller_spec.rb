@@ -365,6 +365,32 @@ RSpec.describe IconsController do
       expect(icon.keyword).to eq('new keyword')
       expect(icon.credit).to eq('new credit')
     end
+
+    it "successfully uploads an icon" do
+      user = create(:user)
+      login_as(user)
+      icon = create(:icon, user: user)
+      file = fixture_file_upload('app/assets/images/icons/note_go_strong.png', 'image/png')
+      expect { put :update, params: { id: icon.id, icon: { image: file } } }.to change(ActiveStorage::Attachment, :count).by(1)
+      expect(flash[:success]).to be_present
+      icon.reload
+      expect(icon.url).to include('note_go_strong.png')
+      expect(icon.image).to be_attached
+    end
+
+    it "successfully changes an uploaded icon" do
+      user = create(:user)
+      login_as(user)
+      original_image = fixture_file_upload('app/assets/images/icons/note_go_strong.png', 'image/png')
+      icon = create(:icon, user: user, image: original_image)
+      expect(icon.image).to be_attached
+      new_image = fixture_file_upload('app/assets/images/icons/accept.png', 'image/png')
+      expect { put :update, params: { id: icon.id, icon: { image: new_image } } }.to change(ActiveStorage::Blob, :count).by(1)
+      expect(flash[:success]).to be_present
+      icon.reload
+      expect(icon.url).to include('accept.png')
+      expect(icon.image).to be_attached
+    end
   end
 
   describe "DELETE destroy" do
