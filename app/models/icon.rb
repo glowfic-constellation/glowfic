@@ -16,13 +16,12 @@ class Icon < ApplicationRecord
   validates :keyword, presence: true
   validates :url,
     presence: true,
-    length: { maximum: 255 },
-    if: -> { !self.image.attached? }
+    length: { maximum: 255 }
   validate :url_is_url
   validate :uploaded_url_not_in_use
   nilify_blanks
 
-  before_validation :use_icon_host
+  before_validation :setup_uploaded_url
   before_save :use_https
   before_update :delete_from_s3
   after_destroy :clear_icon_ids, :delete_from_s3
@@ -74,6 +73,11 @@ class Icon < ApplicationRecord
   def clear_icon_ids
     UpdateModelJob.perform_later(Post.to_s, {icon_id: id}, {icon_id: nil})
     UpdateModelJob.perform_later(Reply.to_s, {icon_id: id}, {icon_id: nil})
+  end
+
+  def setup_uploaded_url
+    return unless self.image.attached? && self.image.saved_changes?
+    self.url = Rails.application.routes.url_helpers.rails_blob_url(self.image, disposition: 'attachment')
   end
 
   class UploadError < RuntimeError
