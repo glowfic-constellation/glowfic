@@ -388,8 +388,8 @@ RSpec.describe IconsController do
       expect { put :update, params: { id: icon.id, icon: { image: new_image } } }.to change(ActiveStorage::Blob, :count).by(1)
       expect(flash[:success]).to be_present
       icon.reload
-      expect(icon.url).to include('accept.png')
       expect(icon.image).to be_attached
+      expect(icon.url).to include('accept.png')
     end
   end
 
