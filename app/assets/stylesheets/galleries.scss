@@ -27,15 +27,25 @@
   vertical-align: top;
 }
 
-.gallery-icon-editor {
+.icon-editor {
   display: inline-flex;
   align-items: stretch;
+  input { height: 23px; }
+  input[type='text'], input[type='file'] { width: 209px; }
+  .icons-box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+.gallery-icon-editor {
+  @extend .icon-editor;
   margin: 18px 18px 0px 0px;
   border: solid $border_color_icon_editor;
   border-width: 15px 1.5px 5px 1.5px;
   background-color: $bg_color_icon_editor;
   padding: 5px;
-  input { height: 23px; }
   input[type='text'], input[type='file'] { width: 225px; }
 
   .icons-box {
@@ -54,7 +64,7 @@
   flex-flow: row wrap;
 }
 
-.gallery-icon-table.form-table { width: unset; }
+.form-table.icon-edit-table { width: unset; }
 
 /* Tiny buttons that hover over icons to allow deleting or selecting a checkbox for editing */
 .delete-button, .select-button {
