@@ -131,6 +131,39 @@ RSpec.describe Icon do
     end
   end
 
+  describe "#delete_from_storage" do
+    before(:each) { clear_enqueued_jobs }
+
+    it "deletes uploaded on destroy" do
+      icon = create(:uploaded_icon)
+      icon.destroy!
+      blob = ActiveStorage::Blob.first
+      expect(ActiveStorage::PurgeJob).to have_been_enqueued.with(blob).on_queue('default')
+      expect(DeleteIconFromS3Job).not_to have_been_enqueued
+    end
+
+    it "deletes uploaded on new uploaded update" do
+      icon = create(:uploaded_icon)
+      blob = ActiveStorage::Blob.first
+      icon.update!(image: fixture_file_upload(Rails.root.join('app', 'assets', 'images', 'icons', 'accept.png'), 'image/png'))
+      expect(ActiveStorage::PurgeJob).to have_been_enqueued.with(blob).on_queue('default')
+    end
+
+    it "deletes uploaded on new non-uploaded update" do
+      icon = create(:uploaded_icon)
+      blob = ActiveStorage::Blob.first
+      icon.update!(url: "https://fake.com/nonsense-fakeimg2.png")
+      expect(ActiveStorage::PurgeJob).to have_been_enqueued.with(blob).on_queue('default')
+    end
+
+    it "does not delete uploaded on non-url update" do
+      icon = create(:uploaded_icon)
+      icon.keyword = "not a url update"
+      icon.save!
+      expect(ActiveStorage::PurgeJob).not_to have_been_enqueued
+    end
+  end
+
   context "#use_icon_host" do
     let(:asset_host) { "https://fake.cloudfront.net" }
     before(:each) { @cached_host = ENV['ICON_HOST'] }

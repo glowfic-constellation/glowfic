@@ -23,7 +23,7 @@ class Icon < ApplicationRecord
 
   before_validation :setup_uploaded_url
   before_save :use_https
-  before_update :delete_from_s3
+  before_update :delete_from_s3, :delete_from_storage
   after_destroy :clear_icon_ids, :delete_from_s3
 
   scope :ordered, -> { order(Arel.sql('lower(keyword) asc'), created_at: :asc, id: :asc) }
@@ -58,6 +58,12 @@ class Icon < ApplicationRecord
     return unless destroyed? || s3_key_changed?
     return unless s3_key_was.present?
     DeleteIconFromS3Job.perform_later(s3_key_was)
+  end
+
+  def delete_from_storage
+    return unless self.url_changed? && self.image.attached? && self.image.changes.empty?
+    return if self.url == Rails.application.routes.url_helpers.rails_blob_url(self.image, disposition: 'attachment')
+    image.purge_later
   end
 
   def uploaded_url_not_in_use
