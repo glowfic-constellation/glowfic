@@ -29,7 +29,7 @@ class Icon < ApplicationRecord
   scope :ordered, -> { order(Arel.sql('lower(keyword) asc'), created_at: :asc, id: :asc) }
 
   def uploaded?
-    s3_key.present?
+    s3_key.present? || image.attached?
   end
 
   private
@@ -61,7 +61,7 @@ class Icon < ApplicationRecord
   end
 
   def uploaded_url_not_in_use
-    return unless uploaded?
+    return unless s3_key.present?
     check = Icon.where(s3_key: s3_key)
     check = check.where.not(id: id) unless new_record?
     return unless check.exists?
