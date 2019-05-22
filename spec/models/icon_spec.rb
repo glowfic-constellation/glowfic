@@ -93,7 +93,7 @@ RSpec.describe Icon do
     before(:each) { clear_enqueued_jobs }
 
     it "deletes uploaded on destroy" do
-      icon = create(:uploaded_icon)
+      icon = create(:old_uploaded_icon)
       icon.destroy!
       expect(DeleteIconFromS3Job).to have_been_enqueued.with(icon.s3_key).on_queue('high')
     end
@@ -102,10 +102,11 @@ RSpec.describe Icon do
       icon = create(:icon)
       icon.destroy!
       expect(DeleteIconFromS3Job).not_to have_been_enqueued
+      expect(ActiveStorage::PurgeJob).not_to have_been_enqueued
     end
 
     it "deletes uploaded on new uploaded update" do
-      icon = create(:uploaded_icon)
+      icon = create(:old_uploaded_icon)
       old_key = icon.s3_key
       icon.url = "https://d1anwqy6ci9o1i.cloudfront.net/users/#{icon.user.id}/icons/nonsense-fakeimg2.png"
       icon.s3_key = "/users/#{icon.user.id}/icons/nonsense-fakeimg2.png"
@@ -114,7 +115,7 @@ RSpec.describe Icon do
     end
 
     it "deletes uploaded on new non-uploaded update" do
-      icon = create(:uploaded_icon)
+      icon = create(:old_uploaded_icon)
       old_key = icon.s3_key
       icon.url = "https://fake.com/nonsense-fakeimg2.png"
       icon.s3_key = "/users/#{icon.user.id}/icons/nonsense-fakeimg2.png"
@@ -123,7 +124,7 @@ RSpec.describe Icon do
     end
 
     it "does not delete uploaded on non-url update" do
-      icon = create(:uploaded_icon)
+      icon = create(:old_uploaded_icon)
       icon.keyword = "not a url update"
       icon.save!
       expect(DeleteIconFromS3Job).not_to have_been_enqueued
