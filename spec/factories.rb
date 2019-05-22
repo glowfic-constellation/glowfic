@@ -81,6 +81,10 @@ FactoryBot.define do
     end
 
     factory :uploaded_icon do
+      image { Rack::Test::UploadedFile.new(Rails.root.join('app', 'assets', 'images', 'favicons', 'mstile-150x150.png'), 'image/png') }
+    end
+
+    factory :old_uploaded_icon do
       sequence :url do |n|
         "https://d1anwqy6ci9o1i.cloudfront.net/users%2F#{user.id}%2Ficons%2Fnonsense-fakeimg-#{n}.png"
       end
