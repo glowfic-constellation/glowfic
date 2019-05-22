@@ -60,8 +60,7 @@ RSpec.feature "Editing icons", type: :feature do
   end
 
   scenario "User changes uploaded icon" do
-    original_image = fixture_file_upload(Rails.root.join('app', 'assets', 'images', 'icons', 'accept.png'), 'image/png')
-    icon = create(:icon, user: user, image: original_image)
+    icon = create(:uploaded_icon, user: user)
     expect(icon.image).to be_attached
     checksum = icon.image.checksum
 

@@ -370,7 +370,8 @@ RSpec.describe GalleriesController do
       login_as(user)
       gallery = create(:gallery, user: user)
       icon1 = create(:icon, user: user)
-      icon2 = create(:icon, user: user, image: fixture_file_upload('app/assets/images/icons/note_go_strong.png', 'image/png'))
+      icon2 = create(:uploaded_icon, user: user)
+      expect(icon2.image).to be_attached
       gallery.icons << icon1
       gallery.icons << icon2
       gid1 = gallery.galleries_icons.find_by(icon: icon1).id

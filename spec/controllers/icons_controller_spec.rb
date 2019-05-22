@@ -381,8 +381,7 @@ RSpec.describe IconsController do
     it "successfully changes an uploaded icon" do
       user = create(:user)
       login_as(user)
-      original_image = fixture_file_upload('app/assets/images/icons/note_go_strong.png', 'image/png')
-      icon = create(:icon, user: user, image: original_image)
+      icon = create(:uploaded_icon, user: user)
       expect(icon.image).to be_attached
       new_image = fixture_file_upload('app/assets/images/icons/accept.png', 'image/png')
       expect { put :update, params: { id: icon.id, icon: { image: new_image } } }.to change(ActiveStorage::Blob, :count).by(1)

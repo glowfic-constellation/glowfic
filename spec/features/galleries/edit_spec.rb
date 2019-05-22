@@ -4,8 +4,7 @@ RSpec.feature "Editing galleries", type: :feature do
   scenario "User edits their gallery" do
     user = login
     gallery = create(:gallery, user: user, name: "test gallery", icon_count: 2)
-    original_image = fixture_file_upload(Rails.root.join('app', 'assets', 'images', 'icons', 'accept.png'), 'image/png')
-    uploaded_icon = create(:icon, user: user, image: original_image)
+    uploaded_icon = create(:uploaded_icon, user: user)
     gallery.icons << uploaded_icon
     expect(gallery.icons.last.image).to be_attached
     checksum = gallery.icons.last.image.checksum
