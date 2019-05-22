@@ -1,11 +1,10 @@
 # frozen_string_literal: true
-class GalleriesController < UploadingController
+class GalleriesController < ApplicationController
   include Taggable
 
   before_action :login_required, except: [:index, :show]
   before_action :find_gallery, only: [:destroy, :edit, :update] # assumes login_required
   before_action :setup_new_icons, only: [:add, :icon]
-  before_action :set_s3_url, only: [:edit, :add, :icon]
   before_action :setup_editor, only: [:new, :edit]
 
   def index
@@ -94,7 +93,6 @@ class GalleriesController < UploadingController
 
   def edit
     @page_title = 'Edit Gallery: ' + @gallery.name
-    use_javascript('galleries/uploader')
     use_javascript('galleries/edit')
   end
 
@@ -111,10 +109,8 @@ class GalleriesController < UploadingController
       flash.now[:error][:message] = "Gallery could not be saved."
       flash.now[:error][:array] = @gallery.errors.full_messages
       @page_title = 'Edit Gallery: ' + @gallery.name_was
-      use_javascript('galleries/uploader')
       use_javascript('galleries/edit')
       setup_editor
-      set_s3_url
       render :edit
     else
       flash[:success] = "Gallery saved."
