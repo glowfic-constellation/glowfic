@@ -45,9 +45,9 @@ RSpec.feature "Editing galleries", type: :feature do
 
     expect(page).to have_selector('.success', exact_text: 'Gallery saved.')
     expect(page).to have_selector('.gallery-edit-form th', exact_text: 'Edit Gallery')
-    expect(gallery.icons[1].image).to be_attached
-    expect(gallery.icons[2].image).to be_attached
-    expect(gallery.icons[2].image.checksum).not_to eq(checksum)
+    expect(gallery.icons[1].reload.image).to be_attached
+    expect(gallery.icons[2].reload.image).to be_attached
+    expect(gallery.icons[2].reload.image.checksum).not_to eq(checksum)
 
     within first('.gallery-icon-editor') do
       expect(page).to have_field('Credit', with: 'sample credit')
