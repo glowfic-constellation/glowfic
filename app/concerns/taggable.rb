@@ -3,13 +3,13 @@ module Taggable
 
   def process_tags(klass, obj_param, id_param)
     if defined?(params)
-      process_tags_actual(klass, obj_param, id_param, params)
+      process_tags_actual(klass, obj_param, id_param, params, current_user)
     else
-      process_tags_actual(klass, obj_param, id_param, @params)
+      process_tags_actual(klass, obj_param, id_param, @params, @user)
     end
   end
 
-  def process_tags_actual(klass, obj_param, id_param, params)
+  def process_tags_actual(klass, obj_param, id_param, params, user)
     # fetch and clean tag ids
     ids = params.fetch(obj_param, {}).fetch(id_param, [])
     ids = ids.reject(&:blank?).map(&:to_s)
@@ -30,7 +30,7 @@ module Taggable
 
     # create anything case-insensitively (locale unfriendly) unique that remains
     new_names = new_names.uniq(&:upcase)
-    new_tags = new_names.map { |name| klass.new(user: current_user, name: name) }
+    new_tags = new_names.map { |name| klass.new(user: user, name: name) }
 
     # consolidate, sort and purge duplicates (locale unfriendly)
     all_tags = existing_tags + matched_new_tags + new_tags
