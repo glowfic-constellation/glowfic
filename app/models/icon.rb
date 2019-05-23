@@ -40,13 +40,6 @@ class Icon < ApplicationRecord
     errors.add(:url, "must be an actual fully qualified url (http://www.example.com)")
   end
 
-  def use_icon_host
-    return unless uploaded?
-    return unless url.present? && ENV['ICON_HOST'].present?
-    return if url.to_s.include?(ENV['ICON_HOST'])
-    self.url = ENV['ICON_HOST'] + url[(url.index(S3_DOMAIN).to_i + S3_DOMAIN.length)..-1]
-  end
-
   def use_https
     return if uploaded?
     return unless url.starts_with?('http://')
