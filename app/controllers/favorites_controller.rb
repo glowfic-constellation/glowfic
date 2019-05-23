@@ -67,12 +67,15 @@ class FavoritesController < ApplicationController
     fav = Favorite.new
     fav.user = current_user
     fav.favorite = favorite
-    if fav.save
-      flash[:success] = "Your favorite has been saved."
+    begin
+      fav.save!
+    rescue ActiveRecord::RecordInvalid
+      flash[:error] = {
+        message: "Your favorite could not be saved because of the following problems:",
+        array: fav.errors.full_messages
+      }
     else
-      flash[:error] = {}
-      flash[:error][:message] = "Your favorite could not be saved because of the following problems:"
-      flash[:error][:array] = fav.errors.full_messages
+      flash[:success] = "Your favorite has been saved."
     end
     redirect_to fav_path
   end
@@ -90,6 +93,13 @@ class FavoritesController < ApplicationController
 
     begin
       fav.destroy!
+    rescue ActiveRecord::RecordNotDestroyed
+      flash[:error] = {
+        message: "Favorite could not be deleted.",
+        array: fav.errors.full_messages
+      }
+      redirect_to favorites_path
+    else
       flash[:success] = "Favorite removed."
       if fav.favorite_type == User.to_s
         redirect_to user_path(fav.favorite)
@@ -98,11 +108,6 @@ class FavoritesController < ApplicationController
       else
         redirect_to board_path(fav.favorite)
       end
-    rescue ActiveRecord::RecordNotDestroyed
-      flash[:error] = {}
-      flash[:error][:message] = "Favorite could not be deleted."
-      flash[:error][:array] = fav.errors.full_messages
-      redirect_to favorites_path
     end
   end
 end

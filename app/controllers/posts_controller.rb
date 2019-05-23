@@ -123,17 +123,20 @@ class PostsController < WritableController
     @post.content_warnings = process_tags(ContentWarning, :post, :content_warning_ids)
     @post.labels = process_tags(Label, :post, :label_ids)
 
-    unless @post.save
-      flash.now[:error] = {}
-      flash.now[:error][:array] = @post.errors.full_messages
-      flash.now[:error][:message] = "Your post could not be saved because of the following problems:"
+    begin
+      @post.save!
+    rescue ActiveRecord::RecordInvalid
+      flash.now[:error] = {
+        array: @post.errors.full_messages,
+        message: "Your post could not be saved because of the following problems:"
+      }
       editor_setup
       @page_title = 'New Post'
-      render :new and return
+      render :new
+    else
+      flash[:success] = "You have successfully posted."
+      redirect_to post_path(@post)
     end
-
-    flash[:success] = "You have successfully posted."
-    redirect_to post_path(@post)
   end
 
   def show
@@ -181,15 +184,16 @@ class PostsController < WritableController
         @post.labels = labels
         @post.save!
       end
-
-      flash[:success] = "Your post has been updated."
-      redirect_to post_path(@post)
     rescue ActiveRecord::RecordInvalid
-      flash.now[:error] = {}
-      flash.now[:error][:array] = @post.errors.full_messages
-      flash.now[:error][:message] = "Your post could not be saved because of the following problems:"
+      flash.now[:error] = {
+        array: @post.errors.full_messages,
+        message: "Your post could not be saved because of the following problems:"
+      }
       editor_setup
       render :edit
+    else
+      flash[:success] = "Your post has been updated."
+      redirect_to post_path(@post)
     end
   end
 
@@ -201,13 +205,15 @@ class PostsController < WritableController
 
     begin
       @post.destroy!
+    rescue ActiveRecord::RecordNotDestroyed
+      flash[:error] = {
+        message: "Post could not be deleted.",
+        array: @post.errors.full_messages
+      }
+      redirect_to post_path(@post)
+    else
       flash[:success] = "Post deleted."
       redirect_to boards_path
-    rescue ActiveRecord::RecordNotDestroyed
-      flash[:error] = {}
-      flash[:error][:message] = "Post could not be deleted."
-      flash[:error][:array] = @post.errors.full_messages
-      redirect_to post_path(@post)
     end
   end
 
@@ -320,12 +326,15 @@ class PostsController < WritableController
       flash[:error] = "Invalid status selected."
     else
       @post.status = new_status
-      if @post.save
-        flash[:success] = "Post has been marked #{params[:status]}."
+      begin
+        @post.save!
+      rescue ActiveRecord::RecordInvalid
+        flash[:error] = {
+          message: "Status could not be updated.",
+          array: @post.errors.full_messages
+        }
       else
-        flash[:error] = {}
-        flash[:error][:message] = "Status could not be updated."
-        flash[:error][:array] = @post.errors.full_messages
+        flash[:success] = "Post has been marked #{params[:status]}."
       end
     end
     redirect_to post_path(@post)
@@ -333,12 +342,15 @@ class PostsController < WritableController
 
   def change_authors_locked
     @post.authors_locked = (params[:authors_locked] == 'true')
-    if @post.save
-      flash[:success] = "Post has been #{@post.authors_locked? ? 'locked to' : 'unlocked from'} current authors."
+    begin
+      @post.save!
+    rescue ActiveRecord::RecordInvalid
+      flash[:error] = {
+        message: "Post could not be updated.",
+        array: @post.errors.full_messages
+      }
     else
-      flash[:error] = {}
-      flash[:error][:message] = "Post could not be updated."
-      flash[:error][:array] = @post.errors.full_messages
+      flash[:success] = "Post has been #{@post.authors_locked? ? 'locked to' : 'unlocked from'} current authors."
     end
     redirect_to post_path(@post)
   end
@@ -351,15 +363,18 @@ class PostsController < WritableController
   end
 
   def import_thread
-    importer = PostImporter.new(params[:dreamwidth_url])
-    importer.import(params[:board_id], current_user.id, section_id: params[:section_id], status: params[:status], threaded: params[:threaded])
-    flash[:success] = "Post has begun importing. You will be updated on progress via site message."
-    redirect_to posts_path
-  rescue PostImportError => e
-    flash.now[:error] = e.api_error
-    params[:view] = 'import'
-    editor_setup
-    render :new
+    begin
+      importer = PostImporter.new(params[:dreamwidth_url])
+      importer.import(params[:board_id], current_user.id, section_id: params[:section_id], status: params[:status], threaded: params[:threaded])
+    rescue PostImportError => e
+      flash.now[:error] = e.api_error
+      params[:view] = 'import'
+      editor_setup
+      render :new
+    else
+      flash[:success] = "Post has begun importing. You will be updated on progress via site message."
+      redirect_to posts_path
+    end
   end
 
   def find_post

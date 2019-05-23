@@ -13,14 +13,19 @@ class TemplatesController < ApplicationController
   def create
     @template = Template.new(template_params)
     @template.user = current_user
-    if @template.save
-      flash[:success] = "Template saved successfully."
-      redirect_to template_path(@template)
-    else
-      flash.now[:error] = "Your template could not be saved."
+    begin
+      @template.save!
+    rescue ActiveRecord::RecordInvalid
+      flash.now[:error] = {
+        message: "Your template could not be saved because of the following problems:",
+        array: @template.errors.full_messages
+      }
       editor_setup
       @page_title = "New Template"
       render :new
+    else
+      flash[:success] = "Template saved successfully."
+      redirect_to template_path(@template)
     end
   end
 
@@ -38,26 +43,35 @@ class TemplatesController < ApplicationController
   end
 
   def update
-    unless @template.update(template_params)
-      flash.now[:error] = "Your template could not be saved."
+    begin
+      @template.update!(template_params)
+    rescue ActiveRecord::RecordInvalid
+      flash.now[:error] = {
+        message: "Your template could not be saved because of the following problems:",
+        array: @template.errors.full_messages
+      }
       editor_setup
       @page_title = 'Edit Template: ' + @template.name_was
-      render :edit and return
+      render :edit
+    else
+      flash[:success] = "Template saved successfully."
+      redirect_to template_path(@template)
     end
-
-    flash[:success] = "Template saved successfully."
-    redirect_to template_path(@template)
   end
 
   def destroy
-    @template.destroy!
-    flash[:success] = "Template deleted successfully."
-    redirect_to user_characters_path(current_user)
-  rescue ActiveRecord::RecordNotDestroyed
-    flash[:error] = {}
-    flash[:error][:message] = "Template could not be deleted."
-    flash[:error][:array] = @template.errors.full_messages
-    redirect_to template_path(@template)
+    begin
+      @template.destroy!
+    rescue ActiveRecord::RecordNotDestroyed
+      flash[:error] = {
+        message: "Template could not be deleted.",
+        array: @template.errors.full_messages
+      }
+      redirect_to template_path(@template)
+    else
+      flash[:success] = "Template deleted successfully."
+      redirect_to user_characters_path(current_user)
+    end
   end
 
   def search

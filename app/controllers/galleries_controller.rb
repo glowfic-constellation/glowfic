@@ -38,15 +38,20 @@ class GalleriesController < UploadingController
     @gallery.user = current_user
     @gallery.gallery_groups = process_tags(GalleryGroup, :gallery, :gallery_group_ids)
 
-    unless @gallery.save
-      flash.now[:error] = "Your gallery could not be saved."
+    begin
+      @gallery.save!
+    rescue ActiveRecord::RecordInvalid
+      flash.now[:error] = {
+        message: "Your gallery could not be saved because of the following problems:",
+        array: @gallery.errors.full_messages
+      }
       @page_title = 'New Gallery'
       setup_editor
-      render :new and return
+      render :new
+    else
+      flash[:success] = "Gallery saved successfully."
+      redirect_to gallery_path(@gallery)
     end
-
-    flash[:success] = "Gallery saved successfully."
-    redirect_to gallery_path(@gallery)
   end
 
   def add
@@ -99,8 +104,6 @@ class GalleriesController < UploadingController
         @gallery.gallery_groups = process_tags(GalleryGroup, :gallery, :gallery_group_ids)
         @gallery.save!
       end
-      flash[:success] = "Gallery saved."
-      redirect_to edit_gallery_path(@gallery)
     rescue ActiveRecord::RecordInvalid
       flash.now[:error] = {}
       flash.now[:error][:message] = "Gallery could not be saved."
@@ -111,6 +114,9 @@ class GalleriesController < UploadingController
       setup_editor
       set_s3_url
       render :edit
+    else
+      flash[:success] = "Gallery saved."
+      redirect_to edit_gallery_path(@gallery)
     end
   end
 
@@ -175,14 +181,17 @@ class GalleriesController < UploadingController
   end
 
   def destroy
-    @gallery.destroy!
-    flash[:success] = "Gallery deleted successfully."
-    redirect_to user_galleries_path(current_user)
-  rescue ActiveRecord::RecordNotDestroyed
-    flash[:error] = {}
-    flash[:error][:message] = "Gallery could not be deleted."
-    flash[:error][:array] = @gallery.errors.full_messages
-    redirect_to gallery_path(@gallery)
+    begin
+      @gallery.destroy!
+    rescue ActiveRecord::RecordNotDestroyed
+      flash[:error] = {}
+      flash[:error][:message] = "Gallery could not be deleted."
+      flash[:error][:array] = @gallery.errors.full_messages
+      redirect_to gallery_path(@gallery)
+    else
+      flash[:success] = "Gallery deleted successfully."
+      redirect_to user_galleries_path(current_user)
+    end
   end
 
   def search

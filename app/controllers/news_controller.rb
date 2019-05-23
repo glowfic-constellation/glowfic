@@ -20,16 +20,19 @@ class NewsController < ApplicationController
     @news = News.new(news_params)
     @news.user = current_user
 
-    unless @news.save
-      flash.now[:error] = {}
-      flash.now[:error][:message] = "News post could not be created."
-      flash.now[:error][:array] = @news.errors.full_messages
+    begin
+      @news.save!
+    rescue ActiveRecord::RecordInvalid
+      flash.now[:error] = {
+        message: "News post could not be created.",
+        array: @news.errors.full_messages
+      }
       @page_title = 'Create News Post'
-      render :new and return
+      render :new
+    else
+      flash[:success] = "News post has successfully been created."
+      redirect_to news_index_path
     end
-
-    flash[:success] = "News post has successfully been created."
-    redirect_to news_index_path
   end
 
   def show
@@ -41,16 +44,19 @@ class NewsController < ApplicationController
   end
 
   def update
-    unless @news.update(news_params)
-      flash.now[:error] = {}
-      flash.now[:error][:message] = "News post could not be saved because of the following problems:"
-      flash.now[:error][:array] = @news.errors.full_messages
+    begin
+      @news.update!(news_params)
+    rescue ActiveRecord::RecordInvalid
+      flash.now[:error] = {
+        message: "News post could not be saved because of the following problems:",
+        array: @news.errors.full_messages
+      }
       @page_title = "Edit News Post"
-      render :edit and return
+      render :edit
+    else
+      flash[:success] = "News post saved!"
+      redirect_to paged_news_url(@news)
     end
-
-    flash[:success] = "News post saved!"
-    redirect_to paged_news_url(@news)
   end
 
   def destroy
@@ -61,11 +67,13 @@ class NewsController < ApplicationController
 
     begin
       @news.destroy!
-      flash[:success] = "News post deleted."
     rescue ActiveRecord::RecordNotDestroyed
-      flash[:error] = {}
-      flash[:error][:message] = "News post could not be deleted."
-      flash[:error][:array] = @news.errors.full_messages
+      flash[:error] = {
+        message: "News post could not be deleted.",
+        array: @news.errors.full_messages
+      }
+    else
+      flash[:success] = "News post deleted."
     end
     redirect_to news_index_path
   end
