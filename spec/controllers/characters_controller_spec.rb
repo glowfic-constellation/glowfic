@@ -1214,6 +1214,17 @@ RSpec.describe CharactersController do
       expect(char_post.character).to eq(character)
       expect(char_reply.character).to eq(character)
     end
+
+    it "handles unexpected failure" do
+      character = create(:character)
+      login_as(character.user)
+      character.update_columns(default_icon_id: create(:icon).id)
+      expect(character).not_to be_valid
+      expect{ post :duplicate, params: { id: character.id } }.to not_change { Character.count }
+      expect(response).to redirect_to(character_path(character))
+      expect(flash[:error][:message]).to eq('Character could not be duplicated.')
+      expect(flash[:error][:array]).to eq(['Default icon must be yours'])
+    end
   end
 
   describe "#character_split" do
