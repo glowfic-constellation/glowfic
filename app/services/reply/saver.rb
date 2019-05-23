@@ -1,4 +1,4 @@
-class Reply::Saver < Generic::Saver
+class Reply::Saver < Auditable::Saver
   def initialize(reply, user:, params:)
     @reply = reply
     super
@@ -23,16 +23,6 @@ class Reply::Saver < Generic::Saver
         raise DuplicateReplyError if last_by_user.present? && last_by_user.attributes.slice(*match_attrs) == @reply.attributes.slice(*match_attrs)
       end
     end
-
-    save!
-  end
-
-  def update!
-    build
-
-    raise NoModNote if @user.id != @reply.user_id && @reply.audit_comment.blank?
-
-    @reply.audit_comment = nil if @reply.changes.empty? # don't save an audit for a note and no changes
 
     save!
   end
