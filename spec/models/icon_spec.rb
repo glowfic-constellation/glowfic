@@ -30,14 +30,14 @@ RSpec.describe Icon do
 
     context "#uploaded_url_not_in_use" do
       it "should set the url back to its previous url on create" do
-        icon = create(:uploaded_icon)
+        icon = create(:old_uploaded_icon)
         dupe_icon = build(:icon, url: icon.url, s3_key: icon.s3_key)
         expect(dupe_icon).not_to be_valid
         expect(dupe_icon.url).to be nil
       end
 
       it "should set the url back to its previous url on update" do
-        icon = create(:uploaded_icon)
+        icon = create(:old_uploaded_icon)
         dupe_icon = create(:icon)
         old_url = dupe_icon.url
         dupe_icon.url = icon.url
