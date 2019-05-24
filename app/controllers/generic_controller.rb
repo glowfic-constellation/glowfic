@@ -44,7 +44,7 @@ class GenericController < ApplicationController
   end
 
   def edit
-    @page_title = "Edit #{model_name.titlecase}: #{@model.name}"
+    @page_title = "Edit #{model_name.titlecase}" + (@model.has_attribute?(:name) ? ": #{@model.name}" : "")
   end
 
   def update
@@ -53,7 +53,7 @@ class GenericController < ApplicationController
     rescue ActiveRecord::RecordInvalid => e
       render_errors(@model, action: 'updated', now: true, class_name: model_name.capitalize, msg: @ufm)
       log_error(e) unless @model.errors.present?
-      @page_title = "Edit #{model_name.titlecase}: #{@model.name}"
+      @page_title = "Edit #{model_name.titlecase}" + (@model.has_attribute?(:name) ? ": #{@model.name}" : "")
       render :edit
     else
       flash[:success] = @usm || "#{model_name} updated."
