@@ -86,7 +86,7 @@ RSpec.describe BoardSectionsController do
     it "requires valid section" do
       get :show, params: { id: -1 }
       expect(response).to redirect_to(boards_url)
-      expect(flash[:error]).to eq("Section not found.")
+      expect(flash[:error]).to eq("Section could not be found.")
     end
 
     it "does not require login" do
@@ -157,7 +157,7 @@ RSpec.describe BoardSectionsController do
       login
       get :edit, params: { id: -1 }
       expect(response).to redirect_to(boards_url)
-      expect(flash[:error]).to eq("Section not found.")
+      expect(flash[:error]).to eq("Section could not be found.")
     end
 
     it "requires permission" do
@@ -173,7 +173,7 @@ RSpec.describe BoardSectionsController do
       login_as(section.board.creator)
       get :edit, params: { id: section.id }
       expect(response).to have_http_status(200)
-      expect(assigns(:page_title)).to eq("Edit #{section.name}")
+      expect(assigns(:page_title)).to eq("Edit Section: #{section.name}")
       expect(assigns(:board_section)).to eq(section)
     end
   end
@@ -227,7 +227,7 @@ RSpec.describe BoardSectionsController do
       login
       delete :destroy, params: { id: -1 }
       expect(response).to redirect_to(boards_url)
-      expect(flash[:error]).to eq("Section not found.")
+      expect(flash[:error]).to eq("Section could not be found.")
     end
 
     it "requires permission" do

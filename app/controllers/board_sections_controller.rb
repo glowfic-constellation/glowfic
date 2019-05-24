@@ -1,16 +1,9 @@
 # frozen_string_literal: true
-class BoardSectionsController < ApplicationController
-  before_action :login_required, except: :show
-  before_action :find_section, except: [:new, :create]
-  before_action :require_permission, except: [:show, :update]
-
-  def new
-    @board_section = BoardSection.new(board_id: params[:board_id])
-    @page_title = 'New Section'
-  end
+class BoardSectionsController < GenericController
+  before_action(only: [:new, :create]) { require_edit_permission }
 
   def create
-    @board_section = BoardSection.new(section_params)
+    @board_section = BoardSection.new(permitted_params)
     unless @board_section.board.nil? || @board_section.board.editable_by?(current_user)
       flash[:error] = "You do not have permission to modify this continuity."
       redirect_to boards_path and return
@@ -31,20 +24,14 @@ class BoardSectionsController < ApplicationController
   end
 
   def show
-    @page_title = @board_section.name
+    super
     @posts = posts_from_relation(@board_section.posts.ordered_in_section)
     @meta_og = og_data
   end
 
-  def edit
-    @page_title = 'Edit ' + @board_section.name
-    use_javascript('board_sections')
-    gon.section_id = @board_section.id
-  end
-
   def update
-    @board_section.assign_attributes(section_params)
-    require_permission
+    @board_section.assign_attributes(permitted_params)
+    require_edit_permission
     return if performed?
 
     begin
@@ -54,8 +41,6 @@ class BoardSectionsController < ApplicationController
       log_error(e) unless @board_section.errors.present?
 
       @page_title = 'Edit ' + @board_section.name_was
-      use_javascript('board_sections')
-      gon.section_id = @board_section.id
       render :edit
     else
       flash[:success] = "Section updated."
@@ -63,36 +48,39 @@ class BoardSectionsController < ApplicationController
     end
   end
 
-  def destroy
-    begin
-      @board_section.destroy!
-    rescue ActiveRecord::RecordNotDestroyed => e
-      render_errors(@board_section, action: 'deleted', class_name: 'Section')
-      log_error(e) unless @board_section.errors.present?
-      redirect_to board_section_path(@board_section)
-    else
-      flash[:success] = "Section deleted."
-      redirect_to edit_board_path(@board_section.board)
-    end
-  end
-
   private
 
-  def find_section
-    @board_section = BoardSection.find_by_id(params[:id])
-    unless @board_section
-      flash[:error] = "Section not found."
-      redirect_to boards_path and return
+  def permitted_params
+    params.fetch(:board_section, {}).permit(
+      :board_id,
+      :name,
+      :description,
+    )
+  end
+
+  def editor_setup
+    if @board_section.present?
+      use_javascript('board_sections')
+      gon.section_id = @board_section.id
     end
   end
 
-  def require_permission
+  def model_name
+    'Section'
+  end
+
+  def model_class
+    BoardSection
+  end
+
+  def require_edit_permission
     board = @board_section.try(:board) || Board.find_by_id(params[:board_id])
     if board && !board.editable_by?(current_user)
       flash[:error] = "You do not have permission to modify this continuity."
       redirect_to boards_path and return
     end
   end
+  alias_method :require_delete_permission, :require_edit_permission
 
   def og_data
     stats = []
@@ -109,11 +97,19 @@ class BoardSectionsController < ApplicationController
     }
   end
 
-  def section_params
-    params.fetch(:board_section, {}).permit(
-      :board_id,
-      :name,
-      :description,
-    )
+  def create_redirect
+    edit_board_path(@board_section.board)
+  end
+
+  def update_redirect
+    board_section_path(@board_section)
+  end
+
+  def destroy_redirect
+    edit_board_path(@board_section.board)
+  end
+
+  def invalid_redirect
+    boards_path
   end
 end
