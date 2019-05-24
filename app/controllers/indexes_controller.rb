@@ -22,7 +22,7 @@ class IndexesController < GenericController
   private
 
   def set_params
-    @model.user = current_user
+    @index.user = current_user
   end
 
   def permitted_params
@@ -30,7 +30,6 @@ class IndexesController < GenericController
   end
 
   def editor_setup
-    @page_title = "Edit Index: #{@index.name}"
     use_javascript('posts/index_edit')
     @index_sections = @index.index_sections.ordered
     @unsectioned_posts = @index.posts.where(index_posts: {index_section_id: nil})
