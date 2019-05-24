@@ -34,7 +34,7 @@ class GenericController < ApplicationController
       render :new
     else
       flash[:success] = "#{model_name} created."
-      redirect_to model_path(model)
+      redirect_to create_redirect
     end
   end
 
@@ -56,7 +56,7 @@ class GenericController < ApplicationController
       render :edit
     else
       flash[:success] = "#{model_name} updated."
-      redirect_to model_path(@model)
+      redirect_to update_redirect
     end
   end
 
@@ -69,7 +69,7 @@ class GenericController < ApplicationController
       redirect_to model_path(@model)
     else
       flash[:success] = "#{model_name} deleted."
-      redirect_to models_path
+      redirect_to destroy_redirect
     end
   end
 
@@ -78,7 +78,7 @@ class GenericController < ApplicationController
   def find_model
     unless (@model = model_class.find_by_id(params[:id]))
       flash[:error] = "#{model_name} could not be found."
-      redirect_to models_path and return
+      redirect_to invalid_redirect and return
     end
     set_model(@model)
   end
@@ -137,5 +137,21 @@ class GenericController < ApplicationController
 
   def set_params(model)
     # pass
+  end
+
+  def create_redirect
+    model_path(model)
+  end
+
+  def update_redirect
+    model_path(@model)
+  end
+
+  def destroy_redirect
+    models_path
+  end
+
+  def invalid_redirect
+    models_path
   end
 end
