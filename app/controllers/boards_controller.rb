@@ -132,8 +132,8 @@ class BoardsController < GenericController
     params.fetch(:board, {}).permit(:name, :description, coauthor_ids: [], cameo_ids: [])
   end
 
-  def set_params(new_board)
-    new_board.creator = current_user
+  def set_params
+    @model.creator = current_user
   end
 
   def model_name

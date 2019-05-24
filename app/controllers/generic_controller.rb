@@ -14,22 +14,22 @@ class GenericController < ApplicationController
 
   def new
     @page_title = "New #{model_name}"
-    model = model_class.new
-    set_params(model)
-    set_model(model)
+    @model = model_class.new
+    set_params
+    set_model
   end
 
   def create
-    model = model_class.new(permitted_params)
-    set_params(model)
+    @model = model_class.new(permitted_params)
+    set_params
 
     begin
-      model.save!
+      @model.save!
     rescue ActiveRecord::RecordInvalid => e
       render_errors(@model, action: 'created', now: true, class_name: model_name.capitalize)
       log_error(e) unless @model.errors.present?
       @page_title = "New #{model_name}"
-      set_model(model)
+      set_model
       editor_setup
       render :new
     else
@@ -80,7 +80,7 @@ class GenericController < ApplicationController
       flash[:error] = "#{model_name} could not be found."
       redirect_to invalid_redirect and return
     end
-    set_model(@model)
+    set_model
   end
 
   def require_view_permission
@@ -127,20 +127,20 @@ class GenericController < ApplicationController
     @msp ||= send("#{controller_name}_path")
   end
 
-  def set_model(model)
-    instance_variable_set("@#{controller_name.singularize}", model)
+  def set_model
+    instance_variable_set("@#{controller_name.singularize}", @model)
   end
 
   def editor_setup
     # pass
   end
 
-  def set_params(model)
+  def set_params
     # pass
   end
 
   def create_redirect
-    model_path(model)
+    model_path(@model)
   end
 
   def update_redirect
