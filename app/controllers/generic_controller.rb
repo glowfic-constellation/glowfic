@@ -82,7 +82,7 @@ class GenericController < ApplicationController
   protected
 
   def find_model
-    unless @model = model_class.find_by_id(params[:id])
+    unless (@model = model_class.find_by_id(params[:id]))
       flash[:error] = "#{model_name} could not be found."
       redirect_to models_path and return
     end
