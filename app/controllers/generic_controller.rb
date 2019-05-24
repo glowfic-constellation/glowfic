@@ -1,4 +1,4 @@
-# class must declare model_params to use
+# class must declare permitted_params to use
 # frozen_string_literal: true
 class GenericController < ApplicationController
   before_action :login_required, only: [:new, :create, :edit, :update, :destroy]
@@ -20,7 +20,7 @@ class GenericController < ApplicationController
   end
 
   def create
-    model = model_class.new(model_params)
+    model = model_class.new(permitted_params)
     set_params(model)
 
     begin
@@ -50,7 +50,7 @@ class GenericController < ApplicationController
 
   def update
     begin
-      @model.update!(model_params)
+      @model.update!(permitted_params)
     rescue ActiveRecord::RecordInvalid
       flash.now[:error] = {
         message: "#{model_name} could not be saved because of the following problems:",
