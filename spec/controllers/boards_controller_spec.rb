@@ -180,11 +180,12 @@ RSpec.describe BoardsController do
           cameo_ids: [user3.id]
         }
       }
-      expect(response).to redirect_to(boards_url)
-      expect(flash[:success]).to eq("Continuity created.")
-      expect(Board.count).to eq(1)
 
+      expect(Board.count).to eq(1)
       board = Board.first
+      expect(response).to redirect_to(board_path(board))
+      expect(flash[:success]).to eq("Continuity created.")
+
       expect(board.name).to eq('TestCreateBoard')
       expect(board.creator).to eq(creator)
       expect(board.description).to eq('Test description')
@@ -573,11 +574,11 @@ RSpec.describe BoardsController do
     end
   end
 
-  describe "#set_available_cowriters" do
+  describe "#setup_editor" do
     it "gets the correct set of available cowriters" do
       login
       users = Array.new(3) { create(:user) }
-      controller.send(:set_available_cowriters)
+      controller.send(:setup_editor)
       expect(assigns(:cameos)).to match_array(users)
       expect(assigns(:coauthors)).to match_array(users)
     end
@@ -590,7 +591,7 @@ RSpec.describe BoardsController do
       login_as(board.creator)
       board.reload
       controller.instance_variable_set(:@board, board)
-      controller.send(:set_available_cowriters)
+      controller.send(:setup_editor)
       expect(assigns(:cameos)).to match_array(users + cameos)
       expect(assigns(:coauthors)).to match_array(users + coauthors)
     end
@@ -600,7 +601,7 @@ RSpec.describe BoardsController do
       user2 = create(:user, username: 'user2')
       user1 = create(:user, username: 'user1')
       user3 = create(:user, username: 'user3')
-      controller.send(:set_available_cowriters)
+      controller.send(:setup_editor)
       expect(assigns(:cameos)).to eq([user1, user2, user3])
       expect(assigns(:coauthors)).to eq([user1, user2, user3])
     end
