@@ -22,6 +22,7 @@ class GenericController < ApplicationController
   def create
     @model = model_class.new(permitted_params)
     set_params
+    set_model
 
     begin
       @model.save!
