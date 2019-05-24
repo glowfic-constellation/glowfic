@@ -67,7 +67,7 @@ class GenericController < ApplicationController
     rescue ActiveRecord::RecordNotDestroyed => e
       render_errors(@model, action: 'deleted', class_name: model_name.capitalize)
       log_error(e) unless @model.errors.present?
-      redirect_to model_path(@model)
+      redirect_to destroy_failed_redirect
     else
       flash[:success] = "#{model_name} deleted."
       redirect_to destroy_redirect
@@ -120,13 +120,20 @@ class GenericController < ApplicationController
     @mc ||= model_name.constantize
   end
 
-  def model_path(model)
+  def model_path(model=@model)
     send("#{controller_name.singularize}_path", model)
   end
+  alias_method :create_redirect, :model_path
+  alias_method :update_redirect, :model_path
+  alias_method :destroy_failed_redirect, :model_path
+  alias_method :uneditable_redirect, :model_path
 
   def models_path
     @msp ||= send("#{controller_name}_path")
   end
+  alias_method :destroy_redirect, :models_path
+  alias_method :invalid_redirect, :models_path
+  alias_method :unviewable_redirect, :models_path
 
   def set_model
     instance_variable_set("@#{controller_name.singularize}", @model)
@@ -138,29 +145,5 @@ class GenericController < ApplicationController
 
   def set_params
     # pass
-  end
-
-  def create_redirect
-    model_path(@model)
-  end
-
-  def update_redirect
-    model_path(@model)
-  end
-
-  def destroy_redirect
-    models_path
-  end
-
-  def invalid_redirect
-    models_path
-  end
-
-  def unviewable_redirect
-    models_path
-  end
-
-  def uneditable_redirect
-    model_path(@model)
   end
 end
