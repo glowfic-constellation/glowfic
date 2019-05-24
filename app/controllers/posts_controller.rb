@@ -242,10 +242,8 @@ class PostsController < WritableController
       @search_results = @search_results.where(id: post_ids.uniq)
     end
     if params[:character_id].present?
-      arel = Post.arel_table
       post_ids = Reply.where(character_id: params[:character_id]).select(:post_id).distinct.pluck(:post_id)
-      where = arel[:character_id].eq(params[:character_id]).or(arel[:id].in(post_ids))
-      @search_results = @search_results.where(where)
+      @search_results = @search_results.where(character_id: params[:character_id]).or(@search_results.where(id: post_ids))
     end
     @search_results = posts_from_relation(@search_results).paginate(page: page, per_page: 25)
   end

@@ -44,10 +44,9 @@ class IconsController < UploadingController
   def show
     @page_title = @icon.keyword
     if params[:view] == 'posts'
-      arel = Post.arel_table
       post_ids = Reply.where(icon_id: @icon.id).select(:post_id).distinct.pluck(:post_id)
-      where_calc = arel[:icon_id].eq(@icon.id).or(arel[:id].in(post_ids))
-      @posts = posts_from_relation(Post.where(where_calc).ordered)
+      posts = Post.where(icon_id: @icon.id).or(Post.where(id: post_ids))
+      @posts = posts_from_relation(posts.ordered)
     elsif params[:view] == 'galleries'
       use_javascript('galleries/expander_old')
     else
