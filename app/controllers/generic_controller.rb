@@ -3,7 +3,7 @@
 class GenericController < ApplicationController
   before_action :login_required, only: [:new, :create, :edit, :update, :destroy]
   before_action :find_model, only: [:show, :edit, :update, :destroy]
-  before_action :setup_editor, only: [:new, :edit]
+  before_action :editor_setup, only: [:new, :edit]
   before_action :require_view_permission, only: [:show, :edit, :update, :destroy]
   before_action :require_edit_permission, only: [:edit, :update]
   before_action :require_delete_permission, only: :destroy
@@ -30,7 +30,7 @@ class GenericController < ApplicationController
       log_error(e) unless @model.errors.present?
       @page_title = "New #{model_name}"
       set_model(model)
-      setup_editor
+      editor_setup
       render :new
     else
       flash[:success] = "#{model_name} created."
@@ -131,7 +131,7 @@ class GenericController < ApplicationController
     instance_variable_set("@#{controller_name.singularize}", model)
   end
 
-  def setup_editor
+  def editor_setup
     # pass
   end
 

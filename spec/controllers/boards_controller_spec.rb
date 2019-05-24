@@ -574,11 +574,11 @@ RSpec.describe BoardsController do
     end
   end
 
-  describe "#setup_editor" do
+  describe "#editor_setup" do
     it "gets the correct set of available cowriters" do
       login
       users = Array.new(3) { create(:user) }
-      controller.send(:setup_editor)
+      controller.send(:editor_setup)
       expect(assigns(:cameos)).to match_array(users)
       expect(assigns(:coauthors)).to match_array(users)
     end
@@ -591,7 +591,7 @@ RSpec.describe BoardsController do
       login_as(board.creator)
       board.reload
       controller.instance_variable_set(:@board, board)
-      controller.send(:setup_editor)
+      controller.send(:editor_setup)
       expect(assigns(:cameos)).to match_array(users + cameos)
       expect(assigns(:coauthors)).to match_array(users + coauthors)
     end
@@ -601,7 +601,7 @@ RSpec.describe BoardsController do
       user2 = create(:user, username: 'user2')
       user1 = create(:user, username: 'user1')
       user3 = create(:user, username: 'user3')
-      controller.send(:setup_editor)
+      controller.send(:editor_setup)
       expect(assigns(:cameos)).to eq([user1, user2, user3])
       expect(assigns(:coauthors)).to eq([user1, user2, user3])
     end

@@ -53,7 +53,7 @@ class BoardsController < GenericController
       log_error(e) unless @board.errors.present?
 
       @page_title = 'Edit Continuity: ' + @board.name_was
-      setup_editor
+      editor_setup
       use_javascript('board_sections')
       @board_sections = @board.board_sections.ordered
       render :edit
@@ -97,7 +97,7 @@ class BoardsController < GenericController
 
   private
 
-  def setup_editor
+  def editor_setup
     @coauthors = @cameos = User.active.ordered
     if @board
       @coauthors -= @board.cameos
