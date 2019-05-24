@@ -13,7 +13,7 @@ class GenericController < ApplicationController
   end
 
   def new
-    @page_title = "New #{model_name}"
+    @page_title = "New #{model_name.titlecase}"
     @model = model_class.new
     set_model
     set_params
@@ -29,7 +29,7 @@ class GenericController < ApplicationController
     rescue ActiveRecord::RecordInvalid => e
       render_errors(@model, action: 'created', now: true, class_name: model_name.capitalize)
       log_error(e) unless @model.errors.present?
-      @page_title = "New #{model_name}"
+      @page_title = "New #{model_name.titlecase}"
       set_model
       editor_setup
       render :new
@@ -44,7 +44,7 @@ class GenericController < ApplicationController
   end
 
   def edit
-    @page_title = "Edit #{model_name}: #{@model.name}"
+    @page_title = "Edit #{model_name.titlecase}: #{@model.name}"
   end
 
   def update
@@ -53,7 +53,7 @@ class GenericController < ApplicationController
     rescue ActiveRecord::RecordInvalid => e
       render_errors(@model, action: 'updated', now: true, class_name: model_name.capitalize)
       log_error(e) unless @model.errors.present?
-      @page_title = "Edit #{model_name}: #{@model.name}"
+      @page_title = "Edit #{model_name.titlecase}: #{@model.name}"
       render :edit
     else
       flash[:success] = "#{model_name} updated."
