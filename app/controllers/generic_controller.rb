@@ -15,14 +15,14 @@ class GenericController < ApplicationController
   def new
     @page_title = "New #{model_name}"
     @model = model_class.new
-    set_params
     set_model
+    set_params
   end
 
   def create
     @model = model_class.new(permitted_params)
-    set_params
     set_model
+    set_params
 
     begin
       @model.save!
