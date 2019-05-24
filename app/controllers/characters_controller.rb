@@ -1,12 +1,10 @@
 # frozen_string_literal: true
-class CharactersController < ApplicationController
+class CharactersController < GenericController
   include Taggable
 
-  before_action :login_required, except: [:index, :show, :facecasts, :search]
-  before_action :find_character, only: [:show, :edit, :update, :duplicate, :destroy, :replace, :do_replace]
-  before_action :find_group, only: :index
-  before_action :require_own_character, only: [:edit, :update, :duplicate, :replace, :do_replace]
-  before_action :build_editor, only: [:new, :edit]
+  before_action(only: [:duplicate, :replace, :do_replace]) { login_required }
+  before_action(only: [:duplicate, :replace, :do_replace]) { find_model }
+  before_action(only: [:duplicate, :replace, :do_replace]) { require_edit_permission }
 
   def index
     (return if login_required) unless params[:user_id].present?
@@ -37,7 +35,7 @@ class CharactersController < ApplicationController
 
   def create
     @character = Character.new(user: current_user)
-    @character.assign_attributes(character_params)
+    @character.assign_attributes(permitted_params)
     @character.settings = process_tags(Setting, :character, :setting_ids)
     @character.gallery_groups = process_tags(GalleryGroup, :character, :gallery_group_ids)
     build_template
@@ -49,7 +47,7 @@ class CharactersController < ApplicationController
       log_error(e) unless @character.errors.present?
 
       @page_title = "New Character"
-      build_editor
+      editor_setup
       render :new
     else
       flash[:success] = "Character created."
@@ -58,25 +56,25 @@ class CharactersController < ApplicationController
   end
 
   def show
-    @page_title = @character.name
+    super
     @posts = posts_from_relation(@character.recent_posts)
     @meta_og = og_data
     use_javascript('characters/show') if @character.user_id == current_user.try(:id)
   end
 
   def edit
-    @page_title = 'Edit Character: ' + @character.name
+    super
   end
 
   def update
     begin
       Character.transaction do
-        @character.assign_attributes(character_params)
+        @character.assign_attributes(permitted_params)
         build_template
 
         if current_user.id != @character.user_id && @character.audit_comment.blank?
           flash[:error] = "You must provide a reason for your moderator edit."
-          build_editor
+          editor_setup
           render :edit and return
         end
 
@@ -89,7 +87,7 @@ class CharactersController < ApplicationController
       log_error(e) unless @character.errors.present?
 
       @page_title = "Edit Character: " + @character.name
-      build_editor
+      editor_setup
       render :edit
     else
       flash[:success] = "Character updated."
@@ -119,24 +117,6 @@ class CharactersController < ApplicationController
     else
       flash[:success] = "Character duplicated. You are now editing the new character."
       redirect_to edit_character_path(dupe)
-    end
-  end
-
-  def destroy
-    unless @character.deletable_by?(current_user)
-      flash[:error] = "You do not have permission to modify this character."
-      redirect_to user_characters_path(current_user) and return
-    end
-
-    begin
-      @character.destroy!
-    rescue ActiveRecord::RecordNotDestroyed => e
-      render_errors(@character, action: 'deleted')
-      log_error(e) unless @character.errors.present?
-      redirect_to character_path(@character)
-    else
-      flash[:success] = "Character deleted."
-      redirect_to user_characters_path(current_user)
     end
   end
 
@@ -303,30 +283,12 @@ class CharactersController < ApplicationController
 
   private
 
-  def find_character
-    unless (@character = Character.find_by_id(params[:id]))
-      flash[:error] = "Character could not be found."
-      if logged_in?
-        redirect_to user_characters_path(current_user)
-      else
-        redirect_to root_path
-      end
-    end
-  end
-
   def find_group
     return unless params[:group_id].present?
     @group = CharacterGroup.find_by_id(params[:group_id])
   end
 
-  def require_own_character
-    unless @character.editable_by?(current_user)
-      flash[:error] = "You do not have permission to modify this character."
-      redirect_to user_characters_path(current_user) and return
-    end
-  end
-
-  def build_editor
+  def editor_setup
     faked = Struct.new(:name, :id)
     user = @character.try(:user) || current_user
     @templates = user.templates.ordered
@@ -387,7 +349,7 @@ class CharactersController < ApplicationController
     data
   end
 
-  def character_params
+  def permitted_params
     permitted = [
       :name,
       :template_name,
@@ -416,4 +378,16 @@ class CharactersController < ApplicationController
     end
   end
   helper_method :character_split
+
+  def destroy_redirect
+    user_characters_path(@character.user)
+  end
+
+  def invalid_redirect
+    logged_in? ? user_characters_path(current_user) : root_path
+  end
+
+  def uneditable_redirect
+    user_characters_path(current_user)
+  end
 end

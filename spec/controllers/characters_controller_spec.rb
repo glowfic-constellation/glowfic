@@ -1418,7 +1418,7 @@ RSpec.describe CharactersController do
     end
   end
 
-  describe "#build_editor" do
+  describe "#editor_setup" do
     it "orders characters correctly" do
       user = create(:user)
       login_as(user)
@@ -1426,7 +1426,7 @@ RSpec.describe CharactersController do
       template2 = create(:template, user: user, name: "b")
       template1 = create(:template, user: user, name: "a")
       template3 = create(:template, user: user, name: "c")
-      controller.send(:build_editor)
+      controller.send(:editor_setup)
       expect(assigns(:templates)).to eq([template1, template2, template3, template4])
     end
 
