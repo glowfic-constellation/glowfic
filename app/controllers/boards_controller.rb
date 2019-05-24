@@ -111,13 +111,6 @@ class BoardsController < GenericController
     use_javascript('boards/editor')
   end
 
-  def require_permission
-    unless @board.editable_by?(current_user)
-      flash[:error] = "You do not have permission to modify this continuity."
-      redirect_to board_path(@board) and return
-    end
-  end
-
   def og_data
     metadata = []
     metadata << @board.writers.where.not(deleted: true).ordered.pluck(:username).join(', ') if @board.authors_locked?
