@@ -181,11 +181,10 @@ RSpec.describe BoardsController do
         }
       }
 
-      expect(Board.count).to eq(1)
-      board = Board.first
-      expect(response).to redirect_to(board_path(board))
+      expect(response).to redirect_to(board_path(assigns(:board)))
       expect(flash[:success]).to eq("Continuity created.")
 
+      board = assigns(:board)
       expect(board.name).to eq('TestCreateBoard')
       expect(board.creator).to eq(creator)
       expect(board.description).to eq('Test description')
