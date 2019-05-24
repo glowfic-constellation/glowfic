@@ -1,4 +1,4 @@
-class BlocksController < CrudController
+class BlocksController < GenericController
   def index
     @page_title = "Blocked Users"
     @blocks = Block.where(blocking_user: current_user)

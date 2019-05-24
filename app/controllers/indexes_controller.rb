@@ -1,5 +1,5 @@
 # frozen_string_literal: true
-class IndexesController < CrudController
+class IndexesController < GenericController
   def index
     super
     @indexes = Index.order('id asc').paginate(per_page: 25, page: page)

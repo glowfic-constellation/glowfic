@@ -1,5 +1,5 @@
 # frozen_string_literal: true
-class BoardSectionsController < CrudController
+class BoardSectionsController < GenericController
 
   def create
     @board_section = BoardSection.new(section_params)

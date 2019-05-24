@@ -1,6 +1,6 @@
 # class must declare model_params to use
 # frozen_string_literal: true
-class CrudController < ApplicationController
+class GenericController < ApplicationController
   before_action :login_required, only: [:new, :create, :edit, :update, :destroy]
   before_action :find_model, only: [:show, :edit, :update, :destroy]
   before_action :setup_editor, only: [:new, :edit]

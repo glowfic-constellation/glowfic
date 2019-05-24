@@ -1,4 +1,4 @@
-class AliasesController < CrudController # TODO create and destroy go to edit_character_path(@character)
+class AliasesController < GenericController # TODO create and destroy go to edit_character_path(@character)
   before_action :find_character
 
   private
