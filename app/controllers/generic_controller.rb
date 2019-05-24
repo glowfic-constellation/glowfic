@@ -87,7 +87,7 @@ class GenericController < ApplicationController
     return unless model_class.method_defined? :visible_to?
     unless @model.visible_to?(current_user)
       flash[:error] = "You do not have permission to view this #{model_name.downcase}."
-      redirect_to models_path
+      redirect_to unviewable_redirect
     end
   end
 
@@ -95,7 +95,7 @@ class GenericController < ApplicationController
     return unless model_class.method_defined? :editable_by?
     unless @model.editable_by?(current_user)
       flash[:error] = "You do not have permission to modify this #{model_name.downcase}."
-      redirect_to model_path(@model) # TODO not if they don't have view permission either
+      redirect_to uneditable_redirect # TODO not if they don't have view permission either
     end
   end
 
@@ -107,7 +107,7 @@ class GenericController < ApplicationController
 
     unless @model.deletable_by?(current_user)
       flash[:error] = "You do not have permission to modify this #{model_name.downcase}."
-      redirect_to model_path(@model) # TODO not if they don't have view permission either
+      redirect_to uneditable_redirect # TODO not if they don't have view permission either
     end
   end
 
@@ -153,5 +153,13 @@ class GenericController < ApplicationController
 
   def invalid_redirect
     models_path
+  end
+
+  def unviewable_redirect
+    models_path
+  end
+
+  def uneditable_redirect
+    model_path(@model)
   end
 end
