@@ -25,17 +25,15 @@ class GenericController < ApplicationController
 
     begin
       model.save!
-    rescue ActiveRecord::RecordInvalid
-      flash.now[:error] = {
-        message: "#{model_name} could not be created.",
-        array: model.errors.full_messages
-      }
+    rescue ActiveRecord::RecordInvalid => e
+      render_errors(@model, action: 'created', now: true, class_name: model_name.capitalize)
+      log_error(e) unless @model.errors.present?
       @page_title = "New #{model_name}"
       set_model(model)
       setup_editor
       render :new
     else
-      flash[:success] = "#{model_name} created successfully."
+      flash[:success] = "#{model_name} created."
       redirect_to model_path(model)
     end
   end
@@ -51,15 +49,13 @@ class GenericController < ApplicationController
   def update
     begin
       @model.update!(permitted_params)
-    rescue ActiveRecord::RecordInvalid
-      flash.now[:error] = {
-        message: "#{model_name} could not be saved because of the following problems:",
-        array: @model.errors.full_messages
-      }
+    rescue ActiveRecord::RecordInvalid => e
+      render_errors(@model, action: 'updated', now: true, class_name: model_name.capitalize)
+      log_error(e) unless @model.errors.present?
       @page_title = "Edit #{model_name}: #{@model.name}"
       render :edit
     else
-      flash[:success] = "#{model_name} saved!"
+      flash[:success] = "#{model_name} updated."
       redirect_to model_path(@model)
     end
   end
@@ -67,11 +63,9 @@ class GenericController < ApplicationController
   def destroy
     begin
       @model.destroy!
-    rescue ActiveRecord::RecordNotDestroyed
-      flash[:error] = {
-        message: "#{model_name} could not be deleted.",
-        array: @model.errors.full_messages
-      }
+    rescue ActiveRecord::RecordNotDestroyed => e
+      render_errors(@model, action: 'deleted', class_name: model_name.capitalize)
+      log_error(e) unless @model.errors.present?
       redirect_to model_path(@model)
     else
       flash[:success] = "#{model_name} deleted."
@@ -100,7 +94,7 @@ class GenericController < ApplicationController
   def require_edit_permission
     return unless model_class.method_defined? :editable_by?
     unless @model.editable_by?(current_user)
-      flash[:error] = "You do not have permission to edit this #{controller_name.singularize}."
+      flash[:error] = "You do not have permission to modify this #{controller_name.singularize}."
       redirect_to model_path(@model) # TODO not if they don't have view permission either
     end
   end
@@ -112,7 +106,7 @@ class GenericController < ApplicationController
     end
 
     unless @model.deletable_by?(current_user)
-      flash[:error] = "You do not have permission to edit this #{controller_name.singularize}."
+      flash[:error] = "You do not have permission to modify this #{controller_name.singularize}."
       redirect_to model_path(@model) # TODO not if they don't have view permission either
     end
   end
