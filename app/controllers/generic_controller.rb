@@ -27,14 +27,14 @@ class GenericController < ApplicationController
     begin
       @model.save!
     rescue ActiveRecord::RecordInvalid => e
-      render_errors(@model, action: 'created', now: true, class_name: model_name.capitalize)
+      render_errors(@model, action: 'created', now: true, class_name: model_name.capitalize, msg: @cfm)
       log_error(e) unless @model.errors.present?
       @page_title = "New #{model_name.titlecase}"
       set_model
       editor_setup
       render :new
     else
-      flash[:success] = "#{model_name} created."
+      flash[:success] = @csm || "#{model_name} created successfully."
       redirect_to create_redirect
     end
   end
@@ -51,12 +51,12 @@ class GenericController < ApplicationController
     begin
       @model.update!(permitted_params)
     rescue ActiveRecord::RecordInvalid => e
-      render_errors(@model, action: 'updated', now: true, class_name: model_name.capitalize)
+      render_errors(@model, action: 'updated', now: true, class_name: model_name.capitalize, msg: @ufm)
       log_error(e) unless @model.errors.present?
       @page_title = "Edit #{model_name.titlecase}: #{@model.name}"
       render :edit
     else
-      flash[:success] = "#{model_name} updated."
+      flash[:success] = @usm || "#{model_name} updated."
       redirect_to update_redirect
     end
   end
@@ -65,11 +65,11 @@ class GenericController < ApplicationController
     begin
       @model.destroy!
     rescue ActiveRecord::RecordNotDestroyed => e
-      render_errors(@model, action: 'deleted', class_name: model_name.capitalize)
+      render_errors(@model, action: 'deleted', class_name: model_name.capitalize, msg: @dfm)
       log_error(e) unless @model.errors.present?
       redirect_to destroy_failed_redirect
     else
-      flash[:success] = "#{model_name} deleted."
+      flash[:success] = @dsm || "#{model_name} deleted."
       redirect_to destroy_redirect
     end
   end
