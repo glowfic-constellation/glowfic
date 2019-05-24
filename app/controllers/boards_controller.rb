@@ -133,7 +133,7 @@ class BoardsController < GenericController
   end
 
   def set_params
-    @model.creator = current_user
+    @board.creator = current_user
   end
 
   def model_name
