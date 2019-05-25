@@ -15,12 +15,23 @@ class NewsController < GenericController
 
   def create
     @page_title = 'Create News Post'
+    @create_redirect = news_index_path
     super
   end
 
   def show
     @meta_og = og_data
     redirect_to paged_news_url(@news)
+  end
+
+  def update
+    @update_redirect = paged_news_url(@news)
+    super
+  end
+
+  def destroy
+    @destroy_redirect = @destroy_failure_redirect = news_index_path
+    super
   end
 
   private
@@ -45,9 +56,6 @@ class NewsController < GenericController
   def models_path
     news_index_path
   end
-  alias_method :create_redirect, :models_path
-  alias_method :destroy_redirect, :models_path
-  alias_method :destroy_failed_redirect, :models_path
   alias_method :invalid_redirect, :models_path
   alias_method :uneditable_redirect, :models_path
 
