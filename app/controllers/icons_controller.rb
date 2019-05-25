@@ -3,7 +3,6 @@ class IconsController < UploadingController
   before_action(only: [:replace, :do_replace, :avatar, :delete_multiple]) { login_required }
   before_action(only: [:replace, :do_replace, :avatar]) { find_model }
   before_action(only: [:replace, :do_replace, :avatar]) { require_edit_permission }
-  before_action :set_s3_url, only: :edit
 
   def delete_multiple
     gallery = Gallery.find_by_id(params[:gallery_id])
@@ -60,26 +59,12 @@ class IconsController < UploadingController
 
   def edit
     @page_title = 'Edit Icon: ' + @icon.keyword
-    use_javascript('galleries/update_existing')
-    use_javascript('galleries/uploader')
+    super
   end
 
   def update
-    begin
-      @icon.update!(permitted_params)
-    rescue ActiveRecord::RecordInvalid => e
-      render_errors(@icon, action: 'updated', now: true)
-      log_error(e) unless @icon.errors.present?
-
-      @page_title = 'Edit icon: ' + @icon.keyword_was
-      use_javascript('galleries/update_existing')
-      use_javascript('galleries/uploader')
-      set_s3_url
-      render :edit
-    else
-      flash[:success] = "Icon updated."
-      redirect_to icon_path(@icon)
-    end
+    @page_title = 'Edit icon: ' + @icon.keyword
+    super
   end
 
   def replace
@@ -137,6 +122,14 @@ class IconsController < UploadingController
   end
 
   private
+
+  def editor_setup
+    if @icon.present?
+      use_javascript('galleries/update_existing')
+      use_javascript('galleries/uploader')
+      set_s3_url
+    end
+  end
 
   def require_edit_permission
     if @icon.user_id != current_user.id
