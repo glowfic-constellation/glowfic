@@ -225,6 +225,11 @@ class PostsController < WritableController
     end
   end
 
+  def destroy
+    @destroy_redirect = boards_path
+    super
+  end
+
   def search
     @page_title = 'Search Posts'
     use_javascript('posts/search')
@@ -432,5 +437,4 @@ class PostsController < WritableController
     boards_path
   end
   alias_method :unviewable_redirect, :invalid_redirect
-  alias_method :destroy_redirect, :invalid_redirect
 end
