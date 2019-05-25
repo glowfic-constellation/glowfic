@@ -121,7 +121,8 @@ class IconsController < UploadingController
   end
 
   def destroy
-    @gallery = @icon.galleries.first if @icon.galleries.count == 1
+    gallery = @icon.galleries.first if @icon.galleries.count == 1
+    @destroy_redirect = gallery ? gallery_path(gallery) : user_galleries_path(current_user)
     super
   end
 
@@ -182,9 +183,5 @@ class IconsController < UploadingController
 
   def invalid_redirect
     logged_in? ? user_galleries_path(current_user) : root_path
-  end
-
-  def destroy_redirect
-    @gallery ? gallery_path(@gallery) : user_galleries_path(current_user)
   end
 end
