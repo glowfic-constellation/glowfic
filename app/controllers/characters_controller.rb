@@ -91,6 +91,11 @@ class CharactersController < GenericController
     end
   end
 
+  def destroy
+    @destroy_redirect = user_characters_path(@character.user)
+    super
+  end
+
   def duplicate
     dupe = @character.dup
 
@@ -374,10 +379,6 @@ class CharactersController < GenericController
     end
   end
   helper_method :character_split
-
-  def destroy_redirect
-    user_characters_path(@character.user)
-  end
 
   def invalid_redirect
     logged_in? ? user_characters_path(current_user) : root_path
