@@ -1,8 +1,5 @@
-class BlocksController < ApplicationController
-  before_action :login_required
-  before_action :find_block, only: [:edit, :update, :destroy]
-  before_action :require_permission, only: [:edit, :update, :destroy]
-  before_action :editor_setup, only: [:new, :edit]
+class BlocksController < GenericController
+  before_action(only: [:index]) { login_required }
 
   def index
     @page_title = "Blocked Users"
@@ -11,29 +8,15 @@ class BlocksController < ApplicationController
 
   def new
     @page_title = "Block User"
-    @block = Block.new
-    @block.blocking_user = current_user
     @users = []
+    super
   end
 
   def create
-    @block = Block.new(permitted_params)
-    @block.blocking_user = current_user
-    @block.blocked_user_id = params.fetch(:block, {})[:blocked_user_id]
-
-    begin
-      @block.save!
-    rescue ActiveRecord::RecordInvalid => e
-      render_errors(@block, action: 'create', now: true, msg: 'User could not be blocked')
-      log_error(e) unless @block.errors.present?
-      editor_setup
-      @users = [@block.blocked_user].compact
-      @page_title = 'Block User'
-      render :new
-    else
-      flash[:success] = "User blocked."
-      redirect_to blocks_path
-    end
+    @csm = "User blocked."
+    @cfm = "User could not be blocked"
+    @users = [User.find_by(id: params.fetch(:block, {})[:blocked_user_id])].compact
+    super
   end
 
   def edit
@@ -41,31 +24,14 @@ class BlocksController < ApplicationController
   end
 
   def update
-    begin
-      @block.update!(permitted_params)
-    rescue ActiveRecord::RecordInvalid => e
-      render_errors(@block, action: 'updated', now: true)
-      log_error(e) unless @block.errors.present?
-
-      editor_setup
-      @page_title = 'Edit Block: ' + @block.blocked_user.username
-      render :edit
-    else
-      flash[:success] = "Block updated."
-      redirect_to blocks_path
-    end
+    @page_title = 'Edit Block: ' + @block.blocked_user.username
+    super
   end
 
   def destroy
-    begin
-      @block.destroy!
-    rescue ActiveRecord::RecordNotDestroyed => e
-      render_errors(@block, action: 'delete', msg: 'User could not be unblocked')
-      log_error(e) unless @block.errors.present?
-    else
-      flash[:success] = "User unblocked."
-    end
-    redirect_to blocks_path
+    @dsm = "User unblocked."
+    @dfm = "User could not be unblocked"
+    super
   end
 
   private
@@ -74,18 +40,16 @@ class BlocksController < ApplicationController
     params.fetch(:block, {}).permit(:block_interactions, :hide_me, :hide_them)
   end
 
-  def require_permission
+  def require_edit_permission
     unless @block.editable_by?(current_user)
       flash[:error] = "Block could not be found." # Return the same error message as if it didn't exist
       redirect_to blocks_path and return
     end
   end
 
-  def find_block
-    unless (@block = Block.find_by(id: params[:id]))
-      flash[:error] = "Block could not be found."
-      redirect_to blocks_path and return
-    end
+  def set_params
+    @block.blocking_user = current_user
+    @block.blocked_user_id = params.fetch(:block, {})[:blocked_user_id]
   end
 
   def editor_setup
@@ -96,4 +60,11 @@ class BlocksController < ApplicationController
       "Everything" => Block::ALL,
     }
   end
+
+  def create_redirect
+    blocks_path
+  end
+  alias_method :update_redirect, :create_redirect
+  alias_method :destroy_redirect, :create_redirect
+  alias_method :destroy_failed_redirect, :create_redirect
 end
