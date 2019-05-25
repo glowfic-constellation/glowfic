@@ -53,28 +53,6 @@ class TagsController < GenericController
     end
   end
 
-  def destroy
-    unless @tag.deletable_by?(current_user)
-      flash[:error] = "You do not have permission to modify this tag."
-      redirect_to tag_path(@tag) and return
-    end
-
-    begin
-      @tag.destroy!
-    rescue ActiveRecord::RecordNotDestroyed => e
-      render_errors(@tag, action: 'deleted')
-      log_error(e) unless @tag.errors.present?
-      redirect_to tag_path(@tag)
-    else
-      flash[:success] = "Tag deleted."
-
-      url_params = {}
-      url_params[:page] = page if params[:page].present?
-      url_params[:view] = params[:view] if params[:view].present?
-      redirect_to tags_path(url_params)
-    end
-  end
-
   private
 
   def editor_setup
@@ -107,5 +85,12 @@ class TagsController < GenericController
     permitted = [:type, :description, :owned]
     permitted.insert(0, :name, :user_id) if current_user.admin? || @tag.user == current_user
     params.fetch(:tag, {}).permit(permitted)
+  end
+
+  def destroy_redirect
+    url_params = {}
+    url_params[:page] = page if params[:page].present?
+    url_params[:view] = params[:view] if params[:view].present?
+    tags_path(url_params)
   end
 end
