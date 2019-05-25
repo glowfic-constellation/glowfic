@@ -3,8 +3,9 @@ class BoardSectionsController < GenericController
   before_action(only: [:new, :create]) { require_edit_permission }
 
   def create
-    board_name = Board.find_by(id: permitted_params[:board_id]).try(:name)
-    @csm = "New section, #{permitted_params[:name]}, created for #{board_name}."
+    board = Board.find_by(id: permitted_params[:board_id])
+    @csm = "New section, #{permitted_params[:name]}, has successfully been created for #{board.try(:name)}."
+    @create_redirect = edit_board_path(board) if board.present?
     super
   end
 
@@ -13,6 +14,12 @@ class BoardSectionsController < GenericController
     @posts = posts_from_relation(@board_section.posts.ordered_in_section)
     @meta_og = og_data
   end
+
+  def destroy
+    @destroy_redirect = edit_board_path(@board_section.board)
+    super
+  end
+
   private
 
   def permitted_params
@@ -61,15 +68,6 @@ class BoardSectionsController < GenericController
 
   def model_class
     BoardSection
-  end
-
-  def create_redirect
-    edit_board_path(@board_section.board)
-  end
-  alias_method :destroy_redirect, :create_redirect
-
-  def update_redirect
-    board_section_path(@board_section)
   end
 
   def invalid_redirect
