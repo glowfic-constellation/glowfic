@@ -35,7 +35,7 @@ class GenericController < ApplicationController
       render :new
     else
       flash[:success] = @csm || "#{model_name} created successfully."
-      redirect_to create_redirect
+      redirect_to @create_redirect || model_path(@model)
     end
   end
 
@@ -57,7 +57,7 @@ class GenericController < ApplicationController
       render :edit
     else
       flash[:success] = @usm || "#{model_name} updated."
-      redirect_to update_redirect
+      redirect_to @update_redirect || model_path(@model)
     end
   end
 
@@ -67,10 +67,10 @@ class GenericController < ApplicationController
     rescue ActiveRecord::RecordNotDestroyed => e
       render_errors(@model, action: 'deleted', class_name: model_name.capitalize, msg: @dfm)
       log_error(e) unless @model.errors.present?
-      redirect_to destroy_failed_redirect
+      redirect_to @destroy_failure_redirect || model_path(@model)
     else
       flash[:success] = @dsm || "#{model_name} deleted."
-      redirect_to destroy_redirect
+      redirect_to @destroy_redirect || models_path
     end
   end
 
@@ -123,15 +123,11 @@ class GenericController < ApplicationController
   def model_path(model=@model)
     send("#{controller_name.singularize}_path", model)
   end
-  alias_method :create_redirect, :model_path
-  alias_method :update_redirect, :model_path
-  alias_method :destroy_failed_redirect, :model_path
   alias_method :uneditable_redirect, :model_path
 
   def models_path
     @msp ||= send("#{controller_name}_path")
   end
-  alias_method :destroy_redirect, :models_path
   alias_method :invalid_redirect, :models_path
   alias_method :unviewable_redirect, :models_path
 
