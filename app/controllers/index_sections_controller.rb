@@ -9,6 +9,17 @@ class IndexSectionsController < GenericController
   def create
     section_name = params[:index_section].fetch(:name, nil)
     @csm = "New section, #{section_name}, created for #{@index.name}."
+    @create_redirect = index_path(@index)
+    super
+  end
+
+  def update
+    @update_redirect = index_path(@section.index)
+    super
+  end
+
+  def destroy
+    @destroy_redirect = @destroy_failure_redirect = index_path(@section.index)
     super
   end
 
@@ -50,13 +61,6 @@ class IndexSectionsController < GenericController
   def model_class
     IndexSection
   end
-
-  def create_redirect
-    index_path(@section.index)
-  end
-  alias_method :update_redirect, :create_redirect
-  alias_method :destroy_redirect, :create_redirect
-  alias_method :destroy_failed_redirect, :create_redirect
 
   def models_path
     indexes_path
