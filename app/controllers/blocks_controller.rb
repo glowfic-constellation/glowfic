@@ -16,6 +16,7 @@ class BlocksController < GenericController
     @csm = "User blocked."
     @cfm = "User could not be blocked"
     @users = [User.find_by(id: params.fetch(:block, {})[:blocked_user_id])].compact
+    @create_redirect = blocks_path
     super
   end
 
@@ -25,12 +26,14 @@ class BlocksController < GenericController
 
   def update
     @page_title = 'Edit Block: ' + @block.blocked_user.username
+    @update_redirect = blocks_path
     super
   end
 
   def destroy
     @dsm = "User unblocked."
     @dfm = "User could not be unblocked"
+    @destroy_failure_redirect = blocks_path
     super
   end
 
@@ -60,11 +63,4 @@ class BlocksController < GenericController
       "Everything" => Block::ALL,
     }
   end
-
-  def create_redirect
-    blocks_path
-  end
-  alias_method :update_redirect, :create_redirect
-  alias_method :destroy_redirect, :create_redirect
-  alias_method :destroy_failed_redirect, :create_redirect
 end
