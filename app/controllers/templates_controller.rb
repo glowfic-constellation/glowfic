@@ -10,6 +10,11 @@ class TemplatesController < GenericController
     @meta_og = og_data
   end
 
+  def destroy
+    @destroy_redirect = user_characters_path(current_user)
+    super
+  end
+
   def search
   end
 
@@ -54,9 +59,5 @@ class TemplatesController < GenericController
 
   def invalid_redirect
     logged_in? ? user_characters_path(current_user) : root_path
-  end
-
-  def destroy_redirect
-    user_characters_path(current_user)
   end
 end
