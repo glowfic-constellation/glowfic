@@ -14,11 +14,6 @@ class IndexPostsController < GenericController
     super
   end
 
-  def update
-    @update_redirect = index_path(@index_post.index)
-    super
-  end
-
   def edit
     @page_title = "Edit Post in Index"
   end
