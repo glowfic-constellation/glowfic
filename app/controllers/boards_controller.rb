@@ -41,12 +41,10 @@ class BoardsController < GenericController
   def edit
     super
     use_javascript('boards/edit')
-    @board_sections = @board.board_sections.ordered
     @unsectioned_posts = @board.posts.where(section_id: nil).ordered_in_section if @board.ordered?
   end
 
   def update
-    @board_sections = @board.board_sections.ordered
     super
   end
 
@@ -91,6 +89,7 @@ class BoardsController < GenericController
       @cameos -= @board.writers
       @coauthors -= [@board.creator]
       @cameos -= [@board.creator]
+      @board_sections = @board.board_sections.ordered
     else
       @coauthors -= [current_user]
       @cameos -= [current_user]
