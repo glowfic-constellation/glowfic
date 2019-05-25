@@ -2,10 +2,7 @@
 require 'will_paginate/array'
 
 class RepliesController < WritableController
-  before_action :login_required, except: [:search, :show, :history]
-  before_action :find_reply, only: [:show, :history, :edit, :update, :destroy]
-  before_action :editor_setup, only: [:edit]
-  before_action :require_permission, only: [:edit, :update]
+  before_action(only: [:history]) { find_model }
 
   def search
     @page_title = 'Search Replies'
@@ -102,7 +99,7 @@ class RepliesController < WritableController
       preview(ReplyDraft.reply_from_draft(draft)) and return
     end
 
-    reply = Reply.new(reply_params)
+    reply = Reply.new(permitted_params)
     reply.user = current_user
 
     if reply.post.present?
@@ -161,7 +158,7 @@ class RepliesController < WritableController
   end
 
   def update
-    @reply.assign_attributes(reply_params)
+    @reply.assign_attributes(permitted_params)
     preview(@reply) and return if params[:button_preview]
 
     if current_user.id != @reply.user_id && @reply.audit_comment.blank?
@@ -185,11 +182,6 @@ class RepliesController < WritableController
   end
 
   def destroy
-    unless @reply.deletable_by?(current_user)
-      flash[:error] = "You do not have permission to modify this reply."
-      redirect_to post_path(@reply.post) and return
-    end
-
     previous_reply = @reply.send(:previous_reply)
     to_page = previous_reply.try(:post_page, per_page) || 1
 
@@ -243,10 +235,8 @@ class RepliesController < WritableController
 
   private
 
-  def find_reply
-    @reply = Reply.find_by_id(params[:id])
-
-    unless @reply
+  def find_model
+    unless (@reply = Reply.find_by_id(params[:id]))
       flash[:error] = "Post could not be found."
       redirect_to boards_path and return
     end
@@ -257,14 +247,9 @@ class RepliesController < WritableController
       redirect_to boards_path and return
     end
 
-    @page_title = @post.subject
-  end
+    @model = @reply
 
-  def require_permission
-    unless @reply.editable_by?(current_user)
-      flash[:error] = "You do not have permission to modify this reply."
-      redirect_to post_path(@reply.post)
-    end
+    @page_title = @post.subject
   end
 
   def preview(written)
@@ -280,9 +265,9 @@ class RepliesController < WritableController
 
   def make_draft(show_message=true)
     if (draft = ReplyDraft.draft_for(params[:reply][:post_id], current_user.id))
-      draft.assign_attributes(reply_params)
+      draft.assign_attributes(permitted_params)
     else
-      draft = ReplyDraft.new(reply_params)
+      draft = ReplyDraft.new(permitted_params)
       draft.user = current_user
     end
 
@@ -295,5 +280,9 @@ class RepliesController < WritableController
       flash[:success] = "Draft saved." if show_message
     end
     draft
+  end
+
+  def uneditable_redirect
+    post_path(@reply.post)
   end
 end

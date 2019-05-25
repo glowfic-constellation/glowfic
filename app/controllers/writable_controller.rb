@@ -1,5 +1,5 @@
 # frozen_string_literal: true
-class WritableController < ApplicationController
+class WritableController < GenericController
   protected
 
   def build_template_groups(user=nil)
@@ -165,7 +165,7 @@ class WritableController < ApplicationController
     }
   end
 
-  def reply_params(param_hash=nil)
+  def permitted_params(param_hash=nil)
     (param_hash || params).fetch(:reply, {}).permit(
       :post_id,
       :content,
