@@ -433,8 +433,4 @@ class PostsController < WritableController
   end
   alias_method :unviewable_redirect, :invalid_redirect
   alias_method :destroy_redirect, :invalid_redirect
-
-  def update_redirect
-    unread_posts_path
-  end
 end
