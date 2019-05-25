@@ -10,11 +10,13 @@ class AliasesController < GenericController
 
   def create
     @page_title = "New Alias: " + @character.name
+    @create_redirect = edit_character_path(@character)
     super
   end
 
   def destroy
     @dsm = "Alias removed."
+    @destroy_redirect = @destroy_failure_redirect = edit_character_path(@character)
     super
   end
 
@@ -60,10 +62,4 @@ class AliasesController < GenericController
   def model_class
     CharacterAlias
   end
-
-  def destroy_redirect
-    edit_character_path(@character)
-  end
-  alias_method :create_redirect, :destroy_redirect
-  alias_method :destroy_failed_redirect, :destroy_redirect
 end
