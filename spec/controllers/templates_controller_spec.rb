@@ -39,12 +39,12 @@ RSpec.describe TemplatesController do
       char = create(:character)
       login_as(char.user)
       post :create, params: { template: {name: 'testtest', description: 'test desc', character_ids: [char.id]} }
-      created = Template.last
-      expect(response).to redirect_to(template_url(created))
+      template = assigns(:template)
+      expect(response).to redirect_to(template_url(template))
       expect(flash[:success]).to eq("Template created.")
-      expect(created.name).to eq('testtest')
-      expect(created.description).to eq('test desc')
-      expect(created.characters).to match_array([char])
+      expect(template.name).to eq('testtest')
+      expect(template.description).to eq('test desc')
+      expect(template.characters).to match_array([char])
     end
   end
 
