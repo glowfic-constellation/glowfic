@@ -62,10 +62,6 @@ class CharactersController < GenericController
     use_javascript('characters/show') if @character.user_id == current_user.try(:id)
   end
 
-  def edit
-    super
-  end
-
   def update
     begin
       Character.transaction do
