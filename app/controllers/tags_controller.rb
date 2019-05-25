@@ -53,6 +53,14 @@ class TagsController < GenericController
     end
   end
 
+  def destroy
+    url_params = {}
+    url_params[:page] = page if params[:page].present?
+    url_params[:view] = params[:view] if params[:view].present?
+    @destroy_redirect = tags_path(url_params)
+    super
+  end
+
   private
 
   def editor_setup
@@ -85,12 +93,5 @@ class TagsController < GenericController
     permitted = [:type, :description, :owned]
     permitted.insert(0, :name, :user_id) if current_user.admin? || @tag.user == current_user
     params.fetch(:tag, {}).permit(permitted)
-  end
-
-  def destroy_redirect
-    url_params = {}
-    url_params[:page] = page if params[:page].present?
-    url_params[:view] = params[:view] if params[:view].present?
-    tags_path(url_params)
   end
 end
