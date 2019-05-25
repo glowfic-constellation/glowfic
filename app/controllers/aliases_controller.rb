@@ -1,42 +1,21 @@
 # frozen_string_literal: true
-class AliasesController < ApplicationController
-  before_action :login_required
-  before_action :find_character
-  before_action :find_alias, only: :destroy
+class AliasesController < GenericController
+  prepend_before_action :find_character, :login_required
+  before_action :require_create_permission, only: [:create, :new]
 
   def new
     @page_title = "New Alias: " + @character.name
-    @alias = CharacterAlias.new(character: @character)
+    super
   end
 
   def create
-    @alias = CharacterAlias.new(calias_params)
-    @alias.character = @character
-
-    begin
-      @alias.save!
-    rescue ActiveRecord::RecordInvalid => e
-      render_errors(@alias, action: 'created', now: true, class_name: 'Alias')
-      log_error(e) unless @alias.errors.present?
-
-      @page_title = "New Alias: " + @character.name
-      render :new
-    else
-      flash[:success] = "Alias created."
-      redirect_to edit_character_path(@character)
-    end
+    @page_title = "New Alias: " + @character.name
+    super
   end
 
   def destroy
-    begin
-      @alias.destroy!
-    rescue ActiveRecord::RecordNotDestroyed => e
-      render_errors(@alias, action: 'deleted', class_name: 'Alias')
-      log_error(e) unless @alias.errors.present?
-    else
-      flash[:success] = "Alias removed."
-    end
-    redirect_to edit_character_path(@character)
+    @dsm = "Alias removed."
+    super
   end
 
   private
@@ -46,15 +25,18 @@ class AliasesController < ApplicationController
       flash[:error] = "Character could not be found."
       redirect_to user_characters_path(current_user) and return
     end
+  end
 
+  def require_create_permission
     unless @character.user == current_user
       flash[:error] = "You do not have permission to modify this character."
       redirect_to user_characters_path(current_user) and return
     end
   end
+  alias_method :require_delete_permission, :require_create_permission
 
-  def find_alias
-    unless (@alias = CharacterAlias.find_by_id(params[:id]))
+  def find_model
+    unless (@alias = CharacterAlias.find_by(id: params[:id]))
       flash[:error] = "Alias could not be found."
       redirect_to edit_character_path(@character) and return
     end
@@ -63,9 +45,25 @@ class AliasesController < ApplicationController
       flash[:error] = "Alias could not be found for that character."
       redirect_to edit_character_path(@character) and return
     end
+
+    @model = @alias
   end
 
-  def calias_params
+  def permitted_params
     params.fetch(:character_alias, {}).permit(:name)
   end
+
+  def set_params
+    @alias.character = @character
+  end
+
+  def model_class
+    CharacterAlias
+  end
+
+  def destroy_redirect
+    edit_character_path(@character)
+  end
+  alias_method :create_redirect, :destroy_redirect
+  alias_method :destroy_failed_redirect, :destroy_redirect
 end

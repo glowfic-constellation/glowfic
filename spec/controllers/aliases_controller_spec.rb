@@ -92,7 +92,7 @@ RSpec.describe AliasesController do
       post :create, params: { character_id: character.id, character_alias: {name: test_name} }
 
       expect(response).to redirect_to(edit_character_url(character))
-      expect(flash[:success]).to eq("Alias created.")
+      expect(flash[:success]).to eq("Alias created successfully.")
       expect(CharacterAlias.count).to eq(1)
       expect(character.aliases.count).to eq(1)
       expect(assigns(:alias).name).to eq(test_name)
@@ -117,8 +117,9 @@ RSpec.describe AliasesController do
       user = create(:user)
       login_as(user)
       character = create(:character)
+      calias = create(:alias, character: character)
       expect(character.user_id).not_to eq(user.id)
-      delete :destroy, params: { id: -1, character_id: character.id }
+      delete :destroy, params: { id: calias.id, character_id: character.id }
       expect(response).to redirect_to(user_characters_url(user.id))
       expect(flash[:error]).to eq("You do not have permission to modify this character.")
     end
