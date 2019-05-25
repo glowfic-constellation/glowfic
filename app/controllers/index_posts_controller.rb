@@ -10,6 +10,12 @@ class IndexPostsController < GenericController
   def create
     @csm = "Post added to index."
     @cfm = "Post could not be added to index"
+    @create_redirect = index_path(@index)
+    super
+  end
+
+  def update
+    @update_redirect = index_path(@index_post.index)
     super
   end
 
@@ -25,6 +31,7 @@ class IndexPostsController < GenericController
   def destroy
     @dsm = "Post removed from index."
     @dfm = "Post could not be removed from index"
+    @destroy_redirect = @destroy_failure_redirect = index_path(@index_post.index)
     super
   end
 
@@ -70,13 +77,6 @@ class IndexPostsController < GenericController
   def set_model
     @index_post = @model
   end
-
-  def create_redirect
-    index_path(@index_post.index)
-  end
-  alias_method :update_redirect, :create_redirect
-  alias_method :destroy_redirect, :create_redirect
-  alias_method :destroy_failed_redirect, :create_redirect
 
   def models_path
     indexes_path
