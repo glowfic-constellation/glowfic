@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 class IconsController < UploadingController
-  before_action :login_required, except: :show
-  before_action :find_icon, except: :delete_multiple
-  before_action :require_own_icon, only: [:edit, :update, :replace, :do_replace, :destroy, :avatar]
+  before_action(only: [:replace, :do_replace, :avatar, :delete_multiple]) { login_required }
+  before_action(only: [:replace, :do_replace, :avatar]) { find_model }
+  before_action(only: [:replace, :do_replace, :avatar]) { require_edit_permission }
   before_action :set_s3_url, only: :edit
 
   def delete_multiple
@@ -66,7 +66,7 @@ class IconsController < UploadingController
 
   def update
     begin
-      @icon.update!(icon_params)
+      @icon.update!(permitted_params)
     rescue ActiveRecord::RecordInvalid => e
       render_errors(@icon, action: 'updated', now: true)
       log_error(e) unless @icon.errors.present?
@@ -121,18 +121,8 @@ class IconsController < UploadingController
   end
 
   def destroy
-    gallery = @icon.galleries.first if @icon.galleries.count == 1
-    begin
-      @icon.destroy!
-    rescue ActiveRecord::RecordNotDestroyed => e
-      render_errors(@icon, action: 'deleted')
-      log_error(e) unless @icon.errors.present?
-      redirect_to icon_path(@icon)
-    else
-      flash[:success] = "Icon deleted."
-      redirect_to gallery_path(gallery) and return if gallery
-      redirect_to user_galleries_path(current_user)
-    end
+    @gallery = @icon.galleries.first if @icon.galleries.count == 1
+    super
   end
 
   def avatar
@@ -147,18 +137,7 @@ class IconsController < UploadingController
 
   private
 
-  def find_icon
-    unless (@icon = Icon.find_by_id(params[:id]))
-      flash[:error] = "Icon could not be found."
-      if logged_in?
-        redirect_to user_galleries_path(current_user)
-      else
-        redirect_to root_path
-      end
-    end
-  end
-
-  def require_own_icon
+  def require_edit_permission
     if @icon.user_id != current_user.id
       flash[:error] = "You do not have permission to modify this icon."
       redirect_to user_galleries_path(current_user)
@@ -197,7 +176,15 @@ class IconsController < UploadingController
     }
   end
 
-  def icon_params
+  def permitted_params
     params.fetch(:icon, {}).permit(:url, :keyword, :credit, :s3_key)
+  end
+
+  def invalid_redirect
+    logged_in? ? user_galleries_path(current_user) : root_path
+  end
+
+  def destroy_redirect
+    @gallery ? gallery_path(@gallery) : user_galleries_path(current_user)
   end
 end

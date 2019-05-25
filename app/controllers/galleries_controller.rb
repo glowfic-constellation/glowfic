@@ -2,11 +2,11 @@
 class GalleriesController < UploadingController
   include Taggable
 
-  before_action :login_required, except: [:index, :show, :search]
-  before_action :find_gallery, only: [:destroy, :edit, :update] # assumes login_required
+  prepend_before_action :find_model, only: [:edit, :update, :destroy, :add, :icon]
+  prepend_before_action :login_required, only: [:new, :create, :edit, :update, :destroy, :icon, :add]
+  before_action(only: [:add, :icon]) { require_edit_permission }
   before_action :setup_new_icons, only: [:add, :icon]
   before_action :set_s3_url, only: [:edit, :add, :icon]
-  before_action :setup_editor, only: [:new, :edit]
 
   def index
     if params[:user_id].present?
@@ -29,12 +29,11 @@ class GalleriesController < UploadingController
   end
 
   def new
-    @page_title = 'New Gallery'
-    @gallery = Gallery.new
+    super
   end
 
   def create
-    @gallery = Gallery.new(gallery_params)
+    @gallery = Gallery.new(permitted_params)
     @gallery.user = current_user
     @gallery.gallery_groups = process_tags(GalleryGroup, :gallery, :gallery_group_ids)
 
@@ -45,7 +44,7 @@ class GalleriesController < UploadingController
       log_error(e) unless @gallery.errors.present?
 
       @page_title = 'New Gallery'
-      setup_editor
+      editor_setup
       render :new
     else
       flash[:success] = "Gallery created."
@@ -109,7 +108,7 @@ class GalleriesController < UploadingController
   end
 
   def update
-    @gallery.assign_attributes(gallery_params)
+    @gallery.assign_attributes(permitted_params)
 
     begin
       Gallery.transaction do
@@ -123,7 +122,7 @@ class GalleriesController < UploadingController
       @page_title = 'Edit Gallery: ' + @gallery.name_was
       use_javascript('galleries/uploader')
       use_javascript('galleries/edit')
-      setup_editor
+      editor_setup
       set_s3_url
       render :edit
     else
@@ -193,16 +192,7 @@ class GalleriesController < UploadingController
   end
 
   def destroy
-    begin
-      @gallery.destroy!
-    rescue ActiveRecord::RecordNotDestroyed => e
-      render_errors(@gallery, action: 'deleted')
-      log_error(e) unless @gallery.errors.present?
-      redirect_to gallery_path(@gallery)
-    else
-      flash[:success] = "Gallery deleted."
-      redirect_to user_galleries_path(current_user)
-    end
+    super
   end
 
   def search
@@ -210,17 +200,14 @@ class GalleriesController < UploadingController
 
   private
 
-  def find_gallery
-    @gallery = Gallery.find_by_id(params[:id])
+  def find_model
+    super unless params[:id] == '0'
+  end
 
-    unless @gallery
-      flash[:error] = "Gallery could not be found."
-      redirect_to user_galleries_path(current_user) and return
-    end
-
-    unless @gallery.user_id == current_user.id
+  def require_edit_permission
+    unless params[:id] == '0' || @gallery.user_id == current_user.id
       flash[:error] = "You do not have permission to modify this gallery."
-      redirect_to user_galleries_path(current_user) and return
+      redirect_to user_galleries_path(current_user)
     end
   end
 
@@ -232,13 +219,12 @@ class GalleriesController < UploadingController
       use_javascript('galleries/uploader')
     end
     @icons = []
-    find_gallery unless params[:id] == '0'
     @unassigned = current_user.galleryless_icons
     @page_title = "Add Icons"
     @page_title += ": " + @gallery.name unless @gallery.nil?
   end
 
-  def setup_editor
+  def editor_setup
     use_javascript('galleries/editor')
     gon.user_id = current_user.id
   end
@@ -258,7 +244,7 @@ class GalleriesController < UploadingController
     }
   end
 
-  def gallery_params
+  def permitted_params
     params.fetch(:gallery, {}).permit(
       :name,
       galleries_icons_attributes: [
@@ -272,5 +258,13 @@ class GalleriesController < UploadingController
 
   def icon_params(paramset)
     paramset.permit(:url, :keyword, :credit, :s3_key)
+  end
+
+  def invalid_redirect
+    logged_in? ? user_galleries_path(current_user) : root_path
+  end
+
+  def destroy_redirect
+    user_galleries_path(current_user)
   end
 end
