@@ -1,10 +1,6 @@
 # frozen_string_literal: true
-class TagsController < ApplicationController
+class TagsController < GenericController
   include Taggable
-
-  before_action :login_required, except: [:index, :show]
-  before_action :find_tag, except: :index
-  before_action :permission_required, except: [:index, :show, :destroy]
 
   def index
     @tags = TagSearcher.new.search(tag_name: params[:name], tag_type: params[:view], page: page)
@@ -20,7 +16,7 @@ class TagsController < ApplicationController
   end
 
   def show
-    @page_title = @tag.name.to_s
+    super
     @view = params[:view]
     @meta_og = og_data
 
@@ -36,13 +32,8 @@ class TagsController < ApplicationController
     end
   end
 
-  def edit
-    @page_title = "Edit Tag: #{@tag.name}"
-    build_editor
-  end
-
   def update
-    @tag.assign_attributes(tag_params)
+    @tag.assign_attributes(permitted_params)
 
     begin
       Tag.transaction do
@@ -54,7 +45,7 @@ class TagsController < ApplicationController
       log_error(e) unless @tag.errors.present?
 
       @page_title = "Edit Tag: #{@tag.name}"
-      build_editor
+      editor_setup
       render :edit
     else
       flash[:success] = "Tag updated."
@@ -86,21 +77,7 @@ class TagsController < ApplicationController
 
   private
 
-  def find_tag
-    unless (@tag = Tag.find_by_id(params[:id]))
-      flash[:error] = "Tag could not be found."
-      redirect_to tags_path
-    end
-  end
-
-  def permission_required
-    unless @tag.editable_by?(current_user)
-      flash[:error] = "You do not have permission to modify this tag."
-      redirect_to tag_path(@tag)
-    end
-  end
-
-  def build_editor
+  def editor_setup
     return unless @tag.is_a?(Setting)
     use_javascript('tags/edit')
   end
@@ -126,7 +103,7 @@ class TagsController < ApplicationController
     }
   end
 
-  def tag_params
+  def permitted_params
     permitted = [:type, :description, :owned]
     permitted.insert(0, :name, :user_id) if current_user.admin? || @tag.user == current_user
     params.fetch(:tag, {}).permit(permitted)
