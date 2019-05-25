@@ -13,8 +13,7 @@ class IndexesController < GenericController
 
   def show
     super
-    @sectionless = @index.posts.where(index_posts: {index_section_id: nil})
-    @sectionless = @sectionless.ordered_by_index
+    @sectionless = @index.posts.where(index_posts: {index_section_id: nil}).ordered_by_index
     dbselect = ', index_posts.description as index_description, index_posts.id as index_post_id'
     @sectionless = posts_from_relation(@sectionless, with_pagination: false, select: dbselect)
   end
