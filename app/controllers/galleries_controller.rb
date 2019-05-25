@@ -192,6 +192,7 @@ class GalleriesController < UploadingController
   end
 
   def destroy
+    @destroy_redirect = user_galleries_path(current_user)
     super
   end
 
@@ -262,9 +263,5 @@ class GalleriesController < UploadingController
 
   def invalid_redirect
     logged_in? ? user_galleries_path(current_user) : root_path
-  end
-
-  def destroy_redirect
-    user_galleries_path(current_user)
   end
 end
