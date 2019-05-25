@@ -25,7 +25,7 @@ class BoardsController < GenericController
   end
 
   def show
-    @page_title = @board.name
+    super
     @board_sections = @board.board_sections.ordered
     board_posts = @board.posts.where(section_id: nil)
     if @board.ordered?
@@ -46,21 +46,8 @@ class BoardsController < GenericController
   end
 
   def update
-    begin
-      @board.update!(permitted_params)
-    rescue ActiveRecord::RecordInvalid => e
-      render_errors(@board, action: 'updated', now: true, class_name: 'Continuity')
-      log_error(e) unless @board.errors.present?
-
-      @page_title = 'Edit Continuity: ' + @board.name_was
-      editor_setup
-      use_javascript('board_sections')
-      @board_sections = @board.board_sections.ordered
-      render :edit
-    else
-      flash[:success] = "Continuity updated."
-      redirect_to board_path(@board)
-    end
+    @board_sections = @board.board_sections.ordered
+    super
   end
 
   def mark
