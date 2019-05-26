@@ -19,7 +19,7 @@ class Api::V1::UsersController < Api::ApiController
       blocked_users = Block.where(blocking_user_id: current_user.id).pluck(:blocked_user_id)
       queryset = queryset.where.not(id: blocked_users + [current_user.id])
     end
-    users = paginate queryset, per_page: 25
+    users = paginate queryset.active, per_page: 25
     render json: {results: users}
   end
 end

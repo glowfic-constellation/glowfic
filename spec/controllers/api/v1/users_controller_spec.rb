@@ -56,5 +56,12 @@ RSpec.describe Api::V1::UsersController do
       get :index
       expect(response.json['results'].count).to eq(6)
     end
+
+    it "does not return deleted users" do
+      user = create(:user, deleted: true)
+      unblocked = create(:user)
+      get :index
+      expect(response.json['results'].count).to eq(1)
+    end
   end
 end
