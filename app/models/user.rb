@@ -6,6 +6,7 @@ class User < ApplicationRecord
   MIN_USERNAME_LEN = 3
   MAX_USERNAME_LEN = 80
   CURRENT_TOS_VERSION = 20181109
+  RESERVED_NAMES = ['(deleted user)', 'Glowfic Constellation']
 
   attr_accessor :password, :password_confirmation
   attr_writer :validate_password
@@ -41,6 +42,7 @@ class User < ApplicationRecord
     confirmation: { if: :validate_password? }
   validates :moiety, format: { with: /\A([0-9A-F]{3}){0,2}\z/i }
   validates :password, :password_confirmation, presence: { if: :validate_password? }
+  validate :username_not_reserved
 
   before_validation :encrypt_password, :strip_spaces
   after_save :clear_password
@@ -120,5 +122,11 @@ class User < ApplicationRecord
 
   def validate_password?
     !!@validate_password
+  end
+
+  def username_not_reserved
+    return unless self.username.present?
+    return unless RESERVED_NAMES.include?(self.username)
+    errors.add(:username, 'is invalid')
   end
 end
