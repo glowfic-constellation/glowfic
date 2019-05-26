@@ -22,6 +22,18 @@ RSpec.describe User do
     expect(new_user).not_to be_valid
   end
 
+  describe "reserved usernames" do
+    it "should not allow users to use the site message placeholder" do
+      user = build(:user, username: 'Glowfic Constellation')
+      expect(user).not_to be_valid
+    end
+
+    it "should not allow users to use the deleted user placeholder" do
+      user = build(:user, username: '(deleted user)')
+      expect(user).not_to be_valid
+    end
+  end
+
   describe "emails" do
     def generate_emailless_user
       user = build(:user, email: '')
