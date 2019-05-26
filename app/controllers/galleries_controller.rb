@@ -10,7 +10,7 @@ class GalleriesController < UploadingController
 
   def index
     if params[:user_id].present?
-      unless (@user = User.find_by_id(params[:user_id]) || current_user) && !@user.deleted?
+      unless (@user = User.active.find_by_id(params[:user_id]))
         flash[:error] = 'User could not be found.'
         redirect_to root_path and return
       end
@@ -59,7 +59,7 @@ class GalleriesController < UploadingController
   def show
     if params[:id].to_s == '0' # avoids casting nils to 0
       if params[:user_id].present?
-        unless (@user = User.find_by_id(params[:user_id]))
+        unless (@user = User.active.find_by_id(params[:user_id]))
           flash[:error] = 'User could not be found.'
           redirect_to root_path and return
         end

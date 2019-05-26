@@ -22,7 +22,7 @@ class Api::V1::GalleriesController < Api::ApiController
 
   def show_galleryless
     user = if params[:user_id].present?
-      User.find_by_id(params[:user_id])
+      User.active.find_by_id(params[:user_id])
     else
       current_user
     end
