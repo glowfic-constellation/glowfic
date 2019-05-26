@@ -36,15 +36,6 @@ RSpec.describe BoardsController do
         expect(assigns(:page_title)).to eq("#{user.username}'s Continuities")
       end
 
-      it "defaults to current user if user id invalid" do
-        user = create(:user)
-        login_as(user)
-        get :index, params: { user_id: -1 }
-        expect(response.status).to eq(200)
-        expect(assigns(:user)).to eq(user)
-        expect(assigns(:page_title)).to eq('Your Continuities')
-      end
-
       it "displays error if user id invalid and logged out" do
         get :index, params: { user_id: -1 }
         expect(flash[:error]).to eq('User could not be found.')

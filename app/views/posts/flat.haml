@@ -34,11 +34,11 @@
                   .post-screenname= breakable_text(@post.character.screenname)
               - else
                 .spacer-alt
-              - if @post.user.deleted?
-                .post-author
+              .post-author
+                - if @post.user.deleted?
                   %em (deleted user)
-              - else
-                .post-author= @post.user.username
+                - else
+                  = @post.user.username
           .post-edit-box
             = link_to post_path(@post), rel: 'alternate' do
               = image_tag "icons/link.png", title: 'Permalink', alt: 'Permalink'

@@ -20,7 +20,7 @@ class MessagesController < ApplicationController
 
   def new
     @message = Message.new
-    recipient = User.find_by_id(params[:recipient_id])
+    recipient = User.active.find_by_id(params[:recipient_id])
     @message.recipient = recipient unless recipient && current_user.has_interaction_blocked?(recipient)
     @page_title = 'Compose Message'
   end

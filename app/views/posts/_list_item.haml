@@ -54,7 +54,7 @@
           - author_list = temp_list.join(', and ')
       = author_list.html_safe
     - else
-      = link_to user_link(post.user)
+      = user_link(post.user)
       and
       = link_to "#{authors.length-1} others", stats_post_path(post)
   %td.width-70.post-replies.vtop{class: klass}= link_to replies_count, stats_post_path(post)

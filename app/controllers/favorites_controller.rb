@@ -39,7 +39,7 @@ class FavoritesController < ApplicationController
     favorite = nil
 
     if params[:user_id].present?
-      unless (favorite = User.find_by_id(params[:user_id]))
+      unless (favorite = User.active.find_by_id(params[:user_id]))
         flash[:error] = "User could not be found."
         redirect_to users_path and return
       end

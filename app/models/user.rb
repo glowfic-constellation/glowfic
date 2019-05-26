@@ -46,6 +46,7 @@ class User < ApplicationRecord
   after_save :clear_password
 
   scope :ordered, -> { order(username: :asc) }
+  scope :active, -> { where(deleted: false) }
 
   nilify_blanks
 
@@ -76,7 +77,7 @@ class User < ApplicationRecord
 
   def archive
     User.transaction do
-      self.update!(email_notifications: false, deleted: true)
+      self.update!(email_notifications: false, deleted: true, favorite_notifications: false)
       Setting.where(user_id: self.id).where(owned: true).find_each do |setting|
         setting.update!(owned: false)
       end
