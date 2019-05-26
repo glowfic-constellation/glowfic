@@ -61,4 +61,10 @@ RSpec.describe Message do
     message.unread = false
     message.save!
   end
+
+  it "errors to sender if messaging a deleted user" do
+    message = build(:message, recipient: create(:user, deleted: true))
+    expect(message).not_to be_valid
+    expect(message.recipient).to be_nil
+  end
 end
