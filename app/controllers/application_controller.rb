@@ -11,7 +11,7 @@ class ApplicationController < ActionController::Base
   before_action :show_password_warning
   before_action :require_glowfic_domain
   before_action :set_login_gon
-  before_action :check_suspension
+  before_action :check_forced_logout
   around_action :set_timezone
   after_action :store_location
 
@@ -31,9 +31,9 @@ class ApplicationController < ActionController::Base
     end
   end
 
-  def check_suspension
+  def check_forced_logout
     return unless logged_in?
-    return unless current_user.suspended?
+    return unless current_user.suspended? || current_user.deleted?
     logout
   end
 

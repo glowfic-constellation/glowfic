@@ -368,14 +368,14 @@ RSpec.describe ApplicationController do
     end
   end
 
-  describe "#check_suspension" do
+  describe "#check_forced_logout" do
     controller do
       def index
         render json: {logged_in: current_user.present?}
       end
     end
 
-    it "does not log out unsuspended" do
+    it "does not log out unsuspended undeleted" do
       user = create(:user)
       login_as(user)
       get :index
@@ -384,7 +384,17 @@ RSpec.describe ApplicationController do
 
     it "logs out suspended" do
       user = create(:user)
+      login_as(user)
       user.role_id = Permissible::SUSPENDED
+      user.save
+      get :index
+      expect(response.json['logged_in']).to eq(false)
+    end
+
+    it "logs out deleted" do
+      user = create(:user)
+      login_as(user)
+      user.deleted = true
       user.save
       get :index
       expect(response.json['logged_in']).to eq(false)
