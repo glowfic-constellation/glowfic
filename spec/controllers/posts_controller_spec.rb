@@ -548,6 +548,30 @@ RSpec.describe PostsController do
       expect(board.cameos).to be_empty
     end
 
+    it "handles new post authors already being in cameos" do
+      user = create(:user)
+      other_user = create(:user)
+      board = create(:board, creator: user, cameos: [other_user])
+
+      login_as(user)
+      post :create, params: {
+        post: {
+          subject: 'a',
+          user_id: user.id,
+          board_id: board.id,
+          unjoined_author_ids: [user.id, other_user.id]
+        }
+      }
+
+      expect(flash[:success]).to eq("You have successfully posted.")
+      post = assigns(:post).reload
+      expect(post.tagging_authors).to match_array([user, other_user])
+
+      board.reload
+      expect(board.creator).to eq(user)
+      expect(board.cameos).to match_array([other_user])
+    end
+
     it "handles invalid posts" do
       user = create(:user)
       login_as(user)

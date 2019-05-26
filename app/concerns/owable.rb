@@ -48,7 +48,7 @@ module Owable
 
       # adjust for the fact that the associations are managed separately
       all_authors = authors + unjoined_authors + joined_authors + tagging_authors
-      new_cameos = all_authors.uniq - board.writers
+      new_cameos = all_authors.uniq - (board.writers + board.cameos)
       return if new_cameos.empty?
       board.cameos += new_cameos
     end
