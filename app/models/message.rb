@@ -8,7 +8,7 @@ class Message < ApplicationRecord
   validates :sender, presence: { if: Proc.new { |m| m.sender_id != 0 } }
   validate :unblocked_recipient, on: :create
 
-  before_validation :set_thread_id
+  before_validation :set_thread_id, :remove_deleted_recipient
   before_create :check_recipient
   after_create :notify_recipient
 
@@ -84,5 +84,10 @@ class Message < ApplicationRecord
     return unless sender && recipient
     return unless sender.has_interaction_blocked?(recipient)
     errors.add(:recipient, "must not be blocked by you")
+  end
+
+  def remove_deleted_recipient
+    return unless recipient&.deleted?
+    self.recipient = nil
   end
 end
