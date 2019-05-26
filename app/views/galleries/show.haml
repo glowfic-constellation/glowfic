@@ -1,25 +1,15 @@
 %table
   - if @gallery
     = render 'single', gallery: @gallery, hide_minmax: true
-    - content_for :breadcrumbs do
-      - if @user.id == current_user.try(:id)
-        = link_to "Galleries", user_galleries_path(current_user)
-      - else
-        = user_link(@user)
-        - unless @user.deleted?
-          &raquo;
-          = link_to "#{@user.username}'s Galleries", user_galleries_path(@user)
-      &raquo;
-      %b= @gallery.name
   - else
     = render 'galleryless'
-    - content_for :breadcrumbs do
-      - if @user.id == current_user.try(:id)
-        = link_to "Galleries", user_galleries_path(current_user)
-      - else
-        = user_link(@user)
-        - unless @user.deleted?
-          &raquo;
-          = link_to "#{@user.username}'s Galleries", user_galleries_path(@user)
-      &raquo;
-      %b= 'Galleryless Icons'
+  - content_for :breadcrumbs do
+    - if @user.id == current_user.try(:id)
+      = link_to "Galleries", user_galleries_path(current_user)
+    - else
+      = user_link(@user)
+      - unless @user.deleted?
+        &raquo;
+        = link_to "#{@user.username}'s Galleries", user_galleries_path(@user)
+    &raquo;
+    %b= @gallery ? @gallery.name : 'Galleryless Icons'
