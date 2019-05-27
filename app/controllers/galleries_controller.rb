@@ -102,10 +102,25 @@ class GalleriesController < UploadingController
 
     begin
       adder.add
-    rescue ApiError
-      # stuff here
+    rescue NoIconsError, MissingGalleryError, InvalidIconsError, ActiveRecord::RecordInvalid => e
+      @icons = adder.icons
+      if e.class == InvalidIconsError
+        flash[:error] = {
+          message: e.message,
+          array: adder.errors,
+        }
+      else
+        flash[:error] = e.message
+      end
+      if e.class == MissingGalleryError
+        redirect_to user_galleries_path(current_user)
+      else
+        render :add
+      end
     else
-      # success stuff here
+      @icons = adder.icons
+      flash[:success] = adder.success_message
+      redirect_to @gallery || user_gallery_path(id: 0, user_id: current_user.id)
     end
   end
 
