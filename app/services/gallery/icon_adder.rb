@@ -8,22 +8,18 @@ class Gallery::IconAdder < Object
     @errors = []
   end
 
-  def add
-    if params[:image_ids].present?
-      raise MissingGalleryError, "Gallery could not be found." unless @gallery # gallery required for adding icons from other galleries
+  def assign_existing
+    raise MissingGalleryError, "Gallery could not be found." unless @gallery # gallery required for adding icons from other galleries
 
-      icon_ids = @params[:image_ids].split(',').map(&:to_i).reject(&:zero?)
-      icon_ids -= @gallery.icons.ids
-      icons = Icon.where(id: icon_ids, user_id: @user.id)
-      @gallery.icons += icons
+    icon_ids = @params[:image_ids].split(',').map(&:to_i).reject(&:zero?)
+    icon_ids -= @gallery.icons.ids
+    icons = Icon.where(id: icon_ids, user_id: @user.id)
+    @gallery.icons += icons
 
-      @success_message = "Icons added to gallery."
-    else
-      add_new_icons
-    end
+    @success_message = "Icons added to gallery."
   end
 
-  def add_new_icons
+  def create_new
     @icons = (@params[:icons] || []).reject { |icon| icon.values.all?(&:blank?) }
     raise NoIconsError, "You have to enter something." if icons.empty?
 
