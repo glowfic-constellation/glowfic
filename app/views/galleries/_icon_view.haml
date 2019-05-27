@@ -1,0 +1,15 @@
+= form_tag delete_multiple_icons_path, method: :delete do
+  - icons.pluck(:id, :keyword, :url).each do |icon_id, keyword, url|
+    .gallery-icon
+      = link_to icon_path(id: icon_id) do
+        = icon_mem_tag url, keyword
+        %br
+        %span.icon-keyword= keyword
+      - if is_owner && !skip_forms
+        .select-button= check_box_tag :"marked_ids[]", icon_id, false, id: nil
+  - if is_owner && !skip_forms
+    .clear.centered.icons-remove
+      - if gallery
+        = hidden_field_tag :gallery_id, gallery.id
+        = submit_tag "- Remove selected icons from gallery", name: 'gallery_delete'
+      = submit_tag "x Delete selected icons permanently", data: { confirm: "Are you sure? These icons will be gone from the site!" }
