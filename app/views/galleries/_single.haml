@@ -35,7 +35,7 @@
   - if !gallery && @user.id == current_user.try(:id)
     %tr.gallery-subheader
       %th.sub Unsorted icons without a gallery will appear here. They can still be individually assigned to a character with no galleries.
-  - icons = gallery ? gallery.icons : @user.galleryless_icons
+  - icons ||= gallery ? gallery.icons : @user.galleryless_icons
   %tr.gallery-icons
     %td.icons-box
       .gallery{id: "gallery#{gallery ? gallery.id : 0}"}
