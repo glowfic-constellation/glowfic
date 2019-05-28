@@ -5,7 +5,7 @@
     %th.padding-10{class: (klass if defined? klass)}
       - link = gallery ? gallery_path(gallery) : user_gallery_path(id: 0, user_id: @user.id)
       = link_to gallery ? gallery.name : 'Galleryless icons', link, class: 'gallery-title'
-      - if @user_id == current_user.try(:id) && !defined? skip_forms
+      - if is_owner && !skip_forms
         = link_to add_gallery_path(gallery || {id: 0}), class: 'gallery-add' do
           .link-box.action-new + Add Icons
         - if gallery
@@ -17,7 +17,7 @@
             .link-box.action-delete x Delete Gallery
       - unless local_assigns[:hide_minmax]
         .gallery-box.float-right.gallery-minmax{data: {id: gallery.id}} -
-      - if local_assigns[:character_gallery] && (gallery.user_id == current_user.try(:id) || current_user.try(:admin?))
+      - if local_assigns[:character_gallery] && (is_owner || current_user.try(:admin?))
         .float-right
           = image_tag "icons/arrow_up.png", class: "section-up disabled-arrow"
           = image_tag "icons/arrow_down.png", class: "section-down disabled-arrow"
@@ -32,7 +32,7 @@
             = link_to tag_path(group.id), class: 'tag-item-link' do
               %span.tag-item
                 = group.name
-  - if !gallery && @user.id == current_user.try(:id)
+  - if !gallery && is_owner
     %tr.gallery-subheader
       %th.sub Unsorted icons without a gallery will appear here. They can still be individually assigned to a character with no galleries.
   - icons ||= gallery ? gallery.icons : @user.galleryless_icons
@@ -46,11 +46,11 @@
                 = icon_mem_tag url, keyword
                 %br
                 %span.icon-keyword= keyword
-              - if @user_id == current_user.try(:id) && !defined? skip_forms
+              - if is_owner && !skip_forms
                 .select-button= check_box_tag :"marked_ids[]", icon_id
           - if icons.empty?
             .centered.no-icons — No icons yet —
-          - elsif @user_id == current_user.try(:id) && !defined? skip_forms
+          - elsif is_owner && !skip_forms
             .clear.centered.icons-remove
               - if gallery
                 = hidden_field_tag :gallery_id, gallery.id

@@ -1,5 +1,5 @@
 %table
-  = render 'single', gallery: @gallery, hide_minmax: true, icons: icons
+  = render 'single', gallery: @gallery, hide_minmax: true, icons: icons, is_owner: @user == current_user, skip_forms: false
   - content_for :breadcrumbs do
     - if @user.id == current_user.try(:id)
       = link_to "Galleries", user_galleries_path(current_user)

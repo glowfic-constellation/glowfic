@@ -93,7 +93,7 @@
             Saved
     %tbody
       - galleries.each do |gallery|
-        = render 'galleries/single', gallery: gallery, klass: 'subber', skip_forms: true, character_gallery: gallery.character_gallery_for(@character)
+        = render 'galleries/single', gallery: gallery, klass: 'subber', skip_forms: true, character_gallery: gallery.character_gallery_for(@character), is_owner: @character.user == current_user
       - unless galleries.present?
         %tr
           %td.icon-box
