@@ -4,7 +4,7 @@ Post.create!([
     user_id: 5,
     subject: "sample thread",
     content: "",
-    icon_id: 5,
+    icon_id: 4,
     created_at: "2018-11-27 02:25:52",
     updated_at: "2018-12-06 00:05:13",
     status: 0,

@@ -191,7 +191,7 @@ Character.create!([
     user_id: 3,
     name: "Pyth",
     screenname: "pythbox",
-    default_icon_id: 4
+    default_icon_id: 3
   },
   {
     user_id: 3,

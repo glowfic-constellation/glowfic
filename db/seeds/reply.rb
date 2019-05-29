@@ -3,7 +3,7 @@ Reply.create!([
     post_id: 1,
     user_id: 5,
     content: "<p>reply</p>",
-    icon_id: 5,
+    icon_id: 4,
     created_at: "2018-11-27 04:53:37",
     updated_at: "2018-11-27 04:53:37"
   },
@@ -11,7 +11,7 @@ Reply.create!([
     post_id: 1,
     user_id: 5,
     content: "<p>reply</p>",
-    icon_id: 5,
+    icon_id: 4,
     created_at: "2018-11-27 04:53:50",
     updated_at: "2018-11-27 04:53:50"
   },
