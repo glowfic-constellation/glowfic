@@ -19,9 +19,9 @@ puts "Creating avatars..."
 Icon.create!([
   { user_id: 1, url: "https://pbs.twimg.com/profile_images/482603626/avatar.png", keyword: "avatar" },
   { user_id: 2, url: "https://33.media.tumblr.com/avatar_ddf517a261d8_64.png", keyword: "avatar" },
-  { user_id: 3, url: "http://i.imgur.com/OJSBRcp.jpg", keyword: "avatar" },
+  { user_id: 3, url: "https://i.imgur.com/OJSBRcp.jpg", keyword: "avatar" },
   { user_id: 5, url: "https://i.imgur.com/7aXnrK1.jpg", keyword: "avatar" },
-  { user_id: 6, url: "https://i.imgur.com/WA1r2Fu.png", keyword: "avatar" }
+  { user_id: 6, url: "https://i.imgur.com/WA1r2Fu.png", keyword: "avatar" },
 ])
 marri.update!(avatar_id: 1)
 alicorn.update!(avatar_id: 2)
