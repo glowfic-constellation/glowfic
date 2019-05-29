@@ -50,7 +50,7 @@ a:visited { color: $font_color_link_visited; }
 }
 
 /* - content headers */
-.table-title, .content-header, .info-box-header, .search-results-header {
+.table-title, .content-header, .info-box-header, .editor-title, .search-results-header {
   background-color: $bg_color_head;
   a { color: $font_color_head_link; }
   a:visited { color: $font_color_head_link_visited; }

@@ -13,14 +13,14 @@
     %table.form-table
       %thead
         %tr
-          %th.centered{colspan: 2}= @character.name
+          %th.editor-title{colspan: 2}= @character.name
       = render 'editor', f: f
 
     %br
     %table.form-table
       %thead
         %tr
-          %th.centered
+          %th.editor-title
             Aliases and Pseudonyms
             - if @character.user_id == current_user.id
               = link_to new_character_alias_path(@character) do

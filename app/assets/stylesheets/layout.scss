@@ -189,10 +189,11 @@ table { width: 100%; }
   font-weight: normal;
 }
 
-.info-box-header {
+.info-box-header, .editor-title {
   @extend .table-title;
   text-align: center;
 }
+
 .content-header {
   width: 100%;
   overflow: hidden;
