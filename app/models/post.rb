@@ -264,6 +264,11 @@ class Post < ApplicationRecord
     audits.count > 1
   end
 
+  def last_user_deleted?
+    return read_attribute(:last_user_deleted) if has_attribute?(:last_user_deleted)
+    last_user.deleted?
+  end
+
   def user_joined(user)
     NotifyFollowersOfNewPostJob.perform_later(self.id, user.id)
   end
