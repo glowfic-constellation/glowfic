@@ -27,11 +27,7 @@
             .post-screenname= breakable_text(reply.screenname)
         - else
           .spacer-alt
-        .post-author
-          - if reply.user_deleted?
-            %em (deleted user)
-          - else
-            = link_to reply.username, user_path(reply.user_id)
+        .post-author= user_link(reply.user_id)
     .post-edit-box
       - if reply.id.present?
         = link_to post_or_reply_link(reply), rel: 'alternate'.freeze do

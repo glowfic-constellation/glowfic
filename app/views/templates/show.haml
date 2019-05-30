@@ -1,12 +1,11 @@
 - content_for :breadcrumbs do
   - if @template.user_id == current_user.try(:id)
     = link_to "Characters", user_characters_path(current_user)
-  - elsif @template.user.deleted?
-    %em (deleted user)
   - else
-    = link_to @template.user.username, user_path(@template.user)
-    &raquo;
-    = link_to "#{@template.user.username}'s Characters", user_characters_path(@template.user)
+    = user_link(@template.user)
+    - unless @template.user.deleted?
+      &raquo;
+      = link_to "#{@template.user.username}'s Characters", user_characters_path(@template.user)
   &raquo;
   %b= @template.name
 

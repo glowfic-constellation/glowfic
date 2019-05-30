@@ -23,7 +23,7 @@
       - klass = cycle('even', 'odd')
       %tr
         %td.padding-5{class: klass}
-          = link_to block.blocked_user.username, user_path(block.blocked_user)
+          = user_link(block.blocked_user)
         %td.padding-5{class: klass}= block.block_interactions? ? 'Yes' : 'No'
         %td.padding-5{class: klass}
           - if block.hide_their_content?

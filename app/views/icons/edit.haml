@@ -1,12 +1,11 @@
 - content_for :breadcrumbs do
   - if @icon.user_id == current_user.try(:id)
     = link_to "Galleries", user_galleries_path(current_user)
-  - elsif @icon.user.deleted?
-    %em (deleted user)
   - else
-    = link_to @icon.user.username, user_path(@icon.user)
-    &raquo;
-    = link_to "#{@icon.user.username}'s Galleries", user_galleries_path(@icon.user)
+    = user_link(@icon.user)
+    - unless @icon.user.deleted?
+      &raquo;
+      = link_to "#{@icon.user.username}'s Galleries", user_galleries_path(@icon.user)
   &raquo;
   = link_to @icon.keyword, icon_path(@icon)
   &raquo;

@@ -13,4 +13,4 @@
     Posted on
     = pretty_time(news.created_at)
     by
-    = link_to news.user.username, user_path(news.user)
+    = user_link(news.user)

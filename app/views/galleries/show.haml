@@ -4,12 +4,11 @@
     - content_for :breadcrumbs do
       - if @user.id == current_user.try(:id)
         = link_to "Galleries", user_galleries_path(current_user)
-      - elsif @user.deleted?
-        %em (deleted user)
       - else
-        = link_to @user.username, user_path(@user)
-        &raquo;
-        = link_to "#{@user.username}'s Galleries", user_galleries_path(@user)
+        = user_link(@user)
+        - unless @user.deleted?
+          &raquo;
+          = link_to "#{@user.username}'s Galleries", user_galleries_path(@user)
       &raquo;
       %b= @gallery.name
   - else
@@ -17,11 +16,10 @@
     - content_for :breadcrumbs do
       - if @user.id == current_user.try(:id)
         = link_to "Galleries", user_galleries_path(current_user)
-      - elsif @user.deleted?
-        %em (deleted user)
       - else
-        = link_to @user.username, user_path(@user)
-        &raquo;
-        = link_to "#{@user.username}'s Galleries", user_galleries_path(@user)
-      &raquo;
-      %b= 'Galleryless Icons'
+        = user_link(@user)
+        - unless @user.deleted?
+          &raquo;
+          = link_to "#{@user.username}'s Galleries", user_galleries_path(@user)
+          &raquo;
+          %b= 'Galleryless Icons'

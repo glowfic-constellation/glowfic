@@ -4,7 +4,7 @@
   - elsif @character.user.deleted?
     %em (deleted user)
   - else
-    = link_to @character.user.username, user_path(@character.user)
+    = user_link(@character.user)
     &raquo;
     = link_to "#{@character.user.username}'s Characters", user_characters_path(@character.user)
   - if @character.template
