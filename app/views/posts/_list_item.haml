@@ -40,23 +40,7 @@
               = link_to index, post_path(post, page: index)
   - unless local_assigns[:hide_continuity]
     %td.post-board.vtop{class: klass}= link_to post.board_name, anchored_board_path(post)
-  %td.post-authors.vtop{class: klass}
-    - authors = post.authors.order(Arel.sql('lower(username) asc'))
-    - if authors.length < 4
-      - active_authors = authors.active
-      - author_list = active_authors.map { |author| user_link(author) }.join(', ')
-      - if authors.any?(&:deleted?)
-        - deleted_authors = pluralize(authors.select(&:deleted?).length, 'deleted user')
-        - temp_list = [author_list, deleted_authors].select(&:present?)
-        - author_list = temp_list.join(active_authors.length == 1 ? ' and ' : ', and ')
-      = author_list.html_safe
-    - else
-      - if post.user.deleted? && authors.active.present?
-        = user_link(authors.active.first)
-      - else
-        = user_link(post.user)
-      and
-      = link_to "#{authors.length-1} others", stats_post_path(post)
+  %td.post-authors.vtop{class: klass}= author_links(post).html_safe
   %td.width-70.post-replies.vtop{class: klass}= link_to replies_count, stats_post_path(post)
   - if logged_in? && local_assigns[:show_unread_count]
     %td.width-70.vtop{class: klass}
@@ -67,7 +51,7 @@
   %td.post-time.vtop{class: klass}
     = pretty_time(post.tagged_at)
     by
-    - if post.last_user.deleted?
+    - if post.last_user_deleted?
       (deleted user)
     - else
       = link_to post.last_user_name, user_path(post.last_user_id)

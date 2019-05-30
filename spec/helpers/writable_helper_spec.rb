@@ -28,4 +28,123 @@ RSpec.describe WritableHelper do
       expect(helper.anchored_board_path(post)).to eq(board_path(post.board_id))
     end
   end
+
+  describe "#author_links" do
+    context "with only deleted users" do
+      it "handles only a deleted user" do
+        post = create(:post)
+        post.user.update_attributes(deleted: true)
+        expect(helper.author_links(post)).to eq('(deleted user)')
+      end
+
+      it "handles only two deleted users" do
+        post = create(:post)
+        post.user.update_attributes(deleted: true)
+        reply = create(:reply, post: post)
+        reply.user.update_attributes(deleted: true)
+        expect(helper.author_links(post)).to eq('(deleted users)')
+      end
+
+      it "handles >4 deleted users" do
+        post = create(:post)
+        post.user.update_attributes(deleted: true)
+        reply = create(:reply, post: post)
+        reply.user.update_attributes(deleted: true)
+        reply = create(:reply, post: post)
+        reply.user.update_attributes(deleted: true)
+        reply = create(:reply, post: post)
+        reply.user.update_attributes(deleted: true)
+        reply = create(:reply, post: post)
+        reply.user.update_attributes(deleted: true)
+        expect(helper.author_links(post)).to eq('(deleted users)')
+      end
+    end
+
+    context "with active and deleted users" do
+      it "handles two users with post user deleted" do
+        post = create(:post)
+        post.user.update_attributes(deleted: true)
+        reply = create(:reply, post: post)
+        expect(helper.author_links(post)).to eq(helper.user_link(reply.user) + ', (deleted user)')
+      end
+
+      it "handles two users with reply user deleted" do
+        post = create(:post)
+        reply = create(:reply, post: post)
+        reply.user.update_attributes(deleted: true)
+        expect(helper.author_links(post)).to eq(helper.user_link(post.user) + ', (deleted user)')
+      end
+
+      it "handles three users with one deleted" do
+        post = create(:post, user: create(:user, username: 'xxx'))
+        reply = create(:reply, post: post)
+        reply.user.update_attributes(deleted: true)
+        reply = create(:reply, post: post, user: create(:user, username: 'yyy'))
+        links = [post.user, reply.user].map { |u| helper.user_link(u) }.join(', ')
+        expect(helper.author_links(post)).to eq(links + ', (deleted user)')
+      end
+
+      it "handles three users with two deleted" do
+        post = create(:post)
+        reply = create(:reply, post: post)
+        reply.user.update_attributes(deleted: true)
+        reply = create(:reply, post: post)
+        reply.user.update_attributes(deleted: true)
+        expect(helper.author_links(post)).to eq(helper.user_link(post.user) + ', (deleted users)')
+      end
+
+      it "handles >4 users with post user first" do
+        post = create(:post, user: create(:user, username: 'zzz'))
+        create(:reply, post: post, user: create(:user, username: 'yyy'))
+        reply = create(:reply, post: post, user: create(:user, username: 'xxx'))
+        reply.user.update_attributes(deleted: true)
+        create(:reply, post: post, user: create(:user, username: 'www'))
+        create(:reply, post: post, user: create(:user, username: 'vvv'))
+        stats_link = helper.link_to('4 others', stats_post_path(post))
+        expect(helper.author_links(post)).to eq(helper.user_link(post.user) + ' and ' + stats_link)
+      end
+
+      it "handles >4 users with alphabetical user first iff post user deleted" do
+        post = create(:post, user: create(:user, username: 'zzz'))
+        post.user.update_attributes(deleted: true)
+        create(:reply, post: post, user: create(:user, username: 'yyy'))
+        create(:reply, post: post, user: create(:user, username: 'xxx'))
+        reply = create(:reply, post: post, user: create(:user, username: 'aaa'))
+        create(:reply, post: post, user: create(:user, username: 'vvv'))
+        stats_link = helper.link_to('4 others', stats_post_path(post))
+        expect(helper.author_links(post)).to eq(helper.user_link(reply.user) + ' and ' + stats_link)
+      end
+    end
+
+    context "with only active users" do
+      it "handles only one user" do
+        post = create(:post)
+        expect(helper.author_links(post)).to eq(helper.user_link(post.user))
+      end
+
+      it "handles two users with commas" do
+        post = create(:post, user: create(:user, username: 'xxx'))
+        reply = create(:reply, post: post, user: create(:user, username: 'yyy'))
+        expect(helper.author_links(post)).to eq(helper.user_link(post.user) + ', ' + helper.user_link(reply.user))
+      end
+
+      it "handles three users with commas and no and" do
+        post = create(:post, user: create(:user, username: 'zzz'))
+        users = [post.user]
+        users << create(:reply, post: post, user: create(:user, username: 'yyy')).user
+        users << create(:reply, post: post, user: create(:user, username: 'xxx')).user
+        expect(helper.author_links(post)).to eq(users.reverse.map { |u| helper.user_link(u) }.join(', '))
+      end
+
+      it "handles >4 users with post user first" do
+        post = create(:post, user: create(:user, username: 'zzz'))
+        create(:reply, post: post, user: create(:user, username: 'yyy'))
+        create(:reply, post: post, user: create(:user, username: 'xxx'))
+        create(:reply, post: post, user: create(:user, username: 'www'))
+        create(:reply, post: post, user: create(:user, username: 'vvv'))
+        stats_link = helper.link_to('4 others', stats_post_path(post))
+        expect(helper.author_links(post)).to eq(helper.user_link(post.user) + ' and ' + stats_link)
+      end
+    end
+  end
 end
