@@ -41,7 +41,7 @@
   - unless local_assigns[:hide_continuity]
     %td.post-board.vtop{class: klass}= link_to post.board_name, anchored_board_path(post)
   %td.post-authors.vtop{class: klass}
-    - authors = post.authors.sort_by { |author| author.username.downcase }
+    - authors = post.authors.order(Arel.sql('lower(username) asc'))
     - if authors.length < 4
       - active_authors = authors.active
       - author_list = active_authors.map { |author| user_link(author) }.join(', ')
