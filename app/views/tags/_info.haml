@@ -18,7 +18,7 @@
               - if @tag.owned?
                 = @tag.user.username
               - else
-                %em= @tag.user.username
+                %em= @tag.user.deleted? ? 'deleted user' : tag.user.username
     - if @tag.description.present?
       %tr
         %th.centered.sub.width-150.vtop Description
