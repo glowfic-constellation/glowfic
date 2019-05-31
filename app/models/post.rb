@@ -240,7 +240,7 @@ class Post < ApplicationRecord
 
   # only returns for authors who have written in the post (it's zero for authors who have not joined)
   def author_word_counts
-    joined_authors.map { |author| [author.username, word_count_for(author)] }.sort_by{|a| -a[1] }
+    joined_authors.map { |author| [!author.deleted? ? author.username : '(deleted user)', word_count_for(author)] }.sort_by{|a| -a[1] }
   end
 
   def character_appearance_counts
