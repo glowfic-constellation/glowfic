@@ -11,9 +11,9 @@ class Api::V1::UsersController < Api::ApiController
   error 422, "Invalid parameters provided"
   def index
     queryset = if params[:match] == 'exact'
-      User.where(username: params[:q])
+      User.active.where(username: params[:q])
     else
-      User.where("username LIKE ?", params[:q].to_s + '%').ordered
+      User.active.where("username LIKE ?", params[:q].to_s + '%').ordered
     end
     if params[:hide_unblockable].present? && params[:hide_unblockable] == 'true' && logged_in?
       blocked_users = Block.where(blocking_user_id: current_user.id).pluck(:blocked_user_id)
