@@ -257,7 +257,7 @@ class CharactersController < ApplicationController
     @search_results = Character.unscoped
 
     if params[:author_id].present?
-      @users = User.where(id: params[:author_id])
+      @users = User.active.where(id: params[:author_id])
       if @users.present?
         @search_results = @search_results.where(user_id: params[:author_id])
       else
