@@ -20,7 +20,7 @@ class RepliesController < WritableController
       @templates = Template.where(id: @characters.map(&:template_id).uniq.compact).ordered
       gon.post_id = @post.id
     else
-      @users = User.where(id: params[:author_id]) if params[:author_id].present?
+      @users = User.active.where(id: params[:author_id]) if params[:author_id].present?
       @characters = Character.where(id: params[:character_id]) if params[:character_id].present?
       @templates = Template.ordered.limit(25)
       @boards = Board.where(id: params[:board_id]) if params[:board_id].present?
