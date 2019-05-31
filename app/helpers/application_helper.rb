@@ -59,6 +59,7 @@ module ApplicationHelper
   end
 
   def fun_name(user)
+    return '(deleted user)'.html_safe if user.deleted?
     return user.username unless user.moiety
     content_tag :span, user.username, style: 'font-weight: bold; color: #' + user.moiety
   end
