@@ -45,6 +45,7 @@ class Message < ApplicationRecord
 
   def sender_name
     return 'Glowfic Constellation' if site_message?
+    return '(deleted user)' if sender.deleted?
     sender.username
   end
 
