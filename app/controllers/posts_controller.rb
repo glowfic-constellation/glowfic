@@ -345,7 +345,7 @@ class PostsController < WritableController
 
   def editor_setup
     super
-    @permitted_authors = User.ordered - (@post.try(:joined_authors) || [])
+    @permitted_authors = User.active.ordered - (@post.try(:joined_authors) || [])
     @author_ids = post_params[:unjoined_author_ids].reject(&:blank?).map(&:to_i) if post_params.key?(:unjoined_author_ids)
     @author_ids ||= @post.try(:unjoined_author_ids) || []
   end
