@@ -49,14 +49,7 @@
               %br
               %span.details= sanitize_post_description(post.description).html_safe
           %td.vtop.post-board{class: klass}= link_to post.board_name, board_path(post.board_id)
-          %td.vtop.post-authors{class: klass}
-            - authors = post.authors.sort_by { |author| author.username.downcase }
-            - if authors.length < 4
-              = authors.map { |author| user_link(author, colored: true) }.join(', ').html_safe
-            - else
-              = user_link(post.user, colored: true)
-              and
-              = link_to "#{authors.length-1} others", stats_post_path(post)
+          %td.vtop.post-authors{class: klass}= author_links(post, colored: true)
           %td.vtop.centered.post-replies{class: klass}= link_to post.reply_count, stats_post_path(post)
           %td.vtop.centered.post-replies{class: klass}= link_to replies_today.count, post_or_reply_link(linked)
           %td.vtop.centered.post-time{class: klass}= linked.created_at.strftime("%l:%M %p")
