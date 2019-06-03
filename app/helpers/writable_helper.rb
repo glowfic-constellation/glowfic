@@ -63,21 +63,4 @@ module WritableHelper
       content_tag(:span, sanitize_post_description(desc[255..-1]).html_safe, class: 'hidden', id: "desc-#{id}") +
       content_tag(:a, 'more &raquo;'.html_safe, href: '#', id: "expanddesc-#{id}", class: 'expanddesc')
   end
-
-  def author_links(post)
-    authors = post.authors.active.order(Arel.sql('lower(username) asc'))
-    num_deleted = post.authors.where(deleted: true).count
-    deleted = '(' + 'deleted user'.pluralize(num_deleted) + ')'
-    return deleted if authors.empty?
-
-    total = authors.size + (num_deleted > 0 ? 1 : 0)
-    if total < 4
-      links = authors.map { |author| user_link(author) }
-      links << deleted if num_deleted > 0
-      return links.join(', ')
-    end
-
-    first_author = post.user.deleted? ? authors.first : post.user
-    user_link(first_author) + ' and ' + link_to("#{total-1} others", stats_post_path(post))
-  end
 end

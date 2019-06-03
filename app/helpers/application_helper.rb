@@ -228,4 +228,21 @@ module ApplicationHelper
     return '(deleted user)'.html_safe if deleted
     link_to username, user_path(user_id)
   end
+
+  def author_links(post)
+    authors = post.authors.active.order(Arel.sql('lower(username) asc'))
+    num_deleted = post.authors.where(deleted: true).count
+    deleted = '(' + 'deleted user'.pluralize(num_deleted) + ')'
+    return deleted if authors.empty?
+
+    total = authors.size + (num_deleted > 0 ? 1 : 0)
+    if total < 4
+      links = authors.map { |author| user_link(author) }
+      links << deleted if num_deleted > 0
+      return links.join(', ')
+    end
+
+    first_author = post.user.deleted? ? authors.first : post.user
+    user_link(first_author) + ' and ' + link_to("#{total-1} others", stats_post_path(post))
+  end
 end
