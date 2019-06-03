@@ -65,14 +65,14 @@ RSpec.describe WritableHelper do
         post = create(:post)
         post.user.update_attributes(deleted: true)
         reply = create(:reply, post: post)
-        expect(helper.author_links(post)).to eq(helper.user_link(reply.user) + ', (deleted user)')
+        expect(helper.author_links(post)).to eq(helper.user_link(reply.user) + ' and 1 deleted user')
       end
 
       it "handles two users with reply user deleted" do
         post = create(:post)
         reply = create(:reply, post: post)
         reply.user.update_attributes(deleted: true)
-        expect(helper.author_links(post)).to eq(helper.user_link(post.user) + ', (deleted user)')
+        expect(helper.author_links(post)).to eq(helper.user_link(post.user) + ' and 1 deleted user')
       end
 
       it "handles three users with one deleted" do
@@ -81,7 +81,7 @@ RSpec.describe WritableHelper do
         reply.user.update_attributes(deleted: true)
         reply = create(:reply, post: post, user: create(:user, username: 'yyy'))
         links = [post.user, reply.user].map { |u| helper.user_link(u) }.join(', ')
-        expect(helper.author_links(post)).to eq(links + ', (deleted user)')
+        expect(helper.author_links(post)).to eq(links + ' and 1 deleted user')
       end
 
       it "handles three users with two deleted" do
@@ -90,7 +90,7 @@ RSpec.describe WritableHelper do
         reply.user.update_attributes(deleted: true)
         reply = create(:reply, post: post)
         reply.user.update_attributes(deleted: true)
-        expect(helper.author_links(post)).to eq(helper.user_link(post.user) + ', (deleted users)')
+        expect(helper.author_links(post)).to eq(helper.user_link(post.user) + ' and 2 deleted users')
       end
 
       it "handles >4 users with post user first" do

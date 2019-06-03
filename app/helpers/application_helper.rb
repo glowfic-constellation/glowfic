@@ -229,21 +229,22 @@ module ApplicationHelper
     link_to username, user_path(user_id)
   end
 
-  def author_links(post)
+  def author_links(post, linked: true, colored: false)
     authors = post.authors.active.order(Arel.sql('lower(username) asc'))
     num_deleted = post.authors.where(deleted: true).count
-    deleted = '(' + 'deleted user'.pluralize(num_deleted) + ')'
-    return deleted if authors.empty?
+    deleted = 'deleted user'.pluralize(num_deleted)
+    return "(#{deleted})" if authors.empty?
 
-    total = authors.size + (num_deleted > 0 ? 1 : 0)
+    total = authors.size + num_deleted
     if total < 4
-      links = authors.map { |author| user_link(author, colored: colored) }
-      links << deleted if num_deleted > 0
-      return links.join(', ')
+      links = authors.map { |author| linked ? user_link(author, colored: colored) : author.username }
+      return links.join(', ') if num_deleted.zero?
+      return links.join(', ') + " and #{num_deleted} #{deleted}"
     end
 
     first_author = post.user.deleted? ? authors.first : post.user
-    first_link = user_link(first_author, colored: colored)
-    first_link + ' and ' + link_to("#{total-1} others", stats_post_path(post))
+    first_link = linked ? user_link(first_author, colored: colored) : first_author.username
+    others = linked ? link_to("#{total-1} others", stats_post_path(post)) : "#{total-1} others"
+    first_link + ' and ' + others
   end
 end
