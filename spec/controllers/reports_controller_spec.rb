@@ -55,6 +55,16 @@ RSpec.describe ReportsController do
       expect(response).to have_http_status(200)
     end
 
+    it "succeeds with deleted user" do
+      valid = create(:post)
+      invalid = create(:post, user: create(:user, deleted: true))
+      get :show, params: { id: 'daily' }
+      valid_report = assigns(:posts).detect { |p| p.id == valid.id }
+      invalid_report = assigns(:posts).detect { |p| p.id == invalid.id }
+      expect(valid_report.last_user_deleted).to eq(false)
+      expect(invalid_report.last_user_deleted).to eq(true)
+    end
+
     context "with views" do
       render_views
 

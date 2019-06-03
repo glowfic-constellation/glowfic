@@ -60,17 +60,17 @@ RSpec.feature "Show a single continuity", :type => :feature do
     end
     within("tbody tr:nth-child(3)") do
       expect(page).to have_selector('.post-subject', exact_text: post2.subject)
-      expect(page).to have_selector('.post-authors', text: '1 deleted user')
+      expect(page).to have_selector('.post-authors', text: '(deleted user)')
       expect(page).to have_selector('.post-time', text: '(deleted user)')
     end
     within("tbody tr:nth-child(2)") do
       expect(page).to have_selector('.post-subject', exact_text: post3.subject)
-      expect(page).to have_selector('.post-authors', text: '(deleted user) and 4 others')
+      expect(page).to have_selector('.post-authors', text: 'Alice and 4 others')
       expect(page).to have_selector('.post-time', text: 'Bob')
     end
     within("tbody tr:nth-child(1)") do
       expect(page).to have_selector('.post-subject', exact_text: post4.subject)
-      expect(page).to have_selector('.post-authors', text: 'Alice, Poe, and 1 deleted user')
+      expect(page).to have_selector('.post-authors', text: 'Alice, Poe and 1 deleted user')
       expect(page).to have_selector('.post-time', text: '(deleted user)')
     end
   end

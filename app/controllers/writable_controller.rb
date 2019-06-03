@@ -156,7 +156,7 @@ class WritableController < ApplicationController
 
     post_description = generate_short(post.description)
     post_description += ' ('
-    post_description += author_links(post)
+    post_description += helpers.author_links(post, linked: false)
     post_description += " – page #{page} of #{total_pages}"
     post_description += ", #{per_page}/page" unless per_page == 25
     post_description += ')'
