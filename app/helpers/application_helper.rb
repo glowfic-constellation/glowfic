@@ -216,12 +216,16 @@ module ApplicationHelper
 
   def message_sender(message)
     return message.sender_name if message.site_message?
-    user_link(message.sender, message.sender_name)
+    user_mem_link(message.sender.id, message.sender_name, message.sender.deleted?)
   end
 
-  def user_link(user, text = nil)
-    return '(deleted user)'.html_safe if user.deleted?
-    link_to text, user_path(user) if text
-    link_to user.username, user_path(user)
+  def user_link(user, colored: false)
+    username = colored ? fun_name(user) : user.username
+    user_mem_link(user.id, username, user.deleted?)
+  end
+
+  def user_mem_link(user_id, username, deleted)
+    return '(deleted user)'.html_safe if deleted
+    link_to username, user_path(user_id)
   end
 end
