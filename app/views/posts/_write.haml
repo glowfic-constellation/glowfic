@@ -44,7 +44,7 @@
     = f.select :privacy, options_from_collection_for_select(post_privacy_settings.to_a, :second, :first, post.privacy)
     #access_list
       = f.label :viewer_ids, '&#8627; Who can view this post? '.html_safe
-      = f.collection_select(:viewer_ids, User.where.not(id: post.user_id).ordered,
+      = f.collection_select(:viewer_ids, User.active.where.not(id: post.user_id).ordered,
       :id, :username, {selected: @viewer_ids.nil? ? post.viewer_ids : @viewer_ids}, {multiple: true})
 
     #current_authors

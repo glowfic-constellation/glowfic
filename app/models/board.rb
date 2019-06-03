@@ -44,6 +44,7 @@ class Board < ApplicationRecord
     return false unless user
     return true if creator_id == user.id
     return true if user.has_permission?(:edit_continuities)
+    return false if creator.deleted?
     board_coauthors.where(user_id: user.id).exists?
   end
 
