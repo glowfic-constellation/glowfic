@@ -19,7 +19,7 @@
       %th.sub Hidden (Yours)
       %th.sub
   %tbody
-    - @blocks.ordered.each do |block|
+    - @blocks.each do |block|
       - klass = cycle('even', 'odd')
       %tr
         %td.padding-5{class: klass}
@@ -42,8 +42,7 @@
         %td.width-70.right-align{class: klass}
           = link_to edit_block_path(block) do
             = image_tag "icons/pencil.png"
-          - username = !block.blocked_user.deleted? ? block.blocked_user.username : 'this deleted user'
-          = link_to block_path(block), :method => :delete, data: { confirm: "Are you sure you want to unblock #{username}?" } do
+          = link_to block_path(block), :method => :delete, data: { confirm: "Are you sure you want to unblock #{block.blocked_user.username}?" } do
             = image_tag "icons/cross.png"
           &nbsp;
     - if @blocks.empty?

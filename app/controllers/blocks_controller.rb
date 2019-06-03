@@ -6,7 +6,7 @@ class BlocksController < ApplicationController
 
   def index
     @page_title = "Blocked Users"
-    @blocks = Block.where(blocking_user: current_user)
+    @blocks = Block.where(blocking_user: current_user).ordered.reject{ |b| b.blocked_user.deleted? }
   end
 
   def new
