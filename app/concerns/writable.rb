@@ -60,6 +60,7 @@ module Writable
     end
 
     def username
+      return '(deleted user)' if user_deleted?
       return read_attribute(:username) if has_attribute?(:username)
       user.username
     end
