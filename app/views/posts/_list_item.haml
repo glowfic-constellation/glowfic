@@ -51,10 +51,7 @@
   %td.post-time.vtop{class: klass}
     = pretty_time(post.tagged_at)
     by
-    - if post.last_user_deleted?
-      (deleted user)
-    - else
-      = link_to post.last_user_name, user_path(post.last_user_id)
+    = user_mem_link(post.last_user_id, post.last_user_name, post.last_user_deleted?)
   - if local_assigns[:check_box_name]
     %td.post-check-box{class: klass}= check_box_tag check_box_name, post.id, false, class: 'checkbox'
 - if post.respond_to?(:index_description)
