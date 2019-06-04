@@ -1471,6 +1471,16 @@ RSpec.describe PostsController do
         expect(post.reload).to be_active
       end
 
+      it "handles unexpected failure" do
+        post = create(:post, status: Post::STATUS_ACTIVE)
+        login_as(post.user)
+        expect_any_instance_of(Post).to receive(:save).and_return(false)
+        put :update, params: { id: post.id, status: 'abandoned' }
+        expect(response).to redirect_to(post_url(post))
+        expect(flash[:error][:message]).to eq('Status could not be updated.')
+        expect(post.reload.status).not_to eq(Post::STATUS_ABANDONED)
+      end
+
       {complete: 'completed', abandoned: 'abandoned', hiatus: 'on_hiatus', active: 'active'}.each do |status, method|
         context "to #{status}" do
           let(:post) { create(:post) }
@@ -1589,6 +1599,16 @@ RSpec.describe PostsController do
 
         put :update, params: { id: post.id, authors_locked: 'false' }
         expect(flash[:success]).to eq("Post has been unlocked from current authors.")
+        expect(post.reload).not_to be_authors_locked
+      end
+
+      it "handles unexpected failure" do
+        post = create(:post)
+        login_as(post.user)
+        expect_any_instance_of(Post).to receive(:save).and_return(false)
+        put :update, params: { id: post.id, authors_locked: 'true' }
+        expect(response).to redirect_to(post_url(post))
+        expect(flash[:error][:message]).to eq('Post could not be updated.')
         expect(post.reload).not_to be_authors_locked
       end
     end

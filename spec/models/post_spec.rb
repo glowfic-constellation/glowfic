@@ -859,6 +859,21 @@ RSpec.describe Post do
     end
   end
 
+  describe "last_user_deleted" do
+    it "loads from the database if not loaded via select" do
+      post = create(:post)
+      post.last_user.archive
+      expect(post.reload.last_user_deleted?).to eq(true)
+    end
+
+    it "reads from attribute if loaded via select" do
+      post = create(:post)
+      post = Post.where(id: post.id).joins(:last_user).select('posts.*, users.deleted as last_user_deleted').first
+      post.last_user.archive
+      expect(post.last_user_deleted?).to eq(false) # not reloaded loads cached false
+    end
+  end
+
   describe "#has_edit_audits?" do
     let(:user) { create(:user) }
     before(:each) { Post.auditing_enabled = true }

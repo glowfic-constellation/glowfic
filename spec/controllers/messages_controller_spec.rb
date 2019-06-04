@@ -307,6 +307,24 @@ RSpec.describe MessagesController do
       expect(flash[:error]).to eq("That is not your message!")
     end
 
+    it "requires extant sender" do
+      message = create(:message)
+      login_as(message.recipient)
+      message.sender.archive
+      get :show, params: { id: message.id }
+      expect(response).to redirect_to(messages_url(view: 'inbox'))
+      expect(flash[:error]).to eq("Message could not be found.")
+    end
+
+    it "requires extant recipient" do
+      message = create(:message)
+      login_as(message.sender)
+      message.recipient.archive
+      get :show, params: { id: message.id }
+      expect(response).to redirect_to(messages_url(view: 'inbox'))
+      expect(flash[:error]).to eq("Message could not be found.")
+    end
+
     context "with views" do
       render_views
       it "works for sender" do
