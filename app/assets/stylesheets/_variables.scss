@@ -123,7 +123,7 @@ $bg_color_ender: $bg_color_subber !default; // form table footer with submit
 $font_color_ender: $colors_black !default;
 
 // content
-$filter_disabled: #808080 !default;
+$filter_disabled: $colors_grey !default;
 
 $bg_color_even: #E3E3E3 !default;
 $bg_color_odd: #D8D8D8 !default;
@@ -195,7 +195,7 @@ $font_color_popup_link: $colors_mineshaft !default;
 
 // misc
 $bg_color_descriptions: $colors_lightbrown !default; // description subheadings on templates page ("single-description"), *not* posts
-$bg_color_descriptions_blockquote: #808080 !default;
+$bg_color_descriptions_blockquote: $colors_grey !default;
 $font_color_descriptions_link: $colors_green !default;
 $font_color_descriptions_link_visited: $colors_plantation !default;
 $bg_color_selectionpopup: $colors_lightbrown !default; // selection popups like character/alias on posts#editor
@@ -204,7 +204,7 @@ $bg_color_search_box: $colors_brown !default;
 $font_color_search_box: $colors_black !default;
 
 $font_color_char_switcher: #AAAAAA !default;
-$font_color_char_switcher_alpha: #808080 !default;
+$font_color_char_switcher_alpha: $colors_grey !default;
 
 // replies.scss
 $bg_color_icon_overlay: $colors_black !default; // box displaying current icon
