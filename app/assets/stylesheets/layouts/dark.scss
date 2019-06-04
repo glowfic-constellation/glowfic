@@ -18,14 +18,14 @@ $font_color_link_hover: #B3B3B3; // link (hovered)
 // flashes
 // these are the notifications that appear when you submit a form or get a message
 $bg_color_flash_success: #555E55; // success
-$font_color_flash_success: $colors_silver_again;
+$font_color_flash_success: $colors_silver;
 $bg_color_flash_error: #532D38; // error
 $bg_color_flash_inbox: #4B4B71; // new message
 $font_color_flash_inbox: $colors_silver;
 $bg_color_flash_breadcrumbs: $colors_dark; // breadcrumbs ("Continuities » Continuity » Section » Thread")
 $font_color_flash_breadcrumbs: $colors_alto;
 $font_color_flash_link: $colors_alto;
-$font_color_flash_hover: $colors_silver_again;
+$font_color_flash_hover: $colors_silver;
 
 $bg_color_spacer_alt: $colors_mineshaft;
 $bg_color_search_box: $colors_mineshaft;
@@ -108,7 +108,7 @@ $border_color_popup_button: #484848;
 $font_color_popup_link: #66997D;
 
 // Darken input boxes
-$font_color_input: $colors_silver_again; // TODO: standardize font color
+$font_color_input: $colors_silver; // TODO: standardize font color
 $bg_color_input: #4D4D4D; // for generic input boxes all over the place
 $border_color_input: #666666;
 $font_color_input_placeholder: #888888;
