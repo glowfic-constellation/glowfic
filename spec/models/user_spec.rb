@@ -172,5 +172,15 @@ RSpec.describe User do
       user.reload
       expect(user.send(:[], :username)).to eq('test')
     end
+
+    it "removes related blocks" do
+      user = create(:user)
+      create(:block, blocking_user: user)
+      create(:block, blocked_user: user)
+      expect(Blocks.count).to be(2)
+      user.archive
+      expect(user.deleted).to be(true)
+      expect(Blocks.count).to be(0)
+    end
   end
 end
