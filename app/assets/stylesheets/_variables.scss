@@ -126,10 +126,10 @@ $font_color_ender: $colors_black !default;
 $filter_disabled: $colors_grey !default;
 
 $bg_color_even: #E3E3E3 !default;
-$bg_color_odd: #D8D8D8 !default;
+$bg_color_odd: $colors_alto_darker !default;
 $bg_color_content_border: transparent !default; // from river, is 0-width in default
 
-// target: #D8D8D8;
+// target: #D8D8D8; ($colors_alto_darker)
 // from: #E3E3E3;
 // opacity: 0.5;
 // from + (given-from) * opacity = target
