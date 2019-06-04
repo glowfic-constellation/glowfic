@@ -15,11 +15,11 @@ $font_color_link_visited: #484848;
 // these are the notifications that appear when you submit a form or get a message
 $bg_color_flash_success: $colors_gallery; // success
 $bg_color_flash_inbox: $colors_gallery; // new message
-$bg_color_flash_breadcrumbs: #ADADAD; // breadcrumbs ("Continuities » Continuity » Section » Thread")
+$bg_color_flash_breadcrumbs: $colors_silver_chalice; // breadcrumbs ("Continuities » Continuity » Section » Thread")
 
 // content headers
 $bg_color_sub: $colors_silver_darker; // secondary content header
-$bg_color_subber: #ADADAD; // tertiary content header
+$bg_color_subber: $colors_silver_chalice; // tertiary content header
 
 $bg_color_navheader: $colors_silver_darker;
 
@@ -42,7 +42,7 @@ $bg_color_paginate_current_page: #616161;
 // icons
 $bg_color_icon: $colors_silver_darker;
 $bg_color_icon_credit: $colors_silver_darker;
-$border_color_icon_editor: #ADADAD;
+$border_color_icon_editor: $colors_silver_chalice;
 $bg_color_icon_editor: $colors_silver_darker;
 
 $bg_color_tag_item: #575757;
