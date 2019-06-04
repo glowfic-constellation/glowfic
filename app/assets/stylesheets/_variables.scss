@@ -65,11 +65,11 @@ $font_color_linkbox_dismiss: $colors_black !default;
 // inputs
 $bg_color_input: $colors_white !default; // regular <input>
 $font_color_input: $colors_dark !default;
-$border_color_input: #AAAAAA !default;
+$border_color_input: $colors_silver_chalice_lighter !default;
 
 $bg_color_button: $colors_white !default; // buttons; overridden by gradient
 $font_color_button: $colors_dark !default;
-$border_color_button: #AAAAAA !default;
+$border_color_button: $colors_silver_chalice_lighter !default;
 // color steps on the gradient
 $bg_color_button_20: #FFFFFF !default;
 $bg_color_button_50: #F6F6F6 !default;
@@ -203,7 +203,7 @@ $bg_color_spacer_alt: $colors_brown !default;
 $bg_color_search_box: $colors_brown !default;
 $font_color_search_box: $colors_black !default;
 
-$font_color_char_switcher: #AAAAAA !default;
+$font_color_char_switcher: $colors_silver_chalice_lighter !default;
 $font_color_char_switcher_alpha: $colors_grey !default;
 
 // replies.scss
