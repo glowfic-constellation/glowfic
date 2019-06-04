@@ -12,7 +12,7 @@ $font_size_smaller: 0.75rem;
 $font_size_mini: 0.625rem; // time-loaded
 
 // header
-$font_color_header_link: $colors_bright !default; // header links
+$font_color_header_link: $colors_white !default; // header links
 $font_color_header_link_hover: $colors_brown !default; // header links (hover)
 
 $bg_color_header_top: $colors_green !default; // top header strip for logo
@@ -29,7 +29,7 @@ $font_color_content: $colors_dark !default; // body
 $font_color_link: $colors_green !default; // link
 $font_color_link_visited: $colors_plantation !default; // link (visited)
 $font_color_link_visited_alt: $colors_plantation !default; // starry has an alternate link visited color in some places
-$font_color_link_hover: $colors_narvik !default; // link (hovered)
+$font_color_link_hover: $colors_white !default; // link (hovered)
 
 // flashes
 // these are the notifications that appear when you submit a form or get a message
@@ -44,7 +44,7 @@ $font_color_flash_breadcrumbs: $colors_black !default;
 $font_color_breadcrumbs_bold: $colors_black !default;
 $font_color_breadcrumbs_link_visited: $colors_plantation !default;
 $font_color_flash_link: $colors_green !default;
-$font_color_flash_hover: $colors_narvik !default;
+$font_color_flash_hover: $colors_white !default;
 
 // link-boxes
 $bg_color_linkbox_new: $colors_green !default;
@@ -71,7 +71,7 @@ $bg_color_button: $colors_white !default; // buttons; overridden by gradient
 $font_color_button: $colors_dark !default;
 $border_color_button: #AAAAAA !default;
 // color steps on the gradient
-$bg_color_button_20: $colors_white !default;
+$bg_color_button_20: #FFFFFF !default;
 $bg_color_button_50: #F6F6F6 !default;
 $bg_color_button_52: $colors_lightgrey !default;
 $bg_color_button_100: #F4F4F4 !default;
@@ -212,7 +212,7 @@ $bg_color_icon_overlay: $colors_blacker !default; // box displaying current icon
 $bg_color_expander: $colors_greygreen !default; // expander on posts
 
 $bg_color_ender_post: $colors_darkpurple !default;
-$font_color_ender_post: $colors_bright !default;
+$font_color_ender_post: $colors_white !default;
 
 $bg_color_post_character: $colors_brown !default;
 $bg_color_post_screenname: $colors_greybrown !default;
