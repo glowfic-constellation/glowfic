@@ -42,6 +42,20 @@ RSpec.describe BoardsController do
         expect(response).to redirect_to(root_url)
       end
 
+      it "displays error if user id invalid and logged in" do
+        login
+        get :index, params: { user_id: -1 }
+        expect(flash[:error]).to eq('User could not be found.')
+        expect(response).to redirect_to(root_url)
+      end
+
+      it "does not use logged in user's username" do
+        board = create(:board)
+        login_as(board.creator)
+        get :index, params: { user_id: board.creator_id }
+        expect(assigns(:page_title)).to eq('Your Continuities')
+      end
+
       it "sets correct variables" do
         user = create(:user)
         owned_board = create(:board, creator_id: user.id)
