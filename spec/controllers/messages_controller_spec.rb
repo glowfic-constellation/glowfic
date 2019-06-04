@@ -14,6 +14,8 @@ RSpec.describe MessagesController do
         user = create(:user)
         login_as(user)
         messages = Array.new(4) { create(:message, recipient: user) }
+        deleted = create(:message, recipient: user)
+        deleted.sender.archive
         get :index
         expect(response).to have_http_status(200)
         expect(assigns(:view)).to eq('inbox')
@@ -25,6 +27,8 @@ RSpec.describe MessagesController do
         user = create(:user)
         login_as(user)
         messages = Array.new(4) { create(:message, sender: user) }
+        deleted = create(:message, sender: user)
+        deleted.recipient.archive
         get :index, params: { view: 'outbox' }
         expect(response).to have_http_status(200)
         expect(assigns(:view)).to eq('outbox')
