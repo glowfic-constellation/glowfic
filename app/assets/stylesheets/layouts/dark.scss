@@ -27,8 +27,8 @@ $font_color_flash_breadcrumbs: $colors_alto;
 $font_color_flash_link: $colors_alto;
 $font_color_flash_hover: $colors_silver_again;
 
-$bg_color_spacer_alt: #333333;
-$bg_color_search_box: #333333;
+$bg_color_spacer_alt: $colors_mineshaft;
+$bg_color_search_box: $colors_mineshaft;
 $font_color_search_box: $colors_silver_chalice;
 
 // misc
@@ -100,7 +100,7 @@ $font_color_reply_content: #CCCCCC;
 $bg_color_popup_header: #2B2B2B;
 $font_color_popup_header: #C2C2C2;
 $border_color_popup_header: #262626;
-$bg_color_popup_content: #333333;
+$bg_color_popup_content: $colors_mineshaft;
 $font_color_popup_content: $colors_silver_chalice;
 $border_color_popup: #444444;
 $bg_color_popup_button: #383838;

@@ -184,14 +184,14 @@ $bg_color_reply_content: $colors_white !default;
 $font_color_reply_content: $colors_dark !default;
 
 $bg_color_popup_header: #E9E9E9 !default;
-$font_color_popup_header: #333333 !default;
+$font_color_popup_header: $colors_mineshaft !default;
 $border_color_popup_header: $colors_alto !default;
 $bg_color_popup_content: $colors_white !default;
-$font_color_popup_content: #333333 !default;
+$font_color_popup_content: $colors_mineshaft !default;
 $border_color_popup: $colors_silver !default;
 $bg_color_popup_button: #F6F6F6 !default;
 $border_color_popup_button: $colors_silver !default;
-$font_color_popup_link: #333333 !default;
+$font_color_popup_link: $colors_mineshaft !default;
 
 // misc
 $bg_color_descriptions: $colors_lightbrown !default; // description subheadings on templates page ("single-description"), *not* posts
