@@ -49,7 +49,7 @@
               %br
               %span.details= sanitize_post_description(post.description).html_safe
           %td.vtop.post-board{class: klass}= link_to post.board_name, board_path(post.board_id)
-          %td.vtop.post-authors{class: klass}= author_links(post, colored: true)
+          %td.vtop.post-authors{class: klass}= author_links(post, colored: true).html_safe
           %td.vtop.centered.post-replies{class: klass}= link_to post.reply_count, stats_post_path(post)
           %td.vtop.centered.post-replies{class: klass}= link_to replies_today.count, post_or_reply_link(linked)
           %td.vtop.centered.post-time{class: klass}= linked.created_at.strftime("%l:%M %p")
