@@ -6,7 +6,7 @@ $bg_color_header_bottom: $colors_gunpowder !default; // bottom header strip with
 $font_color_header_link_hover: $colors_silver !default;
 
 // main page
-$font_color_page: $colors_alto_brighter;
+$font_color_page: $colors_alto;
 
 $font_color_search_box: $colors_white;
 
@@ -35,7 +35,7 @@ $font_color_subber_link_visited: $colors_santasgrey !default;
 
 // content
 $bg_color_even: #E3E3E3 !default;
-$bg_color_odd: $colors_alto_darker !default;
+$bg_color_odd: $colors_alto !default;
 $opacity_blockquote: 0.2;
 
 // posts
@@ -59,10 +59,10 @@ $font_color_paginate_link_disabled: #58546B;
 $bg_color_paginate_current_page: $colors_gunpowder !default;
 
 // icons
-$bg_color_icon: $colors_alto_darker !default;
-$bg_color_icon_credit: $colors_alto_darker !default;
+$bg_color_icon: $colors_alto !default;
+$bg_color_icon_credit: $colors_alto !default;
 $border_color_icon_editor: $colors_gunpowder !default;
-$bg_color_icon_editor: $colors_alto_darker !default;
+$bg_color_icon_editor: $colors_alto !default;
 
 // tag items
 $font_color_tag_item: #444158 !default;
