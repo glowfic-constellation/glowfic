@@ -83,7 +83,7 @@ body, .even, .odd, .post-post, .post-reply, #post-editor { color: $font_color_pa
 
 // Hovering help box on post editor
 $bg_color_popup_header: #0D0B1E;
-$font_color_popup_header: #EEEEEE;
+$font_color_popup_header: $colors_lightgrey;
 $border_color_popup_header: #28225D;
 $bg_color_popup_content: #211E2F;
 $font_color_popup_content: $colors_alto_brighter;
