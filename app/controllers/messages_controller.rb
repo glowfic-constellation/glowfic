@@ -58,6 +58,11 @@ class MessagesController < ApplicationController
       redirect_to messages_path(view: 'inbox') and return
     end
 
+    if message.sender&.deleted? || message.recipient.deleted?
+      flash[:error] = "Message could not be found."
+      redirect_to messages_path(view: 'inbox') and return
+    end
+
     unless message.visible_to?(current_user)
       flash[:error] = "That is not your message!"
       redirect_to messages_path(view: 'inbox') and return
