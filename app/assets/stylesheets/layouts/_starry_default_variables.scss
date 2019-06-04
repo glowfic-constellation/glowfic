@@ -1,7 +1,7 @@
 @import 'palette';
 
 // header
-$bg_color_header_middle: #05050F !default; // middle header strip with user items
+$bg_color_header_middle: $colors_bunker !default; // middle header strip with user items
 $bg_color_header_bottom: $colors_gunpowder !default; // bottom header strip with navigation
 $font_color_header_link_hover: $colors_silver !default;
 
