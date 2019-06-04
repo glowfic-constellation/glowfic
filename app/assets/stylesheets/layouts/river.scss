@@ -13,8 +13,8 @@ $font_color_link: #3F5970; // link
 $font_color_link_visited: #284150;
 
 // flashes
-$bg_color_flash_success: $colors_gallery; // success
-$bg_color_flash_inbox: $colors_gallery; // new message
+$bg_color_flash_success: $colors_lightgrey; // success
+$bg_color_flash_inbox: $colors_lightgrey; // new message
 $bg_color_flash_breadcrumbs: #A3A8A9; // breadcrumbs ("Continuities » Continuity » Section » Thread")
 
 // content headers
@@ -23,7 +23,7 @@ $bg_color_subber: $colors_lightbrown; // tertiary content header
 $bg_color_ender: #A3A8A9; // form table footer with submit
 
 // content
-$bg_color_even: $colors_concrete;
+$bg_color_even: $colors_lightgrey;
 $bg_color_odd: #E8E8E8;
 $bg_color_content_border: $colors_silver_chalice_lighter;
 

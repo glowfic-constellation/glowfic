@@ -16,7 +16,7 @@ $font_color_link_visited: $colors_gunpowder !default;
 
 // flashes
 // these are the notifications that appear when you submit a form or get a message
-$font_color_breadcrumbs_bold: $colors_concrete;
+$font_color_breadcrumbs_bold: $colors_lightgrey;
 $font_color_breadcrumbs_link_visited: $colors_santasgrey !default;
 
 // misc
@@ -25,8 +25,8 @@ $font_color_descriptions_link_visited: $colors_santasgrey !default;
 $bg_color_descriptions: $colors_gunpowder !default; // description subheadings on templates page ("single-description"), *not* posts
 
 // content headers
-$font_color_sub: $colors_concrete;
-$font_color_subber_bold: $colors_concrete;
+$font_color_sub: $colors_lightgrey;
+$font_color_subber_bold: $colors_lightgrey;
 
 $font_color_head_link: $colors_logan !default; // TODO: check this
 $font_color_head_link_visited: $colors_santasgrey !default;
@@ -39,7 +39,7 @@ $bg_color_odd: $colors_alto !default;
 $opacity_blockquote: 0.2;
 
 // posts
-$font_color_post_description: $colors_concrete !default;
+$font_color_post_description: $colors_lightgrey !default;
 $bg_color_post_description: $colors_gunpowder !default;
 
 $border_color_post_menu: $colors_grey;
@@ -49,11 +49,11 @@ $bg_color_menu_link_hover: #D3D3D3 !default;
 $bg_color_selectionpopup: $colors_gunpowder !default; // selection popups like character/alias on posts#editor
 $bg_color_icon_selector: $colors_gunpowder !default;
 
-$font_color_post_info: $colors_concrete;
+$font_color_post_info: $colors_lightgrey;
 $font_weight_post_info: bold !default;
 $font_color_post_screenname: $colors_santasgrey !default;
 
-$font_color_paginate_link: $colors_concrete;
+$font_color_paginate_link: $colors_lightgrey;
 $font_color_paginate_link_visited: $colors_santasgrey !default;
 $font_color_paginate_link_disabled: #58546B;
 $bg_color_paginate_current_page: $colors_gunpowder !default;
