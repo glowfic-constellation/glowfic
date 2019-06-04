@@ -11,8 +11,8 @@ $bg_color_header_bottom: #56554F; // bottom header strip with navigation
 $font_color_header_link: #CCCCCC;  // header links
 
 // links
-$font_color_link: #66997D; // link
-$font_color_link_visited: #66997D; // TODO: why the heck are these set the same
+$font_color_link: $colors_oxley; // link
+$font_color_link_visited: $colors_oxley; // TODO: why the heck are these set the same
 $font_color_link_hover: #B3B3B3; // link (hovered)
 
 // flashes
@@ -105,7 +105,7 @@ $font_color_popup_content: $colors_silver_chalice;
 $border_color_popup: $colors_dark;
 $bg_color_popup_button: #383838;
 $border_color_popup_button: #484848;
-$font_color_popup_link: #66997D;
+$font_color_popup_link: $colors_oxley;
 
 // Darken input boxes
 $font_color_input: $colors_silver; // TODO: standardize font color
