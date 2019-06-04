@@ -116,11 +116,11 @@ $bg_color_subber: $colors_greybrown !default; // tertiary content header
 $font_color_head: $colors_lightgrey !default;
 $font_color_sub: $colors_darkpurple !default;
 $font_color_subber_link_visited: $colors_plantation !default;
-$font_color_subber: $colors_blacker !default;
-$font_color_subber_bold: $colors_blacker !default; // TODO: confirm
+$font_color_subber: $colors_black !default;
+$font_color_subber_bold: $colors_black !default; // TODO: confirm
 
 $bg_color_ender: $bg_color_subber !default; // form table footer with submit
-$font_color_ender: $colors_blacker !default;
+$font_color_ender: $colors_black !default;
 
 // content
 $filter_disabled: #808080 !default;
@@ -167,7 +167,7 @@ $bg_color_odd_blockquote: calculate-transparent-color($bg_color_odd, $bg_color_e
 $bg_color_section_warning: #D06E6E !default;
 $bg_color_section_warning_alpha: #FF0000 !default;
 
-$bg_color_message_expander: $colors_blacker !default;
+$bg_color_message_expander: $colors_black !default;
 
 // select2 dropdown
 $font_color_select2_container: $colors_dark !default;
@@ -207,7 +207,7 @@ $font_color_char_switcher: #AAAAAA !default;
 $font_color_char_switcher_alpha: #808080 !default;
 
 // replies.scss
-$bg_color_icon_overlay: $colors_blacker !default; // box displaying current icon
+$bg_color_icon_overlay: $colors_black !default; // box displaying current icon
 
 $bg_color_expander: $colors_greygreen !default; // expander on posts
 
@@ -228,7 +228,7 @@ $bg_color_post_author_narrow: $colors_brown !default; // these are flipped from 
 
 $border_color_unread_reply: #FF0000 !default;
 
-$font_color_paginate: $colors_blacker !default;
+$font_color_paginate: $colors_black !default;
 $font_color_paginate_link: $colors_lightgrey !default;
 $bg_color_paginate_link_hover: $colors_greybrown !default;
 $font_color_paginate_link_visited: $colors_brown !default;
