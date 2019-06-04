@@ -82,7 +82,7 @@ body, .even, .odd, .post-post, .post-reply, #post-editor { color: $font_color_pa
 .odd .tag-item { background-color: $bg_color_tag_item_odd; }
 
 // Hovering help box on post editor
-$bg_color_popup_header: #0D0B1E;
+$bg_color_popup_header: $colors_blackcurrant_blacker;
 $font_color_popup_header: $colors_lightgrey;
 $border_color_popup_header: #28225D;
 $bg_color_popup_content: #211E2F;
