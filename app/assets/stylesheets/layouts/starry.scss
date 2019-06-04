@@ -3,33 +3,33 @@
 // main page
 $bg_color_page: #6C697C; // overall page
 
-$bg_color_spacer_alt: $colors_bunting_brighter;
-$bg_color_search_box: $colors_bunting_brighter;
+$bg_color_spacer_alt: $colors_bunting;
+$bg_color_search_box: $colors_bunting;
 
 // flashes
 $bg_color_flash_error: $colors_manatee_lighter; // error
 $bg_color_flash_success: $colors_manatee_lighter; // success
 $bg_color_flash_inbox: $colors_manatee_lighter; // new message
-$bg_color_flash_breadcrumbs: $colors_bunting_brighter; // breadcrumbs ("Continuities » Continuity » Section » Thread")
+$bg_color_flash_breadcrumbs: $colors_bunting; // breadcrumbs ("Continuities » Continuity » Section » Thread")
 
 // content headers
-$bg_color_head: $colors_bigstone; // primary content header
-$bg_color_sub: $colors_bunting_brighter; // secondary content header
-$bg_color_ender: $colors_bigstone; // form table footer with submit
+$bg_color_head: $colors_ebony; // primary content header
+$bg_color_sub: $colors_bunting; // secondary content header
+$bg_color_ender: $colors_ebony; // form table footer with submit
 $font_color_ender: $colors_lightgrey;
 
 // posts
-$bg_color_navheader: $colors_bunting_brighter;
+$bg_color_navheader: $colors_bunting;
 
 $font_color_post_menu: $colors_black;
 
 $bg_color_expander: $colors_manatee_lighter; // expander on posts
 
-$bg_color_post_icon: $colors_bigstone;
+$bg_color_post_icon: $colors_ebony;
 
 $bg_color_post_character: $colors_gunpowder;
 $bg_color_post_screenname: $colors_gunpowder;
-$bg_color_post_author: $colors_bigstone;
+$bg_color_post_author: $colors_ebony;
 
 // tag items
 $bg_color_tag_item: #2C2C5D;
