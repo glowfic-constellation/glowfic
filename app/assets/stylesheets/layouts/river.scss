@@ -19,7 +19,7 @@ $bg_color_flash_breadcrumbs: #A3A8A9; // breadcrumbs ("Continuities » Continuit
 
 // content headers
 $bg_color_sub: $colors_silver_darker; // secondary content header
-$bg_color_subber: #B9B6AD; // tertiary content header
+$bg_color_subber: $colors_lightbrown; // tertiary content header
 $bg_color_ender: #A3A8A9; // form table footer with submit
 
 // content
@@ -51,7 +51,7 @@ $font_color_post_info: #B3D3FF;
 // icons
 $bg_color_icon: $colors_hit_gray;
 $bg_color_icon_credit: $colors_hit_gray;
-$border_color_icon_editor: #B9B6AD;
+$border_color_icon_editor: $colors_lightbrown;
 $bg_color_icon_editor: $colors_hit_gray;
 
 // tag items
