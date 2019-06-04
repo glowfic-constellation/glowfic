@@ -86,11 +86,11 @@ $bg_color_popup_header: #0D0B1E;
 $font_color_popup_header: #EEEEEE;
 $border_color_popup_header: #28225D;
 $bg_color_popup_content: #211E2F;
-$font_color_popup_content: #DADADA;
+$font_color_popup_content: $colors_alto_brighter;
 $border_color_popup: #444444;
 
 // Darken input boxes
-$font_color_input: #DADADA;
+$font_color_input: $colors_alto_brighter;
 $bg_color_input: #4D4B5B; // for generic input boxes all over the place
 $border_color_input: #625F73; // TODO: check with Aestrix at a better time
 $font_color_input_placeholder: #8884A0;
