@@ -36,7 +36,7 @@ class BlocksController < ApplicationController
   end
 
   def edit
-    @page_title = "Edit Block: #{@block.blocked_user.username}"
+    @page_title = 'Edit Block: ' + @block.blocked_user.username
   end
 
   def update
@@ -48,7 +48,7 @@ class BlocksController < ApplicationController
       flash.now[:error][:message] = "Block could not be saved."
       flash.now[:error][:array] = @block.errors.full_messages
       editor_setup
-      @page_title = "Edit Block: #{@block.blocked_user.username}"
+      @page_title = 'Edit Block: ' + @block.blocked_user.username
       render :edit
     end
   end
