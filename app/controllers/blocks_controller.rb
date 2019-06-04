@@ -6,7 +6,7 @@ class BlocksController < ApplicationController
 
   def index
     @page_title = "Blocked Users"
-    @blocks = Block.where(blocking_user: current_user).ordered.reject{ |b| b.blocked_user.deleted? }
+    @blocks = Block.where(blocking_user: current_user)
   end
 
   def new
@@ -36,8 +36,7 @@ class BlocksController < ApplicationController
   end
 
   def edit
-    @page_title = 'Edit Block'
-    @page_title += ": #{@block.blocked_user.username}" unless @block.blocked_user.deleted?
+    @page_title = "Edit Block: #{@block.blocked_user.username}"
   end
 
   def update
@@ -49,8 +48,7 @@ class BlocksController < ApplicationController
       flash.now[:error][:message] = "Block could not be saved."
       flash.now[:error][:array] = @block.errors.full_messages
       editor_setup
-      @page_title = 'Edit Block'
-      @page_title += ": #{@block.blocked_user.username}" unless @block.blocked_user.deleted?
+      @page_title = "Edit Block: #{@block.blocked_user.username}"
       render :edit
     end
   end
