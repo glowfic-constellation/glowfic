@@ -19,7 +19,7 @@
       %th.sub Hidden (Yours)
       %th.sub
   %tbody
-    - @blocks.each do |block|
+    - @blocks.ordered.each do |block|
       - klass = cycle('even', 'odd')
       %tr
         %td.padding-5{class: klass}
