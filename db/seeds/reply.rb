@@ -22,6 +22,7 @@ Reply.create!([
     character_id: 6,
     created_at: "2018-12-06 00:04:35",
     updated_at: "2018-12-06 00:05:13"
+    icon_id: 11,
   },
   {
     post_id: 2,

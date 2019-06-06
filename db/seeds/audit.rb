@@ -1,3 +1,5 @@
+Post.find_by(id: 1).own_and_associated_audits.delete_all
+
 Audited::Audit.create!([
   {
     auditable_id: 1,

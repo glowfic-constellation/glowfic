@@ -62,8 +62,6 @@ load Rails.root.join('db', 'seeds', 'post.rb')
 puts "Creating replies..."
 load Rails.root.join('db', 'seeds', 'reply.rb')
 
-Post.all.each { |p| p.update_columns(authors_locked: true) }
-
 puts "Creating tags..."
 load Rails.root.join('db', 'seeds', 'tag.rb')
 
