@@ -33,7 +33,7 @@ Audited::Audit.create!([
     user_type: "User",
     action: "create",
     audited_changes: {
-      "post_id"=>51,
+      "post_id"=>1,
       "user_id"=>5,
       "content"=>"<p>reply</p>",
       "character_id"=>nil,
@@ -55,7 +55,7 @@ Audited::Audit.create!([
     user_type: "User",
     action: "create",
     audited_changes: {
-      "post_id"=>51,
+      "post_id"=>1,
       "user_id"=>5,
       "content"=>"<p>reply</p>",
       "character_id"=>nil,
@@ -77,7 +77,7 @@ Audited::Audit.create!([
     user_type: "User",
     action: "create",
     audited_changes: {
-      "post_id"=>51,
+      "post_id"=>1,
       "user_id"=>1,
       "content"=>"reply",
       "character_id"=>nil,
