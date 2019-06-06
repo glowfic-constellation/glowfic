@@ -12,7 +12,7 @@ class MessagesController < ApplicationController
     else
       @page_title = 'Inbox'
       from_table = current_user.messages.where(visible_inbox: true).ordered_by_thread.select('distinct on (thread_id) messages.*')
-      from_table = from_table.where.not(sender_id: blocked_ids).left_outer_joins(:sender).where.not(users: {deleted: true})
+      from_table = from_table.where.not(sender_id: blocked_ids).left_outer_joins(:sender).where('users.deleted IS NULL OR users.deleted = false')
     end
     @messages = Message.from(from_table).select('*').order('subquery.id desc').paginate(per_page: 25, page: page)
     @view = @page_title.downcase
