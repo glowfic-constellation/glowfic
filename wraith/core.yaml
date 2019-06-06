@@ -203,8 +203,9 @@ paths:
     path: /posts/3/edit
     selector: '[id=content]'
   post_flat:
-    path: /posts/3?view=flat&pp=skip
+    path: /posts/3
     selector: '[id=content]'
+    before_capture: 'wraith/javascript/flat-post.js'
 
   post_menu:
     path: /posts/3
