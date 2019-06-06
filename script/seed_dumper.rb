@@ -27,12 +27,12 @@ MODELS = [Icon, Template, Character, CharacterAlias, Gallery, CharactersGallery,
           Setting, CharacterTag, GalleryTag, TagTag, PostTag, Audited::Audit, PostAuthor, Message, PostView]
 
 FILES = {
-  Audit: [Audited::Audit],
+  Audit: ['Post.find_by(id: 1).own_and_associated_audits.delete_all', Audited::Audit],
   Icon: [Icon],
   Character: [Template, 'puts "Creating characters..."', Character, 'puts "Creating character aliases..."', CharacterAlias],
   Gallery: [Gallery, 'puts "Assigning galleries to characters..."', CharactersGallery, 'puts "Populating galleries with icons..."', GalleriesIcon],
-  Post: [Post, 'puts "Assigning users to threads..."', 'ActiveRecord::Base.connection.execute("TRUNCATE TABLE PostAuthor RESTART IDENTITY")',
-         PostAuthor, 'puts '"Setting up post views..."'', PostView],
+  Post: [Post, 'puts "Assigning users to threads..."', 'ActiveRecord::Base.connection.execute("TRUNCATE TABLE post_authors RESTART IDENTITY")',
+         PostAuthor, 'puts "Setting up post views..."', PostView, 'FlatPost.regenerate_all'],
   Reply: [Reply],
   Tag: [ContentWarning, GalleryGroup, Setting, 'puts "Assigning tags to characters..."', CharacterTag, 'puts "Assigning tags to galleries..."',
         GalleryTag, 'puts "Attaching settings to each other..."', TagTag, 'puts "Attaching tags to posts..."', PostTag]
