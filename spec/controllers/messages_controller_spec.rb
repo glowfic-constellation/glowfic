@@ -35,6 +35,15 @@ RSpec.describe MessagesController do
         expect(assigns(:page_title)).to eq('Outbox')
         expect(assigns(:messages)).to match_array(messages)
       end
+
+      it "includes site messages" do
+        user = create(:user)
+        login_as(user)
+        message = create(:message, sender_id: 0, recipient: user)
+        get :index, params: { view: 'inbox' }
+        expect(response).to have_http_status(200)
+        expect(assigns(:messages)).to match_array([message])
+      end
     end
 
     context "blocking" do
