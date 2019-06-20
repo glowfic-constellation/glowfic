@@ -104,30 +104,30 @@ paths:
     path: /posts
     selector: '[id=content]'
   post_show:
-    path: /posts/1
+    path: /posts/3
     selector: '[id=content]'
   post_flat:
-    path: /posts/1?view=flat&pp=skip
+    path: /posts/3?view=flat&pp=skip
     selector: '[id=content]'
   post_menu:
-    path: /posts/1
+    path: /posts/3
     before_capture: 'wraith/javascript/post-menu.js'
     selector: '[id=post-menu-box]'
   posts_search:
     path: /posts/search?character_id=19&author_id[]=3&author_id[]=2&subject=a
     selector: '[id=content]'
   post_stats:
-    path: /posts/1/stats
+    path: /posts/3/stats
     selector: '[id=content]'
   post_history:
-    path: /posts/1/history
+    path: /posts/3/history
     selector: '[id=content]'
 
   replies_search:
     path: /replies/search?author_id=3&subj_content=a&sort=rank&condensed=on&commit=Search
     selector: '[id=content]'
   reply_history:
-    path: /replies/514/history
+    path: /replies/3/history
     selector: '[id=content]'
 
   reports:
@@ -137,7 +137,7 @@ paths:
     path: /reports/monthly
     selector: '[id=content]'
   report_daily:
-    path: /reports/daily?day=2018-11-04
+    path: /reports/daily?day=2012-09-13
     selector: '[id=content]'
 
   tags:
@@ -147,13 +147,13 @@ paths:
     path: /tags?view=Setting
     selector: '[id=content]'
   tag_show_info:
-    path: /tags/2
+    path: /tags/5
     selector: '[id=content]'
   tag_show_posts:
-    path: /tags/2?view=posts
+    path: /tags/5?view=posts
     selector: '[id=content]'
   tag_show_characters:
-    path: /tags/2?view=characters
+    path: /tags/5?view=characters
     selector: '[id=content]'
 
   template_show:
