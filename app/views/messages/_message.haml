@@ -1,11 +1,11 @@
-- col_klass = exp_klass = cycle('even', 'odd')
+- col_klass = exp_klass = ''
 - if local_assigns[:message_counter].present?
-  - col_klass += ' message-collapse'
+  - col_klass = 'message-collapse'
 
 - if local_assigns[:message_counter].nil? || (local_assigns[:all_collapse].nil? && local_assigns[:message_counter] >= @messages.length - 1)
-  - col_klass += ' hidden'
+  - col_klass += 'hidden'
 - else
-  - exp_klass += ' hidden'
+  - exp_klass += 'hidden'
 
 .post-container{class: col_klass, id: "collapsed-#{message.id}", data: {id: message.id}}
   .padding-10

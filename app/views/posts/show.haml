@@ -135,7 +135,8 @@
       = render 'replies/single', reply: @post
 - if @replies.present?
   = render 'posts/paginator', paginated: @replies
-= render partial: 'replies/single', collection: @replies, as: :reply
+.alternating
+  = render partial: 'replies/single', collection: @replies, as: :reply
 - if @post.complete? && (@replies.empty? || (@replies.last.id == @post.last_reply_id))
   .post-ender Here Ends This Thread
   - if @prev_post || @next_post
