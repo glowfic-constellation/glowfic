@@ -127,6 +127,20 @@ table.alternating tbody {
   tr:nth-child(2n) td { background-color: $bg_color_odd; }
 }
 
+table.alternating-doubles tbody {
+  // 1, 5 - 4n+1 - 0, 4, even
+  // 2, 6 - 4n+2 - 1, 5, even
+  // 3, 7 - 4n+3 - 2, 6, odd
+  // 4, 8 - 4n   - 3, 7, odd
+  tr td { padding: 5px; }
+  tr:nth-child(4n+1), tr:nth-child(4n+2) {
+    td { background-color: $bg_color_even; }
+  }
+  tr:nth-child(4n), tr:nth-child(4n+3) {
+    td { background-color: $bg_color_odd; }
+  }
+}
+
 ul.alternating {
   li { padding: 5px; }
   li:nth-child(2n+1) { background-color: $bg_color_even; }
