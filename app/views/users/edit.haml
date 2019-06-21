@@ -91,7 +91,7 @@
 
 %br
 = form_for current_user, url: password_user_path(current_user), method: :put, html: {id: 'change_password_form'} do |f|
-  %table.form-table#change-password
+  %table.form-table.alternating#change-password
     %thead
       %tr
         %th.editor-title{colspan: 2} Change Password

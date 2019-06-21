@@ -1,4 +1,4 @@
-%table.alternating.left-info-box.user-info-box
+%table.left-info-box.user-info-box
   %thead
     %tr
       %th.info-box-header
@@ -13,7 +13,7 @@
         %td.icons-box#user-avatar
           = link_to icon_path(@user.avatar) do
             = icon_tag @user.avatar
-  %tbody
+  %tbody.alternating
     - if logged_in? && @user.id != current_user.id
       %tr
         %td.centered
