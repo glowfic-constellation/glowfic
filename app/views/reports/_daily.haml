@@ -1,6 +1,6 @@
 %span.time-loaded{style: 'font-size: 10px; position: absolute; top: 2px; right: 20px;'}= pretty_time(DateTime.now.in_time_zone)
 
-%table
+%table.alternating
   %thead
     %tr
       %th.table-title{colspan: 7}
@@ -38,8 +38,7 @@
     %tbody
       - @posts.each do |post|
         %tr
-          - klass = [cycle('even', 'odd')]
-          - klass << 'post-ignored' if ignored?(post)
+          - klass = ignored?(post) ? 'post-ignored' : ''
           %td.vtop.post-completed{class: klass.dup.push(post.complete? ? 'post-complete' : 'post-incomplete')}
             - if post.complete?
               = image_tag "icons/book.png", class: 'vmid', title: "Thread Complete", alt: 'Complete'
