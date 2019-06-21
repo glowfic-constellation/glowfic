@@ -127,6 +127,12 @@ table.alternating tbody {
   tr:nth-child(2n) td { background-color: $bg_color_odd; }
 }
 
+ul.alternating {
+  li { padding: 5px; }
+  li:nth-child(2n+1) { background-color: $bg_color_even; }
+  li:nth-child(2n) { background-color: $bg_color_odd; }
+}
+
 .odd, .post-reply:nth-child(odd), .post-post + #post-editor, .post-post + a + #post-editor { background-color: $bg_color_odd; }
 
 /* UI Links */
