@@ -6,7 +6,7 @@
     Warning: full blocking is not yet implemented, and will function the same as simply blocking posts.
     Additionally, any threads not locked to their authors will not be covered by post blocking.
 
-%table
+%table.alternating
   %thead
     %tr
       %th.table-title{colspan: 5}
@@ -48,4 +48,4 @@
           &nbsp;
     - if @blocks.empty?
       %tr
-        %td.centered.padding-10.no-posts{ class: cycle('even', 'odd'), colspan: 5 } — No blocks yet —
+        %td.centered.padding-10.no-posts{colspan: 5} — No blocks yet —

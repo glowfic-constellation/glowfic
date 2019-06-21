@@ -121,6 +121,12 @@ a.disabled-arrow {
 
 .even, .post-post, .post-reply:nth-child(even), #post-editor { background-color: $bg_color_even; }
 
+table.alternating tbody {
+  tr td { padding: 5px; }
+  tr:nth-child(2n+1) td { background-color: $bg_color_even; }
+  tr:nth-child(2n) td { background-color: $bg_color_odd; }
+}
+
 .odd, .post-reply:nth-child(odd), .post-post + #post-editor, .post-post + a + #post-editor { background-color: $bg_color_odd; }
 
 /* UI Links */
