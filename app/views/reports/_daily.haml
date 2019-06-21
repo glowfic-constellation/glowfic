@@ -10,8 +10,7 @@
           %em (Incomplete)
     %tr
       %th.sub{colspan: 7}= render 'date_nav'
-  - if @posts.present?
-    %tbody
+    - if @posts.present?
       %tr
         %th.subber.width-15
         %th.subber= link_to 'Thread', url_for(day: params[:day], sort: 'subject')
@@ -20,6 +19,8 @@
         %th.subber.width-70 Replies
         %th.subber.width-70 Today
         %th.subber.width-70= link_to 'Updated', url_for(day: params[:day], sort: 'updated')
+  - if @posts.present?
+    %tbody
       - @posts.each do |post|
         %tr
           - klass = [cycle('even', 'odd')]

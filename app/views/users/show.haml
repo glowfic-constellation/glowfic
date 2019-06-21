@@ -13,6 +13,7 @@
         %td.icons-box#user-avatar
           = link_to icon_path(@user.avatar) do
             = icon_tag @user.avatar
+  %tbody
     - if logged_in? && @user.id != current_user.id
       %tr
         %td.centered{class: cycle('even', 'odd')}

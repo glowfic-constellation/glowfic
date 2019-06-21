@@ -14,12 +14,12 @@
             .link-box.action-new + New Gallery
         - else
           = @user.username + "'s Galleries"
-  %tbody
     %tr
       %th.sub Name
       %th.sub.width-150.centered # of Icons
       %th.sub.width-70 Manage
       %th.sub.width-70 Expand
+  %tbody
     %tr
       %td.odd.gallery-name= link_to '[Galleryless]', user_gallery_path(id: 0, user_id: @user.id)
       %td.width-150.centered.odd.gallery-icon-count= @user.icons.where(has_gallery: false).count

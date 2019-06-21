@@ -7,6 +7,7 @@
 
 = form_for @index, method: :put do |f|
   %table.form-table
-    %tr
-      %th.centered{colspan: 2} Edit Index
+    %thead
+      %tr
+        %th.centered{colspan: 2} Edit Index
     = render 'editor', f: f

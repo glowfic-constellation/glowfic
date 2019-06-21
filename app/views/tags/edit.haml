@@ -10,6 +10,7 @@
 = form_for @tag.becomes(Tag) do |f|
   - f.object = @tag.becomes(@tag.class) # handles the STI with Tag/Setting/ContentWarning properly
   %table.form-table
-    %tr
-      %th.centered{colspan: 2} Edit #{@tag.type.titlecase}
+    %thead
+      %tr
+        %th.centered{colspan: 2} Edit #{@tag.type.titlecase}
     = render 'editor', f: f

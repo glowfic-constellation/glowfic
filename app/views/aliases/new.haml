@@ -12,10 +12,13 @@
 
 = form_for @alias, url: character_aliases_path(@character), method: :post do |f|
   %table.form-table
-    %tr
-      %th.centered{colspan: 2}= "New Alias"
-    %tr
-      %th.sub Name
-      %td.even= f.text_field :name, placeholder: "Alias", class: 'text'
-    %tr
-      %th.form-table-ender{colspan: 2}= submit_tag "Save", class: 'button'
+    %thead
+      %tr
+        %th.centered{colspan: 2}= "New Alias"
+    %tbody
+      %tr
+        %th.sub Name
+        %td.even= f.text_field :name, placeholder: "Alias", class: 'text'
+    %tfoot
+      %tr
+        %th.form-table-ender{colspan: 2}= submit_tag "Save", class: 'button'

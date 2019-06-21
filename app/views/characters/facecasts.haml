@@ -1,19 +1,21 @@
 %table
-  %tr
-    %th{colspan: 4} Facecasts
-  %tr
-    %th.sub= link_to 'Facecast', url_for(sort: nil)
-    %th.sub Type
-    %th.sub= link_to 'Name', url_for(sort: 'name')
-    %th.sub= link_to 'Writer', url_for(sort: 'writer')
-  - @pbs.each do |obj|
+  %thead
     %tr
-      - klass = cycle('even', 'odd')
-      %td.padding-5{class: klass}= obj.pb
-      %td.padding-5{class: klass}= obj.type
-      %td.padding-5{class: klass}
-        - if obj.type == Character
-          = link_to obj.item_name, character_path(obj.item_id)
-        - else
-          = link_to obj.item_name, template_path(obj.item_id)
-      %td.padding-5{class: klass}= user_mem_link(obj.user_id, obj.username, false)
+      %th{colspan: 4} Facecasts
+    %tr
+      %th.sub= link_to 'Facecast', url_for(sort: nil)
+      %th.sub Type
+      %th.sub= link_to 'Name', url_for(sort: 'name')
+      %th.sub= link_to 'Writer', url_for(sort: 'writer')
+  %tbody
+    - @pbs.each do |obj|
+      %tr
+        - klass = cycle('even', 'odd')
+        %td.padding-5{class: klass}= obj.pb
+        %td.padding-5{class: klass}= obj.type
+        %td.padding-5{class: klass}
+          - if obj.type == Character
+            = link_to obj.item_name, character_path(obj.item_id)
+          - else
+            = link_to obj.item_name, template_path(obj.item_id)
+        %td.padding-5{class: klass}= user_mem_link(obj.user_id, obj.username, false)

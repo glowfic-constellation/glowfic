@@ -2,8 +2,9 @@
   = f.hidden_field :default_icon_id
   .character-form
     %table.form-table
-      %tr
-        %th.centered{colspan: 2} New Character
+      %thead
+        %tr
+          %th.centered{colspan: 2} New Character
       = render 'editor', f: f
 
   = render 'icon_selector'

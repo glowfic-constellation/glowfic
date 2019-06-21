@@ -1,25 +1,28 @@
 = form_for @gallery, url: galleries_path, method: :post do |f|
   - icons_present = current_user.galleryless_icons.present?
   %table.form-table{style: (icons_present ? 'width: 100%;' : nil)}
-    %tr
-      %th.centered{colspan: 2}New Gallery
-    %tr
-      %th.vtop.sub Name
-      %td{class: cycle('even', 'odd')}= f.text_field :name, placeholder: "Gallery Name", class: 'text'
-    %tr
-      %th.vtop.sub Groups
-      %td{class: cycle('even', 'odd')}= tag_select(@gallery, f, :gallery_groups)
-    - if icons_present
+    %thead
       %tr
-        %th.vtop.sub Icons
-        %td{class: cycle('even', 'odd')}
-          - current_user.galleryless_icons.each do |icon|
-            = label_tag "gallery_icon_ids_#{icon.id}" do
-              .gallery-icon
-                = icon_tag icon, id: icon.id, pointer: true
-                %br>
-                %span.icon-keyword= icon.keyword
-                - box_selected = params[:gallery].try(:[], :icon_ids).try(:include?, icon.id.to_s)
-                .select-button= check_box_tag "gallery[icon_ids][]", icon.id, box_selected, id: "gallery_icon_ids_#{icon.id}"
-    %tr
-      %th.form-table-ender{colspan: 2}= submit_tag "Create", class: 'button'
+        %th.centered{colspan: 2}New Gallery
+    %tbody
+      %tr
+        %th.vtop.sub Name
+        %td{class: cycle('even', 'odd')}= f.text_field :name, placeholder: "Gallery Name", class: 'text'
+      %tr
+        %th.vtop.sub Groups
+        %td{class: cycle('even', 'odd')}= tag_select(@gallery, f, :gallery_groups)
+      - if icons_present
+        %tr
+          %th.vtop.sub Icons
+          %td{class: cycle('even', 'odd')}
+            - current_user.galleryless_icons.each do |icon|
+              = label_tag "gallery_icon_ids_#{icon.id}" do
+                .gallery-icon
+                  = icon_tag icon, id: icon.id, pointer: true
+                  %br>
+                  %span.icon-keyword= icon.keyword
+                  - box_selected = params[:gallery].try(:[], :icon_ids).try(:include?, icon.id.to_s)
+                  .select-button= check_box_tag "gallery[icon_ids][]", icon.id, box_selected, id: "gallery_icon_ids_#{icon.id}"
+    %tfoot
+      %tr
+        %th.form-table-ender{colspan: 2}= submit_tag "Create", class: 'button'

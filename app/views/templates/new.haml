@@ -5,6 +5,7 @@
 
 = form_for @template, :url => templates_path, :method => :post do |f|
   %table.form-table
-    %tr
-      %th.centered{colspan: 2} New Template
+    %thead
+      %tr
+        %th.centered{colspan: 2} New Template
     = render 'editor', f: f

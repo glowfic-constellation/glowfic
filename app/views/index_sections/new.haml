@@ -8,6 +8,7 @@
 
 = form_for @section, url: index_sections_path, method: :post do |f|
   %table.form-table
-    %tr
-      %th.centered{colspan: 2} Create #{@index.try(:name)} Section
+    %thead
+      %tr
+        %th.centered{colspan: 2} Create #{@index.try(:name)} Section
     = render 'editor', f: f
