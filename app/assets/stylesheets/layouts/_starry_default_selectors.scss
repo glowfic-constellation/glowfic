@@ -154,6 +154,11 @@ a:visited { color: $font_color_link_visited; }
   &, .right-align a { color: $font_color_paginate; }
 }
 
+td.post-list-buttons {
+  background-color: $bg_color_ender;
+  color: $font_color_ender;
+}
+
 /* - icons */
 .replace-icon, .icons-box { background-color: $bg_color_icon; }
 .icon-credit { background-color: $bg_color_icon_credit; }

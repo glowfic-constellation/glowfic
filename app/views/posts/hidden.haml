@@ -27,7 +27,7 @@
     - if @hidden_posts.present? || @hidden_boardviews.present?
       %tfoot
         %tr
-          %td.right-align.padding-5{colspan: 7}
+          %td.post-list-buttons{colspan: 7}
             = submit_tag "Show in Unread", class: 'button'
       - if @hidden_posts.methods.include?(:total_pages) && @hidden_posts.total_pages > 1
         %tr

@@ -143,6 +143,11 @@ a:hover { color: $font_color_link_hover; }
 
 table { border-color: #555555; } // TODO: what does this style
 
+td.post-list-buttons {
+  background-color: $bg_color_subber;
+  color: $font_color_subber;
+}
+
 /* - icons */
 .replace-icon, .icons-box { background-color: $bg_color_icon; }
 .icon-credit { background-color: $bg_color_icon_credit; }
