@@ -1,6 +1,6 @@
 Post.create!([
   {
-    board_id: 5,
+    board_id: 3,
     user_id: 5,
     subject: "sample thread",
     content: "",
@@ -15,7 +15,7 @@ Post.create!([
     authors_locked: true
   },
   {
-    board_id: 5,
+    board_id: 3,
     user_id: 6,
     subject: "html test",
     content: "test content",

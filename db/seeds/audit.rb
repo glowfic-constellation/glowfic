@@ -8,7 +8,7 @@ Audited::Audit.create!([
     user_type: "User",
     action: "create",
     audited_changes: {
-      "board_id"=>5,
+      "board_id"=>3,
       "user_id"=>5,
       "subject"=>"sample thread",
       "privacy"=>0,
