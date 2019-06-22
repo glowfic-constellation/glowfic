@@ -10,25 +10,25 @@ Post.create!([
     status: 0,
     section_order: 0,
     last_user_id: 1,
-    last_reply_id: 3,
     edited_at: "2018-11-27 02:25:52",
     tagged_at: "2018-12-06 00:05:13",
     authors_locked: true
   },
   {
-    board_id: 1,
-    user_id: 2,
-    subject: "style substance subterfuge",
-    content: "Miles-toting is a reasonably fun part of Elli's job.  She is privy to such secrets as \"where he is being toted from\" and \"who he will be when picked up to be toted\", so she's the one who fetches Miles Vorkosigan, watches over his transformation into Miles Naismith, and accompanies the latter to his destination, pretending this time to be business partners (she Sales And Marketing, he eccentrically Development, product Top Secret).<br><br>Currently they're sliding back into their ranks and uniforms - she's got her Dendarii pants on already and lovely scarlet accessories to turn them into shiny silver fashion statements.  But before they fully reintegrate with their outfit and she dons the rest of <em>her</em> outfit there is a hospital visit to make.<br><br>The survivors of the incident, such as they are, aren't in great shape.  Miles knows how the dead-and-irrecoverable wanted to be disposed of; he knows his obligations to the crippled, likewise, and he discharges them with all the gravity and generosity that could be wished.  Quinn wants his job, so she watches him do it, even this least lovely part.  Reminds her a little of the news that her face was getting artistically replaced.  But that doesn't mean she doesn't wonder why he has to get that up close and personal with Aziz, who after all probably can't understand a word he says.<br><br>Miles demurs with something about a fascinated fear of the loss of mind, and Elli lets it go.<br><br>They get good news about Marilac, about the value of their work there.<br><br>They split up so that he can shower, and she can get into her greys, and then there's going to be the usual meeting.",
-    created_at: "2015-07-22 17:44:00",
-    updated_at: "2015-07-23 00:59:00",
-    status: 3,
-    section_order: 0,
-    last_user_id: 3,
-    last_reply_id: 35,
-    edited_at: "2015-07-22 17:44:00",
-    tagged_at: "2015-07-23 00:59:00",
-    authors_locked: true
+    board_id: 5,
+    user_id: 6,
+    subject: "html test",
+    content: "test content",
+    icon_id: 5,
+    created_at: "2019-06-22 03:30:03",
+    updated_at: "2019-06-22 15:59:07",
+    status: 0,
+    section_order: 1,
+    description: "test description",
+    last_user_id: 6,
+    edited_at: "2019-06-22 03:42:33",
+    tagged_at: "2019-06-22 15:52:39",
+    authors_locked: false
   },
   {
     board_id: 1,
@@ -43,7 +43,6 @@ Post.create!([
     section_id: 1,
     section_order: 0,
     last_user_id: 2,
-    last_reply_id: 48,
     edited_at: "2012-09-13 00:56:00",
     tagged_at: "2012-09-13 02:00:00",
     authors_locked: true
@@ -60,7 +59,6 @@ Post.create!([
     section_id: 1,
     section_order: 1,
     last_user_id: 3,
-    last_reply_id: 83,
     edited_at: "2012-09-13 14:47:00",
     tagged_at: "2012-09-13 20:32:00",
     authors_locked: true
@@ -78,7 +76,6 @@ Post.create!([
     section_id: 1,
     section_order: 2,
     last_user_id: 3,
-    last_reply_id: 108,
     edited_at: "2012-09-13 17:50:00",
     tagged_at: "2012-09-13 22:06:00",
     authors_locked: true
@@ -95,7 +92,6 @@ Post.create!([
     section_id: 1,
     section_order: 3,
     last_user_id: 2,
-    last_reply_id: 127,
     edited_at: "2012-09-13 22:14:00",
     tagged_at: "2012-09-13 23:20:00",
     authors_locked: true
@@ -113,7 +109,6 @@ Post.create!([
     section_id: 1,
     section_order: 4,
     last_user_id: 3,
-    last_reply_id: 154,
     edited_at: "2012-09-13 20:22:00",
     tagged_at: "2012-09-14 00:10:00",
     authors_locked: true
@@ -130,7 +125,6 @@ Post.create!([
     section_id: 1,
     section_order: 5,
     last_user_id: 2,
-    last_reply_id: 6002,
     edited_at: "2012-09-13 21:12:00",
     tagged_at: "2012-09-15 22:24:00",
     authors_locked: true
@@ -148,7 +142,6 @@ Post.create!([
     section_id: 1,
     section_order: 6,
     last_user_id: 2,
-    last_reply_id: 6042,
     edited_at: "2012-09-15 19:29:00",
     tagged_at: "2012-09-16 00:32:00",
     authors_locked: true
@@ -166,7 +159,6 @@ Post.create!([
     section_id: 1,
     section_order: 7,
     last_user_id: 2,
-    last_reply_id: 6253,
     edited_at: "2012-09-15 21:37:00",
     tagged_at: "2012-09-17 18:09:00",
     authors_locked: true
@@ -183,7 +175,6 @@ Post.create!([
     section_id: 1,
     section_order: 8,
     last_user_id: 2,
-    last_reply_id: 6641,
     edited_at: "2012-09-17 15:24:00",
     tagged_at: "2012-09-20 03:14:00",
     authors_locked: true
@@ -201,7 +192,6 @@ Post.create!([
     section_id: 1,
     section_order: 9,
     last_user_id: 2,
-    last_reply_id: 6960,
     edited_at: "2012-09-20 13:01:00",
     tagged_at: "2012-09-21 17:46:00",
     authors_locked: true
@@ -218,7 +208,6 @@ Post.create!([
     section_id: 2,
     section_order: 0,
     last_user_id: 2,
-    last_reply_id: 7248,
     edited_at: "2012-09-21 15:18:00",
     tagged_at: "2012-09-23 18:01:00",
     authors_locked: true
@@ -235,7 +224,6 @@ Post.create!([
     section_id: 2,
     section_order: 1,
     last_user_id: 2,
-    last_reply_id: 7587,
     edited_at: "2012-09-23 15:04:00",
     tagged_at: "2012-09-25 22:34:00",
     authors_locked: true
@@ -253,7 +241,6 @@ Post.create!([
     section_id: 2,
     section_order: 2,
     last_user_id: 2,
-    last_reply_id: 7707,
     edited_at: "2012-09-25 20:03:00",
     tagged_at: "2012-09-27 17:34:00",
     authors_locked: true
@@ -271,7 +258,6 @@ Post.create!([
     section_id: 2,
     section_order: 3,
     last_user_id: 2,
-    last_reply_id: 7837,
     edited_at: "2012-09-27 14:40:00",
     tagged_at: "2012-09-28 18:09:00",
     authors_locked: true
@@ -289,7 +275,6 @@ Post.create!([
     section_id: 2,
     section_order: 4,
     last_user_id: 2,
-    last_reply_id: 7873,
     edited_at: "2012-09-28 15:19:00",
     tagged_at: "2012-09-28 20:46:00",
     authors_locked: true
@@ -307,7 +292,6 @@ Post.create!([
     section_id: 2,
     section_order: 5,
     last_user_id: 2,
-    last_reply_id: 7961,
     edited_at: "2012-09-28 17:52:00",
     tagged_at: "2012-09-29 00:19:00",
     authors_locked: true
@@ -325,7 +309,6 @@ Post.create!([
     section_id: 2,
     section_order: 6,
     last_user_id: 2,
-    last_reply_id: 8140,
     edited_at: "2012-09-28 21:29:00",
     tagged_at: "2012-09-30 17:24:00",
     authors_locked: true
@@ -343,7 +326,6 @@ Post.create!([
     section_id: 2,
     section_order: 7,
     last_user_id: 2,
-    last_reply_id: 8179,
     edited_at: "2012-09-30 14:38:00",
     tagged_at: "2012-10-01 00:17:00",
     authors_locked: true
@@ -360,7 +342,6 @@ Post.create!([
     section_id: 2,
     section_order: 8,
     last_user_id: 2,
-    last_reply_id: 8271,
     edited_at: "2012-09-30 21:27:00",
     tagged_at: "2012-10-01 19:40:00",
     authors_locked: true
@@ -378,7 +359,6 @@ Post.create!([
     section_id: 2,
     section_order: 9,
     last_user_id: 2,
-    last_reply_id: 8330,
     edited_at: "2012-10-01 17:07:00",
     tagged_at: "2012-10-01 22:58:00",
     authors_locked: true
@@ -396,7 +376,6 @@ Post.create!([
     section_id: 2,
     section_order: 10,
     last_user_id: 2,
-    last_reply_id: 8385,
     edited_at: "2012-10-01 20:08:00",
     tagged_at: "2012-10-02 02:00:00",
     authors_locked: true
@@ -414,7 +393,6 @@ Post.create!([
     section_id: 2,
     section_order: 11,
     last_user_id: 2,
-    last_reply_id: 8527,
     edited_at: "2012-10-01 23:09:00",
     tagged_at: "2012-10-03 22:16:00",
     authors_locked: true
@@ -432,7 +410,6 @@ Post.create!([
     section_id: 2,
     section_order: 12,
     last_user_id: 2,
-    last_reply_id: 8560,
     edited_at: "2012-10-03 19:37:00",
     tagged_at: "2012-10-04 00:14:00",
     authors_locked: true
@@ -450,7 +427,6 @@ Post.create!([
     section_id: 3,
     section_order: 0,
     last_user_id: 2,
-    last_reply_id: 8905,
     edited_at: "2012-10-03 22:36:00",
     tagged_at: "2012-10-08 09:49:00",
     authors_locked: true
@@ -467,7 +443,6 @@ Post.create!([
     section_id: 3,
     section_order: 1,
     last_user_id: 2,
-    last_reply_id: 9032,
     edited_at: "2012-10-08 15:31:00",
     tagged_at: "2012-10-09 15:24:00",
     authors_locked: true
@@ -484,7 +459,6 @@ Post.create!([
     section_id: 3,
     section_order: 2,
     last_user_id: 2,
-    last_reply_id: 9177,
     edited_at: "2012-10-09 12:27:00",
     tagged_at: "2012-10-11 00:27:00",
     authors_locked: true
@@ -502,7 +476,6 @@ Post.create!([
     section_id: 3,
     section_order: 3,
     last_user_id: 2,
-    last_reply_id: 9244,
     edited_at: "2012-10-10 21:38:00",
     tagged_at: "2012-10-11 18:49:00",
     authors_locked: true
@@ -520,7 +493,6 @@ Post.create!([
     section_id: 3,
     section_order: 4,
     last_user_id: 2,
-    last_reply_id: 9337,
     edited_at: "2012-10-11 17:19:00",
     tagged_at: "2012-10-12 19:02:00",
     authors_locked: true
@@ -538,9 +510,23 @@ Post.create!([
     section_id: 3,
     section_order: 5,
     last_user_id: 2,
-    last_reply_id: 9368,
     edited_at: "2012-10-12 16:02:00",
     tagged_at: "2012-10-12 21:18:00",
+    authors_locked: true
+  },
+  {
+    board_id: 1,
+    user_id: 2,
+    subject: "style substance subterfuge",
+    content: "Miles-toting is a reasonably fun part of Elli's job.  She is privy to such secrets as \"where he is being toted from\" and \"who he will be when picked up to be toted\",
+    so she's the one who fetches Miles Vorkosigan, watches over his transformation into Miles Naismith, and accompanies the latter to his destination, pretending this time to be business partners (she Sales And Marketing, he eccentrically Development, product Top Secret).<br><br>Currently they're sliding back into their ranks and uniforms - she's got her Dendarii pants on already and lovely scarlet accessories to turn them into shiny silver fashion statements.  But before they fully reintegrate with their outfit and she dons the rest of <em>her</em> outfit there is a hospital visit to make.<br><br>The survivors of the incident, such as they are, aren't in great shape.  Miles knows how the dead-and-irrecoverable wanted to be disposed of; he knows his obligations to the crippled, likewise, and he discharges them with all the gravity and generosity that could be wished.  Quinn wants his job, so she watches him do it, even this least lovely part.  Reminds her a little of the news that her face was getting artistically replaced.  But that doesn't mean she doesn't wonder why he has to get that up close and personal with Aziz, who after all probably can't understand a word he says.<br><br>Miles demurs with something about a fascinated fear of the loss of mind, and Elli lets it go.<br><br>They get good news about Marilac, about the value of their work there.<br><br>They split up so that he can shower, and she can get into her greys, and then there's going to be the usual meeting.",
+    created_at: "2015-07-22 17:44:00",
+    updated_at: "2019-06-22 18:40:31",
+    status: 2,
+    section_order: 0,
+    last_user_id: 3,
+    edited_at: "2019-06-22 18:40:31",
+    tagged_at: "2015-07-23 00:59:00",
     authors_locked: true
   },
 ])
@@ -551,8 +537,7 @@ ActiveRecord::Base.connection.execute("TRUNCATE TABLE post_authors RESTART IDENT
 PostAuthor.create!([
   { user_id: 5, post_id: 1, can_owe: true, can_reply: true, joined: true, joined_at: "2018-11-27 02:25:52" },
   { user_id: 1, post_id: 1, can_owe: true, can_reply: true, joined: true, joined_at: "2018-12-06 00:04:35" },
-  { user_id: 2, post_id: 2, can_owe: true, can_reply: true, joined: true, joined_at: "2015-07-22 17:44:00" },
-  { user_id: 3, post_id: 2, can_owe: true, can_reply: true, joined: true, joined_at: "2015-07-22 21:42:00" },
+  { user_id: 6, post_id: 2, can_owe: true, can_reply: true, joined: true, joined_at: "2019-06-22 03:30:03" },
   { user_id: 3, post_id: 3, can_owe: true, can_reply: true, joined: true, joined_at: "2012-09-13 00:56:00" },
   { user_id: 2, post_id: 3, can_owe: true, can_reply: true, joined: true, joined_at: "2012-09-13 01:14:00" },
   { user_id: 2, post_id: 4, can_owe: true, can_reply: true, joined: true, joined_at: "2012-09-13 14:47:00" },
@@ -611,6 +596,8 @@ PostAuthor.create!([
   { user_id: 3, post_id: 30, can_owe: true, can_reply: true, joined: false },
   { user_id: 2, post_id: 31, can_owe: true, can_reply: true, joined: true, joined_at: "2012-10-12 16:02:00" },
   { user_id: 3, post_id: 31, can_owe: true, can_reply: true, joined: false },
+  { user_id: 2, post_id: 32, can_owe: true, can_reply: true, joined: true, joined_at: "2015-07-22 17:44:00" },
+  { user_id: 3, post_id: 32, can_owe: true, can_reply: true, joined: true, joined_at: "2015-07-22 21:42:00" },
 ])
 
 puts "Setting up post views..."
@@ -618,9 +605,9 @@ PostView.create!([
   { post_id: 1, user_id: 5, read_at: "2018-12-06 00:05:13" },
   { post_id: 1, user_id: 1, read_at: "2018-12-06 00:05:13" },
   { post_id: 1, user_id: 3, read_at: "2019-05-06 23:07:00" },
-  { post_id: 2, user_id: 3, read_at: "2019-05-17 21:17:38" },
-  { post_id: 4, user_id: 3 }
+  { post_id: 4, user_id: 3 },
   { post_id: 3, user_id: 3, read_at: "2019-06-06 01:53:29" },
+  { post_id: 32, user_id: 3, read_at: "2015-07-23 00:57:00" },
 ])
 
 FlatPost.regenerate_all
