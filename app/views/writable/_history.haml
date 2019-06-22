@@ -13,7 +13,6 @@
       %tr.bg.spacer{style: 'height:20px;'}
       %tr
         %th.table-title{colspan: 2} Version: #{audit.version}
-    %tbody.alternating
       - if audit.comment.present?
         %tr
           %td.post-subheader{colspan: 2}
@@ -23,6 +22,7 @@
               = user_link(audit.user)
             = surround '"' do
               = audit.comment
+    %tbody.alternating
       %tr
         %th.sub.history-header Fields Changed
         %td
