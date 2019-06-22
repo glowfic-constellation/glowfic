@@ -77,6 +77,7 @@ def clean(file, expand = false)
     line.gsub!(", description: nil", "")
     line.gsub!(", last_user_id: nil", "")
     line.gsub!(", last_reply_id: nil", "")
+    line.gsub!(", joined_at: nil", "")
     # line.gsub!(", ", "")
     if expand
       line.gsub!("{", "{\n   ")
