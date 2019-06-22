@@ -55,7 +55,6 @@ end
 def copy_object(object, exp_id)
   copy = object.dup
   copy.id = exp_id
-  #object.delete
   copy.save!
   copy.update_columns(created_at: object.created_at)
   copy.update_columns(updated_at: object.updated_at)
@@ -64,6 +63,7 @@ def copy_object(object, exp_id)
     copy.update_columns(tagged_at: object.tagged_at)
     copy.update_columns(section_order: object.section_order)
   end
+  object.delete
   copy.id
 end
 
@@ -75,7 +75,7 @@ def check_object(object, model, exp_id)
   symbol = model.to_s.to_sym
   if Arrangements.key?(symbol)
     Arrangements[symbol].each do |key, value|
-      puts "\t\t Updating #{key} with new #{value}, #{exp_id}..."
+      puts "\t\t Updating #{key} with new #{value}, #{new_id}..."
       update_models(key.to_s.constantize, value, old_id, new_id)
     end
   end
