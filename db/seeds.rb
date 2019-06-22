@@ -15,6 +15,8 @@ throne = User.create!(username: 'Throne3d', password: 'throne3d', email: "dummy5
 teceler = User.create!(username: 'Teceler', password: 'teceler', email: "dummy6@example.com", role_id: 2, default_editor: 'html',
                     layout: 'starrydark', ignore_unread_daily_report: true)
 
+User.update_all(tos_version: 20181109)
+
 puts "Creating avatars..."
 Icon.create!([
   { user_id: 1, url: "https://pbs.twimg.com/profile_images/482603626/avatar.png", keyword: "avatar" },
