@@ -230,12 +230,12 @@ module ApplicationHelper
   end
 
   def author_links(post, linked: true, colored: false)
-    authors = post.authors.active.order(Arel.sql('lower(username) asc'))
-    num_deleted = post.authors.where(deleted: true).count
+    total = post.authors.size
+    authors = post.authors.reject(&:deleted?).sort_by{|a| a.username.downcase}
+    num_deleted = total - authors.size
     deleted = 'deleted user'.pluralize(num_deleted)
     return "(#{deleted})" if authors.empty?
 
-    total = authors.size + num_deleted
     if total < 4
       links = authors.map { |author| linked ? user_link(author, colored: colored) : author.username }
       return links.join(', ') if num_deleted.zero?
