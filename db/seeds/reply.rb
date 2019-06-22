@@ -1106,7 +1106,7 @@ Reply.create!([
     user_id: 2,
     content: "\"I did, yes.  It was... it was nice.  We talked, we hadn't really had a chance before.\"",
     created_at: "2015-07-22 21:43:00",
-    updated_at: "2019-06-22 18:40:31"
+    updated_at: "2015-07-22 21:43:00"
   },
   {
     post_id: 32,
@@ -1122,7 +1122,7 @@ Reply.create!([
     user_id: 2,
     content: "And in comes Elli, complete with files.  Her possessions not having been mysteriously spirited away, she is in full undress kit.  Files, meet Miles.  She sits.  Miles gets many expectant looks.",
     created_at: "2015-07-22 21:47:00",
-    updated_at: "2019-06-22 18:40:33"
+    updated_at: "2015-07-22 21:47:00"
   },
   {
     post_id: 32,
@@ -1130,14 +1130,14 @@ Reply.create!([
     content: "He waits for Bel until the actual time of the meeting, and then another half-minute, frowning increasingly.<br><br>\"Is there some reason Captain Thorne is late?\"",
     character_id: 27,
     created_at: "2015-07-22 21:48:00",
-    updated_at: "2019-06-22 18:53:25"
+    updated_at: "2015-07-22 21:48:00"
   },
   {
     post_id: 32,
     user_id: 2,
     content: "The various officers look at each other.  Eventually the eye contact adds up to Elena speaking:<br><br>\"...Was Bel supposed to be back first, Miles?\"",
     created_at: "2015-07-22 21:49:00",
-    updated_at: "2019-06-22 18:40:34"
+    updated_at: "2015-07-22 21:49:00"
   },
   {
     post_id: 32,
@@ -1145,21 +1145,21 @@ Reply.create!([
     content: "\"Back <em>first</em>? From—?\"<br><br>From whatever extracted Miles's full kit from his cabin? From whatever Lieutenant Hereld expected him to still be out doing? Once is chance, twice is coincidence...<br><br>\"Oh, <em>fuck</em>,\" he says. \"<em>From what?</em>\"",
     character_id: 27,
     created_at: "2015-07-22 21:53:00",
-    updated_at: "2019-06-22 18:53:26"
+    updated_at: "2015-07-22 21:53:00"
   },
   {
     post_id: 32,
     user_id: 2,
     content: "\"...Bel left with you, three days ago, in the Ariel -\"",
     created_at: "2015-07-22 21:55:00",
-    updated_at: "2019-06-22 18:40:35"
+    updated_at: "2015-07-22 21:55:00"
   },
   {
     post_id: 32,
     user_id: 2,
     content: "\"The hell it did,\" hisses Elli.",
     created_at: "2015-07-22 21:55:00",
-    updated_at: "2019-06-22 18:40:37"
+    updated_at: "2015-07-22 21:55:00"
   },
   {
     post_id: 32,
@@ -1167,14 +1167,14 @@ Reply.create!([
     content: "\"It left with an accurate facsimile, I'm sure,\" says Miles. For fuck's sake, he was sure Mark wouldn't impersonate him - no, he was sure Mark wouldn't impersonate <em>Lord Vorkosigan</em>, and this has proven to be correct, he just failed to consider whether Mark would impersonate Naismith instead. \"Where to?\"",
     character_id: 27,
     created_at: "2015-07-22 22:00:00",
-    updated_at: "2019-06-22 18:53:28"
+    updated_at: "2015-07-22 22:00:00"
   },
   {
     post_id: 32,
     user_id: 2,
     content: "\"Jackson's Whole,\" Elena answers, peering at him minutely.  \"Assuming <em>that</em> was your clone and this is you.\"",
     created_at: "2015-07-22 22:03:00",
-    updated_at: "2019-06-22 18:40:34"
+    updated_at: "2015-07-22 22:03:00"
   },
   {
     post_id: 32,
@@ -1182,14 +1182,14 @@ Reply.create!([
     content: "\"If you have doubts, get a med scanner. In fact, perhaps I should have made it official policy to scan me every time I show up, because <em>without</em> that policy, my <em>fucking</em> twin brother managed to con Bel Thorne into taking the <em>fucking Ariel</em> to Jackson's <em>fucking</em> Whole!\" He throws up his hands.",
     character_id: 27,
     created_at: "2015-07-22 22:10:00",
-    updated_at: "2019-06-22 18:53:30"
+    updated_at: "2015-07-22 22:10:00"
   },
   {
     post_id: 32,
     user_id: 2,
     content: "\"<em>I'm</em> sure enough this is the real thing, but yes, just for common knowledge,\" says Elli, rolling her eyes.  She nips out, is back a minute later with a scanner, scans him, and passes the device around for all to see.",
     created_at: "2015-07-22 22:12:00",
-    updated_at: "2019-06-22 18:40:39"
+    updated_at: "2015-07-22 22:12:00"
   },
   {
     post_id: 32,
@@ -1197,14 +1197,14 @@ Reply.create!([
     content: "\"Let it be known,\" says Miles, for the benefit of those who <em>weren't</em> around for that fiasco on Earth, \"that is what a correct and appropriate medical scan of me looks like. I have a twin brother - a trained impersonator, although I was not his intended target - who can fake everything about me except for the old bone fractures. Until just now, he's never actually given it a serious try. And he absconded with the <i>Ariel</i>, of all the ships he could've picked, which means I'm going to have to rethink the upcoming mission if it takes too long to haul him back. This meeting is cancelled.\"",
     character_id: 27,
     created_at: "2015-07-22 22:24:00",
-    updated_at: "2019-06-22 18:53:27"
+    updated_at: "2015-07-22 22:24:00"
   },
   {
     post_id: 32,
     user_id: 2,
     content: "There is some more eye contact, and then some dispersal.",
     created_at: "2015-07-22 22:26:00",
-    updated_at: "2019-06-22 18:40:40"
+    updated_at: "2015-07-22 22:26:00"
   },
   {
     post_id: 32,
@@ -1212,14 +1212,14 @@ Reply.create!([
     content: "Miles sits at the conference table and puts his head in his hands and swears quietly to himself. He retains enough situational awareness to keep the profanity strictly Betan until everyone who lacks the relevant clearance is out of the room.",
     character_id: 27,
     created_at: "2015-07-22 22:28:00",
-    updated_at: "2019-06-22 18:53:31"
+    updated_at: "2015-07-22 22:28:00"
   },
   {
     post_id: 32,
     user_id: 2,
     content: "Soon even those people are leaving him to it.",
     created_at: "2015-07-22 22:30:00",
-    updated_at: "2019-06-22 18:40:41"
+    updated_at: "2015-07-22 22:30:00"
   },
   {
     post_id: 32,
@@ -1227,14 +1227,14 @@ Reply.create!([
     content: "The communications turnaround to Jackson's Whole is long enough that a few minutes either way is near-guaranteed to be swallowed up by en-route delays, but any more than that would just be self-indulgent. He drags himself from the table, parks in front of a comconsole, and composes a vid message to Captain Thorne.<br><br>\"Bel,\" he starts off, \"as you may or may not be aware, you've been travelling with the wrong Naismith. I don't know what the two of you think you're doing out there, and I don't care. You are to scan the little shit's bones if you haven't already, and when you verify that he is not me, you are to turn around and make all haste back to Escobar. I will meet you en route. Do not fuck with me on this one. I'm sure Mark's intentions are good, but I will not tolerate impersonation, no matter how well-meaning.\"<br><br>He pauses, considering priorities, then adds: \"If he seems inclined to flee when he hears I'm after him, don't bother trying to chase him down and haul him back to me. The important part here is reuniting you with the fleet. I trust that you find these orders clear and unambiguous.\" And will therefore not deliberately waste time sending back clarification requests until Mark has already grabbed a double fistful of your easily-tugged Betan heartstrings and dragged you into God knows what sort of trouble trying to save all of Jackson's Whole with one commando squad. He trusts this subtext is conveyed by his expression. \"Naismith out.\"<br><br>Then he gets the message sealed and sent, and spends a little while longer poring over the mission files and muttering obscenities. Fucking Mark. This could be anything from misguided heroics to a bizarre and elaborate prank. The one thing he's sure it <em>isn't</em> is a trap. Mark has made it very clear what he thinks of being used as a weapon against Miles. If somebody were to try it against Mark's will, Miles's expectations lie firmly in the area of 'and the body was never found'.<br><br>So.<br><br>He calls up to Nav and Com again, and the comm officer on duty obligingly locates Baz, Elena, and Elli and directs them back to the briefing room. Miles awaits them calmly for about three seconds, and then jumps to his feet and starts pacing.",
     character_id: 27,
     created_at: "2015-07-22 22:53:00",
-    updated_at: "2019-06-22 18:53:30"
+    updated_at: "2015-07-22 22:53:00"
   },
   {
     post_id: 32,
     user_id: 2,
     content: "They come when called, of course.<br><br>\"What's the plan?\" Elli inquires.",
     created_at: "2015-07-22 23:44:00",
-    updated_at: "2019-06-22 18:40:33"
+    updated_at: "2015-07-22 23:44:00"
   },
   {
     post_id: 32,
@@ -1242,14 +1242,14 @@ Reply.create!([
     content: "He sighs in wry awareness of how stupid the plan is probably going to sound. \"I go after Mark, of course.\"",
     character_id: 27,
     created_at: "2015-07-22 23:52:00",
-    updated_at: "2019-06-22 18:53:33"
+    updated_at: "2015-07-22 23:52:00"
   },
   {
     post_id: 32,
     user_id: 2,
     content: "\"Is this instead of the other contract, or instead of you personally accompanying it, or...?\"",
     created_at: "2015-07-22 23:55:00",
-    updated_at: "2019-06-22 18:40:43"
+    updated_at: "2015-07-22 23:55:00"
   },
   {
     post_id: 32,
@@ -1257,14 +1257,14 @@ Reply.create!([
     content: "\"No, the other contract has to go forward.\" He shakes his head. \"But we don't need the whole fleet to pull it off. <em>If</em> my recall message reaches Bel, and if nothing else goes wrong along the way, then the <i>Ariel</i> will be back in time for departure and my pursuit will amount to nothing more than a waste of a little fuel. If not, though - Baz, you're in charge of this one.\" <br><br>He brings up a map with a woggle of his pen.<br><br>\"We're smuggling pack-horses, so to speak. Vega Station,\" he indicates the map, \"is an independent deep-space transfer station currently under an arms embargo courtesy of the Cetagandan Empire, who owns one of its neighbours and strong-armed the other two. We come in through Toranira with a perfectly legitimate flight plan filed, headed to Illyrica through Zoave Twilight. And that is exactly where we go, but while we're in Vega space, we drop off three of our ships - not troops or armaments, but the ships themselves. Then at Illyrica we pick up three new ones. Winterfair gifts from Emperor Gregor.\"<br><br>Through the ship's internal system rather than his pen, he sends the specs to Baz's comconsole.<br><br>\"The only trouble is, my brother just walked off with a third of our trade inventory. We were supposed to give away the <i>Triumph</i>, the <i>D-16</i>, and the <i>Ariel</i>. The nearest possible substitute for the missing ship is Truzillo's <i>Jayhawk</i>. I'm <em>really</em> hoping I can reel Thorne back in before we have to leave, because while the replacement ship would be an across-the-board improvement on the <i>Ariel</i>, it falls a little short of the <i>Jayhawk</i>'s firepower. If I take too long chasing down the <i>Ariel</i>, though - Baz, can you talk Captain Truzillo into the trade?\"",
     character_id: 27,
     created_at: "2015-07-23 00:19:00",
-    updated_at: "2019-06-22 18:53:28"
+    updated_at: "2015-07-23 00:19:00"
   },
   {
     post_id: 32,
     user_id: 2,
     content: "Baz peers at the information about the would-be replacement.  \"Oh, wait'll he sees - yes I can.  You could too, of course.\"",
     created_at: "2015-07-23 00:22:00",
-    updated_at: "2019-06-22 18:40:51"
+    updated_at: "2015-07-23 00:22:00"
   },
   {
     post_id: 32,
@@ -1272,14 +1272,14 @@ Reply.create!([
     content: "\"Yeah. But if I'm around to persuade him it will be because Thorne has made it thankfully unnecessary.\"<br><br>He sighs again and sends Baz a data dump of the rest of the mission files.<br><br>\"Elena, I'm taking the <i>Peregrine</i> for this. We wait here for as long as it takes to get the ship ready to go. If we hear back from Bel in the meantime, well and good, we meet it en route and escort the <i>Ariel</i> back to the fleet. If not - the departure schedule for this mission is flexible on the scale of days, but not weeks. I give it until forty-eight hours from this moment. If that time comes and goes and the <i>Ariel</i> is not confirmed on its way to Escobar, Baz, you pack up and head for Vega Station without us.\"",
     character_id: 27,
     created_at: "2015-07-23 00:36:00",
-    updated_at: "2019-06-22 18:53:27"
+    updated_at: "2015-07-23 00:36:00"
   },
   {
     post_id: 32,
     user_id: 2,
     content: "Confirmatory nods all 'round.<br><br>And then: \"Assuming this is more serious than a prank, extracting your clone - especially if he gets all the way to Jackson's Whole - could get dicey, for a definition of dicey meaning 'expensive'...\"",
     created_at: "2015-07-23 00:38:00",
-    updated_at: "2019-06-22 18:40:33"
+    updated_at: "2015-07-23 00:38:00"
   },
   {
     post_id: 32,
@@ -1287,14 +1287,14 @@ Reply.create!([
     content: "\"ImpSec will cover it.\"",
     character_id: 27,
     created_at: "2015-07-23 00:43:00",
-    updated_at: "2019-06-22 18:53:28"
+    updated_at: "2015-07-23 00:43:00"
   },
   {
     post_id: 32,
     user_id: 2,
     content: "\"Will cover a run after Mark?  What's Mark to them besides a - a leftover from a plot over and done?\"",
     created_at: "2015-07-23 00:45:00",
-    updated_at: "2019-06-22 18:40:45"
+    updated_at: "2015-07-23 00:45:00"
   },
   {
     post_id: 32,
@@ -1302,14 +1302,14 @@ Reply.create!([
     content: "\"A legitimate potential heir to the Barrayaran Imperium, deserving no less of their attention than I,\" says Miles. \"Which fact I have made more than clear to Simon. If I have to go to expensive lengths to fish him out of whatever shit he's diving into, Simon will cough up the money the same way he would if it were <em>me</em> who needed the rescue.\"",
     character_id: 27,
     created_at: "2015-07-23 00:51:00",
-    updated_at: "2019-06-22 18:53:30"
+    updated_at: "2015-07-23 00:51:00"
   },
   {
     post_id: 32,
     user_id: 2,
     content: "\"A legitimate potential - the entire imperium would go into convulsions,\" Baz says.  \"They wouldn't have <em>you</em> on suspicion of mutation; someone who looks just like you and is a clone to boot can hardly improve on the situation.\"",
     created_at: "2015-07-23 00:52:00",
-    updated_at: "2019-06-22 18:40:52"
+    updated_at: "2015-07-23 00:52:00"
   },
   {
     post_id: 32,
@@ -1317,14 +1317,14 @@ Reply.create!([
     content: "\"I didn't say <em>likely</em>, I said <em>legitimate</em>. But yes, granted, either of us trying for the Imperium would land like a bomb. That doesn't make <em>either</em> of us any less ImpSec's business - more, if anything, against the possibility that someone might try to <em>throw</em> that bomb. It does make me wish Gregor would get married and have five children already, but that's rather outside the scope of my current worries.\"",
     character_id: 27,
     created_at: "2015-07-23 00:57:00",
-    updated_at: "2019-06-22 18:53:27"
+    updated_at: "2015-07-23 00:57:00"
   },
   {
     post_id: 32,
     user_id: 2,
     content: "Baz nods, satisfied with this explanation.  \"Still, best if Bel turns around,\" he sighs.",
     created_at: "2015-07-23 00:58:00",
-    updated_at: "2019-06-22 18:40:52"
+    updated_at: "2015-07-23 00:58:00"
   },
   {
     post_id: 32,
@@ -1332,6 +1332,6 @@ Reply.create!([
     content: "\"Emphatically agreed.\"",
     character_id: 27,
     created_at: "2015-07-23 00:59:00",
-    updated_at: "2019-06-22 18:53:28"
+    updated_at: "2015-07-23 00:59:00"
   },
 ])
