@@ -123,13 +123,13 @@ a.disabled-arrow {
 
 .odd, .post-post + #post-editor, .post-post + a + #post-editor { background-color: $bg_color_odd; }
 
-table.alternating tbody {
+table.alternating tbody, tbody.alternating {
   tr td { padding: 5px; }
   tr:nth-child(2n+1) td { background-color: $bg_color_even; }
   tr:nth-child(2n) td { background-color: $bg_color_odd; }
 }
 
-table.alternating-doubles tbody {
+table.alternating-doubles tbody, tbody.alternating-doubles {
   // 1, 5 - 4n+1 - 0, 4, even
   // 2, 6 - 4n+2 - 1, 5, even
   // 3, 7 - 4n+3 - 2, 6, odd
