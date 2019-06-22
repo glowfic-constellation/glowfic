@@ -75,7 +75,7 @@
             Delete Icon
 
 - if params[:view] == 'galleries'
-  %table.icon-right-content-box
+  %table.alternating-double.icon-right-content-box
     %thead
       %tr
         %th.table-title Galleries
@@ -84,20 +84,20 @@
     - else
       %tbody
         %tr
-          %td.even.centered — No galleries yet —
+          %td.centered — No galleries yet —
 - elsif params[:view] == 'posts'
   - content_for :posts_title do
     Posts Containing Icon
   = render 'posts/list', posts: @posts, table_class: 'icon-right-content-box'
 - else
-  %table.icon-right-content-box
+  %table.alternating.icon-right-content-box
     %thead
       %tr
         %th.table-title{colspan: 2} Stats
     %tbody
       %tr
         %th.sub.width-150 Times Used
-        %td.even= @times_used.to_s
+        %td= @times_used.to_s
       %tr
         %th.sub.width-150 Posts In
-        %td.even= @posts_used
+        %td= @posts_used
