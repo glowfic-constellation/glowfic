@@ -12,6 +12,7 @@ Post.create!([
     last_user_id: 1,
     edited_at: "2018-11-27 02:25:52",
     tagged_at: "2018-12-06 00:05:13",
+    last_reply_id: 3,
     authors_locked: true
   },
   {
@@ -28,6 +29,7 @@ Post.create!([
     last_user_id: 6,
     edited_at: "2019-06-22 03:42:33",
     tagged_at: "2019-06-22 15:52:39",
+    last_reply_id: 13,
     authors_locked: false
   },
   {
@@ -45,6 +47,7 @@ Post.create!([
     last_user_id: 2,
     edited_at: "2012-09-13 00:56:00",
     tagged_at: "2012-09-13 02:00:00",
+    last_reply_id: 26,
     authors_locked: true
   },
   {
@@ -61,6 +64,7 @@ Post.create!([
     last_user_id: 3,
     edited_at: "2012-09-13 14:47:00",
     tagged_at: "2012-09-13 20:32:00",
+    last_reply_id: 61,
     authors_locked: true
   },
   {
@@ -78,6 +82,7 @@ Post.create!([
     last_user_id: 3,
     edited_at: "2012-09-13 17:50:00",
     tagged_at: "2012-09-13 22:06:00",
+    last_reply_id: 86,
     authors_locked: true
   },
   {
@@ -94,6 +99,7 @@ Post.create!([
     last_user_id: 2,
     edited_at: "2012-09-13 22:14:00",
     tagged_at: "2012-09-13 23:20:00",
+    last_reply_id: 105,
     authors_locked: true
   },
   {
@@ -111,6 +117,7 @@ Post.create!([
     last_user_id: 3,
     edited_at: "2012-09-13 20:22:00",
     tagged_at: "2012-09-14 00:10:00",
+    last_reply_id: 132,
     authors_locked: true
   },
   {
@@ -527,6 +534,7 @@ Post.create!([
     last_user_id: 3,
     edited_at: "2019-06-22 18:40:31",
     tagged_at: "2015-07-23 00:59:00",
+    last_reply_id: 164,
     authors_locked: true
   },
 ])
@@ -605,6 +613,7 @@ PostView.create!([
   { post_id: 1, user_id: 5, read_at: "2018-12-06 00:05:13" },
   { post_id: 1, user_id: 1, read_at: "2018-12-06 00:05:13" },
   { post_id: 1, user_id: 3, read_at: "2019-05-06 23:07:00" },
+  { post_id: 2, user_id: 3, read_at: "2019-06-22 07:40:11" },
   { post_id: 4, user_id: 3 },
   { post_id: 3, user_id: 3, read_at: "2019-06-06 01:53:29" },
   { post_id: 32, user_id: 3, read_at: "2015-07-23 00:57:00" },
