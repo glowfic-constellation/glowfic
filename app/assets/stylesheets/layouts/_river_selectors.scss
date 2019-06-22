@@ -23,12 +23,20 @@ a:visited { color: $font_color_link_visited; }
 .form-table-ender { background-color: $bg_color_ender; }
 
 /* - content */
-#content .odd, #content .even, .post-post, .post-reply, #post-editor {
+%unalternating {
   // sass-lint:disable-block no-important
   background-color: $bg_color_even !important;
   border-top: solid 1px $bg_color_content_border;
+}
+
+.odd, .even, div.alternating {
+  @extend %unalternating;
   blockquote { background-color: calculate-transparent-color($bg_color_even, $bg_color_odd, 0.2) !important; }
 }
+
+ul.alternating { @extend %unalternating; }
+table.alternating tbody, tbody.alternating { @extend %unalternating; }
+table.alternating-doubles tbody, tbody.alternating-doubles { @extend %unalternating; }
 
 .post-edit-box img {
   width: 1em;
