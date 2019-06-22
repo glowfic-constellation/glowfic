@@ -44,7 +44,7 @@
                 %em= tag.user.deleted? ? 'deleted user' : tag.user.username
         %td= @post_counts.fetch(tag.id, 0)
         %td= tag.character_count
-        %td.width-70.right-align{class: klass}
+        %td.width-70.right-align
           - if tag.editable_by?(current_user)
             = link_to edit_tag_path(tag) do
               = image_tag "icons/pencil.png", alt: 'Edit'
