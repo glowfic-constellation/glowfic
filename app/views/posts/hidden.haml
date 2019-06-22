@@ -11,17 +11,18 @@
     %tbody
       - @hidden_boardviews.each do |view|
         %tr
-          - klass = cycle('even, odd')
           %td.padding-10
           %td.padding-10{colspan: 5}
             = link_to view.board.name, continuity_path(view.board)
-          %td{class: klass}= check_box_tag :"unhide_boards[]", view.board_id, params[:unhide_boards].try(:include?, view.board_id.to_s), class: 'no-margin'
+          %td= check_box_tag :"unhide_boards[]", view.board_id, params[:unhide_boards].try(:include?, view.board_id.to_s), class: 'no-margin'
       - if @hidden_boardviews.empty?
         %tr
           %td.padding-10.centered{colspan: 7} — No continuities hidden —
+    %tbody
       %tr
         %th.subber{colspan: 7} Posts
-      = render partial: 'posts/list_item', collection: @hidden_posts, as: :post, locals: {check_box_name: 'unhide_posts[]'}
+    = render partial: 'posts/list_item', collection: @hidden_posts, as: :post, locals: {check_box_name: 'unhide_posts[]'}
+    %tbody.alternating
       - if @hidden_posts.empty?
         %td.padding-10.centered{colspan: 7} — No posts hidden —
     - if @hidden_posts.present? || @hidden_boardviews.present?

@@ -24,9 +24,9 @@
     - if @index.description.present?
       %tr
         %td.odd.written-content{colspan: 7}= sanitize_written_content(@index.description)
-  %tbody
-    = render partial: 'index_sections/single', collection: @index.index_sections.ordered, as: :section
-    - if @sectionless.present?
+  = render partial: 'index_sections/single', collection: @index.index_sections.ordered, as: :section
+  - if @sectionless.present?
+    %tbody.alternating-doubles
       %tr
         %td.continuity-spacer{colspan: 7}
       = render partial: 'posts/list_item', collection: @sectionless, as: :post, locals: {index: @index}
