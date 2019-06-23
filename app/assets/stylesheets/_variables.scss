@@ -65,8 +65,25 @@ $font_color_linkbox_dismiss: $colors_black !default;
 // inputs
 $bg_color_input: $colors_white !default; // regular <input>
 $font_color_input: $colors_dark !default;
+$font_color_input_placeholder: default !default;
 $border_color_input: #AAAAAA !default;
 
+// select2
+// Most of this is currently styled by gem files
+$bg_color_select2_disabled: #EEEEEE !default;
+$bg_color_select2_tags: #E4E4E4 !default;
+
+$border_color_select2_arrow: #888888 !default;
+$border_color_select2_focus: #000000 !default;
+$font_color_select2_remove: #999999 !default;
+$font_color_select2_remove_hover: #333333 !default;
+
+$font_color_select2_option_disabled: #999999 !default;
+$bg_color_select2_option_selected: $colors_alto !default;
+$bg_color_select2_option_hover: #5897FB !default;
+$font_color_select2_option_hover: $colors_white !default;
+
+// buttons
 $bg_color_button: $colors_white !default; // buttons; overridden by gradient
 $font_color_button: $colors_dark !default;
 $border_color_button: #AAAAAA !default;
@@ -169,15 +186,7 @@ $bg_color_section_warning_alpha: #FF0000 !default;
 
 $bg_color_message_expander: $colors_blacker !default;
 
-// select2 dropdown
-$font_color_select2_container: $colors_dark !default;
-// Most of this is currently styled by gem files
-$bg_color_select2_highlight: #E4E4E4 !default;
-$bg_color_select2_selected: $colors_alto !default;
-$bg_color_select2_search: $colors_white !default;
-
 // rtf editor
-$font_color_input_placeholder: default !default;
 $bg_color_mce_panel: #F0F0F0 !default; // MCE header & footer background
 $opacity_mce_label: 1 !default; //TODO: check this
 $bg_color_reply_content: $colors_white !default;

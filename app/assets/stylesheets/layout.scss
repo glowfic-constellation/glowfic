@@ -284,7 +284,7 @@ td, .table-list li { font-size: $font_size_small; }
 .select2 {
   &-container {
     margin: 3px 0;
-    color: $font_color_select2_container;
+    color: $font_color_input;
   }
 
   &, &-dropdown { font-size: $font_size_smallerish; }

@@ -1,0 +1,60 @@
+@import 'variables';
+
+.select2-container--default {
+  color: $font_color_input;
+
+  .select2-selection--single, .select2-selection--multiple {
+    border-color: $border_color_input;
+    background-color: $bg_color_input;
+    color: $font_color_input;
+
+    // placeholder text
+    .select2-selection__placeholder { color: $font_color_input_placeholder; }
+  }
+
+  .select2-selection--single {
+    // text displayed in box after selection
+    .select2-selection__rendered { color: $font_color_input; }
+
+    .select2-selection__arrow b { border-color: $border_color_select2_arrow transparent transparent transparent; }
+  }
+
+  .select2-selection--multiple {
+    // selected options
+    .select2-selection__choice {
+      border-color: $border_color_input;
+      background-color: $bg_color_select2_tags;
+    }
+
+    // x-s to remove tags
+    .select2-selection__choice__remove {
+      color: $font_color_select2_remove;
+      &:hover { color: $font_color_select2_remove_hover; }
+    }
+  }
+
+  // border color when the cursor is in in a multi-select box
+  &.select2-container--focus .select2-selection--multiple { border-color: $border_color_select2_focus; }
+
+  // disabled select2s
+  &.select2-container--disabled {
+    .select2-selection--single, .select-selection--multiple { background-color: $bg_color_select2_disabled; }
+  }
+
+  &.select2-container--open .select2-selection--single .select2-selection__arrow b {
+    border-color: transparent transparent $border_color_select2_arrow transparent;
+  }
+
+  .select2-search--dropdown .select2-search__field { border-color: $border_color_input; }
+
+  .select2-results__option {
+    &[aria-disabled='true'] { color: $font_color_select2_option_disabled; } // disabled options
+    &[aria-selected='true'] { background-color: $bg_color_select2_option_selected; } // previously selected options in dropdown
+  }
+
+  // hovering over an item in dropdown
+  .select2-results__option--highlighted[aria-selected] {
+    background-color: $bg_color_select2_option_hover;
+    color: $font_color_select2_option_hover;
+  }
+}
