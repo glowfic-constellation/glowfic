@@ -101,4 +101,39 @@ $bg_color_select2_selected: #3F3D4C;
 $bg_color_select2_search: $bg_color_select2_highlight;
 $opacity_mce_label: 0.8;
 
-@import 'dark_themes_selectors'
+@import 'dark_themes_selectors';
+
+$bg_color_button: $colors_mulledwine;
+$font_color_button: $colors_bright;
+$bg_color_button_subber: #5C5778;
+
+$font_color_input_subber: $colors_concrete;
+$font_color_input_placeholder_subber: $colors_concrete;
+$bg_color_input_subber: #6F697F;
+$border_color_input_subber: #888299;
+$bg_color_select2_highlight_subber: #888299;
+$bg_color_select2_selected_subber: #635D73;
+
+// inputs
+button, .button, #nav-top .button {
+  border-color: transparent;
+  background-color: $bg_color_button;
+  background-image: none;
+  color: $font_color_button;
+}
+
+.subber {
+  .button { background-color: $bg_color_button_subber; }
+  ::placeholder { color: $font_color_input_placeholder_subber; }
+
+  @include select2($font: $font_color_input_subber, $border: $border_color_input_subber,
+    $bg: $bg_color_input_subber, $bg_highlight: $bg_color_select2_highlight_subber,
+    $bg_selected: $bg_color_select2_selected_subber,
+    $font_placeholder: $font_color_input_placeholder_subber);
+
+  input {
+    border-color: $border_color_input_subber;
+    background-color: $bg_color_input_subber;
+    color: $font_color_input_subber;
+  }
+}
