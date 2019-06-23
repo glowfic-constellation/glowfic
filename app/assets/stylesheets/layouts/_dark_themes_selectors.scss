@@ -28,21 +28,10 @@ button, .button {
 .ui-widget.ui-widget-content { border-color: $border_color_popup; }
 
 /* - placeholders */
-::-webkit-input-placeholder { color: $font_color_input_placeholder; }
-
-:-moz-placeholder {
-  color: $font_color_input_placeholder;
+::placeholder {
   opacity: 1;
-}
-
-::-moz-placeholder {
   color: $font_color_input_placeholder;
-  opacity: 1;
 }
-
-:-ms-input-placeholder { color: $font_color_input_placeholder; }
-::-ms-input-placeholder { color: $font_color_input_placeholder; }
-::placeholder { color: $font_color_input_placeholder; }
 
 /* - account options, post editor, search */
 #content .form-table, #icon-table, .search-form, .post-info-box {
