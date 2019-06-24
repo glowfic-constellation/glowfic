@@ -3,7 +3,7 @@
 .select2-container--default {
   color: $font_color_input;
 
-  .select2-selection--single, .select2-selection--multiple {
+  .select2-selection--single, .select2-selection--multiple, .select2-dropdown {
     border-color: $border_color_input;
     background-color: $bg_color_input;
     color: $font_color_input;
@@ -45,7 +45,13 @@
     border-color: transparent transparent $border_color_select2_arrow transparent;
   }
 
-  .select2-search--dropdown .select2-search__field { border-color: $border_color_input; }
+  .select2-search--dropdown .select2-search__field {
+    border-color: $border_color_input;
+    background-color: $bg_color_select2_search;
+    color: $font_color_input;
+  }
+
+  .select2-search--inline .select2-search__field { color: $font_color_input; }
 
   .select2-results__option {
     &[aria-disabled='true'] { color: $font_color_select2_option_disabled; } // disabled options

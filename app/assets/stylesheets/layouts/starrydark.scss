@@ -86,19 +86,37 @@ $bg_color_popup_header: #0D0B1E;
 $font_color_popup_header: #EEEEEE;
 $border_color_popup_header: #28225D;
 $bg_color_popup_content: #211E2F;
-$font_color_popup_content: #DADADA;
+$font_color_popup_content: $colors_alto_brighter;
 $border_color_popup: #444444;
 
 // Darken input boxes
-$font_color_input: #DADADA;
+$font_color_input: $colors_alto_brighter;
 $bg_color_input: #4D4B5B; // for generic input boxes all over the place
 $border_color_input: #625F73; // TODO: check with Aestrix at a better time
 $font_color_input_placeholder: #8884A0;
 $bg_color_mce_panel: #3B394A; // MCE header & footer background
 // TODO: check with Aestrix at a better time
-$bg_color_select2_highlight: #5B586B;
-$bg_color_select2_selected: #3F3D4C;
-$bg_color_select2_search: $bg_color_select2_highlight;
 $opacity_mce_label: 0.8;
 
-@import 'dark_themes_selectors'
+$bg_color_select2_disabled: #3B394A;
+$bg_color_select2_search: #5B586B;
+$bg_color_select2_tags: #5B586B;
+
+$bg_color_select2_option_selected: #3F3D4C;
+$bg_color_select2_option_hover: #5B586B;
+$font_color_select2_option_hover: $colors_alto_brighter;
+
+@import 'dark_themes_selectors';
+
+$font_color_input: $colors_concrete;
+$bg_color_input: #6F697F;
+$border_color_input: #888299;
+
+$bg_color_select2_search: #888299;
+$bg_color_select2_tags: #888299;
+
+$bg_color_select2_option_selected: #635D73;
+$bg_color_select2_option_hover: #888299;
+$font_color_select2_option_hover: $colors_concrete;
+
+.subber { @import 'select2'; }

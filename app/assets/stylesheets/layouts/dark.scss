@@ -113,9 +113,14 @@ $bg_color_input: #4D4D4D; // for generic input boxes all over the place
 $border_color_input: #666666;
 $font_color_input_placeholder: #888888;
 $bg_color_mce_panel: #404040; // MCE header & footer background
-$bg_color_select2_highlight: #616161;
-$bg_color_select2_selected: #454545;
-$bg_color_select2_search: $bg_color_select2_highlight;
 $opacity_mce_label: 1;
 
-@import '_dark_selectors.scss'
+$bg_color_select2_disabled: #404040;
+$bg_color_select2_search: #616161;
+$bg_color_select2_tags: #616161;
+
+$bg_color_select2_option_selected: #454545;
+$bg_color_select2_option_hover: #616161;
+$font_color_select2_option_hover: $colors_silver_again;
+
+@import 'dark_selectors';
