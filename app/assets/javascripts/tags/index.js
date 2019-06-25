@@ -4,5 +4,6 @@ $(document).ready(function() {
     minimumResultsForSearch: 10,
     placeholder: '— Choose Type —',
     allowClear: true,
+    dropdownParent: $('.index-search'),
   });
 });

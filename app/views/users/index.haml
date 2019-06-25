@@ -3,7 +3,7 @@
     %tr
       %th{colspan: 3} Users
     %tr
-      %th.subber.padding-10{colspan: 3}
+      %th.subber.index-search{colspan: 3}
         = form_tag search_users_path, method: :get do
           = label_tag :username, 'Search by username:'
           = text_field_tag :username, params[:username], style: 'margin: 0px 5px;'

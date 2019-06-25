@@ -14,7 +14,7 @@
       %th{colspan: col_count}
         = @view.present? ? @view.titlecase.pluralize : 'Tags'
     %tr
-      %th.subber.padding-10{colspan: col_count}
+      %th.subber.index-search{colspan: col_count}
         = form_tag tags_path, method: :get do
           Search for a tag:
           = text_field_tag :name, params[:name], id: 'tag-search-name', placeholder: 'Exact name (case-insensitive)'
