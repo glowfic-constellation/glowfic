@@ -58,13 +58,12 @@ button, .button {
 /* Display Helpers */
 .no-margin { margin: 0; } // used in characters#search, posts#hidden, posts#search
 .noheight { font-size: 0; } // used on _generate_flat, posts#show, and replies _single
-.margin-10 { margin: 10px; } // all instances cleaned up (was used once, on thread link to top)
 .padding-5 { padding: 5px 10px; } // primarily used on various tds
 .padding-10 { padding: 10px; }
 .padding-15 { padding: 15px; } // currently used once, on replies#preview
 .padding-left-5 { padding-left: 5px; } // currently used once, on messages#index
 .padding-right-10 { padding-right: 10px; } // currently used once, for a checkbox in the post _list_items
-.width-15 { width: 15px !important; } // currently used 1x, on galleries _add_new
+.width-15 { width: 15px !important; } // galleries/_add_new, messages/index, posts/_list, reports/_daily, reports/_monthly
 .width-70 { width: 70px; }
 
  // primarily used on searches and lists of information
