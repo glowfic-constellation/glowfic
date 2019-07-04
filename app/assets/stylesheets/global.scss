@@ -108,8 +108,8 @@ button, .button {
 /* For UI elements involving reordering */
 .disabled-arrow {
   filter: $filter_disabled; /* IE */
-  -webkit-filter: grayscale(1); /* Chrome, Safari, Opera */
   filter: grayscale(1); /* Edge, Firefox */
+  -webkit-filter: grayscale(1); /* Chrome, Safari, Opera */
 }
 
 /* Displaying forum threads */
