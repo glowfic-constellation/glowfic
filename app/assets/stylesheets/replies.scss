@@ -307,24 +307,22 @@ div.post-subheader { width: 100%; }
   font-style: italic;
 }
 
-/* - Blockquotes around .post-info-box */
-.post-content blockquote {
-  margin-left: 5.5em;
-  margin-right: 5.5em;
-}
-
-/* - Lists around .post-info-box */
 .post-content {
+  /* - Blockquotes around .post-info-box */
+  blockquote {
+    margin-left: 5.5em;
+    margin-right: 5.5em;
+  }
+
+  /* - Lists around .post-info-box */
   ul, ol {
     list-style-position: inside;
     padding-left: 30px;
 
     ul, ol { overflow: auto; }
   }
-}
 
-/* - Tables in post-content */
-.post-content {
+  /* - Tables in post-content */
   th {
     padding: 5px;
     background-color: unset;
