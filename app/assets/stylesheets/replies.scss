@@ -39,6 +39,7 @@
   left: 150px;
   padding: 5px 20px 10px 20px;
   z-index: 2;
+  background-color: $bg_color_selectionpopup;
   min-width: 200px;
   display: none;
   text-align: left;
@@ -525,10 +526,6 @@ div.post-subheader { width: 100%; }
 }
 
 .reply-highlighted { border: 1px $border_color_unread_reply solid; }
-
-.selector-popup {
-  background-color: $bg_color_selectionpopup;
-}
 
 /* History page */
 .history-header { width: 170px; }
