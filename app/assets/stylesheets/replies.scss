@@ -332,13 +332,9 @@ div.post-subheader { width: 100%; }
     font-weight: bold;
   }
 
-  td {
-    padding: 5px;
-  }
+  td { padding: 5px; }
 
-  th, td {
-    border: 1px solid $border_color_reply_table;
-  }
+  th, td { border: 1px solid $border_color_reply_table; }
 }
 
 /* - Character quick switcher - small icons for selecting characters in post-editor */
@@ -513,9 +509,7 @@ div.post-subheader { width: 100%; }
 }
 
 /* Unread marker on posts */
-.unread-marker-container {
-  position: relative;
-}
+.unread-marker-container { position: relative; }
 
 .unread-marker {
   background-color: transparent;
