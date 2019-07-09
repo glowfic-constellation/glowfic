@@ -30,6 +30,7 @@ rules:
   no-duplicate-properties:
     - 1
     - exclude:
+      - background
       - background-color
       - border-top
       - border-bottom
