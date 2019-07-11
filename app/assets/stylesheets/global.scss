@@ -94,7 +94,6 @@ button, .button {
 .pointer { cursor: pointer; } // referenced in javascript but afaict not used
 .vtop { vertical-align: top; }
 .vmid { vertical-align: middle; }
-.bold { font-weight: bold; } // seems to be used in messages#index?
 .auto { overflow: auto; } // not currently used
 .semiopaque { opacity: 0.5; } // currently seems to only be referenced in javascript?
 .semiplusopaque { opacity: 0.6; } // currently used once, on .tag-box .tag-item in _expandable

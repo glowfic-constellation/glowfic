@@ -17,7 +17,7 @@
         - @messages.each do |message|
           %tr.message-row
             - klass = cycle('even', 'odd')
-            - klass += ' bold' if @view == 'inbox' and message.unread?
+            - klass += ' message-unread' if @view == 'inbox' and message.unread?
             %td.padding-left-5{class: klass}= # just padding
             %td{class: klass}
               = link_to message.unempty_subject, message_path(message)
