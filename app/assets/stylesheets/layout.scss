@@ -433,6 +433,11 @@ td, .table-list li { font-size: $font_size_small; }
   vertical-align: top;
   background-color: $bg_color_search_box;
   color: $font_color_search_box;
+
+  input[type='checkbox'] {
+    margin: 0 0 3px 0;
+    vertical-align: middle;
+  }
 }
 .search-icon-preview { vertical-align: middle; }
 .search-icon-keyword { padding-left: 5px; }

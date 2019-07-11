@@ -33,7 +33,7 @@
             %tr
               %td Completed
               %td.padding-5
-                = check_box_tag :completed, true, params[:completed].present?, {class: 'vmid no-margin', style: 'margin-bottom: 3px;'}
+                = check_box_tag :completed, true, params[:completed].present?
                 = label_tag :completed, "Completed Only"
             %tr
               %td.centered{colspan: 2}= submit_tag "Search", class: 'button'

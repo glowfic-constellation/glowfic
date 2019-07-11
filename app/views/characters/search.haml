@@ -29,17 +29,17 @@
               %td
                 Searching for name in:
                 %br
-                = check_box_tag :search_name, true, params[:commit] ? params[:search_name] : true, {class: 'vmid no-margin', style: 'margin-bottom: 3px;'}
+                = check_box_tag :search_name, true, params[:commit] ? params[:search_name] : true
                 = label_tag :search_name, "Name"
                 %br
-                = check_box_tag :search_screenname, true, params[:commit] ? params[:search_screenname] : true, {class: 'vmid no-margin', style: 'margin-bottom: 3px;'}
+                = check_box_tag :search_screenname, true, params[:commit] ? params[:search_screenname] : true
                 = label_tag :search_screenname, "Screenname"
                 %br
-                = check_box_tag :search_nickname, true, params[:commit] ? params[:search_nickname] : true, {class: 'vmid no-margin', style: 'margin-bottom: 3px;'}
+                = check_box_tag :search_nickname, true, params[:commit] ? params[:search_nickname] : true
                 = label_tag :search_nickname, "Nickname"
                 - if false # TODO
                   %br
-                  = check_box_tag :search_aliases, true, params[:commit] ? params[:search_aliases] : true, {class: 'vmid no-margin', style: 'margin-bottom: 3px;'}
+                  = check_box_tag :search_aliases, true, params[:commit] ? params[:search_aliases] : true
                   = label_tag :search_aliases, "Aliases"
             -# TODO: setting search, facecast search
             %tr

@@ -52,7 +52,7 @@
             %tr
               %td= label_tag :condensed, 'Condensed'
               %td
-                = check_box_tag :condensed, nil, (params[:commit].nil? || params[:condensed].present?), class: 'vmid'
+                = check_box_tag :condensed, nil, (params[:commit].nil? || params[:condensed].present?)
                 = label_tag :condensed, 'Hide screennames and icons'
             %tr
               %td.centered{colspan: 2}= submit_tag "Search", class: 'button'
