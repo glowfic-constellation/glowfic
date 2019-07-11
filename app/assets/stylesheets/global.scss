@@ -65,12 +65,7 @@ button, .button {
 .padding-right-10 { padding-right: 10px; } // currently used once, for a checkbox in the post _list_items
 .width-15 { width: 15px !important; } // galleries/_add_new, messages/index, posts/_list, reports/_daily, reports/_monthly
 .width-70 { width: 70px; }
-
- // primarily used on searches and lists of information
-.width-150 {
-  width: 150px;
-  &.subber { width: 200px; }
-}
+.width-150 { width: 150px; } // primarily used on searches and lists of information
 
 .spacer {
   padding: 0px !important;
