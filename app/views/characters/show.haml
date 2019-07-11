@@ -111,22 +111,22 @@
       - nicknames = ([@character.template_name] + @character.aliases.ordered.pluck(:name)).compact
       - if nicknames.present?
         %tr
-          %th.sub.vtop.width-150 Nickname(s)
+          %th.sub.info-label Nickname(s)
           %td.character-template-nickname{class: cycle('even', 'odd')}= nicknames.join(", ")
       - if @character.template
         %tr
-          %th.sub.vtop.width-150 Template
+          %th.sub.info-label Template
           %td.character-template{class: cycle('even', 'odd')}
             = link_to @character.template.name, template_path(@character.template), class: 'character-template'
       %tr
-        %th.sub.vtop.width-150 Facecast
+        %th.sub.info-label Facecast
         %td.character-pb{class: cycle('even', 'odd')}= @character.pb
       - if @character.settings.present?
         %tr
-          %th.sub.vtop.width-150 Setting
+          %th.sub.info-label Setting
           - setting_links = @character.settings.map { |setting| link_to(setting.name, tag_path(setting)) }
           %td.character-setting{class: cycle('even', 'odd')}= safe_join(setting_links, ', ')
       - if @character.description
         %tr
-          %th.sub.vtop.width-150 Description
+          %th.sub.info-label Description
           %td.character-description.written-content{class: cycle('even', 'odd')}= sanitize_written_content(@character.description)

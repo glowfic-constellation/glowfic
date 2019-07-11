@@ -26,7 +26,7 @@
         %td.post-subheader{colspan: 2, style: 'width: unset;'}= sanitize_simple_link_text(@post.description)
   %tbody
     %tr
-      %th.sub.width-150 Status
+      %th.sub.info-label Status
       %td{class: cycle('odd', 'even')}
         - case @post.status
         - when Post::STATUS_ACTIVE
@@ -42,14 +42,14 @@
           = image_tag "icons/book_grey.png", class: 'vmid', title: "In Progress"
           Abandoned
     %tr
-      %th.sub.width-150 Audience
+      %th.sub.info-label Audience
       %td{class: cycle('odd', 'even')}
         = privacy_state(@post.privacy)
         - if @post.access_list?
           \-
           = safe_join(@post.post_viewers.map(&:user).map{ |u| user_link(u) }, ', ')
     %tr
-      %th.sub.width-150 Authors
+      %th.sub.info-label Authors
       %td{class: cycle('odd', 'even')}
         - post_authors = @post.post_authors.joins(:user).order(Arel.sql('LOWER(users.username) asc'))
         %ul
@@ -59,7 +59,7 @@
               - unless post_author.joined?
                 (invited)
     %tr
-      %th.sub.width-150.vtop Characters
+      %th.sub.info-label Characters
       %td{class: cycle('odd', 'even')}
         %ul
           - @post.character_appearance_counts.each do |character, count|
@@ -70,21 +70,21 @@
 
     - if @post.settings.present?
       %tr
-        %th.sub.width-150 Setting
+        %th.sub.info-label Setting
         - setting_links = @post.settings.ordered_by_post_tag.map { |tag| link_to tag.name, tag_path(tag) }
         %td{class: cycle('odd', 'even')}= safe_join(setting_links, ', ')
     - if @post.content_warnings.present?
       %tr
-        %th.sub.width-150 Content Warnings
+        %th.sub.info-label Content Warnings
         - warning_links = @post.content_warnings.ordered_by_post_tag.map { |tag| link_to tag.name, tag_path(tag) }
         %td{class: cycle('odd', 'even')}= safe_join(warning_links, ', ')
     - if @post.labels.present?
       %tr
-        %th.sub.width-150 Labels
+        %th.sub.info-label Labels
         - label_links = @post.labels.ordered_by_post_tag.map { |tag| link_to tag.name, tag_path(tag) }
         %td{class: cycle('odd', 'even')}= safe_join(label_links, ', ')
     %tr
-      %th.sub.width-150.vtop Word Count
+      %th.sub.info-label Word Count
       %td{class: cycle('odd', 'even')}
         = number_with_delimiter(@post.total_word_count)
         - if @post.joined_authors.count > 1
@@ -94,8 +94,8 @@
                 = username + ':'
                 = number_with_delimiter(count)
     %tr
-      %th.sub.width-150 Time Begun
+      %th.sub.info-label Time Begun
       %td{class: cycle('odd', 'even')}= pretty_time(@post.created_at)
     %tr
-      %th.sub.width-150 Time Last Updated
+      %th.sub.info-label Time Last Updated
       %td{class: cycle('odd', 'even')}= pretty_time(@post.tagged_at)

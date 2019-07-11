@@ -10,7 +10,7 @@
             Compose New Message
     %tbody
       %tr
-        %th.sub.padding-10.width-150 Recipient
+        %th.sub.padding-10.info-label Recipient
         %td.even.padding-10
           - if @message.parent
             = user_link(@message.recipient) if @message.recipient
