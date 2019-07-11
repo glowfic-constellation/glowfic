@@ -3,7 +3,7 @@
 %table.search-collapsible
   %thead
     %tr
-      %th.width-150
+      %th.search-params-header
         Search Characters
         - if @search_results
           = '- '+@search_results.total_entries.to_s+' results'
@@ -76,5 +76,5 @@
   - if @search_results && @search_results.total_pages > 1
     %tfoot
       %tr
-        %th.width-150.empty
+        %th.search-params-header.empty
         %th= render 'posts/paginator', paginated: @search_results, no_per: true
