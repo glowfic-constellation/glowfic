@@ -4,7 +4,7 @@
       %tr
         %th{colspan: 2} Sign Up
     %tbody
-      %tr#username
+      %tr#username-row
         %th.sub.vtop Username
         %td.even
           = f.text_field :username, placeholder: "Username"
@@ -18,7 +18,7 @@
           .user-alert.hidden
             = image_tag 'icons/exclamation.png', alt: '!', title: '', class: 'vmid'
             %span.msg
-      %tr#password
+      %tr#password-row
         %th.sub.vtop Password
         %td.even
           = f.password_field :password, placeholder: "Password"
@@ -32,7 +32,7 @@
           .user-alert.hidden
             = image_tag 'icons/exclamation.png', alt: '!', title: '', class: 'vmid'
             %span.msg
-      %tr#secret
+      %tr#secret-row
         %th.sub.vtop Secret
         %td.even
           = text_field_tag :secret, params[:secret], placeholder: "Secret"

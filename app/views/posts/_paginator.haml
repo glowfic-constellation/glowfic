@@ -6,7 +6,7 @@
     .right-align
       - if paginated.klass == Reply && !local_assigns[:no_per]
         Posts Per Page:
-        = select_tag :per_page, per_page_options, class: 'per-page'
+        = select_tag :per_page, per_page_options, class: 'per-page', id: nil
     .narrow-clear
   .pagination
     - if paginated.total_entries > paginated.per_page

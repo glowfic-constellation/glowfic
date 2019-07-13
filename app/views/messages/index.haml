@@ -29,7 +29,7 @@
               - else
                 = user_link(message.recipient)
             %td{class: klass}= pretty_time(message.last_in_thread.created_at)
-            %td{class: klass}= check_box_tag :"marked_ids[]", message.id, false, class: 'select-all-box'
+            %td{class: klass}= check_box_tag :"marked_ids[]", message.id, false, class: 'select-all-box', id: nil
         %tr
           %td.right-align.padding-5{colspan: 5, class: cycle('even', 'odd')}
             - if @view == 'inbox'
