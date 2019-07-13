@@ -70,12 +70,12 @@
     #markup-allowed-attributes
       %strong Allowed attributes (by tag):
       %ul
-      - Glowfic::ALLOWED_ATTRIBUTES.each do |tag_name, attrs|
-        %li
-          - if tag_name == :all
-            %strong #{tag_name}:
-          - else
-            %strong <code>#{tag_name}</code>:
-          %ul.inline-list
-            - attrs.each do |attribute|
-              %li <code>#{attribute}</code>
+        - Glowfic::ALLOWED_ATTRIBUTES.each do |tag_name, attrs|
+          %li
+            - if tag_name == :all
+              %strong #{tag_name}:
+            - else
+              %strong <code>#{tag_name}</code>:
+            %ul.inline-list
+              - attrs.each do |attribute|
+                %li <code>#{attribute}</code>
