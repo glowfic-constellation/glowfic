@@ -135,7 +135,7 @@ CodeClimate runs the following tools automatically:
 
 Tools we do not currently use but are interested in evaluating:
 * [bullet](https://github.com/flyerhzm/bullet)
-* [Reek](https://github.com/troessner/reek) and [Flog](https://github.com/seattlerb/flog) if they're not already included by CodeClimate or other gems (Marris' brain thinks they might be, the way flay is in duplication, but isn't citing its sources)
+* [Reek](https://github.com/troessner/reek) and [Flog](https://github.com/seattlerb/flog) if they're not already included by CodeClimate or other gems (Marri's brain thinks they might be, the way flay is in duplication, but isn't citing its sources)
 * [Reek's brother and sister gems](https://github.com/troessner/reek#brothers-and-sisters)
 
 ### Attribution
