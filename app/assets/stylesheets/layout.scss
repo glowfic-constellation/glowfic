@@ -493,3 +493,8 @@ The copy box can't be invisible/hidden or copy fails but opacity works
   width: 210px;
 }
 #tag-search { margin-left: 5px; }
+
+#remember-link {
+  font-size: $font_size_smaller;
+  text-align: right;
+}
