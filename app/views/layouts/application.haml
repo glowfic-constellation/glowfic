@@ -113,23 +113,20 @@
               %li= link_to 'Daily Report', report_path(id: :daily)
       - if content_for?(:breadcrumbs)
         .flash.breadcrumbs= content_for :breadcrumbs
-      - if flash[:error].is_a?(Hash)
-        .flash.error
-          = link_to '#' do
-            = image_tag 'icons/cross.png', class: 'float-right flash-dismiss'
-          - if flash[:error].key?(:image)
-            = image_tag flash[:error][:image], class: 'vmid'.freeze
-          = flash[:error][:message]
-          - if flash[:error].key?(:array)
-            %ul
-              - flash[:error][:array].each do |error|
-                %li= error
-        - flash.delete(:error)
-      - flash.keys.each do |key|
+      - flash.each do |key, val|
         .flash{class: key}
           = link_to '#' do
             = image_tag 'icons/cross.png', class: 'float-right flash-dismiss'
-          = flash[key]
+          - if val.is_a?(Hash)
+            - if val.key?(:image)
+              = image_tag val[:image], class: 'vmid'.freeze
+            = val[:message]
+            - if val.key?(:array)
+              %ul
+                - val[:array].each do |message|
+                  %li= message
+          - else
+            = val
       - if content_for?(:flashes)
         = content_for :flashes
       - unless logged_in? || tos_skippable?
