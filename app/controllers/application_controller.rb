@@ -6,6 +6,8 @@ class ApplicationController < ActionController::Base
   include Memorylogic
 
   protect_from_forgery with: :exception
+  rescue_from ActionController::InvalidAuthenticityToken, with: :handle_invalid_token
+
   before_action :check_tos
   before_action :check_permanent_user
   before_action :show_password_warning
@@ -42,6 +44,12 @@ class ApplicationController < ActionController::Base
     return unless current_user.salt_uuid.nil?
     logout
     flash.now[:error] = "Because Marri accidentally made passwords a bit too secure, you must log back in to continue using the site."
+  end
+
+  def handle_invalid_token
+    flash[:error] = 'Oops, looks like your session expired! Please try another tab or log in again to resume glowficcing. If you were writing a reply, it has been cached for your next page load.'
+    session[:attempted_reply] = params[:reply] if params[:reply].present?
+    redirect_to root_path
   end
 
   def use_javascript(js)

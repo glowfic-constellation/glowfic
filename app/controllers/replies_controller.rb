@@ -240,17 +240,6 @@ class RepliesController < WritableController
     render :preview
   end
 
-  def reply_params
-    params.fetch(:reply, {}).permit(
-      :post_id,
-      :content,
-      :character_id,
-      :icon_id,
-      :audit_comment,
-      :character_alias_id,
-    )
-  end
-
   def make_draft(show_message=true)
     if (draft = ReplyDraft.draft_for(params[:reply][:post_id], current_user.id))
       draft.assign_attributes(reply_params)

@@ -98,13 +98,14 @@ class Post < ApplicationRecord
     (post_viewers.pluck(:user_id) + [user_id]).include?(user.id)
   end
 
-  def build_new_reply_for(user)
+  def build_new_reply_for(user, reply_params={})
     draft = ReplyDraft.draft_reply_for(self, user)
     return draft if draft.present?
 
-    reply = Reply.new(post: self, user: user)
-    user_replies = replies.where(user_id: user.id).ordered
+    reply = Reply.new(reply_params.merge(post: self, user: user))
+    return reply if reply_params.present?
 
+    user_replies = replies.where(user_id: user.id).ordered
     if user_replies.exists?
       last_user_reply = user_replies.last
       reply.character_id = last_user_reply.character_id

@@ -1007,7 +1007,7 @@ RSpec.describe PostsController do
 
         login_as(user)
         expect(post).to be_taggable_by(user)
-        expect(post).to receive(:build_new_reply_for).with(user).and_call_original
+        expect(post).to receive(:build_new_reply_for).with(user, {}).and_call_original
         expect(controller).to receive(:setup_layout_gon).and_call_original
 
         get :show, params: { id: post.id }
@@ -1037,7 +1037,7 @@ RSpec.describe PostsController do
 
         login_as(user)
         expect(post).to be_taggable_by(user)
-        expect(post).to receive(:build_new_reply_for).with(user).and_call_original
+        expect(post).to receive(:build_new_reply_for).with(user, {}).and_call_original
 
         get :show, params: { id: post.id }
         expect(response).to have_http_status(200)

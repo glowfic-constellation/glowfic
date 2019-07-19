@@ -113,7 +113,12 @@ class WritableController < ApplicationController
 
       if @post.taggable_by?(current_user)
         build_template_groups
-        @reply = @post.build_new_reply_for(current_user)
+
+        session_params = ActionController::Parameters.new(reply: session.fetch(:attempted_reply, {}))
+        reply_hash = reply_params(session_params)
+        session.delete(:attempted_reply)
+
+        @reply = @post.build_new_reply_for(current_user, reply_hash)
       end
 
       @post.mark_read(current_user, @post.read_time_for(@replies))
@@ -166,5 +171,16 @@ class WritableController < ApplicationController
       title: post.subject + ' · ' + post_location,
       description: post_description,
     }
+  end
+
+  def reply_params(param_hash=nil)
+    (param_hash || params).fetch(:reply, {}).permit(
+      :post_id,
+      :content,
+      :character_id,
+      :icon_id,
+      :audit_comment,
+      :character_alias_id,
+    )
   end
 end
