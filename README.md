@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/Marri/glowfic.svg?branch=master)](https://travis-ci.org/Marri/glowfic) [![Test Coverage](https://codeclimate.com/github/Marri/glowfic/badges/coverage.svg)](https://codeclimate.com/github/Marri/glowfic/coverage)
+[![Build Status](https://travis-ci.com/Marri/glowfic.svg?branch=master)](https://travis-ci.com/Marri/glowfic) [![Test Coverage](https://codeclimate.com/github/Marri/glowfic/badges/coverage.svg)](https://codeclimate.com/github/Marri/glowfic/coverage)
 
 ## README
 
@@ -113,6 +113,30 @@ And finally, run any database migrations that might have been added in the meant
 *   `docker-bin/rake db:migrate`
 
 You should now be able to execute the server, as before but now with the latest updates.
+
+### Validation tools
+
+We use the following tools to make sure our code is clean and standards-ctompliant:
+
+* [html-proofer](https://github.com/gjtorikian/html-proofer)
+* The [W3 HTML validator](https://validator.w3.org/)
+* [traceroute](https://github.com/amatsuda/traceroute)
+* [rails_best_practices](https://github.com/flyerhzm/rails_best_practices)
+* [haml-lint](https://github.com/sds/haml-lint)
+* [sass-lint](https://github.com/sasstools/sass-lint)
+
+CodeClimate runs the following tools automatically:
+* [brakeman](https://github.com/presidentbeef/brakeman)
+* [bundler-audit](https://github.com/rubysec/bundler-audit)
+* [duplication](https://github.com/codeclimate/codeclimate-duplication)
+* [ESLint](https://eslint.org/)
+* [fixme](https://github.com/codeclimate/codeclimate-fixme)
+* [Rubocop](https://github.com/rubocop-hq/rubocop)
+
+Tools we do not currently use but are interested in evaluating:
+* [bullet](https://github.com/flyerhzm/bullet)
+* [Reek](https://github.com/troessner/reek) and [Flog](https://github.com/seattlerb/flog) if they're not already included by CodeClimate or other gems (Marris' brain thinks they might be, the way flay is in duplication, but isn't citing its sources)
+* [Reek's brother and sister gems](https://github.com/troessner/reek#brothers-and-sisters)
 
 ### Attribution
 
