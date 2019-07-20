@@ -33,15 +33,17 @@ class PasswordResetsController < ApplicationController
     end
 
     password_reset = PasswordReset.new(user: user)
-    unless password_reset.save
+    begin
+      password_reset.save!
+    rescue ActiveRecord::RecordInvalid
       flash.now[:error] = "Password reset could not be saved."
-      render :new and return
+      render :new
+    else
+      UserMailer.password_reset_link(password_reset.id).deliver
+      params[:email] = params[:username] = nil
+      flash[:success] = "A password reset link has been emailed to you."
+      redirect_to new_password_reset_path
     end
-
-    UserMailer.password_reset_link(password_reset.id).deliver
-    params[:email] = params[:username] = nil
-    flash[:success] = "A password reset link has been emailed to you."
-    redirect_to new_password_reset_path
   end
 
   def show
@@ -58,8 +60,6 @@ class PasswordResetsController < ApplicationController
         @password_reset.user.save!
         @password_reset.update!(used: true)
       end
-      flash[:success] = "Password successfully changed."
-      redirect_to root_url
     rescue ActiveRecord::RecordInvalid
       flash.now[:error] = {}
       flash.now[:error][:message] = "Could not update password."
@@ -67,6 +67,9 @@ class PasswordResetsController < ApplicationController
       flash.now[:error][:array] += @password_reset.errors.full_messages
       @page_title = 'Change Password'
       render :show
+    else
+      flash[:success] = "Password successfully changed."
+      redirect_to root_url
     end
   end
 

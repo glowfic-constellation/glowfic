@@ -18,16 +18,19 @@ class IndexesController < ApplicationController
     @index = Index.new(index_params)
     @index.user = current_user
 
-    if @index.save
+    begin
+      @index.save!
+    rescue ActiveRecord::RecordInvalid
+      flash.now[:error] = {
+        message: "Index could not be created.",
+        array: @index.errors.full_messages
+      }
+      @page_title = 'New Index'
+      render :new
+    else
       flash[:success] = "Index created!"
       redirect_to index_path(@index) and return
     end
-
-    flash.now[:error] = {}
-    flash.now[:error][:message] = "Index could not be created."
-    flash.now[:error][:array] = @index.errors.full_messages
-    @page_title = 'New Index'
-    render :new
   end
 
   def show
@@ -48,27 +51,34 @@ class IndexesController < ApplicationController
   end
 
   def update
-    unless @index.update(index_params)
-      flash.now[:error] = {}
-      flash.now[:error][:message] = "Index could not be saved because of the following problems:"
-      flash.now[:error][:array] = @index.errors.full_messages
+    begin
+      @index.update!(index_params)
+    rescue ActiveRecord::RecordInvalid
+      flash.now[:error] = {
+        message: "Index could not be saved because of the following problems:",
+        array: @index.errors.full_messages
+      }
       @page_title = "Edit Index: #{@index.name}"
-      render :edit and return
+      render :edit
+    else
+      flash[:success] = "Index saved!"
+      redirect_to index_path(@index)
     end
-
-    flash[:success] = "Index saved!"
-    redirect_to index_path(@index)
   end
 
   def destroy
-    @index.destroy!
-    flash[:success] = "Index deleted."
-    redirect_to indexes_path
-  rescue ActiveRecord::RecordNotDestroyed
-    flash[:error] = {}
-    flash[:error][:message] = "Index could not be deleted."
-    flash[:error][:array] = @index.errors.full_messages
-    redirect_to index_path(@index)
+    begin
+      @index.destroy!
+    rescue ActiveRecord::RecordNotDestroyed
+      flash[:error] = {
+        message: "Index could not be deleted.",
+        array: @index.errors.full_messages
+      }
+      redirect_to index_path(@index)
+    else
+      redirect_to indexes_path
+      flash[:success] = "Index deleted."
+    end
   end
 
   private

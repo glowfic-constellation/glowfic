@@ -37,17 +37,20 @@ class BoardsController < ApplicationController
     @board = Board.new(board_params)
     @board.creator = current_user
 
-    if @board.save
+    begin
+      @board.save!
+    rescue ActiveRecord::RecordInvalid
+      flash.now[:error] = {
+        message: "Continuity could not be created.",
+        array: @board.errors.full_messages
+      }
+      @page_title = 'New Continuity'
+      set_available_cowriters
+      render :new
+    else
       flash[:success] = "Continuity created!"
-      redirect_to boards_path and return
+      redirect_to boards_path
     end
-
-    flash.now[:error] = {}
-    flash.now[:error][:message] = "Continuity could not be created."
-    flash.now[:error][:array] = @board.errors.full_messages
-    @page_title = 'New Continuity'
-    set_available_cowriters
-    render :new
   end
 
   def show
@@ -73,30 +76,37 @@ class BoardsController < ApplicationController
   end
 
   def update
-    if @board.update(board_params)
-      flash[:success] = "Continuity saved!"
-      redirect_to board_path(@board)
-    else
-      flash.now[:error] = {}
-      flash.now[:error][:message] = "Continuity could not be created."
-      flash.now[:error][:array] = @board.errors.full_messages
+    begin
+      @board.update!(board_params)
+    rescue ActiveRecord::RecordInvalid
+      flash.now[:error] = {
+        message: "Continuity could not be created.",
+        array: @board.errors.full_messages
+      }
       @page_title = 'Edit Continuity: ' + @board.name_was
       set_available_cowriters
       use_javascript('board_sections')
       @board_sections = @board.board_sections.ordered
       render :edit
+    else
+      flash[:success] = "Continuity saved!"
+      redirect_to board_path(@board)
     end
   end
 
   def destroy
-    @board.destroy!
-    flash[:success] = "Continuity deleted."
-    redirect_to boards_path
-  rescue ActiveRecord::RecordNotDestroyed
-    flash[:error] = {}
-    flash[:error][:message] = "Continuity could not be deleted."
-    flash[:error][:array] = @board.errors.full_messages
-    redirect_to board_path(@board)
+    begin
+      @board.destroy!
+    rescue ActiveRecord::RecordNotDestroyed
+      flash[:error] = {
+        message: "Continuity could not be deleted.",
+        array: @board.errors.full_messages
+      }
+      redirect_to board_path(@board)
+    else
+      flash[:success] = "Continuity deleted."
+      redirect_to boards_path
+    end
   end
 
   def mark

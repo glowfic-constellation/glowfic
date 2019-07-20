@@ -26,17 +26,20 @@ class IndexPostsController < ApplicationController
       redirect_to index_path(@index_post.index) and return
     end
 
-    if @index_post.save
+    begin
+      @index_post.save!
+    rescue ActiveRecord::RecordInvalid
+      flash.now[:error] = {
+        message: "Post could not be added to index.",
+        array: @index_post.errors.full_messages
+      }
+      @page_title = 'Add Posts to Index'
+      use_javascript('posts/index_post_new')
+      render :new
+    else
       flash[:success] = "Post added to index!"
-      redirect_to index_path(@index_post.index) and return
+      redirect_to index_path(@index_post.index)
     end
-
-    flash.now[:error] = {}
-    flash.now[:error][:message] = "Post could not be added to index."
-    flash.now[:error][:array] = @index_post.errors.full_messages
-    @page_title = 'Add Posts to Index'
-    use_javascript('posts/index_post_new')
-    render :new
   end
 
   def destroy
@@ -52,11 +55,13 @@ class IndexPostsController < ApplicationController
 
     begin
       index_post.destroy!
-      flash[:success] = "Post removed from index."
     rescue ActiveRecord::RecordNotDestroyed
-      flash[:error] = {}
-      flash[:error][:message] = "Post could not be removed from index."
-      flash[:error][:array] = index_post.errors.full_messages
+      flash[:error] = {
+        message: "Post could not be removed from index.",
+        array: index_post.errors.full_messages
+      }
+    else
+      flash[:success] = "Post removed from index."
     end
     redirect_to index_path(index_post.index)
   end

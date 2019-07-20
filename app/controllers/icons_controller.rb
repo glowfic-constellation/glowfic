@@ -64,19 +64,22 @@ class IconsController < UploadingController
   end
 
   def update
-    unless @icon.update(icon_params)
-      flash.now[:error] = {}
-      flash.now[:error][:message] = "Your icon could not be saved due to the following problems:"
-      flash.now[:error][:array] = @icon.errors.full_messages
+    begin
+      @icon.update!(icon_params)
+    rescue ActiveRecord::RecordInvalid
+      flash.now[:error] = {
+        message: "Your icon could not be saved due to the following problems:",
+        array: @icon.errors.full_messages
+      }
       @page_title = 'Edit icon: ' + @icon.keyword_was
       use_javascript('galleries/update_existing')
       use_javascript('galleries/uploader')
       set_s3_url
-      render :edit and return
+      render :edit
+    else
+      flash[:success] = "Icon updated."
+      redirect_to icon_path(@icon)
     end
-
-    flash[:success] = "Icon updated."
-    redirect_to icon_path(@icon)
   end
 
   def replace
@@ -121,14 +124,16 @@ class IconsController < UploadingController
     gallery = @icon.galleries.first if @icon.galleries.count == 1
     begin
       @icon.destroy!
+    rescue ActiveRecord::RecordNotDestroyed
+      flash[:error] = {
+        message: "Icon could not be deleted.",
+        array: @icon.errors.full_messages
+      }
+      redirect_to icon_path(@icon)
+    else
       flash[:success] = "Icon deleted successfully."
       redirect_to gallery_path(gallery) and return if gallery
       redirect_to user_galleries_path(current_user)
-    rescue ActiveRecord::RecordNotDestroyed
-      flash[:error] = {}
-      flash[:error][:message] = "Icon could not be deleted."
-      flash[:error][:array] = @icon.errors.full_messages
-      redirect_to icon_path(@icon)
     end
   end
 

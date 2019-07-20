@@ -310,7 +310,8 @@ RSpec.describe UsersController do
         user.update_columns(username: 'a') # too short to validate
         put :update, params: { id: user.id, tos_check: true }
         expect(user.reload.tos_version).to be_nil
-        expect(flash[:error]).to eq('There was an error saving your changes. Please try again.')
+        expect(flash[:error][:message]).to eq('There was an error saving your changes. Please try again.')
+        expect(flash[:error][:array]).to eq(["Username is too short (minimum is 3 characters)"])
         expect(response).to render_template('about/accept_tos')
       end
     end

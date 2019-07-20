@@ -28,7 +28,8 @@ RSpec.describe TemplatesController do
       login
       post :create
       expect(response).to render_template(:new)
-      expect(flash[:error]).to eq("Your template could not be saved.")
+      expect(flash[:error][:message]).to eq("Your template could not be saved because of the following problems:")
+      expect(flash[:error][:array]).to eq(["Name can't be blank"])
       expect(assigns(:page_title)).to eq("New Template")
       expect(assigns(:template)).not_to be_valid
       expect(assigns(:template)).to be_a_new_record
@@ -149,7 +150,8 @@ RSpec.describe TemplatesController do
       put :update, params: { id: template.id, template: {name: ''} }
       expect(assigns(:template)).not_to be_valid
       expect(response).to render_template(:edit)
-      expect(flash[:error]).to eq("Your template could not be saved.")
+      expect(flash[:error][:message]).to eq("Your template could not be saved because of the following problems:")
+      expect(flash[:error][:array]).to eq(["Name can't be blank"])
     end
 
     it "works" do

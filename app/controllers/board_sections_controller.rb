@@ -16,15 +16,18 @@ class BoardSectionsController < ApplicationController
       redirect_to boards_path and return
     end
 
-    if @board_section.save
-      flash[:success] = "New section, #{@board_section.name}, has successfully been created for #{@board_section.board.name}."
-      redirect_to edit_board_path(@board_section.board)
-    else
-      flash.now[:error] = {}
-      flash.now[:error][:message] = "Section could not be created."
-      flash.now[:error][:array] = @board_section.errors.full_messages
+    begin
+      @board_section.save!
+    rescue ActiveRecord::RecordInvalid
+      flash.now[:error] = {
+        message: "Section could not be created.",
+        array: @board_section.errors.full_messages
+      }
       @page_title = 'New Section'
       render :new
+    else
+      flash[:success] = "New section, #{@board_section.name}, has successfully been created for #{@board_section.board.name}."
+      redirect_to edit_board_path(@board_section.board)
     end
   end
 
@@ -43,29 +46,37 @@ class BoardSectionsController < ApplicationController
     @board_section.assign_attributes(section_params)
     require_permission
     return if performed?
-    if @board_section.save
-      flash[:success] = "#{@board_section.name} has been successfully updated."
-      redirect_to board_section_path(@board_section)
-    else
-      flash.now[:error] = {}
-      flash.now[:error][:message] = "Section could not be updated."
-      flash.now[:error][:array] = @board_section.errors.full_messages
+
+    begin
+      @board_section.save!
+    rescue ActiveRecord::RecordInvalid
+      flash.now[:error] = {
+        message: "Section could not be updated.",
+        array: @board_section.errors.full_messages
+      }
       @page_title = 'Edit ' + @board_section.name_was
       use_javascript('board_sections')
       gon.section_id = @board_section.id
       render :edit
+    else
+      flash[:success] = "#{@board_section.name} has been successfully updated."
+      redirect_to board_section_path(@board_section)
     end
   end
 
   def destroy
-    @board_section.destroy!
-    flash[:success] = "Section deleted."
-    redirect_to edit_board_path(@board_section.board)
-  rescue ActiveRecord::RecordNotDestroyed
-    flash[:error] = {}
-    flash[:error][:message] = "Section could not be deleted."
-    flash[:error][:array] = @board_section.errors.full_messages
-    redirect_to board_section_path(@board_section)
+    begin
+      @board_section.destroy!
+    rescue ActiveRecord::RecordNotDestroyed
+      flash[:error] = {
+        message: "Section could not be deleted.",
+        array: @board_section.errors.full_messages
+      }
+      redirect_to board_section_path(@board_section)
+    else
+      flash[:success] = "Section deleted."
+      redirect_to edit_board_path(@board_section.board)
+    end
   end
 
   private

@@ -43,10 +43,11 @@ class MessagesController < ApplicationController
     end
 
     cached_error = flash.now[:error] # preserves errors from setting an invalid parent
-    flash.now[:error] = {}
-    flash.now[:error][:array] = @message.errors.full_messages
+    flash.now[:error] = {
+      message: "Your message could not be sent because of the following problems:",
+      array: @message.errors.full_messages
+    }
     flash.now[:error][:array] << cached_error if cached_error.present?
-    flash.now[:error][:message] = "Your message could not be sent because of the following problems:"
     editor_setup
     @page_title = 'Compose Message'
     render :new

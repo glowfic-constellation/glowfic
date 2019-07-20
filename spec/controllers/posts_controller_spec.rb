@@ -1474,7 +1474,8 @@ RSpec.describe PostsController do
       it "handles unexpected failure" do
         post = create(:post, status: Post::STATUS_ACTIVE)
         login_as(post.user)
-        expect_any_instance_of(Post).to receive(:save).and_return(false)
+        post.update_columns(board_id: 0)
+        expect(post.reload).not_to be_valid
         put :update, params: { id: post.id, status: 'abandoned' }
         expect(response).to redirect_to(post_url(post))
         expect(flash[:error][:message]).to eq('Status could not be updated.')
@@ -1605,7 +1606,8 @@ RSpec.describe PostsController do
       it "handles unexpected failure" do
         post = create(:post)
         login_as(post.user)
-        expect_any_instance_of(Post).to receive(:save).and_return(false)
+        post.update_columns(board_id: 0)
+        expect(post.reload).not_to be_valid
         put :update, params: { id: post.id, authors_locked: 'true' }
         expect(response).to redirect_to(post_url(post))
         expect(flash[:error][:message]).to eq('Post could not be updated.')

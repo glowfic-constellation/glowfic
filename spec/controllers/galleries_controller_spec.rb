@@ -71,7 +71,8 @@ RSpec.describe GalleriesController do
         expect(response.status).to eq(200)
         expect(response).to render_template(:new)
         expect(assigns(:page_title)).to eq('New Gallery')
-        expect(flash[:error]).to eq('Your gallery could not be saved.')
+        expect(flash[:error][:message]).to eq('Your gallery could not be saved because of the following problems:')
+        expect(flash[:error][:array]).to eq(["Name can't be blank"])
         expect(assigns(:gallery).gallery_groups.map(&:id)).to eq([group.id])
         expect(assigns(:gallery).icon_ids).to eq([icon.id])
       end
@@ -83,7 +84,8 @@ RSpec.describe GalleriesController do
       post :create, params: { gallery: {icon_ids: [icon.id]} }
       expect(response).to have_http_status(200)
       expect(assigns(:page_title)).to eq('New Gallery')
-      expect(flash[:error]).to eq('Your gallery could not be saved.')
+      expect(flash[:error][:message]).to eq('Your gallery could not be saved because of the following problems:')
+      expect(flash[:error][:array]).to eq(["Name can't be blank"])
       expect(icon.reload.has_gallery).not_to eq(true)
     end
 

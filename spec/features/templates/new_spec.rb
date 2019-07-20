@@ -35,8 +35,8 @@ RSpec.feature "Creating a new template", :type => :feature do
     end
     expect(page).to have_selector('.flash.error')
     within('.flash.error') do
-      expect(page).to have_text('Your template could not be saved.')
-      # TODO: more specific error messages
+      error_message = "Your template could not be saved because of the following problems:\nName can't be blank"
+      expect(page).to have_text(error_message)
     end
   end
 
@@ -75,8 +75,8 @@ RSpec.feature "Creating a new template", :type => :feature do
 
     expect(page).to have_selector('.flash.error')
     within('.flash.error') do
-      expect(page).to have_text('Your template could not be saved.')
-      # TODO: more specific error messages
+      error_message = "Your template could not be saved because of the following problems:\nName can't be blank Characters is invalid"
+      expect(page).to have_text(error_message)
     end
     within('.form-table') do
       expect(page).to have_field('Template Name', with: '')

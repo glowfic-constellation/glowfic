@@ -42,17 +42,20 @@ class CharactersController < ApplicationController
     @character.gallery_groups = process_tags(GalleryGroup, :character, :gallery_group_ids)
     build_template
 
-    if @character.save
+    begin
+      @character.save!
+    rescue ActiveRecord::RecordInvalid
+      @page_title = "New Character"
+      flash.now[:error] = {
+        message: "Your character could not be saved.",
+        array: @character.errors.full_messages
+      }
+      build_editor
+      render :new
+    else
       flash[:success] = "Character saved successfully."
-      redirect_to character_path(@character) and return
+      redirect_to character_path(@character)
     end
-
-    @page_title = "New Character"
-    flash.now[:error] = {}
-    flash.now[:error][:message] = "Your character could not be saved."
-    flash.now[:error][:array] = @character.errors.full_messages
-    build_editor
-    render :new
   end
 
   def show
@@ -83,35 +86,45 @@ class CharactersController < ApplicationController
         @character.gallery_groups = process_tags(GalleryGroup, :character, :gallery_group_ids)
         @character.save!
       end
-      flash[:success] = "Character saved successfully."
-      redirect_to character_path(@character)
     rescue ActiveRecord::RecordInvalid
       @page_title = "Edit Character: " + @character.name
-      flash.now[:error] = {}
-      flash.now[:error][:message] = "Your character could not be saved."
-      flash.now[:error][:array] = @character.errors.full_messages
+      flash.now[:error] = {
+        message: "Your character could not be saved.",
+        array: @character.errors.full_messages
+      }
       build_editor
       render :edit
+    else
+      flash[:success] = "Character saved successfully."
+      redirect_to character_path(@character)
     end
   end
 
   def duplicate
     dupe = @character.dup
 
-    Character.transaction do
-      dupe.gallery_groups = @character.gallery_groups
-      dupe.settings = @character.settings
-      dupe.ungrouped_gallery_ids = @character.ungrouped_gallery_ids
-      @character.aliases.find_each do |calias|
-        dupalias = calias.dup
-        dupe.aliases << dupalias
-        dupalias.save!
+    begin
+      Character.transaction do
+        dupe.gallery_groups = @character.gallery_groups
+        dupe.settings = @character.settings
+        dupe.ungrouped_gallery_ids = @character.ungrouped_gallery_ids
+        @character.aliases.find_each do |calias|
+          dupalias = calias.dup
+          dupe.aliases << dupalias
+          dupalias.save!
+        end
+        dupe.save!
       end
-      dupe.save!
+    rescue ActiveRecord::RecordInvalid
+      flash[:error] = {
+        message: "Character could not be duplicated.",
+        array: dupe.errors.full_messages
+      }
+      redirect_to character_path(@character)
+    else
+      flash[:success] = "Character duplicated successfully. You are now editing the new character."
+      redirect_to edit_character_path(dupe)
     end
-
-    flash[:success] = "Character duplicated successfully. You are now editing the new character."
-    redirect_to edit_character_path(dupe)
   end
 
   def destroy
@@ -122,13 +135,15 @@ class CharactersController < ApplicationController
 
     begin
       @character.destroy!
+    rescue ActiveRecord::RecordNotDestroyed
+      flash[:error] = {
+        message: "Character could not be deleted.",
+        array: @character.errors.full_messages
+      }
+      redirect_to character_path(@character)
+    else
       flash[:success] = "Character deleted successfully."
       redirect_to user_characters_path(current_user)
-    rescue ActiveRecord::RecordNotDestroyed
-      flash[:error] = {}
-      flash[:error][:message] = "Character could not be deleted."
-      flash[:error][:array] = @character.errors.full_messages
-      redirect_to character_path(@character)
     end
   end
 
