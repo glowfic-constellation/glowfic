@@ -29,7 +29,7 @@ gem 'redis', '~> 3.3.5' # until resque updates to support Redis 4
 gem 'redis-rails'
 gem 'resque'
 gem 'resque-scheduler'
-gem 'resque-web', '0.0.12'
+gem 'resque-web', '0.0.12', require: 'resque_web'
 gem 'resque_mailer'
 gem 'sanitize'
 gem 'sassc-rails'
