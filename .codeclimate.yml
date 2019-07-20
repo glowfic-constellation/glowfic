@@ -1,5 +1,6 @@
 ---
-engines:
+version: "2"
+plugins:
   brakeman:
     enabled: true
   bundler-audit:
@@ -18,20 +19,8 @@ engines:
     enabled: true
   rubocop:
     enabled: true
-ratings:
-  paths:
-  - Gemfile.lock
-  - "**.erb"
-  - "**.haml"
-  - "**.rb"
-  - "**.rhtml"
-  - "**.slim"
-  - "**.css"
-  - "**.inc"
-  - "**.js"
-  - "**.jsx"
-  - "**.module"
-exclude_paths:
+    channel: rubocop-0-68
+exclude_patterns:
 - config/
 - db/
 - doc/
