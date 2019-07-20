@@ -73,21 +73,22 @@ class GalleriesController < UploadingController
         @user = current_user
       end
       @page_title = 'Galleryless Icons'
-      render :show and return
-    end
-
-    @gallery = Gallery.find_by_id(params[:id])
-    unless @gallery
-      flash[:error] = "Gallery could not be found."
-      if logged_in?
-        redirect_to user_galleries_path(current_user) and return
-      else
-        redirect_to root_path and return
+    else
+      @gallery = Gallery.find_by_id(params[:id])
+      unless @gallery
+        flash[:error] = "Gallery could not be found."
+        if logged_in?
+          redirect_to user_galleries_path(current_user) and return
+        else
+          redirect_to root_path and return
+        end
       end
-    end
 
-    @user = @gallery.user
-    @page_title = @gallery.name + ' (Gallery)'
+      @user = @gallery.user
+      @page_title = @gallery.name + ' (Gallery)'
+    end
+    icons = @gallery ? @gallery.icons : @user.galleryless_icons
+    render :show, locals: { icons: icons }
   end
 
   def edit
