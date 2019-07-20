@@ -22,7 +22,7 @@ class TagsController < ApplicationController
     @view = params[:view]
 
     if @view == 'posts'
-      @posts = posts_from_relation(@tag.posts)
+      @posts = posts_from_relation(@tag.posts.ordered)
     elsif @view == 'characters'
       @characters = @tag.characters.includes(:user, :template).ordered.paginate(per_page: 25, page: page)
     elsif @view == 'galleries'
