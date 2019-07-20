@@ -10,6 +10,10 @@ AllCops:
     - 'spec/spec_helper.rb'
     - 'wraith/*'
 
+require:
+  - rubocop-performance
+  - rubocop-rails
+
 Rails:
   Enabled: true
 
@@ -221,6 +225,9 @@ Rails/DynamicFindBy:
 Rails/HasManyOrHasOneDependent:
   Exclude:
     - 'app/models/user.rb'
+
+Rails/HelperInstanceVariable:
+  Enabled: false
 
 Rails/SaveBang:
   Enabled: true
