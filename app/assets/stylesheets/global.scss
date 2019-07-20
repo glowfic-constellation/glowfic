@@ -48,11 +48,7 @@ textarea { padding: 5px; }
 
 button, .button {
   background-color: $bg_color_button;
-  background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(20%, $bg_color_button_20), color-stop(50%, $bg_color_button_50), color-stop(52%, $bg_color_button_52), color-stop(100%, $bg_color_button_100));
-  background: -webkit-linear-gradient(to bottom, $bg_color_button_20 20%, $bg_color_button_50 50%, $bg_color_button_52 52%, $bg_color_button_100 100%);
-  background: -moz-linear-gradient(to bottom, $bg_color_button_20 20%, $bg_color_button_50 50%, $bg_color_button_52 52%, $bg_color_button_100 100%);
-  background: -o-linear-gradient(to bottom, $bg_color_button_20 20%, $bg_color_button_50 50%, $bg_color_button_52 52%, $bg_color_button_100 100%);
-  background: linear-gradient(to bottom, $bg_color_button_20 20%, $bg_color_button_50 50%, $bg_color_button_52 52%, $bg_color_button_100 100%);
+  background: linear-gradient($bg_color_button_20 20%, $bg_color_button_50 50%, $bg_color_button_52 52%, $bg_color_button_100 100%);
   background-clip: padding-box;
   border-color: $border_color_button;
   line-height: normal;
