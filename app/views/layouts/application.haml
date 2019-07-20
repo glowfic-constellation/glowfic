@@ -14,11 +14,19 @@
 
     / OpenGraph embed data
     - if @meta_og.present?
-      %meta{property: 'og:image', content: asset_url('favicons/og-image-48x48.png')}
-      %meta{property: 'og:image:type', content: 'image/png'}
-      %meta{property: 'og:image:width', content: '48'}
-      %meta{property: 'og:image:height', content: '48'}
-      %meta{property: 'og:image:alt', content: 'Three stars, colored green, purple and blue'}
+      :ruby
+        image_hash = @meta_og.fetch(:image, {
+          src: asset_url('favicons/og-image-48x48.png'),
+          type: 'image/png',
+          alt: 'Three stars, colored green, purple and blue',
+          width: '48',
+          height: '48'
+        })
+      %meta{property: 'og:image', content: image_hash[:src]}
+      - [:type, :alt, :width, :height].each do |prop|
+        - if image_hash.key?(prop)
+          %meta{property: "og:image:#{prop}", content: image_hash[prop]}
+
       %meta{property: 'og:type', content: 'website'}
       %meta{property: 'og:site_name', content: 'Glowfic Constellation'}
 

@@ -250,6 +250,19 @@ RSpec.describe BoardsController do
       expect(assigns(:board_sections).map(&:posts)).to eq([[post1, post2, post3], [post4, post5, post6]])
       expect(assigns(:posts)).to eq([post7, post8, post9])
     end
+
+    it "calculates OpenGraph meta" do
+      user = create(:user, username: 'John Doe')
+      board = create(:board, name: 'board', creator: user, coauthors: [create(:user, username: 'Jane Doe')], description: 'sample board')
+      create(:post, subject: 'title', user: user, board: board)
+      get :show, params: { id: board.id }
+
+      meta_og = assigns(:meta_og)
+      expect(meta_og.keys).to match_array([:url, :title, :description])
+      expect(meta_og[:url]).to eq(board_url(board))
+      expect(meta_og[:title]).to eq('board')
+      expect(meta_og[:description]).to eq("Jane Doe, John Doe – 1 post\nsample board")
+    end
   end
 
   describe "GET edit" do

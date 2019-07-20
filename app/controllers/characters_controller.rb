@@ -61,6 +61,7 @@ class CharactersController < ApplicationController
   def show
     @page_title = @character.name
     @posts = posts_from_relation(@character.recent_posts)
+    @meta_og = og_data
     use_javascript('characters/show') if @character.user_id == current_user.try(:id)
   end
 
@@ -357,6 +358,42 @@ class CharactersController < ApplicationController
     return unless @character.user == current_user
     @character.build_template unless @character.template
     @character.template.user = current_user
+  end
+
+  def og_data
+    # User >> Template >> Character | screenname
+    # Nickname(s): a, b. Settings: c, d
+    # Description
+    # n posts.
+
+    character_desc = [@character.name, @character.screenname].select(&:present?).join(' | ')
+    title = [character_desc]
+    title.prepend(@character.template.name) if @character.template.present?
+    title.prepend(@character.user.username) unless @character.user.deleted?
+
+    linked = []
+    nicknames = ([@character.template_name] + @character.aliases.pluck(:name)).uniq.compact
+    linked << "Nickname".pluralize(nicknames.count) + ": " + nicknames.join(', ') if nicknames.present?
+    settings = @character.settings.pluck(:name)
+    linked << "Setting".pluralize(settings.count) + ": " + settings.join(', ') if settings.present?
+    desc = [linked.join('. ')].reject(&:blank?)
+    desc << generate_short(@character.description) if @character.description.present?
+    reply_posts = Reply.where(character_id: @character.id).select(:post_id).distinct.pluck(:post_id)
+    posts_count = Post.where(character_id: @character.id).or(Post.where(id: reply_posts)).uniq.count
+    desc << "#{posts_count} #{'post'.pluralize(posts_count)}" if posts_count > 0
+    data = {
+      url: character_url(@character),
+      title: title.join(' » '),
+      description: desc.join("\n"),
+    }
+    if @character.default_icon.present?
+      data[:image] = {
+        src: @character.default_icon.url,
+        width: '75',
+        height: '75',
+      }
+    end
+    data
   end
 
   def character_params

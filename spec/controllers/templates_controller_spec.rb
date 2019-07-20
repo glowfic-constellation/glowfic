@@ -88,6 +88,20 @@ RSpec.describe TemplatesController do
       expect(assigns(:posts).map(&:id)).to eq([reply_post.id, template_post.id])
       expect(assigns(:user)).to eq(template.user)
     end
+
+    it "calculates OpenGraph meta" do
+      user = create(:user, username: 'user')
+      template = create(:template, name: 'template', user: user, description: "This is an example template.")
+      create_list(:character, 3, template: template)
+
+      get :show, params: { id: template.id }
+
+      meta_og = assigns(:meta_og)
+      expect(meta_og.keys).to match_array([:url, :title, :description])
+      expect(meta_og[:url]).to eq(template_url(template))
+      expect(meta_og[:title]).to eq('user » template')
+      expect(meta_og[:description]).to eq("This is an example template.\n3 characters")
+    end
   end
 
   describe "GET edit" do

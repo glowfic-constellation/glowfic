@@ -20,6 +20,7 @@ class TagsController < ApplicationController
   def show
     @page_title = @tag.name.to_s
     @view = params[:view]
+    @meta_og = og_data
 
     if @view == 'posts'
       @posts = posts_from_relation(@tag.posts.ordered)
@@ -103,6 +104,27 @@ class TagsController < ApplicationController
   def build_editor
     return unless @tag.is_a?(Setting)
     use_javascript('tags/edit')
+  end
+
+  def og_data
+    desc = []
+    desc << generate_short(@tag.description) if @tag.description.present?
+    stats = []
+    post_count = @tag.posts.count
+    stats << "#{post_count} " + "post".pluralize(post_count) if post_count > 0
+    gallery_count = @tag.galleries.count
+    stats << "#{gallery_count} " + "gallery".pluralize(gallery_count) if gallery_count > 0
+    character_count = @tag.characters.count
+    stats << "#{character_count} " + "character".pluralize(character_count) if character_count > 0
+    desc << stats.join(', ')
+    title = [@tag.name]
+    title << @tag.user.username if @tag.owned? && !@tag.user.deleted?
+    title << @tag.type.titleize
+    {
+      url: tag_url(@tag),
+      title: title.join(' · '),
+      description: desc.join("\n"),
+    }
   end
 
   def tag_params

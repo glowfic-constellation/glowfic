@@ -192,6 +192,37 @@ RSpec.describe UsersController do
       get :show, params: { id: user.id }
       expect(assigns(:posts).to_a).to eq([post1, post2, post3])
     end
+
+    it "calculates OpenGraph meta for a bare user" do
+      user = create(:user, username: 'user')
+
+      get :show, params: { id: user.id }
+
+      meta_og = assigns(:meta_og)
+      expect(meta_og.keys).to match_array([:url, :title, :description])
+      expect(meta_og[:url]).to eq(user_url(user))
+      expect(meta_og[:title]).to eq('user')
+      expect(meta_og[:description]).to eq('No continuities.')
+    end
+
+    it "calculates OpenGraph meta for user with settings and an avatar" do
+      user = create(:user, username: 'user')
+      user.update!(avatar: create(:icon))
+      create(:board, name: "Board 1", creator: user)
+      create(:board, name: "Board 2", creator: user)
+
+      get :show, params: { id: user.id }
+
+      meta_og = assigns(:meta_og)
+      expect(meta_og.keys).to match_array([:url, :title, :description, :image])
+      expect(meta_og[:url]).to eq(user_url(user))
+      expect(meta_og[:title]).to eq('user')
+      expect(meta_og[:description]).to eq('Continuities: Board 1, Board 2')
+      expect(meta_og[:image].keys).to match_array([:src, :width, :height])
+      expect(meta_og[:image][:src]).to eq(user.avatar.url)
+      expect(meta_og[:image][:width]).to eq('75')
+      expect(meta_og[:image][:width]).to eq('75')
+    end
   end
 
   describe "GET edit" do
