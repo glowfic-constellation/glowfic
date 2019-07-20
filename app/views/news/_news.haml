@@ -8,7 +8,7 @@
       - if news.deletable_by?(current_user)
         = link_to news_path(news), method: :delete, data: { confirm: "Are you sure you wish to delete this news post?" } do
           = image_tag "icons/cross.png".freeze, title: 'Delete'.freeze, alt: 'Delete'.freeze
-    .message-content= sanitize_written_content(news.content).html_safe
+    .message-content= sanitize_written_content(news.content)
   .subber
     Posted on
     = pretty_time(news.created_at)

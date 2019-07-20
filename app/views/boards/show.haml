@@ -36,7 +36,7 @@
         %th{colspan: 5}= content_for :posts_title
       - if @board.description.present?
         %tr
-          %td.odd.written-content{colspan: 5}= sanitize_written_content(@board.description).html_safe
+          %td.odd.written-content{colspan: 5}= sanitize_written_content(@board.description)
     %tbody
       %tr
         %td.continuity-spacer{colspan: 5}
@@ -58,5 +58,5 @@
 - else
   - if @board.description.present?
     - content_for :post_list_description do
-      = sanitize_written_content(@board.description).html_safe
+      = sanitize_written_content(@board.description)
   = render 'posts/list', posts: @posts, hide_continuity: true

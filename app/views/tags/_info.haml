@@ -19,4 +19,4 @@
     - if @tag.description.present?
       %tr
         %th.centered.sub.width-150.vtop Description
-        %td.written-content{class: cycle('even', 'odd')}= sanitize_written_content(@tag.description).html_safe
+        %td.written-content{class: cycle('even', 'odd')}= sanitize_written_content(@tag.description)
