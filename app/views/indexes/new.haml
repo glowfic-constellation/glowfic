@@ -6,6 +6,7 @@
 
 = form_for @index do |f|
   %table.form-table
-    %tr
-      %th.centered{colspan: 2} Create Index
+    %thead
+      %tr
+        %th.centered{colspan: 2} Create Index
     = render 'editor', f: f

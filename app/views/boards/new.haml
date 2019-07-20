@@ -1,5 +1,6 @@
 = form_for @board, url: boards_path, method: :post do |f|
   %table.form-table
-    %tr
-      %th.centered{colspan: 2} Create Continuity
+    %thead
+      %tr
+        %th.centered{colspan: 2} Create Continuity
     = render 'editor', f: f

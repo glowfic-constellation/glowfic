@@ -2,17 +2,18 @@
   %table
     %thead
       = render @view
-    %tbody
-      - if @messages.empty?
-        %tr
-          %td.centered.odd.padding-10 — No messages yet —
-      - else
+      - if @messages.present?
         %tr
           %th.sub.width-15
           %th.sub Subject
           %th.sub= @view == 'inbox' ? 'Sender' : 'Recipient'
           %th.sub Sent
           %th.sub#select-all-cell= check_box_tag :select_all, false
+    %tbody
+      - if @messages.empty?
+        %tr
+          %td.centered.padding-10 — No messages yet —
+      - else
         - @messages.each do |message|
           %tr.message-row
             - klass = cycle('even', 'odd')

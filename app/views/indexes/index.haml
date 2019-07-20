@@ -6,11 +6,11 @@
         - if logged_in? && current_user.admin?
           = link_to new_index_path do
             .link-box.action-new + New Index
-  %tbody
     %tr
       %th.sub Name
       %th.sub Posts
       %th.sub
+  %tbody
     - @indexes.each do |index|
       - klass = cycle('even', 'odd')
       %tr

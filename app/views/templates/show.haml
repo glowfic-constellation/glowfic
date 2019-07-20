@@ -10,30 +10,32 @@
   %b= @template.name
 
 %table
-  %tr
-    %th{colspan: 6}
-      Template: #{@template.name}
-      - if @template.user_id == current_user.try(:id)
-        = link_to new_character_path(template_id: @template.id) do
-          .link-box.action-new + New Instance
-        = link_to edit_template_path(@template) do
-          .link-box.action-edit
-            = image_tag "icons/pencil.png"
-            Edit Template
-        = link_to template_path(@template), :method => :delete, data: { confirm: 'Are you sure you want to delete this template?' } do
-          .link-box.action-delete x Delete Template
-      = link_to url_for(view: 'icons') do
-        .view-button{class: (:selected unless page_view == 'list')}
-          = image_tag "icons/grid.png", class: 'icon-view', alt: ''
-          Icons
-      = link_to url_for(view: 'list') do
-        .view-button{class: (:selected if page_view == 'list')}
-          = image_tag "icons/list.png", class: 'list-view', alt: ''
-          List
-  - if page_view == 'list'
-    = render 'characters/list_section', characters: @template.characters
-  - else
-    = render 'characters/icon_view', characters: @template.characters
+  %thead
+    %tr
+      %th{colspan: 6}
+        Template: #{@template.name}
+        - if @template.user_id == current_user.try(:id)
+          = link_to new_character_path(template_id: @template.id) do
+            .link-box.action-new + New Instance
+          = link_to edit_template_path(@template) do
+            .link-box.action-edit
+              = image_tag "icons/pencil.png"
+              Edit Template
+          = link_to template_path(@template), :method => :delete, data: { confirm: 'Are you sure you want to delete this template?' } do
+            .link-box.action-delete x Delete Template
+        = link_to url_for(view: 'icons') do
+          .view-button{class: (:selected unless page_view == 'list')}
+            = image_tag "icons/grid.png", class: 'icon-view', alt: ''
+            Icons
+        = link_to url_for(view: 'list') do
+          .view-button{class: (:selected if page_view == 'list')}
+            = image_tag "icons/list.png", class: 'list-view', alt: ''
+            List
+  %tbody
+    - if page_view == 'list'
+      = render 'characters/list_section', characters: @template.characters
+    - else
+      = render 'characters/icon_view', characters: @template.characters
 - if @posts.present?
   %br
   - content_for :posts_title do 'Posts with Template Instances' end

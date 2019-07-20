@@ -5,6 +5,7 @@
 
 = form_for @news do |f|
   %table.form-table
-    %tr
-      %th.centered{colspan: 2} Edit News Post
+    %thead
+      %tr
+        %th.centered{colspan: 2} Edit News Post
     = render 'editor', f: f
