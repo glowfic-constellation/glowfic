@@ -21,10 +21,10 @@
             .link-box.action-delete{style: 'font-size: 14px'} x Delete
 - if @template && @template.description.present?
   %tr
-    %td.single-description.written-content{colspan: 6}= sanitize_written_content(@template.description).html_safe
+    %td.single-description.written-content{colspan: 6}= sanitize_written_content(@template.description)
 - elsif @template.nil? && name.present? && name.is_a?(::Template) && name.description.present?
   %tr
-    %td.single-description.written-content{colspan: 6}= sanitize_written_content(name.description).html_safe
+    %td.single-description.written-content{colspan: 6}= sanitize_written_content(name.description)
 %tr
   %td.icons-box.left-align
     .character-icon-list

@@ -15,4 +15,4 @@
       %div{style: 'background-color: #A3A1A0; padding: 4px;'}
         %b To:
         = @message.recipient.username
-    = sanitize_written_content(@message.message).html_safe
+    = sanitize_written_content(@message.message)

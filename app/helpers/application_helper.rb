@@ -181,7 +181,7 @@ module ApplicationHelper
       end
     end
 
-    Glowfic::Sanitizers.written(content)
+    Glowfic::Sanitizers.written(content).html_safe
   end
 
   def breakable_text(text)
