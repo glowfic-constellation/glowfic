@@ -79,11 +79,9 @@ class Post < ApplicationRecord
 
   scope :visible_to, ->(user) {
     if user
-      where(privacy: Concealable::PUBLIC)
-      .or(where(privacy: Concealable::REGISTERED))
-      .or(where(privacy: Concealable::ACCESS_LIST, user_id: user.id))
+      where(user_id: user.id)
+      .or(where(privacy: [Concealable::PUBLIC, Concealable::REGISTERED]))
       .or(where(privacy: Concealable::ACCESS_LIST, id: PostViewer.where(user_id: user.id).select(:post_id)))
-      .or(where(privacy: Concealable::PRIVATE, user_id: user.id))
     else
       where(privacy: Concealable::PUBLIC)
     end
