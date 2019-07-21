@@ -121,7 +121,7 @@
       -#    = image_tag "icons/bell_add.png"
       -#    Turn on notifications
 - if @post.description.present?
-  .post-subheader= sanitize_simple_link_text(@post.description).html_safe
+  .post-subheader= sanitize_simple_link_text(@post.description)
 - if @prev_post || @next_post
   .post-navheader
     - if @next_post

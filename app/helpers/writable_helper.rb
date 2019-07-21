@@ -58,9 +58,9 @@ module WritableHelper
 
   def shortened_desc(desc, id)
     return sanitize_simple_link_text(desc) if desc.length <= 255
-    sanitize_simple_link_text(desc[0...255]).html_safe +
+    sanitize_simple_link_text(desc[0...255]) +
       content_tag(:span, '... ', id: "dots-#{id}") +
-      content_tag(:span, sanitize_simple_link_text(desc[255..-1]).html_safe, class: 'hidden', id: "desc-#{id}") +
+      content_tag(:span, sanitize_simple_link_text(desc[255..-1]), class: 'hidden', id: "desc-#{id}") +
       content_tag(:a, 'more &raquo;'.html_safe, href: '#', id: "expanddesc-#{id}", class: 'expanddesc')
   end
 end

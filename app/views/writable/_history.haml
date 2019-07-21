@@ -61,5 +61,5 @@
             - if audited.is_a?(Post)
               .content-header= cur.subject
               - if cur.description.present?
-                .post-subheader= sanitize_simple_link_text(cur.description).html_safe
+                .post-subheader= sanitize_simple_link_text(cur.description)
             = render 'replies/single', reply: cur, hide_footer: true
