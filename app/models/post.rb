@@ -81,7 +81,7 @@ class Post < ApplicationRecord
     if user
       where(user_id: user.id)
       .or(where(privacy: [Concealable::PUBLIC, Concealable::REGISTERED]))
-      .or(where(privacy: Concealable::ACCESS_LIST, id: PostViewer.where(user_id: user.id).select(:post_id)))
+      .or(where(privacy: Concealable::ACCESS_LIST, id: user.visible_posts))
     else
       where(privacy: Concealable::PUBLIC)
     end
