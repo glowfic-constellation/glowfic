@@ -1,3 +1,50 @@
 = render 'search/breadcrumbs'
 
-Under Construction
+%table.search-collapsible
+  %thead
+    %tr
+      %th.width-150
+        Search Templates
+        - if @search_results
+          = '- '+@search_results.total_entries.to_s+' results'
+      %th.top-pagination
+        - if @search_results
+          = render 'posts/paginator', paginated: @search_results, no_per: true
+    %tbody
+      %tr
+        %td.search-box
+          = form_tag search_templates_path, :method => :get do
+            %table.search-form
+              %tr
+                %td= label_tag :author_id, 'Author'
+                %td= select_tag :author_id, options_from_collection_for_select([], :id, :username, params[:author_id]), {class: 'chosen-select', prompt: '— Choose Author —'}
+              %tr
+                %td= label_tag :name, 'Name'
+                %td= text_field_tag :name, params[:name], style: 'width: 100%; margin: 5px 0px; box-sizing: border-box;'
+              %tr
+                %td.centered{colspan: 2}= submit_tag "Search", class: 'button'
+        %td.vtop
+          - if @search_results.present?
+            %table
+              %thead
+                %tr
+                  - klass = cycle('even'.freeze, 'odd'.freeze)
+                  %td.padding-5{class: klass}
+                    %b Template Name
+                  %td.padding-5{class: klass}
+                    %b Characters
+                  %td.padding-5{class: klass}
+                    %b User
+              %tbody
+                - @search_results.each do |template|
+                  - klass = cycle('even'.freeze, 'odd'.freeze)
+                  %tr
+                    %td.padding-5{class: klass}= link_to template.name, template_path(template)
+                    %td.padding-5{class: klass, style: 'width:15%'}= template.characters.count
+                    %td.padding-5{class: klass, style: 'width:15%'}= user_link(template.user)
+
+    - if @search_results && @search_results.total_pages > 1
+      %tfoot
+        %tr
+          %th.width-150.empty
+          %th= render 'posts/paginator', paginated: @search_results, no_per: true

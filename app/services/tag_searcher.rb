@@ -13,6 +13,8 @@ class TagSearcher < Object
     @qs.with_item_counts.paginate(per_page: 25, page: page)
   end
 
+  private
+
   def validate_type!(tag_type)
     return if Tag::TYPES.include?(tag_type)
     raise InvalidTagType.new("Invalid filter")

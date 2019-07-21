@@ -76,6 +76,8 @@ class TemplatesController < ApplicationController
   end
 
   def search
+    @search_results = TemplateSearcher.new.search(page: page) if params[:commit].present?
+    @page_title = 'Search Templates'
   end
 
   private
