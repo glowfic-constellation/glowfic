@@ -24,6 +24,11 @@ RSpec.describe Character do
       character.gallery_ids = [gallery.id]
       expect(character).not_to be_valid
     end
+
+    it "strips facecast" do
+      character = create(:character, pb: 'Chris Pine ')
+      expect(character.reload.pb).to eq('Chris Pine')
+    end
   end
 
   it "uniqs gallery images" do

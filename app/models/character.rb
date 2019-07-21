@@ -25,6 +25,7 @@ class Character < ApplicationRecord
 
   attr_accessor :group_name
 
+  before_validation :strip_spaces
   after_destroy :clear_char_ids
 
   scope :ordered, -> { order(name: :asc).order(Arel.sql('lower(screenname) asc'), created_at: :asc, id: :asc) }
@@ -147,5 +148,9 @@ class Character < ApplicationRecord
     UpdateModelJob.perform_later(Reply.to_s, {character_id: id}, {character_id: nil})
     ReplyDraft.where(character_id: id).update_all(character_id: nil)
     User.where(active_character_id: id).update_all(active_character_id: nil)
+  end
+
+  def strip_spaces
+    self.pb = self.pb.strip if self.pb.present?
   end
 end
