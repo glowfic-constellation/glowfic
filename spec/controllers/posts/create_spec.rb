@@ -394,8 +394,8 @@ RSpec.describe PostsController, 'POST create' do
       expect(PostTag.count).to eq(0)
     end
 
-    skip "handles invalid first reply" do
-      # TODO: Add a test for this if it becomes possible to have an invalid reply here
+    it "handles invalid first reply" do
+      skip "it is not currently possible for this reply to be invalid"
     end
 
     it "creates a post" do
