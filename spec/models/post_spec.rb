@@ -76,8 +76,10 @@ RSpec.describe Post do
         Timecop.freeze(time) do
           post.written.update!(content: 'newer content')
         end
+        post.reload
         expect(post.tagged_at).to be_the_same_time_as(old_tagged_at)
         expect(post.edited_at).to be_the_same_time_as(old_edited_at)
+        expect(post.written.content).to eq('newer content')
       end
 
       it "should update edited_at and tagged_at when status edited" do
