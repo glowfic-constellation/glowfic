@@ -183,4 +183,36 @@ RSpec.describe User do
       expect(Block.count).to be(0)
     end
   end
+
+  describe "visiblity caching" do
+    let (:user) { create(:user) }
+    before(:each) do
+      create(:post, privacy: Concealable::ACCESS_LIST)
+      create(:post, privacy: Concealable::PRIVATE)
+      create(:post)
+      create(:post, user: user, privacy: Concealable::ACCESS_LIST)
+      create(:post, privacy: Concealable::ACCESS_LIST, viewer_ids: [create(:user).id])
+      PostViewer.create!(post: create(:post), user: create(:user))
+    end
+
+    it "handles no visible access-listed posts" do
+      expect(user.visible_posts).to be_blank
+    end
+
+    context "with a visible post" do
+      let (:visible_post) { create(:post, privacy: Concealable::ACCESS_LIST, viewer_ids: [user.id, create(:user).id]) }
+      before(:each) { visible_post }
+
+      it "handles one visible access-listed post" do
+        expect(user.visible_posts).to be([visible_post.id])
+      end
+
+      it "records the correct visible posts" do
+        second_visible = create(:post, privacy: Concealable::ACCESS_LIST, viewer_ids: [user.id] + create_list(:user, 3).map(&:id))
+        third_visible = create(:post, privacy: Concealable::ACCESS_LIST, viewer_ids: [user.id])
+        expect(user.visible_posts).to match_array([visible_post.id, second_visible.id, third_visible.id])
+        expect(Rails.cache.exists?(PostViewer.cache_string_for(user.id))).not_to be_nil
+      end
+    end
+  end
 end
