@@ -14,7 +14,9 @@ RSpec.describe ApplicationHelper do
 
     it "permits links" do
       text = 'here is <a href="http://example.com">a link</a> <a href="https://example.com">another link</a> <a href="/characters/1">yet another link</a>'
-      expect(helper.sanitize_simple_link_text(text)).to eq(text)
+      result = helper.sanitize_simple_link_text(text)
+      expect(result).to eq(text)
+      expect(result).to be_html_safe
     end
 
     it "removes unpermitted attributes" do
@@ -59,7 +61,9 @@ RSpec.describe ApplicationHelper do
 
         it "permits images" do
           text = 'images: <img src="http://example.com/image.png"> <img src="https://example.com/image.jpg"> <img src="/image.gif">'
-          expect(helper.sanitize_written_content(format_input(text, editor_mode))).to eq("<p>#{text}</p>")
+          result = helper.sanitize_written_content(format_input(text, editor_mode))
+          expect(result).to eq("<p>#{text}</p>")
+          expect(result).to be_html_safe
         end
 
         it "removes unpermitted attributes" do
@@ -83,7 +87,9 @@ RSpec.describe ApplicationHelper do
       # RTF editor or HTML editor with manual tags
       it "removes unpermitted elements" do
         text = '<b>test</b> <script type="text/javascript">alert("bad!");</script> <p>text</p>'
-        expect(helper.sanitize_written_content(text)).to eq('<b>test</b> alert("bad!"); <p>text</p>')
+        result = helper.sanitize_written_content(text)
+        expect(result).to eq('<b>test</b> alert("bad!"); <p>text</p>')
+        expect(result).to be_html_safe
       end
 
       it "permits some attributes on only some tags" do
@@ -124,7 +130,9 @@ RSpec.describe ApplicationHelper do
     context "without linebreak tags" do
       it "automatically converts linebreaks" do
         text = "line1\nline2\n\nline3"
-        expect(helper.sanitize_written_content(text)).to eq("<p>line1\n<br>line2</p>\n\n<p>line3</p>")
+        result = helper.sanitize_written_content(text)
+        expect(result).to eq("<p>line1\n<br>line2</p>\n\n<p>line3</p>")
+        expect(result).to be_html_safe
       end
 
       it "defaults to old linebreak-to-br format when blockquote detected" do
@@ -169,7 +177,9 @@ RSpec.describe ApplicationHelper do
     it "escapes HTML elements" do
       text = "screenname <b>text</b> &amp; more text"
       expected = "screenname &lt;b&gt;text&lt;/b&gt; &amp;amp; more text"
-      expect(helper.send(:breakable_text, text)).to eq(expected)
+      result = helper.send(:breakable_text, text)
+      expect(result).to eq(expected)
+      expect(result).to be_html_safe
     end
 
     it "leaves simple text intact" do
