@@ -14,7 +14,7 @@
       %th.sub Date Joined
   %tbody
     - @users.each do |user|
-      %tr
+      %tr.user-row
         - klass = cycle('even', 'odd')
         %td.padding-10.username{class: klass}= link_to user.username, user_path(user)
         %td.padding-10.user-moiety.centered.width-70{class: klass}= color_block(user)
