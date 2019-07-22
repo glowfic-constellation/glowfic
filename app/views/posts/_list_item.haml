@@ -58,4 +58,4 @@
   %tr
     %td{class: klass}
     %td{class: klass, colspan: 5, style: 'padding-top: 0px;'}
-      %span.details= sanitize_post_description(post.index_description).html_safe
+      %span.details= sanitize_simple_link_text(post.index_description)

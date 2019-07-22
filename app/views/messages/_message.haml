@@ -10,7 +10,7 @@
 .post-container{class: col_klass, id: "collapsed-#{message.id}", data: {id: message.id}}
   .padding-10
     .author= message_sender(message)
-    .message= generate_short(message.message).html_safe
+    .message= generate_short(message.message)
     .float-right
       - if message.created_at
         .message-time Sent #{pretty_time(message.created_at)}
