@@ -4,39 +4,39 @@
       %tr
         %th{colspan: 2} Sign Up
     %tbody
-      %tr#username
+      %tr#signup-username
         %th.sub.vtop Username
         %td.even
           = f.text_field :username, placeholder: "Username"
           .user-alert.hidden
             = image_tag 'icons/exclamation.png', alt: '!', title: '', class: 'vmid'
             %span.msg
-      %tr#email
+      %tr#signup-email
         %th.sub.vtop Email
         %td.odd
           = f.text_field :email, placeholder: "Email address"
           .user-alert.hidden
             = image_tag 'icons/exclamation.png', alt: '!', title: '', class: 'vmid'
             %span.msg
-      %tr#password
+      %tr#signup-password
         %th.sub.vtop Password
         %td.even
           = f.password_field :password, placeholder: "Password"
           .user-alert.hidden
             = image_tag 'icons/exclamation.png', alt: '!', title: '', class: 'vmid'
             %span.msg
-      %tr#conf
+      %tr#signup-password-conf
         %th.sub.vtop Confirm
         %td.odd
           = f.password_field :password_confirmation, placeholder: "Confirm Password"
           .user-alert.hidden
             = image_tag 'icons/exclamation.png', alt: '!', title: '', class: 'vmid'
             %span.msg
-      %tr#secret
+      %tr#signup-secret
         %th.sub.vtop Secret
         %td.even
           = text_field_tag :secret, params[:secret], placeholder: "Secret"
-      %tr#terms
+      %tr#signup-terms
         %th.sub.vtop Terms
         %td.odd
           = check_box_tag :tos, true, params[:tos].present?

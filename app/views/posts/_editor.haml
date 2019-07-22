@@ -74,8 +74,9 @@
           %br>
           = icon.keyword
     .gallery-icon
-      = no_icon_tag id: '', pointer: true
-      %br> No Icon
+      = no_icon_tag pointer: true
+      %br>
+      No Icon
   = yield :form
   .clear &nbsp;
 - if item.is_a?(Post)

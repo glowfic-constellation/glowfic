@@ -1,22 +1,22 @@
 /* global gon */
 $(document).ready(function() {
   $("#user_username").blur(function() {
-    $("#username .user-alert").hide();
+    $("#signup-username .user-alert").hide();
     validateUsername();
   });
 
   $("#user_email").blur(function() {
-    $("#email .user-alert").hide();
+    $("#signup-email .user-alert").hide();
     validateEmail();
   });
 
   $("#user_password").blur(function() {
-    $("#password .user-alert").hide();
+    $("#signup-password .user-alert").hide();
     validatePassword();
   });
 
   $("#user_password_confirmation").blur(function() {
-    $("#conf .user-alert").hide();
+    $("#signup-password-conf .user-alert").hide();
     validateConfirmation();
   });
 
@@ -76,7 +76,7 @@ function validatePassword() {
     success = false;
   }
   if (conf !== password) {
-    addAlertAfter('conf', 'Your passwords do not match.');
+    addAlertAfter('password-conf', 'Your passwords do not match.');
     success = false;
   }
   return success;
@@ -87,11 +87,11 @@ function validateConfirmation() {
   var conf = $("#user_password_confirmation").val();
   var success = true;
   if (conf === '') {
-    addAlertAfter('conf', 'Please confirm your password.');
+    addAlertAfter('password-conf', 'Please confirm your password.');
     success = false;
   }
   if (conf !== password) {
-    addAlertAfter('conf', 'Your passwords do not match.');
+    addAlertAfter('password-conf', 'Your passwords do not match.');
     success = false;
   }
   return success;
@@ -104,6 +104,6 @@ function validateTosAccepted() {
 }
 
 function addAlertAfter(id, message) {
-  $("#" + id + " .user-alert span.msg").text(message);
-  $("#" + id + " .user-alert").show();
+  $("#signup-" + id + " .user-alert span.msg").text(message);
+  $("#signup-" + id + " .user-alert").show();
 }

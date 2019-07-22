@@ -32,7 +32,7 @@
           .float-right.gallery-box{id: "minmax-#{gallery.id}"} +
       %tr
         %td.padding-5.hidden{class: cycle('even', 'odd'), id: "icons-#{gallery.id}"}
-          = check_box_tag :select_all, gallery.id, false, class: 'select-all'
+          = check_box_tag :select_all, gallery.id, false, class: 'select-all', id: nil
           Select all icons
           %br
     %tr
