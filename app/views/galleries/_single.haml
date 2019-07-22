@@ -47,7 +47,7 @@
                 %br
                 %span.icon-keyword= keyword
               - if is_owner && !skip_forms
-                .select-button= check_box_tag :"marked_ids[]", icon_id, true, id: nil
+                .select-button= check_box_tag :"marked_ids[]", icon_id, false, id: nil
           - if icons.empty?
             .centered.no-icons — No icons yet —
           - elsif is_owner && !skip_forms
