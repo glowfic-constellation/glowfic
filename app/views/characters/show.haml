@@ -91,10 +91,10 @@
           .saveconf.float-right.hidden
             = image_tag "icons/accept.png", title: 'Saved', class: 'vmid', alt: ''
             Saved
-    %tbody
-      - galleries.each do |gallery|
-        = render 'galleries/single', gallery: gallery, klass: 'subber', skip_forms: true, character_gallery: gallery.character_gallery_for(@character), is_owner: @character.user == current_user
-      - unless galleries.present?
+    - galleries.each do |gallery|
+      = render 'galleries/single', gallery: gallery, klass: 'subber', skip_forms: true, character_gallery: gallery.character_gallery_for(@character), is_owner: @character.user == current_user
+    - unless galleries.present?
+      %tbody
         %tr
           %td.icon-box
             .centered.padding-5 — No galleries yet —

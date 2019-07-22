@@ -1,6 +1,6 @@
 - attrs = {}
 - attrs = {class: 'section-ordered', data: {id: character_gallery.id, order: character_gallery.section_order}} if local_assigns[:character_gallery]
-%thead
+%tbody
   %tr.gallery-header{**attrs}
     %th.padding-10{class: (klass if defined? klass)}
       - link = gallery ? gallery_path(gallery) : user_gallery_path(id: 0, user_id: @user.id)
