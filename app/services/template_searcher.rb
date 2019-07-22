@@ -3,6 +3,6 @@ class TemplateSearcher < Object
   end
 
   def search(page: 1)
-    Template.paginate(page: page)
+    Template.paginate(page: page, per_page: 2)
   end
 end
