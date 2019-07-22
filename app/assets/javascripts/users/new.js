@@ -16,7 +16,7 @@ $(document).ready(function() {
   });
 
   $("#user_password_confirmation").blur(function() {
-    $("#signup-conf .user-alert").hide();
+    $("#signup-password-conf .user-alert").hide();
     validateConfirmation();
   });
 
@@ -76,7 +76,7 @@ function validatePassword() {
     success = false;
   }
   if (conf !== password) {
-    addAlertAfter('conf', 'Your passwords do not match.');
+    addAlertAfter('password-conf', 'Your passwords do not match.');
     success = false;
   }
   return success;
@@ -87,11 +87,11 @@ function validateConfirmation() {
   var conf = $("#user_password_confirmation").val();
   var success = true;
   if (conf === '') {
-    addAlertAfter('conf', 'Please confirm your password.');
+    addAlertAfter('password-conf', 'Please confirm your password.');
     success = false;
   }
   if (conf !== password) {
-    addAlertAfter('conf', 'Your passwords do not match.');
+    addAlertAfter('password-conf', 'Your passwords do not match.');
     success = false;
   }
   return success;
