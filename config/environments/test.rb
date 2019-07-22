@@ -46,4 +46,7 @@ Rails.application.configure do
     g.test_framework :rspec, fixture: true
     g.fixture_replacement :factory_bot
   end
+  
+  # Check html is valid
+  config.middleware.use HTMLProofer::Middleware
 end
