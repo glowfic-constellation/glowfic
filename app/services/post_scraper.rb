@@ -65,6 +65,7 @@ class PostScraper < Object
 
     Post.transaction do
       import_post_from_doc(@html_doc)
+      @post.postpone_save = true
       threads.each do |thread|
         @html_doc = doc_from_url(thread)
         import_replies_from_doc(@html_doc)
@@ -167,7 +168,6 @@ class PostScraper < Object
     end
 
     set_from_username(@post, username)
-    @post.last_user_id = @post.user_id
 
     set_from_icon(@post, img_url, img_keyword)
 
@@ -199,7 +199,6 @@ class PostScraper < Object
       set_from_icon(@reply, img_url, img_keyword)
 
       @reply.skip_notify = true
-      @reply.skip_post_update = true
       @reply.skip_regenerate = true
       @reply.is_import = true
       Audited.audit_class.as_user(@reply.user) do
@@ -209,9 +208,7 @@ class PostScraper < Object
   end
 
   def finalize_post_data
-    @post.last_user_id = @reply.try(:user_id) || @post.user_id
-    @post.last_reply_id = @reply.try(:id)
-    @post.tagged_at = @reply.try(:created_at) || @post.created_at
+    @post.postpone_save = false
     @post.authors_locked = true
     @post.save!
   end
