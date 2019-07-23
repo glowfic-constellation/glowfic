@@ -6,8 +6,8 @@ class PostViewer < ApplicationRecord
 
   CACHE_VERSION = 1
 
-  def self.cache_string_for(user)
-    "#{Rails.env}.#{CACHE_VERSION}.visible_posts.#{user.id}"
+  def self.cache_string_for(user_id)
+    "#{Rails.env}.#{CACHE_VERSION}.visible_posts.#{user_id}"
   end
 
   private

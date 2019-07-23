@@ -196,7 +196,7 @@ RSpec.describe User do
     end
 
     it "handles no visible access-listed posts" do
-      expect(user.visible_posts).to be_blank
+      expect(user.visible_posts).to be_empty
     end
 
     context "with a visible post" do
@@ -204,7 +204,7 @@ RSpec.describe User do
       before(:each) { visible_post }
 
       it "handles one visible access-listed post" do
-        expect(user.visible_posts).to be([visible_post.id])
+        expect(user.visible_posts).to eq([visible_post.id])
       end
 
       it "records the correct visible posts" do
@@ -212,6 +212,14 @@ RSpec.describe User do
         third_visible = create(:post, privacy: Concealable::ACCESS_LIST, viewer_ids: [user.id])
         expect(user.visible_posts).to match_array([visible_post.id, second_visible.id, third_visible.id])
         expect(Rails.cache.exists?(PostViewer.cache_string_for(user.id))).not_to be_nil
+      end
+
+      it "handles being removed from access list" do
+        expect(user.visible_posts).to eq([visible_post.id])
+        ids = visible_post.viewer_ids - [user.id]
+        visible_post.update_attributes(viewer_ids: ids)
+        expect(PostViewer.where(user: user).pluck(:post_id)).to be_empty
+        expect(user.visible_posts).to be_empty
       end
     end
   end
