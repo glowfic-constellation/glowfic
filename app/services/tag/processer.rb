@@ -1,32 +1,53 @@
 class Tag::Processer < Object
-  def process_tags(klass, obj_param, id_param)
-    # fetch and clean tag ids
-    ids = @params.fetch(obj_param, {}).fetch(id_param, [])
-    ids = ids.reject(&:blank?).map(&:to_s)
-    return [] unless ids.present?
+  def initialize(ids, klass:, user:)
+    # clean tag ids
+    @ids = ids.reject(&:blank?).map(&:to_s)
+    @klass = klass
+    @user = user
+    @tags = []
+  end
 
-    # store formatted for creation-order sorting later
-    match_ids = ids.map { |id| id.start_with?('_') ? id.upcase[1..-1].strip : id }
+  def process
+    return [] unless @ids.present?
 
     # separate existing tags from new tags which start with _
-    new_names = ids.select { |id| id.start_with?('_') }
-    existing_tags = klass.where(id: (ids - new_names))
-    new_names.map! { |name| name[1..-1].strip }
+    new_names = split
 
     # locate anything that already exists with the same name (locale unfriendly) and substitute it
-    matched_new_tags = klass.where(name: new_names)
-    matched_new_names = matched_new_tags.map { |tag| tag.name.upcase }
-    new_names.reject! { |name| matched_new_names.include?(name.upcase) }
+    new_names = find_existing(new_names)
 
     # create anything case-insensitively (locale unfriendly) unique that remains
-    new_names = new_names.uniq(&:upcase)
-    new_tags = new_names.map { |name| klass.new(user: @user, name: name) }
+    @tags += create_new(new_names)
 
-    # consolidate, sort and purge duplicates (locale unfriendly)
-    all_tags = existing_tags + matched_new_tags + new_tags
-    all_tags.sort_by! do |tag|
-      match_ids.index(tag.name.upcase) || match_ids.index(tag.id.to_s)
-    end
-    all_tags.uniq { |tag| tag.name.upcase }
+    # sort and purge duplicates (locale unfriendly)
+    sort
+
+    @tags
+  end
+
+  private
+
+  def split
+    new_names = @ids.select { |id| id.start_with?('_') }
+    @tags += @klass.where(id: (@ids - new_names))
+    new_names.map { |name| name[1..-1].strip }
+  end
+
+  def find_existing(new_names)
+    matched_new_tags = @klass.where(name: new_names)
+    matched_new_names = matched_new_tags.map { |tag| tag.name.upcase }
+    @tags += matched_new_tags
+    new_names.reject { |name| matched_new_names.include?(name.upcase) }
+  end
+
+  def create_new(new_names)
+    new_names = new_names.uniq(&:upcase)
+    new_names.map { |name| @klass.new(user: @user, name: name) }
+  end
+
+  def sort
+    match_ids = @ids.map { |id| id.start_with?('_') ? id.upcase[1..-1].strip : id } # for creation-order sorting
+    @tags.sort_by! { |tag| match_ids.index(tag.name.upcase) || match_ids.index(tag.id.to_s) }
+    @tags.uniq { |tag| tag.name.upcase }
   end
 end
