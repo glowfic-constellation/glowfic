@@ -3,7 +3,7 @@ class Gallery < ApplicationRecord
 
   has_many :galleries_icons, dependent: :destroy, inverse_of: :gallery
   accepts_nested_attributes_for :galleries_icons, allow_destroy: true
-  has_many :icons, -> { ordered }, through: :galleries_icons
+  has_many :icons, -> { ordered }, through: :galleries_icons, dependent: :destroy
 
   has_many :characters_galleries, inverse_of: :gallery, dependent: :destroy
   has_many :characters, through: :characters_galleries, dependent: :destroy

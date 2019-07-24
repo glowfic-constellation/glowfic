@@ -21,17 +21,17 @@ class Post < ApplicationRecord
   has_many :reply_drafts, dependent: :destroy
 
   has_many :post_viewers, inverse_of: :post, dependent: :destroy
-  has_many :viewers, through: :post_viewers, source: :user
+  has_many :viewers, through: :post_viewers, source: :user, dependent: :destroy
   has_many :favorites, as: :favorite, inverse_of: :favorite, dependent: :destroy
 
   has_many :post_tags, inverse_of: :post, dependent: :destroy
-  has_many :labels, -> { ordered_by_post_tag }, through: :post_tags, source: :label
-  has_many :settings, -> { ordered_by_post_tag }, through: :post_tags, source: :setting
-  has_many :content_warnings, -> { ordered_by_post_tag }, through: :post_tags, source: :content_warning, after_add: :reset_warnings
+  has_many :labels, -> { ordered_by_post_tag }, through: :post_tags, source: :label, dependent: :destroy
+  has_many :settings, -> { ordered_by_post_tag }, through: :post_tags, source: :setting, dependent: :destroy
+  has_many :content_warnings, -> { ordered_by_post_tag }, through: :post_tags, source: :content_warning, after_add: :reset_warnings, dependent: :destroy
 
   has_many :index_posts, inverse_of: :post, dependent: :destroy
-  has_many :indexes, inverse_of: :posts, through: :index_posts
-  has_many :index_sections, inverse_of: :posts, through: :index_posts
+  has_many :indexes, inverse_of: :posts, through: :index_posts, dependent: :destroy
+  has_many :index_sections, inverse_of: :posts, through: :index_posts, dependent: :destroy
 
   attr_accessor :is_import
   attr_writer :skip_edited

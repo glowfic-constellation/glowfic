@@ -11,9 +11,9 @@ class Board < ApplicationRecord
 
   has_many :board_authors, inverse_of: :board, dependent: :destroy
   has_many :board_coauthors, -> { where(cameo: false) }, class_name: 'BoardAuthor', inverse_of: :board
-  has_many :coauthors, class_name: 'User', through: :board_coauthors, source: :user
+  has_many :coauthors, class_name: 'User', through: :board_coauthors, source: :user, dependent: :destroy
   has_many :board_cameos, -> { where(cameo: true) }, class_name: 'BoardAuthor', inverse_of: :board
-  has_many :cameos, class_name: 'User', through: :board_cameos, source: :user
+  has_many :cameos, class_name: 'User', through: :board_cameos, source: :user, dependent: :destroy
 
   validates :name, presence: true, uniqueness: true
 

@@ -1,11 +1,11 @@
 class Tag < ApplicationRecord
   belongs_to :user, optional: false
   has_many :post_tags, dependent: :destroy, inverse_of: :tag
-  has_many :posts, through: :post_tags
+  has_many :posts, through: :post_tags, dependent: :destroy
   has_many :character_tags, dependent: :destroy, inverse_of: :tag
-  has_many :characters, through: :character_tags
+  has_many :characters, through: :character_tags, dependent: :destroy
   has_many :gallery_tags, dependent: :destroy, inverse_of: :tag
-  has_many :galleries, through: :gallery_tags
+  has_many :galleries, through: :gallery_tags, dependent: :destroy
 
   TYPES = %w(Setting Label ContentWarning GalleryGroup)
 

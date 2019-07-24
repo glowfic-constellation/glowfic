@@ -4,11 +4,12 @@ class Icon < ApplicationRecord
   S3_DOMAIN = '.s3.amazonaws.com'
 
   belongs_to :user, optional: false
+  has_one :avatar_user, inverse_of: :avatar, class_name: 'User', foreign_key: :avatar_id, dependent: :nullify
   has_many :posts, dependent: false
   has_many :replies, dependent: false
-  has_many :reply_drafts, dependent: false # These are handled in callbacks
+  has_many :reply_drafts, dependent: :nullify
   has_many :galleries_icons, dependent: :destroy, inverse_of: :icon
-  has_many :galleries, through: :galleries_icons
+  has_many :galleries, through: :galleries_icons, dependent: :destroy
 
   validates :keyword, presence: true
   validates :url,
@@ -68,8 +69,6 @@ class Icon < ApplicationRecord
   end
 
   def clear_icon_ids
-    ReplyDraft.where(icon_id: id).update_all(icon_id: nil)
-    User.where(avatar_id: id).update_all(avatar_id: nil)
     UpdateModelJob.perform_later(Post.to_s, {icon_id: id}, {icon_id: nil})
     UpdateModelJob.perform_later(Reply.to_s, {icon_id: id}, {icon_id: nil})
   end

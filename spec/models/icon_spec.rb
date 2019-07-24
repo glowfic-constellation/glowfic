@@ -49,13 +49,21 @@ RSpec.describe Icon do
   end
 
   describe "#after_destroy" do
-    it "updates ids" do
+    it "updates reply ids" do
       reply = create(:reply, with_icon: true)
       perform_enqueued_jobs(only: UpdateModelJob) do
         reply.icon.destroy
       end
       reply.reload
       expect(reply.icon_id).to be_nil
+    end
+
+    it "updates avatar ids" do
+      icon = create(:icon)
+      icon.user.avatar = icon
+      icon.user.save!
+      icon.destroy
+      expect(icon.user.reload.avatar_id).to be_nil
     end
   end
 
