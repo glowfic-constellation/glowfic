@@ -401,8 +401,8 @@ class CharactersController < ApplicationController
   end
 
   def process_galleries
-    group_ids = params.fetch(:character).fetch(:gallery_groups_ids)
-    ungrouped_ids = params.fetch(:character).fetch(:ungrouped_gallery_ids)
+    group_ids = params.fetch(:character).fetch(:gallery_groups_ids, [])
+    ungrouped_ids = params.fetch(:character).fetch(:ungrouped_gallery_ids, [])
 
     removed_gallery_ids = GalleryTag.where(tag_id: (self.gallery_group_ids - group_ids)).pluck(:gallery_id)
 
