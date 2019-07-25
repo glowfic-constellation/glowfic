@@ -404,35 +404,35 @@ class CharactersController < ApplicationController
     group_ids = params.fetch(:character).fetch(:gallery_groups_ids, [])
     ungrouped_ids = params.fetch(:character).fetch(:ungrouped_gallery_ids, [])
 
-    removed_gallery_ids = GalleryTag.where(tag_id: (self.gallery_group_ids - group_ids)).pluck(:gallery_id)
+    removed_gallery_ids = GalleryTag.where(tag_id: (@character.gallery_groups.pluck(:id) - group_ids)).pluck(:gallery_id)
 
     # first check if any removed galleries are also added
     removed_gallery_ids -= ungrouped_ids
 
     # second check if any removed galleries are anchored
-    removed_gallery_ids -= self.characters_galleries.where(gallery_id: removed_gallery_ids, added_by_group: false)
+    removed_gallery_ids -= @character.characters_galleries.where(gallery_id: removed_gallery_ids, added_by_group: false)
 
     # third check if any removed group galleries are in other groups (including new ones)
     removed_gallery_ids -= GalleryTag.where(tag_id: group_ids, gallery_id: removed_gallery_ids).pluck(:gallery_id)
 
     # finally, mark remaining removed galleries for destruction
-    self.characters_galleries.where(gallery_id: removed_gallery_ids).each(&:destroy!)
+    @character.characters_galleries.where(gallery_id: removed_gallery_ids).each(&:destroy!)
 
     # next, create join tables for newly added_by_group galleries
     added_gallery_ids = GalleryTag.where(tag_id: group_ids).pluck(:gallery_id)
-    added_gallery_ids -= self.characters_galleries.where(gallery_id: added_gallery_ids) # skip ones where a join already exists
+    added_gallery_ids -= @character.characters_galleries.where(gallery_id: added_gallery_ids) # skip ones where a join already exists
     added_gallery_ids -= ungrouped_ids # skip any in ungrouped_ids
     added_gallery_ids.each do |gallery_id|
-      self.character_galleries.create!(gallery_id: gallery_id, added_by_group: true)
+      @character.character_galleries.create!(gallery_id: gallery_id, added_by_group: true)
     end
 
     # anchor galleries added by group but in ungrouped_ids
-    self.characters_galleries.where(gallery_id: ungrouped_ids, added_by_group: true).each do |cg|
+    @character.characters_galleries.where(gallery_id: ungrouped_ids, added_by_group: true).each do |cg|
       cg.assign_attributes(added_by_group: false)
     end
 
-    (ungrouped_ids - self.characters_galleries(gallery_id: ungrouped_ids)).each do |gallery_id|
-      self.characters_galleries.create!(gallery_id: gallery_id, added_by_group: false)
+    (ungrouped_ids - @character.characters_galleries(gallery_id: ungrouped_ids)).each do |gallery_id|
+      @character.characters_galleries.create!(gallery_id: gallery_id, added_by_group: false)
     end
   end
 
