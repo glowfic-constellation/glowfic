@@ -10,7 +10,6 @@ class Character < ApplicationRecord
   has_many :aliases, class_name: 'CharacterAlias', inverse_of: :character, dependent: :destroy
 
   has_many :characters_galleries, inverse_of: :character, dependent: :destroy
-  accepts_nested_attributes_for :characters_galleries, allow_destroy: true
   has_many :galleries, through: :characters_galleries, dependent: :destroy
   has_many :icons, -> { group('icons.id').ordered }, through: :galleries
 
@@ -69,50 +68,6 @@ class Character < ApplicationRecord
       next if other.section_order == index
       other.section_order = index
       other.save
-    end
-  end
-
-  def ungrouped_gallery_ids
-    characters_galleries.reject(&:added_by_group?).map(&:gallery_id)
-  end
-
-  # WARNING: this method *will make changes* when used, not just when saved!!!
-  # This is so it can interact with group_gallery_ids properly instead of having to use an intricate system to find the current character galleries prior to persisting
-  # i.e. it's so ungrouped_gallery_ids= and various callbacks for gallery_group_ids= interact properly
-  def ungrouped_gallery_ids=(new_ids)
-    new_ids -= ['']
-    new_ids = new_ids.map(&:to_i)
-    group_gallery_ids = gallery_groups.joins(:gallery_tags).except(:order).pluck(Arel.sql('distinct gallery_tags.gallery_id'))
-    new_chargals = []
-    transaction do
-      characters_galleries.each do |char_gal|
-        gallery_id = char_gal.gallery_id
-        if new_ids.include?(gallery_id)
-          # add relevant old galleries, making sure added_by_group is false
-          char_gal.added_by_group = false
-          new_chargals << char_gal
-          new_ids.delete(gallery_id)
-        elsif group_gallery_ids.include?(gallery_id)
-          # add relevant old group galleries, added_by_group being true
-          char_gal.added_by_group = true
-          new_chargals << char_gal
-          group_gallery_ids.delete(gallery_id)
-        else
-          # destroy joins that are not in the new set of IDs
-          char_gal.destroy
-        end
-      end
-      new_ids.each do |gallery_id|
-        # add any leftover new galleries
-        new_chargals << CharactersGallery.new(gallery_id: gallery_id, character_id: id, added_by_group: false)
-      end
-      # leftover galleries from gallery groups will be added by that model
-      self.characters_galleries = new_chargals
-      if persisted?
-        self.update(characters_galleries: new_chargals)
-      else
-        self.assign_attributes(characters_galleries: new_chargals)
-      end
     end
   end
 
