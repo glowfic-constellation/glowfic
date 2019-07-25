@@ -71,6 +71,10 @@ class Character < ApplicationRecord
     end
   end
 
+  def ungrouped_gallery_ids
+    characters_galleries.reject(&:added_by_group?).map(&:gallery_id)
+  end
+
   def character_gallery_for(gallery)
     characters_galleries.find_by(gallery_id: gallery)
   end
