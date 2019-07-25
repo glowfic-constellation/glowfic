@@ -406,24 +406,29 @@ class CharactersController < ApplicationController
 
     removed_gallery_ids = GalleryTag.where(tag_id: (@character.gallery_groups.pluck(:id) - group_ids)).pluck(:gallery_id)
 
-    # first check if any removed galleries are also added
-    removed_gallery_ids -= ungrouped_ids
+    if removed_gallery_ids.present?
+      # first check if any removed galleries are also added
+      removed_gallery_ids -= ungrouped_ids
 
-    # second check if any removed galleries are anchored
-    removed_gallery_ids -= @character.characters_galleries.where(gallery_id: removed_gallery_ids, added_by_group: false)
+      # second check if any removed galleries are anchored
+      removed_gallery_ids -= @character.characters_galleries.where(gallery_id: removed_gallery_ids, added_by_group: false)
 
-    # third check if any removed group galleries are in other groups (including new ones)
-    removed_gallery_ids -= GalleryTag.where(tag_id: group_ids, gallery_id: removed_gallery_ids).pluck(:gallery_id)
+      # third check if any removed group galleries are in other groups (including new ones)
+      removed_gallery_ids -= GalleryTag.where(tag_id: group_ids, gallery_id: removed_gallery_ids).pluck(:gallery_id)
 
-    # finally, mark remaining removed galleries for destruction
-    @character.characters_galleries.where(gallery_id: removed_gallery_ids).each(&:destroy!)
+      # finally, mark remaining removed galleries for destruction
+      @character.characters_galleries.where(gallery_id: removed_gallery_ids).each(&:destroy!)
+    end
 
-    # next, create join tables for newly added_by_group galleries
+    # create join tables for newly added_by_group galleries
     added_gallery_ids = GalleryTag.where(tag_id: group_ids).pluck(:gallery_id)
-    added_gallery_ids -= @character.characters_galleries.where(gallery_id: added_gallery_ids) # skip ones where a join already exists
-    added_gallery_ids -= ungrouped_ids # skip any in ungrouped_ids
-    added_gallery_ids.each do |gallery_id|
-      @character.character_galleries.create!(gallery_id: gallery_id, added_by_group: true)
+
+    if added_gallery_ids.present?
+      added_gallery_ids -= @character.characters_galleries.where(gallery_id: added_gallery_ids) # skip ones where a join already exists
+      added_gallery_ids -= ungrouped_ids # skip any in ungrouped_ids
+      added_gallery_ids.each do |gallery_id|
+        @character.character_galleries.create!(gallery_id: gallery_id, added_by_group: true)
+      end
     end
 
     # anchor galleries added by group but in ungrouped_ids
@@ -431,6 +436,7 @@ class CharactersController < ApplicationController
       cg.assign_attributes(added_by_group: false)
     end
 
+    # create join tables for new ungrouped galleries
     (ungrouped_ids - @character.characters_galleries(gallery_id: ungrouped_ids)).each do |gallery_id|
       @character.characters_galleries.create!(gallery_id: gallery_id, added_by_group: false)
     end
