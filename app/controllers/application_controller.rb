@@ -192,4 +192,11 @@ class ApplicationController < ActionController::Base
     short_msg[0...73] + '…' # make the absolute max length 75 characters
   end
   helper_method :generate_short
+
+  def render_errors(model, msg: nil, name: model.class.name.downcase, participle: 'saved')
+    flash.now[:error] = {
+      message: "Your #{name} could not be #{participle} because of the following problems:",
+      array: model.errors.full_messages
+    }
+  end
 end
