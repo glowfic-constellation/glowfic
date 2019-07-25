@@ -446,11 +446,12 @@ class CharactersController < ApplicationController
       :description,
       :audit_comment,
     ]
+    nested = {}
     if @character.user == current_user
-      permitted.last[:template_attributes] = [:name, :id]
-      permitted.insert(0, :default_icon_id)
+      nested[:template_attributes] = [:name, :id]
+      permitted << :default_icon_id
     end
-    params.fetch(:character, {}).permit(permitted)
+    params.fetch(:character, {}).permit(*permitted, **nested)
   end
 
   # logic replicated from page_view
