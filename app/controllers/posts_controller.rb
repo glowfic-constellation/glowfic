@@ -178,12 +178,7 @@ class PostsController < WritableController
     @post.audit_comment = nil if @post.changes.empty? # don't save an audit for a note and no changes
 
     begin
-      Post.transaction do
-        @post.settings = settings
-        @post.content_warnings = warnings
-        @post.labels = labels
-        @post.save!
-      end
+       @post.update!(settings: settings, labels: labels, content_warnings: warnings)
     rescue ActiveRecord::RecordInvalid
       flash.now[:error] = {
         array: @post.errors.full_messages,
