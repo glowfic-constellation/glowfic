@@ -126,10 +126,7 @@ class PostsController < WritableController
     begin
       @post.save!
     rescue ActiveRecord::RecordInvalid
-      flash.now[:error] = {
-        array: @post.errors.full_messages,
-        message: "Your post could not be saved because of the following problems:"
-      }
+      render_errors(@post)
       editor_setup
       @page_title = 'New Post'
       render :new
@@ -185,10 +182,7 @@ class PostsController < WritableController
         @post.save!
       end
     rescue ActiveRecord::RecordInvalid
-      flash.now[:error] = {
-        array: @post.errors.full_messages,
-        message: "Your post could not be saved because of the following problems:"
-      }
+      render_errors(@post)
       editor_setup
       render :edit
     else
@@ -329,10 +323,7 @@ class PostsController < WritableController
       begin
         @post.save!
       rescue ActiveRecord::RecordInvalid
-        flash[:error] = {
-          message: "Status could not be updated.",
-          array: @post.errors.full_messages
-        }
+        render_errors(@post)
       else
         flash[:success] = "Post has been marked #{params[:status]}."
       end
@@ -345,10 +336,7 @@ class PostsController < WritableController
     begin
       @post.save!
     rescue ActiveRecord::RecordInvalid
-      flash[:error] = {
-        message: "Post could not be updated.",
-        array: @post.errors.full_messages
-      }
+      render_errors(@post)
     else
       flash[:success] = "Post has been #{@post.authors_locked? ? 'locked to' : 'unlocked from'} current authors."
     end
