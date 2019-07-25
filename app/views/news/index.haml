@@ -8,7 +8,7 @@
 - if @news.total_entries > @news.per_page
   .paginator.centered.sub
     .pagination
-      - args = {container: false, first_label: "&laquo; Newest", last_label: "Oldest &raquo", previous_label: "&lt; Newer", next_label: "Older &gt;", summary_label: "%d of %d"}
+      - args = {container: false, first_label: "&laquo; Newest", last_label: "Oldest &raquo;", previous_label: "&lt; Newer", next_label: "Older &gt;", summary_label: "%d of %d"}
       .normal-pagination
         = will_paginate @news, args
       .mobile-pagination
