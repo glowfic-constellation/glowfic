@@ -407,7 +407,9 @@ class CharactersController < ApplicationController
     ungrouped_ids = ungrouped_ids.reject(&:empty?).map(&:to_i)
 
     # unanchor galleries removed but in group
-    @character.characters_galleries.where(added_by_group: false).where.not(gallery_id: ungrouped_ids).each do |cg|
+    group_ids = params.fetch(:character, {}).fetch(:gallery_group_ids, [])
+    grouped_ids = GalleryTag.where(tag_id: group_ids).pluck(:gallery_id) - ungrouped_ids
+    @character.characters_galleries.where(added_by_group: false, gallery_id: ungrouped_ids).each do |cg|
       cg.update!(added_by_group: true)
     end
 
