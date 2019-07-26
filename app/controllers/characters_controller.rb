@@ -437,12 +437,19 @@ class CharactersController < ApplicationController
           @character.character_galleries.create!(gallery_id: gallery_id, added_by_group: true)
         end
       end
+
+      # unanchor galleries removed but in group
+      unless added_gallery_ids.blank? && unchanged_galleries
+        @character.characters_galleries.where(added_by_group: false, gallery_id: added_gallery_ids - ungrouped_ids).each do |cg|
+          cg.update!(added_by_group: true)
+        end
+      end
     end
 
     unless unchanged_galleries
       # anchor galleries added by group but in ungrouped_ids
       @character.characters_galleries.where(gallery_id: ungrouped_ids, added_by_group: true).each do |cg|
-        cg.assign_attributes(added_by_group: false)
+        cg.update!(added_by_group: false)
       end
 
       # create join tables for new ungrouped galleries
