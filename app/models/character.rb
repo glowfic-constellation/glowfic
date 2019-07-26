@@ -11,6 +11,8 @@ class Character < ApplicationRecord
 
   has_many :characters_galleries, inverse_of: :character, dependent: :destroy
   has_many :galleries, through: :characters_galleries, dependent: :destroy
+  has_many :ungrouped_characters_galleries, -> { where(added_by_group: false) }, class_name: 'CharactersGallery', inverse_of: :character
+  has_many :ungrouped_galleries, through: :ungrouped_characters_galleries, source: :gallery
   has_many :icons, -> { group('icons.id').ordered }, through: :galleries
 
   has_many :character_tags, inverse_of: :character, dependent: :destroy
@@ -69,10 +71,6 @@ class Character < ApplicationRecord
       other.section_order = index
       other.save
     end
-  end
-
-  def ungrouped_gallery_ids
-    characters_galleries.reject(&:added_by_group?).map(&:gallery_id)
   end
 
   def character_gallery_for(gallery)
