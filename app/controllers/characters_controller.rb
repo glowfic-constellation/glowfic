@@ -401,10 +401,10 @@ class CharactersController < ApplicationController
   end
 
   def process_galleries
-    group_ids = params.fetch(:character).fetch(:gallery_groups_ids, [])
+    group_ids = params.fetch(:character, {}).fetch(:gallery_groups_ids, [])
     unchanged_groups = group_ids == []
     group_ids.reject(&:empty?).map!(&:to_i)
-    ungrouped_ids = params.fetch(:character).fetch(:ungrouped_gallery_ids, [])
+    ungrouped_ids = params.fetch(:character, {}).fetch(:ungrouped_gallery_ids, [])
     unchanged_galleries = ungrouped_ids == []
     ungrouped_ids.reject(&:empty?).map!(&:to_i)
 
