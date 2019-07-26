@@ -92,6 +92,7 @@ class CharactersController < ApplicationController
         @character.save!
       end
     rescue ActiveRecord::RecordInvalid
+      debugger
       @page_title = "Edit Character: " + @character.name
       flash.now[:error] = {
         message: "Your character could not be saved.",
@@ -401,20 +402,13 @@ class CharactersController < ApplicationController
   end
 
   def process_galleries
-    group_ids = params.fetch(:character, {}).fetch(:gallery_groups_ids, []).reject(&:empty?).map!(&:to_i)
     ungrouped_ids = params.fetch(:character, {}).fetch(:ungrouped_gallery_ids, [])
-    unchanged_galleries = ungrouped_ids == []
-    ungrouped_ids.reject(&:empty?).map!(&:to_i)
-
-    return if unchanged_galleries
-
-    added_gallery_ids = GalleryTag.where(tag_id: group_ids).pluck(:gallery_id)
+    return if ungrouped_ids == []
+    ungrouped_ids = ungrouped_ids.reject(&:empty?).map(&:to_i)
 
     # unanchor galleries removed but in group
-    unless added_gallery_ids.blank? || unchanged_galleries
-      @character.characters_galleries.where(added_by_group: false, gallery_id: added_gallery_ids - ungrouped_ids).each do |cg|
-        cg.update!(added_by_group: true)
-      end
+    @character.characters_galleries.where(added_by_group: false).where.not(gallery_id: ungrouped_ids).each do |cg|
+      cg.update!(added_by_group: true)
     end
 
     # anchor galleries added by group but in ungrouped_ids
@@ -429,8 +423,8 @@ class CharactersController < ApplicationController
       cg.save! if @character.persisted?
     end
 
-    removed_galleries = @character.ungrouped_galleries - ungrouped_ids
-    removed_galleries.each { |gallery| @character.character_gallery_for(gallery).destroy! }
+    removed_galleries = @character.ungrouped_gallery_ids - ungrouped_ids
+    removed_galleries.each { |gallery_id| @character.characters_galleries.find_by(gallery_id: gallery_id).destroy! }
   end
 
   def character_params
