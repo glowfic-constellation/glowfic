@@ -679,9 +679,9 @@ RSpec.describe CharactersController do
 
         CharactersGallery.create!(character: character, gallery: gallery_manual)
         character.characters_galleries.find_by(gallery: gallery_both).update!(added_by_group: false)
-        expect(character.gallery_groups).to eq([group])
 
         character.reload
+        expect(character.gallery_groups).to eq([group])
         expect(character.gallery_ids).to match_array([gallery_manual.id, gallery_both.id, gallery_automatic.id])
         expect(character.ungrouped_gallery_ids).to match_array([gallery_manual.id, gallery_both.id])
 

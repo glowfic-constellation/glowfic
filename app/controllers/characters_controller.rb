@@ -92,7 +92,6 @@ class CharactersController < ApplicationController
         @character.save!
       end
     rescue ActiveRecord::RecordInvalid
-      debugger
       @page_title = "Edit Character: " + @character.name
       flash.now[:error] = {
         message: "Your character could not be saved.",
@@ -409,7 +408,7 @@ class CharactersController < ApplicationController
     # unanchor galleries removed but in group
     group_ids = params.fetch(:character, {}).fetch(:gallery_group_ids, [])
     grouped_ids = GalleryTag.where(tag_id: group_ids).pluck(:gallery_id) - ungrouped_ids
-    @character.characters_galleries.where(added_by_group: false, gallery_id: ungrouped_ids).each do |cg|
+    @character.characters_galleries.where(added_by_group: false, gallery_id: grouped_ids).each do |cg|
       cg.update!(added_by_group: true)
     end
 
