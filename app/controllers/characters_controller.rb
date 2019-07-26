@@ -418,7 +418,7 @@ class CharactersController < ApplicationController
         removed_gallery_ids -= ungrouped_ids
 
         # second check if any removed galleries are anchored
-        removed_gallery_ids -= @character.characters_galleries.where(gallery_id: removed_gallery_ids, added_by_group: false)
+        removed_gallery_ids -= @character.characters_galleries.where(gallery_id: removed_gallery_ids, added_by_group: false).pluck(:gallery_id)
 
         # third check if any removed group galleries are in other groups (including new ones)
         removed_gallery_ids -= GalleryTag.where(tag_id: group_ids, gallery_id: removed_gallery_ids).pluck(:gallery_id)
@@ -427,22 +427,22 @@ class CharactersController < ApplicationController
         @character.characters_galleries.where(gallery_id: removed_gallery_ids).each(&:destroy!)
       end
 
-      # create join tables for newly added_by_group galleries
       added_gallery_ids = GalleryTag.where(tag_id: group_ids).pluck(:gallery_id)
 
+      # unanchor galleries removed but in group
+      unless added_gallery_ids.blank? || unchanged_galleries
+        @character.characters_galleries.where(added_by_group: false, gallery_id: added_gallery_ids - ungrouped_ids).each do |cg|
+          cg.update!(added_by_group: true)
+        end
+      end
+
+      # create join tables for newly added_by_group galleries
       if added_gallery_ids.present?
-        added_gallery_ids -= @character.characters_galleries.where(gallery_id: added_gallery_ids) # skip ones where a join already exists
+        added_gallery_ids -= @character.gallery_ids # skip ones where a join already exists
         added_gallery_ids -= ungrouped_ids # skip any in ungrouped_ids
         added_gallery_ids.each do |gallery_id|
           cg = @character.characters_galleries.build(gallery_id: gallery_id, added_by_group: true)
           cg.save! if @character.persisted?
-        end
-      end
-
-      # unanchor galleries removed but in group
-      unless added_gallery_ids.blank? && unchanged_galleries
-        @character.characters_galleries.where(added_by_group: false, gallery_id: added_gallery_ids - ungrouped_ids).each do |cg|
-          cg.update!(added_by_group: true)
         end
       end
     end
@@ -454,7 +454,8 @@ class CharactersController < ApplicationController
       end
 
       # create join tables for new ungrouped galleries
-      (ungrouped_ids - @character.characters_galleries.where(gallery_id: ungrouped_ids)).each do |gallery_id|
+      new_gallery_ids = ungrouped_ids - @character.gallery_ids
+      new_gallery_ids.each do |gallery_id|
         cg = @character.characters_galleries.create!(gallery_id: gallery_id, added_by_group: false)
         cg.save! if @character.persisted?
       end
