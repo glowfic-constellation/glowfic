@@ -258,7 +258,6 @@ class GalleriesController < UploadingController
         icon_attributes: [:url, :keyword, :credit, :id, :_destroy, :s3_key]
       ],
       icon_ids: [],
-      ungrouped_gallery_ids: [],
     )
   end
 
