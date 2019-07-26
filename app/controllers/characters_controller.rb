@@ -434,7 +434,8 @@ class CharactersController < ApplicationController
         added_gallery_ids -= @character.characters_galleries.where(gallery_id: added_gallery_ids) # skip ones where a join already exists
         added_gallery_ids -= ungrouped_ids # skip any in ungrouped_ids
         added_gallery_ids.each do |gallery_id|
-          @character.character_galleries.create!(gallery_id: gallery_id, added_by_group: true)
+          cg = @character.characters_galleries.build(gallery_id: gallery_id, added_by_group: true)
+          cg.save! if @character.persisted?
         end
       end
 
@@ -454,7 +455,8 @@ class CharactersController < ApplicationController
 
       # create join tables for new ungrouped galleries
       (ungrouped_ids - @character.characters_galleries.where(gallery_id: ungrouped_ids)).each do |gallery_id|
-        @character.characters_galleries.create!(gallery_id: gallery_id, added_by_group: false)
+        cg = @character.characters_galleries.create!(gallery_id: gallery_id, added_by_group: false)
+        cg.save! if @character.persisted?
       end
     end
   end
