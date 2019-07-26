@@ -22,7 +22,7 @@ class CharacterTag < ApplicationRecord
     gallery_group.galleries.each do |gallery|
       next if character.gallery_groups.where.not(id: gallery_group.id).collect(&:galleries).include?(gallery) # skip if the gallery is in another attached group
       cg = character.character_gallery_for(gallery)
-      next unless cg.added_by_group? # skip anchored galleries
+      next unless cg&.added_by_group? # skip anchored and unjoined galleries
       cg.destroy!
     end
   end
