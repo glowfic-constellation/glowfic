@@ -8,15 +8,21 @@ class GalleryTag < ApplicationRecord
 
   def add_gallery_to_characters
     return if gallery_group.nil? # skip non-gallery_groups
-    joined_characters = gallery_group.characters.where(id: gallery.characters_galleries.map(&:character_id))
-    characters = gallery_group.characters.where(user_id: gallery.user_id).where.not(id: joined_characters.pluck(:id))
-    characters.each do |character|
-      gallery.characters_galleries.create(character_id: character.id, added_by_group: true)
+    characters = gallery_group.characters.where(user_id: gallery.user_id).pluck(:id)
+    characters -= gallery.characters_galleries.pluck(:character_id) # skip characters that already have joins
+    characters.each do |character_id|
+      gallery.characters_galleries.create(character_id: character_id, added_by_group: true)
     end
   end
 
   def remove_gallery_from_characters
     return if gallery_group.nil? # skip non-gallery_groups
-    CharactersGallery.where(character: gallery.characters, gallery: gallery, added_by_group: true).destroy_all
+
+    gallery_group.characters.each do |character|
+      next if character.gallery_groups.where.not(id: gallery_group.id).collect(&:galleries).include?(gallery) # skip if the gallery is in another attached group
+      cg = character.character_gallery_for(gallery)
+      next unless cg.added_by_group? # skip anchored galleries
+      cg.destroy!
+    end
   end
 end
