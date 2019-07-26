@@ -747,7 +747,7 @@ RSpec.describe CharactersController do
           id: character.id,
           character: {
             ungrouped_gallery_ids: [gallery.id],
-            gallery_group_ids: []
+            gallery_group_ids: ['']
           }
         }
         expect(flash[:success]).to eq('Character saved successfully.')
@@ -793,7 +793,7 @@ RSpec.describe CharactersController do
         put :update, params: {
           id: character.id,
           character: {
-            ungrouped_gallery_ids: [],
+            ungrouped_gallery_ids: [''],
             gallery_group_ids: [group.id]
           }
         }
@@ -817,7 +817,7 @@ RSpec.describe CharactersController do
         put :update, params: {
           id: character.id,
           character: {
-            ungrouped_gallery_ids: [],
+            ungrouped_gallery_ids: [''],
             gallery_group_ids: [group2.id]
           }
         }
