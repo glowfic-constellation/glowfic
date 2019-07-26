@@ -123,8 +123,39 @@ $(document).ready(function() {
     });
   });
 
-  createTagSelect("GalleryGroup", "gallery_group", "character", {user_id: gon.user_id});
   createTagSelect("Setting", "setting", "character");
+  $("#character_gallery_group_ids").select2({
+    placeholder: 'Enter gallery group(s) separated by commas',
+    ajax: {
+      delay: 200,
+      url: '/api/v1/tags',
+      dataType: 'json',
+      data: function(params) {
+        var data = queryTransform(params);
+        data.t = 'GalleryGroup';
+        data.user_id = gon.user_id
+        return data;
+      },
+      processResults: function(data, params) {
+        params.page = params.page || 1;
+        var total = this._request.getResponseHeader('Total');
+        var results = processResults(data, params, total);
+
+        // Remove duplicates
+        var existingIds = $("#character_gallery_group_ids").val() || [];
+        var validResults = []
+        results.results.forEach(function(gallery) {
+          if(!existingIds.includes(gallery.id.toString())) validResults.push(gallery);
+        });
+        results.results = validResults;
+
+        return results;
+      },
+      cache: true,
+      createTag: function(params) { return null; }
+    },
+    width: '300px'
+  });
 });
 
 function findGalleryInGroups(galleryId) {
