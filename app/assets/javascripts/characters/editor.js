@@ -1,4 +1,4 @@
-/* global gon, createTagSelect */
+/* global gon, createTagSelect, processResults, queryTransform */
 var galleryIds, oldTemplate;
 var galleryGroupIds = [];
 var galleryGroups = {};
@@ -133,7 +133,7 @@ $(document).ready(function() {
       data: function(params) {
         var data = queryTransform(params);
         data.t = 'GalleryGroup';
-        data.user_id = gon.user_id
+        data.user_id = gon.user_id;
         return data;
       },
       processResults: function(data, params) {
@@ -143,7 +143,7 @@ $(document).ready(function() {
 
         // Remove duplicates
         var existingIds = $("#character_gallery_group_ids").val() || [];
-        var validResults = []
+        var validResults = [];
         results.results.forEach(function(gallery) {
           if(!existingIds.includes(gallery.id.toString())) validResults.push(gallery);
         });
@@ -152,7 +152,6 @@ $(document).ready(function() {
         return results;
       },
       cache: true,
-      createTag: function(params) { return null; }
     },
     width: '300px'
   });
