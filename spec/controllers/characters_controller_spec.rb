@@ -642,7 +642,7 @@ RSpec.describe CharactersController do
         expect(flash[:success]).to eq('Character saved successfully.')
 
         character.reload
-        expect(character.characters_galleries.find_by(gallery: gallery)).to be_added_by_group
+        expect(character.characters_galleries.find_by(gallery: gallery)).not_to be_added_by_group
         expect(character.galleries).to eq([gallery])
       end
 
@@ -657,12 +657,18 @@ RSpec.describe CharactersController do
         expect(character.ungrouped_gallery_ids).to be_empty
 
         login_as(user)
-        put :update, params: { id: character.id, character: {ungrouped_gallery_ids: [gallery.id]} }
+        put :update, params: {
+          id: character.id,
+          character: {
+            gallery_group_ids: [group.id],
+            ungrouped_gallery_ids: [gallery.id]
+          }
+        }
         expect(flash[:success]).to eq('Character saved successfully.')
 
         character.reload
 
-        expect(character.characters_galleries.find_by(gallery: gallery)).to be_added_by_group
+        expect(character.characters_galleries.find_by(gallery: gallery)).not_to be_added_by_group
         expect(character.galleries).to eq([gallery])
       end
 
@@ -686,9 +692,16 @@ RSpec.describe CharactersController do
         expect(character.ungrouped_gallery_ids).to match_array([gallery_manual.id, gallery_both.id])
 
         login_as(user)
-        put :update, params: { id: character.id, character: { gallery_group_ids: [group.id], ungrouped_gallery_ids: [gallery_manual.id] } }
+        put :update, params: {
+          id: character.id,
+          character: {
+            gallery_group_ids: [group.id],
+            ungrouped_gallery_ids: [gallery_manual.id]
+          }
+        }
         expect(flash[:success]).to eq('Character saved successfully.')
-        character = Character.find_by_id(character.id)
+
+        character = assigns(:character)
         expect(character.gallery_groups).to eq([group])
         expect(character.gallery_ids).to match_array([gallery_manual.id, gallery_both.id, gallery_automatic.id])
         expect(character.ungrouped_gallery_ids).to match_array([gallery_manual.id])
@@ -728,7 +741,13 @@ RSpec.describe CharactersController do
         expect(character.ungrouped_gallery_ids).to match_array([gallery_manual.id, gallery_both.id])
 
         login_as(user)
-        put :update, params: { id: character.id, character: {ungrouped_gallery_ids: [gallery_manual.id, gallery_both.id]} }
+        put :update, params: {
+          id: character.id,
+          character: {
+            gallery_group_ids: [group.id],
+            ungrouped_gallery_ids: [gallery_manual.id, gallery_both.id]
+          }
+        }
         expect(flash[:success]).to eq('Character saved successfully.')
 
         character.reload
