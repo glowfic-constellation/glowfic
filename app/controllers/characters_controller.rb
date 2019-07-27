@@ -402,7 +402,7 @@ class CharactersController < ApplicationController
 
   def process_galleries
     ungrouped_ids = params.fetch(:character, {}).fetch(:ungrouped_gallery_ids, [])
-    return if ungrouped_ids == []
+    return unless ungrouped_ids.present?
     ungrouped_ids = ungrouped_ids.reject(&:empty?).map(&:to_i)
 
     # unanchor galleries removed but in group
@@ -420,7 +420,7 @@ class CharactersController < ApplicationController
     # create join tables for new ungrouped galleries
     new_gallery_ids = ungrouped_ids - @character.gallery_ids
     new_gallery_ids.each do |gallery_id|
-      cg = @character.characters_galleries.create!(gallery_id: gallery_id, added_by_group: false)
+      cg = @character.characters_galleries.build(gallery_id: gallery_id, added_by_group: false)
       cg.save! if @character.persisted?
     end
 
@@ -438,12 +438,11 @@ class CharactersController < ApplicationController
       :description,
       :audit_comment,
     ]
-    nested = {}
     if @character.user == current_user
-      nested[:template_attributes] = [:name, :id]
       permitted << :default_icon_id
+      permitted << {template_attributes: [:name, :id]}
     end
-    params.fetch(:character, {}).permit(*permitted, **nested)
+    params.fetch(:character, {}).permit(permitted)
   end
 
   # logic replicated from page_view
