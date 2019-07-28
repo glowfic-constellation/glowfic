@@ -42,7 +42,7 @@ class CharactersController < ApplicationController
 
     begin
       Character.transaction do
-        process_galleries
+        @character.ungrouped_gallery_ids = params.fetch(:character, {}).fetch(:ungrouped_gallery_ids, [])
         @character.settings = process_tags(Setting, :character, :setting_ids)
         @character.gallery_groups = process_tags(GalleryGroup, :character, :gallery_group_ids)
         @character.save!
@@ -418,11 +418,7 @@ class CharactersController < ApplicationController
     end
 
     # create join tables for new ungrouped galleries
-    new_gallery_ids = ungrouped_ids - @character.gallery_ids
-    new_gallery_ids.each do |gallery_id|
-      cg = @character.characters_galleries.build(gallery_id: gallery_id, added_by_group: false)
-      cg.save! if @character.persisted?
-    end
+    @character.ungrouped_gallery_ids = ungrouped_ids
 
     removed_galleries = @character.ungrouped_gallery_ids - ungrouped_ids
     removed_galleries.each { |gallery_id| @character.characters_galleries.find_by(gallery_id: gallery_id).destroy! }
