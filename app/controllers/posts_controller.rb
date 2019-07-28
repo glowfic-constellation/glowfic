@@ -447,7 +447,6 @@ class PostsController < WritableController
       :authors_locked,
       :audit_comment,
       :private_note,
-      :settings_list,
       :labels_list,
       :content_warnings_list,
     ]

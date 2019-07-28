@@ -38,7 +38,6 @@ class Character < ApplicationRecord
   nilify_blanks
 
   audited on: :update, mod_only: true, update_with_comment_only: false
-  acts_as_taggable_on :settings, :gallery_groups
 
   def editable_by?(user)
     self.class.editable_by?(user, self.user_id)
