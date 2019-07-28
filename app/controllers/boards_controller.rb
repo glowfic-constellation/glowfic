@@ -117,7 +117,13 @@ class BoardsController < ApplicationController
     end
 
     if params[:commit] == "Mark Read"
-      board.mark_read(current_user)
+      Board.transaction do
+        board.mark_read(current_user)
+        post_views = PostView.joins(post: :board).where(user: current_user, boards: {id: board.id})
+        post_views.includes(:post).each do |post_view|
+          post_view.post.mark_read(current_user, board.last_read(current_user))
+        end
+      end
       flash[:success] = "#{board.name} marked as read."
     elsif params[:commit] == "Hide from Unread"
       board.ignore(current_user)
