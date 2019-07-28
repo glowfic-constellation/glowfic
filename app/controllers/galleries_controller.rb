@@ -263,6 +263,7 @@ class GalleriesController < UploadingController
   def gallery_params
     params.fetch(:gallery, {}).permit(
       :name,
+      :gallery_groups_list,
       galleries_icons_attributes: [
         :id,
         :_destroy,
