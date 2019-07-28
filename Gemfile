@@ -2,6 +2,7 @@ source 'https://rubygems.org'
 
 ruby '2.6.5'
 
+gem 'acts-as-taggable-on', '~> 6.0'
 gem 'api-pagination'
 gem 'apipie-rails'
 gem 'audited', '~> 4.9.0' # check for migrations after update with `rails generate audited:upgrade`
