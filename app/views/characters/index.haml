@@ -51,7 +51,7 @@
           %th.sub{colspan: colspan} Ungrouped Characters
         = render 'group', characters: @user.characters.where(character_group_id: nil), skip_grouped_templates: true, page_view: page_view
     - elsif @user.characters.exists?
-      - paginated_templates = @user.templates.ordered.paginate(page: page, per_page: 5)
+      - paginated_templates = @user.templates.ordered.paginate(page: page, per_page: 10)
       - paginated_templates.each do |template|
         = render partial_type, name: template, characters: template.characters.ordered
       - if paginated_templates.next_page.nil? && @user.characters.where(template_id: nil).exists?
