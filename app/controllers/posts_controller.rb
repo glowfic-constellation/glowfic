@@ -45,11 +45,21 @@ class PostsController < WritableController
     @started = (params[:started] == 'true') || (params[:started].nil? && current_user.unread_opened)
     @posts = Post.joins("LEFT JOIN post_views ON post_views.post_id = posts.id AND post_views.user_id = #{current_user.id}")
     @posts = @posts.joins("LEFT JOIN board_views on board_views.board_id = posts.board_id AND board_views.user_id = #{current_user.id}")
-    @posts = @posts.where("post_views.user_id IS NULL OR ((post_views.read_at IS NULL OR (date_trunc('second', post_views.read_at) < date_trunc('second', posts.tagged_at))) AND post_views.ignored = '0')")
-    @posts = @posts.where("board_views.user_id IS NULL OR ((board_views.read_at IS NULL OR (date_trunc('second', board_views.read_at) < date_trunc('second', posts.tagged_at))) AND board_views.ignored = '0')")
+
+    # I am so very sorry I cannot make this more legible. I blame Rails? Posts are unread when:
+    #   post view does not exist and (board view does not exist or post has updated since non-ignored board view read_at)
+    #   or
+    #   post view exists and post has updated since non-ignored post view read_at
+    @posts = @posts.where("(\
+      post_views.user_id IS NULL AND (\
+        board_views.user_id IS NULL OR ((board_views.read_at IS NULL OR (date_trunc('second', board_views.read_at) < date_trunc('second', posts.tagged_at))) AND board_views.ignored = '0')))\
+      OR (post_views.user_id IS NOT NULL AND (\
+        (post_views.read_at IS NULL OR (date_trunc('second', post_views.read_at) < date_trunc('second', posts.tagged_at))) AND post_views.ignored = '0'))")
+
     @posts = posts_from_relation(@posts.ordered, with_pagination: false)
     @posts = @posts.select { |p| @opened_ids.include?(p.id) } if @started
     @posts = @posts.paginate(per_page: 25, page: page)
+
     @hide_quicklinks = true
     @page_title = @started ? 'Opened Threads' : 'Unread Threads'
     use_javascript('posts/unread')
@@ -291,14 +301,8 @@ class PostsController < WritableController
     if params[:at_id].present?
       reply = Reply.find(params[:at_id])
       if reply && reply.post == @post
-        board_read = @post.board.last_read(current_user)
-        if board_read && board_read > reply.created_at
-          flash[:error] = "You have marked this continuity read more recently than that reply was written; it will not appear in your Unread posts."
-          Message.send_site_message(1, 'Unread at failure', "#{current_user.username} tried to mark post #{@post.id} unread at reply #{reply.id}")
-        else
-          @post.mark_read(current_user, reply.created_at - 1.second, true)
-          flash[:success] = "Post has been marked as read until reply ##{reply.id}."
-        end
+        @post.mark_read(current_user, reply.created_at - 1.second, true)
+        flash[:success] = "Post has been marked as read until reply ##{reply.id}."
       end
       return redirect_to unread_posts_path
     end

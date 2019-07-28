@@ -463,6 +463,27 @@ RSpec.describe BoardsController do
       expect(flash[:success]).to eq("#{board.name} marked as read.")
     end
 
+    it "marks extant post views read" do
+      now = Time.zone.now
+      board = create(:board)
+      user = create(:user)
+      read_post = create(:post, user: user, board: board)
+      read_post.mark_read(user, now - 1.day, true)
+      unread_post = create(:post, user: user, board: board)
+      unread_post.mark_read(create(:user), now - 1.day, true)
+
+      expect(Board.find(board.id).last_read(user)).to be_nil # reload to reset cached @view
+      expect(Post.find(read_post.id).last_read(user)).to be_the_same_time_as(now - 1.day)
+      expect(Post.find(unread_post.id).last_read(user)).to be_nil
+
+      login_as(user)
+      post :mark, params: { board_id: board.id, commit: "Mark Read" }
+
+      expect(Board.find(board.id).last_read(user)).to be >= now # reload to reset cached @view
+      expect(Post.find(read_post.id).last_read(user)).to be >= now
+      expect(Post.find(unread_post.id).last_read(user)).to be_nil
+    end
+
     it "successfully ignores board" do
       board = create(:board)
       user = create(:user)

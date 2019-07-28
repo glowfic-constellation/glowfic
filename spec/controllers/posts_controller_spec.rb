@@ -1357,26 +1357,6 @@ RSpec.describe PostsController do
         skip "TODO does not notify"
       end
 
-      it "notifies Marri about board_read" do
-        # TODO fix the board_read thing better
-        post = create(:post)
-        post.mark_read(post.user, post.created_at)
-        unread_reply = create(:reply, post: post)
-        create(:reply, post: post)
-        time = Time.zone.now
-        post.board.mark_read(post.user, time)
-
-        login_as(post.user)
-        create(:user, id: 1) # to receive the alert message
-        expect {
-          put :update, params: { id: post.id, unread: true, at_id: unread_reply.id }
-        }.to change{ Message.count }.by(1)
-
-        expect(response).to redirect_to(unread_posts_url)
-        expect(flash[:error]).to eq("You have marked this continuity read more recently than that reply was written; it will not appear in your Unread posts.")
-        expect(post.reload.last_read(post.user)).to be_the_same_time_as(post.created_at)
-      end
-
       it "works with at_id" do
         post = create(:post)
         unread_reply = build(:reply, post: post)
@@ -2652,6 +2632,43 @@ RSpec.describe PostsController do
 
       get :unread
       expect(assigns(:posts)).to eq([post1, post2, post3])
+    end
+
+    it "manages board/post read time mismatches" do
+      user = create(:user)
+
+      # no views exist
+      unread_post = create(:post)
+
+      # only post view exists
+      post_unread_post = create(:post)
+      post_unread_post.mark_read(user, post_unread_post.created_at - 1.second, true)
+      post_read_post = create(:post)
+      post_read_post.mark_read(user)
+
+      # only board view exists
+      board_unread_post = create(:post)
+      board_unread_post.board.mark_read(user, board_unread_post.created_at - 1.second, true)
+      board_read_post = create(:post)
+      board_read_post.board.mark_read(user)
+
+      # both exist
+      both_unread_post = create(:post)
+      both_unread_post.mark_read(user, both_unread_post.created_at - 1.second, true)
+      both_unread_post.board.mark_read(user, both_unread_post.created_at - 1.second, true)
+      both_board_read_post = create(:post)
+      both_board_read_post.mark_read(user, both_unread_post.created_at - 1.second, true)
+      both_board_read_post.board.mark_read(user)
+      both_post_read_post = create(:post)
+      both_post_read_post.board.mark_read(user, both_unread_post.created_at - 1.second, true)
+      both_post_read_post.mark_read(user)
+      both_read_post = create(:post)
+      both_read_post.mark_read(user)
+      both_read_post.board.mark_read(user)
+
+      login_as(user)
+      get :unread
+      expect(assigns(:posts)).to match_array([unread_post, post_unread_post, board_unread_post, both_unread_post, both_board_read_post])
     end
 
     context "opened" do
