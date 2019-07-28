@@ -43,8 +43,6 @@ class Gallery < ApplicationRecord
   }
   # rubocop:enable Style/TrailingCommaInArguments
 
-  acts_as_taggable_on :gallery_groups
-
   # Converts the internal [{'f1' => id, 'f2' => name}] structure of the retrieved data
   # to [{id => id, name => name}]
   def gallery_groups_data
