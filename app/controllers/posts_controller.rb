@@ -446,7 +446,10 @@ class PostsController < WritableController
       :character_alias_id,
       :authors_locked,
       :audit_comment,
-      :private_note
+      :private_note,
+      :settings_list,
+      :labels_list,
+      :content_warnings_list,
     ]
 
     # prevents us from setting (and saving) associations on preview()
