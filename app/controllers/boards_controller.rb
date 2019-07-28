@@ -121,7 +121,7 @@ class BoardsController < ApplicationController
         board.mark_read(current_user)
         read_time = board.last_read(current_user)
         post_views = PostView.joins(post: :board).where(user: current_user, boards: {id: board.id})
-        post_views.update_all(read_at: read_time, updated_at: read_time)
+        post_views.update_all(read_at: read_time, updated_at: read_time) # rubocop:disable Rails/SkipsModelValidations
       end
       flash[:success] = "#{board.name} marked as read."
     elsif params[:commit] == "Hide from Unread"
