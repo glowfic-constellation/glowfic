@@ -4,9 +4,11 @@ class MigrateTags < ActiveRecord::Migration[5.2]
     post_tags = PostTag.where(tag_id: tag_ids)
     post_ids = post_tags.select(:post_id).distinct.pluck(:post_id)
     Tag.transaction do
-      Post.where(:id: post_ids).each do |post|
-        post.labels_list = post.labels.map(&:name)
-        post.content_warnings_list = post.content_warnings.map(&:name)
+      Post.where(id: post_ids).each do |post|
+        local_ids = post_tags.where(post: post).pluck(:tag_id)
+        post.label_list = Label.where(id: local_ids).pluck(:name)
+        post.content_warning_list = ContentWarning.where(id: local_ids).pluck(:name)
+        post.save!
       end
       post_tags.destroy_all
       Tag.where(id: tag_ids).destroy_all
