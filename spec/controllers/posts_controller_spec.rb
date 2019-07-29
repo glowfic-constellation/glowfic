@@ -2666,6 +2666,11 @@ RSpec.describe PostsController do
       both_read_post.mark_read(user)
       both_read_post.board.mark_read(user)
 
+      # board ignored
+      board_ignored = create(:post)
+      board_ignored.mark_read(user, both_unread_post.created_at - 1.second, true)
+      board_ignored.board.ignore(user)
+
       login_as(user)
       get :unread
       expect(assigns(:posts)).to match_array([unread_post, post_unread_post, board_unread_post, both_unread_post, both_board_read_post])
