@@ -23,6 +23,8 @@ plugins:
   rubocop:
     enabled: true
     channel: rubocop-0-80
+  sass-lint:
+    enabled: true
 checks:
   return-statements:
     config:
