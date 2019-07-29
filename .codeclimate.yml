@@ -18,6 +18,8 @@ plugins:
     channel: eslint-6
   fixme:
     enabled: true
+  haml-lint:
+    enabled: true
   rubocop:
     enabled: true
     channel: rubocop-0-80
