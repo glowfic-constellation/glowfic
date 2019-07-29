@@ -49,11 +49,12 @@ class PostsController < WritableController
     # I am so very sorry I cannot make this more legible. I blame Rails? Posts are unread when:
     #   post view does not exist and (board view does not exist or post has updated since non-ignored board view read_at)
     #   or
-    #   post view exists and post has updated since non-ignored post view read_at
+    #   post view exists and post has updated since non-ignored post view read_at and (board view does not exist or is not ignored)
     @posts = @posts.where("(\
       post_views.user_id IS NULL AND (\
         board_views.user_id IS NULL OR ((board_views.read_at IS NULL OR (date_trunc('second', board_views.read_at) < date_trunc('second', posts.tagged_at))) AND board_views.ignored = '0')))\
       OR (post_views.user_id IS NOT NULL AND (\
+        board_views.user_id IS NULL OR board_views.ignored = '0') AND (\
         (post_views.read_at IS NULL OR (date_trunc('second', post_views.read_at) < date_trunc('second', posts.tagged_at))) AND post_views.ignored = '0'))")
 
     @posts = posts_from_relation(@posts.ordered, with_pagination: false)
