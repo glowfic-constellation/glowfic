@@ -8,9 +8,13 @@ class MigrateTags < ActiveRecord::Migration[5.2]
         ActsAsTaggableOn::Tag.create!(name: tag.name, created_at: tag.created_at, updated_at: tag.updated_at)
       end
       Post.where(id: post_ids).each do |post|
-        local_ids = post_tags.where(post: post).pluck(:tag_id)
-        post.label_list = Label.where(id: local_ids).pluck(:name)
-        post.content_warning_list = ContentWarning.where(id: local_ids).pluck(:name)
+        local_tags = post_tags.where(post: post).pluck(:tag_id)
+        local_ids.each do |tag_id|
+          tag = Tag.where(id: tag_id)
+          type = tag.is_a?(Label) ? :labels : :content_warnings
+          user = tag.posts.order(created_at: :asc, id: :asc).first == post ? tag.user : post.user
+          user.tag(post, with: tag.name, on: type, skip_save: true)
+        end
         post.save!
       end
       post_tags.destroy_all
