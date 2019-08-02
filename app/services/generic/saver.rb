@@ -1,5 +1,6 @@
-class Generic::Saver < Object
+class Generic::Saver < Generic::Service
   def initialize(model, user:, params:, allowed_params: [])
+    super
     @user = user
     @params = params
     @model = model
@@ -8,7 +9,7 @@ class Generic::Saver < Object
 
   def perform
     build
-    save!
+    save
   end
 
   alias_method :create!, :perform
@@ -20,8 +21,11 @@ class Generic::Saver < Object
     @model.assign_attributes(permitted_params)
   end
 
-  def save!
-    @model.save!
+  def save
+    unless @model.save
+      @errors.add(:base, "Your #{model.class.name} could not be saved because of the following errors:")
+      @errors.merge!(@model.errors)
+    end
   end
 
   def permitted_params
