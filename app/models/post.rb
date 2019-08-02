@@ -2,7 +2,7 @@ class Post < ApplicationRecord
   include Concealable
   include Orderable
   include Owable
-  include PgSearch
+  include PgSearch::Model
   include Presentable
   include Viewable
   include Writable
