@@ -26,7 +26,7 @@ RSpec.describe ApplicationHelper do
 
     it "removes unpermitted elements" do
       text = '<b>test</b> <script type="text/javascript">alert("bad!");</script> <p>text</p>'
-      expect(helper.sanitize_simple_link_text(text)).to eq('test alert("bad!");  text ')
+      expect(helper.sanitize_simple_link_text(text)).to eq('test   text ')
     end
 
     it "fixes unending tags" do
@@ -88,7 +88,7 @@ RSpec.describe ApplicationHelper do
       it "removes unpermitted elements" do
         text = '<b>test</b> <script type="text/javascript">alert("bad!");</script> <p>text</p>'
         result = helper.sanitize_written_content(text)
-        expect(result).to eq('<b>test</b> alert("bad!"); <p>text</p>')
+        expect(result).to eq('<b>test</b>  <p>text</p>')
         expect(result).to be_html_safe
       end
 
@@ -147,7 +147,7 @@ RSpec.describe ApplicationHelper do
         expect(helper.sanitize_written_content(text)).to eq(expected)
 
         text = "line1\n\n\n\nline2"
-        expected = "<p>line1</p>\n\n<p>\u00A0</p>\n\n<p>line2</p>" # U+00A0 is NBSP
+        expected = "<p>line1</p>\n\n<p>&nbsp;</p>\n\n<p>line2</p>" # U+00A0 is NBSP
         expect(helper.sanitize_written_content(text)).to eq(expected)
       end
 
