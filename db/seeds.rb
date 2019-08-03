@@ -5,409 +5,76 @@
 puts "Seeding database..."
 
 puts "Creating users..."
-marri = User.create(username: 'Marri', password: 'nikari', email: "dummy1@example.com", default_editor: 'html', unread_opened: true,
+marri = User.create!(username: 'Marri', password: 'nikari', email: "dummy1@example.com", default_editor: 'html', unread_opened: true,
                     role_id: 1, default_view: 'list', layout: 'starrylight', moiety_name: 'Red', moiety: 'AA0000', hide_warnings: true,
                     ignore_unread_daily_report: true, visible_unread: true)
-alicorn = User.create(username: 'Alicorn', password: 'alicorn', email: "dummy2@example.com")
-kappa = User.create(username: 'Kappa', password: 'pythbox', email: "dummy3@example.com")
-aestrix = User.create(username: 'Aestrix', password: 'aestrix', email: "dummy4@example.com")
-throne = User.create(username: 'Throne3d', password: 'throne3d', email: "dummy5@example.com", role_id: 2)
+alicorn = User.create!(username: 'Alicorn', password: 'alicorn', email: "dummy2@example.com")
+kappa = User.create!(username: 'Kappa', password: 'pythbox', email: "dummy3@example.com")
+aestrix = User.create!(username: 'Aestrix', password: 'aestrix', email: "dummy4@example.com")
+throne = User.create!(username: 'Throne3d', password: 'throne3d', email: "dummy5@example.com", role_id: 2)
+teceler = User.create!(username: 'Teceler', password: 'teceler', email: "dummy6@example.com", role_id: 2, default_editor: 'html',
+                    layout: 'starrydark', ignore_unread_daily_report: true)
+
+User.update_all(tos_version: 20181109)
 
 puts "Creating avatars..."
 Icon.create!([
   { user_id: 1, url: "https://pbs.twimg.com/profile_images/482603626/avatar.png", keyword: "avatar" },
   { user_id: 2, url: "https://33.media.tumblr.com/avatar_ddf517a261d8_64.png", keyword: "avatar" },
-  { user_id: 3, url: "http://i.imgur.com/OJSBRcp.jpg", keyword: "avatar" },
+  { user_id: 3, url: "https://i.imgur.com/OJSBRcp.jpg", keyword: "avatar" },
   { user_id: 5, url: "https://i.imgur.com/7aXnrK1.jpg", keyword: "avatar" },
+  { user_id: 6, url: "https://i.imgur.com/WA1r2Fu.png", keyword: "avatar" },
 ])
-marri.update(avatar_id: 1)
-alicorn.update(avatar_id: 2)
-kappa.update(avatar_id: 3)
-throne.update(avatar_id: 4)
+marri.update!(avatar_id: 1)
+alicorn.update!(avatar_id: 2)
+kappa.update!(avatar_id: 3)
+throne.update!(avatar_id: 4)
+teceler.update!(avatar_id: 5)
 
 puts "Creating continuities..."
 Board.create!([
   { name: 'Effulgence', creator: alicorn, coauthors: [kappa] },
-  { name: 'Incandescence', creator: alicorn, coauthors: [aestrix] },
-  { name: 'Pixiethreads', creator: kappa, coauthors: [aestrix] },
-  { name: 'Site testing', creator: marri },
-  { name: 'Sandboxes', creator: marri, pinned: true },
   { name: 'Witchlight', creator: alicorn, coauthors: [marri] },
+  { name: 'Sandboxes', creator: marri, pinned: true },
+  { name: 'Site testing', creator: marri },
+  { name: 'Pixiethreads', creator: kappa, coauthors: [aestrix] },
+  { name: 'Incandescence', creator: alicorn, coauthors: [aestrix] },
+])
+
+puts "Creating sections..."
+BoardSection.create!([
+  { board_id: 1, name: "make a wish", status: 1, section_order: 0 },
+  { board_id: 1, name: "hexes", status: 1, section_order: 1 },
+  { board_id: 1, name: "parable of the talents", status: 1, section_order: 2 },
+  { board_id: 1, name: "golden opportunity", status: 0, section_order: 3 },
 ])
 
 puts "Creating icons..."
-Icon.create!([
-  { user_id: 1, url: "http://v.dreamwidth.org/8101920/2295419", keyword: "a2" },
-  { user_id: 1, url: "http://v.dreamwidth.org/8465698/2338276", keyword: "a4" },
-  { user_id: 1, url: "http://v.dreamwidth.org/8063783/2291446", keyword: "e1" },
-  { user_id: 1, url: "http://v.dreamwidth.org/8459269/2337418", keyword: "e1" },
-  { user_id: 1, url: "http://v.dreamwidth.org/8460178/2337418", keyword: "e9" },
-  { user_id: 1, url: "http://v.dreamwidth.org/8462163/2337902", keyword: "j1" },
-  { user_id: 1, url: "http://v.dreamwidth.org/8060553/2291089", keyword: "j2" },
-  { user_id: 1, url: "http://v.dreamwidth.org/8988325/2394070", keyword: "bill" },
-  { user_id: 1, url: "http://v.dreamwidth.org/8568635/2350190", keyword: "cass" },
-  { user_id: 2, url: "http://v.dreamwidth.org/5889914/1988465", keyword: "j ~ sigh" },
-  { user_id: 2, url: "http://v.dreamwidth.org/5889919/1988465", keyword: "h ~ pealing" },
-  { user_id: 2, url: "http://v.dreamwidth.org/6358255/2040974", keyword: "d ~ pup" },
-  { user_id: 2, url: "http://v.dreamwidth.org/6358249/2040974", keyword: "o ~ floof" },
-  { user_id: 2, url: "http://v.dreamwidth.org/5440994/1871004", keyword: "h ~ hello" },
-  { user_id: 2, url: "http://v.dreamwidth.org/8424439/2333826", keyword: "d-h ~ tiag" },
-  { user_id: 2, url: "http://v.dreamwidth.org/8424430/2333826", keyword: "g-c ~ longdark" },
-  { user_id: 2, url: "http://v.dreamwidth.org/8006030/2286092", keyword: "f ~ hauteur" },
-  { user_id: 2, url: "http://v.dreamwidth.org/8006031/2286092", keyword: "l ~ conspicuous" },
-  { user_id: 2, url: "http://v.dreamwidth.org/8006033/2286092", keyword: "m ~ precocious" },
-  { user_id: 2, url: "http://v.dreamwidth.org/8006038/2286092", keyword: "j ~ half-dozen" },
-  { user_id: 2, url: "http://v.dreamwidth.org/8187172/2286092", keyword: "e ~ engineer" },
-  { user_id: 2, url: "http://v.dreamwidth.org/5992507/1999481", keyword: "e ~ grayscale" },
-  { user_id: 2, url: "http://v.dreamwidth.org/5992475/1999481", keyword: "h ~ headscratch" },
-  { user_id: 2, url: "http://v.dreamwidth.org/7500533/2171701", keyword: "f ~ tell her later" },
-  { user_id: 2, url: "http://v.dreamwidth.org/7500541/2171701", keyword: "b ~ better it's not me" },
-  { user_id: 2, url: "http://v.dreamwidth.org/5690914/1965156", keyword: "i ~ empress" },
-  { user_id: 2, url: "http://v.dreamwidth.org/5690921/1965156", keyword: "f ~ attention" },
-  { user_id: 2, url: "http://v.dreamwidth.org/5778459/1975813", keyword: "aiua" },
-  { user_id: 2, url: "http://v.dreamwidth.org/5778470/1975813", keyword: "dreamcatcher" },
-  { user_id: 2, url: "http://v.dreamwidth.org/5778471/1975813", keyword: "fractal" },
-  { user_id: 2, url: "http://v.dreamwidth.org/5778472/1975813", keyword: "jewel" },
-  { user_id: 2, url: "http://v.dreamwidth.org/5778474/1975813", keyword: "map" },
-  { user_id: 2, url: "http://v.dreamwidth.org/6074344/2006764", keyword: "pearls" },
-  { user_id: 2, url: "http://v.dreamwidth.org/6074349/2006764", keyword: "lock" },
-  { user_id: 2, url: "http://v.dreamwidth.org/6074351/2006764", keyword: "frown" },
-  { user_id: 2, url: "http://v.dreamwidth.org/7501074/2171749", keyword: "it's just my name" },
-  { user_id: 2, url: "http://v.dreamwidth.org/7501071/2171749", keyword: "irrepressible" },
-  { user_id: 2, url: "http://v.dreamwidth.org/4737274/1721567", keyword: "c ~ relaxed" },
-  { user_id: 2, url: "http://v.dreamwidth.org/4737270/1721567", keyword: "h ~ calm" },
-  { user_id: 2, url: "http://v.dreamwidth.org/5862192/1984090", keyword: "l ~ dweomer" },
-  { user_id: 2, url: "http://v.dreamwidth.org/5862196/1984090", keyword: "d ~ invocation" },
-  { user_id: 2, url: "http://v.dreamwidth.org/5862202/1984090", keyword: "c ~ divination" },
-  { user_id: 2, url: "http://v.dreamwidth.org/5862203/1984090", keyword: "g ~ cantrip" },
-  { user_id: 3, url: "http://v.dreamwidth.org/705251/680300", keyword: "== come all the same" },
-  { user_id: 3, url: "http://v.dreamwidth.org/3907575/680300", keyword: "<= one point eight seconds" },
-  { user_id: 3, url: "http://v.dreamwidth.org/933538/1081151", keyword: "== at home in the dark and the quiet" },
-  { user_id: 3, url: "http://v.dreamwidth.org/933539/1081151", keyword: "== off to a good start" },
-  { user_id: 3, url: "http://v.dreamwidth.org/933541/1081151", keyword: "<= what a novel concept" },
-  { user_id: 3, url: "http://v.dreamwidth.org/933543/1081151", keyword: ">= I respectfully decline to give a shit" },
-  { user_id: 3, url: "http://v.dreamwidth.org/933545/1081151", keyword: "!= not inclined to argue" },
-  { user_id: 3, url: "http://v.dreamwidth.org/933546/1081151", keyword: "!= like a bolt of lightning" },
-  { user_id: 3, url: "http://v.dreamwidth.org/933547/1081151", keyword: "!= absolute freedom of thought" },
-  { user_id: 3, url: "http://v.dreamwidth.org/933548/1081151", keyword: "<= improvising on the violin" },
-  { user_id: 3, url: "http://v.dreamwidth.org/933559/1081151", keyword: "== an extremity of idleness" },
-  { user_id: 3, url: "http://v.dreamwidth.org/933560/1081151", keyword: ">= contemplating violence" },
-  { user_id: 3, url: "http://v.dreamwidth.org/933561/1081151", keyword: "<= what is my name?" },
-  { user_id: 3, url: "http://v.dreamwidth.org/933562/1081151", keyword: ">= that is a fucking stupid idea" },
-  { user_id: 3, url: "http://v.dreamwidth.org/933564/1081151", keyword: "== come all the same" },
-  { user_id: 3, url: "http://v.dreamwidth.org/933567/1081151", keyword: "<= captures my attention" },
-  { user_id: 3, url: "http://v.dreamwidth.org/933594/1081151", keyword: ">= I am not okay" },
-  { user_id: 3, url: "http://v.dreamwidth.org/4108690/1662196", keyword: "⑻ out of the doorway" },
-  { user_id: 3, url: "http://v.dreamwidth.org/4108746/1662196", keyword: "⑵ extraordinarily nice" },
-  { user_id: 3, url: "http://v.dreamwidth.org/9505838/2439464", keyword: "8. i can help" },
-  { user_id: 3, url: "http://v.dreamwidth.org/9505761/2439464", keyword: "1. on the wing" },
-  { user_id: 3, url: "http://v.dreamwidth.org/9505851/2439464", keyword: "b. not enough" },
-  { user_id: 3, url: "http://v.dreamwidth.org/9506389/2439464", keyword: "6. let me see" },
-  { user_id: 3, url: "http://v.dreamwidth.org/9506871/2439464", keyword: "c. purposeless" },
-  { user_id: 3, url: "http://v.dreamwidth.org/2487411/1513235", keyword: "⑻ nothing in his pockets" },
-  { user_id: 3, url: "http://v.dreamwidth.org/2493091/1513235", keyword: "⑼ the store by the dungeon" },
-  { user_id: 3, url: "http://v.dreamwidth.org/2493097/1513235", keyword: "⑷ coral is far more red" },
-  { user_id: 3, url: "http://v.dreamwidth.org/755826/706192", keyword: "# extremely unobtrusive" },
-  { user_id: 3, url: "http://v.dreamwidth.org/755828/706192", keyword: "# user input" },
-  { user_id: 3, url: "http://v.dreamwidth.org/755829/706192", keyword: "^ hermes" },
-  { user_id: 3, url: "http://v.dreamwidth.org/755830/706192", keyword: "_ pluto" },
-  { user_id: 3, url: "http://v.dreamwidth.org/755831/706192", keyword: "^ thoth" },
-  { user_id: 3, url: "http://v.dreamwidth.org/755832/706192", keyword: "^ iris" },
-  { user_id: 3, url: "http://v.dreamwidth.org/755833/706192", keyword: "@ muninn" },
-  { user_id: 3, url: "http://v.dreamwidth.org/755834/706192", keyword: "@ horus" },
-  { user_id: 3, url: "http://v.dreamwidth.org/755836/706192", keyword: "_ hades" },
-  { user_id: 3, url: "http://v.dreamwidth.org/755838/706192", keyword: "^ seshet" },
-  { user_id: 3, url: "http://v.dreamwidth.org/755840/706192", keyword: "@ argus" },
-  { user_id: 3, url: "http://v.dreamwidth.org/7736384/2245494", keyword: "⑧ watchful eyes" },
-  { user_id: 3, url: "http://v.dreamwidth.org/7734791/2245494", keyword: "⑩ in silence" },
-  { user_id: 3, url: "http://v.dreamwidth.org/7735101/2245494", keyword: "① more delight" },
-  { user_id: 3, url: "http://v.dreamwidth.org/8011911/2286305", keyword: "⑤ miles" },
-  { user_id: 3, url: "http://v.dreamwidth.org/8007971/2286305", keyword: "③ inspiring" },
-  { user_id: 3, url: "http://v.dreamwidth.org/8265361/2312658", keyword: "8. display" },
-  { user_id: 3, url: "http://v.dreamwidth.org/8261995/2312658", keyword: "6. reflection" },
-  { user_id: 3, url: "http://v.dreamwidth.org/8265330/2312658", keyword: "7. derive" },
-  { user_id: 3, url: "http://v.dreamwidth.org/8579355/2312660", keyword: "a. what they're made of" },
-  { user_id: 3, url: "http://v.dreamwidth.org/8586799/2312660", keyword: "7. any part of life" },
-  { user_id: 3, url: "http://v.dreamwidth.org/8579078/2312659", keyword: "1. the sun is still a rumour" },
-  { user_id: 3, url: "http://v.dreamwidth.org/8579091/2312659", keyword: "9. overwhelmed by everything" },
-  { user_id: 1, url: "http://v.dreamwidth.org/8642359/2357326", keyword: "laughing" },
-  { user_id: 1, url: "http://v.dreamwidth.org/8060718/2291089", keyword: "sad" },
-  { user_id: 1, url: "http://v.dreamwidth.org/9756024/2464861", keyword: "suuure" },
-  { user_id: 1, url: "http://v.dreamwidth.org/8121332/2297261", keyword: "pleased" },
-])
+load Rails.root.join('db', 'seeds', 'icon.rb')
 
 puts "Creating templates..."
-Template.create!([
-  { user_id: 1, name: "Alli" },
-  { user_id: 1, name: "Emma" },
-  { user_id: 2, name: "Bell" },
-  { user_id: 3, name: "Sherlock" },
-  { user_id: 1, name: "Jenny" },
-  { user_id: 3, name: "Joker" },
-  { user_id: 1, name: "Vivian" },
-  { user_id: 2, name: "Alex" },
-  { user_id: 2, name: "Olympian" },
-  { user_id: 3, name: "Mark" },
-  { user_id: 3, name: "Miles" },
-  { user_id: 2, name: "Elspeth" }
-])
-
-puts "Creating characters..."
-Character.create!([
-  { user_id: 1, name: "Cass Cutler", screenname: "undercover_talent", default_icon_id: 13, pb: "Michelle Rodriguez" },
-  { user_id: 1, name: "Alli Kowalski", screenname: "witch_perfect", template_id: 1, default_icon_id: 6, pb: "Alexandra Daddario" },
-  { user_id: 1, name: "Alli Kowalski", screenname: "witch_please", template_id: 1, default_icon_id: 5, pb: "Alexandra Daddario" },
-  { user_id: 1, name: "Emma Miller Anderson", template_name: "Anderson", screenname: "ipsam_custodem", template_id: 2, default_icon_id: 8, pb: "Shailene Woodley" },
-  { user_id: 1, name: "Emma Mason", template_name: "Mason", screenname: "parental_guidance", template_id: 2, default_icon_id: 7, pb: "Shailene Woodley" },
-  { user_id: 1, name: "Genevieve O'Meara", template_name: "O'Meara", screenname: "metamorphmaga", template_id: 5, default_icon_id: 11, pb: "Christina Aguilera" },
-  { user_id: 1, name: "Jenny Marino", template_name: "Jenny", screenname: "bright_and_beautiful", template_id: 5, default_icon_id: 10, pb: "Christina Aguilera" },
-  { user_id: 1, name: "Eleanor Miller", pb: "Diane Lane" },
-  { user_id: 1, name: "William Miller", screenname: "hidebound", default_icon_id: 12, pb: "George Newbern" },
-  { user_id: 2, name: "Elspeth Annarose Cullen", template_name: "Elspeth", screenname: "her_imperial_radiance", template_id: 12, default_icon_id: 18, pb: "Astrid Bergès-Frisbey" },
-  { user_id: 3, name: "Sherlock Holmes", screenname: "calendarofcrime", template_id: 4, default_icon_id: 58, pb: "Hayley Atwell" },
-  { user_id: 2, name: "Holly / Crystal", screenname: "inourhead", default_icon_id: 19, pb: "Aisha Dee" },
-  { user_id: 2, name: "Jane", screenname: "mind_game", default_icon_id: 32 },
-  { user_id: 2, name: "Aleko Fylt Swan Ardelay | \"Ko\"", template_name: "Aleko", screenname: "liakoura", template_id: 8, default_icon_id: 28, pb: "Dylan O'Brien" },
-  { user_id: 2, name: "Alexandra Phyllis Swan | \"Lexi\"", template_name: "Lexi", screenname: "lexicality", template_id: 8, default_icon_id: 26, pb: "Christie Burke" },
-  { user_id: 2, name: "Alexandra Phyllis Swan | \"Andi\"", template_name: "Andi", screenname: "pandion", template_id: 8, default_icon_id: 39, pb: "Christie Burke" },
-  { user_id: 2, name: "Zeus Bartholomew Norton", screenname: "floofcoaster", template_id: 9, default_icon_id: 16 },
-  { user_id: 2, name: "Patience Frothen", screenname: "salt_of_the", template_id: 9, default_icon_id: 40 },
-  { user_id: 3, name: "Alice", screenname: "edgeofyourseat", template_id: 6, default_icon_id: 65, pb: "Heath Ledger" },
-  { user_id: 3, name: "Sherlock Holmes", screenname: "bitofafiction", template_id: 4, default_icon_id: 48, pb: "Robert Downey Jr" },
-  { user_id: 3, name: "Solvei Koskin", template_name: "Solvei", screenname: "gloriousdawn", template_id: 11, default_icon_id: 67, pb: "Rosario Dawson" },
-  { user_id: 3, name: "Jarvis", screenname: "poeticterms" },
-  { user_id: 3, name: "Pyth", screenname: "pythbox", default_icon_id: 3 },
-  { user_id: 3, name: "Sigyn", template_name: "Sigyn", screenname: "thevictorious", template_id: 10, default_icon_id: 86, pb: "Willy Cartier" },
-  { user_id: 1, name: "Alianora of Toure-on-Marsh", template_name: "Alianora", screenname: "raging_firewitch", template_id: 1, default_icon_id: 100, pb: "Darby Stanchfield" },
-  { user_id: 3, name: "Mark Pierre Vorkosigan", template_name: "Mark", screenname: "unmarred", template_id: 10, default_icon_id: 91, pb: "Sebastian Stan" },
-  { user_id: 3, name: "Miles Naismith Vorkosigan", template_name: "Miles", screenname: "thisvorlunatic", template_id: 11, default_icon_id: 89, pb: "Sebastian Stan" },
-  { user_id: 2, name: "Linyabel Miriat ⍟ \"Linya\"", template_name: "Linya", screenname: "isthisart", template_id: 3, default_icon_id: 21, pb: "Kristen Stewart" },
-  { user_id: 2, name: "Isabella Marie Swan Ø \"Pattern\"", template_name: "Pattern", screenname: "bellfounding", template_id: 3, default_icon_id: 14, pb: "Kristen Stewart" },
-  { user_id: 2, name: "Isabella Marie Swan Cullen ☼ \"Golden\"", template_name: "Golden", screenname: "luminous_regnant", template_id: 3, default_icon_id: 30, pb: "Kristen Stewart" },
-  { user_id: 2, name: "Isabella Marie Swan ✴ \"Stella\"", template_name: "Stella", screenname: "self_composed", template_id: 3, default_icon_id: 42, pb: "Kristen Stewart" },
-  { user_id: 2, name: "Isabella Mariel Swan ∀ \"Glass\"", template_name: "Glass", screenname: "thaumobabble", template_id: 3, default_icon_id: 47, pb: "Kristen Stewart" },
-  { user_id: 3, name: "Jokes", screenname: "manofmyword", template_id: 6, default_icon_id: 72, pb: "Heath Ledger" }
-])
-
-puts "Creating character aliases..."
-CharacterAlias.create!([
-  { character_id: 6, name: "Jenny O'Meara", created_at: "2018-03-14 22:43:02", updated_at: "2018-03-14 22:43:02" },
-  { character_id: 19, name: "Laney", created_at: "2018-03-14 22:53:03", updated_at: "2018-03-14 22:53:03" },
-  { character_id: 19, name: "Whistle", created_at: "2018-03-14 22:53:17", updated_at: "2018-03-14 22:53:17" }
-])
+load Rails.root.join('db', 'seeds', 'character.rb')
 
 puts "Creating galleries..."
-Gallery.create!([
-  { user_id: 1, name: "Alli" },
-  { user_id: 1, name: "Emma - Shailene Woodley" },
-  { user_id: 1, name: "Emma - Shailene Woodley (Short Hair)" },
-  { user_id: 1, name: "Jenny" },
-  { user_id: 2, name: "bellfounding" },
-  { user_id: 2, name: "floofcoaster" },
-  { user_id: 2, name: "her_imperial_radiance" },
-  { user_id: 2, name: "inourhead" },
-  { user_id: 2, name: "isthisart" },
-  { user_id: 2, name: "lexicality" },
-  { user_id: 2, name: "liakoura" },
-  { user_id: 2, name: "luminous_regnant" },
-  { user_id: 2, name: "mind_game" },
-  { user_id: 2, name: "pandion" },
-  { user_id: 2, name: "salt_of_the" },
-  { user_id: 2, name: "self_composed" },
-  { user_id: 2, name: "thaumobabble" },
-  { user_id: 3, name: "bitofafiction" },
-  { user_id: 3, name: "calendarofcrime" },
-  { user_id: 3, name: "edgeofyourseat" },
-  { user_id: 3, name: "gloriousdawn" },
-  { user_id: 3, name: "manofmyword" },
-  { user_id: 3, name: "poeticterms" },
-  { user_id: 3, name: "thevictorious" },
-  { user_id: 3, name: "thisvorlunatic" },
-  { user_id: 3, name: "unmarred" },
-  { user_id: 3, name: "unmired" },
-  { user_id: 3, name: "unmirrored" }
-])
+load Rails.root.join('db', 'seeds', 'gallery.rb')
 
-puts "Assigning galleries to characters..."
-CharactersGallery.create!([
-  { character_id: 5, gallery_id: 2 },
-  { character_id: 4, gallery_id: 2, section_order: 0 },
-  { character_id: 4, gallery_id: 3, section_order: 1 },
-  { character_id: 7, gallery_id: 4 },
-  { character_id: 3, gallery_id: 1 },
-  { character_id: 6, gallery_id: 4 },
-  { character_id: 2, gallery_id: 1 },
-  { character_id: 25, gallery_id: 1 },
-  { character_id: 29, gallery_id: 5 },
-  { character_id: 17, gallery_id: 6 },
-  { character_id: 10, gallery_id: 7 },
-  { character_id: 12, gallery_id: 8 },
-  { character_id: 28, gallery_id: 9 },
-  { character_id: 15, gallery_id: 10 },
-  { character_id: 14, gallery_id: 11 },
-  { character_id: 30, gallery_id: 12 },
-  { character_id: 13, gallery_id: 13 },
-  { character_id: 16, gallery_id: 14 },
-  { character_id: 18, gallery_id: 15 },
-  { character_id: 31, gallery_id: 16 },
-  { character_id: 32, gallery_id: 17 },
-  { character_id: 20, gallery_id: 18 },
-  { character_id: 11, gallery_id: 19 },
-  { character_id: 19, gallery_id: 20 },
-  { character_id: 21, gallery_id: 21 },
-  { character_id: 22, gallery_id: 23 },
-  { character_id: 24, gallery_id: 24 },
-  { character_id: 27, gallery_id: 25 },
-  { character_id: 33, gallery_id: 22 },
-  { character_id: 26, gallery_id: 26, section_order: 0, added_by_group: true },
-  { character_id: 26, gallery_id: 27, section_order: 1, added_by_group: true },
-  { character_id: 26, gallery_id: 28, section_order: 2, added_by_group: true },
-])
+puts "Creating posts..."
+load Rails.root.join('db', 'seeds', 'post.rb')
 
-puts "Populating galleries with icons..."
-GalleriesIcon.create!([
-  { icon_id: 5, gallery_id: 1 },
-  { icon_id: 6, gallery_id: 1 },
-  { icon_id: 7, gallery_id: 2 },
-  { icon_id: 8, gallery_id: 3 },
-  { icon_id: 9, gallery_id: 3 },
-  { icon_id: 11, gallery_id: 4 },
-  { icon_id: 14, gallery_id: 5 },
-  { icon_id: 15, gallery_id: 5 },
-  { icon_id: 16, gallery_id: 6 },
-  { icon_id: 17, gallery_id: 6 },
-  { icon_id: 18, gallery_id: 7 },
-  { icon_id: 19, gallery_id: 8 },
-  { icon_id: 20, gallery_id: 8 },
-  { icon_id: 21, gallery_id: 9 },
-  { icon_id: 22, gallery_id: 9 },
-  { icon_id: 23, gallery_id: 9 },
-  { icon_id: 24, gallery_id: 9 },
-  { icon_id: 25, gallery_id: 9 },
-  { icon_id: 26, gallery_id: 10 },
-  { icon_id: 27, gallery_id: 10 },
-  { icon_id: 28, gallery_id: 11 },
-  { icon_id: 29, gallery_id: 11 },
-  { icon_id: 30, gallery_id: 12 },
-  { icon_id: 31, gallery_id: 12 },
-  { icon_id: 32, gallery_id: 13 },
-  { icon_id: 33, gallery_id: 13 },
-  { icon_id: 34, gallery_id: 13 },
-  { icon_id: 35, gallery_id: 13 },
-  { icon_id: 36, gallery_id: 13 },
-  { icon_id: 37, gallery_id: 14 },
-  { icon_id: 38, gallery_id: 14 },
-  { icon_id: 39, gallery_id: 14 },
-  { icon_id: 40, gallery_id: 15 },
-  { icon_id: 41, gallery_id: 15 },
-  { icon_id: 42, gallery_id: 16 },
-  { icon_id: 43, gallery_id: 16 },
-  { icon_id: 44, gallery_id: 17 },
-  { icon_id: 45, gallery_id: 17 },
-  { icon_id: 46, gallery_id: 17 },
-  { icon_id: 47, gallery_id: 17 },
-  { icon_id: 48, gallery_id: 18 },
-  { icon_id: 49, gallery_id: 18 },
-  { icon_id: 50, gallery_id: 19 },
-  { icon_id: 51, gallery_id: 19 },
-  { icon_id: 52, gallery_id: 19 },
-  { icon_id: 53, gallery_id: 19 },
-  { icon_id: 54, gallery_id: 19 },
-  { icon_id: 55, gallery_id: 19 },
-  { icon_id: 56, gallery_id: 19 },
-  { icon_id: 57, gallery_id: 19 },
-  { icon_id: 58, gallery_id: 19 },
-  { icon_id: 59, gallery_id: 19 },
-  { icon_id: 60, gallery_id: 19 },
-  { icon_id: 61, gallery_id: 19 },
-  { icon_id: 62, gallery_id: 19 },
-  { icon_id: 63, gallery_id: 19 },
-  { icon_id: 64, gallery_id: 19 },
-  { icon_id: 65, gallery_id: 20 },
-  { icon_id: 66, gallery_id: 20 },
-  { icon_id: 67, gallery_id: 21 },
-  { icon_id: 68, gallery_id: 21 },
-  { icon_id: 69, gallery_id: 21 },
-  { icon_id: 70, gallery_id: 21 },
-  { icon_id: 71, gallery_id: 21 },
-  { icon_id: 72, gallery_id: 22 },
-  { icon_id: 73, gallery_id: 22 },
-  { icon_id: 74, gallery_id: 22 },
-  { icon_id: 75, gallery_id: 23 },
-  { icon_id: 76, gallery_id: 23 },
-  { icon_id: 77, gallery_id: 23 },
-  { icon_id: 78, gallery_id: 23 },
-  { icon_id: 79, gallery_id: 23 },
-  { icon_id: 80, gallery_id: 23 },
-  { icon_id: 81, gallery_id: 23 },
-  { icon_id: 82, gallery_id: 23 },
-  { icon_id: 83, gallery_id: 23 },
-  { icon_id: 84, gallery_id: 23 },
-  { icon_id: 85, gallery_id: 23 },
-  { icon_id: 86, gallery_id: 24 },
-  { icon_id: 87, gallery_id: 24 },
-  { icon_id: 88, gallery_id: 24 },
-  { icon_id: 89, gallery_id: 25 },
-  { icon_id: 90, gallery_id: 25 },
-  { icon_id: 91, gallery_id: 26 },
-  { icon_id: 92, gallery_id: 26 },
-  { icon_id: 93, gallery_id: 26 },
-  { icon_id: 94, gallery_id: 27 },
-  { icon_id: 95, gallery_id: 27 },
-  { icon_id: 96, gallery_id: 28 },
-  { icon_id: 97, gallery_id: 28 },
-  { icon_id: 98, gallery_id: 1 },
-  { icon_id: 101, gallery_id: 2 },
-  { icon_id: 99, gallery_id: 4 }
-])
+puts "Creating replies..."
+load Rails.root.join('db', 'seeds', 'reply.rb')
 
 puts "Creating tags..."
-GalleryGroup.create!([
-  { user_id: 3, name: "JokerSherlock (SS)", type: "GalleryGroup" }
-])
-Setting.create!([
-  { user_id: 3, name: "Earth", type: "Setting" },
-  { user_id: 3, name: "Sunnyverse", type: "Setting", owned: true },
-  { user_id: 3, name: "Nexus", type: "Setting" },
-  { user_id: 2, name: "Aurum", type: "Setting", owned: true },
-  { user_id: 2, name: "Harmonics", type: "Setting", owned: true },
-  { user_id: 2, name: "Quinn", type: "Setting" },
-  { user_id: 2, name: "Dreamward", type: "Setting", owned: true },
-  { user_id: 3, name: "Buffy", type: "Setting" }
-])
+load Rails.root.join('db', 'seeds', 'tag.rb')
 
-puts "Assigning tags to characters..."
-CharacterTag.create!([
-  { character_id: 19, tag_id: 2 },
-  { character_id: 20, tag_id: 3 },
-  { character_id: 22, tag_id: 2 },
-  { character_id: 27, tag_id: 4 },
-  { character_id: 26, tag_id: 4 },
-  { character_id: 21, tag_id: 2 },
-  { character_id: 33, tag_id: 2 },
-  { character_id: 26, tag_id: 1 },
-  { character_id: 10, tag_id: 5 },
-  { character_id: 14, tag_id: 7 },
-  { character_id: 15, tag_id: 2 },
-  { character_id: 16, tag_id: 2 },
-  { character_id: 30, tag_id: 5 },
-  { character_id: 31, tag_id: 2 },
-  { character_id: 28, tag_id: 4 },
-  { character_id: 12, tag_id: 8 },
-  { character_id: 17, tag_id: 5 },
-  { character_id: 18, tag_id: 7 }
-])
+puts "Creating audits..."
+load Rails.root.join('db', 'seeds', 'audit.rb')
 
-puts "Assigning tags to galleries..."
-GalleryTag.create!([
-  { gallery_id: 26, tag_id: 1 },
-  { gallery_id: 28, tag_id: 1 },
-  { gallery_id: 27, tag_id: 1 }
-])
-
-puts "Attaching settings to each other..."
-TagTag.create!([
-  { tagged_id: 3, tag_id: 9 },
-  { tagged_id: 9, tag_id: 2 },
-  { tagged_id: 5, tag_id: 2 }
+puts "Creating messages..."
+Message.create!([
+  { sender_id: 0, recipient_id: 3, subject: "Post import succeeded",
+    message: "Your post was successfully imported! <a href='https://localhost:3000/posts/86'>View it here</a>.", unread: false },
+  { sender_id: 1, recipient_id: 3, subject: "Test Message", message: "Sample text" },
+  { sender_id: 3, recipient_id: 1, parent_id: 2, message: "Sample reply", unread: false },
+  { sender_id: 1, recipient_id: 3, parent_id: 2, message: "Sample reply 2" },
 ])

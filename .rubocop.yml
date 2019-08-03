@@ -5,8 +5,7 @@ AllCops:
   Exclude:
     - 'bin/*'
     - 'config/**/*'
-    - 'db/migrate/*'
-    - 'db/seeds.rb'
+    - 'db/**/*'
     - 'spec/spec_helper.rb'
     - 'wraith/*'
 
