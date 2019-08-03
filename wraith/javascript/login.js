@@ -1,6 +1,6 @@
-module.exports = function (casper, ready) {
+module.exports = function(casper, ready) {
   if (casper.exists("#header-form")) {
-    casper.fill ( '#header-forms', {
+    casper.fill('#header-forms', {
       'username': 'Kappa',
       'password': 'pythbox'
     });
@@ -28,4 +28,4 @@ module.exports = function (casper, ready) {
   });
 
   casper.wait(5000, ready);
-}
+};
