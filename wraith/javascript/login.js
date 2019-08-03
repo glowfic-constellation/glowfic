@@ -9,7 +9,7 @@ module.exports = function(casper, ready) {
 
     casper.wait(100);
 
-    if (casper.getCurrentUrl() != casper.cli.get(0)) {
+    if (casper.getCurrentUrl() !== casper.cli.get(0)) {
       casper.thenOpen(casper.cli.get(0)); // redirect to original page
     }
   }
@@ -20,7 +20,7 @@ module.exports = function(casper, ready) {
         $(".time-loaded").hide();
       });
     }
-    if (casper.cli.get(3) == "[id=content]") {
+    if (casper.cli.get(3) === "[id=content]") {
       casper.evaluate(function() {
         $("#footer").hide();
       });

@@ -14,7 +14,7 @@ module.exports = function(casper, ready) {
         $(".time-loaded").hide();
       });
     }
-    if (casper.cli.get(3) == "[id=content]") {
+    if (casper.cli.get(3) === "[id=content]") {
       casper.evaluate(function() {
         $("#footer").hide();
       });
