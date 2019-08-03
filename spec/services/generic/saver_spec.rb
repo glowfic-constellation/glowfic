@@ -39,7 +39,7 @@ RSpec.describe Generic::Saver do
     params[:board] = { name: nil }
     saver = Generic::Saver.new(board, user: user, params: params, allowed_params: allowed)
     expect(saver.update).to eq(false)
-    expect(saver.errors.key?(:base)).to be(true)
-    expect(saver.errors.added?(:name, :blank)).to be(true)
+    expect(saver.error_message).not_to be_nil
+    expect(saver.model.errors.added?(:name, :blank)).to be(true)
   end
 end

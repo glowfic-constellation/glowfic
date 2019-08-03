@@ -1,4 +1,6 @@
 class Generic::Saver < Generic::Service
+  attr_reader :error_message
+
   def initialize(model, user:, params:, allowed_params: [])
     @user = user
     @params = params
@@ -23,12 +25,15 @@ class Generic::Saver < Generic::Service
 
   def save
     return true if @model.save
-    @errors.add(:base, "Your #{model.class.name.downcase} could not be saved because of the following errors:")
-    @errors.merge!(@model.errors)
+    @error_message = "Your #{model.class.name.downcase} could not be saved because of the following problems:"
     false
   end
 
   def permitted_params
     @params.fetch(@model.class.name.underscore.to_sym, {}).permit(@allowed)
+  end
+
+  def read_attribute_for_validation(attr)
+    @model.send(attr)
   end
 end

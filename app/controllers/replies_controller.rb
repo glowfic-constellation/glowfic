@@ -107,14 +107,14 @@ class RepliesController < WritableController
     if creater.create
       flash[:success] = "Posted!"
       redirect_to reply_path(@reply, anchor: "reply-#{@reply.id}")
-    elsif (creater.errors.details[:base].flat_map(&:values) & [:duplicate, :unseen]).present?
-      @allow_dupe = true if creater.errors.details[:base].include?(error: :duplicate)
-      flash[:error] = creater.errors[:base].first
+    elsif creater.has_any_error?([:duplicate, :unseen])
+      @allow_dupe = true if creater.has_error?(:duplicate)
+      flash[:error] = creater.error_message
       draft = make_draft
       preview(ReplyDraft.reply_from_draft(draft))
     else
       flash[:error] = {
-        message: "Your reply could not be saved because of the following problems:",
+        message: creater.error_message,
         array: @reply.errors.full_messages
       }
       redirect_to @reply.post ? post_path(@reply.post) : posts_path
@@ -143,11 +143,11 @@ class RepliesController < WritableController
       redirect_to reply_path(@reply, anchor: "reply-#{@reply.id}")
     else
       if updater.errors.key?(:audit_comment)
-        flash[:error] = updater.errors[:audit_comment].flat_map(&:values).first
+        flash[:error] = updater.error_message
       else
         flash[:error] = {
-          message: "Your reply could not be saved because of the following problems:",
-          array: updater.errors.full_messages
+          message: updater.error_message,
+          array: @reply.errors.full_messages
         }
       end
       editor_setup

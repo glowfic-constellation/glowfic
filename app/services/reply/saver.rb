@@ -14,7 +14,8 @@ class Reply::Saver < Auditable::Saver
       if @unseen_replies.present?
         @reply.post.mark_read(@user, @reply.post.read_time_for(@unseen_replies))
         num = @unseen_replies.count
-        @errors.add(:base, :unseen, message: "There #{'has'.pluralize(num)} been #{num} new #{'reply'.pluralize(num)} since you last viewed this post.")
+        @errors.add(:base, :unseen)
+        @error_message = "There #{'has'.pluralize(num)} been #{num} new #{'reply'.pluralize(num)} since you last viewed this post."
         return false
       end
 
@@ -22,7 +23,8 @@ class Reply::Saver < Auditable::Saver
         last_by_user = @reply.post.replies.where(user_id: @reply.user_id).ordered.last
         match_attrs = ['content', 'icon_id', 'character_id', 'character_alias_id']
         if last_by_user.present? && last_by_user.attributes.slice(*match_attrs) == @reply.attributes.slice(*match_attrs)
-          @errors.add(:base, :duplicate, message: "This looks like a duplicate. Did you attempt to post this twice? Please resubmit if this was intentional.")
+          @errors.add(:base, :duplicate)
+          @error_message = "This looks like a duplicate. Did you attempt to post this twice? Please resubmit if this was intentional."
           return false
         end
       end
