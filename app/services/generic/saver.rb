@@ -1,10 +1,10 @@
 class Generic::Saver < Generic::Service
   def initialize(model, user:, params:, allowed_params: [])
-    super
     @user = user
     @params = params
     @model = model
-    @allowed = allowed_params
+    @allowed = allowed_params if allowed_params.present?
+    super()
   end
 
   def perform
@@ -12,8 +12,8 @@ class Generic::Saver < Generic::Service
     save
   end
 
-  alias_method :create!, :perform
-  alias_method :update!, :perform
+  alias_method :create, :perform
+  alias_method :update, :perform
 
   private
 
@@ -22,10 +22,10 @@ class Generic::Saver < Generic::Service
   end
 
   def save
-    unless @model.save
-      @errors.add(:base, "Your #{model.class.name} could not be saved because of the following errors:")
-      @errors.merge!(@model.errors)
-    end
+    return true if @model.save
+    @errors.add(:base, "Your #{model.class.name.downcase} could not be saved because of the following errors:")
+    @errors.merge!(@model.errors)
+    false
   end
 
   def permitted_params

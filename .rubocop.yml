@@ -231,6 +231,9 @@ Rails/HelperInstanceVariable:
 
 Rails/SaveBang:
   Enabled: true
+  Exclude:
+    - app/services/**/*
+    - spec/services/**/*
 
 # read_attribute(:attr) and self[:attr] are no longer equivalent
 Rails/ReadWriteAttribute:

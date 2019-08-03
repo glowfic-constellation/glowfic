@@ -104,23 +104,20 @@ class RepliesController < WritableController
     @reply = Reply.new(user: current_user)
     creater = Reply::Saver.new(@reply, user: current_user, params: params)
 
-    begin
-      creater.create!
-    rescue DuplicateReplyError, UnseenRepliesError => e
-      @allow_dupe = true if e.class == DuplicateReplyError
-      flash[:error] = e.message
+    if creater.create
+      flash[:success] = "Posted!"
+      redirect_to reply_path(@reply, anchor: "reply-#{@reply.id}")
+    elsif (creater.errors.details[:base].flat_map(&:values) & [:duplicate, :unseen]).present?
+      @allow_dupe = true if creater.errors.details[:base].include?(error: :duplicate)
+      flash[:error] = creater.errors[:base].first
       draft = make_draft
       preview(ReplyDraft.reply_from_draft(draft))
-    rescue ActiveRecord::RecordInvalid
+    else
       flash[:error] = {
         message: "Your reply could not be saved because of the following problems:",
         array: @reply.errors.full_messages
       }
-      redirect_to posts_path unless @reply.post
-      redirect_to post_path(@reply.post)
-    else
-      flash[:success] = "Posted!"
-      redirect_to reply_path(@reply, anchor: "reply-#{@reply.id}")
+      redirect_to @reply.post ? post_path(@reply.post) : posts_path
     end
   end
 
@@ -141,22 +138,20 @@ class RepliesController < WritableController
     preview and return if params[:button_preview]
 
     updater = Reply::Saver.new(@reply, user: current_user, params: params)
-    begin
-      updater.update!
-    rescue NoModNoteError, ActiveRecord::RecordInvalid => e
-      if e.class == NoModNoteError
-        flash[:error] = e.message
+    if updater.update
+      flash[:success] = "Post updated"
+      redirect_to reply_path(@reply, anchor: "reply-#{@reply.id}")
+    else
+      if updater.errors.key?(:audit_comment)
+        flash[:error] = updater.errors[:audit_comment].flat_map(&:values).first
       else
         flash[:error] = {
           message: "Your reply could not be saved because of the following problems:",
-          array: @reply.errors.full_messages
+          array: updater.errors.full_messages
         }
       end
       editor_setup
       render :edit
-    else
-      flash[:success] = "Post updated"
-      redirect_to reply_path(@reply, anchor: "reply-#{@reply.id}")
     end
   end
 
@@ -228,15 +223,13 @@ class RepliesController < WritableController
   def make_draft(show_message=true)
     drafter = Reply::Drafter.new(params, user: current_user)
 
-    begin
-      drafter.save!
-    rescue ActiveRecord::RecordInvalid
+    if drafter.save
+      flash[:success] = "Draft saved!" if show_message
+    else
       flash[:error] = {
         message: "Your draft could not be saved because of the following problems:",
         array: drafter.draft.errors.full_messages
       }
-    else
-      flash[:success] = "Draft saved!" if show_message
     end
     drafter.draft
   end

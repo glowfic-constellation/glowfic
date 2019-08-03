@@ -4,7 +4,7 @@ class Reply::Saver < Auditable::Saver
     super
   end
 
-  def create!
+  def create
     build
 
     if @reply.post.present?
@@ -14,17 +14,21 @@ class Reply::Saver < Auditable::Saver
       if @unseen_replies.present?
         @reply.post.mark_read(@user, @reply.post.read_time_for(@unseen_replies))
         num = @unseen_replies.count
-        raise UnseenRepliesError, "There #{'has'.pluralize(num)} been #{num} new #{'reply'.pluralize(num)} since you last viewed this post."
+        @errors.add(:base, :unseen, message: "There #{'has'.pluralize(num)} been #{num} new #{'reply'.pluralize(num)} since you last viewed this post.")
+        return false
       end
 
       if @reply.user_id.present? && @params[:allow_dupe].blank?
         last_by_user = @reply.post.replies.where(user_id: @reply.user_id).ordered.last
         match_attrs = ['content', 'icon_id', 'character_id', 'character_alias_id']
-        raise DuplicateReplyError if last_by_user.present? && last_by_user.attributes.slice(*match_attrs) == @reply.attributes.slice(*match_attrs)
+        if last_by_user.present? && last_by_user.attributes.slice(*match_attrs) == @reply.attributes.slice(*match_attrs)
+          @errors.add(:base, :duplicate, message: "This looks like a duplicate. Did you attempt to post this twice? Please resubmit if this was intentional.")
+          return false
+        end
       end
     end
 
-    save!
+    save
   end
 
   private
@@ -38,14 +42,5 @@ class Reply::Saver < Auditable::Saver
       :audit_comment,
       :character_alias_id,
     )
-  end
-end
-
-class UnseenRepliesError < ApiError
-end
-
-class DuplicateReplyError < ApiError
-  def initialize(msg="This looks like a duplicate. Did you attempt to post this twice? Please resubmit if this was intentional.")
-    super(msg)
   end
 end

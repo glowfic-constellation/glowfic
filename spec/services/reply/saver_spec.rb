@@ -15,7 +15,7 @@ RSpec.describe Reply::Saver do
 
       params[:reply] = { post_id: reply_post.id, content: 'test content!'}
       saver = Reply::Saver.new(reply, user: user, params: params)
-      saver.create!
+      saver.create
 
       reply.reload
       expect(reply.user).to eq(user)
@@ -28,7 +28,7 @@ RSpec.describe Reply::Saver do
 
       params[:reply] = { post_id: reply_post.id, content: 'test content again!' }
       saver = Reply::Saver.new(reply, user: user, params: params)
-      saver.create!
+      saver.create
 
       reply.reload
       expect(reply.user).to eq(user)
@@ -42,7 +42,7 @@ RSpec.describe Reply::Saver do
 
       params[:reply] = { post_id: reply_post.id, content: 'test content the third!' }
       saver = Reply::Saver.new(reply, user: user, params: params)
-      saver.create!
+      saver.create
 
       expect(Reply.count).to eq(2)
       expect(Reply.ordered.last).not_to eq(reply_old)
@@ -55,11 +55,11 @@ RSpec.describe Reply::Saver do
       reply_old = create(:reply, post: reply_post, user: user)
       reply_post.mark_read(user, reply_old.created_at + 1.second, true)
       expect(Reply.count).to eq(1)
-      reply_post.update!(authors_locked: true)
+      reply_post.update(authors_locked: true)
 
       params[:reply] = { post_id: reply_post.id, content: 'test content the third!' }
       saver = Reply::Saver.new(reply, user: user, params: params)
-      saver.create!
+      saver.create
 
       expect(Reply.count).to eq(2)
       reply.reload
@@ -74,7 +74,7 @@ RSpec.describe Reply::Saver do
 
       params[:reply] = { post_id: reply_post.id, content: 'test content!' }
       saver = Reply::Saver.new(reply, user: user, params: params)
-      saver.create!
+      saver.create
 
       expect(Reply.count).to eq(1)
     end
@@ -86,7 +86,7 @@ RSpec.describe Reply::Saver do
 
       params[:reply] = { post_id: other_post.id, content: 'more test content!' }
       saver = Reply::Saver.new(reply, user: user, params: params)
-      saver.create!
+      saver.create
 
       expect(Reply.count).to eq(1)
     end
@@ -97,7 +97,7 @@ RSpec.describe Reply::Saver do
       params[:reply] = { post_id: reply_post.id, content: 'test content!' }
       saver = Reply::Saver.new(reply, user: user, params: params)
       Timecop.freeze(Time.zone.now) do
-        saver.create!
+        saver.create
       end
 
       expect(Reply.count).to eq(1)
@@ -122,7 +122,7 @@ RSpec.describe Reply::Saver do
 
       params[:reply] = { post_id: reply_post.id, content: 'test content!' }
       saver = Reply::Saver.new(reply, user: user, params: params)
-      saver.create!
+      saver.create
 
       expect(Reply.count).to eq(2)
       expect(reply_post.tagging_authors).to match_array([user, reply_post.user])
@@ -135,7 +135,7 @@ RSpec.describe Reply::Saver do
 
       params[:reply] = { post_id: reply_post.id, content: searchable }
       saver = Reply::Saver.new(reply, user: user, params: params)
-      saver.create!
+      saver.create
 
       reply.reload
       expect(reply.content).to eq(searchable)
@@ -150,7 +150,7 @@ RSpec.describe Reply::Saver do
 
       params[:reply] = { post_id: reply_post.id, content: searchable }
       saver = Reply::Saver.new(reply, user: user, params: params)
-      saver.create!
+      saver.create
 
       reply.reload
       expect(reply.content).to eq(searchable)
@@ -166,7 +166,7 @@ RSpec.describe Reply::Saver do
 
       params[:reply] = { post_id: reply_post.id, content: searchable }
       saver = Reply::Saver.new(reply, user: user, params: params)
-      saver.create!
+      saver.create
 
       reply.reload
       expect(reply.content).to eq(searchable)
@@ -191,7 +191,7 @@ RSpec.describe Reply::Saver do
 
       params[:reply] = { content: 'new content' }
       saver = Reply::Saver.new(reply, user: user, params: params)
-      saver.update!
+      saver.update
 
       expect(reply.reload.reply_order).to eq(1)
     end

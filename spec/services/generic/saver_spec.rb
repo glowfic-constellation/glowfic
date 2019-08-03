@@ -10,7 +10,7 @@ RSpec.describe Generic::Saver do
     board = build(:board)
     params[:board] = { name: "test name" }
     saver = Generic::Saver.new(board, user: user, params: params, allowed_params: allowed)
-    saver.create!
+    expect(saver.create).to eq(true)
 
     board.reload
 
@@ -21,7 +21,7 @@ RSpec.describe Generic::Saver do
   it "succeeds on update" do
     params[:board] = { name: "test name" }
     saver = Generic::Saver.new(board, user: user, params: params, allowed_params: allowed)
-    saver.update!
+    expect(saver.update).to eq(true)
 
     expect(board.reload.name).to eq('test name')
   end
@@ -30,7 +30,7 @@ RSpec.describe Generic::Saver do
     params[:board] = { random_thing: 'should be ignored', name: "test name" }
     saver = Generic::Saver.new(board, user: user, params: params, allowed_params: allowed)
 
-    expect { saver.update! }.not_to raise_error
+    expect(saver.update).to eq(true)
 
     expect(board.reload.name).to eq('test name')
   end
@@ -38,6 +38,8 @@ RSpec.describe Generic::Saver do
   it "fails on invalid params" do
     params[:board] = { name: nil }
     saver = Generic::Saver.new(board, user: user, params: params, allowed_params: allowed)
-    expect { saver.update! }.to raise_error(ActiveRecord::RecordInvalid)
+    expect(saver.update).to eq(false)
+    expect(saver.errors.key?(:base)).to be(true)
+    expect(saver.errors.added?(:name, :blank)).to be(true)
   end
 end

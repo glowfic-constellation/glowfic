@@ -11,7 +11,7 @@ class Reply::Drafter < Reply::Saver
     end
   end
 
-  def save!
-    @draft.save!
+  def save
+    @draft.save
   end
 end
