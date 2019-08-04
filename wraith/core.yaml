@@ -69,6 +69,19 @@ paths:
     path: /contribute
     selector: '[id=content]'
 
+  about_tos:
+    path: /tos
+    selector: '[id=content]'
+  about_dmca:
+    path: /dmca
+    selector: '[id=content]'
+  about_contact:
+    path: /contact
+    selector: '[id=content]'
+  about_privacy:
+    path: /privacy
+    selector: '[id=content]'
+
   boards:
     path: /boards
     selector: '[id=content]'
