@@ -161,8 +161,11 @@ paths:
   gallery_new:
     path: /galleries/new
     selector: '[id=content]'
-  gallery_add:
+  gallery_add_new:
     path: /galleries/0/add
+    selector: '[id=content]'
+  gallery_add_existing:
+    path: /galleries/19/add?type=existing
     selector: '[id=content]'
   gallery_show:
     path: /galleries/26
