@@ -244,7 +244,7 @@ function toggleEditor() {
 
 function bindGallery() {
   iconSelectBox.find('img').click(function() {
-    var id = $(this).attr('id');
+    var id = $(this).data('icon-id');
     setIconFromId(id, $(this));
   });
 }
@@ -278,7 +278,7 @@ function iconString(icon) {
   shownIcons.push(icon.id);
 
   if (!icon.skip_dropdown) $("#icon_dropdown").append($("<option>").attr({value: imgId}).append(imgKey));
-  var iconImg = $("<img>").attr({src: imgUrl, id: imgId, alt: imgKey, title: imgKey, 'class': 'icon'});
+  var iconImg = $("<img>").attr({src: imgUrl, alt: imgKey, title: imgKey, 'class': 'icon img-'+imgId, 'data-icon-id': imgId});
   return $("<div>").attr('class', 'gallery-icon').append(iconImg).append("<br />").append(imgKey)[0].outerHTML;
 }
 
@@ -459,7 +459,7 @@ function getAndSetCharacterData(characterId, options) {
 function setIconFromId(id, img) {
   // Assumes the icon selection box is populated with icons with the correct values
   if (id === "") return setIcon(id);
-  if (typeof img === 'undefined') img = $("#"+id);
+  if (typeof img === 'undefined') img = $('.img-'+id);
   return setIcon(id, img.attr('src'), img.attr('title'), img.attr('alt'));
 }
 

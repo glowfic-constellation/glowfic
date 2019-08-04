@@ -48,19 +48,19 @@
           .gallery-name= gallery.name
           - gallery.icons.each do |icon|
             .gallery-icon
-              = icon_tag icon, id: icon.id, pointer: true
+              = icon_tag icon, data: {icon_id: icon.id}, pointer: true, class: "img-#{icon.id}"
               %br>
               = icon.keyword
 
       - all_ids = item.character.icons.pluck(:id) # handle edge cases
       - if item.character.default_icon && !all_ids.include?(item.character.default_icon_id)
         .gallery-icon
-          = icon_tag item.character.default_icon, id: item.character.default_icon_id, pointer: true
+          = icon_tag item.character.default_icon, pointer: true, data: {icon_id: item.character.default_icon_id}, class: "img-#{item.character.default_icon_id}"
           %br>
           = item.character.default_icon.keyword
       - if item.icon && !all_ids.include?(item.icon_id)
         .gallery-icon
-          = icon_tag item.icon, id: item.icon_id, pointer: true
+          = icon_tag item.icon, pointer: true, data: {icon_id: item.icon_id}, class: "img-#{item.icon_id}"
           %br>
           = item.icon.keyword
     - else
@@ -70,7 +70,7 @@
       - icons |= [current_user.avatar] if !item.character && current_user.avatar
       - icons.each do |icon|
         .gallery-icon
-          = icon_tag icon, id: icon.id, pointer: true
+          = icon_tag icon, data: {icon_id: icon.id}, pointer: true, class: "img-#{icon.id}"
           %br>
           = icon.keyword
     .gallery-icon
