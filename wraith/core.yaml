@@ -189,6 +189,16 @@ paths:
     before_capture: 'wraith/javascript/icon-selector.js'
     selector: '[id=reply-icon-selector]'
 
+  messages_index:
+    path: /messages
+    selector: '[id=content]'
+  message_show:
+    path: /messages/2
+    selector: '[id=content]'
+  message_new:
+    path: /messages/new?recipient_id=1
+    selector: '[id=content]'
+
   posts:
     path: /posts
     selector: '[id=content]'
