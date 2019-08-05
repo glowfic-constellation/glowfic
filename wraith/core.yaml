@@ -223,11 +223,12 @@ paths:
     selector: '[id=content]'
     before_capture: 'wraith/javascript/wait.js'
   post_show:
-    path: /posts/3
+    path: /posts/32?page=unread#unread
     selector: '[id=content]'
   post_show_html:
     path: /posts/2?page=2&per_page=5&proofer-ignore
     selector: '[id=content]'
+    before_capture: 'wraith/javascript/paginator-hover.js'
   post_edit:
     path: /posts/3/edit
     selector: '[id=content]'
@@ -240,6 +241,15 @@ paths:
     path: /posts/3
     before_capture: 'wraith/javascript/post-menu.js'
     selector: '[id=post-menu-box]'
+  editor_help:
+    path: /posts/new
+    before_capture: 'wraith/javascript/editor-help.js'
+    selector: '[class=ui-dialog]'
+  character_selector:
+    path: /posts/new
+    before_capture: 'wraith/javascript.character-selector.js'
+    selector: '[id=post-editor]'
+
 
   replies_search:
     path: /replies/search?commit=true&icon_id=89
