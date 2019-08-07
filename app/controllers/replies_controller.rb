@@ -171,7 +171,6 @@ class RepliesController < WritableController
       render :edit and return
     end
 
-    @reply.audit_comment = nil if @reply.changes.empty? # don't save an audit for a note and no changes
     begin
       @reply.save!
     rescue ActiveRecord::RecordInvalid

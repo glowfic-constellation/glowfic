@@ -7,7 +7,7 @@ class Block < ApplicationRecord
   validate :not_blocking_self
   validate :option_chosen
 
-  audited on: [:update, :destroy]
+  audited on: [:update, :destroy], update_with_comment_only: false
 
   scope :ordered, -> { includes(:blocked_user).sort_by { |block| [block.blocked_user.username.downcase] } }
 

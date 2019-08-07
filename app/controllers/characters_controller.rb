@@ -73,13 +73,11 @@ class CharactersController < ApplicationController
     @character.assign_attributes(character_params)
     build_template
 
-    # TODO once assign_attributes doesn't save, use @character.audit_comment and uncomment clearing
-    if current_user.id != @character.user_id && params.fetch(:character, {})[:audit_comment].blank?
+    if current_user.id != @character.user_id && @character.audit_comment.blank?
       flash[:error] = "You must provide a reason for your moderator edit."
       build_editor
       render :edit and return
     end
-    # @character.audit_comment = nil if @character.changes.empty?
 
     begin
       Character.transaction do
