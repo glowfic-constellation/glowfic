@@ -8,6 +8,8 @@ class Character < ApplicationRecord
   has_many :replies, dependent: false
   has_many :posts, dependent: false # These are handled in callbacks
   has_many :aliases, class_name: 'CharacterAlias', inverse_of: :character, dependent: :destroy
+  has_many :reply_drafts, dependent: :nullify
+  has_one :active_user, inverse_of: :active_character, class_name: 'User', foreign_key: :active_character_id, dependent: :nullify
 
   has_many :characters_galleries, inverse_of: :character, dependent: :destroy
   accepts_nested_attributes_for :characters_galleries, allow_destroy: true
@@ -146,8 +148,6 @@ class Character < ApplicationRecord
   def clear_char_ids
     UpdateModelJob.perform_later(Post.to_s, {character_id: id}, {character_id: nil})
     UpdateModelJob.perform_later(Reply.to_s, {character_id: id}, {character_id: nil})
-    ReplyDraft.where(character_id: id).update_all(character_id: nil)
-    User.where(active_character_id: id).update_all(active_character_id: nil)
   end
 
   def strip_spaces
