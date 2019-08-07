@@ -186,7 +186,6 @@ class PostsController < WritableController
       editor_setup
       render :edit and return
     end
-    @post.audit_comment = nil if @post.changes.empty? # don't save an audit for a note and no changes
 
     begin
       Post.transaction do

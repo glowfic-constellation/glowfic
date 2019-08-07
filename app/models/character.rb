@@ -37,7 +37,7 @@ class Character < ApplicationRecord
 
   nilify_blanks
 
-  audited on: :update, mod_only: true
+  audited on: :update, mod_only: true, update_with_comment_only: false
 
   def editable_by?(user)
     return false unless user
