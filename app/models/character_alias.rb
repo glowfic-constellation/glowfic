@@ -1,5 +1,6 @@
 class CharacterAlias < ApplicationRecord
   belongs_to :character, optional: false
+  has_many :reply_drafts, dependent: :nullify
   validates :name, presence: true
   after_destroy :clear_alias_ids
 
@@ -12,7 +13,6 @@ class CharacterAlias < ApplicationRecord
   private
 
   def clear_alias_ids
-    ReplyDraft.where(character_alias_id: id).update_all(character_alias_id: nil)
     UpdateModelJob.perform_later(Reply.to_s, {character_alias_id: id}, {character_alias_id: nil})
     UpdateModelJob.perform_later(Post.to_s, {character_alias_id: id}, {character_alias_id: nil})
   end
