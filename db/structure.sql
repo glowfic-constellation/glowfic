@@ -1887,14 +1887,14 @@ ALTER TABLE ONLY public.users
 -- Name: associated_index; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
-CREATE INDEX associated_index ON public.audits USING btree (associated_id, associated_type);
+CREATE INDEX associated_index ON public.audits USING btree (associated_type, associated_id);
 
 
 --
 -- Name: auditable_index; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
-CREATE INDEX auditable_index ON public.audits USING btree (auditable_id, auditable_type);
+CREATE INDEX auditable_index ON public.audits USING btree (auditable_type, auditable_id);
 
 
 --
