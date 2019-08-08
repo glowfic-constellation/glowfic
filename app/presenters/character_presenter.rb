@@ -22,6 +22,7 @@ class CharacterPresenter
     char_json[:selector_name] = character.selector_name if options[:include].include?(:selector_name)
     char_json[:default] = character.default_icon.try(:as_json) if options[:include].include?(:default)
     char_json[:aliases] = character.aliases if options[:include].include?(:aliases)
+    char_json[:template_name] = character.template_name if options[:include].include?(:template_name)
     return char_json unless options[:include].include?(:galleries)
 
     galleries = if character.galleries.present? && character.user.icon_picker_grouping?

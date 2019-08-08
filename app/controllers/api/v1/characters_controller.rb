@@ -2,6 +2,7 @@ class Api::V1::CharactersController < Api::ApiController
   before_action :login_required, only: [:update, :reorder]
   before_action :find_character, except: [:index, :reorder]
   before_action :find_post, except: [:update, :reorder]
+  before_action :find_template, only: :index
   before_action :require_permission, only: :update
 
   resource_description do
@@ -9,20 +10,27 @@ class Api::V1::CharactersController < Api::ApiController
   end
 
   api :GET, '/characters', 'Load all the characters that match the given query, results ordered by name'
-  param :q, String, required: false, desc: "Query string"
+  param :q, String, required: false, desc: "If provided, will return only characters where q is present as a substring anywhere in any of a character's name, screenname or template nickname."
   param :page, :number, required: false, desc: 'Page in results (25 per page)'
   param :post_id, :number, required: false, desc: 'If provided, will return only characters that appear in the provided post'
+  param :template_id, :number, required: false, desc: 'If provided, will return only characters that belong to the provided template. Use 0 to find only characters with no template.'
+  param :includes, Array, in: ["default", "aliases", "template_name"], of: String, required: false, desc: 'Specify additional fields to return in JSON'
   error 403, "Post is not visible to the user"
   error 422, "Invalid parameters provided"
   def index
-    queryset = Character.with_name(params[:q].to_s).ordered
+    queryset = Character.ordered
+    queryset = queryset.with_name(params[:q].to_s) if params[:q].present?
+    queryset = queryset.where(user_id: current_user.id) if params[:user_id].present?
+    queryset = queryset.where(template_id: @template&.id) if params[:template_id].present?
+
     if @post
       char_ids = @post.replies.select(:character_id).distinct.pluck(:character_id) + [@post.character_id]
       queryset = queryset.where(id: char_ids)
     end
 
     characters = paginate queryset, per_page: 25
-    render json: {results: characters.as_json(include: [:selector_name])}
+    includes = [:selector_name] + (params[:includes] || []).map(&:to_sym)
+    render json: {results: characters.as_json(include: includes)}
   end
 
   api :GET, '/characters/:id', 'Load a single character as a JSON resource'
@@ -110,6 +118,12 @@ class Api::V1::CharactersController < Api::ApiController
     return unless params[:post_id].present?
     return unless (@post = find_object(Post, :post_id, :unprocessable_entity))
     access_denied unless @post.visible_to?(current_user)
+  end
+
+  def find_template
+    return unless params[:template_id].present?
+    return if params[:template_id] == '0' # used to filter for templateless characters
+    @template = find_object(Template, :template_id, :unprocessable_entity)
   end
 
   def require_permission

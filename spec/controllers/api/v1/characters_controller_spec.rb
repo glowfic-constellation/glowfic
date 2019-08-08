@@ -11,7 +11,7 @@ RSpec.describe Api::V1::CharactersController do
         expect(response.json['results']).to contain_exactly(char.as_json(include: [:selector_name]).stringify_keys)
       end
 
-      it "should support search", show_in_doc: in_doc do
+      it "should support search" do
         char = create(:character, name: 'search')
         create(:character, name: 'no') # char2
         get :index, params: { q: 'se' }
@@ -21,12 +21,29 @@ RSpec.describe Api::V1::CharactersController do
       end
 
       it "requires valid post id if provided", show_in_doc: in_doc do
-        create(:character) # char
+        create(:character)
         get :index, params: { post_id: -1 }
         expect(response).to have_http_status(:unprocessable_entity)
         expect(response.json['errors'].size).to eq(1)
         expect(response.json['errors'][0]['message']).to eq("Post could not be found.")
       end
+
+      it "requires valid template id if provided", show_in_doc: in_doc do
+        create(:character)
+        get :index, params: { template_id: 999 }
+        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response.json['errors'].size).to eq(1)
+        expect(response.json['errors'][0]['message']).to eq("Template could not be found.")
+      end
+
+      it "requires valid includes if provided", show_in_doc: in_doc do
+        create(:character)
+        get :index, params: { includes: ['invalid'] }
+        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response.json['errors'].size).to eq(1)
+        expect(response.json['errors'][0]['message']).to eq("Invalid parameter 'includes' value ['invalid']: Must be an array of ['default', 'aliases', 'template_name']")
+      end
+
 
       it "requires post with permission", show_in_doc: in_doc do
         post = create(:post, privacy: Concealable::PRIVATE, with_character: true)
@@ -36,11 +53,31 @@ RSpec.describe Api::V1::CharactersController do
         expect(response.json['errors'][0]['message']).to eq("You do not have permission to perform this action.")
       end
 
-      it "filters by post", show_in_doc: in_doc do
+      it "filters by post" do
         char = create(:character)
         create(:character) # char2
         post = create(:post, character: char, user: char.user)
         get :index, params: { post_id: post.id }
+        expect(response).to have_http_status(200)
+        expect(response.json).to have_key('results')
+        expect(response.json['results']).to contain_exactly(char.as_json(include: [:selector_name]).stringify_keys)
+      end
+
+      it "filters by template" do
+        template = create(:template)
+        char = create(:character, template: template)
+        create(:character)
+        get :index, params: { template_id: template.id }
+        expect(response).to have_http_status(200)
+        expect(response.json).to have_key('results')
+        expect(response.json['results']).to contain_exactly(char.as_json(include: [:selector_name]).stringify_keys)
+      end
+
+      it "filters by templateless" do
+        template = create(:template)
+        create(:character, template: template)
+        char = create(:character)
+        get :index, params: { template_id: '0' }
         expect(response).to have_http_status(200)
         expect(response.json).to have_key('results')
         expect(response.json['results']).to contain_exactly(char.as_json(include: [:selector_name]).stringify_keys)
