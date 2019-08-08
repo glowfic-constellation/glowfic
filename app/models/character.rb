@@ -46,6 +46,10 @@ class Character < ApplicationRecord
   end
 
   def deletable_by?(user)
+    self.class.deletable_by?(user, self.user_id)
+  end
+
+  def self.deletable_by?(user, user_id)
     return false unless user
     return true if user_id == user.id
     user.has_permission?(:delete_characters)
