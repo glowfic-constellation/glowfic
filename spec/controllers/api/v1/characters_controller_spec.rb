@@ -36,12 +36,20 @@ RSpec.describe Api::V1::CharactersController do
         expect(response.json['errors'][0]['message']).to eq("Template could not be found.")
       end
 
+      it "requires valid user id if provided", show_in_doc: in_doc do
+        character = create(:character)
+        get :index, params: { user_id: character.user.id + 1 }
+        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response.json['errors'].size).to eq(1)
+        expect(response.json['errors'][0]['message']).to eq("User could not be found.")
+      end
+
       it "requires valid includes if provided", show_in_doc: in_doc do
         create(:character)
         get :index, params: { includes: ['invalid'] }
         expect(response).to have_http_status(:unprocessable_entity)
         expect(response.json['errors'].size).to eq(1)
-        expect(response.json['errors'][0]['message']).to eq("Invalid parameter 'includes' value ['invalid']: Must be an array of ['default', 'aliases', 'template_name']")
+        expect(response.json['errors'][0]['message']).to eq("Invalid parameter 'includes' value ['invalid']: Must be an array of ['default_icon', 'aliases', 'template_name']")
       end
 
 
@@ -78,6 +86,16 @@ RSpec.describe Api::V1::CharactersController do
         create(:character, template: template)
         char = create(:character)
         get :index, params: { template_id: '0' }
+        expect(response).to have_http_status(200)
+        expect(response.json).to have_key('results')
+        expect(response.json['results']).to contain_exactly(char.as_json(include: [:selector_name]).stringify_keys)
+      end
+
+      it "filters by user id" do
+        char = create(:character)
+        char2 = create(:character)
+        login_as(char2.user)
+        get :index, params: { user_id: char.user_id }
         expect(response).to have_http_status(200)
         expect(response.json).to have_key('results')
         expect(response.json['results']).to contain_exactly(char.as_json(include: [:selector_name]).stringify_keys)

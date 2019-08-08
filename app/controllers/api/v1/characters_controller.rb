@@ -3,6 +3,7 @@ class Api::V1::CharactersController < Api::ApiController
   before_action :find_character, except: [:index, :reorder]
   before_action :find_post, except: [:update, :reorder]
   before_action :find_template, only: :index
+  before_action :find_user, only: :index
   before_action :require_permission, only: :update
 
   resource_description do
@@ -13,14 +14,15 @@ class Api::V1::CharactersController < Api::ApiController
   param :q, String, required: false, desc: "If provided, will return only characters where q is present as a substring anywhere in any of a character's name, screenname or template nickname."
   param :page, :number, required: false, desc: 'Page in results (25 per page)'
   param :post_id, :number, required: false, desc: 'If provided, will return only characters that appear in the provided post'
+  param :user_id, :number, required: false, desc: 'If provided, will return only characters that belong to the provided user'
   param :template_id, :number, required: false, desc: 'If provided, will return only characters that belong to the provided template. Use 0 to find only characters with no template.'
-  param :includes, Array, in: ["default", "aliases", "template_name"], of: String, required: false, desc: 'Specify additional fields to return in JSON'
+  param :includes, Array, in: ["default_icon", "aliases", "template_name"], of: String, required: false, desc: 'Specify additional fields to return in JSON'
   error 403, "Post is not visible to the user"
   error 422, "Invalid parameters provided"
   def index
     queryset = Character.ordered
     queryset = queryset.with_name(params[:q].to_s) if params[:q].present?
-    queryset = queryset.where(user_id: current_user.id) if params[:user_id].present?
+    queryset = queryset.where(user_id: @user.id) if params[:user_id].present?
     queryset = queryset.where(template_id: @template&.id) if params[:template_id].present?
 
     if @post
@@ -40,7 +42,7 @@ class Api::V1::CharactersController < Api::ApiController
   error 404, "Character not found"
   error 422, "Invalid parameters provided"
   def show
-    render json: @character.as_json(include: [:galleries, :default, :aliases], post_for_alias: @post)
+    render json: @character.as_json(include: [:galleries, :default_icon, :aliases], post_for_alias: @post)
   end
 
   api :PATCH, '/characters/:id', 'Update a given character'
@@ -50,7 +52,7 @@ class Api::V1::CharactersController < Api::ApiController
   error 404, "Character not found"
   error 422, "Invalid parameters provided"
   def update
-    render json: {data: @character.as_json(include: [:default])} and return unless params[:character]
+    render json: {data: @character.as_json(include: [:default_icon])} and return unless params[:character]
 
     errors = []
     if params[:character][:default_icon_id].present?
@@ -62,7 +64,7 @@ class Api::V1::CharactersController < Api::ApiController
     render json: {errors: errors}, status: :unprocessable_entity and return unless errors.empty?
 
     @character.save!
-    render json: @character.as_json(include: [:default])
+    render json: @character.as_json(include: [:default_icon])
   end
 
   api :POST, '/characters/reorder', 'Update the order of galleries on a character. This is an unstable feature, and may be moved or renamed; it should not be trusted.'
@@ -122,8 +124,13 @@ class Api::V1::CharactersController < Api::ApiController
 
   def find_template
     return unless params[:template_id].present?
-    return if params[:template_id] == '0' # used to filter for templateless characters
+    return if params[:template_id] == '0' # used to filter for templateless characters, so @template should remain nil without find_object raising a missing template error
     @template = find_object(Template, :template_id, :unprocessable_entity)
+  end
+
+  def find_user
+    return unless params[:user_id].present?
+    @user = find_object(User, :user_id, :unprocessable_entity)
   end
 
   def require_permission
