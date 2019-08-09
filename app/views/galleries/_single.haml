@@ -1,7 +1,11 @@
 - attrs = {}
-- attrs = {class: 'section-ordered', data: {id: character_gallery.id, order: character_gallery.section_order}} if local_assigns[:character_gallery]
-%tbody{class: ("gallery-title-#{gallery.id}" if gallery)}
-  %tr.gallery-header{**attrs}
+- gallery_klass = []
+- if local_assigns[:character_gallery]
+  - gallery_klass << 'section-ordered'
+  - attrs[:data] = {id: character_gallery.id, order: character_gallery.section_order}
+- gallery_klass << "gallery-title-#{gallery.id}" if gallery
+%tbody{class: gallery_klass, **attrs}
+  %tr.gallery-header
     %th.padding-10{class: (klass if defined? klass)}
       - link = gallery ? gallery_path(gallery) : user_gallery_path(id: 0, user_id: @user.id)
       = link_to gallery ? gallery.name : 'Galleryless icons', link, class: 'gallery-title'
