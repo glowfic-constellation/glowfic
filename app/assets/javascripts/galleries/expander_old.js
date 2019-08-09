@@ -3,12 +3,10 @@ $(document).ready(function() {
     var elem = $(this);
     var id = elem.data('id');
     if (elem.html().trim() === '-') {
-      $('#gallery' + id).hide();
-      $('#gallery-tags-' + id).hide();
+      $('.gallery-data-' + id).hide();
       elem.html('+');
     } else {
-      $('#gallery' + id).show();
-      $('#gallery-tags-' + id).show();
+      $('.gallery-data-' + id).show();
       elem.html('-');
     }
   });

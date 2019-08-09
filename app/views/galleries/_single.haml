@@ -1,6 +1,6 @@
 - attrs = {}
 - attrs = {class: 'section-ordered', data: {id: character_gallery.id, order: character_gallery.section_order}} if local_assigns[:character_gallery]
-%tbody
+%tbody{class: ("gallery-title-#{gallery.id}" if gallery)}
   %tr.gallery-header{**attrs}
     %th.padding-10{class: (klass if defined? klass)}
       - link = gallery ? gallery_path(gallery) : user_gallery_path(id: 0, user_id: @user.id)
@@ -21,7 +21,7 @@
         .float-right
           = image_tag "icons/arrow_up.png", class: "section-up disabled-arrow"
           = image_tag "icons/arrow_down.png", class: "section-down disabled-arrow"
-%tbody
+%tbody{class: ("gallery-data-#{gallery.id}" if gallery)}
   - groups = gallery.gallery_groups_data if gallery
   - if groups.present?
     %tr.gallery-tags
