@@ -10,7 +10,7 @@ RUN apt-get update
 RUN apt-get install -y curl
 RUN curl -sL https://deb.nodesource.com/setup_8.x | bash
 RUN apt-get install -y nodejs postgresql-client-9.4
-RUN apt-get install -y chromium-driver
+RUN apt-get install -y firefox-esr
 
 RUN gem install bundler -v 1.15.2
 RUN bundle install

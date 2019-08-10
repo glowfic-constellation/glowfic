@@ -45,6 +45,8 @@ require 'support/spec_feature_helper'
 require 'webdrivers'
 require 'selenium/webdriver'
 
+Webdrivers.logger.level = :DEBUG
+
 Capybara.register_driver :headless_firefox do |app|
   profile = Selenium::WebDriver::Firefox::Profile.new
   options = Selenium::WebDriver::Firefox::Options.new(profile: profile)
@@ -70,7 +72,7 @@ Capybara.register_driver :headless_chrome do |app|
   Capybara::Selenium::Driver.new(app, browser: :chrome, options: options)
 end
 
-Capybara.javascript_driver = :headless_chrome
+Capybara.javascript_driver = :headless_firefox
 
 RSpec.configure do |config|
   # rspec-expectations config goes here. You can use an alternate
