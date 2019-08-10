@@ -77,10 +77,10 @@
     %thead
       %tr
         %th Galleries
-    %tbody
-      - if @icon.galleries.exists?
-        = render partial: 'galleries/single', collection: @icon.galleries.ordered_by_name, as: :gallery, locals: {klass: 'subber', skip_forms: true, is_owner: @icon.user == current_user}
-      - else
+    - if @icon.galleries.exists?
+      = render partial: 'galleries/single', collection: @icon.galleries.ordered_by_name, as: :gallery, locals: {klass: 'subber', skip_forms: true, is_owner: @icon.user == current_user}
+    - else
+      %tbody
         %tr
           %td.even.centered — No galleries yet —
 - elsif params[:view] == 'posts'

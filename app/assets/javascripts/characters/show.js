@@ -29,11 +29,10 @@ function bindArrows(orderBox, path, param) {
 
 // override standard reorder
 function reorderRows(orderBox) {
-  var arrowBox = $('tbody', orderBox);
-  var rows = $('.section-ordered', arrowBox);
+  var rows = $('.section-ordered', orderBox);
   var ordered = rows.sort(function(a, b) { return $(a).data('order') > $(b).data('order') ? 1 : -1; }).each(function() {
     var attaches = $(this).nextUntil('.section-ordered');
-    arrowBox.append(this, attaches.get());
+    orderBox.append(this, attaches.get());
   });
   return ordered;
 }
