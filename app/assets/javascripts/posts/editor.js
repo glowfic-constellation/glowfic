@@ -346,12 +346,12 @@ function setFormData(characterId, resp, options) {
   else if (resp.alias_id_for_post)
     setAliasFromID(resp.alias_id_for_post);
 
-  setGalleriesAndDefault(resp.galleries, resp.default);
+  setGalleriesAndDefault(resp.galleries, resp.default_icon);
   setIcon('');
   if (restoreIcon)
     setIconFromId(selectedIconID);
-  else if (resp.default)
-    setIcon(resp.default.id, resp.default.url, resp.default.keyword, resp.default.keyword);
+  else if (resp.default_icon)
+    setIcon(resp.default_icon.id, resp.default_icon.url, resp.default_icon.keyword, resp.default_icon.keyword);
 }
 
 function setInfoBoxFields(characterId, name, screenname) {
@@ -443,7 +443,7 @@ function getAndSetCharacterData(characterId, options) {
     var avatar = gon.editor_user.avatar;
     var data = {aliases: [], galleries: []};
     if (avatar) {
-      data.default = avatar;
+      data.default_icon = avatar;
       data.galleries.push({icons: [avatar]});
     }
     setFormData(characterId, data, options);

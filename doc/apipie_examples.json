@@ -8,33 +8,6 @@
       ],
       "query": null,
       "request_data": {
-        "ordered_section_ids": [
-          "541",
-          "539",
-          "542",
-          "540"
-        ]
-      },
-      "response_data": {
-        "section_ids": [
-          541,
-          539,
-          542,
-          540
-        ]
-      },
-      "code": "200",
-      "show_in_doc": 1,
-      "recorded": true
-    },
-    {
-      "verb": "POST",
-      "path": "/api/v1/board_sections/reorder",
-      "versions": [
-        "1.0"
-      ],
-      "query": null,
-      "request_data": {
       },
       "response_data": {
         "errors": [
@@ -56,16 +29,43 @@
       "query": null,
       "request_data": {
         "ordered_section_ids": [
-          "546",
-          "544"
+          "152",
+          "150",
+          "153",
+          "151"
         ]
       },
       "response_data": {
         "section_ids": [
-          546,
-          544,
-          545,
-          547
+          152,
+          150,
+          153,
+          151
+        ]
+      },
+      "code": "200",
+      "show_in_doc": 1,
+      "recorded": true
+    },
+    {
+      "verb": "POST",
+      "path": "/api/v1/board_sections/reorder",
+      "versions": [
+        "1.0"
+      ],
+      "query": null,
+      "request_data": {
+        "ordered_section_ids": [
+          "157",
+          "155"
+        ]
+      },
+      "response_data": {
+        "section_ids": [
+          157,
+          155,
+          156,
+          158
         ]
       },
       "code": "200",
@@ -85,11 +85,11 @@
       "response_data": {
         "results": [
           {
-            "id": 6852,
+            "id": 1583,
             "name": "baa"
           },
           {
-            "id": 6856,
+            "id": 1587,
             "name": "BAAc"
           }
         ]
@@ -140,23 +140,23 @@
     },
     {
       "verb": "GET",
-      "path": "/api/v1/boards/6860",
+      "path": "/api/v1/boards/1591",
       "versions": [
         "1.0"
       ],
       "query": "",
       "request_data": null,
       "response_data": {
-        "id": 6860,
+        "id": 1591,
         "name": "test board 21",
         "board_sections": [
           {
-            "id": 554,
+            "id": 161,
             "name": "TestSection16",
             "order": 0
           },
           {
-            "id": 553,
+            "id": 160,
             "name": "TestSection15",
             "order": 1
           }
@@ -177,9 +177,28 @@
       "query": "",
       "request_data": null,
       "response_data": {
+        "errors": [
+          {
+            "message": "You do not have permission to perform this action."
+          }
+        ]
+      },
+      "code": "403",
+      "show_in_doc": 1,
+      "recorded": true
+    },
+    {
+      "verb": "GET",
+      "path": "/api/v1/characters",
+      "versions": [
+        "1.0"
+      ],
+      "query": "",
+      "request_data": null,
+      "response_data": {
         "results": [
           {
-            "id": 2432,
+            "id": 1103,
             "name": "test character 5",
             "screenname": null,
             "selector_name": "test character 5"
@@ -199,16 +218,13 @@
       "query": "",
       "request_data": null,
       "response_data": {
-        "results": [
+        "errors": [
           {
-            "id": 2434,
-            "name": "search",
-            "screenname": null,
-            "selector_name": "search"
+            "message": "Template could not be found."
           }
         ]
       },
-      "code": "200",
+      "code": "422",
       "show_in_doc": 1,
       "recorded": true
     },
@@ -221,16 +237,32 @@
       "query": "",
       "request_data": null,
       "response_data": {
-        "results": [
+        "errors": [
           {
-            "id": 2436,
-            "name": "test character 7",
-            "screenname": null,
-            "selector_name": "test character 7"
+            "message": "User could not be found."
           }
         ]
       },
-      "code": "200",
+      "code": "422",
+      "show_in_doc": 1,
+      "recorded": true
+    },
+    {
+      "verb": "GET",
+      "path": "/api/v1/characters",
+      "versions": [
+        "1.0"
+      ],
+      "query": "",
+      "request_data": null,
+      "response_data": {
+        "errors": [
+          {
+            "message": "Invalid parameter 'includes' value ['invalid']: Must be an array of ['default_icon', 'aliases', 'template_name']"
+          }
+        ]
+      },
+      "code": "422",
       "show_in_doc": 1,
       "recorded": true
     },
@@ -252,25 +284,6 @@
       "code": "422",
       "show_in_doc": 1,
       "recorded": true
-    },
-    {
-      "verb": "GET",
-      "path": "/api/v1/characters",
-      "versions": [
-        "1.0"
-      ],
-      "query": "",
-      "request_data": null,
-      "response_data": {
-        "errors": [
-          {
-            "message": "You do not have permission to perform this action."
-          }
-        ]
-      },
-      "code": "403",
-      "show_in_doc": 1,
-      "recorded": true
     }
   ],
   "characters#reorder": [
@@ -283,16 +296,16 @@
       "query": null,
       "request_data": {
         "ordered_characters_gallery_ids": [
-          "763",
-          "761"
+          "351",
+          "349"
         ]
       },
       "response_data": {
         "characters_gallery_ids": [
-          763,
-          761,
-          762,
-          764
+          351,
+          349,
+          350,
+          352
         ]
       },
       "code": "200",
@@ -328,18 +341,18 @@
       "query": null,
       "request_data": {
         "ordered_characters_gallery_ids": [
-          "768",
-          "766",
-          "769",
-          "767"
+          "356",
+          "354",
+          "357",
+          "355"
         ]
       },
       "response_data": {
         "characters_gallery_ids": [
-          768,
-          766,
-          769,
-          767
+          356,
+          354,
+          357,
+          355
         ]
       },
       "code": "200",
@@ -369,26 +382,86 @@
     },
     {
       "verb": "GET",
-      "path": "/api/v1/characters/2439",
+      "path": "/api/v1/characters/1111",
       "versions": [
         "1.0"
       ],
       "query": "",
       "request_data": null,
       "response_data": {
-        "errors": [
+        "id": 1111,
+        "name": "test character 13",
+        "screenname": null,
+        "default_icon": null,
+        "aliases": [
           {
-            "message": "Post could not be found."
+            "id": 66,
+            "name": "TestAlias3"
+          }
+        ],
+        "galleries": [
+          {
+            "name": "test gallery 5",
+            "icons": [
+              {
+                "id": 455,
+                "url": "http://www.fakeicon.com",
+                "keyword": "totally fake 11"
+              },
+              {
+                "id": 456,
+                "url": "http://www.fakeicon.com",
+                "keyword": "totally fake 12"
+              }
+            ]
+          },
+          {
+            "name": "test gallery 6",
+            "icons": [
+              {
+                "id": 457,
+                "url": "http://www.fakeicon.com",
+                "keyword": "totally fake 13"
+              }
+            ]
           }
         ]
       },
-      "code": "422",
+      "code": "200",
       "show_in_doc": 1,
       "recorded": true
     },
     {
       "verb": "GET",
-      "path": "/api/v1/characters/2440",
+      "path": "/api/v1/characters/1112",
+      "versions": [
+        "1.0"
+      ],
+      "query": "",
+      "request_data": null,
+      "response_data": {
+        "id": 1112,
+        "name": "test character 14",
+        "screenname": null,
+        "alias_id_for_post": 67,
+        "default_icon": null,
+        "aliases": [
+          {
+            "id": 67,
+            "name": "TestAlias4"
+          }
+        ],
+        "galleries": [
+
+        ]
+      },
+      "code": "200",
+      "show_in_doc": 1,
+      "recorded": true
+    },
+    {
+      "verb": "GET",
+      "path": "/api/v1/characters/1113",
       "versions": [
         "1.0"
       ],
@@ -407,85 +480,45 @@
     },
     {
       "verb": "GET",
-      "path": "/api/v1/characters/2441",
+      "path": "/api/v1/characters/1114",
       "versions": [
         "1.0"
       ],
       "query": "",
       "request_data": null,
       "response_data": {
-        "id": 2441,
-        "name": "test character 12",
-        "screenname": null,
-        "alias_id_for_post": 178,
-        "default": null,
-        "aliases": [
+        "errors": [
           {
-            "id": 178,
-            "name": "TestAlias2"
-          }
-        ],
-        "galleries": [
-
-        ]
-      },
-      "code": "200",
-      "show_in_doc": 1,
-      "recorded": true
-    },
-    {
-      "verb": "GET",
-      "path": "/api/v1/characters/2442",
-      "versions": [
-        "1.0"
-      ],
-      "query": "",
-      "request_data": null,
-      "response_data": {
-        "id": 2442,
-        "name": "test character 13",
-        "screenname": null,
-        "default": null,
-        "aliases": [
-          {
-            "id": 179,
-            "name": "TestAlias3"
-          }
-        ],
-        "galleries": [
-          {
-            "name": "test gallery 5",
-            "icons": [
-              {
-                "id": 1283,
-                "url": "http://www.fakeicon.com",
-                "keyword": "totally fake 7"
-              },
-              {
-                "id": 1284,
-                "url": "http://www.fakeicon.com",
-                "keyword": "totally fake 8"
-              }
-            ]
-          },
-          {
-            "name": "test gallery 6",
-            "icons": [
-              {
-                "id": 1285,
-                "url": "http://www.fakeicon.com",
-                "keyword": "totally fake 9"
-              }
-            ]
+            "message": "Post could not be found."
           }
         ]
       },
-      "code": "200",
+      "code": "422",
       "show_in_doc": 1,
       "recorded": true
     }
   ],
   "characters#update": [
+    {
+      "verb": "PUT",
+      "path": "/api/v1/characters/-1",
+      "versions": [
+        "1.0"
+      ],
+      "query": null,
+      "request_data": {
+      },
+      "response_data": {
+        "errors": [
+          {
+            "message": "You must be logged in to view that page."
+          }
+        ]
+      },
+      "code": "401",
+      "show_in_doc": 1,
+      "recorded": true
+    },
     {
       "verb": "PUT",
       "path": "/api/v1/characters/-1",
@@ -508,49 +541,24 @@
     },
     {
       "verb": "PUT",
-      "path": "/api/v1/characters/2429",
+      "path": "/api/v1/characters/1108",
       "versions": [
         "1.0"
       ],
       "query": null,
       "request_data": {
         "character": {
-          "default_icon_id": "1280",
-          "name": "",
-          "user_id": ""
+          "default_icon_id": "452"
         }
       },
       "response_data": {
-        "errors": [
-          {
-            "message": "Name can't be blank"
-          }
-        ]
-      },
-      "code": "422",
-      "show_in_doc": 1,
-      "recorded": true
-    },
-    {
-      "verb": "PUT",
-      "path": "/api/v1/characters/2430",
-      "versions": [
-        "1.0"
-      ],
-      "query": null,
-      "request_data": {
-        "character": {
-          "default_icon_id": "1282"
-        }
-      },
-      "response_data": {
-        "name": "test character 3",
-        "id": 2430,
+        "name": "test character 10",
+        "id": 1108,
         "screenname": null,
-        "default": {
-          "id": 1282,
+        "default_icon": {
+          "id": 452,
           "url": "http://www.fakeicon.com",
-          "keyword": "totally fake 6"
+          "keyword": "totally fake 8"
         }
       },
       "code": "200",
@@ -559,7 +567,7 @@
     },
     {
       "verb": "PUT",
-      "path": "/api/v1/characters/2431",
+      "path": "/api/v1/characters/1109",
       "versions": [
         "1.0"
       ],
@@ -579,21 +587,26 @@
     },
     {
       "verb": "PUT",
-      "path": "/api/v1/characters/-1",
+      "path": "/api/v1/characters/1110",
       "versions": [
         "1.0"
       ],
       "query": null,
       "request_data": {
+        "character": {
+          "default_icon_id": "454",
+          "name": "",
+          "user_id": ""
+        }
       },
       "response_data": {
         "errors": [
           {
-            "message": "You must be logged in to view that page."
+            "message": "Name can't be blank"
           }
         ]
       },
-      "code": "401",
+      "code": "422",
       "show_in_doc": 1,
       "recorded": true
     }
@@ -601,42 +614,19 @@
   "galleries#show": [
     {
       "verb": "GET",
-      "path": "/api/v1/galleries/1190",
+      "path": "/api/v1/galleries/0",
       "versions": [
         "1.0"
       ],
       "query": "",
       "request_data": null,
       "response_data": {
-        "name": "test gallery 1",
+        "name": "Galleryless",
         "icons": [
-          {
-            "id": 1277,
-            "url": "http://www.fakeicon.com",
-            "keyword": "totally fake 1"
-          }
+
         ]
       },
       "code": "200",
-      "show_in_doc": 1,
-      "recorded": true
-    },
-    {
-      "verb": "GET",
-      "path": "/api/v1/galleries/1",
-      "versions": [
-        "1.0"
-      ],
-      "query": "",
-      "request_data": null,
-      "response_data": {
-        "errors": [
-          {
-            "message": "Gallery could not be found."
-          }
-        ]
-      },
-      "code": "404",
       "show_in_doc": 1,
       "recorded": true
     },
@@ -661,16 +651,39 @@
     },
     {
       "verb": "GET",
-      "path": "/api/v1/galleries/0",
+      "path": "/api/v1/galleries/1",
       "versions": [
         "1.0"
       ],
       "query": "",
       "request_data": null,
       "response_data": {
-        "name": "Galleryless",
+        "errors": [
+          {
+            "message": "Gallery could not be found."
+          }
+        ]
+      },
+      "code": "404",
+      "show_in_doc": 1,
+      "recorded": true
+    },
+    {
+      "verb": "GET",
+      "path": "/api/v1/galleries/447",
+      "versions": [
+        "1.0"
+      ],
+      "query": "",
+      "request_data": null,
+      "response_data": {
+        "name": "test gallery 4",
         "icons": [
-
+          {
+            "id": 450,
+            "url": "http://www.fakeicon.com",
+            "keyword": "totally fake 6"
+          }
         ]
       },
       "code": "200",
@@ -679,6 +692,48 @@
     }
   ],
   "icons#s3_delete": [
+    {
+      "verb": "POST",
+      "path": "/api/v1/icons/s3_delete",
+      "versions": [
+        "1.0"
+      ],
+      "query": null,
+      "request_data": {
+        "s3_key": "users/61611/icons/hash_name.png"
+      },
+      "response_data": {
+        "errors": [
+          {
+            "message": "That is not your icon."
+          }
+        ]
+      },
+      "code": "403",
+      "show_in_doc": 1,
+      "recorded": true
+    },
+    {
+      "verb": "POST",
+      "path": "/api/v1/icons/s3_delete",
+      "versions": [
+        "1.0"
+      ],
+      "query": null,
+      "request_data": {
+        "s3_key": "users/6162/icons/nonsense-fakeimg-1.png"
+      },
+      "response_data": {
+        "errors": [
+          {
+            "message": "Only unused icons can be deleted."
+          }
+        ]
+      },
+      "code": "422",
+      "show_in_doc": 1,
+      "recorded": true
+    },
     {
       "verb": "POST",
       "path": "/api/v1/icons/s3_delete",
@@ -696,27 +751,6 @@
         ]
       },
       "code": "401",
-      "show_in_doc": 1,
-      "recorded": true
-    },
-    {
-      "verb": "POST",
-      "path": "/api/v1/icons/s3_delete",
-      "versions": [
-        "1.0"
-      ],
-      "query": null,
-      "request_data": {
-        "s3_key": "users/235271/icons/hash_name.png"
-      },
-      "response_data": {
-        "errors": [
-          {
-            "message": "That is not your icon."
-          }
-        ]
-      },
-      "code": "403",
       "show_in_doc": 1,
       "recorded": true
     },
@@ -748,28 +782,7 @@
       ],
       "query": null,
       "request_data": {
-        "s3_key": "users/23529/icons/nonsense-fakeimg-1.png"
-      },
-      "response_data": {
-        "errors": [
-          {
-            "message": "Only unused icons can be deleted."
-          }
-        ]
-      },
-      "code": "422",
-      "show_in_doc": 1,
-      "recorded": true
-    },
-    {
-      "verb": "POST",
-      "path": "/api/v1/icons/s3_delete",
-      "versions": [
-        "1.0"
-      ],
-      "query": null,
-      "request_data": {
-        "s3_key": "users/23530/icons/nonsense-fakeimg-2.png"
+        "s3_key": "users/6164/icons/nonsense-fakeimg-2.png"
       },
       "response_data": {
       },
@@ -790,8 +803,8 @@
       "response_data": {
         "results": [
           {
-            "id": 6850,
-            "subject": "test subject 1"
+            "id": 1563,
+            "subject": "search"
           }
         ]
       },
@@ -810,8 +823,8 @@
       "response_data": {
         "results": [
           {
-            "id": 6851,
-            "subject": "search"
+            "id": 1565,
+            "subject": "test subject 23"
           }
         ]
       },
@@ -850,19 +863,17 @@
       "query": null,
       "request_data": {
         "ordered_post_ids": [
-          "6857",
-          "6855",
-          "6858",
-          "6856"
+          "1543",
+          "1541"
         ],
-        "section_id": "549"
+        "section_id": "146"
       },
       "response_data": {
         "post_ids": [
-          6857,
-          6855,
-          6858,
-          6856
+          1543,
+          1541,
+          1542,
+          1544
         ]
       },
       "code": "200",
@@ -878,17 +889,19 @@
       "query": null,
       "request_data": {
         "ordered_post_ids": [
-          "6862",
-          "6860"
+          "1548",
+          "1546",
+          "1549",
+          "1547"
         ],
-        "section_id": "551"
+        "section_id": "148"
       },
       "response_data": {
         "post_ids": [
-          6862,
-          6860,
-          6861,
-          6863
+          1548,
+          1546,
+          1549,
+          1547
         ]
       },
       "code": "200",
@@ -904,16 +917,16 @@
       "query": null,
       "request_data": {
         "ordered_post_ids": [
-          "6867",
-          "6865"
+          "1553",
+          "1551"
         ]
       },
       "response_data": {
         "post_ids": [
-          6867,
-          6865,
-          6866,
-          6868
+          1553,
+          1551,
+          1552,
+          1554
         ]
       },
       "code": "200",
@@ -929,18 +942,18 @@
       "query": null,
       "request_data": {
         "ordered_post_ids": [
-          "6872",
-          "6870",
-          "6873",
-          "6871"
+          "1558",
+          "1556",
+          "1559",
+          "1557"
         ]
       },
       "response_data": {
         "post_ids": [
-          6872,
-          6870,
-          6873,
-          6871
+          1558,
+          1556,
+          1559,
+          1557
         ]
       },
       "code": "200",
@@ -970,40 +983,40 @@
     },
     {
       "verb": "GET",
-      "path": "/api/v1/posts/6853",
+      "path": "/api/v1/posts/1561",
       "versions": [
         "1.0"
       ],
       "query": "",
       "request_data": null,
       "response_data": {
-        "id": 6853,
-        "subject": "test subject 2",
+        "id": 1561,
+        "subject": "test subject 21",
         "content": "test content",
-        "created_at": "2018-05-29T01:26:58.292Z",
+        "created_at": "2019-08-08T22:30:46.303Z",
         "status": 0,
-        "description": null,
-        "edited_at": "2018-05-29T01:26:58.292Z",
-        "tagged_at": "2018-05-29T01:26:58.292Z",
+        "description": "",
+        "edited_at": "2019-08-08T22:30:46.303Z",
+        "tagged_at": "2019-08-08T22:30:46.303Z",
         "board": {
-          "id": 6844,
-          "name": "test board 13"
+          "id": 1574,
+          "name": "test board 12"
         },
         "section": null,
         "user": {
-          "id": 23427,
-          "username": "JohnDoe12"
+          "id": 6140,
+          "username": "JohnDoe36"
         },
         "character": {
-          "id": 2428,
+          "id": 1099,
           "name": "test character 1",
           "screenname": null
         },
         "character_name": "TestAlias1",
         "icon": {
-          "id": 1278,
+          "id": 446,
           "url": "http://www.fakeicon.com",
-          "keyword": "totally fake 2"
+          "keyword": "totally fake 1"
         }
       },
       "code": "200",
@@ -1012,7 +1025,7 @@
     },
     {
       "verb": "GET",
-      "path": "/api/v1/posts/6854",
+      "path": "/api/v1/posts/1562",
       "versions": [
         "1.0"
       ],
@@ -1033,68 +1046,26 @@
   "replies#index": [
     {
       "verb": "GET",
-      "path": "/api/v1/posts/6879/replies",
+      "path": "/api/v1/posts/0/replies",
       "versions": [
         "1.0"
       ],
       "query": "",
       "request_data": null,
-      "response_data": [
-        {
-          "id": 4035,
-          "content": "test content 1",
-          "created_at": "2018-05-29T01:27:03.168Z",
-          "updated_at": "2018-05-29T01:27:03.168Z",
-          "character_name": null,
-          "character": null,
-          "icon": null,
-          "user": {
-            "id": 23512,
-            "username": "JohnDoe87"
+      "response_data": {
+        "errors": [
+          {
+            "message": "Post could not be found."
           }
-        },
-        {
-          "id": 4036,
-          "content": "test content 2",
-          "created_at": "2018-05-29T01:27:03.229Z",
-          "updated_at": "2018-05-29T01:27:03.229Z",
-          "character_name": null,
-          "character": null,
-          "icon": null,
-          "user": {
-            "id": 23512,
-            "username": "JohnDoe87"
-          }
-        },
-        {
-          "id": 4037,
-          "content": "test content 3",
-          "created_at": "2018-05-29T01:27:03.321Z",
-          "updated_at": "2018-05-29T01:27:03.321Z",
-          "character_name": "TestAlias4",
-          "character": {
-            "id": 2448,
-            "name": "test character 19",
-            "screenname": null
-          },
-          "icon": {
-            "id": 1287,
-            "url": "http://www.fakeicon.com",
-            "keyword": "totally fake 11"
-          },
-          "user": {
-            "id": 23514,
-            "username": "JohnDoe89"
-          }
-        }
-      ],
-      "code": "200",
+        ]
+      },
+      "code": "404",
       "show_in_doc": 1,
       "recorded": true
     },
     {
       "verb": "GET",
-      "path": "/api/v1/posts/6880/replies",
+      "path": "/api/v1/posts/1566/replies",
       "versions": [
         "1.0"
       ],
@@ -1113,25 +1084,107 @@
     },
     {
       "verb": "GET",
-      "path": "/api/v1/posts/0/replies",
+      "path": "/api/v1/posts/1567/replies",
+      "versions": [
+        "1.0"
+      ],
+      "query": "",
+      "request_data": null,
+      "response_data": [
+        {
+          "id": 780,
+          "content": "test content 1",
+          "created_at": "2019-08-08T22:30:46.735Z",
+          "updated_at": "2019-08-08T22:30:46.735Z",
+          "character_name": null,
+          "character": null,
+          "icon": null,
+          "user": {
+            "id": 6167,
+            "username": "JohnDoe63"
+          }
+        },
+        {
+          "id": 781,
+          "content": "test content 2",
+          "created_at": "2019-08-08T22:30:46.756Z",
+          "updated_at": "2019-08-08T22:30:46.756Z",
+          "character_name": null,
+          "character": null,
+          "icon": null,
+          "user": {
+            "id": 6167,
+            "username": "JohnDoe63"
+          }
+        },
+        {
+          "id": 782,
+          "content": "test content 3",
+          "created_at": "2019-08-08T22:30:46.781Z",
+          "updated_at": "2019-08-08T22:30:46.781Z",
+          "character_name": "TestAlias2",
+          "character": {
+            "id": 1101,
+            "name": "test character 3",
+            "screenname": null
+          },
+          "icon": {
+            "id": 449,
+            "url": "http://www.fakeicon.com",
+            "keyword": "totally fake 5"
+          },
+          "user": {
+            "id": 6169,
+            "username": "JohnDoe65"
+          }
+        }
+      ],
+      "code": "200",
+      "show_in_doc": 1,
+      "recorded": true
+    }
+  ],
+  "tags#index": [
+    {
+      "verb": "GET",
+      "path": "/api/v1/tags",
       "versions": [
         "1.0"
       ],
       "query": "",
       "request_data": null,
       "response_data": {
-        "errors": [
+        "results": [
           {
-            "message": "Post could not be found."
+            "id": 325,
+            "text": "Tag2"
           }
         ]
       },
-      "code": "404",
+      "code": "200",
       "show_in_doc": 1,
       "recorded": true
-    }
-  ],
-  "tags#index": [
+    },
+    {
+      "verb": "GET",
+      "path": "/api/v1/tags",
+      "versions": [
+        "1.0"
+      ],
+      "query": "",
+      "request_data": null,
+      "response_data": {
+        "results": [
+          {
+            "id": 326,
+            "text": "Tag3"
+          }
+        ]
+      },
+      "code": "200",
+      "show_in_doc": 1,
+      "recorded": true
+    },
     {
       "verb": "GET",
       "path": "/api/v1/tags",
@@ -1162,48 +1215,8 @@
       "response_data": {
         "results": [
           {
-            "id": 1513,
-            "text": "Tag1"
-          }
-        ]
-      },
-      "code": "200",
-      "show_in_doc": 1,
-      "recorded": true
-    },
-    {
-      "verb": "GET",
-      "path": "/api/v1/tags",
-      "versions": [
-        "1.0"
-      ],
-      "query": "",
-      "request_data": null,
-      "response_data": {
-        "results": [
-          {
-            "id": 1514,
-            "text": "Tag2"
-          }
-        ]
-      },
-      "code": "200",
-      "show_in_doc": 1,
-      "recorded": true
-    },
-    {
-      "verb": "GET",
-      "path": "/api/v1/tags",
-      "versions": [
-        "1.0"
-      ],
-      "query": "",
-      "request_data": null,
-      "response_data": {
-        "results": [
-          {
-            "id": 1515,
-            "text": "Tag3"
+            "id": 327,
+            "text": "Tag4"
           }
         ]
       },
@@ -1213,26 +1226,6 @@
     }
   ],
   "tags#show": [
-    {
-      "verb": "GET",
-      "path": "/api/v1/tags/1516",
-      "versions": [
-        "1.0"
-      ],
-      "query": "",
-      "request_data": null,
-      "response_data": {
-        "id": 1516,
-        "text": "Tag4",
-        "gallery_ids": [
-          1191,
-          1192
-        ]
-      },
-      "code": "200",
-      "show_in_doc": 1,
-      "recorded": true
-    },
     {
       "verb": "GET",
       "path": "/api/v1/tags/99",
@@ -1251,6 +1244,26 @@
       "code": "404",
       "show_in_doc": 1,
       "recorded": true
+    },
+    {
+      "verb": "GET",
+      "path": "/api/v1/tags/324",
+      "versions": [
+        "1.0"
+      ],
+      "query": "",
+      "request_data": null,
+      "response_data": {
+        "id": 324,
+        "text": "Tag1",
+        "gallery_ids": [
+          444,
+          445
+        ]
+      },
+      "code": "200",
+      "show_in_doc": 1,
+      "recorded": true
     }
   ],
   "templates#index": [
@@ -1265,11 +1278,11 @@
       "response_data": {
         "results": [
           {
-            "id": 659,
+            "id": 199,
             "name": "baa"
           },
           {
-            "id": 663,
+            "id": 203,
             "name": "BAAc"
           }
         ]
@@ -1287,13 +1300,14 @@
       "query": "",
       "request_data": null,
       "response_data": {
-        "errors": [
+        "results": [
           {
-            "message": "Invalid parameter 'page' value 'b': Must be a number."
+            "id": 207,
+            "name": "test template 1"
           }
         ]
       },
-      "code": "422",
+      "code": "200",
       "show_in_doc": 1,
       "recorded": true
     },
@@ -1344,14 +1358,13 @@
       "query": "",
       "request_data": null,
       "response_data": {
-        "results": [
+        "errors": [
           {
-            "id": 667,
-            "name": "test template 1"
+            "message": "Invalid parameter 'page' value 'b': Must be a number."
           }
         ]
       },
-      "code": "200",
+      "code": "422",
       "show_in_doc": 1,
       "recorded": true
     }
@@ -1366,13 +1379,14 @@
       "query": "",
       "request_data": null,
       "response_data": {
-        "errors": [
+        "results": [
           {
-            "message": "Invalid parameter 'page' value 'b': Must be a number."
+            "id": 6097,
+            "username": "ali"
           }
         ]
       },
-      "code": "422",
+      "code": "200",
       "show_in_doc": 1,
       "recorded": true
     },
@@ -1387,11 +1401,11 @@
       "response_data": {
         "results": [
           {
-            "id": 23461,
+            "id": 6098,
             "username": "baa"
           },
           {
-            "id": 23465,
+            "id": 6102,
             "username": "BAAc"
           }
         ]
@@ -1409,14 +1423,13 @@
       "query": "",
       "request_data": null,
       "response_data": {
-        "results": [
+        "errors": [
           {
-            "id": 23470,
-            "username": "ali"
+            "message": "Invalid parameter 'page' value 'b': Must be a number."
           }
         ]
       },
-      "code": "200",
+      "code": "422",
       "show_in_doc": 1,
       "recorded": true
     }
