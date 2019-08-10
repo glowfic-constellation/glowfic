@@ -1,7 +1,7 @@
 $(document).ready(function() {
   $('.gallery-minmax').click(function(event) {
-    var elem = $(this);
-    var id = elem.data('id');
+    var elem = $('a', this);
+    var id = $(this).data('id');
     if (elem.html().trim() === '-') {
       $('.gallery-data-' + id).hide();
       elem.html('+');

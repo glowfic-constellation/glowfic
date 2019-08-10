@@ -63,7 +63,7 @@ Capybara.register_driver :headless_chrome do |app|
   options = Selenium::WebDriver::Chrome::Options.new
 
   options.add_argument('--headless')
-  # options.add_argument('--no-sandbox')
+  options.add_argument('--no-sandbox')
   # options.add_argument('--disable-popup-blocking')
   options.add_argument('--window-size=1366,768')
 
@@ -200,7 +200,10 @@ module ActionDispatch
 end
 
 require 'webmock/rspec'
-WebMock.disable_net_connect!(allow_localhost: true)
+WebMock.disable_net_connect!(
+  allow_localhost: true,
+  allow: "chromedriver.storage.googleapis.com",
+)
 
 # disable auditing by default unless specifically turned on for a test
 Post.auditing_enabled = false
