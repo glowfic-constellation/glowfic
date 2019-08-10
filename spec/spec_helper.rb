@@ -42,6 +42,36 @@ require 'rails_helper'
 require 'support/spec_test_helper'
 require 'support/spec_feature_helper'
 
+require 'webdrivers'
+require 'selenium/webdriver'
+
+Capybara.register_driver :headless_firefox do |app|
+  profile = Selenium::WebDriver::Firefox::Profile.new
+  options = Selenium::WebDriver::Firefox::Options.new(profile: profile)
+
+  options.add_argument('-headless')
+  options.add_argument('--window-size=1366,768')
+
+  Capybara::Selenium::Driver.new(app, browser: :firefox, options: options)
+end
+
+Capybara.register_driver :chrome do |app|
+  Capybara::Selenium::Driver.new(app, browser: :chrome)
+end
+
+Capybara.register_driver :headless_chrome do |app|
+  options = Selenium::WebDriver::Chrome::Options.new
+
+  options.add_argument('--headless')
+  # options.add_argument('--no-sandbox')
+  # options.add_argument('--disable-popup-blocking')
+  options.add_argument('--window-size=1366,768')
+
+  Capybara::Selenium::Driver.new(app, browser: :chrome, options: options)
+end
+
+Capybara.javascript_driver = :headless_chrome
+
 RSpec.configure do |config|
   # rspec-expectations config goes here. You can use an alternate
   # assertion/expectation library such as wrong or the stdlib/minitest

@@ -20,7 +20,8 @@
           = link_to gallery_path(gallery), method: :delete, data: { confirm: 'Are you sure you want to delete this gallery? (This will not delete the icons.)' }, class: 'gallery-delete' do
             .link-box.action-delete x Delete Gallery
       - unless local_assigns[:hide_minmax]
-        .gallery-box.float-right.gallery-minmax{data: {id: gallery.id}} -
+        .gallery-box.float-right.gallery-minmax{data: {id: gallery.id}}
+          = link_to '-', '#'
       - if local_assigns[:character_gallery] && (is_owner || current_user.try(:admin?))
         .float-right
           = image_tag "icons/arrow_up.png", class: "section-up disabled-arrow"

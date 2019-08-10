@@ -75,7 +75,9 @@ group :test do
   gem 'json'
   gem 'rails-controller-testing'
   gem 'resque_spec'
+  gem 'selenium-webdriver'
   gem 'simplecov'
   gem 'timecop'
+  gem 'webdrivers', '~> 4.0'
   gem 'webmock'
 end

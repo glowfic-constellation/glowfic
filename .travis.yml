@@ -20,3 +20,4 @@ branches:
 addons:
   code_climate:
     repo_token: 1e0c6dba9930e839038860b6d73301226c821937f57ed35d06fc0e4b7bddf5f6
+  chrome: stable

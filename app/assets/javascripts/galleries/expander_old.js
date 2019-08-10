@@ -1,5 +1,5 @@
 $(document).ready(function() {
-  $('.gallery-minmax').click(function() {
+  $('.gallery-minmax').click(function(event) {
     var elem = $(this);
     var id = elem.data('id');
     if (elem.html().trim() === '-') {
@@ -9,5 +9,6 @@ $(document).ready(function() {
       $('.gallery-data-' + id).show();
       elem.html('-');
     }
+    event.preventDefault();
   });
 });

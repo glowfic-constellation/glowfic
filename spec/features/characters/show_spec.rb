@@ -299,4 +299,62 @@ RSpec.feature "Creating a new character", :type => :feature do
       expect(page).to have_link('Other post', href: post_path(post2))
     end
   end
+
+  scenario "Viewing many galleries", js: true do
+    user = create(:user, username: 'Example user', password: 'known')
+    icons = Array.new(4) { |i| create(:icon, user: user, keyword: "Default#{i}", url: "https://example.com/image#{i}.png") }
+    galleries = Array.new(4) { |i| create(:gallery, user: user, icons: [icons[i]], name: "Gallery #{i}")}
+    char = create(:character, user: user, galleries: galleries, default_icon: icons.first, name: 'Test char')
+
+    login(user, 'known')
+
+    visit character_path(char)
+
+    within('.character-info-box') do
+      click_link 'Galleries'
+    end
+
+    within('.character-right-content-box') do
+      expect(page.all('.gallery-title').map(&:text)).to eq(["Gallery 0", "Gallery 1", "Gallery 2", "Gallery 3"])
+      expect(page).to have_selector('.gallery-icons', count: 4)
+
+      # min-max buttons
+      expect(page).to have_selector(".gallery-data-#{galleries.first.id}")
+
+      gallery_headers = page.all('.gallery-header')
+
+      within(gallery_headers.first) do
+        expect(page).to have_link('-')
+        expect(page).to have_no_link('+')
+        click_link '-'
+        expect(page).to have_no_link('-')
+        expect(page).to have_link('+')
+      end
+
+      expect(page).to have_selector('.gallery-icons', count: 3)
+      expect(page).to have_no_selector(".gallery-data-#{galleries.first.id}")
+
+      within(gallery_headers.first) do
+        click_link '+'
+        expect(page).to have_link('-')
+        expect(page).to have_no_link('+')
+      end
+
+      expect(page).to have_selector('.gallery-icons', count: 4)
+      expect(page).to have_selector(".gallery-data-#{galleries.first.id}")
+
+      # TODO:
+
+      # re-maximize 0
+
+      # minimize 2
+      # try moving 0 up first and make sure it's disabled.
+      # move 0 -> 1 (ID -> pos, tests two expanded galleries switching place)
+      # move 0 -> 2 (ID -> pos, tests an unexpanded with an expanded)
+      # move 2 -> 0 (ID -> pos, tests moving up)
+      # reload, ensure new order goes 2, 1, 0, 3.
+
+      # add a gallery group to one of the galleries?
+    end
+  end
 end
