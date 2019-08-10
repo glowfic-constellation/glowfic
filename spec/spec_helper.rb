@@ -201,7 +201,6 @@ end
 
 require 'webmock/rspec'
 allowed_sites = lambda do |uri|
-  p uri.to_s
   uri.to_s.start_with?("https://github.com:443/mozilla/geckodriver/") ||
     uri.host == "github-production-release-asset-2e65be.s3.amazonaws.com"
 end
