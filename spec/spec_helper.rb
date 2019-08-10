@@ -45,8 +45,6 @@ require 'support/spec_feature_helper'
 require 'webdrivers'
 require 'selenium/webdriver'
 
-Webdrivers.logger.level = :DEBUG
-
 Capybara.register_driver :headless_firefox do |app|
   profile = Selenium::WebDriver::Firefox::Profile.new
   options = Selenium::WebDriver::Firefox::Options.new(profile: profile)
@@ -202,9 +200,14 @@ module ActionDispatch
 end
 
 require 'webmock/rspec'
+allowed_sites = lambda do |uri|
+  p uri.to_s
+  uri.to_s.start_with?("https://github.com:443/mozilla/geckodriver/") ||
+    uri.host == "github-production-release-asset-2e65be.s3.amazonaws.com"
+end
 WebMock.disable_net_connect!(
   allow_localhost: true,
-  allow: "chromedriver.storage.googleapis.com",
+  allow: allowed_sites,
 )
 
 # disable auditing by default unless specifically turned on for a test
