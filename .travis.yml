@@ -27,3 +27,4 @@ branches:
     - master
 addons:
   postgresql: 10
+  chrome: stable
