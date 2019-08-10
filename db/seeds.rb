@@ -78,3 +78,10 @@ Message.create!([
   { sender_id: 3, recipient_id: 1, parent_id: 2, message: "Sample reply", unread: false },
   { sender_id: 1, recipient_id: 3, parent_id: 2, message: "Sample reply 2" },
 ])
+
+puts "Creating favorites..."
+Favorite.create!([
+  { user_id: 3, favorite_id: 1, favorite_type: "Post" },
+  { user_id: 3, favorite_id: 1, favorite_type: "Board" },
+  { user_id: 3, favorite_id: 1, favorite_type: "User" },
+])
