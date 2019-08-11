@@ -49,6 +49,12 @@ BoardSection.create!([
   { board_id: 1, name: "golden opportunity", status: 0, section_order: 3 },
 ])
 
+puts "Creating news posts..."
+News.create!([
+  { user_id: 1, content: "News Post 1", created_at: "2019-08-18 21:19:27", updated_at: "2019-08-18 21:19:27" },
+  { user_id: 1, content: "News Post 2", created_at: "2019-08-18 21:19:27", updated_at: "2019-08-18 21:19:27" },
+])
+
 puts "Creating icons..."
 load Rails.root.join('db', 'seeds', 'icon.rb')
 
