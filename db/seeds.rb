@@ -79,10 +79,10 @@ load Rails.root.join('db', 'seeds', 'audit.rb')
 puts "Creating messages..."
 Message.create!([
   { sender_id: 0, recipient_id: 3, subject: "Post import succeeded",
-    message: "Your post was successfully imported! <a href='https://localhost:3000/posts/86'>View it here</a>.", unread: false },
+    message: "Your post was successfully imported! <a href='https://localhost:3000/posts/32'>View it here</a>.", unread: false },
   { sender_id: 1, recipient_id: 3, subject: "Test Message", message: "Sample text" },
-  { sender_id: 3, recipient_id: 1, parent_id: 2, message: "Sample reply", unread: false },
-  { sender_id: 1, recipient_id: 3, parent_id: 2, message: "Sample reply 2" },
+  { sender_id: 3, recipient_id: 1, parent_id: 2, thread_id: 2, message: "Sample reply", unread: false },
+  { sender_id: 1, recipient_id: 3, parent_id: 3, thread_id: 2, message: "Sample reply 2" },
 ])
 
 puts "Creating favorites..."
