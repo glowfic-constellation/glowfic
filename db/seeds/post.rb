@@ -533,6 +533,7 @@ PostView.create!([
   { post_id: 1, user_id: 3, read_at: "2019-05-06 23:07:00" },
   { post_id: 2, user_id: 3, read_at: "2019-06-22 07:40:11" },
   { post_id: 4, user_id: 3 },
+  { post_id: 7, user_id: 3, ignored: true },
   { post_id: 3, user_id: 3, read_at: "2019-06-06 01:53:29" },
   { post_id: 32, user_id: 3, read_at: "2015-07-23 00:57:00" },
 ])
