@@ -408,9 +408,9 @@ RSpec.describe CharactersController do
     end
 
     it "requires notes from moderators" do
-      character = create(:character)
+      character = create(:character, name: 'a')
       login_as(create(:mod_user))
-      put :update, params: { id: character.id }
+      put :update, params: { id: character.id , character: { name: 'b' } }
       expect(response).to render_template(:edit)
       expect(flash[:error]).to eq('You must provide a reason for your moderator edit.')
     end
@@ -448,6 +448,42 @@ RSpec.describe CharactersController do
       expect(character.pb).to eq('Actor')
       expect(character.description).to eq('Description')
       expect(character.galleries).to match_array([gallery])
+    end
+
+    it "does not persist values when invalid" do
+      character = create(:character)
+      user = character.user
+      login_as(user)
+      old_name = character.name
+      template = create(:template, user: user)
+      gallery = create(:gallery, user: user)
+      setting = create(:setting, name: 'Another World')
+
+      put :update, params: {
+        id: character.id,
+        character: {
+          name: '',
+          template_name: 'TemplateName',
+          screenname: 'a-new-test',
+          setting_ids: [setting.id],
+          template_id: template.id,
+          pb: 'Actor',
+          description: 'Description',
+          ungrouped_gallery_ids: [gallery.id]
+        }
+      }
+
+      expect(response.status).to eq(200)
+      expect(flash[:error][:message]).to eq("Your character could not be saved.")
+      character.reload
+      expect(character.name).to eq(old_name)
+      expect(character.template_name).to be_nil
+      expect(character.screenname).to be_nil
+      expect(character.settings).to be_blank
+      expect(character.template).to be_blank
+      expect(character.pb).to be_nil
+      expect(character.description).to be_nil
+      expect(character.galleries).to be_blank
     end
 
     it "adds galleries by groups" do
