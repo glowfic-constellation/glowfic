@@ -70,17 +70,17 @@ class CharactersController < ApplicationController
   end
 
   def update
-    @character.assign_attributes(character_params)
-    build_template
-
-    if current_user.id != @character.user_id && @character.audit_comment.blank?
-      flash[:error] = "You must provide a reason for your moderator edit."
-      build_editor
-      render :edit and return
-    end
-
     begin
       Character.transaction do
+        @character.assign_attributes(character_params)
+        build_template
+
+        if current_user.id != @character.user_id && @character.audit_comment.blank?
+          flash[:error] = "You must provide a reason for your moderator edit."
+          build_editor
+          render :edit and return
+        end
+
         @character.settings = process_tags(Setting, :character, :setting_ids)
         @character.gallery_groups = process_tags(GalleryGroup, :character, :gallery_group_ids)
         @character.save!
