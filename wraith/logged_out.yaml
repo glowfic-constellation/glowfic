@@ -20,6 +20,10 @@ paths:
     path: /boards/1
     selector: '.flash'
 
+  signup:
+    path: /users/new
+    selector: '[id=content]'
+
   about_tos:
     path: /tos
     selector: '[id=content]'
