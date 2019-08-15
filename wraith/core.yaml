@@ -54,7 +54,7 @@ paths:
     path: /boards/-1
     selector: '.flash'
   flash_success:
-    path: /
+    path: /posts/32?at_id=163&unread=true
     selector: '.flash'
   home:
     path: /?pp=skip
