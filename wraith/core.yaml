@@ -151,6 +151,13 @@ paths:
     path: /characters/27/aliases/new
     selector: '[id=content]'
 
+  favorites:
+    path: /favorites
+    selector: '[id=content]'
+  favorites_grouped:
+    path: /favorites?view=bucket
+    selector: '[id=content]'
+
   galleries:
     path: /users/3/galleries
     selector: '[id=content]'
@@ -202,6 +209,10 @@ paths:
     path: /messages/new?recipient_id=1
     selector: '[id=content]'
 
+  news:
+    path: /news
+    selector: '[id=content]'
+
   posts:
     path: /posts
     selector: '[id=content]'
@@ -222,6 +233,9 @@ paths:
     path: /posts/new
     selector: '[id=content]'
     before_capture: 'wraith/javascript/wait.js'
+  post_import:
+    path: /posts/new?view=import
+    selector: '[id=content]'
   post_show:
     path: /posts/32?page=unread#unread
     selector: '[id=content]'
