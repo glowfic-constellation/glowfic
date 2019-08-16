@@ -1,4 +1,6 @@
 module.exports = function(casper, ready) {
-  $("#editor-help-box").dialog('open');
+  casper.evaluate(function() {
+    $("#editor-help-box").dialog('open');
+  });
   ready();
 };
