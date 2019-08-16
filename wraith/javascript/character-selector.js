@@ -4,4 +4,5 @@ module.exports = function(casper, ready) {
     $('#alias-selector').hide();
     $('html, body').scrollTop($("#post-editor").offset().top);
   });
+  ready();
 };
