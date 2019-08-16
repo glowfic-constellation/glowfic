@@ -54,8 +54,9 @@ paths:
     path: /boards/-1
     selector: '.flash'
   flash_success:
-    path: /posts/32?at_id=163&unread=true
-    selector: '.flash'
+    path: /characters/27/edit
+    selector: '.flash.success'
+    before_capture: 'wraith/javascript/flash_success.js'
   home:
     path: /?pp=skip
   footer:
@@ -89,10 +90,10 @@ paths:
     path: /boards/new
     selector: '[id=content]'
   board_show_open:
-    path: /boards/5
+    path: /boards/3
     selector: '[id=content]'
   board_edit:
-    path: /boards/1/edit
+    path: /boards/1/edit?proofer-ignore
     selector: '[id=content]'
   board_show_sections:
     path: /boards/1
@@ -237,7 +238,7 @@ paths:
     path: /posts/new?view=import
     selector: '[id=content]'
   post_show:
-    path: /posts/32?page=unread#unread
+    path: /posts/3
     selector: '[id=content]'
   post_show_html:
     path: /posts/2?page=2&per_page=5&proofer-ignore
@@ -264,7 +265,6 @@ paths:
     before_capture: 'wraith/javascript/character-selector.js'
     selector: '[id=post_form]'
 
-
   replies_search:
     path: /replies/search?commit=true&icon_id=89
     selector: '[id=content]'
@@ -274,6 +274,9 @@ paths:
   reply_edit:
     path: /replies/37/edit
     selector: '[id=content]'
+  reply_unread:
+    path: /posts/33?page=unread#unread
+    selector: '.reply-highlighted'
 
   reports:
     path: /reports

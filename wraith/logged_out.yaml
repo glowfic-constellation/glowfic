@@ -41,7 +41,7 @@ paths:
     path: /boards
     selector: '[id=content]'
   board_show_open:
-    path: /boards/5
+    path: /boards/3
     selector: '[id=content]'
   board_show_sections:
     path: /boards/1
