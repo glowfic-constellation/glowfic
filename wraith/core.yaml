@@ -261,7 +261,7 @@ paths:
     selector: '[class=ui-dialog]'
   character_selector:
     path: /posts/new
-    before_capture: 'wraith/javascript.character-selector.js'
+    before_capture: 'wraith/javascript/character-selector.js'
     selector: '[id=post-editor]'
 
 
