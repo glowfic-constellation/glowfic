@@ -258,11 +258,11 @@ paths:
   editor_help:
     path: /posts/new
     before_capture: 'wraith/javascript/editor-help.js'
-    selector: '[class=ui-dialog]'
+    selector: '[id=editor-help-box]'
   character_selector:
     path: /posts/new
     before_capture: 'wraith/javascript/character-selector.js'
-    selector: '[id=post-editor]'
+    selector: '[id=post_form]'
 
 
   replies_search:
