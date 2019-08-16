@@ -448,7 +448,7 @@ GEM
       websocket-extensions (>= 0.1.0)
     websocket-extensions (0.1.4)
     will_paginate (3.1.8)
-    wraith (4.2.4)
+    wraith (4.2.3)
       anemone
       chromedriver-helper (~> 1.1)
       image_size
@@ -533,7 +533,7 @@ DEPENDENCIES
   web-console (~> 3.0)
   webmock
   will_paginate (~> 3.1.8)
-  wraith
+  wraith (= 4.2.3)
 
 RUBY VERSION
    ruby 2.6.5p114

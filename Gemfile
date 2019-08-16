@@ -57,7 +57,7 @@ group :development do
   gem 'rubocop-rspec', '~> 1.36.0', require: false
   gem 'traceroute'
   gem 'web-console', '~> 3.0'
-  gem 'wraith'
+  gem 'wraith', '4.2.3'
 end
 
 group :development, :test do
