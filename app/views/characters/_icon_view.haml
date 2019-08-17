@@ -28,18 +28,19 @@
 %tr
   %td.icons-box.left-align
     .character-icon-list
-      - characters.includes(:default_icon).each do |character|
+      - characters.left_outer_joins(:default_icon).pluck(:id, :name, :screenname, :user_id, :url, :keyword).each do |plucked|
+        - char_id, char_name, screenname, user_id, url, keyword = plucked
         .character-icon-item
-          = link_to character_path(character) do
-            - if character.default_icon
-              = icon_tag character.default_icon
+          = link_to character_path(char_id) do
+            - if url
+              = icon_mem_tag(url, keyword)
             - else
               .icon.character-no-icon &nbsp;
-            .character-name= character.name
-            - if character.screenname
-              .character-screenname= surround('(', ')') { breakable_text(character.screenname) }
-          - if character.deletable_by?(current_user)
-            .delete-button{ id: character.id }
-              = link_to '×', character_path(character), :method => :delete, data: { confirm: 'Are you sure you want to delete '+character.name+'?' }
+            .character-name= char_name
+            - if screenname
+              .character-screenname= surround('(', ')') { breakable_text(screenname) }
+          - if Character.deletable_by?(current_user, user_id)
+            .delete-button{ id: char_id }
+              = link_to '×', character_path(char_id), :method => :delete, data: { confirm: 'Are you sure you want to delete '+char_name+'?' }
       - unless characters.present?
         .centered — No characters yet —
