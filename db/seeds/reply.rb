@@ -1334,4 +1334,11 @@ Reply.create!([
     created_at: "2015-07-23 00:59:00",
     updated_at: "2015-07-23 00:59:00",
   },
+  {
+    post_id: 33,
+    user_id: 4,
+    content: "<p>unread reply</p>",
+    created_at: "2018-08-18 21:22:43",
+    updated_at: "2018-08-18 21:22:43",
+  },
 ])

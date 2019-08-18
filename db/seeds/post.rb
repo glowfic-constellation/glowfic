@@ -524,6 +524,22 @@ Post.create!([
     authors_locked: true,
     unjoined_author_ids: [3]
   },
+  {
+    board_id: 5,
+    user_id: 3,
+    subject: "unread post",
+    content: "<p>sample text</p>",
+    character_id: 23,
+    icon_id: 3,
+    created_at: "2018-08-18 21:19:27",
+    updated_at: "2018-08-18 21:22:43",
+    status: 0,
+    section_order: 0,
+    edited_at: "2018-08-18 21:19:27",
+    tagged_at: "2018-08-18 21:22:43",
+    authors_locked: true,
+    unjoined_author_ids: [4]
+  },
 ])
 
 puts "Setting up post views..."
@@ -536,6 +552,7 @@ PostView.create!([
   { post_id: 7, user_id: 3, ignored: true },
   { post_id: 3, user_id: 3, read_at: "2019-06-06 01:53:29" },
   { post_id: 32, user_id: 3, read_at: "2015-07-23 00:57:00" },
+  { post_id: 33, user_id: 3, read_at: "2019-08-18 21:22:42" },
 ])
 
 puts "Queuing flat post generation (will not update until jobs are run)"
