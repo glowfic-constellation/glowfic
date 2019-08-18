@@ -29,6 +29,10 @@ layouts.each do |layout|
   else
     user.update!(layout: layout)
   end
+  Message.find_by(id: 4).update!(unread: true)
+  post = Post.find_by(id: 33)
+  post.mark_read(user, post.replies.first.created_at, true)
+  FlatPost.find_by(post_id: 3).update!(updated_at: "2012-09-13 02:00:00")
   run(layout, wraith, command)
 end
 
