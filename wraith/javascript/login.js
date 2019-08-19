@@ -4,6 +4,9 @@ module.exports = function(casper, ready) {
       'username': 'Kappa',
       'password': 'pythbox'
     });
+    casper.fill("#header-remember", {
+      'remember_me': true
+    });
 
     casper.click('#header-form input.button');
 
@@ -27,5 +30,5 @@ module.exports = function(casper, ready) {
     }
   });
 
-  casper.wait(5000, ready);
+  casper.wait(500, ready);
 };

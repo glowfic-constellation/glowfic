@@ -31,6 +31,7 @@ tmux-server-*
 coverage/*
 spec/examples.txt
 wraith/now/*
+wraith/cookies.txt
 
 # Ignore DB backups
 /db/backups/*
