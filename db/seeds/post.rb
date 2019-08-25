@@ -521,7 +521,7 @@ Post.create!([
     so she's the one who fetches Miles Vorkosigan, watches over his transformation into Miles Naismith, and accompanies the latter to his destination, pretending this time to be business partners (she Sales And Marketing, he eccentrically Development, product Top Secret).<br><br>Currently they're sliding back into their ranks and uniforms - she's got her Dendarii pants on already and lovely scarlet accessories to turn them into shiny silver fashion statements.  But before they fully reintegrate with their outfit and she dons the rest of <em>her</em> outfit there is a hospital visit to make.<br><br>The survivors of the incident, such as they are, aren't in great shape.  Miles knows how the dead-and-irrecoverable wanted to be disposed of; he knows his obligations to the crippled, likewise, and he discharges them with all the gravity and generosity that could be wished.  Quinn wants his job, so she watches him do it, even this least lovely part.  Reminds her a little of the news that her face was getting artistically replaced.  But that doesn't mean she doesn't wonder why he has to get that up close and personal with Aziz, who after all probably can't understand a word he says.<br><br>Miles demurs with something about a fascinated fear of the loss of mind, and Elli lets it go.<br><br>They get good news about Marilac, about the value of their work there.<br><br>They split up so that he can shower, and she can get into her greys, and then there's going to be the usual meeting.",
     created_at: "2015-07-22 17:44:00",
     updated_at: "2019-06-22 18:40:31",
-    status: 2,
+    status: Post::STATUS_ABANDONED,
     section_order: 0,
     edited_at: "2019-06-22 18:40:31",
     tagged_at: "2015-07-23 00:59:00",
