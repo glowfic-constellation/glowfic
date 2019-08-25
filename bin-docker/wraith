@@ -1,3 +1,15 @@
 #!/bin/bash
 
-docker-compose run --rm wraith "$@"
+layout=$2
+layout_param=$2
+
+if [[ ! -z "$layout" ]]; then
+  if [ ${layout:0:7} == "wraith/" ]; then
+    layout=${layout:8}
+  else
+    layout_param="wraith/" + $layout
+  fi
+  docker-compose run --rm web bin/rails runner script/before_wraith.rb "$layout"
+fi
+
+docker-compose run --rm wraith "$1 $layout_param"
