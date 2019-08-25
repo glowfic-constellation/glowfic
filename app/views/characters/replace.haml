@@ -42,7 +42,7 @@
     - @posts.each do |post|
       %tr
         %td{colspan: 2, class: cycle('even', 'odd')}
-          = check_box_tag :'post_ids[]', post.id, id: nil
+          = check_box_tag :'post_ids[]', post.id, false, id: nil
           = link_to post.subject, post_path(post)
     %tr
       %th.form-table-ender{colspan: 2}= submit_tag "Replace", class: 'button'
