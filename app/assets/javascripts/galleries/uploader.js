@@ -20,10 +20,6 @@ $(document).ready(function() {
   });
 });
 
-function randomString() {
-  return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
-}
-
 function bindFileInput(fileInput, form, submitButton, formData) {
   var uploadArgs = {
     fileInput: fileInput,
@@ -50,12 +46,6 @@ function bindFileInput(fileInput, form, submitButton, formData) {
 
       formData["Content-Type"] = fileType;
       data.formData = formData;
-
-      // seed the AWS key with a random string here, not serverside, so each upload has a unique string
-      var pieces = data.formData.key.split('$');
-      var newKey = pieces[0] + randomString() + '_$' + pieces[1];
-      data.formData.key = newKey;
-
       data.submit();
       fileInput.val('');
     },
