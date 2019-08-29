@@ -1,7 +1,11 @@
 class SplitPostTextIntoReplies < ActiveRecord::Migration[5.1]
   def up
+    execute <<~SQL
+      UPDATE replies
+      SET reply_order = reply_order + 1;
+    SQL
+
     Post.find_each do |post|
-      post.replies.ordered.each { |reply| reply.update_columns(reply_order: reply.reply_order+1) }
       reply = Reply.create!(
         post_id: post.id,
         user_id: post.user_id,
@@ -40,9 +44,14 @@ class SplitPostTextIntoReplies < ActiveRecord::Migration[5.1]
       else
         raise "Post user does not match initial reply's user"
       end
-      post.replies.ordered.each { |reply| reply.update_columns(reply_order: reply.reply_order-1) }
       reply.delete
     end
+
+    execute <<~SQL
+      UPDATE replies
+      SET reply_order = reply_order - 1;
+    SQL
+    
     add_index :posts, :character_id
     add_index :posts, :icon_id
     execute "CREATE INDEX idx_fts_post_content ON posts USING gin(to_tsvector('english', coalesce(\"posts\".\"content\"::text, '')))"
