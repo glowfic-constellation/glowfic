@@ -12,7 +12,7 @@ class UploadingController < ApplicationController
     end
 
     @s3_direct_post = S3_BUCKET.presigned_post(
-      key: "users/#{current_user.id}/icons/${filename}",
+      key: "users/#{current_user.id}/icons/#{SecureRandom.uuid}_${filename}",
       success_action_status: '201',
       acl: 'public-read',
       content_type_starts_with: 'image/',
