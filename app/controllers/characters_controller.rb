@@ -43,9 +43,10 @@ class CharactersController < ApplicationController
     @character.gallery_groups = process_tags(GalleryGroup, obj_param: :character, id_param: :gallery_group_ids)
     build_template
 
-    begin
-      @character.save!
-    rescue ActiveRecord::RecordInvalid
+    if @character.save
+      flash[:success] = "Character saved successfully."
+      redirect_to character_path(@character)
+    else
       @page_title = "New Character"
       flash.now[:error] = {
         message: "Your character could not be saved.",
@@ -53,9 +54,6 @@ class CharactersController < ApplicationController
       }
       editor_setup
       render :new
-    else
-      flash[:success] = "Character saved successfully."
-      redirect_to character_path(@character)
     end
   end
 
@@ -133,17 +131,15 @@ class CharactersController < ApplicationController
       redirect_to user_characters_path(current_user) and return
     end
 
-    begin
-      @character.destroy!
-    rescue ActiveRecord::RecordNotDestroyed
+    if @character.destroy
+      flash[:success] = "Character deleted successfully."
+      redirect_to user_characters_path(current_user)
+    else
       flash[:error] = {
         message: "Character could not be deleted.",
         array: @character.errors.full_messages
       }
       redirect_to character_path(@character)
-    else
-      flash[:success] = "Character deleted successfully."
-      redirect_to user_characters_path(current_user)
     end
   end
 

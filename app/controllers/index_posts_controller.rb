@@ -59,15 +59,13 @@ class IndexPostsController < ApplicationController
   end
 
   def destroy
-    begin
-      @index_post.destroy!
-    rescue ActiveRecord::RecordNotDestroyed
+    if @index_post.destroy
+      flash[:success] = "Post removed from index."
+    else
       flash[:error] = {
         message: "Post could not be removed from index.",
         array: @index_post.errors.full_messages
       }
-    else
-      flash[:success] = "Post removed from index."
     end
     redirect_to index_path(@index_post.index)
   end

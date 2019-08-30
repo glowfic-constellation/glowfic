@@ -37,9 +37,10 @@ class BoardsController < ApplicationController
     @board = Board.new(permitted_params)
     @board.creator = current_user
 
-    begin
-      @board.save!
-    rescue ActiveRecord::RecordInvalid
+    if @board.save
+      flash[:success] = "Continuity created!"
+      redirect_to continuities_path
+    else
       flash.now[:error] = {
         message: "Continuity could not be created.",
         array: @board.errors.full_messages
@@ -47,9 +48,6 @@ class BoardsController < ApplicationController
       @page_title = 'New Continuity'
       editor_setup
       render :new
-    else
-      flash[:success] = "Continuity created!"
-      redirect_to continuities_path
     end
   end
 
@@ -75,9 +73,10 @@ class BoardsController < ApplicationController
   end
 
   def update
-    begin
-      @board.update!(permitted_params)
-    rescue ActiveRecord::RecordInvalid
+    if @board.update(permitted_params)
+      flash[:success] = "Continuity saved!"
+      redirect_to continuity_path(@board)
+    else
       flash.now[:error] = {
         message: "Continuity could not be created.",
         array: @board.errors.full_messages
@@ -87,24 +86,19 @@ class BoardsController < ApplicationController
       use_javascript('board_sections')
       @board_sections = @board.board_sections.ordered
       render :edit
-    else
-      flash[:success] = "Continuity saved!"
-      redirect_to continuity_path(@board)
     end
   end
 
   def destroy
-    begin
-      @board.destroy!
-    rescue ActiveRecord::RecordNotDestroyed
+    if @board.destroy
+      flash[:success] = "Continuity deleted."
+      redirect_to continuities_path
+    else
       flash[:error] = {
         message: "Continuity could not be deleted.",
         array: @board.errors.full_messages
       }
       redirect_to continuity_path(@board)
-    else
-      flash[:success] = "Continuity deleted."
-      redirect_to continuities_path
     end
   end
 

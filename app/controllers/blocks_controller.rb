@@ -57,15 +57,13 @@ class BlocksController < ApplicationController
   end
 
   def destroy
-    begin
-      @block.destroy!
-    rescue ActiveRecord::RecordNotDestroyed
+    if @block.destroy
+      flash[:success] = "User unblocked."
+    else
       flash[:error] = {
         message: "User could not be unblocked.",
         array: @block.errors.full_messages
       }
-    else
-      flash[:success] = "User unblocked."
     end
     redirect_to blocks_path
   end

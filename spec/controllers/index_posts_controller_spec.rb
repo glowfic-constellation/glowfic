@@ -186,7 +186,7 @@ RSpec.describe IndexPostsController do
       post = create(:post, user: index.user)
       index.posts << post
       login_as(index.user)
-      expect_any_instance_of(IndexPost).to receive(:destroy!).and_raise(ActiveRecord::RecordNotDestroyed, 'fake error')
+      expect_any_instance_of(IndexPost).to receive(:destroy).and_return(false)
       index_post = index.index_posts.first
       delete :destroy, params: { id: index_post.id }
       expect(response).to redirect_to(index_url(index))

@@ -45,20 +45,18 @@ class UsersController < ApplicationController
       render :new and return
     end
 
-    begin
-      @user.save!
-    rescue ActiveRecord::RecordInvalid
+    if @user.save
+      flash[:success] = "User created! You have been logged in."
+      session[:user_id] = @user.id
+      @current_user = @user
+      redirect_to root_url
+    else
       signup_prep
       flash.now[:error] = {
         message: "There was a problem completing your sign up.",
         array: @user.errors.full_messages
       }
       render :new
-    else
-      flash[:success] = "User created! You have been logged in."
-      session[:user_id] = @user.id
-      @current_user = @user
-      redirect_to root_url
     end
   end
 
@@ -72,9 +70,10 @@ class UsersController < ApplicationController
 
     params[:user][:per_page] = -1 if params[:user].try(:[], :per_page) == 'all'
 
-    begin
-      current_user.update!(user_params)
-    rescue ActiveRecord::RecordInvalid
+    if current_user.update(user_params)
+      flash[:success] = "Changes saved successfully."
+      redirect_to edit_user_path(current_user)
+    else
       flash.now[:error] = {
         message: "There was a problem updating your account.",
         array: current_user.errors.full_messages
@@ -82,9 +81,6 @@ class UsersController < ApplicationController
       use_javascript('users/edit')
       @page_title = 'Edit Account'
       render :edit
-    else
-      flash[:success] = "Changes saved successfully."
-      redirect_to edit_user_path(current_user)
     end
   end
 
@@ -97,18 +93,16 @@ class UsersController < ApplicationController
 
     current_user.validate_password = true
 
-    begin
-      current_user.update!(user_params)
-    rescue ActiveRecord::RecordInvalid
+    if current_user.update(user_params)
+      flash[:success] = "Changes saved successfully."
+      redirect_to edit_user_path(current_user)
+    else
       flash.now[:error] = {
         message: "There was a problem with your changes.",
         array: current_user.errors.full_messages
       }
       @page_title = 'Edit Account'
       render :edit
-    else
-      flash[:success] = "Changes saved successfully."
-      redirect_to edit_user_path(current_user)
     end
   end
 
@@ -207,17 +201,15 @@ class UsersController < ApplicationController
 
   def store_tos
     current_user.tos_version = User::CURRENT_TOS_VERSION
-    begin
-      current_user.save!
-    rescue ActiveRecord::RecordInvalid
+    if current_user.save
+      flash[:success] = "Acceptance saved successfully. Thank you!"
+      redirect_to session[:previous_url] || root_url
+    else
       flash.now[:error] = {
         message: 'There was an error saving your changes. Please try again.',
         array: current_user.errors.full_messages
       }
       render 'about/accept_tos'
-    else
-      flash[:success] = "Acceptance saved successfully. Thank you!"
-      redirect_to session[:previous_url] || root_url
     end
   end
 end

@@ -202,7 +202,7 @@ RSpec.describe IndexesController do
       index = create(:index)
       section = create(:index_section, index: index)
       login_as(index.user)
-      expect_any_instance_of(Index).to receive(:destroy!).and_raise(ActiveRecord::RecordNotDestroyed, 'fake error')
+      expect_any_instance_of(Index).to receive(:destroy).and_return(false)
       delete :destroy, params: { id: index.id }
       expect(response).to redirect_to(index_url(index))
       expect(flash[:error]).to eq({message: "Index could not be deleted.", array: []})

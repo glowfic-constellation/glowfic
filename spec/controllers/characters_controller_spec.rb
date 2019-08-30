@@ -808,7 +808,7 @@ RSpec.describe CharactersController do
       character = create(:character)
       post = create(:post, user: character.user, character: character)
       login_as(character.user)
-      expect_any_instance_of(Character).to receive(:destroy!).and_raise(ActiveRecord::RecordNotDestroyed, 'fake error')
+      expect_any_instance_of(Character).to receive(:destroy).and_return(false)
       delete :destroy, params: { id: character.id }
       expect(response).to redirect_to(character_url(character))
       expect(flash[:error]).to eq({message: "Character could not be deleted.", array: []})

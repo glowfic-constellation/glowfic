@@ -15,9 +15,10 @@ class TemplatesController < ApplicationController
   def create
     @template = Template.new(permitted_params)
     @template.user = current_user
-    begin
-      @template.save!
-    rescue ActiveRecord::RecordInvalid
+    if @template.save
+      flash[:success] = "Template saved successfully."
+      redirect_to template_path(@template)
+    else
       flash.now[:error] = {
         message: "Your template could not be saved because of the following problems:",
         array: @template.errors.full_messages
@@ -25,9 +26,6 @@ class TemplatesController < ApplicationController
       editor_setup
       @page_title = "New Template"
       render :new
-    else
-      flash[:success] = "Template saved successfully."
-      redirect_to template_path(@template)
     end
   end
 
@@ -46,9 +44,10 @@ class TemplatesController < ApplicationController
   end
 
   def update
-    begin
-      @template.update!(permitted_params)
-    rescue ActiveRecord::RecordInvalid
+    if @template.update(permitted_params)
+      flash[:success] = "Template saved successfully."
+      redirect_to template_path(@template)
+    else
       flash.now[:error] = {
         message: "Your template could not be saved because of the following problems:",
         array: @template.errors.full_messages
@@ -56,24 +55,19 @@ class TemplatesController < ApplicationController
       editor_setup
       @page_title = 'Edit Template: ' + @template.name_was
       render :edit
-    else
-      flash[:success] = "Template saved successfully."
-      redirect_to template_path(@template)
     end
   end
 
   def destroy
-    begin
-      @template.destroy!
-    rescue ActiveRecord::RecordNotDestroyed
+    if @template.destroy
+      flash[:success] = "Template deleted successfully."
+      redirect_to user_characters_path(current_user)
+    else
       flash[:error] = {
         message: "Template could not be deleted.",
         array: @template.errors.full_messages
       }
       redirect_to template_path(@template)
-    else
-      flash[:success] = "Template deleted successfully."
-      redirect_to user_characters_path(current_user)
     end
   end
 

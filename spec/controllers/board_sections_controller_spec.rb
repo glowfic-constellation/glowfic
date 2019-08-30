@@ -249,7 +249,7 @@ RSpec.describe BoardSectionsController do
       section = create(:board_section)
       post = create(:post, user: section.board.creator, board: section.board, section: section)
       login_as(section.board.creator)
-      expect_any_instance_of(BoardSection).to receive(:destroy!).and_raise(ActiveRecord::RecordNotDestroyed, 'fake error')
+      expect_any_instance_of(BoardSection).to receive(:destroy).and_return(false)
       delete :destroy, params: { id: section.id }
       expect(response).to redirect_to(board_section_url(section))
       expect(flash[:error]).to eq({message: "Section could not be deleted.", array: []})

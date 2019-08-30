@@ -2757,7 +2757,7 @@ RSpec.describe PostsController do
       post = create(:post)
       reply = create(:reply, user: post.user, post: post)
       login_as(post.user)
-      expect_any_instance_of(Post).to receive(:destroy!).and_raise(ActiveRecord::RecordNotDestroyed, 'fake error')
+      expect_any_instance_of(Post).to receive(:destroy).and_return(false)
       delete :destroy, params: { id: post.id }
       expect(response).to redirect_to(post_url(post))
       expect(flash[:error]).to eq({message: "Post could not be deleted.", array: []})
