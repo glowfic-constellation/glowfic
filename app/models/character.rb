@@ -40,6 +40,10 @@ class Character < ApplicationRecord
   audited on: :update, mod_only: true, update_with_comment_only: false
 
   def editable_by?(user)
+    self.class.editable_by?(user, self.user_id)
+  end
+
+  def self.editable_by?(user, user_id)
     return false unless user
     return true if user_id == user.id
     user.has_permission?(:edit_characters)
