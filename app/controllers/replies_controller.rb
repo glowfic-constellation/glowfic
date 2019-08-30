@@ -186,16 +186,9 @@ class RepliesController < WritableController
     to_page = previous_reply.try(:post_page, per_page) || 1
 
     # to destroy subsequent replies, do @reply.destroy_subsequent_replies
-    begin
-      @reply.destroy!
-    rescue ActiveRecord::RecordNotDestroyed => e
-      render_errors(@reply, action: 'deleted')
-      log_error(e) unless @reply.errors.present?
-      redirect_to reply_path(@reply, anchor: "reply-#{@reply.id}")
-    else
-      flash[:success] = "Reply deleted."
-      redirect_to post_path(@reply.post, page: to_page)
-    end
+    @destroy_redirect = post_path(@reply.post, page: to_page)
+    @destroy_failure_redirect = reply_path(@reply, anchor: "reply-#{@reply.id}")
+    super
   end
 
   def restore
