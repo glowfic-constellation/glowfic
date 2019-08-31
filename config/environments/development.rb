@@ -75,4 +75,7 @@ Rails.application.configure do
 
   # Check html is valid
   config.middleware.use HTMLProofer::Middleware
+
+  # raise an error if assets aren't found
+  config.assets.unknown_asset_fallback = false
 end
