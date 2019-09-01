@@ -5,7 +5,6 @@ class ApplicationController < ActionController::Base
   include Authentication
   include Memorylogic
 
-  protect_from_forgery with: :exception
   rescue_from ActionController::InvalidAuthenticityToken, with: :handle_invalid_token
 
   before_action :check_tos
