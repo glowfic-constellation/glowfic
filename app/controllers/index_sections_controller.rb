@@ -28,11 +28,7 @@ class IndexSectionsController < GenericController
 
   def find_index
     id = params[:index_id] || permitted_params[:index_id]
-
-    unless (@index = Index.find_by(id: id))
-      flash[:error] = "Index could not be found."
-      redirect_to indexes_path
-    end
+    @index = find_parent(Index, id: id, redirect: indexes_path)
   end
 
   def require_edit_permission

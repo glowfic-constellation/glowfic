@@ -84,6 +84,15 @@ class GenericController < ApplicationController
     set_model
   end
 
+  def find_parent(model, id:, redirect:)
+    if (parent = model.find_by(id: id))
+      parent
+    else
+      flash[:error] = "#{model} could not be found."
+      redirect_to redirect
+    end
+  end
+
   def require_view_permission
     return unless model_class.method_defined? :visible_to?
     unless @model.visible_to?(current_user)

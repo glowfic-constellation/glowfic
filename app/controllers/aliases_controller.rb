@@ -23,10 +23,7 @@ class AliasesController < GenericController
   private
 
   def find_character
-    unless (@character = Character.find_by_id(params[:character_id]))
-      flash[:error] = "Character could not be found."
-      redirect_to user_characters_path(current_user) and return
-    end
+    @character = find_parent(Character, id: params[:character_id], redirect: user_characters_path(current_user))
   end
 
   def require_create_permission
