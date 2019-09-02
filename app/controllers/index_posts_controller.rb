@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 class IndexPostsController < GenericController
   before_action :find_index, only: [:new, :create]
+  before_action(only: [:new, :create]) { require_edit_permission }
 
   def new
     @index_post = IndexPost.new(index: index, index_section_id: params[:index_section_id])
@@ -33,23 +34,20 @@ class IndexPostsController < GenericController
   private
 
   def find_index
-    unless (id = params[:index_id])
-      id = params.key?(:index_post) ? params[:index_post].fetch(:index_id, nil) : nil
-    end
+    id = params[:index_id] || permitted_params[:index_id]
 
     unless (@index = Index.find_by(id: id))
       flash[:error] = "Index could not be found."
-      redirect_to indexes_path and return
+      redirect_to indexes_path
     end
-
-    require_edit_permission(@index)
   end
 
   def permitted_params
     params.fetch(:index_post, {}).permit(:description, :index_id, :index_section_id, :post_id)
   end
 
-  def require_edit_permission(index=@index_post.index)
+  def require_edit_permission
+    index = @index || @index_post.index
     unless index.editable_by?(current_user)
       flash[:error] = "You do not have permission to modify this index."
       redirect_to index_path(@index_post.index) and return
