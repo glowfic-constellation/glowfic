@@ -425,7 +425,7 @@ RSpec.describe RepliesController do
     it "requires valid reply" do
       get :show, params: { id: -1 }
       expect(response).to redirect_to(boards_url)
-      expect(flash[:error]).to eq("Post could not be found.")
+      expect(flash[:error]).to eq("Reply could not be found.")
     end
 
     it "requires post access" do
@@ -486,7 +486,7 @@ RSpec.describe RepliesController do
     it "requires valid reply" do
       get :history, params: { id: -1 }
       expect(response).to redirect_to(boards_url)
-      expect(flash[:error]).to eq("Post could not be found.")
+      expect(flash[:error]).to eq("Reply could not be found.")
     end
 
     it "requires post access" do
@@ -530,7 +530,7 @@ RSpec.describe RepliesController do
       login
       get :edit, params: { id: -1 }
       expect(response).to redirect_to(boards_url)
-      expect(flash[:error]).to eq("Post could not be found.")
+      expect(flash[:error]).to eq("Reply could not be found.")
     end
 
     it "requires post access" do
@@ -596,7 +596,7 @@ RSpec.describe RepliesController do
       login
       put :update, params: { id: -1 }
       expect(response).to redirect_to(boards_url)
-      expect(flash[:error]).to eq("Post could not be found.")
+      expect(flash[:error]).to eq("Reply could not be found.")
     end
 
     it "requires post access" do
@@ -797,7 +797,7 @@ RSpec.describe RepliesController do
       login
       delete :destroy, params: { id: -1 }
       expect(response).to redirect_to(boards_url)
-      expect(flash[:error]).to eq("Post could not be found.")
+      expect(flash[:error]).to eq("Reply could not be found.")
     end
 
     it "requires post access" do
