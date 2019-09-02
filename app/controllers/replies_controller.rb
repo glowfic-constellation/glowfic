@@ -3,6 +3,7 @@ require 'will_paginate/array'
 
 class RepliesController < WritableController
   before_action(only: [:history]) { find_model }
+  before_action :require_view_permission, only: [:show, :edit, :update, :destroy, :history]
 
   def search
     @page_title = 'Search Replies'
@@ -228,20 +229,12 @@ class RepliesController < WritableController
 
   private
 
-  def find_model
-    unless (@reply = Reply.find_by_id(params[:id]))
-      flash[:error] = "Post could not be found."
-      redirect_to boards_path and return
-    end
-
+  def require_view_permission
     @post = @reply.post
     unless @post.visible_to?(current_user)
       flash[:error] = "You do not have permission to view this post."
       redirect_to boards_path and return
     end
-
-    @model = @reply
-
     @page_title = @post.subject
   end
 
@@ -277,5 +270,9 @@ class RepliesController < WritableController
 
   def uneditable_redirect
     post_path(@reply.post)
+  end
+
+  def invalid_redirect
+    boards_path
   end
 end
