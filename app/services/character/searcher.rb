@@ -7,7 +7,7 @@ class Character::Searcher < Generic::Searcher
     search_users(params[:author_id]) if params[:author_id].present?
     search_templates(params[:template_id]) if params[:template_id].present?
     search_names(params) if params[:name].present?
-    select_templates(params[:author_id]) if params[:author_id].present?
+    select_templates(params[:author_id]) if params[:author_id].present? && params[:template_id].blank?
     @search_results.ordered.paginate(page: page, per_page: 25)
   end
 
