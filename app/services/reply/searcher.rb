@@ -13,7 +13,7 @@ class Reply::Searcher < Generic::Searcher
     search_posts(post, params[:board_id]) if post || params[:board_id].present?
     search_templates(params[:template_id]) if params[:template_id].present?
     select_templates(params[:author_id]) if params[:author_id].present? && params[:template_id].blank?
-    format_results(page)
+    format_results(page, params[:condensed])
   end
 
   def search_content(content)
@@ -47,7 +47,7 @@ class Reply::Searcher < Generic::Searcher
     end
   end
 
-  def format_results(page)
+  def format_results(page, condensed)
     @search_results = @search_results
       .select('replies.*, characters.name, characters.screenname, users.username, users.deleted as user_deleted')
       .joins(:user)
@@ -57,7 +57,7 @@ class Reply::Searcher < Generic::Searcher
 
     @search_results = @search_results.where.not(post_id: current_user.hidden_posts) if logged_in? && !params[:show_blocked]
 
-    return @search_results if params[:condensed]
+    return @search_results if condensed
 
     @search_results = @search_results
       .select('icons.keyword, icons.url')
