@@ -65,13 +65,11 @@ class Character::Replacer < Generic::Replacer
   end
 
   def find_posts
-    super({character_id: @character.id})
+    super({ character_id: @character.id })
   end
 
   def check_target(id, user:)
-    @errors.add(:character, "could not be found.") unless id.blank? || (new_char = Character.find_by(id: id))
-    @errors.add(:base, "You do not have permission to modify this character.") if new_char && new_char.user_id != user.id
-    new_char
+    super(Character, id: id, user: user)
   end
 
   def check_alias(alias_id, character: @character, state:)

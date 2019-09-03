@@ -37,8 +37,6 @@ class Icon::Replacer < Generic::Replacer
   end
 
   def check_target(id, user:)
-    @errors.add(:icon, "could not be found.") unless id.blank? || (new_icon = Icon.find_by(id: id))
-    @errors.add(:base, "You do not have permission to modify this icon.") if new_icon && new_icon.user_id != user.id
-    new_icon
+    super(Icon, id: id, user: user)
   end
 end
