@@ -56,11 +56,11 @@ class Character::Replacer < Generic::Replacer
 
   def construct_dropdown
     @alts.map do |alt|
-      name = alt.name
-      name += ' | ' + alt.screenname if alt.screenname
-      name += ' | ' + alt.template_name if alt.template_name
-      name += ' | ' + alt.settings.pluck(:name).join(' & ') if alt.settings.present?
-      [name, alt.id]
+      name = [alt.name]
+      name << alt.try(:screenname)
+      name << alt.try(:template_name)
+      name << alt.settings.pluck(:name).join(' & ') if alt.settings.present?
+      [name.reject(&:nil?).join(' | '), alt.id]
     end
   end
 
