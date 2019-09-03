@@ -1,5 +1,5 @@
 class Character::Replacer < Generic::Replacer
-  attr_reader :alt_dropdown, :success_msg
+  attr_reader :alt_dropdown
 
   def initialize(character)
     @character = character
@@ -18,8 +18,6 @@ class Character::Replacer < Generic::Replacer
     orig_alias = check_alias(params[:orig_alias], state: 'old') if params[:orig_alias] != 'all'
     new_alias = check_alias(params[:alias_dropdown], character: new_char, state: 'new')
     return if @errors.present?
-
-    @success_msg = params[:post_ids].present? ? " in the specified " + 'post'.pluralize(params[:post_ids].size) : ''
 
     wheres = { character_id: @character.id }
     wheres[:post_id] = params[:post_ids] if params[:post_ids].present?

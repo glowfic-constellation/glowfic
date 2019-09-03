@@ -185,7 +185,8 @@ class CharactersController < ApplicationController
       flash[:error] = replacer.errors.full_messages.first
       redirect_to replace_character_path(@character)
     else
-      flash[:success] = "All uses of this character#{replacer.success_msg} will be replaced."
+      success_msg = params[:post_ids].present? ? " in the specified " + 'post'.pluralize(params[:post_ids].size) : ''
+      flash[:success] = "All uses of this character#{success_msg} will be replaced."
       redirect_to character_path(@character)
     end
   end
