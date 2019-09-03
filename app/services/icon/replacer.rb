@@ -6,6 +6,7 @@ class Icon::Replacer < Generic::Replacer
 
   def replace(params, user:)
     new_icon = check_target(params[:icon_dropdown], user: user)
+    return if @errors
 
     wheres = { icon_id: @icon.id }
     wheres[:post_id] = params[:post_ids] if params[:post_ids].present?
