@@ -18,7 +18,7 @@ RSpec.describe IconsController do
     it "succeeds" do
       user = create(:user)
       login_as(user)
-      icons = create_list(:icon, 3)
+      icons = create_list(:icon, 3, user: user)
       delete :delete_multiple, params: { marked_ids: icons.map(&:id) }
       expect(response).to redirect_to(user_gallery_path(id: 0, user_id: user.id))
       expect(flash[:success]).to eq("Icons deleted.")

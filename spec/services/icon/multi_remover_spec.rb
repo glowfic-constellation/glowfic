@@ -35,11 +35,13 @@ RSpec.describe Icon::MultiRemover do
 
     it "skips other people's icons" do
       icon = create(:icon)
+      icon2 = create(:icon, user: user)
       gallery = create(:gallery, user: user)
       gallery.icons << icon
+      gallery.icons << icon2
       icon.reload
       expect(icon.galleries.count).to eq(1)
-      params = { marked_ids: [icon.id], gallery_id: gallery.id, gallery_delete: true }
+      params = { marked_ids: [icon.id, icon2.id], gallery_id: gallery.id, gallery_delete: true }
       deleter.perform(params, user: user)
       expect(icon.reload.galleries.count).to eq(1)
     end
@@ -70,8 +72,8 @@ RSpec.describe Icon::MultiRemover do
   context "deleting icons from the site" do
     it "skips other people's icons" do
       icon = create(:icon)
-      deleter = Icon::MultiRemover.new({ marked_ids: [icon.id] })
-      deleter.perform(user)
+      params = { marked_ids: [icon.id, create(:icon, user: user).id] }
+      deleter.perform(params, user: user)
       expect { icon.reload }.not_to raise_error
     end
 
