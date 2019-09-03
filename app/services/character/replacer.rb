@@ -15,16 +15,12 @@ class Character::Replacer < Generic::Replacer
     new_char = check_target(params[:icon_dropdown], user: user)
     return if @errors.present?
 
-    orig_alias = check_alias(params[:orig_alias], state: 'old') if params[:orig_alias] != 'all'
+    orig_alias = check_alias(params[:orig_alias], state: 'old') unless params[:orig_alias] == 'all'
     new_alias = check_alias(params[:alias_dropdown], character: new_char, state: 'new')
     return if @errors.present?
 
-    wheres = { character_id: @character.id }
-    wheres[:post_id] = params[:post_ids] if params[:post_ids].present?
-    wheres[:character_alias_id] = orig_alias.try(:id) if @character.aliases.exists? && params[:orig_alias] != 'all'
-
-    updates = { character_id: new_char.try(:id) }
-    updates[:character_alias_id] = new_alias.id if new_alias.present?
+    wheres = setup_wheres(params, orig_alias.presence)
+    updates = setup_updates(new_char, new_alias)
 
     replace_jobs(wheres: wheres, updates: updates, post_ids: params[:post_ids])
   end
@@ -77,5 +73,18 @@ class Character::Replacer < Generic::Replacer
     alias_obj = CharacterAlias.find_by(id: alias_id)
     @errors.add(:base, "Invalid #{state} alias.") unless alias_obj && alias_obj.character_id == character.id
     alias_obj
+  end
+
+  def setup_wheres(params, orig_alias)
+    wheres = { character_id: @character.id }
+    wheres[:post_id] = params[:post_ids] if params[:post_ids].present?
+    wheres[:character_alias_id] = orig_alias if @character.aliases.exists? && params[:orig_alias] != 'all'
+    wheres
+  end
+
+  def setup_updates(new_char, new_alias)
+    updates = { character_id: new_char.try(:id) }
+    updates[:character_alias_id] = new_alias.id if new_alias.present?
+    updates
   end
 end
