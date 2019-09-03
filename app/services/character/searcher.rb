@@ -4,12 +4,10 @@ class Character::Searcher < Generic::Searcher
   end
 
   def search(params, page: 1)
+    search_users(params[:author_id]) if params[:author_id].present?
     search_templates(params[:template_id]) if params[:template_id].present?
-    if params[:author_id].present?
-      search_users(params[:author_id])
-      select_templates(params[:author_id])
-    end
     search_names(params) if params[:name].present?
+    select_templates(params[:author_id]) if params[:author_id].present?
     @search_results.ordered.paginate(page: page, per_page: 25)
   end
 
