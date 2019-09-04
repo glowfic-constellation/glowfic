@@ -1,4 +1,4 @@
-class Gallery::IconAdder < Object
+class Gallery::IconAdder < Generic::Service
   attr_reader :success_message, :errors, :icons
 
   def initialize(gallery, user:, params:)
