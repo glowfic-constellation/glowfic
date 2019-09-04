@@ -23,7 +23,12 @@ class Gallery::IconAdder < Generic::Service
   def create_new
     @icons = (@params[:icons] || []).reject { |icon| icon.values.all?(&:blank?) }
     @errors.add(:base, "You have to enter something.") && return if icons.empty?
+    validate_icons
+    return if @errors.present?
+    save_icons
+  end
 
+  def validate_icons
     icons = @icons.map { |hash| Icon.new(icon_params(hash.except('filename', 'file')).merge(user: @user)) }
 
     if icons.any? { |i| !i.valid? }
@@ -34,7 +39,9 @@ class Gallery::IconAdder < Generic::Service
     end
 
     @errors.add(:icons, "could not be saved because of the following problems:") && return if @icon_errors.present?
+  end
 
+  def save_icons
     Icon.transaction do
       icons.each_with_index do |icon, index|
         next if icon.save
