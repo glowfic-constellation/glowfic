@@ -1,15 +1,16 @@
 class Gallery::IconAdder < Generic::Service
-  attr_reader :success_message, :errors, :icons
+  attr_reader :success_message, :icon_errors, :icons
 
   def initialize(gallery, user:, params:)
     @gallery = gallery
     @user = user
     @params = params
-    @errors = []
+    @icon_errors = []
+    super()
   end
 
   def assign_existing
-    raise MissingGalleryError, "Gallery could not be found." unless @gallery # gallery required for adding icons from other galleries
+    @errors.add(:gallery, "could not be found.") && return unless @gallery # gallery required for adding icons from other galleries
 
     icon_ids = @params[:image_ids].split(',').map(&:to_i).reject(&:zero?)
     icon_ids -= @gallery.icons.ids
@@ -21,29 +22,29 @@ class Gallery::IconAdder < Generic::Service
 
   def create_new
     @icons = (@params[:icons] || []).reject { |icon| icon.values.all?(&:blank?) }
-    raise NoIconsError, "You have to enter something." if icons.empty?
+    @errors.add(:base, "You have to enter something.") && return if icons.empty?
 
     icons = @icons.map { |hash| Icon.new(icon_params(hash.except('filename', 'file')).merge(user: @user)) }
 
     if icons.any? { |i| !i.valid? }
       icons.each_with_index do |icon, index|
         next if icon.valid?
-        @errors += icon.get_errors(index)
+        @icon_errors += icon.get_errors(index)
       end
     end
 
-    raise InvalidIconsError, "Icons could not be saved because of the following problems:" if @errors.present?
+    @errors.add(:icons, "could not be saved because of the following problems:") && return if @icon_errors.present?
 
     Icon.transaction do
       icons.each_with_index do |icon, index|
         next if icon.save
-        @errors += icon.errors.present? ? icon.get_errors(index) : ["Icon #{index + 1} could not be saved."]
+        @icon_errors += icon.errors.present? ? icon.get_errors(index) : ["Icon #{index + 1} could not be saved."]
       end
       raise ActiveRecord::Rollback if @errors.present?
       @gallery.icons += icons if @gallery
     end
 
-    raise InvalidIconsError, "Icons could not be saved because of the following problems:" if @errors.present?
+    @errors.add(:icons, "could not be saved because of the following problems:") && return if @icon_errors.present?
     @success_message = "Icons saved."
   end
 
@@ -51,7 +52,3 @@ class Gallery::IconAdder < Generic::Service
     paramset.permit(:url, :keyword, :credit, :s3_key)
   end
 end
-
-class MissingGalleryError < ApiError; end
-class NoIconsError < ApiError; end
-class InvalidIconsError < ApiError; end
