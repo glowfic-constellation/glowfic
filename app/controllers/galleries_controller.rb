@@ -122,7 +122,7 @@ class GalleriesController < UploadingController
         render :add
       end
     else
-      flash[:success] = adder.success_message
+      flash[:success] = "Icons #{params[:image_ids].present? ? 'added to gallery' : 'saved'}."
       redirect_to @gallery || user_gallery_path(id: 0, user_id: current_user.id)
     end
   end

@@ -1,5 +1,5 @@
 class Gallery::IconAdder < Generic::Service
-  attr_reader :success_message, :icon_errors, :icons
+  attr_reader :icon_errors, :icons
 
   def initialize(gallery, user:, params:)
     @gallery = gallery
@@ -16,7 +16,6 @@ class Gallery::IconAdder < Generic::Service
     icon_ids -= @gallery.icons.ids
     icons = Icon.where(id: icon_ids, user_id: @user.id)
     @gallery.icons += icons
-    @success_message = "Icons added to gallery."
   end
 
   def create_new
@@ -51,7 +50,6 @@ class Gallery::IconAdder < Generic::Service
     end
 
     @errors.add(:icons, "could not be saved because of the following problems:") && return if @icon_errors.present?
-    @success_message = "Icons saved."
   end
 
   def icon_params(paramset)
