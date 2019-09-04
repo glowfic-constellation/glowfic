@@ -16,7 +16,6 @@ class Gallery::IconAdder < Generic::Service
     icon_ids -= @gallery.icons.ids
     icons = Icon.where(id: icon_ids, user_id: @user.id)
     @gallery.icons += icons
-
     @success_message = "Icons added to gallery."
   end
 
@@ -38,7 +37,7 @@ class Gallery::IconAdder < Generic::Service
       end
     end
 
-    @errors.add(:icons, "could not be saved because of the following problems:") && return if @icon_errors.present?
+    @errors.add(:icons, "could not be saved because of the following problems:") if @icon_errors.present?
   end
 
   def save_icons
