@@ -541,22 +541,12 @@ RSpec.describe GalleriesController do
       expect(flash[:error]).to eq("That is not your gallery.")
     end
 
-    it "correctly stubs S3 bucket for devs without local buckets" do
-      stub_const("S3_BUCKET", nil)
-      login
-      get :add, params: { id: 0 }
-      expect(response).to render_template('add')
-      expect(assigns(:page_title)).to eq("Add Icons")
-      expect(assigns(:s3_direct_post)).to be_a(Struct)
-    end
-
     it "supports galleryless" do
       handle_s3_bucket
       login
       get :add, params: { id: 0 }
       expect(response).to render_template('add')
       expect(assigns(:page_title)).to eq("Add Icons")
-      expect(assigns(:s3_direct_post)).not_to be_nil
     end
 
     it "supports normal gallery" do
@@ -566,7 +556,6 @@ RSpec.describe GalleriesController do
       get :add, params: { id: gallery.id }
       expect(response).to render_template('add')
       expect(assigns(:page_title)).to eq("Add Icons: #{gallery.name}")
-      expect(assigns(:s3_direct_post)).not_to be_nil
     end
 
     it "supports existing view for normal gallery" do
@@ -575,7 +564,6 @@ RSpec.describe GalleriesController do
       get :add, params: { id: gallery.id, type: 'existing' }
       expect(response).to render_template('add')
       expect(assigns(:page_title)).to eq("Add Icons: #{gallery.name}")
-      expect(assigns(:s3_direct_post)).to be_nil
     end
 
     it "doesn't support existing view for galleryless" do
