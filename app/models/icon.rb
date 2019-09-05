@@ -75,7 +75,7 @@ class Icon < ApplicationRecord
   end
 
   def setup_uploaded_url
-    return unless self.image.attached? && self.image.saved_changes?
+    return unless self.image.attached? && self.image.changed?
     self.url = Rails.application.routes.url_helpers.rails_blob_url(self.image, disposition: 'attachment')
   end
 
