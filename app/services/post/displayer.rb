@@ -13,40 +13,15 @@ class Post::Displayer < Generic::Service
   def find_page(params)
     @paginate_params = {controller: 'posts', action: 'show', id: @post.id}
     if params[:at_id].present?
-      if params[:at_id] == 'unread' && @user.present?
-        reply = @unread = @post.first_unread_for(@user)
-        @paginate_params['at_id'] = @unread.try(:id)
-      else
-        reply = Reply.find_by_id(params[:at_id].to_i)
-      end
-
-      if reply && reply.post_id == @post.id
-        @replies = @replies.where('replies.reply_order >= ?', reply.reply_order)
-        page = @cur_page = @cur_page.to_i
-      else
-        @errors.add(:base, "Could not locate specified reply, defaulting to first page.")
-        page = @cur_page = 1
-      end
+      page_for_id(params[:at_id])
     elsif @cur_page == 'last'
-      page = @cur_page = @post.replies.paginate(per_page: @per, page: 1).total_pages
+      @cur_page = @post.replies.paginate(per_page: @per, page: 1).total_pages
     elsif @cur_page == 'unread'
-      if @user.present?
-        @unread = @post.first_unread_for(@user)
-        if @unread.nil?
-          page = @cur_page = @post.replies.paginate(per_page: @per, page: 1).total_pages
-        elsif @unread.class == Post
-          page = @cur_page = 1
-        else
-          page = @cur_page = @unread.post_page(@per)
-        end
-      else
-        @errors.add(:base, "You must be logged in to view unread posts.")
-        page = @cur_page = 1
-      end
+      page_for_unread
     else
-      page = @cur_page = @cur_page.to_i
+      @cur_page = @cur_page.to_i
     end
-    page
+    @cur_page
   end
 
   def fetch_replies
@@ -77,6 +52,40 @@ class Post::Displayer < Generic::Service
   end
 
   private
+
+  def page_for_id(at_id)
+    if at_id == 'unread' && @user.present?
+      reply = @unread = @post.first_unread_for(@user)
+      @paginate_params['at_id'] = @unread.try(:id)
+    else
+      reply = Reply.find_by(id: at_id.to_i, post_id: @post)
+    end
+
+    if reply
+      @replies = @replies.where('replies.reply_order >= ?', reply.reply_order)
+      @cur_page = @cur_page.to_i
+    else
+      @errors.add(:base, "Could not locate specified reply, defaulting to first page.")
+      @cur_page = 1
+    end
+    @cur_page
+  end
+
+  def page_for_unread
+    if @user.present?
+      @unread = @post.first_unread_for(@user)
+      if @unread.nil?
+        @cur_page = @post.replies.paginate(per_page: @per, page: 1).total_pages
+      elsif @unread.class == Post
+        @cur_page = 1
+      else
+        @cur_page = @unread.post_page(@per)
+      end
+    else
+      @errors.add(:base, "You must be logged in to view unread posts.")
+      @cur_page = 1
+    end
+  end
 
   def section_sequence(prev=false)
     posts = Post.where(board_id: @post.board_id, section_id: @post.section_id).visible_to(@user).ordered_in_section

@@ -35,7 +35,7 @@ class WritableController < ApplicationController
 
     @replies = displayer.fetch_replies
 
-    if displayer.cur_page > @replies.total_pages
+    if self.page > @replies.total_pages
       redirect_to post_path(@post, page: @replies.total_pages, per_page: per)
       return
     end
