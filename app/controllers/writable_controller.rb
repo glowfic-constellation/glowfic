@@ -26,11 +26,20 @@ class WritableController < ApplicationController
 
   def show_post(cur_page=nil)
     cur_page ||= page
-    displayer = Post::Displayer.new(@post, per: per_page, cur_page: cur_page, user: current_user)
+    per = per_page
+    displayer = Post::Displayer.new(@post, per: per, cur_page: cur_page, user: current_user)
     self.page = displayer.find_page(params)
+    @unread = displayer.unread
+    @paginate_params = displayer.paginate_params
+    flash.now[:error] = displayer.errors.full_messages.first if displayer.errors.present?
 
     @replies = displayer.fetch_replies
-    redirect_to post_path(@post, page: @replies.total_pages, per_page: per) and return if cur_page > @replies.total_pages
+
+    if displayer.cur_page > @replies.total_pages
+      redirect_to post_path(@post, page: @replies.total_pages, per_page: per)
+      return
+    end
+
     use_javascript('paginator')
 
     if @post.board.ordered?
@@ -39,7 +48,7 @@ class WritableController < ApplicationController
     end
 
     # show <link rel="canonical"> – for SEO stuff
-    @meta_canonical = displayer.get_url
+    @meta_canonical = post_url(@post, displayer.canon_params)
 
     # show <meta property="og:..." content="..."> – for embed data
     @meta_og = og_data_for_post(@post, self.page, @replies.total_pages, per)
@@ -52,7 +61,10 @@ class WritableController < ApplicationController
 
       if @post.taggable_by?(current_user)
         build_template_groups
-        @reply = displayer.fetch_attempted_reply(session)
+        session_params = ActionController::Parameters.new(reply: session.fetch(:attempted_reply, {}))
+        reply_hash = reply_params(session_params)
+        session.delete(:attempted_reply)
+        @reply = @post.build_new_reply_for(current_user, reply_hash)
       end
 
       @post.mark_read(current_user, @post.read_time_for(@replies))
