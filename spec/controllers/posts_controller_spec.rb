@@ -1145,16 +1145,16 @@ RSpec.describe PostsController do
       user = create(:user)
       board = create(:board, creator: user)
       section = create(:board_section, board: board)
-      create(:post, user: user, board: board, section: section)
+      prev = create(:post, user: user, board: board, section: section)
       create_list(:post, 10, board: board, section: section, privacy: Concealable::PRIVATE)
       post = create(:post, user: user, board: board, section: section)
       create_list(:post, 10, board: board, section: section, privacy: Concealable::PRIVATE)
-      create(:post, user: user, board: board, section: section)
+      nextp = create(:post, user: user, board: board, section: section)
 
       get :show, params: { id: post.id }
 
-      expect(assigns(:prev_post)).to be_nil
-      expect(assigns(:next_post)).to be_nil
+      expect(assigns(:prev_post)).to eq(prev)
+      expect(assigns(:next_post)).to eq(nextp)
     end
     # TODO WAY more tests
   end

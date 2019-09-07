@@ -79,21 +79,10 @@ class WritableController < ApplicationController
     use_javascript('paginator')
 
     if @post.board.ordered?
-      next_post = @post.next_post
-      9.times do
-        break unless next_post
-        break if next_post.visible_to?(current_user)
-        next_post = next_post.next_post
-      end
-      @next_post = next_post&.visible_to?(current_user) ? next_post : nil
+      posts = Post.where(board_id: @post.board_id, section_id: @post.section_id).visible_to(current_user).ordered_in_section
 
-      prev_post = @post.prev_post
-      9.times do
-        break unless prev_post
-        break if prev_post.visible_to?(current_user)
-        prev_post = prev_post.prev_post
-      end
-      @prev_post = prev_post&.visible_to?(current_user) ? prev_post : nil
+      @next_post = posts.find_by('section_order > ?', @post.section_order)
+      @prev_post = posts.reverse_order.find_by('section_order < ?', @post.section_order)
     end
 
     # show <link rel="canonical"> – for SEO stuff
