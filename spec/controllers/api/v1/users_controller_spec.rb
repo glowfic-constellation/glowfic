@@ -58,8 +58,8 @@ RSpec.describe Api::V1::UsersController do
     end
 
     it "does not return deleted users" do
-      user = create(:user, deleted: true)
-      unblocked = create(:user)
+      create(:user, deleted: true)
+      create(:user)
       get :index
       expect(response.json['results'].count).to eq(1)
     end

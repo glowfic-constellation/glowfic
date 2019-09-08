@@ -14,7 +14,7 @@ RSpec.describe NewsController do
     end
 
     it "only shows one news post" do
-      n1 = create(:news)
+      create(:news)
       n2 = create(:news)
       get :index
       expect(assigns(:news).to_a).to eq([n2])
@@ -97,9 +97,9 @@ RSpec.describe NewsController do
 
     it "works logged in" do
       n1 = create(:news)
-      n2 = create(:news)
+      create(:news)
       n3 = create(:news)
-      n4 = create(:news)
+      create(:news)
       n3.destroy
       login
       get :show, params: {id: n1.id}

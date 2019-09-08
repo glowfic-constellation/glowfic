@@ -5,7 +5,7 @@ RSpec.feature "Searching users", :type => :feature do
     simple_user = create(:user, username: 'Test Alice')
     moietied_user = create(:user, username: 'Test Bob', moiety: 'FF0000', moiety_name: 'Test moiety')
     old_user = create(:user, username: 'Test Charlie', created_at: Time.zone.local(2018, 1, 1))
-    other_user = create(:user, username: 'Dominique')
+    create(:user, username: 'Dominique')
 
     visit search_users_path
 
