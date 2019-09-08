@@ -132,7 +132,7 @@ module ApplicationHelper
   end
 
   def sanitize_simple_link_text(text)
-    Glowfic::Sanitizers.description(text).html_safe
+    Glowfic::Sanitizers.description(text)
   end
 
   # modified version of split_paragraphs that doesn't mangle large breaks
@@ -181,7 +181,7 @@ module ApplicationHelper
       end
     end
 
-    Glowfic::Sanitizers.written(content).html_safe
+    Glowfic::Sanitizers.written(content)
   end
 
   def breakable_text(text)

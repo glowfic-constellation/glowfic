@@ -30,7 +30,7 @@ module Glowfic
       attributes: ALLOWED_ATTRIBUTES,
     )
     def self.written(text)
-      Sanitize.fragment(text, WRITTEN_CONF)
+      Sanitize.fragment(text, WRITTEN_CONF).html_safe
     end
 
     DESCRIPTION_CONF = Sanitize::Config.merge(Sanitize::Config::RELAXED,
@@ -38,11 +38,11 @@ module Glowfic
       attributes: {'a' => ['href']},
     )
     def self.description(text)
-      Sanitize.fragment(text, DESCRIPTION_CONF)
+      Sanitize.fragment(text, DESCRIPTION_CONF).html_safe
     end
 
     def self.full(text)
-      Sanitize.fragment(text)
+      Sanitize.fragment(text).html_safe
     end
   end
 
