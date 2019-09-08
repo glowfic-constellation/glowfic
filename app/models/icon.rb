@@ -11,7 +11,7 @@ class Icon < ApplicationRecord
   has_many :galleries_icons, dependent: :destroy, inverse_of: :icon
   has_many :galleries, through: :galleries_icons, dependent: :destroy
 
-  has_one_attached :image
+  has_one_attached :image, dependent: :purge_later
 
   validates :keyword, presence: true
   validates :url,
