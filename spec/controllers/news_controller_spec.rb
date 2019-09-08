@@ -100,7 +100,7 @@ RSpec.describe NewsController do
       create(:news)
       n3 = create(:news)
       create(:news)
-      n3.destroy
+      n3.destroy!
       login
       get :show, params: {id: n1.id}
       expect(response).to redirect_to(news_index_url(page: 3))

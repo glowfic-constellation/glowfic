@@ -62,7 +62,7 @@ RSpec.describe Icon do
       icon = create(:icon)
       icon.user.avatar = icon
       icon.user.save!
-      icon.destroy
+      icon.destroy!
       expect(icon.user.reload.avatar_id).to be_nil
     end
   end

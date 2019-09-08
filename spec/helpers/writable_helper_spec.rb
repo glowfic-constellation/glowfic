@@ -33,29 +33,29 @@ RSpec.describe WritableHelper do
     context "with only deleted users" do
       it "handles only a deleted user" do
         post = create(:post)
-        post.user.update(deleted: true)
+        post.user.update!(deleted: true)
         expect(helper.author_links(post)).to eq('(deleted user)')
       end
 
       it "handles only two deleted users" do
         post = create(:post)
-        post.user.update(deleted: true)
+        post.user.update!(deleted: true)
         reply = create(:reply, post: post)
-        reply.user.update(deleted: true)
+        reply.user.update!(deleted: true)
         expect(helper.author_links(post)).to eq('(deleted users)')
       end
 
       it "handles >4 deleted users" do
         post = create(:post)
-        post.user.update(deleted: true)
+        post.user.update!(deleted: true)
         reply = create(:reply, post: post)
-        reply.user.update(deleted: true)
+        reply.user.update!(deleted: true)
         reply = create(:reply, post: post)
-        reply.user.update(deleted: true)
+        reply.user.update!(deleted: true)
         reply = create(:reply, post: post)
-        reply.user.update(deleted: true)
+        reply.user.update!(deleted: true)
         reply = create(:reply, post: post)
-        reply.user.update(deleted: true)
+        reply.user.update!(deleted: true)
         expect(helper.author_links(post)).to eq('(deleted users)')
       end
     end
@@ -63,7 +63,7 @@ RSpec.describe WritableHelper do
     context "with active and deleted users" do
       it "handles two users with post user deleted" do
         post = create(:post)
-        post.user.update(deleted: true)
+        post.user.update!(deleted: true)
         reply = create(:reply, post: post)
         expect(helper.author_links(post)).to eq(helper.user_link(reply.user) + ' and 1 deleted user')
       end
@@ -71,14 +71,14 @@ RSpec.describe WritableHelper do
       it "handles two users with reply user deleted" do
         post = create(:post)
         reply = create(:reply, post: post)
-        reply.user.update(deleted: true)
+        reply.user.update!(deleted: true)
         expect(helper.author_links(post)).to eq(helper.user_link(post.user) + ' and 1 deleted user')
       end
 
       it "handles three users with one deleted" do
         post = create(:post, user: create(:user, username: 'xxx'))
         reply = create(:reply, post: post)
-        reply.user.update(deleted: true)
+        reply.user.update!(deleted: true)
         reply = create(:reply, post: post, user: create(:user, username: 'yyy'))
         links = [post.user, reply.user].map { |u| helper.user_link(u) }.join(', ')
         expect(helper.author_links(post)).to eq(links + ' and 1 deleted user')
@@ -87,9 +87,9 @@ RSpec.describe WritableHelper do
       it "handles three users with two deleted" do
         post = create(:post)
         reply = create(:reply, post: post)
-        reply.user.update(deleted: true)
+        reply.user.update!(deleted: true)
         reply = create(:reply, post: post)
-        reply.user.update(deleted: true)
+        reply.user.update!(deleted: true)
         expect(helper.author_links(post)).to eq(helper.user_link(post.user) + ' and 2 deleted users')
       end
 
@@ -97,7 +97,7 @@ RSpec.describe WritableHelper do
         post = create(:post, user: create(:user, username: 'zzz'))
         create(:reply, post: post, user: create(:user, username: 'yyy'))
         reply = create(:reply, post: post, user: create(:user, username: 'xxx'))
-        reply.user.update(deleted: true)
+        reply.user.update!(deleted: true)
         create(:reply, post: post, user: create(:user, username: 'www'))
         create(:reply, post: post, user: create(:user, username: 'vvv'))
         stats_link = helper.link_to('4 others', stats_post_path(post))
@@ -106,7 +106,7 @@ RSpec.describe WritableHelper do
 
       it "handles >4 users with alphabetical user first iff post user deleted" do
         post = create(:post, user: create(:user, username: 'zzz'))
-        post.user.update(deleted: true)
+        post.user.update!(deleted: true)
         create(:reply, post: post, user: create(:user, username: 'yyy'))
         create(:reply, post: post, user: create(:user, username: 'xxx'))
         reply = create(:reply, post: post, user: create(:user, username: 'aaa'))

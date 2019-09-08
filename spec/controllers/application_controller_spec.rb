@@ -386,7 +386,7 @@ RSpec.describe ApplicationController do
       user = create(:user)
       login_as(user)
       user.role_id = Permissible::SUSPENDED
-      user.save
+      user.save!
       get :index
       expect(response.json['logged_in']).to eq(false)
     end
@@ -395,7 +395,7 @@ RSpec.describe ApplicationController do
       user = create(:user)
       login_as(user)
       user.deleted = true
-      user.save
+      user.save!
       get :index
       expect(response.json['logged_in']).to eq(false)
     end
