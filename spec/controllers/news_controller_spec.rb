@@ -123,8 +123,6 @@ RSpec.describe NewsController do
       expect(meta_og[:url]).to eq(news_index_path(page: 2))
       expect(meta_og[:title]).to eq('News Post for Dec 20, 2018')
       expect(meta_og[:description]).to eq('sample content')
-
-
     end
   end
 

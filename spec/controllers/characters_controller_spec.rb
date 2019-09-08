@@ -410,7 +410,7 @@ RSpec.describe CharactersController do
     it "requires notes from moderators" do
       character = create(:character, name: 'a')
       login_as(create(:mod_user))
-      put :update, params: { id: character.id , character: { name: 'b' } }
+      put :update, params: { id: character.id, character: { name: 'b' } }
       expect(response).to render_template(:edit)
       expect(flash[:error]).to eq('You must provide a reason for your moderator edit.')
     end
