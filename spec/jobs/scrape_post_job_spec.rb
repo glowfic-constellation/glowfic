@@ -1,4 +1,5 @@
 require "spec_helper"
+require Rails.root.join("app", "services", "post_scraper.rb")
 
 RSpec.describe ScrapePostJob do
   include ActiveJob::TestHelper
