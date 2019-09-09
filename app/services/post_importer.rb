@@ -43,7 +43,8 @@ class PostImporter < Object
 
     msg = "The following usernames were not recognized. "\
           "Please have the correct author create a character with the correct screenname, "\
-          "or contact Marri if you wish to map a particular screenname to 'your base account posting without a character'."
+          "or contact Marri if you wish to map a particular screenname to "\
+          "'your base account posting without a character'."
     raise MissingUsernames.new(msg, missing_usernames)
   end
 

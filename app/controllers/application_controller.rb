@@ -46,7 +46,8 @@ class ApplicationController < ActionController::Base
   end
 
   def handle_invalid_token
-    flash[:error] = 'Oops, looks like your session expired! Please try another tab or log in again to resume glowficcing. If you were writing a reply, it has been cached for your next page load.'
+    flash[:error] = 'Oops, looks like your session expired! Please try another tab or log in again to resume glowficcing.'
+    flash[:error] += ' If you were writing a reply, it has been cached for your next page load.'
     session[:attempted_reply] = params[:reply] if params[:reply].present?
     redirect_to root_path
   end

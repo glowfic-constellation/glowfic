@@ -13,7 +13,9 @@ RSpec.describe ApplicationHelper do
     end
 
     it "permits links" do
-      text = 'here is <a href="http://example.com">a link</a> <a href="https://example.com">another link</a> <a href="/characters/1">yet another link</a>'
+      text = 'here is <a href="http://example.com">a link</a> '
+      text += '<a href="https://example.com">another link</a> '
+      text += '<a href="/characters/1">yet another link</a>'
       result = helper.sanitize_simple_link_text(text)
       expect(result).to eq(text)
       expect(result).to be_html_safe
@@ -55,7 +57,9 @@ RSpec.describe ApplicationHelper do
         end
 
         it "permits links" do
-          text = 'here is <a href="http://example.com">a link</a> <a href="https://example.com">another link</a> <a href="/characters/1">yet another link</a>'
+          text = 'here is <a href="http://example.com">a link</a> '
+          text += '<a href="https://example.com">another link</a> '
+          text += '<a href="/characters/1">yet another link</a>'
           expect(helper.sanitize_written_content(format_input(text, editor_mode))).to eq("<p>#{text}</p>")
         end
 
