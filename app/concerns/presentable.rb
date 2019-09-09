@@ -6,7 +6,8 @@
 # Limitations:
 # - Presenter must have an initializer that takes the model as an argument
 # - Presenter must implement as_json(options={})
-# - If the class Model implements its own as_json method, that will override the presenter but can access the presenter as_json through super (even if the presenter is included _afterwards_)
+# - If the class Model implements its own as_json method, that will override the presenter
+#   but can access the presenter as_json through super (even if the presenter is included _afterwards_)
 
 module Presents
   def as_json(options={})
