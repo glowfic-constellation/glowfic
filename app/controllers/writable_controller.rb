@@ -67,7 +67,10 @@ class WritableController < ApplicationController
     end
 
     @replies = @replies
-      .select("replies.*, characters.name, characters.screenname, icons.keyword, icons.url, users.username, character_aliases.name as alias, users.deleted as user_deleted")
+      .select("replies.*, characters.name, characters.screenname, \
+        icons.keyword, icons.url, \
+        users.username, users.deleted as user_deleted, \
+        character_aliases.name as alias")
       .joins(:user)
       .left_outer_joins(:character)
       .left_outer_joins(:icon)

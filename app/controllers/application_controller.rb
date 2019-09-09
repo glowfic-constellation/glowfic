@@ -156,9 +156,10 @@ class ApplicationController < ActionController::Base
 
   def posts_from_relation(relation, no_tests: true, with_pagination: true, select: '', max: false)
     if max
-      posts = relation.select('posts.*, max(boards.name) as board_name, max(users.username) as last_user_name, bool_or(users.deleted) as last_user_deleted'+ select)
+      posts = relation.select("posts.*, max(boards.name) as board_name, max(users.username) as last_user_name, \
+        bool_or(users.deleted) as last_user_deleted"+ select)
     else
-      posts = relation.select('posts.*, boards.name as board_name, users.username as last_user_name, users.deleted as last_user_deleted'+ select)
+      posts = relation.select("posts.*, boards.name as board_name, users.username as last_user_name, users.deleted as last_user_deleted"+ select)
     end
 
     posts = posts
