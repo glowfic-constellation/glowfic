@@ -45,7 +45,8 @@ RSpec.describe Template do
     it "returns info for a single character" do
       template = create(:template)
       character = create(:character, template: template, template_name: "nickname", screenname: "screen_name")
-      expect(template.plucked_characters).to eq([[character.id, "#{character.name} | #{character.template_name} | #{character.screenname}"]])
+      info = [[character.id, "#{character.name} | #{character.template_name} | #{character.screenname}"]]
+      expect(template.plucked_characters).to eq(info)
     end
 
     it "returns info for multiple characters" do

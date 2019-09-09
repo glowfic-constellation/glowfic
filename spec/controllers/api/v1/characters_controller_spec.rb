@@ -49,7 +49,8 @@ RSpec.describe Api::V1::CharactersController do
         get :index, params: { includes: ['invalid'] }
         expect(response).to have_http_status(:unprocessable_entity)
         expect(response.json['errors'].size).to eq(1)
-        expect(response.json['errors'][0]['message']).to eq("Invalid parameter 'includes' value ['invalid']: Must be an array of ['default_icon', 'aliases', 'template_name']")
+        expected = "Invalid parameter 'includes' value ['invalid']: Must be an array of ['default_icon', 'aliases', 'template_name']"
+        expect(response.json['errors'][0]['message']).to eq(expected)
       end
 
 
