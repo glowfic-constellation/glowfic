@@ -145,17 +145,17 @@ RSpec.describe CharacterHelper do
       templateless = create_list(:character, 3, user: user)
       templated = Array.new(3) { create(:character, user: user, template: create(:template)) }
       template = create(:template)
-      same_template = create_list(:character, 3, user: user, template: template)
+      one_template = create_list(:character, 3, user: user, template: template)
       deleted_user = create_list(:character, 1, user: create(:user, deleted: true))
       other_user = create_list(:character, 2, user: create(:user))
-      characters = templateless + templated + same_template + deleted_user + other_user
+      characters = templateless + templated + one_template + deleted_user + other_user
       assoc = Character.where(id: characters.map(&:id))
       expected = [
-        templateless.map  { |char| [char.id, char.name, nil, nil, nil, user.id,      user.username,      false, nil,              nil] },
-        templated.map     { |char| [char.id, char.name, nil, nil, nil, user.id,      user.username,      false, char.template.id, char.template.name] },
-        same_template.map { |char| [char.id, char.name, nil, nil, nil, user.id,      user.username,      false, template.id,      template.name] },
-        deleted_user.map  { |char| [char.id, char.name, nil, nil, nil, char.user.id, char.user.username, true,  nil,              nil] },
-        other_user.map    { |char| [char.id, char.name, nil, nil, nil, char.user.id, char.user.username, false, nil,              nil] },
+        templateless.map{ |char| [char.id, char.name, nil, nil, nil, user.id,      user.username,      false, nil,              nil] },
+        templated.map   { |char| [char.id, char.name, nil, nil, nil, user.id,      user.username,      false, char.template.id, char.template.name] },
+        one_template.map{ |char| [char.id, char.name, nil, nil, nil, user.id,      user.username,      false, template.id,      template.name] },
+        deleted_user.map{ |char| [char.id, char.name, nil, nil, nil, char.user.id, char.user.username, true,  nil,              nil] },
+        other_user.map  { |char| [char.id, char.name, nil, nil, nil, char.user.id, char.user.username, false, nil,              nil] },
       ].flatten(1)
       expect(helper.characters_list(assoc, true)).to match_array(expected)
     end

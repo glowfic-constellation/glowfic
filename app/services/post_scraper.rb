@@ -89,19 +89,20 @@ class PostScraper < Object
     # download URL, trying up to 3 times
     max_try = 3
     retried = 0
-    data =  begin
-              sleep 0.25
-              HTTParty.get(url).body
-            rescue Net::OpenTimeout => e
-              retried += 1
-              if retried < max_try
-                logger.debug "Failed to get #{url}: #{e.message}; retrying (tried #{retried} #{'time'.pluralize(retried)})"
-                retry
-              else
-                logger.warn "Failed to get #{url}: #{e.message}"
-                raise
-              end
-            end
+
+    begin
+      sleep 0.25
+      data = HTTParty.get(url).body
+    rescue Net::OpenTimeout => e
+      retried += 1
+      if retried < max_try
+        logger.debug "Failed to get #{url}: #{e.message}; retrying (tried #{retried} #{'time'.pluralize(retried)})"
+        retry
+      else
+        logger.warn "Failed to get #{url}: #{e.message}"
+        raise
+      end
+    end
 
     Nokogiri::HTML(data)
   end
@@ -165,7 +166,7 @@ class PostScraper < Object
 
     # detect already imported
     # skip if it's a threaded import, unless a subject was given manually
-    if (@subject || !@threaded_import) && (subj_post = Post.where(subject: @post.subject, board_id: @board_id).first)
+    if (@subject || !@threaded_import) && (subj_post = Post.find_by(subject: @post.subject, board_id: @board_id))
       raise AlreadyImportedError.new("This thread has already been imported", subj_post.id)
     end
 
