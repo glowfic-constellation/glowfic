@@ -17,7 +17,12 @@ class Post::Displayer < Generic::Service
     elsif @cur_page == 'last'
       @cur_page = @post.replies.paginate(per_page: @per, page: 1).total_pages
     elsif @cur_page == 'unread'
-      page_for_unread
+      if @user.present?
+        @cur_page = page_for_unread
+      else
+        @errors.add(:base, "You must be logged in to view unread posts.")
+        @cur_page = 1
+      end
     else
       @cur_page = @cur_page.to_i
     end
@@ -72,18 +77,13 @@ class Post::Displayer < Generic::Service
   end
 
   def page_for_unread
-    if @user.present?
-      @unread = @post.first_unread_for(@user)
-      if @unread.nil?
-        @cur_page = @post.replies.paginate(per_page: @per, page: 1).total_pages
-      elsif @unread.class == Post
-        @cur_page = 1
-      else
-        @cur_page = @unread.post_page(@per)
-      end
+    @unread = @post.first_unread_for(@user)
+    if @unread.nil?
+      @post.replies.paginate(per_page: @per, page: 1).total_pages
+    elsif @unread.class == Post
+      1
     else
-      @errors.add(:base, "You must be logged in to view unread posts.")
-      @cur_page = 1
+      @unread.post_page(@per)
     end
   end
 
