@@ -20,8 +20,12 @@ Post.create!([
     subject: "html test",
     content: "test content",
     icon_id: 5,
+    created_at: "2019-06-22 03:38:40",
+    updated_at: "2019-06-22 03:38:40",
     status: 0,
     section_order: 1,
+    edited_at: "2019-06-22 03:38:40",
+    tagged_at: "2019-06-22 03:38:40",
     description: "test description",
     authors_locked: false,
   },
@@ -517,12 +521,28 @@ Post.create!([
     so she's the one who fetches Miles Vorkosigan, watches over his transformation into Miles Naismith, and accompanies the latter to his destination, pretending this time to be business partners (she Sales And Marketing, he eccentrically Development, product Top Secret).<br><br>Currently they're sliding back into their ranks and uniforms - she's got her Dendarii pants on already and lovely scarlet accessories to turn them into shiny silver fashion statements.  But before they fully reintegrate with their outfit and she dons the rest of <em>her</em> outfit there is a hospital visit to make.<br><br>The survivors of the incident, such as they are, aren't in great shape.  Miles knows how the dead-and-irrecoverable wanted to be disposed of; he knows his obligations to the crippled, likewise, and he discharges them with all the gravity and generosity that could be wished.  Quinn wants his job, so she watches him do it, even this least lovely part.  Reminds her a little of the news that her face was getting artistically replaced.  But that doesn't mean she doesn't wonder why he has to get that up close and personal with Aziz, who after all probably can't understand a word he says.<br><br>Miles demurs with something about a fascinated fear of the loss of mind, and Elli lets it go.<br><br>They get good news about Marilac, about the value of their work there.<br><br>They split up so that he can shower, and she can get into her greys, and then there's going to be the usual meeting.",
     created_at: "2015-07-22 17:44:00",
     updated_at: "2019-06-22 18:40:31",
-    status: 2,
+    status: Post::STATUS_ABANDONED,
     section_order: 0,
     edited_at: "2019-06-22 18:40:31",
     tagged_at: "2015-07-23 00:59:00",
     authors_locked: true,
     unjoined_author_ids: [3]
+  },
+  {
+    board_id: 5,
+    user_id: 3,
+    subject: "unread post",
+    content: "<p>sample text</p>",
+    character_id: 23,
+    icon_id: 3,
+    created_at: "2018-08-18 21:19:27",
+    updated_at: "2018-08-18 21:22:43",
+    status: 0,
+    section_order: 0,
+    edited_at: "2018-08-18 21:19:27",
+    tagged_at: "2018-08-18 21:22:43",
+    authors_locked: true,
+    unjoined_author_ids: [4]
   },
 ])
 
@@ -533,8 +553,10 @@ PostView.create!([
   { post_id: 1, user_id: 3, read_at: "2019-05-06 23:07:00" },
   { post_id: 2, user_id: 3, read_at: "2019-06-22 07:40:11" },
   { post_id: 4, user_id: 3 },
+  { post_id: 7, user_id: 3, ignored: true },
   { post_id: 3, user_id: 3, read_at: "2019-06-06 01:53:29" },
   { post_id: 32, user_id: 3, read_at: "2015-07-23 00:57:00" },
+  { post_id: 33, user_id: 3, read_at: "2019-08-18 21:22:42" },
 ])
 
 puts "Queuing flat post generation (will not update until jobs are run)"
