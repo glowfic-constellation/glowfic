@@ -14,7 +14,7 @@ RSpec.describe NewsController do
     end
 
     it "only shows one news post" do
-      n1 = create(:news)
+      create(:news)
       n2 = create(:news)
       get :index
       expect(assigns(:news).to_a).to eq([n2])
@@ -97,10 +97,10 @@ RSpec.describe NewsController do
 
     it "works logged in" do
       n1 = create(:news)
-      n2 = create(:news)
+      create(:news)
       n3 = create(:news)
-      n4 = create(:news)
-      n3.destroy
+      create(:news)
+      n3.destroy!
       login
       get :show, params: {id: n1.id}
       expect(response).to redirect_to(news_index_url(page: 3))
@@ -123,8 +123,6 @@ RSpec.describe NewsController do
       expect(meta_og[:url]).to eq(news_index_path(page: 2))
       expect(meta_og[:title]).to eq('News Post for Dec 20, 2018')
       expect(meta_og[:description]).to eq('sample content')
-
-
     end
   end
 
