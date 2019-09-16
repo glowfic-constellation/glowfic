@@ -307,6 +307,7 @@ class Post < ApplicationRecord
     self.edited_at = self.updated_at
     return if skip_tagged
     return if replies.exists? && !status_changed?
+    return if marked_hiatus?
     self.tagged_at = self.updated_at
   end
 

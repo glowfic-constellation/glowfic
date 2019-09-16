@@ -76,6 +76,15 @@ RSpec.describe Post do
         end
       end
 
+      it "should update edited_at but not tagged_at when hiatused" do
+        Timecop.freeze(time) do
+          post.status = Post::STATUS_HIATUS
+          post.save!
+          expect(post.tagged_at).to eq(old_tagged_at)
+          expect(post.edited_at).to be > old_edited_at
+        end
+      end
+
       it "should not update on invalid edit" do
         Timecop.freeze(time) do
           post.section_order = post.section_order + 1
