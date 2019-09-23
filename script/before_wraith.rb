@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-layout = ARGV[0] || nil
+layout ||= ARGV[0] || nil
 user = User.find_by(username: "Kappa")
 
 unless layout.nil?

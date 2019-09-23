@@ -5,8 +5,6 @@ command = ARGV[1] || 'latest'
 
 WRAITH_DIR = 'wraith'
 
-user = User.find_by(username: "Kappa")
-
 layouts = ['default', 'dark', 'iconless', 'starry', 'starrydark', 'starrylight', 'monochrome', 'river']
 
 def run(layout, wraith, command)
@@ -24,15 +22,7 @@ def run(layout, wraith, command)
 end
 
 layouts.each do |layout|
-  if layout == 'default'
-    user.update!(layout: nil)
-  else
-    user.update!(layout: layout)
-  end
-  Message.find_by(id: 4).update!(unread: true)
-  post = Post.find_by(id: 33)
-  post.mark_read(user, post.replies.first.created_at, true)
-  FlatPost.find_by(post_id: 3).update!(updated_at: "2012-09-13 02:00:00")
+  Rails.root.join('script', 'before_wraith.rb')
   run(layout, wraith, command)
 end
 
