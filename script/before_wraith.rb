@@ -16,3 +16,5 @@ post = Post.find_by(id: 33)
 post.mark_read(user, (post.replies.first.created_at - 5.seconds), true)
 
 FlatPost.find_by(post_id: 3).update!(updated_at: "2012-09-13 02:00:00")
+NewsView.find_by(user: user)&.destroy!
+Post.find_by(id: 2).mark_read(user, "2019-06-22 07:40:11", true)
