@@ -40,7 +40,7 @@ phantomjs_options: '--ssl-protocol=tlsv1 --cookies-file=wraith/cookies.txt'
 
 # Set the number of threads to use when saving images. Raising this value can improve performance, but very high
 # values can lead to server connection issues. Set to around 1.5 the available CPU cores for best performance. Default: 8
-threads: 6
+threads: 4
 
 # JavaScript file to execute before taking screenshot of every path.
 before_capture: 'wraith/javascript/login.js'
