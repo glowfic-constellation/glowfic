@@ -55,7 +55,7 @@ RSpec.feature "Editing icons", type: :feature do
     expect(page).to have_selector('.icon-keyword', exact_text: icon.keyword)
     expect(icon.reload.image).to be_attached
 
-    url = Rails.application.routes.url_helpers.rails_blob_url(icon.image, disposition: 'attachment')
+    url = Rails.application.routes.url_helpers.rails_blob_url(icon.image)
     expect(page.find(".icon")[:src]).to eq(url)
   end
 
@@ -84,7 +84,7 @@ RSpec.feature "Editing icons", type: :feature do
     expect(page).to have_selector('.icon-keyword', exact_text: icon.keyword)
     expect(icon.reload.image.checksum).not_to eq(checksum)
 
-    url = Rails.application.routes.url_helpers.rails_blob_url(icon.image, disposition: 'attachment')
+    url = Rails.application.routes.url_helpers.rails_blob_url(icon.image)
     expect(page.find(".icon")[:src]).to eq(url)
   end
 end

@@ -56,13 +56,13 @@ RSpec.feature "Editing galleries", type: :feature do
 
     within all('.gallery-icon-editor')[1] do
       expect(page).to have_selector('.hidden.icon_url_field')
-      url = Rails.application.routes.url_helpers.rails_blob_url(gallery.icons[1].image, disposition: 'attachment')
+      url = Rails.application.routes.url_helpers.rails_blob_url(gallery.icons[1].image)
       expect(page.find("#icon-#{gallery.icons[1].id}")[:src]).to eq(url)
     end
 
     within all('.gallery-icon-editor')[2] do
       expect(page).to have_selector('.hidden.icon_url_field')
-      url = Rails.application.routes.url_helpers.rails_blob_url(gallery.icons[2].image, disposition: 'attachment')
+      url = Rails.application.routes.url_helpers.rails_blob_url(gallery.icons[2].image)
       expect(page.find("#icon-#{gallery.icons[2].id}")[:src]).to eq(url)
     end
   end

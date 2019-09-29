@@ -55,7 +55,7 @@ class Icon < ApplicationRecord
 
   def delete_from_storage
     return unless self.url_changed? && self.image.attached? && self.image.changes.empty?
-    return if self.url == Rails.application.routes.url_helpers.rails_blob_url(self.image, disposition: 'attachment')
+    return if self.url == Rails.application.routes.url_helpers.rails_blob_url(self.image)
     image.purge_later
   end
 
@@ -76,7 +76,7 @@ class Icon < ApplicationRecord
 
   def setup_uploaded_url
     return unless self.image.attached? && self.image.changed?
-    self.url = Rails.application.routes.url_helpers.rails_blob_url(self.image, disposition: 'attachment')
+    self.url = Rails.application.routes.url_helpers.rails_blob_url(self.image)
   end
 
   class UploadError < RuntimeError

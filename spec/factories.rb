@@ -83,7 +83,7 @@ FactoryBot.define do
     factory :uploaded_icon do
       image { Rack::Test::UploadedFile.new(Rails.root.join('app', 'assets', 'images', 'favicons', 'mstile-150x150.png'), 'image/png') }
       after(:create) do |icon|
-        icon.update!(url: Rails.application.routes.url_helpers.rails_blob_url(icon.image, disposition: 'attachment'))
+        icon.update!(url: Rails.application.routes.url_helpers.rails_blob_url(icon.image))
       end
     end
 
