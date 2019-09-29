@@ -316,150 +316,118 @@ RSpec.describe GalleriesController do
       end
     end
 
-    it "successfully updates" do
-      user = create(:user)
-      gallery = create(:gallery, user: user)
-      group = create(:gallery_group)
-      login_as(user)
-      put :update, params: { id: gallery.id, gallery: {name: 'NewGalleryName', gallery_group_ids: [group.id]} }
-      expect(response).to redirect_to(edit_gallery_url(gallery))
-      expect(flash[:success]).to eq('Gallery saved.')
-      gallery.reload
-      expect(gallery.name).to eq('NewGalleryName')
-      expect(gallery.gallery_groups).to match_array([group])
-    end
+    context "when valid" do
+      let (:user) { create(:user) }
+      let (:gallery) { create(:gallery, user: user) }
+      let (:icon) { create(:icon, user: user, gallery_ids: [gallery.id], has_gallery: true) }
+      let (:gid) { gallery.galleries_icons.find_by(icon: icon).id }
+      before(:each) { login_as(user) }
 
-    it "can update a gallery icon" do
-      user = create(:user)
-      gallery = create(:gallery, user: user)
-      icon = create(:icon, user: user)
-      newkey = icon.keyword + 'new'
-      gallery.icons << icon
-      login_as(user)
+      it "successfully updates" do
+        group = create(:gallery_group)
+        put :update, params: { id: gallery.id, gallery: {name: 'NewGalleryName', gallery_group_ids: [group.id]} }
+        expect(response).to redirect_to(edit_gallery_url(gallery))
+        expect(flash[:success]).to eq('Gallery saved.')
+        gallery.reload
+        expect(gallery.name).to eq('NewGalleryName')
+        expect(gallery.gallery_groups).to match_array([group])
+      end
 
-      icon_attributes = {id: icon.id, keyword: newkey}
-      gid = gallery.galleries_icons.first.id
-      gallery_icon_attributes = {id: gid, icon_attributes: icon_attributes}
+      it "can update a gallery icon" do
+        newkey = icon.keyword + 'new'
 
-      put :update, params: { id: gallery.id, gallery: {galleries_icons_attributes: {gid.to_s => gallery_icon_attributes}} }
-      expect(response).to redirect_to(edit_gallery_url(gallery))
-      expect(flash[:success]).to eq('Gallery saved.')
-      expect(icon.reload.keyword).to eq(newkey)
-    end
+        icon_attributes = {id: icon.id, keyword: newkey}
+        gallery_icon_attributes = {id: gid, icon_attributes: icon_attributes}
 
-    it "can upload an icon" do
-      user = create(:user)
-      login_as(user)
-      gallery = create(:gallery, user: user)
-      icon = create(:icon, user: user)
-      gallery.icons << icon
-      gid = gallery.galleries_icons.find_by(icon: icon).id
-      icon_attributes = { id: icon.id, image: fixture_file_upload('app/assets/images/icons/note_go_strong.png', 'image/png') }
-      gallery_icon_attributes = { id: gid, icon_attributes: icon_attributes }
-      expect(icon.image).not_to be_attached
-      put :update, params: {
-        id: gallery.id,
-        gallery: { galleries_icons_attributes: { gid.to_s => gallery_icon_attributes } }
-      }
-      icon.reload
-      expect(icon.image).to be_attached
-      expect(icon.image.blob.reload.filename.to_s).to include('note_go_strong.png')
-      expect(icon.url).to include('note_go_strong.png')
-    end
+        put :update, params: { id: gallery.id, gallery: {galleries_icons_attributes: {gid.to_s => gallery_icon_attributes}} }
+        expect(response).to redirect_to(edit_gallery_url(gallery))
+        expect(flash[:success]).to eq('Gallery saved.')
+        expect(icon.reload.keyword).to eq(newkey)
+      end
 
-    it "can upload multiple icons" do
-      user = create(:user)
-      login_as(user)
-      gallery = create(:gallery, user: user)
-      icon1 = create(:icon, user: user)
-      icon2 = create(:uploaded_icon, user: user)
-      expect(icon2.image).to be_attached
-      gallery.icons << icon1
-      gallery.icons << icon2
-      gid1 = gallery.galleries_icons.find_by(icon: icon1).id
-      gid2 = gallery.galleries_icons.find_by(icon: icon2).id
-      icon1_attributes = { id: icon1.id, image: fixture_file_upload('app/assets/images/icons/add.png', 'image/png') }
-      icon2_attributes = { id: icon2.id, image: fixture_file_upload('app/assets/images/icons/arrow_up.png', 'image/png') }
-      put :update, params: {
-        id: gallery.id,
-        gallery: {
-          galleries_icons_attributes: {
-            gid1.to_s => { id: gid1, icon_attributes: icon1_attributes },
-            gid2.to_s => { id: gid2, icon_attributes: icon2_attributes }
+      it "can upload an icon" do
+        icon_attributes = { id: icon.id, image: fixture_file_upload('app/assets/images/icons/note_go_strong.png', 'image/png') }
+        gallery_icon_attributes = { id: gid, icon_attributes: icon_attributes }
+        expect(icon.image).not_to be_attached
+        put :update, params: {
+          id: gallery.id,
+          gallery: { galleries_icons_attributes: { gid.to_s => gallery_icon_attributes } }
+        }
+        icon.reload
+        expect(icon.image).to be_attached
+        expect(icon.image.blob.filename).to eq('note_go_strong.png')
+        expect(icon.url).to include('note_go_strong.png')
+      end
+
+      it "can upload multiple icons" do
+        icon2 = create(:uploaded_icon, user: user, gallery_ids: [gallery.id], has_gallery: true)
+        expect(icon2.image).to be_attached
+        gid2 = gallery.galleries_icons.find_by(icon: icon2).id
+        icon1_attributes = { id: icon.id,  image: fixture_file_upload('app/assets/images/icons/add.png', 'image/png') }
+        icon2_attributes = { id: icon2.id, image: fixture_file_upload('app/assets/images/icons/arrow_up.png', 'image/png') }
+        put :update, params: {
+          id: gallery.id,
+          gallery: {
+            galleries_icons_attributes: {
+              gid.to_s => { id: gid, icon_attributes: icon1_attributes },
+              gid2.to_s => { id: gid2, icon_attributes: icon2_attributes }
+            }
           }
         }
-      }
-      icon1.reload
-      icon2.reload
-      expect(icon1.image).to be_attached
-      expect(icon2.image).to be_attached
-      expect(icon1.url).to include('add.png')
-      expect(icon2.url).to include('arrow_up.png')
-    end
+        icon.reload
+        icon2.reload
+        expect(icon.image).to be_attached
+        expect(icon2.image).to be_attached
+        expect(icon.image.blob.filename).to eq('add.png')
+        expect(icon2.image.blob.filename).to eq('arrow_up.png')
+        expect(icon.url).to include('add.png')
+        expect(icon2.url).to include('arrow_up.png')
+      end
 
-    it "can remove a gallery icon from the gallery" do
-      user = create(:user)
-      gallery = create(:gallery, user: user)
-      icon = create(:icon, user: user)
-      gallery.icons << icon
-      expect(icon.reload.has_gallery).to eq(true)
-      login_as(user)
+      it "can remove a gallery icon from the gallery" do
+        icon_attributes = {id: icon.id}
+        gallery_icon_attributes = {id: gid, _destroy: '1', icon_attributes: icon_attributes}
 
-      icon_attributes = {id: icon.id}
-      gid = gallery.galleries_icons.first.id
-      gallery_icon_attributes = {id: gid, _destroy: '1', icon_attributes: icon_attributes}
+        put :update, params: { id: gallery.id, gallery: {galleries_icons_attributes: {gid.to_s => gallery_icon_attributes}} }
+        expect(response).to redirect_to(edit_gallery_url(gallery))
+        expect(flash[:success]).to eq('Gallery saved.')
+        expect(gallery.reload.icons).to be_empty
+        expect(icon.reload).not_to be_nil
+        expect(icon.has_gallery).not_to eq(true)
+      end
 
-      put :update, params: { id: gallery.id, gallery: {galleries_icons_attributes: {gid.to_s => gallery_icon_attributes}} }
-      expect(response).to redirect_to(edit_gallery_url(gallery))
-      expect(flash[:success]).to eq('Gallery saved.')
-      expect(gallery.reload.icons).to be_empty
-      expect(icon.reload).not_to be_nil
-      expect(icon.has_gallery).not_to eq(true)
-    end
+      it "can delete a gallery icon" do
+        icon_attributes = {id: icon.id, _destroy: '1'}
+        gallery_icon_attributes = {id: gid, icon_attributes: icon_attributes}
 
-    it "can delete a gallery icon" do
-      user = create(:user)
-      gallery = create(:gallery, user: user)
-      icon = create(:icon, user: user)
-      gallery.icons << icon
-      login_as(user)
+        put :update, params: { id: gallery.id, gallery: {galleries_icons_attributes: {gid.to_s => gallery_icon_attributes}} }
+        expect(response).to redirect_to(edit_gallery_url(gallery))
+        expect(flash[:success]).to eq('Gallery saved.')
+        expect(gallery.reload.icons).to be_empty
+        expect(Icon.find_by_id(icon.id)).to be_nil
+      end
 
-      icon_attributes = {id: icon.id, _destroy: '1'}
-      gid = gallery.galleries_icons.first.id
-      gallery_icon_attributes = {id: gid, icon_attributes: icon_attributes}
+      it "creates new gallery groups" do
+        existing_name = create(:gallery_group)
+        existing_case = create(:gallery_group)
+        tags = ['_atag', '_atag', create(:gallery_group).id, '', '_' + existing_name.name, '_' + existing_case.name.upcase]
+        expect {
+          post :update, params: { id: gallery.id, gallery: {gallery_group_ids: tags} }
+        }.to change{GalleryGroup.count}.by(1)
+        expect(GalleryGroup.last.name).to eq('atag')
+        expect(assigns(:gallery).gallery_groups.count).to eq(4)
+      end
 
-      put :update, params: { id: gallery.id, gallery: {galleries_icons_attributes: {gid.to_s => gallery_icon_attributes}} }
-      expect(response).to redirect_to(edit_gallery_url(gallery))
-      expect(flash[:success]).to eq('Gallery saved.')
-      expect(gallery.reload.icons).to be_empty
-      expect(Icon.find_by_id(icon.id)).to be_nil
-    end
-
-    it "creates new gallery groups" do
-      existing_name = create(:gallery_group)
-      existing_case = create(:gallery_group)
-      gallery = create(:gallery)
-      login_as(gallery.user)
-      tags = ['_atag', '_atag', create(:gallery_group).id, '', '_' + existing_name.name, '_' + existing_case.name.upcase]
-      expect {
-        post :update, params: { id: gallery.id, gallery: {gallery_group_ids: tags} }
-      }.to change{GalleryGroup.count}.by(1)
-      expect(GalleryGroup.last.name).to eq('atag')
-      expect(assigns(:gallery).gallery_groups.count).to eq(4)
-    end
-
-    it "orders gallery groups" do
-      user = create(:user)
-      login_as(user)
-      gallery = create(:gallery, user: user)
-      group3 = create(:gallery_group, user: user)
-      group1 = create(:gallery_group, user: user)
-      group2 = create(:gallery_group, user: user)
-      post :update, params: {
-        id: gallery.id,
-        gallery: { gallery_group_ids: [group1, group2, group3].map(&:id) }
-      }
-      expect(gallery.gallery_groups).to eq([group1, group2, group3])
+      it "orders gallery groups" do
+        group3 = create(:gallery_group, user: user)
+        group1 = create(:gallery_group, user: user)
+        group2 = create(:gallery_group, user: user)
+        post :update, params: {
+          id: gallery.id,
+          gallery: { gallery_group_ids: [group1, group2, group3].map(&:id) }
+        }
+        expect(gallery.gallery_groups).to eq([group1, group2, group3])
+      end
     end
   end
 
