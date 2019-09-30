@@ -46,17 +46,20 @@ class PostsController < WritableController
     @posts = Post.joins("LEFT JOIN post_views ON post_views.post_id = posts.id AND post_views.user_id = #{current_user.id}")
     @posts = @posts.joins("LEFT JOIN board_views on board_views.board_id = posts.board_id AND board_views.user_id = #{current_user.id}")
 
-    # I am so very sorry I cannot make this more legible. I blame Rails? Posts are unread when:
-    #   post view does not exist and (board view does not exist or post has updated since non-ignored board view read_at)
-    #   or
-    #   post view exists and post has updated since non-ignored post view read_at and (board view does not exist or is not ignored)
-    @posts = @posts.where("(\
-      post_views.user_id IS NULL AND (\
-        board_views.user_id IS NULL OR ((board_views.read_at IS NULL OR (date_trunc('second', board_views.read_at) < date_trunc('second', posts.tagged_at))) AND board_views.ignored = '0')))\
-      OR (post_views.user_id IS NOT NULL AND (\
-        board_views.user_id IS NULL OR board_views.ignored = '0') AND (\
-        (post_views.read_at IS NULL OR (date_trunc('second', post_views.read_at) < date_trunc('second', posts.tagged_at))) AND post_views.ignored = '0'))")
+    # post view does not exist and (board view does not exist or post has updated since non-ignored board view read_at)
+    no_post_view = @posts.where(post_views: { user_id: nil })
+    updated_since_board_read = no_post_view.where(board_views: { read_at: nil })
+      .or(no_post_view.where("date_trunc('second', board_views.read_at) < date_trunc('second', posts.tagged_at)"))
+      .where(board_views: { ignored: false })
+    no_post_view = no_post_view.where(board_views: { user_id: nil }).or(updated_since_board_read)
 
+    # post view exists and post has updated since non-ignored post view read_at and (board view does not exist or is not ignored)
+    with_post_view = @posts.where(post_views: { ignored: false }) # non-existant post-views will return nil here
+    with_post_view = with_post_view.where(board_views: { user_id: nil}).or(with_post_view.where(board_views: { ignored: false }))
+    with_post_view = with_post_view.where(post_views: { read_at: nil })
+      .or(with_post_view.where("date_trunc('second', post_views.read_at) < date_trunc('second', posts.tagged_at)"))
+
+    @posts = with_post_view.or(no_post_view)
     @posts = posts_from_relation(@posts.ordered, with_pagination: false)
     @posts = @posts.select { |p| @opened_ids.include?(p.id) } if @started
     @posts = @posts.paginate(per_page: 25, page: page)
