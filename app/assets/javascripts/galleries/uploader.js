@@ -1,6 +1,7 @@
 /* global addUploadedIcon, setLoadingIcon, addCallback, failCallback */
 
 var uploadedIcons = {};
+var formKey = '';
 
 $(document).ready(function() {
   var form = $('form.icon-upload');
@@ -52,7 +53,8 @@ function bindFileInput(fileInput, form, submitButton, formData) {
       data.formData = formData;
 
       // seed the AWS key with a random string here, not serverside, so each upload has a unique string
-      var pieces = data.formData.key.split('$');
+      if (formKey === '') formKey = data.formData.key;
+      var pieces = formKey.split('$');
       var newKey = pieces[0] + randomString() + '_$' + pieces[1];
       data.formData.key = newKey;
 
