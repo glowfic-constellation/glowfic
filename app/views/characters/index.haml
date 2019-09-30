@@ -34,6 +34,18 @@
         = link_to url_for(character_split: 'template', view: params[:view]) do
           .view-button
             Group
+  %tr
+    %th.subber.padding-10{colspan: 3}
+      = form_tag search_characters_path, method: :get do
+        = label_tag :name, 'Search by name:'
+        = text_field_tag :name, params[:name], style: 'margin: 0px 5px;', id: :name
+        = hidden_field_tag :author_id, @user.id
+        = hidden_field_tag :search_name, true
+        = hidden_field_tag :search_screenname, true
+        = hidden_field_tag :search_nickname, true
+        = submit_tag "Search", class: 'button'
+  %tr
+    %th.odd{style: 'padding: 3px'}
   - partial_type = (page_view == 'list') ? 'characters/list_section' : 'characters/icon_view'
   - colspan = (page_view == 'list') ? 6 : 1
   - if character_split == 'template'
