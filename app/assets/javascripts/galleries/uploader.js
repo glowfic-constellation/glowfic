@@ -35,6 +35,9 @@ function bindFileInput(fileInput, form, submitButton, formData) {
     paramName: 'file', // S3 does not like nested name fields i.e. name="user[avatar_url]"
     dataType: 'XML', // S3 returns XML if success_action_status is set to 201
     replaceFileInput: false,
+    disableImageResize: false,
+    imageMaxWidth: 400,
+    imageMaxHeight: 400,
 
     add: function(e, data) {
       var fileType = data.files[0].type;
@@ -58,7 +61,12 @@ function bindFileInput(fileInput, form, submitButton, formData) {
       var newKey = pieces[0] + randomString() + '_$' + pieces[1];
       data.formData.key = newKey;
 
-      data.submit();
+      var uploader = $(this);
+      data.process(function() {
+        return uploader.fileupload('process', data);
+      }).done(function() {
+        data.submit();
+      });
       fileInput.val('');
     },
     start: function() {
