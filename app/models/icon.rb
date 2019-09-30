@@ -21,6 +21,7 @@ class Icon < ApplicationRecord
   validate :uploaded_url_not_in_use
   nilify_blanks
 
+  before_validation :setup_uploaded_url
   before_save :use_https
   before_update :delete_from_s3, :delete_from_storage
   after_destroy :clear_icon_ids, :delete_from_s3
@@ -71,6 +72,11 @@ class Icon < ApplicationRecord
   def clear_icon_ids
     UpdateModelJob.perform_later(Post.to_s, {icon_id: id}, {icon_id: nil})
     UpdateModelJob.perform_later(Reply.to_s, {icon_id: id}, {icon_id: nil})
+  end
+
+  def setup_uploaded_url
+    return unless self.image.attached?
+    self.url = Rails.application.routes.url_helpers.rails_blob_url(self.image)
   end
 
   class UploadError < RuntimeError
