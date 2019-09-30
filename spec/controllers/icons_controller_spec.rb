@@ -392,18 +392,6 @@ RSpec.describe IconsController do
       expect(icon.image.blob.filename).to eq('accept.png')
       expect(icon.url).to include('accept.png')
     end
-
-    it "successfully changes an uploaded icon to a hotlinked one" do
-      user = create(:user)
-      login_as(user)
-      icon = create(:uploaded_icon, user: user)
-      expect(icon.image).to be_attached
-      perform_enqueued_jobs(only: ActiveStorage::PurgeJob) do
-        expect { put :update, params: { id: icon.id, icon: { url: 'https://fakeicon.com' } } }.to change(ActiveStorage::Blob, :count).by(-1)
-      end
-      expect(flash[:success]).to be_present
-      expect(icon.reload.image).not_to be_attached
-    end
   end
 
   describe "DELETE destroy" do

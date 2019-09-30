@@ -149,13 +149,6 @@ RSpec.describe Icon do
       expect(ActiveStorage::PurgeJob).to have_been_enqueued.with(blob).on_queue('default')
     end
 
-    it "deletes uploaded on new non-uploaded update" do
-      icon = create(:uploaded_icon)
-      blob = ActiveStorage::Blob.first
-      icon.update!(url: "https://fake.com/nonsense-fakeimg2.png")
-      expect(ActiveStorage::PurgeJob).to have_been_enqueued.with(blob).on_queue('default')
-    end
-
     it "does not delete uploaded on non-url update" do
       icon = create(:uploaded_icon)
       icon.keyword = "not a url update"
