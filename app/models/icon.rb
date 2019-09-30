@@ -21,8 +21,8 @@ class Icon < ApplicationRecord
   validate :uploaded_url_not_in_use
   nilify_blanks
 
-  before_validation :setup_uploaded_url
-  before_save :use_https
+  before_validation :setup_uploaded_url, if: :new_record
+  before_save :use_https, :setup_uploaded_url
   before_update :delete_from_s3, :delete_from_storage
   after_destroy :clear_icon_ids, :delete_from_s3
 

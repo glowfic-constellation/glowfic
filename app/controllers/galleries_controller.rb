@@ -97,10 +97,10 @@ class GalleriesController < ApplicationController
   end
 
   def update
-    @gallery.assign_attributes(gallery_params)
-
     begin
       Gallery.transaction do
+        @gallery.assign_attributes(gallery_params)
+        update_urls
         @gallery.gallery_groups = process_tags(GalleryGroup, :gallery, :gallery_group_ids)
         @gallery.save!
       end
@@ -243,6 +243,13 @@ class GalleriesController < ApplicationController
       title: title.join(' » '),
       description: desc.join("\n"),
     }
+  end
+
+  def update_urls
+    changed_images = gallery_params["galleries_icons_attributes"].values
+    chabged_images.collect! { |p| [p["icon_attributes"]["id"], p["icon_attributes"].key?("image")] }.to_h
+    changed_images.select! { |_k, v| v }
+    @gallery.icon.where(id: changed_images.keys).each(&:setup_uploaded_url)
   end
 
   def gallery_params
