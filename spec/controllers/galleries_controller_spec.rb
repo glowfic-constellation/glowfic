@@ -356,12 +356,14 @@ RSpec.describe GalleriesController do
       gid = gallery.galleries_icons.find_by(icon: icon).id
       icon_attributes = { id: icon.id, image: fixture_file_upload('app/assets/images/icons/note_go_strong.png', 'image/png') }
       gallery_icon_attributes = { id: gid, icon_attributes: icon_attributes }
+      expect(icon.image).not_to be_attached
       put :update, params: {
         id: gallery.id,
         gallery: { galleries_icons_attributes: { gid.to_s => gallery_icon_attributes } }
       }
       icon.reload
       expect(icon.image).to be_attached
+      expect(icon.image.blob.reload.filename.to_s).to include('note_go_strong.png')
       expect(icon.url).to include('note_go_strong.png')
     end
 
