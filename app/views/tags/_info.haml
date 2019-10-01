@@ -6,7 +6,8 @@
     - if @tag.is_a?(Setting) && @tag.parent_settings.present?
       %tr
         %th.centered.sub.width-150= 'Parent Setting'.pluralize(@tag.parent_settings.count)
-        %td{class: cycle('even', 'odd')}= @tag.parent_settings.map { |c| link_to(c.name, tag_path(c))}.join(', ').html_safe
+        - setting_links = @tag.parent_settings.map { |c| link_to(c.name, tag_path(c))}
+        %td{class: cycle('even', 'odd')}= safe_join(setting_links, ', ')
     - if @tag.is_a?(Setting)
       %tr
         %th.centered.sub.width-150 Owner

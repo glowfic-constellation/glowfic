@@ -124,7 +124,8 @@
       - if @character.settings.present?
         %tr
           %th.sub.vtop.width-150 Setting
-          %td.character-setting{class: cycle('even', 'odd')}= @character.settings.map { |setting| link_to(setting.name, tag_path(setting)) }.join(', ').html_safe
+          - setting_links = @character.settings.map { |setting| link_to(setting.name, tag_path(setting)) }
+          %td.character-setting{class: cycle('even', 'odd')}= safe_join(setting_links, ', ')
       - if @character.description
         %tr
           %th.sub.vtop.width-150 Description
