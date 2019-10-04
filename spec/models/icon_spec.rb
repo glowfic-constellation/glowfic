@@ -46,6 +46,14 @@ RSpec.describe Icon do
         expect(dupe_icon.save).to be false
         expect(dupe_icon.url).to eq(old_url)
       end
+
+      it "does not allow url/s3_key mismatch" do
+        icon = build(:icon, user: create(:user))
+        icon.url = "https://d1anwqy6ci9o1i.cloudfront.net/users%2F#{icon.user.id}%2Ficons%2Fnonsense-fakeimg2.png"
+        icon.s3_key = "users/#{icon.user.id + 1}/icons/nonsense-fakeimg2.png"
+        expect(icon.save).to be false
+        expect(icon.url).to be_nil
+      end
     end
   end
 
@@ -131,7 +139,7 @@ RSpec.describe Icon do
       ENV['ICON_HOST'] = nil
       icon = build(:icon, user: create(:user))
       url = "https://glowfic-bucket.s3.amazonaws.com/users%2F#{icon.user.id}%2Ficons%2Ffake_test.png"
-      icon.s3_key = 'users/1/icons/fake_test.png'
+      icon.s3_key = "users/#{icon.user_id}/icons/fake_test.png"
       icon.url = url
       icon.save!
       expect(icon.reload.url).to eq(url)
@@ -151,7 +159,7 @@ RSpec.describe Icon do
       ENV['ICON_HOST'] = asset_host
       icon = build(:icon, user: create(:user))
       url = "#{asset_host}/users%2F#{icon.user_id}%2Ficons%2Ffake_test.png"
-      icon.s3_key = 'users/1/icons/fake_test.png'
+      icon.s3_key = "users/#{icon.user_id}/icons/fake_test.png"
       icon.url = url
       icon.save!
       expect(icon.reload.url).to eq(url)
@@ -167,7 +175,7 @@ RSpec.describe Icon do
       ENV['ICON_HOST'] = asset_host
       icon = build(:icon, user: create(:user))
       icon.url = "https://glowfic-bucket.s3.amazonaws.com/users%2F#{icon.user_id}%2Ficons%2Ffake_test.png"
-      icon.s3_key = 'users/1/icons/fake_test.png'
+      icon.s3_key = "users/#{icon.user_id}/icons/fake_test.png"
       icon.save!
       expect(icon.reload.url).to eq("#{asset_host}/users%2F#{icon.user_id}%2Ficons%2Ffake_test.png")
     end
