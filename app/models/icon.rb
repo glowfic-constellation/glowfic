@@ -16,7 +16,7 @@ class Icon < ApplicationRecord
     presence: true,
     length: { maximum: 255 }
   validate :url_is_url
-  validate :uploaded_url_not_in_use
+  validate :uploaded_url_yours
   nilify_blanks
 
   before_validation :use_icon_host
@@ -58,14 +58,13 @@ class Icon < ApplicationRecord
     DeleteIconFromS3Job.perform_later(s3_key_was)
   end
 
-  def uploaded_url_not_in_use
+  def uploaded_url_yours
     return unless uploaded?
-    check = Icon.where(s3_key: s3_key)
-    check = check.where.not(id: id) unless new_record?
-    return unless check.exists?
+    return if url.include?("users%2F#{user_id}%2Ficons%2F")
+
     self.url = url_was
     self.s3_key = s3_key_was
-    errors.add(:url, 'has already been taken')
+    errors.add(:url, 'is invalid')
   end
 
   def clear_icon_ids
