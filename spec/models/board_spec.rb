@@ -49,13 +49,12 @@ RSpec.describe Board do
       board.board_authors.create!(user: cameo, cameo: true)
       board.reload
       expect(board.writer_ids).to match_array([board.creator_id, coauthor.id])
-      expect(board.writer_ids).to match_array(board.writers.map(&:id))
     end
 
     it "should allow coauthors and cameos to post" do
       coauthor = create(:user)
       cameo = create(:user)
-      board = create(:board, coauthors: [coauthor], cameos: [cameo], authors_locked: true)
+      board = create(:board, writers: [coauthor], cameos: [cameo], authors_locked: true)
       expect(board.authors_locked?).to be true
       expect(coauthor.writes_in?(board)).to be true
       expect(cameo.writes_in?(board)).to be true
@@ -82,8 +81,8 @@ RSpec.describe Board do
       board2.board_authors.create!(user: coauthor)
       board.reload
       board2.reload
-      expect(board.board_authors.count).to eq(1)
-      expect(board2.board_authors.count).to eq(1)
+      expect(board.board_authors.count).to eq(2)
+      expect(board2.board_authors.count).to eq(2)
     end
   end
 

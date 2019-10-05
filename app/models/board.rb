@@ -10,29 +10,24 @@ class Board < ApplicationRecord
   belongs_to :creator, class_name: 'User', inverse_of: false, optional: false
 
   has_many :board_authors, inverse_of: :board, dependent: :destroy
-  has_many :board_coauthors, -> { where(cameo: false) }, class_name: 'BoardAuthor', inverse_of: :board
-  has_many :coauthors, class_name: 'User', through: :board_coauthors, source: :user, dependent: :destroy
+  has_many :authors, class_name: 'User', through: :board_authors, source: :user, dependent: :destroy
+  has_many :board_writers, -> { where(cameo: false) }, class_name: 'BoardAuthor', inverse_of: :board
+  has_many :writers, class_name: 'User', through: :board_writers, source: :user, dependent: :destroy
   has_many :board_cameos, -> { where(cameo: true) }, class_name: 'BoardAuthor', inverse_of: :board
   has_many :cameos, class_name: 'User', through: :board_cameos, source: :user, dependent: :destroy
+  has_many :coauthors, ->(board) { where.not(id: board.creator_id) }, class_name: 'User', through: :board_writers, source: :user, dependent: :destroy
 
   validates :name, presence: true, uniqueness: true
 
+  after_create :add_creator_to_authors
   after_destroy :move_posts_to_sandbox
 
   scope :ordered, -> { order(pinned: :desc, name: :asc) }
 
-  def writers
-    @writers ||= coauthors + [creator]
-  end
-
-  def writer_ids
-    coauthor_ids + [creator_id]
-  end
-
   def open_to?(user)
     return false unless user
-    return true if creator_id == user.id
     return true unless self.authors_locked?
+    return true if creator_id == user.id
     board_authors.where(user_id: user.id).exists?
   end
 
@@ -41,7 +36,7 @@ class Board < ApplicationRecord
     return true if creator_id == user.id
     return true if user.has_permission?(:edit_continuities)
     return false if creator.deleted?
-    board_coauthors.where(user_id: user.id).exists?
+    board_writers.where(user_id: user.id).exists?
   end
 
   def ordered?
@@ -53,6 +48,10 @@ class Board < ApplicationRecord
   def move_posts_to_sandbox
     # TODO don't hard code sandbox board_id
     UpdateModelJob.perform_later(Post.to_s, {board_id: id}, {board_id: 3, section_id: nil})
+  end
+
+  def add_creator_to_authors
+    board_authors.create!(user: creator)
   end
 
   def fix_ordering

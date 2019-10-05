@@ -239,7 +239,7 @@ RSpec.describe PostsController do
       login_as(user)
       create(:user) # user not in the board
       board_creator = create(:user) # user in the board
-      board = create(:board, creator: board_creator, coauthors: [])
+      board = create(:board, creator: board_creator, authors_locked: false)
       get :new, params: { board_id: board.id }
       expect(assigns(:post).board).to eq(board)
       expect(assigns(:author_ids)).to eq([])
@@ -250,7 +250,7 @@ RSpec.describe PostsController do
       login_as(user)
       coauthor = create(:user)
       create(:user) # other_user
-      board = create(:board, creator: user, coauthors: [coauthor])
+      board = create(:board, creator: user, writers: [coauthor])
       get :new, params: { board_id: board.id }
       expect(assigns(:post).board).to eq(board)
       expect(assigns(:author_ids)).to match_array([coauthor.id])
@@ -499,7 +499,7 @@ RSpec.describe PostsController do
       other_user = create(:user)
       third_user = create(:user)
       create(:user) # separate user
-      board = create(:board, creator: user, coauthors: [other_user])
+      board = create(:board, creator: user, writers: [other_user])
 
       login_as(user)
       expect {
@@ -517,8 +517,7 @@ RSpec.describe PostsController do
       expect(post.tagging_authors).to match_array([user, other_user, third_user])
 
       board.reload
-      expect(board.creator).to eq(user)
-      expect(board.coauthors).to match_array([other_user])
+      expect(board.writers).to match_array([user, other_user])
       expect(board.cameos).to match_array([third_user])
     end
 
@@ -544,7 +543,7 @@ RSpec.describe PostsController do
       expect(post.tagging_authors).to match_array([user, other_user])
 
       board.reload
-      expect(board.coauthors).to be_empty
+      expect(board.writers).to eq([board.creator])
       expect(board.cameos).to be_empty
     end
 
@@ -1969,7 +1968,7 @@ RSpec.describe PostsController do
         other_user = create(:user)
         third_user = create(:user)
         login_as(user)
-        board = create(:board, creator: user, coauthors: [other_user])
+        board = create(:board, creator: user, writers: [other_user])
         post = create(:post, user: user, board: board)
         put :update, params: {
           id: post.id,

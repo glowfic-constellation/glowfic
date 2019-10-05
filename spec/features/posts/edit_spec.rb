@@ -200,7 +200,7 @@ RSpec.feature "Editing posts", :type => :feature do
   scenario "Moderator saves no change to a post in a board they can't write in" do
     user = create(:user)
     other_user = create(:user)
-    board = create(:board, creator: user, coauthors: [other_user], name: 'test board')
+    board = create(:board, creator: user, writers: [other_user], name: 'test board')
     post = create(:post, user: user, board: board, subject: 'test subject')
 
     login(create(:mod_user, password: 'known'), 'known')

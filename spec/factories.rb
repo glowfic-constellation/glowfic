@@ -24,7 +24,7 @@ FactoryBot.define do
 
   factory :board do
     creator
-    authors_locked { coauthor_ids.present? || coauthors.present? }
+    authors_locked { writer_ids.present? || writers.present? }
     sequence :name do |n|
       "test board #{n}"
     end

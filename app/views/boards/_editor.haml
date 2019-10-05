@@ -8,7 +8,7 @@
   %tr
     %th.sub Coauthors
     %td.even
-      = f.collection_select(:coauthor_ids, @authors, :id, :username, {selected: @board.coauthors.pluck(:user_id)}, {multiple: true})
+      = f.collection_select(:coauthor_ids, @coauthors, :id, :username, {selected: @board.coauthors.pluck(:user_id)}, {multiple: true})
   %tr
     %th.sub Cameos
     %td.odd

@@ -305,7 +305,7 @@ RSpec.describe Post do
     end
 
     it "should reorder upon board change" do
-      board = create(:board, coauthor_ids: [create(:user).id])
+      board = create(:board, authors_locked: true)
       post0 = create(:post, board_id: board.id, user: board.creator)
       expect(post0.section_order).to eq(0)
       post1 = create(:post, board_id: board.id, user: board.creator)

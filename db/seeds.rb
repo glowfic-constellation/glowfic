@@ -34,12 +34,12 @@ teceler.update!(avatar_id: 5)
 
 puts "Creating continuities..."
 Board.create!([
-  { name: 'Effulgence', creator: alicorn, coauthors: [kappa] },
-  { name: 'Witchlight', creator: alicorn, coauthors: [marri] },
+  { name: 'Effulgence', creator: alicorn, writers: [kappa] },
+  { name: 'Witchlight', creator: alicorn, writers: [marri] },
   { name: 'Sandboxes', creator: marri, pinned: true, authors_locked: false },
   { name: 'Site testing', creator: marri, authors_locked: false },
-  { name: 'Pixiethreads', creator: kappa, coauthors: [aestrix] },
-  { name: 'Incandescence', creator: alicorn, coauthors: [aestrix] },
+  { name: 'Pixiethreads', creator: kappa, writers: [aestrix] },
+  { name: 'Incandescence', creator: alicorn, writers: [aestrix] },
 ])
 
 puts "Creating sections..."

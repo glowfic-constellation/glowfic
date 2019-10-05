@@ -64,10 +64,8 @@ RSpec.describe BoardsController do
         expect(assigns(:boards)).to match_array([owned_board])
 
         coauthor = create(:user)
-        owned_board2 = create(:board, creator_id: user.id)
-        owned_board2.coauthors << coauthor
-        owned_board3 = create(:board, creator_id: user.id)
-        owned_board3.cameos << coauthor
+        owned_board2 = create(:board, creator: user, writers: [coauthor])
+        owned_board3 = create(:board, creator: user, cameos: [coauthor])
 
         get :index, params: { user_id: coauthor.id }
         expect(assigns(:boards)).to match_array([owned_board2])
@@ -78,8 +76,8 @@ RSpec.describe BoardsController do
         user = create(:user)
         owned_board1 = create(:board, creator_id: user.id, name: 'da')
         owned_board2 = create(:board, creator_id: user.id, name: 'ba')
-        author_board1 = create(:board, coauthors: [user], name: 'aa')
-        author_board2 = create(:board, coauthors: [user], name: 'ca')
+        author_board1 = create(:board, writers: [user], name: 'aa')
+        author_board2 = create(:board, writers: [user], name: 'ca')
         cameo_board1 = create(:board, cameos: [user], name: 'bb')
         cameo_board2 = create(:board, cameos: [user], name: 'ab')
         cameo_board3 = create(:board, cameos: [user], name: 'cb')
@@ -116,10 +114,10 @@ RSpec.describe BoardsController do
       expect(assigns(:board).creator_id).to eq(user_id)
       expect(assigns(:page_title)).to eq("New Continuity")
 
-      expect(assigns(:authors).size).to eq(3)
-      expect(assigns(:authors)).to match_array(other_users)
-      expect(assigns(:authors)).not_to include(current_user)
-      expect(assigns(:authors).sort_by(&:username)).to eq(assigns(:authors))
+      expect(assigns(:coauthors).size).to eq(3)
+      expect(assigns(:coauthors)).to match_array(other_users)
+      expect(assigns(:coauthors)).not_to include(current_user)
+      expect(assigns(:coauthors).sort_by(&:username)).to eq(assigns(:coauthors))
 
       expect(assigns(:cameos).size).to eq(3)
       expect(assigns(:cameos)).to match_array(other_users)
@@ -156,10 +154,10 @@ RSpec.describe BoardsController do
       expect(assigns(:board).creator).to eq(assigns(:current_user))
       expect(assigns(:page_title)).to eq("New Continuity")
 
-      expect(assigns(:authors).size).to eq(3)
-      expect(assigns(:authors)).to match_array(other_users)
-      expect(assigns(:authors)).not_to include(assigns(:current_user))
-      expect(assigns(:authors).sort_by(&:username)).to eq(assigns(:authors))
+      expect(assigns(:coauthors).size).to eq(3)
+      expect(assigns(:coauthors)).to match_array(other_users)
+      expect(assigns(:coauthors)).not_to include(assigns(:current_user))
+      expect(assigns(:coauthors).sort_by(&:username)).to eq(assigns(:coauthors))
 
       expect(assigns(:cameos).size).to eq(3)
       expect(assigns(:cameos)).to match_array(other_users)
@@ -174,7 +172,14 @@ RSpec.describe BoardsController do
       user2 = create(:user)
       user3 = create(:user)
 
-      post :create, params: { board: {name: 'TestCreateBoard', description: 'Test description', coauthor_ids: [user2.id], cameo_ids: [user3.id]} }
+      post :create, params: {
+        board: {
+          name: 'TestCreateBoard',
+          description: 'Test description',
+          coauthor_ids: [user2.id],
+          cameo_ids: [user3.id]
+        }
+      }
       expect(response).to redirect_to(boards_url)
       expect(flash[:success]).to eq("Continuity created!")
       expect(Board.count).to eq(1)
@@ -183,7 +188,7 @@ RSpec.describe BoardsController do
       expect(board.name).to eq('TestCreateBoard')
       expect(board.creator).to eq(creator)
       expect(board.description).to eq('Test description')
-      expect(board.coauthors).to match_array([user2])
+      expect(board.writers).to match_array([creator, user2])
       expect(board.cameos).to match_array([user3])
     end
   end
@@ -252,7 +257,7 @@ RSpec.describe BoardsController do
 
     it "calculates OpenGraph meta" do
       user = create(:user, username: 'John Doe')
-      board = create(:board, name: 'board', creator: user, coauthors: [create(:user, username: 'Jane Doe')], description: 'sample board')
+      board = create(:board, name: 'board', creator: user, writers: [create(:user, username: 'Jane Doe')], description: 'sample board')
       create(:post, subject: 'title', user: user, board: board)
       get :show, params: { id: board.id }
 
@@ -296,12 +301,12 @@ RSpec.describe BoardsController do
     end
 
     it "sets expected variables" do
-      board = create(:board)
+      coauthor = create(:user)
+      board = create(:board, writers: [coauthor])
       sections = [create(:board_section, board: board), create(:board_section, board: board)]
-      posts = [create(:post, board: board, tagged_at: Time.zone.now + 5.minutes), create(:post, board: board)]
+      posts = [create(:post, board: board, user: board.creator, tagged_at: Time.zone.now + 5.minutes), create(:post, user: coauthor, board: board)]
       sections[0].update!(section_order: 1)
       sections[1].update!(section_order: 0)
-      board.coauthors << create(:user)
       login_as(board.creator)
       get :edit, params: { id: board.id }
       expect(assigns(:board_sections)).to eq(sections.reverse)
@@ -350,13 +355,21 @@ RSpec.describe BoardsController do
       login_as(user)
       user2 = create(:user)
       user3 = create(:user)
-      put :update, params: { id: board.id, board: {name: name + 'edit', description: 'New description', coauthor_ids: [user2.id], cameo_ids: [user3.id]} }
+      put :update, params: {
+        id: board.id,
+        board: {
+          name: name + 'edit',
+          description: 'New description',
+          coauthor_ids: [user2.id],
+          cameo_ids: [user3.id]
+        }
+      }
       expect(response).to redirect_to(board_url(board))
       expect(flash[:success]).to eq("Continuity saved!")
       board.reload
       expect(board.name).to eq(name + 'edit')
       expect(board.description).to eq('New description')
-      expect(board.coauthors).to match_array([user2])
+      expect(board.writers).to match_array([user, user2])
       expect(board.cameos).to match_array([user3])
     end
   end
@@ -501,19 +514,20 @@ RSpec.describe BoardsController do
       users = Array.new(3) { create(:user) }
       controller.send(:set_available_cowriters)
       expect(assigns(:cameos)).to match_array(users)
-      expect(assigns(:authors)).to match_array(users)
+      expect(assigns(:coauthors)).to match_array(users)
     end
 
     it "gets the correct set of available cowriters on an existing board" do
       users = Array.new(3) { create(:user) }
       coauthors = [create(:user)]
       cameos = [create(:user), create(:user)]
-      board = create(:board, coauthors: coauthors, cameos: cameos)
+      board = create(:board, writers: coauthors, cameos: cameos)
       login_as(board.creator)
+      board.reload
       controller.instance_variable_set(:@board, board)
       controller.send(:set_available_cowriters)
       expect(assigns(:cameos)).to match_array(users + cameos)
-      expect(assigns(:authors)).to match_array(users + coauthors)
+      expect(assigns(:coauthors)).to match_array(users + coauthors)
     end
 
     it "orders them correctly" do
@@ -523,7 +537,7 @@ RSpec.describe BoardsController do
       user3 = create(:user, username: 'user3')
       controller.send(:set_available_cowriters)
       expect(assigns(:cameos)).to eq([user1, user2, user3])
-      expect(assigns(:authors)).to eq([user1, user2, user3])
+      expect(assigns(:coauthors)).to eq([user1, user2, user3])
     end
   end
 end
