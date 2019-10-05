@@ -39,7 +39,7 @@ gem 'uglifier'
 gem 'will_paginate'
 
 group :production do
-  gem 'puma'
+  gem 'puma', '3.12.0' # puma cannot be upgraded without breaking Docker
   gem 'rack-cors'
   gem 'rack-timeout'
   gem 'rails_12factor'
