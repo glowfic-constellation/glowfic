@@ -26,6 +26,8 @@ function randomString() {
 }
 
 function bindFileInput(fileInput, form, submitButton, formData) {
+  var limit = form.data('limit');
+  var numFiles = 0;
   var uploadArgs = {
     fileInput: fileInput,
     url: form.data('url'),
@@ -40,6 +42,17 @@ function bindFileInput(fileInput, form, submitButton, formData) {
     imageMaxHeight: 400,
 
     add: function(e, data) {
+      if (typeof limit !== 'undefined' && limit > 1) {
+        var isFirstFile = (fileInput[0].files[0] == data.files[0]);
+        var numUploading = fileInput[0].files.length;
+        if (isFirstFile) numFiles += numUploading;
+        if (numFiles > limit) {
+          if (isFirstFile) alert("You cannot upload more than "+limit+" files at once. Please try again.");
+          if(fileInput[0].files[numUploading - 1] == data.files[0]) numFiles -= numUploading;
+          return;
+        }
+      }
+
       var fileType = data.files[0].type;
       if (!fileType.startsWith('image/')) {
         alert("You must upload files with an image filetype such as .png or .jpg - please retry with a valid file.");
