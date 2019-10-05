@@ -14,8 +14,13 @@
     %td.odd
       = f.collection_select(:cameo_ids, @cameos, :id, :username, {selected: @board.cameos.pluck(:user_id)}, {multiple: true})
   %tr
+    %th.sub Locked?
+    %td.even
+      = f.check_box :authors_locked, class: 'vmid', checked: @board.authors_locked
+      = f.label :authors_locked, 'Only allow authors to create new posts in this continuity', class: 'no-margin'
+  %tr
     %th.sub.vtop Description
-    %td.even= f.text_area :description
+    %td.odd= f.text_area :description
 %tfoot
   %tr
     %th.form-table-ender{colspan: 2}= submit_tag "Save", class: 'button'

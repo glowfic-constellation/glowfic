@@ -289,15 +289,14 @@ RSpec.describe Post do
     end
 
     it "should reorder upon deletion" do
-      board = create(:board)
-      board.coauthors << create(:user)
-      post0 = create(:post, board_id: board.id, user: board.creator)
+      board = create(:board, authors_locked: true)
+      post0 = create(:post, board: board, user: board.creator)
       expect(post0.section_order).to eq(0)
-      post1 = create(:post, board_id: board.id, user: board.creator)
+      post1 = create(:post, board: board, user: board.creator)
       expect(post1.section_order).to eq(1)
-      post2 = create(:post, board_id: board.id, user: board.creator)
+      post2 = create(:post, board: board, user: board.creator)
       expect(post2.section_order).to eq(2)
-      post3 = create(:post, board_id: board.id, user: board.creator)
+      post3 = create(:post, board: board, user: board.creator)
       expect(post3.section_order).to eq(3)
       post1.destroy!
       expect(post0.reload.section_order).to eq(0)
@@ -306,8 +305,7 @@ RSpec.describe Post do
     end
 
     it "should reorder upon board change" do
-      board = create(:board)
-      board.coauthors << create(:user)
+      board = create(:board, coauthor_ids: [create(:user).id])
       post0 = create(:post, board_id: board.id, user: board.creator)
       expect(post0.section_order).to eq(0)
       post1 = create(:post, board_id: board.id, user: board.creator)
@@ -438,8 +436,7 @@ RSpec.describe Post do
     end
 
     it "requires board the user can access" do
-      board = create(:board)
-      board.coauthors << create(:user)
+      board = create(:board, authors_locked: true)
       post = create(:post)
       expect(post.valid?).to eq(true)
       post.board = board

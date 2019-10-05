@@ -36,8 +36,8 @@ puts "Creating continuities..."
 Board.create!([
   { name: 'Effulgence', creator: alicorn, coauthors: [kappa] },
   { name: 'Witchlight', creator: alicorn, coauthors: [marri] },
-  { name: 'Sandboxes', creator: marri, pinned: true },
-  { name: 'Site testing', creator: marri },
+  { name: 'Sandboxes', creator: marri, pinned: true, authors_locked: false },
+  { name: 'Site testing', creator: marri, authors_locked: false },
   { name: 'Pixiethreads', creator: kappa, coauthors: [aestrix] },
   { name: 'Incandescence', creator: alicorn, coauthors: [aestrix] },
 ])

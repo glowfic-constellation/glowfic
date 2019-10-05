@@ -12,11 +12,11 @@
   %tr
     %th.sub.vtop Editors
     %td.odd
-      = f.radio_button :open_to_anyone, false, class: 'checkbox'
-      = f.label :open_to_anyone, 'Just me', value: false
+      = f.radio_button :authors_locked, true, class: 'checkbox'
+      = f.label :authors_locked, 'Just me', value: true
       %br
-      = f.radio_button :open_to_anyone, true, class: 'checkbox'
-      = f.label :open_to_anyone, 'Any Constellation user', value: true
+      = f.radio_button :authors_locked, false, class: 'checkbox'
+      = f.label :authors_locked, 'Any Constellation user', value: false
   %tr
     %th.sub.vtop Description
     %td.even= f.text_area :description

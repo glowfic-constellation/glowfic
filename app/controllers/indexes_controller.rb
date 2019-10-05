@@ -98,6 +98,6 @@ class IndexesController < ApplicationController
   end
 
   def index_params
-    params.fetch(:index, {}).permit(:name, :description, :privacy, :open_to_anyone)
+    params.fetch(:index, {}).permit(:name, :description, :privacy, :authors_locked)
   end
 end

@@ -31,13 +31,9 @@ class Board < ApplicationRecord
 
   def open_to?(user)
     return false unless user
-    return true if open_to_anyone?
     return true if creator_id == user.id
+    return true unless self.authors_locked?
     board_authors.where(user_id: user.id).exists?
-  end
-
-  def open_to_anyone?
-    !board_authors.exists?
   end
 
   def editable_by?(user)
@@ -49,7 +45,7 @@ class Board < ApplicationRecord
   end
 
   def ordered?
-    !open_to_anyone? || board_sections.exists?
+    authors_locked? || board_sections.exists?
   end
 
   private

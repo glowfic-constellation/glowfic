@@ -35,7 +35,7 @@ RSpec.describe Board do
   it "should allow everyone to post if open to anyone" do
     board = create(:board)
     user = create(:user)
-    expect(board.open_to_anyone?).to be true
+    expect(board.authors_locked?).to be false
     expect(user.writes_in?(board)).to be true
   end
 
@@ -53,13 +53,10 @@ RSpec.describe Board do
     end
 
     it "should allow coauthors and cameos to post" do
-      board = create(:board)
       coauthor = create(:user)
       cameo = create(:user)
-      board.board_authors.create!(user: coauthor)
-      board.board_authors.create!(user: cameo, cameo: true)
-      board.reload
-      expect(board.open_to_anyone?).to be false
+      board = create(:board, coauthors: [coauthor], cameos: [cameo], authors_locked: true)
+      expect(board.authors_locked?).to be true
       expect(coauthor.writes_in?(board)).to be true
       expect(cameo.writes_in?(board)).to be true
     end
@@ -114,13 +111,10 @@ RSpec.describe Board do
     end
 
     it "should be ordered if board is not open to anyone" do
-      board = create(:board)
-      board.update!(coauthors: [create(:user)])
+      board = create(:board, authors_locked: true)
       expect(board.ordered?).to eq(true)
-      board.update!(coauthors: [])
+      board.update!(authors_locked: false)
       expect(board.ordered?).to eq(false)
-      board.update!(cameos: [create(:user)])
-      expect(board.ordered?).to eq(true)
     end
 
     it "should be ordered if board has sections" do
