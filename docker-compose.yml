@@ -17,6 +17,7 @@ services:
       - GLOWFIC_DATABASE_HOST=postgres
       - GLOWFIC_DATABASE_USER=postgres
       - GLOWFIC_DATABASE_PASS=postgres
+      - BIND_HOST=0.0.0.0
   redis:
     image: redis:3.2-alpine
   postgres:

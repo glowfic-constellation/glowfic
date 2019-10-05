@@ -1,7 +1,7 @@
 class Reply < ApplicationRecord
   include Presentable
   include Writable
-  include PgSearch
+  include PgSearch::Model
   include Orderable
 
   belongs_to :post, inverse_of: :replies, optional: false
