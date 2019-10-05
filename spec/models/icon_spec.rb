@@ -28,10 +28,10 @@ RSpec.describe Icon do
       expect(icon).not_to be_valid
     end
 
-    context "#uploaded_url_not_in_use" do
+    context "#uploaded_url_yours" do
       it "should set the url back to its previous url on create" do
         icon = create(:uploaded_icon)
-        dupe_icon = build(:icon, url: icon.url, s3_key: icon.s3_key)
+        dupe_icon = build(:icon, url: icon.url, s3_key: icon.s3_key, user: create(:user))
         expect(dupe_icon).not_to be_valid
         expect(dupe_icon.url).to be nil
       end
@@ -42,8 +42,17 @@ RSpec.describe Icon do
         old_url = dupe_icon.url
         dupe_icon.url = icon.url
         dupe_icon.s3_key = icon.s3_key
+        dupe_icon.user_id = create(:user)
         expect(dupe_icon.save).to be false
         expect(dupe_icon.url).to eq(old_url)
+      end
+
+      it "does not allow url/s3_key mismatch" do
+        icon = build(:icon, user: create(:user))
+        icon.url = "https://d1anwqy6ci9o1i.cloudfront.net/users%2F#{icon.user.id}%2Ficons%2Fnonsense-fakeimg2.png"
+        icon.s3_key = "users/#{icon.user.id + 1}/icons/nonsense-fakeimg2.png"
+        expect(icon.save).to be false
+        expect(icon.url).to be_nil
       end
     end
   end
@@ -107,17 +116,8 @@ RSpec.describe Icon do
     it "deletes uploaded on new uploaded update" do
       icon = create(:uploaded_icon)
       old_key = icon.s3_key
-      icon.url = "https://d1anwqy6ci9o1i.cloudfront.net/users/#{icon.user.id}/icons/nonsense-fakeimg2.png"
-      icon.s3_key = "/users/#{icon.user.id}/icons/nonsense-fakeimg2.png"
-      icon.save!
-      expect(DeleteIconFromS3Job).to have_been_enqueued.with(old_key).on_queue('high')
-    end
-
-    it "deletes uploaded on new non-uploaded update" do
-      icon = create(:uploaded_icon)
-      old_key = icon.s3_key
-      icon.url = "https://fake.com/nonsense-fakeimg2.png"
-      icon.s3_key = "/users/#{icon.user.id}/icons/nonsense-fakeimg2.png"
+      icon.url = "https://d1anwqy6ci9o1i.cloudfront.net/users%2F#{icon.user.id}%2Ficons%2Fnonsense-fakeimg2.png"
+      icon.s3_key = "users/#{icon.user.id}/icons/nonsense-fakeimg2.png"
       icon.save!
       expect(DeleteIconFromS3Job).to have_been_enqueued.with(old_key).on_queue('high')
     end
@@ -137,29 +137,32 @@ RSpec.describe Icon do
 
     it "does nothing unless asset host is present" do
       ENV['ICON_HOST'] = nil
-      icon = build(:icon)
-      icon.s3_key = 'users/1/icons/fake_test.png'
-      icon.url = 'https://glowfic-bucket.s3.amazonaws.com/users%2F1%2Ficons%2Ffake_test.png'
+      icon = build(:icon, user: create(:user))
+      url = "https://glowfic-bucket.s3.amazonaws.com/users%2F#{icon.user.id}%2Ficons%2Ffake_test.png"
+      icon.s3_key = "users/#{icon.user_id}/icons/fake_test.png"
+      icon.url = url
       icon.save!
-      expect(icon.reload.url).to eq('https://glowfic-bucket.s3.amazonaws.com/users%2F1%2Ficons%2Ffake_test.png')
+      expect(icon.reload.url).to eq(url)
     end
 
     it "does nothing unless the icon is uploaded" do
       ENV['ICON_HOST'] = asset_host
-      icon = build(:icon)
+      icon = build(:icon, user: create(:user))
+      url = "https://glowfic-bucket.s3.amazonaws.com/users%2F#{icon.user.id}%2Ficons%2Ffake_test.png"
       icon.s3_key = nil
-      icon.url = 'https://glowfic-bucket.s3.amazonaws.com/users%2F1%2Ficons%2Ffake_test.png'
+      icon.url = url
       icon.save!
-      expect(icon.reload.url).to eq('https://glowfic-bucket.s3.amazonaws.com/users%2F1%2Ficons%2Ffake_test.png')
+      expect(icon.reload.url).to eq(url)
     end
 
     it "does nothing unless the icon already has the asset host domain in it" do
       ENV['ICON_HOST'] = asset_host
-      icon = build(:icon)
-      icon.s3_key = 'users/1/icons/fake_test.png'
-      icon.url = asset_host + '/users%2F1%2Ficons%2Ffake_test.png'
+      icon = build(:icon, user: create(:user))
+      url = "#{asset_host}/users%2F#{icon.user_id}%2Ficons%2Ffake_test.png"
+      icon.s3_key = "users/#{icon.user_id}/icons/fake_test.png"
+      icon.url = url
       icon.save!
-      expect(icon.reload.url).to eq(asset_host + '/users%2F1%2Ficons%2Ffake_test.png')
+      expect(icon.reload.url).to eq(url)
     end
 
     it "handles weird URL-less AWS edge case" do
@@ -170,11 +173,11 @@ RSpec.describe Icon do
 
     it "updates the s3 domain to the asset host domain" do
       ENV['ICON_HOST'] = asset_host
-      icon = build(:icon)
-      icon.s3_key = 'users/1/icons/fake_test.png'
-      icon.url = 'https://glowfic-bucket.s3.amazonaws.com/users%2F1%2Ficons%2Ffake_test.png'
+      icon = build(:icon, user: create(:user))
+      icon.url = "https://glowfic-bucket.s3.amazonaws.com/users%2F#{icon.user_id}%2Ficons%2Ffake_test.png"
+      icon.s3_key = "users/#{icon.user_id}/icons/fake_test.png"
       icon.save!
-      expect(icon.reload.url).to eq(asset_host + '/users%2F1%2Ficons%2Ffake_test.png')
+      expect(icon.reload.url).to eq("#{asset_host}/users%2F#{icon.user_id}%2Ficons%2Ffake_test.png")
     end
   end
 end

@@ -1,6 +1,7 @@
 /* global addUploadedIcon, setLoadingIcon, addCallback, failCallback */
 
 var uploadedIcons = {};
+var formKey = '';
 
 $(document).ready(function() {
   var form = $('form.icon-upload');
@@ -20,6 +21,10 @@ $(document).ready(function() {
   });
 });
 
+function randomString() {
+  return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+}
+
 function bindFileInput(fileInput, form, submitButton, formData) {
   var uploadArgs = {
     fileInput: fileInput,
@@ -30,6 +35,9 @@ function bindFileInput(fileInput, form, submitButton, formData) {
     paramName: 'file', // S3 does not like nested name fields i.e. name="user[avatar_url]"
     dataType: 'XML', // S3 returns XML if success_action_status is set to 201
     replaceFileInput: false,
+    disableImageResize: false,
+    imageMaxWidth: 400,
+    imageMaxHeight: 400,
 
     add: function(e, data) {
       var fileType = data.files[0].type;
@@ -46,7 +54,19 @@ function bindFileInput(fileInput, form, submitButton, formData) {
 
       formData["Content-Type"] = fileType;
       data.formData = formData;
-      data.submit();
+
+      // seed the AWS key with a random string here, not serverside, so each upload has a unique string
+      if (formKey === '') formKey = data.formData.key;
+      var pieces = formKey.split('$');
+      var newKey = pieces[0] + randomString() + '_$' + pieces[1];
+      data.formData.key = newKey;
+
+      var uploader = $(this);
+      data.process(function() {
+        return uploader.fileupload('process', data);
+      }).done(function() {
+        data.submit();
+      });
       fileInput.val('');
     },
     start: function() {

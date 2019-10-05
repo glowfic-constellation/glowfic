@@ -661,9 +661,9 @@ RSpec.describe GalleriesController do
         expect(response).to render_template(:add)
         expect(flash[:error][:message]).to eq('Your icons could not be saved.')
         expect(assigns(:icons).length).to eq(icons.length-1) # removes blank icons
-        expect(assigns(:icons).first[:url]).to be_empty # removes duplicate uploaded icon URLs
+        expect(assigns(:icons).first[:url]).to be_empty # removes not-yours uploaded icon URLs
         expect(flash.now[:error][:array]).to match_array([
-          "Icon 1: url has already been taken",
+          "Icon 1: url is invalid",
           "Icon 2: keyword can't be blank",
           "Icon 3: url can't be blank",
           "Icon 3: url must be an actual fully qualified url (http://www.example.com)",

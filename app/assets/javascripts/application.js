@@ -20,6 +20,10 @@
 //= require jquery-ui/widgets/button
 //= require jquery-ui/widgets/dialog
 //= require jquery-fileupload/basic
+//= require jquery-fileupload/vendor/load-image.all.min
+//= require jquery-fileupload/vendor/canvas-to-blob
+//= require jquery-fileupload/jquery.fileupload-process
+//= require jquery-fileupload/jquery.fileupload-image
 //= require bootstrap.min
 //= require tinymce-jquery
 //= require select2
