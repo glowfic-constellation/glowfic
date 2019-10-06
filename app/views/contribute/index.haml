@@ -10,4 +10,7 @@
     %tr
       %td.even= link_to 'Submit a pull request', 'https://github.com/Marri/glowfic'
     %tr
-      %td.odd= link_to 'Write something!', new_post_path
+      - if logged_in?
+        %td.odd= link_to 'Write something!', new_post_path
+      - else
+        %td.odd= link_to 'Join us', new_user_path
