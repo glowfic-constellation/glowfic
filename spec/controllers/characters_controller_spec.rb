@@ -594,16 +594,6 @@ RSpec.describe CharactersController do
       expect(character.galleries).to eq([])
     end
 
-    it "creates new templates when specified" do
-      expect(Template.count).to eq(0)
-      character = create(:character)
-      login_as(character.user)
-      put :update, params: { id: character.id, new_template: '1', character: {template_attributes: {name: 'Test'}} }
-      expect(Template.count).to eq(1)
-      expect(Template.first.name).to eq('Test')
-      expect(character.reload.template_id).to eq(Template.first.id)
-    end
-
     context "with views" do
       render_views
       it "sets correct variables when invalid" do
