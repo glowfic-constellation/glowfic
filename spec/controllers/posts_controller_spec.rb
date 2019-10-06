@@ -8,14 +8,14 @@ RSpec.describe PostsController do
     end
 
     it "paginates" do
-      26.times do create(:post) end
+      create_list(:post, 26)
       get :index
       num_posts_fetched = controller.instance_variable_get('@posts').total_pages
       expect(num_posts_fetched).to eq(2)
     end
 
     it "only fetches most recent threads" do
-      26.times do create(:post) end
+      create_list(:post, 26)
       oldest = Post.ordered_by_id.first
       get :index
       ids_fetched = controller.instance_variable_get('@posts').map(&:id)
@@ -23,7 +23,7 @@ RSpec.describe PostsController do
     end
 
     it "only fetches most recent threads based on updated_at" do
-      26.times do create(:post) end
+      create_list(:post, 26)
       oldest = Post.ordered_by_id.first
       next_oldest = Post.ordered_by_id.second
       oldest.update!(content: "just to make it update")
@@ -76,7 +76,7 @@ RSpec.describe PostsController do
 
     context "searching" do
       it "finds all when no arguments given" do
-        4.times do create(:post) end
+        create_list(:post, 4)
         get :search, params: { commit: true }
         expect(assigns(:search_results)).to match_array(Post.all)
       end
@@ -823,14 +823,14 @@ RSpec.describe PostsController do
 
     it "handles pages outside range" do
       post = create(:post)
-      5.times { create(:reply, post: post) }
+      create_list(:reply, 5, post: post)
       get :show, params: { id: post.id, per_page: 1, page: 10 }
       expect(response).to redirect_to(post_url(post, page: 5, per_page: 1))
     end
 
     it "handles page=last with replies" do
       post = create(:post)
-      5.times { create(:reply, post: post) }
+      create_list(:reply, 5, post: post)
       get :show, params: { id: post.id, per_page: 1, page: 'last' }
       expect(assigns(:page)).to eq(5)
       expect(response).to have_http_status(200)
@@ -889,7 +889,7 @@ RSpec.describe PostsController do
       let(:post) { create(:post) }
 
       before(:each) do
-        5.times do create(:reply, post: post) end
+        create_list(:reply, 5, post: post)
       end
 
       it "shows error if reply not found" do
@@ -961,7 +961,7 @@ RSpec.describe PostsController do
     context "page=unread" do
       it "goes to the end if you're up to date" do
         post = create(:post)
-        3.times do create(:reply, post: post, user: post.user) end
+        create_list(:reply, 3, post: post, user: post.user)
         user = create(:user)
         post.mark_read(user)
         login_as(user)

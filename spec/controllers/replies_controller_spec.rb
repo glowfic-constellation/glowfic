@@ -408,7 +408,7 @@ RSpec.describe RepliesController do
       board = create(:board, name: 'example board')
       section = create(:board_section, board: board, name: 'example section')
       post = create(:post, board: board, section: section, user: user, subject: 'a post', description: 'Test.')
-      25.times { create(:reply, post: post, user: user) }
+      create_list(:reply, 25, post: post, user: user)
       reply = create(:reply, post: post, user: user2)
       get :show, params: { id: reply.id }
       expect(response).to have_http_status(200)
@@ -963,7 +963,7 @@ RSpec.describe RepliesController do
 
     context "searching" do
       it "finds all when no arguments given" do
-        4.times do create(:reply) end
+        create_list(:reply, 4)
         get :search, params: { commit: true }
         expect(assigns(:search_results)).to match_array(Reply.all)
       end

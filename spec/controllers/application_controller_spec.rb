@@ -121,8 +121,8 @@ RSpec.describe ApplicationController do
       post3 = create(:post, content_warnings: [warning1, warning2])
       post3_user2 = create(:user)
       post3_user3 = create(:user)
-      25.times { create(:reply, post: post3, user: post3_user2) }
-      10.times { create(:reply, post: post3, user: post3_user3)}
+      create_list(:reply, 25, post: post3, user: post3_user2)
+      create_list(:reply, 10, post: post3, user: post3_user3)
       post3.post_authors.find_by(user_id: post3_user3.id).update!(can_owe: false)
 
       id_list = [post1.id, post2.id, post3.id]

@@ -3,7 +3,7 @@ require "spec_helper"
 RSpec.feature "Show a single continuity", :type => :feature do
   scenario "View a standard continuity" do
     board = create(:board, name: "Test board")
-    5.times do create(:post, board: board, user: board.creator) end
+    create_list(:post, 5, board: board, user: board.creator)
 
     visit board_path(board)
 
@@ -16,7 +16,7 @@ RSpec.feature "Show a single continuity", :type => :feature do
     post1 = create(:post, board: board, user: board.creator)
     reply = create(:reply, post: post1)
     post2 = create(:post, board: board, user: board.creator)
-    4.times do create(:reply, post: post2) end
+    create_list(:reply, 4, post: post2)
 
     visit board_path(board)
 

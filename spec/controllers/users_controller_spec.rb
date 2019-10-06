@@ -15,7 +15,7 @@ RSpec.describe UsersController do
 
     it "does not return deleted users" do
       user = create(:user, deleted: true)
-      4.times do create(:user) end
+      create_list(:user, 4)
       get :index
       expect(assigns(:users).length).to eq(4)
       expect(assigns(:users)).not_to include(user)
@@ -467,7 +467,7 @@ RSpec.describe UsersController do
 
     it "does not include deleted users" do
       user = create(:user, deleted: true)
-      4.times do create(:user) end
+      create_list(:user, 4)
       get :search, params: { commit: 'Search', username: 'Doe' }
       expect(assigns(:search_results).length).to eq(4)
       expect(assigns(:search_results)).not_to include(user)
@@ -475,7 +475,7 @@ RSpec.describe UsersController do
 
     it "does not include deleted users even on exact match" do
       create(:user, username: "testUser", deleted: true)
-      4.times do create(:user) end
+      create_list(:user, 4)
       get :search, params: { commit: 'Search', username: "testUser" }
       expect(assigns(:search_results)).to be_empty
     end

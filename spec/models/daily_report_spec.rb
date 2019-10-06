@@ -63,10 +63,10 @@ RSpec.describe DailyReport do
       post = nil
       Timecop.freeze(now - 2.days) do
         post = create(:post)
-        2.times do create(:reply, post: post, user: post.user) end
+        create_list(:reply, 2, post: post, user: post.user)
       end
       Timecop.freeze(now) do
-        3.times do create(:reply, post: post, user: post.user) end
+        create_list(:reply, 3, post: post, user: post.user)
       end
       report = DailyReport.new(now)
       expect(report.posts.first.reply_count).to eq(5)
