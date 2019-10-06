@@ -748,7 +748,6 @@ RSpec.describe Post do
     before(:each) do
       post.content_warnings << warning
       post.hide_warnings_for(user)
-      expect(post).not_to be_show_warnings_for(user)
     end
 
     it "does not reset on update" do

@@ -268,7 +268,7 @@ RSpec.describe Character do
   describe "audits" do
     before(:each) do
       Character.auditing_enabled = true
-      expect(Audited::Audit.count).to eq(0)
+      expect(Audited::Audit.count).to eq(0) # rubocop:disable RSpec/ExpectInHook
     end
 
     after(:each) { Character.auditing_enabled = false }
