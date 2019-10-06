@@ -101,6 +101,7 @@ RSpec.describe BoardSectionsController do
     end
 
     it "works with login" do
+      login
       section = create(:board_section)
       posts = Array.new(2) { create(:post, board: section.board, section: section) }
       create(:post)
