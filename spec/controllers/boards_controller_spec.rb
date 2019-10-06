@@ -508,6 +508,71 @@ RSpec.describe BoardsController do
     end
   end
 
+  describe "GET search" do
+    context "no search" do
+      it "works logged out" do
+        get :search
+        expect(response).to have_http_status(200)
+        expect(assigns(:page_title)).to eq('Search Continuities')
+        expect(assigns(:search_results)).to be_nil
+      end
+
+      it "works logged in" do
+        login
+        get :search
+        expect(response).to have_http_status(200)
+        expect(assigns(:page_title)).to eq('Search Continuities')
+        expect(assigns(:search_results)).to be_nil
+      end
+    end
+
+    context "searching" do
+      it "finds all when no arguments given" do
+        create_list(:board, 4)
+        get :search, params: { commit: true }
+        expect(assigns(:search_results)).to match_array(Board.all)
+      end
+
+      it "filters by name" do
+        board1 = create(:board, name: 'contains stars')
+        board2 = create(:board, name: 'contains Stars cased')
+        create(:board, name: 'unrelated')
+        get :search, params: { commit: true, name: 'stars' }
+        expect(assigns(:search_results)).to match_array([board1, board2])
+      end
+
+      it "filters by authors" do
+        user = create(:user)
+        board1 = create(:board, creator: user)
+        create_list(:board, 2)
+        board4 = create(:board, coauthors: [user])
+        get :search, params: { commit: true, author_id: [user.id] }
+        expect(assigns(:search_results)).to match_array([board1, board4])
+      end
+
+      it "filters by multiple authors" do
+        author1 = create(:user)
+        author2 = create(:user)
+
+        create(:board, creator: author1) # one author but not the other
+        create(:board, coauthors: [author2]) # one author but not the other, coauthor
+
+        boards = [create(:board, creator: author1, coauthors: [author2])] # both authors
+        boards << create(:board, coauthors: [author1, author2]) # both authors coauthors
+        boards << create(:board, coauthors: [author1], cameos: [author2]) # both authors, one cameo
+
+        get :search, params: { commit: true, author_id: [author1.id, author2.id] }
+        expect(assigns(:search_results)).to match_array(boards)
+      end
+
+      it "orders boards by name" do
+        ['baa', 'aab', 'aba'].each { |name| create(:board, name: name) }
+        get :search, params: { commit: 'Search', name: 'b' }
+        expect(assigns(:search_results).map(&:name)).to eq(['aab', 'aba', 'baa'])
+      end
+    end
+  end
+
   describe "#set_available_cowriters" do
     it "gets the correct set of available cowriters" do
       login

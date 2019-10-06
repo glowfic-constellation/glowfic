@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 class BoardsController < ApplicationController
-  before_action :login_required, except: [:index, :show]
+  before_action :login_required, except: [:index, :show, :search]
   before_action :find_board, only: [:show, :edit, :update, :destroy]
   before_action :set_available_cowriters, only: [:new, :edit]
   before_action :require_permission, only: [:edit, :update, :destroy]
@@ -129,6 +129,15 @@ class BoardsController < ApplicationController
       flash[:error] = "Please choose a valid action."
     end
     redirect_to unread_posts_path
+  end
+
+  def search
+    @page_title = 'Search Continuities'
+    @users = User.active.where(id: params[:author_id]).ordered if params[:author_id].present?
+    return unless params[:commit].present?
+
+    searcher = Board::Searcher.new
+    @search_results = searcher.search(params, page: page)
   end
 
   private

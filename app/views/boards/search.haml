@@ -1,0 +1,41 @@
+= render 'search/breadcrumbs'
+
+%table.search-collapsible
+  %thead
+    %tr
+      %th.search-params-header
+        Search Continuities
+        - if @search_results
+          = '- '+@search_results.total_entries.to_s+' results'
+      %th.search-results-header
+        - if @search_results
+          = render 'posts/paginator', paginated: @search_results, no_per: true
+  %tbody
+    %tr
+      %td.search-box
+        = form_tag search_boards_path, method: :get do
+          %table.search-form
+            %tr
+              %td.width-70= label_tag :name, 'Name'
+              %td= text_field_tag :name, params[:name], style: 'width: 100%; margin: 5px 0px; box-sizing: border-box;', id: :name
+            %tr
+              %td= label_tag :author_id, 'Author'
+              %td= select_tag :author_id, options_from_collection_for_select(@user || [], :id, :username, params[:author_id]), {class: 'chosen-select', prompt: '— Choose Author —', multiple: true}
+            %tr
+              %td.centered{colspan: 2}= submit_tag "Search", class: 'button'
+      %td.vtop
+        - if @search_results.present?
+          %table
+            %thead
+              %tr
+                %th.sub Name
+                %th.sub Authors
+                %th.sub Last Updated
+            %tbody
+              = render partial: 'list_item', collection: @search_results, as: :board
+
+  - if @search_results && @search_results.total_pages > 1
+    %tfoot
+      %tr
+        %th.search-params-header.empty
+        %th.search-results-header= render 'posts/paginator', paginated: @search_results, no_per: true

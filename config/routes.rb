@@ -68,7 +68,12 @@ Rails.application.routes.draw do
   end
 
   # Forums
-  resources :boards do collection { post :mark } end
+  resources :boards do
+    collection do
+      post :mark
+      get :search
+    end
+  end
   resources :board_sections, except: :index
   resources :posts do
     member do
