@@ -887,6 +887,7 @@ RSpec.describe PostsController do
 
     context "with at_id" do
       let(:post) { create(:post) }
+
       before(:each) do
         5.times do create(:reply, post: post) end
       end
@@ -1499,6 +1500,7 @@ RSpec.describe PostsController do
             time = 2.months.ago
             let(:post) { create(:post, created_at: time, updated_at: time) }
             let(:reply) { create(:reply, post: post, created_at: time, updated_at: time) }
+
             before (:each) { reply }
 
             it "works for creator" do
@@ -2395,6 +2397,7 @@ RSpec.describe PostsController do
     context "with hiatused" do
       let(:user) { create(:user) }
       let(:other_user) { create(:user) }
+
       before(:each) {
         login_as(user)
         create(:post)
@@ -2426,6 +2429,7 @@ RSpec.describe PostsController do
       let(:user) { create(:user) }
       let(:other_user) { create(:user) }
       let(:post) { create(:post, user: user) }
+
       before(:each) do
         other_user
         login_as(user)

@@ -132,7 +132,9 @@ RSpec.describe Icon do
 
   context "#use_icon_host" do
     let(:asset_host) { "https://fake.cloudfront.net" }
+
     before(:each) { @cached_host = ENV['ICON_HOST'] }
+
     after(:each) { ENV['ICON_HOST'] = @cached_host }
 
     it "does nothing unless asset host is present" do

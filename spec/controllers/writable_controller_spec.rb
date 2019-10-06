@@ -177,6 +177,7 @@ RSpec.describe WritableController do
         expect(templates.first.plucked_characters.map(&:first)).to eq([char1, char2, char3].map(&:id))
       end
     end
+
     it "has more tests" do
       skip
     end

@@ -32,6 +32,7 @@ RSpec.describe Api::V1::PostsController do
 
     context "when logged in" do
       before(:each) { login }
+
       it_behaves_like "index.json", false
     end
 

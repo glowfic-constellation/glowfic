@@ -587,6 +587,7 @@ RSpec.describe Post do
 
     context "registered" do
       let(:post) { create(:post, privacy: Concealable::REGISTERED) }
+
       it "is visible to poster" do
         expect(post).to be_visible_to(post.user)
       end
@@ -622,6 +623,7 @@ RSpec.describe Post do
 
     context "with replies" do
       let(:post) { create(:post) }
+
       before(:each) { create(:reply, post: post) }
 
       it "uses nil if full post viewed" do
@@ -742,6 +744,7 @@ RSpec.describe Post do
     let(:post) { create(:post) }
     let(:warning) { create(:content_warning) }
     let(:user) { create(:user) }
+
     before(:each) do
       post.content_warnings << warning
       post.hide_warnings_for(user)
@@ -876,8 +879,11 @@ RSpec.describe Post do
 
   describe "#has_edit_audits?" do
     let(:user) { create(:user) }
+
     before(:each) { Post.auditing_enabled = true }
+
     after(:each) { Post.auditing_enabled = false }
+
     it "is false if post has never been edited" do
       post = nil
       Audited.audit_class.as_user(user) do

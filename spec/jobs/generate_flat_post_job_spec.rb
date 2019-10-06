@@ -3,6 +3,7 @@ require "spec_helper"
 RSpec.describe GenerateFlatPostJob do
   include ActiveJob::TestHelper
   before(:each) { clear_enqueued_jobs }
+
   it "does nothing with invalid post id" do
     expect($redis).not_to receive(:set)
     GenerateFlatPostJob.perform_now(-1)

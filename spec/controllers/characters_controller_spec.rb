@@ -1375,6 +1375,7 @@ RSpec.describe CharactersController do
       controller.send(:build_editor)
       expect(assigns(:templates)).to eq([template1, template2, template3, template4])
     end
+
     skip "has more tests"
   end
 end

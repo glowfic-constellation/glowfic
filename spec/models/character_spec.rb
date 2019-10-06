@@ -270,6 +270,7 @@ RSpec.describe Character do
       Character.auditing_enabled = true
       expect(Audited::Audit.count).to eq(0)
     end
+
     after(:each) { Character.auditing_enabled = false }
 
     it "is not created on create" do
