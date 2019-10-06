@@ -12,6 +12,7 @@ AllCops:
 require:
   - rubocop-performance
   - rubocop-rails
+  - rubocop-rspec
 
 Rails:
   Enabled: true
@@ -189,6 +190,51 @@ Rails/ReadWriteAttribute:
 Rails/Output:
   Exclude:
     - 'app/services/post_scraper.rb'
+
+################## RSpec #################################
+
+Capybara/FeatureMethods:
+  EnabledMethods: [feature, scenario]
+
+Rails/HttpStatus:
+  EnforcedStyle: numeric
+
+RSpec/AnyInstance:
+  Enabled: false
+
+RSpec/ContextWording:
+  Enabled: false
+
+RSpec/DescribedClass:
+  EnforcedStyle: explicit
+
+RSpec/ExampleLength:
+  Enabled: false
+
+RSpec/ExampleWording:
+  Enabled: false
+
+RSpec/ExpectChange:
+  EnforcedStyle: block
+
+RSpec/HookArgument:
+  EnforcedStyle: each
+
+RSpec/InstanceVariable:
+  Enabled: false
+
+RSpec/LeakyConstantDeclaration:
+  Exclude:
+    - 'spec/lib/presentable_spec.rb'
+
+RSpec/MessageSpies:
+  EnforcedStyle: receive
+
+RSpec/MultipleExpectations:
+  Enabled: false
+
+RSpec/NestedGroups:
+  Max: 5
 
 ################## Style #################################
 
