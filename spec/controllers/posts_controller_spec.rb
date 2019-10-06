@@ -1350,6 +1350,7 @@ RSpec.describe PostsController do
     end
 
     context "mark unread" do
+      # rubocop:disable RSpec/RepeatedExample
       it "requires valid at_id" do
         skip "TODO does not notify"
       end
@@ -1357,6 +1358,7 @@ RSpec.describe PostsController do
       it "requires post's at_id" do
         skip "TODO does not notify"
       end
+      # rubocop:enable RSpec/RepeatedExample
 
       it "works with at_id" do
         post = create(:post)
