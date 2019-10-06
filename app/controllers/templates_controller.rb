@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 class TemplatesController < ApplicationController
-  before_action :login_required, except: :show
+  before_action :login_required, except: [:show, :search]
   before_action :find_template, only: [:show, :destroy, :edit, :update]
   before_action :require_own_template, only: [:edit, :update, :destroy]
   before_action :editor_setup, only: [:new, :edit]
