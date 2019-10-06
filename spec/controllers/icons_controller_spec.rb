@@ -89,7 +89,7 @@ RSpec.describe IconsController do
         expect(response).to redirect_to(user_galleries_url(user.id, anchor: "gallery-#{gallery.id}"))
       end
 
-      it "goes back to index page if given" do
+      it "goes back to tag page if given" do
         icon = create(:icon, user: user)
         gallery = create(:gallery, user: user)
         group = create(:gallery_group, user: user)
@@ -137,7 +137,7 @@ RSpec.describe IconsController do
         expect(response).to redirect_to(user_galleries_url(user.id, anchor: "gallery-#{gallery.id}"))
       end
 
-      it "goes back to index page if given" do
+      it "goes back to tag page if given" do
         icon = create(:icon, user: user)
         gallery = create(:gallery, user: user)
         group = create(:gallery_group, user: user)

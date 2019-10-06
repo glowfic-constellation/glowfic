@@ -935,7 +935,7 @@ RSpec.describe PostsController do
         expect(assigns(:replies).per_page).to eq(1)
       end
 
-      it "works for specified reply with page settings" do
+      it "works for page settings incompatible with specified reply" do
         last_reply = post.replies.ordered.last
         second_last_reply = post.replies.ordered.last(2).first
         get :show, params: { id: post.id, at_id: second_last_reply.id, per_page: 1, page: 2 }
