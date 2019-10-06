@@ -28,7 +28,7 @@ RSpec.describe Icon do
       expect(icon).not_to be_valid
     end
 
-    context "#uploaded_url_yours" do
+    describe "#uploaded_url_yours" do
       it "should set the url back to its previous url on create" do
         icon = create(:uploaded_icon)
         dupe_icon = build(:icon, url: icon.url, s3_key: icon.s3_key, user: create(:user))
@@ -130,7 +130,7 @@ RSpec.describe Icon do
     end
   end
 
-  context "#use_icon_host" do
+  describe "#use_icon_host" do
     let(:asset_host) { "https://fake.cloudfront.net" }
 
     before(:each) { @cached_host = ENV['ICON_HOST'] }

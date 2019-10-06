@@ -1,7 +1,7 @@
 require "spec_helper"
 
 RSpec.describe Setting do
-  context "#has_items?" do
+  describe "#has_items?" do
     it "has items with a post" do
       harry_potter = create(:setting, name: 'Harry Potter')
       post = create(:post, subject: 'Harry Potter and the Goblet of Fire')
