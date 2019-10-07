@@ -2,7 +2,8 @@
 
 - col_count = 7
 - col_count += 1 if show_template
-- col_count += 1 if show_user] && show_settings
+- col_count += 1 if show_user && show_settings
+- col_count -= 1 if hide_buttons
 - characters ||= name.characters.non_npcs.ordered
 - characters = characters.not_retired unless show_retired
 
@@ -58,7 +59,8 @@
     - if show_user
       %td.padding-5{class: klass}
         %b User
-    %td.padding-5{class: klass}
+    - unless hide_buttons
+      %td.padding-5{class: klass}
   - pluck = characters_list(characters.ordered, show_template)
   - params = { show_template: show_template, show_user: show_user, hide_buttons: hide_buttons }
   - params[:settings] = show_user && !show_settings ? {} : settings_info(characters)
