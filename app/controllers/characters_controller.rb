@@ -246,6 +246,7 @@ class CharactersController < ApplicationController
     use_javascript('search')
     @users = []
     @templates = []
+    @settings = []
     return unless params[:commit].present?
 
     response.headers['X-Robots-Tag'] = 'noindex'
@@ -277,14 +278,29 @@ class CharactersController < ApplicationController
       @templates = Template.where(user_id: params[:author_id]).ordered.limit(25)
     end
 
+    if params[:setting_id].present?
+      @settings = Setting.where(id: params[:setting_id])
+      character_ids = CharacterTag.where(tag_id: params[:setting_id]).pluck(:character_id)
+      @search_results = @search_results.where(id: character_ids)
+    end
+
     if params[:name].present?
       where_calc = []
       where_calc << "name ILIKE ?" if params[:search_name].present?
       where_calc << "screenname ILIKE ?" if params[:search_screenname].present?
       where_calc << "nickname ILIKE ?" if params[:search_nickname].present?
 
-      @search_results = @search_results.where(where_calc.join(' OR '), *(['%' + params[:name].to_s + '%'] * where_calc.length))
+      matches = @search_results.where(where_calc.join(' OR '), *(['%' + params[:name].to_s + '%'] * where_calc.length))
+
+      if params[:search_aliases].present?
+        character_ids = CharacterAlias.where('name ILIKE ?', '%' + params[:alias].to_s + '%').pluck(:character_id)
+        @search_results = matches.or(@search_results.where(id: character_ids))
+      else
+        @search_results = matches
+      end
     end
+
+    @search_results = @search_results.where('pb ILIKE ?', '%' + params[:pb].to_s + '%') if params[:pb].present?
 
     @search_results = @search_results.ordered.paginate(page: page)
   end
