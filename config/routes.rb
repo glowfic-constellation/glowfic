@@ -1,4 +1,4 @@
-require "resque_web"
+require 'resque/server'
 
 Rails.application.routes.draw do
   # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
@@ -135,5 +135,5 @@ Rails.application.routes.draw do
   resources :bugs, only: :create
   resources :favorites, only: [:index, :create, :destroy]
   match '/contribute' => 'contribute#index', as: :contribute, via: :get
-  mount ResqueWeb::Engine => "/resque_web"
+  mount Resque::Server.new, :at => "/resque_web"
 end
