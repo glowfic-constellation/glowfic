@@ -53,34 +53,4 @@
       %td.vtop
         - if @search_results.present?
           %table
-            %thead
-              %tr
-                - klass = cycle('even'.freeze, 'odd'.freeze)
-                %td.padding-5{class: klass}
-                  %b Name
-                %td.padding-5{class: klass}
-                  %b Nickname
-                %td.padding-5{class: klass}
-                  %b Screenname
-                %td.padding-5{class: klass}
-                  %b Facecast
-                %td.padding-5{class: klass}
-                  %b User
-                -# TODO
-                  -# %td.padding-5{class: klass}
-                    -# %b Setting
-            %tbody
-              - @search_results.each do |character|
-                - klass = cycle('even'.freeze, 'odd'.freeze)
-                %tr
-                  %td.padding-5{class: klass}= link_to character.name, character_path(character)
-                  %td.padding-5{class: klass, style: 'width:15%'}= character.nickname
-                  %td.padding-5{class: klass, style: 'width:15%'}= breakable_text(character.screenname)
-                  %td.padding-5{class: klass, style: 'width:25%'}= character.pb
-                  %td.padding-5{class: klass, style: 'width:15%'}= user_link(character.user)
-
-  - if @search_results && @search_results.total_pages > 1
-    %tfoot
-      %tr
-        %th.search-params-header.empty
-        %th.search-results-header= render 'posts/paginator', paginated: @search_results, no_per: true
+            = render 'characters/list_section', characters: @search_results, name: nil, show_user: true, show_settings: true, show_template: true, hide_buttons: true
