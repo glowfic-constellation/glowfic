@@ -4,7 +4,7 @@
 
 ### Dependencies
 
-*   [Ruby](https://www.ruby-lang.org/en/) 2.6.3
+*   [Ruby](https://www.ruby-lang.org/en/) 2.6.5
 *   [Rails](http://rubyonrails.org/) 5.2
 *   [Redis](https://redis.io/topics/quickstart)
 *   [PostgreSQL](https://www.postgresql.org/) (guide to set this up [later](#setting-up-postgresql))
@@ -97,7 +97,7 @@ First, go to the glowfic folder and download the latest code:
 *   `git pull`
 
 Then look at this README again, to make sure the version of Ruby hasn't changed; alternatively, in case this file is not up to date, look at the top of the `Gemfile` file, where it states the version of ruby.
-As of writing, this is `ruby '2.6.3'`.
+As of writing, this is `ruby '2.6.5'`.
 If it has changed, you can rebuild the glowfic image with:
 
 *   `docker-compose stop`
