@@ -47,21 +47,15 @@
         = privacy_state(@post.privacy)
         - if @post.access_list?
           \-
-          - @post.post_viewers.each_with_index do |viewer, i|
-            - if i < @post.post_viewers.count - 1
-              = succeed ',' do
-                = user_link(viewer.user)
-            - else
-              = user_link(viewer.user)
+          - safe_join(@post.post_viewers.map(&:user).map{ |u| user_link(u) }, ', ')
     %tr
       %th.sub.width-150 Authors
       %td{class: cycle('odd', 'even')}
         - post_authors = @post.post_authors.joins(:user).order(Arel.sql('LOWER(users.username) asc'))
         %ul
           - post_authors.each do |post_author|
-            - author = post_author.user
             %li
-              = user_link(author)
+              = user_link(post_author.user)
               - unless post_author.joined?
                 (invited)
     %tr
@@ -77,15 +71,18 @@
     - if @post.settings.present?
       %tr
         %th.sub.width-150 Setting
-        %td{class: cycle('odd', 'even')}= @post.settings.ordered_by_post_tag.map { |tag| link_to tag.name, tag_path(tag) }.join(', ').html_safe
+        - setting_links = @post.settings.ordered_by_post_tag.map { |tag| link_to tag.name, tag_path(tag) }
+        %td{class: cycle('odd', 'even')}= safe_join(setting_links, ', ')
     - if @post.content_warnings.present?
       %tr
         %th.sub.width-150 Content Warnings
-        %td{class: cycle('odd', 'even')}= @post.content_warnings.ordered_by_post_tag.map { |tag| link_to tag.name, tag_path(tag) }.join(', ').html_safe
+        - warning_links = @post.content_warnings.ordered_by_post_tag.map { |tag| link_to tag.name, tag_path(tag) }
+        %td{class: cycle('odd', 'even')}= safe_join(warning_links, ', ')
     - if @post.labels.present?
       %tr
         %th.sub.width-150 Labels
-        %td{class: cycle('odd', 'even')}= @post.labels.ordered_by_post_tag.map { |tag| link_to tag.name, tag_path(tag) }.join(', ').html_safe
+        - label_links = @post.labels.ordered_by_post_tag.map { |tag| link_to tag.name, tag_path(tag) }
+        %td{class: cycle('odd', 'even')}= safe_join(label_links, ', ')
     %tr
       %th.sub.width-150.vtop Word Count
       %td{class: cycle('odd', 'even')}
