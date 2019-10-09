@@ -1,7 +1,7 @@
 class Character::Searcher < Generic::Searcher
   attr_reader :templates, :users
 
-  def initialize(search=Character.unscoped, templates:, users: [])
+  def initialize(search=Character.unscoped, templates: [], users: [])
     @templates = templates
     @users = users
     super(search)
