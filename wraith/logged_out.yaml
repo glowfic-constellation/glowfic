@@ -2,9 +2,6 @@ imports: "core.yaml"
 
 # The paths to capture.
 paths:
-  header:
-    path: /?pp=skip
-    selector: '[id=header]'
   home:
     path: /?pp=skip
   signup:
