@@ -1,12 +1,6 @@
-# The engine to run Wraith with. Examples: 'phantomjs', 'casperjs', 'slimerjs'
-browser: "casperjs"
+imports: "core.yaml"
 
-# The domain to take screenshots of.
-domains:
-  # glowfic: "http://web:3000" # uncomment for Docker
-  glowfic: "http://localhost:3000" # for non-Docker environment
-
-# The paths to capture. This particular config is using casperjs, so we can take screenshots of selectors rather than the entire page.
+# The paths to capture.
 paths:
   header:
     path: /?pp=skip
@@ -23,18 +17,8 @@ paths:
     path: /password_resets/new
     selector: '[id=content]'
 
-
 # JavaScript file to execute before taking screenshot of every path. Default: nil
 before_capture: 'wraith/javascript/accept_tos.js'
-
-# Screen widths (and optional height) to resize the browser to before taking the screenshot.
-screen_widths:
-  - 750x1334
-  - 1024x768
-  - 1920x1080
-
-# Resize to each screen width (efficient), or reload at each screen width (costly). Default: 'reload'
-resize_or_reload: 'resize'
 
 # The directory that your base screenshots will be stored in.
 history_dir: 'wraith/then/logged_out'
@@ -42,30 +26,5 @@ history_dir: 'wraith/then/logged_out'
 # The directory that your latest screenshots will be stored in
 directory: 'wraith/now/logged_out'
 
-# Amount of fuzz ImageMagick will use when comparing images. A higher fuzz makes the comparison less strict.
-fuzz: '20%'
-
-# The maximum acceptable level of difference (in %) between two images before Wraith reports a failure. Default: 0
-threshold: 1
-
-# Specify the template (and generated thumbnail sizes) for the gallery output.
-gallery:
-  template: 'slideshow_template' # Examples: 'basic_template' (default), 'slideshow_template'
-  thumb_width:  200
-  thumb_height: 200
-
-# Choose which results are displayed in the gallery, and in what order. Default: alphanumeric
-mode: diffs_only
-
-# Choose to run Wraith in verbose mode, for easier debugging. Default: false
-verbose: false
-
-# Color to highlight the image diff. Default: 'blue'
-highlight_color: red
-
 # Parameters to pass to Phantom/Casper command line. Default: '--ignore-ssl-errors=true --ssl-protocol=tlsv1'
 phantomjs_options: '--ssl-protocol=tlsv1'
-
-# Set the number of threads to use when saving images. Raising this value can improve performance, but very high
-# values can lead to server connection issues. Set to around 1.5 the available CPU cores for best performance. Default: 8
-threads: 6
