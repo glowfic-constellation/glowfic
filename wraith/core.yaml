@@ -66,28 +66,12 @@ paths:
     path: /boards/1
     selector: '.flash'
 
-  contribute:
-    path: /contribute
-    selector: '[id=content]'
-
-  about_tos:
-    path: /tos
-    selector: '[id=content]'
-  about_dmca:
-    path: /dmca
-    selector: '[id=content]'
   about_contact:
     path: /contact
-    selector: '[id=content]'
-  about_privacy:
-    path: /privacy
     selector: '[id=content]'
 
   boards:
     path: /boards
-    selector: '[id=content]'
-  board_new:
-    path: /boards/new
     selector: '[id=content]'
   board_show_open:
     path: /boards/3
@@ -98,13 +82,6 @@ paths:
   board_show_sections:
     path: /boards/1
     selector: '[id=content]'
-
-  board_section_new:
-    path: /board_sections/new?board_id=1
-    selector: '[id=content]'
-  board_section_show:
-    path: /board_sections/1
-    selector: '[id=content]'
   board_section_edit:
     path: /board_sections/1/edit
     selector: '[id=content]'
@@ -112,19 +89,10 @@ paths:
   characters_icon_split:
     path: /users/3/characters?character_split=template&view=icons
     selector: '[id=content]'
-  characters_icon_combined:
-    path: /users/3/characters?character_split=none&view=icons
-    selector: '[id=content]'
-  characters_list_split:
-    path: /users/3/characters?character_split=template&view=list
-    selector: '[id=content]'
   characters_list_combined:
     path: /users/3/characters?character_split=none&view=list
     selector: '[id=content]'
 
-  character_new:
-    path: /characters/new
-    selector: '[id=content]'
   character_edit:
     path: /characters/27/edit
     selector: '[id=content]'
@@ -137,9 +105,6 @@ paths:
     selector: '[id=content]'
   character_galleries:
     path: /characters/27?view=galleries
-    selector: '[id=content]'
-  character_posts:
-    path: /characters/27?view=posts
     selector: '[id=content]'
   characters_search:
     path: /characters/search?author_id=1&name=a&search_name=true&search_screenname=true&search_nickname=true&commit=Search
@@ -161,13 +126,6 @@ paths:
 
   galleries:
     path: /users/3/galleries
-    selector: '[id=content]'
-  galleries_search:
-    path: /galleries/search
-    selector: '[id=content]'
-
-  gallery_new:
-    path: /galleries/new
     selector: '[id=content]'
   gallery_add_new:
     path: /galleries/0/add
@@ -191,14 +149,6 @@ paths:
   icon_edit:
     path: /icons/93/edit
     selector: '[id=content]'
-  icon_replace:
-    path: /icons/93/replace
-    selector: '[id=content]'
-
-  icon_selector:
-    path: /posts/new
-    before_capture: 'wraith/javascript/icon-selector.js'
-    selector: '[id=reply-icon-selector]'
 
   messages_index:
     path: /messages
@@ -214,9 +164,6 @@ paths:
     path: /news
     selector: '[id=content]'
 
-  posts:
-    path: /posts
-    selector: '[id=content]'
   posts_search:
     path: /posts/search?character_id=19&author_id[]=3&author_id[]=2&subject=a
     selector: '[id=content]'
@@ -230,13 +177,6 @@ paths:
     path: /posts/owed
     selector: '[id=content]'
 
-  post_new:
-    path: /posts/new
-    selector: '[id=content]'
-    before_capture: 'wraith/javascript/wait.js'
-  post_import:
-    path: /posts/new?view=import
-    selector: '[id=content]'
   post_show:
     path: /posts/3
     selector: '[id=content]'
@@ -255,10 +195,10 @@ paths:
     path: /posts/3
     before_capture: 'wraith/javascript/post-menu.js'
     selector: '[id=post-menu-box]'
-  editor_help:
+  icon_selector:
     path: /posts/new
-    before_capture: 'wraith/javascript/editor-help.js'
-    selector: '[id=editor-help-box]'
+    before_capture: 'wraith/javascript/icon-selector.js'
+    selector: '[id=reply-icon-selector]'
   character_selector:
     path: /posts/new
     before_capture: 'wraith/javascript/character-selector.js'
@@ -277,27 +217,15 @@ paths:
     path: /posts/33?page=unread#unread
     selector: '.reply-highlighted'
 
-  reports:
-    path: /reports
-    selector: '[id=content]'
-  report_monthly:
-    path: /reports/monthly
-    selector: '[id=content]'
   report_daily:
     path: /reports/daily?day=2012-09-13
     selector: '[id=content]'
 
-  tags:
-    path: /tags
-    selector: '[id=content]'
   tags_settings:
     path: /tags?view=Setting
     selector: '[id=content]'
   tag_show_info:
     path: /tags/5
-    selector: '[id=content]'
-  tag_show_posts:
-    path: /tags/5?view=posts
     selector: '[id=content]'
   tag_show_characters:
     path: /tags/5?view=characters
@@ -306,9 +234,6 @@ paths:
     path: /tags/5/edit
     selector: '[id=content]'
 
-  template_new:
-    path: /templates/new
-    selector: '[id=content]'
   template_show:
     path: /templates/11
     selector: '[id=content]'
@@ -318,9 +243,6 @@ paths:
   template_list:
     path: /templates/11?view=list
     selector: '[id=content]'
-  #templates_search:
-  #  path: /templates/search
-  #  selector: '[id=content]'
 
   users:
     path: /users
@@ -330,13 +252,4 @@ paths:
     selector: '[id=content]'
   user_edit:
     path: /users/3/edit
-    selector: '[id=content]'
-  user_output:
-    path: /users/3/output
-    selector: '[id=content]'
-  user_boards:
-    path: /users/3/boards
-    selector: '[id=content]'
-  users_search:
-    path: /users/search?username=a&commit=Search
     selector: '[id=content]'
