@@ -234,14 +234,8 @@ paths:
     path: /tags/5/edit
     selector: '[id=content]'
 
-  template_show:
-    path: /templates/11
-    selector: '[id=content]'
   template_edit:
     path: /templates/11/edit
-    selector: '[id=content]'
-  template_list:
-    path: /templates/11?view=list
     selector: '[id=content]'
 
   users:
