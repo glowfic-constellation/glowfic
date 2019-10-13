@@ -5,3 +5,40 @@ history_dir: 'wraith/then/river'
 
 # The directory that your latest screenshots will be stored in
 directory: 'wraith/now/river'
+
+paths:
+  home:
+    path: /?pp=skip
+
+  board_show_sections:
+    path: /boards/1
+    selector: '[id=content]'
+
+  characters_icon_split:
+    path: /users/3/characters?character_split=template&view=icons
+    selector: '[id=content]'
+  characters_list_combined:
+    path: /users/3/characters?character_split=none&view=list
+    selector: '[id=content]'
+  character_show:
+    path: /characters/27
+    selector: '[id=content]'
+
+  galleries:
+    path: /users/3/galleries
+    selector: '[id=content]'
+  gallery_show:
+    path: /galleries/26
+    selector: '[id=content]'
+
+  posts_unread:
+    path: /posts/unread
+    selector: '[id=content]'
+  post_show_html:
+    path: /posts/2?page=2&per_page=5&proofer-ignore
+    selector: '[id=content]'
+    before_capture: 'wraith/javascript/paginator-hover.js'
+
+  report_daily:
+    path: /reports/daily?day=2012-09-13
+    selector: '[id=content]'
