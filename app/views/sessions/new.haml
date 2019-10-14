@@ -4,10 +4,10 @@
       %tr
         %th{colspan: 2} Sign In
     %tbody
-      %tr#username
+      %tr#username-row
         %th.sub.vtop Username
         %td.even= text_field_tag :username, params[:username], placeholder: "Username"
-      %tr#password
+      %tr#password-row
         %th.sub.vtop Password
         %td.odd
           = password_field_tag :password, params[:password], placeholder: "Password"
