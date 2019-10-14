@@ -54,7 +54,7 @@ paths:
     path: /characters/27/edit
     selector: '.flash.success'
     before_capture: 'wraith/javascript/flash_success.js'
-    
+
   home:
     path: /?pp=skip
 
@@ -110,9 +110,6 @@ paths:
     selector: '[id=content]'
 
   favorites:
-    path: /favorites
-    selector: '[id=content]'
-  favorites_grouped:
     path: /favorites?view=bucket
     selector: '[id=content]'
 
@@ -213,14 +210,11 @@ paths:
     path: /reports/daily?day=2012-09-13
     selector: '[id=content]'
 
-  tags_settings:
+  tags:
     path: /tags?view=Setting
     selector: '[id=content]'
   tag_show_info:
     path: /tags/5
-    selector: '[id=content]'
-  tag_show_characters:
-    path: /tags/5?view=characters
     selector: '[id=content]'
   tag_edit:
     path: /tags/5/edit
