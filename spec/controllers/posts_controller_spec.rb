@@ -1868,7 +1868,6 @@ RSpec.describe PostsController do
             put :update, params: {
               id: post.id,
               post: {
-                subject: 'add authors', # TODO this is necessary and therefore a problem
                 unjoined_author_ids: [other_user.id]
               }
             }
@@ -1878,16 +1877,15 @@ RSpec.describe PostsController do
         expect(response).to redirect_to(post_url(post))
         post.reload
         expect(post.tagging_authors).to match_array([user, other_user])
-        expect(post.updated_at).to be_the_same_time_as(time)
 
         # doesn't change joined time or invited status when inviting main user
-        main_author = post.post_authors.find_by(user: user)
+        main_author = post.author_for(user)
         expect(main_author.can_owe).to eq(true)
         expect(main_author.joined).to eq(true)
         expect(main_author.joined_at).to be_the_same_time_as(post.created_at)
 
         # doesn't set joined time but does set invited status when inviting new user
-        new_author = post.post_authors.find_by(user: other_user)
+        new_author = post.author_for(other_user)
         expect(new_author.can_owe).to eq(true)
         expect(new_author.joined).to eq(false)
         expect(new_author.joined_at).to be_nil
