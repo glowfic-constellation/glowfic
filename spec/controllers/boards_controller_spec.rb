@@ -228,15 +228,13 @@ RSpec.describe BoardsController do
       section1 = create(:board_section, board: board)
       section1.update!(section_order: 0)
       section2.update!(section_order: 1)
-      post1 = create(:post, board: board, section: section1, tagged_at: Time.zone.now + rand(5..30).hours)
-      post2 = create(:post, board: board, section: section1, tagged_at: Time.zone.now + rand(5..30).hours)
-      post3 = create(:post, board: board, section: section1, tagged_at: Time.zone.now + rand(5..30).hours)
-      post4 = create(:post, board: board, section: section2, tagged_at: Time.zone.now + rand(5..30).hours)
-      post5 = create(:post, board: board, section: section2, tagged_at: Time.zone.now + rand(5..30).hours)
-      post6 = create(:post, board: board, section: section2, tagged_at: Time.zone.now + rand(5..30).hours)
-      post7 = create(:post, board: board, tagged_at: Time.zone.now + rand(5..30).hours)
-      post8 = create(:post, board: board, tagged_at: Time.zone.now + rand(5..30).hours)
-      post9 = create(:post, board: board, tagged_at: Time.zone.now + rand(5..30).hours)
+      post1, post2, post3 = create_list(:post, 3, board: board, section: section1)
+      post4, post5, post6 = create_list(:post, 3, board: board, section: section2)
+      post7, post8, post9 = create_list(:post, 3, board: board)
+      board.posts.each do |post|
+        # skip callbacks so we truly override tagged_at
+        post.update_columns(tagged_at: Time.zone.now + rand(5..30).hours)
+      end
       post1.update!(section_order: 0)
       post2.update!(section_order: 1)
       post3.update!(section_order: 2)
@@ -247,7 +245,8 @@ RSpec.describe BoardsController do
       post8.update!(section_order: 1)
       post9.update!(section_order: 2)
       get :show, params: { id: board.id }
-      expect(assigns(:board_sections).map(&:posts)).to eq([[post1, post2, post3], [post4, post5, post6]])
+      # we only order board section posts in the HAML, so manually order them here
+      expect(assigns(:board_sections).map(&:posts).map(&:ordered_in_section).map(&:to_a)).to eq([[post1, post2, post3], [post4, post5, post6]])
       expect(assigns(:posts)).to eq([post7, post8, post9])
     end
 
