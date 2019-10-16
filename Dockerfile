@@ -8,7 +8,9 @@ RUN curl -sL https://deb.nodesource.com/setup_10.x | bash
 RUN apt-get update
 RUN apt-get install -y curl nodejs postgresql-client-9.4
 
-RUN gem install bundler -v 1.17.2
+ARG bundler_version=1.17.3
+
+RUN gem install bundler -v $bundler_version
 
 ADD Gemfile* /code/
-RUN bundle install
+RUN bundler _${bundler_version}_ install
