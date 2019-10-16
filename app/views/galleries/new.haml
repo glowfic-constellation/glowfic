@@ -5,12 +5,7 @@
       %tr
         %th.editor-title{colspan: 2}New Gallery
     %tbody
-      %tr
-        %th.vtop.sub Name
-        %td{class: cycle('even', 'odd')}= f.text_field :name, placeholder: "Gallery Name", class: 'text'
-      %tr
-        %th.vtop.sub Groups
-        %td{class: cycle('even', 'odd')}= tag_select(@gallery, f, :gallery_groups)
+      = render 'editor', f: f, gallery: @gallery
       - if icons_present
         %tr
           %th.vtop.sub Icons
