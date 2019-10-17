@@ -33,9 +33,8 @@
 
   .subber Metadata
   .even
-    - boards = Board.ordered.select {|b| b.id == post.board_id || current_user.writes_in?(b) }
     = f.label :board_id, 'Continuity:'
-    = f.select :board_id, options_from_collection_for_select(boards, :id, :name, post.board_id)
+    = f.select :board_id, options_from_collection_for_select(allowed_boards(post, current_user), :id, :name, post.board_id)
     %br
     #section{class: ('hidden' unless post.board&.board_sections&.exists?)}
       = f.label :section_id, 'Continuity section:'
