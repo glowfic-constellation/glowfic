@@ -46,9 +46,13 @@ module WritableHelper
   }
 
   def privacy_state(privacy)
+    privacy_icon(privacy) + ' ' + PRIVACY_MAP[privacy][0]
+  end
+
+  def privacy_icon(privacy)
     name = PRIVACY_MAP[privacy][0]
     img = PRIVACY_MAP[privacy][1]
-    image_tag("icons/#{img}.png", class: 'vmid', title: name) + ' ' + name
+    image_tag("icons/#{img}.png", class: 'vmid', title: name)
   end
 
   def menu_img

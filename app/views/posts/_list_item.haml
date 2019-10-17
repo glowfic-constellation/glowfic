@@ -4,10 +4,12 @@
   %td.post-completed.vtop{class: [klass, (post.completed? ? 'post-complete' : 'post-incomplete')]}
     - if post.completed?
       = image_tag "icons/book.png", class: 'vmid', title: "Thread Complete"
-    - if post.on_hiatus?
+    - elsif post.on_hiatus?
       = image_tag "icons/hourglass.png", class: 'vmid', title: "Thread On Hiatus"
-    - if post.abandoned?
+    - elsif post.abandoned?
       = image_tag "icons/book_grey.png", class: 'vmid', title: "Thread Abandoned"
+    - if post.access_list? || post.private?
+      = privacy_icon(post.privacy)
     - if !current_user.try(:hide_warnings) && post.has_content_warnings?
       = image_tag "icons/exclamation.png", class: 'vmid', title: "Content Warning: " + post.content_warnings.pluck(:name).join(', '), alt: '!'
   %td.post-subject.vtop{class: klass}
