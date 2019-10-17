@@ -189,6 +189,10 @@ table { width: 100%; }
   font-weight: normal;
 }
 
+.info-box-header {
+  @extend .table-title;
+  text-align: center;
+}
 .content-header {
   width: 100%;
   overflow: hidden;
