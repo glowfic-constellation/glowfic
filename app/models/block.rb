@@ -12,10 +12,13 @@ class Block < ApplicationRecord
   scope :ordered, -> { includes(:blocked_user).sort_by { |block| [block.blocked_user.username.downcase] } }
 
   after_create :mark_messages_read
+  after_commit :invalidate_caches
 
   NONE = 0
   POSTS = 1
   ALL = 2
+
+  CACHE_VERSION = 1
 
   def editable_by?(user)
     return false unless user
@@ -38,6 +41,10 @@ class Block < ApplicationRecord
     self.hide_them == ALL
   end
 
+  def self.cache_string_for(user_id, string='blocked')
+    "#{Rails.env}.#{CACHE_VERSION}.#{string}_posts.#{user_id}"
+  end
+
   private
 
   def not_blocking_self
@@ -55,5 +62,11 @@ class Block < ApplicationRecord
       message.unread = false
       message.save
     end
+  end
+
+  def invalidate_caches
+    return unless created_at == updated_at || saved_change_to_hide_me? || saved_change_to_hide_them?
+    Rails.cache.delete(Block.cache_string_for(self.blocking_user.id, 'hidden'))
+    Rails.cache.delete(Block.cache_string_for(self.blocked_user.id, 'blocked'))
   end
 end

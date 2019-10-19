@@ -126,7 +126,7 @@ class ApplicationController < ActionController::Base
       .with_has_content_warnings
       .with_reply_count
 
-    posts = posts.where_not_hidden(current_user) unless show_blocked
+    posts = posts.where.not(id: current_user.hidden_posts) if logged_in? && !show_blocked
     posts = posts.no_tests if no_tests
     posts
   end

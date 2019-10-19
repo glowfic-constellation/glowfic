@@ -87,37 +87,11 @@ class Post < ApplicationRecord
   scope :visible_to, ->(user) {
     if user
       where(user_id: user.id)
-        .where_not_blocked(user)
         .or(where(privacy: [Concealable::PUBLIC, Concealable::REGISTERED]))
         .or(where(privacy: Concealable::ACCESS_LIST, id: user.visible_posts))
+        .where.not(id: user.blocked_posts)
     else
       where(privacy: Concealable::PUBLIC)
-    end
-  }
-
-  scope :where_not_blocked, ->(user) {
-    where.not(id:
-      Post.reorder('').where(authors_locked: true, id:
-        PostAuthor.where(user_id:
-          Block.where(blocked_user_id: user.id)
-          .where(Arel.sql('hide_me > 0'))
-          .select(:blocking_user_id)
-        ).select(:post_id)
-      ).pluck(:id).to_a
-    )
-  }
-
-  scope :where_not_hidden, ->(user) {
-    if user
-      where.not(id:
-        Post.reorder('').where(authors_locked: true, id:
-          PostAuthor.where(user_id:
-            Block.where(blocking_user_id: user.id)
-            .where(Arel.sql('hide_them > 0'))
-            .select(:blocked_user_id)
-          ).select(:post_id)
-        ).pluck(:id)
-      )
     end
   }
 
