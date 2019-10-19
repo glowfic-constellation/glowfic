@@ -1025,10 +1025,7 @@ CREATE TABLE public.posts (
     section_id integer,
     section_order integer,
     description character varying,
-    last_user_id integer,
-    last_reply_id integer,
     edited_at timestamp without time zone,
-    tagged_at timestamp without time zone,
     authors_locked boolean DEFAULT false,
     character_alias_id integer
 );
@@ -2248,13 +2245,6 @@ CREATE INDEX index_posts_on_icon_id ON public.posts USING btree (icon_id);
 
 
 --
--- Name: index_posts_on_tagged_at; Type: INDEX; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE INDEX index_posts_on_tagged_at ON public.posts USING btree (tagged_at);
-
-
---
 -- Name: index_posts_on_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -2477,5 +2467,6 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20190122034907'),
 ('20190331223926'),
 ('20190802051248');
+('20191018195349');
 
 

@@ -57,17 +57,20 @@ class Reply < ApplicationRecord
   private
 
   def set_last_reply
-    return if skip_post_update
-    post.last_user = user
-    post.last_reply = self
+    invalidate_cache unless skip_post_update
+  end
+
+  def invalidate_cache
+    Rails.cache.delete(Post.cache_string_for(self.post_id, 'last_reply'))
+    Rails.cache.delete(Post.cache_string_for(self.post_id, 'last_user'))
+    Rails.cache.delete(Post.cache_string_for(self.post_id, 'tagged_at'))
   end
 
   def update_post
     return if post.last_reply_id != id || skip_post_update
     return if (saved_changes.keys - Post::NON_TAGGED_ATTRS - ['updated_at']).empty?
-    post.tagged_at = updated_at
-    post.status = Post::STATUS_ACTIVE if post.on_hiatus?
-    post.save
+    Rails.cache.delete(Post.cache_string_for(self.post_id, 'tagged_at'))
+    post.update!(status: Post::STATUS_ACTIVE) if post.on_hiatus?
   end
 
   def update_active_char
@@ -81,12 +84,9 @@ class Reply < ApplicationRecord
   end
 
   def set_previous_reply_to_last
-    return if post.last_reply_id != id || skip_post_update
+    return if post.last_reply_id != self.id || skip_post_update
     # return unless needs to update last reply (this is destroyed, this is the last reply)
-    post.last_reply = previous_reply
-    post.last_user = (previous_reply || post).user
-    post.tagged_at = (previous_reply || post).last_updated
-    post.save
+    invalidate_cache
   end
 
   def destroy_draft

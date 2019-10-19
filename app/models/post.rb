@@ -12,10 +12,12 @@ class Post < ApplicationRecord
   STATUS_HIATUS = 2
   STATUS_ABANDONED = 3
 
+  CACHE_VERSION = 1
+
   belongs_to :board, inverse_of: :posts, optional: false
   belongs_to :section, class_name: 'BoardSection', inverse_of: :posts, optional: true
-  belongs_to :last_user, class_name: 'User', inverse_of: false, optional: false
-  belongs_to :last_reply, class_name: 'Reply', inverse_of: false, optional: true
+  has_one :last_user, -> (post) { unscope(where: :post_id).where(id: post.last_user_id) }, class_name: 'User', inverse_of: false
+  has_one :last_reply, -> (post) { unscope(where: :post_id).where(id: post.last_reply_id) }, class_name: 'Reply', inverse_of: false
   has_one :flat_post, dependent: :destroy
   has_many :replies, inverse_of: :post, dependent: :delete_all
   has_many :reply_drafts, dependent: :destroy
@@ -282,6 +284,28 @@ class Post < ApplicationRecord
     Post.where(board_id: self.board_id, section_id: self.section_id).find_by(section_order: self.section_order + 1)
   end
 
+  def last_user_id
+    Rails.cache.fetch(Post.cache_string_for(self.id, 'last_user'), expires_in: 1.month) do
+      (self.replies.ordered.last || self).user_id
+    end
+  end
+
+  def last_reply_id
+    Rails.cache.fetch(Post.cache_string_for(self.id, 'last_reply'), expires_in: 1.month) do
+      self.replies.ordered.last.id
+    end
+  end
+
+  def tagged_at
+    Rails.cache.fetch(Post.cache_string_for(self.id, 'tagged_at'), expires_in: 1.month) do
+      (self.replies.ordered.last || self).updated_at
+    end
+  end
+
+  def self.cache_string_for(post_id, string)
+    "#{Rails.env}.#{CACHE_VERSION}.#{string}.#{post_id}"
+  end
+
   private
 
   def valid_board
@@ -295,10 +319,6 @@ class Post < ApplicationRecord
     return unless section.present?
     return if section.board_id == board_id
     errors.add(:section, "must be in the post's board")
-  end
-
-  def set_last_user
-    self.last_user = user
   end
 
   # timestamps start existing between before_save and before_create/update
