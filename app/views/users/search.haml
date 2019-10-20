@@ -17,7 +17,7 @@
           %table.search-form
             %tr
               %td.width-70= label_tag :search_username, 'Username'
-              %td= text_field_tag :username, params[:username], style: 'width: 100%; margin: 5px 0px; box-sizing: border-box;', id: :search_username
+              %td= text_field_tag :username, params[:username], style: 'width: 100%; margin: 5px 0px;', id: :search_username
             %tr
               %td.centered{colspan: 2}= submit_tag "Search", class: 'button'
       %td.vtop
