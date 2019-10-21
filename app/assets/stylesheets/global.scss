@@ -157,9 +157,20 @@ table.alternating-doubles tbody, tbody.alternating-doubles {
 }
 
 div.alternating {
-  @include alternating('.post-container')
-  .post-container:nth-child(2n) blockquote { background-color: $bg_color_odd_blockquote; }
-  .post-container:nth-child(2n+1) blockquote { background-color: $bg_color_even_blockquote; }
+  .post-container {
+    padding: 0;
+    overflow: auto;
+  }
+
+  .post-container:nth-child(2n) {
+    background-color: $bg_color_odd;
+    blockquote { background-color: $bg_color_odd_blockquote; }
+  }
+
+  .post-container:nth-child(2n+1) {
+    background-color: $bg_color_even;
+    blockquote { background-color: $bg_color_even_blockquote; }
+  }
 }
 
 /* UI Links */
