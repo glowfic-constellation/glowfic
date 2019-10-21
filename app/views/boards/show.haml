@@ -57,6 +57,7 @@
       %tbody
         %tr
           %td.continuity-spacer{colspan: 5}
+    %tbody.alternating
       = render partial: 'posts/list_item', collection: @posts, as: :post, locals: {hide_continuity: true}
 - else
   - if @board.description.present?
