@@ -16,10 +16,10 @@ screen_widths:
 resize_or_reload: 'resize'
 
 # Amount of fuzz ImageMagick will use when comparing images. A higher fuzz makes the comparison less strict.
-fuzz: '20%'
+fuzz: '10%'
 
 # The maximum acceptable level of difference (in %) between two images before Wraith reports a failure. Default: 0
-threshold: 1
+threshold: 0
 
 # Specify the template (and generated thumbnail sizes) for the gallery output.
 gallery:
