@@ -22,7 +22,8 @@ def run(layout, wraith, command)
 end
 
 layouts.each do |layout|
-  Rails.root.join('script', 'before_wraith.rb')
+  ARGV[0] = layout
+  load Rails.root.join('script', 'before_wraith.rb')
   run(layout, wraith, command)
 end
 
