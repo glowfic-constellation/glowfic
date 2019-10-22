@@ -19,7 +19,7 @@
   - else
     %b Info
 
-%table.alternating.left-info-box.character-info-box
+%table.left-info-box.character-info-box
   %thead
     %tr
       %th.info-box-header
@@ -33,6 +33,7 @@
         %td.character-icon.icons-box
           = link_to icon_path(@character.default_icon) do
             = icon_tag @character.default_icon
+  %tbody.alternating
     %tr
       %td.centered
         = link_to character_path(@character) do
