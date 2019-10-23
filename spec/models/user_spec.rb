@@ -183,4 +183,96 @@ RSpec.describe User do
       expect(Block.count).to be(0)
     end
   end
+
+  describe "visiblity caching" do
+    let (:user) { create(:user) }
+    let (:memory_store) { ActiveSupport::Cache.lookup_store(:memory_store) }
+    let (:cache) { Rails.cache }
+
+    before(:each) do
+      allow(Rails).to receive(:cache).and_return(memory_store)
+      Rails.cache.clear
+      create(:post, privacy: Concealable::ACCESS_LIST)
+      create(:post, privacy: Concealable::PRIVATE)
+      create(:post)
+      create(:post, user: user, privacy: Concealable::ACCESS_LIST)
+      create(:post, privacy: Concealable::ACCESS_LIST, viewer_ids: [create(:user).id])
+      PostViewer.create!(post: create(:post), user: create(:user))
+    end
+
+    it "handles no visible access-listed posts" do
+      expect(user.visible_posts).to be_empty
+    end
+
+    context "with a visible post" do
+      let (:visible_post) { create(:post, privacy: Concealable::ACCESS_LIST, viewer_ids: [user.id, create(:user).id]) }
+      before(:each) { visible_post }
+
+      it "handles one visible access-listed post" do
+        expect(user.visible_posts).to eq([visible_post.id])
+      end
+
+      it "records the correct visible posts" do
+        second_visible = create(:post, privacy: Concealable::ACCESS_LIST, viewer_ids: [user.id] + create_list(:user, 3).map(&:id))
+        third_visible = create(:post, privacy: Concealable::ACCESS_LIST, viewer_ids: [user.id])
+        expect(user.visible_posts).to match_array([visible_post.id, second_visible.id, third_visible.id])
+        expect(cache.exist?(PostViewer.cache_string_for(user.id))).to be(true)
+      end
+
+      it "handles being removed from access list" do
+        expect(user.visible_posts).to eq([visible_post.id])
+        ids = visible_post.viewer_ids - [user.id]
+        visible_post.update!(viewer_ids: ids)
+        expect(PostViewer.where(user: user).pluck(:post_id)).to be_empty
+        expect(cache.exist?(PostViewer.cache_string_for(user.id))).to be(false)
+        expect(user.visible_posts).to be_empty
+        expect(Post.visible_to(user)).not_to include(visible_post)
+      end
+
+      it "handles being added to an access list" do
+        expect(user.visible_posts).to eq([visible_post.id])
+        second_visible = create(:post, privacy: Concealable::ACCESS_LIST, viewer_ids: create_list(:user, 3).map(&:id))
+        ids = second_visible.viewer_ids + [user.id]
+        second_visible.update!(viewer_ids: ids)
+        expect(cache.exist?(PostViewer.cache_string_for(user.id))).to be(false)
+        expect(user.visible_posts).to match_array([visible_post.id, second_visible.id])
+      end
+
+      it "handles a new access-listed post" do
+        expect(user.visible_posts).to eq([visible_post.id])
+        expect(cache.exist?(PostViewer.cache_string_for(user.id))).to be(true)
+        second_visible = create(:post, privacy: Concealable::ACCESS_LIST, viewer_ids: [user.id] + create_list(:user, 3).map(&:id))
+        expect(cache.exist?(PostViewer.cache_string_for(user.id))).to be(false)
+        expect(user.visible_posts).to match_array([visible_post.id, second_visible.id])
+      end
+
+      it "handles a post becoming access-listed" do
+        public_post = create(:post)
+        public_post.update!(privacy: Concealable::ACCESS_LIST, viewer_ids: [user.id])
+        expect(Post.visible_to(user)).to include(visible_post)
+      end
+
+      it "handles a post becoming access-listed with existing PostViewer" do
+        public_post = create(:post)
+        PostViewer.create!(post: public_post, user: user)
+        expect(user.visible_posts).to match_array([visible_post.id, public_post.id])
+        public_post.update!(privacy: Concealable::ACCESS_LIST)
+        expect(Post.visible_to(user)).to include(visible_post)
+      end
+
+      it "handles an access listed post becoming public" do
+        expect(user.visible_posts).to eq([visible_post.id])
+        expect(cache.exist?(PostViewer.cache_string_for(user.id))).to be(true)
+        visible_post.update!(privacy: Concealable::PUBLIC)
+        expect(Post.all.visible_to(user)).to include(visible_post)
+      end
+
+      it "handles an access listed post becoming private" do
+        expect(user.visible_posts).to eq([visible_post.id])
+        expect(Post.visible_to(user)).to include(visible_post)
+        visible_post.update!(privacy: Concealable::PRIVATE)
+        expect(Post.visible_to(user)).not_to include(visible_post)
+      end
+    end
+  end
 end

@@ -87,6 +87,12 @@ class User < ApplicationRecord
     end
   end
 
+  def visible_posts
+    Rails.cache.fetch(PostViewer.cache_string_for(self.id), expires_in: 1.month) do
+      PostViewer.where(user: self).pluck(:post_id)
+    end
+  end
+
   private
 
   def strip_spaces
