@@ -22,7 +22,8 @@ module Glowfic
     "cite" => %w(href)
   }
 
-  DISCORD_LINK = 'https://discord.gg/Ss6fRFj'
+  DISCORD_LINK_GLOWFIC = 'https://discord.gg/Ss6fRFj'
+  DISCORD_LINK_CONSTELLATION = 'https://discord.gg/RWUPXQD'
 
   module Sanitizers
     WRITTEN_CONF = Sanitize::Config.merge(Sanitize::Config::RELAXED,
