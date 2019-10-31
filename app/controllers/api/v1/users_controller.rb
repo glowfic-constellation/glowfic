@@ -24,22 +24,13 @@ class Api::V1::UsersController < Api::ApiController
   end
 
   api :GET, '/users/:id/posts', 'Load all posts where the specified user is an author'
-  param :authorship, :number, required: false, desc: 'Level of involvement in a post. TODO define'
+  param :page, :number, required: false, desc: 'Page in results (25 per page)'
   error 404, "User not found"
   def posts
     return unless (user = find_object(User))
     
-    posts = Post.where(privacy: Concealable::PUBLIC) # TODO expand when OAuth exists
-    case params[:authorship] # TODO does not include first-poster-or-cameo-not-different-primary-author, seems too edge case
-    when 1 # only posts you were the first post
-      posts = posts.where(user: user)
-    when 2 # only posts you are any of the primary authors # TODO wait for creators to have PostAuthors
-      posts = posts.where(id: PostAuthor.where(user: user).select(:post_id))
-    when 3 # only posts where you are a cameo author
-    when 4 # only posts where you are a primary author, not first poster or cameo
-    when 5 # only posts where you are not the starter
-      posts = posts.where(id: PostAuthor.where(user: user).select(:post_id)).where.not(user: user)
-    else # default to all posts they have joined as any of first poster, primary author or cameo author
-    end
+    post_ids = PostAuthor.where(user: user).pluck(:post_id)
+    posts = paginate Post.where(privacy: Concealable::PUBLIC, id: post_ids), per_page: 25
+    render json: {results: posts}
   end
 end
