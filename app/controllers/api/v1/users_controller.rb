@@ -28,9 +28,9 @@ class Api::V1::UsersController < Api::ApiController
   error 404, "User not found"
   def posts
     return unless (user = find_object(User))
-    
+
     post_ids = PostAuthor.where(user: user).pluck(:post_id)
     posts = paginate Post.where(privacy: Concealable::PUBLIC, id: post_ids), per_page: 25
-    render json: {results: posts}
+    render json: {results: posts.as_json(min: true)}
   end
 end
