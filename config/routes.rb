@@ -119,7 +119,9 @@ Rails.application.routes.draw do
       end
       resources :tags, only: [:index, :show]
       resources :templates, only: :index
-      resources :users, only: :index
+      resources :users, only: :index do
+        member { get :posts }
+      end
     end
   end
 
