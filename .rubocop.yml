@@ -103,13 +103,6 @@ Lint/ParenthesesAsGroupedExpression:
   Exclude:
     - 'spec/**/*'
 
-Lint/RescueException:
-  Exclude:
-    - 'app/jobs/application_job.rb'
-    - 'app/jobs/generate_flat_post_job.rb'
-    - 'spec/jobs/application_job_spec.rb'
-    - 'spec/jobs/generate_flat_post_job_spec.rb'
-
 ###################### Metrics ####################################
 
 Metrics/AbcSize:
