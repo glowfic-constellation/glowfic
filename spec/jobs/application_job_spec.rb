@@ -33,7 +33,7 @@ RSpec.describe ApplicationJob do
     expect(job).to receive(:perform).and_raise(exc)
     begin
       job.perform_now
-    rescue Exception
+    rescue StandardError
     else
       raise "Error should be handled"
     end

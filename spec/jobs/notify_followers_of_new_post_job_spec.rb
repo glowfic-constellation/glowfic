@@ -25,7 +25,7 @@ RSpec.describe NotifyFollowersOfNewPostJob do
       post = create(:post, user: author, board: board)
       expect {
         NotifyFollowersOfNewPostJob.perform_now(post.id, post.user_id)
-      }.to change { Message.count }.by(1)
+      }.to change(Message.count).by(1)
     end
 
     it "sends the right messages based on favorite type" do
@@ -37,7 +37,7 @@ RSpec.describe NotifyFollowersOfNewPostJob do
       create(:favorite, user: board_notified, favorite: board)
       create(:favorite, user: author_notified, favorite: author)
       post = create(:post, user: author, board: board, unjoined_authors: [expected])
-      expect { NotifyFollowersOfNewPostJob.perform_now(post.id, post.user_id) }.to change { Message.count }.by(2)
+      expect { NotifyFollowersOfNewPostJob.perform_now(post.id, post.user_id) }.to change(Message.count).by(2)
       board_msg = Message.where(recipient: board_notified).last
       author_msg = Message.where(recipient: author_notified).last
       expect(board_msg.message).to include("in the #{board.name} continuity")
@@ -52,7 +52,7 @@ RSpec.describe NotifyFollowersOfNewPostJob do
       create(:favorite, user: author_notified, favorite: author)
       post = create(:post, user: author, unjoined_authors: [], subject: 'test')
 
-      expect { NotifyFollowersOfNewPostJob.perform_now(post.id, post.user_id) }.to change { Message.count }.by(1)
+      expect { NotifyFollowersOfNewPostJob.perform_now(post.id, post.user_id) }.to change(Message.count).by(1)
 
       author_msg = Message.where(recipient: author_notified).last
       expect(author_msg.subject).to eq("New post by #{author.username}")
@@ -64,7 +64,7 @@ RSpec.describe NotifyFollowersOfNewPostJob do
       notified = create(:user)
       create(:favorite, user: notified, favorite: author)
       post = create(:post, user: author, privacy: Concealable::PRIVATE)
-      expect { NotifyFollowersOfNewPostJob.perform_now(post.id, post.user_id) }.not_to change { Message.count }
+      expect { NotifyFollowersOfNewPostJob.perform_now(post.id, post.user_id) }.not_to change(Message.count)
     end
 
     it "does not send if reader has config disabled" do
@@ -72,7 +72,7 @@ RSpec.describe NotifyFollowersOfNewPostJob do
       notified = create(:user, favorite_notifications: false)
       create(:favorite, user: notified, favorite: author)
       post = create(:post, user: author)
-      expect { NotifyFollowersOfNewPostJob.perform_now(post.id, post.user_id) }.not_to change { Message.count }
+      expect { NotifyFollowersOfNewPostJob.perform_now(post.id, post.user_id) }.not_to change(Message.count)
     end
 
     it "does not send to the poster" do
@@ -80,7 +80,7 @@ RSpec.describe NotifyFollowersOfNewPostJob do
       author = create(:user)
       create(:favorite, user: author, favorite: board)
       post = create(:post, user: author, board: board)
-      expect { NotifyFollowersOfNewPostJob.perform_now(post.id, post.user_id) }.not_to change { Message.count }
+      expect { NotifyFollowersOfNewPostJob.perform_now(post.id, post.user_id) }.not_to change(Message.count)
     end
   end
 
@@ -95,12 +95,12 @@ RSpec.describe NotifyFollowersOfNewPostJob do
       post = create(:post, user: author)
       expect {
         NotifyFollowersOfNewPostJob.perform_now(post.id, post.user_id)
-      }.to change { Message.count }.by(1)
+      }.to change(Message.count).by(1)
 
       reply = create(:reply, post: post, user: replier)
       expect {
         NotifyFollowersOfNewPostJob.perform_now(post.id, reply.user_id)
-      }.not_to change { Message.count }
+      }.not_to change(Message.count)
     end
 
     it "does not send twice if the poster changes their username" do
@@ -113,13 +113,13 @@ RSpec.describe NotifyFollowersOfNewPostJob do
       post = create(:post, user: author)
       expect {
         NotifyFollowersOfNewPostJob.perform_now(post.id, post.user_id)
-      }.to change { Message.count }.by(1)
+      }.to change(Message.count).by(1)
 
       author.update!(username: author.username + 'new')
       reply = create(:reply, post: post, user: replier)
       expect {
         NotifyFollowersOfNewPostJob.perform_now(post.id, reply.user_id)
-      }.not_to change { Message.count }
+      }.not_to change(Message.count)
     end
 
     it "does not send twice if the post subject changes" do
@@ -132,13 +132,13 @@ RSpec.describe NotifyFollowersOfNewPostJob do
       post = create(:post, user: author)
       expect {
         NotifyFollowersOfNewPostJob.perform_now(post.id, post.user_id)
-      }.to change { Message.count }.by(1)
+      }.to change(Message.count).by(1)
 
       post.update!(subject: post.subject + 'new')
       reply = create(:reply, post: post, user: replier)
       expect {
         NotifyFollowersOfNewPostJob.perform_now(post.id, reply.user_id)
-      }.not_to change { Message.count }
+      }.not_to change(Message.count)
     end
 
     it "sends twice for different posts" do
@@ -151,17 +151,17 @@ RSpec.describe NotifyFollowersOfNewPostJob do
       post = create(:post, user: author)
       expect {
         NotifyFollowersOfNewPostJob.perform_now(post.id, post.user_id)
-      }.to change { Message.count }.by(1)
+      }.to change(Message.count).by(1)
 
       not_favorited_post = create(:post)
       expect {
         NotifyFollowersOfNewPostJob.perform_now(not_favorited_post.id, not_favorited_post.user_id)
-      }.not_to change { Message.count }
+      }.not_to change(Message.count)
 
       reply = create(:reply, post: not_favorited_post, user: replier)
       expect {
         NotifyFollowersOfNewPostJob.perform_now(not_favorited_post.id, reply.user_id)
-      }.to change { Message.count }.by(1)
+      }.to change(Message.count).by(1)
     end
 
     it "sends the right message" do
@@ -173,7 +173,7 @@ RSpec.describe NotifyFollowersOfNewPostJob do
       reply = create(:reply, post: post, user: author)
       expect {
         NotifyFollowersOfNewPostJob.perform_now(post.id, reply.user_id)
-      }.to change { Message.count }.by(1)
+      }.to change(Message.count).by(1)
 
       message = Message.last
       expect(message.subject).to eq("#{author.username} has joined a new thread")
@@ -187,7 +187,7 @@ RSpec.describe NotifyFollowersOfNewPostJob do
       create(:favorite, user: notified, favorite: author)
       post = create(:post, privacy: Concealable::ACCESS_LIST, viewers: [author])
       create(:reply, post: post, user: author) # reply
-      expect { NotifyFollowersOfNewPostJob.perform_now(post.id, author.id) }.not_to change { Message.count }
+      expect { NotifyFollowersOfNewPostJob.perform_now(post.id, author.id) }.not_to change(Message.count)
     end
 
     it "does not send if reader has config disabled" do
@@ -196,7 +196,7 @@ RSpec.describe NotifyFollowersOfNewPostJob do
       create(:favorite, user: notified, favorite: author)
       post = create(:post)
       create(:reply, post: post, user: author) # reply
-      expect { NotifyFollowersOfNewPostJob.perform_now(post.id, author.id) }.not_to change { Message.count }
+      expect { NotifyFollowersOfNewPostJob.perform_now(post.id, author.id) }.not_to change(Message.count)
     end
 
     it "does not send to the poster" do
@@ -205,7 +205,7 @@ RSpec.describe NotifyFollowersOfNewPostJob do
       create(:favorite, user: author, favorite: favorite)
       post = create(:post, user: author)
       create(:reply, post: post, user: favorite) # reply
-      expect { NotifyFollowersOfNewPostJob.perform_now(post.id, favorite.id) }.not_to change { Message.count }
+      expect { NotifyFollowersOfNewPostJob.perform_now(post.id, favorite.id) }.not_to change(Message.count)
     end
   end
 end

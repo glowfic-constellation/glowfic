@@ -265,7 +265,7 @@ RSpec.describe MessagesController do
         login_as(previous.sender)
         expect {
           post :create, params: { message: {subject: 'Preview', message: 'example'}, parent_id: previous.id, button_preview: true }
-        }.not_to change { Message.count }
+        }.not_to change(Message.count)
         expect(response).to render_template(:preview)
         expect(assigns(:messages)).to eq([previous])
       end
@@ -286,7 +286,7 @@ RSpec.describe MessagesController do
 
         expect {
           post :create, params: { message: {subject: 'Preview', message: 'example'}, button_preview: true }
-        }.not_to change { Message.count }
+        }.not_to change(Message.count)
         expect(response).to render_template(:preview)
         expect(assigns(:javascripts)).to include('messages')
         expect(assigns(:select_items)).to eq({'Recently messaged': recents_data, 'Other users': users_data})

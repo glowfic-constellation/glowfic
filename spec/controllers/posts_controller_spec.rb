@@ -538,7 +538,7 @@ RSpec.describe PostsController do
             unjoined_author_ids: [user.id, other_user.id]
           }
         }
-      }.not_to change { BoardAuthor.count }
+      }.not_to change(BoardAuthor.count)
 
       post = assigns(:post).reload
       expect(post.tagging_authors).to match_array([user, other_user])

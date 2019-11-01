@@ -600,7 +600,7 @@ RSpec.describe RepliesController do
       login_as(reply.user)
       expect {
         put :update, params: { id: reply.id, reply: { audit_comment: 'note' } }
-      }.not_to change { Audited::Audit.count }
+      }.not_to change(Audited::Audit.count)
       Reply.auditing_enabled = false
     end
 

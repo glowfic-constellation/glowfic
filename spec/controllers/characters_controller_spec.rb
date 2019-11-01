@@ -1306,7 +1306,9 @@ RSpec.describe CharactersController do
       login_as(character.user)
       character.update_columns(default_icon_id: create(:icon).id)
       expect(character).not_to be_valid
-      expect{ post :duplicate, params: { id: character.id } }.to not_change { Character.count }
+      expect {
+        post :duplicate, params: { id: character.id }
+      }.not_to change(Character.count)
       expect(response).to redirect_to(character_path(character))
       expect(flash[:error][:message]).to eq('Character could not be duplicated.')
       expect(flash[:error][:array]).to eq(['Default icon must be yours'])

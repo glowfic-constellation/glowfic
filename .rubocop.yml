@@ -132,10 +132,6 @@ Layout/TrailingBlankLines:
 
 #################### Lint ################################
 
-Lint/AmbiguousBlockAssociation:
-  Exclude:
-    - 'spec/**/*'
-
 Lint/HandleExceptions:
   Exclude:
     - 'spec/jobs/application_job_spec.rb'
