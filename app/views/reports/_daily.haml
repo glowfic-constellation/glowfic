@@ -25,8 +25,6 @@
         %tr
           - klass = [cycle('even', 'odd')]
           - klass << 'post-ignored' if ignored?(post)
-          - replies_today = post.replies.where(created_at: @day.beginning_of_day .. @day.end_of_day).order('created_at asc')
-          - linked = linked_for(@day, post, replies_today)
           %td.vtop.post-completed{class: klass.dup.push(post.completed? ? 'post-complete' : 'post-incomplete')}
             - if post.completed?
               = image_tag "icons/book.png", class: 'vmid', title: "Thread Complete"
@@ -52,8 +50,8 @@
           %td.vtop.post-board{class: klass}= link_to post.board_name, board_path(post.board_id)
           %td.vtop.post-authors{class: klass}= author_links(post, colored: true).html_safe
           %td.vtop.centered.post-replies{class: klass}= link_to post.reply_count, stats_post_path(post)
-          %td.vtop.centered.post-replies{class: klass}= link_to replies_today.count, post_or_reply_link(linked)
-          %td.vtop.centered.post-time{class: klass}= linked.created_at.strftime("%l:%M %p")
+          %td.vtop.centered.post-replies{class: klass}= link_to @reply_counts[post.id], post_or_reply_link(@link_targets[post.id])
+          %td.vtop.centered.post-time{class: klass}= @link_targets[post.id].created_at.strftime("%l:%M %p")
     %tfoot
       %tr
         %td{colspan: 7}= render 'posts/paginator', paginated: @posts

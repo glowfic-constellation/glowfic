@@ -29,6 +29,10 @@ class ReportsController < ApplicationController
     if @report_type == 'daily'
       @posts = DailyReport.new(@day).posts(sort)
       @posts = posts_from_relation(@posts, max: true)
+      replies_on_day = Reply.where(created_at: @day.beginning_of_day..@day.end_of_day)
+      @reply_counts = replies_on_day.group(:post_id).count
+      first_for_day = replies_on_day.order(post_id: :asc, created_at: :asc).select('DISTINCT ON (post_id) replies.*')
+      @link_targets = @posts.to_h{ |post| [post.id, linked_for(post, first_for_day[post.id])] }
     end
   end
 
@@ -63,13 +67,11 @@ class ReportsController < ApplicationController
   end
   helper_method :ignored?
 
-  def linked_for(day, post, replies=nil)
-    return post if post.created_at.to_date == day.to_date
-    replies ||= post.replies.where(created_at: day.beginning_of_day .. day.end_of_day).order('created_at asc')
-    return post if replies.empty?
-    replies.first
+  def linked_for(post, reply)
+    return post if post.created_at.to_date == @day.to_date
+    return post if reply.nil?
+    reply
   end
-  helper_method :linked_for
 
   def sort
     @sort ||= case params[:sort]
