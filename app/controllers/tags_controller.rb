@@ -110,7 +110,7 @@ class TagsController < ApplicationController
     desc = []
     desc << generate_short(@tag.description) if @tag.description.present?
     stats = []
-    post_count = @tag.posts.count
+    post_count = @tag.posts.where(privacy: Concealable::PUBLIC).count
     stats << "#{post_count} " + "post".pluralize(post_count) if post_count > 0
     gallery_count = @tag.galleries.count
     stats << "#{gallery_count} " + "gallery".pluralize(gallery_count) if gallery_count > 0
