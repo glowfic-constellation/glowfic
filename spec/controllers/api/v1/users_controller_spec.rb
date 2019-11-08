@@ -66,7 +66,7 @@ RSpec.describe Api::V1::UsersController do
   end
   
   describe 'GET posts' do
-    it 'requires a valid user' do
+    it 'requires a valid user', show_in_doc: true do
       get :posts, params: { id: 0 }
       expect(response).to have_http_status(404)
       expect(response.json['errors'].size).to eq(1)
@@ -83,7 +83,7 @@ RSpec.describe Api::V1::UsersController do
       expect(response.json['results'][0]['id']).to eq(public_post.id)
     end
     
-    it 'returns only the correct posts' do
+    it 'returns only the correct posts', show_in_doc: true do
       user = create(:user)
       board = create(:board)
       user_post = create(:post, user: user, board: board, section: create(:board_section, board: board))
