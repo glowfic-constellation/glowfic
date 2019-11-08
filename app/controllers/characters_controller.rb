@@ -377,7 +377,7 @@ class CharactersController < ApplicationController
     desc = [linked.join('. ')].reject(&:blank?)
     desc << generate_short(@character.description) if @character.description.present?
     reply_posts = Reply.where(character_id: @character.id).select(:post_id).distinct.pluck(:post_id)
-    posts_count = Post.where(character_id: @character.id).or(Post.where(id: reply_posts)).uniq.count
+    posts_count = Post.where(character_id: @character.id).or(Post.where(id: reply_posts)).where(privacy: Concealable::PUBLIC).uniq.count
     desc << "#{posts_count} #{'post'.pluralize(posts_count)}" if posts_count > 0
     data = {
       url: character_url(@character),

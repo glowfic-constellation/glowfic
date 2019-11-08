@@ -166,7 +166,7 @@ class BoardsController < ApplicationController
   def og_data
     metadata = []
     metadata << @board.writers.reject(&:deleted?).pluck(:username).sort_by(&:downcase).join(', ') unless @board.open_to_anyone?
-    post_count = @board.posts.count
+    post_count = @board.posts.where(privacy: Concealable::PUBLIC).count
     stats = "#{post_count} " + "post".pluralize(post_count)
     section_count = @board.board_sections.count
     stats += " in #{section_count} " + "section".pluralize(section_count) if section_count > 0
