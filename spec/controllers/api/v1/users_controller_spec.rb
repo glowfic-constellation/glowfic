@@ -85,12 +85,15 @@ RSpec.describe Api::V1::UsersController do
     
     it 'returns only the correct posts' do
       user = create(:user)
-      user_post = create(:post, user: user)
+      board = create(:board)
+      user_post = create(:post, user: user, board: board, section: create(:board_section, board: board))
       create(:post, user: create(:user))
       get :posts, params: { id: user.id }
       expect(response).to have_http_status(200)
       expect(response.json['results'].size).to eq(1)
       expect(response.json['results'][0]['id']).to eq(user_post.id)
+      expect(response.json['results'][0]['board']['id']).to eq(user_post.board_id)
+      expect(response.json['results'][0]['section']['id']).to eq(user_post.section_id)
     end
     
     it 'paginates results' do
