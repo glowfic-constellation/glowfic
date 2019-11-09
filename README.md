@@ -7,7 +7,7 @@
 *   [Ruby](https://www.ruby-lang.org/en/) 2.6.5
 *   [Rails](http://rubyonrails.org/) 5.2
 *   [Redis](https://redis.io/topics/quickstart)
-*   [PostgreSQL](https://www.postgresql.org/) (guide to set this up [later](#setting-up-postgresql))
+*   [PostgreSQL](https://www.postgresql.org/)
 
 If you are not acquainted with Rails, it may help to go through the [Getting Started with Rails](http://guides.rubyonrails.org/v5.1/getting_started.html) tutorial for Rails 5.1.
 If you wish to learn Ruby, try out the [quickstart](https://www.ruby-lang.org/en/documentation/quickstart/) guide provided on their website, or if you are already acquainted with various programming languages, try the [Learn X in Y minutes](https://learnxinyminutes.com/docs/ruby/) tutorial for Ruby.
@@ -37,7 +37,7 @@ This README mostly focuses on how to get started developing this project with Do
 
 #### Setting up the Glowfic site environment
 
-If you haven't already, [start by installing Docker](https://docs.docker.com/install/).
+If you haven't already, start by installing [Docker](https://docs.docker.com/install/) and [Docker Compose](https://docs.docker.com/compose/install/).
 
 Then run `docker-compose up` within the glowfic directory.
 This will set up a Postgres server, a Redis server, and a Glowfic app server which can talk to both of them.
@@ -52,10 +52,7 @@ If you have added these scripts to your PATH you can leave off "bin-docker/" in 
 #### Setting up the database
 
 Once you've taken these steps, you should be able to set up the contents of the glowfic database with some example data:
-
-*   `bin-docker/rake db:create`
-*   `bin-docker/rake db:migrate`
-*   `bin-docker/rake db:seed`
+*   `bin-docker/rake db:setup`
 
 This will set up the database and add some sample information – currently these are users, continuities, characters, galleries, icons and templates; no posts will be created.
 
