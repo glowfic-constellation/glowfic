@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_08_02_051248) do
+ActiveRecord::Schema.define(version: 2019_11_09_005526) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
@@ -25,7 +25,7 @@ ActiveRecord::Schema.define(version: 2019_08_02_051248) do
     t.string "user_type"
     t.string "username"
     t.string "action"
-    t.text "audited_changes"
+    t.jsonb "audited_changes"
     t.integer "version", default: 0
     t.string "comment"
     t.string "remote_address"
