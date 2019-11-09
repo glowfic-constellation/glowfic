@@ -5,8 +5,8 @@ class PostsController < WritableController
   include Taggable
 
   before_action :login_required, except: [:index, :show, :history, :warnings, :search, :stats]
-  before_action :find_post, only: [:show, :history, :stats, :warnings, :edit, :update, :destroy]
-  before_action :require_permission, only: [:edit]
+  before_action :find_post, only: [:show, :history, :delete_history, :stats, :warnings, :edit, :update, :destroy]
+  before_action :require_permission, only: [:edit, :delete_history]
   before_action :require_import_permission, only: [:new, :create]
   before_action :editor_setup, only: [:new, :edit]
 
@@ -159,6 +159,15 @@ class PostsController < WritableController
   end
 
   def history
+  end
+
+  def delete_history
+    @audits = @post.associated_audits.where(action: 'destroy').paginate(per_page: 1, page: page)
+    @audit = @audits.first
+    @deleted = Reply.new(@audit.audited_changes)
+    @preceding = @post.replies.where('id < ?', @audit.auditable_id).order(id: :desc).limit(2)
+    @preceding = [@post] unless @preceding.present?
+    @following = @post.replies.where('id > ?', @audit.auditable_id).order(id: :asc).limit(2)
   end
 
   def stats

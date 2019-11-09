@@ -210,6 +210,34 @@ class RepliesController < WritableController
     end
   end
 
+  def restore
+    audit = Audited::Audit.find_by(auditable_id: params[:id])
+
+    unless audit
+      flash[:error] = "Post could not be found."
+      redirect_to boards_path and return
+    end
+
+    new_reply = Reply.new(audit.audited_changes)
+    new_reply.is_import = true
+    new_reply.skip_notify = true
+    new_reply.skip_post_update = true
+    new_reply.id = audit.auditable_id
+
+    following_replies = new_reply.post.replies.where('id > ?', new_reply.id).order(id: :asc)
+    new_reply.reply_order = following_replies.first.reply_order
+
+    Reply.transaction do
+      following_replies.update_all('reply_order = reply_order - 1')
+      new_reply.save!
+    end
+    # TODO special handling if it was the most recent reply
+    # TODO can't restore multiple times
+
+    flash[:success] = "Reply has been restored!"
+    redirect_to reply_path(new_reply)
+  end
+
   private
 
   def find_reply
