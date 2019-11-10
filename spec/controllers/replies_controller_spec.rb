@@ -915,6 +915,81 @@ RSpec.describe RepliesController do
       end
       expect(reloaded_post.replies.pluck(:reply_order).sort).to eq(0.upto(4).to_a)
     end
+
+    it "handles first reply deletion" do
+      rpost = create(:post)
+      replies = create_list(:reply, 2, post: rpost, user: rpost.user)
+      deleted_reply = replies.first
+      deleted_reply.destroy
+      Timecop.freeze(rpost.reload.tagged_at + 1.day) { create(:reply, post: rpost, user: rpost.user) }
+      post_attributes = Post.find_by_id(rpost.id).attributes
+
+      login_as(rpost.user)
+      post :restore, params: { id: deleted_reply.id }
+
+      expect(Reply.find_by_id(deleted_reply.id)).to eq(deleted_reply)
+      reloaded_post = Post.find_by_id(rpost.id)
+      new_attributes = reloaded_post.attributes
+      post_attributes.each do |key, val|
+        expect(new_attributes[key]).to eq(val)
+      end
+      expect(reloaded_post.replies.pluck(:reply_order).sort).to eq(0.upto(2).to_a)
+    end
+
+    it "handles last reply deletion" do
+      rpost = create(:post)
+      replies = create_list(:reply, 2, post: rpost, user: rpost.user)
+      deleted_reply = Timecop.freeze(rpost.reload.tagged_at + 1.day) { create(:reply, post: rpost) }
+      deleted_reply.destroy
+      post_attributes = Post.find_by_id(rpost.id).attributes
+
+      login_as(rpost.user)
+      post :restore, params: { id: deleted_reply.id }
+
+      expect(Reply.find_by_id(deleted_reply.id)).to eq(deleted_reply)
+      reloaded_post = Post.find_by_id(rpost.id)
+      new_attributes = reloaded_post.attributes
+      post_attributes.each do |key, val|
+        next if %w(last_reply_id last_user_id updated_at tagged_at).include?(key.to_s)
+        expect(new_attributes[key]).to eq(val), "#{key}s did not match, #{new_attributes[key]} should have been #{val}"
+      end
+      expect(reloaded_post.last_user).to eq(deleted_reply.user)
+      expect(reloaded_post.last_reply).to eq(deleted_reply)
+      expect(reloaded_post.replies.pluck(:reply_order).sort).to eq(0.upto(2).to_a)
+    end
+
+    it "handles only reply deletion" do
+      rpost = create(:post)
+      expect(rpost.last_user).to eq(rpost.user)
+      expect(rpost.last_reply).to be_nil
+
+      deleted_reply = Timecop.freeze(rpost.reload.tagged_at + 1.day) { create(:reply, post: rpost) }
+      rpost = Post.find(rpost.id)
+      expect(rpost.last_user).to eq(deleted_reply.user)
+      expect(rpost.last_reply).to eq(deleted_reply)
+
+      deleted_reply.destroy
+      rpost = Post.find(rpost.id)
+      expect(rpost.last_user).to eq(rpost.user)
+      expect(rpost.last_reply).to be_nil
+
+      login_as(rpost.user)
+      post :restore, params: { id: deleted_reply.id }
+      rpost = Post.find(rpost.id)
+      expect(rpost.last_user).to eq(deleted_reply.user)
+      expect(rpost.last_reply).to eq(deleted_reply)
+    end
+
+    it "does not allow two restores" do
+      reply = create(:reply)
+      reply.destroy
+      login_as(reply.user)
+      post :restore, params: { id: reply.id }
+      expect(flash[:success]).to eq("Reply has been restored!")
+      post :restore, params: { id: reply.id }
+      expect(flash[:error]).to eq("Reply does not need restoring.")
+      expect(response).to redirect_to(post_url(reply.post))
+    end
   end
 
   describe "GET search" do
