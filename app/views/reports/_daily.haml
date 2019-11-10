@@ -50,7 +50,7 @@
           %td.vtop.post-board{class: klass}= link_to post.board_name, board_path(post.board_id)
           %td.vtop.post-authors{class: klass}= author_links(post, colored: true).html_safe
           %td.vtop.centered.post-replies{class: klass}= link_to post.reply_count, stats_post_path(post)
-          %td.vtop.centered.post-replies{class: klass}= link_to @reply_counts[post.id], post_or_reply_link(@link_targets[post.id])
+          %td.vtop.centered.post-replies{class: klass}= link_to @reply_counts[post.id].to_i, post_or_reply_link(@link_targets[post.id])
           %td.vtop.centered.post-time{class: klass}= @link_targets[post.id].created_at.strftime("%l:%M %p")
     %tfoot
       %tr
