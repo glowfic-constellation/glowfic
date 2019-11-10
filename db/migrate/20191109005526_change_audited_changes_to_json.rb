@@ -1,14 +1,10 @@
 class ChangeAuditedChangesToJson < ActiveRecord::Migration[5.2]
   def up
-    change_column_type(:jsonb) do |audit|
-      YAML.load(audit.old_changes)
-    end
+    change_column_type(:jsonb) { |audit| YAML.load(audit.old_changes) }
   end
 
   def down
-    change_column_type(:text) do |audit|
-      audit.old_changes
-    end
+    change_column_type(:text) { |audit| audit.old_changes }
   end
 
   def change_column_type(column_type)
