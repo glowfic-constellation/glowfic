@@ -361,6 +361,6 @@ class Post < ApplicationRecord
   end
 
   def create_written
-    self.written ||= self.replies.build(reply_order: 0, user: self.user)
+    self.written ||= self.replies.build(reply_order: 0, user: self.user, skip_draft: true)
   end
 end
