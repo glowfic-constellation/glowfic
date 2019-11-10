@@ -247,4 +247,11 @@ module ApplicationHelper
     others = linked ? link_to("#{total-1} others", stats_post_path(post)) : "#{total-1} others"
     first_link + ' and ' + others
   end
+
+  def allowed_boards(obj, user)
+    valid_ids = BoardAuthor.where(user: user).pluck(:board_id)
+    valid_ids << obj.board_id if obj.board_id.present?
+    have_authors = BoardAuthor.select(:board_id).distinct.pluck(:board_id)
+    Board.where(id: valid_ids).or(Board.where(creator: current_user)).or(Board.where.not(id: have_authors)).ordered
+  end
 end
