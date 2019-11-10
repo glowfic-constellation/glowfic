@@ -8,41 +8,18 @@
   &raquo;
   %b Replace
 
+- content_for :disclaimer do
+  %tr
+    %td.odd.centered{colspan: 2}
+      .details *This does NOT replace icons*
+
+- content_for :aliases do
+  - if @character.aliases.exists?
+    = select_tag :orig_alias, options_for_select({'— Any Alias —': 'all'}, 'all') + options_from_collection_for_select(@character.aliases, :id, :name), prompt: '— No alias —'
+
+- content_for :options do
+  = select_tag :icon_dropdown, options_for_select(@alt_dropdown, @alt.try(:id)), prompt: "No Character"
+  = select_tag :alias_dropdown, options_from_collection_for_select(@alt.try(:aliases), :id, :name), prompt: '— No alias —', class: ('hidden' unless @alt.try(:aliases).present?)
+
 = form_for @character, url: do_replace_character_path(@character), method: :post do
-  %table.form-table
-    %tr
-      %th.centered{colspan: 2} Replace All Uses of Character
-    %tr
-      %td.odd.centered{colspan: 2}
-        .details *This does NOT replace icons*
-    %tr
-      %th.sub Current
-      %th.sub New
-    %tr
-      %td.replace-icon.vtop
-        = icon_tag @character.default_icon
-        %br
-        = @character.name
-        - if @character.aliases.exists?
-          = select_tag :orig_alias, options_for_select({'— Any Alias —': 'all'}, 'all') + options_from_collection_for_select(@character.aliases, :id, :name), prompt: '— No alias —'
-      %td.replace-icon.vtop
-        - if @alts.first.try(:default_icon)
-          = icon_tag @alts.first.default_icon, id: 'new_icon'
-        - else
-          = no_icon_tag id: 'new_icon'
-        %br
-        = select_tag :icon_dropdown, options_for_select(@alt_dropdown, @alt.try(:id)), prompt: "No Character"
-        = select_tag :alias_dropdown, options_from_collection_for_select(@alt.try(:aliases), :id, :name), prompt: '— No alias —', class: ('hidden' unless @alt.try(:aliases).present?)
-    - if @posts.present?
-      %tr
-        %th.sub{colspan: 2} Optional: Select Post(s)
-      %tr
-        %td.odd.centered{colspan: 2}
-          .details *If none are selected, replaces all uses*
-    - @posts.each do |post|
-      %tr
-        %td{colspan: 2, class: cycle('even', 'odd')}
-          = check_box_tag :'post_ids[]', post.id, false, id: nil
-          = link_to post.subject, post_path(post)
-    %tr
-      %th.form-table-ender{colspan: 2}= submit_tag "Replace", class: 'button'
+  = render 'global/replace', obj: @character, name: @character.name, icon: @character.default_icon, alt_icon: @alts.first.try(:default_icon), is_character: true

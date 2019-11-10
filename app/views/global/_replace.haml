@@ -1,0 +1,37 @@
+%table.form-table
+  %thead
+    %tr
+      %th.centered{colspan: 2} Replace All Uses of #{obj.class}
+  %tbody
+    = content_for :disclaimer
+    %tr
+      %th.sub Current
+      %th.sub New
+    %tr
+      %td.replace-icon.vtop
+        = icon_tag icon
+        %br
+        = name
+        = content_for :aliases
+      %td.replace-icon.vtop
+        - if alt_icon
+          = icon_tag alt_icon, id: 'new_icon'
+        - else
+          = no_icon_tag id: 'new_icon'
+        %br
+        = content_for :options
+  %tbody
+    - if @posts.present?
+      %tr
+        %th.sub{colspan: 2} Optional: Select Post(s)
+      %tr
+        %td.odd.centered{colspan: 2}
+          .details *If none are selected, replaces all uses*
+    - @posts.each do |post|
+      %tr
+        %td{colspan: 2, class: cycle('even', 'odd')}
+          = check_box_tag :'post_ids[]', post.id, false, id: nil
+          = link_to post.subject, post_path(post)
+  %tfoot
+    %tr
+      %th.form-table-ender{colspan: 2}= submit_tag "Replace", class: 'button'
