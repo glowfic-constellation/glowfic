@@ -12,7 +12,7 @@ before_install:
 before_script:
   - psql -c 'create database glowfic_test;' -U postgres
 script:
-  - RAILS_ENV=test bundle exec rails db:migrate --trace
+  - RAILS_ENV=test bundle exec rails db:schema:load --trace
   - bundle exec rspec spec
 branches:
   only:
