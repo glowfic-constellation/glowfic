@@ -868,6 +868,55 @@ RSpec.describe RepliesController do
     end
   end
 
+  describe "POST restore" do
+    before(:each) { Reply.auditing_enabled = true }
+    after(:each) { Reply.auditing_enabled = false }
+
+    it "requires login" do
+      post :restore, params: { id: -1 }
+      expect(response).to redirect_to(root_url)
+      expect(flash[:error]).to eq("You must be logged in to view that page.")
+    end
+
+    it "must find the reply" do
+      expect(Reply.find_by_id(99)).to be_nil
+      expect(Audited::Audit.find_by(auditable_id: 99)).to be_nil
+      login
+      post :restore, params: { id: 99 }
+      expect(response).to redirect_to(boards_url)
+      expect(flash[:error]).to eq("Reply could not be found.")
+    end
+
+    it "must be a deleted reply" do
+      reply = create(:reply)
+      Audited::Audit.where(action: 'create').find_by(auditable_id: reply.id).update(action: 'destroy')
+      login
+      post :restore, params: { id: 99 }
+      expect(response).to redirect_to(boards_url)
+      expect(flash[:error]).to eq("Reply could not be found.")
+    end
+
+    it "handles mid reply deletion" do
+      rpost = create(:post)
+      replies = create_list(:reply, 4, post: rpost, user: rpost.user)
+      deleted_reply = replies[2]
+      deleted_reply.destroy
+      Timecop.freeze(rpost.reload.tagged_at + 1.day) { create(:reply, post: rpost, user: rpost.user) }
+      post_attributes = Post.find_by_id(rpost.id).attributes
+
+      login_as(rpost.user)
+      post :restore, params: { id: deleted_reply.id }
+
+      expect(Reply.find_by_id(deleted_reply.id)).to eq(deleted_reply)
+      reloaded_post = Post.find_by_id(rpost.id)
+      new_attributes = reloaded_post.attributes
+      post_attributes.each do |key, val|
+        expect(new_attributes[key]).to eq(val)
+      end
+      expect(reloaded_post.replies.pluck(:reply_order).sort).to eq(0.upto(4).to_a)
+    end
+  end
+
   describe "GET search" do
     context "no search" do
       before(:each) do

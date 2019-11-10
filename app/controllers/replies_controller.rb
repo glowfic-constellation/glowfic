@@ -211,11 +211,16 @@ class RepliesController < WritableController
   end
 
   def restore
-    audit = Audited::Audit.find_by(auditable_id: params[:id])
+    audit = Audited::Audit.where(action: 'destroy').find_by(auditable_id: params[:id])
 
     unless audit
-      flash[:error] = "Post could not be found."
+      flash[:error] = "Reply could not be found."
       redirect_to boards_path and return
+    end
+
+    if audit.auditable
+      flash[:error] = "Reply does not need restoring."
+      redirect_to post_path(audit.associated) and return
     end
 
     new_reply = Reply.new(audit.audited_changes)
@@ -228,7 +233,7 @@ class RepliesController < WritableController
     new_reply.reply_order = following_replies.first.reply_order
 
     Reply.transaction do
-      following_replies.update_all('reply_order = reply_order - 1')
+      following_replies.update_all('reply_order = reply_order + 1')
       new_reply.save!
     end
     # TODO special handling if it was the most recent reply
