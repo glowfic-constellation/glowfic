@@ -23,7 +23,7 @@
               %td= select_tag :template_id, options_from_collection_for_select(@templates, :id, :name, params[:template_id]), {class: 'chosen-select', prompt: '— Choose Template —'}
             %tr
               %td= label_tag :name, 'Name'
-              %td= text_field_tag :name, params[:name], style: 'width: 100%; margin: 5px 0px; box-sizing: border-box;'
+              %td= text_field_tag :name, params[:name], style: 'width: 100%; margin: 5px 0px;'
             %tr
               %td
               %td

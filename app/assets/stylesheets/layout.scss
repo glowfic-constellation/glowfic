@@ -171,7 +171,6 @@
   position: absolute;
   top: 0;
   width: 100%;
-  box-sizing: border-box;
 }
 
 /* List Tables */
@@ -192,7 +191,6 @@ th, .content-header {
 }
 
 .content-header {
-  box-sizing: border-box;
   width: 100%;
   overflow: hidden;
 
@@ -243,9 +241,6 @@ td, .table-list li { font-size: $font_size_small; }
     input {
       margin: 0;
       width: 100%;
-      -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
-      -moz-box-sizing: border-box;    /* Firefox, other Gecko */
-      box-sizing: border-box;         /* Opera/IE 8+ */
 
       &[type='checkbox'] {
         margin: 0 1px;
@@ -257,7 +252,6 @@ td, .table-list li { font-size: $font_size_small; }
   }
 
   textarea {
-    box-sizing: border-box;
     height: 10em;
     width: 100%;
   }
@@ -443,7 +437,6 @@ td, .table-list li { font-size: $font_size_small; }
     .empty { display: none; }
 
     > thead > tr > th, > tbody > tr > td, > tfoot > tr > th {
-      box-sizing: border-box;
       display: block;
       width: 100%;
     }

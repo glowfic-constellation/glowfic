@@ -29,7 +29,7 @@
               %td= select_tag :setting_id, options_from_collection_for_select(@setting || [], :id, :name, params[:setting_id]), {prompt: '— Choose Setting —'}
             %tr
               %td= label_tag :subject, 'Subject'
-              %td= text_field_tag :subject, params[:subject], style: 'width: 100%; margin: 5px 0px; box-sizing: border-box;'
+              %td= text_field_tag :subject, params[:subject], style: 'width: 100%; margin: 5px 0px;'
             %tr
               %td Completed
               %td.padding-5

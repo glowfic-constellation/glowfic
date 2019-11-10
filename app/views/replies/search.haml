@@ -33,7 +33,7 @@
               %td= select_tag :character_id, options_from_collection_for_select(@characters || [], :id, :selector_name, params[:character_id]), {prompt: '— Choose Character —'}
             %tr
               %td= label_tag :subj_content, 'Content'
-              %td= text_field_tag :subj_content, params[:subj_content], style: 'width: 100%; margin: 5px 0px; box-sizing: border-box;'
+              %td= text_field_tag :subj_content, params[:subj_content], style: 'width: 100%; margin: 5px 0px;'
             %tr
               %td= label_tag :sort, 'Sort'
               %td= select_tag :sort, options_for_select([['Best match', 'rank'], ['Newest first', 'created_new'], ['Oldest first', 'created_old']], params[:sort]), {class: 'chosen-select'}

@@ -10,7 +10,6 @@
   min-width: 200px;
   height: 100px;
   width: 100%;
-  box-sizing: border-box;
   min-height: 250px;
 }
 
@@ -40,7 +39,6 @@
 .message-menu {
   z-index: 1;
   padding: 10px;
-  box-sizing: border-box;
 
   .text {
     width: 55%;
