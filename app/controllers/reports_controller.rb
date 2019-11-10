@@ -31,7 +31,9 @@ class ReportsController < ApplicationController
       @posts = posts_from_relation(@posts, max: true)
       replies_on_day = Reply.where(created_at: @day.beginning_of_day..@day.end_of_day)
       @reply_counts = replies_on_day.group(:post_id).count
-      first_for_day = replies_on_day.order(post_id: :asc, created_at: :asc).select('DISTINCT ON (post_id) replies.*')
+      first_for_day = replies_on_day.order(post_id: :asc, created_at: :asc)
+      first_for_day = first_for_day.pluck(Arel.sql('DISTINCT ON (post_id) replies.post_id, replies.id, replies.created_at'))
+      first_for_day = first_for_day.to_h { |pluck| [pluck[0], { id: pluck[1], klass: Reply, created_at: pluck[2] }] }
       @link_targets = @posts.to_h{ |post| [post.id, linked_for(post, first_for_day[post.id])] }
     end
   end
@@ -68,9 +70,11 @@ class ReportsController < ApplicationController
   helper_method :ignored?
 
   def linked_for(post, reply)
-    return post if post.created_at.to_date == @day.to_date
-    return post if reply.nil?
-    reply
+    if post.created_at.to_date == @day.to_date || reply.nil?
+      {id: post.id, klass: Post, created_at: post.created_at}
+    else
+      reply
+    end
   end
 
   def sort
