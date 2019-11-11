@@ -7,7 +7,7 @@ RSpec.describe DailyReport do
       # 2017-11-05 10:00, clock goes back in Eastern
       "without timezone" => [default_zone, [2017, 11, 5, 10, 0]],
       # 2017-10-29 10:00, clock goes back in GMT/BST
-      "with timezone" => ["Europe/London", [2017, 10, 29, 10, 0]]
+      "with timezone"    => ["Europe/London", [2017, 10, 29, 10, 0]]
     }.each do |name, data|
       zone = data.first
       dst_day_params = data.last

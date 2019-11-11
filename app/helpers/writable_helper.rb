@@ -39,10 +39,10 @@ module WritableHelper
   end
 
   PRIVACY_MAP = {
-    Concealable::PUBLIC => ['Public', 'world'],
-    Concealable::REGISTERED => ['Constellation Users', 'star'],
+    Concealable::PUBLIC      => ['Public', 'world'],
+    Concealable::REGISTERED  => ['Constellation Users', 'star'],
     Concealable::ACCESS_LIST => ['Access List', 'group'],
-    Concealable::PRIVATE => ['Private', 'lock'],
+    Concealable::PRIVATE     => ['Private', 'lock'],
   }
 
   def privacy_state(privacy)

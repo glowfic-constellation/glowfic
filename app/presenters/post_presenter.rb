@@ -17,6 +17,7 @@ class PostPresenter
       user: post.user,
       character: post.character,
       character_name: post.name, # handles alias
-      icon: post.icon})
+      icon: post.icon
+    })
   end
 end

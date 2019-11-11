@@ -22,62 +22,35 @@ Layout/AlignArguments:
   EnforcedStyle: with_fixed_indentation
 
 Layout/AlignHash:
-  Enabled: false
+  EnforcedHashRocketStyle: table
 
 Layout/AlignParameters:
-  Enabled: false
+  EnforcedStyle: 'with_fixed_indentation'
 
 Layout/CaseIndentation:
-  Enabled: true
   EnforcedStyle: 'end'
   IndentOneStep: true
 
-Layout/ClosingHeredocIndentation:
-  Enabled: true
-  Exclude:
-    - 'db/migrate/**/*'
-
-Layout/ClosingParenthesisIndentation:
-  Enabled: false
-
 Layout/EmptyLineAfterMagicComment:
-  Enabled: false
-
-Layout/EmptyLineBetweenDefs:
-  Enabled: false
-
-Layout/EmptyLines:
   Enabled: false
 
 Layout/EmptyLineAfterGuardClause:
   Enabled: false
 
-Layout/EmptyLinesAroundAccessModifier:
-  Enabled: true
-
-Layout/EmptyLinesAroundExceptionHandlingKeywords:
-  Enabled: true
-
 Layout/EndAlignment:
-  Enabled: true
   EnforcedStyleAlignWith: 'variable'
 
 Layout/EndOfLine:
-  Enabled: false
-
-Layout/IndentFirstArgument:
-  Enabled: false
+  EnforcedStyle: lf
 
 Layout/IndentationWidth:
   Enabled: true
   Width: 2
 
 Layout/IndentFirstArrayElement:
-  Enabled: true
   EnforcedStyle: 'consistent'
 
 Layout/IndentFirstHashElement:
-  Enabled: true
   EnforcedStyle: 'consistent'
 
 Layout/IndentHeredoc:
@@ -85,26 +58,17 @@ Layout/IndentHeredoc:
   Exclude:
     - 'db/migrate/**/*'
 
-Layout/MultilineHashBraceLayout:
-  Enabled: false
-
 Layout/MultilineMethodCallBraceLayout:
   Enabled: false
 
 Layout/MultilineMethodCallIndentation:
-  Enabled: false
-
-Layout/MultilineMethodDefinitionBraceLayout:
-  Enabled: false
+  EnforcedStyle: 'indented'
 
 Layout/MultilineOperationIndentation:
   Enabled: false
 
-Layout/SpaceAroundBlockParameters:
-  Enabled: false
-
 Layout/SpaceAroundEqualsInParameterDefault:
-  Enabled: false
+  EnforcedStyle: 'no_space'
 
 Layout/SpaceAroundOperators:
   Enabled: false
@@ -121,13 +85,7 @@ Layout/SpaceInsideBlockBraces:
 Layout/SpaceInsideHashLiteralBraces:
   Enabled: false
 
-Layout/SpaceInsidePercentLiteralDelimiters:
-  Enabled: false
-
 Layout/SpaceInsideRangeLiteral:
-  Enabled: false
-
-Layout/TrailingBlankLines:
   Enabled: false
 
 #################### Lint ################################
@@ -142,14 +100,8 @@ Lint/HandleExceptions:
     - 'spec/jobs/generate_flat_post_job_spec.rb'
 
 Lint/ParenthesesAsGroupedExpression:
-  Enabled: false
-
-Lint/RescueException:
   Exclude:
-    - 'app/jobs/application_job.rb'
-    - 'app/jobs/generate_flat_post_job.rb'
-    - 'spec/jobs/application_job_spec.rb'
-    - 'spec/jobs/generate_flat_post_job_spec.rb'
+    - 'spec/**/*'
 
 ###################### Metrics ####################################
 
@@ -190,9 +142,6 @@ Metrics/PerceivedComplexity:
 Naming/AccessorMethodName:
   Enabled: false
 
-Naming/AsciiIdentifiers:
-  Enabled: false
-
 Naming/MemoizedInstanceVariableName:
   Enabled: false
 
@@ -200,7 +149,8 @@ Naming/PredicateName:
   Enabled: false
 
 Naming/VariableNumber:
-  Enabled: false
+  Exclude:
+    - 'spec/**/*'
 
 Naming/UncommunicativeMethodParamName:
   AllowedNames:
@@ -242,23 +192,14 @@ Rails/Output:
 
 ################## Style #################################
 
-Style/Alias:
-  Enabled: false
-
 Style/AndOr:
-  Enabled: false
-
-Style/ArrayJoin:
-  Enabled: false
+  EnforcedStyle: 'conditionals'
 
 Style/AsciiComments:
   Enabled: false
 
 Style/AutoResourceCleanup:
   Enabled: true
-
-Style/BeginBlock:
-  Enabled: false
 
 Style/BlockDelimiters:
   Enabled: false
@@ -267,10 +208,7 @@ Style/BracesAroundHashParameters:
   Enabled: false
 
 Style/ClassAndModuleChildren:
-  Enabled: false
-
-Style/CommandLiteral:
-  Enabled: false
+  EnforcedStyle: 'compact'
 
 Style/CommentAnnotation:
   Enabled: false
@@ -287,20 +225,11 @@ Style/DoubleNegation:
 Style/EmptyMethod:
   Enabled: false
 
-Style/Encoding:
-  Enabled: false
-
-Style/FormatString:
-  Enabled: false
-
-Style/FormatStringToken:
-  Enabled: false
-
 Style/FrozenStringLiteralComment:
   Enabled: false
 
 Style/GlobalVars:
-  Enabled: false
+  AllowedVariables: ['$redis']
 
 Style/GuardClause:
   Enabled: false
@@ -308,19 +237,7 @@ Style/GuardClause:
 Style/HashSyntax:
   Enabled: false
 
-Style/IfWithSemicolon:
-  Enabled: false
-
-Style/InfiniteLoop:
-  Enabled: false
-
 Style/Lambda:
-  Enabled: false
-
-Style/ModuleFunction:
-  Enabled: false
-
-Style/MultilineMemoization:
   Enabled: false
 
 Style/MutableConstant:
@@ -332,16 +249,10 @@ Style/NumericLiterals:
 Style/NumericPredicate:
   Enabled: false
 
-Style/OneLineConditional:
-  Enabled: false
-
 Style/ParallelAssignment:
   Enabled: false
 
 Style/PercentLiteralDelimiters:
-  Enabled: false
-
-Style/PercentQLiterals:
   Enabled: false
 
 Style/Proc:
@@ -360,22 +271,15 @@ Style/RedundantSelf:
   Enabled: false
 
 Style/RegexpLiteral:
-  Enabled: false
-
-Style/SignalException:
-  Enabled: false
-
-Style/SingleLineMethods:
-  Enabled: false
+  EnforcedStyle: 'slashes'
+  AllowInnerSlashes: true
 
 Style/StringLiterals:
   Enabled: false
 
-Style/StringMethods:
-  Enabled: true
-
 Style/SymbolArray:
   Enabled: false
+  EnforcedStyle: 'brackets'
 
 Style/TernaryParentheses:
   Enabled: false
@@ -391,21 +295,6 @@ Style/TrailingCommaInArrayLiteral:
 Style/TrailingCommaInHashLiteral:
   Enabled: false
   EnforcedStyleForMultiline: 'comma'
-
-Style/TrailingUnderscoreVariable:
-  Enabled: true
-
-Style/UnneededCapitalW:
-  Enabled: false
-
-Style/VariableInterpolation:
-  Enabled: false
-
-Style/WhenThen:
-  Enabled: false
-
-Style/WhileUntilModifier:
-  Enabled: false
 
 Style/WordArray:
   Enabled: false

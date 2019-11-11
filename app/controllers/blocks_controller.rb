@@ -96,7 +96,7 @@ class BlocksController < ApplicationController
   def editor_setup
     use_javascript('blocks')
     @options = {
-      "Nothing" => Block::NONE,
+      "Nothing"    => Block::NONE,
       "Just posts" => Block::POSTS,
       "Everything" => Block::ALL,
     }

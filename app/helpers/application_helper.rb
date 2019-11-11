@@ -146,7 +146,7 @@ module ApplicationHelper
 
   # modified version of simple_format that doesn't mangle large breaks
   # https://apidock.com/rails/ActionView/Helpers/TextHelper/simple_format
-  def simple_format_largebreak(text, options = {})
+  def simple_format_largebreak(text, options={})
     wrapper_tag = options.fetch(:wrapper_tag, :p)
     text = sanitize(text) if options.fetch(:sanitize, true)
     paragraphs = split_paragraphs_largebreak(text)

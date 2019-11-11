@@ -2,7 +2,7 @@ module SpecFeatureHelper
   # if given a user, the password must be 'known' or given as a parameter
   # otherwise, the helper will create a user with a given password
   # returns the user it logs in as, navigates to root_path
-  def login(user = nil, password = 'known')
+  def login(user=nil, password='known')
     user ||= create(:user, password: password)
     visit root_path
     fill_in "Username", with: user.username
