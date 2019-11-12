@@ -82,9 +82,9 @@ RSpec.describe ReplyScraper do
       tag = build(:reply, user: kappa, character: char)
       expect(tag.icon_id).to be_nil
       scraper = ReplyScraper.new(tag)
-      scraper.send(:set_from_icon, tag, 'http://irrelevanturl.com', 'f.1 mountains')
+      found_icon = scraper.send(:set_from_icon, 'http://irrelevanturl.com', 'f.1 mountains')
       expect(Icon.count).to eq(1)
-      expect(tag.icon_id).to eq(icon.id)
+      expect(found_icon.id).to eq(icon.id)
     end
 
     it "handles icons with descriptions" do
@@ -97,9 +97,9 @@ RSpec.describe ReplyScraper do
       tag = build(:reply, user: user, character: char)
       expect(tag.icon_id).to be_nil
       scraper = ReplyScraper.new(tag)
-      scraper.send(:set_from_icon, tag, 'http://irrelevanturl.com', 'keyword blah (Accessbility description.)')
+      found_icon = scraper.send(:set_from_icon, 'http://irrelevanturl.com', 'keyword blah (Accessbility description.)')
       expect(Icon.count).to eq(1)
-      expect(tag.icon_id).to eq(icon.id)
+      expect(found_icon.id).to eq(icon.id)
     end
 
     it "handles kappa icons with descriptions" do
@@ -112,9 +112,9 @@ RSpec.describe ReplyScraper do
       tag = build(:reply, user: kappa, character: char)
       expect(tag.icon_id).to be_nil
       scraper = ReplyScraper.new(tag)
-      scraper.send(:set_from_icon, tag, 'http://irrelevanturl.com', 'f.1 keyword blah (Accessbility description.)')
+      found_icon = scraper.send(:set_from_icon, 'http://irrelevanturl.com', 'f.1 keyword blah (Accessbility description.)')
       expect(Icon.count).to eq(1)
-      expect(tag.icon_id).to eq(icon.id)
+      expect(found_icon.id).to eq(icon.id)
     end
   end
 end
