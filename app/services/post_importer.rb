@@ -3,13 +3,12 @@ class PostImporter < Object
     @url = url
   end
 
-  def import(board_id, importer_id, section_id: nil, status: Post.statuses[:complete], threaded: false)
+  def import(params, user:)
     validate_url!
-    validate_duplicate!(board_id) unless threaded
+    validate_duplicate!(params[:board_id]) unless params[:threaded]
     validate_usernames!
 
-    # note that the arg order for this import method does not match the order of ScrapePostJob
-    ScrapePostJob.perform_later(@url, board_id, section_id, status, threaded, importer_id)
+    ScrapePostJob.perform_later(@url, params, user: user)
   end
 
   def self.valid_dreamwidth_url?(url)
