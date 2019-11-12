@@ -152,8 +152,7 @@ RSpec.describe PostScraper do
 
     scraper = PostScraper.new(urls.first, board_id: board.id, threaded: true)
     expect(scraper.send(:logger)).to receive(:info).with("Importing thread 'repealing'")
-    scraper.scrape_threads!(threads)
-    expect(Post.count).to eq(1)
+    expect { scraper.scrape_threads!(threads) }.to change { Post.count }.by(1)
     expect(Post.first.subject).to eq('repealing')
     expect(Post.first.authors_locked).to eq(true)
     expect(Reply.count).to eq(55)

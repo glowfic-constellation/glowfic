@@ -45,7 +45,7 @@ class ReplyScraper < Object
     @reply.created_at = @reply.updated_at = created_at
 
     set_from_username(@reply, username)
-    set_from_icon(@reply, img_url, img_keyword)
+    set_from_icon(@reply, img_url, img_keyword) if img_url
 
     if @reply.is_a?(Post)
       @reply.last_user_id = @reply.user_id
@@ -84,50 +84,68 @@ class ReplyScraper < Object
   end
 
   def set_from_icon(tag, url, keyword)
-    return unless url
-
-    url = 'https://v.dreamwidth.org' + url if url[0] == '/'
-    host_url = url.gsub(/https?:\/\//, "")
-    https_url = 'https://' + host_url
-    icon = Icon.find_by(url: https_url)
+    url = parse_url(url)
+    icon = Icon.find_by(url: url)
     tag.icon = icon and return if icon
 
+    keyword = parse_keyword(keyword)
+
+    if tag.character
+      icon = tag.character.icons.find_by(keyword: keyword)
+      tag.icon = icon and return if icon
+
+      icon = clean_keyword(tag, keyword)
+      tag.icon = icon and return if icon
+    end
+
+    create_icon(tag, url, keyword)
+  end
+
+  def parse_url(url)
+    url = 'https://v.dreamwidth.org' + url if url[0] == '/'
+    host_url = url.gsub(/https?:\/\//, "")
+    'https://' + host_url
+  end
+
+  def parse_keyword(keyword)
     end_index = keyword.index("(Default)").to_i - 1
     start_index = (keyword.index(':') || -1) + 1
     parsed_keyword = keyword[start_index..end_index].strip
     parsed_keyword = 'Default' if parsed_keyword.blank? && keyword.include?("(Default)")
-    keyword = parsed_keyword
+    parsed_keyword
+  end
 
-    if tag.character
-      icon = tag.character.icons.where(keyword: keyword).first
-      tag.icon = icon and return if icon
-
-      # split out the last " (...)" from the keyword (which should be at the
-      # very end), if applicable, for without_desc
-      without_desc = nil
-      if keyword.end_with?(')')
-        lbracket = keyword.rindex(' (')
-        if lbracket && lbracket > 0 # without_desc must be non-empty
-          without_desc = keyword[0...lbracket]
-          icon = tag.character.icons.where(keyword: without_desc).first
-          tag.icon = icon and return if icon
-        end
-      end
-
-      # kappa icon handling - icons are prefixed
-      if tag.user_id == 3 && (spaceindex = keyword.index(" "))
-        unprefixed = keyword.slice(spaceindex, keyword.length)
-        icon = tag.character.icons.detect { |i| i.keyword.ends_with?(unprefixed) }
-        tag.icon = icon and return if icon
-
-        if without_desc
-          unprefixed = without_desc.slice(spaceindex, without_desc.length)
-          icon = tag.character.icons.detect { |i| i.keyword.ends_with?(unprefixed) }
-          tag.icon = icon and return if icon
-        end
+  def clean_keyword(tag, keyword)
+    # split out the last " (...)" from the keyword (which should be at the
+    # very end), if applicable, for without_desc
+    without_desc = nil
+    if keyword.end_with?(')')
+      lbracket = keyword.rindex(' (')
+      if lbracket && lbracket > 0 # without_desc must be non-empty
+        without_desc = keyword[0...lbracket]
+        icon = tag.character.icons.find_by(keyword: without_desc)
       end
     end
+    icon ||= kappa_keyword(tag, keyword, without_desc)
+    icon
+  end
 
+  def kappa_keyword(tag, keyword, without_desc)
+    # kappa icon handling - icons are prefixed
+    if tag.user_id == 3 && (spaceindex = keyword.index(" "))
+      unprefixed = keyword.slice(spaceindex, keyword.length)
+      icon = tag.character.icons.detect { |i| i.keyword.ends_with?(unprefixed) }
+      return icon if icon
+
+      if without_desc
+        unprefixed = without_desc.slice(spaceindex, without_desc.length)
+        icon = tag.character.icons.detect { |i| i.keyword.ends_with?(unprefixed) }
+        return icon if icon
+      end
+    end
+  end
+
+  def create_icon(tag, https_url, keyword)
     icon = Icon.create!(user: tag.user, url: https_url, keyword: keyword)
     tag.icon = icon
     return unless tag.character
