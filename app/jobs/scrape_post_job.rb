@@ -1,21 +1,20 @@
 class ScrapePostJob < ApplicationJob
   queue_as :low
 
-  def perform(url, board_id, section_id, status, threaded, importer_id)
+  def perform(url, params, user:)
     Resque.logger.debug "Starting scrape for #{url}"
-    scraper = PostScraper.new(url, board_id, section_id, status, threaded)
+    scraper = PostScraper.new(url, **params.symbolize_keys)
     scraped_post = scraper.scrape!
-    success_msg = "Your post was successfully imported! #{self.class.view_post(scraped_post.id)}"
-    Message.send_site_message(importer_id, 'Post import succeeded', success_msg)
+    Message.send_site_message(user.id, 'Post import succeeded', "Your post was successfully imported! #{self.class.view_post(scraped_post.id)}")
   end
 
-  def self.notify_exception(exception, url, board_id, section_id, status, threaded, importer_id)
+  def self.notify_exception(exception, url, params, user:)
     Resque.logger.warn "Failed to import #{url}: #{exception.message}"
-    if User.find_by_id(importer_id)
+    if user
       message = "The url <a href='#{url}'>#{url}</a> could not be successfully scraped. "
       message += exception.message if exception.is_a?(UnrecognizedUsernameError)
       message += "Your post was already imported! #{view_post(exception.post_id)}" if exception.is_a?(AlreadyImportedError)
-      Message.send_site_message(importer_id, 'Post import failed', message)
+      Message.send_site_message(user.id, 'Post import failed', message)
     end
     super
   end

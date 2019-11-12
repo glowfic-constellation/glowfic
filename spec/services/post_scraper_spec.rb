@@ -29,7 +29,7 @@ RSpec.describe PostScraper do
     user = create(:user, username: "Marri")
     board = create(:board, creator: user)
 
-    scraper = PostScraper.new(url, board.id)
+    scraper = PostScraper.new(url, board_id: board.id)
     allow_any_instance_of(ReplyScraper).to receive(:prompt_for_user).and_return(user) # rubocop:todo RSpec/AnyInstance
     allow_any_instance_of(ReplyScraper).to receive(:set_from_icon).and_return(nil) # rubocop:todo RSpec/AnyInstance
     expect(scraper.send(:logger)).to receive(:info).with("Importing thread 'linear b'")
@@ -53,7 +53,7 @@ RSpec.describe PostScraper do
     user = create(:user, username: "Marri")
     board = create(:board, creator: user)
 
-    scraper = PostScraper.new(url, board.id)
+    scraper = PostScraper.new(url, board_id: board.id)
     allow_any_instance_of(ReplyScraper).to receive(:prompt_for_user).and_return(user) # rubocop:todo RSpec/AnyInstance
     allow_any_instance_of(ReplyScraper).to receive(:set_from_icon).and_return(nil) # rubocop:todo RSpec/AnyInstance
     expect(scraper.send(:logger)).to receive(:info).with("Importing thread 'linear b'")
@@ -72,7 +72,7 @@ RSpec.describe PostScraper do
   it "should detect all threaded pages" do
     url = 'http://alicornutopia.dreamwidth.org/9596.html?thread=4077436&style=site#cmt4077436'
     stub_fixture(url, 'scrape_threaded')
-    scraper = PostScraper.new(url, nil, nil, nil, true)
+    scraper = PostScraper.new(url, threaded: true)
     scraper.instance_variable_set(:@html_doc, scraper.send(:doc_from_url, url))
     expect(scraper.send(:page_links).size).to eq(2)
   end
@@ -80,7 +80,7 @@ RSpec.describe PostScraper do
   it "should detect all threaded pages even if there's a single broken-depth comment" do
     url = 'https://alicornutopia.dreamwidth.org/22671.html?thread=14698127&style=site#cmt14698127'
     stub_fixture(url, 'scrape_threaded_broken_depth')
-    scraper = PostScraper.new(url, nil, nil, nil, true)
+    scraper = PostScraper.new(url, threaded: true)
     scraper.instance_variable_set(:@html_doc, scraper.send(:doc_from_url, url))
     expect(scraper.send(:page_links)).to eq([
       'https://alicornutopia.dreamwidth.org/22671.html?thread=14705039&style=site#cmt14705039',
@@ -91,7 +91,7 @@ RSpec.describe PostScraper do
   it "should detect all threaded pages even if there's a broken-depth comment at the 25-per-page boundary" do
     url = 'https://alicornutopia.dreamwidth.org/22671.html?thread=14691983#cmt14691983'
     stub_fixture(url, 'scrape_threaded_broken_boundary_depth')
-    scraper = PostScraper.new(url, nil, nil, nil, true)
+    scraper = PostScraper.new(url, threaded: true)
     scraper.instance_variable_set(:@html_doc, scraper.send(:doc_from_url, url))
     expect(scraper.send(:page_links)).to eq([
       'https://alicornutopia.dreamwidth.org/22671.html?thread=14698383&style=site#cmt14698383',
@@ -105,7 +105,7 @@ RSpec.describe PostScraper do
     create(:character, screenname: 'wild_pegasus_appeared', user: board.creator)
     url = 'http://wild-pegasus-appeared.dreamwidth.org/403.html?style=site&view=flat'
     stub_fixture(url, 'scrape_no_replies')
-    scraper = PostScraper.new(url, board.id)
+    scraper = PostScraper.new(url, board_id: board.id)
     allow(scraper.send(:logger)).to receive(:info).with("Importing thread 'linear b'")
     expect { scraper.scrape! }.to change { Post.count }.by(1)
     expect { scraper.scrape! }.to raise_error(AlreadyImportedError)
@@ -118,7 +118,7 @@ RSpec.describe PostScraper do
     create(:post, board: board, subject: new_title) # post
     url = 'http://wild-pegasus-appeared.dreamwidth.org/403.html?style=site&view=flat'
     stub_fixture(url, 'scrape_no_replies')
-    scraper = PostScraper.new(url, board.id, nil, nil, false, false, new_title)
+    scraper = PostScraper.new(url, board_id: board.id, subject: new_title)
     allow(scraper.send(:logger)).to receive(:info).with("Importing thread '#{new_title}'")
     expect { scraper.scrape! }.to raise_error(AlreadyImportedError)
     expect(Post.count).to eq(1)
@@ -150,7 +150,7 @@ RSpec.describe PostScraper do
     ]
     characters.each { |data| create(:character, data) }
 
-    scraper = PostScraper.new(urls.first, board.id, nil, nil, true, false)
+    scraper = PostScraper.new(urls.first, board_id: board.id, threaded: true)
     expect(scraper.send(:logger)).to receive(:info).with("Importing thread 'repealing'")
     scraper.scrape_threads!(threads)
     expect(Post.count).to eq(1)

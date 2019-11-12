@@ -1,15 +1,15 @@
 class PostScraper < Object
   attr_accessor :url, :post, :html_doc
 
-  def initialize(url, board_id=nil, section_id=nil, status=nil, threaded_import=false, console_import=false, subject=nil)
+  def initialize(url, board_id: nil, section_id: nil, status: nil, threaded: false, console: false, subject: nil)
     @board_id = board_id || Board::ID_SANDBOX
     @section_id = section_id
     @status = status || :complete
     url += (url.include?('?') ? '&' : '?') + 'style=site' unless url.include?('style=site')
-    url += '&view=flat' unless url.include?('view=flat') || threaded_import
+    url += '&view=flat' unless url.include?('view=flat') || threaded
     @url = url
-    @console_import = console_import
-    @threaded_import = threaded_import # boolean
+    @console_import = console
+    @threaded_import = threaded # boolean
     @subject = subject
   end
 
