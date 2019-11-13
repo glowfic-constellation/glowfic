@@ -58,13 +58,9 @@ class ReplyScraper < Object
   end
 
   def set_from_username(tag, username)
-    if BASE_ACCOUNTS.key?(username)
-      tag.user = User.find_by(username: BASE_ACCOUNTS[username])
-      return
-    end
+    return User.find_by(username: BASE_ACCOUNTS[username]) if BASE_ACCOUNTS.key?(username)
 
-    character = Character.find_by(screenname: username.tr("-", "_")) || Character.find_by(screenname: username.tr("_", "-"))
-    unless character
+    unless (character = Character.find_by(screenname: [username.tr("-", "_"), username.tr("_", "-")]))
       user = prompt_for_user(username)
       character = Character.create!(user: user, name: username, screenname: username)
       gallery = Gallery.create!(user: user, name: username)
@@ -72,30 +68,28 @@ class ReplyScraper < Object
     end
 
     tag.character = character
-    tag.user = character.user
+    character.user
   end
 
   def prompt_for_user(username)
     raise UnrecognizedUsernameError.new("Unrecognized username: #{username}") unless @console_import
-    print('User ID or username for ' + username + '? ')
+    print("User ID or username for #{username}? ")
     input = STDIN.gets.chomp
-    return User.find_by_id(input) if input.to_s == input.to_i.to_s
-    User.where('lower(username) = ?', input.downcase).first
+    return User.find_by(id: input) if input.to_s == input.to_i.to_s
+    User.find_by('lower(username) = ?', input.downcase)
   end
 
   def set_from_icon(tag, url, keyword)
     url = parse_url(url)
     icon = Icon.find_by(url: url)
-    tag.icon = icon and return if icon
+    return icon if icon
 
     keyword = parse_keyword(keyword)
 
     if tag.character
       icon = tag.character.icons.find_by(keyword: keyword)
-      tag.icon = icon and return if icon
-
-      icon = clean_keyword(tag, keyword)
-      tag.icon = icon and return if icon
+      icon ||= clean_keyword(tag, keyword)
+      return icon if icon
     end
 
     create_icon(tag, url, keyword)
@@ -133,22 +127,16 @@ class ReplyScraper < Object
   def kappa_keyword(tag, keyword, without_desc)
     # kappa icon handling - icons are prefixed
     if tag.user_id == 3 && (spaceindex = keyword.index(" "))
-      unprefixed = keyword.slice(spaceindex, keyword.length)
+      unprefixed = keyword[spaceindex..-1]
       icon = tag.character.icons.detect { |i| i.keyword.ends_with?(unprefixed) }
-      return icon if icon
-
-      if without_desc
-        unprefixed = without_desc.slice(spaceindex, without_desc.length)
-        icon = tag.character.icons.detect { |i| i.keyword.ends_with?(unprefixed) }
-        return icon if icon
-      end
+      icon ||= tag.character.icons.detect { |i| i.keyword.ends_with?(without_desc[spaceindex..-1]) } if without_desc
     end
+    icon
   end
 
   def create_icon(tag, https_url, keyword)
     icon = Icon.create!(user: tag.user, url: https_url, keyword: keyword)
-    tag.icon = icon
-    return unless tag.character
+    return icon unless tag.character
 
     gallery = tag.character.galleries.first
     if gallery.nil?
@@ -156,6 +144,7 @@ class ReplyScraper < Object
       CharactersGallery.create!(character_id: tag.character.id, gallery_id: gallery.id)
     end
     gallery.icons << icon
+    icon
   end
 
   def strip_content(content)
