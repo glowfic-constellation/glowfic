@@ -129,9 +129,10 @@ class PostScraper < Object
   end
 
   def finalize_post_data
-    @post.last_user_id = @reply.try(:user_id) || @post.user_id
-    @post.last_reply_id = @reply.try(:id)
-    @post.tagged_at = @reply.try(:created_at) || @post.created_at
+    last_reply = @post.replies.last
+    @post.last_user_id = (last_reply || @post).user_id
+    @post.last_reply_id = last_reply.id if last_reply
+    @post.tagged_at = (last_reply || @post).created_at
     @post.authors_locked = true
     @post.save!
   end
