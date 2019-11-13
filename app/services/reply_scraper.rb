@@ -96,9 +96,9 @@ class ReplyScraper < Object
   end
 
   def parse_url(url)
-    url = 'https://v.dreamwidth.org' + url if url[0] == '/'
-    host_url = url.gsub(/https?:\/\//, "")
-    'https://' + host_url
+    uri = URI(url)
+    uri.host ||= 'v.dreamwidth.org'
+    uri.to_s
   end
 
   def parse_keyword(keyword)
