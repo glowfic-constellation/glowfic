@@ -106,7 +106,7 @@ class PostScraper < Object
 
     # detect already imported
     # skip if it's a threaded import, unless a subject was given manually
-    if (@subject || !@threaded_import) && (subj_post = Post.find_by(subject: @post.subject, board_id: @board_id))
+    if (subject || !@threaded_import) && (subj_post = Post.find_by(subject: subject, board_id: @board_id))
       raise AlreadyImportedError.new("This thread has already been imported", subj_post.id)
     end
 
