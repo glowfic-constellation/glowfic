@@ -369,7 +369,7 @@ Rails/NegateInclude:
 
 Rails/Output:
   Exclude:
-    - 'app/services/post_scraper.rb' # post_scraper.rb is run manually in the command line so stdout is fine
+    - 'app/services/reply_scraper.rb' # post_scraper.rb (which calls ReplyScraper) is run manually in the command line
     - 'db/seeds.rb'
     - 'db/seeds/**' # seed files are run from the command line
 
