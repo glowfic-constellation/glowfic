@@ -1,10 +1,10 @@
 class PostScraper < Object
   attr_accessor :url, :post, :html_doc
 
-  def initialize(url, board_id: nil, section_id: nil, status: nil, threaded: false, console: false, subject: nil)
-    @board_id = board_id || Board::ID_SANDBOX
+  def initialize(url, board_id: Board::ID_SANDBOX, section_id: nil, status: :complete, threaded: false, console: false, subject: nil)
+    @board_id = board_id
     @section_id = section_id
-    @status = status || :complete
+    @status = status
     @console_import = console
     @threaded_import = threaded # boolean
     @subject = subject
