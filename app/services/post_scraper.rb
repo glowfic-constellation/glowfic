@@ -13,55 +13,37 @@ class PostScraper < Object
     @subject = subject
   end
 
-  def scrape!
+  def scrape!(threads=nil)
     @html_doc = doc_from_url(@url)
 
     Post.transaction do
       import_post_from_doc(@html_doc)
-      import_replies_from_doc(@html_doc)
-      links = page_links
-      links.each_with_index do |link, i|
-        logger.debug "Scraping '#{@post.subject}': page #{i + 1}/#{links.count}"
-        doc = doc_from_url(link)
-        import_replies_from_doc(doc)
-      end
-      finalize_post_data
-    end
-    GenerateFlatPostJob.perform_later(@post.id)
-    @post
-  end
-
-  # works as an alternative to scrape! when you want to scrape particular
-  # top-level threads of a post sequentially
-  # "threads" are URL permalinks to the threads to scrape, which it will scrape
-  # in the given order
-  def scrape_threads!(threads)
-    raise RuntimeError.new('threaded_import must be true to use scrape_threads!') unless @threaded_import
-
-    @html_doc = doc_from_url(@url)
-    # if threads.blank?
-    #   threads = top_level_comments(@html_doc)
-    # end
-
-    Post.transaction do
-      import_post_from_doc(@html_doc)
-      threads.each do |thread|
-        @html_doc = doc_from_url(thread)
-        import_replies_from_doc(@html_doc)
-        links = page_links
-        links.each_with_index do |link, i|
-          logger.debug "Scraping '#{@post.subject}': page #{i + 1}/#{links.count}"
-          doc = doc_from_url(link)
-          import_replies_from_doc(doc)
+      if threads.present?
+        threads.each do |thread|
+          @html_doc = doc_from_url(thread)
+          evaluate_links
         end
+      else
+        evaluate_links
       end
       finalize_post_data
     end
     GenerateFlatPostJob.perform_later(@post.id)
     @post
   end
+  alias scrape_threads! scrape!
 
   private
+
+  def evaluate_links
+    import_replies_from_doc(@html_doc)
+    links = page_links
+    links.each_with_index do |link, i|
+      logger.debug "Scraping '#{@post.subject}': page #{i + 1}/#{links.count}"
+      doc = doc_from_url(link)
+      import_replies_from_doc(doc)
+    end
+  end
 
   def doc_from_url(url)
     # download URL, trying up to 3 times
