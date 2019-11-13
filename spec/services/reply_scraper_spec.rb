@@ -80,7 +80,6 @@ RSpec.describe ReplyScraper do
       icon = create(:icon, user: kappa, keyword: '⑮ mountains')
       gallery.icons << icon
       tag = build(:reply, user: kappa, character: char)
-      expect(tag.icon_id).to be_nil
       scraper = ReplyScraper.new(tag)
       found_icon = scraper.send(:set_from_icon, 'http://irrelevanturl.com', 'f.1 mountains')
       expect(Icon.count).to eq(1)
@@ -95,7 +94,6 @@ RSpec.describe ReplyScraper do
       icon = create(:icon, user: user, keyword: 'keyword blah')
       gallery.icons << icon
       tag = build(:reply, user: user, character: char)
-      expect(tag.icon_id).to be_nil
       scraper = ReplyScraper.new(tag)
       found_icon = scraper.send(:set_from_icon, 'http://irrelevanturl.com', 'keyword blah (Accessbility description.)')
       expect(Icon.count).to eq(1)
