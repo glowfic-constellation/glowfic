@@ -55,6 +55,22 @@ module WritableHelper
     image_tag("icons/#{img}.png", class: 'vmid', title: name)
   end
 
+  STATUS_MAP = {
+    Post::STATUS_ACTIVE    => ['In Progress', 'book_open'],
+    Post::STATUS_COMPLETE  => ['Complete', 'book'],
+    Post::STATUS_HIATUS    => ['On Hiatus', 'hourglass'],
+    Post::STATUS_ABANDONED => ['Abandoned', 'book_grey'],
+  }
+
+  def status_state(status, only_icon: false, only_text: false, short_title: false)
+    name = STATUS_MAP[status][0]
+    img = STATUS_MAP[status][1]
+    return name if only_text
+    icon = image_tag("icons/#{img}.png", class: 'vmid', title: "#{'Thread' unless short_title} #{name}")
+    return icon if only_icon
+    [icon, name].join(' ')
+  end
+
   def menu_img
     return 'icons/menu.png' unless current_user.try(:layout).to_s.start_with?('starry')
     'icons/menugray.png'

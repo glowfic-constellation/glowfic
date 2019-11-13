@@ -327,22 +327,16 @@ class PostsController < WritableController
   end
 
   def change_status
+    @post.status = params[:status]
     begin
-      new_status = Post.const_get('STATUS_'+params[:status].upcase)
-    rescue NameError
-      flash[:error] = "Invalid status selected."
+      @post.save!
+    rescue ActiveRecord::RecordInvalid
+      flash[:error] = {
+        message: "Status could not be updated.",
+        array: @post.errors.full_messages
+      }
     else
-      @post.status = new_status
-      begin
-        @post.save!
-      rescue ActiveRecord::RecordInvalid
-        flash[:error] = {
-          message: "Status could not be updated.",
-          array: @post.errors.full_messages
-        }
-      else
-        flash[:success] = "Post has been marked #{params[:status]}."
-      end
+      flash[:success] = "Post has been marked #{helpers.status_state(params[:status].to_i, only_text: true).downcase}."
     end
     redirect_to post_path(@post)
   end

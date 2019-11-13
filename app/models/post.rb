@@ -38,6 +38,7 @@ class Post < ApplicationRecord
 
   validates :subject, presence: true
   validates :description, length: { maximum: 255 }
+  validates :status, inclusion: { in: (0..3), message: 'is invalid' }
   validate :valid_board, :valid_board_section
 
   before_create :build_initial_flat_post, :set_timestamps

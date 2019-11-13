@@ -2,12 +2,8 @@
   - klass = cycle('even', 'odd')
   - replies_count = post.reply_count
   %td.post-completed.vtop{class: [klass, (post.completed? ? 'post-complete' : 'post-incomplete')]}
-    - if post.completed?
-      = image_tag "icons/book.png", class: 'vmid', title: "Thread Complete"
-    - elsif post.on_hiatus?
-      = image_tag "icons/hourglass.png", class: 'vmid', title: "Thread On Hiatus"
-    - elsif post.abandoned?
-      = image_tag "icons/book_grey.png", class: 'vmid', title: "Thread Abandoned"
+    - if [Post::STATUS_COMPLETE, Post::STATUS_HIATUS, Post::STATUS_ABANDONED].include?(post.status)
+      = status_state(post.status, only_icon: true)
     - if post.access_list? || post.private?
       = privacy_icon(post.privacy)
     - if !current_user.try(:hide_warnings) && post.has_content_warnings?

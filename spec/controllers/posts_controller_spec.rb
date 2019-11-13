@@ -1445,9 +1445,10 @@ RSpec.describe PostsController do
       it "requires valid status" do
         post = create(:post)
         login_as(post.user)
-        put :update, params: { id: post.id, status: 'invalid' }
+        put :update, params: { id: post.id, status: 5 }
         expect(response).to redirect_to(post_url(post))
-        expect(flash[:error]).to eq("Invalid status selected.")
+        expect(flash[:error][:message]).to eq("Status could not be updated.")
+        expect(flash[:error][:array]).to eq(["Status is invalid"])
         expect(post.reload).to be_active
       end
 
@@ -1462,39 +1463,41 @@ RSpec.describe PostsController do
         expect(post.reload.status).not_to eq(Post::STATUS_ABANDONED)
       end
 
-      {complete: 'completed', abandoned: 'abandoned', hiatus: 'on_hiatus', active: 'active'}.each do |status, method|
+      STATUS_MAP = WritableHelper::STATUS_MAP.transform_values{ |v| v[0].downcase }
+
+      STATUS_MAP.each do |int, status|
         context "to #{status}" do
           let(:post) { create(:post) }
 
           it "works for creator" do
             login_as(post.user)
-            put :update, params: { id: post.id, status: status }
+            put :update, params: { id: post.id, status: int }
             expect(response).to redirect_to(post_url(post))
             expect(flash[:success]).to eq("Post has been marked #{status}.")
-            expect(post.reload.send("#{method}?")).to eq(true)
+            expect(post.reload.status).to eq(int)
           end
 
           it "works for coauthor" do
             reply = create(:reply, post: post)
             login_as(reply.user)
-            put :update, params: { id: post.id, status: status }
+            put :update, params: { id: post.id, status: int }
             expect(response).to redirect_to(post_url(post))
             expect(flash[:success]).to eq("Post has been marked #{status}.")
-            expect(post.reload.send("#{method}?")).to eq(true)
+            expect(post.reload.status).to eq(int)
           end
 
           it "works for admin" do
             login_as(create(:admin_user))
-            put :update, params: { id: post.id, status: status }
+            put :update, params: { id: post.id, status: int }
             expect(response).to redirect_to(post_url(post))
             expect(flash[:success]).to eq("Post has been marked #{status}.")
-            expect(post.reload.send("#{method}?")).to eq(true)
+            expect(post.reload.status).to eq(int)
           end
         end
       end
 
       context "with an old thread" do
-        [:hiatus, :active].each do |status|
+        STATUS_MAP.slice(Post::STATUS_ACTIVE, Post::STATUS_HIATUS).each do |int, status|
           context "to #{status}" do
             time = 2.months.ago
             let(:post) { create(:post, created_at: time, updated_at: time) }
@@ -1504,31 +1507,31 @@ RSpec.describe PostsController do
             it "works for creator" do
               login_as(post.user)
               expect(post.reload.tagged_at).to be_the_same_time_as(time)
-              put :update, params: { id: post.id, status: status }
+              put :update, params: { id: post.id, status: int }
               expect(response).to redirect_to(post_url(post))
               expect(flash[:success]).to eq("Post has been marked #{status}.")
               expect(post.reload.send("on_hiatus?")).to eq(true)
-              expect(post.reload.send("marked_hiatus?")).to eq(status == :hiatus)
+              expect(post.reload.send("marked_hiatus?")).to eq(status == 'on hiatus')
             end
 
             it "works for coauthor" do
               login_as(reply.user)
               expect(post.reload.tagged_at).to be_the_same_time_as(time)
-              put :update, params: { id: post.id, status: status }
+              put :update, params: { id: post.id, status: int }
               expect(response).to redirect_to(post_url(post))
               expect(flash[:success]).to eq("Post has been marked #{status}.")
               expect(post.reload.send("on_hiatus?")).to eq(true)
-              expect(post.reload.send("marked_hiatus?")).to eq(status == :hiatus)
+              expect(post.reload.send("marked_hiatus?")).to eq(status == 'on hiatus')
             end
 
             it "works for admin" do
               login_as(create(:admin_user))
               expect(post.reload.tagged_at).to be_the_same_time_as(time)
-              put :update, params: { id: post.id, status: status }
+              put :update, params: { id: post.id, status: int }
               expect(response).to redirect_to(post_url(post))
               expect(flash[:success]).to eq("Post has been marked #{status}.")
               expect(post.reload.send("on_hiatus?")).to eq(true)
-              expect(post.reload.send("marked_hiatus?")).to eq(status == :hiatus)
+              expect(post.reload.send("marked_hiatus?")).to eq(status == 'on hiatus')
             end
           end
         end

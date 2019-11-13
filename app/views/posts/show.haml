@@ -75,22 +75,22 @@
             Favorite
       - if @post.metadata_editable_by?(current_user)
         - unless @post.completed?
-          = link_to post_path(@post, status: 'complete'.freeze), method: :put do
+          = link_to post_path(@post, status: Post::STATUS_COMPLETE), method: :put do
             %div
               = image_tag "icons/book.png".freeze
               Mark Complete
         - unless @post.marked_hiatus?
-          = link_to post_path(@post, status: 'hiatus'.freeze), method: :put do
+          = link_to post_path(@post, status: Post::STATUS_HIATUS), method: :put do
             %div
               = image_tag "icons/hourglass.png".freeze
               Mark On Hiatus
         - unless @post.active?
-          = link_to post_path(@post, status: 'active'.freeze), method: :put do
+          = link_to post_path(@post, status: Post::STATUS_ACTIVE), method: :put do
             %div
               = image_tag "icons/book_open.png".freeze
               Mark In Progress
         - unless @post.abandoned?
-          = link_to post_path(@post, status: 'abandoned'.freeze), method: :put do
+          = link_to post_path(@post, status: Post::STATUS_ABANDONED), method: :put do
             %div
               = image_tag "icons/book_grey.png".freeze
               Mark Abandoned
