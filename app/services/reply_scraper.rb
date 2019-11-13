@@ -46,15 +46,18 @@ class ReplyScraper < Object
 
     set_from_username(@reply, username)
     set_from_icon(@reply, img_url, img_keyword) if img_url
-
-    if @reply.is_a?(Post)
-      @reply.last_user_id = @reply.user_id
-      @reply.edited_at = created_at
-    end
+    post_setup if @reply.is_a? Post
 
     Audited.audit_class.as_user(@reply.user) do
       @reply.save!
     end
+  end
+
+  private
+
+  def post_setup
+    @reply.last_user_id = @reply.user_id
+    @reply.edited_at = @reply.created_at
   end
 
   def set_from_username(tag, username)
