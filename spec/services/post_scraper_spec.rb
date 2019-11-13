@@ -4,23 +4,29 @@ RSpec.describe PostScraper do
     expect(scraper.url).to include('view=flat')
   end
 
-  it "should not change url if view is present" do
-    url = 'http://wild-pegasus-appeared.dreamwidth.org/403.html?view=flat'
-    scraper = PostScraper.new(url)
-    expect(scraper.url.sub('view=flat', '')).not_to include('view=flat')
-    expect(scraper.url.gsub("&style=site", "").length).to eq(url.length)
-  end
-
-  it "should add site style to the url" do
-    url = 'http://wild-pegasus-appeared.dreamwidth.org/403.html?view=flat'
-    scraper = PostScraper.new(url)
-    expect(scraper.url).to include('&style=site')
-  end
-
-  it "should not change url if site style is present" do
+  it "should not change url if view and style are present" do
     url = 'http://wild-pegasus-appeared.dreamwidth.org/403.html?view=flat&style=site'
     scraper = PostScraper.new(url)
-    expect(scraper.url.length).to eq(url.length)
+    expect(scraper.url).to eq(url)
+  end
+
+  it "should not add flat view on threaded import" do
+    url = 'http://wild-pegasus-appeared.dreamwidth.org/403.html?style=site'
+    scraper = PostScraper.new(url, threaded: true)
+    expect(scraper.url).to eq(url)
+  end
+
+  it "should add parameters to the url" do
+    url = 'http://wild-pegasus-appeared.dreamwidth.org/403.html'
+    scraper = PostScraper.new(url)
+    expect(scraper.url).to eq(url + '?style=site&view=flat')
+  end
+
+  it "should replace incorrect style" do
+    url = 'http://wild-pegasus-appeared.dreamwidth.org/403.html?style=mine&view=flat'
+    scraper = PostScraper.new(url)
+    expect(scraper.url).not_to include('style=mine')
+    expect(scraper.url).to include('style=site')
   end
 
   it "should scrape properly when nothing is created" do
@@ -89,7 +95,7 @@ RSpec.describe PostScraper do
   end
 
   it "should detect all threaded pages even if there's a broken-depth comment at the 25-per-page boundary" do
-    url = 'https://alicornutopia.dreamwidth.org/22671.html?thread=14691983#cmt14691983'
+    url = 'https://alicornutopia.dreamwidth.org/22671.html?thread=14691983&style=site#cmt14691983'
     stub_fixture(url, 'scrape_threaded_broken_boundary_depth')
     scraper = PostScraper.new(url, threaded: true)
     scraper.instance_variable_set(:@html_doc, scraper.send(:doc_from_url, url))

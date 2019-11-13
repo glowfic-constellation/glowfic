@@ -5,12 +5,10 @@ class PostScraper < Object
     @board_id = board_id || Board::ID_SANDBOX
     @section_id = section_id
     @status = status || :complete
-    url += (url.include?('?') ? '&' : '?') + 'style=site' unless url.include?('style=site')
-    url += '&view=flat' unless url.include?('view=flat') || threaded
-    @url = url
     @console_import = console
     @threaded_import = threaded # boolean
     @subject = subject
+    @url = clean_url(url)
   end
 
   def scrape!(threads=nil)
@@ -86,12 +84,7 @@ class PostScraper < Object
     while index < comments.count
       first_reply_in_batch = comments[index]
       url = first_reply_in_batch.at_css('.comment-title').at_css('a').attribute('href').value
-      unless url[/(\?|&)style=site/]
-        url_obj = URI.parse(url)
-        url_obj.query += ('&' if url_obj.query.present?) + 'style=site'
-        url = url_obj.to_s
-      end
-      links << url
+      links << clean_url(url)
       depth = first_reply_in_batch[:class][/comment-depth-\d+/].sub('comment-depth-', '').to_i
 
       # check for accidental comment at same depth, if so go mark it as a new page too
@@ -141,6 +134,24 @@ class PostScraper < Object
     @post.tagged_at = @reply.try(:created_at) || @post.created_at
     @post.authors_locked = true
     @post.save!
+  end
+
+  def clean_url(url)
+    uri = URI(url)
+    query = Rack::Utils.parse_query(uri.query)
+    return url if check_query(query)
+    query['style'] = 'site'
+    query['view'] = 'flat' unless @threaded_import
+    uri.query = Rack::Utils.build_query(query)
+    uri.to_s
+  end
+
+  def check_query(query)
+    # query parameters are good if both:
+    # - style is site
+    # - view is flat or this a threaded import
+    return false unless query['view'] == 'flat' || @threaded_import
+    query['style'] == 'site'
   end
 
   def logger
