@@ -44,8 +44,8 @@ class ReplyScraper < Object
     @reply.editor_mode = 'html'
     @reply.created_at = @reply.updated_at = created_at
 
-    set_from_username(@reply, username)
-    set_from_icon(@reply, img_url, img_keyword) if img_url
+    @reply.user = set_from_username(username)
+    @reply.icon = set_from_icon(img_url, img_keyword) if img_url
     post_setup if @reply.is_a? Post
 
     Audited.audit_class.as_user(@reply.user) do
@@ -60,7 +60,7 @@ class ReplyScraper < Object
     @reply.edited_at = @reply.created_at
   end
 
-  def set_from_username(tag, username)
+  def set_from_username(username)
     return User.find_by(username: BASE_ACCOUNTS[username]) if BASE_ACCOUNTS.key?(username)
 
     unless (character = Character.find_by(screenname: [username.tr("-", "_"), username.tr("_", "-")]))
@@ -70,7 +70,7 @@ class ReplyScraper < Object
       CharactersGallery.create!(character_id: character.id, gallery_id: gallery.id)
     end
 
-    tag.character = character
+    @reply.character = character
     character.user
   end
 
@@ -82,20 +82,20 @@ class ReplyScraper < Object
     User.find_by('lower(username) = ?', input.downcase)
   end
 
-  def set_from_icon(tag, url, keyword)
+  def set_from_icon(url, keyword)
     url = parse_url(url)
     icon = Icon.find_by(url: url)
     return icon if icon
 
     keyword = parse_keyword(keyword)
 
-    if tag.character
-      icon = tag.character.icons.find_by(keyword: keyword)
-      icon ||= clean_keyword(tag, keyword)
+    if @reply.character
+      icon = @reply.character.icons.find_by(keyword: keyword)
+      icon ||= clean_keyword(keyword)
       return icon if icon
     end
 
-    create_icon(tag, url, keyword)
+    create_icon(url, keyword)
   end
 
   def parse_url(url)
@@ -112,7 +112,7 @@ class ReplyScraper < Object
     parsed_keyword
   end
 
-  def clean_keyword(tag, keyword)
+  def clean_keyword(keyword)
     # split out the last " (...)" from the keyword (which should be at the
     # very end), if applicable, for without_desc
     without_desc = nil
@@ -120,31 +120,31 @@ class ReplyScraper < Object
       lbracket = keyword.rindex(' (')
       if lbracket && lbracket > 0 # without_desc must be non-empty
         without_desc = keyword[0...lbracket]
-        icon = tag.character.icons.find_by(keyword: without_desc)
+        icon = @reply.character.icons.find_by(keyword: without_desc)
       end
     end
-    icon ||= kappa_keyword(tag, keyword, without_desc)
+    icon ||= kappa_keyword(keyword, without_desc)
     icon
   end
 
-  def kappa_keyword(tag, keyword, without_desc)
+  def kappa_keyword(keyword, without_desc)
     # kappa icon handling - icons are prefixed
-    if tag.user_id == 3 && (spaceindex = keyword.index(" "))
+    if @reply.user_id == 3 && (spaceindex = keyword.index(" "))
       unprefixed = keyword[spaceindex..-1]
-      icon = tag.character.icons.detect { |i| i.keyword.ends_with?(unprefixed) }
-      icon ||= tag.character.icons.detect { |i| i.keyword.ends_with?(without_desc[spaceindex..-1]) } if without_desc
+      icon = @reply.character.icons.detect { |i| i.keyword.ends_with?(unprefixed) }
+      icon ||= @reply.character.icons.detect { |i| i.keyword.ends_with?(without_desc[spaceindex..-1]) } if without_desc
     end
     icon
   end
 
-  def create_icon(tag, https_url, keyword)
-    icon = Icon.create!(user: tag.user, url: https_url, keyword: keyword)
-    return icon unless tag.character
+  def create_icon(https_url, keyword)
+    icon = Icon.create!(user: @reply.user, url: https_url, keyword: keyword)
+    return icon unless @reply.character
 
-    gallery = tag.character.galleries.first
+    gallery = @reply.character.galleries.first
     if gallery.nil?
-      gallery = Gallery.create!(user: tag.user, name: tag.character.name)
-      CharactersGallery.create!(character_id: tag.character.id, gallery_id: gallery.id)
+      gallery = Gallery.create!(user: @reply.user, name: @reply.character.name)
+      CharactersGallery.create!(character_id: @reply.character.id, gallery_id: gallery.id)
     end
     gallery.icons << icon
     icon
