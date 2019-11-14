@@ -42,7 +42,7 @@
               = link_to index, post_path(post, page: index)
   - unless local_assigns[:hide_continuity]
     %td.post-board.vtop{class: klass}= link_to post.board_name, anchored_board_path(post)
-  %td.post-authors.vtop{class: klass}= author_links(post).html_safe
+  %td.post-authors.vtop{class: klass}= author_links(post)
   %td.width-70.post-replies.vtop{class: klass}= link_to replies_count, stats_post_path(post)
   - if logged_in? && local_assigns[:show_unread_count]
     %td.width-70.vtop{class: klass}

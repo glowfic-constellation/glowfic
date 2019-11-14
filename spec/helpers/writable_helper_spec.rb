@@ -35,6 +35,7 @@ RSpec.describe WritableHelper do
         post = create(:post)
         post.user.update!(deleted: true)
         expect(helper.author_links(post)).to eq('(deleted user)')
+        expect(helper.author_links(post)).to be_html_safe
       end
 
       it "handles only two deleted users" do
@@ -43,6 +44,7 @@ RSpec.describe WritableHelper do
         reply = create(:reply, post: post)
         reply.user.update!(deleted: true)
         expect(helper.author_links(post)).to eq('(deleted users)')
+        expect(helper.author_links(post)).to be_html_safe
       end
 
       it "handles >4 deleted users" do
@@ -57,6 +59,7 @@ RSpec.describe WritableHelper do
         reply = create(:reply, post: post)
         reply.user.update!(deleted: true)
         expect(helper.author_links(post)).to eq('(deleted users)')
+        expect(helper.author_links(post)).to be_html_safe
       end
     end
 
@@ -66,6 +69,7 @@ RSpec.describe WritableHelper do
         post.user.update!(deleted: true)
         reply = create(:reply, post: post)
         expect(helper.author_links(post)).to eq(helper.user_link(reply.user) + ' and 1 deleted user')
+        expect(helper.author_links(post)).to be_html_safe
       end
 
       it "handles two users with reply user deleted" do
@@ -73,6 +77,7 @@ RSpec.describe WritableHelper do
         reply = create(:reply, post: post)
         reply.user.update!(deleted: true)
         expect(helper.author_links(post)).to eq(helper.user_link(post.user) + ' and 1 deleted user')
+        expect(helper.author_links(post)).to be_html_safe
       end
 
       it "handles three users with one deleted" do
@@ -82,6 +87,7 @@ RSpec.describe WritableHelper do
         reply = create(:reply, post: post, user: create(:user, username: 'yyy'))
         links = [post.user, reply.user].map { |u| helper.user_link(u) }.join(', ')
         expect(helper.author_links(post)).to eq(links + ' and 1 deleted user')
+        expect(helper.author_links(post)).to be_html_safe
       end
 
       it "handles three users with two deleted" do
@@ -91,6 +97,7 @@ RSpec.describe WritableHelper do
         reply = create(:reply, post: post)
         reply.user.update!(deleted: true)
         expect(helper.author_links(post)).to eq(helper.user_link(post.user) + ' and 2 deleted users')
+        expect(helper.author_links(post)).to be_html_safe
       end
 
       it "handles >4 users with post user first" do
@@ -102,6 +109,7 @@ RSpec.describe WritableHelper do
         create(:reply, post: post, user: create(:user, username: 'vvv'))
         stats_link = helper.link_to('4 others', stats_post_path(post))
         expect(helper.author_links(post)).to eq(helper.user_link(post.user) + ' and ' + stats_link)
+        expect(helper.author_links(post)).to be_html_safe
       end
 
       it "handles >4 users with alphabetical user first iff post user deleted" do
@@ -113,6 +121,7 @@ RSpec.describe WritableHelper do
         create(:reply, post: post, user: create(:user, username: 'vvv'))
         stats_link = helper.link_to('4 others', stats_post_path(post))
         expect(helper.author_links(post)).to eq(helper.user_link(reply.user) + ' and ' + stats_link)
+        expect(helper.author_links(post)).to be_html_safe
       end
     end
 
@@ -120,12 +129,14 @@ RSpec.describe WritableHelper do
       it "handles only one user" do
         post = create(:post)
         expect(helper.author_links(post)).to eq(helper.user_link(post.user))
+        expect(helper.author_links(post)).to be_html_safe
       end
 
       it "handles two users with commas" do
         post = create(:post, user: create(:user, username: 'xxx'))
         reply = create(:reply, post: post, user: create(:user, username: 'yyy'))
         expect(helper.author_links(post)).to eq(helper.user_link(post.user) + ', ' + helper.user_link(reply.user))
+        expect(helper.author_links(post)).to be_html_safe
       end
 
       it "handles three users with commas and no and" do
@@ -134,6 +145,7 @@ RSpec.describe WritableHelper do
         users << create(:reply, post: post, user: create(:user, username: 'yyy')).user
         users << create(:reply, post: post, user: create(:user, username: 'xxx')).user
         expect(helper.author_links(post)).to eq(users.reverse.map { |u| helper.user_link(u) }.join(', '))
+        expect(helper.author_links(post)).to be_html_safe
       end
 
       it "handles >4 users with post user first" do
@@ -144,6 +156,7 @@ RSpec.describe WritableHelper do
         create(:reply, post: post, user: create(:user, username: 'vvv'))
         stats_link = helper.link_to('4 others', stats_post_path(post))
         expect(helper.author_links(post)).to eq(helper.user_link(post.user) + ' and ' + stats_link)
+        expect(helper.author_links(post)).to be_html_safe
       end
     end
   end
