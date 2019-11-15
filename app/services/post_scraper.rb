@@ -53,11 +53,12 @@ class PostScraper < Object
       data = HTTParty.get(url).body
     rescue Net::OpenTimeout => e
       retried += 1
+      base_message = "Failed to get #{url}: #{e.message}"
       if retried < max_try
-        logger.debug "Failed to get #{url}: #{e.message}; retrying (tried #{retried} #{'time'.pluralize(retried)})"
+        logger.debug base_message + "; retrying (tried #{retried} #{'time'.pluralize(retried)})"
         retry
       else
-        logger.warn "Failed to get #{url}: #{e.message}"
+        logger.warn base_message
         raise
       end
     end
