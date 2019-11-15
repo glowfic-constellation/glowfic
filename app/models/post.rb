@@ -100,7 +100,7 @@ class Post < ApplicationRecord
     return false unless user
     return true if registered_users?
     return true if user.admin?
-    return user.id == user_id if private?
+    return user.id == self.user_id if private?
     (post_viewers.pluck(:user_id) + [user_id]).include?(user.id)
   end
 
@@ -123,12 +123,7 @@ class Post < ApplicationRecord
       reply.character_id = user.active_character_id
     end
 
-    if reply.character_id.nil?
-      reply.icon_id = user.avatar_id
-    else
-      reply.icon_id = reply.character.default_icon.try(:id)
-    end
-
+    reply.icon_id = reply.character_id.present? ? reply.character.default_icon.try(:id) : user.avatar_id
     reply
   end
 
@@ -161,14 +156,10 @@ class Post < ApplicationRecord
       .pluck(:character_id)
 
     # add the post's character_id to the last one if it's not over the limit
-    if character_id.present? && user_id == user.id && recent_ids.length < count && !recent_ids.include?(character_id)
-      recent_ids << character_id
-    end
+    recent_ids << character_id if self.character_id.present? && self.user == user && recent_ids.length < count && !recent_ids.include?(character_id)
 
     # fetch the relevant characters and sort by their index in the recent list
-    Character.where(id: recent_ids).includes(:default_icon).sort_by do |x|
-      recent_ids.index(x.id)
-    end
+    Character.where(id: recent_ids).includes(:default_icon).sort_by { |char| recent_ids.index(char.id) }
   end
 
   def hide_warnings_for(user)
