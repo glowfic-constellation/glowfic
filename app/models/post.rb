@@ -215,30 +215,26 @@ class Post < ApplicationRecord
 
   def total_word_count
     return word_count unless replies.exists?
-    contents = replies.pluck(:content)
-    contents[0] = contents[0].split.size
-    word_count + contents.inject{|r, e| r + e.split.size}.to_i
+    word_count + replies_word_count(replies)
   end
 
   def word_count_for(user)
     sum = 0
     sum = word_count if user_id == user.id
     return sum unless replies.where(user_id: user.id).exists?
-
-    contents = replies.where(user_id: user.id).pluck(:content)
-    contents[0] = contents[0].split.size
-    sum + contents.inject{|r, e| r + e.split.size}.to_i
+    sum + replies_word_count(replies.where(user_id: user.id))
   end
 
   # only returns for authors who have written in the post (it's zero for authors who have not joined)
   def author_word_counts
-    joined_authors.map { |author| [!author.deleted? ? author.username : '(deleted user)', word_count_for(author)] }.sort_by{|a| -a[1] }
+    authors_map = joined_authors.map { |author| [!author.deleted? ? author.username : '(deleted user)', word_count_for(author)] }
+    authors_map.sort_by(&:last).reverse
   end
 
   def character_appearance_counts
-    reply_counts = replies.joins(:character).group(:character_id).count
-    reply_counts[character_id] = reply_counts[character_id].to_i + 1
-    Character.where(id: reply_counts.keys).map { |c| [c, reply_counts[c.id]]}.sort_by{|a| -a[1] }
+    reply_counts = replies.joins(:character).group(:character_id).count.transform_values(&:to_i)
+    reply_counts[self.character_id] += 1
+    Character.where(id: reply_counts.keys).map { |char| [char, reply_counts[char.id]]}.sort_by(&:last).reverse
   end
 
   def has_content_warnings?
@@ -331,5 +327,11 @@ class Post < ApplicationRecord
   def notify_followers
     return if is_import
     NotifyFollowersOfNewPostJob.perform_later(self.id, user_id)
+  end
+
+  def replies_word_count(replies)
+    contents = replies.pluck(:content)
+    contents.map!{ |text| text.split.size }
+    contents.reduce(:+).to_i
   end
 end
