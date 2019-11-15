@@ -116,11 +116,8 @@ class PostScraper < Object
   end
 
   def import_replies_from_doc(doc)
-    comments = if @threaded_import
-      doc.at_css('#comments').css('.comment-thread').first(25).compact
-    else
-      doc.at_css('#comments').css('.comment-thread') # can't do 25 on non-threaded because single page is 50 per
-    end
+    comments = doc.at_css('#comments').css('.comment-thread')
+    comments = comments.first(25).compact if @threaded_import # can't do 25 on non-threaded because single page is 50 per
 
     comments.each do |comment|
       reply = @post.replies.new(skip_notify: true, skip_post_update: true, skip_regenerate: true, is_import: true)
