@@ -38,7 +38,7 @@ RSpec.describe PostScraper do
     scraper = PostScraper.new(url, board_id: board.id)
     allow_any_instance_of(ReplyScraper).to receive(:prompt_for_user).and_return(user) # rubocop:todo RSpec/AnyInstance
     allow_any_instance_of(ReplyScraper).to receive(:set_from_icon).and_return(nil) # rubocop:todo RSpec/AnyInstance
-    expect(scraper.send(:logger)).to receive(:info).with("Importing thread 'linear b'")
+    expect(Resque.logger).to receive(:info).with("Importing thread 'linear b'")
 
     scraper.scrape!
 
@@ -62,7 +62,7 @@ RSpec.describe PostScraper do
     scraper = PostScraper.new(url, board_id: board.id)
     allow_any_instance_of(ReplyScraper).to receive(:prompt_for_user).and_return(user) # rubocop:todo RSpec/AnyInstance
     allow_any_instance_of(ReplyScraper).to receive(:set_from_icon).and_return(nil) # rubocop:todo RSpec/AnyInstance
-    expect(scraper.send(:logger)).to receive(:info).with("Importing thread 'linear b'")
+    expect(Resque.logger).to receive(:info).with("Importing thread 'linear b'")
 
     scraper.scrape!
 
@@ -112,7 +112,7 @@ RSpec.describe PostScraper do
     url = 'http://wild-pegasus-appeared.dreamwidth.org/403.html?style=site&view=flat'
     stub_fixture(url, 'scrape_no_replies')
     scraper = PostScraper.new(url, board_id: board.id)
-    allow(scraper.send(:logger)).to receive(:info).with("Importing thread 'linear b'")
+    allow(Resque.logger).to receive(:info).with("Importing thread 'linear b'")
     expect { scraper.scrape! }.to change { Post.count }.by(1)
     expect { scraper.scrape! }.to raise_error(AlreadyImportedError)
     expect(Post.count).to eq(1)
@@ -125,7 +125,7 @@ RSpec.describe PostScraper do
     url = 'http://wild-pegasus-appeared.dreamwidth.org/403.html?style=site&view=flat'
     stub_fixture(url, 'scrape_no_replies')
     scraper = PostScraper.new(url, board_id: board.id, subject: new_title)
-    allow(scraper.send(:logger)).to receive(:info).with("Importing thread '#{new_title}'")
+    allow(Resque.logger).to receive(:info).with("Importing thread '#{new_title}'")
     expect { scraper.scrape! }.to raise_error(AlreadyImportedError)
     expect(Post.count).to eq(1)
   end
@@ -157,7 +157,7 @@ RSpec.describe PostScraper do
     characters.each { |data| create(:character, data) }
 
     scraper = PostScraper.new(urls.first, board_id: board.id, threaded: true)
-    expect(scraper.send(:logger)).to receive(:info).with("Importing thread 'repealing'")
+    expect(Resque.logger).to receive(:info).with("Importing thread 'repealing'")
     expect { scraper.scrape_threads!(threads) }.to change { Post.count }.by(1)
     expect(Post.first.subject).to eq('repealing')
     expect(Post.first.authors_locked).to eq(true)

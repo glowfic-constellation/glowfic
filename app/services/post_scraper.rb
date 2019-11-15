@@ -34,7 +34,7 @@ class PostScraper < Object
     import_replies_from_doc(base_doc)
     links = page_links(base_doc)
     links.each_with_index do |link, i|
-      logger.debug "Scraping '#{@post.subject}': page #{i + 1}/#{links.count}"
+      Resque.logger.debug "Scraping '#{@post.subject}': page #{i + 1}/#{links.count}"
       doc = doc_from_url(link)
       import_replies_from_doc(doc)
     end
@@ -52,10 +52,10 @@ class PostScraper < Object
       retried += 1
       base_message = "Failed to get #{url}: #{e.message}"
       if retried < max_try
-        logger.debug base_message + "; retrying (tried #{retried} #{'time'.pluralize(retried)})"
+        Resque.logger.debug base_message + "; retrying (tried #{retried} #{'time'.pluralize(retried)})"
         retry
       else
-        logger.warn base_message
+        Resque.logger.warn base_message
         raise
       end
     end
@@ -98,7 +98,7 @@ class PostScraper < Object
 
   def import_post_from_doc(doc)
     subject = @subject || doc.at_css('.entry .entry-title').text.strip
-    logger.info "Importing thread '#{subject}'"
+    Resque.logger.info "Importing thread '#{subject}'"
 
     @post = Post.new(board_id: @board_id, section_id: @section_id, subject: subject, status: @status, is_import: true)
 
@@ -148,10 +148,6 @@ class PostScraper < Object
     # - view is flat or this a threaded import
     return false unless query['view'] == 'flat' || @threaded_import
     query['style'] == 'site'
-  end
-
-  def logger
-    Resque.logger
   end
 end
 
