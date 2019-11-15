@@ -1,23 +1,37 @@
-version: "3"
+version: "3.7"
+
+x-env: &env
+  REDIS_URL: redis://redis
+  GLOWFIC_DATABASE_HOST: postgres
+  GLOWFIC_DATABASE_USER: postgres
+  GLOWFIC_DATABASE_PASS: postgres
+x-svc: &svc
+  build: .
+  image: glowfic
+  links:
+    - redis
+    - postgres
+  volumes:
+    - .:/code
+    - bundler-volume:/usr/local/bundle
+
 services:
   web:
-    build: .
+    <<: *svc
     ports:
       - "3000:3000"
-    volumes:
-      - .:/code
-      - bundler-volume:/usr/local/bundle
-    links:
-      - redis
-      - postgres
-    working_dir: /code
     command: bin/rails s
     environment:
-      - REDIS_URL=redis://redis
-      - GLOWFIC_DATABASE_HOST=postgres
-      - GLOWFIC_DATABASE_USER=postgres
-      - GLOWFIC_DATABASE_PASS=postgres
-      - BIND_HOST=0.0.0.0
+      <<: *env
+      BIND_HOST: 0.0.0.0
+  worker:
+    <<: *svc
+    command: bundle exec rake resque:work
+    environment:
+      <<: *env
+      TERM_CHILD: 1
+      RESQUE_TERM_TIMEOUT: 7
+      QUEUES: mailer,notifier,high,*
   redis:
     image: redis:4.0-alpine
   postgres:
