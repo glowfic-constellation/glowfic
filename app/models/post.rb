@@ -70,12 +70,18 @@ class Post < ApplicationRecord
 
   scope :no_tests, -> { where.not(board_id: Board::ID_SITETESTING) }
 
+  # rubocop:disable Style/TrailingCommaInArguments
   scope :with_has_content_warnings, -> {
-    select("(\
-        SELECT tags.id IS NOT NULL FROM tags LEFT JOIN post_tags ON tags.id = post_tags.tag_id\
-        WHERE tags.type = 'ContentWarning' AND post_tags.post_id = posts.id LIMIT 1\
-      ) AS has_content_warnings")
+    select(
+      <<~SQL
+        (
+          SELECT tags.id IS NOT NULL FROM tags LEFT JOIN post_tags ON tags.id = post_tags.tag_id
+          WHERE tags.type = 'ContentWarning' AND post_tags.post_id = posts.id LIMIT 1
+        ) AS has_content_warnings
+      SQL
+    )
   }
+  # rubocop:enable Style/TrailingCommaInArguments
 
   scope :with_reply_count, -> {
     select('(SELECT COUNT(*) FROM replies WHERE replies.post_id = posts.id) AS reply_count')
