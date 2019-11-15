@@ -83,11 +83,11 @@ class PostScraper < Object
       first_reply_in_batch = comments[index]
       url = first_reply_in_batch.at_css('.comment-title').at_css('a').attribute('href').value
       links << clean_url(url)
-      depth = first_reply_in_batch[:class][/comment-depth-\d+/].sub('comment-depth-', '').to_i
+      depth = find_comment_depth(first_reply_in_batch)
 
       # check for accidental comment at same depth, if so go mark it as a new page too
       next_comment = comments[index + 1]
-      if next_comment && next_comment[:class][/comment-depth-\d+/].sub('comment-depth-', '').to_i == depth
+      if next_comment && find_comment_depth(next_comment) == depth
         index += 1
       else
         index += 25
@@ -148,6 +148,14 @@ class PostScraper < Object
     # - view is flat or this a threaded import
     return false unless query['view'] == 'flat' || @threaded_import
     query['style'] == 'site'
+  end
+
+  def find_comment_depth(comment)
+    classes = comment[:class].split(' ')
+    classes -= ['comment-thread', 'comment-depth-even', 'comment-depth-odd'] # remove other classes on comments
+    depth = classes.first
+    depth = classes.find { |name| name.match?(/comment-depth-\d+/) } if classes.size > 1 # just in case
+    depth.split('-')[-1].to_i
   end
 end
 
