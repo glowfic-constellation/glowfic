@@ -28,17 +28,17 @@ class ReplyScraper < Object
   def import(comment)
     if @reply.is_a?(Post)
       username = comment.at_css('.entry-poster b').inner_html
-      img_url = comment.at_css('.entry .userpic img').try(:attribute, 'src').try(:value)
-      img_keyword = comment.at_css('.entry .userpic img').try(:attribute, 'title').try(:value)
-      created_at = comment.at_css('.entry .datetime').text
       content = comment.at_css('.entry-content').inner_html
+      comment = comment.at_css('.entry')
     else
       content = comment.at_css('.comment-content').inner_html
-      img_url = comment.at_css('.userpic img').try(:attribute, 'src').try(:value)
-      img_keyword = comment.at_css('.userpic img').try(:attribute, 'title').try(:value)
       username = comment.at_css('.comment-poster b').inner_html
-      created_at = comment.at_css('.datetime').text
     end
+
+    img_node = comment.at_css('.userpic img')
+    img_url = img_node.try(:[], 'src')
+    img_keyword = img_node.try(:[], 'title')
+    created_at = comment.at_css('.datetime').text
 
     @reply.content = strip_content(content)
     @reply.editor_mode = 'html'
