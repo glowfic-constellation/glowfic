@@ -1,5 +1,5 @@
 class PostScraper < Object
-  attr_accessor :url, :post
+  attr_reader :url
 
   def initialize(url, board_id: Board::ID_SANDBOX, section_id: nil, status: :complete, threaded: false, console: false, subject: nil)
     @board_id = board_id
