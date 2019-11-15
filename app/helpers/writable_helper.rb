@@ -70,7 +70,7 @@ module WritableHelper
     return name if only_text
     icon = image_tag("icons/#{img}.png", class: 'vmid', title: "#{'Thread' unless short_title} #{name}")
     return icon if only_icon
-    [icon, name].join(' ')
+    [icon, name].safe_join(' ')
   end
 
   def menu_img
