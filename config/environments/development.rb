@@ -78,4 +78,8 @@ Rails.application.configure do
 
   # raise an error if assets aren't found
   config.assets.unknown_asset_fallback = false
+
+  # enable Resque logging
+  Resque.logger       = Logger.new(STDOUT)
+  Resque.logger.level = Logger::INFO
 end
