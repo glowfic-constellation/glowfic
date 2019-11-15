@@ -1,5 +1,5 @@
 class PostScraper < Object
-  attr_accessor :url, :post, :html_doc
+  attr_accessor :url, :post
 
   def initialize(url, board_id: Board::ID_SANDBOX, section_id: nil, status: :complete, threaded: false, console: false, subject: nil)
     @board_id = board_id
@@ -12,17 +12,14 @@ class PostScraper < Object
   end
 
   def scrape!(threads=nil)
-    @html_doc = doc_from_url(@url)
+    html_doc = doc_from_url(@url)
 
     Post.transaction do
-      import_post_from_doc(@html_doc)
+      import_post_from_doc(html_doc)
       if threads.present?
-        threads.each do |thread|
-          @html_doc = doc_from_url(thread)
-          evaluate_links
-        end
+        threads.each { |thread| evaluate_links(doc_from_url(thread)) }
       else
-        evaluate_links
+        evaluate_links(html_doc)
       end
       finalize_post_data
     end
@@ -33,9 +30,9 @@ class PostScraper < Object
 
   private
 
-  def evaluate_links
-    import_replies_from_doc(@html_doc)
-    links = page_links
+  def evaluate_links(base_doc)
+    import_replies_from_doc(base_doc)
+    links = page_links(base_doc)
     links.each_with_index do |link, i|
       logger.debug "Scraping '#{@post.subject}': page #{i + 1}/#{links.count}"
       doc = doc_from_url(link)
@@ -66,18 +63,18 @@ class PostScraper < Object
     Nokogiri::HTML(data)
   end
 
-  def page_links
-    return threaded_page_links if @threaded_import
-    links = @html_doc.at_css('.page-links')
+  def page_links(doc)
+    return threaded_page_links(doc) if @threaded_import
+    links = doc.at_css('.page-links')
     return [] if links.nil?
     links.css('a').map { |link| link.attribute('href').value }
   end
 
-  def threaded_page_links
+  def threaded_page_links(doc)
     # gets pages after the first page
     # does not work based on depths as sometimes mistakes over depth are made
     # during threading (two replies made on the same depth)
-    comments = @html_doc.at_css('#comments').css('.comment-thread')
+    comments = doc.at_css('#comments').css('.comment-thread')
     # 0..24 are in full on the first page
     # fetch 25..49, …, on the other pages
     links = []
