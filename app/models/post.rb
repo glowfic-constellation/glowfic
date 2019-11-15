@@ -189,13 +189,13 @@ class Post < ApplicationRecord
     most_recent = viewing_replies.max_by(&:reply_order)
     most_recent_id = replies.select(:id).ordered.last.id
     return most_recent.created_at unless most_recent.id == most_recent_id # not on last page
-    return most_recent.updated_at if most_recent.updated_at > edited_at
-
-    # testing for case where the post was changed in status more recently than the last reply
-    audits_exist = audits.where('created_at > ?', most_recent.created_at).where(action: 'update')
-    audits_exist = audits_exist.where("(audited_changes -> 'status' ->> 1)::integer = ?", Post.statuses[:complete])
-    return most_recent.updated_at unless audits_exist.exists?
-    self.edited_at
+    unless most_recent.updated_at > edited_at
+      # testing for case where the post was changed in status more recently than the last reply
+      audits_exist = audits.where('created_at > ?', most_recent.created_at).where(action: 'update')
+      audits_exist = audits_exist.where("(audited_changes -> 'status' ->> 1)::integer = ?", Post.statuses[:complete])
+      return edited_at if audits_exist
+    end
+    most_recent.updated_at
   end
 
   def metadata_editable_by?(user)
