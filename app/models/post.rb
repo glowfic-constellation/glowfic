@@ -6,6 +6,7 @@ class Post < ApplicationRecord
   include Post::Status
   include Presentable
   include Viewable
+  include WordCountable
   include Writable
 
   belongs_to :board, inverse_of: :posts, optional: false
@@ -213,24 +214,6 @@ class Post < ApplicationRecord
     author_ids.include?(user.id)
   end
 
-  def total_word_count
-    return word_count unless replies.exists?
-    word_count + replies_word_count(replies)
-  end
-
-  def word_count_for(user)
-    sum = 0
-    sum = word_count if user_id == user.id
-    return sum unless replies.where(user_id: user.id).exists?
-    sum + replies_word_count(replies.where(user_id: user.id))
-  end
-
-  # only returns for authors who have written in the post (it's zero for authors who have not joined)
-  def author_word_counts
-    authors_map = joined_authors.map { |author| [!author.deleted? ? author.username : '(deleted user)', word_count_for(author)] }
-    authors_map.sort_by(&:last).reverse
-  end
-
   def character_appearance_counts
     reply_counts = replies.joins(:character).group(:character_id).count.transform_values(&:to_i)
     reply_counts[self.character_id] += 1
@@ -327,11 +310,5 @@ class Post < ApplicationRecord
   def notify_followers
     return if is_import
     NotifyFollowersOfNewPostJob.perform_later(self.id, user_id)
-  end
-
-  def replies_word_count(replies)
-    contents = replies.pluck(:content)
-    contents.map!{ |text| text.split.size }
-    contents.reduce(:+).to_i
   end
 end
