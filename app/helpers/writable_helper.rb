@@ -63,8 +63,10 @@ module WritableHelper
   }
 
   def status_state(status, only_icon: false, only_text: false, short_title: false)
-    name = STATUS_MAP[status][0]
-    img = STATUS_MAP[status][1]
+    raise ArgumentError("Invalid status: #{status}") unless STATUS_MAP.key?(status)
+    status_info = STATUS_MAP[status]
+    name = status_info[0]
+    img = status_info[1]
     return name if only_text
     icon = image_tag("icons/#{img}.png", class: 'vmid', title: "#{'Thread' unless short_title} #{name}")
     return icon if only_icon
