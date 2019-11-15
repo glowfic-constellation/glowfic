@@ -272,17 +272,21 @@ class Post < ApplicationRecord
     NotifyFollowersOfNewPostJob.perform_later(self.id, user.id)
   end
 
-  def prev_post
+  def prev_post(user)
     return unless self.board.ordered?
-    Post.where(board_id: self.board_id, section_id: self.section_id).find_by(section_order: self.section_order - 1)
+    adjacent_posts_for(user).reverse_order.find_by('section_order < ?', self.section_order)
   end
 
-  def next_post
+  def next_post(user)
     return unless self.board.ordered?
-    Post.where(board_id: self.board_id, section_id: self.section_id).find_by(section_order: self.section_order + 1)
+    adjacent_posts_for(user).find_by('section_order > ?', self.section_order)
   end
 
   private
+
+  def adjacent_posts_for(user)
+    Post.where(board_id: self.board_id, section_id: self.section_id).visible_to(user).ordered_in_section
+  end
 
   def valid_board
     return unless board_id.present?
