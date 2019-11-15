@@ -19,7 +19,7 @@ services:
       - GLOWFIC_DATABASE_PASS=postgres
       - BIND_HOST=0.0.0.0
   redis:
-    image: redis:3.2-alpine
+    image: redis:4.0-alpine
   postgres:
     environment:
       - POSTGRES_PASSWORD=postgres
