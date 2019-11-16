@@ -10,7 +10,8 @@ services:
   - postgresql
 cache: bundler
 before_install:
-  - gem install bundler -v 1.15.2
+  - gem install bundler -v 1.17.3
+  - echo "Using bundler:" $(bundle --version)
 before_script:
   - psql -c 'create database glowfic_test;' -U postgres
   - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
