@@ -234,7 +234,7 @@ module ApplicationHelper
     authors = post.authors.reject(&:deleted?).sort_by{|a| a.username.downcase}
     num_deleted = total - authors.size
     deleted = 'deleted user'.pluralize(num_deleted)
-    return "(#{deleted})".html_safe if authors.empty?
+    return "(#{deleted})" if authors.empty?
 
     if total < 4
       links = authors.map { |author| linked ? user_link(author, colored: colored) : author.username }
