@@ -5,6 +5,7 @@ rvm:
 env:
   global:
     - CC_TEST_REPORTER_ID=1e0c6dba9930e839038860b6d73301226c821937f57ed35d06fc0e4b7bddf5f6
+    - PGPORT=5433
 services:
   - redis-server
   - postgresql
@@ -25,3 +26,9 @@ after_script:
 branches:
   only:
     - master
+addons:
+  postgresql: 11
+  apt:
+    packages:
+      - postgresql-11
+      - postgresql-client-11
