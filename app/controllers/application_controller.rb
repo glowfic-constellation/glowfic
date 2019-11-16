@@ -140,13 +140,19 @@ class ApplicationController < ActionController::Base
 
   def post_or_reply_link(reply)
     return unless reply.id.present?
-    if reply.is_a?(Reply)
-      reply_path(reply, anchor: "reply-#{reply.id}")
-    else
-      post_path(reply)
-    end
+    post_or_reply_mem_link(id: reply.id, klass: reply.class)
   end
   helper_method :post_or_reply_link
+
+  def post_or_reply_mem_link(id: nil, klass: nil)
+    return if id.nil?
+    if klass == Reply
+      reply_path(id, anchor: "reply-#{id}")
+    else
+      post_path(id)
+    end
+  end
+  helper_method :post_or_reply_mem_link
 
   def posts_from_relation(relation, no_tests: true, with_pagination: true, select: '', max: false)
     if max
