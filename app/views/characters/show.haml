@@ -22,7 +22,7 @@
 %table.left-info-box.character-info-box
   %thead
     %tr
-      %th.centered
+      %th.info-box-header
         %span.character-name= @character.name
         - if @character.screenname
           %br
@@ -82,7 +82,7 @@
   %table.character-right-content-box#reorder-galleries-table
     %thead
       %tr
-        %th
+        %th.table-title
           Galleries
           #loading.float-right.hidden= loading_tag
           #saveerror.float-right.hidden
@@ -106,7 +106,7 @@
   %table.character-right-content-box
     %thead
       %tr
-        %th{colspan: 2} Info
+        %th.table-title{colspan: 2} Info
     %tbody
       - nicknames = ([@character.template_name] + @character.aliases.ordered.pluck(:name)).compact
       - if nicknames.present?

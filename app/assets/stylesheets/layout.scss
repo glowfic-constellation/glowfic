@@ -181,12 +181,27 @@ table { width: 100%; }
   margin: 0;
 }
 
-th, .content-header {
+.table-title, .content-header, .search-results-header {
   background-color: $bg_color_head;
   color: $font_color_head;
   padding: 15px;
   font-size: $font_size_large;
   font-weight: normal;
+}
+
+.info-box-header, .editor-title {
+  @extend .table-title;
+  text-align: center;
+}
+
+.search-params-header {
+  @extend .table-title;
+  width: 150px;
+}
+
+.gallery-table-title {
+  @extend .table-title;
+  &, &.subber { padding: 10px; }
 }
 
 .content-header {
@@ -213,6 +228,7 @@ td, .table-list li { font-size: $font_size_small; }
   background-color: $bg_color_sub;
   color: $font_color_sub;
   font-size: $font_size_main;
+  font-weight: normal;
   &.width-150 { width: 170px; }
 }
 

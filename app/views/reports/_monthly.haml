@@ -3,7 +3,7 @@
 %table
   %thead
     %tr
-      %th{colspan: 6} Monthly Report
+      %th.table-title{colspan: 6} Monthly Report
   - 1.upto(1.month.ago.end_of_month.day) do |num_days|
     - day = 1.month.ago.end_of_month - (num_days - 1).days
     - posts = posts_from_relation(Post.where(tagged_at: day.beginning_of_day .. day.end_of_day))

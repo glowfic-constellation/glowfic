@@ -1,16 +1,16 @@
 %table.tag-right-content-box
   %thead
     %tr
-      %th{colspan: 2} Info
+      %th.table-title{colspan: 2} Info
   %tbody
     - if @tag.is_a?(Setting) && @tag.parent_settings.present?
       %tr
-        %th.centered.sub.width-150= 'Parent Setting'.pluralize(@tag.parent_settings.count)
+        %th.sub.centered.width-150= 'Parent Setting'.pluralize(@tag.parent_settings.count)
         - setting_links = @tag.parent_settings.map { |c| link_to(c.name, tag_path(c))}
         %td{class: cycle('even', 'odd')}= safe_join(setting_links, ', ')
     - if @tag.is_a?(Setting)
       %tr
-        %th.centered.sub.width-150 Owner
+        %th.sub.centered.width-150 Owner
         %td{class: cycle('even', 'odd'), title: ('This setting is not marked as owned' unless @tag.owned?)}
           = link_to @tag.user do
             - if @tag.owned?
@@ -19,5 +19,5 @@
               %em= @tag.user.deleted? ? 'deleted user' : @tag.user.username
     - if @tag.description.present?
       %tr
-        %th.centered.sub.width-150.vtop Description
+        %th.sub.centered.width-150.vtop Description
         %td.written-content{class: cycle('even', 'odd')}= sanitize_written_content(@tag.description)

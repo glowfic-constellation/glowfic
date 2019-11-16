@@ -3,7 +3,7 @@
   %tr
     %td.continuity-spacer{colspan: 6}
 %tr
-  %th{colspan: 6, class: ('sub continuity-header' if in_collection)}
+  %th.table-title{colspan: 6, class: ('sub continuity-header' if in_collection)}
     = link_to section.name, index_section_path(section)
     - if section.index.editable_by?(current_user)
       = link_to new_index_post_path params: {index_id: section.index.id, index_section_id: section.id} do

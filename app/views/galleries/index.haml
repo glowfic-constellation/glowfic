@@ -7,7 +7,7 @@
 %table
   %thead
     %tr
-      %th.padding-10{colspan: 4}
+      %th.gallery-table-title{colspan: 4}
         - if @user.id == current_user.try(:id)
           Your Galleries
           = link_to new_gallery_path, class: 'gallery-new' do

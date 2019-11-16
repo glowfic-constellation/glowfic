@@ -23,7 +23,7 @@
 
 %table.left-info-box.icon-info-box
   %tr
-    %th.centered.icon-keyword= @icon.keyword
+    %th.info-box-header.icon-keyword= @icon.keyword
   %tr
     %td.icons-box.centered.icon-icon= icon_tag @icon
   - if @icon.credit
@@ -76,7 +76,7 @@
   %table.icon-right-content-box
     %thead
       %tr
-        %th Galleries
+        %th.table-title Galleries
     - if @icon.galleries.exists?
       = render partial: 'galleries/single', collection: @icon.galleries.ordered_by_name, as: :gallery, locals: {klass: 'subber', skip_forms: true, is_owner: @icon.user == current_user}
     - else
@@ -91,7 +91,7 @@
   %table.icon-right-content-box
     %thead
       %tr
-        %th{colspan: 2} Stats
+        %th.table-title{colspan: 2} Stats
     %tbody
       %tr
         %th.sub.width-150 Times Used

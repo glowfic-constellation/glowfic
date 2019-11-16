@@ -33,7 +33,7 @@
   %table
     %thead
       %tr
-        %th{colspan: 5}= content_for :posts_title
+        %th.table-title{colspan: 5}= content_for :posts_title
       - if @board.description.present?
         %tr
           %td.odd.written-content{colspan: 5}= sanitize_written_content(@board.description)

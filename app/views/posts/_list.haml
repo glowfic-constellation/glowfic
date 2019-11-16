@@ -9,7 +9,7 @@
 %table{class: local_assigns[:table_class].to_s}
   %thead
     %tr
-      %th{colspan: col_count}= content_for :posts_title
+      %th.table-title{colspan: col_count}= content_for :posts_title
     - if content_for? :post_list_description
       %tr
         %td.odd.written-content{colspan: col_count}= content_for :post_list_description

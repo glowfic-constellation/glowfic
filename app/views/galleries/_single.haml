@@ -6,7 +6,7 @@
 - gallery_klass << "gallery-title-#{gallery.id}" if gallery
 %tbody{class: gallery_klass, **attrs}
   %tr.gallery-header
-    %th.padding-10{class: (klass if defined? klass)}
+    %th.gallery-table-title{class: (klass if defined? klass)}
       - link = gallery ? gallery_path(gallery) : user_gallery_path(id: 0, user_id: @user.id)
       = link_to gallery ? gallery.name : 'Galleryless icons', link, class: 'gallery-title'
       - if is_owner && !skip_forms

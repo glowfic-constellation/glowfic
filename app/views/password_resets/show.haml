@@ -1,7 +1,7 @@
 = form_for @password_reset, url: password_reset_path(id: @password_reset.auth_token), method: :put do
   %table.form-table
     %tr
-      %th.centered{colspan: 2} Change Password
+      %th.editor-title{colspan: 2} Change Password
     %tr
       %th.sub New
       %td.odd= password_field_tag :password, params[:password], placeholder: "New Password", class: 'text'
