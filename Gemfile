@@ -36,7 +36,7 @@ gem 'sprockets', '~> 3.7' # pin sprockets until we deal with its major upgrade
 gem 'test-unit', '~> 3.0' # required by Heroku for production console
 gem 'tinymce-rails', '~> 4.6.7'
 gem 'uglifier'
-gem 'will_paginate'
+gem 'will_paginate', '~> 3.1.8' # pin will_paginate until we deal with breaking WillPaginate::ViewHelpers::LinkRenderer change
 
 group :production do
   gem 'puma'
