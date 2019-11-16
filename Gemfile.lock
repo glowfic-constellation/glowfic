@@ -131,7 +131,7 @@ GEM
       raabro (~> 1.1)
     globalid (0.4.2)
       activesupport (>= 4.2.0)
-    gon (6.3.1)
+    gon (6.2.1)
       actionpack (>= 3.0)
       multi_json
       request_store (>= 1.0)
@@ -451,7 +451,7 @@ DEPENDENCIES
   dotenv-rails
   exception_notification
   factory_bot_rails
-  gon
+  gon (~> 6.2.1)
   haml-lint
   haml-rails
   html-proofer
