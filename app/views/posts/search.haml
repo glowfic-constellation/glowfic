@@ -7,7 +7,7 @@
         Search Posts
         - if @search_results
           = '- ' + @search_results.total_entries.to_s + ' results'
-      %th
+      %th.search-results-header
         - if @search_results
           = render 'paginator', paginated: @search_results
   %tbody
@@ -55,4 +55,4 @@
     %tfoot
       %tr
         %th.width-150.empty
-        %th= render 'paginator', paginated: @search_results
+        %th.search-results-header= render 'paginator', paginated: @search_results
