@@ -66,6 +66,7 @@ RSpec.describe ApplicationController do
 
   describe "#posts_from_relation" do
     let(:site_testing) { create(:board, id: Board::ID_SITETESTING) }
+    let(:default_post_ids) { Array.new(26) { create(:post).id } }
 
     it "gets posts" do
       post = create(:post)
@@ -91,8 +92,6 @@ RSpec.describe ApplicationController do
       relation = Post.where(id: post.id)
       expect(controller.send(:posts_from_relation, relation, no_tests: false)).not_to be_blank
     end
-
-    let(:default_post_ids) { Array.new(26) do create(:post).id end }
 
     it "paginates by default" do
       relation = Post.where(id: default_post_ids)
@@ -122,8 +121,8 @@ RSpec.describe ApplicationController do
       post3 = create(:post, content_warnings: [warning1, warning2])
       post3_user2 = create(:user)
       post3_user3 = create(:user)
-      25.times { create(:reply, post: post3, user: post3_user2) }
-      10.times { create(:reply, post: post3, user: post3_user3)}
+      create_list(:reply, 25, post: post3, user: post3_user2)
+      create_list(:reply, 10, post: post3, user: post3_user3)
       post3.post_authors.find_by(user_id: post3_user3.id).update!(can_owe: false)
 
       id_list = [post1.id, post2.id, post3.id]

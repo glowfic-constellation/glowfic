@@ -18,7 +18,7 @@ RSpec.feature "Creating a new character", :type => :feature do
     expect(page).to have_no_selector("img.icon")
 
     # view new character form with icons
-    2.times do create(:icon, user: user) end
+    create_list(:icon, 2, user: user)
     visit new_character_path
     expect(page).to have_selector("img.icon", count: 2)
 

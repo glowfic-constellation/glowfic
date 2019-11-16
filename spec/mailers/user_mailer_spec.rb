@@ -1,7 +1,8 @@
 require "spec_helper"
 
 RSpec.describe UserMailer, type: :mailer do
-  before { ResqueSpec.reset! }
+  before(:each) { ResqueSpec.reset! }
+
   describe "#post_has_new_reply" do
     it "sends email" do
       ActionMailer::Base.deliveries.clear

@@ -210,14 +210,14 @@ RSpec.describe BoardsController do
 
     it "only fetches the board's first 25 posts" do
       board = create(:board)
-      26.times do create(:post, board: board) end
+      create_list(:post, 26, board: board)
       get :show, params: { id: board.id }
       expect(assigns(:posts).size).to eq(25)
     end
 
     it "orders the posts by tagged_at in unordered boards" do
       board = create(:board)
-      3.times do create(:post, board: board, tagged_at: Time.zone.now + rand(5..30).hours) end
+      Array.new(3) { create(:post, board: board, tagged_at: Time.zone.now + rand(5..30).hours) }
       get :show, params: { id: board.id }
       expect(assigns(:posts)).to eq(assigns(:posts).sort_by(&:tagged_at).reverse)
     end

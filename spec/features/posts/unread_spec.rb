@@ -11,7 +11,7 @@ RSpec.feature "Unread posts", :type => :feature do
     expect(page).to have_text("Unread Posts")
     expect(page).to have_text("No posts yet")
 
-    2.times { create(:post) }
+    create_list(:post, 2)
     3.times do
       unread = Timecop.freeze(Time.zone.now - 1.day) do
         unread = create(:post)

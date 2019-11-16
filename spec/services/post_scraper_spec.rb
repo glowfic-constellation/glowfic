@@ -33,7 +33,7 @@ RSpec.describe PostScraper do
 
     scraper = PostScraper.new(url, board.id)
     allow(scraper).to receive(:prompt_for_user) { user }
-    allow(scraper).to receive(:set_from_icon) { nil }
+    allow(scraper).to receive(:set_from_icon).and_return(nil)
     expect(scraper.send(:logger)).to receive(:info).with("Importing thread 'linear b'")
 
     scraper.scrape!
@@ -57,7 +57,7 @@ RSpec.describe PostScraper do
 
     scraper = PostScraper.new(url, board.id)
     allow(scraper).to receive(:prompt_for_user) { user }
-    allow(scraper).to receive(:set_from_icon) { nil }
+    allow(scraper).to receive(:set_from_icon).and_return(nil)
     expect(scraper.send(:logger)).to receive(:info).with("Importing thread 'linear b'")
 
     scraper.scrape!

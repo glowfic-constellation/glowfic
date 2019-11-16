@@ -56,7 +56,7 @@ RSpec.describe Tag do
       tag2 = create(:label)
       create(:post, labels: [tag2])
       tag3 = create(:label)
-      2.times { create(:post, labels: [tag3]) }
+      create_list(:post, 2, labels: [tag3])
       [tag1, tag2, tag3]
     end
 
@@ -81,7 +81,7 @@ RSpec.describe Tag do
       tag2 = create(:gallery_group)
       create(:character, gallery_groups: [tag2])
       tag3 = create(:gallery_group)
-      2.times { create(:character, gallery_groups: [tag3]) }
+      create_list(:character, 2, gallery_groups: [tag3])
       [tag1, tag2, tag3]
     end
 
@@ -106,7 +106,7 @@ RSpec.describe Tag do
       tag2 = create(:gallery_group)
       create(:gallery, gallery_groups: [tag2])
       tag3 = create(:gallery_group)
-      2.times { create(:gallery, gallery_groups: [tag3]) }
+      create_list(:gallery, 2, gallery_groups: [tag3])
       [tag1, tag2, tag3]
     end
 

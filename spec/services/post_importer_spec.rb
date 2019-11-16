@@ -5,6 +5,7 @@ RSpec.describe PostImporter do
 
   describe "import" do
     let(:url) { 'http://wild-pegasus-appeared.dreamwidth.org/403.html?style=site&view=flat' }
+
     before(:each) { clear_enqueued_jobs }
 
     context "when validating url" do

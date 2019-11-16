@@ -28,6 +28,7 @@ RSpec.describe IconsController do
 
     context "removing icons from a gallery" do
       let(:user) { create(:user) }
+
       before(:each) { login_as(user) }
 
       it "requires gallery" do
@@ -88,7 +89,7 @@ RSpec.describe IconsController do
         expect(response).to redirect_to(user_galleries_url(user.id, anchor: "gallery-#{gallery.id}"))
       end
 
-      it "goes back to index page if given" do
+      it "goes back to tag page if given" do
         icon = create(:icon, user: user)
         gallery = create(:gallery, user: user)
         group = create(:gallery_group, user: user)
@@ -103,6 +104,7 @@ RSpec.describe IconsController do
 
     context "deleting icons from the site" do
       let(:user) { create(:user) }
+
       before(:each) { login_as(user) }
 
       it "skips other people's icons" do
@@ -135,7 +137,7 @@ RSpec.describe IconsController do
         expect(response).to redirect_to(user_galleries_url(user.id, anchor: "gallery-#{gallery.id}"))
       end
 
-      it "goes back to index page if given" do
+      it "goes back to tag page if given" do
         icon = create(:icon, user: user)
         gallery = create(:gallery, user: user)
         group = create(:gallery_group, user: user)
@@ -237,6 +239,7 @@ RSpec.describe IconsController do
       render_views
       let(:gallery) { create(:gallery) }
       let(:icon) { create(:icon, galleries: [gallery], user: gallery.user) }
+
       before(:each) do
         icon
       end
@@ -261,6 +264,7 @@ RSpec.describe IconsController do
       let(:reply) { create(:reply, icon: icon, user: icon.user, post: create(:post)) }
       let(:private_post) { create(:post, icon: icon, user: icon.user, privacy: Concealable::PRIVATE) }
       let(:registered_post) { create(:post, icon: icon, user: icon.user, privacy: Concealable::REGISTERED) }
+
       before(:each) do
         create(:reply, post: post, user: icon.user, icon: icon)
         reply

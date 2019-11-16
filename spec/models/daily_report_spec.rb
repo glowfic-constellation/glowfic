@@ -13,7 +13,9 @@ RSpec.describe DailyReport do
       dst_day_params = data.last
       context name do
         before(:each) { Time.zone = zone }
+
         after(:each) { Time.zone = default_zone }
+
         it "should work on a regular day" do
           time = Time.zone.local(2017, 1, 2, 10, 0) # 2017-01-02 10:00
           day = time.beginning_of_day
@@ -61,10 +63,10 @@ RSpec.describe DailyReport do
       post = nil
       Timecop.freeze(now - 2.days) do
         post = create(:post)
-        2.times do create(:reply, post: post, user: post.user) end
+        create_list(:reply, 2, post: post, user: post.user)
       end
       Timecop.freeze(now) do
-        3.times do create(:reply, post: post, user: post.user) end
+        create_list(:reply, 3, post: post, user: post.user)
       end
       report = DailyReport.new(now)
       expect(report.posts.first.reply_count).to eq(5)

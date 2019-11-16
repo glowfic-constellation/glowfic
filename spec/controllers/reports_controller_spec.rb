@@ -69,7 +69,7 @@ RSpec.describe ReportsController do
       render_views
 
       it "works" do
-        3.times do create(:post) end
+        create_list(:post, 3)
         Post.last.user.update!(moiety: 'abcdef')
         create(:post, num_replies: 4, created_at: 2.days.ago)
         get :show, params: { id: 'daily' }

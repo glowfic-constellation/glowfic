@@ -206,6 +206,7 @@ RSpec.describe User do
 
     context "with a visible post" do
       let (:visible_post) { create(:post, privacy: Concealable::ACCESS_LIST, viewer_ids: [user.id, create(:user).id]) }
+
       before(:each) { visible_post }
 
       it "handles one visible access-listed post" do
