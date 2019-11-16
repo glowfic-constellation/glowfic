@@ -37,8 +37,6 @@ $bg_color_flash_error: #FFDDDD !default; // error
 $font_color_flash_error: $colors_black !default;
 $bg_color_flash_success: #DDEEDD !default; // success
 $font_color_flash_success: $colors_black !default;
-$bg_color_flash_inbox: #DDDDEE !default; // new message
-$font_color_flash_inbox: $colors_black !default;
 $bg_color_flash_breadcrumbs: $colors_greybrown !default; // breadcrumbs ("Continuities » Effulgence » make a wish » one enormous bruise")
 $font_color_flash_breadcrumbs: $colors_black !default;
 $font_color_breadcrumbs_bold: $colors_black !default;
@@ -146,9 +144,9 @@ $bg_color_content_border: transparent !default; // from river, is 0-width in def
 // mix colors X and Y with weight W (favoring Y, allowing values outside 0 and 1)
 @function mix-allow-heavy($color1, $color2, $value) {
   // @return (1 - $value) * $color1 + ($color2 * $value);
-  $red: (1-$value) * red($color1) + (red($color2) * $value);
-  $green: (1-$value) * green($color1) + (green($color2) * $value);
-  $blue: (1-$value) * blue($color1) + (blue($color2) * $value);
+  $red: (1 - $value) * red($color1) + (red($color2) * $value);
+  $green: (1 - $value) * green($color1) + (green($color2) * $value);
+  $blue: (1 - $value) * blue($color1) + (blue($color2) * $value);
   @return rgb($red, $green, $blue);
 }
 

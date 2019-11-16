@@ -39,6 +39,7 @@
   left: 150px;
   padding: 5px 20px 10px 20px;
   z-index: 2;
+  background-color: $bg_color_selectionpopup;
   min-width: 200px;
   display: none;
   text-align: left;
@@ -73,7 +74,6 @@
     position: relative;
     width: 130px;
     word-wrap: break-word;
-    display: inline-block;
   }
 
   .gallery-name {
@@ -198,6 +198,7 @@ div.post-subheader { width: 100%; }
 }
 
 .post-icon, #current-icon-dropdown { background-color: $bg_color_post_icon; }
+
 .post-icon {
   padding: 0;
   height: 120px;
@@ -283,13 +284,13 @@ div.post-subheader { width: 100%; }
   .subber { padding: 10px; }
 
   #post-editor {
-    input[type="text"] { width: 250px; }
+    input[type='text'] { width: 250px; }
     label { min-width: 95px; }
   }
 
   .clear { height: 1px; }
 
-  input[type="checkbox"] {
+  input[type='checkbox'] {
     margin-left: 5px;
     position: relative;
     bottom: 2px;
@@ -307,24 +308,22 @@ div.post-subheader { width: 100%; }
   font-style: italic;
 }
 
-/* - Blockquotes around .post-info-box */
-.post-content blockquote {
-  margin-left: 5.5em;
-  margin-right: 5.5em;
-}
-
-/* - Lists around .post-info-box */
 .post-content {
+  /* - Blockquotes around .post-info-box */
+  blockquote {
+    margin-left: 5.5em;
+    margin-right: 5.5em;
+  }
+
+  /* - Lists around .post-info-box */
   ul, ol {
     list-style-position: inside;
     padding-left: 30px;
 
     ul, ol { overflow: auto; }
   }
-}
 
-/* - Tables in post-content */
-.post-content {
+  /* - Tables in post-content */
   th {
     padding: 5px;
     background-color: unset;
@@ -333,13 +332,9 @@ div.post-subheader { width: 100%; }
     font-weight: bold;
   }
 
-  td {
-    padding: 5px;
-  }
+  td { padding: 5px; }
 
-  th, td {
-    border: 1px solid $border_color_reply_table;
-  }
+  th, td { border: 1px solid $border_color_reply_table; }
 }
 
 /* - Character quick switcher - small icons for selecting characters in post-editor */
@@ -363,20 +358,24 @@ div.post-subheader { width: 100%; }
     width: 100%;
     display: inline-block;
   }
+
   .post-icon {
     float: left;
     margin-right: 0;
     margin-bottom: 5px;
   }
+
   .post-info-text {
     float: left;
     margin-right: 10px;
     margin-bottom: 5px;
   }
+
   #post-form-wrapper { margin-left: 0; }
   #character-selector { left: 0; }
   .post-character { background-color: $bg_color_post_character_narrow; }
   .post-author { background-color: $bg_color_post_author_narrow; }
+
   .post-content blockquote {
     margin-left: 1.5em;
     margin-right: 1.5em;
@@ -435,6 +434,7 @@ div.post-subheader { width: 100%; }
   .normal-pagination { display: block; }
   .mobile-pagination { display: none; }
 }
+
 @mixin mobile-paginator {
   padding: 0;
 
@@ -456,6 +456,7 @@ div.post-subheader { width: 100%; }
 
 @media (max-width: 400px) {
   .paginator-meta { display: none; }
+
   .paginator {
     @include mobile-paginator;
   }
@@ -478,6 +479,7 @@ div.post-subheader { width: 100%; }
     padding: 10px 20px;
     border-bottom: 1px solid $border_color_post_menu;
   }
+
   a { color: $font_color_menu_link; }
   a:hover div { background-color: $bg_color_menu_link_hover; }
 
@@ -507,9 +509,7 @@ div.post-subheader { width: 100%; }
 }
 
 /* Unread marker on posts */
-.unread-marker-container {
-  position: relative;
-}
+.unread-marker-container { position: relative; }
 
 .unread-marker {
   background-color: transparent;
@@ -521,15 +521,16 @@ div.post-subheader { width: 100%; }
 
 .reply-highlighted { border: 1px $border_color_unread_reply solid; }
 
-.selector-popup {
-  background-color: $bg_color_selectionpopup;
-}
-
 /* History page */
 .history-header { width: 170px; }
+
 @media (max-width: 600px) {
   .history-header { width: 75px; }
 }
 
 .index-description p { margin: 0px; }
-.mod { width: 100%; height: 50px; }
+
+.mod {
+  width: 100%;
+  height: 50px;
+}

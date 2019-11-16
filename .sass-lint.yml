@@ -29,7 +29,12 @@ rules:
   no-disallowed-properties: 0
   no-duplicate-properties:
     - 1
-    - exclude: [background-color]
+    - exclude:
+      - background
+      - background-color
+      - border-top
+      - border-bottom
+      - filter
   no-empty-rulesets: 1
   no-extends: 0
   no-ids: 0

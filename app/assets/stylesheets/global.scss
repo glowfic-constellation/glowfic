@@ -3,7 +3,7 @@
 body, html { height: 100%; }
 
 body {
-  margin: 0 0 0 0;
+  margin: 0;
   font-family: Helvetica, Verdana, sans-serif;
   background-color: $bg_color_page;
   color: $font_color_page;
@@ -11,10 +11,10 @@ body {
 
 html {
   box-sizing: border-box;
-  font-size: 16px;
+  font-size: 16px; // sass-lint:disable-line property-units
 }
 
-*, ::before, ::after {
+*, ::before, ::after { // sass-lint:disable-line no-universal-selectors
   box-sizing: inherit;
 }
 
@@ -42,12 +42,12 @@ input, textarea, button {
   margin: 5px 0;
 }
 
-input[type="checkbox"] { height: 23px; }
+input[type='checkbox'] { height: 23px; }
 textarea { padding: 5px; }
-.form-table td input[type="radio"] { width: unset; }
+.form-table td input[type='radio'] { width: unset; }
 
 button, .button {
-  background-color: $bg_color_button;
+  background: $bg_color_button;
   background: linear-gradient($bg_color_button_20 20%, $bg_color_button_50 50%, $bg_color_button_52 52%, $bg_color_button_100 100%);
   background-clip: padding-box;
   border-color: $border_color_button;
@@ -108,22 +108,16 @@ button, .button {
 /* For UI elements involving reordering */
 .disabled-arrow {
   filter: $filter_disabled; /* IE */
-  -webkit-filter: grayscale(1); /* Chrome, Safari, Opera */
   filter: grayscale(1); /* Edge, Firefox */
+  -webkit-filter: grayscale(1); /* Chrome, Safari, Opera */
 }
 
 /* Displaying forum threads */
-.even, .odd, .post-post, .post-reply, #post-editor {
-  padding: 5px;
-}
+.even, .odd, .post-post, .post-reply, #post-editor { padding: 5px; }
 
-.even, .post-post, .post-reply:nth-child(even), #post-editor {
-  background-color: $bg_color_even;
-}
+.even, .post-post, .post-reply:nth-child(even), #post-editor { background-color: $bg_color_even; }
 
-.odd, .post-reply:nth-child(odd), .post-post + #post-editor, .post-post + a + #post-editor {
-  background-color: $bg_color_odd;
-}
+.odd, .post-reply:nth-child(odd), .post-post + #post-editor, .post-post + a + #post-editor { background-color: $bg_color_odd; }
 
 /* UI Links */
 .link-box {

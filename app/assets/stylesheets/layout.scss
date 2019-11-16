@@ -155,7 +155,6 @@
 
 .flash.error { background-color: $bg_color_flash_error; }
 .flash.success { background-color: $bg_color_flash_success; }
-.flash.inbox { background-color: $bg_color_flash_inbox; }
 .flash.breadcrumbs { background-color: $bg_color_flash_breadcrumbs; }
 
 /* Top-right timestamp on certain timestamped pages */
@@ -205,6 +204,7 @@ th, .content-header {
 
   & > div { overflow: hidden; }
 }
+
 td, .table-list li { font-size: $font_size_small; }
 
 /* Subs and subbers */
@@ -213,7 +213,6 @@ td, .table-list li { font-size: $font_size_small; }
   background-color: $bg_color_sub;
   color: $font_color_sub;
   font-size: $font_size_main;
-
   &.width-150 { width: 170px; }
 }
 
@@ -266,7 +265,6 @@ td, .table-list li { font-size: $font_size_small; }
   font-size: $font_size_smallish;
   font-weight: bold;
   text-align: center;
-
   input { margin: 0; }
 }
 
@@ -307,9 +305,7 @@ td, .table-list li { font-size: $font_size_small; }
   border-radius: 5px;
   cursor: pointer;
   height: 29px;
-
   &.selected { background-color: $bg_color_viewbutton_selected; }
-
   a { color: $font_color_viewbutton; }
 }
 
@@ -364,6 +360,7 @@ td, .table-list li { font-size: $font_size_small; }
   word-wrap: break-word;
   table-layout: fixed;
 }
+
 .right-content-box { float: left; }
 .user-info-box { width: 200px; }
 .icon-info-box { width: 150px; }
@@ -428,6 +425,7 @@ td, .table-list li { font-size: $font_size_small; }
   background-color: $bg_color_search_box;
   color: $font_color_search_box;
 }
+
 .search-icon-preview { vertical-align: middle; }
 .search-icon-keyword { padding-left: 5px; }
 
@@ -453,7 +451,6 @@ td, .table-list li { font-size: $font_size_small; }
   left: 0px;
   bottom: 0px;
   width: 100%;
-
   a { color: $font_color_header_link; }
   a:hover { color: $font_color_header_link_hover; }
 
@@ -485,6 +482,7 @@ The copy box can't be invisible/hidden or copy fails but opacity works
   margin: 0px 5px;
   width: 210px;
 }
+
 #tag-search { margin-left: 5px; }
 
 #remember-link {

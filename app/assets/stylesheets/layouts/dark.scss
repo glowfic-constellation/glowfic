@@ -20,8 +20,6 @@ $font_color_link_hover: #B3B3B3; // link (hovered)
 $bg_color_flash_success: #555E55; // success
 $font_color_flash_success: $colors_silver_again;
 $bg_color_flash_error: #532D38; // error
-$bg_color_flash_inbox: #4B4B71; // new message
-$font_color_flash_inbox: #C5C5C5;
 $bg_color_flash_breadcrumbs: #464646; // breadcrumbs ("Continuities » Continuity » Section » Thread")
 $font_color_flash_breadcrumbs: $colors_alto;
 $font_color_flash_link: $colors_alto;
@@ -118,4 +116,4 @@ $bg_color_select2_selected: #454545;
 $bg_color_select2_search: $bg_color_select2_highlight;
 $opacity_mce_label: 1;
 
-@import '_dark_selectors.scss'
+@import 'dark_selectors'

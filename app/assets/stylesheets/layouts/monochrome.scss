@@ -14,7 +14,6 @@ $font_color_link_visited: #484848;
 // flashes
 // these are the notifications that appear when you submit a form or get a message
 $bg_color_flash_success: $colors_gallery; // success
-$bg_color_flash_inbox: $colors_gallery; // new message
 $bg_color_flash_breadcrumbs: #ADADAD; // breadcrumbs ("Continuities » Continuity » Section » Thread")
 
 // content headers
@@ -57,4 +56,4 @@ $bg_color_linkbox_dismiss: $colors_rock;
 $bg_color_badge: #E5D8AF;
 $border_color_badge: #6F6A61;
 
-@import '_monochrome_selectors'
+@import 'monochrome_selectors'
