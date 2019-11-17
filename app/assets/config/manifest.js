@@ -2,18 +2,10 @@
 //= link favicons/browserconfig.xml
 //= link favicons/manifest.json
 
-//= require application.js
+//= link application.js
 //= link_tree ../javascripts .js
 
 //= link application.css
-//= link bootstrap-ui.css
-//= link characters.css
-//= link galleries.css
-//= link global.css
-//= link layout.css
-//= link messages.css
-//= link normalize.css
-//= link replies.css
 //= link tinymce.css
 
 //= link layouts/dark.css
