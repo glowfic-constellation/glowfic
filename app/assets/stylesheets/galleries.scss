@@ -130,3 +130,8 @@
   width: 150px;
   text-align: center;
 }
+
+.gallery-table {
+  td, th { padding: 5px 10px; }
+  .form-table-ender { font-weight: normal; }
+}

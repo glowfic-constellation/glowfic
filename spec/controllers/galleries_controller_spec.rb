@@ -221,6 +221,52 @@ RSpec.describe GalleriesController do
         expect(meta_og[:description]).to eq("16 icons\nTags: Tag 1, Tag 2")
       end
     end
+
+    context "with views" do
+      let(:user) { create(:user) }
+
+      render_views
+
+      context "with galleryless" do
+        let(:gallery_user) { create(:user) }
+        let(:icons) { create_list(:icon, 3, user: gallery_user) }
+
+        it "loads icon view" do
+          get :show, params: { id: '0', user_id: gallery_user.id, view: 'icons' }
+          expect(response.status).to eq(200)
+        end
+
+        it "loads list view" do
+          post = create(:post, user: gallery_user, icon: icons[0])
+          create(:post, user: gallery_user, icon: icons[1])
+          icons.each { |icon| create(:reply, user: gallery_user, post: post, icon: icon) }
+          get :show, params: { id: '0', user_id: gallery_user.id, view: 'list' }
+          expect(response.status).to eq(200)
+          expect(assigns(:times_used).to_a).to match_array([[icons[0].id, 2], [icons[1].id, 2], [icons[2].id, 1]])
+          expect(assigns(:posts_used).to_a).to match_array([[icons[0].id, 1], [icons[1].id, 2], [icons[2].id, 1]])
+        end
+      end
+
+      context "with a gallery" do
+        let(:gallery) { create(:gallery, icon_count: 3) }
+
+        it "loads icon view" do
+          get :show, params: { id: gallery.id, view: 'icons' }
+          expect(response.status).to eq(200)
+        end
+
+        it "loads list view" do
+          icons = gallery.icons
+          post = create(:post, user: gallery.user, icon: icons[0])
+          create(:post, user: gallery.user, icon: icons[1])
+          icons.each { |icon| create(:reply, user: gallery.user, post: post, icon: icon) }
+          get :show, params: { id: gallery.id, view: 'list' }
+          expect(response.status).to eq(200)
+          expect(assigns(:times_used).to_a).to match_array([[icons[0].id, 2], [icons[1].id, 2], [icons[2].id, 1]])
+          expect(assigns(:posts_used).to_a).to match_array([[icons[0].id, 1], [icons[1].id, 2], [icons[2].id, 1]])
+        end
+      end
+    end
   end
 
   describe "GET edit" do
