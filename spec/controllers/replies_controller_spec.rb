@@ -1020,6 +1020,17 @@ RSpec.describe RepliesController do
     end
 
     it "does not update post status" do
+      rpost = create(:post)
+      reply = create(:reply, post: rpost, user: rpost.user)
+      create(:reply, post: rpost, user: rpost.user)
+      reply.destroy
+
+      rpost.status = Post::STATUS_HIATUS
+      rpost.save
+      login_as(rpost.user)
+      post :restore, params: { id: reply.id }
+      expect(flash[:success]).to eq("Reply has been restored!")
+      expect(Post.find(rpost.id).status).to eq(Post::STATUS_HIATUS)
     end
   end
 
