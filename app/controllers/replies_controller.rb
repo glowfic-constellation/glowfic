@@ -211,8 +211,7 @@ class RepliesController < WritableController
   end
 
   def restore
-    audit = Audited::Audit.where(action: 'destroy').find_by(auditable_id: params[:id])
-
+    audit = Audited::Audit.where(action: 'destroy').order(id: :desc).find_by(auditable_id: params[:id])
     unless audit
       flash[:error] = "Reply could not be found."
       redirect_to boards_path and return
@@ -224,6 +223,11 @@ class RepliesController < WritableController
     end
 
     new_reply = Reply.new(audit.audited_changes)
+    unless new_reply.editable_by?(current_user)
+      flash[:error] = "You do not have permission to modify this post."
+      redirect_to post_path(new_reply.post) # TODO test this
+    end
+
     new_reply.is_import = true
     new_reply.skip_notify = true
     new_reply.id = audit.auditable_id

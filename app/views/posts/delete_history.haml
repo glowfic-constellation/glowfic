@@ -11,15 +11,20 @@
 = render 'posts/paginator', paginated: @audits
 %br
 
-.sub Preceding context
-= render partial: 'replies/single', collection: @preceding, as: :reply
-%br
+- if @audits.present?
+  .subber Preceding context
+  = render partial: 'replies/single', collection: @preceding, as: :reply
+  %br
 
-.sub
-  Reply deleted #{pretty_time(@audit.created_at)} by #{user_link(@audit.user)}
-  = link_to 'Restore', restore_reply_path(id: @audit.auditable_id), method: :post
-= render 'replies/single', reply: @deleted
-%br
+  .subber
+    Reply deleted #{pretty_time(@audit.created_at)} by #{user_link(@audit.user)}
+    - if @deleted.editable_by?(current_user)
+      = link_to restore_reply_path(id: @audit.auditable_id), method: :post do
+        %button{style: 'float: right; margin: 0;'} Restore
+        .clear
+  = render 'replies/single', reply: @deleted
+  %br
 
-.sub Following context
-= render partial: 'replies/single', collection: @following, as: :reply
+  - if @following.present?
+    .subber Following context
+    = render partial: 'replies/single', collection: @following, as: :reply

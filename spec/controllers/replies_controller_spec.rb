@@ -980,7 +980,7 @@ RSpec.describe RepliesController do
       expect(rpost.last_reply).to eq(deleted_reply)
     end
 
-    it "does not allow two restores" do
+    it "does not allow restoring something already restored" do
       reply = create(:reply)
       reply.destroy
       login_as(reply.user)
@@ -989,6 +989,27 @@ RSpec.describe RepliesController do
       post :restore, params: { id: reply.id }
       expect(flash[:error]).to eq("Reply does not need restoring.")
       expect(response).to redirect_to(post_url(reply.post))
+    end
+
+    it "correctly restores a previously restored reply" do
+      reply = create(:reply, content: 'not yet restored')
+      reply.destroy
+      login_as(reply.user)
+      post :restore, params: { id: reply.id }
+      expect(flash[:success]).to eq("Reply has been restored!")
+
+      reply = Reply.find(reply.id)
+      reply.content = 'restored right'
+      reply.save
+      reply.destroy
+
+      post :restore, params: { id: reply.id }
+      expect(flash[:success]).to eq("Reply has been restored!")
+      reply = Reply.find(reply.id)
+      expect(reply.content).to eq('restored right')
+    end
+
+    it "does not update post status" do
     end
   end
 
