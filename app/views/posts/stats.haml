@@ -19,7 +19,7 @@
         - if @post.metadata_editable_by?(current_user)
           = link_to edit_post_path(@post) do
             .link-box.action-edit
-              = image_tag "icons/pencil.png"
+              = image_tag "icons/pencil.png", alt: ''
               Edit Post
     - if @post.description.present?
       %tr
@@ -30,16 +30,16 @@
       %td{class: cycle('odd', 'even')}
         - case @post.status
         - when Post::STATUS_ACTIVE
-          = image_tag "icons/book_open.png", class: 'vmid', title: "In Progress"
+          = image_tag "icons/book_open.png", class: 'vmid', title: 'In Progress', alt: ''
           In Progress
         - when Post::STATUS_COMPLETE
-          = image_tag "icons/book.png", class: 'vmid', title: "In Progress"
+          = image_tag "icons/book.png", class: 'vmid', title: 'Complete', alt: ''
           Complete
         - when Post::STATUS_HIATUS
-          = image_tag "icons/hourglass.png", class: 'vmid', title: "In Progress"
+          = image_tag "icons/hourglass.png", class: 'vmid', title: 'On Hiatus', alt: ''
           On Hiatus
         - when Post::STATUS_ABANDONED
-          = image_tag "icons/book_grey.png", class: 'vmid', title: "In Progress"
+          = image_tag "icons/book_grey.png", class: 'vmid', title: 'Abandoned', alt: ''
           Abandoned
     %tr
       %th.sub.width-150 Audience

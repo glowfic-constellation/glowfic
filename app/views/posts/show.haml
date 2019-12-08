@@ -19,7 +19,7 @@
       - else
         = link_to warnings_post_path(@post, page: page, per_page: per_page), method: :post, data: { confirm: 'Are you sure? You will not see content warnings again until you restart your browser!'.freeze } do
           .link-box.action-dismiss.float-right Dismiss all content warnings
-      = image_tag "icons/exclamation.png".freeze, class: 'vmid'.freeze
+      = image_tag "icons/exclamation.png".freeze, class: 'vmid'.freeze, alt: ''
       This post has the following content warnings:
       %ul
         - @warnings.each do |warning|
@@ -34,86 +34,86 @@
     -# TODO ePub downloader
     -#= link_to post_path(@post, completed: false), method: :put do
     -#  %div
-    -#    = image_tag "icons/book_go.png"
+    -#    = image_tag "icons/book_go.png", alt: ''
     -#    Download as ePub
     = link_to post_path(@post, view: 'flat'.freeze), rel: 'nofollow noindex'.freeze do
       %div
-        = image_tag "icons/page_world.png".freeze
+        = image_tag "icons/page_world.png".freeze, alt: ''
         View Flat HTML
     = link_to stats_post_path(@post) do
       %div
-        = image_tag "icons/chart_bar.png".freeze
+        = image_tag "icons/chart_bar.png".freeze, alt: ''
         View Metadata
     = link_to search_replies_path(post_id: @post.id) do
       %div
-        = image_tag "icons/magnifier.png".freeze
+        = image_tag "icons/magnifier.png".freeze, alt: ''
         Search Post
     - if logged_in?
       = link_to post_path(@post, unread: true), method: :put do
         %div
-          = image_tag "icons/eye.png".freeze, class: 'vmid'.freeze, style: 'margin-bottom: 3px;'.freeze
+          = image_tag "icons/eye.png".freeze, class: 'vmid'.freeze, style: 'margin-bottom: 3px;'.freeze, alt: ''
           Mark Unread
       - if @post.ignored_by?(current_user)
         = link_to post_path(@post, hidden: false), method: :put do
           %div
-            = image_tag "icons/weather_cloudy.png".freeze, class: 'vmid'.freeze, style: 'margin-bottom: 3px;'.freeze
+            = image_tag "icons/weather_cloudy.png".freeze, class: 'vmid'.freeze, style: 'margin-bottom: 3px;'.freeze, alt: ''
             Unhide
       - else
         = link_to post_path(@post, hidden: true), method: :put do
           %div
-            = image_tag "icons/weather_clouds.png".freeze, class: 'vmid'.freeze, style: 'margin-bottom: 3px;'.freeze
+            = image_tag "icons/weather_clouds.png".freeze, class: 'vmid'.freeze, style: 'margin-bottom: 3px;'.freeze, alt: ''
             Hide
       - if (fav = Favorite.between(current_user, @post))
         = link_to favorite_path(fav), method: :delete do
           %div
-            = image_tag "icons/star_delete.png".freeze, class: 'vmid'.freeze, style: 'margin-bottom: 3px;'.freeze
+            = image_tag "icons/star_delete.png".freeze, class: 'vmid'.freeze, style: 'margin-bottom: 3px;'.freeze, alt: ''
             Unfavorite
       - else
         = link_to favorites_path(post_id: @post.id, page: page, per_page: per_page), method: :post do
           %div
-            = image_tag "icons/star_add.png".freeze, class: 'vmid'.freeze, style: 'margin-bottom: 3px;'.freeze
+            = image_tag "icons/star_add.png".freeze, class: 'vmid'.freeze, style: 'margin-bottom: 3px;'.freeze, alt: ''
             Favorite
       - if @post.metadata_editable_by?(current_user)
         - unless @post.completed?
           = link_to post_path(@post, status: 'complete'.freeze), method: :put do
             %div
-              = image_tag "icons/book.png".freeze
+              = image_tag "icons/book.png".freeze, alt: ''
               Mark Complete
         - unless @post.marked_hiatus?
           = link_to post_path(@post, status: 'hiatus'.freeze), method: :put do
             %div
-              = image_tag "icons/hourglass.png".freeze
+              = image_tag "icons/hourglass.png".freeze, alt: ''
               Mark On Hiatus
         - unless @post.active?
           = link_to post_path(@post, status: 'active'.freeze), method: :put do
             %div
-              = image_tag "icons/book_open.png".freeze
+              = image_tag "icons/book_open.png".freeze, alt: ''
               Mark In Progress
         - unless @post.abandoned?
           = link_to post_path(@post, status: 'abandoned'.freeze), method: :put do
             %div
-              = image_tag "icons/book_grey.png".freeze
+              = image_tag "icons/book_grey.png".freeze, alt: ''
               Mark Abandoned
         - if @post.authors_locked?
           = link_to post_path(@post, authors_locked: 'false'.freeze), method: :put do
             %div
-              = image_tag "icons/lock_open.png".freeze
+              = image_tag "icons/lock_open.png".freeze, alt: ''
               Unlock Authors
         - else
           = link_to post_path(@post, authors_locked: 'true'.freeze), method: :put do
             %div
-              = image_tag "icons/lock.png".freeze
+              = image_tag "icons/lock.png".freeze, alt: ''
               Lock Authors
         - author = @post.author_for(current_user)
         - if author&.can_owe?
           = link_to mark_posts_path(marked_ids: [@post.id], commit: "Remove from Replies Owed"), method: :post do
             %div
-              = image_tag "icons/bell_delete.png".freeze
+              = image_tag "icons/bell_delete.png".freeze, alt: ''
               Remove from Replies Owed
         - elsif author.present?
           = link_to mark_posts_path(marked_ids: [@post.id], commit: "Show in Replies Owed"), method: :post do
             %div
-              = image_tag "icons/bell_add.png".freeze
+              = image_tag "icons/bell_add.png".freeze, alt: ''
               Show in Replies Owed
         = link_to delete_history_post_path(@post) do
           %div
@@ -122,7 +122,7 @@
       -# TODO need more dynos
       -#= link_to users_path do
       -#  %div
-      -#    = image_tag "icons/bell_add.png"
+      -#    = image_tag "icons/bell_add.png", alt: ''
       -#    Turn on notifications
 - if @post.description.present?
   .post-subheader= sanitize_simple_link_text(@post.description)

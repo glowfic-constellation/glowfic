@@ -33,43 +33,43 @@
   %tr
     %td.centered{class: cycle('even', 'odd')}
       = link_to icon_path(@icon, view: 'stats') do
-        = image_tag "icons/chart_bar.png"
+        = image_tag "icons/chart_bar.png", alt: ''
         Stats
   %tr
     %td.centered{class: cycle('even', 'odd')}
       = link_to icon_path(@icon, view: 'galleries') do
-        = image_tag "icons/photos.png"
+        = image_tag "icons/photos.png", alt: ''
         &nbsp;Galleries
   %tr
     %td.centered{class: cycle('even', 'odd')}
       = link_to icon_path(@icon, view: 'posts') do
-        = image_tag "icons/book_open.png"
+        = image_tag "icons/book_open.png", alt: ''
         Posts
   %tr
     %td.centered{class: cycle('even', 'odd')}
       = link_to search_replies_path(commit: true, icon_id: @icon.id) do
-        = image_tag "icons/table_multiple.png"
+        = image_tag "icons/table_multiple.png", alt: ''
         Replies
   - if @icon.user_id == current_user.try(:id)
     %tr
       %td.centered{class: cycle('even', 'odd')}
         = link_to edit_icon_path(@icon) do
-          = image_tag "icons/pencil.png"
+          = image_tag "icons/pencil.png", alt: ''
           Edit Icon
     %tr
       %td.centered{class: cycle('even', 'odd')}
         = link_to avatar_icon_path(@icon), method: :post do
-          = image_tag "icons/status_online.png"
+          = image_tag "icons/status_online.png", alt: ''
           Make Avatar
     %tr
       %td.centered{class: cycle('even', 'odd')}
         = link_to replace_icon_path(@icon) do
-          = image_tag "icons/swap.png", style: 'width: 16px;'
+          = image_tag "icons/swap.png", style: 'width: 16px;', alt: ''
           Replace Icon
     %tr
       %td.centered{class: cycle('even', 'odd')}
         = link_to icon_path(@icon), method: :delete, data: { confirm: 'Are you sure you want to delete this icon?' } do
-          = image_tag "icons/cross.png"
+          = image_tag "icons/cross.png", alt: ''
           Delete Icon
 
 - if params[:view] == 'galleries'

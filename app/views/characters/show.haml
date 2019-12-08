@@ -36,45 +36,45 @@
     %tr
       %td.centered{class: cycle('even', 'odd')}
         = link_to character_path(@character) do
-          = image_tag "icons/chart_bar.png"
+          = image_tag "icons/chart_bar.png", alt: ''
           Info
     %tr
       %td.centered{class: cycle('even', 'odd')}
         = link_to character_path(@character, view: 'galleries') do
-          = image_tag "icons/photos.png"
+          = image_tag "icons/photos.png", alt: ''
           Galleries
     %tr
       %td.centered{class: cycle('even', 'odd')}
         = link_to character_path(@character, view: 'posts') do
-          = image_tag "icons/book_open.png"
+          = image_tag "icons/book_open.png", alt: ''
           Posts
     %tr
       %td.centered{class: cycle('even', 'odd')}
         = link_to search_replies_path(commit: true, character_id: @character.id) do
-          = image_tag "icons/table_multiple.png"
+          = image_tag "icons/table_multiple.png", alt: ''
           Replies
     - if @character.editable_by?(current_user)
       %tr
         %td.centered{class: cycle('even', 'odd')}
           = link_to edit_character_path(@character), class: 'character-edit' do
-            = image_tag "icons/pencil.png"
+            = image_tag "icons/pencil.png", alt: ''
             Edit Character
     - if logged_in? && @character.user_id == current_user.id
       %tr
         %td.centered{class: cycle('even', 'odd')}
           = link_to duplicate_character_path(@character), method: :post, class: 'character-duplicate', data: { confirm: 'Are you sure you want to duplicate this character?' } do
-            = image_tag "icons/arrow_branch.png"
+            = image_tag "icons/arrow_branch.png", alt: ''
             Duplicate Character
       %tr
         %td.centered{class: cycle('even', 'odd')}
           = link_to replace_character_path(@character), class: 'character-replace' do
-            = image_tag "icons/swap.png", style: 'width: 16px;'
+            = image_tag "icons/swap.png", style: 'width: 16px;', alt: ''
             Replace Character
     - if @character.deletable_by?(current_user)
       %tr
         %td.centered{class: cycle('even', 'odd')}
           = link_to character_path(@character), method: :delete, class: 'character-delete', data: { confirm: 'Are you sure you want to delete this character?' } do
-            = image_tag "icons/cross.png"
+            = image_tag "icons/cross.png", alt: ''
             Delete Character
 
 - if params[:view] == 'galleries'

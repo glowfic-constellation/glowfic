@@ -14,19 +14,19 @@
         .link-box.action-new + New Section
       = link_to edit_board_path(@board) do
         .link-box.action-edit
-          = image_tag "icons/pencil.png"
+          = image_tag "icons/pencil.png", alt: ''
           Edit
       = link_to board_path(@board), method: :delete, data: { confirm: 'Are you sure you want to delete this continuity?' } do
         .link-box.action-delete x Delete
     - if (fav = Favorite.between(current_user, @board))
       = link_to favorite_path(fav), method: :delete do
         .link-box.action-edit
-          = image_tag "icons/star_delete.png", class: 'vmid'
+          = image_tag "icons/star_delete.png", class: 'vmid', alt: ''
           Unfavorite
     - else
       = link_to favorites_path(board_id: @board.id), method: :post do
         .link-box.action-favorite
-          = image_tag "icons/star_add.png", class: 'vmid'
+          = image_tag "icons/star_add.png", class: 'vmid', alt: ''
           Favorite
 
 - if @board.board_sections.exists?

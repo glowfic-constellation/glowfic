@@ -35,7 +35,7 @@
           %td.width-15{class: klass, style: 'padding: 0px;'}= icon_mem_tag purl || '', pkey || '', class: 'vmid preview-icon'
           %td.padding-5{class: klass}
             %span.conf{class: ('hidden' unless s3_key.present?)}
-              = image_tag "icons/accept.png", class: 'vmid'
+              = image_tag "icons/accept.png", class: 'vmid', alt: ''
               Uploaded
               %span.filename= @icons[i].try(:[], :filename)
             = text_field_tag "icons[][url]", url, placeholder: "URL", class: ('hidden' if s3_key.present?), id: "icons_#{i}_url"

@@ -10,7 +10,7 @@
         .link-box.action-new + Add Post to Section
       = link_to edit_index_section_path(section) do
         .link-box.action-edit
-          = image_tag "icons/pencil.png"
+          = image_tag "icons/pencil.png", alt: ''
           Edit
       = link_to index_section_path(section), method: :delete, data: { confirm: 'Are you sure you want to delete this section?' } do # TODO do I nilify or destroy here?
         .link-box.action-delete x Delete
