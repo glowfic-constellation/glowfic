@@ -39,7 +39,8 @@ services:
       - POSTGRES_PASSWORD=postgres
     image: postgres:11-alpine
     volumes:
-      - "./db/storage/:/var/lib/postgresql/data"
+      - postgres-data:/var/lib/postgresql/data
 
 volumes:
   bundler-volume:
+  postgres-data:
