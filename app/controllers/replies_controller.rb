@@ -225,7 +225,7 @@ class RepliesController < WritableController
     new_reply = Reply.new(audit.audited_changes)
     unless new_reply.editable_by?(current_user)
       flash[:error] = "You do not have permission to modify this post."
-      redirect_to post_path(new_reply.post) # TODO test this
+      redirect_to post_path(new_reply.post) and return # TODO test this
     end
 
     new_reply.is_import = true

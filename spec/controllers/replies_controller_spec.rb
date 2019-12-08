@@ -890,10 +890,20 @@ RSpec.describe RepliesController do
     it "must be a deleted reply" do
       reply = create(:reply)
       Audited::Audit.where(action: 'create').find_by(auditable_id: reply.id).update(action: 'destroy')
-      login
+      login_as(reply.user)
       post :restore, params: { id: 99 }
       expect(response).to redirect_to(boards_url)
       expect(flash[:error]).to eq("Reply could not be found.")
+    end
+
+    it "must be your reply" do
+      rpost = create(:post)
+      reply = create(:reply, post: rpost)
+      login_as(rpost.user)
+      reply.destroy
+      post :restore, params: { id: reply.id }
+      expect(response).to redirect_to(post_url(rpost))
+      expect(flash[:error]).to eq('You do not have permission to modify this post.')
     end
 
     it "handles mid reply deletion" do
@@ -943,7 +953,7 @@ RSpec.describe RepliesController do
       deleted_reply.destroy
       post_attributes = Post.find_by_id(rpost.id).attributes
 
-      login_as(rpost.user)
+      login_as(deleted_reply.user)
       post :restore, params: { id: deleted_reply.id }
 
       expect(Reply.find_by_id(deleted_reply.id)).to eq(deleted_reply)
@@ -973,7 +983,7 @@ RSpec.describe RepliesController do
       expect(rpost.last_user).to eq(rpost.user)
       expect(rpost.last_reply).to be_nil
 
-      login_as(rpost.user)
+      login_as(deleted_reply.user)
       post :restore, params: { id: deleted_reply.id }
       rpost = Post.find(rpost.id)
       expect(rpost.last_user).to eq(deleted_reply.user)
