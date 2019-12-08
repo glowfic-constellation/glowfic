@@ -59,7 +59,7 @@
           #user-info
             = link_to user_path(current_user) do
               - if current_user.avatar
-                = image_tag current_user.avatar.url, class: 'icon', id: 'user-icon'
+                = image_tag current_user.avatar.url, class: 'icon', id: 'user-icon', title: current_user.avatar.keyword, alt: current_user.avatar.keyword
               - else
                 .no-img
               #user-username= current_user.username
