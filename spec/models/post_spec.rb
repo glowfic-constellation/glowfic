@@ -940,6 +940,26 @@ RSpec.describe Post do
     end
   end
 
+  describe "#has_content_warnings?" do
+    it "is false with no warnings" do
+      post = create(:post)
+      expect(post.has_content_warnings?).to be false
+    end
+
+    it "is true with warnings" do
+      warning = create(:content_warning)
+      post = create(:post, content_warning_ids: [warning.id])
+      expect(post.has_content_warnings?).to be true
+    end
+
+    it "is true with preloaded warnings" do
+      warning = create(:content_warning)
+      post = create(:post, content_warning_ids: [warning.id])
+      post = Post.where(id: post.id).with_has_content_warnings.first
+      expect(post.has_content_warnings?).to be true
+    end
+  end
+
   describe "authors" do
     it "automatically creates an author on creation" do
       post = create(:post)

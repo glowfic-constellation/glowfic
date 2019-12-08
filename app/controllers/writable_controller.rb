@@ -78,12 +78,8 @@ class WritableController < ApplicationController
     redirect_to post_path(@post, page: @replies.total_pages, per_page: per) and return if cur_page > @replies.total_pages
     use_javascript('paginator')
 
-    if @post.board.ordered?
-      posts = Post.where(board_id: @post.board_id, section_id: @post.section_id).visible_to(current_user).ordered_in_section
-
-      @next_post = posts.find_by('section_order > ?', @post.section_order)
-      @prev_post = posts.reverse_order.find_by('section_order < ?', @post.section_order)
-    end
+    @next_post = @post.next_post(current_user)
+    @prev_post = @post.prev_post(current_user)
 
     # show <link rel="canonical"> – for SEO stuff
     canon_params = {}

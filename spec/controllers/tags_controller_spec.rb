@@ -62,6 +62,12 @@ RSpec.describe TagsController do
       get :index
       expect(assigns(:tags)).to eq([setting1, setting2, tag1, tag2, warning1, warning2])
     end
+
+    it 'checks for valid tag type' do
+      get :index, params: { view: 'NotATagType' }
+      expect(response).to redirect_to(tags_path)
+      expect(flash[:error]).to eq("Invalid filter")
+    end
   end
 
   describe "GET show" do
