@@ -44,8 +44,8 @@
           %td.padding-5{class: klass}= text_field_tag "icons[][keyword]", keyword, placeholder: "Keyword"
           %td.padding-5{class: klass}= text_field_tag "icons[][credit]", @icons[i].try(:[], :credit), placeholder: "Credit"
           %td.right-align.icon-buttons{class: klass}
-            = image_tag "icons/add.png", class: "icon-row-add"
-            = image_tag "icons/minus.png", class: "icon-row-rem"
+            = image_tag "icons/add.png", class: "icon-row-add", alt: 'Add Row'
+            = image_tag "icons/minus.png", class: "icon-row-rem", alt: 'Delete Row'
     %tfoot
       %tr.submit-row
         %th.form-table-ender{colspan: 5}= submit_tag "Add New Icons", class: 'button'

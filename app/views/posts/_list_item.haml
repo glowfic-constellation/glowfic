@@ -3,23 +3,23 @@
   - replies_count = post.reply_count
   %td.post-completed.vtop{class: [klass, (post.completed? ? 'post-complete' : 'post-incomplete')]}
     - if post.completed?
-      = image_tag "icons/book.png", class: 'vmid', title: "Thread Complete"
+      = image_tag "icons/book.png", class: 'vmid', title: "Thread Complete", alt: 'Complete'
     - elsif post.on_hiatus?
-      = image_tag "icons/hourglass.png", class: 'vmid', title: "Thread On Hiatus"
+      = image_tag "icons/hourglass.png", class: 'vmid', title: "Thread On Hiatus", alt: 'Hiatused'
     - elsif post.abandoned?
-      = image_tag "icons/book_grey.png", class: 'vmid', title: "Thread Abandoned"
+      = image_tag "icons/book_grey.png", class: 'vmid', title: "Thread Abandoned", alt: 'Abandoned'
     - if post.access_list? || post.private?
       = privacy_icon(post.privacy)
     - if !current_user.try(:hide_warnings) && post.has_content_warnings?
-      = image_tag "icons/exclamation.png", class: 'vmid', title: "Content Warning: " + post.content_warnings.pluck(:name).join(', '), alt: '!'
+      = image_tag "icons/exclamation.png", class: 'vmid', title: "Content Warning: " + post.content_warnings.pluck(:name).join(', '), alt: 'Has Warnings'
   %td.post-subject.vtop{class: klass}
     - if logged_in?
       - if unread_post?(post, unread_ids) || (@show_unread && !opened_post?(post, opened_ids))
         = link_to unread_path(post) do
-          = image_tag unread_img, class: 'vmid', title: 'First Unread'
+          = image_tag unread_img, class: 'vmid', title: 'First Unread', alt: 'First Unread'
       - elsif @show_unread
         = link_to unread_path(post) do
-          = image_tag lastlink_img, class: 'vmid', title: 'First Unread'
+          = image_tag lastlink_img, class: 'vmid', title: 'First Unread', alt: 'Jump To End'
     - if logged_in? && @opened_ids.present? && !@opened_ids.include?(post.id)
       %b= link_to post.subject, post_path(post), title: strip_tags(post.description)&.html_safe
     - else

@@ -78,10 +78,10 @@
         - unless local_assigns[:hide_buttons]
           - if Character.editable_by?(current_user, user_id)
             = link_to edit_character_path(char_id) do
-              = image_tag "icons/pencil.png"
+              = image_tag "icons/pencil.png", alt: 'Edit'
           - if Character.deletable_by?(current_user, user_id)
             = link_to character_path(char_id), :method => :delete, data: { confirm: "Are you sure you want to delete #{char_name}?" } do
-              = image_tag "icons/cross.png"
+              = image_tag "icons/cross.png", alt: 'Delete'
             &nbsp;
   - if characters.methods.include?(:total_pages) && characters.total_pages > 1
     %tfoot

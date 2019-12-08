@@ -28,7 +28,7 @@
 .content-header
   %span#post-title= link_to @post.subject, post_path(@post)
   .view-button#post-menu
-    = image_tag menu_img, class: 'icon-view'.freeze
+    = image_tag menu_img, class: 'icon-view'.freeze, alt: 'Show Menu'
 #post-menu-holder
   #post-menu-box.hidden
     -# TODO ePub downloader

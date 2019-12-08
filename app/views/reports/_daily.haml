@@ -27,13 +27,13 @@
           - klass << 'post-ignored' if ignored?(post)
           %td.vtop.post-completed{class: klass.dup.push(post.completed? ? 'post-complete' : 'post-incomplete')}
             - if post.completed?
-              = image_tag "icons/book.png", class: 'vmid', title: "Thread Complete"
-            - if post.on_hiatus?
-              = image_tag "icons/hourglass.png", class: 'vmid', title: "Thread On Hiatus"
-            - if post.abandoned?
-              = image_tag "icons/book_grey.png", class: 'vmid', title: "Thread Abandoned"
+              = image_tag "icons/book.png", class: 'vmid', title: "Thread Complete", alt: 'Complete'
+            - elsif post.on_hiatus?
+              = image_tag "icons/hourglass.png", class: 'vmid', title: "Thread On Hiatus", alt: 'Hiatused'
+            - elsif post.abandoned?
+              = image_tag "icons/book_grey.png", class: 'vmid', title: "Thread Abandoned", alt: 'Abandoned'
             - if !current_user.try(:hide_warnings) && post.has_content_warnings?
-              = image_tag "icons/exclamation.png", class: 'vmid', title: "Content Warning: " + post.content_warnings.pluck(:name).join(', '), alt: '!'
+              = image_tag "icons/exclamation.png", class: 'vmid', title: "Content Warning: " + post.content_warnings.pluck(:name).join(', '), alt: 'Has Warnings'
             - if post.created_at.beginning_of_day == @day.beginning_of_day
               = image_tag "icons/new.png", class: 'vmid', title: 'New Today', alt: 'New'
           %td.post-subject{class: klass}
