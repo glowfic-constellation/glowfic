@@ -237,7 +237,7 @@ class RepliesController < WritableController
     new_reply.reply_order = following_replies.first&.reply_order
 
     Reply.transaction do
-      following_replies.update_all('reply_order = reply_order + 1')
+      following_replies.update_all('reply_order = reply_order + 1') # rubocop:disable Rails/SkipsModelValidations
       new_reply.save!
     end
 
