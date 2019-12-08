@@ -3,7 +3,6 @@ rvm:
  - 2.6.5
 env:
   global:
-    - CI=true
     - CC_TEST_REPORTER_ID=1e0c6dba9930e839038860b6d73301226c821937f57ed35d06fc0e4b7bddf5f6
 services:
   - redis-server
