@@ -1465,6 +1465,18 @@ RSpec.describe PostsController do
         expect(post.reload.status).not_to eq(Post::STATUS_ABANDONED)
       end
 
+      it "marks read after completed" do
+        post = nil
+        Timecop.freeze(Time.now - 1.day) do
+          post = create(:post)
+          login_as(post.user)
+          post.mark_read(post.user)
+        end
+        put :update, params: { id: post.id, status: 'complete' }
+        post = Post.find(post.id)
+        expect(post.last_read(post.user)).to be_the_same_time_as(post.tagged_at)
+      end
+
       {complete: 'completed', abandoned: 'abandoned', hiatus: 'on_hiatus', active: 'active'}.each do |status, method|
         context "to #{status}" do
           let(:post) { create(:post) }

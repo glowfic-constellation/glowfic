@@ -334,7 +334,10 @@ class PostsController < WritableController
     else
       @post.status = new_status
       begin
-        @post.save!
+        Post.transaction do
+          @post.save!
+          @post.mark_read(current_user, @post.tagged_at)
+        end
       rescue ActiveRecord::RecordInvalid
         flash[:error] = {
           message: "Status could not be updated.",
