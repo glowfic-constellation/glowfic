@@ -174,7 +174,7 @@ div.post-subheader { width: 100%; }
 }
 
 /* Post-specific content & editor */
-#content > .post-container {
+#content > .post-container, .flat-post-replies .post-container {
   padding: 0;
   overflow: auto;
 }
