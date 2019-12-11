@@ -35,7 +35,6 @@ RSpec.describe WritableHelper do
         post = create(:post)
         post.user.update!(deleted: true)
         expect(helper.author_links(post)).to eq('(deleted user)')
-        expect(helper.author_links(post)).to be_html_safe
       end
 
       it "handles only two deleted users" do
@@ -44,7 +43,6 @@ RSpec.describe WritableHelper do
         reply = create(:reply, post: post)
         reply.user.update!(deleted: true)
         expect(helper.author_links(post)).to eq('(deleted users)')
-        expect(helper.author_links(post)).to be_html_safe
       end
 
       it "handles >4 deleted users" do
@@ -59,7 +57,6 @@ RSpec.describe WritableHelper do
         reply = create(:reply, post: post)
         reply.user.update!(deleted: true)
         expect(helper.author_links(post)).to eq('(deleted users)')
-        expect(helper.author_links(post)).to be_html_safe
       end
     end
 
