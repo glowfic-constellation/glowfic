@@ -11,7 +11,7 @@ gem 'aws-sdk-ses', '~> 1'
 gem 'bootstrap'
 gem 'coffee-rails'
 gem 'exception_notification'
-gem 'gon'
+gem 'gon', '~> 6.2.1'
 gem 'haml-rails'
 gem 'httparty'
 gem 'jquery-fileupload-rails'
@@ -32,10 +32,11 @@ gem 'resque_mailer'
 gem 'sanitize'
 gem 'sassc-rails'
 gem 'select2-rails'
+gem 'sprockets', '~> 3.7' # pin sprockets until we deal with its major upgrade
 gem 'test-unit', '~> 3.0' # required by Heroku for production console
 gem 'tinymce-rails', '~> 4.6.7'
 gem 'uglifier'
-gem 'will_paginate'
+gem 'will_paginate', '~> 3.1.8' # pin will_paginate until we deal with breaking WillPaginate::ViewHelpers::LinkRenderer change
 
 group :production do
   gem 'puma'
