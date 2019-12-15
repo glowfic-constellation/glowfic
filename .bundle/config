@@ -1,1 +1,1 @@
-build.sassc --disable-march-tune-native
+BUNDLE_BUILD__SASSC: "--disable-march-tune-native"
