@@ -3,12 +3,11 @@
     = form_tag delete_multiple_icons_path, method: :delete do
       %table.gallery-table
         %tr
-          - klass = cycle('even', 'odd')
-          %th.subber{class: klass} Keyword
-          %th.subber{class: klass} Credit
-          %th.subber{class: klass} Times Used
-          %th.subber{class: klass} Posts In
-          %th.subber{class: klass}
+          %th.subber Keyword
+          %th.subber Credit
+          %th.subber Times Used
+          %th.subber Posts In
+          %th.subber
         - icons.pluck(:id, :keyword, :credit).each do |icon_id, keyword, credit|
           - klass = cycle('even', 'odd')
           %tr
