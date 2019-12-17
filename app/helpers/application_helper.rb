@@ -238,14 +238,15 @@ module ApplicationHelper
 
     if total < 4
       links = authors.map { |author| linked ? user_link(author, colored: colored) : author.username }
-      return links.join(', ') if num_deleted.zero?
-      return links.join(', ') + " and #{num_deleted} #{deleted}"
+      joined_links = safe_join(links, ', ')
+      return joined_links if num_deleted.zero?
+      return safe_join([joined_links, "#{num_deleted} #{deleted}"], ' and ')
     end
 
     first_author = post.user.deleted? ? authors.first : post.user
     first_link = linked ? user_link(first_author, colored: colored) : first_author.username
     others = linked ? link_to("#{total-1} others", stats_post_path(post)) : "#{total-1} others"
-    first_link + ' and ' + others
+    safe_join([first_link, others], ' and ')
   end
 
   def allowed_boards(obj, user)
