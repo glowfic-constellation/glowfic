@@ -22,4 +22,17 @@ class Api::V1::UsersController < Api::ApiController
     users = paginate queryset.active, per_page: 25
     render json: {results: users}
   end
+
+  api :GET, '/users/:id/posts', 'Load all posts where the specified user is an author'
+  param :id, :number, required: true, desc: "User ID"
+  param :page, :number, required: false, desc: 'Page in results (25 per page)'
+  error 404, "User not found"
+  def posts
+    return unless (user = find_object(User))
+
+    post_ids = PostAuthor.where(user: user).pluck(:post_id)
+    queryset = Post.where(privacy: Concealable::PUBLIC, id: post_ids).with_reply_count.select('posts.*')
+    posts = paginate queryset.includes(:board, :joined_authors, :section), per_page: 25
+    render json: {results: posts}
+  end
 end
