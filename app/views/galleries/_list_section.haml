@@ -3,20 +3,19 @@
     = form_tag delete_multiple_icons_path, method: :delete do
       %table.gallery-table
         %tr
-          - klass = cycle('even', 'odd')
-          %th.subber{class: klass} Keyword
-          %th.subber{class: klass} Credit
-          %th.subber{class: klass} Times Used
-          %th.subber{class: klass} Posts In
-          %th.subber{class: klass}
+          %th.subber Keyword
+          %th.subber Credit
+          %th.subber Times Used
+          %th.subber Posts In
+          %th.subber
         - icons.pluck(:id, :keyword, :credit).each do |icon_id, keyword, credit|
           - klass = cycle('even', 'odd')
           %tr
             %td{class: klass}
               = link_to keyword, icon_path(id: icon_id)
             %td{class: klass}= credit
-            %td{class: klass}= @times_used[icon_id]
-            %td{class: klass}= @posts_used[icon_id]
+            %td{class: klass}= @times_used.fetch(icon_id, 0)
+            %td{class: klass}= @posts_used.fetch(icon_id, 0)
 
             %td.width-70.right-align{class: klass}
               - if is_owner && !skip_forms
