@@ -24,6 +24,7 @@ class Api::V1::UsersController < Api::ApiController
   end
 
   api :GET, '/users/:id/posts', 'Load all posts where the specified user is an author'
+  param :id, :number, required: true, desc: "User ID"
   param :page, :number, required: false, desc: 'Page in results (25 per page)'
   error 404, "User not found"
   def posts
