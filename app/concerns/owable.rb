@@ -44,11 +44,11 @@ module Owable
     end
 
     def update_board_cameos
-      return if board.open_to_anyone?
+      return unless board.authors_locked?
 
       # adjust for the fact that the associations are managed separately
       all_authors = authors + unjoined_authors + joined_authors + tagging_authors
-      new_cameos = all_authors.uniq - (board.writers + board.cameos)
+      new_cameos = all_authors.uniq - board.authors
       return if new_cameos.empty?
       board.cameos += new_cameos
     end

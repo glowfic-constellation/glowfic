@@ -122,7 +122,7 @@ class PostsController < WritableController
     @page_title = 'New Post'
 
     @permitted_authors -= [current_user]
-    if @post.board && !@post.board.open_to_anyone?
+    if @post.board&.authors_locked?
       @author_ids = @post.board.writer_ids - [current_user.id]
       @authors_from_board = true
     end

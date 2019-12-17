@@ -250,9 +250,7 @@ module ApplicationHelper
   end
 
   def allowed_boards(obj, user)
-    valid_ids = BoardAuthor.where(user: user).pluck(:board_id)
-    valid_ids << obj.board_id if obj.board_id.present?
-    have_authors = BoardAuthor.select(:board_id).distinct.pluck(:board_id)
-    Board.where(id: valid_ids).or(Board.where(creator: current_user)).or(Board.where.not(id: have_authors)).ordered
+    authored_ids = BoardAuthor.where(user: user).select(:board_id)
+    Board.where(id: obj.board_id).or(Board.where(authors_locked: false)).or(Board.where(id: authored_ids))
   end
 end

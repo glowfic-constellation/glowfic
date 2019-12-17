@@ -133,7 +133,7 @@ RSpec.describe BoardSectionsController do
 
     it "calculates OpenGraph data" do
       user = create(:user, username: 'John Doe')
-      board = create(:board, name: 'board', creator: user, coauthors: [create(:user, username: 'Jane Doe')])
+      board = create(:board, name: 'board', creator: user, writers: [create(:user, username: 'Jane Doe')])
       section = create(:board_section, name: 'section', board: board, description: "test description")
       create(:post, subject: 'title', user: user, board: board, section: section)
       get :show, params: { id: section.id }

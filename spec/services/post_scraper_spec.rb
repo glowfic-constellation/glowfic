@@ -168,7 +168,7 @@ RSpec.describe PostScraper do
 
     alicorn = create(:user, username: 'Alicorn')
     kappa = create(:user, username: 'Kappa')
-    board = create(:board, creator: alicorn, coauthors: [kappa])
+    board = create(:board, creator: alicorn, writers: [kappa])
     characters = [
       {screenname: 'mind_game', name: 'Jane', user: alicorn},
       {screenname: 'luminous_regnant', name: 'Isabella Marie Swan Cullen ☼ "Golden"', user: alicorn},

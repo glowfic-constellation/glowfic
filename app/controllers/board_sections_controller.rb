@@ -100,7 +100,7 @@ class BoardSectionsController < ApplicationController
 
   def og_data
     stats = []
-    stats << @board_section.board.writers.reject(&:deleted?).pluck(:username).sort_by(&:downcase).join(', ') unless @board_section.board.open_to_anyone?
+    stats << @board_section.board.writers.where.not(deleted: true).ordered.pluck(:username).join(', ') if @board_section.board.authors_locked?
     post_count = @board_section.posts.where(privacy: Concealable::PUBLIC).count
     stats << "#{post_count} " + "post".pluralize(post_count)
     desc = [stats.join(' – ')]

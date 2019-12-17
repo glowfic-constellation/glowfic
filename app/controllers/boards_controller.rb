@@ -71,9 +71,7 @@ class BoardsController < ApplicationController
     @page_title = 'Edit Continuity: ' + @board.name
     use_javascript('boards/edit')
     @board_sections = @board.board_sections.ordered
-    unless @board.open_to_anyone? && @board_sections.empty?
-      @unsectioned_posts = @board.posts.where(section_id: nil).ordered_in_section
-    end
+    @unsectioned_posts = @board.posts.where(section_id: nil).ordered_in_section if @board.ordered?
   end
 
   def update
@@ -136,14 +134,14 @@ class BoardsController < ApplicationController
   private
 
   def set_available_cowriters
-    @authors = @cameos = User.active.ordered
+    @coauthors = @cameos = User.active.ordered
     if @board
-      @authors -= @board.cameos
-      @cameos -= @board.coauthors
-      @authors -= [@board.creator]
+      @coauthors -= @board.cameos
+      @cameos -= @board.writers
+      @coauthors -= [@board.creator]
       @cameos -= [@board.creator]
     else
-      @authors -= [current_user]
+      @coauthors -= [current_user]
       @cameos -= [current_user]
     end
     use_javascript('boards/editor')
@@ -165,7 +163,7 @@ class BoardsController < ApplicationController
 
   def og_data
     metadata = []
-    metadata << @board.writers.reject(&:deleted?).pluck(:username).sort_by(&:downcase).join(', ') unless @board.open_to_anyone?
+    metadata << @board.writers.where.not(deleted: true).ordered.pluck(:username).join(', ') if @board.authors_locked?
     post_count = @board.posts.where(privacy: Concealable::PUBLIC).count
     stats = "#{post_count} " + "post".pluralize(post_count)
     section_count = @board.board_sections.count

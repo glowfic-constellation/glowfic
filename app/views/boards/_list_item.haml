@@ -2,8 +2,8 @@
   - klass = cycle('even', 'odd')
   %td.padding-10.board-title{class: klass}= link_to board.name, board_path(board)
   %td.padding-10.board-authors{class: klass}
-    - if board.open_to_anyone?
-      Anyone
+    - if board.authors_locked?
+      = safe_join(board.writers.where.not(deleted: true).ordered.map { |u| user_link(u) }, ', ')
     - else
-      = safe_join(board.writers.reject(&:deleted?).sort_by{ |author| author.username.downcase }.map { |u| user_link(u) }, ', ')
+      Anyone
   %td.padding-10.board-time{class: klass}= pretty_time(board.posts.ordered.first.try(:tagged_at))

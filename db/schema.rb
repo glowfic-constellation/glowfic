@@ -89,6 +89,7 @@ ActiveRecord::Schema.define(version: 2019_11_09_005526) do
     t.datetime "updated_at"
     t.text "description"
     t.boolean "pinned", default: false
+    t.boolean "authors_locked", default: true
   end
 
   create_table "character_aliases", id: :serial, force: :cascade do |t|
@@ -223,7 +224,7 @@ ActiveRecord::Schema.define(version: 2019_11_09_005526) do
     t.citext "name", null: false
     t.text "description"
     t.integer "privacy", default: 0, null: false
-    t.boolean "open_to_anyone", default: false, null: false
+    t.boolean "authors_locked", default: true, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["user_id"], name: "index_indexes_on_user_id"
