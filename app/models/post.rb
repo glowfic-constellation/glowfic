@@ -310,7 +310,7 @@ class Post < ApplicationRecord
     return if skip_edited
     self.edited_at = self.updated_at
     return if skip_tagged
-    return if replies.exists? && !status_changed?
+    return if replies.exists? && (!status_changed? || status != Post::STATUS_COMPLETE)
     self.tagged_at = self.updated_at
   end
 
