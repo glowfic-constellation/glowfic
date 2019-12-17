@@ -15,6 +15,12 @@
           = link_to new_board_path do
             .link-box.action-new + New Continuity
     %tr
+      %th.subber.padding-10{colspan: 3}
+        = form_tag search_boards_path, method: :get do
+          = label_tag :name, 'Search by name:'
+          = text_field_tag :name, params[:name], style: 'margin: 0px 5px;', id: :name
+          = submit_tag "Search", class: 'button'
+    %tr
       %th.sub Name
       %th.sub Authors
       %th.sub Last Updated
