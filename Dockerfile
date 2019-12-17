@@ -11,7 +11,7 @@ RUN apt-get update && apt-get install -y \
     postgresql-client-11 \
   && apt-get clean
 
-ARG bundler_version=1.17.3
+ARG bundler_version=2.0.2
 
 RUN gem install bundler -v $bundler_version
 
