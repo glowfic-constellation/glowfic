@@ -89,7 +89,7 @@ class GalleriesController < UploadingController
       @meta_og = og_data
     end
     icons = @gallery ? @gallery.icons : @user.galleryless_icons
-    if params[:view] == 'list'
+    if page_view == 'list'
       posts = Post.visible_to(current_user).where(icon_id: icons.map(&:id))
       post_counts = posts.select(:icon_id).group(:icon_id).count
       replies = Reply.visible_to(current_user).where(icon_id: icons.map(&:id))
