@@ -1,0 +1,30 @@
+- content_for :breadcrumbs do
+  = link_to "Continuities", boards_path
+  &raquo;
+  = link_to @post.board.name, board_path(@post.board)
+  &raquo;
+  = link_to @post.subject, post_path(@post)
+  &raquo;
+  %b Delete History
+
+.content-header History of Deleted Replies
+= render 'posts/paginator', paginated: @audits
+%br
+
+- if @audits.present?
+  .subber Preceding context
+  = render partial: 'replies/single', collection: @preceding, as: :reply
+  %br
+
+  .subber
+    Reply deleted #{pretty_time(@audit.created_at)} by #{user_link(@audit.user)}
+    - if @deleted.editable_by?(current_user)
+      = link_to restore_reply_path(id: @audit.auditable_id), method: :post do
+        %button{style: 'float: right; margin: 0;'} Restore
+        .clear
+  = render 'replies/single', reply: @deleted
+  %br
+
+  - if @following.present?
+    .subber Following context
+    = render partial: 'replies/single', collection: @following, as: :reply

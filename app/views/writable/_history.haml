@@ -27,12 +27,17 @@
         %td{class: cycle('even', 'odd')}
           - if audit.version == 1
             (Original)
+          - elsif audit.action == 'destroy'
+            = image_tag 'icons/cross.png', alt: 'X', class: 'vmid'
+            Deleted
+          - elsif audit.action == 'create'
+            Restored
           - else
             = audit.audited_changes.keys.map(&:humanize).join(', ').capitalize
       %tr
         %th.sub Updated
         %td{class: cycle('even', 'odd')}= pretty_time(audit.created_at)
-      - if audit.version > 1 && audit.audited_changes.key?('board_id')
+      - if audit.action == 'update' && audit.audited_changes.key?('board_id')
         %tr
           %th.sub Continuity
           %td{class: cycle('even', 'odd')}
@@ -46,7 +51,7 @@
               %b= link_to cur.board.name, board_path(cur.board)
             - else
               %b [Deleted]
-      - if audit.version > 1 && audit.audited_changes.key?('privacy')
+      - if audit.action == 'update' && audit.audited_changes.key?('privacy')
         %tr
           %th.sub Privacy
           %td{colspan: 3, class: cycle('even', 'odd')}
@@ -54,7 +59,7 @@
             %b= privacy_state(audit.audited_changes['privacy'][0])
             to
             %b= privacy_state(cur.privacy)
-      - if audit.version == 1 || (audit.audited_changes.keys & %w(character_alias_id character_id content description icon_id subject)).present?
+      - if audit.action != 'destroy' && (audit.action == 'create' || (audit.audited_changes.keys & %w(character_alias_id character_id content description icon_id subject)).present?)
         %tr
           %th.sub.vtop Content
           %td{class: cycle('even', 'odd')}

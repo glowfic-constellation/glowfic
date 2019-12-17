@@ -210,6 +210,41 @@ class RepliesController < WritableController
     end
   end
 
+  def restore
+    audit = Audited::Audit.where(action: 'destroy').order(id: :desc).find_by(auditable_id: params[:id])
+    unless audit
+      flash[:error] = "Reply could not be found."
+      redirect_to boards_path and return
+    end
+
+    if audit.auditable
+      flash[:error] = "Reply does not need restoring."
+      redirect_to post_path(audit.associated) and return
+    end
+
+    new_reply = Reply.new(audit.audited_changes)
+    unless new_reply.editable_by?(current_user)
+      flash[:error] = "You do not have permission to modify this post."
+      redirect_to post_path(new_reply.post) and return
+    end
+
+    new_reply.is_import = true
+    new_reply.skip_notify = true
+    new_reply.id = audit.auditable_id
+
+    following_replies = new_reply.post.replies.where('id > ?', new_reply.id).order(id: :asc)
+    new_reply.skip_post_update = following_replies.exists?
+    new_reply.reply_order = following_replies.first&.reply_order
+
+    Reply.transaction do
+      following_replies.update_all('reply_order = reply_order + 1') # rubocop:disable Rails/SkipsModelValidations
+      new_reply.save!
+    end
+
+    flash[:success] = "Reply has been restored!"
+    redirect_to reply_path(new_reply)
+  end
+
   private
 
   def find_reply

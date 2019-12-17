@@ -78,6 +78,7 @@ Rails.application.routes.draw do
   resources :posts do
     member do
       get :history
+      get :delete_history
       get :stats
       post :warnings
     end
@@ -91,7 +92,10 @@ Rails.application.routes.draw do
     end
   end
   resources :replies, except: [:index, :new] do
-    member { get :history }
+    member do
+      get :history
+      post :restore
+    end
     collection { get :search }
   end
   resources :tags, except: [:new, :create]
