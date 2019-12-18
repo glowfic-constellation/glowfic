@@ -3,14 +3,16 @@ module Post::Read
 
   included do
     def first_unread_for(user)
-      return self unless (viewed_at = viewed_at(user))
+      viewed_at = viewed_at(user)
+      return self unless viewed_at
       return unless has_replies?
       replies.where('created_at > ?', viewed_at).ordered.first
     end
 
     def last_seen_reply_for(user)
       return unless has_replies? # unlike first_unread_for we don't care about the post
-      return unless (viewed_at = viewed_at(user))
+      viewed_at = viewed_at(user)
+      return unless viewed_at
       replies.where('created_at <= ?', viewed_at).ordered.last
     end
 
