@@ -22,7 +22,7 @@ class Api::V1::PostsController < Api::ApiController
   def show
     return unless (post = find_object(Post))
     access_denied and return unless post.visible_to?(current_user)
-    render json: post
+    render json: post.as_json(include: [:character, :icon, :content])
   end
 
   api :POST, '/posts/reorder', 'Update the order of posts. This is an unstable feature, and may be moved or renamed; it should not be trusted.'

@@ -25,4 +25,19 @@ class Api::V1::BoardsController < Api::ApiController
 
     render json: board.as_json(include: [:board_sections])
   end
+
+  api :GET, '/boards/:id/posts', 'Load all posts in the specified continuity'
+  param :id, :number, required: true, desc: "Continuity ID"
+  param :page, :number, required: false, desc: 'Page in results (25 per page)'
+  error 404, "Continuity not found"
+  def posts
+    unless (board = Board.find_by_id(params[:id]))
+      error = {message: "Continuity could not be found."}
+      render json: {errors: [error]}, status: :not_found and return
+    end
+
+    queryset = Post.where(privacy: Concealable::PUBLIC, board_id: board.id).with_reply_count.select('posts.*')
+    posts = paginate queryset.includes(:board, :joined_authors, :section), per_page: 25
+    render json: {results: posts}
+  end
 end

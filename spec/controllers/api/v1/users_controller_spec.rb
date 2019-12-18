@@ -103,7 +103,7 @@ RSpec.describe Api::V1::UsersController do
       expect(response.json['results'].size).to eq(25)
     end
     
-    it 'paginates results' do
+    it 'paginates results on additional pages' do
       user = create(:user)
       create_list(:post, 27, user: user)
       get :posts, params: { id: user.id, page: 2 }
