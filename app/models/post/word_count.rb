@@ -1,7 +1,7 @@
 module Post::WordCount
   extend ActiveSupport::Concern
 
-  class_methods do
+  included do
     def total_word_count
       return word_count unless replies.exists?
       word_count + replies_word_count(replies)
