@@ -175,7 +175,7 @@ class Post < ApplicationRecord
 
   def character_appearance_counts
     reply_counts = replies.joins(:character).group(:character_id).count.transform_values(&:to_i)
-    reply_counts[self.character_id] += 1
+    reply_counts[character_id] = reply_counts[character_id].to_i + 1
     Character.where(id: reply_counts.keys).map { |char| [char, reply_counts[char.id]]}.sort_by(&:last).reverse
   end
 
