@@ -1,4 +1,4 @@
-module WordCountable
+module Post::WordCount
   extend ActiveSupport::Concern
 
   def total_word_count

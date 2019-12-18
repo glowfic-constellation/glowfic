@@ -1,12 +1,12 @@
 class Post < ApplicationRecord
   include Concealable
   include Orderable
-  include Owable
   include PgSearch::Model
+  include Post::Owable
   include Post::Status
+  include Post::WordCount
   include Presentable
   include Viewable
-  include WordCountable
   include Writable
 
   belongs_to :board, inverse_of: :posts, optional: false

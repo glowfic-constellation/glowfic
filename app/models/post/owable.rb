@@ -1,4 +1,4 @@
-module Owable
+module Post::Owable
   extend ActiveSupport::Concern
 
   included do
