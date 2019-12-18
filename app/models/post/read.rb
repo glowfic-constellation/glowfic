@@ -4,18 +4,19 @@ module Post::Read
   included do
     def first_unread_for(user)
       return @first_unread if @first_unread
-      viewed_at = last_read(user) || board.last_read(user)
-      return @first_unread = self unless viewed_at
-      return unless has_replies?
-      reply = replies.where('created_at > ?', viewed_at).ordered.first
-      @first_unread ||= reply
+      if (viewed_at = viewed_at(user))
+        return unless has_replies?
+        reply = replies.where('created_at > ?', viewed_at).ordered.first
+        @first_unread ||= reply
+      else
+        @first_unread = self
+      end
     end
 
     def last_seen_reply_for(user)
       return @last_seen if @last_seen
       return unless has_replies? # unlike first_unread_for we don't care about the post
-      viewed_at = last_read(user) || board.last_read(user)
-      return unless viewed_at
+      return unless (viewed_at = viewed_at(user))
       reply = replies.where('created_at <= ?', viewed_at).ordered.last
       @last_seen = reply
     end
@@ -24,15 +25,24 @@ module Post::Read
       return self.edited_at if viewing_replies.empty?
 
       most_recent = viewing_replies.max_by(&:reply_order)
-      most_recent_id = replies.select(:id).ordered.last.id
-      return most_recent.created_at unless most_recent.id == most_recent_id # not on last page
-      unless most_recent.updated_at > edited_at
-        # testing for case where the post was changed in status more recently than the last reply
-        audits_exist = audits.where('created_at > ?', most_recent.created_at).where(action: 'update')
-        audits_exist = audits_exist.where("(audited_changes -> 'status' ->> 1)::integer = ?", Post.statuses[:complete])
-        return edited_at if audits_exist
+      if most_recent.reply_order == replies.ordered.last.reply_order # whether we're on the last page
+        return self.edited_at if more_recent_status?(most_recent) # if the post was changed in status more recently than the last reply
+        most_recent.updated_at
+      else
+        most_recent.created_at
       end
-      most_recent.updated_at
+    end
+
+    private
+
+    def viewed_at(user)
+      last_read(user) || board.last_read(user)
+    end
+
+    def more_recent_status?(most_recent)
+      return false if most_recent.updated_at > self.edited_at
+      audits_exist = audits.where('created_at > ?', most_recent.created_at).where(action: 'update')
+      audits_exist.where("(audited_changes -> 'status' ->> 1)::integer = ?", Post.statuses[:complete]).exists?
     end
   end
 end
