@@ -50,48 +50,6 @@ ActiveRecord::Schema.define(version: 2019_12_19_180641) do
     t.index ["blocking_user_id"], name: "index_blocks_on_blocking_user_id"
   end
 
-  create_table "board_authors", id: :serial, force: :cascade do |t|
-    t.integer "user_id", null: false
-    t.integer "board_id", null: false
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.boolean "cameo", default: false
-    t.index ["board_id"], name: "index_board_authors_on_board_id"
-    t.index ["user_id"], name: "index_board_authors_on_user_id"
-  end
-
-  create_table "board_sections", id: :serial, force: :cascade do |t|
-    t.integer "board_id", null: false
-    t.string "name", null: false
-    t.integer "status", default: 0, null: false
-    t.integer "section_order", null: false
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.text "description"
-  end
-
-  create_table "board_views", id: :serial, force: :cascade do |t|
-    t.integer "board_id", null: false
-    t.integer "user_id", null: false
-    t.boolean "ignored", default: false
-    t.boolean "notify_message", default: false
-    t.boolean "notify_email", default: false
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.datetime "read_at"
-    t.index ["user_id", "board_id"], name: "index_board_views_on_user_id_and_board_id", unique: true
-  end
-
-  create_table "boards", id: :serial, force: :cascade do |t|
-    t.citext "name", null: false
-    t.integer "creator_id", null: false
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.text "description"
-    t.boolean "pinned", default: false
-    t.boolean "authors_locked", default: true
-  end
-
   create_table "character_aliases", id: :serial, force: :cascade do |t|
     t.integer "character_id", null: false
     t.string "name", null: false
@@ -138,6 +96,38 @@ ActiveRecord::Schema.define(version: 2019_12_19_180641) do
     t.boolean "added_by_group", default: false
     t.index ["character_id"], name: "index_characters_galleries_on_character_id"
     t.index ["gallery_id"], name: "index_characters_galleries_on_gallery_id"
+  end
+
+  create_table "continuities", id: :serial, force: :cascade do |t|
+    t.citext "name", null: false
+    t.integer "creator_id", null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.text "description"
+    t.boolean "pinned", default: false
+    t.boolean "authors_locked", default: true
+  end
+
+  create_table "continuity_authors", id: :serial, force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.integer "continuity_id", null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.boolean "cameo", default: false
+    t.index ["continuity_id"], name: "index_continuity_authors_on_continuity_id"
+    t.index ["user_id"], name: "index_continuity_authors_on_user_id"
+  end
+
+  create_table "continuity_views", id: :serial, force: :cascade do |t|
+    t.integer "continuity_id", null: false
+    t.integer "user_id", null: false
+    t.boolean "ignored", default: false
+    t.boolean "notify_message", default: false
+    t.boolean "notify_email", default: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.datetime "read_at"
+    t.index ["user_id", "continuity_id"], name: "index_continuity_views_on_user_id_and_continuity_id", unique: true
   end
 
   create_table "favorites", id: :serial, force: :cascade do |t|
@@ -320,7 +310,7 @@ ActiveRecord::Schema.define(version: 2019_12_19_180641) do
   end
 
   create_table "posts", id: :serial, force: :cascade do |t|
-    t.integer "board_id", null: false
+    t.integer "continuity_id", null: false
     t.integer "user_id", null: false
     t.string "subject", null: false
     t.text "content"
@@ -341,8 +331,8 @@ ActiveRecord::Schema.define(version: 2019_12_19_180641) do
     t.integer "character_alias_id"
     t.index "to_tsvector('english'::regconfig, COALESCE((subject)::text, ''::text))", name: "idx_fts_post_subject", using: :gin
     t.index "to_tsvector('english'::regconfig, COALESCE(content, ''::text))", name: "idx_fts_post_content", using: :gin
-    t.index ["board_id"], name: "index_posts_on_board_id"
     t.index ["character_id"], name: "index_posts_on_character_id"
+    t.index ["continuity_id"], name: "index_posts_on_continuity_id"
     t.index ["created_at"], name: "index_posts_on_created_at"
     t.index ["icon_id"], name: "index_posts_on_icon_id"
     t.index ["tagged_at"], name: "index_posts_on_tagged_at"
@@ -389,6 +379,16 @@ ActiveRecord::Schema.define(version: 2019_12_19_180641) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.index ["user_id"], name: "index_report_views_on_user_id"
+  end
+
+  create_table "subcontinuities", id: :serial, force: :cascade do |t|
+    t.integer "continuity_id", null: false
+    t.string "name", null: false
+    t.integer "status", default: 0, null: false
+    t.integer "section_order", null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.text "description"
   end
 
   create_table "tag_tags", id: :serial, force: :cascade do |t|
