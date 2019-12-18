@@ -213,6 +213,12 @@ class Post < ApplicationRecord
     adjacent_posts_for(user).find_by('section_order > ?', self.section_order)
   end
 
+  def has_replies?
+    return @has_replies if @has_replies
+    return (@has_replies = reply_count > 0) if has_attribute?(:reply_count)
+    @has_replies = replies.exists?
+  end
+
   private
 
   def adjacent_posts_for(user)
@@ -241,7 +247,7 @@ class Post < ApplicationRecord
     return if skip_edited
     self.edited_at = self.updated_at
     return if skip_tagged
-    return if replies.exists? && (!status_changed? || !complete?)
+    return if has_replies? && (!status_changed? || !complete?)
     self.tagged_at = self.updated_at
   end
 
