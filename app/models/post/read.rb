@@ -18,18 +18,22 @@ module Post::Read
       return self.edited_at if viewing_replies.empty?
 
       most_recent = viewing_replies.max_by(&:reply_order)
-      if most_recent.reply_order == replies.ordered.last.reply_order # whether we're on the last page
-        return self.edited_at if more_recent_status?(most_recent) # if the post was changed in status more recently than the last reply
-        most_recent.updated_at
-      else
-        most_recent.created_at
-      end
+      select_read_timestamp(most_recent)
     end
 
     private
 
     def viewed_at(user)
       last_read(user) || board.last_read(user)
+    end
+
+    def select_read_timestamp(most_recent)
+      if most_recent.reply_order == replies.ordered.last.reply_order # whether we're on the last page
+        return self.edited_at if more_recent_status?(most_recent) # if the post was changed in status more recently than the last reply
+        most_recent.updated_at
+      else
+        most_recent.created_at
+      end
     end
 
     def more_recent_status?(most_recent)
