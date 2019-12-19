@@ -829,6 +829,7 @@ RSpec.describe PostsController, 'PUT update' do
       section = create(:board_section, board: board)
 
       post.reload
+      post.written.reload
       expect(post.tagging_authors).to match_array([user, invited_user, joined_user])
       expect(post.joined_authors).to match_array([user, joined_user])
       expect(post.viewers).to be_empty
