@@ -152,6 +152,7 @@ class PostsController < WritableController
       @post.errors.merge!(@post.written)
       render_errors(@post, action: 'created', now: true, err: e)
 
+      @reply = @post.written
       editor_setup
       @page_title = 'New Post'
       render :new
@@ -412,6 +413,7 @@ class PostsController < WritableController
 
     @audits = { post: @post.audits.count } if @post.id.present?
     @reply_bookmarks = {}
+    @reply = @post.written
 
     editor_setup
     @page_title = 'Previewing: ' + @post.subject.to_s
