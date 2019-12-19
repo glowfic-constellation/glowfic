@@ -4,14 +4,14 @@ module Post::WordCount
   included do
     def total_word_count
       return word_count unless replies.exists?
-      word_count + Posts::WordCount.replies_word_count(replies)
+      word_count + Post::WordCount.replies_word_count(replies)
     end
 
     def word_count_for(user)
       sum = 0
       sum = word_count if user_id == user.id
       return sum unless replies.where(user_id: user.id).exists?
-      sum + Posts::WordCount.replies_word_count(replies.where(user_id: user.id))
+      sum + Post::WordCount.replies_word_count(replies.where(user_id: user.id))
     end
 
     # only returns for authors who have written in the post (it's zero for authors who have not joined)

@@ -145,15 +145,6 @@ class Post < ApplicationRecord
     Character.where(id: recent_ids).includes(:default_icon).sort_by { |char| recent_ids.index(char.id) }
   end
 
-  def hide_warnings_for(user)
-    view_for(user).update(warnings_hidden: true)
-  end
-
-  def show_warnings_for?(user)
-    return false if user.hide_warnings
-    !view_for(user).try(:warnings_hidden)
-  end
-
   def last_updated
     edited_at
   end
@@ -177,11 +168,6 @@ class Post < ApplicationRecord
     reply_counts = replies.joins(:character).group(:character_id).count.transform_values(&:to_i)
     reply_counts[character_id] = reply_counts[character_id].to_i + 1
     Character.where(id: reply_counts.keys).map { |char| [char, reply_counts[char.id]]}.sort_by(&:last).reverse
-  end
-
-  def has_content_warnings?
-    return read_attribute(:has_content_warnings) if has_attribute?(:has_content_warnings)
-    content_warnings.exists?
   end
 
   def reply_count
@@ -266,10 +252,6 @@ class Post < ApplicationRecord
   def build_initial_flat_post
     build_flat_post
     true
-  end
-
-  def reset_warnings(_warning)
-    Post::View.where(post_id: id).update_all(warnings_hidden: false)
   end
 
   def notify_followers
