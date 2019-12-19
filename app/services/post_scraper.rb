@@ -23,8 +23,8 @@ class PostScraper < Object
 
   attr_accessor :url, :post, :html_doc
 
-  def initialize(url, board_id=nil, section_id=nil, status=nil, threaded_import=false, console_import=false, subject=nil)
-    @board_id = board_id || SANDBOX_ID
+  def initialize(url, continuity_id=nil, section_id=nil, status=nil, threaded_import=false, console_import=false, subject=nil)
+    @continuity_id = continuity_id || SANDBOX_ID
     @section_id = section_id
     @status = status || Post::STATUS_COMPLETE
     url += (url.include?('?') ? '&' : '?') + 'style=site' unless url.include?('style=site')
@@ -156,7 +156,7 @@ class PostScraper < Object
     content = doc.at_css('.entry-content').inner_html
 
     @post = Post.new
-    @post.board_id = @board_id
+    @post.continuity_id = @continuity_id
     @post.section_id = @section_id
     @post.subject = subject
     @post.content = strip_content(content)
@@ -166,7 +166,7 @@ class PostScraper < Object
 
     # detect already imported
     # skip if it's a threaded import, unless a subject was given manually
-    if (@subject || !@threaded_import) && (subj_post = Post.find_by(subject: @post.subject, board_id: @board_id))
+    if (@subject || !@threaded_import) && (subj_post = Post.find_by(subject: @post.subject, continuity_id: @continuity_id))
       raise AlreadyImportedError.new("This thread has already been imported", subj_post.id)
     end
 

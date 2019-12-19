@@ -202,46 +202,46 @@ RSpec.describe Post do
 
   describe "#section_order" do
     it "should be set on create" do
-      board = create(:board)
+      continuity = create(:continuity)
       5.times do |i|
-        post = create(:post, board_id: board.id)
+        post = create(:post, continuity_id: continuity.id)
         expect(post.section_order).to eq(i)
       end
     end
 
     it "should be set in its section on create" do
-      board = create(:board)
-      section = create(:board_section, board_id: board.id)
+      continuity = create(:continuity)
+      section = create(:subcontinuity, continuity_id: continuity.id)
       5.times do |i|
-        post = create(:post, board_id: board.id, section_id: section.id)
+        post = create(:post, continuity_id: continuity.id, section_id: section.id)
         expect(post.section_order).to eq(i)
       end
     end
 
     it "should handle mix and match section/no section creates" do
-      board = create(:board)
-      section = create(:board_section, board_id: board.id)
+      continuity = create(:continuity)
+      section = create(:subcontinuity, continuity_id: continuity.id)
       expect(section.section_order).to eq(0)
       5.times do |i|
-        post = create(:post, board_id: board.id, section_id: section.id)
+        post = create(:post, continuity_id: continuity.id, section_id: section.id)
         expect(post.section_order).to eq(i)
       end
-      post = create(:post, board_id: board.id)
+      post = create(:post, continuity_id: continuity.id)
       expect(post.section_order).to eq(0)
-      post = create(:post, board_id: board.id)
+      post = create(:post, continuity_id: continuity.id)
       expect(post.section_order).to eq(1)
-      post = create(:post, board_id: board.id, section_id: section.id)
+      post = create(:post, continuity_id: continuity.id, section_id: section.id)
       expect(post.section_order).to eq(5)
-      section = create(:board_section, board_id: board.id)
+      section = create(:subcontinuity, continuity_id: continuity.id)
       expect(section.section_order).to eq(1)
-      post = create(:post, board_id: board.id)
+      post = create(:post, continuity_id: continuity.id)
       expect(post.section_order).to eq(2)
 
-      board.board_sections.ordered.each_with_index do |s, i|
+      continuity.subcontinuities.ordered.each_with_index do |s, i|
         expect(s.section_order).to eq(i)
       end
 
-      board.posts.where(section_id: nil).ordered_in_section.each_with_index do |s, i|
+      continuity.posts.where(section_id: nil).ordered_in_section.each_with_index do |s, i|
         expect(s.section_order).to eq(i)
       end
 
@@ -251,52 +251,52 @@ RSpec.describe Post do
     end
 
     it "should update when section is changed" do
-      board = create(:board)
-      section = create(:board_section, board_id: board.id)
-      post = create(:post, board_id: board.id, section_id: section.id)
+      continuity = create(:continuity)
+      section = create(:subcontinuity, continuity_id: continuity.id)
+      post = create(:post, continuity_id: continuity.id, section_id: section.id)
       expect(post.section_order).to eq(0)
-      post = create(:post, board_id: board.id, section_id: section.id)
+      post = create(:post, continuity_id: continuity.id, section_id: section.id)
       expect(post.section_order).to eq(1)
-      section = create(:board_section, board_id: board.id)
+      section = create(:subcontinuity, continuity_id: continuity.id)
       post.section_id = section.id
       post.save!
       post.reload
       expect(post.section_order).to eq(0)
     end
 
-    it "should update when board is changed" do
-      board = create(:board)
-      create(:post, board_id: board.id)
-      create(:post, board_id: board.id)
-      post = create(:post, board_id: board.id)
+    it "should update when continuity is changed" do
+      continuity = create(:continuity)
+      create(:post, continuity_id: continuity.id)
+      create(:post, continuity_id: continuity.id)
+      post = create(:post, continuity_id: continuity.id)
       expect(post.section_order).to eq(2)
-      board = create(:board)
-      post.board = board
+      continuity = create(:continuity)
+      post.continuity = continuity
       post.save!
       post.reload
       expect(post.section_order).to eq(0)
     end
 
     it "should not increment on non-section update" do
-      board = create(:board)
-      post = create(:post, board_id: board.id)
+      continuity = create(:continuity)
+      post = create(:post, continuity_id: continuity.id)
       expect(post.section_order).to eq(0)
-      create(:post, board_id: board.id)
-      create(:post, board_id: board.id)
+      create(:post, continuity_id: continuity.id)
+      create(:post, continuity_id: continuity.id)
       post.update!(content: 'new content')
       post.reload
       expect(post.section_order).to eq(0)
     end
 
     it "should reorder upon deletion" do
-      board = create(:board, authors_locked: true)
-      post0 = create(:post, board: board, user: board.creator)
+      continuity = create(:continuity, authors_locked: true)
+      post0 = create(:post, continuity: continuity, user: continuity.creator)
       expect(post0.section_order).to eq(0)
-      post1 = create(:post, board: board, user: board.creator)
+      post1 = create(:post, continuity: continuity, user: continuity.creator)
       expect(post1.section_order).to eq(1)
-      post2 = create(:post, board: board, user: board.creator)
+      post2 = create(:post, continuity: continuity, user: continuity.creator)
       expect(post2.section_order).to eq(2)
-      post3 = create(:post, board: board, user: board.creator)
+      post3 = create(:post, continuity: continuity, user: continuity.creator)
       expect(post3.section_order).to eq(3)
       post1.destroy!
       expect(post0.reload.section_order).to eq(0)
@@ -304,34 +304,34 @@ RSpec.describe Post do
       expect(post3.reload.section_order).to eq(2)
     end
 
-    it "should reorder upon board change" do
-      board = create(:board, authors_locked: true)
-      post0 = create(:post, board_id: board.id, user: board.creator)
+    it "should reorder upon continuity change" do
+      continuity = create(:continuity, authors_locked: true)
+      post0 = create(:post, continuity_id: continuity.id, user: continuity.creator)
       expect(post0.section_order).to eq(0)
-      post1 = create(:post, board_id: board.id, user: board.creator)
+      post1 = create(:post, continuity_id: continuity.id, user: continuity.creator)
       expect(post1.section_order).to eq(1)
-      post2 = create(:post, board_id: board.id, user: board.creator)
+      post2 = create(:post, continuity_id: continuity.id, user: continuity.creator)
       expect(post2.section_order).to eq(2)
-      post3 = create(:post, board_id: board.id, user: board.creator)
+      post3 = create(:post, continuity_id: continuity.id, user: continuity.creator)
       expect(post3.section_order).to eq(3)
-      post1.board = create(:board)
+      post1.continuity = create(:continuity)
       post1.save!
       expect(post0.reload.section_order).to eq(0)
       expect(post2.reload.section_order).to eq(1)
       expect(post3.reload.section_order).to eq(2)
     end
 
-    it "should autofill correctly upon board change" do
-      board = create(:board)
-      board2 = create(:board)
-      post0 = create(:post, board_id: board.id)
-      post1 = create(:post, board_id: board.id)
-      post2 = create(:post, board_id: board2.id)
+    it "should autofill correctly upon continuity change" do
+      continuity = create(:continuity)
+      continuity2 = create(:continuity)
+      post0 = create(:post, continuity_id: continuity.id)
+      post1 = create(:post, continuity_id: continuity.id)
+      post2 = create(:post, continuity_id: continuity2.id)
       expect(post0.section_order).to eq(0)
       expect(post1.section_order).to eq(1)
       expect(post2.section_order).to eq(0)
 
-      post2.board_id = board.id
+      post2.continuity_id = continuity.id
       post2.skip_edited = true
       post2.save!
 
@@ -340,19 +340,19 @@ RSpec.describe Post do
       expect(post2.section_order).to eq(2)
     end
 
-    it "should autofill correctly upon board change with mix" do
-      board = create(:board)
-      board2 = create(:board)
+    it "should autofill correctly upon continuity change with mix" do
+      continuity = create(:continuity)
+      continuity2 = create(:continuity)
 
-      section1 = create(:board_section, board_id: board.id)
-      post = create(:post, board_id: board.id)
-      section2 = create(:board_section, board_id: board.id)
+      section1 = create(:subcontinuity, continuity_id: continuity.id)
+      post = create(:post, continuity_id: continuity.id)
+      section2 = create(:subcontinuity, continuity_id: continuity.id)
 
       expect(section1.section_order).to eq(0)
       expect(post.section_order).to eq(0)
       expect(section2.section_order).to eq(1)
 
-      post.board_id = board2.id
+      post.continuity_id = continuity2.id
       post.skip_edited = true
       post.save!
 
@@ -435,18 +435,18 @@ RSpec.describe Post do
       expect(post.valid?).not_to eq(true)
     end
 
-    it "requires board the user can access" do
-      board = create(:board, authors_locked: true)
+    it "requires continuity the user can access" do
+      continuity = create(:continuity, authors_locked: true)
       post = create(:post)
       expect(post.valid?).to eq(true)
-      post.board = board
+      post.continuity = continuity
       expect(post.valid?).not_to eq(true)
     end
 
-    it "requires board section matching board" do
+    it "requires continuity section matching continuity" do
       post = create(:post)
       expect(post.valid?).to eq(true)
-      post.section = create(:board_section)
+      post.section = create(:subcontinuity)
       expect(post.valid?).not_to eq(true)
     end
 
@@ -629,7 +629,7 @@ RSpec.describe Post do
       end
 
       it "uses nil if full continuity viewed" do
-        post.board.mark_read(post.user)
+        post.continuity.mark_read(post.user)
         expect(post.first_unread_for(post.user)).to be_nil
       end
 
@@ -671,7 +671,7 @@ RSpec.describe Post do
       end
 
       it "uses nil if continuity viewed" do
-        post.board.mark_read(post.user)
+        post.continuity.mark_read(post.user)
         expect(post.first_unread_for(post.user)).to be_nil
       end
     end

@@ -33,7 +33,7 @@ throne.update!(avatar_id: 4)
 teceler.update!(avatar_id: 5)
 
 puts "Creating continuities..."
-Board.create!([
+Continuity.create!([
   { name: 'Effulgence', creator: alicorn, writers: [kappa] },
   { name: 'Witchlight', creator: alicorn, writers: [marri] },
   { name: 'Sandboxes', creator: marri, pinned: true, authors_locked: false },
@@ -43,11 +43,11 @@ Board.create!([
 ])
 
 puts "Creating sections..."
-BoardSection.create!([
-  { board_id: 1, name: "make a wish", status: 1, section_order: 0 },
-  { board_id: 1, name: "hexes", status: 1, section_order: 1 },
-  { board_id: 1, name: "parable of the talents", status: 1, section_order: 2 },
-  { board_id: 1, name: "golden opportunity", status: 0, section_order: 3 },
+Subcontinuity.create!([
+  { continuity_id: 1, name: "make a wish", status: 1, section_order: 0 },
+  { continuity_id: 1, name: "hexes", status: 1, section_order: 1 },
+  { continuity_id: 1, name: "parable of the talents", status: 1, section_order: 2 },
+  { continuity_id: 1, name: "golden opportunity", status: 0, section_order: 3 },
 ])
 
 puts "Creating news posts..."
@@ -90,6 +90,6 @@ Message.create!([
 puts "Creating favorites..."
 Favorite.create!([
   { user_id: 3, favorite_id: 1, favorite_type: "Post" },
-  { user_id: 3, favorite_id: 1, favorite_type: "Board" },
+  { user_id: 3, favorite_id: 1, favorite_type: "Continuity" },
   { user_id: 3, favorite_id: 1, favorite_type: "User" },
 ])

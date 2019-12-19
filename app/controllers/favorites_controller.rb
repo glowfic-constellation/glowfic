@@ -20,8 +20,8 @@ class FavoritesController < ApplicationController
         new_calc = arel[:id].in(post_ids)
       elsif favorite_rec.favorite_type == Post.to_s
         new_calc = arel[:id].eq(favorite_rec.favorite_id)
-      elsif favorite_rec.favorite_type == Board.to_s
-        new_calc = arel[:board_id].eq(favorite_rec.favorite_id)
+      elsif favorite_rec.favorite_type == Continuity.to_s
+        new_calc = arel[:continuity_id].eq(favorite_rec.favorite_id)
       end
       if where_calc.nil?
         where_calc = new_calc
@@ -44,12 +44,12 @@ class FavoritesController < ApplicationController
         redirect_to users_path and return
       end
       fav_path = user_path(favorite)
-    elsif params[:board_id].present?
-      unless (favorite = Board.find_by_id(params[:board_id]))
+    elsif params[:continuity_id].present?
+      unless (favorite = Continuity.find_by_id(params[:continuity_id]))
         flash[:error] = "Continuity could not be found."
-        redirect_to boards_path and return
+        redirect_to continuities_path and return
       end
-      fav_path = board_path(favorite)
+      fav_path = continuity_path(favorite)
     elsif params[:post_id].present?
       unless (favorite = Post.find_by_id(params[:post_id]))
         flash[:error] = "Post could not be found."
@@ -61,7 +61,7 @@ class FavoritesController < ApplicationController
       fav_path = post_path(favorite, params)
     else
       flash[:error] = "No favorite specified."
-      redirect_to boards_path and return
+      redirect_to continuities_path and return
     end
 
     fav = Favorite.new
@@ -106,7 +106,7 @@ class FavoritesController < ApplicationController
       elsif fav.favorite_type == Post.to_s
         redirect_to post_path(fav.favorite)
       else
-        redirect_to board_path(fav.favorite)
+        redirect_to continuity_path(fav.favorite)
       end
     end
   end

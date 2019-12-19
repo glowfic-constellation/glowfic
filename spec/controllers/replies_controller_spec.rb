@@ -392,7 +392,7 @@ RSpec.describe RepliesController do
   describe "GET show" do
     it "requires valid reply" do
       get :show, params: { id: -1 }
-      expect(response).to redirect_to(boards_url)
+      expect(response).to redirect_to(continuities_url)
       expect(flash[:error]).to eq("Post could not be found.")
     end
 
@@ -408,7 +408,7 @@ RSpec.describe RepliesController do
 
       login_as(reply.user)
       get :show, params: { id: reply.id }
-      expect(response).to redirect_to(boards_url)
+      expect(response).to redirect_to(continuities_url)
       expect(flash[:error]).to eq("You do not have permission to view this post.")
     end
 
@@ -422,9 +422,9 @@ RSpec.describe RepliesController do
     it "calculates OpenGraph meta" do
       user = create(:user, username: 'user1')
       user2 = create(:user, username: 'user2')
-      board = create(:board, name: 'example board')
-      section = create(:board_section, board: board, name: 'example section')
-      post = create(:post, board: board, section: section, user: user, subject: 'a post', description: 'Test.')
+      continuity = create(:continuity, name: 'example continuity')
+      section = create(:subcontinuity, continuity: continuity, name: 'example section')
+      post = create(:post, continuity: continuity, section: section, user: user, subject: 'a post', description: 'Test.')
       create_list(:reply, 25, post: post, user: user)
       reply = create(:reply, post: post, user: user2)
       get :show, params: { id: reply.id }
@@ -433,7 +433,7 @@ RSpec.describe RepliesController do
 
       meta_og = assigns(:meta_og)
       expect(meta_og[:url]).to eq(post_url(post, page: 2))
-      expect(meta_og[:title]).to eq('a post · example board » example section')
+      expect(meta_og[:title]).to eq('a post · example continuity » example section')
       expect(meta_og[:description]).to eq('Test. (user1, user2 – page 2 of 2)')
     end
 
@@ -453,7 +453,7 @@ RSpec.describe RepliesController do
   describe "GET history" do
     it "requires valid reply" do
       get :history, params: { id: -1 }
-      expect(response).to redirect_to(boards_url)
+      expect(response).to redirect_to(continuities_url)
       expect(flash[:error]).to eq("Post could not be found.")
     end
 
@@ -469,7 +469,7 @@ RSpec.describe RepliesController do
 
       login_as(reply.user)
       get :history, params: { id: reply.id }
-      expect(response).to redirect_to(boards_url)
+      expect(response).to redirect_to(continuities_url)
       expect(flash[:error]).to eq("You do not have permission to view this post.")
     end
 
@@ -497,7 +497,7 @@ RSpec.describe RepliesController do
     it "requires valid reply" do
       login
       get :edit, params: { id: -1 }
-      expect(response).to redirect_to(boards_url)
+      expect(response).to redirect_to(continuities_url)
       expect(flash[:error]).to eq("Post could not be found.")
     end
 
@@ -513,7 +513,7 @@ RSpec.describe RepliesController do
 
       login_as(reply.user)
       get :edit, params: { id: reply.id }
-      expect(response).to redirect_to(boards_url)
+      expect(response).to redirect_to(continuities_url)
       expect(flash[:error]).to eq("You do not have permission to view this post.")
     end
 
@@ -563,7 +563,7 @@ RSpec.describe RepliesController do
     it "requires valid reply" do
       login
       put :update, params: { id: -1 }
-      expect(response).to redirect_to(boards_url)
+      expect(response).to redirect_to(continuities_url)
       expect(flash[:error]).to eq("Post could not be found.")
     end
 
@@ -579,7 +579,7 @@ RSpec.describe RepliesController do
 
       login_as(reply.user)
       put :update, params: { id: reply.id }
-      expect(response).to redirect_to(boards_url)
+      expect(response).to redirect_to(continuities_url)
       expect(flash[:error]).to eq("You do not have permission to view this post.")
     end
 
@@ -764,7 +764,7 @@ RSpec.describe RepliesController do
     it "requires valid reply" do
       login
       delete :destroy, params: { id: -1 }
-      expect(response).to redirect_to(boards_url)
+      expect(response).to redirect_to(continuities_url)
       expect(flash[:error]).to eq("Post could not be found.")
     end
 
@@ -780,7 +780,7 @@ RSpec.describe RepliesController do
 
       login_as(reply.user)
       delete :destroy, params: { id: reply.id }
-      expect(response).to redirect_to(boards_url)
+      expect(response).to redirect_to(continuities_url)
       expect(flash[:error]).to eq("You do not have permission to view this post.")
     end
 
@@ -900,7 +900,7 @@ RSpec.describe RepliesController do
       expect(Audited::Audit.find_by(auditable_id: 99)).to be_nil
       login
       post :restore, params: { id: 99 }
-      expect(response).to redirect_to(boards_url)
+      expect(response).to redirect_to(continuities_url)
       expect(flash[:error]).to eq("Reply could not be found.")
     end
 
@@ -909,7 +909,7 @@ RSpec.describe RepliesController do
       Audited::Audit.where(action: 'create').find_by(auditable_id: reply.id).update(action: 'destroy')
       login_as(reply.user)
       post :restore, params: { id: 99 }
-      expect(response).to redirect_to(boards_url)
+      expect(response).to redirect_to(continuities_url)
       expect(flash[:error]).to eq("Reply could not be found.")
     end
 
@@ -1223,7 +1223,7 @@ RSpec.describe RepliesController do
         continuity_post = create(:post, num_replies: 1)
         create(:post, num_replies: 1) # wrong post
         filtered_reply = continuity_post.replies.last
-        get :search, params: { commit: true, board_id: continuity_post.board_id }
+        get :search, params: { commit: true, continuity_id: continuity_post.continuity_id }
         expect(assigns(:search_results)).to match_array([filtered_reply])
       end
 

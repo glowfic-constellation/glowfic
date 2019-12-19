@@ -23,7 +23,7 @@ class RepliesController < WritableController
       @users = User.active.where(id: params[:author_id]) if params[:author_id].present?
       @characters = Character.where(id: params[:character_id]) if params[:character_id].present?
       @templates = Template.ordered.limit(25)
-      @boards = Board.where(id: params[:board_id]) if params[:board_id].present?
+      @continuities = Continuity.where(id: params[:continuity_id]) if params[:continuity_id].present?
       if @post
         # post exists but post not visible
         flash.now[:error] = "You do not have permission to view this post."
@@ -61,8 +61,8 @@ class RepliesController < WritableController
 
     if @post
       @search_results = @search_results.where(post_id: @post.id)
-    elsif params[:board_id].present?
-      post_ids = Post.where(board_id: params[:board_id]).pluck(:id)
+    elsif params[:continuity_id].present?
+      post_ids = Post.where(continuity_id: params[:continuity_id]).pluck(:id)
       @search_results = @search_results.where(post_id: post_ids)
     end
 
@@ -214,7 +214,7 @@ class RepliesController < WritableController
     audit = Audited::Audit.where(action: 'destroy').order(id: :desc).find_by(auditable_id: params[:id])
     unless audit
       flash[:error] = "Reply could not be found."
-      redirect_to boards_path and return
+      redirect_to continuities_path and return
     end
 
     if audit.auditable
@@ -252,13 +252,13 @@ class RepliesController < WritableController
 
     unless @reply
       flash[:error] = "Post could not be found."
-      redirect_to boards_path and return
+      redirect_to continuities_path and return
     end
 
     @post = @reply.post
     unless @post.visible_to?(current_user)
       flash[:error] = "You do not have permission to view this post."
-      redirect_to boards_path and return
+      redirect_to continuities_path and return
     end
 
     @page_title = @post.subject

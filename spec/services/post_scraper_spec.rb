@@ -29,9 +29,9 @@ RSpec.describe PostScraper do
     url = 'http://wild-pegasus-appeared.dreamwidth.org/403.html?style=site&view=flat'
     stub_fixture(url, 'scrape_single_page')
     user = create(:user, username: "Marri")
-    board = create(:board, creator: user)
+    continuity = create(:continuity, creator: user)
 
-    scraper = PostScraper.new(url, board.id)
+    scraper = PostScraper.new(url, continuity.id)
     allow(scraper).to receive(:prompt_for_user) { user }
     allow(scraper).to receive(:set_from_icon).and_return(nil)
     expect(scraper.send(:logger)).to receive(:info).with("Importing thread 'linear b'")
@@ -53,9 +53,9 @@ RSpec.describe PostScraper do
     stub_fixture(url, 'scrape_multi_page')
     stub_fixture(url_page_2, 'scrape_single_page')
     user = create(:user, username: "Marri")
-    board = create(:board, creator: user)
+    continuity = create(:continuity, creator: user)
 
-    scraper = PostScraper.new(url, board.id)
+    scraper = PostScraper.new(url, continuity.id)
     allow(scraper).to receive(:prompt_for_user) { user }
     allow(scraper).to receive(:set_from_icon).and_return(nil)
     expect(scraper.send(:logger)).to receive(:info).with("Importing thread 'linear b'")
@@ -111,11 +111,11 @@ RSpec.describe PostScraper do
   end
 
   it "should raise an error when post is already imported" do
-    board = create(:board)
-    create(:character, screenname: 'wild_pegasus_appeared', user: board.creator)
+    continuity = create(:continuity)
+    create(:character, screenname: 'wild_pegasus_appeared', user: continuity.creator)
     url = 'http://wild-pegasus-appeared.dreamwidth.org/403.html?style=site&view=flat'
     stub_fixture(url, 'scrape_no_replies')
-    scraper = PostScraper.new(url, board.id)
+    scraper = PostScraper.new(url, continuity.id)
     allow(scraper.send(:logger)).to receive(:info).with("Importing thread 'linear b'")
     expect { scraper.scrape! }.to change { Post.count }.by(1)
     expect { scraper.scrape! }.to raise_error(AlreadyImportedError)
@@ -124,11 +124,11 @@ RSpec.describe PostScraper do
 
   it "should raise an error when post is already imported with given subject" do
     new_title = 'other name'
-    board = create(:board)
-    create(:post, board: board, subject: new_title) # post
+    continuity = create(:continuity)
+    create(:post, continuity: continuity, subject: new_title) # post
     url = 'http://wild-pegasus-appeared.dreamwidth.org/403.html?style=site&view=flat'
     stub_fixture(url, 'scrape_no_replies')
-    scraper = PostScraper.new(url, board.id, nil, nil, false, false, new_title)
+    scraper = PostScraper.new(url, continuity.id, nil, nil, false, false, new_title)
     allow(scraper.send(:logger)).to receive(:info).with("Importing thread '#{new_title}'")
     expect { scraper.scrape! }.to raise_error(AlreadyImportedError)
     expect(Post.count).to eq(1)
@@ -138,9 +138,9 @@ RSpec.describe PostScraper do
     url = 'http://wild-pegasus-appeared.dreamwidth.org/403.html?style=site&view=flat'
     stub_fixture(url, 'scrape_no_replies')
     user = create(:user, username: "Marri")
-    board = create(:board, creator: user)
+    continuity = create(:continuity, creator: user)
 
-    scraper = PostScraper.new(url, board.id, nil, nil, false, true)
+    scraper = PostScraper.new(url, continuity.id, nil, nil, false, true)
     allow(STDIN).to receive(:gets).and_return(user.username)
     expect(scraper.send(:logger)).to receive(:info).with("Importing thread 'linear b'")
     expect(scraper).to receive(:print).with("User ID or username for wild_pegasus_appeared? ")
@@ -168,7 +168,7 @@ RSpec.describe PostScraper do
 
     alicorn = create(:user, username: 'Alicorn')
     kappa = create(:user, username: 'Kappa')
-    board = create(:board, creator: alicorn, writers: [kappa])
+    continuity = create(:continuity, creator: alicorn, writers: [kappa])
     characters = [
       {screenname: 'mind_game', name: 'Jane', user: alicorn},
       {screenname: 'luminous_regnant', name: 'Isabella Marie Swan Cullen ☼ "Golden"', user: alicorn},
@@ -181,7 +181,7 @@ RSpec.describe PostScraper do
     ]
     characters.each { |data| create(:character, data) }
 
-    scraper = PostScraper.new(urls.first, board.id, nil, nil, true, false)
+    scraper = PostScraper.new(urls.first, continuity.id, nil, nil, true, false)
     expect(scraper.send(:logger)).to receive(:info).with("Importing thread 'repealing'")
     scraper.scrape_threads!(threads)
     expect(Post.count).to eq(1)
@@ -198,7 +198,7 @@ RSpec.describe PostScraper do
     stub_fixture(url, 'scrape_no_replies')
 
     user = create(:user, username: "Marri")
-    board = create(:board, creator: user)
+    continuity = create(:continuity, creator: user)
     nita = create(:character, user: user, screenname: 'wild_pegasus_appeared', name: 'Juanita')
     icon = create(:icon, keyword: 'sad', url: 'http://v.dreamwidth.org/8517100/2343677', user: user)
     gallery = create(:gallery, user: user)
@@ -209,7 +209,7 @@ RSpec.describe PostScraper do
     expect(Icon.count).to eq(1)
     expect(Character.count).to eq(1)
 
-    scraper = PostScraper.new(url, board.id)
+    scraper = PostScraper.new(url, continuity.id)
     expect(scraper).not_to receive(:print).with("User ID or username for wild_pegasus_appeared? ")
     expect(scraper.send(:logger)).to receive(:info).with("Importing thread 'linear b'") # just to quiet it
 
@@ -224,7 +224,7 @@ RSpec.describe PostScraper do
     stub_fixture(url, 'scrape_no_replies')
 
     user = create(:user, username: "Marri")
-    board = create(:board, creator: user)
+    continuity = create(:continuity, creator: user)
     nita = create(:character, user: user, screenname: 'wild_pegasus_appeared', name: 'Juanita')
     icon = create(:icon, keyword: 'sad', url: 'http://glowfic.com/uploaded/icon.png', user: user)
     gallery = create(:gallery, user: user)
@@ -235,7 +235,7 @@ RSpec.describe PostScraper do
     expect(Icon.count).to eq(1)
     expect(Character.count).to eq(1)
 
-    scraper = PostScraper.new(url, board.id)
+    scraper = PostScraper.new(url, continuity.id)
     expect(scraper).not_to receive(:print).with("User ID or username for wild_pegasus_appeared? ")
     expect(scraper.send(:logger)).to receive(:info).with("Importing thread 'linear b'") # just to quiet it
 

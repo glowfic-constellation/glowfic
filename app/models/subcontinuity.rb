@@ -1,8 +1,8 @@
-class BoardSection < ApplicationRecord
+class Subcontinuity < ApplicationRecord
   include Orderable
   include Presentable
 
-  belongs_to :board, inverse_of: :board_sections, optional: false
+  belongs_to :continuity, inverse_of: :subcontinuities, optional: false
   has_many :posts, inverse_of: :section, foreign_key: :section_id, dependent: false # This is handled in callbacks
 
   validates :name, presence: true
@@ -21,6 +21,6 @@ class BoardSection < ApplicationRecord
   end
 
   def ordered_attributes
-    [:board_id]
+    [:continuity_id]
   end
 end

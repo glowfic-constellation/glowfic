@@ -83,9 +83,9 @@ RSpec.describe PostsController do
 
       it "filters by continuity" do
         post = create(:post)
-        post2 = create(:post, board: post.board)
+        post2 = create(:post, continuity: post.continuity)
         create(:post)
-        get :search, params: { commit: true, board_id: post.board_id }
+        get :search, params: { commit: true, continuity_id: post.continuity_id }
         expect(assigns(:search_results)).to match_array([post, post2])
       end
 
@@ -234,25 +234,25 @@ RSpec.describe PostsController do
       end
     end
 
-    it "defaults authors to be the current user in open boards" do
+    it "defaults authors to be the current user in open continuities" do
       user = create(:user)
       login_as(user)
-      create(:user) # user not in the board
-      board_creator = create(:user) # user in the board
-      board = create(:board, creator: board_creator, authors_locked: false)
-      get :new, params: { board_id: board.id }
-      expect(assigns(:post).board).to eq(board)
+      create(:user) # user not in the continuity
+      continuity_creator = create(:user) # user in the continuity
+      continuity = create(:continuity, creator: continuity_creator, authors_locked: false)
+      get :new, params: { continuity_id: continuity.id }
+      expect(assigns(:post).continuity).to eq(continuity)
       expect(assigns(:author_ids)).to eq([])
     end
 
-    it "defaults authors to be board authors in closed boards" do
+    it "defaults authors to be continuity authors in closed continuities" do
       user = create(:user)
       login_as(user)
       coauthor = create(:user)
       create(:user) # other_user
-      board = create(:board, creator: user, writers: [coauthor])
-      get :new, params: { board_id: board.id }
-      expect(assigns(:post).board).to eq(board)
+      continuity = create(:continuity, creator: user, writers: [coauthor])
+      get :new, params: { continuity_id: continuity.id }
+      expect(assigns(:post).continuity).to eq(continuity)
       expect(assigns(:author_ids)).to match_array([coauthor.id])
     end
   end
@@ -397,7 +397,7 @@ RSpec.describe PostsController do
       tags = ['_atag', '_atag', create(:label).id, '', '_' + existing_name.name, '_' + existing_case.name.upcase]
       login
       expect {
-        post :create, params: { post: {subject: 'a', board_id: create(:board).id, label_ids: tags} }
+        post :create, params: { post: {subject: 'a', continuity_id: create(:continuity).id, label_ids: tags} }
       }.to change{Label.count}.by(1)
       expect(Label.last.name).to eq('atag')
       expect(assigns(:post).labels.count).to eq(4)
@@ -416,7 +416,7 @@ RSpec.describe PostsController do
       ]
       login
       expect {
-        post :create, params: { post: {subject: 'a', board_id: create(:board).id, setting_ids: tags} }
+        post :create, params: { post: {subject: 'a', continuity_id: create(:continuity).id, setting_ids: tags} }
       }.to change{Setting.count}.by(1)
       expect(Setting.last.name).to eq('atag')
       expect(assigns(:post).settings.count).to eq(4)
@@ -436,7 +436,7 @@ RSpec.describe PostsController do
       login
       expect {
         post :create, params: {
-          post: {subject: 'a', board_id: create(:board).id, content_warning_ids: tags}
+          post: {subject: 'a', continuity_id: create(:continuity).id, content_warning_ids: tags}
         }
       }.to change{ContentWarning.count}.by(1)
       expect(ContentWarning.last.name).to eq('atag')
@@ -447,8 +447,8 @@ RSpec.describe PostsController do
       user = create(:user)
       other_user = create(:user)
       create(:user) # user should not be author
-      board_creator = create(:user) # user should not be author
-      board = create(:board, creator: board_creator)
+      continuity_creator = create(:user) # user should not be author
+      continuity = create(:continuity, creator: continuity_creator)
       login_as(user)
 
       time = Time.zone.now - 5.minutes
@@ -458,7 +458,7 @@ RSpec.describe PostsController do
             post: {
               subject: 'a',
               user_id: user.id,
-              board_id: board.id,
+              continuity_id: continuity.id,
               unjoined_author_ids: [other_user.id]
             }
           }
@@ -482,8 +482,8 @@ RSpec.describe PostsController do
     it "handles post submitted with no authors" do
       user = create(:user)
       create(:user) # non-author
-      board_creator = create(:user)
-      board = create(:board, creator: board_creator)
+      continuity_creator = create(:user)
+      continuity = create(:continuity, creator: continuity_creator)
       login_as(user)
 
       time = Time.zone.now - 5.minutes
@@ -493,7 +493,7 @@ RSpec.describe PostsController do
             post: {
               subject: 'a',
               user_id: user.id,
-              board_id: board.id,
+              continuity_id: continuity.id,
               unjoined_author_ids: ['']
             }
           }
@@ -510,12 +510,12 @@ RSpec.describe PostsController do
       expect(post_author.joined_at).to be_the_same_time_as(time)
     end
 
-    it "adds new post authors to board cameo" do
+    it "adds new post authors to continuity cameo" do
       user = create(:user)
       other_user = create(:user)
       third_user = create(:user)
       create(:user) # separate user
-      board = create(:board, creator: user, writers: [other_user])
+      continuity = create(:continuity, creator: user, writers: [other_user])
 
       login_as(user)
       expect {
@@ -523,25 +523,25 @@ RSpec.describe PostsController do
           post: {
             subject: 'a',
             user_id: user.id,
-            board_id: board.id,
+            continuity_id: continuity.id,
             unjoined_author_ids: [user.id, other_user.id, third_user.id]
           }
         }
-      }.to change { BoardAuthor.count }.by(1)
+      }.to change { ContinuityAuthor.count }.by(1)
 
       post = assigns(:post).reload
       expect(post.tagging_authors).to match_array([user, other_user, third_user])
 
-      board.reload
-      expect(board.writers).to match_array([user, other_user])
-      expect(board.cameos).to match_array([third_user])
+      continuity.reload
+      expect(continuity.writers).to match_array([user, other_user])
+      expect(continuity.cameos).to match_array([third_user])
     end
 
-    it "does not add to cameos of open boards" do
+    it "does not add to cameos of open continuities" do
       user = create(:user)
       other_user = create(:user)
-      board = create(:board)
-      expect(board.cameos).to be_empty
+      continuity = create(:continuity)
+      expect(continuity.cameos).to be_empty
 
       login_as(user)
       expect {
@@ -549,31 +549,31 @@ RSpec.describe PostsController do
           post: {
             subject: 'a',
             user_id: user.id,
-            board_id: board.id,
+            continuity_id: continuity.id,
             unjoined_author_ids: [user.id, other_user.id]
           }
         }
-      }.not_to change { BoardAuthor.count }
+      }.not_to change { ContinuityAuthor.count }
 
       post = assigns(:post).reload
       expect(post.tagging_authors).to match_array([user, other_user])
 
-      board.reload
-      expect(board.writers).to eq([board.creator])
-      expect(board.cameos).to be_empty
+      continuity.reload
+      expect(continuity.writers).to eq([continuity.creator])
+      expect(continuity.cameos).to be_empty
     end
 
     it "handles new post authors already being in cameos" do
       user = create(:user)
       other_user = create(:user)
-      board = create(:board, creator: user, cameos: [other_user])
+      continuity = create(:continuity, creator: user, cameos: [other_user])
 
       login_as(user)
       post :create, params: {
         post: {
           subject: 'a',
           user_id: user.id,
-          board_id: board.id,
+          continuity_id: continuity.id,
           unjoined_author_ids: [user.id, other_user.id]
         }
       }
@@ -582,9 +582,9 @@ RSpec.describe PostsController do
       post = assigns(:post).reload
       expect(post.tagging_authors).to match_array([user, other_user])
 
-      board.reload
-      expect(board.creator).to eq(user)
-      expect(board.cameos).to match_array([other_user])
+      continuity.reload
+      expect(continuity.creator).to eq(user)
+      expect(continuity.cameos).to match_array([other_user])
     end
 
     it "handles invalid posts" do
@@ -602,7 +602,7 @@ RSpec.describe PostsController do
       expect(controller).to receive(:editor_setup).and_call_original
       expect(controller).to receive(:setup_layout_gon).and_call_original
 
-      # valid post requires a board_id
+      # valid post requires a continuity_id
       post :create, params: {
         post: {
           subject: 'asubjct',
@@ -656,8 +656,8 @@ RSpec.describe PostsController do
     it "creates a post" do
       user = create(:user)
       login_as(user)
-      board = create(:board)
-      section = create(:board_section, board: board)
+      continuity = create(:continuity)
+      section = create(:subcontinuity, continuity: continuity)
       char = create(:character, user: user)
       icon = create(:icon, user: user)
       calias = create(:alias, character: char)
@@ -676,7 +676,7 @@ RSpec.describe PostsController do
             subject: 'asubjct',
             content: 'acontnt',
             description: 'adesc',
-            board_id: board.id,
+            continuity_id: continuity.id,
             section_id: section.id,
             character_id: char.id,
             icon_id: icon.id,
@@ -700,7 +700,7 @@ RSpec.describe PostsController do
       expect(post.subject).to eq('asubjct')
       expect(post.content).to eq('acontnt')
       expect(post.description).to eq('adesc')
-      expect(post.board).to eq(board)
+      expect(post.continuity).to eq(continuity)
       expect(post.section).to eq(section)
       expect(post.character_id).to eq(char.id)
       expect(post.icon_id).to eq(icon.id)
@@ -734,7 +734,7 @@ RSpec.describe PostsController do
       post :create, params: {
         post: {
           subject: 'subject',
-          board_id: create(:board).id,
+          continuity_id: create(:continuity).id,
           privacy: Concealable::REGISTERED,
           content: 'content',
         }
@@ -754,20 +754,20 @@ RSpec.describe PostsController do
 
     it "calculates OpenGraph meta" do
       user = create(:user, username: 'example user')
-      board = create(:board, name: 'board')
-      post = create(:post, subject: 'title', user: user, board: board)
+      continuity = create(:continuity, name: 'continuity')
+      post = create(:post, subject: 'title', user: user, continuity: continuity)
       get :show, params: { id: post.id }
 
       meta_og = assigns(:meta_og)
       expect(meta_og[:url]).to eq(post_url(post))
-      expect(meta_og[:title]).to eq('title · board')
+      expect(meta_og[:title]).to eq('title · continuity')
       expect(meta_og[:description]).to eq('(example user – page 1 of 1)')
     end
 
     it "requires permission" do
       post = create(:post, privacy: Concealable::PRIVATE)
       get :show, params: { id: post.id }
-      expect(response).to redirect_to(boards_url)
+      expect(response).to redirect_to(continuities_url)
       expect(flash[:error]).to eq("You do not have permission to view this post.")
     end
 
@@ -1082,13 +1082,13 @@ RSpec.describe PostsController do
 
     it "gives correct next and previous posts" do
       user = create(:user)
-      board = create(:board, creator: user)
-      section = create(:board_section, board: board)
-      create(:post, user: user, board: board, section: section)
-      prev = create(:post, user: user, board: board, section: section)
-      post = create(:post, user: user, board: board, section: section)
-      nextp = create(:post, user: user, board: board, section: section)
-      create(:post, user: user, board: board, section: section)
+      continuity = create(:continuity, creator: user)
+      section = create(:subcontinuity, continuity: continuity)
+      create(:post, user: user, continuity: continuity, section: section)
+      prev = create(:post, user: user, continuity: continuity, section: section)
+      post = create(:post, user: user, continuity: continuity, section: section)
+      nextp = create(:post, user: user, continuity: continuity, section: section)
+      create(:post, user: user, continuity: continuity, section: section)
       expect([prev, post, nextp].map(&:section_order)).to eq([1, 2, 3])
 
       get :show, params: { id: post.id }
@@ -1099,12 +1099,12 @@ RSpec.describe PostsController do
 
     it "gives the correct previous post with an intermediate private post" do
       user = create(:user)
-      board = create(:board, creator: user)
-      section = create(:board_section, board: board)
-      extra = create(:post, user: user, board: board, section: section)
-      prev = create(:post, user: user, board: board, section: section)
-      hidden = create(:post, board: board, section: section, privacy: Concealable::PRIVATE)
-      post = create(:post, user: user, board: board, section: section)
+      continuity = create(:continuity, creator: user)
+      section = create(:subcontinuity, continuity: continuity)
+      extra = create(:post, user: user, continuity: continuity, section: section)
+      prev = create(:post, user: user, continuity: continuity, section: section)
+      hidden = create(:post, continuity: continuity, section: section, privacy: Concealable::PRIVATE)
+      post = create(:post, user: user, continuity: continuity, section: section)
       expect([extra, prev, hidden, post].map(&:section_order)).to eq([0, 1, 2, 3])
 
       get :show, params: { id: post.id }
@@ -1115,12 +1115,12 @@ RSpec.describe PostsController do
 
     it "gives the correct next post with an intermediate private post" do
       user = create(:user)
-      board = create(:board, creator: user)
-      section = create(:board_section, board: board)
-      post = create(:post, user: user, board: board, section: section)
-      hidden = create(:post, board: board, section: section, privacy: Concealable::PRIVATE)
-      nextp = create(:post, user: user, board: board, section: section)
-      extra = create(:post, user: user, board: board, section: section)
+      continuity = create(:continuity, creator: user)
+      section = create(:subcontinuity, continuity: continuity)
+      post = create(:post, user: user, continuity: continuity, section: section)
+      hidden = create(:post, continuity: continuity, section: section, privacy: Concealable::PRIVATE)
+      nextp = create(:post, user: user, continuity: continuity, section: section)
+      extra = create(:post, user: user, continuity: continuity, section: section)
       expect([post, hidden, nextp, extra].map(&:section_order)).to eq([0, 1, 2, 3])
 
       get :show, params: { id: post.id }
@@ -1131,10 +1131,10 @@ RSpec.describe PostsController do
 
     it "does not give previous with only a non-visible post in section" do
       user = create(:user)
-      board = create(:board, creator: user)
-      section = create(:board_section, board: board)
-      hidden = create(:post, board: board, section: section, privacy: Concealable::PRIVATE)
-      post = create(:post, user: user, board: board, section: section)
+      continuity = create(:continuity, creator: user)
+      section = create(:subcontinuity, continuity: continuity)
+      hidden = create(:post, continuity: continuity, section: section, privacy: Concealable::PRIVATE)
+      post = create(:post, user: user, continuity: continuity, section: section)
       hidden.update!(section_order: 0)
       post.update!(section_order: 1)
 
@@ -1145,10 +1145,10 @@ RSpec.describe PostsController do
 
     it "does not give next with only a non-visible post in section" do
       user = create(:user)
-      board = create(:board, creator: user)
-      section = create(:board_section, board: board)
-      post = create(:post, user: user, board: board, section: section)
-      hidden = create(:post, board: board, section: section, privacy: Concealable::PRIVATE)
+      continuity = create(:continuity, creator: user)
+      section = create(:subcontinuity, continuity: continuity)
+      post = create(:post, user: user, continuity: continuity, section: section)
+      hidden = create(:post, continuity: continuity, section: section, privacy: Concealable::PRIVATE)
       post.update!(section_order: 0)
       hidden.update!(section_order: 1)
 
@@ -1159,13 +1159,13 @@ RSpec.describe PostsController do
 
     it "handles very large mostly-hidden sections as expected" do
       user = create(:user)
-      board = create(:board, creator: user)
-      section = create(:board_section, board: board)
-      prev = create(:post, user: user, board: board, section: section)
-      create_list(:post, 10, board: board, section: section, privacy: Concealable::PRIVATE)
-      post = create(:post, user: user, board: board, section: section)
-      create_list(:post, 10, board: board, section: section, privacy: Concealable::PRIVATE)
-      nextp = create(:post, user: user, board: board, section: section)
+      continuity = create(:continuity, creator: user)
+      section = create(:subcontinuity, continuity: continuity)
+      prev = create(:post, user: user, continuity: continuity, section: section)
+      create_list(:post, 10, continuity: continuity, section: section, privacy: Concealable::PRIVATE)
+      post = create(:post, user: user, continuity: continuity, section: section)
+      create_list(:post, 10, continuity: continuity, section: section, privacy: Concealable::PRIVATE)
+      nextp = create(:post, user: user, continuity: continuity, section: section)
 
       get :show, params: { id: post.id }
 
@@ -1179,7 +1179,7 @@ RSpec.describe PostsController do
     it "requires post" do
       login
       get :history, params: { id: -1 }
-      expect(response).to redirect_to(boards_url)
+      expect(response).to redirect_to(continuities_url)
       expect(flash[:error]).to eq("Post could not be found.")
     end
 
@@ -1208,7 +1208,7 @@ RSpec.describe PostsController do
     it "requires post" do
       login
       get :delete_history, params: { id: -1 }
-      expect(response).to redirect_to(boards_url)
+      expect(response).to redirect_to(continuities_url)
       expect(flash[:error]).to eq("Post could not be found.")
     end
 
@@ -1269,7 +1269,7 @@ RSpec.describe PostsController do
     it "requires post" do
       login
       get :stats, params: { id: -1 }
-      expect(response).to redirect_to(boards_url)
+      expect(response).to redirect_to(continuities_url)
       expect(flash[:error]).to eq("Post could not be found.")
     end
 
@@ -1295,7 +1295,7 @@ RSpec.describe PostsController do
     it "requires post" do
       login
       get :edit, params: { id: -1 }
-      expect(response).to redirect_to(boards_url)
+      expect(response).to redirect_to(continuities_url)
       expect(flash[:error]).to eq("Post could not be found.")
     end
 
@@ -1388,7 +1388,7 @@ RSpec.describe PostsController do
     it "requires valid post" do
       login
       put :update, params: { id: -1 }
-      expect(response).to redirect_to(boards_url)
+      expect(response).to redirect_to(continuities_url)
       expect(flash[:error]).to eq("Post could not be found.")
     end
 
@@ -1399,7 +1399,7 @@ RSpec.describe PostsController do
       expect(post.visible_to?(user)).not_to eq(true)
 
       put :update, params: { id: post.id }
-      expect(response).to redirect_to(boards_url)
+      expect(response).to redirect_to(continuities_url)
       expect(flash[:error]).to eq("You do not have permission to view this post.")
     end
 
@@ -1542,7 +1542,7 @@ RSpec.describe PostsController do
       it "handles unexpected failure" do
         post = create(:post, status: Post::STATUS_ACTIVE)
         login_as(post.user)
-        post.update_columns(board_id: 0)
+        post.update_columns(continuity_id: 0)
         expect(post.reload).not_to be_valid
         put :update, params: { id: post.id, status: 'abandoned' }
         expect(response).to redirect_to(post_url(post))
@@ -1687,7 +1687,7 @@ RSpec.describe PostsController do
       it "handles unexpected failure" do
         post = create(:post)
         login_as(post.user)
-        post.update_columns(board_id: 0)
+        post.update_columns(continuity_id: 0)
         expect(post.reload).not_to be_valid
         put :update, params: { id: post.id, authors_locked: 'true' }
         expect(response).to redirect_to(post_url(post))
@@ -2052,13 +2052,13 @@ RSpec.describe PostsController do
         expect(joined_post_author.joined_at).to be_the_same_time_as(reply.created_at)
       end
 
-      it "updates board cameos if necessary" do
+      it "updates continuity cameos if necessary" do
         user = create(:user)
         other_user = create(:user)
         third_user = create(:user)
         login_as(user)
-        board = create(:board, creator: user, writers: [other_user])
-        post = create(:post, user: user, board: board)
+        continuity = create(:continuity, creator: user, writers: [other_user])
+        post = create(:post, user: user, continuity: continuity)
         put :update, params: {
           id: post.id,
           post: {
@@ -2066,18 +2066,18 @@ RSpec.describe PostsController do
           }
         }
         post.reload
-        board.reload
+        continuity.reload
         expect(post.tagging_authors).to match_array([user, other_user, third_user])
-        expect(board.cameos).to match_array([third_user])
+        expect(continuity.cameos).to match_array([third_user])
       end
 
-      it "does not add to cameos of open boards" do
+      it "does not add to cameos of open continuities" do
         user = create(:user)
         other_user = create(:user)
         login_as(user)
-        board = create(:board)
-        expect(board.cameos).to be_empty
-        post = create(:post, user: user, board: board)
+        continuity = create(:continuity)
+        expect(continuity.cameos).to be_empty
+        post = create(:post, user: user, continuity: continuity)
         put :update, params: {
           id: post.id,
           post: {
@@ -2085,9 +2085,9 @@ RSpec.describe PostsController do
           }
         }
         post.reload
-        board.reload
+        continuity.reload
         expect(post.tagging_authors).to match_array([user, other_user])
-        expect(board.cameos).to be_empty
+        expect(continuity.cameos).to be_empty
       end
 
       it "orders tags" do
@@ -2207,8 +2207,8 @@ RSpec.describe PostsController do
         newcontent = post.content + 'new'
         newsubj = post.subject + 'new'
         login_as(user)
-        board = create(:board)
-        section = create(:board_section, board: board)
+        continuity = create(:continuity)
+        section = create(:subcontinuity, continuity: continuity)
         char = create(:character, user: user)
         calias = create(:alias, character_id: char.id)
         icon = create(:icon, user: user)
@@ -2229,7 +2229,7 @@ RSpec.describe PostsController do
             content: newcontent,
             subject: newsubj,
             description: 'desc',
-            board_id: board.id,
+            continuity_id: continuity.id,
             section_id: section.id,
             character_id: char.id,
             character_alias_id: calias.id,
@@ -2249,7 +2249,7 @@ RSpec.describe PostsController do
         expect(post.content).to eq(newcontent)
         expect(post.subject).to eq(newsubj)
         expect(post.description).to eq('desc')
-        expect(post.board_id).to eq(board.id)
+        expect(post.continuity_id).to eq(continuity.id)
         expect(post.section_id).to eq(section.id)
         expect(post.character_id).to eq(char.id)
         expect(post.character_alias_id).to eq(calias.id)
@@ -2338,14 +2338,14 @@ RSpec.describe PostsController do
   describe "POST warnings" do
     it "requires a valid post" do
       post :warnings, params: { id: -1 }
-      expect(response).to redirect_to(boards_url)
+      expect(response).to redirect_to(continuities_url)
       expect(flash[:error]).to eq("Post could not be found.")
     end
 
     it "requires permission" do
       warn_post = create(:post, privacy: Concealable::PRIVATE)
       post :warnings, params: { id: warn_post.id }
-      expect(response).to redirect_to(boards_url)
+      expect(response).to redirect_to(continuities_url)
       expect(flash[:error]).to eq("You do not have permission to view this post.")
     end
 
@@ -2384,7 +2384,7 @@ RSpec.describe PostsController do
     it "requires valid post" do
       login
       delete :destroy, params: { id: -1 }
-      expect(response).to redirect_to(boards_url)
+      expect(response).to redirect_to(continuities_url)
       expect(flash[:error]).to eq("Post could not be found.")
     end
 
@@ -2402,7 +2402,7 @@ RSpec.describe PostsController do
       post = create(:post)
       login_as(post.user)
       delete :destroy, params: { id: post.id }
-      expect(response).to redirect_to(boards_url)
+      expect(response).to redirect_to(continuities_url)
       expect(flash[:success]).to eq("Post deleted.")
     end
 
@@ -2555,9 +2555,9 @@ RSpec.describe PostsController do
       end
 
       it "does not show posts from site_testing" do
-        site_test = create(:board, id: Board::ID_SITETESTING)
+        site_test = create(:continuity, id: Continuity::ID_SITETESTING)
 
-        post.board = site_test
+        post.continuity = site_test
         post.save!
         create(:reply, post_id: post.id, user_id: other_user.id)
 
@@ -2740,7 +2740,7 @@ RSpec.describe PostsController do
       expect(assigns(:posts)).to eq([post1, post2, post3])
     end
 
-    it "manages board/post read time mismatches" do
+    it "manages continuity/post read time mismatches" do
       user = create(:user)
 
       # no views exist
@@ -2752,34 +2752,34 @@ RSpec.describe PostsController do
       post_read_post = create(:post)
       post_read_post.mark_read(user)
 
-      # only board view exists
-      board_unread_post = create(:post)
-      board_unread_post.board.mark_read(user, board_unread_post.created_at - 1.second, true)
-      board_read_post = create(:post)
-      board_read_post.board.mark_read(user)
+      # only continuity view exists
+      continuity_unread_post = create(:post)
+      continuity_unread_post.continuity.mark_read(user, continuity_unread_post.created_at - 1.second, true)
+      continuity_read_post = create(:post)
+      continuity_read_post.continuity.mark_read(user)
 
       # both exist
       both_unread_post = create(:post)
       both_unread_post.mark_read(user, both_unread_post.created_at - 1.second, true)
-      both_unread_post.board.mark_read(user, both_unread_post.created_at - 1.second, true)
-      both_board_read_post = create(:post)
-      both_board_read_post.mark_read(user, both_unread_post.created_at - 1.second, true)
-      both_board_read_post.board.mark_read(user)
+      both_unread_post.continuity.mark_read(user, both_unread_post.created_at - 1.second, true)
+      both_continuity_read_post = create(:post)
+      both_continuity_read_post.mark_read(user, both_unread_post.created_at - 1.second, true)
+      both_continuity_read_post.continuity.mark_read(user)
       both_post_read_post = create(:post)
-      both_post_read_post.board.mark_read(user, both_unread_post.created_at - 1.second, true)
+      both_post_read_post.continuity.mark_read(user, both_unread_post.created_at - 1.second, true)
       both_post_read_post.mark_read(user)
       both_read_post = create(:post)
       both_read_post.mark_read(user)
-      both_read_post.board.mark_read(user)
+      both_read_post.continuity.mark_read(user)
 
-      # board ignored
-      board_ignored = create(:post)
-      board_ignored.mark_read(user, both_unread_post.created_at - 1.second, true)
-      board_ignored.board.ignore(user)
+      # continuity ignored
+      continuity_ignored = create(:post)
+      continuity_ignored.mark_read(user, both_unread_post.created_at - 1.second, true)
+      continuity_ignored.continuity.ignore(user)
 
       login_as(user)
       get :unread
-      expect(assigns(:posts)).to match_array([unread_post, post_unread_post, board_unread_post, both_unread_post, both_board_read_post])
+      expect(assigns(:posts)).to match_array([unread_post, post_unread_post, continuity_unread_post, both_unread_post, both_continuity_read_post])
     end
 
     context "opened" do
@@ -3031,18 +3031,18 @@ RSpec.describe PostsController do
       login
       get :hidden
       expect(response.status).to eq(200)
-      expect(assigns(:hidden_boardviews)).to be_empty
+      expect(assigns(:hidden_continuityviews)).to be_empty
       expect(assigns(:hidden_posts)).to be_empty
     end
 
-    it "succeeds with board hidden" do
+    it "succeeds with continuity hidden" do
       user = create(:user)
-      board = create(:board)
-      board.ignore(user)
+      continuity = create(:continuity)
+      continuity.ignore(user)
       login_as(user)
       get :hidden
       expect(response.status).to eq(200)
-      expect(assigns(:hidden_boardviews)).not_to be_empty
+      expect(assigns(:hidden_continuityviews)).not_to be_empty
       expect(assigns(:hidden_posts)).to be_empty
     end
 
@@ -3053,7 +3053,7 @@ RSpec.describe PostsController do
       login_as(user)
       get :hidden
       expect(response.status).to eq(200)
-      expect(assigns(:hidden_boardviews)).to be_empty
+      expect(assigns(:hidden_continuityviews)).to be_empty
       expect(assigns(:hidden_posts)).not_to be_empty
     end
 
@@ -3061,11 +3061,11 @@ RSpec.describe PostsController do
       user = create(:user)
       post = create(:post)
       post.ignore(user)
-      post.board.ignore(user)
+      post.continuity.ignore(user)
       login_as(user)
       get :hidden
       expect(response.status).to eq(200)
-      expect(assigns(:hidden_boardviews)).not_to be_empty
+      expect(assigns(:hidden_continuityviews)).not_to be_empty
       expect(assigns(:hidden_posts)).not_to be_empty
     end
   end
@@ -3092,35 +3092,35 @@ RSpec.describe PostsController do
       expect(stay_hidden_post).to be_ignored_by(user)
     end
 
-    it "succeeds for board" do
-      board = create(:board)
-      stay_hidden_board = create(:board)
+    it "succeeds for continuity" do
+      continuity = create(:continuity)
+      stay_hidden_continuity = create(:continuity)
       user = create(:user)
-      board.ignore(user)
-      stay_hidden_board.ignore(user)
+      continuity.ignore(user)
+      stay_hidden_continuity.ignore(user)
       login_as(user)
-      post :unhide, params: { unhide_boards: [board.id] }
+      post :unhide, params: { unhide_continuities: [continuity.id] }
       expect(response).to redirect_to(hidden_posts_url)
-      board.reload
-      stay_hidden_board.reload
-      expect(board).not_to be_ignored_by(user)
-      expect(stay_hidden_board).to be_ignored_by(user)
+      continuity.reload
+      stay_hidden_continuity.reload
+      expect(continuity).not_to be_ignored_by(user)
+      expect(stay_hidden_continuity).to be_ignored_by(user)
     end
 
     it "succeeds for both" do
-      board = create(:board)
+      continuity = create(:continuity)
       hidden_post = create(:post)
       user = create(:user)
-      board.ignore(user)
+      continuity.ignore(user)
       hidden_post.ignore(user)
       login_as(user)
 
-      post :unhide, params: { unhide_boards: [board.id], unhide_posts: [hidden_post.id] }
+      post :unhide, params: { unhide_continuities: [continuity.id], unhide_posts: [hidden_post.id] }
 
       expect(response).to redirect_to(hidden_posts_url)
-      board.reload
+      continuity.reload
       hidden_post.reload
-      expect(board).not_to be_ignored_by(user)
+      expect(continuity).not_to be_ignored_by(user)
       expect(hidden_post).not_to be_ignored_by(user)
     end
 

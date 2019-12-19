@@ -50,19 +50,19 @@ RSpec.describe PostImporter do
 
       it "does not raise error on threaded imports" do
         importer = PostImporter.new(url)
-        expect { importer.import(post.board_id, nil, threaded: true) }.not_to raise_error
+        expect { importer.import(post.continuity_id, nil, threaded: true) }.not_to raise_error
         expect(ScrapePostJob).to have_been_enqueued
       end
 
       it "does not raise error on different continuity imports" do
         importer = PostImporter.new(url)
-        expect { importer.import(post.board_id + 1, nil) }.not_to raise_error
+        expect { importer.import(post.continuity_id + 1, nil) }.not_to raise_error
         expect(ScrapePostJob).to have_been_enqueued
       end
 
       it "raises error on duplicate" do
         importer = PostImporter.new(url)
-        expect { importer.import(post.board_id, nil) }.to raise_error(AlreadyImported)
+        expect { importer.import(post.continuity_id, nil) }.to raise_error(AlreadyImported)
         expect(ScrapePostJob).not_to have_been_enqueued
       end
     end

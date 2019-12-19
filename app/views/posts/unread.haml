@@ -23,7 +23,7 @@
           = submit_tag "Mark Read", class: 'button'
 %br
 
-= form_tag mark_boards_path, :method => :post do
+= form_tag mark_continuities_path, :method => :post do
   %table.float-left.form-table{style: 'margin-bottom: 10px;'}
     %thead
       %tr
@@ -31,8 +31,8 @@
     %tbody
       %tr
         %td.even.padding-5.centered
-          = select_tag :board_id,
-                       options_from_collection_for_select(Board.where(id: params[:board_id]), :id, :name, params[:board_id]),
+          = select_tag :continuity_id,
+                       options_from_collection_for_select(Continuity.where(id: params[:continuity_id]), :id, :name, params[:continuity_id]),
                        {class: 'chosen-select', prompt: '— Choose Continuity —'}
     %tfoot
       %tr

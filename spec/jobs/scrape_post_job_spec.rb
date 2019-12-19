@@ -12,9 +12,9 @@ RSpec.describe ScrapePostJob do
     Post.auditing_enabled = true
     url = 'http://wild-pegasus-appeared.dreamwidth.org/403.html?style=site&view=flat'
     stub_fixture(url, 'scrape_no_replies')
-    board = create(:board)
+    continuity = create(:continuity)
     create(:character, screenname: 'wild_pegasus_appeared')
-    ScrapePostJob.perform_now(url, board.id, nil, Post::STATUS_COMPLETE, false, board.creator_id)
+    ScrapePostJob.perform_now(url, continuity.id, nil, Post::STATUS_COMPLETE, false, continuity.creator_id)
     expect(Message.count).to eq(1)
     expect(Message.first.subject).to eq("Post import succeeded")
     expect(Post.count).to eq(1)
@@ -28,15 +28,15 @@ RSpec.describe ScrapePostJob do
   it "sends messages on username exceptions" do
     url = 'http://wild-pegasus-appeared.dreamwidth.org/403.html?style=site&view=flat'
     stub_fixture(url, 'scrape_no_replies')
-    board = create(:board)
+    continuity = create(:continuity)
 
     expect(ScrapePostJob).to receive(:notify_exception).with(
       an_instance_of(UnrecognizedUsernameError),
-      url, board.id, nil, Post::STATUS_COMPLETE, false, board.creator_id
+      url, continuity.id, nil, Post::STATUS_COMPLETE, false, continuity.creator_id
     ).and_call_original
 
     begin
-      ScrapePostJob.perform_now(url, board.id, nil, Post::STATUS_COMPLETE, false, board.creator_id)
+      ScrapePostJob.perform_now(url, continuity.id, nil, Post::STATUS_COMPLETE, false, continuity.creator_id)
     rescue UnrecognizedUsernameError
       expect(Message.count).to eq(1)
       expect(Message.first.subject).to eq("Post import failed")
@@ -50,18 +50,18 @@ RSpec.describe ScrapePostJob do
   it "sends messages on imported exceptions" do
     url = 'http://wild-pegasus-appeared.dreamwidth.org/403.html?style=site&view=flat'
     stub_fixture(url, 'scrape_no_replies')
-    board = create(:board)
-    create(:character, screenname: 'wild_pegasus_appeared', user: board.creator)
-    scraper = PostScraper.new(url, board.id)
+    continuity = create(:continuity)
+    create(:character, screenname: 'wild_pegasus_appeared', user: continuity.creator)
+    scraper = PostScraper.new(url, continuity.id)
     scraper.scrape!
 
     expect(ScrapePostJob).to receive(:notify_exception).with(
       an_instance_of(AlreadyImportedError),
-      url, board.id, nil, Post::STATUS_COMPLETE, false, board.creator_id
+      url, continuity.id, nil, Post::STATUS_COMPLETE, false, continuity.creator_id
     ).and_call_original
 
     begin
-      ScrapePostJob.perform_now(url, board.id, nil, Post::STATUS_COMPLETE, false, board.creator_id)
+      ScrapePostJob.perform_now(url, continuity.id, nil, Post::STATUS_COMPLETE, false, continuity.creator_id)
     rescue AlreadyImportedError
       expect(Message.count).to eq(1)
       expect(Message.first.subject).to eq("Post import failed")

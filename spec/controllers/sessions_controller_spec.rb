@@ -43,7 +43,7 @@ RSpec.describe SessionsController do
     it "redirects when logged in" do
       login
       get :new
-      expect(response).to redirect_to(boards_url)
+      expect(response).to redirect_to(continuities_url)
       expect(flash[:error]).to eq("You are already logged in.")
     end
   end
@@ -52,7 +52,7 @@ RSpec.describe SessionsController do
     it "redirects when logged in" do
       login
       post :create
-      expect(response).to redirect_to(boards_url)
+      expect(response).to redirect_to(continuities_url)
       expect(flash[:error]).to eq("You are already logged in.")
     end
 
@@ -142,7 +142,7 @@ RSpec.describe SessionsController do
     it "redirects when logged in" do
       login
       patch :confirm_tos
-      expect(response).to redirect_to(boards_url)
+      expect(response).to redirect_to(continuities_url)
       expect(flash[:error]).to eq("You are already logged in.")
     end
 

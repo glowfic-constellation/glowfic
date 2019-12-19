@@ -18,7 +18,7 @@ module Owable
     has_many :unjoined_authors, class_name: 'User', through: :unjoined_post_authors, source: :user, dependent: :destroy
 
     after_create :add_creator_to_authors
-    after_save :update_board_cameos
+    after_save :update_continuity_cameos
 
     def opt_out_of_owed(user)
       return unless (author = author_for(user))
@@ -43,14 +43,14 @@ module Owable
       post_authors.create(user: user, joined: true, joined_at: created_at)
     end
 
-    def update_board_cameos
-      return unless board.authors_locked?
+    def update_continuity_cameos
+      return unless continuity.authors_locked?
 
       # adjust for the fact that the associations are managed separately
       all_authors = authors + unjoined_authors + joined_authors + tagging_authors
-      new_cameos = all_authors.uniq - board.authors
+      new_cameos = all_authors.uniq - continuity.authors
       return if new_cameos.empty?
-      board.cameos += new_cameos
+      continuity.cameos += new_cameos
     end
   end
 end

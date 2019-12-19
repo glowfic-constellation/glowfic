@@ -1,6 +1,6 @@
-class Board::Searcher < Object
+class Continuity::Searcher < Object
   def initialize
-    @search_results = Board.unscoped
+    @search_results = Continuity.unscoped
   end
 
   def search(params, page:)
@@ -10,7 +10,7 @@ class Board::Searcher < Object
   end
 
   def search_authors(author_ids)
-    author_boards = author_ids.map { |author_id| BoardAuthor.where(user_id: author_id).pluck(:board_id) }.reduce(:&).uniq
-    @search_results = @search_results.where(id: author_boards)
+    author_continuities = author_ids.map { |author_id| ContinuityAuthor.where(user_id: author_id).pluck(:continuity_id) }.reduce(:&).uniq
+    @search_results = @search_results.where(id: author_continuities)
   end
 end

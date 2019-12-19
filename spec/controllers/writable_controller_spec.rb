@@ -29,9 +29,9 @@ RSpec.describe WritableController do
 
   describe "#og_data_for_post" do
     it "succeeds" do
-      board = create(:board, name: 'Test')
+      continuity = create(:continuity, name: 'Test')
       user = create(:user, username: 'Tester')
-      post = create(:post, subject: 'Temp', board: board, user: user)
+      post = create(:post, subject: 'Temp', continuity: continuity, user: user)
 
       data = controller.send(:og_data_for_post, post, 1, 5, 25)
       expect(data).to eq({
@@ -41,9 +41,9 @@ RSpec.describe WritableController do
     end
 
     it "works with description" do
-      board = create(:board, name: 'Test')
+      continuity = create(:continuity, name: 'Test')
       user = create(:user, username: 'Tester')
-      post = create(:post, subject: 'Temp', description: 'More.', board: board, user: user)
+      post = create(:post, subject: 'Temp', description: 'More.', continuity: continuity, user: user)
 
       data = controller.send(:og_data_for_post, post, 1, 5, 25)
       expect(data).to eq({
@@ -53,9 +53,9 @@ RSpec.describe WritableController do
     end
 
     it "strips tags from description" do
-      board = create(:board, name: 'Test')
+      continuity = create(:continuity, name: 'Test')
       user = create(:user, username: 'Tester')
-      post = create(:post, subject: 'Temp', description: 'With an <a href="/characters/1">Alli</a>.', board: board, user: user)
+      post = create(:post, subject: 'Temp', description: 'With an <a href="/characters/1">Alli</a>.', continuity: continuity, user: user)
 
       data = controller.send(:og_data_for_post, post, 1, 5, 25)
       expect(data).to eq({
@@ -65,10 +65,10 @@ RSpec.describe WritableController do
     end
 
     it "works with section" do
-      board = create(:board, name: 'Test')
-      section = create(:board_section, board: board, name: 'Further')
+      continuity = create(:continuity, name: 'Test')
+      section = create(:subcontinuity, continuity: continuity, name: 'Further')
       user = create(:user, username: 'Tester')
-      post = create(:post, subject: 'Temp', description: 'More.', board: board, section: section, user: user)
+      post = create(:post, subject: 'Temp', description: 'More.', continuity: continuity, section: section, user: user)
 
       data = controller.send(:og_data_for_post, post, 1, 5, 25)
       expect(data).to eq({
@@ -78,10 +78,10 @@ RSpec.describe WritableController do
     end
 
     it "works with two authors" do
-      board = create(:board, name: 'Test')
+      continuity = create(:continuity, name: 'Test')
       user = create(:user, username: 'Tester')
       user2 = create(:user, username: 'Friend')
-      post = create(:post, subject: 'Temp', description: 'More.', board: board, user: user)
+      post = create(:post, subject: 'Temp', description: 'More.', continuity: continuity, user: user)
       create(:reply, post: post, user: user2)
 
       data = controller.send(:og_data_for_post, post, 1, 5, 25)
@@ -92,9 +92,9 @@ RSpec.describe WritableController do
     end
 
     it "works with pages that are not the first" do
-      board = create(:board, name: 'Test')
+      continuity = create(:continuity, name: 'Test')
       user = create(:user, username: 'Tester')
-      post = create(:post, subject: 'Temp', board: board, user: user)
+      post = create(:post, subject: 'Temp', continuity: continuity, user: user)
 
       data = controller.send(:og_data_for_post, post, 2, 2, 25)
       expect(data).to eq({
@@ -104,9 +104,9 @@ RSpec.describe WritableController do
     end
 
     it "works with many authors" do
-      board = create(:board, name: 'Test')
+      continuity = create(:continuity, name: 'Test')
       user = create(:user, username: 'Tester')
-      post = create(:post, subject: 'Temp', board: board, user: user)
+      post = create(:post, subject: 'Temp', continuity: continuity, user: user)
       5.times do |i|
         user2 = create(:user, username: "Friend #{i}")
         create(:reply, post: post, user: user2)
@@ -120,9 +120,9 @@ RSpec.describe WritableController do
     end
 
     it "works with non-standard per_page" do
-      board = create(:board, name: 'Test')
+      continuity = create(:continuity, name: 'Test')
       user = create(:user, username: 'Tester')
-      post = create(:post, subject: 'Temp', board: board, user: user)
+      post = create(:post, subject: 'Temp', continuity: continuity, user: user)
 
       data = controller.send(:og_data_for_post, post, 1, 5, 5)
       expect(data).to eq({

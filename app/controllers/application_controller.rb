@@ -28,7 +28,7 @@ class ApplicationController < ActionController::Base
   def logout_required
     if logged_in?
       flash[:error] = "You are already logged in."
-      redirect_to boards_path
+      redirect_to continuities_path
     end
   end
 
@@ -156,7 +156,7 @@ class ApplicationController < ActionController::Base
     if max
       reports_select = <<~SQL
         posts.*,
-        max(boards.name) as board_name,
+        max(continuities.name) as continuity_name,
         max(users.username) as last_user_name,
         bool_or(users.deleted) as last_user_deleted
         #{select}
@@ -165,7 +165,7 @@ class ApplicationController < ActionController::Base
     else
       regular_select = <<~SQL
         posts.*,
-        boards.name as board_name,
+        continuities.name as continuity_name,
         users.username as last_user_name,
         users.deleted as last_user_deleted
         #{select}
@@ -175,7 +175,7 @@ class ApplicationController < ActionController::Base
 
     posts = posts
       .visible_to(current_user)
-      .joins(:board)
+      .joins(:continuity)
       .joins(:last_user)
       .includes(:authors)
       .with_has_content_warnings

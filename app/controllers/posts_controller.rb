@@ -44,18 +44,18 @@ class PostsController < WritableController
   def unread
     @started = (params[:started] == 'true') || (params[:started].nil? && current_user.unread_opened)
     @posts = Post.joins("LEFT JOIN post_views ON post_views.post_id = posts.id AND post_views.user_id = #{current_user.id}")
-    @posts = @posts.joins("LEFT JOIN board_views on board_views.board_id = posts.board_id AND board_views.user_id = #{current_user.id}")
+    @posts = @posts.joins("LEFT JOIN continuity_views on continuity_views.continuity_id = posts.continuity_id AND continuity_views.user_id = #{current_user.id}")
 
-    # post view does not exist and (board view does not exist or post has updated since non-ignored board view read_at)
+    # post view does not exist and (continuity view does not exist or post has updated since non-ignored continuity view read_at)
     no_post_view = @posts.where(post_views: { user_id: nil })
-    updated_since_board_read = no_post_view.where(board_views: { read_at: nil })
-      .or(no_post_view.where("date_trunc('second', board_views.read_at) < date_trunc('second', posts.tagged_at)"))
-      .where(board_views: { ignored: false })
-    no_post_view = no_post_view.where(board_views: { user_id: nil }).or(updated_since_board_read)
+    updated_since_continuity_read = no_post_view.where(continuity_views: { read_at: nil })
+      .or(no_post_view.where("date_trunc('second', continuity_views.read_at) < date_trunc('second', posts.tagged_at)"))
+      .where(continuity_views: { ignored: false })
+    no_post_view = no_post_view.where(continuity_views: { user_id: nil }).or(updated_since_continuity_read)
 
-    # post view exists and post has updated since non-ignored post view read_at and (board view does not exist or is not ignored)
+    # post view exists and post has updated since non-ignored post view read_at and (continuity view does not exist or is not ignored)
     with_post_view = @posts.where(post_views: { ignored: false }) # non-existant post-views will return nil here
-    with_post_view = with_post_view.where(board_views: { user_id: nil}).or(with_post_view.where(board_views: { ignored: false }))
+    with_post_view = with_post_view.where(continuity_views: { user_id: nil}).or(with_post_view.where(continuity_views: { ignored: false }))
     with_post_view = with_post_view.where(post_views: { read_at: nil })
       .or(with_post_view.where("date_trunc('second', post_views.read_at) < date_trunc('second', posts.tagged_at)"))
 
@@ -92,16 +92,16 @@ class PostsController < WritableController
   end
 
   def hidden
-    @hidden_boardviews = BoardView.where(user_id: current_user.id).where(ignored: true).includes(:board)
+    @hidden_continuityviews = ContinuityView.where(user_id: current_user.id).where(ignored: true).includes(:continuity)
     hidden_post_ids = PostView.where(user_id: current_user.id).where(ignored: true).select(:post_id).distinct.pluck(:post_id)
     @hidden_posts = posts_from_relation(Post.where(id: hidden_post_ids).ordered)
-    @page_title = 'Hidden Posts & Boards'
+    @page_title = 'Hidden Posts & Continuities'
   end
 
   def unhide
-    if params[:unhide_boards].present?
-      board_ids = params[:unhide_boards].map(&:to_i).compact.uniq
-      views_to_update = BoardView.where(user_id: current_user.id).where(board_id: board_ids)
+    if params[:unhide_continuities].present?
+      continuity_ids = params[:unhide_continuities].map(&:to_i).compact.uniq
+      views_to_update = ContinuityView.where(user_id: current_user.id).where(continuity_id: continuity_ids)
       views_to_update.each do |view| view.update(ignored: false) end
     end
 
@@ -116,15 +116,15 @@ class PostsController < WritableController
 
   def new
     @post = Post.new(character: current_user.active_character, user: current_user)
-    @post.board_id = params[:board_id]
+    @post.continuity_id = params[:continuity_id]
     @post.section_id = params[:section_id]
     @post.icon_id = (current_user.active_character ? current_user.active_character.default_icon.try(:id) : current_user.avatar_id)
     @page_title = 'New Post'
 
     @permitted_authors -= [current_user]
-    if @post.board&.authors_locked?
-      @author_ids = @post.board.writer_ids - [current_user.id]
-      @authors_from_board = true
+    if @post.continuity&.authors_locked?
+      @author_ids = @post.continuity.writer_ids - [current_user.id]
+      @authors_from_continuity = true
     end
   end
 
@@ -194,7 +194,7 @@ class PostsController < WritableController
     preview and return if params[:button_preview].present?
 
     @post.assign_attributes(post_params)
-    @post.board ||= Board.find(3)
+    @post.continuity ||= Continuity.find(3)
     settings = process_tags(Setting, :post, :setting_ids)
     warnings = process_tags(ContentWarning, :post, :content_warning_ids)
     labels = process_tags(Label, :post, :label_ids)
@@ -241,7 +241,7 @@ class PostsController < WritableController
       redirect_to post_path(@post)
     else
       flash[:success] = "Post deleted."
-      redirect_to boards_path
+      redirect_to continuities_path
     end
   end
 
@@ -253,12 +253,12 @@ class PostsController < WritableController
     @setting = Setting.where(id: params[:setting_id]) if params[:setting_id].present?
     @character = Character.where(id: params[:character_id]) if params[:character_id].present?
     @user = User.active.where(id: params[:author_id]).ordered if params[:author_id].present?
-    @board = Board.where(id: params[:board_id]) if params[:board_id].present?
+    @continuity = Continuity.where(id: params[:continuity_id]) if params[:continuity_id].present?
 
     return unless params[:commit].present?
 
     @search_results = Post.ordered
-    @search_results = @search_results.where(board_id: params[:board_id]) if params[:board_id].present?
+    @search_results = @search_results.where(continuity_id: params[:continuity_id]) if params[:continuity_id].present?
     @search_results = @search_results.where(id: Setting.find(params[:setting_id]).post_tags.pluck(:post_id)) if params[:setting_id].present?
     if params[:subject].present?
       @search_results = @search_results.search(params[:subject]).where('LOWER(subject) LIKE ?', "%#{params[:subject].downcase}%")
@@ -304,7 +304,7 @@ class PostsController < WritableController
   def preview
     @post ||= Post.new(user: current_user)
     @post.assign_attributes(post_params(false))
-    @post.board ||= Board.find_by_id(3)
+    @post.continuity ||= Continuity.find_by_id(3)
 
     @author_ids = params.fetch(:post, {}).fetch(:unjoined_author_ids, [])
     @viewer_ids = params.fetch(:post, {}).fetch(:viewer_ids, [])
@@ -393,7 +393,7 @@ class PostsController < WritableController
   def import_thread
     begin
       importer = PostImporter.new(params[:dreamwidth_url])
-      importer.import(params[:board_id], current_user.id, section_id: params[:section_id], status: params[:status], threaded: params[:threaded])
+      importer.import(params[:continuity_id], current_user.id, section_id: params[:section_id], status: params[:status], threaded: params[:threaded])
     rescue PostImportError => e
       flash.now[:error] = e.api_error
       params[:view] = 'import'
@@ -410,12 +410,12 @@ class PostsController < WritableController
 
     unless @post
       flash[:error] = "Post could not be found."
-      redirect_to boards_path and return
+      redirect_to continuities_path and return
     end
 
     unless @post.visible_to?(current_user)
       flash[:error] = "You do not have permission to view this post."
-      redirect_to boards_path and return
+      redirect_to continuities_path and return
     end
 
     @page_title = @post.subject
@@ -438,7 +438,7 @@ class PostsController < WritableController
 
   def post_params(include_associations=true)
     allowed_params = [
-      :board_id,
+      :continuity_id,
       :section_id,
       :privacy,
       :subject,

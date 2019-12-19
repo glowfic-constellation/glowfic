@@ -250,8 +250,8 @@ module ApplicationHelper
     safe_join([first_link, others], ' and ')
   end
 
-  def allowed_boards(obj, user)
-    authored_ids = BoardAuthor.where(user: user).select(:board_id)
-    Board.where(id: obj.board_id).or(Board.where(authors_locked: false)).or(Board.where(id: authored_ids))
+  def allowed_continuities(obj, user)
+    authored_ids = ContinuityAuthor.where(user: user).select(:continuity_id)
+    Continuity.where(id: obj.continuity_id).or(Continuity.where(authors_locked: false)).or(Continuity.where(id: authored_ids))
   end
 end

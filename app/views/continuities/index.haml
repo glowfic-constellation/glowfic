@@ -12,11 +12,11 @@
       %th.table-title{colspan: 3}
         = @page_title
         - if logged_in? && (@user.nil? || @user.id == current_user.id)
-          = link_to new_board_path do
+          = link_to new_continuity_path do
             .link-box.action-new + New Continuity
     %tr
       %th.subber.padding-10{colspan: 3}
-        = form_tag search_boards_path, method: :get do
+        = form_tag search_continuities_path, method: :get do
           = label_tag :name, 'Search by name:'
           = text_field_tag :name, params[:name], style: 'margin: 0px 5px;', id: :name
           = submit_tag "Search", class: 'button'
@@ -25,18 +25,18 @@
       %th.sub Authors
       %th.sub Last Updated
   %tbody
-    = render partial: 'list_item', collection: @boards, as: :board
-    - if @boards.empty?
+    = render partial: 'list_item', collection: @continuities, as: :continuity
+    - if @continuities.empty?
       %tr
-        %td.centered.padding-10.no-posts{ class: cycle('even', 'odd'), colspan: 3 } — No boards yet —
-  - if @boards.methods.include?(:total_pages) && @boards.total_pages > 1
+        %td.centered.padding-10.no-posts{ class: cycle('even', 'odd'), colspan: 3 } — No continuities yet —
+  - if @continuities.methods.include?(:total_pages) && @continuities.total_pages > 1
     %tfoot
       %tr
-        %td{colspan: 3}= render 'posts/paginator', paginated: @boards
+        %td{colspan: 3}= render 'posts/paginator', paginated: @continuities
 
-  - if @cameo_boards.present?
+  - if @cameo_continuities.present?
     %tr
       %td.continuity-spacer
     %tr
       %th.sub{colspan: 3} Cameo Boards
-    = render partial: 'list_item', collection: @cameo_boards, as: :board
+    = render partial: 'list_item', collection: @cameo_continuities, as: :continuity

@@ -27,7 +27,7 @@ class Api::V1::PostsController < Api::ApiController
 
   api :POST, '/posts/reorder', 'Update the order of posts. This is an unstable feature, and may be moved or renamed; it should not be trusted.'
   error 401, "You must be logged in"
-  error 403, "Board is not editable by the user"
+  error 403, "Continuity is not editable by the user"
   error 404, "Post IDs could not be found"
   error 422, "Invalid parameters provided"
   param :ordered_post_ids, Array, allow_blank: false
@@ -43,19 +43,19 @@ class Api::V1::PostsController < Api::ApiController
       render json: {errors: [error]}, status: :not_found and return
     end
 
-    boards = Board.where(id: posts.select(:board_id).distinct.pluck(:board_id))
-    unless boards.count == 1
-      error = {message: 'Posts must be from one board'}
+    continuities = Continuity.where(id: posts.select(:continuity_id).distinct.pluck(:continuity_id))
+    unless continuities.count == 1
+      error = {message: 'Posts must be from one continuity'}
       render json: {errors: [error]}, status: :unprocessable_entity and return
     end
 
-    board = boards.first
-    access_denied and return unless board.editable_by?(current_user)
+    continuity = continuities.first
+    access_denied and return unless continuity.editable_by?(current_user)
 
     post_section_ids = posts.select(:section_id).distinct.pluck(:section_id)
     unless post_section_ids == [section_id] &&
-      (section_id.nil? || BoardSection.where(id: section_id, board_id: board.id).exists?)
-      error = {message: 'Posts must be from one specified section in the board, or no section'}
+      (section_id.nil? || Subcontinuity.where(id: section_id, continuity_id: continuity.id).exists?)
+      error = {message: 'Posts must be from one specified section in the continuity, or no section'}
       render json: {errors: [error]}, status: :unprocessable_entity and return
     end
 
@@ -66,7 +66,7 @@ class Api::V1::PostsController < Api::ApiController
         post.update(section_order: index)
       end
 
-      other_posts = Post.where(board_id: board.id, section_id: section_id).where.not(id: post_ids).ordered_in_section
+      other_posts = Post.where(continuity_id: continuity.id, section_id: section_id).where.not(id: post_ids).ordered_in_section
       other_posts.each_with_index do |post, i|
         index = i + posts_count
         next if post.section_order == index
@@ -74,7 +74,7 @@ class Api::V1::PostsController < Api::ApiController
       end
     end
 
-    posts = Post.where(board_id: board.id, section_id: section_id)
+    posts = Post.where(continuity_id: continuity.id, section_id: section_id)
     render json: {post_ids: posts.ordered_in_section.pluck(:id)}
   end
 end

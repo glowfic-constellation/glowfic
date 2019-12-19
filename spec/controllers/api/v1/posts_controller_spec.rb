@@ -78,68 +78,68 @@ RSpec.describe Api::V1::PostsController do
     end
 
     context "without section_id" do
-      it "requires a board you have access to" do
-        board = create(:board)
-        board_post1 = create(:post, board_id: board.id)
-        board_post2 = create(:post, board_id: board.id)
-        expect(board_post1.reload.section_order).to eq(0)
-        expect(board_post2.reload.section_order).to eq(1)
+      it "requires a continuity you have access to" do
+        continuity = create(:continuity)
+        continuity_post1 = create(:post, continuity_id: continuity.id)
+        continuity_post2 = create(:post, continuity_id: continuity.id)
+        expect(continuity_post1.reload.section_order).to eq(0)
+        expect(continuity_post2.reload.section_order).to eq(1)
 
-        post_ids = [board_post2.id, board_post1.id]
+        post_ids = [continuity_post2.id, continuity_post1.id]
 
         login
         post :reorder, params: { ordered_post_ids: post_ids }
         expect(response).to have_http_status(403)
-        expect(board_post1.reload.section_order).to eq(0)
-        expect(board_post2.reload.section_order).to eq(1)
+        expect(continuity_post1.reload.section_order).to eq(0)
+        expect(continuity_post2.reload.section_order).to eq(1)
       end
 
-      it "requires a single board without section_id" do
+      it "requires a single continuity without section_id" do
         user = create(:user)
-        board1 = create(:board, creator: user)
-        board2 = create(:board, creator: user)
-        board_post1 = create(:post, board_id: board1.id)
-        board_post2 = create(:post, board_id: board2.id)
-        board_post3 = create(:post, board_id: board2.id)
+        continuity1 = create(:continuity, creator: user)
+        continuity2 = create(:continuity, creator: user)
+        continuity_post1 = create(:post, continuity_id: continuity1.id)
+        continuity_post2 = create(:post, continuity_id: continuity2.id)
+        continuity_post3 = create(:post, continuity_id: continuity2.id)
 
-        expect(board_post1.reload.section_order).to eq(0)
-        expect(board_post2.reload.section_order).to eq(0)
-        expect(board_post3.reload.section_order).to eq(1)
+        expect(continuity_post1.reload.section_order).to eq(0)
+        expect(continuity_post2.reload.section_order).to eq(0)
+        expect(continuity_post3.reload.section_order).to eq(1)
 
-        post_ids = [board_post3.id, board_post2.id, board_post1.id]
+        post_ids = [continuity_post3.id, continuity_post2.id, continuity_post1.id]
         login_as(user)
         post :reorder, params: { ordered_post_ids: post_ids }
         expect(response).to have_http_status(422)
-        expect(response.json['errors'][0]['message']).to eq('Posts must be from one board')
-        expect(board_post1.reload.section_order).to eq(0)
-        expect(board_post2.reload.section_order).to eq(0)
-        expect(board_post3.reload.section_order).to eq(1)
+        expect(response.json['errors'][0]['message']).to eq('Posts must be from one continuity')
+        expect(continuity_post1.reload.section_order).to eq(0)
+        expect(continuity_post2.reload.section_order).to eq(0)
+        expect(continuity_post3.reload.section_order).to eq(1)
       end
 
       it "requires section_id if posts in section" do
         user = create(:user)
-        board = create(:board, creator: user)
-        section = create(:board_section, board_id: board.id)
-        board_post1 = create(:post, board_id: board.id, section_id: section.id)
-        board_post2 = create(:post, board_id: board.id, section_id: section.id)
+        continuity = create(:continuity, creator: user)
+        section = create(:subcontinuity, continuity_id: continuity.id)
+        continuity_post1 = create(:post, continuity_id: continuity.id, section_id: section.id)
+        continuity_post2 = create(:post, continuity_id: continuity.id, section_id: section.id)
 
-        expect(board_post1.reload.section_order).to eq(0)
-        expect(board_post2.reload.section_order).to eq(1)
+        expect(continuity_post1.reload.section_order).to eq(0)
+        expect(continuity_post2.reload.section_order).to eq(1)
 
-        post_ids = [board_post2.id, board_post1.id]
+        post_ids = [continuity_post2.id, continuity_post1.id]
         login_as(user)
         post :reorder, params: { ordered_post_ids: post_ids }
         expect(response).to have_http_status(422)
-        expect(response.json['errors'][0]['message']).to eq('Posts must be from one specified section in the board, or no section')
-        expect(board_post1.reload.section_order).to eq(0)
-        expect(board_post2.reload.section_order).to eq(1)
+        expect(response.json['errors'][0]['message']).to eq('Posts must be from one specified section in the continuity, or no section')
+        expect(continuity_post1.reload.section_order).to eq(0)
+        expect(continuity_post2.reload.section_order).to eq(1)
       end
 
       it "requires valid post_ids" do
         user = create(:user)
-        board = create(:board, creator: user)
-        post1 = create(:post, board_id: board.id)
-        post2 = create(:post, board_id: board.id)
+        continuity = create(:continuity, creator: user)
+        post1 = create(:post, continuity_id: continuity.id)
+        post2 = create(:post, continuity_id: continuity.id)
         expect(post1.reload.section_order).to eq(0)
         expect(post2.reload.section_order).to eq(1)
 
@@ -151,170 +151,170 @@ RSpec.describe Api::V1::PostsController do
       end
 
       it "works for valid changes", :show_in_doc do
-        board = create(:board)
-        board2 = create(:board, creator: board.creator)
-        board_post1 = create(:post, board_id: board.id)
-        board_post2 = create(:post, board_id: board.id)
-        board_post3 = create(:post, board_id: board.id)
-        board_post4 = create(:post, board_id: board.id)
-        board_post5 = create(:post, board_id: board2.id)
+        continuity = create(:continuity)
+        continuity2 = create(:continuity, creator: continuity.creator)
+        continuity_post1 = create(:post, continuity_id: continuity.id)
+        continuity_post2 = create(:post, continuity_id: continuity.id)
+        continuity_post3 = create(:post, continuity_id: continuity.id)
+        continuity_post4 = create(:post, continuity_id: continuity.id)
+        continuity_post5 = create(:post, continuity_id: continuity2.id)
 
-        expect(board_post1.reload.section_order).to eq(0)
-        expect(board_post2.reload.section_order).to eq(1)
-        expect(board_post3.reload.section_order).to eq(2)
-        expect(board_post4.reload.section_order).to eq(3)
-        expect(board_post5.reload.section_order).to eq(0)
+        expect(continuity_post1.reload.section_order).to eq(0)
+        expect(continuity_post2.reload.section_order).to eq(1)
+        expect(continuity_post3.reload.section_order).to eq(2)
+        expect(continuity_post4.reload.section_order).to eq(3)
+        expect(continuity_post5.reload.section_order).to eq(0)
 
-        post_ids = [board_post3.id, board_post1.id, board_post4.id, board_post2.id]
+        post_ids = [continuity_post3.id, continuity_post1.id, continuity_post4.id, continuity_post2.id]
 
-        login_as(board.creator)
+        login_as(continuity.creator)
         post :reorder, params: { ordered_post_ids: post_ids }
         expect(response).to have_http_status(200)
         expect(response.json).to eq({'post_ids' => post_ids})
-        expect(board_post1.reload.section_order).to eq(1)
-        expect(board_post2.reload.section_order).to eq(3)
-        expect(board_post3.reload.section_order).to eq(0)
-        expect(board_post4.reload.section_order).to eq(2)
-        expect(board_post5.reload.section_order).to eq(0)
+        expect(continuity_post1.reload.section_order).to eq(1)
+        expect(continuity_post2.reload.section_order).to eq(3)
+        expect(continuity_post3.reload.section_order).to eq(0)
+        expect(continuity_post4.reload.section_order).to eq(2)
+        expect(continuity_post5.reload.section_order).to eq(0)
       end
 
       it "works when specifying valid subset", :show_in_doc do
-        board = create(:board)
-        board2 = create(:board, creator: board.creator)
-        board_post1 = create(:post, board_id: board.id)
-        board_post2 = create(:post, board_id: board.id)
-        board_post3 = create(:post, board_id: board.id)
-        board_post4 = create(:post, board_id: board.id)
-        board_post5 = create(:post, board_id: board2.id)
+        continuity = create(:continuity)
+        continuity2 = create(:continuity, creator: continuity.creator)
+        continuity_post1 = create(:post, continuity_id: continuity.id)
+        continuity_post2 = create(:post, continuity_id: continuity.id)
+        continuity_post3 = create(:post, continuity_id: continuity.id)
+        continuity_post4 = create(:post, continuity_id: continuity.id)
+        continuity_post5 = create(:post, continuity_id: continuity2.id)
 
-        expect(board_post1.reload.section_order).to eq(0)
-        expect(board_post2.reload.section_order).to eq(1)
-        expect(board_post3.reload.section_order).to eq(2)
-        expect(board_post4.reload.section_order).to eq(3)
-        expect(board_post5.reload.section_order).to eq(0)
+        expect(continuity_post1.reload.section_order).to eq(0)
+        expect(continuity_post2.reload.section_order).to eq(1)
+        expect(continuity_post3.reload.section_order).to eq(2)
+        expect(continuity_post4.reload.section_order).to eq(3)
+        expect(continuity_post5.reload.section_order).to eq(0)
 
-        post_ids = [board_post3.id, board_post1.id]
+        post_ids = [continuity_post3.id, continuity_post1.id]
 
-        login_as(board.creator)
+        login_as(continuity.creator)
         post :reorder, params: { ordered_post_ids: post_ids }
         expect(response).to have_http_status(200)
-        expect(response.json).to eq({'post_ids' => [board_post3.id, board_post1.id, board_post2.id, board_post4.id]})
-        expect(board_post1.reload.section_order).to eq(1)
-        expect(board_post2.reload.section_order).to eq(2)
-        expect(board_post3.reload.section_order).to eq(0)
-        expect(board_post4.reload.section_order).to eq(3)
-        expect(board_post5.reload.section_order).to eq(0)
+        expect(response.json).to eq({'post_ids' => [continuity_post3.id, continuity_post1.id, continuity_post2.id, continuity_post4.id]})
+        expect(continuity_post1.reload.section_order).to eq(1)
+        expect(continuity_post2.reload.section_order).to eq(2)
+        expect(continuity_post3.reload.section_order).to eq(0)
+        expect(continuity_post4.reload.section_order).to eq(3)
+        expect(continuity_post5.reload.section_order).to eq(0)
       end
     end
 
     context "with section_id" do
-      it "requires a board you have access to" do
-        board = create(:board)
-        section = create(:board_section, board_id: board.id)
-        board_post1 = create(:post, board_id: board.id, section_id: section.id)
-        board_post2 = create(:post, board_id: board.id, section_id: section.id)
-        expect(board_post1.reload.section_order).to eq(0)
-        expect(board_post2.reload.section_order).to eq(1)
+      it "requires a continuity you have access to" do
+        continuity = create(:continuity)
+        section = create(:subcontinuity, continuity_id: continuity.id)
+        continuity_post1 = create(:post, continuity_id: continuity.id, section_id: section.id)
+        continuity_post2 = create(:post, continuity_id: continuity.id, section_id: section.id)
+        expect(continuity_post1.reload.section_order).to eq(0)
+        expect(continuity_post2.reload.section_order).to eq(1)
 
-        post_ids = [board_post2.id, board_post1.id]
+        post_ids = [continuity_post2.id, continuity_post1.id]
 
         login
         post :reorder, params: { ordered_post_ids: post_ids, section_id: section.id }
         expect(response).to have_http_status(403)
-        expect(board_post1.reload.section_order).to eq(0)
-        expect(board_post2.reload.section_order).to eq(1)
+        expect(continuity_post1.reload.section_order).to eq(0)
+        expect(continuity_post2.reload.section_order).to eq(1)
       end
 
       it "requires a single section" do
         user = create(:user)
-        board = create(:board, creator: user)
-        board_section1 = create(:board_section, board_id: board.id)
-        board_section2 = create(:board_section, board_id: board.id)
-        board_post1 = create(:post, board_id: board.id, section_id: board_section1.id)
-        board_post2 = create(:post, board_id: board.id, section_id: board_section2.id)
-        board_post3 = create(:post, board_id: board.id, section_id: board_section2.id)
+        continuity = create(:continuity, creator: user)
+        subcontinuity1 = create(:subcontinuity, continuity_id: continuity.id)
+        subcontinuity2 = create(:subcontinuity, continuity_id: continuity.id)
+        continuity_post1 = create(:post, continuity_id: continuity.id, section_id: subcontinuity1.id)
+        continuity_post2 = create(:post, continuity_id: continuity.id, section_id: subcontinuity2.id)
+        continuity_post3 = create(:post, continuity_id: continuity.id, section_id: subcontinuity2.id)
 
-        expect(board_post1.reload.section_order).to eq(0)
-        expect(board_post2.reload.section_order).to eq(0)
-        expect(board_post3.reload.section_order).to eq(1)
+        expect(continuity_post1.reload.section_order).to eq(0)
+        expect(continuity_post2.reload.section_order).to eq(0)
+        expect(continuity_post3.reload.section_order).to eq(1)
 
-        post_ids = [board_post3.id, board_post2.id, board_post1.id]
+        post_ids = [continuity_post3.id, continuity_post2.id, continuity_post1.id]
         login_as(user)
-        post :reorder, params: { ordered_post_ids: post_ids, section_id: board_section1.id }
+        post :reorder, params: { ordered_post_ids: post_ids, section_id: subcontinuity1.id }
         expect(response).to have_http_status(422)
-        expect(response.json['errors'][0]['message']).to eq('Posts must be from one specified section in the board, or no section')
-        expect(board_post1.reload.section_order).to eq(0)
-        expect(board_post2.reload.section_order).to eq(0)
-        expect(board_post3.reload.section_order).to eq(1)
+        expect(response.json['errors'][0]['message']).to eq('Posts must be from one specified section in the continuity, or no section')
+        expect(continuity_post1.reload.section_order).to eq(0)
+        expect(continuity_post2.reload.section_order).to eq(0)
+        expect(continuity_post3.reload.section_order).to eq(1)
       end
 
       it "requires valid section id" do
         user = create(:user)
-        board = create(:board, creator: user)
-        section = create(:board_section, board_id: board.id)
-        board_post1 = create(:post, board_id: board.id, section_id: section.id)
-        board_post2 = create(:post, board_id: board.id, section_id: section.id)
+        continuity = create(:continuity, creator: user)
+        section = create(:subcontinuity, continuity_id: continuity.id)
+        continuity_post1 = create(:post, continuity_id: continuity.id, section_id: section.id)
+        continuity_post2 = create(:post, continuity_id: continuity.id, section_id: section.id)
 
-        expect(board_post1.reload.section_order).to eq(0)
-        expect(board_post2.reload.section_order).to eq(1)
+        expect(continuity_post1.reload.section_order).to eq(0)
+        expect(continuity_post2.reload.section_order).to eq(1)
 
-        post_ids = [board_post2.id, board_post1.id]
+        post_ids = [continuity_post2.id, continuity_post1.id]
         login_as(user)
         post :reorder, params: { ordered_post_ids: post_ids, section_id: 0 }
         expect(response).to have_http_status(422)
-        expect(response.json['errors'][0]['message']).to eq('Posts must be from one specified section in the board, or no section')
-        expect(board_post1.reload.section_order).to eq(0)
-        expect(board_post2.reload.section_order).to eq(1)
+        expect(response.json['errors'][0]['message']).to eq('Posts must be from one specified section in the continuity, or no section')
+        expect(continuity_post1.reload.section_order).to eq(0)
+        expect(continuity_post2.reload.section_order).to eq(1)
       end
 
       it "requires correct section id" do
         user = create(:user)
-        board = create(:board, creator: user)
-        board_section1 = create(:board_section, board_id: board.id)
-        board_section2 = create(:board_section, board_id: board.id)
-        board_post1 = create(:post, board_id: board.id, section_id: board_section1.id)
-        board_post2 = create(:post, board_id: board.id, section_id: board_section2.id)
-        board_post3 = create(:post, board_id: board.id, section_id: board_section2.id)
+        continuity = create(:continuity, creator: user)
+        subcontinuity1 = create(:subcontinuity, continuity_id: continuity.id)
+        subcontinuity2 = create(:subcontinuity, continuity_id: continuity.id)
+        continuity_post1 = create(:post, continuity_id: continuity.id, section_id: subcontinuity1.id)
+        continuity_post2 = create(:post, continuity_id: continuity.id, section_id: subcontinuity2.id)
+        continuity_post3 = create(:post, continuity_id: continuity.id, section_id: subcontinuity2.id)
 
-        expect(board_post1.reload.section_order).to eq(0)
-        expect(board_post2.reload.section_order).to eq(0)
-        expect(board_post3.reload.section_order).to eq(1)
+        expect(continuity_post1.reload.section_order).to eq(0)
+        expect(continuity_post2.reload.section_order).to eq(0)
+        expect(continuity_post3.reload.section_order).to eq(1)
 
-        post_ids = [board_post3.id, board_post2.id]
+        post_ids = [continuity_post3.id, continuity_post2.id]
         login_as(user)
-        post :reorder, params: { ordered_post_ids: post_ids, section_id: board_section1.id }
+        post :reorder, params: { ordered_post_ids: post_ids, section_id: subcontinuity1.id }
         expect(response).to have_http_status(422)
-        expect(response.json['errors'][0]['message']).to eq('Posts must be from one specified section in the board, or no section')
-        expect(board_post1.reload.section_order).to eq(0)
-        expect(board_post2.reload.section_order).to eq(0)
-        expect(board_post3.reload.section_order).to eq(1)
+        expect(response.json['errors'][0]['message']).to eq('Posts must be from one specified section in the continuity, or no section')
+        expect(continuity_post1.reload.section_order).to eq(0)
+        expect(continuity_post2.reload.section_order).to eq(0)
+        expect(continuity_post3.reload.section_order).to eq(1)
       end
 
       it "requires no section_id if posts not in section" do
         user = create(:user)
-        board = create(:board, creator: user)
-        section = create(:board_section, board_id: board.id)
-        board_post1 = create(:post, board_id: board.id)
-        board_post2 = create(:post, board_id: board.id)
+        continuity = create(:continuity, creator: user)
+        section = create(:subcontinuity, continuity_id: continuity.id)
+        continuity_post1 = create(:post, continuity_id: continuity.id)
+        continuity_post2 = create(:post, continuity_id: continuity.id)
 
-        expect(board_post1.reload.section_order).to eq(0)
-        expect(board_post2.reload.section_order).to eq(1)
+        expect(continuity_post1.reload.section_order).to eq(0)
+        expect(continuity_post2.reload.section_order).to eq(1)
 
-        post_ids = [board_post2.id, board_post1.id]
+        post_ids = [continuity_post2.id, continuity_post1.id]
         login_as(user)
         post :reorder, params: { ordered_post_ids: post_ids, section_id: section.id }
         expect(response).to have_http_status(422)
-        expect(response.json['errors'][0]['message']).to eq('Posts must be from one specified section in the board, or no section')
-        expect(board_post1.reload.section_order).to eq(0)
-        expect(board_post2.reload.section_order).to eq(1)
+        expect(response.json['errors'][0]['message']).to eq('Posts must be from one specified section in the continuity, or no section')
+        expect(continuity_post1.reload.section_order).to eq(0)
+        expect(continuity_post2.reload.section_order).to eq(1)
       end
 
       it "requires valid post_ids" do
         user = create(:user)
-        board = create(:board, creator: user)
-        section = create(:board_section, board_id: board.id)
-        post1 = create(:post, board_id: board.id, section_id: section.id)
-        post2 = create(:post, board_id: board.id, section_id: section.id)
+        continuity = create(:continuity, creator: user)
+        section = create(:subcontinuity, continuity_id: continuity.id)
+        post1 = create(:post, continuity_id: continuity.id, section_id: section.id)
+        post2 = create(:post, continuity_id: continuity.id, section_id: section.id)
         expect(post1.reload.section_order).to eq(0)
         expect(post2.reload.section_order).to eq(1)
 
@@ -326,61 +326,61 @@ RSpec.describe Api::V1::PostsController do
       end
 
       it "works for valid changes", :show_in_doc do
-        board = create(:board)
-        section = create(:board_section, board_id: board.id)
-        section2 = create(:board_section, board_id: board.id)
-        board_post1 = create(:post, board_id: board.id, section_id: section.id)
-        board_post2 = create(:post, board_id: board.id, section_id: section.id)
-        board_post3 = create(:post, board_id: board.id, section_id: section.id)
-        board_post4 = create(:post, board_id: board.id, section_id: section.id)
-        board_post5 = create(:post, board_id: board.id, section_id: section2.id)
+        continuity = create(:continuity)
+        section = create(:subcontinuity, continuity_id: continuity.id)
+        section2 = create(:subcontinuity, continuity_id: continuity.id)
+        continuity_post1 = create(:post, continuity_id: continuity.id, section_id: section.id)
+        continuity_post2 = create(:post, continuity_id: continuity.id, section_id: section.id)
+        continuity_post3 = create(:post, continuity_id: continuity.id, section_id: section.id)
+        continuity_post4 = create(:post, continuity_id: continuity.id, section_id: section.id)
+        continuity_post5 = create(:post, continuity_id: continuity.id, section_id: section2.id)
 
-        expect(board_post1.reload.section_order).to eq(0)
-        expect(board_post2.reload.section_order).to eq(1)
-        expect(board_post3.reload.section_order).to eq(2)
-        expect(board_post4.reload.section_order).to eq(3)
-        expect(board_post5.reload.section_order).to eq(0)
+        expect(continuity_post1.reload.section_order).to eq(0)
+        expect(continuity_post2.reload.section_order).to eq(1)
+        expect(continuity_post3.reload.section_order).to eq(2)
+        expect(continuity_post4.reload.section_order).to eq(3)
+        expect(continuity_post5.reload.section_order).to eq(0)
 
-        post_ids = [board_post3.id, board_post1.id, board_post4.id, board_post2.id]
+        post_ids = [continuity_post3.id, continuity_post1.id, continuity_post4.id, continuity_post2.id]
 
-        login_as(board.creator)
+        login_as(continuity.creator)
         post :reorder, params: { ordered_post_ids: post_ids, section_id: section.id }
         expect(response).to have_http_status(200)
         expect(response.json).to eq({'post_ids' => post_ids})
-        expect(board_post1.reload.section_order).to eq(1)
-        expect(board_post2.reload.section_order).to eq(3)
-        expect(board_post3.reload.section_order).to eq(0)
-        expect(board_post4.reload.section_order).to eq(2)
-        expect(board_post5.reload.section_order).to eq(0)
+        expect(continuity_post1.reload.section_order).to eq(1)
+        expect(continuity_post2.reload.section_order).to eq(3)
+        expect(continuity_post3.reload.section_order).to eq(0)
+        expect(continuity_post4.reload.section_order).to eq(2)
+        expect(continuity_post5.reload.section_order).to eq(0)
       end
 
       it "works when specifying valid subset", :show_in_doc do
-        board = create(:board)
-        section = create(:board_section, board_id: board.id)
-        section2 = create(:board_section, board_id: board.id)
-        board_post1 = create(:post, board_id: board.id, section_id: section.id)
-        board_post2 = create(:post, board_id: board.id, section_id: section.id)
-        board_post3 = create(:post, board_id: board.id, section_id: section.id)
-        board_post4 = create(:post, board_id: board.id, section_id: section.id)
-        board_post5 = create(:post, board_id: board.id, section_id: section2.id)
+        continuity = create(:continuity)
+        section = create(:subcontinuity, continuity_id: continuity.id)
+        section2 = create(:subcontinuity, continuity_id: continuity.id)
+        continuity_post1 = create(:post, continuity_id: continuity.id, section_id: section.id)
+        continuity_post2 = create(:post, continuity_id: continuity.id, section_id: section.id)
+        continuity_post3 = create(:post, continuity_id: continuity.id, section_id: section.id)
+        continuity_post4 = create(:post, continuity_id: continuity.id, section_id: section.id)
+        continuity_post5 = create(:post, continuity_id: continuity.id, section_id: section2.id)
 
-        expect(board_post1.reload.section_order).to eq(0)
-        expect(board_post2.reload.section_order).to eq(1)
-        expect(board_post3.reload.section_order).to eq(2)
-        expect(board_post4.reload.section_order).to eq(3)
-        expect(board_post5.reload.section_order).to eq(0)
+        expect(continuity_post1.reload.section_order).to eq(0)
+        expect(continuity_post2.reload.section_order).to eq(1)
+        expect(continuity_post3.reload.section_order).to eq(2)
+        expect(continuity_post4.reload.section_order).to eq(3)
+        expect(continuity_post5.reload.section_order).to eq(0)
 
-        post_ids = [board_post3.id, board_post1.id]
+        post_ids = [continuity_post3.id, continuity_post1.id]
 
-        login_as(board.creator)
+        login_as(continuity.creator)
         post :reorder, params: { ordered_post_ids: post_ids, section_id: section.id }
         expect(response).to have_http_status(200)
-        expect(response.json).to eq({'post_ids' => [board_post3.id, board_post1.id, board_post2.id, board_post4.id]})
-        expect(board_post1.reload.section_order).to eq(1)
-        expect(board_post2.reload.section_order).to eq(2)
-        expect(board_post3.reload.section_order).to eq(0)
-        expect(board_post4.reload.section_order).to eq(3)
-        expect(board_post5.reload.section_order).to eq(0)
+        expect(response.json).to eq({'post_ids' => [continuity_post3.id, continuity_post1.id, continuity_post2.id, continuity_post4.id]})
+        expect(continuity_post1.reload.section_order).to eq(1)
+        expect(continuity_post2.reload.section_order).to eq(2)
+        expect(continuity_post3.reload.section_order).to eq(0)
+        expect(continuity_post4.reload.section_order).to eq(3)
+        expect(continuity_post5.reload.section_order).to eq(0)
       end
     end
   end

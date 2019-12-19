@@ -1,10 +1,10 @@
 - content_for :breadcrumbs do
-  = link_to "Continuities", boards_path
+  = link_to "Continuities", continuities_path
   &raquo;
-  = link_to @post.board.name, board_path(@post.board)
+  = link_to @post.continuity.name, continuity_path(@post.continuity)
   - if @post.section
     &raquo;
-    = link_to @post.section.name, board_section_path(@post.section)
+    = link_to @post.section.name, subcontinuities_path(@post.section)
   &raquo;
   = link_to @post.subject, post_path(@post)
   &raquo;

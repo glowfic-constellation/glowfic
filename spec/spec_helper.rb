@@ -155,11 +155,11 @@ RSpec.configure do |config|
   Kernel.srand config.seed
 
   config.before(:suite) do
-    # make 5 boards so site_testing doesn't screw up tests
+    # make 5 continuities so site_testing doesn't screw up tests
     user = FactoryBot.create(:user)
     5.times do
-      board = FactoryBot.create(:board, creator: user)
-      board.destroy
+      continuity = FactoryBot.create(:continuity, creator: user)
+      continuity.destroy
     end
     user.destroy
   end

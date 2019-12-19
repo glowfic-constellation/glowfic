@@ -45,7 +45,7 @@ RSpec.describe UsersController do
     it "complains when logged in" do
       login
       post :create
-      expect(response).to redirect_to(boards_path)
+      expect(response).to redirect_to(continuities_path)
       expect(flash[:error]).to eq('You are already logged in.')
     end
   end
@@ -54,7 +54,7 @@ RSpec.describe UsersController do
     it "complains when logged in" do
       login
       post :create
-      expect(response).to redirect_to(boards_path)
+      expect(response).to redirect_to(continuities_path)
       expect(flash[:error]).to eq('You are already logged in.')
     end
 
@@ -208,8 +208,8 @@ RSpec.describe UsersController do
     it "calculates OpenGraph meta for user with settings and an avatar" do
       user = create(:user, username: 'user')
       user.update!(avatar: create(:icon))
-      create(:board, name: "Board 1", creator: user)
-      create(:board, name: "Board 2", creator: user)
+      create(:continuity, name: "Continuity 1", creator: user)
+      create(:continuity, name: "Continuity 2", creator: user)
 
       get :show, params: { id: user.id }
 
@@ -217,7 +217,7 @@ RSpec.describe UsersController do
       expect(meta_og.keys).to match_array([:url, :title, :description, :image])
       expect(meta_og[:url]).to eq(user_url(user))
       expect(meta_og[:title]).to eq('user')
-      expect(meta_og[:description]).to eq('Continuities: Board 1, Board 2')
+      expect(meta_og[:description]).to eq('Continuities: Continuity 1, Continuity 2')
       expect(meta_og[:image].keys).to match_array([:src, :width, :height])
       expect(meta_og[:image][:src]).to eq(user.avatar.url)
       expect(meta_og[:image][:width]).to eq('75')
@@ -236,7 +236,7 @@ RSpec.describe UsersController do
       user = create(:user)
       login
       get :edit, params: { id: user.id }
-      expect(response).to redirect_to(boards_url)
+      expect(response).to redirect_to(continuities_url)
       expect(flash[:error]).to eq('You do not have permission to edit that user.')
     end
 
@@ -276,7 +276,7 @@ RSpec.describe UsersController do
       user2 = create(:user)
       login_as(user1)
       put :update, params: { id: user2.id, user: {email: 'bademail@example.com'} }
-      expect(response).to redirect_to(boards_url)
+      expect(response).to redirect_to(continuities_url)
       expect(flash[:error]).to eq('You do not have permission to edit that user.')
       expect(user2.reload.email).not_to eq('bademail@example.com')
     end
@@ -359,7 +359,7 @@ RSpec.describe UsersController do
       user = create(:user)
       login
       put :password, params: { id: user.id }
-      expect(response).to redirect_to(boards_url)
+      expect(response).to redirect_to(continuities_url)
       expect(flash[:error]).to eq('You do not have permission to edit that user.')
     end
 

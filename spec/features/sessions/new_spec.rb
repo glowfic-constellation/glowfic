@@ -41,7 +41,7 @@ RSpec.feature "Logging in", :type => :feature do
       click_on 'Sign In'
     end
 
-    expect(page).to have_current_path(boards_path)
+    expect(page).to have_current_path(continuities_path)
     expect(page).to have_no_selector('.flash.error')
     expect(page).to have_selector('.flash.success', text: 'You are now logged in as Test user. Welcome back!')
     expect(page).to have_no_selector('#username')
@@ -58,7 +58,7 @@ RSpec.feature "Logging in", :type => :feature do
     login
 
     visit login_path
-    expect(page).to have_current_path(boards_path)
+    expect(page).to have_current_path(continuities_path)
     expect(page).to have_selector('.flash.error', text: 'You are already logged in.')
     expect(page).to have_no_selector('#username')
   end

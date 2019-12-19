@@ -14,7 +14,7 @@ class NotifyFollowersOfNewPostJob < ApplicationJob
 
   def notify_of_post_creation(post, post_user)
     users_favoriting_user = Favorite.where(favorite: post_user).pluck(:user_id)
-    users_favoriting_continuity = Favorite.where(favorite: post.board).pluck(:user_id)
+    users_favoriting_continuity = Favorite.where(favorite: post.continuity).pluck(:user_id)
     user_ids = (users_favoriting_continuity + users_favoriting_user).uniq - [post_user.id]
     return unless user_ids.present?
     users = User.where(id: user_ids)
@@ -23,7 +23,7 @@ class NotifyFollowersOfNewPostJob < ApplicationJob
       next unless user.favorite_notifications?
       next unless post.visible_to?(user)
       message = "#{post_user.username} has just posted a new post entitled #{post.subject}"
-      message += " in the #{post.board.name} continuity" if users_favoriting_continuity.include?(user.id)
+      message += " in the #{post.continuity.name} continuity" if users_favoriting_continuity.include?(user.id)
       other_authors = post.authors.where.not(id: post_user.id)
       message += " with " + other_authors.pluck(:username).join(', ') if other_authors.exists?
       message += ". #{view_post(post.id)}"

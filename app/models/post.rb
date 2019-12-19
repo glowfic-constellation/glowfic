@@ -12,8 +12,8 @@ class Post < ApplicationRecord
   STATUS_HIATUS = 2
   STATUS_ABANDONED = 3
 
-  belongs_to :board, inverse_of: :posts, optional: false
-  belongs_to :section, class_name: 'BoardSection', inverse_of: :posts, optional: true
+  belongs_to :continuity, inverse_of: :posts, optional: false
+  belongs_to :section, class_name: 'Subcontinuity', inverse_of: :posts, optional: true
   belongs_to :last_user, class_name: 'User', inverse_of: false, optional: false
   belongs_to :last_reply, class_name: 'Reply', inverse_of: false, optional: true
   has_one :flat_post, dependent: :destroy
@@ -39,7 +39,7 @@ class Post < ApplicationRecord
 
   validates :subject, presence: true
   validates :description, length: { maximum: 255 }
-  validate :valid_board, :valid_board_section
+  validate :valid_continuity, :valid_subcontinuity
 
   before_create :build_initial_flat_post, :set_timestamps
   before_update :set_timestamps
@@ -68,7 +68,7 @@ class Post < ApplicationRecord
 
   scope :ordered_by_index, -> { order('index_posts.section_order asc') }
 
-  scope :no_tests, -> { where.not(board_id: Board::ID_SITETESTING) }
+  scope :no_tests, -> { where.not(continuity_id: Continuity::ID_SITETESTING) }
 
   # rubocop:disable Style/TrailingCommaInArguments
   scope :with_has_content_warnings, -> {
@@ -136,7 +136,7 @@ class Post < ApplicationRecord
 
   def first_unread_for(user)
     return @first_unread if @first_unread
-    viewed_at = last_read(user) || board.last_read(user)
+    viewed_at = last_read(user) || continuity.last_read(user)
     return @first_unread = self unless viewed_at
     return unless replies.exists?
     reply = replies.where('created_at > ?', viewed_at).ordered.first
@@ -146,7 +146,7 @@ class Post < ApplicationRecord
   def last_seen_reply_for(user)
     return @last_seen if @last_seen
     return unless replies.exists? # unlike first_unread_for we don't care about the post
-    viewed_at = last_read(user) || board.last_read(user)
+    viewed_at = last_read(user) || continuity.last_read(user)
     return unless viewed_at
     reply = replies.where('created_at <= ?', viewed_at).ordered.last
     @last_seen = reply
@@ -231,7 +231,7 @@ class Post < ApplicationRecord
   def taggable_by?(user)
     return false unless user
     return false if completed? || abandoned?
-    return false unless user.writes_in?(board)
+    return false unless user.writes_in?(continuity)
     return true unless authors_locked?
     author_ids.include?(user.id)
   end
@@ -289,32 +289,32 @@ class Post < ApplicationRecord
   end
 
   def prev_post(user)
-    return unless self.board.ordered?
+    return unless self.continuity.ordered?
     adjacent_posts_for(user).reverse_order.find_by('section_order < ?', self.section_order)
   end
 
   def next_post(user)
-    return unless self.board.ordered?
+    return unless self.continuity.ordered?
     adjacent_posts_for(user).find_by('section_order > ?', self.section_order)
   end
 
   private
 
   def adjacent_posts_for(user)
-    Post.where(board_id: self.board_id, section_id: self.section_id).visible_to(user).ordered_in_section
+    Post.where(continuity_id: self.continuity_id, section_id: self.section_id).visible_to(user).ordered_in_section
   end
 
-  def valid_board
-    return unless board_id.present?
-    return unless new_record? || board_id_changed?
-    return if board.open_to?(user)
-    errors.add(:board, "is invalid – you must be able to write in it")
+  def valid_continuity
+    return unless continuity_id.present?
+    return unless new_record? || continuity_id_changed?
+    return if continuity.open_to?(user)
+    errors.add(:continuity, "is invalid – you must be able to write in it")
   end
 
-  def valid_board_section
+  def valid_subcontinuity
     return unless section.present?
-    return if section.board_id == board_id
-    errors.add(:section, "must be in the post's board")
+    return if section.continuity_id == continuity_id
+    errors.add(:section, "must be in the post's continuity")
   end
 
   def set_last_user
@@ -339,7 +339,7 @@ class Post < ApplicationRecord
   end
 
   def ordered_attributes
-    [:section_id, :board_id]
+    [:section_id, :continuity_id]
   end
 
   def build_initial_flat_post

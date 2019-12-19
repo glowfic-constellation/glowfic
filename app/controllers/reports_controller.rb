@@ -20,7 +20,7 @@ class ReportsController < ApplicationController
 
     if logged_in?
       @opened_posts = PostView.where(user_id: current_user.id).select([:post_id, :read_at, :ignored])
-      @board_views = BoardView.where(user_id: current_user.id).select([:board_id, :ignored])
+      @continuity_views = ContinuityView.where(user_id: current_user.id).select([:continuity_id, :ignored])
       @opened_ids = @opened_posts.map(&:post_id)
 
       DailyReport.mark_read(current_user, @day) if !current_user.ignore_unread_daily_report? && @day.to_date < Time.zone.now.to_date
@@ -63,9 +63,9 @@ class ReportsController < ApplicationController
   def ignored?(post)
     return false unless @opened_posts.present?
     view = @opened_posts.detect { |v| v.post_id == post.id }
-    board_view = @board_views.detect { |v| v.board_id == post.board_id }
-    return false unless view || board_view
-    view.try(:ignored?) || board_view.try(:ignored?)
+    continuity_view = @continuity_views.detect { |v| v.continuity_id == post.continuity_id }
+    return false unless view || continuity_view
+    view.try(:ignored?) || continuity_view.try(:ignored?)
   end
   helper_method :ignored?
 
@@ -82,7 +82,7 @@ class ReportsController < ApplicationController
       when 'subject'
         Arel.sql('LOWER(subject)')
       when 'continuity'
-        Arel.sql('LOWER(max(boards.name)), tagged_at desc')
+        Arel.sql('LOWER(max(continuities.name)), tagged_at desc')
       else
         {first_updated_at: :desc}
     end

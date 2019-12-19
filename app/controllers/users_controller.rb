@@ -143,7 +143,7 @@ class UsersController < ApplicationController
   def require_own_user
     unless params[:id] == current_user.id.to_s
       flash[:error] = "You do not have permission to edit that user."
-      redirect_to(boards_path)
+      redirect_to(continuities_path)
     end
   end
 
@@ -155,11 +155,11 @@ class UsersController < ApplicationController
   end
 
   def og_data
-    board_ids = BoardAuthor.where(user_id: @user.id, cameo: false).select(:board_id).distinct.pluck(:board_id)
-    boards = Board.where(creator: @user).or(Board.where(id: board_ids))
-    board_count = boards.count
-    if board_count > 0
-      desc = "Continuity".pluralize(board_count) + ": " + generate_short(boards.pluck(:name) * ', ')
+    continuity_ids = ContinuityAuthor.where(user_id: @user.id, cameo: false).select(:continuity_id).distinct.pluck(:continuity_id)
+    continuities = Continuity.where(creator: @user).or(Continuity.where(id: continuity_ids))
+    continuity_count = continuities.count
+    if continuity_count > 0
+      desc = "Continuity".pluralize(continuity_count) + ": " + generate_short(continuities.pluck(:name) * ', ')
     else
       desc = "No continuities."
     end

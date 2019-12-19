@@ -65,7 +65,7 @@ RSpec.describe ApplicationController do
   end
 
   describe "#posts_from_relation" do
-    let(:site_testing) { create(:board, id: Board::ID_SITETESTING) }
+    let(:site_testing) { create(:continuity, id: Continuity::ID_SITETESTING) }
     let(:default_post_ids) { Array.new(26) { create(:post).id } }
 
     it "gets posts" do
@@ -81,14 +81,14 @@ RSpec.describe ApplicationController do
     end
 
     it "skips posts in site testing" do
-      post = create(:post, board: site_testing)
+      post = create(:post, continuity: site_testing)
       expect(Post.where(id: post.id).no_tests).to be_blank
       relation = Post.where(id: post.id)
       expect(controller.send(:posts_from_relation, relation, no_tests: true)).to be_blank
     end
 
     it "can be made to show site testing posts" do
-      post = create(:post, board: site_testing)
+      post = create(:post, continuity: site_testing)
       relation = Post.where(id: post.id)
       expect(controller.send(:posts_from_relation, relation, no_tests: false)).not_to be_blank
     end
