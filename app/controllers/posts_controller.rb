@@ -169,7 +169,7 @@ class PostsController < WritableController
 
     if @audits.present?
       @audit = @audits.first
-      @deleted = Reply.new(@audit.audited_changes || @audit.old_changes)
+      @deleted = Reply.new(@audit.audited_changes || YAML.load(@audit.old_changes))
       @preceding = @post.replies.where('id < ?', @audit.auditable_id).order(id: :desc).limit(2).reverse
       @preceding = [@post] unless @preceding.present?
       @following = @post.replies.where('id > ?', @audit.auditable_id).order(id: :asc).limit(2)

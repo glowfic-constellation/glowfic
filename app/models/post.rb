@@ -201,7 +201,7 @@ class Post < ApplicationRecord
     # testing for case where the post was changed in status more recently than the last reply
     audits_since_last_reply = audits.where('created_at > ?', most_recent.created_at)
     audit = audits_since_last_reply.detect do |a|
-      changes = a.audited_changes || a.old_changes
+      changes = a.audited_changes || YAML.load(a.old_changes)
       changes.key?('status')
     end
     return most_recent.updated_at unless audit
