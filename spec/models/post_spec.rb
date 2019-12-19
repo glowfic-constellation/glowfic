@@ -593,13 +593,6 @@ RSpec.describe Post do
   end
 
   describe "#first_unread_for" do
-    it "uses instance variable if set" do
-      post = create(:post)
-      post.instance_variable_set('@first_unread', 3)
-      expect(post).not_to receive(:last_read)
-      expect(post.first_unread_for(nil)).to eq(3)
-    end
-
     it "uses itself if not yet viewed" do
       post = create(:post)
       create(:reply, post: post)
