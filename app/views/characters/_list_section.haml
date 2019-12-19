@@ -71,7 +71,7 @@
         - if local_assigns[:show_user]
           = user_mem_link(user_id, username, user_deleted)
         - else
-          - setting_links = settings.fetch(:char_id, []).map { |setting| link_to(setting[1], tag_path(setting[0])) }
+          - setting_links = settings.fetch(char_id, []).map { |setting| link_to(setting[1], tag_path(setting[0])) }
           = safe_join(setting_links, ', ')
 
       %td.width-70.right-align{class: klass}
