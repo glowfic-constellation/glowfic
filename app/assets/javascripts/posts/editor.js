@@ -189,7 +189,7 @@ function setupWritableEditor() {
 
   $("#autocomplete_character").typeahead({highlight: true, hint: false, minLength: 2}, {
     source: characters.ttAdapter(),
-    display: function (obj) {
+    display: function(obj) {
       return obj.selector_name;
     },
   });

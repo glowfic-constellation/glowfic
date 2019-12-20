@@ -175,18 +175,18 @@ function createTagSelect(tagType, selector, formType, scope) {
 
 function paginatedGet(url, data, successFunc) {
   var perPage = data.perPage || 25;
-  var page = data.page = data.page || 1;
+  data.page = data.page || 1;
 
   $.getJSON(url, data, function(response, status, xhr) {
     var total = xhr.getResponseHeader('Total');
-    response.page = page;
+    response.page = data.page;
     response.total = total;
-    response.isFirstPage = (page === 1);
-    response.isLastPage = ((page * perPage) >= total);
+    response.isFirstPage = (data.page === 1);
+    response.isLastPage = ((data.page * perPage) >= total);
 
     successFunc(response);
 
-    if ((page * perPage) < total) {
+    if ((data.page * perPage) < total) {
       data.page += 1;
       paginatedGet(url, data, successFunc);
     }
