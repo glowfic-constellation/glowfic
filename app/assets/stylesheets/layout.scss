@@ -507,11 +507,12 @@ The copy box can't be invisible/hidden or copy fails but opacity works
 }
 
 /* TODO separate into general modal and specifically charpicker modal */
+.modal-content { background-color: transparent; }
 .modal-header {
   color: #eee;
   background-color: #42416e;
   border-bottom: 0;
-  border-radius: 0;
+  padding: 0.75rem;
 
   h4 { margin: 0; }
   .close-modal {
@@ -592,6 +593,10 @@ The copy box can't be invisible/hidden or copy fails but opacity works
     vertical-align: top;
     flex: 1;
 
+    .character-no-icon, img {
+      &:hover { border: 10px $border_color_icon_selected solid; }
+    }
+
     .character-no-icon {
       background-image: url(image-path("icons/no-icon.png"));
       background-size: 90px;
@@ -608,6 +613,17 @@ The copy box can't be invisible/hidden or copy fails but opacity works
       }
     }
     .gallery-icon { cursor: pointer; }
+  }
+}
+.modal-footer {
+  padding: 10px;
+  border: 0;
+
+  button {
+    text-align: center;
+    display: inline-block;
+    margin: 0 auto;
+    line-height: 16px;
   }
 }
 /* TODO make hovering over characters more obviously the Way To Select Them */

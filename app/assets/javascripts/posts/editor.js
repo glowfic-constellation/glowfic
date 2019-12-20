@@ -124,6 +124,10 @@ function setupWritableEditor() {
     loadCharSelectorCharacters(data);
     return false;
   });
+  $(".select-no-character").click(function() {
+    getAndSetCharacterData('');
+    $("#char-picker").modal('hide');
+  });
   $('#char-picker').modal('show'); // TODO
 
   var characters = new Bloodhound({
