@@ -173,10 +173,9 @@ function createTagSelect(tagType, selector, formType, scope) {
   });
 }
 
-function paginatedGet(url, data, successFunc, page, perPage) {
-  page = page || 1;
-  perPage = perPage || 25;
-  data.page = page;
+function paginatedGet(url, data, successFunc) {
+  var perPage = data.perPage || 25;
+  var page = data.page = data.page || 1;
 
   $.getJSON(url, data, function(response, status, xhr) {
     var total = xhr.getResponseHeader('Total');
@@ -187,7 +186,10 @@ function paginatedGet(url, data, successFunc, page, perPage) {
 
     successFunc(response);
 
-    if ((page * perPage) < total) paginatedGet(url, data, successFunc, page + 1, perPage);
+    if ((page * perPage) < total) {
+      data.page += 1;
+      paginatedGet(url, data, successFunc);
+    }
     return response;
   });
 
