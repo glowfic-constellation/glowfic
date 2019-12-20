@@ -228,10 +228,16 @@ class PostsController < WritableController
     labels = process_tags(Label, obj_param: :post, id_param: :label_ids)
 
     is_author = @post.author_ids.include?(current_user.id)
-    if current_user.id != @post.user_id && @post.audit_comment.blank? && !is_author
-      flash[:error] = "You must provide a reason for your moderator edit."
-      editor_setup
-      render :edit and return
+
+    unless current_user.id == @post.user_id || is_author
+      if @post.written.audit_comment.blank?
+        flash[:error] = "You must provide a reason for your moderator edit."
+        editor_setup
+        render :edit and return
+      else
+        # no audit will be saved if a comment is the only change, so this should be safe
+        @post.audit_comment = @post.written.audit_comment
+      end
     end
 
     begin
