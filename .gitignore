@@ -31,6 +31,8 @@ tmux-server-*
 coverage/*
 spec/examples.txt
 wraith/now/*
+backstop/now/*
+backstop/reports/*
 
 # Ignore DB backups
 /db/backups/*

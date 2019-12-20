@@ -48,6 +48,13 @@ services:
       - postgres-data:/var/lib/postgresql/data
     ports:
       - 5432:5432
+  backstop:
+    image: backstopjs/backstopjs
+    working_dir: /src
+    volumes:
+      - "./backstop/:/src"
+    depends_on:
+      - web
 
 volumes:
   bundler-volume:

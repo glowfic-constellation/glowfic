@@ -1,0 +1,14 @@
+[
+  {
+    "domain": "web",
+    "path": "/",
+    "name": "user_id",
+    "value": "Mw==--5a8b23fddb779498b36b77ea9298f5450653e237",
+    "expirationDate": "Fri, 19-Aug-2039 00:55:00 GMT",
+    "hostOnly": true,
+    "httpOnly": false,
+    "secure": false,
+    "session": false,
+    "sameSite": "Unset"
+  }
+]
