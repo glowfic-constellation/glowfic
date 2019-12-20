@@ -609,6 +609,5 @@ function addCharactersToPicker(response) {
     if (char.screenname !== null) newChar.append($("<div>").attr({class: 'character-screenname'}).append("("+char.screenname+")"));
     if (char.template_name !== null) newChar.append($("<div>").attr({class: 'details'}).append(char.template_name));
     $(".search-results").append(newChar);
-    // TODO .details= thread_char.template_name
   });
 }
