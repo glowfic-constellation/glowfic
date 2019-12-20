@@ -130,7 +130,6 @@ function setupWritableEditor() {
     $("#char-picker").modal('hide');
     return false;
   });
-  $('#char-picker').modal('show'); // TODO
 
   var characters = new Bloodhound({
     initialize: false,
