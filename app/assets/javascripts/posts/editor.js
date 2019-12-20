@@ -125,6 +125,7 @@ function setupWritableEditor() {
     return false;
   });
   $(".select-no-character").click(function() {
+    $("#reply_character_id").val('');
     getAndSetCharacterData('');
     $("#char-picker").modal('hide');
   });
