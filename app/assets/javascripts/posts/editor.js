@@ -128,6 +128,7 @@ function setupWritableEditor() {
     $("#reply_character_id").val('');
     getAndSetCharacterData('');
     $("#char-picker").modal('hide');
+    return false;
   });
   $('#char-picker').modal('show'); // TODO
 

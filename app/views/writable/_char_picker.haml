@@ -28,6 +28,12 @@
                     %div= thread_char.name
                     .character-screenname= "(#{thread_char.screenname})"
                     .details= thread_char.template_name
+              - elsif item.character
+                .gallery-icon{data: {character_id: item.character_id}}
+                  = icon_tag item.character.default_icon
+                  %div= item.character.name
+                  .character-screenname= "(#{item.character.screenname})"
+                  .details= item.character.template_name
               - else
                 .centered — No characters yet —
             .loading.hidden= image_tag 'icons/loading.gif', title: 'Loading...', alt: '...'
