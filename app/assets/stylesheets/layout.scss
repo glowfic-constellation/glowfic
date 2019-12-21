@@ -506,11 +506,10 @@ The copy box can't be invisible/hidden or copy fails but opacity works
   text-align: right;
 }
 
-/* TODO separate into general modal and specifically charpicker modal */
 .modal-content { background-color: transparent; }
 .modal-header {
-  color: #eee;
-  background-color: #42416e;
+  background-color: $bg_color_head;
+  color: $font_color_head;
   border-bottom: 0;
   padding: 0.75rem;
 
@@ -524,7 +523,8 @@ The copy box can't be invisible/hidden or copy fails but opacity works
 }
 #char-picker .modal-dialog { max-width: 550px; }
 .modal-body {
-  background-color: $colors_santasgrey_bluer;
+  background-color: $bg_color_post_icon;
+  color: $font_color_modal_body;
   padding: 0;
 
   .search-box {
@@ -569,7 +569,8 @@ The copy box can't be invisible/hidden or copy fails but opacity works
   }
   .col-container { display: flex; }
   .template-list {
-    background-color: $colors_alto_darker;
+    background-color: $bg_color_odd;
+    color: $font_color_modal_list;
     padding: 0;
     vertical-align: top;
     flex: 0 0 130px;
@@ -582,10 +583,13 @@ The copy box can't be invisible/hidden or copy fails but opacity works
     a.group-link {
       display: block;
       padding: 5px;
-      background-color: #E3E3E3;
+      background-color: $bg_color_even;
       margin: 5px;
       text-align: center;
-      &:hover, &.selected { background-color: $colors_santasgrey_bluer; color: white; }
+      &:hover, &.selected {
+        background-color: $bg_color_post_icon;
+        color: $font_color_modal_link;
+      }
     }
   }
   .group-characters {

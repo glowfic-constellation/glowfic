@@ -38,6 +38,8 @@ $bg_color_linkbox_subber: #66608B;
 
 @import 'starry_default_selectors';
 
+$font_color_modal_list: $colors_black;
+
 // posts
 #post-menu-box { color: $font_color_post_menu; }
 
@@ -61,3 +63,5 @@ tr.gallery-tags .tag-item {
   a { color: $font_color_header_link; }
   a:hover { color: $font_color_header_link_hover; }
 }
+
+@import 'colorize';

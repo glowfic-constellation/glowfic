@@ -32,7 +32,7 @@
 ::placeholder { color: $font_color_input_placeholder; }
 
 /* - account options, post editor, search */
-#content .form-table, #icon-table, .search-form, .post-info-box {
+#content .form-table, #icon-table, .search-form, .post-info-box, .modal-dialog {
   input:not([type='submit']), textarea, select {
     background-color: $bg_color_input;
     color: $font_color_input;
@@ -131,3 +131,5 @@
   a { color: $font_color_header_link; }
   a:hover { color: $font_color_header_link_hover; }
 }
+
+$font_color_modal_link: $colors_alto_brighter;

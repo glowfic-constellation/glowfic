@@ -254,3 +254,8 @@ $shadow_color_badge: $colors_lemon !default;
 
 $font_color_reply_footer: default !default; // from river // TODO: fix
 $shadow_color_nav: $colors_bunker !default;
+
+// Modal for charpicker
+$font_color_modal_body: $font_color_page !default;
+$font_color_modal_list: $font_color_page !default;
+$font_color_modal_link: $colors_bright !default;
