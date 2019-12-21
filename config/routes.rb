@@ -124,6 +124,7 @@ Rails.application.routes.draw do
       end
       resources :posts, only: [:index, :show] do
         resources :replies, only: :index
+        resources :characters, only: :index
         collection { post :reorder }
       end
       resources :tags, only: [:index, :show]

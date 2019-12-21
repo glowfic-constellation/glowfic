@@ -505,3 +505,134 @@ The copy box can't be invisible/hidden or copy fails but opacity works
   font-size: $font_size_smaller;
   text-align: right;
 }
+
+.modal-content { background-color: transparent; }
+.modal-header {
+  background-color: $bg_color_head;
+  color: $font_color_head;
+  border-bottom: 0;
+  padding: 0.75rem;
+
+  h4 { margin: 0; }
+  .close-modal {
+    opacity: 0.7;
+    margin: auto 0;
+    cursor: pointer;
+    &:hover { opacity: 1; }
+  }
+}
+#char-picker .modal-dialog { max-width: 550px; }
+.modal-body {
+  background-color: $bg_color_post_icon;
+  color: $font_color_modal_body;
+  padding: 0;
+
+  .search-box {
+    padding: 10px;
+    width: 100%;
+
+    .search-label {
+      font-weight: bold;
+      width: 74px;
+      display: inline-block;
+      font-size: $font_size_main;
+      padding-left: 6px;
+    }
+    .search-input {
+      display: inline-block;
+      width: calc(100% - 90px);
+      input { width: 100%; }
+    }
+    .twitter-typeahead {
+      display: block !important;
+      .tt-hint, .tt-input { margin: 0; }
+      .tt-menu {
+        width: 100%;
+        background-color: #FFFFFF;
+        color: #444444;
+        border: 1px solid #AAAAAA;
+        border-top: 0;
+        border-radius: 0 0 5px 5px;
+      }
+      .tt-suggestion {
+        font-size: 13px;
+        padding: 6px;
+        line-height: normal;
+        cursor: pointer;
+        &.tt-cursor, &:hover {
+          color: #FFFFFF;
+          background-color: #5897FB;
+        }
+      }
+      .opened {
+        border-radius: 5px 5px 0 0 !important;
+        border-bottom: 0px !important;
+      }
+    }
+    #autocomplete_character:focus {
+      outline: 0;
+    }
+  }
+  .col-container { display: flex; }
+  .template-list {
+    background-color: $bg_color_odd;
+    color: $font_color_modal_list;
+    padding: 0;
+    vertical-align: top;
+    flex: 0 0 130px;
+
+    .template-title {
+      text-align: center;
+      font-weight: bold;
+      padding: 5px;
+    }
+    a.group-link {
+      display: block;
+      padding: 5px;
+      background-color: $bg_color_even;
+      margin: 5px;
+      text-align: center;
+      &:hover, &.selected {
+        background-color: $bg_color_post_icon;
+        color: $font_color_modal_link;
+      }
+    }
+  }
+  .group-characters {
+    padding: 5px;
+    vertical-align: top;
+    flex: 1;
+
+    .character-no-icon, img {
+      &:hover { border: 10px $border_color_icon_selected solid; }
+    }
+
+    .character-no-icon {
+      background-image: url(image-path("icons/no-icon.png"));
+      background-size: 90px;
+      border: 0;
+      background-position: 50% 50%;
+      background-repeat: no-repeat;
+    }
+    .loading {
+      text-align: center;
+      img {
+        vertical-align: middle;
+        height: 16px;
+        width: 16px;
+      }
+    }
+    .gallery-icon { cursor: pointer; }
+  }
+}
+.modal-footer {
+  padding: 10px;
+  border: 0;
+
+  button {
+    text-align: center;
+    display: inline-block;
+    margin: 0 auto;
+    line-height: 16px;
+  }
+}

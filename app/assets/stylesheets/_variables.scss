@@ -170,7 +170,7 @@ $bg_color_message_expander: $colors_blacker !default;
 // select2 dropdown
 $font_color_select2_container: $colors_dark !default;
 // Most of this is currently styled by gem files
-$bg_color_select2_highlight: #E4E4E4 !default;
+$bg_color_select2_highlight: #5897FB !default;
 $bg_color_select2_selected: $colors_alto !default;
 $bg_color_select2_search: $colors_white !default;
 
@@ -254,3 +254,8 @@ $shadow_color_badge: $colors_lemon !default;
 
 $font_color_reply_footer: default !default; // from river // TODO: fix
 $shadow_color_nav: $colors_bunker !default;
+
+// Modal for charpicker
+$font_color_modal_body: $font_color_page !default;
+$font_color_modal_list: $font_color_page !default;
+$font_color_modal_link: $colors_bright !default;

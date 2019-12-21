@@ -1,0 +1,37 @@
+.modal-header {
+  background-color: $bg_color_head;
+  color: $font_color_head;
+}
+.modal-body {
+  background-color: $bg_color_post_icon;
+  color: $font_color_modal_body;
+
+  .search-box {
+    .twitter-typeahead {
+      .tt-menu {
+        background-color: $bg_color_input;
+        color: $font_color_input;
+        border-color: $border_color_input;
+      }
+      .tt-suggestion {
+        &.tt-cursor, &:hover {
+          color: $colors_white;
+          background-color: $bg_color_select2_highlight;
+        }
+      }
+    }
+  }
+
+  .template-list {
+    background-color: $bg_color_odd;
+    color: $font_color_modal_list;
+
+    a.group-link {
+      background-color: $bg_color_even;
+      &:hover, &.selected {
+        background-color: $bg_color_post_icon;
+        color: $font_color_modal_link;
+      }
+    }
+  }
+}

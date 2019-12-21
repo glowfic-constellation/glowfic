@@ -25,6 +25,7 @@
 //= require jquery-fileupload/jquery.fileupload-process
 //= require jquery-fileupload/jquery.fileupload-image
 //= require bootstrap.min
+//= require typeahead.bundle.min
 //= require tinymce-jquery
 //= require select2
 //= require global
