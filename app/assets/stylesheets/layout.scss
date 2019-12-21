@@ -531,7 +531,13 @@ The copy box can't be invisible/hidden or copy fails but opacity works
     padding: 10px;
     width: 100%;
 
-    .search-label { font-weight: bold; width: 74px; display: inline-block; font-size: $font_size_main; padding-left: 6px; }
+    .search-label {
+      font-weight: bold;
+      width: 74px;
+      display: inline-block;
+      font-size: $font_size_main;
+      padding-left: 6px;
+    }
     .search-input {
       display: inline-block;
       width: calc(100% - 90px);
