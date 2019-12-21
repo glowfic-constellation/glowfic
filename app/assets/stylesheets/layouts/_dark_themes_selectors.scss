@@ -105,25 +105,36 @@
 }
 
 /* RTF post editor – see tinymce.css for styling of the iframe itself */
-/* border: */
-#content .mce-panel { border-color: $border_color_input; }
-#content .mce-edit-area { border-top-color: $border_color_input; }
-#content .mce-statusbar { border-top-color: $border_color_input; }
-/* header & buttons: */
-/* - default */
-#content .mce-panel, #content .mce-btn { background-color: $bg_color_mce_panel; }
-#content .mce-ico { color: $font_color_input; }
-
-/* footer: 'powered by' text */
-#content .mce-branding-powered-by {
+#content .tox-toolbar, #content .tox-statusbar {
   background-color: $bg_color_mce_panel;
   border-color: $border_color_input;
+  .tox-toolbar__group { border-color: $border_color_input; }
 }
-
-#content .mce-label {
-  color: rgba($font_color_input, $opacity_mce_label);
-  text-shadow: none;
+#content .tox-statusbar__wordcount { color: $font_color_input; }
+#content .tox-statusbar__resize-handle svg { fill: $font_color_input; }
+#content .tox .tox-tbtn {
+  box-sizing: content-box;
+  svg {
+    fill: $font_color_input;
+    &:hover {
+      background-color: $bg_color_input;
+      border: 1px solid $font_color_input;
+    }
+  }
+  &:hover { background-color: $bg_color_input; }
+  &.tox-tbtn--disabled {
+    svg {
+      fill: $font_color_input;
+      opacity: 0.5;
+      &:hover {
+        border: 0;
+        background-color: transparent;
+      }
+    }
+    &:hover { background-color: transparent; }
+  }
 }
+#content .tox-tinymce { border-color: $border_color_input; }
 
 #footer {
   background-color: $bg_color_header_middle;
