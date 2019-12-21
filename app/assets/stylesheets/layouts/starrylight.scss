@@ -100,4 +100,6 @@ tr.gallery-tags .tag-item {
   a:hover { color: $font_color_header_link_hover; }
 }
 
+$font_color_modal_body: $colors_black;
+$font_color_modal_list: $colors_black;
 @import 'colorize';
