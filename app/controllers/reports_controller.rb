@@ -80,11 +80,11 @@ class ReportsController < ApplicationController
   def sort
     @sort ||= case params[:sort]
       when 'subject'
-        'LOWER(subject)'
+        Arel.sql('LOWER(subject)')
       when 'continuity'
-        'LOWER(max(boards.name)), tagged_at desc'
+        Arel.sql('LOWER(max(boards.name)), tagged_at desc')
       else
-        'first_updated_at desc'
+        {first_updated_at: :desc}
     end
   end
   helper_method :sort

@@ -50,6 +50,42 @@ RSpec.describe ReportsController do
       expect(response).to have_http_status(200)
     end
 
+    it "sorts by timestamp" do
+      today = DateTime.now.utc.beginning_of_day
+      post1 = Timecop.freeze(today) { create(:post, subject: 'aaa') }
+      post2 = Timecop.freeze(today + 1.hour) { create(:post, subject: 'bbb') }
+      user = create(:user, timezone: 'UTC')
+      login_as(user)
+      get :show, params: { id: 'daily', day: today.to_date.to_s }
+      expect(assigns(:posts)[0].id).to eq(post2.id)
+      expect(assigns(:posts)[1].id).to eq(post1.id)
+    end
+
+    it "sorts by subject" do
+      today = DateTime.now.utc.beginning_of_day
+      post1 = Timecop.freeze(today) { create(:post, subject: 'aaa') }
+      post2 = Timecop.freeze(today + 1.hour) { create(:post, subject: 'bbb') }
+      user = create(:user, timezone: 'UTC')
+      login_as(user)
+      get :show, params: { id: 'daily', day: today.to_date.to_s, sort: 'subject' }
+      expect(assigns(:posts)[0].id).to eq(post1.id)
+      expect(assigns(:posts)[1].id).to eq(post2.id)
+    end
+
+    it "sorts by continuity" do
+      today = DateTime.now.utc.beginning_of_day
+      board1 = create(:board, name: 'cc')
+      board2 = create(:board, name: 'dd')
+      post1 = Timecop.freeze(today) { create(:post, board: board1) }
+      post2 = Timecop.freeze(today + 2.hours) { create(:post, board: board1) }
+      post3 = Timecop.freeze(today) { create(:post, board: board2) }
+      post4 = Timecop.freeze(today + 1.hour) { create(:post, board: board2) }
+      user = create(:user, timezone: 'UTC')
+      login_as(user)
+      get :show, params: { id: 'daily', day: today.to_date.to_s, sort: 'continuity' }
+      expect(assigns(:posts).map(&:id)).to eq([post2, post1, post4, post3].map(&:id))
+    end
+
     it "succeeds with monthly" do
       get :show, params: { id: 'monthly' }
       expect(response).to have_http_status(200)
