@@ -25,15 +25,20 @@ $font_color_descriptions_link: $colors_concrete;
 $bg_color_head: $colors_fiord; // primary content header
 $font_color_head_link: $colors_concrete;
 $font_color_head_link_visited: $colors_periwinklegrey;
+
 $bg_color_sub: $colors_manatee_darker; // secondary content header
+
 $bg_color_subber: $colors_rum; // tertiary content header
 $font_color_subber_link_visited: $colors_periwinklegrey;
+
 $bg_color_ender: $colors_rum; // form table footer with submit
 $font_color_ender: $colors_alto_brighter;
+
 $shadow_color_nav: $colors_martinique;
 
 // posts
 $bg_color_navheader: $colors_manatee_darker;
+$bg_color_navbutton: $colors_scampi;
 $bg_color_post_description: $colors_manatee_lighter;
 
 $bg_color_selectionpopup: $colors_rum; // selection popups like character/alias on posts#editor
@@ -78,11 +83,6 @@ $bg_color_viewbutton_selected: $colors_scampi;
 .pagination a:hover { background-color: $bg_color_paginate_link_hover; }
 
 // tag items
-tr.gallery-tags .tag-item {
-  background-color: $bg_color_tag_item;
-  color: $font_color_tag_item_gallery;
-}
-
 .tag-item { color: $font_color_tag_item; }
 
 // ???

@@ -41,10 +41,6 @@ $bg_color_icon_selector: $colors_hit_gray;
 $bg_color_post_character: #929292;
 $bg_color_post_screenname: #A5A5A5;
 $bg_color_post_author: $colors_silver_again;
-//$bg_color_post_character_narrow: $colors_lightbrown;
-//$bg_color_post_author_narrow: $colors_brown;
-// these are flipped from not-narrow mode to make the quick-switcher blend in
-// TODO: Should these flip on other themes?
 $font_color_post_info: #B3D3FF;
 
 // icons
@@ -54,8 +50,9 @@ $border_color_icon_editor: #B9B6AD;
 $bg_color_icon_editor: $colors_hit_gray;
 
 // tag items
-$bg_color_tag_item: #3E526F;
-$font_color_tag_item: #D0CEC8;
+$font_color_tag_item: #3E526F;
+$font_color_tag_item_gallery: #3E526F;
+$bg_color_tag_item: #D0CEC8;
 
 // link-boxes
 $bg_color_linkbox_new: #3F5370;

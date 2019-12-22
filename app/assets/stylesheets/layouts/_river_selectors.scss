@@ -47,7 +47,6 @@ a:visited { color: $font_color_link_visited; }
 .post-screenname { background-color: $bg_color_post_screenname; }
 .post-author { background-color: $bg_color_post_author; }
 
-// TODO: Check pagination displays fine in this theme
 .pagination .current { background-color: $bg_color_paginate_current_page; }
 .pagination a:visited { color: $font_color_paginate_link_visited; }
 
@@ -61,9 +60,14 @@ a:visited { color: $font_color_link_visited; }
 }
 
 /* - tag items */
-.tag-item, tr.gallery-tags .tag-item {
-  color: $bg_color_tag_item;
-  background-color: $font_color_tag_item;
+.tag-item {
+  color: $font_color_tag_item;
+  background-color: $bg_color_tag_item;
+}
+
+tr.gallery-tags .tag-item {
+  color: $font_color_tag_item_gallery;
+  background-color: $bg_color_tag_item;
 }
 
 /* - link-boxes */

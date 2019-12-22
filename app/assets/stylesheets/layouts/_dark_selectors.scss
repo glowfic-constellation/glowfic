@@ -73,9 +73,14 @@ a:hover { color: $font_color_link_hover; }
   color: $font_color_sub;
 }
 
-.subber, .form-table-ender {
+.subber {
   background-color: $bg_color_subber;
   color: $font_color_subber;
+}
+
+.form-table-ender {
+  background-color: $bg_color_ender;
+  color: $font_color_ender;
 }
 
 /* - content */
@@ -102,8 +107,6 @@ a:hover { color: $font_color_link_hover; }
 
 .post-navheader { background-color: $bg_color_navheader; }
 
-// TODO: darken post-menu-box to fit with the rest of this theme
-
 .selector-popup { background-color: $bg_color_selectionpopup; }
 .selector-popup-button { opacity: 0.7; } /* make the white less contrasty */
 .post-expander { background-color: $bg_color_expander; }
@@ -124,7 +127,7 @@ a:hover { color: $font_color_link_hover; }
 
 .post-screenname {
   background-color: $bg_color_post_screenname;
-  color: $font_color_post_info;
+  color: $font_color_post_screenname;
 }
 
 .post-author {
@@ -132,11 +135,13 @@ a:hover { color: $font_color_link_hover; }
   color: $font_color_post_info;
 }
 
+.paginator {
+  &, .right-align a { color: $font_color_paginate; }
+}
+
 #post-menu-box { color: $font_color_post_menu; }
 
 table { border-color: #555555; } // TODO: what does this style
-
-// TODO: Check pagination displays fine in this theme
 
 /* - icons */
 .replace-icon, .icons-box { background-color: $bg_color_icon; }
@@ -148,17 +153,18 @@ table { border-color: #555555; } // TODO: what does this style
 }
 
 /* - tag items */
-.tag-item, tr.gallery-tags .tag-item {
+.tag-item {
   background-color: $bg_color_tag_item;
   color: $font_color_tag_item;
 }
 
+tr.gallery-tags .tag-item {
+  background-color: $bg_color_tag_item;
+  color: $font_color_tag_item_gallery;
+}
+
 /* - link-boxes */
-.link-box.action-new { color: $font_color_linkbox_new; }
-.link-box.action-edit { color: $font_color_linkbox_edit; }
-.link-box.action-favorite { color: $font_color_linkbox_favorite; }
-.link-box.action-delete { color: $font_color_linkbox_delete; }
-.link-box.action-dismiss { color: $font_color_linkbox_dismiss; }
+.link-box { color: $font_color_linkbox; }
 
 /* - other buttons */
 .view-button {

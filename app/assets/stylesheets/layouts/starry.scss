@@ -30,6 +30,11 @@ $bg_color_post_character: $colors_gunpowder;
 $bg_color_post_screenname: $colors_gunpowder;
 $bg_color_post_author: $colors_ebony;
 
+$font_color_timeloaded: $colors_alto_brighter;
+
+// icons
+$font_color_character_icon: $colors_alto_brighter;
+
 // tag items
 $bg_color_tag_item: #2C2C5D;
 
@@ -41,15 +46,12 @@ $bg_color_linkbox_subber: #66608B;
 // posts
 #post-menu-box { color: $font_color_post_menu; }
 
+.time-loaded { color: $font_color_timeloaded; }
+
 // icons
-#character-icon-selector, .time-loaded { color: $font_color_page; }
+#character-icon-selector { color: $font_color_character_icon; }
 
 // tag items
-tr.gallery-tags .tag-item {
-  background-color: $bg_color_tag_item;
-  color: $font_color_tag_item_gallery;
-}
-
 .tag-item { color: $font_color_tag_item; }
 
 // ??

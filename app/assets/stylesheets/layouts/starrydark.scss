@@ -2,6 +2,7 @@
 
 // main page
 $bg_color_page: #211E2F; // overall page
+$font_color_page: $colors_alto_brighter;
 
 $bg_color_spacer_alt: $colors_bigstone;
 $bg_color_search_box: $colors_bigstone;
@@ -48,6 +49,8 @@ $bg_color_icon_credit: $colors_shark;
 $bg_color_icon_editor: $colors_shark;
 
 // tag items
+$font_color_tag_item: $colors_logan;
+$font_color_tag_item_gallery: $colors_logan;
 $bg_color_tag_item: #241F4E;
 $bg_color_tag_item_even: #24252D;
 $bg_color_tag_item_odd: #1A1A22;
@@ -74,13 +77,9 @@ body, .even, .odd, .post-post, .post-reply, #post-editor { color: $font_color_pa
 #character-icon-selector, .time-loaded { color: $font_color_page; }
 
 // tag items
-.tag-item, tr.gallery-tags .tag-item {
-  background-color: $bg_color_tag_item;
-  color: $font_color_link;
-}
-
 .even .tag-item { background-color: $bg_color_tag_item_even; }
 .odd .tag-item { background-color: $bg_color_tag_item_odd; }
+.tag-item { color: $font_color_tag_item }
 
 // Hovering help box on post editor
 $bg_color_popup_header: #0D0B1E;

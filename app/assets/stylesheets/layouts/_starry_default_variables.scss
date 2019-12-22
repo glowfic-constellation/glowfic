@@ -6,9 +6,9 @@ $bg_color_header_bottom: $colors_gunpowder !default; // bottom header strip with
 $font_color_header_link_hover: $colors_silver !default;
 
 // main page
-$font_color_page: $colors_alto_brighter;
+$font_color_page: $colors_black !default;
 
-$font_color_search_box: $colors_bright;
+$font_color_search_box: $colors_bright !default;
 
 // links
 $font_color_link: #666284 !default; // link
@@ -16,7 +16,7 @@ $font_color_link_visited: $colors_gunpowder !default;
 
 // flashes
 // these are the notifications that appear when you submit a form or get a message
-$font_color_breadcrumbs_bold: $colors_concrete;
+$font_color_breadcrumbs_bold: $colors_concrete !default;
 $font_color_breadcrumbs_link_visited: $colors_santasgrey !default;
 
 // misc
@@ -25,35 +25,41 @@ $font_color_descriptions_link_visited: $colors_santasgrey !default;
 $bg_color_descriptions: $colors_gunpowder !default; // description subheadings on templates page ("single-description"), *not* posts
 
 // content headers
-$font_color_sub: $colors_concrete;
-$font_color_subber_bold: $colors_concrete;
-
 $font_color_head_link: $colors_logan !default; // TODO: check this
 $font_color_head_link_visited: $colors_santasgrey !default;
+
+$font_color_sub: $colors_concrete !default;
+
 $bg_color_subber: $colors_gunpowder !default; // tertiary content header
+$font_color_subber_bold: $colors_concrete !default;
 $font_color_subber_link_visited: $colors_santasgrey !default;
 
 // content
 $bg_color_even: #E3E3E3 !default;
 $bg_color_odd: $colors_alto_darker !default;
-$opacity_blockquote: 0.2;
+$opacity_blockquote: 0.2 !default;
 
 // posts
+$bg_color_navbutton: $colors_mulledwine !default;
+
 $font_color_post_description: $colors_concrete !default;
 $bg_color_post_description: $colors_gunpowder !default;
 
-$border_color_post_menu: #808080;
+$border_color_post_menu: #808080 !default;
 $bg_color_post_menu: #BCBCBC !default;
 $bg_color_menu_link_hover: #D3D3D3 !default;
 
 $bg_color_selectionpopup: $colors_gunpowder !default; // selection popups like character/alias on posts#editor
+$font_color_selectionpopup: $colors_alto_brighter !default;
 $bg_color_icon_selector: $colors_gunpowder !default;
+$font_color_icon_selector: $colors_alto_brighter !default;
 
-$font_color_post_info: $colors_concrete;
+$font_color_post_info: $colors_concrete !default;
 $font_weight_post_info: bold !default;
 $font_color_post_screenname: $colors_santasgrey !default;
 
-$font_color_paginate_link: $colors_concrete;
+$font_color_paginate: $colors_concrete !default;
+$font_color_paginate_link: $colors_concrete !default;
 $font_color_paginate_link_visited: $colors_santasgrey !default;
 $font_color_paginate_link_disabled: #58546B;
 $bg_color_paginate_current_page: $colors_gunpowder !default;
