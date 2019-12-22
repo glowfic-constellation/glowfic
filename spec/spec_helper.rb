@@ -35,7 +35,7 @@ unless ENV['SKIP_COVERAGE'] || ENV['APIPIE_RECORD'] || RSpec.configuration.files
       end
     end
   end
-  SimpleCov.minimum_coverage 99.35
+  SimpleCov.minimum_coverage 99.5
 end
 
 require 'factory_bot_rails'

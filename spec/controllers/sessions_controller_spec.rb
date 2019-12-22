@@ -21,6 +21,16 @@ RSpec.describe SessionsController do
       get :index
       expect(response).not_to render_template('about/accept_tos')
     end
+
+    it "logs out if user has become invalid" do
+      user = create(:user)
+      login_as(user)
+      expect(controller.send(:logged_in?)).to eq(true)
+      user.destroy
+      expect { get :index }.to raise_error(NoMethodError) # current_user will be cleared but then call functions on nil
+      get :index # subsequent loads will work
+      expect(controller.send(:logged_in?)).not_to eq(true)
+    end
   end
 
   describe "GET new" do
