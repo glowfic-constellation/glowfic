@@ -64,20 +64,13 @@
         = render 'group', characters: @user.characters.where(character_group_id: nil), skip_grouped_templates: true, page_view: page_view
     - elsif @user.characters.exists?
       - templates = @user.templates.ordered
-      - templates = templates.paginate(page: page, per_page: 10) if page_view == 'list'
       - templates.each do |template|
         = render partial_type, name: template, characters: template.characters.ordered
-      - if (page_view != 'list' || templates.next_page.nil?) && @user.characters.where(template_id: nil).exists?
+      - if @user.characters.where(template_id: nil).exists?
         = render partial_type, name: "No Template", characters: @user.characters.where(template_id: nil).ordered, show_new_character_button: @user.id == current_user&.id
-      - if page_view == 'list' && templates.total_pages > 1
-        %tfoot
-          %tr
-            %td{colspan: colspan}= render 'posts/paginator', paginated: templates
     - else
       %tr
         %td.centered.padding-5{class: cycle('even', 'odd'), colspan: colspan} — No characters yet —
   - else
     - characters = @user.characters.includes(:template).ordered
-    - if page_view == 'list' && character_split == 'none'
-      - characters = characters.paginate(per_page: 25, page: page)
     = render partial_type, name: nil, characters: characters, show_template: true
