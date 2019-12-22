@@ -53,7 +53,6 @@ group :development do
   gem 'rubocop-rails', '~> 2.3.2', require: false
   gem 'rubocop-rspec', '~> 1.36.0', require: false
   gem 'traceroute'
-  gem 'web-console', '~> 3.0'
 end
 
 group :development, :test do
@@ -70,7 +69,6 @@ end
 group :test do
   gem 'capybara'
   gem 'factory_bot_rails'
-  gem 'json'
   gem 'rails-controller-testing'
   gem 'resque_spec'
   gem 'simplecov'
