@@ -16,4 +16,4 @@ ARG bundler_version=2.0.2
 RUN gem install bundler -v $bundler_version
 
 ADD Gemfile* /code/
-RUN bundler _${bundler_version}_ install
+RUN bundler _${bundler_version}_ install --jobs $(nproc)
