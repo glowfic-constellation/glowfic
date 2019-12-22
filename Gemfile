@@ -9,7 +9,6 @@ gem 'aws-sdk-rails', '~> 2'
 gem 'aws-sdk-s3', '~> 1'
 gem 'aws-sdk-ses', '~> 1'
 gem 'bootstrap'
-gem 'coffee-rails'
 gem 'exception_notification'
 gem 'gon', '~> 6.2.1'
 gem 'haml-rails'
@@ -27,7 +26,6 @@ gem 'rails', '~> 5.2.0'
 gem 'redis', '~> 4.0'
 gem 'redis-rails'
 gem 'resque'
-gem 'resque-scheduler'
 gem 'resque_mailer'
 gem 'sanitize'
 gem 'sassc', '~> 2.1' # pin sassc until it stops causing schema:load problems (potentially related to https://github.com/sass/sassc-ruby/issues/146)
@@ -43,7 +41,6 @@ group :production do
   gem 'puma'
   gem 'rack-cors'
   gem 'rack-timeout'
-  gem 'rails_12factor'
 end
 
 group :development do
