@@ -22,4 +22,4 @@ module.exports = function prepareScenarios(value) {
     value.delay = 200;
   }
   return value;
-})
+};
