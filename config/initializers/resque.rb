@@ -1,3 +1,5 @@
+require 'resque/server'
+
 Resque.before_fork do
   defined?(ActiveRecord::Base) and ActiveRecord::Base.connection.disconnect!
 end
@@ -15,6 +17,14 @@ Resque::Mailer.error_handler = lambda { |mailer, message, error, action, args|
   end
 }
 Resque::Mailer.excluded_environments = [] # I explicitly want this to run in tests; don't exclude them.
+
+if Rails.env.production?
+  Resque::Server.use(Rack::Auth::Basic) do |user, password|
+    username = ENV['RESQUE_WEB_HTTP_BASIC_AUTH_USER'] || 'user'
+    pw = ENV['RESQUE_WEB_HTTP_BASIC_AUTH_PASSWORD'] || 'secret'
+    [user, password] == [username, pw]
+  end
+end
 
 # only logs Resque failures when they are not retried
 # require 'resque/failure/redis'
