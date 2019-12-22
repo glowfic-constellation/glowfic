@@ -160,6 +160,6 @@
             - if news_count > 0
               %span.badge.badge-primary= news_count
 
-  = javascript_include_tag 'application'.freeze
-  - (@javascripts || []).each do |javascript|
-    = javascript_include_tag javascript
+    = javascript_include_tag 'application'.freeze
+    - (@javascripts || []).each do |javascript|
+      = javascript_include_tag javascript
