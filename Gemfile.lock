@@ -427,7 +427,6 @@ DEPENDENCIES
   jquery-fileupload-rails
   jquery-rails (>= 4.3.4)
   jquery-ui-rails
-  json
   listen
   memory_profiler
   newrelic_rpm

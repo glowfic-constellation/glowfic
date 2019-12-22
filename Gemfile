@@ -69,7 +69,6 @@ end
 group :test do
   gem 'capybara'
   gem 'factory_bot_rails'
-  gem 'json'
   gem 'rails-controller-testing'
   gem 'resque_spec'
   gem 'simplecov'
