@@ -1,4 +1,4 @@
-/* global gon, tinymce, tinyMCE, resizeScreenname, createTagSelect */
+/* global gon, tinyMCE, resizeScreenname, createTagSelect */
 var tinyMCEInit = false, shownIcons = [];
 var PRIVACY_ACCESS = 2; // TODO don't hardcode
 var iconSelectBox;
@@ -292,31 +292,22 @@ function setupTinyMCE() {
       selector: selector,
       menubar: false,
       toolbar: ["bold italic underline strikethrough | link image | blockquote hr bullist numlist | undo redo"],
-      plugins: "image,hr,link,autoresize,paste",
+      branding: false,
+      plugins: "wordcount,image,hr,link,autoresize,paste",
       paste_as_text: true,
       custom_undo_redo_levels: 10,
       content_css: gon.tinymce_css_path,
       statusbar: true,
       elementpath: false,
-      theme_advanced_resizing: true,
-      theme_advanced_resize_horizontal: false,
-      autoresize_bottom_margin: 15,
-      autoresize_min_height: height,
+      resize: true,
+      autoresize_bottom_margin: 5,
+      min_height: height,
       browser_spellcheck: true,
       relative_urls: false,
       remove_script_host: true,
       document_base_url: gon.base_url,
       body_class: gon.editor_class,
-      setup: function(ed) {
-        ed.on('init', function() {
-          var rawContent = tinymce.activeEditor.getContent({format: 'raw'});
-          var content = tinymce.activeEditor.getContent();
-          // TODO fix hack
-          if (rawContent === '<p>&nbsp;<br></p>' && content === '') {
-            tinymce.activeEditor.setContent('');
-          }
-        });
-      }
+      contextmenu: false,
     });
     tinyMCEInit = true;
   }

@@ -505,3 +505,9 @@ The copy box can't be invisible/hidden or copy fails but opacity works
   font-size: $font_size_smaller;
   text-align: right;
 }
+
+#content .tox-toolbar {
+  background-color: $bg_color_mce_panel;
+  border-bottom: 1px solid #CCCCCC;
+  .tox-tbtn { height: 30px; width: 30px; }
+}
