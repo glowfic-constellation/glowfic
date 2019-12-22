@@ -75,7 +75,6 @@ GEM
       aws-sigv4 (~> 1.1)
     aws-sigv4 (1.1.0)
       aws-eventstream (~> 1.0, >= 1.0.2)
-    bindex (0.8.1)
     bootstrap (4.3.1)
       autoprefixer-rails (>= 9.1.0)
       popper_js (>= 1.14.3, < 2)
@@ -391,11 +390,6 @@ GEM
     unicode-display_width (1.6.0)
     vegas (0.1.11)
       rack (>= 1.0.0)
-    web-console (3.7.0)
-      actionview (>= 5.0)
-      activemodel (>= 5.0)
-      bindex (>= 0.4.0)
-      railties (>= 5.0)
     webmock (3.7.6)
       addressable (>= 2.3.6)
       crack (>= 0.3.2)
@@ -472,7 +466,6 @@ DEPENDENCIES
   tinymce-rails
   traceroute
   uglifier
-  web-console (~> 3.0)
   webmock
   will_paginate (~> 3.1.8)
 
