@@ -1,6 +1,12 @@
 #!/bin/bash
 
-if [ $1 == 'test' ] || [ $1 == 'reference' ] && [ $2 != 'logged_out' ]; then
-  docker-compose run --rm web bin/rails runner script/before_backstop.rb $2
+set -e
+
+docker_compose_run() {
+  docker-compose -f docker-compose.yml -f docker-compose-backstop.yml run --rm "$@"
+}
+
+if [ "$1" == 'test' ] || [ "$1" == 'reference' ] && [ "$2" != 'logged_out' ]; then
+  docker_compose_run web bin/rails runner script/before_backstop.rb $2
 fi
-docker-compose run --rm backstop $1 --config $2
+docker_compose_run backstop $1 --config $2
