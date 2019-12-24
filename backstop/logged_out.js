@@ -1,37 +1,20 @@
 var config = require('./shared_config/core.js');
 const prepareScenarios = require('./shared_config/prepare_scenarios.js');
+const filteredScenarios = require('./shared_config/scenarios_filtered.js');
 
-const scenarios = [
-  {
-    label: "home",
-    path: "",
-  },
-  {
-    label: "signup",
-    path: "users/new",
-    selectors: ["#content"]
-  },
-  {
-    label: "login",
-    path: "login",
-    selectors: ["#content"]
-  },
-  {
-    label: "password_reset",
-    path: "password_resets/new",
-    selectors: ["#content"],
-  },
-];
+const scenarios = filteredScenarios([
+  'home',
+  'signup',
+  'login',
+  'password_reset',
+]);
 
-config.id = 'logged_out';
+var updateConfigWithID = require('./shared_config/utils').updateConfigWithID;
+updateConfigWithID(config, 'logged_out');
+
 config.scenarios = scenarios.map(prepareScenarios);
 config.scenarios = config.scenarios.map(function(value) {
-  value.cookiePath = 'engine_scripts/tos.json';
-  return value;
+  return Object.assign({}, value, {cookiePath: 'engine_scripts/tos.json'});
 });
-config.paths.bitmaps_reference = "then/logged_out";
-config.paths.bitmaps_test = "now/logged_out";
-config.paths.html_report = "reports/logged_out";
-config.paths.ci_report = "reports/logged_out";
 
 module.exports = config;

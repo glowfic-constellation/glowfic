@@ -1,18 +1,21 @@
 const fs = require('fs');
+const { promisify } = require('util');
+const readFile = promisify(fs.readFile);
 
 module.exports = async (page, scenario) => {
   let cookies = [];
   const cookiePath = scenario.cookiePath;
 
-  // READ COOKIES FROM FILE IF EXISTS
-  if (fs.existsSync(cookiePath)) {
-    cookies = JSON.parse(fs.readFileSync(cookiePath));
-  } else {
-    console.log('Cookies not found.')
+  // READ COOKIES
+  try {
+    const cookieString = await readFile(cookiePath);
+    cookies = JSON.parse(cookieString);
+  } catch (e) {
+    console.log('Cookies not found.');
   }
 
   // SET COOKIES
-  const setCookies = async () => {
+  const setCookies = () => {
     return Promise.all(
       cookies.map(async (cookie) => {
         await page.setCookie(cookie);
@@ -20,5 +23,5 @@ module.exports = async (page, scenario) => {
     );
   };
   await setCookies();
-  //console.log('Cookie state restored with:', JSON.stringify(cookies, null, 2));
+  // console.log('Cookie state restored with:', JSON.stringify(cookies, null, 2));
 };

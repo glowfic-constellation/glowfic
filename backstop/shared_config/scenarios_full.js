@@ -8,7 +8,7 @@ module.exports = [
     label: "flash_success",
     path: "characters/27/edit",
     selectors: [".flash.success"],
-    clickSelector: "input.button",
+    clickSelectors: ["input.button"],
     delay: 0,
     postInteractionWait: 200
   },
@@ -199,7 +199,7 @@ module.exports = [
     label: "post_menu",
     path: "posts/3",
     selectors: ["#post-menu-box"],
-    clickSelector: '#post-menu',
+    clickSelectors: ['#post-menu'],
     delay: 0,
     postInteractionWait: 200
   },
@@ -207,7 +207,7 @@ module.exports = [
     label: "icon_selector",
     path: "posts/new",
     selectors: ["#reply-icon-selector"],
-    clickSelector: '#current-icon-holder',
+    clickSelectors: ['#current-icon-holder'],
     delay: 0,
     postInteractionWait: 200
   },

@@ -1,39 +1,37 @@
-module.exports = async (page, scenario) => {
-  const hoverSelector = scenario.hoverSelectors || scenario.hoverSelector;
-  const clickSelector = scenario.clickSelectors || scenario.clickSelector;
-  const keyPressSelector = scenario.keyPressSelectors || scenario.keyPressSelector;
-  const scrollToSelector = scenario.scrollToSelector;
-  const postInteractionWait = scenario.postInteractionWait; // selector [str] | ms [int]
+module.exports = async (page, givenScenario) => {
+  const defaults = {
+    hoverSelectors: [],
+    clickSelectors: [],
+    keyPressSelectors: [],
+    // postInteractionWait: selector [str] | ms [int]
+    postInteractionWait: null,
+    scrollToSelector: null,
+  };
+  const config = Object.assign(defaults, givenScenario);
 
-  if (keyPressSelector) {
-    for (const keyPressSelectorItem of [].concat(keyPressSelector)) {
-      await page.waitFor(keyPressSelectorItem.selector);
-      await page.type(keyPressSelectorItem.selector, keyPressSelectorItem.keyPress);
-    }
+  for (const keyPressSelectorItem of config.keyPressSelectors) {
+    await page.waitFor(keyPressSelectorItem.selector);
+    await page.type(keyPressSelectorItem.selector, keyPressSelectorItem.keyPress);
   }
 
-  if (hoverSelector) {
-    for (const hoverSelectorIndex of [].concat(hoverSelector)) {
-      await page.waitFor(hoverSelectorIndex);
-      await page.hover(hoverSelectorIndex);
-    }
+  for (const hoverSelectorItem of config.hoverSelectors) {
+    await page.waitFor(hoverSelectorItem);
+    await page.hover(hoverSelectorItem);
   }
 
-  if (clickSelector) {
-    for (const clickSelectorIndex of [].concat(clickSelector)) {
-      await page.waitFor(clickSelectorIndex);
-      await page.click(clickSelectorIndex);
-    }
+  for (const clickSelectorItem of config.clickSelectors) {
+    await page.waitFor(clickSelectorItem);
+    await page.click(clickSelectorItem);
   }
 
-  if (postInteractionWait) {
-    await page.waitFor(postInteractionWait);
+  if (config.postInteractionWait) {
+    await page.waitFor(config.postInteractionWait);
   }
 
-  if (scrollToSelector) {
-    await page.waitFor(scrollToSelector);
+  if (config.scrollToSelector) {
+    await page.waitFor(config.scrollToSelector);
     await page.evaluate(scrollToSelector => {
       document.querySelector(scrollToSelector).scrollIntoView();
-    }, scrollToSelector);
+    }, config.scrollToSelector);
   }
 };

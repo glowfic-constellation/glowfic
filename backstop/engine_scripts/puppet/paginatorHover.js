@@ -1,4 +1,4 @@
-module.exports = async (page, scenario) => {
+module.exports = async (page, _scenario) => {
   const selector = '.pagination a';
   try {
     await page.waitForSelector(selector, { timeout: 1000 });

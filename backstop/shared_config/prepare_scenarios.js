@@ -1,25 +1,29 @@
 const domain = "http://web:3000/";
 
-module.exports = function prepareScenarios(value) {
-  value.cookiePath = "engine_scripts/cookies.json";
-  value.url = domain.concat(value.path);
-  if (value.url.includes('?')) {
-    value.url = value.url.concat('&pp=skip');
+module.exports = function prepareScenarios(scenarioOriginal) {
+  const scenario = Object.assign({}, scenarioOriginal); // clone to prevent mutating original
+  scenario.cookiePath = "engine_scripts/cookies.json";
+
+  // path -> url
+  scenario.url = domain.concat(scenario.path);
+  delete scenario.path;
+  if (scenario.url.includes('?')) {
+    scenario.url = scenario.url.concat('&pp=skip');
   } else {
-    value.url = value.url.concat('?pp=skip');
+    scenario.url = scenario.url.concat('?pp=skip');
   }
-  delete value.path;
-  var selectors = ['.time-loaded', '.profiler-results'];
-  if (('selectors' in value) && value.selectors.includes("#content")) {
-    selectors.push("#footer");
+
+  // ignore selectors to allow sensible diffs
+  var removeSelectors = ['.time-loaded', '.profiler-results'];
+  if (('selectors' in scenario) && scenario.selectors.includes("#content")) {
+    removeSelectors.push("#footer");
   }
-  if ('removeSelectors' in value) {
-    value.removeSelectors = value.removeSelectors.concat(selectors);
-  } else {
-    value.removeSelectors = selectors;
+  scenario.removeSelectors = removeSelectors.concat(scenario.removeSelectors || []);
+
+  // add default delay
+  if (!('delay' in scenario)) {
+    scenario.delay = 200;
   }
-  if (!('delay' in value)) {
-    value.delay = 200;
-  }
-  return value;
+
+  return scenario;
 };
