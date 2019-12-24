@@ -48,6 +48,8 @@ class IndexesController < ApplicationController
 
   def edit
     @page_title = "Edit Index: #{@index.name}"
+    @index_sections = @index.index_sections.ordered
+    @unsectioned_posts = @index.posts.where(section_id: nil).ordered_in_section
   end
 
   def update
