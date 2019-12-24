@@ -17,7 +17,8 @@
             = link_to view.board.name, board_path(view.board)
           %td{class: klass}= check_box_tag :"unhide_boards[]", view.board_id, params[:unhide_boards].try(:include?, view.board_id.to_s), class: 'no-margin'
       - if @hidden_boardviews.empty?
-        %td.padding-10.centered{class: cycle('even', 'odd'), colspan: 7} — No continuities hidden —
+        %tr
+          %td.padding-10.centered{class: cycle('even', 'odd'), colspan: 7} — No continuities hidden —
       %tr
         %th.subber{colspan: 7} Posts
       = render partial: 'posts/list_item', collection: @hidden_posts, as: :post, locals: {check_box_name: 'unhide_posts[]'}
