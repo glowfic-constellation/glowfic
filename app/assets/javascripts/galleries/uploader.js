@@ -15,7 +15,7 @@ $(document).ready(function() {
   $("form.icon-upload").submit(function() {
     var usedUrls = $.map($('form.icon-upload').find('input[id$=_url]'), function(input) { return $(input).val(); });
     var uploadedUrls = $.map(uploadedIcons, function(value, key) { return key; });
-    var unusedUrls = uploadedUrls.filter(function(x) { return usedUrls.indexOf(x) < 0 });
+    var unusedUrls = uploadedUrls.filter(function(x) { return usedUrls.indexOf(x) < 0; });
     if (unusedUrls.length < 1) return true;
     deleteUnusedIcons($.map(unusedUrls, function(url) { return uploadedIcons[url]; }));
   });

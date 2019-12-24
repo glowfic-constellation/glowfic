@@ -12,7 +12,7 @@ $(document).ready(function() {
     return false;
   });
 
-  $("#select_all").click(function () {
+  $("#select_all").click(function() {
     $(".select-all-box").prop('checked', this.checked);
   });
 
@@ -159,7 +159,7 @@ function createTagSelect(tagType, selector, formType, scope) {
       var term = $.trim(params.term);
       if (term === '') return null;
 
-      for(var i = 0; i < foundTags[selector].length; i++) {
+      for (var i = 0; i < foundTags[selector].length; i++) {
         var tag = foundTags[selector][i];
         if (tag.text.toUpperCase() === term.toUpperCase()) return null;
       }

@@ -84,7 +84,7 @@ $(document).ready(function() {
       data: function(params) {
         var data = queryTransform(params);
         var authorId = $("#author_id").val();
-        if( authorId !== '' && authorId !== undefined) { data.user_id = authorId; }
+        if (authorId !== '' && typeof authorId !== 'undefined') { data.user_id = authorId; }
         return data;
       },
       processResults: function(data, params) {

@@ -1,3 +1,4 @@
+/* global processResults, queryTransform */
 $(document).ready(function() {
   $("#block_blocked_user_id").select2({
     ajax: {
@@ -6,7 +7,7 @@ $(document).ready(function() {
       dataType: 'json',
       data: function(params) {
         var data = queryTransform(params);
-        data.hide_unblockable = true
+        data.hide_unblockable = true;
         return data;
       },
       processResults: function(data, params) {
