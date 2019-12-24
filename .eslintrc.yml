@@ -1,13 +1,9 @@
-ecmaFeatures:
-  modules: true
-  jsx: true
+parserOptions:
+  ecmaVersion: 5
 
 env:
-  amd: true
   browser: true
-  es6: true
   jquery: true
-  node: true
 
 # http://eslint.org/docs/rules/
 rules:
@@ -67,7 +63,7 @@ rules:
   no-floating-decimal: 2
   no-global-assign: 2
   no-implicit-coercion: 2
-  no-implicit-globals: 2
+  no-implicit-globals: 0
   no-implied-eval: 2
   no-invalid-this: 2
   no-iterator: 2
@@ -124,9 +120,13 @@ rules:
   no-undef: 1
   no-undef-init: 2
   no-undefined: 2
-  no-unused-vars: 1
-  # TODO: consider using below
-  no-use-before-define: 0
+  no-unused-vars:
+    - 2
+    - varsIgnorePattern: ^_.*$
+      argsIgnorePattern: ^_.*$
+  no-use-before-define:
+    - 2
+    - functions: false
 
   # Node.js and CommonJS
   callback-return: 2
