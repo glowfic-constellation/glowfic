@@ -23,8 +23,9 @@
   - if @character.user == current_user
     %tr#create_template{class: ('hidden' unless params[:new_template])}
       %th.sub &#8627; Name
-      = f.fields_for :template do |ff|
-        %td{class: klass}= ff.text_field :name, placeholder: "Template Name", class: 'text'
+      %td{class: klass}
+        = f.fields_for :template do |ff|
+          = ff.text_field :name, placeholder: "Template Name", class: 'text'
   - if @character.user.galleries.present?
     %tr
       %th.sub Galleries
