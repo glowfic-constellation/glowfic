@@ -50,7 +50,7 @@ $(document).ready(function() {
 
   // horrible hack to make the paginator center-aligned when it's forced to a second line
   // the timeout in the resize event acts as a debounce so we don't re-render on each pixel change of the resize
-  if($(".normal-pagination").length > 0) {
+  if ($(".normal-pagination").length > 0) {
     var paginators = $('.paginator');
     paginators.each(function() { reflowPaginator(this); });
     var resizeDebounce = null;

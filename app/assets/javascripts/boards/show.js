@@ -1,7 +1,7 @@
 $(document).ready(function() {
   $(".expanddesc").click(function() {
     var id = $(this).attr('id').substring(11);
-    if ($(this).text()[0] == "m") {
+    if ($(this).text()[0] === "m") {
       $("#desc-"+id).show();
       $("#dots-"+id).hide();
       $(this).html(' &laquo; less');

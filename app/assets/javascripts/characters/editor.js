@@ -145,7 +145,7 @@ $(document).ready(function() {
         var existingIds = $("#character_gallery_group_ids").val() || [];
         var validResults = [];
         results.results.forEach(function(gallery) {
-          if(!existingIds.includes(gallery.id.toString())) validResults.push(gallery);
+          if (!existingIds.includes(gallery.id.toString())) validResults.push(gallery);
         });
         results.results = validResults;
 
@@ -187,7 +187,7 @@ function displayGallery(newId) {
 }
 
 function bindIcons(obj) {
-  if(gon.mod_editing) return; // Mods can't change icons, so don't present the UI
+  if (gon.mod_editing) return; // Mods can't change icons, so don't present the UI
   obj = obj || window.body;
   $(".character-icon", obj).click(function() {
     if ($(this).hasClass('selected-icon')) {

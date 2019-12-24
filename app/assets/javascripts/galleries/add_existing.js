@@ -3,7 +3,7 @@ var skipWarning = false;
 $(document).ready(function() {
   bindGalleryIcons(".add-gallery-icon");
 
-  $(".select-all").click(function () {
+  $(".select-all").click(function() {
     var galleryId = $(this).val();
     var icons = $("#icons-"+galleryId+" .gallery-icon img");
     $.each(icons, function(index, icon) {

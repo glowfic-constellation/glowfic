@@ -1,4 +1,4 @@
-/* global gon, processResults, queryTransform */
+/* global processResults, queryTransform */
 $(document).ready(function() {
   $("#index_post_post_id").select2({
     ajax: {
