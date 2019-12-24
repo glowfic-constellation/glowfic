@@ -17,3 +17,4 @@ RUN gem install bundler -v $bundler_version
 
 ADD Gemfile* /code/
 RUN bundler _${bundler_version}_ install --jobs $(nproc)
+RUN npm i -g eslint
