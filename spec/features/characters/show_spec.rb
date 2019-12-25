@@ -388,13 +388,13 @@ RSpec.feature "Creating a new character", :type => :feature do
 
       # clicking the up button on the first gallery should do nothing
       within(current_headers.first) do
-        click_link '↑'
+        click_link 'Move Up'
       end
       expect_tbody_order([0, 1, 2, 3], galleries)
 
       # move the first gallery down (testing boundaries)
       within(current_headers.first) do
-        click_link '↓'
+        click_link 'Move Down'
       end
       expect(current_titles).to eq(["Gallery 1", "Gallery 0", "Gallery 2", "Gallery 3"])
       expect_tbody_order([1, 0, 2, 3], galleries)
@@ -411,14 +411,14 @@ RSpec.feature "Creating a new character", :type => :feature do
 
       # move it down again (testing non-boundaries)
       within(current_headers[1]) do
-        click_link '↓'
+        click_link 'Move Down'
       end
       expect(current_titles).to eq(["Gallery 1", "Gallery 2", "Gallery 0", "Gallery 3"])
       expect_tbody_order([1, 2, 0, 3], galleries)
 
       # test moving up
       within(current_headers[1]) do
-        click_link '↑'
+        click_link 'Move Up'
       end
       expect(current_titles).to eq(["Gallery 2", "Gallery 1", "Gallery 0", "Gallery 3"])
       expect_tbody_order([2, 1, 0, 3], galleries)
