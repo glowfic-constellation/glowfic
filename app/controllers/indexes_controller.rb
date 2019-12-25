@@ -3,6 +3,7 @@ class IndexesController < ApplicationController
   before_action :login_required, except: [:index, :show]
   before_action :find_index, except: [:index, :new, :create]
   before_action :permission_required, except: [:index, :new, :create, :show]
+  before_action :prepare_editor, only: :edit
 
   def index
     @page_title = "Indexes"
@@ -43,13 +44,9 @@ class IndexesController < ApplicationController
     @sectionless = @index.posts.where(index_posts: {index_section_id: nil})
     @sectionless = @sectionless.ordered_by_index
     @sectionless = posts_from_relation(@sectionless, with_pagination: false, select: ', index_posts.description as index_description, index_posts.id as index_post_id')
-    @sectionless = @sectionless.select { |p| p.visible_to?(current_user) }
   end
 
   def edit
-    @page_title = "Edit Index: #{@index.name}"
-    @index_sections = @index.index_sections.ordered
-    @unsectioned_posts = @index.posts.where(section_id: nil).ordered_in_section
   end
 
   def update
@@ -60,7 +57,7 @@ class IndexesController < ApplicationController
         message: "Index could not be saved because of the following problems:",
         array: @index.errors.full_messages
       }
-      @page_title = "Edit Index: #{@index.name}"
+      prepare_editor
       render :edit
     else
       flash[:success] = "Index saved!"
@@ -101,5 +98,12 @@ class IndexesController < ApplicationController
 
   def index_params
     params.fetch(:index, {}).permit(:name, :description, :privacy, :authors_locked)
+  end
+
+  def prepare_editor
+    @page_title = "Edit Index: #{@index.name}"
+    use_javascript('posts/index_edit')
+    @index_sections = @index.index_sections.ordered
+    @unsectioned_posts = @index.posts.where(index_posts: {index_section_id: nil}).ordered_in_section
   end
 end

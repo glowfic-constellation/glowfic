@@ -124,6 +124,12 @@ Rails.application.routes.draw do
       resources :icons, only: [] do
         collection { post :s3_delete }
       end
+      resources :index_posts, only: [] do
+        collection { post :reorder }
+      end
+      resources :index_sections, only: [] do
+        collection { post :reorder }
+      end
       resources :posts, only: [:index, :show] do
         resources :replies, only: :index
         collection { post :reorder }
