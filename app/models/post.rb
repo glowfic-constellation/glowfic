@@ -200,8 +200,8 @@ class Post < ApplicationRecord
 
     # testing for case where the post was changed in status more recently than the last reply
     audits_exist = audits.where('created_at > ?', most_recent.created_at).where(action: 'update')
-    audits_exist = audits_exist.where("(audited_changes -> 'status' ->> 1)::integer = ?", Post::STATUS_COMPLETE).exists?
-    return most_recent.updated_at unless audits_exist
+    audits_exist = audits_exist.where("(audited_changes -> 'status' ->> 1)::integer = ?", Post::STATUS_COMPLETE)
+    return most_recent.updated_at unless audits_exist.exists?
     self.edited_at
   end
 
