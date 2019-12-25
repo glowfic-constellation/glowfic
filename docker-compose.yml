@@ -14,6 +14,7 @@ x-svc: &svc
   volumes:
     - .:/code
     - bundler-volume:/usr/local/bundle
+    - webdrivers:/root/.webdrivers # caches webdrivers for selenium feature specs
 
 services:
   web:
@@ -44,3 +45,4 @@ services:
 volumes:
   bundler-volume:
   postgres-data:
+  webdrivers:
