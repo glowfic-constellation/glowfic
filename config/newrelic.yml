@@ -34,6 +34,8 @@ development:
   <<: *default_settings
   app_name: Glowfic Constellation (Development)
 
+  agent_enabled: <%= ENV["NEWRELIC_LICENSE_KEY"].present? %>
+
   # NOTE: There is substantial overhead when running in developer mode.
   # Do not use for production or load testing.
   developer_mode: true
