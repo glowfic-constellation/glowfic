@@ -308,6 +308,7 @@ function setupTinyMCE() {
       document_base_url: gon.base_url,
       body_class: gon.editor_class,
       contextmenu: false,
+      cache_suffix: '?v=5.1.4'
     });
     tinyMCEInit = true;
   }
