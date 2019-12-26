@@ -35,12 +35,19 @@ services:
       QUEUES: mailer,notifier,high,*
   redis:
     image: redis:4.0-alpine
+    ports:
+      - 6379:6379
   postgres:
     environment:
+      - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
+      - PGUSER=postgres
+      - PGPASSWORD=postgres
     image: postgres:11-alpine
     volumes:
       - postgres-data:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
 
 volumes:
   bundler-volume:
