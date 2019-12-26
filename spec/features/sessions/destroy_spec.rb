@@ -1,11 +1,10 @@
 require "spec_helper"
 
 RSpec.feature "Logging out", :type => :feature do
-  scenario "Log out while correctly logged in" do
+  scenario "Log out while correctly logged in", js: true do
     user = login
     expect(page).to have_selector('#user-info', text: user.username)
-    # TODO: Use js:true and logout button, rather than manually submitting a DELETE.
-    page.driver.submit(:delete, logout_path, {})
+    click_button "Log out"
 
     expect(page).to have_selector('.flash.success', text: 'You have been logged out.')
     expect(page).to have_no_selector('#user-info')
