@@ -17,7 +17,7 @@
         - if gallery
           = link_to edit_gallery_path(gallery), class: 'gallery-edit' do
             .link-box.action-edit
-              = image_tag "icons/pencil.png"
+              = image_tag "icons/pencil.png", alt: ''
               Edit Gallery
           = link_to gallery_path(gallery), method: :delete, data: { confirm: 'Are you sure you want to delete this gallery? (This will not delete the icons.)' }, class: 'gallery-delete' do
             .link-box.action-delete x Delete Gallery
@@ -34,8 +34,8 @@
         .gallery-box.float-right.gallery-minmax{data: {id: gallery.id}} -
       - if local_assigns[:character_gallery] && (is_owner || current_user.try(:admin?))
         .float-right
-          = image_tag "icons/arrow_up.png", class: "section-up disabled-arrow"
-          = image_tag "icons/arrow_down.png", class: "section-down disabled-arrow"
+          = image_tag "icons/arrow_up.png", class: "section-up disabled-arrow", alt: 'Move Up'
+          = image_tag "icons/arrow_down.png", class: "section-down disabled-arrow", alt: 'Move Down'
 %tbody{class: ("gallery-data-#{gallery.id}" if gallery)}
   - groups = gallery.gallery_groups_data if gallery
   - if groups.present?

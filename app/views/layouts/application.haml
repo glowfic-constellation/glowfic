@@ -59,7 +59,7 @@
           #user-info
             = link_to user_path(current_user) do
               - if current_user.avatar
-                = image_tag current_user.avatar.url, class: 'icon', id: 'user-icon'
+                = image_tag current_user.avatar.url, class: 'icon', id: 'user-icon', title: current_user.avatar.keyword, alt: current_user.avatar.keyword
               - else
                 .no-img
               #user-username= current_user.username
@@ -71,7 +71,7 @@
                 %span &nbsp;|&nbsp;
                 = link_to "Sign up", new_user_path
             = link_to root_path do
-              = image_tag "layouts/logo.png", alt: 'Glowfic Constellation'
+              = image_tag "layouts/logo.png", alt: 'Glowfic Constellation home'
           #nav-top
             - if logged_in?
               %ul
@@ -124,7 +124,7 @@
       - flash.each do |key, val|
         .flash{class: key}
           = link_to '#' do
-            = image_tag 'icons/cross.png', class: 'float-right flash-dismiss'
+            = image_tag 'icons/cross.png', class: 'float-right flash-dismiss', alt: 'Dismiss'
           - if val.is_a?(Hash)
             - if val.key?(:image)
               = image_tag val[:image], class: 'vmid'.freeze

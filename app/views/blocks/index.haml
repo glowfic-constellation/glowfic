@@ -41,9 +41,9 @@
             None
         %td.width-70.right-align{class: klass}
           = link_to edit_block_path(block) do
-            = image_tag "icons/pencil.png"
+            = image_tag "icons/pencil.png", alt: 'Edit'
           = link_to block_path(block), :method => :delete, data: { confirm: "Are you sure you want to unblock #{block.blocked_user.username}?" } do
-            = image_tag "icons/cross.png"
+            = image_tag "icons/cross.png", alt: 'Delete'
           &nbsp;
     - if @blocks.empty?
       %tr

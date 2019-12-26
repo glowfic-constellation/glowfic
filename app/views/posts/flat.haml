@@ -43,7 +43,7 @@
             = link_to post_path(@post), rel: 'alternate' do
               = image_tag "icons/link.png", title: 'Permalink', alt: 'Permalink'
             = link_to post_path(@post, unread: true), method: :put do
-              = image_tag "icons/eye.png", title: 'Mark Unread Here', alt: 'Eye'
+              = image_tag "icons/eye.png", title: 'Mark Unread Here', alt: 'Mark Unread'
           .post-content= sanitize_written_content(@post.content.to_s)
         .post-footer
           .right-align>

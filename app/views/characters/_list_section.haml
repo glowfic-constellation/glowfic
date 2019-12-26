@@ -17,7 +17,7 @@
             .link-box.action-new{style: 'font-size: 14px'} + New Instance
           = link_to edit_template_path(name) do
             .link-box.action-edit{style: 'font-size: 14px'}
-              = image_tag "icons/pencil.png", class: 'vmid'
+              = image_tag "icons/pencil.png", class: 'vmid', alt: ''
               Edit
           = link_to template_path(name), method: :delete, data: { confirm: 'Are you sure you want to delete this template?' } do
             .link-box.action-delete{style: 'font-size: 14px'} x Delete
@@ -78,10 +78,10 @@
         - unless local_assigns[:hide_buttons]
           - if Character.editable_by?(current_user, user_id)
             = link_to edit_character_path(char_id) do
-              = image_tag "icons/pencil.png"
+              = image_tag "icons/pencil.png", alt: 'Edit'
           - if Character.deletable_by?(current_user, user_id)
             = link_to character_path(char_id), :method => :delete, data: { confirm: "Are you sure you want to delete #{char_name}?" } do
-              = image_tag "icons/cross.png"
+              = image_tag "icons/cross.png", alt: 'Delete'
             &nbsp;
   - if characters.methods.include?(:total_pages) && characters.total_pages > 1
     %tfoot

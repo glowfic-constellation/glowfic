@@ -15,7 +15,7 @@
         %span#name= item.name
         - klass = ['selector-popup-button']
         - klass << 'hidden' unless item.character.try(:aliases).present?
-        = image_tag swap_icon_url, id: 'swap-alias', alt: ">", title: 'Choose Alias', class: klass
+        = image_tag swap_icon_url, id: 'swap-alias', alt: 'Choose Alias', title: 'Choose Alias', class: klass
         #alias-selector.selector-popup
           %h4 Choose Alias
           = select_tag :character_alias, options_from_collection_for_select(item.character.try(:aliases).to_a, :id, :name, item.character_alias_id), prompt: item.character.try(:name), class: 'chosen-select'
@@ -24,7 +24,7 @@
       .post-author
         = item.user.username
         - if current_user.characters.present?
-          = image_tag swap_icon_url, id: 'swap-character', alt: ">", title: 'Choose Character', class: 'selector-popup-button'
+          = image_tag swap_icon_url, id: 'swap-character', alt: 'Choose Character', title: 'Choose Character', class: 'selector-popup-button'
           #character-selector.selector-popup
             %h4 Choose Character
             = select_tag :active_character,
