@@ -66,8 +66,15 @@ class WritableController < ApplicationController
       self.page = cur_page = cur_page.to_i
     end
 
+    select = <<~SQL
+      replies.*, characters.name, characters.screenname,
+      icons.keyword, icons.url,
+      users.username, users.deleted as user_deleted,
+      character_aliases.name as alias
+    SQL
+
     @replies = @replies
-      .select("replies.*, characters.name, characters.screenname, icons.keyword, icons.url, users.username, character_aliases.name as alias, users.deleted as user_deleted")
+      .select(select)
       .joins(:user)
       .left_outer_joins(:character)
       .left_outer_joins(:icon)

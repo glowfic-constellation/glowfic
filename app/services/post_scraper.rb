@@ -53,8 +53,10 @@ class PostScraper < Object
     @post
   end
 
-  # works as an alternative to scrape! when you want to scrape particular top-level threads of a post sequentially
-  # "threads" are URL permalinks to the threads to scrape, which it will scrape in the given order
+  # works as an alternative to scrape! when you want to scrape particular
+  # top-level threads of a post sequentially
+  # "threads" are URL permalinks to the threads to scrape, which it will scrape
+  # in the given order
   def scrape_threads!(threads)
     raise RuntimeError.new('threaded_import must be true to use scrape_threads!') unless @threaded_import
 
@@ -87,19 +89,20 @@ class PostScraper < Object
     # download URL, trying up to 3 times
     max_try = 3
     retried = 0
-    data =  begin
-              sleep 0.25
-              HTTParty.get(url).body
-            rescue Net::OpenTimeout => e
-              retried += 1
-              if retried < max_try
-                logger.debug "Failed to get #{url}: #{e.message}; retrying (tried #{retried} #{'time'.pluralize(retried)})"
-                retry
-              else
-                logger.warn "Failed to get #{url}: #{e.message}"
-                raise
-              end
-            end
+
+    begin
+      sleep 0.25
+      data = HTTParty.get(url).body
+    rescue Net::OpenTimeout => e
+      retried += 1
+      if retried < max_try
+        logger.debug "Failed to get #{url}: #{e.message}; retrying (tried #{retried} #{'time'.pluralize(retried)})"
+        retry
+      else
+        logger.warn "Failed to get #{url}: #{e.message}"
+        raise
+      end
+    end
 
     Nokogiri::HTML(data)
   end
@@ -113,7 +116,8 @@ class PostScraper < Object
 
   def threaded_page_links
     # gets pages after the first page
-    # does not work based on depths as sometimes mistakes over depth are made during threading (two replies made on the same depth)
+    # does not work based on depths as sometimes mistakes over depth are made
+    # during threading (two replies made on the same depth)
     comments = @html_doc.at_css('#comments').css('.comment-thread')
     # 0..24 are in full on the first page
     # fetch 25..49, …, on the other pages
@@ -162,7 +166,7 @@ class PostScraper < Object
 
     # detect already imported
     # skip if it's a threaded import, unless a subject was given manually
-    if (@subject || !@threaded_import) && (subj_post = Post.where(subject: @post.subject, board_id: @board_id).first)
+    if (@subject || !@threaded_import) && (subj_post = Post.find_by(subject: @post.subject, board_id: @board_id))
       raise AlreadyImportedError.new("This thread has already been imported", subj_post.id)
     end
 
@@ -261,7 +265,8 @@ class PostScraper < Object
       icon = tag.character.icons.where(keyword: keyword).first
       tag.icon = icon and return if icon
 
-      # split out the last " (...)" from the keyword (which should be at the very end), if applicable, for without_desc
+      # split out the last " (...)" from the keyword (which should be at the
+      # very end), if applicable, for without_desc
       without_desc = nil
       if keyword.end_with?(')')
         lbracket = keyword.rindex(' (')

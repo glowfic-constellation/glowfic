@@ -57,7 +57,8 @@ class NotifyFollowersOfNewPostJob < ApplicationJob
   end
 
   def view_post(post_id)
-    url = Rails.application.routes.url_helpers.post_url(post_id, host: ENV['DOMAIN_NAME'] || 'localhost:3000', protocol: 'https')
+    host = ENV['DOMAIN_NAME'] || 'localhost:3000'
+    url = Rails.application.routes.url_helpers.post_url(post_id, host: host, protocol: 'https')
     "<a href='#{url}'>View it here</a>."
   end
 end

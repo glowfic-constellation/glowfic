@@ -87,8 +87,10 @@ class Character < ApplicationRecord
   end
 
   # WARNING: this method *will make changes* when used, not just when saved!!!
-  # This is so it can interact with group_gallery_ids properly instead of having to use an intricate system to find the current character galleries prior to persisting
-  # i.e. it's so ungrouped_gallery_ids= and various callbacks for gallery_group_ids= interact properly
+  # This is so it can interact with group_gallery_ids properly instead of having
+  # to use an intricate system to find the current character galleries prior to
+  # persisting i.e. it's so ungrouped_gallery_ids= and various callbacks for
+  # gallery_group_ids= interact properly
   def ungrouped_gallery_ids=(new_ids)
     new_ids -= ['']
     new_ids = new_ids.map(&:to_i)

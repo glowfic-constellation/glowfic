@@ -100,14 +100,15 @@ class BoardSectionsController < ApplicationController
 
   def og_data
     stats = []
-    stats << @board_section.board.writers.where.not(deleted: true).ordered.pluck(:username).join(', ') if @board_section.board.authors_locked?
+    board = @board_section.board
+    stats << board.writers.where.not(deleted: true).ordered.pluck(:username).join(', ') if board.authors_locked?
     post_count = @board_section.posts.where(privacy: Concealable::PUBLIC).count
     stats << "#{post_count} " + "post".pluralize(post_count)
     desc = [stats.join(' – ')]
     desc << generate_short(@board_section.description) if @board_section.description.present?
     {
       url: board_section_url(@board_section),
-      title: "#{@board_section.board.name} » #{@board_section.name}",
+      title: "#{board.name} » #{@board_section.name}",
       description: desc.join("\n"),
     }
   end

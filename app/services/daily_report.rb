@@ -6,18 +6,19 @@ class DailyReport < Report
   end
 
   def posts(sort='')
-    created_no_replies = Post.where(last_reply_id: nil, created_at: day.beginning_of_day .. day.end_of_day).pluck(:id)
-    by_replies = Reply.where(created_at: day.beginning_of_day .. day.end_of_day).pluck(:post_id)
+    range = day.beginning_of_day .. day.end_of_day
+    created_no_replies = Post.where(last_reply_id: nil, created_at: range).pluck(:id)
+    by_replies = Reply.where(created_at: range).pluck(:post_id)
     all_post_ids = created_no_replies + by_replies
     Post.where(id: all_post_ids.uniq)
       .select("posts.*,
         case
-        when (posts.created_at between #{ActiveRecord::Base.connection.quote(day.beginning_of_day)} AND #{ActiveRecord::Base.connection.quote(day.end_of_day)})
+        when (posts.created_at between #{ActiveRecord::Base.connection.quote(range.begin)} AND #{ActiveRecord::Base.connection.quote(range.end)})
           then posts.created_at
           else coalesce(min(replies_today.created_at), posts.created_at)
           end as first_updated_at")
       .joins("LEFT JOIN replies AS replies_today ON replies_today.post_id = posts.id")
-      .where("replies_today.created_at IS NULL OR (replies_today.created_at between ? AND ?)", day.beginning_of_day, day.end_of_day)
+      .where("replies_today.created_at IS NULL OR (replies_today.created_at between ? AND ?)", range.begin, range.end)
       .group("posts.id")
       .order(sort)
   end

@@ -124,7 +124,10 @@ Metrics/CyclomaticComplexity:
   Enabled: false
 
 Metrics/LineLength:
-  Enabled: false
+  Enabled: true
+  Max: 150
+  Exclude:
+    - 'app/controllers/api/**/*'
 
 Metrics/MethodLength:
   Enabled: false

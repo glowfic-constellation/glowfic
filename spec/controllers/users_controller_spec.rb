@@ -370,7 +370,11 @@ RSpec.describe UsersController do
       user = create(:user, password: 'testpass')
       login_as(user)
 
-      put :password, params: { id: user.id, old_password: fakepass, user: {password: newpass, password_confirmation: newpass} }
+      put :password, params: {
+        id: user.id,
+        old_password: fakepass,
+        user: {password: newpass, password_confirmation: newpass}
+      }
 
       expect(response).to render_template(:edit)
       expect(flash[:error]).to eq('Incorrect password entered.')
@@ -386,7 +390,11 @@ RSpec.describe UsersController do
       user = create(:user, password: pass)
       login_as(user)
 
-      put :password, params: { id: user.id, old_password: pass, user: {password: newpass, password_confirmation: newpass} }
+      put :password, params: {
+        id: user.id,
+        old_password: pass,
+        user: {password: newpass, password_confirmation: newpass}
+      }
 
       expect(response).to render_template(:edit)
       expect(flash[:error][:message]).to eq('There was a problem with your changes.')
@@ -400,7 +408,11 @@ RSpec.describe UsersController do
       user = create(:user, password: pass)
       login_as(user)
 
-      put :password, params: { id: user.id, old_password: pass, user: {password: newpass, password_confirmation: 'wrongconfirmation'} }
+      put :password, params: {
+        id: user.id,
+        old_password: pass,
+        user: {password: newpass, password_confirmation: 'wrongconfirmation'}
+      }
 
       expect(response).to render_template(:edit)
       expect(flash[:error][:message]).to eq('There was a problem with your changes.')
@@ -415,7 +427,11 @@ RSpec.describe UsersController do
       user = create(:user, password: pass)
       login_as(user)
 
-      put :password, params: { id: user.id, old_password: pass, user: {password: newpass, password_confirmation: newpass} }
+      put :password, params: {
+        id: user.id,
+        old_password: pass,
+        user: {password: newpass, password_confirmation: newpass}
+      }
 
       expect(response).to redirect_to(edit_user_url(user))
       expect(flash[:success]).to eq('Changes saved successfully.')

@@ -43,7 +43,8 @@ class PostImporter < Object
 
     msg = "The following usernames were not recognized. "\
           "Please have the correct author create a character with the correct screenname, "\
-          "or contact Marri if you wish to map a particular screenname to 'your base account posting without a character'."
+          "or contact Marri if you wish to map a particular screenname to "\
+          "'your base account posting without a character'."
     raise MissingUsernames.new(msg, missing_usernames)
   end
 
@@ -53,7 +54,8 @@ class PostImporter < Object
     poster_names = dreamwidth_doc.css('.entry-poster span.ljuser b')
     usernames -= [poster_names.last.text] if poster_names.count > 1
     usernames -= Character.where(screenname: usernames).pluck(:screenname)
-    usernames - Character.where(screenname: usernames.map { |u| u.tr("_", "-")}).pluck(:screenname).map { |u| u.tr('-', '_')}
+    dashed = usernames.map { |u| u.tr("_", "-")}
+    usernames - Character.where(screenname: dashed).pluck(:screenname).map { |u| u.tr('-', '_') }
   end
 
   def dreamwidth_doc

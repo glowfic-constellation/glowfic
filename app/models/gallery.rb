@@ -25,12 +25,23 @@ class Gallery < ApplicationRecord
       .group("galleries.id")
   }
 
+  # rubocop:disable Style/TrailingCommaInArguments
   scope :with_gallery_groups, -> {
     # fetches an array of
     # galleries.map(&:gallery_groups).map{|group| [f1: group.id, f2: group.name]}
     # ordered by tag name
-    select("ARRAY(SELECT row_to_json(ROW(tags.id, tags.name)) FROM tags LEFT JOIN gallery_tags ON gallery_tags.tag_id = tags.id WHERE gallery_tags.gallery_id = galleries.id AND tags.type = 'GalleryGroup' ORDER BY gallery_tags.id ASC) AS gallery_groups_data_internal")
+    select(
+      <<~SQL
+        ARRAY(
+          SELECT row_to_json(ROW(tags.id, tags.name)) FROM tags
+          LEFT JOIN gallery_tags ON gallery_tags.tag_id = tags.id
+          WHERE gallery_tags.gallery_id = galleries.id AND tags.type = 'GalleryGroup'
+          ORDER BY gallery_tags.id ASC
+        ) AS gallery_groups_data_internal
+      SQL
+    )
   }
+  # rubocop:enable Style/TrailingCommaInArguments
 
   # Converts the internal [{'f1' => id, 'f2' => name}] structure of the retrieved data
   # to [{id => id, name => name}]

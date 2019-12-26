@@ -124,8 +124,10 @@ RSpec.describe CharacterHelper do
 
       it "when showing templates" do
         expected = [
-          [character1.id, 'Test Character 1', 'Nickname 1', 'screenname_one', 'Facecast 1', user.id, 'John Doe', false, template1.id, "Test Template 1"],
-          [character2.id, 'Test Character 2', 'Nickname 2', 'screenname_two', 'Facecast 2', user.id, 'John Doe', false, template2.id, "Test Template 2"]
+          [character1.id, 'Test Character 1', 'Nickname 1', 'screenname_one',
+           'Facecast 1', user.id, 'John Doe', false, template1.id, "Test Template 1"],
+          [character2.id, 'Test Character 2', 'Nickname 2', 'screenname_two',
+           'Facecast 2', user.id, 'John Doe', false, template2.id, "Test Template 2"]
         ]
         expect(helper.characters_list(assoc, true)).to match_array(expected)
       end
@@ -143,17 +145,17 @@ RSpec.describe CharacterHelper do
       templateless = create_list(:character, 3, user: user)
       templated = Array.new(3) { create(:character, user: user, template: create(:template)) }
       template = create(:template)
-      same_template = create_list(:character, 3, user: user, template: template)
+      one_template = create_list(:character, 3, user: user, template: template)
       deleted_user = create_list(:character, 1, user: create(:user, deleted: true))
       other_user = create_list(:character, 2, user: create(:user))
-      characters = templateless + templated + same_template + deleted_user + other_user
+      characters = templateless + templated + one_template + deleted_user + other_user
       assoc = Character.where(id: characters.map(&:id))
       expected = [
-        templateless.map  { |char| [char.id, char.name, nil, nil, nil, user.id,      user.username,      false, nil,              nil] },
-        templated.map     { |char| [char.id, char.name, nil, nil, nil, user.id,      user.username,      false, char.template.id, char.template.name] },
-        same_template.map { |char| [char.id, char.name, nil, nil, nil, user.id,      user.username,      false, template.id,      template.name] },
-        deleted_user.map  { |char| [char.id, char.name, nil, nil, nil, char.user.id, char.user.username, true,  nil,              nil] },
-        other_user.map    { |char| [char.id, char.name, nil, nil, nil, char.user.id, char.user.username, false, nil,              nil] },
+        templateless.map{ |char| [char.id, char.name, nil, nil, nil, user.id,      user.username,      false, nil,              nil] },
+        templated.map   { |char| [char.id, char.name, nil, nil, nil, user.id,      user.username,      false, char.template.id, char.template.name] },
+        one_template.map{ |char| [char.id, char.name, nil, nil, nil, user.id,      user.username,      false, template.id,      template.name] },
+        deleted_user.map{ |char| [char.id, char.name, nil, nil, nil, char.user.id, char.user.username, true,  nil,              nil] },
+        other_user.map  { |char| [char.id, char.name, nil, nil, nil, char.user.id, char.user.username, false, nil,              nil] },
       ].flatten(1)
       expect(helper.characters_list(assoc, true)).to match_array(expected)
     end

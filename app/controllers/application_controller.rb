@@ -46,7 +46,8 @@ class ApplicationController < ActionController::Base
   end
 
   def handle_invalid_token
-    flash[:error] = 'Oops, looks like your session expired! Please try another tab or log in again to resume glowficcing. If you were writing a reply, it has been cached for your next page load.'
+    flash[:error] = 'Oops, looks like your session expired! Please try another tab or log in again to resume glowficcing.'
+    flash[:error] += ' If you were writing a reply, it has been cached for your next page load.'
     session[:attempted_reply] = params[:reply] if params[:reply].present?
     redirect_to root_path
   end
@@ -156,9 +157,23 @@ class ApplicationController < ActionController::Base
 
   def posts_from_relation(relation, no_tests: true, with_pagination: true, select: '', max: false)
     if max
-      posts = relation.select('posts.*, max(boards.name) as board_name, max(users.username) as last_user_name, bool_or(users.deleted) as last_user_deleted'+ select)
+      reports_select = <<~SQL
+        posts.*,
+        max(boards.name) as board_name,
+        max(users.username) as last_user_name,
+        bool_or(users.deleted) as last_user_deleted
+        #{select}
+      SQL
+      posts = relation.select(reports_select)
     else
-      posts = relation.select('posts.*, boards.name as board_name, users.username as last_user_name, users.deleted as last_user_deleted'+ select)
+      regular_select = <<~SQL
+        posts.*,
+        boards.name as board_name,
+        users.username as last_user_name,
+        users.deleted as last_user_deleted
+        #{select}
+      SQL
+      posts = relation.select(regular_select)
     end
 
     posts = posts
@@ -173,9 +188,9 @@ class ApplicationController < ActionController::Base
     posts = posts.no_tests if no_tests
 
     if logged_in?
-      @opened_ids ||= PostView.where(user_id: current_user.id).where('read_at IS NOT NULL').pluck(:post_id)
+      @opened_ids ||= PostView.where(user_id: current_user.id).where.not(read_at: nil).pluck(:post_id)
 
-      opened_posts = PostView.where(user_id: current_user.id).where('read_at IS NOT NULL').where(post_id: posts.map(&:id)).select([:post_id, :read_at])
+      opened_posts = PostView.where(user_id: current_user.id).where.not(read_at: nil).where(post_id: posts.map(&:id)).select([:post_id, :read_at])
       @unread_ids ||= []
       @unread_ids += opened_posts.select do |view|
         post = posts.detect { |p| p.id == view.post_id }

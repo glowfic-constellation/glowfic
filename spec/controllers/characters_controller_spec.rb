@@ -129,7 +129,18 @@ RSpec.describe CharactersController do
       setting = create(:setting, user: user, name: 'A World')
 
       login_as(user)
-      post :create, params: { character: {name: test_name, template_name: 'TempName', screenname: 'just-a-test', setting_ids: [setting.id], template_id: template.id, pb: 'Facecast', description: 'Desc', ungrouped_gallery_ids: [gallery.id]} }
+      post :create, params: {
+        character: {
+          name: test_name,
+          template_name: 'TempName',
+          screenname: 'just-a-test',
+          setting_ids: [setting.id],
+          template_id: template.id,
+          pb: 'Facecast',
+          description: 'Desc',
+          ungrouped_gallery_ids: [gallery.id]
+        }
+      }
 
       expect(response).to redirect_to(assigns(:character))
       expect(flash[:success]).to eq("Character saved successfully.")
@@ -149,7 +160,14 @@ RSpec.describe CharactersController do
     it "creates new templates when specified" do
       expect(Template.count).to eq(0)
       login
-      post :create, params: { new_template: '1', character: {template_attributes: {name: 'TemplateTest'}, name: 'Test'} }
+      post :create, params: {
+        new_template: '1',
+        character: {
+          template_attributes: {
+            name: 'TemplateTest'
+          }, name: 'Test'
+        }
+      }
       expect(Template.count).to eq(1)
       expect(Template.first.name).to eq('TemplateTest')
       expect(assigns(:character).template_id).to eq(Template.first.id)
@@ -166,7 +184,12 @@ RSpec.describe CharactersController do
         create(:template)
 
         login_as(user)
-        post :create, params: { character: {ungrouped_gallery_ids: [gallery.id, group_gallery.id], gallery_group_ids: [group.id]} }
+        post :create, params: {
+          character: {
+            ungrouped_gallery_ids: [gallery.id, group_gallery.id],
+            gallery_group_ids: [group.id]
+          }
+        }
 
         expect(response).to render_template(:new)
         expect(controller.gon.character_id).to eq('')
@@ -401,7 +424,14 @@ RSpec.describe CharactersController do
       character = create(:character)
       login_as(character.user)
       new_name = character.name + 'aaa'
-      put :update, params: { id: character.id, new_template: '1', character: {template_attributes: {name: ''}, name: new_name} }
+      put :update, params: {
+        id: character.id,
+        new_template: '1',
+        character: {
+          template_attributes: {name: ''},
+          name: new_name
+        }
+      }
       expect(response.status).to eq(200)
       expect(flash[:error][:message]).to eq("Your character could not be saved.")
       expect(character.reload.name).not_to eq(new_name)
@@ -435,7 +465,19 @@ RSpec.describe CharactersController do
       template = create(:template, user: user)
       gallery = create(:gallery, user: user)
       setting = create(:setting, name: 'Another World')
-      put :update, params: { id: character.id, character: {name: new_name, template_name: 'TemplateName', screenname: 'a-new-test', setting_ids: [setting.id], template_id: template.id, pb: 'Actor', description: 'Description', ungrouped_gallery_ids: [gallery.id]} }
+      put :update, params: {
+        id: character.id,
+        character: {
+          name: new_name,
+          template_name: 'TemplateName',
+          screenname: 'a-new-test',
+          setting_ids: [setting.id],
+          template_id: template.id,
+          pb: 'Actor',
+          description: 'Description',
+          ungrouped_gallery_ids: [gallery.id]
+        }
+      }
 
       expect(response).to redirect_to(assigns(:character))
       expect(flash[:success]).to eq("Character saved successfully.")
@@ -542,7 +584,13 @@ RSpec.describe CharactersController do
       expect(character.characters_galleries.first).not_to be_added_by_group
 
       login_as(user)
-      put :update, params: { id: character.id, character: {ungrouped_gallery_ids: [''], gallery_group_ids: [group.id]} }
+      put :update, params: {
+        id: character.id,
+        character: {
+          ungrouped_gallery_ids: [''],
+          gallery_group_ids: [group.id]
+        }
+      }
       expect(flash[:success]).to eq('Character saved successfully.')
       character.reload
       expect(character.gallery_groups).to match_array([group])
@@ -558,7 +606,13 @@ RSpec.describe CharactersController do
       character = create(:character, user: user)
 
       login_as(user)
-      put :update, params: { id: character.id, character: {gallery_group_ids: [group.id], ungrouped_gallery_ids: [gallery.id]} }
+      put :update, params: {
+        id: character.id,
+        character: {
+          gallery_group_ids: [group.id],
+          ungrouped_gallery_ids: [gallery.id]
+        }
+      }
       expect(flash[:success]).to eq('Character saved successfully.')
       character.reload
       expect(character.gallery_groups).to match_array([group])
@@ -1001,7 +1055,11 @@ RSpec.describe CharactersController do
 
       login_as(user)
       perform_enqueued_jobs(only: UpdateModelJob) do
-        post :do_replace, params: { id: character.id, icon_dropdown: other_char.id, post_ids: [char_post.id, char_reply.post.id] }
+        post :do_replace, params: {
+          id: character.id,
+          icon_dropdown: other_char.id,
+          post_ids: [char_post.id, char_reply.post.id]
+        }
       end
       expect(response).to redirect_to(character_path(character))
       expect(flash[:success]).to eq('All uses of this character in the specified posts will be replaced.')
@@ -1175,7 +1233,13 @@ RSpec.describe CharactersController do
       end
 
       it "searches all correctly" do
-        get :search, params: { commit: true, name: 'a', search_name: true, search_screenname: true, search_nickname: true }
+        get :search, params: {
+          commit: true,
+          name: 'a',
+          search_name: true,
+          search_screenname: true,
+          search_nickname: true
+        }
         expect(assigns(:search_results)).to match_array([@name, @screenname, @nickname])
       end
 

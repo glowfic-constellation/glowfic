@@ -406,7 +406,14 @@ RSpec.describe PostsController do
     it "creates new settings" do
       existing_name = create(:setting)
       existing_case = create(:setting)
-      tags = ['_atag', '_atag', create(:setting).id, '', '_' + existing_name.name, '_' + existing_case.name.upcase]
+      tags = [
+        '_atag',
+        '_atag',
+        create(:setting).id,
+        '',
+        '_' + existing_name.name,
+        '_' + existing_case.name.upcase
+      ]
       login
       expect {
         post :create, params: { post: {subject: 'a', board_id: create(:board).id, setting_ids: tags} }
@@ -418,10 +425,19 @@ RSpec.describe PostsController do
     it "creates new content warnings" do
       existing_name = create(:content_warning)
       existing_case = create(:content_warning)
-      tags = ['_atag', '_atag', create(:content_warning).id, '', '_' + existing_name.name, '_' + existing_case.name.upcase]
+      tags = [
+        '_atag',
+        '_atag',
+        create(:content_warning).id,
+        '',
+        '_' + existing_name.name,
+        '_' + existing_case.name.upcase
+      ]
       login
       expect {
-        post :create, params: { post: {subject: 'a', board_id: create(:board).id, content_warning_ids: tags} }
+        post :create, params: {
+          post: {subject: 'a', board_id: create(:board).id, content_warning_ids: tags}
+        }
       }.to change{ContentWarning.count}.by(1)
       expect(ContentWarning.last.name).to eq('atag')
       expect(assigns(:post).content_warnings.count).to eq(4)
@@ -1935,7 +1951,10 @@ RSpec.describe PostsController do
         warning = create(:content_warning, name: 'warning')
         label_ids = ['_label']
         tag = create(:label, name: 'label')
-        put :update, params: { id: post.id, post: {setting_ids: setting_ids, content_warning_ids: warning_ids, label_ids: label_ids} }
+        put :update, params: {
+          id: post.id,
+          post: {setting_ids: setting_ids, content_warning_ids: warning_ids, label_ids: label_ids}
+        }
         expect(response).to redirect_to(post_url(post))
         post = assigns(:post)
         expect(post.settings).to eq([setting])

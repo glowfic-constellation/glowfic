@@ -104,7 +104,8 @@ module ApplicationHelper
   end
 
   def layout_options(default=nil)
-    # Layout identifiers (values in this hash) are expected to not include spaces, so they are suitable as HTML classes for the TinyMCE editor
+    # Layout identifiers (values in this hash) are expected to not include spaces,
+    # so they are suitable as HTML classes for the TinyMCE editor
     layouts = {
       'Default': nil,
       'Dark': 'dark'.freeze,

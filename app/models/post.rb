@@ -27,7 +27,8 @@ class Post < ApplicationRecord
   has_many :post_tags, inverse_of: :post, dependent: :destroy
   has_many :labels, -> { ordered_by_post_tag }, through: :post_tags, source: :label, dependent: :destroy
   has_many :settings, -> { ordered_by_post_tag }, through: :post_tags, source: :setting, dependent: :destroy
-  has_many :content_warnings, -> { ordered_by_post_tag }, through: :post_tags, source: :content_warning, after_add: :reset_warnings, dependent: :destroy
+  has_many :content_warnings, -> { ordered_by_post_tag }, through: :post_tags, source: :content_warning,
+    after_add: :reset_warnings, dependent: :destroy
 
   has_many :index_posts, inverse_of: :post, dependent: :destroy
   has_many :indexes, inverse_of: :posts, through: :index_posts, dependent: :destroy
@@ -69,9 +70,18 @@ class Post < ApplicationRecord
 
   scope :no_tests, -> { where.not(board_id: Board::ID_SITETESTING) }
 
+  # rubocop:disable Style/TrailingCommaInArguments
   scope :with_has_content_warnings, -> {
-    select("(SELECT tags.id IS NOT NULL FROM tags LEFT JOIN post_tags ON tags.id = post_tags.tag_id WHERE tags.type = 'ContentWarning' AND post_tags.post_id = posts.id LIMIT 1) AS has_content_warnings")
+    select(
+      <<~SQL
+        (
+          SELECT tags.id IS NOT NULL FROM tags LEFT JOIN post_tags ON tags.id = post_tags.tag_id
+          WHERE tags.type = 'ContentWarning' AND post_tags.post_id = posts.id LIMIT 1
+        ) AS has_content_warnings
+      SQL
+    )
   }
+  # rubocop:enable Style/TrailingCommaInArguments
 
   scope :with_reply_count, -> {
     select('(SELECT COUNT(*) FROM replies WHERE replies.post_id = posts.id) AS reply_count')
@@ -144,7 +154,13 @@ class Post < ApplicationRecord
 
   def recent_characters_for(user, count)
     # fetch the (count) most recent non-nil character_ids for user in post
-    recent_ids = replies.where(user_id: user.id).where('character_id IS NOT NULL').limit(count).group('character_id').select('DISTINCT character_id, MAX(id)').order(Arel.sql('MAX(id) desc')).pluck(:character_id)
+    recent_ids = replies.where(user_id: user.id)
+      .where.not(character_id: nil)
+      .limit(count)
+      .group('character_id')
+      .select('DISTINCT character_id, MAX(id)')
+      .order(Arel.sql('MAX(id) desc'))
+      .pluck(:character_id)
 
     # add the post's character_id to the last one if it's not over the limit
     if character_id.present? && user_id == user.id && recent_ids.length < count && !recent_ids.include?(character_id)

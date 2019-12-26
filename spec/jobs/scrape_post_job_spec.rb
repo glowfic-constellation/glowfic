@@ -30,7 +30,10 @@ RSpec.describe ScrapePostJob do
     stub_fixture(url, 'scrape_no_replies')
     board = create(:board)
 
-    expect(ScrapePostJob).to receive(:notify_exception).with(an_instance_of(UnrecognizedUsernameError), url, board.id, nil, Post::STATUS_COMPLETE, false, board.creator_id).and_call_original
+    expect(ScrapePostJob).to receive(:notify_exception).with(
+      an_instance_of(UnrecognizedUsernameError),
+      url, board.id, nil, Post::STATUS_COMPLETE, false, board.creator_id
+    ).and_call_original
 
     begin
       ScrapePostJob.perform_now(url, board.id, nil, Post::STATUS_COMPLETE, false, board.creator_id)
@@ -52,7 +55,10 @@ RSpec.describe ScrapePostJob do
     scraper = PostScraper.new(url, board.id)
     scraper.scrape!
 
-    expect(ScrapePostJob).to receive(:notify_exception).with(an_instance_of(AlreadyImportedError), url, board.id, nil, Post::STATUS_COMPLETE, false, board.creator_id).and_call_original
+    expect(ScrapePostJob).to receive(:notify_exception).with(
+      an_instance_of(AlreadyImportedError),
+      url, board.id, nil, Post::STATUS_COMPLETE, false, board.creator_id
+    ).and_call_original
 
     begin
       ScrapePostJob.perform_now(url, board.id, nil, Post::STATUS_COMPLETE, false, board.creator_id)

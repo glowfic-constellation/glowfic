@@ -255,8 +255,8 @@ RSpec.describe ApplicationController do
 
     it 'preserves post order with pagination disabled' do
       relation = Post.where(id: default_post_ids)
-      expect(controller.send(:posts_from_relation, relation.order(tagged_at: :asc), with_pagination: false).map(&:id)).to eq(default_post_ids)
-      expect(controller.send(:posts_from_relation, relation.order(tagged_at: :desc), with_pagination: false).map(&:id)).to eq(default_post_ids.reverse)
+      expect(controller.send(:posts_from_relation, relation.order(tagged_at: :asc), with_pagination: false).ids).to eq(default_post_ids)
+      expect(controller.send(:posts_from_relation, relation.order(tagged_at: :desc), with_pagination: false).ids).to eq(default_post_ids.reverse)
     end
 
     it "has more tests" do

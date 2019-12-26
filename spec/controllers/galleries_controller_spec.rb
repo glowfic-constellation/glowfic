@@ -108,7 +108,14 @@ RSpec.describe GalleriesController do
     it "creates new gallery groups" do
       existing_name = create(:gallery_group)
       existing_case = create(:gallery_group)
-      tags = ['_atag', '_atag', create(:gallery_group).id, '', '_' + existing_name.name, '_' + existing_case.name.upcase]
+      tags = [
+        '_atag',
+        '_atag',
+        create(:gallery_group).id,
+        '',
+        '_' + existing_name.name,
+        '_' + existing_case.name.upcase
+      ]
       login
       expect {
         post :create, params: { gallery: {name: 'a', gallery_group_ids: tags} }
@@ -387,7 +394,12 @@ RSpec.describe GalleriesController do
       gid = gallery.galleries_icons.first.id
       gallery_icon_attributes = {id: gid, icon_attributes: icon_attributes}
 
-      put :update, params: { id: gallery.id, gallery: {galleries_icons_attributes: {gid.to_s => gallery_icon_attributes}} }
+      put :update, params: {
+        id: gallery.id,
+        gallery: {
+          galleries_icons_attributes: {gid.to_s => gallery_icon_attributes}
+        }
+      }
       expect(response).to redirect_to(edit_gallery_url(gallery))
       expect(flash[:success]).to eq('Gallery saved.')
       expect(icon.reload.keyword).to eq(newkey)
@@ -405,7 +417,12 @@ RSpec.describe GalleriesController do
       gid = gallery.galleries_icons.first.id
       gallery_icon_attributes = {id: gid, _destroy: '1', icon_attributes: icon_attributes}
 
-      put :update, params: { id: gallery.id, gallery: {galleries_icons_attributes: {gid.to_s => gallery_icon_attributes}} }
+      put :update, params: {
+        id: gallery.id,
+        gallery: {
+          galleries_icons_attributes: {gid.to_s => gallery_icon_attributes}
+        }
+      }
       expect(response).to redirect_to(edit_gallery_url(gallery))
       expect(flash[:success]).to eq('Gallery saved.')
       expect(gallery.reload.icons).to be_empty
@@ -424,7 +441,12 @@ RSpec.describe GalleriesController do
       gid = gallery.galleries_icons.first.id
       gallery_icon_attributes = {id: gid, icon_attributes: icon_attributes}
 
-      put :update, params: { id: gallery.id, gallery: {galleries_icons_attributes: {gid.to_s => gallery_icon_attributes}} }
+      put :update, params: {
+        id: gallery.id,
+        gallery: {
+          galleries_icons_attributes: {gid.to_s => gallery_icon_attributes}
+        }
+      }
       expect(response).to redirect_to(edit_gallery_url(gallery))
       expect(flash[:success]).to eq('Gallery saved.')
       expect(gallery.reload.icons).to be_empty
@@ -436,7 +458,14 @@ RSpec.describe GalleriesController do
       existing_case = create(:gallery_group)
       gallery = create(:gallery)
       login_as(gallery.user)
-      tags = ['_atag', '_atag', create(:gallery_group).id, '', '_' + existing_name.name, '_' + existing_case.name.upcase]
+      tags = [
+        '_atag',
+        '_atag',
+        create(:gallery_group).id,
+        '',
+        '_' + existing_name.name,
+        '_' + existing_case.name.upcase
+      ]
       expect {
         post :update, params: { id: gallery.id, gallery: {gallery_group_ids: tags} }
       }.to change{GalleryGroup.count}.by(1)

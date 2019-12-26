@@ -260,7 +260,9 @@ class PostsController < WritableController
     @search_results = Post.ordered
     @search_results = @search_results.where(board_id: params[:board_id]) if params[:board_id].present?
     @search_results = @search_results.where(id: Setting.find(params[:setting_id]).post_tags.pluck(:post_id)) if params[:setting_id].present?
-    @search_results = @search_results.search(params[:subject]).where('LOWER(subject) LIKE ?', "%#{params[:subject].downcase}%") if params[:subject].present?
+    if params[:subject].present?
+      @search_results = @search_results.search(params[:subject]).where('LOWER(subject) LIKE ?', "%#{params[:subject].downcase}%")
+    end
     @search_results = @search_results.where(status: Post::STATUS_COMPLETE) if params[:completed].present?
     if params[:author_id].present?
       post_ids = nil
@@ -285,7 +287,8 @@ class PostsController < WritableController
   def warnings
     if logged_in?
       @post.hide_warnings_for(current_user)
-      flash[:success] = "Content warnings have been hidden for this thread. Proceed at your own risk. Please be aware that this will reset if new warnings are added later."
+      flash[:success] = "Content warnings have been hidden for this thread. Proceed at your own risk. "
+      flash[:success] += "Please be aware that this will reset if new warnings are added later."
     else
       session[:ignore_warnings] = true
       flash[:success] = "All content warnings have been hidden. Proceed at your own risk."

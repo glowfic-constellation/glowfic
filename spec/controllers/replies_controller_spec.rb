@@ -89,7 +89,16 @@ RSpec.describe RepliesController do
         calias = create(:alias, character: char)
 
         expect(ReplyDraft.count).to eq(0)
-        post :create, params: { button_draft: true, reply: {post_id: reply_post.id, character_id: char.id, icon_id: icon.id, content: 'testcontent', character_alias_id: calias.id} }
+        post :create, params: {
+          button_draft: true,
+          reply: {
+            post_id: reply_post.id,
+            character_id: char.id,
+            icon_id: icon.id,
+            content: 'testcontent',
+            character_alias_id: calias.id
+          }
+        }
         expect(response).to redirect_to(post_url(reply_post, page: :unread, anchor: :unread))
         expect(flash[:success]).to eq("Draft saved!")
         expect(ReplyDraft.count).to eq(1)
@@ -187,7 +196,15 @@ RSpec.describe RepliesController do
       icon = create(:icon, user: user)
       calias = create(:alias, character: char)
 
-      post :create, params: { reply: {post_id: reply_post.id, content: 'test!', character_id: char.id, icon_id: icon.id, character_alias_id: calias.id} }
+      post :create, params: {
+        reply: {
+          post_id: reply_post.id,
+          content: 'test!',
+          character_id: char.id,
+          icon_id: icon.id,
+          character_alias_id: calias.id
+        }
+      }
 
       reply = Reply.first
       expect(reply).not_to be_nil
