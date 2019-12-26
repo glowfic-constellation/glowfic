@@ -31,11 +31,14 @@
             = image_tag "icons/list.png", class: 'list-view', alt: ''
             List
       - else
-        .gallery-box.float-right.gallery-minmax{data: {id: gallery.id}} -
+        .gallery-box.float-right.gallery-minmax{data: {id: gallery.id}}
+          = link_to '-', '#'
       - if local_assigns[:character_gallery] && (is_owner || current_user.try(:admin?))
         .float-right
-          = image_tag "icons/arrow_up.png", class: "section-up disabled-arrow", alt: 'Move Up'
-          = image_tag "icons/arrow_down.png", class: "section-down disabled-arrow", alt: 'Move Down'
+          = link_to '#', class: "section-up disabled-arrow" do
+            = image_tag "icons/arrow_up.png", title: 'Move Up', alt: 'Move Up'
+          = link_to '#', class: "section-down disabled-arrow" do
+            = image_tag "icons/arrow_down.png", title: 'Move Down', alt: 'Move Down'
 %tbody{class: ("gallery-data-#{gallery.id}" if gallery)}
   - groups = gallery.gallery_groups_data if gallery
   - if groups.present?

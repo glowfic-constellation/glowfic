@@ -71,7 +71,9 @@ group :test do
   gem 'factory_bot_rails'
   gem 'rails-controller-testing'
   gem 'resque_spec'
+  gem 'selenium-webdriver'
   gem 'simplecov'
   gem 'timecop'
+  gem 'webdrivers', '~> 4.0'
   gem 'webmock'
 end

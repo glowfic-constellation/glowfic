@@ -299,4 +299,136 @@ RSpec.feature "Creating a new character", :type => :feature do
       expect(page).to have_link('Other post', href: post_path(post2))
     end
   end
+
+  scenario "Viewing many character galleries", js: true do
+    user = create(:user, username: 'Example user', password: 'known')
+    icons = Array.new(4) { |i| create(:icon, user: user, keyword: "Default#{i}", url: "https://example.com/image#{i}.png") }
+    galleries = Array.new(4) { |i| create(:gallery, user: user, icons: [icons[i]], name: "Gallery #{i}")}
+    group = create(:gallery_group, name: 'Group A')
+    galleries[2].update!(gallery_groups: [group])
+    char = create(:character, user: user, galleries: galleries, default_icon: icons.first, name: 'Test char')
+
+    login(user, 'known')
+
+    visit character_path(char)
+
+    within('.character-info-box') do
+      click_link 'Galleries'
+    end
+
+    def minimize_gallery(gallery_headers, index)
+      within(gallery_headers[index]) do
+        expect(page).to have_link('-')
+        expect(page).to have_no_link('+')
+        click_link '-'
+        expect(page).to have_no_link('-')
+        expect(page).to have_link('+')
+      end
+    end
+
+    def maximize_gallery(gallery_headers, index)
+      within(gallery_headers[index]) do
+        expect(page).to have_no_link('-')
+        expect(page).to have_link('+')
+        click_link '+'
+        expect(page).to have_link('-')
+        expect(page).to have_no_link('+')
+      end
+    end
+
+    within('.character-right-content-box') do
+      expect(page.all('.gallery-title').map(&:text)).to eq(["Gallery 0", "Gallery 1", "Gallery 2", "Gallery 3"])
+      expect(page).to have_selector('.gallery-icons', count: 4)
+
+      # min-max button
+      gallery_headers = page.all('.gallery-header')
+
+      expect(page).to have_selector(".gallery-data-#{galleries.first.id}")
+      minimize_gallery(gallery_headers, 0)
+      expect(page).to have_selector('.gallery-icons', count: 3)
+      expect(page).to have_no_selector(".gallery-data-#{galleries.first.id}")
+      maximize_gallery(gallery_headers, 0)
+      expect(page).to have_selector('.gallery-icons', count: 4)
+      expect(page).to have_selector(".gallery-data-#{galleries.first.id}")
+
+      expect(page).to have_selector(".gallery-data-#{galleries[2].id}")
+      minimize_gallery(gallery_headers, 2)
+      expect(page).to have_selector('.gallery-icons', count: 3)
+      expect(page).to have_no_selector(".gallery-data-#{galleries[2].id}")
+
+      # arrow pressing
+      within(gallery_headers.first) do
+        expect(page).to have_selector('.section-up.disabled-arrow')
+        expect(page).to have_selector('.section-down.pointer')
+      end
+      within(gallery_headers.last) do
+        expect(page).to have_selector('.section-up.pointer')
+        expect(page).to have_selector('.section-down.disabled-arrow')
+      end
+
+      def current_headers
+        page.all('.gallery-header')
+      end
+      def current_titles
+        page.all('.gallery-title').map(&:text)
+      end
+      def gallery_title_for(id)
+        page.find(".gallery-title-#{id}", visible: :all)
+      end
+      def gallery_data_for(id)
+        page.find(".gallery-data-#{id}", visible: :all)
+      end
+      def expect_tbody_order(order, galleries)
+        expect(current_titles).to eq(order.map {|x| "Gallery #{x}"})
+        # convert orders to gallery IDs to the relevant .gallery-title-n and .gallery-data-n tbodies
+        expected_tbody_order = order.map{|name| galleries[name].id}.map {|id| [gallery_title_for(id), gallery_data_for(id)]}.flatten
+        # then make sure the page tbodies are in this order
+        expect(page.all('tbody', visible: :all).to_a).to eq(expected_tbody_order)
+      end
+
+      # clicking the up button on the first gallery should do nothing
+      within(current_headers.first) do
+        click_link 'Move Up'
+      end
+      expect_tbody_order([0, 1, 2, 3], galleries)
+
+      # move the first gallery down (testing boundaries)
+      within(current_headers.first) do
+        click_link 'Move Down'
+      end
+      expect(current_titles).to eq(["Gallery 1", "Gallery 0", "Gallery 2", "Gallery 3"])
+      expect_tbody_order([1, 0, 2, 3], galleries)
+
+      # make sure arrows got re-disabled correctly
+      within(current_headers.first) do
+        expect(page).to have_selector('.section-up.disabled-arrow')
+        expect(page).to have_selector('.section-down.pointer')
+      end
+      within(current_headers[1]) do
+        expect(page).to have_selector('.section-up.pointer')
+        expect(page).to have_selector('.section-down.pointer')
+      end
+
+      # move it down again (testing non-boundaries)
+      within(current_headers[1]) do
+        click_link 'Move Down'
+      end
+      expect(current_titles).to eq(["Gallery 1", "Gallery 2", "Gallery 0", "Gallery 3"])
+      expect_tbody_order([1, 2, 0, 3], galleries)
+
+      # test moving up
+      within(current_headers[1]) do
+        click_link 'Move Up'
+      end
+      expect(current_titles).to eq(["Gallery 2", "Gallery 1", "Gallery 0", "Gallery 3"])
+      expect_tbody_order([2, 1, 0, 3], galleries)
+    end
+
+    # reload page and ensure the ordering is correct (ensure it persisted)
+    visit current_url
+
+    within('.character-right-content-box') do
+      expect(page.all('.gallery-title').map(&:text)).to eq(["Gallery 2", "Gallery 1", "Gallery 0", "Gallery 3"])
+    end
+  end
 end
