@@ -11,12 +11,16 @@ class DailyReport < Report
     by_replies = Reply.where(created_at: range).pluck(:post_id)
     all_post_ids = created_no_replies + by_replies
     Post.where(id: all_post_ids.uniq)
-      .select("posts.*,
+      .select(ActiveRecord::Base.sanitize_sql_array([
+        "posts.*,
         case
-        when (posts.created_at between #{ActiveRecord::Base.connection.quote(range.begin)} AND #{ActiveRecord::Base.connection.quote(range.end)})
+        when (posts.created_at between ? AND ?)
           then posts.created_at
           else coalesce(min(replies_today.created_at), posts.created_at)
-          end as first_updated_at")
+          end as first_updated_at",
+        range.begin,
+        range.end,
+      ]))
       .joins("LEFT JOIN replies AS replies_today ON replies_today.post_id = posts.id")
       .where("replies_today.created_at IS NULL OR (replies_today.created_at between ? AND ?)", range.begin, range.end)
       .group("posts.id")

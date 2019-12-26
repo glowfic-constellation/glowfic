@@ -124,8 +124,8 @@ class UsersController < ApplicationController
     use_javascript('users/output')
 
     @day = calculate_day
-    daystart = ActiveRecord::Base.connection.quote(@day.beginning_of_day)
-    dayend = ActiveRecord::Base.connection.quote(@day.end_of_day)
+    daystart = @day.beginning_of_day
+    dayend = @day.end_of_day
     @posts = Post.where(user: current_user).where('created_at between ? AND ?', daystart, dayend).pluck(:content)
     @replies = Reply.where(user: current_user).where('created_at between ? AND ?', daystart, dayend).pluck(:content)
 
