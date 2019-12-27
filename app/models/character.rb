@@ -97,7 +97,7 @@ class Character < ApplicationRecord
   def ungrouped_gallery_ids=(new_ids)
     new_ids -= ['']
     new_ids = new_ids.map(&:to_i)
-    group_gallery_ids = gallery_groups.joins(:gallery_tags).except(:order).pluck(Arel.sql('distinct gallery_tags.gallery_id'))
+    group_gallery_ids = Gallery.where(user: user).tagged_with(gallery_group_list_was)
     new_chargals = []
     transaction do
       characters_galleries.each do |char_gal|
