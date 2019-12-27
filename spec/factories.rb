@@ -234,4 +234,18 @@ FactoryBot.define do
       "content for news post #{n}"
     end
   end
+
+  factory :aato_tag, class: "ActsAsTaggableOn::Tag" do
+    sequence :name do |n|
+      "Tag#{n}"
+    end
+
+    factory :label do
+      after(:build) { |label| create(:post).label_list.add(label.name) }
+    end
+
+    factory :content_warning do
+      after(:build) { |warning| create(:post).content_warning_list.add(warning.name) }
+    end
+  end
 end
