@@ -40,7 +40,7 @@ gem 'will_paginate', '~> 3.1.8' # pin will_paginate until we deal with breaking 
 group :production do
   gem 'puma'
   gem 'rack-cors'
-  gem 'rack-timeout'
+  gem 'rack-timeout', '>= 0.6.0'
 end
 
 group :development do
