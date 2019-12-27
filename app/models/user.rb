@@ -50,6 +50,8 @@ class User < ApplicationRecord
   scope :ordered, -> { order(username: :asc) }
   scope :active, -> { where(deleted: false) }
 
+  acts_as_tagger
+
   nilify_blanks
 
   def authenticate(password)
