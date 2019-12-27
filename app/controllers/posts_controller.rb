@@ -130,9 +130,7 @@ class PostsController < WritableController
     preview and return if params[:button_preview].present?
 
     @post = current_user.posts.new(permitted_params)
-    @post.settings = process_tags(Setting, obj_param: :post, id_param: :setting_ids)
-    @post.content_warnings = process_tags(ContentWarning, obj_param: :post, id_param: :content_warning_ids)
-    @post.labels = process_tags(Label, obj_param: :post, id_param: :label_ids)
+    @post.settings = process_tags(Setting, :post, :setting_ids)
 
     begin
       @post.save!
@@ -193,8 +191,6 @@ class PostsController < WritableController
     @post.assign_attributes(permitted_params)
     @post.board ||= Board.find_by(id: Board::ID_SANDBOX)
     settings = process_tags(Setting, obj_param: :post, id_param: :setting_ids)
-    warnings = process_tags(ContentWarning, obj_param: :post, id_param: :content_warning_ids)
-    labels = process_tags(Label, obj_param: :post, id_param: :label_ids)
 
     is_author = @post.author_ids.include?(current_user.id)
     if current_user.id != @post.user_id && @post.audit_comment.blank? && !is_author
@@ -206,8 +202,6 @@ class PostsController < WritableController
     begin
       Post.transaction do
         @post.settings = settings
-        @post.content_warnings = warnings
-        @post.labels = labels
         @post.save!
         @post.author_for(current_user).update!(private_note: @post.private_note) if is_author
       end
@@ -447,13 +441,13 @@ class PostsController < WritableController
       :authors_locked,
       :audit_comment,
       :private_note,
-      :labels_list,
-      :content_warnings_list,
     ]
 
     # prevents us from setting (and saving) associations on preview()
     if include_associations
       allowed_params << {
+        label_list: [],
+        content_warning_list: [],
         unjoined_author_ids: [],
         viewer_ids: []
       }
