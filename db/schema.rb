@@ -16,6 +16,14 @@ ActiveRecord::Schema.define(version: 2019_12_19_180641) do
   enable_extension "citext"
   enable_extension "plpgsql"
 
+  create_table "aato_tag", id: :serial, force: :cascade do |t|
+    t.string "name"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.integer "taggings_count", default: 0
+    t.index ["name"], name: "index_aato_tag_on_name", unique: true
+  end
+
   create_table "audits", id: :serial, force: :cascade do |t|
     t.integer "auditable_id"
     t.string "auditable_type"
@@ -25,12 +33,12 @@ ActiveRecord::Schema.define(version: 2019_12_19_180641) do
     t.string "user_type"
     t.string "username"
     t.string "action"
-    t.jsonb "audited_changes"
     t.integer "version", default: 0
     t.string "comment"
     t.string "remote_address"
     t.datetime "created_at"
     t.string "request_uuid"
+    t.jsonb "audited_changes"
     t.index ["associated_type", "associated_id"], name: "associated_index"
     t.index ["auditable_type", "auditable_id"], name: "auditable_index"
     t.index ["created_at"], name: "index_audits_on_created_at"
@@ -401,6 +409,25 @@ ActiveRecord::Schema.define(version: 2019_12_19_180641) do
     t.index ["tagged_id"], name: "index_tag_tags_on_tagged_id"
   end
 
+  create_table "tagging", id: :serial, force: :cascade do |t|
+    t.integer "tag_id"
+    t.string "taggable_type"
+    t.integer "taggable_id"
+    t.string "tagger_type"
+    t.integer "tagger_id"
+    t.string "context", limit: 128
+    t.datetime "created_at"
+    t.index ["context"], name: "index_tagging_on_context"
+    t.index ["tag_id", "taggable_id", "taggable_type", "context", "tagger_id", "tagger_type"], name: "taggings_idx", unique: true
+    t.index ["tag_id"], name: "index_tagging_on_tag_id"
+    t.index ["taggable_id", "taggable_type", "context"], name: "taggings_taggable_context_idx"
+    t.index ["taggable_id", "taggable_type", "tagger_id", "context"], name: "taggings_idy"
+    t.index ["taggable_id"], name: "index_tagging_on_taggable_id"
+    t.index ["taggable_type"], name: "index_tagging_on_taggable_type"
+    t.index ["tagger_id", "tagger_type"], name: "index_tagging_on_tagger_id_and_tagger_type"
+    t.index ["tagger_id"], name: "index_tagging_on_tagger_id"
+  end
+
   create_table "tags", id: :serial, force: :cascade do |t|
     t.integer "user_id", null: false
     t.citext "name", null: false
@@ -456,4 +483,5 @@ ActiveRecord::Schema.define(version: 2019_12_19_180641) do
     t.index ["username"], name: "index_users_on_username", unique: true
   end
 
+  add_foreign_key "tagging", "aato_tag", column: "tag_id"
 end
