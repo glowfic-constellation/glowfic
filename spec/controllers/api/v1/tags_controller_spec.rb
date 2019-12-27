@@ -98,7 +98,7 @@ RSpec.describe Api::V1::TagsController do
       expect(response.json['gallery_ids']).to match_array(galleries.map(&:id))
     end
 
-    [:setting, :label, :content_warning].each do |type|
+    [:setting].each do |type|
       it "should support getting #{type} tags" do
         tag = create(type) # rubocop:disable Rails/SaveBang
         get :show, params: { id: tag.id }

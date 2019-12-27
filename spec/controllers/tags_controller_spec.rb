@@ -53,12 +53,9 @@ RSpec.describe TagsController do
     end
 
     it "orders tags by type and then name" do
-      tag2 = create(:label, name: "b")
-      tag1 = create(:label, name: "a")
+      # TODO: rework this test?
       setting1 = create(:setting, name: "a")
       setting2 = create(:setting, owned: true, name: "b")
-      warning2 = create(:content_warning, name: "b")
-      warning1 = create(:content_warning, name: "a")
       get :index
       expect(assigns(:tags)).to eq([setting1, setting2, tag1, tag2, warning1, warning2])
     end
@@ -78,6 +75,7 @@ RSpec.describe TagsController do
     end
 
     it "calculates OpenGraph meta for labels" do
+      skip "TODO work out if we can reimplement this"
       label = create(:label, name: 'label')
       create_list(:post, 2, labels: [label])
 
@@ -261,7 +259,7 @@ RSpec.describe TagsController do
     end
 
     it "requires permission" do
-      tag = create(:label, owned: true)
+      tag = create(:setting, owned: true)
       login
       get :edit, params: { id: tag.id }
       expect(response).to redirect_to(tag_url(tag))
@@ -269,7 +267,7 @@ RSpec.describe TagsController do
     end
 
     it "allows admin to edit the tag" do
-      tag = create(:label)
+      tag = create(:setting)
       login_as(create(:admin_user))
       get :edit, params: { id: tag.id }
       expect(response.status).to eq(200)
@@ -277,7 +275,7 @@ RSpec.describe TagsController do
 
     it "allows mod to edit the tag" do
       stub_const("Permissible::MOD_PERMS", [:edit_tags])
-      tag = create(:label)
+      tag = create(:setting)
       login_as(create(:mod_user))
       get :edit, params: { id: tag.id }
       expect(response.status).to eq(200)
@@ -315,7 +313,7 @@ RSpec.describe TagsController do
     end
 
     it "allows admin to update the tag" do
-      tag = create(:label)
+      tag = create(:setting)
       name = tag.name + 'Edited'
       login_as(create(:admin_user))
       put :update, params: { id: tag.id, tag: {name: name} }
@@ -340,7 +338,7 @@ RSpec.describe TagsController do
     end
 
     it "requires permission" do
-      tag = create(:label, owned: true)
+      tag = create(:setting, owned: true)
       login
       delete :destroy, params: { id: tag.id }
       expect(response).to redirect_to(tag_url(tag))
@@ -348,7 +346,7 @@ RSpec.describe TagsController do
     end
 
     it "allows admin to destroy the tag" do
-      tag = create(:label)
+      tag = create(:setting)
       login_as(create(:admin_user))
       delete :destroy, params: { id: tag.id }
       expect(response).to redirect_to(tags_path)
@@ -356,7 +354,7 @@ RSpec.describe TagsController do
     end
 
     it "handles destroy failure" do
-      tag = create(:label)
+      tag = create(:setting)
       login_as(tag.user)
       expect_any_instance_of(Tag).to receive(:destroy!).and_raise(ActiveRecord::RecordNotDestroyed, 'fake error')
       delete :destroy, params: { id: tag.id }

@@ -7,7 +7,7 @@ class Tag < ApplicationRecord
   has_many :gallery_tags, dependent: :destroy, inverse_of: :tag
   has_many :galleries, through: :gallery_tags, dependent: :destroy
 
-  TYPES = %w(Setting Label ContentWarning GalleryGroup)
+  TYPES = %w(Setting GalleryGroup)
 
   validates :name, :type, presence: true
   validates :name, uniqueness: { scope: :type }

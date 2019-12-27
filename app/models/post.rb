@@ -25,10 +25,7 @@ class Post < ApplicationRecord
   has_many :favorites, as: :favorite, inverse_of: :favorite, dependent: :destroy
 
   has_many :post_tags, inverse_of: :post, dependent: :destroy
-  has_many :labels, -> { ordered_by_post_tag }, through: :post_tags, source: :label, dependent: :destroy
   has_many :settings, -> { ordered_by_post_tag }, through: :post_tags, source: :setting, dependent: :destroy
-  has_many :content_warnings, -> { ordered_by_post_tag }, through: :post_tags, source: :content_warning,
-    after_add: :reset_warnings, dependent: :destroy
 
   has_many :index_posts, inverse_of: :post, dependent: :destroy
   has_many :indexes, inverse_of: :posts, through: :index_posts, dependent: :destroy
@@ -349,6 +346,7 @@ class Post < ApplicationRecord
     true
   end
 
+  # TODO: work out how to invoke this
   def reset_warnings(_warning)
     PostView.where(post_id: id).update_all(warnings_hidden: false)
   end
