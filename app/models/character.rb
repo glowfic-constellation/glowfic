@@ -169,28 +169,15 @@ class Character < ApplicationRecord
 
   def update_galleries
     return unless gallery_group_list_changed?
-    new_groups = gallery_group_list - gallery_group_list_was
-    rem_groups = gallery_group_list_was - gallery_group_list
 
     user_galleries = Gallery.where(user: user)
 
-    # collect new galleries, checking for ones shared between an existing group and a new one
-    new_galleries = user_galleries.tagged_with(new_groups, any: true).tagged_with(gallery_group_list_was, exclude: true)
-    add_galleries_by_groups(new_galleries)
+    new_galleries = user_galleries.tagged_with(gallery_group_list, any: true)
+    new_galleries = new_galleries.tagged_with(gallery_group_list_was, exclude: true) if gallery_group_list_was.present?
+    new_galleries.each { |gallery| characters_galleries.create!(gallery: gallery, added_by_group: true) }
 
-    # collect removed galleries, checking for ones shared between a remaining group and a removed one
-    rem_galleries = user_galleries.tagged_with(rem_groups, any: true).tagged_with(gallery_group_list, exclude: true)
-    remove_galleries_by_groups(rem_galleries)
-  end
-
-  def add_galleries_by_groups(new_galleries)
-    new_galleries.each do |gallery|
-      characters_galleries.create(gallery: gallery, added_by_group: true)
-    end
-  end
-
-  def remove_galleries_by_groups(rem_galleries)
+    rem_galleries = user_galleries.tagged_with(gallery_group_list_was, any: true)
+    rem_galleries = rem_galleries.tagged_with(gallery_group_list, exclude: true) if gallery_group_list.present?
     characters_galleries.where(gallery: rem_galleries, added_by_group: true).destroy_all
-    character.characters_galleries.reload
   end
 end
