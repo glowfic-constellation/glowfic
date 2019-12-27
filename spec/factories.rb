@@ -174,16 +174,8 @@ FactoryBot.define do
     end
     user
 
-    factory :label, class: :label do
-      type { 'Label' }
-    end
-
     factory :setting, class: :setting do
       type { 'Setting' }
-    end
-
-    factory :content_warning, class: :content_warning do
-      type { 'ContentWarning' }
     end
 
     factory :gallery_group, class: :gallery_group do
