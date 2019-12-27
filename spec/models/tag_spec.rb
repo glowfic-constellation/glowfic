@@ -44,7 +44,7 @@ RSpec.describe Tag do
     end
 
     it "uses name with prepended underscore otherwise" do
-      tag = build(:label, name: 'tag')
+      tag = build(:setting, name: 'tag')
       expect(tag.id_for_select).to eq('_tag')
     end
   end
@@ -53,11 +53,11 @@ RSpec.describe Tag do
     it "works" do
       tag1 = create(:setting)
       tag2 = create(:setting)
-      create(:post, labels: [tag2])
+      create(:post, settings: [tag2])
       tag3 = create(:setting)
-      create_list(:post, 2, labels: [tag3])
+      create_list(:post, 2, settings: [tag3])
       tags = [tag1, tag2, tag3]
-      fetched = Label.where(id: tags.map(&:id)).ordered_by_id
+      fetched = Setting.where(id: tags.map(&:id)).ordered_by_id
       expect(fetched).to eq(tags)
       expect(fetched.map(&:post_count)).to eq([0, 1, 2])
     end
