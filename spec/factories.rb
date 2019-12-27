@@ -79,7 +79,7 @@ FactoryBot.define do
     end
     transient do
       icon_count { 0 }
-      gallery_group { [] }
+      gallery_groups { [] }
     end
     before(:create) do |gallery, evaluator|
       if evaluator.gallery_groups.present?
