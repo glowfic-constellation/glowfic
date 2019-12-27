@@ -19,3 +19,5 @@ production:
   <<: *default
   database: db/production.sqlite3
   pool: <%= ENV["DB_POOL"] || ENV['RAILS_MAX_THREADS'] || 5 %>
+  variables:
+    statement_timeout: <%= ENV["STATEMENT_TIMEOUT"] %>
