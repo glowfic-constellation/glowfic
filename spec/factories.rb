@@ -42,6 +42,8 @@ FactoryBot.define do
       with_icon { false }
       with_character { false }
       num_replies { 0 }
+      labels { [] }
+      content_warnings { [] }
     end
     user
     board
@@ -53,6 +55,16 @@ FactoryBot.define do
     before(:create) do |post, evaluator|
       post.character = create(:character, user: post.user) if evaluator.with_character
       post.icon = create(:icon, user: post.user) if evaluator.with_icon
+
+      # clean up labels and warnings
+      if evaluator.labels.present?
+        labels = evaluator.labels.map { |label| label.is_a?(String) ? label : label.name }
+        post.label_list.add(labels)
+      end
+      if evaluator.content_warnings.present?
+        warnings = evaluator.content_warnings.map { |warning| warning.is_a?(String) ? warning : warning.name }
+        post.content_warning_list.add(warnings)
+      end
     end
 
     after(:create) do |post, evaluator|
@@ -67,7 +79,15 @@ FactoryBot.define do
     end
     transient do
       icon_count { 0 }
+      gallery_group { [] }
     end
+    before(:create) do |gallery, evaluator|
+      if evaluator.gallery_groups.present?
+        groups = evaluator.gallery_groups.map { |group| group.is_a?(String) ? group : group.name }
+        groups.each { |group| gallery.user.tag(gallery, with: group, on: :gallery_groups, skip_save: true) }
+      end
+    end
+
     after(:create) do |gallery, evaluator|
       evaluator.icon_count.times do
         gallery.icons << create(:icon, user: gallery.user)
@@ -119,6 +139,7 @@ FactoryBot.define do
   factory :character do
     transient do
       with_default_icon { false }
+      gallery_groups { [] }
     end
     user
     sequence :name do |n|
@@ -129,6 +150,11 @@ FactoryBot.define do
     end
     before(:create) do |character, evaluator|
       character.default_icon = create(:icon, user: character.user) if evaluator.with_default_icon
+
+      if evaluator.gallery_groups.present?
+        groups = evaluator.gallery_groups.map { |group| group.is_a?(String) ? group : group.name }
+        groups.each { |group| character.user.tag(character, with: group, on: :gallery_groups, skip_save: true) }
+      end
     end
   end
 
@@ -177,10 +203,6 @@ FactoryBot.define do
 
     factory :content_warning, class: ContentWarning do
       type { 'ContentWarning' }
-    end
-
-    factory :gallery_group, class: GalleryGroup do
-      type { 'GalleryGroup' }
     end
   end
 
@@ -240,6 +262,12 @@ FactoryBot.define do
     user { create(:mod_user) }
     sequence :content do |n|
       "content for news post #{n}"
+    end
+  end
+
+  factory :gallery_group, class: "ActsAsTaggableOn::Tag" do
+    sequence :name do |n|
+      "Tag#{n}"
     end
   end
 end
