@@ -945,13 +945,13 @@ RSpec.describe Post do
 
     it "is true with warnings" do
       warning = create(:content_warning)
-      post = create(:post, content_warning_ids: [warning.id])
+      post = create(:post, content_warnings: [warning])
       expect(post.has_content_warnings?).to be true
     end
 
     it "is true with preloaded warnings" do
       warning = create(:content_warning)
-      post = create(:post, content_warning_ids: [warning.id])
+      post = create(:post, content_warnings: [warning])
       post = Post.where(id: post.id).with_has_content_warnings.first
       expect(post.has_content_warnings?).to be true
     end

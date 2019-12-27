@@ -46,7 +46,7 @@ RSpec.describe Tag do
     end
 
     it "uses name with prepended underscore otherwise" do
-      tag = build(:label, name: 'tag')
+      tag = build(:setting, name: 'tag')
       expect(tag.id_for_select).to eq('_tag')
     end
   end
@@ -55,22 +55,22 @@ RSpec.describe Tag do
     def create_tags
       tag1 = create(:setting)
       tag2 = create(:setting)
-      create(:post, labels: [tag2])
+      create(:post, settings: [tag2])
       tag3 = create(:setting)
-      create_list(:post, 2, labels: [tag3])
+      create_list(:post, 2, settings: [tag3])
       [tag1, tag2, tag3]
     end
 
     it "works with with_item_counts scope" do
       tags = create_tags
-      fetched = Label.where(id: tags.map(&:id)).select(:id).ordered_by_id.with_item_counts
+      fetched = Setting.where(id: tags.map(&:id)).select(:id).ordered_by_id.with_item_counts
       expect(fetched).to eq(tags)
       expect(fetched.map(&:post_count)).to eq([0, 1, 2])
     end
 
     it "works without with_item_counts scope" do
       tags = create_tags
-      fetched = Label.where(id: tags.map(&:id)).ordered_by_id
+      fetched = Setting.where(id: tags.map(&:id)).ordered_by_id
       expect(fetched).to eq(tags)
       expect(fetched.map(&:post_count)).to eq([0, 1, 2])
     end

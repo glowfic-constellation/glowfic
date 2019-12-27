@@ -44,7 +44,7 @@ RSpec.describe TagsController do
 
       it "succeeds when logged in" do
         tags = create_tags
-        login_as(tags.first.user)
+        login
         get :index
         expect(response.status).to eq(200)
         tags.reject! { |tag| tag.is_a?(GalleryGroup) }
@@ -57,7 +57,7 @@ RSpec.describe TagsController do
       setting1 = create(:setting, name: "a")
       setting2 = create(:setting, owned: true, name: "b")
       get :index
-      expect(assigns(:tags)).to eq([setting1, setting2, tag1, tag2, warning1, warning2])
+      expect(assigns(:tags)).to eq([setting1, setting2])
     end
 
     it 'checks for valid tag type' do
@@ -298,7 +298,7 @@ RSpec.describe TagsController do
 
     it "requires permission" do
       login
-      tag = create(:label, owned: true)
+      tag = create(:setting, owned: true)
       put :update, params: { id: tag.id }
       expect(response).to redirect_to(tag_url(tag))
       expect(flash[:error]).to eq("You do not have permission to edit this tag.")
