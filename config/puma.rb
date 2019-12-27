@@ -23,6 +23,8 @@ environment ENV.fetch("RAILS_ENV") { "development" }
 # Workers do not work on JRuby or Windows (both of which do not support
 # processes).
 #
+# Should be greater than 1 to allow RACK_TIMEOUT_TERM_ON_TIMEOUT to work appropriately.
+#
 workers ENV.fetch("WEB_CONCURRENCY") { 2 }
 
 # Use the `preload_app!` method when specifying a `workers` number.

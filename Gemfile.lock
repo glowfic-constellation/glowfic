@@ -226,7 +226,7 @@ GEM
       rack
     rack-test (1.1.0)
       rack (>= 1.0, < 3)
-    rack-timeout (0.5.2)
+    rack-timeout (0.6.0)
     rails (5.2.3)
       actioncable (= 5.2.3)
       actionmailer (= 5.2.3)
@@ -447,7 +447,7 @@ DEPENDENCIES
   rack-cors
   rack-mini-profiler
   rack-pratchett
-  rack-timeout
+  rack-timeout (>= 0.6.0)
   rails (~> 5.2.0)
   rails-controller-testing
   rake (~> 12.0)
