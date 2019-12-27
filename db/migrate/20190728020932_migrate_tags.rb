@@ -10,7 +10,7 @@ class MigrateTags < ActiveRecord::Migration[5.2]
       Post.where(id: post_ids).each do |post|
         local_tags = post_tags.where(post: post).pluck(:tag_id)
         local_tags.each do |tag_id|
-          tag = Tag.where(id: tag_id)
+          tag = Tag.find_by(id: tag_id)
           type = tag.is_a?(Label) ? :labels : :content_warnings
           user = tag.posts.order(created_at: :asc, id: :asc).first == post ? tag.user : post.user
           user.tag(post, with: tag.name, on: type, skip_save: true)
