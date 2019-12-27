@@ -13,6 +13,8 @@ class Gallery < ApplicationRecord
 
   validates :name, presence: true
 
+  before_save :update_characters
+
   scope :ordered, -> { order('characters_galleries.section_order ASC') }
 
   scope :ordered_by_name, -> { order(Arel.sql('lower(name) asc'), id: :asc) }
@@ -63,5 +65,34 @@ class Gallery < ApplicationRecord
 
   def character_gallery_for(character)
     characters_galleries.find_by(character_id: character)
+  end
+
+  private
+
+  def update_characters
+    return unless gallery_group_list_changed?
+    new_groups = gallery_group_list - gallery_group_list_was
+    rem_groups = gallery_group_list_was - gallery_group_list
+
+    user_characters = Character.where(user: user)
+
+    # collect new characters, checking for ones shared between an existing group and a new one
+    new_characters = user_characters.tagged_with(new_groups, any: true).tagged_with(gallery_group_list_was, exclude: true)
+    add_characters_by_groups(new_characters)
+
+    # collect removed galleries, checking for ones shared between a remaining group and a removed one
+    rem_characters = user_characters.tagged_with(rem_groups, any: true).tagged_with(gallery_group_list, exclude: true)
+    remove_characters_by_groups(rem_characters)
+  end
+
+  def add_characters_by_groups(new_characters)
+    new_characters.each do |character|
+      characters_galleries.create(character: character, added_by_group: true)
+    end
+  end
+
+  def remove_characters_by_groups(rem_characters)
+    characters_galleries.where(character: rem_characters, added_by_group: true).destroy_all
+    characters_galleries.reload
   end
 end
