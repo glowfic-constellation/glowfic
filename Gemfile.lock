@@ -1,11 +1,3 @@
-GIT
-  remote: https://github.com/mbleigh/acts-as-taggable-on
-  revision: fbf2b609b69a90edcd5813e9ba6395a7e293e977
-  branch: master
-  specs:
-    acts-as-taggable-on (6.0.1)
-      activerecord (>= 5.0, < 6.1)
-
 GEM
   remote: https://rubygems.org/
   specs:
@@ -50,8 +42,8 @@ GEM
       i18n (>= 0.7, < 2)
       minitest (~> 5.1)
       tzinfo (~> 1.1)
-    acts-as-taggable-on (6.0.0)
-      activerecord (~> 5.0)
+    acts-as-taggable-on (6.5.0)
+      activerecord (>= 5.0, < 6.1)
     addressable (2.7.0)
       public_suffix (>= 2.0.2, < 5.0)
     api-pagination (4.8.2)
@@ -425,7 +417,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  acts-as-taggable-on!
+  acts-as-taggable-on
   api-pagination
   apipie-rails
   audited (~> 4.9.0)
