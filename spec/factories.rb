@@ -81,7 +81,7 @@ FactoryBot.define do
       icon_count { 0 }
       gallery_groups { [] }
     end
-    before(:create) do |gallery, evaluator|
+    after(:build) do |gallery, evaluator|
       if evaluator.gallery_groups.present?
         groups = evaluator.gallery_groups.map { |group| group.is_a?(String) ? group : group.name }
         groups.each { |group| gallery.user.tag(gallery, with: group, on: :gallery_groups, skip_save: true) }
@@ -148,13 +148,15 @@ FactoryBot.define do
     factory :template_character do
       template { build(:template, user: user) }
     end
-    before(:create) do |character, evaluator|
-      character.default_icon = create(:icon, user: character.user) if evaluator.with_default_icon
-
+    after(:build) do |character, evaluator|
       if evaluator.gallery_groups.present?
         groups = evaluator.gallery_groups.map { |group| group.is_a?(String) ? group : group.name }
         groups.each { |group| character.user.tag(character, with: group, on: :gallery_groups, skip_save: true) }
       end
+    end
+
+    before(:create) do |character, evaluator|
+      character.default_icon = create(:icon, user: character.user) if evaluator.with_default_icon
     end
   end
 
