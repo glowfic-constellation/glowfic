@@ -58,7 +58,8 @@ This will set up the database and add some sample information – currently thes
 
 If you encounter an error involving the 'citext' extension:
 
-*   Execute `sudo -u postgres bin-docker/psql`, and then in the prompt that appears:
+*   Ensure the postgres container is running, with `docker-compose up postgres &`
+*   Execute `docker-compose exec postgres psql`, and then in the prompt that appears:
 *   `CREATE EXTENSION IF NOT EXISTS citext;`
 
 You will need to re-run `bin-docker/rake db:migrate`.
