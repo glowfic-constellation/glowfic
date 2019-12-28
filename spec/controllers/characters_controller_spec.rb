@@ -187,7 +187,7 @@ RSpec.describe CharactersController do
         post :create, params: {
           character: {
             ungrouped_gallery_ids: [gallery.id, group_gallery.id],
-            gallery_group_ids: [group.id]
+            gallery_group_list: [group.name]
           }
         }
 
@@ -195,7 +195,7 @@ RSpec.describe CharactersController do
         expect(controller.gon.character_id).to eq('')
         expect(assigns(:templates).map(&:name)).to match_array(templates.map(&:name))
         expect(assigns(:character).ungrouped_gallery_ids).to match_array([gallery.id, group_gallery.id])
-        expect(assigns(:character).gallery_group_ids).to eq([group.id])
+        expect(assigns(:character).gallery_group_list).to eq([group.name])
       end
     end
   end
@@ -534,7 +534,7 @@ RSpec.describe CharactersController do
       gallery = create(:gallery, gallery_groups: [group], user: user)
       character = create(:character, user: user)
       login_as(user)
-      put :update, params: { id: character.id, character: {gallery_group_ids: [group.id]} }
+      put :update, params: { id: character.id, character: {gallery_group_list: [group.name]} }
 
       expect(flash[:success]).to eq('Character saved successfully.')
       character.reload
@@ -564,7 +564,7 @@ RSpec.describe CharactersController do
       gallery2 = create(:gallery, gallery_groups: [group3, group4], user: user)
       character = create(:character, gallery_groups: [group1, group3, group4], user: user)
       login_as(user)
-      put :update, params: { id: character.id, character: {gallery_group_ids: [group2.id, group4.id]} }
+      put :update, params: { id: character.id, character: {gallery_group_list: [group2.name, group4.name]} }
 
       expect(flash[:success]).to eq('Character saved successfully.')
       character.reload
@@ -588,7 +588,7 @@ RSpec.describe CharactersController do
         id: character.id,
         character: {
           ungrouped_gallery_ids: [''],
-          gallery_group_ids: [group.id]
+          gallery_group_list: [group.name]
         }
       }
       expect(flash[:success]).to eq('Character saved successfully.')
@@ -609,25 +609,25 @@ RSpec.describe CharactersController do
       put :update, params: {
         id: character.id,
         character: {
-          gallery_group_ids: [group.id],
+          gallery_group_list: [group.name],
           ungrouped_gallery_ids: [gallery.id]
         }
       }
       expect(flash[:success]).to eq('Character saved successfully.')
       character.reload
       expect(character.gallery_groups).to match_array([group])
-      expect(character.galleries).to match_array([gallery])
+      expect(character.gallery_ids).to match_array([gallery.id])
       expect(character.ungrouped_gallery_ids).to eq([gallery.id])
       expect(character.characters_galleries.first).not_to be_added_by_group
     end
 
     it "does not add another user's galleries" do
       group = create(:gallery_group)
-      create(:gallery, gallery_groups: [group]) # gallery
+      create(:gallery, gallery_groups: [group])
       character = create(:character)
 
       login_as(character.user)
-      put :update, params: { id: character.id, character: {gallery_group_ids: [group.id]} }
+      put :update, params: { id: character.id, character: {gallery_group_list: [group.name]} }
       expect(flash[:success]).to eq('Character saved successfully.')
       character.reload
       expect(character.gallery_groups).to match_array([group])
@@ -637,7 +637,7 @@ RSpec.describe CharactersController do
     it "removes untethered galleries when group goes" do
       user = create(:user)
       group = create(:gallery_group)
-      create(:gallery, gallery_groups: [group], user: user) # gallery
+      create(:gallery, gallery_groups: [group], user: user)
       character = create(:character, gallery_groups: [group], user: user)
 
       login_as(user)
@@ -659,7 +659,7 @@ RSpec.describe CharactersController do
         create(:template)
 
         login_as(user)
-        put :update, params: { id: character.id, character: {name: '', gallery_group_ids: [group.id]} }
+        put :update, params: { id: character.id, character: {name: '', gallery_group_list: [group.name]} }
 
         expect(response).to render_template(:edit)
         expect(controller.gon.character_id).to eq(character.id)
@@ -707,16 +707,16 @@ RSpec.describe CharactersController do
       user = create(:user)
       login_as(user)
       char = create(:character, user: user)
-      group4 = create(:gallery_group, user: user)
-      group1 = create(:gallery_group, user: user)
-      group3 = create(:gallery_group, user: user)
-      group2 = create(:gallery_group, user: user)
+      group4 = create(:gallery_group)
+      group1 = create(:gallery_group)
+      group3 = create(:gallery_group)
+      group2 = create(:gallery_group)
       put :update, params: {
         id: char.id,
-        character: {gallery_group_ids: [group1, group2, group3, group4].map(&:id)}
+        character: {gallery_group_list: [group1, group2, group3, group4].map(&:name)}
       }
       expect(flash[:success]).to eq('Character saved successfully.')
-      expect(char.gallery_groups).to eq([group1, group2, group3, group4])
+      expect(char.gallery_groups.ids).to eq([group1, group2, group3, group4].map(&:id))
     end
   end
 
@@ -1303,9 +1303,9 @@ RSpec.describe CharactersController do
 
       character.reload
 
-      expect(character.galleries).to match_array([gallery, gallery2, gallery3])
+      expect(character.gallery_ids).to match_array([gallery, gallery2, gallery3].map(&:id))
       expect(character.ungrouped_gallery_ids).to match_array([gallery.id, gallery2.id])
-      expect(character.gallery_groups).to match_array([group])
+      expect(character.gallery_groups.ids).to match_array([group.id])
 
       login_as(user)
       expect do
