@@ -485,6 +485,4 @@ ActiveRecord::Schema.define(version: 2020_04_16_173619) do
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["username"], name: "index_users_on_username", unique: true
   end
-
-  add_foreign_key "tagging", "aato_tag", column: "tag_id"
 end
