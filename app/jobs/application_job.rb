@@ -12,7 +12,7 @@ class ApplicationJob < ActiveJob::Base
 
   def notify_exception
     yield
-  rescue StandardError => e
+  rescue Exception => e # rubocop:disable Lint/RescueException
     self.class.notify_exception(e, *arguments)
     raise e
   end
