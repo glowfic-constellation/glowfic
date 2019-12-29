@@ -451,7 +451,8 @@ class PostsController < WritableController
         label_list: [],
         content_warning_list: [],
         unjoined_author_ids: [],
-        viewer_ids: []
+        viewer_ids: [],
+        setting_list: [],
       }
     end
 

@@ -130,6 +130,7 @@ class TagsController < ApplicationController
   def tag_params
     permitted = [:type, :description, :owned]
     permitted.insert(0, :name, :user_id) if current_user.admin? || @tag.user == current_user
+    permitted.insert({setting_list: []}) if @tag.is_a?(ActsAsTaggableOn::Tag) && @tag.child_taggings.where(context: 'setting').exists?
     params.fetch(:tag, {}).permit(permitted)
   end
 end
