@@ -271,7 +271,7 @@ FactoryBot.define do
         settings = (evaluator.settings + evaluator.parents).map { |setting| setting.is_a?(String) ? setting : setting.name }
         tag.setting_list = settings
       end
-      owners.each { |owner| owner.settings_list.add(setting.name) } if evaluator.owners.present?
+      evaluator.owners.each { |owner| owner.setting_list.add(tag.name) } if evaluator.owners.present?
     end
   end
 end
