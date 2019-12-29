@@ -258,6 +258,7 @@ FactoryBot.define do
   factory :setting, class: "ActsAsTaggableOn::Tag" do
     transient do
       settings { [] }
+      parents { [] }
     end
 
     sequence :name do |n|
@@ -265,8 +266,8 @@ FactoryBot.define do
     end
 
     after(:build) do |tag, evaluator|
-      if evaluator.settings.present?
-        settings = evaluator.settings.map { |setting| setting.is_a?(String) ? setting : setting.name }
+      if evaluator.settings.present? || evaluator.parents.present?
+        settings = (evaluator.settings + evaluator.parents).map { |setting| setting.is_a?(String) ? setting : setting.name }
         settings.each { |setting| tag.user.tag(tag, with: setting, on: :settings, skip_save: true) }
       end
     end
