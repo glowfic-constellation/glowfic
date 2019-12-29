@@ -153,6 +153,7 @@
             "subject": "test subject 1",
             "created_at": "2019-01-02T03:04:05.000Z",
             "status": 0,
+            "section_order": 0,
             "description": "",
             "tagged_at": "2019-01-02T03:04:05.000Z",
             "board": {
@@ -1074,6 +1075,7 @@
         "subject": "test subject 8",
         "created_at": "2019-12-25T21:34:56.000Z",
         "status": 0,
+        "section_order": 0,
         "description": "",
         "tagged_at": "2019-12-25T21:34:56.000Z",
         "board": {
@@ -1540,6 +1542,7 @@
             "subject": "test subject 31",
             "created_at": "2019-12-25T21:34:56.000Z",
             "status": 0,
+            "section_order": 0,
             "description": "",
             "tagged_at": "2019-12-25T21:34:56.000Z",
             "board": {
