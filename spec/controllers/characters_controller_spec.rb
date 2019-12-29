@@ -132,7 +132,7 @@ RSpec.describe CharactersController do
       user = create(:user)
       template = create(:template, user: user)
       gallery = create(:gallery, user: user)
-      setting = create(:setting, user: user, name: 'A World')
+      setting = create(:setting, owners: [user], name: 'A World')
 
       login_as(user)
       post :create, params: {
@@ -140,7 +140,7 @@ RSpec.describe CharactersController do
           name: test_name,
           nickname: 'TempName',
           screenname: 'just-a-test',
-          setting_ids: [setting.id],
+          setting_list: [setting.name],
           template_id: template.id,
           pb: 'Facecast',
           description: 'Desc',
@@ -477,7 +477,7 @@ RSpec.describe CharactersController do
           name: new_name,
           nickname: 'TemplateName',
           screenname: 'a-new-test',
-          setting_ids: [setting.id],
+          setting_list: [setting.name],
           template_id: template.id,
           pb: 'Actor',
           description: 'Description',
@@ -513,7 +513,7 @@ RSpec.describe CharactersController do
           name: '',
           nickname: 'TemplateName',
           screenname: 'a-new-test',
-          setting_ids: [setting.id],
+          setting_list: [setting.name],
           template_id: template.id,
           pb: 'Actor',
           description: 'Description',
@@ -703,7 +703,7 @@ RSpec.describe CharactersController do
       setting2 = create(:setting)
       put :update, params: {
         id: char.id,
-        character: {setting_ids: [setting1, setting2, setting3].map(&:id)}
+        character: {setting_list: [setting1, setting2, setting3].map(&:name)}
       }
       expect(flash[:success]).to eq('Character saved successfully.')
       expect(char.settings).to eq([setting1, setting2, setting3])
@@ -1317,8 +1317,9 @@ RSpec.describe CharactersController do
       expect do
         post :duplicate, params: { id: character.id }
       end.to not_change {
-        [Template.count, Gallery.count, Icon.count, Reply.count, Post.count, Tag.count]
-      }.and change { Character.count }.by(1).and change { CharactersGallery.count }.by(3).and change { CharacterTag.count }.by(2)
+        [Template.count, Gallery.count, Icon.count, Reply.count, Post.count, Tag.count, ActsAsTaggableOn::Tag.count]
+      }.and change { Character.count }.by(1).and change { CharactersGallery.count }.by(3).and change { CharacterTag.count
+      }.by(1).and change { ActsAsTaggableOn::Tagging.count }.by(1)
 
       dupe = Character.last
       character.reload
