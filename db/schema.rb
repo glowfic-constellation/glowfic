@@ -21,6 +21,7 @@ ActiveRecord::Schema.define(version: 2020_04_16_173619) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer "taggings_count", default: 0
+    t.text "description"
     t.index ["name"], name: "index_aato_tag_on_name", unique: true
   end
 
@@ -485,4 +486,5 @@ ActiveRecord::Schema.define(version: 2020_04_16_173619) do
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["username"], name: "index_users_on_username", unique: true
   end
+
 end
