@@ -9,6 +9,9 @@ module ActsAsTaggableOn
     has_many :child_taggings, -> { where(taggable_type: 'ActsAsTaggableOn::Tag') },
       class_name: 'ActsAsTaggableOn::Tagging', foreign_key: :tag_id, dependent: :destroy
     has_many :children, through: :child_taggings, source: :taggable, source_type: "ActsAsTaggableOn::Tag", dependent: :destroy
-    has_many :owners, through: :taggings, source: :user, dependent: :destroy
+
+    has_many :ownership_taggings, -> { where(taggable_type: 'User') },
+      class_name: 'ActsAsTaggableOn::Tagging', foreign_key: :tag_id, dependent: :destroy
+    has_many :owners, through: :ownership_taggings, source: :taggable, source_type: 'User', dependent: :destroy
   end
 end
