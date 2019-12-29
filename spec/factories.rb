@@ -274,6 +274,7 @@ FactoryBot.define do
       transient do
         settings { [] }
         parents { [] }
+        owners { [] }
       end
 
       sequence :name do |n|
@@ -282,9 +283,10 @@ FactoryBot.define do
 
       after(:build) do |tag, evaluator|
         if evaluator.settings.present?
-          settings = evaluator.settings.map { |setting| setting.is_a?(String) ? setting : setting.name }
-          settings.each { |setting| tag.user.tag(tag, with: setting, on: :settings, skip_save: true) }
+          settings = (evaluator.settings + evaluator.parents).map { |setting| setting.is_a?(String) ? setting : setting.name }
+          tag.setting_list = settings
         end
+        owners.each { |owner| owner.settings_list.add(setting.name) } if evaluator.owners.present?
       end
     end
   end

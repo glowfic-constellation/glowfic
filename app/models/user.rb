@@ -51,6 +51,7 @@ class User < ApplicationRecord
   scope :active, -> { where(deleted: false) }
 
   acts_as_tagger
+  acts_as_taggable_on :settings
 
   nilify_blanks
 
