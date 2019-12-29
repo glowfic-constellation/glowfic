@@ -10,7 +10,7 @@ RSpec.describe TagsController do
         tag = create(:label)
         create(:post, labels: [tag])
         setting = create(:setting, name: 'Empty')
-        owned_setting = create(:setting, owned: true)
+        owned_setting = create(:setting, owners: [create(:user)])
 
         empty_group = create(:gallery_group)
         group1 = create(:gallery_group)
@@ -56,7 +56,7 @@ RSpec.describe TagsController do
       tag2 = create(:label, name: "b")
       tag1 = create(:label, name: "a")
       setting1 = create(:setting, name: "a")
-      setting2 = create(:setting, owned: true, name: "b")
+      setting2 = create(:setting, owners: [create(:user)], name: "b")
       warning2 = create(:content_warning, name: "b")
       warning1 = create(:content_warning, name: "a")
       get :index
@@ -110,9 +110,8 @@ RSpec.describe TagsController do
     it "calculates OpenGraph meta for owned settings" do
       setting = create(:setting,
         name: 'setting',
-        user: create(:user, username: "User"),
+        owners: [create(:user, username: "User")],
         description: 'this is an example setting',
-        owned: true,
       )
       create_list(:post, 2, settings: [setting])
       create_list(:character, 3, settings: [setting])
@@ -161,7 +160,7 @@ RSpec.describe TagsController do
 
       it 'succeeds for canons with settings' do
         tag = create(:setting)
-        tag.child_settings << create(:setting)
+        create(:setting, parents: [tag])
         get :show, params: { id: tag.id, view: 'settings' }
         expect(response).to have_http_status(200)
       end
@@ -231,7 +230,7 @@ RSpec.describe TagsController do
         end
 
         it "succeeds for owned settings" do
-          setting = create(:setting, owned: true)
+          setting = create(:setting, owners: [create(:user)])
           get :show, params: { id: setting.id }
           expect(response.status).to eq(200)
         end
