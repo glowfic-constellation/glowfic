@@ -44,6 +44,7 @@ FactoryBot.define do
       num_replies { 0 }
       labels { [] }
       content_warnings { [] }
+      settings { [] }
     end
     user
     board
@@ -52,6 +53,13 @@ FactoryBot.define do
     sequence :subject do |n|
       "test subject #{n}"
     end
+    after(:build) do |post, evaluator|
+      if evaluator.settings.present?
+        settings = evaluator.settings.map { |setting| setting.is_a?(String) ? setting : setting.name }
+        settings.each { |setting| post.user.tag(post, with: setting, on: :settings, skip_save: true) }
+      end
+    end
+
     before(:create) do |post, evaluator|
       post.character = create(:character, user: post.user) if evaluator.with_character
       post.icon = create(:icon, user: post.user) if evaluator.with_icon
@@ -131,6 +139,7 @@ FactoryBot.define do
   factory :character do
     transient do
       with_default_icon { false }
+      settings { [] }
     end
     user
     sequence :name do |n|
@@ -139,6 +148,13 @@ FactoryBot.define do
     factory :template_character do
       template { build(:template, user: user) }
     end
+    after(:build) do |character, evaluator|
+      if evaluator.settings.present?
+        settings = evaluator.settings.map { |setting| setting.is_a?(String) ? setting : setting.name }
+        settings.each { |setting| character.user.tag(character, with: setting, on: :settings, skip_save: true) }
+      end
+    end
+
     before(:create) do |character, evaluator|
       character.default_icon = create(:icon, user: character.user) if evaluator.with_default_icon
     end
@@ -178,10 +194,6 @@ FactoryBot.define do
       "Tag#{n}"
     end
     user
-
-    factory :setting, class: Setting do
-      type { 'Setting' }
-    end
 
     factory :gallery_group, class: GalleryGroup do
       type { 'GalleryGroup' }
@@ -253,11 +265,26 @@ FactoryBot.define do
     end
 
     factory :label do
-      after(:build) { |label| create(:post).label_list.add(label.name) }
     end
 
     factory :content_warning do
-      after(:build) { |warning| create(:post).content_warning_list.add(warning.name) }
+    end
+
+    factory :setting do
+      transient do
+        settings { [] }
+      end
+
+      sequence :name do |n|
+        "Tag#{n}"
+      end
+
+      after(:build) do |tag, evaluator|
+        if evaluator.settings.present?
+          settings = evaluator.settings.map { |setting| setting.is_a?(String) ? setting : setting.name }
+          settings.each { |setting| tag.user.tag(tag, with: setting, on: :settings, skip_save: true) }
+        end
+      end
     end
   end
 end

@@ -50,7 +50,7 @@ class Post < ApplicationRecord
   audited except: NON_EDITED_ATTRS, update_with_comment_only: false
   has_associated_audits
 
-  acts_as_ordered_taggable_on :labels, :content_warnings
+  acts_as_ordered_taggable_on :labels, :content_warnings, :settings
 
   pg_search_scope(
     :search,
