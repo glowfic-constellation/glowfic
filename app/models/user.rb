@@ -83,9 +83,7 @@ class User < ApplicationRecord
   def archive
     User.transaction do
       self.update!(email_notifications: false, deleted: true, favorite_notifications: false)
-      Setting.where(user_id: self.id).where(owned: true).find_each do |setting|
-        setting.update!(owned: false)
-      end
+      self.taggings.destroy_all
       Block.where(blocking_user: self).or(Block.where(blocked_user: self)).destroy_all
     end
   end
