@@ -50,9 +50,9 @@ GalleryTag.create!([
 
 puts "Attaching settings to each other..."
 TagTag.create!([
-  { tagged_id: 3, tag_id: 9 },
-  { tagged_id: 9, tag_id: 2 },
-  { tagged_id: 5, tag_id: 2 },
+  { tagged_id: 6, tag_id: 12 },
+  { tagged_id: 12, tag_id: 5 },
+  { tagged_id: 8, tag_id: 5 },
 ])
 
 puts "Attaching tags to posts..."
