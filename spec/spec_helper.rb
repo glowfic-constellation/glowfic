@@ -142,7 +142,7 @@ RSpec.configure do |config|
   # order dependency and want to debug it, you can fix the order by providing
   # the seed, which is printed after each run.
   #     --seed 1234
-  config.order = :random
+  config.order = ENV['APIPIE_RECORD'] ? :defined : :random
 
   # Seed global randomization in this process using the `--seed` CLI option.
   # Setting this allows you to use `--seed` to deterministically reproduce
@@ -158,6 +158,19 @@ RSpec.configure do |config|
       board.destroy
     end
     user.destroy
+  end
+
+  if ENV['APIPIE_RECORD']
+    config.before(:suite) do
+      DatabaseCleaner.strategy = :truncation
+      DatabaseCleaner.clean_with(:truncation)
+    end
+
+    config.around(:each) do |example|
+      DatabaseCleaner.cleaning do
+        example.run
+      end
+    end
   end
 end
 
