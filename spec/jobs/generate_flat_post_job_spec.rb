@@ -33,7 +33,7 @@ RSpec.describe GenerateFlatPostJob do
     expect($redis.get(GenerateFlatPostJob.lock_key(post.id))).to be_nil
   end
 
-  it "unsets key even if exception is raised" do
+  it "unsets key even if error is raised" do
     post = create(:post)
     $redis.set(GenerateFlatPostJob.lock_key(post.id), true)
 
@@ -50,5 +50,18 @@ RSpec.describe GenerateFlatPostJob do
     end
 
     expect($redis.get(GenerateFlatPostJob.lock_key(post.id))).to be_nil
+  end
+
+  it "retries if resque is terminated" do
+    post = create(:post)
+    $redis.set(GenerateFlatPostJob.lock_key(post.id), true)
+
+    exc = Resque::TermException.new("SIGTERM")
+    expect_any_instance_of(FlatPost).to receive(:save!).and_raise(exc)
+    clear_enqueued_jobs
+
+    expect_any_instance_of(GenerateFlatPostJob).to receive(:retry_job)
+
+    GenerateFlatPostJob.perform_now(post.id)
   end
 end
