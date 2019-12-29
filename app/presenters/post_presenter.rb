@@ -7,8 +7,18 @@ class PostPresenter
 
   def as_json(options={})
     return {} unless post
-    return post.as_json_without_presenter(only: [:id, :subject]) if options[:min]
+    return min_json(post) if options[:min]
+    return includeless_json(post) unless options[:include]
+    included_json(post, options[:include])
+  end
 
+  private
+
+  def min_json(post)
+    post.as_json_without_presenter(only: [:id, :subject])
+  end
+
+  def includeless_json(post)
     attrs = %w(id subject description created_at tagged_at status)
     post_json = post.as_json_without_presenter(only: attrs)
     post_json.merge({
@@ -17,5 +27,27 @@ class PostPresenter
       authors: post.joined_authors,
       num_replies: post.reply_count
     })
+  end
+
+  def included_json(post, includes)
+    post_json = includeless_json(post)
+    post_json[:content] = post.content if includes.include?(:content)
+    post_json[:character] = character(post) if includes.include?(:character)
+    post_json[:icon] = icon(post) if includes.include?(:icon)
+    post_json
+  end
+
+  def character(post)
+    return unless post.character_id
+    { id: post.character_id,
+      name: post.name,
+      screenname: post.screenname }
+  end
+
+  def icon(post)
+    return unless post.icon_id
+    { id: post.icon_id,
+      url: post.url,
+      keyword: post.keyword }
   end
 end

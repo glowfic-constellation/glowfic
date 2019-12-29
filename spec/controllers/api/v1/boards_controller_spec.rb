@@ -84,4 +84,50 @@ RSpec.describe Api::V1::BoardsController do
       expect(response.json['board_sections'][1]['order']).to eq(1)
     end
   end
+
+  describe 'GET posts' do
+    it 'requires a valid board', show_in_doc: true do
+      get :posts, params: { id: 0 }
+      expect(response).to have_http_status(404)
+      expect(response.json['errors'].size).to eq(1)
+      expect(response.json['errors'][0]['message']).to eq("Continuity could not be found.")
+    end
+
+    it 'filters non-public posts' do
+      public_post = create(:post, privacy: Concealable::PUBLIC)
+      create(:post, privacy: Concealable::PRIVATE, board: public_post.board)
+      get :posts, params: { id: public_post.board_id }
+      expect(response).to have_http_status(200)
+      expect(response.json['results'].size).to eq(1)
+      expect(response.json['results'][0]['id']).to eq(public_post.id)
+    end
+
+    it 'returns only the correct posts', show_in_doc: true do
+      board = create(:board)
+      user_post = Timecop.freeze(DateTime.new(2019,1,2,3,4,5).utc) do
+        create(:post, board: board, section: create(:board_section, board: board))
+      end
+      create(:post, board: create(:board))
+      get :posts, params: { id: board.id }
+      expect(response).to have_http_status(200)
+      expect(response.json['results'].size).to eq(1)
+      expect(response.json['results'][0]['id']).to eq(user_post.id)
+      expect(response.json['results'][0]['board']['id']).to eq(user_post.board_id)
+      expect(response.json['results'][0]['section']['id']).to eq(user_post.section_id)
+    end
+
+    it 'paginates results' do
+      board = create(:board)
+      create_list(:post, 26, board: board)
+      get :posts, params: { id: board.id }
+      expect(response.json['results'].size).to eq(25)
+    end
+
+    it 'paginates results on additional pages' do
+      board = create(:board)
+      create_list(:post, 27, board: board)
+      get :posts, params: { id: board.id, page: 2 }
+      expect(response.json['results'].size).to eq(2)
+    end
+  end
 end
