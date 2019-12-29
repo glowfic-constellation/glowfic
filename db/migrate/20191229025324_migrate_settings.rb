@@ -2,28 +2,47 @@ class MigrateSettings < ActiveRecord::Migration[5.2]
   include ActiveSupport::Inflector
 
   def up
+    add_column :aato_tag, :description, :text unless column_exists?(:aato_tag, :description)
     Setting.all.each do |tag|
-      aato_tag = ActsAsTaggableOn::Tag.create!(name: tag.name, created_at: tag.created_at, updated_at: tag.updated_at)
-      tag.character_tags.each do |char_tag|
-        create_tagging(aato_tag, old_tagging: char_tag, type: Character)
-      end
-      tag.post_tags.each do |post_tag|
-        create_tagging(aato_tag, old_tagging: post_tag, type: Post)
-      end
-      tag.child_setting_tags.each do |tag_tag|
-        create_tagging(aato_tag, old_tagging: tag_tag, type: Tag)
-      end
+      aato_tag = ActsAsTaggableOn::Tag.create!(
+        name: tag.name,
+        created_at: tag.created_at,
+        updated_at: tag.updated_at,
+        description: tag.description
+      )
+      tag.character_tags.each { |char_tag| create_tagging(aato_tag, old_tagging: char_tag, type: Character) }
+      tag.post_tags.each { |post_tag| create_tagging(aato_tag, old_tagging: post_tag, type: Post) }
       create_tagging(aato_tag, old_tagging: tag, type: User)
+    end
+    TagTag.all.each do |tag_tag|
+      parent = ActsAsTaggableOn::Tag.find_by(name: tag_tag.parent_setting.name)
+      child = ActsAsTaggableOn::Tag.find_by(name: tag_tag.child_setting.name)
+      ActsAsTaggableOn::Tagging.create!(
+        tag: parent,
+        taggable_type: 'ActsAsTaggableOn::Tag',
+        taggable_id: child.id,
+        context: 'setting',
+        created_at: tag_tag.created_at
+      )
     end
     Setting.all.destroy_all
   end
 
   def down
-    settings = ActsAsTaggableOn::Tag.for_context(:post_groups)
+    settings = ActsAsTaggableOn::Tag.for_context('setting')
     settings.each do |tag|
       user = tag.ownership_taggings.order(created_at: :asc).first.taggable
       setting = Setting.create!(name: tag.name, user: user, created_at: tag.created_at, updated_at: tag.updated_at)
-      tag.taggings.each { |tagging| create_join(setting, tagging) }
+      tag.taggings.where.not(taggable_type: 'ActsAsTaggableOn::Tag').each { |tagging| create_join(setting, tagging) }
+    end
+    ActsAsTaggableOn::Tagging.where(taggable_type: 'ActsAsTaggableOn::Tag').each do |tagging|
+      parent = Setting.find_by(name: tagging.tag.name)
+      child = Setting.find_by(name: tagging.taggable.name)
+      TagTag.create!(
+        tag_id: parent.id,
+        tagged_id: child.id,
+        created_at: tagging.created_at,
+      )
     end
     settings.destroy_all
   end
@@ -32,7 +51,7 @@ class MigrateSettings < ActiveRecord::Migration[5.2]
     ActsAsTaggableOn::Tagging.create!(
       tag: aato_tag,
       taggable_type: type.to_s,
-      taggable_id: old_tagging[find_foreign_key(type)],
+      taggable_id: old_tagging[foreign_key(type)],
       context: context,
       created_at: old_tagging.created_at
     )
@@ -41,17 +60,9 @@ class MigrateSettings < ActiveRecord::Migration[5.2]
   def create_join(tag, tagging)
     table = constantize(tagging.taggable_type + '_' + 'tag')
     table.create!(
-      find_foreign_key(type) => tagging.taggable_id,
+      foreign_key(type) => tagging.taggable_id,
       tag_id: tag.id,
       created_at: tagging.created_at,
     )
-  end
-
-  def find_foreign_key(type)
-    if type == Tag
-      foreign_key = 'tagged_id'
-    else
-      foreign_key = foreign_key(type)
-    end
   end
 end
