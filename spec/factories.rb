@@ -56,7 +56,7 @@ FactoryBot.define do
     after(:build) do |post, evaluator|
       if evaluator.settings.present?
         settings = evaluator.settings.map { |setting| setting.is_a?(String) ? setting : setting.name }
-        settings.each { |setting| post.user.tag(post, with: setting, on: :settings, skip_save: true) }
+        post.setting_list = settings
       end
     end
 
@@ -151,7 +151,7 @@ FactoryBot.define do
     after(:build) do |character, evaluator|
       if evaluator.settings.present?
         settings = evaluator.settings.map { |setting| setting.is_a?(String) ? setting : setting.name }
-        settings.each { |setting| character.user.tag(character, with: setting, on: :settings, skip_save: true) }
+        character.setting_list = settings
       end
     end
 
