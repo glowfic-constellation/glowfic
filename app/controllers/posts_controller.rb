@@ -455,7 +455,8 @@ class PostsController < WritableController
     if include_associations
       allowed_params << {
         unjoined_author_ids: [],
-        viewer_ids: []
+        viewer_ids: [],
+        setting_list: [],
       }
     end
 
