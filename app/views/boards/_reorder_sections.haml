@@ -1,0 +1,27 @@
+- reset_cycle
+#reorder-sections-table
+  .content-header
+    = content_for :reorder_title
+    #loading.float-right.hidden= loading_tag # TODO duplicate id
+    #saveerror.float-right.hidden
+      - # TODO duplicate id
+      = image_tag "icons/exclamation.png", title: 'Error', class: 'vmid', alt: '!'
+      Error, please refresh
+    .saveconf.float-right.hidden
+      = image_tag "icons/accept.png", title: 'Saved', class: 'vmid', alt: ''
+      Saved
+  %ul.sortable.table-list
+    - sections.each do |section|
+      %li.padding-5.section-ordered{class: cycle('even', 'odd'), data: {id: section.id, order: section.section_order}}
+        .section-ordered-handle
+          = image_tag "icons/arrow_double.png", title: 'Reorder', class: 'disabled-arrow', alt: '↕'
+        = link_to section.name, section
+        .float-right
+          = image_tag "icons/arrow_up.png", class: "section-up disabled-arrow", alt: 'Move Up'
+          = image_tag "icons/arrow_down.png", class: "section-down disabled-arrow", alt: 'Move Down'
+          = link_to url_for(section) + "/edit" do # TODO
+            = image_tag "icons/pencil.png", alt: 'Edit'
+          = link_to section, method: :delete, data: { confirm: 'Are you sure you want to delete this section?' } do
+            = image_tag "icons/cross.png", alt: 'Delete'
+    - if sections.empty?
+      %li.centered.padding-10{class: cycle('even', 'odd')} — No items yet —

@@ -19,7 +19,7 @@
   Organize Index Sections
   = link_to new_index_section_path params: {index_id: @index.id} do
     .link-box.action-new + New Section
+= render 'boards/reorder_sections', sections: @index_sections
 
-- locals = {sections: @index_sections}
-- locals[:unsectioned_posts] = @unsectioned_posts
-= render 'boards/reorder', locals
+%br
+= render 'boards/reorder_posts', unsectioned_posts: @unsectioned_posts, id: :index_post_id, klass: IndexPost

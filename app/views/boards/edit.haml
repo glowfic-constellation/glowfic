@@ -5,7 +5,7 @@
   &raquo;
   %b Edit
 
-= form_for @board, url: board_path(@board), method: :put do |f|
+= form_for @board, method: :put do |f|
   %table.form-table
     %thead
       %tr
@@ -19,7 +19,8 @@
   Organize Continuity Sections
   = link_to new_board_section_path params: {board_id: @board.id} do
     .link-box.action-new + New Section
+= render 'reorder_sections', sections: @board_sections
 
-- locals = {sections: @board_sections}
-- locals[:unsectioned_posts] = @unsectioned_posts if @board.ordered?
-= render 'reorder', locals
+- if @board.ordered?
+  %br
+  = render 'reorder_posts', unsectioned_posts: @unsectioned_posts
