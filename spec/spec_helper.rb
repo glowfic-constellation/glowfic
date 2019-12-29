@@ -167,8 +167,11 @@ RSpec.configure do |config|
     end
 
     config.around(:each) do |example|
+      time = Time.new(2019, 12, 25, 21, 34, 56, 0)
       DatabaseCleaner.cleaning do
-        example.run
+        Timecop.freeze(time) do
+          example.run
+        end
       end
     end
   end
