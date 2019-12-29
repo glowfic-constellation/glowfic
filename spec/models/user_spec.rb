@@ -160,10 +160,10 @@ RSpec.describe User do
 
     it "removes ownership of settings" do
       user = create(:user)
-      setting = create(:setting, user: user, owned: true)
+      setting = create(:setting, owners: [user])
       user.archive
       expect(user.deleted).to be(true)
-      expect(setting.reload.owned).to be(false)
+      expect(setting.reload.owners).to be_empty
     end
 
     it "does not change username when persisted" do
