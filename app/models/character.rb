@@ -39,6 +39,8 @@ class Character < ApplicationRecord
 
   audited on: :update, mod_only: true, update_with_comment_only: false
 
+  acts_as_ordered_taggable_on :settings
+
   def editable_by?(user)
     self.class.editable_by?(user, self.user_id)
   end
