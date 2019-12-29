@@ -5,8 +5,8 @@ RSpec.describe CharacterHelper do
     let (:user) { create(:user) }
     let (:character1) { create(:character, user: user) }
     let (:character2) { create(:character, user: user) }
-    let (:setting1) { create(:setting, user: user) }
-    let (:setting2) { create(:setting, user: user) }
+    let (:setting1) { create(:setting, owners: [user]) }
+    let (:setting2) { create(:setting, owners: [user]) }
     let (:association) { Character.where(id: [character1.id, character2.id]) }
 
     it "handles characters with no setting" do
@@ -14,8 +14,8 @@ RSpec.describe CharacterHelper do
     end
 
     it "handles characters with one setting" do
-      character1.update!(setting_ids: [setting1.id])
-      character2.update!(setting_ids: [setting2.id])
+      character1.update!(setting_list: [setting1])
+      character2.update!(setting_list: [setting2])
       expected = {
         character1.id => [[setting1.id, setting1.name]],
         character2.id => [[setting2.id, setting2.name]]
@@ -24,16 +24,16 @@ RSpec.describe CharacterHelper do
     end
 
     it "handles characters with many settings" do
-      character1.update!(setting_ids: [setting1.id, setting2.id])
+      character1.update!(setting_list: [setting1, setting2])
       association = Character.where(id: [character1.id])
       expected = { character1.id => [[setting1.id, setting1.name], [setting2.id, setting2.name]] }
       expect(helper.settings_info(association)).to eq(expected)
     end
 
     it "handles multiple characters with the same setting" do
-      character1.update!(setting_ids: [setting1.id])
-      character2.update!(setting_ids: [setting1.id])
-      character3 = create(:character, user: user, setting_ids: [setting1.id, setting2.id])
+      character1.update!(setting_list: [setting1])
+      character2.update!(setting_list: [setting1])
+      character3 = create(:character, user: user, setting_list: [setting1, setting2])
       association = Character.where(id: [character1.id, character2.id, character3.id])
       expected = {
         character1.id => [[setting1.id, setting1.name]],
@@ -44,9 +44,9 @@ RSpec.describe CharacterHelper do
     end
 
     it "handles characters with a mixture of settings" do
-      character1.update!(setting_ids: [setting1.id])
-      character2.update!(setting_ids: [setting2.id])
-      character3 = create(:character, user: user, setting_ids: [setting1.id, setting2.id])
+      character1.update!(setting_list: [setting1])
+      character2.update!(setting_list: [setting2])
+      character3 = create(:character, user: user, setting_list: [setting1, setting2])
       character4 = create(:character, user: user)
       association = Character.where(id: [character1.id, character2.id, character3.id, character4.id])
       expected = {
