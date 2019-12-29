@@ -51,6 +51,8 @@ class Post < ApplicationRecord
   audited except: NON_EDITED_ATTRS, update_with_comment_only: false
   has_associated_audits
 
+  acts_as_ordered_taggable_on :settings
+
   pg_search_scope(
     :search,
     against: %i(
