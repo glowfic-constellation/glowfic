@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_12_19_180641) do
+ActiveRecord::Schema.define(version: 2019_12_29_025324) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
@@ -21,6 +21,7 @@ ActiveRecord::Schema.define(version: 2019_12_19_180641) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer "taggings_count", default: 0
+    t.text "description"
     t.index ["name"], name: "index_aato_tag_on_name", unique: true
   end
 
@@ -482,4 +483,5 @@ ActiveRecord::Schema.define(version: 2019_12_19_180641) do
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["username"], name: "index_users_on_username", unique: true
   end
+
 end
