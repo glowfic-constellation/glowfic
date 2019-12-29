@@ -1,11 +1,14 @@
 class GenerateFlatPostJob < ApplicationJob
   queue_as :high
 
+  EXPIRY_SECONDS = 30 * 60
+
   def self.enqueue(post_id)
     # frequent tag check
     lock_key = lock_key(post_id)
-    return if $redis.get(lock_key)
-    $redis.set(lock_key, true)
+    # set lock iff not already locked, with expiry to prevent infinite broken locks
+    locked = $redis.set(lock_key, true, ex: EXPIRY_SECONDS, nx: true)
+    return unless locked
 
     perform_later(post_id)
   end
