@@ -280,6 +280,7 @@ FactoryBot.define do
     factory :setting do
       transient do
         settings { [] }
+        parents { [] }
       end
 
       sequence :name do |n|
