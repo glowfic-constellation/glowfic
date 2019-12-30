@@ -2136,10 +2136,9 @@ RSpec.describe PostsController do
         login_as(user)
 
         post = create(:post, user: user, settings: [setting, rems], content_warnings: [warning, remw], labels: [label, reml])
-        expect(Setting.count).to eq(3)
-        expect(ActsAsTaggableOn::Tag.count).to eq(6)
-        expect(PostTag.count).to eq(2)
-        expect(ActsAsTaggableOn::Tagging.count).to eq(4)
+
+        expect(ActsAsTaggableOn::Tag.count).to eq(9)
+        expect(ActsAsTaggableOn::Tagging.count).to eq(6)
 
         char1 = create(:character, user: user)
         char2 = create(:template_character, user: user)
