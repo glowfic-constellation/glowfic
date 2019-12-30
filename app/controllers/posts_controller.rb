@@ -133,7 +133,6 @@ class PostsController < WritableController
     preview and return if params[:button_preview].present?
 
     @post = current_user.posts.new(post_params)
-    @post.settings = process_tags(Setting, :post, :setting_ids)
 
     begin
       @post.save!
@@ -193,7 +192,6 @@ class PostsController < WritableController
 
     @post.assign_attributes(post_params)
     @post.board ||= Board.find(3)
-    settings = process_tags(Setting, :post, :setting_ids)
 
     if current_user.id != @post.user_id && @post.audit_comment.blank? && !@post.author_ids.include?(current_user.id)
       flash[:error] = "You must provide a reason for your moderator edit."
@@ -203,7 +201,6 @@ class PostsController < WritableController
 
     begin
       Post.transaction do
-        @post.settings = settings
         @post.save!
       end
     rescue ActiveRecord::RecordInvalid
@@ -445,6 +442,7 @@ class PostsController < WritableController
       :character_alias_id,
       :authors_locked,
       :audit_comment,
+      setting_list: [],
     ]
 
     # prevents us from setting (and saving) associations on preview()
@@ -454,7 +452,6 @@ class PostsController < WritableController
         content_warning_list: [],
         unjoined_author_ids: [],
         viewer_ids: [],
-        setting_list: [],
       }
     end
 
