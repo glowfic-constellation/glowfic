@@ -6,7 +6,7 @@ RSpec.describe Setting do
       expect(setting.valid?).to eq(false)
       expect(setting.save).to eq(false)
       expect(setting.parents.count).to eq(0)
-      expect(setting.parents.size).to eq(1)
+      expect(setting.setting_list.size).to eq(1)
       expect(ActsAsTaggableOn::Tagging.count).to eq(0)
     end
 
