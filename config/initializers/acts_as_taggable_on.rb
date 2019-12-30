@@ -18,5 +18,17 @@ module ActsAsTaggableOn
         where(["#{ActsAsTaggableOn.taggings_table}.context = ?", context]).
         select("DISTINCT #{ActsAsTaggableOn.tags_table}.*")
     end
+
+    def editable_by?(user)
+      return false unless user
+      return true if deletable_by?(user)
+      return true if user.has_permission?(:edit_tags)
+    end
+
+    def deletable_by?(user)
+      return false unless user
+      return true if user.has_permission?(:delete_tags)
+      owner_ids.include?(user.id)
+    end
   end
 end
