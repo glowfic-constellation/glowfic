@@ -60,7 +60,7 @@ class MigrateSettings < ActiveRecord::Migration[5.2]
   def create_join(tag, tagging)
     table = constantize(tagging.taggable_type + '_' + 'tag')
     table.create!(
-      foreign_key(type) => tagging.taggable_id,
+      foreign_key(tagging.taggable_type) => tagging.taggable_id,
       tag_id: tag.id,
       created_at: tagging.created_at,
     )
