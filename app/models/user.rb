@@ -50,8 +50,7 @@ class User < ApplicationRecord
   scope :ordered, -> { order(username: :asc) }
   scope :active, -> { where(deleted: false) }
 
-  acts_as_tagger
-  acts_as_taggable_on :settings
+  acts_as_taggable_on :settings, :labels, :content_warnings
 
   nilify_blanks
 

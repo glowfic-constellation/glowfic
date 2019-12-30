@@ -266,7 +266,11 @@ FactoryBot.define do
     end
   end
 
-  factory :aato_tag, class: "ActsAsTaggableOn::Tag" do
+  factory :aato_tag, class: Taggable::Tag do
+    transient do
+      owners { [] }
+    end
+
     sequence :name do |n|
       "Tag#{n}"
     end
@@ -279,7 +283,6 @@ FactoryBot.define do
 
     factory :setting do
       transient do
-        settings { [] }
         parents { [] }
         owners { [] }
       end
@@ -289,10 +292,7 @@ FactoryBot.define do
       end
 
       after(:build) do |tag, evaluator|
-        if evaluator.settings.present?
-          settings = (evaluator.settings + evaluator.parents).map { |setting| setting.is_a?(String) ? setting : setting.name }
-          tag.setting_list = settings
-        end
+        tag.setting_list = evaluator.parents if evaluator.parents.present?
         evaluator.owners.each { |owner| owner.settings_list.add(setting.name) } if evaluator.owners.present?
       end
     end
