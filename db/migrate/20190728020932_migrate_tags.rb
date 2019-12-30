@@ -1,52 +1,52 @@
 class MigrateTags < ActiveRecord::Migration[5.2]
+  include ActiveSupport::Inflector
+
   def up
+    add_column :aato_tag, :description, :text unless column_exists?(:aato_tag, :description)
     tags = Tag.where(type: 'Label').or(Tag.where(type: 'ContentWarning'))
-    post_tags = PostTag.where(tag: tags)
-    post_ids = post_tags.select(:post_id).distinct.pluck(:post_id)
-    Tag.transaction do
-      tags.each do |tag|
-        ActsAsTaggableOn::Tag.create!(name: tag.name, created_at: tag.created_at, updated_at: tag.updated_at)
-      end
-      Post.where(id: post_ids).each do |post|
-        local_tags = post_tags.where(post: post).pluck(:tag_id)
-        local_tags.each do |tag_id|
-          tag = Tag.find_by(id: tag_id)
-          type = tag.is_a?(Label) ? :labels : :content_warnings
-          user = tag.posts.order(created_at: :asc, id: :asc).first == post ? tag.user : post.user
-          user.tag(post, with: tag.name, on: type, skip_save: true)
-        end
-        post.save!
-      end
-      post_tags.destroy_all
-      tags.destroy_all
+    tags.each do |tag|
+      aato_tag = ActsAsTaggableOn::Tag.create!(
+        name: tag.name,
+        created_at: tag.created_at,
+        updated_at: tag.updated_at,
+        description: tag.description
+      )
+      tag.post_tags.each { |post_tag| create_tagging(aato_tag, old_tagging: post_tag, type: Post, context: tableize(tag.class)) }
+      create_tagging(aato_tag, old_tagging: tag, type: User)
     end
+    Setting.all.destroy_all
   end
 
   def down
-    warnings = ActsAsTaggableOn::Tag.for_context(:content_warnings)
-    warnings.each do |warning|
-      user = warning.taggings.order(created_at: :asc).first.tagger
-      ContentWarning.create!(name: warning.name, user: user, created_at: warning.created_at, updated_at: warning.updated_at)
+    ActsAsTaggableOn::Tag.for_context(:labels).each do |tag|
+      user = tag.ownership_taggings.order(created_at: :asc).first.taggable
+      new_tag = Label.create!(name: tag.name, user: user, created_at: tag.created_at, updated_at: tag.updated_at, description: tag.description)
+      tag.taggings.each { |tagging| create_join(new_tag, tagging) }
     end
-
-    labels = ActsAsTaggableOn::Tag.for_context(:labels)
-    labels.each do |label|
-      user = label.taggings.order(created_at: :asc).first.tagger
-      Label.create!(name: label.name, user: user, created_at: label.created_at, updated_at: label.updated_at)
+    ActsAsTaggableOn::Tag.for_context(:content_warnings).each do |tag|
+      user = tag.ownership_taggings.order(created_at: :asc).first.taggable
+      new_tag = ContentWarning.create!(name: tag.name, user: user, created_at: tag.created_at, updated_at: tag.updated_at, description: tag.description)
+      tag.taggings.each { |tagging| create_join(new_tag, tagging) }
     end
+    settings.destroy_all
+  end
 
-    Post.tagged_with((warnings + labels), any: true).each do |post|
-      post.content_warning_list.each do |warning|
-        PostTag.create!(post: post, tag: ContentWarning.find_by(name: warning))
-      end
-      post.content_warning_list = []
+  def create_tagging(aato_tag, old_tagging:, type:, context: 'setting')
+    ActsAsTaggableOn::Tagging.create!(
+      tag: aato_tag,
+      taggable_type: type.to_s,
+      taggable_id: old_tagging[foreign_key(type)],
+      context: context,
+      created_at: old_tagging.created_at
+    )
+  end
 
-      post.label_list.each do |label|
-        PostTag.create!(post: post, tag: Label.find_by(name: label))
-      end
-      post.label_list = []
-    end
-    ActsAsTaggableOn::Tag.destroy_all
-    ActsAsTaggableOn::Tagging.destroy_all
+  def create_join(tag, tagging)
+    table = constantize(tagging.taggable_type + '_' + 'tag')
+    table.create!(
+      foreign_key(tagging.taggable_type) => tagging.taggable_id,
+      tag_id: tag.id,
+      created_at: tagging.created_at,
+    )
   end
 end

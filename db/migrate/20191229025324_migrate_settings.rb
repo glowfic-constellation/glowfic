@@ -32,7 +32,7 @@ class MigrateSettings < ActiveRecord::Migration[5.2]
     settings = ActsAsTaggableOn::Tag.for_context('setting')
     settings.each do |tag|
       user = tag.ownership_taggings.order(created_at: :asc).first.taggable
-      setting = Setting.create!(name: tag.name, user: user, created_at: tag.created_at, updated_at: tag.updated_at)
+      setting = Setting.create!(name: tag.name, user: user, created_at: tag.created_at, updated_at: tag.updated_at, description: tag.description)
       tag.taggings.where.not(taggable_type: 'ActsAsTaggableOn::Tag').each { |tagging| create_join(setting, tagging) }
     end
     ActsAsTaggableOn::Tagging.where(taggable_type: 'ActsAsTaggableOn::Tag').each do |tagging|
