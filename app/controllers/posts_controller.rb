@@ -133,7 +133,6 @@ class PostsController < WritableController
     preview and return if params[:button_preview].present?
 
     @post = current_user.posts.new(post_params)
-    @post.settings = process_tags(Setting, :post, :setting_ids)
     @post.content_warnings = process_tags(ContentWarning, :post, :content_warning_ids)
     @post.labels = process_tags(Label, :post, :label_ids)
 
@@ -195,7 +194,6 @@ class PostsController < WritableController
 
     @post.assign_attributes(post_params)
     @post.board ||= Board.find(3)
-    settings = process_tags(Setting, :post, :setting_ids)
     warnings = process_tags(ContentWarning, :post, :content_warning_ids)
     labels = process_tags(Label, :post, :label_ids)
 
@@ -207,7 +205,6 @@ class PostsController < WritableController
 
     begin
       Post.transaction do
-        @post.settings = settings
         @post.content_warnings = warnings
         @post.labels = labels
         @post.save!
@@ -450,7 +447,8 @@ class PostsController < WritableController
       :icon_id,
       :character_alias_id,
       :authors_locked,
-      :audit_comment
+      :audit_comment,
+      setting_list: [],
     ]
 
     # prevents us from setting (and saving) associations on preview()
@@ -458,7 +456,6 @@ class PostsController < WritableController
       allowed_params << {
         unjoined_author_ids: [],
         viewer_ids: [],
-        setting_list: [],
       }
     end
 
