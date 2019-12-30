@@ -66,7 +66,7 @@ class Post < ApplicationRecord
 
   scope :ordered_by_id, -> { order(id: :asc) }
 
-  scope :ordered_by_index, -> { order('index_posts.section_order asc') }
+  scope :ordered_by_index, -> { order('index_posts.section_order asc') } # TODO
 
   scope :no_tests, -> { where.not(board_id: Board::ID_SITETESTING) }
 

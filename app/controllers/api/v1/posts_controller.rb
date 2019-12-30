@@ -33,6 +33,19 @@ class Api::V1::PostsController < Api::ApiController
   param :ordered_post_ids, Array, allow_blank: false
   param :section_id, :number, required: false
   def reorder
+    reorderer = Reorderer.new(Post, Board, current_user)
+    reorderer.section_id = params[:section_id]
+    reorderer.new_ordering_ids = params[:ordered_post_ids]
+    ordered_ids = reorderer.reorder
+
+    if reorderer.succeeded?
+      render json: {post_ids: ordered_ids}
+    else
+      error = reorderer.error
+      render json: {errors: [{message: error[:message]}]}, status: error[:status]
+    end
+    return
+
     section_id = params[:section_id] ? params[:section_id].to_i : nil
     post_ids = params[:ordered_post_ids].map(&:to_i).uniq
     posts = Post.where(id: post_ids)
