@@ -90,23 +90,6 @@ RSpec.describe TagsController do
       expect(meta_og[:description]).to eq('2 posts')
     end
 
-    it "calculates OpenGraph meta for unowned settings" do
-      setting = create(:setting,
-        name: 'setting',
-        description: 'this is an example setting',
-      )
-      create_list(:post, 2, settings: [setting])
-      create_list(:character, 3, settings: [setting])
-
-      get :show, params: { id: setting.id }
-
-      meta_og = assigns(:meta_og)
-      expect(meta_og.keys).to match_array([:url, :title, :description])
-      expect(meta_og[:url]).to eq(tag_url(setting))
-      expect(meta_og[:title]).to eq('setting · Setting')
-      expect(meta_og[:description]).to eq("this is an example setting\n2 posts, 3 characters")
-    end
-
     it "calculates OpenGraph meta for owned settings" do
       setting = create(:setting,
         name: 'setting',
@@ -260,7 +243,7 @@ RSpec.describe TagsController do
     end
 
     it "requires permission" do
-      tag = create(:setting, owned: true)
+      tag = create(:setting, owners: [create(:user)])
       login
       get :edit, params: { id: tag.id }
       expect(response).to redirect_to(tag_url(tag))
@@ -299,7 +282,7 @@ RSpec.describe TagsController do
 
     it "requires permission" do
       login
-      tag = create(:setting, owned: true)
+      tag = create(:setting, owners: [create(:user)])
       put :update, params: { id: tag.id }
       expect(response).to redirect_to(tag_url(tag))
       expect(flash[:error]).to eq("You do not have permission to edit this tag.")
@@ -339,11 +322,20 @@ RSpec.describe TagsController do
     end
 
     it "requires permission" do
-      tag = create(:setting, owned: true)
+      tag = create(:setting, owners: [create(:user)])
       login
       delete :destroy, params: { id: tag.id }
       expect(response).to redirect_to(tag_url(tag))
       expect(flash[:error]).to eq("You do not have permission to edit this tag.")
+    end
+
+    it "allows owner to destroy the tag" do
+      owner = create(:user)
+      tag = create(:setting, owners: [owner])
+      login_as(owner)
+      delete :destroy, params: { id: tag.id }
+      expect(response).to redirect_to(tags_path)
+      expect(flash[:success]).to eq("Tag deleted.")
     end
 
     it "allows admin to destroy the tag" do
@@ -356,7 +348,7 @@ RSpec.describe TagsController do
 
     it "handles destroy failure" do
       tag = create(:setting)
-      login_as(tag.user)
+      login_as(create(:admin_user))
       expect_any_instance_of(Tag).to receive(:destroy!).and_raise(ActiveRecord::RecordNotDestroyed, 'fake error')
       delete :destroy, params: { id: tag.id }
       expect(response).to redirect_to(tag_url(tag))

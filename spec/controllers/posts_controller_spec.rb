@@ -352,12 +352,13 @@ RSpec.describe PostsController do
         expect(assigns(:author_ids)).to match_array([user.id, coauthor.id])
 
         # tags
-        expect(assigns(:post).settings.size).to eq(0)
-        expect(assigns(:post).content_warnings.size).to eq(0)
-        expect(assigns(:post).labels.size).to eq(0)
-        expect(assigns(:post).setting_list).to match_array([setting1.name, setting2.name, 'other'])
-        expect(assigns(:content_warnings).map(&:id_for_select)).to match_array([warning1.id, warning2.id, '_other'])
-        expect(assigns(:labels).map(&:id_for_select)).to match_array([label1.id, label2.id, '_other'])
+        post = assigns(:post)
+        expect(post.settings.size).to eq(0)
+        expect(post.content_warnings.size).to eq(0)
+        expect(post.labels.size).to eq(0)
+        expect(post.setting_list).to match_array([setting1.name, setting2.name, 'other'])
+        expect(post.content_warning_list).to match_array([warning1.name, warning2.name, 'other'])
+        expect(post.label_list).to match_array([label1.name, label2.name, 'other'])
 
         expect(ActsAsTaggableOn::Tag.count).to eq(6)
         expect(ActsAsTaggableOn::Tagging.count).to eq(0)
@@ -639,11 +640,10 @@ RSpec.describe PostsController do
       expect(templateless.plucked_characters).to eq([[char1.id, char1.name]])
 
       # tags
-      expect(assigns(:post).content_warnings.size).to eq(3)
-      expect(assigns(:post).labels.size).to eq(3)
-      expect(assigns(:post).setting_list).to match_array([setting1.name, setting2.name, 'other'])
-      expect(assigns(:post).content_warnings.map(&:id_for_select)).to match_array([warning1.id, warning2.id, '_other'])
-      expect(assigns(:post).labels.map(&:id_for_select)).to match_array([label1.id, label2.id, '_other'])
+      post = assigns(:post)
+      expect(post.setting_list).to match_array([setting1.name, setting2.name, 'other'])
+      expect(post.content_warning_list).to match_array([warning1.name, warning2.name, 'other'])
+      expect(post.label_list).to match_array([label1.name, label2.name, 'other'])
 
       expect(ActsAsTaggableOn::Tag.count).to eq(6)
       expect(ActsAsTaggableOn::Tagging.count).to eq(0)
@@ -717,8 +717,8 @@ RSpec.describe PostsController do
       expect(post.labels.size).to eq(3)
 
       expect(post.settings.pluck(:id)).to match_array([setting1, setting2, ActsAsTaggableOn::Tag.for_context(:settings).last].map(&:id))
-      expect(post.content_warnings.map(&:id_for_select)).to match_array([warning1.id, warning2.id, ContentWarning.last.id])
-      expect(post.labels.map(&:id_for_select)).to match_array([label1.id, label2.id, Label.last.id])
+      expect(post.content_warnings.pluck(:id)).to match_array([warning1.id, warning2.id, ActsAsTaggableOn::Tag.for_context(:content_warnings).last.id])
+      expect(post.labels.pluck(:id)).to match_array([label1.id, label2.id, ActsAsTaggableOn::Tag.for_context(:labels).last.id])
 
       expect(ActsAsTaggableOn::Tag.count).to eq(9)
       expect(ActsAsTaggableOn::Tagging.count).to eq(9)
@@ -1369,8 +1369,8 @@ RSpec.describe PostsController do
 
       # tags
       expect(assigns(:post).settings.map(&:id)).to match_array([setting.id])
-      expect(assigns(:post).content_warnings.map(&:id_for_select)).to match_array([warning.id])
-      expect(assigns(:post).labels.map(&:id_for_select)).to match_array([label.id])
+      expect(assigns(:post).content_warnings.map(&:id)).to match_array([warning.id])
+      expect(assigns(:post).labels.map(&:id)).to match_array([label.id])
     end
   end
 
@@ -1769,8 +1769,9 @@ RSpec.describe PostsController do
         expect(post.content_warnings.size).to eq(2)
         expect(post.labels.size).to eq(2)
         expect(post.setting_list).to match_array([setting.name, 'setting', 'dupesetting'])
-        expect(assigns(:content_warnings).map(&:name)).to match_array([warning.name, 'warning', 'dupewarning'])
-        expect(assigns(:labels).map(&:name)).to match_array([label.name, 'label', 'dupelabel'])
+        expect(post.content_warning_list).to match_array([warning.name, 'warning', 'dupewarning'])
+        expect(post.label_list).to match_array([label.name, 'label', 'dupelabel'])
+
         expect(ActsAsTaggableOn::Tag.count).to eq(9)
         expect(PostTag.count).to eq(2)
         expect(ActsAsTaggableOn::Tagging.count).to eq(6)
@@ -1847,17 +1848,18 @@ RSpec.describe PostsController do
         expect(templateless.plucked_characters).to eq([[char1.id, char1.name]])
 
         # tags
-        expect(assigns(:post).settings.size).to eq(0)
-        expect(assigns(:post).content_warnings.size).to eq(0)
-        expect(assigns(:post).labels.size).to eq(0)
-        expect(assigns(:post).setting_list).to match_array([setting1.name, setting2.name, 'other'])
-        expect(assigns(:content_warnings).map(&:id_for_select)).to match_array([warning1.id, warning2.id, '_other'])
-        expect(assigns(:labels).map(&:id_for_select)).to match_array([label1.id, label2.id, '_other'])
+        post = assigns(:post)
+        expect(post.settings.size).to eq(0)
+        expect(post.content_warnings.size).to eq(0)
+        expect(post.labels.size).to eq(0)
+        expect(post.setting_list).to match_array([setting1.name, setting2.name, 'other'])
+        expect(post.content_warning_list).to match_array([warning1.name, warning2.name, 'other'])
+        expect(post.label_list).to match_array([label1.name, label2.name, 'other'])
         expect(ActsAsTaggableOn::Tag.count).to eq(6)
         expect(ActsAsTaggableOn::Tagging.count).to eq(0)
 
         # in storage
-        post = assigns(:post).reload
+        post = post.reload
         expect(post.user).to eq(user)
         expect(post.subject).to eq('old')
         expect(post.content).to eq('example')
@@ -1918,12 +1920,11 @@ RSpec.describe PostsController do
         post = assigns(:post)
 
         expect(post.settings.reload.size).to eq(3)
-        expect(post.content_warnings.size).to eq(3)
-        expect(post.labels.size).to eq(3)
+        expect(post.content_warnings.reload.size).to eq(3)
+        expect(post.labels.reload.size).to eq(3)
         expect(post.settings.pluck(:name)).to match_array([setting.name, 'setting', 'dupesetting'])
-        expect(post.content_warnings.map(&:name)).to match_array([warning.name, 'warning', 'dupewarning'])
-        expect(post.labels.map(&:name)).to match_array([label.name, 'label', 'dupelabel'])
-
+        expect(post.content_warnings.pluck(:name)).to match_array([warning.name, 'warning', 'dupewarning'])
+        expect(post.labels.pluck(:name)).to match_array([label.name, 'label', 'dupelabel'])
         expect(ActsAsTaggableOn::Tag.count).to eq(12)
         expect(ActsAsTaggableOn::Tagging.count).to eq(9)
         expect(ActsAsTaggableOn::Tagging.where(taggable: post, tag: [setting, warning, label]).count).to eq(3)
@@ -2174,17 +2175,13 @@ RSpec.describe PostsController do
 
         # tags change only in memory when save fails
         post = assigns(:post)
-        expect(post.setting_list.size).to eq(3)
-        expect(post.content_warnings.size).to eq(3)
-        expect(post.labels.size).to eq(3)
         expect(post.setting_list).to match_array([setting.name, 'setting', 'dupesetting'])
-        expect(post.content_warnings.map(&:name)).to match_array([warning.name, 'warning', 'dupewarning'])
-        expect(post.labels.map(&:name)).to match_array([label.name, 'label', 'dupelabel'])
-        expect(Setting.count).to eq(3)
-        expect(ActsAsTaggableOn::Tag.count).to eq(6)
-        expect(PostTag.count).to eq(3)
-        expect(ActsAsTaggableOn::Tagging.count).to eq(3)
-        expect(ActsAsTaggableOn::Tagging.where(tagggable: post, tag: [setting, warning, label]).count).to eq(3)
+        expect(post.content_warning_list).to match_array([warning.name, 'warning', 'dupewarning'])
+        expect(post.label_list).to match_array([label.name, 'label', 'dupelabel'])
+
+        expect(ActsAsTaggableOn::Tag.count).to eq(9)
+        expect(ActsAsTaggableOn::Tagging.count).to eq(6)
+        expect(ActsAsTaggableOn::Tagging.where(taggable: post, tag: [setting, warning, label]).count).to eq(3)
         expect(ActsAsTaggableOn::Tagging.where(taggable: post, tag: [dupes, dupew, dupel]).count).to eq(0)
         expect(ActsAsTaggableOn::Tagging.where(taggable: post, tag: [reml, remw, rems]).count).to eq(3)
       end
