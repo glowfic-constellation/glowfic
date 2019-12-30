@@ -3,6 +3,7 @@ class MigrateTags < ActiveRecord::Migration[5.2]
 
   def up
     add_column :aato_tag, :description, :text unless column_exists?(:aato_tag, :description)
+    add_column :aato_tag, :type, :string unless column_exists?(:aato_tag, :type)
     tags = Tag.where(type: 'Label').or(Tag.where(type: 'ContentWarning'))
     tags.each do |tag|
       aato_tag = ActsAsTaggableOn::Tag.create!(
@@ -11,7 +12,7 @@ class MigrateTags < ActiveRecord::Migration[5.2]
         updated_at: tag.updated_at,
         description: tag.description
       )
-      tag.post_tags.each { |post_tag| create_tagging(aato_tag, old_tagging: post_tag, type: Post, context: tableize(tag.class)) }
+      tag.post_tags.each { |post_tag| create_tagging(aato_tag, old_tagging: post_tag, type: Post, context: tableize(tag.class.name)) }
       create_tagging(aato_tag, old_tagging: tag, type: User)
     end
     Setting.all.destroy_all
@@ -19,12 +20,12 @@ class MigrateTags < ActiveRecord::Migration[5.2]
 
   def down
     ActsAsTaggableOn::Tag.for_context(:labels).each do |tag|
-      user = tag.ownership_taggings.order(created_at: :asc).first.taggable
+      user = tag.child_taggings.where(taggable_type: 'User').order(created_at: :asc).first.taggable
       new_tag = Label.create!(name: tag.name, user: user, created_at: tag.created_at, updated_at: tag.updated_at, description: tag.description)
       tag.taggings.each { |tagging| create_join(new_tag, tagging) }
     end
     ActsAsTaggableOn::Tag.for_context(:content_warnings).each do |tag|
-      user = tag.ownership_taggings.order(created_at: :asc).first.taggable
+      user = tag.child_taggings.where(taggable_type: 'User').order(created_at: :asc).first.taggable
       new_tag = ContentWarning.create!(name: tag.name, user: user, created_at: tag.created_at, updated_at: tag.updated_at, description: tag.description)
       tag.taggings.each { |tagging| create_join(new_tag, tagging) }
     end

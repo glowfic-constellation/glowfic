@@ -17,12 +17,13 @@ ActiveRecord::Schema.define(version: 2019_12_29_025324) do
   enable_extension "plpgsql"
 
   create_table "aato_tag", id: :serial, force: :cascade do |t|
-    t.string "name"
+    t.citext "name"
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer "taggings_count", default: 0
     t.text "description"
-    t.index ["name"], name: "index_aato_tag_on_name", unique: true
+    t.string "type"
+    t.index ["name"], name: "index_aato_tag_on_name"
   end
 
   create_table "audits", id: :serial, force: :cascade do |t|
