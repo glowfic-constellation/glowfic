@@ -5,19 +5,19 @@ RSpec.describe Setting do
     it "has items with a post" do
       harry_potter = create(:setting, name: 'Harry Potter')
       create(:post, subject: 'Harry Potter and the Goblet of Fire', settings: [harry_potter])
-      expect(harry_potter.taggings_count).to be > 0
+      expect(harry_potter.reload.taggings_count).to be > 0
     end
 
     it "has items with a character" do
       harry_potter = create(:setting, name: 'Harry Potter')
       create(:character, name: 'Hermione Granger', settings: [harry_potter])
-      expect(harry_potter.taggings_count).to be > 0
+      expect(harry_potter.reload.taggings_count).to be > 0
     end
 
     it "has items with a child setting" do
       harry_potter = create(:setting, name: 'Harry Potter')
       create(:setting, name: 'Hazel', parents: [harry_potter])
-      expect(harry_potter.taggings_count).to be > 0
+      expect(harry_potter.reload.taggings_count).to be > 0
     end
   end
 
@@ -28,7 +28,7 @@ RSpec.describe Setting do
       expect(setting.valid?).to eq(false)
       expect(setting.save).to eq(false)
       expect(setting.parents.count).to eq(0)
-      expect(setting.parents.size).to eq(1)
+      expect(setting.setting_list.size).to eq(1)
       expect(ActsAsTaggableOn::Tagging.count).to eq(0)
     end
 
