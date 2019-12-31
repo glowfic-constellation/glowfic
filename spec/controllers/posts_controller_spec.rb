@@ -361,6 +361,9 @@ RSpec.describe PostsController do
 
         expect(ActsAsTaggableOn::Tag.count).to eq(6)
         expect(ActsAsTaggableOn::Tagging.count).to eq(0)
+        expect(Setting.count).to eq(2)
+        expect(ContentWarning.count).to eq(2)
+        expect(Label.count).to eq(2)
 
         # editor_setup:
         expect(assigns(:javascripts)).to include('posts/editor')
@@ -441,8 +444,8 @@ RSpec.describe PostsController do
       login
       expect {
         post :create, params: { post: {subject: 'a', board_id: create(:board).id, setting_list: tags} }
-      }.to change{ActsAsTaggableOn::Tag.count}.by(1)
-      expect(ActsAsTaggableOn::Tag.last.name).to eq('atag')
+      }.to change{Setting.count}.by(1)
+      expect(Setting.last.name).to eq('atag')
       expect(assigns(:post).settings.count).to eq(4)
     end
 
@@ -461,9 +464,9 @@ RSpec.describe PostsController do
         post :create, params: {
           post: {subject: 'a', board_id: create(:board).id, content_warning_list: tags}
         }
-      }.to change{ActsAsTaggableOn::Tag.count}.by(1)
-      expect(ActsAsTaggableOn::Tag.last.name).to eq('atag')
-      expect(assigns(:post).content_warnings.count).to eq(3)
+      }.to change{ContentWarning.count}.by(1)
+      expect(ContentWarning.last.name).to eq('atag')
+      expect(assigns(:post).content_warnings.count).to eq(4)
     end
 
     it "creates new post authors correctly" do
@@ -673,6 +676,9 @@ RSpec.describe PostsController do
 
       expect(ActsAsTaggableOn::Tag.count).to eq(6)
       expect(ActsAsTaggableOn::Tagging.count).to eq(0)
+      expect(Setting.count).to eq(2)
+      expect(ContentWarning.count).to eq(2)
+      expect(Label.count).to eq(2)
     end
 
     it "creates a post" do
@@ -748,6 +754,9 @@ RSpec.describe PostsController do
 
       expect(ActsAsTaggableOn::Tag.count).to eq(9)
       expect(ActsAsTaggableOn::Tagging.count).to eq(9)
+      expect(Setting.count).to eq(3)
+      expect(ContentWarning.count).to eq(3)
+      expect(Label.count).to eq(3)
     end
 
     it "generates a flat post" do
@@ -1683,7 +1692,9 @@ RSpec.describe PostsController do
 
         post = create(:post, user: user, settings: [setting, rems], content_warnings: [warning, remw], labels: [label, reml])
 
-        expect(ActsAsTaggableOn::Tag.count).to eq(9)
+        expect(Setting.count).to eq(3)
+        expect(ContentWarning.count).to eq(3)
+        expect(Label.count).to eq(3)
         expect(ActsAsTaggableOn::Tagging.count).to eq(8)
 
         # for each type: keep one, remove one, create one, existing one
@@ -1709,8 +1720,9 @@ RSpec.describe PostsController do
         expect(post.content_warning_list).to match_array([warning.name, 'warning', 'dupewarning'])
         expect(post.label_list).to match_array([label.name, 'label', 'dupelabel'])
 
-        expect(ActsAsTaggableOn::Tag.count).to eq(9)
-        expect(PostTag.count).to eq(2)
+        expect(Setting.count).to eq(3)
+        expect(ContentWarning.count).to eq(3)
+        expect(Label.count).to eq(3)
         expect(ActsAsTaggableOn::Tagging.count).to eq(6)
         expect(ActsAsTaggableOn::Tagging.where(taggable: post, tag: [setting, warning, label]).count).to eq(3)
         expect(ActsAsTaggableOn::Tagging.where(taggable: post, tag: [dupes, dupew, dupel]).count).to eq(0)
@@ -1794,6 +1806,9 @@ RSpec.describe PostsController do
         expect(post.label_list).to match_array([label1.name, label2.name, 'other'])
         expect(ActsAsTaggableOn::Tag.count).to eq(6)
         expect(ActsAsTaggableOn::Tagging.count).to eq(0)
+        expect(Setting.count).to eq(2)
+        expect(ContentWarning.count).to eq(2)
+        expect(Label.count).to eq(2)
 
         # in storage
         post = post.reload
@@ -1863,6 +1878,10 @@ RSpec.describe PostsController do
 
         expect(ActsAsTaggableOn::Tag.count).to eq(9)
         expect(ActsAsTaggableOn::Tagging.count).to eq(6)
+        expect(Setting.count).to eq(3)
+        expect(ContentWarning.count).to eq(3)
+        expect(Label.count).to eq(3)
+        expect(PostTag.count).to eq(6)
 
         # for each type: keep one, remove one, create one, existing one
         setting_names = [setting.name, 'setting', 'dupesetting']
@@ -1872,6 +1891,7 @@ RSpec.describe PostsController do
           id: post.id,
           post: {
             setting_list: setting_names,
+            setting_ids: setting_ids,
             content_warning_ids: warning_ids,
             label_ids: label_ids
           }
@@ -1890,6 +1910,9 @@ RSpec.describe PostsController do
         expect(ActsAsTaggableOn::Tagging.where(taggable: post, tag: [setting, warning, label]).count).to eq(3)
         expect(ActsAsTaggableOn::Tagging.where(taggable: post, tag: [dupes, dupew, dupel]).count).to eq(3)
         expect(ActsAsTaggableOn::Tagging.where(taggable: post, tag: [reml, remw, rems]).count).to eq(0)
+        expect(Setting.count).to eq(4)
+        expect(ContentWarning.count).to eq(4)
+        expect(Label.count).to eq(4)
       end
 
       it "uses extant tags if available" do
@@ -2091,6 +2114,9 @@ RSpec.describe PostsController do
 
         expect(ActsAsTaggableOn::Tag.count).to eq(9)
         expect(ActsAsTaggableOn::Tagging.count).to eq(6)
+        expect(Setting.count).to eq(3)
+        expect(ContentWarning.count).to eq(3)
+        expect(Label.count).to eq(3)
 
         char1 = create(:character, user: user)
         char2 = create(:template_character, user: user)
@@ -2144,6 +2170,9 @@ RSpec.describe PostsController do
         expect(ActsAsTaggableOn::Tagging.where(taggable: post, tag: [setting, warning, label]).count).to eq(3)
         expect(ActsAsTaggableOn::Tagging.where(taggable: post, tag: [dupes, dupew, dupel]).count).to eq(0)
         expect(ActsAsTaggableOn::Tagging.where(taggable: post, tag: [reml, remw, rems]).count).to eq(3)
+        expect(Setting.count).to eq(3)
+        expect(ContentWarning.count).to eq(3)
+        expect(Label.count).to eq(3)
       end
 
       it "works" do
