@@ -8,8 +8,7 @@ class Gallery < ApplicationRecord
   has_many :characters_galleries, inverse_of: :gallery, dependent: :destroy
   has_many :characters, through: :characters_galleries, dependent: :destroy
 
-  has_many :gallery_tags, inverse_of: :gallery, dependent: :destroy
-  has_many :gallery_groups, -> { ordered_by_gallery_tag }, through: :gallery_tags, source: :gallery_group, dependent: :destroy
+  has_many :gallery_tags, inverse_of: :gallery
 
   validates :name, presence: true
 
@@ -34,14 +33,16 @@ class Gallery < ApplicationRecord
       <<~SQL
         ARRAY(
           SELECT row_to_json(ROW(tags.id, tags.name)) FROM tags
-          LEFT JOIN gallery_tags ON gallery_tags.tag_id = tags.id
-          WHERE gallery_tags.gallery_id = galleries.id AND tags.type = 'GalleryGroup'
-          ORDER BY gallery_tags.id ASC
+          LEFT JOIN taggings ON tagging.tag_id = tags.id
+          WHERE tagging.taggable_id = galleries.id AND AND tagging.taggable_type = 'Gallery' AND tags.type = 'GalleryGroup'
+          ORDER BY tagging.created_at ASC
         ) AS gallery_groups_data_internal
       SQL
     )
   }
   # rubocop:enable Style/TrailingCommaInArguments
+
+  acts_as_ordered_taggable_on :gallery_groups
 
   # Converts the internal [{'f1' => id, 'f2' => name}] structure of the retrieved data
   # to [{id => id, name => name}]

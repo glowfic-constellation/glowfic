@@ -16,9 +16,7 @@ class Character < ApplicationRecord
   has_many :galleries, through: :characters_galleries, dependent: :destroy
   has_many :icons, -> { group('icons.id').ordered }, through: :galleries
 
-  has_many :character_tags, inverse_of: :character, dependent: :destroy
-  has_many :settings, -> { ordered_by_char_tag }, through: :character_tags, source: :setting, dependent: :destroy
-  has_many :gallery_groups, -> { ordered_by_char_tag }, through: :character_tags, source: :gallery_group, dependent: :destroy
+  has_many :character_tags, inverse_of: :character
 
   validates :name,
     presence: true,
@@ -39,7 +37,7 @@ class Character < ApplicationRecord
 
   audited on: :update, mod_only: true, update_with_comment_only: false
 
-  acts_as_ordered_taggable_on :settings
+  acts_as_ordered_taggable_on :settings, :gallery_groups
 
   def editable_by?(user)
     self.class.editable_by?(user, self.user_id)
