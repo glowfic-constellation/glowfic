@@ -3,7 +3,7 @@ require "spec_helper"
 RSpec.describe Api::V1::UsersController do
   describe "GET index" do
     def create_search_users
-      create(:user, username: 'baa') # firstuser
+      create(:user, username: 'baa', moiety: '123456', moiety_name: 'Test') # firstuser
       create(:user, username: 'aba') # miduser
       create(:user, username: 'aab') # enduser
       create(:user, username: 'aaa') # notuser
@@ -63,8 +63,26 @@ RSpec.describe Api::V1::UsersController do
       get :index
       expect(response.json['results'].count).to eq(1)
     end
+
+    it "shows moieties appropriately" do
+      create(:user, username: 'Throne3d', moiety: '960018', moiety_name: 'Carmine')
+      create(:user, username: 'anon')
+      get :index
+      expect(response.json['results']).to contain_exactly(
+        a_collection_including(
+          'username'    => 'Throne3d',
+          'moiety'      => '960018',
+          'moiety_name' => 'Carmine',
+        ),
+        a_collection_including(
+          'username'    => 'anon',
+          'moiety'      => nil,
+          'moiety_name' => nil,
+        ),
+      )
+    end
   end
-  
+
   describe 'GET posts' do
     it 'requires a valid user', show_in_doc: true do
       get :posts, params: { id: 0 }
@@ -72,7 +90,7 @@ RSpec.describe Api::V1::UsersController do
       expect(response.json['errors'].size).to eq(1)
       expect(response.json['errors'][0]['message']).to eq("User could not be found.")
     end
-    
+
     it 'filters non-public posts' do
       user = create(:user)
       public_post = create(:post, privacy: Concealable::PUBLIC, user: user)
@@ -82,7 +100,7 @@ RSpec.describe Api::V1::UsersController do
       expect(response.json['results'].size).to eq(1)
       expect(response.json['results'][0]['id']).to eq(public_post.id)
     end
-    
+
     it 'returns only the correct posts', show_in_doc: true do
       user = create(:user)
       board = create(:board)
@@ -95,14 +113,14 @@ RSpec.describe Api::V1::UsersController do
       expect(response.json['results'][0]['board']['id']).to eq(user_post.board_id)
       expect(response.json['results'][0]['section']['id']).to eq(user_post.section_id)
     end
-    
+
     it 'paginates results' do
       user = create(:user)
       create_list(:post, 26, user: user)
       get :posts, params: { id: user.id }
       expect(response.json['results'].size).to eq(25)
     end
-    
+
     it 'paginates results on additional pages' do
       user = create(:user)
       create_list(:post, 27, user: user)

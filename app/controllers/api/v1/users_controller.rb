@@ -20,7 +20,7 @@ class Api::V1::UsersController < Api::ApiController
       queryset = queryset.where.not(id: blocked_users + [current_user.id])
     end
     users = paginate queryset.active, per_page: 25
-    render json: {results: users}
+    render json: {results: users.as_json(detailed: true)}
   end
 
   api :GET, '/users/:id/posts', 'Load all posts where the specified user is an author'
