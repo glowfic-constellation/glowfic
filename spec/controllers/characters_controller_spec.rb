@@ -1301,11 +1301,11 @@ RSpec.describe CharactersController do
       group = create(:gallery_group)
       gallery2 = create(:gallery, gallery_groups: [group], user: user)
       gallery3 = create(:gallery, gallery_groups: [group], user: user)
-      character = create(:character, template: template, galleries: [gallery, gallery2], gallery_groups: [group], default_icon: icon, user: user)
+      character = create(:character, template: template, galleries: [gallery, gallery2], gallery_groups: [group],
+                          settings: [create(:setting)], default_icon: icon, user: user)
       calias = create(:alias, character: character)
       char_post = create(:post, character: character, user: user)
       char_reply = create(:reply, character: character, user: user)
-      character.settings << create(:setting)
 
       character.reload
 
@@ -1314,6 +1314,7 @@ RSpec.describe CharactersController do
       expect(character.gallery_groups.ids).to match_array([group.id])
 
       login_as(user)
+
       expect do
         post :duplicate, params: { id: character.id }
       end.to not_change {
