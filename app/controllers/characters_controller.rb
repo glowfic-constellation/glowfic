@@ -403,6 +403,7 @@ class CharactersController < ApplicationController
       :cluster,
       ungrouped_gallery_ids: [],
       setting_list: [],
+      gallery_group_list: [],
     ]
     if @character.user == current_user
       permitted.last[:template_attributes] = [:name, :id]

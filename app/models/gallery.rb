@@ -12,6 +12,8 @@ class Gallery < ApplicationRecord
 
   validates :name, presence: true
 
+  before_save :update_characters
+
   scope :ordered, -> { order('characters_galleries.section_order ASC') }
 
   scope :ordered_by_name, -> { order(Arel.sql('lower(name) asc'), id: :asc) }
@@ -62,5 +64,21 @@ class Gallery < ApplicationRecord
 
   def character_gallery_for(character)
     characters_galleries.find_by(character_id: character)
+  end
+
+  private
+
+  def update_characters
+    return unless gallery_group_list_changed?
+
+    user_characters = Character.where(user: user)
+
+    new_characters = user_characters.tagged_with(new_groups, any: true)
+    new_characters = new_characters.tagged_with(gallery_group_list_was, exclude: true) if gallery_group_list_was.present?
+    new_characters.each { |character| characters_galleries.create!(character: character, added_by_group: true) }
+
+    rem_characters = user_characters.tagged_with(rem_groups, any: true)
+    rem_characters = rem_characters.tagged_with(gallery_group_list, exclude: true) if gallery_group_list.present?
+    characters_galleries.where(character: rem_characters, added_by_group: true).destroy_all
   end
 end
