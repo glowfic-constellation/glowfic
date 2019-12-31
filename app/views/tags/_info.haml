@@ -12,7 +12,7 @@
       %tr
         %th.sub.centered.width-150 Owner
         - if @tag.owners.exists?
-          = safe_join(tag.owners.map { |user| user_link(user) }, ', ')
+          = safe_join(@tag.owners.map { |user| user_link(user) }, ', ')
         - else
           %td{class: cycle('even', 'odd'), title: ('This setting is not marked as owned')}
     - if @tag.description.present?
