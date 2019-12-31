@@ -168,33 +168,35 @@ class Character < ApplicationRecord
   def update_galleries
     return unless gallery_group_list_changed?
 
-    gallery_taggings = ActsAsTaggableOn::Tagging.where(taggable_type: 'Gallery')
-
-    old_taggings = gallery_taggings.where(tag_id: Tag.where(name: gallery_group_list_was).select(:id)).pluck(:taggable_id).uniq
-    present_taggings = gallery_taggings.where(tag_id: Tag.where(name: gallery_group_list).select(:id)).pluck(:taggable_id).uniq
+    present_galleries = ActsAsTaggableOn::Tagging.where(taggable_type: 'Gallery').joins(:tag)
+    present_galleries = present_galleries.joins("INNER JOIN galleries ON galleries.id = taggings.taggable_id")
+    present_galleries = present_galleries.where(tags: {type: 'GalleryGroup', name: gallery_group_list})
+    present_galleries = present_galleries.where(galleries: {user_id: user_id}).pluck(:taggable_id)
 
     if new_record? || gallery_group_list_was.nil?
-      add_galleries_from_group(old_taggings, present_taggings)
+      add_galleries_from_group(present_galleries)
     else
-      add_galleries_from_group(old_taggings, present_taggings) unless (gallery_group_list - gallery_group_list_was).empty?
-      remove_galleries_from_group(old_taggings, present_taggings) unless (gallery_group_list_was - gallery_group_list).empty?
+      add_galleries_from_group(present_galleries) unless (gallery_group_list - gallery_group_list_was).empty?
+      remove_galleries_from_group(present_galleries) unless (gallery_group_list_was - gallery_group_list).empty?
     end
   end
 
-  def add_galleries_from_group(old_taggings, present_taggings)
-    new_galleries = Gallery.where(user: user).where(id: present_taggings)
-    new_galleries = new_galleries.where.not(id: old_taggings) if gallery_group_list_was.present?
-    new_galleries = new_galleries.where.not(id: characters_galleries.where(character: self).select(:gallery_id))
-    if new_record?
-      new_galleries.each { |gallery| characters_galleries.new(gallery: gallery, added_by_group: true) }
-    else
-      new_galleries.each { |gallery| characters_galleries.create!(gallery: gallery, added_by_group: true) }
+  def add_galleries_from_group(present_galleries)
+    existing_links = characters_galleries.select(:gallery_id)
+    new_galleries = Gallery.where(id: present_galleries).where.not(id: existing_links)
+    new_galleries.each do |gallery|
+      creates = {gallery: gallery, added_by_group: true}
+      if new_record?
+        characters_galleries.new(creates)
+      else
+        characters_galleries.create!(creates)
+      end
     end
   end
 
-  def remove_galleries_from_group(old_taggings, present_taggings)
-    rem_galleries = Gallery.where(user: user).where(id: old_taggings)
-    rem_galleries = rem_galleries.where.not(id: present_taggings) if gallery_group_list.present?
-    characters_galleries.where(gallery_id: rem_galleries.unscope(:select).select(:id), added_by_group: true).destroy_all
+  def remove_galleries_from_group(present_galleries)
+    rem_cgs = characters_galleries.where(added_by_group: true)
+    rem_cgs = rem_cgs.where.not(gallery_id: present_galleries) if gallery_group_list.present?
+    rem_cgs.destroy_all
   end
 end
