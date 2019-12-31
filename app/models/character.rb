@@ -27,6 +27,7 @@ class Character < ApplicationRecord
 
   before_validation :strip_spaces
   after_destroy :clear_char_ids
+  before_save :update_galleries
 
   scope :ordered, -> { order(name: :asc).order(Arel.sql('lower(screenname) asc'), created_at: :asc, id: :asc) }
   scope :with_name, -> (charname) { where("lower(concat_ws(' | ', name, template_name, screenname)) LIKE ?", "%#{charname.downcase}%") }
@@ -94,7 +95,7 @@ class Character < ApplicationRecord
   def ungrouped_gallery_ids=(new_ids)
     new_ids -= ['']
     new_ids = new_ids.map(&:to_i)
-    group_gallery_ids = gallery_groups.joins(:gallery_tags).except(:order).pluck(Arel.sql('distinct gallery_tags.gallery_id'))
+    group_gallery_ids = Gallery.where(user: user).tagged_with(gallery_group_list_was)
     new_chargals = []
     transaction do
       characters_galleries.each do |char_gal|
@@ -162,5 +163,19 @@ class Character < ApplicationRecord
 
   def strip_spaces
     self.pb = self.pb.strip if self.pb.present?
+  end
+
+  def update_galleries
+    return unless gallery_group_list_changed?
+
+    user_galleries = Gallery.where(user: user)
+
+    new_galleries = user_galleries.tagged_with(gallery_group_list, any: true)
+    new_galleries = new_galleries.tagged_with(gallery_group_list_was, exclude: true) if gallery_group_list_was.present?
+    new_galleries.each { |gallery| characters_galleries.create!(gallery: gallery, added_by_group: true) }
+
+    rem_galleries = user_galleries.tagged_with(gallery_group_list_was, any: true)
+    rem_galleries = rem_galleries.tagged_with(gallery_group_list, exclude: true) if gallery_group_list.present?
+    characters_galleries.where(gallery: rem_galleries, added_by_group: true).destroy_all
   end
 end

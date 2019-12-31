@@ -78,8 +78,8 @@ FactoryBot.define do
       icon_count { 0 }
       gallery_groups { [] }
     end
-    after(:build) do |post, evaluator|
-      post.gallery_group_list = evaluator.gallery_groups if evaluator.gallery_groups.present?
+    after(:build) do |gallery, evaluator|
+      gallery.gallery_group_list = evaluator.gallery_groups if evaluator.gallery_groups.present?
     end
 
     after(:create) do |gallery, evaluator|
@@ -134,6 +134,7 @@ FactoryBot.define do
     transient do
       with_default_icon { false }
       settings { [] }
+      gallery_groups { [] }
     end
     user
     sequence :name do |n|
@@ -143,10 +144,8 @@ FactoryBot.define do
       template { build(:template, user: user) }
     end
     after(:build) do |character, evaluator|
-      if evaluator.settings.present?
-        settings = evaluator.settings.map { |setting| setting.is_a?(String) ? setting : setting.name }
-        character.setting_list = settings
-      end
+      character.setting_list = evaluator.settings if evaluator.settings.present?
+      character.gallery_groups_list = evaluator.gallery_groups if evaluator.gallery_groups.present?
     end
 
     before(:create) do |character, evaluator|
