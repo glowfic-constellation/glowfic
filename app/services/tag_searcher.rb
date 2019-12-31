@@ -1,6 +1,6 @@
 class TagSearcher < Object
   def initialize
-    @qs = ActsAsTaggableOn::Tag.ordered_by_type.select('tags.*')
+    @qs = Tag.ordered_by_type.select('tags.*')
   end
 
   def search(tag_name: nil, tag_type: nil, page: 1)
