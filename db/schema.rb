@@ -10,21 +10,11 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_12_29_025324) do
+ActiveRecord::Schema.define(version: 2019_12_31_000858) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "plpgsql"
-
-  create_table "aato_tag", id: :serial, force: :cascade do |t|
-    t.citext "name"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.integer "taggings_count", default: 0
-    t.text "description"
-    t.string "type"
-    t.index ["name"], name: "index_aato_tag_on_name"
-  end
 
   create_table "audits", id: :serial, force: :cascade do |t|
     t.integer "auditable_id"
@@ -35,12 +25,12 @@ ActiveRecord::Schema.define(version: 2019_12_29_025324) do
     t.string "user_type"
     t.string "username"
     t.string "action"
+    t.jsonb "audited_changes"
     t.integer "version", default: 0
     t.string "comment"
     t.string "remote_address"
     t.datetime "created_at"
     t.string "request_uuid"
-    t.jsonb "audited_changes"
     t.index ["associated_type", "associated_id"], name: "associated_index"
     t.index ["auditable_type", "auditable_id"], name: "auditable_index"
     t.index ["created_at"], name: "index_audits_on_created_at"
@@ -115,15 +105,6 @@ ActiveRecord::Schema.define(version: 2019_12_29_025324) do
     t.string "name", null: false
   end
 
-  create_table "character_tags", id: :serial, force: :cascade do |t|
-    t.integer "character_id", null: false
-    t.integer "tag_id", null: false
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.index ["character_id"], name: "index_character_tags_on_character_id"
-    t.index ["tag_id"], name: "index_character_tags_on_tag_id"
-  end
-
   create_table "characters", id: :serial, force: :cascade do |t|
     t.integer "user_id", null: false
     t.citext "name", null: false
@@ -181,15 +162,6 @@ ActiveRecord::Schema.define(version: 2019_12_29_025324) do
     t.integer "gallery_id"
     t.index ["gallery_id"], name: "index_galleries_icons_on_gallery_id"
     t.index ["icon_id"], name: "index_galleries_icons_on_icon_id"
-  end
-
-  create_table "gallery_tags", id: :serial, force: :cascade do |t|
-    t.integer "gallery_id", null: false
-    t.integer "tag_id", null: false
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.index ["gallery_id"], name: "index_gallery_tags_on_gallery_id"
-    t.index ["tag_id"], name: "index_gallery_tags_on_tag_id"
   end
 
   create_table "icons", id: :serial, force: :cascade do |t|
@@ -298,16 +270,6 @@ ActiveRecord::Schema.define(version: 2019_12_29_025324) do
     t.index ["user_id"], name: "index_post_authors_on_user_id"
   end
 
-  create_table "post_tags", id: :serial, force: :cascade do |t|
-    t.integer "post_id", null: false
-    t.integer "tag_id", null: false
-    t.boolean "suggested", default: false
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.index ["post_id"], name: "index_post_tags_on_post_id"
-    t.index ["tag_id"], name: "index_post_tags_on_tag_id"
-  end
-
   create_table "post_viewers", id: :serial, force: :cascade do |t|
     t.integer "post_id", null: false
     t.integer "user_id", null: false
@@ -401,17 +363,7 @@ ActiveRecord::Schema.define(version: 2019_12_29_025324) do
     t.index ["user_id"], name: "index_report_views_on_user_id"
   end
 
-  create_table "tag_tags", id: :serial, force: :cascade do |t|
-    t.integer "tagged_id", null: false
-    t.integer "tag_id", null: false
-    t.boolean "suggested", default: false
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.index ["tag_id"], name: "index_tag_tags_on_tag_id"
-    t.index ["tagged_id"], name: "index_tag_tags_on_tagged_id"
-  end
-
-  create_table "tagging", id: :serial, force: :cascade do |t|
+  create_table "taggings", force: :cascade do |t|
     t.integer "tag_id"
     t.string "taggable_type"
     t.integer "taggable_id"
@@ -419,25 +371,18 @@ ActiveRecord::Schema.define(version: 2019_12_29_025324) do
     t.integer "tagger_id"
     t.string "context", limit: 128
     t.datetime "created_at"
-    t.index ["context"], name: "index_tagging_on_context"
-    t.index ["tag_id", "taggable_id", "taggable_type", "context", "tagger_id", "tagger_type"], name: "taggings_idx", unique: true
-    t.index ["tag_id"], name: "index_tagging_on_tag_id"
-    t.index ["taggable_id", "taggable_type", "context"], name: "taggings_taggable_context_idx"
-    t.index ["taggable_id", "taggable_type", "tagger_id", "context"], name: "taggings_idy"
-    t.index ["taggable_id"], name: "index_tagging_on_taggable_id"
-    t.index ["taggable_type"], name: "index_tagging_on_taggable_type"
-    t.index ["tagger_id", "tagger_type"], name: "index_tagging_on_tagger_id_and_tagger_type"
-    t.index ["tagger_id"], name: "index_tagging_on_tagger_id"
+    t.index ["tag_id"], name: "index_taggings_on_tag_id"
+    t.index ["taggable_type", "taggable_id"], name: "index_taggings_on_taggable_type_and_taggable_id"
+    t.index ["tagger_type", "tagger_id"], name: "index_taggings_on_tagger_type_and_tagger_id"
   end
 
   create_table "tags", id: :serial, force: :cascade do |t|
-    t.integer "user_id", null: false
     t.citext "name", null: false
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string "type"
     t.text "description"
-    t.boolean "owned", default: false
+    t.integer "taggings_count", default: 0
     t.index ["name"], name: "index_tags_on_name"
     t.index ["type"], name: "index_tags_on_type"
   end

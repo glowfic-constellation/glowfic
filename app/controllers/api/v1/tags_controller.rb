@@ -48,6 +48,6 @@ class Api::V1::TagsController < Api::ApiController
 
   def find_type(type_string=nil)
     type_string ||= params[:t]
-    Taggable::Tag::TYPES.detect {|x| x == type_string }.constantize
+    Tag::TYPES.detect {|x| x == type_string }.constantize
   end
 end

@@ -1,15 +1,16 @@
-class Tag < ApplicationRecord
-  belongs_to :user, optional: false
+class Tag < ActsAsTaggableOn::Tag
   has_many :post_tags, dependent: :destroy, inverse_of: :tag
-  has_many :posts, through: :post_tags, dependent: :destroy
   has_many :character_tags, dependent: :destroy, inverse_of: :tag
-  has_many :characters, through: :character_tags, dependent: :destroy
   has_many :gallery_tags, dependent: :destroy, inverse_of: :tag
-  has_many :galleries, through: :gallery_tags, dependent: :destroy
 
-  TYPES = %w(Setting GalleryGroup)
+  has_many :child_taggings, class_name: 'ActsAsTaggableOn::Tagging', dependent: :destroy
 
-  validates :name, :type, presence: true
+  has_many :owners, through: :child_taggings, source: :taggable, source_type: 'User', dependent: :destroy
+  has_many :posts, through: :child_taggings, source: :taggable, source_type: "Post", dependent: :destroy
+  has_many :characters, through: :child_taggings, source: :taggable, source_type: "Character", dependent: :destroy
+
+  TYPES = %w(ContentWarning Label Setting GalleryGroup)
+
   validates :name, uniqueness: { scope: :type }
 
   scope :ordered_by_type, -> { order(type: :desc, name: :asc) }
@@ -95,5 +96,20 @@ class Tag < ApplicationRecord
       TagTag.where(tagged_id: other_tag.id).update_all(tagged_id: self.id)
       other_tag.destroy
     end
+  end
+
+  # AATO overrides
+  # disables the AATO unscoped uniqueness validation
+  def validates_name_uniqueness?
+    false
+  end
+
+  def self.for_context(context)
+    where(type: context.classify)
+  end
+
+  # overrides the complicated thing AATO does because their column isn't citext
+  def self.named_any(list)
+    where(name: list)
   end
 end

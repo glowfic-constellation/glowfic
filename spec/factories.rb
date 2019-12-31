@@ -189,13 +189,37 @@ FactoryBot.define do
   end
 
   factory :tag do
+    transient do
+      owners { [] }
+    end
+
     sequence :name do |n|
       "Tag#{n}"
     end
-    user
 
     factory :gallery_group, class: GalleryGroup do
       type { 'GalleryGroup' }
+    end
+
+    factory :label, class: Label do
+      type { 'Label' }
+    end
+
+    factory :content_warning, class: ContentWarning do
+      type { 'ContentWarning' }
+    end
+
+    factory :setting, class: Setting do
+      type { 'Setting' }
+
+      transient do
+        parents { [] }
+      end
+
+      after(:build) do |tag, evaluator|
+        tag.setting_list = evaluator.parents if evaluator.parents.present?
+        evaluator.owners.each { |owner| owner.setting_list.add(tag.name) } if evaluator.owners.present?
+      end
     end
   end
 
@@ -255,42 +279,6 @@ FactoryBot.define do
     user { create(:mod_user) }
     sequence :content do |n|
       "content for news post #{n}"
-    end
-  end
-
-  factory :aato_tag, class: Taggable::Tag do
-    transient do
-      owners { [] }
-    end
-
-    sequence :name do |n|
-      "Tag#{n}"
-    end
-
-    factory :label, class: Taggable::Label do
-      type { 'Taggable::Label' }
-    end
-
-    factory :content_warning, class: Taggable::ContentWarning do
-      type { 'Taggable::ContentWarning' }
-    end
-
-    factory :setting, class: Taggable::Setting do
-      type { 'Taggable::Setting' }
-
-      transient do
-        parents { [] }
-        owners { [] }
-      end
-
-      sequence :name do |n|
-        "Tag#{n}"
-      end
-
-      after(:build) do |tag, evaluator|
-        tag.setting_list = evaluator.parents if evaluator.parents.present?
-        evaluator.owners.each { |owner| owner.settings_list.add(setting.name) } if evaluator.owners.present?
-      end
     end
   end
 end

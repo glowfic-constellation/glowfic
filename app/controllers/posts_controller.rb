@@ -241,7 +241,7 @@ class PostsController < WritableController
     use_javascript('posts/search')
 
     # don't start blank if the parameters are set
-    @setting = ActsAsTaggableOn::Tag.where(id: params[:setting_id]) if params[:setting_id].present?
+    @setting = Setting.where(id: params[:setting_id]) if params[:setting_id].present?
     @character = Character.where(id: params[:character_id]) if params[:character_id].present?
     @user = User.active.where(id: params[:author_id]).ordered if params[:author_id].present?
     @board = Board.where(id: params[:board_id]) if params[:board_id].present?
@@ -250,9 +250,7 @@ class PostsController < WritableController
 
     @search_results = Post.ordered
     @search_results = @search_results.where(board_id: params[:board_id]) if params[:board_id].present?
-    if params[:setting_id].present?
-      @search_results = @search_results.where(id: ActsAsTaggableOn::Tag.find(params[:setting_id]).child_taggings.pluck(:taggable_id))
-    end
+    @search_results = @search_results.where(id: Setting.find(params[:setting_id]).child_taggings.pluck(:taggable_id)) if params[:setting_id].present?
     if params[:subject].present?
       @search_results = @search_results.search(params[:subject]).where('LOWER(subject) LIKE ?', "%#{params[:subject].downcase}%")
     end

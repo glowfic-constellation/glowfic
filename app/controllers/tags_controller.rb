@@ -87,7 +87,7 @@ class TagsController < ApplicationController
   private
 
   def find_tag
-    unless (@tag = ActsAsTaggableOn::Tag.find_by_id(params[:id]))
+    unless (@tag = Tag.find_by(id: params[:id]))
       flash[:error] = "Tag could not be found."
       redirect_to tags_path
     end
@@ -111,7 +111,7 @@ class TagsController < ApplicationController
     stats = []
     post_count = @tag.posts.where(privacy: Concealable::PUBLIC).count
     stats << "#{post_count} " + "post".pluralize(post_count) if post_count > 0
-    if @tag.is_a?(Taggable::GalleryGroup)
+    if @tag.is_a?(GalleryGroup)
       gallery_count = @tag.galleries.count
       stats << "#{gallery_count} " + "gallery".pluralize(gallery_count) if gallery_count > 0
     end
@@ -131,7 +131,7 @@ class TagsController < ApplicationController
   def tag_params
     permitted = [:type, :description, :owned]
     permitted.insert(0, :name, :user_id) if current_user.admin? || @tag.user == current_user
-    permitted.insert({setting_list: []}) if @tag.is_a?(ActsAsTaggableOn::Tag) && @tag.child_taggings.where(context: 'setting').exists?
+    permitted.insert({setting_list: []}) if @tag.is_a?(Setting) && @tag.child_taggings.where(context: 'setting').exists?
     params.fetch(:tag, {}).permit(permitted)
   end
 end
