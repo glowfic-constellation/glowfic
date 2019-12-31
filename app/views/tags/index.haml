@@ -25,7 +25,7 @@
       - unless @view.present?
         %th.sub Type
       - if @view == 'Setting'
-        %th.sub Owner
+        %th.sub Owners
       %th.sub Posts
       %th.sub Characters
       %th.sub
@@ -38,11 +38,10 @@
           %td{class: klass}= link_to tag.type.titlecase, tags_path(view: tag.type)
         - if @view == 'Setting'
           %td{class: klass}
-            = link_to tag.user do
-              - if tag.owned?
-                = tag.user.username
-              - else
-                %em= tag.user.deleted? ? 'deleted user' : tag.user.username
+            - if tag.owners.exists?
+              = safe_join(tag.owners.map { |user| user_link(user) }, ', ')
+            - else
+              None
         %td{class: klass}= tag.post_count
         %td{class: klass}= tag.character_count
         %td.width-70.right-align{class: klass}

@@ -96,9 +96,8 @@ RSpec.describe IconsController do
 
       it "goes back to tag page if given" do
         icon = create(:icon, user: user)
-        gallery = create(:gallery, user: user)
-        group = create(:gallery_group, user: user)
-        group.galleries << gallery
+        group = create(:gallery_group, owners: [user])
+        gallery = create(:gallery, user: user, gallery_groups: [group])
         gallery.icons << icon
         expect(icon.galleries.count).to eq(1)
         delete :delete_multiple, params: {
@@ -149,9 +148,8 @@ RSpec.describe IconsController do
 
       it "goes back to tag page if given" do
         icon = create(:icon, user: user)
-        gallery = create(:gallery, user: user)
-        group = create(:gallery_group, user: user)
-        group.galleries << gallery
+        group = create(:gallery_group, owners: [user])
+        gallery = create(:gallery, user: user, gallery_groups: [group])
         gallery.icons << icon
         delete :delete_multiple, params: { marked_ids: [icon.id], gallery_id: gallery.id, return_tag: group.id }
         expect(Icon.find_by_id(icon.id)).to be_nil

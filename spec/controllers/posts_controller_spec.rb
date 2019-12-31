@@ -360,11 +360,10 @@ RSpec.describe PostsController do
         expect(post.content_warning_list).to match_array([warning1.name, warning2.name, 'other'])
         expect(post.label_list).to match_array([label1.name, label2.name, 'other'])
 
-        expect(ActsAsTaggableOn::Tag.count).to eq(6)
-        expect(ActsAsTaggableOn::Tagging.count).to eq(0)
         expect(Setting.count).to eq(2)
         expect(ContentWarning.count).to eq(2)
         expect(Label.count).to eq(2)
+        expect(ActsAsTaggableOn::Tagging.count).to eq(0)
 
         # editor_setup:
         expect(assigns(:javascripts)).to include('posts/editor')
@@ -401,8 +400,8 @@ RSpec.describe PostsController do
       login
       expect {
         post :create, params: { post: {subject: 'a', board_id: create(:board).id, label_list: tags} }
-      }.to change{ActsAsTaggableOn::Tag.count}.by(1)
-      expect(ActsAsTaggableOn::Tag.last.name).to eq('atag')
+      }.to change{Label.count}.by(1)
+      expect(Label.last.name).to eq('atag')
       expect(assigns(:post).labels.count).to eq(3)
     end
 
@@ -422,7 +421,7 @@ RSpec.describe PostsController do
         post :create, params: { post: {subject: 'a', board_id: create(:board).id, setting_list: tags} }
       }.to change{Setting.count}.by(1)
       expect(Setting.last.name).to eq('atag')
-      expect(assigns(:post).settings.count).to eq(4)
+      expect(assigns(:post).settings.count).to eq(3)
     end
 
     it "creates new content warnings" do
@@ -442,7 +441,7 @@ RSpec.describe PostsController do
         }
       }.to change{ContentWarning.count}.by(1)
       expect(ContentWarning.last.name).to eq('atag')
-      expect(assigns(:post).content_warnings.count).to eq(4)
+      expect(assigns(:post).content_warnings.count).to eq(3)
     end
 
     it "creates new post authors correctly" do
@@ -648,11 +647,10 @@ RSpec.describe PostsController do
       expect(post.content_warning_list).to match_array([warning1.name, warning2.name, 'other'])
       expect(post.label_list).to match_array([label1.name, label2.name, 'other'])
 
-      expect(ActsAsTaggableOn::Tag.count).to eq(6)
-      expect(ActsAsTaggableOn::Tagging.count).to eq(0)
       expect(Setting.count).to eq(2)
       expect(ContentWarning.count).to eq(2)
       expect(Label.count).to eq(2)
+      expect(ActsAsTaggableOn::Tagging.count).to eq(0)
     end
 
     it "creates a post" do
@@ -722,15 +720,14 @@ RSpec.describe PostsController do
       expect(post.content_warnings.size).to eq(3)
       expect(post.labels.size).to eq(3)
 
-      expect(post.settings.pluck(:id)).to match_array([setting1, setting2, ActsAsTaggableOn::Tag.for_context(:settings).last].map(&:id))
-      expect(post.content_warnings.pluck(:id)).to match_array([warning1.id, warning2.id, ActsAsTaggableOn::Tag.for_context(:content_warnings).last.id])
-      expect(post.labels.pluck(:id)).to match_array([label1.id, label2.id, ActsAsTaggableOn::Tag.for_context(:labels).last.id])
+      expect(post.settings.pluck(:id)).to match_array([setting1, setting2, Setting.last].map(&:id))
+      expect(post.content_warnings.pluck(:id)).to match_array([warning1.id, warning2.id, ContentWarning.last.id])
+      expect(post.labels.pluck(:id)).to match_array([label1.id, label2.id, Label.last.id])
 
-      expect(ActsAsTaggableOn::Tag.count).to eq(9)
-      expect(ActsAsTaggableOn::Tagging.count).to eq(9)
       expect(Setting.count).to eq(3)
       expect(ContentWarning.count).to eq(3)
       expect(Label.count).to eq(3)
+      expect(ActsAsTaggableOn::Tagging.count).to eq(9)
     end
 
     it "generates a flat post" do
@@ -1867,11 +1864,10 @@ RSpec.describe PostsController do
         expect(post.setting_list).to match_array([setting1.name, setting2.name, 'other'])
         expect(post.content_warning_list).to match_array([warning1.name, warning2.name, 'other'])
         expect(post.label_list).to match_array([label1.name, label2.name, 'other'])
-        expect(ActsAsTaggableOn::Tag.count).to eq(6)
-        expect(ActsAsTaggableOn::Tagging.count).to eq(0)
         expect(Setting.count).to eq(2)
         expect(ContentWarning.count).to eq(2)
         expect(Label.count).to eq(2)
+        expect(ActsAsTaggableOn::Tagging.count).to eq(0)
 
         # in storage
         post = post.reload
@@ -1915,25 +1911,21 @@ RSpec.describe PostsController do
         dupel = create(:label, name: 'dupelabel')
 
         post = create(:post, user: user, settings: [setting, rems], content_warnings: [warning, remw], labels: [label, reml])
-
-        expect(ActsAsTaggableOn::Tag.count).to eq(9)
-        expect(ActsAsTaggableOn::Tagging.count).to eq(6)
         expect(Setting.count).to eq(3)
         expect(ContentWarning.count).to eq(3)
         expect(Label.count).to eq(3)
-        expect(PostTag.count).to eq(6)
+        expect(ActsAsTaggableOn::Tagging.count).to eq(6)
 
         # for each type: keep one, remove one, create one, existing one
         setting_names = [setting.name, 'setting', 'dupesetting']
-        warning_ids = [warning.id, '_warning', '_dupewarning']
-        label_ids = [label.id, '_label', '_dupelabel']
+        warning_names = [warning.name, 'warning', 'dupewarning']
+        label_names = [label.name, 'label', 'dupelabel']
         put :update, params: {
           id: post.id,
           post: {
             setting_list: setting_names,
-            setting_ids: setting_ids,
-            content_warning_ids: warning_ids,
-            label_ids: label_ids
+            content_warning_list: warning_names,
+            label_list: label_names
           }
         }
         expect(response).to redirect_to(post_url(post))
@@ -1945,14 +1937,13 @@ RSpec.describe PostsController do
         expect(post.settings.pluck(:name)).to match_array([setting.name, 'setting', 'dupesetting'])
         expect(post.content_warnings.pluck(:name)).to match_array([warning.name, 'warning', 'dupewarning'])
         expect(post.labels.pluck(:name)).to match_array([label.name, 'label', 'dupelabel'])
-        expect(ActsAsTaggableOn::Tag.count).to eq(12)
+        expect(Setting.count).to eq(4)
+        expect(ContentWarning.count).to eq(4)
+        expect(Label.count).to eq(4)
         expect(ActsAsTaggableOn::Tagging.count).to eq(9)
         expect(ActsAsTaggableOn::Tagging.where(taggable: post, tag: [setting, warning, label]).count).to eq(3)
         expect(ActsAsTaggableOn::Tagging.where(taggable: post, tag: [dupes, dupew, dupel]).count).to eq(3)
         expect(ActsAsTaggableOn::Tagging.where(taggable: post, tag: [reml, remw, rems]).count).to eq(0)
-        expect(Setting.count).to eq(4)
-        expect(ContentWarning.count).to eq(4)
-        expect(Label.count).to eq(4)
       end
 
       it "uses extant tags if available" do
@@ -2152,11 +2143,10 @@ RSpec.describe PostsController do
 
         post = create(:post, user: user, settings: [setting, rems], content_warnings: [warning, remw], labels: [label, reml])
 
-        expect(ActsAsTaggableOn::Tag.count).to eq(9)
-        expect(ActsAsTaggableOn::Tagging.count).to eq(6)
         expect(Setting.count).to eq(3)
         expect(ContentWarning.count).to eq(3)
         expect(Label.count).to eq(3)
+        expect(ActsAsTaggableOn::Tagging.count).to eq(6)
 
         char1 = create(:character, user: user)
         char2 = create(:template_character, user: user)
@@ -2205,14 +2195,13 @@ RSpec.describe PostsController do
         expect(post.content_warning_list).to match_array([warning.name, 'warning', 'dupewarning'])
         expect(post.label_list).to match_array([label.name, 'label', 'dupelabel'])
 
-        expect(ActsAsTaggableOn::Tag.count).to eq(9)
+        expect(Setting.count).to eq(3)
+        expect(ContentWarning.count).to eq(3)
+        expect(Label.count).to eq(3)
         expect(ActsAsTaggableOn::Tagging.count).to eq(6)
         expect(ActsAsTaggableOn::Tagging.where(taggable: post, tag: [setting, warning, label]).count).to eq(3)
         expect(ActsAsTaggableOn::Tagging.where(taggable: post, tag: [dupes, dupew, dupel]).count).to eq(0)
         expect(ActsAsTaggableOn::Tagging.where(taggable: post, tag: [reml, remw, rems]).count).to eq(3)
-        expect(Setting.count).to eq(3)
-        expect(ContentWarning.count).to eq(3)
-        expect(Label.count).to eq(3)
       end
 
       it "works" do

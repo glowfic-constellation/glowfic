@@ -1,7 +1,7 @@
 module CharacterHelper
   def settings_info(characters)
     settings = characters.joins(:settings).group(:id)
-    sql = Arel.sql('ARRAY_AGG(aato_tag.id ORDER BY tagging.id ASC) AS setting_ids, ARRAY_AGG(aato_tag.name ORDER BY tagging.id ASC)')
+    sql = Arel.sql('ARRAY_AGG(tags.id ORDER BY taggings.created_at ASC) AS setting_ids, ARRAY_AGG(tags.name ORDER BY taggings.created_at ASC)')
     settings = settings.pluck(:id, sql)
     settings.map{ |i| [i[0], i[1].zip(i[2])] }.to_h
   end

@@ -641,7 +641,7 @@ RSpec.describe CharactersController do
       character = create(:character, gallery_groups: [group], user: user)
 
       login_as(user)
-      put :update, params: { id: character.id, character: {gallery_group_ids: ['']} }
+      put :update, params: { id: character.id, character: {gallery_group_list: ['']} }
       expect(flash[:success]).to eq('Character saved successfully.')
       character.reload
       expect(character.gallery_groups).to eq([])

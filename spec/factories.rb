@@ -145,7 +145,7 @@ FactoryBot.define do
     end
     after(:build) do |character, evaluator|
       character.setting_list = evaluator.settings if evaluator.settings.present?
-      character.gallery_groups_list = evaluator.gallery_groups if evaluator.gallery_groups.present?
+      character.gallery_group_list = evaluator.gallery_groups if evaluator.gallery_groups.present?
     end
 
     before(:create) do |character, evaluator|
@@ -212,7 +212,13 @@ FactoryBot.define do
 
       after(:build) do |tag, evaluator|
         tag.setting_list = evaluator.parents if evaluator.parents.present?
-        evaluator.owners.each { |owner| owner.setting_list.add(tag.name) } if evaluator.owners.present?
+      end
+
+      after(:create) do |tag, evaluator|
+        evaluator.owners.each do |owner|
+          owner.setting_list.add(tag.name)
+          owner.save!
+        end
       end
     end
   end

@@ -34,7 +34,7 @@
           = link_to tag_path(@tag, view: 'characters') do
             = image_tag "icons/group.png", class: 'vmid', alt: ''
             Characters
-    - if @tag.is_a?(Setting) && @tag.child_settings.present?
+    - if @tag.is_a?(Setting) && @tag.children.present?
       %tr
         %td.centered{class: cycle('even', 'odd')}
           = link_to tag_path(@tag, view: 'settings') do

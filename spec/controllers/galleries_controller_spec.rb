@@ -73,7 +73,7 @@ RSpec.describe GalleriesController do
         expect(assigns(:page_title)).to eq('New Gallery')
         expect(flash[:error][:message]).to eq('Your gallery could not be saved because of the following problems:')
         expect(flash[:error][:array]).to eq(["Name can't be blank"])
-        expect(assigns(:gallery).gallery_groups.map(&:id)).to eq([group.id])
+        expect(assigns(:gallery).gallery_group_list).to eq([group.name])
         expect(assigns(:gallery).icon_ids).to eq([icon.id])
       end
     end
@@ -109,16 +109,16 @@ RSpec.describe GalleriesController do
       existing_name = create(:gallery_group)
       existing_case = create(:gallery_group)
       tags = [
-        '_atag',
-        '_atag',
-        create(:gallery_group).id,
+        'atag',
+        'atag',
+        create(:gallery_group).name,
         '',
-        '_' + existing_name.name,
-        '_' + existing_case.name.upcase
+        existing_name.name,
+        existing_case.name.upcase
       ]
       login
       expect {
-        post :create, params: { gallery: {name: 'a', gallery_group_ids: tags} }
+        post :create, params: { gallery: {name: 'a', gallery_group_list: tags} }
       }.to change{GalleryGroup.count}.by(1)
       expect(GalleryGroup.last.name).to eq('atag')
       expect(assigns(:gallery).gallery_groups.count).to eq(4)
@@ -304,7 +304,7 @@ RSpec.describe GalleriesController do
       it "sets relevant fields" do
         user_id = login
         group = create(:gallery_group)
-        gallery = create(:gallery, user_id: user_id, gallery_groups: [group])
+        gallery = create(:gallery, user_id: user_id, gallery_group_list: [group.name])
         get :edit, params: { id: gallery.id }
         expect(response.status).to eq(200)
         expect(assigns(:javascripts)).to include('galleries/editor')
@@ -362,7 +362,7 @@ RSpec.describe GalleriesController do
         create(:icon, user: gallery.user) # icon
         group = create(:gallery_group)
         login_as(gallery.user)
-        post :update, params: { id: gallery.id, gallery: {name: '', gallery_group_ids: [group.id]} }
+        post :update, params: { id: gallery.id, gallery: {name: '', gallery_group_list: [group.name]} }
         expect(response.status).to eq(200)
         expect(response).to render_template(:edit)
         expect(assigns(:gallery).gallery_groups.map(&:id)).to eq([group.id])
@@ -374,7 +374,7 @@ RSpec.describe GalleriesController do
       gallery = create(:gallery, user: user)
       group = create(:gallery_group)
       login_as(user)
-      put :update, params: { id: gallery.id, gallery: {name: 'NewGalleryName', gallery_group_ids: [group.id]} }
+      put :update, params: { id: gallery.id, gallery: {name: 'NewGalleryName', gallery_group_list: [group.name]} }
       expect(response).to redirect_to(edit_gallery_url(gallery))
       expect(flash[:success]).to eq('Gallery saved.')
       gallery.reload
@@ -459,15 +459,15 @@ RSpec.describe GalleriesController do
       gallery = create(:gallery)
       login_as(gallery.user)
       tags = [
-        '_atag',
-        '_atag',
-        create(:gallery_group).id,
+        'atag',
+        'atag',
+        create(:gallery_group).name,
         '',
-        '_' + existing_name.name,
-        '_' + existing_case.name.upcase
+        existing_name.name,
+        existing_case.name.upcase
       ]
       expect {
-        post :update, params: { id: gallery.id, gallery: {gallery_group_ids: tags} }
+        post :update, params: { id: gallery.id, gallery: {gallery_group_list: tags} }
       }.to change{GalleryGroup.count}.by(1)
       expect(GalleryGroup.last.name).to eq('atag')
       expect(assigns(:gallery).gallery_groups.count).to eq(4)
@@ -477,12 +477,12 @@ RSpec.describe GalleriesController do
       user = create(:user)
       login_as(user)
       gallery = create(:gallery, user: user)
-      group3 = create(:gallery_group, user: user)
-      group1 = create(:gallery_group, user: user)
-      group2 = create(:gallery_group, user: user)
+      group3 = create(:gallery_group, owners: [user])
+      group1 = create(:gallery_group, owners: [user])
+      group2 = create(:gallery_group, owners: [user])
       post :update, params: {
         id: gallery.id,
-        gallery: { gallery_group_ids: [group1, group2, group3].map(&:id) }
+        gallery: { gallery_group_list: [group1, group2, group3].map(&:name) }
       }
       expect(gallery.gallery_groups).to eq([group1, group2, group3])
     end

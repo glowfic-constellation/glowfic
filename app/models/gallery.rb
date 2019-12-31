@@ -35,9 +35,9 @@ class Gallery < ApplicationRecord
       <<~SQL
         ARRAY(
           SELECT row_to_json(ROW(tags.id, tags.name)) FROM tags
-          LEFT JOIN taggings ON tagging.tag_id = tags.id
-          WHERE tagging.taggable_id = galleries.id AND AND tagging.taggable_type = 'Gallery' AND tags.type = 'GalleryGroup'
-          ORDER BY tagging.created_at ASC
+          LEFT JOIN taggings ON taggings.tag_id = tags.id
+          WHERE taggings.taggable_id = galleries.id AND taggings.taggable_type = 'Gallery' AND tags.type = 'GalleryGroup'
+          ORDER BY taggings.created_at ASC
         ) AS gallery_groups_data_internal
       SQL
     )
@@ -73,12 +73,26 @@ class Gallery < ApplicationRecord
 
     user_characters = Character.where(user: user)
 
-    new_characters = user_characters.tagged_with(new_groups, any: true)
-    new_characters = new_characters.tagged_with(gallery_group_list_was, exclude: true) if gallery_group_list_was.present?
-    new_characters.each { |character| characters_galleries.create!(character: character, added_by_group: true) }
+    character_taggings = ActsAsTaggableOn::Tagging.where(taggable_type: 'Character')
 
-    rem_characters = user_characters.tagged_with(rem_groups, any: true)
-    rem_characters = rem_characters.tagged_with(gallery_group_list, exclude: true) if gallery_group_list.present?
-    characters_galleries.where(character: rem_characters, added_by_group: true).destroy_all
+    old_taggings = character_taggings.where(tag_id: Tag.where(name: gallery_group_list_was).select(:id)).pluck(:taggable_id)
+    present_taggings = character_taggings.where(tag_id: Tag.where(name: gallery_group_list).select(:id)).pluck(:taggable_id)
+
+    unless (gallery_group_list - gallery_group_list_was.to_a).empty?
+      new_characters = user_characters.where(id: present_taggings)
+      new_characters = new_characters.where.not(id: old_taggings) if gallery_group_list_was.present?
+      new_characters = new_characters.where.not(id: characters_galleries.where(gallery: self).select(:character_id))
+      if new_record?
+        new_characters.each { |character| characters_galleries.new(character: character, added_by_group: true) }
+      else
+        new_characters.each { |character| characters_galleries.create!(character: character, added_by_group: true) }
+      end
+    end
+
+    unless new_record? || (gallery_group_list_was.to_a - gallery_group_list).empty?
+      rem_characters = user_characters.where(id: old_taggings)
+      rem_characters = rem_characters.where.not(id: present_taggings) if gallery_group_list.present?
+      characters_galleries.where(character: rem_characters, added_by_group: true).destroy_all
+    end
   end
 end

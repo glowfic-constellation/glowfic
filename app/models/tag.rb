@@ -26,8 +26,8 @@ class Tag < ActsAsTaggableOn::Tag
   scope :with_item_counts, -> {
     select(
       <<~SQL
-        (SELECT COUNT(DISTINCT taggging.taggable_id) FROM taggings WHERE tagging.tag_id = tags.id AND tagging.taggable_type = 'Post') AS post_count,
-        (SELECT COUNT(DISTINCT taggging.taggable_id) FROM taggings WHERE tagging.tag_id = tags.id AND tagging.taggable_type = 'Character') AS character_count'
+        (SELECT COUNT(DISTINCT taggings.taggable_id) FROM taggings WHERE taggings.tag_id = tags.id AND taggings.taggable_type = 'Post') AS post_count,
+        (SELECT COUNT(DISTINCT taggings.taggable_id) FROM taggings WHERE taggings.tag_id = tags.id AND taggings.taggable_type = 'Character') AS character_count
       SQL
     )
   }
@@ -38,22 +38,22 @@ class Tag < ActsAsTaggableOn::Tag
     return true if deletable_by?(user)
     return true if user.has_permission?(:edit_tags)
     return false unless is_a?(Setting)
-    !owned?
+    !owners.exists?
   end
 
   def deletable_by?(user)
     return false unless user
     return true if user.has_permission?(:delete_tags)
-    user.id == user_id
+    owner_ids.include?(user.id)
   end
 
   def as_json(options={})
     tag_json = {id: self.id, text: self.name}
     return tag_json unless options[:include].present?
     if options[:include].include?(:gallery_ids)
-      g_tags = gallery_tags.joins(:gallery)
+      g_tags = ActsAsTaggableOn::Tagging.where(taggable_type: 'Gallery').joins('INNER JOIN galleries ON galleries.id = taggings.taggable_id')
       g_tags = g_tags.where(galleries: {user_id: options[:user_id]}) if options[:user_id].present?
-      tag_json[:gallery_ids] = g_tags.pluck(:gallery_id)
+      tag_json[:gallery_ids] = g_tags.pluck('galleries.id')
     end
     tag_json
   end
@@ -100,17 +100,42 @@ class Tag < ActsAsTaggableOn::Tag
   end
 
   # AATO overrides
-  # disables the AATO unscoped uniqueness validation
-  def validates_name_uniqueness?
-    false
-  end
-
   def self.for_context(context)
     where(type: context.classify)
   end
 
   # overrides the complicated thing AATO does because their column isn't citext
+  def self.named(name)
+    where(name: name)
+  end
+
   def self.named_any(list)
     where(name: list)
+  end
+
+  def self.named_like(name)
+    where('name LIKE ?', sanitize_sql_like(name))
+  end
+
+  def self.named_like_any(list)
+    where('name LIKE ?', sanitize_sql_like(list))
+  end
+
+  def self.find_or_create_all_with_like_by_name(*list)
+    list = Array(list).flatten
+
+    return [] if list.empty?
+
+    list.map do |tag_name|
+      existing_tag = self.find_by(name: tag_name)
+      existing_tag || create!(name: tag_name)
+    end
+  end
+
+  private
+
+  # disables the AATO unscoped uniqueness validation
+  def validates_name_uniqueness?
+    false
   end
 end

@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 class GalleriesController < UploadingController
-  include Taggable
-
   before_action :login_required, except: [:index, :show, :search]
   before_action :find_gallery, only: [:destroy, :edit, :update] # assumes login_required
   before_action :setup_new_icons, only: [:add, :icon]
@@ -36,7 +34,6 @@ class GalleriesController < UploadingController
   def create
     @gallery = Gallery.new(gallery_params)
     @gallery.user = current_user
-    @gallery.gallery_groups = process_tags(GalleryGroup, :gallery, :gallery_group_ids)
 
     begin
       @gallery.save!
@@ -114,7 +111,6 @@ class GalleriesController < UploadingController
 
     begin
       Gallery.transaction do
-        @gallery.gallery_groups = process_tags(GalleryGroup, :gallery, :gallery_group_ids)
         @gallery.save!
       end
     rescue ActiveRecord::RecordInvalid

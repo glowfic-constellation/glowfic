@@ -38,7 +38,7 @@ class Post < ApplicationRecord
   validate :valid_board, :valid_board_section
 
   before_create :build_initial_flat_post, :set_timestamps
-  before_update :set_timestamps
+  before_update :set_timestamps, :reset_warnings
   before_validation :set_last_user, on: :create
   after_commit :notify_followers, on: :create
 
@@ -346,8 +346,10 @@ class Post < ApplicationRecord
     true
   end
 
-  # TODO: work out how to invoke this
-  def reset_warnings(_warning)
+  def reset_warnings
+    return unless content_warning_list_changed?
+    return if content_warning_list.blank?
+    return if (content_warning_list - content_warning_list_was.to_a).empty?
     PostView.where(post_id: id).update_all(warnings_hidden: false)
   end
 

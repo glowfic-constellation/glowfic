@@ -18,8 +18,8 @@ class Api::V1::TagsController < Api::ApiController
 
     # gallery groups only searches groups the specified user has used
     if (user_id = params[:user_id]) && type == GalleryGroup
-      user_gal_tags = GalleryGroup.joins(gallery_tags: [:gallery]).where(galleries: {user_id: user_id}).pluck(:id)
-      user_char_tags = GalleryGroup.joins(character_tags: [:character]).where(characters: {user_id: user_id}).pluck(:id)
+      user_gal_tags = GalleryGroup.joins(:galleries).where(galleries: {user_id: user_id}).pluck(:id)
+      user_char_tags = GalleryGroup.joins(:characters).where(characters: {user_id: user_id}).pluck(:id)
       queryset = queryset.where(id: user_gal_tags + user_char_tags)
     end
 

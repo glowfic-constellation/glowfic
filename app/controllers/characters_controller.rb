@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 class CharactersController < ApplicationController
-  include Taggable
-
   before_action :login_required, except: [:index, :show, :facecasts, :search]
   before_action :find_character, only: [:show, :edit, :update, :duplicate, :destroy, :replace, :do_replace]
   before_action :find_group, only: :index
@@ -38,8 +36,6 @@ class CharactersController < ApplicationController
   def create
     @character = Character.new(user: current_user)
     @character.assign_attributes(character_params)
-    @character.settings = process_tags(Setting, :character, :setting_ids)
-    @character.gallery_groups = process_tags(GalleryGroup, :character, :gallery_group_ids)
     build_template
 
     begin
@@ -81,8 +77,6 @@ class CharactersController < ApplicationController
           render :edit and return
         end
 
-        @character.settings = process_tags(Setting, :character, :setting_ids)
-        @character.gallery_groups = process_tags(GalleryGroup, :character, :gallery_group_ids)
         @character.save!
       end
     rescue ActiveRecord::RecordInvalid

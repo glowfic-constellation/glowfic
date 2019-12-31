@@ -170,12 +170,26 @@ class Character < ApplicationRecord
 
     user_galleries = Gallery.where(user: user)
 
-    new_galleries = user_galleries.tagged_with(gallery_group_list, any: true)
-    new_galleries = new_galleries.tagged_with(gallery_group_list_was, exclude: true) if gallery_group_list_was.present?
-    new_galleries.each { |gallery| characters_galleries.create!(gallery: gallery, added_by_group: true) }
+    gallery_taggings = ActsAsTaggableOn::Tagging.where(taggable_type: 'Gallery')
 
-    rem_galleries = user_galleries.tagged_with(gallery_group_list_was, any: true)
-    rem_galleries = rem_galleries.tagged_with(gallery_group_list, exclude: true) if gallery_group_list.present?
-    characters_galleries.where(gallery: rem_galleries, added_by_group: true).destroy_all
+    old_taggings = gallery_taggings.where(tag_id: Tag.where(name: gallery_group_list_was).select(:id)).pluck(:taggable_id).uniq
+    present_taggings = gallery_taggings.where(tag_id: Tag.where(name: gallery_group_list).select(:id)).pluck(:taggable_id).uniq
+
+    unless (gallery_group_list - gallery_group_list_was.to_a).empty?
+      new_galleries = user_galleries.where(id: present_taggings)
+      new_galleries = new_galleries.where.not(id: old_taggings) if gallery_group_list_was.present?
+      new_galleries = new_galleries.where.not(id: characters_galleries.where(character: self).select(:gallery_id))
+      if new_record?
+        new_galleries.each { |gallery| characters_galleries.new(gallery: gallery, added_by_group: true) }
+      else
+        new_galleries.each { |gallery| characters_galleries.create!(gallery: gallery, added_by_group: true) }
+      end
+    end
+
+    unless new_record? || (gallery_group_list_was.to_a - gallery_group_list).empty?
+      rem_galleries = user_galleries.where(id: old_taggings)
+      rem_galleries = rem_galleries.where.not(id: present_taggings) if gallery_group_list.present?
+      characters_galleries.where(gallery_id: rem_galleries.unscope(:select).select(:id), added_by_group: true).destroy_all
+    end
   end
 end
