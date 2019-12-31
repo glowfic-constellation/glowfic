@@ -71,28 +71,33 @@ class Gallery < ApplicationRecord
   def update_characters
     return unless gallery_group_list_changed?
 
-    user_characters = Character.where(user: user)
-
     character_taggings = ActsAsTaggableOn::Tagging.where(taggable_type: 'Character')
 
     old_taggings = character_taggings.where(tag_id: Tag.where(name: gallery_group_list_was).select(:id)).pluck(:taggable_id)
     present_taggings = character_taggings.where(tag_id: Tag.where(name: gallery_group_list).select(:id)).pluck(:taggable_id)
 
-    unless (gallery_group_list - gallery_group_list_was.to_a).empty?
-      new_characters = user_characters.where(id: present_taggings)
-      new_characters = new_characters.where.not(id: old_taggings) if gallery_group_list_was.present?
-      new_characters = new_characters.where.not(id: characters_galleries.where(gallery: self).select(:character_id))
-      if new_record?
-        new_characters.each { |character| characters_galleries.new(character: character, added_by_group: true) }
-      else
-        new_characters.each { |character| characters_galleries.create!(character: character, added_by_group: true) }
-      end
+    if new_record? || gallery_group_list_was.nil?
+      add_characters_from_group(old_taggings, present_taggings)
+    else
+      add_characters_from_group(old_taggings, present_taggings) unless (gallery_group_list - gallery_group_list_was).empty?
+      remove_characters_from_group(old_taggings, present_taggings) unless (gallery_group_list_was - gallery_group_list).empty?
     end
+  end
 
-    unless new_record? || (gallery_group_list_was.to_a - gallery_group_list).empty?
-      rem_characters = user_characters.where(id: old_taggings)
-      rem_characters = rem_characters.where.not(id: present_taggings) if gallery_group_list.present?
-      characters_galleries.where(character: rem_characters, added_by_group: true).destroy_all
+  def add_characters_from_group(old_taggings, present_taggings)
+    new_characters = Character.where(user: user).where(id: present_taggings)
+    new_characters = new_characters.where.not(id: old_taggings) if gallery_group_list_was.present?
+    new_characters = new_characters.where.not(id: characters_galleries.where(gallery: self).select(:character_id))
+    if new_record?
+      new_characters.each { |character| characters_galleries.new(character: character, added_by_group: true) }
+    else
+      new_characters.each { |character| characters_galleries.create!(character: character, added_by_group: true) }
     end
+  end
+
+  def remove_characters_from_group(old_taggings, present_taggings)
+    rem_characters = Character.where(user: user).where(id: old_taggings)
+    rem_characters = rem_characters.where.not(id: present_taggings) if gallery_group_list.present?
+    characters_galleries.where(character: rem_characters, added_by_group: true).destroy_all
   end
 end
