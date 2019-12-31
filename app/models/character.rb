@@ -90,7 +90,7 @@ class Character < ApplicationRecord
   def ungrouped_gallery_ids=(new_ids)
     new_ids -= ['']
     new_ids = new_ids.map(&:to_i).uniq
-    group_gallery_ids = Gallery.where(user: user).tagged_with(gallery_group_list_was)
+    group_gallery_ids = GalleryGroup.where(name: gallery_group_list).joins(:galleries).where(galleries: {user_id: user_id}).pluck('galleries.id')
     characters_galleries.each do |char_gal|
       gallery_id = char_gal.gallery_id
       if new_ids.include?(gallery_id)
