@@ -1,7 +1,7 @@
 class Tag < ActsAsTaggableOn::Tag
-  has_many :post_tags, dependent: :destroy, inverse_of: :tag
-  has_many :character_tags, dependent: :destroy, inverse_of: :tag
-  has_many :gallery_tags, dependent: :destroy, inverse_of: :tag
+  has_many :post_tags, inverse_of: :tag
+  has_many :character_tags, inverse_of: :tag
+  has_many :gallery_tags, inverse_of: :tag
 
   has_many :child_taggings, class_name: 'ActsAsTaggableOn::Tagging', dependent: :destroy
 
@@ -19,18 +19,19 @@ class Tag < ActsAsTaggableOn::Tag
 
   scope :ordered_by_id, -> { order(id: :asc) }
 
-  scope :ordered_by_char_tag, -> { order('character_tags.id ASC') }
+  scope :ordered_by_tagging, -> { order('tagging.created_at ASC') }
 
-  scope :ordered_by_gallery_tag, -> { order('gallery_tags.id ASC') }
 
-  scope :ordered_by_post_tag, -> { order('post_tags.id ASC') }
-
-  scope :ordered_by_tag_tag, -> { order('tag_tags.id ASC') }
-
+  # rubocop:disable Style/TrailingCommaInArguments
   scope :with_item_counts, -> {
-    select('(SELECT COUNT(DISTINCT post_tags.post_id) FROM post_tags WHERE post_tags.tag_id = tags.id) AS post_count,
-    (SELECT COUNT(DISTINCT character_tags.character_id) FROM character_tags WHERE character_tags.tag_id = tags.id) AS character_count')
+    select(
+      <<~SQL
+        (SELECT COUNT(DISTINCT taggging.taggable_id) FROM taggings WHERE tagging.tag_id = tags.id AND tagging.taggable_type = 'Post') AS post_count,
+        (SELECT COUNT(DISTINCT taggging.taggable_id) FROM taggings WHERE tagging.tag_id = tags.id AND tagging.taggable_type = 'Character') AS character_count'
+      SQL
+    )
   }
+  # rubocop:enable Style/TrailingCommaInArguments
 
   def editable_by?(user)
     return false unless user

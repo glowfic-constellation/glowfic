@@ -67,7 +67,7 @@ RSpec.describe GalleriesController do
         icon = create(:icon)
         group = create(:gallery_group)
         login_as(icon.user)
-        post :create, params: { gallery: {gallery_group_ids: [group.id], icon_ids: [icon.id]} }
+        post :create, params: { gallery: {gallery_group_list: [group.name], icon_ids: [icon.id]} }
         expect(response.status).to eq(200)
         expect(response).to render_template(:new)
         expect(assigns(:page_title)).to eq('New Gallery')
@@ -94,7 +94,7 @@ RSpec.describe GalleriesController do
       icon = create(:icon)
       group = create(:gallery_group)
       login_as(icon.user)
-      post :create, params: { gallery: {name: 'Test Gallery', icon_ids: [icon.id], gallery_group_ids: [group.id]} }
+      post :create, params: { gallery: {name: 'Test Gallery', icon_ids: [icon.id], gallery_group_list: [group.name]} }
       expect(Gallery.count).to eq(1)
       gallery = assigns(:gallery).reload
       expect(response).to redirect_to(gallery_url(gallery))

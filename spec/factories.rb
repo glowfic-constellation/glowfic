@@ -54,24 +54,14 @@ FactoryBot.define do
       "test subject #{n}"
     end
     after(:build) do |post, evaluator|
-      if evaluator.settings.present?
-        settings = evaluator.settings.map { |setting| setting.is_a?(String) ? setting : setting.name }
-        post.setting_list = settings
-      end
+      post.setting_list = evaluator.settings if evaluator.settings.present?
+      post.label_list = evaluator.labels if evaluator.labels.present?
+      post.content_warning_list = evaluator.content_warnings if evaluator.content_warnings.present?
     end
 
     before(:create) do |post, evaluator|
       post.character = create(:character, user: post.user) if evaluator.with_character
       post.icon = create(:icon, user: post.user) if evaluator.with_icon
-
-      # clean up labels and warnings
-      if evaluator.labels.present?
-        labels = evaluator.labels.map { |label| label.is_a?(String) ? label : label.name }
-        post.label_list.add(labels)
-      end
-      if evaluator.content_warnings.present?
-        post.content_warning_list.add(evaluator.content_warnings)
-      end
     end
 
     after(:create) do |post, evaluator|
@@ -86,7 +76,12 @@ FactoryBot.define do
     end
     transient do
       icon_count { 0 }
+      gallery_groups { [] }
     end
+    after(:build) do |post, evaluator|
+      post.gallery_group_list = evaluator.gallery_groups if evaluator.gallery_groups.present?
+    end
+
     after(:create) do |gallery, evaluator|
       evaluator.icon_count.times do
         gallery.icons << create(:icon, user: gallery.user)
