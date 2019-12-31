@@ -9,12 +9,16 @@ class Taggable::Tag < ActsAsTaggableOn::Tag
 
   validates :name, uniqueness: { scope: :type }
 
-  def self.for_context(context)
-    joins(:child_taggings)
-      .where(["#{ActsAsTaggableOn.taggings_table}.context = ?", context])
-      .select("DISTINCT #{ActsAsTaggableOn.tags_table}.*")
+  # disables the AATO unscoped uniqueness validation
+  def validates_name_uniqueness?
+    false
   end
 
+  def self.for_context(context)
+    where(type: context.constantize)
+  end
+
+  # overrides the complicated thing AATO does because their column isn't citext
   def self.named_any(list)
     where(name: list)
   end

@@ -70,8 +70,7 @@ FactoryBot.define do
         post.label_list.add(labels)
       end
       if evaluator.content_warnings.present?
-        warnings = evaluator.content_warnings.map { |warning| warning.is_a?(String) ? warning : warning.name }
-        post.content_warning_list.add(warnings)
+        post.content_warning_list.add(evaluator.content_warnings)
       end
     end
 
@@ -268,13 +267,17 @@ FactoryBot.define do
       "Tag#{n}"
     end
 
-    factory :label do
+    factory :label, class: Taggable::Label do
+      type { 'Taggable::Label' }
     end
 
-    factory :content_warning do
+    factory :content_warning, class: Taggable::ContentWarning do
+      type { 'Taggable::ContentWarning' }
     end
 
-    factory :setting do
+    factory :setting, class: Taggable::Setting do
+      type { 'Taggable::Setting' }
+
       transient do
         parents { [] }
         owners { [] }

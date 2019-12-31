@@ -111,8 +111,10 @@ class TagsController < ApplicationController
     stats = []
     post_count = @tag.posts.where(privacy: Concealable::PUBLIC).count
     stats << "#{post_count} " + "post".pluralize(post_count) if post_count > 0
-    gallery_count = @tag.galleries.count
-    stats << "#{gallery_count} " + "gallery".pluralize(gallery_count) if gallery_count > 0
+    if @tag.is_a?(Taggable::GalleryGroup)
+      gallery_count = @tag.galleries.count
+      stats << "#{gallery_count} " + "gallery".pluralize(gallery_count) if gallery_count > 0
+    end
     character_count = @tag.characters.count
     stats << "#{character_count} " + "character".pluralize(character_count) if character_count > 0
     desc << stats.join(', ')
