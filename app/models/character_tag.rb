@@ -4,6 +4,8 @@ class CharacterTag < ApplicationRecord
   belongs_to :setting, foreign_key: :tag_id, inverse_of: :character_tags, optional: true
   belongs_to :gallery_group, foreign_key: :tag_id, inverse_of: :character_tags, optional: true
 
+  validates :character, uniqueness: { scope: :tag }
+
   after_create :add_galleries_to_character
   after_destroy :remove_galleries_from_character
 
