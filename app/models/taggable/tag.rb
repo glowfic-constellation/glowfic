@@ -15,6 +15,10 @@ class Taggable::Tag < ActsAsTaggableOn::Tag
       .select("DISTINCT #{ActsAsTaggableOn.tags_table}.*")
   end
 
+  def self.named_any(list)
+    where(name: list)
+  end
+
   def editable_by?(user)
     return false unless user
     return true if deletable_by?(user)

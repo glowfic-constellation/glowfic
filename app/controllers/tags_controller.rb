@@ -46,7 +46,6 @@ class TagsController < ApplicationController
 
     begin
       Tag.transaction do
-        @tag.parent_settings = process_tags(Setting, obj_param: :tag, id_param: :parent_setting_ids) if @tag.is_a?(Setting)
         @tag.save!
       end
     rescue ActiveRecord::RecordInvalid
@@ -90,7 +89,7 @@ class TagsController < ApplicationController
   private
 
   def find_model
-    unless (@tag = Tag.find_by_id(params[:id]))
+    unless (@tag = ActsAsTaggableOn::Tag.find_by_id(params[:id]))
       flash[:error] = "Tag could not be found."
       redirect_to tags_path
     end
@@ -120,8 +119,8 @@ class TagsController < ApplicationController
     stats << "#{character_count} " + "character".pluralize(character_count) if character_count > 0
     desc << stats.join(', ')
     title = [@tag.name]
-    title << @tag.user.username if @tag.owned? && !@tag.user.deleted?
-    title << @tag.type.titleize
+    title << @tag.owners.map(&:name).join(', ')
+    title << "Tag"
     {
       url: tag_url(@tag),
       title: title.join(' · '),

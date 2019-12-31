@@ -440,14 +440,14 @@ class PostsController < WritableController
       :authors_locked,
       :audit_comment,
       :private_note,
+      content_warning_list: [],
+      label_list: [],
       setting_list: [],
     ]
 
     # prevents us from setting (and saving) associations on preview()
     if include_associations
       allowed_params << {
-        label_list: [],
-        content_warning_list: [],
         unjoined_author_ids: [],
         viewer_ids: [],
       }
