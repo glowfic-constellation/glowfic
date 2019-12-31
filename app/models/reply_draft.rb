@@ -3,6 +3,8 @@ class ReplyDraft < ApplicationRecord
 
   belongs_to :post, inverse_of: :reply_drafts, optional: false
 
+  validates :post, uniqueness: { scope: :user }
+
   def self.draft_for(post_id, user_id)
     self.find_by(post_id: post_id, user_id: user_id)
   end

@@ -5,6 +5,8 @@ class CharactersGallery < ApplicationRecord
   before_create :autofill_order
   after_destroy :reorder_others
 
+  validates :character, uniqueness: { scope: :gallery }
+
   scope :ordered, -> { order(section_order: :asc) }
 
   def reorder_others

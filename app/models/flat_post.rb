@@ -1,6 +1,8 @@
 class FlatPost < ApplicationRecord
   belongs_to :post, inverse_of: :flat_post, optional: false
 
+  validates :post, uniqueness: true
+
   def self.regenerate_all(before=nil, override=true)
     # uses Post instead of FlatPost in case any are missing
     Post.includes(:flat_post).find_each do |post|
