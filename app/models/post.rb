@@ -76,8 +76,9 @@ class Post < ApplicationRecord
     select(
       <<~SQL
         (
-          SELECT tags.id IS NOT NULL FROM tags LEFT JOIN post_tags ON tags.id = post_tags.tag_id
-          WHERE tags.type = 'ContentWarning' AND post_tags.post_id = posts.id LIMIT 1
+          SELECT tags.id IS NOT NULL FROM tags LEFT JOIN taggings ON tags.id = taggings.tag_id
+          WHERE tags.type = 'ContentWarning' AND taggings.taggable_type = 'Post' AND taggings.taggable_id = posts.id
+          LIMIT 1
         ) AS has_content_warnings
       SQL
     )
