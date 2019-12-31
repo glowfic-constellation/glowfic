@@ -42,6 +42,8 @@ class TagsController < ApplicationController
 
     begin
       Tag.transaction do
+        assign_owners
+        assign_children
         @tag.save!
       end
     rescue ActiveRecord::RecordInvalid
@@ -126,10 +128,28 @@ class TagsController < ApplicationController
     }
   end
 
+  def assign_owners
+    owner_ids = params.fetch(:tag, {})[:owner_ids]
+    return unless owner_ids.present?
+    owner_ids -= @tag.owner_ids
+    owner_ids.each { |owner_id| ActsAsTaggableOn::Tagging.create(taggable_type: 'User', taggable_id: owner_id, tag: @tag, context: 'settings') }
+  end
+
+  def assign_children
+    children_ids = params.fetch(:tag, {})[:children_ids]
+    return unless children_ids.present?
+    children_ids -= @tag.children_ids
+    children_ids.each do |owner_id|
+      ActsAsTaggableOn::Tagging.create(taggable_type: 'ActsAsTaggableOn::Tag', taggable_id: owner_id, tag: @tag, context: 'settings')
+    end
+  end
+
   def tag_params
     permitted = [:type, :description, :owned]
-    # TODO: add permitted param for tag owners if current_user.admin? || @tag.owners.include?(current_user)
-    permitted.insert({setting_list: []}) if @tag.is_a?(Setting) && @tag.child_taggings.where(context: 'setting').exists?
+    if current_user.admin? || @tag.owners.include?(current_user)
+      permitted << :name
+      permitted << {setting_list: []} if @tag.is_a?(Setting)
+    end
     params.fetch(:tag, {}).permit(permitted)
   end
 end
