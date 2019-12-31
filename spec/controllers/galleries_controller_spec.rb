@@ -365,7 +365,7 @@ RSpec.describe GalleriesController do
         post :update, params: { id: gallery.id, gallery: {name: '', gallery_group_list: [group.name]} }
         expect(response.status).to eq(200)
         expect(response).to render_template(:edit)
-        expect(assigns(:gallery).gallery_groups.map(&:id)).to eq([group.id])
+        expect(assigns(:gallery).gallery_group_list).to eq([group.name])
       end
     end
 
