@@ -27,38 +27,38 @@ RSpec.describe Tag do
 
   describe "validations" do
     it "requires unique name" do
-      tag = create(:setting)
-      new_tag = build(:setting, name: tag.name)
+      tag = create(:label)
+      new_tag = build(:label, name: tag.name)
       expect(new_tag).not_to be_valid
     end
 
     it "requires unique case sensitive name" do
-      tag = create(:setting, name: 'CASE')
-      new_tag = build(:setting, name: tag.name.downcase)
+      tag = create(:label, name: 'CASE')
+      new_tag = build(:label, name: tag.name.downcase)
       expect(new_tag).not_to be_valid
     end
   end
 
   describe "#post_count" do
     def create_tags
-      tag1 = create(:setting)
-      tag2 = create(:setting)
-      create(:post, settings: [tag2])
-      tag3 = create(:setting)
-      create_list(:post, 2, settings: [tag3])
+      tag1 = create(:label)
+      tag2 = create(:label)
+      create(:post, labels: [tag2])
+      tag3 = create(:label)
+      create_list(:post, 2, labels: [tag3])
       [tag1, tag2, tag3]
     end
 
     it "works with with_item_counts scope" do
       tags = create_tags
-      fetched = Setting.where(id: tags.map(&:id)).select(:id).ordered_by_id.with_item_counts
+      fetched = Label.where(id: tags.map(&:id)).select(:id).ordered_by_id.with_item_counts
       expect(fetched).to eq(tags)
       expect(fetched.map(&:post_count)).to eq([0, 1, 2])
     end
 
     it "works without with_item_counts scope" do
       tags = create_tags
-      fetched = Setting.where(id: tags.map(&:id)).ordered_by_id
+      fetched = Label.where(id: tags.map(&:id)).ordered_by_id
       expect(fetched).to eq(tags)
       expect(fetched.map(&:post_count)).to eq([0, 1, 2])
     end
