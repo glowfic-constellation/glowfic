@@ -3,10 +3,10 @@
     %tr
       %th.table-title{colspan: 2} Info
   %tbody
-    - if @tag.is_a?(Setting) && @tag.parent_settings.present?
+    - if @tag.is_a?(Setting) && @tag.parents.present?
       %tr
-        %th.sub.centered.width-150= 'Parent Setting'.pluralize(@tag.parent_settings.count)
-        - setting_links = @tag.parent_settings.map { |c| link_to(c.name, tag_path(c))}
+        %th.sub.centered.width-150= 'Parent Setting'.pluralize(@tag.parents.count)
+        - setting_links = @tag.parents.map { |c| link_to(c.name, tag_path(c))}
         %td{class: cycle('even', 'odd')}= safe_join(setting_links, ', ')
     - if @tag.is_a?(Setting)
       %tr
