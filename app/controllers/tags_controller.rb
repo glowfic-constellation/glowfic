@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 class TagsController < ApplicationController
-  include Taggable
-
   before_action :login_required, except: [:index, :show]
   before_action :find_model, except: :index
   before_action :require_permission, except: [:index, :show, :destroy]
@@ -121,8 +119,8 @@ class TagsController < ApplicationController
     stats << "#{character_count} " + "character".pluralize(character_count) if character_count > 0
     desc << stats.join(', ')
     title = [@tag.name]
-    title << @tag.owners.map(&:name).join(', ')
-    title << "Tag"
+    title << @tag.owners.map(&:username).join(', ') if @tag.owners.exists?
+    title << @tag.class.to_s.titleize
     {
       url: tag_url(@tag),
       title: title.join(' · '),
@@ -132,7 +130,7 @@ class TagsController < ApplicationController
 
   def permitted_params
     permitted = [:type, :description, :owned]
-    permitted.insert(0, :name, :user_id) if current_user.admin? || @tag.user == current_user
+    # TODO: add permitted param for tag owners if current_user.admin? || @tag.owners.include?(current_user)
     permitted.insert({setting_list: []}) if @tag.is_a?(Setting) && @tag.child_taggings.where(context: 'setting').exists?
     params.fetch(:tag, {}).permit(permitted)
   end

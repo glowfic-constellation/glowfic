@@ -1,3 +1,5 @@
+ActsAsTaggableOn.strict_case_match = true # this avoids it using like queries and lowers on our citext name column
+
 module ActsAsTaggableOn
   module Taggable
     Core.module_eval do
@@ -9,7 +11,7 @@ module ActsAsTaggableOn
           ::Label.find_or_create_all_with_like_by_name(tag_list)
         when :content_warnings
           ::ContentWarning.find_or_create_all_with_like_by_name(tag_list)
-        when :gallery_group_ids
+        when :gallery_groups
           ::GalleryGroup.find_or_create_all_with_like_by_name(tag_list)
         else
           raise ActiveRecord::RecordInvalid, 'Invalid tag type'
