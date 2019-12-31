@@ -297,9 +297,6 @@ class PostsController < WritableController
 
     @author_ids = params.fetch(:post, {}).fetch(:unjoined_author_ids, [])
     @viewer_ids = params.fetch(:post, {}).fetch(:viewer_ids, [])
-    @settings = process_tags(Setting, :post, :setting_ids)
-    @content_warnings = process_tags(ContentWarning, :post, :content_warning_ids)
-    @labels = process_tags(Label, :post, :label_ids)
 
     @written = @post
     editor_setup
