@@ -8,7 +8,7 @@ class TagSearcher < Object
 
     @qs = @qs.where('name LIKE ?', tag_name) if tag_name.present?
     @qs = @qs.where(type: tag_type) if tag_type.present?
-    @qs = @qs.includes(:user) if tag_type == 'Setting'
+    @qs = @qs.includes(:owners) if tag_type == 'Setting'
     @qs = @qs.where.not(type: 'GalleryGroup') unless tag_type == 'GalleryGroup'
     @qs.with_item_counts.paginate(per_page: 25, page: page)
   end
