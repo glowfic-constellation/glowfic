@@ -1927,8 +1927,8 @@ RSpec.describe PostsController do
         expect(response).to redirect_to(post_url(post))
         post = assigns(:post)
         expect(post.settings.reload).to eq([setting])
-        expect(post.content_warnings).to eq([warning])
-        expect(post.labels).to eq([tag])
+        expect(post.content_warnings.reload).to eq([warning])
+        expect(post.labels.reload).to eq([tag])
       end
 
       it "correctly updates when adding new authors" do
@@ -2083,8 +2083,8 @@ RSpec.describe PostsController do
         expect(response).to redirect_to(post_url(post))
         post = assigns(:post)
         expect(post.settings.reload).to eq([setting1, setting2, setting3])
-        expect(post.content_warnings).to eq([warning1, warning2, warning3])
-        expect(post.labels).to eq([tag1, tag2, tag3])
+        expect(post.content_warnings.reload).to eq([warning1, warning2, warning3])
+        expect(post.labels.reload).to eq([tag1, tag2, tag3])
       end
 
       it "requires valid update" do
