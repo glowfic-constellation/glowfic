@@ -159,21 +159,19 @@ class Character < ApplicationRecord
   end
 
   def add_galleries_from_group(present_galleries)
+    # clear planned destruction on galleries that would be re-added
+    characters_galleries.select(&:marked_for_destruction?).select{ |cg| present_galleries.include?(cg.gallery_id) }.each(&:unmark_for_destruction)
+
+    # add new galleries
     existing_links = characters_galleries.select(:gallery_id)
     new_galleries = Gallery.where(id: present_galleries).where.not(id: existing_links)
-    new_galleries.each do |gallery|
-      creates = {gallery: gallery, added_by_group: true}
-      if new_record?
-        characters_galleries.new(creates)
-      else
-        characters_galleries.create!(creates)
-      end
-    end
+    new_galleries.each { |gallery| characters_galleries.new(gallery: gallery, added_by_group: true) }
   end
 
   def remove_galleries_from_group(present_galleries)
-    rem_cgs = characters_galleries.where(added_by_group: true)
+    rem_cgs_ids = characters_galleries.select(&:added_by_group?).map(&:id) # check list in memory
+    rem_cgs = characters_galleries.where(id: rem_cgs_ids)
     rem_cgs = rem_cgs.where.not(gallery_id: present_galleries) if gallery_group_list.present?
-    rem_cgs.destroy_all
+    rem_cgs.each(&:destroy!)
   end
 end
