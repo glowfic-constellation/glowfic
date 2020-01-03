@@ -35,11 +35,10 @@ class CharactersController < ApplicationController
 
   def create
     @character = Character.new(user: current_user)
-    @character.assign_attributes(character_params)
     build_template
 
     begin
-      @character.save!
+      @character.update!(character_params)
     rescue ActiveRecord::RecordInvalid
       @page_title = "New Character"
       flash.now[:error] = {

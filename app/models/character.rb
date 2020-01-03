@@ -11,7 +11,7 @@ class Character < ApplicationRecord
   has_many :reply_drafts, dependent: :nullify
   has_one :active_user, inverse_of: :active_character, class_name: 'User', foreign_key: :active_character_id, dependent: :nullify
 
-  has_many :characters_galleries, inverse_of: :character, dependent: :destroy
+  has_many :characters_galleries, inverse_of: :character, autosave: true, dependent: :destroy
   accepts_nested_attributes_for :characters_galleries, allow_destroy: true
   has_many :galleries, through: :characters_galleries, dependent: :destroy
   has_many :icons, -> { group('icons.id').ordered }, through: :galleries
@@ -87,45 +87,30 @@ class Character < ApplicationRecord
     characters_galleries.reject(&:added_by_group?).map(&:gallery_id)
   end
 
-  # WARNING: this method *will make changes* when used, not just when saved!!!
-  # This is so it can interact with group_gallery_ids properly instead of having
-  # to use an intricate system to find the current character galleries prior to
-  # persisting i.e. it's so ungrouped_gallery_ids= and various callbacks for
-  # gallery_group_ids= interact properly
   def ungrouped_gallery_ids=(new_ids)
     new_ids -= ['']
     new_ids = new_ids.map(&:to_i)
     group_gallery_ids = GalleryGroup.where(name: gallery_group_list).joins(:galleries).where(galleries: {user_id: user_id}).pluck('galleries.id')
-    new_chargals = []
     transaction do
       characters_galleries.each do |char_gal|
         gallery_id = char_gal.gallery_id
         if new_ids.include?(gallery_id)
           # add relevant old galleries, making sure added_by_group is false
           char_gal.added_by_group = false
-          new_chargals << char_gal
           new_ids.delete(gallery_id)
-        elsif group_gallery_ids.include?(gallery_id)
-          # add relevant old group galleries, added_by_group being true
-          char_gal.added_by_group = true
-          new_chargals << char_gal
-          group_gallery_ids.delete(gallery_id)
         else
-          # destroy joins that are not in the new set of IDs
-          char_gal.destroy
+          char_gal.added_by_group = true
+          if group_gallery_ids.include?(gallery_id)
+            # add relevant old group galleries, added_by_group being true
+            group_gallery_ids.delete(gallery_id)
+          else
+            # destroy joins that are not in the new set of IDs
+            char_gal.mark_for_destruction
+          end
         end
       end
-      new_ids.each do |gallery_id|
-        # add any leftover new galleries
-        new_chargals << CharactersGallery.new(gallery_id: gallery_id, character_id: id, added_by_group: false)
-      end
-      # leftover galleries from gallery groups will be added by that model
-      self.characters_galleries = new_chargals
-      if persisted?
-        self.update(characters_galleries: new_chargals)
-      else
-        self.assign_attributes(characters_galleries: new_chargals)
-      end
+      # add any new galleries
+      self.galleries << Gallery.where(id: new_ids) if new_ids.present?
     end
   end
 
@@ -182,21 +167,19 @@ class Character < ApplicationRecord
   end
 
   def add_galleries_from_group(present_galleries)
+    # clear planned destruction on galleries that would be re-added
+    characters_galleries.select(&:marked_for_destruction?).select{ |cg| present_galleries.include?(cg.gallery_id) }.each(&:unmark_for_destruction)
+
+    # add new galleries
     existing_links = characters_galleries.select(:gallery_id)
     new_galleries = Gallery.where(id: present_galleries).where.not(id: existing_links)
-    new_galleries.each do |gallery|
-      creates = {gallery: gallery, added_by_group: true}
-      if new_record?
-        characters_galleries.new(creates)
-      else
-        characters_galleries.create!(creates)
-      end
-    end
+    new_galleries.each { |gallery| characters_galleries.new(gallery: gallery, added_by_group: true) }
   end
 
   def remove_galleries_from_group(present_galleries)
-    rem_cgs = characters_galleries.where(added_by_group: true)
+    rem_cgs_ids = characters_galleries.select(&:added_by_group?).map(&:id) # check list in memory
+    rem_cgs = characters_galleries.where(id: rem_cgs_ids)
     rem_cgs = rem_cgs.where.not(gallery_id: present_galleries) if gallery_group_list.present?
-    rem_cgs.destroy_all
+    rem_cgs.each(&:destroy!)
   end
 end
