@@ -324,8 +324,8 @@ class Post < ApplicationRecord
 
   def reset_warnings
     return unless content_warning_list_changed?
-    return if content_warning_list.blank?
-    return if (content_warning_list - content_warning_list_was.to_a).empty?
+    return unless content_warnings.present? && persisted?
+    return if (content_warning_list - content_warning_list_was).empty?
     Post::View.where(post_id: id).update_all(warnings_hidden: false)
   end
 
