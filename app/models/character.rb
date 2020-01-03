@@ -91,27 +91,25 @@ class Character < ApplicationRecord
     new_ids -= ['']
     new_ids = new_ids.map(&:to_i)
     group_gallery_ids = GalleryGroup.where(name: gallery_group_list).joins(:galleries).where(galleries: {user_id: user_id}).pluck('galleries.id')
-    transaction do
-      characters_galleries.each do |char_gal|
-        gallery_id = char_gal.gallery_id
-        if new_ids.include?(gallery_id)
-          # add relevant old galleries, making sure added_by_group is false
-          char_gal.added_by_group = false
-          new_ids.delete(gallery_id)
+    characters_galleries.each do |char_gal|
+      gallery_id = char_gal.gallery_id
+      if new_ids.include?(gallery_id)
+        # make sure added_by_group is false for galleries in the new ids
+        char_gal.added_by_group = false
+        new_ids.delete(gallery_id)
+      else
+        char_gal.added_by_group = true
+        if group_gallery_ids.include?(gallery_id)
+          # keep the connection (with added_by_group = true) if the gallery is attached by a group
+          group_gallery_ids.delete(gallery_id)
         else
-          char_gal.added_by_group = true
-          if group_gallery_ids.include?(gallery_id)
-            # add relevant old group galleries, added_by_group being true
-            group_gallery_ids.delete(gallery_id)
-          else
-            # destroy joins that are not in the new set of IDs
-            char_gal.mark_for_destruction
-          end
+          # destroy joins that are not in the new set of IDs
+          char_gal.mark_for_destruction
         end
       end
-      # add any new galleries
-      self.galleries << Gallery.where(id: new_ids) if new_ids.present?
     end
+    # add any new galleries
+    self.galleries << Gallery.where(id: new_ids) if new_ids.present?
   end
 
   def character_gallery_for(gallery)
