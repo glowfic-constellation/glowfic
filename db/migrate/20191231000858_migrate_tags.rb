@@ -14,8 +14,13 @@ class MigrateTags < ActiveRecord::Migration[5.2]
 
     add_column :tags, :taggings_count, :integer, default: 0
 
-    Tag.where(owned: true).each do |tag|
+    Setting.where(owned: true).each do |tag|
       ActsAsTaggableOn::Tagging.create!(tag: tag, taggable_id: tag.user_id, taggable_type: 'User', context: 'settings')
+    end
+
+    GalleryGroup.all.each do |group|
+      users = group.gallery_tags.joins(:gallery).select(:user_id).distinct.pluck(:user_id)
+      users.each { |user_id| ActsAsTaggableOn::Tagging.create!(tag: group, taggable_id: user_id, taggable_type: 'User', context: 'gallery_groups') }
     end
 
     PostTag.all.each { |tagging| create_tagging(tagging, Post) }
