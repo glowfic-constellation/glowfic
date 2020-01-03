@@ -171,8 +171,7 @@ class Character < ApplicationRecord
     characters_galleries.select(&:marked_for_destruction?).select{ |cg| present_galleries.include?(cg.gallery_id) }.each(&:unmark_for_destruction)
 
     # add new galleries
-    existing_links = characters_galleries.select(:gallery_id)
-    new_galleries = Gallery.where(id: present_galleries).where.not(id: existing_links)
+    new_galleries = Gallery.where(id: present_galleries).where.not(id: gallery_ids)
     new_galleries.each { |gallery| characters_galleries.new(gallery: gallery, added_by_group: true) }
   end
 
