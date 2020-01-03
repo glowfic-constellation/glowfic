@@ -185,13 +185,13 @@ RSpec.describe Character do
     end
 
     ['before', 'after'].each do |time|
-      context "combined #{time} gallery_group_ids" do
-        def process_changes(obj, gallery_group_ids, ungrouped_gallery_ids, time)
+      context "combined #{time} gallery_group_list" do
+        def process_changes(obj, gallery_group_list, ungrouped_gallery_ids, time)
           if time == 'before'
             obj.ungrouped_gallery_ids = ungrouped_gallery_ids
-            obj.gallery_group_ids = gallery_group_ids
+            obj.gallery_group_list = gallery_group_list
           else
-            obj.gallery_group_ids = gallery_group_ids
+            obj.gallery_group_list = gallery_group_list
             obj.ungrouped_gallery_ids = ungrouped_gallery_ids
           end
         end
@@ -207,7 +207,7 @@ RSpec.describe Character do
           character.save!
 
           character.reload
-          expect(character.galleries).to match_array([gallery])
+          expect(character.galleries).to match_array([gallery.reload])
           expect(character.ungrouped_gallery_ids).to match_array([gallery.id])
           expect(character.gallery_groups).to match_array([])
         end
@@ -220,11 +220,11 @@ RSpec.describe Character do
           character = create(:character, user: user, gallery_groups: [group1])
           expect(character.reload.galleries).to match_array([gallery])
 
-          process_changes(character, [group2.id], [gallery.id], time)
+          process_changes(character, [group2.name], [gallery.id], time)
           character.save!
 
           character.reload
-          expect(character.galleries).to match_array([gallery])
+          expect(character.galleries).to match_array([gallery.reload])
           expect(character.ungrouped_gallery_ids).to match_array([gallery.id])
           expect(character.gallery_groups).to match_array([group2])
         end
@@ -236,11 +236,11 @@ RSpec.describe Character do
           character = create(:character, user: user, galleries: [gallery])
           expect(character.reload.galleries).to match_array([gallery])
 
-          process_changes(character, [group.id], [], time)
+          process_changes(character, [group.name], [], time)
           character.save!
 
           character.reload
-          expect(character.galleries).to match_array([gallery])
+          expect(character.galleries).to match_array([gallery.reload])
           expect(character.ungrouped_gallery_ids).to match_array([])
           expect(character.gallery_groups).to match_array([group])
         end
@@ -251,9 +251,9 @@ RSpec.describe Character do
           group2 = create(:gallery_group)
           gallery = create(:gallery, user: user, gallery_groups: [group1, group2])
           character = create(:character, user: user, galleries: [gallery], gallery_groups: [group1])
-          expect(character.reload.galleries).to match_array([gallery])
+          expect(character.reload.galleries).to match_array([gallery.reload])
 
-          process_changes(character, [group2.id], [], time)
+          process_changes(character, [group2.name], [], time)
           character.save!
 
           character.reload
