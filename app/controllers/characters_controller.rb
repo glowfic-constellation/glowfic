@@ -99,8 +99,8 @@ class CharactersController < ApplicationController
 
     begin
       Character.transaction do
-        dupe.gallery_groups = @character.gallery_groups
-        dupe.settings = @character.settings
+        dupe.gallery_group_list = @character.gallery_group_list
+        dupe.setting_list = @character.setting_list
         dupe.ungrouped_gallery_ids = @character.ungrouped_gallery_ids
         @character.aliases.find_each do |calias|
           dupalias = calias.dup

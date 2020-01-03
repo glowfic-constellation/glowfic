@@ -1312,6 +1312,7 @@ RSpec.describe CharactersController do
       expect(character.gallery_ids).to match_array([gallery, gallery2, gallery3].map(&:id))
       expect(character.ungrouped_gallery_ids).to match_array([gallery.id, gallery2.id])
       expect(character.gallery_groups.ids).to match_array([group.id])
+      expect(character).to be_persisted
 
       login_as(user)
 
@@ -1319,7 +1320,7 @@ RSpec.describe CharactersController do
         post :duplicate, params: { id: character.id }
       end.to not_change {
         [Template.count, Gallery.count, Icon.count, Reply.count, Post.count, Tag.count]
-      }.and change { Character.count }.by(1).and change { CharactersGallery.count }.by(3).and change { ActsAsTaggableOn::Tagging.count }.by(1)
+      }.and change { Character.count }.by(1).and change { CharactersGallery.count }.by(3).and change { ActsAsTaggableOn::Tagging.count }.by(2)
 
       dupe = Character.last
       character.reload
