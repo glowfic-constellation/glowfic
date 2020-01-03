@@ -445,7 +445,7 @@ RSpec.describe PostsController do
         post :create, params: { post: {subject: 'a', board_id: create(:board).id, setting_list: tags} }
       }.to change{Setting.count}.by(1)
       expect(Setting.last.name).to eq('atag')
-      expect(assigns(:post).settings.count).to eq(3)
+      expect(assigns(:post).settings.count).to eq(4)
     end
 
     it "creates new content warnings" do
@@ -1692,7 +1692,7 @@ RSpec.describe PostsController do
         expect(Setting.count).to eq(3)
         expect(ContentWarning.count).to eq(3)
         expect(Label.count).to eq(3)
-        expect(ActsAsTaggableOn::Tagging.count).to eq(8)
+        expect(ActsAsTaggableOn::Tagging.count).to eq(6)
 
         # for each type: keep one, remove one, create one, existing one
         setting_names = [setting.name, 'setting', 'dupesetting']
