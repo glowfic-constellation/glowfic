@@ -71,10 +71,12 @@ class Gallery < ApplicationRecord
   def update_characters
     return unless gallery_group_list_changed?
 
-    present_characters = ActsAsTaggableOn::Tagging.where(taggable_type: 'Character').joins(:tag)
-    present_characters = present_characters.joins("INNER JOIN characters ON characters.id = taggings.taggable_id")
-    present_characters = present_characters.where(tags: {type: 'GalleryGroup', name: gallery_group_list})
-    present_characters = present_characters.where(characters: {user_id: user_id}).pluck(:taggable_id)
+    present_characters = ActsAsTaggableOn::Tagging.where(taggable_type: 'Character')
+      .joins(:tag)
+      .joins("INNER JOIN characters ON characters.id = taggings.taggable_id")
+      .where(tags: {type: 'GalleryGroup', name: gallery_group_list})
+      .where(characters: {user_id: user_id})
+      .pluck(:taggable_id)
 
     if new_record? || gallery_group_list_was.nil?
       add_characters_from_group(present_characters)
