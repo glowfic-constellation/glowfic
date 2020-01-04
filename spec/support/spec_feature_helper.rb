@@ -21,4 +21,21 @@ module SpecFeatureHelper
   def table_titled(title)
     find('table') { |x| x.has_selector?('.table-title', text: title) }
   end
+
+  def select2(finder, text)
+    page.find(finder).sibling('.select2-container').click
+    within page.find('.select2-results') do
+      page.find('li', text: text).click
+    end
+  end
+
+  RSpec::Matchers.define :have_multiselect do |finder, **args|
+    match do |page|
+      raise ArgumentError, "Missing matcher argument" unless args.key?(:with)
+      choices = Array(args[:with])
+      nodes = page.find(finder).sibling('.select2-container').find_all('.select2-selection__choice')
+      choices.map!{ |choice| '×' + choice }
+      expect(nodes.map(&:text)).to match_array(choices)
+    end
+  end
 end
