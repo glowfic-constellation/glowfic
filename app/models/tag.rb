@@ -11,6 +11,7 @@ class Tag < ActsAsTaggableOn::Tag
 
   TYPES = %w(ContentWarning Label Setting GalleryGroup)
 
+  validates :type, presence: true
   validates :name, uniqueness: { scope: :type }
 
   scope :ordered_by_type, -> { order(type: :desc, name: :asc) }
