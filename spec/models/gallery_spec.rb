@@ -86,4 +86,31 @@ RSpec.describe Gallery do
       end
     end
   end
+
+  describe "gallery groups" do
+    let (:group) { create(:gallery_group) }
+    let (:character) { create(:character, gallery_groups: [group]) }
+    let (:gallery) { create(:gallery, user: character.user) }
+
+    before(:each) { gallery }
+
+    it "can be added successfully" do
+      expect {
+        gallery.update!(gallery_group_list: [group])
+      }.to change{ CharactersGallery.count }.by(1).and change{ ActsAsTaggableOn::Tagging.count }.by(1)
+      gallery.reload
+      expect(group.reload.galleries).to eq([gallery])
+      expect(character.reload.galleries).to eq([gallery])
+    end
+
+    it "can be removed successfully" do
+      gallery.update!(gallery_group_list: [group])
+      gallery.reload
+      expect {
+        gallery.update!(gallery_group_list: [])
+      }.to change{ CharactersGallery.count }.by(-1).and change{ ActsAsTaggableOn::Tagging.count }.by(-1)
+      expect(group.reload.galleries).to be_blank
+      expect(character.reload.galleries).to be_blank
+    end
+  end
 end
