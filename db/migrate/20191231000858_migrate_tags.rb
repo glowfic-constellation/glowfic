@@ -42,16 +42,18 @@ class MigrateTags < ActiveRecord::Migration[5.2]
   end
 
   def down
-    add_column :tags, :user_id, :integer
-    add_column :tags, :owned, :boolean
+    add_column :tags, :user_id, :integer # not setting null: false here since we have no way to ensure all tags can get users
+    add_column :tags, :owned, :boolean, default: false
 
     ActsAsTaggableOn::Tagging.where(taggable_type: 'User').each do |tagging|
-      tagging.tag.update!(user_id: tagging.taggable_id, owned: true)
+      tagging.tag.update!(user_id: tagging.taggable_id, owned: true) unless tagging.tag.owned
       tagging.destroy!
     end
 
     Tag.where(user_id: nil).each do |tag|
-      tag.update(user: Tag.tagging.first.user, owned: false)
+      taggings = tag.is_a?(Setting) ? tag.child_taggings.where.not(taggable_type: 'Setting') : tag.taggings
+      next unless taggings.exists? # tags where all of their attachments have been deleted, or are all settings
+      tag.update!(user_id: taggings.first.taggable.user.id, owned: false)
     end
 
     new_table(:post_tags, :post_id, true)
@@ -95,7 +97,7 @@ class MigrateTags < ActiveRecord::Migration[5.2]
   end
 
   def new_table(table_name, key, suggested)
-    create_table table_name do |t|
+    create_table table_name, id: :serial do |t|
       t.integer key, null: false
       t.integer :tag_id, null: false
       t.boolean :suggested, default: false if suggested
