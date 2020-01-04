@@ -16,7 +16,7 @@ class Character < ApplicationRecord
   has_many :galleries, through: :characters_galleries, dependent: :destroy
   has_many :icons, -> { group('icons.id').ordered }, through: :galleries
 
-  has_many :character_tags, inverse_of: :character
+  has_many :character_tags, inverse_of: :character, dependent: false
 
   validates :name,
     presence: true,

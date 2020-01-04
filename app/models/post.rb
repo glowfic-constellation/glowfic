@@ -21,7 +21,7 @@ class Post < ApplicationRecord
   has_many :favorites, as: :favorite, inverse_of: :favorite, dependent: :destroy
   has_many :views, class_name: 'Post::View', dependent: :destroy
 
-  has_many :post_tags, inverse_of: :post
+  has_many :post_tags, inverse_of: :post, dependent: false
 
   has_many :index_posts, inverse_of: :post, dependent: :destroy
   has_many :indexes, inverse_of: :posts, through: :index_posts, dependent: :destroy

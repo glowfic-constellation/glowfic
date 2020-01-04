@@ -1,7 +1,7 @@
 class Tag < ActsAsTaggableOn::Tag
-  has_many :post_tags, inverse_of: :tag
-  has_many :character_tags, inverse_of: :tag
-  has_many :gallery_tags, inverse_of: :tag
+  has_many :post_tags, inverse_of: :tag, dependent: false
+  has_many :character_tags, inverse_of: :tag, dependent: false
+  has_many :gallery_tags, inverse_of: :tag, dependent: false
 
   has_many :child_taggings, class_name: 'ActsAsTaggableOn::Tagging', dependent: :destroy
 

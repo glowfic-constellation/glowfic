@@ -8,7 +8,7 @@ class Gallery < ApplicationRecord
   has_many :characters_galleries, inverse_of: :gallery, dependent: :destroy
   has_many :characters, through: :characters_galleries, dependent: :destroy
 
-  has_many :gallery_tags, inverse_of: :gallery
+  has_many :gallery_tags, inverse_of: :gallery, dependent: false
 
   validates :name, presence: true
 
