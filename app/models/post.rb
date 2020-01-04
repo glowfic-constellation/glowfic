@@ -34,7 +34,7 @@ class Post < ApplicationRecord
   has_many :indexes, inverse_of: :posts, through: :index_posts, dependent: :destroy
   has_many :index_sections, inverse_of: :posts, through: :index_posts, dependent: :destroy
 
-  attr_accessor :is_import
+  attr_accessor :is_import, :postpone_save
   attr_writer :skip_edited
 
   validates :subject, presence: true
@@ -43,7 +43,7 @@ class Post < ApplicationRecord
 
   before_create :build_initial_flat_post, :set_timestamps
   before_update :set_timestamps
-  before_validation :set_last_user, on: :create
+  before_validation :set_last_caches, on: :create
   after_commit :notify_followers, on: :create
 
   NON_EDITED_ATTRS = %w(id created_at updated_at edited_at tagged_at last_user_id last_reply_id section_order)
@@ -298,6 +298,24 @@ class Post < ApplicationRecord
     adjacent_posts_for(user).find_by('section_order > ?', self.section_order)
   end
 
+  def last_tag
+    last_reply || self
+  end
+
+  def set_last_caches
+    self.last_reply = replies.ordered.last
+    return unless last_reply_id_changed? || new_record?
+
+    self.last_user = last_tag.user
+    bump_tagged_at
+  end
+
+  def bump_tagged_at
+    self.tagged_at = last_tag.last_updated
+    self.status = Post::STATUS_ACTIVE if tagged_at_changed? && on_hiatus?
+    save unless postpone_save || new_record?
+  end
+
   private
 
   def adjacent_posts_for(user)
@@ -315,10 +333,6 @@ class Post < ApplicationRecord
     return unless section.present?
     return if section.board_id == board_id
     errors.add(:section, "must be in the post's board")
-  end
-
-  def set_last_user
-    self.last_user = user
   end
 
   # timestamps start existing between before_save and before_create/update
