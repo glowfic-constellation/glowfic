@@ -17,9 +17,12 @@ RSpec.feature "Creating a new character", :type => :feature do
     expect(page).to have_selector("th", text: "New Character")
     expect(page).to have_no_selector("img.icon")
 
-    # view new character form with icons
     create_list(:icon, 2, user: user)
     create(:icon, user: user, keyword: 'Example icon')
+    create(:setting, name: 'Example setting')
+    create_list(:setting, 2)
+
+    # view new character form with icons
     visit new_character_path
     expect(page).to have_selector("img.icon", count: 3)
 
@@ -27,6 +30,8 @@ RSpec.feature "Creating a new character", :type => :feature do
     find("img[alt='Example icon']").click
     expect(page).to have_selector('.selected-icon')
     expect(find('.selected-icon')[:alt]).to eq('Example icon')
+
+    select2('#character_setting_ids', 'Example setting')
 
     within('.form-table') do
       fill_in 'Template Nickname', with: 'Example nickname'
@@ -51,6 +56,7 @@ RSpec.feature "Creating a new character", :type => :feature do
       expect(page).to have_field('Screen Name', with: 'example_screenname')
       expect(page).to have_field('Facecast', with: 'Example facecast')
       expect(page).to have_field('Description', with: 'Example description')
+      expect(page).to have_multiselect('#character_setting_ids', with: 'Example setting')
     end
   end
 
