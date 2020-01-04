@@ -56,11 +56,6 @@ class Tag < ActsAsTaggableOn::Tag
     tag_json
   end
 
-  def id_for_select
-    return id if persisted? # id present on unpersisted records when associated record is invalid
-    "_#{name}"
-  end
-
   def post_count
     return read_attribute(:post_count) if has_attribute?(:post_count)
     posts.count
@@ -90,23 +85,6 @@ class Tag < ActsAsTaggableOn::Tag
   # AATO overrides
   def self.for_context(context)
     where(type: context.classify)
-  end
-
-  # overrides the complicated thing AATO does because their column isn't citext
-  def self.named(name)
-    where(name: name)
-  end
-
-  def self.named_any(list)
-    where(name: list)
-  end
-
-  def self.named_like(name)
-    where('name LIKE ?', sanitize_sql_like(name))
-  end
-
-  def self.named_like_any(list)
-    where('name LIKE ?', sanitize_sql_like(list))
   end
 
   def self.find_or_create_all_with_like_by_name(*list)
