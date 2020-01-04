@@ -87,8 +87,7 @@ class Gallery < ApplicationRecord
   end
 
   def add_characters_from_group(present_characters)
-    existing_links = characters_galleries.select(:character_id)
-    new_characters = Character.where(id: present_characters).where.not(id: existing_links)
+    new_characters = Character.where(id: present_characters).where.not(id: character_ids)
     new_characters.each do |character|
       creates = {character: character, added_by_group: true}
       if new_record?
