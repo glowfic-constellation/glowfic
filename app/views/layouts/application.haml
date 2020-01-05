@@ -112,13 +112,12 @@
               %li= link_to 'Unread', unread_posts_path
               %li= link_to 'Replies Owed', owed_posts_path
             %li= link_to 'Tags', tags_path
-            - if (day = DailyReport.unread_date_for(current_user)).present?
-              %li
-                = link_to report_path(id: :daily, day: day), style: 'text-shadow: 0 0 0.8em #F87, 0 0 0.8em #F87' do
-                  Daily Report
-                  %em= '(' + Date.parse(day).strftime("%b %d, %Y") + ')'
-            - else
-              %li= link_to 'Daily Report', report_path(id: :daily)
+            - day = DailyReport.unread_date_for(current_user)
+            - daybadge = day.present? ? (DateTime.now.to_date - day).to_i : 0
+            %li
+              = link_to 'Daily Report', report_path(id: :daily, day: day&.to_s)
+              - if daybadge > 0
+                %span.badge.badge-primary= daybadge
       - if content_for?(:breadcrumbs)
         .flash.breadcrumbs= content_for :breadcrumbs
       - flash.each do |key, val|
