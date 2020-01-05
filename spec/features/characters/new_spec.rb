@@ -98,7 +98,7 @@ RSpec.feature "Creating a new character", :type => :feature do
     complex_setup
 
     expect(page).to have_no_selector('.flash.error')
-    expect(page).to have_selector('#select2-character_template_id-container', text: 'Example template')
+    expect(page).to have_select2('#character_template_id', with: 'Example template')
 
     fill_in 'Character Name', with: 'Example character'
     click_button 'Save'
