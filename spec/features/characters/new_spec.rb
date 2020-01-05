@@ -18,9 +18,12 @@ RSpec.feature "Creating a new character", :type => :feature do
     expect(page).to have_no_selector("img.icon")
 
     create_list(:icon, 2, user: user)
-    create(:icon, user: user, keyword: 'Example icon')
-    create(:setting, name: 'Example setting')
+    create_list(:template, 2, user: user)
     create_list(:setting, 2)
+    create(:icon, user: user, keyword: 'Example icon')
+    create(:template, user: user, name: 'Example template')
+    create(:setting, name: 'Example setting')
+    create(:setting, name: 'Example setting 2')
 
     # view new character form with icons
     visit new_character_path
@@ -31,7 +34,8 @@ RSpec.feature "Creating a new character", :type => :feature do
     expect(page).to have_selector('.selected-icon')
     expect(find('.selected-icon')[:alt]).to eq('Example icon')
 
-    select2('#character_setting_ids', 'Example setting')
+    select2('#character_setting_ids', 'Example setting', 'Example setting 2')
+    select2('#character_template_id', 'Example template')
 
     within('.form-table') do
       fill_in 'Template Nickname', with: 'Example nickname'
@@ -56,7 +60,8 @@ RSpec.feature "Creating a new character", :type => :feature do
       expect(page).to have_field('Screen Name', with: 'example_screenname')
       expect(page).to have_field('Facecast', with: 'Example facecast')
       expect(page).to have_field('Description', with: 'Example description')
-      expect(page).to have_multiselect('#character_setting_ids', with: 'Example setting')
+      expect(page).to have_multiselect('#character_setting_ids', with: ['Example setting', 'Example setting 2'])
+      expect(page).to have_select2('#character_template_id', with: 'Example template')
     end
   end
 
