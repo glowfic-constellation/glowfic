@@ -92,8 +92,7 @@ class ApplicationController < ActionController::Base
   helper_method :page_view
 
   def store_location
-    return unless request.get?
-    return if request.xhr?
+    return unless standard_request?
     session[:previous_url] = request.fullpath
   end
 
@@ -105,8 +104,7 @@ class ApplicationController < ActionController::Base
 
   def require_glowfic_domain
     return unless Rails.env.production? || params[:force_domain] # for testability
-    return unless request.get?
-    return if request.xhr?
+    return unless standard_request?
     return if request.host.include?('glowfic.com')
     return if request.host.include?('glowfic-staging.herokuapp.com')
     glowfic_url = root_url(host: ENV['DOMAIN_NAME'], protocol: 'https')[0...-1] + request.fullpath # strip double slash
@@ -128,8 +126,7 @@ class ApplicationController < ActionController::Base
 
   def tos_skippable?
     return true if Rails.env.test? && params[:force_tos].nil?
-    return true if request.xhr?
-    return true unless request.get?
+    return true unless standard_request?
     return true if params[:tos_check].present?
     return true if ['about', 'sessions', 'password_resets'].include?(params[:controller])
     return true if params[:controller] == 'users' && params[:action] == 'new'
@@ -212,4 +209,10 @@ class ApplicationController < ActionController::Base
     short_msg[0...73] + '…' # make the absolute max length 75 characters
   end
   helper_method :generate_short
+
+  private
+
+  def standard_request?
+    request.get? && !request.xhr?
+  end
 end

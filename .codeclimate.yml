@@ -21,6 +21,10 @@ plugins:
   rubocop:
     enabled: true
     channel: rubocop-0-74
+checks:
+  return-statements:
+    config:
+      threshold: 5
 exclude_patterns:
 - config/
 - db/
