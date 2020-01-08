@@ -26,7 +26,13 @@
       = submit_tag "Preview", class: 'button', id: 'preview_button', name: 'button_preview', data: { disable_with: 'Previewing...' }
       - if reply.new_record?
         = submit_tag "Save Draft", class: 'button', id: 'draft_button', data: { disable_with: 'Drafting...' }, name: 'button_draft'
-    %br
+    - if reply.post.author_for(current_user)&.private_note.present?
+      %hr.clear
+      %b Your Post Notes
+      %br
+      = sanitize_written_content(reply.post.author_for(current_user).private_note)
+    - else
+      %br
     = render 'posts/editor_help'
 
 = render 'posts/editor', item: reply
