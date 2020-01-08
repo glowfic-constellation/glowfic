@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_12_19_180641) do
+ActiveRecord::Schema.define(version: 2020_01_08_101015) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
@@ -284,6 +284,7 @@ ActiveRecord::Schema.define(version: 2019_12_19_180641) do
     t.boolean "can_reply", default: true
     t.boolean "joined", default: false
     t.datetime "joined_at"
+    t.text "private_note"
     t.index ["post_id"], name: "index_post_authors_on_post_id"
     t.index ["user_id"], name: "index_post_authors_on_user_id"
   end
