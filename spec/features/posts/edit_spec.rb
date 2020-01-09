@@ -16,10 +16,46 @@ RSpec.feature "Editing posts", :type => :feature do
     expect(page).to have_current_path(root_path)
     expect(page).to have_no_selector('#post-editor')
   end
+  scenario "User edits a post", js: true do
+    user = create(:user, password: 'known', default_editor: 'html')
 
-  scenario "User edits a post" do
-    user = create(:user, password: 'known')
-    post = create(:post, user: user, subject: 'test subject', content: 'test content')
+    board = create(:board, name: 'test board', coauthors: [user])
+    create_list(:board, 2)
+    section = create(:board_section, board: board, name: 'test section')
+    create_list(:board_section, 3, board: board)
+
+    setting1 = create(:setting, name: 'test setting 1')
+    create_list(:setting, 2)
+    setting2 = create(:setting, name: 'test setting 2')
+    label = create(:label, name: 'test label')
+    warning1 = create(:content_warning, name: 'test warning 1')
+    warning2 = create(:content_warning, name: 'test warning 2')
+    warning3 = create(:content_warning, name: 'test warning 3')
+    create_list(:content_warning, 5)
+
+    gallery = create(:gallery, user: user)
+    icon1 = create(:icon, user: user, keyword: 'test icon 1', galleries: [gallery])
+    icon2 = create(:icon, user: user, keyword: 'test icon 2', galleries: [gallery])
+    default_icon = create(:icon, user: user, keyword: 'test default icon', galleries: [gallery])
+    create_list(:icon, 5, user: user, galleries: [gallery])
+
+    character = create(:character, user: user, name: 'test character', screenname: 'just_a_test',
+      galleries: [gallery], default_icon: default_icon)
+    create_list(:character, 3, user: user)
+    calias = create(:alias, character: character, name: 'test alias')
+    create(:alias, character: character)
+
+    post = create(:post,
+      user: user,
+      subject: 'test subject',
+      content: 'test content',
+      board: board,
+      section: section,
+      settings: [setting1],
+      content_warnings: [warning1, warning2],
+      character: character,
+      icon: icon1,
+    )
 
     login(user, 'known')
 
@@ -32,11 +68,44 @@ RSpec.feature "Editing posts", :type => :feature do
     expect(page).to have_no_selector('.error')
     expect(page).to have_selector('.content-header', exact_text: 'Edit post')
     expect(page).to have_no_selector('.post-container')
-    within('#post-editor') do
-      expect(page).to have_field('Subject', with: 'test subject')
-      expect(page).to have_field('post_content', with: 'test content')
-      fill_in 'Subject', with: 'other subject'
-      fill_in "post_content", with: "other content"
+
+    within('#post_form') do
+      expect(page).to have_multiselect('Settings:', selected: 'test setting 1')
+
+      within('#post-editor') do
+        within('.post-info-box') do
+          expect(page).to have_selector('#current-icon')
+          expect(find('#current-icon')[:alt]).to eq('test icon 1')
+          expect(page).to have_select('icon_dropdown', selected: 'test icon 1', with_options: ['test icon 2'])
+
+          within('.post-character') do
+            expect(page).to have_selector('#name', text: 'test character')
+            expect(page).to have_selector('#swap-alias')
+          end
+
+          expect(page).to have_selector('.post-screenname', text: 'just_a_test')
+          expect(page).to have_selector('.post-author', text: user.username)
+          expect(page).to have_selector('#swap-character')
+
+          # TODO: come back to this when select2 is less dumb
+          #find('#swap-alias').click
+          #expect(page).to have_selector('#alias-selector')
+          #select2('#character_alias', 'test alias')
+        end
+
+        find('#current-icon-holder').click
+        expect(page).to have_selector('#reply-icon-selector')
+        within('#reply-icon-selector') do
+          find("img[alt='test icon 2']").click
+        end
+        expect(page).to have_select('icon_dropdown', selected: 'test icon 2')
+
+        expect(page).to have_field('Subject', with: 'test subject')
+        expect(page).to have_field('post_content', with: 'test content')
+
+        fill_in 'Subject', with: 'other subject'
+        fill_in "post_content", with: "other content"
+      end
     end
     click_button 'Save'
 

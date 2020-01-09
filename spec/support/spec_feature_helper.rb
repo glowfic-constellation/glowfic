@@ -31,18 +31,18 @@ module SpecFeatureHelper
 
   RSpec::Matchers.define :have_multiselect do |finder, **args|
     match do |page|
-      raise ArgumentError, "Missing matcher argument" unless args.key?(:with)
-      choices = Array(args[:with]).map{ |choice| '×' + choice }
-      nodes = page.find(finder).sibling('.select2-container').find_all('.select2-selection__choice')
+      raise ArgumentError, "Missing matcher argument" unless args.key?(:selected)
+      choices = Array(args[:selected]).map{ |choice| '×' + choice }
+      nodes = page.find_field(finder).find_all('.select2-selection__choice')
       expect(nodes.map(&:text)).to match_array(choices)
     end
   end
 
   RSpec::Matchers.define :have_select2 do |finder, **args|
     match do |page|
-      raise ArgumentError, "Missing matcher argument" unless args.key?(:with)
+      raise ArgumentError, "Missing matcher argument" unless args.key?(:selected)
       node = page.find(finder).sibling('.select2-container').find('.select2-selection__rendered')
-      expect(node.text).to eq(args[:with])
+      expect(node.text).to eq(args[:selected])
     end
   end
 end
