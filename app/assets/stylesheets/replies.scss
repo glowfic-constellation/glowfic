@@ -288,8 +288,6 @@ div.post-subheader { width: 100%; }
     label { min-width: 95px; }
   }
 
-  .clear { height: 1px; }
-
   input[type='checkbox'] {
     margin-left: 5px;
     position: relative;
@@ -329,6 +327,7 @@ div.post-subheader { width: 100%; }
     padding: 5px;
   }
 }
+#post-editor .clear { height: 1px; }
 
 /* - Character quick switcher - small icons for selecting characters in post-editor */
 .char-access-icon {
