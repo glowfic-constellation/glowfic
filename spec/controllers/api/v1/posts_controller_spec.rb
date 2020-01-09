@@ -62,9 +62,6 @@ RSpec.describe Api::V1::PostsController do
       expect(response.parsed_body['num_replies']).to eq(0)
       expect(response.parsed_body['authors'].size).to eq(1)
       expect(response.parsed_body['authors'][0]['id']).to eq(post.user_id)
-      expect(response.parsed_body['content']).to eq(post.content)
-      expect(response.parsed_body['icon']['id']).to eq(post.icon_id)
-      expect(response.parsed_body['character']['id']).to eq(post.character_id)
     end
   end
 
