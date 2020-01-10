@@ -3,6 +3,24 @@ require "spec_helper"
 RSpec.describe FlatPost do
   include ActiveJob::TestHelper
 
+  describe "validations" do
+    it "is limited to one per post" do
+      post = create(:post)
+      expect(post.flat_post).to be_present
+      flatpost = FlatPost.create(post: post)
+      expect(flatpost.persisted?).to be(false)
+      expect(flatpost).not_to be_valid
+      expect(flatpost.errors.messages).to eq({post: ['has already been taken']})
+    end
+
+    it "can have multiple on different posts" do
+      create(:post)
+      expect(FlatPost.count).to eq(1)
+      post = create(:post)
+      expect(post.flat_post).to be_valid
+    end
+  end
+
   describe ".regenerate_all" do
     def delete_lock(post)
       lock_key = GenerateFlatPostJob.lock_key(post.id)

@@ -22,6 +22,29 @@ RSpec.describe ReplyDraft do
       expect(draft).not_to be_valid
     end
 
+    it "is limited to one per user per post" do
+      post = create(:post)
+      user = create(:user)
+      create(:reply_draft, user: user, post: post)
+      draft = build(:reply_draft, post: post, user: user)
+      expect(draft).not_to be_valid
+      expect(draft.errors.messages).to eq({post: ['has already been taken']})
+    end
+
+    it "allows multiple drafts by different users on the same post" do
+      post = create(:post)
+      create(:reply_draft, post: post)
+      draft = build(:reply_draft, post: post)
+      expect(draft).to be_valid
+    end
+
+    it "allows multiple drafts by the same user on different posts" do
+      user = create(:user)
+      create(:reply_draft, user: user)
+      draft = build(:reply_draft, user: user)
+      expect(draft).to be_valid
+    end
+
     it "works when valid" do
       user = create(:user)
       icon = create(:icon, user: user)

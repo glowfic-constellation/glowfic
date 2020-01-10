@@ -5,7 +5,7 @@ class GalleriesIcon < ApplicationRecord
 
   after_create :set_has_gallery
   after_destroy :unset_has_gallery
-  validates :gallery_id, uniqueness: { scope: :icon_id }
+  validates :gallery, uniqueness: { scope: :icon }
 
   def unset_has_gallery
     return if icon.galleries.present?
