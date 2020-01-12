@@ -252,6 +252,6 @@ module ApplicationHelper
 
   def allowed_boards(obj, user)
     authored_ids = BoardAuthor.where(user: user).select(:board_id)
-    Board.where(id: obj.board_id).or(Board.where(authors_locked: false)).or(Board.where(id: authored_ids))
+    Board.where(id: obj.board_id).or(Board.where(authors_locked: false)).or(Board.where(id: authored_ids)).ordered
   end
 end
