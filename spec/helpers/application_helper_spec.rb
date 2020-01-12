@@ -231,6 +231,13 @@ RSpec.describe ApplicationHelper do
       expect(helper.allowed_boards(post, user)).to eq([])
     end
 
+    it "shows the post's board even if the user can't write in it" do
+      board = create(:board, authors_locked: true)
+      user = create(:user)
+      post = build(:post, board: board)
+      expect(helper.allowed_boards(post, user)).to eq([board])
+    end
+
     it "orders boards" do
       board_a = create(:board, name: "A")
       board_b_pinned = create(:board, name: "B", pinned: true)
