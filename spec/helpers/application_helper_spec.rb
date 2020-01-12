@@ -208,4 +208,36 @@ RSpec.describe ApplicationHelper do
       expect(helper.send(:breakable_text, text)).to eq(expected)
     end
   end
+
+  describe "#allowed_boards" do
+    it "includes open-to-everyone boards" do
+      board = create(:board)
+      user = create(:user)
+      post = build(:post)
+      expect(helper.allowed_boards(post, user)).to eq([board])
+    end
+
+    it "includes locked boards with user in" do
+      user = create(:user)
+      board = create(:board, authors_locked: true, authors: [user])
+      post = build(:post)
+      expect(helper.allowed_boards(post, user)).to eq([board])
+    end
+
+    it "hides boards that user can't write in" do
+      create(:board, authors_locked: true)
+      user = create(:user)
+      post = build(:post)
+      expect(helper.allowed_boards(post, user)).to eq([])
+    end
+
+    it "orders boards" do
+      board_a = create(:board, name: "A")
+      board_b_pinned = create(:board, name: "B", pinned: true)
+      board_c = create(:board, name: "C")
+      user = create(:user)
+      post = build(:post)
+      expect(helper.allowed_boards(post, user)).to eq([board_b_pinned, board_a, board_c])
+    end
+  end
 end
