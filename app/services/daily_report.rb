@@ -36,4 +36,9 @@ class DailyReport < Report
     return nil unless last_read.to_date < 1.day.ago.to_date
     (last_read + 1.day).to_date
   end
+
+  def self.badge_for(day)
+    return 0 unless day.present?
+    (DateTime.now.utc.to_date - day).to_i
+  end
 end
