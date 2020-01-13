@@ -29,6 +29,9 @@
     - if reply.post.author_for(current_user)&.private_note.present?
       %hr.clear
       %b Your Post Notes
+      &nbsp;
+      = link_to edit_post_path(reply.post, anchor: 'post-notes') do
+        = image_tag "icons/pencil.png".freeze, title: 'Edit', alt: 'Edit'
       %br
       = sanitize_written_content(reply.post.author_for(current_user).private_note)
     - else
