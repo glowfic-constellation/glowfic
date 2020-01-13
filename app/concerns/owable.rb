@@ -42,7 +42,7 @@ module Owable
 
     def add_creator_to_authors
       if author_ids.include?(user_id)
-        author_for(user).update(private_note: private_note)
+        author_for(user).update(joined: true, joined_at: created_at, private_note: private_note)
       else
         post_authors.create(user: user, joined: true, joined_at: created_at, private_note: private_note)
       end
