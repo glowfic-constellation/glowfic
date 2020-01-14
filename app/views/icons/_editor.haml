@@ -32,10 +32,10 @@
         %td{class: cycle('even', 'odd'), colspan: 2}
           = gif.check_box :_destroy
           = gif.label :_destroy, 'Remove from Gallery'
-    %tr.gallery-icon-destroy
-      %td{class: cycle('even', 'odd'), colspan: 2}
-        = f.check_box :_destroy
-        = f.label :_destroy, 'Delete Icon'
+      %tr.gallery-icon-destroy
+        %td{class: cycle('even', 'odd'), colspan: 2}
+          = f.check_box :_destroy
+          = f.label :_destroy, 'Delete Icon'
   %tfoot
     - if gif.nil?
       %tr.submit-row

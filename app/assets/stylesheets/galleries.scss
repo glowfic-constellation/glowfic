@@ -30,6 +30,7 @@
 
 .icon-editor {
   display: inline-flex;
+  width: 400px;
   align-items: stretch;
   input { height: 23px; }
   input[type='text'], input[type='file'] { width: 209px; }
@@ -38,11 +39,14 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    width: 110px;
   }
+  .icon-edit-table { width: 290px; }
 }
 
 .gallery-icon-editor {
   @extend .icon-editor;
+  width: unset;
   margin: 18px 18px 0px 0px;
   border: solid $border_color_icon_editor;
   border-width: 15px 1.5px 5px 1.5px;
@@ -55,6 +59,7 @@
     align-items: center;
     justify-content: center;
   }
+  .icon-edit-table { width: unset; }
 }
 
 .gallery-editor #gallery_name { height: 23px; }
@@ -65,8 +70,6 @@
   display: flex;
   flex-flow: row wrap;
 }
-
-.form-table.icon-edit-table { width: unset; }
 
 /* Tiny buttons that hover over icons to allow deleting or selecting a checkbox for editing */
 .delete-button, .select-button {
