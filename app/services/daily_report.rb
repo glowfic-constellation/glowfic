@@ -39,6 +39,6 @@ class DailyReport < Report
 
   def self.badge_for(day)
     return 0 unless day.present?
-    (DateTime.now.utc.to_date - day).to_i
+    (Time.zone.now.to_date - day).to_i
   end
 end
