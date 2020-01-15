@@ -1,9 +1,10 @@
+- colspan = 7
 - in_collection = local_assigns[:section_counter].present?
 - if in_collection
   %tr
-    %td.continuity-spacer{colspan: 7}
+    %td.continuity-spacer{colspan: colspan}
 %tr
-  %th.table-title{colspan: 7, class: ('sub continuity-header' if in_collection)}
+  %th.table-title{colspan: colspan, class: ('sub continuity-header' if in_collection)}
     = link_to section.name, index_section_path(section)
     - if section.index.editable_by?(current_user)
       = link_to new_index_post_path params: {index_id: section.index.id, index_section_id: section.id} do
@@ -16,10 +17,10 @@
         .link-box.action-delete x Delete
 - if section.description.present?
   %tr
-    %th.subber.index-description{colspan: 7}= sanitize_written_content(section.description)
+    %th.subber.index-description{colspan: colspan}= sanitize_written_content(section.description)
 - section_posts = posts_from_relation(section.posts.ordered_by_index, with_pagination: !in_collection, select: ', index_posts.description as index_description, index_posts.id as index_post_id')
 - if section_posts.present?
   = render partial: 'posts/list_item', collection: section_posts, as: :post, locals: {index: section.index}
 - else
   %tr
-    %td.centered.padding-10.no-posts{ class: cycle('even', 'odd'), colspan: 7 } — No posts yet —
+    %td.centered.padding-10.no-posts{ class: cycle('even', 'odd'), colspan: colspan } — No posts yet —
