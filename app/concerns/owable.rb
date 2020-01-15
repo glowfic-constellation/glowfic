@@ -20,6 +20,8 @@ module Owable
     after_create :add_creator_to_authors
     after_save :update_board_cameos
 
+    attr_accessor :private_note
+
     def opt_out_of_owed(user)
       return unless (author = author_for(user))
       author.destroy and return true unless author.joined?
@@ -39,8 +41,11 @@ module Owable
     private
 
     def add_creator_to_authors
-      return if author_ids.include?(user_id)
-      post_authors.create(user: user, joined: true, joined_at: created_at)
+      if author_ids.include?(user_id)
+        author_for(user).update(joined: true, joined_at: created_at, private_note: private_note)
+      else
+        post_authors.create(user: user, joined: true, joined_at: created_at, private_note: private_note)
+      end
     end
 
     def update_board_cameos

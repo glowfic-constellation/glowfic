@@ -459,7 +459,8 @@ RSpec.describe PostsController do
               subject: 'a',
               user_id: user.id,
               board_id: board.id,
-              unjoined_author_ids: [other_user.id]
+              unjoined_author_ids: [other_user.id],
+              private_note: 'there is a note!'
             }
           }
         }.to change { PostAuthor.count }.by(2)
@@ -472,6 +473,7 @@ RSpec.describe PostsController do
       expect(post_author.can_owe).to eq(true)
       expect(post_author.joined).to eq(true)
       expect(post_author.joined_at).to be_the_same_time_as(time)
+      expect(post_author.private_note).to eq('there is a note!')
 
       other_post_author = post.author_for(other_user)
       expect(other_post_author.can_owe).to eq(true)
@@ -2331,6 +2333,50 @@ RSpec.describe PostsController do
         expect(flash[:error]).to eq("You do not have permission to modify this post.")
         post.reload
         expect(post.subject).to eq("test subject")
+      end
+    end
+
+    context "notes" do
+      it "updates if there are no other changes" do
+        post = create(:post)
+        login_as(post.user)
+        expect(post.author_for(post.user).private_note).to be_nil
+        put :update, params: {
+          id: post.id,
+          post: {
+            private_note: 'look a note!'
+          }
+        }
+        expect(Post.find_by_id(post.id).author_for(post.user).private_note).not_to be_nil
+      end
+
+      it "updates with other changes" do
+        post = create(:post, content: 'old')
+        login_as(post.user)
+        expect(post.author_for(post.user).private_note).to be_nil
+        put :update, params: {
+          id: post.id,
+          post: {
+            private_note: 'look a note!',
+            content: 'new'
+          }
+        }
+        expect(Post.find_by_id(post.id).author_for(post.user).private_note).not_to be_nil
+        expect(post.reload.content).to eq('new')
+      end
+
+      it "updates with coauthor" do
+        post = create(:post)
+        reply = create(:reply, post: post)
+        login_as(reply.user)
+        expect(post.author_for(reply.user).private_note).to be_nil
+        put :update, params: {
+          id: post.id,
+          post: {
+            private_note: 'look a note!'
+          }
+        }
+        expect(Post.find_by_id(post.id).author_for(reply.user).private_note).not_to be_nil
       end
     end
   end

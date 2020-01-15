@@ -199,7 +199,8 @@ class PostsController < WritableController
     warnings = process_tags(ContentWarning, :post, :content_warning_ids)
     labels = process_tags(Label, :post, :label_ids)
 
-    if current_user.id != @post.user_id && @post.audit_comment.blank? && !@post.author_ids.include?(current_user.id)
+    is_author = @post.author_ids.include?(current_user.id)
+    if current_user.id != @post.user_id && @post.audit_comment.blank? && !is_author
       flash[:error] = "You must provide a reason for your moderator edit."
       editor_setup
       render :edit and return
@@ -211,6 +212,7 @@ class PostsController < WritableController
         @post.content_warnings = warnings
         @post.labels = labels
         @post.save!
+        @post.author_for(current_user).update!(private_note: @post.private_note) if is_author
       end
     rescue ActiveRecord::RecordInvalid
       flash.now[:error] = {
@@ -448,7 +450,8 @@ class PostsController < WritableController
       :icon_id,
       :character_alias_id,
       :authors_locked,
-      :audit_comment
+      :audit_comment,
+      :private_note
     ]
 
     # prevents us from setting (and saving) associations on preview()
