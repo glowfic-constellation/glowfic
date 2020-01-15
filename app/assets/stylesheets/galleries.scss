@@ -31,8 +31,8 @@
 %shared-editor {
   display: inline-flex;
   align-items: stretch;
-
   input { height: 23px; }
+
   .icons-box {
     display: flex;
     align-items: center;
@@ -44,20 +44,18 @@
   @extend %shared-editor;
   width: 400px;
   input[type='text'], input[type='file'] { width: 209px; }
-
   .icons-box { width: 110px; }
   .icon-edit-table { width: 290px; }
 }
 
 .gallery-icon-editor {
   @extend %shared-editor;
-  margin: 18px 18px 0px 0px;
+  margin: 18px 18px 0 0;
   border: solid $border_color_icon_editor;
   border-width: 15px 1.5px 5px 1.5px;
   background-color: $bg_color_icon_editor;
   padding: 5px 5px 5px 0;
   input[type='text'], input[type='file'] { width: 225px; }
-
   .icon-edit-table { width: unset; }
 }
 
