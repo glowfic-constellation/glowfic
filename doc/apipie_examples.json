@@ -853,6 +853,208 @@
       "recorded": true
     }
   ],
+  "index_posts#reorder": [
+    {
+      "verb": "POST",
+      "path": "/api/v1/index_posts/reorder",
+      "versions": [
+        "1.0"
+      ],
+      "query": null,
+      "request_data": {
+      },
+      "response_data": {
+        "errors": [
+          {
+            "message": "You must be logged in to view that page."
+          }
+        ]
+      },
+      "code": "401",
+      "show_in_doc": 1,
+      "recorded": true
+    },
+    {
+      "verb": "POST",
+      "path": "/api/v1/index_posts/reorder",
+      "versions": [
+        "1.0"
+      ],
+      "query": null,
+      "request_data": {
+        "ordered_post_ids": [
+          "3",
+          "1",
+          "4",
+          "2"
+        ]
+      },
+      "response_data": {
+        "post_ids": [
+          3,
+          1,
+          4,
+          2
+        ]
+      },
+      "code": "200",
+      "show_in_doc": 1,
+      "recorded": true
+    },
+    {
+      "verb": "POST",
+      "path": "/api/v1/index_posts/reorder",
+      "versions": [
+        "1.0"
+      ],
+      "query": null,
+      "request_data": {
+        "ordered_post_ids": [
+          "3",
+          "1"
+        ]
+      },
+      "response_data": {
+        "post_ids": [
+          3,
+          1,
+          2,
+          4
+        ]
+      },
+      "code": "200",
+      "show_in_doc": 1,
+      "recorded": true
+    },
+    {
+      "verb": "POST",
+      "path": "/api/v1/index_posts/reorder",
+      "versions": [
+        "1.0"
+      ],
+      "query": null,
+      "request_data": {
+        "ordered_post_ids": [
+          "3",
+          "1",
+          "4",
+          "2"
+        ],
+        "section_id": "1"
+      },
+      "response_data": {
+        "post_ids": [
+          3,
+          1,
+          4,
+          2
+        ]
+      },
+      "code": "200",
+      "show_in_doc": 1,
+      "recorded": true
+    },
+    {
+      "verb": "POST",
+      "path": "/api/v1/index_posts/reorder",
+      "versions": [
+        "1.0"
+      ],
+      "query": null,
+      "request_data": {
+        "ordered_post_ids": [
+          "3",
+          "1"
+        ],
+        "section_id": "1"
+      },
+      "response_data": {
+        "post_ids": [
+          3,
+          1,
+          2,
+          4
+        ]
+      },
+      "code": "200",
+      "show_in_doc": 1,
+      "recorded": true
+    }
+  ],
+  "index_sections#reorder": [
+    {
+      "verb": "POST",
+      "path": "/api/v1/index_sections/reorder",
+      "versions": [
+        "1.0"
+      ],
+      "query": null,
+      "request_data": {
+      },
+      "response_data": {
+        "errors": [
+          {
+            "message": "You must be logged in to view that page."
+          }
+        ]
+      },
+      "code": "401",
+      "show_in_doc": 1,
+      "recorded": true
+    },
+    {
+      "verb": "POST",
+      "path": "/api/v1/index_sections/reorder",
+      "versions": [
+        "1.0"
+      ],
+      "query": null,
+      "request_data": {
+        "ordered_section_ids": [
+          "3",
+          "1",
+          "4",
+          "2"
+        ]
+      },
+      "response_data": {
+        "section_ids": [
+          3,
+          1,
+          4,
+          2
+        ]
+      },
+      "code": "200",
+      "show_in_doc": 1,
+      "recorded": true
+    },
+    {
+      "verb": "POST",
+      "path": "/api/v1/index_sections/reorder",
+      "versions": [
+        "1.0"
+      ],
+      "query": null,
+      "request_data": {
+        "ordered_section_ids": [
+          "3",
+          "1"
+        ]
+      },
+      "response_data": {
+        "section_ids": [
+          3,
+          1,
+          2,
+          4
+        ]
+      },
+      "code": "200",
+      "show_in_doc": 1,
+      "recorded": true
+    }
+  ],
   "posts#index": [
     {
       "verb": "GET",
@@ -866,7 +1068,7 @@
         "results": [
           {
             "id": 1,
-            "subject": "test subject 6"
+            "subject": "test subject 26"
           }
         ]
       },
@@ -1072,7 +1274,7 @@
       "request_data": null,
       "response_data": {
         "id": 1,
-        "subject": "test subject 8",
+        "subject": "test subject 28",
         "created_at": "2019-12-25T21:34:56.000Z",
         "status": 0,
         "section_order": 0,
@@ -1080,13 +1282,13 @@
         "tagged_at": "2019-12-25T21:34:56.000Z",
         "board": {
           "id": 1,
-          "name": "test board 20"
+          "name": "test board 40"
         },
         "section": null,
         "authors": [
           {
             "id": 1,
-            "username": "JohnDoe61"
+            "username": "JohnDoe107"
           }
         ],
         "num_replies": 0,
@@ -1165,7 +1367,7 @@
           "icon": null,
           "user": {
             "id": 1,
-            "username": "JohnDoe89"
+            "username": "JohnDoe135"
           }
         },
         {
@@ -1178,7 +1380,7 @@
           "icon": null,
           "user": {
             "id": 1,
-            "username": "JohnDoe89"
+            "username": "JohnDoe135"
           }
         },
         {
@@ -1199,7 +1401,7 @@
           },
           "user": {
             "id": 3,
-            "username": "JohnDoe91"
+            "username": "JohnDoe137"
           }
         }
       ],
@@ -1539,7 +1741,7 @@
         "results": [
           {
             "id": 1,
-            "subject": "test subject 31",
+            "subject": "test subject 51",
             "created_at": "2019-12-25T21:34:56.000Z",
             "status": 0,
             "section_order": 0,
@@ -1547,7 +1749,7 @@
             "tagged_at": "2019-12-25T21:34:56.000Z",
             "board": {
               "id": 1,
-              "name": "test board 29"
+              "name": "test board 49"
             },
             "section": {
               "id": 1,
@@ -1557,7 +1759,7 @@
             "authors": [
               {
                 "id": 1,
-                "username": "JohnDoe108"
+                "username": "JohnDoe154"
               }
             ],
             "num_replies": 0
