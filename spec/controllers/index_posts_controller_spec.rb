@@ -72,6 +72,84 @@ RSpec.describe IndexPostsController do
     end
   end
 
+  describe "GET edit" do
+    it "requires login" do
+      get :edit, params: { id: -1 }
+      expect(response).to redirect_to(root_url)
+      expect(flash[:error]).to eq("You must be logged in to view that page.")
+    end
+
+    it "requires valid index post" do
+      login
+      get :edit, params: { id: -1 }
+      expect(response).to redirect_to(indexes_url)
+      expect(flash[:error]).to eq("Index post could not be found.")
+    end
+
+    it "requires permission" do
+      index = create(:index)
+      index.posts << create(:post, user: index.user)
+      login
+      get :edit, params: { id: index.index_posts.first.id }
+      expect(response).to redirect_to(index_url(index))
+      expect(flash[:error]).to eq("You do not have permission to edit this index.")
+    end
+
+    it "works" do
+      index = create(:index)
+      index.posts << create(:post, user: index.user)
+      login_as(index.user)
+      get :edit, params: { id: index.index_posts.first.id }
+      expect(response).to have_http_status(200)
+      expect(assigns(:page_title)).to eq("Edit Post in Index")
+    end
+  end
+
+  describe "PATCH update" do
+    it "requires login" do
+      patch :update, params: { id: -1 }
+      expect(response).to redirect_to(root_url)
+      expect(flash[:error]).to eq("You must be logged in to view that page.")
+    end
+
+    it "requires valid index post" do
+      login
+      patch :update, params: { id: -1 }
+      expect(response).to redirect_to(indexes_url)
+      expect(flash[:error]).to eq("Index post could not be found.")
+    end
+
+    it "requires permission" do
+      index = create(:index)
+      index.posts << create(:post, user: index.user)
+      login
+      patch :update, params: { id: index.index_posts.first.id }
+      expect(response).to redirect_to(index_url(index))
+      expect(flash[:error]).to eq("You do not have permission to edit this index.")
+    end
+
+    it "requires valid params" do
+      index = create(:index)
+      index.posts << create(:post, user: index.user)
+      login_as(index.user)
+      patch :update, params: { id: index.index_posts.first.id, index_post: {post_id: nil} }
+      expect(response).to have_http_status(200)
+      expect(assigns(:page_title)).to eq("Edit Post in Index")
+      expect(flash[:error][:message]).to eq("Index could not be saved")
+    end
+
+    it "works" do
+      index = create(:index)
+      index.posts << create(:post, user: index.user)
+      login_as(index.user)
+      expect(index.index_posts.first.description).to be_nil
+      patch :update, params: { id: index.index_posts.first.id, index_post: {description: 'some text'} }
+      expect(response).to redirect_to(index_url(index))
+      expect(flash[:success]).to eq("Index post has been updated.")
+      expect(index.index_posts.first.description).to eq('some text')
+    end
+  end
+
   describe "DELETE destroy" do
     it "requires login" do
       delete :destroy, params: { id: -1 }

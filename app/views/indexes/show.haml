@@ -20,13 +20,13 @@
 %table
   %thead
     %tr
-      %th.table-title{colspan: 6}= content_for :posts_title
+      %th.table-title{colspan: 7}= content_for :posts_title
     - if @index.description.present?
       %tr
-        %td.odd.written-content{colspan: 6}= sanitize_written_content(@index.description)
+        %td.odd.written-content{colspan: 7}= sanitize_written_content(@index.description)
   %tbody
     = render partial: 'index_sections/single', collection: @index.index_sections.ordered, as: :section
     - if @sectionless.present?
       %tr
-        %td.continuity-spacer{colspan: 6}
-      = render partial: 'posts/list_item', collection: @sectionless, as: :post
+        %td.continuity-spacer{colspan: 7}
+      = render partial: 'posts/list_item', collection: @sectionless, as: :post, locals: {index: @index}

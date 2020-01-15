@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 class IndexPostsController < ApplicationController
   before_action :login_required
+  before_action :find_index_post, only: [:edit, :update, :destroy]
 
   def new
     unless (index = Index.find_by_id(params[:index_id]))
@@ -26,49 +27,66 @@ class IndexPostsController < ApplicationController
       redirect_to index_path(@index_post.index) and return
     end
 
-    begin
-      @index_post.save!
-    rescue ActiveRecord::RecordInvalid
+    unless @index_post.save
       flash.now[:error] = {
         message: "Post could not be added to index.",
         array: @index_post.errors.full_messages
       }
       @page_title = 'Add Posts to Index'
       use_javascript('posts/index_post_new')
-      render :new
-    else
-      flash[:success] = "Post added to index!"
-      redirect_to index_path(@index_post.index)
+      render :new and return
     end
+
+    flash[:success] = "Post added to index!"
+    redirect_to index_path(@index_post.index)
+  end
+
+  def edit
+    @page_title = "Edit Post in Index"
+  end
+
+  def update
+    unless @index_post.update(index_params)
+      flash.now[:error] = {}
+      flash.now[:error][:message] = "Index could not be saved"
+      flash.now[:error][:array] = @index_post.errors.full_messages
+      @page_title = "Edit Post in Index"
+      render action: :edit and return
+    end
+
+    flash[:success] = "Index post has been updated."
+    redirect_to index_path(@index_post.index)
   end
 
   def destroy
-    unless (index_post = IndexPost.find_by_id(params[:id]))
-      flash[:error] = "Index post could not be found."
-      redirect_to indexes_path and return
-    end
-
-    unless index_post.index.editable_by?(current_user)
-      flash[:error] = "You do not have permission to edit this index."
-      redirect_to index_path(index_post.index) and return
-    end
-
     begin
-      index_post.destroy!
+      @index_post.destroy!
     rescue ActiveRecord::RecordNotDestroyed
       flash[:error] = {
         message: "Post could not be removed from index.",
-        array: index_post.errors.full_messages
+        array: @index_post.errors.full_messages
       }
     else
       flash[:success] = "Post removed from index."
     end
-    redirect_to index_path(index_post.index)
+    redirect_to index_path(@index_post.index)
   end
 
   private
 
   def index_params
     params.fetch(:index_post, {}).permit(:description, :index_id, :index_section_id, :post_id)
+  end
+
+  def find_index_post
+    unless (@index_post = IndexPost.find_by_id(params[:id]))
+      flash[:error] = "Index post could not be found."
+      redirect_to indexes_path and return
+    end
+
+    unless @index_post.index.editable_by?(current_user)
+      flash[:error] = "You do not have permission to edit this index."
+      redirect_to index_path(@index_post.index) and return
+    end
   end
 end
