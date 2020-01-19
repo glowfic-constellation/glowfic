@@ -1,6 +1,6 @@
 RSpec.describe TagsController do
   describe "GET index" do
-    context "with views" do
+    context "with views", bullet: true do
       render_views
       def create_tags
         # set up sample tags, empty and not
@@ -145,7 +145,7 @@ RSpec.describe TagsController do
       expect(meta_og[:description]).to eq('2 galleries, 3 characters')
     end
 
-    context "with views" do
+    context "with views", bullet: true do
       render_views
       it "succeeds with valid post tag" do
         tag = create(:label)

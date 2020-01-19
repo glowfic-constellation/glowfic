@@ -6,7 +6,7 @@ RSpec.describe MessagesController do
       expect(flash[:error]).to eq("You must be logged in to view that page.")
     end
 
-    context "with views" do
+    context "with views", bullet: true do
       render_views
       it "assigns correct inbox variables" do
         user = create(:user)
@@ -133,7 +133,7 @@ RSpec.describe MessagesController do
       expect(assigns(:select_items)).to eq(Users: other_users)
     end
 
-    context "with views" do
+    context "with views", bullet: true do
       render_views
 
       it "succeeds" do
@@ -265,7 +265,7 @@ RSpec.describe MessagesController do
       expect(message.parent).to eq(previous)
     end
 
-    context "preview" do
+    context "preview", bullet: true do
       render_views
       it "sets messages if in a thread" do
         previous = create(:message)
@@ -345,7 +345,7 @@ RSpec.describe MessagesController do
       expect(flash[:error]).to eq("Message could not be found.")
     end
 
-    context "with views" do
+    context "with views", bullet: true do
       render_views
       it "works for sender" do
         message = create(:message)
