@@ -2,6 +2,7 @@
 
 var uploadedIcons = {};
 var formKey = '';
+var numFiles = 0;
 
 $(document).ready(function() {
   var form = $('form.icon-upload');
@@ -27,7 +28,6 @@ function randomString() {
 
 function bindFileInput(fileInput, form, submitButton, formData) {
   var limit = form.data('limit');
-  var numFiles = 0;
   var uploadArgs = {
     fileInput: fileInput,
     url: form.data('url'),
@@ -138,6 +138,7 @@ function unsetLoadingIcon() {
 }
 
 function deleteUnusedIcons(keys) {
+  numFiles -= keys.length;
   $(keys).each(function(index, key) {
     $.authenticatedPost('/api/v1/icons/s3_delete', {s3_key: key});
   });
