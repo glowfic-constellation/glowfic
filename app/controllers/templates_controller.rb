@@ -30,13 +30,17 @@ class TemplatesController < ApplicationController
   end
 
   def show
-    @user = @template.user
-    character_ids = @template.characters.pluck(:id)
+    @page_title = @template.name
+    @meta_og = og_data
+    @characters = @template.characters
+
+    character_ids = @characters.pluck(:id)
     post_ids = Reply.where(character_id: character_ids).select(:post_id).distinct.pluck(:post_id)
     posts = Post.where(character_id: character_ids).or(Post.where(id: post_ids))
     @posts = posts_from_relation(posts.ordered)
-    @page_title = @template.name
-    @meta_og = og_data
+
+    @settings = Template.settings_info(@characters) if page_view == 'list'
+    @characters = Template.characters_list(@characters, page_view: page_view)
   end
 
   def edit

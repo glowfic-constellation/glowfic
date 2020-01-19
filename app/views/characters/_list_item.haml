@@ -1,30 +1,27 @@
-- char_id, char_name, nickname, screenname, pb, user_id, username, user_deleted = character
-- if show_template
-  - template_id, template_name = character[-2..]
 - klass = cycle('even', 'odd')
 %tr
   %td.padding-5{class: klass}
-    = link_to char_name, character_path(char_id)
+    = link_to character[:name], character_path(character[:id])
   - if show_template
     %td.padding-5{class: klass}
-      - if template_id.present?
-        = link_to template_name, template_path(template_id)
-  %td.padding-5{class: klass, style: 'width:15%'}= nickname
-  %td.padding-5{class: klass, style: 'width:15%'}= breakable_text(screenname)
-  %td.padding-5{class: klass, style: 'width:20%'}= pb
+      - if character[:template_id].present?
+        = link_to character[:template_name], template_path(character[:template_id])
+  %td.padding-5{class: klass, style: 'width:15%'}= character[:nickname]
+  %td.padding-5{class: klass, style: 'width:15%'}= breakable_text(character[:screenname])
+  %td.padding-5{class: klass, style: 'width:20%'}= character[:pb]
   %td.padding-5{class: klass, style: 'width:15%'}
     - if show_user
-      = user_mem_link(user_id, username, user_deleted)
+      = user_mem_link(character[:user_id], character[:username], character[:user_deleted])
     - else
-      - setting_links = settings.fetch(char_id, []).map { |setting| link_to(setting[1], tag_path(setting[0])) }
+      - setting_links = settings.fetch(character[:id], []).map { |setting| link_to(setting[1], tag_path(setting[0])) }
       = safe_join(setting_links, ', ')
 
   %td.width-70.right-align{class: klass}
     - unless hide_buttons
-      - if Character.editable_by?(current_user, user_id)
-        = link_to edit_character_path(char_id) do
+      - if Character.editable_by?(current_user, character[:user_id])
+        = link_to edit_character_path(character[:id]) do
           = image_tag "icons/pencil.png", alt: 'Edit'
-      - if Character.deletable_by?(current_user, user_id)
-        = link_to character_path(char_id), :method => :delete, data: { confirm: "Are you sure you want to delete #{char_name}?" } do
+      - if Character.deletable_by?(current_user, character[:user_id])
+        = link_to character_path(character[:id]), :method => :delete, data: { confirm: "Are you sure you want to delete #{character[:name]}?" } do
           = image_tag "icons/cross.png", alt: 'Delete'
         &nbsp;

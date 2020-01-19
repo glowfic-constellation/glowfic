@@ -56,6 +56,119 @@ RSpec.describe CharactersController do
         expect(response.status).to eq(200)
       end
     end
+
+    describe "can group characters" do
+      let (:user) { create(:user, username: 'John Doe') }
+      let(:templateless) { create_list(:character, 3, user: user) }
+      let(:templated) { Array.new(3) { create(:character, user: user, template: create(:template, user: user)) } }
+      let(:template) { create(:template, user: user) }
+      let(:one_template) { create_list(:character, 3, user: user, template: template) }
+      let!(:assoc) { Character.where(id: (templateless + templated + one_template).map(&:id)).ordered }
+
+      before(:each) do
+        templateless[2].update!(name: 'b')
+        one_template[1].update!(name: 'a')
+      end
+
+      describe "by template" do
+        RSpec.shared_examples "templates shared example" do
+          it "properly" do
+            expected = templated.to_h do |char|
+              [char.template.id, [{ id: char.id, name: char.name, template_id: char.template_id }.merge(defaults)]]
+            end
+
+            expected[template.id] = one_template.sort_by{|char| char[:name] }.map do |char|
+              { id: char.id, name: char.name, template_id: template.id }.merge(defaults)
+            end
+
+            expected[nil] = templateless.sort_by{|char| char[:name] }.map do |char|
+              { id: char.id, name: char.name, template_id: nil }.merge(defaults)
+            end
+
+            get :index, params: { user_id: user.id, view: view }
+            assigns(:characters).each { |k, v| expect(v).to eq(expected[k]) }
+            expect(assigns(:characters)).to eq(expected)
+          end
+        end
+
+        describe "in icon view" do
+          let(:defaults) { {screenname: nil, user_id: user.id, url: nil, keyword: nil} }
+          let(:view) { 'icon' }
+
+          include_examples "templates shared example"
+        end
+
+        describe "in list view" do
+          let(:defaults) { {screenname: nil, user_id: user.id, nickname: nil, pb: nil, username: 'John Doe', user_deleted: false} }
+          let(:view) { 'list' }
+
+          include_examples "templates shared example"
+        end
+      end
+
+      describe "by character group" do
+        let(:character_group) { create(:character_group, user: user) }
+
+        before(:each) do
+          update = [one_template, templated[1], templateless[2]].flatten
+          update.each { |character| character.update!(character_group: character_group) }
+        end
+
+        RSpec.shared_examples "groups shared example" do
+          it "properly" do
+            templated_hash = templated.to_h do |char|
+              [char.template.id, [{ id: char.id, name: char.name, template_id: char.template_id}.merge(defaults)]]
+            end
+
+            templateless.map! do |char|
+              { id: char.id, name: char.name, template_id: nil }.merge(defaults)
+            end
+
+            group_hash = defaults.update({ character_group_id: character_group.id })
+
+            one_template.sort_by!{|char| char[:name] }
+            one_template.map! do |char|
+              { id: char.id, name: char.name, template_id: template.id }.merge(group_hash)
+            end
+
+            grouped_template_id = templated[1].template_id
+            grouped_template = templated_hash.slice(grouped_template_id)
+            grouped_template.transform_values { |characters| characters.each { |char| char.update(group_hash) } }
+            templated_hash.delete(grouped_template_id)
+
+            expected = {
+              character_group.id => {
+                template.id => one_template,
+                nil         => [templateless[2].merge(group_hash)]
+              }.merge(grouped_template),
+              nil                => {
+                nil => templateless[0..1].sort_by{|char| char[:name]}
+              }.merge(templated_hash)
+            }
+
+            get :index, params: { user_id: user.id, view: view }
+            assigns(:characters).each { |k, v| expect(v).to eq(expected[k]) }
+            expect(assigns(:characters)).to eq(expected)
+          end
+        end
+
+        describe "in icon view" do
+          let(:defaults) { {screenname: nil, user_id: user.id, url: nil, keyword: nil, character_group_id: nil} }
+          let(:view) { 'icon' }
+
+          include_examples "groups shared example"
+        end
+
+        describe "in list view" do
+          let(:defaults) do
+            {screenname: nil, user_id: user.id, nickname: nil, pb: nil, username: 'John Doe', user_deleted: false, character_group_id: nil}
+          end
+          let(:view) { 'list' }
+
+          include_examples "groups shared example"
+        end
+      end
+    end
   end
 
   describe "GET new" do

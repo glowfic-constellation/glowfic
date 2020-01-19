@@ -1,13 +1,12 @@
-- char_id, char_name, screenname, user_id, url, keyword = character
 .character-icon-item
-  = link_to character_path(char_id) do
-    - if url
-      = icon_mem_tag(url, keyword)
+  = link_to character_path(character[:id]) do
+    - if character[:url]
+      = icon_mem_tag(character[:url], character[:keyword])
     - else
       .icon.character-no-icon &nbsp;
-    .character-name= char_name
-    - if screenname
-      .character-screenname= surround('(', ')') { breakable_text(screenname) }
-  - if Character.deletable_by?(current_user, user_id)
-    .delete-button{ id: char_id }
-      = link_to '×', character_path(char_id), :method => :delete, data: { confirm: "Are you sure you want to delete #{char_name}?" }
+    .character-name= character[:name]
+    - if character[:screenname]
+      .character-screenname= surround('(', ')') { breakable_text(character[:screenname]) }
+  - if Character.deletable_by?(current_user, character[:user_id])
+    .delete-button{ id: character[:id] }
+      = link_to '×', character_path(character[:id]), :method => :delete, data: { confirm: "Are you sure you want to delete #{character[:name]}?" }

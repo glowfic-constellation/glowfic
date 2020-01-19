@@ -19,10 +19,25 @@ class Template < ApplicationRecord
     settings.map{ |i| [i[0], i[1].zip(i[2])] }.to_h
   end
 
-  def self.characters_list(characters, show_template=false)
-    characters = characters.left_outer_joins(:template) if show_template
-    attributes = [:id, :name, :template_name, :screenname, :pb, :user_id, 'users.username', Arel.sql('users.deleted as user_deleted')]
-    attributes += ['templates.id', 'templates.name'] if show_template
-    characters.joins(:user).pluck(*attributes)
+  def self.characters_list(characters, show_template: false, page_view:, select: [])
+    attributes = [:id, :name, :screenname, :user_id]
+    attributes += select unless select.empty?
+    if page_view == 'list'
+      characters = characters.joins(:user)
+      attributes += [:pb]
+      attributes << :template_id if show_template && !attributes.include?(:template_id)
+      pluck_attributes = attributes + [:template_name, 'users.username', 'users.deleted']
+      key_attributes   = attributes + [:nickname,      :username,        :user_deleted]
+      if show_template
+        characters = characters.left_outer_joins(:template)
+        pluck_attributes << 'templates.name'
+        key_attributes << :template_name
+      end
+    else
+      characters = characters.left_outer_joins(:default_icon)
+      attributes += [:url, :keyword]
+      pluck_attributes = key_attributes = attributes
+    end
+    characters.pluck(*pluck_attributes).map{ |char| key_attributes.zip(char).to_h }
   end
 end
