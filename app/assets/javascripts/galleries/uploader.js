@@ -48,7 +48,10 @@ function bindFileInput(fileInput, form, submitButton, formData) {
         if (isFirstFile) numFiles += numUploading;
         if (numFiles > limit) {
           if (isFirstFile) alert("You cannot upload more than "+limit+" files at once. Please try again.");
-          if(fileInput[0].files[numUploading - 1] == data.files[0]) numFiles -= numUploading;
+          if(fileInput[0].files[numUploading - 1] == data.files[0]) {
+            numFiles -= numUploading;
+            fileInput.val(null);
+          }
           return;
         }
       }
