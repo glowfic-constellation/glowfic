@@ -123,4 +123,12 @@ module ApplicationHelper
     return '(deleted user)'.html_safe if deleted
     link_to username, user_path(user_id)
   end
+
+  def conditional_tag(tag_name, condition, &block)
+    if condition
+      content_tag tag_name, capture(&block)
+    else
+      capture(&block)
+    end
+  end
 end
