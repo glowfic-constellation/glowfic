@@ -34,6 +34,7 @@
         = link_to url_for(character_split: 'template', view: params[:view]) do
           .view-button
             Group
+  - needs_templates = (page_view == 'list')
   - partial_type = (page_view == 'list') ? 'characters/list_section' : 'characters/icon_view'
   - colspan = (page_view == 'list') ? 6 : 1
   %tr
@@ -72,5 +73,7 @@
       %tr
         %td.centered.padding-5{class: cycle('even', 'odd'), colspan: colspan} — No characters yet —
   - else
-    - characters = @user.characters.includes(:template).ordered
+    - characters = @user.characters.ordered
+    - if needs_templates
+      - characters = characters.includes(:template)
     = render partial_type, name: nil, characters: characters, show_template: true
