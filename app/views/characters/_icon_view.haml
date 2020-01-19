@@ -28,7 +28,8 @@
 %tr
   %td.icons-box.left-align
     .character-icon-list
-      - characters.left_outer_joins(:default_icon).pluck(:id, :name, :screenname, :user_id, :url, :keyword).each do |plucked|
+      - characters = characters.left_outer_joins(:default_icon).pluck(:id, :name, :screenname, :user_id, :url, :keyword)
+      - characters.each do |plucked|
         - char_id, char_name, screenname, user_id, url, keyword = plucked
         .character-icon-item
           = link_to character_path(char_id) do
