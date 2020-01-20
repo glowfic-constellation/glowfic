@@ -26,9 +26,10 @@ RSpec.describe PostsController do
       create_list(:post, 26)
       oldest = Post.ordered_by_id.first
       next_oldest = Post.ordered_by_id.second
-      oldest.update!(content: "just to make it update")
+      oldest.update!(status: Post::STATUS_COMPLETE)
       get :index
       ids_fetched = controller.instance_variable_get('@posts').map(&:id)
+      expect(ids_fetched.count).to eq(25)
       expect(ids_fetched).not_to include(next_oldest.id)
     end
 
@@ -987,8 +988,8 @@ RSpec.describe PostsController do
       end
 
       it "works for unread" do
-        third_reply = post.replies.ordered.limit(3).last
-        second_last_reply = post.replies.ordered.last(2).first
+        third_reply = post.replies.ordered[2]
+        second_last_reply = post.replies.ordered[-2]
         user = create(:user)
         post.mark_read(user, third_reply.created_at)
         expect(post.first_unread_for(user)).to eq(second_last_reply)
@@ -1454,9 +1455,12 @@ RSpec.describe PostsController do
       post = create(:post, privacy: Concealable::PRIVATE)
       admin = create(:admin_user)
       login_as(admin)
-      put :update, params: { id: post.id, post: { content: 'b', audit_comment: 'note' } }
+      put :update, params: {
+        id: post.id,
+        post: { description: 'b', audit_comment: 'note' }
+      }
       expect(flash[:success]).to eq("Your post has been updated.")
-      expect(post.reload.content).to eq('b')
+      expect(post.reload.description).to eq('b')
       expect(post.audits.last.comment).to eq('note')
       Post.auditing_enabled = false
     end
