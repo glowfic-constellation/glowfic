@@ -32,19 +32,6 @@ class ApplicationController < ActionController::Base
     end
   end
 
-  def check_forced_logout
-    return unless logged_in?
-    return unless current_user.suspended? || current_user.deleted?
-    logout
-  end
-
-  def show_password_warning
-    return unless logged_in?
-    return unless current_user.salt_uuid.nil?
-    logout
-    flash.now[:error] = "Because Marri accidentally made passwords a bit too secure, you must log back in to continue using the site."
-  end
-
   def handle_invalid_token
     flash[:error] = 'Oops, looks like your session expired! Please try another tab or log in again to resume glowficcing.'
     flash[:error] += ' If you were writing a reply, it has been cached for your next page load.'
@@ -90,39 +77,6 @@ class ApplicationController < ActionController::Base
     end
   end
   helper_method :page_view
-
-  def store_location
-    return unless standard_request?
-    session[:previous_url] = request.fullpath
-  end
-
-  def set_timezone(&block)
-    return yield unless logged_in?
-    return yield unless current_user.timezone
-    Time.use_zone(current_user.timezone, &block)
-  end
-
-  def require_glowfic_domain
-    return unless Rails.env.production? || params[:force_domain] # for testability
-    return unless standard_request?
-    return if request.host.include?('glowfic.com')
-    return if request.host.include?('glowfic-staging.herokuapp.com')
-    glowfic_url = root_url(host: ENV['DOMAIN_NAME'], protocol: 'https')[0...-1] + request.fullpath # strip double slash
-    redirect_to glowfic_url, status: :moved_permanently
-  end
-
-  def set_login_gon
-    gon.logged_in = logged_in?
-  end
-
-  def check_tos
-    return if tos_skippable?
-
-    store_location
-    @page_title = 'Accept the TOS'
-    render 'about/accept_tos' and return if logged_in?
-    use_javascript('accept_tos')
-  end
 
   def tos_skippable?
     return true if Rails.env.test? && params[:force_tos].nil?
@@ -195,6 +149,52 @@ class ApplicationController < ActionController::Base
   helper_method :generate_short
 
   private
+
+  def check_forced_logout
+    return unless logged_in?
+    return unless current_user.suspended? || current_user.deleted?
+    logout
+  end
+
+  def show_password_warning
+    return unless logged_in?
+    return unless current_user.salt_uuid.nil?
+    logout
+    flash.now[:error] = "Because Marri accidentally made passwords a bit too secure, you must log back in to continue using the site."
+  end
+
+  def store_location
+    return unless standard_request?
+    session[:previous_url] = request.fullpath
+  end
+
+  def set_login_gon
+    gon.logged_in = logged_in?
+  end
+
+  def set_timezone(&block)
+    return yield unless logged_in?
+    return yield unless current_user.timezone
+    Time.use_zone(current_user.timezone, &block)
+  end
+
+  def require_glowfic_domain
+    return unless Rails.env.production? || params[:force_domain] # for testability
+    return unless standard_request?
+    return if request.host.include?('glowfic.com')
+    return if request.host.include?('glowfic-staging.herokuapp.com')
+    glowfic_url = root_url(host: ENV['DOMAIN_NAME'], protocol: 'https')[0...-1] + request.fullpath # strip double slash
+    redirect_to glowfic_url, status: :moved_permanently
+  end
+
+  def check_tos
+    return if tos_skippable?
+
+    store_location
+    @page_title = 'Accept the TOS'
+    render 'about/accept_tos' and return if logged_in?
+    use_javascript('accept_tos')
+  end
 
   def standard_request?
     request.get? && !request.xhr?
