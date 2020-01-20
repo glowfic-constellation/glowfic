@@ -73,6 +73,16 @@
     = f.label :label_ids, 'Labels:'
     = tag_select(post, f, :labels)
 
+  .subber Related Posts
+  .even
+    = label_tag :post_id, 'Add related post:'
+    = select_tag :post_id, options_from_collection_for_select(Post.limit(10), :id, :subject, nil)
+    %br
+    = label_tag :relation, 'Relationship:'
+    = select_tag :relation, options_for_select(['Inspired By', 'AU of'])
+    or
+    = text_field_tag :relation_freeform, '', placeholder: 'Enter your own'
+
   - if !post.persisted? || post.author_ids.include?(current_user.id)
     #post-notes.subber Notes
     .even
