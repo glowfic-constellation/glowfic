@@ -91,27 +91,34 @@ class ApplicationController < ActionController::Base
   helper_method :tos_skippable?
 
   def posts_from_relation(relation, no_tests: true, with_pagination: true, select: '', max: false)
-    if max
-      reports_select = <<~SQL
+    posts = posts_list_relation(relation, no_tests: no_tests, select: select, max: max)
+    posts = posts.paginate(page: page, per_page: 25) if with_pagination
+    calculate_view_status(posts) if logged_in?
+    posts
+  end
+  helper_method :posts_from_relation
+
+  def posts_list_relation(relation, no_tests: true, select: '', max: false)
+    select = if max
+      <<~SQL
         posts.*,
         max(boards.name) as board_name,
         max(users.username) as last_user_name,
         bool_or(users.deleted) as last_user_deleted
         #{select}
       SQL
-      posts = relation.select(reports_select)
     else
-      regular_select = <<~SQL
+      <<~SQL
         posts.*,
         boards.name as board_name,
         users.username as last_user_name,
         users.deleted as last_user_deleted
         #{select}
       SQL
-      posts = relation.select(regular_select)
     end
 
-    posts = posts
+    posts = relation
+      .select(select)
       .visible_to(current_user)
       .joins(:board)
       .joins(:last_user)
@@ -119,23 +126,23 @@ class ApplicationController < ActionController::Base
       .with_has_content_warnings
       .with_reply_count
 
-    posts = posts.paginate(page: page, per_page: 25) if with_pagination
     posts = posts.no_tests if no_tests
-
-    if logged_in?
-      @opened_ids ||= PostView.where(user_id: current_user.id).where.not(read_at: nil).pluck(:post_id)
-
-      opened_posts = PostView.where(user_id: current_user.id).where.not(read_at: nil).where(post_id: posts.map(&:id)).select([:post_id, :read_at])
-      @unread_ids ||= []
-      @unread_ids += opened_posts.select do |view|
-        post = posts.detect { |p| p.id == view.post_id }
-        post && view.read_at < post.tagged_at
-      end.map(&:post_id)
-    end
-
     posts
   end
-  helper_method :posts_from_relation
+
+  def calculate_view_status(posts)
+    post_views = PostView.where(user_id: current_user.id).where.not(read_at: nil)
+    @opened_ids ||= post_views.pluck(:post_id)
+
+    opened_posts = post_views.where(post_id: posts.map(&:id)).select([:post_id, :read_at])
+    unread_views = opened_posts.select do |view|
+      post = posts.detect { |p| p.id == view.post_id }
+      post && view.read_at < post.tagged_at
+    end
+
+    @unread_ids ||= []
+    @unread_ids += unread_views.map(&:post_id)
+  end
 
   attr_reader :unread_ids, :opened_ids
   # unread_ids does not necessarily include fully unread posts
