@@ -5,6 +5,25 @@ var tinyMCEInit = false, shownIcons = [];
 var iconSelectBox;
 
 $(document).ready(function() {
+  $("#post_id").select2({
+    ajax: {
+      delay: 200,
+      url: '/api/v1/posts',
+      dataType: 'json',
+      data: function(params) { return queryTransform(params); },
+      processResults: function(data, params) {
+        var total = this._request.getResponseHeader('Total');
+        return processResults(data, params, total, 'subject');
+      },
+      cache: true
+    },
+    placeholder: '— Choose Post —',
+    allowClear: true,
+    width: '300px'
+  });
+
+  $("#relation").select2({width: '300px'})
+
   setupMetadataEditor();
   iconSelectBox = $('#reply-icon-selector');
 
