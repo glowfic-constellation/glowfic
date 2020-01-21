@@ -28,7 +28,7 @@ RSpec.feature "Listing characters", type: :feature do
   let!(:earth) { create(:setting, name: 'Earth') }
   let!(:icon) { create(:icon, user: user, url: 'https://example.org/sample.png') }
 
-  let!(:character_data) do
+  let!(:ungrouped_character_data) do
     [
       with_template([
         { name: 'Test character' },
@@ -68,85 +68,151 @@ RSpec.feature "Listing characters", type: :feature do
     end
   end
 
-  scenario "Viewing in list mode, separated by template" do
-    visit user_characters_path(user_id: user.id, view: 'list', character_split: 'template')
-    expect(page).to have_text("Sample user's Characters")
-
-    expect(page).not_to have_text('Unrelated template')
-    expect(page).not_to have_text('Unrelated character')
-
-    character_data.each do |data|
-      text = if data[:template]
-        'Template: ' + data[:template].name
-      else
-        'No Template'
+  RSpec.shared_examples "characters#index" do |has_groups|
+    def check_headers(group_data, has_groups)
+      if has_groups
+        text = if group_data[:group]
+          'Group: ' + group_data[:group].name
+        else
+          'Ungrouped Characters'
+        end
+        expect(page).to have_selector('tr', text: text)
       end
-      expect(page).to have_selector('tr', text: text)
 
-      expect_character_rows(data[:characters])
-    end
-  end
-
-  scenario "Viewing in list mode, unseparated" do
-    visit user_characters_path(user_id: user.id, view: 'list', character_split: 'none')
-    expect(page).to have_text("Sample user's Characters")
-
-    expect(page).not_to have_text('Unrelated template')
-    expect(page).not_to have_text('Unrelated character')
-
-    expect(page).not_to have_text('Template:')
-
-    character_data.each do |data|
-      expect_character_rows(data[:characters])
-    end
-  end
-
-  def expect_character_icons(characters)
-    characters.each do |character|
-      link = find_link(character.name, href: character_path(character))
-      within(link) do
-        expect(page).to have_text(character.screenname) if character.screenname.present?
-        icon = character.default_icon
-        next unless icon.present?
-
-        img = find('img')
-        expect(img[:src]).to eq(icon.url)
-        expect(img[:alt]).to eq(icon.keyword)
-        expect(img[:title]).to eq(icon.keyword)
+      group_data[:templates].each do |data|
+        text = if data[:template]
+          'Template: ' + data[:template].name
+        else
+          'No Template'
+        end
+        expect(page).to have_selector('tr', text: text)
       end
     end
-  end
 
-  scenario "Viewing in icon mode, separated by template" do
-    visit user_characters_path(user_id: user.id, view: 'icon', character_split: 'template')
-    expect(page).to have_text("Sample user's Characters")
+    def no_headers
+      expect(page).not_to have_text('Template:')
+      expect(page).not_to have_text('Group:')
+    end
 
-    expect(page).not_to have_text('Unrelated template')
-    expect(page).not_to have_text('Unrelated character')
+    def no_unrelated
+      expect(page).not_to have_text('Unrelated template')
+      expect(page).not_to have_text('Unrelated character')
+      expect(page).not_to have_text('Unrelated group')
+    end
 
-    character_data.each do |data|
-      text = if data[:template]
-        'Template: ' + data[:template].name
-      else
-        'No Template'
+    scenario "Viewing in list mode, separated by template" do
+      visit user_characters_path(user_id: user.id, view: 'list', character_split: 'template')
+      expect(page).to have_text("Sample user's Characters")
+
+      no_unrelated
+
+      groups.each do |group_data|
+        check_headers(group_data, has_groups)
+        group_data[:templates].each do |data|
+          expect_character_rows(data[:characters])
+        end
       end
-      expect(page).to have_selector('tr', text: text)
+    end
 
-      expect_character_icons(data[:characters])
+    scenario "Viewing in list mode, unseparated" do
+      visit user_characters_path(user_id: user.id, view: 'list', character_split: 'none')
+      expect(page).to have_text("Sample user's Characters")
+
+      no_unrelated
+      no_headers
+
+      groups.each do |group_data|
+        group_data[:templates].each do |data|
+          expect_character_rows(data[:characters])
+        end
+      end
+    end
+
+    def expect_character_icons(characters)
+      characters.each do |character|
+        link = find_link(character.name, href: character_path(character))
+        within(link) do
+          expect(page).to have_text(character.screenname) if character.screenname.present?
+          icon = character.default_icon
+          next unless icon.present?
+
+          img = find('img')
+          expect(img[:src]).to eq(icon.url)
+          expect(img[:alt]).to eq(icon.keyword)
+          expect(img[:title]).to eq(icon.keyword)
+        end
+      end
+    end
+
+    scenario "Viewing in icon mode, separated by template" do
+      visit user_characters_path(user_id: user.id, view: 'icon', character_split: 'template')
+      expect(page).to have_text("Sample user's Characters")
+
+      no_unrelated
+
+      groups.each do |group_data|
+        check_headers(group_data, has_groups)
+        group_data[:templates].each do |data|
+          expect_character_icons(data[:characters])
+        end
+      end
+    end
+
+    scenario "Viewing in icon mode, unseparated" do
+      visit user_characters_path(user_id: user.id, view: 'icon', character_split: 'none')
+      expect(page).to have_text("Sample user's Characters")
+
+      no_unrelated
+      no_headers
+
+      groups.each do |group_data|
+        group_data[:templates].each do |data|
+          expect_character_icons(data[:characters])
+        end
+      end
     end
   end
 
-  scenario "Viewing in icon mode, unseparated" do
-    visit user_characters_path(user_id: user.id, view: 'icon', character_split: 'none')
-    expect(page).to have_text("Sample user's Characters")
-
-    expect(page).not_to have_text('Unrelated template')
-    expect(page).not_to have_text('Unrelated character')
-
-    expect(page).not_to have_text('Template:')
-
-    character_data.each do |data|
-      expect_character_icons(data[:characters])
+  context "without character groups" do
+    let!(:groups) do
+      [
+        {
+          group: nil,
+          templates: ungrouped_character_data,
+        }
+      ]
     end
+
+    include_examples "characters#index", false
+  end
+
+  context "with character groups" do
+    def grouped_sample(group)
+      template = create(:template, user: user, name: 'grouped template')
+      [
+        with_template([
+          { name: 'character group character 1', character_group: group },
+        ], template),
+        without_template([
+          { name: 'grouped untemplated character', character_group: group },
+        ]),
+      ]
+    end
+
+    let!(:groups) do
+      group = create(:character_group, user: user, name: 'test character group')
+      [
+        {
+          group: group,
+          templates: grouped_sample(group),
+        },
+        {
+          group: nil,
+          templates: ungrouped_character_data,
+        }
+      ]
+    end
+
+    include_examples "characters#index", true
   end
 end
