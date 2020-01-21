@@ -43,7 +43,7 @@ RSpec.feature "Viewing a template", type: :feature do
             expect(page).to have_text(val) if val.present?
           end
           character.settings.each do |setting|
-            expect(page).to have_text(setting.name)
+            expect(page).to have_link(setting.name, href: tag_path(setting))
           end
         end
       end
