@@ -45,6 +45,7 @@ class PostsController < WritableController
     @started = (params[:started] == 'true') || (params[:started].nil? && current_user.unread_opened)
     @posts = Post.joins("LEFT JOIN post_views ON post_views.post_id = posts.id AND post_views.user_id = #{current_user.id}")
     @posts = @posts.joins("LEFT JOIN board_views on board_views.board_id = posts.board_id AND board_views.user_id = #{current_user.id}")
+    @posts = @posts.where.not(post_views: {read_at: nil}) if @started
 
     # post view does not exist and (board view does not exist or post has updated since non-ignored board view read_at)
     no_post_view = @posts.where(post_views: { user_id: nil })
@@ -60,9 +61,7 @@ class PostsController < WritableController
       .or(with_post_view.where("date_trunc('second', post_views.read_at) < date_trunc('second', posts.tagged_at)"))
 
     @posts = with_post_view.or(no_post_view)
-    @posts = posts_from_relation(@posts.ordered, with_pagination: false)
-    @posts = @posts.select { |p| @opened_ids.include?(p.id) } if @started
-    @posts = @posts.paginate(per_page: 25, page: page)
+    @posts = posts_from_relation(@posts.ordered)
 
     @hide_quicklinks = true
     @page_title = @started ? 'Opened Threads' : 'Unread Threads'
