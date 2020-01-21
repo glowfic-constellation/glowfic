@@ -156,9 +156,9 @@ class CharactersController < ApplicationController
 
     pb_struct = Struct.new(:item_id, :item_name, :type, :pb, :user_id, :username)
     chars.each do |dataset|
-      id, name, pb, user_id, username, template_id, template_name = dataset
+      id, name, pb, user_id, username, template_id, nickname = dataset
       if template_id.present?
-        item_id, item_name, type = template_id, template_name, Template
+        item_id, item_name, type = template_id, nickname, Template
       else
         item_id, item_name, type = id, name, Character
       end
@@ -198,7 +198,7 @@ class CharactersController < ApplicationController
     @alt_dropdown = @alts.map do |alt|
       name = alt.name
       name += ' | ' + alt.screenname if alt.screenname
-      name += ' | ' + alt.template_name if alt.template_name
+      name += ' | ' + alt.nickname if alt.nickname
       name += ' | ' + alt.settings.pluck(:name).join(' & ') if alt.settings.present?
       [name, alt.id]
     end
@@ -299,7 +299,7 @@ class CharactersController < ApplicationController
       where_calc = []
       where_calc << "name LIKE ?" if params[:search_name].present?
       where_calc << "screenname LIKE ?" if params[:search_screenname].present?
-      where_calc << "template_name LIKE ?" if params[:search_nickname].present?
+      where_calc << "nickname LIKE ?" if params[:search_nickname].present?
 
       @search_results = @search_results.where(where_calc.join(' OR '), *(['%' + params[:name].to_s + '%'] * where_calc.length))
     end
@@ -369,7 +369,7 @@ class CharactersController < ApplicationController
     title.prepend(@character.user.username) unless @character.user.deleted?
 
     linked = []
-    nicknames = ([@character.template_name] + @character.aliases.pluck(:name)).uniq.compact
+    nicknames = ([@character.nickname] + @character.aliases.pluck(:name)).uniq.compact
     linked << "Nickname".pluralize(nicknames.count) + ": " + nicknames.join(', ') if nicknames.present?
     settings = @character.settings.pluck(:name)
     linked << "Setting".pluralize(settings.count) + ": " + settings.join(', ') if settings.present?
@@ -396,7 +396,7 @@ class CharactersController < ApplicationController
   def character_params
     permitted = [
       :name,
-      :template_name,
+      :nickname,
       :screenname,
       :template_id,
       :pb,

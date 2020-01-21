@@ -49,7 +49,7 @@ RSpec.describe Api::V1::CharactersController do
         get :index, params: { includes: ['invalid'] }
         expect(response).to have_http_status(:unprocessable_entity)
         expect(response.json['errors'].size).to eq(1)
-        expected = "Invalid parameter 'includes' value ['invalid']: Must be an array of ['default_icon', 'aliases', 'template_name']"
+        expected = "Invalid parameter 'includes' value ['invalid']: Must be an array of ['default_icon', 'aliases', 'nickname']"
         expect(response.json['errors'][0]['message']).to eq(expected)
       end
 
@@ -118,7 +118,7 @@ RSpec.describe Api::V1::CharactersController do
       end
 
       it "matches nickname" do
-        char = create(:character, name: 'a', template_name: 'b', screenname: 'c')
+        char = create(:character, name: 'a', nickname: 'b', screenname: 'c')
         get :index, params: { q: 'b' }
         expect(response).to have_http_status(200)
         expect(response.json).to have_key('results')
@@ -126,7 +126,7 @@ RSpec.describe Api::V1::CharactersController do
       end
 
       it "matches screenname" do
-        char = create(:character, name: 'a', template_name: 'b', screenname: 'c')
+        char = create(:character, name: 'a', nickname: 'b', screenname: 'c')
         get :index, params: { q: 'c' }
         expect(response).to have_http_status(200)
         expect(response.json).to have_key('results')

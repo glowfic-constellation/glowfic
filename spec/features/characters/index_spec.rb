@@ -32,7 +32,7 @@ RSpec.feature "Listing characters", type: :feature do
     [
       with_template([
         { name: 'Test character' },
-        { name: 'Nicknamed', template_name: 'Other name' },
+        { name: 'Nicknamed', nickname: 'Other name' },
         { name: 'Character with screenname', screenname: 'test-screenname' },
         { name: 'Played by', pb: 'Test Person' },
         { name: 'With setting', settings: [earth] },
@@ -57,7 +57,7 @@ RSpec.feature "Listing characters", type: :feature do
       row = find('tr', text: character.name)
       within(row) do
         expect(page).to have_link(character.name, href: character_path(character))
-        [:template_name, :screenname, :pb].each do |param|
+        [:nickname, :screenname, :pb].each do |param|
           val = character.public_send(param)
           expect(page).to have_text(val) if val.present?
         end

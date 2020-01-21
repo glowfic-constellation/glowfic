@@ -8,7 +8,7 @@ module CharacterHelper
 
   def characters_list(characters, show_template)
     characters = characters.left_outer_joins(:template) if show_template
-    attributes = [:id, :name, :template_name, :screenname, :pb, :user_id, 'users.username', Arel.sql('users.deleted as user_deleted')]
+    attributes = [:id, :name, :nickname, :screenname, :pb, :user_id, 'users.username', Arel.sql('users.deleted as user_deleted')]
     attributes += ['templates.id', 'templates.name'] if show_template
     characters.joins(:user).pluck(*attributes)
   end

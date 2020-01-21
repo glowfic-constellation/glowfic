@@ -132,7 +132,7 @@ RSpec.describe CharactersController do
       post :create, params: {
         character: {
           name: test_name,
-          template_name: 'TempName',
+          nickname: 'TempName',
           screenname: 'just-a-test',
           setting_ids: [setting.id],
           template_id: template.id,
@@ -148,7 +148,7 @@ RSpec.describe CharactersController do
       character = assigns(:character).reload
       expect(character.name).to eq(test_name)
       expect(character.user_id).to eq(user.id)
-      expect(character.template_name).to eq('TempName')
+      expect(character.nickname).to eq('TempName')
       expect(character.screenname).to eq('just-a-test')
       expect(character.settings.pluck(:name)).to eq(['A World'])
       expect(character.template).to eq(template)
@@ -282,7 +282,7 @@ RSpec.describe CharactersController do
         user: user,
         template: create(:template, name: "A"),
         name: "Alice",
-        template_name: "Lis",
+        nickname: "Lis",
         screenname: "player_one",
         settings: [
           create(:setting, name: 'Infosec'),
@@ -469,7 +469,7 @@ RSpec.describe CharactersController do
         id: character.id,
         character: {
           name: new_name,
-          template_name: 'TemplateName',
+          nickname: 'TemplateName',
           screenname: 'a-new-test',
           setting_ids: [setting.id],
           template_id: template.id,
@@ -483,7 +483,7 @@ RSpec.describe CharactersController do
       expect(flash[:success]).to eq("Character saved successfully.")
       character.reload
       expect(character.name).to eq(new_name)
-      expect(character.template_name).to eq('TemplateName')
+      expect(character.nickname).to eq('TemplateName')
       expect(character.screenname).to eq('a-new-test')
       expect(character.settings.pluck(:name)).to eq(['Another World'])
       expect(character.template).to eq(template)
@@ -505,7 +505,7 @@ RSpec.describe CharactersController do
         id: character.id,
         character: {
           name: '',
-          template_name: 'TemplateName',
+          nickname: 'TemplateName',
           screenname: 'a-new-test',
           setting_ids: [setting.id],
           template_id: template.id,
@@ -519,7 +519,7 @@ RSpec.describe CharactersController do
       expect(flash[:error][:message]).to eq("Your character could not be saved.")
       character.reload
       expect(character.name).to eq(old_name)
-      expect(character.template_name).to be_nil
+      expect(character.nickname).to be_nil
       expect(character.screenname).to be_nil
       expect(character.settings).to be_blank
       expect(character.template).to be_blank
@@ -1197,9 +1197,9 @@ RSpec.describe CharactersController do
 
     context "searching" do
       before(:each) do
-        @name = create(:character, name: 'a', screenname: 'b', template_name: 'c')
-        @nickname = create(:character, name: 'b', screenname: 'c', template_name: 'a')
-        @screenname = create(:character, name: 'c', screenname: 'a', template_name: 'b')
+        @name = create(:character, name: 'a', screenname: 'b', nickname: 'c')
+        @nickname = create(:character, name: 'b', screenname: 'c', nickname: 'a')
+        @screenname = create(:character, name: 'c', screenname: 'a', nickname: 'b')
       end
 
       it "searches names correctly" do

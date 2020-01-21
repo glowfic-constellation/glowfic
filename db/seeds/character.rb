@@ -41,7 +41,7 @@ Character.create!([
   {
     user_id: 1,
     name: "Emma Miller Anderson",
-    template_name: "Anderson",
+    nickname: "Anderson",
     screenname: "ipsam_custodem",
     template_id: 2,
     default_icon_id: 8,
@@ -50,7 +50,7 @@ Character.create!([
   {
     user_id: 1,
     name: "Emma Mason",
-    template_name: "Mason",
+    nickname: "Mason",
     screenname: "parental_guidance",
     template_id: 2,
     default_icon_id: 7,
@@ -59,7 +59,7 @@ Character.create!([
   {
     user_id: 1,
     name: "Genevieve O'Meara",
-    template_name: "O'Meara",
+    nickname: "O'Meara",
     screenname: "metamorphmaga",
     template_id: 5,
     default_icon_id: 11,
@@ -68,7 +68,7 @@ Character.create!([
   {
     user_id: 1,
     name: "Jenny Marino",
-    template_name: "Jenny",
+    nickname: "Jenny",
     screenname: "bright_and_beautiful",
     template_id: 5,
     default_icon_id: 10,
@@ -89,7 +89,7 @@ Character.create!([
   {
     user_id: 2,
     name: "Elspeth Annarose Cullen",
-    template_name: "Elspeth",
+    nickname: "Elspeth",
     screenname: "her_imperial_radiance",
     template_id: 12,
     default_icon_id: 18,
@@ -119,7 +119,7 @@ Character.create!([
   {
     user_id: 2,
     name: "Aleko Fylt Swan Ardelay | \"Ko\"",
-    template_name: "Aleko",
+    nickname: "Aleko",
     screenname: "liakoura",
     template_id: 8,
     default_icon_id: 28,
@@ -128,7 +128,7 @@ Character.create!([
   {
     user_id: 2,
     name: "Alexandra Phyllis Swan | \"Lexi\"",
-    template_name: "Lexi",
+    nickname: "Lexi",
     screenname: "lexicality",
     template_id: 8,
     default_icon_id: 26,
@@ -137,7 +137,7 @@ Character.create!([
   {
     user_id: 2,
     name: "Alexandra Phyllis Swan | \"Andi\"",
-    template_name: "Andi",
+    nickname: "Andi",
     screenname: "pandion",
     template_id: 8,
     default_icon_id: 39,
@@ -176,7 +176,7 @@ Character.create!([
   {
     user_id: 3,
     name: "Solvei Koskin",
-    template_name: "Solvei",
+    nickname: "Solvei",
     screenname: "gloriousdawn",
     template_id: 11,
     default_icon_id: 67,
@@ -196,7 +196,7 @@ Character.create!([
   {
     user_id: 3,
     name: "Sigyn",
-    template_name: "Sigyn",
+    nickname: "Sigyn",
     screenname: "thevictorious",
     template_id: 10,
     default_icon_id: 86,
@@ -205,7 +205,7 @@ Character.create!([
   {
     user_id: 1,
     name: "Alianora of Toure-on-Marsh",
-    template_name: "Alianora",
+    nickname: "Alianora",
     screenname: "raging_firewitch",
     template_id: 1,
     default_icon_id: 100,
@@ -214,7 +214,7 @@ Character.create!([
   {
     user_id: 3,
     name: "Mark Pierre Vorkosigan",
-    template_name: "Mark",
+    nickname: "Mark",
     screenname: "unmarred",
     template_id: 10,
     default_icon_id: 91,
@@ -223,7 +223,7 @@ Character.create!([
   {
     user_id: 3,
     name: "Miles Naismith Vorkosigan",
-    template_name: "Miles",
+    nickname: "Miles",
     screenname: "thisvorlunatic",
     template_id: 11,
     default_icon_id: 89,
@@ -232,7 +232,7 @@ Character.create!([
   {
     user_id: 2,
     name: "Linyabel Miriat ⍟ \"Linya\"",
-    template_name: "Linya",
+    nickname: "Linya",
     screenname: "isthisart",
     template_id: 3,
     default_icon_id: 21,
@@ -241,7 +241,7 @@ Character.create!([
   {
     user_id: 2,
     name: "Isabella Marie Swan Ø \"Pattern\"",
-    template_name: "Pattern",
+    nickname: "Pattern",
     screenname: "bellfounding",
     template_id: 3,
     default_icon_id: 14,
@@ -250,7 +250,7 @@ Character.create!([
   {
     user_id: 2,
     name: "Isabella Marie Swan Cullen ☼ \"Golden\"",
-    template_name: "Golden",
+    nickname: "Golden",
     screenname: "luminous_regnant",
     template_id: 3,
     default_icon_id: 30,
@@ -259,7 +259,7 @@ Character.create!([
   {
     user_id: 2,
     name: "Isabella Marie Swan ✴ \"Stella\"",
-    template_name: "Stella",
+    nickname: "Stella",
     screenname: "self_composed",
     template_id: 3,
     default_icon_id: 42,
@@ -268,7 +268,7 @@ Character.create!([
   {
     user_id: 2,
     name: "Isabella Mariel Swan ∀ \"Glass\"",
-    template_name: "Glass",
+    nickname: "Glass",
     screenname: "thaumobabble",
     template_id: 3,
     default_icon_id: 47,

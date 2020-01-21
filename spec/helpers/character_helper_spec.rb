@@ -111,13 +111,13 @@ RSpec.describe CharacterHelper do
       let (:character1) do
         create(:character, user: user, template: template1,
                name: 'Test Character 1', screenname: 'screenname_one',
-               template_name: "Nickname 1", pb: "Facecast 1")
+               nickname: "Nickname 1", pb: "Facecast 1")
       end
 
       let (:character2) do
         create(:character, user: user, template: template2,
                name: 'Test Character 2', screenname: 'screenname_two',
-               template_name: "Nickname 2", pb: "Facecast 2")
+               nickname: "Nickname 2", pb: "Facecast 2")
       end
 
       let (:assoc) { Character.where(id: [character1.id, character2.id]) }

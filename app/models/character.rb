@@ -31,7 +31,7 @@ class Character < ApplicationRecord
   after_destroy :clear_char_ids
 
   scope :ordered, -> { order(name: :asc).order(Arel.sql('lower(screenname) asc'), created_at: :asc, id: :asc) }
-  scope :with_name, -> (charname) { where("lower(concat_ws(' | ', name, template_name, screenname)) LIKE ?", "%#{charname.downcase}%") }
+  scope :with_name, -> (charname) { where("lower(concat_ws(' | ', name, nickname, screenname)) LIKE ?", "%#{charname.downcase}%") }
 
   accepts_nested_attributes_for :template, reject_if: :all_blank
 
@@ -67,7 +67,7 @@ class Character < ApplicationRecord
   end
 
   def selector_name
-    [name, template_name, screenname].compact.join(' | ')
+    [name, nickname, screenname].compact.join(' | ')
   end
 
   def reorder_galleries(_gallery=nil)
