@@ -68,4 +68,18 @@ module WritableHelper
       content_tag(:span, sanitize_simple_link_text(desc[255..-1]), class: 'hidden', id: "desc-#{id}") +
       content_tag(:a, 'more &raquo;'.html_safe, href: '#', id: "expanddesc-#{id}", class: 'expanddesc')
   end
+
+  def post_or_reply_link(reply)
+    return unless reply.id.present?
+    post_or_reply_mem_link(id: reply.id, klass: reply.class)
+  end
+
+  def post_or_reply_mem_link(id: nil, klass: nil)
+    return if id.nil?
+    if klass == Reply
+      reply_path(id, anchor: "reply-#{id}")
+    else
+      post_path(id)
+    end
+  end
 end
