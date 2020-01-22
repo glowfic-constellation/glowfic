@@ -151,6 +151,13 @@ FactoryBot.define do
     end
   end
 
+  factory :character_group do
+    user
+    sequence :name do |n|
+      "test character group #{n}"
+    end
+  end
+
   factory :password_reset do
     user
     factory :expired_password_reset do

@@ -17,4 +17,8 @@ module SpecFeatureHelper
   def row_for(title)
     find('tr') { |x| x.has_selector?('th', text: title) }
   end
+
+  def table_titled(title)
+    find('table') { |x| x.has_selector?('.table-title', text: title) }
+  end
 end
