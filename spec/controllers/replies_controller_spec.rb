@@ -68,6 +68,26 @@ RSpec.describe RepliesController do
         expect(templateless.name).to eq('Templateless')
         expect(templateless.plucked_characters).to eq([[char1.id, char1.name]])
       end
+
+      it "does not create authors" do
+        user = create(:user)
+        board = create(:board, authors_locked: true)
+        reply_post = create(:post, user: board.creator, board: board)
+        expect(reply_post.user.id).not_to eq(user.id)
+        login_as(user)
+
+        expect {
+          post :create, params: {
+            button_preview: true,
+            reply: {
+              content: 'example',
+              post_id: reply_post.id
+            }
+          }
+        }.not_to change { [PostAuthor.count, BoardAuthor.count]}
+
+        expect(flash[:success]).to be_present
+      end
     end
 
     context "draft" do

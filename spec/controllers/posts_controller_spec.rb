@@ -389,6 +389,31 @@ RSpec.describe PostsController do
         expect(assigns(:written)).to be_a_new_record
         expect(assigns(:written).user).to eq(user)
       end
+
+      it "does not create authors or viewers" do
+        user = create(:user)
+        login_as(user)
+
+        coauthor = create(:user)
+        board = create(:board, creator: user, authors_locked: true)
+
+        expect {
+          post :create, params: {
+          button_preview: true,
+          post: {
+            subject: 'test subject',
+            privacy: Concealable::ACCESS_LIST,
+            board_id: board.id,
+            unjoined_author_ids: [coauthor.id],
+            viewer_ids: [coauthor.id, create(:user).id],
+            content: 'test content',
+          },
+        }
+        }.not_to change { [PostAuthor.count, PostViewer.count, BoardAuthor.count] }
+
+        expect(flash[:error]).to be_nil
+        expect(assigns(:page_title)).to eq('Previewing: ' + assigns(:post).subject.to_s)
+      end
     end
 
     it "creates new labels" do
@@ -1887,6 +1912,29 @@ RSpec.describe PostsController do
 
       it "saves a draft" do
         skip "TODO"
+      end
+
+      it "does not create authors or viewers" do
+        user = create(:user)
+        login_as(user)
+
+        coauthor = create(:user)
+        board = create(:board, creator: user, authors_locked: true)
+        post = create(:post, user: user, board: board, authors_locked: true, privacy: Concealable::ACCESS_LIST)
+
+        expect {
+          put :update, params: {
+            id: post.id,
+            button_preview: true,
+            post: {
+              unjoined_author_ids: [coauthor.id],
+              viewer_ids: [coauthor.id, create(:user).id],
+            },
+          }
+        }.not_to change { [PostAuthor.count, PostViewer.count, BoardAuthor.count] }
+
+        expect(flash[:error]).to be_nil
+        expect(assigns(:page_title)).to eq('Previewing: ' + assigns(:post).subject.to_s)
       end
 
       skip "TODO"
