@@ -28,13 +28,13 @@ class PostsController < WritableController
       solo = PostAuthor.where(post_id: ids).group(:post_id).having('count(post_id) < 2').pluck(:post_id)
       @posts = @posts.where.not(last_user: current_user).or(@posts.where(id: (drafts + solo).uniq))
     end
-    @posts = @posts.where.not(status: [Post::STATUS_COMPLETE, Post::STATUS_ABANDONED])
-    hiatused = @posts.where(status: Post::STATUS_HIATUS).or(@posts.where('tagged_at < ?', 1.month.ago))
+    @posts = @posts.where.not(status: [Post::Status::COMPLETE, Post::Status::ABANDONED])
+    hiatused = @posts.where(status: Post::Status::HIATUS).or(@posts.where('tagged_at < ?', 1.month.ago))
 
     if params[:view] == 'hiatused'
       @posts = hiatused
     elsif current_user.hide_hiatused_tags_owed?
-      @posts = @posts.where.not(status: Post::STATUS_HIATUS).where('tagged_at > ?', 1.month.ago)
+      @posts = @posts.where.not(status: Post::Status::HIATUS).where('tagged_at > ?', 1.month.ago)
       @hiatused_exist = true if hiatused.count > 0
     end
 
@@ -264,7 +264,7 @@ class PostsController < WritableController
     if params[:subject].present?
       @search_results = @search_results.search(params[:subject]).where('LOWER(subject) LIKE ?', "%#{params[:subject].downcase}%")
     end
-    @search_results = @search_results.where(status: Post::STATUS_COMPLETE) if params[:completed].present?
+    @search_results = @search_results.where(status: Post::Status::COMPLETE) if params[:completed].present?
     if params[:author_id].present?
       post_ids = nil
       params[:author_id].each do |author_id|
@@ -347,7 +347,7 @@ class PostsController < WritableController
 
   def change_status
     begin
-      new_status = Post.const_get('STATUS_'+params[:status].upcase)
+      new_status = Post::Status.get_status(params[:status].upcase)
     rescue NameError
       flash[:error] = "Invalid status selected."
     else

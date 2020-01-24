@@ -1074,12 +1074,12 @@ RSpec.describe RepliesController do
       create(:reply, post: rpost, user: rpost.user)
       reply.destroy!
 
-      rpost.status = Post::STATUS_HIATUS
+      rpost.status = Post::Status::HIATUS
       rpost.save!
       login_as(rpost.user)
       post :restore, params: { id: reply.id }
       expect(flash[:success]).to eq("Reply has been restored!")
-      expect(Post.find(rpost.id).status).to eq(Post::STATUS_HIATUS)
+      expect(Post.find(rpost.id).status).to eq(Post::Status::HIATUS)
     end
   end
 

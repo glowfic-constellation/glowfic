@@ -26,7 +26,7 @@ class PostScraper < Object
   def initialize(url, board_id=nil, section_id=nil, status=nil, threaded_import=false, console_import=false, subject=nil)
     @board_id = board_id || SANDBOX_ID
     @section_id = section_id
-    @status = status || Post::STATUS_COMPLETE
+    @status = status || Post::Status::COMPLETE
     url += (url.include?('?') ? '&' : '?') + 'style=site' unless url.include?('style=site')
     url += '&view=flat' unless url.include?('view=flat') || threaded_import
     @url = url
