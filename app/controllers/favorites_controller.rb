@@ -3,6 +3,8 @@ class FavoritesController < ApplicationController
   before_action :login_required
 
   def index
+    @page_title = 'Favorites'
+
     return if params[:view] == 'bucket'
     unless (@favorites = current_user.favorites).present?
       @posts = []
@@ -17,7 +19,6 @@ class FavoritesController < ApplicationController
     @posts = Post.where(id: author_posts).or(Post.where(id: post_favorites)).or(Post.where(board_id: board_favorites))
     @posts = posts_from_relation(@posts.ordered)
     @hide_quicklinks = true
-    @page_title = 'Favorites'
   end
 
   def create
