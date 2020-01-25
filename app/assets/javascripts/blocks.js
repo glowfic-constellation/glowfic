@@ -1,10 +1,8 @@
-/* global processResults, queryTransform */
+/* global createSelect2, processResults, queryTransform */
 $(document).ready(function() {
-  $("#block_blocked_user_id").select2({
+  createSelect2("#block_blocked_user_id", {
     ajax: {
-      delay: 200,
       url: '/api/v1/users',
-      dataType: 'json',
       data: function(params) {
         var data = queryTransform(params);
         data.hide_unblockable = true;
@@ -14,10 +12,8 @@ $(document).ready(function() {
         var total = this._request.getResponseHeader('Total');
         return processResults(data, params, total, 'username');
       },
-      cache: true
     },
     placeholder: '— Choose User —',
     allowClear: true,
-    width: '100%'
   });
 });

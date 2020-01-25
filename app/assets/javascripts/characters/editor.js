@@ -1,4 +1,4 @@
-/* global gon, createTagSelect, processResults, queryTransform */
+/* global gon, createSelect2, createTagSelect, processResults, queryTransform */
 var galleryIds, oldTemplate;
 var galleryGroupIds = [];
 var galleryGroups = {};
@@ -12,15 +12,13 @@ $(document).ready(function() {
   galleryIds = $("#character_ungrouped_gallery_ids").val() || [];
   galleryGroupIds = $("#character_gallery_group_ids").val() || [];
 
-  $("#character_setting_ids").select2({
-    width: '100%',
+  createSelect2("#character_setting_ids", {
     minimumResultsForSearch: 10,
     placeholder: 'Setting',
     tags: true
   });
 
-  $("#character_ungrouped_gallery_ids").select2({
-    width: '100%',
+  createSelect2("#character_ungrouped_gallery_ids", {
     minimumResultsForSearch: 10,
     placeholder: 'Default Gallery'
   });
@@ -124,12 +122,10 @@ $(document).ready(function() {
   });
 
   createTagSelect("Setting", "setting", "character");
-  $("#character_gallery_group_ids").select2({
+  createSelect2("#character_gallery_group_ids", {
     placeholder: 'Enter gallery group(s) separated by commas',
     ajax: {
-      delay: 200,
       url: '/api/v1/tags',
-      dataType: 'json',
       data: function(params) {
         var data = queryTransform(params);
         data.t = 'GalleryGroup';
@@ -151,7 +147,6 @@ $(document).ready(function() {
 
         return results;
       },
-      cache: true,
     },
     width: '300px'
   });

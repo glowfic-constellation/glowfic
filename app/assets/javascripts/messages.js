@@ -1,5 +1,7 @@
+/* global createSelect2 */
+
 $(document).ready(function() {
-  $("#message_recipient_id").select2({
+  createSelect2('#message_recipient_id', {
     width: '230px',
     minimumResultsForSearch: 20
   });

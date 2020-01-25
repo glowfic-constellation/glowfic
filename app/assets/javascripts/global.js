@@ -2,8 +2,7 @@
 var foundTags = {};
 
 $(document).ready(function() {
-  $(".chosen-select").select2({
-    width: '100%',
+  createSelect2('.chosen-select', {
     minimumResultsForSearch: 10,
   });
 
@@ -132,14 +131,13 @@ function processResults(data, params, total, textKey) {
 
 function createTagSelect(tagType, selector, formType, scope) {
   foundTags[selector] = [];
-  $("#"+formType+"_"+selector+"_ids").select2({
+
+  createSelect2("#"+formType+"_"+selector+"_ids", {
     tags: true,
     tokenSeparators: [','],
     placeholder: 'Enter ' + selector.replace('_', ' ') + '(s) separated by commas',
     ajax: {
-      delay: 200,
       url: '/api/v1/tags',
-      dataType: 'json',
       data: function(params) {
         var data = queryTransform(params);
         data.t = tagType;
@@ -153,7 +151,6 @@ function createTagSelect(tagType, selector, formType, scope) {
         saveExistingTags(selector, data.results);
         return results;
       },
-      cache: true
     },
     createTag: function(params) {
       var term = $.trim(params.term);
@@ -171,4 +168,17 @@ function createTagSelect(tagType, selector, formType, scope) {
     },
     width: '300px'
   });
+}
+
+function createSelect2(selector, options) {
+  if (!options.width) { options.width = '100%'; }
+
+  if (options.ajax) {
+    options.ajax.delay = 200;
+    options.ajax.dataType = 'json';
+    options.ajax.cache = true;
+    if (!options.ajax.data) { options.ajax.data = queryTransform; }
+  }
+
+  $(selector).select2(options);
 }

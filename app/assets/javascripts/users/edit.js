@@ -1,32 +1,34 @@
+/* global createSelect2 */
+
 $(document).ready(function() {
-  $("#user_per_page").select2({
+  createSelect2('#user_per_page', {
     width: '70px',
     minimumResultsForSearch: 20,
   });
 
-  $("#user_default_view").select2({
+  createSelect2('#user_default_view', {
     width: '100px',
     minimumResultsForSearch: 20,
   });
 
-  $("#user_default_character_split").select2({
+  createSelect2('#user_default_character_split', {
     width: '250px',
     minimumResultsForSearch: 20,
   });
 
-  $("#user_default_editor").select2({
+  createSelect2('#user_default_editor', {
     width: '100px',
     minimumResultsForSearch: 20,
   });
 
-  $("#user_layout").select2({
+  createSelect2('#user_layout', {
     width: '150px',
     minimumResultsForSearch: 20,
   });
 
-  $("#user_timezone").select2({width: '250px'});
+  createSelect2('#user_timezone', {width: '250px'});
 
-  $("#user_time_display").select2({
+  createSelect2('#user_time_display', {
     width: '200px',
     minimumResultsForSearch: 20
   });

@@ -1,19 +1,14 @@
-/* global processResults, queryTransform */
+/* global createSelect2, processResults */
 $(document).ready(function() {
-  $("#board_id").select2({
+  createSelect2('#board_id', {
     ajax: {
-      delay: 200,
       url: '/api/v1/boards',
-      dataType: 'json',
-      data: queryTransform,
       processResults: function(data, params) {
         var total = this._request.getResponseHeader('Total');
         return processResults(data, params, total, 'name');
       },
-      cache: true
     },
     placeholder: '— Choose Continuity —',
     allowClear: true,
-    width: '100%'
   });
 });

@@ -1,4 +1,4 @@
-/* global gon, tinyMCE, resizeScreenname, createTagSelect */
+/* global gon, tinyMCE, resizeScreenname, createTagSelect, createSelect2 */
 var tinyMCEInit = false, shownIcons = [];
 var PRIVACY_ACCESS = 2; // TODO don't hardcode
 var iconSelectBox;
@@ -17,28 +17,28 @@ $(document).ready(function() {
 
 function setupMetadataEditor() {
   // Adding Select2 UI to relevant selects
-  $("#post_board_id").select2({
+  createSelect2('#post_board_id', {
     width: '200px',
     minimumResultsForSearch: 20
   });
 
-  $("#post_section_id").select2({
+  createSelect2('#post_section_id', {
     width: '200px',
     minimumResultsForSearch: 20
   });
 
-  $("#post_privacy").select2({
+  createSelect2('#post_privacy', {
     width: '200px',
     minimumResultsForSearch: 20
   });
 
-  $("#post_viewer_ids").select2({
+  createSelect2('#post_viewer_ids', {
     width: '200px',
     minimumResultsForSearch: 20,
     placeholder: 'Choose user(s) to view this post'
   });
 
-  $("#post_unjoined_author_ids").select2({
+  createSelect2('#post_unjoined_author_ids', {
     width: '300px',
     minimumResultsForSearch: 20,
     placeholder: 'Choose user(s) to invite to reply to this post'
