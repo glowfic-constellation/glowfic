@@ -25,11 +25,10 @@ RSpec.describe SessionsController do
     it "logs out if user has become invalid" do
       user = create(:user)
       login_as(user)
-      expect(controller.send(:logged_in?)).to eq(true)
-      user.destroy
-      expect { get :index }.to raise_error(NoMethodError) # current_user will be cleared but then call functions on nil
-      get :index # subsequent loads will work
-      expect(controller.send(:logged_in?)).not_to eq(true)
+      user.destroy!
+      # reloading index should destroy the session
+      get :index
+      expect(controller.send(:logged_in?)).to eq(false)
     end
   end
 

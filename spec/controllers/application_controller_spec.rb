@@ -399,4 +399,14 @@ RSpec.describe ApplicationController do
       expect(response.json['logged_in']).to eq(false)
     end
   end
+
+  it "resets your session if your user was hard deleted" do
+    user_id = login
+    User.find_by(id: user_id).destroy!
+    get :index
+
+    expect(session[:user_id]).to be_nil
+    expect(controller.send(:logged_in?)).to eq(false)
+    expect(cookies.signed[:user_id]).to be_nil
+  end
 end

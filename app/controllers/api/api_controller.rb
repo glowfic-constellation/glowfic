@@ -3,7 +3,6 @@ class Api::ApiController < ActionController::Base
   include Authentication
 
   protect_from_forgery with: :exception
-  before_action :check_permanent_user
   around_action :set_timezone
   around_action :handle_param_validation
 

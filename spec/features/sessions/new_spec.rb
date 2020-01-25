@@ -62,4 +62,22 @@ RSpec.feature "Logging in", :type => :feature do
     expect(page).to have_selector('.flash.error', text: 'You are already logged in.')
     expect(page).to have_no_selector('#username')
   end
+
+  scenario "Automatically logged out when user is destroyed" do
+    username = 'Test user'
+    password = 'my password1234@'
+    user = create(:user, username: username, password: password)
+    visit login_path
+
+    within('.form-table') do
+      fill_in 'Username', with: username
+      fill_in 'Password', with: password
+      click_on 'Sign In'
+    end
+
+    user.destroy!
+
+    visit root_path
+    expect(page).not_to have_text(username)
+  end
 end
