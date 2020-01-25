@@ -8,10 +8,7 @@ $(document).ready(function() {
         data.t = 'Setting';
         return data;
       },
-      processResults: function(data, params) {
-        var total = this._request.getResponseHeader('Total');
-        return processResults(data, params, total);
-      },
+      processResults: processTotal(),
     },
     placeholder: '— Choose Setting —',
     allowClear: true,
@@ -25,10 +22,7 @@ $(document).ready(function() {
         if (typeof gon !== 'undefined') data.post_id = gon.post_id;
         return data;
       },
-      processResults: function(data, params) {
-        var total = this._request.getResponseHeader('Total');
-        return processResults(data, params, total, 'selector_name');
-      },
+      processResults: processTotal('selector_name'),
     },
     placeholder: '— Choose Character —',
     allowClear: true,
@@ -37,10 +31,7 @@ $(document).ready(function() {
   createSelect2('#author_id', {
     ajax: {
       url: '/api/v1/users',
-      processResults: function(data, params) {
-        var total = this._request.getResponseHeader('Total');
-        return processResults(data, params, total, 'username');
-      },
+      processResults: processTotal('username'),
     },
     placeholder: '— Choose Author —',
     allowClear: true,
@@ -49,10 +40,7 @@ $(document).ready(function() {
   createSelect2('#board_id', {
     ajax: {
       url: '/api/v1/boards',
-      processResults: function(data, params) {
-        var total = this._request.getResponseHeader('Total');
-        return processResults(data, params, total, 'name');
-      },
+      processResults: processTotal('name'),
     },
     placeholder: '— Choose Continuity —',
     allowClear: true,
@@ -67,12 +55,16 @@ $(document).ready(function() {
         if (authorId !== '' && typeof authorId !== 'undefined') { data.user_id = authorId; }
         return data;
       },
-      processResults: function(data, params) {
-        var total = this._request.getResponseHeader('Total');
-        return processResults(data, params, total, 'name');
-      },
+      processResults: processTotal('name'),
     },
     placeholder: '— Choose Template —',
     allowClear: true,
   });
 });
+
+function processTotal(key) {
+  return function(data, params) {
+    var total = this._request.getResponseHeader('Total');
+    return processResults(data, params, total, key);
+  };
+}
