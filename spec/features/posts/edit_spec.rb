@@ -16,6 +16,7 @@ RSpec.feature "Editing posts", :type => :feature do
     expect(page).to have_current_path(root_path)
     expect(page).to have_no_selector('#post-editor')
   end
+
   scenario "User edits a post", js: true do
     user = create(:user, password: 'known', default_editor: 'html')
 
@@ -70,7 +71,8 @@ RSpec.feature "Editing posts", :type => :feature do
     expect(page).to have_no_selector('.post-container')
 
     within('#post_form') do
-      expect(page).to have_multiselect('Settings:', selected: 'test setting 1')
+      expect(page).to have_select('Setting:', selected: 'test setting 1')
+      select2('Setting', 'setting 2')
 
       within('#post-editor') do
         within('.post-info-box') do
@@ -87,10 +89,9 @@ RSpec.feature "Editing posts", :type => :feature do
           expect(page).to have_selector('.post-author', text: user.username)
           expect(page).to have_selector('#swap-character')
 
-          # TODO: come back to this when select2 is less dumb
-          #find('#swap-alias').click
-          #expect(page).to have_selector('#alias-selector')
-          #select2('#character_alias', 'test alias')
+          find('#swap-alias').click
+          expect(page).to have_selector('#alias-selector')
+          page.select('test alias')
         end
 
         find('#current-icon-holder').click
