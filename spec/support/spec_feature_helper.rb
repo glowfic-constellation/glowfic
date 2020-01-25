@@ -33,7 +33,8 @@ module SpecFeatureHelper
     match do |page|
       raise ArgumentError, "Missing matcher argument" unless args.key?(:selected)
       choices = Array(args[:selected]).map{ |choice| '×' + choice }
-      nodes = page.find_field(finder).find_all('.select2-selection__choice')
+      xpath = SpecFeatureHelper.locate_field(:select2, finder)
+      nodes = page.find(:xpath, xpath).find_all('.select2-selection__choice')
       expect(nodes.map(&:text)).to match_array(choices)
     end
   end
@@ -41,8 +42,27 @@ module SpecFeatureHelper
   RSpec::Matchers.define :have_select2 do |finder, **args|
     match do |page|
       raise ArgumentError, "Missing matcher argument" unless args.key?(:selected)
-      node = page.find(finder).sibling('.select2-container').find('.select2-selection__rendered')
+      xpath = SpecFeatureHelper.locate_field(:select2, finder)
+      node = page.find(:xpath, xpath).find('.select2-selection__rendered')
       expect(node.text).to eq(args[:selected])
     end
+  end
+
+  private
+
+  # modified from https://github.com/teamcapybara/capybara/blob/3.29_stable/lib/capybara/selector/selector.rb#L116
+  def self.locate_field(tag, locator)
+    xpath = XPath.descendant(tag)
+    return xpath if locator.nil?
+
+    locate_xpath = xpath
+    locator = locator.to_s
+    attr_matchers = [XPath.attr(:id) == locator,
+                     XPath.attr(:name) == locator,
+                     XPath.attr(:placeholder) == locator,
+                     XPath.attr(:id) == XPath.anywhere(:label)[XPath.string.n.is(locator)].attr(:for)].reduce(:|)
+
+    locate_xpath = locate_xpath[attr_matchers]
+    locate_xpath + XPath.descendant(:label)[XPath.string.n.is(locator)].descendant(xpath)
   end
 end
