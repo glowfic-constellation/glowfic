@@ -1,3 +1,5 @@
+- characters = name.characters.ordered unless local_assigns[:characters]
+
 - if @template.nil? && name.present?
   %tr
     %td.subber.padding-10{colspan: 6}

@@ -1,5 +1,7 @@
 - col_count = 6
 - col_count += 1 if local_assigns[:show_template]
+- characters = name.characters.ordered unless local_assigns[:characters]
+
 - if @template.nil? && name.present?
   %tr
     %td.subber.character-list-template{colspan: col_count}

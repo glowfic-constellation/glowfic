@@ -1,5 +1,10 @@
 - partial_type = (page_view == 'list') ? 'characters/list_section' : 'characters/icon_view'
 - skip_grouped_templates = false unless defined?(:skip_grouped_templates)
+- characters = group.characters unless local_assigns[:characters]
+- unless local_assigns[:no_header]
+  %tr
+    %th.sub{colspan: colspan}
+      = group ? "Group: #{group.name}" : 'Ungrouped Characters'
 - if characters.try(:exists?)
   - template_ids = characters.group(:template_id).pluck(:template_id).uniq.compact
   - templates = ::Template.where(id: template_ids).ordered.each do |template|

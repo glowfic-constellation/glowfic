@@ -50,22 +50,13 @@
     %th.odd{style: 'padding: 3px', colspan: colspan}
   - if character_split == 'template'
     - if @group
-      = render 'group', characters: @group.characters, page_view: page_view
+      = render 'group', group: @group, page_view: page_view, colspan: colspan
     - elsif @user.character_groups.exists?
-      - @user.character_groups.order('id asc').each do |group|
-        %tr
-          %th.sub{colspan: colspan}
-            Group:
-            = group.name
-        = render 'group', characters: group.characters, page_view: page_view
+      = render partial: 'group', collection: @user.character_groups.order(id: :asc), locals: { page_view: page_view, colspan: colspan }
       - if @user.characters.where(character_group_id: nil).exists?
-        %tr
-          %th.sub{colspan: colspan} Ungrouped Characters
-        = render 'group', characters: @user.characters.where(character_group_id: nil), skip_grouped_templates: true, page_view: page_view
+        = render 'group', characters: @user.characters.where(character_group_id: nil), group: nil, skip_grouped_templates: true, page_view: page_view, colspan: colspan
     - elsif @user.characters.exists?
-      - templates = @user.templates.ordered
-      - templates.each do |template|
-        = render partial_type, name: template, characters: template.characters.ordered
+      = render partial: partial_type, collection: @user.templates.ordered, as: :name
       - if @user.characters.where(template_id: nil).exists?
         = render partial_type, name: "No Template", characters: @user.characters.where(template_id: nil).ordered, show_new_character_button: @user.id == current_user&.id
     - else
