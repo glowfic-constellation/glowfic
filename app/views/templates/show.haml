@@ -32,6 +32,9 @@
             = image_tag "icons/list.png", class: 'list-view', alt: ''
             List
   %tbody
+    - if @template.description.present?
+      %tr
+        %td.single-description.written-content{colspan: col_count}= sanitize_written_content(@template.description)
     - if page_view == 'list'
       = render 'characters/list_section', characters: @template.characters
     - else

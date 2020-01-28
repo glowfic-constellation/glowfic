@@ -1,4 +1,3 @@
-- partial_type = (page_view == 'list') ? 'characters/list_section' : 'characters/icon_view'
 - skip_grouped_templates = false unless defined?(:skip_grouped_templates)
 - characters = group.characters unless local_assigns[:characters]
 - unless local_assigns[:no_header]
@@ -9,9 +8,9 @@
   - template_ids = characters.group(:template_id).pluck(:template_id).uniq.compact
   - templates = ::Template.where(id: template_ids).ordered.each do |template|
     - next if skip_grouped_templates && template.characters.where('character_group_id is not null').exists?
-    = render partial_type, name: template, characters: template.characters.ordered
+    = render 'template', name: template, characters: template.characters.ordered, partial_type: partial_type
   - if characters.where(template_id: nil).exists?
-    = render partial_type, name: 'No Template', characters: characters.where(template_id: nil).ordered, show_new_character_button: @user.id == current_user&.id
+    = render 'template', name: 'No Template', characters: characters.where(template_id: nil).ordered, show_new_character_button: @user.id == current_user&.id, partial_type: partial_type
 - else
   %tr
     %td.centered.padding-5{class: cycle('even', 'odd'), colspan: 6} — No characters yet —
