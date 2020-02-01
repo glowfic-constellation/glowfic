@@ -3,36 +3,22 @@ class FavoritesController < ApplicationController
   before_action :login_required
 
   def index
+    @page_title = 'Favorites'
+
     return if params[:view] == 'bucket'
-    unless current_user.favorites.present?
+    unless (@favorites = current_user.favorites).present?
       @posts = []
       return
     end
 
-    @posts = Post.unscoped
-    arel = Post.arel_table
-    where_calc = nil
+    user_favorites = @favorites.where(favorite_type: User.to_s).select(:favorite_id)
+    author_posts = PostAuthor.where(user_id: user_favorites, joined: true).select(:post_id)
+    board_favorites = @favorites.where(favorite_type: Board.to_s).select(:favorite_id)
+    post_favorites = @favorites.where(favorite_type: Post.to_s).select(:favorite_id)
 
-    current_user.favorites.each do |favorite_rec|
-      new_calc = nil
-      if favorite_rec.favorite_type == User.to_s
-        post_ids = PostAuthor.where(user_id: favorite_rec.favorite_id).where(joined: true).pluck(:post_id)
-        new_calc = arel[:id].in(post_ids)
-      elsif favorite_rec.favorite_type == Post.to_s
-        new_calc = arel[:id].eq(favorite_rec.favorite_id)
-      elsif favorite_rec.favorite_type == Board.to_s
-        new_calc = arel[:board_id].eq(favorite_rec.favorite_id)
-      end
-      if where_calc.nil?
-        where_calc = new_calc
-      else
-        where_calc = where_calc.or(new_calc)
-      end
-    end
-
-    @posts = posts_from_relation(@posts.where(where_calc).ordered)
+    @posts = Post.where(id: author_posts).or(Post.where(id: post_favorites)).or(Post.where(board_id: board_favorites))
+    @posts = posts_from_relation(@posts.ordered)
     @hide_quicklinks = true
-    @page_title = 'Favorites'
   end
 
   def create
