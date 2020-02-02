@@ -15,6 +15,7 @@ class Api::V1::RepliesController < Api::ApiController
     access_denied and return unless post.visible_to?(current_user)
 
     replies = post.replies
+      .where.not(reply_order: 0)
       .select('replies.*, characters.name, characters.screenname, icons.keyword, icons.url, users.username, users.deleted as user_deleted, character_aliases.name as alias')
       .joins(:user)
       .left_outer_joins(:character)
