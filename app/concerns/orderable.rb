@@ -36,6 +36,7 @@ module Orderable
       others.each_with_index do |other, index|
         next if other.order == index
         other.order = index
+        other.order += 1 if other.is_a? Reply
         other.save!
       end
     end
