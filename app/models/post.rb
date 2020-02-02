@@ -375,6 +375,7 @@ class Post < ApplicationRecord
       character_alias: character_alias,
       created_at: created_at,
       updated_at: edited_at,
+      skip_regenerate: true,
     )
   end
 
