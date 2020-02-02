@@ -1,12 +1,5 @@
 = form_tag delete_multiple_icons_path, method: :delete do
-  - icons.pluck(:id, :keyword, :url).each do |icon_id, keyword, url|
-    .gallery-icon
-      = link_to icon_path(id: icon_id) do
-        = icon_mem_tag url, keyword
-        %br
-        %span.icon-keyword= keyword
-      - if is_owner && !skip_forms
-        .select-button= check_box_tag :"marked_ids[]", icon_id, false, id: nil
+  = render partial: 'galleries/icon_item', collection: icons.pluck(:id, :keyword, :url), locals: {is_owner: is_owner, skip_forms: skip_forms}
   - if is_owner && !skip_forms
     .clear.centered.icons-remove
       - if gallery
