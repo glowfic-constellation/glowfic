@@ -358,6 +358,7 @@ class Post < ApplicationRecord
   def create_written
     replies.create!(
       reply_order: 0,
+      user: user,
       content: content,
       icon: icon,
       character: character,
