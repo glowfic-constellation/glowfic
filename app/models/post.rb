@@ -47,6 +47,7 @@ class Post < ApplicationRecord
   before_create :build_initial_flat_post, :set_timestamps
   after_create :create_written
   before_update :set_timestamps
+  after_update :update_written
   after_commit :notify_followers, on: :create
   after_commit :invalidate_caches, on: :update
 
@@ -362,6 +363,18 @@ class Post < ApplicationRecord
       character: character,
       character_alias: character_alias,
       created_at: created_at,
+      updated_at: edited_at,
+    )
+  end
+
+  def update_written
+    return unless written.present?
+    return if (changed_attributes.keys - NON_TAGGED_ATTRS - 'content').empty?
+    written.update!(
+      content: content,
+      icon: icon,
+      character: character,
+      character_alias: character_alias,
       updated_at: edited_at,
     )
   end
