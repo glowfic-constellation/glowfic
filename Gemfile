@@ -8,6 +8,7 @@ gem 'audited', '~> 4.9.0' # check for migrations after update with `rails genera
 gem 'aws-sdk-rails', '~> 2'
 gem 'aws-sdk-s3', '~> 1'
 gem 'aws-sdk-ses', '~> 1'
+gem 'barnes' # heroku ruby-specific metrics
 gem 'bootstrap'
 gem 'exception_notification'
 gem 'get_process_mem'
