@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_01_08_101015) do
+ActiveRecord::Schema.define(version: 2020_02_01_234427) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
@@ -365,8 +365,8 @@ ActiveRecord::Schema.define(version: 2020_01_08_101015) do
     t.index ["character_id"], name: "index_replies_on_character_id"
     t.index ["created_at"], name: "index_replies_on_created_at"
     t.index ["icon_id"], name: "index_replies_on_icon_id"
+    t.index ["post_id", "reply_order"], name: "index_replies_on_post_id_and_reply_order"
     t.index ["post_id"], name: "index_replies_on_post_id"
-    t.index ["reply_order"], name: "index_replies_on_reply_order"
     t.index ["thread_id"], name: "index_replies_on_thread_id"
     t.index ["user_id"], name: "index_replies_on_user_id"
   end
