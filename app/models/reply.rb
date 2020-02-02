@@ -6,9 +6,8 @@ class Reply < ApplicationRecord
 
   belongs_to :post, inverse_of: :replies, optional: false
   validate :author_can_write_in_post, on: :create
-  audited associated_with: :post, except: [:reply_order, :new_order], update_with_comment_only: false
+  audited associated_with: :post, except: :reply_order, update_with_comment_only: false
 
-  before_save :set_new_order
   after_create :notify_other_authors, :destroy_draft, :update_active_char, :set_last_reply, :update_post, :update_post_authors
   after_save :update_flat_post
   after_update :update_post
@@ -150,10 +149,6 @@ class Reply < ApplicationRecord
     else
       post_author.destroy
     end
-  end
-
-  def set_new_order
-    self.new_order = self.reply_order + 1
   end
 
   def ordered_attributes
