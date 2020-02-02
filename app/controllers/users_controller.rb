@@ -152,7 +152,7 @@ class UsersController < ApplicationController
       klass.where(user: current_user).where('created_at between ? AND ?', daystart, dayend)
     end
     @posts = @posts.ordered_by_id.pluck(:content, :editor_mode)
-    @replies = @replies.order(post_id: :asc).ordered.pluck(:content, :editor_mode)
+    @replies = @replies.where.not(reply_order: 0).order(post_id: :asc).ordered.pluck(:content, :editor_mode)
 
     @total = (@posts + @replies).map { |x, _| x }
     if @total.empty?

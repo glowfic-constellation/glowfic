@@ -57,12 +57,12 @@ class WritableController < ApplicationController
         self.page = cur_page = 1
       end
     elsif cur_page == 'last'
-      self.page = cur_page = @post.replies.paginate(per_page: per, page: 1).total_pages
+      self.page = cur_page = @post.replies.paginate(per_page: per, page: 1).where.not(reply_order: 0).total_pages
     elsif cur_page == 'unread'
       if logged_in?
         @unread = @post.first_unread_for(current_user) if logged_in?
         if @unread.nil?
-          self.page = cur_page = @post.replies.paginate(per_page: per, page: 1).total_pages
+          self.page = cur_page = @post.replies.paginate(per_page: per, page: 1).where.not(reply_order: 0).total_pages
         elsif @unread.class == Post
           self.page = cur_page = 1
         else
@@ -87,6 +87,7 @@ class WritableController < ApplicationController
 
     @replies = @replies
       .select(select)
+      .where('replies.reply_order > 0')
       .joins(:user)
       .left_outer_joins(:character)
       .left_outer_joins(:icon)
@@ -129,7 +130,7 @@ class WritableController < ApplicationController
         @draft = ReplyDraft.draft_for(@post.id, current_user.id)
       end
 
-      @post.mark_read(current_user, at_time: @post.read_time_for(@replies))
+      @post.mark_read(current_user, at_time: @post.read_time_for(@replies + [@post.written]))
     end
 
     if display_warnings?
