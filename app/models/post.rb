@@ -38,6 +38,8 @@ class Post < ApplicationRecord
 
   has_many :notifications, inverse_of: :post, dependent: :destroy
 
+  has_one :written, -> { where(reply_order: 0) }, class_name: 'Reply', inverse_of: :post
+
   attr_accessor :is_import
   attr_writer :skip_edited
 
