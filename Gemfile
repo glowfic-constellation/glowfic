@@ -8,6 +8,7 @@ gem 'audited', '~> 4.9.0' # check for migrations after update with `rails genera
 gem 'aws-sdk-rails', '~> 2'
 gem 'aws-sdk-s3', '~> 1'
 gem 'aws-sdk-ses', '~> 1'
+gem 'barnes' # heroku ruby-specific metrics
 gem 'bootstrap'
 gem 'exception_notification'
 gem 'get_process_mem'
@@ -39,7 +40,6 @@ gem 'uglifier'
 gem 'will_paginate', '~> 3.1.8' # pin will_paginate until we deal with breaking WillPaginate::ViewHelpers::LinkRenderer change
 
 group :production do
-  gem 'barnes' # heroku ruby-specific metrics
   gem 'puma'
   gem 'rack-cors'
   gem 'rack-timeout', '>= 0.6.0'
