@@ -238,8 +238,8 @@ RSpec.describe Reply do
       first_reply = create(:reply, post: post)
       second_reply = create(:reply, post: post)
       third_reply = create(:reply, post: post)
-      second_reply.update_columns(reply_order: 2)
-      third_reply.update_columns(reply_order: 1)
+      second_reply.update_columns(reply_order: 3)
+      third_reply.update_columns(reply_order: 2)
       expect(post.replies.ordered).to eq([first_reply, third_reply, second_reply])
     end
   end
