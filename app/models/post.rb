@@ -368,9 +368,11 @@ class Post < ApplicationRecord
     )
   end
 
+  WRITTEN_ATTRS = %w(content icon_id character_alias_id character_id)
+
   def update_written
     return unless written.present?
-    return if (changed_attributes.keys - NON_TAGGED_ATTRS - 'content').empty?
+    return if (changed_attributes.keys - WRITTEN_ATTRS).empty?
     written.update!(
       content: content,
       icon: icon,
