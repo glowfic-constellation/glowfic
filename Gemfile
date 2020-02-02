@@ -39,6 +39,7 @@ gem 'uglifier'
 gem 'will_paginate', '~> 3.1.8' # pin will_paginate until we deal with breaking WillPaginate::ViewHelpers::LinkRenderer change
 
 group :production do
+  gem 'barnes' # heroku ruby-specific metrics
   gem 'puma'
   gem 'rack-cors'
   gem 'rack-timeout', '>= 0.6.0'
