@@ -245,7 +245,7 @@ class Post < ApplicationRecord
 
   def total_word_count
     return word_count unless replies.exists?
-    contents = replies.pluck(:content)
+    contents = replies.where.not(reply_order: 0).pluck(:content)
     full_sanitizer = Rails::Html::FullSanitizer.new
     word_count + contents.inject(0) { |r, e| r + full_sanitizer.sanitize(e).split.size }.to_i
   end
@@ -253,9 +253,8 @@ class Post < ApplicationRecord
   def word_count_for(user)
     sum = 0
     sum = word_count if user_id == user.id
-    return sum unless replies.where(user_id: user.id).exists?
 
-    contents = replies.where(user_id: user.id).pluck(:content)
+    contents = replies.where(user_id: user.id).where.not(reply_order: 0).pluck(:content)
     full_sanitizer = Rails::Html::FullSanitizer.new
     sum + contents.inject(0) { |r, e| r + full_sanitizer.sanitize(e).split.size }.to_i
   end
@@ -266,7 +265,7 @@ class Post < ApplicationRecord
   end
 
   def character_appearance_counts
-    reply_counts = replies.joins(:character).group(:character_id).count
+    reply_counts = replies.where.not(reply_order: 0).joins(:character).group(:character_id).count
     reply_counts[character_id] = reply_counts[character_id].to_i + 1
     Character.where(id: reply_counts.keys).map { |c| [c, reply_counts[c.id]] }.sort_by { |a| -a[1] }
   end
@@ -278,7 +277,7 @@ class Post < ApplicationRecord
 
   def reply_count
     return read_attribute(:reply_count) if has_attribute?(:reply_count)
-    replies.count
+    replies.where.not(reply_order: 0).count
   end
 
   def last_user_deleted?

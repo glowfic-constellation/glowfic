@@ -22,6 +22,7 @@ class GenerateFlatPostJob < ApplicationJob
 
     begin
       replies = post.replies
+        .where.not(reply_order: 0)
         .select('replies.*, characters.name, characters.screenname, icons.keyword, icons.url, users.username')
         .joins(:user)
         .left_outer_joins(:character)

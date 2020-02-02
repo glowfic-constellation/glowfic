@@ -33,8 +33,8 @@ class Reply < ApplicationRecord
   scope :bookmark_visible_to, ->(bookmark_owner, viewing_user) { where(bookmarks: bookmark_owner.bookmarks.visible_to(viewing_user)) }
 
   def post_page(per=25)
-    per_page = per > 0 ? per : post.replies.count
-    index = post.replies.where('reply_order < ?', self.reply_order).count
+    per_page = per > 0 ? per : post.replies.where.not(reply_order: 0).count
+    index = post.replies.where('reply_order < ?', self.reply_order).where.not(reply_order: 0).count
     (index / per_page) + 1
   end
 
