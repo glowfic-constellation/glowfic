@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_01_08_101015) do
+ActiveRecord::Schema.define(version: 2020_02_02_034956) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
@@ -361,6 +361,7 @@ ActiveRecord::Schema.define(version: 2020_01_08_101015) do
     t.datetime "updated_at"
     t.integer "character_alias_id"
     t.integer "reply_order"
+    t.integer "new_order"
     t.index "to_tsvector('english'::regconfig, COALESCE(content, ''::text))", name: "idx_fts_reply_content", using: :gin
     t.index ["character_id"], name: "index_replies_on_character_id"
     t.index ["created_at"], name: "index_replies_on_created_at"
