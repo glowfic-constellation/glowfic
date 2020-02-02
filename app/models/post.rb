@@ -49,6 +49,7 @@ class Post < ApplicationRecord
 
   before_validation :set_last_user, on: :create
   before_create :build_initial_flat_post, :set_timestamps
+  after_create :create_written
   before_update :set_timestamps
   after_commit :notify_followers, on: :create
   after_commit :invalidate_caches, on: :update
@@ -360,5 +361,17 @@ class Post < ApplicationRecord
   def invalidate_caches
     return unless saved_change_to_authors_locked?
     Post::Author.clear_cache_for(authors)
+  end
+
+  def create_written
+    replies.create!(
+      reply_order: 0,
+      content: content,
+      icon: icon,
+      character: character,
+      character_alias: character_alias,
+      created_at: created_at,
+      updated_at: edited_at,
+    )
   end
 end
