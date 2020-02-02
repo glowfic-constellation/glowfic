@@ -8,18 +8,7 @@
           %th.subber Times Used
           %th.subber Posts In
           %th.subber
-        - icons.pluck(:id, :keyword, :credit).each do |icon_id, keyword, credit|
-          - klass = cycle('even', 'odd')
-          %tr
-            %td{class: klass}
-              = link_to keyword, icon_path(id: icon_id)
-            %td{class: klass}= credit
-            %td{class: klass}= @times_used.fetch(icon_id, 0)
-            %td{class: klass}= @posts_used.fetch(icon_id, 0)
-
-            %td.width-70.right-align{class: klass}
-              - if is_owner && !skip_forms
-                = check_box_tag :"marked_ids[]", icon_id, false, id: nil
+        = render partial: 'galleries/list_item', collection: icons.pluck(:id, :keyword, :credit), locals: {is_owner: is_owner, skip_forms: skip_forms}
         - if is_owner && !skip_forms
           %tr
             %th.form-table-ender{colspan: 5}
