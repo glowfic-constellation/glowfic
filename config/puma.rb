@@ -44,9 +44,11 @@ preload_app!
 #   ActiveRecord::Base.connection_pool.disconnect! if defined?(ActiveRecord)
 # end
 
-require 'barnes'
-before_fork do
-  Barnes.start
+if Rails.env.production?
+  require 'barnes'
+  before_fork do
+    Barnes.start
+  end
 end
 
 # The code in the `on_worker_boot` will be called if you are using
