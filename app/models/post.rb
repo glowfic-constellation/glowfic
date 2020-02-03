@@ -14,7 +14,7 @@ class Post < ApplicationRecord
   belongs_to :last_user, class_name: 'User', inverse_of: false, optional: false
   belongs_to :last_reply, class_name: 'Reply', inverse_of: false, optional: true
   has_one :flat_post, dependent: :destroy
-  has_many :replies, inverse_of: :post, dependent: :delete_all
+  has_many :replies, -> { where('reply_order > 0') }, inverse_of: :post, dependent: :delete_all
   has_many :reply_drafts, dependent: :destroy
 
   has_many :post_viewers, inverse_of: :post, dependent: :destroy
@@ -170,19 +170,17 @@ class Post < ApplicationRecord
     return @first_unread if @first_unread
     viewed_at = last_read(user) || board.last_read(user)
     return @first_unread = self unless viewed_at
-    relevant_replies = replies.where.not(reply_order: 0)
-    return unless relevant_replies.exists?
-    reply = relevant_replies.where('created_at > ?', viewed_at).ordered.first
+    return unless replies.exists?
+    reply = replies.where('created_at > ?', viewed_at).ordered.first
     @first_unread ||= reply
   end
 
   def last_seen_reply_for(user)
     return @last_seen if @last_seen
-    relevant_replies = replies.where.not(reply_order: 0)
-    return unless relevant_replies.exists? # unlike first_unread_for we don't care about the post
+    return unless replies.exists? # unlike first_unread_for we don't care about the post
     viewed_at = last_read(user) || board.last_read(user)
     return unless viewed_at
-    reply = relevant_replies.where('created_at <= ?', viewed_at).ordered.last
+    reply = replies.where('created_at <= ?', viewed_at).ordered.last
     @last_seen = reply
   end
 
@@ -381,7 +379,8 @@ class Post < ApplicationRecord
   end
 
   def create_written
-    replies.create!(
+    self.written = Reply.create!(
+      post: self,
       reply_order: 0,
       user: user,
       content: content,
