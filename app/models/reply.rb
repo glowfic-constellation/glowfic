@@ -29,8 +29,8 @@ class Reply < ApplicationRecord
   scope :visible_to, ->(user) { where(post_id: Post.visible_to(user).select(:id)) }
 
   def post_page(per=25)
-    per_page = per > 0 ? per : post.replies.where.not(reply_order: 0).count
-    index = post.replies.where('reply_order < ?', self.reply_order).where.not(reply_order: 0).count
+    per_page = per > 0 ? per : post.replies.count
+    index = post.replies.where('reply_order < ?', self.reply_order).count
     (index / per_page) + 1
   end
 
@@ -97,7 +97,7 @@ class Reply < ApplicationRecord
   end
 
   def previous_reply
-    @prev ||= post.replies.find_by(reply_order: reply_order - 1)
+    @prev ||= post.replies.find_by(reply_order: reply_order - 1) || post.written
   end
 
   def author_can_write_in_post
