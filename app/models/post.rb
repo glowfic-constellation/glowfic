@@ -89,7 +89,7 @@ class Post < ApplicationRecord
   # rubocop:enable Style/TrailingCommaInArguments
 
   scope :with_reply_count, -> {
-    select('(SELECT COUNT(*) FROM replies WHERE replies.post_id = posts.id) AS reply_count')
+    select('(SELECT COUNT(*) FROM replies WHERE replies.post_id = posts.id AND replies.reply_order > 0) AS reply_count')
   }
 
   scope :visible_to, ->(user) {
