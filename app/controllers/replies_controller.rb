@@ -125,7 +125,7 @@ class RepliesController < WritableController
 
     if reply.post.present?
       last_seen_reply_order = reply.post.last_seen_reply_for(current_user).try(:reply_order)
-      @unseen_replies = reply.post.replies.ordered.paginate(page: 1, per_page: 10)
+      @unseen_replies = reply.post.replies.where.not(reply_order: 0).ordered.paginate(page: 1, per_page: 10)
       if last_seen_reply_order.present?
         @unseen_replies = @unseen_replies.where('reply_order > ?', last_seen_reply_order)
         @audits = Audited::Audit.where(auditable_id: @unseen_replies.map(&:id)).group(:auditable_id).count
