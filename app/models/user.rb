@@ -15,7 +15,7 @@ class User < ApplicationRecord
   has_many :characters
   has_many :galleries
   has_many :character_groups
-  has_many :templates
+  has_many :templates, -> { ordered }, inverse_of: :user
   has_many :sent_messages, class_name: 'Message', foreign_key: 'sender_id', inverse_of: :sender
   has_many :messages, foreign_key: 'recipient_id', inverse_of: :recipient
   has_many :password_resets

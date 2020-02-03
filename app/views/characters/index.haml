@@ -50,18 +50,18 @@
     %th.odd{style: 'padding: 3px', colspan: colspan}
   - if character_split == 'template'
     - if @group
-      = render 'group', group: @group, page_view: page_view, colspan: colspan
+      = render 'group', group: @group, characters: @characters, page_view: page_view, colspan: colspan, settings: @settings, no_header: true
     - elsif @user.character_groups.exists?
-      = render partial: 'group', collection: @user.character_groups.order(id: :asc), locals: { page_view: page_view, colspan: colspan }
-      - if @user.characters.where(character_group_id: nil).exists?
-        = render 'group', characters: @user.characters.where(character_group_id: nil), group: nil, skip_grouped_templates: true, page_view: page_view, colspan: colspan
-    - elsif @user.characters.exists?
-      = render partial: partial_type, collection: @user.templates.ordered, as: :name
-      - if @user.characters.where(template_id: nil).exists?
-        = render partial_type, name: "No Template", characters: @user.characters.where(template_id: nil).ordered, show_new_character_button: @user.id == current_user&.id
+      - collection_locals = { page_view: page_view, characters: @characters, settings: @settings, colspan: colspan, select_characters: true }
+      = render partial: 'group', collection: @user.character_groups.order(id: :asc), locals: collection_locals
+      - if @characters.key?(nil)
+        = render 'group', group: nil, characters: @characters[nil], page_view: page_view, settings: @settings, colspan: colspan
+    - elsif @characters.present?
+      = render partial: partial_type, collection: @user.templates, as: :name, locals: { characters: @characters, settings: @settings, select_characters: true }
+      - if @characters.key?(nil)
+        = render partial_type, name: "No Template", characters: @characters[nil], show_new_character_button: @user.id == current_user&.id, settings: @settings
     - else
       %tr
         %td.centered.padding-5{class: cycle('even', 'odd'), colspan: colspan} — No characters yet —
   - else
-    - characters = @user.characters.includes(:template).ordered
-    = render partial_type, name: nil, characters: characters, show_template: true
+    = render partial_type, name: nil, characters: @characters, settings: @settings, show_template: true

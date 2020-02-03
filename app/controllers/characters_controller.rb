@@ -27,6 +27,26 @@ class CharactersController < ApplicationController
     else
       @user.username + "'s Characters"
     end
+
+    @characters = @group ? @group.characters : @user.characters.ordered
+    @settings = Template.settings_info(@characters) if page_view == 'list'
+
+    template_split = character_split == 'template'
+    has_groups = @user.character_groups.exists? && !@group
+
+    select = [:template_id]
+    select << :character_group_id if has_groups
+
+    @characters = Template.characters_list(@characters, show_template: !template_split, page_view: page_view, select: select)
+
+    if template_split
+      if has_groups
+        @characters = @characters.group_by{ |char| char[:character_group_id] }
+        @characters = @characters.transform_values { |group| group.group_by{ |char| char[:template_id] } }
+      else
+        @characters = @characters.group_by{ |char| char[:template_id] }
+      end
+    end
   end
 
   def new

@@ -25,7 +25,7 @@ class TagsController < ApplicationController
     if @view == 'posts'
       @posts = posts_from_relation(@tag.posts.ordered)
     elsif @view == 'characters'
-      @characters = @tag.characters.includes(:user, :template).ordered.paginate(per_page: 25, page: page)
+      @characters = Template.characters_list(@tag.characters.ordered.paginate(per_page: 25, page: page), show_template: true, page_view: 'list')
     elsif @view == 'galleries'
       @galleries = @tag.galleries.with_icon_count.ordered_by_name
       use_javascript('galleries/expander')

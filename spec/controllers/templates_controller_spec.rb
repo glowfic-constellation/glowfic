@@ -86,7 +86,6 @@ RSpec.describe TemplatesController do
       get :show, params: { id: template.id }
       expect(assigns(:page_title)).to eq(template.name)
       expect(assigns(:posts).map(&:id)).to eq([reply_post.id, template_post.id])
-      expect(assigns(:user)).to eq(template.user)
     end
 
     it "calculates OpenGraph meta" do

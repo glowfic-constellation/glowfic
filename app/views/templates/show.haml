@@ -33,9 +33,9 @@
             List
   %tbody
     - if page_view == 'list'
-      = render 'characters/list_section', characters: @template.characters
+      = render 'characters/list_section', characters: @characters, settings: @settings
     - else
-      = render 'characters/icon_view', characters: @template.characters
+      = render 'characters/icon_view', characters: @characters
 - if @posts.present?
   %br
   - content_for :posts_title do 'Posts with Template Instances' end
