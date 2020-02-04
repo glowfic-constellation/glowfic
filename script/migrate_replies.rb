@@ -1,6 +1,6 @@
 Reply.where(new_order: nil).in_batches do |replies|
   Reply.transaction do
-    puts "Migrating replies #{replies.first.id} through #{replies.last.id}"
-    replies.update_all('new_order = reply_order + 1')
+    puts "Migrating replies #{replies.first.id} through #{replies.last.id} at #{Time.zone.now}"
+    replies.update_all('new_order = reply_order + 1') # rubocop:disable Rails/SkipsModelValidations
   end
 end
