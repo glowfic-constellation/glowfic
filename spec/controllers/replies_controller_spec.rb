@@ -381,6 +381,7 @@ RSpec.describe RepliesController do
       reply = reply_post.replies.ordered.last
       expect(reply.content).to eq(searchable)
       expect(reply.reply_order).to eq(0)
+      expect(reply.new_order).to eq(1)
     end
 
     it "sets reply_order correctly with an existing reply" do
@@ -393,6 +394,7 @@ RSpec.describe RepliesController do
       reply = reply_post.replies.ordered.last
       expect(reply.content).to eq(searchable)
       expect(reply.reply_order).to eq(1)
+      expect(reply.new_order).to eq(2)
     end
 
     it "sets reply_order correctly with multiple existing replies" do
@@ -406,6 +408,7 @@ RSpec.describe RepliesController do
       reply = reply_post.replies.ordered.last
       expect(reply.content).to eq(searchable)
       expect(reply.reply_order).to eq(2)
+      expect(reply.new_order).to eq(3)
     end
   end
 
@@ -903,6 +906,21 @@ RSpec.describe RepliesController do
       expect(flash[:error]).to eq({message: "Reply could not be deleted.", array: []})
       expect(post.reload.replies).to eq([reply])
     end
+
+    it "updates reply order on following replies" do
+      reply = create(:reply)
+      replies = create_list(:reply, 3, post: reply.post, user: reply.user)
+      replies = Reply.where(id: replies.map(&:id))
+      expect(replies.map(&:reply_order)).to eq([1, 2, 3])
+      expect(replies.map(&:new_order)).to eq([2, 3, 4])
+      login_as(reply.user)
+      delete :destroy, params: { id: reply.id }
+      expect(response).to redirect_to(post_url(reply.post, page: 1))
+      expect(flash[:success]).to eq("Reply deleted.")
+      expect(Reply.find_by_id(reply.id)).to be_nil
+      expect(replies.reload.map(&:reply_order)).to eq([0, 1, 2])
+      expect(replies.reload.map(&:new_order)).to eq([1, 2, 3])
+    end
   end
 
   describe "POST restore" do
@@ -960,7 +978,8 @@ RSpec.describe RepliesController do
       post_attributes.each do |key, val|
         expect(new_attributes[key]).to eq(val)
       end
-      expect(reloaded_post.replies.pluck(:reply_order).sort).to eq(0.upto(4).to_a)
+      expect(reloaded_post.replies.ordered.pluck(:reply_order)).to eq(0.upto(4).to_a)
+      expect(reloaded_post.replies.ordered.pluck(:new_order)).to eq((1..5).to_a)
     end
 
     it "handles first reply deletion" do
@@ -981,6 +1000,7 @@ RSpec.describe RepliesController do
         expect(new_attributes[key]).to eq(val)
       end
       expect(reloaded_post.replies.pluck(:reply_order).sort).to eq(0.upto(2).to_a)
+      expect(reloaded_post.replies.ordered.pluck(:new_order)).to eq((1..3).to_a)
     end
 
     it "handles last reply deletion" do
