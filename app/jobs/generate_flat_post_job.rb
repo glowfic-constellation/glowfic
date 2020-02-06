@@ -20,14 +20,12 @@ class GenerateFlatPostJob < ApplicationJob
 
     lock_key = self.class.lock_key(post_id)
 
-    begin
-      pages = post.replies.count / REPLIES_PER_RECORD
-      view = ActionView::Base.new(ActionController::Base.view_paths, {})
-      view.extend ApplicationHelper
+    view = ActionView::Base.new(ActionController::Base.view_paths, {})
+    view.extend ApplicationHelper
 
-      pages.times do |i|
-        flat_post = post.flat_posts[i]
-        replies = post.replies.limit(REPLIES_PER_RECORD).offset(REPLIES_PER_RECORD*i)
+    begin
+      post.replies.ordered.in_batches(batch_size: REPLIES_PER_RECORD) do |replies, batch_num|
+        flat_post = post.flat_posts[batch_num]
         next if replies.maximum(:updated_at) < flat_post.updated_at
 
         replies = replies
