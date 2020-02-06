@@ -2,6 +2,7 @@ class GenerateFlatPostJob < ApplicationJob
   queue_as :high
 
   EXPIRY_SECONDS = 30 * 60
+  REPLIES_PER_RECORD = 500
 
   def self.enqueue(post_id)
     # frequent tag check
@@ -20,20 +21,27 @@ class GenerateFlatPostJob < ApplicationJob
     lock_key = self.class.lock_key(post_id)
 
     begin
-      replies = post.replies
-        .select('replies.*, characters.name, characters.screenname, icons.keyword, icons.url, users.username')
-        .joins(:user)
-        .left_outer_joins(:character)
-        .left_outer_joins(:icon)
-        .ordered
-
+      pages = post.replies.count / REPLIES_PER_RECORD
       view = ActionView::Base.new(ActionController::Base.view_paths, {})
       view.extend ApplicationHelper
-      content = view.render(partial: 'posts/generate_flat', locals: {replies: replies})
 
-      flat_post = post.flat_post
-      flat_post.content = content
-      flat_post.save!
+      pages.times do |i|
+        flat_post = post.flat_posts[i]
+        replies = post.replies.limit(REPLIES_PER_RECORD).offset(REPLIES_PER_RECORD*i)
+        next if replies.maximum(:updated_at) < flat_post.updated_at
+
+        replies = replies
+          .select('replies.*, characters.name, characters.screenname, icons.keyword, icons.url, users.username')
+          .joins(:user)
+          .left_outer_joins(:character)
+          .left_outer_joins(:icon)
+          .ordered
+
+        content = view.render(partial: 'posts/generate_flat', locals: {replies: replies})
+
+        flat_post.content = content
+        flat_post.save!
+      end
 
       $redis.del(lock_key)
     rescue StandardError => e
