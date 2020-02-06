@@ -24,27 +24,29 @@ class GenerateFlatPostJob < ApplicationJob
     view.extend ApplicationHelper
 
     begin
-      post.replies.ordered.in_batches(batch_size: REPLIES_PER_RECORD) do |replies, batch_num|
-        flat_post = post.flat_posts[batch_num]
-        next if replies.maximum(:updated_at) < flat_post.updated_at
+      FlatPost.transaction do
+        post.replies.ordered.in_batches(of: REPLIES_PER_RECORD).each_with_index do |replies, batch_num|
+          flat_post = post.flat_posts.find_by(order: batch_num)
+          flat_post ||= post.flat_posts.new(order: batch_num)
 
-        replies = replies
-          .select('replies.*, characters.name, characters.screenname, icons.keyword, icons.url, users.username')
-          .joins(:user)
-          .left_outer_joins(:character)
-          .left_outer_joins(:icon)
-          .ordered
+          next unless flat_post.new_record? || replies.maximum(:updated_at) > flat_post.updated_at
 
-        content = view.render(partial: 'posts/generate_flat', locals: {replies: replies})
+          replies = replies
+            .select('replies.*, characters.name, characters.screenname, icons.keyword, icons.url, users.username')
+            .joins(:user)
+            .left_outer_joins(:character)
+            .left_outer_joins(:icon)
+            .ordered
 
-        flat_post.content = content
-        flat_post.save!
+          flat_post.content = view.render(partial: 'posts/generate_flat', locals: {replies: replies})
+          flat_post.save!
+        end
       end
-
-      $redis.del(lock_key)
     rescue StandardError => e
       $redis.del(lock_key)
       raise e # jobs are automatically retried
+    else
+      $redis.del(lock_key)
     end
   end
 
