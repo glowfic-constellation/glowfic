@@ -16,7 +16,7 @@ class Post < ApplicationRecord
   belongs_to :section, class_name: 'BoardSection', inverse_of: :posts, optional: true
   belongs_to :last_user, class_name: 'User', inverse_of: false, optional: false
   belongs_to :last_reply, class_name: 'Reply', inverse_of: false, optional: true
-  has_one :flat_post, dependent: :destroy
+  has_many :flat_posts, inverse_of: :post, dependent: :destroy
   has_many :replies, inverse_of: :post, dependent: :delete_all
   has_many :reply_drafts, dependent: :destroy
 

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_02_01_234427) do
+ActiveRecord::Schema.define(version: 2020_02_06_022430) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
@@ -155,6 +155,7 @@ ActiveRecord::Schema.define(version: 2020_02_01_234427) do
     t.text "content"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer "order", default: 0
     t.index ["post_id"], name: "index_flat_posts_on_post_id"
   end
 
@@ -361,6 +362,7 @@ ActiveRecord::Schema.define(version: 2020_02_01_234427) do
     t.datetime "updated_at"
     t.integer "character_alias_id"
     t.integer "reply_order"
+    t.integer "new_order"
     t.index "to_tsvector('english'::regconfig, COALESCE(content, ''::text))", name: "idx_fts_reply_content", using: :gin
     t.index ["character_id"], name: "index_replies_on_character_id"
     t.index ["created_at"], name: "index_replies_on_created_at"
