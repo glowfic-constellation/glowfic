@@ -55,4 +55,4 @@
                 = precede ' | Updated ' do
                   %span.post-updated=pretty_time(@post.last_updated, ApplicationHelper::TIME_FORMAT)
       .flat-post-replies
-        = render collection: @post.flat_posts, partial: 'flat_post', as: :flat_post
+        = render collection: @post.flat_posts.order(order: :asc), partial: 'flat_post', as: :flat_post
