@@ -29,7 +29,7 @@ class GenerateFlatPostJob < ApplicationJob
           flat_post = post.flat_posts.find_by(order: batch_num)
           flat_post ||= post.flat_posts.new(order: batch_num)
 
-          next unless flat_post.new_record? || replies.maximum(:updated_at) > flat_post.updated_at
+          # next unless flat_post.new_record? || replies.maximum(:updated_at) > flat_post.updated_at
 
           replies = replies
             .select('replies.*, characters.name, characters.screenname, icons.keyword, icons.url, users.username')
