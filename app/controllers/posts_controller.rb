@@ -77,6 +77,10 @@ class PostsController < WritableController
     if params[:commit] == "Mark Read"
       posts.each { |post| post.mark_read(current_user) }
       flash[:success] = flash_string + "marked as read."
+    elsif params[:commit] == "Mark Unread"
+      views = PostView.where(post: posts, user: current_user)
+      views.each { |view| view.update(read_at: nil) }
+      flash[:success] = flash_string + "marked as unread."
     elsif params[:commit] == "Remove from Replies Owed"
       posts.each { |post| post.opt_out_of_owed(current_user) }
       flash[:success] = flash_string + "removed from replies owed."
