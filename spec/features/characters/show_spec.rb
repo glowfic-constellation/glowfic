@@ -167,7 +167,7 @@ RSpec.feature "Viewing a character", :type => :feature do
     end
   end
 
-  scenario "View an archived character" do
+  scenario "View a character with a deleted user" do
     user = create(:user, deleted: true)
     char = create(:character, user: user, name: "Test char")
 
