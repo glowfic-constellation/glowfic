@@ -1,100 +1,70 @@
-/* global gon, processResults, queryTransform */
+/* global gon, createSelect2, processResults, queryTransform */
 $(document).ready(function() {
-  $("#setting_id").select2({
+  createSelect2('#setting_id', {
     ajax: {
-      delay: 200,
       url: '/api/v1/tags',
-      dataType: 'json',
       data: function(params) {
         var data = queryTransform(params);
         data.t = 'Setting';
         return data;
       },
-      processResults: function(data, params) {
-        var total = this._request.getResponseHeader('Total');
-        return processResults(data, params, total);
-      },
-      cache: true
+      processResults: processTotal(),
     },
     placeholder: '— Choose Setting —',
     allowClear: true,
-    width: '100%'
   });
 
-  $("#character_id").select2({
+  createSelect2('#character_id', {
     ajax: {
-      delay: 200,
       url: '/api/v1/characters',
-      dataType: 'json',
       data: function(params) {
         var data = queryTransform(params);
         if (typeof gon !== 'undefined') data.post_id = gon.post_id;
         return data;
       },
-      processResults: function(data, params) {
-        var total = this._request.getResponseHeader('Total');
-        return processResults(data, params, total, 'selector_name');
-      },
-      cache: true
+      processResults: processTotal('selector_name'),
     },
     placeholder: '— Choose Character —',
     allowClear: true,
-    width: '100%'
   });
 
-  $("#author_id").select2({
+  createSelect2('#author_id', {
     ajax: {
-      delay: 200,
       url: '/api/v1/users',
-      dataType: 'json',
-      data: queryTransform,
-      processResults: function(data, params) {
-        var total = this._request.getResponseHeader('Total');
-        return processResults(data, params, total, 'username');
-      },
-      cache: true
+      processResults: processTotal('username'),
     },
     placeholder: '— Choose Author —',
     allowClear: true,
-    width: '100%'
   });
 
-  $("#board_id").select2({
+  createSelect2('#board_id', {
     ajax: {
-      delay: 200,
       url: '/api/v1/boards',
-      dataType: 'json',
-      data: queryTransform,
-      processResults: function(data, params) {
-        var total = this._request.getResponseHeader('Total');
-        return processResults(data, params, total, 'name');
-      },
-      cache: true
+      processResults: processTotal('name'),
     },
     placeholder: '— Choose Continuity —',
     allowClear: true,
-    width: '100%'
   });
 
-  $("#template_id").select2({
+  createSelect2('#template_id', {
     ajax: {
-      delay: 200,
       url: '/api/v1/templates',
-      dataType: 'json',
       data: function(params) {
         var data = queryTransform(params);
         var authorId = $("#author_id").val();
         if (authorId !== '' && typeof authorId !== 'undefined') { data.user_id = authorId; }
         return data;
       },
-      processResults: function(data, params) {
-        var total = this._request.getResponseHeader('Total');
-        return processResults(data, params, total, 'name');
-      },
-      cache: true
+      processResults: processTotal('name'),
     },
     placeholder: '— Choose Template —',
     allowClear: true,
-    width: '100%'
   });
 });
+
+function processTotal(key) {
+  return function(data, params) {
+    var total = this._request.getResponseHeader('Total');
+    return processResults(data, params, total, key);
+  };
+}

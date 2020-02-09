@@ -1,5 +1,7 @@
+/* global createSelect2 */
+
 $(document).ready(function() {
-  $("#tag-view").select2({
+  createSelect2('#tag-view', {
     width: '200px',
     minimumResultsForSearch: 10,
     placeholder: '— Choose Type —',

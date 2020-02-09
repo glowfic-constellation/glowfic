@@ -1,6 +1,6 @@
-/* global addParameter */
+/* global createSelect2, addParameter */
 $(document).ready(function() {
-  $(".per-page").select2({width: '70px'});
+  createSelect2('.per-page', {width: '70px'});
   $(".per-page").change(function() {
     location.href = addParameter(location.href, 'per_page', $(this).val());
   });
