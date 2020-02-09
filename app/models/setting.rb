@@ -5,9 +5,4 @@ class Setting < Tag
   has_many :parent_settings, -> { ordered_by_tag_tag }, class_name: 'Setting', through: :child_setting_tags,
     source: :parent_setting, dependent: :destroy
   has_many :child_settings, class_name: 'Setting', through: :parent_setting_tags, source: :child_setting, dependent: :destroy
-
-  def has_items?
-    return true if super
-    child_settings.count > 0
-  end
 end
