@@ -70,11 +70,6 @@ class Tag < ApplicationRecord
     characters.count
   end
 
-  def gallery_count
-    return read_attribute(:gallery_count) if has_attribute?(:gallery_count)
-    galleries.count
-  end
-
   def has_items?
     # TODO auto destroy when false, and also maybe fix with settings/canons
     post_count + character_count + gallery_count > 0
