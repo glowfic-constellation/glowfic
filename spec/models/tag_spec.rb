@@ -51,24 +51,13 @@ RSpec.describe Tag do
   end
 
   describe "#post_count" do
-    def create_tags
+    it "works" do
       tag1 = create(:label)
       tag2 = create(:label)
       create(:post, labels: [tag2])
       tag3 = create(:label)
       create_list(:post, 2, labels: [tag3])
-      [tag1, tag2, tag3]
-    end
-
-    it "works with with_item_counts scope" do
-      tags = create_tags
-      fetched = Label.where(id: tags.map(&:id)).select(:id).ordered_by_id.with_item_counts
-      expect(fetched).to eq(tags)
-      expect(fetched.map(&:post_count)).to eq([0, 1, 2])
-    end
-
-    it "works without with_item_counts scope" do
-      tags = create_tags
+      tags = [tag1, tag2, tag3]
       fetched = Label.where(id: tags.map(&:id)).ordered_by_id
       expect(fetched).to eq(tags)
       expect(fetched.map(&:post_count)).to eq([0, 1, 2])
@@ -85,14 +74,14 @@ RSpec.describe Tag do
       [tag1, tag2, tag3]
     end
 
-    it "works with with_item_counts scope" do
+    it "works with with_character_counts scope" do
       tags = create_tags
-      fetched = GalleryGroup.where(id: tags.map(&:id)).select(:id).ordered_by_id.with_item_counts
+      fetched = GalleryGroup.where(id: tags.map(&:id)).select(:id).ordered_by_id.with_character_counts
       expect(fetched).to eq(tags)
-      expect(fetched.map(&:character_count)).to eq([0, 1, 2])
+      expect(fetched.map{|x| x[:character_count] }).to eq([0, 1, 2])
     end
 
-    it "works without with_item_counts scope" do
+    it "works without with_character_counts scope" do
       tags = create_tags
       fetched = GalleryGroup.where(id: tags.map(&:id)).ordered_by_id
       expect(fetched).to eq(tags)
@@ -110,14 +99,14 @@ RSpec.describe Tag do
       [tag1, tag2, tag3]
     end
 
-    it "works with with_item_counts scope" do
+    it "works with with_character_counts scope" do
       tags = create_tags
-      fetched = GalleryGroup.where(id: tags.map(&:id)).select(:id).ordered_by_id.with_item_counts
+      fetched = GalleryGroup.where(id: tags.map(&:id)).select(:id).ordered_by_id.with_character_counts
       expect(fetched).to eq(tags)
       expect(fetched.map(&:gallery_count)).to eq([0, 1, 2])
     end
 
-    it "works without with_item_counts scope" do
+    it "works without with_character_counts scope" do
       tags = create_tags
       fetched = GalleryGroup.where(id: tags.map(&:id)).ordered_by_id
       expect(fetched).to eq(tags)

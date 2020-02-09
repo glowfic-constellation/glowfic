@@ -43,7 +43,7 @@
                 = tag.user.username
               - else
                 %em= tag.user.deleted? ? 'deleted user' : tag.user.username
-        %td{class: klass}= tag.post_count
+        %td{class: klass}= @post_counts.fetch(tag.id, 0)
         %td{class: klass}= tag.character_count
         %td.width-70.right-align{class: klass}
           - if tag.editable_by?(current_user)
