@@ -42,6 +42,11 @@
   %tr
     %th.sub.vtop Description
     %td{class: cycle('even', 'odd')}= f.text_area :description, placeholder: 'Description', class: 'text', cols: 35
+  %tr
+    %th.sub Retired?
+    %td{class: cycle('even', 'odd')}
+      = f.check_box :retired, class: 'vmid'
+      = f.label :retired, 'Do not display in character selector', class: 'no-margin'
   - if current_user.id != @character.user_id
     %tr
       %th.sub.vtop Moderator Note

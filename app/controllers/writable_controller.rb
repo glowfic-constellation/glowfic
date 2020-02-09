@@ -9,7 +9,7 @@ class WritableController < ApplicationController
     faked = Struct.new(:name, :id, :plucked_characters)
     pluck = Arel.sql("id, concat_ws(' | ', name, template_name, screenname)")
     templates = user.templates.ordered
-    templateless = faked.new('Templateless', nil, user.characters.where(template_id: nil).ordered.pluck(pluck))
+    templateless = faked.new('Templateless', nil, user.characters.where(template_id: nil, retired: false).ordered.pluck(pluck))
     @templates = templates + [templateless]
 
     if @post

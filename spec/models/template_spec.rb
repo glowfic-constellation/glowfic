@@ -61,6 +61,18 @@ RSpec.describe Template do
       ]
       expect(template.plucked_characters).to eq(info)
     end
+
+    it "excludes retired characters" do
+      template = create(:template)
+      character1 = create(:character, template: template, name: 'AAAA')
+      character2 = create(:character, template: template, template_name: "nickname", name: 'BBBB')
+      create(:character, template: template, retired: true)
+      info = [
+        [character1.id, character1.name],
+        [character2.id, "#{character2.name} | #{character2.template_name}"],
+      ]
+      expect(template.plucked_characters).to eq(info)
+    end
   end
 
   it "cleans up when deleted" do
