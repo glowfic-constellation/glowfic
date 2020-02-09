@@ -71,8 +71,7 @@ RSpec.feature "Editing posts", :type => :feature do
     expect(page).to have_no_selector('.post-container')
 
     within('#post_form') do
-      expect(page).to have_select('Setting:', selected: 'test setting 1')
-      select2('Setting', 'setting 2')
+      expect(page).to have_multiselect('Settings:', selected: 'test setting 1')
 
       within('#post-editor') do
         within('.post-info-box') do
