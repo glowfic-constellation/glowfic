@@ -1,19 +1,19 @@
 %tbody
   %tr
-    %th.sub Name
+    %th.sub= f.label :name
     %td{class: cycle('even', 'odd')}= f.text_field :name, placeholder: "Character Name", class: 'text'
   %tr
-    %th.sub Nickname
+    %th.sub= f.label :nickname
     %td{class: cycle('even', 'odd')}= f.text_field :nickname, placeholder: "Template Nickname", class: 'text'
   %tr
-    %th.sub Screenname
+    %th.sub= f.label :screenname
     %td{class: cycle('even', 'odd')}= f.text_field :screenname, placeholder: "Screen Name", class: 'text'
   %tr
-    %th.sub Setting
+    %th.sub= f.label :setting_ids, 'Setting'
     %td{class: cycle('even', 'odd')}= tag_select(@character, f, :settings)
   %tr
     - klass = cycle('even', 'odd')
-    %th.sub.vtop Template
+    %th.sub.vtop= f.label :template_id
     %td{class: klass}
       = f.collection_select :template_id, @templates, :id, :name, {include_blank: '— Choose Template —'}, {class: 'text chosen-select', disabled: params[:new_template].present?}
       - if @character.user == current_user
@@ -22,37 +22,37 @@
         = label_tag :new_template, 'Create New Template'
   - if @character.user == current_user
     %tr#create_template{class: ('hidden' unless params[:new_template])}
-      %th.sub &#8627; Name
-      %td{class: klass}
-        = f.fields_for :template do |ff|
+      = f.fields_for :template do |ff|
+        %th.sub= ff.label :name, '↳ Name'
+        %td{class: klass}
           = ff.text_field :name, placeholder: "Template Name", class: 'text'
   %tr
     %th.sub Cluster
     %td{class: cycle('even', 'odd')}= f.text_field :cluster, placeholder: "Template Cluster Name", class: 'text'
   - if @character.user.galleries.present?
     %tr
-      %th.sub Galleries
+      %th.sub= f.label :ungrouped_gallery_ids, 'Galleries'
       %td{class: cycle('even', 'odd')}
         = f.collection_select(:ungrouped_gallery_ids,
         @character.user.galleries.ordered_by_name,
         :id, :name, {selected: @character.ungrouped_gallery_ids}, {multiple: true})
     %tr
-      %th.sub Gallery Groups
+      %th.sub= f.label :gallery_group_ids, 'Gallery Groups'
       %td{class: cycle('even', 'odd')}= tag_select(@character, f, :gallery_groups)
   %tr
-    %th.sub Facecast
+    %th.sub= f.label :pb, 'Facecast'
     %td{class: cycle('even', 'odd')}= f.text_field :pb, placeholder: "Facecast", class: 'text'
   %tr
-    %th.sub.vtop Description
+    %th.sub.vtop= f.label :description
     %td{class: cycle('even', 'odd')}= f.text_area :description, placeholder: 'Description', class: 'text', cols: 35
   %tr
-    %th.sub Retired?
+    %th.sub= f.label :retired, 'Retired?'
     %td{class: cycle('even', 'odd')}
       = f.check_box :retired, class: 'vmid'
       = f.label :retired, 'Do not display in character selector', class: 'no-margin'
   - if current_user.id != @character.user_id
     %tr
-      %th.sub.vtop Moderator Note
+      %th.sub.vtop= f.label :audit_comment, 'Moderator Note'
       %td{class: cycle('even', 'odd')}= f.text_area :audit_comment, placeholder: 'Explain reason for moderation here', class: 'text', cols: 35
 %tfoot
   %tr
