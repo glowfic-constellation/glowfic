@@ -71,7 +71,7 @@ RSpec.feature "Editing posts", :type => :feature do
     expect(page).to have_no_selector('.post-container')
 
     within('#post_form') do
-      expect(page).to have_multiselect('Settings:', selected: 'test setting 1')
+      expect(page).to have_multiselect('Setting:', selected: 'test setting 1')
 
       within('#post-editor') do
         within('.post-info-box') do
@@ -109,10 +109,10 @@ RSpec.feature "Editing posts", :type => :feature do
     end
     click_button 'Save'
 
-    expect(page).to have_no_selector('.error')
     expect(page).to have_selector('.success', text: 'has been updated.')
     expect(page).to have_selector('.post-container', count: 1)
     expect(page).to have_selector('#post-title', exact_text: 'other subject')
+    expect(page).to have_selector('.error', text: 'This post has the following content warnings:')
 
     within('.post-content') do
       expect(page).to have_selector('p', exact_text: 'other content')

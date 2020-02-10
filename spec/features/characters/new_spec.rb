@@ -18,7 +18,7 @@ RSpec.feature "Creating a new character", :type => :feature do
     expect(page).to have_selector('.selected-icon')
     expect(find('.selected-icon')[:alt]).to eq('Example icon')
 
-    select2('#character_setting_ids', 'Example setting', 'Example setting 2')
+    select2('Setting', 'Example setting', 'Example setting 2')
 
     within('.form-table') do
       fill_in 'Template Nickname', with: 'Example nickname'
@@ -98,7 +98,7 @@ RSpec.feature "Creating a new character", :type => :feature do
     complex_setup
 
     expect(page).to have_no_selector('.flash.error')
-    expect(page).to have_select2('#character_template_id', with: 'Example template')
+    expect(page).to have_select2('Template', selected: 'Example template')
 
     fill_in 'Character Name', with: 'Example character'
     click_button 'Save'
