@@ -25,11 +25,17 @@ module SpecFeatureHelper
   def select2(value, from:)
     SpecFeatureHelper.find_select2(page, from).click
     within page.find('.select2-results') do
-      node = page.find('li', text: value, exact_text: true)
-      node.click
+      page.find('li', text: value, exact_text: true).click
     end
   end
-  alias unselect2 select2
+
+  def unselect2(value, from:)
+    s2 = SpecFeatureHelper.find_select2(page, from)
+    within s2 do
+      page.find('li', text: '×' + value, exact_text: true).find('.select2-selection__choice__remove').click
+    end
+    s2.click
+  end
 
   RSpec::Matchers.define :have_multiselect do |finder, **args|
     match do |page|
