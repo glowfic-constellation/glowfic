@@ -72,6 +72,12 @@ RSpec.feature "Editing posts", :type => :feature do
 
     within('#post_form') do
       expect(page).to have_multiselect('Setting:', selected: 'test setting 1')
+      expect(page).to have_multiselect('Content Warnings:', selected: ['test warning 1', 'test warning 2'])
+      unselect2('test warning 2', from: 'Content Warnings:')
+      select2('test warning 3', from: 'Content Warnings:')
+      expect(page).to have_multiselect('Content Warnings:', selected: ['test warning 1', 'test warning 3'])
+      expect(page).to have_multiselect('Labels:', selected: [])
+      select2('test label', from: 'Labels:')
 
       within('#post-editor') do
         within('.post-info-box') do
@@ -113,6 +119,9 @@ RSpec.feature "Editing posts", :type => :feature do
     expect(page).to have_selector('.post-container', count: 1)
     expect(page).to have_selector('#post-title', exact_text: 'other subject')
     expect(page).to have_selector('.error', text: 'This post has the following content warnings:')
+    expect(page).to have_selector('.error', text: 'test warning 1')
+    expect(page).not_to have_selector('.error', text: 'test warning 2')
+    expect(page).to have_selector('.error', text: 'test warning 3')
 
     within('.post-content') do
       expect(page).to have_selector('p', exact_text: 'other content')
