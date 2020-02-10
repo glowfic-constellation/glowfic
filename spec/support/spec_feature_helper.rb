@@ -22,12 +22,14 @@ module SpecFeatureHelper
     find('table') { |x| x.has_selector?('.table-title', text: title) }
   end
 
-  def select2(finder, *options)
-    options.each do |option|
-      SpecFeatureHelper.find_select2(page, finder).click
-      within page.find('.select2-results') { page.find('li', text: option, exact_text: true).click }
+  def select2(value, from:)
+    SpecFeatureHelper.find_select2(page, from).click
+    within page.find('.select2-results') do
+      node = page.find('li', text: value, exact_text: true)
+      node.click
     end
   end
+  alias unselect2 select2
 
   RSpec::Matchers.define :have_multiselect do |finder, **args|
     match do |page|
@@ -36,13 +38,20 @@ module SpecFeatureHelper
       nodes = SpecFeatureHelper.find_select2(page, finder).find_all('.select2-selection__choice')
       expect(nodes.map(&:text)).to match_array(choices)
     end
+    failure_message do |page|
+      choices = Array(args[:selected]).map{ |choice| '×' + choice }
+      nodes = SpecFeatureHelper.find_select2(page, finder).find_all('.select2-selection__choice')
+      matcher = RSpec::Matchers::BuiltIn::ContainExactly.new(choices)
+      matcher.matches?(nodes.map(&:text))
+      matcher.failure_message
+    end
   end
 
   RSpec::Matchers.define :have_select2 do |finder, **args|
     match do |page|
       raise ArgumentError, "Missing matcher argument" unless args.key?(:selected)
       node = SpecFeatureHelper.find_select2(page, finder).find('.select2-selection__rendered')
-      expect(node.text).to eq(args[:selected])
+      node.text == args[:selected]
     end
   end
 
