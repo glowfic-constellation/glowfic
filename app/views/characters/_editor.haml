@@ -26,6 +26,7 @@
         %th.sub= ff.label :name, '↳ Name'
         %td{class: klass}
           = ff.text_field :name, placeholder: "Template Name", class: 'text'
+          = ff.hidden_field :id
   - if @character.user.galleries.present?
     %tr
       %th.sub= f.label :ungrouped_gallery_ids, 'Galleries'
