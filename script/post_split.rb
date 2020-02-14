@@ -47,7 +47,6 @@ Post.transaction do
   first_reply.destroy!
   puts "-> deleted"
 
-  # TODO: ensure this works right (previously didn't, if condition missed .exists?)
   puts "updating authors:"
   new_authors.each do |user_id, reply|
     next if PostAuthor.where(post_id: new_post.id, user_id: user_id).exists?
