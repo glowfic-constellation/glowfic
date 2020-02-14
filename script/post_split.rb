@@ -62,7 +62,7 @@ Post.transaction do
       joined: existing.joined,
       joined_at: reply.created_at,
     }
-    puts "PostAuthor.create!(#{data}), for #{User.find(user_id)}"
+    puts "PostAuthor.create!(#{data}), for #{User.find(user_id).inspect}"
     PostAuthor.create!(data)
   end
   puts "-> new authors created"
