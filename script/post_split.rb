@@ -7,11 +7,11 @@ Post.transaction do
   abort("needs user") unless user
   reply = Reply.find_by(user_id: user.id, id: reply_id)
   abort("couldn't find reply") unless reply
-  post = reply.post
-  puts "splitting post #{post.id}: #{post.subject}, after reply #{reply_id}"
+  old_post = reply.post
+  puts "splitting post #{old_post.id}: #{old_post.subject}, after reply #{reply_id}"
 
-  first_reply = post.replies.where('reply_order > ?', reply.reply_order).ordered.first
-  other_replies = post.replies.where('reply_order > ?', first_reply.reply_order).ordered
+  first_reply = old_post.replies.where('reply_order > ?', reply.reply_order).ordered.first
+  other_replies = old_post.replies.where('reply_order > ?', first_reply.reply_order).ordered
   puts "from after reply #{reply.id}, ie starting at + onwards from #{first_reply.inspect}"
   new_post = Post.new
   puts "new_post: marking skip_edited & is_import"
@@ -24,7 +24,7 @@ Post.transaction do
   end
 
   [:board_id, :section_id, :privacy, :status, :authors_locked].each do |atr|
-    new_value = post.send(atr)
+    new_value = old_post.send(atr)
     puts "new_post.#{atr} = #{new_value.inspect}"
     new_post.send(atr.to_s + '=', new_value)
   end
@@ -41,15 +41,17 @@ Post.transaction do
     new_authors[other_reply.user_id] ||= other_reply
     other_reply.update_columns(post_id: new_post.id, reply_order: index)
   end
+  puts "-> updated"
 
   puts "deleting reply converted to post: #{first_reply.inspect}"
   first_reply.destroy!
+  puts "-> deleted"
 
   # TODO: ensure this works right (previously didn't, if condition missed .exists?)
   puts "updating authors:"
   new_authors.each do |user_id, reply|
     next if PostAuthor.where(post_id: new_post.id, user_id: user_id).exists?
-    existing = PostAuthor.find_by(post_id: post.id, user_id: user_id)
+    existing = PostAuthor.find_by(post_id: old_post.id, user_id: user_id)
     puts "existing: #{existing.inspect}"
     data = {
       user_id: user_id,
@@ -65,8 +67,8 @@ Post.transaction do
     PostAuthor.create!(data)
   end
   puts "-> new authors created"
-  still_valid = (post.replies.distinct.pluck(:user_id) + [post.user_id]).uniq
-  invalid = post.post_authors.where.not(user_id: still_valid)
+  still_valid = (old_post.replies.distinct.pluck(:user_id) + [old_post.user_id]).uniq
+  invalid = old_post.post_authors.where.not(user_id: still_valid)
   puts "removing old invalid post authors: #{invalid.inspect}"
   invalid.destroy_all
   puts "-> removed"
@@ -80,12 +82,12 @@ Post.transaction do
   puts "updating new_post columns: #{new_post_cached_data}"
   new_post.update_columns(new_post_cached_data)
 
-  last_reply = post.replies.ordered.last
+  last_reply = old_post.replies.ordered.last
   post_cached_data = {
     last_reply_id: last_reply.id,
     last_user_id: last_reply.user_id,
     tagged_at: last_reply.updated_at,
   }
   puts "updating post columns: #{post_cached_data}"
-  post.update_columns(post_cached_data)
+  old_post.update_columns(post_cached_data)
 end
