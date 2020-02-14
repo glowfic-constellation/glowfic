@@ -1,6 +1,6 @@
 new_subject = 'test subject'
 reply_user = 'Throne3d'
-reply_id = 1024
+reply_id = 1024 # we split *after* this reply_id
 
 Post.transaction do
   user = User.find_by(username: reply_user)
