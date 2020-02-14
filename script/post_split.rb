@@ -12,9 +12,9 @@ Post.transaction do
 
   first_reply = post.replies.where('reply_order > ?', reply.reply_order).ordered.first
   other_replies = post.replies.where('reply_order > ?', first_reply.reply_order).ordered
-  puts "from after reply #{reply.id} (#{first_reply.inspect} onwards)"
+  puts "from after reply #{reply.id}, ie starting at + onwards from #{first_reply.inspect}"
   new_post = Post.new
-  puts "new_post: skipping edited & is_import"
+  puts "new_post: marking skip_edited & is_import"
   new_post.skip_edited = new_post.is_import = true
 
   [:character_id, :icon_id, :character_alias_id, :user_id, :content, :created_at, :updated_at].each do |atr|
@@ -28,7 +28,7 @@ Post.transaction do
     puts "new_post.#{atr} = #{new_value.inspect}"
     new_post.send(atr.to_s + '=', new_value)
   end
-  puts "new subject: #{new_subject}"
+  puts "new_post.subject = #{new_subject}"
   new_post.subject = new_subject
   puts "new_post.edited_at = #{first_reply.updated_at.inspect}"
   new_post.edited_at = first_reply.updated_at
@@ -50,6 +50,7 @@ Post.transaction do
   new_authors.each do |user_id, reply|
     next if PostAuthor.where(post_id: new_post.id, user_id: user_id).exists?
     existing = PostAuthor.find_by(post_id: post.id, user_id: user_id)
+    puts "existing: #{existing.inspect}"
     data = {
       user_id: user_id,
       post_id: new_post.id,
@@ -60,13 +61,15 @@ Post.transaction do
       joined: existing.joined,
       joined_at: reply.created_at,
     }
-    puts "PostAuthor.create!(#{data})"
+    puts "PostAuthor.create!(#{data}), for #{User.find(user_id)}"
     PostAuthor.create!(data)
   end
+  puts "-> new authors created"
   still_valid = (post.replies.distinct.pluck(:user_id) + [post.user_id]).uniq
   invalid = post.post_authors.where.not(user_id: still_valid)
   puts "removing old invalid post authors: #{invalid.inspect}"
   invalid.destroy_all
+  puts "-> removed"
 
   new_last_reply = other_replies.last
   new_post_cached_data = {
