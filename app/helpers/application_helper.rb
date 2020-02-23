@@ -177,7 +177,7 @@ module ApplicationHelper
     unless content[P_TAG] || content[BR_TAG] # heuristically guard against "Rich Text"-mode replies
       # process HTML-mode editing, by automatically adding paragraphs and linebreaks
       content = if contains_block_tags?(content)
-        careful_format(content)
+        markdown_format(content)
       else
         simple_format_largebreak(content, sanitize: false)
       end
@@ -202,6 +202,10 @@ module ApplicationHelper
     tags = tag_matches.map(&:first).uniq
     non_phrasing = tags.detect { |tag| !PHRASING_CONTENT.include?(tag) }
     non_phrasing.present?
+  end
+
+  def markdown_format(content)
+    CommonMarker.render_html(content, [:HARDBREAKS, :UNSAFE])
   end
 
   def paragraphify_nodes(nodes, fragment, after_block)

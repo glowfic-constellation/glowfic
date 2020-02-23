@@ -10,6 +10,7 @@ gem 'aws-sdk-s3', '~> 1'
 gem 'aws-sdk-ses', '~> 1'
 gem 'barnes' # heroku ruby-specific metrics
 gem 'bootstrap'
+gem 'commonmarker'
 gem 'exception_notification'
 gem 'get_process_mem'
 gem 'gon', '~> 6.2.1'

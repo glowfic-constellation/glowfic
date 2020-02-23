@@ -60,7 +60,7 @@ RSpec.describe ApplicationHelper do
           text = 'here is <a href="http://example.com">a link</a> '
           text += '<a href="https://example.com">another link</a> '
           text += '<a href="/characters/1">yet another link</a>'
-          expect(helper.sanitize_written_content(format_input(text, editor_mode))).to eq("<p>#{text}</p>")
+          expect(helper.sanitize_written_content(format_input(text, editor_mode)).strip).to eq("<p>#{text}</p>")
         end
 
         it "permits images" do
@@ -72,17 +72,17 @@ RSpec.describe ApplicationHelper do
 
         it "removes unpermitted attributes" do
           text = '<a onclick="function(){ alert("bad!");}">test</a>'
-          expect(helper.sanitize_written_content(format_input(text, editor_mode))).to eq("<p><a>test</a></p>")
+          expect(helper.sanitize_written_content(format_input(text, editor_mode)).strip).to eq("<p><a>test</a></p>")
         end
 
         it "permits valid CSS" do
           text = '<a style="color: red;">test</a>'
-          expect(helper.sanitize_written_content(format_input(text, editor_mode))).to eq("<p>#{text}</p>")
+          expect(helper.sanitize_written_content(format_input(text, editor_mode)).strip).to eq("<p>#{text}</p>")
         end
 
         it "fixes unending tags" do
           text = '<a>test'
-          expect(helper.sanitize_written_content(format_input(text, editor_mode))).to eq("<p><a>test</a></p>")
+          expect(helper.sanitize_written_content(format_input(text, editor_mode)).strip).to eq("<p><a>test</a></p>")
         end
       end
     end
@@ -161,7 +161,7 @@ RSpec.describe ApplicationHelper do
 
       it "treats phrasal elements as phrasal content" do
         text = "here is <em>inline</em> modifications to <a href='https://example.com'>some text</a>."
-        expected = '<p>here is <em>inline</em> modifications to <a href="https://example.com">some text</a>.</p>'
+        expected = '<p>here is <em>inline</em> modifications to <a href="https://example.com">some text</a>.</p>\n'
         expect(helper.sanitize_written_content(text)).to eq(expected)
       end
 
