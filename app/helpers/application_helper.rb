@@ -174,15 +174,103 @@ module ApplicationHelper
 
   # specific blockquote handling is due to simple_format wanting to wrap a blockquote in a paragraph
   def sanitize_written_content(content)
-    unless content[P_TAG] || content[BR_TAG]
-      content = if content[BLOCKQUOTE_QUICK_SEARCH] && content[BLOCKQUOTE_TAG]
-        content.gsub(LINEBREAK, BR)
+    unless content[P_TAG] || content[BR_TAG] # heuristically guard against "Rich Text"-mode replies
+      # process HTML-mode editing, by automatically adding paragraphs and linebreaks
+      content = if contains_block_tags?(content)
+        careful_format(content)
       else
         simple_format_largebreak(content, sanitize: false)
       end
     end
 
     Glowfic::Sanitizers.written(content)
+  end
+
+  PHRASING_CONTENT = [
+    "abbr", "audio", "b", "bdo", "br", "button", "canvas", "cite", "code",
+    "command", "data", "datalist", "dfn", "em", "embed", "i", "iframe",
+    "img", "input", "kbd", "keygen", "label", "mark", "math", "meter",
+    "noscript", "object", "output", "picture", "progress", "q", "ruby",
+    "samp", "script", "select", "small", "span", "strong", "sub", "sup",
+    "svg", "textarea", "time", "var", "video", "wbr",
+  ]
+  # checks if the given HTML content non-phrasing content
+  # (content that can't be simply wrapped in a <p> tag).
+  # designed to 80/20 this task, rather than being highly accurate.
+  def contains_block_tags?(content)
+    tag_matches = content.scan(/<([0-9A-Za-z]+)[\s\/>]/)
+    tags = tag_matches.map(&:first).uniq
+    non_phrasing = tags.detect { |tag| !PHRASING_CONTENT.include?(tag) }
+    non_phrasing.present?
+  end
+
+  def paragraphify_nodes(nodes, fragment, after_block)
+    text = nodes.map(&:to_s).sum('')
+    if after_block
+      # allow one non-meaningful whitespace after block elements
+      text = text.sub(/^\r?\n/, '')
+    end
+    nodes.each(&:unlink) # remove from old document
+    paragraphs = split_paragraphs_largebreak(text)
+
+    paragraphs.map! { |paragraph|
+      if paragraph.empty?
+        fragment.document.create_element('p', "\u00A0")
+      else
+        fragment.document.create_element('p').tap { |pa| pa.inner_html = paragraph }
+      end
+    }
+    paragraphs
+  end
+
+  # checks if node is phrasing content, where node is a Nokogiri node.
+  # note - does not perform a complete check:
+  # https://developer.mozilla.org/en-US/docs/Web/Guide/HTML/Content_categories#Phrasing_content
+  def is_phrasing_content?(node, ancestors=[])
+    return true unless node.element?
+    return true if PHRASING_CONTENT.include?(node.name)
+    if ['a', 'del', 'ins', 'map'].include?(node.name)
+      new_ancestors = ancestors + [node]
+      return node.children.all? { |child| is_phrasing_content?(child, new_ancestors) }
+    elsif ['link', 'meta'].include?(node.name) && node.has_attribute?('itemprop')
+      return true
+    elsif ancestors.any? { |ancestor| ancestor.name == 'map' }
+      return true
+    end
+    false
+  end
+
+  def careful_format(content)
+    fragment = Nokogiri::HTML5.fragment(content)
+
+    # simply linebreak all elements
+    # (do this first because it mutates the tree, recreating text nodes)
+    fragment.children.each do |child|
+      child.inner_html = child.inner_html.gsub(LINEBREAK, BR) if child.element?
+    end
+
+    # process the root again
+    # group everything between non-phrasing elements into paragraphs
+    after_block = false
+    to_paragraph = []
+    fragment.children.each do |child|
+      if is_phrasing_content?(child)
+        to_paragraph << child
+        next
+      end
+
+      # hit a non-phrasing element, so let's paragraphify everything before this point
+      paragraphs = paragraphify_nodes(to_paragraph, fragment, after_block)
+      paragraphs.each { |pa| child.add_previous_sibling(pa) }
+      to_paragraph = []
+      after_block = true
+    end
+
+    paragraphs = paragraphify_nodes(to_paragraph, fragment, after_block)
+    paragraphs.each { |pa| fragment.add_child(pa) }
+    to_paragraph = []
+
+    return fragment.inner_html
   end
 
   def breakable_text(text)
