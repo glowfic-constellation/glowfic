@@ -187,6 +187,15 @@ RSpec.describe ApplicationHelper do
 
         skip "should handle lists well"
 
+        it "produces valid HTML given tables" do
+          # TODO: do not create a bunch of linebreaks at the start of this table
+          text = "<table>\n<tr>\n<td>\ntext here\n\nnew line\n</td>\n</tr>\n</table>"
+          expected = "<br><br><br><br><table><tr><td><br>text here<br><br>new line<br></td></tr></table>"
+          expect(helper.sanitize_written_content(text)).to eq(expected)
+        end
+
+        skip "should handle tables well"
+
         it "handles text on either side of block elements" do
           # no linebreaks
           text = "no linebreak before.<blockquote>no linebreaks inside</blockquote>no linebreak after."
