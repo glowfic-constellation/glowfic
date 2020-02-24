@@ -35,3 +35,4 @@ wraith/now/*
 # Ignore DB backups
 /db/backups/*
 /db/storage
+node_modules
