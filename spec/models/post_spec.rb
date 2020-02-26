@@ -26,6 +26,15 @@ RSpec.describe Post do
         end
       end
 
+      it "should update edited_at and tagged_at when status edited" do
+        Timecop.freeze(time) do
+          post.status = Post::STATUS_COMPLETE
+          post.save!
+          expect(post.tagged_at).to be > old_tagged_at
+          expect(post.edited_at).to be > old_edited_at
+        end
+      end
+
       it "should not update with invalid edit" do
         Timecop.freeze(time) do
           post.section_order = post.section_order + 1
@@ -57,6 +66,15 @@ RSpec.describe Post do
         reply
         old_tagged_at
       }
+
+      it "should update edited_at but not tagged_at when subject edited" do
+        Timecop.freeze(time) do
+          post.subject = 'new title'
+          post.save!
+          expect(post.edited_at).to be > post.created_at
+          expect(post.tagged_at).to be_the_same_time_as(old_tagged_at)
+        end
+      end
 
       it "should update edited_at but not tagged_at when content edited" do
         Timecop.freeze(time) do
