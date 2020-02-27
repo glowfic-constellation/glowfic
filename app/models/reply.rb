@@ -16,8 +16,9 @@ class Reply < ApplicationRecord
   has_many :bookmarks, inverse_of: :reply, dependent: :destroy
   has_many :bookmarking_users, -> { ordered }, through: :bookmarks, source: :user, dependent: :destroy
 
+  before_create :set_post_written
   after_create :notify_other_authors, :destroy_draft, :update_active_char, :set_last_reply, :update_post, :update_post_authors
-  after_update :update_post
+  after_update :update_post, :update_post_written
   after_destroy :set_previous_reply_to_last, :remove_post_author, :update_flat_post
   after_save :update_flat_post
 
@@ -153,5 +154,26 @@ class Reply < ApplicationRecord
 
   def ordered_attributes
     [:post_id]
+  end
+
+  def set_post_written
+    return unless reply_order == 0
+    post.assign_attributes(
+      content: content,
+      icon: icon,
+      character: character,
+      character_alias: character_alias,
+    )
+  end
+
+  def update_post_written
+    return unless reply_order == 0
+    post.update!(
+      content: content,
+      icon: icon,
+      character: character,
+      character_alias: character_alias,
+      edited_at: updated_at,
+    )
   end
 end
