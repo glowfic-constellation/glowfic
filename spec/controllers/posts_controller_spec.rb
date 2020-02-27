@@ -1583,7 +1583,7 @@ RSpec.describe PostsController do
 
       it "marks read after completed" do
         post = nil
-        Timecop.freeze(Time.now - 1.day) do
+        Timecop.freeze(Time.zone.now - 1.day) do
           post = create(:post)
           login_as(post.user)
           post.mark_read(post.user)
