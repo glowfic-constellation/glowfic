@@ -260,7 +260,7 @@ RSpec.describe Api::V1::CharactersController do
     it "sets correct alias_id_for_post when given post_id with recently used alias in post", :show_in_doc do
       calias = create(:alias)
       character = calias.character
-      post = create(:post, user: character.user, character: character, character_alias_id: calias.id)
+      post = create(:post, user: character.user, character: character, character_alias: calias)
       get :show, params: { id: character.id, post_id: post.id }
       expect(response).to have_http_status(200)
       expect(response.json).to have_key('alias_id_for_post')
@@ -271,7 +271,7 @@ RSpec.describe Api::V1::CharactersController do
       calias = create(:alias)
       character = calias.character
       post = create(:post, user: character.user, character: character)
-      create(:reply, post: post, user: character.user, character: character, character_alias_id: calias.id) # reply
+      create(:reply, post: post, user: character.user, character: character, character_alias: calias) # reply
       get :show, params: { id: character.id, post_id: post.id }
       expect(response).to have_http_status(200)
       expect(response.json).to have_key('alias_id_for_post')

@@ -511,17 +511,17 @@ RSpec.describe IconsController do
     context "with galleryless icon" do
       it "sets variables correctly" do
         user = create(:user)
-        icon = create(:icon, user_id: user.id)
-        alts = Array.new(5) { create(:icon, user_id: user.id) }
-        post = create(:post, user_id: user.id, icon_id: icon.id)
-        create(:reply, post_id: post.id, user_id: user.id, icon_id: icon.id) # post reply
-        reply = create(:reply, user_id: user.id, icon_id: icon.id)
+        icon = create(:icon, user: user)
+        alts = Array.new(5) { create(:icon, user: user) }
+        post = create(:post, user: user, icon: icon)
+        create(:reply, post: post, user: user, icon: icon) # post reply
+        reply = create(:reply, user: user, icon: icon)
 
-        other_icon = create(:icon, user_id: user.id)
-        gallery = create(:gallery, user_id: user.id, icon_ids: [other_icon.id])
+        other_icon = create(:icon, user: user)
+        gallery = create(:gallery, user: user, icons: [other_icon])
         expect(gallery.icons).to match_array([other_icon])
-        create(:post, user_id: user.id, icon_id: other_icon.id) # other post
-        create(:reply, user_id: user.id, icon_id: other_icon.id) # other reply
+        create(:post, user: user, icon: other_icon) # other post
+        create(:reply, user: user, icon: other_icon) # other reply
 
         login_as(icon.user)
         get :replace, params: { id: icon.id }
@@ -535,7 +535,7 @@ RSpec.describe IconsController do
     context "with icon gallery" do
       it "sets variables correctly" do
         user = create(:user)
-        icon = create(:icon, user_id: user.id)
+        icon = create(:icon, user: user)
         alts = Array.new(5) { create(:icon, user: user) }
         gallery = create(:gallery, user: user, icon_ids: [icon.id] + alts.map(&:id))
         other_icon = create(:icon, user: user)
