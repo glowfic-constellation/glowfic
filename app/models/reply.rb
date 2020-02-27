@@ -116,7 +116,7 @@ class Reply < ApplicationRecord
   def previous_reply
     return @prev if defined?(@prev)
 
-    @prev = post.replies.find_by(reply_order: reply_order - 1) || post.written
+    @prev = post.replies.find_by(reply_order: reply_order - 1)
   end
 
   def author_can_write_in_post
