@@ -1252,7 +1252,7 @@ RSpec.describe PostsController do
       post = create(:post)
       login_as(post.user)
       reply = create(:reply, post: post)
-      reply.destroy
+      reply.destroy!
       get :delete_history, params: { id: post.id }
       expect(response).to have_http_status(200)
       expect(assigns(:audit).auditable_id).to eq(reply.id)
@@ -1262,7 +1262,7 @@ RSpec.describe PostsController do
       post = create(:post)
       login_as(post.user)
       reply = create(:reply, post: post)
-      reply.destroy
+      reply.destroy!
       restore(reply)
       get :delete_history, params: { id: post.id }
       expect(assigns(:audits).count).to eq(0)
@@ -1272,12 +1272,12 @@ RSpec.describe PostsController do
       post = create(:post)
       login_as(post.user)
       reply = create(:reply, post: post, content: 'old content')
-      reply.destroy
+      reply.destroy!
       restore(reply)
       reply = Reply.find_by_id(reply.id)
       reply.content = 'new content'
-      reply.save
-      reply.destroy
+      reply.save!
+      reply.destroy!
       get :delete_history, params: { id: post.id }
       expect(assigns(:audits).count).to eq(1)
       expect(assigns(:audit).audited_changes['content']).to eq('new content')

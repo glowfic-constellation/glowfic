@@ -938,7 +938,7 @@ RSpec.describe RepliesController do
 
     it "must be a deleted reply" do
       reply = create(:reply)
-      Audited::Audit.where(action: 'create').find_by(auditable_id: reply.id).update(action: 'destroy')
+      Audited::Audit.where(action: 'create').find_by(auditable_id: reply.id).update!(action: 'destroy')
       login_as(reply.user)
       post :restore, params: { id: 99 }
       expect(response).to redirect_to(boards_url)
@@ -949,7 +949,7 @@ RSpec.describe RepliesController do
       rpost = create(:post)
       reply = create(:reply, post: rpost)
       login_as(rpost.user)
-      reply.destroy
+      reply.destroy!
       post :restore, params: { id: reply.id }
       expect(response).to redirect_to(post_url(rpost))
       expect(flash[:error]).to eq('You do not have permission to modify this post.')
@@ -959,7 +959,7 @@ RSpec.describe RepliesController do
       rpost = create(:post)
       replies = create_list(:reply, 4, post: rpost, user: rpost.user)
       deleted_reply = replies[2]
-      deleted_reply.destroy
+      deleted_reply.destroy!
       Timecop.freeze(rpost.reload.tagged_at + 1.day) { create(:reply, post: rpost, user: rpost.user) }
       post_attributes = Post.find_by_id(rpost.id).attributes
 
@@ -979,7 +979,7 @@ RSpec.describe RepliesController do
       rpost = create(:post)
       replies = create_list(:reply, 2, post: rpost, user: rpost.user)
       deleted_reply = replies.first
-      deleted_reply.destroy
+      deleted_reply.destroy!
       Timecop.freeze(rpost.reload.tagged_at + 1.day) { create(:reply, post: rpost, user: rpost.user) }
       post_attributes = Post.find_by_id(rpost.id).attributes
 
@@ -999,7 +999,7 @@ RSpec.describe RepliesController do
       rpost = create(:post)
       replies = create_list(:reply, 2, post: rpost, user: rpost.user)
       deleted_reply = Timecop.freeze(rpost.reload.tagged_at + 1.day) { create(:reply, post: rpost) }
-      deleted_reply.destroy
+      deleted_reply.destroy!
       post_attributes = Post.find_by_id(rpost.id).attributes
 
       login_as(deleted_reply.user)
@@ -1027,7 +1027,7 @@ RSpec.describe RepliesController do
       expect(rpost.last_user).to eq(deleted_reply.user)
       expect(rpost.last_reply).to eq(deleted_reply)
 
-      deleted_reply.destroy
+      deleted_reply.destroy!
       rpost = Post.find(rpost.id)
       expect(rpost.last_user).to eq(rpost.user)
       expect(rpost.last_reply).to be_nil
@@ -1041,7 +1041,7 @@ RSpec.describe RepliesController do
 
     it "does not allow restoring something already restored" do
       reply = create(:reply)
-      reply.destroy
+      reply.destroy!
       login_as(reply.user)
       post :restore, params: { id: reply.id }
       expect(flash[:success]).to eq("Reply has been restored!")
@@ -1052,15 +1052,15 @@ RSpec.describe RepliesController do
 
     it "correctly restores a previously restored reply" do
       reply = create(:reply, content: 'not yet restored')
-      reply.destroy
+      reply.destroy!
       login_as(reply.user)
       post :restore, params: { id: reply.id }
       expect(flash[:success]).to eq("Reply has been restored!")
 
       reply = Reply.find(reply.id)
       reply.content = 'restored right'
-      reply.save
-      reply.destroy
+      reply.save!
+      reply.destroy!
 
       post :restore, params: { id: reply.id }
       expect(flash[:success]).to eq("Reply has been restored!")
@@ -1072,10 +1072,10 @@ RSpec.describe RepliesController do
       rpost = create(:post)
       reply = create(:reply, post: rpost, user: rpost.user)
       create(:reply, post: rpost, user: rpost.user)
-      reply.destroy
+      reply.destroy!
 
       rpost.status = Post::STATUS_HIATUS
-      rpost.save
+      rpost.save!
       login_as(rpost.user)
       post :restore, params: { id: reply.id }
       expect(flash[:success]).to eq("Reply has been restored!")
