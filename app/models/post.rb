@@ -270,7 +270,7 @@ class Post < ApplicationRecord
 
   def reply_count
     return read_attribute(:reply_count) if has_attribute?(:reply_count)
-    replies.count
+    replies.where.not(reply_order: 0).count
   end
 
   def last_user_deleted?
