@@ -151,24 +151,29 @@ RSpec.describe Post do
   end
 
   describe "#edited_at" do
+    let(:post) { create(:post) }
+
     it "should update when a field is changed" do
-      post = create(:post)
+      expect(post.edited_at).to eq(post.created_at)
+      post.update!(subject: 'new suject')
+      expect(post.edited_at).not_to eq(post.created_at)
+    end
+
+    it "should not update when content is edited" do
       expect(post.edited_at).to eq(post.created_at)
       post.written.update!(content: 'new content now')
       expect(post.edited_at).to eq(post.created_at)
-      expect(post.written.edited_at).not_to eq(post.created_at)
     end
 
     it "should update when multiple fields are changed" do
-      post = create(:post)
       expect(post.edited_at).to eq(post.created_at)
       post.subject = 'new subject'
-      post.update!(description: 'description')
+      post.description = 'description'
+      post.save!
       expect(post.edited_at).not_to eq(post.created_at)
     end
 
     it "should not update when skip is set" do
-      post = create(:post)
       expect(post.edited_at).to eq(post.created_at)
       post.skip_edited = true
       post.touch # rubocop:disable Rails/SkipsModelValidations
@@ -176,7 +181,6 @@ RSpec.describe Post do
     end
 
     it "should not update when a reply is made" do
-      post = create(:post)
       expect(post.edited_at).to eq(post.created_at)
       create(:reply, post: post, user: post.user)
       expect(post.edited_at).to eq(post.created_at)
