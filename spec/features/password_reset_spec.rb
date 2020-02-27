@@ -5,7 +5,7 @@ RSpec.feature "Resetting password", :type => :feature do
     visit new_password_reset_path
     expect(page).to have_selector("th.editor-title", exact_text: "Request Password Reset")
     within(".form-table") do
-      fill_in "Username" , with: user.username
+      fill_in "Username", with: user.username
       fill_in "Email address", with: user.email
       click_button "Reset Password"
     end

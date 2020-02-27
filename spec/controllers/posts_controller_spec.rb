@@ -400,16 +400,16 @@ RSpec.describe PostsController do
 
         expect {
           post :create, params: {
-          button_preview: true,
-          post: {
-            subject: 'test subject',
-            privacy: Concealable::ACCESS_LIST,
-            board_id: board.id,
-            unjoined_author_ids: [coauthor.id],
-            viewer_ids: [coauthor.id, create(:user).id],
-            content: 'test content',
-          },
-        }
+            button_preview: true,
+            post: {
+              subject: 'test subject',
+              privacy: Concealable::ACCESS_LIST,
+              board_id: board.id,
+              unjoined_author_ids: [coauthor.id],
+              viewer_ids: [coauthor.id, create(:user).id],
+              content: 'test content',
+            },
+          }
         }.not_to change { [PostAuthor.count, PostViewer.count, BoardAuthor.count] }
 
         expect(flash[:error]).to be_nil

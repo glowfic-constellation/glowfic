@@ -53,7 +53,6 @@ RSpec.describe Api::V1::CharactersController do
         expect(response.json['errors'][0]['message']).to eq(expected)
       end
 
-
       it "requires post with permission", show_in_doc: in_doc do
         post = create(:post, privacy: Concealable::PRIVATE, with_character: true)
         get :index, params: { post_id: post.id }

@@ -369,15 +369,19 @@ RSpec.feature "Viewing a character", :type => :feature do
       def current_headers
         page.all('.gallery-header')
       end
+
       def current_titles
         page.all('.gallery-title').map(&:text)
       end
+
       def gallery_title_for(id)
         page.find(".gallery-title-#{id}", visible: :all)
       end
+
       def gallery_data_for(id)
         page.find(".gallery-data-#{id}", visible: :all)
       end
+
       def expect_tbody_order(order, galleries)
         expect(current_titles).to eq(order.map {|x| "Gallery #{x}"})
         # convert orders to gallery IDs to the relevant .gallery-title-n and .gallery-data-n tbodies
