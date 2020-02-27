@@ -1573,7 +1573,7 @@ RSpec.describe PostsController do
       it "handles unexpected failure" do
         post = create(:post, status: Post::STATUS_ACTIVE)
         login_as(post.user)
-        post.update_columns(board_id: 0)
+        post.update_columns(board_id: 0) # rubocop:disable Rails/SkipsModelValidations
         expect(post.reload).not_to be_valid
         put :update, params: { id: post.id, status: 'abandoned' }
         expect(response).to redirect_to(post_url(post))
@@ -1718,7 +1718,7 @@ RSpec.describe PostsController do
       it "handles unexpected failure" do
         post = create(:post)
         login_as(post.user)
-        post.update_columns(board_id: 0)
+        post.update_columns(board_id: 0) # rubocop:disable Rails/SkipsModelValidations
         expect(post.reload).not_to be_valid
         put :update, params: { id: post.id, authors_locked: 'true' }
         expect(response).to redirect_to(post_url(post))

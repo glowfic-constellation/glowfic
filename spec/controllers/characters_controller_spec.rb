@@ -1358,7 +1358,7 @@ RSpec.describe CharactersController do
     it "handles unexpected failure" do
       character = create(:character)
       login_as(character.user)
-      character.update_columns(default_icon_id: create(:icon).id)
+      character.update_columns(default_icon_id: create(:icon).id) # rubocop:disable Rails/SkipsModelValidations
       expect(character).not_to be_valid
       expect{ post :duplicate, params: { id: character.id } }.to not_change { Character.count }
       expect(response).to redirect_to(character_path(character))

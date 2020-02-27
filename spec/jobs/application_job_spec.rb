@@ -33,7 +33,7 @@ RSpec.describe ApplicationJob do
     expect(job).to receive(:perform).and_raise(exc)
     begin
       job.perform_now
-    rescue Exception
+    rescue Exception # rubocop:disable Lint/RescueException
     else
       raise "Error should be handled"
     end

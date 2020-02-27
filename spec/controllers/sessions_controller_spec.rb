@@ -105,7 +105,7 @@ RSpec.describe SessionsController do
     it "logs in successfully without salt_uuid and sets it" do
       password = 'password'
       user = create(:user)
-      user.update_columns(salt_uuid: nil, crypted: user.send(:old_crypted_password, password))
+      user.update_columns(salt_uuid: nil, crypted: user.send(:old_crypted_password, password)) # rubocop:disable Rails/SkipsModelValidations
       user.reload
       expect(user.salt_uuid).to be_nil
       expect(session[:user_id]).to be_nil
