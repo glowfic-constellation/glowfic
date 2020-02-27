@@ -997,7 +997,7 @@ RSpec.describe RepliesController do
 
     it "handles last reply deletion" do
       rpost = create(:post)
-      replies = create_list(:reply, 2, post: rpost, user: rpost.user)
+      create_list(:reply, 2, post: rpost, user: rpost.user)
       deleted_reply = Timecop.freeze(rpost.reload.tagged_at + 1.day) { create(:reply, post: rpost) }
       deleted_reply.destroy!
       post_attributes = Post.find_by_id(rpost.id).attributes

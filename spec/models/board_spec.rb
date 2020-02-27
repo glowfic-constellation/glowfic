@@ -75,7 +75,7 @@ RSpec.describe Board do
       board = create(:board)
       board2 = create(:board)
       coauthor = create(:user)
-      cameo = create(:user) # FIXME: unused
+      create(:user)
       board.board_authors.create!(user: coauthor)
       expect { board.board_authors.create!(user: coauthor) }.to raise_error(ActiveRecord::RecordInvalid)
       board2.board_authors.create!(user: coauthor)
