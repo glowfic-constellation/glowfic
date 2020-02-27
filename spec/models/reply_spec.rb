@@ -226,7 +226,7 @@ RSpec.describe Reply do
     end
 
     it "orders replies by reply_order, not created_at" do
-      first_reply = create(:reply, post: post)
+      first_reply = Timecop.freeze(post.created_at + 1.second) { create(:reply, post: post) }
       second_reply = Timecop.freeze(first_reply.created_at - 5.seconds) { create(:reply, post: post) }
       third_reply = Timecop.freeze(first_reply.created_at - 3.seconds) { create(:reply, post: post) }
       expect(post.replies.ordered).not_to eq(post.replies.order(:created_at))
