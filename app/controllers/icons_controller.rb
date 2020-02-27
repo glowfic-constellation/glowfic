@@ -110,6 +110,8 @@ class IconsController < UploadingController
     wheres = { icon_id: @icon.id }
     wheres[:post_id] = params[:post_ids] if params[:post_ids].present?
     UpdateModelJob.perform_later(Reply.to_s, wheres, { icon_id: new_icon.try(:id) }, current_user.id)
+    wheres[:id] = wheres.delete(:post_id) if params[:post_ids].present?
+    UpdateModelJob.perform_later(Post.to_s, wheres, { icon_id: new_icon.try(:id) }, current_user.id)
 
     flash[:success] = "All uses of this icon will be replaced."
     redirect_to @icon
