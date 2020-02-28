@@ -124,7 +124,8 @@ class Api::V1::CharactersController < Api::ApiController
 
   def find_template
     return unless params[:template_id].present?
-    return if params[:template_id] == '0' # used to filter for templateless characters, so @template should remain nil without find_object raising a missing template error
+    # filter for templateless characters, so @template should remain nil without find_object raising a missing template error
+    return if params[:template_id] == '0'
     @template = find_object(Template, :template_id, :unprocessable_entity)
   end
 
