@@ -163,6 +163,10 @@ Naming/VariableNumber:
 
 ##################### Rails ##################################
 
+Rails/ApplicationController:
+  Exclude:
+    - 'app/controllers/api/api_controller.rb'
+
 Rails/Blank:
   Enabled: true
   UnlessPresent: false
