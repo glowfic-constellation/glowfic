@@ -16,4 +16,8 @@ class CharactersGallery < ApplicationRecord
   def autofill_order
     self.section_order = CharactersGallery.where(character_id: character_id).count
   end
+
+  def order
+    section_order
+  end
 end
