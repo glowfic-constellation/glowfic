@@ -21,7 +21,7 @@ RSpec.describe Api::V1::IndexSectionsController do
       expect(section1.reload.section_order).to eq(0)
       expect(section2.reload.section_order).to eq(1)
 
-      section_ids = [section2.id, section1.id]
+      section_ids = [section2, section1].map(&:id)
 
       login
       post :reorder, params: { ordered_section_ids: section_ids }
@@ -67,7 +67,7 @@ RSpec.describe Api::V1::IndexSectionsController do
       expect(section4.reload.section_order).to eq(3)
       expect(section5.reload.section_order).to eq(0)
 
-      section_ids = [section3.id, section1.id, section4.id, section2.id]
+      section_ids = [section3, section1, section4, section2].map(&:id)
 
       login_as(user)
       post :reorder, params: { ordered_section_ids: section_ids }
@@ -87,12 +87,12 @@ RSpec.describe Api::V1::IndexSectionsController do
       expect(section4.reload.section_order).to eq(3)
       expect(section5.reload.section_order).to eq(0)
 
-      section_ids = [section3.id, section1.id]
+      section_ids = [section3, section1].map(&:id)
 
       login_as(user)
       post :reorder, params: { ordered_section_ids: section_ids }
       expect(response).to have_http_status(200)
-      expect(response.json).to eq({'section_ids' => [section3.id, section1.id, section2.id, section4.id]})
+      expect(response.json).to eq({'section_ids' => [section3, section1, section2, section4].map(&:id)})
       expect(section1.reload.section_order).to eq(1)
       expect(section2.reload.section_order).to eq(2)
       expect(section3.reload.section_order).to eq(0)

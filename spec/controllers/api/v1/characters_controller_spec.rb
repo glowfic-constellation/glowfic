@@ -347,7 +347,7 @@ RSpec.describe Api::V1::CharactersController do
       expect(char_gal1.reload.section_order).to eq(0)
       expect(char_gal2.reload.section_order).to eq(1)
 
-      section_ids = [char_gal2.id, char_gal1.id]
+      section_ids = [char_gal2, char_gal1].map(&:id)
 
       login
       post :reorder, params: { ordered_characters_gallery_ids: section_ids }
@@ -393,7 +393,7 @@ RSpec.describe Api::V1::CharactersController do
       expect(char_gal4.reload.section_order).to eq(3)
       expect(char_gal5.reload.section_order).to eq(0)
 
-      section_ids = [char_gal3.id, char_gal1.id, char_gal4.id, char_gal2.id]
+      section_ids = [char_gal3, char_gal1, char_gal4, char_gal2].map(&:id)
 
       login_as(user)
       post :reorder, params: { ordered_characters_gallery_ids: section_ids }
@@ -413,12 +413,12 @@ RSpec.describe Api::V1::CharactersController do
       expect(char_gal4.reload.section_order).to eq(3)
       expect(char_gal5.reload.section_order).to eq(0)
 
-      section_ids = [char_gal3.id, char_gal1.id]
+      section_ids = [char_gal3, char_gal1].map(&:id)
 
       login_as(user)
       post :reorder, params: { ordered_characters_gallery_ids: section_ids }
       expect(response).to have_http_status(200)
-      expect(response.json).to eq({'characters_gallery_ids' => [char_gal3.id, char_gal1.id, char_gal2.id, char_gal4.id]})
+      expect(response.json).to eq({'characters_gallery_ids' => [char_gal3, char_gal1, char_gal2, char_gal4].map(&:id)})
       expect(char_gal1.reload.section_order).to eq(1)
       expect(char_gal2.reload.section_order).to eq(2)
       expect(char_gal3.reload.section_order).to eq(0)

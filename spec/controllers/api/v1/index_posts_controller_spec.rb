@@ -23,7 +23,7 @@ RSpec.describe Api::V1::IndexPostsController do
         expect(index_post1.reload.section_order).to eq(0)
         expect(index_post2.reload.section_order).to eq(1)
 
-        post_ids = [index_post2.id, index_post1.id]
+        post_ids = [index_post2, index_post1].map(&:id)
 
         login
         post :reorder, params: { ordered_post_ids: post_ids }
@@ -57,7 +57,7 @@ RSpec.describe Api::V1::IndexPostsController do
         expect(index_post1.reload.section_order).to eq(0)
         expect(index_post2.reload.section_order).to eq(1)
 
-        post_ids = [index_post2.id, index_post1.id]
+        post_ids = [index_post2, index_post1].map(&:id)
         login_as(user)
         post :reorder, params: { ordered_post_ids: post_ids }
         expect(response).to have_http_status(422)
@@ -84,7 +84,7 @@ RSpec.describe Api::V1::IndexPostsController do
         expect(index_post4.reload.section_order).to eq(3)
         expect(index_post5.reload.section_order).to eq(0)
 
-        post_ids = [index_post3.id, index_post1.id, index_post4.id, index_post2.id]
+        post_ids = [index_post3, index_post1, index_post4, index_post2].map(&:id)
 
         login_as(user)
         post :reorder, params: { ordered_post_ids: post_ids }
@@ -104,12 +104,12 @@ RSpec.describe Api::V1::IndexPostsController do
         expect(index_post4.reload.section_order).to eq(3)
         expect(index_post5.reload.section_order).to eq(0)
 
-        post_ids = [index_post3.id, index_post1.id]
+        post_ids = [index_post3, index_post1].map(&:id)
 
         login_as(user)
         post :reorder, params: { ordered_post_ids: post_ids }
         expect(response).to have_http_status(200)
-        expect(response.json).to eq({'post_ids' => [index_post3.id, index_post1.id, index_post2.id, index_post4.id]})
+        expect(response.json).to eq({'post_ids' => [index_post3, index_post1, index_post2, index_post4].map(&:id)})
         expect(index_post1.reload.section_order).to eq(1)
         expect(index_post2.reload.section_order).to eq(2)
         expect(index_post3.reload.section_order).to eq(0)
@@ -131,7 +131,7 @@ RSpec.describe Api::V1::IndexPostsController do
         expect(index_post1.reload.section_order).to eq(0)
         expect(index_post2.reload.section_order).to eq(1)
 
-        post_ids = [index_post2.id, index_post1.id]
+        post_ids = [index_post2, index_post1].map(&:id)
 
         login
         post :reorder, params: { ordered_post_ids: post_ids, section_id: index_section.id }
@@ -161,7 +161,7 @@ RSpec.describe Api::V1::IndexPostsController do
         expect(index_post1.reload.section_order).to eq(0)
         expect(index_post2.reload.section_order).to eq(1)
 
-        post_ids = [index_post2.id, index_post1.id]
+        post_ids = [index_post2, index_post1].map(&:id)
         login_as(user)
         post :reorder, params: { ordered_post_ids: post_ids, section_id: 0 }
         expect(response).to have_http_status(422)
@@ -175,7 +175,7 @@ RSpec.describe Api::V1::IndexPostsController do
         expect(index_post2.reload.section_order).to eq(1)
         expect(index_post3.reload.section_order).to eq(2)
 
-        post_ids = [index_post3.id, index_post2.id]
+        post_ids = [index_post3, index_post2].map(&:id)
         login_as(user)
         post :reorder, params: { ordered_post_ids: post_ids, section_id: index_section2.id }
         expect(response).to have_http_status(422)
@@ -186,13 +186,13 @@ RSpec.describe Api::V1::IndexPostsController do
       end
 
       it "requires no section_id if posts not in section" do
-        index_post1 = create(:index_post, index_id: index.id)
-        index_post2 = create(:index_post, index_id: index.id)
+        index_post1 = create(:index_post, index: index)
+        index_post2 = create(:index_post, index: index)
 
         expect(index_post1.reload.section_order).to eq(0)
         expect(index_post2.reload.section_order).to eq(1)
 
-        post_ids = [index_post2.id, index_post1.id]
+        post_ids = [index_post2, index_post1].map(&:id)
         login_as(user)
         post :reorder, params: { ordered_post_ids: post_ids, section_id: index_section.id }
         expect(response).to have_http_status(422)
@@ -219,7 +219,7 @@ RSpec.describe Api::V1::IndexPostsController do
         expect(index_post4.reload.section_order).to eq(3)
         expect(index_post5.reload.section_order).to eq(0)
 
-        post_ids = [index_post3.id, index_post1.id, index_post4.id, index_post2.id]
+        post_ids = [index_post3, index_post1, index_post4, index_post2].map(&:id)
 
         login_as(user)
         post :reorder, params: { ordered_post_ids: post_ids, section_id: index_section.id }
@@ -239,12 +239,12 @@ RSpec.describe Api::V1::IndexPostsController do
         expect(index_post4.reload.section_order).to eq(3)
         expect(index_post5.reload.section_order).to eq(0)
 
-        post_ids = [index_post3.id, index_post1.id]
+        post_ids = [index_post3, index_post1].map(&:id)
 
         login_as(user)
         post :reorder, params: { ordered_post_ids: post_ids, section_id: index_section.id }
         expect(response).to have_http_status(200)
-        expect(response.json).to eq({'post_ids' => [index_post3.id, index_post1.id, index_post2.id, index_post4.id]})
+        expect(response.json).to eq({'post_ids' => [index_post3, index_post1, index_post2, index_post4].map(&:id)})
         expect(index_post1.reload.section_order).to eq(1)
         expect(index_post2.reload.section_order).to eq(2)
         expect(index_post3.reload.section_order).to eq(0)

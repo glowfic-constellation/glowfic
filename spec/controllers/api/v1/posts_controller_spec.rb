@@ -91,7 +91,7 @@ RSpec.describe Api::V1::PostsController do
         expect(post1.reload.section_order).to eq(0)
         expect(post2.reload.section_order).to eq(1)
 
-        post_ids = [post2.id, post1.id]
+        post_ids = [post2, post1].map(&:id)
 
         login
         post :reorder, params: { ordered_post_ids: post_ids }
@@ -107,7 +107,7 @@ RSpec.describe Api::V1::PostsController do
         expect(post5.reload.section_order).to eq(0)
         expect(post6.reload.section_order).to eq(1)
 
-        post_ids = [post3.id, post2.id, post1.id]
+        post_ids = [post6, post4, post1].map(&:id)
         login_as(user)
         post :reorder, params: { ordered_post_ids: post_ids }
         expect(response).to have_http_status(422)
@@ -118,14 +118,14 @@ RSpec.describe Api::V1::PostsController do
       end
 
       it "requires section_id if posts in section" do
-        section = create(:board_section, board_id: board.id)
-        post1 = create(:post, board_id: board.id, section_id: section.id)
-        post2 = create(:post, board_id: board.id, section_id: section.id)
+        section = create(:board_section, board: board)
+        post1 = create(:post, board: board, section: section)
+        post2 = create(:post, board: board, section: section)
 
         expect(post1.reload.section_order).to eq(0)
         expect(post2.reload.section_order).to eq(1)
 
-        post_ids = [post2.id, post1.id]
+        post_ids = [post2, post1].map(&:id)
         login_as(user)
         post :reorder, params: { ordered_post_ids: post_ids }
         expect(response).to have_http_status(422)
@@ -152,7 +152,7 @@ RSpec.describe Api::V1::PostsController do
         expect(post4.reload.section_order).to eq(3)
         expect(post5.reload.section_order).to eq(0)
 
-        post_ids = [post3.id, post1.id, post4.id, post2.id]
+        post_ids = [post3, post1, post4, post2].map(&:id)
 
         login_as(board.creator)
         post :reorder, params: { ordered_post_ids: post_ids }
@@ -172,12 +172,12 @@ RSpec.describe Api::V1::PostsController do
         expect(post4.reload.section_order).to eq(3)
         expect(post5.reload.section_order).to eq(0)
 
-        post_ids = [post3.id, post1.id]
+        post_ids = [post3, post1].map(&:id)
 
         login_as(board.creator)
         post :reorder, params: { ordered_post_ids: post_ids }
         expect(response).to have_http_status(200)
-        expect(response.json).to eq({'post_ids' => [post3.id, post1.id, post2.id, post4.id]})
+        expect(response.json).to eq({'post_ids' => [post3, post1, post2, post4].map(&:id)})
         expect(post1.reload.section_order).to eq(1)
         expect(post2.reload.section_order).to eq(2)
         expect(post3.reload.section_order).to eq(0)
@@ -199,7 +199,7 @@ RSpec.describe Api::V1::PostsController do
         expect(post1.reload.section_order).to eq(0)
         expect(post2.reload.section_order).to eq(1)
 
-        post_ids = [post2.id, post1.id]
+        post_ids = [post2, post1].map(&:id)
 
         login
         post :reorder, params: { ordered_post_ids: post_ids, section_id: section.id }
@@ -242,7 +242,7 @@ RSpec.describe Api::V1::PostsController do
         expect(post1.reload.section_order).to eq(0)
         expect(post2.reload.section_order).to eq(1)
 
-        post_ids = [post3.id, post2.id]
+        post_ids = [post2, post1].map(&:id)
         login_as(user)
         post :reorder, params: { ordered_post_ids: post_ids, section_id: section2.id }
         expect(response).to have_http_status(422)
@@ -285,7 +285,7 @@ RSpec.describe Api::V1::PostsController do
         expect(post4.reload.section_order).to eq(3)
         expect(post5.reload.section_order).to eq(0)
 
-        post_ids = [post3.id, post1.id, post4.id, post2.id]
+        post_ids = [post3, post1, post4, post2].map(&:id)
 
         login_as(board.creator)
         post :reorder, params: { ordered_post_ids: post_ids, section_id: section.id }
@@ -305,12 +305,12 @@ RSpec.describe Api::V1::PostsController do
         expect(post4.reload.section_order).to eq(3)
         expect(post5.reload.section_order).to eq(0)
 
-        post_ids = [post3.id, post1.id]
+        post_ids = [post3, post1].map(&:id)
 
         login_as(board.creator)
         post :reorder, params: { ordered_post_ids: post_ids, section_id: section.id }
         expect(response).to have_http_status(200)
-        expect(response.json).to eq({'post_ids' => [post3.id, post1.id, post2.id, post4.id]})
+        expect(response.json).to eq({'post_ids' => [post3, post1, post2, post4].map(&:id)})
         expect(post1.reload.section_order).to eq(1)
         expect(post2.reload.section_order).to eq(2)
         expect(post3.reload.section_order).to eq(0)
