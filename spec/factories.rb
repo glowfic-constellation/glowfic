@@ -137,7 +137,7 @@ FactoryBot.define do
     gallery
   end
 
-  factory :alias, class: CharacterAlias do
+  factory :alias, class: :character_alias do
     character
     sequence :name do |n|
       "TestAlias#{n}"
@@ -174,19 +174,19 @@ FactoryBot.define do
     end
     user
 
-    factory :label, class: Label do
+    factory :label, class: :label do
       type { 'Label' }
     end
 
-    factory :setting, class: Setting do
+    factory :setting, class: :setting do
       type { 'Setting' }
     end
 
-    factory :content_warning, class: ContentWarning do
+    factory :content_warning, class: :content_warning do
       type { 'ContentWarning' }
     end
 
-    factory :gallery_group, class: GalleryGroup do
+    factory :gallery_group, class: :gallery_group do
       type { 'GalleryGroup' }
     end
   end
