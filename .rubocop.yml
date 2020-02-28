@@ -19,14 +19,8 @@ Rails:
 
 #################### Layout ##############################
 
-Layout/AlignArguments:
+Layout/ArgumentAlignment:
   EnforcedStyle: with_fixed_indentation
-
-Layout/AlignHash:
-  EnforcedHashRocketStyle: table
-
-Layout/AlignParameters:
-  EnforcedStyle: 'with_fixed_indentation'
 
 Layout/CaseIndentation:
   EnforcedStyle: 'end'
@@ -44,20 +38,29 @@ Layout/EndAlignment:
 Layout/EndOfLine:
   EnforcedStyle: lf
 
+Layout/FirstArrayElementIndentation:
+  EnforcedStyle: 'consistent'
+
+Layout/FirstHashElementIndentation:
+  EnforcedStyle: 'consistent'
+
+Layout/HashAlignment:
+  EnforcedHashRocketStyle: table
+
+Layout/HeredocIndentation:
+  Enabled: true
+  Exclude:
+    - 'db/migrate/**/*'
+
 Layout/IndentationWidth:
   Enabled: true
   Width: 2
 
-Layout/IndentFirstArrayElement:
-  EnforcedStyle: 'consistent'
-
-Layout/IndentFirstHashElement:
-  EnforcedStyle: 'consistent'
-
-Layout/IndentHeredoc:
+Layout/LineLength:
   Enabled: true
+  Max: 150
   Exclude:
-    - 'db/migrate/**/*'
+    - 'app/controllers/api/**/*'
 
 Layout/MultilineMethodCallBraceLayout:
   Enabled: false
@@ -67,6 +70,9 @@ Layout/MultilineMethodCallIndentation:
 
 Layout/MultilineOperationIndentation:
   Enabled: false
+
+Layout/ParameterAlignment:
+  EnforcedStyle: 'with_fixed_indentation'
 
 Layout/SpaceAroundEqualsInParameterDefault:
   EnforcedStyle: 'no_space'
@@ -95,14 +101,14 @@ Lint/AmbiguousBlockAssociation:
   Exclude:
     - 'spec/**/*'
 
-Lint/HandleExceptions:
-  Exclude:
-    - 'spec/jobs/application_job_spec.rb'
-    - 'spec/jobs/generate_flat_post_job_spec.rb'
-
 Lint/ParenthesesAsGroupedExpression:
   Exclude:
     - 'spec/**/*'
+
+Lint/SuppressedException:
+  Exclude:
+    - 'spec/jobs/application_job_spec.rb'
+    - 'spec/jobs/generate_flat_post_job_spec.rb'
 
 ###################### Metrics ####################################
 
@@ -122,12 +128,6 @@ Metrics/ClassLength:
 
 Metrics/CyclomaticComplexity:
   Enabled: false
-
-Metrics/LineLength:
-  Enabled: true
-  Max: 150
-  Exclude:
-    - 'app/controllers/api/**/*'
 
 Metrics/MethodLength:
   Enabled: false
@@ -149,19 +149,17 @@ Naming/AccessorMethodName:
 Naming/MemoizedInstanceVariableName:
   Enabled: false
 
+Naming/MethodParameterName:
+  AllowedNames:
+    - js
+    - id
+
 Naming/PredicateName:
   Enabled: false
 
 Naming/VariableNumber:
   Exclude:
     - 'spec/**/*'
-
-Naming/UncommunicativeMethodParamName:
-  AllowedNames:
-    - io
-    - id
-    - to
-    - js
 
 ##################### Rails ##################################
 
@@ -174,6 +172,9 @@ Rails/DynamicFindBy:
   Whitelist:
     - find_by_sql
     - find_by_id
+
+Rails/FilePath:
+  EnforcedStyle: 'arguments'
 
 Rails/HasManyOrHasOneDependent:
   Exclude:
@@ -253,9 +254,6 @@ Style/AutoResourceCleanup:
 Style/BlockDelimiters:
   Enabled: false
 
-Style/BracesAroundHashParameters:
-  Enabled: false
-
 Style/ClassAndModuleChildren:
   EnforcedStyle: 'compact'
 
@@ -283,8 +281,17 @@ Style/GlobalVars:
 Style/GuardClause:
   Enabled: false
 
+Style/HashEachMethods:
+  Enabled: true
+
 Style/HashSyntax:
   Enabled: false
+
+Style/HashTransformKeys:
+  Enabled: true
+
+Style/HashTransformValues:
+  Enabled: true
 
 Style/Lambda:
   Enabled: false
