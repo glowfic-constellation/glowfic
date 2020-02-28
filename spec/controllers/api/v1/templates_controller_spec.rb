@@ -2,29 +2,26 @@ require "spec_helper"
 
 RSpec.describe Api::V1::TemplatesController do
   describe "GET index" do
-    def create_search_templates
-      create(:template, name: 'baa') # firsttemplate
-      create(:template, name: 'aba') # midtemplate
-      create(:template, name: 'aab') # endtemplate
-      create(:template, name: 'aaa') # nottemplate
-      Template.all.each do |template|
-        create(:template, name: template.name.upcase + 'c')
+    context "with search" do
+      before(:each) do
+        ['baa', 'aba', 'aab', 'aaa'].each do |name|
+          create(:template, name: name)
+          create(:template, name: name.upcase + 'c')
+        end
       end
-    end
 
-    it "works logged in" do
-      create_search_templates
-      login
-      get :index
-      expect(response).to have_http_status(200)
-      expect(response.json['results'].count).to eq(8)
-    end
+      it "works logged in" do
+        login
+        get :index
+        expect(response).to have_http_status(200)
+        expect(response.json['results'].count).to eq(8)
+      end
 
-    it "works logged out", show_in_doc: true do
-      create_search_templates
-      get :index, params: { q: 'b' }
-      expect(response).to have_http_status(200)
-      expect(response.json['results'].count).to eq(2)
+      it "works logged out", show_in_doc: true do
+        get :index, params: { q: 'b' }
+        expect(response).to have_http_status(200)
+        expect(response.json['results'].count).to eq(2)
+      end
     end
 
     it "raises error on invalid page", show_in_doc: true do

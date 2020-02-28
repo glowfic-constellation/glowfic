@@ -271,13 +271,6 @@ RSpec.describe Api::V1::CharactersController do
       expect(response.json['errors'][0]['message']).to eq("You must be logged in to view that page.")
     end
 
-    it "requires valid character", :show_in_doc do
-      login
-      put :update, params: { id: -1 }
-      expect(response).to have_http_status(404)
-      expect(response.json['errors'][0]['message']).to eq("Character could not be found.")
-    end
-
     it "requires permission", :show_in_doc do
       login
       put :update, params: { id: character.id }
@@ -285,49 +278,52 @@ RSpec.describe Api::V1::CharactersController do
       expect(response.json['errors'][0]['message']).to eq("You do not have permission to perform this action.")
     end
 
-    it "does not change icon if invalid icon provided" do
-      login_as(user)
-      put :update, params: { id: character.id, character: {default_icon_id: -1} }
-      expect(response).to have_http_status(422)
-      expect(response.json['errors'][0]['message']).to eq("Default icon could not be found")
-      expect(character.reload.default_icon_id).to eq(icon.id)
-    end
+    context "when logged in" do
+      before(:each) { login_as(user) }
 
-    it "does not change icon if someone else's icon provided" do
-      login_as(user)
-      put :update, params: { id: character.id, character: {default_icon_id: create(:icon).id} }
-      expect(response).to have_http_status(422)
-      expect(response.json['errors'][0]['message']).to eq("Default icon must be yours")
-      expect(character.reload.default_icon_id).to eq(icon.id)
-    end
+      it "requires valid character", :show_in_doc do
+        put :update, params: { id: -1 }
+        expect(response).to have_http_status(404)
+        expect(response.json['errors'][0]['message']).to eq("Character could not be found.")
+      end
 
-    it "removes icon successfully with empty icon_id" do
-      login_as(user)
-      put :update, params: { id: character.id, character: {default_icon_id: ''} }
-      expect(response.status).to eq(200)
-      expect(response.json['name']).to eq(character.name)
-      expect(character.reload.default_icon_id).to be_nil
-    end
+      it "does not change icon if invalid icon provided" do
+        put :update, params: { id: character.id, character: {default_icon_id: -1} }
+        expect(response).to have_http_status(422)
+        expect(response.json['errors'][0]['message']).to eq("Default icon could not be found")
+        expect(character.reload.default_icon_id).to eq(icon.id)
+      end
 
-    it "changes icon if valid", :show_in_doc do
-      login_as(user)
+      it "does not change icon if someone else's icon provided" do
+        put :update, params: { id: character.id, character: {default_icon_id: create(:icon).id} }
+        expect(response).to have_http_status(422)
+        expect(response.json['errors'][0]['message']).to eq("Default icon must be yours")
+        expect(character.reload.default_icon_id).to eq(icon.id)
+      end
 
-      put :update, params: { id: character.id, character: {default_icon_id: new_icon.id} }
+      it "removes icon successfully with empty icon_id" do
+        put :update, params: { id: character.id, character: {default_icon_id: ''} }
+        expect(response.status).to eq(200)
+        expect(response.json['name']).to eq(character.name)
+        expect(character.reload.default_icon_id).to be_nil
+      end
 
-      expect(response.status).to eq(200)
-      expect(response.json['name']).to eq(character.name)
-      expect(character.reload.default_icon_id).to eq(new_icon.id)
-    end
+      it "changes icon if valid", :show_in_doc do
+        put :update, params: { id: character.id, character: {default_icon_id: new_icon.id} }
 
-    it "handles validation failures and invalid params", :show_in_doc do
-      login_as(user)
+        expect(response.status).to eq(200)
+        expect(response.json['name']).to eq(character.name)
+        expect(character.reload.default_icon_id).to eq(new_icon.id)
+      end
 
-      put :update, params: { id: character.id, character: {default_icon_id: new_icon.id, name: '', user_id: nil} }
+      it "handles validation failures and invalid params", :show_in_doc do
+        put :update, params: { id: character.id, character: {default_icon_id: new_icon.id, name: '', user_id: nil} }
 
-      expect(response.status).to eq(422)
-      expect(response.json['errors'][0]['message']).to eq("Name can't be blank")
-      expect(character.reload.default_icon_id).to eq(icon.id)
-      expect(character.reload.user_id).to eq(icon.user_id)
+        expect(response.status).to eq(422)
+        expect(response.json['errors'][0]['message']).to eq("Name can't be blank")
+        expect(character.reload.default_icon_id).to eq(icon.id)
+        expect(character.reload.user_id).to eq(icon.user_id)
+      end
     end
   end
 
