@@ -376,10 +376,9 @@ RSpec.describe Api::V1::CharactersController do
     it "requires valid section ids" do
       expect(char_gal1.reload.section_order).to eq(0)
       expect(char_gal2.reload.section_order).to eq(1)
-      section_ids = [-1]
 
       login_as(user)
-      post :reorder, params: { ordered_characters_gallery_ids: section_ids }
+      post :reorder, params: { ordered_characters_gallery_ids: [-1] }
       expect(response).to have_http_status(404)
       expect(response.json['errors'][0]['message']).to eq('Some character galleries could not be found: -1')
       expect(char_gal1.reload.section_order).to eq(0)

@@ -50,10 +50,9 @@ RSpec.describe Api::V1::BoardSectionsController do
     it "requires valid section ids" do
       expect(section1.reload.section_order).to eq(0)
       expect(section2.reload.section_order).to eq(1)
-      section_ids = [-1]
 
       login_as(user)
-      post :reorder, params: { ordered_section_ids: section_ids }
+      post :reorder, params: { ordered_section_ids: [-1] }
       expect(response).to have_http_status(404)
       expect(response.json['errors'][0]['message']).to eq('Some sections could not be found: -1')
       expect(section1.reload.section_order).to eq(0)

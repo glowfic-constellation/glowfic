@@ -40,10 +40,8 @@ RSpec.describe Api::V1::TemplatesController do
     end
 
     it "finds only user's templates", show_in_doc: true do
-      user = create(:user)
-      notuser = create(:user)
-      template = create(:template, user: user)
-      create(:template, user: notuser) # nottemplate
+      template = create(:template)
+      create(:template)
 
       get :index, params: { user_id: template.user_id }
       expect(response.json['results'].count).to eq(1)

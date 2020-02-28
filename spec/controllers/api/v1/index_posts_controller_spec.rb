@@ -67,12 +67,8 @@ RSpec.describe Api::V1::IndexPostsController do
       end
 
       it "requires valid post_ids" do
-        expect(post1.reload.section_order).to eq(0)
-        expect(post2.reload.section_order).to eq(1)
-
-        post_ids = [-1]
         login_as(user)
-        post :reorder, params: { ordered_post_ids: post_ids }
+        post :reorder, params: { ordered_post_ids: [-1] }
         expect(response).to have_http_status(404)
         expect(response.json['errors'][0]['message']).to eq('Some posts could not be found: -1')
       end
@@ -202,12 +198,8 @@ RSpec.describe Api::V1::IndexPostsController do
       end
 
       it "requires valid post_ids" do
-        expect(post1.reload.section_order).to eq(0)
-        expect(post2.reload.section_order).to eq(1)
-
-        post_ids = [-1]
         login_as(user)
-        post :reorder, params: { ordered_post_ids: post_ids, section_id: index_section.id }
+        post :reorder, params: { ordered_post_ids: [-1], section_id: index_section.id }
         expect(response).to have_http_status(404)
         expect(response.json['errors'][0]['message']).to eq('Some posts could not be found: -1')
       end
