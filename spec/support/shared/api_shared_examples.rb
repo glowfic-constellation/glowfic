@@ -17,85 +17,65 @@ RSpec.shared_examples "reorder" do |parent, child|
   end
 
   it "requires a #{parent_name} you have access to" do
-    expect(child1.reload.order).to eq(0)
-    expect(child2.reload.order).to eq(1)
-
     post_ids = [child2, child1].map(&:id)
-
     login
-    post :reorder, params: { ordered_ids => post_ids }
+
+    expect { post :reorder, params: { ordered_ids => post_ids } }
+      .not_to change{[child1, child2].map(&:reload).map(&:order)}
+
     expect(response).to have_http_status(403)
-    expect(child1.reload.order).to eq(0)
-    expect(child2.reload.order).to eq(1)
   end
 
   it "requires a single #{parent_name}" do
     child6 = create(child, parent => parent2)
 
-    expect(child1.reload.order).to eq(0)
-    expect(child5.reload.order).to eq(0)
-    expect(child6.reload.order).to eq(1)
-
     post_ids = [child6, child5, child1].map(&:id)
     login_as(user)
-    post :reorder, params: { ordered_ids => post_ids }
+
+    expect { post :reorder, params: { ordered_ids => post_ids } }
+      .not_to change{[child1, child5, child6].map(&:reload).map(&:order)}
+
     expect(response).to have_http_status(422)
     expect(response.json['errors'][0]['message']).to eq("#{child_name.capitalize.pluralize} must be from one #{parent_name}")
-    expect(child1.reload.order).to eq(0)
-    expect(child5.reload.order).to eq(0)
-    expect(child6.reload.order).to eq(1)
   end
 
   it "requires valid ids" do
-    expect(child1.reload.order).to eq(0)
-    expect(child2.reload.order).to eq(1)
-
     login_as(user)
-    post :reorder, params: { ordered_ids => [-1] }
+
+    expect { post :reorder, params: { ordered_ids => [-1] } }
+      .not_to change{[child1, child2].map(&:reload).map(&:order)}
+
     expect(response).to have_http_status(404)
     expect(response.json['errors'][0]['message']).to eq("Some #{child_name.pluralize} could not be found: -1")
-    expect(child1.reload.order).to eq(0)
-    expect(child2.reload.order).to eq(1)
   end
 
   it "works for valid changes", :show_in_doc do
-    expect(child1.reload.order).to eq(0)
-    expect(child2.reload.order).to eq(1)
-    expect(child3.reload.order).to eq(2)
-    expect(child4.reload.order).to eq(3)
-    expect(child5.reload.order).to eq(0)
-
     post_ids = [child3, child1, child4, child2].map(&:id)
-
     login_as(user)
-    post :reorder, params: { ordered_ids => post_ids }
+
+    expect { post :reorder, params: { ordered_ids => post_ids } }
+      .to change{ child1.reload.order }.from(0).to(1)
+      .and change{ child2.reload.order }.from(1).to(3)
+      .and change{ child3.reload.order }.from(2).to(0)
+      .and change{ child4.reload.order }.from(3).to(2)
+      .and not_change{ child5.reload.order }
+
     expect(response).to have_http_status(200)
     expect(response.json).to eq({ids_name => post_ids})
-    expect(child1.reload.order).to eq(1)
-    expect(child2.reload.order).to eq(3)
-    expect(child3.reload.order).to eq(0)
-    expect(child4.reload.order).to eq(2)
-    expect(child5.reload.order).to eq(0)
   end
 
   it "works when specifying valid subset", :show_in_doc do
-    expect(child1.reload.order).to eq(0)
-    expect(child2.reload.order).to eq(1)
-    expect(child3.reload.order).to eq(2)
-    expect(child4.reload.order).to eq(3)
-    expect(child5.reload.order).to eq(0)
-
     post_ids = [child3, child1].map(&:id)
-
     login_as(user)
-    post :reorder, params: { ordered_ids => post_ids }
+
+    expect { post :reorder, params: { ordered_ids => post_ids } }
+      .to change{ child1.reload.order }.from(0).to(1)
+      .and change{ child2.reload.order }.from(1).to(2)
+      .and change{ child3.reload.order }.from(2).to(0)
+      .and not_change{ [child5.reload.order, child4.reload.order] }
+
     expect(response).to have_http_status(200)
     expect(response.json).to eq({ids_name => [child3, child1, child2, child4].map(&:id)})
-    expect(child1.reload.order).to eq(1)
-    expect(child2.reload.order).to eq(2)
-    expect(child3.reload.order).to eq(0)
-    expect(child4.reload.order).to eq(3)
-    expect(child5.reload.order).to eq(0)
   end
 end
 
@@ -114,74 +94,59 @@ RSpec.shared_examples "reorder with sections" do |grandparent, parent, child, pa
   let(:error_message) { "Posts must be from one specified #{parent_name} in the #{grandparent_name}, or no #{parent_name}" }
 
   it "requires a #{grandparent_name} you have access to" do
-    expect(child1.reload.order).to eq(0)
-    expect(child2.reload.order).to eq(1)
-
     post_ids = [child2, child1].map(&:id)
-
     login
-    post :reorder, params: { ordered_ids => post_ids, parent_id => parent1.id }
+
+    expect { post :reorder, params: { ordered_ids => post_ids, parent_id => parent1.id } }
+      .not_to change{[child1, child2].map(&:reload).map(&:order)}
+
     expect(response).to have_http_status(403)
-    expect(child1.reload.order).to eq(0)
-    expect(child2.reload.order).to eq(1)
   end
 
   it "requires a single #{parent_name}" do
     child6 = create(child, grandparent => grandparent1, parent => parent2)
-
-    expect(child1.reload.order).to eq(0)
-    expect(child5.reload.order).to eq(0)
-    expect(child6.reload.order).to eq(1)
-
     post_ids = [child6, child5, child1].map(&:id)
     login_as(user)
-    post :reorder, params: { ordered_ids => post_ids, parent_id => parent1.id }
+
+    expect { post :reorder, params: { ordered_ids => post_ids, parent_id => parent1.id } }
+      .not_to change{[child1, child5, child6].map(&:reload).map(&:order)}
+
     expect(response).to have_http_status(422)
     expect(response.json['errors'][0]['message']).to eq(error_message)
-    expect(child1.reload.order).to eq(0)
-    expect(child5.reload.order).to eq(0)
-    expect(child6.reload.order).to eq(1)
   end
 
   it "requires valid #{parent_name} id" do
-    expect(child1.reload.order).to eq(0)
-    expect(child2.reload.order).to eq(1)
-
     post_ids = [child2.id, child1.id]
     login_as(user)
-    post :reorder, params: { ordered_ids => post_ids, parent_id => 0 }
+
+    expect { post :reorder, params: { ordered_ids => post_ids, parent_id => 0 } }
+      .not_to change{[child1, child2].map(&:reload).map(&:order)}
+
     expect(response.json['errors'][0]['message']).to eq(error_message)
-    expect(child1.reload.order).to eq(0)
-    expect(child2.reload.order).to eq(1)
   end
 
   it "requires correct #{parent_name} id" do
-    expect(child1.reload.order).to eq(0)
-    expect(child2.reload.order).to eq(1)
-
     post_ids = [child2, child1].map(&:id)
     login_as(user)
-    post :reorder, params: { ordered_ids => post_ids, parent_id => parent2.id }
+    expect { post :reorder, params: { ordered_ids => post_ids, parent_id => parent2.id } }
+      .not_to change{[child1, child2].map(&:reload).map(&:order)}
+
     expect(response).to have_http_status(422)
     expect(response.json['errors'][0]['message']).to eq(error_message)
-    expect(child1.reload.order).to eq(0)
-    expect(child2.reload.order).to eq(1)
   end
 
   it "requires no #{parent_name} id if posts not in #{parent}" do
     child1 = create(child, grandparent => grandparent1)
     child2 = create(child, grandparent => grandparent1)
 
-    expect(child1.reload.order).to eq(0)
-    expect(child2.reload.order).to eq(1)
-
     post_ids = [child2.id, child1.id]
     login_as(user)
-    post :reorder, params: { ordered_ids => post_ids, parent_id => parent1.id }
+
+    expect { post :reorder, params: { ordered_ids => post_ids, parent_id => parent1.id } }
+      .not_to change{[child1, child2].map(&:reload).map(&:order)}
+
     expect(response).to have_http_status(422)
     expect(response.json['errors'][0]['message']).to eq(error_message)
-    expect(child1.reload.order).to eq(0)
-    expect(child2.reload.order).to eq(1)
   end
 
   it "requires valid ids" do
@@ -192,42 +157,31 @@ RSpec.shared_examples "reorder with sections" do |grandparent, parent, child, pa
   end
 
   it "works for valid changes", :show_in_doc do
-    expect(child1.reload.order).to eq(0)
-    expect(child2.reload.order).to eq(1)
-    expect(child3.reload.order).to eq(2)
-    expect(child4.reload.order).to eq(3)
-    expect(child5.reload.order).to eq(0)
-
     post_ids = [child3, child1, child4, child2].map(&:id)
 
     login_as(user)
-    post :reorder, params: { ordered_ids => post_ids, parent_id => parent1.id }
+    expect { post :reorder, params: { ordered_ids => post_ids, parent_id => parent1.id } }
+      .to change{ child1.reload.order }.from(0).to(1)
+      .and change{ child2.reload.order }.from(1).to(3)
+      .and change{ child3.reload.order }.from(2).to(0)
+      .and change{ child4.reload.order }.from(3).to(2)
+      .and not_change{ child5.reload.order }
+
     expect(response).to have_http_status(200)
     expect(response.json).to eq({ids_name => post_ids})
-    expect(child1.reload.order).to eq(1)
-    expect(child2.reload.order).to eq(3)
-    expect(child3.reload.order).to eq(0)
-    expect(child4.reload.order).to eq(2)
-    expect(child5.reload.order).to eq(0)
   end
 
   it "works when specifying valid subset", :show_in_doc do
-    expect(child1.reload.order).to eq(0)
-    expect(child2.reload.order).to eq(1)
-    expect(child3.reload.order).to eq(2)
-    expect(child4.reload.order).to eq(3)
-    expect(child5.reload.order).to eq(0)
-
     post_ids = [child3, child1].map(&:id)
-
     login_as(user)
-    post :reorder, params: { ordered_ids => post_ids, parent_id => parent1.id }
+
+    expect { post :reorder, params: { ordered_ids => post_ids, parent_id => parent1.id } }
+      .to change{ child1.reload.order }.from(0).to(1)
+      .and change{ child2.reload.order }.from(1).to(2)
+      .and change{ child3.reload.order }.from(2).to(0)
+      .and not_change{ [child5.reload.order, child4.reload.order] }
+
     expect(response).to have_http_status(200)
     expect(response.json).to eq({ids_name => [child3, child1, child2, child4].map(&:id)})
-    expect(child1.reload.order).to eq(1)
-    expect(child2.reload.order).to eq(2)
-    expect(child3.reload.order).to eq(0)
-    expect(child4.reload.order).to eq(3)
-    expect(child5.reload.order).to eq(0)
   end
 end
