@@ -2,6 +2,15 @@ require "spec_helper"
 
 RSpec.describe Api::V1::BoardSectionsController do
   describe "POST reorder" do
+    let(:user) { create(:user) }
+    let(:board) { create(:board, creator: user) }
+    let(:board2) { create(:board, creator: user) }
+    let!(:section1) { create(:board_section, board: board) }
+    let!(:section2) { create(:board_section, board: board) }
+    let!(:section3) { create(:board_section, board: board) }
+    let!(:section4) { create(:board_section, board: board) }
+    let!(:section5) { create(:board_section, board: board2) }
+
     it "requires login", :show_in_doc do
       post :reorder
       expect(response).to have_http_status(401)
@@ -9,9 +18,6 @@ RSpec.describe Api::V1::BoardSectionsController do
     end
 
     it "requires a board you have access to" do
-      board = create(:board)
-      section1 = create(:board_section, board_id: board.id)
-      section2 = create(:board_section, board_id: board.id)
       expect(section1.reload.section_order).to eq(0)
       expect(section2.reload.section_order).to eq(1)
 
@@ -25,16 +31,11 @@ RSpec.describe Api::V1::BoardSectionsController do
     end
 
     it "requires a single board" do
-      user = create(:user)
-      board1 = create(:board, creator: user)
-      board2 = create(:board, creator: user)
-      section1 = create(:board_section, board_id: board1.id)
-      section2 = create(:board_section, board_id: board2.id)
-      section3 = create(:board_section, board_id: board2.id)
+      section6 = create(:board_section, board: board2)
 
       expect(section1.reload.section_order).to eq(0)
-      expect(section2.reload.section_order).to eq(0)
-      expect(section3.reload.section_order).to eq(1)
+      expect(section5.reload.section_order).to eq(0)
+      expect(section6.reload.section_order).to eq(1)
 
       section_ids = [section3.id, section2.id, section1.id]
       login_as(user)
@@ -42,19 +43,16 @@ RSpec.describe Api::V1::BoardSectionsController do
       expect(response).to have_http_status(422)
       expect(response.json['errors'][0]['message']).to eq('Sections must be from one board')
       expect(section1.reload.section_order).to eq(0)
-      expect(section2.reload.section_order).to eq(0)
-      expect(section3.reload.section_order).to eq(1)
+      expect(section5.reload.section_order).to eq(0)
+      expect(section6.reload.section_order).to eq(1)
     end
 
     it "requires valid section ids" do
-      board = create(:board)
-      section1 = create(:board_section, board_id: board.id)
-      section2 = create(:board_section, board_id: board.id)
       expect(section1.reload.section_order).to eq(0)
       expect(section2.reload.section_order).to eq(1)
       section_ids = [-1]
 
-      login_as(board.creator)
+      login_as(user)
       post :reorder, params: { ordered_section_ids: section_ids }
       expect(response).to have_http_status(404)
       expect(response.json['errors'][0]['message']).to eq('Some sections could not be found: -1')
@@ -63,14 +61,6 @@ RSpec.describe Api::V1::BoardSectionsController do
     end
 
     it "works for valid changes", :show_in_doc do
-      board = create(:board)
-      board2 = create(:board, creator: board.creator)
-      section1 = create(:board_section, board_id: board.id)
-      section2 = create(:board_section, board_id: board.id)
-      section3 = create(:board_section, board_id: board.id)
-      section4 = create(:board_section, board_id: board.id)
-      section5 = create(:board_section, board_id: board2.id)
-
       expect(section1.reload.section_order).to eq(0)
       expect(section2.reload.section_order).to eq(1)
       expect(section3.reload.section_order).to eq(2)
@@ -79,7 +69,7 @@ RSpec.describe Api::V1::BoardSectionsController do
 
       section_ids = [section3.id, section1.id, section4.id, section2.id]
 
-      login_as(board.creator)
+      login_as(user)
       post :reorder, params: { ordered_section_ids: section_ids }
       expect(response).to have_http_status(200)
       expect(response.json).to eq({'section_ids' => section_ids})
@@ -91,14 +81,6 @@ RSpec.describe Api::V1::BoardSectionsController do
     end
 
     it "works when specifying valid subset", :show_in_doc do
-      board = create(:board)
-      board2 = create(:board, creator: board.creator)
-      section1 = create(:board_section, board_id: board.id)
-      section2 = create(:board_section, board_id: board.id)
-      section3 = create(:board_section, board_id: board.id)
-      section4 = create(:board_section, board_id: board.id)
-      section5 = create(:board_section, board_id: board2.id)
-
       expect(section1.reload.section_order).to eq(0)
       expect(section2.reload.section_order).to eq(1)
       expect(section3.reload.section_order).to eq(2)
@@ -107,7 +89,7 @@ RSpec.describe Api::V1::BoardSectionsController do
 
       section_ids = [section3.id, section1.id]
 
-      login_as(board.creator)
+      login_as(user)
       post :reorder, params: { ordered_section_ids: section_ids }
       expect(response).to have_http_status(200)
       expect(response.json).to eq({'section_ids' => [section3.id, section1.id, section2.id, section4.id]})

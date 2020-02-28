@@ -3,8 +3,9 @@ require "spec_helper"
 RSpec.describe Api::V1::PostsController do
   describe "GET index" do
     shared_examples_for "index.json" do |in_doc|
+      let!(:post) { create(:post, subject: 'search') }
+
       it "should support no search", show_in_doc: in_doc do
-        post = create(:post)
         get :index
         expect(response).to have_http_status(200)
         expect(response.json).to have_key('results')
@@ -12,8 +13,7 @@ RSpec.describe Api::V1::PostsController do
       end
 
       it "should support search", show_in_doc: in_doc do
-        post = create(:post, subject: 'search')
-        create(:post, subject: 'no') # post2
+        create(:post, subject: 'no')
         get :index, params: { q: 'se' }
         expect(response).to have_http_status(200)
         expect(response.json).to have_key('results')
@@ -22,7 +22,6 @@ RSpec.describe Api::V1::PostsController do
 
       it "hides private posts" do
         create(:post, privacy: Concealable::PRIVATE)
-        post = create(:post)
         get :index
         expect(response).to have_http_status(200)
         expect(response.json).to have_key('results')
@@ -71,6 +70,10 @@ RSpec.describe Api::V1::PostsController do
   end
 
   describe "POST reorder" do
+    let(:user) { create(:user) }
+    let(:board) { create(:board, creator: user) }
+    let(:board2) { create(:board, creator: user) }
+
     it "requires login", :show_in_doc do
       post :reorder
       expect(response).to have_http_status(401)
@@ -78,10 +81,13 @@ RSpec.describe Api::V1::PostsController do
     end
 
     context "without section_id" do
+      let!(:post1) { create(:post, board: board) }
+      let!(:post2) { create(:post, board: board) }
+      let!(:post3) { create(:post, board: board) }
+      let!(:post4) { create(:post, board: board) }
+      let!(:post5) { create(:post, board: board2) }
+
       it "requires a board you have access to" do
-        board = create(:board)
-        post1 = create(:post, board_id: board.id)
-        post2 = create(:post, board_id: board.id)
         expect(post1.reload.section_order).to eq(0)
         expect(post2.reload.section_order).to eq(1)
 
@@ -95,16 +101,11 @@ RSpec.describe Api::V1::PostsController do
       end
 
       it "requires a single board without section_id" do
-        user = create(:user)
-        board1 = create(:board, creator: user)
-        board2 = create(:board, creator: user)
-        post1 = create(:post, board_id: board1.id)
-        post2 = create(:post, board_id: board2.id)
-        post3 = create(:post, board_id: board2.id)
+        post6 = create(:post, board: board2)
 
         expect(post1.reload.section_order).to eq(0)
-        expect(post2.reload.section_order).to eq(0)
-        expect(post3.reload.section_order).to eq(1)
+        expect(post5.reload.section_order).to eq(0)
+        expect(post6.reload.section_order).to eq(1)
 
         post_ids = [post3.id, post2.id, post1.id]
         login_as(user)
@@ -112,13 +113,11 @@ RSpec.describe Api::V1::PostsController do
         expect(response).to have_http_status(422)
         expect(response.json['errors'][0]['message']).to eq('Posts must be from one board')
         expect(post1.reload.section_order).to eq(0)
-        expect(post2.reload.section_order).to eq(0)
-        expect(post3.reload.section_order).to eq(1)
+        expect(post5.reload.section_order).to eq(0)
+        expect(post6.reload.section_order).to eq(1)
       end
 
       it "requires section_id if posts in section" do
-        user = create(:user)
-        board = create(:board, creator: user)
         section = create(:board_section, board_id: board.id)
         post1 = create(:post, board_id: board.id, section_id: section.id)
         post2 = create(:post, board_id: board.id, section_id: section.id)
@@ -136,10 +135,6 @@ RSpec.describe Api::V1::PostsController do
       end
 
       it "requires valid post_ids" do
-        user = create(:user)
-        board = create(:board, creator: user)
-        post1 = create(:post, board_id: board.id)
-        post2 = create(:post, board_id: board.id)
         expect(post1.reload.section_order).to eq(0)
         expect(post2.reload.section_order).to eq(1)
 
@@ -151,14 +146,6 @@ RSpec.describe Api::V1::PostsController do
       end
 
       it "works for valid changes", :show_in_doc do
-        board = create(:board)
-        board2 = create(:board, creator: board.creator)
-        post1 = create(:post, board_id: board.id)
-        post2 = create(:post, board_id: board.id)
-        post3 = create(:post, board_id: board.id)
-        post4 = create(:post, board_id: board.id)
-        post5 = create(:post, board_id: board2.id)
-
         expect(post1.reload.section_order).to eq(0)
         expect(post2.reload.section_order).to eq(1)
         expect(post3.reload.section_order).to eq(2)
@@ -179,14 +166,6 @@ RSpec.describe Api::V1::PostsController do
       end
 
       it "works when specifying valid subset", :show_in_doc do
-        board = create(:board)
-        board2 = create(:board, creator: board.creator)
-        post1 = create(:post, board_id: board.id)
-        post2 = create(:post, board_id: board.id)
-        post3 = create(:post, board_id: board.id)
-        post4 = create(:post, board_id: board.id)
-        post5 = create(:post, board_id: board2.id)
-
         expect(post1.reload.section_order).to eq(0)
         expect(post2.reload.section_order).to eq(1)
         expect(post3.reload.section_order).to eq(2)
@@ -208,11 +187,15 @@ RSpec.describe Api::V1::PostsController do
     end
 
     context "with section_id" do
+      let(:section) { create(:board_section, board: board) }
+      let(:section2) { create(:board_section, board: board) }
+      let!(:post1) { create(:post, board: board, section: section) }
+      let!(:post2) { create(:post, board: board, section: section) }
+      let!(:post3) { create(:post, board: board, section: section) }
+      let!(:post4) { create(:post, board: board, section: section) }
+      let!(:post5) { create(:post, board: board, section: section2) }
+
       it "requires a board you have access to" do
-        board = create(:board)
-        section = create(:board_section, board_id: board.id)
-        post1 = create(:post, board_id: board.id, section_id: section.id)
-        post2 = create(:post, board_id: board.id, section_id: section.id)
         expect(post1.reload.section_order).to eq(0)
         expect(post2.reload.section_order).to eq(1)
 
@@ -226,35 +209,23 @@ RSpec.describe Api::V1::PostsController do
       end
 
       it "requires a single section" do
-        user = create(:user)
-        board = create(:board, creator: user)
-        board_section1 = create(:board_section, board_id: board.id)
-        board_section2 = create(:board_section, board_id: board.id)
-        post1 = create(:post, board_id: board.id, section_id: board_section1.id)
-        post2 = create(:post, board_id: board.id, section_id: board_section2.id)
-        post3 = create(:post, board_id: board.id, section_id: board_section2.id)
+        post6 = create(:post, board: board, section: section2)
 
         expect(post1.reload.section_order).to eq(0)
-        expect(post2.reload.section_order).to eq(0)
-        expect(post3.reload.section_order).to eq(1)
+        expect(post5.reload.section_order).to eq(0)
+        expect(post6.reload.section_order).to eq(1)
 
-        post_ids = [post3.id, post2.id, post1.id]
+        post_ids = [post6, post5, post1].map(&:id)
         login_as(user)
-        post :reorder, params: { ordered_post_ids: post_ids, section_id: board_section1.id }
+        post :reorder, params: { ordered_post_ids: post_ids, section_id: section.id }
         expect(response).to have_http_status(422)
         expect(response.json['errors'][0]['message']).to eq('Posts must be from one specified section in the board, or no section')
         expect(post1.reload.section_order).to eq(0)
-        expect(post2.reload.section_order).to eq(0)
-        expect(post3.reload.section_order).to eq(1)
+        expect(post5.reload.section_order).to eq(0)
+        expect(post6.reload.section_order).to eq(1)
       end
 
       it "requires valid section id" do
-        user = create(:user)
-        board = create(:board, creator: user)
-        section = create(:board_section, board_id: board.id)
-        post1 = create(:post, board_id: board.id, section_id: section.id)
-        post2 = create(:post, board_id: board.id, section_id: section.id)
-
         expect(post1.reload.section_order).to eq(0)
         expect(post2.reload.section_order).to eq(1)
 
@@ -268,34 +239,21 @@ RSpec.describe Api::V1::PostsController do
       end
 
       it "requires correct section id" do
-        user = create(:user)
-        board = create(:board, creator: user)
-        board_section1 = create(:board_section, board_id: board.id)
-        board_section2 = create(:board_section, board_id: board.id)
-        post1 = create(:post, board_id: board.id, section_id: board_section1.id)
-        post2 = create(:post, board_id: board.id, section_id: board_section2.id)
-        post3 = create(:post, board_id: board.id, section_id: board_section2.id)
-
         expect(post1.reload.section_order).to eq(0)
-        expect(post2.reload.section_order).to eq(0)
-        expect(post3.reload.section_order).to eq(1)
+        expect(post2.reload.section_order).to eq(1)
 
         post_ids = [post3.id, post2.id]
         login_as(user)
-        post :reorder, params: { ordered_post_ids: post_ids, section_id: board_section1.id }
+        post :reorder, params: { ordered_post_ids: post_ids, section_id: section2.id }
         expect(response).to have_http_status(422)
         expect(response.json['errors'][0]['message']).to eq('Posts must be from one specified section in the board, or no section')
         expect(post1.reload.section_order).to eq(0)
-        expect(post2.reload.section_order).to eq(0)
-        expect(post3.reload.section_order).to eq(1)
+        expect(post2.reload.section_order).to eq(1)
       end
 
       it "requires no section_id if posts not in section" do
-        user = create(:user)
-        board = create(:board, creator: user)
-        section = create(:board_section, board_id: board.id)
-        post1 = create(:post, board_id: board.id)
-        post2 = create(:post, board_id: board.id)
+        post1 = create(:post, board: board)
+        post2 = create(:post, board: board)
 
         expect(post1.reload.section_order).to eq(0)
         expect(post2.reload.section_order).to eq(1)
@@ -310,11 +268,6 @@ RSpec.describe Api::V1::PostsController do
       end
 
       it "requires valid post_ids" do
-        user = create(:user)
-        board = create(:board, creator: user)
-        section = create(:board_section, board_id: board.id)
-        post1 = create(:post, board_id: board.id, section_id: section.id)
-        post2 = create(:post, board_id: board.id, section_id: section.id)
         expect(post1.reload.section_order).to eq(0)
         expect(post2.reload.section_order).to eq(1)
 
@@ -326,15 +279,6 @@ RSpec.describe Api::V1::PostsController do
       end
 
       it "works for valid changes", :show_in_doc do
-        board = create(:board)
-        section = create(:board_section, board_id: board.id)
-        section2 = create(:board_section, board_id: board.id)
-        post1 = create(:post, board_id: board.id, section_id: section.id)
-        post2 = create(:post, board_id: board.id, section_id: section.id)
-        post3 = create(:post, board_id: board.id, section_id: section.id)
-        post4 = create(:post, board_id: board.id, section_id: section.id)
-        post5 = create(:post, board_id: board.id, section_id: section2.id)
-
         expect(post1.reload.section_order).to eq(0)
         expect(post2.reload.section_order).to eq(1)
         expect(post3.reload.section_order).to eq(2)
@@ -355,15 +299,6 @@ RSpec.describe Api::V1::PostsController do
       end
 
       it "works when specifying valid subset", :show_in_doc do
-        board = create(:board)
-        section = create(:board_section, board_id: board.id)
-        section2 = create(:board_section, board_id: board.id)
-        post1 = create(:post, board_id: board.id, section_id: section.id)
-        post2 = create(:post, board_id: board.id, section_id: section.id)
-        post3 = create(:post, board_id: board.id, section_id: section.id)
-        post4 = create(:post, board_id: board.id, section_id: section.id)
-        post5 = create(:post, board_id: board.id, section_id: section2.id)
-
         expect(post1.reload.section_order).to eq(0)
         expect(post2.reload.section_order).to eq(1)
         expect(post3.reload.section_order).to eq(2)

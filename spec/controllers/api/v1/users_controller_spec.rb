@@ -84,6 +84,8 @@ RSpec.describe Api::V1::UsersController do
   end
 
   describe 'GET posts' do
+    let(:user) { create(:user) }
+
     it 'requires a valid user', show_in_doc: true do
       get :posts, params: { id: 0 }
       expect(response).to have_http_status(404)
@@ -92,7 +94,6 @@ RSpec.describe Api::V1::UsersController do
     end
 
     it 'filters non-public posts' do
-      user = create(:user)
       public_post = create(:post, privacy: Concealable::PUBLIC, user: user)
       create(:post, privacy: Concealable::PRIVATE, user: user)
       get :posts, params: { id: user.id }
@@ -102,7 +103,6 @@ RSpec.describe Api::V1::UsersController do
     end
 
     it 'returns only the correct posts', show_in_doc: true do
-      user = create(:user)
       board = create(:board)
       user_post = create(:post, user: user, board: board, section: create(:board_section, board: board))
       create(:post, user: create(:user))
@@ -115,14 +115,12 @@ RSpec.describe Api::V1::UsersController do
     end
 
     it 'paginates results' do
-      user = create(:user)
       create_list(:post, 26, user: user)
       get :posts, params: { id: user.id }
       expect(response.json['results'].size).to eq(25)
     end
 
     it 'paginates results on additional pages' do
-      user = create(:user)
       create_list(:post, 27, user: user)
       get :posts, params: { id: user.id, page: 2 }
       expect(response.json['results'].size).to eq(2)
