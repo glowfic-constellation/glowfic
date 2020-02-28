@@ -23,7 +23,10 @@ FactoryBot.define do
   end
 
   factory :board do
-    creator
+    transient do
+      user { nil }
+    end
+    creator { user || create(:user) }
     authors_locked { writer_ids.present? || writers.present? }
     sequence :name do |n|
       "test board #{n}"
