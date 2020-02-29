@@ -1,4 +1,5 @@
 require "spec_helper"
+require "support/shared_examples/controller"
 
 RSpec.describe BoardsController do
   include ActiveJob::TestHelper
@@ -127,20 +128,7 @@ RSpec.describe BoardsController do
   end
 
   describe "POST create" do
-    it "requires login" do
-      post :create
-      expect(response).to redirect_to(root_url)
-      expect(flash[:error]).to eq("You must be logged in to view that page.")
-    end
-
-    it "requires valid params" do
-      login
-      post :create
-      expect(response.status).to eq(200)
-      expect(flash[:error][:message]).to eq("Continuity could not be created.")
-      expect(flash[:error][:array]).to be_present
-      expect(response).to render_template('new')
-    end
+    include_examples "POST create validations", 'board', 'continuity'
 
     it "sets correct variables on failure" do
       login
@@ -194,24 +182,9 @@ RSpec.describe BoardsController do
   end
 
   describe "GET show" do
-    it "requires valid board" do
-      get :show, params: { id: -1 }
-      expect(response).to redirect_to(boards_url)
-      expect(flash[:error]).to eq("Continuity could not be found.")
-    end
+    let(:redirect) { boards_url }
 
-    it "succeeds with valid board" do
-      board = create(:board)
-      get :show, params: { id: board.id }
-      expect(response.status).to eq(200)
-    end
-
-    it "succeeds for logged in users with valid board" do
-      login
-      board = create(:board)
-      get :show, params: { id: board.id }
-      expect(response.status).to eq(200)
-    end
+    shared_examples "GET show validations"
 
     it "only fetches the board's first 25 posts" do
       board = create(:board)
@@ -270,35 +243,9 @@ RSpec.describe BoardsController do
   end
 
   describe "GET edit" do
-    it "requires login" do
-      get :edit, params: { id: -1 }
-      expect(response).to redirect_to(root_url)
-      expect(flash[:error]).to eq("You must be logged in to view that page.")
-    end
+    let(:redirect) { boards_url }
 
-    it "requires valid board" do
-      login
-      get :edit, params: { id: -1 }
-      expect(response).to redirect_to(boards_url)
-      expect(flash[:error]).to eq("Continuity could not be found.")
-    end
-
-    it "requires board permission" do
-      user = create(:user)
-      login_as(user)
-      board = create(:board)
-      expect(board).not_to be_editable_by(user)
-      get :edit, params: { id: board.id }
-      expect(response).to redirect_to(board_url(board))
-      expect(flash[:error]).to eq("You do not have permission to edit that continuity.")
-    end
-
-    it "succeeds with valid board" do
-      board = create(:board)
-      login_as(board.creator)
-      get :edit, params: { id: board.id }
-      expect(response.status).to eq(200)
-    end
+    include_examples 'GET edit validations', 'board', 'continuity'
 
     it "sets expected variables" do
       coauthor = create(:user)
@@ -315,38 +262,9 @@ RSpec.describe BoardsController do
   end
 
   describe "PUT update" do
-    it "requires login" do
-      put :update, params: { id: -1 }
-      expect(response).to redirect_to(root_url)
-      expect(flash[:error]).to eq("You must be logged in to view that page.")
-    end
+    let(:redirect) { boards_url }
 
-    it "requires valid board" do
-      login
-      put :update, params: { id: -1 }
-      expect(response).to redirect_to(boards_url)
-      expect(flash[:error]).to eq("Continuity could not be found.")
-    end
-
-    it "requires board permission" do
-      user = create(:user)
-      login_as(user)
-      board = create(:board)
-      expect(board).not_to be_editable_by(user)
-      put :update, params: { id: board.id }
-      expect(response).to redirect_to(board_url(board))
-      expect(flash[:error]).to eq("You do not have permission to edit that continuity.")
-    end
-
-    it "requires valid params" do
-      user = create(:user)
-      board = create(:board, creator: user)
-      login_as(user)
-      put :update, params: { id: board.id, board: {name: ''} }
-      expect(response).to render_template('edit')
-      expect(flash[:error][:message]).to eq("Continuity could not be created.")
-      expect(flash[:error][:array]).to be_present
-    end
+    include_examples "PUT update validations", 'board', 'continuity'
 
     it "succeeds" do
       user = create(:user)

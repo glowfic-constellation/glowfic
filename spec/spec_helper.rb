@@ -93,7 +93,7 @@ RSpec.configure do |config|
 
   config.include FactoryBot::Syntax::Methods
   config.include SpecTestHelper, type: :controller
-  config.include SharedExamples::Controller, type: :controller
+  #config.include SharedExamples::Controller, type: :controller
   config.include SpecFeatureHelper, type: :feature
 
   config.filter_run :show_in_doc => true if ENV['APIPIE_RECORD']

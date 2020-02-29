@@ -24,6 +24,8 @@ class Board < ApplicationRecord
 
   scope :ordered, -> { order(pinned: :desc, name: :asc) }
 
+  alias_attribute :user, :creator
+
   def open_to?(user)
     return false unless user
     return true unless self.authors_locked?

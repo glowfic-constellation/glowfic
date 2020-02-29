@@ -1,23 +1,11 @@
 require "spec_helper"
+require "support/shared_examples/controller"
 
 RSpec.describe BoardSectionsController do
   describe "GET new" do
-    it "requires login" do
-      get :new
-      expect(response).to redirect_to(root_url)
-      expect(flash[:error]).to eq("You must be logged in to view that page.")
-    end
+    let(:redirect) { boards_url}
 
-    it "requires permission" do
-      user = create(:user)
-      board = create(:board)
-      expect(board.editable_by?(user)).to eq(false)
-      login_as(user)
-
-      get :new, params: { board_id: board.id }
-      expect(response).to redirect_to(boards_url)
-      expect(flash[:error]).to eq("You do not have permission to edit this continuity.")
-    end
+    include_examples 'GET new validations', 'board'
 
     it "works with board_id" do
       board = create(:board)
@@ -36,40 +24,9 @@ RSpec.describe BoardSectionsController do
   end
 
   describe "POST create" do
-    it "requires login" do
-      post :create
-      expect(response).to redirect_to(root_url)
-      expect(flash[:error]).to eq("You must be logged in to view that page.")
-    end
+    let(:redirect) { boards_url}
 
-    it "requires permission" do
-      user = create(:user)
-      board = create(:board)
-      expect(board.editable_by?(user)).to eq(false)
-      login_as(user)
-
-      post :create, params: { board_section: {board_id: board.id} }
-      expect(response).to redirect_to(boards_url)
-      expect(flash[:error]).to eq("You do not have permission to edit this continuity.")
-    end
-
-    it "requires valid section" do
-      board = create(:board)
-      login_as(board.creator)
-      post :create, params: { board_section: {board_id: board.id} }
-      expect(response).to have_http_status(200)
-      expect(response).to render_template(:new)
-      expect(flash[:error][:message]).to eq("Section could not be created.")
-    end
-
-    it "requires valid board for section" do
-      board = create(:board)
-      login_as(board.creator)
-      post :create, params: { board_section: {name: 'fake'} }
-      expect(response).to have_http_status(200)
-      expect(response).to render_template(:new)
-      expect(flash[:error][:message]).to eq("Section could not be created.")
-    end
+    include_examples 'POST create with parent validations', 'board', 'BoardSection', 'section'
 
     it "succeeds" do
       board = create(:board)

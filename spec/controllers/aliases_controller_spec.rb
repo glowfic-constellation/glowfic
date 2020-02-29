@@ -1,4 +1,5 @@
 require "spec_helper"
+require "support/shared_examples/controller"
 
 RSpec.describe AliasesController do
   include ActiveJob::TestHelper
@@ -6,7 +7,7 @@ RSpec.describe AliasesController do
   describe "GET new" do
     let(:redirect) { user_characters_url(user) }
 
-    include_examples "GET new validations"
+    include_examples 'GET new validations', 'character'
 
     it "succeeds" do
       character = create(:character)
@@ -20,48 +21,9 @@ RSpec.describe AliasesController do
   end
 
   describe "POST create" do
-    it "requires login" do
-      post :create, params: { character_id: -1 }
-      expect(response).to redirect_to(root_url)
-      expect(flash[:error]).to eq("You must be logged in to view that page.")
-    end
+    let(:redirect) { user_characters_url(user) }
 
-    it "requires valid character" do
-      user_id = login
-      post :create, params: { character_id: -1 }
-      expect(response).to redirect_to(user_characters_url(user_id))
-      expect(flash[:error]).to eq("Character could not be found.")
-    end
-
-    it "requires your character" do
-      user = create(:user)
-      login_as(user)
-      character = create(:character)
-      expect(character.user_id).not_to eq(user.id)
-      post :create, params: { character_id: character.id }
-      expect(response).to redirect_to(user_characters_url(user.id))
-      expect(flash[:error]).to eq("That is not your character.")
-    end
-
-    it "fails with missing params" do
-      character = create(:character)
-      login_as(character.user)
-      post :create, params: { character_id: character.id }
-      expect(response.status).to eq(200)
-      expect(flash[:error][:message]).to eq("Alias could not be created.")
-      expect(assigns(:page_title)).to eq("New Alias: #{character.name}")
-      expect(assigns(:alias)).to be_a_new_record
-    end
-
-    it "fails with invalid params" do
-      character = create(:character)
-      login_as(character.user)
-      post :create, params: { character_id: character.id, character_alias: {name: ''} }
-      expect(response.status).to eq(200)
-      expect(flash[:error][:message]).to eq("Alias could not be created.")
-      expect(assigns(:page_title)).to eq("New Alias: #{character.name}")
-      expect(assigns(:alias)).to be_a_new_record
-    end
+    include_examples 'POST create with parent validations', 'character', 'CharacterAlias', 'alias'
 
     it "succeeds when valid" do
       expect(CharacterAlias.count).to eq(0)
@@ -81,46 +43,10 @@ RSpec.describe AliasesController do
   end
 
   describe "DELETE destroy" do
-    it "requires login" do
-      delete :destroy, params: { id: -1, character_id: -1 }
-      expect(response).to redirect_to(root_url)
-      expect(flash[:error]).to eq("You must be logged in to view that page.")
-    end
+    let(:redirect) { user_characters_url(user) }
+    let(:parent_redirect) { edit_character_url(parent) }
 
-    it "requires valid character" do
-      user_id = login
-      delete :destroy, params: { id: -1, character_id: -1 }
-      expect(response).to redirect_to(user_characters_url(user_id))
-      expect(flash[:error]).to eq("Character could not be found.")
-    end
-
-    it "requires your character" do
-      user = create(:user)
-      login_as(user)
-      character = create(:character)
-      expect(character.user_id).not_to eq(user.id)
-      delete :destroy, params: { id: -1, character_id: character.id }
-      expect(response).to redirect_to(user_characters_url(user.id))
-      expect(flash[:error]).to eq("That is not your character.")
-    end
-
-    it "requires valid alias" do
-      character = create(:character)
-      login_as(character.user)
-      delete :destroy, params: { id: -1, character_id: character.id }
-      expect(response).to redirect_to(edit_character_url(character))
-      expect(flash[:error]).to eq("Alias could not be found.")
-    end
-
-    it "requires aliases to match character" do
-      character = create(:character)
-      calias = create(:alias)
-      login_as(character.user)
-      expect(character.id).not_to eq(calias.character_id)
-      delete :destroy, params: { id: calias.id, character_id: character.id }
-      expect(response).to redirect_to(edit_character_url(character))
-      expect(flash[:error]).to eq("Alias could not be found for that character.")
-    end
+    include_examples 'DELETE destroy validations', 'character', 'CharacterAlias', 'alias'
 
     it "succeeds" do
       calias = create(:alias)
