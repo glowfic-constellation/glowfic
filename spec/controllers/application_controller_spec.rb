@@ -14,8 +14,9 @@ RSpec.describe ApplicationController do
   end
 
   describe "#set_timezone" do
+    let!(:current_zone) { Time.zone.name }
+
     it "uses the user's time zone within the block" do
-      current_zone = Time.zone.name
       different_zone = ActiveSupport::TimeZone.all.detect { |z| z.name != current_zone }.name
       login_as(create(:user, timezone: different_zone))
 
@@ -24,13 +25,11 @@ RSpec.describe ApplicationController do
     end
 
     it "succeeds when logged out" do
-      current_zone = Time.zone.name
       get :index
       expect(response.json['zone']).to eq(current_zone)
     end
 
     it "succeeds when logged in user has no zone set" do
-      current_zone = Time.zone.name
       login_as(create(:user, timezone: nil))
       get :index
       expect(response.json['zone']).to eq(current_zone)
@@ -39,6 +38,7 @@ RSpec.describe ApplicationController do
 
   describe "#show_password_warning" do
     let(:warning) { "Because Marri accidentally made passwords a bit too secure, you must log back in to continue using the site." }
+    let(:user) { create(:user) }
 
     it "shows no warning if logged out" do
       get :index
@@ -46,7 +46,6 @@ RSpec.describe ApplicationController do
     end
 
     it "shows no warning for users with salt_uuid" do
-      user = create(:user)
       login_as(user)
       expect(user.salt_uuid).not_to be_nil
       get :index
@@ -54,7 +53,6 @@ RSpec.describe ApplicationController do
     end
 
     it "shows warning if salt_uuid not set" do
-      user = create(:user)
       login_as(user)
       user.update_columns(salt_uuid: nil) # rubocop:disable Rails/SkipsModelValidations
       get :index
@@ -63,9 +61,6 @@ RSpec.describe ApplicationController do
   end
 
   describe "#posts_from_relation" do
-    let(:site_testing) { create(:board, id: Board::ID_SITETESTING) }
-    let(:default_post_ids) { Array.new(26) { create(:post).id } }
-
     it "gets posts" do
       post = create(:post)
       relation = Post.where.not(id: nil)
@@ -78,36 +73,50 @@ RSpec.describe ApplicationController do
       expect(controller.send(:posts_from_relation, relation)).to be_blank
     end
 
-    it "skips posts in site testing" do
-      post = create(:post, board: site_testing)
-      expect(Post.where(id: post.id).no_tests).to be_blank
-      relation = Post.where(id: post.id)
-      expect(controller.send(:posts_from_relation, relation, no_tests: true)).to be_blank
+    context "with site testing" do
+      let(:site_testing) { create(:board, id: Board::ID_SITETESTING) }
+      let(:post) { create(:post, board: site_testing) }
+      let(:relation) { Post.where(id: post.id) }
+
+      it "skips posts in site testing" do
+        expect(relation.no_tests).to be_blank
+        expect(controller.send(:posts_from_relation, relation, no_tests: true)).to be_blank
+      end
+
+      it "can be made to show site testing posts" do
+        expect(controller.send(:posts_from_relation, relation, no_tests: false)).not_to be_blank
+      end
     end
 
-    it "can be made to show site testing posts" do
-      post = create(:post, board: site_testing)
-      relation = Post.where(id: post.id)
-      expect(controller.send(:posts_from_relation, relation, no_tests: false)).not_to be_blank
-    end
+    context "with many posts" do
+      let(:default_post_ids) { Array.new(26) { create(:post).id } }
+      let(:relation) { Post.where(id: default_post_ids) }
 
-    it "paginates by default" do
-      relation = Post.where(id: default_post_ids)
-      fetched_posts = controller.send(:posts_from_relation, relation)
-      expect(fetched_posts.total_pages).to eq(2)
-    end
+      it "paginates by default" do
+        fetched_posts = controller.send(:posts_from_relation, relation)
+        expect(fetched_posts.total_pages).to eq(2)
+      end
 
-    it "allows pagination to be disabled" do
-      relation = Post.where(id: default_post_ids)
-      fetched_posts = controller.send(:posts_from_relation, relation, with_pagination: false)
-      expect(fetched_posts).not_to respond_to(:total_pages)
-    end
+      it "allows pagination to be disabled" do
+        fetched_posts = controller.send(:posts_from_relation, relation, with_pagination: false)
+        expect(fetched_posts).not_to respond_to(:total_pages)
+      end
 
-    it "skips visibility check if there are more than 25 posts" do
-      expect_any_instance_of(Post).not_to receive(:visible_to?)
-      relation = Post.where(id: default_post_ids)
-      fetched_posts = controller.send(:posts_from_relation, relation)
-      expect(fetched_posts.count).to eq(26) # number when querying the database – actual number returned is 25, due to pagination
+      it "skips visibility check if there are more than 25 posts" do
+        expect_any_instance_of(Post).not_to receive(:visible_to?)
+        fetched_posts = controller.send(:posts_from_relation, relation)
+        expect(fetched_posts.count).to eq(26) # number when querying the database – actual number returned is 25, due to pagination
+      end
+
+      it 'preserves post order with pagination' do
+        expect(controller.send(:posts_from_relation, relation.order(tagged_at: :asc)).map(&:id)).to eq(default_post_ids[0..24])
+        expect(controller.send(:posts_from_relation, relation.ordered).map(&:id)).to eq(default_post_ids.reverse[0..24])
+      end
+
+      it 'preserves post order with pagination disabled' do
+        expect(controller.send(:posts_from_relation, relation.order(tagged_at: :asc), with_pagination: false).ids).to eq(default_post_ids)
+        expect(controller.send(:posts_from_relation, relation.order(tagged_at: :desc), with_pagination: false).ids).to eq(default_post_ids.reverse)
+      end
     end
 
     it "fetches correct authors, reply counts and content warnings" do
@@ -178,27 +187,27 @@ RSpec.describe ApplicationController do
       it "sets opened_ids and unread_ids properly" do
         other_user = create(:user)
         time = Time.zone.now - 5.minutes
-        unopened2, partread, read1, read2, hidden_unread, hidden_partread = posts = Timecop.freeze(time) do
-          create(:post) # post; unopened1
-          unopened2 = create(:post) # post, reply
-          partread = create(:post) # post, reply
-          read1 = create(:post) # post
-          read2 = create(:post) # post, reply
-          hidden_unread = create(:post) # post
-          hidden_partread = create(:post) # post, reply
+        unopened, partread, read1, read2, hidden_unread, hidden_partread = posts = Timecop.freeze(time) do
+          create(:post)
+          unopened = create(:post)
+          partread = create(:post)
+          read1 = create(:post)
+          read2 = create(:post)
+          hidden_unread = create(:post)
+          hidden_partread = create(:post)
 
           partread.mark_read(user)
           read1.mark_read(user)
           hidden_partread.mark_read(user)
 
-          [unopened2, partread, read1, read2, hidden_unread, hidden_partread]
+          [unopened, partread, read1, read2, hidden_unread, hidden_partread]
         end
 
         Timecop.freeze(time + 1.minute) do
-          create(:reply, post: unopened2) # unopened2_reply
-          create(:reply, post: partread) # partread_reply
-          create(:reply, post: read2) # read2_reply
-          create(:reply, post: hidden_partread) # hidden_partread_reply
+          create(:reply, post: unopened)
+          create(:reply, post: partread)
+          create(:reply, post: read2)
+          create(:reply, post: hidden_partread)
 
           read2.mark_read(user)
           partread.reload
@@ -295,18 +304,6 @@ RSpec.describe ApplicationController do
       expect(controller.send(:posts_from_relation, Post.all.ordered)).to eq([post4, post3, post2, post1])
     end
 
-    it 'preserves post order with pagination' do
-      relation = Post.where(id: default_post_ids)
-      expect(controller.send(:posts_from_relation, relation.order(tagged_at: :asc)).map(&:id)).to eq(default_post_ids[0..24])
-      expect(controller.send(:posts_from_relation, relation.ordered).map(&:id)).to eq(default_post_ids.reverse[0..24])
-    end
-
-    it 'preserves post order with pagination disabled' do
-      relation = Post.where(id: default_post_ids)
-      expect(controller.send(:posts_from_relation, relation.order(tagged_at: :asc), with_pagination: false).ids).to eq(default_post_ids)
-      expect(controller.send(:posts_from_relation, relation.order(tagged_at: :desc), with_pagination: false).ids).to eq(default_post_ids.reverse)
-    end
-
     it "uses an accurate custom post_count with joins and groups" do
       create(:post, privacy: :private) # hidden
       replyless = create(:post)
@@ -394,20 +391,20 @@ RSpec.describe ApplicationController do
     end
 
     context "when logged in" do
+      let(:user) { create(:user, default_view: 'list') }
+
       it "works by default" do
         login
         expect(controller.send(:page_view)).to eq('icon')
       end
 
       it "uses account default if different" do
-        user = create(:user, default_view: 'list')
         login_as(user)
         expect(controller.send(:page_view)).to eq('list')
       end
 
       it "is not overridden by session" do
         # also does not modify user default
-        user = create(:user, default_view: 'list')
         login_as(user)
         session[:view] = 'icon'
         expect(controller.send(:page_view)).to eq('list')
@@ -416,7 +413,6 @@ RSpec.describe ApplicationController do
 
       it "can be overridden by params" do
         # also does not modify user default
-        user = create(:user, default_view: 'list')
         login_as(user)
         controller.params[:view] = 'icon'
         expect(controller.send(:page_view)).to eq('icon')
@@ -448,27 +444,23 @@ RSpec.describe ApplicationController do
       end
     end
 
+    let(:user) { create(:user) }
+
+    before(:each) { login_as(user) }
+
     it "does not log out unsuspended undeleted" do
-      user = create(:user)
-      login_as(user)
       get :index
       expect(response.json['logged_in']).to be(true)
     end
 
     it "logs out suspended" do
-      user = create(:user)
-      login_as(user)
-      user.role_id = Permissible::SUSPENDED
-      user.save!
+      user.update!(role_id: Permissible::SUSPENDED)
       get :index
       expect(response.json['logged_in']).to eq(false)
     end
 
     it "logs out deleted" do
-      user = create(:user)
-      login_as(user)
-      user.deleted = true
-      user.save!
+      user.update!(deleted: true)
       get :index
       expect(response.json['logged_in']).to eq(false)
     end

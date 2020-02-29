@@ -161,8 +161,9 @@ RSpec.describe BlocksController, type: :controller do
   end
 
   describe "GET edit" do
+    let(:block) { create(:block) }
+
     it "requires permission" do
-      block = create(:block)
       login
       get :edit, params: { id: block.id }
       expect(response).to redirect_to(blocks_url)
@@ -177,7 +178,6 @@ RSpec.describe BlocksController, type: :controller do
     end
 
     it "succeeds" do
-      block = create(:block)
       login_as(block.blocking_user)
       get :edit, params: { id: block.id }
       expect(response.status).to eq(200)
@@ -193,8 +193,10 @@ RSpec.describe BlocksController, type: :controller do
   end
 
   describe "PUT update" do
+    let(:user) { create(:user) }
+    let(:block) { create(:block, blocking_user: user) }
+
     it "requires permission" do
-      block = create(:block)
       login
       put :update, params: { id: block.id }
       expect(response).to redirect_to(blocks_url)
@@ -209,8 +211,7 @@ RSpec.describe BlocksController, type: :controller do
     end
 
     it "requires valid variables" do
-      block = create(:block)
-      login_as(block.blocking_user)
+      login_as(user)
       expect {
         put :update, params: { id: block.id, block: { hide_them: -1 } }
       }.to raise_error(ArgumentError)
@@ -225,8 +226,7 @@ RSpec.describe BlocksController, type: :controller do
     end
 
     it "suceeds" do
-      block = create(:block)
-      login_as(block.blocking_user)
+      login_as(user)
       put :update, params: {
         id: block.id,
         block: {
@@ -263,7 +263,6 @@ RSpec.describe BlocksController, type: :controller do
     end
 
     it "does not update blocked_user" do
-      block = create(:block)
       blocked_user = block.blocked_user
       login_as(block.blocking_user)
       put :update, params: { id: block.id, block: { blocked_user: create(:user).id } }
@@ -273,8 +272,10 @@ RSpec.describe BlocksController, type: :controller do
   end
 
   describe "DELETE destroy" do
+    let(:user) { create(:user) }
+    let(:block) { create(:block, blocking_user: user) }
+
     it "requires permission" do
-      block = create(:block)
       login
       delete :destroy, params: { id: block.id }
       expect(response).to redirect_to(blocks_url)
@@ -289,8 +290,7 @@ RSpec.describe BlocksController, type: :controller do
     end
 
     it "handles failure" do
-      block = create(:block)
-      login_as(block.blocking_user)
+      login_as(user)
       expect_any_instance_of(Block).to receive(:destroy).and_return(false)
       delete :destroy, params: { id: block.id }
       expect(response).to redirect_to(blocks_url)
@@ -299,8 +299,7 @@ RSpec.describe BlocksController, type: :controller do
     end
 
     it "succeeds" do
-      block = create(:block)
-      login_as(block.blocking_user)
+      login_as(user)
       delete :destroy, params: { id: block.id }
       expect(response).to redirect_to(blocks_url)
       expect(flash[:success]).to eq("User unblocked.")
