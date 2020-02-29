@@ -4,28 +4,9 @@ RSpec.describe AliasesController do
   include ActiveJob::TestHelper
 
   describe "GET new" do
-    it "requires login" do
-      get :new, params: { character_id: -1 }
-      expect(response).to redirect_to(root_url)
-      expect(flash[:error]).to eq("You must be logged in to view that page.")
-    end
+    let(:redirect) { user_characters_url(user) }
 
-    it "requires valid character" do
-      user_id = login
-      get :new, params: { character_id: -1 }
-      expect(response).to redirect_to(user_characters_url(user_id))
-      expect(flash[:error]).to eq("Character could not be found.")
-    end
-
-    it "requires your character" do
-      user = create(:user)
-      login_as(user)
-      character = create(:character)
-      expect(character.user_id).not_to eq(user.id)
-      get :new, params: { character_id: character.id }
-      expect(response).to redirect_to(user_characters_url(user.id))
-      expect(flash[:error]).to eq("That is not your character.")
-    end
+    include_examples "GET new validations"
 
     it "succeeds" do
       character = create(:character)
