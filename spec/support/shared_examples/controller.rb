@@ -1,34 +1,65 @@
+include Rails.application.routes.url_helpers
+default_url_options[:host] = 'test.host'
+
 module SharedExamples
 module Controller
-  RSpec.shared_examples "GET new validations" do |klass|
+  RSpec.shared_context "shared context" do |klass, name|
+    let(:index_redirect) do
+      redirect_override if defined? redirect_override
+      url_for(controller: klass.pluralize)
+    end
     let(:user) { create(:user) }
     let(:object) { create(klass) }
-    let(:key) { klass.foreign_key }
+    let(:self_key) { klass.foreign_key }
+    let(:klass_name) { (name || klass).downcase }
+  end
+
+  RSpec.shared_context "parent shared context" do
+    include_context "shared context"
+    let(:parent) { create(parent_klass) }
+    let(:parent_key) { parent_klass.foreign_key }
+  end
+
+  RSpec.shared_examples "GET new validations" do
+    it "requires login" do
+      get :new
+      expect(response).to redirect_to(root_url)
+      expect(flash[:error]).to eq("You must be logged in to view that page.")
+    end
+
+    it "succeeds when logged in" do
+      login
+      get :new
+      expect(response.status).to eq(200)
+    end
+  end
+
+  RSpec.shared_examples "GET new validations with parent" do |klass, name|
+    include_context "shared context", klass, name
 
     it "requires login" do
-      get :new, params: { key => -1 }
+      get :new, params: { self_key => -1 }
       expect(response).to redirect_to(root_url)
       expect(flash[:error]).to eq("You must be logged in to view that page.")
     end
 
     it "requires valid #{klass}" do
       login_as(user)
-      get :new, params: { key => -1 }
-      expect(response).to redirect_to(redirect)
+      get :new, params: { self_key => -1 }
+      expect(response).to redirect_to(index_redirect)
       expect(flash[:error]).to eq("#{klass.capitalize} could not be found.")
     end
 
     it "requires your #{klass}" do
       login_as(user)
-      get :new, params: { key => object.id }
-      expect(response).to redirect_to(redirect)
+      get :new, params: { self_key => object.id }
+      expect(response).to redirect_to(index_redirect)
       expect(flash[:error]).to eq("That is not your #{klass}.")
     end
   end
 
   RSpec.shared_examples "POST create validations" do |klass, name|
-    let(:self_key) { klass.foreign_key }
-    let(:klass_name) { (name || klass).capitalize }
+    include_context "shared context", klass, name
 
     it "requires login" do
       post :create
@@ -40,8 +71,8 @@ module Controller
       login
       post :create
       expect(response.status).to eq(200)
-      expect(flash[:error][:message]).to eq("#{klass_name} could not be created.")
-      expect(assigns(:page_title)).to eq("New #{klass_name}")
+      expect(flash[:error][:message]).to eq("#{klass_name.capitalize} could not be created.")
+      expect(assigns(:page_title)).to eq("New #{klass_name.capitalize}")
       expect(assigns(klass)).to be_a_new_record
     end
 
@@ -49,18 +80,14 @@ module Controller
       login
       post :create, params: { self_key => {name: ''} }
       expect(response.status).to eq(200)
-      expect(flash[:error][:message]).to eq("#{klass_name} could not be created.")
-      expect(assigns(:page_title)).to eq("New #{klass_name}")
+      expect(flash[:error][:message]).to eq("#{klass_name.capitalize} could not be created.")
+      expect(assigns(:page_title)).to eq("New #{klass_name.capitalize}")
       expect(assigns(klass)).to be_a_new_record
     end
   end
 
   RSpec.shared_examples "POST create with parent validations" do |parent_klass, klass, name|
-    let(:user) { create(:user) }
-    let(:parent) { create(parent_klass) }
-    let(:parent_key) { parent_klass.foreign_key }
-    let(:self_key) { klass.foreign_key }
-    let(:klass_name) { (name || klass).capitalize }
+    include_context "shared context", klass, name
     let(:assign) { (name || klass).downcase.to_sym }
 
     it "requires login" do
@@ -72,14 +99,14 @@ module Controller
     it "requires valid #{parent_klass}" do
       login_as(user)
       post :create, params: { parent_key => -1 }
-      expect(response).to redirect_to(redirect)
+      expect(response).to redirect_to(index_redirect)
       expect(flash[:error]).to eq("#{parent_klass.capitalize} could not be found.")
     end
 
     it "requires your #{parent_klass}" do
       login_as(user)
       post :create, params: { parent_key => parent.id }
-      expect(response).to redirect_to(redirect)
+      expect(response).to redirect_to(index_redirect)
       expect(flash[:error]).to eq("That is not your #{parent_klass}.")
     end
 
@@ -103,12 +130,11 @@ module Controller
   end
 
   RSpec.shared_examples "GET show validations" do |klass, name|
-    let(:klass_name) { (name || klass).capitalize }
-    let(:object) { create(klass) }
+    include_context "shared context", klass, name
 
     it "requires valid #{klass}" do
       get :show, params: { id: -1 }
-      expect(response).to redirect_to(redirect)
+      expect(response).to redirect_to(index_redirect)
       expect(flash[:error]).to eq("#{name.capitalize} could not be found.")
     end
 
@@ -125,8 +151,7 @@ module Controller
   end
 
   RSpec.shared_examples 'GET edit validations' do |klass, name|
-    let(:klass_name) { (name || klass).downcase }
-    let(:object) { create(klass) }
+    include_context "shared context", klass, name
 
     it "requires login" do
       get :edit, params: { id: -1 }
@@ -137,7 +162,7 @@ module Controller
     it "requires valid #{klass}" do
       login
       get :edit, params: { id: -1 }
-      expect(response).to redirect_to(redirect)
+      expect(response).to redirect_to(index_redirect)
       expect(flash[:error]).to eq("#{klass_name.capitalize} could not be found.")
     end
 
@@ -156,9 +181,7 @@ module Controller
   end
 
   RSpec.shared_examples 'PUT update validations' do |klass, name|
-    let(:klass_name) { (name || klass).downcase }
-    let(:object) { create(klass) }
-    let(:key) { klass.foreign_key }
+    include_context "shared context", klass, name
 
     it "requires login" do
       put :update, params: { id: -1 }
@@ -169,7 +192,7 @@ module Controller
     it "requires valid #{klass}" do
       login
       put :update, params: { id: -1 }
-      expect(response).to redirect_to(redirect)
+      expect(response).to redirect_to(index_redirect)
       expect(flash[:error]).to eq("#{klass_name.capitalize} could not be found.")
     end
 
@@ -190,9 +213,7 @@ module Controller
   end
 
   RSpec.shared_examples 'DELETE destroy validations' do |parent_klass, klass, name|
-    let(:user) { create(:user) }
-    let(:parent) { create(parent_klass) }
-    let(:parent_key) { parent_klass.foreign_key }
+    include_context "shared context", klass, name
     klass_name = (name || klass).downcase
 
     it "requires login" do
@@ -204,7 +225,7 @@ module Controller
     it "requires valid #{parent_klass}" do
       login_as(user)
       delete :destroy, params: { id: -1, parent_key => -1 }
-      expect(response).to redirect_to(redirect)
+      expect(response).to redirect_to(index_redirect)
       expect(flash[:error]).to eq("Character could not be found.")
     end
 
@@ -212,7 +233,7 @@ module Controller
       login_as(user)
       expect(parent.user_id).not_to eq(user.id)
       delete :destroy, params: { id: -1, parent_key => parent.id }
-      expect(response).to redirect_to(redirect)
+      expect(response).to redirect_to(index_redirect)
       expect(flash[:error]).to eq("That is not your character.")
     end
 

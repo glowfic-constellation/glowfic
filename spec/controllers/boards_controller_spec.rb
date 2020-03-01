@@ -1,5 +1,4 @@
 require "spec_helper"
-require "support/shared_examples/controller"
 
 RSpec.describe BoardsController do
   include ActiveJob::TestHelper
@@ -91,17 +90,7 @@ RSpec.describe BoardsController do
   end
 
   describe "GET new" do
-    it "requires login" do
-      get :new
-      expect(response).to redirect_to(root_url)
-      expect(flash[:error]).to eq("You must be logged in to view that page.")
-    end
-
-    it "succeeds when logged in" do
-      login
-      get :new
-      expect(response.status).to eq(200)
-    end
+    include_examples 'GET new validations'
 
     it "sets correct variables" do
       user_id = login
@@ -182,9 +171,7 @@ RSpec.describe BoardsController do
   end
 
   describe "GET show" do
-    let(:redirect) { boards_url }
-
-    shared_examples "GET show validations"
+    include_examples "GET show validations", 'board', 'continuity'
 
     it "only fetches the board's first 25 posts" do
       board = create(:board)
@@ -243,8 +230,6 @@ RSpec.describe BoardsController do
   end
 
   describe "GET edit" do
-    let(:redirect) { boards_url }
-
     include_examples 'GET edit validations', 'board', 'continuity'
 
     it "sets expected variables" do
@@ -262,8 +247,6 @@ RSpec.describe BoardsController do
   end
 
   describe "PUT update" do
-    let(:redirect) { boards_url }
-
     include_examples "PUT update validations", 'board', 'continuity'
 
     it "succeeds" do
