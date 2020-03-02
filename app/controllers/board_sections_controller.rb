@@ -85,7 +85,7 @@ class BoardSectionsController < ApplicationController
   def find_section
     @board_section = BoardSection.find_by_id(params[:id])
     unless @board_section
-      flash[:error] = "Section not found."
+      flash[:error] = "Section could not be found."
       redirect_to boards_path and return
     end
   end

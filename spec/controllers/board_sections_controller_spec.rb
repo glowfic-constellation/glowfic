@@ -3,9 +3,7 @@ require "support/shared_examples/controller"
 
 RSpec.describe BoardSectionsController do
   describe "GET new" do
-    let(:redirect) { boards_url}
-
-    include_examples 'GET new validations', 'board'
+    include_examples 'GET new with parent validations', 'board', 'continuity'
 
     it "works with board_id" do
       board = create(:board)
@@ -24,9 +22,9 @@ RSpec.describe BoardSectionsController do
   end
 
   describe "POST create" do
-    let(:redirect) { boards_url}
+    let(:redirect_override) { boards_url }
 
-    include_examples 'POST create with parent validations', 'board', 'BoardSection', 'section'
+    include_examples 'POST create with parent validations', 'board', 'continuity', 'board_section', 'section'
 
     it "succeeds" do
       board = create(:board)
@@ -40,34 +38,9 @@ RSpec.describe BoardSectionsController do
   end
 
   describe "GET show" do
-    it "requires valid section" do
-      get :show, params: { id: -1 }
-      expect(response).to redirect_to(boards_url)
-      expect(flash[:error]).to eq("Section not found.")
-    end
+    let(:redirect_override) { boards_url }
 
-    it "does not require login" do
-      section = create(:board_section)
-      posts = Array.new(2) { create(:post, board: section.board, section: section) }
-      create(:post)
-      create(:post, board: section.board)
-      get :show, params: { id: section.id }
-      expect(response).to have_http_status(200)
-      expect(assigns(:page_title)).to eq(section.name)
-      expect(assigns(:posts)).to match_array(posts)
-    end
-
-    it "works with login" do
-      login
-      section = create(:board_section)
-      posts = Array.new(2) { create(:post, board: section.board, section: section) }
-      create(:post)
-      create(:post, board: section.board)
-      get :show, params: { id: section.id }
-      expect(response).to have_http_status(200)
-      expect(assigns(:page_title)).to eq(section.name)
-      expect(assigns(:posts)).to match_array(posts)
-    end
+    include_examples 'GET show validations', 'board_section', 'section'
 
     it "orders posts correctly" do
       board = create(:board)
@@ -104,66 +77,18 @@ RSpec.describe BoardSectionsController do
   end
 
   describe "GET edit" do
-    it "requires login" do
-      get :edit, params: { id: -1 }
-      expect(response).to redirect_to(root_url)
-      expect(flash[:error]).to eq("You must be logged in to view that page.")
-    end
+    let(:redirect_override) { boards_url }
 
-    it "requires valid section" do
-      login
-      get :edit, params: { id: -1 }
-      expect(response).to redirect_to(boards_url)
-      expect(flash[:error]).to eq("Section not found.")
-    end
-
-    it "requires permission" do
-      section = create(:board_section)
-      login
-      get :edit, params: { id: section.id }
-      expect(response).to redirect_to(boards_url)
-      expect(flash[:error]).to eq("You do not have permission to edit this continuity.")
-    end
-
-    it "works" do
-      section = create(:board_section)
-      login_as(section.board.creator)
-      get :edit, params: { id: section.id }
-      expect(response).to have_http_status(200)
-      expect(assigns(:page_title)).to eq("Edit #{section.name}")
-      expect(assigns(:board_section)).to eq(section)
-    end
+    include_examples 'GET edit with parent validations', 'board', 'board_section', 'section'
   end
 
   describe "PUT update" do
-    it "requires login" do
-      put :update, params: { id: -1 }
-      expect(response).to redirect_to(root_url)
-      expect(flash[:error]).to eq("You must be logged in to view that page.")
-    end
+    let(:redirect_override) { boards_url }
 
-    it "requires board permission" do
-      user = create(:user)
-      login_as(user)
-      board_section = create(:board_section)
-      expect(board_section.board).not_to be_editable_by(user)
-
-      put :update, params: { id: board_section.id }
-      expect(response).to redirect_to(boards_url)
-      expect(flash[:error]).to eq("You do not have permission to edit this continuity.")
-    end
-
-    it "requires valid params" do
-      board_section = create(:board_section)
-      login_as(board_section.board.creator)
-      put :update, params: { id: board_section.id, board_section: {name: ''} }
-      expect(response).to have_http_status(200)
-      expect(response).to render_template(:edit)
-      expect(flash[:error][:message]).to eq("Section could not be updated.")
-    end
+    include_examples 'PUT update with parent validations', 'board', 'board_section', 'section'
 
     it "succeeds" do
-      board_section = create(:board_section, name: 'TestSection1')
+      board_section = create('board_section', name: 'TestSection1')
       login_as(board_section.board.creator)
       section_name = 'TestSection2'
       put :update, params: { id: board_section.id, board_section: {name: section_name} }
@@ -174,38 +99,12 @@ RSpec.describe BoardSectionsController do
   end
 
   describe "DELETE destroy" do
-    it "requires login" do
-      delete :destroy, params: { id: -1 }
-      expect(response).to redirect_to(root_url)
-      expect(flash[:error]).to eq("You must be logged in to view that page.")
-    end
+    let(:redirect_override) { boards_url }
 
-    it "requires valid section" do
-      login
-      delete :destroy, params: { id: -1 }
-      expect(response).to redirect_to(boards_url)
-      expect(flash[:error]).to eq("Section not found.")
-    end
-
-    it "requires permission" do
-      section = create(:board_section)
-      login
-      delete :destroy, params: { id: section.id }
-      expect(response).to redirect_to(boards_url)
-      expect(flash[:error]).to eq("You do not have permission to edit this continuity.")
-    end
-
-    it "works" do
-      section = create(:board_section)
-      login_as(section.board.creator)
-      delete :destroy, params: { id: section.id }
-      expect(response).to redirect_to(edit_board_url(section.board))
-      expect(flash[:success]).to eq("Section deleted.")
-      expect(BoardSection.find_by_id(section.id)).to be_nil
-    end
+    include_examples 'DELETE destroy with parent validations', 'board', 'board_section', 'continuity', 'section'
 
     it "handles destroy failure" do
-      section = create(:board_section)
+      section = create('board_section')
       post = create(:post, user: section.board.creator, board: section.board, section: section)
       login_as(section.board.creator)
       expect_any_instance_of(BoardSection).to receive(:destroy!).and_raise(ActiveRecord::RecordNotDestroyed, 'fake error')

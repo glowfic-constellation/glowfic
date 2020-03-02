@@ -5,9 +5,9 @@ RSpec.describe AliasesController do
   include ActiveJob::TestHelper
 
   describe "GET new" do
-    let(:redirect) { user_characters_url(user) }
+    let(:redirect_override) { user_characters_url(user) }
 
-    include_examples 'GET new validations', 'character'
+    include_examples 'GET new with parent validations', 'character'
 
     it "succeeds" do
       character = create(:character)
@@ -21,7 +21,7 @@ RSpec.describe AliasesController do
   end
 
   describe "POST create" do
-    let(:redirect) { user_characters_url(user) }
+    let(:redirect_override) { user_characters_url(user) }
 
     include_examples 'POST create with parent validations', 'character', 'CharacterAlias', 'alias'
 
@@ -43,10 +43,17 @@ RSpec.describe AliasesController do
   end
 
   describe "DELETE destroy" do
-    let(:redirect) { user_characters_url(user) }
+    let(:redirect_override) { user_characters_url(user) }
     let(:parent_redirect) { edit_character_url(parent) }
 
-    include_examples 'DELETE destroy validations', 'character', 'CharacterAlias', 'alias'
+    include_examples 'DELETE destroy with parent validations', 'character', 'CharacterAlias', 'alias'
+
+    it "requires valid character" do
+      login_as(user)
+      delete :destroy, params: { id: -1, parent_key => -1 }
+      expect(response).to redirect_to(parent_redirect)
+      expect(flash[:error]).to eq("Character could not be found.")
+    end
 
     it "succeeds" do
       calias = create(:alias)

@@ -5,16 +5,7 @@ RSpec.describe BoardsController do
 
   describe "GET index" do
     context "without a user_id" do
-      it "succeeds when logged out" do
-        get :index
-        expect(response.status).to eq(200)
-      end
-
-      it "succeeds when logged in" do
-        login
-        get :index
-        expect(response.status).to eq(200)
-      end
+      include_examples 'GET index validations'
 
       it "sets correct variables" do
         user = create(:user)
@@ -276,36 +267,7 @@ RSpec.describe BoardsController do
   end
 
   describe "DELETE destroy" do
-    it "requires login" do
-      delete :destroy, params: { id: -1 }
-      expect(response).to redirect_to(root_url)
-      expect(flash[:error]).to eq("You must be logged in to view that page.")
-    end
-
-    it "requires valid board" do
-      login
-      delete :destroy, params: { id: -1 }
-      expect(response).to redirect_to(boards_url)
-      expect(flash[:error]).to eq("Continuity could not be found.")
-    end
-
-    it "requires board permission" do
-      user = create(:user)
-      login_as(user)
-      board = create(:board)
-      expect(board).not_to be_editable_by(user)
-      delete :destroy, params: { id: board.id }
-      expect(response).to redirect_to(board_url(board))
-      expect(flash[:error]).to eq("You do not have permission to edit that continuity.")
-    end
-
-    it "succeeds" do
-      board = create(:board)
-      login_as(board.creator)
-      delete :destroy, params: { id: board.id }
-      expect(response).to redirect_to(boards_url)
-      expect(flash[:success]).to eq("Continuity deleted.")
-    end
+    include_examples 'DELETE destroy validations', 'board', 'continuity'
 
     it "moves posts to sandboxes" do
       board = create(:board)

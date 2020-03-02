@@ -79,7 +79,7 @@ class BoardsController < ApplicationController
       @board.update!(board_params)
     rescue ActiveRecord::RecordInvalid
       flash.now[:error] = {
-        message: "Continuity could not be created.",
+        message: "Continuity could not be updated.",
         array: @board.errors.full_messages
       }
       @page_title = 'Edit Continuity: ' + @board.name_was
