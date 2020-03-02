@@ -59,17 +59,7 @@ RSpec.describe CharactersController do
   end
 
   describe "GET new" do
-    it "requires login" do
-      get :new
-      expect(response).to redirect_to(root_url)
-      expect(flash[:error]).to eq("You must be logged in to view that page.")
-    end
-
-    it "succeeds when logged in" do
-      login
-      get :new
-      expect(response.status).to eq(200)
-    end
+    include_examples 'GET new validations'
 
     it "sets correct variables with template_id" do
       template = create(:template)
@@ -100,25 +90,10 @@ RSpec.describe CharactersController do
   end
 
   describe "POST create" do
-    it "requires login" do
-      post :create
-      expect(response).to redirect_to(root_url)
-      expect(flash[:error]).to eq("You must be logged in to view that page.")
-    end
+    let(:error_msg_override) { "Your character could not be saved." }
+    let(:redirect_override) { user_characters_url(user) }
 
-    it "fails with missing params" do
-      login
-      post :create
-      expect(response.status).to eq(200)
-      expect(flash[:error][:message]).to eq("Your character could not be saved.")
-    end
-
-    it "fails with invalid params" do
-      login
-      post :create, params: { character: {} }
-      expect(response.status).to eq(200)
-      expect(flash[:error][:message]).to eq("Your character could not be saved.")
-    end
+    include_examples 'POST create validations', 'character'
 
     it "succeeds when valid" do
       expect(Character.count).to eq(0)
@@ -201,31 +176,7 @@ RSpec.describe CharactersController do
   end
 
   describe "GET show" do
-    it "requires valid character logged out" do
-      get :show, params: { id: -1 }
-      expect(response).to redirect_to(root_url)
-      expect(flash[:error]).to eq("Character could not be found.")
-    end
-
-    it "requires valid character logged in" do
-      user_id = login
-      get :show, params: { id: -1 }
-      expect(response).to redirect_to(user_characters_url(user_id))
-      expect(flash[:error]).to eq("Character could not be found.")
-    end
-
-    it "should succeed when logged out" do
-      character = create(:character)
-      get :show, params: { id: character.id }
-      expect(response.status).to eq(200)
-    end
-
-    it "should succeed when logged in" do
-      character = create(:character)
-      login
-      get :show, params: { id: character.id }
-      expect(response.status).to eq(200)
-    end
+    include_examples 'GET show validations', 'character'
 
     it "should set correct variables" do
       character = create(:character)
@@ -310,32 +261,9 @@ RSpec.describe CharactersController do
   end
 
   describe "GET edit" do
-    it "requires login" do
-      get :edit, params: { id: -1 }
-      expect(response).to redirect_to(root_url)
-      expect(flash[:error]).to eq("You must be logged in to view that page.")
-    end
+    let(:redirect_override) { user_characters_url(user) }
 
-    it "requires valid character id" do
-      user_id = login
-      get :edit, params: { id: -1 }
-      expect(response).to redirect_to(user_characters_url(user_id))
-      expect(flash[:error]).to eq("Character could not be found.")
-    end
-
-    it "requires character with permissions" do
-      user_id = login
-      get :edit, params: { id: create(:character).id }
-      expect(response).to redirect_to(user_characters_url(user_id))
-      expect(flash[:error]).to eq("You do not have permission to edit that character.")
-    end
-
-    it "succeeds when logged in" do
-      character = create(:character)
-      login_as(character.user)
-      get :edit, params: { id: character.id }
-      expect(response.status).to eq(200)
-    end
+    include_examples 'GET edit validations', 'character'
 
     context "with views" do
       render_views
@@ -392,33 +320,10 @@ RSpec.describe CharactersController do
   end
 
   describe "PUT update" do
-    it "requires login" do
-      put :update, params: { id: -1 }
-      expect(response).to redirect_to(root_url)
-      expect(flash[:error]).to eq("You must be logged in to view that page.")
-    end
+    let(:error_msg_override) { "Your character could not be saved." }
+    let(:redirect_override) { user_characters_url(user) }
 
-    it "requires valid character id" do
-      user_id = login
-      put :update, params: { id: -1 }
-      expect(response).to redirect_to(user_characters_url(user_id))
-      expect(flash[:error]).to eq("Character could not be found.")
-    end
-
-    it "requires character with permissions" do
-      user_id = login
-      put :update, params: { id: create(:character).id }
-      expect(response).to redirect_to(user_characters_url(user_id))
-      expect(flash[:error]).to eq("You do not have permission to edit that character.")
-    end
-
-    it "fails with invalid params" do
-      character = create(:character)
-      login_as(character.user)
-      put :update, params: { id: character.id, character: {name: ''} }
-      expect(response.status).to eq(200)
-      expect(flash[:error][:message]).to eq("Your character could not be saved.")
-    end
+    include_examples 'PUT update validations', 'character'
 
     it "fails with invalid template params" do
       character = create(:character)
@@ -766,37 +671,9 @@ RSpec.describe CharactersController do
   end
 
   describe "DELETE destroy" do
-    it "requires login" do
-      delete :destroy, params: { id: -1 }
-      expect(response).to redirect_to(root_url)
-      expect(flash[:error]).to eq("You must be logged in to view that page.")
-    end
+    let(:redirect_override) { user_characters_url(user) }
 
-    it "requires valid character" do
-      user_id = login
-      delete :destroy, params: { id: -1 }
-      expect(response).to redirect_to(user_characters_url(user_id))
-      expect(flash[:error]).to eq("Character could not be found.")
-    end
-
-    it "requires permission" do
-      user = create(:user)
-      login_as(user)
-      character = create(:character)
-      expect(character.user_id).not_to eq(user.id)
-      delete :destroy, params: { id: character.id }
-      expect(response).to redirect_to(user_characters_url(user.id))
-      expect(flash[:error]).to eq("You do not have permission to edit that character.")
-    end
-
-    it "succeeds" do
-      character = create(:character)
-      login_as(character.user)
-      delete :destroy, params: { id: character.id }
-      expect(response).to redirect_to(user_characters_url(character.user_id))
-      expect(flash[:success]).to eq("Character deleted successfully.")
-      expect(Character.find_by_id(character.id)).to be_nil
-    end
+    include_examples 'DELETE destroy validations', 'character'
 
     it "handles destroy failure" do
       character = create(:character)

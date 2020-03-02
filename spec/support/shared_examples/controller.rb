@@ -1,8 +1,9 @@
 include Rails.application.routes.url_helpers
 default_url_options[:host] = 'test.host'
 
-module SharedExamples
-module Controller
+module SharedExamples end
+
+module SharedExamples::Controller
   RSpec.shared_context "shared context" do |klass|
     let(:index_redirect) do
       return redirect_override if defined? redirect_override
@@ -92,6 +93,11 @@ module Controller
   RSpec.shared_examples "POST create validations" do |klass|
     include_context "shared context", klass
 
+    let(:error_msg) do
+      return error_msg_override if defined? error_msg_override
+      "#{klass_name.capitalize} could not be created."
+    end
+
     it "requires login" do
       post :create
       expect(response).to redirect_to(root_url)
@@ -102,7 +108,7 @@ module Controller
       login
       post :create
       expect(response.status).to eq(200)
-      expect(flash[:error][:message]).to eq("#{klass_name.capitalize} could not be created.")
+      expect(flash[:error][:message]).to eq(error_msg)
       expect(assigns(:page_title)).to eq("New #{klass_name.capitalize}")
       expect(assigns(klass)).to be_a_new_record
     end
@@ -111,7 +117,7 @@ module Controller
       login
       post :create, params: { self_key => {name: ''} }
       expect(response.status).to eq(200)
-      expect(flash[:error][:message]).to eq("#{klass_name.capitalize} could not be created.")
+      expect(flash[:error][:message]).to eq(error_msg)
       expect(assigns(:page_title)).to eq("New #{klass_name.capitalize}")
       expect(assigns(klass)).to be_a_new_record
     end
@@ -259,6 +265,11 @@ module Controller
     include_context "shared context", klass
     include_examples 'PUT update validations shared', klass
 
+    let(:error_msg) do
+      return error_msg_override if defined? error_msg_override
+      "#{klass_name.capitalize} could not be updated."
+    end
+
     it "requires permission" do
       login
       put :update, params: { id: object.id }
@@ -270,7 +281,7 @@ module Controller
       login_as(object.user)
       put :update, params: { id: object.id, klass => {name: ''} }
       expect(response).to render_template('edit')
-      expect(flash[:error][:message]).to eq("#{klass_name.capitalize} could not be updated.")
+      expect(flash[:error][:message]).to eq(error_msg)
       expect(flash[:error][:array]).to be_present
     end
   end
@@ -319,7 +330,7 @@ module Controller
     end
 
     it "succeeds" do
-      login_as(object.creator)
+      login_as(object.user)
       delete :destroy, params: { id: object.id }
       expect(response).to redirect_to(index_redirect)
       expect(flash[:success]).to eq("#{klass_name.capitalize} deleted.")
@@ -365,5 +376,4 @@ module Controller
       expect(flash[:error]).to eq("Alias could not be found for that character.").or eq("You do not have permission to edit this #{parent_name}.")
     end
   end
-end
 end

@@ -23,16 +23,7 @@ RSpec.describe BlocksController, type: :controller do
   end
 
   describe "GET new" do
-    it "requires login" do
-      get :new
-      expect(response).to redirect_to(root_url)
-    end
-
-    it "succeeds" do
-      login
-      get :new
-      expect(response.status).to eq(200)
-    end
+    include_examples 'GET new validations'
   end
 
   describe "POST create" do
