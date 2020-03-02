@@ -11,7 +11,7 @@ module SharedExamples
       when 'Board'
         'continuity'
       else
-        klass.to_s.underscore.humanize.downcase
+        self_sym.humanize.downcase
     end
   end
 end
@@ -24,9 +24,11 @@ module SharedExamples::Controller
     end
     let(:self_redirect) { url_for(object) }
     let(:user) { create(:user) }
-    let(:object) { create(klass.to_s.underscore) }
+    let(:object) { create(self_sym) }
+    let(:self_sym) { klass.to_s.underscore.to_sym }
     let(:self_key) { klass.to_s.foreign_key }
     let(:klass_name) { SharedExamples.name_for(klass) }
+    let(:klass_cname) { klass_name.capitalize }
   end
 
   RSpec.shared_context "shared parent context" do
@@ -78,7 +80,7 @@ module SharedExamples::Controller
       login_as(user)
       get :new, params: { self_key => -1 }
       expect(response).to redirect_to(index_redirect)
-      expect(flash[:error]).to eq("#{klass_name.capitalize} could not be found.")
+      expect(flash[:error]).to eq("#{klass_cname} could not be found.")
     end
 
     it "requires your parent" do
@@ -94,7 +96,7 @@ module SharedExamples::Controller
 
     let(:error_msg) do
       return error_msg_override if defined? error_msg_override
-      "#{klass_name.capitalize} could not be created."
+      "#{klass_cname} could not be created."
     end
 
     it "requires login" do
@@ -108,8 +110,8 @@ module SharedExamples::Controller
       post :create
       expect(response.status).to eq(200)
       expect(flash[:error][:message]).to eq(error_msg)
-      expect(assigns(:page_title)).to eq("New #{klass_name.capitalize}")
-      expect(assigns(klass.to_s.underscore)).to be_a_new_record
+      expect(assigns(:page_title)).to eq("New #{klass_cname}")
+      expect(assigns(self_sym)).to be_a_new_record
     end
 
     it "fails with invalid params" do
@@ -117,15 +119,15 @@ module SharedExamples::Controller
       post :create, params: { self_key => {name: ''} }
       expect(response.status).to eq(200)
       expect(flash[:error][:message]).to eq(error_msg)
-      expect(assigns(:page_title)).to eq("New #{klass_name.capitalize}")
-      expect(assigns(klass.to_s.underscore)).to be_a_new_record
+      expect(assigns(:page_title)).to eq("New #{klass_cname}")
+      expect(assigns(self_sym)).to be_a_new_record
     end
   end
 
   RSpec.shared_examples "POST create with parent validations" do
     let(:assign) do
       return :alias if klass == CharacterAlias
-      klass.to_s.underscore.to_sym
+      self_sym
     end
 
     include_context "shared parent context"
@@ -142,7 +144,7 @@ module SharedExamples::Controller
       expect(response).to redirect_to(index_redirect).or render_template(:new)
       expect(flash[:error]).to eq("#{parent_name.capitalize} could not be found.")
         .or eq({
-          message: "#{klass_name.capitalize} could not be created.",
+          message: "#{klass_cname} could not be created.",
           array: ["#{parent_klass.to_s.capitalize} must exist", "Name can't be blank"]
         })
     end
@@ -158,8 +160,8 @@ module SharedExamples::Controller
       login_as(parent.user)
       post :create, params: { parent_key => parent.id }
       expect(response.status).to eq(200)
-      expect(flash[:error][:message]).to eq("#{klass_name.capitalize} could not be created.")
-      expect(assigns(:page_title)).to eq("New #{klass_name.capitalize}").or eq("New #{klass_name.capitalize}: #{parent.name}")
+      expect(flash[:error][:message]).to eq("#{klass_cname} could not be created.")
+      expect(assigns(:page_title)).to eq("New #{klass_cname}").or eq("New #{klass_cname}: #{parent.name}")
       expect(assigns(assign)).to be_a_new_record
     end
 
@@ -167,8 +169,8 @@ module SharedExamples::Controller
       login_as(parent.user)
       post :create, params: { parent_key => parent.id, self_key => {name: ''} }
       expect(response.status).to eq(200)
-      expect(flash[:error][:message]).to eq("#{klass_name.capitalize} could not be created.")
-      expect(assigns(:page_title)).to eq("New #{klass_name.capitalize}").or eq("New #{klass_name.capitalize}: #{parent.name}")
+      expect(flash[:error][:message]).to eq("#{klass_cname} could not be created.")
+      expect(assigns(:page_title)).to eq("New #{klass_cname}").or eq("New #{klass_cname}: #{parent.name}")
       expect(assigns(assign)).to be_a_new_record
     end
   end
@@ -179,7 +181,7 @@ module SharedExamples::Controller
     it "requires valid instance" do
       get :show, params: { id: -1 }
       expect(response).to redirect_to(index_redirect)
-      expect(flash[:error]).to eq("#{klass_name.capitalize} could not be found.")
+      expect(flash[:error]).to eq("#{klass_cname} could not be found.")
     end
 
     it "works logged in" do
@@ -205,7 +207,7 @@ module SharedExamples::Controller
       login
       get :edit, params: { id: -1 }
       expect(response).to redirect_to(index_redirect)
-      expect(flash[:error]).to eq("#{klass_name.capitalize} could not be found.")
+      expect(flash[:error]).to eq("#{klass_cname} could not be found.")
     end
   end
 
@@ -256,7 +258,7 @@ module SharedExamples::Controller
       login
       put :update, params: { id: -1 }
       expect(response).to redirect_to(index_redirect)
-      expect(flash[:error]).to eq("#{klass_name.capitalize} could not be found.")
+      expect(flash[:error]).to eq("#{klass_cname} could not be found.")
     end
   end
 
@@ -266,7 +268,7 @@ module SharedExamples::Controller
 
     let(:error_msg) do
       return error_msg_override if defined? error_msg_override
-      "#{klass_name.capitalize} could not be updated."
+      "#{klass_cname} could not be updated."
     end
 
     it "requires permission" do
@@ -278,7 +280,7 @@ module SharedExamples::Controller
 
     it "requires valid params" do
       login_as(object.user)
-      put :update, params: { id: object.id, klass.to_s.underscore => {name: ''} }
+      put :update, params: { id: object.id, self_sym => {name: ''} }
       expect(response).to render_template('edit')
       expect(flash[:error][:message]).to eq(error_msg)
       expect(flash[:error][:array]).to be_present
@@ -298,9 +300,9 @@ module SharedExamples::Controller
 
     it "requires valid params" do
       login_as(parent.user)
-      put :update, params: { id: object.id, klass.to_s.underscore => {name: ''} }
+      put :update, params: { id: object.id, self_sym => {name: ''} }
       expect(response).to render_template('edit')
-      expect(flash[:error][:message]).to eq("#{klass_name.capitalize} could not be updated.")
+      expect(flash[:error][:message]).to eq("#{klass_cname} could not be updated.")
       expect(flash[:error][:array]).to be_present
     end
   end
@@ -318,7 +320,7 @@ module SharedExamples::Controller
       login
       delete :destroy, params: { id: -1 }
       expect(response).to redirect_to(index_redirect)
-      expect(flash[:error]).to eq("#{klass_name.capitalize} could not be found.")
+      expect(flash[:error]).to eq("#{klass_cname} could not be found.")
     end
 
     it "requires permission" do
@@ -332,7 +334,7 @@ module SharedExamples::Controller
       login_as(object.user)
       delete :destroy, params: { id: object.id }
       expect(response).to redirect_to(index_redirect)
-      expect(flash[:success]).to eq("#{klass_name.capitalize} deleted.")
+      expect(flash[:success]).to eq("#{klass_cname} deleted.")
       expect{object.reload}.to raise_error(ActiveRecord::RecordNotFound)
     end
   end
@@ -363,11 +365,11 @@ module SharedExamples::Controller
       login_as(parent.user)
       delete :destroy, params: { id: -1, parent_key => parent.id }
       expect(response).to redirect_to(parent_redirect).or redirect_to(index_redirect)
-      expect(flash[:error]).to eq("#{klass_name.capitalize} could not be found.")
+      expect(flash[:error]).to eq("#{klass_cname} could not be found.")
     end
 
     it "requires instance to match parent" do
-      child = create(klass.to_s.underscore)
+      child = create(self_sym)
       login_as(parent.user)
       expect(parent.id).not_to eq(child[parent_key])
       delete :destroy, params: { id: child.id, parent_key => parent.id }
