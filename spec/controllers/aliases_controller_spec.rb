@@ -3,11 +3,14 @@ require "support/shared_examples/controller"
 
 RSpec.describe AliasesController do
   include ActiveJob::TestHelper
+  let(:klass) { CharacterAlias }
+  let(:parent_klass) { Character }
 
   describe "GET new" do
+    let(:klass) { Character }
     let(:redirect_override) { user_characters_url(user) }
 
-    include_examples 'GET new with parent validations', 'character'
+    include_examples 'GET new with parent validations'
 
     it "succeeds" do
       character = create(:character)
@@ -23,7 +26,7 @@ RSpec.describe AliasesController do
   describe "POST create" do
     let(:redirect_override) { user_characters_url(user) }
 
-    include_examples 'POST create with parent validations', 'character', 'character_alias'
+    include_examples 'POST create with parent validations'
 
     it "succeeds when valid" do
       expect(CharacterAlias.count).to eq(0)
@@ -46,7 +49,7 @@ RSpec.describe AliasesController do
     let(:redirect_override) { user_characters_url(user) }
     let(:parent_redirect_override) { edit_character_url(parent) }
 
-    include_examples 'DELETE destroy with parent validations', 'character', 'character_alias'
+    include_examples 'DELETE destroy with parent validations', 'character'
 
     it "requires valid character" do
       login_as(user)

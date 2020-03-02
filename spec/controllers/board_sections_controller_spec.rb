@@ -1,9 +1,14 @@
 require "spec_helper"
-require "support/shared_examples/controller"
 
 RSpec.describe BoardSectionsController do
+  let(:klass) { BoardSection }
+  let(:parent_klass) { Board }
+  let(:redirect_override) { boards_url }
+
   describe "GET new" do
-    include_examples 'GET new with parent validations', 'board'
+    let(:klass) { Board }
+
+    include_examples 'GET new with parent validations'
 
     it "works with board_id" do
       board = create(:board)
@@ -22,9 +27,7 @@ RSpec.describe BoardSectionsController do
   end
 
   describe "POST create" do
-    let(:redirect_override) { boards_url }
-
-    include_examples 'POST create with parent validations', 'board', 'board_section'
+    include_examples 'POST create with parent validations'
 
     it "succeeds" do
       board = create(:board)
@@ -38,9 +41,7 @@ RSpec.describe BoardSectionsController do
   end
 
   describe "GET show" do
-    let(:redirect_override) { boards_url }
-
-    include_examples 'GET show validations', 'board_section', 'section'
+    include_examples 'GET show validations'
 
     it "orders posts correctly" do
       board = create(:board)
@@ -77,15 +78,11 @@ RSpec.describe BoardSectionsController do
   end
 
   describe "GET edit" do
-    let(:redirect_override) { boards_url }
-
-    include_examples 'GET edit with parent validations', 'board', 'board_section'
+    include_examples 'GET edit with parent validations'
   end
 
   describe "PUT update" do
-    let(:redirect_override) { boards_url }
-
-    include_examples 'PUT update with parent validations', 'board', 'board_section'
+    include_examples 'PUT update with parent validations'
 
     it "succeeds" do
       board_section = create('board_section', name: 'TestSection1')
@@ -99,9 +96,7 @@ RSpec.describe BoardSectionsController do
   end
 
   describe "DELETE destroy" do
-    let(:redirect_override) { boards_url }
-
-    include_examples 'DELETE destroy with parent validations', 'board', 'board_section'
+    include_examples 'DELETE destroy with parent validations'
 
     it "handles destroy failure" do
       section = create('board_section')

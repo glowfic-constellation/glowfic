@@ -2,6 +2,7 @@ require "spec_helper"
 
 RSpec.describe BoardsController do
   include ActiveJob::TestHelper
+  let(:klass) { Board }
 
   describe "GET index" do
     context "without a user_id" do
@@ -108,7 +109,7 @@ RSpec.describe BoardsController do
   end
 
   describe "POST create" do
-    include_examples "POST create validations", 'board'
+    include_examples "POST create validations"
 
     it "sets correct variables on failure" do
       login
@@ -162,7 +163,7 @@ RSpec.describe BoardsController do
   end
 
   describe "GET show" do
-    include_examples "GET show validations", 'board'
+    include_examples "GET show validations"
 
     it "only fetches the board's first 25 posts" do
       board = create(:board)
@@ -221,7 +222,7 @@ RSpec.describe BoardsController do
   end
 
   describe "GET edit" do
-    include_examples 'GET edit validations', 'board'
+    include_examples 'GET edit validations'
 
     it "sets expected variables" do
       coauthor = create(:user)
@@ -238,7 +239,7 @@ RSpec.describe BoardsController do
   end
 
   describe "PUT update" do
-    include_examples "PUT update validations", 'board'
+    include_examples "PUT update validations"
 
     it "succeeds" do
       user = create(:user)
@@ -267,7 +268,7 @@ RSpec.describe BoardsController do
   end
 
   describe "DELETE destroy" do
-    include_examples 'DELETE destroy validations', 'board'
+    include_examples 'DELETE destroy validations'
 
     it "moves posts to sandboxes" do
       board = create(:board)

@@ -1,41 +1,40 @@
 include Rails.application.routes.url_helpers
 default_url_options[:host] = 'test.host'
 
-module SharedExamples end
+module SharedExamples
+  def self.name_for(klass)
+    case klass.to_s
+      when 'CharacterAlias'
+        'alias'
+      when 'BoardSection'
+        'section'
+      when 'Board'
+        'continuity'
+      else
+        klass.to_s.underscore.humanize.downcase
+    end
+  end
+end
 
 module SharedExamples::Controller
-  RSpec.shared_context "shared context" do |klass|
+  RSpec.shared_context "shared context" do
     let(:index_redirect) do
       return redirect_override if defined? redirect_override
-      url_for(controller: klass.tableize)
+      url_for(controller: klass.table_name)
     end
     let(:self_redirect) { url_for(object) }
     let(:user) { create(:user) }
-    let(:object) { create(klass) }
-    let(:self_key) { klass.foreign_key }
-    let(:klass_name) do
-      case klass
-        when 'character_alias'
-          'alias'
-        when 'board_section'
-          'section'
-        when 'board'
-          'continuity'
-        else
-          klass
-      end
-    end
+    let(:object) { create(klass.to_s.underscore) }
+    let(:self_key) { klass.to_s.foreign_key }
+    let(:klass_name) { SharedExamples.name_for(klass) }
   end
 
-  RSpec.shared_context "shared parent context" do |parent_klass, klass|
-    include_context "shared context", klass
+  RSpec.shared_context "shared parent context" do
+    include_context "shared context"
 
-    let(:parent) { object.send(parent_klass) }
-    let(:parent_key) { parent_klass.foreign_key }
-    let(:parent_name) do
-      return 'continuity' if parent_klass == 'board'
-      parent_klass
-    end
+    let(:parent) { object.send(parent_klass.to_s.underscore) }
+    let(:parent_key) { parent_klass.to_s.foreign_key }
+    let(:parent_name) { SharedExamples.name_for(parent_klass) }
   end
 
   RSpec.shared_examples "GET index validations" do
@@ -65,8 +64,8 @@ module SharedExamples::Controller
     end
   end
 
-  RSpec.shared_examples "GET new with parent validations" do |parent_klass|
-    include_context "shared context", parent_klass
+  RSpec.shared_examples "GET new with parent validations" do
+    include_context "shared context"
 
     it "requires login" do
       get :new, params: { self_key => -1 }
@@ -74,15 +73,15 @@ module SharedExamples::Controller
       expect(flash[:error]).to eq("You must be logged in to view that page.")
     end
 
-    it "requires valid #{parent_klass}" do
-      skip if parent_klass == 'board'
+    it "requires valid parent" do
+      skip if klass == Board
       login_as(user)
       get :new, params: { self_key => -1 }
       expect(response).to redirect_to(index_redirect)
       expect(flash[:error]).to eq("#{klass_name.capitalize} could not be found.")
     end
 
-    it "requires your #{parent_klass}" do
+    it "requires your parent" do
       login_as(user)
       get :new, params: { self_key => object.id }
       expect(response).to redirect_to(index_redirect)
@@ -90,8 +89,8 @@ module SharedExamples::Controller
     end
   end
 
-  RSpec.shared_examples "POST create validations" do |klass|
-    include_context "shared context", klass
+  RSpec.shared_examples "POST create validations" do
+    include_context "shared context"
 
     let(:error_msg) do
       return error_msg_override if defined? error_msg_override
@@ -110,7 +109,7 @@ module SharedExamples::Controller
       expect(response.status).to eq(200)
       expect(flash[:error][:message]).to eq(error_msg)
       expect(assigns(:page_title)).to eq("New #{klass_name.capitalize}")
-      expect(assigns(klass)).to be_a_new_record
+      expect(assigns(klass.to_s.underscore)).to be_a_new_record
     end
 
     it "fails with invalid params" do
@@ -119,17 +118,17 @@ module SharedExamples::Controller
       expect(response.status).to eq(200)
       expect(flash[:error][:message]).to eq(error_msg)
       expect(assigns(:page_title)).to eq("New #{klass_name.capitalize}")
-      expect(assigns(klass)).to be_a_new_record
+      expect(assigns(klass.to_s.underscore)).to be_a_new_record
     end
   end
 
-  RSpec.shared_examples "POST create with parent validations" do |parent_klass, klass|
+  RSpec.shared_examples "POST create with parent validations" do
     let(:assign) do
-      return :alias if klass == 'character_alias'
-      klass.to_sym
+      return :alias if klass == CharacterAlias
+      klass.to_s.underscore.to_sym
     end
 
-    include_context "shared parent context", parent_klass, klass
+    include_context "shared parent context"
 
     it "requires login" do
       post :create, params: { parent_key => -1 }
@@ -137,18 +136,18 @@ module SharedExamples::Controller
       expect(flash[:error]).to eq("You must be logged in to view that page.")
     end
 
-    it "requires valid #{parent_klass}" do
+    it "requires valid parent" do
       login_as(user)
       post :create, params: { parent_key => -1 }
       expect(response).to redirect_to(index_redirect).or render_template(:new)
       expect(flash[:error]).to eq("#{parent_name.capitalize} could not be found.")
         .or eq({
           message: "#{klass_name.capitalize} could not be created.",
-          array: ["#{parent_klass.capitalize} must exist", "Name can't be blank"]
+          array: ["#{parent_klass.to_s.capitalize} must exist", "Name can't be blank"]
         })
     end
 
-    it "requires your #{parent_klass}" do
+    it "requires your parent" do
       login_as(user)
       post :create, params: { parent_key => parent.id }
       expect(response).to redirect_to(index_redirect)
@@ -174,10 +173,10 @@ module SharedExamples::Controller
     end
   end
 
-  RSpec.shared_examples "GET show validations" do |klass|
-    include_context "shared context", klass
+  RSpec.shared_examples "GET show validations" do
+    include_context "shared context"
 
-    it "requires valid #{klass}" do
+    it "requires valid instance" do
       get :show, params: { id: -1 }
       expect(response).to redirect_to(index_redirect)
       expect(flash[:error]).to eq("#{klass_name.capitalize} could not be found.")
@@ -195,14 +194,14 @@ module SharedExamples::Controller
     end
   end
 
-  RSpec.shared_examples 'GET edit validations shared' do |klass|
+  RSpec.shared_examples 'GET edit validations shared' do
     it "requires login" do
       get :edit, params: { id: -1 }
       expect(response).to redirect_to(root_url)
       expect(flash[:error]).to eq("You must be logged in to view that page.")
     end
 
-    it "requires valid #{klass}" do
+    it "requires valid instance" do
       login
       get :edit, params: { id: -1 }
       expect(response).to redirect_to(index_redirect)
@@ -210,9 +209,9 @@ module SharedExamples::Controller
     end
   end
 
-  RSpec.shared_examples 'GET edit validations' do |klass|
-    include_context "shared context", klass
-    include_examples 'GET edit validations shared', klass
+  RSpec.shared_examples 'GET edit validations' do
+    include_context "shared context"
+    include_examples 'GET edit validations shared'
 
     it "requires permission" do
       login
@@ -228,9 +227,9 @@ module SharedExamples::Controller
     end
   end
 
-  RSpec.shared_examples 'GET edit with parent validations' do |parent_klass, klass|
-    include_context "shared parent context", parent_klass, klass
-    include_examples 'GET edit validations shared', klass
+  RSpec.shared_examples 'GET edit with parent validations' do
+    include_context "shared parent context"
+    include_examples 'GET edit validations shared'
 
     it "requires permission" do
       login
@@ -246,14 +245,14 @@ module SharedExamples::Controller
     end
   end
 
-  RSpec.shared_examples 'PUT update validations shared' do |klass|
+  RSpec.shared_examples 'PUT update validations shared' do
     it "requires login" do
       put :update, params: { id: -1 }
       expect(response).to redirect_to(root_url)
       expect(flash[:error]).to eq("You must be logged in to view that page.")
     end
 
-    it "requires valid #{klass}" do
+    it "requires valid instance" do
       login
       put :update, params: { id: -1 }
       expect(response).to redirect_to(index_redirect)
@@ -261,9 +260,9 @@ module SharedExamples::Controller
     end
   end
 
-  RSpec.shared_examples 'PUT update validations' do |klass|
-    include_context "shared context", klass
-    include_examples 'PUT update validations shared', klass
+  RSpec.shared_examples 'PUT update validations' do
+    include_context "shared context"
+    include_examples 'PUT update validations shared'
 
     let(:error_msg) do
       return error_msg_override if defined? error_msg_override
@@ -279,16 +278,16 @@ module SharedExamples::Controller
 
     it "requires valid params" do
       login_as(object.user)
-      put :update, params: { id: object.id, klass => {name: ''} }
+      put :update, params: { id: object.id, klass.to_s.underscore => {name: ''} }
       expect(response).to render_template('edit')
       expect(flash[:error][:message]).to eq(error_msg)
       expect(flash[:error][:array]).to be_present
     end
   end
 
-  RSpec.shared_examples 'PUT update with parent validations' do |parent_klass, klass|
-    include_context "shared parent context", parent_klass, klass
-    include_examples 'PUT update validations shared', klass
+  RSpec.shared_examples 'PUT update with parent validations' do
+    include_context "shared parent context"
+    include_examples 'PUT update validations shared'
 
     it "requires permission" do
       login
@@ -299,15 +298,15 @@ module SharedExamples::Controller
 
     it "requires valid params" do
       login_as(parent.user)
-      put :update, params: { id: object.id, klass => {name: ''} }
+      put :update, params: { id: object.id, klass.to_s.underscore => {name: ''} }
       expect(response).to render_template('edit')
       expect(flash[:error][:message]).to eq("#{klass_name.capitalize} could not be updated.")
       expect(flash[:error][:array]).to be_present
     end
   end
 
-  RSpec.shared_examples 'DELETE destroy validations' do |klass|
-    include_context "shared context", klass
+  RSpec.shared_examples 'DELETE destroy validations' do
+    include_context "shared context"
 
     it "requires login" do
       delete :destroy, params: { id: -1 }
@@ -315,7 +314,7 @@ module SharedExamples::Controller
       expect(flash[:error]).to eq("You must be logged in to view that page.")
     end
 
-    it "requires valid #{klass}" do
+    it "requires valid instance" do
       login
       delete :destroy, params: { id: -1 }
       expect(response).to redirect_to(index_redirect)
@@ -338,14 +337,14 @@ module SharedExamples::Controller
     end
   end
 
-  RSpec.shared_examples 'DELETE destroy with parent validations' do |parent_klass, klass|
+  RSpec.shared_examples 'DELETE destroy with parent validations' do
     let(:parent_redirect) do
       return parent_redirect_override if defined? parent_redirect_override
       return redirect_override if defined? redirect_override
-      url_for(controller: parent_klass.tableize, action: 'edit', id: parent.id)
+      url_for(controller: parent_klass.table_name, action: 'edit', id: parent.id)
     end
 
-    include_context "shared parent context", parent_klass, klass
+    include_context "shared parent context"
 
     it "requires login" do
       delete :destroy, params: { id: -1, parent_key => -1 }
@@ -353,22 +352,22 @@ module SharedExamples::Controller
       expect(flash[:error]).to eq("You must be logged in to view that page.")
     end
 
-    it "requires your #{parent_klass}" do
+    it "requires your parent" do
       login_as(user)
-      delete :destroy, params: { id: object.id, parent_key => create(parent_klass).id }
+      delete :destroy, params: { id: object.id, parent_key => create(parent_klass.to_s.underscore).id }
       expect(response).to redirect_to(index_redirect)
       expect(flash[:error]).to eq("That is not your #{parent_name}.").or eq("You do not have permission to edit this #{parent_name}.")
     end
 
-    it "requires valid #{klass}" do
+    it "requires valid instance" do
       login_as(parent.user)
       delete :destroy, params: { id: -1, parent_key => parent.id }
       expect(response).to redirect_to(parent_redirect).or redirect_to(index_redirect)
       expect(flash[:error]).to eq("#{klass_name.capitalize} could not be found.")
     end
 
-    it "requires #{klass} to match #{parent_klass}" do
-      child = create(klass)
+    it "requires instance to match parent" do
+      child = create(klass.to_s.underscore)
       login_as(parent.user)
       expect(parent.id).not_to eq(child[parent_key])
       delete :destroy, params: { id: child.id, parent_key => parent.id }
