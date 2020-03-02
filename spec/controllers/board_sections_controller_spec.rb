@@ -3,7 +3,7 @@ require "support/shared_examples/controller"
 
 RSpec.describe BoardSectionsController do
   describe "GET new" do
-    include_examples 'GET new with parent validations', 'board', 'continuity'
+    include_examples 'GET new with parent validations', 'board'
 
     it "works with board_id" do
       board = create(:board)
@@ -24,7 +24,7 @@ RSpec.describe BoardSectionsController do
   describe "POST create" do
     let(:redirect_override) { boards_url }
 
-    include_examples 'POST create with parent validations', 'board', 'continuity', 'board_section', 'section'
+    include_examples 'POST create with parent validations', 'board', 'board_section'
 
     it "succeeds" do
       board = create(:board)
@@ -79,13 +79,13 @@ RSpec.describe BoardSectionsController do
   describe "GET edit" do
     let(:redirect_override) { boards_url }
 
-    include_examples 'GET edit with parent validations', 'board', 'board_section', 'section'
+    include_examples 'GET edit with parent validations', 'board', 'board_section'
   end
 
   describe "PUT update" do
     let(:redirect_override) { boards_url }
 
-    include_examples 'PUT update with parent validations', 'board', 'board_section', 'section'
+    include_examples 'PUT update with parent validations', 'board', 'board_section'
 
     it "succeeds" do
       board_section = create('board_section', name: 'TestSection1')
@@ -101,7 +101,7 @@ RSpec.describe BoardSectionsController do
   describe "DELETE destroy" do
     let(:redirect_override) { boards_url }
 
-    include_examples 'DELETE destroy with parent validations', 'board', 'board_section', 'continuity', 'section'
+    include_examples 'DELETE destroy with parent validations', 'board', 'board_section'
 
     it "handles destroy failure" do
       section = create('board_section')

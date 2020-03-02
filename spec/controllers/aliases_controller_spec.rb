@@ -23,7 +23,7 @@ RSpec.describe AliasesController do
   describe "POST create" do
     let(:redirect_override) { user_characters_url(user) }
 
-    include_examples 'POST create with parent validations', 'character', 'CharacterAlias', 'alias'
+    include_examples 'POST create with parent validations', 'character', 'character_alias'
 
     it "succeeds when valid" do
       expect(CharacterAlias.count).to eq(0)
@@ -44,14 +44,14 @@ RSpec.describe AliasesController do
 
   describe "DELETE destroy" do
     let(:redirect_override) { user_characters_url(user) }
-    let(:parent_redirect) { edit_character_url(parent) }
+    let(:parent_redirect_override) { edit_character_url(parent) }
 
-    include_examples 'DELETE destroy with parent validations', 'character', 'CharacterAlias', 'alias'
+    include_examples 'DELETE destroy with parent validations', 'character', 'character_alias'
 
     it "requires valid character" do
       login_as(user)
-      delete :destroy, params: { id: -1, parent_key => -1 }
-      expect(response).to redirect_to(parent_redirect)
+      delete :destroy, params: { id: -1, character_id: -1 }
+      expect(response).to redirect_to(user_characters_url(user))
       expect(flash[:error]).to eq("Character could not be found.")
     end
 

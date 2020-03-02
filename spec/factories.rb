@@ -137,7 +137,7 @@ FactoryBot.define do
     gallery
   end
 
-  factory :alias, class: :character_alias do
+  factory :alias, class: :character_alias, aliases: [:character_alias] do
     character
     sequence :name do |n|
       "TestAlias#{n}"

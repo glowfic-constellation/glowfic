@@ -108,7 +108,7 @@ RSpec.describe BoardsController do
   end
 
   describe "POST create" do
-    include_examples "POST create validations", 'board', 'continuity'
+    include_examples "POST create validations", 'board'
 
     it "sets correct variables on failure" do
       login
@@ -162,7 +162,7 @@ RSpec.describe BoardsController do
   end
 
   describe "GET show" do
-    include_examples "GET show validations", 'board', 'continuity'
+    include_examples "GET show validations", 'board'
 
     it "only fetches the board's first 25 posts" do
       board = create(:board)
@@ -221,7 +221,7 @@ RSpec.describe BoardsController do
   end
 
   describe "GET edit" do
-    include_examples 'GET edit validations', 'board', 'continuity'
+    include_examples 'GET edit validations', 'board'
 
     it "sets expected variables" do
       coauthor = create(:user)
@@ -238,7 +238,7 @@ RSpec.describe BoardsController do
   end
 
   describe "PUT update" do
-    include_examples "PUT update validations", 'board', 'continuity'
+    include_examples "PUT update validations", 'board'
 
     it "succeeds" do
       user = create(:user)
@@ -267,7 +267,7 @@ RSpec.describe BoardsController do
   end
 
   describe "DELETE destroy" do
-    include_examples 'DELETE destroy validations', 'board', 'continuity'
+    include_examples 'DELETE destroy validations', 'board'
 
     it "moves posts to sandboxes" do
       board = create(:board)
