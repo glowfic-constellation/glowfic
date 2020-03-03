@@ -41,11 +41,10 @@ class BoardsController < ApplicationController
 
     begin
       @board.save!
-    rescue ActiveRecord::RecordInvalid
-      flash.now[:error] = {
-        message: "Continuity could not be created because of the following problems:",
-        array: @board.errors.full_messages,
-      }
+    rescue ActiveRecord::RecordInvalid => e
+      render_errors(@board, action: 'created', now: true, class_name: 'Continuity')
+      log_error(e) unless @board.errors.present?
+
       @page_title = 'New Continuity'
       editor_setup
       render :new
@@ -79,11 +78,10 @@ class BoardsController < ApplicationController
   def update
     begin
       @board.update!(permitted_params)
-    rescue ActiveRecord::RecordInvalid
-      flash.now[:error] = {
-        message: "Continuity could not be updated because of the following problems:",
-        array: @board.errors.full_messages,
-      }
+    rescue ActiveRecord::RecordInvalid => e
+      render_errors(@board, action: 'updated', now: true, class_name: 'Continuity')
+      log_error(e) unless @board.errors.present?
+
       @page_title = 'Edit Continuity: ' + @board.name_was
       editor_setup
       use_javascript('board_sections')
@@ -98,11 +96,9 @@ class BoardsController < ApplicationController
   def destroy
     begin
       @board.destroy!
-    rescue ActiveRecord::RecordNotDestroyed
-      flash[:error] = {
-        message: "Continuity could not be deleted because of the following problems:",
-        array: @board.errors.full_messages,
-      }
+    rescue ActiveRecord::RecordNotDestroyed => e
+      render_errors(@board, action: 'deleted', class_name: 'Continuity')
+      log_error(e) unless @board.errors.present?
       redirect_to continuity_path(@board)
     else
       flash[:success] = "Continuity deleted."

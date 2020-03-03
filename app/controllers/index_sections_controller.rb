@@ -30,11 +30,10 @@ class IndexSectionsController < ApplicationController
 
     begin
       @section.save!
-    rescue ActiveRecord::RecordInvalid
-      flash.now[:error] = {
-        message: "Index section could not be created because of the following problems:",
-        array: @section.errors.full_messages,
-      }
+    rescue ActiveRecord::RecordInvalid => e
+      render_errors(@section, action: 'created', now: true)
+      log_error(e) unless @section.errors.present?
+
       @page_title = 'New Index Section'
       render :new
     else
@@ -54,11 +53,9 @@ class IndexSectionsController < ApplicationController
   def update
     begin
       @section.update!(permitted_params)
-    rescue ActiveRecord::RecordInvalid
-      flash.now[:error] = {
-        message: "Index section could not be updated because of the following problems:",
-        array: @section.errors.full_messages,
-      }
+    rescue ActiveRecord::RecordInvalid => e
+      render_errors(@section, action: 'updated', now: true)
+      log_error(e) unless @section.errors.present?
       @page_title = "Edit Index Section: #{@section.name}"
       render :edit
     else
@@ -70,11 +67,9 @@ class IndexSectionsController < ApplicationController
   def destroy
     begin
       @section.destroy!
-    rescue ActiveRecord::RecordNotDestroyed
-      flash[:error] = {
-        message: "Index section could not be deleted because of the following problems:",
-        array: @section.errors.full_messages,
-      }
+    rescue ActiveRecord::RecordNotDestroyed => e
+      render_errors(@section, action: 'deleted')
+      log_error(e) unless @section.errors.present?
     else
       flash[:success] = "Index section deleted."
     end

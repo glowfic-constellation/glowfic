@@ -38,12 +38,13 @@ class UsersController < ApplicationController
 
     begin
       @user.save!
-    rescue ActiveRecord::RecordInvalid
+    rescue ActiveRecord::RecordInvalid => e
       signup_prep
       flash.now[:error] = {
         message: "There was a problem completing your sign up.",
         array: @user.errors.full_messages,
       }
+      log_error(e) unless @user.errors.present?
       render :new
     else
       flash[:success] = "User created! You have been logged in."
@@ -77,11 +78,10 @@ class UsersController < ApplicationController
 
     begin
       current_user.update!(user_params)
-    rescue ActiveRecord::RecordInvalid
-      flash.now[:error] = {
-        message: "Changes could not be saved because of the following problems:",
-        array: current_user.errors.full_messages,
-      }
+    rescue ActiveRecord::RecordInvalid => e
+      render_errors(current_user, action: 'saved', now: true, class_name: 'Changes')
+      log_error(e) unless current_user.errors.present?
+
       use_javascript('users/edit')
       @page_title = 'Edit Account'
       render :edit

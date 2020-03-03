@@ -42,11 +42,10 @@ class GalleriesController < UploadingController
 
     begin
       @gallery.save!
-    rescue ActiveRecord::RecordInvalid
-      flash.now[:error] = {
-        message: "Gallery could not be created because of the following problems:",
-        array: @gallery.errors.full_messages,
-      }
+    rescue ActiveRecord::RecordInvalid => e
+      render_errors(@gallery, action: 'created', now: true)
+      log_error(e) unless @gallery.errors.present?
+
       @page_title = 'New Gallery'
       editor_setup
       render :new
@@ -115,11 +114,10 @@ class GalleriesController < UploadingController
         @gallery.gallery_groups = process_tags(GalleryGroup, obj_param: :gallery, id_param: :gallery_group_ids)
         @gallery.save!
       end
-    rescue ActiveRecord::RecordInvalid
-      flash.now[:error] = {
-        message: "Gallery could not be updated because of the following problems:",
-        array: @gallery.errors.full_messages,
-      }
+    rescue ActiveRecord::RecordInvalid => e
+      render_errors(@gallery, action: 'updated', now: true)
+      log_error(e) unless @gallery.errors.present?
+
       @page_title = 'Edit Gallery: ' + @gallery.name_was
       use_javascript('galleries/uploader')
       use_javascript('galleries/edit')
@@ -195,11 +193,9 @@ class GalleriesController < UploadingController
   def destroy
     begin
       @gallery.destroy!
-    rescue ActiveRecord::RecordNotDestroyed
-      flash[:error] = {
-        message: "Gallery could not be deleted because of the following problems:",
-        array: @gallery.errors.full_messages,
-      }
+    rescue ActiveRecord::RecordNotDestroyed => e
+      render_errors(@gallery, action: 'deleted')
+      log_error(e) unless @gallery.errors.present?
       redirect_to @gallery
     else
       flash[:success] = "Gallery deleted."

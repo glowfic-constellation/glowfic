@@ -23,10 +23,7 @@ class BlocksController < ApplicationController
     @block.blocked_user_id = params.fetch(:block, {})[:blocked_user_id]
 
     unless @block.save
-      flash.now[:error] = {
-        message: "User could not be blocked because of the following problems:",
-        array: @block.errors.full_messages,
-      }
+      render_errors(@block, action: 'create', now: true, msg: 'User could not be blocked')
       editor_setup
       @users = [@block.blocked_user].compact
       @page_title = 'Block User'
@@ -43,10 +40,7 @@ class BlocksController < ApplicationController
 
   def update
     unless @block.update(permitted_params)
-      flash.now[:error] = {
-        message: "Block could not be updated because of the following problems:",
-        array: @block.errors.full_messages,
-      }
+      render_errors(@block, action: 'updated', now: true)
       editor_setup
       @page_title = 'Edit Block: ' + @block.blocked_user.username
       render :edit and return
@@ -59,11 +53,9 @@ class BlocksController < ApplicationController
   def destroy
     begin
       @block.destroy!
-    rescue ActiveRecord::RecordNotDestroyed
-      flash[:error] = {
-        message: "User could not be unblocked because of the following problems:",
-        array: @block.errors.full_messages,
-      }
+    rescue ActiveRecord::RecordNotDestroyed => e
+      render_errors(@block, action: 'delete', msg: 'User could not be unblocked')
+      log_error(e) unless @block.errors.present?
     else
       flash[:success] = "User unblocked."
     end

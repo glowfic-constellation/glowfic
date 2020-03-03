@@ -143,11 +143,10 @@ class PostsController < WritableController
 
     begin
       @post.save!
-    rescue ActiveRecord::RecordInvalid
-      flash.now[:error] = {
-        message: "Post could not be created because of the following problems:",
-        array: @post.errors.full_messages,
-      }
+    rescue ActiveRecord::RecordInvalid => e
+      render_errors(@post, action: 'created', now: true)
+      log_error(e) unless @post.errors.present?
+
       editor_setup
       @page_title = 'New Post'
       render :new
@@ -237,11 +236,10 @@ class PostsController < WritableController
         @post.save!
         @post.author_for(current_user).update!(private_note: @post.private_note) if is_author
       end
-    rescue ActiveRecord::RecordInvalid
-      flash.now[:error] = {
-        message: "Post could not be updated because of the following problems:",
-        array: @post.errors.full_messages,
-      }
+    rescue ActiveRecord::RecordInvalid => e
+      render_errors(@post, action: 'updated', now: true)
+      log_error(e) unless @post.errors.present?
+
       @audits = { post: @post.audits.count }
       editor_setup
       render :edit
@@ -259,11 +257,9 @@ class PostsController < WritableController
 
     begin
       @post.destroy!
-    rescue ActiveRecord::RecordNotDestroyed
-      flash[:error] = {
-        message: "Post could not be deleted because of the following problems:",
-        array: @post.errors.full_messages,
-      }
+    rescue ActiveRecord::RecordNotDestroyed => e
+      render_errors(@post, action: 'deleted')
+      log_error(e) unless @post.errors.present?
       redirect_to @post
     else
       flash[:success] = "Post deleted."
@@ -390,11 +386,9 @@ class PostsController < WritableController
         @post.update!(status: params[:status])
         @post.mark_read(current_user, at_time: @post.tagged_at)
       end
-    rescue ActiveRecord::RecordInvalid
-      flash[:error] = {
-        message: "Status could not be updated because of the following problems:",
-        array: @post.errors.full_messages,
-      }
+    rescue ActiveRecord::RecordInvalid => e
+      render_errors(@post, action: 'updated', class_name: 'Status')
+      log_error(e) unless @post.errors.present?
     else
       flash[:success] = "Post has been marked #{@post.status}."
     end
@@ -405,11 +399,9 @@ class PostsController < WritableController
     @post.authors_locked = (params[:authors_locked] == 'true')
     begin
       @post.save!
-    rescue ActiveRecord::RecordInvalid
-      flash[:error] = {
-        message: "Post could not be updated because of the following problems:",
-        array: @post.errors.full_messages,
-      }
+    rescue ActiveRecord::RecordInvalid => e
+      render_errors(@post, action: 'updated')
+      log_error(e) unless @post.errors.present?
     else
       flash[:success] = "Post has been #{@post.authors_locked? ? 'locked to' : 'unlocked from'} current authors."
     end
