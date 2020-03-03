@@ -69,11 +69,10 @@ class IconsController < UploadingController
   def update
     begin
       @icon.update!(permitted_params)
-    rescue ActiveRecord::RecordInvalid
-      flash.now[:error] = {
-        message: "Icon could not be updated because of the following problems:",
-        array: @icon.errors.full_messages,
-      }
+    rescue ActiveRecord::RecordInvalid => e
+      render_errors(@icon, action: 'updated', now: true)
+      log_error(e) unless @icon.errors.present?
+
       @page_title = 'Edit icon: ' + @icon.keyword_was
       use_javascript('galleries/update_existing')
       use_javascript('galleries/uploader')
@@ -127,11 +126,9 @@ class IconsController < UploadingController
     gallery = @icon.galleries.first if @icon.galleries.count == 1
     begin
       @icon.destroy!
-    rescue ActiveRecord::RecordNotDestroyed
-      flash[:error] = {
-        message: "Icon could not be deleted because of the following problems:",
-        array: @icon.errors.full_messages,
-      }
+    rescue ActiveRecord::RecordNotDestroyed => e
+      render_errors(@icon, action: 'deleted')
+      log_error(e) unless @icon.errors.present?
       redirect_to @icon
     else
       flash[:success] = "Icon deleted."
@@ -144,10 +141,8 @@ class IconsController < UploadingController
     if current_user.update(avatar: @icon)
       flash[:success] = "Avatar set."
     else
-      flash[:error] = {
-        message: "Avatar could not be set because of the following problems:",
-        array: @icon.errors.full_messages + current_user.errors.full_messages,
-      }
+      @icon.errors.merge!(current_user.errors)
+      render_errors(@icon, action: 'set', class_name: 'Avatar')
     end
     redirect_to @icon
   end

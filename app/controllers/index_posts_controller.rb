@@ -32,10 +32,7 @@ class IndexPostsController < ApplicationController
     end
 
     unless @index_post.save
-      flash.now[:error] = {
-        message: "Post could not be added to index because of the following problems:",
-        array: @index_post.errors.full_messages,
-      }
+      render_errors(@index_post, now: true, action: 'added', msg: 'Post could not be added to index')
       @page_title = 'Add Posts to Index'
       use_javascript('posts/index_post_new')
       render :new and return
@@ -51,10 +48,7 @@ class IndexPostsController < ApplicationController
 
   def update
     unless @index_post.update(permitted_params)
-      flash.now[:error] = {
-        message: "Index could not be updated because of the following problems:",
-        array: @index_post.errors.full_messages,
-      }
+      render_errors(@index_post, action: 'updated', now: true, class_name: 'Index')
       @page_title = "Edit Post in Index"
       render action: :edit and return
     end
@@ -66,11 +60,9 @@ class IndexPostsController < ApplicationController
   def destroy
     begin
       @index_post.destroy!
-    rescue ActiveRecord::RecordNotDestroyed
-      flash[:error] = {
-        message: "Post could not be removed from index because of the following problems:",
-        array: @index_post.errors.full_messages,
-      }
+    rescue ActiveRecord::RecordNotDestroyed => e
+      render_errors(@index_post, action: 'removed', msg: 'Post could not be removed from index')
+      log_error(e) unless @index_post.errors.present?
     else
       flash[:success] = "Post removed from index."
     end

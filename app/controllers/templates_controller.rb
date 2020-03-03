@@ -18,11 +18,10 @@ class TemplatesController < ApplicationController
     @template.user = current_user
     begin
       @template.save!
-    rescue ActiveRecord::RecordInvalid
-      flash.now[:error] = {
-        message: "Template could not be created because of the following problems:",
-        array: @template.errors.full_messages,
-      }
+    rescue ActiveRecord::RecordInvalid => e
+      render_errors(@template, action: 'created', now: true)
+      log_error(e) unless @template.errors.present?
+
       editor_setup
       @page_title = "New Template"
       render :new
@@ -49,11 +48,10 @@ class TemplatesController < ApplicationController
   def update
     begin
       @template.update!(permitted_params)
-    rescue ActiveRecord::RecordInvalid
-      flash.now[:error] = {
-        message: "Template could not be updated because of the following problems:",
-        array: @template.errors.full_messages,
-      }
+    rescue ActiveRecord::RecordInvalid => e
+      render_errors(@template, action: 'updated', now: true)
+      log_error(e) unless @template.errors.present?
+
       editor_setup
       @page_title = 'Edit Template: ' + @template.name_was
       render :edit
@@ -66,11 +64,9 @@ class TemplatesController < ApplicationController
   def destroy
     begin
       @template.destroy!
-    rescue ActiveRecord::RecordNotDestroyed
-      flash[:error] = {
-        message: "Template could not be deleted because of the following problems:",
-        array: @template.errors.full_messages,
-      }
+    rescue ActiveRecord::RecordNotDestroyed => e
+      render_errors(@template, action: 'deleted')
+      log_error(e) unless @template.errors.present?
       redirect_to @template
     else
       flash[:success] = "Template deleted."
