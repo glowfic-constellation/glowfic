@@ -378,15 +378,5 @@ module SharedExamples::Controller
       expect(response).to redirect_to(parent_redirect).or redirect_to(index_redirect)
       expect(flash[:error]).to eq("#{klass_cname} could not be found.")
     end
-
-    it "requires instance to match parent" do
-      child = create(self_sym)
-      login_as(parent.user)
-      expect(parent.id).not_to eq(child[parent_key])
-      delete :destroy, params: { id: child.id, parent_key => parent.id }
-      expect(response).to redirect_to(parent_redirect)
-      expect(flash[:error]).to eq("#{klass_cname} could not be found for that #{parent_name}.")
-        .or eq("You do not have permission to modify this #{parent_name}.")
-    end
   end
 end

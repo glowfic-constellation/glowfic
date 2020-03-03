@@ -58,6 +58,16 @@ RSpec.describe AliasesController do
       expect(flash[:error]).to eq("Character could not be found.")
     end
 
+    it "requires alias to match character" do
+      character = create(:character)
+      calias = create(:alias)
+      login_as(character.user)
+      expect(character.id).not_to eq(calias.character_id)
+      delete :destroy, params: { id: calias.id, character_id: character.id }
+      expect(response).to redirect_to(edit_character_url(character))
+      expect(flash[:error]).to eq("Alias could not be found for that character.")
+    end
+
     it "succeeds" do
       calias = create(:alias)
       reply = create(:reply, user: calias.character.user, character: calias.character, character_alias: calias)
