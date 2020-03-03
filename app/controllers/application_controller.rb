@@ -207,20 +207,15 @@ class ApplicationController < ActionController::Base
     request.get? && !request.xhr?
   end
 
-  def render_errors(errors, action:, exception:, now: false, class_name: nil)
-    model = errors[:base]
-    if errors.present?
-      class_name ||= model.class.name.underscore.humanize
+  def render_errors(model, action:, exception:, now: false, class_name: nil)
+    class_name ||= model.class.name.underscore.humanize
+    if model.errors.present?
       msg = {
         message: "#{class_name} could not be #{action} because of the following problems:",
-        array: errors.full_messages
+        array: model.errors.full_messages
       }
-      if now
-        flash.now[:error] = msg
-      else
-        flash[:error] = msg
-      end
     else
+      msg = "#{class_name} could not be #{action}."
       data = {
         response_status: params[:response_status],
         response_body: params[:response_body],
@@ -228,6 +223,12 @@ class ApplicationController < ActionController::Base
         user_id: current_user.try(:id)
       }
       ExceptionNotifier.notify_exception(exception, data: data)
+    end
+
+    if now
+      flash.now[:error] = msg
+    else
+      flash[:error] = msg
     end
   end
 end
