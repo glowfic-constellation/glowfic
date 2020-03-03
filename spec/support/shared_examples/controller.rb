@@ -298,7 +298,6 @@ module SharedExamples::Controller
 
     it "requires valid params" do
       login_as(object.user)
-      debugger
       put :update, params: invalid_params
       expect(response).to render_template('edit')
       expect(flash[:error][:message]).to eq("#{klass_cname} could not be updated because of the following problems:")

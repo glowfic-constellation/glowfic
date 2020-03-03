@@ -1,11 +1,11 @@
 require "spec_helper"
 
 RSpec.describe PostsController do
+  let(:klass) { Post }
+  let(:redirect_override) { boards_url }
+
   describe "GET index" do
-    it "has a 200 status code" do
-      get :index
-      expect(response.status).to eq(200)
-    end
+    include_examples 'GET index validations'
 
     it "paginates" do
       create_list(:post, 26)
@@ -182,11 +182,7 @@ RSpec.describe PostsController do
   end
 
   describe "GET new" do
-    it "requires login" do
-      get :new
-      expect(response).to redirect_to(root_url)
-      expect(flash[:error]).to eq("You must be logged in to view that page.")
-    end
+    include_examples 'GET new validations'
 
     it "sets relevant fields" do
       user = create(:user)
@@ -259,11 +255,9 @@ RSpec.describe PostsController do
   end
 
   describe "POST create" do
-    it "requires login" do
-      post :create
-      expect(response).to redirect_to(root_url)
-      expect(flash[:error]).to eq("You must be logged in to view that page.")
-    end
+    let(:invalid_override) { { id: object.id, post: {subject: ''} } }
+
+    include_examples 'POST create validations'
 
     context "scrape" do
       include ActiveJob::TestHelper
@@ -773,12 +767,7 @@ RSpec.describe PostsController do
   end
 
   describe "GET show" do
-    it "does not require login" do
-      post = create(:post)
-      get :show, params: { id: post.id }
-      expect(response).to have_http_status(200)
-      expect(assigns(:javascripts)).to include('posts/show')
-    end
+    include_examples 'GET show validations'
 
     it "calculates OpenGraph meta" do
       user = create(:user, username: 'example user')
@@ -797,14 +786,6 @@ RSpec.describe PostsController do
       get :show, params: { id: post.id }
       expect(response).to redirect_to(boards_url)
       expect(flash[:error]).to eq("You do not have permission to view this post.")
-    end
-
-    it "works with login" do
-      post = create(:post)
-      login
-      get :show, params: { id: post.id }
-      expect(response).to have_http_status(200)
-      expect(assigns(:javascripts)).to include('posts/show')
     end
 
     it "marks read multiple times" do
@@ -1314,26 +1295,7 @@ RSpec.describe PostsController do
   end
 
   describe "GET edit" do
-    it "requires login" do
-      get :edit, params: { id: -1 }
-      expect(response).to redirect_to(root_url)
-      expect(flash[:error]).to eq("You must be logged in to view that page.")
-    end
-
-    it "requires post" do
-      login
-      get :edit, params: { id: -1 }
-      expect(response).to redirect_to(boards_url)
-      expect(flash[:error]).to eq("Post could not be found.")
-    end
-
-    it "requires your post" do
-      login
-      post = create(:post)
-      get :edit, params: { id: post.id }
-      expect(response).to redirect_to(post_url(post))
-      expect(flash[:error]).to eq("You do not have permission to modify this post.")
-    end
+    include_examples 'GET edit validations'
 
     it "sets relevant fields" do
       user = create(:user)
@@ -1407,18 +1369,9 @@ RSpec.describe PostsController do
   end
 
   describe "PUT update" do
-    it "requires login" do
-      put :update, params: { id: -1 }
-      expect(response).to redirect_to(root_url)
-      expect(flash[:error]).to eq("You must be logged in to view that page.")
-    end
+    let(:invalid_override) { { id: object.id, post: {subject: ''} } }
 
-    it "requires valid post" do
-      login
-      put :update, params: { id: -1 }
-      expect(response).to redirect_to(boards_url)
-      expect(flash[:error]).to eq("Post could not be found.")
-    end
+    include_examples 'PUT update validations'
 
     it "requires post be visible to user" do
       post = create(:post, privacy: Concealable::PRIVATE)
@@ -2473,36 +2426,7 @@ RSpec.describe PostsController do
   end
 
   describe "DELETE destroy" do
-    it "requires login" do
-      delete :destroy, params: { id: -1 }
-      expect(response).to redirect_to(root_url)
-      expect(flash[:error]).to eq("You must be logged in to view that page.")
-    end
-
-    it "requires valid post" do
-      login
-      delete :destroy, params: { id: -1 }
-      expect(response).to redirect_to(boards_url)
-      expect(flash[:error]).to eq("Post could not be found.")
-    end
-
-    it "requires post permission" do
-      user = create(:user)
-      login_as(user)
-      post = create(:post)
-      expect(post).not_to be_editable_by(user)
-      delete :destroy, params: { id: post.id }
-      expect(response).to redirect_to(post_url(post))
-      expect(flash[:error]).to eq("You do not have permission to modify this post.")
-    end
-
-    it "succeeds" do
-      post = create(:post)
-      login_as(post.user)
-      delete :destroy, params: { id: post.id }
-      expect(response).to redirect_to(boards_url)
-      expect(flash[:success]).to eq("Post deleted.")
-    end
+    include_examples 'DELETE destroy validations'
 
     it "deletes PostAuthors" do
       user = create(:user)
