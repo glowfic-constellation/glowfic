@@ -30,7 +30,7 @@ class NewsController < ApplicationController
       @page_title = 'Create News Post'
       render :new
     else
-      flash[:success] = "News post has successfully been created."
+      flash[:success] = "News post created."
       redirect_to news_index_path
     end
   end
@@ -49,7 +49,7 @@ class NewsController < ApplicationController
       @news.update!(news_params)
     rescue ActiveRecord::RecordInvalid
       flash.now[:error] = {
-        message: "News post could not be saved because of the following problems:",
+        message: "News post could not be updated.",
         array: @news.errors.full_messages
       }
       @page_title = "Edit News Post"
@@ -62,7 +62,7 @@ class NewsController < ApplicationController
 
   def destroy
     unless @news.deletable_by?(current_user)
-      flash[:error] = "You do not have permission to edit that news post."
+      flash[:error] = "You do not have permission to edit this news post."
       redirect_to news_index_path and return
     end
 
@@ -97,7 +97,7 @@ class NewsController < ApplicationController
 
   def require_permission
     unless @news.editable_by?(current_user)
-      flash[:error] = "You do not have permission to edit that news post."
+      flash[:error] = "You do not have permission to edit this news post."
       redirect_to news_index_path and return
     end
   end

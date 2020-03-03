@@ -47,7 +47,7 @@ class CharactersController < ApplicationController
     rescue ActiveRecord::RecordInvalid
       @page_title = "New Character"
       flash.now[:error] = {
-        message: "Your character could not be saved.",
+        message: "Your character could not be created.",
         array: @character.errors.full_messages
       }
       build_editor
@@ -88,7 +88,7 @@ class CharactersController < ApplicationController
     rescue ActiveRecord::RecordInvalid
       @page_title = "Edit Character: " + @character.name
       flash.now[:error] = {
-        message: "Your character could not be saved.",
+        message: "Your character could not be updated.",
         array: @character.errors.full_messages
       }
       build_editor
@@ -128,7 +128,7 @@ class CharactersController < ApplicationController
 
   def destroy
     unless @character.deletable_by?(current_user)
-      flash[:error] = "You do not have permission to edit that character."
+      flash[:error] = "You do not have permission to edit this character."
       redirect_to user_characters_path(current_user) and return
     end
 
@@ -327,7 +327,7 @@ class CharactersController < ApplicationController
 
   def require_own_character
     unless @character.editable_by?(current_user)
-      flash[:error] = "You do not have permission to edit that character."
+      flash[:error] = "You do not have permission to edit this character."
       redirect_to user_characters_path(current_user) and return
     end
   end

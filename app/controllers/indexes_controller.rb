@@ -55,13 +55,13 @@ class IndexesController < ApplicationController
       @index.update!(index_params)
     rescue ActiveRecord::RecordInvalid
       flash.now[:error] = {
-        message: "Index could not be saved because of the following problems:",
+        message: "Index could not be updated.",
         array: @index.errors.full_messages
       }
       prepare_editor
       render :edit
     else
-      flash[:success] = "Index saved!"
+      flash[:success] = "Index updated."
       redirect_to index_path(@index)
     end
   end

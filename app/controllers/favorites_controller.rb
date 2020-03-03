@@ -57,7 +57,7 @@ class FavoritesController < ApplicationController
       fav.save!
     rescue ActiveRecord::RecordInvalid
       flash[:error] = {
-        message: "Your favorite could not be saved because of the following problems:",
+        message: "Your favorite could not be saved.",
         array: fav.errors.full_messages
       }
     else

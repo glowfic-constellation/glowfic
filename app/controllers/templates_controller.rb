@@ -17,14 +17,14 @@ class TemplatesController < ApplicationController
       @template.save!
     rescue ActiveRecord::RecordInvalid
       flash.now[:error] = {
-        message: "Your template could not be saved because of the following problems:",
+        message: "Template could not be created.",
         array: @template.errors.full_messages
       }
       editor_setup
       @page_title = "New Template"
       render :new
     else
-      flash[:success] = "Template saved successfully."
+      flash[:success] = "Template created successfully."
       redirect_to template_path(@template)
     end
   end
@@ -48,14 +48,14 @@ class TemplatesController < ApplicationController
       @template.update!(template_params)
     rescue ActiveRecord::RecordInvalid
       flash.now[:error] = {
-        message: "Your template could not be saved because of the following problems:",
+        message: "Template could not be updated.",
         array: @template.errors.full_messages
       }
       editor_setup
       @page_title = 'Edit Template: ' + @template.name_was
       render :edit
     else
-      flash[:success] = "Template saved successfully."
+      flash[:success] = "Template updated successfully."
       redirect_to template_path(@template)
     end
   end
@@ -101,7 +101,7 @@ class TemplatesController < ApplicationController
 
   def require_own_template
     return true if @template.user_id == current_user.id
-    flash[:error] = "That is not your template."
+    flash[:error] = "You do not have permission to edit this template."
     redirect_to user_characters_path(current_user)
   end
 

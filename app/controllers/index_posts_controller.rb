@@ -47,9 +47,10 @@ class IndexPostsController < ApplicationController
 
   def update
     unless @index_post.update(index_params)
-      flash.now[:error] = {}
-      flash.now[:error][:message] = "Index could not be saved"
-      flash.now[:error][:array] = @index_post.errors.full_messages
+      flash.now[:error] = {
+        message: "Index could not be updated.",
+        array: @index_post.errors.full_messages
+      }
       @page_title = "Edit Post in Index"
       render action: :edit and return
     end

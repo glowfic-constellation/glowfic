@@ -76,7 +76,7 @@ class UsersController < ApplicationController
       current_user.update!(user_params)
     rescue ActiveRecord::RecordInvalid
       flash.now[:error] = {
-        message: "There was a problem updating your account.",
+        message: "Your account could not be updated because of the following problems:",
         array: current_user.errors.full_messages
       }
       use_javascript('users/edit')
@@ -142,7 +142,7 @@ class UsersController < ApplicationController
 
   def require_own_user
     unless params[:id] == current_user.id.to_s
-      flash[:error] = "You do not have permission to edit that user."
+      flash[:error] = "You do not have permission to edit this user."
       redirect_to(boards_path)
     end
   end

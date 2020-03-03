@@ -42,7 +42,7 @@ class GalleriesController < UploadingController
       @gallery.save!
     rescue ActiveRecord::RecordInvalid
       flash.now[:error] = {
-        message: "Your gallery could not be saved because of the following problems:",
+        message: "Gallery could not be created.",
         array: @gallery.errors.full_messages
       }
       @page_title = 'New Gallery'
@@ -118,9 +118,10 @@ class GalleriesController < UploadingController
         @gallery.save!
       end
     rescue ActiveRecord::RecordInvalid
-      flash.now[:error] = {}
-      flash.now[:error][:message] = "Gallery could not be saved."
-      flash.now[:error][:array] = @gallery.errors.full_messages
+      flash.now[:error] = {
+        message: "Gallery could not be updated.",
+        array: @gallery.errors.full_messages
+      }
       @page_title = 'Edit Gallery: ' + @gallery.name_was
       use_javascript('galleries/uploader')
       use_javascript('galleries/edit')
@@ -197,9 +198,10 @@ class GalleriesController < UploadingController
     begin
       @gallery.destroy!
     rescue ActiveRecord::RecordNotDestroyed
-      flash[:error] = {}
-      flash[:error][:message] = "Gallery could not be deleted."
-      flash[:error][:array] = @gallery.errors.full_messages
+      flash[:error] = {
+        message: "Gallery could not be deleted.",
+        array: @gallery.errors.full_messages
+      }
       redirect_to gallery_path(@gallery)
     else
       flash[:success] = "Gallery deleted successfully."
@@ -221,7 +223,7 @@ class GalleriesController < UploadingController
     end
 
     unless @gallery.user_id == current_user.id
-      flash[:error] = "That is not your gallery."
+      flash[:error] = "You do not have permission to edit this gallery."
       redirect_to user_galleries_path(current_user) and return
     end
   end

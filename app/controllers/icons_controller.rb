@@ -69,7 +69,7 @@ class IconsController < UploadingController
       @icon.update!(icon_params)
     rescue ActiveRecord::RecordInvalid
       flash.now[:error] = {
-        message: "Your icon could not be saved due to the following problems:",
+        message: "Icon could not be updated.",
         array: @icon.errors.full_messages
       }
       @page_title = 'Edit icon: ' + @icon.keyword_was
@@ -162,7 +162,7 @@ class IconsController < UploadingController
 
   def require_own_icon
     if @icon.user_id != current_user.id
-      flash[:error] = "That is not your icon."
+      flash[:error] = "You do not have permission to edit this icon."
       redirect_to user_galleries_path(current_user)
     end
   end

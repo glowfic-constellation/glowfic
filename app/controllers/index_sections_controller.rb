@@ -55,13 +55,13 @@ class IndexSectionsController < ApplicationController
       @section.update!(index_params)
     rescue ActiveRecord::RecordInvalid
       flash.now[:error] = {
-        message: "Index section could not be saved because of the following problems:",
+        message: "Index section could not be updated.",
         array: @section.errors.full_messages
       }
       @page_title = "Edit Index Section: #{@section.name}"
       render :edit
     else
-      flash[:success] = "Index section saved!"
+      flash[:success] = "Index section updated successfully."
       redirect_to index_path(@section.index)
     end
   end

@@ -141,7 +141,7 @@ class PostsController < WritableController
     rescue ActiveRecord::RecordInvalid
       flash.now[:error] = {
         array: @post.errors.full_messages,
-        message: "Your post could not be saved because of the following problems:"
+        message: "Post could not be created."
       }
       editor_setup
       @page_title = 'New Post'
@@ -215,8 +215,8 @@ class PostsController < WritableController
       end
     rescue ActiveRecord::RecordInvalid
       flash.now[:error] = {
-        array: @post.errors.full_messages,
-        message: "Your post could not be saved because of the following problems:"
+        message: "Post could not be updated.",
+        array: @post.errors.full_messages
       }
       editor_setup
       render :edit
@@ -424,7 +424,7 @@ class PostsController < WritableController
 
   def require_permission
     unless @post.editable_by?(current_user) || @post.metadata_editable_by?(current_user)
-      flash[:error] = "You do not have permission to modify this post."
+      flash[:error] = "You do not have permission to edit this post."
       redirect_to post_path(@post)
     end
   end
