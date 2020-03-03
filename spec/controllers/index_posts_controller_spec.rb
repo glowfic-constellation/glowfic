@@ -135,7 +135,7 @@ RSpec.describe IndexPostsController do
       patch :update, params: { id: index.index_posts.first.id, index_post: {post_id: nil} }
       expect(response).to have_http_status(200)
       expect(assigns(:page_title)).to eq("Edit Post in Index")
-      expect(flash[:error][:message]).to eq("Index could not be saved")
+      expect(flash[:error][:message]).to eq("Index could not be updated because of the following problems:")
     end
 
     it "works" do

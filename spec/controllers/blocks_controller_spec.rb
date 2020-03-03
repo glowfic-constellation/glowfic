@@ -146,7 +146,7 @@ RSpec.describe BlocksController, type: :controller do
       login_as(block.blocking_user)
       put :update, params: { id: block.id, block: { hide_them: -1 } }
       expect(response).to render_template('edit')
-      expect(flash[:error][:message]).to eq("Block could not be saved.")
+      expect(flash[:error][:message]).to eq("Block could not be updated because of the following problems:")
       expect(flash[:error][:array]).to include("Hide them is not included in the list")
     end
 
