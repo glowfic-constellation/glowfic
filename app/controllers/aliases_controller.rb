@@ -16,7 +16,9 @@ class AliasesController < ApplicationController
     begin
       @alias.save!
     rescue ActiveRecord::RecordInvalid => e
-      render_errors(@alias.errors, action: 'created', exception: e, now: true, class_name: 'Alias')
+      render_errors(@alias.errors, action: 'created', now: true, class_name: 'Alias')
+      log_error(e) unless @alias.errors.present?
+
       @page_title = "New Alias: " + @character.name
       render :new
     else
