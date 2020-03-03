@@ -87,17 +87,12 @@ module SharedExamples::Controller
       login_as(user)
       get :new, params: { self_key => object.id }
       expect(response).to redirect_to(index_redirect)
-      expect(flash[:error]).to eq("That is not your #{klass_name}.").or eq("You do not have permission to edit this #{klass_name}.")
+      expect(flash[:error]).to eq("You do not have permission to modify this #{klass_name}.")
     end
   end
 
   RSpec.shared_examples "POST create validations" do
     include_context "shared context"
-
-    let(:error_msg) do
-      return error_msg_override if defined? error_msg_override
-      "#{klass_cname} could not be created."
-    end
 
     it "requires login" do
       post :create
@@ -109,7 +104,7 @@ module SharedExamples::Controller
       login
       post :create
       expect(response.status).to eq(200)
-      expect(flash[:error][:message]).to eq(error_msg).or eq("Your #{klass_name} could not be saved because of the following problems:")
+      expect(flash[:error][:message]).to eq("#{klass_cname} could not be created because of the following problems:")
       expect(assigns(:page_title)).to eq("New #{klass_cname}")
       expect(assigns(self_sym)).to be_a_new_record
     end
@@ -118,7 +113,7 @@ module SharedExamples::Controller
       login
       post :create, params: { self_key => {name: ''} }
       expect(response.status).to eq(200)
-      expect(flash[:error][:message]).to eq(error_msg).or eq("Your #{klass_name} could not be saved because of the following problems:")
+      expect(flash[:error][:message]).to eq("#{klass_cname} could not be created because of the following problems:")
       expect(assigns(:page_title)).to eq("New #{klass_cname}")
       expect(assigns(self_sym)).to be_a_new_record
     end
@@ -144,7 +139,7 @@ module SharedExamples::Controller
       expect(response).to redirect_to(index_redirect).or render_template(:new)
       expect(flash[:error]).to eq("#{parent_name.capitalize} could not be found.")
         .or eq({
-          message: "#{klass_cname} could not be created.",
+          message: "#{klass_cname} could not be created because of the following problems:",
           array: ["#{parent_klass.to_s.capitalize} must exist", "Name can't be blank"]
         })
     end
@@ -153,14 +148,14 @@ module SharedExamples::Controller
       login_as(user)
       post :create, params: { parent_key => parent.id }
       expect(response).to redirect_to(index_redirect)
-      expect(flash[:error]).to eq("That is not your #{parent_name}.").or eq("You do not have permission to edit this #{parent_name}.")
+      expect(flash[:error]).to eq("You do not have permission to modify this #{parent_name}.")
     end
 
     it "fails with missing params" do
       login_as(parent.user)
       post :create, params: { parent_key => parent.id }
       expect(response.status).to eq(200)
-      expect(flash[:error][:message]).to eq("#{klass_cname} could not be created.")
+      expect(flash[:error][:message]).to eq("#{klass_cname} could not be created because of the following problems:")
       expect(assigns(:page_title)).to eq("New #{klass_cname}").or eq("New #{klass_cname}: #{parent.name}")
       expect(assigns(assign)).to be_a_new_record
     end
@@ -169,7 +164,7 @@ module SharedExamples::Controller
       login_as(parent.user)
       post :create, params: { parent_key => parent.id, self_key => {name: ''} }
       expect(response.status).to eq(200)
-      expect(flash[:error][:message]).to eq("#{klass_cname} could not be created.")
+      expect(flash[:error][:message]).to eq("#{klass_cname} could not be created because of the following problems:")
       expect(assigns(:page_title)).to eq("New #{klass_cname}").or eq("New #{klass_cname}: #{parent.name}")
       expect(assigns(assign)).to be_a_new_record
     end
@@ -219,8 +214,7 @@ module SharedExamples::Controller
       login_as(user)
       get :edit, params: { id: object.id }
       expect(response).to redirect_to(self_redirect).or redirect_to(index_redirect)
-      expect(flash[:error]).to eq("You do not have permission to edit that #{klass_name}.")
-        .or eq("That is not your #{klass_name}.")
+      expect(flash[:error]).to eq("You do not have permission to modify this #{klass_name}.")
     end
 
     it "succeeds" do
@@ -238,7 +232,7 @@ module SharedExamples::Controller
       login
       get :edit, params: { id: object.id }
       expect(response).to redirect_to(index_redirect)
-      expect(flash[:error]).to eq("You do not have permission to edit this #{parent_name}.")
+      expect(flash[:error]).to eq("You do not have permission to modify this #{parent_name}.")
     end
 
     it "succeeds" do
@@ -267,24 +261,18 @@ module SharedExamples::Controller
     include_context "shared context"
     include_examples 'PUT update validations shared'
 
-    let(:error_msg) do
-      return error_msg_override if defined? error_msg_override
-      "#{klass_cname} could not be updated."
-    end
-
     it "requires permission" do
       login_as(user)
       put :update, params: { id: object.id }
       expect(response).to redirect_to(self_redirect).or redirect_to(index_redirect)
-      expect(flash[:error]).to eq("You do not have permission to edit that #{klass_name}.")
-        .or eq("That is not your #{klass_name}.")
+      expect(flash[:error]).to eq("You do not have permission to modify this #{klass_name}.")
     end
 
     it "requires valid params" do
       login_as(object.user)
       put :update, params: { id: object.id, self_sym => {name: ''} }
       expect(response).to render_template('edit')
-      expect(flash[:error][:message]).to eq(error_msg).or eq("#{klass_cname} could not be saved.")
+      expect(flash[:error][:message]).to eq("#{klass_cname} could not be updated because of the following problems:")
       expect(flash[:error][:array]).to be_present
     end
   end
@@ -297,14 +285,14 @@ module SharedExamples::Controller
       login
       put :update, params: { id: object.id }
       expect(response).to redirect_to(index_redirect)
-      expect(flash[:error]).to eq("You do not have permission to edit this #{parent_name}.")
+      expect(flash[:error]).to eq("You do not have permission to modify this #{parent_name}.")
     end
 
     it "requires valid params" do
       login_as(parent.user)
       put :update, params: { id: object.id, self_sym => {name: ''} }
       expect(response).to render_template('edit')
-      expect(flash[:error][:message]).to eq("#{klass_cname} could not be updated.")
+      expect(flash[:error][:message]).to eq("#{klass_cname} could not be updated because of the following problems:")
       expect(flash[:error][:array]).to be_present
     end
   end
@@ -329,8 +317,7 @@ module SharedExamples::Controller
       login_as(user)
       delete :destroy, params: { id: object.id }
       expect(response).to redirect_to(self_redirect).or redirect_to(index_redirect)
-      expect(flash[:error]).to eq("You do not have permission to edit that #{klass_name}.")
-        .or eq("That is not your #{klass_name}.")
+      expect(flash[:error]).to eq("You do not have permission to modify this #{klass_name}.")
     end
 
     it "succeeds" do
@@ -338,7 +325,7 @@ module SharedExamples::Controller
       login_as(user)
       delete :destroy, params: { id: object.id }
       expect(response).to redirect_to(index_redirect)
-      expect(flash[:success]).to eq("#{klass_cname} deleted.").or eq("#{klass_cname} deleted successfully.")
+      expect(flash[:success]).to eq("#{klass_cname} deleted.")
       expect{object.reload}.to raise_error(ActiveRecord::RecordNotFound)
     end
   end
@@ -362,7 +349,7 @@ module SharedExamples::Controller
       login_as(user)
       delete :destroy, params: { id: object.id, parent_key => create(parent_klass.to_s.underscore).id }
       expect(response).to redirect_to(index_redirect)
-      expect(flash[:error]).to eq("That is not your #{parent_name}.").or eq("You do not have permission to edit this #{parent_name}.")
+      expect(flash[:error]).to eq("You do not have permission to modify this #{parent_name}.")
     end
 
     it "requires valid instance" do
@@ -378,7 +365,8 @@ module SharedExamples::Controller
       expect(parent.id).not_to eq(child[parent_key])
       delete :destroy, params: { id: child.id, parent_key => parent.id }
       expect(response).to redirect_to(parent_redirect)
-      expect(flash[:error]).to eq("Alias could not be found for that character.").or eq("You do not have permission to edit this #{parent_name}.")
+      expect(flash[:error]).to eq("#{klass_cname} could not be found for that #{parent_name}.")
+        .or eq("You do not have permission to modify this #{parent_name}.")
     end
   end
 end

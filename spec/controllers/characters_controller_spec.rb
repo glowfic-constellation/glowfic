@@ -91,7 +91,6 @@ RSpec.describe CharactersController do
   end
 
   describe "POST create" do
-    let(:error_msg_override) { "Your character could not be saved." }
     let(:redirect_override) { user_characters_url(user) }
 
     include_examples 'POST create validations'
@@ -321,7 +320,6 @@ RSpec.describe CharactersController do
   end
 
   describe "PUT update" do
-    let(:error_msg_override) { "Your character could not be saved." }
     let(:redirect_override) { user_characters_url(user) }
 
     include_examples 'PUT update validations'
