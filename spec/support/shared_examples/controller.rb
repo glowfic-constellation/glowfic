@@ -37,6 +37,11 @@ module SharedExamples::Controller
     let(:parent) { object.send(parent_klass.to_s.underscore) }
     let(:parent_key) { parent_klass.to_s.foreign_key }
     let(:parent_name) { SharedExamples.name_for(parent_klass) }
+    let(:parent_redirect) do
+      return parent_redirect_override if defined? parent_redirect_override
+      return redirect_override if defined? redirect_override
+      url_for(controller: parent_klass.table_name, action: 'edit', id: parent.id)
+    end
   end
 
   RSpec.shared_examples "GET index validations" do
@@ -86,8 +91,9 @@ module SharedExamples::Controller
     it "requires your parent" do
       login_as(user)
       get :new, params: { self_key => object.id }
-      expect(response).to redirect_to(index_redirect)
+      expect(response).to redirect_to(index_redirect).or redirect_to(self_redirect)
       expect(flash[:error]).to eq("You do not have permission to modify this #{klass_name}.")
+        .or eq("#{klass_name} could not be found.")
     end
   end
 
@@ -246,7 +252,7 @@ module SharedExamples::Controller
     it "requires permission" do
       login
       get :edit, params: { id: object.id }
-      expect(response).to redirect_to(index_redirect)
+      expect(response).to redirect_to(index_redirect).or redirect_to(parent_redirect)
       expect(flash[:error]).to eq("You do not have permission to modify this #{parent_name}.")
     end
 
@@ -304,7 +310,7 @@ module SharedExamples::Controller
     it "requires permission" do
       login
       put :update, params: { id: object.id }
-      expect(response).to redirect_to(index_redirect)
+      expect(response).to redirect_to(index_redirect).or redirect_to(parent_redirect)
       expect(flash[:error]).to eq("You do not have permission to modify this #{parent_name}.")
     end
 
@@ -313,6 +319,7 @@ module SharedExamples::Controller
       put :update, params: invalid_params
       expect(response).to render_template('edit')
       expect(flash[:error][:message]).to eq("#{klass_cname} could not be updated because of the following problems:")
+        .or eq("#{parent_name.capitalize} could not be updated because of the following problems:")
       expect(flash[:error][:array]).to be_present
     end
   end
@@ -351,12 +358,6 @@ module SharedExamples::Controller
   end
 
   RSpec.shared_examples 'DELETE destroy with parent validations' do
-    let(:parent_redirect) do
-      return parent_redirect_override if defined? parent_redirect_override
-      return redirect_override if defined? redirect_override
-      url_for(controller: parent_klass.table_name, action: 'edit', id: parent.id)
-    end
-
     include_context "shared parent context"
 
     it "requires login" do
@@ -368,14 +369,14 @@ module SharedExamples::Controller
     it "requires your parent" do
       login_as(user)
       delete :destroy, params: { id: object.id, parent_key => create(parent_klass.to_s.underscore).id }
-      expect(response).to redirect_to(index_redirect)
+      expect(response).to redirect_to(index_redirect).or redirect_to(parent_redirect)
       expect(flash[:error]).to eq("You do not have permission to modify this #{parent_name}.")
     end
 
     it "requires valid instance" do
       login_as(parent.user)
       delete :destroy, params: { id: -1, parent_key => parent.id }
-      expect(response).to redirect_to(parent_redirect).or redirect_to(index_redirect)
+      expect(response).to redirect_to(index_redirect).or redirect_to(parent_redirect)
       expect(flash[:error]).to eq("#{klass_cname} could not be found.")
     end
   end

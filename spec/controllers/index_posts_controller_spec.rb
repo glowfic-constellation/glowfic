@@ -1,30 +1,15 @@
 require "spec_helper"
 
 RSpec.describe IndexPostsController do
+  let(:klass) { IndexPost }
+  let(:parent_klass) { Index }
+  let(:redirect_override) { indexes_url }
+  let(:parent_redirect_override) { index_url(parent) }
+
   describe "GET new" do
-    it "requires login" do
-      get :new
-      expect(response).to redirect_to(root_url)
-      expect(flash[:error]).to eq("You must be logged in to view that page.")
-    end
+    let(:klass) { Index }
 
-    it "requires permission" do
-      user = create(:user)
-      index = create(:index)
-      expect(index.editable_by?(user)).to eq(false)
-      login_as(user)
-
-      get :new, params: { index_id: index.id }
-      expect(response).to redirect_to(index_url(index))
-      expect(flash[:error]).to eq("You do not have permission to modify this index.")
-    end
-
-    it "requires index_id" do
-      login
-      get :new
-      expect(response.status).to redirect_to(indexes_url)
-      expect(flash[:error]).to eq("Index could not be found.")
-    end
+    include_examples 'GET new with parent validations'
 
     it "works with index_id" do
       index = create(:index)
@@ -73,70 +58,15 @@ RSpec.describe IndexPostsController do
   end
 
   describe "GET edit" do
-    it "requires login" do
-      get :edit, params: { id: -1 }
-      expect(response).to redirect_to(root_url)
-      expect(flash[:error]).to eq("You must be logged in to view that page.")
-    end
+    let(:invalid_override) { { id: object.id, index_post: {post_id: nil} } }
 
-    it "requires valid index post" do
-      login
-      get :edit, params: { id: -1 }
-      expect(response).to redirect_to(indexes_url)
-      expect(flash[:error]).to eq("Index post could not be found.")
-    end
-
-    it "requires permission" do
-      index = create(:index)
-      index.posts << create(:post, user: index.user)
-      login
-      get :edit, params: { id: index.index_posts.first.id }
-      expect(response).to redirect_to(index_url(index))
-      expect(flash[:error]).to eq("You do not have permission to modify this index.")
-    end
-
-    it "works" do
-      index = create(:index)
-      index.posts << create(:post, user: index.user)
-      login_as(index.user)
-      get :edit, params: { id: index.index_posts.first.id }
-      expect(response).to have_http_status(200)
-      expect(assigns(:page_title)).to eq("Edit Post in Index")
-    end
+    include_examples 'GET edit with parent validations'
   end
 
   describe "PATCH update" do
-    it "requires login" do
-      patch :update, params: { id: -1 }
-      expect(response).to redirect_to(root_url)
-      expect(flash[:error]).to eq("You must be logged in to view that page.")
-    end
+    let(:invalid_override) { { id: object.id, index_post: {post_id: nil} } }
 
-    it "requires valid index post" do
-      login
-      patch :update, params: { id: -1 }
-      expect(response).to redirect_to(indexes_url)
-      expect(flash[:error]).to eq("Index post could not be found.")
-    end
-
-    it "requires permission" do
-      index = create(:index)
-      index.posts << create(:post, user: index.user)
-      login
-      patch :update, params: { id: index.index_posts.first.id }
-      expect(response).to redirect_to(index_url(index))
-      expect(flash[:error]).to eq("You do not have permission to modify this index.")
-    end
-
-    it "requires valid params" do
-      index = create(:index)
-      index.posts << create(:post, user: index.user)
-      login_as(index.user)
-      patch :update, params: { id: index.index_posts.first.id, index_post: {post_id: nil} }
-      expect(response).to have_http_status(200)
-      expect(assigns(:page_title)).to eq("Edit Post in Index")
-      expect(flash[:error][:message]).to eq("Index could not be updated because of the following problems:")
-    end
+    include_examples 'PUT update with parent validations'
 
     it "works" do
       index = create(:index)
@@ -151,37 +81,7 @@ RSpec.describe IndexPostsController do
   end
 
   describe "DELETE destroy" do
-    it "requires login" do
-      delete :destroy, params: { id: -1 }
-      expect(response).to redirect_to(root_url)
-      expect(flash[:error]).to eq("You must be logged in to view that page.")
-    end
-
-    it "requires valid index post" do
-      login
-      delete :destroy, params: { id: -1 }
-      expect(response).to redirect_to(indexes_url)
-      expect(flash[:error]).to eq("Index post could not be found.")
-    end
-
-    it "requires permission" do
-      index = create(:index)
-      index.posts << create(:post, user: index.user)
-      login
-      delete :destroy, params: { id: index.index_posts.first.id }
-      expect(response).to redirect_to(index_url(index))
-      expect(flash[:error]).to eq("You do not have permission to modify this index.")
-    end
-
-    it "works" do
-      index = create(:index)
-      index.posts << create(:post, user: index.user)
-      login_as(index.user)
-      delete :destroy, params: { id: index.index_posts.first.id }
-      expect(response).to redirect_to(index_url(index))
-      expect(flash[:success]).to eq("Post removed from index.")
-      expect(IndexPost.count).to eq(0)
-    end
+    include_examples 'DELETE destroy with parent validations'
 
     it "handles destroy failure" do
       index = create(:index)
