@@ -417,7 +417,7 @@ RSpec.describe CharactersController do
       login_as(character.user)
       put :update, params: { id: character.id, character: {name: ''} }
       expect(response.status).to eq(200)
-      expect(flash[:error][:message]).to eq("Character could not be created because of the following problems:")
+      expect(flash[:error][:message]).to eq("Character could not be updated because of the following problems:")
     end
 
     it "fails with invalid template params" do
@@ -433,7 +433,7 @@ RSpec.describe CharactersController do
         }
       }
       expect(response.status).to eq(200)
-      expect(flash[:error][:message]).to eq("Character could not be created because of the following problems:")
+      expect(flash[:error][:message]).to eq("Character could not be updated because of the following problems:")
       expect(character.reload.name).not_to eq(new_name)
     end
 
@@ -516,7 +516,7 @@ RSpec.describe CharactersController do
       }
 
       expect(response.status).to eq(200)
-      expect(flash[:error][:message]).to eq("Character could not be created because of the following problems:")
+      expect(flash[:error][:message]).to eq("Character could not be updated because of the following problems:")
       character.reload
       expect(character.name).to eq(old_name)
       expect(character.template_name).to be_nil
