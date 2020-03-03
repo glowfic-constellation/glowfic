@@ -115,7 +115,7 @@ RSpec.describe IndexesController do
       index = create(:index)
       get :edit, params: { id: index.id }
       expect(response).to redirect_to(index_url(index))
-      expect(flash[:error]).to eq('You do not have permission to edit this index.')
+      expect(flash[:error]).to eq('You do not have permission to modify this index.')
     end
 
     it "works" do
@@ -146,7 +146,7 @@ RSpec.describe IndexesController do
       index = create(:index)
       put :update, params: { id: index.id }
       expect(response).to redirect_to(index_url(index))
-      expect(flash[:error]).to eq('You do not have permission to edit this index.')
+      expect(flash[:error]).to eq('You do not have permission to modify this index.')
     end
 
     it "requires valid index params" do
@@ -188,7 +188,7 @@ RSpec.describe IndexesController do
       index = create(:index)
       delete :destroy, params: { id: index.id }
       expect(response).to redirect_to(index_url(index))
-      expect(flash[:error]).to eq('You do not have permission to edit this index.')
+      expect(flash[:error]).to eq('You do not have permission to modify this index.')
     end
 
     it "works" do

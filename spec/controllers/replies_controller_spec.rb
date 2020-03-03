@@ -554,7 +554,7 @@ RSpec.describe RepliesController do
       login
       get :edit, params: { id: reply.id }
       expect(response).to redirect_to(post_url(reply.post))
-      expect(flash[:error]).to eq("You do not have permission to edit this reply.")
+      expect(flash[:error]).to eq("You do not have permission to modify this reply.")
     end
 
     it "works" do
@@ -620,7 +620,7 @@ RSpec.describe RepliesController do
       login
       put :update, params: { id: reply.id }
       expect(response).to redirect_to(post_url(reply.post))
-      expect(flash[:error]).to eq("You do not have permission to edit this reply.")
+      expect(flash[:error]).to eq("You do not have permission to modify this reply.")
     end
 
     it "requires notes from moderators" do
@@ -821,7 +821,7 @@ RSpec.describe RepliesController do
       login
       delete :destroy, params: { id: reply.id }
       expect(response).to redirect_to(post_url(reply.post))
-      expect(flash[:error]).to eq("You do not have permission to edit this reply.")
+      expect(flash[:error]).to eq("You do not have permission to modify this reply.")
     end
 
     it "succeeds for reply creator" do
@@ -952,7 +952,7 @@ RSpec.describe RepliesController do
       reply.destroy
       post :restore, params: { id: reply.id }
       expect(response).to redirect_to(post_url(rpost))
-      expect(flash[:error]).to eq('You do not have permission to edit this reply.')
+      expect(flash[:error]).to eq('You do not have permission to modify this reply.')
     end
 
     it "handles mid reply deletion" do

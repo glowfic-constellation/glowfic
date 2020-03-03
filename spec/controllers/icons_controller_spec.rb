@@ -43,7 +43,7 @@ RSpec.describe IconsController do
         gallery = create(:gallery)
         delete :delete_multiple, params: { marked_ids: [icon.id], gallery_id: gallery.id, gallery_delete: true }
         expect(response).to redirect_to(user_galleries_url(user.id))
-        expect(flash[:error]).to eq("You do not have permission to edit this gallery.")
+        expect(flash[:error]).to eq("You do not have permission to modify this gallery.")
       end
 
       it "skips other people's icons" do
@@ -327,7 +327,7 @@ RSpec.describe IconsController do
       get :edit, params: { id: create(:icon).id }
       expect(response.status).to eq(302)
       expect(response.redirect_url).to eq(user_galleries_url(user_id))
-      expect(flash[:error]).to eq("You do not have permission to edit this icon.")
+      expect(flash[:error]).to eq("You do not have permission to modify this icon.")
     end
 
     it "successfully loads" do
@@ -356,7 +356,7 @@ RSpec.describe IconsController do
       user_id = login
       put :update, params: { id: create(:icon).id }
       expect(response).to redirect_to(user_galleries_url(user_id))
-      expect(flash[:error]).to eq("You do not have permission to edit this icon.")
+      expect(flash[:error]).to eq("You do not have permission to modify this icon.")
     end
 
     it "requires valid params" do
@@ -401,7 +401,7 @@ RSpec.describe IconsController do
       delete :destroy, params: { id: create(:icon).id }
       expect(response.status).to eq(302)
       expect(response.redirect_url).to eq(user_galleries_url(user_id))
-      expect(flash[:error]).to eq("You do not have permission to edit this icon.")
+      expect(flash[:error]).to eq("You do not have permission to modify this icon.")
     end
 
     it "successfully destroys" do
@@ -456,7 +456,7 @@ RSpec.describe IconsController do
       user_id = login
       post :avatar, params: { id: create(:icon).id }
       expect(response).to redirect_to(user_galleries_url(user_id))
-      expect(flash[:error]).to eq("You do not have permission to edit this icon.")
+      expect(flash[:error]).to eq("You do not have permission to modify this icon.")
     end
 
     it "handles save errors" do
@@ -505,7 +505,7 @@ RSpec.describe IconsController do
       user_id = login
       get :replace, params: { id: create(:icon).id }
       expect(response).to redirect_to(user_galleries_url(user_id))
-      expect(flash[:error]).to eq("You do not have permission to edit this icon.")
+      expect(flash[:error]).to eq("You do not have permission to modify this icon.")
     end
 
     context "with galleryless icon" do
@@ -577,7 +577,7 @@ RSpec.describe IconsController do
       user_id = login
       post :do_replace, params: { id: create(:icon).id }
       expect(response).to redirect_to(user_galleries_url(user_id))
-      expect(flash[:error]).to eq("You do not have permission to edit this icon.")
+      expect(flash[:error]).to eq("You do not have permission to modify this icon.")
     end
 
     it "requires valid other icon" do
@@ -594,7 +594,7 @@ RSpec.describe IconsController do
       login_as(icon.user)
       post :do_replace, params: { id: icon.id, icon_dropdown: other_icon.id }
       expect(response).to redirect_to(replace_icon_path(icon))
-      expect(flash[:error]).to eq('You do not have permission to edit this icon.')
+      expect(flash[:error]).to eq('You do not have permission to modify this icon.')
     end
 
     it "succeeds with valid other icon" do

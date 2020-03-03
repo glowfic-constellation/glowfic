@@ -88,7 +88,7 @@ class IndexesController < ApplicationController
 
   def permission_required
     unless @index.editable_by?(current_user)
-      flash[:error] = "You do not have permission to edit this index."
+      flash[:error] = "You do not have permission to modify this index."
       redirect_to index_path(@index)
     end
   end

@@ -12,7 +12,7 @@ class BoardSectionsController < ApplicationController
   def create
     @board_section = BoardSection.new(section_params)
     unless @board_section.board.nil? || @board_section.board.editable_by?(current_user)
-      flash[:error] = "You do not have permission to edit this continuity."
+      flash[:error] = "You do not have permission to modify this continuity."
       redirect_to boards_path and return
     end
 
@@ -89,7 +89,7 @@ class BoardSectionsController < ApplicationController
   def require_permission
     board = @board_section.try(:board) || Board.find_by_id(params[:board_id])
     if board && !board.editable_by?(current_user)
-      flash[:error] = "You do not have permission to edit this continuity."
+      flash[:error] = "You do not have permission to modify this continuity."
       redirect_to boards_path and return
     end
   end

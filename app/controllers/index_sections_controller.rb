@@ -11,7 +11,7 @@ class IndexSectionsController < ApplicationController
     end
 
     unless index.editable_by?(current_user)
-      flash[:error] = "You do not have permission to edit this index."
+      flash[:error] = "You do not have permission to modify this index."
       redirect_to index_path(index) and return
     end
 
@@ -23,7 +23,7 @@ class IndexSectionsController < ApplicationController
     @section = IndexSection.new(index_params)
 
     if @section.index && !@section.index.editable_by?(current_user)
-      flash[:error] = "You do not have permission to edit this index."
+      flash[:error] = "You do not have permission to modify this index."
       redirect_to index_path(@section.index) and return
     end
 
@@ -87,7 +87,7 @@ class IndexSectionsController < ApplicationController
 
   def permission_required
     unless @section.index.editable_by?(current_user)
-      flash[:error] = "You do not have permission to edit this index."
+      flash[:error] = "You do not have permission to modify this index."
       redirect_to index_path(@section.index)
     end
   end

@@ -226,7 +226,7 @@ class PostsController < WritableController
 
   def destroy
     unless @post.deletable_by?(current_user)
-      flash[:error] = "You do not have permission to edit this post."
+      flash[:error] = "You do not have permission to modify this post."
       redirect_to post_path(@post) and return
     end
 
@@ -420,7 +420,7 @@ class PostsController < WritableController
 
   def require_permission
     unless @post.editable_by?(current_user) || @post.metadata_editable_by?(current_user)
-      flash[:error] = "You do not have permission to edit this post."
+      flash[:error] = "You do not have permission to modify this post."
       redirect_to post_path(@post)
     end
   end

@@ -10,7 +10,7 @@ class IndexPostsController < ApplicationController
     end
 
     unless index.editable_by?(current_user)
-      flash[:error] = "You do not have permission to edit this index."
+      flash[:error] = "You do not have permission to modify this index."
       redirect_to index_path(index) and return
     end
 
@@ -23,7 +23,7 @@ class IndexPostsController < ApplicationController
     @index_post = IndexPost.new(index_params)
 
     if @index_post.index && !@index_post.index.editable_by?(current_user)
-      flash[:error] = "You do not have permission to edit this index."
+      flash[:error] = "You do not have permission to modify this index."
       redirect_to index_path(@index_post.index) and return
     end
 
@@ -84,7 +84,7 @@ class IndexPostsController < ApplicationController
     end
 
     unless @index_post.index.editable_by?(current_user)
-      flash[:error] = "You do not have permission to edit this index."
+      flash[:error] = "You do not have permission to modify this index."
       redirect_to index_path(@index_post.index) and return
     end
   end

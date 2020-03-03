@@ -16,7 +16,7 @@ RSpec.describe BoardSectionsController do
 
       get :new, params: { board_id: board.id }
       expect(response).to redirect_to(boards_url)
-      expect(flash[:error]).to eq("You do not have permission to edit this continuity.")
+      expect(flash[:error]).to eq("You do not have permission to modify this continuity.")
     end
 
     it "works with board_id" do
@@ -50,7 +50,7 @@ RSpec.describe BoardSectionsController do
 
       post :create, params: { board_section: {board_id: board.id} }
       expect(response).to redirect_to(boards_url)
-      expect(flash[:error]).to eq("You do not have permission to edit this continuity.")
+      expect(flash[:error]).to eq("You do not have permission to modify this continuity.")
     end
 
     it "requires valid section" do
@@ -165,7 +165,7 @@ RSpec.describe BoardSectionsController do
       login
       get :edit, params: { id: section.id }
       expect(response).to redirect_to(boards_url)
-      expect(flash[:error]).to eq("You do not have permission to edit this continuity.")
+      expect(flash[:error]).to eq("You do not have permission to modify this continuity.")
     end
 
     it "works" do
@@ -193,7 +193,7 @@ RSpec.describe BoardSectionsController do
 
       put :update, params: { id: board_section.id }
       expect(response).to redirect_to(boards_url)
-      expect(flash[:error]).to eq("You do not have permission to edit this continuity.")
+      expect(flash[:error]).to eq("You do not have permission to modify this continuity.")
     end
 
     it "requires valid params" do
@@ -235,7 +235,7 @@ RSpec.describe BoardSectionsController do
       login
       delete :destroy, params: { id: section.id }
       expect(response).to redirect_to(boards_url)
-      expect(flash[:error]).to eq("You do not have permission to edit this continuity.")
+      expect(flash[:error]).to eq("You do not have permission to modify this continuity.")
     end
 
     it "works" do

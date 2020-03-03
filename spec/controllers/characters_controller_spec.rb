@@ -327,7 +327,7 @@ RSpec.describe CharactersController do
       user_id = login
       get :edit, params: { id: create(:character).id }
       expect(response).to redirect_to(user_characters_url(user_id))
-      expect(flash[:error]).to eq("You do not have permission to edit this character.")
+      expect(flash[:error]).to eq("You do not have permission to modify this character.")
     end
 
     it "succeeds when logged in" do
@@ -409,7 +409,7 @@ RSpec.describe CharactersController do
       user_id = login
       put :update, params: { id: create(:character).id }
       expect(response).to redirect_to(user_characters_url(user_id))
-      expect(flash[:error]).to eq("You do not have permission to edit this character.")
+      expect(flash[:error]).to eq("You do not have permission to modify this character.")
     end
 
     it "fails with invalid params" do
@@ -786,7 +786,7 @@ RSpec.describe CharactersController do
       expect(character.user_id).not_to eq(user.id)
       delete :destroy, params: { id: character.id }
       expect(response).to redirect_to(user_characters_url(user.id))
-      expect(flash[:error]).to eq("You do not have permission to edit this character.")
+      expect(flash[:error]).to eq("You do not have permission to modify this character.")
     end
 
     it "succeeds" do
@@ -830,7 +830,7 @@ RSpec.describe CharactersController do
       user_id = login
       get :replace, params: { id: character.id }
       expect(response).to redirect_to(user_characters_url(user_id))
-      expect(flash[:error]).to eq('You do not have permission to edit this character.')
+      expect(flash[:error]).to eq('You do not have permission to modify this character.')
     end
 
     it "sets correct variables" do
@@ -934,7 +934,7 @@ RSpec.describe CharactersController do
       user_id = login
       post :do_replace, params: { id: character.id }
       expect(response).to redirect_to(user_characters_url(user_id))
-      expect(flash[:error]).to eq('You do not have permission to edit this character.')
+      expect(flash[:error]).to eq('You do not have permission to modify this character.')
     end
 
     it "requires valid other character" do
@@ -951,7 +951,7 @@ RSpec.describe CharactersController do
       login_as(character.user)
       post :do_replace, params: { id: character.id, icon_dropdown: other_char.id }
       expect(response).to redirect_to(replace_character_path(character))
-      expect(flash[:error]).to eq('You do not have permission to edit this character.')
+      expect(flash[:error]).to eq('You do not have permission to modify this character.')
     end
 
     it "requires valid new alias if parameter provided" do
@@ -1284,7 +1284,7 @@ RSpec.describe CharactersController do
       user_id = login
       post :duplicate, params: { id: create(:character).id }
       expect(response).to redirect_to(user_characters_url(user_id))
-      expect(flash[:error]).to eq('You do not have permission to edit this character.')
+      expect(flash[:error]).to eq('You do not have permission to modify this character.')
     end
 
     it "succeeds" do

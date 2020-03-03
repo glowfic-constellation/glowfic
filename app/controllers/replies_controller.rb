@@ -186,7 +186,7 @@ class RepliesController < WritableController
 
   def destroy
     unless @reply.deletable_by?(current_user)
-      flash[:error] = "You do not have permission to edit this reply."
+      flash[:error] = "You do not have permission to modify this reply."
       redirect_to post_path(@reply.post) and return
     end
 
@@ -220,7 +220,7 @@ class RepliesController < WritableController
 
     new_reply = Reply.new(audit.audited_changes)
     unless new_reply.editable_by?(current_user)
-      flash[:error] = "You do not have permission to edit this reply."
+      flash[:error] = "You do not have permission to modify this reply."
       redirect_to post_path(new_reply.post) and return
     end
 
@@ -262,7 +262,7 @@ class RepliesController < WritableController
 
   def require_permission
     unless @reply.editable_by?(current_user)
-      flash[:error] = "You do not have permission to edit this reply."
+      flash[:error] = "You do not have permission to modify this reply."
       redirect_to post_path(@reply.post)
     end
   end

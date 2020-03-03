@@ -107,7 +107,7 @@ RSpec.feature "Editing posts", :type => :feature do
     end
 
     visit edit_post_path(post)
-    expect(page).to have_selector('.error', text: 'You do not have permission to edit this post.')
+    expect(page).to have_selector('.error', text: 'You do not have permission to modify this post.')
     expect(page).to have_current_path(post_path(post))
   end
 

@@ -97,7 +97,7 @@ class TemplatesController < ApplicationController
 
   def require_own_template
     return true if @template.user_id == current_user.id
-    flash[:error] = "You do not have permission to edit this template."
+    flash[:error] = "You do not have permission to modify this template."
     redirect_to user_characters_path(current_user)
   end
 

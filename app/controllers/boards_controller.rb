@@ -161,7 +161,7 @@ class BoardsController < ApplicationController
 
   def require_permission
     unless @board.editable_by?(current_user)
-      flash[:error] = "You do not have permission to edit this continuity."
+      flash[:error] = "You do not have permission to modify this continuity."
       redirect_to board_path(@board) and return
     end
   end

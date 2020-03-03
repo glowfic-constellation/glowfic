@@ -290,7 +290,7 @@ RSpec.describe BoardsController do
       expect(board).not_to be_editable_by(user)
       get :edit, params: { id: board.id }
       expect(response).to redirect_to(board_url(board))
-      expect(flash[:error]).to eq("You do not have permission to edit this continuity.")
+      expect(flash[:error]).to eq("You do not have permission to modify this continuity.")
     end
 
     it "succeeds with valid board" do
@@ -335,7 +335,7 @@ RSpec.describe BoardsController do
       expect(board).not_to be_editable_by(user)
       put :update, params: { id: board.id }
       expect(response).to redirect_to(board_url(board))
-      expect(flash[:error]).to eq("You do not have permission to edit this continuity.")
+      expect(flash[:error]).to eq("You do not have permission to modify this continuity.")
     end
 
     it "requires valid params" do
@@ -395,7 +395,7 @@ RSpec.describe BoardsController do
       expect(board).not_to be_editable_by(user)
       delete :destroy, params: { id: board.id }
       expect(response).to redirect_to(board_url(board))
-      expect(flash[:error]).to eq("You do not have permission to edit this continuity.")
+      expect(flash[:error]).to eq("You do not have permission to modify this continuity.")
     end
 
     it "succeeds" do

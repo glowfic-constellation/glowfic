@@ -24,7 +24,7 @@ RSpec.describe AliasesController do
       expect(character.user_id).not_to eq(user.id)
       get :new, params: { character_id: character.id }
       expect(response).to redirect_to(user_characters_url(user.id))
-      expect(flash[:error]).to eq("You do not have permission to edit this character.")
+      expect(flash[:error]).to eq("You do not have permission to modify this character.")
     end
 
     it "succeeds" do
@@ -59,7 +59,7 @@ RSpec.describe AliasesController do
       expect(character.user_id).not_to eq(user.id)
       post :create, params: { character_id: character.id }
       expect(response).to redirect_to(user_characters_url(user.id))
-      expect(flash[:error]).to eq("You do not have permission to edit this character.")
+      expect(flash[:error]).to eq("You do not have permission to modify this character.")
     end
 
     it "fails with missing params" do
@@ -120,7 +120,7 @@ RSpec.describe AliasesController do
       expect(character.user_id).not_to eq(user.id)
       delete :destroy, params: { id: -1, character_id: character.id }
       expect(response).to redirect_to(user_characters_url(user.id))
-      expect(flash[:error]).to eq("You do not have permission to edit this character.")
+      expect(flash[:error]).to eq("You do not have permission to modify this character.")
     end
 
     it "requires valid alias" do

@@ -153,7 +153,7 @@ RSpec.describe NewsController do
       login_as(other_mod)
       get :edit, params: {id: news.id}
       expect(response).to redirect_to(news_index_url)
-      expect(flash[:error]).to eq("You do not have permission to edit this news post.")
+      expect(flash[:error]).to eq("You do not have permission to modify this news post.")
     end
 
     it "works for admins" do
@@ -200,7 +200,7 @@ RSpec.describe NewsController do
       login_as(other_mod)
       patch :update, params: {id: news.id}
       expect(response).to redirect_to(news_index_url)
-      expect(flash[:error]).to eq("You do not have permission to edit this news post.")
+      expect(flash[:error]).to eq("You do not have permission to modify this news post.")
     end
 
     it "errors without content" do
@@ -256,7 +256,7 @@ RSpec.describe NewsController do
       login_as(other_mod)
       delete :destroy, params: {id: news.id}
       expect(response).to redirect_to(news_index_url)
-      expect(flash[:error]).to eq("You do not have permission to edit this news post.")
+      expect(flash[:error]).to eq("You do not have permission to modify this news post.")
     end
 
     it "errors if something fails" do

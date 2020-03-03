@@ -142,7 +142,7 @@ class UsersController < ApplicationController
 
   def require_own_user
     unless params[:id] == current_user.id.to_s
-      flash[:error] = "You do not have permission to edit this user."
+      flash[:error] = "You do not have permission to modify this user."
       redirect_to(boards_path)
     end
   end

@@ -296,7 +296,7 @@ RSpec.describe GalleriesController do
       expect(gallery.user_id).not_to eq(user_id)
       get :edit, params: { id: gallery.id }
       expect(response).to redirect_to(user_galleries_url(user_id))
-      expect(flash[:error]).to eq("You do not have permission to edit this gallery.")
+      expect(flash[:error]).to eq("You do not have permission to modify this gallery.")
     end
 
     context "with views" do
@@ -332,7 +332,7 @@ RSpec.describe GalleriesController do
       expect(gallery.user_id).not_to eq(user_id)
       put :update, params: { id: gallery.id }
       expect(response).to redirect_to(user_galleries_url(user_id))
-      expect(flash[:error]).to eq("You do not have permission to edit this gallery.")
+      expect(flash[:error]).to eq("You do not have permission to modify this gallery.")
     end
 
     it "requires valid params" do
@@ -508,7 +508,7 @@ RSpec.describe GalleriesController do
       expect(gallery.user_id).not_to eq(user_id)
       delete :destroy, params: { id: gallery.id }
       expect(response).to redirect_to(user_galleries_url(user_id))
-      expect(flash[:error]).to eq("You do not have permission to edit this gallery.")
+      expect(flash[:error]).to eq("You do not have permission to modify this gallery.")
     end
 
     it "successfully destroys" do
@@ -565,7 +565,7 @@ RSpec.describe GalleriesController do
       expect(gallery.user_id).not_to eq(user_id)
       get :add, params: { id: gallery.id }
       expect(response).to redirect_to(user_galleries_url(user_id))
-      expect(flash[:error]).to eq("You do not have permission to edit this gallery.")
+      expect(flash[:error]).to eq("You do not have permission to modify this gallery.")
     end
 
     it "correctly stubs S3 bucket for devs without local buckets" do
@@ -632,7 +632,7 @@ RSpec.describe GalleriesController do
       user_id = login
       post :icon, params: { id: gallery.id }
       expect(response).to redirect_to(user_galleries_url(user_id))
-      expect(flash[:error]).to eq('You do not have permission to edit this gallery.')
+      expect(flash[:error]).to eq('You do not have permission to modify this gallery.')
     end
 
     context "when adding existing icons" do

@@ -265,7 +265,7 @@ RSpec.describe TagsController do
       login
       get :edit, params: { id: tag.id }
       expect(response).to redirect_to(tag_url(tag))
-      expect(flash[:error]).to eq("You do not have permission to edit this tag.")
+      expect(flash[:error]).to eq("You do not have permission to modify this tag.")
     end
 
     it "allows admin to edit the tag" do
@@ -303,7 +303,7 @@ RSpec.describe TagsController do
       tag = create(:label, owned: true)
       put :update, params: { id: tag.id }
       expect(response).to redirect_to(tag_url(tag))
-      expect(flash[:error]).to eq("You do not have permission to edit this tag.")
+      expect(flash[:error]).to eq("You do not have permission to modify this tag.")
     end
 
     it "requires valid params" do
@@ -344,7 +344,7 @@ RSpec.describe TagsController do
       login
       delete :destroy, params: { id: tag.id }
       expect(response).to redirect_to(tag_url(tag))
-      expect(flash[:error]).to eq("You do not have permission to edit this tag.")
+      expect(flash[:error]).to eq("You do not have permission to modify this tag.")
     end
 
     it "allows admin to destroy the tag" do

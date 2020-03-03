@@ -123,7 +123,7 @@ RSpec.describe TemplatesController do
       user_id = login
       get :edit, params: { id: template.id }
       expect(response).to redirect_to(user_characters_url(user_id))
-      expect(flash[:error]).to eq("You do not have permission to edit this template.")
+      expect(flash[:error]).to eq("You do not have permission to modify this template.")
     end
 
     it "works" do
@@ -155,7 +155,7 @@ RSpec.describe TemplatesController do
       user_id = login
       put :update, params: { id: template.id }
       expect(response).to redirect_to(user_characters_url(user_id))
-      expect(flash[:error]).to eq("You do not have permission to edit this template.")
+      expect(flash[:error]).to eq("You do not have permission to modify this template.")
     end
 
     it "requires valid params" do
@@ -212,7 +212,7 @@ RSpec.describe TemplatesController do
       template = create(:template)
       delete :destroy, params: { id: template.id }
       expect(response).to redirect_to(user_characters_url(user.id))
-      expect(flash[:error]).to eq("You do not have permission to edit this template.")
+      expect(flash[:error]).to eq("You do not have permission to modify this template.")
     end
 
     it "succeeds" do

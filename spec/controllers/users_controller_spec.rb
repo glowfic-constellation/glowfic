@@ -237,7 +237,7 @@ RSpec.describe UsersController do
       login
       get :edit, params: { id: user.id }
       expect(response).to redirect_to(boards_url)
-      expect(flash[:error]).to eq('You do not have permission to edit this user.')
+      expect(flash[:error]).to eq('You do not have permission to modify this user.')
     end
 
     it "succeeds" do
@@ -277,7 +277,7 @@ RSpec.describe UsersController do
       login_as(user1)
       put :update, params: { id: user2.id, user: {email: 'bademail@example.com'} }
       expect(response).to redirect_to(boards_url)
-      expect(flash[:error]).to eq('You do not have permission to edit this user.')
+      expect(flash[:error]).to eq('You do not have permission to modify this user.')
       expect(user2.reload.email).not_to eq('bademail@example.com')
     end
 
@@ -360,7 +360,7 @@ RSpec.describe UsersController do
       login
       put :password, params: { id: user.id }
       expect(response).to redirect_to(boards_url)
-      expect(flash[:error]).to eq('You do not have permission to edit this user.')
+      expect(flash[:error]).to eq('You do not have permission to modify this user.')
     end
 
     it "requires correct password" do

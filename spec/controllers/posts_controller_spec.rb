@@ -1245,7 +1245,7 @@ RSpec.describe PostsController do
       post = create(:post)
       get :delete_history, params: { id: post.id }
       expect(response).to redirect_to(post_url(post))
-      expect(flash[:error]).to eq("You do not have permission to edit this post.")
+      expect(flash[:error]).to eq("You do not have permission to modify this post.")
     end
 
     it "sets correct variables" do
@@ -1332,7 +1332,7 @@ RSpec.describe PostsController do
       post = create(:post)
       get :edit, params: { id: post.id }
       expect(response).to redirect_to(post_url(post))
-      expect(flash[:error]).to eq("You do not have permission to edit this post.")
+      expect(flash[:error]).to eq("You do not have permission to modify this post.")
     end
 
     it "sets relevant fields" do
@@ -1557,7 +1557,7 @@ RSpec.describe PostsController do
         login
         put :update, params: { id: post.id, status: 'complete' }
         expect(response).to redirect_to(post_url(post))
-        expect(flash[:error]).to eq("You do not have permission to edit this post.")
+        expect(flash[:error]).to eq("You do not have permission to modify this post.")
         expect(post.reload).to be_active
       end
 
@@ -1674,7 +1674,7 @@ RSpec.describe PostsController do
         login
         put :update, params: { id: post.id, authors_locked: 'true' }
         expect(response).to redirect_to(post_url(post))
-        expect(flash[:error]).to eq("You do not have permission to edit this post.")
+        expect(flash[:error]).to eq("You do not have permission to modify this post.")
         expect(post.reload).not_to be_authors_locked
       end
 
@@ -2333,7 +2333,7 @@ RSpec.describe PostsController do
           }
         }
         expect(response).to redirect_to(post_url(post))
-        expect(flash[:error]).to eq("You do not have permission to edit this post.")
+        expect(flash[:error]).to eq("You do not have permission to modify this post.")
       end
     end
 
@@ -2382,7 +2382,7 @@ RSpec.describe PostsController do
           }
         }
         expect(response).to redirect_to(post_url(post))
-        expect(flash[:error]).to eq("You do not have permission to edit this post.")
+        expect(flash[:error]).to eq("You do not have permission to modify this post.")
         post.reload
         expect(post.subject).to eq("test subject")
       end
@@ -2493,7 +2493,7 @@ RSpec.describe PostsController do
       expect(post).not_to be_editable_by(user)
       delete :destroy, params: { id: post.id }
       expect(response).to redirect_to(post_url(post))
-      expect(flash[:error]).to eq("You do not have permission to edit this post.")
+      expect(flash[:error]).to eq("You do not have permission to modify this post.")
     end
 
     it "succeeds" do

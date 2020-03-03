@@ -16,7 +16,7 @@ RSpec.describe IndexSectionsController do
 
       get :new, params: { index_id: index.id }
       expect(response).to redirect_to(index_url(index))
-      expect(flash[:error]).to eq("You do not have permission to edit this index.")
+      expect(flash[:error]).to eq("You do not have permission to modify this index.")
     end
 
     it "requires index_id" do
@@ -49,7 +49,7 @@ RSpec.describe IndexSectionsController do
 
       post :create, params: { index_section: {index_id: index.id} }
       expect(response).to redirect_to(index_url(index))
-      expect(flash[:error]).to eq("You do not have permission to edit this index.")
+      expect(flash[:error]).to eq("You do not have permission to modify this index.")
     end
 
     it "requires valid section" do
@@ -114,7 +114,7 @@ RSpec.describe IndexSectionsController do
       login
       get :edit, params: { id: section.id }
       expect(response).to redirect_to(index_url(section.index))
-      expect(flash[:error]).to eq("You do not have permission to edit this index.")
+      expect(flash[:error]).to eq("You do not have permission to modify this index.")
     end
 
     it "works" do
@@ -141,7 +141,7 @@ RSpec.describe IndexSectionsController do
 
       put :update, params: { id: index_section.id }
       expect(response).to redirect_to(index_url(index_section.index))
-      expect(flash[:error]).to eq("You do not have permission to edit this index.")
+      expect(flash[:error]).to eq("You do not have permission to modify this index.")
     end
 
     it "requires valid params" do
@@ -183,7 +183,7 @@ RSpec.describe IndexSectionsController do
       login
       delete :destroy, params: { id: section.id }
       expect(response).to redirect_to(index_url(section.index))
-      expect(flash[:error]).to eq("You do not have permission to edit this index.")
+      expect(flash[:error]).to eq("You do not have permission to modify this index.")
     end
 
     it "works" do

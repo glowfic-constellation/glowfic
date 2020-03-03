@@ -124,7 +124,7 @@ class CharactersController < ApplicationController
 
   def destroy
     unless @character.deletable_by?(current_user)
-      flash[:error] = "You do not have permission to edit this character."
+      flash[:error] = "You do not have permission to modify this character."
       redirect_to user_characters_path(current_user) and return
     end
 
@@ -210,7 +210,7 @@ class CharactersController < ApplicationController
     end
 
     if new_char && new_char.user_id != current_user.id
-      flash[:error] = "You do not have permission to edit this character."
+      flash[:error] = "You do not have permission to modify this character."
       redirect_to replace_character_path(@character) and return
     end
 
@@ -321,7 +321,7 @@ class CharactersController < ApplicationController
 
   def require_own_character
     unless @character.editable_by?(current_user)
-      flash[:error] = "You do not have permission to edit this character."
+      flash[:error] = "You do not have permission to modify this character."
       redirect_to user_characters_path(current_user) and return
     end
   end

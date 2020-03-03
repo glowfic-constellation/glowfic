@@ -48,7 +48,7 @@ class AliasesController < ApplicationController
     end
 
     unless @character.user == current_user
-      flash[:error] = "You do not have permission to edit this character."
+      flash[:error] = "You do not have permission to modify this character."
       redirect_to user_characters_path(current_user) and return
     end
   end

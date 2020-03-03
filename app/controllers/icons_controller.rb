@@ -20,7 +20,7 @@ class IconsController < UploadingController
       end
 
       unless gallery.user_id == current_user.id
-        flash[:error] = "You do not have permission to edit this gallery."
+        flash[:error] = "You do not have permission to modify this gallery."
         redirect_to user_galleries_path(current_user) and return
       end
 
@@ -106,7 +106,7 @@ class IconsController < UploadingController
     end
 
     if new_icon && new_icon.user_id != current_user.id
-      flash[:error] = "You do not have permission to edit this icon."
+      flash[:error] = "You do not have permission to modify this icon."
       redirect_to replace_icon_path(@icon) and return
     end
 
@@ -159,7 +159,7 @@ class IconsController < UploadingController
 
   def require_own_icon
     if @icon.user_id != current_user.id
-      flash[:error] = "You do not have permission to edit this icon."
+      flash[:error] = "You do not have permission to modify this icon."
       redirect_to user_galleries_path(current_user)
     end
   end
