@@ -93,6 +93,10 @@ module SharedExamples::Controller
 
   RSpec.shared_examples "POST create validations" do
     include_context "shared context"
+    let(:invalid_params) do
+      return invalid_override if defined? invalid_override
+      { self_key => {name: ''} }
+    end
 
     it "requires login" do
       post :create
@@ -111,7 +115,7 @@ module SharedExamples::Controller
 
     it "fails with invalid params" do
       login
-      post :create, params: { self_key => {name: ''} }
+      post :create, params: invalid_params
       expect(response.status).to eq(200)
       expect(flash[:error][:message]).to eq("#{klass_cname} could not be created because of the following problems:")
       expect(assigns(:page_title)).to eq("New #{klass_cname}")
@@ -123,6 +127,10 @@ module SharedExamples::Controller
     let(:assign) do
       return :alias if klass == CharacterAlias
       self_sym
+    end
+    let(:invalid_params) do
+      return invalid_override if defined? invalid_override
+      { parent_key => parent.id, self_key => {name: ''} }
     end
 
     include_context "shared parent context"
@@ -162,7 +170,7 @@ module SharedExamples::Controller
 
     it "fails with invalid params" do
       login_as(parent.user)
-      post :create, params: { parent_key => parent.id, self_key => {name: ''} }
+      post :create, params: invalid_params
       expect(response.status).to eq(200)
       expect(flash[:error][:message]).to eq("#{klass_cname} could not be created because of the following problems:")
       expect(assigns(:page_title)).to eq("New #{klass_cname}").or eq("New #{klass_cname}: #{parent.name}")
@@ -173,9 +181,16 @@ module SharedExamples::Controller
   RSpec.shared_examples "GET show validations" do
     include_context "shared context"
 
-    it "requires valid instance" do
+    it "requires valid instance when logged out" do
       get :show, params: { id: -1 }
       expect(response).to redirect_to(index_redirect).or redirect_to(root_url)
+      expect(flash[:error]).to eq("#{klass_cname} could not be found.")
+    end
+
+    it "requires valid instance when logged in" do
+      login_as(user)
+      get :show, params: { id: -1 }
+      expect(response).to redirect_to(index_redirect)
       expect(flash[:error]).to eq("#{klass_cname} could not be found.")
     end
 
@@ -243,6 +258,11 @@ module SharedExamples::Controller
   end
 
   RSpec.shared_examples 'PUT update validations shared' do
+    let(:invalid_params) do
+      return invalid_override if defined? invalid_override
+      { id: object.id, self_key => {name: ''} }
+    end
+
     it "requires login" do
       put :update, params: { id: -1 }
       expect(response).to redirect_to(root_url)
@@ -270,7 +290,7 @@ module SharedExamples::Controller
 
     it "requires valid params" do
       login_as(object.user)
-      put :update, params: { id: object.id, self_sym => {name: ''} }
+      put :update, params: invalid_params
       expect(response).to render_template('edit')
       expect(flash[:error][:message]).to eq("#{klass_cname} could not be updated because of the following problems:")
       expect(flash[:error][:array]).to be_present
@@ -290,7 +310,7 @@ module SharedExamples::Controller
 
     it "requires valid params" do
       login_as(parent.user)
-      put :update, params: { id: object.id, self_sym => {name: ''} }
+      put :update, params: invalid_params
       expect(response).to render_template('edit')
       expect(flash[:error][:message]).to eq("#{klass_cname} could not be updated because of the following problems:")
       expect(flash[:error][:array]).to be_present

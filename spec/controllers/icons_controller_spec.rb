@@ -2,6 +2,8 @@ require "spec_helper"
 
 RSpec.describe IconsController do
   include ActiveJob::TestHelper
+  let(:klass) { Icon }
+  let(:redirect_override) { user_galleries_url(user) }
 
   describe "DELETE delete_multiple" do
     it "requires login" do
@@ -161,33 +163,7 @@ RSpec.describe IconsController do
   end
 
   describe "GET show" do
-    it "requires valid icon logged out" do
-      get :show, params: { id: -1 }
-      expect(response).to redirect_to(root_url)
-      expect(flash[:error]).to eq("Icon could not be found.")
-    end
-
-    it "requires valid icon logged in" do
-      user_id = login
-      get :show, params: { id: -1 }
-      expect(response).to redirect_to(user_galleries_url(user_id))
-      expect(flash[:error]).to eq("Icon could not be found.")
-    end
-
-    it "successfully loads when logged out" do
-      icon = create(:icon)
-      get :show, params: { id: icon.id }
-      expect(response).to have_http_status(200)
-      expect(assigns(:posts)).to be_nil
-    end
-
-    it "successfully loads when logged in" do
-      login
-      icon = create(:icon)
-      get :show, params: { id: icon.id }
-      expect(response).to have_http_status(200)
-      expect(assigns(:posts)).to be_nil
-    end
+    include_examples 'GET show validations'
 
     it "calculates OpenGraph meta" do
       user = create(:user, username: 'user')
@@ -308,64 +284,13 @@ RSpec.describe IconsController do
   end
 
   describe "GET edit" do
-    it "requires login" do
-      get :edit, params: { id: -1 }
-      expect(response.status).to eq(302)
-      expect(flash[:error]).to eq("You must be logged in to view that page.")
-    end
-
-    it "requires valid icon" do
-      user_id = login
-      get :edit, params: { id: -1 }
-      expect(response.status).to eq(302)
-      expect(response.redirect_url).to eq(user_galleries_url(user_id))
-      expect(flash[:error]).to eq("Icon could not be found.")
-    end
-
-    it "requires your icon" do
-      user_id = login
-      get :edit, params: { id: create(:icon).id }
-      expect(response.status).to eq(302)
-      expect(response.redirect_url).to eq(user_galleries_url(user_id))
-      expect(flash[:error]).to eq("You do not have permission to modify this icon.")
-    end
-
-    it "successfully loads" do
-      user_id = login
-      icon = create(:icon, user_id: user_id)
-      get :edit, params: { id: icon.id }
-      expect(response.status).to eq(200)
-    end
+    include_examples 'GET edit validations'
   end
 
   describe "PUT update" do
-    it "requires login" do
-      put :update, params: { id: -1 }
-      expect(response).to redirect_to(root_url)
-      expect(flash[:error]).to eq("You must be logged in to view that page.")
-    end
+    let(:invalid_override) { { id: object.id, icon: { url: '' } } }
 
-    it "requires valid icon" do
-      user_id = login
-      put :update, params: { id: -1 }
-      expect(response).to redirect_to(user_galleries_url(user_id))
-      expect(flash[:error]).to eq("Icon could not be found.")
-    end
-
-    it "requires your icon" do
-      user_id = login
-      put :update, params: { id: create(:icon).id }
-      expect(response).to redirect_to(user_galleries_url(user_id))
-      expect(flash[:error]).to eq("You do not have permission to modify this icon.")
-    end
-
-    it "requires valid params" do
-      icon = create(:icon)
-      login_as(icon.user)
-      put :update, params: { id: icon.id, icon: {url: ''} }
-      expect(response).to render_template(:edit)
-      expect(flash[:error][:message]).to eq("Icon could not be updated because of the following problems:")
-    end
+    include_examples 'PUT update validations'
 
     it "successfully updates" do
       icon = create(:icon)
@@ -382,37 +307,7 @@ RSpec.describe IconsController do
   end
 
   describe "DELETE destroy" do
-    it "requires login" do
-      delete :destroy, params: { id: -1 }
-      expect(response.status).to eq(302)
-      expect(flash[:error]).to eq("You must be logged in to view that page.")
-    end
-
-    it "requires valid icon" do
-      user_id = login
-      delete :destroy, params: { id: -1 }
-      expect(response.status).to eq(302)
-      expect(response.redirect_url).to eq(user_galleries_url(user_id))
-      expect(flash[:error]).to eq("Icon could not be found.")
-    end
-
-    it "requires your icon" do
-      user_id = login
-      delete :destroy, params: { id: create(:icon).id }
-      expect(response.status).to eq(302)
-      expect(response.redirect_url).to eq(user_galleries_url(user_id))
-      expect(flash[:error]).to eq("You do not have permission to modify this icon.")
-    end
-
-    it "successfully destroys" do
-      user_id = login
-      icon = create(:icon, user_id: user_id)
-      delete :destroy, params: { id: icon.id }
-      expect(response.status).to eq(302)
-      expect(response.redirect_url).to eq(user_galleries_url(user_id))
-      expect(flash[:success]).to eq("Icon deleted.")
-      expect(Icon.find_by_id(icon.id)).to be_nil
-    end
+    include_examples 'DELETE destroy validations'
 
     it "successfully goes to gallery if one" do
       icon = create(:icon)
