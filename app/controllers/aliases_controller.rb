@@ -15,11 +15,8 @@ class AliasesController < ApplicationController
 
     begin
       @alias.save!
-    rescue ActiveRecord::RecordInvalid
-      flash.now[:error] = {
-        message: "Alias could not be created.",
-        array: @alias.errors.full_messages
-      }
+    rescue ActiveRecord::RecordInvalid => e
+      render_errors(@alias.errors, action: 'created', exception: e, now: true, class_name: 'Alias')
       @page_title = "New Alias: " + @character.name
       render :new
     else
