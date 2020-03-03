@@ -16,7 +16,7 @@ RSpec.describe IndexPostsController do
 
       get :new, params: { index_id: index.id }
       expect(response).to redirect_to(index_url(index))
-      expect(flash[:error]).to eq("You do not have permission to edit this index.")
+      expect(flash[:error]).to eq("You do not have permission to modify this index.")
     end
 
     it "requires index_id" do
@@ -49,7 +49,7 @@ RSpec.describe IndexPostsController do
 
       post :create, params: { index_post: {index_id: index.id} }
       expect(response).to redirect_to(index_url(index))
-      expect(flash[:error]).to eq("You do not have permission to edit this index.")
+      expect(flash[:error]).to eq("You do not have permission to modify this index.")
     end
 
     it "requires valid post" do
@@ -92,7 +92,7 @@ RSpec.describe IndexPostsController do
       login
       get :edit, params: { id: index.index_posts.first.id }
       expect(response).to redirect_to(index_url(index))
-      expect(flash[:error]).to eq("You do not have permission to edit this index.")
+      expect(flash[:error]).to eq("You do not have permission to modify this index.")
     end
 
     it "works" do
@@ -125,7 +125,7 @@ RSpec.describe IndexPostsController do
       login
       patch :update, params: { id: index.index_posts.first.id }
       expect(response).to redirect_to(index_url(index))
-      expect(flash[:error]).to eq("You do not have permission to edit this index.")
+      expect(flash[:error]).to eq("You do not have permission to modify this index.")
     end
 
     it "requires valid params" do
@@ -135,7 +135,7 @@ RSpec.describe IndexPostsController do
       patch :update, params: { id: index.index_posts.first.id, index_post: {post_id: nil} }
       expect(response).to have_http_status(200)
       expect(assigns(:page_title)).to eq("Edit Post in Index")
-      expect(flash[:error][:message]).to eq("Index could not be saved")
+      expect(flash[:error][:message]).to eq("Index could not be updated because of the following problems:")
     end
 
     it "works" do
@@ -170,7 +170,7 @@ RSpec.describe IndexPostsController do
       login
       delete :destroy, params: { id: index.index_posts.first.id }
       expect(response).to redirect_to(index_url(index))
-      expect(flash[:error]).to eq("You do not have permission to edit this index.")
+      expect(flash[:error]).to eq("You do not have permission to modify this index.")
     end
 
     it "works" do

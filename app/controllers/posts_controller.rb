@@ -138,16 +138,15 @@ class PostsController < WritableController
 
     begin
       @post.save!
-    rescue ActiveRecord::RecordInvalid
-      flash.now[:error] = {
-        array: @post.errors.full_messages,
-        message: "Your post could not be saved because of the following problems:"
-      }
+    rescue ActiveRecord::RecordInvalid => e
+      render_errors(@post, action: 'created', now: true)
+      log_error(e) unless @post.errors.present?
+
       editor_setup
       @page_title = 'New Post'
       render :new
     else
-      flash[:success] = "You have successfully posted."
+      flash[:success] = "Post created."
       redirect_to post_path(@post)
     end
   end
@@ -213,15 +212,14 @@ class PostsController < WritableController
         @post.save!
         @post.author_for(current_user).update!(private_note: @post.private_note) if is_author
       end
-    rescue ActiveRecord::RecordInvalid
-      flash.now[:error] = {
-        array: @post.errors.full_messages,
-        message: "Your post could not be saved because of the following problems:"
-      }
+    rescue ActiveRecord::RecordInvalid => e
+      render_errors(@post, action: 'updated', now: true)
+      log_error(e) unless @post.errors.present?
+
       editor_setup
       render :edit
     else
-      flash[:success] = "Your post has been updated."
+      flash[:success] = "Post updated."
       redirect_to post_path(@post)
     end
   end
@@ -234,11 +232,9 @@ class PostsController < WritableController
 
     begin
       @post.destroy!
-    rescue ActiveRecord::RecordNotDestroyed
-      flash[:error] = {
-        message: "Post could not be deleted.",
-        array: @post.errors.full_messages
-      }
+    rescue ActiveRecord::RecordNotDestroyed => e
+      render_errors(@post, action: 'deleted')
+      log_error(e) unless @post.errors.present?
       redirect_to post_path(@post)
     else
       flash[:success] = "Post deleted."

@@ -35,7 +35,7 @@ RSpec.describe BoardSectionsController do
       section_name = 'ValidSection'
       post :create, params: { board_section: {board_id: board.id, name: section_name} }
       expect(response).to redirect_to(edit_board_url(board))
-      expect(flash[:success]).to eq("New section, #{section_name}, has successfully been created for #{board.name}.")
+      expect(flash[:success]).to eq("New section, #{section_name}, created for #{board.name}.")
       expect(assigns(:board_section).name).to eq(section_name)
     end
   end
@@ -91,7 +91,7 @@ RSpec.describe BoardSectionsController do
       put :update, params: { id: board_section.id, board_section: {name: section_name} }
       expect(response).to redirect_to(board_section_path(board_section))
       expect(board_section.reload.name).to eq(section_name)
-      expect(flash[:success]).to eq("#{section_name} has been successfully updated.")
+      expect(flash[:success]).to eq("Section updated.")
     end
   end
 
@@ -105,7 +105,7 @@ RSpec.describe BoardSectionsController do
       expect_any_instance_of(BoardSection).to receive(:destroy!).and_raise(ActiveRecord::RecordNotDestroyed, 'fake error')
       delete :destroy, params: { id: section.id }
       expect(response).to redirect_to(board_section_url(section))
-      expect(flash[:error]).to eq({message: "Section could not be deleted.", array: []})
+      expect(flash[:error]).to eq("Section could not be deleted.")
       expect(post.reload.section).to eq(section)
     end
   end

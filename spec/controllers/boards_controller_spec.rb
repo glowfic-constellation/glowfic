@@ -150,7 +150,7 @@ RSpec.describe BoardsController do
         }
       }
       expect(response).to redirect_to(boards_url)
-      expect(flash[:success]).to eq("Continuity created!")
+      expect(flash[:success]).to eq("Continuity created.")
       expect(Board.count).to eq(1)
 
       board = Board.first
@@ -258,7 +258,7 @@ RSpec.describe BoardsController do
         }
       }
       expect(response).to redirect_to(board_url(board))
-      expect(flash[:success]).to eq("Continuity saved!")
+      expect(flash[:success]).to eq("Continuity updated.")
       board.reload
       expect(board.name).to eq(name + 'edit')
       expect(board.description).to eq('New description')
@@ -294,7 +294,7 @@ RSpec.describe BoardsController do
       expect_any_instance_of(Board).to receive(:destroy!).and_raise(ActiveRecord::RecordNotDestroyed, 'fake error')
       delete :destroy, params: { id: board.id }
       expect(response).to redirect_to(board_url(board))
-      expect(flash[:error]).to eq({message: "Continuity could not be deleted.", array: []})
+      expect(flash[:error]).to eq("Continuity could not be deleted.")
       expect(post.reload.board).to eq(board)
     end
   end

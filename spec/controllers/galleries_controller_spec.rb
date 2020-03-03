@@ -65,7 +65,7 @@ RSpec.describe GalleriesController do
         expect(response.status).to eq(200)
         expect(response).to render_template(:new)
         expect(assigns(:page_title)).to eq('New Gallery')
-        expect(flash[:error][:message]).to eq('Your gallery could not be saved because of the following problems:')
+        expect(flash[:error][:message]).to eq('Gallery could not be created because of the following problems:')
         expect(flash[:error][:array]).to eq(["Name can't be blank"])
         expect(assigns(:gallery).gallery_groups.map(&:id)).to eq([group.id])
         expect(assigns(:gallery).icon_ids).to eq([icon.id])
@@ -78,7 +78,7 @@ RSpec.describe GalleriesController do
       post :create, params: { gallery: {icon_ids: [icon.id]} }
       expect(response).to have_http_status(200)
       expect(assigns(:page_title)).to eq('New Gallery')
-      expect(flash[:error][:message]).to eq('Your gallery could not be saved because of the following problems:')
+      expect(flash[:error][:message]).to eq('Gallery could not be created because of the following problems:')
       expect(flash[:error][:array]).to eq(["Name can't be blank"])
       expect(icon.reload.has_gallery).not_to eq(true)
     end
@@ -92,7 +92,7 @@ RSpec.describe GalleriesController do
       expect(Gallery.count).to eq(1)
       gallery = assigns(:gallery).reload
       expect(response).to redirect_to(gallery_url(gallery))
-      expect(flash[:success]).to eq('Gallery saved successfully.')
+      expect(flash[:success]).to eq('Gallery created.')
       expect(gallery.name).to eq('Test Gallery')
       expect(gallery.icons).to match_array([icon])
       expect(icon.reload.has_gallery).to eq(true)
@@ -276,7 +276,7 @@ RSpec.describe GalleriesController do
       expect(response.status).to eq(200)
       expect(response).to render_template(:edit)
       expect(assigns(:page_title)).to eq('Edit Gallery: Example Gallery')
-      expect(flash[:error][:message]).to eq('Gallery could not be saved.')
+      expect(flash[:error][:message]).to eq('Gallery could not be updated because of the following problems:')
     end
 
     context "with views" do
@@ -301,7 +301,7 @@ RSpec.describe GalleriesController do
       login_as(user)
       put :update, params: { id: gallery.id, gallery: {name: 'NewGalleryName', gallery_group_ids: [group.id]} }
       expect(response).to redirect_to(edit_gallery_url(gallery))
-      expect(flash[:success]).to eq('Gallery saved.')
+      expect(flash[:success]).to eq('Gallery updated.')
       gallery.reload
       expect(gallery.name).to eq('NewGalleryName')
       expect(gallery.gallery_groups).to match_array([group])
@@ -326,7 +326,7 @@ RSpec.describe GalleriesController do
         }
       }
       expect(response).to redirect_to(edit_gallery_url(gallery))
-      expect(flash[:success]).to eq('Gallery saved.')
+      expect(flash[:success]).to eq('Gallery updated.')
       expect(icon.reload.keyword).to eq(newkey)
     end
 
@@ -349,7 +349,7 @@ RSpec.describe GalleriesController do
         }
       }
       expect(response).to redirect_to(edit_gallery_url(gallery))
-      expect(flash[:success]).to eq('Gallery saved.')
+      expect(flash[:success]).to eq('Gallery updated.')
       expect(gallery.reload.icons).to be_empty
       expect(icon.reload).not_to be_nil
       expect(icon.has_gallery).not_to eq(true)
@@ -373,7 +373,7 @@ RSpec.describe GalleriesController do
         }
       }
       expect(response).to redirect_to(edit_gallery_url(gallery))
-      expect(flash[:success]).to eq('Gallery saved.')
+      expect(flash[:success]).to eq('Gallery updated.')
       expect(gallery.reload.icons).to be_empty
       expect(Icon.find_by_id(icon.id)).to be_nil
     end
@@ -427,7 +427,7 @@ RSpec.describe GalleriesController do
       expect(icon.reload.has_gallery).to eq(true)
       delete :destroy, params: { id: gallery.id }
       expect(response).to redirect_to(user_galleries_url(user_id))
-      expect(flash[:success]).to eq("Gallery deleted successfully.")
+      expect(flash[:success]).to eq("Gallery deleted.")
       expect(icon.reload.has_gallery).not_to eq(true)
     end
 
@@ -438,7 +438,7 @@ RSpec.describe GalleriesController do
       expect_any_instance_of(Gallery).to receive(:destroy!).and_raise(ActiveRecord::RecordNotDestroyed, 'fake error')
       delete :destroy, params: { id: gallery.id }
       expect(response).to redirect_to(gallery_url(gallery))
-      expect(flash[:error]).to eq({message: "Gallery could not be deleted.", array: []})
+      expect(flash[:error]).to eq("Gallery could not be deleted.")
       expect(icon.reload.galleries).to eq([gallery])
     end
   end
@@ -463,7 +463,7 @@ RSpec.describe GalleriesController do
       expect(gallery.user_id).not_to eq(user_id)
       get :add, params: { id: gallery.id }
       expect(response).to redirect_to(user_galleries_url(user_id))
-      expect(flash[:error]).to eq("That is not your gallery.")
+      expect(flash[:error]).to eq("You do not have permission to modify this gallery.")
     end
 
     it "correctly stubs S3 bucket for devs without local buckets" do
@@ -530,7 +530,7 @@ RSpec.describe GalleriesController do
       user_id = login
       post :icon, params: { id: gallery.id }
       expect(response).to redirect_to(user_galleries_url(user_id))
-      expect(flash[:error]).to eq('That is not your gallery.')
+      expect(flash[:error]).to eq('You do not have permission to modify this gallery.')
     end
 
     context "when adding existing icons" do
@@ -552,7 +552,7 @@ RSpec.describe GalleriesController do
 
         post :icon, params: { id: gallery.id, image_ids: icon.id.to_s }
         expect(response).to redirect_to(gallery_path(gallery))
-        expect(flash[:success]).to eq('Icons added to gallery successfully.')
+        expect(flash[:success]).to eq('Icons added to gallery.')
         expect(icon.reload.has_gallery).not_to eq(true)
         expect(gallery.reload.icons).to be_empty
       end
@@ -566,7 +566,7 @@ RSpec.describe GalleriesController do
 
         post :icon, params: { id: gallery.id, image_ids: icon.id.to_s }
         expect(response).to redirect_to(gallery_path(gallery))
-        expect(flash[:success]).to eq('Icons added to gallery successfully.')
+        expect(flash[:success]).to eq('Icons added to gallery.')
         expect(icon.reload.has_gallery).to eq(true)
         expect(gallery.reload.galleries_icons.count).to eq(1)
       end
@@ -582,7 +582,7 @@ RSpec.describe GalleriesController do
         login_as(user)
         post :icon, params: { id: gallery.id, image_ids: "#{icon1.id},#{icon2.id}" }
         expect(response).to redirect_to(gallery_path(gallery))
-        expect(flash[:success]).to eq('Icons added to gallery successfully.')
+        expect(flash[:success]).to eq('Icons added to gallery.')
         expect(icon1.reload.has_gallery).to eq(true)
         expect(icon2.reload.has_gallery).to eq(true)
         expect(gallery.reload.icons).to match_array([icon1, icon2])
@@ -600,7 +600,7 @@ RSpec.describe GalleriesController do
         login_as(user)
         post :icon, params: { id: gallery2.id, image_ids: "#{icon1.id},#{icon2.id}" }
         expect(response).to redirect_to(gallery_path(gallery2))
-        expect(flash[:success]).to eq('Icons added to gallery successfully.')
+        expect(flash[:success]).to eq('Icons added to gallery.')
         expect(icon1.reload.has_gallery).to eq(true)
         expect(icon2.reload.has_gallery).to eq(true)
         expect(gallery1.reload.icons).to match_array([icon1, icon2])
@@ -655,7 +655,7 @@ RSpec.describe GalleriesController do
 
         post :icon, params: { id: gallery.id, icons: icons }
         expect(response).to redirect_to(gallery_path(gallery))
-        expect(flash[:success]).to eq('Icons saved successfully.')
+        expect(flash[:success]).to eq('Icons saved.')
 
         gallery.reload
         icon_objs = gallery.icons
@@ -680,7 +680,7 @@ RSpec.describe GalleriesController do
 
         post :icon, params: { id: 0, icons: icons }
         expect(response).to redirect_to(user_gallery_path(id: 0, user_id: user.id))
-        expect(flash[:success]).to eq('Icons saved successfully.')
+        expect(flash[:success]).to eq('Icons saved.')
 
         user.reload
         icon_objs = user.icons.ordered

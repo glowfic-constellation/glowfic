@@ -23,11 +23,12 @@ class BlocksController < ApplicationController
 
     begin
       @block.save!
-    rescue ActiveRecord::RecordInvalid
+    rescue ActiveRecord::RecordInvalid => e
       flash.now[:error] = {
         message: "User could not be blocked.",
         array: @block.errors.full_messages
       }
+      log_error(e) unless @block.errors.present?
       editor_setup
       @users = [@block.blocked_user].compact
       @page_title = 'Block User'
@@ -45,11 +46,10 @@ class BlocksController < ApplicationController
   def update
     begin
       @block.update!(permitted_params)
-    rescue ActiveRecord::RecordInvalid
-      flash.now[:error] = {
-        message: "Block could not be saved.",
-        array: @block.errors.full_messages
-      }
+    rescue ActiveRecord::RecordInvalid => e
+      render_errors(@block, action: 'updated', now: true)
+      log_error(e) unless @block.errors.present?
+
       editor_setup
       @page_title = 'Edit Block: ' + @block.blocked_user.username
       render :edit
@@ -62,11 +62,12 @@ class BlocksController < ApplicationController
   def destroy
     begin
       @block.destroy!
-    rescue ActiveRecord::RecordNotDestroyed
+    rescue ActiveRecord::RecordNotDestroyed => e
       flash[:error] = {
         message: "User could not be unblocked.",
         array: @block.errors.full_messages
       }
+      log_error(e) unless @block.errors.present?
     else
       flash[:success] = "User unblocked."
     end
