@@ -85,7 +85,7 @@ class CharactersController < ApplicationController
         @character.save!
       end
     rescue ActiveRecord::RecordInvalid => e
-      render_errors(@character, action: 'created', now: true)
+      render_errors(@character, action: 'updated', now: true)
       log_error(e) unless @character.errors.present?
 
       @page_title = "Edit Character: " + @character.name
