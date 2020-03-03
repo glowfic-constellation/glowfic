@@ -21,11 +21,10 @@ class IndexesController < ApplicationController
 
     begin
       @index.save!
-    rescue ActiveRecord::RecordInvalid
-      flash.now[:error] = {
-        message: "Index could not be created.",
-        array: @index.errors.full_messages
-      }
+    rescue ActiveRecord::RecordInvalid => e
+      render_errors(@index, action: 'created', now: true)
+      log_error(e) unless @index.errors.present?
+
       @page_title = 'New Index'
       render :new
     else
@@ -53,11 +52,10 @@ class IndexesController < ApplicationController
   def update
     begin
       @index.update!(index_params)
-    rescue ActiveRecord::RecordInvalid
-      flash.now[:error] = {
-        message: "Index could not be updated.",
-        array: @index.errors.full_messages
-      }
+    rescue ActiveRecord::RecordInvalid => e
+      render_errors(@index, action: 'updated', now: true)
+      log_error(e) unless @index.errors.present?
+
       prepare_editor
       render :edit
     else
@@ -69,11 +67,9 @@ class IndexesController < ApplicationController
   def destroy
     begin
       @index.destroy!
-    rescue ActiveRecord::RecordNotDestroyed
-      flash[:error] = {
-        message: "Index could not be deleted.",
-        array: @index.errors.full_messages
-      }
+    rescue ActiveRecord::RecordNotDestroyed => e
+      render_errors(@index, action: 'deleted')
+      log_error(e) unless @index.errors.present?
       redirect_to index_path(@index)
     else
       redirect_to indexes_path

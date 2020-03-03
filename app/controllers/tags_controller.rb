@@ -49,11 +49,10 @@ class TagsController < ApplicationController
         @tag.parent_settings = process_tags(Setting, :tag, :parent_setting_ids) if @tag.is_a?(Setting)
         @tag.save!
       end
-    rescue ActiveRecord::RecordInvalid
-      flash.now[:error] = {
-        message: "Tag could not be saved because of the following problems:",
-        array: @tag.errors.full_messages
-      }
+    rescue ActiveRecord::RecordInvalid => e
+      render_errors(@tag, action: 'updated', now: true)
+      log_error(e) unless @tag.errors.present?
+
       @page_title = "Edit Tag: #{@tag.name}"
       build_editor
       render :edit
@@ -71,11 +70,9 @@ class TagsController < ApplicationController
 
     begin
       @tag.destroy!
-    rescue ActiveRecord::RecordNotDestroyed
-      flash[:error] = {
-        message: "Tag could not be deleted.",
-        array: @tag.errors.full_messages
-      }
+    rescue ActiveRecord::RecordNotDestroyed => e
+      render_errors(@tag, action: 'deleted')
+      log_error(e) unless @tag.errors.present?
       redirect_to tag_path(@tag)
     else
       flash[:success] = "Tag deleted."

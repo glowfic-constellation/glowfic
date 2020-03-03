@@ -47,10 +47,7 @@ class IndexPostsController < ApplicationController
 
   def update
     unless @index_post.update(index_params)
-      flash.now[:error] = {
-        message: "Index could not be updated.",
-        array: @index_post.errors.full_messages
-      }
+      render_errors(@index_post, action: 'updated', now: true, class_name: 'Index')
       @page_title = "Edit Post in Index"
       render action: :edit and return
     end
@@ -62,11 +59,12 @@ class IndexPostsController < ApplicationController
   def destroy
     begin
       @index_post.destroy!
-    rescue ActiveRecord::RecordNotDestroyed
+    rescue ActiveRecord::RecordNotDestroyed => e
       flash[:error] = {
         message: "Post could not be removed from index.",
         array: @index_post.errors.full_messages
       }
+      log_error(e) unless @index_post.errors.present?
     else
       flash[:success] = "Post removed from index."
     end

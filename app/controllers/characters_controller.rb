@@ -44,16 +44,15 @@ class CharactersController < ApplicationController
 
     begin
       @character.save!
-    rescue ActiveRecord::RecordInvalid
+    rescue ActiveRecord::RecordInvalid => e
+      render_errors(@character, action: 'created', now: true)
+      log_error(e) unless @character.errors.present?
+
       @page_title = "New Character"
-      flash.now[:error] = {
-        message: "Your character could not be created.",
-        array: @character.errors.full_messages
-      }
       build_editor
       render :new
     else
-      flash[:success] = "Character saved successfully."
+      flash[:success] = "Character saved."
       redirect_to character_path(@character)
     end
   end
@@ -85,16 +84,15 @@ class CharactersController < ApplicationController
         @character.gallery_groups = process_tags(GalleryGroup, :character, :gallery_group_ids)
         @character.save!
       end
-    rescue ActiveRecord::RecordInvalid
+    rescue ActiveRecord::RecordInvalid => e
+      render_errors(@character, action: 'created', now: true)
+      log_error(e) unless @character.errors.present?
+
       @page_title = "Edit Character: " + @character.name
-      flash.now[:error] = {
-        message: "Your character could not be updated.",
-        array: @character.errors.full_messages
-      }
       build_editor
       render :edit
     else
-      flash[:success] = "Character saved successfully."
+      flash[:success] = "Character saved."
       redirect_to character_path(@character)
     end
   end
@@ -114,14 +112,12 @@ class CharactersController < ApplicationController
         end
         dupe.save!
       end
-    rescue ActiveRecord::RecordInvalid
-      flash[:error] = {
-        message: "Character could not be duplicated.",
-        array: dupe.errors.full_messages
-      }
+    rescue ActiveRecord::RecordInvalid => e
+      render_errors(dupe, action: 'duplicated')
+      log_error(e) unless dupe.errors.present?
       redirect_to character_path(@character)
     else
-      flash[:success] = "Character duplicated successfully. You are now editing the new character."
+      flash[:success] = "Character duplicated. You are now editing the new character."
       redirect_to edit_character_path(dupe)
     end
   end
@@ -134,14 +130,12 @@ class CharactersController < ApplicationController
 
     begin
       @character.destroy!
-    rescue ActiveRecord::RecordNotDestroyed
-      flash[:error] = {
-        message: "Character could not be deleted.",
-        array: @character.errors.full_messages
-      }
+    rescue ActiveRecord::RecordNotDestroyed => e
+      render_errors(@character, action: 'deleted')
+      log_error(e) unless @character.errors.present?
       redirect_to character_path(@character)
     else
-      flash[:success] = "Character deleted successfully."
+      flash[:success] = "Character deleted."
       redirect_to user_characters_path(current_user)
     end
   end
@@ -216,7 +210,7 @@ class CharactersController < ApplicationController
     end
 
     if new_char && new_char.user_id != current_user.id
-      flash[:error] = "That is not your character."
+      flash[:error] = "You do not have permission to edit this character."
       redirect_to replace_character_path(@character) and return
     end
 
