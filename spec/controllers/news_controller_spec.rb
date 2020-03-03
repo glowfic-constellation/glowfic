@@ -1,17 +1,10 @@
 require "spec_helper"
 
 RSpec.describe NewsController do
-  describe "GET index" do
-    it "works logged out" do
-      get :index
-      expect(response).to have_http_status(200)
-    end
+  let(:klass) { News }
 
-    it "works logged in" do
-      login
-      get :index
-      expect(response).to have_http_status(200)
-    end
+  describe "GET index" do
+    include_examples 'GET index validations'
 
     it "only shows one news post" do
       create(:news)

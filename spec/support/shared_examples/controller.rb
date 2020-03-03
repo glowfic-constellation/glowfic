@@ -7,6 +7,8 @@ module SharedExamples
         'section'
       when 'Board'
         'continuity'
+      when 'News'
+        'news post'
       else
         klass.to_s.underscore.humanize(capitalize: false)
     end
