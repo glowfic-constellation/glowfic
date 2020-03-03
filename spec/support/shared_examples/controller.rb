@@ -1,6 +1,3 @@
-include Rails.application.routes.url_helpers
-default_url_options[:host] = 'test.host'
-
 module SharedExamples
   def self.name_for(klass)
     case klass.to_s
@@ -11,12 +8,15 @@ module SharedExamples
       when 'Board'
         'continuity'
       else
-        self_sym.humanize.downcase
+        klass.to_s.underscore.humanize(capitalize: false)
     end
   end
 end
 
 module SharedExamples::Controller
+  include ActionView::Helpers::UrlHelper
+  include Rails.application.routes.url_helpers
+
   RSpec.shared_context "shared context" do
     let(:index_redirect) do
       return redirect_override if defined? redirect_override
@@ -180,7 +180,7 @@ module SharedExamples::Controller
 
     it "requires valid instance" do
       get :show, params: { id: -1 }
-      expect(response).to redirect_to(index_redirect)
+      expect(response).to redirect_to(index_redirect).or redirect_to(root_url)
       expect(flash[:error]).to eq("#{klass_cname} could not be found.")
     end
 
@@ -204,7 +204,7 @@ module SharedExamples::Controller
     end
 
     it "requires valid instance" do
-      login
+      login_as(user)
       get :edit, params: { id: -1 }
       expect(response).to redirect_to(index_redirect)
       expect(flash[:error]).to eq("#{klass_cname} could not be found.")
@@ -216,9 +216,9 @@ module SharedExamples::Controller
     include_examples 'GET edit validations shared'
 
     it "requires permission" do
-      login
+      login_as(user)
       get :edit, params: { id: object.id }
-      expect(response).to redirect_to(self_redirect)
+      expect(response).to redirect_to(self_redirect).or redirect_to(index_redirect)
       expect(flash[:error]).to eq("You do not have permission to edit that #{klass_name}.")
     end
 
@@ -255,7 +255,7 @@ module SharedExamples::Controller
     end
 
     it "requires valid instance" do
-      login
+      login_as(user)
       put :update, params: { id: -1 }
       expect(response).to redirect_to(index_redirect)
       expect(flash[:error]).to eq("#{klass_cname} could not be found.")
@@ -272,9 +272,9 @@ module SharedExamples::Controller
     end
 
     it "requires permission" do
-      login
+      login_as(user)
       put :update, params: { id: object.id }
-      expect(response).to redirect_to(self_redirect)
+      expect(response).to redirect_to(self_redirect).or redirect_to(index_redirect)
       expect(flash[:error]).to eq("You do not have permission to edit that #{klass_name}.")
     end
 
@@ -317,24 +317,25 @@ module SharedExamples::Controller
     end
 
     it "requires valid instance" do
-      login
+      login_as(user)
       delete :destroy, params: { id: -1 }
       expect(response).to redirect_to(index_redirect)
       expect(flash[:error]).to eq("#{klass_cname} could not be found.")
     end
 
     it "requires permission" do
-      login
+      login_as(user)
       delete :destroy, params: { id: object.id }
-      expect(response).to redirect_to(self_redirect)
+      expect(response).to redirect_to(self_redirect).or redirect_to(index_redirect)
       expect(flash[:error]).to eq("You do not have permission to edit that #{klass_name}.")
     end
 
     it "succeeds" do
-      login_as(object.user)
+      object = create(self_sym, user: user)
+      login_as(user)
       delete :destroy, params: { id: object.id }
       expect(response).to redirect_to(index_redirect)
-      expect(flash[:success]).to eq("#{klass_cname} deleted.")
+      expect(flash[:success]).to eq("#{klass_cname} deleted.").or eq("#{klass_cname} deleted successfully.")
       expect{object.reload}.to raise_error(ActiveRecord::RecordNotFound)
     end
   end

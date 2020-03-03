@@ -2,6 +2,7 @@ require "spec_helper"
 
 RSpec.describe CharactersController do
   include ActiveJob::TestHelper
+  let(:klass) { Character }
 
   describe "GET index" do
     it "requires login without an id" do
@@ -93,7 +94,7 @@ RSpec.describe CharactersController do
     let(:error_msg_override) { "Your character could not be saved." }
     let(:redirect_override) { user_characters_url(user) }
 
-    include_examples 'POST create validations', 'character'
+    include_examples 'POST create validations'
 
     it "succeeds when valid" do
       expect(Character.count).to eq(0)
@@ -263,7 +264,7 @@ RSpec.describe CharactersController do
   describe "GET edit" do
     let(:redirect_override) { user_characters_url(user) }
 
-    include_examples 'GET edit validations', 'character'
+    include_examples 'GET edit validations'
 
     context "with views" do
       render_views
@@ -323,7 +324,7 @@ RSpec.describe CharactersController do
     let(:error_msg_override) { "Your character could not be saved." }
     let(:redirect_override) { user_characters_url(user) }
 
-    include_examples 'PUT update validations', 'character'
+    include_examples 'PUT update validations'
 
     it "fails with invalid template params" do
       character = create(:character)
@@ -673,7 +674,7 @@ RSpec.describe CharactersController do
   describe "DELETE destroy" do
     let(:redirect_override) { user_characters_url(user) }
 
-    include_examples 'DELETE destroy validations', 'character'
+    include_examples 'DELETE destroy validations'
 
     it "handles destroy failure" do
       character = create(:character)
