@@ -1,49 +1,18 @@
 require "spec_helper"
 
 RSpec.describe IndexesController do
-  describe "GET index" do
-    it "works logged out" do
-      get :index
-      expect(response).to have_http_status(200)
-    end
+  let(:klass) { Index }
 
-    it "works logged in" do
-      login
-      get :index
-      expect(response).to have_http_status(200)
-      expect(assigns(:page_title)).to eq("Indexes")
-    end
+  describe "GET index" do
+    include_examples 'GET index validations'
   end
 
   describe "GET new" do
-    it "requires login" do
-      get :new
-      expect(response).to redirect_to(root_url)
-      expect(flash[:error]).to eq("You must be logged in to view that page.")
-    end
-
-    it "works logged in" do
-      login
-      get :new
-      expect(response).to have_http_status(200)
-      expect(assigns(:page_title)).to eq("New Index")
-    end
+    include_examples 'GET new validations'
   end
 
   describe "POST create" do
-    it "requires login" do
-      post :create
-      expect(response).to redirect_to(root_url)
-      expect(flash[:error]).to eq("You must be logged in to view that page.")
-    end
-
-    it "requires valid index" do
-      login
-      post :create, params: { index: {} }
-      expect(response).to have_http_status(200)
-      expect(response).to render_template(:new)
-      expect(flash[:error][:message]).to eq("Index could not be created because of the following problems:")
-    end
+    include_examples 'POST create validations'
 
     it "succeeds" do
       login
@@ -56,31 +25,13 @@ RSpec.describe IndexesController do
   end
 
   describe "GET show" do
-    it "requires valid index" do
-      get :show, params: { id: -1 }
-      expect(response).to redirect_to(indexes_url)
-      expect(flash[:error]).to eq('Index could not be found.')
-    end
+    include_examples 'GET show validations'
 
     it "requires visible index" do
       index = create(:index, privacy: Concealable::PRIVATE)
       get :show, params: { id: index.id }
       expect(response).to redirect_to(indexes_url)
       expect(flash[:error]).to eq('You do not have permission to view this index.')
-    end
-
-    it "works logged out" do
-      index = create(:index)
-      get :show, params: { id: index.id }
-      expect(response).to have_http_status(200)
-      expect(assigns(:page_title)).to eq(index.name)
-    end
-
-    it "works logged in" do
-      index = create(:index, privacy: Concealable::PRIVATE)
-      login_as(index.user)
-      get :show, params: { id: index.id }
-      expect(response).to have_http_status(200)
     end
 
     it "orders sectionless posts correctly" do
@@ -97,66 +48,11 @@ RSpec.describe IndexesController do
   end
 
   describe "GET edit" do
-    it "requires login" do
-      get :edit, params: { id: -1 }
-      expect(response).to redirect_to(root_url)
-      expect(flash[:error]).to eq("You must be logged in to view that page.")
-    end
-
-    it "requires valid index" do
-      login
-      get :edit, params: { id: -1 }
-      expect(response).to redirect_to(indexes_url)
-      expect(flash[:error]).to eq('Index could not be found.')
-    end
-
-    it "requires permission" do
-      login
-      index = create(:index)
-      get :edit, params: { id: index.id }
-      expect(response).to redirect_to(index_url(index))
-      expect(flash[:error]).to eq('You do not have permission to modify this index.')
-    end
-
-    it "works" do
-      index = create(:index)
-      login_as(index.user)
-      get :edit, params: { id: index.id }
-      expect(response).to have_http_status(200)
-      expect(assigns(:page_title)).to eq("Edit Index: #{index.name}")
-    end
+    include_examples 'GET edit validations'
   end
 
   describe "PUT update" do
-    it "requires login" do
-      put :update, params: { id: -1 }
-      expect(response).to redirect_to(root_url)
-      expect(flash[:error]).to eq("You must be logged in to view that page.")
-    end
-
-    it "requires valid index" do
-      login
-      put :update, params: { id: -1 }
-      expect(response).to redirect_to(indexes_url)
-      expect(flash[:error]).to eq('Index could not be found.')
-    end
-
-    it "requires permission" do
-      login
-      index = create(:index)
-      put :update, params: { id: index.id }
-      expect(response).to redirect_to(index_url(index))
-      expect(flash[:error]).to eq('You do not have permission to modify this index.')
-    end
-
-    it "requires valid index params" do
-      index = create(:index)
-      login_as(index.user)
-      put :update, params: { id: index.id, index: {name: ''} }
-      expect(response).to have_http_status(200)
-      expect(response).to render_template(:edit)
-      expect(flash[:error][:message]).to eq("Index could not be updated because of the following problems:")
-    end
+    include_examples 'PUT update validations'
 
     it "succeeds" do
       index = create(:index)
@@ -170,35 +66,7 @@ RSpec.describe IndexesController do
   end
 
   describe "DELETE destroy" do
-    it "requires login" do
-      delete :destroy, params: { id: -1 }
-      expect(response).to redirect_to(root_url)
-      expect(flash[:error]).to eq("You must be logged in to view that page.")
-    end
-
-    it "requires valid index" do
-      login
-      delete :destroy, params: { id: -1 }
-      expect(response).to redirect_to(indexes_url)
-      expect(flash[:error]).to eq('Index could not be found.')
-    end
-
-    it "requires permission" do
-      login
-      index = create(:index)
-      delete :destroy, params: { id: index.id }
-      expect(response).to redirect_to(index_url(index))
-      expect(flash[:error]).to eq('You do not have permission to modify this index.')
-    end
-
-    it "works" do
-      index = create(:index)
-      login_as(index.user)
-      delete :destroy, params: { id: index.id }
-      expect(response).to redirect_to(indexes_url)
-      expect(flash[:success]).to eq("Index deleted.")
-      expect(Index.find_by_id(index.id)).to be_nil
-    end
+    include_examples 'DELETE destroy validations'
 
     it "handles destroy failure" do
       index = create(:index)

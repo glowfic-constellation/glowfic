@@ -266,7 +266,7 @@ module SharedExamples::Controller
   RSpec.shared_examples 'PUT update validations shared' do
     let(:invalid_params) do
       return invalid_override if defined? invalid_override
-      { id: object.id, self_key => {name: ''} }
+      { id: object.id, self_sym => {name: ''} }
     end
 
     it "requires login" do
@@ -296,6 +296,7 @@ module SharedExamples::Controller
 
     it "requires valid params" do
       login_as(object.user)
+      debugger
       put :update, params: invalid_params
       expect(response).to render_template('edit')
       expect(flash[:error][:message]).to eq("#{klass_cname} could not be updated because of the following problems:")
