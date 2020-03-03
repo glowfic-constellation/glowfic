@@ -22,12 +22,18 @@ class BlocksController < ApplicationController
     @block.blocking_user = current_user
     @block.blocked_user_id = params.fetch(:block, {})[:blocked_user_id]
 
-    unless @block.save
+    begin
+      @block.save!
+    rescue ActiveRecord::RecordInvalid => e
       render_errors(@block, action: 'create', now: true, msg: 'User could not be blocked')
+      log_error(e) unless @block.errors.present?
       editor_setup
       @users = [@block.blocked_user].compact
       @page_title = 'Block User'
-      render :new and return
+      render :new
+    else
+      flash[:success] = "User blocked."
+      redirect_to blocks_path
     end
 
     flash[:success] = "User blocked."
@@ -39,11 +45,18 @@ class BlocksController < ApplicationController
   end
 
   def update
-    unless @block.update(permitted_params)
+    begin
+      @block.update!(permitted_params)
+    rescue ActiveRecord::RecordInvalid => e
       render_errors(@block, action: 'updated', now: true)
+      log_error(e) unless @block.errors.present?
+
       editor_setup
       @page_title = 'Edit Block: ' + @block.blocked_user.username
-      render :edit and return
+      render :edit
+    else
+      flash[:success] = "Block updated."
+      redirect_to blocks_path
     end
 
     flash[:success] = "Block updated."

@@ -287,13 +287,13 @@ class RepliesController < WritableController
   def require_create_permission
     return unless current_user.read_only?
     flash[:error] = "You do not have permission to create replies."
-    redirect_to continuities_path and return
+    redirect_to continuities_path
   end
 
   def require_edit_permission
     return if @reply.editable_by?(current_user)
     flash[:error] = "You do not have permission to modify this reply."
-    redirect_to post_path(@reply.post)
+    redirect_to @reply.post
   end
 
   def preview(written)
