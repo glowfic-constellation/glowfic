@@ -55,7 +55,7 @@ RSpec.describe RepliesController do
         expect(draft.character).to eq(char1)
         expect(draft.icon).to eq(icon)
         expect(draft.character_alias).to eq(calias)
-        expect(flash[:success]).to eq('Draft saved!')
+        expect(flash[:success]).to eq('Draft saved.')
 
         # build_template_groups:
         expect(controller.gon.editor_user[:username]).to eq(user.username)
@@ -120,7 +120,7 @@ RSpec.describe RepliesController do
           }
         }
         expect(response).to redirect_to(post_url(reply_post, page: :unread, anchor: :unread))
-        expect(flash[:success]).to eq("Draft saved!")
+        expect(flash[:success]).to eq("Draft saved.")
         expect(ReplyDraft.count).to eq(1)
 
         draft = ReplyDraft.last
@@ -136,7 +136,7 @@ RSpec.describe RepliesController do
         draft = create(:reply_draft)
         login_as(draft.user)
         post :create, params: { button_draft: true, reply: {post_id: draft.post.id, content: 'new draft'} }
-        expect(flash[:success]).to eq("Draft saved!")
+        expect(flash[:success]).to eq("Draft saved.")
         expect(draft.reload.content).to eq('new draft')
         expect(ReplyDraft.count).to eq(1)
       end

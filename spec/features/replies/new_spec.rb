@@ -15,7 +15,7 @@ RSpec.feature "Creating replies", :type => :feature do
       click_button 'Preview'
     end
     expect(page).to have_no_selector('.error')
-    expect(page).to have_selector('.success', exact_text: 'Draft saved!')
+    expect(page).to have_selector('.success', exact_text: 'Draft saved.')
     expect(page).to have_selector('#post-editor')
 
     # then save:
