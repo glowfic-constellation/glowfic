@@ -2,6 +2,8 @@ require "spec_helper"
 require "support/s3_bucket_helper"
 
 RSpec.describe GalleriesController do
+  let(:klass) { Gallery }
+
   describe "GET index" do
     context "without a user_id" do
       it "requires login" do
@@ -38,11 +40,7 @@ RSpec.describe GalleriesController do
   end
 
   describe "GET new" do
-    it "requires login" do
-      get :new
-      expect(response).to redirect_to(root_url)
-      expect(flash[:error]).to eq("You must be logged in to view that page.")
-    end
+    include_examples 'GET new validations'
 
     context "with views" do
       render_views
@@ -55,11 +53,7 @@ RSpec.describe GalleriesController do
   end
 
   describe "POST create" do
-    it "requires login" do
-      post :create
-      expect(response).to redirect_to(root_url)
-      expect(flash[:error]).to eq("You must be logged in to view that page.")
-    end
+    include_examples 'POST create validations'
 
     context "with views" do
       render_views
@@ -172,31 +166,7 @@ RSpec.describe GalleriesController do
     end
 
     context "with normal gallery id" do
-      it "requires valid gallery id logged out" do
-        get :show, params: { id: -1 }
-        expect(response).to redirect_to(root_url)
-        expect(flash[:error]).to eq('Gallery could not be found.')
-      end
-
-      it "requires valid gallery id logged in" do
-        user_id = login
-        get :show, params: { id: -1 }
-        expect(response).to redirect_to(user_galleries_url(user_id))
-        expect(flash[:error]).to eq('Gallery could not be found.')
-      end
-
-      it "successfully loads logged out" do
-        gallery = create(:gallery)
-        get :show, params: { id: gallery.id }
-        expect(response.status).to eq(200)
-      end
-
-      it "successfully loads logged in" do
-        gallery = create(:gallery)
-        login
-        get :show, params: { id: gallery.id }
-        expect(response.status).to eq(200)
-      end
+      include_examples 'GET show validations'
 
       it "calculates OpenGraph meta" do
         user = create(:user, username: 'user')
@@ -277,27 +247,9 @@ RSpec.describe GalleriesController do
   end
 
   describe "GET edit" do
-    it "requires login" do
-      get :edit, params: { id: -1 }
-      expect(response).to redirect_to(root_url)
-      expect(flash[:error]).to eq("You must be logged in to view that page.")
-    end
+    let(:redirect_override) { user_galleries_url(user) }
 
-    it "requires valid gallery" do
-      user_id = login
-      get :edit, params: { id: -1 }
-      expect(response).to redirect_to(user_galleries_url(user_id))
-      expect(flash[:error]).to eq("Gallery could not be found.")
-    end
-
-    it "requires your gallery" do
-      user_id = login
-      gallery = create(:gallery)
-      expect(gallery.user_id).not_to eq(user_id)
-      get :edit, params: { id: gallery.id }
-      expect(response).to redirect_to(user_galleries_url(user_id))
-      expect(flash[:error]).to eq("That is not your gallery.")
-    end
+    include_examples 'GET edit validations'
 
     context "with views" do
       render_views
@@ -313,36 +265,9 @@ RSpec.describe GalleriesController do
   end
 
   describe "PUT update" do
-    it "requires login" do
-      put :update, params: { id: -1 }
-      expect(response).to redirect_to(root_url)
-      expect(flash[:error]).to eq("You must be logged in to view that page.")
-    end
+    let(:redirect_override) { user_galleries_url(user) }
 
-    it "requires valid gallery" do
-      user_id = login
-      put :update, params: { id: -1 }
-      expect(response).to redirect_to(user_galleries_url(user_id))
-      expect(flash[:error]).to eq("Gallery could not be found.")
-    end
-
-    it "requires your gallery" do
-      user_id = login
-      gallery = create(:gallery)
-      expect(gallery.user_id).not_to eq(user_id)
-      put :update, params: { id: gallery.id }
-      expect(response).to redirect_to(user_galleries_url(user_id))
-      expect(flash[:error]).to eq("That is not your gallery.")
-    end
-
-    it "requires valid params" do
-      user = create(:user)
-      gallery = create(:gallery, user: user)
-      login_as(user)
-      put :update, params: { id: gallery.id, gallery: {name: ''} }
-      expect(response).to render_template('edit')
-      expect(flash[:error][:message]).to eq("Gallery could not be saved.")
-    end
+    include_examples 'PUT update validations'
 
     it "sets right variables on failed save" do
       gallery = create(:gallery, name: 'Example Gallery')
@@ -489,36 +414,9 @@ RSpec.describe GalleriesController do
   end
 
   describe "DELETE destroy" do
-    it "requires login" do
-      delete :destroy, params: { id: -1 }
-      expect(response).to redirect_to(root_url)
-      expect(flash[:error]).to eq("You must be logged in to view that page.")
-    end
+    let(:redirect_override) { user_galleries_url(user) }
 
-    it "requires valid gallery" do
-      user_id = login
-      delete :destroy, params: { id: -1 }
-      expect(response).to redirect_to(user_galleries_url(user_id))
-      expect(flash[:error]).to eq("Gallery could not be found.")
-    end
-
-    it "requires your gallery" do
-      user_id = login
-      gallery = create(:gallery)
-      expect(gallery.user_id).not_to eq(user_id)
-      delete :destroy, params: { id: gallery.id }
-      expect(response).to redirect_to(user_galleries_url(user_id))
-      expect(flash[:error]).to eq("That is not your gallery.")
-    end
-
-    it "successfully destroys" do
-      user_id = login
-      gallery = create(:gallery, user_id: user_id)
-      delete :destroy, params: { id: gallery.id }
-      expect(response).to redirect_to(user_galleries_url(user_id))
-      expect(flash[:success]).to eq("Gallery deleted successfully.")
-      expect(Gallery.find_by_id(gallery.id)).to be_nil
-    end
+    include_examples 'DELETE destroy validations'
 
     it "modifies associations relevantly" do
       user_id = login

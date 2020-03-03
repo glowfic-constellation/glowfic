@@ -109,7 +109,7 @@ module SharedExamples::Controller
       login
       post :create
       expect(response.status).to eq(200)
-      expect(flash[:error][:message]).to eq(error_msg)
+      expect(flash[:error][:message]).to eq(error_msg).or eq("Your #{klass_name} could not be saved because of the following problems:")
       expect(assigns(:page_title)).to eq("New #{klass_cname}")
       expect(assigns(self_sym)).to be_a_new_record
     end
@@ -118,7 +118,7 @@ module SharedExamples::Controller
       login
       post :create, params: { self_key => {name: ''} }
       expect(response.status).to eq(200)
-      expect(flash[:error][:message]).to eq(error_msg)
+      expect(flash[:error][:message]).to eq(error_msg).or eq("Your #{klass_name} could not be saved because of the following problems:")
       expect(assigns(:page_title)).to eq("New #{klass_cname}")
       expect(assigns(self_sym)).to be_a_new_record
     end
@@ -220,6 +220,7 @@ module SharedExamples::Controller
       get :edit, params: { id: object.id }
       expect(response).to redirect_to(self_redirect).or redirect_to(index_redirect)
       expect(flash[:error]).to eq("You do not have permission to edit that #{klass_name}.")
+        .or eq("That is not your #{klass_name}.")
     end
 
     it "succeeds" do
@@ -276,13 +277,14 @@ module SharedExamples::Controller
       put :update, params: { id: object.id }
       expect(response).to redirect_to(self_redirect).or redirect_to(index_redirect)
       expect(flash[:error]).to eq("You do not have permission to edit that #{klass_name}.")
+        .or eq("That is not your #{klass_name}.")
     end
 
     it "requires valid params" do
       login_as(object.user)
       put :update, params: { id: object.id, self_sym => {name: ''} }
       expect(response).to render_template('edit')
-      expect(flash[:error][:message]).to eq(error_msg)
+      expect(flash[:error][:message]).to eq(error_msg).or eq("#{klass_cname} could not be saved.")
       expect(flash[:error][:array]).to be_present
     end
   end
@@ -328,6 +330,7 @@ module SharedExamples::Controller
       delete :destroy, params: { id: object.id }
       expect(response).to redirect_to(self_redirect).or redirect_to(index_redirect)
       expect(flash[:error]).to eq("You do not have permission to edit that #{klass_name}.")
+        .or eq("That is not your #{klass_name}.")
     end
 
     it "succeeds" do
