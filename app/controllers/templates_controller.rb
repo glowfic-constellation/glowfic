@@ -3,8 +3,8 @@ class TemplatesController < ApplicationController
   include CharacterSplit
 
   before_action :login_required, except: [:show, :search]
-  before_action :find_template, only: [:show, :destroy, :edit, :update]
-  before_action :require_own_template, only: [:edit, :update, :destroy]
+  before_action :find_model, only: [:show, :destroy, :edit, :update]
+  before_action :require_permission, only: [:edit, :update, :destroy]
   before_action :editor_setup, only: [:new, :edit]
 
   def new
@@ -13,7 +13,7 @@ class TemplatesController < ApplicationController
   end
 
   def create
-    @template = Template.new(template_params)
+    @template = Template.new(permitted_params)
     @template.user = current_user
     begin
       @template.save!
@@ -47,7 +47,7 @@ class TemplatesController < ApplicationController
 
   def update
     begin
-      @template.update!(template_params)
+      @template.update!(permitted_params)
     rescue ActiveRecord::RecordInvalid
       flash.now[:error] = {
         message: "Your template could not be saved because of the following problems:",
@@ -86,11 +86,11 @@ class TemplatesController < ApplicationController
     @selectable_characters = @template.try(:characters) || []
     @selectable_characters += current_user.characters.where(template_id: nil).ordered
     @selectable_characters.uniq!
-    @character_ids = template_params[:character_ids] if template_params.key?(:character_ids)
+    @character_ids = permitted_params[:character_ids] if permitted_params.key?(:character_ids)
     @character_ids ||= @template.try(:character_ids) || []
   end
 
-  def find_template
+  def find_model
     unless (@template = Template.find_by_id(params[:id]))
       flash[:error] = "Template could not be found."
       if logged_in?
@@ -101,7 +101,7 @@ class TemplatesController < ApplicationController
     end
   end
 
-  def require_own_template
+  def require_permission
     return true if @template.user_id == current_user.id
     flash[:error] = "That is not your template."
     redirect_to user_characters_path(current_user)
@@ -121,7 +121,7 @@ class TemplatesController < ApplicationController
     }
   end
 
-  def template_params
+  def permitted_params
     params.fetch(:template, {}).permit(:name, :description, character_ids: [])
   end
 end

@@ -2,7 +2,7 @@
 class AliasesController < ApplicationController
   before_action :login_required
   before_action :find_character
-  before_action :find_alias, only: :destroy
+  before_action :find_model, only: :destroy
 
   def new
     @page_title = "New Alias: " + @character.name
@@ -10,7 +10,7 @@ class AliasesController < ApplicationController
   end
 
   def create
-    @alias = CharacterAlias.new(calias_params)
+    @alias = CharacterAlias.new(permitted_params)
     @alias.character = @character
 
     begin
@@ -56,7 +56,7 @@ class AliasesController < ApplicationController
     end
   end
 
-  def find_alias
+  def find_model
     unless (@alias = CharacterAlias.find_by_id(params[:id]))
       flash[:error] = "Alias could not be found."
       redirect_to edit_character_path(@character) and return
@@ -68,7 +68,7 @@ class AliasesController < ApplicationController
     end
   end
 
-  def calias_params
+  def permitted_params
     params.fetch(:character_alias, {}).permit(:name)
   end
 end

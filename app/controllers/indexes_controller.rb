@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 class IndexesController < ApplicationController
   before_action :login_required, except: [:index, :show]
-  before_action :find_index, except: [:index, :new, :create]
-  before_action :permission_required, except: [:index, :new, :create, :show]
-  before_action :prepare_editor, only: :edit
+  before_action :find_model, except: [:index, :new, :create]
+  before_action :require_permission, except: [:index, :new, :create, :show]
+  before_action :editor_setup, only: :edit
 
   def index
     @page_title = "Indexes"
@@ -16,7 +16,7 @@ class IndexesController < ApplicationController
   end
 
   def create
-    @index = Index.new(index_params)
+    @index = Index.new(permitted_params)
     @index.user = current_user
 
     begin
@@ -52,13 +52,13 @@ class IndexesController < ApplicationController
 
   def update
     begin
-      @index.update!(index_params)
+      @index.update!(permitted_params)
     rescue ActiveRecord::RecordInvalid
       flash.now[:error] = {
         message: "Index could not be saved because of the following problems:",
         array: @index.errors.full_messages
       }
-      prepare_editor
+      editor_setup
       render :edit
     else
       flash[:success] = "Index saved!"
@@ -83,25 +83,25 @@ class IndexesController < ApplicationController
 
   private
 
-  def find_index
+  def find_model
     unless (@index = Index.find_by_id(params[:id]))
       flash[:error] = "Index could not be found."
       redirect_to indexes_path
     end
   end
 
-  def permission_required
+  def require_permission
     unless @index.editable_by?(current_user)
       flash[:error] = "You do not have permission to edit this index."
       redirect_to index_path(@index)
     end
   end
 
-  def index_params
+  def permitted_params
     params.fetch(:index, {}).permit(:name, :description, :privacy, :authors_locked)
   end
 
-  def prepare_editor
+  def editor_setup
     @page_title = "Edit Index: #{@index.name}"
     use_javascript('posts/index_edit')
     @index_sections = @index.index_sections.ordered

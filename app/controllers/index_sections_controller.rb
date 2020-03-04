@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 class IndexSectionsController < ApplicationController
   before_action :login_required, except: [:show]
-  before_action :find_index_section, except: [:new, :create]
-  before_action :permission_required, except: [:new, :create, :show]
+  before_action :find_model, except: [:new, :create]
+  before_action :require_permission, except: [:new, :create, :show]
 
   def new
     unless (index = Index.find_by_id(params[:index_id]))
@@ -20,7 +20,7 @@ class IndexSectionsController < ApplicationController
   end
 
   def create
-    @section = IndexSection.new(index_params)
+    @section = IndexSection.new(permitted_params)
 
     if @section.index && !@section.index.editable_by?(current_user)
       flash[:error] = "You do not have permission to edit this index."
@@ -52,7 +52,7 @@ class IndexSectionsController < ApplicationController
 
   def update
     begin
-      @section.update!(index_params)
+      @section.update!(permitted_params)
     rescue ActiveRecord::RecordInvalid
       flash.now[:error] = {
         message: "Index section could not be saved because of the following problems:",
@@ -81,21 +81,21 @@ class IndexSectionsController < ApplicationController
 
   private
 
-  def find_index_section
+  def find_model
     unless (@section = IndexSection.find_by_id(params[:id]))
       flash[:error] = "Index section could not be found."
       redirect_to indexes_path
     end
   end
 
-  def permission_required
+  def require_permission
     unless @section.index.editable_by?(current_user)
       flash[:error] = "You do not have permission to edit this index."
       redirect_to index_path(@section.index)
     end
   end
 
-  def index_params
+  def permitted_params
     params.fetch(:index_section, {}).permit(:name, :description, :index_id)
   end
 end

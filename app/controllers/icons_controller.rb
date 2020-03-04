@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 class IconsController < UploadingController
   before_action :login_required, except: :show
-  before_action :find_icon, except: :delete_multiple
-  before_action :require_own_icon, only: [:edit, :update, :replace, :do_replace, :destroy, :avatar]
+  before_action :find_model, except: :delete_multiple
+  before_action :require_permission, only: [:edit, :update, :replace, :do_replace, :destroy, :avatar]
   before_action :set_s3_url, only: :edit
 
   def delete_multiple
@@ -66,7 +66,7 @@ class IconsController < UploadingController
 
   def update
     begin
-      @icon.update!(icon_params)
+      @icon.update!(permitted_params)
     rescue ActiveRecord::RecordInvalid
       flash.now[:error] = {
         message: "Your icon could not be saved due to the following problems:",
@@ -149,7 +149,7 @@ class IconsController < UploadingController
 
   private
 
-  def find_icon
+  def find_model
     unless (@icon = Icon.find_by_id(params[:id]))
       flash[:error] = "Icon could not be found."
       if logged_in?
@@ -160,7 +160,7 @@ class IconsController < UploadingController
     end
   end
 
-  def require_own_icon
+  def require_permission
     if @icon.user_id != current_user.id
       flash[:error] = "That is not your icon."
       redirect_to user_galleries_path(current_user)
@@ -199,7 +199,7 @@ class IconsController < UploadingController
     }
   end
 
-  def icon_params
+  def permitted_params
     params.fetch(:icon, {}).permit(:url, :keyword, :credit, :s3_key)
   end
 end

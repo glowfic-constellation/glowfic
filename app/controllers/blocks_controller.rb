@@ -1,6 +1,6 @@
 class BlocksController < ApplicationController
   before_action :login_required
-  before_action :find_block, only: [:edit, :update, :destroy]
+  before_action :find_model, only: [:edit, :update, :destroy]
   before_action :require_permission, only: [:edit, :update, :destroy]
   before_action :editor_setup, only: [:new, :edit]
 
@@ -86,7 +86,7 @@ class BlocksController < ApplicationController
     end
   end
 
-  def find_block
+  def find_model
     unless (@block = Block.find_by(id: params[:id]))
       flash[:error] = "Block could not be found."
       redirect_to blocks_path and return

@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 class BoardsController < ApplicationController
   before_action :login_required, except: [:index, :show, :search]
-  before_action :find_board, only: [:show, :edit, :update, :destroy]
-  before_action :set_available_cowriters, only: [:new, :edit]
+  before_action :find_model, only: [:show, :edit, :update, :destroy]
+  before_action :editor_setup, only: [:new, :edit]
   before_action :require_permission, only: [:edit, :update, :destroy]
 
   def index
@@ -34,7 +34,7 @@ class BoardsController < ApplicationController
   end
 
   def create
-    @board = Board.new(board_params)
+    @board = Board.new(permitted_params)
     @board.creator = current_user
 
     begin
@@ -45,7 +45,7 @@ class BoardsController < ApplicationController
         array: @board.errors.full_messages
       }
       @page_title = 'New Continuity'
-      set_available_cowriters
+      editor_setup
       render :new
     else
       flash[:success] = "Continuity created!"
@@ -76,14 +76,14 @@ class BoardsController < ApplicationController
 
   def update
     begin
-      @board.update!(board_params)
+      @board.update!(permitted_params)
     rescue ActiveRecord::RecordInvalid
       flash.now[:error] = {
         message: "Continuity could not be created.",
         array: @board.errors.full_messages
       }
       @page_title = 'Edit Continuity: ' + @board.name_was
-      set_available_cowriters
+      editor_setup
       use_javascript('board_sections')
       @board_sections = @board.board_sections.ordered
       render :edit
@@ -142,7 +142,7 @@ class BoardsController < ApplicationController
 
   private
 
-  def set_available_cowriters
+  def editor_setup
     @coauthors = @cameos = User.active.ordered
     if @board
       @coauthors -= @board.cameos
@@ -156,7 +156,7 @@ class BoardsController < ApplicationController
     use_javascript('boards/editor')
   end
 
-  def find_board
+  def find_model
     unless (@board = Board.find_by_id(params[:id]))
       flash[:error] = "Continuity could not be found."
       redirect_to continuities_path and return
@@ -187,7 +187,7 @@ class BoardsController < ApplicationController
     }
   end
 
-  def board_params
+  def permitted_params
     params.fetch(:board, {}).permit(:name, :description, coauthor_ids: [], cameo_ids: [])
   end
 end
