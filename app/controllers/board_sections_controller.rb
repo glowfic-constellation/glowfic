@@ -4,7 +4,7 @@ class BoardSectionsController < GenericController
 
   def create
     board = Board.find_by(id: permitted_params[:board_id])
-    @csm = "New section, #{permitted_params[:name]}, has successfully been created for #{board.try(:name)}."
+    @csm = "New section, #{permitted_params[:name]}, created for #{board.try(:name)}."
     @create_redirect = edit_board_path(board) if board.present?
     super
   end

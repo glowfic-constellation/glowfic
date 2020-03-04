@@ -30,7 +30,7 @@ class TemplatesController < GenericController
 
   def require_edit_permission
     unless @template.user_id == current_user.id
-      flash[:error] = "That is not your template."
+      flash[:error] = "You do not have permission to modify this template."
       redirect_to user_characters_path(current_user)
     end
   end

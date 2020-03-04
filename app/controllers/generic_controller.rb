@@ -34,7 +34,7 @@ class GenericController < ApplicationController
       editor_setup
       render :new
     else
-      flash[:success] = @csm || "#{model_name} created successfully."
+      flash[:success] = @csm || "#{model_name} created."
       redirect_to @create_redirect || model_path(@model)
     end
   end

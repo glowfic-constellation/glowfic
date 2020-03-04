@@ -4,7 +4,7 @@ require 'will_paginate/array'
 class PostsController < WritableController
   include Taggable
 
-  before_action(only: [:owed, :unread, :mark, :hidden, :unhide]) { login_required }
+  before_action(only: [:owed, :unread, :mark, :hidden, :unhide, :delete_history]) { login_required }
   before_action(only: [:history, :delete_history, :stats, :warnings]) { find_model }
   before_action(only: [:warnings]) { require_view_permission }
   before_action :require_edit_permission, only: [:edit, :delete_history]
