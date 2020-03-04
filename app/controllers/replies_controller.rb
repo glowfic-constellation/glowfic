@@ -2,6 +2,7 @@
 require 'will_paginate/array'
 
 class RepliesController < WritableController
+  before_action(only: [:restore]) { login_required }
   before_action(only: [:history]) { find_model }
   before_action :require_view_permission, only: [:show, :edit, :update, :destroy, :history]
 

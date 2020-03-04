@@ -4,7 +4,7 @@ class IndexPostsController < GenericController
   before_action(only: [:new, :create]) { require_edit_permission }
 
   def new
-    @index_post = IndexPost.new(index: index, index_section_id: params[:index_section_id])
+    @index_post = IndexPost.new(index: @index, index_section_id: params[:index_section_id])
     @page_title = "Add Posts to Index"
   end
 
@@ -46,7 +46,7 @@ class IndexPostsController < GenericController
     index = @index || @index_post.index
     unless index.editable_by?(current_user)
       flash[:error] = "You do not have permission to modify this index."
-      redirect_to index_path(@index_post.index) and return
+      redirect_to index_path(index)
     end
   end
   alias_method :require_destroy_permission, :require_edit_permission
