@@ -92,7 +92,7 @@ RSpec.describe AliasesController do
       post :create, params: { character_id: character.id, character_alias: {name: test_name} }
 
       expect(response).to redirect_to(edit_character_url(character))
-      expect(flash[:success]).to eq("Alias created successfully.")
+      expect(flash[:success]).to eq("Alias created.")
       expect(CharacterAlias.count).to eq(1)
       expect(character.aliases.count).to eq(1)
       expect(assigns(:alias).name).to eq(test_name)

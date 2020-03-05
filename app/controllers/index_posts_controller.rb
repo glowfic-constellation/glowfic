@@ -21,7 +21,7 @@ class IndexPostsController < GenericController
 
   def update
     @update_redirect = index_path(@index_post.index)
-    @ufm = "Index could not be updated because of the following problems:"
+    @ufm = "Index could not be updated"
     @page_title = "Edit Post in Index"
     super
   end
