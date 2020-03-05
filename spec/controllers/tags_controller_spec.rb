@@ -320,7 +320,7 @@ RSpec.describe TagsController do
       login_as(create(:admin_user))
       put :update, params: { id: tag.id, tag: {name: name} }
       expect(response).to redirect_to(tag_url(tag))
-      expect(flash[:success]).to eq("Tag saved!")
+      expect(flash[:success]).to eq("Tag updated.")
       expect(tag.reload.name).to eq(name)
     end
   end

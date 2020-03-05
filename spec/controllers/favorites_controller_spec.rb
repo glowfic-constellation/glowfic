@@ -158,7 +158,7 @@ RSpec.describe FavoritesController do
       login_as(user)
       post :create, params: { user_id: user.id }
       expect(response).to redirect_to(user_path(user))
-      expect(flash[:error][:message]).to eq('Favorite could not be created because of the following problems:')
+      expect(flash[:error][:message]).to eq('Favorite could not be saved because of the following problems:')
     end
 
     it "favorites a user" do

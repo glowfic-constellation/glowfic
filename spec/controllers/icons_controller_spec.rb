@@ -469,7 +469,7 @@ RSpec.describe IconsController do
       post :avatar, params: { id: icon.id }
 
       expect(response).to redirect_to(icon_url(icon))
-      expect(flash[:error]).to eq("Something went wrong.")
+      expect(flash[:error]).to eq("Avatar could not be set.")
       expect(user.reload.avatar_id).to be_nil
     end
 
@@ -482,7 +482,7 @@ RSpec.describe IconsController do
       post :avatar, params: { id: icon.id }
 
       expect(response).to redirect_to(icon_url(icon))
-      expect(flash[:success]).to eq("Avatar has been set!")
+      expect(flash[:success]).to eq("Avatar set.")
       expect(user.reload.avatar_id).to eq(icon.id)
     end
   end

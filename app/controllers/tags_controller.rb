@@ -57,7 +57,7 @@ class TagsController < ApplicationController
       build_editor
       render :edit
     else
-      flash[:success] = "Tag saved!"
+      flash[:success] = "Tag updated."
       redirect_to tag_path(@tag)
     end
   end

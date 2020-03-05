@@ -1577,7 +1577,7 @@ RSpec.describe PostsController do
         expect(post.reload).not_to be_valid
         put :update, params: { id: post.id, status: 'abandoned' }
         expect(response).to redirect_to(post_url(post))
-        expect(flash[:error][:message]).to eq('Status could not be updated.')
+        expect(flash[:error][:message]).to eq('Status could not be updated because of the following problems:')
         expect(post.reload.status).not_to eq(Post::STATUS_ABANDONED)
       end
 
@@ -1722,7 +1722,7 @@ RSpec.describe PostsController do
         expect(post.reload).not_to be_valid
         put :update, params: { id: post.id, authors_locked: 'true' }
         expect(response).to redirect_to(post_url(post))
-        expect(flash[:error][:message]).to eq('Post could not be updated.')
+        expect(flash[:error][:message]).to eq('Post could not be updated because of the following problems:')
         expect(post.reload).not_to be_authors_locked
       end
     end

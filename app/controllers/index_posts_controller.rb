@@ -37,7 +37,7 @@ class IndexPostsController < ApplicationController
       render :new and return
     end
 
-    flash[:success] = "Post added to index!"
+    flash[:success] = "Post added to index."
     redirect_to index_path(@index_post.index)
   end
 
@@ -52,7 +52,7 @@ class IndexPostsController < ApplicationController
       render action: :edit and return
     end
 
-    flash[:success] = "Index post has been updated."
+    flash[:success] = "Index post updated."
     redirect_to index_path(@index_post.index)
   end
 

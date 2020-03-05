@@ -50,7 +50,7 @@ RSpec.describe IndexesController do
       name = 'ValidSection'
       post :create, params: { index: {name: name} }
       expect(response).to redirect_to(index_url(assigns(:index)))
-      expect(flash[:success]).to eq("Index created!")
+      expect(flash[:success]).to eq("Index created.")
       expect(assigns(:index).name).to eq(name)
     end
   end

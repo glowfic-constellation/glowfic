@@ -331,7 +331,7 @@ RSpec.describe UsersController do
         login_as(user)
         put :update, params: { id: user.id, tos_check: true }
         expect(user.reload.tos_version).to eq(User::CURRENT_TOS_VERSION)
-        expect(flash[:success]).to eq('Acceptance saved. Thank you!')
+        expect(flash[:success]).to eq('Acceptance saved. Thank you.')
         expect(response).to redirect_to(root_url)
       end
 

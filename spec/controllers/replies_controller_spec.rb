@@ -190,7 +190,7 @@ RSpec.describe RepliesController do
 
       post :create, params: { reply: {post_id: reply_post.id, user_id: reply_post.user_id, content: dupe_reply.content}, allow_dupe: true }
       expect(response).to have_http_status(302)
-      expect(flash[:success]).to eq("Posted!")
+      expect(flash[:success]).to eq("Reply posted.")
     end
 
     it "requires valid params if read" do
@@ -230,7 +230,7 @@ RSpec.describe RepliesController do
       reply = Reply.order(:id).last
       expect(reply).not_to be_nil
       expect(response).to redirect_to(reply_url(reply, anchor: "reply-#{reply.id}"))
-      expect(flash[:success]).to eq("Posted!")
+      expect(flash[:success]).to eq("Reply posted.")
       expect(reply.user).to eq(user)
       expect(reply.post).to eq(reply_post)
       expect(reply.content).to eq('test!')
@@ -252,7 +252,7 @@ RSpec.describe RepliesController do
       reply = Reply.order(:id).last
       expect(response).to redirect_to(reply_url(reply, anchor: "reply-#{reply.id}"))
       expect(reply).not_to be_nil
-      expect(flash[:success]).to eq('Posted!')
+      expect(flash[:success]).to eq('Reply posted.')
       expect(reply.user).to eq(user)
       expect(reply.content).to eq('test content!')
     end
@@ -270,7 +270,7 @@ RSpec.describe RepliesController do
       reply = Reply.order(:id).last
       expect(response).to redirect_to(reply_url(reply, anchor: "reply-#{reply.id}"))
       expect(reply).not_to be_nil
-      expect(flash[:success]).to eq('Posted!')
+      expect(flash[:success]).to eq('Reply posted.')
       expect(reply.user).to eq(user)
       expect(reply.content).to eq('test content again!')
     end
@@ -289,7 +289,7 @@ RSpec.describe RepliesController do
       reply = Reply.ordered.last
       expect(reply).not_to eq(reply_old)
       expect(response).to redirect_to(reply_url(reply, anchor: "reply-#{reply.id}"))
-      expect(flash[:success]).to eq('Posted!')
+      expect(flash[:success]).to eq('Reply posted.')
       expect(reply.user).to eq(user)
       expect(reply.content).to eq('test content the third!')
     end
@@ -309,7 +309,7 @@ RSpec.describe RepliesController do
       reply = Reply.order(id: :desc).first
       expect(reply).not_to eq(reply_old)
       expect(response).to redirect_to(reply_url(reply, anchor: "reply-#{reply.id}"))
-      expect(flash[:success]).to eq('Posted!')
+      expect(flash[:success]).to eq('Reply posted.')
       expect(reply.user).to eq(user)
       expect(reply.content).to eq('test content the third!')
     end
@@ -1044,7 +1044,7 @@ RSpec.describe RepliesController do
       reply.destroy
       login_as(reply.user)
       post :restore, params: { id: reply.id }
-      expect(flash[:success]).to eq("Reply has been restored!")
+      expect(flash[:success]).to eq("Reply restored.")
       post :restore, params: { id: reply.id }
       expect(flash[:error]).to eq("Reply does not need restoring.")
       expect(response).to redirect_to(post_url(reply.post))
@@ -1055,7 +1055,7 @@ RSpec.describe RepliesController do
       reply.destroy
       login_as(reply.user)
       post :restore, params: { id: reply.id }
-      expect(flash[:success]).to eq("Reply has been restored!")
+      expect(flash[:success]).to eq("Reply restored.")
 
       reply = Reply.find(reply.id)
       reply.content = 'restored right'
@@ -1063,7 +1063,7 @@ RSpec.describe RepliesController do
       reply.destroy
 
       post :restore, params: { id: reply.id }
-      expect(flash[:success]).to eq("Reply has been restored!")
+      expect(flash[:success]).to eq("Reply restored.")
       reply = Reply.find(reply.id)
       expect(reply.content).to eq('restored right')
     end
@@ -1078,7 +1078,7 @@ RSpec.describe RepliesController do
       rpost.save
       login_as(rpost.user)
       post :restore, params: { id: reply.id }
-      expect(flash[:success]).to eq("Reply has been restored!")
+      expect(flash[:success]).to eq("Reply restored.")
       expect(Post.find(rpost.id).status).to eq(Post::STATUS_HIATUS)
     end
   end

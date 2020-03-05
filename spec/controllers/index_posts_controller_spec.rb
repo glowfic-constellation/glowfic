@@ -68,7 +68,7 @@ RSpec.describe IndexPostsController do
       login_as(index.user)
       post :create, params: { index_post: { index_id: index.id, post_id: add_post.id } }
       expect(response).to redirect_to(index_url(index))
-      expect(flash[:success]).to eq("Post added to index!")
+      expect(flash[:success]).to eq("Post added to index.")
     end
   end
 
@@ -145,7 +145,7 @@ RSpec.describe IndexPostsController do
       expect(index.index_posts.first.description).to be_nil
       patch :update, params: { id: index.index_posts.first.id, index_post: {description: 'some text'} }
       expect(response).to redirect_to(index_url(index))
-      expect(flash[:success]).to eq("Index post has been updated.")
+      expect(flash[:success]).to eq("Index post updated.")
       expect(index.index_posts.first.description).to eq('some text')
     end
   end

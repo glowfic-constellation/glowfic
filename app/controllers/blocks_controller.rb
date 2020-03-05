@@ -24,17 +24,14 @@ class BlocksController < ApplicationController
     begin
       @block.save!
     rescue ActiveRecord::RecordInvalid => e
-      flash.now[:error] = {
-        message: "User could not be blocked.",
-        array: @block.errors.full_messages
-      }
+      render_errors(@block, action: 'create', now: true, msg: 'User could not be blocked')
       log_error(e) unless @block.errors.present?
       editor_setup
       @users = [@block.blocked_user].compact
       @page_title = 'Block User'
       render :new
     else
-      flash[:success] = "User blocked!"
+      flash[:success] = "User blocked."
       redirect_to blocks_path
     end
   end
@@ -54,7 +51,7 @@ class BlocksController < ApplicationController
       @page_title = 'Edit Block: ' + @block.blocked_user.username
       render :edit
     else
-      flash[:success] = "Block updated!"
+      flash[:success] = "Block updated."
       redirect_to blocks_path
     end
   end
@@ -63,10 +60,7 @@ class BlocksController < ApplicationController
     begin
       @block.destroy!
     rescue ActiveRecord::RecordNotDestroyed => e
-      flash[:error] = {
-        message: "User could not be unblocked.",
-        array: @block.errors.full_messages
-      }
+      render_errors(@block, action: 'delete', msg: 'User could not be unblocked')
       log_error(e) unless @block.errors.present?
     else
       flash[:success] = "User unblocked."

@@ -52,7 +52,7 @@ class CharactersController < ApplicationController
       build_editor
       render :new
     else
-      flash[:success] = "Character saved."
+      flash[:success] = "Character created."
       redirect_to character_path(@character)
     end
   end
@@ -92,7 +92,7 @@ class CharactersController < ApplicationController
       build_editor
       render :edit
     else
-      flash[:success] = "Character saved."
+      flash[:success] = "Character updated."
       redirect_to character_path(@character)
     end
   end

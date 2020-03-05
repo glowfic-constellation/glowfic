@@ -143,7 +143,7 @@ RSpec.describe CharactersController do
       }
 
       expect(response).to redirect_to(assigns(:character))
-      expect(flash[:success]).to eq("Character saved.")
+      expect(flash[:success]).to eq("Character created.")
       expect(Character.count).to eq(1)
       character = assigns(:character).reload
       expect(character.name).to eq(test_name)
@@ -451,7 +451,7 @@ RSpec.describe CharactersController do
       admin = create(:admin_user)
       login_as(admin)
       put :update, params: { id: character.id, character: { name: 'b', audit_comment: 'note' } }
-      expect(flash[:success]).to eq("Character saved.")
+      expect(flash[:success]).to eq("Character updated.")
       expect(character.reload.name).to eq('b')
       expect(character.audits.last.comment).to eq('note')
       Character.auditing_enabled = false
@@ -480,7 +480,7 @@ RSpec.describe CharactersController do
       }
 
       expect(response).to redirect_to(assigns(:character))
-      expect(flash[:success]).to eq("Character saved.")
+      expect(flash[:success]).to eq("Character updated.")
       character.reload
       expect(character.name).to eq(new_name)
       expect(character.template_name).to eq('TemplateName')
@@ -536,7 +536,7 @@ RSpec.describe CharactersController do
       login_as(user)
       put :update, params: { id: character.id, character: {gallery_group_ids: [group.id]} }
 
-      expect(flash[:success]).to eq('Character saved.')
+      expect(flash[:success]).to eq('Character updated.')
       character.reload
       expect(character.gallery_groups).to match_array([group])
       expect(character.galleries).to match_array([gallery])
@@ -566,7 +566,7 @@ RSpec.describe CharactersController do
       login_as(user)
       put :update, params: { id: character.id, character: {gallery_group_ids: [group2.id, group4.id]} }
 
-      expect(flash[:success]).to eq('Character saved.')
+      expect(flash[:success]).to eq('Character updated.')
       character.reload
       expect(character.gallery_groups).to match_array([group2, group4])
       expect(character.galleries).to match_array([gallery1, gallery2])
@@ -591,7 +591,7 @@ RSpec.describe CharactersController do
           gallery_group_ids: [group.id]
         }
       }
-      expect(flash[:success]).to eq('Character saved.')
+      expect(flash[:success]).to eq('Character updated.')
       character.reload
       expect(character.gallery_groups).to match_array([group])
       expect(character.galleries).to match_array([gallery])
@@ -613,7 +613,7 @@ RSpec.describe CharactersController do
           ungrouped_gallery_ids: [gallery.id]
         }
       }
-      expect(flash[:success]).to eq('Character saved.')
+      expect(flash[:success]).to eq('Character updated.')
       character.reload
       expect(character.gallery_groups).to match_array([group])
       expect(character.galleries).to match_array([gallery])
@@ -628,7 +628,7 @@ RSpec.describe CharactersController do
 
       login_as(character.user)
       put :update, params: { id: character.id, character: {gallery_group_ids: [group.id]} }
-      expect(flash[:success]).to eq('Character saved.')
+      expect(flash[:success]).to eq('Character updated.')
       character.reload
       expect(character.gallery_groups).to match_array([group])
       expect(character.galleries).to be_blank
@@ -642,7 +642,7 @@ RSpec.describe CharactersController do
 
       login_as(user)
       put :update, params: { id: character.id, character: {gallery_group_ids: ['']} }
-      expect(flash[:success]).to eq('Character saved.')
+      expect(flash[:success]).to eq('Character updated.')
       character.reload
       expect(character.gallery_groups).to eq([])
       expect(character.galleries).to eq([])
@@ -699,7 +699,7 @@ RSpec.describe CharactersController do
         id: char.id,
         character: {setting_ids: [setting1, setting2, setting3].map(&:id)}
       }
-      expect(flash[:success]).to eq('Character saved.')
+      expect(flash[:success]).to eq('Character updated.')
       expect(char.settings).to eq([setting1, setting2, setting3])
     end
 
@@ -715,7 +715,7 @@ RSpec.describe CharactersController do
         id: char.id,
         character: {gallery_group_ids: [group1, group2, group3, group4].map(&:id)}
       }
-      expect(flash[:success]).to eq('Character saved.')
+      expect(flash[:success]).to eq('Character updated.')
       expect(char.gallery_groups).to eq([group1, group2, group3, group4])
     end
   end

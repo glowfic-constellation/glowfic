@@ -353,11 +353,9 @@ class PostsController < WritableController
           @post.save!
           @post.mark_read(current_user, @post.tagged_at)
         end
-      rescue ActiveRecord::RecordInvalid
-        flash[:error] = {
-          message: "Status could not be updated.",
-          array: @post.errors.full_messages
-        }
+      rescue ActiveRecord::RecordInvalid => e
+        render_errors(@post, action: 'updated', class_name: 'Status')
+        log_error(e) unless @post.errors.present?
       else
         flash[:success] = "Post has been marked #{params[:status]}."
       end
@@ -369,11 +367,9 @@ class PostsController < WritableController
     @post.authors_locked = (params[:authors_locked] == 'true')
     begin
       @post.save!
-    rescue ActiveRecord::RecordInvalid
-      flash[:error] = {
-        message: "Post could not be updated.",
-        array: @post.errors.full_messages
-      }
+    rescue ActiveRecord::RecordInvalid => e
+      render_errors(@post, action: 'updated')
+      log_error(e) unless @post.errors.present?
     else
       flash[:success] = "Post has been #{@post.authors_locked? ? 'locked to' : 'unlocked from'} current authors."
     end

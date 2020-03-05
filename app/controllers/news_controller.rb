@@ -53,7 +53,7 @@ class NewsController < ApplicationController
       @page_title = "Edit News Post"
       render :edit
     else
-      flash[:success] = "News post saved!"
+      flash[:success] = "News post updated."
       redirect_to paged_news_url(@news)
     end
   end

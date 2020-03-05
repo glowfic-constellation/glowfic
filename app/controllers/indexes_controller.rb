@@ -28,7 +28,7 @@ class IndexesController < ApplicationController
       @page_title = 'New Index'
       render :new
     else
-      flash[:success] = "Index created!"
+      flash[:success] = "Index created."
       redirect_to index_path(@index) and return
     end
   end

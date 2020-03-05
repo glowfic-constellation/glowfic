@@ -137,9 +137,10 @@ class IconsController < UploadingController
 
   def avatar
     if current_user.update(avatar: @icon)
-      flash[:success] = "Avatar has been set!"
+      flash[:success] = "Avatar set."
     else
-      flash[:error] = "Something went wrong."
+      @icon.errors.merge!(current_user.errors)
+      render_errors(@icon, action: 'set', class_name: 'Avatar')
     end
     redirect_to icon_path(@icon)
   end

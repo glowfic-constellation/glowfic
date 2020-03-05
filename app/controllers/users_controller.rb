@@ -216,7 +216,7 @@ class UsersController < ApplicationController
       }
       render 'about/accept_tos'
     else
-      flash[:success] = "Acceptance saved. Thank you!"
+      flash[:success] = "Acceptance saved. Thank you."
       redirect_to session[:previous_url] || root_url
     end
   end

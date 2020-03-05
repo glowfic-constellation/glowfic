@@ -142,7 +142,7 @@ class RepliesController < WritableController
       redirect_to posts_path and return unless reply.post
       redirect_to post_path(reply.post)
     else
-      flash[:success] = "Posted!"
+      flash[:success] = "Reply posted."
       redirect_to reply_path(reply, anchor: "reply-#{reply.id}")
     end
   end
@@ -237,7 +237,7 @@ class RepliesController < WritableController
       new_reply.save!
     end
 
-    flash[:success] = "Reply has been restored!"
+    flash[:success] = "Reply restored."
     redirect_to reply_path(new_reply)
   end
 
@@ -288,11 +288,9 @@ class RepliesController < WritableController
 
     begin
       draft.save!
-    rescue ActiveRecord::RecordInvalid
-      flash[:error] = {
-        message: "Draft could not be saved because of the following problems:",
-        array: draft.errors.full_messages
-      }
+    rescue ActiveRecord::RecordInvalid => e
+      render_errors(draft, action: 'saved', class_name: 'Draft')
+      log_errors(e) unless draft.errors.present?
     else
       flash[:success] = "Draft saved." if show_message
     end
