@@ -59,7 +59,7 @@ RSpec.describe IndexPostsController do
       post :create, params: { index_post: {index_id: index.id, index_section_id: section.id } }
       expect(response).to have_http_status(200)
       expect(response).to render_template(:new)
-      expect(flash[:error][:message]).to eq("Post could not be added to index.")
+      expect(flash[:error][:message]).to eq("Post could not be added to index because of the following problems:")
     end
 
     it "succeeds" do
@@ -192,7 +192,7 @@ RSpec.describe IndexPostsController do
       index_post = index.index_posts.first
       delete :destroy, params: { id: index_post.id }
       expect(response).to redirect_to(index_url(index))
-      expect(flash[:error]).to eq({message: "Post could not be removed from index.", array: []})
+      expect(flash[:error]).to eq("Post could not be removed from index.")
       expect(index.reload.index_posts).to eq([index_post])
     end
   end

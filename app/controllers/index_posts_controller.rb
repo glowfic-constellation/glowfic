@@ -28,10 +28,7 @@ class IndexPostsController < ApplicationController
     end
 
     unless @index_post.save
-      flash.now[:error] = {
-        message: "Post could not be added to index.",
-        array: @index_post.errors.full_messages
-      }
+      render_errors(@index_post, now: true, action: 'added', msg: 'Post could not be added to index')
       @page_title = 'Add Posts to Index'
       use_javascript('posts/index_post_new')
       render :new and return
@@ -60,10 +57,7 @@ class IndexPostsController < ApplicationController
     begin
       @index_post.destroy!
     rescue ActiveRecord::RecordNotDestroyed => e
-      flash[:error] = {
-        message: "Post could not be removed from index.",
-        array: @index_post.errors.full_messages
-      }
+      render_errors(@index_post, action: 'removed', msg: 'Post could not be removed from index')
       log_error(e) unless @index_post.errors.present?
     else
       flash[:success] = "Post removed from index."
