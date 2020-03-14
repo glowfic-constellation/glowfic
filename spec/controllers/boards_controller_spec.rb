@@ -238,7 +238,7 @@ RSpec.describe BoardsController do
       post7, post8, post9 = create_list(:post, 3, board: board)
       board.posts.each do |post|
         # skip callbacks so we truly override tagged_at
-        post.update_columns(tagged_at: Time.zone.now + rand(5..30).hours)
+        post.update_columns(tagged_at: Time.zone.now + rand(5..30).hours) # rubocop:disable Rails/SkipsModelValidations
       end
       post1.update!(section_order: 0)
       post2.update!(section_order: 1)

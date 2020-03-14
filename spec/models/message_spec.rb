@@ -9,7 +9,7 @@ RSpec.describe Message do
       expect(message.recipient.email_notifications).not_to eq(true)
 
       user = create(:user)
-      user.update_columns(email: nil)
+      user.update_columns(email: nil) # rubocop:disable Rails/SkipsModelValidations
       create(:message, recipient: user)
 
       notified_user = create(:user, email_notifications: true)

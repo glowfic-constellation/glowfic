@@ -338,7 +338,7 @@ RSpec.describe UsersController do
       it "handles failures" do
         user = create(:user, tos_version: nil)
         login_as(user)
-        user.update_columns(username: 'a') # too short to validate
+        user.update_columns(username: 'a') # too short to validate # rubocop:disable Rails/SkipsModelValidations
         put :update, params: { id: user.id, tos_check: true }
         expect(user.reload.tos_version).to be_nil
         expect(flash[:error][:message]).to eq('There was an error saving your changes. Please try again.')

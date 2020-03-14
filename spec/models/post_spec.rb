@@ -102,7 +102,7 @@ RSpec.describe Post do
         let!(:reply2) do
           Timecop.freeze(post.edited_at + 30.minutes) { create(:reply, post: post) }
         end
-        let!(:old_tagged_at) { post.tagged_at }
+        let!(:old_tagged_at) { post.tagged_at } # rubocop:disable RSpec/LetSetup # false positive
 
         it "should not update if first reply edited" do
           old_tagged_at = post.tagged_at
@@ -158,7 +158,7 @@ RSpec.describe Post do
       post = create(:post)
       expect(post.edited_at).to eq(post.created_at)
       post.skip_edited = true
-      post.touch
+      post.touch # rubocop:disable Rails/SkipsModelValidations
       expect(post.edited_at).to eq(post.created_at)
     end
 
@@ -882,7 +882,7 @@ RSpec.describe Post do
       post = nil
       Audited.audit_class.as_user(user) do
         post = create(:post, content: 'original', user: user)
-        post.touch
+        post.touch # rubocop:disable Rails/SkipsModelValidations
       end
       expect(post.reload.has_edit_audits?).to eq(false)
     end

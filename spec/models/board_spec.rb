@@ -75,7 +75,7 @@ RSpec.describe Board do
       board = create(:board)
       board2 = create(:board)
       coauthor = create(:user)
-      cameo = create(:user) # FIXME: unused
+      create(:user)
       board.board_authors.create!(user: coauthor)
       expect { board.board_authors.create!(user: coauthor) }.to raise_error(ActiveRecord::RecordInvalid)
       board2.board_authors.create!(user: coauthor)
@@ -92,11 +92,11 @@ RSpec.describe Board do
     create(:post, board: board) # post2
     create(:post, board: board) # post3
     create(:post, board: board) # post4
-    post.update_columns(section_order: 2)
+    post.update_columns(section_order: 2) # rubocop:disable Rails/SkipsModelValidations
     section = create(:board_section, board: board)
     create(:board_section, board: board) # section2
     create(:board_section, board: board) # section3
-    section.update_columns(section_order: 6)
+    section.update_columns(section_order: 6) # rubocop:disable Rails/SkipsModelValidations
     expect(board.posts.ordered_in_section.pluck(:section_order)).to eq([1, 2, 2, 3])
     expect(board.board_sections.ordered.pluck(:section_order)).to eq([1, 2, 6])
     board.send(:fix_ordering)

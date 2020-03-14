@@ -104,7 +104,7 @@ RSpec.describe Api::V1::BoardsController do
 
     it 'returns only the correct posts', show_in_doc: true do
       board = create(:board)
-      user_post = Timecop.freeze(DateTime.new(2019,1,2,3,4,5).utc) do
+      user_post = Timecop.freeze(DateTime.new(2019, 1, 2, 3, 4, 5).utc) do
         create(:post, board: board, section: create(:board_section, board: board))
       end
       create(:post, board: create(:board))

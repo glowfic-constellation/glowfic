@@ -174,7 +174,7 @@ RSpec.feature "Listing characters", type: :feature do
   end
 
   context "without character groups" do
-    let!(:groups) do
+    let!(:groups) do # rubocop:disable RSpec/LetSetup
       [
         {
           group: nil,
@@ -199,7 +199,7 @@ RSpec.feature "Listing characters", type: :feature do
       ]
     end
 
-    let!(:groups) do
+    let!(:groups) do # rubocop:disable RSpec/LetSetup
       group = create(:character_group, user: user, name: 'test character group')
       [
         {

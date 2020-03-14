@@ -84,7 +84,7 @@ RSpec.describe Reply do
       expect(post.user.email_notifications).not_to eq(true)
 
       user = create(:user)
-      user.update_columns(email: nil)
+      user.update_columns(email: nil) # rubocop:disable Rails/SkipsModelValidations
       create(:reply, user: user, post: post, skip_notify: true)
 
       notified_user = create(:user, email_notifications: true)
@@ -136,7 +136,7 @@ RSpec.describe Reply do
         reply = nil
         Audited.audit_class.as_user(user) do
           reply = create(:reply, content: 'original', user: user)
-          reply.touch
+          reply.touch # rubocop:disable Rails/SkipsModelValidations
         end
         expect(get_has_edit_audits.call(reply.id)).to eq(false)
       end
@@ -238,8 +238,8 @@ RSpec.describe Reply do
       first_reply = create(:reply, post: post)
       second_reply = create(:reply, post: post)
       third_reply = create(:reply, post: post)
-      second_reply.update_columns(reply_order: 2)
-      third_reply.update_columns(reply_order: 1)
+      second_reply.update_columns(reply_order: 2) # rubocop:disable Rails/SkipsModelValidations
+      third_reply.update_columns(reply_order: 1) # rubocop:disable Rails/SkipsModelValidations
       expect(post.replies.ordered).to eq([first_reply, third_reply, second_reply])
     end
   end

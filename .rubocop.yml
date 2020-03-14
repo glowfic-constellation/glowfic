@@ -182,6 +182,9 @@ Rails/HasManyOrHasOneDependent:
 Rails/HelperInstanceVariable:
   Enabled: false
 
+Rails/HttpStatus:
+  Enabled: false
+
 Rails/SaveBang:
   Enabled: true
 
@@ -198,9 +201,6 @@ Rails/Output:
 
 Capybara/FeatureMethods:
   EnabledMethods: [feature, scenario]
-
-Rails/HttpStatus:
-  EnforcedStyle: numeric
 
 RSpec/AnyInstance:
   Enabled: false

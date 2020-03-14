@@ -400,16 +400,16 @@ RSpec.describe PostsController do
 
         expect {
           post :create, params: {
-          button_preview: true,
-          post: {
-            subject: 'test subject',
-            privacy: Concealable::ACCESS_LIST,
-            board_id: board.id,
-            unjoined_author_ids: [coauthor.id],
-            viewer_ids: [coauthor.id, create(:user).id],
-            content: 'test content',
-          },
-        }
+            button_preview: true,
+            post: {
+              subject: 'test subject',
+              privacy: Concealable::ACCESS_LIST,
+              board_id: board.id,
+              unjoined_author_ids: [coauthor.id],
+              viewer_ids: [coauthor.id, create(:user).id],
+              content: 'test content',
+            },
+          }
         }.not_to change { [PostAuthor.count, PostViewer.count, BoardAuthor.count] }
 
         expect(flash[:error]).to be_nil
@@ -1252,7 +1252,7 @@ RSpec.describe PostsController do
       post = create(:post)
       login_as(post.user)
       reply = create(:reply, post: post)
-      reply.destroy
+      reply.destroy!
       get :delete_history, params: { id: post.id }
       expect(response).to have_http_status(200)
       expect(assigns(:audit).auditable_id).to eq(reply.id)
@@ -1262,7 +1262,7 @@ RSpec.describe PostsController do
       post = create(:post)
       login_as(post.user)
       reply = create(:reply, post: post)
-      reply.destroy
+      reply.destroy!
       restore(reply)
       get :delete_history, params: { id: post.id }
       expect(assigns(:audits).count).to eq(0)
@@ -1272,12 +1272,12 @@ RSpec.describe PostsController do
       post = create(:post)
       login_as(post.user)
       reply = create(:reply, post: post, content: 'old content')
-      reply.destroy
+      reply.destroy!
       restore(reply)
       reply = Reply.find_by_id(reply.id)
       reply.content = 'new content'
-      reply.save
-      reply.destroy
+      reply.save!
+      reply.destroy!
       get :delete_history, params: { id: post.id }
       expect(assigns(:audits).count).to eq(1)
       expect(assigns(:audit).audited_changes['content']).to eq('new content')
@@ -1573,7 +1573,7 @@ RSpec.describe PostsController do
       it "handles unexpected failure" do
         post = create(:post, status: Post::STATUS_ACTIVE)
         login_as(post.user)
-        post.update_columns(board_id: 0)
+        post.update_columns(board_id: 0) # rubocop:disable Rails/SkipsModelValidations
         expect(post.reload).not_to be_valid
         put :update, params: { id: post.id, status: 'abandoned' }
         expect(response).to redirect_to(post_url(post))
@@ -1583,7 +1583,7 @@ RSpec.describe PostsController do
 
       it "marks read after completed" do
         post = nil
-        Timecop.freeze(Time.now - 1.day) do
+        Timecop.freeze(Time.zone.now - 1.day) do
           post = create(:post)
           login_as(post.user)
           post.mark_read(post.user)
@@ -1718,7 +1718,7 @@ RSpec.describe PostsController do
       it "handles unexpected failure" do
         post = create(:post)
         login_as(post.user)
-        post.update_columns(board_id: 0)
+        post.update_columns(board_id: 0) # rubocop:disable Rails/SkipsModelValidations
         expect(post.reload).not_to be_valid
         put :update, params: { id: post.id, authors_locked: 'true' }
         expect(response).to redirect_to(post_url(post))

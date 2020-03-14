@@ -130,7 +130,7 @@ RSpec.describe Character do
       gallery_automatic = create(:gallery, gallery_groups: [group], user: user)
 
       CharactersGallery.create!(character: character, gallery: gallery_manual)
-      character.characters_galleries.where(gallery_id: gallery_both.id).update_all(added_by_group: false)
+      character.characters_galleries.where(gallery_id: gallery_both.id).update_all(added_by_group: false) # rubocop:disable Rails/SkipsModelValidations
 
       character.reload
       expect(character.gallery_ids).to match_array([gallery_manual.id, gallery_both.id, gallery_automatic.id])
@@ -170,7 +170,7 @@ RSpec.describe Character do
       gallery_automatic = create(:gallery, gallery_groups: [group], user: user)
 
       CharactersGallery.create!(character: character, gallery: gallery_manual)
-      character.characters_galleries.where(gallery_id: gallery_both.id).update_all(added_by_group: false)
+      character.characters_galleries.where(gallery_id: gallery_both.id).update_all(added_by_group: false) # rubocop:disable Rails/SkipsModelValidations
 
       character.reload
       expect(character.gallery_ids).to match_array([gallery_manual.id, gallery_both.id, gallery_automatic.id])

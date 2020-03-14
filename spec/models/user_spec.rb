@@ -4,7 +4,7 @@ RSpec.describe User do
   describe "password encryption" do
     it "should support nil salt_uuid" do
       user = create(:user)
-      user.update_columns(salt_uuid: nil, crypted: user.send(:old_crypted_password, 'test'))
+      user.update_columns(salt_uuid: nil, crypted: user.send(:old_crypted_password, 'test')) # rubocop:disable Rails/SkipsModelValidations
       user.reload
       expect(user.authenticate('test')).to eq(true)
     end

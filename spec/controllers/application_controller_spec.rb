@@ -58,7 +58,7 @@ RSpec.describe ApplicationController do
     it "shows warning if salt_uuid not set" do
       user = create(:user)
       login_as(user)
-      user.update_columns(salt_uuid: nil)
+      user.update_columns(salt_uuid: nil) # rubocop:disable Rails/SkipsModelValidations
       get :index
       expect(flash.now[:error]).to eq(warning)
     end
