@@ -3,14 +3,10 @@ class Post < ApplicationRecord
   include Orderable
   include Owable
   include PgSearch::Model
+  include Post::Status
   include Presentable
   include Viewable
   include Writable
-
-  STATUS_ACTIVE = 0
-  STATUS_COMPLETE = 1
-  STATUS_HIATUS = 2
-  STATUS_ABANDONED = 3
 
   belongs_to :board, inverse_of: :posts, optional: false
   belongs_to :section, class_name: 'BoardSection', inverse_of: :posts, optional: true
@@ -182,26 +178,6 @@ class Post < ApplicationRecord
     !view_for(user).try(:warnings_hidden)
   end
 
-  def completed?
-    status == STATUS_COMPLETE
-  end
-
-  def on_hiatus?
-    marked_hiatus? || (active? && tagged_at < 1.month.ago)
-  end
-
-  def marked_hiatus?
-    status == STATUS_HIATUS
-  end
-
-  def active?
-    status == STATUS_ACTIVE
-  end
-
-  def abandoned?
-    status == STATUS_ABANDONED
-  end
-
   def last_updated
     edited_at
   end
@@ -216,7 +192,7 @@ class Post < ApplicationRecord
 
     # testing for case where the post was changed in status more recently than the last reply
     audits_exist = audits.where('created_at > ?', most_recent.created_at).where(action: 'update')
-    audits_exist = audits_exist.where("(audited_changes -> 'status' ->> 1)::integer = ?", Post::STATUS_COMPLETE)
+    audits_exist = audits_exist.where("(audited_changes -> 'status' ->> 1)::integer = ?", Post::Status::COMPLETE)
     return most_recent.updated_at unless audits_exist.exists?
     self.edited_at
   end
@@ -326,7 +302,7 @@ class Post < ApplicationRecord
     return if skip_edited
     self.edited_at = self.updated_at
     return if skip_tagged
-    return if replies.exists? && (!status_changed? || status != Post::STATUS_COMPLETE)
+    return if replies.exists? && (!status_changed? || status != Post::Status::COMPLETE)
     self.tagged_at = self.updated_at
   end
 

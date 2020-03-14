@@ -3,7 +3,7 @@ class PostImporter < Object
     @url = url
   end
 
-  def import(board_id, importer_id, section_id: nil, status: Post::STATUS_COMPLETE, threaded: false)
+  def import(board_id, importer_id, section_id: nil, status: Post::Status::COMPLETE, threaded: false)
     validate_url!
     validate_duplicate!(board_id) unless threaded
     validate_usernames!

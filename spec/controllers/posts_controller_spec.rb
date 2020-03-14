@@ -26,7 +26,7 @@ RSpec.describe PostsController do
       create_list(:post, 26)
       oldest = Post.ordered_by_id.first
       next_oldest = Post.ordered_by_id.second
-      oldest.update!(status: Post::STATUS_COMPLETE)
+      oldest.update!(status: Post::Status::COMPLETE)
       get :index
       ids_fetched = controller.instance_variable_get('@posts').map(&:id)
       expect(ids_fetched.count).to eq(25)
@@ -166,7 +166,7 @@ RSpec.describe PostsController do
 
       it "filters by completed" do
         create(:post)
-        post = create(:post, status: Post::STATUS_COMPLETE)
+        post = create(:post, status: Post::Status::COMPLETE)
         get :search, params: { commit: true, completed: true }
         expect(assigns(:search_results)).to match_array(post)
       end
@@ -1571,14 +1571,14 @@ RSpec.describe PostsController do
       end
 
       it "handles unexpected failure" do
-        post = create(:post, status: Post::STATUS_ACTIVE)
+        post = create(:post, status: Post::Status::ACTIVE)
         login_as(post.user)
         post.update_columns(board_id: 0) # rubocop:disable Rails/SkipsModelValidations
         expect(post.reload).not_to be_valid
         put :update, params: { id: post.id, status: 'abandoned' }
         expect(response).to redirect_to(post_url(post))
         expect(flash[:error][:message]).to eq('Status could not be updated.')
-        expect(post.reload.status).not_to eq(Post::STATUS_ABANDONED)
+        expect(post.reload.status).not_to eq(Post::Status::ABANDONED)
       end
 
       it "marks read after completed" do
@@ -2606,7 +2606,7 @@ RSpec.describe PostsController do
       it "shows hiatused posts" do
         post = create(:post, user: user)
         create(:reply, post: post, user: other_user)
-        post.update!(status: Post::STATUS_HIATUS)
+        post.update!(status: Post::Status::HIATUS)
 
         get :owed, params: {view: 'hiatused'}
         expect(response.status).to eq(200)
@@ -2667,17 +2667,17 @@ RSpec.describe PostsController do
       it "hides completed and abandoned threads" do
         create(:reply, post_id: post.id, user_id: other_user.id)
 
-        post.update!(status: Post::STATUS_COMPLETE)
+        post.update!(status: Post::Status::COMPLETE)
         get :owed
         expect(response.status).to eq(200)
         expect(assigns(:posts)).to be_empty
 
-        post.update!(status: Post::STATUS_ACTIVE)
+        post.update!(status: Post::Status::ACTIVE)
         get :owed
         expect(response.status).to eq(200)
         expect(assigns(:posts)).to match_array([post])
 
-        post.update!(status: Post::STATUS_ABANDONED)
+        post.update!(status: Post::Status::ABANDONED)
         get :owed
         expect(response.status).to eq(200)
         expect(assigns(:posts)).to be_empty
@@ -2685,7 +2685,7 @@ RSpec.describe PostsController do
 
       it "show hiatused threads by default" do
         create(:reply, post_id: post.id, user_id: other_user.id)
-        post.update!(status: Post::STATUS_HIATUS)
+        post.update!(status: Post::Status::HIATUS)
 
         get :owed
         expect(response.status).to eq(200)
@@ -2694,7 +2694,7 @@ RSpec.describe PostsController do
 
       it "optionally hides hiatused threads" do
         create(:reply, post_id: post.id, user_id: other_user.id)
-        post.update!(status: Post::STATUS_HIATUS)
+        post.update!(status: Post::Status::HIATUS)
 
         user.hide_hiatused_tags_owed = true
         user.save!

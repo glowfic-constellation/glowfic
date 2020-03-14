@@ -24,7 +24,7 @@ RSpec.describe Post do
 
       it "should update edited_at and tagged_at when status edited" do
         Timecop.freeze(time) do
-          post.update!(status: Post::STATUS_COMPLETE)
+          post.update!(status: Post::Status::COMPLETE)
         end
         expect(post.tagged_at).to be > old_tagged_at
         expect(post.edited_at).to be > old_edited_at
@@ -73,7 +73,7 @@ RSpec.describe Post do
 
       it "should update edited_at and tagged_at when status edited" do
         Timecop.freeze(time) do
-          post.update!(status: Post::STATUS_COMPLETE)
+          post.update!(status: Post::Status::COMPLETE)
         end
         expect(post.tagged_at).to be > old_tagged_at
         expect(post.edited_at).to be > old_edited_at
@@ -637,7 +637,7 @@ RSpec.describe Post do
         expect(post.read_time_for(post.replies)).to be_the_same_time_as(unread.created_at)
 
         Timecop.freeze(unread.created_at + 1.day) do
-          post.status = Post::STATUS_COMPLETE
+          post.status = Post::Status::COMPLETE
           post.save!
 
           post.description = 'new description to add another audit'

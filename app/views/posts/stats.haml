@@ -29,16 +29,16 @@
       %th.sub.width-150 Status
       %td{class: cycle('odd', 'even')}
         - case @post.status
-        - when Post::STATUS_ACTIVE
+        - when Post::Status::ACTIVE
           = image_tag "icons/book_open.png", class: 'vmid', title: 'In Progress', alt: ''
           In Progress
-        - when Post::STATUS_COMPLETE
+        - when Post::Status::COMPLETE
           = image_tag "icons/book.png", class: 'vmid', title: 'Complete', alt: ''
           Complete
-        - when Post::STATUS_HIATUS
+        - when Post::Status::HIATUS
           = image_tag "icons/hourglass.png", class: 'vmid', title: 'On Hiatus', alt: ''
           On Hiatus
-        - when Post::STATUS_ABANDONED
+        - when Post::Status::ABANDONED
           = image_tag "icons/book_grey.png", class: 'vmid', title: 'Abandoned', alt: ''
           Abandoned
     %tr

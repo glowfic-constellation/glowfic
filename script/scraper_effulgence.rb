@@ -38,7 +38,7 @@ main_list.children.each do |section|
   list = section.at_css('ul, ol')
   links = list.css('> li')
   section_active = links.last.children.size == 1 && links.last.children.first.name == 'text' && links.last.children.first.content.strip == '+'
-  section_status = section_active ? Post::STATUS_ACTIVE : Post::STATUS_COMPLETE
+  section_status = section_active ? Post::Status::ACTIVE : Post::Status::COMPLETE
   board_section ||= BoardSection.create!(board_id: board_id, name: section_title, section_order: section_index - 1, status: section_status)
 
   # process a list and import the posts for the given section
@@ -61,7 +61,7 @@ main_list.children.each do |section|
       end
 
       title = title[0..-2] if (is_active = link.content.strip.last == '+')
-      post_status = is_active ? Post::STATUS_ACTIVE : Post::STATUS_COMPLETE
+      post_status = is_active ? Post::Status::ACTIVE : Post::Status::COMPLETE
 
       desired_title = nil
       desired_title = rename_prefix.to_s + title if threaded
@@ -84,7 +84,7 @@ main_list.children.each do |section|
       link.at_css('a').attribute('href').value
     end
     url = threads.first
-    scraper = PostScraper.new(url, board_id, board_section.id, Post::STATUS_COMPLETE, true)
+    scraper = PostScraper.new(url, board_id, board_section.id, Post::Status::COMPLETE, true)
     post = scraper.scrape_threads!(threads)
     post.update_columns(subject: 'guest list')
     puts "Renamed thread to 'guest list'"
