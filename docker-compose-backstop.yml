@@ -1,0 +1,10 @@
+version: "3.7"
+
+services:
+  backstop:
+    image: backstopjs/backstopjs
+    working_dir: /src
+    volumes:
+      - "./backstop/:/src"
+    depends_on:
+      - web

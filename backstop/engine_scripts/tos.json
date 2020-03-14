@@ -1,0 +1,14 @@
+[
+  {
+    "domain": "web",
+    "path": "/",
+    "name": "accepted_tos",
+    "value": "20181109",
+    "expirationDate": 1798790400,
+    "hostOnly": true,
+    "httpOnly": false,
+    "secure": false,
+    "session": false,
+    "sameSite": "Unset"
+  }
+]
