@@ -16,7 +16,7 @@ class Api::V1::CharactersController < Api::ApiController
   param :post_id, :number, required: false, desc: 'If provided, will return only characters that appear in the provided post'
   param :user_id, :number, required: false, desc: 'If provided, will return only characters that belong to the provided user'
   param :template_id, :number, required: false, desc: 'If provided, will return only characters that belong to the provided template. Use 0 to find only characters with no template.'
-  param :includes, Array, in: ["default_icon", "aliases", "template_name"], of: String, required: false, desc: 'Specify additional fields to return in JSON'
+  param :includes, Array, in: ["default_icon", "aliases", "nickname"], of: String, required: false, desc: 'Specify additional fields to return in JSON'
   error 403, "Post is not visible to the user"
   error 422, "Invalid parameters provided"
   def index
@@ -138,6 +138,6 @@ class Api::V1::CharactersController < Api::ApiController
   end
 
   def character_params
-    params.fetch(:character, {}).permit(:default_icon_id, :name, :template_name, :screenname, :setting, :template_id, :pb, :description, gallery_ids: [])
+    params.fetch(:character, {}).permit(:default_icon_id, :name, :nickname, :screenname, :setting, :template_id, :pb, :description, gallery_ids: [])
   end
 end

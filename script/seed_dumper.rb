@@ -58,7 +58,7 @@ def clean(file, expand = false)
     line.gsub!(/}$/, "},")
     line.gsub!(/{id: [0-9]{1,3},/, "{")
 
-    line.gsub!(", template_name: nil", "")
+    line.gsub!(", nickname: nil", "")
     line.gsub!(", screenname: nil", "")
     line.gsub!(", template_id: nil", "")
     line.gsub!(", default_icon_id: nil", "")

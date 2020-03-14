@@ -44,19 +44,19 @@ RSpec.describe Template do
 
     it "returns info for a single character" do
       template = create(:template)
-      character = create(:character, template: template, template_name: "nickname", screenname: "screen_name")
-      info = [[character.id, "#{character.name} | #{character.template_name} | #{character.screenname}"]]
+      character = create(:character, template: template, nickname: "nickname", screenname: "screen_name")
+      info = [[character.id, "#{character.name} | #{character.nickname} | #{character.screenname}"]]
       expect(template.plucked_characters).to eq(info)
     end
 
     it "returns info for multiple characters" do
       template = create(:template)
       character1 = create(:character, template: template, name: 'AAAA')
-      character2 = create(:character, template: template, template_name: "nickname", name: 'BBBB')
+      character2 = create(:character, template: template, nickname: "nickname", name: 'BBBB')
       character3 = create(:character, template: template, screenname: "screen_name", name: 'CCCC')
       info = [
         [character1.id, character1.name],
-        [character2.id, "#{character2.name} | #{character2.template_name}"],
+        [character2.id, "#{character2.name} | #{character2.nickname}"],
         [character3.id, "#{character3.name} | #{character3.screenname}"]
       ]
       expect(template.plucked_characters).to eq(info)
@@ -65,11 +65,11 @@ RSpec.describe Template do
     it "excludes retired characters" do
       template = create(:template)
       character1 = create(:character, template: template, name: 'AAAA')
-      character2 = create(:character, template: template, template_name: "nickname", name: 'BBBB')
+      character2 = create(:character, template: template, nickname: "nickname", name: 'BBBB')
       create(:character, template: template, retired: true)
       info = [
         [character1.id, character1.name],
-        [character2.id, "#{character2.name} | #{character2.template_name}"],
+        [character2.id, "#{character2.name} | #{character2.nickname}"],
       ]
       expect(template.plucked_characters).to eq(info)
     end

@@ -117,7 +117,7 @@ ActiveRecord::Schema.define(version: 2020_02_09_021236) do
   create_table "characters", id: :serial, force: :cascade do |t|
     t.integer "user_id", null: false
     t.citext "name", null: false
-    t.string "template_name"
+    t.string "nickname"
     t.string "screenname"
     t.integer "template_id"
     t.integer "default_icon_id"

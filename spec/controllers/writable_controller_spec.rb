@@ -182,18 +182,18 @@ RSpec.describe WritableController do
       user = create(:user)
       template = create(:template, user: user)
       char1 = create(:character, template: template, user: user, name: 'AAAA')
-      char2 = create(:character, template: template, user: user, template_name: "nickname", name: 'BBBB')
+      char2 = create(:character, template: template, user: user, nickname: "nickname", name: 'BBBB')
       char3 = create(:character, template: template, user: user, screenname: "screen_name", name: 'CCCC')
-      char4 = create(:character, template: template, user: user, name: 'DDDD', screenname: "other_sceen", template_name: "Nickname")
+      char4 = create(:character, template: template, user: user, name: 'DDDD', screenname: "other_sceen", nickname: "Nickname")
       login_as(user)
       controller.send(:build_template_groups)
       templates = assigns(:templates)
       expect(templates.count).to eq(1)
       info = [
         [char1.id, char1.name],
-        [char2.id, "#{char2.name} | #{char2.template_name}"],
+        [char2.id, "#{char2.name} | #{char2.nickname}"],
         [char3.id, "#{char3.name} | #{char3.screenname}"],
-        [char4.id, "#{char4.name} | #{char4.template_name} | #{char4.screenname}"]
+        [char4.id, "#{char4.name} | #{char4.nickname} | #{char4.screenname}"]
       ]
       expect(templates.first.plucked_characters).to eq(info)
     end
@@ -203,14 +203,14 @@ RSpec.describe WritableController do
       template = create(:template, user: user)
       char1 = create(:character, template: template, user: user, name: 'AAAA')
       create_list(:character, 2, template: template, user: user, retired: true)
-      char2 = create(:character, template: template, user: user, name: 'DDDD', screenname: "screen_name", template_name: "Nickname")
+      char2 = create(:character, template: template, user: user, name: 'DDDD', screenname: "screen_name", nickname: "Nickname")
       login_as(user)
       controller.send(:build_template_groups)
       templates = assigns(:templates)
       expect(templates.count).to eq(1)
       info = [
         [char1.id, char1.name],
-        [char2.id, "#{char2.name} | #{char2.template_name} | #{char2.screenname}"]
+        [char2.id, "#{char2.name} | #{char2.nickname} | #{char2.screenname}"]
       ]
       expect(templates.first.plucked_characters).to eq(info)
     end

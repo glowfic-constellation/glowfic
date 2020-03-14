@@ -320,7 +320,7 @@
       "response_data": {
         "errors": [
           {
-            "message": "Invalid parameter 'includes' value ['invalid']: Must be an array of ['default_icon', 'aliases', 'template_name']"
+            "message": "Invalid parameter 'includes' value ['invalid']: Must be an array of ['default_icon', 'aliases', 'nickname']"
           }
         ]
       },

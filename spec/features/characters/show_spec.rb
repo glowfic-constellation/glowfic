@@ -198,7 +198,7 @@ RSpec.feature "Viewing a character", :type => :feature do
       user: user,
       name: 'Char Surname',
       screenname: 'just-a-char',
-      template_name: 'Char',
+      nickname: 'Char',
       default_icon: icon1_1,
       galleries: [gallery2, gallery1],
       template: template,
