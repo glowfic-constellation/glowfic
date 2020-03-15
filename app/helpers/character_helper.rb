@@ -12,4 +12,19 @@ module CharacterHelper
     attributes += ['templates.id', 'templates.name'] if show_template
     characters.joins(:user).pluck(*attributes)
   end
+
+  def character_menu_link(link_params)
+    link_params = params.permit(:character_split, :retired, :view).to_h.merge(link_params)
+    url_for(**link_params.symbolize_keys)
+  end
+
+  # logic replicated from page_view
+  def character_split
+    return @character_split if @character_split
+    if logged_in?
+      @character_split = params[:character_split] || current_user.default_character_split
+    else
+      @character_split = session[:character_split] = params[:character_split] || session[:character_split] || 'template'
+    end
+  end
 end
