@@ -4,9 +4,10 @@
     &raquo;
     %b #{@user.username}'s Characters
 
+- colspan = (page_view == 'list') ? (character_split == 'none' ? 7 : 6) : 1
 %table
   %tr
-    %th.table-title{colspan: (character_split == 'none' ? 7 : 6)}
+    %th.table-title{colspan: colspan}
       - if @group
         Character Group:
         = @group.name
@@ -35,7 +36,6 @@
           .view-button
             Group
   - partial_type = (page_view == 'list') ? 'characters/list_section' : 'characters/icon_view'
-  - colspan = (page_view == 'list') ? 6 : 1
   %tr
     %th.subber.padding-10{colspan: colspan}
       = form_tag search_characters_path, method: :get do
