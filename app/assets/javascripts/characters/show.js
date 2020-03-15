@@ -1,6 +1,6 @@
 //= require galleries/expander_old
 //= require reorder
-/* global moveRow */
+/* global swapRows */
 $(document).ready(function() {
   bindArrows($("#reorder-galleries-table"), '/api/v1/characters/reorder', 'characters_gallery_ids');
 });

@@ -29,7 +29,6 @@ function unbindArrows(orderBox) {
 function bindSortable(orderBox, path, param) {
   orderBox.addClass('sortableBox');
   var sortables = $(".sortable", orderBox);
-  var handles = $(".section-ordered-handle", orderBox);
   sortables.sortable({
     axis: 'y',
     cancel: '.section-warning',
