@@ -160,4 +160,68 @@ RSpec.describe CharacterHelper do
       expect(helper.characters_list(assoc, true)).to match_array(expected)
     end
   end
+
+  describe "#character_split" do
+    context "when logged out" do
+      helper do
+        def logged_in?
+          false
+        end
+      end
+
+      it "works by default" do
+        expect(helper.character_split).to eq('template')
+      end
+
+      it "can be overridden with a parameter" do
+        controller.params[:character_split] = 'none'
+        expect(session[:character_split]).to be_nil
+        expect(helper.character_split).to eq('none')
+        expect(session[:character_split]).to eq('none')
+      end
+
+      it "uses session variable if it exists" do
+        session[:character_split] = 'none'
+        expect(helper.character_split).to eq('none')
+      end
+    end
+
+    context "when logged in" do
+      helper do
+        def logged_in?
+          true
+        end
+        def current_user; end
+      end
+
+      it "works by default" do
+        allow(helper).to receive(:current_user).and_return create(:user)
+        expect(helper.character_split).to eq('template')
+      end
+
+      it "uses account default if different" do
+        user = create(:user, default_character_split: 'none')
+        allow(helper).to receive(:current_user).and_return user
+        expect(helper.character_split).to eq('none')
+      end
+
+      it "is not overridden by session" do
+        # also does not modify user default
+        user = create(:user, default_character_split: 'none')
+        allow(helper).to receive(:current_user).and_return user
+        session[:character_split] = 'template'
+        expect(helper.character_split).to eq('none')
+        expect(user.reload.default_character_split).to eq('none')
+      end
+
+      it "can be overridden by params" do
+        # also does not modify user default
+        user = create(:user, default_character_split: 'none')
+        allow(helper).to receive(:current_user).and_return user
+        controller.params[:character_split] = 'template'
+        expect(helper.character_split).to eq('template')
+        expect(user.reload.default_character_split).to eq('none')
+      end
+    end
+  end
 end
