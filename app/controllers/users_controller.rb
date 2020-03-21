@@ -56,7 +56,7 @@ class UsersController < ApplicationController
 
   def show
     unless (@user = User.active.find_by_id(params[:id]))
-      flash[:error] = "User could not be found."
+      flash[:error] = t_err(:not_found)
       redirect_to users_path and return
     end
 
@@ -79,13 +79,13 @@ class UsersController < ApplicationController
     begin
       current_user.update!(user_params)
     rescue ActiveRecord::RecordInvalid => e
-      render_errors(current_user, action: 'saved', now: true, class_name: 'Changes', err: e)
+      render_errors(current_user, action: :updated, now: true, class_name: 'Account settings', err: e)
 
       use_javascript('users/edit')
       @page_title = 'Edit Account'
       render :edit
     else
-      flash[:success] = "Changes saved."
+      flash[:success] = t_success(:saved, 'Account settings')
       redirect_to edit_user_path(current_user)
     end
   end

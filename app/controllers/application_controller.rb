@@ -4,6 +4,7 @@ require Rails.root.join('lib', 'memorylogic')
 class ApplicationController < ActionController::Base
   include Authentication::Web
   include Memorylogic
+  include Translations
 
   rescue_from ActionController::InvalidAuthenticityToken, with: :handle_invalid_token
 
@@ -227,7 +228,7 @@ class ApplicationController < ActionController::Base
   end
 
   def render_errors(model, action:, now: false, class_name: nil, msg: nil, err: nil)
-    class_name ||= model.class.name.underscore.humanize
+    class_name ||= model.model_name.human
     msg ||= "#{class_name} could not be #{action}"
     if model.errors.present?
       msg = {
@@ -254,5 +255,9 @@ class ApplicationController < ActionController::Base
       user_id: current_user.try(:id),
     }
     ExceptionNotifier.notify_exception(exception, data: data)
+  end
+
+  def associated_model
+    controller_path.classify.constantize
   end
 end

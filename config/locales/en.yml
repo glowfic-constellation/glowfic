@@ -30,6 +30,15 @@
 # available at https://guides.rubyonrails.org/i18n.html.
 
 en:
+  actioncontroller:
+    errors:
+      messages:
+        not_found: "%{model_name} could not be found"
+    success:
+      messages:
+        saved: "%{model_name} saved"
+  models:
+    "Account settings": Account settings
   hello: "Hello world"
   will_paginate:
     previous_label: "&lsaquo; Previous"
