@@ -85,7 +85,7 @@ class UsersController < ApplicationController
       @page_title = 'Edit Account'
       render :edit
     else
-      flash[:success] = t_success(:saved, 'Account settings')
+      flash[:success] = t_success(:saved, model: 'Account settings')
       redirect_to edit_user_path(current_user)
     end
   end

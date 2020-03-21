@@ -1,15 +1,23 @@
 module Translations
-  def t_notify(key, action: :notifications, model: nil)
+  def t_notify(key, action: :notifications, model: nil, format: :final)
+    model ||= associated_model
     model_name = if model.respond_to?(:model_name)
       model.model_name.human
     else
-      t(model, scope: :models)
+      model
     end
 
-    t(
+    str = t(
       key,
       model_name: model_name,
       scope: [:actioncontroller, action, :messages],
+    )
+
+    # bound appropriately (e.g. "Error." vs "Error, because of the following problems:")
+    t(
+      format,
+      str: str,
+      scope: [:actioncontroller, action, :formats],
     )
   end
 

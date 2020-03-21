@@ -32,12 +32,17 @@
 en:
   actioncontroller:
     errors:
+      formats:
+        final: "%{str}."
+        intro: "%{str} because of the following problems:"
       messages:
         not_found: "%{model_name} could not be found"
         create_failed: "%{model_name} could not be created"
         delete_failed: "%{model_name} could not be deleted"
         update_failed: "%{model_name} could not be updated"
     success:
+      formats:
+        final: "%{str}."
       messages:
         saved: "%{model_name} saved"
   activerecord:
@@ -54,8 +59,6 @@ en:
       news:
         one: News post
         other: News posts
-  models:
-    "Account settings": Account settings
   hello: "Hello world"
   will_paginate:
     previous_label: "&lsaquo; Previous"

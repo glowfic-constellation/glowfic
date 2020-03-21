@@ -22,15 +22,14 @@ module ErrorRendering
 
   def render_err_target(target, model, key, model_name: nil)
     model_name ||= model
-    msg = t_err(key, model: model_name) # {class} could not be {actioned}
-    # TODO: investigate extracting the "because of the following problems" vs "." encapsulation
-    if model.errors.present?
+
+    lists_errors = model.errors.present?
+    msg = t_err(key, model: model_name, format: lists_errors ? :intro : :final)
+    if lists_errors
       msg = {
-        message: msg + " because of the following problems:",
+        message: msg,
         array: model.errors.full_messages
       }
-    else
-      msg += '.'
     end
 
     target[:error] = msg
