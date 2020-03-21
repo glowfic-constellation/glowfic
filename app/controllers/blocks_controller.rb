@@ -25,7 +25,7 @@ class BlocksController < ApplicationController
     begin
       @block.save!
     rescue ActiveRecord::RecordInvalid => e
-      render_errors(@block, action: 'create', now: true, msg: 'User could not be blocked')
+      render_err.now(@block, :create_failed)
       log_error(e) unless @block.errors.present?
       editor_setup
       @users = [@block.blocked_user].compact
@@ -67,7 +67,7 @@ class BlocksController < ApplicationController
     begin
       @block.destroy!
     rescue ActiveRecord::RecordNotDestroyed => e
-      render_errors(@block, action: 'delete', msg: 'User could not be unblocked', err: e)
+      render_err(@block, :delete_failed, err: e)
     else
       flash[:success] = "User unblocked."
     end

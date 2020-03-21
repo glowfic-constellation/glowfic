@@ -116,7 +116,7 @@ class CharactersController < ApplicationController
         dupe.save!
       end
     rescue ActiveRecord::RecordInvalid => e
-      render_errors(dupe, action: 'duplicated', err: e)
+      render_err(dupe, :duplicate_failed, err: e)
       redirect_to @character
     else
       flash[:success] = "Character duplicated. You are now editing the new character."

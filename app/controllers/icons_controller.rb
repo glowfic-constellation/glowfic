@@ -140,7 +140,7 @@ class IconsController < UploadingController
       flash[:success] = "Avatar set."
     else
       @icon.errors.merge!(current_user.errors)
-      render_errors(@icon, action: 'set', class_name: 'Avatar')
+      render_err(@icon, :update_failed, model_name: 'Avatar')
     end
     redirect_to @icon
   end

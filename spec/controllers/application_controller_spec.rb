@@ -17,7 +17,7 @@ RSpec.describe ApplicationController do
       begin
         obj.destroy!
       rescue ActiveRecord::RecordNotDestroyed => e
-        render_errors(obj, action: 'deleted', class_name: 'Object', err: e)
+        render_err(obj, :delete_failed, model_name: 'Object', err: e)
       else
         flash[:success] = "Object removed."
       end

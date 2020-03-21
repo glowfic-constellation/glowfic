@@ -1,4 +1,8 @@
 module Translations
+  def t_sym_for(*args)
+    args.map(&:to_s).join('.').to_sym
+  end
+
   def t_notify(key, action: :notifications, model: nil, format: :final)
     model ||= associated_model
     model_name = if model.respond_to?(:model_name)
@@ -8,9 +12,10 @@ module Translations
     end
 
     str = t(
-      key,
+      t_sym_for(model_name.parameterize.underscore, action, :messages, key),
       model_name: model_name,
-      scope: [:actioncontroller, action, :messages],
+      scope: [:actioncontroller],
+      default: t_sym_for(action, :messages, key),
     )
 
     # bound appropriately (e.g. "Error." vs "Error, because of the following problems:")

@@ -56,7 +56,7 @@ class FavoritesController < ApplicationController
     begin
       fav.save!
     rescue ActiveRecord::RecordInvalid => e
-      render_errors(fav, action: 'saved', err: e)
+      render_err(fav, :create_failed, err: e)
     else
       flash[:success] = "Your favorite has been saved."
     end

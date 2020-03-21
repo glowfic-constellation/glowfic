@@ -228,26 +228,6 @@ class ApplicationController < ActionController::Base
     request.get? && !request.xhr?
   end
 
-  def render_errors(model, action:, now: false, class_name: nil, msg: nil, err: nil)
-    class_name ||= model.model_name.human
-    msg ||= "#{class_name} could not be #{action}"
-    if model.errors.present?
-      msg = {
-        message: msg + " because of the following problems:",
-        array: model.errors.full_messages,
-      }
-    else
-      log_error(err) if err
-      msg += '.'
-    end
-
-    if now
-      flash.now[:error] = msg
-    else
-      flash[:error] = msg
-    end
-  end
-
   def log_error(exception)
     data = {
       response_status: params[:response_status],

@@ -10,7 +10,7 @@ module ErrorRendering
     end
   end
 
-  def render_err(chain = :chain, *args)
+  def render_err(chain=:chain, *args)
     if chain == :chain
       ErrorRenderer.new(flash, self)
     else
@@ -20,7 +20,7 @@ module ErrorRendering
 
   private
 
-  def render_err_target(target, model, key, model_name: nil)
+  def render_err_target(target, model, key, model_name: nil, err: nil)
     model_name ||= model
 
     lists_errors = model.errors.present?
@@ -28,8 +28,10 @@ module ErrorRendering
     if lists_errors
       msg = {
         message: msg,
-        array: model.errors.full_messages
+        array: model.errors.full_messages,
       }
+    elsif err
+      log_error(err)
     end
 
     target[:error] = msg

@@ -45,6 +45,33 @@ en:
         final: "%{str}."
       messages:
         saved: "%{model_name} saved"
+    avatar:
+      errors:
+        messages:
+          update_failed: "Avatar could not be set"
+    block:
+      errors:
+        messages:
+          create_failed: "User could not be blocked"
+          delete_failed: "User could not be unblocked"
+    character:
+      errors:
+        messages:
+          duplicate_failed: "Character could not be duplicated"
+    favorite:
+      errors:
+        messages:
+          create_failed: "Favorite could not be saved"
+    index_post:
+      errors:
+        messages:
+          create_failed: "Post could not be added to index"
+          delete_failed: "Post could not be removed from index"
+          update_failed: "Index could not be updated"
+    reply_draft:
+      errors:
+        messages:
+          create_failed: "Draft could not be saved"
   activerecord:
     models:
       character_alias:
