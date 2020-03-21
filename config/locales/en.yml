@@ -34,6 +34,7 @@ en:
     errors:
       messages:
         not_found: "%{model_name} could not be found"
+        update_failed: "%{model_name} could not be updated"
     success:
       messages:
         saved: "%{model_name} saved"

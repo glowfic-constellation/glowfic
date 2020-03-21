@@ -1,9 +1,9 @@
 module Translations
-  def t_notify(key, action = :notifications, model_name = nil)
-    model_name = if model_name
-      t(model_name, scope: :models)
+  def t_notify(key, action: :notifications, model: nil)
+    model_name = if model.respond_to?(:model_name)
+      model.model_name.human
     else
-      associated_model.model_name.human
+      t(model, scope: :models)
     end
 
     t(
@@ -13,11 +13,13 @@ module Translations
     )
   end
 
-  def t_success(key, model_name=nil)
-    t_notify(key, :success, model_name)
+  def t_success(key, **kwargs)
+    kwargs = { action: :success }.merge(kwargs)
+    t_notify(key, **kwargs)
   end
 
-  def t_err(key, model_name=nil)
-    t_notify(key, :errors, model_name)
+  def t_err(key, **kwargs)
+    kwargs = { action: :errors }.merge(kwargs)
+    t_notify(key, **kwargs)
   end
 end

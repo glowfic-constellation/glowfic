@@ -5,6 +5,7 @@ class ApplicationController < ActionController::Base
   include Authentication::Web
   include Memorylogic
   include Translations
+  include ErrorRendering
 
   rescue_from ActionController::InvalidAuthenticityToken, with: :handle_invalid_token
 
