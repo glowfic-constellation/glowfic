@@ -48,7 +48,7 @@ class BlocksController < ApplicationController
     begin
       @block.update!(permitted_params)
     rescue ActiveRecord::RecordInvalid => e
-      render_errors(@block, action: 'updated', now: true)
+      render_err.now(@block, :update_failed)
       log_error(e) unless @block.errors.present?
 
       editor_setup

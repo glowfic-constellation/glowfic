@@ -50,7 +50,7 @@ class CharactersController < ApplicationController
     begin
       @character.save!
     rescue ActiveRecord::RecordInvalid => e
-      render_errors(@character, action: 'created', now: true, err: e)
+      render_err.now(@character, :create_failed, err: e)
 
       @page_title = "New Character"
       editor_setup
@@ -89,7 +89,7 @@ class CharactersController < ApplicationController
         @character.save!
       end
     rescue ActiveRecord::RecordInvalid => e
-      render_errors(@character, action: 'updated', now: true, err: e)
+      render_err.now(@character, :update_failed, err: e)
 
       @page_title = "Edit Character: " + @character.name
       editor_setup
@@ -133,7 +133,7 @@ class CharactersController < ApplicationController
     begin
       @character.destroy!
     rescue ActiveRecord::RecordNotDestroyed => e
-      render_errors(@character, action: 'deleted', err: e)
+      render_err(@character, :delete_failed, err: e)
       redirect_to @character
     else
       flash[:success] = "Character deleted."

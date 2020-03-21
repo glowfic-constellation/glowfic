@@ -31,7 +31,7 @@ class IndexSectionsController < ApplicationController
     begin
       @section.save!
     rescue ActiveRecord::RecordInvalid => e
-      render_errors(@section, action: 'created', now: true, err: e)
+      render_err.now(@section, :create_failed, err: e)
 
       @page_title = 'New Index Section'
       render :new
@@ -53,7 +53,7 @@ class IndexSectionsController < ApplicationController
     begin
       @section.update!(permitted_params)
     rescue ActiveRecord::RecordInvalid => e
-      render_errors(@section, action: 'updated', now: true, err: e)
+      render_err.now(@section, :update_failed, err: e)
       @page_title = "Edit Index Section: #{@section.name}"
       render :edit
     else
@@ -66,7 +66,7 @@ class IndexSectionsController < ApplicationController
     begin
       @section.destroy!
     rescue ActiveRecord::RecordNotDestroyed => e
-      render_errors(@section, action: 'deleted', err: e)
+      render_err(@section, :delete_failed, err: e)
     else
       flash[:success] = "Index section deleted."
     end

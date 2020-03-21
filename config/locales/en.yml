@@ -34,10 +34,26 @@ en:
     errors:
       messages:
         not_found: "%{model_name} could not be found"
+        create_failed: "%{model_name} could not be created"
+        delete_failed: "%{model_name} could not be deleted"
         update_failed: "%{model_name} could not be updated"
     success:
       messages:
         saved: "%{model_name} saved"
+  activerecord:
+    models:
+      character_alias:
+        one: Alias
+        other: Aliases
+      board_section:
+        one: Section
+        other: Sections
+      board:
+        one: Continuity
+        other: Continuities
+      news:
+        one: News post
+        other: News posts
   models:
     "Account settings": Account settings
   hello: "Hello world"
