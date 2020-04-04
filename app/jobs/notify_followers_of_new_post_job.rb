@@ -24,7 +24,7 @@ class NotifyFollowersOfNewPostJob < ApplicationJob
     message = "#{post_user.username} has just posted a new post entitled #{post.subject} in the #{post.board.name} continuity"
     other_authors = post.authors.where.not(id: post_user.id)
     message += " with #{other_authors.pluck(:username).join(', ')}" if other_authors.exists?
-    message += ". #{view_post(post.id)}"
+    message += ". #{self.class.view_post(post.id)}"
 
     users.each { |user| Message.send_site_message(user.id, "New post by #{post_user.username}", message) }
   end
@@ -36,7 +36,7 @@ class NotifyFollowersOfNewPostJob < ApplicationJob
     subject = "#{new_user.username} has joined a new thread"
     message = "#{new_user.username} has just joined the post entitled #{post.subject} with "
     message += post.joined_authors.where.not(id: new_user.id).pluck(:username).join(', ')
-    message += ". #{view_post(post.id)}"
+    message += ". #{self.class.view_post(post.id)}"
 
     users.each do |user|
       next if already_notified_about?(post, user)
@@ -53,13 +53,17 @@ class NotifyFollowersOfNewPostJob < ApplicationJob
   end
 
   def already_notified_about?(post, user)
-    Message.where(recipient: user, sender_id: 0).find_each do |notification|
-      return true if notification.message.include?(view_post(post.id))
-    end
-    false
+    self.class.notification_about(post, user).present?
   end
 
-  def view_post(post_id)
+  def self.notification_about(post, user)
+    Message.where(recipient: user, sender_id: 0).where('created_at >= ?', post.created_at).find_each do |notification|
+      return notification if notification.message.include?(view_post(post.id))
+    end
+    nil
+  end
+
+  def self.view_post(post_id)
     host = ENV['DOMAIN_NAME'] || 'localhost:3000'
     url = Rails.application.routes.url_helpers.post_url(post_id, host: host, protocol: 'https')
     "<a href='#{url}'>View it here</a>."
