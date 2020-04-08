@@ -16,6 +16,6 @@ class Post::View < ApplicationRecord
     message = NotifyFollowersOfNewPostJob.notification_about(post, user)
     return unless message&.unread?
 
-    message.update!(unread: false, read_at: Time.now.in_time_zone)
+    message.update!(unread: false, read_at: Time.zone.now)
   end
 end
