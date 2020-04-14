@@ -25,8 +25,8 @@
         %tr
           - klass = [cycle('even', 'odd')]
           - klass << 'post-ignored' if ignored?(post)
-          %td.vtop.post-completed{class: klass.dup.push(post.completed? ? 'post-complete' : 'post-incomplete')}
-            - if post.completed?
+          %td.vtop.post-completed{class: klass.dup.push(post.complete? ? 'post-complete' : 'post-incomplete')}
+            - if post.complete?
               = image_tag "icons/book.png", class: 'vmid', title: "Thread Complete", alt: 'Complete'
             - elsif post.on_hiatus?
               = image_tag "icons/hourglass.png", class: 'vmid', title: "Thread On Hiatus", alt: 'Hiatused'
