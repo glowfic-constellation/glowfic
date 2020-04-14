@@ -1,4 +1,4 @@
-class PostView < ApplicationRecord
+class Post::View < ApplicationRecord
   belongs_to :post, optional: false
   belongs_to :user, optional: false
 

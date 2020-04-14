@@ -1,6 +1,6 @@
 require "spec_helper"
 
-RSpec.describe PostView do
+RSpec.describe Post::View do
   describe "validations" do
     it "requires post" do
       view = build(:post_view, post: nil)

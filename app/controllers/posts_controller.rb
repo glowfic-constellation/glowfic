@@ -92,7 +92,7 @@ class PostsController < WritableController
 
   def hidden
     @hidden_boardviews = BoardView.where(user_id: current_user.id).where(ignored: true).includes(:board)
-    hidden_post_ids = PostView.where(user_id: current_user.id).where(ignored: true).select(:post_id).distinct.pluck(:post_id)
+    hidden_post_ids = Post::View.where(user_id: current_user.id).where(ignored: true).select(:post_id).distinct.pluck(:post_id)
     @hidden_posts = posts_from_relation(Post.where(id: hidden_post_ids).ordered)
     @page_title = 'Hidden Posts & Boards'
   end
@@ -106,7 +106,7 @@ class PostsController < WritableController
 
     if params[:unhide_posts].present?
       post_ids = params[:unhide_posts].map(&:to_i).compact.uniq
-      views_to_update = PostView.where(user_id: current_user.id).where(post_id: post_ids)
+      views_to_update = Post::View.where(user_id: current_user.id).where(post_id: post_ids)
       views_to_update.each do |view| view.update(ignored: false) end
     end
 

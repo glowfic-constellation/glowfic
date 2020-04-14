@@ -114,7 +114,7 @@ RSpec.describe ReportsController do
       it "works with logged in" do
         user = create(:user)
         DailyReport.mark_read(user, 3.days.ago.to_date)
-        PostView.create!(user: user, post: create(:post))
+        create(:post_view, user: user)
         login_as(user)
         get :show, params: { id: 'daily' }
       end

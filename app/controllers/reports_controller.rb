@@ -19,7 +19,7 @@ class ReportsController < ApplicationController
     @day = calculate_day
 
     if logged_in?
-      @opened_posts = PostView.where(user_id: current_user.id).select([:post_id, :read_at, :ignored])
+      @opened_posts = Post::View.where(user_id: current_user.id).select([:post_id, :read_at, :ignored])
       @board_views = BoardView.where(user_id: current_user.id).select([:board_id, :ignored])
       @opened_ids = @opened_posts.map(&:post_id)
 

@@ -130,11 +130,11 @@ RSpec.describe Post do
     it "should delete views" do
       post = create(:post)
       user = create(:user)
-      expect(PostView.count).to be_zero
+      expect(Post::View.count).to be_zero
       post.mark_read(user)
-      expect(PostView.count).not_to be_zero
+      expect(Post::View.count).not_to be_zero
       post.destroy!
-      expect(PostView.count).to be_zero
+      expect(Post::View.count).to be_zero
     end
   end
 
