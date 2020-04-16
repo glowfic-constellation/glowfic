@@ -547,7 +547,7 @@ Post.create!([
 ])
 
 puts "Setting up post views..."
-PostView.create!([
+Post::View.create!([
   { post_id: 1, user_id: 5, read_at: "2018-12-06 00:05:13" },
   { post_id: 1, user_id: 1, read_at: "2018-12-06 00:05:13" },
   { post_id: 1, user_id: 3, read_at: "2019-05-06 23:07:00" },

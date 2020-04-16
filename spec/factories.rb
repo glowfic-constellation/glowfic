@@ -214,7 +214,7 @@ FactoryBot.define do
     post
   end
 
-  factory :post_view do
+  factory :post_view, class: 'Post::View' do
     user
     post
   end

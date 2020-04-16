@@ -19,6 +19,7 @@ class Post < ApplicationRecord
   has_many :post_viewers, inverse_of: :post, dependent: :destroy
   has_many :viewers, through: :post_viewers, source: :user, dependent: :destroy
   has_many :favorites, as: :favorite, inverse_of: :favorite, dependent: :destroy
+  has_many :views, class_name: 'Post::View', dependent: :destroy
 
   has_many :post_tags, inverse_of: :post, dependent: :destroy
   has_many :labels, -> { ordered_by_post_tag }, through: :post_tags, source: :label, dependent: :destroy
@@ -324,7 +325,7 @@ class Post < ApplicationRecord
   end
 
   def reset_warnings(_warning)
-    PostView.where(post_id: id).update_all(warnings_hidden: false)
+    Post::View.where(post_id: id).update_all(warnings_hidden: false)
   end
 
   def notify_followers

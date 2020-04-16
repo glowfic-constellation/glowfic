@@ -131,7 +131,7 @@ class ApplicationController < ActionController::Base
   end
 
   def calculate_view_status(posts)
-    post_views = PostView.where(user_id: current_user.id).where.not(read_at: nil)
+    post_views = Post::View.where(user_id: current_user.id).where.not(read_at: nil)
     @opened_ids ||= post_views.pluck(:post_id)
 
     opened_posts = post_views.where(post_id: posts.map(&:id)).select([:post_id, :read_at])
