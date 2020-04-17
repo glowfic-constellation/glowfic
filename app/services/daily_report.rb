@@ -32,8 +32,13 @@ class DailyReport < Report
     return nil unless user
     return nil if user.ignore_unread_daily_report?
     last_read = last_read(user)
-    return 1.day.ago.to_date.to_s unless last_read
+    return 1.day.ago.to_date unless last_read
     return nil unless last_read.to_date < 1.day.ago.to_date
-    (last_read + 1.day).to_date.to_s
+    (last_read + 1.day).to_date
+  end
+
+  def self.badge_for(day)
+    return 0 unless day.present?
+    (Time.zone.now.to_date - day).to_i
   end
 end

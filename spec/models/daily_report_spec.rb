@@ -91,4 +91,31 @@ RSpec.describe DailyReport do
       Time.zone = old
     end
   end
+
+  describe "#badge_for" do
+    it "is zero when unspecified" do
+      expect(DailyReport.badge_for(nil)).to eq(0)
+    end
+
+    it "respects timezone" do
+      # Hawaii 7pm April 3 UTC 5am April 4
+      date = DateTime.new(2020, 04, 04, 5, 0, 0)
+      later_date = date + 2.days
+      user = create(:user)
+
+      Time.use_zone('UTC') do
+        DailyReport.mark_read(user, date.to_date)
+      end
+
+      Timecop.freeze(later_date) do
+        Time.use_zone('Hawaii') do
+          expect(DailyReport.badge_for(DailyReport.unread_date_for(user))).to eq(1)
+        end
+
+        Time.use_zone('UTC') do
+          expect(DailyReport.badge_for(DailyReport.unread_date_for(user))).to eq(1)
+        end
+      end
+    end
+  end
 end
