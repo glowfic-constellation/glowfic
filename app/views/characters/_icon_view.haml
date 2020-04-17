@@ -1,4 +1,5 @@
 - characters = name.characters.ordered unless local_assigns[:characters]
+- characters = characters.where(retired: false) if params[:retired] == 'false'
 
 - if @template.nil? && name.present?
   %tr
