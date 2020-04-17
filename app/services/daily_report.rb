@@ -5,11 +5,13 @@ class DailyReport < Report
     @day = day
   end
 
-  def posts(sort='')
+  def posts(sort='', new_today=false)
     range = day.beginning_of_day .. day.end_of_day
-    created_no_replies = Post.where(last_reply_id: nil, created_at: range)
+    created_today = Post.where(created_at: range)
+    return created_today.select("posts.*, posts.created_at as first_updated_at").order(sort) if new_today
+
     by_replies = Post.where(id: Reply.where(created_at: range).distinct.select(:post_id))
-    all_posts = created_no_replies.or(by_replies)
+    all_posts = created_today.or(by_replies)
     all_posts
       .select(ActiveRecord::Base.sanitize_sql_array([
         "posts.*,
@@ -21,8 +23,7 @@ class DailyReport < Report
         range.begin,
         range.end,
       ]))
-      .joins("LEFT JOIN replies AS replies_today ON replies_today.post_id = posts.id")
-      .where("replies_today.created_at IS NULL OR (replies_today.created_at between ? AND ?)", range.begin, range.end)
+      .joins("LEFT JOIN replies AS replies_today ON replies_today.post_id = posts.id AND replies_today.created_at between '#{range.begin}' AND '#{range.end}'")
       .group("posts.id")
       .order(sort)
   end
