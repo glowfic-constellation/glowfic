@@ -515,3 +515,10 @@ The copy box can't be invisible/hidden or copy fails but opacity works
   border-bottom: 1px solid #CCCCCC;
   .tox-tbtn { height: 30px; width: 30px; }
 }
+
+#news-table {
+  width: 100%;
+
+  th.sub { width: 150px; }
+  textarea { height: 400px; }
+}
