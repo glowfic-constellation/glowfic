@@ -8,6 +8,16 @@
         = @day.strftime("%b %d, %Y")
         - if @day == Time.zone.today
           %em (Incomplete)
+        - if @new_today
+          = link_to url_for(day: @day) do
+            .view-button
+              = image_tag "icons/list.png", class: 'list-view', alt: ''
+              All Today
+        - else
+          = link_to url_for(day: @day, new_today: true) do
+            .view-button
+              = image_tag "icons/new.png", class: 'list-view', alt: 'New', title: 'New Today'
+              Only New Today
     %tr
       %th.sub{colspan: 7}= render 'date_nav'
     - if @posts.present?

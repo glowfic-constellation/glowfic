@@ -90,6 +90,40 @@ RSpec.describe DailyReport do
       expect(report.posts.first.first_updated_at).to be_the_same_time_as(now)
       Time.zone = old
     end
+
+    it "returns all necessary posts" do
+      report_time = DateTime.new(2020, 04, 04, 3, 0, 0)
+      new_today_replies = nil
+      new_today_no_replies = nil
+      new_yesterday_replies = nil
+      new_today_future_replies = nil
+
+      Time.use_zone('UTC') do
+        Timecop.freeze(report_time - 1.day) do
+          new_yesterday_replies = create(:post)
+        end
+
+        Timecop.freeze(report_time) do
+          new_today_no_replies = create(:post)
+          new_today_replies = create(:post)
+          new_today_future_replies = create(:post)
+          create(:reply, post: new_yesterday_replies)
+        end
+
+        Timecop.freeze(report_time + 1.hour) do
+          create(:reply, post: new_today_replies)
+        end
+
+        Timecop.freeze(report_time + 2.days) do
+          create(:reply, post: new_today_future_replies)
+        end
+
+        report = DailyReport.new(report_time.to_date)
+        posts = [new_yesterday_replies, new_today_replies, new_today_no_replies, new_today_future_replies]
+        expect(report.posts.map(&:id)).to match_array(posts.map(&:id))
+      end
+    end
+
   end
 
   describe "#badge_for" do

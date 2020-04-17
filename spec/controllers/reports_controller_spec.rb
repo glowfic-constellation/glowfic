@@ -101,6 +101,17 @@ RSpec.describe ReportsController do
       expect(invalid_report.last_user_deleted).to eq(true)
     end
 
+    it "ignores not-new when specified" do
+      today = DateTime.now.utc.beginning_of_day + 1.hour
+      valid = Timecop.freeze(today) { create(:post) }
+      invalid = Timecop.freeze(today - 2.days) { create(:post) }
+      Timecop.freeze(today) { create(:reply, post: invalid) }
+      user = create(:user, timezone: 'UTC')
+      login_as(user)
+      get :show, params: { id: 'daily', day: today.to_date.to_s, new_today: 'true' }
+      expect(assigns(:posts).map(&:id)).to eq([valid.id])
+    end
+
     context "with views" do
       render_views
 
