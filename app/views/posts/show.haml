@@ -74,12 +74,12 @@
             = image_tag "icons/star_add.png".freeze, class: 'vmid'.freeze, style: 'margin-bottom: 3px;'.freeze, alt: ''
             Favorite
       - if @post.metadata_editable_by?(current_user)
-        - unless @post.completed?
+        - unless @post.complete?
           = link_to post_path(@post, status: 'complete'.freeze), method: :put do
             %div
               = image_tag "icons/book.png".freeze, alt: ''
               Mark Complete
-        - unless @post.marked_hiatus?
+        - unless @post.hiatus?
           = link_to post_path(@post, status: 'hiatus'.freeze), method: :put do
             %div
               = image_tag "icons/hourglass.png".freeze, alt: ''
@@ -144,7 +144,7 @@
 - if @replies.present?
   = render 'posts/paginator', paginated: @replies
 = render partial: 'replies/single', collection: @replies, as: :reply
-- if @post.completed? && (@replies.empty? || (@replies.last.id == @post.last_reply_id))
+- if @post.complete? && (@replies.empty? || (@replies.last.id == @post.last_reply_id))
   .post-ender Here Ends This Thread
   - if @prev_post || @next_post
     .post-navheader

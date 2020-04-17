@@ -28,13 +28,13 @@ class PostsController < WritableController
       solo = PostAuthor.where(post_id: ids).group(:post_id).having('count(post_id) < 2').pluck(:post_id)
       @posts = @posts.where.not(last_user: current_user).or(@posts.where(id: (drafts + solo).uniq))
     end
-    @posts = @posts.where.not(status: [Post::Status::COMPLETE, Post::Status::ABANDONED])
-    hiatused = @posts.where(status: Post::Status::HIATUS).or(@posts.where('tagged_at < ?', 1.month.ago))
+    @posts = @posts.where.not(status: [:complete, :abandoned])
+    hiatused = @posts.hiatus.or(@posts.where('tagged_at < ?', 1.month.ago))
 
     if params[:view] == 'hiatused'
       @posts = hiatused
     elsif current_user.hide_hiatused_tags_owed?
-      @posts = @posts.where.not(status: Post::Status::HIATUS).where('tagged_at > ?', 1.month.ago)
+      @posts = @posts.where.not(status: :hiatus).where('tagged_at > ?', 1.month.ago)
       @hiatused_exist = true if hiatused.count > 0
     end
 
@@ -264,7 +264,7 @@ class PostsController < WritableController
     if params[:subject].present?
       @search_results = @search_results.search(params[:subject]).where('LOWER(subject) LIKE ?', "%#{params[:subject].downcase}%")
     end
-    @search_results = @search_results.where(status: Post::Status::COMPLETE) if params[:completed].present?
+    @search_results = @search_results.complete if params[:completed].present?
     if params[:author_id].present?
       post_ids = nil
       params[:author_id].each do |author_id|
@@ -346,25 +346,23 @@ class PostsController < WritableController
   end
 
   def change_status
-    begin
-      new_status = Post::Status.get_status(params[:status].upcase)
-    rescue NameError
+    unless Post.statuses.key?(params[:status])
       flash[:error] = "Invalid status selected."
-    else
-      @post.status = new_status
-      begin
-        Post.transaction do
-          @post.save!
-          @post.mark_read(current_user, @post.tagged_at)
-        end
-      rescue ActiveRecord::RecordInvalid
-        flash[:error] = {
-          message: "Status could not be updated.",
-          array: @post.errors.full_messages
-        }
-      else
-        flash[:success] = "Post has been marked #{params[:status]}."
+      return redirect_to post_path(@post)
+    end
+
+    begin
+      Post.transaction do
+        @post.update!(status: params[:status])
+        @post.mark_read(current_user, @post.tagged_at)
       end
+    rescue ActiveRecord::RecordInvalid
+      flash[:error] = {
+        message: "Status could not be updated.",
+        array: @post.errors.full_messages
+      }
+    else
+      flash[:success] = "Post has been marked #{@post.status}."
     end
     redirect_to post_path(@post)
   end

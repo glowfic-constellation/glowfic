@@ -66,7 +66,7 @@ class Reply < ApplicationRecord
     return if post.last_reply_id != id || skip_post_update
     return if (saved_changes.keys - Post::NON_TAGGED_ATTRS - ['updated_at']).empty?
     post.tagged_at = updated_at
-    post.status = Post::Status::ACTIVE if post.on_hiatus?
+    post.status = :active if post.on_hiatus?
     post.save
   end
 

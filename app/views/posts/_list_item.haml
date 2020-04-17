@@ -1,8 +1,8 @@
 %tr
   - klass = cycle('even', 'odd')
   - replies_count = post.reply_count
-  %td.post-completed.vtop{class: [klass, (post.completed? ? 'post-complete' : 'post-incomplete')]}
-    - if post.completed?
+  %td.post-completed.vtop{class: [klass, (post.complete? ? 'post-complete' : 'post-incomplete')]}
+    - if post.complete?
       = image_tag "icons/book.png", class: 'vmid', title: "Thread Complete", alt: 'Complete'
     - elsif post.on_hiatus?
       = image_tag "icons/hourglass.png", class: 'vmid', title: "Thread On Hiatus", alt: 'Hiatused'

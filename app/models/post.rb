@@ -193,7 +193,7 @@ class Post < ApplicationRecord
 
     # testing for case where the post was changed in status more recently than the last reply
     audits_exist = audits.where('created_at > ?', most_recent.created_at).where(action: 'update')
-    audits_exist = audits_exist.where("(audited_changes -> 'status' ->> 1)::integer = ?", Post::Status::COMPLETE)
+    audits_exist = audits_exist.where("(audited_changes -> 'status' ->> 1)::integer = ?", Post.statuses[:complete])
     return most_recent.updated_at unless audits_exist.exists?
     self.edited_at
   end
@@ -207,7 +207,7 @@ class Post < ApplicationRecord
 
   def taggable_by?(user)
     return false unless user
-    return false if completed? || abandoned?
+    return false if complete? || abandoned?
     return false unless user.writes_in?(board)
     return true unless authors_locked?
     author_ids.include?(user.id)
@@ -303,7 +303,7 @@ class Post < ApplicationRecord
     return if skip_edited
     self.edited_at = self.updated_at
     return if skip_tagged
-    return if replies.exists? && (!status_changed? || status != Post::Status::COMPLETE)
+    return if replies.exists? && (!status_changed? || !complete?)
     self.tagged_at = self.updated_at
   end
 
