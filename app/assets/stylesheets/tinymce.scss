@@ -2,6 +2,7 @@
 
 body {
   background-color: $bg_color_input;
+  font-size: 87.5%;
 
   blockquote {
     background-color: calculate-transparent-color($bg_color_input, #EAEAEA, 0.2);
