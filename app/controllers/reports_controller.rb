@@ -27,7 +27,7 @@ class ReportsController < ApplicationController
     end
 
     if @report_type == 'daily'
-      @new_today = (params[:new_today]=='true')
+      @new_today = params[:new_today].present?
       @posts = DailyReport.new(@day).posts(sort, @new_today)
       @posts = posts_from_relation(@posts, max: !@new_today)
       replies_on_day = Reply.where(created_at: @day.beginning_of_day..@day.end_of_day)
