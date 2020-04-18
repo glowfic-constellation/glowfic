@@ -490,7 +490,7 @@ The copy box can't be invisible/hidden or copy fails but opacity works
   height: 20px;
 }
 
-#_hiddenCopyText_ {
+#_hiddenCopyText_ { // sass-lint:disable-line id-name-format
   height: 0px;
   width: 0px;
   opacity: 0;
@@ -512,8 +512,12 @@ The copy box can't be invisible/hidden or copy fails but opacity works
 
 #content .tox-toolbar {
   background-color: $bg_color_mce_panel;
-  border-bottom: 1px solid #CCCCCC;
-  .tox-tbtn { height: 30px; width: 30px; }
+  border-bottom: 1px solid $border_color_mce_panel;
+
+  .tox-tbtn {
+    height: 30px;
+    width: 30px;
+  }
 }
 
 #news-table {
