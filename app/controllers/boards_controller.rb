@@ -181,7 +181,7 @@ class BoardsController < ApplicationController
     desc = [metadata.join(' – ')]
     desc << generate_short(@board.description) if @board.description.present?
     {
-      url: board_url(@board),
+      url: continuity_url(@board),
       title: @board.name,
       description: desc.join("\n"),
     }
