@@ -1,14 +1,4 @@
-- content_for :breadcrumbs do
-  = link_to "Continuities", continuities_path
-  &raquo;
-  = link_to @post.board.name, continuity_path(@post.board)
-  - if @post.section
-    &raquo;
-    = link_to @post.section.name, board_section_path(@post.section)
-  &raquo;
-  = link_to @post.subject, post_path(@post)
-  &raquo;
-  %b Metadata
+= render 'breadcrumbs', subtitle: 'Metadata', post: @post
 
 %table#stats
   %thead

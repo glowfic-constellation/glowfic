@@ -1,10 +1,2 @@
-- content_for :breadcrumbs do
-  = link_to "Continuities", continuities_path
-  &raquo;
-  = link_to @post.board.name, continuity_path(@post.board)
-  &raquo;
-  = link_to @post.subject, post_path(@post)
-  &raquo;
-  %b History
-
+= render 'breadcrumbs', subtitle: 'History', post: @post
 = render 'writable/history', audited: @post
