@@ -1,12 +1,4 @@
-- content_for :breadcrumbs do
-  = link_to "Continuities".freeze, continuities_path
-  &raquo;
-  = link_to @post.board.name, continuity_path(@post.board)
-  - if @post.section
-    &raquo;
-    = link_to @post.section.name, board_section_path(@post.section)
-  &raquo;
-  %b= @post.subject
+= render 'posts/breadcrumbs', post: @post
 
 %span.time-loaded= pretty_time(DateTime.now.in_time_zone)
 
