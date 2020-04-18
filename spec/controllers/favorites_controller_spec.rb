@@ -128,7 +128,7 @@ RSpec.describe FavoritesController do
     it "requires a valid param" do
       login
       post :create
-      expect(response).to redirect_to(boards_path)
+      expect(response).to redirect_to(continuities_path)
       expect(flash[:error]).to eq('No favorite specified.')
     end
 
@@ -149,7 +149,7 @@ RSpec.describe FavoritesController do
     it "requires valid board if given" do
       login
       post :create, params: { board_id: -1 }
-      expect(response).to redirect_to(boards_path)
+      expect(response).to redirect_to(continuities_path)
       expect(flash[:error]).to eq('Continuity could not be found.')
     end
 
@@ -207,7 +207,7 @@ RSpec.describe FavoritesController do
       login_as(user)
       post :create, params: { board_id: board.id }
       expect(Favorite.between(user, board)).not_to be_nil
-      expect(response).to redirect_to(board_url(board))
+      expect(response).to redirect_to(continuity_url(board))
       expect(flash[:success]).to eq("Your favorite has been saved.")
     end
   end
@@ -237,7 +237,7 @@ RSpec.describe FavoritesController do
       favorite = create(:favorite, favorite: create(:board))
       login_as(favorite.user)
       delete :destroy, params: { id: favorite.id }
-      expect(response).to redirect_to(board_url(favorite.favorite))
+      expect(response).to redirect_to(continuity_url(favorite.favorite))
       expect(flash[:success]).to eq("Favorite removed.")
     end
 

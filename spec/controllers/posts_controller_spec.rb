@@ -795,7 +795,7 @@ RSpec.describe PostsController do
     it "requires permission" do
       post = create(:post, privacy: Concealable::PRIVATE)
       get :show, params: { id: post.id }
-      expect(response).to redirect_to(boards_url)
+      expect(response).to redirect_to(continuities_url)
       expect(flash[:error]).to eq("You do not have permission to view this post.")
     end
 
@@ -1207,7 +1207,7 @@ RSpec.describe PostsController do
     it "requires post" do
       login
       get :history, params: { id: -1 }
-      expect(response).to redirect_to(boards_url)
+      expect(response).to redirect_to(continuities_url)
       expect(flash[:error]).to eq("Post could not be found.")
     end
 
@@ -1236,7 +1236,7 @@ RSpec.describe PostsController do
     it "requires post" do
       login
       get :delete_history, params: { id: -1 }
-      expect(response).to redirect_to(boards_url)
+      expect(response).to redirect_to(continuities_url)
       expect(flash[:error]).to eq("Post could not be found.")
     end
 
@@ -1297,7 +1297,7 @@ RSpec.describe PostsController do
     it "requires post" do
       login
       get :stats, params: { id: -1 }
-      expect(response).to redirect_to(boards_url)
+      expect(response).to redirect_to(continuities_url)
       expect(flash[:error]).to eq("Post could not be found.")
     end
 
@@ -1323,7 +1323,7 @@ RSpec.describe PostsController do
     it "requires post" do
       login
       get :edit, params: { id: -1 }
-      expect(response).to redirect_to(boards_url)
+      expect(response).to redirect_to(continuities_url)
       expect(flash[:error]).to eq("Post could not be found.")
     end
 
@@ -1416,7 +1416,7 @@ RSpec.describe PostsController do
     it "requires valid post" do
       login
       put :update, params: { id: -1 }
-      expect(response).to redirect_to(boards_url)
+      expect(response).to redirect_to(continuities_url)
       expect(flash[:error]).to eq("Post could not be found.")
     end
 
@@ -1427,7 +1427,7 @@ RSpec.describe PostsController do
       expect(post.visible_to?(user)).not_to eq(true)
 
       put :update, params: { id: post.id }
-      expect(response).to redirect_to(boards_url)
+      expect(response).to redirect_to(continuities_url)
       expect(flash[:error]).to eq("You do not have permission to view this post.")
     end
 
@@ -2436,14 +2436,14 @@ RSpec.describe PostsController do
   describe "POST warnings" do
     it "requires a valid post" do
       post :warnings, params: { id: -1 }
-      expect(response).to redirect_to(boards_url)
+      expect(response).to redirect_to(continuities_url)
       expect(flash[:error]).to eq("Post could not be found.")
     end
 
     it "requires permission" do
       warn_post = create(:post, privacy: Concealable::PRIVATE)
       post :warnings, params: { id: warn_post.id }
-      expect(response).to redirect_to(boards_url)
+      expect(response).to redirect_to(continuities_url)
       expect(flash[:error]).to eq("You do not have permission to view this post.")
     end
 
@@ -2482,7 +2482,7 @@ RSpec.describe PostsController do
     it "requires valid post" do
       login
       delete :destroy, params: { id: -1 }
-      expect(response).to redirect_to(boards_url)
+      expect(response).to redirect_to(continuities_url)
       expect(flash[:error]).to eq("Post could not be found.")
     end
 
@@ -2500,7 +2500,7 @@ RSpec.describe PostsController do
       post = create(:post)
       login_as(post.user)
       delete :destroy, params: { id: post.id }
-      expect(response).to redirect_to(boards_url)
+      expect(response).to redirect_to(continuities_url)
       expect(flash[:success]).to eq("Post deleted.")
     end
 

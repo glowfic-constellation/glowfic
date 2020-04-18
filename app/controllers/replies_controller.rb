@@ -214,7 +214,7 @@ class RepliesController < WritableController
     audit = Audited::Audit.where(action: 'destroy').order(id: :desc).find_by(auditable_id: params[:id])
     unless audit
       flash[:error] = "Reply could not be found."
-      redirect_to boards_path and return
+      redirect_to continuities_path and return
     end
 
     if audit.auditable
@@ -252,13 +252,13 @@ class RepliesController < WritableController
 
     unless @reply
       flash[:error] = "Post could not be found."
-      redirect_to boards_path and return
+      redirect_to continuities_path and return
     end
 
     @post = @reply.post
     unless @post.visible_to?(current_user)
       flash[:error] = "You do not have permission to view this post."
-      redirect_to boards_path and return
+      redirect_to continuities_path and return
     end
 
     @page_title = @post.subject

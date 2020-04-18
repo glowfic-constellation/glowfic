@@ -180,7 +180,7 @@ RSpec.describe BoardsController do
           cameo_ids: [user3.id]
         }
       }
-      expect(response).to redirect_to(boards_url)
+      expect(response).to redirect_to(continuities_url)
       expect(flash[:success]).to eq("Continuity created!")
       expect(Board.count).to eq(1)
 
@@ -196,7 +196,7 @@ RSpec.describe BoardsController do
   describe "GET show" do
     it "requires valid board" do
       get :show, params: { id: -1 }
-      expect(response).to redirect_to(boards_url)
+      expect(response).to redirect_to(continuities_url)
       expect(flash[:error]).to eq("Continuity could not be found.")
     end
 
@@ -263,7 +263,7 @@ RSpec.describe BoardsController do
 
       meta_og = assigns(:meta_og)
       expect(meta_og.keys).to match_array([:url, :title, :description])
-      expect(meta_og[:url]).to eq(board_url(board))
+      expect(meta_og[:url]).to eq(continuity_url(board))
       expect(meta_og[:title]).to eq('board')
       expect(meta_og[:description]).to eq("Jane Doe, John Doe – 1 post\nsample board")
     end
@@ -279,7 +279,7 @@ RSpec.describe BoardsController do
     it "requires valid board" do
       login
       get :edit, params: { id: -1 }
-      expect(response).to redirect_to(boards_url)
+      expect(response).to redirect_to(continuities_url)
       expect(flash[:error]).to eq("Continuity could not be found.")
     end
 
@@ -289,7 +289,7 @@ RSpec.describe BoardsController do
       board = create(:board)
       expect(board).not_to be_editable_by(user)
       get :edit, params: { id: board.id }
-      expect(response).to redirect_to(board_url(board))
+      expect(response).to redirect_to(continuity_url(board))
       expect(flash[:error]).to eq("You do not have permission to edit that continuity.")
     end
 
@@ -324,7 +324,7 @@ RSpec.describe BoardsController do
     it "requires valid board" do
       login
       put :update, params: { id: -1 }
-      expect(response).to redirect_to(boards_url)
+      expect(response).to redirect_to(continuities_url)
       expect(flash[:error]).to eq("Continuity could not be found.")
     end
 
@@ -334,7 +334,7 @@ RSpec.describe BoardsController do
       board = create(:board)
       expect(board).not_to be_editable_by(user)
       put :update, params: { id: board.id }
-      expect(response).to redirect_to(board_url(board))
+      expect(response).to redirect_to(continuity_url(board))
       expect(flash[:error]).to eq("You do not have permission to edit that continuity.")
     end
 
@@ -364,7 +364,7 @@ RSpec.describe BoardsController do
           cameo_ids: [user3.id]
         }
       }
-      expect(response).to redirect_to(board_url(board))
+      expect(response).to redirect_to(continuity_url(board))
       expect(flash[:success]).to eq("Continuity saved!")
       board.reload
       expect(board.name).to eq(name + 'edit')
@@ -384,7 +384,7 @@ RSpec.describe BoardsController do
     it "requires valid board" do
       login
       delete :destroy, params: { id: -1 }
-      expect(response).to redirect_to(boards_url)
+      expect(response).to redirect_to(continuities_url)
       expect(flash[:error]).to eq("Continuity could not be found.")
     end
 
@@ -394,7 +394,7 @@ RSpec.describe BoardsController do
       board = create(:board)
       expect(board).not_to be_editable_by(user)
       delete :destroy, params: { id: board.id }
-      expect(response).to redirect_to(board_url(board))
+      expect(response).to redirect_to(continuity_url(board))
       expect(flash[:error]).to eq("You do not have permission to edit that continuity.")
     end
 
@@ -402,7 +402,7 @@ RSpec.describe BoardsController do
       board = create(:board)
       login_as(board.creator)
       delete :destroy, params: { id: board.id }
-      expect(response).to redirect_to(boards_url)
+      expect(response).to redirect_to(continuities_url)
       expect(flash[:success]).to eq("Continuity deleted.")
     end
 
@@ -415,7 +415,7 @@ RSpec.describe BoardsController do
       perform_enqueued_jobs(only: UpdateModelJob) do
         delete :destroy, params: { id: board.id }
       end
-      expect(response).to redirect_to(boards_url)
+      expect(response).to redirect_to(continuities_url)
       expect(flash[:success]).to eq('Continuity deleted.')
       post.reload
       expect(post.board_id).to eq(3)
@@ -429,7 +429,7 @@ RSpec.describe BoardsController do
       login_as(board.creator)
       expect_any_instance_of(Board).to receive(:destroy!).and_raise(ActiveRecord::RecordNotDestroyed, 'fake error')
       delete :destroy, params: { id: board.id }
-      expect(response).to redirect_to(board_url(board))
+      expect(response).to redirect_to(continuity_url(board))
       expect(flash[:error]).to eq({message: "Continuity could not be deleted.", array: []})
       expect(post.reload.board).to eq(board)
     end

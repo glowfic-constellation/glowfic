@@ -68,7 +68,7 @@ Rails.application.routes.draw do
   end
 
   # Forums
-  resources :boards do
+  resources :boards, as: :continuities do
     collection do
       post :mark
       get :search

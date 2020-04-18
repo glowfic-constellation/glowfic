@@ -28,7 +28,7 @@ class ApplicationController < ActionController::Base
   def logout_required
     if logged_in?
       flash[:error] = "You are already logged in."
-      redirect_to boards_path
+      redirect_to continuities_path
     end
   end
 
