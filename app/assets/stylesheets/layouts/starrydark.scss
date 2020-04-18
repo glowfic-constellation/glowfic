@@ -79,7 +79,7 @@ body, .even, .odd, .post-post, .post-reply, #post-editor { color: $font_color_pa
 // tag items
 .even .tag-item { background-color: $bg_color_tag_item_even; }
 .odd .tag-item { background-color: $bg_color_tag_item_odd; }
-.tag-item { color: $font_color_tag_item }
+.tag-item { color: $font_color_tag_item; }
 
 // Hovering help box on post editor
 $bg_color_popup_header: #0D0B1E;
