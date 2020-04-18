@@ -45,7 +45,7 @@ RSpec.describe UsersController do
     it "complains when logged in" do
       login
       post :create
-      expect(response).to redirect_to(boards_path)
+      expect(response).to redirect_to(continuities_path)
       expect(flash[:error]).to eq('You are already logged in.')
     end
   end
@@ -54,7 +54,7 @@ RSpec.describe UsersController do
     it "complains when logged in" do
       login
       post :create
-      expect(response).to redirect_to(boards_path)
+      expect(response).to redirect_to(continuities_path)
       expect(flash[:error]).to eq('You are already logged in.')
     end
 

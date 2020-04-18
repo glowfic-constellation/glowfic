@@ -128,7 +128,7 @@ RSpec.describe FavoritesController do
     it "requires a valid param" do
       login
       post :create
-      expect(response).to redirect_to(boards_path)
+      expect(response).to redirect_to(continuities_path)
       expect(flash[:error]).to eq('No favorite specified.')
     end
 
@@ -149,7 +149,7 @@ RSpec.describe FavoritesController do
     it "requires valid board if given" do
       login
       post :create, params: { board_id: -1 }
-      expect(response).to redirect_to(boards_path)
+      expect(response).to redirect_to(continuities_path)
       expect(flash[:error]).to eq('Continuity could not be found.')
     end
 

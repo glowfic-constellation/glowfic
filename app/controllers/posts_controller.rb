@@ -242,7 +242,7 @@ class PostsController < WritableController
       redirect_to post_path(@post)
     else
       flash[:success] = "Post deleted."
-      redirect_to boards_path
+      redirect_to continuities_path
     end
   end
 
@@ -409,12 +409,12 @@ class PostsController < WritableController
 
     unless @post
       flash[:error] = "Post could not be found."
-      redirect_to boards_path and return
+      redirect_to continuities_path and return
     end
 
     unless @post.visible_to?(current_user)
       flash[:error] = "You do not have permission to view this post."
-      redirect_to boards_path and return
+      redirect_to continuities_path and return
     end
 
     @page_title = @post.subject

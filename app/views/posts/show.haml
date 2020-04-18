@@ -1,7 +1,7 @@
 - content_for :breadcrumbs do
-  = link_to "Continuities".freeze, boards_path
+  = link_to "Continuities".freeze, continuities_path
   &raquo;
-  = link_to @post.board.name, board_path(@post.board)
+  = link_to @post.board.name, continuity_path(@post.board)
   - if @post.section
     &raquo;
     = link_to @post.section.name, board_section_path(@post.section)

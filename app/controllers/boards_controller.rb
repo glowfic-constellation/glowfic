@@ -49,7 +49,7 @@ class BoardsController < ApplicationController
       render :new
     else
       flash[:success] = "Continuity created!"
-      redirect_to boards_path
+      redirect_to continuities_path
     end
   end
 
@@ -89,7 +89,7 @@ class BoardsController < ApplicationController
       render :edit
     else
       flash[:success] = "Continuity saved!"
-      redirect_to board_path(@board)
+      redirect_to continuity_path(@board)
     end
   end
 
@@ -101,10 +101,10 @@ class BoardsController < ApplicationController
         message: "Continuity could not be deleted.",
         array: @board.errors.full_messages
       }
-      redirect_to board_path(@board)
+      redirect_to continuity_path(@board)
     else
       flash[:success] = "Continuity deleted."
-      redirect_to boards_path
+      redirect_to continuities_path
     end
   end
 
@@ -159,14 +159,14 @@ class BoardsController < ApplicationController
   def find_board
     unless (@board = Board.find_by_id(params[:id]))
       flash[:error] = "Continuity could not be found."
-      redirect_to boards_path and return
+      redirect_to continuities_path and return
     end
   end
 
   def require_permission
     unless @board.editable_by?(current_user)
       flash[:error] = "You do not have permission to edit that continuity."
-      redirect_to board_path(@board) and return
+      redirect_to continuity_path(@board) and return
     end
   end
 

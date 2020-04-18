@@ -11,7 +11,7 @@ RSpec.feature "Logging out", :type => :feature do
     expect(page).to have_current_path(root_path)
 
     # make sure we're still logged out after navigating somewhere else
-    visit boards_path
+    visit continuities_path
     expect(page).to have_no_selector('.flash')
     expect(page).to have_no_selector('#user-info')
   end

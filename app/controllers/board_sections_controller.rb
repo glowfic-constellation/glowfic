@@ -13,7 +13,7 @@ class BoardSectionsController < ApplicationController
     @board_section = BoardSection.new(section_params)
     unless @board_section.board.nil? || @board_section.board.editable_by?(current_user)
       flash[:error] = "You do not have permission to edit this continuity."
-      redirect_to boards_path and return
+      redirect_to continuities_path and return
     end
 
     begin
@@ -27,7 +27,7 @@ class BoardSectionsController < ApplicationController
       render :new
     else
       flash[:success] = "New section, #{@board_section.name}, has successfully been created for #{@board_section.board.name}."
-      redirect_to edit_board_path(@board_section.board)
+      redirect_to edit_continuity_path(@board_section.board)
     end
   end
 
@@ -76,7 +76,7 @@ class BoardSectionsController < ApplicationController
       redirect_to board_section_path(@board_section)
     else
       flash[:success] = "Section deleted."
-      redirect_to edit_board_path(@board_section.board)
+      redirect_to edit_continuity_path(@board_section.board)
     end
   end
 
@@ -86,7 +86,7 @@ class BoardSectionsController < ApplicationController
     @board_section = BoardSection.find_by_id(params[:id])
     unless @board_section
       flash[:error] = "Section not found."
-      redirect_to boards_path and return
+      redirect_to continuities_path and return
     end
   end
 
@@ -94,7 +94,7 @@ class BoardSectionsController < ApplicationController
     board = @board_section.try(:board) || Board.find_by_id(params[:board_id])
     if board && !board.editable_by?(current_user)
       flash[:error] = "You do not have permission to edit this continuity."
-      redirect_to boards_path and return
+      redirect_to continuities_path and return
     end
   end
 

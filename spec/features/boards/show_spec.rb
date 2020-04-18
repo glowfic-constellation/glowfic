@@ -5,7 +5,7 @@ RSpec.feature "Show a single continuity", :type => :feature do
     board = create(:board, name: "Test board")
     create_list(:post, 5, board: board, user: board.creator)
 
-    visit board_path(board)
+    visit continuity_path(board)
 
     expect(page).to have_text("Test board")
     expect(page).to have_selector('.post-subject', count: 5)
@@ -18,7 +18,7 @@ RSpec.feature "Show a single continuity", :type => :feature do
     post2 = create(:post, board: board, user: board.creator)
     create_list(:reply, 4, post: post2)
 
-    visit board_path(board)
+    visit continuity_path(board)
 
     expect(page).to have_text("Author board")
     expect(page).to have_selector('.post-subject', count: 2)
@@ -49,7 +49,7 @@ RSpec.feature "Show a single continuity", :type => :feature do
     del_user1.archive
     del_user2.archive
 
-    visit board_path(board)
+    visit continuity_path(board)
 
     expect(page).to have_text("Test board")
     expect(page).to have_selector('.post-subject', count: 4)
