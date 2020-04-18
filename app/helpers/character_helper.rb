@@ -17,4 +17,10 @@ module CharacterHelper
     link_params = params.permit(:character_split, :retired, :view).to_h.merge(link_params)
     url_for(**link_params.symbolize_keys)
   end
+
+  def filter_characters(characters)
+    characters = characters.where(retired: false) if params[:retired] == 'false'
+    characters = characters.order(cluster: :asc) if character_split == 'cluster'
+    characters.ordered
+  end
 end

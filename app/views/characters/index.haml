@@ -66,10 +66,10 @@
     - elsif @user.characters.exists?
       = render partial: partial_type, collection: @user.templates.ordered, as: :name
       - if @user.characters.where(template_id: nil).exists?
-        = render partial_type, name: "No Template", characters: @user.characters.where(template_id: nil).ordered, show_new_character_button: @user.id == current_user&.id
+        = render partial_type, name: "No Template", characters: @user.characters.where(template_id: nil), show_new_character_button: @user.id == current_user&.id
     - else
       %tr
         %td.centered.padding-5{class: cycle('even', 'odd'), colspan: colspan} — No characters yet —
   - else
-    - characters = @user.characters.includes(:template).ordered
+    - characters = @user.characters.includes(:template)
     = render partial_type, name: nil, characters: characters, show_template: true
