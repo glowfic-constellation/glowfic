@@ -5,7 +5,7 @@
   &raquo;
   %b Edit
 
-= form_for @board, method: :put do |f|
+= form_for @board, url: continuity_path(@board), method: :put do |f|
   %table.form-table
     %thead
       %tr
