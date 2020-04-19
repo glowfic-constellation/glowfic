@@ -1,4 +1,6 @@
-- characters = filter_characters(local_assigns[:characters] || name.characters)
+- characters = name.characters unless local_assigns[:characters]
+- clusters = characters.reorder('').select(:cluster).distinct.pluck(:cluster) if character_split == 'cluster'
+- characters = filter_characters(characters)
 
 - if @template.nil? && name.present?
   %tr
@@ -27,10 +29,15 @@
 - elsif @template.nil? && name.present? && name.is_a?(::Template) && name.description.present?
   %tr
     %td.single-description.written-content{colspan: 6}= sanitize_written_content(name.description)
-%tr
-  %td.icons-box.left-align
-    .character-icon-list
-      - characters = characters.left_outer_joins(:default_icon).pluck(:id, :name, :screenname, :user_id, :url, :keyword)
-      = render partial: 'characters/icon_item', collection: characters, as: :character
-      - unless characters.present?
-        .centered — No characters yet —
+
+- if character_split != 'cluster' #|| clusters.size == 1
+  %tr
+    %td.icons-box.left-align
+      .character-icon-list
+        - characters = characters.left_outer_joins(:default_icon).pluck(:id, :name, :screenname, :user_id, :url, :keyword)
+        - if characters.present?
+          = render partial: 'characters/icon_item', collection: characters, as: :character
+        - else
+          .centered — No characters yet —
+- else
+  = render partial: 'characters/icon_cluster', collection: clusters, as: :cluster, locals: { characters: characters }
