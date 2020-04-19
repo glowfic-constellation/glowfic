@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 class TemplatesController < ApplicationController
+  include CharacterSplit
+
   before_action :login_required, except: [:show, :search]
   before_action :find_template, only: [:show, :destroy, :edit, :update]
   before_action :require_own_template, only: [:edit, :update, :destroy]
