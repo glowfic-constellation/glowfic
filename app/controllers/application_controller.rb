@@ -215,4 +215,15 @@ class ApplicationController < ActionController::Base
   def standard_request?
     request.get? && !request.xhr?
   end
+
+  # logic replicated from page_view
+  def character_split
+    return @character_split if @character_split
+    if logged_in?
+      @character_split = params[:character_split] || current_user.default_character_split
+    else
+      @character_split = session[:character_split] = params[:character_split] || session[:character_split] || 'template'
+    end
+  end
+  helper_method :character_split
 end
