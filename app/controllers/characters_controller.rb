@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 class CharactersController < ApplicationController
   include Taggable
+  include CharacterSplit
 
   before_action :login_required, except: [:index, :show, :facecasts, :search]
   before_action :find_character, only: [:show, :edit, :update, :duplicate, :destroy, :replace, :do_replace]
@@ -411,15 +412,4 @@ class CharactersController < ApplicationController
     end
     params.fetch(:character, {}).permit(permitted)
   end
-
-  # logic replicated from page_view
-  def character_split
-    return @character_split if @character_split
-    if logged_in?
-      @character_split = params[:character_split] || current_user.default_character_split
-    else
-      @character_split = session[:character_split] = params[:character_split] || session[:character_split] || 'template'
-    end
-  end
-  helper_method :character_split
 end
