@@ -2,7 +2,7 @@
 require Rails.root.join('lib', 'memorylogic')
 
 class ApplicationController < ActionController::Base
-  include Authentication
+  include Authentication::Web
   include Memorylogic
 
   rescue_from ActionController::InvalidAuthenticityToken, with: :handle_invalid_token
@@ -183,6 +183,7 @@ class ApplicationController < ActionController::Base
 
   def set_login_gon
     gon.logged_in = logged_in?
+    gon.api_token = session[:api_token] if logged_in?
   end
 
   def set_timezone(&block)

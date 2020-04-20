@@ -176,6 +176,7 @@ GEM
     jquery-ui-rails (6.0.1)
       railties (>= 3.2.16)
     json (2.3.0)
+    jwt (2.2.1)
     listen (3.2.1)
       rb-fsevent (~> 0.10, >= 0.10.3)
       rb-inotify (~> 0.9, >= 0.9.10)
@@ -449,6 +450,7 @@ DEPENDENCIES
   jquery-rails (>= 4.3.4)
   jquery-ui-rails
   json (>= 2.3.0)
+  jwt
   listen
   memory_profiler
   newrelic_rpm

@@ -126,6 +126,6 @@ function unsetLoadingIcon() {
 
 function deleteUnusedIcons(keys) {
   $(keys).each(function(index, key) {
-    $.post('/api/v1/icons/s3_delete', {s3_key: key});
+    $.authenticatedPost('/api/v1/icons/s3_delete', {s3_key: key});
   });
 }

@@ -443,7 +443,7 @@ function getAndSetCharacterData(characterId, options) {
   }
 
   var postID = $("#reply_post_id").val();
-  $.getJSON('/api/v1/characters/' + characterId, {post_id: postID}, function(resp) {
+  $.authenticatedGet('/api/v1/characters/' + characterId, {post_id: postID}, function(resp) {
     setFormData(characterId, resp, options);
   });
 }
@@ -480,7 +480,7 @@ function setIcon(id, url, title, alt) {
 
 function setSections() {
   var boardId = $("#post_board_id").val();
-  $.get("/api/v1/boards/"+boardId, {}, function(resp) {
+  $.authenticatedGet("/api/v1/boards/"+boardId, {}, function(resp) {
     var sections = resp.board_sections;
     if (sections.length > 0) {
       $("#section").show();

@@ -47,7 +47,7 @@ function validateUsername() {
     return false;
   }
 
-  $.get('/api/v1/users', {'q': username, 'match': 'exact'}, function(resp, status, xhr) {
+  $.authenticatedGet('/api/v1/users', {'q': username, 'match': 'exact'}, function(resp, status, xhr) {
     var total = xhr.getResponseHeader('Total');
     if (total > 0) {
       addAlertAfter('username', 'That username has already been taken.');
