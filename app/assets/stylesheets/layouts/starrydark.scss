@@ -58,6 +58,8 @@ $bg_color_tag_item_odd: #1A1A22;
 // link-boxes
 $bg_color_linkbox_subber: #5C5778;
 
+$bg_color_cluster_title: $colors_bigstone; // header for clusters in icon view
+
 @import 'starry_default_selectors';
 
 .flash.success, .flash.error { color: $font_color_flash; }

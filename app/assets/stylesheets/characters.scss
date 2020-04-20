@@ -51,4 +51,8 @@
 // character list view
 .character-list-template { padding: 10px; }
 
-.cluster-title { padding: 5px 10px; }
+.cluster-title {
+  padding: 5px 10px;
+  background-color: $bg_color_cluster_title;
+  color: $font_color_cluster_title;
+}
