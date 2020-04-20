@@ -139,6 +139,8 @@ Rails.application.routes.draw do
       resources :users, only: :index do
         member { get :posts }
       end
+
+      match '/login' => 'sessions#create', as: :login, via: :post
     end
   end
 

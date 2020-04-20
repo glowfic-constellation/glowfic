@@ -425,4 +425,16 @@ RSpec.describe ApplicationController do
       expect(response.json['logged_in']).to eq(false)
     end
   end
+
+  describe "#check_permanent_user" do
+    it "sets the user from cookie" do
+      current_zone = Time.zone.name
+      different_zone = ActiveSupport::TimeZone.all.detect { |z| z.name != current_zone }.name
+      user = create(:user, timezone: different_zone)
+      cookies.signed[:user_id] = user.id
+
+      get :index
+      expect(response.json['zone']).to eq(different_zone)
+    end
+  end
 end

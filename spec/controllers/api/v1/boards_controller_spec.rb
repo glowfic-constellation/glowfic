@@ -12,7 +12,7 @@ RSpec.describe Api::V1::BoardsController do
 
     it "works logged in" do
       create_search_boards
-      login
+      api_login
       get :index
       expect(response).to have_http_status(200)
       expect(response.json['results'].count).to eq(8)
@@ -52,7 +52,7 @@ RSpec.describe Api::V1::BoardsController do
     end
 
     it "succeeds for logged in users with valid board" do
-      login
+      api_login
       board = create(:board)
       section1 = create(:board_section, board: board)
       section2 = create(:board_section, board: board)

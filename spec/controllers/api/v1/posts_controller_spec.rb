@@ -29,7 +29,7 @@ RSpec.describe Api::V1::PostsController do
     end
 
     context "when logged in" do
-      before(:each) { login }
+      before(:each) { api_login }
 
       it_behaves_like "index.json", false
     end
@@ -85,7 +85,7 @@ RSpec.describe Api::V1::PostsController do
 
         post_ids = [board_post2.id, board_post1.id]
 
-        login
+        api_login
         post :reorder, params: { ordered_post_ids: post_ids }
         expect(response).to have_http_status(403)
         expect(board_post1.reload.section_order).to eq(0)
@@ -105,7 +105,7 @@ RSpec.describe Api::V1::PostsController do
         expect(board_post3.reload.section_order).to eq(1)
 
         post_ids = [board_post3.id, board_post2.id, board_post1.id]
-        login_as(user)
+        api_login_as(user)
         post :reorder, params: { ordered_post_ids: post_ids }
         expect(response).to have_http_status(422)
         expect(response.json['errors'][0]['message']).to eq('Posts must be from one board')
@@ -125,7 +125,7 @@ RSpec.describe Api::V1::PostsController do
         expect(board_post2.reload.section_order).to eq(1)
 
         post_ids = [board_post2.id, board_post1.id]
-        login_as(user)
+        api_login_as(user)
         post :reorder, params: { ordered_post_ids: post_ids }
         expect(response).to have_http_status(422)
         expect(response.json['errors'][0]['message']).to eq('Posts must be from one specified section in the board, or no section')
@@ -142,7 +142,7 @@ RSpec.describe Api::V1::PostsController do
         expect(post2.reload.section_order).to eq(1)
 
         post_ids = [-1]
-        login_as(user)
+        api_login_as(user)
         post :reorder, params: { ordered_post_ids: post_ids }
         expect(response).to have_http_status(404)
         expect(response.json['errors'][0]['message']).to eq('Some posts could not be found: -1')
@@ -165,7 +165,7 @@ RSpec.describe Api::V1::PostsController do
 
         post_ids = [board_post3.id, board_post1.id, board_post4.id, board_post2.id]
 
-        login_as(board.creator)
+        api_login_as(board.creator)
         post :reorder, params: { ordered_post_ids: post_ids }
         expect(response).to have_http_status(200)
         expect(response.json).to eq({'post_ids' => post_ids})
@@ -193,7 +193,7 @@ RSpec.describe Api::V1::PostsController do
 
         post_ids = [board_post3.id, board_post1.id]
 
-        login_as(board.creator)
+        api_login_as(board.creator)
         post :reorder, params: { ordered_post_ids: post_ids }
         expect(response).to have_http_status(200)
         expect(response.json).to eq({'post_ids' => [board_post3.id, board_post1.id, board_post2.id, board_post4.id]})
@@ -216,7 +216,7 @@ RSpec.describe Api::V1::PostsController do
 
         post_ids = [board_post2.id, board_post1.id]
 
-        login
+        api_login
         post :reorder, params: { ordered_post_ids: post_ids, section_id: section.id }
         expect(response).to have_http_status(403)
         expect(board_post1.reload.section_order).to eq(0)
@@ -237,7 +237,7 @@ RSpec.describe Api::V1::PostsController do
         expect(board_post3.reload.section_order).to eq(1)
 
         post_ids = [board_post3.id, board_post2.id, board_post1.id]
-        login_as(user)
+        api_login_as(user)
         post :reorder, params: { ordered_post_ids: post_ids, section_id: board_section1.id }
         expect(response).to have_http_status(422)
         expect(response.json['errors'][0]['message']).to eq('Posts must be from one specified section in the board, or no section')
@@ -257,7 +257,7 @@ RSpec.describe Api::V1::PostsController do
         expect(board_post2.reload.section_order).to eq(1)
 
         post_ids = [board_post2.id, board_post1.id]
-        login_as(user)
+        api_login_as(user)
         post :reorder, params: { ordered_post_ids: post_ids, section_id: 0 }
         expect(response).to have_http_status(422)
         expect(response.json['errors'][0]['message']).to eq('Posts must be from one specified section in the board, or no section')
@@ -279,7 +279,7 @@ RSpec.describe Api::V1::PostsController do
         expect(board_post3.reload.section_order).to eq(1)
 
         post_ids = [board_post3.id, board_post2.id]
-        login_as(user)
+        api_login_as(user)
         post :reorder, params: { ordered_post_ids: post_ids, section_id: board_section1.id }
         expect(response).to have_http_status(422)
         expect(response.json['errors'][0]['message']).to eq('Posts must be from one specified section in the board, or no section')
@@ -299,7 +299,7 @@ RSpec.describe Api::V1::PostsController do
         expect(board_post2.reload.section_order).to eq(1)
 
         post_ids = [board_post2.id, board_post1.id]
-        login_as(user)
+        api_login_as(user)
         post :reorder, params: { ordered_post_ids: post_ids, section_id: section.id }
         expect(response).to have_http_status(422)
         expect(response.json['errors'][0]['message']).to eq('Posts must be from one specified section in the board, or no section')
@@ -317,7 +317,7 @@ RSpec.describe Api::V1::PostsController do
         expect(post2.reload.section_order).to eq(1)
 
         post_ids = [-1]
-        login_as(user)
+        api_login_as(user)
         post :reorder, params: { ordered_post_ids: post_ids, section_id: section.id }
         expect(response).to have_http_status(404)
         expect(response.json['errors'][0]['message']).to eq('Some posts could not be found: -1')
@@ -341,7 +341,7 @@ RSpec.describe Api::V1::PostsController do
 
         post_ids = [board_post3.id, board_post1.id, board_post4.id, board_post2.id]
 
-        login_as(board.creator)
+        api_login_as(board.creator)
         post :reorder, params: { ordered_post_ids: post_ids, section_id: section.id }
         expect(response).to have_http_status(200)
         expect(response.json).to eq({'post_ids' => post_ids})
@@ -370,7 +370,7 @@ RSpec.describe Api::V1::PostsController do
 
         post_ids = [board_post3.id, board_post1.id]
 
-        login_as(board.creator)
+        api_login_as(board.creator)
         post :reorder, params: { ordered_post_ids: post_ids, section_id: section.id }
         expect(response).to have_http_status(200)
         expect(response.json).to eq({'post_ids' => [board_post3.id, board_post1.id, board_post2.id, board_post4.id]})
