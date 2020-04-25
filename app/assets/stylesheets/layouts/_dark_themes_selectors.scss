@@ -40,6 +40,12 @@
   }
 }
 
+textarea#post_private_note {
+  background-color: $bg_color_input;
+  color: $font_color_input;
+  border-color: $border_color_input;
+}
+
 /* - select2 */
 .select2-dropdown {
   background-color: $bg_color_input;
