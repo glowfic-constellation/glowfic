@@ -15,6 +15,7 @@ module.exports = [
   {
     label: "home",
     path: "",
+    misMatchThreshold: 0.00,
   },
   {
     label: "about_contact",

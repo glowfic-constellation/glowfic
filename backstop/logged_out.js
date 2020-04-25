@@ -2,11 +2,22 @@ var config = require('./shared_config/core.js');
 const prepareScenarios = require('./shared_config/prepare_scenarios.js');
 const filteredScenarios = require('./shared_config/scenarios_filtered.js');
 
-const scenarios = filteredScenarios([
-  'home',
-  'signup',
-  'login',
-  'password_reset',
+const scenarios = filteredScenarios(['home']).concat([
+  {
+    label: "signup",
+    path: "users/new",
+    selectors: ["#content"]
+  },
+  {
+    label: "login",
+    path: "login",
+    selectors: ["#content"]
+  },
+  {
+    label: "password_reset",
+    path: "password_resets/new",
+    selectors: ["#content"],
+  },
 ]);
 
 var updateConfigWithID = require('./shared_config/utils').updateConfigWithID;
