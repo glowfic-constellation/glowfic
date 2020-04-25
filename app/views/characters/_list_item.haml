@@ -1,4 +1,4 @@
-- char_id, char_name, nickname, screenname, pb, user_id, username, user_deleted = character
+- char_id, char_name, nickname, screenname, pb, cluster, user_id, username, user_deleted = character
 - if show_template
   - template_id, template_name = character[-2..]
 - klass = cycle('even', 'odd')
@@ -9,6 +9,7 @@
     %td.padding-5{class: klass}
       - if template_id.present?
         = link_to template_name, template_path(template_id)
+  %td.padding-5{class: klass}= cluster
   %td.padding-5{class: klass, style: 'width:15%'}= nickname
   %td.padding-5{class: klass, style: 'width:15%'}= breakable_text(screenname)
   %td.padding-5{class: klass, style: 'width:20%'}= pb

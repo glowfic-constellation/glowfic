@@ -26,6 +26,9 @@
       %td{class: klass}
         = f.fields_for :template do |ff|
           = ff.text_field :name, placeholder: "Template Name", class: 'text'
+  %tr
+    %th.sub Cluster
+    %td{class: cycle('even', 'odd')}= f.text_field :cluster, placeholder: "Template Cluster Name", class: 'text'
   - if @character.user.galleries.present?
     %tr
       %th.sub Galleries

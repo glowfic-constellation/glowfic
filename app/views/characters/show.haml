@@ -118,6 +118,10 @@
           %th.sub.vtop.width-150 Template
           %td.character-template{class: cycle('even', 'odd')}
             = link_to @character.template.name, template_path(@character.template), class: 'character-template'
+      - if @character.cluster
+        %tr
+          %th.sub.vtop.width-150
+          %td.character-cluster{class: cycle('even', 'odd')}= @character.cluster
       %tr
         %th.sub.vtop.width-150 Facecast
         %td.character-pb{class: cycle('even', 'odd')}= @character.pb

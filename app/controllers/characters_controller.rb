@@ -404,6 +404,7 @@ class CharactersController < ApplicationController
       :description,
       :audit_comment,
       :retired,
+      :cluster,
       ungrouped_gallery_ids: [],
     ]
     if @character.user == current_user
