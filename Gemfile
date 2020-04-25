@@ -39,7 +39,6 @@ gem 'redis-rails'
 gem 'resque'
 gem 'resque_mailer'
 gem 'sanitize'
-gem 'sassc', '~> 2.1' # pin sassc until it stops causing schema:load problems (potentially related to https://github.com/sass/sassc-ruby/issues/146)
 gem 'sassc-rails'
 gem 'select2-rails'
 gem 'sprockets', '~> 3.7' # pin sprockets until we deal with its major upgrade
