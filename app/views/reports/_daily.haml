@@ -8,6 +8,11 @@
         = @day.strftime("%b %d, %Y")
         - if @day == Time.zone.today
           %em (Incomplete)
+          - if logged_in?
+            = link_to output_user_path(current_user) do
+              .view-button
+                = image_tag 'icons/book_open.png', class: 'list-view', alt: ''
+                Your Output Today
         - if @new_today
           = link_to url_for(day: @day) do
             .view-button
