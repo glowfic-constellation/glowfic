@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 class PasswordResetsController < ApplicationController
   before_action :logout_required
-  before_action :find_reset, only: [:show, :update]
+  before_action :find_model, only: [:show, :update]
 
   def new
     @page_title = 'Reset Password'
@@ -82,7 +82,7 @@ class PasswordResetsController < ApplicationController
     end
   end
 
-  def find_reset
+  def find_model
     unless (@password_reset = PasswordReset.where(auth_token: params[:id]).first)
       flash[:error] = "Authentication token not found."
       redirect_to root_url and return

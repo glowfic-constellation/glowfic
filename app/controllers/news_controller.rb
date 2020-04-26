@@ -2,7 +2,7 @@
 class NewsController < ApplicationController
   before_action :login_required, except: [:index, :show]
   before_action :require_staff, except: [:index, :show]
-  before_action :find_news, only: [:show, :edit, :update, :destroy]
+  before_action :find_model, only: [:show, :edit, :update, :destroy]
   before_action :require_permission, only: [:edit, :update]
 
   def index
@@ -17,7 +17,7 @@ class NewsController < ApplicationController
   end
 
   def create
-    @news = News.new(news_params)
+    @news = News.new(permitted_params)
     @news.user = current_user
 
     begin
@@ -46,7 +46,7 @@ class NewsController < ApplicationController
 
   def update
     begin
-      @news.update!(news_params)
+      @news.update!(permitted_params)
     rescue ActiveRecord::RecordInvalid
       flash.now[:error] = {
         message: "News post could not be saved because of the following problems:",
@@ -81,7 +81,7 @@ class NewsController < ApplicationController
 
   private
 
-  def find_news
+  def find_model
     unless (@news = News.find_by_id(params[:id]))
       flash[:error] = "News post could not be found."
       redirect_to news_index_path and return
@@ -102,7 +102,7 @@ class NewsController < ApplicationController
     end
   end
 
-  def news_params
+  def permitted_params
     params.fetch(:news, {}).permit(:content)
   end
 

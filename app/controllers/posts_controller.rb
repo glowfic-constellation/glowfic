@@ -5,7 +5,7 @@ class PostsController < WritableController
   include Taggable
 
   before_action :login_required, except: [:index, :show, :history, :warnings, :search, :stats]
-  before_action :find_post, only: [:show, :history, :delete_history, :stats, :warnings, :edit, :update, :destroy]
+  before_action :find_model, only: [:show, :history, :delete_history, :stats, :warnings, :edit, :update, :destroy]
   before_action :require_permission, only: [:edit, :delete_history]
   before_action :require_import_permission, only: [:new, :create]
   before_action :editor_setup, only: [:new, :edit]
@@ -131,7 +131,7 @@ class PostsController < WritableController
     import_thread and return if params[:button_import].present?
     preview and return if params[:button_preview].present?
 
-    @post = current_user.posts.new(post_params)
+    @post = current_user.posts.new(permitted_params)
     @post.settings = process_tags(Setting, :post, :setting_ids)
     @post.content_warnings = process_tags(ContentWarning, :post, :content_warning_ids)
     @post.labels = process_tags(Label, :post, :label_ids)
@@ -192,7 +192,7 @@ class PostsController < WritableController
     change_authors_locked and return if params[:authors_locked].present?
     preview and return if params[:button_preview].present?
 
-    @post.assign_attributes(post_params)
+    @post.assign_attributes(permitted_params)
     @post.board ||= Board.find(3)
     settings = process_tags(Setting, :post, :setting_ids)
     warnings = process_tags(ContentWarning, :post, :content_warning_ids)
@@ -304,7 +304,7 @@ class PostsController < WritableController
 
   def preview
     @post ||= Post.new(user: current_user)
-    @post.assign_attributes(post_params(false))
+    @post.assign_attributes(permitted_params(false))
     @post.board ||= Board.find_by_id(3)
 
     @author_ids = params.fetch(:post, {}).fetch(:unjoined_author_ids, [])
@@ -385,7 +385,7 @@ class PostsController < WritableController
   def editor_setup
     super
     @permitted_authors = User.active.ordered - (@post.try(:joined_authors) || [])
-    @author_ids = post_params[:unjoined_author_ids].reject(&:blank?).map(&:to_i) if post_params.key?(:unjoined_author_ids)
+    @author_ids = permitted_params[:unjoined_author_ids].reject(&:blank?).map(&:to_i) if permitted_params.key?(:unjoined_author_ids)
     @author_ids ||= @post.try(:unjoined_author_ids) || []
   end
 
@@ -404,7 +404,7 @@ class PostsController < WritableController
     end
   end
 
-  def find_post
+  def find_model
     @post = Post.find_by_id(params[:id])
 
     unless @post
@@ -435,7 +435,7 @@ class PostsController < WritableController
     end
   end
 
-  def post_params(include_associations=true)
+  def permitted_params(include_associations=true)
     allowed_params = [
       :board_id,
       :section_id,

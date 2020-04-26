@@ -107,7 +107,7 @@ class WritableController < ApplicationController
         build_template_groups
 
         session_params = ActionController::Parameters.new(reply: session.fetch(:attempted_reply, {}))
-        reply_hash = reply_params(session_params)
+        reply_hash = permitted_params(session_params)
         session.delete(:attempted_reply)
 
         @reply = @post.build_new_reply_for(current_user, reply_hash)
@@ -165,7 +165,7 @@ class WritableController < ApplicationController
     }
   end
 
-  def reply_params(param_hash=nil)
+  def permitted_params(param_hash=nil)
     (param_hash || params).fetch(:reply, {}).permit(
       :post_id,
       :content,

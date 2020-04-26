@@ -4,10 +4,10 @@ class CharactersController < ApplicationController
   include CharacterSplit
 
   before_action :login_required, except: [:index, :show, :facecasts, :search]
-  before_action :find_character, only: [:show, :edit, :update, :duplicate, :destroy, :replace, :do_replace]
+  before_action :find_model, only: [:show, :edit, :update, :duplicate, :destroy, :replace, :do_replace]
   before_action :find_group, only: :index
-  before_action :require_own_character, only: [:edit, :update, :duplicate, :replace, :do_replace]
-  before_action :build_editor, only: [:new, :edit]
+  before_action :require_permission, only: [:edit, :update, :duplicate, :replace, :do_replace]
+  before_action :editor_setup, only: [:new, :edit]
 
   def index
     (return if login_required) unless params[:user_id].present?
@@ -38,7 +38,7 @@ class CharactersController < ApplicationController
 
   def create
     @character = Character.new(user: current_user)
-    @character.assign_attributes(character_params)
+    @character.assign_attributes(permitted_params)
     @character.settings = process_tags(Setting, :character, :setting_ids)
     @character.gallery_groups = process_tags(GalleryGroup, :character, :gallery_group_ids)
     build_template
@@ -51,7 +51,7 @@ class CharactersController < ApplicationController
         message: "Your character could not be saved.",
         array: @character.errors.full_messages
       }
-      build_editor
+      editor_setup
       render :new
     else
       flash[:success] = "Character saved successfully."
@@ -73,12 +73,12 @@ class CharactersController < ApplicationController
   def update
     begin
       Character.transaction do
-        @character.assign_attributes(character_params)
+        @character.assign_attributes(permitted_params)
         build_template
 
         if current_user.id != @character.user_id && @character.audit_comment.blank?
           flash[:error] = "You must provide a reason for your moderator edit."
-          build_editor
+          editor_setup
           render :edit and return
         end
 
@@ -92,7 +92,7 @@ class CharactersController < ApplicationController
         message: "Your character could not be saved.",
         array: @character.errors.full_messages
       }
-      build_editor
+      editor_setup
       render :edit
     else
       flash[:success] = "Character saved successfully."
@@ -310,7 +310,7 @@ class CharactersController < ApplicationController
 
   private
 
-  def find_character
+  def find_model
     unless (@character = Character.find_by_id(params[:id]))
       flash[:error] = "Character could not be found."
       if logged_in?
@@ -326,14 +326,14 @@ class CharactersController < ApplicationController
     @group = CharacterGroup.find_by_id(params[:group_id])
   end
 
-  def require_own_character
+  def require_permission
     unless @character.editable_by?(current_user)
       flash[:error] = "You do not have permission to edit that character."
       redirect_to user_characters_path(current_user) and return
     end
   end
 
-  def build_editor
+  def editor_setup
     faked = Struct.new(:name, :id)
     user = @character.try(:user) || current_user
     @templates = user.templates.ordered
@@ -394,7 +394,7 @@ class CharactersController < ApplicationController
     data
   end
 
-  def character_params
+  def permitted_params
     permitted = [
       :name,
       :nickname,

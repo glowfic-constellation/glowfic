@@ -3,7 +3,7 @@ require 'will_paginate/array'
 
 class RepliesController < WritableController
   before_action :login_required, except: [:search, :show, :history]
-  before_action :find_reply, only: [:show, :history, :edit, :update, :destroy]
+  before_action :find_model, only: [:show, :history, :edit, :update, :destroy]
   before_action :editor_setup, only: [:edit]
   before_action :require_permission, only: [:edit, :update]
 
@@ -102,7 +102,7 @@ class RepliesController < WritableController
       preview(ReplyDraft.reply_from_draft(draft)) and return
     end
 
-    reply = Reply.new(reply_params)
+    reply = Reply.new(permitted_params)
     reply.user = current_user
 
     if reply.post.present?
@@ -162,7 +162,7 @@ class RepliesController < WritableController
   end
 
   def update
-    @reply.assign_attributes(reply_params)
+    @reply.assign_attributes(permitted_params)
     preview(@reply) and return if params[:button_preview]
 
     if current_user.id != @reply.user_id && @reply.audit_comment.blank?
@@ -247,7 +247,7 @@ class RepliesController < WritableController
 
   private
 
-  def find_reply
+  def find_model
     @reply = Reply.find_by_id(params[:id])
 
     unless @reply
@@ -284,9 +284,9 @@ class RepliesController < WritableController
 
   def make_draft(show_message=true)
     if (draft = ReplyDraft.draft_for(params[:reply][:post_id], current_user.id))
-      draft.assign_attributes(reply_params)
+      draft.assign_attributes(permitted_params)
     else
-      draft = ReplyDraft.new(reply_params)
+      draft = ReplyDraft.new(permitted_params)
       draft.user = current_user
     end
 

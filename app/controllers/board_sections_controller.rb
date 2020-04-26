@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 class BoardSectionsController < ApplicationController
   before_action :login_required, except: :show
-  before_action :find_section, except: [:new, :create]
+  before_action :find_model, except: [:new, :create]
   before_action :require_permission, except: [:show, :update]
 
   def new
@@ -10,7 +10,7 @@ class BoardSectionsController < ApplicationController
   end
 
   def create
-    @board_section = BoardSection.new(section_params)
+    @board_section = BoardSection.new(permitted_params)
     unless @board_section.board.nil? || @board_section.board.editable_by?(current_user)
       flash[:error] = "You do not have permission to edit this continuity."
       redirect_to continuities_path and return
@@ -44,7 +44,7 @@ class BoardSectionsController < ApplicationController
   end
 
   def update
-    @board_section.assign_attributes(section_params)
+    @board_section.assign_attributes(permitted_params)
     require_permission
     return if performed?
 
@@ -82,7 +82,7 @@ class BoardSectionsController < ApplicationController
 
   private
 
-  def find_section
+  def find_model
     @board_section = BoardSection.find_by_id(params[:id])
     unless @board_section
       flash[:error] = "Section not found."
@@ -113,7 +113,7 @@ class BoardSectionsController < ApplicationController
     }
   end
 
-  def section_params
+  def permitted_params
     params.fetch(:board_section, {}).permit(
       :board_id,
       :name,

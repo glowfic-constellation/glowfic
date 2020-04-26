@@ -3,10 +3,10 @@ class GalleriesController < UploadingController
   include Taggable
 
   before_action :login_required, except: [:index, :show, :search]
-  before_action :find_gallery, only: [:destroy, :edit, :update] # assumes login_required
+  before_action :find_model, only: [:destroy, :edit, :update] # assumes login_required
   before_action :setup_new_icons, only: [:add, :icon]
   before_action :set_s3_url, only: [:edit, :add, :icon]
-  before_action :setup_editor, only: [:new, :edit]
+  before_action :editor_setup, only: [:new, :edit]
 
   def index
     if params[:user_id].present?
@@ -34,7 +34,7 @@ class GalleriesController < UploadingController
   end
 
   def create
-    @gallery = Gallery.new(gallery_params)
+    @gallery = Gallery.new(permitted_params)
     @gallery.user = current_user
     @gallery.gallery_groups = process_tags(GalleryGroup, :gallery, :gallery_group_ids)
 
@@ -46,7 +46,7 @@ class GalleriesController < UploadingController
         array: @gallery.errors.full_messages
       }
       @page_title = 'New Gallery'
-      setup_editor
+      editor_setup
       render :new
     else
       flash[:success] = "Gallery saved successfully."
@@ -110,7 +110,7 @@ class GalleriesController < UploadingController
   end
 
   def update
-    @gallery.assign_attributes(gallery_params)
+    @gallery.assign_attributes(permitted_params)
 
     begin
       Gallery.transaction do
@@ -124,7 +124,7 @@ class GalleriesController < UploadingController
       @page_title = 'Edit Gallery: ' + @gallery.name_was
       use_javascript('galleries/uploader')
       use_javascript('galleries/edit')
-      setup_editor
+      editor_setup
       set_s3_url
       render :edit
     else
@@ -212,7 +212,7 @@ class GalleriesController < UploadingController
 
   private
 
-  def find_gallery
+  def find_model
     @gallery = Gallery.find_by_id(params[:id])
 
     unless @gallery
@@ -234,13 +234,13 @@ class GalleriesController < UploadingController
       use_javascript('galleries/uploader')
     end
     @icons = []
-    find_gallery unless params[:id] == '0'
+    find_model unless params[:id] == '0'
     @unassigned = current_user.galleryless_icons
     @page_title = "Add Icons"
     @page_title += ": " + @gallery.name unless @gallery.nil?
   end
 
-  def setup_editor
+  def editor_setup
     use_javascript('galleries/editor')
     gon.user_id = current_user.id
   end
@@ -260,7 +260,7 @@ class GalleriesController < UploadingController
     }
   end
 
-  def gallery_params
+  def permitted_params
     params.fetch(:gallery, {}).permit(
       :name,
       galleries_icons_attributes: [
