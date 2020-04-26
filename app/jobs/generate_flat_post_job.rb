@@ -27,12 +27,8 @@ class GenerateFlatPostJob < ApplicationJob
         .left_outer_joins(:icon)
         .ordered
 
-      view = ActionView::Base.new(ActionController::Base.view_paths, {})
-      view.extend ApplicationHelper
-      content = view.render(partial: 'posts/generate_flat', locals: {replies: replies})
-
       flat_post = post.flat_post
-      flat_post.content = content
+      flat_post.content = PostsController.render :_generate_flat, layout: false, locals: {replies: replies}
       flat_post.save!
 
       $redis.del(lock_key)
