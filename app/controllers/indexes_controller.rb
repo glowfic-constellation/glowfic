@@ -7,7 +7,7 @@ class IndexesController < ApplicationController
 
   def index
     @page_title = "Indexes"
-    @indexes = Index.order('id asc').paginate(per_page: 25, page: page)
+    @indexes = Index.order('id asc').paginate(page: page)
   end
 
   def new

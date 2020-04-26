@@ -6,7 +6,7 @@ class Board::Searcher < Object
   def search(params, page:)
     search_authors(params[:author_id]) if params[:author_id].present?
     @search_results = @search_results.where("name LIKE ?", "%#{params[:name]}%") if params[:name].present?
-    @search_results.ordered.paginate(per_page: 25, page: page)
+    @search_results.ordered.paginate(page: page)
   end
 
   def search_authors(author_ids)

@@ -23,7 +23,7 @@ class BoardsController < ApplicationController
       @cameo_boards = Board.where(id: BoardAuthor.where(user_id: @user.id, cameo: true).select(:board_id).distinct.pluck(:board_id)).ordered
     else
       @page_title = 'Continuities'
-      @boards = Board.ordered.paginate(page: page, per_page: 25)
+      @boards = Board.ordered.paginate(page: page)
     end
   end
 

@@ -82,7 +82,7 @@ class RepliesController < WritableController
       .joins(:user)
       .left_outer_joins(:character)
       .with_edit_audit_counts
-      .paginate(page: page, per_page: 25)
+      .paginate(page: page)
       .includes(:post)
 
     unless params[:condensed]
