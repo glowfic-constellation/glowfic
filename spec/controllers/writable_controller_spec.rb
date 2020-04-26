@@ -26,11 +26,13 @@ RSpec.describe WritableController do
   end
 
   describe "#og_data_for_post" do
-    it "succeeds" do
-      board = create(:board, name: 'Test')
-      user = create(:user, username: 'Tester')
-      post = create(:post, subject: 'Temp', board: board, user: user)
+    let(:board) { create(:board, name: 'Test') }
+    let(:user) { create(:user, username: 'Tester') }
+    let!(:post) { create(:post, subject: 'Temp', board: board, user: user) }
 
+    before(:each) { post.reload }
+
+    it "succeeds" do
       data = controller.send(:og_data_for_post, post, total_pages: 5)
       expect(data).to eq({
         title: 'Temp · Test',
@@ -39,10 +41,7 @@ RSpec.describe WritableController do
     end
 
     it "works with description" do
-      board = create(:board, name: 'Test')
-      user = create(:user, username: 'Tester')
-      post = create(:post, subject: 'Temp', description: 'More.', board: board, user: user)
-
+      post.update!(description: 'More.')
       data = controller.send(:og_data_for_post, post, total_pages: 5)
       expect(data).to eq({
         title: 'Temp · Test',
@@ -51,10 +50,7 @@ RSpec.describe WritableController do
     end
 
     it "strips tags from description" do
-      board = create(:board, name: 'Test')
-      user = create(:user, username: 'Tester')
-      post = create(:post, subject: 'Temp', description: 'With an <a href="/characters/1">Alli</a>.', board: board, user: user)
-
+      post.update!(description: 'With an <a href="/characters/1">Alli</a>.')
       data = controller.send(:og_data_for_post, post, total_pages: 5)
       expect(data).to eq({
         title: 'Temp · Test',
@@ -63,11 +59,8 @@ RSpec.describe WritableController do
     end
 
     it "works with section" do
-      board = create(:board, name: 'Test')
       section = create(:board_section, board: board, name: 'Further')
-      user = create(:user, username: 'Tester')
-      post = create(:post, subject: 'Temp', description: 'More.', board: board, section: section, user: user)
-
+      post.update!(description: 'More.', section: section)
       data = controller.send(:og_data_for_post, post, total_pages: 5)
       expect(data).to eq({
         title: 'Temp · Test » Further',
@@ -76,11 +69,10 @@ RSpec.describe WritableController do
     end
 
     it "works with two authors" do
-      board = create(:board, name: 'Test')
-      user = create(:user, username: 'Tester')
       user2 = create(:user, username: 'Friend')
-      post = create(:post, subject: 'Temp', description: 'More.', board: board, user: user)
+      post.update!(description: 'More.')
       create(:reply, post: post, user: user2)
+      post.reload
 
       data = controller.send(:og_data_for_post, post, total_pages: 5)
       expect(data).to eq({
@@ -90,10 +82,6 @@ RSpec.describe WritableController do
     end
 
     it "works with pages that are not the first" do
-      board = create(:board, name: 'Test')
-      user = create(:user, username: 'Tester')
-      post = create(:post, subject: 'Temp', board: board, user: user)
-
       data = controller.send(:og_data_for_post, post, page: 2, total_pages: 2)
       expect(data).to eq({
         title: 'Temp · Test',
@@ -102,14 +90,12 @@ RSpec.describe WritableController do
     end
 
     it "works with many authors" do
-      board = create(:board, name: 'Test')
-      user = create(:user, username: 'Tester')
-      post = create(:post, subject: 'Temp', board: board, user: user)
       5.times do |i|
         user2 = create(:user, username: "Friend #{i}")
         create(:reply, post: post, user: user2)
       end
 
+      post.reload
       data = controller.send(:og_data_for_post, Post.find_by(id: post.id), total_pages: 5)
       expect(data).to eq({
         title: 'Temp · Test',
@@ -118,10 +104,6 @@ RSpec.describe WritableController do
     end
 
     it "works with non-standard per_page" do
-      board = create(:board, name: 'Test')
-      user = create(:user, username: 'Tester')
-      post = create(:post, subject: 'Temp', board: board, user: user)
-
       data = controller.send(:og_data_for_post, post, total_pages: 5, per_page: 5)
       expect(data).to eq({
         title: 'Temp · Test',
