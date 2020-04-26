@@ -352,6 +352,9 @@ ActiveRecord::Schema[7.2].define(version: 2024_12_22_000400) do
     t.integer "board_id", null: false
     t.integer "user_id", null: false
     t.string "subject", null: false
+    t.text "content"
+    t.integer "character_id"
+    t.integer "icon_id"
     t.integer "privacy", default: 0, null: false
     t.datetime "created_at", precision: nil
     t.datetime "updated_at", precision: nil
@@ -364,9 +367,13 @@ ActiveRecord::Schema[7.2].define(version: 2024_12_22_000400) do
     t.datetime "edited_at", precision: nil
     t.datetime "tagged_at", precision: nil
     t.boolean "authors_locked", default: false
+    t.integer "character_alias_id"
     t.index "to_tsvector('english'::regconfig, COALESCE((subject)::text, ''::text))", name: "idx_fts_post_subject", using: :gin
+    t.index "to_tsvector('english'::regconfig, COALESCE(content, ''::text))", name: "idx_fts_post_content", using: :gin
     t.index ["board_id"], name: "index_posts_on_board_id"
+    t.index ["character_id"], name: "index_posts_on_character_id"
     t.index ["created_at"], name: "index_posts_on_created_at"
+    t.index ["icon_id"], name: "index_posts_on_icon_id"
     t.index ["tagged_at"], name: "index_posts_on_tagged_at"
     t.index ["user_id"], name: "index_posts_on_user_id"
   end
