@@ -92,7 +92,7 @@ class ApplicationController < ActionController::Base
 
   def posts_from_relation(relation, no_tests: true, with_pagination: true, select: '', max: false)
     posts = posts_list_relation(relation, no_tests: no_tests, select: select, max: max)
-    posts = posts.paginate(page: page, per_page: 25) if with_pagination
+    posts = posts.paginate(page: page) if with_pagination
     calculate_view_status(posts) if logged_in?
     posts
   end

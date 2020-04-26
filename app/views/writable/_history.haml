@@ -1,7 +1,7 @@
 .content-header Edit History (Oldest to Newest)
 %table
   %tbody
-    - audits = audited.audits.paginate(per_page: 25, page: page)
+    - audits = audited.audits.paginate(page: page)
     - if audits.total_pages > 1
       %tr
         %td{colspan: 2}= render 'posts/paginator', paginated: audits
