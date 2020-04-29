@@ -305,6 +305,20 @@ div.post-subheader { width: 100%; }
   }
 }
 
+.private-note-editor {
+  #post_private_note {
+    width: 100%;
+    height: calc(100% - 50px);
+  }
+}
+
+.loading {
+  width: 16px;
+  height: 16px;
+}
+
+.post-note-editor { margin: 5px; }
+
 .details {
   display: inline;
   font-size: $font_size_smaller;

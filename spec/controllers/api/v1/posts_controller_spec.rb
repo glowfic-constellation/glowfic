@@ -68,6 +68,69 @@ RSpec.describe Api::V1::PostsController do
     end
   end
 
+  describe "PATCH update" do
+    it "requires login", :show_in_doc do
+      patch :update, params: { id: 0 }
+      expect(response).to have_http_status(401)
+      expect(response.json['errors'][0]['message']).to eq("You must be logged in to view that page.")
+    end
+
+    it "requires valid post", :show_in_doc do
+      api_login
+      patch :update, params: { id: 0 }
+      expect(response).to have_http_status(404)
+      expect(response.json['errors'].size).to eq(1)
+      expect(response.json['errors'][0]['message']).to eq("Post could not be found.")
+    end
+
+    it "requires access to post", :show_in_doc do
+      api_login
+      post = create(:post, privacy: Concealable::PRIVATE)
+      patch :update, params: { id: post.id }
+      expect(response).to have_http_status(403)
+      expect(response.json['errors'][0]['message']).to eq("You do not have permission to perform this action.")
+    end
+
+    it "requires private_note param", :show_in_doc do
+      api_login
+      post = create(:post)
+      patch :update, params: { id: post.id }
+      expect(response).to have_http_status(422)
+      expect(response.json['errors'][0]['message']).to eq("Missing parameter private_note")
+    end
+
+    it "requires authorship of post" do
+      api_login
+      post = create(:post)
+      patch :update, params: { id: post.id, private_note: "Shiny new note" }
+      expect(response).to have_http_status(403)
+      expect(response.json['errors'][0]['message']).to eq("You do not have permission to perform this action.")
+    end
+
+    it "handles failed saves" do
+      expect_any_instance_of(Post::Author).to receive(:update).and_return(false)
+      user = api_login
+      post = create(:post, user: user)
+
+      patch :update, params: { id: post.id, private_note: 'Shiny new note' }
+
+      expect(response).to have_http_status(422)
+      expect(response.json['errors'][0]['message']).to eq('Post could not be updated.')
+    end
+
+    it "succeeds with valid post", :show_in_doc do
+      user = api_login
+      post = create(:post, user: user)
+      expect(post.author_for(user).private_note).to be_nil
+
+      patch :update, params: { id: post.id, private_note: 'Shiny new note' }
+
+      expect(response).to have_http_status(200)
+      expect(response.json['private_note']).to eq("<p>Shiny new note</p>");
+      expect(post.author_for(user).private_note).to eq('Shiny new note')
+    end
+  end
+
   describe "POST reorder" do
     it "requires login", :show_in_doc do
       post :reorder

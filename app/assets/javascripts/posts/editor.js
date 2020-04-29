@@ -1,4 +1,6 @@
+//= require posts/edit_notes
 /* global gon, tinyMCE, resizeScreenname, createTagSelect, createSelect2 */
+
 var tinyMCEInit = false, shownIcons = [];
 var PRIVACY_ACCESS = 2; // TODO don't hardcode
 var iconSelectBox;
@@ -6,11 +8,6 @@ var iconSelectBox;
 $(document).ready(function() {
   setupMetadataEditor();
   iconSelectBox = $('#reply-icon-selector');
-
-  var formButtons = $("#submit_button, #draft_button, #preview_button");
-  formButtons.click(function() {
-    formButtons.not(this).data('disable-with', '').prop('disabled', true);
-  });
 
   if ($("#post-editor .view-button").length > 0) setupWritableEditor();
 });
