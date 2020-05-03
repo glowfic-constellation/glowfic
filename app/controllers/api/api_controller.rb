@@ -21,6 +21,10 @@ class Api::ApiController < ActionController::Base
     render json: {errors: [error]}, status: :unauthorized and return
   end
 
+  def login_optional
+    logged_in? # checks for invalid tokens and prevents double renders
+  end
+
   def set_timezone
     Time.use_zone("UTC") { yield }
   end

@@ -1,5 +1,6 @@
 RSpec.describe Api::ApiController do
   controller do
+    before_action :login_optional, only: :index
     before_action :login_required, only: :show
 
     def index
@@ -53,7 +54,7 @@ RSpec.describe Api::ApiController do
         Timecop.freeze(cur_time + Authentication::EXPIRY + 3.days) do
           get :index
           expect(response).to have_http_status(422)
-          expect(response.json['errors'][0]['message']).to eq("Authorization token is not valid.")
+          expect(response.json['errors'][0]['message']).to eq("Authorization token has expired.")
         end
       end
 
