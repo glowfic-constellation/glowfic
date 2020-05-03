@@ -1,5 +1,3 @@
-require "spec_helper"
-
 RSpec.feature "Show a list of galleries", :type => :feature do
   def setup_sample_data
     user = create(:user, username: 'Test user', password: 'known')

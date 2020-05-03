@@ -1,5 +1,3 @@
-require "spec_helper"
-
 RSpec.describe AliasesController do
   include ActiveJob::TestHelper
 

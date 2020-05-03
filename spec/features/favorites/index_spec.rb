@@ -1,5 +1,3 @@
-require "spec_helper"
-
 RSpec.feature "Favorites page", :type => :feature do
   scenario "User views normal favorites" do
     user = create(:user, username: "usert")

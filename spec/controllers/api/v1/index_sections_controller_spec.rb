@@ -1,5 +1,3 @@
-require "spec_helper"
-
 RSpec.describe Api::V1::IndexSectionsController do
   describe "POST reorder" do
     it "requires login", :show_in_doc do

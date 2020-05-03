@@ -1,5 +1,3 @@
-require "spec_helper"
-
 RSpec.describe CharactersController do
   include ActiveJob::TestHelper
 

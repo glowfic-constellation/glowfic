@@ -1,5 +1,3 @@
-require "spec_helper"
-
 RSpec.feature "Viewing posts", :type => :feature do
   scenario "User views a post with layouts" do
     user = login

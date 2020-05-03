@@ -1,5 +1,3 @@
-require "spec_helper"
-
 RSpec.describe UpdateModelJob do
   before(:each) { ResqueSpec.reset! }
 

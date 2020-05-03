@@ -1,5 +1,3 @@
-require "spec_helper"
-
 RSpec.describe User do
   describe "password encryption" do
     it "should support nil salt_uuid" do

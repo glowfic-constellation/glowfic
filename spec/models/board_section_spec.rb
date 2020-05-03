@@ -1,5 +1,3 @@
-require "spec_helper"
-
 RSpec.describe BoardSection do
   it "should reset section_* fields in posts after deletion" do
     board = create(:board)

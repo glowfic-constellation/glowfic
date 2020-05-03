@@ -1,5 +1,3 @@
-require "spec_helper"
-
 RSpec.describe Reply do
   describe "#has_icons?" do
     let(:user) { create(:user) }

@@ -1,5 +1,3 @@
-require "spec_helper"
-
 RSpec.describe PasswordResetsController do
   describe "GET new" do
     it "requires logout" do

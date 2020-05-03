@@ -1,5 +1,3 @@
-require "spec_helper"
-
 RSpec.describe IndexSectionsController do
   describe "GET new" do
     it "requires login" do

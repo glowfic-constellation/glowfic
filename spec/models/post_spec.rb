@@ -1,5 +1,3 @@
-require "spec_helper"
-
 RSpec.describe Post do
   describe "timestamps" do
     let!(:post) { create(:post) }

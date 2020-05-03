@@ -1,5 +1,3 @@
-require 'rails_helper'
-
 RSpec.describe Block, type: :model do
   describe "validations" do
     it 'succeeds' do

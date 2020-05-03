@@ -1,5 +1,3 @@
-require "spec_helper"
-
 RSpec.describe PostImporter do
   include ActiveJob::TestHelper
 

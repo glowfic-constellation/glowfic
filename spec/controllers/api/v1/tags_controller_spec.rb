@@ -1,5 +1,3 @@
-require "spec_helper"
-
 RSpec.describe Api::V1::TagsController do
   describe "GET index" do
     shared_examples_for "index.json" do |in_doc|

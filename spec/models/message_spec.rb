@@ -1,5 +1,3 @@
-require "spec_helper"
-
 RSpec.describe Message do
   describe "#notify_recipient" do
     before(:each) do ResqueSpec.reset! end

@@ -1,5 +1,3 @@
-require "spec_helper"
-
 RSpec.describe PostScraper do
   it "should add view to url" do
     scraper = PostScraper.new('http://wild-pegasus-appeared.dreamwidth.org/403.html')

@@ -1,5 +1,3 @@
-require "spec_helper"
-
 RSpec.describe Setting do
   context "tags" do
     it "creates only in-memory tags on invalid create" do

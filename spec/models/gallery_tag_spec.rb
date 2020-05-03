@@ -1,5 +1,3 @@
-require "spec_helper"
-
 RSpec.describe GalleryTag do
   describe "callbacks" do
     context "when gallery group added to gallery" do

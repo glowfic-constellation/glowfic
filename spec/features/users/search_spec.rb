@@ -1,5 +1,3 @@
-require "spec_helper"
-
 RSpec.feature "Searching users", :type => :feature do
   scenario "Logged-out user searches simple list of users" do
     simple_user = create(:user, username: 'Test Alice')

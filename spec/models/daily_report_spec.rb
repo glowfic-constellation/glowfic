@@ -1,5 +1,3 @@
-require "spec_helper"
-
 RSpec.describe DailyReport do
   describe "#posts" do
     default_zone = Time.zone

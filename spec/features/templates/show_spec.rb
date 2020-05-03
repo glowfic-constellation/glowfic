@@ -1,5 +1,3 @@
-require "spec_helper"
-
 RSpec.feature "Viewing a template", type: :feature do
   let!(:user) { create(:user) }
   let!(:template) { create(:template, user: user, name: 'sample template') }

@@ -1,5 +1,3 @@
-require "spec_helper"
-
 RSpec.describe TagsController do
   describe "GET index" do
     context "with views" do

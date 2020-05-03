@@ -1,5 +1,3 @@
-require "spec_helper"
-
 RSpec.describe Character do
   describe "validations" do
     it "requires valid group" do

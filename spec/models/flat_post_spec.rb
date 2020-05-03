@@ -1,5 +1,3 @@
-require "spec_helper"
-
 RSpec.describe FlatPost do
   include ActiveJob::TestHelper
 

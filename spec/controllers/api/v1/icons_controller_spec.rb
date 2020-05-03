@@ -1,4 +1,3 @@
-require "spec_helper"
 require "support/s3_bucket_helper"
 
 RSpec.describe Api::V1::IconsController do

@@ -1,5 +1,3 @@
-require "spec_helper"
-
 RSpec.feature "Listing characters", type: :feature do
   def with_template(characters, template)
     {

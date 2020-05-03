@@ -1,5 +1,3 @@
-require "spec_helper"
-
 RSpec.describe Api::V1::GalleriesController do
   describe "GET show" do
     context "with zero gallery id" do

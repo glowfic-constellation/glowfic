@@ -1,5 +1,3 @@
-require "spec_helper"
-
 RSpec.feature "Viewing a tag", type: :feature do
   scenario "Viewing a setting" do
     # set up sample data

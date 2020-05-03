@@ -1,5 +1,3 @@
-require "spec_helper"
-
 RSpec.feature "Unread posts", :type => :feature do
   scenario "User views their unread page" do
     visit unread_posts_path

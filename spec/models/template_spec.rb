@@ -1,5 +1,3 @@
-require "spec_helper"
-
 RSpec.describe Template do
   it "requires a name" do
     template = build(:template, name: nil)

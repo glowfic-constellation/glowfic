@@ -1,5 +1,3 @@
-require "spec_helper"
-
 RSpec.feature "Creating a new character", :type => :feature do
   scenario "Create an invalid character", js: true do
     # view new character form without being logged in

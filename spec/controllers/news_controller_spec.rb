@@ -1,5 +1,3 @@
-require "spec_helper"
-
 RSpec.describe NewsController do
   describe "GET index" do
     it "works logged out" do

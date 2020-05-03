@@ -1,5 +1,3 @@
-require "spec_helper"
-
 RSpec.describe SessionsController do
   describe "GET index" do
     it "works when logged out" do

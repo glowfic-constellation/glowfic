@@ -1,5 +1,3 @@
-require "spec_helper"
-
 RSpec.feature "Message threads", :type => :feature do
   scenario "User views a message thread" do
     user = login

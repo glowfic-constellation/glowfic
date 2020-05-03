@@ -1,5 +1,3 @@
-require "spec_helper"
-
 RSpec.feature "Viewing flat posts", :type => :feature do
   scenario "User views a flat post" do
     user = login

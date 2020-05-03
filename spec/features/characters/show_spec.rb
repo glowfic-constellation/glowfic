@@ -1,5 +1,3 @@
-require "spec_helper"
-
 RSpec.feature "Viewing a character", :type => :feature do
   def create_basic_character(user)
     default_icon = create(:icon, user: user, keyword: 'Default', url: 'https://example.com/image.png')
