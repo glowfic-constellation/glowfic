@@ -16,6 +16,7 @@ class Api::ApiController < ActionController::Base
 
   def login_required
     return if logged_in?
+    return if performed?
     error = {message: "You must be logged in to view that page."}
     render json: {errors: [error]}, status: :unauthorized and return
   end

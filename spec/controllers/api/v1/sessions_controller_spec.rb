@@ -9,17 +9,6 @@ RSpec.describe Api::V1::SessionsController do
       expect(response.json['errors'][0]['message']).to eq("You must be logged out to call this endpoint.")
     end
 
-    it "counts token expiration as logout" do
-      cur_time = Time.now
-      Timecop.freeze(cur_time) { api_login }
-      Timecop.freeze(cur_time + Authentication::EXPIRY + 3.days) do
-        password = 'password'
-        user = create(:user, password: password)
-        post :create, params: { username: user.username, password: password }
-        expect(response).to have_http_status(200)
-      end
-    end
-
     it "requires an existing username" do
       nonusername = 'nonuser'
       expect(User.find_by(username: nonusername)).to be_nil
