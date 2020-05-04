@@ -1,5 +1,3 @@
-require "spec_helper"
-
 RSpec.feature "Creating posts", :type => :feature do
   scenario "User creates a post" do
     visit new_post_path

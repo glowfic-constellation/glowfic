@@ -1,5 +1,3 @@
-require "rails_helper"
-
 RSpec.feature "Edit a single continuity", type: :feature do
   scenario "Continuity can be edited" do
     board = create(:board, name: "Test board")

@@ -1,5 +1,3 @@
-require "spec_helper"
-
 RSpec.describe ReplyDraft do
   describe "validations" do
     it "requires a post" do

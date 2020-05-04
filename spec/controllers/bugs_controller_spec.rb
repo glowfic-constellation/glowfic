@@ -1,5 +1,3 @@
-require "spec_helper"
-
 RSpec.describe BugsController do
   describe "POST create" do
     it "requires login" do

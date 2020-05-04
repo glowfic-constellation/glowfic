@@ -1,5 +1,3 @@
-require "spec_helper"
-
 RSpec.describe BoardView do
   describe "validations" do
     it "requires board" do

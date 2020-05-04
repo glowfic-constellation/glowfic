@@ -1,5 +1,3 @@
-require "spec_helper"
-
 RSpec.describe PostsController do
   describe "GET index" do
     it "has a 200 status code" do

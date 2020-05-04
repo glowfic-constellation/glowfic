@@ -1,5 +1,3 @@
-require "spec_helper"
-
 RSpec.describe CharactersGallery do
   it "should reset section_order fields in other galleries after deletion" do
     character = create(:character)

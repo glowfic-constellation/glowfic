@@ -1,5 +1,3 @@
-require 'rails_helper'
-
 RSpec.describe BlocksController, type: :controller do
   describe "GET index" do
     it "requires login" do

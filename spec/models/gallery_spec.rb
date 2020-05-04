@@ -1,5 +1,3 @@
-require "spec_helper"
-
 RSpec.describe Gallery do
   it "adds icons if it saves successfully" do
     user = create(:user)

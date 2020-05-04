@@ -1,5 +1,3 @@
-require "spec_helper"
-
 RSpec.describe News do
   describe "#mark_read" do
     it "works for never reads" do

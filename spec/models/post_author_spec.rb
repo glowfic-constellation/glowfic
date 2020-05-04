@@ -1,5 +1,3 @@
-require "spec_helper"
-
 RSpec.describe PostAuthor do
   describe "validations" do
     it 'succeeds' do

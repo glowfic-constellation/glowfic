@@ -1,5 +1,3 @@
-require "spec_helper"
-
 RSpec.describe FavoritesController do
   describe "GET index" do
     it "succeeds when logged out" do

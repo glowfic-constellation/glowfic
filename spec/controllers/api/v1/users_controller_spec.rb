@@ -1,5 +1,3 @@
-require "spec_helper"
-
 RSpec.describe Api::V1::UsersController do
   describe "GET index" do
     def create_search_users

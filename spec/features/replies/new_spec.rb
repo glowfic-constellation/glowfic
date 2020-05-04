@@ -1,5 +1,3 @@
-require "spec_helper"
-
 RSpec.feature "Creating replies", :type => :feature do
   scenario "User replies to own post" do
     user = login

@@ -1,5 +1,3 @@
-require "spec_helper"
-
 RSpec.describe MessagesController do
   describe "GET index" do
     it "requires login" do

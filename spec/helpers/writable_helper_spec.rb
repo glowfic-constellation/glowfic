@@ -1,5 +1,3 @@
-require "spec_helper"
-
 RSpec.describe WritableHelper do
   describe "#shortened_desc" do
     it "uses full string if short enough" do

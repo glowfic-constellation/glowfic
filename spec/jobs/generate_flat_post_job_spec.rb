@@ -1,5 +1,3 @@
-require "spec_helper"
-
 RSpec.describe GenerateFlatPostJob do
   include ActiveJob::TestHelper
   before(:each) { clear_enqueued_jobs }

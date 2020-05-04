@@ -1,5 +1,3 @@
-require "spec_helper"
-
 RSpec.describe IndexPost do
   it "should autofill post section order on creation" do
     index = create(:index)

@@ -1,5 +1,3 @@
-require "spec_helper"
-
 RSpec.describe Post::View do
   describe "validations" do
     it "requires post" do

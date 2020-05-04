@@ -1,5 +1,3 @@
-require "spec_helper"
-
 RSpec.feature "Post stats", :type => :feature do
   scenario "User views a stats page" do
     post = create(:post, subject: "stats post test")

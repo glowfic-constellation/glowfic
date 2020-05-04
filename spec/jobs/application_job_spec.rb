@@ -1,5 +1,3 @@
-require "spec_helper"
-
 class StubJob < ApplicationJob
   queue_as :high
   def perform(*_args)

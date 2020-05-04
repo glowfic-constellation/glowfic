@@ -1,5 +1,3 @@
-require "spec_helper"
-
 RSpec.describe Presentable do
   class ExampleWithPresenter
     def initialize(obj) end

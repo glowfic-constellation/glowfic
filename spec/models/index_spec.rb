@@ -1,5 +1,3 @@
-require "spec_helper"
-
 RSpec.describe Index do
   describe "destroy behavior" do
     let!(:index) { create(:index) }

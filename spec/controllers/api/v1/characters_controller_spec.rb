@@ -1,5 +1,3 @@
-require "spec_helper"
-
 RSpec.describe Api::V1::CharactersController do
   describe "GET index" do
     shared_examples_for "index.json" do |in_doc|

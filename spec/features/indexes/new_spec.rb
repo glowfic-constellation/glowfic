@@ -1,5 +1,3 @@
-require "spec_helper"
-
 RSpec.feature "Creating a new index", :type => :feature do
   scenario "Create a simple index" do
     login

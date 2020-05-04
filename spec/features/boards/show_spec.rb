@@ -1,5 +1,3 @@
-require "spec_helper"
-
 RSpec.feature "Show a single continuity", :type => :feature do
   scenario "View a standard continuity" do
     board = create(:board, name: "Test board")

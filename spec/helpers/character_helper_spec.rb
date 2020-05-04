@@ -1,5 +1,3 @@
-require "spec_helper"
-
 RSpec.describe CharacterHelper do
   describe "#settings_info" do
     let (:user) { create(:user) }

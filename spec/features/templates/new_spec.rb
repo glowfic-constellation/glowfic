@@ -1,5 +1,3 @@
-require "spec_helper"
-
 RSpec.feature "Creating a new template", :type => :feature do
   scenario "Create an invalid template" do
     # view new template form without being logged in

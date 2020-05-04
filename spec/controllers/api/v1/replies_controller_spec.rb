@@ -1,5 +1,3 @@
-require "spec_helper"
-
 RSpec.describe Api::V1::RepliesController do
   describe "GET index" do
     it "requires valid post", :show_in_doc do

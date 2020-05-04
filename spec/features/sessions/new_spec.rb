@@ -1,5 +1,3 @@
-require "spec_helper"
-
 # Sessions#new is primarily for mobile logins.
 # The other flow is tested (implicitly) everywhere that uses the login method.
 RSpec.feature "Logging in", :type => :feature do

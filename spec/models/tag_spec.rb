@@ -1,5 +1,3 @@
-require "spec_helper"
-
 RSpec.describe Tag do
   describe "#merge_with" do
     it "takes the correct actions" do

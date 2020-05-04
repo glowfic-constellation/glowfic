@@ -1,5 +1,3 @@
-require 'spec_helper'
-
 RSpec.describe WritableController do
   describe "#setup_layout_gon" do
     it "does not error when logged out" do

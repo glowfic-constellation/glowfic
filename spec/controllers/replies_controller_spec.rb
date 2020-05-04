@@ -1,5 +1,3 @@
-require "spec_helper"
-
 RSpec.describe RepliesController do
   describe "POST create" do
     it "requires login" do

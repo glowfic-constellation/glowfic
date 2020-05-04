@@ -1,5 +1,3 @@
-require "spec_helper"
-
 RSpec.feature "Searching posts", :type => :feature do
   scenario "Searching a mixture of posts" do
     post = create(:post, subject: 'First post')

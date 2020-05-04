@@ -1,5 +1,3 @@
-require "spec_helper"
-
 RSpec.describe ApplicationController do
   controller do
     def index

@@ -1,5 +1,3 @@
-require "spec_helper"
-
 RSpec.describe ApplicationHelper do
   describe "#sanitize_simple_link_text" do
     it "remains blank if given blank" do

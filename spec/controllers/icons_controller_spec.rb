@@ -1,5 +1,3 @@
-require "spec_helper"
-
 RSpec.describe IconsController do
   include ActiveJob::TestHelper
 

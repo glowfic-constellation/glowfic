@@ -1,5 +1,3 @@
-require "spec_helper"
-
 RSpec.describe AboutController do
   describe "GET tos" do
     it "succeeds when logged out" do

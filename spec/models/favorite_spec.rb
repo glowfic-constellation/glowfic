@@ -1,5 +1,3 @@
-require "spec_helper"
-
 RSpec.describe Favorite do
   describe "validations" do
     it "should require a user" do

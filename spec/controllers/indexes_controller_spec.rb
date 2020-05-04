@@ -1,5 +1,3 @@
-require "spec_helper"
-
 RSpec.describe IndexesController do
   describe "GET index" do
     it "works logged out" do

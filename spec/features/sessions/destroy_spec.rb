@@ -1,5 +1,3 @@
-require "spec_helper"
-
 RSpec.feature "Logging out", :type => :feature do
   scenario "Log out while correctly logged in", js: true do
     user = login
