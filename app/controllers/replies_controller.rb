@@ -111,7 +111,7 @@ class RepliesController < WritableController
       @unseen_replies = @unseen_replies.where('reply_order > ?', last_seen_reply_order) if last_seen_reply_order.present?
       most_recent_unseen_reply = @unseen_replies.last
 
-      if reply.user_id.present? && params[:allow_dupe].blank?
+      if params[:allow_dupe].blank?
         last_by_user = reply.post.replies.where(user_id: reply.user_id).ordered.last
         if last_by_user.present?
           match_attrs = ['content', 'icon_id', 'character_id', 'character_alias_id']
