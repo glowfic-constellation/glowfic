@@ -111,21 +111,19 @@ class RepliesController < WritableController
       @unseen_replies = @unseen_replies.where('reply_order > ?', last_seen_reply_order) if last_seen_reply_order.present?
       most_recent_unseen_reply = @unseen_replies.last
 
-      if reply.user_id.present? && params[:allow_dupe].blank?
+      if params[:allow_dupe].blank?
         last_by_user = reply.post.replies.where(user_id: reply.user_id).ordered.last
-        if last_by_user.present?
-          match_attrs = ['content', 'icon_id', 'character_id', 'character_alias_id']
-          if last_by_user.attributes.slice(*match_attrs) == reply.attributes.slice(*match_attrs)
-            flash.now[:error] = "This looks like a duplicate. Did you attempt to post this twice? Please resubmit if this was intentional."
-            @allow_dupe = true
-            if most_recent_unseen_reply.nil? || (most_recent_unseen_reply.id == last_by_user.id && @unseen_replies.count == 1)
-              preview(reply)
-            else
-              draft = make_draft(false)
-              preview(ReplyDraft.reply_from_draft(draft))
-            end
-            return
+        match_attrs = ['content', 'icon_id', 'character_id', 'character_alias_id']
+        if last_by_user.present? && last_by_user.attributes.slice(*match_attrs) == reply.attributes.slice(*match_attrs)
+          flash.now[:error] = "This looks like a duplicate. Did you attempt to post this twice? Please resubmit if this was intentional."
+          @allow_dupe = true
+          if most_recent_unseen_reply.nil? || (most_recent_unseen_reply.id == last_by_user.id && @unseen_replies.count == 1)
+            preview(reply)
+          else
+            draft = make_draft(false)
+            preview(ReplyDraft.reply_from_draft(draft))
           end
+          return
         end
       end
 
