@@ -106,6 +106,11 @@ class RepliesController < WritableController
     reply.user = current_user
 
     if reply.post.present?
+      last_seen_reply_order = reply.post.last_seen_reply_for(current_user).try(:reply_order)
+      @unseen_replies = reply.post.replies.ordered.paginate(page: 1, per_page: 10)
+      @unseen_replies = @unseen_replies.where('reply_order > ?', last_seen_reply_order) if last_seen_reply_order.present?
+      most_recent_unseen_reply = @unseen_replies.last
+
       if reply.user_id.present? && params[:allow_dupe].blank?
         last_by_user = reply.post.replies.where(user_id: reply.user_id).ordered.last
         if last_by_user.present?
@@ -113,16 +118,17 @@ class RepliesController < WritableController
           if last_by_user.attributes.slice(*match_attrs) == reply.attributes.slice(*match_attrs)
             flash.now[:error] = "This looks like a duplicate. Did you attempt to post this twice? Please resubmit if this was intentional."
             @allow_dupe = true
-            draft = make_draft(false)
-            preview(ReplyDraft.reply_from_draft(draft)) and return
+            if most_recent_unseen_reply.nil? || (most_recent_unseen_reply.id == last_by_user.id && @unseen_replies.count == 1)
+              preview(reply)
+            else
+              draft = make_draft(false)
+              preview(ReplyDraft.reply_from_draft(draft))
+            end
+            return
           end
         end
       end
 
-      last_seen_reply_order = reply.post.last_seen_reply_for(current_user).try(:reply_order)
-      @unseen_replies = reply.post.replies.ordered.paginate(page: 1, per_page: 10)
-      @unseen_replies = @unseen_replies.where('reply_order > ?', last_seen_reply_order) if last_seen_reply_order.present?
-      most_recent_unseen_reply = @unseen_replies.last
       if most_recent_unseen_reply.present?
         reply.post.mark_read(current_user, reply.post.read_time_for(@unseen_replies))
         num = @unseen_replies.count
