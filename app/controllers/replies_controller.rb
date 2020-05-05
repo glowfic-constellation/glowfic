@@ -106,19 +106,6 @@ class RepliesController < WritableController
     reply.user = current_user
 
     if reply.post.present?
-      last_seen_reply_order = reply.post.last_seen_reply_for(current_user).try(:reply_order)
-      @unseen_replies = reply.post.replies.ordered.paginate(page: 1, per_page: 10)
-      @unseen_replies = @unseen_replies.where('reply_order > ?', last_seen_reply_order) if last_seen_reply_order.present?
-      most_recent_unseen_reply = @unseen_replies.last
-      if most_recent_unseen_reply.present?
-        reply.post.mark_read(current_user, reply.post.read_time_for(@unseen_replies))
-        num = @unseen_replies.count
-        pluraled = num > 1 ? "have been #{num} new replies" : "has been 1 new reply"
-        flash.now[:error] = "There #{pluraled} since you last viewed this post."
-        draft = make_draft
-        preview(ReplyDraft.reply_from_draft(draft)) and return
-      end
-
       if reply.user_id.present? && params[:allow_dupe].blank?
         last_by_user = reply.post.replies.where(user_id: reply.user_id).ordered.last
         if last_by_user.present?
@@ -130,6 +117,19 @@ class RepliesController < WritableController
             preview(ReplyDraft.reply_from_draft(draft)) and return
           end
         end
+      end
+
+      last_seen_reply_order = reply.post.last_seen_reply_for(current_user).try(:reply_order)
+      @unseen_replies = reply.post.replies.ordered.paginate(page: 1, per_page: 10)
+      @unseen_replies = @unseen_replies.where('reply_order > ?', last_seen_reply_order) if last_seen_reply_order.present?
+      most_recent_unseen_reply = @unseen_replies.last
+      if most_recent_unseen_reply.present?
+        reply.post.mark_read(current_user, reply.post.read_time_for(@unseen_replies))
+        num = @unseen_replies.count
+        pluraled = num > 1 ? "have been #{num} new replies" : "has been 1 new reply"
+        flash.now[:error] = "There #{pluraled} since you last viewed this post."
+        draft = make_draft
+        preview(ReplyDraft.reply_from_draft(draft)) and return
       end
     end
 
