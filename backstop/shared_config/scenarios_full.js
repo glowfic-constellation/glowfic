@@ -183,7 +183,8 @@ module.exports = [
     path: "posts/2?page=2&per_page=5&proofer-ignore",
     selectors: ["#content"],
     onReadyScript: 'puppet/paginatorHover.js',
-    delay: 1000
+    delay: 1000,
+    misMatchThreshold: 0
   },
   {
     label: "post_edit",
