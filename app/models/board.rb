@@ -2,6 +2,7 @@ class Board < ApplicationRecord
   include Presentable
   include Viewable
 
+  ID_SANDBOX = 3
   ID_SITETESTING = 4
 
   has_many :posts, dependent: false # This is handled in callbacks
@@ -48,7 +49,7 @@ class Board < ApplicationRecord
 
   def move_posts_to_sandbox
     # TODO don't hard code sandbox board_id
-    UpdateModelJob.perform_later(Post.to_s, {board_id: id}, {board_id: 3, section_id: nil})
+    UpdateModelJob.perform_later(Post.to_s, {board_id: id}, {board_id: ID_SANDBOX, section_id: nil})
   end
 
   def add_creator_to_authors
