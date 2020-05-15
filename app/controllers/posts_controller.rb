@@ -1,6 +1,4 @@
 # frozen_string_literal: true
-require 'will_paginate/array'
-
 class PostsController < WritableController
   include Taggable
 
@@ -282,7 +280,7 @@ class PostsController < WritableController
       post_ids = Reply.where(character_id: params[:character_id]).select(:post_id).distinct.pluck(:post_id)
       @search_results = @search_results.where(character_id: params[:character_id]).or(@search_results.where(id: post_ids))
     end
-    @search_results = posts_from_relation(@search_results).paginate(page: page)
+    @search_results = posts_from_relation(@search_results)
   end
 
   def warnings
