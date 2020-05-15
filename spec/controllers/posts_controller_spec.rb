@@ -408,7 +408,7 @@ RSpec.describe PostsController do
               content: 'test content',
             },
           }
-        }.not_to change { [PostAuthor.count, PostViewer.count, BoardAuthor.count] }
+        }.not_to change { [Post::Author.count, PostViewer.count, BoardAuthor.count] }
 
         expect(flash[:error]).to be_nil
         expect(assigns(:page_title)).to eq('Previewing: ' + assigns(:post).subject.to_s)
@@ -487,7 +487,7 @@ RSpec.describe PostsController do
               private_note: 'there is a note!'
             }
           }
-        }.to change { PostAuthor.count }.by(2)
+        }.to change { Post::Author.count }.by(2)
       end
 
       post = assigns(:post).reload
@@ -523,7 +523,7 @@ RSpec.describe PostsController do
               unjoined_author_ids: ['']
             }
           }
-        }.to change { PostAuthor.count }.by(1)
+        }.to change { Post::Author.count }.by(1)
       end
 
       post = assigns(:post).reload
@@ -1840,7 +1840,7 @@ RSpec.describe PostsController do
               viewer_ids: [coauthor.id, create(:user).id],
             },
           }
-        }.not_to change { [PostAuthor.count, PostViewer.count, BoardAuthor.count] }
+        }.not_to change { [Post::Author.count, PostViewer.count, BoardAuthor.count] }
 
         expect(flash[:error]).to be_nil
         expect(assigns(:page_title)).to eq('Previewing: ' + assigns(:post).subject.to_s)
@@ -1936,7 +1936,7 @@ RSpec.describe PostsController do
                 unjoined_author_ids: [other_user.id]
               }
             }
-          }.to change { PostAuthor.count }.by(1)
+          }.to change { Post::Author.count }.by(1)
         end
 
         expect(response).to redirect_to(post_url(post))
@@ -2409,7 +2409,7 @@ RSpec.describe PostsController do
       expect(flash[:success]).to eq("Post deleted.")
     end
 
-    it "deletes PostAuthors" do
+    it "deletes Post::Authors" do
       user = create(:user)
       login_as(user)
       other_user = create(:user)
@@ -2417,8 +2417,8 @@ RSpec.describe PostsController do
       id1 = post.post_authors[0].id
       id2 = post.post_authors[1].id
       delete :destroy, params: { id: post.id }
-      expect(PostAuthor.find_by(id: id1)).to be_nil
-      expect(PostAuthor.find_by(id: id2)).to be_nil
+      expect(Post::Author.find_by(id: id1)).to be_nil
+      expect(Post::Author.find_by(id: id2)).to be_nil
     end
 
     it "handles destroy failure" do

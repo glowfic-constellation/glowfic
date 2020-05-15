@@ -19,11 +19,11 @@ class PostsController < WritableController
     @page_title = 'Replies Owed'
 
     can_owe = (params[:view] != 'hidden')
-    ids = PostAuthor.where(user_id: current_user.id, can_owe: can_owe).group(:post_id).pluck(:post_id)
+    ids = Post::Author.where(user_id: current_user.id, can_owe: can_owe).group(:post_id).pluck(:post_id)
     @posts = Post.where(id: ids)
     unless params[:view] == 'hidden'
       drafts = ReplyDraft.where(post_id: @posts.select(:id)).where(user: current_user).pluck(:post_id)
-      solo = PostAuthor.where(post_id: ids).group(:post_id).having('count(post_id) < 2').pluck(:post_id)
+      solo = Post::Author.where(post_id: ids).group(:post_id).having('count(post_id) < 2').pluck(:post_id)
       @posts = @posts.where.not(last_user: current_user).or(@posts.where(id: (drafts + solo).uniq))
     end
     @posts = @posts.where.not(status: [:complete, :abandoned])
@@ -266,7 +266,7 @@ class PostsController < WritableController
     if params[:author_id].present?
       post_ids = nil
       params[:author_id].each do |author_id|
-        author_posts = PostAuthor.where(user_id: author_id, joined: true).pluck(:post_id)
+        author_posts = Post::Author.where(user_id: author_id, joined: true).pluck(:post_id)
         if post_ids.nil?
           post_ids = author_posts
         else

@@ -82,7 +82,7 @@ RSpec.describe RepliesController do
               post_id: reply_post.id
             }
           }
-        }.not_to change { [PostAuthor.count, BoardAuthor.count]}
+        }.not_to change { [Post::Author.count, BoardAuthor.count]}
 
         expect(flash[:success]).to be_present
       end
@@ -871,7 +871,7 @@ RSpec.describe RepliesController do
       id = post_user.id
       expect(post_user.joined).to eq(true)
       delete :destroy, params: { id: reply.id }
-      expect(PostAuthor.find_by(id: id)).to be_nil
+      expect(Post::Author.find_by(id: id)).to be_nil
     end
 
     it "sets joined to false on deleting only reply when invited" do

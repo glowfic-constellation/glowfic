@@ -18,7 +18,7 @@ class UsersController < ApplicationController
       redirect_to users_path and return
     end
 
-    ids = PostAuthor.where(user_id: @user.id, joined: true).pluck(:post_id)
+    ids = Post::Author.where(user_id: @user.id, joined: true).pluck(:post_id)
     @posts = posts_from_relation(Post.where(id: ids).ordered)
     @page_title = @user.username
     @meta_og = og_data
