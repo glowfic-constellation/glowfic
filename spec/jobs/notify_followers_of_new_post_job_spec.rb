@@ -14,10 +14,43 @@ RSpec.describe NotifyFollowersOfNewPostJob do
   end
 
   context "on new posts" do
+    let(:author) { create(:user) }
+    let(:coauthor) { create(:user) }
+    let(:notified) { create(:user) }
+    let(:board) { create(:board) }
+
+    it "works for board favorites" do
+      create(:favorite, user: notified, favorite: board)
+      post = create(:post, user: author, unjoined_authors: [coauthor], board: board)
+      expect { NotifyFollowersOfNewPostJob.perform_now(post.id, post.user_id) }.to change { Message.count }.by(1)
+      author_msg = Message.where(recipient: notified).last
+      expect(author_msg.subject).to eq("New post by #{author.username}")
+      expected = "#{author.username} has just posted a new post entitled #{post.subject} in the #{board.name} continuity with #{coauthor.username}."
+      expect(author_msg.message).to include(expected)
+    end
+
+    it "works for user favorites" do
+      create(:favorite, user: notified, favorite: author)
+      post = create(:post, user: author, unjoined_authors: [coauthor], board: board)
+      expect { NotifyFollowersOfNewPostJob.perform_now(post.id, post.user_id) }.to change { Message.count }.by(1)
+      author_msg = Message.where(recipient: notified).last
+      expect(author_msg.subject).to include("New post by #{author.username}")
+      expected = "#{author.username} has just posted a new post entitled #{post.subject} in the #{board.name} continuity with #{coauthor.username}."
+      expect(author_msg.message).to include(expected)
+    end
+
+    it "works for self-threads" do
+      create(:favorite, user: notified, favorite: author)
+      post = create(:post, user: author, unjoined_authors: [], subject: 'test')
+
+      expect { NotifyFollowersOfNewPostJob.perform_now(post.id, post.user_id) }.to change { Message.count }.by(1)
+
+      author_msg = Message.where(recipient: notified).last
+      expect(author_msg.subject).to eq("New post by #{author.username}")
+      expect(author_msg.message).to include("#{author.username} has just posted a new post entitled test in the #{post.board.name} continuity.")
+    end
+
     it "does not send twice if the user has favorited both the poster and the continuity" do
-      board = create(:board)
-      author = create(:user)
-      notified = create(:user)
       create(:favorite, user: notified, favorite: board)
       create(:favorite, user: notified, favorite: author)
       post = create(:post, user: author, board: board)
@@ -26,58 +59,37 @@ RSpec.describe NotifyFollowersOfNewPostJob do
       }.to change { Message.count }.by(1)
     end
 
-    it "sends the right messages based on favorite type" do
-      board = create(:board)
-      author = create(:user)
-      board_notified = create(:user)
-      author_notified = create(:user)
-      expected = create(:user)
-      create(:favorite, user: board_notified, favorite: board)
-      create(:favorite, user: author_notified, favorite: author)
-      post = create(:post, user: author, board: board, unjoined_authors: [expected])
-      expect { NotifyFollowersOfNewPostJob.perform_now(post.id, post.user_id) }.to change { Message.count }.by(2)
-      board_msg = Message.where(recipient: board_notified).last
-      author_msg = Message.where(recipient: author_notified).last
-      expect(board_msg.message).to include("in the #{board.name} continuity")
-      expect(author_msg.message).not_to include("in the #{board.name} continuity")
-      expect(board_msg.subject).to eq("New post by #{author.username}")
-      expect(author_msg.message).to include(" with #{expected.username}")
-    end
-
-    it "works for self-threads" do
-      author = create(:user)
-      author_notified = create(:user)
-      create(:favorite, user: author_notified, favorite: author)
-      post = create(:post, user: author, unjoined_authors: [], subject: 'test')
-
-      expect { NotifyFollowersOfNewPostJob.perform_now(post.id, post.user_id) }.to change { Message.count }.by(1)
-
-      author_msg = Message.where(recipient: author_notified).last
-      expect(author_msg.subject).to eq("New post by #{author.username}")
-      expect(author_msg.message).to include("#{author.username} has just posted a new post entitled test.")
-    end
-
-    it "does not send unless visible" do
-      author = create(:user)
-      notified = create(:user)
+    it "does not send for private posts" do
       create(:favorite, user: notified, favorite: author)
       post = create(:post, user: author, privacy: Concealable::PRIVATE)
       expect { NotifyFollowersOfNewPostJob.perform_now(post.id, post.user_id) }.not_to change { Message.count }
     end
 
+    it "does not send to non-viewers for access-locked posts" do
+      unnotified = create(:user)
+      create(:favorite, user: unnotified, favorite: author)
+      create(:favorite, user: notified, favorite: author)
+      post = create(:post, user: author, privacy: Concealable::ACCESS_LIST, viewers: [notified])
+      expect { NotifyFollowersOfNewPostJob.perform_now(post.id, post.user_id) }.to change { Message.count }.by(1)
+      expect(Message.where(recipient: unnotified)).not_to be_present
+    end
+
     it "does not send if reader has config disabled" do
-      author = create(:user)
-      notified = create(:user, favorite_notifications: false)
+      notified.update!(favorite_notifications: false)
       create(:favorite, user: notified, favorite: author)
       post = create(:post, user: author)
       expect { NotifyFollowersOfNewPostJob.perform_now(post.id, post.user_id) }.not_to change { Message.count }
     end
 
     it "does not send to the poster" do
-      board = create(:board)
-      author = create(:user)
       create(:favorite, user: author, favorite: board)
       post = create(:post, user: author, board: board)
+      expect { NotifyFollowersOfNewPostJob.perform_now(post.id, post.user_id) }.not_to change { Message.count }
+    end
+
+    it "does not send to coauthors" do
+      create(:favorite, user: author, favorite: notified)
+      post = create(:post, user: author, unjoined_authors: [notified])
       expect { NotifyFollowersOfNewPostJob.perform_now(post.id, post.user_id) }.not_to change { Message.count }
     end
   end
@@ -204,6 +216,16 @@ RSpec.describe NotifyFollowersOfNewPostJob do
       post = create(:post, user: author)
       create(:reply, post: post, user: favorite) # reply
       expect { NotifyFollowersOfNewPostJob.perform_now(post.id, favorite.id) }.not_to change { Message.count }
+    end
+
+    it "does not send to coauthors" do
+      author = create(:user)
+      coauthor1 = create(:user)
+      coauthor2 = create(:user)
+      create(:favorite, user: coauthor1, favorite: coauthor2)
+      post = create(:post, user: author, unjoined_authors: [coauthor1, coauthor2])
+      create(:reply, post: post, user: coauthor2)
+      expect { NotifyFollowersOfNewPostJob.perform_now(post.id, post.user_id) }.not_to change { Message.count }
     end
   end
 end
