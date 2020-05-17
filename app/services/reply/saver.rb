@@ -15,9 +15,7 @@ class Reply::Saver < Generic::Saver
         if last_by_user.present? && last_by_user.attributes.slice(*match_attrs) == @reply.attributes.slice(*match_attrs)
           @error_message = "This looks like a duplicate. Did you attempt to post this twice? Please resubmit if this was intentional."
           @duplicate = true
-          if @unseen_replies.count == 0 || (@unseen_replies.count == 1 && most_recent_unseen_reply.id == last_by_user.id)
-            @skip_draft = true
-          end
+          @skip_draft = true if @unseen_replies.count == 0 || (@unseen_replies.count == 1 && most_recent_unseen_reply.id == last_by_user.id)
           @show_preview = true
           return false
         end
