@@ -113,6 +113,15 @@ class RepliesController < WritableController
         message: creater.error_message,
         array: reply.errors.full_messages
       }
+      if creator.show_preview
+        if creator.skip_draft
+          preview(@reply)
+        else
+          draft = make_draft(false)
+          preview(ReplyDraft.reply_from_draft(draft))
+        end
+      end
+      @allow_dupe = true if creator.duplicate
       redirect_to posts_path and return unless reply.post
       redirect_to post_path(reply.post)
     end
@@ -251,9 +260,9 @@ class RepliesController < WritableController
     else
       flash[:error] = {
         message: "Your draft could not be saved because of the following problems:",
-        array: draft.errors.full_messages
+        array: drafter.draft.errors.full_messages
       }
     end
-    draft
+    drafter.draft
   end
 end

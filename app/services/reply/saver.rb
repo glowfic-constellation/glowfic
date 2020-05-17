@@ -1,4 +1,6 @@
 class Reply::Saver < Generic::Saver
+  attr_reader :duplicate, :skip_draft, :show_preview
+
   def create
     @reply.assign_attribute(permitted_params)
     if @reply.post.present?
@@ -12,13 +14,11 @@ class Reply::Saver < Generic::Saver
         match_attrs = ['content', 'icon_id', 'character_id', 'character_alias_id']
         if last_by_user.present? && last_by_user.attributes.slice(*match_attrs) == @reply.attributes.slice(*match_attrs)
           @error_message = "This looks like a duplicate. Did you attempt to post this twice? Please resubmit if this was intentional."
-          @allow_dupe = true
+          @duplicate = true
           if @unseen_replies.count == 0 || (@unseen_replies.count == 1 && most_recent_unseen_reply.id == last_by_user.id)
-            preview(reply)
-          else
-            draft = make_draft(false)
-            preview(ReplyDraft.reply_from_draft(draft))
+            @skip_draft = true
           end
+          @show_preview = true
           return false
         end
       end
@@ -28,8 +28,7 @@ class Reply::Saver < Generic::Saver
         num = @unseen_replies.count
         pluraled = num > 1 ? "have been #{num} new replies" : "has been 1 new reply"
         @error_message = "There #{pluraled} since you last viewed this post."
-        draft = make_draft
-        preview(ReplyDraft.reply_from_draft(draft))
+        @show_preview = true
         return false
       end
     end
