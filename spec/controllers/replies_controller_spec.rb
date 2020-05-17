@@ -155,7 +155,7 @@ RSpec.describe RepliesController do
 
       post :create, params: { reply: {post_id: reply_post.id, user_id: reply_post.user_id} }
       expect(response.status).to eq(200)
-      expect(flash[:error]).to eq("There has been 1 new reply since you last viewed this post.")
+      expect(flash[:error][:message]).to eq("There has been 1 new reply since you last viewed this post.")
     end
 
     it "handles multiple creations with unread warning" do
@@ -166,14 +166,14 @@ RSpec.describe RepliesController do
 
       post :create, params: { reply: {post_id: reply_post.id, user_id: reply_post.user_id} }
       expect(response.status).to eq(200)
-      expect(flash[:error]).to eq("There has been 1 new reply since you last viewed this post.")
+      expect(flash[:error][:message]).to eq("There has been 1 new reply since you last viewed this post.")
 
       create(:reply, post: reply_post)
       create(:reply, post: reply_post)
 
       post :create, params: { reply: {post_id: reply_post.id, user_id: reply_post.user_id} }
       expect(response.status).to eq(200)
-      expect(flash[:error]).to eq("There have been 2 new replies since you last viewed this post.")
+      expect(flash[:error][:message]).to eq("There have been 2 new replies since you last viewed this post.")
     end
 
     it "handles multiple creations by user" do
@@ -184,7 +184,8 @@ RSpec.describe RepliesController do
 
       post :create, params: { reply: {post_id: reply_post.id, user_id: reply_post.user_id, content: dupe_reply.content} }
       expect(response).to have_http_status(200)
-      expect(flash[:error]).to eq("This looks like a duplicate. Did you attempt to post this twice? Please resubmit if this was intentional.")
+      duplicate_msg = "This looks like a duplicate. Did you attempt to post this twice? Please resubmit if this was intentional."
+      expect(flash[:error][:message]).to eq(duplicate_msg)
 
       post :create, params: { reply: {post_id: reply_post.id, user_id: reply_post.user_id, content: dupe_reply.content}, allow_dupe: true }
       expect(response).to have_http_status(302)
@@ -626,7 +627,7 @@ RSpec.describe RepliesController do
       login_as(create(:admin_user))
       put :update, params: { id: reply.id }
       expect(response).to render_template(:edit)
-      expect(flash[:error]).to eq('You must provide a reason for your moderator edit.')
+      expect(flash[:error][:message]).to eq('You must provide a reason for your moderator edit.')
     end
 
     it "stores note from moderators" do

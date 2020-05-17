@@ -110,8 +110,8 @@ class RepliesController < WritableController
       redirect_to reply_path(@reply, anchor: "reply-#{@reply.id}")
     else
       flash[:error] = {
-        message: creater.error_message,
-        array: reply.errors.full_messages
+        message: creator.error_message,
+        array: @reply.errors.full_messages
       }
       if creator.show_preview
         if creator.skip_draft
@@ -120,10 +120,11 @@ class RepliesController < WritableController
           draft = make_draft(false)
           preview(ReplyDraft.reply_from_draft(draft))
         end
+        return
       end
       @allow_dupe = true if creator.duplicate
-      redirect_to posts_path and return unless reply.post
-      redirect_to post_path(reply.post)
+      redirect_to posts_path and return unless @reply.post
+      redirect_to post_path(@reply.post)
     end
   end
 

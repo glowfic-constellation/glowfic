@@ -22,7 +22,7 @@ class Reply::Saver < Reply::Service
       end
 
       if most_recent_unseen_reply.present?
-        @reply.post.mark_read(@user, reply.post.read_time_for(@unseen_replies))
+        @reply.post.mark_read(@user, @reply.post.read_time_for(@unseen_replies))
         num = @unseen_replies.count
         pluraled = num > 1 ? "have been #{num} new replies" : "has been 1 new reply"
         @error_message = "There #{pluraled} since you last viewed this post."
