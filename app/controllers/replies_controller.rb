@@ -105,12 +105,12 @@ class RepliesController < WritableController
     @reply = Reply.new(user: current_user)
     creator = Reply::Saver.new(@reply, user: current_user, params: params)
 
-    if creator.create
+    if creator.create # rubocop:disable Rails/SaveBang
       flash[:success] = "Posted!"
-      redirect_to reply_path(reply, anchor: "reply-#{reply.id}")
+      redirect_to reply_path(@reply, anchor: "reply-#{@reply.id}")
     else
       flash[:error] = {
-        message: "Your reply could not be saved because of the following problems:",
+        message: creater.error_message,
         array: reply.errors.full_messages
       }
       redirect_to posts_path and return unless reply.post
@@ -139,7 +139,7 @@ class RepliesController < WritableController
       redirect_to reply_path(@reply, anchor: "reply-#{@reply.id}")
     else
       flash[:error] = {
-        message: "Your reply could not be saved because of the following problems:",
+        message: updater.error_message,
         array: @reply.errors.full_messages
       }
       editor_setup

@@ -23,7 +23,7 @@ class Reply::Saver < Generic::Saver
             draft = make_draft(false)
             preview(ReplyDraft.reply_from_draft(draft))
           end
-          return
+          return false
         end
       end
 
@@ -33,10 +33,11 @@ class Reply::Saver < Generic::Saver
         pluraled = num > 1 ? "have been #{num} new replies" : "has been 1 new reply"
         @error_message = "There #{pluraled} since you last viewed this post."
         draft = make_draft
-        preview(ReplyDraft.reply_from_draft(draft)) and return
+        preview(ReplyDraft.reply_from_draft(draft))
+        return false
       end
     end
-    @reply.save
+    save
   end
 
   def update
@@ -45,10 +46,9 @@ class Reply::Saver < Generic::Saver
 
     if @user.id != @reply.user_id && @reply.audit_comment.blank?
       @error_message = "You must provide a reason for your moderator edit."
-      editor_setup
-      render :edit and return
+      return false
     end
-    @reply.save
+    save
   end
 
   def permitted_params
