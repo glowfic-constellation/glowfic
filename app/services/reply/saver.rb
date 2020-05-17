@@ -1,9 +1,4 @@
 class Reply::Saver < Generic::Saver
-  def initialize(model, user:, params:)
-    @reply = model
-    super
-  end
-
   def create
     if reply.post.present?
       last_seen_reply_order = reply.post.last_seen_reply_for(@user).try(:reply_order)
@@ -49,16 +44,5 @@ class Reply::Saver < Generic::Saver
       return false
     end
     save
-  end
-
-  def permitted_params
-    @params.fetch(:reply, {}).permit(
-      :post_id,
-      :content,
-      :character_id,
-      :icon_id,
-      :audit_comment,
-      :character_alias_id,
-    )
   end
 end
