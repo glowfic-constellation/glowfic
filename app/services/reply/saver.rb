@@ -1,8 +1,8 @@
-class Reply::Saver < Generic::Saver
+class Reply::Saver < Reply::Service
   attr_reader :duplicate, :skip_draft, :show_preview
 
   def create
-    @reply.assign_attribute(permitted_params)
+    @reply.assign_attributes(permitted_params)
     if @reply.post.present?
       last_seen_reply_order = @reply.post.last_seen_reply_for(@user).try(:reply_order)
       @unseen_replies = @reply.post.replies.ordered.paginate(page: 1, per_page: 10)
@@ -35,7 +35,6 @@ class Reply::Saver < Generic::Saver
 
   def update
     @reply.assign_attributes(permitted_params)
-    preview(@reply) and return if @params[:button_preview]
 
     if @user.id != @reply.user_id && @reply.audit_comment.blank?
       @error_message = "You must provide a reason for your moderator edit."
