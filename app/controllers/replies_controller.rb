@@ -105,18 +105,16 @@ class RepliesController < WritableController
     @reply = Reply.new(user: current_user)
     creator = Reply::Saver.new(@reply, user: current_user, params: params)
 
-    begin
-      creator.create
-    rescue ActiveRecord::RecordInvalid
+    if creator.create
+      flash[:success] = "Posted!"
+      redirect_to reply_path(reply, anchor: "reply-#{reply.id}")
+    else
       flash[:error] = {
         message: "Your reply could not be saved because of the following problems:",
         array: reply.errors.full_messages
       }
       redirect_to posts_path and return unless reply.post
       redirect_to post_path(reply.post)
-    else
-      flash[:success] = "Posted!"
-      redirect_to reply_path(reply, anchor: "reply-#{reply.id}")
     end
   end
 
@@ -136,18 +134,16 @@ class RepliesController < WritableController
   def update
     updater = Reply::Saver.new(@reply, user: current_user, params: params)
 
-    begin
-      updater.update
-    rescue ActiveRecord::RecordInvalid
+    if updater.update
+      flash[:success] = "Post updated"
+      redirect_to reply_path(@reply, anchor: "reply-#{@reply.id}")
+    else
       flash[:error] = {
         message: "Your reply could not be saved because of the following problems:",
         array: @reply.errors.full_messages
       }
       editor_setup
       render :edit
-    else
-      flash[:success] = "Post updated"
-      redirect_to reply_path(@reply, anchor: "reply-#{@reply.id}")
     end
   end
 
