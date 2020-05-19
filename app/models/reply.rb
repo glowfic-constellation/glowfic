@@ -3,6 +3,7 @@ class Reply < ApplicationRecord
   include Writable
   include PgSearch::Model
 
+  # define this scope here or Orderable will redefine it
   scope :ordered, -> { order(reply_order: :asc) }
   scope :ordered_manually, -> { ordered }
   include Orderable
