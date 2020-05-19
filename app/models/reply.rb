@@ -2,6 +2,9 @@ class Reply < ApplicationRecord
   include Presentable
   include Writable
   include PgSearch::Model
+
+  scope :ordered, -> { order(reply_order: :asc) }
+  scope :ordered_manually, -> { ordered }
   include Orderable
 
   belongs_to :post, inverse_of: :replies, optional: false
@@ -24,10 +27,6 @@ class Reply < ApplicationRecord
   scope :with_edit_audit_counts, -> {
     select("(SELECT COUNT(*) FROM audits WHERE audits.auditable_id = replies.id AND audits.auditable_type = 'Reply') > 1 AS has_edit_audits")
   }
-
-  scope :ordered, -> { order(reply_order: :asc) }
-
-  scope :ordered_manually, -> { ordered }
 
   scope :visible_to, ->(user) { where(post_id: Post.visible_to(user).select(:id)) }
 
