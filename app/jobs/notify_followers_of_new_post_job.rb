@@ -5,7 +5,7 @@ class NotifyFollowersOfNewPostJob < ApplicationJob
     post = Post.find_by(id: post_id)
     user = User.find_by(id: user_id)
     return unless post && user
-    return if post.private?
+    return if post.privacy_private?
 
     if post.user_id == user_id
       notify_of_post_creation(post, user)
@@ -45,7 +45,7 @@ class NotifyFollowersOfNewPostJob < ApplicationJob
   end
 
   def filter_users(post, user_ids)
-    user_ids &= PostViewer.where(post: post).pluck(:user_id) if post.access_list?
+    user_ids &= PostViewer.where(post: post).pluck(:user_id) if post.privacy_access_list?
     user_ids -= post.author_ids
     user_ids -= blocked_user_ids(post)
     return [] unless user_ids.present?

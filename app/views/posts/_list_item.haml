@@ -8,8 +8,8 @@
       = image_tag "icons/hourglass.png", class: 'vmid', title: "Thread On Hiatus", alt: 'Hiatused'
     - elsif post.abandoned?
       = image_tag "icons/book_grey.png", class: 'vmid', title: "Thread Abandoned", alt: 'Abandoned'
-    - if post.access_list? || post.private?
-      = privacy_icon(post.privacy)
+    - if post.privacy_access_list? || post.privacy_private?
+      = privacy_icon(post.privacy.to_sym)
     - if !current_user.try(:hide_warnings) && post.has_content_warnings?
       = image_tag "icons/exclamation.png", class: 'vmid', title: "Content Warning: " + post.content_warnings.pluck(:name).join(', '), alt: 'Has Warnings'
   %td.post-subject.vtop{class: klass}

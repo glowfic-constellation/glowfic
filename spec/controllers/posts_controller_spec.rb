@@ -112,7 +112,7 @@ RSpec.describe PostsController do
       end
 
       it "restricts to visible posts" do
-        create(:post, subject: 'contains stars', privacy: Concealable::PRIVATE)
+        create(:post, subject: 'contains stars', privacy: :private)
         post = create(:post, subject: 'visible contains stars')
         get :search, params: { commit: true, subject: 'stars' }
         expect(assigns(:search_results)).to match_array([post])
@@ -401,7 +401,7 @@ RSpec.describe PostsController do
             button_preview: true,
             post: {
               subject: 'test subject',
-              privacy: Concealable::ACCESS_LIST,
+              privacy: :access_list,
               board_id: board.id,
               unjoined_author_ids: [coauthor.id],
               viewer_ids: [coauthor.id, create(:user).id],
@@ -707,7 +707,7 @@ RSpec.describe PostsController do
             character_id: char.id,
             icon_id: icon.id,
             character_alias_id: calias.id,
-            privacy: Concealable::ACCESS_LIST,
+            privacy: :access_list,
             viewer_ids: [viewer.id],
             setting_ids: [setting1.id, '_'+setting2.name, '_other'],
             content_warning_ids: [warning1.id, '_'+warning2.name, '_other'],
@@ -731,7 +731,7 @@ RSpec.describe PostsController do
       expect(post.character_id).to eq(char.id)
       expect(post.icon_id).to eq(icon.id)
       expect(post.character_alias_id).to eq(calias.id)
-      expect(post.privacy).to eq(Concealable::ACCESS_LIST)
+      expect(post).to be_privacy_access_list
       expect(post.viewers).to match_array([viewer])
       expect(post.reload).to be_visible_to(viewer)
       expect(post.reload).not_to be_visible_to(create(:user))
@@ -761,7 +761,7 @@ RSpec.describe PostsController do
         post: {
           subject: 'subject',
           board_id: create(:board).id,
-          privacy: Concealable::REGISTERED,
+          privacy: :registered,
           content: 'content',
         }
       }
@@ -854,7 +854,7 @@ RSpec.describe PostsController do
     end
 
     it "requires permission" do
-      post = create(:post, privacy: Concealable::PRIVATE)
+      post = create(:post, privacy: :private)
       get :show, params: { id: post.id }
       expect(response).to redirect_to(continuities_url)
       expect(flash[:error]).to eq("You do not have permission to view this post.")
@@ -1390,7 +1390,7 @@ RSpec.describe PostsController do
     end
 
     it "requires post be visible to user" do
-      post = create(:post, privacy: Concealable::PRIVATE)
+      post = create(:post, privacy: :private)
       user = create(:user)
       login_as(user)
       expect(post.visible_to?(user)).not_to eq(true)
@@ -1401,7 +1401,7 @@ RSpec.describe PostsController do
     end
 
     it "requires notes from moderators" do
-      post = create(:post, privacy: Concealable::PRIVATE)
+      post = create(:post, privacy: :private)
       login_as(create(:admin_user))
       put :update, params: { id: post.id }
       expect(response).to render_template(:edit)
@@ -1409,7 +1409,7 @@ RSpec.describe PostsController do
     end
 
     it "does not require note from coauthors" do
-      post = create(:post, privacy: Concealable::ACCESS_LIST)
+      post = create(:post, privacy: :access_list)
       user = create(:user)
       post.viewers << user
       post.authors << user
@@ -1421,7 +1421,7 @@ RSpec.describe PostsController do
 
     it "stores note from moderators" do
       Post.auditing_enabled = true
-      post = create(:post, privacy: Concealable::PRIVATE)
+      post = create(:post, privacy: :private)
       admin = create(:admin_user)
       login_as(admin)
       put :update, params: {
@@ -1893,7 +1893,7 @@ RSpec.describe PostsController do
 
         coauthor = create(:user)
         board = create(:board, creator: user, authors_locked: true)
-        post = create(:post, user: user, board: board, authors_locked: true, privacy: Concealable::ACCESS_LIST)
+        post = create(:post, user: user, board: board, authors_locked: true, privacy: :access_list)
 
         expect {
           put :update, params: {
@@ -2257,7 +2257,7 @@ RSpec.describe PostsController do
             character_id: char.id,
             character_alias_id: calias.id,
             icon_id: icon.id,
-            privacy: Concealable::ACCESS_LIST,
+            privacy: :access_list,
             viewer_ids: [viewer.id],
             setting_ids: [setting.id],
             content_warning_ids: [warning.id],
@@ -2277,7 +2277,7 @@ RSpec.describe PostsController do
         expect(post.character_id).to eq(char.id)
         expect(post.character_alias_id).to eq(calias.id)
         expect(post.icon_id).to eq(icon.id)
-        expect(post.privacy).to eq(Concealable::ACCESS_LIST)
+        expect(post).to be_privacy_access_list
         expect(post.viewers).to match_array([viewer])
         expect(post.settings).to eq([setting])
         expect(post.content_warnings).to eq([warning])
@@ -2512,7 +2512,7 @@ RSpec.describe PostsController do
     end
 
     it "requires permission" do
-      warn_post = create(:post, privacy: Concealable::PRIVATE)
+      warn_post = create(:post, privacy: :private)
       post :warnings, params: { id: warn_post.id }
       expect(response).to redirect_to(continuities_url)
       expect(flash[:error]).to eq("You do not have permission to view this post.")
@@ -3018,7 +3018,7 @@ RSpec.describe PostsController do
 
     context "read" do
       it "skips invisible post" do
-        private_post = create(:post, privacy: Concealable::PRIVATE)
+        private_post = create(:post, privacy: :private)
         user = create(:user)
         expect(private_post.visible_to?(user)).not_to eq(true)
         login_as(user)
@@ -3048,7 +3048,7 @@ RSpec.describe PostsController do
 
     context "ignored" do
       it "skips invisible post" do
-        private_post = create(:post, privacy: Concealable::PRIVATE)
+        private_post = create(:post, privacy: :private)
         user = create(:user)
         expect(private_post.visible_to?(user)).not_to eq(true)
         login_as(user)
@@ -3113,7 +3113,7 @@ RSpec.describe PostsController do
     context "not owed" do
       it "ignores invisible posts" do
         user = create(:user)
-        private_post = create(:post, privacy: Concealable::PRIVATE, authors: [user])
+        private_post = create(:post, privacy: :private, authors: [user])
         expect(private_post.visible_to?(user)).not_to eq(true)
         expect(private_post.post_authors.find_by(user: user).can_owe).to eq(true)
         login_as(user)
@@ -3151,7 +3151,7 @@ RSpec.describe PostsController do
     context "newly owed" do
       it "ignores invisible posts" do
         user = create(:user)
-        private_post = create(:post, privacy: Concealable::PRIVATE, authors: [user])
+        private_post = create(:post, privacy: :private, authors: [user])
         expect(private_post.visible_to?(user)).not_to eq(true)
         private_post.author_for(user).update!(can_owe: false)
         login_as(user)
@@ -3303,7 +3303,7 @@ RSpec.describe PostsController do
   shared_examples "logged out post list" do
     it "does not show user-only posts" do
       posts = create_list(:post, 2)
-      create_list(:post, 2, privacy: Concealable::REGISTERED)
+      create_list(:post, 2, privacy: :registered)
       get controller_action, params: params
       expect(response.status).to eq(200)
       expect(Post.all.count).to eq(4)
@@ -3321,16 +3321,16 @@ RSpec.describe PostsController do
     }
 
     it "does not show access-locked or private threads" do
-      create(:post, privacy: Concealable::PRIVATE)
-      create(:post, privacy: Concealable::ACCESS_LIST)
+      create(:post, privacy: :private)
+      create(:post, privacy: :access_list)
       get controller_action, params: params
       expect(response.status).to eq(200)
       expect(assigns(assign_variable)).to match_array(posts)
     end
 
     it "shows access-locked and private threads if you have access" do
-      posts << create(:post, user: user, privacy: Concealable::PRIVATE)
-      posts << create(:post, user: user, privacy: Concealable::ACCESS_LIST)
+      posts << create(:post, user: user, privacy: :private)
+      posts << create(:post, user: user, privacy: :access_list)
       get controller_action, params: params
       expect(response.status).to eq(200)
       expect(assigns(assign_variable)).to match_array(posts)

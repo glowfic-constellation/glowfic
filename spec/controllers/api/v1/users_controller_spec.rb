@@ -91,8 +91,8 @@ RSpec.describe Api::V1::UsersController do
 
     it 'filters non-public posts' do
       user = create(:user)
-      public_post = create(:post, privacy: Concealable::PUBLIC, user: user)
-      create(:post, privacy: Concealable::PRIVATE, user: user)
+      public_post = create(:post, privacy: :public, user: user)
+      create(:post, privacy: :private, user: user)
       get :posts, params: { id: user.id }
       expect(response).to have_http_status(200)
       expect(response.json['results'].size).to eq(1)

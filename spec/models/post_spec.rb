@@ -502,7 +502,7 @@ RSpec.describe Post do
 
   describe "#visible_to?" do
     context "public" do
-      let(:post) { create(:post, privacy: Concealable::PUBLIC) }
+      let(:post) { create(:post, privacy: :public) }
 
       it "is visible to poster" do
         expect(post).to be_visible_to(post.user)
@@ -523,7 +523,7 @@ RSpec.describe Post do
     end
 
     context "private" do
-      let(:post) { create(:post, privacy: Concealable::PRIVATE) }
+      let(:post) { create(:post, privacy: :private) }
 
       it "is visible to poster" do
         expect(post).to be_visible_to(post.user)
@@ -544,7 +544,7 @@ RSpec.describe Post do
     end
 
     context "list" do
-      let(:post) { create(:post, privacy: Concealable::ACCESS_LIST) }
+      let(:post) { create(:post, privacy: :access_list) }
 
       it "is visible to poster" do
         expect(post).to be_visible_to(post.user)
@@ -571,7 +571,7 @@ RSpec.describe Post do
     end
 
     context "registered" do
-      let(:post) { create(:post, privacy: Concealable::REGISTERED) }
+      let(:post) { create(:post, privacy: :registered) }
 
       it "is visible to poster" do
         expect(post).to be_visible_to(post.user)
@@ -1062,10 +1062,10 @@ RSpec.describe Post do
 
   describe "#visible_to" do
     it "logged out only shows public posts" do
-      create(:post, privacy: Concealable::PRIVATE)
-      create_list(:post, 2, privacy: Concealable::ACCESS_LIST)
-      create_list(:post, 2, privacy: Concealable::REGISTERED)
-      posts = create_list(:post, 3, privacy: Concealable::PUBLIC)
+      create(:post, privacy: :private)
+      create_list(:post, 2, privacy: :access_list)
+      create_list(:post, 2, privacy: :registered)
+      posts = create_list(:post, 3, privacy: :public)
       expect(Post.visible_to(nil)).to match_array(posts)
     end
 
@@ -1073,33 +1073,33 @@ RSpec.describe Post do
       let(:user) { create(:user) }
 
       it "shows constellation-only posts" do
-        posts = create_list(:post, 2, privacy: Concealable::REGISTERED)
+        posts = create_list(:post, 2, privacy: :registered)
         expect(Post.visible_to(user)).to match_array(posts)
       end
 
       it "shows own access-listed posts" do
-        posts = create_list(:post, 2, privacy: Concealable::ACCESS_LIST, user_id: user.id)
+        posts = create_list(:post, 2, privacy: :access_list, user_id: user.id)
         expect(Post.visible_to(user)).to match_array(posts)
       end
 
       it "shows access-listed posts with access" do
-        post = create(:post, privacy: Concealable::ACCESS_LIST)
+        post = create(:post, privacy: :access_list)
         PostViewer.create!(post: post, user: user)
         expect(Post.visible_to(user)).to eq([post])
       end
 
       it "does not show other access-listed posts" do
-        create_list(:post, 2, privacy: Concealable::ACCESS_LIST)
+        create_list(:post, 2, privacy: :access_list)
         expect(Post.visible_to(user)).to be_empty
       end
 
       it "shows own private posts" do
-        posts = create_list(:post, 2, privacy: Concealable::PRIVATE, user_id: user.id)
+        posts = create_list(:post, 2, privacy: :private, user_id: user.id)
         expect(Post.visible_to(user)).to match_array(posts)
       end
 
       it "does not show other private posts" do
-        create_list(:post, 2, privacy: Concealable::PRIVATE)
+        create_list(:post, 2, privacy: :private)
         expect(Post.visible_to(user)).to be_empty
       end
     end
@@ -1125,7 +1125,7 @@ RSpec.describe Post do
     it "gives the correct previous post with an intermediate private post" do
       extra = create(:post, user: user, board: board, section: section)
       prev = create(:post, user: user, board: board, section: section)
-      hidden = create(:post, board: board, section: section, privacy: Concealable::PRIVATE)
+      hidden = create(:post, board: board, section: section, privacy: :private)
       post = create(:post, user: user, board: board, section: section)
       expect([extra, prev, hidden, post].map(&:section_order)).to eq([0, 1, 2, 3])
 
@@ -1135,7 +1135,7 @@ RSpec.describe Post do
 
     it "gives the correct next post with an intermediate private post" do
       post = create(:post, user: user, board: board, section: section)
-      hidden = create(:post, board: board, section: section, privacy: Concealable::PRIVATE)
+      hidden = create(:post, board: board, section: section, privacy: :private)
       nextp = create(:post, user: user, board: board, section: section)
       extra = create(:post, user: user, board: board, section: section)
       expect([post, hidden, nextp, extra].map(&:section_order)).to eq([0, 1, 2, 3])
@@ -1145,7 +1145,7 @@ RSpec.describe Post do
     end
 
     it "does not give previous with only a non-visible post in section" do
-      hidden = create(:post, board: board, section: section, privacy: Concealable::PRIVATE)
+      hidden = create(:post, board: board, section: section, privacy: :private)
       post = create(:post, user: user, board: board, section: section)
       hidden.update!(section_order: 0)
       post.update!(section_order: 1)
@@ -1155,7 +1155,7 @@ RSpec.describe Post do
 
     it "does not give next with only a non-visible post in section" do
       post = create(:post, user: user, board: board, section: section)
-      hidden = create(:post, board: board, section: section, privacy: Concealable::PRIVATE)
+      hidden = create(:post, board: board, section: section, privacy: :private)
       post.update!(section_order: 0)
       hidden.update!(section_order: 1)
 
@@ -1164,9 +1164,9 @@ RSpec.describe Post do
 
     it "handles very large mostly-hidden sections as expected" do
       prev = create(:post, user: user, board: board, section: section)
-      create_list(:post, 10, board: board, section: section, privacy: Concealable::PRIVATE)
+      create_list(:post, 10, board: board, section: section, privacy: :private)
       post = create(:post, user: user, board: board, section: section)
-      create_list(:post, 10, board: board, section: section, privacy: Concealable::PRIVATE)
+      create_list(:post, 10, board: board, section: section, privacy: :private)
       nextp = create(:post, user: user, board: board, section: section)
 
       expect(post.prev_post(user)).to eq(prev)

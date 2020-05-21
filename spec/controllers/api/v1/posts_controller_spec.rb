@@ -19,7 +19,7 @@ RSpec.describe Api::V1::PostsController do
       end
 
       it "hides private posts" do
-        create(:post, privacy: Concealable::PRIVATE)
+        create(:post, privacy: :private)
         post = create(:post)
         get :index
         expect(response).to have_http_status(200)
@@ -48,7 +48,7 @@ RSpec.describe Api::V1::PostsController do
     end
 
     it "requires access to post", :show_in_doc do
-      post = create(:post, privacy: Concealable::PRIVATE)
+      post = create(:post, privacy: :private)
       get :show, params: { id: post.id }
       expect(response).to have_http_status(403)
       expect(response.json['errors'][0]['message']).to eq("You do not have permission to perform this action.")
@@ -85,7 +85,7 @@ RSpec.describe Api::V1::PostsController do
 
     it "requires access to post", :show_in_doc do
       api_login
-      post = create(:post, privacy: Concealable::PRIVATE)
+      post = create(:post, privacy: :private)
       patch :update, params: { id: post.id }
       expect(response).to have_http_status(403)
       expect(response.json['errors'][0]['message']).to eq("You do not have permission to perform this action.")

@@ -92,8 +92,8 @@ RSpec.describe Api::V1::BoardsController do
     end
 
     it 'filters non-public posts' do
-      public_post = create(:post, privacy: Concealable::PUBLIC)
-      create(:post, privacy: Concealable::PRIVATE, board: public_post.board)
+      public_post = create(:post, privacy: :public)
+      create(:post, privacy: :private, board: public_post.board)
       get :posts, params: { id: public_post.board_id }
       expect(response).to have_http_status(200)
       expect(response.json['results'].size).to eq(1)
