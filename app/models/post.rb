@@ -7,6 +7,7 @@ class Post < ApplicationRecord
   include Post::Status
   include Presentable
   include Viewable
+  include Writable
 
   belongs_to :board, inverse_of: :posts, optional: false
   belongs_to :user, optional: false
