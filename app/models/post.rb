@@ -266,19 +266,19 @@ class Post < ApplicationRecord
   end
 
   def prev_post(user)
-    return unless self.board.ordered?
-    adjacent_posts_for(user).reverse_order.find_by('section_order < ?', self.section_order)
+    adjacent_posts_for(user) { |relation| relation.reverse_order.find_by('section_order < ?', self.section_order) }
   end
 
   def next_post(user)
-    return unless self.board.ordered?
-    adjacent_posts_for(user).find_by('section_order > ?', self.section_order)
+    adjacent_posts_for(user) { |relation| relation.find_by('section_order > ?', self.section_order) }
   end
 
   private
 
   def adjacent_posts_for(user)
-    Post.where(board_id: self.board_id, section_id: self.section_id).visible_to(user).ordered_in_section
+    return unless board.ordered?
+    return unless section || board.board_sections.empty?
+    yield Post.where(board_id: self.board_id, section_id: self.section_id).visible_to(user).ordered_in_section
   end
 
   def valid_board
