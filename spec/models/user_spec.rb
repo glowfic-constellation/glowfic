@@ -129,7 +129,7 @@ RSpec.describe User do
       blocker = create(:user)
       unblocked = create(:user)
       only_posts = create(:user)
-      create(:block, blocking_user: blocker, blocked_user: only_posts, hide_them: Block::POSTS, block_interactions: false)
+      create(:block, blocking_user: blocker, blocked_user: only_posts, hide_them: :posts, block_interactions: false)
       blockees = create_list(:user, 3)
       blockees.each { |b| create(:block, blocking_user: blocker, blocked_user: b, block_interactions: true) }
       expect(blocker.can_interact_with?(unblocked)).to be(true)
@@ -150,12 +150,12 @@ RSpec.describe User do
       let(:irrelevant_blocker2) { create(:user) }
 
       before(:each) {
-        create(:block, blocking_user: blocking_post_user, blocked_user: user, hide_me: Block::POSTS)
-        create(:block, blocking_user: blocking_content_user, blocked_user: user, hide_me: Block::ALL)
-        create(:block, blocking_user: user, blocked_user: blocked_post_user, hide_them: Block::POSTS)
-        create(:block, blocking_user: user, blocked_user: blocked_content_user, hide_them: Block::ALL)
+        create(:block, blocking_user: blocking_post_user, blocked_user: user, hide_me: :posts)
+        create(:block, blocking_user: blocking_content_user, blocked_user: user, hide_me: :all)
+        create(:block, blocking_user: user, blocked_user: blocked_post_user, hide_them: :posts)
+        create(:block, blocking_user: user, blocked_user: blocked_content_user, hide_them: :all)
         create(:block, blocking_user: irrelevant_blocker1, blocked_user: user, block_interactions: true)
-        create(:block, blocking_user: irrelevant_blocker2, blocked_user: user, hide_them: Block::POSTS)
+        create(:block, blocking_user: irrelevant_blocker2, blocked_user: user, hide_them: :posts)
       }
 
       it "correctly handles all hidden post users" do

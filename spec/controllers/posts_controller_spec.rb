@@ -777,8 +777,8 @@ RSpec.describe PostsController do
       let(:memory_store) { ActiveSupport::Cache.lookup_store(:memory_store) }
 
       before(:each) do
-        create(:block, blocking_user: user, blocked_user: blocked, hide_me: Block::POSTS)
-        create(:block, blocking_user: blocking, blocked_user: user, hide_them: Block::POSTS)
+        create(:block, blocking_user: user, blocked_user: blocked, hide_me: :posts)
+        create(:block, blocking_user: blocking, blocked_user: user, hide_them: :posts)
         allow(Rails).to receive(:cache).and_return(memory_store)
         Rails.cache.clear
       end
@@ -2409,8 +2409,8 @@ RSpec.describe PostsController do
       let(:memory_store) { ActiveSupport::Cache.lookup_store(:memory_store) }
 
       before(:each) do
-        create(:block, blocking_user: user, blocked_user: blocked, hide_me: Block::POSTS)
-        create(:block, blocking_user: blocking, blocked_user: user, hide_them: Block::POSTS)
+        create(:block, blocking_user: user, blocked_user: blocked, hide_me: :posts)
+        create(:block, blocking_user: blocking, blocked_user: user, hide_them: :posts)
         allow(Rails).to receive(:cache).and_return(memory_store)
         Rails.cache.clear
       end
@@ -3339,8 +3339,8 @@ RSpec.describe PostsController do
     it "does not show posts with blocked or blocking authors" do
       post1 = create(:post, authors_locked: true)
       post2 = create(:post, authors_locked: true)
-      create(:block, blocking_user: user, blocked_user: post1.user, hide_them: Block::POSTS)
-      create(:block, blocking_user: post2.user, blocked_user: user, hide_me: Block::POSTS)
+      create(:block, blocking_user: user, blocked_user: post1.user, hide_them: :posts)
+      create(:block, blocking_user: post2.user, blocked_user: user, hide_me: :posts)
       get controller_action, params: params
       expect(response.status).to eq(200)
       expect(assigns(assign_variable)).to match_array(posts)
@@ -3349,8 +3349,8 @@ RSpec.describe PostsController do
     it "shows posts with a blocked (but not blocking) author with show_blocked" do
       post1 = create(:post, authors_locked: true)
       post2 = create(:post, authors_locked: true)
-      create(:block, blocking_user: user, blocked_user: post1.user, hide_them: Block::POSTS)
-      create(:block, blocking_user: post2.user, blocked_user: user, hide_me: Block::POSTS)
+      create(:block, blocking_user: user, blocked_user: post1.user, hide_them: :posts)
+      create(:block, blocking_user: post2.user, blocked_user: user, hide_me: :posts)
       params[:show_blocked] = true
       posts << post1
       get controller_action, params: params
@@ -3363,8 +3363,8 @@ RSpec.describe PostsController do
       create(:reply, post: post1, user: user)
       post2 = create(:post, authors_locked: true, author_ids: [user.id])
       create(:reply, post: post2, user: user)
-      create(:block, blocking_user: user, blocked_user: post1.user, hide_them: Block::POSTS)
-      create(:block, blocking_user: post2.user, blocked_user: user, hide_me: Block::POSTS)
+      create(:block, blocking_user: user, blocked_user: post1.user, hide_them: :posts)
+      create(:block, blocking_user: post2.user, blocked_user: user, hide_me: :posts)
       posts << post2
       get controller_action, params: params
       expect(response.status).to eq(200)
