@@ -1499,7 +1499,7 @@ RSpec.describe PostsController do
         expect(post.last_read(post.user)).to be_the_same_time_as(post.tagged_at)
       end
 
-      Post.statuses.keys.each do |status|
+      Post.statuses.each_key do |status|
         context "to #{status}" do
           let(:post) { create(:post) }
 
