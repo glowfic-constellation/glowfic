@@ -142,7 +142,6 @@ RSpec.describe DailyReport do
         expect(report.posts.map(&:id)).to match_array(posts.map(&:id))
       end
     end
-
   end
 
   describe "#badge_for" do

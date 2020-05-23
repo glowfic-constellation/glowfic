@@ -51,7 +51,7 @@ def sort(file)
   `mv -f db/seeds/tmp #{file}`
 end
 
-def clean(file, expand = false)
+def clean(file, expand=false)
   sort(file)
   lines = []
   File.readlines(file).each do |line|
