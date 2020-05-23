@@ -4,15 +4,19 @@ class PostAuthor < ApplicationRecord
 
   validates :user, uniqueness: { scope: :post }
 
-  def opt_out_of_owed(user)
-    return unless (author = author_for(user))
-    author.destroy and return true unless author.joined?
-    author.update(can_owe: false)
+  def opt_out_of_owed
+    change_owed { joined? ? self.update(can_owe: false) : self.destroy } # rubocop:disable Rails/SaveBang
   end
 
-  def opt_in_to_owed(user)
-    return unless (author = author_for(user))
-    return if author.can_owe?
-    author.update(can_owe: true)
+  def opt_in_to_owed
+    change_owed { can_owe? ? true : self.update(can_owe: true) } # rubocop:disable Rails/SaveBang
+  end
+
+  private
+
+  def change_owed
+    success = yield
+    post.errors.merge(errors) unless success
+    success
   end
 end

@@ -30,10 +30,23 @@ module Owable
 
     def add_creator_to_authors
       if author_ids.include?(user_id)
-        author_for(user).update(joined: true, joined_at: created_at, private_note: private_note)
+        update_author
       else
-        post_authors.create(user: user, joined: true, joined_at: created_at, private_note: private_note)
+        create_author
       end
+    end
+
+    def create_author
+      author = post_authors.create(user: user, joined: true, joined_at: created_at, private_note: private_note)
+      errors.merge(author.errors) unless author.persisted?
+      author.persisted?
+    end
+
+    def update_author
+      author = author_for(user)
+      status = author.update(joined: true, joined_at: created_at, private_note: private_note)
+      errors.merge(author.errors) unless status
+      status
     end
 
     def update_board_cameos
