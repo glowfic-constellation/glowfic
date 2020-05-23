@@ -161,9 +161,7 @@ class Post < ApplicationRecord
       .pluck(:character_id)
 
     # add the post's character_id to the last one if it's not over the limit
-    if character_id.present? && user_id == user.id && recent_ids.length < count && !recent_ids.include?(character_id)
-      recent_ids << character_id
-    end
+    recent_ids << character_id if character_id.present? && user_id == user.id && recent_ids.length < count && !recent_ids.include?(character_id)
 
     # fetch the relevant characters and sort by their index in the recent list
     Character.where(id: recent_ids).includes(:default_icon).sort_by do |x|
