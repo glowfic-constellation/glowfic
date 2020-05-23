@@ -22,18 +22,6 @@ module Owable
 
     attr_accessor :private_note
 
-    def opt_out_of_owed(user)
-      return unless (author = author_for(user))
-      author.destroy and return true unless author.joined?
-      author.update(can_owe: false)
-    end
-
-    def opt_in_to_owed(user)
-      return unless (author = author_for(user))
-      return if author.can_owe?
-      author.update(can_owe: true)
-    end
-
     def author_for(user)
       post_authors.find_by(user_id: user.id)
     end
