@@ -1130,6 +1130,7 @@ RSpec.describe PostsController do
 
   describe "GET delete_history" do
     before(:each) { Reply.auditing_enabled = true }
+
     after(:each) { Reply.auditing_enabled = false }
 
     it "requires login" do
