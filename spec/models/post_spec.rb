@@ -593,13 +593,6 @@ RSpec.describe Post do
   end
 
   describe "#first_unread_for" do
-    it "uses instance variable if set" do
-      post = create(:post)
-      post.instance_variable_set('@first_unread', 3)
-      expect(post).not_to receive(:last_read)
-      expect(post.first_unread_for(nil)).to eq(3)
-    end
-
     it "uses itself if not yet viewed" do
       post = create(:post)
       create(:reply, post: post)
@@ -971,23 +964,6 @@ RSpec.describe Post do
     end
   end
 
-  describe "#opt_out_of_owed" do
-    it "removes owedness if user previously could owe" do
-      post = create(:post)
-      expect(post.author_for(post.user).reload.can_owe).to eq(true)
-      post.opt_out_of_owed(post.user)
-      expect(post.author_for(post.user).reload.can_owe).to eq(false)
-    end
-
-    it "destroys if not joined" do
-      user = create(:user)
-      post = create(:post, unjoined_authors: [user])
-      expect(post.author_for(user).reload.can_owe).to eq(true)
-      post.opt_out_of_owed(user)
-      expect(post.author_for(user)).to be_nil
-    end
-  end
-
   describe "#taggable_by" do
     let(:poster) { create(:user) }
     let(:coauthor) { create(:user) }
@@ -1008,7 +984,7 @@ RSpec.describe Post do
 
       it "should allow coauthors who have opted out of owing" do
         create(:reply, user: coauthor, post: post)
-        post.opt_out_of_owed(coauthor)
+        post.author_for(coauthor).opt_out_of_owed
         expect(post).to be_taggable_by(coauthor)
       end
     end

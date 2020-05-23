@@ -1,9 +1,11 @@
 class Post < ApplicationRecord
   include Concealable
   include Orderable
-  include Owable
   include PgSearch::Model
+  include Post::Owable
+  include Post::Read
   include Post::Status
+  include Post::WordCount
   include Presentable
   include Viewable
   include Writable
@@ -99,7 +101,7 @@ class Post < ApplicationRecord
     return false unless user
     return true if registered_users?
     return true if user.admin?
-    return user.id == user_id if private?
+    return user.id == self.user_id if private?
     (post_viewers.pluck(:user_id) + [user_id]).include?(user.id)
   end
 
@@ -122,31 +124,8 @@ class Post < ApplicationRecord
       reply.character_id = user.active_character_id
     end
 
-    if reply.character_id.nil?
-      reply.icon_id = user.avatar_id
-    else
-      reply.icon_id = reply.character.default_icon.try(:id)
-    end
-
+    reply.icon_id = reply.character_id.present? ? reply.character.default_icon.try(:id) : user.avatar_id
     reply
-  end
-
-  def first_unread_for(user)
-    return @first_unread if @first_unread
-    viewed_at = last_read(user) || board.last_read(user)
-    return @first_unread = self unless viewed_at
-    return unless replies.exists?
-    reply = replies.where('created_at > ?', viewed_at).ordered.first
-    @first_unread ||= reply
-  end
-
-  def last_seen_reply_for(user)
-    return @last_seen if @last_seen
-    return unless replies.exists? # unlike first_unread_for we don't care about the post
-    viewed_at = last_read(user) || board.last_read(user)
-    return unless viewed_at
-    reply = replies.where('created_at <= ?', viewed_at).ordered.last
-    @last_seen = reply
   end
 
   def recent_characters_for(user, count)
@@ -160,42 +139,14 @@ class Post < ApplicationRecord
       .pluck(:character_id)
 
     # add the post's character_id to the last one if it's not over the limit
-    if character_id.present? && user_id == user.id && recent_ids.length < count && !recent_ids.include?(character_id)
-      recent_ids << character_id
-    end
+    recent_ids << character_id if self.character_id.present? && self.user == user && recent_ids.length < count && !recent_ids.include?(character_id)
 
     # fetch the relevant characters and sort by their index in the recent list
-    Character.where(id: recent_ids).includes(:default_icon).sort_by do |x|
-      recent_ids.index(x.id)
-    end
-  end
-
-  def hide_warnings_for(user)
-    view_for(user).update(warnings_hidden: true)
-  end
-
-  def show_warnings_for?(user)
-    return false if user.hide_warnings
-    !view_for(user).try(:warnings_hidden)
+    Character.where(id: recent_ids).includes(:default_icon).sort_by { |char| recent_ids.index(char.id) }
   end
 
   def last_updated
     edited_at
-  end
-
-  def read_time_for(viewing_replies)
-    return self.edited_at if viewing_replies.empty?
-
-    most_recent = viewing_replies.max_by(&:reply_order)
-    most_recent_id = replies.select(:id).ordered.last.id
-    return most_recent.created_at unless most_recent.id == most_recent_id # not on last page
-    return most_recent.updated_at if most_recent.updated_at > edited_at
-
-    # testing for case where the post was changed in status more recently than the last reply
-    audits_exist = audits.where('created_at > ?', most_recent.created_at).where(action: 'update')
-    audits_exist = audits_exist.where("(audited_changes -> 'status' ->> 1)::integer = ?", Post.statuses[:complete])
-    return most_recent.updated_at unless audits_exist.exists?
-    self.edited_at
   end
 
   def metadata_editable_by?(user)
@@ -213,37 +164,10 @@ class Post < ApplicationRecord
     author_ids.include?(user.id)
   end
 
-  def total_word_count
-    return word_count unless replies.exists?
-    contents = replies.pluck(:content)
-    contents[0] = contents[0].split.size
-    word_count + contents.inject{|r, e| r + e.split.size}.to_i
-  end
-
-  def word_count_for(user)
-    sum = 0
-    sum = word_count if user_id == user.id
-    return sum unless replies.where(user_id: user.id).exists?
-
-    contents = replies.where(user_id: user.id).pluck(:content)
-    contents[0] = contents[0].split.size
-    sum + contents.inject{|r, e| r + e.split.size}.to_i
-  end
-
-  # only returns for authors who have written in the post (it's zero for authors who have not joined)
-  def author_word_counts
-    joined_authors.map { |author| [!author.deleted? ? author.username : '(deleted user)', word_count_for(author)] }.sort_by{|a| -a[1] }
-  end
-
   def character_appearance_counts
-    reply_counts = replies.joins(:character).group(:character_id).count
+    reply_counts = replies.joins(:character).group(:character_id).count.transform_values(&:to_i)
     reply_counts[character_id] = reply_counts[character_id].to_i + 1
-    Character.where(id: reply_counts.keys).map { |c| [c, reply_counts[c.id]]}.sort_by{|a| -a[1] }
-  end
-
-  def has_content_warnings?
-    return read_attribute(:has_content_warnings) if has_attribute?(:has_content_warnings)
-    content_warnings.exists?
+    Character.where(id: reply_counts.keys).map { |char| [char, reply_counts[char.id]]}.sort_by(&:last).reverse
   end
 
   def reply_count
@@ -275,6 +199,12 @@ class Post < ApplicationRecord
     adjacent_posts_for(user).find_by('section_order > ?', self.section_order)
   end
 
+  def has_replies?
+    return @has_replies if @has_replies
+    return (@has_replies = reply_count > 0) if has_attribute?(:reply_count)
+    @has_replies = replies.exists?
+  end
+
   private
 
   def adjacent_posts_for(user)
@@ -303,7 +233,7 @@ class Post < ApplicationRecord
     return if skip_edited
     self.edited_at = self.updated_at
     return if skip_tagged
-    return if replies.exists? && (!status_changed? || !complete?)
+    return if has_replies? && (!status_changed? || !complete?)
     self.tagged_at = self.updated_at
   end
 
@@ -322,10 +252,6 @@ class Post < ApplicationRecord
   def build_initial_flat_post
     build_flat_post
     true
-  end
-
-  def reset_warnings(_warning)
-    Post::View.where(post_id: id).update_all(warnings_hidden: false)
   end
 
   def notify_followers
