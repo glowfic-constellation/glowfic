@@ -90,10 +90,10 @@ class ApplicationController < ActionController::Base
   end
   helper_method :tos_skippable?
 
-  def posts_from_relation(relation, no_tests: true, with_pagination: true, select: '', max: false)
+  def posts_from_relation(relation, no_tests: true, with_pagination: true, select: '', max: false, with_unread: false)
     posts = posts_list_relation(relation, no_tests: no_tests, select: select, max: max)
     posts = posts.paginate(page: page) if with_pagination
-    calculate_view_status(posts) if logged_in?
+    calculate_view_status(posts, with_unread: with_unread) if logged_in?
     posts
   end
   helper_method :posts_from_relation
@@ -130,7 +130,7 @@ class ApplicationController < ActionController::Base
     posts
   end
 
-  def calculate_view_status(posts)
+  def calculate_view_status(posts, with_unread: false)
     post_views = Post::View.where(user_id: current_user.id).where.not(read_at: nil)
     @opened_ids ||= post_views.pluck(:post_id)
 
@@ -142,11 +142,16 @@ class ApplicationController < ActionController::Base
 
     @unread_ids ||= []
     @unread_ids += unread_views.map(&:post_id)
+
+    if with_unread
+      @unread_counts = Reply.where(post_id: @unread_ids).joins('INNER JOIN post_views ON replies.post_id = post_views.post_id')
+      @unread_counts = @unread_counts.where('replies.created_at > post_views.read_at').group(:post_id).count
+    end
   end
 
-  attr_reader :unread_ids, :opened_ids
-  # unread_ids does not necessarily include fully unread posts
-  helper_method :unread_ids, :opened_ids
+  attr_reader :unread_ids, :opened_ids, :unread_counts
+  # unread_ids and unread_counts do not necessarily include fully unread posts
+  helper_method :unread_ids, :opened_ids, :unread_counts
 
   def generate_short(msg)
     short_msg = Glowfic::Sanitizers.full(msg) # strip all tags, replacing appropriately with spaces
