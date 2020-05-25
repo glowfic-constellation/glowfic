@@ -26,7 +26,7 @@ RSpec.describe Api::ApiController do
         Timecop.freeze(cur_time) { api_login }
         Timecop.freeze(cur_time + Authentication::EXPIRY + 3.days) do
           get :show, params: {id: 1}
-          expect(response).to have_http_status(422)
+          expect(response).to have_http_status(401)
           expect(response.json['errors'][0]['message']).to eq("Authorization token has expired.")
         end
       end
@@ -52,7 +52,7 @@ RSpec.describe Api::ApiController do
         Timecop.freeze(cur_time) { api_login }
         Timecop.freeze(cur_time + Authentication::EXPIRY + 3.days) do
           get :index
-          expect(response).to have_http_status(422)
+          expect(response).to have_http_status(401)
           expect(response.json['errors'][0]['message']).to eq("Authorization token has expired.")
         end
       end
