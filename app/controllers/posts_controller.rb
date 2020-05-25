@@ -130,9 +130,9 @@ class PostsController < WritableController
     preview and return if params[:button_preview].present?
 
     @post = current_user.posts.new(permitted_params)
-    @post.settings = process_tags(Setting, :post, :setting_ids)
-    @post.content_warnings = process_tags(ContentWarning, :post, :content_warning_ids)
-    @post.labels = process_tags(Label, :post, :label_ids)
+    @post.settings = process_tags(Setting, obj_param: :post, id_param: :setting_ids)
+    @post.content_warnings = process_tags(ContentWarning, obj_param: :post, id_param: :content_warning_ids)
+    @post.labels = process_tags(Label, obj_param: :post, id_param: :label_ids)
 
     begin
       @post.save!
@@ -192,9 +192,9 @@ class PostsController < WritableController
 
     @post.assign_attributes(permitted_params)
     @post.board ||= Board.find_by(id: Board::ID_SANDBOX)
-    settings = process_tags(Setting, :post, :setting_ids)
-    warnings = process_tags(ContentWarning, :post, :content_warning_ids)
-    labels = process_tags(Label, :post, :label_ids)
+    settings = process_tags(Setting, obj_param: :post, id_param: :setting_ids)
+    warnings = process_tags(ContentWarning, obj_param: :post, id_param: :content_warning_ids)
+    labels = process_tags(Label, obj_param: :post, id_param: :label_ids)
 
     is_author = @post.author_ids.include?(current_user.id)
     if current_user.id != @post.user_id && @post.audit_comment.blank? && !is_author
@@ -307,9 +307,9 @@ class PostsController < WritableController
 
     @author_ids = params.fetch(:post, {}).fetch(:unjoined_author_ids, [])
     @viewer_ids = params.fetch(:post, {}).fetch(:viewer_ids, [])
-    @settings = process_tags(Setting, :post, :setting_ids)
-    @content_warnings = process_tags(ContentWarning, :post, :content_warning_ids)
-    @labels = process_tags(Label, :post, :label_ids)
+    @settings = process_tags(Setting, obj_param: :post, id_param: :setting_ids)
+    @content_warnings = process_tags(ContentWarning, obj_param: :post, id_param: :content_warning_ids)
+    @labels = process_tags(Label, obj_param: :post, id_param: :label_ids)
 
     @written = @post
     editor_setup
@@ -321,7 +321,7 @@ class PostsController < WritableController
     if params[:at_id].present?
       reply = Reply.find(params[:at_id])
       if reply && reply.post == @post
-        @post.mark_read(current_user, reply.created_at - 1.second, true)
+        @post.mark_read(current_user, at_time: reply.created_at - 1.second, force: true)
         flash[:success] = "Post has been marked as read until reply ##{reply.id}."
       end
       return redirect_to unread_posts_path
@@ -352,7 +352,7 @@ class PostsController < WritableController
     begin
       Post.transaction do
         @post.update!(status: params[:status])
-        @post.mark_read(current_user, @post.tagged_at)
+        @post.mark_read(current_user, at_time: @post.tagged_at)
       end
     rescue ActiveRecord::RecordInvalid
       flash[:error] = {

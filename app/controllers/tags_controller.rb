@@ -46,7 +46,7 @@ class TagsController < ApplicationController
 
     begin
       Tag.transaction do
-        @tag.parent_settings = process_tags(Setting, :tag, :parent_setting_ids) if @tag.is_a?(Setting)
+        @tag.parent_settings = process_tags(Setting, obj_param: :tag, id_param: :parent_setting_ids) if @tag.is_a?(Setting)
         @tag.save!
       end
     rescue ActiveRecord::RecordInvalid

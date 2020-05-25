@@ -180,7 +180,7 @@ RSpec.describe RepliesController do
       reply_post = create(:post)
       login_as(reply_post.user)
       dupe_reply = create(:reply, user: reply_post.user, post: reply_post)
-      reply_post.mark_read(reply_post.user, dupe_reply.created_at + 1.second, true)
+      reply_post.mark_read(reply_post.user, at_time: dupe_reply.created_at + 1.second, force: true)
 
       post :create, params: { reply: {post_id: reply_post.id, user_id: reply_post.user_id, content: dupe_reply.content} }
       expect(response).to have_http_status(200)
@@ -196,7 +196,7 @@ RSpec.describe RepliesController do
       login_as(user)
       character = create(:character)
       reply_post = create(:post)
-      reply_post.mark_read(user, reply_post.created_at + 1.second, true)
+      reply_post.mark_read(user, at_time: reply_post.created_at + 1.second, force: true)
 
       expect(character.user_id).not_to eq(user.id)
       post :create, params: { reply: {character_id: character.id, post_id: reply_post.id} }
@@ -208,7 +208,7 @@ RSpec.describe RepliesController do
       user = create(:user)
       login_as(user)
       reply_post = create(:post)
-      reply_post.mark_read(user, reply_post.created_at + 1.second, true)
+      reply_post.mark_read(user, at_time: reply_post.created_at + 1.second, force: true)
       char = create(:character, user: user)
       icon = create(:icon, user: user)
       calias = create(:alias, character: char)
@@ -241,7 +241,7 @@ RSpec.describe RepliesController do
       user = create(:user)
       login_as(user)
       reply_post = create(:post, user: user)
-      reply_post.mark_read(user, reply_post.created_at + 1.second, true)
+      reply_post.mark_read(user, at_time: reply_post.created_at + 1.second, force: true)
 
       expect {
         post :create, params: { reply: {post_id: reply_post.id, content: 'test content!'} }
@@ -259,7 +259,7 @@ RSpec.describe RepliesController do
       user = create(:user)
       login_as(user)
       reply_post = create(:post)
-      reply_post.mark_read(user, reply_post.created_at + 1.second, true)
+      reply_post.mark_read(user, at_time: reply_post.created_at + 1.second, force: true)
 
       expect {
         post :create, params: { reply: {post_id: reply_post.id, content: 'test content again!'} }
@@ -278,7 +278,7 @@ RSpec.describe RepliesController do
       login_as(user)
       reply_post = create(:post)
       reply_old = create(:reply, post: reply_post, user: user)
-      reply_post.mark_read(user, reply_old.created_at + 1.second, true)
+      reply_post.mark_read(user, at_time: reply_old.created_at + 1.second, force: true)
 
       expect {
         post :create, params: { reply: {post_id: reply_post.id, content: 'test content the third!'} }
@@ -297,7 +297,7 @@ RSpec.describe RepliesController do
       login_as(user)
       reply_post = create(:post)
       reply_old = create(:reply, post: reply_post, user: user)
-      reply_post.mark_read(user, reply_old.created_at + 1.second, true)
+      reply_post.mark_read(user, at_time: reply_old.created_at + 1.second, force: true)
       reply_post.update!(authors_locked: true)
 
       expect {
@@ -365,7 +365,7 @@ RSpec.describe RepliesController do
       expect(reply_post.tagging_authors.count).to eq(2)
       expect(reply_post.joined_authors).to include(user)
       expect(reply_post.joined_authors.count).to eq(2)
-      reply_post.mark_read(user, old_reply.created_at + 1.second, true)
+      reply_post.mark_read(user, at_time: old_reply.created_at + 1.second, force: true)
       expect {
         post :create, params: { reply: {post_id: reply_post.id, content: 'test content!'} }
       }.to change{Reply.count}.by(1)

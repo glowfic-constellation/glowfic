@@ -31,7 +31,7 @@ RSpec.describe WritableController do
       user = create(:user, username: 'Tester')
       post = create(:post, subject: 'Temp', board: board, user: user)
 
-      data = controller.send(:og_data_for_post, post, 1, 5, 25)
+      data = controller.send(:og_data_for_post, post, total_pages: 5)
       expect(data).to eq({
         title: 'Temp · Test',
         description: '(Tester – page 1 of 5)'
@@ -43,7 +43,7 @@ RSpec.describe WritableController do
       user = create(:user, username: 'Tester')
       post = create(:post, subject: 'Temp', description: 'More.', board: board, user: user)
 
-      data = controller.send(:og_data_for_post, post, 1, 5, 25)
+      data = controller.send(:og_data_for_post, post, total_pages: 5)
       expect(data).to eq({
         title: 'Temp · Test',
         description: 'More. (Tester – page 1 of 5)'
@@ -55,7 +55,7 @@ RSpec.describe WritableController do
       user = create(:user, username: 'Tester')
       post = create(:post, subject: 'Temp', description: 'With an <a href="/characters/1">Alli</a>.', board: board, user: user)
 
-      data = controller.send(:og_data_for_post, post, 1, 5, 25)
+      data = controller.send(:og_data_for_post, post, total_pages: 5)
       expect(data).to eq({
         title: 'Temp · Test',
         description: 'With an Alli. (Tester – page 1 of 5)'
@@ -68,7 +68,7 @@ RSpec.describe WritableController do
       user = create(:user, username: 'Tester')
       post = create(:post, subject: 'Temp', description: 'More.', board: board, section: section, user: user)
 
-      data = controller.send(:og_data_for_post, post, 1, 5, 25)
+      data = controller.send(:og_data_for_post, post, total_pages: 5)
       expect(data).to eq({
         title: 'Temp · Test » Further',
         description: 'More. (Tester – page 1 of 5)'
@@ -82,7 +82,7 @@ RSpec.describe WritableController do
       post = create(:post, subject: 'Temp', description: 'More.', board: board, user: user)
       create(:reply, post: post, user: user2)
 
-      data = controller.send(:og_data_for_post, post, 1, 5, 25)
+      data = controller.send(:og_data_for_post, post, total_pages: 5)
       expect(data).to eq({
         title: 'Temp · Test',
         description: 'More. (Friend, Tester – page 1 of 5)'
@@ -94,7 +94,7 @@ RSpec.describe WritableController do
       user = create(:user, username: 'Tester')
       post = create(:post, subject: 'Temp', board: board, user: user)
 
-      data = controller.send(:og_data_for_post, post, 2, 2, 25)
+      data = controller.send(:og_data_for_post, post, page: 2, total_pages: 2)
       expect(data).to eq({
         title: 'Temp · Test',
         description: '(Tester – page 2 of 2)'
@@ -110,7 +110,7 @@ RSpec.describe WritableController do
         create(:reply, post: post, user: user2)
       end
 
-      data = controller.send(:og_data_for_post, Post.find_by(id: post.id), 1, 5, 25)
+      data = controller.send(:og_data_for_post, Post.find_by(id: post.id), total_pages: 5)
       expect(data).to eq({
         title: 'Temp · Test',
         description: '(Tester and 5 others – page 1 of 5)'
@@ -122,7 +122,7 @@ RSpec.describe WritableController do
       user = create(:user, username: 'Tester')
       post = create(:post, subject: 'Temp', board: board, user: user)
 
-      data = controller.send(:og_data_for_post, post, 1, 5, 5)
+      data = controller.send(:og_data_for_post, post, total_pages: 5, per_page: 5)
       expect(data).to eq({
         title: 'Temp · Test',
         description: '(Tester – page 1 of 5, 5/page)'
