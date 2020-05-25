@@ -146,6 +146,7 @@ class ApplicationController < ActionController::Base
 
     if with_unread
       @unread_counts = Reply.where(post_id: @unread_ids).joins('INNER JOIN post_views ON replies.post_id = post_views.post_id')
+      @unread_counts = @unread_counts.where(post_views: {user_id: current_user.id})
       @unread_counts = @unread_counts.where('replies.created_at > post_views.read_at').group(:post_id).count
     end
   end
