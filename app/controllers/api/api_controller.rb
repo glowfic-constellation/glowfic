@@ -1,9 +1,9 @@
 class Api::ApiController < ActionController::Base
   include Rails::Pagination
-  include Authentication
+  include Authentication::Api
 
   protect_from_forgery with: :exception
-  before_action :check_permanent_user
+  before_action :check_token
   around_action :set_timezone
   around_action :handle_param_validation
 
@@ -14,6 +14,11 @@ class Api::ApiController < ActionController::Base
   end
 
   protected
+
+  def check_token
+    # checks for invalid tokens in a before to prevent double renders
+    logged_in?
+  end
 
   def login_required
     return if logged_in?
