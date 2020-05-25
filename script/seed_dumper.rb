@@ -16,9 +16,9 @@ EXCLUDED_SCHEMA = {
   TagTag: ['created_at', 'updated_at', 'suggested'],
   PostTag: ['created_at', 'updated_at', 'suggested'],
   'Audited::Audit': [],
-  PostAuthor: ['created_at', 'updated_at'],
+  Post::Author => ['created_at', 'updated_at'],
   Message: ['created_at', 'updated_at'],
-  Post::View: ['created_at', 'updated_at', 'ignored', 'notify_message', 'notify_email', 'warnings_hidden'],
+  Post::View => ['created_at', 'updated_at', 'ignored', 'notify_message', 'notify_email', 'warnings_hidden'],
 }
 
 MODELS = [Icon, Template, Character, CharacterAlias, Gallery, CharactersGallery, GalleriesIcon, Post, Reply, ContentWarning, GalleryGroup,

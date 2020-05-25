@@ -1,4 +1,4 @@
-class PostAuthor < ApplicationRecord
+class Post::Author < ApplicationRecord
   belongs_to :post, optional: false
   belongs_to :user, optional: false
 
