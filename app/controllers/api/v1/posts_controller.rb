@@ -1,6 +1,5 @@
 class Api::V1::PostsController < Api::ApiController
   before_action :login_required, except: [:index, :show]
-
   resource_description do
     description 'Viewing and editing posts'
   end
