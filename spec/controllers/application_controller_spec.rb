@@ -213,6 +213,34 @@ RSpec.describe ApplicationController do
         expect(assigns(:opened_ids)).to match_array([partread, read1, read2, hidden_partread].map(&:id))
         expect(assigns(:unread_ids)).to match_array([partread, hidden_partread].map(&:id))
       end
+
+      it "can calculate unread count" do
+        user = create(:user)
+
+        unread_post = create(:post, num_replies: 3)
+        read_post = create(:post, num_replies: 2)
+        one_unread = create(:post)
+        two_unread = create(:post, num_replies: 1)
+
+        read_post.mark_read(user)
+        one_unread.mark_read(user)
+        two_unread.mark_read(user)
+
+        create(:reply, post: one_unread)
+        create_list(:reply, 2, post: two_unread)
+
+        posts = [unread_post, read_post, one_unread, two_unread]
+        relation = Post.where(id: posts.map(&:id))
+        login_as(user)
+        fetched_posts = controller.send(:posts_from_relation, relation, with_unread: true)
+        expect(fetched_posts).to match_array(posts)
+        expect(assigns(:opened_ids)).to match_array([read_post.id, one_unread.id, two_unread.id])
+        expect(assigns(:unread_ids)).to match_array([one_unread.id, two_unread.id])
+        expect(assigns(:unread_counts)).to eq({
+          one_unread.id => 1,
+          two_unread.id => 2,
+        })
+      end
     end
 
     context "when logged out" do
