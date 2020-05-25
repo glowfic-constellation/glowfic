@@ -55,6 +55,7 @@ class IconsController < UploadingController
       @times_used = (posts_using.count + replies_using.count)
       @posts_used = (posts_using.pluck(:id) + replies_using.select(:post_id).distinct.pluck(:post_id)).uniq.count
     end
+    @galleries = @icon.galleries.ordered_by_name
     @meta_og = og_data
   end
 
@@ -180,7 +181,7 @@ class IconsController < UploadingController
   end
 
   def og_data
-    galleries = @icon.galleries.pluck(:name)
+    galleries = @galleries.map(&:name)
     if galleries.present?
       desc = "Gallery".pluralize(galleries.count) + ": " + galleries.join(', ')
     else

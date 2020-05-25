@@ -59,7 +59,7 @@ class PostsController < WritableController
       .or(with_post_view.where("date_trunc('second', post_views.read_at) < date_trunc('second', posts.tagged_at)"))
 
     @posts = with_post_view.or(no_post_view)
-    @posts = posts_from_relation(@posts.ordered)
+    @posts = posts_from_relation(@posts.ordered, with_unread: true)
 
     @hide_quicklinks = true
     @page_title = @started ? 'Opened Threads' : 'Unread Threads'

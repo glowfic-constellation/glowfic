@@ -47,7 +47,7 @@
   - if logged_in? && local_assigns[:show_unread_count]
     %td.width-70.vtop{class: klass}
       - if @opened_ids.include?(post.id) && unread_ids.include?(post.id)
-        = Reply.where(post_id: post.id).where('created_at > ?', post.last_read(current_user)).count
+        = @unread_counts.fetch(post.id, 0)
       - else
         \-
   %td.post-time.vtop{class: klass}
