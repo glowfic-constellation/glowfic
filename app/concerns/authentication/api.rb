@@ -37,11 +37,11 @@ module Authentication::Api
     rescue JWT::ExpiredSignature
       error = {message: "Authorization token has expired."}
       render json: {errors: [error]}, status: :unauthorized
-      return {}
+      {}
     rescue JWT::DecodeError
       error = {message: "Authorization token is not valid."}
       render json: {errors: [error]}, status: :unprocessable_entity
-      return {}
+      {}
     end
   end
 end
