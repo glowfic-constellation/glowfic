@@ -56,7 +56,7 @@ RSpec.describe CharactersController do
 
       it "skips retired characters when specified" do
         character = create(:character, name: 'ExistingCharacter')
-        retired_character = create(:character, user: character.user, retired: true, name: 'RetiredCharacter')
+        create(:character, user: character.user, retired: true, name: 'RetiredCharacter')
         get :index, params: { user_id: character.user_id, retired: 'false' }
         expect(response.body).to include('ExistingCharacter')
         expect(response.body).not_to include('RetiredCharacter')

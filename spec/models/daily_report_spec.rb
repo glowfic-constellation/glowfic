@@ -111,7 +111,7 @@ RSpec.describe DailyReport do
     end
 
     it "returns all necessary posts" do
-      report_time = DateTime.new(2020, 04, 04, 3, 0, 0)
+      report_time = DateTime.new(2020, 4, 4, 3, 0, 0)
       new_today_replies = nil
       new_today_no_replies = nil
       new_yesterday_replies = nil
@@ -142,7 +142,6 @@ RSpec.describe DailyReport do
         expect(report.posts.map(&:id)).to match_array(posts.map(&:id))
       end
     end
-
   end
 
   describe "#badge_for" do
@@ -152,7 +151,7 @@ RSpec.describe DailyReport do
 
     it "respects timezone" do
       # Hawaii 7pm April 3 UTC 5am April 4
-      date = DateTime.new(2020, 04, 04, 5, 0, 0)
+      date = DateTime.new(2020, 4, 4, 5, 0, 0)
       later_date = date + 2.days
       user = create(:user)
 

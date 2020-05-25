@@ -249,9 +249,7 @@ class CharactersController < ApplicationController
       success_msg = " in the specified " + 'post'.pluralize(params[:post_ids].size)
     end
 
-    if @character.aliases.exists? && params[:orig_alias] != 'all'
-      wheres[:character_alias_id] = orig_alias.try(:id)
-    end
+    wheres[:character_alias_id] = orig_alias.try(:id) if @character.aliases.exists? && params[:orig_alias] != 'all'
 
     UpdateModelJob.perform_later(Reply.to_s, wheres, updates)
     wheres[:id] = wheres.delete(:post_id) if params[:post_ids].present?
@@ -341,9 +339,7 @@ class CharactersController < ApplicationController
     @groups = user.character_groups.order('name asc') + [new_group]
     use_javascript('characters/editor')
     gon.character_id = @character.try(:id) || ''
-    if @character.present? && @character.template.nil? && @character.user == current_user
-      @character.build_template(user: user)
-    end
+    @character.build_template(user: user) if @character.present? && @character.template.nil? && @character.user == current_user
     gon.user_id = user.id
     @aliases = @character.aliases.ordered if @character
     gon.mod_editing = (user != current_user)

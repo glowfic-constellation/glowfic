@@ -33,9 +33,7 @@ module ApplicationHelper
   end
 
   def quick_switch_tag(image_url, short_text, hover_name, char_id)
-    if image_url.nil?
-      return content_tag :div, short_text, class: CHAR_ICON_FAKE, title: hover_name, data: { character_id: char_id }
-    end
+    return content_tag :div, short_text, class: CHAR_ICON_FAKE, title: hover_name, data: { character_id: char_id } if image_url.nil?
     image_tag image_url, class: CHAR_ICON, alt: hover_name, title: hover_name, data: { character_id: char_id }
   end
 

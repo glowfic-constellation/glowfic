@@ -917,6 +917,7 @@ RSpec.describe RepliesController do
 
   describe "POST restore" do
     before(:each) { Reply.auditing_enabled = true }
+
     after(:each) { Reply.auditing_enabled = false }
 
     it "requires login" do
