@@ -3,6 +3,7 @@ class Api::ApiController < ActionController::Base
   include Authentication::Api
 
   protect_from_forgery with: :exception
+  before_action :check_token
   around_action :set_timezone
   around_action :handle_param_validation
 
@@ -14,15 +15,15 @@ class Api::ApiController < ActionController::Base
 
   protected
 
-  def login_required
-    return if logged_in?
-    return if performed?
-    error = {message: "You must be logged in to view that page."}
-    render json: {errors: [error]}, status: :unauthorized and return
+  def check_token
+    # checks for invalid tokens in a before to prevent double renders
+    logged_in?
   end
 
-  def login_optional
-    logged_in? # checks for invalid tokens and prevents double renders
+  def login_required
+    return if logged_in?
+    error = {message: "You must be logged in to view that page."}
+    render json: {errors: [error]}, status: :unauthorized and return
   end
 
   def set_timezone

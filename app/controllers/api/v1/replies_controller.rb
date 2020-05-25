@@ -1,6 +1,4 @@
 class Api::V1::RepliesController < Api::ApiController
-  before_action :login_optional
-
   resource_description do
     description 'Viewing replies to a post'
   end

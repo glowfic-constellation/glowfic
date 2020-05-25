@@ -1,6 +1,4 @@
 class Api::V1::UsersController < Api::ApiController
-  before_action :login_optional
-
   resource_description do
     description 'Viewing and searching users'
   end

@@ -1,6 +1,5 @@
 RSpec.describe Api::ApiController do
   controller do
-    before_action :login_optional, only: :index
     before_action :login_required, only: :show
 
     def index

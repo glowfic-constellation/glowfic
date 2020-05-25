@@ -1,6 +1,4 @@
 class Api::V1::GalleriesController < Api::ApiController
-  before_action :login_optional
-
   resource_description do
     description 'Viewing and editing galleries'
   end
