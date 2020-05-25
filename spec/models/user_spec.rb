@@ -34,7 +34,7 @@ RSpec.describe User do
 
   describe "emails" do
     def generate_emailless_user
-      user = build(:user, email: '')
+      user = build(:user, email: nil)
       user.send(:encrypt_password)
       user.save!(validate: false)
       user
