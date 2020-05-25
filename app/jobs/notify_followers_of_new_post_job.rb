@@ -47,6 +47,7 @@ class NotifyFollowersOfNewPostJob < ApplicationJob
   def filter_users(post, user_ids)
     user_ids &= PostViewer.where(post: post).pluck(:user_id) if post.access_list?
     user_ids -= post.author_ids
+    user_ids -= blocked_user_ids(post)
     return [] unless user_ids.present?
     User.where(id: user_ids, favorite_notifications: true)
   end
@@ -62,5 +63,13 @@ class NotifyFollowersOfNewPostJob < ApplicationJob
     host = ENV['DOMAIN_NAME'] || 'localhost:3000'
     url = Rails.application.routes.url_helpers.post_url(post_id, host: host, protocol: 'https')
     "<a href='#{url}'>View it here</a>."
+  end
+
+  def blocked_user_ids(post)
+    blocked = Block.where(blocked_user_id: post.author_ids).where("hide_them >= ?", Block::POSTS)
+    blocked = blocked.select(:blocking_user_id).distinct.pluck(:blocking_user_id)
+    blocking = Block.where(blocking_user_id: post.author_ids).where("hide_me >= ?", Block::POSTS)
+    blocking = blocking.select(:blocked_user_id).distinct.pluck(:blocked_user_id)
+    (blocked + blocking).uniq
   end
 end

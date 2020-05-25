@@ -93,6 +93,14 @@ class User < ApplicationRecord
     end
   end
 
+  def blocked_posts
+    blocked_or_hidden_posts('blocked', Block.where(blocked_user_id: self.id).where('hide_me > 0').select(:blocking_user_id))
+  end
+
+  def hidden_posts
+    blocked_or_hidden_posts('hidden', Block.where(blocking_user_id: self.id).where('hide_them > 0').select(:blocked_user_id))
+  end
+
   private
 
   def strip_spaces
@@ -135,5 +143,14 @@ class User < ApplicationRecord
     return unless self.username.present?
     return unless RESERVED_NAMES.include?(self.username)
     errors.add(:username, 'is invalid')
+  end
+
+  def blocked_or_hidden_posts(keyword, user_ids)
+    Rails.cache.fetch(Block.cache_string_for(self.id, keyword), expires_in: 1.month) do
+      Post.unscoped.where(
+        authors_locked: true,
+        id: Post::Author.where(user_id: user_ids).select(:post_id),
+      ).pluck(:id)
+    end
   end
 end

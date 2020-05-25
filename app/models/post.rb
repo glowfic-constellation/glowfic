@@ -89,16 +89,17 @@ class Post < ApplicationRecord
       where(user_id: user.id)
         .or(where(privacy: [Concealable::PUBLIC, Concealable::REGISTERED]))
         .or(where(privacy: Concealable::ACCESS_LIST, id: user.visible_posts))
+        .where.not(id: user.blocked_posts)
     else
       where(privacy: Concealable::PUBLIC)
     end
   }
 
   def visible_to?(user)
+    return false if user&.author_blocking?(self, author_ids)
     return true if public?
     return false unless user
-    return true if registered_users?
-    return true if user.admin?
+    return true if registered_users? || user.admin?
     return user.id == user_id if private?
     (post_viewers.pluck(:user_id) + [user_id]).include?(user.id)
   end

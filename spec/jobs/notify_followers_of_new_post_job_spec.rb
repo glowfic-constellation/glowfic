@@ -92,6 +92,32 @@ RSpec.describe NotifyFollowersOfNewPostJob do
       post = create(:post, user: author, unjoined_authors: [notified])
       expect { NotifyFollowersOfNewPostJob.perform_now(post.id, post.user_id) }.not_to change { Message.count }
     end
+
+    describe "with blocking" do
+      let(:post) { create(:post, user: author, board: board, authors: [coauthor]) }
+
+      before(:each) { create(:favorite, user: notified, favorite: board) }
+
+      it "does not send to users the poster has blocked" do
+        create(:block, blocking_user: author, blocked_user: notified, hide_me: Block::POSTS)
+        expect { NotifyFollowersOfNewPostJob.perform_now(post.id, post.user_id) }.not_to change { Message.count }
+      end
+
+      it "does not send to users a coauthor has blocked" do
+        create(:block, blocking_user: coauthor, blocked_user: notified, hide_me: Block::POSTS)
+        expect { NotifyFollowersOfNewPostJob.perform_now(post.id, post.user_id) }.not_to change { Message.count }
+      end
+
+      it "does not send to users who are blocking the poster" do
+        create(:block, blocked_user: author, blocking_user: notified, hide_them: Block::POSTS)
+        expect { NotifyFollowersOfNewPostJob.perform_now(post.id, post.user_id) }.not_to change { Message.count }
+      end
+
+      it "does not send to users who are blocking a coauthor" do
+        create(:block, blocked_user: coauthor, blocking_user: notified, hide_them: Block::POSTS)
+        expect { NotifyFollowersOfNewPostJob.perform_now(post.id, post.user_id) }.not_to change { Message.count }
+      end
+    end
   end
 
   context "on joined posts" do
@@ -226,6 +252,29 @@ RSpec.describe NotifyFollowersOfNewPostJob do
       post = create(:post, user: author, unjoined_authors: [coauthor1, coauthor2])
       create(:reply, post: post, user: coauthor2)
       expect { NotifyFollowersOfNewPostJob.perform_now(post.id, post.user_id) }.not_to change { Message.count }
+    end
+
+    describe "with blocking" do
+      let(:board) { create(:board) }
+      let(:author) { create(:user) }
+      let(:coauthor) { create(:user) }
+      let(:notified) { create(:user) }
+      let(:post) { create(:post, user: author, board: board) }
+
+      before(:each) do
+        create(:favorite, user: notified, favorite: board)
+        create(:reply, post: post, user: coauthor)
+      end
+
+      it "does not send to users the joining user has blocked" do
+        create(:block, blocking_user: coauthor, blocked_user: notified, hide_me: Block::POSTS)
+        expect { NotifyFollowersOfNewPostJob.perform_now(post.id, post.user_id) }.not_to change { Message.count }
+      end
+
+      it "does not send to users who are blocking the joining user" do
+        create(:block, blocked_user: coauthor, blocking_user: notified, hide_them: Block::POSTS)
+        expect { NotifyFollowersOfNewPostJob.perform_now(post.id, post.user_id) }.not_to change { Message.count }
+      end
     end
   end
 end

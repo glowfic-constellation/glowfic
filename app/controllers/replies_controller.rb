@@ -85,6 +85,8 @@ class RepliesController < WritableController
       .paginate(page: page)
       .includes(:post)
 
+    @search_results = @search_results.where.not(post_id: current_user.hidden_posts) if logged_in? && !params[:show_blocked]
+
     unless params[:condensed]
       @search_results = @search_results
         .select('icons.keyword, icons.url')
