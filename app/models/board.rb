@@ -48,7 +48,6 @@ class Board < ApplicationRecord
   private
 
   def move_posts_to_sandbox
-    # TODO don't hard code sandbox board_id
     UpdateModelJob.perform_later(Post.to_s, {board_id: id}, {board_id: ID_SANDBOX, section_id: nil})
   end
 
