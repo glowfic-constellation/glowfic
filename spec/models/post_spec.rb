@@ -1083,6 +1083,114 @@ RSpec.describe Post do
     end
   end
 
+  describe "adjacent posts" do
+    let(:user) { create(:user) }
+    let(:board) { create(:board, creator: user) }
+    let(:section) { create(:board_section, board: board) }
+
+    it "gives correct next and previous posts" do
+      create(:post, user: user, board: board, section: section)
+      prev = create(:post, user: user, board: board, section: section)
+      post = create(:post, user: user, board: board, section: section)
+      nextp = create(:post, user: user, board: board, section: section)
+      create(:post, user: user, board: board, section: section)
+      expect([prev, post, nextp].map(&:section_order)).to eq([1, 2, 3])
+
+      expect(post.prev_post(user)).to eq(prev)
+      expect(post.next_post(user)).to eq(nextp)
+    end
+
+    it "gives the correct previous post with an intermediate private post" do
+      extra = create(:post, user: user, board: board, section: section)
+      prev = create(:post, user: user, board: board, section: section)
+      hidden = create(:post, board: board, section: section, privacy: Concealable::PRIVATE)
+      post = create(:post, user: user, board: board, section: section)
+      expect([extra, prev, hidden, post].map(&:section_order)).to eq([0, 1, 2, 3])
+
+      expect(post.prev_post(user)).to eq(prev)
+      expect(post.next_post(user)).to be_nil
+    end
+
+    it "gives the correct next post with an intermediate private post" do
+      post = create(:post, user: user, board: board, section: section)
+      hidden = create(:post, board: board, section: section, privacy: Concealable::PRIVATE)
+      nextp = create(:post, user: user, board: board, section: section)
+      extra = create(:post, user: user, board: board, section: section)
+      expect([post, hidden, nextp, extra].map(&:section_order)).to eq([0, 1, 2, 3])
+
+      expect(post.next_post(user)).to eq(nextp)
+      expect(post.prev_post(user)).to be_nil
+    end
+
+    it "does not give previous with only a non-visible post in section" do
+      hidden = create(:post, board: board, section: section, privacy: Concealable::PRIVATE)
+      post = create(:post, user: user, board: board, section: section)
+      hidden.update!(section_order: 0)
+      post.update!(section_order: 1)
+
+      expect(post.prev_post(user)).to be_nil
+    end
+
+    it "does not give next with only a non-visible post in section" do
+      post = create(:post, user: user, board: board, section: section)
+      hidden = create(:post, board: board, section: section, privacy: Concealable::PRIVATE)
+      post.update!(section_order: 0)
+      hidden.update!(section_order: 1)
+
+      expect(post.next_post(user)).to be_nil
+    end
+
+    it "handles very large mostly-hidden sections as expected" do
+      prev = create(:post, user: user, board: board, section: section)
+      create_list(:post, 10, board: board, section: section, privacy: Concealable::PRIVATE)
+      post = create(:post, user: user, board: board, section: section)
+      create_list(:post, 10, board: board, section: section, privacy: Concealable::PRIVATE)
+      nextp = create(:post, user: user, board: board, section: section)
+
+      expect(post.prev_post(user)).to eq(prev)
+      expect(post.next_post(user)).to eq(nextp)
+    end
+
+    it "does not give next or previous on unordered boards" do
+      create(:post, board: board)
+      post = create(:post, board: board)
+      create(:post, board: board)
+
+      expect(post.prev_post(user)).to be_nil
+      expect(post.next_post(user)).to be_nil
+    end
+
+    it "handles sectionless on sectioned boards correctly" do
+      section
+
+      create(:post, user: user, board: board)
+      post = create(:post, user: user, board: board)
+      create(:post, user: user, board: board)
+
+      expect(post.prev_post(user)).to be_nil
+      expect(post.next_post(user)).to be_nil
+    end
+
+    it "handles ordered boards with no sections correctly" do
+      board.update!(authors_locked: true)
+      prev = create(:post, user: user, board: board)
+      post = create(:post, user: user, board: board)
+      nextp = create(:post, user: user, board: board)
+
+      expect(post.prev_post(user)).to eq(prev)
+      expect(post.next_post(user)).to eq(nextp)
+    end
+
+    it "handles first post and last posts in section" do
+      first = create(:post, user: user, board: board, section: section)
+      create_list(:post, 3, user: user, board: board, section: section)
+      last = create(:post, user: user, board: board, section: section)
+
+      expect(first.prev_post(user)).to be_nil
+      expect(last.next_post(user)).to be_nil
+    end
+  end
+
   context "callbacks" do
     include ActiveJob::TestHelper
 
