@@ -1,4 +1,6 @@
 RSpec.describe BoardSection do
+  include ActiveJob::TestHelper
+
   it "should reset section_* fields in posts after deletion" do
     board = create(:board)
     BoardSection.create!(board: board, name: 'Test')
@@ -8,7 +10,9 @@ RSpec.describe BoardSection do
     expect(post.section_id).not_to be_nil
     expect(post.section_order).to eq(0)
     expect(section2.section_order).to eq(2)
-    section.destroy!
+    perform_enqueued_jobs(only: UpdateModelJob) do
+      section.destroy!
+    end
     post.reload
     expect(post.section_id).to be_nil
     expect(post.section_order).to eq(0)
