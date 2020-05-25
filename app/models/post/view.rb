@@ -13,7 +13,7 @@ class Post::View < ApplicationRecord
     favorited_users = user.favorites.where(favorite: post.joined_authors).exists?
     return unless favorited_continuity || favorited_users
 
-    message = NotifyFollowersOfNewPostJob.notification_about(post, user, unread: true)
+    message = NotifyFollowersOfNewPostJob.notification_about(post, user, unread_only: true)
     return unless message
 
     message.update!(unread: false, read_at: Time.zone.now)
