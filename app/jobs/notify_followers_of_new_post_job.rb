@@ -56,8 +56,10 @@ class NotifyFollowersOfNewPostJob < ApplicationJob
     self.class.notification_about(post, user).present?
   end
 
-  def self.notification_about(post, user)
-    Message.where(recipient: user, sender_id: 0).where('created_at >= ?', post.created_at).find_each do |notification|
+  def self.notification_about(post, user, unread_only: false)
+    messages = Message.where(recipient: user, sender_id: 0).where('created_at >= ?', post.created_at)
+    messages = messages.unread if unread_only
+    messages.find_each do |notification|
       return notification if notification.message.include?(ScrapePostJob.view_post(post.id))
     end
     nil
