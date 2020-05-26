@@ -177,6 +177,7 @@ RSpec.describe ApplicationController do
 
       it "sets opened_ids and unread_ids properly" do
         user = create(:user)
+        other_user = create(:user)
         login_as(user)
         time = Time.zone.now - 5.minutes
         unopened2, partread, read1, read2, hidden_unread, hidden_partread = posts = Timecop.freeze(time) do
@@ -202,6 +203,8 @@ RSpec.describe ApplicationController do
           create(:reply, post: hidden_partread) # hidden_partread_reply
 
           read2.mark_read(user)
+          partread.reload
+          partread.mark_read(other_user)
         end
 
         hidden_unread.ignore(user)
@@ -216,6 +219,7 @@ RSpec.describe ApplicationController do
 
       it "can calculate unread count" do
         user = create(:user)
+        other_user = create(:user)
 
         unread_post = create(:post, num_replies: 3)
         read_post = create(:post, num_replies: 2)
@@ -224,10 +228,15 @@ RSpec.describe ApplicationController do
 
         read_post.mark_read(user)
         one_unread.mark_read(user)
+        one_unread.reload
+        one_unread.mark_read(other_user)
         two_unread.mark_read(user)
 
         create(:reply, post: one_unread)
         create_list(:reply, 2, post: two_unread)
+
+        two_unread.reload
+        two_unread.mark_read(other_user)
 
         posts = [unread_post, read_post, one_unread, two_unread]
         relation = Post.where(id: posts.map(&:id))
