@@ -162,7 +162,7 @@ function findGalleryInGroups(galleryId) {
 }
 
 function displayGallery(newId) {
-  $.authenticatedGet('/api/v1/galleries/'+newId, function(resp) {
+  $.authenticatedGet('/api/v1/galleries/'+newId, {}, function(resp) {
     var galleryObj = $("<div>").attr({id: 'gallery'+newId}).data('id', newId);
     galleryObj.append("<br />");
     galleryObj.append($("<b>").attr({class: 'gallery-name'}).append(resp.name));
