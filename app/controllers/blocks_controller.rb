@@ -13,7 +13,8 @@ class BlocksController < ApplicationController
     @page_title = "Block User"
     @block = Block.new
     @block.blocking_user = current_user
-    @users = []
+    @block.blocked_user_id = params.fetch(:block, {})[:blocked_user_id]
+    @users = [@block.blocked_user].compact
   end
 
   def create
