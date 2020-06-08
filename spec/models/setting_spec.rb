@@ -35,13 +35,13 @@ RSpec.describe Setting do
       child2.update!(setting_list: [parent1, parent2, child1].map(&:name))
       child3.update!(setting_list: [parent1.name])
 
-      expect(parent1.reload.children.ids).to match_array([child1, child2, child3].map(&:id))
-      expect(parent2.children.ids).to eq([child2.id])
-      expect(child1.children.ids).to eq([child2.id])
+      expect(parent1.reload.child_settings.ids).to match_array([child1, child2, child3].map(&:id))
+      expect(parent2.child_settings.ids).to eq([child2.id])
+      expect(child1.child_settings.ids).to eq([child2.id])
 
-      expect(child1.parents.ids).to eq([parent1.id])
-      expect(child2.parents.ids).to match_array([parent1, parent2, child1].map(&:id))
-      expect(child3.parents.ids).to eq([parent1.id])
+      expect(child1.parent_settings.ids).to eq([parent1.id])
+      expect(child2.parent_settings.ids).to match_array([parent1, parent2, child1].map(&:id))
+      expect(child3.parent_settings.ids).to eq([parent1.id])
     end
   end
 end
