@@ -4,7 +4,7 @@ module Tag::Taggable::Setting
   included do
     include Tag::Taggable
 
-    define_attribute_method :setting_list
+    attr_reader :setting_list, :setting_list_was
 
     after_initialize :load_setting_tags
     after_save :save_setting_tags
@@ -15,14 +15,28 @@ module Tag::Taggable::Setting
 
     def setting_list=(list)
       list = Tag::List.new(list)
-      setting_list_will_change! unless list == setting_list
+      return if list == setting_list
+      @setting_list_changed = true
+      @setting_list_was = @setting_list
       @setting_list = list
+    end
+
+    def setting_list_changed?
+      @setting_list_changed
     end
 
     private
 
     def load_setting_tags
-      @setting_list = Tag::List.new(settings.map(&:name))
+      @setting_list = get_setting_tags
+    end
+
+    def reload_setting_tags
+      self.setting_list=get_setting_tags
+    end
+
+    def get_setting_tags
+      Tag::List.new(settings.map(&:name))
     end
 
     def save_setting_tags

@@ -15,14 +15,28 @@ module Tag::Taggable::GalleryGroup
 
     def gallery_group_list=(list)
       list = Tag::List.new(list)
-      gallery_group_list_will_change! unless list == gallery_group_list
+      return if list == gallery_group_list
+      @gallery_group_list_changed = true
+      @gallery_group_list_was = @gallery_group_list
       @gallery_group_list = list
+    end
+
+    def gallery_group_list_changed?
+      @gallery_group_list_changed
     end
 
     private
 
     def load_gallery_group_tags
-      @gallery_group_list ||= Tag::List.new(gallery_groups.map(&:name))
+      @gallery_group_list = get_gallery_group_tags
+    end
+
+    def reload_gallery_group_tags
+      self.gallery_group_list=get_gallery_group_tags
+    end
+
+    def get_gallery_group_tags
+      Tag::List.new(gallery_groups.map(&:name))
     end
 
     def save_gallery_group_tags

@@ -15,14 +15,28 @@ module Tag::Taggable::ContentWarning
 
     def content_warning_list=(list)
       list = Tag::List.new(list)
-      content_warning_list_will_change! unless list == content_warning_list
+      return if list == content_warning_list
+      @content_warning_list_changed = true
+      @content_warning_list_was = @content_warning_list
       @content_warning_list = list
+    end
+
+    def content_warning_list_changed?
+      @content_warning_list_changed
     end
 
     private
 
     def load_content_warning_tags
-      @content_warning_list = Tag::List.new(content_warnings.map(&:name))
+      @content_warning_list = get_content_warning_tags
+    end
+
+    def reload_content_warning_tags
+      self.content_warning_list=get_content_warning_tags
+    end
+
+    def get_content_warning_tags
+      Tag::List.new(content_warnings.map(&:name))
     end
 
     def save_content_warning_tags

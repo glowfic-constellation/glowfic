@@ -15,14 +15,28 @@ module Tag::Taggable::Label
 
     def label_list=(list)
       list = Tag::List.new(list)
-      label_list_will_change! unless list == label_list
+      return if list == label_list
+      @label_list_changed = true
+      @label_list_was = @label_list
       @label_list = list
+    end
+
+    def label_list_changed?
+      @label_list_changed
     end
 
     private
 
     def load_label_tags
-      @label_list = Tag::List.new(labels.map(&:name))
+      @label_list = get_label_tags
+    end
+
+    def reload_label_tags
+      self.label_list=get_label_tags
+    end
+
+    def get_label_tags
+      Tag::List.new(labels.map(&:name))
     end
 
     def save_label_tags

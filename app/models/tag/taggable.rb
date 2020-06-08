@@ -5,7 +5,7 @@ module Tag::Taggable
     private
 
     def dirtify_tag_list(join)
-      attribute_will_change!(join.tag.type+"_list")
+      send("reload_#{join.tag.type}_list")
     end
 
     def save_tags(type, new_list:, old_list:, assoc:)
