@@ -10,8 +10,8 @@ class Setting < Tag
 
   private
 
-  def load_setting_tags
-    @setting_list = Tag::List.new(parent_settings.pluck(:name))
+  def get_setting_tags
+    Tag::List.new(parent_settings.map(&:name))
   end
 
   def save_setting_tags
