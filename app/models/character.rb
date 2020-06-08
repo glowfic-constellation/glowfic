@@ -1,5 +1,6 @@
 class Character < ApplicationRecord
   include Presentable
+  include Tag::Taggable::GalleryGroup
 
   belongs_to :user, optional: false
   belongs_to :template, inverse_of: :characters, optional: true
