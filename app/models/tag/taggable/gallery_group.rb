@@ -19,6 +19,7 @@ module Tag::Taggable::GalleryGroup
     end
 
     def save_gallery_group_tags
+      return unless gallery_group_list_changed?
       save_tags(::GalleryGroup, @gallery_group_list, gallery_group_list_was)
     end
   end
