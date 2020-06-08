@@ -42,9 +42,6 @@ FactoryBot.define do
       with_icon { false }
       with_character { false }
       num_replies { 0 }
-      labels { [] }
-      content_warnings { [] }
-      settings { [] }
     end
     user
     board
@@ -53,12 +50,6 @@ FactoryBot.define do
     sequence :subject do |n|
       "test subject #{n}"
     end
-    after(:build) do |post, evaluator|
-      post.setting_list = evaluator.settings if evaluator.settings.present?
-      post.label_list = evaluator.labels if evaluator.labels.present?
-      post.content_warning_list = evaluator.content_warnings if evaluator.content_warnings.present?
-    end
-
     before(:create) do |post, evaluator|
       post.character = create(:character, user: post.user) if evaluator.with_character
       post.icon = create(:icon, user: post.user) if evaluator.with_icon
@@ -76,12 +67,7 @@ FactoryBot.define do
     end
     transient do
       icon_count { 0 }
-      gallery_groups { [] }
     end
-    after(:build) do |gallery, evaluator|
-      gallery.gallery_group_list = evaluator.gallery_groups if evaluator.gallery_groups.present?
-    end
-
     after(:create) do |gallery, evaluator|
       evaluator.icon_count.times do
         gallery.icons << create(:icon, user: gallery.user)
@@ -133,8 +119,6 @@ FactoryBot.define do
   factory :character do
     transient do
       with_default_icon { false }
-      settings { [] }
-      gallery_groups { [] }
     end
     user
     sequence :name do |n|
@@ -143,11 +127,6 @@ FactoryBot.define do
     factory :template_character do
       template { build(:template, user: user) }
     end
-    after(:build) do |character, evaluator|
-      character.setting_list = evaluator.settings if evaluator.settings.present?
-      character.gallery_group_list = evaluator.gallery_groups if evaluator.gallery_groups.present?
-    end
-
     before(:create) do |character, evaluator|
       character.default_icon = create(:icon, user: character.user) if evaluator.with_default_icon
     end
@@ -201,14 +180,6 @@ FactoryBot.define do
 
     factory :setting, class: :setting do
       type { 'Setting' }
-
-      transient do
-        parents { [] }
-      end
-
-      after(:build) do |tag, evaluator|
-        tag.setting_list = evaluator.parents if evaluator.parents.present?
-      end
     end
 
     factory :content_warning, class: :content_warning do
