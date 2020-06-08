@@ -19,6 +19,7 @@ module Tag::Taggable::Setting
     end
 
     def save_setting_tags
+      return unless setting_list_changed?
       save_tags(::Setting, @setting_list, setting_list_was)
     end
   end

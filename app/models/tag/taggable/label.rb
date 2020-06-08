@@ -19,6 +19,7 @@ module Tag::Taggable::Label
     end
 
     def save_label_tags
+      return unless label_list_changed?
       save_tags(::Label, @label_list, label_list_was)
     end
   end
