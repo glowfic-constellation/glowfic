@@ -9,7 +9,7 @@ module Tag::Taggable::Label
     after_save :save_label_tags
 
     def label_list
-      @label_list
+      @label_list ||= Tag::List.new(labels.map(&:name))
     end
 
     def label_list=(list)

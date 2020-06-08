@@ -9,7 +9,7 @@ module Tag::Taggable::Setting
     after_save :save_setting_tags
 
     def setting_list
-      @setting_list
+      @setting_list ||= Tag::List.new(settings.map(&:name))
     end
 
     def setting_list=(list)

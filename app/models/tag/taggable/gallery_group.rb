@@ -9,7 +9,7 @@ module Tag::Taggable::GalleryGroup
     after_save :save_gallery_group_tags
 
     def gallery_group_list
-      @gallery_group_list
+      @gallery_group_list ||= Tag::List.new(gallery_groups.map(&:name))
     end
 
     def gallery_group_list=(list)

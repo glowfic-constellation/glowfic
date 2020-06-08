@@ -9,7 +9,7 @@ module Tag::Taggable::ContentWarning
     after_save :save_content_warning_tags
 
     def content_warning_list
-      @content_warning_list
+      @content_warning_list ||= Tag::List.new(content_warnings.map(&:name))
     end
 
     def content_warning_list=(list)
