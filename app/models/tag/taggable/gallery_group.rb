@@ -5,7 +5,8 @@ module Tag::Taggable::GalleryGroup
     include Tag::Taggable
 
     define_attribute_method :gallery_group_list
-    attribute :gallery_group_list, Tag::List.new
+
+    after_save :save_gallery_tags
 
     def gallery_group_list
       @gallery_group_list
@@ -15,6 +16,10 @@ module Tag::Taggable::GalleryGroup
       list = Tag::List.new(list)
       gallery_group_list_will_change! unless list == gallery_group_list
       @gallery_group_list = list
+    end
+
+    def save_gallery_tags
+      save_tags(::GalleryGroup, @gallery_group_list, gallery_group_list_was)
     end
   end
 end

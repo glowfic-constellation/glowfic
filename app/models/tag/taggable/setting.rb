@@ -1,0 +1,25 @@
+module Tag::Taggable::Setting
+  extend ActiveSupport::Concern
+
+  included do
+    include Tag::Taggable
+
+    define_attribute_method :setting_list
+
+    after_save :save_setting_tags
+
+    def setting_list
+      @setting_list
+    end
+
+    def setting_list=(list)
+      list = Tag::List.new(list)
+      setting_list_will_change! unless list == setting_list
+      @setting_list = list
+    end
+
+    def save_setting_tags
+      save_tags(::Setting, @setting_list, setting_list_was)
+    end
+  end
+end

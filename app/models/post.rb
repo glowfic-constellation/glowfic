@@ -5,6 +5,9 @@ class Post < ApplicationRecord
   include PgSearch::Model
   include Post::Status
   include Presentable
+  include Tag::Taggable::ContentWarning
+  include Tag::Taggable::Label
+  include Tag::Taggable::Setting
   include Viewable
   include Writable
 

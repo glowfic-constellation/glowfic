@@ -1,4 +1,6 @@
 class Gallery < ApplicationRecord
+  include Tag::Taggable::GalleryGroup
+
   belongs_to :user, optional: false
 
   has_many :galleries_icons, dependent: :destroy, inverse_of: :gallery
