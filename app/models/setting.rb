@@ -11,11 +11,11 @@ class Setting < Tag
   private
 
   def load_setting_tags
-    @setting_list = Tag::List.new(parent_settings.map(&:name))
+    @setting_list = Tag::List.new(parent_settings.pluck(:name))
   end
 
   def save_setting_tags
     return unless setting_list_changed?
-    save_tags(::Setting, new_list: @setting_list, old_list: setting_list_was, assoc: parent_settings)
+    save_tags(::Setting, new_list: @setting_list, old_list: setting_list_was, assoc: parent_settings, join: child_setting_tags)
   end
 end

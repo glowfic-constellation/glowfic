@@ -8,10 +8,10 @@ module Tag::Taggable
       send("reload_#{join.tag.type}_list")
     end
 
-    def save_tags(type, new_list:, old_list:, assoc:)
+    def save_tags(type, new_list:, old_list:, assoc:, join: tag_join)
       return if old_list == new_list
       add_tags(type, new_list - old_list, assoc)
-      rem_tags(type, old_list - new_list)
+      rem_tags(type, old_list - new_list, join)
     end
 
     def add_tags(type, list, assoc)
@@ -26,9 +26,13 @@ module Tag::Taggable
       end
     end
 
-    def rem_tags(type, list)
-      tags = type.where(name: list)
-      send(self.class.table_name.singularize+'_tags').where(tag: tags).destroy_all
+    def rem_tags(type, list, join)
+      tags = type.where(name: list).pluck(:id)
+      join.where(tag_id: tags).destroy_all
+    end
+
+    def tag_join
+      send(self.class.table_name.singularize+'_tags')
     end
   end
 end
