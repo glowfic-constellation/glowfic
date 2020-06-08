@@ -4,14 +4,11 @@ module Tag::Taggable::GalleryGroup
   included do
     include Tag::Taggable
 
-    define_attribute_method :gallery_group_list
+    attr_reader :gallery_group_list, :gallery_group_list_was, :gallery_group_list_changed
+    alias_method :gallery_group_list_changed?, :gallery_group_list_changed
 
     after_initialize :load_gallery_group_tags
     after_save :save_gallery_group_tags
-
-    def gallery_group_list
-      @gallery_group_list
-    end
 
     def gallery_group_list=(list)
       list = Tag::List.new(list)
@@ -19,10 +16,6 @@ module Tag::Taggable::GalleryGroup
       @gallery_group_list_changed = true
       @gallery_group_list_was = @gallery_group_list
       @gallery_group_list = list
-    end
-
-    def gallery_group_list_changed?
-      @gallery_group_list_changed
     end
 
     private

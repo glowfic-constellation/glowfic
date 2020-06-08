@@ -4,14 +4,11 @@ module Tag::Taggable::Setting
   included do
     include Tag::Taggable
 
-    attr_reader :setting_list, :setting_list_was
+    attr_reader :setting_list, :setting_list_was, :setting_list_changed
+    alias_method :setting_list_changed?, :setting_list_changed
 
     after_initialize :load_setting_tags
     after_save :save_setting_tags
-
-    def setting_list
-      @setting_list
-    end
 
     def setting_list=(list)
       list = Tag::List.new(list)
@@ -19,10 +16,6 @@ module Tag::Taggable::Setting
       @setting_list_changed = true
       @setting_list_was = @setting_list
       @setting_list = list
-    end
-
-    def setting_list_changed?
-      @setting_list_changed
     end
 
     private

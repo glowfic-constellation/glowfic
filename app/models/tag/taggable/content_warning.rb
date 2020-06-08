@@ -4,14 +4,11 @@ module Tag::Taggable::ContentWarning
   included do
     include Tag::Taggable
 
-    define_attribute_method :content_warning_list
+    attr_reader :content_warning_list, :content_warning_list_was, :content_warning_list_changed
+    alias_method :content_warning_list_changed?, :content_warning_list_changed
 
     after_initialize :load_content_warning_tags
     after_save :save_content_warning_tags
-
-    def content_warning_list
-      @content_warning_list
-    end
 
     def content_warning_list=(list)
       list = Tag::List.new(list)
@@ -19,10 +16,6 @@ module Tag::Taggable::ContentWarning
       @content_warning_list_changed = true
       @content_warning_list_was = @content_warning_list
       @content_warning_list = list
-    end
-
-    def content_warning_list_changed?
-      @content_warning_list_changed
     end
 
     private

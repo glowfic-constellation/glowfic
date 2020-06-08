@@ -4,14 +4,11 @@ module Tag::Taggable::Label
   included do
     include Tag::Taggable
 
-    define_attribute_method :label_list
+    attr_reader :label_list, :label_list_was, :label_list_changed
+    alias_method :label_list_changed?, :label_list_changed
 
     after_initialize :load_label_tags
     after_save :save_label_tags
-
-    def label_list
-      @label_list
-    end
 
     def label_list=(list)
       list = Tag::List.new(list)
@@ -19,10 +16,6 @@ module Tag::Taggable::Label
       @label_list_changed = true
       @label_list_was = @label_list
       @label_list = list
-    end
-
-    def label_list_changed?
-      @label_list_changed
     end
 
     private
