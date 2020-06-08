@@ -19,7 +19,7 @@ module TagHelper
 
     form.select(
       attr_name,
-      options_from_collection_for_select(collection, :name, selected_ids),
+      options_from_collection_for_select(collection, :name, :name, selected_ids),
       {},
       {multiple: true}.merge(opts),
     )
