@@ -21,7 +21,11 @@ module Tag::Taggable::GalleryGroup
     private
 
     def load_gallery_group_tags
-      @gallery_group_list = get_gallery_group_tags
+      if gallery_group_list_changed? && gallery_group_list_was.nil?
+        @gallery_group_list_was = get_gallery_group_tags
+      else
+        @gallery_group_list = get_gallery_group_tags
+      end
     end
 
     def reload_gallery_group_tags

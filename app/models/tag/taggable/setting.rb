@@ -21,7 +21,11 @@ module Tag::Taggable::Setting
     private
 
     def load_setting_tags
-      @setting_list = get_setting_tags
+      if setting_list_changed? && setting_list_was.nil?
+        @setting_list_was = get_setting_tags
+      else
+        @setting_list = get_setting_tags
+      end
     end
 
     def reload_setting_tags

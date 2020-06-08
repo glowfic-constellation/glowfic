@@ -21,7 +21,11 @@ module Tag::Taggable::Label
     private
 
     def load_label_tags
-      @label_list = get_label_tags
+      if label_list_changed? && label_list_was.nil?
+        @label_list_was = get_label_tags
+      else
+        @label_list = get_label_tags
+      end
     end
 
     def reload_label_tags

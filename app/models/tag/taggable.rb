@@ -9,7 +9,6 @@ module Tag::Taggable
     end
 
     def save_tags(type, new_list:, old_list:, assoc:, join: tag_join)
-      old_list = [] if old_list.nil?
       return if old_list == new_list
       add_tags(type, new_list - old_list, assoc)
       rem_tags(type, old_list - new_list, join)

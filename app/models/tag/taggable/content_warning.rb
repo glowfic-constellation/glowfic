@@ -21,7 +21,11 @@ module Tag::Taggable::ContentWarning
     private
 
     def load_content_warning_tags
-      @content_warning_list = get_content_warning_tags
+      if content_warning_list_changed? && content_warning_list_was.nil?
+        @content_warning_list_was = get_content_warning_tags
+      else
+        @content_warning_list = get_content_warning_tags
+      end
     end
 
     def reload_content_warning_tags
