@@ -2,6 +2,7 @@ class Tag::List < Array
   def initialize(list=[])
     super
     clean_tags unless self == []
+    self
   end
 
   def clean_tags
