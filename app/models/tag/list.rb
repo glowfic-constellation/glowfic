@@ -6,6 +6,8 @@ class Tag::List < Array
   end
 
   def clean_tags
-    reject(&:blank?).map(&:to_s).uniq
+    reject!(&:blank?)
+    map!(&:to_s)
+    uniq!
   end
 end
