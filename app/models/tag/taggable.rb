@@ -8,20 +8,20 @@ module Tag::Taggable
       attribute_will_change!(join.tag.type+"_list")
     end
 
-    def save_tags(type, new_list, old_list)
+    def save_tags(type, new_list:, old_list:, assoc:)
       return if old_list == new_list
-      add_tags(type, new_list - old_list)
+      add_tags(type, new_list - old_list, assoc)
       rem_tags(type, old_list - new_list)
     end
 
-    def add_tags(type, list)
+    def add_tags(type, list, assoc)
       existing_tags = type.where(name: list)
       new_tags = list - existing_tags.pluck(:name)
       list.each do |name|
         if new_tags.include?(name)
-          class_association(type).create!(name: name, user: user)
+          assoc.create!(name: name, user: user)
         else
-          class_association(type) << type.find_by(name: name)
+          assoc << type.find_by(name: name)
         end
       end
     end
@@ -29,10 +29,6 @@ module Tag::Taggable
     def rem_tags(type, list)
       tags = type.where(name: list)
       send(self.class.table_name.singularize+'_tags').where(tag: tags).destroy_all
-    end
-
-    def class_association(type)
-      send(type.to_s.tableize)
     end
   end
 end

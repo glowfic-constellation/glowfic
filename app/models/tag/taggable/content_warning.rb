@@ -27,7 +27,7 @@ module Tag::Taggable::ContentWarning
 
     def save_content_warning_tags
       return unless content_warning_list_changed?
-      save_tags(::ContentWarning, @content_warning_list, content_warning_list_was)
+      save_tags(::ContentWarning, new_list: @content_warning_list, old_list: content_warning_list_was, assoc: content_warnings)
     end
   end
 end

@@ -27,7 +27,7 @@ module Tag::Taggable::Label
 
     def save_label_tags
       return unless label_list_changed?
-      save_tags(::Label, @label_list, label_list_was)
+      save_tags(::Label, new_list: @label_list, old_list: label_list_was, assoc: labels)
     end
   end
 end
