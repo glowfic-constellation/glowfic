@@ -6,16 +6,23 @@ module Tag::Taggable::Label
 
     define_attribute_method :label_list
 
+    after_initialize :load_label_tags
     after_save :save_label_tags
 
     def label_list
-      @label_list ||= Tag::List.new(labels.map(&:name))
+      @label_list
     end
 
     def label_list=(list)
       list = Tag::List.new(list)
       label_list_will_change! unless list == label_list
       @label_list = list
+    end
+
+    private
+
+    def load_label_tags
+      @label_list = Tag::List.new(labels.map(&:name))
     end
 
     def save_label_tags

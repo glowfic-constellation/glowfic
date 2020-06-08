@@ -6,16 +6,23 @@ module Tag::Taggable::GalleryGroup
 
     define_attribute_method :gallery_group_list
 
+    after_initialize :load_gallery_group_tags
     after_save :save_gallery_group_tags
 
     def gallery_group_list
-      @gallery_group_list ||= Tag::List.new(gallery_groups.map(&:name))
+      @gallery_group_list
     end
 
     def gallery_group_list=(list)
       list = Tag::List.new(list)
       gallery_group_list_will_change! unless list == gallery_group_list
       @gallery_group_list = list
+    end
+
+    private
+
+    def load_gallery_group_tags
+      @gallery_group_list ||= Tag::List.new(gallery_groups.map(&:name))
     end
 
     def save_gallery_group_tags

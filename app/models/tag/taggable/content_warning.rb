@@ -6,16 +6,23 @@ module Tag::Taggable::ContentWarning
 
     define_attribute_method :content_warning_list
 
+    after_initialize :load_content_warning_tags
     after_save :save_content_warning_tags
 
     def content_warning_list
-      @content_warning_list ||= Tag::List.new(content_warnings.map(&:name))
+      @content_warning_list
     end
 
     def content_warning_list=(list)
       list = Tag::List.new(list)
       content_warning_list_will_change! unless list == content_warning_list
       @content_warning_list = list
+    end
+
+    private
+
+    def load_content_warning_tags
+      @content_warning_list = Tag::List.new(content_warnings.map(&:name))
     end
 
     def save_content_warning_tags
