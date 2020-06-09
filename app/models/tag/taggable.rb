@@ -6,6 +6,8 @@ module Tag::Taggable
 
     @tag_types = {}
 
+    after_save :save_tags
+
     def self.has_tags(**tag_types)
       @tag_types = tag_types
 
@@ -13,8 +15,6 @@ module Tag::Taggable
         type_list = "#{type}_list"
 
         attr_reader("#{type_list}_was".to_sym)
-
-        after_save("save_#{type}_tags".to_sym)
 
         define_method(type_list.to_sym) do
           return instance_variable_get("@#{type_list}") if instance_variable_defined?("@#{type_list}")
@@ -42,11 +42,6 @@ module Tag::Taggable
         define_method("get_#{type}_tags".to_sym) do
           Tag::List.new(send(type.to_s.pluralize).map(&:name))
         end
-
-        define_method("save_#{type}_tags".to_sym) do
-          return unless send("#{type_list}_changed?")
-          save_tags(type)
-        end
       end
     end
 
@@ -54,11 +49,14 @@ module Tag::Taggable
       send("reload_#{join.tag.type}_list")
     end
 
-    def save_tags(type)
-      new_list = send("#{type}_list")
-      old_list = send("#{type}_list_was")
-      add_tags(type, new_list - old_list)
-      rem_tags(type, old_list - new_list)
+    def save_tags
+      @tag_types.each_key do |type|
+        next if send("#{type}_list_changed?")
+        new_list = send("#{type}_list")
+        old_list = send("#{type}_list_was")
+        add_tags(type, new_list - old_list)
+        rem_tags(type, old_list - new_list)
+      end
     end
 
     def add_tags(type, list)
