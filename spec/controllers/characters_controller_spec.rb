@@ -706,7 +706,7 @@ RSpec.describe CharactersController do
         character: {setting_list: [setting1, setting2, setting3].map(&:name)}
       }
       expect(flash[:success]).to eq('Character saved successfully.')
-      expect(char.settings).to eq([setting1, setting2, setting3])
+      expect(char.reload.settings).to eq([setting1, setting2, setting3])
     end
 
     it "orders gallery groups by default" do
@@ -1321,6 +1321,8 @@ RSpec.describe CharactersController do
       expect(character.galleries).to match_array([gallery, gallery2, gallery3])
       expect(character.ungrouped_gallery_ids).to match_array([gallery.id, gallery2.id])
       expect(character.gallery_groups).to match_array([group])
+      expect(character.gallery_group_list).to eq([group.name])
+      expect(character.setting_list.size).to eq(1)
 
       login_as(user)
       expect do

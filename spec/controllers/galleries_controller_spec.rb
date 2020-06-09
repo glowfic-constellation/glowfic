@@ -66,7 +66,12 @@ RSpec.describe GalleriesController do
         icon = create(:icon)
         group = create(:gallery_group)
         login_as(icon.user)
-        post :create, params: { gallery: {gallery_group_list: [group.name], icon_ids: [icon.id]} }
+        post :create, params: {
+          gallery: {
+            gallery_group_list: [group.name],
+            icon_ids: [icon.id]
+          }
+        }
         expect(response.status).to eq(200)
         expect(response).to render_template(:new)
         expect(assigns(:page_title)).to eq('New Gallery')
