@@ -578,7 +578,11 @@ RSpec.describe PostsController do
       login
       expect {
         post :create, params: {
-          post: {subject: 'a', board_id: create(:board).id, content_warning_list: tags}
+          post: {
+            subject: 'a',
+            board_id: create(:board).id,
+            content_warning_list: tags
+          }
         }
       }.to change{ContentWarning.count}.by(1)
       expect(ContentWarning.last.name).to eq('atag')
