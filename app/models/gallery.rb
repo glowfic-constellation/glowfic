@@ -1,5 +1,5 @@
 class Gallery < ApplicationRecord
-  include Tag::Taggable::GalleryGroup
+  include Tag::Taggable
 
   belongs_to :user, optional: false
 
@@ -14,6 +14,8 @@ class Gallery < ApplicationRecord
   has_many :gallery_groups, -> { ordered_by_gallery_tag }, through: :gallery_tags, source: :gallery_group, dependent: :destroy
 
   validates :name, presence: true
+
+  has_tags(gallery_group: GalleryGroup)
 
   scope :ordered, -> { order('characters_galleries.section_order ASC') }
 
