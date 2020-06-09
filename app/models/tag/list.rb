@@ -8,6 +8,7 @@ class Tag::List < Array
   def clean_tags
     reject!(&:blank?)
     map!(&:to_s)
-    uniq!
+    map! { |name| name.start_with?('_') ? name[1..] : name }
+    uniq!(&:downcase)
   end
 end
