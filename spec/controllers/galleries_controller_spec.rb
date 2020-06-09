@@ -113,12 +113,12 @@ RSpec.describe GalleriesController do
       existing_name = create(:gallery_group)
       existing_case = create(:gallery_group)
       tags = [
-        'atag',
-        'atag',
+        '_atag',
+        '_atag',
         create(:gallery_group).name,
         '',
-        existing_name.name,
-        existing_case.name.upcase
+        '_' + existing_name.name,
+        '_' + existing_case.name.upcase
       ]
       login
       expect {
@@ -463,12 +463,12 @@ RSpec.describe GalleriesController do
       gallery = create(:gallery)
       login_as(gallery.user)
       tags = [
-        'atag',
-        'atag',
+        '_atag',
+        '_atag',
         create(:gallery_group).name,
         '',
-        existing_name.name,
-        existing_case.name.upcase
+        '_' + existing_name.name,
+        '_' + existing_case.name.upcase
       ]
       expect {
         post :update, params: { id: gallery.id, gallery: {gallery_group_list: tags} }
