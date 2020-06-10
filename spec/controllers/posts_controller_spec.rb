@@ -3192,6 +3192,19 @@ RSpec.describe PostsController do
       expect(response.status).to eq(200)
       expect(assigns(assign_variable)).to match_array(posts)
     end
+
+    it "shows your own posts with blocked or but not blocking authors" do
+      post1 = create(:post, authors_locked: true, author_ids: [user.id])
+      create(:reply, post: post1, user: user)
+      post2 = create(:post, authors_locked: true, author_ids: [user.id])
+      create(:reply, post: post2, user: user)
+      create(:block, blocking_user: user, blocked_user: post1.user, hide_them: Block::POSTS)
+      create(:block, blocking_user: post2.user, blocked_user: user, hide_me: Block::POSTS)
+      posts << post2
+      get controller_action, params: params
+      expect(response.status).to eq(200)
+      expect(assigns(assign_variable)).to match_array(posts)
+    end
   end
 
   context "GET index" do
