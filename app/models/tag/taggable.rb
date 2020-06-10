@@ -7,12 +7,15 @@ module Tag::Taggable
     after_save :save_tags
 
     def self.has_tags(**tag_types)
-      class_eval { @tag_types = tag_types }
+      class_eval do
+        class_attribute :tag_types
+        self.tag_types = tag_types
+      end
 
       tag_types.each_key do |type|
         type_list = "#{type}_list"
 
-        class_eval { attr_reader("#{type_list}_was".to_sym) }
+        class_eval { attr_reader "#{type_list}_was".to_sym }
 
         define_method(type_list.to_sym) do
           return instance_variable_get("@#{type_list}") if instance_variable_defined?("@#{type_list}")
@@ -48,30 +51,31 @@ module Tag::Taggable
     end
 
     def save_tags
-      @tag_types.each_key do |type|
+      self.tag_types.each_key do |type|
         next if send("#{type}_list_changed?")
         new_list = send("#{type}_list")
-        old_list = send("#{type}_list_was")
+        old_list = send("#{type}_list_was") || []
         add_tags(type, new_list - old_list)
         rem_tags(type, old_list - new_list)
       end
     end
 
     def add_tags(type, list)
-      existing_tags = @tag_types[type].where(name: list)
+      klass = self.tag_types[type]
+      existing_tags = klass.where(name: list)
       new_tags = list - existing_tags.pluck(:name)
       association = send(type.to_s.pluralize)
       list.each do |name|
         if new_tags.include?(name)
           association.create!(name: name, user: user)
         else
-          association << type.find_by(name: name)
+          association << klass.find_by(name: name)
         end
       end
     end
 
     def rem_tags(type, list)
-      tags = @tag_types[type].where(name: list).pluck(:id)
+      tags = self.tag_types[type].where(name: list).pluck(:id)
       tag_join.where(tag_id: tags).destroy_all
     end
 
