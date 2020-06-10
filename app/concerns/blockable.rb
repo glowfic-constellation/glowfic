@@ -15,6 +15,7 @@ module Blockable
 
   def author_blocking?(post, author_ids)
     return false unless post.authors_locked
+    return false if author_ids.include?(self.id)
     Block.where(blocking_user_id: author_ids, blocked_user: self).where("hide_me >= ?", Block::POSTS).exists?
   end
 
