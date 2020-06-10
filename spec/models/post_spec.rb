@@ -590,6 +590,28 @@ RSpec.describe Post do
         expect(post).not_to be_visible_to(nil)
       end
     end
+
+    context "blocks" do
+      it "hides blocked posts" do
+        post = create(:post, authors_locked: true)
+        block = create(:block, blocking_user: post.user, hide_me: Block::POSTS)
+        expect(post.reload).not_to be_visible_to(block.blocked_user)
+      end
+
+      it "does not hide blocked users (so you can use show_blocked param)" do
+        post = create(:post, authors_locked: true)
+        block = create(:block, blocked_user: post.user, hide_them: Block::POSTS)
+        expect(post.reload).to be_visible_to(block.blocking_user)
+      end
+
+      it "does not hide coauthored posts when blocked" do
+        coauthor = create(:user)
+        post = create(:post, authors_locked: true, author_ids: [coauthor.id])
+        create(:reply, post: post, user: coauthor)
+        block = create(:block, blocking_user: post.user, blocked_user: coauthor, hide_me: Block::POSTS)
+        expect(post.reload).to be_visible_to(coauthor)
+      end
+    end
   end
 
   describe "#first_unread_for" do
