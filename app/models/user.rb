@@ -147,10 +147,12 @@ class User < ApplicationRecord
 
   def blocked_or_hidden_posts(keyword, user_ids)
     Rails.cache.fetch(Block.cache_string_for(self.id, keyword), expires_in: 1.month) do
-      Post.unscoped.where(
+      post_ids = Post.unscoped.where(
         authors_locked: true,
         id: Post::Author.where(user_id: user_ids).select(:post_id),
       ).pluck(:id)
+      post_ids -= Post::Author.where(user_id: self.id).pluck(:post_id) if keyword == 'blocked'
+      post_ids
     end
   end
 end
