@@ -18,7 +18,7 @@ class Block < ApplicationRecord
   POSTS = 1
   ALL = 2
 
-  CACHE_VERSION = 1
+  CACHE_VERSION = 2
 
   def editable_by?(user)
     return false unless user
