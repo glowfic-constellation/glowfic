@@ -4,17 +4,15 @@ module Tag::Taggable
   included do
     private
 
-    @tag_types = {}
-
     after_save :save_tags
 
     def self.has_tags(**tag_types)
-      @tag_types = tag_types
+      class_eval { @tag_types = tag_types }
 
       tag_types.each_key do |type|
         type_list = "#{type}_list"
 
-        attr_reader("#{type_list}_was".to_sym)
+        class_eval { attr_reader("#{type_list}_was".to_sym) }
 
         define_method(type_list.to_sym) do
           return instance_variable_get("@#{type_list}") if instance_variable_defined?("@#{type_list}")
