@@ -18,7 +18,7 @@ class Block < ApplicationRecord
   POSTS = 1
   ALL = 2
 
-  CACHE_VERSION = 2
+  CACHE_VERSION = 3
 
   def editable_by?(user)
     return false unless user
@@ -65,7 +65,6 @@ class Block < ApplicationRecord
   end
 
   def invalidate_caches
-    return unless created_at == updated_at || saved_change_to_hide_me? || saved_change_to_hide_them?
     Rails.cache.delete(Block.cache_string_for(self.blocking_user.id, 'hidden'))
     Rails.cache.delete(Block.cache_string_for(self.blocked_user.id, 'blocked'))
   end
