@@ -36,10 +36,6 @@ module Tag::Taggable
           instance_variable_get("@#{type_list}_changed") == true
         end
 
-        define_method("reload_#{type}_list".to_sym) do
-          instance_variable_set("@#{type_list}", send("get_#{type}_tags"))
-        end
-
         define_method("get_#{type}_tags".to_sym) do
           Tag::List.new(send(type.to_s.pluralize).map(&:name))
         end
@@ -47,7 +43,8 @@ module Tag::Taggable
     end
 
     def dirtify_tag_list(join)
-      send("reload_#{join.tag.type.tableize.singularize}_list")
+      type = join.tag.type.tableize.singularize
+      send("#{type}_list=", send("get_#{type}_tags"))
     end
 
     def save_tags
@@ -61,6 +58,7 @@ module Tag::Taggable
     end
 
     def add_tags(type, list)
+      return if list.blank?
       klass = self.tag_types[type]
       existing_tags = klass.where(name: list)
       new_tags = list - existing_tags.pluck(:name)
@@ -69,12 +67,13 @@ module Tag::Taggable
         if new_tags.include?(name)
           association.create!(name: name, user: user)
         else
-          association << klass.find_by(name: name)
+          tag_join.create!(tag: klass.find_by(name: name))
         end
       end
     end
 
     def rem_tags(type, list)
+      return if list.blank?
       tags = self.tag_types[type].where(name: list).pluck(:id)
       tag_join.where(tag_id: tags).destroy_all
     end
