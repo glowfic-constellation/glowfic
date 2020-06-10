@@ -97,6 +97,42 @@ RSpec.describe BlocksController, type: :controller do
       expect(block.hide_them).to eq(Block::POSTS)
       expect(block.hide_me).to eq(Block::ALL)
     end
+
+    it "refreshes caches" do
+      user = create(:user)
+      blocked = create(:user)
+      blocking = create(:user)
+      create(:block, blocking_user: blocking, blocked_user: user, hide_me: Block::POSTS)
+      blocked_post = create(:post, user: blocking, authors_locked: true)
+      hidden_post = create(:post, user: blocked, authors_locked: true)
+      user_post = create(:post, user: user, authors_locked: true)
+
+      memory_store = ActiveSupport::Cache.lookup_store(:memory_store)
+      allow(Rails).to receive(:cache).and_return(memory_store)
+      Rails.cache.clear
+
+      expect(user.hidden_posts).to be_empty
+      expect(user.blocked_posts).to eq([blocked_post.id])
+      expect(blocked.blocked_posts).to be_empty
+
+      login_as(user)
+
+      post :create, params: {
+        block: {
+          blocked_user_id: blocked.id,
+          block_interactions: false,
+          hide_them: Block::POSTS,
+          hide_me: Block::POSTS
+        }
+      }
+
+      expect(Rails.cache.exist?(Block.cache_string_for(user.id, 'blocked'))).to be(true)
+      expect(Rails.cache.exist?(Block.cache_string_for(user.id, 'hidden'))).to be(false)
+      expect(Rails.cache.exist?(Block.cache_string_for(blocked.id, 'blocked'))).to be(false)
+
+      expect(user.hidden_posts).to eq([hidden_post.id])
+      expect(blocked.blocked_posts).to eq([user_post.id])
+    end
   end
 
   describe "GET edit" do
@@ -213,6 +249,36 @@ RSpec.describe BlocksController, type: :controller do
       expect(response).to redirect_to(blocks_url)
       expect(flash[:success]).to eq("User unblocked.")
       expect(Block.find_by(id: block.id)).to be_nil
+    end
+
+    it "refreshes caches" do
+      user = create(:user)
+      blocked = create(:user)
+      blocking = create(:user)
+      block = create(:block, blocking_user: user, blocked_user: blocked, hide_me: Block::POSTS, hide_them: Block::POSTS)
+      create(:block, blocking_user: blocking, blocked_user: user, hide_me: Block::POSTS)
+      blocked_post = create(:post, user: blocking, authors_locked: true)
+      hidden_post = create(:post, user: blocked, authors_locked: true)
+      user_post = create(:post, user: user, authors_locked: true)
+
+      memory_store = ActiveSupport::Cache.lookup_store(:memory_store)
+      allow(Rails).to receive(:cache).and_return(memory_store)
+      Rails.cache.clear
+
+      expect(user.hidden_posts).to eq([hidden_post.id])
+      expect(user.blocked_posts).to eq([blocked_post.id])
+      expect(blocked.blocked_posts).to eq([user_post.id])
+
+      login_as(user)
+
+      delete :destroy, params: { id: block.id }
+
+      expect(Rails.cache.exist?(Block.cache_string_for(user.id, 'blocked'))).to be(true)
+      expect(Rails.cache.exist?(Block.cache_string_for(user.id, 'hidden'))).to be(false)
+      expect(Rails.cache.exist?(Block.cache_string_for(blocked.id, 'blocked'))).to be(false)
+
+      expect(user.hidden_posts).to be_empty
+      expect(blocked.blocked_posts).to be_empty
     end
   end
 end
