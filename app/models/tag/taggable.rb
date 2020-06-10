@@ -36,7 +36,7 @@ module Tag::Taggable
           instance_variable_get("@#{type_list}_changed") == true
         end
 
-        define_method("reload_#{type}_tags".to_sym) do
+        define_method("reload_#{type}_list".to_sym) do
           instance_variable_set("@#{type_list}", send("get_#{type}_tags"))
         end
 
@@ -47,12 +47,12 @@ module Tag::Taggable
     end
 
     def dirtify_tag_list(join)
-      send("reload_#{join.tag.type}_list")
+      send("reload_#{join.tag.type.tableize.singularize}_list")
     end
 
     def save_tags
       self.tag_types.each_key do |type|
-        next if send("#{type}_list_changed?")
+        next unless send("#{type}_list_changed?")
         new_list = send("#{type}_list")
         old_list = send("#{type}_list_was") || []
         add_tags(type, new_list - old_list)

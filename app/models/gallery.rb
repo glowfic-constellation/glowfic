@@ -10,7 +10,8 @@ class Gallery < ApplicationRecord
   has_many :characters_galleries, inverse_of: :gallery, dependent: :destroy
   has_many :characters, through: :characters_galleries, dependent: :destroy
 
-  has_many :gallery_tags, inverse_of: :gallery, dependent: :destroy
+  has_many :gallery_tags, inverse_of: :gallery, dependent: :destroy,
+    after_add: :dirtify_tag_list, after_remove: :dirtify_tag_list
   has_many :gallery_groups, -> { ordered_by_gallery_tag }, through: :gallery_tags, source: :gallery_group, dependent: :destroy
 
   validates :name, presence: true
