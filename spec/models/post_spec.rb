@@ -762,7 +762,7 @@ RSpec.describe Post do
     end
 
     it "does not reset on settings change" do
-      post.update!(setting_list: [create(:setting)])
+      post.update!(setting_list: [create(:setting).name])
       expect(post.reload).not_to be_show_warnings_for(user)
     end
 

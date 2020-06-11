@@ -29,11 +29,11 @@ RSpec.describe Setting do
       child2 = create(:setting) # has parent1, parent2, and child1 as parents
       child3 = create(:setting) # has parent1 as parent
 
-      child1.setting_list = [parent1.name]
+      child1.parent_setting_list = [parent1.name]
       child1.save!
 
-      child2.update!(setting_list: [parent1, parent2, child1].map(&:name))
-      child3.update!(setting_list: [parent1.name])
+      child2.update!(parent_setting_list: [parent1, parent2, child1].map(&:name))
+      child3.update!(parent_setting_list: [parent1.name])
 
       expect(parent1.reload.child_settings.ids).to match_array([child1, child2, child3].map(&:id))
       expect(parent2.child_settings.ids).to eq([child2.id])
