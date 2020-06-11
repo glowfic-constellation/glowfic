@@ -17,22 +17,23 @@ module Tag::Taggable
 
         class_eval { attribute type_list.to_sym, :string, array: true }
 
-        define_method(type_list.to_sym) do
-          return instance_variable_get("@#{type_list}") if instance_variable_defined?("@#{type_list}")
-          list = send("get_#{type}_tags")
-          instance_variable_set("@#{type_list}", list)
-          list
-        end
+        class_eval do
+          <<~MIXIN
+            def #{type_list} do
+              @#{type_list} ||= get_#{type}_tags
+            end
 
-        define_method("#{type_list}=".to_sym) do |list|
-          list = Tag::List.new(list)
-          return if list == send(type_list)
-          attribute_will_change!(type_list)
-          instance_variable_set("@#{type_list}", list)
-        end
+            def #{type_list}=(list)
+              list = Tag::List.new(list)
+              return if list == #{type_list}
+              #{type_list}_will_change!
+              @#{type_list} = list
+            end
 
-        define_method("get_#{type}_tags".to_sym) do
-          Tag::List.new(send(type.to_s.pluralize).map(&:name))
+            def get_#{type}_tags do
+              Tag::List.new(#{type.to_s.pluralize}.map(&:name))
+            end
+          MIXIN
         end
       end
     end
