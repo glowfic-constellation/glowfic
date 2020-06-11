@@ -10,37 +10,43 @@ module Tag::Taggable
       class_eval do
         class_attribute :tag_types
         self.tag_types = tag_types
+
+        attribute_method_suffix '='
+        attribute_method_prefix 'get_'
+
+        def attribute=(type_list)
+          list = Tag::List.new(list)
+          return if list == send(type_list)
+          attribute_will_change!(type_list)
+          instance_variable_set("@#{type_list}", list)
+        end
+
+        def get_attribute(type_list)
+          type = type_list[0..-6].to_s.pluralize
+          Tag::List.new(send(type).map(&:name))
+        end
       end
 
       tag_types.each_key do |type|
         type_list = "#{type}_list"
 
-        class_eval { attribute type_list.to_sym, :string, array: true }
-
         class_eval do
-          <<~MIXIN
-            def #{type_list} do
-              @#{type_list} ||= get_#{type}_tags
-            end
+          attribute type_list.to_sym, :string, array: true, default: []
+          define_attribute_method(type_list)
 
-            def #{type_list}=(list)
-              list = Tag::List.new(list)
-              return if list == #{type_list}
-              #{type_list}_will_change!
-              @#{type_list} = list
-            end
-
-            def get_#{type}_tags do
-              Tag::List.new(#{type.to_s.pluralize}.map(&:name))
-            end
-          MIXIN
+          define_method(type_list) do
+            return instance_variable_get("@#{type_list}") if instance_variable_defined?("@#{type_list}")
+            list = send("get_#{type_list}")
+            instance_variable_set("@#{type_list}", list)
+            list
+          end
         end
       end
     end
 
     def dirtify_tag_list(join)
       type = join.tag.type.tableize.singularize
-      send("#{type}_list=", send("get_#{type}_tags"))
+      send("#{type}_list=", send("get_#{type}_list"))
     end
 
     def save_tags
