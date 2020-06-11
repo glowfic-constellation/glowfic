@@ -15,7 +15,7 @@ module Tag::Taggable
       tag_types.each_key do |type|
         type_list = "#{type}_list"
 
-        class_eval { attr_reader "#{type_list}_was".to_sym }
+        class_eval { attribute type_list.to_sym, :string, array: true }
 
         define_method(type_list.to_sym) do
           return instance_variable_get("@#{type_list}") if instance_variable_defined?("@#{type_list}")
@@ -27,13 +27,8 @@ module Tag::Taggable
         define_method("#{type_list}=".to_sym) do |list|
           list = Tag::List.new(list)
           return if list == send(type_list)
-          instance_variable_set("@#{type_list}_changed", true)
-          instance_variable_set("@#{type_list}_was", send(type_list))
+          attribute_will_change!(type_list)
           instance_variable_set("@#{type_list}", list)
-        end
-
-        define_method("#{type_list}_changed?") do
-          instance_variable_get("@#{type_list}_changed") == true
         end
 
         define_method("get_#{type}_tags".to_sym) do
@@ -49,11 +44,13 @@ module Tag::Taggable
 
     def save_tags
       self.tag_types.each_key do |type|
-        next unless send("#{type}_list_changed?")
-        new_list = send("#{type}_list")
-        old_list = send("#{type}_list_was") || []
+        type_list = "#{type}_list"
+        next unless attribute_changed?(type_list)
+        new_list = send(type_list)
+        old_list = attribute_was(type_list) || []
         add_tags(type, new_list - old_list)
         rem_tags(type, old_list - new_list)
+        changes_applied
       end
     end
 
