@@ -6,6 +6,9 @@ module Tag::Taggable
 
     before_save :save_tags
 
+    private_class_method :has_tags
+    private_class_method :define_tag_methods
+
     def self.has_tags(**tag_types)
       class_eval do
         class_attribute :tag_types
@@ -19,6 +22,10 @@ module Tag::Taggable
         end
       end
 
+      define_tag_methods(tag_types)
+    end
+
+    def self.define_tag_methods(tag_types)
       tag_types.each_key do |type|
         type_list = "#{type}_list"
 
@@ -27,14 +34,7 @@ module Tag::Taggable
           define_attribute_method(type_list)
 
           define_method(type_list) do
-            list = read_attribute(type_list)
-            return list if list.present?
-            list = send("get_#{type_list}")
-            changed = attribute_changed?(type_list)
-            write_attribute(type_list, list)
-            return list if changed
-            clear_attribute_changes([type_list])
-            list
+            read_type_list(type_list)
           end
 
           define_method("#{type_list}=") do |list|
@@ -45,6 +45,17 @@ module Tag::Taggable
           end
         end
       end
+    end
+
+    def read_type_list(type_list)
+      list = read_attribute(type_list)
+      return list if list.present?
+      list = send("get_#{type_list}")
+      changed = attribute_changed?(type_list)
+      write_attribute(type_list, list)
+      return list if changed
+      clear_attribute_changes([type_list])
+      list
     end
 
     def dirtify_tag_list(join)
