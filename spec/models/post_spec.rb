@@ -774,7 +774,7 @@ RSpec.describe Post do
     it "resets with new warning without changing read time" do
       at_time = 3.days.ago
       post.mark_read(user, at_time: at_time, force: true)
-      post.content_warning_list += [create(:content_warning)]
+      post.content_warning_list += [create(:content_warning).name]
       post.save!
       expect(post.reload).to be_show_warnings_for(user)
       expect(post.last_read(user)).to be_the_same_time_as(at_time)
