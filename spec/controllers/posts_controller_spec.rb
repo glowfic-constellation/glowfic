@@ -790,13 +790,13 @@ RSpec.describe PostsController do
 
       # tags
       post = assigns(:post)
-      expect(post.settings.size).to eq(3)
-      expect(post.content_warnings.size).to eq(3)
-      expect(post.labels.size).to eq(3)
       expect(post.setting_list).to match_array([setting1.name, setting2.name, 'other'])
       expect(post.content_warning_list).to match_array([warning1.name, warning2.name, 'other'])
       expect(post.label_list).to match_array([label1.name, label2.name, 'other'])
 
+      expect(post.settings.size).to eq(0)
+      expect(post.content_warnings.size).to eq(0)
+      expect(post.labels.size).to eq(0)
       expect(Setting.count).to eq(2)
       expect(ContentWarning.count).to eq(2)
       expect(Label.count).to eq(2)
@@ -2385,15 +2385,16 @@ RSpec.describe PostsController do
         expect(templateless.name).to eq('Templateless')
         expect(templateless.plucked_characters).to eq([[char1.id, char1.name]])
 
-        # tags change only in memory when save fails
         post = assigns(:post)
-        expect(post.settings.size).to eq(3)
-        expect(post.content_warnings.size).to eq(3)
-        expect(post.labels.size).to eq(3)
+
+        # tags change only in list when save fails
         expect(post.setting_list).to match_array([setting.name, 'setting', 'dupesetting'])
         expect(post.content_warning_list).to match_array([warning.name, 'warning', 'dupewarning'])
         expect(post.label_list).to match_array([label.name, 'label', 'dupelabel'])
 
+        expect(post.settings.size).to eq(2)
+        expect(post.content_warnings.size).to eq(2)
+        expect(post.labels.size).to eq(2)
         expect(Setting.count).to eq(3)
         expect(ContentWarning.count).to eq(3)
         expect(Label.count).to eq(3)
