@@ -5,6 +5,8 @@ class Tag::List < Array
     self
   end
 
+  private
+
   def clean_tags
     reject!(&:blank?)
     map!(&:to_s)

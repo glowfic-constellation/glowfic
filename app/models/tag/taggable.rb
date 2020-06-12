@@ -11,15 +11,7 @@ module Tag::Taggable
         class_attribute :tag_types
         self.tag_types = tag_types
 
-        attribute_method_suffix '='
         attribute_method_prefix 'get_'
-
-        def attribute=(type_list)
-          list = Tag::List.new(list)
-          return if list == send(type_list)
-          attribute_will_change!(type_list)
-          instance_variable_set("@#{type_list}", list)
-        end
 
         def get_attribute(type_list)
           type = type_list[0..-6].to_s.pluralize
@@ -35,10 +27,18 @@ module Tag::Taggable
           define_attribute_method(type_list)
 
           define_method(type_list) do
-            return instance_variable_get("@#{type_list}") if instance_variable_defined?("@#{type_list}")
+            list = read_attribute(type_list)
+            return list if list.present?
             list = send("get_#{type_list}")
-            instance_variable_set("@#{type_list}", list)
+            write_attribute(type_list, list)
             list
+          end
+
+          define_method("#{type_list}=") do |list|
+            list = Tag::List.new(list)
+            return if list == send(type_list)
+            set_attribute_was(type_list, send(type_list))
+            write_attribute(type_list, list)
           end
         end
       end
@@ -52,12 +52,11 @@ module Tag::Taggable
     def save_tags
       self.tag_types.each_key do |type|
         type_list = "#{type}_list"
-        next unless attribute_changed?(type_list)
-        new_list = send(type_list)
-        old_list = attribute_was(type_list) || []
+        next unless attribute_previously_changed?(type_list)
+        new_list = previous_changes[type_list][1]
+        old_list = attribute_before_last_save(type_list) || []
         add_tags(type, new_list - old_list)
         rem_tags(type, old_list - new_list)
-        changes_applied
       end
     end
 
