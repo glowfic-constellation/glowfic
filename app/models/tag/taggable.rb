@@ -4,7 +4,7 @@ module Tag::Taggable
   included do
     private
 
-    after_save :save_tags
+    before_save :save_tags
 
     def self.has_tags(**tag_types)
       class_eval do
@@ -46,15 +46,15 @@ module Tag::Taggable
 
     def dirtify_tag_list(join)
       type = join.tag.type.tableize.singularize
-      send("#{type}_list=", send("get_#{type}_list"))
+      send("#{type}_list_will_change!")
     end
 
     def save_tags
       self.tag_types.each_key do |type|
         type_list = "#{type}_list"
-        next unless attribute_previously_changed?(type_list)
-        new_list = previous_changes[type_list][1]
-        old_list = attribute_before_last_save(type_list) || []
+        next unless attribute_changed?(type_list)
+        new_list = changes[type_list][1]
+        old_list = attribute_was(type_list) || []
         add_tags(type, new_list - old_list)
         rem_tags(type, old_list - new_list)
       end
@@ -65,13 +65,13 @@ module Tag::Taggable
       klass = self.tag_types[type]
       existing_tags = klass.where(name: list)
       new_tags = list - existing_tags.pluck(:name)
-      association = send(type.to_s.pluralize)
       list.each do |name|
         if new_tags.include?(name)
-          association.create!(name: name, user: user)
+          tag = klass.create!(name: name, user: user)
         else
-          tag_join.create!(tag: klass.find_by(name: name))
+          tag = klass.find_by(name: name)
         end
+        tag_join.new(tag: tag)
       end
     end
 
