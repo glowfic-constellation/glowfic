@@ -30,7 +30,10 @@ module Tag::Taggable
             list = read_attribute(type_list)
             return list if list.present?
             list = send("get_#{type_list}")
+            changed = attribute_changed?(type_list)
             write_attribute(type_list, list)
+            return list if changed
+            clear_attribute_changes([type_list])
             list
           end
 
@@ -63,15 +66,15 @@ module Tag::Taggable
     def add_tags(type, list)
       return if list.blank?
       klass = self.tag_types[type]
-      existing_tags = klass.where(name: list)
-      new_tags = list - existing_tags.pluck(:name)
+      existing_tags = klass.where(name: list).pluck(:name).map(&:downcase)
+      new_tags = list.reject{|n| existing_tags.include?(n.downcase) }
       list.each do |name|
         if new_tags.include?(name)
           tag = klass.create!(name: name, user: user)
         else
           tag = klass.find_by(name: name)
         end
-        tag_join.new(tag: tag)
+        send(type.to_s.pluralize) << tag
       end
     end
 
