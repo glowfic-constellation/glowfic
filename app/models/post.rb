@@ -42,6 +42,7 @@ class Post < ApplicationRecord
   before_update :set_timestamps
   before_validation :set_last_user, on: :create
   after_commit :notify_followers, on: :create
+  after_commit :invalidate_caches, on: :update
 
   NON_EDITED_ATTRS = %w(id created_at updated_at edited_at tagged_at last_user_id last_reply_id section_order)
   NON_TAGGED_ATTRS = %w(icon_id character_alias_id character_id)
@@ -330,5 +331,10 @@ class Post < ApplicationRecord
   def notify_followers
     return if is_import
     NotifyFollowersOfNewPostJob.perform_later(self.id, user_id)
+  end
+
+  def invalidate_caches
+    return unless saved_change_to_authors_locked?
+    Post::Author.clear_cache_for(authors)
   end
 end

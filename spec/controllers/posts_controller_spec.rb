@@ -768,6 +768,69 @@ RSpec.describe PostsController do
       post = assigns(:post)
       expect(post.flat_post).not_to be_nil
     end
+
+    context "with blocks" do
+      let(:user) { create(:user) }
+      let(:blocked) { create(:user) }
+      let(:blocking) { create(:user) }
+      let(:other_user) { create(:user) }
+      let(:memory_store) { ActiveSupport::Cache.lookup_store(:memory_store) }
+
+      before(:each) do
+        create(:block, blocking_user: user, blocked_user: blocked, hide_me: Block::POSTS)
+        create(:block, blocking_user: blocking, blocked_user: user, hide_them: Block::POSTS)
+        allow(Rails).to receive(:cache).and_return(memory_store)
+        Rails.cache.clear
+      end
+
+      it "regenerates blocked and hidden posts for poster" do
+        expect(blocking.hidden_posts).to be_empty
+        expect(blocked.blocked_posts).to be_empty
+
+        login_as(user)
+
+        post :create, params: {
+          post: {
+            subject: "subject",
+            user_id: user.id,
+            board_id: create(:board).id,
+            authors_locked: true,
+            unjoined_author_ids: [other_user.id],
+          }
+        }
+
+        expect(Rails.cache.exist?(Block.cache_string_for(blocking.id, 'hidden'))).to be(false)
+        expect(Rails.cache.exist?(Block.cache_string_for(blocked.id, 'blocked'))).to be(false)
+
+        post = assigns(:post)
+        expect(blocking.hidden_posts).to eq([post.id])
+        expect(blocked.blocked_posts).to eq([post.id])
+      end
+
+      it "regenerates blocked and hidden posts for coauthor" do
+        expect(blocking.hidden_posts).to be_empty
+        expect(blocked.blocked_posts).to be_empty
+
+        login_as(other_user)
+
+        post :create, params: {
+          post: {
+            subject: "subject",
+            user_id: other_user.id,
+            board_id: create(:board).id,
+            authors_locked: true,
+            unjoined_author_ids: [user.id],
+          }
+        }
+
+        expect(Rails.cache.exist?(Block.cache_string_for(blocking.id, 'hidden'))).to be(false)
+        expect(Rails.cache.exist?(Block.cache_string_for(blocked.id, 'blocked'))).to be(false)
+
+        post = assigns(:post)
+        expect(blocking.hidden_posts).to eq([post.id])
+        expect(blocked.blocked_posts).to eq([post.id])
+      end
+    end
   end
 
   describe "GET show" do
@@ -2335,6 +2398,108 @@ RSpec.describe PostsController do
           }
         }
         expect(Post.find_by_id(post.id).author_for(reply.user).private_note).not_to be_nil
+      end
+    end
+
+    context "with blocks" do
+      let(:user) { create(:user) }
+      let(:blocked) { create(:user) }
+      let(:blocking) { create(:user) }
+      let(:other_user) { create(:user) }
+      let(:memory_store) { ActiveSupport::Cache.lookup_store(:memory_store) }
+
+      before(:each) do
+        create(:block, blocking_user: user, blocked_user: blocked, hide_me: Block::POSTS)
+        create(:block, blocking_user: blocking, blocked_user: user, hide_them: Block::POSTS)
+        allow(Rails).to receive(:cache).and_return(memory_store)
+        Rails.cache.clear
+      end
+
+      it "regenerates blocked and hidden posts for poster" do
+        post = create(:post, user: user, authors_locked: false, unjoined_authors: [other_user])
+
+        expect(blocking.hidden_posts).to be_empty
+        expect(blocked.blocked_posts).to be_empty
+
+        login_as(user)
+
+        put :update, params: {
+          id: post.id,
+          post: { authors_locked: true }
+        }
+
+        expect(Rails.cache.exist?(Block.cache_string_for(blocking.id, 'hidden'))).to be(false)
+        expect(Rails.cache.exist?(Block.cache_string_for(blocked.id, 'blocked'))).to be(false)
+
+        expect(blocking.hidden_posts).to eq([post.id])
+        expect(blocked.blocked_posts).to eq([post.id])
+      end
+
+      it "regenerates blocked and hidden posts for coauthor" do
+        post = create(:post, user: other_user, authors_locked: false, unjoined_authors: [user])
+
+        expect(blocking.hidden_posts).to be_empty
+        expect(blocked.blocked_posts).to be_empty
+
+        login_as(other_user)
+
+        put :update, params: {
+          id: post.id,
+          post: { authors_locked: true }
+        }
+
+        expect(Rails.cache.exist?(Block.cache_string_for(blocking.id, 'hidden'))).to be(false)
+        expect(Rails.cache.exist?(Block.cache_string_for(blocked.id, 'blocked'))).to be(false)
+
+        expect(blocking.hidden_posts).to eq([post.id])
+        expect(blocked.blocked_posts).to eq([post.id])
+      end
+
+      it "regenerates blocked and hidden posts for new coauthor" do
+        post = create(:post, user: other_user, authors_locked: true)
+
+        expect(blocking.hidden_posts).to be_empty
+        expect(blocked.blocked_posts).to be_empty
+
+        login_as(other_user)
+
+        put :update, params: {
+          id: post.id,
+          post: {
+            unjoined_author_ids: [user.id]
+          }
+        }
+
+        expect(Rails.cache.exist?(Block.cache_string_for(blocking.id, 'hidden'))).to be(false)
+        expect(Rails.cache.exist?(Block.cache_string_for(blocked.id, 'blocked'))).to be(false)
+
+        expect(blocking.hidden_posts).to eq([post.id])
+        expect(blocked.blocked_posts).to eq([post.id])
+      end
+
+      it "regenerates blocked and hidden posts for removed coauthor" do
+        post = create(:post, user: other_user, unjoined_authors: [user], authors_locked: true)
+
+        expect(blocking.hidden_posts).to eq([post.id])
+        expect(blocked.blocked_posts).to eq([post.id])
+
+        login_as(other_user)
+
+        put :update, params: {
+          id: post.id,
+          post: {
+            unjoined_author_ids: ['']
+          }
+        }
+
+        post.reload
+        expect(post.unjoined_authors).to be_empty
+
+        expect(Rails.cache.exist?(Block.cache_string_for(blocking.id, 'hidden'))).to be(false)
+        expect(Rails.cache.exist?(Block.cache_string_for(blocked.id, 'blocked'))).to be(false)
+
+        expect(blocking.hidden_posts).to be_empty
+        expect(blocked.blocked_posts).to be_empty
       end
     end
   end
