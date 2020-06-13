@@ -34,7 +34,7 @@ class TemplatesController < ApplicationController
   def show
     @user = @template.user
     character_ids = @template.characters.pluck(:id)
-    post_ids = Reply.where(character_id: character_ids).select(:post_id).distinct.pluck(:post_id)
+    post_ids = Reply.where(character_id: character_ids).select(:post_id).distinct
     posts = Post.where(character_id: character_ids).or(Post.where(id: post_ids))
     @posts = posts_from_relation(posts.ordered)
     @page_title = @template.name

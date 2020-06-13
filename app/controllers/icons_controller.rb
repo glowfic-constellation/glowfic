@@ -44,7 +44,7 @@ class IconsController < UploadingController
   def show
     @page_title = @icon.keyword
     if params[:view] == 'posts'
-      post_ids = Reply.where(icon_id: @icon.id).select(:post_id).distinct.pluck(:post_id)
+      post_ids = Reply.where(icon_id: @icon.id).select(:post_id).distinct
       posts = Post.where(icon_id: @icon.id).or(Post.where(id: post_ids))
       @posts = posts_from_relation(posts.ordered)
     elsif params[:view] == 'galleries'
@@ -96,7 +96,7 @@ class IconsController < UploadingController
     gon.gallery = Hash[all_icons.map { |i| [i.id, {url: i.url, keyword: i.keyword}] }]
     gon.gallery[''] = {url: view_context.image_path('icons/no-icon.png'), keyword: 'No Icon'}
 
-    post_ids = Reply.where(icon_id: @icon.id).select(:post_id).distinct.pluck(:post_id)
+    post_ids = Reply.where(icon_id: @icon.id).select(:post_id).distinct
     all_posts = Post.where(icon_id: @icon.id) + Post.where(id: post_ids)
     @posts = all_posts.uniq
   end

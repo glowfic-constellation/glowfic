@@ -15,8 +15,8 @@ class RepliesController < WritableController
     @icon = Icon.find_by_id(params[:icon_id]) if params[:icon_id].present?
     if @post.try(:visible_to?, current_user)
       @users = @post.authors.active
-      char_ids = @post.replies.select(:character_id).distinct.pluck(:character_id) + [@post.character_id]
-      @characters = Character.where(id: char_ids).ordered
+      char_ids = @post.replies.select(:character_id).distinct
+      @characters = Character.where(id: char_ids).or(Character.where(id: @post.character_id)).ordered
       @templates = Template.where(id: @characters.map(&:template_id).uniq.compact).ordered
       gon.post_id = @post.id
     else
@@ -62,14 +62,14 @@ class RepliesController < WritableController
     if @post
       @search_results = @search_results.where(post_id: @post.id)
     elsif params[:board_id].present?
-      post_ids = Post.where(board_id: params[:board_id]).pluck(:id)
+      post_ids = Post.where(board_id: params[:board_id]).select(:id)
       @search_results = @search_results.where(post_id: post_ids)
     end
 
     if params[:template_id].present?
       @templates = Template.where(id: params[:template_id])
       if @templates.first.present?
-        character_ids = Character.where(template_id: @templates.first.id).pluck(:id)
+        character_ids = Character.where(template_id: @templates.first.id).select(:id)
         @search_results = @search_results.where(character_id: character_ids)
       end
     elsif params[:author_id].present?

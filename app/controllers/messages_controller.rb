@@ -4,7 +4,7 @@ class MessagesController < ApplicationController
   before_action :editor_setup, only: :new
 
   def index
-    blocked_ids = Block.where(blocking_user: current_user).pluck(:blocked_user_id)
+    blocked_ids = Block.where(blocking_user: current_user).select(:blocked_user_id)
     if params[:view] == 'outbox'
       @page_title = 'Outbox'
       from_table = current_user.sent_messages.where(visible_outbox: true).ordered_by_thread.select('distinct on (thread_id) messages.*')

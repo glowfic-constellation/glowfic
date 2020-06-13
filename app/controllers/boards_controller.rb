@@ -18,9 +18,9 @@ class BoardsController < ApplicationController
         @user.username + "'s Continuities"
       end
 
-      board_ids = BoardAuthor.where(user_id: @user.id, cameo: false).select(:board_id).distinct.pluck(:board_id)
-      @boards = Board.where(creator_id: @user.id).or(Board.where(id: board_ids)).ordered
-      @cameo_boards = Board.where(id: BoardAuthor.where(user_id: @user.id, cameo: true).select(:board_id).distinct.pluck(:board_id)).ordered
+      board_ids = BoardAuthor.where(user_id: @user.id, cameo: false).select(:board_id).distinct
+      @boards = Board.where(id: board_ids).ordered
+      @cameo_boards = Board.where(id: BoardAuthor.where(user_id: @user.id, cameo: true).select(:board_id).distinct).ordered
     else
       @page_title = 'Continuities'
       @boards = Board.ordered.paginate(page: page)
