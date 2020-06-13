@@ -6,9 +6,6 @@ module Tag::Taggable
 
     before_save :save_tags
 
-    private_class_method :has_tags
-    private_class_method :define_tag_methods
-
     def self.has_tags(**tag_types)
       class_eval do
         class_attribute :tag_types
@@ -46,6 +43,9 @@ module Tag::Taggable
         end
       end
     end
+
+    private_class_method :has_tags
+    private_class_method :define_tag_methods
 
     def read_type_list(type_list)
       list = read_attribute(type_list)
