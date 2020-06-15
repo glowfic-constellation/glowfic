@@ -56,49 +56,10 @@ class Api::V1::PostsController < Api::ApiController
   param :ordered_post_ids, Array, allow_blank: false
   param :section_id, :number, required: false
   def reorder
-    section_id = params[:section_id] ? params[:section_id].to_i : nil
-    post_ids = params[:ordered_post_ids].map(&:to_i).uniq
-    posts = Post.where(id: post_ids)
-    posts_count = posts.count
-    unless posts_count == post_ids.count
-      missing_posts = post_ids - posts.pluck(:id)
-      error = {message: "Some posts could not be found: #{missing_posts * ', '}"}
-      render json: {errors: [error]}, status: :not_found and return
-    end
-
-    boards = Board.where(id: posts.select(:board_id).distinct.pluck(:board_id))
-    unless boards.count == 1
-      error = {message: 'Posts must be from one board'}
-      render json: {errors: [error]}, status: :unprocessable_entity and return
-    end
-
-    board = boards.first
-    access_denied and return unless board.editable_by?(current_user)
-
-    post_section_ids = posts.select(:section_id).distinct.pluck(:section_id)
-    unless post_section_ids == [section_id] &&
-      (section_id.nil? || BoardSection.where(id: section_id, board_id: board.id).exists?)
-      error = {message: 'Posts must be from one specified section in the board, or no section'}
-      render json: {errors: [error]}, status: :unprocessable_entity and return
-    end
-
-    Post.transaction do
-      posts = posts.sort_by {|post| post_ids.index(post.id) }
-      posts.each_with_index do |post, index|
-        next if post.section_order == index
-        post.update(section_order: index)
-      end
-
-      other_posts = Post.where(board_id: board.id, section_id: section_id).where.not(id: post_ids).ordered_in_section
-      other_posts.each_with_index do |post, i|
-        index = i + posts_count
-        next if post.section_order == index
-        post.update(section_order: index)
-      end
-    end
-
-    posts = Post.where(board_id: board.id, section_id: section_id)
-    render json: {post_ids: posts.ordered_in_section.pluck(:id)}
+    list = super(params[:ordered_post_ids], model_klass: Post, parent_klass: Board,
+      section_klass: BoardSection, section_key: :section_id, section_id: params[:section_id])
+    return if performed?
+    render json: {post_ids: list}
   end
 
   private

@@ -74,40 +74,9 @@ class Api::V1::CharactersController < Api::ApiController
   error 422, "Invalid parameters provided"
   param :ordered_characters_gallery_ids, Array, allow_blank: false
   def reorder
-    section_ids = params[:ordered_characters_gallery_ids].map(&:to_i).uniq
-    sections = CharactersGallery.where(id: section_ids)
-    sections_count = sections.count
-    unless sections_count == section_ids.count
-      missing_sections = section_ids - sections.pluck(:id)
-      error = {message: "Some character galleries could not be found: #{missing_sections * ', '}"}
-      render json: {errors: [error]}, status: :not_found and return
-    end
-
-    characters = Character.where(id: sections.select(:character_id).distinct.pluck(:character_id))
-    unless characters.count == 1
-      error = {message: 'Character galleries must be from one character'}
-      render json: {errors: [error]}, status: :unprocessable_entity and return
-    end
-
-    character = characters.first
-    access_denied and return unless character.editable_by?(current_user)
-
-    CharactersGallery.transaction do
-      sections = sections.sort_by {|section| section_ids.index(section.id) }
-      sections.each_with_index do |section, index|
-        next if section.section_order == index
-        section.update(section_order: index)
-      end
-
-      other_sections = CharactersGallery.where(character_id: character.id).where.not(id: section_ids).ordered
-      other_sections.each_with_index do |section, i|
-        index = i + sections_count
-        next if section.section_order == index
-        section.update(section_order: index)
-      end
-    end
-
-    render json: {characters_gallery_ids: CharactersGallery.where(character_id: character.id).ordered.pluck(:id)}
+    list = super(params[:ordered_characters_gallery_ids], model_klass: CharactersGallery, model_name: 'character gallery', parent_klass: Character)
+    return if performed?
+    render json: {characters_gallery_ids: list}
   end
 
   private
