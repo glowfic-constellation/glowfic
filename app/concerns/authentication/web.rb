@@ -40,7 +40,11 @@ module Authentication::Web
     def set_user
       @current_user ||= User.find_by_id(session[:user_id])
       return unless @current_user
-      session[:api_token] ||= Authentication.generate_api_token(@current_user)
+      session[:api_token] = nil if Time.zone.now > session[:api_token].try(:[], "expires").to_i
+      session[:api_token] ||= {
+        value: Authentication.generate_api_token(@current_user),
+        expires: Authentication::EXPIRY.from_now.to_i
+      }
     end
   end
 end
