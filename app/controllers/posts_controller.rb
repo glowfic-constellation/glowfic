@@ -216,6 +216,7 @@ class PostsController < WritableController
         array: @post.errors.full_messages,
         message: "Your post could not be saved because of the following problems:"
       }
+      @audits = { post: @post.audits.count }
       editor_setup
       render :edit
     else

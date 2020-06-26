@@ -111,7 +111,10 @@ class RepliesController < WritableController
     if reply.post.present?
       last_seen_reply_order = reply.post.last_seen_reply_for(current_user).try(:reply_order)
       @unseen_replies = reply.post.replies.ordered.paginate(page: 1, per_page: 10)
-      @unseen_replies = @unseen_replies.where('reply_order > ?', last_seen_reply_order) if last_seen_reply_order.present?
+      if last_seen_reply_order.present?
+        @unseen_replies = @unseen_replies.where('reply_order > ?', last_seen_reply_order)
+        @audits = Audited::Audit.where(auditable_id: @unseen_replies.map(&:id)).group(:auditable_id).count
+      end
       most_recent_unseen_reply = @unseen_replies.last
 
       if params[:allow_dupe].blank?
@@ -185,6 +188,7 @@ class RepliesController < WritableController
         message: "Your reply could not be saved because of the following problems:",
         array: @reply.errors.full_messages
       }
+      @audits = { @reply.id => @post.audits.count }
       editor_setup
       render :edit
     else
