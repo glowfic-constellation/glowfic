@@ -3,7 +3,6 @@ class Block < ApplicationRecord
   belongs_to :blocked_user, class_name: 'User', optional: false
 
   validates :blocking_user_id, uniqueness: { scope: :blocked_user_id }
-  validates :hide_them, :hide_me, inclusion: { in: 0..2 }
   validate :not_blocking_self
   validate :option_chosen
 
@@ -14,9 +13,17 @@ class Block < ApplicationRecord
   after_create :mark_messages_read
   after_commit :invalidate_caches
 
-  NONE = 0
-  POSTS = 1
-  ALL = 2
+  enum hide_me: {
+    none: 0,
+    posts: 1,
+    all: 2
+  }, _prefix: true
+
+  enum hide_them: {
+    none: 0,
+    posts: 1,
+    all: 2
+  }, _prefix: true
 
   CACHE_VERSION = 3
 
@@ -26,19 +33,11 @@ class Block < ApplicationRecord
   end
 
   def hide_my_posts?
-    self.hide_me != NONE
-  end
-
-  def hide_my_content?
-    self.hide_me == ALL
+    !hide_me_none?
   end
 
   def hide_their_posts?
-    self.hide_them != NONE
-  end
-
-  def hide_their_content?
-    self.hide_them == ALL
+    !hide_them_none?
   end
 
   def self.cache_string_for(user_id, string='blocked')

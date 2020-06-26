@@ -16,7 +16,7 @@ module Blockable
   def author_blocking?(post, author_ids)
     return false unless post.authors_locked
     return false if author_ids.include?(self.id)
-    Block.where(blocking_user_id: author_ids, blocked_user: self).where("hide_me >= ?", Block::POSTS).exists?
+    Block.where(blocking_user_id: author_ids, blocked_user: self).where(hide_me: [:posts, :all]).exists?
   end
 
   def user_ids_blocked_interaction
@@ -32,10 +32,10 @@ module Blockable
   end
 
   def hidden_post_users
-    (blocking_post_users + Block.where(blocking_user: self).where("hide_them >= ?", Block::POSTS).pluck(:blocked_user_id)).uniq
+    (blocking_post_users + Block.where(blocking_user: self).where(hide_them: [:posts, :all]).pluck(:blocked_user_id)).uniq
   end
 
   def blocking_post_users
-    Block.where(blocked_user: self).where("hide_me >= ?", Block::POSTS).pluck(:blocking_user_id)
+    Block.where(blocked_user: self).where(hide_me: [:posts, :all]).pluck(:blocking_user_id)
   end
 end
