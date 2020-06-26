@@ -16,7 +16,10 @@ class SessionsController < ApplicationController
       user = auth.user
       flash[:success] = "You are now logged in as #{user.username}. Welcome back!"
       session[:user_id] = user.id
-      session[:api_token] = auth.api_token
+      session[:api_token] = {
+        value: auth.api_token,
+        expires: Authentication::EXPIRY.from_now.to_i
+      }
       cookies.permanent.signed[:user_id] = cookie_hash(user.id) if params[:remember_me].present?
       @current_user = user
       redirect_to continuities_path and return if session[:previous_url] == '/login'
