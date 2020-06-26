@@ -184,7 +184,7 @@ class ApplicationController < ActionController::Base
 
   def set_login_gon
     gon.logged_in = logged_in?
-    gon.api_token = session[:api_token] if logged_in?
+    gon.api_token = session[:api_token]["value"] if logged_in?
   end
 
   def set_timezone(&block)
