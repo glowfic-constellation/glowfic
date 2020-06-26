@@ -39,13 +39,14 @@ module WritableHelper
   end
 
   PRIVACY_MAP = {
-    Concealable::PUBLIC      => ['Public', 'world'],
-    Concealable::REGISTERED  => ['Constellation Users', 'star'],
-    Concealable::ACCESS_LIST => ['Access List', 'group'],
-    Concealable::PRIVATE     => ['Private', 'lock'],
+    public: ['Public', 'world'],
+    registered: ['Constellation Users', 'star'],
+    access_list: ['Access List', 'group'],
+    private: ['Private', 'lock'],
   }
 
   def privacy_state(privacy)
+    privacy = privacy.to_sym
     privacy_icon(privacy, false) + ' ' + PRIVACY_MAP[privacy][0]
   end
 

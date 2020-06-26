@@ -52,7 +52,7 @@ RSpec.describe Api::V1::CharactersController do
       end
 
       it "requires post with permission", show_in_doc: in_doc do
-        post = create(:post, privacy: Concealable::PRIVATE, with_character: true)
+        post = create(:post, privacy: :private, with_character: true)
         get :index, params: { post_id: post.id }
         expect(response).to have_http_status(:forbidden)
         expect(response.json['errors'].size).to eq(1)
@@ -238,7 +238,7 @@ RSpec.describe Api::V1::CharactersController do
     end
 
     it "requires post to have permission when provided a post_id", :show_in_doc do
-      post = create(:post, privacy: Concealable::PRIVATE, with_character: true)
+      post = create(:post, privacy: :private, with_character: true)
       get :show, params: { id: post.character_id, post_id: post.id }
       expect(response).to have_http_status(:forbidden)
       expect(response.json['errors'].size).to eq(1)

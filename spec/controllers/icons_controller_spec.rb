@@ -270,8 +270,8 @@ RSpec.describe IconsController do
       let(:icon) { create(:icon) }
       let(:post) { create(:post, icon: icon, user: icon.user) }
       let(:reply) { create(:reply, icon: icon, user: icon.user, post: create(:post)) }
-      let(:private_post) { create(:post, icon: icon, user: icon.user, privacy: Concealable::PRIVATE) }
-      let(:registered_post) { create(:post, icon: icon, user: icon.user, privacy: Concealable::REGISTERED) }
+      let(:private_post) { create(:post, icon: icon, user: icon.user, privacy: :private) }
+      let(:registered_post) { create(:post, icon: icon, user: icon.user, privacy: :registered) }
 
       before(:each) do
         create(:reply, post: post, user: icon.user, icon: icon)

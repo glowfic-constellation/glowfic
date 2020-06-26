@@ -431,7 +431,7 @@ RSpec.describe RepliesController do
       expect(reply.user_id).not_to eq(reply.post.user_id)
       expect(reply.post.visible_to?(reply.user)).to eq(true)
 
-      reply.post.privacy = Concealable::PRIVATE
+      reply.post.update!(privacy: :private)
       reply.post.save!
       reply.reload
       expect(reply.post.visible_to?(reply.user)).to eq(false)
@@ -492,8 +492,7 @@ RSpec.describe RepliesController do
       expect(reply.user_id).not_to eq(reply.post.user_id)
       expect(reply.post.visible_to?(reply.user)).to eq(true)
 
-      reply.post.privacy = Concealable::PRIVATE
-      reply.post.save!
+      reply.post.update!(privacy: :private)
       reply.reload
       expect(reply.post.visible_to?(reply.user)).to eq(false)
 
@@ -536,8 +535,7 @@ RSpec.describe RepliesController do
       expect(reply.user_id).not_to eq(reply.post.user_id)
       expect(reply.post.visible_to?(reply.user)).to eq(true)
 
-      reply.post.privacy = Concealable::PRIVATE
-      reply.post.save!
+      reply.post.update!(privacy: :private)
       reply.reload
       expect(reply.post.visible_to?(reply.user)).to eq(false)
 
@@ -602,7 +600,7 @@ RSpec.describe RepliesController do
       expect(reply.user_id).not_to eq(reply.post.user_id)
       expect(reply.post.visible_to?(reply.user)).to eq(true)
 
-      reply.post.privacy = Concealable::PRIVATE
+      reply.post.update!(privacy: :private)
       reply.post.save!
       reply.reload
       expect(reply.post.visible_to?(reply.user)).to eq(false)
@@ -803,8 +801,7 @@ RSpec.describe RepliesController do
       expect(reply.user_id).not_to eq(reply.post.user_id)
       expect(reply.post.visible_to?(reply.user)).to eq(true)
 
-      reply.post.privacy = Concealable::PRIVATE
-      reply.post.save!
+      reply.post.update!(privacy: :private)
       reply.reload
       expect(reply.post.visible_to?(reply.user)).to eq(false)
 
@@ -1226,7 +1223,7 @@ RSpec.describe RepliesController do
       it "only shows from visible posts" do
         reply1 = create(:reply, content: 'contains forks')
         reply2 = create(:reply, content: 'visible contains forks')
-        reply1.post.update!(privacy: Concealable::PRIVATE)
+        reply1.post.update!(privacy: :private)
         expect(reply1.post.reload).not_to be_visible_to(nil) # logged out, not visible
         expect(reply2.post.reload).to be_visible_to(nil)
         get :search, params: { commit: true, subj_content: 'forks' }
@@ -1242,7 +1239,7 @@ RSpec.describe RepliesController do
 
       it "requires visible post if given" do
         reply1 = create(:reply)
-        reply1.post.update!(privacy: Concealable::PRIVATE)
+        reply1.post.update!(privacy: :private)
         expect(reply1.post.reload).not_to be_visible_to(nil)
         get :search, params: { commit: true, post_id: reply1.post_id }
         expect(assigns(:search_results)).to be_nil

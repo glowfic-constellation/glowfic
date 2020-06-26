@@ -61,7 +61,7 @@ RSpec.describe NotifyFollowersOfNewPostJob do
 
     it "does not send for private posts" do
       create(:favorite, user: notified, favorite: author)
-      post = create(:post, user: author, privacy: Concealable::PRIVATE)
+      post = create(:post, user: author, privacy: :private)
       expect { NotifyFollowersOfNewPostJob.perform_now(post.id, post.user_id) }.not_to change { Message.count }
     end
 
@@ -69,7 +69,7 @@ RSpec.describe NotifyFollowersOfNewPostJob do
       unnotified = create(:user)
       create(:favorite, user: unnotified, favorite: author)
       create(:favorite, user: notified, favorite: author)
-      post = create(:post, user: author, privacy: Concealable::ACCESS_LIST, viewers: [notified])
+      post = create(:post, user: author, privacy: :access_list, viewers: [notified])
       expect { NotifyFollowersOfNewPostJob.perform_now(post.id, post.user_id) }.to change { Message.count }.by(1)
       expect(Message.where(recipient: unnotified)).not_to be_present
     end
@@ -221,7 +221,7 @@ RSpec.describe NotifyFollowersOfNewPostJob do
       author = create(:user)
       notified = create(:user)
       create(:favorite, user: notified, favorite: author)
-      post = create(:post, privacy: Concealable::ACCESS_LIST, viewers: [author])
+      post = create(:post, privacy: :access_list, viewers: [author])
       create(:reply, post: post, user: author) # reply
       expect { NotifyFollowersOfNewPostJob.perform_now(post.id, author.id) }.not_to change { Message.count }
     end
