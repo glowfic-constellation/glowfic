@@ -81,11 +81,12 @@ class RepliesController < WritableController
       .visible_to(current_user)
       .joins(:user)
       .left_outer_joins(:character)
-      .with_edit_audit_counts
       .paginate(page: page)
       .includes(:post)
 
     @search_results = @search_results.where.not(post_id: current_user.hidden_posts) if logged_in? && !params[:show_blocked]
+
+    @audits = Audited::Audit.where(auditable_id: @search_results.map(&:id)).group(:auditable_id).count
 
     unless params[:condensed]
       @search_results = @search_results
@@ -281,6 +282,7 @@ class RepliesController < WritableController
     @written = written
     @post = @written.post
     @written.user = current_user unless @written.user
+    @audits = { @written.id => @written.audits.count } if @written.id.present?
 
     @page_title = @post.subject
 
