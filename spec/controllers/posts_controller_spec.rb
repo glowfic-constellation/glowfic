@@ -949,6 +949,34 @@ RSpec.describe PostsController do
       expect(response).to render_template(:show)
     end
 
+    it "calculates audits" do
+      Reply.auditing_enabled = true
+      Post.auditing_enabled = true
+      post = create(:post)
+
+      replies = Audited.audit_class.as_user(post.user) do
+        create_list(:reply, 6, post: post, user: post.user)
+      end
+
+      Audited.audit_class.as_user(post.user) do
+        replies[1].touch # rubocop:disable Rails/SkipsModelValidations
+        replies[3].update!(character: create(:character, user: post.user))
+        replies[2].update!(content: 'new content')
+        1.upto(5) { |i| replies[4].update!(content: 'message' + i.to_s) }
+      end
+      Audited.audit_class.as_user(create(:mod_user)) do
+        replies[5].update!(content: 'new content')
+      end
+
+      counts = replies.map(&:id).zip([1, 1, 2, 2, 6, 2]).to_h
+      counts[:post] = 1
+
+      get :show, params: { id: post.id }
+      expect(assigns(:audits)).to eq(counts)
+      Reply.auditing_enabled = false
+      Post.auditing_enabled = false
+    end
+
     context "with render_views" do
       render_views
 
@@ -1786,6 +1814,7 @@ RSpec.describe PostsController do
       end
 
       it "sets expected variables" do
+        Post.auditing_enabled = true
         user = create(:user)
         login_as(user)
         post = create(:post, user: user, subject: 'old', content: 'example')
@@ -1830,6 +1859,7 @@ RSpec.describe PostsController do
         expect(assigns(:post).icon).to eq(icon)
         expect(assigns(:post).character_alias).to eq(calias)
         expect(assigns(:page_title)).to eq('Previewing: test')
+        expect(assigns(:audits)).to eq({post: 1})
 
         # editor_setup:
         expect(assigns(:javascripts)).to include('posts/editor')
@@ -1872,6 +1902,7 @@ RSpec.describe PostsController do
         expect(post.character).to be_nil
         expect(post.icon).to be_nil
         expect(post.character_alias).to be_nil
+        Post.auditing_enabled = false
       end
 
       it "does not crash without arguments" do

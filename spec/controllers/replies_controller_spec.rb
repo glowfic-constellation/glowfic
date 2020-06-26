@@ -693,6 +693,7 @@ RSpec.describe RepliesController do
 
     context "preview" do
       it "takes correct actions" do
+        Reply.auditing_enabled = true
         user = create(:user)
         reply_post = create(:post, user: user)
         reply = create(:reply, post: reply_post, user: user)
@@ -724,6 +725,7 @@ RSpec.describe RepliesController do
         expect(assigns(:post)).to eq(reply_post)
         expect(assigns(:reply)).to eq(reply)
         expect(ReplyDraft.count).to eq(0)
+        expect(assigns(:audits)).to eq({reply.id => 1})
 
         written = assigns(:written)
         expect(written).not_to be_a_new_record
@@ -749,6 +751,7 @@ RSpec.describe RepliesController do
         templateless = templates.last
         expect(templateless.name).to eq('Templateless')
         expect(templateless.plucked_characters).to eq([[char.id, char.name]])
+        Reply.auditing_enabled = false
       end
 
       it "takes correct actions for moderators" do
@@ -1279,6 +1282,31 @@ RSpec.describe RepliesController do
         end
         get :search, params: { commit: true, sort: 'created_old' }
         expect(assigns(:search_results)).to eq([reply, reply2])
+      end
+
+      it "calculates audits" do
+        Reply.auditing_enabled = true
+        user = create(:user)
+
+        replies = Audited.audit_class.as_user(user) do
+          create_list(:reply, 6, user: user)
+        end
+
+        Audited.audit_class.as_user(user) do
+          replies[1].touch # rubocop:disable Rails/SkipsModelValidations
+          replies[3].update!(character: create(:character, user: user))
+          replies[2].update!(content: 'new content')
+          1.upto(5) { |i| replies[4].update!(content: 'message' + i.to_s) }
+        end
+        Audited.audit_class.as_user(create(:mod_user)) do
+          replies[5].update!(content: 'new content')
+        end
+
+        counts = replies.map(&:id).zip([1, 1, 2, 2, 6, 2]).to_h
+
+        get :search, params: { commit: true, sort: 'created_old' }
+        expect(assigns(:audits)).to eq(counts)
+        Reply.auditing_enabled = false
       end
     end
   end

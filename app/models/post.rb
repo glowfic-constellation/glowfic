@@ -251,11 +251,6 @@ class Post < ApplicationRecord
     replies.count
   end
 
-  def has_edit_audits?
-    return read_attribute(:has_edit_audits) if has_attribute?(:has_edit_audits)
-    audits.count > 1
-  end
-
   def last_user_deleted?
     return read_attribute(:last_user_deleted) if has_attribute?(:last_user_deleted)
     last_user.deleted?

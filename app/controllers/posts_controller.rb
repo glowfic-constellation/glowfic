@@ -312,6 +312,9 @@ class PostsController < WritableController
     @labels = process_tags(Label, obj_param: :post, id_param: :label_ids)
 
     @written = @post
+
+    @audits = { post: @post.audits.count } if @post.id.present?
+
     editor_setup
     @page_title = 'Previewing: ' + @post.subject.to_s
     render :preview
