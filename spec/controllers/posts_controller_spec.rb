@@ -1217,6 +1217,25 @@ RSpec.describe PostsController do
       get :history, params: { id: create(:post).id }
       expect(response.status).to eq(200)
     end
+
+    context "with render_view" do
+      render_views
+
+      it "works" do
+        Post.auditing_enabled = true
+        post = create(:post)
+        post.update!(privacy: :access_list)
+        post.update!(board: create(:board))
+        post.update!(content: 'new content')
+
+        login_as(post.user)
+
+        get :history, params: { id: post.id }
+
+        expect(response.status).to eq(200)
+        Post.auditing_enabled = false
+      end
+    end
   end
 
   describe "GET delete_history" do
