@@ -2,7 +2,6 @@
 /* global gon, tinyMCE, resizeScreenname, createTagSelect, createSelect2 */
 
 var tinyMCEInit = false, shownIcons = [];
-var PRIVACY_ACCESS = 2; // TODO don't hardcode
 var iconSelectBox;
 
 $(document).ready(function() {
@@ -45,7 +44,7 @@ function setupMetadataEditor() {
   createTagSelect("Setting", "setting", "post");
   createTagSelect("ContentWarning", "content_warning", "post");
 
-  if (String($("#post_privacy").val()) !== String(PRIVACY_ACCESS)) {
+  if ($("#post_privacy").val() !== 'access_list') {
     $("#access_list").hide();
   }
 
@@ -53,7 +52,7 @@ function setupMetadataEditor() {
   $("#post_board_id").change(function() { setSections(); });
 
   $("#post_privacy").change(function() {
-    if (String($(this).val()) === String(PRIVACY_ACCESS)) {
+    if ($(this).val() === 'access_list') {
       $("#access_list").show();
     } else {
       $("#access_list").hide();
