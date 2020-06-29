@@ -360,7 +360,7 @@ class CharactersController < ApplicationController
     linked << ("Setting".pluralize(settings.count) + ": " + settings.join(', ')) if settings.present?
     desc = [linked.join('. ')].compact_blank
     desc << generate_short(@character.description) if @character.description.present?
-    posts_count = Reply.where(character_id: @character.id).privacy_public.select(:post_id).distinct.count
+    posts_count = Reply.where(character_id: @character.id).visible_to(nil).select(:post_id).distinct.count
     desc << "#{posts_count} #{'post'.pluralize(posts_count)}" if posts_count > 0
     data = {
       url: character_url(@character),
