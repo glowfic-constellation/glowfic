@@ -968,11 +968,8 @@ RSpec.describe PostsController do
         replies[5].update!(content: 'new content')
       end
 
-      counts = replies.map(&:id).zip([1, 1, 2, 2, 6, 2]).to_h
-      counts[:post] = 1
-
       get :show, params: { id: post.id }
-      expect(assigns(:audits)).to eq(counts)
+      expect(assigns(:audits)).to match_array(replies[2..5].map(&:id))
       Reply.auditing_enabled = false
       Post.auditing_enabled = false
     end
@@ -1878,7 +1875,7 @@ RSpec.describe PostsController do
         expect(assigns(:post).icon).to eq(icon)
         expect(assigns(:post).character_alias).to eq(calias)
         expect(assigns(:page_title)).to eq('Previewing: test')
-        expect(assigns(:audits)).to eq({post: 1})
+        expect(assigns(:audits)).to eq([])
 
         # editor_setup:
         expect(assigns(:javascripts)).to include('posts/editor')

@@ -268,6 +268,11 @@ class Post < ApplicationRecord
     adjacent_posts_for(user) { |relation| relation.find_by('section_order > ?', self.section_order) }
   end
 
+  def has_edit_audits?
+    return false unless id.present?
+    audits.where(action: 'update').exists?
+  end
+
   private
 
   def adjacent_posts_for(user)

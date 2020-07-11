@@ -1302,10 +1302,8 @@ RSpec.describe RepliesController do
           replies[5].update!(content: 'new content')
         end
 
-        counts = replies.map(&:id).zip([1, 1, 2, 2, 6, 2]).to_h
-
         get :search, params: { commit: true, sort: 'created_old' }
-        expect(assigns(:audits)).to eq(counts)
+        expect(assigns(:audits)).to eq(replies[2..5].map(&:id))
         Reply.auditing_enabled = false
       end
     end

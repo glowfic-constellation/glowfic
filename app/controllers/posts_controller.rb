@@ -216,7 +216,7 @@ class PostsController < WritableController
         array: @post.errors.full_messages,
         message: "Your post could not be saved because of the following problems:"
       }
-      @audits = { post: @post.audits.count }
+      @audits = @post.has_edit_audits? ? [:post] : []
       editor_setup
       render :edit
     else
@@ -314,7 +314,7 @@ class PostsController < WritableController
 
     @written = @post
 
-    @audits = { post: @post.audits.count } if @post.id.present?
+    @audits = @post.has_edit_audits? ? [:post] : []
 
     editor_setup
     @page_title = 'Previewing: ' + @post.subject.to_s

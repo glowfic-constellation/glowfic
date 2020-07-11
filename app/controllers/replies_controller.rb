@@ -86,7 +86,7 @@ class RepliesController < WritableController
 
     @search_results = @search_results.where.not(post_id: current_user.hidden_posts) if logged_in? && !params[:show_blocked]
 
-    @audits = Audited::Audit.where(auditable_id: @search_results.map(&:id)).group(:auditable_id).count
+    @audits = Audited::Audit.where(auditable_id: @search_results.map(&:id), action: 'update').select(:auditable_id).distinct.pluck(:auditable_id)
 
     unless params[:condensed]
       @search_results = @search_results
@@ -113,7 +113,7 @@ class RepliesController < WritableController
       @unseen_replies = reply.post.replies.ordered.paginate(page: 1, per_page: 10)
       if last_seen_reply_order.present?
         @unseen_replies = @unseen_replies.where('reply_order > ?', last_seen_reply_order)
-        @audits = Audited::Audit.where(auditable_id: @unseen_replies.map(&:id)).group(:auditable_id).count
+        @audits = Audited::Audit.where(auditable_id: @unseen_replies.map(&:id), action: 'update').select(:auditable_id).distinct.pluck(:auditable_id)
       end
       most_recent_unseen_reply = @unseen_replies.last
 
@@ -188,7 +188,7 @@ class RepliesController < WritableController
         message: "Your reply could not be saved because of the following problems:",
         array: @reply.errors.full_messages
       }
-      @audits = { @reply.id => @post.audits.count }
+      @audits = [@reply.id]
       editor_setup
       render :edit
     else
