@@ -45,7 +45,7 @@ class User < ApplicationRecord
   validate :username_not_reserved
 
   before_validation :encrypt_password, :strip_spaces
-  after_update :update_flat_posts
+  after_update_commit :update_flat_posts
   after_save :clear_password
 
   scope :ordered, -> { order(username: :asc) }
