@@ -137,12 +137,6 @@ RSpec.describe ApplicationHelper do
         expect(result).to be_html_safe
       end
 
-      it "defaults to old linebreak-to-br format when blockquote detected" do
-        text = "<blockquote>Blah. Blah.\r\nBlah.\r\n\r\nBlah blah.</blockquote>\r\nBlah."
-        expected = "<blockquote>Blah. Blah.<br>Blah.<br><br>Blah blah.</blockquote><br>Blah."
-        expect(helper.sanitize_written_content(text)).to eq(expected)
-      end
-
       it "does not mangle large breaks" do
         text = "line1\n\n\nline2"
         expected = "<p>line1</p>\n\n<p>\n<br>line2</p>"
@@ -161,6 +155,75 @@ RSpec.describe ApplicationHelper do
         text = "line1<b>text\n\nline2</b>"
         expected = "<p>line1<b>text</b></p><b>\n\n</b><p><b>line2</b></p>"
         expect(helper.sanitize_written_content(text)).to eq(expected)
+      end
+
+      it "treats phrasal elements as phrasal content" do
+        text = "here is <em>inline</em> modifications to <a href='https://example.com'>some text</a>."
+        expected = '<p>here is <em>inline</em> modifications to <a href="https://example.com">some text</a>.</p>'
+        expect(helper.sanitize_written_content(text)).to eq(expected)
+      end
+
+      context "with non-phrasing content" do
+        it "does a simple linebreak-to-br conversion inside elements" do
+          text = "<blockquote>Some text\nhere.\n\nNew paragraph.</blockquote>"
+          expected = "<blockquote>Some text<br>here.<br><br>New paragraph.</blockquote>"
+          result = helper.sanitize_written_content(text)
+          expect(result).to eq(expected)
+          expect(result).to be_html_safe
+
+          text = "<table><tr><td>Text\r\nLinebreak.\r\n\r\nDouble linebreak.</td></tr></table>"
+          expected = "<table><tr><td>Text<br>Linebreak.<br><br>Double linebreak.</td></tr></table>"
+          expect(helper.sanitize_written_content(text)).to eq(expected)
+        end
+
+        it "does not error on lists" do
+          # does not currently handle lists very well: erroneous <br> tags.
+          text = "Here's a list:\n<ul>\n<li>Test.</li>\n<li>Next item.</li>\n</ul>\nText after."
+          expected = "<p>Here's a list:\n</p><ul><br><li>Test.</li><br><li>Next item.</li><br></ul><p>Text after.</p>"
+          expect(helper.sanitize_written_content(text)).to eq(expected)
+        end
+
+        skip "should handle lists well"
+
+        it "produces valid HTML given tables" do
+          # TODO: do not create a bunch of linebreaks at the start of this table
+          text = "<table>\n<tr>\n<td>\ntext here\n\nnew line\n</td>\n</tr>\n</table>"
+          expected = "<br><br><br><br><table><tr><td><br>text here<br><br>new line<br></td></tr></table>"
+          expect(helper.sanitize_written_content(text)).to eq(expected)
+        end
+
+        skip "should handle tables well"
+
+        it "handles text on either side of block elements" do
+          # no linebreaks
+          text = "no linebreak before.<blockquote>no linebreaks inside</blockquote>no linebreak after."
+          expected = "<p>no linebreak before.</p><blockquote>no linebreaks inside</blockquote><p>no linebreak after.</p>"
+          expect(helper.sanitize_written_content(text)).to eq(expected)
+
+          # single linebreaks either side
+          text = "Blah.\r\n<blockquote>Blah. Blah.\r\nBlah.\r\n\r\nBlah blah.</blockquote>\r\nBlah."
+          expected = "<p>Blah.\n</p><blockquote>Blah. Blah.<br>Blah.<br><br>Blah blah.</blockquote><p>Blah.</p>"
+          expect(helper.sanitize_written_content(text)).to eq(expected)
+
+          # double linebreaks either side
+          text = "Blah.\n\n<blockquote>Text\n\nOther text.</blockquote>\nText.\n\nOther text."
+          expected = "<p>Blah.</p><blockquote>Text<br><br>Other text.</blockquote><p>Text.</p><p>Other text.</p>"
+          expect(helper.sanitize_written_content(text)).to eq(expected)
+        end
+
+        it "does not error on strange input" do
+          text = "here is a <em>italic\n\nnew paragraph</em>, followed by <strong><div>a bold\ndiv with\n\nlinebreaks.</div></strong>."
+          expected = "<p>here is a <em>italic<br><br>new paragraph</em>, followed by " +
+            "<strong></strong></p><div><strong>a bold<br>div with<br><br>linebreaks.</strong></div>.<p></p>"
+          expect(helper.sanitize_written_content(text)).to eq(expected)
+        end
+
+        it "still allows long linebreaks" do
+          text = "\n\n\nstart.\n\n\n\n\nnext line.<blockquote>\n\ntext.\n\n\n\nmore text.\n\n</blockquote>\n\n\n\nmore text.\n\n\n"
+          expected = "<p>&nbsp;</p><p>\n<br>start.</p><p>&nbsp;</p><p>\n<br>next line.</p>" +
+            "<blockquote><br><br>text.<br><br><br><br>more text.<br><br></blockquote><p>&nbsp;</p><p>\n<br>more text.</p><p>\n</p>"
+          expect(helper.sanitize_written_content(text)).to eq(expected)
+        end
       end
     end
   end
