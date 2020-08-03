@@ -23,6 +23,8 @@ class Reply < ApplicationRecord
   after_destroy :set_previous_reply_to_last, :remove_post_author, :update_flat_post
   after_save :update_flat_post
 
+  CONTENT_ATTRS = %w(icon_id character_alias_id character_id content)
+
   attr_accessor :skip_notify, :skip_post_update, :is_import, :skip_regenerate, :skip_draft
 
   pg_search_scope(
@@ -168,6 +170,7 @@ class Reply < ApplicationRecord
 
   def set_post_written
     return unless reply_order == 0
+    return if self.slice(CONTENT_ATTRS) == post.slice(CONTENT_ATTRS)
     post.assign_attributes(
       content: content,
       icon: icon,
@@ -178,6 +181,7 @@ class Reply < ApplicationRecord
 
   def update_post_written
     return unless reply_order == 0
+    return if self.slice(CONTENT_ATTRS) == post.slice(CONTENT_ATTRS)
     post.update!(
       content: content,
       icon: icon,
