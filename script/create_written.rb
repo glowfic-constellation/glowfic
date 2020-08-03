@@ -15,6 +15,7 @@ def create_writtens
           created_at: post.created_at,
           updated_at: post.edited_at,
         )
+        reply.audits.delete_all
         audits = post.audits.where("audits.audited_changes ?| array['content', 'icon_id', 'character_id', 'character_alias_id']")
         audits.each do |audit|
           reply.audits.create!(
