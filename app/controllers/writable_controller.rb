@@ -83,7 +83,7 @@ class WritableController < ApplicationController
       character_aliases.name as alias
     SQL
 
-    reply_count = @replies.count
+    reply_count = @replies.where.not(reply_order: 0).count
 
     @replies = @replies
       .select(select)
