@@ -53,6 +53,7 @@ class Post < ApplicationRecord
   before_create :build_initial_flat_post, :set_timestamps
   before_update :set_timestamps
   after_commit :notify_followers, on: :create
+  after_commit :invalidate_caches, on: :update
 
   NON_EDITED_ATTRS = %w(id created_at updated_at edited_at tagged_at last_user_id last_reply_id section_order)
   NON_TAGGED_ATTRS = %w(icon_id character_alias_id character_id)
