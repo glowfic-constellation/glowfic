@@ -108,6 +108,8 @@ class PostScraper < Object
       raise AlreadyImportedError.new("This thread has already been imported", subj_post.id)
     end
 
+    scraper = ReplyScraper.new(@post, console: @console_import)
+    scraper.import(doc)
     scraper = ReplyScraper.new(@post.written, console: @console_import)
     scraper.import(doc)
   end

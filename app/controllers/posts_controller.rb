@@ -137,6 +137,7 @@ class PostsController < WritableController
     import_thread and return if params[:button_import].present?
 
     @post = current_user.posts.new(permitted_params)
+    @post.assign_attributes(written_params)
     @post.written.assign_attributes(written_params)
 
     preview and return if params[:button_preview].present?
@@ -219,6 +220,7 @@ class PostsController < WritableController
     change_authors_locked and return if params[:authors_locked].present?
 
     @post.assign_attributes(permitted_params(params[:button_preview].blank?))
+    @post.assign_attributes(written_params)
     @post.written.assign_attributes(written_params)
     preview and return if params[:button_preview].present?
 

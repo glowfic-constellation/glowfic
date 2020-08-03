@@ -76,10 +76,10 @@ FactoryBot.define do
       with_character { false }
       num_replies { 0 }
 
-      character { nil }
-      character_alias { nil }
-      icon { nil }
-      content { "test content" }
+      # character { nil }
+      # character_alias { nil }
+      # icon { nil }
+      # content { "test content" }
     end
     user
     board
@@ -88,16 +88,17 @@ FactoryBot.define do
     sequence :subject, ordered_numbers do |n|
       "test subject #{n}"
     end
+    content { "test content "}
 
     after(:build) do |post, evaluator|
       # create_written is called before factorybot sets the user
       # so we need to set the post.written user here
       post.written.user = post.user
 
-      post.written.content = evaluator.content
-      post.written.character = evaluator.character if evaluator.character
-      post.written.character_alias = evaluator.character_alias if evaluator.character_alias
-      post.written.icon = evaluator.icon if evaluator.icon
+      post.written.content = post.content
+      post.written.character = post.character
+      post.written.character_alias = post.character_alias
+      post.written.icon = post.icon
 
       post.written.character = create(:character, user: post.user) if evaluator.with_character
       post.written.icon = create(:icon, user: post.user) if evaluator.with_icon
