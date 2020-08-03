@@ -27,8 +27,10 @@ RSpec.describe Post do
           post.update!(content: 'new content')
         end
         post.reload
-        expect(post.edited_at).to be_the_same_time_as(old_edited_at)
-        expect(post.tagged_at).to be > old_tagged_at
+        # change to this when we stop maintaining the post duplicate
+        # expect(post.edited_at).to be_the_same_time_as(old_edited_at)
+        expect(post.edited_at).to be > old_edited_at # because it's currently updating the post
+        expect(post.tagged_at).to be > post.created_at
         expect(post.written.updated_at).to be > old_written_updated_at
       end
 
@@ -74,6 +76,7 @@ RSpec.describe Post do
       end
 
       it "should not update when content edited" do
+        skip "until we stop mantaining post content"
         Timecop.freeze(time) do
           post.written.update!(content: 'newer content')
         end
@@ -117,6 +120,7 @@ RSpec.describe Post do
         let!(:old_tagged_at) { post.tagged_at } # rubocop:disable RSpec/LetSetup # false positive
 
         it "should not update if first reply edited" do
+          skip "until we stop mantaining post content"
           old_tagged_at = post.tagged_at
           Timecop.freeze(time) do
             reply.update!(content: 'new content')
@@ -160,6 +164,7 @@ RSpec.describe Post do
     end
 
     it "should not update when content is edited" do
+      skip "until we stop mantaining post content"
       expect(post.edited_at).to eq(post.created_at)
       post.written.update!(content: 'new content now')
       expect(post.edited_at).to eq(post.created_at)
