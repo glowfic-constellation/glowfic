@@ -6,9 +6,25 @@
 class UpdateModelJob < ApplicationJob
   queue_as :low
 
-  def perform(klass, where_vals, new_attrs)
+  def perform(klass, where_vals, new_attrs, user_id=0)
+    if user_id == 0
+      UpdateModelJob.notify_exception(ArgumentError, klass, where_vals, new_attrs)
+    elsif !User.exists?(user_id)
+      UpdateModelJob.notify_exception(ActiveRecord::RecordNotFound, klass, where_vals, new_attrs, user_id)
+    end
+
+    if user_id == 0
+      update_records(klass, where_vals, new_attrs)
+    else
+      Audited.audit_class.as_user(User.find_by(id: user_id)) do
+        update_records(klass, where_vals, new_attrs)
+      end
+    end
+  end
+
+  def update_records(klass, where_vals, new_attrs)
     klass.constantize.where(where_vals).find_each do |model|
-      model.update(new_attrs)
+      model.update!(new_attrs)
     end
   end
 end
