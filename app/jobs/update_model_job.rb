@@ -9,14 +9,14 @@ class UpdateModelJob < ApplicationJob
   def perform(klass, where_vals, new_attrs, user_id=0)
     if user_id == 0
       UpdateModelJob.notify_exception(ArgumentError, klass, where_vals, new_attrs)
-    elsif !User.exists?(user_id)
+    elsif (user = User.find_by(id: user_id)).nil?
       UpdateModelJob.notify_exception(ActiveRecord::RecordNotFound, klass, where_vals, new_attrs, user_id)
     end
 
     if user_id == 0
       update_records(klass, where_vals, new_attrs)
     else
-      Audited.audit_class.as_user(User.find_by(id: user_id)) do
+      Audited.audit_class.as_user(user) do
         update_records(klass, where_vals, new_attrs)
       end
     end
