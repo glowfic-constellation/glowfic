@@ -21,12 +21,14 @@ def create_writtens
           reply.audits.create!(
             user_id: audit.user_id,
             user_type: audit.user_type,
+            username: username,
             action: audit.action,
             audited_changes: audit.audited_changes,
             version: audit.version,
             remote_address: audit.remote_address,
             created_at: audit.created_at,
             request_uuid: audit.request_uuid,
+            comment: comment,
           )
         end
       end
