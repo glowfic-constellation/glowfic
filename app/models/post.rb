@@ -36,7 +36,7 @@ class Post < ApplicationRecord
 
   has_one :written, -> { where(reply_order: 0) }, class_name: 'Reply', inverse_of: :post
 
-  attr_accessor :is_import, :skip_written
+  attr_accessor :is_import, :skip_written # TODO: delete skip_written after the migration is done
   attr_writer :skip_edited
 
   validates :subject, presence: true, length: { maximum: 255 }
