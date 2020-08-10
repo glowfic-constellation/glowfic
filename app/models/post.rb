@@ -391,6 +391,8 @@ class Post < ApplicationRecord
       created_at: created_at,
       updated_at: edited_at,
       skip_regenerate: true,
+      skip_post_update: true,
+      is_import: true,
     )
   end
 
@@ -405,6 +407,7 @@ class Post < ApplicationRecord
       character: character,
       character_alias: character_alias,
       updated_at: edited_at,
+      skip_post_update: true,
     )
   end
 end
