@@ -216,7 +216,7 @@ class Post < ApplicationRecord
   def total_word_count
     return word_count unless replies.exists?
     contents = replies.pluck(:content)
-    contents[0] = contents[0].gsub(/<[^>]*>/ui,'').split.size
+    contents[0] = contents[0].gsub(/<[^>]*>/ui, '').split.size
     word_count + contents.inject{|r, e| r + e.split.size}.to_i
   end
 
@@ -226,7 +226,7 @@ class Post < ApplicationRecord
     return sum unless replies.where(user_id: user.id).exists?
 
     contents = replies.where(user_id: user.id).pluck(:content)
-    contents[0] = contents[0].gsub(/<[^>]*>/ui,'').split.size
+    contents[0] = contents[0].gsub(/<[^>]*>/ui, '').split.size
     sum + contents.inject{|r, e| r + e.split.size}.to_i
   end
 

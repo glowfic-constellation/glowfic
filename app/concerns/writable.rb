@@ -30,7 +30,7 @@ module Writable
 
     def word_count
       return 0 if content.nil?
-      content.gsub(/<[^>]*>/ui,'').split.size
+      content.gsub(/<[^>]*>/ui, '').split.size
     end
 
     def url
