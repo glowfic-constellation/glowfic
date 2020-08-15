@@ -73,6 +73,8 @@ class WritableController < ApplicationController
       character_aliases.name as alias
     SQL
 
+    reply_count = @replies.count
+
     @replies = @replies
       .select(select)
       .joins(:user)
@@ -80,7 +82,7 @@ class WritableController < ApplicationController
       .left_outer_joins(:icon)
       .left_outer_joins(:character_alias)
       .ordered
-      .paginate(page: cur_page, per_page: per)
+      .paginate(page: cur_page, per_page: per, total_entries: reply_count)
     redirect_to post_path(@post, page: @replies.total_pages, per_page: per) and return if cur_page > @replies.total_pages
     use_javascript('paginator')
 
