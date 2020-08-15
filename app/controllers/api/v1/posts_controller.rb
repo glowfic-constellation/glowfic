@@ -13,7 +13,7 @@ class Api::V1::PostsController < Api::ApiController
     queryset = queryset.where('LOWER(subject) LIKE ?', "%#{params[:q].downcase}%") if params[:q].present?
 
     posts = paginate queryset, per_page: 25
-    posts = posts.select { |post| post.visible_to?(current_user) }
+    posts = posts.visible_to(current_user)
     render json: {results: posts.as_json(min: true)}
   end
 
