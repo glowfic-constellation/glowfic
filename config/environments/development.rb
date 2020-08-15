@@ -82,4 +82,6 @@ Rails.application.configure do
   # enable Resque logging
   Resque.logger       = Logger.new(STDOUT)
   Resque.logger.level = Logger::INFO
+
+  config.middleware.use Rack::Pratchett
 end
