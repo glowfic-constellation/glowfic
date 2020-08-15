@@ -52,5 +52,4 @@ Rails.application.configure do
 
   # raise an error if assets aren't found
   config.assets.unknown_asset_fallback = false
-  config.middleware.use Rack::Pratchett
 end

@@ -46,10 +46,9 @@ Rails.application.configure do
   # config.action_cable.url = 'wss://example.com/cable'
   # config.action_cable.allowed_request_origins = [ 'http://example.com', /http:\/\/example.*/ ]
 
-  config.middleware.use Rack::Pratchett
   # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
+  config.force_ssl = true
   config.ssl_options = { hsts: { preload: true } }
-  config.middleware.use ActionDispatch::SSL, config.ssl_options
 
   # Use the lowest log level to ensure availability of diagnostic information
   # when problems arise.
