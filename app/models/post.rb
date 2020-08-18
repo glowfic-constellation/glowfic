@@ -31,10 +31,10 @@ class Post < ApplicationRecord
   has_many :indexes, inverse_of: :posts, through: :index_posts, dependent: :destroy
   has_many :index_sections, inverse_of: :posts, through: :index_posts, dependent: :destroy
 
-  has_many :related_post_relations, class_name: 'PostRelation', foreign_key: :related_post_id, inverse_of: :relating_posts, dependent: :destroy
-  has_many :relating_post_relations, class_name: 'PostRelation', foreign_key: :relating_post_id, inverse_of: :related_posts, dependent: :destroy
-  has_many :related_posts, class_name: 'Post', inverse_of: :post, through: :relating_post_relations, source: :related_post_relations
-  has_many :relating_posts, class_name: 'Post', inverse_of: :post, through: :related_post_relations, source: :relating_post_relations
+  has_many :linked_post_joins, class_name: 'PostLink', foreign_key: :linking_post_id, inverse_of: :linking_post, dependent: :destroy
+  has_many :linking_post_joins, class_name: 'PostLink', foreign_key: :linked_post_id, inverse_of: :linked_post, dependent: :destroy
+  has_many :linked_posts, class_name: 'Post', through: :linked_post_joins, inverse_of: :linking_posts
+  has_many :linking_posts, class_name: 'Post', through: :linking_post_joins, inverse_of: :linked_posts
 
   attr_accessor :is_import
   attr_writer :skip_edited
