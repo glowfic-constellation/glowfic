@@ -8,6 +8,8 @@
       - if news.deletable_by?(current_user)
         = link_to news_path(news), method: :delete, data: { confirm: "Are you sure you wish to delete this news post?" } do
           = image_tag "icons/cross.png".freeze, title: 'Delete'.freeze, alt: 'Delete'.freeze
+      = link_to news_path(news), title: 'Pemalink'.freeze, alt: 'Permalink'.freeze do
+        = image_tag "icons/link.png".freeze, title: 'Delete'.freeze, alt: 'Delete'.freeze
     .message-content= sanitize_written_content(news.content)
   .subber
     Posted on
