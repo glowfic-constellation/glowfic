@@ -129,6 +129,7 @@ class PostsController < WritableController
       @author_ids = @post.board.writer_ids - [current_user.id]
       @authors_from_board = true
     end
+    @post.linked_post_joins.build(linked_post: nil, linking_post: @post)
   end
 
   def create
