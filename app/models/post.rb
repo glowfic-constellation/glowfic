@@ -36,6 +36,8 @@ class Post < ApplicationRecord
   has_many :linked_posts, class_name: 'Post', through: :linked_post_joins, inverse_of: :linking_posts
   has_many :linking_posts, class_name: 'Post', through: :linking_post_joins, inverse_of: :linked_posts
 
+  accepts_nested_attributes_for :linked_post_joins
+
   attr_accessor :is_import
   attr_writer :skip_edited
 
