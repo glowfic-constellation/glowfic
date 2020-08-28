@@ -60,28 +60,16 @@ function setupMetadataEditor() {
     placeholder: 'Choose user(s) to invite to reply to this post'
   });
 
-  createSelect2('#post_linked_post_joins_attributes_0_linked_post_id', {
-    width: '300px',
-    minimumResultsForSearch: 20,
-    placeholder: 'Choose a post'
-  });
-
-  createSelect2('#post_linked_post_joins_attributes_0_relationship', {
+  createSelect2('.post_link_relationship', {
     width: '200px',
     minimumResultsForSearch: 20,
     placeholder: 'Choose relationship'
   });
 
-  createSelect2('#post_linked_post_joins_attributes_1_linked_post_id', {
+  createSelect2('.post_link_linked_post_id', {
     width: '300px',
     minimumResultsForSearch: 20,
     placeholder: 'Choose a post'
-  });
-
-  createSelect2('#post_linked_post_joins_attributes_1_relationship', {
-    width: '200px',
-    minimumResultsForSearch: 20,
-    placeholder: 'Choose relationship'
   });
 
   createTagSelect("Label", "label", "post");
