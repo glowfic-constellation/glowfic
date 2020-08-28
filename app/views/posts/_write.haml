@@ -75,12 +75,14 @@
 
   .subber Related Posts
   = f.fields_for :linked_post_joins do |ff|
-    .even
-      = ff.label :linked_post_id, 'Add related post:'
-      = ff.select :linked_post_id, options_from_collection_for_select(Post::Author.find_by(user: current_user).posts.limit(10), :id, :subject, nil)
-      %br
-      = ff.label :relation, 'Relationship:'
-      = ff.select :relation, options_for_select(['Inspired By', 'AU of', 'Follows'])
+    - klass = cycle('even', 'odd')
+    .link-row{class: klass}
+      - posts = Post.ordered.joins(:post_authors).where(post_authors: { user: current_user }).limit(10)
+      This post is
+      = ff.select :relationship, options_for_select(['inspired by', 'an AU of', 'a sequel to']), include_blank: '— Choose Relationship —'
+      = ff.select :linked_post_id, options_from_collection_for_select(posts, :id, :subject, nil), include_blank: '— Choose Post —'
+      = image_tag "icons/add.png", class: "icon-row-add", alt: 'Add Row'
+      = image_tag "icons/minus.png", class: "icon-row-rem", alt: 'Delete Row'
 
   - if !post.persisted? || post.author_ids.include?(current_user.id)
     #post-notes.subber Notes

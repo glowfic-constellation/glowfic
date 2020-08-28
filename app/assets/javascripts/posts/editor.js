@@ -25,6 +25,7 @@ $(document).ready(function() {
   $("#relation").select2({width: '300px'})
 
   setupMetadataEditor();
+  fixButtons()
   iconSelectBox = $('#reply-icon-selector');
 
   if ($("#post-editor .view-button").length > 0) setupWritableEditor();
@@ -57,6 +58,18 @@ function setupMetadataEditor() {
     width: '300px',
     minimumResultsForSearch: 20,
     placeholder: 'Choose user(s) to invite to reply to this post'
+  });
+
+  createSelect2('#post_linked_post_joins_attributes_0_linked_post_id', {
+    width: '300px',
+    minimumResultsForSearch: 20,
+    placeholder: 'Choose a post'
+  });
+
+  createSelect2('#post_linked_post_joins_attributes_0_relationship', {
+    width: '200px',
+    minimumResultsForSearch: 20,
+    placeholder: 'Choose relationship'
   });
 
   createTagSelect("Label", "label", "post");
@@ -516,5 +529,41 @@ function setSwitcherListSelected(characterId) {
   $(".char-access-icon.semiopaque").removeClass('semiopaque').addClass('pointer');
   $(".char-access-icon").each(function() {
     if (String($(this).data('character-id')) === String(characterId)) $(this).addClass('semiopaque').removeClass('pointer');
+  });
+}
+
+function fixButtons() {
+  $(".icon-row-add").hide().unbind();
+  $(".icon-row-add").last().show();
+  $(".icon-row-rem").show();
+  bindAdd();
+  bindRem();
+}
+
+function bindAdd() {
+  $(".icon-row-add").click(function() {
+    addNewRow();
+    fixButtons();
+  });
+}
+
+function addNewRow() {
+  var oldRow = $(".link-row:last");
+  var newRow = oldRow.clone();
+  var index = oldRow.data('index') + 1;
+  newRow.data('index', index);
+
+  // clear all input values in the clone
+  var inputs = newRow.find('input');
+  inputs.val('');
+
+  newRow.insertBefore($("#post-notes"));
+}
+
+function bindRem() {
+  $(".icon-row-rem").click(function() {
+    var remRow = $(this).parent()
+    remRow.remove();
+    fixButtons();
   });
 }
