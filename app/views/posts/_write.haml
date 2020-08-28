@@ -77,12 +77,17 @@
   = f.fields_for :linked_post_joins do |ff|
     - klass = cycle('even', 'odd')
     .link-row{class: klass}
-      - posts = Post.ordered.joins(:post_authors).where(post_authors: { user: current_user }).limit(10)
       This post is
-      = ff.select :relationship, options_for_select(['inspired by', 'an AU of', 'a sequel to']), include_blank: '— Choose Relationship —'
-      = ff.select :linked_post_id, options_from_collection_for_select(posts, :id, :subject, nil), include_blank: '— Choose Post —'
-      = image_tag "icons/add.png", class: "icon-row-add", alt: 'Add Row'
-      = image_tag "icons/minus.png", class: "icon-row-rem", alt: 'Delete Row'
+      = ff.select :relationship, options_for_select(['inspired by', 'an AU of', 'a sequel to'], ff.object.relationship), include_blank: '— Choose Relationship —'
+      - if ff.object.new_record?
+        - posts = Post.ordered.joins(:post_authors).where(post_authors: { user: current_user }).limit(10)
+        = ff.select :linked_post_id, options_from_collection_for_select(posts, :id, :subject, nil), include_blank: '— Choose Post —'
+        = image_tag "icons/add.png", class: "icon-row-add", alt: 'Add Row'
+        = image_tag "icons/minus.png", class: "icon-row-rem", alt: 'Delete Row'
+      - else
+        = ff.object.linked_post.subject
+        = ff.check_box :_destroy
+        = ff.label :_destroy, 'Delete Link'
 
   - if !post.persisted? || post.author_ids.include?(current_user.id)
     #post-notes.subber Notes

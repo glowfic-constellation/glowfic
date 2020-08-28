@@ -72,6 +72,18 @@ function setupMetadataEditor() {
     placeholder: 'Choose relationship'
   });
 
+  createSelect2('#post_linked_post_joins_attributes_1_linked_post_id', {
+    width: '300px',
+    minimumResultsForSearch: 20,
+    placeholder: 'Choose a post'
+  });
+
+  createSelect2('#post_linked_post_joins_attributes_1_relationship', {
+    width: '200px',
+    minimumResultsForSearch: 20,
+    placeholder: 'Choose relationship'
+  });
+
   createTagSelect("Label", "label", "post");
   createTagSelect("Setting", "setting", "post");
   createTagSelect("ContentWarning", "content_warning", "post");
@@ -536,6 +548,7 @@ function fixButtons() {
   $(".icon-row-add").hide().unbind();
   $(".icon-row-add").last().show();
   $(".icon-row-rem").show();
+  $(".icon-row-rem").first().hide();
   bindAdd();
   bindRem();
 }
