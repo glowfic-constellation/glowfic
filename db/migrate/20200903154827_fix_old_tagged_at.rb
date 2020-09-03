@@ -1,6 +1,14 @@
 class FixOldTaggedAt < ActiveRecord::Migration[5.2]
   def change
-    posts = Post.joins(:last_reply).where.not(status: :completed).where.not(last_reply_id: nil).where.not('posts.tagged_at = replies.updated_at')
-    posts.update_all('posts.tagged_at = replies.updated_at')
+    execute <<~SQL
+      UPDATE posts
+      SET tagged_at = replies.updated_at
+      FROM replies
+      WHERE
+        replies.id = posts.last_reply_id
+        AND posts.status != #{Post.statuses[:complete]}
+        AND posts.last_reply_id IS NOT NULL
+        AND NOT (posts.tagged_at = replies.updated_at)
+    SQL
   end
 end
