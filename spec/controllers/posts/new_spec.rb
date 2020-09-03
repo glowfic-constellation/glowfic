@@ -81,4 +81,12 @@ RSpec.describe PostsController, 'GET new' do
     expect(assigns(:post).board).to eq(board)
     expect(assigns(:author_ids)).to match_array([coauthor.id])
   end
+
+  context "with render_view" do
+    render_views
+
+    it "works" do
+      get :new
+    end
+  end
 end
