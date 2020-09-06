@@ -69,6 +69,26 @@ RSpec.describe PostsController do
       expect(response.status).to eq(200)
       expect(assigns(assign_variable)).to match_array(posts)
     end
+
+    it "shows unlocked posts with incomplete blocking" do
+      post1 = create(:post)
+      post2 = create(:post)
+      create(:block, blocking_user: user, blocked_user: post1.user, hide_them: :posts)
+      create(:block, blocking_user: post2.user, blocked_user: user, hide_me: :posts)
+      get controller_action, params: params
+      expect(response.status).to eq(200)
+      expect(assigns(assign_variable)).to match_array(posts + [post1, post2])
+    end
+
+    it "does not show unlocked posts with full blocking" do
+      post1 = create(:post)
+      post2 = create(:post)
+      create(:block, blocking_user: user, blocked_user: post1.user, hide_them: :all)
+      create(:block, blocking_user: post2.user, blocked_user: user, hide_me: :all)
+      get controller_action, params: params
+      expect(response.status).to eq(200)
+      expect(assigns(assign_variable)).to match_array(posts)
+    end
   end
 
   describe "GET index" do
