@@ -3430,6 +3430,7 @@ RSpec.describe PostsController do
     context "when logged out" do
       include_examples "logged out post list"
     end
+
     context "when logged in" do
       include_examples "logged in post list"
     end
@@ -3453,6 +3454,7 @@ RSpec.describe PostsController do
     context "when logged out" do
       include_examples "logged out post list"
     end
+
     context "when logged in" do
       include_examples "logged in post list"
     end
