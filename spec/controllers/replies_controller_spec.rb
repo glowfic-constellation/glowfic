@@ -1,5 +1,10 @@
 RSpec.describe RepliesController do
+  let(:user) { create(:user) }
+  let(:coauthor) { create(:user) }
+
   describe "POST create" do
+    let(:reply_post) { create(:post, user: user) }
+
     it "requires login" do
       post :create
       expect(response).to redirect_to(root_url)
@@ -14,12 +19,11 @@ RSpec.describe RepliesController do
     end
 
     context "preview" do
+      before(:each) { login_as(user) }
+
       it "takes correct actions" do
-        user = create(:user)
-        reply_post = create(:post, user: user)
-        create(:reply, post: reply_post) # reply
+        create(:reply, post: reply_post)
         reply_post.mark_read(user)
-        login_as(user)
         expect(ReplyDraft.count).to eq(0)
 
         char1 = create(:character, user: user)
@@ -75,11 +79,9 @@ RSpec.describe RepliesController do
       end
 
       it "does not create authors" do
-        user = create(:user)
         board = create(:board, authors_locked: true)
         reply_post = create(:post, user: board.creator, board: board)
-        expect(reply_post.user.id).not_to eq(user.id)
-        login_as(user)
+        expect(reply_post.user_id).not_to eq(user.id)
 
         expect {
           post :create, params: {
@@ -96,9 +98,12 @@ RSpec.describe RepliesController do
     end
 
     context "draft" do
+      let(:draft) { create(:reply_draft, user: user, post: reply_post) }
+
+      before(:each) { login_as(user) }
+
       it "displays errors if relevant" do
-        draft = create(:reply_draft)
-        login_as(draft.user)
+        draft
         post :create, params: { button_draft: true, reply: { post_id: '' } }
         expect(flash[:error][:message]).to eq("Your draft could not be saved because of the following problems:")
         expect(draft.reload.post_id).not_to be_nil
@@ -106,9 +111,6 @@ RSpec.describe RepliesController do
       end
 
       it "creates a new draft if none exists" do
-        user = create(:user)
-        reply_post = create(:post, user: user)
-        login_as(user)
         char = create(:character, user: user)
         icon = create(:icon, user: user)
         calias = create(:alias, character: char)
@@ -138,9 +140,8 @@ RSpec.describe RepliesController do
       end
 
       it "updates the existing draft if one exists" do
-        draft = create(:reply_draft)
-        login_as(draft.user)
-        post :create, params: { button_draft: true, reply: { post_id: draft.post.id, content: 'new draft' } }
+        draft
+        post :create, params: { button_draft: true, reply: { post_id: reply_post.id, content: 'new draft' } }
         expect(flash[:success]).to eq("Draft saved!")
         expect(draft.reload.content).to eq('new draft')
         expect(ReplyDraft.count).to eq(1)
@@ -155,23 +156,21 @@ RSpec.describe RepliesController do
     end
 
     it "requires post read" do
-      reply_post = create(:post)
-      login_as(reply_post.user)
-      reply_post.mark_read(reply_post.user)
+      login_as(user)
+      reply_post.mark_read(user)
       create(:reply, post: reply_post)
 
-      post :create, params: { reply: { post_id: reply_post.id, user_id: reply_post.user_id } }
+      post :create, params: { reply: { post_id: reply_post.id, user_id: user.id } }
       expect(response.status).to eq(200)
       expect(flash[:error]).to eq("There has been 1 new reply since you last viewed this post.")
     end
 
     it "handles multiple creations with unread warning" do
-      reply_post = create(:post)
-      login_as(reply_post.user)
-      reply_post.mark_read(reply_post.user)
-      create(:reply, post: reply_post) # last_seen
+      login_as(user)
+      reply_post.mark_read(user)
+      create(:reply, post: reply_post)
 
-      post :create, params: { reply: { post_id: reply_post.id, user_id: reply_post.user_id } }
+      post :create, params: { reply: { post_id: reply_post.id, user_id: user.id } }
       expect(response.status).to eq(200)
       expect(flash[:error]).to eq("There has been 1 new reply since you last viewed this post.")
 
@@ -184,16 +183,15 @@ RSpec.describe RepliesController do
     end
 
     it "handles multiple creations by user" do
-      reply_post = create(:post)
-      login_as(reply_post.user)
-      dupe_reply = create(:reply, user: reply_post.user, post: reply_post)
-      reply_post.mark_read(reply_post.user, at_time: dupe_reply.created_at + 1.second, force: true)
+      login_as(user)
+      dupe_reply = create(:reply, user: user, post: reply_post)
+      reply_post.mark_read(user, at_time: dupe_reply.created_at + 1.second, force: true)
 
-      post :create, params: { reply: { post_id: reply_post.id, user_id: reply_post.user_id, content: dupe_reply.content } }
+      post :create, params: { reply: { post_id: reply_post.id, user_id: user.id, content: dupe_reply.content } }
       expect(response).to have_http_status(200)
       expect(flash[:error]).to eq("This looks like a duplicate. Did you attempt to post this twice? Please resubmit if this was intentional.")
 
-      post :create, params: { reply: { post_id: reply_post.id, user_id: reply_post.user_id, content: dupe_reply.content }, allow_dupe: true }
+      post :create, params: { reply: { post_id: reply_post.id, user_id: user.id, content: dupe_reply.content }, allow_dupe: true }
       expect(response).to have_http_status(302)
       expect(flash[:success]).to eq("Posted!")
     end
@@ -213,10 +211,8 @@ RSpec.describe RepliesController do
     end
 
     it "requires valid params if read" do
-      user = create(:user)
       login_as(user)
       character = create(:character)
-      reply_post = create(:post)
       reply_post.mark_read(user, at_time: reply_post.created_at + 1.second, force: true)
 
       expect(character.user_id).not_to eq(user.id)
@@ -226,9 +222,7 @@ RSpec.describe RepliesController do
     end
 
     it "saves a new reply successfully if read" do
-      user = create(:user)
       login_as(user)
-      reply_post = create(:post)
       reply_post.mark_read(user, at_time: reply_post.created_at + 1.second, force: true)
       char = create(:character, user: user)
       icon = create(:icon, user: user)
@@ -246,7 +240,7 @@ RSpec.describe RepliesController do
         }
       }.to change { Reply.count }.by(1)
 
-      reply = Reply.order(:id).last
+      reply = Reply.ordered.last
       expect(reply).not_to be_nil
       expect(response).to redirect_to(reply_url(reply, anchor: "reply-#{reply.id}"))
       expect(flash[:success]).to eq("Posted!")
@@ -259,16 +253,14 @@ RSpec.describe RepliesController do
     end
 
     it "allows you to reply to a post you created" do
-      user = create(:user)
       login_as(user)
-      reply_post = create(:post, user: user)
       reply_post.mark_read(user, at_time: reply_post.created_at + 1.second, force: true)
 
       expect {
         post :create, params: { reply: { post_id: reply_post.id, content: 'test content!' } }
       }.to change { Reply.count }.by(1)
 
-      reply = Reply.order(:id).last
+      reply = Reply.ordered.last
       expect(response).to redirect_to(reply_url(reply, anchor: "reply-#{reply.id}"))
       expect(reply).not_to be_nil
       expect(flash[:success]).to eq('Posted!')
@@ -277,7 +269,6 @@ RSpec.describe RepliesController do
     end
 
     it "allows you to reply to join a post you did not create" do
-      user = create(:user)
       login_as(user)
       reply_post = create(:post)
       reply_post.mark_read(user, at_time: reply_post.created_at + 1.second, force: true)
@@ -286,7 +277,7 @@ RSpec.describe RepliesController do
         post :create, params: { reply: { post_id: reply_post.id, content: 'test content again!' } }
       }.to change { Reply.count }.by(1)
 
-      reply = Reply.order(:id).last
+      reply = Reply.ordered.last
       expect(response).to redirect_to(reply_url(reply, anchor: "reply-#{reply.id}"))
       expect(reply).not_to be_nil
       expect(flash[:success]).to eq('Posted!')
@@ -295,7 +286,6 @@ RSpec.describe RepliesController do
     end
 
     it "allows you to reply to a post you already joined" do
-      user = create(:user)
       login_as(user)
       reply_post = create(:post)
       reply_old = create(:reply, post: reply_post, user: user)
@@ -314,7 +304,6 @@ RSpec.describe RepliesController do
     end
 
     it "allows you to reply to a closed post you already joined" do
-      user = create(:user)
       login_as(user)
       reply_post = create(:post)
       reply_old = create(:reply, post: reply_post, user: user)
@@ -334,10 +323,8 @@ RSpec.describe RepliesController do
     end
 
     it "allows replies from authors in a closed post" do
-      user = create(:user)
-      other_user = create(:user)
       login_as(user)
-      reply_post = create(:post, user: other_user, tagging_authors: [user, other_user], authors_locked: true)
+      reply_post = create(:post, user: coauthor, tagging_authors: [user, coauthor], authors_locked: true)
       reply_post.mark_read(user)
       expect {
         post :create, params: { reply: { post_id: reply_post.id, content: 'test content!' } }
@@ -345,10 +332,8 @@ RSpec.describe RepliesController do
     end
 
     it "allows replies from owner in a closed post" do
-      user = create(:user)
-      other_user = create(:user)
       login_as(user)
-      other_post = create(:post, user: user, tagging_authors: [user, other_user], authors_locked: true)
+      other_post = create(:post, user: user, tagging_authors: [user, coauthor], authors_locked: true)
       other_post.mark_read(user)
       expect {
         post :create, params: { reply: { post_id: other_post.id, content: 'more test content!' } }
@@ -356,7 +341,6 @@ RSpec.describe RepliesController do
     end
 
     it "adds authors correctly when a user replies to an open thread" do
-      user = create(:user)
       login_as(user)
       reply_post = create(:post)
       reply_post.mark_read(user)
@@ -376,7 +360,6 @@ RSpec.describe RepliesController do
     end
 
     it "handles multiple replies to an open thread correctly" do
-      user = create(:user)
       login_as(user)
       reply_post = create(:post)
       expect(reply_post.tagging_authors.count).to eq(1)
@@ -394,7 +377,6 @@ RSpec.describe RepliesController do
     end
 
     it "handles trying to reply to a closed thread as a non-author correctly" do
-      user = create(:user)
       login_as(user)
       reply_post = create(:post, authors_locked: true)
       reply_post.mark_read(user)
@@ -404,9 +386,8 @@ RSpec.describe RepliesController do
     end
 
     it "sets reply_order correctly on the first reply" do
-      reply_post = create(:post)
-      login_as(reply_post.user)
-      reply_post.mark_read(reply_post.user)
+      login_as(user)
+      reply_post.mark_read(user)
       searchable = 'searchable content'
       post :create, params: { reply: { post_id: reply_post.id, content: searchable } }
       reply = reply_post.replies.ordered.last
@@ -415,10 +396,9 @@ RSpec.describe RepliesController do
     end
 
     it "sets reply_order correctly with an existing reply" do
-      reply_post = create(:post)
-      login_as(reply_post.user)
+      login_as(user)
       create(:reply, post: reply_post)
-      reply_post.mark_read(reply_post.user)
+      reply_post.mark_read(user)
       searchable = 'searchable content'
       post :create, params: { reply: { post_id: reply_post.id, content: searchable } }
       reply = reply_post.replies.ordered.last
@@ -427,11 +407,10 @@ RSpec.describe RepliesController do
     end
 
     it "sets reply_order correctly with multiple existing replies" do
-      reply_post = create(:post)
-      login_as(reply_post.user)
+      login_as(user)
       create(:reply, post: reply_post)
       create(:reply, post: reply_post)
-      reply_post.mark_read(reply_post.user)
+      reply_post.mark_read(user)
       searchable = 'searchable content'
       post :create, params: { reply: { post_id: reply_post.id, content: searchable } }
       reply = reply_post.replies.ordered.last
@@ -450,15 +429,11 @@ RSpec.describe RepliesController do
     end
 
     it "requires post access" do
-      expect(reply.user_id).not_to eq(reply.post.user_id)
-      expect(reply.post.visible_to?(reply.user)).to eq(true)
-
       reply.post.update!(privacy: :private)
-      reply.post.save!
       reply.reload
-      expect(reply.post.visible_to?(reply.user)).to eq(false)
+      expect(reply.post.visible_to?(user)).to eq(false)
 
-      login_as(reply.user)
+      login_as(user)
       get :show, params: { id: reply.id }
       expect(response).to redirect_to(continuities_url)
       expect(flash[:error]).to eq("You do not have permission to view this post.")
@@ -516,14 +491,11 @@ RSpec.describe RepliesController do
     end
 
     it "requires post access" do
-      expect(reply.user_id).not_to eq(reply.post.user_id)
-      expect(reply.post.visible_to?(reply.user)).to eq(true)
-
       reply.post.update!(privacy: :private)
       reply.reload
-      expect(reply.post.visible_to?(reply.user)).to eq(false)
+      expect(reply.post.visible_to?(user)).to eq(false)
 
-      login_as(reply.user)
+      login_as(user)
       get :history, params: { id: reply.id }
       expect(response).to redirect_to(continuities_url)
       expect(flash[:error]).to eq("You do not have permission to view this post.")
@@ -548,6 +520,8 @@ RSpec.describe RepliesController do
   end
 
   describe "GET edit" do
+    let(:reply) { create(:reply, user: user) }
+
     it "requires login" do
       get :edit, params: { id: -1 }
       expect(response).to redirect_to(root_url)
@@ -566,22 +540,20 @@ RSpec.describe RepliesController do
     end
 
     it "requires post access" do
-      reply = create(:reply)
-      expect(reply.user_id).not_to eq(reply.post.user_id)
-      expect(reply.post.visible_to?(reply.user)).to eq(true)
+      expect(user.id).not_to eq(reply.post.user_id)
+      expect(reply.post.visible_to?(user)).to eq(true)
 
       reply.post.update!(privacy: :private)
       reply.reload
-      expect(reply.post.visible_to?(reply.user)).to eq(false)
+      expect(reply.post.visible_to?(user)).to eq(false)
 
-      login_as(reply.user)
+      login_as(user)
       get :edit, params: { id: reply.id }
       expect(response).to redirect_to(continuities_url)
       expect(flash[:error]).to eq("You do not have permission to view this post.")
     end
 
     it "requires reply access" do
-      reply = create(:reply)
       login
       get :edit, params: { id: reply.id }
       expect(response).to redirect_to(post_url(reply.post))
@@ -589,8 +561,6 @@ RSpec.describe RepliesController do
     end
 
     it "works" do
-      user = create(:user)
-      reply = create(:reply, user: user)
       login_as(user)
       char1 = create(:character, user: user)
       char2 = create(:template_character, user: user)
@@ -617,6 +587,8 @@ RSpec.describe RepliesController do
   end
 
   describe "PUT update" do
+    let(:reply) { create(:reply, user: user) }
+
     it "requires login" do
       put :update, params: { id: -1 }
       expect(response).to redirect_to(root_url)
@@ -635,23 +607,20 @@ RSpec.describe RepliesController do
     end
 
     it "requires post access" do
-      reply = create(:reply)
-      expect(reply.user_id).not_to eq(reply.post.user_id)
-      expect(reply.post.visible_to?(reply.user)).to eq(true)
+      expect(user.id).not_to eq(reply.post.user_id)
+      expect(reply.post.visible_to?(user)).to eq(true)
 
       reply.post.update!(privacy: :private)
-      reply.post.save!
       reply.reload
-      expect(reply.post.visible_to?(reply.user)).to eq(false)
+      expect(reply.post.visible_to?(user)).to eq(false)
 
-      login_as(reply.user)
+      login_as(user)
       put :update, params: { id: reply.id }
       expect(response).to redirect_to(continuities_url)
       expect(flash[:error]).to eq("You do not have permission to view this post.")
     end
 
     it "requires reply access" do
-      reply = create(:reply)
       login
       put :update, params: { id: reply.id }
       expect(response).to redirect_to(post_url(reply.post))
@@ -659,7 +628,6 @@ RSpec.describe RepliesController do
     end
 
     it "requires notes from moderators" do
-      reply = create(:reply)
       login_as(create(:admin_user))
       put :update, params: { id: reply.id }
       expect(response).to render_template(:edit)
@@ -669,8 +637,7 @@ RSpec.describe RepliesController do
     it "stores note from moderators" do
       Reply.auditing_enabled = true
       reply = create(:reply, content: 'a')
-      admin = create(:admin_user)
-      login_as(admin)
+      login_as(create(:admin_user))
       put :update, params: { id: reply.id, reply: { content: 'b', audit_comment: 'note' } }
       expect(flash[:success]).to eq("Post updated")
       expect(reply.reload.content).to eq('b')
@@ -680,8 +647,7 @@ RSpec.describe RepliesController do
 
     it "does not save audit when only comment provided" do
       Reply.auditing_enabled = true
-      reply = create(:reply)
-      login_as(reply.user)
+      login_as(user)
       expect {
         put :update, params: { id: reply.id, reply: { audit_comment: 'note' } }
       }.not_to change { Audited::Audit.count }
@@ -689,16 +655,13 @@ RSpec.describe RepliesController do
     end
 
     it "fails when invalid" do
-      reply = create(:reply)
-      login_as(reply.user)
+      login_as(user)
       put :update, params: { id: reply.id, reply: { post_id: nil } }
       expect(response).to render_template(:edit)
       expect(flash[:error][:message]).to eq("Your reply could not be saved because of the following problems:")
     end
 
     it "succeeds" do
-      user = create(:user)
-      reply = create(:reply, user: user)
       newcontent = reply.content + 'new'
       login_as(user)
       char = create(:character, user: user)
@@ -717,26 +680,26 @@ RSpec.describe RepliesController do
     end
 
     it "preserves reply_order" do
-      reply_post = create(:post)
-      login_as(reply_post.user)
+      reply_post = reply.post
+      login_as(user)
       create(:reply, post: reply_post)
-      reply = create(:reply, post: reply_post, user: reply_post.user)
+      reply = create(:reply, post: reply_post, user: user)
       expect(reply.reply_order).to eq(1)
       expect(reply_post.replies.ordered.last).to eq(reply)
       create(:reply, post: reply_post)
       expect(reply_post.replies.ordered.last).not_to eq(reply)
-      reply_post.mark_read(reply_post.user)
+      reply_post.mark_read(user)
       put :update, params: { id: reply.id, reply: { content: 'new content' } }
       expect(flash[:success]).to eq("Post updated")
       expect(reply.reload.reply_order).to eq(1)
     end
 
     context "preview" do
+      let(:reply_post) { create(:post, user: user) }
+      let(:reply) { create(:reply, post: reply_post, user: user) }
+
       it "takes correct actions" do
         Reply.auditing_enabled = true
-        user = create(:user)
-        reply_post = create(:post, user: user)
-        reply = create(:reply, post: reply_post, user: user)
         login_as(user)
         expect(ReplyDraft.count).to eq(0)
 
@@ -795,9 +758,6 @@ RSpec.describe RepliesController do
       end
 
       it "takes correct actions for moderators" do
-        user = create(:user)
-        reply_post = create(:post, user: user)
-        reply = create(:reply, post: reply_post, user: user)
         char = create(:template_character, user: user)
         login_as(create(:mod_user))
 
@@ -826,6 +786,8 @@ RSpec.describe RepliesController do
   end
 
   describe "DELETE destroy" do
+    let(:reply) { create(:reply, user: user) }
+
     it "requires login" do
       delete :destroy, params: { id: -1 }
       expect(response).to redirect_to(root_url)
@@ -844,22 +806,20 @@ RSpec.describe RepliesController do
     end
 
     it "requires post access" do
-      reply = create(:reply)
-      expect(reply.user_id).not_to eq(reply.post.user_id)
-      expect(reply.post.visible_to?(reply.user)).to eq(true)
+      expect(user.id).not_to eq(reply.post.user_id)
+      expect(reply.post.visible_to?(user)).to eq(true)
 
       reply.post.update!(privacy: :private)
       reply.reload
-      expect(reply.post.visible_to?(reply.user)).to eq(false)
+      expect(reply.post.visible_to?(user)).to eq(false)
 
-      login_as(reply.user)
+      login_as(user)
       delete :destroy, params: { id: reply.id }
       expect(response).to redirect_to(continuities_url)
       expect(flash[:error]).to eq("You do not have permission to view this post.")
     end
 
     it "requires reply access" do
-      reply = create(:reply)
       login
       delete :destroy, params: { id: reply.id }
       expect(response).to redirect_to(post_url(reply.post))
@@ -867,8 +827,7 @@ RSpec.describe RepliesController do
     end
 
     it "succeeds for reply creator" do
-      reply = create(:reply)
-      login_as(reply.user)
+      login_as(user)
       delete :destroy, params: { id: reply.id }
       expect(response).to redirect_to(post_url(reply.post, page: 1))
       expect(flash[:success]).to eq("Reply deleted.")
@@ -876,7 +835,6 @@ RSpec.describe RepliesController do
     end
 
     it "succeeds for admin user" do
-      reply = create(:reply)
       login_as(create(:admin_user))
       delete :destroy, params: { id: reply.id }
       expect(response).to redirect_to(post_url(reply.post, page: 1))
@@ -885,28 +843,25 @@ RSpec.describe RepliesController do
     end
 
     it "respects per_page when redirecting" do
-      reply = create(:reply) # p1
-      reply = create(:reply, post: reply.post, user: reply.user) # p1
-      reply = create(:reply, post: reply.post, user: reply.user) # p2
-      reply = create(:reply, post: reply.post, user: reply.user) # p2
-      login_as(reply.user)
-      delete :destroy, params: { id: reply.id, per_page: 2 }
+      create(:reply, post: reply.post, user: user) # p2
+      create(:reply, post: reply.post, user: user) # p2
+      last_reply = create(:reply, post: reply.post, user: user)
+      login_as(user)
+      delete :destroy, params: { id: last_reply.id, per_page: 2 }
       expect(response).to redirect_to(post_url(reply.post, page: 2))
     end
 
     it "respects per_page when redirecting first on page" do
-      reply = create(:reply) # p1
-      reply = create(:reply, post: reply.post, user: reply.user) # p1
-      reply = create(:reply, post: reply.post, user: reply.user) # p2
-      reply = create(:reply, post: reply.post, user: reply.user) # p2
-      reply = create(:reply, post: reply.post, user: reply.user) # p3
-      login_as(reply.user)
-      delete :destroy, params: { id: reply.id, per_page: 2 }
+      create(:reply, post: reply.post, user: user) # p1
+      create(:reply, post: reply.post, user: user) # p2
+      create(:reply, post: reply.post, user: user) # p2
+      last_reply = create(:reply, post: reply.post, user: user) # p3
+      login_as(user)
+      delete :destroy, params: { id: last_reply.id, per_page: 2 }
       expect(response).to redirect_to(post_url(reply.post, page: 2))
     end
 
     it "deletes post author on deleting only reply in open posts" do
-      user = create(:user)
       post = create(:post)
       expect(post.authors_locked).to eq(false)
       login_as(user)
@@ -919,28 +874,24 @@ RSpec.describe RepliesController do
     end
 
     it "sets joined to false on deleting only reply when invited" do
-      user = create(:user)
-      other_user = create(:user)
-      post = create(:post, user: other_user, authors: [user, other_user], authors_locked: true)
+      post = create(:post, user: coauthor, authors: [user, coauthor], authors_locked: true)
       expect(post.authors_locked).to eq(true)
-      expect(post.post_authors.find_by(user: user)).not_to be_nil
+      post_user = post.author_for(user)
+      expect(post_user).not_to be_nil
       login_as(user)
       reply = create(:reply, post: post, user: user)
-      post_user = post.post_authors.find_by(user: user)
-      expect(post_user.joined).to eq(true)
+      expect(post_user.reload.joined).to eq(true)
       delete :destroy, params: { id: reply.id }
-      post_user.reload
-      expect(post_user.joined).to eq(false)
+      expect(post_user.reload.joined).to eq(false)
     end
 
     it "does not clean up post author when other replies exist" do
-      user = create(:user)
       post = create(:post)
       expect(post.authors_locked).to eq(false)
       login_as(user)
       create(:reply, post: post, user: user) # remaining reply
       reply = create(:reply, post: post, user: user)
-      post_user = post.post_authors.find_by(user: user)
+      post_user = post.author_for(user)
       expect(post_user.joined).to eq(true)
       delete :destroy, params: { id: reply.id }
       post_user.reload
@@ -948,9 +899,9 @@ RSpec.describe RepliesController do
     end
 
     it "handles destroy failure" do
-      post = create(:post)
-      reply = create(:reply, user: post.user, post: post)
-      login_as(post.user)
+      post = create(:post, user: user)
+      reply = create(:reply, user: user, post: post)
+      login_as(user)
       expect_any_instance_of(Reply).to receive(:destroy!).and_raise(ActiveRecord::RecordNotDestroyed, 'fake error')
       delete :destroy, params: { id: reply.id }
       expect(response).to redirect_to(reply_url(reply, anchor: "reply-#{reply.id}"))
@@ -960,6 +911,9 @@ RSpec.describe RepliesController do
   end
 
   describe "POST restore" do
+    let(:rpost) { create(:post) }
+    let(:reply) { create(:reply, post: rpost, user: user) }
+
     before(:each) { Reply.auditing_enabled = true }
 
     after(:each) { Reply.auditing_enabled = false }
@@ -984,18 +938,16 @@ RSpec.describe RepliesController do
     end
 
     it "must be a deleted reply" do
-      reply = create(:reply)
       Audited::Audit.where(action: 'create').find_by(auditable_id: reply.id).update!(action: 'destroy')
-      login_as(reply.user)
+      login_as(user)
       post :restore, params: { id: 99 }
       expect(response).to redirect_to(continuities_url)
       expect(flash[:error]).to eq("Reply could not be found.")
     end
 
     it "must be your reply" do
-      rpost = create(:post)
       reply = create(:reply, post: rpost)
-      login_as(rpost.user)
+      login
       reply.destroy!
       post :restore, params: { id: reply.id }
       expect(response).to redirect_to(post_url(rpost))
@@ -1003,7 +955,6 @@ RSpec.describe RepliesController do
     end
 
     it "handles mid reply deletion" do
-      rpost = create(:post)
       replies = create_list(:reply, 4, post: rpost, user: rpost.user)
       deleted_reply = replies[2]
       deleted_reply.destroy!
@@ -1023,7 +974,6 @@ RSpec.describe RepliesController do
     end
 
     it "handles first reply deletion" do
-      rpost = create(:post)
       replies = create_list(:reply, 2, post: rpost, user: rpost.user)
       deleted_reply = replies.first
       deleted_reply.destroy!
@@ -1043,7 +993,6 @@ RSpec.describe RepliesController do
     end
 
     it "handles last reply deletion" do
-      rpost = create(:post)
       create_list(:reply, 2, post: rpost, user: rpost.user)
       deleted_reply = Timecop.freeze(rpost.reload.tagged_at + 1.day) { create(:reply, post: rpost) }
       deleted_reply.destroy!
@@ -1065,48 +1014,45 @@ RSpec.describe RepliesController do
     end
 
     it "handles only reply deletion" do
-      rpost = create(:post)
       expect(rpost.last_user).to eq(rpost.user)
       expect(rpost.last_reply).to be_nil
 
-      deleted_reply = Timecop.freeze(rpost.reload.tagged_at + 1.day) { create(:reply, post: rpost) }
-      rpost = Post.find(rpost.id)
-      expect(rpost.last_user).to eq(deleted_reply.user)
+      deleted_reply = Timecop.freeze(rpost.reload.tagged_at + 1.day) { create(:reply, post: rpost, user: user) }
+      rpost.reload
+      expect(rpost.last_user).to eq(user)
       expect(rpost.last_reply).to eq(deleted_reply)
 
       deleted_reply.destroy!
-      rpost = Post.find(rpost.id)
+      rpost.reload
       expect(rpost.last_user).to eq(rpost.user)
       expect(rpost.last_reply).to be_nil
 
-      login_as(deleted_reply.user)
+      login_as(user)
       post :restore, params: { id: deleted_reply.id }
-      rpost = Post.find(rpost.id)
-      expect(rpost.last_user).to eq(deleted_reply.user)
+      rpost.reload
+      expect(rpost.last_user).to eq(user)
       expect(rpost.last_reply).to eq(deleted_reply)
     end
 
     it "does not allow restoring something already restored" do
-      reply = create(:reply)
       reply.destroy!
-      login_as(reply.user)
+      login_as(user)
       post :restore, params: { id: reply.id }
       expect(flash[:success]).to eq("Reply has been restored!")
       post :restore, params: { id: reply.id }
       expect(flash[:error]).to eq("Reply does not need restoring.")
-      expect(response).to redirect_to(post_url(reply.post))
+      expect(response).to redirect_to(post_url(rpost))
     end
 
     it "correctly restores a previously restored reply" do
-      reply = create(:reply, content: 'not yet restored')
       reply.destroy!
-      login_as(reply.user)
+      login_as(user)
       post :restore, params: { id: reply.id }
       expect(flash[:success]).to eq("Reply has been restored!")
 
-      reply = Reply.find(reply.id)
-      reply.content = 'restored right'
-      reply.save!
+      reply.reload
+      expect(reply.content).not_to eq('restored right')
+      reply.update!(content: 'restored right')
       reply.destroy!
 
       post :restore, params: { id: reply.id }
@@ -1116,16 +1062,14 @@ RSpec.describe RepliesController do
     end
 
     it "does not update post status" do
-      rpost = create(:post)
-      reply = create(:reply, post: rpost, user: rpost.user)
-      create(:reply, post: rpost, user: rpost.user)
+      create(:reply, post: rpost, user: user)
       reply.destroy!
 
       rpost.update!(status: :hiatus)
-      login_as(rpost.user)
+      login_as(user)
       post :restore, params: { id: reply.id }
       expect(flash[:success]).to eq("Reply has been restored!")
-      expect(Post.find(rpost.id)).to be_hiatus
+      expect(rpost.reload).to be_hiatus
     end
   end
 
@@ -1167,10 +1111,9 @@ RSpec.describe RepliesController do
       end
 
       it "sets templates by author" do
-        author = create(:user)
-        template = create(:template, user: author)
+        template = create(:template, user: user)
         create(:template)
-        get :search, params: { commit: true, author_id: author.id }
+        get :search, params: { commit: true, author_id: user.id }
         expect(assigns(:templates)).to eq([template])
       end
 
@@ -1201,7 +1144,6 @@ RSpec.describe RepliesController do
       end
 
       it "sorts templates" do
-        user = create(:user)
         login_as(user)
         template3 = create(:template, user: user, name: "c")
         template1 = create(:template, user: user, name: "a")
@@ -1211,7 +1153,6 @@ RSpec.describe RepliesController do
       end
 
       it "sorts characters and templates when a post is given" do
-        user = create(:user)
         login_as(user)
         template3 = create(:template, user: user, name: "c")
         template1 = create(:template, user: user, name: "a")
@@ -1236,7 +1177,7 @@ RSpec.describe RepliesController do
       end
 
       it "filters by author" do
-        replies = Array.new(4) { create(:reply) }
+        replies = create_list(:reply, 4)
         filtered_reply = replies.last
         get :search, params: { commit: true, author_id: filtered_reply.user_id }
         expect(assigns(:search_results)).to match_array([filtered_reply])
@@ -1288,7 +1229,7 @@ RSpec.describe RepliesController do
       end
 
       it "filters by post" do
-        replies = Array.new(4) { create(:reply) }
+        replies = create_list(:reply, 4)
         filtered_reply = replies.last
         get :search, params: { commit: true, post_id: filtered_reply.post_id }
         expect(assigns(:search_results)).to match_array([filtered_reply])
@@ -1340,8 +1281,6 @@ RSpec.describe RepliesController do
 
       it "does not include audits" do
         Reply.auditing_enabled = true
-        user = create(:user)
-
         replies = Audited.audit_class.as_user(user) do
           create_list(:reply, 6, user: user)
         end
