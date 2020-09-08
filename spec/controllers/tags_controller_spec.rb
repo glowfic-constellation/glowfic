@@ -61,6 +61,13 @@ RSpec.describe TagsController do
       expect(assigns(:tags)).to eq([setting1, setting2, tag1, tag2, warning1, warning2])
     end
 
+    it "performs a full-text match on tag names" do
+      warning2 = create(:content_warning, name: 'dubcon')
+      warning1 = create(:content_warning, name: 'con')
+      get :index, params: { name: 'con' }
+      expect(assigns(:tags)).to eq([warning1, warning2])
+    end
+
     it 'checks for valid tag type' do
       get :index, params: { view: 'NotATagType' }
       expect(response).to redirect_to(tags_path)
