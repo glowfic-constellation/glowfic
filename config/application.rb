@@ -63,7 +63,11 @@ module Glowfic
     config.after_initialize do
       ActionView::Base.sanitized_allowed_attributes += ['style', 'target']
     end
-    config.middleware.use Rack::Pratchett
+    if defined?(ActionDispatch::SSL)
+      config.middleware.insert_after ActionDispatch::SSL, Rack::Pratchett
+    else
+      config.middleware.insert_before 0, Rack::Pratchett
+    end
 
     # The default locale is :en and all translations from config/locales/*.rb,yml are auto loaded.
     # config.i18n.load_path += Dir[Rails.root.join('my', 'locales', '*.{rb,yml}').to_s]
