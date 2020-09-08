@@ -42,6 +42,7 @@ RSpec.describe WritableController do
 
     it "works with description" do
       post.update!(description: 'More.')
+      post.reload
       data = controller.send(:og_data_for_post, post, total_pages: 5)
       expect(data).to eq({
         title: 'Temp · Test',
@@ -51,6 +52,7 @@ RSpec.describe WritableController do
 
     it "strips tags from description" do
       post.update!(description: 'With an <a href="/characters/1">Alli</a>.')
+      post.reload
       data = controller.send(:og_data_for_post, post, total_pages: 5)
       expect(data).to eq({
         title: 'Temp · Test',
@@ -61,6 +63,7 @@ RSpec.describe WritableController do
     it "works with section" do
       section = create(:board_section, board: board, name: 'Further')
       post.update!(description: 'More.', section: section)
+      post.reload
       data = controller.send(:og_data_for_post, post, total_pages: 5)
       expect(data).to eq({
         title: 'Temp · Test » Further',
@@ -113,26 +116,26 @@ RSpec.describe WritableController do
   end
 
   describe "#build_template_groups" do
+    let(:user) { create(:user) }
+
+    before(:each) { login_as(user) }
+
     it "orders templates correctly" do
-      user = create(:user)
       template2 = create(:template, user: user, name: "b")
       template3 = create(:template, user: user, name: "c")
       template1 = create(:template, user: user, name: "a")
       create(:character, user: user, template: template1)
       create(:character, user: user, template: template2)
       create(:character, user: user, template: template3)
-      login_as(user)
       controller.send(:build_template_groups)
       expect(assigns(:templates)).not_to be_empty
       expect(assigns(:templates)).to eq([template1, template2, template3])
     end
 
     it "orders templateless characters correctly" do
-      user = create(:user)
       char2 = create(:character, user: user, name: "b")
       char3 = create(:character, user: user, name: "c")
       char1 = create(:character, user: user, name: "a")
-      login_as(user)
       controller.send(:build_template_groups)
       templates = assigns(:templates)
       expect(templates.count).to eq(1)
@@ -141,8 +144,6 @@ RSpec.describe WritableController do
 
     describe "with post" do
       it "orders thread characters correctly" do
-        user = create(:user)
-        login_as(user)
         char3 = create(:character, user: user, name: 'c')
         char1 = create(:character, user: user, name: 'a')
         char2 = create(:character, user: user, name: 'b')
@@ -159,13 +160,11 @@ RSpec.describe WritableController do
     end
 
     it "loads correct information for template characters" do
-      user = create(:user)
       template = create(:template, user: user)
       char1 = create(:character, template: template, user: user, name: 'AAAA')
       char2 = create(:character, template: template, user: user, nickname: "nickname", name: 'BBBB')
       char3 = create(:character, template: template, user: user, screenname: "screen_name", name: 'CCCC')
       char4 = create(:character, template: template, user: user, name: 'DDDD', screenname: "other_sceen", nickname: "Nickname")
-      login_as(user)
       controller.send(:build_template_groups)
       templates = assigns(:templates)
       expect(templates.count).to eq(1)
@@ -179,7 +178,6 @@ RSpec.describe WritableController do
     end
 
     it "loads correct information for templateless characters" do
-      user = create(:user)
       char1 = create(:character, user: user, name: 'AAAA')
       char2 = create(:character, user: user, nickname: "nickname", name: 'BBBB')
       char3 = create(:character, user: user, screenname: "screen_name", name: 'CCCC')
@@ -198,12 +196,10 @@ RSpec.describe WritableController do
     end
 
     it "excludes retired templateless characters" do
-      user = create(:user)
       template = create(:template, user: user)
       char1 = create(:character, template: template, user: user, name: 'AAAA')
       create_list(:character, 2, template: template, user: user, retired: true)
       char2 = create(:character, template: template, user: user, name: 'DDDD', screenname: "screen_name", nickname: "Nickname")
-      login_as(user)
       controller.send(:build_template_groups)
       templates = assigns(:templates)
       expect(templates.count).to eq(1)
