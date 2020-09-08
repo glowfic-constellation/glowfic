@@ -22,7 +22,7 @@ RSpec.describe Api::ApiController do
       end
 
       it "displays an error if an expired token is provided" do
-        cur_time = Time.now
+        cur_time = Time.zone.now
         Timecop.freeze(cur_time) { api_login }
         Timecop.freeze(cur_time + Authentication::EXPIRY + 3.days) do
           get :show, params: {id: 1}
@@ -48,7 +48,7 @@ RSpec.describe Api::ApiController do
       end
 
       it "displays an error if an expired token is provided" do
-        cur_time = Time.now
+        cur_time = Time.zone.now
         Timecop.freeze(cur_time) { api_login }
         Timecop.freeze(cur_time + Authentication::EXPIRY + 3.days) do
           get :index
