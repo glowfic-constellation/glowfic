@@ -2881,19 +2881,16 @@ RSpec.describe PostsController do
         expect(assigns(:posts)).to be_empty
       end
 
-      it "hides completed and abandoned threads" do
-        create(:reply, post_id: post.id, user_id: other_user.id)
-
+      it "hides completed threads" do
+        create(:reply, post: post, user: other_user)
         post.update!(status: :complete)
         get :owed
         expect(response.status).to eq(200)
         expect(assigns(:posts)).to be_empty
+      end
 
-        post.update!(status: :active)
-        get :owed
-        expect(response.status).to eq(200)
-        expect(assigns(:posts)).to match_array([post])
-
+      it "hides abandoned threads" do
+        create(:reply, post: post, user: other_user)
         post.update!(status: :abandoned)
         get :owed
         expect(response.status).to eq(200)
