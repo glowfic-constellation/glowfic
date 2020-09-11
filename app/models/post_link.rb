@@ -8,6 +8,8 @@ class PostLink < ApplicationRecord
   validates :relationship, presence: true
   validate :different_posts
 
+  scope :visible_to, ->(user) { where(linking_post_id: Post.visible_to(user).select(:id), linked_post_id: Post.visible_to(user).select(:id)) }
+
   private
 
   def different_posts
