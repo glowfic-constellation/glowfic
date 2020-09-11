@@ -1,5 +1,5 @@
 //= require posts/edit_notes
-/* global gon, tinyMCE, resizeScreenname, createTagSelect, createSelect2 */
+/* global gon, tinyMCE, resizeScreenname, createTagSelect, createSelect2, queryTransform, processResults */
 
 var tinyMCEInit = false, shownIcons = [];
 var iconSelectBox;
@@ -22,10 +22,10 @@ $(document).ready(function() {
     width: '300px'
   });
 
-  $("#relation").select2({width: '300px'})
+  $("#relation").select2({width: '300px'});
 
   setupMetadataEditor();
-  fixButtons()
+  fixButtons();
   iconSelectBox = $('#reply-icon-selector');
 
   if ($("#post-editor .view-button").length > 0) setupWritableEditor();
@@ -563,7 +563,7 @@ function addNewRow() {
 
 function bindRem() {
   $(".icon-row-rem").click(function() {
-    var remRow = $(this).parent()
+    var remRow = $(this).parent();
     remRow.remove();
     fixButtons();
   });
