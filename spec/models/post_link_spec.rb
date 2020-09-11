@@ -20,6 +20,11 @@ RSpec.describe PostLink, type: :model do
       expect(link).not_to be_valid
     end
 
+    it "requires relationship" do
+      link = build(:post_link, relationship: nil)
+      expect(link).not_to be_valid
+    end
+
     it "succeeds" do
       expect(create(:post_link)).to be_valid
     end

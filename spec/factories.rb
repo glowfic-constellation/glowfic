@@ -255,6 +255,7 @@ FactoryBot.define do
   end
 
   factory :post_link do
+    relationship { 'related to' }
     linking_post
     linked_post
   end
