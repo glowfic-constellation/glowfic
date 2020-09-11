@@ -3,7 +3,7 @@ class CreatePostLinks < ActiveRecord::Migration[5.2]
     create_table :post_links do |t|
       t.integer :linking_post_id, null: false
       t.integer :linked_post_id, null: false
-      t.text :relationship, null: false, default: "is related to"
+      t.text :relationship, null: false, default: "related to"
       t.boolean :approved, default: false
       t.timestamps
     end

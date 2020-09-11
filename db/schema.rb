@@ -294,7 +294,7 @@ ActiveRecord::Schema.define(version: 2020_04_16_173619) do
   create_table "post_links", force: :cascade do |t|
     t.integer "linking_post_id", null: false
     t.integer "linked_post_id", null: false
-    t.text "relationship", default: "is related to", null: false
+    t.text "relationship", default: "related to", null: false
     t.boolean "approved", default: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
