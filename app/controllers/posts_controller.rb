@@ -486,7 +486,6 @@ class PostsController < WritableController
         :id,
         :linked_post_id,
         :relationship,
-        :approved,
         :_destroy,
       ],
     ]
