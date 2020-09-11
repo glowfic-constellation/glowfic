@@ -74,7 +74,6 @@
     = tag_select(post, f, :labels)
 
   .subber Related Posts
-  - relationship_options = ['inspired by', 'an AU of', 'a sequel to']
   - if @post.linked_post_joins.present?
     %div{class: cycle('even', 'odd')}
       %b Existing Links
@@ -82,7 +81,7 @@
     - klass = cycle('even', 'odd')
     .link-row{class: klass}
       This post is
-      = ff.select :relationship, options_for_select(relationship_options, ff.object.relationship), {}, { class: 'post_link_relationship' }
+      = ff.select :relationship, options_for_select(PostLink::TYPES, ff.object.relationship), {}, { class: 'post_link_relationship' }
       = ff.object.linked_post.subject
       = ff.check_box :_destroy
       = ff.label :_destroy, 'Delete Link'
@@ -92,7 +91,7 @@
     - klass = cycle('even', 'odd')
     .link-row{class: klass}
       This post is
-      = ff.select :relationship, options_for_select(relationship_options), { include_blank: '— Choose Relationship —' }, { class: 'post_link_relationship' }
+      = ff.select :relationship, options_for_select(PostLink::TYPES), { include_blank: '— Choose Relationship —' }, { class: 'post_link_relationship' }
       - posts = Post.ordered.joins(:post_authors).where(post_authors: { user: current_user }).limit(10)
       = ff.select :linked_post_id, options_from_collection_for_select(posts, :id, :subject, nil), { include_blank: '— Choose Post —' }, { class: 'post_link_linked_post_id' }
       = image_tag "icons/add.png", class: "icon-row-add", alt: 'Add Row'
