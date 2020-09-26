@@ -170,10 +170,7 @@ class PostsController < WritableController
       @preceding = @post.replies.where('id < ?', @audit.auditable_id).order(id: :desc).limit(2).reverse
       @preceding = [@post] unless @preceding.present?
       @following = @post.replies.where('id > ?', @audit.auditable_id).order(id: :asc).limit(2)
-      @audits = @post.associated_audits.where(auditable_id: @following.map(&:id))
-      @audits = @audits.or(@post.associated_audits.where(auditable_id: @preceding.map(&:id))) unless @preceding.first.is_a?(Post)
-      @audits = @audits.group(:auditable_id).count
-      @audits[:post] = @post.audits.count if @preceding.is_a?(Post)
+      @audits = {} # set to prevent crashes, but we don't need this calculated, we don't want to display edit history on this page
     end
   end
 
