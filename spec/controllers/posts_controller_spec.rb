@@ -1,5 +1,81 @@
 RSpec.describe PostsController do
+  shared_examples "logged out post list" do
+    it "does not show user-only posts" do
+      posts = create_list(:post, 2)
+      create_list(:post, 2, privacy: :registered)
+      get controller_action, params: params
+      expect(response.status).to eq(200)
+      expect(Post.all.count).to eq(4)
+      expect(assigns(assign_variable)).to match_array(posts)
+    end
+  end
+
+  shared_examples "logged in post list" do
+    let(:user) { create(:user) }
+    let(:posts) { create_list(:post, 3) }
+
+    before(:each) {
+      login_as(user)
+      posts
+    }
+
+    it "does not show access-locked or private threads" do
+      create(:post, privacy: :private)
+      create(:post, privacy: :access_list)
+      get controller_action, params: params
+      expect(response.status).to eq(200)
+      expect(assigns(assign_variable)).to match_array(posts)
+    end
+
+    it "shows access-locked and private threads if you have access" do
+      posts << create(:post, user: user, privacy: :private)
+      posts << create(:post, user: user, privacy: :access_list)
+      get controller_action, params: params
+      expect(response.status).to eq(200)
+      expect(assigns(assign_variable)).to match_array(posts)
+    end
+
+    it "does not show posts with blocked or blocking authors" do
+      post1 = create(:post, authors_locked: true)
+      post2 = create(:post, authors_locked: true)
+      create(:block, blocking_user: user, blocked_user: post1.user, hide_them: :posts)
+      create(:block, blocking_user: post2.user, blocked_user: user, hide_me: :posts)
+      get controller_action, params: params
+      expect(response.status).to eq(200)
+      expect(assigns(assign_variable)).to match_array(posts)
+    end
+
+    it "shows posts with a blocked (but not blocking) author with show_blocked" do
+      post1 = create(:post, authors_locked: true)
+      post2 = create(:post, authors_locked: true)
+      create(:block, blocking_user: user, blocked_user: post1.user, hide_them: :posts)
+      create(:block, blocking_user: post2.user, blocked_user: user, hide_me: :posts)
+      params[:show_blocked] = true
+      posts << post1
+      get controller_action, params: params
+      expect(response.status).to eq(200)
+      expect(assigns(assign_variable)).to match_array(posts)
+    end
+
+    it "shows your own posts with blocked or but not blocking authors" do
+      post1 = create(:post, authors_locked: true, author_ids: [user.id])
+      create(:reply, post: post1, user: user)
+      post2 = create(:post, authors_locked: true, author_ids: [user.id])
+      create(:reply, post: post2, user: user)
+      create(:block, blocking_user: user, blocked_user: post1.user, hide_them: :posts)
+      create(:block, blocking_user: post2.user, blocked_user: user, hide_me: :posts)
+      posts << post2
+      get controller_action, params: params
+      expect(response.status).to eq(200)
+      expect(assigns(assign_variable)).to match_array(posts)
+    end
+  end
+
   describe "GET index" do
+    let(:controller_action) { "index" }
+    let(:params) { { } }
+    let(:assign_variable) { :posts }
+
     it "has a 200 status code" do
       get :index
       expect(response.status).to eq(200)
@@ -53,6 +129,14 @@ RSpec.describe PostsController do
         expect(response.body).to include('title="A &amp; B do a thing"')
       end
     end
+
+    context "when logged out" do
+      include_examples "logged out post list"
+    end
+
+    context "when logged in" do
+      include_examples "logged in post list"
+    end
   end
 
   describe "GET search" do
@@ -74,6 +158,10 @@ RSpec.describe PostsController do
     end
 
     context "searching" do
+      let(:controller_action) { "search" }
+      let(:params) { { commit: true } }
+      let(:assign_variable) { :search_results }
+
       it "finds all when no arguments given" do
         create_list(:post, 4)
         get :search, params: { commit: true }
@@ -175,6 +263,14 @@ RSpec.describe PostsController do
         create(:reply, post: posts[1])
         get :search, params: { commit: true }
         expect(assigns(:search_results)).to eq([posts[1], posts[2], posts[3], posts[0]])
+      end
+
+      context "when logged out" do
+        include_examples "logged out post list"
+      end
+
+      context "when logged in" do
+        include_examples "logged in post list"
       end
     end
   end
@@ -2785,19 +2881,16 @@ RSpec.describe PostsController do
         expect(assigns(:posts)).to be_empty
       end
 
-      it "hides completed and abandoned threads" do
-        create(:reply, post_id: post.id, user_id: other_user.id)
-
+      it "hides completed threads" do
+        create(:reply, post: post, user: other_user)
         post.update!(status: :complete)
         get :owed
         expect(response.status).to eq(200)
         expect(assigns(:posts)).to be_empty
+      end
 
-        post.update!(status: :active)
-        get :owed
-        expect(response.status).to eq(200)
-        expect(assigns(:posts)).to match_array([post])
-
+      it "hides abandoned threads" do
+        create(:reply, post: post, user: other_user)
         post.update!(status: :abandoned)
         get :owed
         expect(response.status).to eq(200)
@@ -2888,6 +2981,10 @@ RSpec.describe PostsController do
   end
 
   describe "GET unread" do
+    let(:controller_action) { "unread" }
+    let(:params) { { } }
+    let(:assign_variable) { :posts }
+
     it "requires login" do
       get :unread
       expect(response).to redirect_to(root_url)
@@ -3056,6 +3153,10 @@ RSpec.describe PostsController do
         expect(assigns(:posts)).to match_array([opened_post1, opened_post2])
         expect(assigns(:hide_quicklinks)).to eq(true)
       end
+    end
+
+    context "when logged in" do
+      include_examples "logged in post list"
     end
   end
 
@@ -3347,114 +3448,6 @@ RSpec.describe PostsController do
       login
       post :unhide
       expect(response).to redirect_to(hidden_posts_url)
-    end
-  end
-
-  shared_examples "logged out post list" do
-    it "does not show user-only posts" do
-      posts = create_list(:post, 2)
-      create_list(:post, 2, privacy: :registered)
-      get controller_action, params: params
-      expect(response.status).to eq(200)
-      expect(Post.all.count).to eq(4)
-      expect(assigns(assign_variable)).to match_array(posts)
-    end
-  end
-
-  shared_examples "logged in post list" do
-    let(:user) { create(:user) }
-    let(:posts) { create_list(:post, 3) }
-
-    before(:each) {
-      login_as(user)
-      posts
-    }
-
-    it "does not show access-locked or private threads" do
-      create(:post, privacy: :private)
-      create(:post, privacy: :access_list)
-      get controller_action, params: params
-      expect(response.status).to eq(200)
-      expect(assigns(assign_variable)).to match_array(posts)
-    end
-
-    it "shows access-locked and private threads if you have access" do
-      posts << create(:post, user: user, privacy: :private)
-      posts << create(:post, user: user, privacy: :access_list)
-      get controller_action, params: params
-      expect(response.status).to eq(200)
-      expect(assigns(assign_variable)).to match_array(posts)
-    end
-
-    it "does not show posts with blocked or blocking authors" do
-      post1 = create(:post, authors_locked: true)
-      post2 = create(:post, authors_locked: true)
-      create(:block, blocking_user: user, blocked_user: post1.user, hide_them: :posts)
-      create(:block, blocking_user: post2.user, blocked_user: user, hide_me: :posts)
-      get controller_action, params: params
-      expect(response.status).to eq(200)
-      expect(assigns(assign_variable)).to match_array(posts)
-    end
-
-    it "shows posts with a blocked (but not blocking) author with show_blocked" do
-      post1 = create(:post, authors_locked: true)
-      post2 = create(:post, authors_locked: true)
-      create(:block, blocking_user: user, blocked_user: post1.user, hide_them: :posts)
-      create(:block, blocking_user: post2.user, blocked_user: user, hide_me: :posts)
-      params[:show_blocked] = true
-      posts << post1
-      get controller_action, params: params
-      expect(response.status).to eq(200)
-      expect(assigns(assign_variable)).to match_array(posts)
-    end
-
-    it "shows your own posts with blocked or but not blocking authors" do
-      post1 = create(:post, authors_locked: true, author_ids: [user.id])
-      create(:reply, post: post1, user: user)
-      post2 = create(:post, authors_locked: true, author_ids: [user.id])
-      create(:reply, post: post2, user: user)
-      create(:block, blocking_user: user, blocked_user: post1.user, hide_them: :posts)
-      create(:block, blocking_user: post2.user, blocked_user: user, hide_me: :posts)
-      posts << post2
-      get controller_action, params: params
-      expect(response.status).to eq(200)
-      expect(assigns(assign_variable)).to match_array(posts)
-    end
-  end
-
-  context "GET index" do
-    let(:controller_action) { "index" }
-    let(:params) { { } }
-    let(:assign_variable) { :posts }
-
-    context "when logged out" do
-      include_examples "logged out post list"
-    end
-    context "when logged in" do
-      include_examples "logged in post list"
-    end
-  end
-
-  context "GET unread" do
-    let(:controller_action) { "unread" }
-    let(:params) { { } }
-    let(:assign_variable) { :posts }
-
-    context "when logged in" do
-      include_examples "logged in post list"
-    end
-  end
-
-  context "GET search" do
-    let(:controller_action) { "search" }
-    let(:params) { { commit: true } }
-    let(:assign_variable) { :search_results }
-
-    context "when logged out" do
-      include_examples "logged out post list"
-    end
-    context "when logged in" do
-      include_examples "logged in post list"
     end
   end
 end
