@@ -1377,7 +1377,7 @@ RSpec.describe PostsController do
       reply.destroy!
       restore(reply)
       get :delete_history, params: { id: post.id }
-      expect(assigns(:audits).count).to eq(0)
+      expect(assigns(:deleted_audits).count).to eq(0)
     end
 
     it "only selects more recent restore" do
@@ -1391,7 +1391,7 @@ RSpec.describe PostsController do
       reply.save!
       reply.destroy!
       get :delete_history, params: { id: post.id }
-      expect(assigns(:audits).count).to eq(1)
+      expect(assigns(:deleted_audits).count).to eq(1)
       expect(assigns(:audit).audited_changes['content']).to eq('new content')
     end
 
