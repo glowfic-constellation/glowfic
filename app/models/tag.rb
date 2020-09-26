@@ -72,6 +72,7 @@ class Tag < ApplicationRecord
 
   def merge_with(other_tag)
     transaction do
+      # rubocop:disable Rails/SkipsModelValidations
       PostTag.where(tag_id: other_tag.id).where(post_id: post_tags.select(:post_id).distinct.pluck(:post_id)).delete_all
       PostTag.where(tag_id: other_tag.id).update_all(tag_id: self.id)
       CharacterTag.where(tag_id: other_tag.id).where(character_id: character_tags.select(:character_id).distinct.pluck(:character_id)).delete_all
@@ -83,6 +84,7 @@ class Tag < ApplicationRecord
       Tag::SettingTag.where(tag_id: other_tag.id).update_all(tag_id: self.id)
       Tag::SettingTag.where(tagged_id: other_tag.id).update_all(tagged_id: self.id)
       other_tag.destroy
+      # rubocop:enable Rails/SkipsModelValidations
     end
   end
 end
