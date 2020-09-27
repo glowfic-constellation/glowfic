@@ -11,7 +11,9 @@ RSpec.describe BoardSection do
     expect(post.section_order).to eq(0)
     expect(section2.section_order).to eq(2)
     perform_enqueued_jobs(only: UpdateModelJob) do
-      section.destroy!
+      Audited.audit_class.as_user(board.creator) do
+        section.destroy!
+      end
     end
     post.reload
     expect(post.section_id).to be_nil
@@ -50,7 +52,7 @@ RSpec.describe BoardSection do
     expect(section2.section_order).to eq(2)
     section3 = create(:board_section, board_id: board.id)
     expect(section3.section_order).to eq(3)
-    section1.destroy!
+    Audited.audit_class.as_user(board.creator) { section1.destroy! }
     expect(section0.reload.section_order).to eq(0)
     expect(section2.reload.section_order).to eq(1)
     expect(section3.reload.section_order).to eq(2)
