@@ -4,7 +4,14 @@ ruby '2.6.6'
 
 gem 'api-pagination'
 gem 'apipie-rails'
-gem 'audited', '~> 4.9.0' # check for migrations after update with `rails generate audited:upgrade`
+
+# when upgrading check:
+# - for migrations with `rails generate audited:upgrade`
+# - that the method set_audit_user has not changed, since we duplicate it in
+#   ApplicationRecord for use in callbacks to send audit user ids to background jobs.
+#   (currently https://github.com/collectiveidea/audited/blob/v4.9.0/lib/audited/audit.rb#L175)
+gem 'audited', '~> 4.9.0'
+
 gem 'aws-sdk-rails', '~> 2'
 gem 'aws-sdk-s3', '~> 1'
 gem 'aws-sdk-ses', '~> 1'
