@@ -91,7 +91,7 @@ class ApplicationController < ActionController::Base
   helper_method :tos_skippable?
 
   def posts_from_relation(relation, no_tests: true, with_pagination: true, select: '', max: false, with_unread: false, show_blocked: false)
-    posts_count = relation.except(:select, :order, :join, :group).count
+    posts_count = relation.visible_to(current_user).except(:select, :order, :joins, :group).count
     posts = posts_list_relation(relation, no_tests: no_tests, select: select, max: max, show_blocked: show_blocked)
     posts = posts.paginate(page: page, total_entries: posts_count) if with_pagination
     calculate_view_status(posts, with_unread: with_unread) if logged_in?
