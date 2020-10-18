@@ -363,10 +363,11 @@ GEM
       childprocess (>= 0.5, < 4.0)
       rubyzip (>= 1.2.2)
     sexp_processor (4.15.1)
-    simplecov (0.19.0)
+    simplecov (0.17.1)
       docile (~> 1.1)
-      simplecov-html (~> 0.11)
-    simplecov-html (0.12.3)
+      json (>= 1.8, < 3)
+      simplecov-html (~> 0.10.0)
+    simplecov-html (0.10.2)
     sinatra (2.1.0)
       mustermann (~> 1.0)
       rack (~> 2.2)
@@ -481,7 +482,7 @@ DEPENDENCIES
   seed_dump (~> 3.2)
   select2-rails
   selenium-webdriver
-  simplecov
+  simplecov (~> 0.17.1)
   sprockets (~> 3.7)
   test-unit (~> 3.0)
   thin
