@@ -70,7 +70,7 @@ group :development, :test do
   gem 'byebug'
   gem 'database_cleaner'
   gem 'dotenv-rails'
-  gem "html-proofer"
+  gem 'html-proofer'
   gem 'rake', '~> 12.0'
   gem 'rspec-rails'
   gem 'seed_dump', '~> 3.2'
@@ -83,7 +83,7 @@ group :test do
   gem 'rails-controller-testing'
   gem 'resque_spec'
   gem 'selenium-webdriver'
-  gem 'simplecov'
+  gem 'simplecov', '~> 0.17.1'
   gem 'timecop'
   gem 'webdrivers', '~> 4.0'
   gem 'webmock'
