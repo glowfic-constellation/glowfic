@@ -151,7 +151,11 @@ class PostsController < WritableController
   end
 
   def show
-    render :flat, layout: false and return if params[:view] == 'flat'
+    if params[:view] == 'flat'
+      gon.override_times = true
+      render :flat, layout: false
+      return
+    end
     show_post
   end
 

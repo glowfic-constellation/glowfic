@@ -9,6 +9,9 @@
       = stylesheet_link_tag "layouts/#{current_user.layout}"
     = favicon_link_tag 'favicons/favicon-32x32.png', type: 'image/png', rel: 'icon', sizes: '32x32'
     = favicon_link_tag 'favicons/favicon-16x16.png', type: 'image/png', rel: 'icon', sizes: '16x16'
+
+    = include_gon
+    = javascript_include_tag 'application_deferred'.freeze, defer: :defer
   %body
     #content
       = link_to post_path(@post) do
