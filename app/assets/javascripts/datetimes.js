@@ -6,7 +6,7 @@ var options = {
 var format = Intl.DateTimeFormat('en-US', options);
 
 window.onload = function() {
-  if (gon.logged_in && !gon.override_times) return;
+  if (gon.logged_in) return;
   var times = document.getElementsByTagName('time');
   Array.from(times).forEach(function(time) {
     var datetime = new Date(time.dateTime);
