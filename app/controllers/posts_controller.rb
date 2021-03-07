@@ -37,6 +37,7 @@ class PostsController < WritableController
     end
 
     @posts = posts_from_relation(@posts.ordered)
+    fresh_when(etag: @posts, last_modified: @posts.max_by(&:tagged_at).tagged_at, public: false)
   end
 
   def unread
@@ -175,6 +176,7 @@ class PostsController < WritableController
   end
 
   def stats
+        fresh_when(etag: @post, last_modified: @post.tagged_at, public: false)
   end
 
   def edit
