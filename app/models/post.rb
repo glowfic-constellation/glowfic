@@ -322,7 +322,7 @@ class Post < ApplicationRecord
   end
 
   def reset_warnings(_warning)
-    Post::View.where(post_id: id).update_all(warnings_hidden: false)
+    Post::View.where(post_id: id).update_all(warnings_hidden: false) # rubocop:disable Rails/SkipsModelValidations
   end
 
   def notify_followers
