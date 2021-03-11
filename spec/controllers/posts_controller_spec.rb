@@ -1440,7 +1440,7 @@ RSpec.describe PostsController do
       get :stats, params: { id: post.id }
 
       meta_og = assigns(:meta_og)
-      expect(meta_og[:url]).to eq(post_url(post))
+      expect(meta_og[:url]).to eq(stats_post_url(post))
       expect(meta_og[:title]).to eq('title · board » Stats')
       expect(meta_og[:description]).to eq('(example user)')
     end
