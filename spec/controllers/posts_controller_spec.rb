@@ -1317,6 +1317,18 @@ RSpec.describe PostsController do
       expect(flash[:error]).to eq("Post could not be found.")
     end
 
+    it "calculates OpenGraph meta" do
+      user = create(:user, username: 'example user')
+      board = create(:board, name: 'board')
+      post = create(:post, subject: 'title', user: user, board: board)
+      get :stats, params: { id: post.id }
+
+      meta_og = assigns(:meta_og)
+      expect(meta_og[:url]).to eq(post_url(post))
+      expect(meta_og[:title]).to eq('title · board » Stats')
+      expect(meta_og[:description]).to eq('(example user)')
+    end
+
     it "works logged out" do
       get :stats, params: { id: create(:post).id }
       expect(response.status).to eq(200)
