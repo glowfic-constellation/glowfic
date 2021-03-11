@@ -188,7 +188,7 @@ class PostsController < WritableController
     @meta_og = {
       title: @post.subject + ' · ' + post_location,
       description: post_description,
-      url: post_url(@post)
+      url: stats_post_url(@post)
     }
   end
 
