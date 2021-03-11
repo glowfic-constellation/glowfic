@@ -161,9 +161,9 @@ RSpec.configure do |config|
     user = FactoryBot.create(:user)
     5.times do
       board = FactoryBot.create(:board, creator: user)
-      board.destroy
+      Audited.audit_class.as_user(user) { board.destroy! }
     end
-    user.destroy
+    user.destroy!
   end
 
   if ENV['APIPIE_RECORD']

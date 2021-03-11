@@ -520,6 +520,13 @@ div.post-subheader { width: 100%; }
     vertical-align: middle;
   }
 }
+@media (pointer: coarse) {
+  .mobile-target {
+    display: inline-block;
+    padding-bottom: 8px;
+    padding-right: 8px;
+  }
+}
 
 /* Unread marker on posts */
 .unread-marker-container { position: relative; }

@@ -995,24 +995,33 @@ RSpec.describe CharactersController do
       expect(flash[:error]).to eq('Invalid old alias.')
     end
 
-    it "succeeds with valid other character" do
-      user = create(:user)
-      character = create(:character, user: user)
-      other_char = create(:character, user: user)
-      char_post = create(:post, user: user, character: character)
-      reply = create(:reply, user: user, character: character)
-      reply_post_char = reply.post.character_id
+    context "with audits enabled" do
+      before(:each) { Reply.auditing_enabled = true }
+      after(:each) { Reply.auditing_enabled = false }
 
-      login_as(user)
-      perform_enqueued_jobs(only: UpdateModelJob) do
-        post :do_replace, params: { id: character.id, icon_dropdown: other_char.id }
+      it "succeeds with valid other character" do
+        user = create(:user)
+        character = create(:character, user: user)
+        other_char = create(:character, user: user)
+        char_post = create(:post, user: user, character: character)
+        reply = create(:reply, user: user, character: character)
+        reply_post_char = reply.post.character_id
+
+        login_as(user)
+        perform_enqueued_jobs(only: UpdateModelJob) do
+          post :do_replace, params: { id: character.id, icon_dropdown: other_char.id }
+        end
+        expect(response).to redirect_to(character_path(character))
+        expect(flash[:success]).to eq('All uses of this character will be replaced.')
+
+        expect(char_post.reload.character_id).to eq(other_char.id)
+        expect(reply.reload.character_id).to eq(other_char.id)
+        expect(reply.post.reload.character_id).to eq(reply_post_char) # check it doesn't replace all replies in a post
+
+        audit = reply.audits.where(action: 'update').first
+        expect(audit).not_to be(nil)
+        expect(audit.user).to eq(user)
       end
-      expect(response).to redirect_to(character_path(character))
-      expect(flash[:success]).to eq('All uses of this character will be replaced.')
-
-      expect(char_post.reload.character_id).to eq(other_char.id)
-      expect(reply.reload.character_id).to eq(other_char.id)
-      expect(reply.post.reload.character_id).to eq(reply_post_char) # check it doesn't replace all replies in a post
     end
 
     it "succeeds with no other character" do

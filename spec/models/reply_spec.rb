@@ -77,24 +77,35 @@ RSpec.describe Reply do
       expect(UserMailer).to have_queue_size_of(0)
     end
 
-    it "sends to all other active authors if previous reply wasn't yours" do
+    it "does not send to authors with notifications off" do
       post = create(:post)
       expect(post.user.email_notifications).not_to eq(true)
+      create(:reply, post: post)
+      expect(UserMailer).to have_queue_size_of(0)
+    end
 
+    it "does not send to emailless users" do
       user = create(:user)
       user.update_columns(email: nil) # rubocop:disable Rails/SkipsModelValidations
-      create(:reply, user: user, post: post, skip_notify: true)
+      post = create(:post, user: user)
+      create(:reply, post: post)
+      expect(UserMailer).to have_queue_size_of(0)
+    end
 
+    it "does not send to users who have opted out of owed" do
+      user = create(:user, email_notifications: true)
+      post = create(:post, user: user)
+      post.opt_out_of_owed(user)
+      create(:reply, post: post)
+      expect(UserMailer).to have_queue_size_of(0)
+    end
+
+    it "sends to all other active authors if previous reply wasn't yours" do
       notified_user = create(:user, email_notifications: true)
-      create(:reply, user: notified_user, post: post, skip_notify: true)
+      post = create(:post, user: notified_user)
 
       another_notified_user = create(:user, email_notifications: true)
       create(:reply, user: another_notified_user, post: post, skip_notify: true)
-
-      # skips users who have the post set as ignored for tags owed purposes (or who can't tag)
-      a_user_who_doesnt_owe = create(:user, email_notifications: true)
-      create(:reply, user: a_user_who_doesnt_owe, post: post, skip_notify: true)
-      post.opt_out_of_owed(a_user_who_doesnt_owe)
 
       reply = create(:reply, post: post)
       expect(UserMailer).to have_queue_size_of(2)

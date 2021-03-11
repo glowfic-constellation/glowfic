@@ -16,10 +16,10 @@
     - if logged_in?
       - if unread_post?(post, unread_ids) || (@show_unread && !opened_post?(post, opened_ids))
         = link_to unread_path(post) do
-          = image_tag unread_img, class: 'vmid', title: 'First Unread', alt: 'First Unread'
+          = image_tag unread_img, class: 'vmid mobile-target', title: 'First Unread', alt: 'First Unread'
       - elsif @show_unread
         = link_to unread_path(post) do
-          = image_tag lastlink_img, class: 'vmid', title: 'First Unread', alt: 'Jump To End'
+          = image_tag lastlink_img, class: 'vmid mobile-target', title: 'First Unread', alt: 'Jump To End'
     - if logged_in? && @opened_ids.present? && !@opened_ids.include?(post.id)
       %b= link_to post.subject, post_path(post), title: strip_tags(post.description)&.html_safe
     - else
