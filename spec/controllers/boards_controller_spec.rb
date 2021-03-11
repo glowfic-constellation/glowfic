@@ -406,7 +406,7 @@ RSpec.describe BoardsController do
 
     it "moves posts to sandboxes" do
       board = create(:board)
-      create(:board, id: 3) # sandbox
+      create(:board, id: Board::ID_SANDBOX)
       section = create(:board_section, board: board)
       post = create(:post, board: board, section: section)
       login_as(board.creator)
@@ -416,7 +416,7 @@ RSpec.describe BoardsController do
       expect(response).to redirect_to(continuities_url)
       expect(flash[:success]).to eq('Continuity deleted.')
       post.reload
-      expect(post.board_id).to eq(3)
+      expect(post.board_id).to eq(Board::ID_SANDBOX)
       expect(post.section).to be_nil
       expect(BoardSection.find_by_id(section.id)).to be_nil
     end

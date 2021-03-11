@@ -4,6 +4,9 @@ var submittedButton = '';
 $(document).ready(function() {
   originalValue = $("#post_private_note").val();
 
+  // If not on the reply page or otherwise not live editing notes
+  if (!$(".edit-private-notes").length) return;
+
   $(".edit-private-notes").click(function() {
     $(".private-note").toggle();
     $(".private-note-editor").toggle();

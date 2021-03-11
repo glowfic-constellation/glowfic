@@ -162,14 +162,15 @@ class PostsController < WritableController
     audit_ids = @post.associated_audits.where(action: 'destroy').where(auditable_type: 'Reply') # all destroyed replies
     audit_ids = audit_ids.joins('LEFT JOIN replies ON replies.id = audits.auditable_id').where('replies.id IS NULL') # not restored
     audit_ids = audit_ids.group(:auditable_id).pluck(Arel.sql('MAX(audits.id)')) # only most recent per reply
-    @audits = Audited::Audit.where(id: audit_ids).paginate(per_page: 1, page: page)
+    @deleted_audits = Audited::Audit.where(id: audit_ids).paginate(per_page: 1, page: page)
 
-    if @audits.present?
-      @audit = @audits.first
+    if @deleted_audits.present?
+      @audit = @deleted_audits.first
       @deleted = Reply.new(@audit.audited_changes)
       @preceding = @post.replies.where('id < ?', @audit.auditable_id).order(id: :desc).limit(2).reverse
       @preceding = [@post] unless @preceding.present?
       @following = @post.replies.where('id > ?', @audit.auditable_id).order(id: :asc).limit(2)
+      @audits = {} # set to prevent crashes, but we don't need this calculated, we don't want to display edit history on this page
     end
   end
 

@@ -47,7 +47,7 @@
         Posts
   %tr
     %td.centered{class: cycle('even', 'odd')}
-      = link_to search_replies_path(commit: true, icon_id: @icon.id) do
+      = link_to search_replies_path(commit: true, icon_id: @icon.id, sort: :created_new) do
         = image_tag "icons/table_multiple.png", alt: ''
         Replies
   - if @icon.user_id == current_user.try(:id)
