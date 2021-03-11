@@ -176,7 +176,7 @@ class PostsController < WritableController
   end
 
   def stats
-    fresh_when(etag: @post, last_modified: @post.tagged_at, public: false)
+    fresh_when(etag: @post, last_modified: @post.updated_at, public: false)
   end
 
   def edit
