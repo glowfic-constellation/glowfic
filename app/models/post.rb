@@ -229,7 +229,7 @@ class Post < ApplicationRecord
     contents = replies.where(user_id: user.id).pluck(:content)
     full_sanitizer = Rails::Html::FullSanitizer.new
     contents[0] = full_sanitizer.sanitize(contents[0]).split.size
-    sum + contents.inject{|r, e| r + e.split.size}.to_i
+    sum + contents.inject{|r, e| r + full_sanitizer.sanitize(e).split.size}.to_i
   end
 
   # only returns for authors who have written in the post (it's zero for authors who have not joined)
