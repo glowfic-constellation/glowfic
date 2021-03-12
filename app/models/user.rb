@@ -94,11 +94,13 @@ class User < ApplicationRecord
   end
 
   def blocked_posts
-    blocked_or_hidden_posts('blocked', Block.where(blocked_user_id: self.id).where('hide_me > 0').select(:blocking_user_id))
+    blocks = Block.where(blocked_user_id: self.id).select(:blocking_user_id)
+    blocked_or_hidden_posts('blocked', blocks.where(hide_me: :posts), blocks.where(hide_me: :all))
   end
 
   def hidden_posts
-    blocked_or_hidden_posts('hidden', Block.where(blocking_user_id: self.id).where('hide_them > 0').select(:blocked_user_id))
+    blocks = Block.where(blocking_user_id: self.id).select(:blocked_user_id)
+    blocked_or_hidden_posts('hidden', blocks.where(hide_them: :posts), blocks.where(hide_them: :all))
   end
 
   private
@@ -145,12 +147,14 @@ class User < ApplicationRecord
     errors.add(:username, 'is invalid')
   end
 
-  def blocked_or_hidden_posts(keyword, user_ids)
+  def blocked_or_hidden_posts(keyword, post_user_ids, full_user_ids)
     Rails.cache.fetch(Block.cache_string_for(self.id, keyword), expires_in: 1.month) do
       post_ids = Post.unscoped.where(
         authors_locked: true,
-        id: Post::Author.where(user_id: user_ids).select(:post_id),
+        id: Post::Author.where(user_id: post_user_ids).select(:post_id),
       ).pluck(:id)
+      post_ids += Post::Author.where(user_id: full_user_ids).pluck(:post_id)
+      post_ids.uniq!
       post_ids -= Post::Author.where(user_id: self.id).pluck(:post_id) if keyword == 'blocked'
       post_ids
     end

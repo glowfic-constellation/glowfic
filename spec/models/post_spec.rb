@@ -608,7 +608,7 @@ RSpec.describe Post do
         coauthor = create(:user)
         post = create(:post, authors_locked: true, author_ids: [coauthor.id])
         create(:reply, post: post, user: coauthor)
-        block = create(:block, blocking_user: post.user, blocked_user: coauthor, hide_me: :posts)
+        create(:block, blocking_user: post.user, blocked_user: coauthor, hide_me: :posts)
         expect(post.reload).to be_visible_to(coauthor)
       end
     end

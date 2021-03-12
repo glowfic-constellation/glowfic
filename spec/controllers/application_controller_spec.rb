@@ -294,6 +294,19 @@ RSpec.describe ApplicationController do
       expect(controller.send(:posts_from_relation, relation.order(tagged_at: :desc), with_pagination: false).ids).to eq(default_post_ids.reverse)
     end
 
+    it "uses an accurate custom post_count with joins and groups" do
+      create(:post, privacy: :private) # hidden
+      replyless = create(:post)
+      replyful = create(:post)
+      create_list(:reply, 2, post: replyful)
+
+      login
+      relation = Post.select("posts.*").left_joins(:replies).group("posts.id")
+      result = controller.send(:posts_from_relation, relation, max: true)
+      expect(result.to_a).to match_array([replyless, replyful])
+      expect(result.total_entries).to eq(2)
+    end
+
     it "has more tests" do
       skip
     end

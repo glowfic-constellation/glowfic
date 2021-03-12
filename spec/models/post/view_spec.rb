@@ -84,7 +84,7 @@ RSpec.describe Post::View do
     it "does not update message if read" do
       post = make_post
       notification = user.messages.first
-      notification.update_attributes(unread: false)
+      notification.update!(unread: false)
       post.mark_read(user)
       expect(user.messages.first.unread).to eq(false)
     end
