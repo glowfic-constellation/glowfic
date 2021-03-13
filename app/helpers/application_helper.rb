@@ -254,18 +254,16 @@ module ApplicationHelper
   end
   def get_owed
     ids = Post::Author.where(user_id: current_user.id, can_owe: true).group(:post_id).pluck(:post_id)
-    @posts = Post.where(id: ids)
-    drafts = ReplyDraft.where(post_id: @posts.select(:id)).where(user: current_user).pluck(:post_id)
+    posts = Post.where(id: ids)
+    drafts = ReplyDraft.where(post_id: posts.select(:id)).where(user: current_user).pluck(:post_id)
     solo = Post::Author.where(post_id: ids).group(:post_id).having('count(post_id) < 2').pluck(:post_id)
-    @posts = @posts.where.not(last_user: current_user).or(@posts.where(id: (drafts + solo).uniq))
-    @posts = @posts.where.not(status: [:complete, :abandoned])
-    hiatused = @posts.hiatus.or(@posts.where('tagged_at < ?', 1.month.ago))
+    posts = posts.where.not(last_user: current_user).or(posts.where(id: (drafts + solo).uniq))
+    posts = posts.where.not(status: [:complete, :abandoned])
 
     if current_user.hide_hiatused_tags_owed?
-      @posts = @posts.where.not(status: :hiatus).where('tagged_at > ?', 1.month.ago)
-      @hiatused_exist = true if hiatused.count > 0
+      posts = posts.where.not(status: :hiatus).where('tagged_at > ?', 1.month.ago)
     end
 
-    return @posts.count
+    return posts.count
   end
 end
