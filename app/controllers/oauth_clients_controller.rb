@@ -22,7 +22,7 @@ class OauthClientsController < ApplicationController
   end
 
   def user_params
-      params.require(:client_application).permit(:name, :callback_url, :support_url, :url)
+    params.fetch(:client_application, {}).permit(:name, :callback_url, :support_url, :url)
   end
 
   def show
