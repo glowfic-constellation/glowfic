@@ -3,7 +3,7 @@
 class OauthNonce < ApplicationRecord
   validates :nonce, presence: true
   validates :timestamp, presence: true
-  validates :nonce, :unique: true, :scope => :timestamp
+  validates :nonce, uniqueness: true, :scope => :timestamp
 
   # Remembers a nonce and it's associated timestamp. It returns false if it has already been used
   def self.remember(nonce, timestamp)
