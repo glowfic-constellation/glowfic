@@ -105,7 +105,7 @@ RSpec.describe OauthClientsController do
   describe "create" do
 
     def do_valid_post
-      post :create, params: { 'client_application'=>{'name' => 'my site', :url=>"http://test.com"} }
+      post :create, params: { 'client_application'=>{'name' => 'my site', :url=>"http://test.com", :callback_url=>"http://test.com/callback"} }
       @client_application = ClientApplication.last
     end
 
@@ -147,7 +147,7 @@ RSpec.describe OauthClientsController do
   describe "update" do
 
     def do_valid_update
-      put :update, params: { :id => @client_application.id, 'client_application'=>{'name' => 'updated site'} }
+      put :update, params: { :id => @client_application.id, 'client_application'=>{'name' => 'updated site', 'url' => @client_application.url, 'callback_url' => @client_application.callback_url} }
     end
 
     def do_invalid_update
@@ -162,7 +162,7 @@ RSpec.describe OauthClientsController do
 
     it "should assign client_applications" do
       do_invalid_update
-      expect(assigns(:client_application)).to eq(ClientApplication.find(1))
+      expect(assigns(:client_application)).to eq(@client_application)
     end
 
     it "should render show template" do
