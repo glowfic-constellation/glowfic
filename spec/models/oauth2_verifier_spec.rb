@@ -3,42 +3,44 @@ require File.dirname(__FILE__) + '/../spec_helper'
 RSpec.describe Oauth2Verifier do
   fixtures :client_applications, :oauth_tokens
   before(:each) do
-    @verifier = Oauth2Verifier.create :client_application => client_applications(:one), :user=>Users.find_by_id(1), :scope => "bbbb aaaa"
+    @user = User.find_by_id(1) || create(:user)
+    @user.save!
+    @verifier = Oauth2Verifier.create :client_application => client_applications(:one), :user=>@user, :scope => "bbbb aaaa"
   end
 
   it "should be valid" do
-    @verifier.should be_valid
+    expect(@verifier).to be_valid
   end
 
   it "should have a code" do
-    @verifier.code.should_not be_nil
+    expect(@verifier.code).not_to be_nil
   end
 
   it "should not have a secret" do
-    @verifier.secret.should be_nil
+    expect(@verifier.secret).to be_nil
   end
 
   it "should be authorized" do
-    @verifier.should be_authorized
+    expect(@verifier).to be_authorized
   end
 
   it "should not be invalidated" do
-    @verifier.should_not be_invalidated
+    expect(@verifier).not_to be_invalidated
   end
 
   it "should generate query string" do
-    @verifier.to_query.should == "code=#{@verifier.code}"
+    expect(@verifier.to_query).to eq "code=#{@verifier.code}"
     @verifier.state="bbbb aaaa"
-    @verifier.to_query.should == "code=#{@verifier.code}&state=bbbb%20aaaa"
+    expect(@verifier.to_query).to eq "code=#{@verifier.code}&state=bbbb%20aaaa"
   end
 
   it "should properly exchange for token" do
     @token = @verifier.exchange!
-    @verifier.should be_invalidated
-    @token.user.should==@verifier.user
-    @token.client_application.should == @verifier.client_application
-    @token.should be_authorized
-    @token.should_not be_invalidated
-    @token.scope.should == @verifier.scope
+    expect(@verifier).to be_invalidated
+    expect(@token.user).to eq @verifier.user
+    expect(@token.client_application).to eq @verifier.client_application
+    expect(@token).to be_authorized
+    expect(@token).not_to be_invalidated
+    expect(@token.scope).to eq @verifier.scope
   end
 end

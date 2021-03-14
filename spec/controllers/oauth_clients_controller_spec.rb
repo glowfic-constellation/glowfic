@@ -42,7 +42,7 @@ RSpec.describe OauthClientsController do
 
     it "should be successful" do
       do_get
-      expect(response).to be_success
+      expect(response.status).to eq(200)
     end
 
     it "should assign client_applications" do
@@ -65,7 +65,7 @@ RSpec.describe OauthClientsController do
 
     it "should be successful" do
       do_get
-      expect(response).to be_success
+      expect(response.status).to eq(200)
     end
 
     it "should assign client_applications" do
@@ -87,7 +87,7 @@ RSpec.describe OauthClientsController do
 
     it "should be successful" do
       do_get
-      expect(response).to be_success
+      expect(status).to eq(200)
     end
 
     it "should assign client_applications" do

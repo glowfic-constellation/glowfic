@@ -3,39 +3,41 @@ require File.dirname(__FILE__) + '/../spec_helper'
 RSpec.describe RequestToken do
   fixtures :client_applications, :oauth_tokens
   before(:each) do
+    @user = User.find_by_id(1) || create(:user)
+    @user.save!
     @token = RequestToken.create :client_application => client_applications(:one)
   end
 
   it "should be valid" do
-    @token.should be_valid
+    expect(@token).to be_valid
   end
 
   it "should not have errors" do
-    @token.errors.should_not == []
+    expect(@token.errors).not_to eq []
   end
 
   it "should have a token" do
-    @token.token.should_not be_nil
+    expect(@token.token).not_to be_nil
   end
 
   it "should have a secret" do
-    @token.secret.should_not be_nil
+    expect(@token.secret).not_to be_nil
   end
 
   it "should not be authorized" do
-    @token.should_not be_authorized
+    expect(@token).not_to be_authorized
   end
 
   it "should not be invalidated" do
-    @token.should_not be_invalidated
+    expect(@token).not_to be_invalidated
   end
 
   it "should not have a verifier" do
-    @token.verifier.should be_nil
+    expect(@token.verifier).to be_nil
   end
 
   it "should not be oob" do
-    @token.should_not be_oob
+    expect(@token).not_to be_oob
   end
 
   describe "OAuth 1.0a" do
@@ -46,32 +48,32 @@ RSpec.describe RequestToken do
       end
 
       it "should not be oauth10" do
-        @token.should_not be_oauth10
+        expect(@token).not_to be_oauth10
       end
 
       it "should not be oob" do
-        @token.should_not be_oob
+        expect(@token).not_to be_oob
       end
 
       describe "authorize request" do
         before(:each) do
-          @token.authorize!(Users.find_by_id(1))
+          @token.authorize!(@user)
         end
 
         it "should be authorized" do
-          @token.should be_authorized
+          expect(@token).to be_authorized
         end
 
         it "should have authorized at" do
-          @token.authorized_at.should_not be_nil
+          expect(@token.authorized_at).not_to be_nil
         end
 
         it "should have user set" do
-          @token.user.should == Users.find_by_id(1)
+          expect(@token.user).to eq @user
         end
 
         it "should have verifier" do
-          @token.verifier.should_not be_nil
+          expect(@token.verifier).not_to be_nil
         end
 
         describe "exchange for access token" do
@@ -82,23 +84,23 @@ RSpec.describe RequestToken do
           end
 
           it "should be valid" do
-            @access.should be_valid
+            expect(@access).to be_valid
           end
 
           it "should have no error messages" do
-            @access.errors.full_messages.should==[]
+            expect(@access.errors.full_messages).to eq []
           end
 
           it "should invalidate request token" do
-            @token.should be_invalidated
+            expect(@token).to be_invalidated
           end
 
           it "should set user on access token" do
-            @access.user.should == Users.find_by_id(1)
+            expect(@access.user).to eq @user
           end
 
           it "should authorize accesstoken" do
-            @access.should be_authorized
+            expect(@access).to be_authorized
           end
         end
 
@@ -109,11 +111,11 @@ RSpec.describe RequestToken do
           end
 
           it "should return false" do
-            @value.should==false
+            expect(@value).to eq false
           end
 
           it "should not invalidate request token" do
-            @token.should_not be_invalidated
+            expect(@token).not_to be_invalidated
           end
         end
 
@@ -126,16 +128,16 @@ RSpec.describe RequestToken do
         end
 
         it "should return false" do
-          @value.should==false
+          expect(@value).to eq false
         end
 
         it "should not invalidate request token" do
-          @token.should_not be_invalidated
+          expect(@token).not_to be_invalidated
         end
       end
 
       it "should return 1.0a style to_query" do
-        @token.to_query.should=="oauth_token=#{@token.token}&oauth_token_secret=#{@token.secret}&oauth_callback_confirmed=true"
+        expect(@token.to_query).to eq "oauth_token=#{@token.token}&oauth_token_secret=#{@token.secret}&oauth_callback_confirmed=true"
       end
 
     end
@@ -146,32 +148,32 @@ RSpec.describe RequestToken do
       end
 
       it "should not be oauth10" do
-        @token.should_not be_oauth10
+        expect(@token).not_to be_oauth10
       end
 
       it "should be oob" do
-        @token.should be_oob
+        expect(@token).to be_oob
       end
 
       describe "authorize request" do
         before(:each) do
-          @token.authorize!(Users.find_by_id(1))
+          @token.authorize!(@user)
         end
 
         it "should be authorized" do
-          @token.should be_authorized
+          expect(@token).to be_authorized
         end
 
         it "should have authorized at" do
-          @token.authorized_at.should_not be_nil
+          expect(@token.authorized_at).not_to be_nil
         end
 
         it "should have user set" do
-          @token.user.should == Users.find_by_id(1)
+          expect(@token.user).to eq @user
         end
 
         it "should have verifier" do
-          @token.verifier.should_not be_nil
+          expect(@token.verifier).not_to be_nil
         end
 
         describe "exchange for access token" do
@@ -182,15 +184,15 @@ RSpec.describe RequestToken do
           end
 
           it "should invalidate request token" do
-            @token.should be_invalidated
+            expect(@token).to be_invalidated
           end
 
           it "should set user on access token" do
-            @access.user.should == Users.find_by_id(1)
+            expect(@access.user).to eq @user
           end
 
           it "should authorize accesstoken" do
-            @access.should be_authorized
+            expect(@access).to be_authorized
           end
         end
 
@@ -201,11 +203,11 @@ RSpec.describe RequestToken do
           end
 
           it "should return false" do
-            @value.should==false
+            expect(@value).to eq false
           end
 
           it "should not invalidate request token" do
-            @token.should_not be_invalidated
+            expect(@token).not_to be_invalidated
           end
         end
 
@@ -218,16 +220,16 @@ RSpec.describe RequestToken do
         end
 
         it "should return false" do
-          @value.should==false
+          expect(@value).to eq false
         end
 
         it "should not invalidate request token" do
-          @token.should_not be_invalidated
+          expect(@token).not_to be_invalidated
         end
       end
 
       it "should return 1.0 style to_query" do
-        @token.to_query.should=="oauth_token=#{@token.token}&oauth_token_secret=#{@token.secret}&oauth_callback_confirmed=true"
+        expect(@token.to_query).to eq "oauth_token=#{@token.token}&oauth_token_secret=#{@token.secret}&oauth_callback_confirmed=true"
       end
     end
   end
@@ -236,32 +238,32 @@ RSpec.describe RequestToken do
     describe "OAuth 1.0" do
 
       it "should be oauth10" do
-        @token.should be_oauth10
+        expect(@token).to be_oauth10
       end
 
       it "should not be oob" do
-        @token.should_not be_oob
+        expect(@token).not_to be_oob
       end
 
       describe "authorize request" do
         before(:each) do
-          @token.authorize!(Users.find_by_id(1))
+          @token.authorize!(@user)
         end
 
         it "should be authorized" do
-          @token.should be_authorized
+          expect(@token).to be_authorized
         end
 
         it "should have authorized at" do
-          @token.authorized_at.should_not be_nil
+          expect(@token.authorized_at).not_to be_nil
         end
 
         it "should have user set" do
-          @token.user.should == Users.find_by_id(1)
+          expect(@token.user).to eq @user
         end
 
         it "should not have verifier" do
-          @token.verifier.should be_nil
+          expect(@token.verifier).to be_nil
         end
 
         describe "exchange for access token" do
@@ -271,15 +273,15 @@ RSpec.describe RequestToken do
           end
 
           it "should invalidate request token" do
-            @token.should be_invalidated
+            expect(@token).to be_invalidated
           end
 
           it "should set user on access token" do
-            @access.user.should == Users.find_by_id(1)
+            expect(@access.user).to eq @user
           end
 
           it "should authorize accesstoken" do
-            @access.should be_authorized
+            expect(@access).to be_authorized
           end
         end
 
@@ -292,16 +294,16 @@ RSpec.describe RequestToken do
         end
 
         it "should return false" do
-          @value.should==false
+          expect(@value).to eq false
         end
 
         it "should not invalidate request token" do
-          @token.should_not be_invalidated
+          expect(@token).not_to be_invalidated
         end
       end
 
       it "should return 1.0 style to_query" do
-        @token.to_query.should=="oauth_token=#{@token.token}&oauth_token_secret=#{@token.secret}"
+        expect(@token.to_query).to eq "oauth_token=#{@token.token}&oauth_token_secret=#{@token.secret}&oauth_callback_confirmed=true"
       end
 
     end

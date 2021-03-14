@@ -1,28 +1,30 @@
 require File.dirname(__FILE__) + '/../spec_helper'
 RSpec.describe ClientApplication do
-  fixtures :users, :client_applications, :oauth_tokens
+  fixtures  :client_applications, :oauth_tokens
   before(:each) do
-    @application = ClientApplication.create :name => "Agree2", :url => "http://agree2.com", :user => users(:quentin)
+    @user = User.find_by_id(1) || create(:user)
+    @user.save!
+    @application = ClientApplication.create :name => "Agree2", :url => "http://agree2.com", :user => @user
   end
 
   it "should be valid" do
-    @application.should be_valid
+    expect(@application).to be_valid
   end
 
 
   it "should not have errors" do
-    @application.errors.full_messages.should == []
+    expect(@application.errors.full_messages).to eq []
   end
 
   it "should have key and secret" do
-    @application.key.should_not be_nil
-    @application.secret.should_not be_nil
+    expect(@application.key).not_to be_nil
+    expect(@application.secret).not_to be_nil
   end
 
   it "should have credentials" do
-    @application.credentials.should_not be_nil
-    @application.credentials.key.should == @application.key
-    @application.credentials.secret.should == @application.secret
+    expect(@application.credentials).not_to be_nil
+    expect(@application.credentials.key).to eq @application.key
+    expect(@application.credentials.secret).to eq @application.secret
   end
 
 end

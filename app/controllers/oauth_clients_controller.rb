@@ -3,8 +3,8 @@ class OauthClientsController < ApplicationController
   before_action :get_client_application, :only => [:show, :edit, :update, :destroy]
 
   def index
-    @client_applications = current_user.client_applications
-    @tokens = current_user.tokens.where('oauth_tokens.invalidated_at is null and oauth_tokens.authorized_at is not null')
+    @client_applications = @current_user.client_applications
+    @tokens = @current_user.tokens.where('oauth_tokens.invalidated_at is null and oauth_tokens.authorized_at is not null')
   end
 
   def new
@@ -12,7 +12,7 @@ class OauthClientsController < ApplicationController
   end
 
   def create
-    @client_application = current_user.client_applications.build(user_params)
+    @client_application = @current_user.client_applications.build(user_params)
     if @client_application.save
       flash[:notice] = "Registered the information successfully"
       redirect_to :action => "show", :id => @client_application.id
@@ -48,7 +48,7 @@ class OauthClientsController < ApplicationController
 
   private
   def get_client_application
-    unless @client_application = current_user.client_applications.find(params[:id])
+    unless @client_application = @current_user.client_applications.find(params[:id])
       flash.now[:error] = "Wrong application id"
       raise ActiveRecord::RecordNotFound
     end
