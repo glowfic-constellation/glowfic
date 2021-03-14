@@ -1,3 +1,13 @@
+GIT
+  remote: https://github.com/KennaSecurity/oauth-plugin
+  revision: 518c083b1cef079ca48d610581f64e5d15733bbf
+  specs:
+    oauth-plugin (0.5.1)
+      multi_json
+      oauth (~> 0.4.4)
+      oauth2 (>= 0.5.0)
+      rack
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -637,6 +647,7 @@ DEPENDENCIES
   newrelic_rpm
   nilify_blanks
   nokogiri
+  oauth-plugin!
   pg (~> 1.6)
   pg_search
   puma

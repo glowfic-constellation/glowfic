@@ -3,6 +3,7 @@ class Api::ApiController < ActionController::Base
   include Rails::Pagination
   include Authentication::Api
 
+  before_action :oauth_or_jwt
   protect_from_forgery with: :null_session
   before_action :check_token
   around_action :set_timezone
@@ -16,6 +17,12 @@ class Api::ApiController < ActionController::Base
 
   protected
 
+  def oauth_or_jwt
+    @current_user = @current_user || current_token&.user
+  end
+  def current_user=(user)
+    user == current_user
+  end
   def check_token
     # checks for invalid tokens in a before to prevent double renders
     logged_in?
