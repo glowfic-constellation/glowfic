@@ -1,9 +1,9 @@
 require File.dirname(__FILE__) + '/../spec_helper'
 
-describe Oauth2Verifier do
-  fixtures :client_applications, :users, :oauth_tokens
+RSpec.describe Oauth2Verifier do
+  fixtures :client_applications, :oauth_tokens
   before(:each) do
-    @verifier = Oauth2Verifier.create :client_application => client_applications(:one), :user=>users(:aaron), :scope => "bbbb aaaa"
+    @verifier = Oauth2Verifier.create :client_application => client_applications(:one), :user=>Users.find_by_id(1), :scope => "bbbb aaaa"
   end
 
   it "should be valid" do

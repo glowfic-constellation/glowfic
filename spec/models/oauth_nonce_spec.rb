@@ -1,6 +1,6 @@
 require File.dirname(__FILE__) + '/../spec_helper'
 require 'oauth/helper'
-describe OauthNonce do
+RSpec.describe OauthNonce do
   include OAuth::Helper
   before(:each) do
     @oauth_nonce = OauthNonce.remember(generate_key, Time.now.to_i)
