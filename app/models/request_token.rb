@@ -5,9 +5,9 @@ class RequestToken < OauthToken
   def authorize!(user)
     return false if authorized?
     self.user = user
-    self.authorized_at = Time.now
-    self.verifier=OAuth::Helper.generate_key(20)[0,20] unless oauth10?
-    self.save
+    self.authorized_at = Time.zone.now
+    self.verifier = OAuth::Helper.generate_key(20)[0, 20] unless oauth10?
+    self.save!
   end
 
   def exchange!
@@ -15,7 +15,7 @@ class RequestToken < OauthToken
     return false unless oauth10? || verifier==provided_oauth_verifier
 
     RequestToken.transaction do
-      access_token = AccessToken.create(:user => user, :client_application => client_application)
+      access_token = AccessToken.create(:user => user, :client_application => client_application, persisted => true)
       invalidate!
       access_token
     end
@@ -36,5 +36,4 @@ class RequestToken < OauthToken
   def oauth10?
     (defined? OAUTH_10_SUPPORT) && OAUTH_10_SUPPORT && self.callback_url.blank?
   end
-
 end

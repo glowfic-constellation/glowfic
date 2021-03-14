@@ -1,5 +1,6 @@
 class AccessToken < OauthToken
-  validates_presence_of :user, :secret
+  validates :user, presence: true
+  validates :secret, presence: true
   before_create :set_authorized_at
 
   # Implement this to return a hash or array of the capabilities the access token has
@@ -11,6 +12,6 @@ class AccessToken < OauthToken
   protected
 
   def set_authorized_at
-    self.authorized_at = Time.now
+    self.authorized_at = Time.zone.now
   end
 end

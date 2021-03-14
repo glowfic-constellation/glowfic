@@ -1,5 +1,5 @@
 class Oauth2Verifier < OauthToken
-  validates_presence_of :user
+  validates :user, presence: true
   attr_accessor :state
 
   def exchange!(params={})
