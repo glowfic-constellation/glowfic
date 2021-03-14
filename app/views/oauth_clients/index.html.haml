@@ -1,4 +1,3 @@
-.flash= flash[:notice]
 %h1 OAuth Client Applications
 - unless @tokens.empty?
 
@@ -11,13 +10,14 @@
       %th Issued
       %th &nbsp;
     - @tokens.each do |token|
-      - content_tag_for :tr, token do
+      %tr
         %td= link_to token.client_application.name, token.client_application.url
         %td= token.authorized_at
         %td
-          - form_tag :controller => 'oauth', :action => 'revoke' do
-            = hidden_field_tag 'token', token.token
-            = submit_tag "Revoke!"
+          = form_with :url => url_for(:controller => 'oauth', :action => 'revoke'), local: true do |form|
+            = form.hidden_field 'client_application[name]', :value => "#{token.client_application.name}"
+            = form.hidden_field 'token', :value => token.token
+            = form.submit "Revoke!"
 
 %h3 Application Developers
 

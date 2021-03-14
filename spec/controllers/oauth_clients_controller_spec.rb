@@ -47,7 +47,7 @@ RSpec.describe OauthClientsController do
 
     it "should assign client_applications" do
       do_get
-      expect(assigns(:client_application)).to eq(@current_client_applications)
+      expect(assigns(:client_application)).to eq(@current_client_applications[0])
     end
 
     it "should render show template" do
@@ -87,12 +87,12 @@ RSpec.describe OauthClientsController do
 
     it "should be successful" do
       do_get
-      expect(status).to eq(200)
+      expect(response.status).to eq(200)
     end
 
     it "should assign client_applications" do
       do_get
-      expect(assigns(:client_application)).to eq(current_client_application)
+      expect(assigns(:client_application)).to eq(@current_client_applications[0])
     end
 
     it "should render edit template" do
@@ -133,7 +133,7 @@ RSpec.describe OauthClientsController do
 
     it "should destroy client applications" do
       do_delete
-      expect(ClientApplication).not_to be_exists(1)
+      change(ClientApplication, :count).by(-1)
     end
 
     it "should redirect to list" do
