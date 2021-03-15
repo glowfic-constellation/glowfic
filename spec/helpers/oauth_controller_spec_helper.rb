@@ -1,8 +1,7 @@
 module OAuthControllerSpecHelper
   include ActiveJob::TestHelper
   def login_as_application_owner
-    @user = User.find_by_id(1) || create(:user)
-    @user.save!
+    @user = create(:user)
     login_as(@user)
   end
   
@@ -14,7 +13,6 @@ module OAuthControllerSpecHelper
     @client_applications=[@client_application]
     @current_client_application = @client_application
     @current_client_applications = @client_applications
-    @request_token = RequestToken.create :user => @user, :client_application => @client_application, :callback_url=>@client_application.callback_url
     
     @access_token = AccessToken.create :user => @user, :client_application => @client_application
   end
