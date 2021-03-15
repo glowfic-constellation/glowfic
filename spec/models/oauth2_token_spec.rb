@@ -35,13 +35,13 @@ RSpec.describe Oauth2Token do
   it "should generate correct json and query string and include state in query if present" do
     @token.state = 'bb bb'
     expect(@token.as_json).to eq({:access_token => @token.token, :token_type => 'bearer'})
-    expect(@token.to_query).to eq "access_token=#{@token.token}&token_type=bearer&state=bb%20bb"
+    expect(@token.to_query).to eq "access_token=#{@token.token}&token_type=bearer&state=bb+bb"
   end
 
   it "should generate correct json and query string and include scope in query if present" do
     @token.scope = 'bbbb aaaa'
     expect(@token.as_json).to eq({:access_token => @token.token, :token_type => 'bearer'})
-    expect(@token.to_query).to eq("access_token=#{@token.token}&token_type=bearer&scope=bbbb%20aaaa")
+    expect(@token.to_query).to eq("access_token=#{@token.token}&token_type=bearer&scope=bbbb+aaaa")
   end
 
   it "should generate correct json and include expires_in if present" do

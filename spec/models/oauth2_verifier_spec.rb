@@ -31,7 +31,7 @@ RSpec.describe Oauth2Verifier do
   it "should generate query string" do
     expect(@verifier.to_query).to eq "code=#{@verifier.code}"
     @verifier.state="bbbb aaaa"
-    expect(@verifier.to_query).to eq "code=#{@verifier.code}&state=bbbb%20aaaa"
+    expect(@verifier.to_query).to eq "code=#{@verifier.code}&state=bbbb+aaaa"
   end
 
   it "should properly exchange for token" do
