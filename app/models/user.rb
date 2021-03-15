@@ -31,7 +31,7 @@ class User < ApplicationRecord
   has_one :report_view
   has_many :client_applications
   has_many :tokens, -> { includes(:client_application) },
-      :class_name => "Oauth2Token"
+    :class_name => "Oauth2Token"
   belongs_to :avatar, class_name: 'Icon', inverse_of: :user, optional: true
   belongs_to :active_character, class_name: 'Character', inverse_of: :user, optional: true
 

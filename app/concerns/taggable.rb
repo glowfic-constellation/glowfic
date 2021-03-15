@@ -9,12 +9,12 @@ module Taggable
     return [] unless ids.present?
 
     # store formatted for creation-order sorting later
-    match_ids = ids.map { |id| id.start_with?('_') ? id.upcase[1..-1].strip : id }
+    match_ids = ids.map { |id| id.start_with?('_') ? id.upcase[1..].strip : id }
 
     # separate existing tags from new tags which start with _
     new_names = ids.select { |id| id.start_with?('_') }
     existing_tags = klass.where(id: (ids - new_names))
-    new_names.map! { |name| name[1..-1].strip }
+    new_names.map! { |name| name[1..].strip }
 
     # locate anything that already exists with the same name (locale unfriendly) and substitute it
     matched_new_tags = klass.where(name: new_names)
