@@ -19,6 +19,6 @@ RSpec.describe OauthNonce do
   end
 
   it "should not allow a second one with the same values" do
-    expect(OauthNonce.remember(@oauth_nonce.nonce,@oauth_nonce.timestamp)).to eq(false)
+    expect(OauthNonce.remember(@oauth_nonce.nonce, @oauth_nonce.timestamp)).to eq(false)
   end
 end

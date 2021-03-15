@@ -3,7 +3,8 @@ require File.dirname(__FILE__) + '/../spec_helper'
 RSpec.describe Oauth2Verifier do
   before(:each) do
     @user = create(:user)
-    @client_application = ClientApplication.create! :user => @user, :name => "Client Application name", :url => "http://localhost/", :callback_url => "http://localhost:3000/callback"
+    @client_application = ClientApplication.create! :user => @user, :name => "Client Application name", :url => "http://localhost/",
+:callback_url => "http://localhost:3000/callback"
     @verifier = Oauth2Verifier.create! :client_application => @client_application, :user=>@user, :scope => "bbbb aaaa"
   end
 

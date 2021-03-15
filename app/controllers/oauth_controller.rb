@@ -1,19 +1,9 @@
 class OauthController < ApplicationController
-  before_action :login_required, :only => [:authorize,:revoke]
+  before_action :login_required, :only => [:authorize, :revoke]
   oauthenticate :only => [:test_request]
-  oauthenticate :strategies => :token, :interactive => false, :only => [:invalidate,:capabilities]
-  oauthenticate :strategies => :two_legged, :interactive => false, :only => [:request_token]
+  oauthenticate :strategies => :token, :interactive => false, :only => [:invalidate, :capabilities]
   oauthenticate :strategies => :oauth10_request_token, :interactive => false, :only => [:access_token]
-  skip_before_action :verify_authenticity_token, :only=>[:request_token, :access_token, :invalidate, :test_request, :token]
-
-  def request_token
-    @token = current_client_application.create_request_token params
-    if @token
-      render :plain => @token.to_query
-    else
-      render :nothing => true, :status => 401
-    end
-  end
+  skip_before_action :verify_authenticity_token, :only=>[:access_token, :invalidate, :test_request, :token]
 
   def access_token
     @token = current_token && current_token.exchange!
@@ -45,17 +35,12 @@ class OauthController < ApplicationController
   end
 
   def authorize
-    if params[:oauth_token]
-      @token = ::RequestToken.find_by_token! params[:oauth_token]
-      oauth1_authorize
+    if request.post?
+      @authorizer = ProviderAuthorizer.new current_user, user_authorizes_token?, params
+      redirect_to @authorizer.redirect_uri
     else
-      if request.post?
-        @authorizer = ProviderAuthorizer.new current_user, user_authorizes_token?, params
-        redirect_to @authorizer.redirect_uri
-      else
-        @client_application = ClientApplication.find_by_key! params[:client_id]
-        render :action => "oauth2_authorize"
-      end
+      @client_application = ClientApplication.find_by_key! params[:client_id]
+      render :action => "oauth2_authorize"
     end
   end
 
@@ -90,41 +75,9 @@ class OauthController < ApplicationController
 
   protected
 
-  def oauth1_authorize
-    unless @token
-      render :action=>"authorize_failure"
-      return
-    end
-
-    unless @token.invalidated?
-      if request.post?
-        if user_authorizes_token?
-          @token.authorize!(current_user)
-          callback_url  = @token.oob? ? @token.client_application.callback_url : @token.callback_url
-          @redirect_url = URI.parse(callback_url) unless callback_url.blank?
-
-          unless @redirect_url.to_s.blank?
-            @redirect_url.query = @redirect_url.query.blank? ?
-              "oauth_token=#{@token.token}&oauth_verifier=#{@token.verifier}" :
-              @redirect_url.query + "&oauth_token=#{@token.token}&oauth_verifier=#{@token.verifier}"
-              redirect_to @redirect_url.to_s
-          else
-            render :action => "authorize_success"
-          end
-        else
-          @token.invalidate!
-          render :action => "authorize_failure"
-        end
-      end
-    else
-      render :action => "authorize_failure"
-    end
-  end
-
-
   # http://tools.ietf.org/html/draft-ietf-oauth-v2-22#section-4.1.1
   def oauth2_token_authorization_code
-    @verification_code =  @client_application.oauth2_verifiers.find_by_token params[:code]
+    @verification_code = @client_application.oauth2_verifiers.find_by_token params[:code]
     unless @verification_code
       oauth2_error
       return
@@ -139,7 +92,7 @@ class OauthController < ApplicationController
 
   # http://tools.ietf.org/html/draft-ietf-oauth-v2-22#section-4.1.2
   def oauth2_token_password
-    @user = authenticate_user( params[:username], params[:password])
+    @user = authenticate_user(params[:username], params[:password])
     unless @user
       oauth2_error
       return
@@ -149,8 +102,8 @@ class OauthController < ApplicationController
   end
 
   # should authenticate and return a user if valid password. Override in your own controller
-  def authenticate_user(username,password)
-    User.authenticate(username,password)
+  def authenticate_user(username, password)
+    User.authenticate(username, password)
   end
 
   # autonomous authorization which creates a token for client_applications user
@@ -169,10 +122,9 @@ class OauthController < ApplicationController
     render :json=>{:error=>error}.to_json, :status => 400
   end
 
-
   # should authenticate and return a user if valid password.
   # This example should work with most Authlogic or Devise. Uncomment it
-  def authenticate_user(username,password)
+  def authenticate_user(username, password)
     user = User.find_by_email params[:username]
     if user && user.valid_password?(params[:password])
       user

@@ -1,5 +1,5 @@
 %h1
-  OAuth details for
+  OAuth2 details for
   =@client_application.name
 %p
   %strong Consumer Key:
@@ -9,19 +9,14 @@
   %code=@client_application.secret
 
 %p
-  %strong Request Token URL
-  %code
-    ="http#{'s' if request.ssl?}://#{request.host_with_port}#{@client_application.oauth_server.request_token_path}"
-
-%p
   %strong Access Token URL
   %code
-    ="http#{'s' if request.ssl?}://#{request.host_with_port}#{@client_application.oauth_server.access_token_path}"
+    http#{'s' if request.ssl?}://#{request.host_with_port}#{@client_application.oauth_server.access_token_path}
 
 %p
   %strong Authorize URL
   %code
-    ="http#{'s' if request.ssl?}://#{request.host_with_port}#{@client_application.oauth_server.authorize_path}"
+    http#{'s' if request.ssl?}://#{request.host_with_port}#{@client_application.oauth_server.authorize_path}
 
 %p
   We support hmac-sha1 (recommended) as well as plain text in ssl mode.

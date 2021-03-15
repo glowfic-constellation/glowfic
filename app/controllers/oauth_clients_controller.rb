@@ -41,14 +41,15 @@ class OauthClientsController < ApplicationController
   end
 
   def destroy
-    @client_application.destroy
+    @client_application.destroy!
     flash[:notice] = "Destroyed the client application registration"
     redirect_to :action => "index"
   end
 
   private
+
   def get_client_application
-    unless @client_application = @current_user.client_applications.find(params[:id])
+    unless @client_application == @current_user.client_applications.find(params[:id])
       flash.now[:error] = "Wrong application id"
       raise ActiveRecord::RecordNotFound
     end

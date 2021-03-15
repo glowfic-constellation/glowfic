@@ -49,5 +49,4 @@ RSpec.describe Oauth2Token do
     expect(@token.as_json).to eq({ :access_token => @token.token, :token_type => 'bearer', :expires_in => 3600 })
     expect(@token.to_query).to eq("access_token=#{@token.token}&token_type=bearer&expires_in=3600")
   end
-
 end

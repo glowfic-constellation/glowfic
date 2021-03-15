@@ -35,7 +35,6 @@ RSpec.describe OauthClientsController do
   end
 
   describe "show" do
-
     def do_get
       get :show, params: { :id => @client_application.id }
     end
@@ -54,11 +53,9 @@ RSpec.describe OauthClientsController do
       do_get
       expect(response).to render_template('show')
     end
-
   end
 
   describe "new" do
-
     def do_get
       get :new
     end
@@ -77,7 +74,6 @@ RSpec.describe OauthClientsController do
       do_get
       expect(response).to render_template('new')
     end
-
   end
 
   describe "edit" do
@@ -99,11 +95,9 @@ RSpec.describe OauthClientsController do
       do_get
       expect(response).to render_template('edit')
     end
-
   end
 
   describe "create" do
-
     def do_valid_post
       post :create, params: { 'client_application'=>{'name' => 'my site', :url=>"http://test.com", :callback_url=>"http://test.com/callback"} }
       @client_application = ClientApplication.last
@@ -126,7 +120,6 @@ RSpec.describe OauthClientsController do
   end
 
   describe "destroy" do
-
     def do_delete
       delete :destroy, params: { :id => @client_application.id }
     end
@@ -141,13 +134,14 @@ RSpec.describe OauthClientsController do
       expect(response).to be_redirect
       expect(response).to redirect_to(:action => 'index')
     end
-
   end
 
   describe "update" do
-
     def do_valid_update
-      put :update, params: { :id => @client_application.id, 'client_application'=>{'name' => 'updated site', 'url' => @client_application.url, 'callback_url' => @client_application.callback_url} }
+      put :update,
+        params: { :id                  => @client_application.id,
+                  'client_application' => {'name' => 'updated site', 'url' => @client_application.url,
+'callback_url' => @client_application.callback_url} }
     end
 
     def do_invalid_update

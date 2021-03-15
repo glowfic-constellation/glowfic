@@ -127,7 +127,6 @@ Rails.application.routes.draw do
     post :revoke
     post :token
     get :access_token
-    get :request_token
     post :authorize
     get :authorize
     match '',               :to => 'oauth#index',         :via => :get, :as => :oauth

@@ -45,21 +45,16 @@ class ProviderAuthorizer
   end
 
   def response
-    r = {}
-    if ['token','code'].include? params[:response_type]
-      if authorized?
-        if params[:response_type] == 'code'
-          r[:code] = code.token
-        else
-          r[:access_token] = token.token
-        end
-      else
-        r[:error] = 'access_denied'
-      end
-    else
+    r = {:state: params[:state]}
+    unless authorized?
+      r[:error] = 'access_denied'
+    unless ['token','code'].include? params[:response_type]
       r[:error] = 'unsupported_response_type'
-    end
-    r[:state] = params[:state] if params[:state]
+    if not r[:error]?
+      if params[:response_type] == 'code'
+        r[:code] = code.token
+      else
+        r[:access_token] = token.token
     r
   end
 
