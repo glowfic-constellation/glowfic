@@ -1,10 +1,10 @@
-require File.dirname(__FILE__) + '/../spec_helper'
+require "#{File.dirname(__FILE__)}/../spec_helper"
 
 RSpec.describe Oauth2Token do
   fixtures :client_applications, :oauth_tokens
   before(:each) do
     @user = User.find_by_id(1) || create(:user)
-    @token = Oauth2Token.create :client_application => client_applications(:one), :user => @user
+    @token = Oauth2Token.create! :client_application => client_applications(:one), :user => @user
   end
 
   it "should be valid" do

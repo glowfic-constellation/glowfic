@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + '/../spec_helper'
+require "#{File.dirname(__FILE__)}/../spec_helper"
 require 'oauth/helper'
 RSpec.describe OauthNonce do
   include OAuth::Helper
@@ -15,7 +15,7 @@ RSpec.describe OauthNonce do
   end
 
   it "should not be a new record" do
-    expect(@oauth_nonce).to_not be_new_record
+    expect(@oauth_nonce).not_to be_new_record
   end
 
   it "should not allow a second one with the same values" do

@@ -32,7 +32,7 @@ class OauthClientsController < ApplicationController
   end
 
   def update
-    if @client_application.update_attributes(user_params)
+    if @client_application.update(user_params)
       flash[:notice] = "Updated the client information successfully"
       redirect_to :action => "show", :id => @client_application.id
     else
@@ -49,7 +49,8 @@ class OauthClientsController < ApplicationController
   private
 
   def get_client_application
-    unless @client_application == @current_user.client_applications.find(params[:id])
+    @client_application = @current_user.client_applications.find(params[:id])
+    unless @client_application
       flash.now[:error] = "Wrong application id"
       raise ActiveRecord::RecordNotFound
     end

@@ -6,7 +6,7 @@ class OauthController < ApplicationController
   skip_before_action :verify_authenticity_token, :only=>[:access_token, :invalidate, :test_request, :token]
 
   def access_token
-    @token = current_token && current_token.exchange!
+    @token = current_token&.exchange!
     if @token
       render :plain => @token.to_query
     else
@@ -15,7 +15,7 @@ class OauthController < ApplicationController
   end
 
   def token
-    @client_application = ClientApplication.find_by_key! params[:client_id]
+    @client_application = ClientApplication.find_by! :key => params[:client_id]
     if @client_application.secret != params[:client_secret]
       oauth2_error "invalid_client"
       return
@@ -39,13 +39,13 @@ class OauthController < ApplicationController
       @authorizer = ProviderAuthorizer.new current_user, user_authorizes_token?, params
       redirect_to @authorizer.redirect_uri
     else
-      @client_application = ClientApplication.find_by_key! params[:client_id]
+      @client_application = ClientApplication.find_by! :key => params[:client_id]
       render :action => "oauth2_authorize"
     end
   end
 
   def revoke
-    @token = current_user.tokens.find_by_token! params[:token]
+    @token = current_user.tokens.find_by! :token => params[:token]
     if @token
       @token.invalidate!
       flash[:notice] = "You've revoked the token for #{@token.client_application.name}"
@@ -77,7 +77,7 @@ class OauthController < ApplicationController
 
   # http://tools.ietf.org/html/draft-ietf-oauth-v2-22#section-4.1.1
   def oauth2_token_authorization_code
-    @verification_code = @client_application.oauth2_verifiers.find_by_token params[:code]
+    @verification_code = @client_application.oauth2_verifiers.find_by token: params[:code]
     unless @verification_code
       oauth2_error
       return
@@ -97,7 +97,7 @@ class OauthController < ApplicationController
       oauth2_error
       return
     end
-    @token = Oauth2Token.create :client_application=>@client_application, :user=>@user, :scope=>params[:scope]
+    @token = Oauth2Token.create! :client_application=>@client_application, :user=>@user, :scope=>params[:scope]
     render :json=>@token
   end
 
@@ -108,7 +108,7 @@ class OauthController < ApplicationController
 
   # autonomous authorization which creates a token for client_applications user
   def oauth2_token_client_credentials
-    @token = Oauth2Token.create :client_application=>@client_application, :user=>@client_application.user, :scope=>params[:scope]
+    @token = Oauth2Token.create! :client_application=>@client_application, :user=>@client_application.user, :scope=>params[:scope]
     render :json=>@token
   end
 
@@ -120,16 +120,5 @@ class OauthController < ApplicationController
 
   def oauth2_error(error="invalid_grant")
     render :json=>{:error=>error}.to_json, :status => 400
-  end
-
-  # should authenticate and return a user if valid password.
-  # This example should work with most Authlogic or Devise. Uncomment it
-  def authenticate_user(username, password)
-    user = User.find_by_email params[:username]
-    if user && user.valid_password?(params[:password])
-      user
-    else
-      nil
-    end
   end
 end

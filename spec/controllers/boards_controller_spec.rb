@@ -417,7 +417,7 @@ RSpec.describe BoardsController do
       put :update, params: {
         id: board.id,
         board: {
-          name: name + 'edit',
+          name: "#{name}edit",
           description: 'New description',
           coauthor_ids: [user2.id],
           cameo_ids: [user3.id],
@@ -427,7 +427,7 @@ RSpec.describe BoardsController do
       expect(response).to redirect_to(continuity_url(board))
       expect(flash[:success]).to eq("Continuity updated.")
       board.reload
-      expect(board.name).to eq(name + 'edit')
+      expect(board.name).to eq("#{name}edit")
       expect(board.description).to eq('New description')
       expect(board.writers).to match_array([user, user2])
       expect(board.cameos).to match_array([user3])
@@ -589,7 +589,7 @@ RSpec.describe BoardsController do
     context "no search" do
       it "works logged out" do
         get :search
-        expect(response).to have_http_status(200)
+        expect(response).to have_http_status(:ok)
         expect(assigns(:page_title)).to eq('Search Continuities')
         expect(assigns(:search_results)).to be_nil
       end
@@ -603,7 +603,7 @@ RSpec.describe BoardsController do
       it "works logged in" do
         login
         get :search
-        expect(response).to have_http_status(200)
+        expect(response).to have_http_status(:ok)
         expect(assigns(:page_title)).to eq('Search Continuities')
         expect(assigns(:search_results)).to be_nil
       end

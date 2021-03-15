@@ -1,5 +1,5 @@
-require File.dirname(__FILE__) + '/../spec_helper'
-require File.dirname(__FILE__) + '/../helpers/oauth_controller_spec_helper.rb'
+require "#{File.dirname(__FILE__)}/../spec_helper"
+require "#{File.dirname(__FILE__)}/../helpers/oauth_controller_spec_helper.rb"
 require 'oauth/client/action_controller_request'
 
 RSpec.describe OauthClientsController do
@@ -10,7 +10,7 @@ RSpec.describe OauthClientsController do
   end
 
   describe "index" do
-    before do
+    before(:each) do
       @client_applications = @user.client_applications
     end
 
@@ -126,7 +126,7 @@ RSpec.describe OauthClientsController do
 
     it "should destroy client applications" do
       do_delete
-      change(ClientApplication, :count).by(-1)
+      change { ClientApplication.count }.by(-1)
     end
 
     it "should redirect to list" do

@@ -11,11 +11,11 @@ module OAuthControllerSpecHelper
 :callback_url => "http://localhost:3000/callback"
     @consumer=OAuth::Consumer.new(@client_application.key, @client_application.secret, {:site=>"http://localhost:3000"})
 
-    @client_applications=[@client_application]
+    @user.client_applications=[@client_application]
     @current_client_application = @client_application
-    @current_client_applications = @client_applications
+    @current_client_applications = @user.client_applications
 
-    @access_token = AccessToken.create :user => @user, :client_application => @client_application
+    @access_token = AccessToken.create! :user => @user, :client_application => @client_application
   end
 
   def setup_oauth_for_user
