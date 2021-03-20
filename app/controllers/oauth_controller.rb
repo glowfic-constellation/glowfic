@@ -8,6 +8,7 @@ class OauthController < ApplicationController
   def access_token
     @token = current_token&.exchange!
     if @token
+      puts @token.inspect
       render :plain => @token.to_query
     else
       render :nothing => true, :status => 401
@@ -77,6 +78,7 @@ class OauthController < ApplicationController
 
   # http://tools.ietf.org/html/draft-ietf-oauth-v2-22#section-4.1.1
   def oauth2_token_authorization_code
+    puts params.inspect
     @verification_code = @client_application.oauth2_verifiers.find_by token: params[:code]
     unless @verification_code
       oauth2_error
