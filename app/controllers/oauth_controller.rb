@@ -8,7 +8,6 @@ class OauthController < ApplicationController
   def access_token
     @token = current_token&.exchange!
     if @token
-      puts @token.inspect
       render :plain => @token.to_query
     else
       render :nothing => true, :status => 401
@@ -23,7 +22,6 @@ class OauthController < ApplicationController
     end
     # older drafts used none for client_credentials
     params[:grant_type] = 'client_credentials' if params[:grant_type] == 'none'
-    logger.info "grant_type=#{params[:grant_type]}"
     if ["authorization_code", "password", "client_credentials"].include?(params[:grant_type])
       send "oauth2_token_#{params[:grant_type].underscore}"
     else
@@ -78,7 +76,6 @@ class OauthController < ApplicationController
 
   # http://tools.ietf.org/html/draft-ietf-oauth-v2-22#section-4.1.1
   def oauth2_token_authorization_code
-    puts params.inspect
     @verification_code = @client_application.oauth2_verifiers.find_by token: params[:code]
     unless @verification_code
       oauth2_error

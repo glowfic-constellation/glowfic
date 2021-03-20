@@ -60,7 +60,7 @@ class ProviderAuthorizer
 
   def encode_response
     response.map do |k, v|
-      if k and v
+      if k && v
         [CGI.escape(k.to_s), CGI.escape(v)].join("=")
       end
     end * "&"
