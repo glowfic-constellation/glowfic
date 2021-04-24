@@ -1,7 +1,7 @@
 dist: bionic
 language: ruby
 rvm:
-  - 2.6.6
+  - 2.6.7
 env:
   global:
     - CC_TEST_REPORTER_ID=1e0c6dba9930e839038860b6d73301226c821937f57ed35d06fc0e4b7bddf5f6
@@ -11,7 +11,7 @@ services:
 cache: bundler
 before_install:
   - psql -c 'create database glowfic_test;' -U postgres
-  - gem install bundler -v 1.17.3
+  - gem install bundler -v 2.2.16
   - echo "Using bundler:" $(bundle --version)
 before_script:
   - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
