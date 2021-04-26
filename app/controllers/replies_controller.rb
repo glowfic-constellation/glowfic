@@ -86,7 +86,7 @@ class RepliesController < WritableController
 
     @search_results = @search_results.where.not(post_id: current_user.hidden_posts) if logged_in? && !params[:show_blocked]
 
-    @audits = Audited::Audit.where(auditable_id: @search_results.map(&:id)).group(:auditable_id).count
+    @audits = []
 
     unless params[:condensed]
       @search_results = @search_results
