@@ -77,16 +77,15 @@ module Tag::Taggable
     def add_tags(type, list)
       return if list.blank?
       klass = self.tag_types[type]
-      existing_tags = klass.where(name: list).pluck(:name).map(&:downcase)
-      new_tags = list.reject{|n| existing_tags.include?(n.downcase) }
-      list.each do |name|
-        if new_tags.include?(name)
-          tag = klass.create!(name: name, user: user)
-        else
-          tag = klass.find_by(name: name)
-        end
-        send(type.to_s.pluralize) << tag
-      end
+
+      existing_tags = klass.where(name: list)
+      existing_names = existing_tags.pluck(:name).map(&:downcase)
+
+      new_tags = list.reject{|n| existing_names.include?(n.downcase) }
+      new_tags.map! { |name| klass.create!(name: name, user: user) }
+
+      all_tags = existing_tags.to_a + new_tags
+      all_tags.each { |tag| send(type.to_s.pluralize) << tag }
     end
 
     def rem_tags(type, list)
