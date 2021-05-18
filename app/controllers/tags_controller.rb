@@ -34,7 +34,7 @@ class TagsController < ApplicationController
     elsif @view == 'galleries'
       @galleries = @tag.galleries.with_icon_count.ordered_by_name
       use_javascript('galleries/expander')
-    elsif @view != 'settings'
+    else
       @view = 'info'
     end
   end
@@ -45,13 +45,8 @@ class TagsController < ApplicationController
   end
 
   def update
-    @tag.assign_attributes(permitted_params)
-
     begin
-      Tag.transaction do
-        @tag.parent_settings = process_tags(Setting, obj_param: :tag, id_param: :parent_setting_ids) if @tag.is_a?(Setting)
-        @tag.save!
-      end
+      @tag.update!(permitted_params)
     rescue ActiveRecord::RecordInvalid => e
       render_errors(@tag, action: 'updated', now: true, err: e)
 
