@@ -129,7 +129,7 @@ class TagsController < ApplicationController
   end
 
   def permitted_params
-    permitted = [:type, :description, :owned]
+    permitted = [:type, :description, :owned, parent_setting_list: []]
     permitted.insert(0, :name, :user_id) if current_user.admin? || @tag.user == current_user
     params.fetch(:tag, {}).permit(permitted)
   end
