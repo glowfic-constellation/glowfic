@@ -67,11 +67,15 @@ module Tag::Taggable
       self.tag_types.each_key do |type|
         type_list = "#{type}_list"
         next unless attribute_changed?(type_list)
-        new_list = changes[type_list][1]
-        old_list = attribute_was(type_list) || []
-        add_tags(type, new_list - old_list)
-        rem_tags(type, old_list - new_list)
+        sort_tags(type, type_list)
       end
+    end
+
+    def sort_tags(type, type_list)
+      new_list = changes[type_list][1]
+      old_list = attribute_was(type_list) || []
+      add_tags(type, new_list - old_list)
+      rem_tags(type, old_list - new_list)
     end
 
     def add_tags(type, list)
