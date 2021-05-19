@@ -9,14 +9,6 @@ RSpec.describe Api::V1::TagsController do
         expect(response.parsed_body['results']).to contain_exactly(tag.as_json.stringify_keys)
       end
 
-      it "should support setting search", show_in_doc: in_doc do
-        tag = create(:setting)
-        get :index, params: { q: tag.name, t: 'Setting' }
-        expect(response).to have_http_status(200)
-        expect(response.parsed_body).to have_key('results')
-        expect(response.parsed_body['results']).to contain_exactly(tag.as_json.stringify_keys)
-      end
-
       it "should support content warning search", show_in_doc: in_doc do
         tag = create(:content_warning)
         get :index, params: { q: tag.name, t: 'ContentWarning' }
@@ -96,7 +88,7 @@ RSpec.describe Api::V1::TagsController do
       expect(response.parsed_body['gallery_ids']).to match_array(galleries.map(&:id))
     end
 
-    [:setting, :label, :content_warning].each do |type|
+    [:label, :content_warning].each do |type|
       it "should support getting #{type} tags" do
         tag = create(type) # rubocop:disable Rails/SaveBang
         get :show, params: { id: tag.id }
