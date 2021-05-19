@@ -147,7 +147,7 @@ function processTotal(key) {
 
 function createTagSelect(tagType, selector, formType, scope) {
   foundTags[selector] = [];
-  url = '/api/v1/tags';
+  var url = '/api/v1/tags';
   if (tagType === 'Setting') {
     url = '/api/v1/settings';
   }
