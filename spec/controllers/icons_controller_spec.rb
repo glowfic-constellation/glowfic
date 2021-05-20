@@ -3,6 +3,7 @@ RSpec.describe IconsController do
 
   describe "DELETE delete_multiple" do
     let(:user) { create(:user) }
+    let(:icon) { create(:icon) }
 
     it "requires login" do
       delete :delete_multiple
@@ -25,7 +26,6 @@ RSpec.describe IconsController do
     end
 
     it "requires valid icons" do
-      icon = create(:icon)
       Audited.audit_class.as_user(icon.user) { icon.destroy! }
       login_as(user)
       delete :delete_multiple, params: { marked_ids: [0, '0', 'abc', -1, '-1', icon.id] }
@@ -52,7 +52,6 @@ RSpec.describe IconsController do
       end
 
       it "skips other people's icons" do
-        icon = create(:icon)
         gallery = create(:gallery, user: user, icons: [icon])
         icon.reload
         expect(icon.galleries.count).to eq(1)
@@ -114,7 +113,6 @@ RSpec.describe IconsController do
       before(:each) { login_as(user) }
 
       it "skips other people's icons" do
-        icon = create(:icon)
         delete :delete_multiple, params: { marked_ids: [icon.id] }
         icon.reload
       end
@@ -204,7 +202,6 @@ RSpec.describe IconsController do
     end
 
     context "post view" do
-      let(:icon) { create(:icon) }
       let(:post) { create(:post, icon: icon, user: icon.user) }
       let(:other_post) { create(:post) }
       let(:reply) { create(:reply, icon: icon, user: icon.user, post: other_post) }
@@ -243,11 +240,7 @@ RSpec.describe IconsController do
     context "galleries view" do
       render_views
       let(:gallery) { create(:gallery) }
-      let(:icon) { create(:icon, galleries: [gallery], user: gallery.user) }
-
-      before(:each) do
-        icon
-      end
+      let!(:icon) { create(:icon, galleries: [gallery], user: gallery.user) }
 
       it "loads logged out" do
         get :show, params: { id: icon.id, view: 'galleries' }

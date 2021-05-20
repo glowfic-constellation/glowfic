@@ -747,6 +747,7 @@ RSpec.describe CharactersController do
     let(:chars) { Array.new(3) { create(:character, pb: SecureRandom.urlsafe_base64) } }
     let(:temp_chars) { Array.new(3) { create(:template_character, pb: SecureRandom.urlsafe_base64) } }
     let(:all_chars) { chars + temp_chars }
+    let(:names) { assigns(:pbs).map(&:item_name) }
 
     it "does not require login" do
       get :facecasts
@@ -770,21 +771,18 @@ RSpec.describe CharactersController do
     it "sets correct variables for character name sort: character only" do
       chars
       get :facecasts, params: { sort: 'name' }
-      names = assigns(:pbs).map(&:item_name)
       expect(names).to match_array(chars.map(&:name))
     end
 
     it "sets correct variables for character name sort: template only" do
       temp_chars
       get :facecasts, params: { sort: 'name' }
-      names = assigns(:pbs).map(&:item_name)
       expect(names).to match_array(temp_chars.map(&:template).map(&:name))
     end
 
     it "sets correct variables for character name sort: character and template mixed" do
       all_chars
       get :facecasts, params: { sort: 'name' }
-      names = assigns(:pbs).map(&:item_name)
       expect(names).to match_array(all_chars.map { |c| (c.template || c).name })
     end
 
@@ -945,6 +943,7 @@ RSpec.describe CharactersController do
     let(:user) { create(:user) }
     let(:character) { create(:character, user: user) }
     let(:other_char) { create(:character, user: user) }
+    let(:calias) { create(:alias) }
 
     it "requires login" do
       post :do_replace, params: { id: -1 }
@@ -993,7 +992,6 @@ RSpec.describe CharactersController do
     end
 
     it "requires matching new alias if parameter provided" do
-      calias = create(:alias)
       login_as(user)
       post :do_replace, params: { id: character.id, alias_dropdown: calias.id, icon_dropdown: other_char.id }
       expect(response).to redirect_to(replace_character_path(character))
@@ -1008,7 +1006,6 @@ RSpec.describe CharactersController do
     end
 
     it "requires matching old alias if parameter provided" do
-      calias = create(:alias)
       login_as(user)
       post :do_replace, params: { id: character.id, orig_alias: calias.id }
       expect(response).to redirect_to(replace_character_path(character))
@@ -1019,6 +1016,7 @@ RSpec.describe CharactersController do
       let!(:char_post) { create(:post, user: user, character: character) }
       let!(:reply) { create(:reply, user: user, character: character) }
       let(:calias) { create(:alias, character: character) }
+      let(:char_reply) { create(:reply, user: user, character: character, character_alias: calias) }
 
       before(:each) { login_as(user) }
 
@@ -1090,7 +1088,7 @@ RSpec.describe CharactersController do
       end
 
       it "filters to alias if given" do
-        char_reply = create(:reply, user: user, character: character, character_alias_id: calias.id)
+        char_reply
 
         perform_enqueued_jobs(only: UpdateModelJob) do
           post :do_replace, params: { id: character.id, icon_dropdown: other_char.id, orig_alias: calias.id }
@@ -1101,7 +1099,7 @@ RSpec.describe CharactersController do
       end
 
       it "filters to nil if given" do
-        char_reply = create(:reply, user: user, character: character, character_alias_id: calias.id)
+        char_reply
 
         perform_enqueued_jobs(only: UpdateModelJob) do
           post :do_replace, params: { id: character.id, icon_dropdown: other_char.id, orig_alias: '' }
@@ -1112,7 +1110,7 @@ RSpec.describe CharactersController do
       end
 
       it "does not filter if all given" do
-        char_reply = create(:reply, user: user, character: character, character_alias_id: calias.id)
+        char_reply
 
         perform_enqueued_jobs(only: UpdateModelJob) do
           post :do_replace, params: { id: character.id, icon_dropdown: other_char.id, orig_alias: 'all' }
@@ -1398,20 +1396,20 @@ RSpec.describe CharactersController do
     end
 
     context "when logged in" do
+      let(:user) { create(:user, default_character_split: 'none') }
+
       it "works by default" do
         login
         expect(controller.send(:character_split)).to eq('template')
       end
 
       it "uses account default if different" do
-        user = create(:user, default_character_split: 'none')
         login_as(user)
         expect(controller.send(:character_split)).to eq('none')
       end
 
       it "is not overridden by session" do
         # also does not modify user default
-        user = create(:user, default_character_split: 'none')
         login_as(user)
         session[:character_split] = 'template'
         expect(controller.send(:character_split)).to eq('none')
@@ -1420,7 +1418,6 @@ RSpec.describe CharactersController do
 
       it "can be overridden by params" do
         # also does not modify user default
-        user = create(:user, default_character_split: 'none')
         login_as(user)
         controller.params[:character_split] = 'template'
         expect(controller.send(:character_split)).to eq('template')

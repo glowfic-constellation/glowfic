@@ -108,6 +108,7 @@ RSpec.describe AliasesController do
 
   describe "DELETE destroy" do
     let(:calias) { create(:alias, character: character) }
+    let(:reply) { create(:reply, user: user, character: character, character_alias: calias) }
 
     it "requires login" do
       delete :destroy, params: { id: -1, character_id: -1 }
@@ -151,7 +152,6 @@ RSpec.describe AliasesController do
     end
 
     it "succeeds" do
-      reply = create(:reply, user: user, character: character, character_alias: calias)
       draft = create(:reply_draft, user: user, character: character, character_alias: calias)
       login_as(user)
       perform_enqueued_jobs(only: UpdateModelJob) do
@@ -164,7 +164,6 @@ RSpec.describe AliasesController do
     end
 
     it "handles destroy failure" do
-      reply = create(:reply, user: user, character: character, character_alias: calias)
       login_as(user)
       expect_any_instance_of(CharacterAlias).to receive(:destroy!).and_raise(ActiveRecord::RecordNotDestroyed, 'fake error')
       delete :destroy, params: { id: calias.id, character_id: character.id }
