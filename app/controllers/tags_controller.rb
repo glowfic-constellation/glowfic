@@ -13,11 +13,6 @@ class TagsController < TaggableController
     redirect_to tags_path
   end
 
-  def show
-    super
-    @view = params[:view]
-  end
-
   def update
     begin
       @tag.update!(permitted_params)
