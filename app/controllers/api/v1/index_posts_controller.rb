@@ -15,7 +15,7 @@ class Api::V1::IndexPostsController < Api::ApiController
   def reorder
     list = super(params[:ordered_post_ids], model_klass: IndexPost, model_name: 'post', parent_klass: Index,
       section_klass: IndexSection, section_id: params[:section_id])
-    return if performed?
+    return if list == false
     render json: {post_ids: list}
   end
 end

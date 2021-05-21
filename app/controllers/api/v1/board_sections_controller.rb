@@ -14,7 +14,7 @@ class Api::V1::BoardSectionsController < Api::ApiController
   param :ordered_section_ids, Array, allow_blank: false
   def reorder
     list = super(params[:ordered_section_ids], model_klass: BoardSection, model_name: 'section', parent_klass: Board)
-    return if performed?
+    return if list == false
     render json: {section_ids: list}
   end
 end
