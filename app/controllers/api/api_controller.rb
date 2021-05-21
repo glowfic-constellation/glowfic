@@ -60,8 +60,8 @@ class Api::ApiController < ActionController::Base
 
   def reorder(id_list, model_klass:, model_name: nil, parent_klass:, section_klass: nil, section_key: nil, section_id: nil)
     reorderer = ApiReorderer.new(model_klass: model_klass, model_name: model_name, parent_klass: parent_klass,
-      section_klass: section_klass, section_key: section_key)
-    list = reorderer.reorder(id_list, section_id: section_id, user: current_user)
+      section_klass: section_klass, section_key: section_key, section_id: section_id)
+    list = reorderer.reorder(id_list, user: current_user)
     if reorderer.status.present?
       if reorderer.status == :forbidden
         access_denied

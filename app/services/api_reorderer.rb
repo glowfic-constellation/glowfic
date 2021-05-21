@@ -1,35 +1,46 @@
 class ApiReorderer < Object
   attr_reader :errors, :status
 
-  def initialize(model_klass:, model_name: nil, parent_klass:, section_klass: nil, section_key: nil)
-    @model_klass = model_klass
-    @model_name = model_name || model_klass.model_name.to_s.downcase
-    @parent_klass = parent_klass
-    @parent_name = parent_klass.model_name.to_s.downcase
-    @parent_key = @parent_name.foreign_key.to_sym
-    @section_klass = section_klass
-    @section_key = section_key || section_klass.model_name.to_s.foreign_key.to_sym unless section_klass.nil?
+  def initialize(model_klass:, model_name: nil, parent_klass:, section_klass: nil, section_key: nil, section_id: nil)
+    @model = {
+      klass: model_klass,
+      name: model_name || model_klass.model_name.to_s.downcase
+    }
+
+    @parent = {
+      klass: parent_klass,
+      name: parent_klass.model_name.to_s.downcase,
+    }
+    @parent[:key] = @parent[:name].foreign_key.to_sym
+
+    unless section_klass.nil?
+      @section = {
+        klass: section_klass,
+        key: section_key || section_klass.model_name.to_s.foreign_key.to_sym,
+        id: section_id ? section_id.to_i : nil
+      }
+      @section[:where] = {@section[:key] => @section[:id]}
+    end
+
     @errors = []
     @status = nil
   end
 
-  def reorder(id_list, section_id: nil, user: nil)
-    section_id = section_id ? section_id.to_i : nil
+  def reorder(id_list, user: nil)
     id_list = id_list.map(&:to_i).uniq
-    list = @model_klass.where(id: id_list)
+    list = @model[:klass].where(id: id_list)
     return false unless check_items(list, id_list)
-    parent = check_parent(list, user)
-    return false unless parent.is_a?(@parent_klass)
-    return false unless @section_klass.nil? || check_section(list, section_id: section_id, parent_id: parent.id)
+    return false unless set_parent(list, user)
+    return false unless @section.nil? || check_section(list)
 
-    @model_klass.transaction do
+    @model[:klass].transaction do
       reorder_list(list, id_list)
-      reorder_others(id_list, parent_id: parent.id, section_id: section_id)
+      reorder_others(id_list)
     end
 
     return parent if block_given?
 
-    generate_return(parent.id, section_id)
+    generate_return
   end
 
   private
@@ -38,29 +49,31 @@ class ApiReorderer < Object
     return true if list.count == id_list.count
 
     missing_items = id_list - list.pluck(:id)
-    @errors << {message: "Some #{@model_name.pluralize} could not be found: #{missing_items.join(', ')}"}
+    @errors << {message: "Some #{@model[:name].pluralize} could not be found: #{missing_items.join(', ')}"}
     @status = :not_found
     false
   end
 
-  def check_parent(list, user)
-    parents = @parent_klass.where(id: list.select(@parent_key).distinct.pluck(@parent_key))
+  def set_parent(list, user)
+    parents = @parent[:klass].where(id: list.select(@parent[:key]).distinct.pluck(@parent[:key]))
     unless parents.count == 1
-      @errors << {message: "#{@model_name.pluralize.humanize} must be from one #{@parent_name}"}
+      @errors << {message: "#{@model[:name].pluralize.humanize} must be from one #{@parent[:name]}"}
       @status = :unprocessable_entity
       return false
     end
 
-    parent = parents.first
-    @status = :forbidden and return false unless parent.editable_by?(user)
-    parent
+    @parent[:obj] = parents.first
+    @parent[:id] = @parent[:obj].id
+    @parent[:where] = {@parent[:key] => @parent[:id]}
+    @status = :forbidden and return false unless @parent[:obj].editable_by?(user)
+    true
   end
 
-  def check_section(list, section_id:, parent_id:)
-    section_ids = list.select(@section_key).distinct.pluck(@section_key)
-    return true if section_ids == [section_id] && (section_id.nil? || @section_klass.where(id: section_id, @parent_key => parent_id).exists?)
+  def check_section(list)
+    section_ids = list.select(@section[:key]).distinct.pluck(@section[:key])
+    return true if section_ids == [@section[:id]] && (@section[:id].nil? || @section[:klass].where(id: @section[:id]).where(@parent[:where]).exists?)
 
-    @errors << {message: "Posts must be from one specified section in the #{@parent_name}, or no section"}
+    @errors << {message: "Posts must be from one specified section in the #{@parent[:name]}, or no section"}
     @status = :unprocessable_entity
     false
   end
@@ -73,10 +86,10 @@ class ApiReorderer < Object
     end
   end
 
-  def reorder_others(id_list, parent_id:, section_id:)
-    other_models = @model_klass.where(@parent_key => parent_id).where.not(id: id_list)
-    if @section_klass.present?
-      other_models = other_models.where(@section_key => section_id).ordered_in_section
+  def reorder_others(id_list)
+    other_models = @model[:klass].where(@parent[:where]).where.not(id: id_list)
+    if @section.present?
+      other_models = other_models.where(@section[:where]).ordered_in_section
     else
       other_models = other_models.ordered
     end
@@ -87,10 +100,10 @@ class ApiReorderer < Object
     end
   end
 
-  def generate_return(parent_id, section_id)
-    return_list = @model_klass.where(@parent_key => parent_id)
-    if @section_klass.present?
-      return_list = return_list.where(@section_key => section_id).ordered_in_section
+  def generate_return
+    return_list = @model[:klass].where(@parent[:where])
+    if @section.present?
+      return_list = return_list.where(@section[:where]).ordered_in_section
     else
       return_list = return_list.ordered
     end
