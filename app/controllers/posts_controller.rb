@@ -204,11 +204,12 @@ class PostsController < WritableController
 
     begin
       Post.transaction do
-        @post.update!(settings: settings, content_warnings: warnings, labels: labels)
+        @post.settings = settings
+        @post.content_warnings = warnings
+        @post.labels = labels
+        @post.save!
         @post.author_for(current_user).update!(private_note: @post.private_note) if is_author
       end
-      flash[:success] = "Your post has been updated."
-      redirect_to post_path(@post)
     rescue ActiveRecord::RecordInvalid
       flash.now[:error] = {
         array: @post.errors.full_messages,
@@ -217,6 +218,9 @@ class PostsController < WritableController
       @audits = { post: @post.audits.count }
       editor_setup
       render :edit
+    else
+      flash[:success] = "Your post has been updated."
+      redirect_to post_path(@post)
     end
   end
 

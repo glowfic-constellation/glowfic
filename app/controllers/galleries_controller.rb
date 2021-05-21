@@ -110,10 +110,12 @@ class GalleriesController < UploadingController
   def update
     @gallery.assign_attributes(permitted_params)
 
-    if @gallery.update(gallery_groups: process_tags(GalleryGroup, obj_param: :gallery, id_param: :gallery_group_ids))
-      flash[:success] = "Gallery saved."
-      redirect_to edit_gallery_path(@gallery)
-    else
+    begin
+      Gallery.transaction do
+        @gallery.gallery_groups = process_tags(GalleryGroup, obj_param: :gallery, id_param: :gallery_group_ids)
+        @gallery.save!
+      end
+    rescue ActiveRecord::RecordInvalid
       flash.now[:error] = {}
       flash.now[:error][:message] = "Gallery could not be saved."
       flash.now[:error][:array] = @gallery.errors.full_messages
@@ -123,6 +125,9 @@ class GalleriesController < UploadingController
       editor_setup
       set_s3_url
       render :edit
+    else
+      flash[:success] = "Gallery saved."
+      redirect_to edit_gallery_path(@gallery)
     end
   end
 
