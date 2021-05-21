@@ -61,9 +61,9 @@ class Character < ApplicationRecord
 
   def recent_posts
     return @recent unless @recent.nil?
-    reply_ids = replies.group(:post_id).pluck(:post_id)
-    post_ids = posts.select(:id).map(&:id)
-    @recent ||= Post.where(id: (post_ids + reply_ids).uniq).ordered
+    reply_ids = replies.select(:post_id).distinct
+    post_ids = posts.select(:id)
+    @recent ||= Post.where(id: post_ids).or(Post.where(id: reply_ids)).ordered
   end
 
   def selector_name

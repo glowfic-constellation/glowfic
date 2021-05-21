@@ -6,7 +6,7 @@
     %th.sub{colspan: colspan}
       = group ? "Group: #{group.name}" : 'Ungrouped Characters'
 - if characters.try(:exists?)
-  - template_ids = characters.group(:template_id).pluck(:template_id).uniq.compact
+  - template_ids = characters.select(:template_id).distinct
   - templates = ::Template.where(id: template_ids).ordered.each do |template|
     - next if skip_grouped_templates && template.characters.where('character_group_id is not null').exists?
     = render partial_type, name: template, characters: template.characters.ordered

@@ -19,12 +19,12 @@ class PostsController < WritableController
     @page_title = 'Replies Owed'
 
     can_owe = (params[:view] != 'hidden')
-    ids = Post::Author.where(user_id: current_user.id, can_owe: can_owe).group(:post_id).pluck(:post_id)
+    ids = Post::Author.where(user: current_user, can_owe: can_owe).select(:post_id).distinct
     @posts = Post.where(id: ids)
     unless params[:view] == 'hidden'
-      drafts = ReplyDraft.where(post_id: @posts.select(:id)).where(user: current_user).pluck(:post_id)
-      solo = Post::Author.where(post_id: ids).group(:post_id).having('count(post_id) < 2').pluck(:post_id)
-      @posts = @posts.where.not(last_user: current_user).or(@posts.where(id: (drafts + solo).uniq))
+      drafts = ReplyDraft.where(post_id: @posts.select(:id)).where(user: current_user).select(:post_id)
+      solo = Post::Author.where(post_id: ids).group(:post_id).having('count(post_id) < 2').select(:post_id)
+      @posts = @posts.where.not(last_user: current_user).or(@posts.where(id: drafts)).or(@posts.where(id: solo))
     end
     @posts = @posts.where.not(status: [:complete, :abandoned])
     hiatused = @posts.hiatus.or(@posts.where('tagged_at < ?', 1.month.ago))
@@ -90,7 +90,7 @@ class PostsController < WritableController
 
   def hidden
     @hidden_boardviews = BoardView.where(user_id: current_user.id).where(ignored: true).includes(:board)
-    hidden_post_ids = Post::View.where(user_id: current_user.id).where(ignored: true).select(:post_id).distinct.pluck(:post_id)
+    hidden_post_ids = Post::View.where(user_id: current_user.id).where(ignored: true).select(:post_id).distinct
     @hidden_posts = posts_from_relation(Post.where(id: hidden_post_ids).ordered)
     @page_title = 'Hidden Posts & Boards'
   end
@@ -161,7 +161,7 @@ class PostsController < WritableController
   def delete_history
     audit_ids = @post.associated_audits.where(action: 'destroy').where(auditable_type: 'Reply') # all destroyed replies
     audit_ids = audit_ids.joins('LEFT JOIN replies ON replies.id = audits.auditable_id').where('replies.id IS NULL') # not restored
-    audit_ids = audit_ids.group(:auditable_id).pluck(Arel.sql('MAX(audits.id)')) # only most recent per reply
+    audit_ids = audit_ids.group(:auditable_id).select(Arel.sql('MAX(audits.id)')) # only most recent per reply
     @deleted_audits = Audited::Audit.where(id: audit_ids).paginate(per_page: 1, page: page)
 
     if @deleted_audits.present?
@@ -260,7 +260,7 @@ class PostsController < WritableController
 
     @search_results = Post.ordered
     @search_results = @search_results.where(board_id: params[:board_id]) if params[:board_id].present?
-    @search_results = @search_results.where(id: Setting.find(params[:setting_id]).post_tags.pluck(:post_id)) if params[:setting_id].present?
+    @search_results = @search_results.where(id: Setting.find(params[:setting_id]).post_tags.select(:post_id)) if params[:setting_id].present?
     if params[:subject].present?
       @search_results = @search_results.search(params[:subject]).where('LOWER(subject) LIKE ?', "%#{params[:subject].downcase}%")
     end
@@ -279,7 +279,7 @@ class PostsController < WritableController
       @search_results = @search_results.where(id: post_ids.uniq)
     end
     if params[:character_id].present?
-      post_ids = Reply.where(character_id: params[:character_id]).select(:post_id).distinct.pluck(:post_id)
+      post_ids = Reply.where(character_id: params[:character_id]).select(:post_id).distinct
       @search_results = @search_results.where(character_id: params[:character_id]).or(@search_results.where(id: post_ids))
     end
     @search_results = posts_from_relation(@search_results, show_blocked: !!params[:show_blocked])

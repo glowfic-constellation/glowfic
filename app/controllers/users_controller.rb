@@ -18,7 +18,7 @@ class UsersController < ApplicationController
       redirect_to users_path and return
     end
 
-    ids = Post::Author.where(user_id: @user.id, joined: true).pluck(:post_id)
+    ids = Post::Author.where(user_id: @user.id, joined: true).select(:post_id)
     @posts = posts_from_relation(Post.where(id: ids).ordered)
     @page_title = @user.username
     @meta_og = og_data
@@ -155,7 +155,7 @@ class UsersController < ApplicationController
   end
 
   def og_data
-    board_ids = BoardAuthor.where(user_id: @user.id, cameo: false).select(:board_id).distinct.pluck(:board_id)
+    board_ids = BoardAuthor.where(user_id: @user.id, cameo: false).select(:board_id).distinct
     boards = Board.where(id: board_ids).ordered.pluck(:name)
     board_count = boards.length
     if board_count > 0
