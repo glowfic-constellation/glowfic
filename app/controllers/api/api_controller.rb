@@ -62,13 +62,8 @@ class Api::ApiController < ActionController::Base
     reorderer = ApiReorderer.new(model_klass: model_klass, model_name: model_name, parent_klass: parent_klass,
       section_klass: section_klass, section_key: section_key, section_id: section_id)
     list = reorderer.reorder(id_list, user: current_user)
-    if reorderer.status.present?
-      if reorderer.status == :forbidden
-        access_denied
-      else
-        render json: {errors: reorderer.errors}, status: reorderer.status
-      end
-    end
+    render json: {errors: reorderer.errors}, status: reorderer.status if reorderer.status.present?
+
     list
   end
 end

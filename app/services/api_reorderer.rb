@@ -65,8 +65,11 @@ class ApiReorderer < Object
     @parent[:obj] = parents.first
     @parent[:id] = @parent[:obj].id
     @parent[:where] = {@parent[:key] => @parent[:id]}
-    @status = :forbidden and return false unless @parent[:obj].editable_by?(user)
-    true
+    return true if @parent[:obj].editable_by?(user)
+
+    @errors << {message: "You do not have permission to perform this action."}
+    @status = :forbidden
+    false
   end
 
   def check_section(list)
