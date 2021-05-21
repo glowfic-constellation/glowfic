@@ -40,8 +40,7 @@ class ApiReorderer < Object
     return true if list.count == id_list.count
 
     missing_items = id_list - list.pluck(:id)
-    error = {message: "Some #{@model_name.pluralize} could not be found: #{missing_items.join(', ')}"}
-    @errors << error
+    @errors << {message: "Some #{@model_name.pluralize} could not be found: #{missing_items.join(', ')}"}
     @status = :not_found
     false
   end
@@ -49,8 +48,7 @@ class ApiReorderer < Object
   def check_parent(list, user)
     parents = @parent_klass.where(id: list.select(@parent_key).distinct.pluck(@parent_key))
     unless parents.count == 1
-      error = {message: "#{@model_name.pluralize.humanize} must be from one #{@parent_name}"}
-      @errors << error
+      @errors << {message: "#{@model_name.pluralize.humanize} must be from one #{@parent_name}"}
       @status = :unprocessable_entity
       return false
     end
@@ -64,8 +62,7 @@ class ApiReorderer < Object
     section_ids = list.select(@section_key).distinct.pluck(@section_key)
     return true if section_ids == [section_id] && (section_id.nil? || @section_klass.where(id: section_id, @parent_key => parent_id).exists?)
 
-    error = {message: "Posts must be from one specified section in the #{@parent_name}, or no section"}
-    @errors << error
+    @errors << {message: "Posts must be from one specified section in the #{@parent_name}, or no section"}
     @status = :unprocessable_entity
     false
   end
