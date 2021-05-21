@@ -20,9 +20,7 @@ class ApiReorderer < Object
     return false unless check_items(list, id_list)
     parent = check_parent(list, user)
     return false unless parent.is_a?(@parent_klass)
-    if @section_klass.present?
-      return false unless check_section(list, section_id: section_id, parent_id: parent.id)
-    end
+    return false unless @section_klass.nil? || check_section(list, section_id: section_id, parent_id: parent.id)
     do_reorder(list, id_list: id_list, parent_id: parent.id, section_id: section_id)
 
     return parent if block_given?
@@ -39,8 +37,7 @@ class ApiReorderer < Object
   private
 
   def check_items(list, id_list)
-    count = list.count
-    return true if count == id_list.count
+    return true if list.count == id_list.count
 
     missing_items = id_list - list.pluck(:id)
     error = {message: "Some #{@model_name.pluralize} could not be found: #{missing_items.join(', ')}"}
@@ -65,7 +62,7 @@ class ApiReorderer < Object
 
   def check_section(list, section_id:, parent_id:)
     section_ids = list.select(@section_key).distinct.pluck(@section_key)
-    return true if section_ids == [section_id] || (section_id.nil? || @section_klass.where(id: section_id, @parent_key => parent_id).exists?)
+    return true if section_ids == [section_id] && (section_id.nil? || @section_klass.where(id: section_id, @parent_key => parent_id).exists?)
 
     error = {message: "Posts must be from one specified section in the #{@parent_name}, or no section"}
     @errors << error
@@ -74,6 +71,7 @@ class ApiReorderer < Object
   end
 
   def do_reorder(list, id_list:, parent_id:, section_id:)
+    count = list.count
     @model_klass.transaction do
       list = list.sort_by {|item| id_list.index(item.id) }
       list.each_with_index do |item, i|
