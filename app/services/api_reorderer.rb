@@ -21,17 +21,15 @@ class ApiReorderer < Object
     parent = check_parent(list, user)
     return false unless parent.is_a?(@parent_klass)
     return false unless @section_klass.nil? || check_section(list, section_id: section_id, parent_id: parent.id)
-    do_reorder(list, id_list: id_list, parent_id: parent.id, section_id: section_id)
+
+    @model_klass.transaction do
+      reorder_list(list, id_list)
+      reorder_others(id_list, parent_id: parent.id, section_id: section_id)
+    end
 
     return parent if block_given?
 
-    return_list = @model_klass.where(@parent_key => parent.id)
-    if @section_klass.present?
-      return_list = return_list.where(@section_key => section_id).ordered_in_section
-    else
-      return_list = return_list.ordered
-    end
-    return_list.pluck(:id)
+    generate_return(parent.id, section_id)
   end
 
   private
@@ -67,26 +65,35 @@ class ApiReorderer < Object
     false
   end
 
-  def do_reorder(list, id_list:, parent_id:, section_id:)
-    count = list.count
-    @model_klass.transaction do
-      list = list.sort_by {|item| id_list.index(item.id) }
-      list.each_with_index do |item, i|
-        next if item.section_order == i
-        item.update(section_order: i)
-      end
-
-      other_models = @model_klass.where(@parent_key => parent_id).where.not(id: id_list)
-      if @section_klass.present?
-        other_models = other_models.where(@section_key => section_id).ordered_in_section
-      else
-        other_models = other_models.ordered
-      end
-      other_models.each_with_index do |item, j|
-        order = j + count
-        next if item.section_order == order
-        item.update(section_order: order)
-      end
+  def reorder_list(list, id_list)
+    list = list.sort_by {|item| id_list.index(item.id) }
+    list.each_with_index do |item, i|
+      next if item.section_order == i
+      item.update(section_order: i)
     end
+  end
+
+  def reorder_others(id_list, parent_id: parent_id, section_id: section_id)
+    other_models = @model_klass.where(@parent_key => parent_id).where.not(id: id_list)
+    if @section_klass.present?
+      other_models = other_models.where(@section_key => section_id).ordered_in_section
+    else
+      other_models = other_models.ordered
+    end
+    other_models.each_with_index do |item, j|
+      order = j + id_list.size
+      next if item.section_order == order
+      item.update(section_order: order)
+    end
+  end
+
+  def generate_return(parent_id, section_id)
+    return_list = @model_klass.where(@parent_key => parent_id)
+    if @section_klass.present?
+      return_list = return_list.where(@section_key => section_id).ordered_in_section
+    else
+      return_list = return_list.ordered
+    end
+    return_list.pluck(:id)
   end
 end
