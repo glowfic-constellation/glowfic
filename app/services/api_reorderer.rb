@@ -88,15 +88,5 @@ class ApiReorderer < Object
         item.update(section_order: order)
       end
     end
-
-    return parent if block_given?
-
-    return_list = model_klass.where(parent_key => parent.id)
-    if sectioned
-      return_list = return_list.where(section_key => section_id).ordered_in_section
-    else
-      return_list = return_list.ordered
-    end
-    return_list.pluck(:id)
   end
 end
