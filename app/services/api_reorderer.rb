@@ -73,7 +73,7 @@ class ApiReorderer < Object
     end
   end
 
-  def reorder_others(id_list, parent_id: parent_id, section_id: section_id)
+  def reorder_others(id_list, parent_id:, section_id:)
     other_models = @model_klass.where(@parent_key => parent_id).where.not(id: id_list)
     if @section_klass.present?
       other_models = other_models.where(@section_key => section_id).ordered_in_section
