@@ -40,13 +40,13 @@ class ApiReorderer < Object
 
   def check_items(list, id_list)
     count = list.count
-    unless count == id_list.count
-      missing_items = id_list - list.pluck(:id)
-      error = {message: "Some #{@model_name.pluralize} could not be found: #{missing_items.join(', ')}"}
-      @errors << error
-      @status = :not_found
-      false
-    end
+    return true if count == id_list.count
+
+    missing_items = id_list - list.pluck(:id)
+    error = {message: "Some #{@model_name.pluralize} could not be found: #{missing_items.join(', ')}"}
+    @errors << error
+    @status = :not_found
+    false
   end
 
   def check_parent(list, user)
@@ -65,12 +65,12 @@ class ApiReorderer < Object
 
   def check_section(list, section_id:, parent_id:)
     section_ids = list.select(@section_key).distinct.pluck(@section_key)
-    unless section_ids == [section_id] && (section_id.nil? || @section_klass.where(id: section_id, @parent_key => parent_id).exists?)
-      error = {message: "Posts must be from one specified section in the #{@parent_name}, or no section"}
-      @errors << error
-      @status = :unprocessable_entity
-      return false
-    end
+    return true if section_ids == [section_id] || (section_id.nil? || @section_klass.where(id: section_id, @parent_key => parent_id).exists?)
+
+    error = {message: "Posts must be from one specified section in the #{@parent_name}, or no section"}
+    @errors << error
+    @status = :unprocessable_entity
+    false
   end
 
   def do_reorder(list, id_list:, parent_id:, section_id:)
@@ -81,7 +81,7 @@ class ApiReorderer < Object
         item.update(section_order: i)
       end
 
-      other_models = model_klass.where(@parent_key => parent_id).where.not(id: id_list)
+      other_models = @model_klass.where(@parent_key => parent_id).where.not(id: id_list)
       if @section_klass.present?
         other_models = other_models.where(@section_key => section_id).ordered_in_section
       else
