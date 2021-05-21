@@ -13,8 +13,12 @@ class Api::V1::IndexSectionsController < Api::ApiController
   error 422, "Invalid parameters provided"
   param :ordered_section_ids, Array, allow_blank: false
   def reorder
-    list = super(params[:ordered_section_ids], model_klass: IndexSection, model_name: 'section', parent_klass: Index)
-    return if list == false
-    render json: {section_ids: list}
+    reorderer = ApiReorderer.new(model_klass: IndexSection, model_name: 'section', parent_klass: Index)
+    list = reorderer.reorder(params[:ordered_section_ids], user: current_user)
+    if reorderer.status.present?
+      render json: {errors: reorderer.errors}, status: reorderer.status
+    else
+      render json: {section_ids: list}
+    end
   end
 end

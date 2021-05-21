@@ -74,9 +74,13 @@ class Api::V1::CharactersController < Api::ApiController
   error 422, "Invalid parameters provided"
   param :ordered_characters_gallery_ids, Array, allow_blank: false
   def reorder
-    list = super(params[:ordered_characters_gallery_ids], model_klass: CharactersGallery, model_name: 'character gallery', parent_klass: Character)
-    return if performed?
-    render json: {characters_gallery_ids: list}
+    reorderer = ApiReorderer.new(model_klass: CharactersGallery, model_name: 'character gallery', parent_klass: Character)
+    list = reorderer.reorder(params[:ordered_characters_gallery_ids], user: current_user)
+    if reorderer.status.present?
+      render json: {errors: reorderer.errors}, status: reorderer.status
+    else
+      render json: {characters_gallery_ids: list}
+    end
   end
 
   private

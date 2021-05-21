@@ -57,13 +57,4 @@ class Api::ApiController < ActionController::Base
     return 100 if per > 100
     per
   end
-
-  def reorder(id_list, model_klass:, model_name: nil, parent_klass:, section_klass: nil, section_key: nil, section_id: nil)
-    reorderer = ApiReorderer.new(model_klass: model_klass, model_name: model_name, parent_klass: parent_klass,
-      section_klass: section_klass, section_key: section_key, section_id: section_id)
-    list = reorderer.reorder(id_list, user: current_user)
-    render json: {errors: reorderer.errors}, status: reorderer.status if reorderer.status.present?
-
-    list
-  end
 end

@@ -13,9 +13,13 @@ class Api::V1::IndexPostsController < Api::ApiController
   param :ordered_post_ids, Array, allow_blank: false
   param :section_id, :number, required: false
   def reorder
-    list = super(params[:ordered_post_ids], model_klass: IndexPost, model_name: 'post', parent_klass: Index,
+    reorderer = ApiReorderer.new(model_klass: IndexPost, model_name: 'post', parent_klass: Index,
       section_klass: IndexSection, section_id: params[:section_id])
-    return if list == false
-    render json: {post_ids: list}
+    list = reorderer.reorder(params[:ordered_post_ids], user: current_user)
+    if reorderer.status.present?
+      render json: {errors: reorderer.errors}, status: reorderer.status
+    else
+      render json: {post_ids: list}
+    end
   end
 end
