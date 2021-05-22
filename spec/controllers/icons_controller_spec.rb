@@ -428,7 +428,7 @@ RSpec.describe IconsController do
       icon = create(:icon)
       post = create(:post, user: icon.user, icon: icon)
       login_as(icon.user)
-      expect_any_instance_of(Icon).to receive(:destroy!).and_raise(ActiveRecord::RecordNotDestroyed, 'fake error')
+      expect_any_instance_of(Icon).to receive(:destroy).and_return(false)
       delete :destroy, params: { id: icon.id }
       expect(response).to redirect_to(icon_url(icon))
       expect(flash[:error]).to eq({message: "Icon could not be deleted.", array: []})

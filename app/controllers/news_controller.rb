@@ -20,18 +20,16 @@ class NewsController < ApplicationController
     @news = News.new(permitted_params)
     @news.user = current_user
 
-    begin
-      @news.save!
-    rescue ActiveRecord::RecordInvalid
+    if @news.save
+      flash[:success] = "News post has successfully been created."
+      redirect_to news_index_path
+    else
       flash.now[:error] = {
         message: "News post could not be created.",
         array: @news.errors.full_messages
       }
       @page_title = 'Create News Post'
       render :new
-    else
-      flash[:success] = "News post has successfully been created."
-      redirect_to news_index_path
     end
   end
 
@@ -45,18 +43,16 @@ class NewsController < ApplicationController
   end
 
   def update
-    begin
-      @news.update!(permitted_params)
-    rescue ActiveRecord::RecordInvalid
+    if @news.update(permitted_params)
+      flash[:success] = "News post saved!"
+      redirect_to paged_news_url(@news)
+    else
       flash.now[:error] = {
         message: "News post could not be saved because of the following problems:",
         array: @news.errors.full_messages
       }
       @page_title = "Edit News Post"
       render :edit
-    else
-      flash[:success] = "News post saved!"
-      redirect_to paged_news_url(@news)
     end
   end
 
@@ -66,15 +62,13 @@ class NewsController < ApplicationController
       redirect_to news_index_path and return
     end
 
-    begin
-      @news.destroy!
-    rescue ActiveRecord::RecordNotDestroyed
+    if @news.destroy
+      flash[:success] = "News post deleted."
+    else
       flash[:error] = {
         message: "News post could not be deleted.",
         array: @news.errors.full_messages
       }
-    else
-      flash[:success] = "News post deleted."
     end
     redirect_to news_index_path
   end

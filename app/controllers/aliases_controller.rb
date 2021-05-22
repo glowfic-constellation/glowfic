@@ -13,31 +13,27 @@ class AliasesController < ApplicationController
     @alias = CharacterAlias.new(permitted_params)
     @alias.character = @character
 
-    begin
-      @alias.save!
-    rescue ActiveRecord::RecordInvalid
+    if @alias.save
+      flash[:success] = "Alias created."
+      redirect_to edit_character_path(@character)
+    else
       flash.now[:error] = {
         message: "Alias could not be created.",
         array: @alias.errors.full_messages
       }
       @page_title = "New Alias: " + @character.name
       render :new
-    else
-      flash[:success] = "Alias created."
-      redirect_to edit_character_path(@character)
     end
   end
 
   def destroy
-    begin
-      @alias.destroy!
-    rescue ActiveRecord::RecordNotDestroyed
+    if @alias.destroy
+      flash[:success] = "Alias removed."
+    else
       flash[:error] = {
         message: "Alias could not be deleted.",
         array: @alias.errors.full_messages
       }
-    else
-      flash[:success] = "Alias removed."
     end
     redirect_to edit_character_path(@character)
   end

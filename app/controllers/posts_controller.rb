@@ -134,9 +134,10 @@ class PostsController < WritableController
     @post.content_warnings = process_tags(ContentWarning, obj_param: :post, id_param: :content_warning_ids)
     @post.labels = process_tags(Label, obj_param: :post, id_param: :label_ids)
 
-    begin
-      @post.save!
-    rescue ActiveRecord::RecordInvalid
+    if @post.save
+      flash[:success] = "You have successfully posted."
+      redirect_to post_path(@post)
+    else
       flash.now[:error] = {
         array: @post.errors.full_messages,
         message: "Your post could not be saved because of the following problems:"
@@ -144,9 +145,6 @@ class PostsController < WritableController
       editor_setup
       @page_title = 'New Post'
       render :new
-    else
-      flash[:success] = "You have successfully posted."
-      redirect_to post_path(@post)
     end
   end
 
@@ -232,17 +230,15 @@ class PostsController < WritableController
       redirect_to post_path(@post) and return
     end
 
-    begin
-      @post.destroy!
-    rescue ActiveRecord::RecordNotDestroyed
+    if @post.destroy
+      flash[:success] = "Post deleted."
+      redirect_to continuities_path
+    else
       flash[:error] = {
         message: "Post could not be deleted.",
         array: @post.errors.full_messages
       }
       redirect_to post_path(@post)
-    else
-      flash[:success] = "Post deleted."
-      redirect_to continuities_path
     end
   end
 
@@ -372,15 +368,13 @@ class PostsController < WritableController
 
   def change_authors_locked
     @post.authors_locked = (params[:authors_locked] == 'true')
-    begin
-      @post.save!
-    rescue ActiveRecord::RecordInvalid
+    if @post.save
+      flash[:success] = "Post has been #{@post.authors_locked? ? 'locked to' : 'unlocked from'} current authors."
+    else
       flash[:error] = {
         message: "Post could not be updated.",
         array: @post.errors.full_messages
       }
-    else
-      flash[:success] = "Post has been #{@post.authors_locked? ? 'locked to' : 'unlocked from'} current authors."
     end
     redirect_to post_path(@post)
   end

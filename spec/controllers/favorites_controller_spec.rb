@@ -258,7 +258,7 @@ RSpec.describe FavoritesController do
     it "handles destroy failure" do
       favorite = create(:favorite, favorite: create(:post))
       login_as(favorite.user)
-      expect_any_instance_of(Favorite).to receive(:destroy!).and_raise(ActiveRecord::RecordNotDestroyed, 'fake error')
+      expect_any_instance_of(Favorite).to receive(:destroy).and_return(false)
       delete :destroy, params: { id: favorite.id }
       expect(response).to redirect_to(favorites_path)
       expect(flash[:error]).to eq({message: "Favorite could not be deleted.", array: []})

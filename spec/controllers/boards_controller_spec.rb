@@ -425,7 +425,7 @@ RSpec.describe BoardsController do
       board = create(:board)
       post = create(:post, user: board.creator, board: board)
       login_as(board.creator)
-      expect_any_instance_of(Board).to receive(:destroy!).and_raise(ActiveRecord::RecordNotDestroyed, 'fake error')
+      expect_any_instance_of(Board).to receive(:destroy).and_return(false)
       delete :destroy, params: { id: board.id }
       expect(response).to redirect_to(continuity_url(board))
       expect(flash[:error]).to eq({message: "Continuity could not be deleted.", array: []})

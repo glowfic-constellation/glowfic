@@ -143,18 +143,16 @@ class RepliesController < WritableController
       end
     end
 
-    begin
-      reply.save!
-    rescue ActiveRecord::RecordInvalid
+    if reply.save
+      flash[:success] = "Posted!"
+      redirect_to reply_path(reply, anchor: "reply-#{reply.id}")
+    else
       flash[:error] = {
         message: "Your reply could not be saved because of the following problems:",
         array: reply.errors.full_messages
       }
       redirect_to posts_path and return unless reply.post
       redirect_to post_path(reply.post)
-    else
-      flash[:success] = "Posted!"
-      redirect_to reply_path(reply, anchor: "reply-#{reply.id}")
     end
   end
 
@@ -181,9 +179,10 @@ class RepliesController < WritableController
       render :edit and return
     end
 
-    begin
-      @reply.save!
-    rescue ActiveRecord::RecordInvalid
+    if @reply.save
+      flash[:success] = "Post updated"
+      redirect_to reply_path(@reply, anchor: "reply-#{@reply.id}")
+    else
       flash[:error] = {
         message: "Your reply could not be saved because of the following problems:",
         array: @reply.errors.full_messages
@@ -191,9 +190,6 @@ class RepliesController < WritableController
       @audits = { @reply.id => @post.audits.count }
       editor_setup
       render :edit
-    else
-      flash[:success] = "Post updated"
-      redirect_to reply_path(@reply, anchor: "reply-#{@reply.id}")
     end
   end
 
@@ -207,17 +203,15 @@ class RepliesController < WritableController
     to_page = previous_reply.try(:post_page, per_page) || 1
 
     # to destroy subsequent replies, do @reply.destroy_subsequent_replies
-    begin
-      @reply.destroy!
-    rescue ActiveRecord::RecordNotDestroyed
+    if @reply.destroy
+      flash[:success] = "Reply deleted."
+      redirect_to post_path(@reply.post, page: to_page)
+    else
       flash[:error] = {
         message: "Reply could not be deleted.",
         array: @reply.errors.full_messages
       }
       redirect_to reply_path(@reply, anchor: "reply-#{@reply.id}")
-    else
-      flash[:success] = "Reply deleted."
-      redirect_to post_path(@reply.post, page: to_page)
     end
   end
 
@@ -302,15 +296,13 @@ class RepliesController < WritableController
       draft.user = current_user
     end
 
-    begin
-      draft.save!
-    rescue ActiveRecord::RecordInvalid
+    if draft.save
+      flash[:success] = "Draft saved!" if show_message
+    else
       flash[:error] = {
         message: "Your draft could not be saved because of the following problems:",
         array: draft.errors.full_messages
       }
-    else
-      flash[:success] = "Draft saved!" if show_message
     end
     draft
   end

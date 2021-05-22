@@ -19,18 +19,16 @@ class IndexesController < ApplicationController
     @index = Index.new(permitted_params)
     @index.user = current_user
 
-    begin
-      @index.save!
-    rescue ActiveRecord::RecordInvalid
+    if @index.save
+      flash[:success] = "Index created!"
+      redirect_to index_path(@index) and return
+    else
       flash.now[:error] = {
         message: "Index could not be created.",
         array: @index.errors.full_messages
       }
       @page_title = 'New Index'
       render :new
-    else
-      flash[:success] = "Index created!"
-      redirect_to index_path(@index) and return
     end
   end
 
@@ -51,33 +49,29 @@ class IndexesController < ApplicationController
   end
 
   def update
-    begin
-      @index.update!(permitted_params)
-    rescue ActiveRecord::RecordInvalid
+    if @index.update(permitted_params)
+      flash[:success] = "Index saved!"
+      redirect_to index_path(@index)
+    else
       flash.now[:error] = {
         message: "Index could not be saved because of the following problems:",
         array: @index.errors.full_messages
       }
       editor_setup
       render :edit
-    else
-      flash[:success] = "Index saved!"
-      redirect_to index_path(@index)
     end
   end
 
   def destroy
-    begin
-      @index.destroy!
-    rescue ActiveRecord::RecordNotDestroyed
+    if @index.destroy
+      redirect_to indexes_path
+      flash[:success] = "Index deleted."
+    else
       flash[:error] = {
         message: "Index could not be deleted.",
         array: @index.errors.full_messages
       }
       redirect_to index_path(@index)
-    else
-      redirect_to indexes_path
-      flash[:success] = "Index deleted."
     end
   end
 

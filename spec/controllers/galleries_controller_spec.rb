@@ -536,7 +536,7 @@ RSpec.describe GalleriesController do
       gallery = create(:gallery)
       icon = create(:icon, user: gallery.user, galleries: [gallery])
       login_as(gallery.user)
-      expect_any_instance_of(Gallery).to receive(:destroy!).and_raise(ActiveRecord::RecordNotDestroyed, 'fake error')
+      expect_any_instance_of(Gallery).to receive(:destroy).and_return(false)
       delete :destroy, params: { id: gallery.id }
       expect(response).to redirect_to(gallery_url(gallery))
       expect(flash[:error]).to eq({message: "Gallery could not be deleted.", array: []})

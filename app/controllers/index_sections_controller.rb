@@ -27,18 +27,16 @@ class IndexSectionsController < ApplicationController
       redirect_to index_path(@section.index) and return
     end
 
-    begin
-      @section.save!
-    rescue ActiveRecord::RecordInvalid
+    if @section.save
+      flash[:success] = "New section, #{@section.name}, has successfully been created for #{@section.index.name}."
+      redirect_to index_path(@section.index)
+    else
       flash.now[:error] = {
         message: "Index section could not be created.",
         array: @section.errors.full_messages
       }
       @page_title = 'New Index Section'
       render :new
-    else
-      flash[:success] = "New section, #{@section.name}, has successfully been created for #{@section.index.name}."
-      redirect_to index_path(@section.index)
     end
   end
 
@@ -51,30 +49,26 @@ class IndexSectionsController < ApplicationController
   end
 
   def update
-    begin
-      @section.update!(permitted_params)
-    rescue ActiveRecord::RecordInvalid
+    if @section.update(permitted_params)
+      flash[:success] = "Index section saved!"
+      redirect_to index_path(@section.index)
+    else
       flash.now[:error] = {
         message: "Index section could not be saved because of the following problems:",
         array: @section.errors.full_messages
       }
       @page_title = "Edit Index Section: #{@section.name}"
       render :edit
-    else
-      flash[:success] = "Index section saved!"
-      redirect_to index_path(@section.index)
     end
   end
 
   def destroy
-    begin
-      @section.destroy!
-    rescue ActiveRecord::RecordNotDestroyed
+    if @section.destroy
+      flash[:success] = "Index section deleted."
+    else
       flash[:error] = {}
       flash[:error][:message] = "Index section could not be deleted."
       flash[:error][:array] = @section.errors.full_messages
-    else
-      flash[:success] = "Index section deleted."
     end
     redirect_to index_path(@section.index)
   end
