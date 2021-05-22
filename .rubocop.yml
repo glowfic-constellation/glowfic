@@ -292,13 +292,25 @@ Performance/Sum:
 
 ##################### Rails ##################################
 
+Rails/ActiveRecordCallbacksOrder:
+  Enabled: true
+
+Rails/AfterCommitOverride:
+  Enabled: true
+
 Rails/ApplicationController:
   Exclude:
     - 'app/controllers/api/api_controller.rb'
 
+Rails/AttributeDefaultBlockValue:
+  Enabled: true
+
 Rails/Blank:
   Enabled: true
   UnlessPresent: false
+
+Rails/ContentTag:
+  Enabled: false
 
 Rails/DynamicFindBy:
   Enabled: true
@@ -308,6 +320,12 @@ Rails/DynamicFindBy:
 
 Rails/FilePath:
   EnforcedStyle: 'arguments'
+
+Rails/FindById:
+  Enabled: true
+
+Rails/Inquiry:
+  Enabled: true
 
 Rails/HasManyOrHasOneDependent:
   Exclude:
@@ -319,16 +337,55 @@ Rails/HelperInstanceVariable:
 Rails/HttpStatus:
   Enabled: false
 
+Rails/MailerName:
+  Enabled: true
+
+Rails/MatchRoute:
+  Enabled: true
+
+Rails/NegateInclude:
+  Enabled: true
+
 # post_scraper.rb is run manually in the command line so stdout is fine
 Rails/Output:
   Exclude:
     - 'app/services/post_scraper.rb'
 
+Rails/Pluck:
+  Enabled: true
+
+Rails/PluckInWhere:
+  Enabled: false
+
 # read_attribute(:attr) and self[:attr] are no longer equivalent
 Rails/ReadWriteAttribute:
   Enabled: false
 
+Rails/RenderInline:
+  Enabled: true
+
+Rails/RenderPlainText:
+  Enabled: true
+
 Rails/SaveBang:
+  Enabled: true
+
+Rails/ShortI18n:
+  Enabled: true
+
+Rails/SquishedSQLHeredocs:
+  Enabled: false
+
+Rails/UniqueValidationWithoutIndex:
+  Enabled: false
+
+Rails/WhereEquals:
+  Enabled: true
+
+Rails/WhereExists:
+  Enabled: false
+
+Rails/WhereNot:
   Enabled: true
 
 ################## RSpec #################################
