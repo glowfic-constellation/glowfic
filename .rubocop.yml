@@ -427,8 +427,14 @@ RSpec/MessageSpies:
 RSpec/MultipleExpectations:
   Enabled: false
 
+RSpec/MultipleMemoizedHelpers:
+  Enabled: false
+
 RSpec/NestedGroups:
   Max: 5
+
+RSpec/StubbedMock:
+  Enabled: false
 
 ################## Style #################################
 
