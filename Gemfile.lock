@@ -333,8 +333,9 @@ GEM
       unicode-display_width (>= 1.4.0, < 2.0)
     rubocop-ast (1.5.0)
       parser (>= 3.0.1.1)
-    rubocop-performance (1.5.2)
-      rubocop (>= 0.71.0)
+    rubocop-performance (1.10.2)
+      rubocop (>= 0.90.0, < 2.0)
+      rubocop-ast (>= 0.4.0)
     rubocop-rails (2.4.2)
       rack (>= 1.1)
       rubocop (>= 0.72.0)
@@ -476,7 +477,7 @@ DEPENDENCIES
   resque_spec
   rspec-rails
   rubocop (~> 0.93.1)
-  rubocop-performance (~> 1.5.2)
+  rubocop-performance (~> 1.10.2)
   rubocop-rails (~> 2.4.2)
   rubocop-rspec (~> 1.38.1)
   sanitize
