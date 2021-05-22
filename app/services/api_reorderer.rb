@@ -2,23 +2,20 @@ class ApiReorderer < Object
   attr_reader :errors, :status
 
   def initialize(model_klass:, model_name: nil, parent_klass:, section_klass: nil, section_key: nil, section_id: nil)
-    @model = {
-      klass: model_klass,
-      name: model_name || model_klass.model_name.to_s.downcase
-    }
+    @model = {}
+    @model[:klass] = model_klass
+    @model[:name] = model_name || model_klass.model_name.to_s.downcase
 
-    @parent = {
-      klass: parent_klass,
-      name: parent_klass.model_name.to_s.downcase,
-    }
+    @parent = {}
+    @parent[:klass] = parent_klass
+    @parent[:name] = parent_klass.model_name.to_s.downcase
     @parent[:key] = @parent[:name].foreign_key.to_sym
 
     unless section_klass.nil?
-      @section = {
-        klass: section_klass,
-        key: section_key || section_klass.model_name.to_s.foreign_key.to_sym,
-        id: section_id ? section_id.to_i : nil
-      }
+      @section = {}
+      @section[:klass] = section_klass
+      @section[:key] = section_key || section_klass.model_name.to_s.foreign_key.to_sym
+      @section[:id] = section_id ? section_id.to_i : nil
       @section[:where] = {@section[:key] => @section[:id]}
     end
 
