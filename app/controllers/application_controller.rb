@@ -101,7 +101,7 @@ class ApplicationController < ActionController::Base
 
   def posts_list_relation(relation, no_tests: true, select: '', max: false, show_blocked: false)
     select = if max
-      <<~SQL
+      <<~SQL.squish
         posts.*,
         max(boards.name) as board_name,
         max(users.username) as last_user_name,
@@ -109,7 +109,7 @@ class ApplicationController < ActionController::Base
         #{select}
       SQL
     else
-      <<~SQL
+      <<~SQL.squish
         posts.*,
         boards.name as board_name,
         users.username as last_user_name,

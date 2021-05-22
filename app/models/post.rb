@@ -71,7 +71,7 @@ class Post < ApplicationRecord
   # rubocop:disable Style/TrailingCommaInArguments
   scope :with_has_content_warnings, -> {
     select(
-      <<~SQL
+      <<~SQL.squish
         (
           SELECT tags.id IS NOT NULL FROM tags LEFT JOIN post_tags ON tags.id = post_tags.tag_id
           WHERE tags.type = 'ContentWarning' AND post_tags.post_id = posts.id LIMIT 1

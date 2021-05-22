@@ -374,7 +374,7 @@ Rails/ShortI18n:
   Enabled: true
 
 Rails/SquishedSQLHeredocs:
-  Enabled: false
+  Enabled: true
 
 Rails/UniqueValidationWithoutIndex:
   Enabled: false

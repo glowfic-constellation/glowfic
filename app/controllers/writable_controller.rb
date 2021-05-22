@@ -66,7 +66,7 @@ class WritableController < ApplicationController
       self.page = cur_page = cur_page.to_i
     end
 
-    select = <<~SQL
+    select = <<~SQL.squish
       replies.*, characters.name, characters.screenname,
       icons.keyword, icons.url,
       users.username, users.deleted as user_deleted,
