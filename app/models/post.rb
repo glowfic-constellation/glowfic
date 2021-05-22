@@ -38,9 +38,9 @@ class Post < ApplicationRecord
   validates :description, length: { maximum: 255 }
   validate :valid_board, :valid_board_section
 
+  before_validation :set_last_user, on: :create
   before_create :build_initial_flat_post, :set_timestamps
   before_update :set_timestamps
-  before_validation :set_last_user, on: :create
   after_commit :notify_followers, on: :create
   after_commit :invalidate_caches, on: :update
 
