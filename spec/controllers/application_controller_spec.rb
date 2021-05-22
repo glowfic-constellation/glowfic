@@ -68,7 +68,7 @@ RSpec.describe ApplicationController do
 
     it "gets posts" do
       post = create(:post)
-      relation = Post.where('posts.id IS NOT NULL')
+      relation = Post.where.not('posts.id' => nil)
       expect(controller.send(:posts_from_relation, relation)).to match_array([post])
     end
 
