@@ -160,7 +160,7 @@ class PostsController < WritableController
 
   def delete_history
     audit_ids = @post.associated_audits.where(action: 'destroy').where(auditable_type: 'Reply') # all destroyed replies
-    audit_ids = audit_ids.joins('LEFT JOIN replies ON replies.id = audits.auditable_id').where('replies.id IS NULL') # not restored
+    audit_ids = audit_ids.joins('LEFT JOIN replies ON replies.id = audits.auditable_id').where(replies: { id: nil }) # not restored
     audit_ids = audit_ids.group(:auditable_id).pluck(Arel.sql('MAX(audits.id)')) # only most recent per reply
     @deleted_audits = Audited::Audit.where(id: audit_ids).paginate(per_page: 1, page: page)
 
