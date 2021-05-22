@@ -55,8 +55,8 @@ class Api::V1::CharactersController < Api::ApiController
     render json: {data: @character.as_json(include: [:default_icon])} and return unless params[:character]
 
     errors = []
-    if params[:character][:default_icon_id].present?
-      errors << {message: "Default icon could not be found"} unless Icon.find_by_id(params[:character][:default_icon_id])
+    if params[:character][:default_icon_id].present? && Icon.find_by(id: params[:character][:default_icon_id]).nil?
+      errors << {message: "Default icon could not be found"}
     end
 
     @character.assign_attributes(character_params)
