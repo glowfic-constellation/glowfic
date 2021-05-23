@@ -9,7 +9,7 @@ RUN apt-get update && apt-get install -y \
     curl \
     nodejs \
     postgresql-client-11 \
-    chromium=89.* \
+    chromium=90.* \
   && apt-get clean
 
 ARG bundler_version=2.2.16
