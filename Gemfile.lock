@@ -127,18 +127,16 @@ GEM
       actionpack (>= 3.0)
       multi_json
       request_store (>= 1.0)
-    haml (5.2.0)
+    haml (5.2.1)
       temple (>= 0.8.0)
       tilt
-    haml-lint (0.999.999)
-      haml_lint
     haml-rails (2.0.1)
       actionpack (>= 5.1)
       activesupport (>= 5.1)
       haml (>= 4.0.6, < 6.0)
       html2haml (>= 1.0.1)
       railties (>= 5.1)
-    haml_lint (0.36.0)
+    haml_lint (0.37.0)
       haml (>= 4.0, < 5.3)
       parallel (~> 1.10)
       rainbow
@@ -447,8 +445,8 @@ DEPENDENCIES
   factory_bot_rails
   get_process_mem
   gon (~> 6.2.1)
-  haml-lint
   haml-rails
+  haml_lint (~> 0.37.0)
   html-proofer
   httparty
   jquery-fileupload-rails
