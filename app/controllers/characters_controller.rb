@@ -193,7 +193,7 @@ class CharactersController < ApplicationController
         [alt.id, {url: view_context.image_path('icons/no-icon.png'), keyword: 'No Icon', aliases: alt.aliases.as_json}]
       end
     end
-    gon.gallery = Hash[icons]
+    gon.gallery = icons.to_h
     gon.gallery[''] = {url: view_context.image_path('icons/no-icon.png'), keyword: 'No Character'}
 
     @alt_dropdown = @alts.map do |alt|
