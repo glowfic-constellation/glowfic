@@ -105,13 +105,13 @@ module ApplicationHelper
     # Layout identifiers (values in this hash) are expected to not include spaces,
     # so they are suitable as HTML classes for the TinyMCE editor
     layouts = {
-      'Default': nil,
-      'Dark': 'dark'.freeze,
-      'Iconless': 'iconless'.freeze,
-      'Starry': 'starry'.freeze,
+      Default: nil,
+      Dark: 'dark'.freeze,
+      Iconless: 'iconless'.freeze,
+      Starry: 'starry'.freeze,
       'Starry Dark' => 'starrydark'.freeze,
       'Starry Light' => 'starrylight'.freeze,
-      'Monochrome': 'monochrome'.freeze,
+      Monochrome: 'monochrome'.freeze,
       'Milky River' => 'river'.freeze,
     }
     options_for_select(layouts, default)

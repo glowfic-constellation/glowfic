@@ -15,7 +15,7 @@ RSpec.describe Api::ApiController do
   describe "token handling" do
     context "with login_required" do
       it "displays an error if an invalid token is provided" do
-        request.headers.merge({'Authorization': "Bearer definitely-invalid"})
+        request.headers.merge({Authorization: "Bearer definitely-invalid"})
         get :show, params: {id: 1}
         expect(response).to have_http_status(422)
         expect(response.json['errors'][0]['message']).to eq("Authorization token is not valid.")
@@ -41,7 +41,7 @@ RSpec.describe Api::ApiController do
 
     context "without login_required but with mixed data" do
       it "displays an error if an invalid token is provided" do
-        request.headers.merge({'Authorization': "Bearer definitely-invalid"})
+        request.headers.merge({Authorization: "Bearer definitely-invalid"})
         get :index
         expect(response).to have_http_status(422)
         expect(response.json['errors'][0]['message']).to eq("Authorization token is not valid.")

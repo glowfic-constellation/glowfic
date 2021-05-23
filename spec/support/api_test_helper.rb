@@ -5,7 +5,7 @@ module ApiTestHelper
 
   def api_login_as(user)
     token = Authentication.generate_api_token(user)
-    request.headers.merge({'Authorization': "Bearer #{token}"})
+    request.headers.merge({Authorization: "Bearer #{token}"})
     user
   end
 end
