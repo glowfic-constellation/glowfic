@@ -220,6 +220,9 @@ Performance/CollectionLiteralInLoop:
 Performance/ConstantRegexp:
   Enabled: true
 
+Performance/MapCompact: # (new in 1.11)
+  Enabled: true
+
 Performance/MethodObjectAsBlock:
   Enabled: true
 
