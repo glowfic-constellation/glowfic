@@ -126,7 +126,7 @@ module ApplicationHelper
       "%d-%m-%Y %l:%M %p", "%d-%m-%Y %H:%M", "%d-%m-%Y %l:%M:%S %p", "%d-%m-%Y %H:%M:%S",
       "%Y-%m-%d %l:%M %p", "%Y-%m-%d %H:%M", "%Y-%m-%d %l:%M:%S %p", "%Y-%m-%d %H:%M:%S"
     ]
-    time_displays = Hash[time_display_list.map { |v| [time_thing.strftime(v), v] }]
+    time_displays = time_display_list.index_by { |v| time_thing.strftime(v) }
     options_for_select(time_displays, default)
   end
 
@@ -138,7 +138,7 @@ module ApplicationHelper
   # https://apidock.com/rails/v4.2.7/ActionView/Helpers/TextHelper/split_paragraphs
   def split_paragraphs_largebreak(text)
     return [] if text.blank?
-    text.to_str.gsub(/\r\n?/, "\n").split(/\n\n/).map! do |t|
+    text.to_str.gsub(/\r\n?/, "\n").split("\n\n").map! do |t|
       t.gsub!(/(^\n|[^\n]\n)(?=[^\n])/, '\1<br />') || t
     end
   end

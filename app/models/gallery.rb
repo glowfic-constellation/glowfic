@@ -31,7 +31,7 @@ class Gallery < ApplicationRecord
     # galleries.map(&:gallery_groups).map{|group| [f1: group.id, f2: group.name]}
     # ordered by tag name
     select(
-      <<~SQL
+      <<~SQL.squish
         ARRAY(
           SELECT row_to_json(ROW(tags.id, tags.name)) FROM tags
           LEFT JOIN gallery_tags ON gallery_tags.tag_id = tags.id
