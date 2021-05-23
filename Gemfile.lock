@@ -338,6 +338,9 @@ GEM
       activesupport (>= 4.2.0)
       rack (>= 1.1)
       rubocop (>= 1.7.0, < 2.0)
+    rubocop-rspec (2.3.0)
+      rubocop (~> 1.0)
+      rubocop-ast (>= 1.1.0)
     ruby-progressbar (1.11.0)
     ruby2_keywords (0.0.2)
     ruby_parser (3.15.0)
@@ -476,6 +479,7 @@ DEPENDENCIES
   rubocop (~> 1.7.0)
   rubocop-performance (~> 1.11.3)
   rubocop-rails (~> 2.10.1)
+  rubocop-rspec (~> 2.3.0)
   sanitize
   sassc-rails
   seed_dump (~> 3.2)
