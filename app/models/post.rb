@@ -38,9 +38,9 @@ class Post < ApplicationRecord
   validates :description, length: { maximum: 255 }
   validate :valid_board, :valid_board_section
 
+  before_validation :set_last_user, on: :create
   before_create :build_initial_flat_post, :set_timestamps
   before_update :set_timestamps
-  before_validation :set_last_user, on: :create
   after_commit :notify_followers, on: :create
   after_commit :invalidate_caches, on: :update
 
@@ -71,7 +71,7 @@ class Post < ApplicationRecord
   # rubocop:disable Style/TrailingCommaInArguments
   scope :with_has_content_warnings, -> {
     select(
-      <<~SQL
+      <<~SQL.squish
         (
           SELECT tags.id IS NOT NULL FROM tags LEFT JOIN post_tags ON tags.id = post_tags.tag_id
           WHERE tags.type = 'ContentWarning' AND post_tags.post_id = posts.id LIMIT 1
@@ -162,7 +162,7 @@ class Post < ApplicationRecord
       .pluck(:character_id)
 
     # add the post's character_id to the last one if it's not over the limit
-    recent_ids << character_id if character_id.present? && user_id == user.id && recent_ids.length < count && !recent_ids.include?(character_id)
+    recent_ids << character_id if character_id.present? && user_id == user.id && recent_ids.length < count && recent_ids.exclude?(character_id)
 
     # fetch the relevant characters and sort by their index in the recent list
     Character.where(id: recent_ids).includes(:default_icon).sort_by do |x|

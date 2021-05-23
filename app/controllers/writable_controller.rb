@@ -13,7 +13,7 @@ class WritableController < ApplicationController
     @templates = templates + [templateless]
 
     if @post
-      uniq_chars_ids = @post.replies.where(user_id: user.id).where('character_id is not null').group(:character_id).pluck(:character_id)
+      uniq_chars_ids = @post.replies.where(user_id: user.id).where.not(character_id: nil).group(:character_id).pluck(:character_id)
       uniq_chars_ids << @post.character_id if @post.user_id == user.id && @post.character_id.present?
       uniq_chars = Character.where(id: uniq_chars_ids).ordered.pluck(pluck)
       threadchars = faked.new('Thread characters', nil, uniq_chars)
@@ -66,7 +66,7 @@ class WritableController < ApplicationController
       self.page = cur_page = cur_page.to_i
     end
 
-    select = <<~SQL
+    select = <<~SQL.squish
       replies.*, characters.name, characters.screenname,
       icons.keyword, icons.url,
       users.username, users.deleted as user_deleted,
