@@ -278,6 +278,9 @@ Rails/DynamicFindBy:
     - find_by_sql
     - find_by_id
 
+Rails/EnvironmentVariableAccess: # (new in 2.10)
+  Enabled: false
+
 Rails/FilePath:
   EnforcedStyle: 'arguments'
 
@@ -335,6 +338,9 @@ Rails/ShortI18n:
 
 Rails/SquishedSQLHeredocs:
   Enabled: true
+
+Rails/TimeZoneAssignment: # (new in 2.10)
+  Enabled: false
 
 Rails/UniqueValidationWithoutIndex:
   Enabled: false
