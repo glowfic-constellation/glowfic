@@ -17,6 +17,11 @@ require:
 Rails:
   Enabled: true
 
+#################### Gemspec ##############################
+
+Gemspec/DateAssignment: # (new in 1.10)
+  Enabled: true
+
 #################### Layout ##############################
 
 Layout/ArgumentAlignment:
@@ -115,6 +120,9 @@ Lint/ConstantDefinitionInBlock:
   Exclude:
     - 'spec/lib/presentable_spec.rb'
 
+Lint/DeprecatedConstants: # (new in 1.8)
+  Enabled: true
+
 Lint/DuplicateBranch: # (new in 1.3)
   Enabled: true
 
@@ -127,6 +135,9 @@ Lint/EmptyBlock: # (new in 1.1)
 Lint/EmptyClass: # (new in 1.3)
   Enabled: true
 
+Lint/LambdaWithoutLiteralBlock: # (new in 1.8)
+  Enabled: true
+
 Lint/MissingSuper:
   Exclude:
     - 'app/services/daily_report.rb'
@@ -134,16 +145,31 @@ Lint/MissingSuper:
 Lint/NoReturnInBeginEndBlocks: # (new in 1.2)
   Enabled: true
 
+Lint/NumberedParameterAssignment: # (new in 1.9)
+  Enabled: true
+
+Lint/OrAssignmentToConstant: # (new in 1.9)
+  Enabled: true
+
 Lint/ParenthesesAsGroupedExpression:
   Exclude:
     - 'spec/**/*'
+
+Lint/RedundantDirGlobSort: # (new in 1.8)
+  Enabled: true
 
 Lint/SuppressedException:
   Exclude:
     - 'spec/jobs/application_job_spec.rb'
     - 'spec/jobs/generate_flat_post_job_spec.rb'
 
+Lint/SymbolConversion: # (new in 1.9)
+  Enabled: true
+
 Lint/ToEnumArguments: # (new in 1.1)
+  Enabled: true
+
+Lint/TripleQuotes: # (new in 1.9)
   Enabled: true
 
 Lint/UnexpectedBlockArity: # (new in 1.5)
@@ -550,7 +576,16 @@ Style/CollectionCompact: # (new in 1.2)
 Style/DocumentDynamicEvalDefinition: # (new in 1.1)
   Enabled: true
 
+Style/EndlessMethod: # (new in 1.8)
+  Enabled: true
+
+Style/HashConversion: # (new in 1.10)
+  Enabled: true
+
 Style/HashExcept: # (new in 1.7)
+  Enabled: true
+
+Style/IfWithBooleanLiteralBranches: # (new in 1.9)
   Enabled: true
 
 Style/NegatedIfElseCondition: # (new in 1.2)
@@ -561,6 +596,9 @@ Style/NilLambda: # (new in 1.3)
 
 Style/RedundantArgument: # (new in 1.4)
   Enabled: false
+
+Style/StringChars: # (new in 1.12)
+  Enabled: true
 
 Style/SwapValues: # (new in 1.1)
   Enabled: true
