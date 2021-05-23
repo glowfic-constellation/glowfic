@@ -1,17 +1,22 @@
-dist: bionic
+dist: focal
 language: ruby
 rvm:
-  - 2.6.6
+  - 2.6.7
 env:
   global:
     - CC_TEST_REPORTER_ID=1e0c6dba9930e839038860b6d73301226c821937f57ed35d06fc0e4b7bddf5f6
+    - PGPORT=5433
+    - PGUSER=travis
+    - GLOWFIC_DATABASE_PEER=true
+    - GLOWFIC_DATABASE_USER=travis
+    - GLOWFIC_DATABASE_PORT=5433
 services:
   - redis-server
   - postgresql
 cache: bundler
 before_install:
-  - psql -c 'create database glowfic_test;' -U postgres
-  - gem install bundler -v 1.17.3
+  - psql -c 'create database glowfic_test;'
+  - gem install bundler -v 2.2.16
   - echo "Using bundler:" $(bundle --version)
 before_script:
   - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
@@ -26,5 +31,12 @@ branches:
   only:
     - master
 addons:
-  postgresql: 10
+  postgresql: 11
+  apt:
+    sources:
+      - sourceline: 'deb http://apt.postgresql.org/pub/repos/apt focal-pgdg main'
+        key_url: 'https://www.postgresql.org/media/keys/ACCC4CF8.asc'
+    packages:
+      - postgresql-11
+      - postgresql-client-11
   chrome: stable
