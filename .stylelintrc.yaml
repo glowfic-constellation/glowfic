@@ -40,7 +40,13 @@ rules:
   color-hex-length: long
   color-named: never
 
-  comment-empty-line-before: null
+  comment-empty-line-before:
+  - always
+  - except:
+    - first-nested
+    ignore:
+    - after-comment
+    - stylelint-commands
   scss/comment-no-empty: true
 
   custom-property-empty-line-before: null
