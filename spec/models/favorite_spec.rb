@@ -43,7 +43,6 @@ RSpec.describe Favorite do
       expect(f2.save).to eq(true)
     end
 
-    it "should allow you to favorite multiple things" do
-    end
+    skip "should allow you to favorite multiple things"
   end
 end
