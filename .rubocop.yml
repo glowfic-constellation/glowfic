@@ -299,7 +299,7 @@ Rails/Blank:
   UnlessPresent: false
 
 Rails/ContentTag:
-  Enabled: false
+  Enabled: true
 
 Rails/DynamicFindBy:
   Enabled: true

@@ -33,7 +33,7 @@ module ApplicationHelper
   end
 
   def quick_switch_tag(image_url, short_text, hover_name, char_id)
-    return content_tag :div, short_text, class: CHAR_ICON_FAKE, title: hover_name, data: { character_id: char_id } if image_url.nil?
+    return tag.div short_text, class: CHAR_ICON_FAKE, title: hover_name, data: { character_id: char_id } if image_url.nil?
     image_tag image_url, class: CHAR_ICON, alt: hover_name, title: hover_name, data: { character_id: char_id }
   end
 
@@ -59,12 +59,12 @@ module ApplicationHelper
   def fun_name(user)
     return '(deleted user)'.html_safe if user.deleted?
     return user.username unless user.moiety
-    content_tag :span, user.username, style: 'font-weight: bold; color: #' + user.moiety
+    tag.span user.username, style: "font-weight: bold; color: ##{user.moiety}"
   end
 
   def color_block(user)
     return unless user.moiety
-    content_tag :span, '█', style: 'cursor: default; color: #' + user.moiety, title: user.moiety_name
+    tag.span '█', style: "cursor: default; color: ##{user.moiety}", title: user.moiety_name
   end
 
   def unread_img
