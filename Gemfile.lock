@@ -420,7 +420,7 @@ GEM
     websocket-driver (0.7.3)
       websocket-extensions (>= 0.1.0)
     websocket-extensions (0.1.5)
-    will_paginate (3.1.8)
+    will_paginate (3.3.0)
     xpath (3.2.0)
       nokogiri (~> 1.8)
     yell (2.2.2)
@@ -495,7 +495,7 @@ DEPENDENCIES
   uglifier
   webdrivers (~> 4.0)
   webmock
-  will_paginate (~> 3.1.8)
+  will_paginate
 
 RUBY VERSION
    ruby 2.6.7p197
