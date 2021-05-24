@@ -20,6 +20,9 @@ linters:
   InstanceVariables:
     enabled: false
 
+  LeadingCommentSpace:
+    enabled: false
+
   LineLength:
     enabled: false
 
@@ -33,15 +36,16 @@ linters:
       - Layout/CaseIndentation
       - Layout/ElseAlignment
       - Layout/EndOfLine
+      - Layout/HashAlignment
       - Layout/IndentationWidth
-      - Layout/LeadingCommentSpace
-      - Layout/TrailingBlankLines
+      - Layout/LineLength
+      - Layout/LeadingCommentSpace # added
+      - Layout/TrailingEmptyLines
       - Layout/TrailingWhitespace
       - Metrics/BlockLength
       - Metrics/BlockNesting
-      - Metrics/LineLength
       - Naming/FileName
-      - Rails/OutputSafety
+      - Rails/OutputSafety # added
       - Style/FrozenStringLiteralComment
       - Style/IfUnlessModifier
       - Style/Next
