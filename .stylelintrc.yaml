@@ -120,6 +120,4 @@ rules:
 
 reportNeedlessDisables: true
 reportInvalidScopeDisables: true
-
-ignoreFiles:
-- 'app/assets/stylesheets/normalize.scss'
+ignoreFiles: ['app/assets/stylesheets/normalize.scss', 'coverage/**/*', 'spec/support/fixtures/**/*', 'public/**/*']
