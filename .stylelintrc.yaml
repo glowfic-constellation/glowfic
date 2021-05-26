@@ -55,6 +55,8 @@ rules:
   #declaration-colon-newline-after: always-multi-line
   declaration-empty-line-before: null
   declaration-no-important: true
+  declaration-property-unit-allowed-list:
+    font-size: ['em', 'rem', '%']
   declaration-property-value-disallowed-list:
     transition: all
     transition-property: all
