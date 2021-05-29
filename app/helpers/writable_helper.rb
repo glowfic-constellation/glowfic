@@ -3,8 +3,8 @@ module WritableHelper
     return unless @replies.present?
     return if @replies.total_pages == page
     'You are not on the latest page of the thread ' + \
-    content_tag(:a, '(View unread)', href: unread_path(@post), class: 'unread-warning') + ' ' + \
-    content_tag(:a, '(New tab)', href: unread_path(@post), class: 'unread-warning', target: '_blank')
+    tag.a('(View unread)', href: unread_path(@post), class: 'unread-warning') + ' ' + \
+    tag.a('(New tab)', href: unread_path(@post), class: 'unread-warning', target: '_blank')
   end
 
   def unread_path(post, **kwargs)
@@ -65,9 +65,9 @@ module WritableHelper
   def shortened_desc(desc, id)
     return sanitize_simple_link_text(desc) if desc.length <= 255
     sanitize_simple_link_text(desc[0...255]) +
-      content_tag(:span, '... ', id: "dots-#{id}") +
-      content_tag(:span, sanitize_simple_link_text(desc[255..-1]), class: 'hidden', id: "desc-#{id}") +
-      content_tag(:a, 'more &raquo;'.html_safe, href: '#', id: "expanddesc-#{id}", class: 'expanddesc')
+      tag.span('... ', id: "dots-#{id}") +
+      tag.span(sanitize_simple_link_text(desc[255..-1]), class: 'hidden', id: "desc-#{id}") +
+      tag.a('more &raquo;'.html_safe, href: '#', id: "expanddesc-#{id}", class: 'expanddesc')
   end
 
   def post_or_reply_link(reply)

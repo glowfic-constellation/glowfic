@@ -1285,7 +1285,7 @@ RSpec.describe RepliesController do
         expect(assigns(:search_results)).to eq([reply, reply2])
       end
 
-      it "calculates audits" do
+      it "does not include audits" do
         Reply.auditing_enabled = true
         user = create(:user)
 
@@ -1303,10 +1303,8 @@ RSpec.describe RepliesController do
           replies[5].update!(content: 'new content')
         end
 
-        counts = replies.map(&:id).zip([1, 1, 2, 2, 6, 2]).to_h
-
         get :search, params: { commit: true, sort: 'created_old' }
-        expect(assigns(:audits)).to eq(counts)
+        expect(assigns(:audits)).to be_empty
         Reply.auditing_enabled = false
       end
     end

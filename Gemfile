@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-ruby '2.6.6'
+ruby '2.6.7'
 
 gem 'api-pagination'
 gem 'apipie-rails'
@@ -19,7 +19,7 @@ gem 'barnes' # heroku ruby-specific metrics
 gem 'bootstrap'
 gem 'exception_notification'
 gem 'get_process_mem'
-gem 'gon', '~> 6.2.1'
+gem 'gon', '~> 6.4.0'
 gem 'haml-rails'
 gem 'httparty'
 gem 'jquery-fileupload-rails'
@@ -45,7 +45,7 @@ gem 'sprockets', '~> 3.7' # pin sprockets until we deal with its major upgrade
 gem 'test-unit', '~> 3.0' # required by Heroku for production console
 gem 'tinymce-rails'
 gem 'uglifier'
-gem 'will_paginate', '~> 3.1.8' # pin will_paginate until we deal with breaking WillPaginate::ViewHelpers::LinkRenderer change
+gem 'will_paginate'
 
 group :production do
   gem 'puma'
@@ -55,14 +55,14 @@ group :production do
 end
 
 group :development do
-  gem 'haml-lint', require: false
+  gem 'haml_lint', '~> 0.37.0', require: false
   gem 'listen'
   gem 'memory_profiler'
   gem 'rack-mini-profiler'
-  gem 'rubocop', '~> 0.80.0', require: false
-  gem 'rubocop-performance', '~> 1.5.2', require: false
-  gem 'rubocop-rails', '~> 2.4.2', require: false
-  gem 'rubocop-rspec', '~> 1.38.1', require: false
+  gem 'rubocop', '~> 1.15.0', require: false
+  gem 'rubocop-performance', '~> 1.11.3', require: false
+  gem 'rubocop-rails', '~> 2.10.1', require: false
+  gem 'rubocop-rspec', '~> 2.3.0', require: false
   gem 'traceroute'
 end
 

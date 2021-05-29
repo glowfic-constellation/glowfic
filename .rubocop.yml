@@ -17,6 +17,11 @@ require:
 Rails:
   Enabled: true
 
+#################### Gemspec ##############################
+
+Gemspec/DateAssignment: # (new in 1.10)
+  Enabled: true
+
 #################### Layout ##############################
 
 Layout/ArgumentAlignment:
@@ -30,6 +35,9 @@ Layout/EmptyLineAfterMagicComment:
   Enabled: false
 
 Layout/EmptyLineAfterGuardClause:
+  Enabled: false
+
+Layout/EmptyLinesAroundAttributeAccessor:
   Enabled: false
 
 Layout/EndAlignment:
@@ -83,6 +91,10 @@ Layout/SpaceAroundOperators:
 Layout/SpaceBeforeBlockBraces:
   Enabled: false
 
+Layout/SpaceBeforeBrackets: # (new in 1.7)
+  Enabled: false
+  # problems with false positives
+
 Layout/SpaceInLambdaLiteral:
   Enabled: false
 
@@ -97,18 +109,74 @@ Layout/SpaceInsideRangeLiteral:
 
 #################### Lint ################################
 
+Lint/AmbiguousAssignment: # (new in 1.7)
+  Enabled: true
+
 Lint/AmbiguousBlockAssociation:
   Exclude:
     - 'spec/**/*'
+
+Lint/ConstantDefinitionInBlock:
+  Exclude:
+    - 'spec/lib/presentable_spec.rb'
+
+Lint/DeprecatedConstants: # (new in 1.8)
+  Enabled: true
+
+Lint/DuplicateBranch: # (new in 1.3)
+  Enabled: true
+
+Lint/DuplicateRegexpCharacterClassElement: # (new in 1.1)
+  Enabled: true
+
+Lint/EmptyBlock: # (new in 1.1)
+  Enabled: true
+
+Lint/EmptyClass: # (new in 1.3)
+  Enabled: true
+
+Lint/LambdaWithoutLiteralBlock: # (new in 1.8)
+  Enabled: true
+
+Lint/MissingSuper:
+  Exclude:
+    - 'app/services/daily_report.rb'
+
+Lint/NoReturnInBeginEndBlocks: # (new in 1.2)
+  Enabled: true
+
+Lint/NumberedParameterAssignment: # (new in 1.9)
+  Enabled: true
+
+Lint/OrAssignmentToConstant: # (new in 1.9)
+  Enabled: true
 
 Lint/ParenthesesAsGroupedExpression:
   Exclude:
     - 'spec/**/*'
 
+Lint/RedundantDirGlobSort: # (new in 1.8)
+  Enabled: true
+
 Lint/SuppressedException:
   Exclude:
     - 'spec/jobs/application_job_spec.rb'
     - 'spec/jobs/generate_flat_post_job_spec.rb'
+
+Lint/SymbolConversion: # (new in 1.9)
+  Enabled: true
+
+Lint/ToEnumArguments: # (new in 1.1)
+  Enabled: true
+
+Lint/TripleQuotes: # (new in 1.9)
+  Enabled: true
+
+Lint/UnexpectedBlockArity: # (new in 1.5)
+  Enabled: true
+
+Lint/UnmodifiedReduceAccumulator: # (new in 1.1)
+  Enabled: true
 
 ###################### Metrics ####################################
 
@@ -161,15 +229,77 @@ Naming/VariableNumber:
   Exclude:
     - 'spec/**/*'
 
+####################### Performance ################################
+
+Performance/AncestorsInclude:
+  Enabled: true
+
+Performance/BigDecimalWithNumericArgument:
+  Enabled: true
+
+Performance/BlockGivenWithExplicitBlock:
+  Enabled: true
+
+Performance/CollectionLiteralInLoop:
+  Enabled: false
+
+Performance/ConstantRegexp:
+  Enabled: true
+
+Performance/MapCompact: # (new in 1.11)
+  Enabled: true
+
+Performance/MethodObjectAsBlock:
+  Enabled: true
+
+Performance/RedundantEqualityComparisonBlock:
+  Enabled: true
+
+Performance/RedundantSortBlock:
+  Enabled: true
+
+Performance/RedundantSplitRegexpArgument:
+  Enabled: true
+
+Performance/RedundantStringChars:
+  Enabled: true
+
+Performance/ReverseFirst:
+  Enabled: true
+
+Performance/SortReverse:
+  Enabled: true
+
+Performance/Squeeze:
+  Enabled: true
+
+Performance/StringInclude:
+  Enabled: true
+
+Performance/Sum:
+  Enabled: true
+
 ##################### Rails ##################################
+
+Rails/ActiveRecordCallbacksOrder:
+  Enabled: true
+
+Rails/AfterCommitOverride:
+  Enabled: true
 
 Rails/ApplicationController:
   Exclude:
     - 'app/controllers/api/api_controller.rb'
 
+Rails/AttributeDefaultBlockValue:
+  Enabled: true
+
 Rails/Blank:
   Enabled: true
   UnlessPresent: false
+
+Rails/ContentTag:
+  Enabled: true
 
 Rails/DynamicFindBy:
   Enabled: true
@@ -177,8 +307,17 @@ Rails/DynamicFindBy:
     - find_by_sql
     - find_by_id
 
+Rails/EnvironmentVariableAccess: # (new in 2.10)
+  Enabled: false
+
 Rails/FilePath:
   EnforcedStyle: 'arguments'
+
+Rails/FindById:
+  Enabled: true
+
+Rails/Inquiry:
+  Enabled: true
 
 Rails/HasManyOrHasOneDependent:
   Exclude:
@@ -187,25 +326,67 @@ Rails/HasManyOrHasOneDependent:
 Rails/HelperInstanceVariable:
   Enabled: false
 
-Rails/HttpStatus:
-  Enabled: false
-
-Rails/SaveBang:
+Rails/MailerName:
   Enabled: true
 
-# read_attribute(:attr) and self[:attr] are no longer equivalent
-Rails/ReadWriteAttribute:
-  Enabled: false
+Rails/MatchRoute:
+  Enabled: true
+
+Rails/NegateInclude:
+  Enabled: true
 
 # post_scraper.rb is run manually in the command line so stdout is fine
 Rails/Output:
   Exclude:
     - 'app/services/post_scraper.rb'
 
+Rails/Pluck:
+  Enabled: true
+
+Rails/PluckInWhere:
+  Enabled: false
+
+# read_attribute(:attr) and self[:attr] are no longer equivalent
+Rails/ReadWriteAttribute:
+  Enabled: false
+
+Rails/RenderInline:
+  Enabled: true
+
+Rails/RenderPlainText:
+  Enabled: true
+
+Rails/SaveBang:
+  Enabled: true
+
+Rails/ShortI18n:
+  Enabled: true
+
+Rails/SquishedSQLHeredocs:
+  Enabled: true
+
+Rails/TimeZoneAssignment: # (new in 2.10)
+  Enabled: false
+
+Rails/UniqueValidationWithoutIndex:
+  Enabled: false
+
+Rails/WhereEquals:
+  Enabled: true
+
+Rails/WhereExists:
+  Enabled: false
+
+Rails/WhereNot:
+  Enabled: true
+
 ################## RSpec #################################
 
-Capybara/FeatureMethods:
+RSpec/Capybara/FeatureMethods:
   EnabledMethods: [feature, scenario]
+
+RSpec/Rails/HttpStatus:
+  Enabled: false
 
 RSpec/AnyInstance:
   Enabled: false
@@ -241,8 +422,14 @@ RSpec/MessageSpies:
 RSpec/MultipleExpectations:
   Enabled: false
 
+RSpec/MultipleMemoizedHelpers:
+  Enabled: false
+
 RSpec/NestedGroups:
   Max: 5
+
+RSpec/StubbedMock:
+  Enabled: false
 
 ################## Style #################################
 
@@ -258,8 +445,14 @@ Style/AutoResourceCleanup:
 Style/BlockDelimiters:
   Enabled: false
 
+Style/CaseLikeIf:
+  Enabled: false
+
 Style/ClassAndModuleChildren:
   EnforcedStyle: 'compact'
+
+Style/ClassEqualityComparison:
+  Enabled: false
 
 Style/CommentAnnotation:
   Enabled: false
@@ -276,26 +469,33 @@ Style/DoubleNegation:
 Style/EmptyMethod:
   Enabled: false
 
+Style/ExplicitBlockArgument:
+  Enabled: false
+
+Style/ExponentialNotation:
+  Enabled: false
+  # disabled because we literally never use exponents
+
 Style/FrozenStringLiteralComment:
   Enabled: false
 
 Style/GlobalVars:
   AllowedVariables: ['$redis']
 
+Style/GlobalStdStream:
+  Enabled: false
+
 Style/GuardClause:
   Enabled: false
 
-Style/HashEachMethods:
-  Enabled: true
+Style/HashAsLastArrayItem:
+  Enabled: false
 
 Style/HashSyntax:
   Enabled: false
 
-Style/HashTransformKeys:
-  Enabled: true
-
-Style/HashTransformValues:
-  Enabled: true
+Style/KeywordParametersOrder:
+  Enabled: false
 
 Style/Lambda:
   Enabled: false
@@ -307,6 +507,9 @@ Style/NumericLiterals:
   Enabled: false
 
 Style/NumericPredicate:
+  Enabled: false
+
+Style/OptionalBooleanParameter:
   Enabled: false
 
 Style/ParallelAssignment:
@@ -334,6 +537,12 @@ Style/RegexpLiteral:
   EnforcedStyle: 'slashes'
   AllowInnerSlashes: true
 
+Style/SlicingWithRange:
+  Enabled: false
+
+Style/StringConcatenation:
+  Enabled: false
+
 Style/StringLiterals:
   Enabled: false
 
@@ -345,7 +554,6 @@ Style/TernaryParentheses:
   Enabled: false
 
 Style/TrailingCommaInArguments:
-  Enabled: true
   EnforcedStyleForMultiline: 'comma'
 
 Style/TrailingCommaInArrayLiteral:
@@ -358,3 +566,39 @@ Style/TrailingCommaInHashLiteral:
 
 Style/WordArray:
   Enabled: false
+
+Style/ArgumentsForwarding: # (new in 1.1)
+  Enabled: true
+
+Style/CollectionCompact: # (new in 1.2)
+  Enabled: true
+
+Style/DocumentDynamicEvalDefinition: # (new in 1.1)
+  Enabled: true
+
+Style/EndlessMethod: # (new in 1.8)
+  Enabled: true
+
+Style/HashConversion: # (new in 1.10)
+  Enabled: true
+
+Style/HashExcept: # (new in 1.7)
+  Enabled: true
+
+Style/IfWithBooleanLiteralBranches: # (new in 1.9)
+  Enabled: true
+
+Style/NegatedIfElseCondition: # (new in 1.2)
+  Enabled: true
+
+Style/NilLambda: # (new in 1.3)
+  Enabled: true
+
+Style/RedundantArgument: # (new in 1.4)
+  Enabled: false
+
+Style/StringChars: # (new in 1.12)
+  Enabled: true
+
+Style/SwapValues: # (new in 1.1)
+  Enabled: true

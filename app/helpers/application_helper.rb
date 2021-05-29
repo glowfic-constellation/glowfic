@@ -33,7 +33,7 @@ module ApplicationHelper
   end
 
   def quick_switch_tag(image_url, short_text, hover_name, char_id)
-    return content_tag :div, short_text, class: CHAR_ICON_FAKE, title: hover_name, data: { character_id: char_id } if image_url.nil?
+    return tag.div short_text, class: CHAR_ICON_FAKE, title: hover_name, data: { character_id: char_id } if image_url.nil?
     image_tag image_url, class: CHAR_ICON, alt: hover_name, title: hover_name, data: { character_id: char_id }
   end
 
@@ -59,12 +59,12 @@ module ApplicationHelper
   def fun_name(user)
     return '(deleted user)'.html_safe if user.deleted?
     return user.username unless user.moiety
-    content_tag :span, user.username, style: 'font-weight: bold; color: #' + user.moiety
+    tag.span user.username, style: "font-weight: bold; color: ##{user.moiety}"
   end
 
   def color_block(user)
     return unless user.moiety
-    content_tag :span, '█', style: 'cursor: default; color: #' + user.moiety, title: user.moiety_name
+    tag.span '█', style: "cursor: default; color: ##{user.moiety}", title: user.moiety_name
   end
 
   def unread_img
@@ -105,13 +105,13 @@ module ApplicationHelper
     # Layout identifiers (values in this hash) are expected to not include spaces,
     # so they are suitable as HTML classes for the TinyMCE editor
     layouts = {
-      'Default': nil,
-      'Dark': 'dark'.freeze,
-      'Iconless': 'iconless'.freeze,
-      'Starry': 'starry'.freeze,
+      Default: nil,
+      Dark: 'dark'.freeze,
+      Iconless: 'iconless'.freeze,
+      Starry: 'starry'.freeze,
       'Starry Dark' => 'starrydark'.freeze,
       'Starry Light' => 'starrylight'.freeze,
-      'Monochrome': 'monochrome'.freeze,
+      Monochrome: 'monochrome'.freeze,
       'Milky River' => 'river'.freeze,
     }
     options_for_select(layouts, default)
@@ -126,7 +126,7 @@ module ApplicationHelper
       "%d-%m-%Y %l:%M %p", "%d-%m-%Y %H:%M", "%d-%m-%Y %l:%M:%S %p", "%d-%m-%Y %H:%M:%S",
       "%Y-%m-%d %l:%M %p", "%Y-%m-%d %H:%M", "%Y-%m-%d %l:%M:%S %p", "%Y-%m-%d %H:%M:%S"
     ]
-    time_displays = Hash[time_display_list.map { |v| [time_thing.strftime(v), v] }]
+    time_displays = time_display_list.index_by { |v| time_thing.strftime(v) }
     options_for_select(time_displays, default)
   end
 
@@ -138,7 +138,7 @@ module ApplicationHelper
   # https://apidock.com/rails/v4.2.7/ActionView/Helpers/TextHelper/split_paragraphs
   def split_paragraphs_largebreak(text)
     return [] if text.blank?
-    text.to_str.gsub(/\r\n?/, "\n").split(/\n\n/).map! do |t|
+    text.to_str.gsub(/\r\n?/, "\n").split("\n\n").map! do |t|
       t.gsub!(/(^\n|[^\n]\n)(?=[^\n])/, '\1<br />') || t
     end
   end
