@@ -19,7 +19,7 @@ gem 'barnes' # heroku ruby-specific metrics
 gem 'bootstrap'
 gem 'exception_notification'
 gem 'get_process_mem'
-gem 'gon', '~> 6.2.1'
+gem 'gon', '~> 6.4.0'
 gem 'haml-rails'
 gem 'httparty'
 gem 'jquery-fileupload-rails'
