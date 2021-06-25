@@ -7,4 +7,4 @@
       = safe_join(writers.map { |u| user_link(u) }, ', ')
     - else
       Anyone
-  %td.padding-10.board-time{class: klass}= pretty_time(board.posts.ordered.first.try(:tagged_at))
+  %td.padding-10.board-time{class: klass}= pretty_time(board.tagged_at)

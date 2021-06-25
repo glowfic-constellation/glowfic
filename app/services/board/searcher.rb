@@ -3,10 +3,10 @@ class Board::Searcher < Object
     @search_results = Board.unscoped
   end
 
-  def search(params, page:)
+  def search(params)
     search_authors(params[:author_id]) if params[:author_id].present?
     @search_results = @search_results.where("name LIKE ?", "%#{params[:name]}%") if params[:name].present?
-    @search_results.ordered.includes(:writers).paginate(page: page)
+    @search_results
   end
 
   def search_authors(author_ids)
