@@ -8,7 +8,7 @@ class Api::V1::BoardSectionsController < Api::ApiController
 
   api :POST, '/board_sections/reorder', 'Update the order of subcontinuities. This is an unstable feature, and may be moved or renamed; it should not be trusted.'
   error 401, "You must be logged in"
-  error 403, "Board is not editable by the user"
+  error 403, "Continuity is not editable by the user"
   error 404, "Section IDs could not be found"
   error 422, "Invalid parameters provided"
   param :ordered_section_ids, Array, allow_blank: false
@@ -24,7 +24,7 @@ class Api::V1::BoardSectionsController < Api::ApiController
 
     boards = Board.where(id: sections.select(:board_id).distinct.pluck(:board_id))
     unless boards.count == 1
-      error = {message: 'Sections must be from one board'}
+      error = {message: 'Sections must be from one continuity'}
       render json: {errors: [error]}, status: :unprocessable_entity and return
     end
 
