@@ -52,4 +52,6 @@ Rails.application.configure do
 
   # raise an error if assets aren't found
   config.assets.unknown_asset_fallback = false
+
+  config.cache_store = :redis_store
 end
