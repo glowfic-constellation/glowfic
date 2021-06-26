@@ -144,6 +144,26 @@ RSpec.describe DailyReport do
     end
   end
 
+  describe "#unread_date_for" do
+    it "invalidates cache on view update" do
+      user = create(:user)
+      date = Time.zone.now - 4.days
+      later = date + 2.days
+      Timecop.freeze(date) do
+        DailyReport.mark_read(user, at_time: date.to_date)
+      end
+      expect(DailyReport.unread_date_for(user)).to eq(date.to_date + 1.day)
+      expect(Rails.cache.exist?(ReportView.cache_string_for(user.id))).to eq(true)
+      Timecop.freeze(later) do
+        DailyReport.mark_read(user, at_time: later.to_date)
+      end
+      expect(Rails.cache.exist?(ReportView.cache_string_for(user.id))).to eq(false)
+      expect(DailyReport.unread_date_for(user)).to eq(later.to_date + 1.day)
+    end
+
+    skip "has more tests"
+  end
+
   describe "#badge_for" do
     it "is zero when unspecified" do
       expect(DailyReport.badge_for(nil)).to eq(0)
