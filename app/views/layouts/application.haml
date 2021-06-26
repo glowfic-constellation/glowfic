@@ -79,8 +79,9 @@
                 %li
                   = link_to messages_path do
                     Inbox
-                    - if current_user.messages.unread.exists?
-                      %span.badge.badge-primary= current_user.messages.unread.count
+                    - unread_count = Message.unread_count_for(current_user)
+                    - if unread_count > 0
+                      %span.badge.badge-primary= unread_count
                 %li= link_to "Characters", user_characters_path(current_user)
                 %li= link_to "Galleries", user_galleries_path(current_user)
                 %li= link_to 'Favorites', favorites_path
