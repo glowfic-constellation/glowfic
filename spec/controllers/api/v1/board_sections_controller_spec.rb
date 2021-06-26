@@ -38,7 +38,7 @@ RSpec.describe Api::V1::BoardSectionsController do
       api_login_as(user)
       post :reorder, params: { ordered_section_ids: section_ids }
       expect(response).to have_http_status(422)
-      expect(response.json['errors'][0]['message']).to eq('Sections must be from one board')
+      expect(response.json['errors'][0]['message']).to eq('Sections must be from one continuity')
       expect(board_section1.reload.section_order).to eq(0)
       expect(board_section2.reload.section_order).to eq(0)
       expect(board_section3.reload.section_order).to eq(1)

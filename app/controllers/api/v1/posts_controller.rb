@@ -50,7 +50,7 @@ class Api::V1::PostsController < Api::ApiController
 
   api :POST, '/posts/reorder', 'Update the order of posts. This is an unstable feature, and may be moved or renamed; it should not be trusted.'
   error 401, "You must be logged in"
-  error 403, "Board is not editable by the user"
+  error 403, "Continuity is not editable by the user"
   error 404, "Post IDs could not be found"
   error 422, "Invalid parameters provided"
   param :ordered_post_ids, Array, allow_blank: false
@@ -68,7 +68,7 @@ class Api::V1::PostsController < Api::ApiController
 
     boards = Board.where(id: posts.select(:board_id).distinct.pluck(:board_id))
     unless boards.count == 1
-      error = {message: 'Posts must be from one board'}
+      error = {message: 'Posts must be from one continuity'}
       render json: {errors: [error]}, status: :unprocessable_entity and return
     end
 
@@ -78,7 +78,7 @@ class Api::V1::PostsController < Api::ApiController
     post_section_ids = posts.select(:section_id).distinct.pluck(:section_id)
     unless post_section_ids == [section_id] &&
       (section_id.nil? || BoardSection.where(id: section_id, board_id: board.id).exists?)
-      error = {message: 'Posts must be from one specified section in the board, or no section'}
+      error = {message: 'Posts must be from one specified section in the continuity, or no section'}
       render json: {errors: [error]}, status: :unprocessable_entity and return
     end
 

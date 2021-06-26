@@ -171,7 +171,7 @@ RSpec.describe Api::V1::PostsController do
         api_login_as(user)
         post :reorder, params: { ordered_post_ids: post_ids }
         expect(response).to have_http_status(422)
-        expect(response.json['errors'][0]['message']).to eq('Posts must be from one board')
+        expect(response.json['errors'][0]['message']).to eq('Posts must be from one continuity')
         expect(board_post1.reload.section_order).to eq(0)
         expect(board_post2.reload.section_order).to eq(0)
         expect(board_post3.reload.section_order).to eq(1)
@@ -191,7 +191,7 @@ RSpec.describe Api::V1::PostsController do
         api_login_as(user)
         post :reorder, params: { ordered_post_ids: post_ids }
         expect(response).to have_http_status(422)
-        expect(response.json['errors'][0]['message']).to eq('Posts must be from one specified section in the board, or no section')
+        expect(response.json['errors'][0]['message']).to eq('Posts must be from one specified section in the continuity, or no section')
         expect(board_post1.reload.section_order).to eq(0)
         expect(board_post2.reload.section_order).to eq(1)
       end
@@ -303,7 +303,7 @@ RSpec.describe Api::V1::PostsController do
         api_login_as(user)
         post :reorder, params: { ordered_post_ids: post_ids, section_id: board_section1.id }
         expect(response).to have_http_status(422)
-        expect(response.json['errors'][0]['message']).to eq('Posts must be from one specified section in the board, or no section')
+        expect(response.json['errors'][0]['message']).to eq('Posts must be from one specified section in the continuity, or no section')
         expect(board_post1.reload.section_order).to eq(0)
         expect(board_post2.reload.section_order).to eq(0)
         expect(board_post3.reload.section_order).to eq(1)
@@ -323,7 +323,7 @@ RSpec.describe Api::V1::PostsController do
         api_login_as(user)
         post :reorder, params: { ordered_post_ids: post_ids, section_id: 0 }
         expect(response).to have_http_status(422)
-        expect(response.json['errors'][0]['message']).to eq('Posts must be from one specified section in the board, or no section')
+        expect(response.json['errors'][0]['message']).to eq('Posts must be from one specified section in the continuity, or no section')
         expect(board_post1.reload.section_order).to eq(0)
         expect(board_post2.reload.section_order).to eq(1)
       end
@@ -345,7 +345,7 @@ RSpec.describe Api::V1::PostsController do
         api_login_as(user)
         post :reorder, params: { ordered_post_ids: post_ids, section_id: board_section1.id }
         expect(response).to have_http_status(422)
-        expect(response.json['errors'][0]['message']).to eq('Posts must be from one specified section in the board, or no section')
+        expect(response.json['errors'][0]['message']).to eq('Posts must be from one specified section in the continuity, or no section')
         expect(board_post1.reload.section_order).to eq(0)
         expect(board_post2.reload.section_order).to eq(0)
         expect(board_post3.reload.section_order).to eq(1)
@@ -365,7 +365,7 @@ RSpec.describe Api::V1::PostsController do
         api_login_as(user)
         post :reorder, params: { ordered_post_ids: post_ids, section_id: section.id }
         expect(response).to have_http_status(422)
-        expect(response.json['errors'][0]['message']).to eq('Posts must be from one specified section in the board, or no section')
+        expect(response.json['errors'][0]['message']).to eq('Posts must be from one specified section in the continuity, or no section')
         expect(board_post1.reload.section_order).to eq(0)
         expect(board_post2.reload.section_order).to eq(1)
       end
