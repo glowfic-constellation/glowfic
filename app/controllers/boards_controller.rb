@@ -174,11 +174,13 @@ class BoardsController < ApplicationController
   end
 
   def boards_from_relation(relation)
+    sql = <<~SQL.squish
+      boards.*,
+      (SELECT tagged_at FROM posts WHERE posts.board_id = boards.id ORDER BY posts.tagged_at DESC LIMIT 1) AS tagged_at
+    SQL
     relation
       .ordered
-      .left_outer_joins(:posts)
-      .select('boards.*, max(posts.tagged_at) as tagged_at')
-      .group('boards.id')
+      .select(sql)
       .includes(:writers)
   end
 
