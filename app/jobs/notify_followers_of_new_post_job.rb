@@ -2,21 +2,24 @@
 class NotifyFollowersOfNewPostJob < ApplicationJob
   queue_as :notifier
 
-  def perform(post_id, user_id)
+  ACTIONS = ['new', 'join']
+
+  def perform(post_id, user_id, action)
     post = Post.find_by(id: post_id)
-    user = User.find_by(id: user_id)
-    return unless post && user
+    return unless post && ACTIONS.include?(action)
     return if post.privacy_private?
 
-    if post.user_id == user_id
-      notify_of_post_creation(post, user)
+    if action == 'new'
+      notify_of_post_creation(post)
     else
+      user = User.find_by(id: user_id)
+      return unless user
       notify_of_post_joining(post, user)
     end
   end
 
-  def notify_of_post_creation(post, post_user)
-    favorites = Favorite.where(favorite: post_user).or(Favorite.where(favorite: post.board))
+  def notify_of_post_creation(post)
+    favorites = Favorite.where(favorite: post.authors).or(Favorite.where(favorite: post.board))
     user_ids = favorites.select(:user_id).distinct.pluck(:user_id)
     users = filter_users(post, user_ids)
 

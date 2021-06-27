@@ -5,13 +5,25 @@ RSpec.describe NotifyFollowersOfNewPostJob do
   it "does nothing with invalid post id" do
     expect(Favorite).not_to receive(:where)
     user = create(:user)
-    NotifyFollowersOfNewPostJob.perform_now(-1, user.id)
+    NotifyFollowersOfNewPostJob.perform_now(-1, user.id, 'new')
   end
 
-  it "does nothing with invalid user id" do
+  it "does nothing with invalid user id on join" do
     expect(Favorite).not_to receive(:where)
     post = create(:post)
-    NotifyFollowersOfNewPostJob.perform_now(post.id, -1)
+    NotifyFollowersOfNewPostJob.perform_now(post.id, -1, 'join')
+  end
+
+  it "does nothing with invalid user id on access" do
+    expect(Favorite).not_to receive(:where)
+    post = create(:post)
+    NotifyFollowersOfNewPostJob.perform_now(post.id, -1, 'access')
+  end
+
+  it "does nothing with invalid action" do
+    expect(Favorite).not_to receive(:where)
+    post = create(:post)
+    NotifyFollowersOfNewPostJob.perform_now(post.id, post.user_id, '')
   end
 
   context "on new posts" do
