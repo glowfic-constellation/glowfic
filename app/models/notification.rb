@@ -20,6 +20,7 @@ class Notification < ApplicationRecord
     import_fail: 1,
     new_favorite_post: 2,
     joined_favorite_post: 3,
+    accessible_favorite_post: 4,
   }
 
   attr_accessor :skip_email

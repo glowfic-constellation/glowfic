@@ -2,19 +2,25 @@
 class NotifyFollowersOfNewPostJob < ApplicationJob
   queue_as :notifier
 
-  ACTIONS = ['new', 'join']
+  ACTIONS = ['new', 'join', 'access', 'public']
 
   def perform(post_id, user_id, action)
     post = Post.find_by(id: post_id)
     return unless post && ACTIONS.include?(action)
     return if post.privacy_private?
 
-    if action == 'new'
-      notify_of_post_creation(post)
-    else
+    if ['join', 'access'].include?(action)
       user = User.find_by(id: user_id)
       return unless user
-      notify_of_post_joining(post, user)
+    end
+
+    case action
+      when 'new'
+        notify_of_post_creation(post)
+      when 'join'
+        notify_of_post_joining(post, user)
+      when 'access'
+        notify_of_post_access(post, user)
     end
   end
 
@@ -38,6 +44,15 @@ class NotifyFollowersOfNewPostJob < ApplicationJob
     end
   end
 
+  def notify_of_post_access(post, viewer)
+    return unless viewer.favorite_notifications? && post.author_ids.exclude?(viewer.id)
+    return if already_notified_about?(post, viewer)
+    return unless Favorite.where(favorite: post.authors).or(Favorite.where(favorite: post.board)).where(user: viewer).exists?
+    Notification.notify_user(viewer, :accessible_favorite_post, post: post)
+  end
+
+  private
+
   def filter_users(post, user_ids)
     user_ids &= PostViewer.where(post: post).pluck(:user_id) if post.privacy_access_list?
     user_ids -= post.author_ids
@@ -53,7 +68,8 @@ class NotifyFollowersOfNewPostJob < ApplicationJob
   end
 
   def self.notification_about(post, user, unread_only: false)
-    notif = Notification.find_by(post: post, notification_type: [:new_favorite_post, :joined_favorite_post])
+    previous_types = [:new_favorite_post, :joined_favorite_post, :accessible_favorite_post]
+    notif = Notification.find_by(post: post, notification_type: previous_types)
     if notif
       return notif if !unread_only || notif.unread
     else
