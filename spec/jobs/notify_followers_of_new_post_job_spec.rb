@@ -29,6 +29,7 @@ RSpec.describe NotifyFollowersOfNewPostJob do
   context "on new posts" do
     let(:author) { create(:user) }
     let(:coauthor) { create(:user) }
+    let(:unjoined) { create(:user) }
     let(:notified) { create(:user) }
     let(:board) { create(:board) }
     let(:title) { 'test subject' }
@@ -84,10 +85,15 @@ RSpec.describe NotifyFollowersOfNewPostJob do
         }.not_to change { Notification.count }
       end
 
-      it "does not send to coauthors" do
+      it "does not send to authors" do
+        Favorite.delete_all
+        [author, coauthor, unjoined].each do |u|
+          create(:favorite, user: u, favorite: favorite) unless u == favorite
+        end
+
         expect {
           perform_enqueued_jobs do
-            create(:post, user: author, board: board, unjoined_authors: [notified])
+            create(:post, user: author, board: board, unjoined_authors: [coauthor])
           end
         }.not_to change { Notification.count }
       end
@@ -118,6 +124,14 @@ RSpec.describe NotifyFollowersOfNewPostJob do
       end
     end
 
+    context "with favorited coauthor" do
+      let(:favorite) { coauthor }
+
+      before(:each) { create(:favorite, user: notified, favorite: coauthor) }
+
+      include_examples "new"
+    end
+
     context "with favorited board" do
       let(:favorite) { board }
 
@@ -132,14 +146,6 @@ RSpec.describe NotifyFollowersOfNewPostJob do
             create(:post, user: author, board: board)
           end
         }.to change { Notification.count }.by(1)
-      end
-
-      it "does not send to the poster" do
-        expect {
-          perform_enqueued_jobs do
-            create(:post, user: notified, board: board)
-          end
-        }.not_to change { Notification.count }
       end
     end
 
@@ -172,6 +178,8 @@ RSpec.describe NotifyFollowersOfNewPostJob do
 
   context "on joined posts" do
     let(:author) { create(:user) }
+    let(:coauthor) { create(:user) }
+    let(:unjoined) { create(:user) }
     let(:replier) { create(:user) }
     let(:notified) { create(:user) }
 
@@ -285,23 +293,18 @@ RSpec.describe NotifyFollowersOfNewPostJob do
       end
     end
 
-    it "does not send to the poster" do
-      create(:favorite, user: author, favorite: replier)
-      expect {
-        perform_enqueued_jobs do
-          post = create(:post, user: author)
-          create(:reply, post: post, user: replier)
-        end
-      }.not_to change { Notification.count }
-    end
+    it "does not send to authors" do
+      Favorite.delete_all
+      [author, coauthor, unjoined].each do |u|
+        create(:favorite, user: u, favorite: replier)
+      end
 
-    it "does not send to coauthors" do
-      unjoined = create(:user)
-      create(:favorite, user: unjoined, favorite: replier)
+      post = create(:post, user: author, unjoined_authors: [coauthor, unjoined, replier])
+      create(:reply, user: coauthor, post: post)
+
       expect {
         perform_enqueued_jobs do
-          post = create(:post, user: author, unjoined_authors: [replier, unjoined])
-          create(:reply, post: post, user: replier)
+          create(:reply, user: replier, post: post)
         end
       }.not_to change { Notification.count }
     end
@@ -396,6 +399,19 @@ RSpec.describe NotifyFollowersOfNewPostJob do
           perform_enqueued_jobs { PostViewer.create!(user: notified, post: post) }
         }.not_to change { Notification.count }
       end
+
+      it "does not send to authors" do
+        Favorite.delete_all
+        PostViewer.delete_all
+        authors = [author, coauthor, unjoined].reject{ |u| u == favorite }
+
+        authors.each do |user|
+          create(:favorite, user: user, favorite: favorite)
+          expect {
+            perform_enqueued_jobs { PostViewer.create!(user: user, post: post) }
+          }.not_to change { Notification.count }
+        end
+      end
     end
 
     context "with favorited author" do
@@ -413,33 +429,12 @@ RSpec.describe NotifyFollowersOfNewPostJob do
         expect(notif.notification_type).to eq('accessible_favorite_post')
         expect(notif.post).to eq(post)
       end
-
-      it "does not send to coauthors" do
-        PostViewer.delete_all
-        create(:favorite, user: coauthor, favorite: author)
-        expect {
-          perform_enqueued_jobs { PostViewer.create!(user: coauthor, post: post) }
-        }.not_to change { Notification.count }
-
-        create(:favorite, user: unjoined, favorite: author)
-        expect {
-          perform_enqueued_jobs { PostViewer.create!(user: unjoined, post: post) }
-        }.not_to change { Notification.count }
-      end
     end
 
     context "with favorited coauthor" do
       before(:each) { create(:favorite, user: notified, favorite: coauthor) }
 
       include_examples "access"
-
-      it "does not send to coauthors" do
-        PostViewer.delete_all
-        create(:favorite, user: unjoined, favorite: author)
-        expect {
-          perform_enqueued_jobs { PostViewer.create!(user: unjoined, post: post) }
-        }.not_to change { Notification.count }
-      end
     end
 
     context "with favorited unjoined coauthor" do
@@ -458,19 +453,6 @@ RSpec.describe NotifyFollowersOfNewPostJob do
         expect {
           perform_enqueued_jobs { PostViewer.create!(user: notified, post: post) }
         }.to change { Notification.count }.by(1)
-      end
-
-      it "does not send to coauthors" do
-        PostViewer.delete_all
-        create(:favorite, user: coauthor, favorite: author)
-        expect {
-          perform_enqueued_jobs { PostViewer.create!(user: coauthor, post: post) }
-        }.not_to change { Notification.count }
-
-        create(:favorite, user: unjoined, favorite: author)
-        expect {
-          perform_enqueued_jobs { PostViewer.create!(user: unjoined, post: post) }
-        }.not_to change { Notification.count }
       end
     end
 
