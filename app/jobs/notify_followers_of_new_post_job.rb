@@ -24,6 +24,23 @@ class NotifyFollowersOfNewPostJob < ApplicationJob
     end
   end
 
+  def self.notification_about(post, user, unread_only: false)
+    previous_types = [:new_favorite_post, :joined_favorite_post, :accessible_favorite_post]
+    notif = Notification.find_by(post: post, notification_type: previous_types)
+    if notif
+      return notif if !unread_only || notif.unread
+    else
+      messages = Message.where(recipient: user, sender_id: 0).where('created_at >= ?', post.created_at)
+      messages = messages.unread if unread_only
+      messages.find_each do |notification|
+        return notification if notification.message.include?(ScrapePostJob.view_post(post.id))
+      end
+    end
+    nil
+  end
+
+  private
+
   def notify_of_post_creation(post)
     favorites = Favorite.where(favorite: post.authors).or(Favorite.where(favorite: post.board))
     user_ids = favorites.select(:user_id).distinct.pluck(:user_id)
@@ -51,8 +68,6 @@ class NotifyFollowersOfNewPostJob < ApplicationJob
     Notification.notify_user(viewer, :accessible_favorite_post, post: post)
   end
 
-  private
-
   def filter_users(post, user_ids)
     user_ids &= PostViewer.where(post: post).pluck(:user_id) if post.privacy_access_list?
     user_ids -= post.author_ids
@@ -65,21 +80,6 @@ class NotifyFollowersOfNewPostJob < ApplicationJob
 
   def already_notified_about?(post, user)
     self.class.notification_about(post, user).present?
-  end
-
-  def self.notification_about(post, user, unread_only: false)
-    previous_types = [:new_favorite_post, :joined_favorite_post, :accessible_favorite_post]
-    notif = Notification.find_by(post: post, notification_type: previous_types)
-    if notif
-      return notif if !unread_only || notif.unread
-    else
-      messages = Message.where(recipient: user, sender_id: 0).where('created_at >= ?', post.created_at)
-      messages = messages.unread if unread_only
-      messages.find_each do |notification|
-        return notification if notification.message.include?(ScrapePostJob.view_post(post.id))
-      end
-    end
-    nil
   end
 
   def blocked_user_ids(post)
