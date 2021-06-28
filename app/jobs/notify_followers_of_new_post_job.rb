@@ -44,8 +44,7 @@ class NotifyFollowersOfNewPostJob < ApplicationJob
   def notify_of_post_creation(post)
     favorites = Favorite.where(favorite: post.authors).or(Favorite.where(favorite: post.board))
     user_ids = favorites.select(:user_id).distinct.pluck(:user_id)
-    users = filter_users(post, user_ids)
-
+    users = filter_users(post, user_ids, skip_previous: true)
     return if users.empty?
 
     users.each { |user| Notification.notify_user(user, :new_favorite_post, post: post) }
@@ -54,28 +53,24 @@ class NotifyFollowersOfNewPostJob < ApplicationJob
   def notify_of_post_joining(post, new_user)
     users = filter_users(post, Favorite.where(favorite: new_user).pluck(:user_id))
     return if users.empty?
-
-    users.each do |user|
-      next if already_notified_about?(post, user)
-      Notification.notify_user(user, :joined_favorite_post, post: post)
-    end
+    users.each { |user| Notification.notify_user(user, :joined_favorite_post, post: post) }
   end
 
   def notify_of_post_access(post, viewer)
-    return unless viewer.favorite_notifications? && post.author_ids.exclude?(viewer.id)
-    return if already_notified_about?(post, viewer)
+    return if filter_users(post, [viewer.id]).empty?
     return unless Favorite.where(favorite: post.authors).or(Favorite.where(favorite: post.board)).where(user: viewer).exists?
     Notification.notify_user(viewer, :accessible_favorite_post, post: post)
   end
 
-  def filter_users(post, user_ids)
+  def filter_users(post, user_ids, skip_previous: false)
     user_ids &= PostViewer.where(post: post).pluck(:user_id) if post.privacy_access_list?
     user_ids -= post.author_ids
     user_ids -= blocked_user_ids(post)
     return [] unless user_ids.present?
     users = User.where(id: user_ids, favorite_notifications: true)
     users = users.full if post.privacy_full_accounts?
-    users
+    return users if skip_previous
+    users.reject { |user| already_notified_about?(post, user) }
   end
 
   def already_notified_about?(post, user)
