@@ -344,4 +344,224 @@ RSpec.describe NotifyFollowersOfNewPostJob do
       end
     end
   end
+
+  context "on newly accessible posts" do
+    let!(:author) { create(:user) }
+    let!(:coauthor) { create(:user) }
+    let!(:unjoined) { create(:user) }
+    let!(:notified) { create(:user) }
+    let!(:post) { create(:post, user: author, unjoined_authors: [coauthor, unjoined], privacy: :access_list, viewers: [coauthor, unjoined]) }
+
+    before(:each) { create(:reply, user: coauthor, post: post) }
+
+    shared_examples "access" do
+      it "works" do
+        expect {
+          perform_enqueued_jobs { PostViewer.create!(user: notified, post: post) }
+        }.to change { Notification.count }.by(1)
+
+        notif = Notification.last
+        expect(notif.user).to eq(notified)
+        expect(notif.notification_type).to eq('accessible_favorite_post')
+        expect(notif.post).to eq(post)
+      end
+
+      it "does not send on post creation" do
+        board = post.board
+        clear_enqueued_jobs
+        expect {
+          perform_enqueued_jobs do
+            create(:post, user: author, unjoined_authors: [coauthor, unjoined], board: board)
+          end
+        }.not_to change { Notification.where(notification_type: :accessible_favorite_post).count }
+      end
+
+      it "does not send for public threads" do
+        post.update!(privacy: :public)
+        expect {
+          perform_enqueued_jobs { PostViewer.create!(user: notified, post: post) }
+        }.not_to change { Notification.count }
+      end
+
+      it "does not send for private threads" do
+        post.update!(privacy: :private)
+        expect {
+          perform_enqueued_jobs { PostViewer.create!(user: notified, post: post) }
+        }.not_to change { Notification.count }
+      end
+
+      it "does not send if reader has config disabled" do
+        notified.update!(favorite_notifications: false)
+        expect {
+          perform_enqueued_jobs { PostViewer.create!(user: notified, post: post) }
+        }.not_to change { Notification.count }
+      end
+    end
+
+    context "with favorited author" do
+      before(:each) { create(:favorite, user: notified, favorite: author) }
+
+      include_examples "access"
+
+      it "works for self-threads" do
+        expect {
+          perform_enqueued_jobs { PostViewer.create!(user: notified, post: post) }
+        }.to change { Notification.count }.by(1)
+
+        notif = Notification.last
+        expect(notif.user).to eq(notified)
+        expect(notif.notification_type).to eq('accessible_favorite_post')
+        expect(notif.post).to eq(post)
+      end
+
+      it "does not send to coauthors" do
+        PostViewer.delete_all
+        create(:favorite, user: coauthor, favorite: author)
+        expect {
+          perform_enqueued_jobs { PostViewer.create!(user: coauthor, post: post) }
+        }.not_to change { Notification.count }
+
+        create(:favorite, user: unjoined, favorite: author)
+        expect {
+          perform_enqueued_jobs { PostViewer.create!(user: unjoined, post: post) }
+        }.not_to change { Notification.count }
+      end
+    end
+
+    context "with favorited coauthor" do
+      before(:each) { create(:favorite, user: notified, favorite: coauthor) }
+
+      include_examples "access"
+
+      it "does not send to coauthors" do
+        PostViewer.delete_all
+        create(:favorite, user: unjoined, favorite: author)
+        expect {
+          perform_enqueued_jobs { PostViewer.create!(user: unjoined, post: post) }
+        }.not_to change { Notification.count }
+      end
+    end
+
+    context "with favorited unjoined coauthor" do
+      before(:each) { create(:favorite, user: notified, favorite: unjoined) }
+
+      include_examples "access"
+    end
+
+    context "with favorited board" do
+      before(:each) { create(:favorite, user: notified, favorite: post.board) }
+
+      include_examples "access"
+
+      it "does not send twice if the user has favorited both the poster and the continuity" do
+        create(:favorite, user: notified, favorite: author)
+        expect {
+          perform_enqueued_jobs { PostViewer.create!(user: notified, post: post) }
+        }.to change { Notification.count }.by(1)
+      end
+
+      it "does not send to coauthors" do
+        PostViewer.delete_all
+        create(:favorite, user: coauthor, favorite: author)
+        expect {
+          perform_enqueued_jobs { PostViewer.create!(user: coauthor, post: post) }
+        }.not_to change { Notification.count }
+
+        create(:favorite, user: unjoined, favorite: author)
+        expect {
+          perform_enqueued_jobs { PostViewer.create!(user: unjoined, post: post) }
+        }.not_to change { Notification.count }
+      end
+    end
+
+    context "with privacy change" do
+      before(:each) do
+        create(:favorite, user: notified, favorite: author)
+        post.update!(privacy: :private, viewers: [coauthor, unjoined, notified])
+        clear_enqueued_jobs
+      end
+
+      it "works" do
+        expect {
+          perform_enqueued_jobs { post.update!(privacy: :access_list) }
+        }.to change { Notification.count }.by(1)
+      end
+
+      it "does not send twice for new viewer" do
+        PostViewer.find_by(user: notified, post: post).destroy!
+        post.reload
+        expect {
+          perform_enqueued_jobs do
+            post.update!(privacy: :access_list, viewers: [coauthor, unjoined, notified])
+          end
+        }.to change { Notification.count }.by(1)
+      end
+
+      it "does not send if already notified" do
+        post.update!(privacy: :access_list, viewers: [coauthor, unjoined])
+        expect {
+          perform_enqueued_jobs { PostViewer.create!(user: notified, post: post) }
+        }.to change { Notification.count }.by(1)
+
+        post.update!(privacy: :private)
+
+        expect {
+          perform_enqueued_jobs { post.update!(privacy: :access_list) }
+        }.not_to change { Notification.count }
+      end
+
+      it "does not send for public threads" do
+        expect {
+          perform_enqueued_jobs { post.update!(privacy: :public) }
+        }.not_to change { Notification.where(notification_type: :accessible_favorite_post).count }
+      end
+
+      it "does not send for registered threads" do
+        expect {
+          perform_enqueued_jobs { post.update!(privacy: :registered) }
+        }.not_to change { Notification.where(notification_type: :accessible_favorite_post).count }
+      end
+
+      it "does not send for previously public threads" do
+        post.update!(privacy: :public)
+        post.reload
+        clear_enqueued_jobs
+        expect { perform_enqueued_jobs { post.update!(privacy: :access_list) } }.not_to change { Notification.count }
+      end
+
+      it "does not send if reader has config disabled" do
+        notified.update!(favorite_notifications: false)
+        expect {
+          perform_enqueued_jobs { post.update!(privacy: :access_list) }
+        }.not_to change { Notification.count }
+      end
+    end
+
+    context "with blocking" do
+      let!(:post) { create(:post, user: author, authors: [coauthor]) }
+      let(:viewer) { PostViewer.create!(user: notified, post: post) }
+
+      before(:each) { create(:favorite, user: notified, favorite: post.board) }
+
+      it "does not send to users the poster has blocked" do
+        create(:block, blocking_user: author, blocked_user: notified, hide_me: :posts)
+        expect { perform_enqueued_jobs { viewer } }.not_to change { Notification.count }
+      end
+
+      it "does not send to users a coauthor has blocked" do
+        create(:block, blocking_user: coauthor, blocked_user: notified, hide_me: :posts)
+        expect { perform_enqueued_jobs { viewer } }.not_to change { Notification.count }
+      end
+
+      it "does not send to users who are blocking the poster" do
+        create(:block, blocked_user: author, blocking_user: notified, hide_them: :posts)
+        expect { perform_enqueued_jobs { viewer } }.not_to change { Notification.count }
+      end
+
+      it "does not send to users who are blocking a coauthor" do
+        create(:block, blocked_user: coauthor, blocking_user: notified, hide_them: :posts)
+        expect { perform_enqueued_jobs { viewer } }.not_to change { Notification.count }
+      end
+    end
+  end
 end
