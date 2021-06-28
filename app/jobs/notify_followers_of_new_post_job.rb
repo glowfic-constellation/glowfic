@@ -42,7 +42,7 @@ class NotifyFollowersOfNewPostJob < ApplicationJob
   private
 
   def notify_of_post_creation(post)
-    favorites = Favorite.where(favorite: post.authors).or(Favorite.where(favorite: post.board))
+    favorites = favorites_for(post)
     user_ids = favorites.select(:user_id).distinct.pluck(:user_id)
     users = filter_users(post, user_ids, skip_previous: true)
     return if users.empty?
@@ -58,8 +58,12 @@ class NotifyFollowersOfNewPostJob < ApplicationJob
 
   def notify_of_post_access(post, viewer)
     return if filter_users(post, [viewer.id]).empty?
-    return unless Favorite.where(favorite: post.authors).or(Favorite.where(favorite: post.board)).where(user: viewer).exists?
+    return unless favorites_for(post).where(user: viewer).exists?
     Notification.notify_user(viewer, :accessible_favorite_post, post: post)
+  end
+
+  def favorites_for(post)
+    Favorite.where(favorite: post.authors).or(Favorite.where(favorite: post.board))
   end
 
   def filter_users(post, user_ids, skip_previous: false)
