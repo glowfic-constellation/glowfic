@@ -21,11 +21,13 @@ class NotifyFollowersOfNewPostJob < ApplicationJob
         notify_of_post_joining(post, user)
       when 'access'
         notify_of_post_access(post, user)
+      when 'public'
+        notify_of_post_publication(post)
     end
   end
 
   def self.notification_about(post, user, unread_only: false)
-    previous_types = [:new_favorite_post, :joined_favorite_post, :accessible_favorite_post]
+    previous_types = [:new_favorite_post, :joined_favorite_post, :accessible_favorite_post, :published_favorite_post]
     notif = Notification.find_by(post: post, notification_type: previous_types)
     if notif
       return notif if !unread_only || notif.unread
@@ -60,6 +62,13 @@ class NotifyFollowersOfNewPostJob < ApplicationJob
     return if filter_users(post, [viewer.id]).empty?
     return unless favorites_for(post).where(user: viewer).exists?
     Notification.notify_user(viewer, :accessible_favorite_post, post: post)
+  end
+
+  def notify_of_post_publication(post)
+    favorites = favorites_for(post)
+    users = filter_users(post, favorites.select(:user_id).distinct.pluck(:user_id))
+    return if users.empty?
+    users.each { |user| Notification.notify_user(user, :published_favorite_post, post: post) }
   end
 
   def favorites_for(post)

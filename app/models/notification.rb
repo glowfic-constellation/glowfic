@@ -21,6 +21,7 @@ class Notification < ApplicationRecord
     new_favorite_post: 2,
     joined_favorite_post: 3,
     accessible_favorite_post: 4,
+    published_favorite_post: 5,
   }
 
   attr_accessor :skip_email
