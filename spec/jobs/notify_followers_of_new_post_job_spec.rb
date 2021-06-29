@@ -546,4 +546,138 @@ RSpec.describe NotifyFollowersOfNewPostJob do
       end
     end
   end
+
+  context "on newly published posts" do
+    let!(:author) { create(:user) }
+    let!(:coauthor) { create(:user) }
+    let!(:notified) { create(:user) }
+    let!(:unjoined) { create(:user) }
+    let!(:board) { create(:board) }
+    let!(:post) { create(:post, user: author, board: board, authors: [coauthor, unjoined], privacy: :access_list) }
+
+    before(:each) { create(:reply, user: coauthor, post: post)}
+
+    [:registered, :public].each do |privacy|
+      context "now #{privacy}" do
+        shared_examples "publication" do
+          it "works" do
+            expect {
+              perform_enqueued_jobs { post.update!(privacy: privacy) }
+            }.to change { Notification.count }.by(1)
+
+            notif = Notification.where(user: notified).last
+            expect(notif.notification_type).to eq('published_favorite_post')
+            expect(notif.post_id).to eq(post.id)
+          end
+
+          it "works for previously private posts" do
+            post.update!(privacy: :private)
+            clear_enqueued_jobs
+            expect {
+              perform_enqueued_jobs { post.update!(privacy: privacy) }
+            }.to change { Notification.count }.by(1)
+
+            notif = Notification.where(user: notified).last
+            expect(notif.notification_type).to eq('published_favorite_post')
+            expect(notif.post_id).to eq(post.id)
+          end
+
+          it "does not send on post creation" do
+            board = post.board
+            clear_enqueued_jobs
+            expect {
+              perform_enqueued_jobs do
+                create(:post, user: author, unjoined_authors: [coauthor, unjoined], board: board)
+              end
+            }.not_to change { Notification.where(notification_type: :published_favorite_post).count }
+          end
+
+          it "does not send if reader has config disabled" do
+            notified.update!(favorite_notifications: false)
+            expect {
+              perform_enqueued_jobs { post.update!(privacy: privacy) }
+            }.not_to change { Notification.count }
+          end
+
+          it "does not send to authors" do
+            Favorite.delete_all
+            authors = [author, coauthor, unjoined].reject{ |u| u == favorite }
+            authors.each { |u| create(:favorite, user: u, favorite: favorite) }
+
+            expect {
+              perform_enqueued_jobs { post.update!(privacy: privacy) }
+            }.not_to change { Notification.count }
+          end
+        end
+
+        context "with favorited author" do
+          before(:each) { create(:favorite, user: notified, favorite: author) }
+
+          include_examples "publication"
+
+          it "works for self-threads" do
+            post = create(:post, user: author, board: board, privacy: :access_list)
+            create(:reply, post: post, user: author)
+
+            expect {
+              perform_enqueued_jobs { post.update!(privacy: privacy) }
+            }.to change { Notification.count }.by(1)
+
+            notif = Notification.where(user: notified).last
+            expect(notif.notification_type).to eq('published_favorite_post')
+            expect(notif.post_id).to eq(post.id)
+          end
+        end
+
+        context "with favorited coauthor" do
+          before(:each) { create(:favorite, user: notified, favorite: coauthor) }
+
+          include_examples "publication"
+        end
+
+        context "with favorited board" do
+          before(:each) { create(:favorite, user: notified, favorite: board) }
+
+          include_examples "publication"
+
+          it "does not send twice if the user has favorited both the poster and the continuity" do
+            create(:favorite, user: notified, favorite: author)
+            expect {
+              perform_enqueued_jobs { post.update!(privacy: privacy) }
+            }.to change { Notification.count }.by(1)
+          end
+        end
+
+        context "with favorited unjoined coauthor" do
+          before(:each) { create(:favorite, user: notified, favorite: unjoined) }
+
+          include_examples "publication"
+        end
+
+        context "with blocking" do
+          before(:each) { create(:favorite, user: notified, favorite: board) }
+
+          it "does not send to users the poster has blocked" do
+            create(:block, blocking_user: author, blocked_user: notified, hide_me: :posts)
+            expect { perform_enqueued_jobs { post.update!(privacy: privacy) } }.not_to change { Notification.count }
+          end
+
+          it "does not send to users a coauthor has blocked" do
+            create(:block, blocking_user: coauthor, blocked_user: notified, hide_me: :posts)
+            expect { perform_enqueued_jobs { post.update!(privacy: privacy) } }.not_to change { Notification.count }
+          end
+
+          it "does not send to users who are blocking the poster" do
+            create(:block, blocked_user: author, blocking_user: notified, hide_them: :posts)
+            expect { perform_enqueued_jobs { post.update!(privacy: privacy) } }.not_to change { Notification.count }
+          end
+
+          it "does not send to users who are blocking a coauthor" do
+            create(:block, blocked_user: coauthor, blocking_user: notified, hide_them: :posts)
+            expect { perform_enqueued_jobs { post.update!(privacy: privacy) } }.not_to change { Notification.count }
+          end
+        end
+      end
+    end
+  end
 end
