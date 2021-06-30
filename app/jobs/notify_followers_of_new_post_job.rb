@@ -2,7 +2,7 @@
 class NotifyFollowersOfNewPostJob < ApplicationJob
   queue_as :notifier
 
-  ACTIONS = ['new', 'join', 'access', 'public']
+  ACTIONS = ['new', 'join', 'access', 'public', 'active']
 
   def perform(post_id, user_id, action)
     post = Post.find_by(id: post_id)
@@ -23,11 +23,14 @@ class NotifyFollowersOfNewPostJob < ApplicationJob
         notify_of_post_access(post, user)
       when 'public'
         notify_of_post_publication(post)
+      when 'active'
+        notify_of_post_activity(post)
     end
   end
 
-  def self.notification_about(post, user, unread_only: false)
+  def self.notification_about(post, user, unread_only: false, exclude_resumed: false)
     previous_types = [:new_favorite_post, :joined_favorite_post, :accessible_favorite_post, :published_favorite_post]
+    previous_types << :resumed_favorite_post unless exclude_resumed
     notif = Notification.find_by(post: post, notification_type: previous_types)
     if notif
       return notif if !unread_only || notif.unread
@@ -71,11 +74,19 @@ class NotifyFollowersOfNewPostJob < ApplicationJob
     users.each { |user| Notification.notify_user(user, :published_favorite_post, post: post) }
   end
 
+  def notify_of_post_activity(post)
+    favorites = favorites_for(post).or(Favorite.where(favorite: post))
+    users = filter_users(post, favorites.select(:user_id).distinct.pluck(:user_id), skip_resumed: true)
+    users = users.reject { |user| self.class.notification_about(post, user, unread_only: true).present? }
+    return if users.empty?
+    users.each { |user| Notification.notify_user(user, :resumed_favorite_post, post: post) }
+  end
+
   def favorites_for(post)
     Favorite.where(favorite: post.authors).or(Favorite.where(favorite: post.board))
   end
 
-  def filter_users(post, user_ids, skip_previous: false)
+  def filter_users(post, user_ids, skip_previous: false, skip_resumed: false)
     user_ids &= PostViewer.where(post: post).pluck(:user_id) if post.privacy_access_list?
     user_ids -= post.author_ids
     user_ids -= blocked_user_ids(post)
@@ -83,11 +94,11 @@ class NotifyFollowersOfNewPostJob < ApplicationJob
     users = User.where(id: user_ids, favorite_notifications: true)
     users = users.full if post.privacy_full_accounts?
     return users if skip_previous
-    users.reject { |user| already_notified_about?(post, user) }
+    users.reject { |user| already_notified_about?(post, user, exclude_resumed: skip_resumed) }
   end
 
-  def already_notified_about?(post, user)
-    self.class.notification_about(post, user).present?
+  def already_notified_about?(post, user, exclude_resumed: false)
+    self.class.notification_about(post, user, exclude_resumed: exclude_resumed).present?
   end
 
   def blocked_user_ids(post)
