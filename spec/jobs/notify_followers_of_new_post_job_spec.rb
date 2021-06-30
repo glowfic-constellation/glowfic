@@ -2,28 +2,30 @@ RSpec.describe NotifyFollowersOfNewPostJob do
   include ActiveJob::TestHelper
   before(:each) { clear_enqueued_jobs }
 
-  it "does nothing with invalid post id" do
-    expect(Favorite).not_to receive(:where)
-    user = create(:user)
-    NotifyFollowersOfNewPostJob.perform_now(-1, user.id, 'new')
-  end
+  context "validations" do
+    it "does nothing with invalid post id" do
+      expect(Favorite).not_to receive(:where)
+      user = create(:user)
+      NotifyFollowersOfNewPostJob.perform_now(-1, user.id, 'new')
+    end
 
-  it "does nothing with invalid user id on join" do
-    expect(Favorite).not_to receive(:where)
-    post = create(:post)
-    NotifyFollowersOfNewPostJob.perform_now(post.id, -1, 'join')
-  end
+    it "does nothing with invalid user id on join" do
+      expect(Favorite).not_to receive(:where)
+      post = create(:post)
+      NotifyFollowersOfNewPostJob.perform_now(post.id, -1, 'join')
+    end
 
-  it "does nothing with invalid user id on access" do
-    expect(Favorite).not_to receive(:where)
-    post = create(:post)
-    NotifyFollowersOfNewPostJob.perform_now(post.id, -1, 'access')
-  end
+    it "does nothing with invalid user id on access" do
+      expect(Favorite).not_to receive(:where)
+      post = create(:post)
+      NotifyFollowersOfNewPostJob.perform_now(post.id, -1, 'access')
+    end
 
-  it "does nothing with invalid action" do
-    expect(Favorite).not_to receive(:where)
-    post = create(:post)
-    NotifyFollowersOfNewPostJob.perform_now(post.id, post.user_id, '')
+    it "does nothing with invalid action" do
+      expect(Favorite).not_to receive(:where)
+      post = create(:post)
+      NotifyFollowersOfNewPostJob.perform_now(post.id, post.user_id, '')
+    end
   end
 
   context "on new posts" do
