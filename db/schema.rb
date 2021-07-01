@@ -269,6 +269,7 @@ ActiveRecord::Schema[7.1].define(version: 2023_09_30_053037) do
     t.integer "post_id"
     t.boolean "unread", default: true, null: false
     t.integer "notification_type", null: false
+    t.text "error_msg"
     t.datetime "read_at", precision: nil
     t.datetime "created_at", precision: nil, null: false
     t.datetime "updated_at", precision: nil, null: false
