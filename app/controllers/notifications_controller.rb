@@ -2,7 +2,11 @@ class NotificationsController < ApplicationController
   before_action :login_required
 
   def index
-    @notifications = current_user.notifications
+    @page_title = "Notifications"
+    @notifications = current_user.notifications.visible_to(current_user).ordered.paginate(page: page)
+
+    post_ids = @notifications.map(&:post_id).compact_blank
+    @posts = posts_from_relation(Post.where(id: post_ids)).index_by(&:id)
   end
 
   def mark
