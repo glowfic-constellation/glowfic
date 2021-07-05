@@ -116,16 +116,23 @@ RSpec.describe ReportsController do
       it "works" do
         create_list(:post, 3)
         Post.last.user.update!(moiety: 'abcdef')
-        create(:post, num_replies: 4, created_at: 2.days.ago)
+        Timecop.freeze(2.days.ago) { create(:post, num_replies: 4) }
         get :show, params: { id: 'daily' }
       end
 
       it "works with logged in" do
         user = create(:user)
         DailyReport.mark_read(user, at_time: 3.days.ago.to_date)
-        create(:post_view, user: user)
+        unread_post = create(:post)
+        Timecop.freeze(2.days.ago) { create(:post, num_replies: 4) }
+        read_post = create(:post, num_replies: 3)
+        read_post.mark_read(user, at_time: read_post.tagged_at)
+        partial_read = create(:post, num_replies: 2)
+        partial_read.mark_read(user, at_time: partial_read.tagged_at)
+        create_list(:reply, 3, post: partial_read)
         login_as(user)
         get :show, params: { id: 'daily' }
+        expect(assigns(:posts).ids).to match_array([multi_day, unread_post, read_post, partial_read].map(&:id))
       end
     end
 
