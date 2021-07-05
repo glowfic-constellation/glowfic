@@ -173,4 +173,17 @@ RSpec.describe Reply do
       expect(post.replies.ordered).to eq([first_reply, third_reply, second_reply])
     end
   end
+
+  describe "#destroy_subsequent_replies" do
+    it "works" do
+      post = create(:post)
+      replies = create_list(:reply, 2, post: post)
+      reply = create(:reply, post: post)
+      create_list(:reply, 2, post: post)
+      expect { reply.send(:destroy_subsequent_replies) }.to change { Reply.count }.by(-3)
+      expect(Reply.where(id: replies.map(&:id)).count).to eq(2)
+      expect(Reply.find_by(id: reply.id)).not_to be_present
+      expect(post.reload.last_reply_id).to eq(replies[1].id)
+    end
+  end
 end

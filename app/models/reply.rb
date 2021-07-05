@@ -67,8 +67,7 @@ class Reply < ApplicationRecord
   end
 
   def destroy_subsequent_replies
-    Reply.where('id > ?', id).where(post_id: post_id).delete_all
-    self.set_previous_reply_to_last
+    Reply.where('reply_order >= ?', reply_order).where(post: post).ordered.reverse_order.destroy_all
   end
 
   def set_previous_reply_to_last
