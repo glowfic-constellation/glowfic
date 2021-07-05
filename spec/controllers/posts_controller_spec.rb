@@ -1095,7 +1095,9 @@ RSpec.describe PostsController do
 
       it "renders HAML with additional attributes" do
         post = create(:post, with_icon: true, with_character: true)
-        create(:reply, post: post, with_icon: true, with_character: true)
+        reply = create(:reply, post: post, with_icon: true, with_character: true)
+        calias = create(:alias, character: reply.character)
+        reply.update!(character_alias: calias)
         get :show, params: { id: post.id }
         expect(response.status).to eq(200)
         expect(response.body).to include(post.subject)
