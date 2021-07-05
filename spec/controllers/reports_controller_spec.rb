@@ -125,6 +125,8 @@ RSpec.describe ReportsController do
         DailyReport.mark_read(user, at_time: 3.days.ago.to_date)
         unread_post = create(:post)
         Timecop.freeze(2.days.ago) { create(:post, num_replies: 4) }
+        multi_day = Timecop.freeze(1.day.ago) { create(:post, num_replies: 2) }
+        create_list(:reply, 2, post: multi_day)
         read_post = create(:post, num_replies: 3)
         read_post.mark_read(user, at_time: read_post.tagged_at)
         partial_read = create(:post, num_replies: 2)
