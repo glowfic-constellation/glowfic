@@ -83,7 +83,7 @@ group :test do
   gem 'rails-controller-testing'
   gem 'resque_spec'
   gem 'selenium-webdriver'
-  gem 'simplecov', '~> 0.17.1'
+  gem 'simplecov'
   gem 'timecop'
   gem 'webdrivers', '~> 4.0'
   gem 'webmock'
