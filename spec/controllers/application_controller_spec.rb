@@ -459,4 +459,31 @@ RSpec.describe ApplicationController do
       expect(response.json['zone']).to eq(different_zone)
     end
   end
+
+  describe "#handle_invalid_token" do
+    controller do
+      def index
+        raise ActionController::InvalidAuthenticityToken
+      end
+
+      def create
+        raise ActionController::InvalidAuthenticityToken
+      end
+    end
+
+    it "displays error" do
+      get :index
+      expect(response).to redirect_to(Rails.application.routes.url_helpers.root_path)
+      expect(flash[:error]).to include("Oops, looks like your session expired!")
+    end
+
+    it "saves reply if present" do
+      reply_param = build(:reply).attributes
+      reply_param.each { |k, v| reply_param[k] = "" if v.nil? }
+      post :create, params: { reply: reply_param }
+      expect(flash[:error]).to include("Oops, looks like your session expired!")
+      session_save = session[:attempted_reply].permit!
+      expect(session_save.to_h).to eq(reply_param)
+    end
+  end
 end
