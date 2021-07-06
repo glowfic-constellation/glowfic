@@ -99,7 +99,7 @@ module.exports = [
   },
   {
     label: "gallery_add_new",
-    path: "galleries/0/add",
+    path: "galleries/0/add?proofer-ignore",
     selectors: ["#content"]
   },
   {
