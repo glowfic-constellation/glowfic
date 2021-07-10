@@ -1,4 +1,7 @@
 /* global gon */
+/* exported addParameter, addUploadedIcon, bindArrows, bindSortable, createSelect2, createTagSelect, deleteUnusedIcons, processResults,
+   processTotal, queryTransform, resizeScreenname, setLoadingIcon, swapRows*/
+
 var foundTags = {};
 
 $(document).ready(function() {
