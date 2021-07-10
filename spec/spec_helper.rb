@@ -56,6 +56,7 @@ Capybara.register_driver :headless_chrome do |app|
 
   options.add_argument('--headless')
   options.add_argument('--no-sandbox')
+  options.add_argument("--user-data-dir=#{ENV['CHROMEDRIVER_CONFIG']}") if ENV['CHROMEDRIVER_CONFIG']
   # options.add_argument('--disable-popup-blocking')
   options.add_argument('--window-size=1366,768')
 
