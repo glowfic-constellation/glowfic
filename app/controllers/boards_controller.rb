@@ -176,7 +176,7 @@ class BoardsController < ApplicationController
   def boards_from_relation(relation)
     sql = <<~SQL.squish
       boards.*,
-      (SELECT tagged_at FROM posts WHERE posts.board_id = boards.id ORDER BY posts.tagged_at DESC LIMIT 1) AS tagged_at
+      (SELECT MAX(tagged_at) FROM posts WHERE posts.board_id = boards.id) AS tagged_at
     SQL
     relation
       .ordered
