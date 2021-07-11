@@ -19,11 +19,12 @@ class BoardsController < ApplicationController
       end
 
       board_ids = BoardAuthor.where(user_id: @user.id, cameo: false).select(:board_id).distinct.pluck(:board_id)
-      @boards = Board.where(creator_id: @user.id).or(Board.where(id: board_ids)).ordered
-      @cameo_boards = Board.where(id: BoardAuthor.where(user_id: @user.id, cameo: true).select(:board_id).distinct.pluck(:board_id)).ordered
+      @boards = boards_from_relation(Board.where(creator_id: @user.id).or(Board.where(id: board_ids)))
+      cameo_ids = BoardAuthor.where(user_id: @user.id, cameo: true).select(:board_id).distinct.pluck(:board_id)
+      @cameo_boards = boards_from_relation(Board.where(id: cameo_ids))
     else
       @page_title = 'Continuities'
-      @boards = Board.ordered.paginate(page: page)
+      @boards = boards_from_relation(Board.all).paginate(page: page)
     end
   end
 
@@ -138,7 +139,8 @@ class BoardsController < ApplicationController
     return unless params[:commit].present?
 
     searcher = Board::Searcher.new
-    @search_results = searcher.search(params, page: page)
+    @search_results = searcher.search(params)
+    @search_results = boards_from_relation(@search_results).paginate(page: page)
   end
 
   private
@@ -169,6 +171,17 @@ class BoardsController < ApplicationController
       flash[:error] = "You do not have permission to edit that continuity."
       redirect_to continuity_path(@board) and return
     end
+  end
+
+  def boards_from_relation(relation)
+    sql = <<~SQL.squish
+      boards.*,
+      (SELECT MAX(tagged_at) FROM posts WHERE posts.board_id = boards.id) AS tagged_at
+    SQL
+    relation
+      .ordered
+      .select(sql)
+      .includes(:writers)
   end
 
   def og_data
