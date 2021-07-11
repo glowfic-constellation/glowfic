@@ -35,7 +35,7 @@ unless ENV['SKIP_COVERAGE'] || ENV['APIPIE_RECORD'] || RSpec.configuration.files
       end
     end
     enable_coverage :branch
-    minimum_coverage line: 99.65, branch: 91.75
+    minimum_coverage line: 99.65, branch: 91.73
   end
 end
 
@@ -219,6 +219,8 @@ WebMock.disable_net_connect!(
   allow_localhost: true,
   allow: "chromedriver.storage.googleapis.com",
 )
+
+require "fakeredis/rspec"
 
 # disable auditing by default unless specifically turned on for a test
 Post.auditing_enabled = false

@@ -106,10 +106,6 @@ RSpec.describe BlocksController, type: :controller do
       hidden_post = create(:post, user: blocked, authors_locked: true)
       user_post = create(:post, user: user, authors_locked: true)
 
-      memory_store = ActiveSupport::Cache.lookup_store(:memory_store)
-      allow(Rails).to receive(:cache).and_return(memory_store)
-      Rails.cache.clear
-
       expect(user.hidden_posts).to be_empty
       expect(user.blocked_posts).to eq([blocked_post.id])
       expect(blocked.blocked_posts).to be_empty
@@ -267,15 +263,15 @@ RSpec.describe BlocksController, type: :controller do
       hidden_post = create(:post, user: blocked, authors_locked: true)
       user_post = create(:post, user: user, authors_locked: true)
 
-      memory_store = ActiveSupport::Cache.lookup_store(:memory_store)
-      allow(Rails).to receive(:cache).and_return(memory_store)
-      Rails.cache.clear
-
       expect(user.hidden_posts).to eq([hidden_post.id])
       expect(user.blocked_posts).to eq([blocked_post.id])
       expect(blocked.blocked_posts).to eq([user_post.id])
 
       login_as(user)
+
+      expect(Rails.cache.exist?(Block.cache_string_for(user.id, 'blocked'))).to be(true)
+      expect(Rails.cache.exist?(Block.cache_string_for(user.id, 'hidden'))).to be(true)
+      expect(Rails.cache.exist?(Block.cache_string_for(blocked.id, 'blocked'))).to be(true)
 
       delete :destroy, params: { id: block.id }
 

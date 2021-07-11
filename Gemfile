@@ -80,6 +80,7 @@ end
 group :test do
   gem 'capybara'
   gem 'factory_bot_rails'
+  gem 'fakeredis'
   gem 'rails-controller-testing'
   gem 'resque_spec'
   gem 'selenium-webdriver'

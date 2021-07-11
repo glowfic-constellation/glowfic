@@ -890,13 +890,10 @@ RSpec.describe PostsController do
       let(:blocked) { create(:user) }
       let(:blocking) { create(:user) }
       let(:other_user) { create(:user) }
-      let(:memory_store) { ActiveSupport::Cache.lookup_store(:memory_store) }
 
       before(:each) do
         create(:block, blocking_user: user, blocked_user: blocked, hide_me: :posts)
         create(:block, blocking_user: blocking, blocked_user: user, hide_them: :posts)
-        allow(Rails).to receive(:cache).and_return(memory_store)
-        Rails.cache.clear
       end
 
       it "regenerates blocked and hidden posts for poster" do
@@ -2572,13 +2569,10 @@ RSpec.describe PostsController do
       let(:blocked) { create(:user) }
       let(:blocking) { create(:user) }
       let(:other_user) { create(:user) }
-      let(:memory_store) { ActiveSupport::Cache.lookup_store(:memory_store) }
 
       before(:each) do
         create(:block, blocking_user: user, blocked_user: blocked, hide_me: :posts)
         create(:block, blocking_user: blocking, blocked_user: user, hide_them: :posts)
-        allow(Rails).to receive(:cache).and_return(memory_store)
-        Rails.cache.clear
       end
 
       it "regenerates blocked and hidden posts for poster" do
