@@ -11,10 +11,13 @@ class Message < ApplicationRecord
   before_validation :set_thread_id, :remove_deleted_recipient
   before_create :check_recipient
   after_create :notify_recipient
+  after_commit :invalidate_caches
 
   scope :ordered_by_id, -> { order(id: :asc) }
   scope :ordered_by_thread, -> { order(thread_id: :asc, id: :desc) }
   scope :unread, -> { where(unread: true) }
+
+  CACHE_VERSION = 1
 
   def visible_to?(user)
     user_ids.include?(user.id)
@@ -58,6 +61,16 @@ class Message < ApplicationRecord
     msg.save
   end
 
+  def self.unread_count_for(user)
+    Rails.cache.fetch(Message.cache_string_for(user.id), expires_in: 1.day) do
+      user.messages.unread.count
+    end
+  end
+
+  def self.cache_string_for(user_id)
+    "#{Rails.env}.#{CACHE_VERSION}.unread_message_count.#{user_id}"
+  end
+
   private
 
   def set_thread_id
@@ -89,5 +102,9 @@ class Message < ApplicationRecord
   def remove_deleted_recipient
     return unless recipient&.deleted?
     self.recipient = nil
+  end
+
+  def invalidate_caches
+    Rails.cache.delete(Message.cache_string_for(recipient.id))
   end
 end
