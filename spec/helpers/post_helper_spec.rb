@@ -190,4 +190,40 @@ RSpec.describe PostHelper do
       expect(helper.anchored_continuity_path(post)).to eq(continuity_path(post.board_id))
     end
   end
+
+  shared_examples "unread_or_opened" do
+    let(:post) { create(:post) }
+
+    it "requires a post" do
+      expect(method(nil, [1, 2])).to eq(false)
+    end
+
+    it "requires an id list" do
+      expect(method(post, nil)).to eq(false)
+    end
+
+    it "returns true if id in list" do
+      expect(method(post, [1, 2, post.id])).to eq(true)
+    end
+
+    it "returns false if id not in list" do
+      expect(method(post, [1, 2])).to eq(false)
+    end
+  end
+
+  describe "#unread_post?" do
+    def method(post, ids)
+      helper.unread_post?(post, ids)
+    end
+
+    include_examples 'unread_or_opened'
+  end
+
+  describe "#opened_post?" do
+    def method(post, ids)
+      helper.opened_post?(post, ids)
+    end
+
+    include_examples 'unread_or_opened'
+  end
 end
