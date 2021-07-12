@@ -3,10 +3,10 @@ class GalleriesController < UploadingController
   include Taggable
 
   before_action :login_required, except: [:index, :show, :search]
-  before_action :find_model, only: [:destroy, :edit, :update]
-  before_action :require_edit_permission, only: [:edit, :update, :destroy]
-  before_action :require_create_permission, only: [:new, :create, :add, :icon]
+  before_action :find_model, only: [:edit, :update, :destroy]
   before_action :find_user, only: [:index]
+  before_action :require_create_permission, only: [:new, :create, :add, :icon]
+  before_action :require_edit_permission, only: [:edit, :update, :destroy]
   before_action :require_own_gallery, only: [:add, :icon]
   before_action :setup_new_icons, only: [:add, :icon]
   before_action :set_s3_url, only: [:edit, :add, :icon]

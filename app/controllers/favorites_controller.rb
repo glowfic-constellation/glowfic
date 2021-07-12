@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 class FavoritesController < ApplicationController
   before_action :login_required
+  before_action :find_model, only: :destroy
+  before_action :require_permission, only: :destroy
 
   def index
     @page_title = 'Favorites'
@@ -64,16 +66,6 @@ class FavoritesController < ApplicationController
   end
 
   def destroy
-    unless (fav = Favorite.find_by_id(params[:id]))
-      flash[:error] = "Favorite could not be found."
-      redirect_to favorites_path and return
-    end
-
-    unless fav.user_id == current_user.id
-      flash[:error] = "You do not have permission to modify this favorite."
-      redirect_to favorites_path and return
-    end
-
     begin
       fav.destroy!
     rescue ActiveRecord::RecordNotDestroyed => e
@@ -81,11 +73,25 @@ class FavoritesController < ApplicationController
       redirect_to favorites_path
     else
       flash[:success] = "Favorite removed."
-      if [User.to_s, Post.to_s].include?(fav.favorite_type)
-        redirect_to fav.favorite
+      if [User.to_s, Post.to_s].include?(@fav.favorite_type)
+        redirect_to @fav.favorite
       else
-        redirect_to continuity_path(fav.favorite)
+        redirect_to continuity_path(@fav.favorite)
       end
     end
+  end
+
+  private
+
+  def find_model
+    return if (@fav = Favorite.find_by_id(params[:id]))
+    flash[:error] = "Favorite could not be found."
+    redirect_to favorites_path
+  end
+
+  def require_permission
+    return if @fav.user_id == current_user.id
+    flash[:error] = "You do not have permission to modify this favorite."
+    redirect_to favorites_path
   end
 end
