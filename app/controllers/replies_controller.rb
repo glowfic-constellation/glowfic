@@ -7,6 +7,7 @@ class RepliesController < WritableController
   before_action :editor_setup, only: [:edit]
   before_action :require_create_permission, only: [:create]
   before_action :require_edit_permission, only: [:edit, :update]
+  before_action :require_delete_permission, only: :destroy
 
   def search
     @page_title = 'Search Replies'
@@ -209,11 +210,6 @@ class RepliesController < WritableController
   end
 
   def destroy
-    unless @reply.deletable_by?(current_user)
-      flash[:error] = "You do not have permission to modify this reply."
-      redirect_to post_path(@reply.post) and return
-    end
-
     previous_reply = @reply.send(:previous_reply)
     to_page = previous_reply.try(:post_page, per_page) || 1
 
@@ -287,11 +283,17 @@ class RepliesController < WritableController
   def require_create_permission
     return unless current_user.read_only?
     flash[:error] = "You do not have permission to create replies."
-    redirect_to continuities_path and return
+    redirect_to continuities_path
   end
 
   def require_edit_permission
     return if @reply.editable_by?(current_user)
+    flash[:error] = "You do not have permission to modify this reply."
+    redirect_to post_path(@reply.post)
+  end
+
+  def require_delete_permission
+    return if @reply.deletable_by?(current_user)
     flash[:error] = "You do not have permission to modify this reply."
     redirect_to post_path(@reply.post)
   end
