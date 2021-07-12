@@ -334,7 +334,7 @@ RSpec.describe ApplicationController do
   describe "#require_glowfic_domain" do
     it "redirects on valid requests" do
       allow(ENV).to receive(:[]).and_call_original
-      allow(ENV).to_receive(:[]).with('DOMAIN_NAME').and_return('domaintest.host')
+      allow(ENV).to receive(:[]).with('DOMAIN_NAME').and_return('domaintest.host')
       get :index, params: { force_domain: true }
       expect(response).to have_http_status(301)
       expect(response).to redirect_to('https://domaintest.host/anonymous?force_domain=true')
