@@ -5,10 +5,13 @@ class PostsController < WritableController
   before_action :login_required, except: [:index, :show, :history, :warnings, :search, :stats]
   before_action :readonly_forbidden, only: [:owed]
   before_action :find_model, only: [:show, :history, :delete_history, :stats, :warnings, :edit, :update, :destroy, :split, :do_split, :preview_split]
-  before_action :require_edit_permission, only: [:edit, :delete_history, :split, :do_split, :preview_split]
-  before_action :require_locked_authorship, only: [:split, :do_split, :preview_split]
-  before_action :require_import_permission, only: [:new, :create]
+
   before_action :require_create_permission, only: [:new, :create]
+  before_action :require_import_permission, only: [:new, :create]
+  before_action :require_edit_permission, only: [:edit, :delete_history, :split, :do_split, :preview_split]
+  before_action :require_delete_permission, only: :destroy
+  before_action :require_locked_authorship, only: [:split, :do_split, :preview_split]
+
   before_action :editor_setup, only: [:new, :edit]
 
   def index
@@ -255,11 +258,6 @@ class PostsController < WritableController
   end
 
   def destroy
-    unless @post.deletable_by?(current_user)
-      flash[:error] = "You do not have permission to modify this post."
-      redirect_to @post and return
-    end
-
     begin
       @post.destroy!
     rescue ActiveRecord::RecordNotDestroyed => e
@@ -513,12 +511,6 @@ class PostsController < WritableController
     @page_title = @post.subject
   end
 
-  def require_edit_permission
-    return if @post.editable_by?(current_user) || @post.metadata_editable_by?(current_user)
-    flash[:error] = "You do not have permission to modify this post."
-    redirect_to @post
-  end
-
   def require_create_permission
     return unless current_user.read_only?
     flash[:error] = "You do not have permission to create posts."
@@ -536,6 +528,18 @@ class PostsController < WritableController
     return if @post.authors_locked
     flash[:error] = "Post must be locked to current authors to be split."
     redirect_to @post
+  end
+
+  def require_edit_permission
+    return if @post.editable_by?(current_user) || @post.metadata_editable_by?(current_user)
+    flash[:error] = "You do not have permission to modify this post."
+    redirect_to @post
+  end
+
+  def require_delete_permission
+    return if @post.deletable_by?(current_user)
+    flash[:error] = "You do not have permission to modify this post."
+    redirect_to @post and return
   end
 
   def permitted_params(include_associations=true)
