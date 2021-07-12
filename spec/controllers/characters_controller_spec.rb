@@ -2,6 +2,8 @@ RSpec.describe CharactersController do
   include ActiveJob::TestHelper
 
   describe "GET index" do
+    let(:user) { create(:user) }
+
     it "requires login without an id" do
       get :index
       expect(response).to redirect_to(root_url)
@@ -15,7 +17,6 @@ RSpec.describe CharactersController do
     end
 
     it "succeeds with an id" do
-      user = create(:user)
       get :index, params: { user_id: user.id }
       expect(response.status).to eq(200)
     end
@@ -27,14 +28,16 @@ RSpec.describe CharactersController do
     end
 
     it "succeeds with an id when logged in" do
-      user = create(:user)
       login
       get :index, params: { user_id: user.id }
       expect(response.status).to eq(200)
     end
 
-    it "does something with character groups" do
-      skip "Character groups need to be refactored"
+    it "succeeds with character group" do
+      group = create(:character_group, user: user)
+      create_list(:character, 3, character_group: group, user: user)
+      get :index, params: { user_id: user.id, group_id: group.id }
+      expect(response.status).to eq(200)
     end
 
     context "with render_views" do

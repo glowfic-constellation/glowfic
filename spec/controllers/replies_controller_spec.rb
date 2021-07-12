@@ -191,6 +191,20 @@ RSpec.describe RepliesController do
       expect(flash[:success]).to eq("Posted!")
     end
 
+    it "handles duplicate with other unseen replies" do
+      reply_post = create(:post)
+      login_as(reply_post.user)
+      reply_post.mark_read(reply_post.user)
+      create(:reply, post: reply_post)
+      dupe_reply = create(:reply, user: reply_post.user, post: reply_post)
+
+      expect {
+        post :create, params: { reply: {post_id: reply_post.id, user_id: reply_post.user_id, content: dupe_reply.content} }
+      }.to change{ ReplyDraft.count }.by(1)
+      expect(response).to have_http_status(200)
+      expect(flash[:error]).to eq("This looks like a duplicate. Did you attempt to post this twice? Please resubmit if this was intentional.")
+    end
+
     it "requires valid params if read" do
       user = create(:user)
       login_as(user)
