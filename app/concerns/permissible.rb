@@ -6,7 +6,7 @@ module Permissible
     :edit_replies,
     :edit_characters,
     :import_posts,
-    # :create_news,
+    :create_news,
     # :split_posts,
     # :regenerate_flat_posts,
     # :relocate_characters,
@@ -20,7 +20,7 @@ module Permissible
     :delete_news,
   ]
 
-  MOD_PERMS = PERMS[0..3]
+  MOD_PERMS = PERMS[0..4]
 
   included do
     enum role_id: {
