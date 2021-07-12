@@ -40,7 +40,7 @@ RSpec.shared_examples "logged in post list" do
     let!(:limited_post) { create(:post, privacy: :full_accounts) }
 
     it "does not show limited access threads to reader accounts" do
-      user.update!(role_id: Permissible::READONLY)
+      user.update!(role_id: :read_only)
       get controller_action, params: params
       expect(response.status).to eq(200)
       expect(assigns(assign_variable)).to match_array(posts)

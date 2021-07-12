@@ -1,12 +1,6 @@
 module Permissible
   extend ActiveSupport::Concern
 
-  ADMIN = 1
-  MOD = 2
-  IMPORTER = 3
-  SUSPENDED = 4
-  READONLY = 5
-
   MOD_PERMS = [
     :edit_posts,
     :edit_replies,
@@ -22,6 +16,14 @@ module Permissible
   ]
 
   included do
+    enum role_id: {
+      admin: 1,
+      mod: 2,
+      importer: 3,
+      suspended: 4,
+      read_only: 5,
+    }
+
     def has_permission?(permission)
       return false unless role_id
       return true if admin?
@@ -29,25 +31,5 @@ module Permissible
       return false unless mod?
       MOD_PERMS.include?(permission)
     end
-
-    def admin?
-      role_id == ADMIN
-    end
-
-    def mod?
-      role_id == MOD
-    end
-
-    def importer?
-      role_id == IMPORTER
-    end
-
-    def suspended?
-      role_id == SUSPENDED
-    end
-  end
-
-  def read_only?
-    role_id == READONLY
   end
 end
