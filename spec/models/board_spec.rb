@@ -134,4 +134,39 @@ RSpec.describe Board do
     expect(post.section).to be_nil
     expect(BoardSection.find_by_id(section.id)).to be_nil
   end
+
+  describe "#as_json" do
+    let(:board) { create(:board) }
+
+    shared_examples 'sections' do
+      it "works with no sections" do
+        expect(board.as_json(options)).to match_hash(json)
+      end
+    end
+
+    context "with include sections" do
+      let(:options) { { include: [:board_sections] } }
+      let(:json) { { id: board.id, name: board.name, board_sections: board.board_sections.ordered } }
+
+      include_examples 'sections'
+
+      it "works with sections" do
+        sections = create_list(:board_section, 4, board: board)
+        json[:board_sections] = sections
+        expect(board.as_json(options)).to match_hash(json)
+      end
+    end
+
+    context "without include sections" do
+      let(:options) { {} }
+      let(:json) { { id: board.id, name: board.name } }
+
+      include_examples 'sections'
+
+      it "works with sections" do
+        create_list(:board_section, 4, board: board)
+        expect(board.as_json(options)).to match_hash(json)
+      end
+    end
+  end
 end
