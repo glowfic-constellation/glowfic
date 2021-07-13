@@ -111,6 +111,15 @@ RSpec.describe PostsController, 'GET search' do
       end
     end
 
+    it "filters authors with no shared posts" do
+      author1 = create(:user)
+      author2 = create(:user)
+      create_list(:post, 2, user: author1)
+      create_list(:post, 2, user: author2)
+      get :search, params: { commit: true, author_id: [author1.id, author2.id] }
+      expect(assigns(:search_results)).to be_empty
+    end
+
     it "filters by characters" do
       create(:reply, with_character: true)
       reply = create(:reply, with_character: true)
