@@ -48,20 +48,6 @@ RSpec.describe Tag do
     end
   end
 
-  describe "#post_count" do
-    it "works" do
-      tag1 = create(:label)
-      tag2 = create(:label)
-      create(:post, labels: [tag2])
-      tag3 = create(:label)
-      create_list(:post, 2, labels: [tag3])
-      tags = [tag1, tag2, tag3]
-      fetched = Label.where(id: tags.map(&:id)).ordered_by_id
-      expect(fetched).to eq(tags)
-      expect(fetched.map(&:post_count)).to eq([0, 1, 2])
-    end
-  end
-
   describe "#character_count" do
     def create_tags
       tag1 = create(:gallery_group)
