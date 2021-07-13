@@ -6,7 +6,6 @@ class BoardPresenter
   end
 
   def as_json(options={})
-    return {} unless board
     board_json = board.as_json_without_presenter(only: [:id, :name])
     return board_json unless options[:include].present? && options[:include].include?(:board_sections)
     # TODO what if lots of sections?

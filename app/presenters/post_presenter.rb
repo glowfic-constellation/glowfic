@@ -6,7 +6,6 @@ class PostPresenter
   end
 
   def as_json(options={})
-    return {} unless post
     return min_json(post) if options[:min]
     return includeless_json(post) unless options[:include]
     included_json(post, options[:include])
