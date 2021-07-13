@@ -6,12 +6,10 @@ module IconHelper
   CHAR_ICON_FAKE = 'char-access-icon char-access-fake pointer'.freeze
 
   def icon_tag(icon, **args)
-    return '' if icon.nil?
     icon_mem_tag(icon.url, icon.keyword, **args)
   end
 
   def icon_mem_tag(url, keyword, **args)
-    return '' if url.nil?
     klass = ICON
     klass += ' pointer' if args.delete(:pointer)
     if (supplied_class = args.delete(:class))
