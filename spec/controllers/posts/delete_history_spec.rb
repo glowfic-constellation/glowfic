@@ -30,34 +30,61 @@ RSpec.describe PostsController, 'GET delete_history' do
   end
 
   context "load history" do
-    let!(:reply) { create(:reply, post: post, content: 'old content') }
+    context "with surrounding replies" do
+      let(:preceding) { create_list(:reply, 2, post: post) }
+      let(:reply) { create(:reply, post: post) }
+      let(:following) { create_list(:reply, 2, post: post) }
 
-    before(:each) do
-      login_as(post.user)
-      reply.destroy!
+      before(:each) { login_as(post.user) }
+
+      it "sets correct variables for deleted first reply" do
+        reply
+        following
+        reply.destroy!
+        get :delete_history, params: { id: post.id }
+        expect(response).to have_http_status(200)
+        expect(assigns(:audit).auditable_id).to eq(reply.id)
+        expect(assigns(:preceding)).to eq([post])
+        expect(assigns(:following)).to eq(following)
+      end
+
+      it "sets correct variables with preceding replies" do
+        preceding
+        reply
+        following
+        reply.destroy!
+        get :delete_history, params: { id: post.id }
+        expect(response).to have_http_status(200)
+        expect(assigns(:audit).auditable_id).to eq(reply.id)
+        expect(assigns(:preceding)).to eq(preceding)
+        expect(assigns(:following)).to eq(following)
+      end
     end
 
-    it "sets correct variables" do
-      get :delete_history, params: { id: post.id }
-      expect(response).to have_http_status(200)
-      expect(assigns(:audit).auditable_id).to eq(reply.id)
-    end
+    context "without surrounding replies" do
+      let!(:reply) { create(:reply, post: post, content: 'old content') }
 
-    it "ignores restored replies" do
-      restore(reply)
-      get :delete_history, params: { id: post.id }
-      expect(assigns(:deleted_audits).count).to eq(0)
-    end
+      before(:each) do
+        login_as(post.user)
+        reply.destroy!
+      end
 
-    it "only selects more recent restore" do
-      id = reply.id
-      restore(reply)
-      reply = Reply.find_by_id(id)
-      reply.update!(content: 'new content')
-      reply.destroy!
-      get :delete_history, params: { id: post.id }
-      expect(assigns(:deleted_audits).count).to eq(1)
-      expect(assigns(:audit).audited_changes['content']).to eq('new content')
+      it "ignores restored replies" do
+        restore(reply)
+        get :delete_history, params: { id: post.id }
+        expect(assigns(:deleted_audits).count).to eq(0)
+      end
+
+      it "only selects more recent restore" do
+        id = reply.id
+        restore(reply)
+        reply = Reply.find_by_id(id)
+        reply.update!(content: 'new content')
+        reply.destroy!
+        get :delete_history, params: { id: post.id }
+        expect(assigns(:deleted_audits).count).to eq(1)
+        expect(assigns(:audit).audited_changes['content']).to eq('new content')
+      end
     end
   end
 
