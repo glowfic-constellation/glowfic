@@ -33,7 +33,7 @@ class RepliesController < WritableController
 
     return unless params[:commit].present?
 
-    searcher = Reply::Searcher.new
+    searcher = Reply::Searcher.new(post: @post, templates: @templates)
     @search_results = searcher.search(params, current_user)
 
     @audits = []

@@ -1,6 +1,11 @@
 class Reply::Searcher < Generic::Searcher
+  def initialize(post: nil, templates: [])
+    @post = post
+    @templates = templates
+    super(Reply.unscoped)
+  end
+
   def search(params, user)
-    @search_results = Reply.unscoped
     @search_results = @search_results.where(user_id: params[:author_id]) if params[:author_id].present?
     @search_results = @search_results.where(character_id: params[:character_id]) if params[:character_id].present?
     @search_results = @search_results.where(icon_id: params[:icon_id]) if params[:icon_id].present?
