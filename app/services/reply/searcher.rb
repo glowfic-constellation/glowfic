@@ -68,10 +68,10 @@ class Reply::Searcher < Generic::Searcher
 
   def filter_templates(template_id, author_id)
     if template_id.present?
-      @templates = Template.where(id: template_id)
-      if @templates.first.present?
-        character_ids = Character.where(template_id: @templates.first.id).pluck(:id)
+      if (template = Template.find_by(id: template_id))
+        character_ids = Character.where(template_id: template.id).pluck(:id)
         @search_results = @search_results.where(character_id: character_ids)
+        @templates = [template]
       end
     elsif author_id.present?
       @templates = @templates.where(user_id: author_id)
