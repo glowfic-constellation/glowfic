@@ -196,7 +196,7 @@ class GalleriesController < UploadingController
     errors = []
     icons.each_with_index do |icon, index|
       next if icon.save
-      errors += icon.get_errors(index)
+      errors += icon.errors.present? ? icon.get_errors(index) : ["Icon #{index + 1} could not be saved."]
     end
 
     @gallery.icons += icons.select(&:persisted?) if @gallery
