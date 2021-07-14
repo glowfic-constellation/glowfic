@@ -16,21 +16,7 @@ class Reply::Searcher < Generic::Service
     sort(params[:sort], params[:subj_content])
     filter_posts(params[:board_id])
     filter_templates(params[:template_id], params[:author_id])
-
-    @search_results = @search_results
-      .select('replies.*, characters.name, characters.screenname, users.username, users.deleted as user_deleted')
-      .visible_to(user)
-      .joins(:user)
-      .left_outer_joins(:character)
-      .includes(:post)
-
-    @search_results = @search_results.where.not(post_id: user.hidden_posts) if user.present? && !params[:show_blocked]
-
-    unless params[:condensed]
-      @search_results = @search_results
-        .select('icons.keyword, icons.url')
-        .left_outer_joins(:icon)
-    end
+    finalize(user, params[:condensed], params[:show_blocked])
   end
 
   private
@@ -81,5 +67,17 @@ class Reply::Searcher < Generic::Service
     elsif author_id.present?
       @templates = @templates.where(user_id: author_id)
     end
+  end
+
+  def finalize(user, condensed, show_blocked)
+    @search_results = @search_results
+      .select('replies.*, characters.name, characters.screenname, users.username, users.deleted as user_deleted')
+      .visible_to(user)
+      .joins(:user)
+      .left_outer_joins(:character)
+      .includes(:post)
+
+    @search_results = @search_results.left_outer_joins(:icon).select('icons.keyword, icons.url') unless condensed
+    @search_results = @search_results.where.not(post_id: user.hidden_posts) if user.present? && !show_blocked
   end
 end
