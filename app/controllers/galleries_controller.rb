@@ -54,7 +54,8 @@ class GalleriesController < UploadingController
 
   def show
     if params[:id].to_s == '0' # avoids casting nils to 0
-      return unless find_user
+      find_user
+      return if performed?
       @page_title = 'Galleryless Icons'
     else
       return unless find_model
@@ -160,14 +161,13 @@ class GalleriesController < UploadingController
     if params[:user_id].present?
       unless (@user = User.active.full.find_by_id(params[:user_id]))
         flash[:error] = 'User could not be found.'
-        redirect_to root_path and return
+        redirect_to root_path
       end
     else
       return if login_required
       return if readonly_forbidden
       @user = current_user
     end
-    true
   end
 
   def add_existing_icons
