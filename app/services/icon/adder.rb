@@ -34,11 +34,8 @@ class Icon::Adder < Object
 
   def save_icons
     Icon.transaction do
-      @icons.each_with_index do |icon, index|
-        next if icon.save
-        get_errors(icon, index)
-      end
-
+      @icons.each(&:save)
+      @icons.each_with_index { |icon, index| get_errors(icon, index) unless icon.persisted? }
       raise ActiveRecord::Rollback if @errors.present?
     end
   end
