@@ -32,6 +32,11 @@ class Icon < ApplicationRecord
     s3_key.present?
   end
 
+  def get_errors(index=nil)
+    prefix = index ? "Icon #{index + 1}: " : ''
+    errors.full_messages.map { |m| prefix + m.downcase }
+  end
+
   private
 
   def url_is_url
