@@ -804,18 +804,25 @@ RSpec.describe GalleriesController do
     end
 
     context "when adding new icons" do
+      let(:user) { create(:user) }
+      let(:gallery) { create(:gallery, user: user) }
+      let(:icons) do
+        [
+          { keyword: 'test1', url: 'http://example.com/image3141.png', credit: 'test1' },
+          { keyword: 'test2', url: "https://d1anwqy6ci9o1i.cloudfront.net/users/#{user.id}/icons/nonsense-fakeimg.png" },
+        ]
+      end
+
+      before(:each) { login_as(user) }
+
       it "requires icons" do
-        gallery = create(:gallery)
-        login_as(gallery.user)
         post :icon, params: { id: gallery.id, icons: [] }
         expect(response).to render_template(:add)
         expect(flash[:error]).to eq('You have to enter something.')
       end
 
       it "requires valid icons" do
-        gallery = create(:gallery)
         uploaded_icon = create(:uploaded_icon)
-        login_as(gallery.user)
 
         icons = [
           { keyword: 'test1', url: uploaded_icon.url, s3_key: uploaded_icon.s3_key, credit: '' },
@@ -840,14 +847,6 @@ RSpec.describe GalleriesController do
       end
 
       it "succeeds with gallery" do
-        user = create(:user)
-        gallery = create(:gallery, user_id: user.id)
-        login_as(user)
-        icons = [
-          { keyword: 'test1', url: 'http://example.com/image3141.png', credit: 'test1' },
-          { keyword: 'test2', url: "https://d1anwqy6ci9o1i.cloudfront.net/users/#{user.id}/icons/nonsense-fakeimg.png" },
-        ]
-
         post :icon, params: { id: gallery.id, icons: icons }
         expect(response).to redirect_to(gallery_path(gallery))
         expect(flash[:success]).to eq('Icons saved.')
@@ -866,13 +865,6 @@ RSpec.describe GalleriesController do
       end
 
       it "succeeds with galleryless" do
-        user = create(:user)
-        login_as(user)
-        icons = [
-          { keyword: 'test1', url: 'http://example.com/image3142.png', credit: 'test1' },
-          { keyword: 'test2', url: "https://d1anwqy6ci9o1i.cloudfront.net/users/#{user.id}/icons/nonsense-fakeimg.png" },
-        ]
-
         post :icon, params: { id: 0, icons: icons }
         expect(response).to redirect_to(user_gallery_path(id: 0, user_id: user.id))
         expect(flash[:success]).to eq('Icons saved.')
@@ -890,6 +882,41 @@ RSpec.describe GalleriesController do
         expect(icon_objs.last.keyword).to eq(icons.last[:keyword])
         expect(icon_objs.last.url).to eq(icons.last[:url])
         expect(icon_objs.last.credit).to be_nil
+      end
+
+      it "handles save failure" do
+        icon = build(:icon, user: user)
+        icon.assign_attributes(icons[0])
+        allow(Icon).to receive(:new).and_call_original
+        allow(Icon).to receive(:new).with(hash_including(icons[0])).and_return(icon)
+        allow(icon).to receive(:save).and_return(false)
+
+        post :icon, params: { id: gallery.id, icons: icons }
+
+        expect(flash[:error][:message]).to eq('Icons could not be saved because of the following problems:')
+        expect(flash[:error][:array]).to eq(['Icon 1 could not be saved.'])
+
+        gallery.reload
+        expect(gallery.icons).to be_empty
+      end
+
+      it "handles save failure with errors" do
+        icon = build(:icon, user: user)
+        icon.assign_attributes(icons[0])
+        allow(Icon).to receive(:new).and_call_original
+        allow(Icon).to receive(:new).with(hash_including(icons[0])).and_return(icon)
+        expect(icon).to receive(:save) do
+          icon.errors.add(:url, :invalid)
+          false
+        end
+
+        post :icon, params: { id: gallery.id, icons: icons }
+
+        expect(flash[:error][:message]).to eq('Icons could not be saved because of the following problems:')
+        expect(flash[:error][:array]).to eq(['Icon 1: url is invalid'])
+
+        gallery.reload
+        expect(gallery.icons).to be_empty
       end
     end
 
