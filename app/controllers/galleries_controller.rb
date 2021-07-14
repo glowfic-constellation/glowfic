@@ -176,37 +176,14 @@ class GalleriesController < UploadingController
       render :add and return
     end
 
-    icons = @icons.map { |hash| Icon.new(icon_params(hash.except('filename', 'file')).merge(user: current_user)) }
+    adder = Icon::Adder.new(@icons, gallery: @gallery)
+    adder.add(user: current_user)
+    @icons = adder.icons
 
-    if icons.any? { |i| !i.valid? }
+    if adder.errors.present?
       flash.now[:error] = {
         message: "Icons could not be saved because of the following problems:",
-        array: [],
-      }
-
-      icons.each_with_index do |icon, index|
-        next if icon.valid?
-        @icons[index]['url'] = @icons[index]['s3_key'] = '' if icon.errors.added?(:url, :invalid)
-        flash.now[:error][:array] += icon.get_errors(index)
-      end
-
-      render :add and return
-    end
-
-    errors = []
-    Icon.transaction do
-      icons.each_with_index do |icon, index|
-        next if icon.save
-        errors += icon.errors.present? ? icon.get_errors(index) : ["Icon #{index + 1} could not be saved."]
-      end
-      raise ActiveRecord::Rollback if errors.present?
-      @gallery.icons += icons if @gallery
-    end
-
-    if errors.present?
-      flash.now[:error] = {
-        message: "Icons could not be saved because of the following problems:",
-        array: errors,
+        array: adder.errors,
       }
       render :add
     else
@@ -258,9 +235,5 @@ class GalleriesController < UploadingController
       ],
       icon_ids: [],
     )
-  end
-
-  def icon_params(paramset)
-    paramset.permit(:url, :keyword, :credit, :s3_key)
   end
 end
