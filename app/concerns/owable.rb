@@ -68,7 +68,7 @@ module Owable
       blocked_ids = User.where(id: new_author_ids).map(&:user_ids_uninteractable).flatten
       return if blocked_ids.empty?
 
-      all_author_ids = new_author_ids + self.author_ids + [self.user_id]
+      all_author_ids = (new_author_ids + self.author_ids + [self.user_id]).uniq
       self.authors.reset # clear association cache
       return if (all_author_ids & blocked_ids).empty?
       errors.add(:post_author, "cannot be added")
