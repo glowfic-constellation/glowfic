@@ -45,13 +45,13 @@ class Reply::Searcher < Generic::Searcher
 
     @search_results = @search_results
       .select('replies.*, characters.name, characters.screenname, users.username, users.deleted as user_deleted')
-      .visible_to(current_user)
+      .visible_to(user)
       .joins(:user)
       .left_outer_joins(:character)
       .paginate(page: page)
       .includes(:post)
 
-    @search_results = @search_results.where.not(post_id: current_user.hidden_posts) if logged_in? && !params[:show_blocked]
+    @search_results = @search_results.where.not(post_id: user.hidden_posts) if user.present? && !params[:show_blocked]
 
     unless params[:condensed]
       @search_results = @search_results
