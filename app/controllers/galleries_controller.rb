@@ -171,13 +171,11 @@ class GalleriesController < UploadingController
 
     icon_ids = params[:image_ids].split(',').map(&:to_i).reject(&:zero?)
     icon_ids -= @gallery.icons.pluck(:id)
-    icons = Icon.where(id: icon_ids)
-    icons.each do |icon|
-      next unless icon.user_id == current_user.id
-      @gallery.icons << icon
-    end
+    icons = Icon.where(id: icon_ids, user_id: current_user.id)
+    @gallery.icons += icons
+
     flash[:success] = "Icons added to gallery."
-    redirect_to @gallery and return
+    redirect_to @gallery
   end
 
   def add_new_icons
