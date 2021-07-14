@@ -7,6 +7,7 @@ class GalleriesController < UploadingController
   before_action :require_edit_permission, only: [:edit, :update, :destroy]
   before_action :require_create_permission, only: [:new, :create, :add, :icon]
   before_action :find_user, only: [:index]
+  before_action :require_own_gallery, only: [:add, :icon]
   before_action :setup_new_icons, only: [:add, :icon]
   before_action :set_s3_url, only: [:edit, :add, :icon]
   before_action :editor_setup, only: [:new, :edit]
@@ -149,6 +150,12 @@ class GalleriesController < UploadingController
     redirect_to continuities_path
   end
 
+  def require_own_gallery
+    return if params[:id].to_s == '0'
+    return unless find_model
+    require_edit_permission
+  end
+
   def find_user
     if params[:user_id].present?
       unless (@user = User.active.full.find_by_id(params[:user_id]))
@@ -229,7 +236,6 @@ class GalleriesController < UploadingController
       use_javascript('galleries/uploader')
     end
     @icons = []
-    find_model && require_edit_permission unless params[:id] == '0'
     @unassigned = current_user.galleryless_icons
     @page_title = "Add Icons"
     @page_title += ": " + @gallery.name unless @gallery.nil?
