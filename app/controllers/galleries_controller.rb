@@ -194,12 +194,14 @@ class GalleriesController < UploadingController
     end
 
     errors = []
-    icons.each_with_index do |icon, index|
-      next if icon.save
-      errors += icon.errors.present? ? icon.get_errors(index) : ["Icon #{index + 1} could not be saved."]
+    Icon.transaction do
+      icons.each_with_index do |icon, index|
+        next if icon.save
+        errors += icon.errors.present? ? icon.get_errors(index) : ["Icon #{index + 1} could not be saved."]
+      end
+      raise ActiveRecord::Rollback if errors.present?
+      @gallery.icons += icons if @gallery
     end
-
-    @gallery.icons += icons.select(&:persisted?) if @gallery
 
     if errors.present?
       flash.now[:error] = {
