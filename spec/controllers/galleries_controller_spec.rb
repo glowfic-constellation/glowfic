@@ -827,7 +827,7 @@ RSpec.describe GalleriesController do
 
         post :icon, params: { id: gallery.id, icons: icons }
         expect(response).to render_template(:add)
-        expect(flash[:error][:message]).to eq('Your icons could not be saved.')
+        expect(flash[:error][:message]).to eq('Icons could not be saved because of the following problems:')
         expect(assigns(:icons).length).to eq(icons.length - 1) # removes blank icons
         expect(assigns(:icons).first[:url]).to be_empty # removes not-yours uploaded icon URLs
         expect(flash.now[:error][:array]).to match_array([
