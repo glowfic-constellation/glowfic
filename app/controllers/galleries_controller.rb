@@ -169,15 +169,13 @@ class GalleriesController < UploadingController
   end
 
   def add_new_icons
-    @icons = (params[:icons] || []).reject { |icon| icon.values.all?(&:blank?) }
-
-    if @icons.empty?
-      flash.now[:error] = "You have to enter something."
+    adder = Icon::Adder.new(params[:icons], gallery: @gallery, user: current_user)
+    if adder.errors
+      flash.now[:error] = adder.errors
       render :add and return
     end
 
-    adder = Icon::Adder.new(@icons, gallery: @gallery)
-    adder.add(user: current_user)
+    adder.add
     @icons = adder.icon_hashes
 
     if adder.errors.present?

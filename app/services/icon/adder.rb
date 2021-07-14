@@ -1,15 +1,17 @@
 class Icon::Adder < Object
   attr_reader :errors, :icon_hashes
 
-  def initialize(icons, gallery: nil)
-    @icon_hashes = icons
-    @icons = []
+  def initialize(icon_hashes, gallery: nil, user:)
+    @icon_hashes = (icon_hashes || []).reject { |icon| icon.values.all?(&:blank?) }
+    @errors = "You have to enter something." and return if @icon_hashes.empty?
+
+    @icon_hashes = @icon_hashes.map { |hash| icon_params(hash).merge(user: user) }
     @gallery = gallery
     @errors = []
   end
 
-  def add(user:)
-    @icons = @icon_hashes.map { |hash| Icon.new(icon_params(hash.except('filename', 'file')).merge(user: user)) }
+  def add
+    @icons = @icon_hashes.map { |hash| Icon.new(hash) }
     validate_icons
     return if @errors.present?
     save_icons
