@@ -28,7 +28,7 @@ class Icon::Adder < Object
         @icon_hashes[index]['url'] = ''
         @icon_hashes[index]['s3_key'] = ''
       end
-      @errors += get_errors(icon, index)
+      get_errors(icon, index)
     end
   end
 
@@ -36,7 +36,7 @@ class Icon::Adder < Object
     Icon.transaction do
       @icons.each_with_index do |icon, index|
         next if icon.save
-        @errors += get_errors(icon, index)
+        get_errors(icon, index)
       end
 
       raise ActiveRecord::Rollback if @errors.present?
@@ -46,9 +46,9 @@ class Icon::Adder < Object
   def get_errors(icon, index)
     prefix = "Icon #{index + 1}: "
     if icon.errors.present?
-      icon.errors.full_messages.map { |m| prefix + m.downcase }
+      @errors += icon.errors.full_messages.map { |m| prefix + m.downcase }
     else
-      [prefix + 'could not be saved']
+      @errors += [prefix + 'could not be saved']
     end
   end
 
