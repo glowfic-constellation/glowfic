@@ -36,7 +36,6 @@ class Icon < ApplicationRecord
 
   def url_is_url
     return true if url.to_s.starts_with?('http://') || url.to_s.starts_with?('https://')
-    self.url = url_was unless new_record?
     errors.add(:url, "must be an actual fully qualified url (http://www.example.com)")
   end
 
@@ -65,10 +64,7 @@ class Icon < ApplicationRecord
     return unless uploaded?
     return if url.include?("users%2F#{user_id}%2Ficons%2F") && \
               s3_key.starts_with?("users/#{user_id}/icons/")
-
-    self.url = url_was
-    self.s3_key = s3_key_was
-    errors.add(:url, 'is invalid')
+    errors.add(:url, :invalid, message: 'is invalid')
   end
 
   def clear_icon_ids
