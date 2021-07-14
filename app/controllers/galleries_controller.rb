@@ -212,12 +212,11 @@ class GalleriesController < UploadingController
 
     errors = []
     icons.each_with_index do |icon, index|
-      if icon.save
-        @gallery.icons << icon if @gallery
-      else
-        errors += icon.get_errors(index)
-      end
+      next if icon.save
+      errors += icon.get_errors(index)
     end
+
+    @gallery.icons += icons.select(&:persisted?) if @gallery
 
     if errors.present?
       flash.now[:error] = {
