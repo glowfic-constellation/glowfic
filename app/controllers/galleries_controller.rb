@@ -109,7 +109,18 @@ class GalleriesController < UploadingController
 
   def icon
     if params[:image_ids].present?
-      add_existing_icons
+      unless @gallery # gallery required for adding icons from other galleries
+        flash[:error] = "Gallery could not be found."
+        redirect_to user_galleries_path(current_user) and return
+      end
+
+      icon_ids = params[:image_ids].split(',').map(&:to_i).reject(&:zero?)
+      icon_ids -= @gallery.icons.pluck(:id)
+      icons = Icon.where(id: icon_ids, user_id: current_user.id)
+      @gallery.icons += icons
+
+      flash[:success] = "Icons added to gallery."
+      redirect_to @gallery
     else
       add_new_icons
     end
@@ -168,21 +179,6 @@ class GalleriesController < UploadingController
       return if readonly_forbidden
       @user = current_user
     end
-  end
-
-  def add_existing_icons
-    unless @gallery # gallery required for adding icons from other galleries
-      flash[:error] = "Gallery could not be found."
-      redirect_to user_galleries_path(current_user) and return
-    end
-
-    icon_ids = params[:image_ids].split(',').map(&:to_i).reject(&:zero?)
-    icon_ids -= @gallery.icons.pluck(:id)
-    icons = Icon.where(id: icon_ids, user_id: current_user.id)
-    @gallery.icons += icons
-
-    flash[:success] = "Icons added to gallery."
-    redirect_to @gallery
   end
 
   def add_new_icons
