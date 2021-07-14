@@ -34,15 +34,10 @@ class Reply::Searcher < Generic::Service
   end
 
   def sort(sort, content)
-    append_rank = content.present? ? ', rank DESC' : ''
     if ['created_new', 'created_old'].include?(sort)
-      order = case sort
-        when 'created_new'
-          'replies.created_at DESC'
-        when 'created_old'
-          'replies.created_at ASC'
-      end
-      @search_results = @search_results.except(:order).order(order + append_rank)
+      order = (sort == 'created_new') ? 'replies.created_at DESC' : 'replies.created_at ASC'
+      order += ', rank DESC' if content.present?
+      @search_results = @search_results.except(:order).order(order)
     elsif content.blank?
       @search_results = @search_results.order('replies.created_at DESC')
     end
