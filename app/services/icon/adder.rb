@@ -17,6 +17,8 @@ class Icon::Adder < Object
     @gallery.icons += @icons if @gallery
   end
 
+  private
+
   def validate_icons
     @icons.each_with_index do |icon, index|
       next if icon.valid?
@@ -32,19 +34,21 @@ class Icon::Adder < Object
     Icon.transaction do
       @icons.each_with_index do |icon, index|
         next if icon.save
-
-        if icon.errors.present?
-          @errors += icon.get_errors(index)
-        else
-          @errors += ["Icon #{index + 1} could not be saved."]
-        end
+        @errors += get_errors(icon, index)
       end
-      
+
       raise ActiveRecord::Rollback if @errors.present?
     end
   end
 
-  private
+  def get_errors(icon, index)
+    prefix = "Icon #{index + 1}: "
+    if icon.errors.present?
+      errors.full_messages.map { |m| prefix + m.downcase }
+    else
+      prefix + 'could not be saved'
+    end
+  end
 
   def icon_params(paramset)
     paramset.permit(:url, :keyword, :credit, :s3_key)
