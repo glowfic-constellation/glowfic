@@ -170,7 +170,7 @@ class GalleriesController < UploadingController
 
   def add_new_icons
     adder = Icon::Adder.new(params[:icons], gallery: @gallery, user: current_user)
-    if adder.errors
+    if adder.errors.present?
       flash.now[:error] = adder.errors
       render :add and return
     end

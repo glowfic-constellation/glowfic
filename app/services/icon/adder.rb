@@ -28,7 +28,7 @@ class Icon::Adder < Object
         @icon_hashes[index]['url'] = ''
         @icon_hashes[index]['s3_key'] = ''
       end
-      @errors += icon.get_errors(index)
+      @errors += get_errors(icon, index)
     end
   end
 
@@ -46,9 +46,9 @@ class Icon::Adder < Object
   def get_errors(icon, index)
     prefix = "Icon #{index + 1}: "
     if icon.errors.present?
-      errors.full_messages.map { |m| prefix + m.downcase }
+      icon.errors.full_messages.map { |m| prefix + m.downcase }
     else
-      prefix + 'could not be saved'
+      [prefix + 'could not be saved']
     end
   end
 
