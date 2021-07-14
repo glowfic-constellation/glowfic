@@ -9,7 +9,12 @@ class Icon::Adder < Object
 
   def add(user:)
     @icons = @icon_hashes.map { |hash| Icon.new(icon_params(hash.except('filename', 'file')).merge(user: user)) }
+    validate_icons
+    return if @errors.present?
+    save_icons
+  end
 
+  def validate_icons
     if @icons.any? { |i| !i.valid? }
       @icons.each_with_index do |icon, index|
         next if icon.valid?
@@ -17,9 +22,9 @@ class Icon::Adder < Object
         @errors += icon.get_errors(index)
       end
     end
+  end
 
-    return if @errors.present?
-
+  def save_icons
     Icon.transaction do
       @icons.each_with_index do |icon, index|
         next if icon.save
