@@ -17,6 +17,7 @@ class Reply::Searcher < Generic::Service
     filter_posts(params[:board_id])
     filter_templates(params[:template_id], params[:author_id])
     finalize(user, params[:condensed], params[:show_blocked])
+    @search_results
   end
 
   private
