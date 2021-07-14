@@ -15,21 +15,35 @@ class Reply::Searcher < Generic::Searcher
     sort
     filter_posts
     filter_templates
-    select(user)
+
+    @search_results = @search_results
+      .select('replies.*, characters.name, characters.screenname, users.username, users.deleted as user_deleted')
+      .visible_to(user)
+      .joins(:user)
+      .left_outer_joins(:character)
+      .includes(:post)
+
+    @search_results = @search_results.where.not(post_id: user.hidden_posts) if user.present? && !params[:show_blocked]
+
+    unless params[:condensed]
+      @search_results = @search_results
+        .select('icons.keyword, icons.url')
+        .left_outer_joins(:icon)
+    end
   end
 
   private
 
   def search_content
-      @search_results = @search_results.search(params[:subj_content]).with_pg_search_highlight
-      exact_phrases = params[:subj_content].scan(/"([^"]*)"/)
-      if exact_phrases.present?
-        exact_phrases.each do |phrase|
-          phrase = phrase.first.strip
-          next if phrase.blank?
-          @search_results = @search_results.where("replies.content LIKE ?", "%#{phrase}%")
-        end
+    @search_results = @search_results.search(params[:subj_content]).with_pg_search_highlight
+    exact_phrases = params[:subj_content].scan(/"([^"]*)"/)
+    if exact_phrases.present?
+      exact_phrases.each do |phrase|
+        phrase = phrase.first.strip
+        next if phrase.blank?
+        @search_results = @search_results.where("replies.content LIKE ?", "%#{phrase}%")
       end
+    end
   end
 
   def sort
@@ -61,23 +75,6 @@ class Reply::Searcher < Generic::Searcher
       end
     elsif params[:author_id].present?
       @templates = @templates.where(user_id: params[:author_id])
-    end
-  end
-
-  def select(user)
-    @search_results = @search_results
-      .select('replies.*, characters.name, characters.screenname, users.username, users.deleted as user_deleted')
-      .visible_to(user)
-      .joins(:user)
-      .left_outer_joins(:character)
-      .includes(:post)
-
-    @search_results = @search_results.where.not(post_id: user.hidden_posts) if user.present? && !params[:show_blocked]
-
-    unless params[:condensed]
-      @search_results = @search_results
-        .select('icons.keyword, icons.url')
-        .left_outer_joins(:icon)
     end
   end
 end
