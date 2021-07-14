@@ -1,4 +1,6 @@
 class Reply::Searcher < Generic::Searcher
+  attr_reader :templates
+
   def initialize(post: nil, templates: [])
     @post = post
     @templates = templates
