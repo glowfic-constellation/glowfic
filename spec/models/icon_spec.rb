@@ -39,30 +39,12 @@ RSpec.describe Icon do
     end
 
     describe "#uploaded_url_yours" do
-      it "should set the url back to its previous url on create" do
-        icon = create(:uploaded_icon)
-        dupe_icon = build(:icon, url: icon.url, s3_key: icon.s3_key, user: create(:user))
-        expect(dupe_icon).not_to be_valid
-        expect(dupe_icon.url).to be_nil
-      end
-
-      it "should set the url back to its previous url on update" do
-        icon = create(:uploaded_icon)
-        dupe_icon = create(:icon)
-        old_url = dupe_icon.url
-        dupe_icon.url = icon.url
-        dupe_icon.s3_key = icon.s3_key
-        dupe_icon.user_id = create(:user)
-        expect(dupe_icon.save).to be false
-        expect(dupe_icon.url).to eq(old_url)
-      end
-
       it "does not allow url/s3_key mismatch" do
         icon = build(:icon, user: create(:user))
         icon.url = "https://d1anwqy6ci9o1i.cloudfront.net/users%2F#{icon.user.id}%2Ficons%2Fnonsense-fakeimg2.png"
         icon.s3_key = "users/#{icon.user.id + 1}/icons/nonsense-fakeimg2.png"
+        expect(icon).not_to be_valid
         expect(icon.save).to be false
-        expect(icon.url).to be_nil
       end
     end
   end

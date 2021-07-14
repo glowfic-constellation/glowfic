@@ -199,7 +199,7 @@ class GalleriesController < UploadingController
       icon = Icon.new(icon_params(icon.except('filename', 'file')))
       icon.user = current_user
       unless icon.valid?
-        @icons[index]['url'] = @icons[index]['s3_key'] = '' if icon.errors.messages[:url]&.include?('is invalid')
+        @icons[index]['url'] = @icons[index]['s3_key'] = '' if icon.errors.added?(:url, :invalid)
         flash.now[:error] ||= {}
         flash.now[:error][:array] ||= []
         flash.now[:error][:array] += icon.errors.full_messages.map { |m| "Icon #{index + 1}: #{m.downcase}" }
