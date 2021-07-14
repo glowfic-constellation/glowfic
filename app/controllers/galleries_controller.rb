@@ -204,7 +204,7 @@ class GalleriesController < UploadingController
       icons.each_with_index do |icon, index|
         next if icon.valid?
         @icons[index]['url'] = @icons[index]['s3_key'] = '' if icon.errors.added?(:url, :invalid)
-        flash.now[:error][:array] += icon.errors.full_messages.map { |m| "Icon #{index + 1}: #{m.downcase}" }
+        flash.now[:error][:array] += icon.get_errors(index)
       end
 
       render :add and return
@@ -215,7 +215,7 @@ class GalleriesController < UploadingController
       if icon.save
         @gallery.icons << icon if @gallery
       else
-        errors += icon.errors.full_messages.map { |m| "Icon #{index + 1}: #{m.downcase}" }
+        errors += icon.get_errors(index)
       end
     end
 
