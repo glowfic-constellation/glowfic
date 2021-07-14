@@ -186,45 +186,48 @@ class GalleriesController < UploadingController
   end
 
   def add_new_icons
-    icons = (params[:icons] || []).reject { |icon| icon.values.all?(&:blank?) }
-    if icons.empty?
+    @icons = (params[:icons] || []).reject { |icon| icon.values.all?(&:blank?) }
+
+    if @icons.empty?
       flash.now[:error] = "You have to enter something."
       render :add and return
     end
 
-    failed = false
-    @icons = icons
-    icons = []
-    @icons.each_with_index do |icon, index|
-      icon = Icon.new(icon_params(icon.except('filename', 'file')))
-      icon.user = current_user
-      unless icon.valid?
+    icons = @icons.map { |hash| Icon.new(icon_params(hash.except('filename', 'file')).merge(user: current_user)) }
+
+    if icons.any? { |i| !i.valid? }
+      flash.now[:error] = {
+        message: "Icons could not be saved because of the following problems:",
+        array: [],
+      }
+
+      icons.each_with_index do |icon, index|
+        next if icon.valid?
         @icons[index]['url'] = @icons[index]['s3_key'] = '' if icon.errors.added?(:url, :invalid)
-        flash.now[:error] ||= {}
-        flash.now[:error][:array] ||= []
         flash.now[:error][:array] += icon.errors.full_messages.map { |m| "Icon #{index + 1}: #{m.downcase}" }
-        failed = true and next
       end
-      icons << icon
+
+      render :add and return
     end
 
-    if failed
-      flash.now[:error][:message] = "Your icons could not be saved."
-      render :add and return
-    elsif icons.empty?
-      @icons = []
-      flash.now[:error] = "Your icons could not be saved."
-      render :add
-    elsif icons.all?(&:save)
-      flash[:success] = "Icons saved."
-      if @gallery
-        icons.each { |icon| @gallery.icons << icon }
-        redirect_to @gallery and return
+    errors = []
+    icons.each_with_index do |icon, index|
+      if icon.save
+        @gallery.icons << icon if @gallery
+      else
+        errors += icon.errors.full_messages.map { |m| "Icon #{index + 1}: #{m.downcase}" }
       end
-      redirect_to user_gallery_path(id: 0, user_id: current_user.id)
-    else
-      flash.now[:error] = "Your icons could not be saved."
+    end
+
+    if errors.present?
+      flash.now[:error] = {
+        message: "Icons could not be saved because of the following problems:",
+        array: errors,
+      }
       render :add
+    else
+      flash[:success] = "Icons saved."
+      redirect_to @gallery || user_gallery_path(id: 0, user_id: current_user.id)
     end
   end
 
