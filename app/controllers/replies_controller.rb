@@ -35,6 +35,7 @@ class RepliesController < WritableController
 
     searcher = Reply::Searcher.new(post: @post, templates: @templates)
     @search_results = searcher.search(params, current_user)
+    @search_results = @search_results.paginate(page: page)
 
     @audits = []
   end

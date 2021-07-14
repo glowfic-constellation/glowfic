@@ -53,7 +53,6 @@ class Reply::Searcher < Generic::Searcher
       .visible_to(user)
       .joins(:user)
       .left_outer_joins(:character)
-      .paginate(page: page)
       .includes(:post)
 
     @search_results = @search_results.where.not(post_id: user.hidden_posts) if user.present? && !params[:show_blocked]
