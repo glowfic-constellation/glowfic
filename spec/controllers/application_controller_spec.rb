@@ -103,13 +103,6 @@ RSpec.describe ApplicationController do
       expect(fetched_posts).not_to respond_to(:total_pages)
     end
 
-    it "skips visibility check if there are more than 25 posts" do
-      expect_any_instance_of(Post).not_to receive(:visible_to?)
-      relation = Post.where(id: default_post_ids)
-      fetched_posts = controller.send(:posts_from_relation, relation)
-      expect(fetched_posts.count).to eq(26) # number when querying the database – actual number returned is 25, due to pagination
-    end
-
     it "fetches correct authors, reply counts and content warnings" do
       post1 = create(:post)
       warning1 = create(:content_warning)

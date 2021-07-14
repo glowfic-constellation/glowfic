@@ -425,7 +425,9 @@ RSpec.describe MessagesController do
     it "does not remark the message read" do
       message = create(:message, unread: false)
       login_as(message.recipient)
-      expect_any_instance_of(Message).not_to receive(:update)
+      allow(Message).to receive(:find_by).and_call_original
+      allow(Message).to receive(:find_by).with(id: message.id.to_s).and_return(message)
+      expect(message).not_to receive(:update)
       get :show, params: { id: message.id }
     end
 
@@ -469,14 +471,17 @@ RSpec.describe MessagesController do
     context "marking unread" do
       it "handles invalid message ids" do
         login
-        expect_any_instance_of(Message).not_to receive(:update)
+        message = instance_double(Message)
+        allow(Message).to receive(:find_by).and_return(message)
+        expect(message).not_to receive(:update)
         post :mark, params: { marked_ids: ['nope', -1, '0'], commit: "Mark Unread" }
       end
 
       it "does not work for users without access" do
         message = create(:message)
         login
-        expect_any_instance_of(Message).not_to receive(:update)
+        allow(Message).to receive(:find_by).with(id: message.id.to_s).and_return(message)
+        expect(message).not_to receive(:update)
         post :mark, params: { marked_ids: [message.id.to_s], commit: "Mark Unread" }
       end
 
@@ -505,14 +510,17 @@ RSpec.describe MessagesController do
     context "marking read" do
       it "handles invalid message ids" do
         login
-        expect_any_instance_of(Message).not_to receive(:update)
+        message = instance_double(Message)
+        allow(Message).to receive(:find_by).and_return(message)
+        expect(message).not_to receive(:update)
         post :mark, params: { marked_ids: ['nope', -1, '0'], commit: "Mark Read" }
       end
 
       it "does not work for users without access" do
         message = create(:message)
         login
-        expect_any_instance_of(Message).not_to receive(:update)
+        allow(Message).to receive(:find_by).with(id: message.id.to_s).and_return(message)
+        expect(message).not_to receive(:update)
         post :mark, params: { marked_ids: [message.id.to_s], commit: "Mark Read" }
       end
 
@@ -541,14 +549,17 @@ RSpec.describe MessagesController do
     context "deleting" do
       it "handles invalid message ids" do
         login
-        expect_any_instance_of(Message).not_to receive(:update)
+        message = instance_double(Message)
+        allow(Message).to receive(:find_by).and_return(message)
+        expect(message).not_to receive(:update)
         post :mark, params: { marked_ids: ['nope', -1, '0'], commit: "Delete" }
       end
 
       it "does not work for users without access" do
         message = create(:message)
         login
-        expect_any_instance_of(Message).not_to receive(:update)
+        allow(Message).to receive(:find_by).with(id: message.id.to_s).and_return(message)
+        expect(message).not_to receive(:update)
         post :mark, params: { marked_ids: [message.id.to_s], commit: "Delete" }
       end
 

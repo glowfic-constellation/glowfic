@@ -220,10 +220,15 @@ RSpec.describe IndexPostsController do
       index = create(:index)
       post = create(:post, user: index.user)
       index.posts << post
-      login_as(index.user)
-      expect_any_instance_of(IndexPost).to receive(:destroy!).and_raise(ActiveRecord::RecordNotDestroyed, 'fake error')
       index_post = index.index_posts.first
+      login_as(index.user)
+
+      allow(IndexPost).to receive(:find_by).with(id: index_post.id.to_s).and_return(index_post)
+      allow(index_post).to receive(:destroy!).and_raise(ActiveRecord::RecordNotDestroyed, 'fake error')
+      expect(index_post).to receive(:destroy!)
+
       delete :destroy, params: { id: index_post.id }
+
       expect(response).to redirect_to(index_url(index))
       expect(flash[:error]).to eq({ message: "Post could not be removed from index.", array: [] })
       expect(index.reload.index_posts).to eq([index_post])

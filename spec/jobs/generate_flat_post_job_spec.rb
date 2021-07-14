@@ -52,10 +52,15 @@ RSpec.describe GenerateFlatPostJob do
 
     it "unsets key even if error is raised" do
       post = create(:post)
+      flat = post.flat_post
       $redis.set(GenerateFlatPostJob.lock_key(post.id), true)
 
       exc = StandardError
-      expect_any_instance_of(FlatPost).to receive(:save!).and_raise(exc)
+
+      allow(Post).to receive(:find_by).with(id: post.id).and_return(post)
+      allow(post).to receive(:flat_post).and_return(flat)
+      allow(flat).to receive(:save!).and_raise(exc)
+      expect(flat).to receive(:save!)
       expect(ApplicationJob).to receive(:notify_exception).with(exc, post.id).and_call_original
       clear_enqueued_jobs
 
@@ -71,15 +76,19 @@ RSpec.describe GenerateFlatPostJob do
 
     it "retries if resque is terminated" do
       post = create(:post)
+      flat = post.flat_post
       $redis.set(GenerateFlatPostJob.lock_key(post.id), true)
 
       exc = Resque::TermException.new("SIGTERM")
-      expect_any_instance_of(FlatPost).to receive(:save!).and_raise(exc)
+      allow(Post).to receive(:find_by).with(id: post.id).and_return(post)
+      allow(post).to receive(:flat_post).and_return(flat)
+      allow(flat).to receive(:save!).and_raise(exc)
+      expect(flat).to receive(:save!)
       clear_enqueued_jobs
 
-      expect_any_instance_of(GenerateFlatPostJob).to receive(:retry_job)
-
-      GenerateFlatPostJob.perform_now(post.id)
+      job = GenerateFlatPostJob.new(post.id)
+      expect(job).to receive(:retry_job)
+      job.perform_now
     end
 
     it "builds a FlatPost object if one does not exist" do

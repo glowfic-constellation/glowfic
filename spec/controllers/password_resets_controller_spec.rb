@@ -57,7 +57,13 @@ RSpec.describe PasswordResetsController do
 
     it "handles failed save" do
       user = create(:user)
-      expect_any_instance_of(PasswordReset).to receive(:generate_auth_token).and_return(nil)
+      reset = PasswordReset.new
+      allow(PasswordReset).to receive(:new) do |args|
+        reset.assign_attributes(args)
+        reset
+      end
+      allow(reset).to receive(:generate_auth_token).and_return(nil)
+      expect(reset).to receive(:generate_auth_token)
       post :create, params: { username: user.username, email: user.email }
       expect(response).to render_template('new')
       expect(flash[:error]).to eq("Password reset could not be saved.")

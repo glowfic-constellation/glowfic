@@ -260,8 +260,13 @@ RSpec.describe NewsController do
     it "errors if something fails" do
       news = create(:news)
       login_as(create(:admin_user))
-      expect_any_instance_of(News).to receive(:destroy!).and_raise(ActiveRecord::RecordNotDestroyed, 'fake error')
+
+      allow(News).to receive(:find_by).with(id: news.id.to_s).and_return(news)
+      allow(news).to receive(:destroy!).and_raise(ActiveRecord::RecordNotDestroyed, 'fake error')
+      expect(news).to receive(:destroy!)
+
       delete :destroy, params: { id: news.id }
+
       expect(response).to redirect_to(news_index_url)
       expect(flash[:error]).to eq({ message: "News post could not be deleted.", array: [] })
       expect(news.reload).not_to be_nil

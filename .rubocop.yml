@@ -481,9 +481,6 @@ Rails/WhereNot:
 
 ################## RSpec #################################
 
-RSpec/AnyInstance:
-  Enabled: false
-
 RSpec/BeEq: # new in 2.9.0
   Enabled: false
 
