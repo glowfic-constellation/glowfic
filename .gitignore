@@ -30,7 +30,6 @@ tmux-server-*
 # Ignore test files
 coverage/*
 spec/examples.txt
-wraith/now/*
 backstop/now/*
 backstop/reports/*
 
