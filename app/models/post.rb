@@ -57,6 +57,8 @@ class Post < ApplicationRecord
 
   NON_EDITED_ATTRS = %w(id created_at updated_at edited_at tagged_at last_user_id last_reply_id section_order)
   NON_TAGGED_ATTRS = %w(icon_id character_alias_id character_id)
+  WRITTEN_ATTRS = %w(content icon_id character_alias_id character_id)
+
   audited except: NON_EDITED_ATTRS, update_with_comment_only: false
   has_associated_audits
 
@@ -382,11 +384,9 @@ class Post < ApplicationRecord
     )
   end
 
-  WRITTEN_ATTRS = %w(content icon_id character_alias_id character_id)
-
   def update_written
     return unless written.present?
-    return if (changed_attributes.keys - WRITTEN_ATTRS).empty?
+    return if self.slice(WRITTEN_ATTRS) == written.slice(WRITTEN_ATTRS)
     written.update!(
       content: content,
       icon: icon,
