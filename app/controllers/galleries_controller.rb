@@ -50,7 +50,7 @@ class GalleriesController < UploadingController
       render :new
     else
       flash[:success] = "Gallery saved successfully."
-      redirect_to gallery_path(@gallery)
+      redirect_to @gallery
     end
   end
 
@@ -148,7 +148,7 @@ class GalleriesController < UploadingController
         @gallery.icons << icon
       end
       flash[:success] = "Icons added to gallery successfully."
-      redirect_to gallery_path(@gallery) and return
+      redirect_to @gallery and return
     end
 
     icons = (params[:icons] || []).reject { |icon| icon.values.all?(&:blank?) }
@@ -184,7 +184,7 @@ class GalleriesController < UploadingController
       flash[:success] = "Icons saved successfully."
       if @gallery
         icons.each do |icon| @gallery.icons << icon end
-        redirect_to gallery_path(@gallery) and return
+        redirect_to @gallery and return
       end
       redirect_to user_gallery_path(id: 0, user_id: current_user.id)
     else
@@ -200,7 +200,7 @@ class GalleriesController < UploadingController
       flash[:error] = {}
       flash[:error][:message] = "Gallery could not be deleted."
       flash[:error][:array] = @gallery.errors.full_messages
-      redirect_to gallery_path(@gallery)
+      redirect_to @gallery
     else
       flash[:success] = "Gallery deleted successfully."
       redirect_to user_galleries_path(current_user)

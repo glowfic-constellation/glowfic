@@ -215,7 +215,7 @@ module ApplicationHelper
 
   def message_sender(message)
     return message.sender_name if message.site_message?
-    link_to(message.sender_name, user_path(message.sender))
+    link_to(message.sender_name, message.sender)
   end
 
   def user_link(user, colored: false)

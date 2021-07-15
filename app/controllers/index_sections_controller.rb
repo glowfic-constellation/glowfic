@@ -24,7 +24,7 @@ class IndexSectionsController < ApplicationController
 
     if @section.index && !@section.index.editable_by?(current_user)
       flash[:error] = "You do not have permission to edit this index."
-      redirect_to index_path(@section.index) and return
+      redirect_to @section.index and return
     end
 
     begin
@@ -38,7 +38,7 @@ class IndexSectionsController < ApplicationController
       render :new
     else
       flash[:success] = "New section, #{@section.name}, has successfully been created for #{@section.index.name}."
-      redirect_to index_path(@section.index)
+      redirect_to @section.index
     end
   end
 
@@ -62,7 +62,7 @@ class IndexSectionsController < ApplicationController
       render :edit
     else
       flash[:success] = "Index section saved!"
-      redirect_to index_path(@section.index)
+      redirect_to @section.index
     end
   end
 
@@ -76,7 +76,7 @@ class IndexSectionsController < ApplicationController
     else
       flash[:success] = "Index section deleted."
     end
-    redirect_to index_path(@section.index)
+    redirect_to @section.index
   end
 
   private
@@ -91,7 +91,7 @@ class IndexSectionsController < ApplicationController
   def require_permission
     unless @section.index.editable_by?(current_user)
       flash[:error] = "You do not have permission to edit this index."
-      redirect_to index_path(@section.index)
+      redirect_to @section.index
     end
   end
 

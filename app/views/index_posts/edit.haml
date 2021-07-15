@@ -1,7 +1,7 @@
 - content_for :breadcrumbs do
   = link_to "Indexes", indexes_path
   &raquo;
-  = link_to @index_post.index.name, index_path(@index_post.index)
+  = link_to @index_post.index.name, @index_post.index
   &raquo;
   = link_to @index_post.post.subject, post_path(@index_post.post)
 

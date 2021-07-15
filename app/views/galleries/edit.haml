@@ -1,7 +1,7 @@
 - content_for :breadcrumbs do
   = link_to "Galleries", user_galleries_path(current_user)
   &raquo;
-  = link_to @gallery.name, gallery_path(@gallery)
+  = link_to @gallery.name, @gallery
   &raquo;
   %b Edit
 
