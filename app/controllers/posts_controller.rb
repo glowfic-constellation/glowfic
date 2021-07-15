@@ -186,18 +186,11 @@ class PostsController < WritableController
     return unless @deleted_audits.present?
 
     @audit = @deleted_audits.first
-    if @audit.is_a?(Reply::Version)
-      @deleted = @audit.reify
-      reply_id = @audit.item_id
-    else
-      @deleted = Reply.new(@audit.audited_changes)
-      reply_id = audit.auditable_id
-    end
-    @preceding = @post.replies.where('id < ?', reply_id).order(id: :desc).limit(2).reverse
+    @deleted = @audit.is_a?(Reply::Version) ? @audit.reify : @deleted = Reply.new(@audit.audited_changes)
+    @preceding = @post.replies.where('id < ?', @audit.auditable_id).order(id: :desc).limit(2).reverse
     @preceding = [@post] unless @preceding.present?
-    @following = @post.replies.where('id > ?', reply_id).order(id: :asc).limit(2)
+    @following = @post.replies.where('id > ?', @audit.auditable_id).order(id: :asc).limit(2)
     @audits = {} # set to prevent crashes, but we don't need this calculated, we don't want to display edit history on this page
-  end
   end
 
   def stats
