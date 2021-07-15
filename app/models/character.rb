@@ -43,7 +43,8 @@ class Character < ApplicationRecord
   audited on: :update, mod_only: true, update_with_comment_only: false
   @auditing_enabled = false
 
-  has_paper_trail on: :update, versions: { class_name: Character::Version.to_s }, if: Proc.new { |c| c.user_id != PaperTrail.request.whodunnit }
+  has_paper_trail on: :update, ignore: [:updated_at], versions: { class_name: Character::Version.to_s },
+    if: Proc.new { |c| c.user_id != PaperTrail.request.whodunnit }
 
   def editable_by?(user)
     self.class.editable_by?(user, self.user_id)
