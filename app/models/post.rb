@@ -49,6 +49,7 @@ class Post < ApplicationRecord
 
   audited except: NON_EDITED_ATTRS, update_with_comment_only: false
   has_associated_audits
+  @auditing_enabled = false
 
   has_paper_trail ignore: NON_EDITED_ATTRS, versions: { class_name: Post::Version.to_s }
 

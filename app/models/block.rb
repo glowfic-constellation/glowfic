@@ -7,6 +7,8 @@ class Block < ApplicationRecord
   validate :option_chosen
 
   audited on: [:update, :destroy], update_with_comment_only: false
+  @auditing_enabled = false
+
   has_paper_trail on: [:update, :destroy], versions: { class_name: Block::Version.to_s }
 
   scope :ordered, -> { includes(:blocked_user).sort_by { |block| [block.blocked_user.username.downcase] } }
