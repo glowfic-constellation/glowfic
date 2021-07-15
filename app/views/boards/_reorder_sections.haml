@@ -1,4 +1,3 @@
-- reset_cycle
 #reorder-sections-table
   .content-header
     = content_for :reorder_title
@@ -12,7 +11,7 @@
       Saved
   %ul.sortable.table-list
     - sections.each do |section|
-      %li.padding-5.section-ordered{class: cycle('even', 'odd'), data: {id: section.id, order: section.section_order}}
+      %li.padding-5.section-ordered{data: {id: section.id, order: section.section_order}}
         .section-ordered-handle
           = image_tag "icons/arrow_double.png", title: 'Reorder', class: 'disabled-arrow', alt: '↕'
         = link_to section.name, section
@@ -24,4 +23,4 @@
           = link_to section, method: :delete, data: { confirm: 'Are you sure you want to delete this section?' } do
             = image_tag "icons/cross.png", alt: 'Delete'
     - if sections.empty?
-      %li.centered.padding-10{class: cycle('even', 'odd')} — No items yet —
+      %li.centered.padding-10 — No items yet —
