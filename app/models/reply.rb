@@ -49,7 +49,7 @@ class Reply < ApplicationRecord
   private
 
   def set_last_reply
-    return if skip_post_update
+    return if skip_post_update && reply_order != 0
     post.last_user = user
     post.last_reply = self
   end
