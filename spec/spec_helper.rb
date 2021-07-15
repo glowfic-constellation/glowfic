@@ -209,3 +209,5 @@ Post.auditing_enabled = false
 Reply.auditing_enabled = false
 Character.auditing_enabled = false
 Block.auditing_enabled = false
+
+require 'paper_trail/frameworks/rspec'

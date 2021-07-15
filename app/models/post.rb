@@ -46,8 +46,11 @@ class Post < ApplicationRecord
 
   NON_EDITED_ATTRS = %w(id created_at updated_at edited_at tagged_at last_user_id last_reply_id section_order)
   NON_TAGGED_ATTRS = %w(icon_id character_alias_id character_id)
+
   audited except: NON_EDITED_ATTRS, update_with_comment_only: false
   has_associated_audits
+
+  has_paper_trail ignore: NON_EDITED_ATTRS, versions: { class_name: Post::Version }
 
   pg_search_scope(
     :search,

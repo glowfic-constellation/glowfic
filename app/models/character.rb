@@ -41,6 +41,7 @@ class Character < ApplicationRecord
   nilify_blanks
 
   audited on: :update, mod_only: true, update_with_comment_only: false
+  has_paper_trail on: :update, versions: { class_name: Character::Version }
 
   def editable_by?(user)
     self.class.editable_by?(user, self.user_id)
