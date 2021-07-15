@@ -207,8 +207,7 @@ RSpec.describe RepliesController, 'GET search' do
       expect(assigns(:search_results)).to eq([reply, reply2])
     end
 
-    it "does not include audits" do
-      Reply.auditing_enabled = true
+    it "does not include audits", versioning: true do
       user = create(:user)
 
       replies = Audited.audit_class.as_user(user) do
@@ -227,7 +226,6 @@ RSpec.describe RepliesController, 'GET search' do
 
       get :search, params: { commit: true, sort: 'created_old' }
       expect(assigns(:audits)).to be_empty
-      Reply.auditing_enabled = false
     end
   end
 end

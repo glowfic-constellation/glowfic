@@ -120,9 +120,8 @@ RSpec.describe PostsController, 'GET show' do
     end
   end
 
-  it "calculates audits" do
-    Reply.auditing_enabled = true
-    Post.auditing_enabled = true
+  it "calculates audits", versioning: true do
+    # TODO version as
 
     replies = Audited.audit_class.as_user(post.user) do
       create_list(:reply, 6, post: post, user: post.user)
@@ -143,8 +142,6 @@ RSpec.describe PostsController, 'GET show' do
 
     get :show, params: { id: post.id }
     expect(assigns(:audits)).to eq(counts)
-    Reply.auditing_enabled = false
-    Post.auditing_enabled = false
   end
 
   context "with render_views" do

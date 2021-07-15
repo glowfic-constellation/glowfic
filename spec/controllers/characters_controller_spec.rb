@@ -500,16 +500,14 @@ RSpec.describe CharactersController do
       expect(flash[:error]).to eq('You must provide a reason for your moderator edit.')
     end
 
-    it "stores note from moderators" do
-      Character.auditing_enabled = true
+    it "stores note from moderators", versioning: true do
       character = create(:character, name: 'a')
       admin = create(:admin_user)
       login_as(admin)
       put :update, params: { id: character.id, character: { name: 'b', audit_comment: 'note' } }
       expect(flash[:success]).to eq("Character updated.")
       expect(character.reload.name).to eq('b')
-      expect(character.audits.last.comment).to eq('note')
-      Character.auditing_enabled = false
+      expect(character.versions.last.comment).to eq('note')
     end
 
     it "succeeds when valid" do
@@ -1093,11 +1091,7 @@ RSpec.describe CharactersController do
       expect(flash[:error]).to eq('Invalid old alias.')
     end
 
-    context "with audits enabled" do
-      before(:each) { Reply.auditing_enabled = true }
-
-      after(:each) { Reply.auditing_enabled = false }
-
+    context "with audits enabled", versioning: true do
       it "succeeds with valid other character" do
         user = create(:user)
         character = create(:character, user: user)
@@ -1117,9 +1111,9 @@ RSpec.describe CharactersController do
         expect(reply.reload.character_id).to eq(other_char.id)
         expect(reply.post.reload.character_id).to eq(reply_post_char) # check it doesn't replace all replies in a post
 
-        audit = reply.audits.where(action: 'update').first
-        expect(audit).not_to be_nil
-        expect(audit.user).to eq(user)
+        version = reply.versions.find_by(event: 'update')
+        expect(version).not_to be_nil
+        expect(version.user).to eq(user)
       end
     end
 

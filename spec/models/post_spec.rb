@@ -167,15 +167,14 @@ RSpec.describe Post do
       expect(post.edited_at).to eq(post.created_at)
     end
 
-    it "should update correctly when characters are edited" do
-      Post.auditing_enabled = true
+    it "should update correctly when characters are edited", versioning: true do
       time = Time.zone.now
       post = Timecop.freeze(time - 5.minutes) do
         create(:post)
       end
       expect(post.edited_at).to be_the_same_time_as(time - 5.minutes)
       expect(post.updated_at).to be_the_same_time_as(time - 5.minutes)
-      expect(post.audits.count).to eq(1)
+      expect(post.versions.count).to eq(1)
 
       Timecop.freeze(time) do
         post.update!(character: create(:character, user: post.user))
@@ -183,9 +182,8 @@ RSpec.describe Post do
 
       # editing a post's character changes edit and makes audit but does not tag
       expect(post.edited_at).to be_the_same_time_as(time)
-      expect(post.audits.count).to eq(2)
+      expect(post.versions.count).to eq(2)
       expect(post.tagged_at).to be_the_same_time_as(time - 5.minutes)
-      Post.auditing_enabled = false
     end
   end
 
@@ -681,8 +679,7 @@ RSpec.describe Post do
         expect(post.first_unread_for(post.user)).to eq(unread)
       end
 
-      it "handles status changes" do
-        Post.auditing_enabled = true
+      it "handles status changes", versioning: true do
         post.mark_read(post.user)
         unread = create(:reply, post: post)
         expect(post.first_unread_for(post.user)).to eq(unread)
@@ -690,16 +687,13 @@ RSpec.describe Post do
 
         Timecop.freeze(unread.created_at + 1.day) do
           post.update!(status: :complete)
-
-          post.description = 'new description to add another audit'
-          post.save!
+          post.update!(description: 'new description to add another audit')
         end
 
         post.reload
         expect(post.edited_at).to be > unread.updated_at
         expect(post.first_unread_for(post.user)).to eq(unread)
         expect(post.read_time_for(post.replies)).to be_the_same_time_as(post.edited_at)
-        Post.auditing_enabled = false
       end
     end
 

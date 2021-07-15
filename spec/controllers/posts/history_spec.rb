@@ -28,8 +28,7 @@ RSpec.describe PostsController, 'GET history' do
   context "with render_view" do
     render_views
 
-    it "works" do
-      Post.auditing_enabled = true
+    it "works", versioning: true do
       post.update!(privacy: :access_list)
       post.update!(board: create(:board))
       post.update!(content: 'new content')
@@ -39,7 +38,6 @@ RSpec.describe PostsController, 'GET history' do
       get :history, params: { id: post.id }
 
       expect(response.status).to eq(200)
-      Post.auditing_enabled = false
     end
   end
 end

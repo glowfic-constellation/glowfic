@@ -50,8 +50,7 @@ RSpec.describe UpdateModelJob do
     expect(reply.post.reload.tagged_at).to be_the_same_time_as(old_tag)
   end
 
-  it "creates audits" do
-    Reply.auditing_enabled = true
+  it "creates audits", versioning: true do
     reply = create(:reply)
     new_char = create(:character, user: reply.user)
     time = Time.zone.now
@@ -59,10 +58,9 @@ RSpec.describe UpdateModelJob do
       UpdateModelJob.perform_now('Reply', { id: reply.id }, { character_id: new_char.id }, reply.user.id)
     end
     expect(reply.reload.character).to eq(new_char)
-    audit = reply.audits.last
+    audit = reply.versions.last
     expect(audit.created_at).to be_the_same_time_as(time)
-    expect(audit.audited_changes).to eq({ "character_id" => [nil, new_char.id] })
-    expect(audit.user).to eq(reply.user)
-    Reply.auditing_enabled = false
+    expect(audit.object_changes).to eq({ "character_id" => [nil, new_char.id] })
+    expect(audit.whodunnit).to eq(reply.user.id)
   end
 end

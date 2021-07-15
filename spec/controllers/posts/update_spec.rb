@@ -77,8 +77,7 @@ RSpec.describe PostsController, 'PUT update' do
     expect(flash[:error]).not_to eq('You must provide a reason for your moderator edit.')
   end
 
-  it "stores note from moderators" do
-    Post.auditing_enabled = true
+  it "stores note from moderators", versioning: true do
     login_as(admin)
     put :update, params: {
       id: post.id,
@@ -86,8 +85,7 @@ RSpec.describe PostsController, 'PUT update' do
     }
     expect(flash[:success]).to eq("Post updated.")
     expect(post.reload.description).to eq('b')
-    expect(post.audits.last.comment).to eq('note')
-    Post.auditing_enabled = false
+    expect(post.versions.last.comment).to eq('note')
   end
 
   context "mark unread" do
@@ -439,8 +437,7 @@ RSpec.describe PostsController, 'PUT update' do
       expect(PostTag.where(post: post, tag: removed_tags).count).to eq(3)
     end
 
-    it "sets expected variables" do
-      Post.auditing_enabled = true
+    it "sets expected variables", versions: true do
       post = create(:post, user: user, subject: 'old', content: 'example')
       icon = create(:icon, user: user)
       duplicate_tags
@@ -518,7 +515,6 @@ RSpec.describe PostsController, 'PUT update' do
       expect(post.character).to be_nil
       expect(post.icon).to be_nil
       expect(post.character_alias).to be_nil
-      Post.auditing_enabled = false
     end
 
     it "does not crash without arguments" do

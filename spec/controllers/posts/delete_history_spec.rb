@@ -1,9 +1,6 @@
-RSpec.describe PostsController, 'GET delete_history' do
-  let(:post) { create(:post) }
-
-  before(:each) { Reply.auditing_enabled = true }
-
-  after(:each) { Reply.auditing_enabled = false }
+RSpec.describe PostsController, 'GET delete_history', versioning: true do
+  let(:user) { create(:user) }
+  let(:post) { create(:post, user: user) }
 
   it "requires login" do
     get :delete_history, params: { id: -1 }
@@ -33,7 +30,7 @@ RSpec.describe PostsController, 'GET delete_history' do
     let!(:reply) { create(:reply, post: post, content: 'old content') }
 
     before(:each) do
-      login_as(post.user)
+      login_as(user)
       reply.destroy!
     end
 
@@ -57,16 +54,16 @@ RSpec.describe PostsController, 'GET delete_history' do
       reply.destroy!
       get :delete_history, params: { id: post.id }
       expect(assigns(:deleted_audits).count).to eq(1)
-      expect(assigns(:audit).audited_changes['content']).to eq('new content')
+      expect(assigns(:audit).object_changes['content']).to eq('new content')
     end
   end
 
   def restore(reply)
-    audit = Audited::Audit.where(action: 'destroy', auditable_id: reply.id).last
-    new_reply = Reply.new(audit.audited_changes)
+    audit = Reply::Version.where(event: 'destroy', item_id: reply.id).last
+    new_reply = audit.reify
     new_reply.is_import = true
     new_reply.skip_notify = true
-    new_reply.id = audit.auditable_id
+    new_reply.id = audit.item_id
     new_reply.save!
   end
 end

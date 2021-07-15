@@ -7,8 +7,7 @@ RSpec.describe ScrapePostJob do
     allow(STDOUT).to receive(:puts).with("Importing thread 'linear b'")
   end
 
-  it "creates the correct objects" do
-    Post.auditing_enabled = true
+  it "creates the correct objects", versioning: true do
     url = 'http://wild-pegasus-appeared.dreamwidth.org/403.html?style=site&view=flat'
     stub_fixture(url, 'scrape_no_replies')
     board = create(:board)
@@ -22,10 +21,9 @@ RSpec.describe ScrapePostJob do
     expect(Message.first.subject).to eq("Post import succeeded")
     expect(Post.count).to eq(1)
     expect(Post.first.authors_locked).to eq(true)
-    expect(Audited::Audit.count).to eq(2)
-    expect(Audited::Audit.first.user_id).to eq(Post.last.user_id)
-    expect(Audited::Audit.last.audited_changes.keys).to eq(['authors_locked'])
-    Post.auditing_enabled = false
+    expect(Post::Version.count).to eq(2)
+    expect(Post::Version.first.whodunnit).to eq(Post.last.user_id)
+    expect(Post::Version.last.object_changes.keys).to eq(['authors_locked'])
   end
 
   it "sends messages on username exceptions" do

@@ -48,26 +48,22 @@ RSpec.describe RepliesController, 'PUT update' do
     expect(flash[:error]).to eq('You must provide a reason for your moderator edit.')
   end
 
-  it "stores note from moderators" do
-    Reply.auditing_enabled = true
+  it "stores note from moderators", versioning: true do
     reply = create(:reply, content: 'a')
     admin = create(:admin_user)
     login_as(admin)
     put :update, params: { id: reply.id, reply: { content: 'b', audit_comment: 'note' } }
     expect(flash[:success]).to eq("Reply updated.")
     expect(reply.reload.content).to eq('b')
-    expect(reply.audits.last.comment).to eq('note')
-    Reply.auditing_enabled = false
+    expect(reply.versions.last.comment).to eq('note')
   end
 
-  it "does not save audit when only comment provided" do
-    Reply.auditing_enabled = true
+  it "does not save audit when only comment provided", versioning: true do
     reply = create(:reply)
     login_as(reply.user)
     expect {
       put :update, params: { id: reply.id, reply: { audit_comment: 'note' } }
-    }.not_to change { Audited::Audit.count }
-    Reply.auditing_enabled = false
+    }.not_to change { Reply::Version.count }
   end
 
   it "fails when invalid" do
@@ -127,8 +123,7 @@ RSpec.describe RepliesController, 'PUT update' do
   end
 
   context "preview" do
-    it "takes correct actions" do
-      Reply.auditing_enabled = true
+    it "takes correct actions", versioning: true do
       user = create(:user)
       reply_post = create(:post, user: user)
       reply = create(:reply, post: reply_post, user: user)
@@ -186,7 +181,6 @@ RSpec.describe RepliesController, 'PUT update' do
       templateless = templates.last
       expect(templateless.name).to eq('Templateless')
       expect(templateless.plucked_characters).to eq([[char.id, char.name]])
-      Reply.auditing_enabled = false
     end
 
     it "preserves NPC without database" do
