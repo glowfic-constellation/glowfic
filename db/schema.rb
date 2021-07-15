@@ -38,7 +38,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_09_30_053037) do
     t.string "item_type", null: false
     t.integer "item_id", null: false
     t.string "event", null: false
-    t.string "whodunnit"
+    t.integer "whodunnit"
     t.jsonb "object"
     t.jsonb "object_changes"
     t.string "comment"
@@ -128,7 +128,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_09_30_053037) do
     t.string "item_type", null: false
     t.integer "item_id", null: false
     t.string "event", null: false
-    t.string "whodunnit"
+    t.integer "whodunnit"
     t.jsonb "object"
     t.jsonb "object_changes"
     t.string "comment"
@@ -330,7 +330,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_09_30_053037) do
     t.string "item_type", null: false
     t.integer "item_id", null: false
     t.string "event", null: false
-    t.string "whodunnit"
+    t.integer "whodunnit"
     t.jsonb "object"
     t.jsonb "object_changes"
     t.string "comment"
@@ -432,7 +432,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_09_30_053037) do
     t.string "item_type", null: false
     t.integer "item_id", null: false
     t.string "event", null: false
-    t.string "whodunnit"
+    t.integer "whodunnit"
     t.jsonb "object"
     t.jsonb "object_changes"
     t.string "comment"

@@ -4,7 +4,7 @@ class CreateVersions < ActiveRecord::Migration[5.2]
       t.string   :item_type, null: false
       t.integer  :item_id,   null: false, index: true
       t.string   :event,     null: false
-      t.string   :whodunnit
+      t.integer  :whodunnit
       t.jsonb    :object
       t.jsonb    :object_changes
       t.string   :comment
@@ -18,7 +18,7 @@ class CreateVersions < ActiveRecord::Migration[5.2]
       t.string   :item_type, null: false
       t.integer  :item_id,   null: false, index: true
       t.string   :event,     null: false
-      t.string   :whodunnit
+      t.integer  :whodunnit
       t.jsonb    :object
       t.jsonb    :object_changes
       t.string   :comment
@@ -33,7 +33,7 @@ class CreateVersions < ActiveRecord::Migration[5.2]
       t.string   :item_type, null: false
       t.integer  :item_id,   null: false, index: true
       t.string   :event,     null: false
-      t.string   :whodunnit
+      t.integer  :whodunnit
       t.jsonb    :object
       t.jsonb    :object_changes
       t.string   :comment
@@ -47,7 +47,7 @@ class CreateVersions < ActiveRecord::Migration[5.2]
       t.string   :item_type, null: false
       t.integer  :item_id,   null: false, index: true
       t.string   :event,     null: false
-      t.string   :whodunnit
+      t.integer  :whodunnit
       t.jsonb    :object
       t.jsonb    :object_changes
       t.string   :comment
