@@ -258,6 +258,10 @@ class ApplicationController < ActionController::Base
   end
 
   def info_for_paper_trail
-    { comment: permitted_params.fetch(:audit_comment, nil), ip: request.remote_ip, request_uuid: request.request_uuid }
+    {
+      comment: params.fetch(controller_name.singularize, {}).fetch(:audit_comment, nil),
+      ip: request.remote_ip,
+      request_uuid: request.uuid
+    }
   end
 end
