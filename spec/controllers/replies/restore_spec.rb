@@ -20,11 +20,11 @@ RSpec.describe RepliesController, 'POST restore', versioning: true do
 
   it "must be a deleted reply" do
     reply = create(:reply)
-    Reply::Version.where(action: 'create').find_by(item_id: reply.id).update!(action: 'destroy')
+    Reply::Version.where(event: 'create').find_by(item_id: reply.id).update!(event: 'destroy')
     login_as(reply.user)
     post :restore, params: { id: reply.id }
-    expect(response).to redirect_to(continuities_url)
-    expect(flash[:error]).to eq("Reply could not be found.")
+    expect(response).to redirect_to(post_url(reply.post))
+    expect(flash[:error]).to eq("Reply does not need restoring.")
   end
 
   it "must be your reply" do
@@ -218,21 +218,31 @@ RSpec.describe RepliesController, 'POST restore', versioning: true do
       PaperTrail.request(enabled: false) do
         Audited.auditing_enabled = true
         reply = create(:reply, content: 'not yet restored')
-        reply.destroy!
         login_as(reply.user)
 
+        expect(reply.audits.size).to eq(1)
+        expect(reply.versions).to be_empty
+
+        reply.destroy!
+
         post :restore, params: { id: reply.id }
+
         expect(flash[:success]).to eq("Reply has been restored!")
         Audited.auditing_enabled = false
       end
 
-      reply.reload
+      reply = Reply.find_by(id: reply.id)
+      expect(reply.audits.size).to eq(3)
+      expect(reply.versions.size).to eq(1)
+
       reply.update!(content: 'restored right')
+      expect(reply.audits.size).to eq(3)
+      expect(reply.versions.size).to eq(2)
       reply.destroy!
 
       post :restore, params: { id: reply.id }
       expect(flash[:success]).to eq("Reply has been restored!")
-      reply.reload
+      reply = Reply.find_by(id: reply.id)
       expect(reply.content).to eq('restored right')
     end
   end

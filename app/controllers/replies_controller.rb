@@ -230,10 +230,13 @@ class RepliesController < WritableController
   end
 
   def restore
-    audit = Audited::Audit.where(action: 'destroy').order(id: :desc).find_by(auditable_id: params[:id])
+    audit = Reply::Version.where(event: 'destroy').order(created_at: :desc).find_by(item_id: params[:id])
     unless audit
-      flash[:error] = "Reply could not be found."
-      redirect_to continuities_path and return
+      audit = Audited::Audit.where(action: 'destroy').order(id: :desc).find_by(auditable_id: params[:id])
+      unless audit
+        flash[:error] = "Reply could not be found."
+        redirect_to continuities_path and return
+      end
     end
 
     if audit.auditable
@@ -241,8 +244,7 @@ class RepliesController < WritableController
       redirect_to post_path(audit.associated) and return
     end
 
-    new_reply = Reply.new(audit.audited_changes)
-    new_reply.created_at = Audited::Audit.order(id: :asc).find_by(action: 'create', auditable_id: params[:id]).created_at
+    new_reply = audit.is_a?(Reply::Version) ? audit.reify : Reply.new(audit.audited_changes)
     unless new_reply.editable_by?(current_user)
       flash[:error] = "You do not have permission to modify this reply."
       redirect_to post_path(new_reply.post) and return
