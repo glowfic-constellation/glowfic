@@ -24,7 +24,7 @@ RSpec.describe Post do
         old_written_updated_at = post.written.updated_at
         post.reload.written
         Timecop.freeze(time) do
-          post.update!(content: 'new content')
+          post.written.update!(content: 'new content')
         end
         post.reload
         # change to this when we stop maintaining the post duplicate
