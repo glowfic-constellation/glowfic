@@ -12,7 +12,6 @@ class Reply < ApplicationRecord
   validate :author_can_write_in_post, on: :create
 
   audited associated_with: :post, except: :reply_order, update_with_comment_only: false
-  @auditing_enabled = false
   has_paper_trail ignore: [:reply_order, :updated_at], versions: { class_name: Reply::Version.to_s }, meta: { post_id: :post_id }
 
   after_create :notify_other_authors, :destroy_draft, :update_active_char, :set_last_reply, :update_post, :update_post_authors

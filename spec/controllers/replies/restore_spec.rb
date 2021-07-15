@@ -38,9 +38,9 @@ RSpec.describe RepliesController, 'POST restore', versioning: true do
   end
 
   context "with audited" do
-    before(:each) { Reply.auditing_enabled = true }
+    before(:each) { Audited.auditing_enabled = true }
 
-    after(:each) { Reply.auditing_enabled = false }
+    after(:each) { Audited.auditing_enabled = false }
 
     it "handles mid reply deletion" do
       rpost = create(:post)
@@ -133,7 +133,7 @@ RSpec.describe RepliesController, 'POST restore', versioning: true do
 
     before(:each) { login_as(user) }
 
-    after(:each) { Reply.auditing_enabled = false }
+    after(:each) { Audited.auditing_enabled = false }
 
     it "handles mid reply deletion" do
       replies = create_list(:reply, 4, post: rpost, user: user)
@@ -216,14 +216,14 @@ RSpec.describe RepliesController, 'POST restore', versioning: true do
       reply = nil
 
       PaperTrail.request(enabled: false) do
-        Reply.auditing_enabled = true
+        Audited.auditing_enabled = true
         reply = create(:reply, content: 'not yet restored')
         reply.destroy!
         login_as(reply.user)
 
         post :restore, params: { id: reply.id }
         expect(flash[:success]).to eq("Reply has been restored!")
-        Reply.auditing_enabled = false
+        Audited.auditing_enabled = false
       end
 
       reply.reload
