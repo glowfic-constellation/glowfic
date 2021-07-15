@@ -164,19 +164,40 @@ class PostsController < WritableController
   end
 
   def delete_history
-    audit_ids = @post.associated_audits.where(action: 'destroy').where(auditable_type: 'Reply') # all destroyed replies
-    audit_ids = audit_ids.joins('LEFT JOIN replies ON replies.id = audits.auditable_id').where(replies: { id: nil }) # not restored
-    audit_ids = audit_ids.group(:auditable_id).pluck(Arel.sql('MAX(audits.id)')) # only most recent per reply
-    @deleted_audits = Audited::Audit.where(id: audit_ids).paginate(per_page: 1, page: page)
+    audit_ids = @post.associated_audits
+      .where(action: 'destroy', auditable_type: 'Reply') # all destroyed replies
+      .joins('LEFT JOIN replies ON replies.id = audits.auditable_id')
+      .where(replies: { id: nil }) # not restored
+      .group(:auditable_id)
+      .pluck(Arel.sql('MAX(audits.id)')) # only most recent per reply
+
+    if page > audit_ids.length
+      @deleted_audits = Reply::Version.where(post: @post, event: 'destroy') # all destroyed replies
+        .joins('LEFT JOIN replies ON replies.id = reply_versions.item_id')
+        .where(replies: { id: nil }) # not restored
+        .select('DISTINCT ON (reply_versions.item_id) item_id, reply_versions.*')
+        .order(:item_id).order(created_at: :desc) # only most recent per reply
+    else
+      @deleted_audits = Audited::Audit.where(id: audit_ids)
+    end
+
+    @deleted_audits = @deleted_audits.paginate(per_page: 1, page: page)
 
     return unless @deleted_audits.present?
 
     @audit = @deleted_audits.first
-    @deleted = Reply.new(@audit.audited_changes)
-    @preceding = @post.replies.where('id < ?', @audit.auditable_id).order(id: :desc).limit(2).reverse
+    if @audit.is_a?(Reply::Version)
+      @deleted = @audit.reify
+      reply_id = @audit.item_id
+    else
+      @deleted = Reply.new(@audit.audited_changes)
+      reply_id = audit.auditable_id
+    end
+    @preceding = @post.replies.where('id < ?', reply_id).order(id: :desc).limit(2).reverse
     @preceding = [@post] unless @preceding.present?
-    @following = @post.replies.where('id > ?', @audit.auditable_id).order(id: :asc).limit(2)
+    @following = @post.replies.where('id > ?', reply_id).order(id: :asc).limit(2)
     @audits = {} # set to prevent crashes, but we don't need this calculated, we don't want to display edit history on this page
+  end
   end
 
   def stats

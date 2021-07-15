@@ -43,7 +43,7 @@ RSpec.describe PostsController, 'GET delete_history', versioning: true do
     it "ignores restored replies" do
       restore(reply)
       get :delete_history, params: { id: post.id }
-      expect(assigns(:deleted_audits).count).to eq(0)
+      expect(assigns(:deleted_audits)).to be_empty
     end
 
     it "only selects more recent restore" do
@@ -53,8 +53,8 @@ RSpec.describe PostsController, 'GET delete_history', versioning: true do
       reply.update!(content: 'new content')
       reply.destroy!
       get :delete_history, params: { id: post.id }
-      expect(assigns(:deleted_audits).count).to eq(1)
-      expect(assigns(:audit).object_changes['content']).to eq('new content')
+      expect(assigns(:deleted_audits).size).to eq(1)
+      expect(assigns(:audit).object_changes['content'][0]).to eq('new content')
     end
   end
 
