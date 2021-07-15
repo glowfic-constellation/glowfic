@@ -121,12 +121,12 @@ a.disabled-arrow {
 
 .even {
   background-color: $bg_color_even;
-  blockquote { background-color: $bg_color_even_blockquote; }
+  blockquote { background-color: calculate-transparent-color($bg_color_even, $bg_color_odd, $opacity_blockquote); }
 }
 
 .odd {
   background-color: $bg_color_odd;
-  blockquote { background-color: $bg_color_odd_blockquote; }
+  blockquote { background-color: calculate-transparent-color($bg_color_odd, $bg_color_even, $opacity_blockquote); }
 }
 
 @mixin alternating($type, $subtype: '') {
@@ -164,12 +164,12 @@ div.alternating {
 
   .post-container:nth-child(2n) {
     background-color: $bg_color_odd;
-    blockquote { background-color: $bg_color_odd_blockquote; }
+    blockquote { background-color: calculate-transparent-color($bg_color_odd, $bg_color_even, $opacity_blockquote); }
   }
 
   .post-container:nth-child(2n+1) {
     background-color: $bg_color_even;
-    blockquote { background-color: $bg_color_even_blockquote; }
+    blockquote { background-color: calculate-transparent-color($bg_color_even, $bg_color_odd, $opacity_blockquote); }
   }
 }
 

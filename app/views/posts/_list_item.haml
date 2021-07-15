@@ -1,6 +1,6 @@
 %tr
   - replies_count = post.reply_count
-  %td.post-completed.vtop{class: (post.complete? ? 'post-complete' : 'post-incomplete')]}
+  %td.post-completed.vtop{class: (post.complete? ? 'post-complete' : 'post-incomplete')}
     - if post.complete?
       = image_tag "icons/book.png", class: 'vmid', title: "Thread Complete", alt: 'Complete'
     - elsif post.on_hiatus?
