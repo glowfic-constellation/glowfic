@@ -162,9 +162,7 @@ class RepliesController < WritableController
       @reply.save!
     rescue ActiveRecord::RecordInvalid => e
       render_errors(reply, action: 'created', now: true, err: e)
-
-      redirect_to posts_path and return unless reply.post
-      redirect_to post_path(reply.post)
+      redirect_to @reply.post ? post_path(@reply.post) : posts_path
     else
       flash[:success] = "Reply posted."
       redirect_to reply_path(reply, anchor: "reply-#{reply.id}")
