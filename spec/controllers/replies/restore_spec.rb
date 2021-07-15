@@ -133,6 +133,8 @@ RSpec.describe RepliesController, 'POST restore', versioning: true do
 
     before(:each) { login_as(user) }
 
+    after(:each) { Reply.auditing_enabled = false }
+
     it "handles mid reply deletion" do
       replies = create_list(:reply, 4, post: rpost, user: user)
       deleted_reply = replies[2]
@@ -211,6 +213,8 @@ RSpec.describe RepliesController, 'POST restore', versioning: true do
     end
 
     it "correctly restores a reply previously restored from audits" do
+      reply = nil
+
       PaperTrail.request(enabled: false) do
         Reply.auditing_enabled = true
         reply = create(:reply, content: 'not yet restored')
