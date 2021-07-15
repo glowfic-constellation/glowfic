@@ -7,6 +7,9 @@ class CreateVersions < ActiveRecord::Migration[5.2]
       t.string   :whodunnit
       t.jsonb    :object
       t.jsonb    :object_changes
+      t.string   :comment
+      t.string   :ip
+      t.string   :request_uuid
 
       t.datetime :created_at
     end
