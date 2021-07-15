@@ -120,33 +120,6 @@ RSpec.describe PostsController, 'GET show' do
     end
   end
 
-  it "calculates audits" do
-    Reply.auditing_enabled = true
-    Post.auditing_enabled = true
-
-    replies = Audited.audit_class.as_user(post.user) do
-      create_list(:reply, 6, post: post, user: post.user)
-    end
-
-    Audited.audit_class.as_user(post.user) do
-      replies[1].touch # rubocop:disable Rails/SkipsModelValidations
-      replies[3].update!(character: create(:character, user: post.user))
-      replies[2].update!(content: 'new content')
-      1.upto(5) { |i| replies[4].update!(content: 'message' + i.to_s) }
-    end
-    Audited.audit_class.as_user(create(:mod_user)) do
-      replies[5].update!(content: 'new content')
-    end
-
-    counts = replies.map(&:id).zip([1, 1, 2, 2, 6, 2]).to_h
-    counts[:post] = 1
-
-    get :show, params: { id: post.id }
-    expect(assigns(:audits)).to eq(counts)
-    Reply.auditing_enabled = false
-    Post.auditing_enabled = false
-  end
-
   context "with render_views" do
     let!(:post) { create(:post, with_icon: true, with_character: true) }
     let!(:reply) { create(:reply, post: post, with_icon: true, with_character: true) }
@@ -183,6 +156,33 @@ RSpec.describe PostsController, 'GET show' do
       login_as(reply.user)
       get :show, params: { id: post.id }
       expect(response.status).to eq(200)
+    end
+
+    it "calculates audits" do
+      Reply.auditing_enabled = true
+      Post.auditing_enabled = true
+
+      replies = Audited.audit_class.as_user(post.user) do
+        create_list(:reply, 6, post: post, user: post.user)
+      end
+
+      Audited.audit_class.as_user(post.user) do
+        replies[1].touch # rubocop:disable Rails/SkipsModelValidations
+        replies[3].update!(character: create(:character, user: post.user))
+        replies[2].update!(content: 'new content')
+        1.upto(5) { |i| replies[4].update!(content: 'message' + i.to_s) }
+      end
+      Audited.audit_class.as_user(create(:mod_user)) do
+        replies[5].update!(content: 'new content')
+      end
+
+      counts = replies.map(&:id).zip([1, 1, 2, 2, 6, 2]).to_h
+      counts[:post] = 1
+
+      get :show, params: { id: post.id }
+      expect(assigns(:audits)).to eq(counts)
+      Reply.auditing_enabled = false
+      Post.auditing_enabled = false
     end
   end
 
