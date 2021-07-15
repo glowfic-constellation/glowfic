@@ -153,6 +153,7 @@ RSpec.describe AliasesController do
 
     it "succeeds" do
       draft = create(:reply_draft, user: user, character: character, character_alias: calias)
+      reply
       login_as(user)
       perform_enqueued_jobs(only: UpdateModelJob) do
         delete :destroy, params: { id: calias.id, character_id: character.id }

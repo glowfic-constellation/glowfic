@@ -263,6 +263,7 @@ RSpec.describe NewsController do
 
     it "works for admins" do
       login_as(create(:admin_user))
+      news
       expect {
         delete :destroy, params: { id: news.id }
       }.to change { News.count }.by(-1)

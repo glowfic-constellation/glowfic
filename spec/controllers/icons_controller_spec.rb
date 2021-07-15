@@ -52,6 +52,7 @@ RSpec.describe IconsController do
       end
 
       it "skips other people's icons" do
+        icon = create(:icon)
         gallery = create(:gallery, user: user, icons: [icon])
         icon.reload
         expect(icon.galleries.count).to eq(1)
@@ -113,6 +114,7 @@ RSpec.describe IconsController do
       before(:each) { login_as(user) }
 
       it "skips other people's icons" do
+        icon = create(:icon)
         delete :delete_multiple, params: { marked_ids: [icon.id] }
         icon.reload
       end
