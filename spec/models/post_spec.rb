@@ -12,13 +12,16 @@ RSpec.describe Post do
     describe "with no replies" do
       let!(:old_tagged_at) { post.tagged_at }
 
-      it "should update tagged_at but not edited_at when content edited" do
+      it "should update edited_at and tagged_at when content edited" do
+        old_written_updated_at = post.written.updated_at
         Timecop.freeze(time) do
-          post.written.update!(content: 'new content')
+          post.update!(content: 'new content')
         end
         post.reload
-        expect(post.edited_at).to be_the_same_time_as(old_edited_at)
-        expect(post.tagged_at).to be > post.created_at
+        expect(post.tagged_at).to be_the_same_time_as(post.edited_at)
+        expect(post.edited_at).to be > old_edited_at
+        expect(post.tagged_at).to be > old_tagged_at
+        expect(post.written.updated_at).to be > old_written_updated_at
       end
 
       it "should update edited_at and tagged_at when status edited" do
