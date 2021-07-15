@@ -203,10 +203,14 @@ class Post < ApplicationRecord
     return most_recent.updated_at if most_recent.updated_at > edited_at
 
     # testing for case where the post was changed in status more recently than the last reply
+    audits_exist = versions.where('created_at > ?', most_recent.created_at).where(event: 'update')
+    audits_exist = audits_exist.where("(object_changes #>> '{status, 1}') = ?", 'complete')
+    return self.edited_at if audits_exist.exists?
+
     audits_exist = audits.where('created_at > ?', most_recent.created_at).where(action: 'update')
-    audits_exist = audits_exist.where("(audited_changes -> 'status' ->> 1)::integer = ?", Post.statuses[:complete])
-    return most_recent.updated_at unless audits_exist.exists?
-    self.edited_at
+    audits_exist = audits_exist.where("(audited_changes #>> '{status, 1}')::integer = ?", Post.statuses[:complete])
+    return self.edited_at if audits_exist.exists?
+    most_recent.updated_at
   end
 
   def metadata_editable_by?(user)
