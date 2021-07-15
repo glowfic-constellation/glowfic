@@ -96,8 +96,11 @@ class WritableController < ApplicationController
     redirect_to post_path(@post, page: @replies.total_pages, per_page: per) and return if cur_page > @replies.total_pages
     use_javascript('paginator')
 
-    @audits = @post.associated_audits.where(auditable_id: @replies.map(&:id)).group(:auditable_id).count
-    @audits[:post] = @post.audits.count
+    audits = @post.associated_audits.where(auditable_id: @replies.map(&:id)).group(:auditable_id).count
+    versions = Reply::Version.where(post: @post, item_id: @replies.map(&:id)).group(:item_id).count
+    @audits = audits.merge(versions) { |_, audit_count, version_count| audit_count + version_count }
+
+    @audits[:post] = @post.audits.count + @post.versions.count
 
     @next_post = @post.next_post(current_user)
     @prev_post = @post.prev_post(current_user)
