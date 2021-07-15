@@ -61,6 +61,6 @@ RSpec.describe UpdateModelJob do
     audit = reply.versions.last
     expect(audit.created_at).to be_the_same_time_as(time)
     expect(audit.object_changes).to eq({ "character_id" => [nil, new_char.id] })
-    expect(audit.whodunnit).to eq(reply.user.id)
+    expect(audit.user_id).to eq(reply.user.id)
   end
 end

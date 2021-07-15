@@ -1,3 +1,3 @@
-class Block::Version < PaperTrail::Version
+class Block::Version < ::Version
   self.table_name = :block_versions
 end

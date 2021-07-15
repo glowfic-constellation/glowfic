@@ -1,3 +1,3 @@
-class Post::Version < PaperTrail::Version
+class Post::Version < ::Version
   self.table_name = :post_versions
 end

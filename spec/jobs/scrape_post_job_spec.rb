@@ -22,7 +22,7 @@ RSpec.describe ScrapePostJob do
     expect(Post.count).to eq(1)
     expect(Post.first.authors_locked).to eq(true)
     expect(Post::Version.count).to eq(2)
-    expect(Post::Version.first.whodunnit).to eq(Post.last.user_id)
+    expect(Post::Version.first.user_id).to eq(Post.last.user_id)
     expect(Post::Version.last.object_changes.keys).to eq(['authors_locked'])
   end
 
