@@ -127,7 +127,7 @@ class PostScraper < Object
     subject = @subject || doc.at_css('.entry .entry-title').text.strip
     logger.info "Importing thread '#{subject}'"
 
-    @post = Post.new
+    @post = Post.new(authors_locked: false)
     @post.board_id = @board_id
     @post.section_id = @section_id
     @post.subject = subject
