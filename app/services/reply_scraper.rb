@@ -48,7 +48,7 @@ class ReplyScraper < Object
     @reply.icon = set_from_icon(img_url, img_keyword) if img_url
     post_setup if @reply.is_a? Post
 
-    Audited.audit_class.as_user(@reply.user) do
+    PaperTrail.request(whodunnit: @reply.user_id) do
       @reply.save!
     end
   end

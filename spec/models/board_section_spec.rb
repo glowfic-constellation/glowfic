@@ -11,7 +11,7 @@ RSpec.describe BoardSection do
     expect(post.section_order).to eq(0)
     expect(section2.section_order).to eq(2)
     perform_enqueued_jobs(only: UpdateModelJob) do
-      Audited.audit_class.as_user(board.creator) do
+      PaperTrail.request(whodunnit: board.creator_id) do
         section.destroy!
       end
     end
@@ -52,7 +52,7 @@ RSpec.describe BoardSection do
     expect(section2.section_order).to eq(2)
     section3 = create(:board_section, board_id: board.id)
     expect(section3.section_order).to eq(3)
-    Audited.audit_class.as_user(board.creator) { section1.destroy! }
+    PaperTrail.request(whodunnit: board.creator_id) { section1.destroy! }
     expect(section0.reload.section_order).to eq(0)
     expect(section2.reload.section_order).to eq(1)
     expect(section3.reload.section_order).to eq(2)

@@ -210,17 +210,17 @@ RSpec.describe RepliesController, 'GET search' do
     it "does not include audits", versioning: true do
       user = create(:user)
 
-      replies = Audited.audit_class.as_user(user) do
+      replies = PaperTrail.request(whodunnit: user.id) do
         create_list(:reply, 6, user: user)
       end
 
-      Audited.audit_class.as_user(user) do
+      PaperTrail.request(whodunnit: user.id) do
         replies[1].touch # rubocop:disable Rails/SkipsModelValidations
         replies[3].update!(character: create(:character, user: user))
         replies[2].update!(content: 'new content')
         1.upto(5) { |i| replies[4].update!(content: 'message' + i.to_s) }
       end
-      Audited.audit_class.as_user(create(:mod_user)) do
+      PaperTrail.request(whodunnit: create(:mod_user).id) do
         replies[5].update!(content: 'new content')
       end
 

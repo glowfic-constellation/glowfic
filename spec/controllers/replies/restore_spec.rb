@@ -36,8 +36,10 @@ RSpec.describe RepliesController, 'POST restore', versioning: true do
     expect(response).to redirect_to(post_url(rpost))
     expect(flash[:error]).to eq('You do not have permission to modify this reply.')
   end
+
   context "with audited" do
     before(:each) { Reply.auditing_enabled = true }
+
     after(:each) { Reply.auditing_enabled = false }
 
     it "handles mid reply deletion" do
@@ -132,7 +134,7 @@ RSpec.describe RepliesController, 'POST restore', versioning: true do
     before(:each) { login_as(user) }
 
     it "handles mid reply deletion" do
-      replies = create_list(:reply, 4, post: rpost, user:user)
+      replies = create_list(:reply, 4, post: rpost, user: user)
       deleted_reply = replies[2]
       deleted_reply.destroy!
       Timecop.freeze(rpost.reload.tagged_at + 1.day) { create(:reply, post: rpost, user: user) }

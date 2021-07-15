@@ -266,16 +266,16 @@ RSpec.describe Character do
   describe "audits", versioning: true do
     it "is not created on create" do
       create(:character)
-      Audited.audit_class.as_user(create(:user)) { create(:character) }
+      PaperTrail.request(whodunnit: create(:user).id) { create(:character) }
       expect(Character::Version.count).to eq(0)
     end
 
     it "is only created on mod update" do
       character = create(:character)
-      Audited.audit_class.as_user(character.user) do
+      PaperTrail.request(whodunnit: character.user_id) do
         character.update(name: character.name + 'notmod')
       end
-      Audited.audit_class.as_user(create(:user)) do
+      PaperTrail.request(whodunnit: create(:mod_user).id) do
         character.update(name: character.name + 'mod', audit_comment: 'mod')
       end
       expect(Character::Version.count).to eq(1)
@@ -283,7 +283,7 @@ RSpec.describe Character do
 
     it "is not created on destroy" do
       character = create(:character)
-      Audited.audit_class.as_user(create(:user)) do
+      PaperTrail.request(whodunnit: create(:user).id) do
         character.destroy
       end
       expect(Character::Version.count).to eq(0)

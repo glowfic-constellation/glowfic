@@ -53,7 +53,7 @@ RSpec.describe Icon do
     it "updates reply ids" do
       reply = create(:reply, with_icon: true)
       perform_enqueued_jobs(only: UpdateModelJob) do
-        Audited.audit_class.as_user(reply.user) { reply.icon.destroy! }
+        PaperTrail.request(whodunnit: reply.user_id) { reply.icon.destroy! }
       end
       reply.reload
       expect(reply.icon_id).to be_nil
@@ -63,7 +63,7 @@ RSpec.describe Icon do
       icon = create(:icon)
       icon.user.avatar = icon
       icon.user.save!
-      Audited.audit_class.as_user(icon.user) { icon.destroy! }
+      PaperTrail.request(whodunnit: icon.user_id) { icon.destroy! }
       expect(icon.user.reload.avatar_id).to be_nil
     end
   end
@@ -95,13 +95,13 @@ RSpec.describe Icon do
 
     it "deletes uploaded on destroy" do
       icon = create(:uploaded_icon)
-      Audited.audit_class.as_user(icon.user) { icon.destroy! }
+      PaperTrail.request(whodunnit: icon.user_id) { icon.destroy! }
       expect(DeleteIconFromS3Job).to have_been_enqueued.with(icon.s3_key).on_queue('high')
     end
 
     it "does not delete non-uploaded on destroy" do
       icon = create(:icon)
-      Audited.audit_class.as_user(icon.user) { icon.destroy! }
+      PaperTrail.request(whodunnit: icon.user_id) { icon.destroy! }
       expect(DeleteIconFromS3Job).not_to have_been_enqueued
     end
 

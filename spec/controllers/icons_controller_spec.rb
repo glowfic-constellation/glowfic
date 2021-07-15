@@ -24,7 +24,7 @@ RSpec.describe IconsController do
 
     it "requires valid icons" do
       icon = create(:icon)
-      Audited.audit_class.as_user(icon.user) { icon.destroy! }
+      PaperTrail.request(whodunnit: icon.user_id) { icon.destroy! }
       user_id = login
       delete :delete_multiple, params: { marked_ids: [0, '0', 'abc', -1, '-1', icon.id] }
       expect(response).to redirect_to(user_galleries_url(user_id))

@@ -127,7 +127,7 @@ RSpec.describe Board do
     section = create(:board_section, board: board)
     post = create(:post, board: board, section: section)
     perform_enqueued_jobs(only: UpdateModelJob) do
-      Audited.audit_class.as_user(board.creator) { board.destroy! }
+      PaperTrail.request(whodunnit: board.creator_id) { board.destroy! }
     end
     post.reload
     expect(post.board_id).to eq(3)

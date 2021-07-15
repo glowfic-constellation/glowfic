@@ -140,7 +140,7 @@ RSpec.configure do |config|
     user = FactoryBot.create(:user)
     5.times do
       board = FactoryBot.create(:board, creator: user)
-      Audited.audit_class.as_user(user) { board.destroy! }
+      PaperTrail.request(whodunnit: user.id) { board.destroy! }
     end
     user.destroy!
   end
