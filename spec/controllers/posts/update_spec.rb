@@ -437,8 +437,8 @@ RSpec.describe PostsController, 'PUT update' do
       expect(PostTag.where(post: post, tag: removed_tags).count).to eq(3)
     end
 
-    it "sets expected variables", versions: true do
-      post = create(:post, user: user, subject: 'old', content: 'example')
+    it "sets expected variables", versioning: true do
+      post = Version.as_user(user) { create(:post, user: user, subject: 'old', content: 'example') }
       icon = create(:icon, user: user)
       duplicate_tags
       templated_character
