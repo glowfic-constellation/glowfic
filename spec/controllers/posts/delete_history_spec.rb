@@ -58,6 +58,17 @@ RSpec.describe PostsController, 'GET delete_history', versioning: true do
     end
   end
 
+  context "with views" do
+    render_views
+
+    it "works" do
+      login_as(user)
+      Version.as_user(reply.user) { reply.destroy! }
+      get :delete_history, params: { id: post.id }
+      expect(assigns(:deleted_audits).size).to eq(1)
+    end
+  end
+
   def restore(reply)
     audit = Reply::Version.where(event: 'destroy', item_id: reply.id).last
     new_reply = audit.reify
