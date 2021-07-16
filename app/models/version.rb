@@ -4,6 +4,7 @@ class Version < PaperTrail::Version
   belongs_to :user, foreign_key: :whodunnit, optional: true, inverse_of: false
 
   alias_attribute :user_id, :whodunnit
+  alias_attribute :action, :event
 
   def self.as_user(user)
     user_id = user.is_a?(User) ? user.id : user

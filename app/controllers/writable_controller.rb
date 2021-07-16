@@ -1,5 +1,22 @@
+require 'will_paginate/array'
+
 # frozen_string_literal: true
 class WritableController < ApplicationController
+  def history
+    versions = @written.versions
+    audits = @written.audits
+    has_versions = versions.exists?
+    has_audits = audits.exists?
+    if has_versions && has_audits
+      @versions = audits.to_a + versions.to_a
+    elsif has_versions
+      @versions = versions
+    else
+      @versions = audits
+    end
+    @versions = @versions.paginate(page: page)
+  end
+
   protected
 
   def build_template_groups(user=nil)

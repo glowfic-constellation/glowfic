@@ -1,18 +1,19 @@
 .content-header Edit History (Oldest to Newest)
 %table
   %tbody
-    - audits = audited.audits.paginate(page: page)
-    - if audits.total_pages > 1
+    - if versions.total_pages > 1
       %tr
-        %td{colspan: 2}= render 'posts/paginator', paginated: audits
+        %td{colspan: 2}= render 'posts/paginator', paginated: versions
 
-    - audits.each do |audit|
-      - cur = audited.revision(audit.version)
+    - versions.each_with_index do |audit, version|
+      - version += 1
+      - cur = audit.is_a?(Version) ? @written.paper_trail.version_at(audit.created_at + 1.second) : @written.revision(audit.version)
+      - changes = audit.is_a?(Version) ? audit.object_changes : audit.audited_changes
       - cur.id = nil # hides the permalink buttons
       - reset_cycle
       %tr.bg.spacer{style: 'height:20px;'}
       %tr
-        %th.table-title{colspan: 2} Version: #{audit.version}
+        %th.table-title{colspan: 2} Version: #{version}
       - if audit.comment.present?
         %tr
           %td.post-subheader{colspan: 2}
@@ -25,7 +26,7 @@
       %tr
         %th.sub.history-header Fields Changed
         %td{class: cycle('even', 'odd')}
-          - if audit.version == 1
+          - if version == 1
             (Original)
           - elsif audit.action == 'destroy'
             = image_tag 'icons/cross.png', alt: 'X', class: 'vmid'
@@ -33,16 +34,16 @@
           - elsif audit.action == 'create'
             Restored
           - else
-            = audit.audited_changes.keys.map(&:humanize).join(', ').capitalize
+            = changes.keys.map(&:humanize).join(', ').capitalize
       %tr
         %th.sub Updated
         %td{class: cycle('even', 'odd')}= pretty_time(audit.created_at)
-      - if audit.action == 'update' && audit.audited_changes.key?('board_id')
+      - if audit.action == 'update' && changes.key?('board_id')
         %tr
           %th.sub Continuity
           %td{class: cycle('even', 'odd')}
             Changed from
-            - if (board = Board.find_by_id(audit.audited_changes['board_id'][0]))
+            - if (board = Board.find_by_id(changes['board_id'][0]))
               %b= link_to board.name, continuity_path(board)
             - else
               %b [Deleted]
@@ -51,19 +52,21 @@
               %b= link_to cur.board.name, continuity_path(cur.board)
             - else
               %b [Deleted]
-      - if audit.action == 'update' && audit.audited_changes.key?('privacy')
+      - if audit.action == 'update' && changes.key?('privacy')
         %tr
           %th.sub Privacy
           %td{colspan: 3, class: cycle('even', 'odd')}
             Changed from
-            %b= privacy_state(Post.privacies.key(audit.audited_changes['privacy'][0]))
+            - old_privacy = changes['privacy'][0]
+            - old_privacy = old_privacy.is_a?(Integer) ? Post.privacies.key(old_privacy) : old_privacy
+            %b= privacy_state(old_privacy)
             to
             %b= privacy_state(cur.privacy)
-      - if audit.action != 'destroy' && (audit.action == 'create' || audit.audited_changes.keys.intersect?(%w(character_alias_id character_id content description icon_id subject)))
+      - if audit.action != 'destroy' && (audit.action == 'create' || changes.keys.intersect?(%w(character_alias_id character_id content description icon_id subject)))
         %tr
           %th.sub.vtop Content
           %td{class: cycle('even', 'odd')}
-            - if audited.is_a?(Post)
+            - if @written.is_a?(Post)
               .content-header= cur.subject
               - if cur.description.present?
                 .post-subheader= sanitize_simple_link_text(cur.description)
