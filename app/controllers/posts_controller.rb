@@ -171,17 +171,19 @@ class PostsController < WritableController
       .group(:auditable_id)
       .pluck(Arel.sql('MAX(audits.id)')) # only most recent per reply
 
-    if page > audit_ids.length
-      @deleted_audits = Reply::Version.where(post: @post, event: 'destroy') # all destroyed replies
-        .joins('LEFT JOIN replies ON replies.id = reply_versions.item_id')
-        .where(replies: { id: nil }) # not restored
-        .select('DISTINCT ON (reply_versions.item_id) item_id, reply_versions.*')
-        .order(:item_id).order(created_at: :desc) # only most recent per reply
-    else
-      @deleted_audits = Audited::Audit.where(id: audit_ids)
-    end
+    @deleted_versions = Reply::Version.where(post: @post, event: 'destroy') # all destroyed replies
+      .joins('LEFT JOIN replies ON replies.id = reply_versions.item_id')
+      .where(replies: { id: nil }) # not restored
+      .select('DISTINCT ON (reply_versions.item_id) item_id, reply_versions.*')
+      .order(:item_id).order(created_at: :desc) # only most recent per reply
 
-    @deleted_audits = @deleted_audits.paginate(per_page: 1, page: page)
+    total = audit_ids.size + @deleted_versions.size
+
+    if page > audit_ids.size
+      @deleted_audits = @deleted_versions.paginate(per_page: 1, page: (page - audit_ids.size), total_entries: total)
+    else
+      @deleted_audits = Audited::Audit.where(id: audit_ids).paginate(per_page: 1, page: page, total_entries: total)
+    end
 
     return unless @deleted_audits.present?
 
