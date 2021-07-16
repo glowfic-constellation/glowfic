@@ -30,6 +30,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_09_30_053037) do
     t.string "remote_address"
     t.datetime "created_at", precision: nil
     t.string "request_uuid"
+    t.integer "version_id"
     t.index ["associated_type", "associated_id"], name: "associated_index"
     t.index ["auditable_type", "auditable_id", "version"], name: "auditable_index"
   end
