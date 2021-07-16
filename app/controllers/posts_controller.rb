@@ -1,3 +1,5 @@
+require 'will_paginate/array'
+
 # frozen_string_literal: true
 class PostsController < WritableController
   include Taggable
@@ -177,13 +179,15 @@ class PostsController < WritableController
       .select('DISTINCT ON (reply_versions.item_id) item_id, reply_versions.*')
       .order(:item_id).order(created_at: :desc) # only most recent per reply
 
-    total = audit_ids.size + @deleted_versions.size
+    versions_exist = @deleted_versions.exists?
 
-    if page > audit_ids.size
-      @deleted_audits = @deleted_versions.paginate(per_page: 1, page: (page - audit_ids.size), total_entries: total)
+    @deleted_audits = if audit_ids.present? && versions_exist
+      Audited::Audit.where(id: audit_ids).to_a + @deleted_versions.to_a
+    elsif versions_exist
+      @deleted_versions
     else
-      @deleted_audits = Audited::Audit.where(id: audit_ids).paginate(per_page: 1, page: page, total_entries: total)
-    end
+      Audited::Audit.where(id: audit_ids)
+    end.paginate(per_page: 1, page: page)
 
     return unless @deleted_audits.present?
 
