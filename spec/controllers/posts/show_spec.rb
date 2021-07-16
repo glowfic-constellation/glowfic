@@ -121,17 +121,17 @@ RSpec.describe PostsController, 'GET show' do
   end
 
   it "calculates audits", versioning: true do
-    replies = PaperTrail.request(whodunnit: post.user_id) do
+    replies = Version.as_user(post.user) do
       create_list(:reply, 6, post: post, user: post.user)
     end
 
-    PaperTrail.request(whodunnit: post.user_id) do
+    Version.as_user(post.user) do
       replies[1].touch # rubocop:disable Rails/SkipsModelValidations
       replies[3].update!(character: create(:character, user: post.user))
       replies[2].update!(content: 'new content')
       1.upto(5) { |i| replies[4].update!(content: 'message' + i.to_s) }
     end
-    PaperTrail.request(whodunnit: create(:mod_user).id) do
+    Version.as_user(create(:mod_user)) do
       replies[5].update!(content: 'new content')
     end
 
