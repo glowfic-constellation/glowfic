@@ -10,7 +10,7 @@ class Tag < ApplicationRecord
   has_many :gallery_tags, dependent: :destroy, inverse_of: :tag
   has_many :galleries, through: :gallery_tags, dependent: :destroy
 
-  TYPES = %w(Setting Label ContentWarning GalleryGroup)
+  TYPES = %w(Setting Label ContentWarning GalleryGroup AccessCircle)
 
   validates :name, :type, presence: true
   validates :name, uniqueness: { scope: :type }
@@ -95,7 +95,12 @@ class Tag < ApplicationRecord
       Tag::SettingTag.where(tag_id: self.id, tagged_id: other_tag.id).delete_all
       Tag::SettingTag.where(tag_id: other_tag.id).update_all(tag_id: self.id)
       Tag::SettingTag.where(tagged_id: other_tag.id).update_all(tagged_id: self.id)
-      other_tag.destroy
+
+      user_tags = Tag::UserTag.where(tag_id: other_tag.id)
+      user_tags.where(user_id: user_tags.select(:user_id).distinct.pluck(:user_id)).delete_all
+      user_tags.update_all(tag_id: self.id)
+
+      other_tag.destroy!
       # rubocop:enable Rails/SkipsModelValidations
     end
   end

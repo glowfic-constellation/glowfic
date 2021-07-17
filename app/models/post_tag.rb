@@ -5,6 +5,7 @@ class PostTag < ApplicationRecord
   belongs_to :setting, foreign_key: :tag_id, inverse_of: :post_tags, optional: true
   belongs_to :content_warning, foreign_key: :tag_id, inverse_of: :post_tags, optional: true
   belongs_to :label, foreign_key: :tag_id, inverse_of: :post_tags, optional: true
+  belongs_to :access_circle, foreign_key: :tag_id, inverse_of: :post_tags, optional: true
 
   validates :post, uniqueness: { scope: :tag }
 end
