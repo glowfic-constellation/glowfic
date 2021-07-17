@@ -48,11 +48,20 @@ class AccessCirclesController < ApplicationController
 
   def show
     @page_title = @circle.name
+    @view = params[:view]
+
+    case @view
+      when 'posts'
+        @posts = posts_from_relation(@circle.posts.ordered)
+      when 'users'
+        @users = @circle.users.paginate(page: page)
+      else
+        @view = 'info'
+    end
   end
 
   def edit
     @page_title = 'Edit Access Circle: ' + @circle.name
-    @circle.include(:users)
   end
 
   def update
@@ -101,6 +110,7 @@ class AccessCirclesController < ApplicationController
       flash[:error] = "Access circle could not be found."
       redirect_to user_access_circles_path(current_user)
     end
+    @tag = @circle
   end
 
   def find_user
@@ -133,6 +143,7 @@ class AccessCirclesController < ApplicationController
   end
 
   def editor_setup
+    use_javascript('access_circles/edit')
   end
 
   def permitted_params
