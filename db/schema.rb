@@ -425,6 +425,15 @@ ActiveRecord::Schema[7.0].define(version: 2023_09_30_053037) do
     t.index ["user_id"], name: "index_templates_on_user_id"
   end
 
+  create_table "user_tags", force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.integer "tag_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["tag_id"], name: "index_user_tags_on_tag_id"
+    t.index ["user_id"], name: "index_user_tags_on_user_id"
+  end
+
   create_table "users", id: :serial, force: :cascade do |t|
     t.citext "username", null: false
     t.string "crypted", null: false
