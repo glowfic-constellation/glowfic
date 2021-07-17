@@ -1,0 +1,19 @@
+%table.tag-right-content-box
+  %thead
+    %tr
+      %th.table-title{colspan: 3} Users in #{@circle.name}
+    %tr
+      %th.sub Name
+      %th.width-70.sub.centered Moiety
+      %th.sub Date Joined
+  %tbody
+    - @users.each do |user|
+      %tr.user-row
+        - klass = cycle('even', 'odd')
+        %td.padding-10.username{class: klass}= link_to user.username, user_path(user)
+        %td.padding-10.user-moiety.centered.width-70{class: klass}= color_block(user)
+        %td.padding-10.user-date{class: klass}= pretty_time(user.created_at)
+  - if @users.total_pages > 1
+    %tfoot
+      %tr
+        %td{colspan: 3}= render 'posts/paginator', paginated: @users

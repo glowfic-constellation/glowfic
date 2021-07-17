@@ -1,0 +1,46 @@
+- content_for :breadcrumbs do
+  = link_to "Access Circles", (@circle.owned? ? user_access_circles_path(@circle.user) : access_circles_path)
+  &raquo;
+  %b= @circle.name
+
+%table.left-info-box.tag-info-box
+  %thead
+    %tr
+      %th.info-box-header
+        %span.character-name= @circle.name
+  %tbody
+    %tr
+      %td.centered{class: cycle('even', 'odd')}
+        = link_to access_circle_path(@circle) do
+          = image_tag "icons/chart_bar.png", class: 'vmid', alt: ''
+          Info
+      %tr
+        %td.centered{class: cycle('even', 'odd')}
+          = link_to access_circle_path(@circle, view: 'posts') do
+            = image_tag "icons/book_open.png", class: 'vmid', alt: ''
+            Posts
+      %tr
+        %td.centered{class: cycle('even', 'odd')}
+          = link_to access_circle_path(@circle, view: 'users') do
+            = image_tag "icons/group.png", class: 'vmid', alt: ''
+            Users
+    - if @circle.editable_by?(current_user)
+      %tr
+        %td.centered{class: cycle('even', 'odd')}
+          = link_to edit_access_circle_path(@circle) do
+            = image_tag "icons/pencil.png", class: 'vmid', alt: ''
+            Edit Access Circle
+    - if @circle.deletable_by?(current_user)
+      %tr
+        %td.centered{class: cycle('even', 'odd')}
+          = link_to access_circle_path(@circle), method: :delete, data: { confirm: 'Are you sure you want to delete this tag?' } do
+            = image_tag "icons/cross.png", class: 'vmid', alt: ''
+            Delete Access Circle
+
+- case @view
+  - when 'info'
+    = render 'tags/info'
+  - when 'posts'
+    = render 'tags/posts'
+  - when 'users'
+    = render 'users'
