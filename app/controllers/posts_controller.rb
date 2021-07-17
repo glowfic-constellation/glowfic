@@ -139,6 +139,7 @@ class PostsController < WritableController
     @post.settings = process_tags(Setting, obj_param: :post, id_param: :setting_ids)
     @post.content_warnings = process_tags(ContentWarning, obj_param: :post, id_param: :content_warning_ids)
     @post.labels = process_tags(Label, obj_param: :post, id_param: :label_ids)
+    @post.access_circles = process_tags(AccessCircle, obj_param: :post, id_param: :circle_ids)
     process_npc(@post, permitted_character_params)
 
     begin
@@ -223,6 +224,7 @@ class PostsController < WritableController
     settings = process_tags(Setting, obj_param: :post, id_param: :setting_ids)
     warnings = process_tags(ContentWarning, obj_param: :post, id_param: :content_warning_ids)
     labels = process_tags(Label, obj_param: :post, id_param: :label_ids)
+    circles = process_tags(AccessCircle, obj_param: :post, id_param: :circle_ids)
 
     is_author = @post.author_ids.include?(current_user.id)
     if current_user.id != @post.user_id && @post.audit_comment.blank? && !is_author
@@ -236,6 +238,7 @@ class PostsController < WritableController
         @post.settings = settings
         @post.content_warnings = warnings
         @post.labels = labels
+        @post.access_circles = circles
         process_npc(@post, permitted_character_params)
         @post.save!
         @post.author_for(current_user).update!(private_note: @post.private_note) if is_author
@@ -366,6 +369,7 @@ class PostsController < WritableController
 
     @author_ids = params.fetch(:post, {}).fetch(:unjoined_author_ids, [])
     @viewer_ids = params.fetch(:post, {}).fetch(:viewer_ids, [])
+    @circle_ids = params.fetch(:post, {}).fetch(:circle_ids, [])
     @settings = process_tags(Setting, obj_param: :post, id_param: :setting_ids)
     @content_warnings = process_tags(ContentWarning, obj_param: :post, id_param: :content_warning_ids)
     @labels = process_tags(Label, obj_param: :post, id_param: :label_ids)
