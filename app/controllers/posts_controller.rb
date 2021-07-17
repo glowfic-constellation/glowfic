@@ -139,7 +139,7 @@ class PostsController < WritableController
     @post.settings = process_tags(Setting, obj_param: :post, id_param: :setting_ids)
     @post.content_warnings = process_tags(ContentWarning, obj_param: :post, id_param: :content_warning_ids)
     @post.labels = process_tags(Label, obj_param: :post, id_param: :label_ids)
-    @post.access_circles = process_tags(AccessCircle, obj_param: :post, id_param: :circle_ids)
+    @post.access_circles = process_tags(AccessCircle, obj_param: :post, id_param: :access_circle_ids)
     process_npc(@post, permitted_character_params)
 
     begin
@@ -224,7 +224,7 @@ class PostsController < WritableController
     settings = process_tags(Setting, obj_param: :post, id_param: :setting_ids)
     warnings = process_tags(ContentWarning, obj_param: :post, id_param: :content_warning_ids)
     labels = process_tags(Label, obj_param: :post, id_param: :label_ids)
-    circles = process_tags(AccessCircle, obj_param: :post, id_param: :circle_ids)
+    circles = process_tags(AccessCircle, obj_param: :post, id_param: :access_circle_ids)
 
     is_author = @post.author_ids.include?(current_user.id)
     if current_user.id != @post.user_id && @post.audit_comment.blank? && !is_author
