@@ -29,6 +29,8 @@ class User < ApplicationRecord
   has_many :indexes
   has_many :news
   has_one :report_view
+  has_many :user_tags, class_name: 'Tag::UserTag', inverse_of: :user
+
   belongs_to :avatar, class_name: 'Icon', inverse_of: :user, optional: true
   belongs_to :active_character, class_name: 'Character', inverse_of: :user, optional: true
 
