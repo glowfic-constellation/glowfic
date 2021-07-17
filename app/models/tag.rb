@@ -13,7 +13,7 @@ class Tag < ApplicationRecord
   TYPES = %w(Setting Label ContentWarning GalleryGroup AccessCircle)
 
   validates :name, :type, presence: true
-  validates :name, uniqueness: { scope: :type }
+  validates :name, uniqueness: { scope: :type }, unless: proc { |tag| tag.is_a?(AccessCircle) }
 
   scope :ordered_by_type, -> { order(type: :desc, name: :asc) }
 
