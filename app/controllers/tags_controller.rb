@@ -91,9 +91,11 @@ class TagsController < ApplicationController
   private
 
   def find_model
-    return if (@tag = Tag.find_by(id: params[:id]) && @tag.visible_to?(current_user))
-    flash[:error] = "Tag could not be found."
-    redirect_to tags_path
+    unless (@tag = Tag.find_by_id(params[:id]))
+      flash[:error] = "Tag could not be found."
+      redirect_to tags_path and return
+    end
+    redirect_to @tag if @tag.is_a?(AccessCircle) && @tag.visible_to?(current_user)
   end
 
   def require_permission
