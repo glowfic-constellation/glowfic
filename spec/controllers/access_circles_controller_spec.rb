@@ -1,7 +1,8 @@
 RSpec.describe AccessCirclesController do
   let(:user) { create(:user) }
   let(:circle) { create(:circle, user: user) }
-  let(:users) { create_list(:user, 5) }
+  let(:users) { User.where(id: create_list(:user, 5).map(&:id)) }
+  let(:unrelated) { create(:user) }
   let(:description) { 'test description' }
 
   describe "GET index" do
@@ -109,24 +110,24 @@ RSpec.describe AccessCirclesController do
         login_as(user)
 
         expect {
-          post :create, params: { access_circle: { name: '', description: description, user_ids: users.map(&:id) } }
+          post :create, params: { access_circle: { name: '', description: description, user_ids: users.ids } }
         }.not_to change { PostTag.count }
 
         expect(response).to render_template(:new)
         expect(flash[:error][:message]).to eq('Your access circle could not be saved.')
         expect(assigns(:circle).description).to eq(description)
-        expect(assigns(:circle).user_ids).to eq(users.map(&:id))
+        expect(assigns(:circle).user_ids).to eq(users.ids)
       end
     end
 
     it "works" do
       login_as(user)
-      post :create, params: { id: circle.id, access_circle: { name: 'test name', description: description, user_ids: users.map(&:id) } }
+      post :create, params: { id: circle.id, access_circle: { name: 'test name', description: description, user_ids: users.ids } }
       expect(response.status).to redirect_to(assigns(:circle))
       expect(flash[:success]).to eq('Access circle saved successfully.')
       expect(assigns(:circle).name).to eq('test name')
       expect(assigns(:circle).description).to eq(description)
-      expect(assigns(:circle).user_ids).to eq(users.map(&:id))
+      expect(assigns(:circle).user_ids).to eq(users.ids)
     end
 
     it "ignores invalid user_ids" do
@@ -135,6 +136,24 @@ RSpec.describe AccessCirclesController do
       expect(response.status).to redirect_to(assigns(:circle))
       expect(flash[:success]).to eq('Access circle saved successfully.')
       expect(assigns(:circle).user_ids).to eq([users[0].id])
+    end
+
+    it "clears relevant caches" do
+      login_as(user)
+      unrelated.visible_posts
+      user.visible_posts
+      users.each(&:visible_posts)
+
+      users.each { |u| expect(Rails.cache.exist?(PostViewer.cache_string_for(u.id))).to be(true) }
+      expect(Rails.cache.exist?(PostViewer.cache_string_for(unrelated.id))).to be(true)
+      expect(Rails.cache.exist?(PostViewer.cache_string_for(user.id))).to be(true)
+
+      post :create, params: { id: circle.id, access_circle: { name: 'test name', description: description, user_ids: users.ids } }
+      expect(flash[:success]).to eq('Access circle saved successfully.')
+
+      users.each { |u| expect(Rails.cache.exist?(PostViewer.cache_string_for(u.id))).to be(false) }
+      expect(Rails.cache.exist?(PostViewer.cache_string_for(unrelated.id))).to be(true)
+      expect(Rails.cache.exist?(PostViewer.cache_string_for(user.id))).to be(true)
     end
   end
 
@@ -178,10 +197,10 @@ RSpec.describe AccessCirclesController do
       end
 
       it "works on users view" do
-        circle.update!(user_ids: users.map(&:id))
+        circle.update!(user_ids: users.ids)
         get :show, params: { id: circle.id, view: 'users' }
         expect(response.status).to eq(200)
-        expect(assigns(:users).ids).to match_array(users.map(&:id))
+        expect(assigns(:users).ids).to match_array(users.ids)
       end
     end
 
@@ -294,27 +313,27 @@ RSpec.describe AccessCirclesController do
         circle.update!(description: 'old description', user_ids: [create(:user).id])
 
         expect {
-          put :update, params: { id: circle.id, access_circle: { name: '', description: description, user_ids: users.map(&:id) } }
+          put :update, params: { id: circle.id, access_circle: { name: '', description: description, user_ids: users.ids } }
         }.not_to change { PostTag.count }
 
         expect(response).to render_template(:edit)
         expect(flash[:error][:message]).to eq('Your access circle could not be saved.')
         expect(assigns(:circle).description).to eq(description)
-        expect(assigns(:circle).user_ids).to eq(users.map(&:id))
+        expect(assigns(:circle).user_ids).to eq(users.ids)
       end
     end
 
     it "works" do
       circle.update!(description: 'old description', user_ids: [create(:user).id])
       login_as(user)
-      put :update, params: { id: circle.id, access_circle: { name: 'new name', description: description, user_ids: users.map(&:id) } }
+      put :update, params: { id: circle.id, access_circle: { name: 'new name', description: description, user_ids: users.ids } }
       expect(response.status).to redirect_to(circle)
       expect(flash[:success]).to eq('Access circle saved successfully.')
 
       circle.reload
       expect(circle.name).to eq('new name')
       expect(circle.description).to eq(description)
-      expect(circle.user_ids).to eq(users.map(&:id))
+      expect(circle.user_ids).to eq(users.ids)
     end
 
     it "ignores invalid user_ids" do
@@ -323,6 +342,39 @@ RSpec.describe AccessCirclesController do
       expect(response).to redirect_to(circle)
       expect(flash[:success]).to eq('Access circle saved successfully.')
       expect(circle.reload.user_ids).to eq([users[0].id])
+    end
+
+    it "clears relevant caches" do
+      login_as(user)
+
+      old_users = create_list(:user, 2)
+      retained_users = User.where(id: create_list(:user, 2).map(&:id))
+      circle.update!(users: old_users + retained_users)
+
+      unrelated.visible_posts
+      user.visible_posts
+      users.each(&:visible_posts)
+      old_users.each(&:visible_posts)
+      retained_users.each(&:visible_posts)
+
+      users.each { |u| expect(Rails.cache.exist?(PostViewer.cache_string_for(u.id))).to be(true) }
+      old_users.each { |u| expect(Rails.cache.exist?(PostViewer.cache_string_for(u.id))).to be(true) }
+      retained_users.each { |u| expect(Rails.cache.exist?(PostViewer.cache_string_for(u.id))).to be(true) }
+      expect(Rails.cache.exist?(PostViewer.cache_string_for(unrelated.id))).to be(true)
+      expect(Rails.cache.exist?(PostViewer.cache_string_for(user.id))).to be(true)
+
+      put :update, params: {
+        id: circle.id,
+        access_circle: { name: 'test name', description: description, user_ids: (users.ids + retained_users.ids) }
+      }
+      expect(flash[:success]).to eq('Access circle saved successfully.')
+      expect(circle.reload.user_ids).to match_array(users.ids + retained_users.ids)
+
+      users.each { |u| expect(Rails.cache.exist?(PostViewer.cache_string_for(u.id))).to be(false) }
+      old_users.each { |u| expect(Rails.cache.exist?(PostViewer.cache_string_for(u.id))).to be(false) }
+      retained_users.each { |u| expect(Rails.cache.exist?(PostViewer.cache_string_for(u.id))).to be(true) }
+      expect(Rails.cache.exist?(PostViewer.cache_string_for(unrelated.id))).to be(true)
+      expect(Rails.cache.exist?(PostViewer.cache_string_for(user.id))).to be(true)
     end
   end
 
