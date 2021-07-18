@@ -919,6 +919,75 @@ RSpec.describe PostsController, 'PUT update' do
       expect(response).to redirect_to(post_url(post))
       expect(flash[:error]).to eq("You do not have permission to modify this post.")
     end
+
+    it "regenerates visible_posts" do
+      user = create(:user)
+      coauthor = create(:user)
+      old_viewer = create(:user)
+      new_viewer = create(:user)
+      still_viewer = create(:user)
+      old_circle_viewers = User.where(id: create_list(:user, 3).map(&:id))
+      new_circle_viewers = User.where(id: create_list(:user, 3).map(&:id))
+      shared_circle_viewers = User.where(id: create_list(:user, 2).map(&:id))
+      retained_circle_viewers = User.where(id: create_list(:user, 3).map(&:id))
+      unrelated = create(:user)
+
+      all = [
+        user.id,
+        coauthor.id,
+        old_viewer.id,
+        new_viewer.id,
+        still_viewer.id,
+        old_circle_viewers.ids,
+        new_circle_viewers.ids,
+        shared_circle_viewers.ids,
+        retained_circle_viewers.ids,
+        unrelated.id,
+      ].flatten
+
+      all = User.where(id: all)
+      circle1 = create(:access_circle, users: old_circle_viewers + shared_circle_viewers)
+      circle2 = create(:access_circle, users: new_circle_viewers + shared_circle_viewers)
+      circle3 = create(:access_circle, users: retained_circle_viewers)
+      post = create(:post,
+        user: user,
+        authors: [coauthor],
+        authors_locked: true,
+        privacy: :access_list,
+        viewers: [coauthor, old_viewer, still_viewer],
+        access_circles: [circle1, circle3],
+      )
+      create(:reply, post: post, user: coauthor)
+
+      all.each(&:visible_posts)
+      all.each { |u| expect(Rails.cache.exist?(PostViewer.cache_string_for(u.id))).to eq(true) }
+
+      login_as(user)
+
+      put :update, params: {
+        id: post.id,
+        post: {
+          viewer_ids: [coauthor.id, new_viewer.id, still_viewer.id],
+          access_circle_ids: [circle2.id, circle3.id],
+        },
+      }
+
+      expect(flash[:success]).to eq('Your post has been updated.')
+      post.reload
+      expect(post.viewers).to match_array([new_viewer, still_viewer, coauthor])
+      expect(post.access_circles).to match_array([circle2, circle3])
+
+      old_circle_viewers.each { |u| expect(Rails.cache.exist?(PostViewer.cache_string_for(u.id))).to be(false) }
+      new_circle_viewers.each { |u| expect(Rails.cache.exist?(PostViewer.cache_string_for(u.id))).to be(false) }
+      shared_circle_viewers.each { |u| expect(Rails.cache.exist?(PostViewer.cache_string_for(u.id))).to be(false) }
+      retained_circle_viewers.each { |u| expect(Rails.cache.exist?(PostViewer.cache_string_for(u.id))).to be(true) }
+      expect(Rails.cache.exist?(PostViewer.cache_string_for(coauthor.id))).to be(true)
+      expect(Rails.cache.exist?(PostViewer.cache_string_for(old_viewer.id))).to be(false)
+      expect(Rails.cache.exist?(PostViewer.cache_string_for(new_viewer.id))).to be(false)
+      expect(Rails.cache.exist?(PostViewer.cache_string_for(still_viewer.id))).to be(true)
+      expect(Rails.cache.exist?(PostViewer.cache_string_for(unrelated.id))).to be(true)
+      expect(Rails.cache.exist?(PostViewer.cache_string_for(user.id))).to be(true)
+    end
   end
 
   context "metadata" do
