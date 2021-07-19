@@ -14,13 +14,13 @@ RSpec.describe WritableHelper do
     end
 
     it "returns on the last page" do
-      create(:reply, post: post)
+      create(:reply, post: post, user: post.user)
       assign(:replies, post.replies.paginate(page: 1))
       expect(helper.unread_warning).to eq(nil)
     end
 
     it "returns html on earlier pages" do
-      create_list(:reply, 26, post: post)
+      create_list(:reply, 26, post: post, user: post.user)
       assign(:replies, post.replies.paginate(page: 1))
       html = 'You are not on the latest page of the thread '
       html += tag.a('(View unread)', href: helper.unread_path(post), class: 'unread-warning') + ' '

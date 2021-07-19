@@ -102,7 +102,7 @@ FactoryBot.define do
       with_character { false }
     end
     user
-    post
+    post { association :post, unjoined_authors: [user] unless user.nil? }
     sequence :content do |n|
       "test content #{n}"
     end
@@ -114,7 +114,7 @@ FactoryBot.define do
 
   factory :reply_draft do
     user
-    post
+    post { association :post, unjoined_authors: [user] unless user.nil? }
     sequence :content do |n|
       "test draft #{n}"
     end

@@ -26,6 +26,8 @@ RSpec.describe PostsController, 'GET edit' do
 
   it "sets relevant fields" do
     user = create(:user)
+    coauthor = create(:user)
+    ignored_author = create(:user)
     char1 = create(:character, user: user)
     char2 = create(:character, user: user)
     char3 = create(:template_character, user: user)
@@ -39,16 +41,12 @@ RSpec.describe PostsController, 'GET edit' do
       settings: [setting],
       content_warnings: [warning],
       labels: [label],
-      unjoined_authors: [unjoined],
+      unjoined_authors: [unjoined, coauthor, ignored_author],
     )
     expect(post.icon).to be_nil
 
     create(:reply, user: user, post: post, character: char2) # reply1
-
-    coauthor = create(:user)
     create(:reply, user: coauthor, post: post) # other user's post
-
-    ignored_author = create(:user)
     create(:reply, user: ignored_author, post: post) # ignored user's post
     post.opt_out_of_owed(ignored_author)
 

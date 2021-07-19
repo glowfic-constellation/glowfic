@@ -206,7 +206,7 @@ RSpec.feature "Viewing a character", :type => :feature do
     )
     create(:alias, character: char, name: 'Alias Person')
     post = create(:post, user: user, character: char, subject: 'Example post')
-    post2 = create(:post, subject: 'Other post')
+    post2 = create(:post, subject: 'Other post', unjoined_authors: [user])
     create(:reply, post: post2, user: user, character: char)
 
     login

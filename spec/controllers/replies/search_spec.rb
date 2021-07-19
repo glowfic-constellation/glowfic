@@ -53,7 +53,7 @@ RSpec.describe RepliesController, 'GET search' do
 
     it "handles valid post" do
       templateless_char = Character.where(template_id: nil).first
-      post = create(:post, character: templateless_char, user: templateless_char.user)
+      post = create(:post, character: templateless_char, user: templateless_char.user, authors_locked: false)
       create(:reply, post: post)
       user_ignoring_tags = create(:user)
       create(:reply, post: post, user: user_ignoring_tags)

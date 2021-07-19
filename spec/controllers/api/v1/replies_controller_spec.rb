@@ -15,9 +15,11 @@ RSpec.describe Api::V1::RepliesController do
     end
 
     it "succeeds with valid post", :show_in_doc do
-      post = create(:post, num_replies: 2, with_icon: true, with_character: true)
-      calias = create(:alias)
-      reply = create(:reply, post: post, user: calias.character.user, character: calias.character, character_alias: calias, with_icon: true)
+      user = create(:user)
+      character = create(:character, user: user)
+      calias = create(:alias, character: character)
+      post = create(:post, unjoined_authors: [user], num_replies: 2, with_icon: true, with_character: true)
+      reply = create(:reply, post: post, user: user, character: character, character_alias: calias, with_icon: true)
       expect(calias.name).not_to eq(reply.character.name)
       get :index, params: { post_id: post.id }
       expect(response).to have_http_status(200)

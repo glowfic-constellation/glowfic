@@ -80,7 +80,7 @@ RSpec.describe RepliesController, 'DELETE destroy' do
 
   it "deletes post author on deleting only reply in open posts" do
     user = create(:user)
-    post = create(:post)
+    post = create(:post, authors_locked: false)
     expect(post.authors_locked).to eq(false)
     login_as(user)
     reply = create(:reply, post: post, user: user)
@@ -108,8 +108,7 @@ RSpec.describe RepliesController, 'DELETE destroy' do
 
   it "does not clean up post author when other replies exist" do
     user = create(:user)
-    post = create(:post)
-    expect(post.authors_locked).to eq(false)
+    post = create(:post, authors_locked: false)
     login_as(user)
     create(:reply, post: post, user: user) # remaining reply
     reply = create(:reply, post: post, user: user)

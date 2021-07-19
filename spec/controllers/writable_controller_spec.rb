@@ -70,7 +70,7 @@ RSpec.describe WritableController do
 
     it "works with two authors" do
       user2 = create(:user, username: 'Friend')
-      post.update!(description: 'More.')
+      post.update!(description: 'More.', unjoined_authors: [user2])
       create(:reply, post: post, user: user2)
       post.reload
 
@@ -90,10 +90,9 @@ RSpec.describe WritableController do
     end
 
     it "works with many authors" do
-      5.times do |i|
-        user2 = create(:user, username: "Friend #{i}")
-        create(:reply, post: post, user: user2)
-      end
+      users = create_list(:user, 5)
+      post.update!(unjoined_authors: users)
+      users.each { |u| create(:reply, post: post, user: u) }
 
       post.reload
       data = controller.send(:og_data_for_post, Post.find_by(id: post.id), total_pages: 5)

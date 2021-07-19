@@ -103,7 +103,7 @@ RSpec.describe ReportsController do
       today = DateTime.now.utc.beginning_of_day + 1.hour
       valid = Timecop.freeze(today) { create(:post) }
       invalid = Timecop.freeze(today - 2.days) { create(:post) }
-      Timecop.freeze(today) { create(:reply, post: invalid) }
+      Timecop.freeze(today) { create(:reply, post: invalid, user: invalid.user) }
       user = create(:user, timezone: 'UTC')
       login_as(user)
       get :show, params: { id: 'daily', day: today.to_date.to_s, new_today: 'true' }
@@ -126,12 +126,12 @@ RSpec.describe ReportsController do
         unread_post = create(:post)
         Timecop.freeze(2.days.ago) { create(:post, num_replies: 4) }
         multi_day = Timecop.freeze(1.day.ago) { create(:post, num_replies: 2) }
-        create_list(:reply, 2, post: multi_day)
+        create_list(:reply, 2, post: multi_day, user: multi_day.user)
         read_post = create(:post, num_replies: 3)
         read_post.mark_read(user, at_time: read_post.tagged_at)
         partial_read = create(:post, num_replies: 2)
         partial_read.mark_read(user, at_time: partial_read.tagged_at)
-        create_list(:reply, 3, post: partial_read)
+        create_list(:reply, 3, post: partial_read, user: partial_read.user)
         login_as(user)
         get :show, params: { id: 'daily' }
         expect(assigns(:posts).ids).to match_array([multi_day, unread_post, read_post, partial_read].map(&:id))

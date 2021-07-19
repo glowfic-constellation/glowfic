@@ -48,7 +48,7 @@ RSpec.describe PostsController, 'GET show' do
     expect(last_read).not_to be_nil
 
     Timecop.freeze(last_read + 1.second) do
-      reply = create(:reply, post: post)
+      reply = create(:reply, post: post, user: post.user)
       expect(reply.created_at).not_to be_the_same_time_as(last_read)
       get :show, params: { id: post.id }
       cur_read = post.reload.last_read(user)
@@ -67,7 +67,7 @@ RSpec.describe PostsController, 'GET show' do
     last_read = post.last_read(user)
 
     Timecop.freeze(last_read + 1.second) do
-      reply = create(:reply, post: post)
+      reply = create(:reply, post: post, user: post.user)
       expect(reply.created_at).not_to be_the_same_time_as(last_read)
       expect(post.reload.first_unread_for(user)).to eq(reply)
       get :show, params: { id: post.id }
@@ -92,13 +92,13 @@ RSpec.describe PostsController, 'GET show' do
   end
 
   it "handles pages outside range" do
-    create_list(:reply, 5, post: post)
+    create_list(:reply, 5, post: post, user: post.user)
     get :show, params: { id: post.id, per_page: 1, page: 10 }
     expect(response).to redirect_to(post_url(post, page: 5, per_page: 1))
   end
 
   it "handles page=last with replies" do
-    create_list(:reply, 5, post: post)
+    create_list(:reply, 5, post: post, user: post.user)
     get :show, params: { id: post.id, per_page: 1, page: 'last' }
     expect(assigns(:page)).to eq(5)
     expect(response).to have_http_status(200)
@@ -143,8 +143,9 @@ RSpec.describe PostsController, 'GET show' do
     render_views
 
     it "renders HAML with additional attributes" do
-      post = create(:post, with_icon: true, with_character: true)
-      reply = create(:reply, post: post, with_icon: true, with_character: true)
+      coauthor = create(:user)
+      post = create(:post, with_icon: true, with_character: true, unjoined_authors: [coauthor])
+      reply = create(:reply, user: coauthor, post: post, with_icon: true, with_character: true)
       calias = create(:alias, character: reply.character)
       reply.update!(character_alias: calias)
       get :show, params: { id: post.id }
@@ -154,6 +155,7 @@ RSpec.describe PostsController, 'GET show' do
     end
 
     it "renders HAML for logged in user" do
+      post.update!(authors_locked: false)
       create(:reply, post: post)
       character = create(:character)
       login_as(character.user)
@@ -164,7 +166,7 @@ RSpec.describe PostsController, 'GET show' do
 
     it "flat view renders HAML properly" do
       post = create(:post, with_icon: true, with_character: true)
-      create(:reply, post: post, with_icon: true, with_character: true)
+      create(:reply, post: post, user: post.user, with_icon: true, with_character: true)
       get :show, params: { id: post.id, view: 'flat' }
       expect(response.status).to eq(200)
       expect(response.body).to include(post.subject)
@@ -172,7 +174,7 @@ RSpec.describe PostsController, 'GET show' do
     end
 
     it "displays quick switch properly" do
-      reply = create(:reply, post: post, with_icon: true, with_character: true)
+      reply = create(:reply, user: post.user, post: post, with_icon: true, with_character: true)
       login_as(reply.user)
       get :show, params: { id: post.id }
       expect(response.status).to eq(200)
@@ -183,7 +185,7 @@ RSpec.describe PostsController, 'GET show' do
     let(:post) { create(:post) }
 
     before(:each) do
-      create_list(:reply, 5, post: post)
+      create_list(:reply, 5, post: post, user: post.user)
     end
 
     it "shows error if reply not found" do
@@ -293,7 +295,7 @@ RSpec.describe PostsController, 'GET show' do
     end
 
     it "sets reply variable using build_new_reply_for" do
-      post = create(:post, with_icon: true, with_character: true)
+      post = create(:post, authors_locked: false, with_icon: true, with_character: true)
       user = post.user
       post.reload
 
@@ -323,7 +325,7 @@ RSpec.describe PostsController, 'GET show' do
     end
 
     it "sets reply variable using build_new_reply_for" do
-      post = create(:post, with_icon: true, with_character: true)
+      post = create(:post, authors_locked: false, with_icon: true, with_character: true)
       user = create(:user)
       post.reload
 

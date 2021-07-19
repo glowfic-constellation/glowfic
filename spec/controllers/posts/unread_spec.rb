@@ -35,12 +35,12 @@ RSpec.describe PostsController, 'GET unread' do
 
     unread_post = create(:post) # post
     opened_post1, opened_post2, read_post1, read_post2, hidden_post = Timecop.freeze(time) do
-      opened_post1 = create(:post) # post & reply, read post
-      opened_post2 = create(:post) # post & 2 replies, read post & reply
+      opened_post1 = create(:post, authors_locked: false) # post & reply, read post
+      opened_post2 = create(:post, authors_locked: false) # post & 2 replies, read post & reply
       create(:reply, post: opened_post2) # reply1
-      read_post1 = create(:post) # post
-      read_post2 = create(:post) # post & reply
-      hidden_post = create(:post) # post
+      read_post1 = create(:post, authors_locked: false) # post
+      read_post2 = create(:post, authors_locked: false) # post & reply
+      hidden_post = create(:post, authors_locked: false) # post
       [opened_post1, opened_post2, read_post1, read_post2, hidden_post]
     end
     reply2, reply3 = Timecop.freeze(time + 5.minutes) do
@@ -77,8 +77,8 @@ RSpec.describe PostsController, 'GET unread' do
     post2 = create(:post)
     post3 = create(:post)
     post1 = create(:post)
-    create(:reply, post: post2)
-    create(:reply, post: post1)
+    create(:reply, post: post2, user: post2.user)
+    create(:reply, post: post1, user: post1.user)
 
     get :unread
     expect(assigns(:posts)).to eq([post1, post2, post3])
@@ -143,12 +143,12 @@ RSpec.describe PostsController, 'GET unread' do
 
       unread_post = create(:post) # post
       opened_post1, opened_post2, read_post1, read_post2, hidden_post = Timecop.freeze(time) do
-        opened_post1 = create(:post) # post & reply, read post
-        opened_post2 = create(:post) # post & 2 replies, read post & reply
+        opened_post1 = create(:post, authors_locked: false) # post & reply, read post
+        opened_post2 = create(:post, authors_locked: false) # post & 2 replies, read post & reply
         create(:reply, post: opened_post2) # reply1
-        read_post1 = create(:post) # post
-        read_post2 = create(:post) # post & reply
-        hidden_post = create(:post) # post & reply
+        read_post1 = create(:post, authors_locked: false) # post
+        read_post2 = create(:post, authors_locked: false) # post & reply
+        hidden_post = create(:post, authors_locked: false) # post & reply
         [opened_post1, opened_post2, read_post1, read_post2, hidden_post]
       end
       reply2, reply3 = Timecop.freeze(time + 5.minutes) do

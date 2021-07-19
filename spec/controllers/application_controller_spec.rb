@@ -103,22 +103,16 @@ RSpec.describe ApplicationController do
       expect(fetched_posts).not_to respond_to(:total_pages)
     end
 
-    it "skips visibility check if there are more than 25 posts" do
-      expect_any_instance_of(Post).not_to receive(:visible_to?)
-      relation = Post.where(id: default_post_ids)
-      fetched_posts = controller.send(:posts_from_relation, relation)
-      expect(fetched_posts.count).to eq(26) # number when querying the database – actual number returned is 25, due to pagination
-    end
-
     it "fetches correct authors, reply counts and content warnings" do
       post1 = create(:post)
       warning1 = create(:content_warning)
-      post2 = create(:post, content_warnings: [warning1])
-      post2_reply = create(:reply, post: post2)
+      post2_user2 = create(:user)
+      post2 = create(:post, content_warnings: [warning1], unjoined_authors: [post2_user2])
+      create(:reply, post: post2, user: post2_user2)
       warning2 = create(:content_warning)
-      post3 = create(:post, content_warnings: [warning1, warning2])
       post3_user2 = create(:user)
       post3_user3 = create(:user)
+      post3 = create(:post, content_warnings: [warning1, warning2], unjoined_authors: [post3_user2, post3_user3])
       create_list(:reply, 25, post: post3, user: post3_user2)
       create_list(:reply, 10, post: post3, user: post3_user3)
       post3.post_authors.find_by(user_id: post3_user3.id).update!(can_owe: false)
@@ -144,15 +138,16 @@ RSpec.describe ApplicationController do
       expect(fetched3.reply_count).to eq(35)
 
       expect(fetched1.joined_authors).to match_array([post1.user])
-      expect(fetched2.joined_authors).to match_array([post2.user, post2_reply.user])
+      expect(fetched2.joined_authors).to match_array([post2.user, post2_user2])
       expect(fetched3.joined_authors).to match_array([post3.user, post3_user2, post3_user3])
       expect(fetched1.joined_author_ids).to match_array([post1.user_id])
-      expect(fetched2.joined_author_ids).to match_array([post2.user_id, post2_reply.user_id])
+      expect(fetched2.joined_author_ids).to match_array([post2.user_id, post2_user2.id])
       expect(fetched3.joined_author_ids).to match_array([post3.user_id, post3_user2.id, post3_user3.id])
     end
 
     context "when logged in" do
       let(:user) { create(:user) }
+      let(:other_user) { create(:user) }
 
       before(:each) { login_as(user) }
 
@@ -176,16 +171,17 @@ RSpec.describe ApplicationController do
       end
 
       it "sets opened_ids and unread_ids properly" do
-        other_user = create(:user)
+        coauthor1 = create(:user)
+        coauthor2 = create(:user)
         time = 5.minutes.ago
         unopened2, partread, read1, read2, hidden_unread, hidden_partread = posts = Timecop.freeze(time) do
-          create(:post) # post; unopened1
-          unopened2 = create(:post) # post, reply
-          partread = create(:post) # post, reply
-          read1 = create(:post) # post
-          read2 = create(:post) # post, reply
-          hidden_unread = create(:post) # post
-          hidden_partread = create(:post) # post, reply
+          create(:post)
+          unopened2 = create(:post, unjoined_authors: [coauthor1])
+          partread = create(:post, unjoined_authors: [coauthor1])
+          read1 = create(:post)
+          read2 = create(:post, unjoined_authors: [coauthor2])
+          hidden_unread = create(:post)
+          hidden_partread = create(:post, unjoined_authors: [coauthor2])
 
           partread.mark_read(user)
           read1.mark_read(user)
@@ -195,10 +191,10 @@ RSpec.describe ApplicationController do
         end
 
         Timecop.freeze(time + 1.minute) do
-          create(:reply, post: unopened2) # unopened2_reply
-          create(:reply, post: partread) # partread_reply
-          create(:reply, post: read2) # read2_reply
-          create(:reply, post: hidden_partread) # hidden_partread_reply
+          create(:reply, post: unopened2, user: coauthor1)
+          create(:reply, post: partread, user: coauthor1)
+          create(:reply, post: read2, user: coauthor2)
+          create(:reply, post: hidden_partread, user: coauthor2)
 
           read2.mark_read(user)
           partread.reload
@@ -229,8 +225,8 @@ RSpec.describe ApplicationController do
         one_unread.mark_read(other_user)
         two_unread.mark_read(user)
 
-        create(:reply, post: one_unread)
-        create_list(:reply, 2, post: two_unread)
+        create(:reply, post: one_unread, user: one_unread.user)
+        create_list(:reply, 2, post: two_unread, user: two_unread.user)
 
         two_unread.reload
         two_unread.mark_read(other_user)
@@ -252,7 +248,7 @@ RSpec.describe ApplicationController do
         create(:post, privacy: :private)
         replyless = create(:post)
         replyful = create(:post)
-        create_list(:reply, 2, post: replyful)
+        create_list(:reply, 2, post: replyful, user: replyful.user)
         blocked_user = create(:user)
         create(:block, blocking_user: user, blocked_user: blocked_user, hide_them: :posts)
         blocked = create(:post, user: blocked_user, authors_locked: true)
@@ -308,10 +304,11 @@ RSpec.describe ApplicationController do
     end
 
     it "uses an accurate custom post_count with joins and groups" do
-      create(:post, privacy: :private) # hidden
+      create(:post, privacy: :private)
       replyless = create(:post)
-      replyful = create(:post)
-      create_list(:reply, 2, post: replyful)
+      coauthor = create(:user)
+      replyful = create(:post, unjoined_authors: [coauthor])
+      create_list(:reply, 2, post: replyful, user: coauthor)
 
       login
       relation = Post.select("posts.*").left_joins(:replies).group("posts.id")
@@ -324,7 +321,7 @@ RSpec.describe ApplicationController do
       create(:post, privacy: :private)
       replyless = create(:post)
       replyful = create(:post)
-      create_list(:reply, 2, post: replyful)
+      create_list(:reply, 2, post: replyful, user: replyful.user)
       testing = create(:post, board: site_testing)
 
       relation = Post.where(id: [replyless, replyful, testing].map(&:id))

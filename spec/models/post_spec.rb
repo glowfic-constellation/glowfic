@@ -1,6 +1,7 @@
 RSpec.describe Post do
   describe "timestamps" do
-    let!(:post) { create(:post) }
+    let(:coauthor) { create(:user) }
+    let!(:post) { create(:post, unjoined_authors: [coauthor]) }
     let!(:old_edited_at) { post.edited_at }
     let!(:time) { post.edited_at + 1.hour }
 
@@ -39,7 +40,7 @@ RSpec.describe Post do
 
     it "should update tagged_at but not edited_at when reply created" do
       reply = Timecop.freeze(time) do
-        create(:reply, post: post)
+        create(:reply, post: post, user: coauthor)
       end
       post.reload
       expect(post.tagged_at).to be_the_same_time_as(reply.created_at)
@@ -49,7 +50,7 @@ RSpec.describe Post do
 
     describe "with replies" do
       let!(:reply) do
-        Timecop.freeze(post.edited_at + 15.minutes) { create(:reply, post: post) }
+        Timecop.freeze(post.edited_at + 15.minutes) { create(:reply, post: post, user: coauthor) }
       end
       let!(:old_tagged_at) { post.tagged_at }
 
@@ -87,7 +88,7 @@ RSpec.describe Post do
 
       it "should update tagged_at but not edited_at with a second reply" do
         reply2 = Timecop.freeze(time) do
-          create(:reply, post: post)
+          create(:reply, post: post, user: post.user)
         end
         post.reload
         expect(reply2.reply_order).to eq(1)
@@ -98,7 +99,7 @@ RSpec.describe Post do
 
       describe "two" do
         let!(:reply2) do
-          Timecop.freeze(post.edited_at + 30.minutes) { create(:reply, post: post) }
+          Timecop.freeze(post.edited_at + 30.minutes) { create(:reply, post: post, user: post.user) }
         end
         let!(:old_tagged_at) { post.tagged_at } # rubocop:disable RSpec/LetSetup # false positive
 
@@ -445,10 +446,13 @@ RSpec.describe Post do
   end
 
   describe "#word_count" do
+    let(:reply_users) { create_list(:user, 2) }
+    let(:reply_user) { reply_users.first }
+
     it "guesses correctly with replies" do
-      post = create(:post, content: 'one two three four five')
-      create(:reply, post: post, content: 'six seven')
-      create(:reply, post: post, content: 'eight')
+      post = create(:post, content: 'one two three four five', unjoined_authors: reply_users)
+      create(:reply, post: post, user: reply_users[0], content: 'six seven')
+      create(:reply, post: post, user: reply_users[1], content: 'eight')
       expect(post.word_count).to eq(5)
       expect(post.total_word_count).to eq(8)
     end
@@ -467,10 +471,10 @@ RSpec.describe Post do
     end
 
     it "orders users correctly" do
-      post = create(:post, content: 'one')
-      two = create(:reply, post: post, content: 'two two')
-      three = create(:reply, post: post, content: 'three three three')
-      post = Post.find(post.id) # authors get cached
+      post = create(:post, content: 'one', unjoined_authors: reply_users)
+      two = create(:reply, post: post, user: reply_users[0], content: 'two two')
+      three = create(:reply, post: post, user: reply_users[1], content: 'three three three')
+      post.reload
       counts = post.author_word_counts
       expect(counts[0][0]).to eq(three.user.username)
       expect(counts[0][1]).to eq(3)
@@ -491,32 +495,34 @@ RSpec.describe Post do
     end
 
     it "handles posted + replies" do
-      post = create(:post, content: 'a a a a')
+      post = create(:post, content: 'a a a a', unjoined_authors: [reply_user])
       create(:reply, user: post.user, post: post, content: 'a a a')
       create(:reply, post: post, user: post.user, content: 'a a')
-      create(:reply, post: post, content: 'c')
+      create(:reply, post: post, user: reply_user, content: 'c')
       expect(post.word_count_for(post.user)).to eq(9)
     end
 
     it "handles only replies" do
-      post = create(:post, content: 'a a a a')
-      reply = create(:reply, post: post, content: 'b b b')
-      create(:reply, post: post, user: reply.user, content: 'b b')
-      create(:reply, post: post, content: 'c')
-      expect(post.word_count_for(reply.user)).to eq(5)
+      post = create(:post, content: 'a a a a', unjoined_authors: [reply_user])
+      create(:reply, post: post, user: reply_user, content: 'b b b')
+      create(:reply, post: post, user: reply_user, content: 'b b')
+      create(:reply, post: post, user: post.user, content: 'c')
+      expect(post.word_count_for(reply_user)).to eq(5)
     end
   end
 
   describe "#visible_to?" do
+    let(:reply_user) { create(:user) }
+
     context "public" do
-      let(:post) { create(:post, privacy: :public) }
+      let(:post) { create(:post, privacy: :public, unjoined_authors: [reply_user]) }
 
       it "is visible to poster" do
         expect(post).to be_visible_to(post.user)
       end
 
       it "is visible to author" do
-        reply = create(:reply, post: post)
+        reply = create(:reply, post: post, user: reply_user)
         expect(post).to be_visible_to(reply.user)
       end
 
@@ -530,14 +536,14 @@ RSpec.describe Post do
     end
 
     context "private" do
-      let(:post) { create(:post, privacy: :private) }
+      let(:post) { create(:post, privacy: :private, unjoined_authors: [reply_user]) }
 
       it "is visible to poster" do
         expect(post).to be_visible_to(post.user)
       end
 
       it "is not visible to author" do # TODO seems wrong
-        reply = create(:reply, post: post)
+        reply = create(:reply, post: post, user: reply_user)
         expect(post).not_to be_visible_to(reply.user)
       end
 
@@ -551,7 +557,7 @@ RSpec.describe Post do
     end
 
     context "list" do
-      let(:post) { create(:post, privacy: :access_list) }
+      let(:post) { create(:post, privacy: :access_list, unjoined_authors: [reply_user]) }
 
       it "is visible to poster" do
         expect(post).to be_visible_to(post.user)
@@ -564,7 +570,7 @@ RSpec.describe Post do
       end
 
       it "is not visible to author" do # TODO seems wrong
-        reply = create(:reply, post: post)
+        reply = create(:reply, post: post, user: reply_user)
         expect(post).not_to be_visible_to(reply.user)
       end
 
@@ -578,14 +584,14 @@ RSpec.describe Post do
     end
 
     context "registered" do
-      let(:post) { create(:post, privacy: :registered) }
+      let(:post) { create(:post, privacy: :registered, unjoined_authors: [reply_user]) }
 
       it "is visible to poster" do
         expect(post).to be_visible_to(post.user)
       end
 
       it "is visible to author" do
-        reply = create(:reply, post: post)
+        reply = create(:reply, post: post, user: reply_user)
         expect(post).to be_visible_to(reply.user)
       end
 
@@ -654,16 +660,15 @@ RSpec.describe Post do
       expect(post.first_unread_for(nil)).to eq(3)
     end
 
-    it "uses itself if not yet viewed" do
-      post = create(:post)
-      create(:reply, post: post)
-      expect(post.first_unread_for(post.user)).to eq(post)
-    end
-
     context "with replies" do
-      let(:post) { create(:post) }
+      let(:reply_user) { create(:user)}
+      let(:post) { create(:post, authors: [reply_user]) }
 
-      before(:each) { create(:reply, post: post) }
+      before(:each) { create(:reply, post: post, user: reply_user) }
+
+      it "uses itself if not yet viewed" do
+        expect(post.first_unread_for(post.user)).to eq(post)
+      end
 
       it "uses nil if full post viewed" do
         post.mark_read(post.user)
@@ -677,22 +682,20 @@ RSpec.describe Post do
 
       it "uses reply created after viewed_at if partially viewed" do
         post.mark_read(post.user)
-        unread = create(:reply, post: post)
+        unread = create(:reply, post: post, user: post.user)
         expect(post.first_unread_for(post.user)).to eq(unread)
       end
 
       it "handles status changes" do
         Post.auditing_enabled = true
         post.mark_read(post.user)
-        unread = create(:reply, post: post)
+        unread = create(:reply, post: post, user: post.user)
         expect(post.first_unread_for(post.user)).to eq(unread)
         expect(post.read_time_for(post.replies)).to be_the_same_time_as(unread.created_at)
 
         Timecop.freeze(unread.created_at + 1.day) do
           post.update!(status: :complete)
-
-          post.description = 'new description to add another audit'
-          post.save!
+          post.update!(description: 'new description to add another audit')
         end
 
         post.reload
@@ -719,56 +722,54 @@ RSpec.describe Post do
   end
 
   describe "#recent_characters_for" do
+    let(:user) { create(:user) }
+    let(:character) { create(:character, user: user) }
+
     it "is blank if user has not responded to post" do
       post = create(:post)
-      create(:reply, post: post)
-      user = create(:user)
+      create(:reply, post: post, user: post.user)
       expect(post.authors).not_to include(user)
       expect(post.recent_characters_for(user, 4)).to be_blank
     end
 
     it "includes the post character if relevant" do
-      char = create(:character)
-      post = create(:post, user: char.user, character: char)
-      expect(post.recent_characters_for(char.user, 4)).to match_array([char])
+      post = create(:post, user: user, character: character)
+      expect(post.recent_characters_for(user, 4)).to match_array([character])
     end
 
     it "only includes characters for specified author" do
       other_char1 = create(:character)
       other_char2 = create(:character)
-      post = create(:post, user: other_char1.user, character: other_char1)
+      post = create(:post, user: other_char1.user, character: other_char1, authors: [other_char2.user, user])
       create(:reply, post: post, user: other_char2.user, character: other_char2)
-      reply = create(:reply, character_id: nil)
+      reply = create(:reply, user: user, character_id: nil)
       expect(post.recent_characters_for(reply.user, 4)).to be_blank
     end
 
     it "returns correctly ordered information without duplicates" do
-      user = create(:user)
-      char = create(:character, user: user)
-      post = create(:post, user: user, character: char)
+      coauthor = create(:user)
+      cochar = create(:character, user: coauthor)
+
+      post = create(:post, user: user, character: character, authors: [coauthor])
       reply_char = create(:character, user: user)
       reply_char2 = create(:character, user: user)
       create(:reply, post: post, user: user, character: reply_char)
       create(:reply, post: post, user: user, character: reply_char)
-      create(:reply, post: post, user: user, character: char)
+      create(:reply, post: post, user: user, character: character)
       create(:reply, post: post, user: user, character: reply_char2)
-      coauthor = create(:user)
-      cochar = create(:character, user: coauthor)
       create(:reply, post: post, user: coauthor, character: cochar)
 
       other_char = create(:character, user: user)
-      other_post = create(:post, user: user, character: other_char)
+      other_post = create(:post, user: user, character: other_char, authors: [coauthor])
       create(:reply, post: other_post, user: user, character: other_char)
       create(:reply, post: post, user: coauthor, character: cochar)
 
-      expect(post.recent_characters_for(user, 4)).to eq([reply_char2, char, reply_char])
+      expect(post.recent_characters_for(user, 4)).to eq([reply_char2, character, reply_char])
     end
 
     it "limits the amount of returned data" do
-      user = create(:user)
       characters = Array.new(10) { create(:character, user: user) }
-      post_char = create(:character, user: user)
-      post = create(:post, user: user, character: post_char)
+      post = create(:post, user: user, character: character)
       characters.each do |char|
         create(:reply, user: user, post: post, character: char)
       end
@@ -809,26 +810,28 @@ RSpec.describe Post do
   end
 
   describe "#build_new_reply_for" do
+    let(:user) { create(:user) }
+    let(:post) { create(:post, authors: [user]) }
+    let(:character) { create(:character, user: user) }
+    let(:icon) { create(:icon, user: user) }
+
     it "uses a draft if one exists" do
-      post = create(:post)
-      draft = create(:reply_draft, post: post)
-      reply = post.build_new_reply_for(draft.user)
+      draft = create(:reply_draft, post: post, user: user)
+      reply = post.build_new_reply_for(user)
       expect(reply).to be_a_new_record
-      expect(reply.user).to eq(draft.user)
+      expect(reply.user).to eq(user)
       expect(reply.content).to eq(draft.content)
     end
 
     it "copies most recent reply details if present" do
-      post = create(:post)
-      last_reply = create(:reply, post: post, with_character: true, with_icon: true)
-      last_reply.character.default_icon = create(:icon, user: last_reply.user)
-      last_reply.character.save!
+      last_reply = create(:reply, post: post, user: user, character: character, with_icon: true)
+      character.update!(default_icon: create(:icon, user: user))
       last_reply.reload
-      reply = post.build_new_reply_for(last_reply.user)
+      reply = post.build_new_reply_for(user)
       expect(reply).to be_a_new_record
-      expect(reply.user).to eq(last_reply.user)
-      expect(reply.icon_id).to eq(last_reply.character.default_icon_id)
-      expect(reply.character_id).to eq(last_reply.character_id)
+      expect(reply.user).to eq(user)
+      expect(reply.icon_id).to eq(character.default_icon_id)
+      expect(reply.character_id).to eq(character.id)
     end
 
     it "copies post details if it belongs to the user" do
@@ -841,28 +844,19 @@ RSpec.describe Post do
     end
 
     it "uses active character if available" do
-      post = create(:post)
-      character = create(:character, with_default_icon: true)
-      character.user.active_character = character
-      character.user.save!
+      character.update!(default_icon: create(:icon, user: user))
+      user.update!(active_character: character)
 
-      reply = post.build_new_reply_for(character.user)
+      reply = post.build_new_reply_for(user)
 
       expect(reply).to be_a_new_record
-      expect(reply.user).to eq(character.user)
+      expect(reply.user).to eq(user)
       expect(reply.icon_id).to eq(character.default_icon_id)
       expect(reply.character_id).to eq(character.id)
     end
 
     it "does not use avatar for active character without icons" do
-      post = create(:post)
-      icon = create(:icon)
-      character = create(:character, user: icon.user)
-
-      user = icon.user
-      user.avatar = icon
-      user.active_character = character
-      user.save!
+      user.update!(avatar: icon, active_character: character)
 
       reply = post.build_new_reply_for(user)
 
@@ -873,23 +867,17 @@ RSpec.describe Post do
     end
 
     it "uses avatar if available" do
-      post = create(:post)
-      icon = create(:icon)
-      icon.user.avatar = icon
-      icon.user.save!
+      user.update!(avatar: icon)
 
-      reply = post.build_new_reply_for(icon.user)
+      reply = post.build_new_reply_for(user)
 
       expect(reply).to be_a_new_record
-      expect(reply.user).to eq(icon.user)
-      expect(reply.icon_id).to eq(icon.user.avatar_id)
+      expect(reply.user).to eq(user)
+      expect(reply.icon_id).to eq(user.avatar_id)
       expect(reply.character_id).to be_nil
     end
 
     it "handles new user" do
-      post = create(:post)
-      user = create(:user)
-
       reply = post.build_new_reply_for(user)
 
       expect(reply).to be_a_new_record
@@ -935,6 +923,8 @@ RSpec.describe Post do
   end
 
   describe "authors" do
+    let(:invited) { create(:user) }
+
     it "automatically creates an author on creation" do
       post = create(:post)
       expect(post.authors).to eq([post.user])
@@ -944,7 +934,6 @@ RSpec.describe Post do
     end
 
     it "invites coauthors on creation" do
-      invited = create(:user)
       post = create(:post, unjoined_author_ids: [invited.id])
       expect(post.authors).to match_array([post.user, invited])
       invited_author = post.author_for(invited)
@@ -953,10 +942,18 @@ RSpec.describe Post do
     end
 
     it "automatically adds to (joined) authors upon reply" do
-      post = create(:post)
+      post = create(:post, authors_locked: false)
       expect(post.authors).to eq([post.user])
       reply = create(:reply, post: post)
       expect(post.authors.reload).to match_array([post.user, reply.user])
+      expect(post.authors.count).to eq(post.joined_authors.count)
+    end
+
+    it "automatically moves from unjoined to joined authors upon reply" do
+      post = create(:post, unjoined_authors: [invited])
+      expect(post.joined_authors).to eq([post.user])
+      reply = create(:reply, post: post, user: invited)
+      expect(post.joined_authors.reload).to match_array([post.user, reply.user])
       expect(post.authors.count).to eq(post.joined_authors.count)
     end
   end
@@ -1197,21 +1194,23 @@ RSpec.describe Post do
   context "callbacks" do
     include ActiveJob::TestHelper
 
+    let(:author) { create(:user) }
+    let(:coauthor) { create(:user) }
+    let(:post) { create(:post, user: author, unjoined_authors: [coauthor]) }
+
     it "should enqueue a message after creation" do
       clear_enqueued_jobs
-      author = create(:user)
       notified = create(:user)
       create(:favorite, user: notified, favorite: author)
-      post = create(:post, user: author)
+      post
       expect(NotifyFollowersOfNewPostJob).to have_been_enqueued.with(post.id, post.user_id).on_queue('notifier')
     end
 
     it "should only enqueue a message on authors' first join" do
       clear_enqueued_jobs
-      author = create(:user)
 
       # first post triggers job
-      post = create(:post, user: author)
+      post
       expect(NotifyFollowersOfNewPostJob).to have_been_enqueued.with(post.id, post.user_id).on_queue('notifier')
 
       # original author posting again does not trigger job
@@ -1220,15 +1219,14 @@ RSpec.describe Post do
       }.not_to enqueue_job(NotifyFollowersOfNewPostJob)
 
       # new author posting triggers job
-      new_author = create(:user)
       expect {
-        create(:reply, post: post, user: new_author)
+        create(:reply, post: post, user: coauthor)
       }.to enqueue_job(NotifyFollowersOfNewPostJob)
 
       # further posts don't trigger
       expect {
         create(:reply, post: post, user: author)
-        create(:reply, post: post, user: new_author)
+        create(:reply, post: post, user: coauthor)
       }.not_to enqueue_job(NotifyFollowersOfNewPostJob)
     end
   end

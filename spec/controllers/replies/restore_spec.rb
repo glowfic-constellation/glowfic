@@ -32,7 +32,7 @@ RSpec.describe RepliesController, 'POST restore' do
   end
 
   it "must be your reply" do
-    rpost = create(:post)
+    rpost = create(:post, authors_locked: false)
     reply = create(:reply, post: rpost)
     login_as(rpost.user)
     reply.destroy!
@@ -82,7 +82,7 @@ RSpec.describe RepliesController, 'POST restore' do
   end
 
   it "handles last reply deletion" do
-    rpost = create(:post)
+    rpost = create(:post, authors_locked: false)
     create_list(:reply, 2, post: rpost, user: rpost.user)
     deleted_reply = Timecop.freeze(rpost.reload.tagged_at + 1.day) { create(:reply, post: rpost) }
     deleted_reply.destroy!
@@ -104,7 +104,7 @@ RSpec.describe RepliesController, 'POST restore' do
   end
 
   it "handles only reply deletion" do
-    rpost = create(:post)
+    rpost = create(:post, authors_locked: false)
     expect(rpost.last_user).to eq(rpost.user)
     expect(rpost.last_reply).to be_nil
 

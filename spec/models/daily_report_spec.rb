@@ -94,14 +94,15 @@ RSpec.describe DailyReport do
       # 2am UTC 5/21 is 10pm EDT 5/20
       mismatch_time = DateTime.new(2020, 5, 21, 2, 30, 0).utc
 
+      users = create_list(:user, 2)
       # create post unambiguously on 5/20
       post = Timecop.freeze(mismatch_time - 12.hours) do
-        create(:post)
+        create(:post, unjoined_authors: users)
       end
 
       # only the second reply is on 5/21 in EDT
-      Timecop.freeze(mismatch_time) { create(:reply, post: post) }
-      Timecop.freeze(mismatch_time + 6.hours) { create(:reply, post: post) }
+      Timecop.freeze(mismatch_time) { create(:reply, post: post, user: users[0]) }
+      Timecop.freeze(mismatch_time + 6.hours) { create(:reply, post: post, user: users[1]) }
 
       Time.use_zone('America/New_York') do
         report = DailyReport.new("2020-05-21".to_date)
@@ -127,15 +128,15 @@ RSpec.describe DailyReport do
           new_today_no_replies = create(:post)
           new_today_replies = create(:post)
           new_today_future_replies = create(:post)
-          create(:reply, post: new_yesterday_replies)
+          create(:reply, post: new_yesterday_replies, user: new_yesterday_replies.user)
         end
 
         Timecop.freeze(report_time + 1.hour) do
-          create(:reply, post: new_today_replies)
+          create(:reply, post: new_today_replies, user: new_today_replies.user)
         end
 
         Timecop.freeze(report_time + 2.days) do
-          create(:reply, post: new_today_future_replies)
+          create(:reply, post: new_today_future_replies, user: new_today_future_replies.user)
         end
 
         report = DailyReport.new(report_time.to_date)

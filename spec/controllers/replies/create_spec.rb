@@ -15,7 +15,7 @@ RSpec.describe RepliesController, 'POST create' do
   context "preview" do
     it "takes correct actions" do
       user = create(:user)
-      reply_post = create(:post, user: user)
+      reply_post = create(:post, user: user, authors_locked: false)
       create(:reply, post: reply_post) # reply
       reply_post.mark_read(user)
       login_as(user)
@@ -76,7 +76,7 @@ RSpec.describe RepliesController, 'POST create' do
     it "does not create authors" do
       user = create(:user)
       board = create(:board, authors_locked: true)
-      reply_post = create(:post, user: board.creator, board: board)
+      reply_post = create(:post, user: board.creator, board: board, authors_locked: false)
       expect(reply_post.user.id).not_to eq(user.id)
       login_as(user)
 
@@ -154,7 +154,7 @@ RSpec.describe RepliesController, 'POST create' do
   end
 
   it "requires post read" do
-    reply_post = create(:post)
+    reply_post = create(:post, authors_locked: false)
     login_as(reply_post.user)
     reply_post.mark_read(reply_post.user)
     create(:reply, post: reply_post)
@@ -165,7 +165,7 @@ RSpec.describe RepliesController, 'POST create' do
   end
 
   it "handles multiple creations with unread warning" do
-    reply_post = create(:post)
+    reply_post = create(:post, authors_locked: false)
     login_as(reply_post.user)
     reply_post.mark_read(reply_post.user)
     create(:reply, post: reply_post) # last_seen
@@ -198,7 +198,7 @@ RSpec.describe RepliesController, 'POST create' do
   end
 
   it "handles duplicate with other unseen replies" do
-    reply_post = create(:post)
+    reply_post = create(:post, authors_locked: false)
     login_as(reply_post.user)
     reply_post.mark_read(reply_post.user)
     create(:reply, post: reply_post)
@@ -227,7 +227,7 @@ RSpec.describe RepliesController, 'POST create' do
   it "saves a new reply successfully if read" do
     user = create(:user)
     login_as(user)
-    reply_post = create(:post)
+    reply_post = create(:post, unjoined_authors: [user])
     reply_post.mark_read(user, at_time: reply_post.created_at + 1.second, force: true)
     char = create(:character, user: user)
     icon = create(:icon, user: user)
@@ -278,7 +278,7 @@ RSpec.describe RepliesController, 'POST create' do
   it "allows you to reply to join a post you did not create" do
     user = create(:user)
     login_as(user)
-    reply_post = create(:post)
+    reply_post = create(:post, authors_locked: false)
     reply_post.mark_read(user, at_time: reply_post.created_at + 1.second, force: true)
 
     expect {
@@ -296,7 +296,7 @@ RSpec.describe RepliesController, 'POST create' do
   it "allows you to reply to a post you already joined" do
     user = create(:user)
     login_as(user)
-    reply_post = create(:post)
+    reply_post = create(:post, authors_locked: false)
     reply_old = create(:reply, post: reply_post, user: user)
     reply_post.mark_read(user, at_time: reply_old.created_at + 1.second, force: true)
 
@@ -315,7 +315,7 @@ RSpec.describe RepliesController, 'POST create' do
   it "allows you to reply to a closed post you already joined" do
     user = create(:user)
     login_as(user)
-    reply_post = create(:post)
+    reply_post = create(:post, authors_locked: false)
     reply_old = create(:reply, post: reply_post, user: user)
     reply_post.mark_read(user, at_time: reply_old.created_at + 1.second, force: true)
     reply_post.update!(authors_locked: true)
@@ -357,7 +357,7 @@ RSpec.describe RepliesController, 'POST create' do
   it "adds authors correctly when a user replies to an open thread" do
     user = create(:user)
     login_as(user)
-    reply_post = create(:post)
+    reply_post = create(:post, authors_locked: false)
     reply_post.mark_read(user)
 
     expect {
@@ -377,7 +377,7 @@ RSpec.describe RepliesController, 'POST create' do
   it "handles multiple replies to an open thread correctly" do
     user = create(:user)
     login_as(user)
-    reply_post = create(:post)
+    reply_post = create(:post, authors_locked: false)
     expect(reply_post.tagging_authors.count).to eq(1)
     old_reply = create(:reply, post: reply_post, user: user)
     reply_post.reload
@@ -414,7 +414,7 @@ RSpec.describe RepliesController, 'POST create' do
   end
 
   it "sets reply_order correctly with an existing reply" do
-    reply_post = create(:post)
+    reply_post = create(:post, authors_locked: false)
     login_as(reply_post.user)
     create(:reply, post: reply_post)
     reply_post.mark_read(reply_post.user)
@@ -426,7 +426,7 @@ RSpec.describe RepliesController, 'POST create' do
   end
 
   it "sets reply_order correctly with multiple existing replies" do
-    reply_post = create(:post)
+    reply_post = create(:post, authors_locked: false)
     login_as(reply_post.user)
     create(:reply, post: reply_post)
     create(:reply, post: reply_post)

@@ -49,7 +49,7 @@ RSpec.describe "post_split" do # rubocop:disable RSpec/DescribeClass
     cameo = create(:user)
     new_user = create(:user)
 
-    post = create(:post, user: user, unjoined_authors: [coauthor])
+    post = create(:post, user: user, unjoined_authors: [coauthor, cameo, new_user])
     create(:reply, post: post, user: cameo)
     100.times { |i| create(:reply, post: post, user: i.even? ? user : coauthor) }
     create(:reply, post: post, user: new_user)

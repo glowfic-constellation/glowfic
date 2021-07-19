@@ -98,7 +98,7 @@ RSpec.describe TemplatesController do
       char2 = create(:character, user: template.user, template: template)
       non_char = create(:character)
       template_post = create(:post, user: template.user, character: char1)
-      reply_post = create(:post)
+      reply_post = create(:post, unjoined_authors: [template.user])
       create(:reply, post: reply_post, user: template.user, character: char2)
       create(:post, character: non_char, user: non_char.user)
 

@@ -22,7 +22,7 @@ RSpec.describe PostsController, 'GET owed' do
   it "lists number of posts in the title if present" do
     user = create(:user)
     login_as(user)
-    post = create(:post, user: user)
+    post = create(:post, user: user, authors_locked: false)
     create(:reply, post: post)
     get :owed
     expect(response.status).to eq(200)
@@ -33,7 +33,7 @@ RSpec.describe PostsController, 'GET owed' do
     render_views
 
     def create_owed(user)
-      post = create(:post, user: user)
+      post = create(:post, user: user, authors_locked: false)
       create(:reply, post: post)
       post.mark_read(user)
     end
@@ -59,8 +59,8 @@ RSpec.describe PostsController, 'GET owed' do
 
   context "with hidden" do
     let(:user) { create(:user) }
-    let(:unhidden_post) { create(:post, user: user) }
-    let(:hidden_post) { create(:post, user: user) }
+    let(:unhidden_post) { create(:post, user: user, authors_locked: false) }
+    let(:hidden_post) { create(:post, user: user, authors_locked: false) }
 
     before(:each) do
       login_as(user)
@@ -91,7 +91,7 @@ RSpec.describe PostsController, 'GET owed' do
     end
 
     it "shows hiatused posts" do
-      post = create(:post, user: user)
+      post = create(:post, user: user, unjoined_authors: [other_user])
       create(:reply, post: post, user: other_user)
       post.update!(status: :hiatus)
 
@@ -103,7 +103,7 @@ RSpec.describe PostsController, 'GET owed' do
     it "shows auto-hiatused posts" do
       post = nil
       Timecop.freeze(1.month.ago) do
-        post = create(:post, user: user)
+        post = create(:post, user: user, unjoined_authors: [other_user])
         create(:reply, post: post, user: other_user)
       end
       get :owed, params: { view: 'hiatused' }
@@ -115,7 +115,7 @@ RSpec.describe PostsController, 'GET owed' do
   context "with posts" do
     let(:user) { create(:user) }
     let(:other_user) { create(:user) }
-    let(:post) { create(:post, user: user) }
+    let(:post) { create(:post, user: user, unjoined_authors: [other_user]) }
 
     before(:each) do
       other_user
@@ -195,7 +195,7 @@ RSpec.describe PostsController, 'GET owed' do
     end
 
     it "hides threads the user has manually removed themselves from" do
-      post = create(:post, user: other_user, tagging_authors: [other_user])
+      post = create(:post, user: other_user, unjoined_authors: [user])
       create(:reply, post: post, user: user)
       create(:reply, post: post, user: other_user)
       post.opt_out_of_owed(user)
@@ -205,9 +205,9 @@ RSpec.describe PostsController, 'GET owed' do
     end
 
     it "orders posts by tagged_at" do
-      post2 = create(:post, user_id: user.id)
-      post3 = create(:post, user_id: user.id)
-      post1 = create(:post, user_id: user.id)
+      post2 = create(:post, user: user, unjoined_authors: [other_user])
+      post3 = create(:post, user: user, unjoined_authors: [other_user])
+      post1 = create(:post, user: user, unjoined_authors: [other_user])
       create(:reply, post_id: post3.id, user_id: other_user.id)
       create(:reply, post_id: post2.id, user_id: other_user.id)
       create(:reply, post_id: post1.id, user_id: other_user.id)
@@ -234,6 +234,7 @@ RSpec.describe PostsController, 'GET owed' do
     end
 
     it "shows solo threads" do
+      post.update!(unjoined_authors: [])
       create(:reply, user: user, post: post)
       get :owed
       expect(response.status).to eq(200)
