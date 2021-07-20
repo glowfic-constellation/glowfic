@@ -5,7 +5,6 @@ class CreateVersions < ActiveRecord::Migration[5.2]
       t.integer  :item_id,   null: false, index: true
       t.string   :event,     null: false
       t.integer  :whodunnit
-      t.jsonb    :object
       t.jsonb    :object_changes
       t.string   :comment
       t.string   :ip
@@ -19,7 +18,6 @@ class CreateVersions < ActiveRecord::Migration[5.2]
       t.integer  :item_id,   null: false, index: true
       t.string   :event,     null: false
       t.integer  :whodunnit
-      t.jsonb    :object
       t.jsonb    :object_changes
       t.string   :comment
       t.string   :ip
@@ -34,7 +32,6 @@ class CreateVersions < ActiveRecord::Migration[5.2]
       t.integer  :item_id,   null: false, index: true
       t.string   :event,     null: false
       t.integer  :whodunnit
-      t.jsonb    :object
       t.jsonb    :object_changes
       t.string   :comment
       t.string   :ip
@@ -48,7 +45,6 @@ class CreateVersions < ActiveRecord::Migration[5.2]
       t.integer  :item_id,   null: false, index: true
       t.string   :event,     null: false
       t.integer  :whodunnit
-      t.jsonb    :object
       t.jsonb    :object_changes
       t.string   :comment
       t.string   :ip
