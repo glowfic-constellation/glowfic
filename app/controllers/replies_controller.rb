@@ -246,7 +246,7 @@ class RepliesController < WritableController
       redirect_to post_path(audit.associated) and return
     end
 
-    new_reply = audit.is_a?(Reply::Version) ? audit.reify : Reply.new(audit.audited_changes)
+    new_reply = audit.is_a?(Reply::Version) ? audit.load_destroyed : Reply.new(audit.audited_changes)
     unless new_reply.editable_by?(current_user)
       flash[:error] = "You do not have permission to modify this reply."
       redirect_to post_path(new_reply.post) and return

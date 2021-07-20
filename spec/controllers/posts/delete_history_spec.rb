@@ -190,7 +190,7 @@ RSpec.describe PostsController, 'GET delete_history' do
   def restore(reply)
     audit = Reply::Version.where(event: 'destroy', item_id: reply.id).last
     if audit
-      new_reply = audit.reify
+      new_reply = audit.load_destroyed
     else
       audit = Audited::Audit.where(action: 'destroy', auditable_id: reply.id).last
       new_reply = Reply.new(audit.audited_changes)

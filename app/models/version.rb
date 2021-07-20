@@ -12,4 +12,9 @@ class Version < PaperTrail::Version
     user_id = user.is_a?(User) ? user.id : user
     ::PaperTrail.request(whodunnit: user_id) { yield }
   end
+
+  def load_destroyed
+    return unless event == 'destroy'
+    item_type.safe_constantize.new(object_changes.transform_values(&:first))
+  end
 end

@@ -197,7 +197,7 @@ class PostsController < WritableController
     return unless @deleted_audits.present?
 
     @audit = @deleted_audits.first
-    @deleted = @audit.is_a?(Reply::Version) ? @audit.reify : @deleted = Reply.new(@audit.audited_changes)
+    @deleted = @audit.is_a?(Reply::Version) ? @audit.load_destroyed : @deleted = Reply.new(@audit.audited_changes)
     @preceding = @post.replies.where('id < ?', @audit.auditable_id).order(id: :desc).limit(2).reverse
     @preceding = [@post] unless @preceding.present?
     @following = @post.replies.where('id > ?', @audit.auditable_id).order(id: :asc).limit(2)
