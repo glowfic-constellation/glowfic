@@ -1216,6 +1216,62 @@ RSpec.describe Post do
     end
   end
 
+  describe "#read_time_for" do
+    let(:time) { 10.days.ago }
+    let(:author) { create(:user) }
+    let(:coauthor) { create(:user) }
+    let(:post) { Timecop.freeze(time) { create(:post, user: author, unjoined_authors: [coauthor]) } }
+    let(:replies) do
+      10.times do |i|
+        user = i.even? ? author : coauthor
+        Timecop.freeze(time + i.minutes) { create(:reply, post: post, user: user) }
+      end
+      post.replies
+    end
+    let(:last_reply) { replies.last }
+
+    after(:each) { Audited.auditing_enabled = false }
+
+    it "returns post edited_at with no replies" do
+      post.update!(privacy: :registered)
+      expect(post.read_time_for([])).to be_the_same_time_as(post.edited_at)
+    end
+
+    it "returns last reply created_at when not on last page" do
+      viewing_replies = replies[0..5]
+      last_reply = viewing_replies.last
+      last_reply.update!(content: 'new content')
+      expect(post.read_time_for(viewing_replies)).to be_the_same_time_as(last_reply.created_at)
+    end
+
+    it "returns last reply updated_at if after post edited at" do
+      Timecop.freeze(time + 1.day) { post.update!(status: :complete) }
+      Timecop.freeze(time + 2.days) { last_reply.update!(content: 'new content') }
+      expect(post).to be_complete
+      expect(post.read_time_for(replies)).to be_the_same_time_as(last_reply.updated_at)
+    end
+
+    it "returns tagged_at with more recent completion with versions", versioning: true do
+      Timecop.freeze(time + 1.day) { last_reply.update!(content: 'new content') }
+      Timecop.freeze(time + 2.days) { post.update!(status: :complete) }
+      expect(post.read_time_for(replies)).to be_the_same_time_as(post.tagged_at)
+    end
+
+    it "returns tagged_at with more recent completion with audits" do
+      Audited.auditing_enabled = true
+      Timecop.freeze(time + 1.day) { last_reply.update!(content: 'new content') }
+      Timecop.freeze(time + 2.days) { post.update!(status: :complete) }
+      expect(post.read_time_for(replies)).to be_the_same_time_as(post.tagged_at)
+      Audited.auditing_enabled = false
+    end
+
+    it "returns updated_at even with more recent other status change" do
+      Timecop.freeze(time + 1.day) { last_reply.update!(content: 'new content') }
+      Timecop.freeze(time + 2.days) { post.update!(status: :abandoned) }
+      expect(post.read_time_for(replies)).to be_the_same_time_as(last_reply.updated_at)
+    end
+  end
+
   describe "adjacent posts" do
     let(:user) { create(:user) }
     let(:board) { create(:board, creator: user) }

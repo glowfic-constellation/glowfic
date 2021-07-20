@@ -204,7 +204,9 @@ class Post < ApplicationRecord
 
     # testing for case where the post was changed in status more recently than the last reply
     audits_exist = versions.where('created_at > ?', most_recent.created_at).where(event: 'update')
-    audits_exist = audits_exist.where("(object_changes #>> '{status, 1}') = ?", 'complete')
+    audits_exist = audits_exist
+      .where("(object_changes #>> '{status, 1}') = ?", 'complete')
+      .or(audits_exist.where("(object_changes #>> '{status, 1}')::integer = ?", Post.statuses[:complete]))
     return self.edited_at if audits_exist.exists?
 
     audits_exist = audits.where('created_at > ?', most_recent.created_at).where(action: 'update')
