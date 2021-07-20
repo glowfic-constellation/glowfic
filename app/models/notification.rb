@@ -2,6 +2,8 @@ class Notification < ApplicationRecord
   belongs_to :user, inverse_of: :notifications, optional: false
   belongs_to :post, inverse_of: :notifications, optional: true
 
+  after_create_commit :notify_recipient
+
   scope :unread, -> { where(unread: true) }
   scope :ordered, -> { order(created_at: :desc) }
 
@@ -21,5 +23,13 @@ class Notification < ApplicationRecord
 
   def self.notify_user(user, type, post: nil, error: nil)
     Notification.create!(user: user, notification_type: type, post: post, error_msg: error)
+  end
+
+  private
+
+  def notify_recipient
+    return unless user.email.present?
+    return unless user.email_notifications?
+    UserMailer.new_notification(self.id).deliver
   end
 end

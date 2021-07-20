@@ -1,0 +1,12 @@
+%div{style: 'width: 500px; margin: 0px auto; background-color: #8B8687; color:#EEEEEE; padding: 0px; font-size: 18px;'}
+  %div{style: 'padding: 15px; overflow: hidden;'}
+    %span{style: 'line-height: 28px;'} subject_for_type(@notification).titlecase
+
+- if @notification.post || @notification.error_msg
+  %div{style: 'background-color: #D8D8D8; color:#101010; overflow: auto; width: 500px; margin: 0px auto;'}
+    %div{style: 'padding: 10px; text-align: center;'}
+      %div{style: 'text-align: center; padding: 0px; float: left; margin-right: 10px; margin-bottom: 10px; width: 150px; overflow: visible;'}
+      - if @notification.post
+        = link_to @notification.post.subject, post_url(id: @notification.post, host: current_host, protocol: 'https'), style: 'color: #EEEEEE;'
+      - else
+        = @notification.error_msg

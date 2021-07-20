@@ -16,25 +16,25 @@ RSpec.describe Notification do
   end
 
   describe "#notify_recipient" do
+    let!(:user) { create(:user, email_notifications: true) }
+    let!(:notification) { build(:notification, user: user) }
+
     before(:each) { ResqueSpec.reset! }
 
-    skip "does not send with notifications off" do
-      notification = create(:notification)
-      expect(notification.user.email_notifications).not_to eq(true)
+    it "does not send with notifications off" do
+      user.update!(email_notifications: false)
+      notification.save!
       expect(UserMailer).to have_queue_size_of(0)
     end
 
-    skip "does not send with no email" do
-      user = create(:user)
+    it "does not send with no email" do
       user.update_columns(email: nil) # rubocop:disable Rails/SkipsModelValidations
-      create(:notification, user: user)
+      notification.save!
       expect(UserMailer).to have_queue_size_of(0)
     end
 
-    skip "sends with notifications on" do
-      notified_user = create(:user, email_notifications: true)
-      notification = create(:notification, user: notified_user)
-
+    it "sends with notifications on" do
+      notification.save!
       expect(UserMailer).to have_queue_size_of(1)
       expect(UserMailer).to have_queued(:new_notification, [notification.id])
     end
