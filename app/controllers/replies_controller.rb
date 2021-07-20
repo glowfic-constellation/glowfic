@@ -235,12 +235,10 @@ class RepliesController < WritableController
 
   def restore
     audit = Reply::Version.where(event: 'destroy').order(created_at: :desc).find_by(item_id: params[:id])
+    audit ||= Audited::Audit.where(action: 'destroy').order(id: :desc).find_by(auditable_id: params[:id])
     unless audit
-      audit = Audited::Audit.where(action: 'destroy').order(id: :desc).find_by(auditable_id: params[:id])
-      unless audit
-        flash[:error] = "Reply could not be found."
-        redirect_to continuities_path and return
-      end
+      flash[:error] = "Reply could not be found."
+      redirect_to continuities_path and return
     end
 
     if audit.auditable

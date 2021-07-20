@@ -5,6 +5,8 @@ class Version < PaperTrail::Version
 
   alias_attribute :user_id, :whodunnit
   alias_attribute :action, :event
+  alias_attribute :audited_changes, :object_changes
+  alias_attribute :auditable_id, :object_id
 
   def self.as_user(user)
     user_id = user.is_a?(User) ? user.id : user
