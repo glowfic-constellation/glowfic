@@ -51,7 +51,8 @@ RSpec.describe "#convert_versions" do # rubocop:disable Rspec/DescribeClass
 
   describe "#setup_version" do
     let(:user) { create(:user) }
-    let(:post) { Timecop.freeze(Time.zone.now - 1.minute) { create(:post, user: user) } }
+    let(:post) { create(:post, user: user) }
+    let(:character) { create(:character, user: user) }
 
     context "with posts" do
       it "works for create audit" do
@@ -87,7 +88,6 @@ RSpec.describe "#convert_versions" do # rubocop:disable Rspec/DescribeClass
         old_subject = post.subject
         old_board = post.board
         new_board = create(:board)
-        character = create(:character, user: user)
         Audited.audit_class.as_user(user) do
           post.update!(subject: 'new subject', description: 'new description', board: new_board, character: character)
         end
@@ -147,18 +147,176 @@ RSpec.describe "#convert_versions" do # rubocop:disable Rspec/DescribeClass
     end
 
     context "with replies" do
-      it "works for create audit"
-      it "works for update audit"
-      it "works for destroy audit"
+      let(:reply) { create(:reply, post: post, user: user) }
+
+      it "works for create audit" do
+        Audited.audit_class.as_user(user) { reply }
+        audit = reply.audits.first
+        version = setup_version(audit, Reply::Version)
+        expect(version).to be_kind_of(Reply::Version)
+        expect(version.item_id).to eq(reply.id)
+        expect(version.item_type).to eq('Reply')
+        expect(version.event).to eq('create')
+        expect(version.whodunnit).to eq(user.id)
+        expect(version.post_id).to eq(post.id)
+        changes = {
+          content: [nil, reply.content],
+          post_id: [nil, post.id],
+          user_id: [nil, user.id],
+        }.transform_keys(&:to_s)
+        expect(version.object_changes.keys).to match_array(changes.keys)
+        version.object_changes.each do |key, value|
+          expect(value).to eq(changes[key])
+        end
+        expect(version.comment).to be_nil
+        expect(version.ip).to eq(audit.remote_address)
+        expect(version.request_uuid).to eq(audit.request_uuid)
+        expect(version.created_at).to be_the_same_time_as(audit.created_at)
+      end
+
+      it "works for update audit" do
+        old_content = reply.content
+        Audited.audit_class.as_user(user) do
+          reply.update!(content: 'new content', character: character)
+        end
+        audit = reply.audits.last
+        version = setup_version(audit, Reply::Version)
+        expect(version).to be_kind_of(Reply::Version)
+        expect(version.item_id).to eq(reply.id)
+        expect(version.item_type).to eq('Reply')
+        expect(version.event).to eq('update')
+        expect(version.whodunnit).to eq(user.id)
+        expect(version.post_id).to eq(post.id)
+        changes = {
+          content: [old_content, reply.content],
+          character_id: [nil, character.id]
+        }.transform_keys(&:to_s)
+        expect(version.object_changes.keys).to match_array(changes.keys)
+        version.object_changes.each do |key, value|
+          expect(value).to eq(changes[key])
+        end
+        expect(version.comment).to be_nil
+        expect(version.ip).to eq(audit.remote_address)
+        expect(version.request_uuid).to eq(audit.request_uuid)
+        expect(version.created_at).to be_the_same_time_as(audit.created_at)
+      end
+
+      it "works for destroy audit" do
+        Audited.audit_class.as_user(user) do
+          reply.destroy!
+        end
+        audit = reply.audits.last
+        version = setup_version(audit, Reply::Version)
+        expect(version).to be_kind_of(Reply::Version)
+        expect(version.item_id).to eq(reply.id)
+        expect(version.item_type).to eq('Reply')
+        expect(version.event).to eq('destroy')
+        expect(version.whodunnit).to eq(user.id)
+        expect(version.post_id).to eq(post.id)
+        changes = {
+          content: [reply.content, nil],
+          post_id: [post.id, nil],
+          user_id: [user.id, nil],
+        }.transform_keys(&:to_s)
+        expect(version.object_changes.keys).to match_array(changes.keys)
+        version.object_changes.each do |key, value|
+          expect(value).to eq(changes[key])
+        end
+        expect(version.comment).to be_nil
+        expect(version.ip).to eq(audit.remote_address)
+        expect(version.request_uuid).to eq(audit.request_uuid)
+        expect(version.created_at).to be_the_same_time_as(audit.created_at)
+      end
     end
 
     context "with characters" do
-      it "works"
+      it "works" do
+        mod = create(:mod_user)
+        old_name = character.name
+        template = create(:template, user: user)
+        Audited.audit_class.as_user(mod) do
+          character.update!(name: 'new name', template: template, screenname: 'test_screen_name')
+        end
+        audit = character.audits.last
+        audit.update!(comment: 'test comment')
+        version = setup_version(audit, Character::Version)
+        expect(version).to be_kind_of(Character::Version)
+        expect(version.item_id).to eq(character.id)
+        expect(version.item_type).to eq('Character')
+        expect(version.event).to eq('update')
+        expect(version.whodunnit).to eq(mod.id)
+        changes = {
+          name: [old_name, character.name],
+          template_id: [nil, template.id],
+          screenname: [nil, character.screenname],
+        }.transform_keys(&:to_s)
+        expect(version.object_changes.keys).to match_array(changes.keys)
+        version.object_changes.each do |key, value|
+          expect(value).to eq(changes[key])
+        end
+        expect(version.comment).to eq(audit.comment)
+        expect(version.ip).to eq(audit.remote_address)
+        expect(version.request_uuid).to eq(audit.request_uuid)
+        expect(version.created_at).to be_the_same_time_as(audit.created_at)
+      end
     end
 
     context "with blocks" do
-      it "works for update audit"
-      it "works for destroy audit"
+      let(:block) { create(:block) }
+
+      it "works for update audit" do
+        Audited.audit_class.as_user(user) do
+          block.update!(block_interactions: false, hide_me: :posts, hide_them: :all)
+        end
+        audit = block.audits.last
+        version = setup_version(audit, Block::Version)
+        expect(version).to be_kind_of(Block::Version)
+        expect(version.item_id).to eq(block.id)
+        expect(version.item_type).to eq('Block')
+        expect(version.event).to eq('update')
+        expect(version.whodunnit).to eq(user.id)
+        changes = {
+          block_interactions: [true, false],
+          hide_me: [0, 1],
+          hide_them: [0, 2]
+        }.transform_keys(&:to_s)
+        expect(version.object_changes.keys).to match_array(changes.keys)
+        version.object_changes.each do |key, value|
+          expect(value).to eq(changes[key])
+        end
+        expect(version.comment).to be_nil
+        expect(version.ip).to eq(audit.remote_address)
+        expect(version.request_uuid).to eq(audit.request_uuid)
+        expect(version.created_at).to be_the_same_time_as(audit.created_at)
+      end
+
+      it "works for destroy audit" do
+        Audited.audit_class.as_user(user) do
+          block.destroy!
+        end
+        audit = block.audits.last
+        version = setup_version(audit, Block::Version)
+        expect(version).to be_kind_of(Block::Version)
+        expect(version.item_id).to eq(block.id)
+        expect(version.item_type).to eq('Block')
+        expect(version.event).to eq('destroy')
+        expect(version.whodunnit).to eq(user.id)
+        changes = {
+          block_interactions: [true, nil],
+          blocking_user_id: [block.blocking_user_id, nil],
+          blocked_user_id: [block.blocked_user_id, nil],
+          hide_me: [0, nil],
+          hide_them: [0, nil],
+        }.transform_keys(&:to_s)
+        expect(version.object_changes.keys).to match_array(changes.keys)
+        version.object_changes.each do |key, value|
+          expect(value).to eq(changes[key])
+        end
+        expect(version.comment).to be_nil
+        expect(version.ip).to eq(audit.remote_address)
+        expect(version.request_uuid).to eq(audit.request_uuid)
+        expect(version.created_at).to be_the_same_time_as(audit.created_at)
+      end
     end
   end
 end
