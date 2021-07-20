@@ -1,11 +1,38 @@
 require Rails.root.join('script', 'convert_versions.rb').to_s
 
 RSpec.describe "#convert_versions" do # rubocop:disable Rspec/DescribeClass
+  let(:user) { create(:user) }
+  let(:mod) { create(:mod_user) }
+  let(:post) { create(:post, user: user) }
+  let(:character) { create(:character, user: user) }
+  let(:reply) { create(:reply, post: post, user: user) }
+  let(:block) { create(:block, blocking_user: user) }
+
   before(:each) { Audited.auditing_enabled = true }
 
   after(:each) { Audited.auditing_enabled = false }
 
-  skip "has tests"
+  it "converts audits" do
+    posts = create_list(:post, 10)
+    posts.each { |post| create_list(:reply, 3, post: post, with_character: true, with_icon: true) }
+    posts = Post.where(id: posts.map(&:id))
+    replies = Reply.all
+    characters = Character.all
+    Audited.audit_class.as_user(mod) do
+      characters.each { |char| char.update!(name: char.name + ' updated') }
+    end
+    blocks = create_list(:block, 10)
+    blocks.each { |block| block.update!(hide_me: :posts) }
+    count = posts.count + replies.count + characters.count + blocks.count
+    expect(Audited::Audit.count).to eq(count)
+
+    convert_versions
+
+    expect(Character::Version.count).to eq(characters.count)
+    expect(Post::Version.count).to eq(posts.count)
+    expect(Reply::Version.count).to eq(replies.count)
+    expect(Block::Version.count).to eq(blocks.count)
+  end
 
   describe "#audits_for" do
     it "finds all post audits" do
@@ -38,22 +65,56 @@ RSpec.describe "#convert_versions" do # rubocop:disable Rspec/DescribeClass
       expect(audits_for('Block').count).to eq(2)
     end
 
-    it "excludes audits with version_id set"
+    it "excludes audits with version_id set" do
+      posts = create_list(:post, 5)
+      create_version(Audited::Audit.second, Post::Version)
+      create_version(Audited::Audit.last, Post::Version)
+      posts.second.update!(description: 'new description')
+      posts.last.destroy!
+      create_version(Audited::Audit.last, Post::Version)
+      expect(audits_for('Post').count).to eq(4)
+    end
   end
 
   describe "#create_version" do
-    it "works with posts"
+    it "works with posts" do
+      Audited.audit_class.as_user(user) { post }
+      audit = post.audits.first
+      create_version(audit, Post::Version)
+      version = Post::Version.last
+      expect(version).to be_persisted
+      expect(audit.reload.version_id).to eq(version.id)
+    end
 
-    it "works with characters"
+    it "works with characters" do
+      Audited.audit_class.as_user(mod) { character.update(name: 'new name') }
+      audit = character.audits.first
+      create_version(audit, Character::Version)
+      version = Character::Version.last
+      expect(version).to be_persisted
+      expect(audit.reload.version_id).to eq(version.id)
+    end
 
-    it "works with blocks"
+    it "works with replies" do
+      Audited.audit_class.as_user(user) { reply }
+      audit = reply.audits.first
+      create_version(audit, Reply::Version)
+      version = Reply::Version.last
+      expect(version).to be_persisted
+      expect(audit.reload.version_id).to eq(version.id)
+    end
+
+    it "works with blocks" do
+      Audited.audit_class.as_user(user) { block.update(hide_me: :posts) }
+      audit = block.audits.first
+      create_version(audit, Block::Version)
+      version = Block::Version.last
+      expect(version).to be_persisted
+      expect(audit.reload.version_id).to eq(version.id)
+    end
   end
 
   describe "#setup_version" do
-    let(:user) { create(:user) }
-    let(:post) { create(:post, user: user) }
-    let(:character) { create(:character, user: user) }
-
     context "with posts" do
       it "works for create audit" do
         Audited.audit_class.as_user(user) { post }
@@ -147,8 +208,6 @@ RSpec.describe "#convert_versions" do # rubocop:disable Rspec/DescribeClass
     end
 
     context "with replies" do
-      let(:reply) { create(:reply, post: post, user: user) }
-
       it "works for create audit" do
         Audited.audit_class.as_user(user) { reply }
         audit = reply.audits.first
@@ -231,7 +290,6 @@ RSpec.describe "#convert_versions" do # rubocop:disable Rspec/DescribeClass
 
     context "with characters" do
       it "works" do
-        mod = create(:mod_user)
         old_name = character.name
         template = create(:template, user: user)
         Audited.audit_class.as_user(mod) do
@@ -262,8 +320,6 @@ RSpec.describe "#convert_versions" do # rubocop:disable Rspec/DescribeClass
     end
 
     context "with blocks" do
-      let(:block) { create(:block) }
-
       it "works for update audit" do
         Audited.audit_class.as_user(user) do
           block.update!(block_interactions: false, hide_me: :posts, hide_them: :all)
