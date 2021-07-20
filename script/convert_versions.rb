@@ -3,14 +3,8 @@ def convert_versions
     create_version(audit, Post::Version)
   end
 
-  reply_audits = audits_for('Reply').reorder(associated_id: :asc, auditable_id: :asc, id: :asc)
-  reply_audits.find_each do |audit|
-    Version.transaction do
-      version = setup_version(audit, Reply::Version)
-      version.post_id = audit.associated_id
-      version.save!
-      audit.update!(version_id: version.id)
-    end
+  audits_for('Reply').find_each do |audit|
+    create_version(audit, Reply::Version)
   end
 
   audits_for('Character').find_each do |audit|
@@ -23,19 +17,24 @@ def convert_versions
 end
 
 def audits_for(model)
-  Audited::Audit.where(auditable_type: model, version_id: nil).order(auditable_id: :asc, id: :asc)
+  audits = Audited::Audit.where(auditable_type: model, version_id: nil)
+  if model == 'Reply'
+    audits.order(associated_id: :asc, auditable_id: :asc, id: :asc)
+  else
+    audits.order(auditable_id: :asc, id: :asc)
+  end
 end
 
-def create_version(audit, model)
+def create_version(audit, klass)
   Version.transaction do
-    version = setup_version(audit, model)
+    version = setup_version(audit, klass)
     version.save!
     audit.update!(version_id: version.id)
   end
 end
 
-def setup_version(audit, model)
-  model.new(
+def setup_version(audit, klass)
+  version = klass.new(
     item_id: audit.auditable_id,
     item_type: audit.auditable_type,
     event: audit.action,
@@ -46,6 +45,8 @@ def setup_version(audit, model)
     request_uuid: audit.request_uuid,
     created_at: audit.created_at,
   )
+  version.post_id = audit.associated_id if klass == Reply::Version
+  version
 end
 
 def convert_changes(changes, action)
