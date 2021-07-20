@@ -40,8 +40,7 @@ def setup_version(audit, model)
     item_type: audit.auditable_type,
     event: audit.action,
     whodunnit: audit.user_id,
-    object: audit.auditable.revision_at(audit.created_at - 1.second),
-    object_changes: convert_changes(audit.auditable_changes, audit.action),
+    object_changes: convert_changes(audit.audited_changes, audit.action),
     comment: audit.comment,
     ip: audit.remote_address,
     request_uuid: audit.request_uuid,
@@ -52,11 +51,13 @@ end
 def convert_changes(changes, action)
   case action
     when 'create'
-      changes.transform_values { |new| [nil, new] }
+      changes.transform_values! { |new| [nil, new] }
+      changes.delete_if { |_, value| value == [nil, nil] }
     when 'update'
       changes
     when 'destroy'
-      changes.transform_values { |old| [old, nil] }
+      changes.transform_values! { |old| [old, nil] }
+      changes.delete_if { |_, value| value == [nil, nil] }
   end
 end
 
