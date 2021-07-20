@@ -36,6 +36,7 @@ RSpec.describe PostsController, 'POST create' do
     before(:each) { clear_enqueued_jobs }
 
     include ActiveJob::TestHelper
+
     it "requires valid user" do
       user = create(:user)
       login_as(user)
@@ -44,31 +45,55 @@ RSpec.describe PostsController, 'POST create' do
       expect(flash[:error]).to eq("You do not have access to this feature.")
     end
 
-    it "requires valid dreamwidth url" do
-      login_as(user)
-      post :create, params: { button_import: true, dreamwidth_url: 'http://www.google.com' }
-      expect(response).to render_template(:new)
-      expect(flash[:error]).to eq("Invalid URL provided.")
-    end
+    context "with importer" do
+      let(:user) { create(:importing_user) }
+      let(:url) { 'http://wild-pegasus-appeared.dreamwidth.org/403.html?style=site&view=flat' }
 
-    it "requires extant usernames" do
-      login_as(user)
-      stub_fixture(url, 'scrape_no_replies')
-      post :create, params: { button_import: true, dreamwidth_url: url }
-      expect(response).to render_template(:new)
-      expect(flash[:error][:message]).to start_with("The following usernames were not recognized")
-      expect(flash[:error][:array]).to include("wild_pegasus_appeared")
-      expect(ScrapePostJob).not_to have_been_enqueued
-    end
+      before(:each) do
+        clear_enqueued_jobs
+        login_as(user)
+      end
 
-    it "scrapes" do
-      login_as(user)
-      create(:character, user: user, screenname: 'wild-pegasus-appeared')
-      stub_fixture(url, 'scrape_no_replies')
-      post :create, params: { button_import: true, dreamwidth_url: url }
-      expect(response).to redirect_to(posts_url)
-      expect(flash[:success]).to eq("Post has begun importing. You will be updated on progress via site message.")
-      expect(ScrapePostJob).to have_been_enqueued.with(url, {}, user: user).on_queue('low')
+      it "requires valid dreamwidth url" do
+        post :create, params: { button_import: true, dreamwidth_url: 'http://www.google.com' }
+        expect(response).to render_template(:new)
+        expect(flash[:error]).to eq("Invalid URL provided.")
+      end
+
+      it "requires extant usernames" do
+        stub_fixture(url, 'scrape_no_replies')
+        post :create, params: { button_import: true, dreamwidth_url: url }
+        expect(response).to render_template(:new)
+        expect(flash[:error][:message]).to start_with("The following usernames were not recognized")
+        expect(flash[:error][:array]).to include("wild_pegasus_appeared")
+        expect(ScrapePostJob).not_to have_been_enqueued
+      end
+
+      it "queues job" do
+        create(:character, user: user, screenname: 'wild-pegasus-appeared')
+        stub_fixture(url, 'scrape_no_replies')
+        post :create, params: { button_import: true, dreamwidth_url: url }
+        expect(response).to redirect_to(posts_url)
+        expect(flash[:success]).to eq("Post has begun importing. You will be updated on progress via site message.")
+        expect(ScrapePostJob).to have_been_enqueued.with(url, {}, user: user).on_queue('low')
+      end
+
+      it "performs scrape" do
+        create(:character, user: user, screenname: 'wild-pegasus-appeared')
+        board = create(:board, creator: user)
+        stub_fixture(url, 'scrape_no_replies')
+        allow(STDOUT).to receive(:puts).and_call_original
+        allow(STDOUT).to receive(:puts).with("Importing thread 'linear b'")
+
+        perform_enqueued_jobs do
+          post :create, params: { button_import: true, dreamwidth_url: url, board_id: board.id }
+        end
+
+        expect(response).to redirect_to(posts_url)
+        expect(flash[:success]).to eq("Post has begun importing. You will be updated on progress via site message.")
+        expect(Message.find_by(recipient: user, sender_id: 0).subject).to eq('Post import succeeded')
+        expect(Post.find_by(subject: 'linear b')).to be_present
+      end
     end
   end
 
