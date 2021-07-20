@@ -1,44 +1,41 @@
 def convert_versions
-  post_audits = Audited::Audit.where(auditable_type: 'Post', version_id: nil).order(auditable_id: :asc, id: :asc)
-  post_audits.find_each do |audit|
-    Version.transaction do
-      version = setup_version(audit)
-      version.save!
-      audit.update!(version_id: version.id)
-    end
+  audits_for('Post').find_each do |audit|
+    create_version(audit, Post::Version)
   end
 
-  reply_audits = Audited::Audit.where(auditable_type: 'Reply', version_id: nil).order(associated_id: :asc, auditable_id: :asc, id: :asc)
+  reply_audits = audits_for('Reply').reorder(associated_id: :asc, auditable_id: :asc, id: :asc)
   reply_audits.find_each do |audit|
     Version.transaction do
-      version = setup_version(audit)
+      version = setup_version(audit, Reply::Version)
       version.post_id = audit.associated_id
       version.save!
       audit.update!(version_id: version.id)
     end
   end
 
-  character_audits = Audited::Audit.where(auditable_type: 'Character', version_id: nil).order(auditable_id: :asc, id: :asc)
-  character_audits.find_each do |audit|
-    Version.transaction do
-      version = setup_version(audit)
-      version.save!
-      audit.update!(version_id: version.id)
-    end
+  audits_for('Character').find_each do |audit|
+    create_version(audit, Character::Version)
   end
 
-  block_audits = Audited::Audit.where(auditable_type: 'Block', version_id: nil).order(auditable_id: :asc, id: :asc)
-  block_audits.find_each.find_each do |audit|
-    Version.transaction do
-      version = setup_version(audit)
-      version.save!
-      audit.update!(version_id: version.id)
-    end
+  audits_for('Block').find_each do |audit|
+    create_version(audit, Block::Version)
   end
 end
 
-def setup_version(audit)
-  Post::Version.new(
+def audits_for(model)
+  Audited::Audit.where(auditable_type: model, version_id: nil).order(auditable_id: :asc, id: :asc)
+end
+
+def create_version(audit, model)
+  Version.transaction do
+    version = setup_version(audit, model)
+    version.save!
+    audit.update!(version_id: version.id)
+  end
+end
+
+def setup_version(audit, model)
+  model.new(
     item_id: audit.auditable_id,
     item_type: audit.auditable_type,
     event: audit.action,
