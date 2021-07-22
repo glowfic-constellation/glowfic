@@ -23,6 +23,7 @@ class Notification < ApplicationRecord
     accessible_favorite_post: 4,
     published_favorite_post: 5,
     resumed_favorite_post: 6,
+    coauthor_invitation: 7,
   }
 
   attr_accessor :skip_email

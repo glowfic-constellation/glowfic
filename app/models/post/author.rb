@@ -7,6 +7,7 @@ class Post::Author < ApplicationRecord
 
   after_commit :invalidate_caches, on: [:create, :destroy]
   after_commit :notify_followers, on: :create
+  after_commit :notify_coauthor, on: :create
 
   def self.clear_cache_for(authors)
     blocked_ids = Block.where(blocking_user: authors, hide_me: [:posts, :all]).pluck(:blocked_user_id)
@@ -19,6 +20,13 @@ class Post::Author < ApplicationRecord
 
   def invalidate_caches
     self.class.clear_cache_for(user)
+  end
+
+  def notify_coauthor
+    return if post.is_import || post.last_reply&.is_import
+    return if user_id == post.user_id
+    return if joined?
+    NotifyCoauthorsJob.perform_later(post_id, user_id)
   end
 
   def notify_followers
