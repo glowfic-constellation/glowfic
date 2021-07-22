@@ -2,6 +2,7 @@ class Notification < ApplicationRecord
   belongs_to :user, inverse_of: :notifications, optional: false
   belongs_to :post, inverse_of: :notifications, optional: true
 
+  before_create :check_read
   after_create_commit :notify_recipient
 
   scope :unread, -> { where(unread: true) }
@@ -26,6 +27,14 @@ class Notification < ApplicationRecord
   end
 
   private
+
+  def check_read
+    return unless post
+    view = Post::View.find_by(user: user, post: post)
+    return unless view&.read_at
+    self.read_at = view.read_at
+    self.unread = false
+  end
 
   def notify_recipient
     return unless user.email.present?

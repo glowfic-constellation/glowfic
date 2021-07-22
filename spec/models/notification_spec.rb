@@ -39,4 +39,37 @@ RSpec.describe Notification do
       expect(UserMailer).to have_queued(:new_notification, [notification.id])
     end
   end
+
+  describe "#check_read" do
+    let(:post) { create(:post) }
+    let(:user) { create(:user) }
+    let(:notification) { create(:notification, user: user, post: post) }
+
+    it "does nothing without a post" do
+      notification = create(:error_notification)
+      expect(notification.unread).to eq(true)
+      expect(notification.read_at).to eq(nil)
+    end
+
+    it "does nothing without a post view" do
+      notification
+      expect(notification.unread).to eq(true)
+      expect(notification.read_at).to eq(nil)
+    end
+
+    it "does nothing without a read_at" do
+      post.ignore(user)
+      notification
+      expect(notification.unread).to eq(true)
+      expect(notification.read_at).to eq(nil)
+    end
+
+    it "marks notification read with read_at" do
+      time = 10.minutes.ago
+      post.mark_read(user, at_time: time)
+      notification
+      expect(notification.unread).to eq(false)
+      expect(notification.read_at).to be_the_same_time_as(time)
+    end
+  end
 end
