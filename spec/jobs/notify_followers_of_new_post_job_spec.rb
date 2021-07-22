@@ -37,7 +37,7 @@ RSpec.describe NotifyFollowersOfNewPostJob do
 
   shared_examples "general" do
     it "works" do
-      expect { perform_enqueued_jobs { do_action } }.to change { Notification.count }.by(1)
+      expect { perform_enqueued_jobs { do_action } }.to change { Notification.where(user: notified).count }.by(1)
       notif = Notification.where(user: notified).last
       expect(notif.notification_type).to eq(type)
       expect(notif.post).to eq(Post.last)
@@ -45,7 +45,7 @@ RSpec.describe NotifyFollowersOfNewPostJob do
 
     it "does not send if reader has config disabled" do
       notified.update!(favorite_notifications: false)
-      expect { perform_enqueued_jobs { do_action } }.not_to change { Notification.count }
+      expect { perform_enqueued_jobs { do_action } }.not_to change { Notification.where(user: notified).count }
     end
   end
 
@@ -54,7 +54,7 @@ RSpec.describe NotifyFollowersOfNewPostJob do
       Favorite.delete_all
       authors = [author, coauthor, unjoined].reject{ |u| u == favorite }
       authors.each { |u| create(:favorite, user: u, favorite: favorite) }
-      expect { perform_enqueued_jobs { do_action } }.not_to change { Notification.count }
+      expect { perform_enqueued_jobs { do_action } }.not_to change { Notification.where.not(notification_type: :coauthor_invitation).count }
     end
   end
 
@@ -77,8 +77,9 @@ RSpec.describe NotifyFollowersOfNewPostJob do
     it "does not send to non-viewers for access-locked posts" do
       unnotified = create(:user)
       create(:favorite, user: unnotified, favorite: favorite)
-      expect { perform_enqueued_jobs { do_action(privacy: :access_list, viewers: [coauthor, notified]) } }.to change { Notification.count }.by(1)
-      expect(Notification.where(user: unnotified)).not_to be_present
+      expect {
+        perform_enqueued_jobs { do_action(privacy: :access_list, viewers: [coauthor, notified]) }
+      }.not_to change { Notification.where(user: unnotified).count }
     end
   end
 
@@ -88,22 +89,22 @@ RSpec.describe NotifyFollowersOfNewPostJob do
 
       it "does not send to users the poster has blocked" do
         create(:block, blocking_user: author, blocked_user: notified, hide_me: :posts)
-        expect { perform_enqueued_jobs { do_action } }.not_to change { Notification.count }
+        expect { perform_enqueued_jobs { do_action } }.not_to change { Notification.where(user: notified).count }
       end
 
       it "does not send to users a coauthor has blocked" do
         create(:block, blocking_user: coauthor, blocked_user: notified, hide_me: :posts)
-        expect { perform_enqueued_jobs { do_action } }.not_to change { Notification.count }
+        expect { perform_enqueued_jobs { do_action } }.not_to change { Notification.where(user: notified).count }
       end
 
       it "does not send to users who are blocking the poster" do
         create(:block, blocked_user: author, blocking_user: notified, hide_them: :posts)
-        expect { perform_enqueued_jobs { do_action } }.not_to change { Notification.count }
+        expect { perform_enqueued_jobs { do_action } }.not_to change { Notification.where(user: notified).count }
       end
 
       it "does not send to users who are blocking a coauthor" do
         create(:block, blocked_user: coauthor, blocking_user: notified, hide_them: :posts)
-        expect { perform_enqueued_jobs { do_action } }.not_to change { Notification.count }
+        expect { perform_enqueued_jobs { do_action } }.not_to change { Notification.where(user: notified).count }
       end
     end
   end
@@ -141,7 +142,7 @@ RSpec.describe NotifyFollowersOfNewPostJob do
           perform_enqueued_jobs do
             create(:post, user: author, unjoined_authors: [], board: board, subject: title)
           end
-        }.to change { Notification.count }.by(1)
+        }.to change { Notification.where(user: notified).count }.by(1)
 
         author_msg = Notification.where(user: notified).last
         expect(author_msg.notification_type).to eq('new_favorite_post')
@@ -166,7 +167,7 @@ RSpec.describe NotifyFollowersOfNewPostJob do
 
       it "does not send twice if the user has favorited both the poster and the continuity" do
         create(:favorite, user: notified, favorite: author)
-        expect { perform_enqueued_jobs { do_action } }.to change { Notification.count }.by(1)
+        expect { perform_enqueued_jobs { do_action } }.to change { Notification.where(user: notified).count }.by(1)
       end
     end
 
@@ -195,7 +196,7 @@ RSpec.describe NotifyFollowersOfNewPostJob do
             post
             create(:reply, post: post, user: replier)
           end
-        }.to change { Notification.count }.by(1)
+        }.to change { Notification.where(user: notified).count }.by(1)
       end
 
       it "does not send twice if the poster changes their username" do
@@ -205,7 +206,7 @@ RSpec.describe NotifyFollowersOfNewPostJob do
             author.update!(username: author.username + 'new')
             create(:reply, post: post, user: replier)
           end
-        }.to change { Notification.count }.by(1)
+        }.to change { Notification.where(user: notified).count }.by(1)
       end
 
       it "does not send twice if the post subject changes" do
@@ -214,7 +215,7 @@ RSpec.describe NotifyFollowersOfNewPostJob do
             post.update!(subject: post.subject + 'new')
             create(:reply, post: post, user: replier)
           end
-        }.to change { Notification.count }.by(1)
+        }.to change { Notification.where(user: notified).count }.by(1)
       end
 
       it "does not send twice if notified by message" do
@@ -235,7 +236,7 @@ RSpec.describe NotifyFollowersOfNewPostJob do
       it "sends twice for different posts" do
         expect {
           perform_enqueued_jobs { post }
-        }.to change { Notification.count }.by(1)
+        }.to change { Notification.where(user: notified).count }.by(1)
 
         not_favorited_post = nil
         expect {
@@ -279,7 +280,10 @@ RSpec.describe NotifyFollowersOfNewPostJob do
     end
 
     describe "with blocking" do
-      before(:each) { create(:favorite, user: notified, favorite: replier) }
+      before(:each) do
+        create(:reply, user: coauthor, post: post)
+        create(:favorite, user: notified, favorite: replier)
+      end
 
       it "does not send to users the joining user has blocked" do
         create(:block, blocking_user: replier, blocked_user: notified, hide_me: :posts)
