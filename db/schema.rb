@@ -244,6 +244,7 @@ ActiveRecord::Schema[7.1].define(version: 2023_09_30_053037) do
     t.datetime "read_at", precision: nil
     t.datetime "created_at", precision: nil
     t.datetime "updated_at", precision: nil
+    t.integer "notification_id"
     t.index ["recipient_id", "unread"], name: "index_messages_on_recipient_id_and_unread"
     t.index ["sender_id"], name: "index_messages_on_sender_id"
     t.index ["thread_id"], name: "index_messages_on_thread_id"

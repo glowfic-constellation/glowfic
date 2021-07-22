@@ -22,6 +22,8 @@ class Notification < ApplicationRecord
     joined_favorite_post: 3,
   }
 
+  attr_accessor :skip_email
+
   def self.notify_user(user, type, post: nil, error: nil)
     Notification.create!(user: user, notification_type: type, post: post, error_msg: error)
   end
@@ -37,6 +39,7 @@ class Notification < ApplicationRecord
   end
 
   def notify_recipient
+    return if skip_email
     return unless user.email.present?
     return unless user.email_notifications?
     UserMailer.new_notification(self.id).deliver
