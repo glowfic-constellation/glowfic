@@ -1,16 +1,18 @@
-new_subject = 'test subject'
-reply_user = 'Throne3d'
-reply_id = 1024 # we split *after* this reply_id
+print('Subject for new post? ')
+new_subject = STDIN.gets.chomp
+raise RuntimeError, "Invalid subject" if new_subject.blank?
+
+print("\n")
+print('First reply_id of new post? ')
+reply_id = STDIN.gets.chomp
 
 Post.transaction do
-  user = User.find_by(username: reply_user)
-  abort("needs user") unless user
-  first_reply = Reply.find_by(user: user, id: reply_id)
-  abort("couldn't find reply") unless reply
-  old_post = reply.post
+  first_reply = Reply.find_by(id: reply_id)
+  raise RuntimeError, "Couldn't find reply" unless first_reply
+  old_post = first_reply.post
   puts "splitting post #{old_post.id}: #{old_post.subject}, at #{reply_id}"
 
-  other_replies = old_post.replies.where('reply_order > ?', reply.reply_order).ordered
+  other_replies = old_post.replies.where('reply_order > ?', first_reply.reply_order).ordered
   puts "ie starting at + onwards from #{first_reply.inspect}"
   new_post = Post.new
   puts "new_post: marking skip_edited & is_import"
