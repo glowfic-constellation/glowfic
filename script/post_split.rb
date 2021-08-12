@@ -5,14 +5,13 @@ reply_id = 1024 # we split *after* this reply_id
 Post.transaction do
   user = User.find_by(username: reply_user)
   abort("needs user") unless user
-  reply = Reply.find_by(user_id: user.id, id: reply_id)
+  first_reply = Reply.find_by(user: user, id: reply_id)
   abort("couldn't find reply") unless reply
   old_post = reply.post
-  puts "splitting post #{old_post.id}: #{old_post.subject}, after reply #{reply_id}"
+  puts "splitting post #{old_post.id}: #{old_post.subject}, at #{reply_id}"
 
-  first_reply = old_post.replies.where('reply_order > ?', reply.reply_order).ordered.first
-  other_replies = old_post.replies.where('reply_order > ?', first_reply.reply_order).ordered
-  puts "from after reply #{reply.id}, ie starting at + onwards from #{first_reply.inspect}"
+  other_replies = old_post.replies.where('reply_order > ?', reply.reply_order).ordered
+  puts "ie starting at + onwards from #{first_reply.inspect}"
   new_post = Post.new
   puts "new_post: marking skip_edited & is_import"
   new_post.skip_edited = new_post.is_import = true
