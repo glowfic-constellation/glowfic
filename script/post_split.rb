@@ -1,3 +1,6 @@
+REPLY_ATTRS = [:character_id, :icon_id, :character_alias_id, :user_id, :content, :created_at, :updated_at].map(&:to_s)
+POST_ATTRS = [:board_id, :section_id, :privacy, :status, :authors_locked].map(&:to_s)
+
 print('Subject for new post? ')
 new_subject = STDIN.gets.chomp
 raise RuntimeError, "Invalid subject" if new_subject.blank?
@@ -14,25 +17,12 @@ Post.transaction do
 
   other_replies = old_post.replies.where('reply_order > ?', first_reply.reply_order).ordered
   puts "ie starting at + onwards from #{first_reply.inspect}"
-  new_post = Post.new
-  puts "new_post: marking skip_edited & is_import"
+  new_post = Post.new(first_reply.attributes.slice(*REPLY_ATTRS))
   new_post.skip_edited = new_post.is_import = true
-
-  [:character_id, :icon_id, :character_alias_id, :user_id, :content, :created_at, :updated_at].each do |atr|
-    new_value = first_reply.send(atr)
-    puts "new_post.#{atr} = #{new_value.inspect}"
-    new_post.send(atr.to_s + '=', new_value)
-  end
-
-  [:board_id, :section_id, :privacy, :status, :authors_locked].each do |atr|
-    new_value = old_post.send(atr)
-    puts "new_post.#{atr} = #{new_value.inspect}"
-    new_post.send(atr.to_s + '=', new_value)
-  end
-  puts "new_post.subject = #{new_subject}"
+  new_post.assign_attributes(old_post.attributes.slice(*POST_ATTRS))
   new_post.subject = new_subject
-  puts "new_post.edited_at = #{first_reply.updated_at.inspect}"
   new_post.edited_at = first_reply.updated_at
+  puts "new post: #{new_post.inspect}"
   new_post.save!
   puts "new post: https://glowfic.com/posts/#{new_post.id}"
 
@@ -58,11 +48,9 @@ Post.transaction do
       post_id: new_post.id,
       created_at: reply.created_at,
       updated_at: [existing.updated_at, reply.created_at].max,
-      can_owe: existing.can_owe,
-      can_reply: existing.can_reply,
-      joined: existing.joined,
       joined_at: reply.created_at,
     }
+    data.merge!(existing.attributes.slice([:can_owe, :can_reply, :joined]))
     puts "PostAuthor.create!(#{data}), for #{User.find(user_id).inspect}"
     PostAuthor.create!(data)
   end
