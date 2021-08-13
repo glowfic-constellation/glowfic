@@ -42,8 +42,11 @@ def create_post(first_reply, old_post:, subject:)
 end
 
 def migrate_replies(other_replies, new_post)
+  count = other_replies.count
+  return {} if count.zero?
+
   new_authors = {}
-  puts "now updating #{other_replies.count} replies to be in post ID #{new_post.id}"
+  puts "now updating #{count} replies to be in post ID #{new_post.id}"
   other_replies.each_with_index do |other_reply, index|
     new_authors[other_reply.user_id] ||= other_reply
     other_reply.update_columns(post_id: new_post.id, reply_order: index)
@@ -84,11 +87,20 @@ def update_authors(new_authors, new_post:, old_post:)
 end
 
 def update_caches(post, last_reply)
-  cached_data = {
-    last_reply_id: last_reply.id,
-    last_user_id: last_reply.user_id,
-    tagged_at: last_reply.updated_at,
-  }
+  if last_reply.nil?
+    cached_data = {
+      last_reply_id: nil,
+      last_user_id: post.user_id,
+      tagged_at: post.edited_at,
+    }
+  else
+    cached_data = {
+      last_reply_id: last_reply.id,
+      last_user_id: last_reply.user_id,
+      tagged_at: last_reply.updated_at,
+    }
+  end
+
   puts "updating post columns: #{cached_data}"
   post.update_columns(cached_data)
 end
