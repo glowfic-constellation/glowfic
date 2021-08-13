@@ -64,19 +64,19 @@ end
 def update_authors(new_authors, new_post:, old_post:)
   puts "updating authors:"
   new_authors.each do |user_id, reply|
-    next if PostAuthor.where(post_id: new_post.id, user_id: user_id).exists?
-    existing = PostAuthor.find_by(post_id: old_post.id, user_id: user_id)
+    user = User.find_by(id: user_id)
+    next unless new_post.author_for(user).nil?
+    existing = old_post.author_for(user)
     puts "existing: #{existing.inspect}"
     data = {
       user_id: user_id,
-      post_id: new_post.id,
       created_at: reply.created_at,
       updated_at: [existing.updated_at, reply.created_at].max,
       joined_at: reply.created_at,
     }
     data.merge!(existing.attributes.slice([:can_owe, :can_reply, :joined]))
     puts "PostAuthor.create!(#{data}), for #{User.find(user_id).inspect}"
-    PostAuthor.create!(data)
+    new_post.post_authors.create!(data)
   end
   puts "-> new authors created"
   still_valid = (old_post.replies.distinct.pluck(:user_id) + [old_post.user_id]).uniq
