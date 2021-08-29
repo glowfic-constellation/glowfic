@@ -152,10 +152,12 @@ RSpec.describe ApplicationController do
     end
 
     context "when logged in" do
+      let(:user) { create(:user) }
+
+      before(:each) { login_as(user) }
+
       it "returns empty array if no visible posts" do
         hidden_post = create(:post, privacy: :private)
-        user = create(:user)
-        login_as(user)
         expect(hidden_post).not_to be_visible_to(user)
 
         relation = Post.where(id: hidden_post.id)
@@ -166,9 +168,7 @@ RSpec.describe ApplicationController do
       it "filters array if mixed visible and not visible posts" do
         hidden_post = create(:post, privacy: :private)
         public_post = create(:post, privacy: :public)
-        user = create(:user)
         own_post = create(:post, user: user, privacy: :public)
-        login_as(user)
 
         relation = Post.where(id: [hidden_post.id, public_post.id, own_post.id])
         fetched_posts = controller.send(:posts_from_relation, relation)
@@ -176,9 +176,7 @@ RSpec.describe ApplicationController do
       end
 
       it "sets opened_ids and unread_ids properly" do
-        user = create(:user)
         other_user = create(:user)
-        login_as(user)
         time = Time.zone.now - 5.minutes
         unopened2, partread, read1, read2, hidden_unread, hidden_partread = posts = Timecop.freeze(time) do
           create(:post) # post; unopened1
@@ -218,7 +216,6 @@ RSpec.describe ApplicationController do
       end
 
       it "can calculate unread count" do
-        user = create(:user)
         other_user = create(:user)
 
         unread_post = create(:post, num_replies: 3)
@@ -240,7 +237,7 @@ RSpec.describe ApplicationController do
 
         posts = [unread_post, read_post, one_unread, two_unread]
         relation = Post.where(id: posts.map(&:id))
-        login_as(user)
+
         fetched_posts = controller.send(:posts_from_relation, relation, with_unread: true)
         expect(fetched_posts).to match_array(posts)
         expect(assigns(:opened_ids)).to match_array([read_post.id, one_unread.id, two_unread.id])
@@ -249,6 +246,21 @@ RSpec.describe ApplicationController do
           one_unread.id => 1,
           two_unread.id => 2,
         })
+      end
+
+      it "uses an accurate post_count with blocked posts" do
+        create(:post, privacy: :private)
+        replyless = create(:post)
+        replyful = create(:post)
+        create_list(:reply, 2, post: replyful)
+        blocked_user = create(:user)
+        create(:block, blocking_user: user, blocked_user: blocked_user, hide_them: :posts)
+        blocked = create(:post, user: blocked_user, authors_locked: true)
+
+        relation = Post.where(id: [replyless, replyful, blocked].map(&:id))
+        result = controller.send(:posts_from_relation, relation)
+        expect(result.to_a).to match_array([replyless, replyful])
+        expect(result.total_entries).to eq(2)
       end
     end
 
@@ -303,6 +315,19 @@ RSpec.describe ApplicationController do
       login
       relation = Post.select("posts.*").left_joins(:replies).group("posts.id")
       result = controller.send(:posts_from_relation, relation, max: true)
+      expect(result.to_a).to match_array([replyless, replyful])
+      expect(result.total_entries).to eq(2)
+    end
+
+    it "uses an accurate post_count with site testing posts" do
+      create(:post, privacy: :private)
+      replyless = create(:post)
+      replyful = create(:post)
+      create_list(:reply, 2, post: replyful)
+      testing = create(:post, board: site_testing)
+
+      relation = Post.where(id: [replyless, replyful, testing].map(&:id))
+      result = controller.send(:posts_from_relation, relation)
       expect(result.to_a).to match_array([replyless, replyful])
       expect(result.total_entries).to eq(2)
     end
