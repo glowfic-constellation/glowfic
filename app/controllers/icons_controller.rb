@@ -80,7 +80,7 @@ class IconsController < UploadingController
       render :edit
     else
       flash[:success] = "Icon updated."
-      redirect_to icon_path(@icon)
+      redirect_to @icon
     end
   end
 
@@ -119,7 +119,7 @@ class IconsController < UploadingController
     UpdateModelJob.perform_later(Post.to_s, wheres, {icon_id: new_icon.try(:id)}, current_user.id)
 
     flash[:success] = "All uses of this icon will be replaced."
-    redirect_to icon_path(@icon)
+    redirect_to @icon
   end
 
   def destroy
@@ -131,7 +131,7 @@ class IconsController < UploadingController
         message: "Icon could not be deleted.",
         array: @icon.errors.full_messages
       }
-      redirect_to icon_path(@icon)
+      redirect_to @icon
     else
       flash[:success] = "Icon deleted successfully."
       redirect_to gallery_path(gallery) and return if gallery
@@ -145,7 +145,7 @@ class IconsController < UploadingController
     else
       flash[:error] = "Something went wrong."
     end
-    redirect_to icon_path(@icon)
+    redirect_to @icon
   end
 
   private

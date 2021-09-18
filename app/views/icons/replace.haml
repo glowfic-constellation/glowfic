@@ -1,7 +1,7 @@
 - content_for :breadcrumbs do
   = link_to "Galleries", user_galleries_path(current_user)
   &raquo;
-  = link_to @icon.keyword, icon_path(@icon)
+  = link_to @icon.keyword, @icon
   &raquo;
   %b= link_to 'Replace', replace_icon_path(@icon)
 

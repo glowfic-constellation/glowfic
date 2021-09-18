@@ -147,7 +147,7 @@ class PostsController < WritableController
       render :new
     else
       flash[:success] = "You have successfully posted."
-      redirect_to post_path(@post)
+      redirect_to @post
     end
   end
 
@@ -224,14 +224,14 @@ class PostsController < WritableController
       render :edit
     else
       flash[:success] = "Your post has been updated."
-      redirect_to post_path(@post)
+      redirect_to @post
     end
   end
 
   def destroy
     unless @post.deletable_by?(current_user)
       flash[:error] = "You do not have permission to modify this post."
-      redirect_to post_path(@post) and return
+      redirect_to @post and return
     end
 
     begin
@@ -241,7 +241,7 @@ class PostsController < WritableController
         message: "Post could not be deleted.",
         array: @post.errors.full_messages
       }
-      redirect_to post_path(@post)
+      redirect_to @post
     else
       flash[:success] = "Post deleted."
       redirect_to continuities_path
@@ -347,13 +347,13 @@ class PostsController < WritableController
       @post.unignore(current_user)
       flash[:success] = "Post has been unhidden"
     end
-    redirect_to post_path(@post)
+    redirect_to @post
   end
 
   def change_status
     unless Post.statuses.key?(params[:status])
       flash[:error] = "Invalid status selected."
-      return redirect_to post_path(@post)
+      return redirect_to @post
     end
 
     begin
@@ -369,7 +369,7 @@ class PostsController < WritableController
     else
       flash[:success] = "Post has been marked #{@post.status}."
     end
-    redirect_to post_path(@post)
+    redirect_to @post
   end
 
   def change_authors_locked
@@ -384,7 +384,7 @@ class PostsController < WritableController
     else
       flash[:success] = "Post has been #{@post.authors_locked? ? 'locked to' : 'unlocked from'} current authors."
     end
-    redirect_to post_path(@post)
+    redirect_to @post
   end
 
   def editor_setup
@@ -428,7 +428,7 @@ class PostsController < WritableController
   def require_permission
     unless @post.editable_by?(current_user) || @post.metadata_editable_by?(current_user)
       flash[:error] = "You do not have permission to modify this post."
-      redirect_to post_path(@post)
+      redirect_to @post
     end
   end
 

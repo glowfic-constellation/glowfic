@@ -18,7 +18,7 @@
           %li= link_to warning.name, tag_path(warning)
 
 .content-header
-  %span#post-title= link_to @post.subject, post_path(@post)
+  %span#post-title= link_to @post.subject, @post
   .view-button#post-menu
     = image_tag menu_img, class: 'icon-view'.freeze, alt: 'Show Menu'
 #post-menu-holder

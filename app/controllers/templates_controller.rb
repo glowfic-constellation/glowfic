@@ -27,7 +27,7 @@ class TemplatesController < ApplicationController
       render :new
     else
       flash[:success] = "Template saved successfully."
-      redirect_to template_path(@template)
+      redirect_to @template
     end
   end
 
@@ -58,7 +58,7 @@ class TemplatesController < ApplicationController
       render :edit
     else
       flash[:success] = "Template saved successfully."
-      redirect_to template_path(@template)
+      redirect_to @template
     end
   end
 
@@ -70,7 +70,7 @@ class TemplatesController < ApplicationController
         message: "Template could not be deleted.",
         array: @template.errors.full_messages
       }
-      redirect_to template_path(@template)
+      redirect_to @template
     else
       flash[:success] = "Template deleted successfully."
       redirect_to user_characters_path(current_user)

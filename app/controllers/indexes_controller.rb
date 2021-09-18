@@ -30,7 +30,7 @@ class IndexesController < ApplicationController
       render :new
     else
       flash[:success] = "Index created!"
-      redirect_to index_path(@index) and return
+      redirect_to @index and return
     end
   end
 
@@ -62,7 +62,7 @@ class IndexesController < ApplicationController
       render :edit
     else
       flash[:success] = "Index saved!"
-      redirect_to index_path(@index)
+      redirect_to @index
     end
   end
 
@@ -74,7 +74,7 @@ class IndexesController < ApplicationController
         message: "Index could not be deleted.",
         array: @index.errors.full_messages
       }
-      redirect_to index_path(@index)
+      redirect_to @index
     else
       redirect_to indexes_path
       flash[:success] = "Index deleted."
@@ -93,7 +93,7 @@ class IndexesController < ApplicationController
   def require_permission
     unless @index.editable_by?(current_user)
       flash[:error] = "You do not have permission to edit this index."
-      redirect_to index_path(@index)
+      redirect_to @index
     end
   end
 

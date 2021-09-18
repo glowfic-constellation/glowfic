@@ -55,7 +55,7 @@ class CharactersController < ApplicationController
       render :new
     else
       flash[:success] = "Character saved successfully."
-      redirect_to character_path(@character)
+      redirect_to @character
     end
   end
 
@@ -96,7 +96,7 @@ class CharactersController < ApplicationController
       render :edit
     else
       flash[:success] = "Character saved successfully."
-      redirect_to character_path(@character)
+      redirect_to @character
     end
   end
 
@@ -120,7 +120,7 @@ class CharactersController < ApplicationController
         message: "Character could not be duplicated.",
         array: dupe.errors.full_messages
       }
-      redirect_to character_path(@character)
+      redirect_to @character
     else
       flash[:success] = "Character duplicated successfully. You are now editing the new character."
       redirect_to edit_character_path(dupe)
@@ -140,7 +140,7 @@ class CharactersController < ApplicationController
         message: "Character could not be deleted.",
         array: @character.errors.full_messages
       }
-      redirect_to character_path(@character)
+      redirect_to @character
     else
       flash[:success] = "Character deleted successfully."
       redirect_to user_characters_path(current_user)
@@ -256,7 +256,7 @@ class CharactersController < ApplicationController
     UpdateModelJob.perform_later(Post.to_s, wheres, updates, current_user.id)
 
     flash[:success] = "All uses of this character#{success_msg} will be replaced."
-    redirect_to character_path(@character)
+    redirect_to @character
   end
 
   def search
