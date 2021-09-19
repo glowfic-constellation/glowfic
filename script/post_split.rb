@@ -72,7 +72,8 @@ end
 
 def cleanup_first(first_reply)
   puts "deleting reply converted to post: #{first_reply.inspect}"
-  first_reply.destroy!
+  first_reply.delete
+  raise ActiveRecord::RecordNotDestroyed if Reply.exists?(first_reply.id)
   puts "-> deleted"
 end
 
