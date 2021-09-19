@@ -20,7 +20,8 @@ def split_post
     puts "ie starting at + onwards from #{first_reply.inspect}"
     new_post = create_post(first_reply, old_post: old_post, subject: new_subject)
 
-    new_authors = migrate_replies(other_replies, new_post)
+    new_authors = find_authors(other_replies)
+    migrate_replies(other_replies, new_post)
     cleanup_first(first_reply)
     update_authors(new_authors, new_post: new_post, old_post: old_post)
     update_caches(new_post, other_replies.last)
@@ -41,18 +42,21 @@ def create_post(first_reply, old_post:, subject:)
   new_post
 end
 
+def find_authors(other_replies)
+  # collect user ids for the new post's replies and created_at of first replies of that set for the author
+  author_ids = other_replies.except(:order).select(:user_id).distinct.pluck(:user_id)
+  author_ids.to_h { |id| [id, other_replies.find_by(user_id: id).created_at] }
+end
+
 def migrate_replies(other_replies, new_post)
   count = other_replies.count
   return {} if count.zero?
 
-  new_authors = {}
   puts "now updating #{count} replies to be in post ID #{new_post.id}"
   other_replies.each_with_index do |other_reply, index|
-    new_authors[other_reply.user_id] ||= other_reply
     other_reply.update_columns(post_id: new_post.id, reply_order: index)
   end
   puts "-> updated"
-  new_authors
 end
 
 def cleanup_first(first_reply)
@@ -63,16 +67,16 @@ end
 
 def update_authors(new_authors, new_post:, old_post:)
   puts "updating authors:"
-  new_authors.each do |user_id, reply|
+  new_authors.each do |user_id, timestamp|
     user = User.find_by(id: user_id)
     next unless new_post.author_for(user).nil?
     existing = old_post.author_for(user)
     puts "existing: #{existing.inspect}"
     data = {
       user_id: user_id,
-      created_at: reply.created_at,
-      updated_at: [existing.updated_at, reply.created_at].max,
-      joined_at: reply.created_at,
+      created_at: timestamp,
+      updated_at: [existing.updated_at, timestamp].max,
+      joined_at: timestamp,
     }
     data.merge!(existing.attributes.slice([:can_owe, :can_reply, :joined]))
     puts "PostAuthor.create!(#{data}), for #{User.find(user_id).inspect}"
