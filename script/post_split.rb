@@ -21,10 +21,10 @@ def split_post
     new_post = create_post(first_reply, old_post: old_post, subject: new_subject)
 
     new_authors = find_authors(other_replies)
-    migrate_replies(other_replies, new_post)
+    migrate_replies(other_replies, new_post: new_post, old_post: old_post, first_reply: first_reply)
     cleanup_first(first_reply)
     update_authors(new_authors, new_post: new_post, old_post: old_post)
-    update_caches(new_post, other_replies.last)
+    update_caches(new_post, new_post.replies.ordered.last)
     update_caches(old_post, old_post.replies.ordered.last)
   end
 end
@@ -48,14 +48,25 @@ def find_authors(other_replies)
   author_ids.to_h { |id| [id, other_replies.find_by(user_id: id).created_at] }
 end
 
-def migrate_replies(other_replies, new_post)
+def migrate_replies(other_replies, new_post:, old_post:, first_reply:)
   count = other_replies.count
   return {} if count.zero?
 
   puts "now updating #{count} replies to be in post ID #{new_post.id}"
-  other_replies.each_with_index do |other_reply, index|
-    other_reply.update_columns(post_id: new_post.id, reply_order: index)
-  end
+  sql = <<~SQL.squish
+    WITH v_replies AS
+    (
+      SELECT ROW_NUMBER() OVER(ORDER BY replies.reply_order asc) AS rn, id
+      FROM replies
+      WHERE replies.post_id = :old_id AND reply_order > :reply_num
+    )
+    UPDATE replies
+    SET reply_order = v_replies.rn-1, post_id = :new_id
+    FROM v_replies
+    WHERE replies.id = v_replies.id;
+  SQL
+  sql = ActiveRecord::Base.sanitize_sql_array([sql, old_id: old_post.id, reply_num: first_reply.reply_order, new_id: new_post.id])
+  ActiveRecord::Base.connection.execute(sql)
   puts "-> updated"
 end
 
