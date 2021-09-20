@@ -158,4 +158,21 @@ Rails.application.routes.draw do
   resources :favorites, only: [:index, :create, :destroy]
   get '/contribute' => 'contribute#index', as: :contribute
   mount Resque::Server.new, at: "/resque_web"
+
+  # Admin Panel
+  scope module: :admin do
+    root to: 'admin#index', as: :admin
+
+    resources :posts, only: [] do
+      collection do
+        get :split
+        get :regenerate_flat
+        post :do_regenerate
+      end
+      member do
+        get :preview_split
+        post :do_split
+      end
+    end
+  end
 end

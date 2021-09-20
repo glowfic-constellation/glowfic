@@ -10,6 +10,8 @@ module Permissible
     :edit_replies,
     :edit_characters,
     :import_posts,
+    :split_posts,
+    :regenerate_flat_posts,
     # :edit_tags,
     # :delete_tags,
     # :edit_continuities
