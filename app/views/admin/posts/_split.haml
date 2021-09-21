@@ -1,0 +1,17 @@
+= form_with url: do_split_posts_path, method: :post do |f|
+  %table.form-table
+    %thead
+      %tr
+        %th.editor-title{colspan: 2} Split Post
+    %tbody
+      %tr
+        %th.sub= f.label :reply_id, "Reply Id"
+        %td{class: cycle('even', 'odd')}= f.text_field :reply_id, placeholder: 'Id of reply for new top post', class: 'text'
+      %tr
+        %th.sub= f.label :subject
+        %td{class: cycle('even', 'odd')}= f.text_field :subject, placeholder: "New Subject", class: 'text'
+    %tfoot
+      %tr
+        %th.form-table-ender{colspan: 2}
+          = submit_tag 'Split', class: 'button', id: 'submit_button', data: { disable_with: 'Splitting...' }
+          = submit_tag "Preview", class: 'button', id: 'preview_button', name: 'button_preview', data: { disable_with: 'Previewing...' }
