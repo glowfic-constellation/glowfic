@@ -31,65 +31,6 @@ RSpec.describe Admin::PostsController do
     end
   end
 
-  describe 'GET #preview_split' do
-    let(:post) { create(:post) }
-    let(:replies) { create_list(:reply, 6, post: post, user: post.user) }
-    let(:reply) { replies[3] }
-
-    it "requires login" do
-      get :preview_split, params: { id: -1 }
-      expect(response).to redirect_to(root_url)
-      expect(flash[:error]).to eq("You must be logged in to view that page.")
-    end
-
-    it "requires permission" do
-      login
-      get :preview_split, params: { id: -1 }
-      expect(response).to redirect_to(root_url)
-      expect(flash[:error]).to eq("You do not have permission to view that page.")
-    end
-
-    it "requires post" do
-      login_as(mod)
-      get :preview_split, params: { id: -1 }
-      expect(response).to redirect_to(split_posts_url)
-      expect(flash[:error]).to eq("Post could not be found.")
-    end
-
-    it "requires reply" do
-      login_as(mod)
-      get :preview_split, params: { id: post.id, reply_id: -1 }
-      expect(response).to redirect_to(split_posts_url)
-      expect(flash[:error]).to eq("Reply could not be found.")
-    end
-
-    it "requires post and reply to match" do
-      login_as(mod)
-      get :preview_split, params: { id: post.id, reply_id: create(:reply).id, subject: 'new subject' }
-      expect(response).to redirect_to(split_posts_url)
-      expect(flash[:error]).to eq("Reply could not be found.")
-    end
-
-    it "requires subject" do
-      login_as(mod)
-      get :preview_split, params: { id: post.id, reply_id: reply.id, subject: "" }
-      expect(response).to redirect_to(split_posts_url)
-      expect(flash[:error]).to eq("Subject must not be blank.")
-    end
-
-    it "loads for mods" do
-      login_as(mod)
-      get :preview_split, params: { id: post.id, reply_id: reply.id, subject: 'new subject' }
-      expect(response).to have_http_status(200)
-    end
-
-    it "loads for admins" do
-      login_as(admin)
-      get :preview_split, params: { id: post.id, reply_id: reply.id, subject: 'new subject' }
-      expect(response).to have_http_status(200)
-    end
-  end
-
   describe "POST #do_split" do
     let(:rpost) { create(:post) }
     let(:replies) { create_list(:reply, 6, post: rpost, user: rpost.user) }
@@ -108,48 +49,50 @@ RSpec.describe Admin::PostsController do
       expect(flash[:error]).to eq("You do not have permission to view that page.")
     end
 
-    it "requires post" do
-      login_as(mod)
-      post :do_split, params: { id: -1 }
-      expect(response).to redirect_to(split_posts_url)
-      expect(flash[:error]).to eq("Post could not be found.")
-    end
-
     it "requires reply" do
       login_as(mod)
-      post :do_split, params: { id: rpost.id, reply_id: -1 }
-      expect(response).to redirect_to(split_posts_url)
-      expect(flash[:error]).to eq("Reply could not be found.")
-    end
-
-    it "requires post and reply to match" do
-      login_as(mod)
-      post :do_split, params: { id: rpost.id, reply_id: create(:reply).id, subject: 'new subject' }
+      post :do_split, params: { reply_id: -1 }
       expect(response).to redirect_to(split_posts_url)
       expect(flash[:error]).to eq("Reply could not be found.")
     end
 
     it "requires subject" do
       login_as(mod)
-      post :do_split, params: { id: rpost.id, reply_id: reply.id, subject: "" }
+      post :do_split, params: { reply_id: reply.id, subject: "" }
       expect(response).to redirect_to(split_posts_url)
       expect(flash[:error]).to eq("Subject must not be blank.")
     end
 
-    it "queues job as mod" do
-      login_as(mod)
-      expect {
-        post :do_split, params: { id: rpost.id, reply_id: reply.id, subject: 'new subject' }
-      }.to enqueue_job(SplitPostJob).exactly(:once).with(reply.id.to_s, 'new subject')
-      expect(response).to redirect_to(admin_url)
+    describe "preview" do
+      it "loads for mods" do
+        login_as(mod)
+        post :do_split, params: { button_preview: 'Preview', reply_id: reply.id, subject: 'new subject' }
+        expect(response).to have_http_status(200)
+      end
+
+      it "loads for admins" do
+        login_as(admin)
+        post :do_split, params: { button_preview: 'Preview', reply_id: reply.id, subject: 'new subject' }
+        expect(response).to have_http_status(200)
+      end
     end
 
-    it "queues job as admin" do
-      login_as(admin)
-      expect {
-        post :do_split, params: { id: rpost.id, reply_id: reply.id, subject: 'new subject' }
-      }.to enqueue_job(SplitPostJob).exactly(:once).with(reply.id.to_s, 'new subject')
-      expect(response).to redirect_to(admin_url)
+    describe "perform" do
+      it "queues job as mod" do
+        login_as(mod)
+        expect {
+          post :do_split, params: { reply_id: reply.id, subject: 'new subject' }
+        }.to enqueue_job(SplitPostJob).exactly(:once).with(reply.id.to_s, 'new subject')
+        expect(response).to redirect_to(admin_url)
+      end
+
+      it "queues job as admin" do
+        login_as(admin)
+        expect {
+          post :do_split, params: { reply_id: reply.id, subject: 'new subject' }
+        }.to enqueue_job(SplitPostJob).exactly(:once).with(reply.id.to_s, 'new subject')
+        expect(response).to redirect_to(admin_url)
+      end
     end
   end
 

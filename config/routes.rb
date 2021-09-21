@@ -160,18 +160,15 @@ Rails.application.routes.draw do
   mount Resque::Server.new, at: "/resque_web"
 
   # Admin Panel
-  scope module: :admin do
+  scope module: :admin, path: :admin do
     root to: 'admin#index', as: :admin
 
     resources :posts, only: [] do
       collection do
         get :split
+        post :do_split
         get :regenerate_flat
         post :do_regenerate
-      end
-      member do
-        get :preview_split
-        post :do_split
       end
     end
   end
