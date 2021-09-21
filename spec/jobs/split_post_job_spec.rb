@@ -4,36 +4,32 @@ RSpec.describe SplitPostJob do
 
   let(:title) { 'test subject' }
 
-  before(:each) do
-    allow(self).to receive(:print).and_return(nil)
-    allow(STDOUT).to receive(:puts).and_return(nil)
-  end
-
   describe "validations" do
-    let(:reply) { create(:reply) }
+    let!(:reply) { create(:reply) }
 
     it "requires valid subject" do
-      expect(STDIN).to receive(:gets).and_return('')
-      expect { split_post }.to raise_error(RuntimeError, 'Invalid subject')
+      expect {
+        SplitPostJob.perform_now(reply.id, '')
+      }.to raise_error(RuntimeError, 'Invalid subject')
     end
 
     it "requires valid reply id" do
-      expect(STDIN).to receive(:gets).and_return(title)
-      expect(STDIN).to receive(:gets).and_return('-1')
-      expect { split_post }.to raise_error(RuntimeError, "Couldn't find reply")
+      expect {
+        SplitPostJob.perform_now(-1, title)
+      }.to raise_error(RuntimeError, "Couldn't find reply")
     end
 
     it "requires existing reply" do
       reply.destroy!
-      expect(STDIN).to receive(:gets).and_return(title)
-      expect(STDIN).to receive(:gets).and_return(reply.id.to_s)
-      expect { split_post }.to raise_error(RuntimeError, "Couldn't find reply")
+      expect {
+        SplitPostJob.perform_now(reply.id, title)
+      }.to raise_error(RuntimeError, "Couldn't find reply")
     end
 
     it "works" do
-      expect(STDIN).to receive(:gets).and_return(title)
-      expect(STDIN).to receive(:gets).and_return(reply.id.to_s)
-      expect { split_post }.to change { Post.count }.by(1)
+      expect {
+        SplitPostJob.perform_now(reply.id, title)
+      }.to change { Post.count }.by(1)
 
       post = Post.last
       expect(post.subject).to eq(title)
@@ -59,9 +55,9 @@ RSpec.describe SplitPostJob do
     next_reply = post.replies.find_by(reply_order: 51)
     last = post.replies.last
 
-    expect(STDIN).to receive(:gets).and_return(title)
-    expect(STDIN).to receive(:gets).and_return(reply.id.to_s)
-    expect { split_post }.to change { Post.count }.by(1).and change { Reply.count }.by(-1)
+    expect {
+      SplitPostJob.perform_now(reply.id, title)
+    }.to change { Post.count }.by(1).and change { Reply.count }.by(-1)
 
     post.reload
     expect(post.replies.count).to eq(50)
@@ -93,9 +89,9 @@ RSpec.describe SplitPostJob do
 
     other_post = create(:post, num_replies: 10)
 
-    expect(STDIN).to receive(:gets).and_return(title)
-    expect(STDIN).to receive(:gets).and_return(post.replies.find_by(reply_order: 5).id.to_s)
-    expect { split_post }.to change { Post.count }.by(1).and change { Reply.count }.by(-1)
+    expect {
+      SplitPostJob.perform_now(post.replies.find_by(reply_order: 5).id, title)
+    }.to change { Post.count }.by(1).and change { Reply.count }.by(-1)
 
     new_post = Post.last
 

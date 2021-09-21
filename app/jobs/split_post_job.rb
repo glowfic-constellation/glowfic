@@ -4,23 +4,14 @@ class SplitPostJob < ApplicationJob
   REPLY_ATTRS = [:character_id, :icon_id, :character_alias_id, :user_id, :content, :created_at, :updated_at].map(&:to_s)
   POST_ATTRS = [:board_id, :section_id, :privacy, :status, :authors_locked].map(&:to_s)
 
-  def perform(*args)
-    print('Subject for new post? ')
-    new_subject = STDIN.gets.chomp
+  def perform(reply_id, new_subject)
     raise RuntimeError, "Invalid subject" if new_subject.blank?
-
-    print("\n")
-    print('First reply_id of new post? ')
-    reply_id = STDIN.gets.chomp
-
     Post.transaction do
       first_reply = Reply.find_by(id: reply_id)
       raise RuntimeError, "Couldn't find reply" unless first_reply
       old_post = first_reply.post
-      puts "splitting post #{old_post.id}: #{old_post.subject}, at #{reply_id}"
 
       other_replies = old_post.replies.where('reply_order > ?', first_reply.reply_order).ordered
-      puts "ie starting at + onwards from #{first_reply.inspect}"
       new_post = create_post(first_reply, old_post: old_post, subject: new_subject)
 
       new_authors = find_authors(other_replies)
@@ -32,6 +23,8 @@ class SplitPostJob < ApplicationJob
     end
   end
 
+  private
+
   def create_post(first_reply, old_post:, subject:)
     new_post = Post.new(first_reply.attributes.slice(*REPLY_ATTRS))
     new_post.skip_edited = true
@@ -39,9 +32,7 @@ class SplitPostJob < ApplicationJob
     new_post.assign_attributes(old_post.attributes.slice(*POST_ATTRS))
     new_post.subject = subject
     new_post.edited_at = first_reply.updated_at
-    puts "new post: #{new_post.inspect}"
     new_post.save!
-    puts "new post: https://glowfic.com/posts/#{new_post.id}"
     new_post
   end
 
@@ -55,7 +46,6 @@ class SplitPostJob < ApplicationJob
     count = other_replies.count
     return {} if count.zero?
 
-    puts "now updating #{count} replies to be in post ID #{new_post.id}"
     sql = <<~SQL.squish
       WITH v_replies AS
       (
@@ -70,23 +60,18 @@ class SplitPostJob < ApplicationJob
     SQL
     sql = ActiveRecord::Base.sanitize_sql_array([sql, old_id: old_post.id, reply_num: first_reply.reply_order, new_id: new_post.id])
     ActiveRecord::Base.connection.execute(sql)
-    puts "-> updated"
   end
 
   def cleanup_first(first_reply)
-    puts "deleting reply converted to post: #{first_reply.inspect}"
     first_reply.delete
     raise ActiveRecord::RecordNotDestroyed if Reply.exists?(first_reply.id)
-    puts "-> deleted"
   end
 
   def update_authors(new_authors, new_post:, old_post:)
-    puts "updating authors:"
     new_authors.each do |user_id, timestamp|
       user = User.find_by(id: user_id)
       next unless new_post.author_for(user).nil?
       existing = old_post.author_for(user)
-      puts "existing: #{existing.inspect}"
       data = {
         user_id: user_id,
         created_at: timestamp,
@@ -94,15 +79,11 @@ class SplitPostJob < ApplicationJob
         joined_at: timestamp,
       }
       data.merge!(existing.attributes.slice([:can_owe, :can_reply, :joined]))
-      puts "PostAuthor.create!(#{data}), for #{User.find(user_id).inspect}"
       new_post.post_authors.create!(data)
     end
-    puts "-> new authors created"
     still_valid = (old_post.replies.distinct.pluck(:user_id) + [old_post.user_id]).uniq
     invalid = old_post.post_authors.where.not(user_id: still_valid)
-    puts "removing old invalid post authors: #{invalid.inspect}"
     invalid.destroy_all
-    puts "-> removed"
   end
 
   def update_caches(post, last_reply)
@@ -120,7 +101,6 @@ class SplitPostJob < ApplicationJob
       }
     end
 
-    puts "updating post columns: #{cached_data}"
     post.update_columns(cached_data) # rubocop:disable Rails/SkipsModelValidations
   end
 end
