@@ -5,7 +5,7 @@ RSpec.describe Api::V1::BoardsController do
       create(:board, name: 'aba') # miduser
       create(:board, name: 'aab') # enduser
       create(:board, name: 'aaa') # notuser
-      Board.all.each do |board|
+      Continuity.all.each do |board|
         create(:board, name: board.name.upcase + 'c')
       end
     end
@@ -68,10 +68,10 @@ RSpec.describe Api::V1::BoardsController do
       board = create(:board)
       section1 = create(:board_section, board: board)
       section2 = create(:board_section, board: board)
-      section1.section_order = 1
-      section1.save!
-      section2.section_order = 0
-      section2.save!
+      # rubocop:disable Rails/SkipsModelValidations
+      section1.update_columns(section_order: 1)
+      section2.update_columns(section_order: 0)
+      # rubocop:enable Rails/SkipsModelValidations
       get :show, params: { id: board.id }
       expect(response).to have_http_status(200)
       expect(response.json['id']).to eq(board.id)

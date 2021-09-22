@@ -1,6 +1,6 @@
-class Board::Searcher < Object
+class Continuity::Searcher < Object
   def initialize
-    @search_results = Board.unscoped
+    @search_results = Continuity.unscoped
   end
 
   def search(params)

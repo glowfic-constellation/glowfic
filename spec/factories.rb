@@ -26,11 +26,11 @@ FactoryBot.define do
     end
   end
 
-  factory :board do
+  factory :continuity, aliases: [:board] do
     creator
     authors_locked { writer_ids.present? || writers.present? }
     sequence :name do |n|
-      "test board #{n}"
+      "test continuity #{n}"
     end
   end
 

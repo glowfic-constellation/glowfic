@@ -20,23 +20,23 @@ class BoardsController < ApplicationController
       end
 
       board_ids = BoardAuthor.where(user_id: @user.id, cameo: false).select(:board_id).distinct.pluck(:board_id)
-      @boards = boards_from_relation(Board.where(creator_id: @user.id).or(Board.where(id: board_ids)))
+      @boards = boards_from_relation(Continuity.where(creator_id: @user.id).or(Continuity.where(id: board_ids)))
       cameo_ids = BoardAuthor.where(user_id: @user.id, cameo: true).select(:board_id).distinct.pluck(:board_id)
-      @cameo_boards = boards_from_relation(Board.where(id: cameo_ids))
+      @cameo_boards = boards_from_relation(Continuity.where(id: cameo_ids))
     else
       @page_title = 'Continuities'
-      @boards = boards_from_relation(Board.all).paginate(page: page)
+      @boards = boards_from_relation(Continuity.all).paginate(page: page)
     end
   end
 
   def new
-    @board = Board.new
+    @board = Continuity.new
     @board.creator = current_user
     @page_title = 'New Continuity'
   end
 
   def create
-    @board = Board.new(permitted_params)
+    @board = Continuity.new(permitted_params)
     @board.creator = current_user
 
     begin
@@ -111,13 +111,13 @@ class BoardsController < ApplicationController
   end
 
   def mark
-    unless (board = Board.find_by_id(params[:board_id]))
+    unless (board = Continuity.find_by_id(params[:board_id]))
       flash[:error] = "Continuity could not be found."
       redirect_to unread_posts_path and return
     end
 
     if params[:commit] == "Mark Read"
-      Board.transaction do
+      Continuity.transaction do
         board.mark_read(current_user)
         read_time = board.last_read(current_user)
         post_views = Post::View.joins(post: :board).where(user: current_user, boards: { id: board.id })
@@ -139,7 +139,7 @@ class BoardsController < ApplicationController
     use_javascript('boards/search')
     return unless params[:commit].present?
 
-    searcher = Board::Searcher.new
+    searcher = Continuity::Searcher.new
     @search_results = searcher.search(params)
     @search_results = boards_from_relation(@search_results).paginate(page: page)
   end
@@ -161,7 +161,7 @@ class BoardsController < ApplicationController
   end
 
   def find_model
-    return if (@board = Board.find_by_id(params[:id]))
+    return if (@board = Continuity.find_by_id(params[:id]))
     flash[:error] = "Continuity could not be found."
     redirect_to continuities_path
   end
@@ -207,6 +207,6 @@ class BoardsController < ApplicationController
   end
 
   def permitted_params
-    params.fetch(:board, {}).permit(:name, :description, :authors_locked, coauthor_ids: [], cameo_ids: [])
+    params.fetch(:continuity, {}).permit(:name, :description, :authors_locked, coauthor_ids: [], cameo_ids: [])
   end
 end

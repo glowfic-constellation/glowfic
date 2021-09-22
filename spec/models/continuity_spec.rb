@@ -1,4 +1,4 @@
-RSpec.describe Board do
+RSpec.describe Continuity do
   include ActiveJob::TestHelper
 
   describe "validations" do
@@ -22,8 +22,8 @@ RSpec.describe Board do
     end
 
     it "should require a unique name" do
-      create(:board, name: 'Test Board')
-      board = build(:board, name: 'Test Board')
+      create(:board, name: 'Test Continuity')
+      board = build(:board, name: 'Test Continuity')
       expect(board).not_to be_valid
       board.name = 'Name'
       expect(board).to be_valid
@@ -123,7 +123,7 @@ RSpec.describe Board do
 
   it "deletes sections but moves posts to sandboxes" do
     board = create(:board)
-    create(:board, id: Board::ID_SANDBOX)
+    create(:board, id: Continuity::ID_SANDBOX)
     section = create(:board_section, board: board)
     post = create(:post, board: board, section: section)
     perform_enqueued_jobs(only: UpdateModelJob) do

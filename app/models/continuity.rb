@@ -1,21 +1,23 @@
-class Board < ApplicationRecord
+class Continuity < ApplicationRecord
   include Presentable
   include Viewable
+
+  self.table_name = 'boards'
 
   ID_SANDBOX = 3
   ID_SITETESTING = 4
 
-  has_many :posts, dependent: false # This is handled in callbacks
-  has_many :board_sections, dependent: :destroy
+  has_many :posts, foreign_key: :board_id, inverse_of: :board, dependent: false # This is handled in callbacks
+  has_many :board_sections, foreign_key: :board_id, inverse_of: :board, dependent: :destroy
   has_many :favorites, as: :favorite, inverse_of: :favorite, dependent: :destroy
-  has_many :views, class_name: 'BoardView', dependent: :destroy
+  has_many :views, class_name: 'BoardView', foreign_key: :board_id, inverse_of: :board, dependent: :destroy
   belongs_to :creator, class_name: 'User', inverse_of: false, optional: false
 
-  has_many :board_authors, inverse_of: :board, dependent: :destroy
+  has_many :board_authors, foreign_key: :board_id, inverse_of: :board, dependent: :destroy
   has_many :authors, class_name: 'User', through: :board_authors, source: :user, dependent: :destroy
-  has_many :board_writers, -> { where(cameo: false) }, class_name: 'BoardAuthor', inverse_of: :board, dependent: :destroy
+  has_many :board_writers, -> { where(cameo: false) }, class_name: 'BoardAuthor', foreign_key: :board_id, inverse_of: :board, dependent: :destroy
   has_many :writers, class_name: 'User', through: :board_writers, source: :user, dependent: :destroy
-  has_many :board_cameos, -> { where(cameo: true) }, class_name: 'BoardAuthor', inverse_of: :board, dependent: :destroy
+  has_many :board_cameos, -> { where(cameo: true) }, class_name: 'BoardAuthor', foreign_key: :board_id, inverse_of: :board, dependent: :destroy
   has_many :cameos, class_name: 'User', through: :board_cameos, source: :user, dependent: :destroy
   has_many :coauthors, ->(board) { where.not(id: board.creator_id) }, class_name: 'User', through: :board_writers, source: :user, dependent: :destroy
 

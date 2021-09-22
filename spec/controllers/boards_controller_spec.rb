@@ -134,7 +134,7 @@ RSpec.describe BoardsController do
 
       get :new
 
-      expect(assigns(:board)).to be_an_instance_of(Board)
+      expect(assigns(:board)).to be_an_instance_of(Continuity)
       expect(assigns(:board)).to be_a_new_record
       expect(assigns(:board).creator_id).to eq(user_id)
       expect(assigns(:page_title)).to eq("New Continuity")
@@ -180,7 +180,7 @@ RSpec.describe BoardsController do
 
       post :create
 
-      expect(assigns(:board)).to be_an_instance_of(Board)
+      expect(assigns(:board)).to be_an_instance_of(Continuity)
       expect(assigns(:board)).to be_a_new_record
       expect(assigns(:board)).not_to be_valid
       expect(assigns(:board).creator).to eq(assigns(:current_user))
@@ -198,15 +198,15 @@ RSpec.describe BoardsController do
     end
 
     it "successfully makes a board" do
-      expect(Board.count).to eq(0)
+      expect(Continuity.count).to eq(0)
       creator = create(:user)
       login_as(creator)
       user2 = create(:user)
       user3 = create(:user)
 
       post :create, params: {
-        board: {
-          name: 'TestCreateBoard',
+        continuity: {
+          name: 'Test Continuity',
           description: 'Test description',
           coauthor_ids: [user2.id],
           cameo_ids: [user3.id],
@@ -215,10 +215,10 @@ RSpec.describe BoardsController do
       }
       expect(response).to redirect_to(continuities_url)
       expect(flash[:success]).to eq("Continuity created!")
-      expect(Board.count).to eq(1)
+      expect(Continuity.count).to eq(1)
 
-      board = Board.first
-      expect(board.name).to eq('TestCreateBoard')
+      board = Continuity.first
+      expect(board.name).to eq('Test Continuity')
       expect(board.creator).to eq(creator)
       expect(board.description).to eq('Test description')
       expect(board.writers).to match_array([creator, user2])
@@ -387,7 +387,7 @@ RSpec.describe BoardsController do
       user = create(:user)
       board = create(:board, creator: user)
       login_as(user)
-      put :update, params: { id: board.id, board: { name: '' } }
+      put :update, params: { id: board.id, continuity: { name: '' } }
       expect(response).to render_template('edit')
       expect(flash[:error][:message]).to eq("Continuity could not be created.")
       expect(flash[:error][:array]).to be_present
@@ -402,7 +402,7 @@ RSpec.describe BoardsController do
       user3 = create(:user)
       put :update, params: {
         id: board.id,
-        board: {
+        continuity: {
           name: name + 'edit',
           description: 'New description',
           coauthor_ids: [user2.id],
@@ -459,7 +459,7 @@ RSpec.describe BoardsController do
 
     it "moves posts to sandboxes" do
       board = create(:board)
-      create(:board, id: Board::ID_SANDBOX)
+      create(:board, id: Continuity::ID_SANDBOX)
       section = create(:board_section, board: board)
       post = create(:post, board: board, section: section)
       login_as(board.creator)
@@ -469,7 +469,7 @@ RSpec.describe BoardsController do
       expect(response).to redirect_to(continuities_url)
       expect(flash[:success]).to eq('Continuity deleted.')
       post.reload
-      expect(post.board_id).to eq(Board::ID_SANDBOX)
+      expect(post.board_id).to eq(Continuity::ID_SANDBOX)
       expect(post.section).to be_nil
       expect(BoardSection.find_by_id(section.id)).to be_nil
     end
@@ -479,8 +479,8 @@ RSpec.describe BoardsController do
       post = create(:post, user: board.creator, board: board)
       login_as(board.creator)
 
-      allow(Board).to receive(:find_by).and_call_original
-      allow(Board).to receive(:find_by).with(id: board.id.to_s).and_return(board)
+      allow(Continuity).to receive(:find_by).and_call_original
+      allow(Continuity).to receive(:find_by).with(id: board.id.to_s).and_return(board)
       allow(board).to receive(:destroy!).and_raise(ActiveRecord::RecordNotDestroyed, 'fake error')
       expect(board).to receive(:destroy!)
 
@@ -535,7 +535,7 @@ RSpec.describe BoardsController do
       now = Time.zone.now
       expect(board.last_read(user)).to be_nil
       post :mark, params: { board_id: board.id, commit: "Mark Read" }
-      expect(Board.find(board.id).last_read(user)).to be >= now # reload to reset cached @view
+      expect(Continuity.find(board.id).last_read(user)).to be >= now # reload to reset cached @view
       expect(response).to redirect_to(unread_posts_url)
       expect(flash[:success]).to eq("#{board.name} marked as read.")
     end
@@ -548,14 +548,14 @@ RSpec.describe BoardsController do
       unread_post = create(:post, user: user, board: board)
       unread_post.mark_read(create(:user), at_time: now - 1.day, force: true)
 
-      expect(Board.find(board.id).last_read(user)).to be_nil # reload to reset cached @view
+      expect(Continuity.find(board.id).last_read(user)).to be_nil # reload to reset cached @view
       expect(Post.find(read_post.id).last_read(user)).to be_the_same_time_as(now - 1.day)
       expect(Post.find(unread_post.id).last_read(user)).to be_nil
 
       login_as(user)
       post :mark, params: { board_id: board.id, commit: "Mark Read" }
 
-      expect(Board.find(board.id).last_read(user)).to be >= now # reload to reset cached @view
+      expect(Continuity.find(board.id).last_read(user)).to be >= now # reload to reset cached @view
       expect(Post.find(read_post.id).last_read(user)).to be >= now
       expect(Post.find(unread_post.id).last_read(user)).to be_nil
     end
@@ -565,7 +565,7 @@ RSpec.describe BoardsController do
       login_as(user)
       expect(board).not_to be_ignored_by(user)
       post :mark, params: { board_id: board.id, commit: "Hide from Unread" }
-      expect(Board.find(board.id)).to be_ignored_by(user) # reload to reset cached @view
+      expect(Continuity.find(board.id)).to be_ignored_by(user) # reload to reset cached @view
       expect(response).to redirect_to(unread_posts_url)
       expect(flash[:success]).to eq("#{board.name} hidden from this page.")
     end
@@ -599,7 +599,7 @@ RSpec.describe BoardsController do
       it "finds all when no arguments given" do
         create_list(:board, 4)
         get :search, params: { commit: true }
-        expect(assigns(:search_results)).to match_array(Board.all)
+        expect(assigns(:search_results)).to match_array(Continuity.all)
       end
 
       it "filters by name" do

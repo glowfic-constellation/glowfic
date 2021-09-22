@@ -215,7 +215,7 @@ class PostsController < WritableController
     preview and return if params[:button_preview].present?
 
     @post.assign_attributes(permitted_params)
-    @post.board ||= Board.find_by(id: Board::ID_SANDBOX)
+    @post.board ||= Continuity.find_by(id: Continuity::ID_SANDBOX)
     settings = process_tags(Setting, obj_param: :post, id_param: :setting_ids)
     warnings = process_tags(ContentWarning, obj_param: :post, id_param: :content_warning_ids)
     labels = process_tags(Label, obj_param: :post, id_param: :label_ids)
@@ -277,7 +277,7 @@ class PostsController < WritableController
     @setting = Setting.where(id: params[:setting_id]) if params[:setting_id].present?
     @character = Character.where(id: params[:character_id]) if params[:character_id].present?
     @user = User.active.where(id: params[:author_id]).ordered if params[:author_id].present?
-    @board = Board.where(id: params[:board_id]) if params[:board_id].present?
+    @board = Continuity.where(id: params[:board_id]) if params[:board_id].present?
 
     return unless params[:commit].present?
 
@@ -327,7 +327,7 @@ class PostsController < WritableController
   def preview
     @post ||= Post.new(user: current_user)
     @post.assign_attributes(permitted_params(false))
-    @post.board ||= Board.find_by_id(3)
+    @post.board ||= Continuity.find_by_id(3)
 
     @author_ids = params.fetch(:post, {}).fetch(:unjoined_author_ids, [])
     @viewer_ids = params.fetch(:post, {}).fetch(:viewer_ids, [])

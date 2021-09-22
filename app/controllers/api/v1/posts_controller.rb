@@ -66,7 +66,7 @@ class Api::V1::PostsController < Api::ApiController
       render json: { errors: [error] }, status: :not_found and return
     end
 
-    boards = Board.where(id: posts.select(:board_id).distinct.pluck(:board_id))
+    boards = Continuity.where(id: posts.select(:board_id).distinct.pluck(:board_id))
     unless boards.count == 1
       error = { message: 'Posts must be from one continuity' }
       render json: { errors: [error] }, status: :unprocessable_entity and return

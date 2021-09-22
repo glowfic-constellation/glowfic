@@ -7,7 +7,7 @@ class CreateBoardAuthors < ActiveRecord::Migration[4.2]
     end
     add_index :board_authors, :board_id
     add_index :board_authors, :user_id
-    Board.all.each do |board|
+    Continuity.all.each do |board|
       next unless board.coauthor_id.present?
       BoardAuthor.create!(board_id: board.id, user_id: board.coauthor_id)
     end
