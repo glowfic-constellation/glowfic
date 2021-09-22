@@ -1,4 +1,4 @@
-RSpec.describe BoardsController do
+RSpec.describe ContinuitiesController do
   include ActiveJob::TestHelper
 
   describe "GET index" do

@@ -1,5 +1,5 @@
 # frozen_string_literal: true
-class BoardsController < ApplicationController
+class ContinuitiesController < ApplicationController
   before_action :login_required, except: [:index, :show, :search]
   before_action :find_model, only: [:show, :edit, :update, :destroy]
   before_action :editor_setup, only: [:new, :edit]

@@ -15,7 +15,7 @@ Rails.application.routes.draw do
   resources :users, except: :destroy do
     resources :characters, only: :index
     resources :galleries, only: [:index, :show]
-    resources :boards, only: :index
+    resources :continuities, only: :index
     collection do
       get :search
     end
@@ -69,7 +69,7 @@ Rails.application.routes.draw do
   end
 
   # Forums
-  resources :boards, as: :continuities do
+  resources :continuities do
     collection do
       post :mark
       get :search
