@@ -327,7 +327,7 @@ class PostsController < WritableController
   def preview
     @post ||= Post.new(user: current_user)
     @post.assign_attributes(permitted_params(false))
-    @post.board ||= Board.find_by_id(3)
+    @post.board ||= Board.find_by_id(Board::ID_SANDBOX)
 
     @author_ids = params.fetch(:post, {}).fetch(:unjoined_author_ids, [])
     @viewer_ids = params.fetch(:post, {}).fetch(:viewer_ids, [])
