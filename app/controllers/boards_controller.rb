@@ -91,7 +91,7 @@ class BoardsController < ApplicationController
       render :edit
     else
       flash[:success] = "Continuity saved!"
-      redirect_to continuity_path(@board)
+      redirect_to @board
     end
   end
 
@@ -103,7 +103,7 @@ class BoardsController < ApplicationController
         message: "Continuity could not be deleted.",
         array: @board.errors.full_messages,
       }
-      redirect_to continuity_path(@board)
+      redirect_to @board
     else
       flash[:success] = "Continuity deleted."
       redirect_to continuities_path
@@ -175,7 +175,7 @@ class BoardsController < ApplicationController
   def require_edit_permission
     return if @board.editable_by?(current_user)
     flash[:error] = "You do not have permission to edit that continuity."
-    redirect_to continuity_path(@board)
+    redirect_to @board
   end
 
   def boards_from_relation(relation)

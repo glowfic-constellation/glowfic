@@ -62,7 +62,7 @@
             - if post.description.present?
               %br
               %span.details= sanitize_simple_link_text(post.description)
-          %td.vtop.post-board{class: klass}= link_to post.board_name, continuity_path(post.board_id)
+          %td.vtop.post-board{class: klass}= link_to post.board_name, post.board
           %td.vtop.post-authors{class: klass}= author_links(post, colored: true)
           %td.vtop.centered.post-replies{class: klass}= link_to post.reply_count, stats_post_path(post)
           %td.vtop.centered.post-replies{class: klass}= link_to @reply_counts[post.id].to_i, post_or_reply_mem_link(**@link_targets[post.id].except(:created_at))

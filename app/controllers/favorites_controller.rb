@@ -35,7 +35,7 @@ class FavoritesController < ApplicationController
         flash[:error] = "Continuity could not be found."
         redirect_to continuities_path and return
       end
-      fav_path = continuity_path(favorite)
+      fav_path = favorite
     elsif params[:post_id].present?
       unless (favorite = Post.find_by_id(params[:post_id]))
         flash[:error] = "Post could not be found."
@@ -87,11 +87,7 @@ class FavoritesController < ApplicationController
       redirect_to favorites_path
     else
       flash[:success] = "Favorite removed."
-      if [User.to_s, Post.to_s].include?(fav.favorite_type)
-        redirect_to fav.favorite
-      else
-        redirect_to continuity_path(fav.favorite)
-      end
+      redirect_to fav.favorite
     end
   end
 end
