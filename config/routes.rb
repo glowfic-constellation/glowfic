@@ -112,7 +112,7 @@ Rails.application.routes.draw do
   # API
   namespace :api do
     namespace :v1 do
-      resources :boards, only: [:index, :show] do
+      resources :boards, controller: :continuities, only: [:index, :show] do
         member { get :posts }
       end
       resources :board_sections, only: [] do

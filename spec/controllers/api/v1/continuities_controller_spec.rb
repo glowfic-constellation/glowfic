@@ -1,4 +1,4 @@
-RSpec.describe Api::V1::BoardsController do
+RSpec.describe Api::V1::ContinuitiesController do
   describe "GET index" do
     def create_search_boards
       create(:board, name: 'baa') # firstuser
