@@ -108,7 +108,7 @@ RSpec.describe Api::V1::UsersController do
       expect(response).to have_http_status(200)
       expect(response.json['results'].size).to eq(1)
       expect(response.json['results'][0]['id']).to eq(user_post.id)
-      expect(response.json['results'][0]['board']['id']).to eq(user_post.board_id)
+      expect(response.json['results'][0]['board']['id']).to eq(user_post.continuity_id)
       expect(response.json['results'][0]['section']['id']).to eq(user_post.section_id)
     end
 

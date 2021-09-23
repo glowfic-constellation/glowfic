@@ -19,20 +19,20 @@ RSpec.describe BoardSectionsController do
       expect(board.editable_by?(user)).to eq(false)
       login_as(user)
 
-      get :new, params: { board_id: board.id }
+      get :new, params: { continuity_id: board.id }
       expect(response).to redirect_to(continuities_url)
       expect(flash[:error]).to eq("You do not have permission to edit this continuity.")
     end
 
-    it "works with board_id" do
+    it "works with continuity_id" do
       board = create(:board)
       login_as(board.creator)
-      get :new, params: { board_id: board.id }
+      get :new, params: { continuity_id: board.id }
       expect(response.status).to eq(200)
       expect(assigns(:page_title)).to eq("New Section")
     end
 
-    it "works without board_id" do
+    it "works without continuity_id" do
       login
       get :new
       expect(response.status).to eq(200)
@@ -60,7 +60,7 @@ RSpec.describe BoardSectionsController do
       expect(board.editable_by?(user)).to eq(false)
       login_as(user)
 
-      post :create, params: { board_section: { board_id: board.id } }
+      post :create, params: { board_section: { continuity_id: board.id } }
       expect(response).to redirect_to(continuities_url)
       expect(flash[:error]).to eq("You do not have permission to edit this continuity.")
     end
@@ -68,7 +68,7 @@ RSpec.describe BoardSectionsController do
     it "requires valid section" do
       board = create(:board)
       login_as(board.creator)
-      post :create, params: { board_section: { board_id: board.id } }
+      post :create, params: { board_section: { continuity_id: board.id } }
       expect(response).to have_http_status(200)
       expect(response).to render_template(:new)
       expect(flash[:error][:message]).to eq("Section could not be created.")
@@ -87,7 +87,7 @@ RSpec.describe BoardSectionsController do
       board = create(:board)
       login_as(board.creator)
       section_name = 'ValidSection'
-      post :create, params: { board_section: { board_id: board.id, name: section_name } }
+      post :create, params: { board_section: { continuity_id: board.id, name: section_name } }
       expect(response).to redirect_to(edit_continuity_url(board))
       expect(flash[:success]).to eq("New section, #{section_name}, has successfully been created for #{board.name}.")
       expect(assigns(:board_section).name).to eq(section_name)

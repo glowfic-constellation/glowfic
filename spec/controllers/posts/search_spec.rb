@@ -37,7 +37,7 @@ RSpec.describe PostsController, 'GET search' do
       post = create(:post)
       post2 = create(:post, board: post.board)
       create(:post)
-      get :search, params: { commit: true, board_id: post.board_id }
+      get :search, params: { commit: true, continuity_id: post.board_id }
       expect(assigns(:search_results)).to match_array([post, post2])
     end
 

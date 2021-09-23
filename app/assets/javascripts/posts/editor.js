@@ -13,7 +13,7 @@ $(document).ready(function() {
 
 function setupMetadataEditor() {
   // Adding Select2 UI to relevant selects
-  createSelect2('#post_board_id', {
+  createSelect2('#post_continuity_id', {
     width: '200px',
     minimumResultsForSearch: 20
   });
@@ -49,7 +49,7 @@ function setupMetadataEditor() {
   }
 
   if ($("#post_section_id").val() === '') setSections();
-  $("#post_board_id").change(function() { setSections(); });
+  $("#post_continuity_id").change(function() { setSections(); });
 
   $("#post_privacy").change(function() {
     if ($(this).val() === 'access_list') {
@@ -475,7 +475,7 @@ function setIcon(id, url, title, alt) {
 }
 
 function setSections() {
-  var boardId = $("#post_board_id").val();
+  var boardId = $("#post_continuity_id").val();
   $.authenticatedGet("/api/v1/boards/"+boardId, {}, function(resp) {
     var sections = resp.board_sections;
     if (sections.length > 0) {

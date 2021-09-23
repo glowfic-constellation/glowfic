@@ -6,7 +6,7 @@ class BoardSectionsController < ApplicationController
   before_action :require_permission, except: [:show, :update]
 
   def new
-    @board_section = BoardSection.new(board_id: params[:board_id])
+    @board_section = BoardSection.new(continuity_id: params[:continuity_id])
     @page_title = 'New Section'
   end
 
@@ -90,7 +90,7 @@ class BoardSectionsController < ApplicationController
   end
 
   def require_permission
-    return unless (board = @board_section.try(:board) || Board.find_by_id(params[:board_id]))
+    return unless (board = @board_section.try(:board) || Board.find_by_id(params[:continuity_id]))
     return if board.editable_by?(current_user)
     flash[:error] = "You do not have permission to edit this continuity."
     redirect_to continuities_path
@@ -113,7 +113,7 @@ class BoardSectionsController < ApplicationController
 
   def permitted_params
     params.fetch(:board_section, {}).permit(
-      :board_id,
+      :continuity_id,
       :name,
       :description,
     )

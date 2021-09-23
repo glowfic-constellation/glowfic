@@ -465,7 +465,7 @@ RSpec.describe BoardsController do
       expect(response).to redirect_to(continuities_url)
       expect(flash[:success]).to eq('Continuity deleted.')
       post.reload
-      expect(post.board_id).to eq(Board::ID_SANDBOX)
+      expect(post.continuity_id).to eq(Board::ID_SANDBOX)
       expect(post.section).to be_nil
       expect(BoardSection.find_by_id(section.id)).to be_nil
     end
@@ -499,7 +499,7 @@ RSpec.describe BoardsController do
 
     it "works for reader accounts" do
       login_as(create(:reader_user))
-      post :mark, params: { board_id: board.id, commit: "Mark Read" }
+      post :mark, params: { continuity_id: board.id, commit: "Mark Read" }
       expect(response).to redirect_to(unread_posts_url)
       expect(flash[:success]).to eq("#{board.name} marked as read.")
     end
@@ -513,14 +513,14 @@ RSpec.describe BoardsController do
 
     it "requires valid board id" do
       login
-      post :mark, params: { board_id: -1 }
+      post :mark, params: { continuity_id: -1 }
       expect(response).to redirect_to(unread_posts_url)
       expect(flash[:error]).to eq("Continuity could not be found.")
     end
 
     it "requires valid action" do
       login
-      post :mark, params: { board_id: create(:board).id }
+      post :mark, params: { continuity_id: create(:board).id }
       expect(response).to redirect_to(unread_posts_url)
       expect(flash[:error]).to eq("Please choose a valid action.")
     end
@@ -530,7 +530,7 @@ RSpec.describe BoardsController do
       login_as(user)
       now = Time.zone.now
       expect(board.last_read(user)).to be_nil
-      post :mark, params: { board_id: board.id, commit: "Mark Read" }
+      post :mark, params: { continuity_id: board.id, commit: "Mark Read" }
       expect(Board.find(board.id).last_read(user)).to be >= now # reload to reset cached @view
       expect(response).to redirect_to(unread_posts_url)
       expect(flash[:success]).to eq("#{board.name} marked as read.")
@@ -549,7 +549,7 @@ RSpec.describe BoardsController do
       expect(Post.find(unread_post.id).last_read(user)).to be_nil
 
       login_as(user)
-      post :mark, params: { board_id: board.id, commit: "Mark Read" }
+      post :mark, params: { continuity_id: board.id, commit: "Mark Read" }
 
       expect(Board.find(board.id).last_read(user)).to be >= now # reload to reset cached @view
       expect(Post.find(read_post.id).last_read(user)).to be >= now
@@ -560,7 +560,7 @@ RSpec.describe BoardsController do
       user = create(:user)
       login_as(user)
       expect(board).not_to be_ignored_by(user)
-      post :mark, params: { board_id: board.id, commit: "Hide from Unread" }
+      post :mark, params: { continuity_id: board.id, commit: "Hide from Unread" }
       expect(Board.find(board.id)).to be_ignored_by(user) # reload to reset cached @view
       expect(response).to redirect_to(unread_posts_url)
       expect(flash[:success]).to eq("#{board.name} hidden from this page.")

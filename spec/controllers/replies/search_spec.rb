@@ -176,7 +176,7 @@ RSpec.describe RepliesController, 'GET search' do
       continuity_post = create(:post, num_replies: 1)
       create(:post, num_replies: 1) # wrong post
       filtered_reply = continuity_post.replies.last
-      get :search, params: { commit: true, board_id: continuity_post.board_id }
+      get :search, params: { commit: true, continuity_id: continuity_post.board_id }
       expect(assigns(:search_results)).to match_array([filtered_reply])
     end
 

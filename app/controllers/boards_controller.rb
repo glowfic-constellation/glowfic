@@ -111,7 +111,7 @@ class BoardsController < ApplicationController
   end
 
   def mark
-    unless (board = Board.find_by_id(params[:board_id]))
+    unless (board = Board.find_by_id(params[:continuity_id]))
       flash[:error] = "Continuity could not be found."
       redirect_to unread_posts_path and return
     end

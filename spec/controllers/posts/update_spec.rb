@@ -882,7 +882,7 @@ RSpec.describe PostsController, 'PUT update' do
           content: newcontent,
           subject: newsubj,
           description: 'desc',
-          board_id: board.id,
+          continuity_id: board.id,
           section_id: section.id,
           character_id: char.id,
           character_alias_id: calias.id,

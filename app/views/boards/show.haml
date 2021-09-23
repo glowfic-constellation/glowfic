@@ -7,10 +7,10 @@
   = @board.name
   - if logged_in?
     - if @board.open_to?(current_user)
-      = link_to new_post_path params: { board_id: @board.id } do
+      = link_to new_post_path params: { continuity_id: @board.id } do
         .link-box.action-new + New Post
     - if @board.editable_by?(current_user)
-      = link_to new_board_section_path params: { board_id: @board.id } do
+      = link_to new_board_section_path params: { continuity_id: @board.id } do
         .link-box.action-new + New Section
       = link_to edit_continuity_path(@board) do
         .link-box.action-edit
@@ -24,7 +24,7 @@
           = image_tag "icons/star_delete.png", class: 'vmid', alt: ''
           Unfavorite
     - else
-      = link_to favorites_path(board_id: @board.id), method: :post do
+      = link_to favorites_path(continuity_id: @board.id), method: :post do
         .link-box.action-favorite
           = image_tag "icons/star_add.png", class: 'vmid', alt: ''
           Favorite

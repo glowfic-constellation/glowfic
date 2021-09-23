@@ -24,7 +24,7 @@ module PostHelper
 
   def allowed_boards(obj, user)
     authored_ids = BoardAuthor.where(user: user).select(:board_id)
-    Board.where(id: obj.board_id).or(Board.where(authors_locked: false)).or(Board.where(id: authored_ids)).ordered
+    Board.where(id: obj.continuity_id).or(Board.where(authors_locked: false)).or(Board.where(id: authored_ids)).ordered
   end
 
   def unread_path(post, **kwargs)
@@ -32,8 +32,8 @@ module PostHelper
   end
 
   def anchored_continuity_path(post)
-    return continuity_path(post.board_id) unless post.section_id.present?
-    continuity_path(post.board_id, anchor: "section-#{post.section_id}")
+    return continuity_path(post.continuity_id) unless post.section_id.present?
+    continuity_path(post.continuity_id, anchor: "section-#{post.section_id}")
   end
 
   def post_privacy_settings

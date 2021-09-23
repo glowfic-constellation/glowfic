@@ -130,7 +130,7 @@ RSpec.describe Board do
       Audited.audit_class.as_user(board.creator) { board.destroy! }
     end
     post.reload
-    expect(post.board_id).to eq(3)
+    expect(post.continuity_id).to eq(Board::ID_SANDBOX)
     expect(post.section).to be_nil
     expect(BoardSection.find_by_id(section.id)).to be_nil
   end
