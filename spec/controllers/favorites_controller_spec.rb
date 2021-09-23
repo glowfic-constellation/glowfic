@@ -47,7 +47,7 @@ RSpec.describe FavoritesController do
         expect(assigns(:posts)).to match_array([post])
       end
 
-      it "shows board posts when board is favorited" do
+      it "shows continuity posts when continuity is favorited" do
         favorite = create(:favorite, favorite: board)
         login_as(favorite.user)
         get :index
@@ -62,7 +62,7 @@ RSpec.describe FavoritesController do
         expect(assigns(:posts)).to match_array([post, user_post, board_user_post])
       end
 
-      it "shows both post and board post when post and board are favorited" do
+      it "shows both post and continuity post when post and continuity are favorited" do
         favorite = create(:favorite, favorite: post)
         favorite = create(:favorite, user: favorite.user, favorite: board)
         login_as(favorite.user)
@@ -70,7 +70,7 @@ RSpec.describe FavoritesController do
         expect(assigns(:posts)).to match_array([post, board_post, board_user_post])
       end
 
-      it "shows user and board posts when board and user are favorited" do
+      it "shows user and continuity posts when continuity and user are favorited" do
         favorite = create(:favorite, favorite: user)
         favorite = create(:favorite, user: favorite.user, favorite: board)
         login_as(favorite.user)
@@ -86,7 +86,7 @@ RSpec.describe FavoritesController do
         expect(assigns(:posts)).to match_array([user_post, board_user_post])
       end
 
-      it "does not duplicate posts if both a board post and board are favorited" do
+      it "does not duplicate posts if both a continuity post and continuity are favorited" do
         favorite = create(:favorite, favorite: board_post)
         favorite = create(:favorite, user: favorite.user, favorite: board)
         login_as(favorite.user)
@@ -144,7 +144,7 @@ RSpec.describe FavoritesController do
       expect(flash[:error]).to eq('Post could not be found.')
     end
 
-    it "requires valid board if given" do
+    it "requires valid continuity if given" do
       login
       post :create, params: { board_id: -1 }
       expect(response).to redirect_to(continuities_path)
@@ -199,7 +199,7 @@ RSpec.describe FavoritesController do
       expect(flash[:success]).to eq("Your favorite has been saved.")
     end
 
-    it "favorites a board" do
+    it "favorites a continuity" do
       user = create(:user)
       board = create(:board)
       login_as(user)
@@ -231,7 +231,7 @@ RSpec.describe FavoritesController do
       expect(flash[:error]).to eq("That is not your favorite.")
     end
 
-    it "destroys board favorite" do
+    it "destroys continuity favorite" do
       favorite = create(:favorite, favorite: create(:board))
       login_as(favorite.user)
       delete :destroy, params: { id: favorite.id }

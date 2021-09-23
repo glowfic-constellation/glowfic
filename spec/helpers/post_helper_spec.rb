@@ -125,35 +125,35 @@ RSpec.describe PostHelper do
   end
 
   describe "#allowed_continuities" do
-    it "includes open-to-everyone boards" do
+    it "includes open-to-everyone continuities" do
       board = create(:board)
       user = create(:user)
       post = build(:post)
       expect(helper.allowed_continuities(post, user)).to eq([board])
     end
 
-    it "includes locked boards with user in" do
+    it "includes locked continuities with user in" do
       user = create(:user)
       board = create(:board, authors_locked: true, authors: [user])
       post = build(:post)
       expect(helper.allowed_continuities(post, user)).to eq([board])
     end
 
-    it "hides boards that user can't write in" do
+    it "hides continuities that user can't write in" do
       create(:board, authors_locked: true)
       user = create(:user)
       post = build(:post)
       expect(helper.allowed_continuities(post, user)).to eq([])
     end
 
-    it "shows the post's board even if the user can't write in it" do
+    it "shows the post's continuity even if the user can't write in it" do
       board = create(:board, authors_locked: true)
       user = create(:user)
       post = build(:post, board: board)
       expect(helper.allowed_continuities(post, user)).to eq([board])
     end
 
-    it "orders boards" do
+    it "orders continuities" do
       board_a = create(:board, name: "A")
       board_b_pinned = create(:board, name: "B", pinned: true)
       board_c = create(:board, name: "C")

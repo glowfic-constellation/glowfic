@@ -705,7 +705,7 @@ RSpec.describe PostsController, 'PUT update' do
       expect(joined_post_author.joined_at).to be_the_same_time_as(reply.created_at)
     end
 
-    it "updates board cameos if necessary" do
+    it "updates continuity cameos if necessary" do
       user = create(:user)
       other_user = create(:user)
       third_user = create(:user)
@@ -724,7 +724,7 @@ RSpec.describe PostsController, 'PUT update' do
       expect(board.cameos).to match_array([third_user])
     end
 
-    it "does not add to cameos of open boards" do
+    it "does not add to cameos of open continuities" do
       user = create(:user)
       other_user = create(:user)
       login_as(user)

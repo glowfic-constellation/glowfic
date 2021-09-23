@@ -107,7 +107,7 @@ RSpec.describe NotifyFollowersOfNewPostJob do
       end
     end
 
-    context "with favorited board" do
+    context "with favorited continuity" do
       let(:favorite) { board }
 
       before(:each) { create(:favorite, user: notified, favorite: board) }

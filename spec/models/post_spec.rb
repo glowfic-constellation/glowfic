@@ -252,7 +252,7 @@ RSpec.describe Post do
       expect(post.section_order).to eq(0)
     end
 
-    it "should update when board is changed" do
+    it "should update when continuity is changed" do
       board = create(:board)
       create(:post, board_id: board.id)
       create(:post, board_id: board.id)
@@ -292,7 +292,7 @@ RSpec.describe Post do
       expect(post3.reload.section_order).to eq(2)
     end
 
-    it "should reorder upon board change" do
+    it "should reorder upon continuity change" do
       board = create(:board, authors_locked: true)
       post0 = create(:post, board_id: board.id, user: board.creator)
       expect(post0.section_order).to eq(0)
@@ -309,7 +309,7 @@ RSpec.describe Post do
       expect(post3.reload.section_order).to eq(2)
     end
 
-    it "should autofill correctly upon board change" do
+    it "should autofill correctly upon continuity change" do
       board = create(:board)
       board2 = create(:board)
       post0 = create(:post, board_id: board.id)
@@ -328,7 +328,7 @@ RSpec.describe Post do
       expect(post2.section_order).to eq(2)
     end
 
-    it "should autofill correctly upon board change with mix" do
+    it "should autofill correctly upon continuity change with mix" do
       board = create(:board)
       board2 = create(:board)
 
@@ -423,7 +423,7 @@ RSpec.describe Post do
       expect(post.valid?).not_to eq(true)
     end
 
-    it "requires board the user can access" do
+    it "requires continuity the user can access" do
       board = create(:board, authors_locked: true)
       post = create(:post)
       expect(post.valid?).to eq(true)
@@ -431,7 +431,7 @@ RSpec.describe Post do
       expect(post.valid?).not_to eq(true)
     end
 
-    it "requires board section matching board" do
+    it "requires continuity section matching continuity" do
       post = create(:post)
       expect(post.valid?).to eq(true)
       post.section = create(:board_section)
@@ -1154,7 +1154,7 @@ RSpec.describe Post do
       expect(post.next_post(user)).to eq(nextp)
     end
 
-    it "does not give next or previous on unordered boards" do
+    it "does not give next or previous on unordered continuities" do
       create(:post, board: board)
       post = create(:post, board: board)
       create(:post, board: board)
@@ -1163,7 +1163,7 @@ RSpec.describe Post do
       expect(post.next_post(user)).to be_nil
     end
 
-    it "handles sectionless on sectioned boards correctly" do
+    it "handles sectionless on sectioned continuities correctly" do
       section
 
       create(:post, user: user, board: board)
@@ -1174,7 +1174,7 @@ RSpec.describe Post do
       expect(post.next_post(user)).to be_nil
     end
 
-    it "handles ordered boards with no sections correctly" do
+    it "handles ordered continuities with no sections correctly" do
       board.update!(authors_locked: true)
       prev = create(:post, user: user, board: board)
       post = create(:post, user: user, board: board)

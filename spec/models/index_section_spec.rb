@@ -15,7 +15,7 @@ RSpec.describe IndexSection do
     expect(post2.index_posts.first.section_order).to eq(2)
   end
 
-  it "should autofill board section order on creation" do
+  it "should autofill continuity section order on creation" do
     index = create(:index)
     section0 = create(:index_section, index: index)
     section1 = create(:index_section, index: index)

@@ -145,7 +145,7 @@ RSpec.describe Api::V1::PostsController do
     end
 
     context "without section_id" do
-      it "requires a board you have access to" do
+      it "requires a continuity you have access to" do
         board = create(:board)
         board_post1 = create(:post, board_id: board.id)
         board_post2 = create(:post, board_id: board.id)
@@ -161,7 +161,7 @@ RSpec.describe Api::V1::PostsController do
         expect(board_post2.reload.section_order).to eq(1)
       end
 
-      it "requires a single board without section_id" do
+      it "requires a single continuity" do
         user = create(:user)
         board1 = create(:board, creator: user)
         board2 = create(:board, creator: user)
@@ -275,7 +275,7 @@ RSpec.describe Api::V1::PostsController do
     end
 
     context "with section_id" do
-      it "requires a board you have access to" do
+      it "requires a continuity you have access to" do
         board = create(:board)
         section = create(:board_section, board_id: board.id)
         board_post1 = create(:post, board_id: board.id, section_id: section.id)

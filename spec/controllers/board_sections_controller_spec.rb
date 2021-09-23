@@ -24,7 +24,7 @@ RSpec.describe BoardSectionsController do
       expect(flash[:error]).to eq("You do not have permission to edit this continuity.")
     end
 
-    it "works with board_id" do
+    it "works with continuity_id" do
       board = create(:board)
       login_as(board.creator)
       get :new, params: { board_id: board.id }
@@ -32,7 +32,7 @@ RSpec.describe BoardSectionsController do
       expect(assigns(:page_title)).to eq("New Section")
     end
 
-    it "works without board_id" do
+    it "works without continuity_id" do
       login
       get :new
       expect(response.status).to eq(200)
@@ -74,7 +74,7 @@ RSpec.describe BoardSectionsController do
       expect(flash[:error][:message]).to eq("Section could not be created.")
     end
 
-    it "requires valid board for section" do
+    it "requires valid continuity for section" do
       board = create(:board)
       login_as(board.creator)
       post :create, params: { board_section: { name: 'fake' } }
@@ -211,7 +211,7 @@ RSpec.describe BoardSectionsController do
       expect(flash[:error]).to eq("This feature is not available to read-only accounts.")
     end
 
-    it "requires board permission" do
+    it "requires continuity permission" do
       user = create(:user)
       login_as(user)
       board_section = create(:board_section)

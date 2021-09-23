@@ -28,7 +28,7 @@ RSpec.describe PostsController, 'POST unhide' do
     expect(response).to redirect_to(hidden_posts_url)
   end
 
-  it "succeeds for board" do
+  it "succeeds for continuity" do
     board = create(:board)
     stay_hidden_board = create(:board)
     user = create(:user)

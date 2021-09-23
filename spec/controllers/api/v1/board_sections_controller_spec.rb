@@ -6,7 +6,7 @@ RSpec.describe Api::V1::BoardSectionsController do
       expect(response.json['errors'][0]['message']).to eq("You must be logged in to view that page.")
     end
 
-    it "requires a board you have access to" do
+    it "requires a continuity you have access to" do
       board = create(:board)
       board_section1 = create(:board_section, board_id: board.id)
       board_section2 = create(:board_section, board_id: board.id)
@@ -22,7 +22,7 @@ RSpec.describe Api::V1::BoardSectionsController do
       expect(board_section2.reload.section_order).to eq(1)
     end
 
-    it "requires a single board" do
+    it "requires a single continuity" do
       user = create(:user)
       board1 = create(:board, creator: user)
       board2 = create(:board, creator: user)

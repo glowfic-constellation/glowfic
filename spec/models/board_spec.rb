@@ -69,7 +69,7 @@ RSpec.describe Board do
       expect(board.editable_by?(cameo)).to be false
     end
 
-    it "should allow coauthors only once per board" do
+    it "should allow coauthors only once per continuity" do
       board = create(:board)
       board2 = create(:board)
       coauthor = create(:user)
@@ -103,18 +103,18 @@ RSpec.describe Board do
   end
 
   describe "#ordered?" do
-    it "should be unordered for default board" do
+    it "should be unordered for default continuity" do
       expect(create(:board).ordered?).to eq(false)
     end
 
-    it "should be ordered if board is not open to anyone" do
+    it "should be ordered if continuity is not open to anyone" do
       board = create(:board, authors_locked: true)
       expect(board.ordered?).to eq(true)
       board.update!(authors_locked: false)
       expect(board.ordered?).to eq(false)
     end
 
-    it "should be ordered if board has sections" do
+    it "should be ordered if continuity has sections" do
       board = create(:board)
       create(:board_section, board: board)
       expect(board.ordered?).to eq(true)

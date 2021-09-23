@@ -20,7 +20,7 @@ RSpec.describe PostsController, 'GET hidden' do
     expect(assigns(:hidden_posts)).to be_empty
   end
 
-  it "succeeds with board hidden" do
+  it "succeeds with continuity hidden" do
     user = create(:user)
     board = create(:board)
     board.ignore(user)

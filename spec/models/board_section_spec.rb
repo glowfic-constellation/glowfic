@@ -32,7 +32,7 @@ RSpec.describe BoardSection do
     expect(post2.section_order).to eq(2)
   end
 
-  it "should autofill board section order when not specified" do
+  it "should autofill continuity section order when not specified" do
     board = create(:board)
     section0 = BoardSection.create!(board_id: board.id, name: 'Test')
     section1 = BoardSection.create!(board_id: board.id, name: 'Test')
@@ -58,7 +58,7 @@ RSpec.describe BoardSection do
     expect(section3.reload.section_order).to eq(2)
   end
 
-  it "should reorder upon board change" do
+  it "should reorder upon continuity change" do
     board = create(:board)
     section0 = create(:board_section, board_id: board.id)
     expect(section0.section_order).to eq(0)

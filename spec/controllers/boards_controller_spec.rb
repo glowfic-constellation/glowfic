@@ -90,7 +90,7 @@ RSpec.describe BoardsController do
         expect(assigns(:cameo_boards)).to match_array([owned_board3])
       end
 
-      it "orders boards correctly" do
+      it "orders continuities correctly" do
         user = create(:user)
         owned_board1 = create(:board, creator_id: user.id, name: 'da')
         owned_board2 = create(:board, creator_id: user.id, name: 'ba')
@@ -197,7 +197,7 @@ RSpec.describe BoardsController do
       expect(assigns(:cameos).sort_by(&:username)).to eq(assigns(:cameos))
     end
 
-    it "successfully makes a board" do
+    it "successfully makes a continuity" do
       expect(Board.count).to eq(0)
       creator = create(:user)
       login_as(creator)
@@ -230,18 +230,18 @@ RSpec.describe BoardsController do
   describe "GET show" do
     let(:board) { create(:board) }
 
-    it "requires valid board" do
+    it "requires valid continuity" do
       get :show, params: { id: -1 }
       expect(response).to redirect_to(continuities_url)
       expect(flash[:error]).to eq("Continuity could not be found.")
     end
 
-    it "succeeds with valid board" do
+    it "succeeds with valid continuity" do
       get :show, params: { id: board.id }
       expect(response.status).to eq(200)
     end
 
-    it "succeeds for logged in users with valid board" do
+    it "succeeds for logged in users with valid continuity" do
       login
       get :show, params: { id: board.id }
       expect(response.status).to eq(200)
@@ -253,19 +253,19 @@ RSpec.describe BoardsController do
       expect(response).to have_http_status(200)
     end
 
-    it "only fetches the board's first 25 posts" do
+    it "only fetches the continuity's first 25 posts" do
       create_list(:post, 26, board: board)
       get :show, params: { id: board.id }
       expect(assigns(:posts).size).to eq(25)
     end
 
-    it "orders the posts by tagged_at in unordered boards" do
+    it "orders the posts by tagged_at in unordered continuities" do
       Array.new(3) { create(:post, board: board, tagged_at: Time.zone.now + rand(5..30).hours) }
       get :show, params: { id: board.id }
       expect(assigns(:posts)).to eq(assigns(:posts).sort_by(&:tagged_at).reverse)
     end
 
-    it "orders the posts correctly in ordered boards" do
+    it "orders the posts correctly in ordered continuities" do
       section2 = create(:board_section, board: board)
       section1 = create(:board_section, board: board)
       section1.update!(section_order: 0)
@@ -317,14 +317,14 @@ RSpec.describe BoardsController do
       skip "TODO Currently relies on inability to create continuities"
     end
 
-    it "requires valid board" do
+    it "requires valid continuity" do
       login
       get :edit, params: { id: -1 }
       expect(response).to redirect_to(continuities_url)
       expect(flash[:error]).to eq("Continuity could not be found.")
     end
 
-    it "requires board permission" do
+    it "requires continuity permission" do
       user = create(:user)
       login_as(user)
       board = create(:board)
@@ -334,7 +334,7 @@ RSpec.describe BoardsController do
       expect(flash[:error]).to eq("You do not have permission to edit that continuity.")
     end
 
-    it "succeeds with valid board" do
+    it "succeeds with valid continuity" do
       board = create(:board)
       login_as(board.creator)
       get :edit, params: { id: board.id }
@@ -366,14 +366,14 @@ RSpec.describe BoardsController do
       skip "TODO Currently relies on inability to create continuities"
     end
 
-    it "requires valid board" do
+    it "requires valid continuity" do
       login
       put :update, params: { id: -1 }
       expect(response).to redirect_to(continuities_url)
       expect(flash[:error]).to eq("Continuity could not be found.")
     end
 
-    it "requires board permission" do
+    it "requires continuity permission" do
       user = create(:user)
       login_as(user)
       board = create(:board)
@@ -432,14 +432,14 @@ RSpec.describe BoardsController do
       skip "TODO Currently relies on inability to create continuities"
     end
 
-    it "requires valid board" do
+    it "requires valid continuity" do
       login
       delete :destroy, params: { id: -1 }
       expect(response).to redirect_to(continuities_url)
       expect(flash[:error]).to eq("Continuity could not be found.")
     end
 
-    it "requires board permission" do
+    it "requires continuity permission" do
       user = create(:user)
       login_as(user)
       board = create(:board)
@@ -508,14 +508,14 @@ RSpec.describe BoardsController do
       expect(flash[:success]).to eq("#{board.name} marked as read.")
     end
 
-    it "requires board id" do
+    it "requires continuity id" do
       login
       post :mark
       expect(response).to redirect_to(unread_posts_url)
       expect(flash[:error]).to eq("Continuity could not be found.")
     end
 
-    it "requires valid board id" do
+    it "requires valid continuity id" do
       login
       post :mark, params: { board_id: -1 }
       expect(response).to redirect_to(unread_posts_url)
@@ -529,7 +529,7 @@ RSpec.describe BoardsController do
       expect(flash[:error]).to eq("Please choose a valid action.")
     end
 
-    it "successfully marks board read" do
+    it "successfully marks continuity read" do
       user = create(:user)
       login_as(user)
       now = Time.zone.now
@@ -560,7 +560,7 @@ RSpec.describe BoardsController do
       expect(Post.find(unread_post.id).last_read(user)).to be_nil
     end
 
-    it "successfully ignores board" do
+    it "successfully ignores continuity" do
       user = create(:user)
       login_as(user)
       expect(board).not_to be_ignored_by(user)
@@ -643,7 +643,7 @@ RSpec.describe BoardsController do
         expect(assigns(:search_results)).to match_array(boards)
       end
 
-      it "orders boards by name" do
+      it "orders continuities by name" do
         ['baa', 'aab', 'aba'].each { |name| create(:board, name: name) }
         get :search, params: { commit: 'Search', name: 'b' }
         expect(assigns(:search_results).map(&:name)).to eq(['aab', 'aba', 'baa'])
@@ -660,7 +660,7 @@ RSpec.describe BoardsController do
       expect(assigns(:coauthors)).to match_array(users)
     end
 
-    it "gets the correct set of available cowriters on an existing board" do
+    it "gets the correct set of available cowriters on an existing continuity" do
       users = Array.new(3) { create(:user) }
       coauthors = [create(:user)]
       cameos = [create(:user), create(:user)]

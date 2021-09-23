@@ -195,7 +195,7 @@ RSpec.feature "Editing posts", type: :feature do
     end
   end
 
-  scenario "Moderator saves no change to a post in a board they can't write in" do
+  scenario "Moderator saves no change to a post in a continuity they can't write in" do
     user = create(:user)
     other_user = create(:user)
     board = create(:board, creator: user, writers: [other_user], name: 'test board')

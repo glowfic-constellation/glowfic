@@ -285,7 +285,7 @@ RSpec.describe PostsController, 'POST create' do
     expect(post_author.joined_at).to be_the_same_time_as(time)
   end
 
-  it "adds new post authors to board cameo" do
+  it "adds new post authors to continuity cameo" do
     user = create(:user)
     other_user = create(:user)
     third_user = create(:user)
@@ -312,7 +312,7 @@ RSpec.describe PostsController, 'POST create' do
     expect(board.cameos).to match_array([third_user])
   end
 
-  it "does not add to cameos of open boards" do
+  it "does not add to cameos of open continuities" do
     user = create(:user)
     other_user = create(:user)
     board = create(:board)
