@@ -19,9 +19,9 @@ class BoardsController < ApplicationController
         @user.username + "'s Continuities"
       end
 
-      board_ids = BoardAuthor.where(user_id: @user.id, cameo: false).select(:board_id).distinct.pluck(:board_id)
+      board_ids = BoardAuthor.where(user_id: @user.id, cameo: false).select(:continuity_id).distinct.pluck(:continuity_id)
       @boards = boards_from_relation(Board.where(creator_id: @user.id).or(Board.where(id: board_ids)))
-      cameo_ids = BoardAuthor.where(user_id: @user.id, cameo: true).select(:board_id).distinct.pluck(:board_id)
+      cameo_ids = BoardAuthor.where(user_id: @user.id, cameo: true).select(:continuity_id).distinct.pluck(:continuity_id)
       @cameo_boards = boards_from_relation(Board.where(id: cameo_ids))
     else
       @page_title = 'Continuities'
@@ -120,7 +120,7 @@ class BoardsController < ApplicationController
       Board.transaction do
         board.mark_read(current_user)
         read_time = board.last_read(current_user)
-        post_views = Post::View.joins(post: :board).where(user: current_user, boards: { id: board.id })
+        post_views = Post::View.joins(post: :board).where(user: current_user, continuities: { id: board.id })
         post_views.update_all(read_at: read_time, updated_at: read_time) # rubocop:disable Rails/SkipsModelValidations
       end
       flash[:success] = "#{board.name} marked as read."
@@ -182,8 +182,8 @@ class BoardsController < ApplicationController
 
   def boards_from_relation(relation)
     sql = <<~SQL.squish
-      boards.*,
-      (SELECT MAX(tagged_at) FROM posts WHERE posts.board_id = boards.id) AS tagged_at
+      continuities.*,
+      (SELECT MAX(tagged_at) FROM posts WHERE posts.continuity_id = continuities.id) AS tagged_at
     SQL
     relation
       .ordered

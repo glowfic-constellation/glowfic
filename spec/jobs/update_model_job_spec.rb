@@ -9,14 +9,14 @@ RSpec.describe UpdateModelJob do
 
   it "crashes on invalid wheres" do
     expect {
-      UpdateModelJob.perform_now('Reply', { board_id: 2 }, {}, nil)
+      UpdateModelJob.perform_now('Reply', { continuity_id: 2 }, {}, nil)
     }.to raise_error(ActiveRecord::StatementInvalid)
   end
 
   it "crashes on invalid attrs" do
     reply = create(:reply)
     expect {
-      UpdateModelJob.perform_now('Reply', { id: reply.id }, { board_id: 2 }, nil)
+      UpdateModelJob.perform_now('Reply', { id: reply.id }, { continuity_id: 2 }, nil)
     }.to raise_error(ActiveModel::UnknownAttributeError)
   end
 

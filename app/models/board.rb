@@ -5,17 +5,19 @@ class Board < ApplicationRecord
   ID_SANDBOX = 3
   ID_SITETESTING = 4
 
-  has_many :posts, dependent: false # This is handled in callbacks
-  has_many :board_sections, dependent: :destroy
+  self.table_name = 'continuities'
+
+  has_many :posts, inverse_of: :board, foreign_key: :continuity_id, dependent: false # This is handled in callbacks
+  has_many :board_sections, inverse_of: :board, foreign_key: :continuity_id, dependent: :destroy
   has_many :favorites, as: :favorite, inverse_of: :favorite, dependent: :destroy
-  has_many :views, class_name: 'BoardView', dependent: :destroy
+  has_many :views, inverse_of: :board, foreign_key: :continuity_id, class_name: 'BoardView', dependent: :destroy
   belongs_to :creator, class_name: 'User', inverse_of: false, optional: false
 
-  has_many :board_authors, inverse_of: :board, dependent: :destroy
+  has_many :board_authors, inverse_of: :board, foreign_key: :continuity_id, dependent: :destroy
   has_many :authors, class_name: 'User', through: :board_authors, source: :user, dependent: :destroy
-  has_many :board_writers, -> { where(cameo: false) }, class_name: 'BoardAuthor', inverse_of: :board, dependent: :destroy
+  has_many :board_writers, -> { where(cameo: false) }, class_name: 'BoardAuthor', foreign_key: :continuity_id, inverse_of: :board, dependent: :destroy
   has_many :writers, class_name: 'User', through: :board_writers, source: :user, dependent: :destroy
-  has_many :board_cameos, -> { where(cameo: true) }, class_name: 'BoardAuthor', inverse_of: :board, dependent: :destroy
+  has_many :board_cameos, -> { where(cameo: true) }, class_name: 'BoardAuthor', foreign_key: :continuity_id, inverse_of: :board, dependent: :destroy
   has_many :cameos, class_name: 'User', through: :board_cameos, source: :user, dependent: :destroy
   has_many :coauthors, ->(board) { where.not(id: board.creator_id) }, class_name: 'User', through: :board_writers, source: :user, dependent: :destroy
 
@@ -49,7 +51,7 @@ class Board < ApplicationRecord
   private
 
   def move_posts_to_sandbox
-    UpdateModelJob.perform_later(Post.to_s, { board_id: id }, { board_id: ID_SANDBOX, section_id: nil }, audited_user_id)
+    UpdateModelJob.perform_later(Post.to_s, { continuity_id: id }, { continuity_id: ID_SANDBOX, section_id: nil }, audited_user_id)
   end
 
   def add_creator_to_authors

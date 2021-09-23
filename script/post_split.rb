@@ -1,5 +1,5 @@
 REPLY_ATTRS = [:character_id, :icon_id, :character_alias_id, :user_id, :content, :created_at, :updated_at].map(&:to_s)
-POST_ATTRS = [:board_id, :section_id, :privacy, :status, :authors_locked].map(&:to_s)
+POST_ATTRS = [:continuity_id, :section_id, :privacy, :status, :authors_locked].map(&:to_s)
 
 def split_post
   print('Subject for new post? ')

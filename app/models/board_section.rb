@@ -2,8 +2,10 @@ class BoardSection < ApplicationRecord
   include Orderable
   include Presentable
 
-  belongs_to :board, inverse_of: :board_sections, optional: false
+  belongs_to :board, foreign_key: :continuity_id, inverse_of: :board_sections, optional: false
   has_many :posts, inverse_of: :section, foreign_key: :section_id, dependent: false # This is handled in callbacks
+
+  alias_attribute :board_id, :continuity_id
 
   validates :name, presence: true
 
@@ -18,6 +20,6 @@ class BoardSection < ApplicationRecord
   end
 
   def ordered_attributes
-    [:board_id]
+    [:continuity_id]
   end
 end

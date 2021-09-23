@@ -8,7 +8,7 @@ class Post < ApplicationRecord
   include Viewable
   include Writable
 
-  belongs_to :board, inverse_of: :posts, optional: false
+  belongs_to :board, foreign_key: :continuity_id, inverse_of: :posts, optional: false
   belongs_to :section, class_name: 'BoardSection', inverse_of: :posts, optional: true
   belongs_to :last_user, class_name: 'User', inverse_of: false, optional: false
   belongs_to :last_reply, class_name: 'Reply', inverse_of: false, optional: true
@@ -30,6 +30,8 @@ class Post < ApplicationRecord
   has_many :index_posts, inverse_of: :post, dependent: :destroy
   has_many :indexes, inverse_of: :posts, through: :index_posts, dependent: :destroy
   has_many :index_sections, inverse_of: :posts, through: :index_posts, dependent: :destroy
+
+  alias_attribute :board_id, :continuity_id
 
   attr_accessor :is_import
   attr_writer :skip_edited
@@ -66,7 +68,7 @@ class Post < ApplicationRecord
 
   scope :ordered_by_index, -> { order('index_posts.section_order asc') }
 
-  scope :no_tests, -> { where.not(board_id: Board::ID_SITETESTING) }
+  scope :no_tests, -> { where.not(continuity_id: Board::ID_SITETESTING) }
 
   # rubocop:disable Style/TrailingCommaInArguments
   scope :with_has_content_warnings, -> {
@@ -282,12 +284,12 @@ class Post < ApplicationRecord
   def adjacent_posts_for(user)
     return unless board.ordered?
     return unless section || board.board_sections.empty?
-    yield Post.where(board_id: self.board_id, section_id: self.section_id).visible_to(user).ordered_in_section
+    yield Post.where(continuity_id: self.continuity_id, section_id: self.section_id).visible_to(user).ordered_in_section
   end
 
   def valid_board
-    return unless board_id.present?
-    return unless new_record? || board_id_changed?
+    return unless continuity_id.present?
+    return unless new_record? || continuity_id_changed?
     return if board.open_to?(user)
     errors.add(:board, "is invalid – you must be able to write in it")
   end
@@ -320,7 +322,7 @@ class Post < ApplicationRecord
   end
 
   def ordered_attributes
-    [:section_id, :board_id]
+    [:section_id, :continuity_id]
   end
 
   def build_initial_flat_post

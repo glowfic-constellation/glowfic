@@ -20,7 +20,7 @@ class ReportsController < ApplicationController
 
     if logged_in?
       @opened_posts = Post::View.where(user_id: current_user.id).select([:post_id, :read_at, :ignored])
-      @board_views = BoardView.where(user_id: current_user.id).select([:board_id, :ignored])
+      @board_views = BoardView.where(user_id: current_user.id).select([:continuity_id, :ignored])
       @opened_ids = @opened_posts.map(&:post_id)
 
       DailyReport.mark_read(current_user, at_time: @day) if !current_user.ignore_unread_daily_report? && @day.to_date < Time.zone.now.to_date
@@ -83,7 +83,7 @@ class ReportsController < ApplicationController
       when 'subject'
         Arel.sql('LOWER(subject)')
       when 'continuity'
-        Arel.sql('LOWER(max(boards.name)), tagged_at desc')
+        Arel.sql('LOWER(max(continuities.name)), tagged_at desc')
       else
         { first_updated_at: :desc }
     end
