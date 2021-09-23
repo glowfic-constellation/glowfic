@@ -12,10 +12,12 @@ Rails.application.routes.draw do
   delete '/logout' => 'sessions#destroy', as: :logout
   patch '/confirm_tos' => 'sessions#confirm_tos', as: :confirm_tos
   get '/users/:id/templates' => redirect('/users/%{id}/characters')
+  get '/users/:id/boards' => redirect('/users/%{id}/continuities')
+
   resources :users, except: :destroy do
     resources :characters, only: :index
     resources :galleries, only: [:index, :show]
-    resources :boards, only: :index
+    resources :continuities, controller: :boards, only: :index
     collection do
       get :search
     end
@@ -67,8 +69,11 @@ Rails.application.routes.draw do
     collection { get :search }
   end
 
-  # Forums
-  resources :boards, as: :continuities do
+  # Writing
+  get '/boards', to: redirect(path: '/continuities')
+  get '/boards/:id', to: redirect(path: '/continuities/%{id}')
+  get '/boards/:id/:action', to: redirect(path: '/continuities/%{id}/%{action}')
+  resources :continuities, controller: :boards do
     collection do
       post :mark
       get :search
