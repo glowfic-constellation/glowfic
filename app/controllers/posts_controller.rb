@@ -49,14 +49,14 @@ class PostsController < WritableController
     @posts = @posts.joins("LEFT JOIN board_views on board_views.board_id = posts.board_id AND board_views.user_id = #{current_user.id}")
     @posts = @posts.where.not(post_views: { read_at: nil }) if @started
 
-    # post view does not exist and (board view does not exist or post has updated since non-ignored board view read_at)
+    # post view does not exist and (continuity view does not exist or post has updated since non-ignored continuity view read_at)
     no_post_view = @posts.where(post_views: { user_id: nil })
     updated_since_board_read = no_post_view.where(board_views: { read_at: nil })
       .or(no_post_view.where("date_trunc('second', board_views.read_at) < date_trunc('second', posts.tagged_at)"))
       .where(board_views: { ignored: false })
     no_post_view = no_post_view.where(board_views: { user_id: nil }).or(updated_since_board_read)
 
-    # post view exists and post has updated since non-ignored post view read_at and (board view does not exist or is not ignored)
+    # post view exists and post has updated since non-ignored post view read_at and (continuity view does not exist or is not ignored)
     with_post_view = @posts.where(post_views: { ignored: false }) # non-existant post-views will return nil here
     with_post_view = with_post_view.where(board_views: { user_id: nil }).or(with_post_view.where(board_views: { ignored: false }))
     with_post_view = with_post_view.where(post_views: { read_at: nil })
