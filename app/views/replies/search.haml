@@ -21,7 +21,7 @@
                 - if @post
                   %b= @post.board.name
                 - else
-                  = select_tag :board_id, options_from_collection_for_select(@boards || [], :id, :name, params[:board_id]),
+                  = select_tag :board_id, options_from_collection_for_select(@continuities || [], :id, :name, params[:board_id]),
                     { class: 'chosen-select', prompt: '— Choose Continuity —' }
             %tr
               %td= label_tag :author_id, 'Author'
