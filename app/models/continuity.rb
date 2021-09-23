@@ -10,7 +10,7 @@ class Continuity < ApplicationRecord
   has_many :posts, foreign_key: :board_id, inverse_of: :board, dependent: false # This is handled in callbacks
   has_many :board_sections, foreign_key: :board_id, inverse_of: :board, dependent: :destroy
   has_many :favorites, as: :favorite, inverse_of: :favorite, dependent: :destroy
-  has_many :views, class_name: 'BoardView', foreign_key: :board_id, inverse_of: :board, dependent: :destroy
+  has_many :views, class_name: 'Continuity::View', foreign_key: :board_id, inverse_of: :continuity, dependent: :destroy
   belongs_to :creator, class_name: 'User', inverse_of: false, optional: false
 
   has_many :continuity_authors, class_name: 'Continuity::Author', foreign_key: :board_id, inverse_of: :continuity, dependent: :destroy

@@ -95,7 +95,7 @@ class PostsController < WritableController
   end
 
   def hidden
-    @hidden_boardviews = BoardView.where(user_id: current_user.id).where(ignored: true).includes(:board)
+    @hidden_boardviews = Continuity::View.where(user_id: current_user.id).where(ignored: true).includes(:board)
     hidden_post_ids = Post::View.where(user_id: current_user.id).where(ignored: true).select(:post_id).distinct.pluck(:post_id)
     @hidden_posts = posts_from_relation(Post.where(id: hidden_post_ids).ordered)
     @page_title = 'Hidden Posts & Continuities'
@@ -104,7 +104,7 @@ class PostsController < WritableController
   def unhide
     if params[:unhide_boards].present?
       board_ids = params[:unhide_boards].filter_map(&:to_i).uniq
-      views_to_update = BoardView.where(user_id: current_user.id).where(board_id: board_ids)
+      views_to_update = Continuity::View.where(user_id: current_user.id).where(board_id: board_ids)
       views_to_update.each { |view| view.update(ignored: false) }
     end
 

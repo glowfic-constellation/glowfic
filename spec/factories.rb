@@ -208,9 +208,9 @@ FactoryBot.define do
     user
   end
 
-  factory :board_view do
+  factory :continuity_view, class: 'Continuity::View' do
     user
-    board
+    continuity
   end
 
   factory :post_author, class: 'Post::Author' do
