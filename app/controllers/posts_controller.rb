@@ -277,7 +277,7 @@ class PostsController < WritableController
     @setting = Setting.where(id: params[:setting_id]) if params[:setting_id].present?
     @character = Character.where(id: params[:character_id]) if params[:character_id].present?
     @user = User.active.where(id: params[:author_id]).ordered if params[:author_id].present?
-    @board = Board.where(id: params[:board_id]) if params[:board_id].present?
+    @continuity = Board.where(id: params[:board_id]) if params[:board_id].present?
 
     return unless params[:commit].present?
 

@@ -22,14 +22,14 @@ class Api::V1::BoardSectionsController < Api::ApiController
       render json: { errors: [error] }, status: :not_found and return
     end
 
-    boards = Board.where(id: sections.select(:board_id).distinct.pluck(:board_id))
-    unless boards.count == 1
+    continuities = Board.where(id: sections.select(:board_id).distinct.pluck(:board_id))
+    unless continuities.count == 1
       error = { message: 'Sections must be from one continuity' }
       render json: { errors: [error] }, status: :unprocessable_entity and return
     end
 
-    board = boards.first
-    access_denied and return unless board.editable_by?(current_user)
+    continuity = continuities.first
+    access_denied and return unless continuity.editable_by?(current_user)
 
     BoardSection.transaction do
       sections = sections.sort_by { |section| section_ids.index(section.id) }
@@ -38,7 +38,7 @@ class Api::V1::BoardSectionsController < Api::ApiController
         section.update(section_order: index)
       end
 
-      other_sections = BoardSection.where(board_id: board.id).where.not(id: section_ids).ordered
+      other_sections = continuity.board_sections.where.not(id: section_ids).ordered
       other_sections.each_with_index do |section, i|
         index = i + sections_count
         next if section.section_order == index
@@ -46,6 +46,6 @@ class Api::V1::BoardSectionsController < Api::ApiController
       end
     end
 
-    render json: { section_ids: BoardSection.where(board_id: board.id).ordered.pluck(:id) }
+    render json: { section_ids: continuity.board_sections.ordered.pluck(:id) }
   end
 end

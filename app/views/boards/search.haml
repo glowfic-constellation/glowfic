@@ -38,7 +38,7 @@
                 %th.sub Authors
                 %th.sub Last Updated
             %tbody
-              = render partial: 'list_item', collection: @search_results, as: :board
+              = render partial: 'list_item', collection: @search_results, as: :continuity
 
   - if @search_results && @search_results.total_pages > 1
     %tfoot

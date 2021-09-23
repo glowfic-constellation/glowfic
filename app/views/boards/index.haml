@@ -25,18 +25,18 @@
       %th.sub Authors
       %th.sub Last Updated
   %tbody
-    = render partial: 'list_item', collection: @boards, as: :board
-    - if @boards.empty?
+    = render partial: 'list_item', collection: @continuities, as: :continuity
+    - if @continuities.empty?
       %tr
         %td.centered.padding-10.no-posts{ class: cycle('even', 'odd'), colspan: 3 } — No continuities yet —
-  - if @boards.methods.include?(:total_pages) && @boards.total_pages > 1
+  - if @continuities.methods.include?(:total_pages) && @continuities.total_pages > 1
     %tfoot
       %tr
-        %td{colspan: 3}= render 'posts/paginator', paginated: @boards
+        %td{colspan: 3}= render 'posts/paginator', paginated: @continuities
 
-  - if @cameo_boards.present?
+  - if @cameo_continuities.present?
     %tr
       %td.continuity-spacer
     %tr
       %th.sub{colspan: 3} Cameo Continuities
-    = render partial: 'list_item', collection: @cameo_boards, as: :board
+    = render partial: 'list_item', collection: @cameo_continuities, as: :continuity

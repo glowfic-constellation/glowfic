@@ -1,16 +1,16 @@
 class BoardPresenter
-  attr_reader :board
+  attr_reader :continuity
 
-  def initialize(board)
-    @board = board
+  def initialize(continuity)
+    @continuity = continuity
   end
 
   def as_json(options={})
-    return {} unless board
-    board_json = board.as_json_without_presenter(only: [:id, :name])
-    return board_json unless options[:include].present?
-    return board_json unless options[:include].include?(:board_sections)
+    return {} unless continuity
+    json = continuity.as_json_without_presenter(only: [:id, :name])
+    return json unless options[:include].present?
+    return json unless options[:include].include?(:board_sections)
     # TODO what if lots of sections?
-    board_json.merge(board_sections: board.board_sections.ordered)
+    json.merge(board_sections: continuity.board_sections.ordered)
   end
 end
