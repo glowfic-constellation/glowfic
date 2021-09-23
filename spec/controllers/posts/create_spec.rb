@@ -157,7 +157,7 @@ RSpec.describe PostsController, 'POST create' do
             content: 'test content',
           },
         }
-      }.not_to change { [Post::Author.count, PostViewer.count, BoardAuthor.count] }
+      }.not_to change { [Post::Author.count, PostViewer.count, Continuity::Author.count] }
 
       expect(flash[:error]).to be_nil
       expect(assigns(:page_title)).to eq('Previewing: ' + assigns(:post).subject.to_s)
@@ -302,7 +302,7 @@ RSpec.describe PostsController, 'POST create' do
           unjoined_author_ids: [user.id, other_user.id, third_user.id],
         },
       }
-    }.to change { BoardAuthor.count }.by(1)
+    }.to change { Continuity::Author.count }.by(1)
 
     post = assigns(:post).reload
     expect(post.tagging_authors).to match_array([user, other_user, third_user])
@@ -328,7 +328,7 @@ RSpec.describe PostsController, 'POST create' do
           unjoined_author_ids: [user.id, other_user.id],
         },
       }
-    }.not_to change { BoardAuthor.count }
+    }.not_to change { Continuity::Author.count }
 
     post = assigns(:post).reload
     expect(post.tagging_authors).to match_array([user, other_user])

@@ -19,9 +19,9 @@ class BoardsController < ApplicationController
         @user.username + "'s Continuities"
       end
 
-      board_ids = BoardAuthor.where(user_id: @user.id, cameo: false).select(:board_id).distinct.pluck(:board_id)
+      board_ids = Continuity::Author.where(user_id: @user.id, cameo: false).select(:board_id).distinct.pluck(:board_id)
       @boards = boards_from_relation(Continuity.where(creator_id: @user.id).or(Continuity.where(id: board_ids)))
-      cameo_ids = BoardAuthor.where(user_id: @user.id, cameo: true).select(:board_id).distinct.pluck(:board_id)
+      cameo_ids = Continuity::Author.where(user_id: @user.id, cameo: true).select(:board_id).distinct.pluck(:board_id)
       @cameo_boards = boards_from_relation(Continuity.where(id: cameo_ids))
     else
       @page_title = 'Continuities'

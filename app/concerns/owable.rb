@@ -18,7 +18,7 @@ module Owable
     has_many :unjoined_authors, class_name: 'User', through: :unjoined_post_authors, source: :user, dependent: :destroy
 
     after_create :add_creator_to_authors
-    after_save :update_board_cameos
+    after_save :update_continuity_cameos
 
     attr_accessor :private_note
 
@@ -48,15 +48,15 @@ module Owable
       end
     end
 
-    def update_board_cameos
+    def update_continuity_cameos
       return unless board.authors_locked?
 
       # adjust for the fact that the associations are managed separately
       all_authors = authors + unjoined_authors + joined_authors + tagging_authors
       # check board authors rather than authors to avoid issues with weird association caching
-      new_cameos = all_authors.uniq.map(&:id) - board.board_authors.map(&:user_id)
+      new_cameos = all_authors.uniq.map(&:id) - board.continuity_authors.map(&:user_id)
       return if new_cameos.empty?
-      new_cameos.each { |author| board.board_authors.create!(user_id: author, cameo: true) }
+      new_cameos.each { |author| board.continuity_authors.create!(user_id: author, cameo: true) }
     end
   end
 end

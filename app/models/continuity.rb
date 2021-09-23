@@ -13,13 +13,16 @@ class Continuity < ApplicationRecord
   has_many :views, class_name: 'BoardView', foreign_key: :board_id, inverse_of: :board, dependent: :destroy
   belongs_to :creator, class_name: 'User', inverse_of: false, optional: false
 
-  has_many :board_authors, foreign_key: :board_id, inverse_of: :board, dependent: :destroy
-  has_many :authors, class_name: 'User', through: :board_authors, source: :user, dependent: :destroy
-  has_many :board_writers, -> { where(cameo: false) }, class_name: 'BoardAuthor', foreign_key: :board_id, inverse_of: :board, dependent: :destroy
-  has_many :writers, class_name: 'User', through: :board_writers, source: :user, dependent: :destroy
-  has_many :board_cameos, -> { where(cameo: true) }, class_name: 'BoardAuthor', foreign_key: :board_id, inverse_of: :board, dependent: :destroy
-  has_many :cameos, class_name: 'User', through: :board_cameos, source: :user, dependent: :destroy
-  has_many :coauthors, ->(board) { where.not(id: board.creator_id) }, class_name: 'User', through: :board_writers, source: :user, dependent: :destroy
+  has_many :continuity_authors, class_name: 'Continuity::Author', foreign_key: :board_id, inverse_of: :continuity, dependent: :destroy
+  has_many :authors, class_name: 'User', through: :continuity_authors, source: :user, dependent: :destroy
+  has_many :continuity_writers, -> { where(cameo: false) }, class_name: 'Continuity::Author', foreign_key: :board_id, inverse_of: :continuity,
+    dependent: :destroy
+  has_many :writers, class_name: 'User', through: :continuity_writers, source: :user, dependent: :destroy
+  has_many :continuity_cameos, -> { where(cameo: true) }, class_name: 'Continuity::Author', foreign_key: :board_id, inverse_of: :continuity,
+    dependent: :destroy
+  has_many :cameos, class_name: 'User', through: :continuity_cameos, source: :user, dependent: :destroy
+  has_many :coauthors, ->(board) { where.not(id: board.creator_id) }, class_name: 'User', through: :continuity_writers, source: :user,
+    dependent: :destroy
 
   validates :name, presence: true, uniqueness: true
 
@@ -33,7 +36,7 @@ class Continuity < ApplicationRecord
     return false if user.read_only?
     return true unless self.authors_locked?
     return true if creator_id == user.id
-    board_authors.where(user_id: user.id).exists?
+    continuity_authors.where(user_id: user.id).exists?
   end
 
   def editable_by?(user)
@@ -41,7 +44,7 @@ class Continuity < ApplicationRecord
     return true if creator_id == user.id
     return true if user.has_permission?(:edit_continuities)
     return false if creator.deleted?
-    board_writers.where(user_id: user.id).exists?
+    continuity_writers.where(user_id: user.id).exists?
   end
 
   def ordered?
@@ -55,7 +58,7 @@ class Continuity < ApplicationRecord
   end
 
   def add_creator_to_authors
-    board_authors.create!(user: creator)
+    continuity_authors.create!(user: creator)
   end
 
   def fix_ordering

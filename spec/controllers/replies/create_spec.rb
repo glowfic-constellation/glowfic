@@ -88,7 +88,7 @@ RSpec.describe RepliesController, 'POST create' do
             post_id: reply_post.id,
           },
         }
-      }.not_to change { [Post::Author.count, BoardAuthor.count] }
+      }.not_to change { [Post::Author.count, Continuity::Author.count] }
 
       expect(flash[:success]).to be_present
     end
