@@ -36,7 +36,7 @@ class Post < ApplicationRecord
 
   validates :subject, presence: true
   validates :description, length: { maximum: 255 }
-  validate :valid_board, :valid_board_section
+  validate :valid_continuity, :valid_board_section
 
   before_validation :set_last_user, on: :create
   before_create :build_initial_flat_post, :set_timestamps
@@ -285,7 +285,7 @@ class Post < ApplicationRecord
     yield Post.where(board_id: self.board_id, section_id: self.section_id).visible_to(user).ordered_in_section
   end
 
-  def valid_board
+  def valid_continuity
     return unless board_id.present?
     return unless new_record? || board_id_changed?
     return if board.open_to?(user)

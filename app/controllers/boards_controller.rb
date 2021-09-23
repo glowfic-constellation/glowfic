@@ -20,12 +20,12 @@ class BoardsController < ApplicationController
       end
 
       board_ids = BoardAuthor.where(user_id: @user.id, cameo: false).select(:board_id).distinct.pluck(:board_id)
-      @boards = boards_from_relation(Board.where(creator_id: @user.id).or(Board.where(id: board_ids)))
+      @boards = continuities_from_relation(Board.where(creator_id: @user.id).or(Board.where(id: board_ids)))
       cameo_ids = BoardAuthor.where(user_id: @user.id, cameo: true).select(:board_id).distinct.pluck(:board_id)
-      @cameo_boards = boards_from_relation(Board.where(id: cameo_ids))
+      @cameo_boards = continuities_from_relation(Board.where(id: cameo_ids))
     else
       @page_title = 'Continuities'
-      @boards = boards_from_relation(Board.all).paginate(page: page)
+      @boards = continuities_from_relation(Board.all).paginate(page: page)
     end
   end
 
@@ -141,7 +141,7 @@ class BoardsController < ApplicationController
 
     searcher = Board::Searcher.new
     @search_results = searcher.search(params)
-    @search_results = boards_from_relation(@search_results).paginate(page: page)
+    @search_results = continuities_from_relation(@search_results).paginate(page: page)
   end
 
   private
@@ -178,7 +178,7 @@ class BoardsController < ApplicationController
     redirect_to continuity_path(@board)
   end
 
-  def boards_from_relation(relation)
+  def continuities_from_relation(relation)
     sql = <<~SQL.squish
       boards.*,
       (SELECT MAX(tagged_at) FROM posts WHERE posts.board_id = boards.id) AS tagged_at

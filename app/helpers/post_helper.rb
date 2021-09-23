@@ -22,7 +22,7 @@ module PostHelper
     safe_join([first_link, others], ' and ')
   end
 
-  def allowed_boards(obj, user)
+  def allowed_continuities(obj, user)
     authored_ids = BoardAuthor.where(user: user).select(:board_id)
     Board.where(id: obj.board_id).or(Board.where(authors_locked: false)).or(Board.where(id: authored_ids)).ordered
   end

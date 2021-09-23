@@ -124,33 +124,33 @@ RSpec.describe PostHelper do
     end
   end
 
-  describe "#allowed_boards" do
+  describe "#allowed_continuities" do
     it "includes open-to-everyone boards" do
       board = create(:board)
       user = create(:user)
       post = build(:post)
-      expect(helper.allowed_boards(post, user)).to eq([board])
+      expect(helper.allowed_continuities(post, user)).to eq([board])
     end
 
     it "includes locked boards with user in" do
       user = create(:user)
       board = create(:board, authors_locked: true, authors: [user])
       post = build(:post)
-      expect(helper.allowed_boards(post, user)).to eq([board])
+      expect(helper.allowed_continuities(post, user)).to eq([board])
     end
 
     it "hides boards that user can't write in" do
       create(:board, authors_locked: true)
       user = create(:user)
       post = build(:post)
-      expect(helper.allowed_boards(post, user)).to eq([])
+      expect(helper.allowed_continuities(post, user)).to eq([])
     end
 
     it "shows the post's board even if the user can't write in it" do
       board = create(:board, authors_locked: true)
       user = create(:user)
       post = build(:post, board: board)
-      expect(helper.allowed_boards(post, user)).to eq([board])
+      expect(helper.allowed_continuities(post, user)).to eq([board])
     end
 
     it "orders boards" do
@@ -159,7 +159,7 @@ RSpec.describe PostHelper do
       board_c = create(:board, name: "C")
       user = create(:user)
       post = build(:post)
-      expect(helper.allowed_boards(post, user)).to eq([board_b_pinned, board_a, board_c])
+      expect(helper.allowed_continuities(post, user)).to eq([board_b_pinned, board_a, board_c])
     end
   end
 

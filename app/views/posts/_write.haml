@@ -34,7 +34,7 @@
   .subber Metadata
   .even
     = f.label :board_id, 'Continuity:'
-    = f.select :board_id, options_from_collection_for_select(allowed_boards(post, current_user), :id, :name, post.board_id)
+    = f.select :board_id, options_from_collection_for_select(allowed_continuities(post, current_user), :id, :name, post.board_id)
     %br
     #section{class: ('hidden' unless post.board&.board_sections&.exists?)}
       = f.label :section_id, 'Continuity section:'

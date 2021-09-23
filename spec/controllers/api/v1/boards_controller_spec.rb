@@ -1,6 +1,6 @@
 RSpec.describe Api::V1::BoardsController do
   describe "GET index" do
-    def create_search_boards
+    def create_search_continuities
       create(:board, name: 'baa') # firstuser
       create(:board, name: 'aba') # miduser
       create(:board, name: 'aab') # enduser
@@ -11,7 +11,7 @@ RSpec.describe Api::V1::BoardsController do
     end
 
     it "works logged in" do
-      create_search_boards
+      create_search_continuities
       api_login
       get :index
       expect(response).to have_http_status(200)
@@ -19,7 +19,7 @@ RSpec.describe Api::V1::BoardsController do
     end
 
     it "works logged out", show_in_doc: true do
-      create_search_boards
+      create_search_continuities
       get :index, params: { q: 'b' }
       expect(response).to have_http_status(200)
       expect(response.json['results'].count).to eq(2)
