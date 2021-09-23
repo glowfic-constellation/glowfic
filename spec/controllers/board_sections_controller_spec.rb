@@ -1,5 +1,7 @@
 RSpec.describe BoardSectionsController do
   describe "GET new" do
+    let(:continuity) { create(:continuity) }
+
     it "requires login" do
       get :new
       expect(response).to redirect_to(root_url)
@@ -14,20 +16,15 @@ RSpec.describe BoardSectionsController do
     end
 
     it "requires permission" do
-      user = create(:user)
-      board = create(:board)
-      expect(board.editable_by?(user)).to eq(false)
-      login_as(user)
-
-      get :new, params: { board_id: board.id }
+      login
+      get :new, params: { board_id: continuity.id }
       expect(response).to redirect_to(continuities_url)
       expect(flash[:error]).to eq("You do not have permission to edit this continuity.")
     end
 
     it "works with continuity_id" do
-      board = create(:board)
-      login_as(board.creator)
-      get :new, params: { board_id: board.id }
+      login_as(continuity.creator)
+      get :new, params: { board_id: continuity.id }
       expect(response.status).to eq(200)
       expect(assigns(:page_title)).to eq("New Section")
     end
@@ -41,6 +38,8 @@ RSpec.describe BoardSectionsController do
   end
 
   describe "POST create" do
+    let(:continuity) { create(:continuity) }
+
     it "requires login" do
       post :create
       expect(response).to redirect_to(root_url)
@@ -55,28 +54,22 @@ RSpec.describe BoardSectionsController do
     end
 
     it "requires permission" do
-      user = create(:user)
-      board = create(:board)
-      expect(board.editable_by?(user)).to eq(false)
-      login_as(user)
-
-      post :create, params: { board_section: { board_id: board.id } }
+      login
+      post :create, params: { board_section: { board_id: continuity.id } }
       expect(response).to redirect_to(continuities_url)
       expect(flash[:error]).to eq("You do not have permission to edit this continuity.")
     end
 
     it "requires valid section" do
-      board = create(:board)
-      login_as(board.creator)
-      post :create, params: { board_section: { board_id: board.id } }
+      login_as(continuity.creator)
+      post :create, params: { board_section: { board_id: continuity.id } }
       expect(response).to have_http_status(200)
       expect(response).to render_template(:new)
       expect(flash[:error][:message]).to eq("Section could not be created.")
     end
 
     it "requires valid continuity for section" do
-      board = create(:board)
-      login_as(board.creator)
+      login_as(continuity.creator)
       post :create, params: { board_section: { name: 'fake' } }
       expect(response).to have_http_status(200)
       expect(response).to render_template(:new)
@@ -84,19 +77,19 @@ RSpec.describe BoardSectionsController do
     end
 
     it "succeeds" do
-      board = create(:board)
-      login_as(board.creator)
+      login_as(continuity.creator)
       section_name = 'ValidSection'
-      post :create, params: { board_section: { board_id: board.id, name: section_name } }
-      expect(response).to redirect_to(edit_continuity_url(board))
-      expect(flash[:success]).to eq("New section, #{section_name}, has successfully been created for #{board.name}.")
+      post :create, params: { board_section: { board_id: continuity.id, name: section_name } }
+      expect(response).to redirect_to(edit_continuity_url(continuity))
+      expect(flash[:success]).to eq("New section, #{section_name}, has successfully been created for #{continuity.name}.")
       expect(assigns(:board_section).name).to eq(section_name)
     end
   end
 
   describe "GET show" do
-    let(:board) { create(:board) }
-    let(:section) { create(:board_section, board: board) }
+    let(:continuity) { create(:continuity) }
+    let(:section) { create(:board_section, board: continuity) }
+    let(:posts) { create_list(:post, 2, board: continuity, section: section) }
 
     it "requires valid section" do
       get :show, params: { id: -1 }
@@ -105,9 +98,9 @@ RSpec.describe BoardSectionsController do
     end
 
     it "does not require login" do
-      posts = create_list(:post, 2, board: board, section: section)
+      posts
       create(:post)
-      create(:post, board: board)
+      create(:post, board: continuity)
       get :show, params: { id: section.id }
       expect(response).to have_http_status(200)
       expect(assigns(:page_title)).to eq(section.name)
@@ -122,16 +115,19 @@ RSpec.describe BoardSectionsController do
 
     it "works with login" do
       login
+      posts
+      create(:post)
+      create(:post, board: continuity)
       get :show, params: { id: section.id }
       expect(response).to have_http_status(200)
     end
 
     it "orders posts correctly" do
-      post5 = create(:post, board: board, section: section)
-      post1 = create(:post, board: board, section: section)
-      post4 = create(:post, board: board, section: section)
-      post3 = create(:post, board: board, section: section)
-      post2 = create(:post, board: board, section: section)
+      post5 = create(:post, board: continuity, section: section)
+      post1 = create(:post, board: continuity, section: section)
+      post4 = create(:post, board: continuity, section: section)
+      post3 = create(:post, board: continuity, section: section)
+      post2 = create(:post, board: continuity, section: section)
       post1.update!(section_order: 1)
       post2.update!(section_order: 2)
       post3.update!(section_order: 3)
@@ -145,15 +141,15 @@ RSpec.describe BoardSectionsController do
 
     it "calculates OpenGraph data" do
       user = create(:user, username: 'John Doe')
-      board = create(:board, name: 'board', creator: user, writers: [create(:user, username: 'Jane Doe')])
-      section = create(:board_section, name: 'section', board: board, description: "test description")
-      create(:post, subject: 'title', user: user, board: board, section: section)
+      continuity = create(:continuity, name: 'continuity', creator: user, writers: [create(:user, username: 'Jane Doe')])
+      section = create(:board_section, name: 'section', board: continuity, description: "test description")
+      create(:post, subject: 'title', user: user, board: continuity, section: section)
       get :show, params: { id: section.id }
 
       meta_og = assigns(:meta_og)
       expect(meta_og.keys).to match_array([:url, :title, :description])
       expect(meta_og[:url]).to eq(board_section_url(section))
-      expect(meta_og[:title]).to eq('board » section')
+      expect(meta_og[:title]).to eq('continuity » section')
       expect(meta_og[:description]).to eq("Jane Doe, John Doe – 1 post\ntest description")
     end
   end
@@ -198,6 +194,8 @@ RSpec.describe BoardSectionsController do
   end
 
   describe "PUT update" do
+    let(:section) { create(:board_section) }
+
     it "requires login" do
       put :update, params: { id: -1 }
       expect(response).to redirect_to(root_url)
@@ -212,37 +210,34 @@ RSpec.describe BoardSectionsController do
     end
 
     it "requires continuity permission" do
-      user = create(:user)
-      login_as(user)
-      board_section = create(:board_section)
-      expect(board_section.board).not_to be_editable_by(user)
-
-      put :update, params: { id: board_section.id }
+      login
+      put :update, params: { id: section.id }
       expect(response).to redirect_to(continuities_url)
       expect(flash[:error]).to eq("You do not have permission to edit this continuity.")
     end
 
     it "requires valid params" do
-      board_section = create(:board_section)
-      login_as(board_section.board.creator)
-      put :update, params: { id: board_section.id, board_section: { name: '' } }
+      login_as(section.board.creator)
+      put :update, params: { id: section.id, board_section: { name: '' } }
       expect(response).to have_http_status(200)
       expect(response).to render_template(:edit)
       expect(flash[:error][:message]).to eq("Section could not be updated.")
     end
 
     it "succeeds" do
-      board_section = create(:board_section, name: 'TestSection1')
-      login_as(board_section.board.creator)
+      section = create(:board_section, name: 'TestSection1')
+      login_as(section.board.creator)
       section_name = 'TestSection2'
-      put :update, params: { id: board_section.id, board_section: { name: section_name } }
-      expect(response).to redirect_to(board_section_path(board_section))
-      expect(board_section.reload.name).to eq(section_name)
+      put :update, params: { id: section.id, board_section: { name: section_name } }
+      expect(response).to redirect_to(board_section_path(section))
+      expect(section.reload.name).to eq(section_name)
       expect(flash[:success]).to eq("#{section_name} has been successfully updated.")
     end
   end
 
   describe "DELETE destroy" do
+    let(:section) { create(:board_section) }
+
     it "requires login" do
       delete :destroy, params: { id: -1 }
       expect(response).to redirect_to(root_url)
@@ -264,7 +259,6 @@ RSpec.describe BoardSectionsController do
     end
 
     it "requires permission" do
-      section = create(:board_section)
       login
       delete :destroy, params: { id: section.id }
       expect(response).to redirect_to(continuities_url)
@@ -272,7 +266,6 @@ RSpec.describe BoardSectionsController do
     end
 
     it "works" do
-      section = create(:board_section)
       login_as(section.board.creator)
       delete :destroy, params: { id: section.id }
       expect(response).to redirect_to(edit_continuity_url(section.board))
@@ -281,7 +274,6 @@ RSpec.describe BoardSectionsController do
     end
 
     it "handles destroy failure" do
-      section = create(:board_section)
       post = create(:post, user: section.board.creator, board: section.board, section: section)
       login_as(section.board.creator)
 

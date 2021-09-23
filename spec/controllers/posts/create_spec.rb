@@ -143,7 +143,7 @@ RSpec.describe PostsController, 'POST create' do
       login_as(user)
 
       coauthor = create(:user)
-      board = create(:board, creator: user, authors_locked: true)
+      continuity = create(:continuity, creator: user, authors_locked: true)
 
       expect {
         post :create, params: {
@@ -151,7 +151,7 @@ RSpec.describe PostsController, 'POST create' do
           post: {
             subject: 'test subject',
             privacy: :access_list,
-            board_id: board.id,
+            board_id: continuity.id,
             unjoined_author_ids: [coauthor.id],
             viewer_ids: [coauthor.id, create(:user).id],
             content: 'test content',
@@ -170,7 +170,7 @@ RSpec.describe PostsController, 'POST create' do
     tags = ['_atag', '_atag', create(:label).id, '', '_' + existing_name.name, '_' + existing_case.name.upcase]
     login
     expect {
-      post :create, params: { post: { subject: 'a', board_id: create(:board).id, label_ids: tags } }
+      post :create, params: { post: { subject: 'a', board_id: create(:continuity).id, label_ids: tags } }
     }.to change { Label.count }.by(1)
     expect(Label.last.name).to eq('atag')
     expect(assigns(:post).labels.count).to eq(4)
@@ -189,7 +189,7 @@ RSpec.describe PostsController, 'POST create' do
     ]
     login
     expect {
-      post :create, params: { post: { subject: 'a', board_id: create(:board).id, setting_ids: tags } }
+      post :create, params: { post: { subject: 'a', board_id: create(:continuity).id, setting_ids: tags } }
     }.to change { Setting.count }.by(1)
     expect(Setting.last.name).to eq('atag')
     expect(assigns(:post).settings.count).to eq(4)
@@ -209,7 +209,7 @@ RSpec.describe PostsController, 'POST create' do
     login
     expect {
       post :create, params: {
-        post: { subject: 'a', board_id: create(:board).id, content_warning_ids: tags },
+        post: { subject: 'a', board_id: create(:continuity).id, content_warning_ids: tags },
       }
     }.to change { ContentWarning.count }.by(1)
     expect(ContentWarning.last.name).to eq('atag')
@@ -220,8 +220,7 @@ RSpec.describe PostsController, 'POST create' do
     user = create(:user)
     other_user = create(:user)
     create(:user) # user should not be author
-    board_creator = create(:user) # user should not be author
-    board = create(:board, creator: board_creator)
+    continuity = create(:continuity)
     login_as(user)
 
     time = 5.minutes.ago
@@ -231,7 +230,7 @@ RSpec.describe PostsController, 'POST create' do
           post: {
             subject: 'a',
             user_id: user.id,
-            board_id: board.id,
+            board_id: continuity.id,
             unjoined_author_ids: [other_user.id],
             private_note: 'there is a note!',
           },
@@ -257,8 +256,7 @@ RSpec.describe PostsController, 'POST create' do
   it "handles post submitted with no authors" do
     user = create(:user)
     create(:user) # non-author
-    board_creator = create(:user)
-    board = create(:board, creator: board_creator)
+    continuity = create(:continuity)
     login_as(user)
 
     time = 5.minutes.ago
@@ -268,7 +266,7 @@ RSpec.describe PostsController, 'POST create' do
           post: {
             subject: 'a',
             user_id: user.id,
-            board_id: board.id,
+            board_id: continuity.id,
             unjoined_author_ids: [''],
           },
         }
@@ -290,7 +288,7 @@ RSpec.describe PostsController, 'POST create' do
     other_user = create(:user)
     third_user = create(:user)
     create(:user) # separate user
-    board = create(:board, creator: user, writers: [other_user])
+    continuity = create(:continuity, creator: user, writers: [other_user])
 
     login_as(user)
     expect {
@@ -298,7 +296,7 @@ RSpec.describe PostsController, 'POST create' do
         post: {
           subject: 'a',
           user_id: user.id,
-          board_id: board.id,
+          board_id: continuity.id,
           unjoined_author_ids: [user.id, other_user.id, third_user.id],
         },
       }
@@ -307,16 +305,16 @@ RSpec.describe PostsController, 'POST create' do
     post = assigns(:post).reload
     expect(post.tagging_authors).to match_array([user, other_user, third_user])
 
-    board.reload
-    expect(board.writers).to match_array([user, other_user])
-    expect(board.cameos).to match_array([third_user])
+    continuity.reload
+    expect(continuity.writers).to match_array([user, other_user])
+    expect(continuity.cameos).to match_array([third_user])
   end
 
   it "does not add to cameos of open continuities" do
     user = create(:user)
     other_user = create(:user)
-    board = create(:board)
-    expect(board.cameos).to be_empty
+    continuity = create(:continuity)
+    expect(continuity.cameos).to be_empty
 
     login_as(user)
     expect {
@@ -324,7 +322,7 @@ RSpec.describe PostsController, 'POST create' do
         post: {
           subject: 'a',
           user_id: user.id,
-          board_id: board.id,
+          board_id: continuity.id,
           unjoined_author_ids: [user.id, other_user.id],
         },
       }
@@ -333,22 +331,22 @@ RSpec.describe PostsController, 'POST create' do
     post = assigns(:post).reload
     expect(post.tagging_authors).to match_array([user, other_user])
 
-    board.reload
-    expect(board.writers).to eq([board.creator])
-    expect(board.cameos).to be_empty
+    continuity.reload
+    expect(continuity.writers).to eq([continuity.creator])
+    expect(continuity.cameos).to be_empty
   end
 
   it "handles new post authors already being in cameos" do
     user = create(:user)
     other_user = create(:user)
-    board = create(:board, creator: user, cameos: [other_user])
+    continuity = create(:continuity, creator: user, cameos: [other_user])
 
     login_as(user)
     post :create, params: {
       post: {
         subject: 'a',
         user_id: user.id,
-        board_id: board.id,
+        board_id: continuity.id,
         unjoined_author_ids: [user.id, other_user.id],
       },
     }
@@ -357,9 +355,9 @@ RSpec.describe PostsController, 'POST create' do
     post = assigns(:post).reload
     expect(post.tagging_authors).to match_array([user, other_user])
 
-    board.reload
-    expect(board.creator).to eq(user)
-    expect(board.cameos).to match_array([other_user])
+    continuity.reload
+    expect(continuity.creator).to eq(user)
+    expect(continuity.cameos).to match_array([other_user])
   end
 
   it "handles invalid posts" do
@@ -431,8 +429,8 @@ RSpec.describe PostsController, 'POST create' do
   it "creates a post" do
     user = create(:user)
     login_as(user)
-    board = create(:board)
-    section = create(:board_section, board: board)
+    continuity = create(:continuity)
+    section = create(:board_section, board: continuity)
     char = create(:character, user: user)
     icon = create(:icon, user: user)
     calias = create(:alias, character: char)
@@ -451,7 +449,7 @@ RSpec.describe PostsController, 'POST create' do
           subject: 'asubjct',
           content: 'acontnt',
           description: 'adesc',
-          board_id: board.id,
+          board_id: continuity.id,
           section_id: section.id,
           character_id: char.id,
           icon_id: icon.id,
@@ -475,7 +473,7 @@ RSpec.describe PostsController, 'POST create' do
     expect(post.subject).to eq('asubjct')
     expect(post.content).to eq('acontnt')
     expect(post.description).to eq('adesc')
-    expect(post.board).to eq(board)
+    expect(post.board).to eq(continuity)
     expect(post.section).to eq(section)
     expect(post.character_id).to eq(char.id)
     expect(post.icon_id).to eq(icon.id)
@@ -509,7 +507,7 @@ RSpec.describe PostsController, 'POST create' do
     post :create, params: {
       post: {
         subject: 'subject',
-        board_id: create(:board).id,
+        board_id: create(:continuity).id,
         privacy: :registered,
         content: 'content',
       },
@@ -539,7 +537,7 @@ RSpec.describe PostsController, 'POST create' do
         post: {
           subject: "subject",
           user_id: user.id,
-          board_id: create(:board).id,
+          board_id: create(:continuity).id,
           authors_locked: true,
           unjoined_author_ids: [other_user.id],
         },
@@ -563,7 +561,7 @@ RSpec.describe PostsController, 'POST create' do
         post: {
           subject: "subject",
           user_id: other_user.id,
-          board_id: create(:board).id,
+          board_id: create(:continuity).id,
           authors_locked: true,
           unjoined_author_ids: [user.id],
         },

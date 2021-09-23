@@ -126,40 +126,40 @@ RSpec.describe PostHelper do
 
   describe "#allowed_continuities" do
     it "includes open-to-everyone continuities" do
-      board = create(:board)
+      continuity = create(:continuity)
       user = create(:user)
       post = build(:post)
-      expect(helper.allowed_continuities(post, user)).to eq([board])
+      expect(helper.allowed_continuities(post, user)).to eq([continuity])
     end
 
     it "includes locked continuities with user in" do
       user = create(:user)
-      board = create(:board, authors_locked: true, authors: [user])
+      continuity = create(:continuity, authors_locked: true, authors: [user])
       post = build(:post)
-      expect(helper.allowed_continuities(post, user)).to eq([board])
+      expect(helper.allowed_continuities(post, user)).to eq([continuity])
     end
 
     it "hides continuities that user can't write in" do
-      create(:board, authors_locked: true)
+      create(:continuity, authors_locked: true)
       user = create(:user)
       post = build(:post)
       expect(helper.allowed_continuities(post, user)).to eq([])
     end
 
     it "shows the post's continuity even if the user can't write in it" do
-      board = create(:board, authors_locked: true)
+      continuity = create(:continuity, authors_locked: true)
       user = create(:user)
-      post = build(:post, board: board)
-      expect(helper.allowed_continuities(post, user)).to eq([board])
+      post = build(:post, board: continuity)
+      expect(helper.allowed_continuities(post, user)).to eq([continuity])
     end
 
     it "orders continuities" do
-      board_a = create(:board, name: "A")
-      board_b_pinned = create(:board, name: "B", pinned: true)
-      board_c = create(:board, name: "C")
+      continuity_a = create(:continuity, name: "A")
+      continuity_b_pinned = create(:continuity, name: "B", pinned: true)
+      continuity_c = create(:continuity, name: "C")
       user = create(:user)
       post = build(:post)
-      expect(helper.allowed_continuities(post, user)).to eq([board_b_pinned, board_a, board_c])
+      expect(helper.allowed_continuities(post, user)).to eq([continuity_b_pinned, continuity_a, continuity_c])
     end
   end
 

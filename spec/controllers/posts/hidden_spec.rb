@@ -22,8 +22,8 @@ RSpec.describe PostsController, 'GET hidden' do
 
   it "succeeds with continuity hidden" do
     user = create(:user)
-    board = create(:board)
-    board.ignore(user)
+    continuity = create(:continuity)
+    continuity.ignore(user)
     login_as(user)
     get :hidden
     expect(response.status).to eq(200)

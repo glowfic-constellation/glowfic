@@ -26,9 +26,9 @@ RSpec.describe WritableController do
   end
 
   describe "#og_data_for_post" do
-    let(:board) { create(:board, name: 'Test') }
+    let(:continuity) { create(:continuity, name: 'Test') }
     let(:user) { create(:user, username: 'Tester') }
-    let!(:post) { create(:post, subject: 'Temp', board: board, user: user) }
+    let!(:post) { create(:post, subject: 'Temp', board: continuity, user: user) }
 
     before(:each) { post.reload }
 
@@ -59,7 +59,7 @@ RSpec.describe WritableController do
     end
 
     it "works with section" do
-      section = create(:board_section, board: board, name: 'Further')
+      section = create(:board_section, board: continuity, name: 'Further')
       post.update!(description: 'More.', section: section)
       data = controller.send(:og_data_for_post, post, total_pages: 5)
       expect(data).to eq({

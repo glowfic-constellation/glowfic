@@ -63,11 +63,10 @@ RSpec.describe PostsController, 'GET new' do
   it "defaults authors to be the current user in open continuities" do
     user = create(:user)
     login_as(user)
-    create(:user) # user not in the board
-    board_creator = create(:user) # user in the board
-    board = create(:board, creator: board_creator, authors_locked: false)
-    get :new, params: { board_id: board.id }
-    expect(assigns(:post).board).to eq(board)
+    create(:user)
+    continuity = create(:continuity, authors_locked: false)
+    get :new, params: { board_id: continuity.id }
+    expect(assigns(:post).board).to eq(continuity)
     expect(assigns(:author_ids)).to eq([])
   end
 
@@ -75,10 +74,10 @@ RSpec.describe PostsController, 'GET new' do
     user = create(:user)
     login_as(user)
     coauthor = create(:user)
-    create(:user) # other_user
-    board = create(:board, creator: user, writers: [coauthor])
-    get :new, params: { board_id: board.id }
-    expect(assigns(:post).board).to eq(board)
+    create(:user)
+    continuity = create(:continuity, creator: user, writers: [coauthor])
+    get :new, params: { board_id: continuity.id }
+    expect(assigns(:post).board).to eq(continuity)
     expect(assigns(:author_ids)).to match_array([coauthor.id])
   end
 end

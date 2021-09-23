@@ -1,4 +1,8 @@
 RSpec.describe PostScraper do
+  let(:user) { create(:user, username: "Marri") }
+  let(:continuity) { create(:continuity, creator: user) }
+  let(:url) { 'http://wild-pegasus-appeared.dreamwidth.org/403.html?view=flat&style=site' }
+
   it "should add view to url" do
     scraper = PostScraper.new('http://wild-pegasus-appeared.dreamwidth.org/403.html')
     expect(scraper.url).to include('view=flat')
@@ -18,18 +22,14 @@ RSpec.describe PostScraper do
   end
 
   it "should not change url if site style is present" do
-    url = 'http://wild-pegasus-appeared.dreamwidth.org/403.html?view=flat&style=site'
     scraper = PostScraper.new(url)
     expect(scraper.url.length).to eq(url.length)
   end
 
   it "should scrape properly when nothing is created" do
-    url = 'http://wild-pegasus-appeared.dreamwidth.org/403.html?style=site&view=flat'
     stub_fixture(url, 'scrape_single_page')
-    user = create(:user, username: "Marri")
-    board = create(:board, creator: user)
 
-    scraper = PostScraper.new(url, board.id)
+    scraper = PostScraper.new(url, continuity.id)
     allow_any_instance_of(ReplyScraper).to receive(:prompt_for_user).and_return(user) # rubocop:todo RSpec/AnyInstance
     allow_any_instance_of(ReplyScraper).to receive(:set_from_icon).and_return(nil) # rubocop:todo RSpec/AnyInstance
     expect(scraper.send(:logger)).to receive(:info).with("Importing thread 'linear b'")
@@ -46,14 +46,13 @@ RSpec.describe PostScraper do
   end
 
   it "should scrape multiple pages" do
-    url = 'http://wild-pegasus-appeared.dreamwidth.org/403.html?style=site&view=flat'
     url_page_2 = 'http://wild-pegasus-appeared.dreamwidth.org/403.html?style=site&view=flat&page=2'
     stub_fixture(url, 'scrape_multi_page')
     stub_fixture(url_page_2, 'scrape_single_page')
     user = create(:user, username: "Marri")
-    board = create(:board, creator: user)
+    continuity = create(:continuity, creator: user)
 
-    scraper = PostScraper.new(url, board.id)
+    scraper = PostScraper.new(url, continuity.id)
     allow_any_instance_of(ReplyScraper).to receive(:prompt_for_user).and_return(user) # rubocop:todo RSpec/AnyInstance
     allow_any_instance_of(ReplyScraper).to receive(:set_from_icon).and_return(nil) # rubocop:todo RSpec/AnyInstance
     expect(scraper.send(:logger)).to receive(:info).with("Importing thread 'linear b'")
@@ -101,11 +100,11 @@ RSpec.describe PostScraper do
   end
 
   it "should raise an error when post is already imported" do
-    board = create(:board)
-    create(:character, screenname: 'wild_pegasus_appeared', user: board.creator)
+    continuity = create(:continuity)
+    create(:character, screenname: 'wild_pegasus_appeared', user: continuity.creator)
     url = 'http://wild-pegasus-appeared.dreamwidth.org/403.html?style=site&view=flat'
     stub_fixture(url, 'scrape_no_replies')
-    scraper = PostScraper.new(url, board.id)
+    scraper = PostScraper.new(url, continuity.id)
     allow(scraper.send(:logger)).to receive(:info).with("Importing thread 'linear b'")
     expect { scraper.scrape! }.to change { Post.count }.by(1)
     expect { scraper.scrape! }.to raise_error(AlreadyImportedError)
@@ -114,11 +113,11 @@ RSpec.describe PostScraper do
 
   it "should raise an error when post is already imported with given subject" do
     new_title = 'other name'
-    board = create(:board)
-    create(:post, board: board, subject: new_title) # post
+    continuity = create(:continuity)
+    create(:post, board: continuity, subject: new_title) # post
     url = 'http://wild-pegasus-appeared.dreamwidth.org/403.html?style=site&view=flat'
     stub_fixture(url, 'scrape_no_replies')
-    scraper = PostScraper.new(url, board.id, nil, nil, false, false, new_title)
+    scraper = PostScraper.new(url, continuity.id, nil, nil, false, false, new_title)
     allow(scraper.send(:logger)).to receive(:info).with("Importing thread '#{new_title}'")
     expect { scraper.scrape! }.to raise_error(AlreadyImportedError)
     expect(Post.count).to eq(1)
@@ -137,7 +136,7 @@ RSpec.describe PostScraper do
 
     alicorn = create(:user, username: 'Alicorn')
     kappa = create(:user, username: 'Kappa')
-    board = create(:board, creator: alicorn, writers: [kappa])
+    continuity = create(:continuity, creator: alicorn, writers: [kappa])
     characters = [
       { screenname: 'mind_game', name: 'Jane', user: alicorn },
       { screenname: 'luminous_regnant', name: 'Isabella Marie Swan Cullen ☼ "Golden"', user: alicorn },
@@ -150,7 +149,7 @@ RSpec.describe PostScraper do
     ]
     characters.each { |data| create(:character, data) }
 
-    scraper = PostScraper.new(urls.first, board.id, nil, nil, true, false)
+    scraper = PostScraper.new(urls.first, continuity.id, nil, nil, true, false)
     expect(scraper.send(:logger)).to receive(:info).with("Importing thread 'repealing'")
     scraper.scrape_threads!(threads)
     expect(Post.count).to eq(1)

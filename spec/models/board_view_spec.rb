@@ -15,12 +15,12 @@ RSpec.describe BoardView do
     it "works with both user and continuity" do
       view = build(:board_view)
       user = view.user
-      board = view.board
+      continuity = view.board
       expect(view).to be_valid
       expect(view.save).to eq(true)
       view.reload
       expect(view.user).to eq(user)
-      expect(view.board).to eq(board)
+      expect(view.board).to eq(continuity)
     end
 
     it "is unique by continuity and user" do
@@ -43,9 +43,9 @@ RSpec.describe BoardView do
     end
 
     it "allows one continuity to have multiple users in continuity views" do
-      board = create(:board)
-      view = create(:board_view, board: board)
-      new_view = build(:board_view, board: board)
+      continuity = create(:continuity)
+      view = create(:continuity_view, board: continuity)
+      new_view = build(:continuity_view, board: continuity)
       expect(new_view.user).not_to eq(view.user)
       expect(new_view).to be_valid
       expect(new_view.save).to eq(true)

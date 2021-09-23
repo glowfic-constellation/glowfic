@@ -63,7 +63,7 @@ RSpec.describe ApplicationController do
   end
 
   describe "#posts_from_relation" do
-    let(:site_testing) { create(:board, id: Board::ID_SITETESTING) }
+    let(:site_testing) { create(:continuity, id: Board::ID_SITETESTING) }
     let(:default_post_ids) { Array.new(26) { create(:post).id } }
 
     it "gets posts" do

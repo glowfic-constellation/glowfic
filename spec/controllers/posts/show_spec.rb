@@ -16,13 +16,13 @@ RSpec.describe PostsController, 'GET show' do
 
   it "calculates OpenGraph meta" do
     user = create(:user, username: 'example user')
-    board = create(:board, name: 'board')
-    post = create(:post, subject: 'title', user: user, board: board)
+    continuity = create(:continuity, name: 'continuity')
+    post = create(:post, subject: 'title', user: user, board: continuity)
     get :show, params: { id: post.id }
 
     meta_og = assigns(:meta_og)
     expect(meta_og[:url]).to eq(post_url(post))
-    expect(meta_og[:title]).to eq('title · board')
+    expect(meta_og[:title]).to eq('title · continuity')
     expect(meta_og[:description]).to eq('(example user – page 1 of 1)')
   end
 

@@ -522,8 +522,8 @@ RSpec.describe PostsController, 'PUT update' do
       login_as(user)
 
       coauthor = create(:user)
-      board = create(:board, creator: user, authors_locked: true)
-      post = create(:post, user: user, board: board, authors_locked: true, privacy: :access_list)
+      continuity = create(:continuity, creator: user, authors_locked: true)
+      post = create(:post, user: user, board: continuity, authors_locked: true, privacy: :access_list)
 
       expect {
         put :update, params: {
@@ -710,8 +710,8 @@ RSpec.describe PostsController, 'PUT update' do
       other_user = create(:user)
       third_user = create(:user)
       login_as(user)
-      board = create(:board, creator: user, writers: [other_user])
-      post = create(:post, user: user, board: board)
+      continuity = create(:continuity, creator: user, writers: [other_user])
+      post = create(:post, user: user, board: continuity)
       put :update, params: {
         id: post.id,
         post: {
@@ -719,18 +719,18 @@ RSpec.describe PostsController, 'PUT update' do
         },
       }
       post.reload
-      board.reload
+      continuity.reload
       expect(post.tagging_authors).to match_array([user, other_user, third_user])
-      expect(board.cameos).to match_array([third_user])
+      expect(continuity.cameos).to match_array([third_user])
     end
 
     it "does not add to cameos of open continuities" do
       user = create(:user)
       other_user = create(:user)
       login_as(user)
-      board = create(:board)
-      expect(board.cameos).to be_empty
-      post = create(:post, user: user, board: board)
+      continuity = create(:continuity)
+      expect(continuity.cameos).to be_empty
+      post = create(:post, user: user, board: continuity)
       put :update, params: {
         id: post.id,
         post: {
@@ -738,9 +738,9 @@ RSpec.describe PostsController, 'PUT update' do
         },
       }
       post.reload
-      board.reload
+      continuity.reload
       expect(post.tagging_authors).to match_array([user, other_user])
-      expect(board.cameos).to be_empty
+      expect(continuity.cameos).to be_empty
     end
 
     it "orders tags" do
@@ -860,8 +860,8 @@ RSpec.describe PostsController, 'PUT update' do
       newcontent = post.content + 'new'
       newsubj = post.subject + 'new'
       login_as(user)
-      board = create(:board)
-      section = create(:board_section, board: board)
+      continuity = create(:continuity)
+      section = create(:board_section, board: continuity)
       char = create(:character, user: user)
       calias = create(:alias, character_id: char.id)
       icon = create(:icon, user: user)
@@ -882,7 +882,7 @@ RSpec.describe PostsController, 'PUT update' do
           content: newcontent,
           subject: newsubj,
           description: 'desc',
-          board_id: board.id,
+          board_id: continuity.id,
           section_id: section.id,
           character_id: char.id,
           character_alias_id: calias.id,
@@ -902,7 +902,7 @@ RSpec.describe PostsController, 'PUT update' do
       expect(post.content).to eq(newcontent)
       expect(post.subject).to eq(newsubj)
       expect(post.description).to eq('desc')
-      expect(post.board_id).to eq(board.id)
+      expect(post.board_id).to eq(continuity.id)
       expect(post.section_id).to eq(section.id)
       expect(post.character_id).to eq(char.id)
       expect(post.character_alias_id).to eq(calias.id)
