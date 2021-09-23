@@ -15,7 +15,7 @@ Rails.application.routes.draw do
   resources :users, except: :destroy do
     resources :characters, only: :index
     resources :galleries, only: [:index, :show]
-    resources :boards, only: :index
+    resources :boards, controller: :continuities, only: :index
     collection do
       get :search
     end
