@@ -14,7 +14,7 @@
           - klass = cycle('even, odd')
           %td.padding-10{class: klass}
           %td.padding-10{class: klass, colspan: 5}
-            = link_to view.board.name, continuity_path(view.board)
+            = link_to view.continuity.name, continuity_path(view.continuity)
           %td{class: klass}= check_box_tag :"unhide_boards[]", view.board_id, params[:unhide_boards].try(:include?, view.board_id.to_s), class: 'no-margin'
       - if @hidden_boardviews.empty?
         %tr

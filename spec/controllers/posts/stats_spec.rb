@@ -11,7 +11,7 @@ RSpec.describe PostsController, 'GET stats' do
   it "calculates OpenGraph meta" do
     user = create(:user, username: 'example user')
     board = create(:board, name: 'board')
-    post = create(:post, subject: 'title', user: user, board: board)
+    post = create(:post, subject: 'title', user: user, continuity: board)
     get :stats, params: { id: post.id }
 
     meta_og = assigns(:meta_og)

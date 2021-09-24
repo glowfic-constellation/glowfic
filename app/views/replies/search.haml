@@ -19,7 +19,7 @@
               %td{style: 'width: 80px;'}= label_tag :board_id, 'Continuity'
               %td
                 - if @post
-                  %b= @post.board.name
+                  %b= @post.continuity.name
                 - else
                   = select_tag :board_id, options_from_collection_for_select(@boards || [], :id, :name, params[:board_id]),
                     { class: 'chosen-select', prompt: '— Choose Continuity —' }

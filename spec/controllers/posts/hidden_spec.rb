@@ -46,7 +46,7 @@ RSpec.describe PostsController, 'GET hidden' do
     user = create(:user)
     post = create(:post)
     post.ignore(user)
-    post.board.ignore(user)
+    post.continuity.ignore(user)
     login_as(user)
     get :hidden
     expect(response.status).to eq(200)

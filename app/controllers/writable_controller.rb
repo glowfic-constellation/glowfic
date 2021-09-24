@@ -152,7 +152,7 @@ class WritableController < ApplicationController
   end
 
   def og_data_for_post(post, page: 1, total_pages:, per_page: 25)
-    post_location = post.board.name
+    post_location = post.continuity.name
     post_location += ' » ' + post.section.name if post.section.present?
 
     post_description = generate_short(post.description)

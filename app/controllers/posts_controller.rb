@@ -95,7 +95,7 @@ class PostsController < WritableController
   end
 
   def hidden
-    @hidden_boardviews = BoardView.where(user_id: current_user.id).where(ignored: true).includes(:board)
+    @hidden_boardviews = BoardView.where(user_id: current_user.id).where(ignored: true).includes(:continuity)
     hidden_post_ids = Post::View.where(user_id: current_user.id).where(ignored: true).select(:post_id).distinct.pluck(:post_id)
     @hidden_posts = posts_from_relation(Post.where(id: hidden_post_ids).ordered)
     @page_title = 'Hidden Posts & Continuities'
@@ -125,9 +125,9 @@ class PostsController < WritableController
     @page_title = 'New Post'
 
     @permitted_authors -= [current_user]
-    return unless @post.board&.authors_locked?
+    return unless @post.continuity&.authors_locked?
 
-    @author_ids = @post.board.writer_ids - [current_user.id]
+    @author_ids = @post.continuity.writer_ids - [current_user.id]
     @authors_from_board = true
   end
 
@@ -181,7 +181,7 @@ class PostsController < WritableController
   end
 
   def stats
-    post_location = @post.board.name
+    post_location = @post.continuity.name
     post_location += ' » ' + @post.section.name if @post.section.present?
     post_location += ' » Stats'
 
@@ -215,7 +215,7 @@ class PostsController < WritableController
     preview and return if params[:button_preview].present?
 
     @post.assign_attributes(permitted_params)
-    @post.board ||= Board.find_by(id: Board::ID_SANDBOX)
+    @post.continuity ||= Board.find_by(id: Board::ID_SANDBOX)
     settings = process_tags(Setting, obj_param: :post, id_param: :setting_ids)
     warnings = process_tags(ContentWarning, obj_param: :post, id_param: :content_warning_ids)
     labels = process_tags(Label, obj_param: :post, id_param: :label_ids)
@@ -327,7 +327,7 @@ class PostsController < WritableController
   def preview
     @post ||= Post.new(user: current_user)
     @post.assign_attributes(permitted_params(false))
-    @post.board ||= Board.find_by_id(3)
+    @post.continuity ||= Board.find_by_id(Board::ID_SANDBOX)
 
     @author_ids = params.fetch(:post, {}).fetch(:unjoined_author_ids, [])
     @viewer_ids = params.fetch(:post, {}).fetch(:viewer_ids, [])

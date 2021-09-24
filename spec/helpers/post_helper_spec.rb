@@ -149,7 +149,7 @@ RSpec.describe PostHelper do
     it "shows the post's board even if the user can't write in it" do
       board = create(:board, authors_locked: true)
       user = create(:user)
-      post = build(:post, board: board)
+      post = build(:post, continuity: board)
       expect(helper.allowed_boards(post, user)).to eq([board])
     end
 
@@ -181,7 +181,7 @@ RSpec.describe PostHelper do
   describe "#anchored_continuity_path" do
     it "anchors for sectioned post" do
       section = create(:board_section)
-      post = create(:post, board: section.board, section: section)
+      post = create(:post, continuity: section.continuity, section: section)
       expect(helper.anchored_continuity_path(post)).to eq(continuity_path(post.board_id) + "#section-" + section.id.to_s)
     end
 

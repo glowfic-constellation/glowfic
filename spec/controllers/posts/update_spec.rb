@@ -523,7 +523,7 @@ RSpec.describe PostsController, 'PUT update' do
 
       coauthor = create(:user)
       board = create(:board, creator: user, authors_locked: true)
-      post = create(:post, user: user, board: board, authors_locked: true, privacy: :access_list)
+      post = create(:post, user: user, continuity: board, authors_locked: true, privacy: :access_list)
 
       expect {
         put :update, params: {
@@ -711,7 +711,7 @@ RSpec.describe PostsController, 'PUT update' do
       third_user = create(:user)
       login_as(user)
       board = create(:board, creator: user, writers: [other_user])
-      post = create(:post, user: user, board: board)
+      post = create(:post, user: user, continuity: board)
       put :update, params: {
         id: post.id,
         post: {
@@ -730,7 +730,7 @@ RSpec.describe PostsController, 'PUT update' do
       login_as(user)
       board = create(:board)
       expect(board.cameos).to be_empty
-      post = create(:post, user: user, board: board)
+      post = create(:post, user: user, continuity: board)
       put :update, params: {
         id: post.id,
         post: {
@@ -861,7 +861,7 @@ RSpec.describe PostsController, 'PUT update' do
       newsubj = post.subject + 'new'
       login_as(user)
       board = create(:board)
-      section = create(:board_section, board: board)
+      section = create(:board_section, continuity: board)
       char = create(:character, user: user)
       calias = create(:alias, character_id: char.id)
       icon = create(:icon, user: user)

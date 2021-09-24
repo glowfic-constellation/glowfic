@@ -1,7 +1,7 @@
 RSpec.feature "Show a single continuity", :type => :feature do
   scenario "View a standard continuity" do
     board = create(:board, name: "Test board")
-    create_list(:post, 5, board: board, user: board.creator)
+    create_list(:post, 5, continuity: board, user: board.creator)
 
     visit continuity_path(board)
 
@@ -11,9 +11,9 @@ RSpec.feature "Show a single continuity", :type => :feature do
 
   scenario "View a continuity with many authors in a post" do
     board = create(:board, name: "Author board")
-    post1 = create(:post, board: board, user: board.creator)
+    post1 = create(:post, continuity: board, user: board.creator)
     reply = create(:reply, post: post1)
-    post2 = create(:post, board: board, user: board.creator)
+    post2 = create(:post, continuity: board, user: board.creator)
     create_list(:reply, 4, post: post2)
 
     visit continuity_path(board)
@@ -37,12 +37,12 @@ RSpec.feature "Show a single continuity", :type => :feature do
     coauthor2 = create(:user, username: "Bob")
     coauthor3 = create(:user, username: "Poe")
     board = create(:board, name: "Test board")
-    post1 = create(:post, user: del_user1, board: board)
+    post1 = create(:post, user: del_user1, continuity: board)
     create(:reply, post: post1, user: coauthor3)
-    post2 = create(:post, user: del_user2, board: board)
-    post3 = create(:post, user: del_user2, board: board, authors: [del_user1, del_user2, coauthor1, coauthor2, coauthor3])
+    post2 = create(:post, user: del_user2, continuity: board)
+    post3 = create(:post, user: del_user2, continuity: board, authors: [del_user1, del_user2, coauthor1, coauthor2, coauthor3])
     create(:reply, post: post3, user: coauthor2)
-    post4 = create(:post, user: coauthor1, board: board, authors: [del_user2, coauthor1, coauthor3])
+    post4 = create(:post, user: coauthor1, continuity: board, authors: [del_user2, coauthor1, coauthor3])
     [coauthor1, coauthor3, del_user2].each { |u| create(:reply, post: post4, user: u) }
     del_user1.archive
     del_user2.archive

@@ -47,8 +47,8 @@
             - else
               %b [Deleted]
             to
-            - if cur.board
-              %b= link_to cur.board.name, continuity_path(cur.board)
+            - if cur.continuity
+              %b= link_to cur.continuity.name, continuity_path(cur.continuity)
             - else
               %b [Deleted]
       - if audit.action == 'update' && audit.audited_changes.key?('privacy')

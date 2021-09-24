@@ -98,28 +98,28 @@ RSpec.describe PostsController, 'GET unread' do
 
     # only board view exists
     board_unread_post = create(:post)
-    board_unread_post.board.mark_read(user, at_time: board_unread_post.created_at - 1.second, force: true)
+    board_unread_post.continuity.mark_read(user, at_time: board_unread_post.created_at - 1.second, force: true)
     board_read_post = create(:post)
-    board_read_post.board.mark_read(user)
+    board_read_post.continuity.mark_read(user)
 
     # both exist
     both_unread_post = create(:post)
     both_unread_post.mark_read(user, at_time: both_unread_post.created_at - 1.second, force: true)
-    both_unread_post.board.mark_read(user, at_time: both_unread_post.created_at - 1.second, force: true)
+    both_unread_post.continuity.mark_read(user, at_time: both_unread_post.created_at - 1.second, force: true)
     both_board_read_post = create(:post)
     both_board_read_post.mark_read(user, at_time: both_unread_post.created_at - 1.second, force: true)
-    both_board_read_post.board.mark_read(user)
+    both_board_read_post.continuity.mark_read(user)
     both_post_read_post = create(:post)
-    both_post_read_post.board.mark_read(user, at_time: both_unread_post.created_at - 1.second, force: true)
+    both_post_read_post.continuity.mark_read(user, at_time: both_unread_post.created_at - 1.second, force: true)
     both_post_read_post.mark_read(user)
     both_read_post = create(:post)
     both_read_post.mark_read(user)
-    both_read_post.board.mark_read(user)
+    both_read_post.continuity.mark_read(user)
 
     # board ignored
     board_ignored = create(:post)
     board_ignored.mark_read(user, at_time: both_unread_post.created_at - 1.second, force: true)
-    board_ignored.board.ignore(user)
+    board_ignored.continuity.ignore(user)
 
     login_as(user)
     get :unread

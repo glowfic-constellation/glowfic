@@ -115,7 +115,7 @@ RSpec.describe PostScraper do
   it "should raise an error when post is already imported with given subject" do
     new_title = 'other name'
     board = create(:board)
-    create(:post, board: board, subject: new_title) # post
+    create(:post, continuity: board, subject: new_title) # post
     url = 'http://wild-pegasus-appeared.dreamwidth.org/403.html?style=site&view=flat'
     stub_fixture(url, 'scrape_no_replies')
     scraper = PostScraper.new(url, board.id, nil, nil, false, false, new_title)

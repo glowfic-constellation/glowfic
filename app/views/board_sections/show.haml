@@ -1,16 +1,16 @@
 - content_for :breadcrumbs do
   = link_to "Continuities", continuities_path
   &raquo;
-  = link_to @board_section.board.name, continuity_path(@board_section.board)
+  = link_to @board_section.continuity.name, continuity_path(@board_section.continuity)
   &raquo;
   %b= @board_section.name
 
 - content_for :posts_title do
   = @board_section.name
-  - if @board_section.board.open_to?(current_user)
-    = link_to new_post_path params: { board_id: @board_section.board.id, section_id: @board_section.id } do
+  - if @board_section.continuity.open_to?(current_user)
+    = link_to new_post_path params: { board_id: @board_section.continuity.id, section_id: @board_section.id } do
       .link-box.action-new + New Post
-  - if @board_section.board.editable_by?(current_user)
+  - if @board_section.continuity.editable_by?(current_user)
     = link_to edit_board_section_path(@board_section) do
       .link-box.action-edit
         = image_tag "icons/pencil.png", alt: ''

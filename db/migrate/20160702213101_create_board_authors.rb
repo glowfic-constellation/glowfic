@@ -18,8 +18,8 @@ class CreateBoardAuthors < ActiveRecord::Migration[4.2]
     add_column :boards, :coauthor_id, :integer
     add_index :boards, :coauthor_id
     BoardAuthor.all.each do |author|
-      author.board.coauthor_id = author.user_id
-      author.board.save!
+      author.continuity.coauthor_id = author.user_id
+      author.continuity.save!
     end
     drop_table :board_authors
   end

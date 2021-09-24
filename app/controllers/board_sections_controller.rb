@@ -12,7 +12,7 @@ class BoardSectionsController < ApplicationController
 
   def create
     @board_section = BoardSection.new(permitted_params)
-    unless @board_section.board.nil? || @board_section.board.editable_by?(current_user)
+    unless @board_section.continuity.nil? || @board_section.continuity.editable_by?(current_user)
       flash[:error] = "You do not have permission to edit this continuity."
       redirect_to continuities_path and return
     end
@@ -27,8 +27,8 @@ class BoardSectionsController < ApplicationController
       @page_title = 'New Section'
       render :new
     else
-      flash[:success] = "New section, #{@board_section.name}, has successfully been created for #{@board_section.board.name}."
-      redirect_to edit_continuity_path(@board_section.board)
+      flash[:success] = "New section, #{@board_section.name}, has successfully been created for #{@board_section.continuity.name}."
+      redirect_to edit_continuity_path(@board_section.continuity)
     end
   end
 
@@ -77,7 +77,7 @@ class BoardSectionsController < ApplicationController
       redirect_to board_section_path(@board_section)
     else
       flash[:success] = "Section deleted."
-      redirect_to edit_continuity_path(@board_section.board)
+      redirect_to edit_continuity_path(@board_section.continuity)
     end
   end
 
@@ -90,7 +90,7 @@ class BoardSectionsController < ApplicationController
   end
 
   def require_permission
-    return unless (board = @board_section.try(:board) || Board.find_by_id(params[:board_id]))
+    return unless (board = @board_section.try(:continuity) || Board.find_by_id(params[:board_id]))
     return if board.editable_by?(current_user)
     flash[:error] = "You do not have permission to edit this continuity."
     redirect_to continuities_path
@@ -98,7 +98,7 @@ class BoardSectionsController < ApplicationController
 
   def og_data
     stats = []
-    board = @board_section.board
+    board = @board_section.continuity
     stats << board.writers.where.not(deleted: true).ordered.pluck(:username).join(', ') if board.authors_locked?
     post_count = @board_section.posts.privacy_public.count
     stats << "#{post_count} #{'post'.pluralize(post_count)}"
