@@ -475,8 +475,8 @@ function setIcon(id, url, title, alt) {
 }
 
 function setSections() {
-  var boardId = $("#post_board_id").val();
-  $.authenticatedGet("/api/v1/boards/"+boardId, {}, function(resp) {
+  var continuityId = $("#post_board_id").val();
+  $.authenticatedGet("/api/v1/boards/"+continuityId, {}, function(resp) {
     var sections = resp.board_sections;
     if (sections.length > 0) {
       $("#section").show();

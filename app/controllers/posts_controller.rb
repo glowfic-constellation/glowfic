@@ -51,10 +51,10 @@ class PostsController < WritableController
 
     # post view does not exist and (continuity view does not exist or post has updated since non-ignored continuity view read_at)
     no_post_view = @posts.where(post_views: { user_id: nil })
-    updated_since_board_read = no_post_view.where(board_views: { read_at: nil })
+    updated_since_continuity_read = no_post_view.where(board_views: { read_at: nil })
       .or(no_post_view.where("date_trunc('second', board_views.read_at) < date_trunc('second', posts.tagged_at)"))
       .where(board_views: { ignored: false })
-    no_post_view = no_post_view.where(board_views: { user_id: nil }).or(updated_since_board_read)
+    no_post_view = no_post_view.where(board_views: { user_id: nil }).or(updated_since_continuity_read)
 
     # post view exists and post has updated since non-ignored post view read_at and (continuity view does not exist or is not ignored)
     with_post_view = @posts.where(post_views: { ignored: false }) # non-existant post-views will return nil here
@@ -95,7 +95,7 @@ class PostsController < WritableController
   end
 
   def hidden
-    @hidden_boardviews = BoardView.where(user_id: current_user.id).where(ignored: true).includes(:board)
+    @hidden_continuities = BoardView.where(user_id: current_user.id).where(ignored: true).includes(:board)
     hidden_post_ids = Post::View.where(user_id: current_user.id).where(ignored: true).select(:post_id).distinct.pluck(:post_id)
     @hidden_posts = posts_from_relation(Post.where(id: hidden_post_ids).ordered)
     @page_title = 'Hidden Posts & Continuities'
@@ -103,8 +103,8 @@ class PostsController < WritableController
 
   def unhide
     if params[:unhide_boards].present?
-      board_ids = params[:unhide_boards].filter_map(&:to_i).uniq
-      views_to_update = BoardView.where(user_id: current_user.id).where(board_id: board_ids)
+      continuity_ids = params[:unhide_boards].filter_map(&:to_i).uniq
+      views_to_update = BoardView.where(user_id: current_user.id).where(board_id: continuity_ids)
       views_to_update.each { |view| view.update(ignored: false) }
     end
 
@@ -128,7 +128,7 @@ class PostsController < WritableController
     return unless @post.board&.authors_locked?
 
     @author_ids = @post.board.writer_ids - [current_user.id]
-    @authors_from_board = true
+    @authors_from_continuity = true
   end
 
   def create

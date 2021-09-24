@@ -10,8 +10,8 @@ class Api::V1::BoardsController < Api::ApiController
   error 422, "Invalid parameters provided"
   def index
     queryset = Board.where("name LIKE ?", params[:q].to_s + '%').ordered
-    boards = paginate queryset, per_page: 25
-    render json: { results: boards }
+    continuities = paginate queryset, per_page: 25
+    render json: { results: continuities }
   end
 
   api :GET, '/boards/:id', 'Load a single continuity as a JSON resource.'
