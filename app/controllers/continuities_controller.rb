@@ -66,12 +66,12 @@ class ContinuitiesController < ApplicationController
     end
     @posts = posts_from_relation(board_posts, no_tests: false)
     @meta_og = og_data
-    use_javascript('boards/show')
+    use_javascript('continuities/show')
   end
 
   def edit
     @page_title = 'Edit Continuity: ' + @board.name
-    use_javascript('boards/edit')
+    use_javascript('continuities/edit')
     @board_sections = @board.board_sections.ordered
     @unsectioned_posts = @board.posts.where(section_id: nil).ordered_in_section if @board.ordered?
   end
@@ -136,7 +136,7 @@ class ContinuitiesController < ApplicationController
   def search
     @page_title = 'Search Continuities'
     @user = User.active.where(id: params[:author_id]).ordered if params[:author_id].present?
-    use_javascript('boards/search')
+    use_javascript('continuities/search')
     return unless params[:commit].present?
 
     searcher = Board::Searcher.new
@@ -157,7 +157,7 @@ class ContinuitiesController < ApplicationController
       @coauthors -= [current_user]
       @cameos -= [current_user]
     end
-    use_javascript('boards/editor')
+    use_javascript('continuities/editor')
   end
 
   def find_model
