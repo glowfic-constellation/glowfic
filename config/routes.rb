@@ -116,7 +116,11 @@ Rails.application.routes.draw do
   # API
   namespace :api do
     namespace :v1 do
-      resources :boards, only: [:index, :show] do
+      get '/boards', to: redirect(path: '/api/v1/continuities')
+      get '/boards/:id', to: redirect(path: '/api/v1/continuities/%{id}')
+      get '/boards/:id/posts', to: redirect(path: '/api/v1/continuities/%{id}/posts')
+
+      resources :continuities, controller: :boards, only: [:index, :show] do
         member { get :posts }
       end
       resources :board_sections, only: [] do
