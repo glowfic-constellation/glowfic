@@ -1,7 +1,7 @@
 module.exports = [
   {
     label: "flash_error",
-    path: "boards/-1",
+    path: "continuities/-1",
     selectors: [".flash"]
   },
   {
@@ -23,23 +23,23 @@ module.exports = [
     selectors: ["#content"]
   },
   {
-    label: "boards",
-    path: "boards",
+    label: "continuities",
+    path: "continuities",
     selectors: ["#content"]
   },
   {
-    label: "board_show_open",
-    path: "boards/3",
+    label: "continuity_show_open",
+    path: "continuities/3",
     selectors: ["#content"]
   },
   {
-    label: "board_edit",
-    path: "boards/1/edit?proofer-ignore",
+    label: "continuity_edit",
+    path: "continuities/1/edit?proofer-ignore",
     selectors: ["#content"]
   },
   {
-    label: "board_show_sections",
-    path: "boards/1",
+    label: "continuity_show_sections",
+    path: "continuities/1",
     selectors: ["#content"]
   },
   {
