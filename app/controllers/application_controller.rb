@@ -108,7 +108,7 @@ class ApplicationController < ActionController::Base
     select = if max
       <<~SQL.squish
         posts.*,
-        max(boards.name) as board_name,
+        max(boards.name) as continuity_name,
         max(users.username) as last_user_name,
         bool_or(users.deleted) as last_user_deleted
         #{select}
@@ -116,7 +116,7 @@ class ApplicationController < ActionController::Base
     else
       <<~SQL.squish
         posts.*,
-        boards.name as board_name,
+        boards.name as continuity_name,
         users.username as last_user_name,
         users.deleted as last_user_deleted
         #{select}
