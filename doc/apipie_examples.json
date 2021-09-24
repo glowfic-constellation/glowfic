@@ -76,7 +76,7 @@
   "boards#index": [
     {
       "verb": "GET",
-      "path": "/api/v1/boards",
+      "path": "/api/v1/continuities",
       "versions": [
         "1.0"
       ],
@@ -100,7 +100,7 @@
     },
     {
       "verb": "GET",
-      "path": "/api/v1/boards",
+      "path": "/api/v1/continuities",
       "versions": [
         "1.0"
       ],
@@ -121,7 +121,7 @@
   "boards#posts": [
     {
       "verb": "GET",
-      "path": "/api/v1/boards/0/posts",
+      "path": "/api/v1/continuities/0/posts",
       "versions": [
         "1.0"
       ],
@@ -140,7 +140,7 @@
     },
     {
       "verb": "GET",
-      "path": "/api/v1/boards/1/posts",
+      "path": "/api/v1/continuities/1/posts",
       "versions": [
         "1.0"
       ],
@@ -183,7 +183,7 @@
   "boards#show": [
     {
       "verb": "GET",
-      "path": "/api/v1/boards/0",
+      "path": "/api/v1/continuities/0",
       "versions": [
         "1.0"
       ],
@@ -202,7 +202,7 @@
     },
     {
       "verb": "GET",
-      "path": "/api/v1/boards/1",
+      "path": "/api/v1/continuities/1",
       "versions": [
         "1.0"
       ],
@@ -634,9 +634,9 @@
         }
       },
       "response_data": {
+        "screenname": null,
         "name": "test character 12",
         "id": 1,
-        "screenname": null,
         "default_icon": {
           "id": 2,
           "url": "http://www.fakeicon.com",
