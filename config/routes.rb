@@ -72,7 +72,7 @@ Rails.application.routes.draw do
   # Writing
   get '/boards', to: redirect(path: '/continuities')
   get '/boards/:id', to: redirect(path: '/continuities/%{id}')
-  get '/boards/:id/:action', to: redirect(path: '/continuities/%{id}/%{action}')
+  get '/boards/:id/:actionname', to: redirect(path: '/continuities/%{id}/%{actionname}')
   resources :continuities, controller: :boards do
     collection do
       post :mark
