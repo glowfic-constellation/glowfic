@@ -5,6 +5,13 @@ class Post::View < ApplicationRecord
   validates :post, uniqueness: { scope: :user }
 
   after_create :mark_favorite_read
+  after_commit :invalidate_cache
+
+  CACHE_VERSION = 1
+
+  def self.cache_string_for(user_id)
+    "#{Rails.env}.#{CACHE_VERSION}.ignored_posts.#{user_id}"
+  end
 
   private
 
@@ -17,5 +24,9 @@ class Post::View < ApplicationRecord
     return unless message
 
     message.update!(unread: false, read_at: Time.zone.now)
+  end
+
+  def invalidate_cache
+    Rails.cache.delete(Post::View.cache_string_for(user_id))
   end
 end

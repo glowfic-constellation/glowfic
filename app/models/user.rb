@@ -103,6 +103,14 @@ class User < ApplicationRecord
     blocked_or_hidden_posts('hidden', blocks.where(hide_them: :posts), blocks.where(hide_them: :all))
   end
 
+  def ignored_posts
+    Rails.cache.fetch(Post::View.cache_string_for(self.id), expires_in: 1.month) do
+      post_views = Post::View.where(user_id: self.id).where(ignored: true).select(:post_id)
+      board_views = BoardView.where(user_id: self.id).where(ignored: true).select(:board_id)
+      Post.where(id: post_views).or(Post.where(board_id: board_views)).pluck(:id)
+    end
+  end
+
   private
 
   def strip_spaces
