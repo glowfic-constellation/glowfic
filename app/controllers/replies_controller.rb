@@ -286,6 +286,8 @@ class RepliesController < WritableController
     @written = written
     @post = @written.post
     @written.user = current_user unless @written.user
+
+    @audits = {}
     @audits = { @written.id => @written.audits.count } if @written.id.present?
 
     @page_title = @post.subject
