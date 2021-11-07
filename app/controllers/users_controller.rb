@@ -225,10 +225,11 @@ class UsersController < ApplicationController
       :layout,
       :time_display,
       :unread_opened,
+      :visible_unread,
+      :hide_from_all,
       :hide_warnings,
       :hide_hiatused_tags_owed,
       :ignore_unread_daily_report,
-      :visible_unread,
       :favorite_notifications,
       :show_user_in_switcher,
     )
