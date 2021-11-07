@@ -91,42 +91,56 @@ RSpec.describe PostsController, 'GET unread' do
     end
 
     it "manages board/post read time mismatches" do
+      now = Time.zone.now
       # no views exist
       unread_post = create(:post)
 
       # only post view exists
-      post_unread_post = create(:post)
-      post_unread_post.mark_read(user, at_time: post_unread_post.created_at - 1.second, force: true)
-      post_read_post = create(:post)
-      post_read_post.mark_read(user)
+      post_unread_post, post_read_post = Timecop.freeze(now) { create_list(:post, 2) }
+
+      Timecop.freeze(now + 1.second) do
+        post_unread_post.mark_read(user)
+        post_read_post.mark_read(user)
+      end
+
+      Timecop.freeze(now + 3.seconds) { create(:reply, post: post_unread_post) }
 
       # only board view exists
-      board_unread_post = create(:post)
-      board_unread_post.board.mark_read(user, at_time: board_unread_post.created_at - 1.second, force: true)
-      board_read_post = create(:post)
-      board_read_post.board.mark_read(user)
+      board_unread_post, board_read_post = Timecop.freeze(now) { create_list(:post, 2) }
+
+      Timecop.freeze(now + 1.second) do
+        board_unread_post.mark_read(user)
+        board_read_post.mark_read(user)
+      end
+
+      Timecop.freeze(now + 3.seconds) { create(:reply, post: board_unread_post) }
 
       # both exist
-      both_unread_post = create(:post)
-      both_board_read_post = create(:post)
-      both_board_read_post.board.mark_read(user)
-      both_post_read_post = create(:post)
+      both_unread_post, both_board_read_post, both_post_read_post, both_read_post = Timecop.freeze(now) { create_list(:post, 4) }
 
-      Timecop.freeze(both_unread_post.created_at - 1.second) do
+      Timecop.freeze(now + 1.second) do
         both_unread_post.mark_read(user)
         both_unread_post.board.mark_read(user)
         both_board_read_post.mark_read(user)
         both_post_read_post.board.mark_read(user)
       end
 
-      both_post_read_post.mark_read(user)
-      both_read_post = create(:post)
-      both_read_post.mark_read(user)
-      both_read_post.board.mark_read(user)
+      Timecop.freeze(now + 3.seconds) do
+        create(:reply, post: both_unread_post)
+        create(:reply, post: both_board_read_post)
+        create(:reply, post: both_post_read_post)
+      end
+
+      Timecop.freeze(now + 5.seconds) do
+        both_board_read_post.board.mark_read(user)
+        both_post_read_post.mark_read(user)
+        both_read_post.mark_read(user)
+        both_read_post.board.mark_read(user)
+      end
 
       # board ignored
-      board_ignored = create(:post)
-      board_ignored.mark_read(user, at_time: both_unread_post.created_at - 1.second, force: true)
+      board_ignored = Timecop.freeze(now) { create(:post) }
+      board_ignored.mark_read(user, at_time: now)
       board_ignored.board.ignore(user)
 
       get :unread
