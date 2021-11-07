@@ -11,7 +11,9 @@ class PostsController < WritableController
   before_action :editor_setup, only: [:new, :edit]
 
   def index
-    @posts = posts_from_relation(Post.ordered, show_blocked: !!params[:show_blocked])
+    @posts = Post.ordered
+    @posts = @posts.not_ignored_by(current_user) if current_user&.hide_from_all
+    @posts = posts_from_relation(@posts, show_blocked: !!params[:show_blocked])
     @page_title = 'Recent Threads'
   end
 
