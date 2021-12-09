@@ -55,7 +55,7 @@
     = javascript_include_tag 'application_deferred'.freeze, defer: :defer
   %body
     #holder
-      #header
+      %header#header
         - if logged_in?
           #user-info
             = link_to current_user do
