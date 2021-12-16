@@ -37,4 +37,26 @@ module IconHelper
   def character_icon_tag(character)
     quick_switch_tag(character.default_icon.try(:url), character.name[0..1], character.selector_name, character.id)
   end
+
+  def dropdown_icons(item, galleries=nil)
+    icons = []
+    selected_id = nil
+
+    if item.character
+      icons = if galleries.present?
+        galleries.map(&:icons).flatten
+      else
+        item.character.icons
+      end
+      icons |= [item.character.default_icon] if item.character.default_icon
+      icons |= [item.icon] if item.icon
+      selected_id = item.icon_id
+    elsif current_user.avatar
+      icons = [current_user.avatar]
+      selected_id = current_user.avatar_id
+    end
+
+    return '' unless icons.present?
+    select_tag :icon_dropdown, options_for_select(icons.map{|i| [i.keyword, i.id]}, selected_id), prompt: "No Icon"
+  end
 end
