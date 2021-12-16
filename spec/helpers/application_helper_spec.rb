@@ -185,4 +185,39 @@ RSpec.describe ApplicationHelper do
       expect(helper.per_page_options(30)).to eq(html)
     end
   end
+
+  describe "#pretty_time" do
+    let(:time) { Time.utc(2016, 12, 25, 21, 34, 56) }
+    let(:user) { create(:user, timezone: 'UTC', time_display: nil) }
+
+    before(:each) do
+      without_partial_double_verification do
+        allow(helper).to receive(:current_user).and_return(user)
+      end
+    end
+
+    it "returns nil with nil time" do
+      expect(helper.pretty_time(nil)).to eq(nil)
+    end
+
+    it "uses given format" do
+      format = '%Y-%m-%d %l:%M %p'
+      expect(helper.pretty_time(time, format: format)).to eq('2016-12-25  9:34 PM')
+    end
+
+    it "uses user format" do
+      user.update!(time_display: '%m-%d-%Y %l:%M:%S %p')
+      expect(helper.pretty_time(time)).to eq('12-25-2016  9:34:56 PM')
+    end
+
+    it "uses default format" do
+      without_partial_double_verification do
+        allow(helper).to receive(:current_user).and_return(nil)
+      end
+
+      Time.use_zone('UTC') do
+        expect(helper.pretty_time(time)).to eq('Dec 25, 2016  9:34 PM')
+      end
+    end
+  end
 end
