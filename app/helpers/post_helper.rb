@@ -24,4 +24,38 @@ module PostHelper
     authored_ids = BoardAuthor.where(user: user).select(:board_id)
     Board.where(id: obj.board_id).or(Board.where(authors_locked: false)).or(Board.where(id: authored_ids)).ordered
   end
+
+  def unread_path(post, **kwargs)
+    post_path(post, page: 'unread', anchor: 'unread', **kwargs)
+  end
+
+  def anchored_continuity_path(post)
+    return continuity_path(post.board_id) unless post.section_id.present?
+    continuity_path(post.board_id, anchor: "section-#{post.section_id}")
+  end
+
+  def privacy_state(privacy)
+    privacy = privacy.to_sym
+    privacy_icon(privacy, false) + ' ' + PRIVACY_MAP[privacy][0]
+  end
+
+  def privacy_icon(privacy, alt=true)
+    name = PRIVACY_MAP[privacy][0]
+    img = PRIVACY_MAP[privacy][1]
+    text = alt ? name : ''
+    image_tag("icons/#{img}.png", class: 'vmid', title: name, alt: text)
+  end
+
+  def menu_img
+    return 'icons/menu.png' unless current_user.try(:layout).to_s.start_with?('starry')
+    'icons/menugray.png'
+  end
+
+  def shortened_desc(desc, id)
+    return sanitize_simple_link_text(desc) if desc.length <= 255
+    sanitize_simple_link_text(desc[0...255]) +
+      tag.span('... ', id: "dots-#{id}") +
+      tag.span(sanitize_simple_link_text(desc[255..-1]), class: 'hidden', id: "desc-#{id}") +
+      tag.a('more &raquo;'.html_safe, href: '#', id: "expanddesc-#{id}", class: 'expanddesc')
+  end
 end
