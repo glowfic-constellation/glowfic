@@ -44,14 +44,8 @@ RSpec.describe WritableHelper do
       end
 
       it "handles >4 deleted users" do
-        reply = create(:reply, post: post)
-        reply.user.update!(deleted: true)
-        reply = create(:reply, post: post)
-        reply.user.update!(deleted: true)
-        reply = create(:reply, post: post)
-        reply.user.update!(deleted: true)
-        reply = create(:reply, post: post)
-        reply.user.update!(deleted: true)
+        replies = create_list(:reply, 4, post: post)
+        replies.each { |r| r.user.update!(deleted: true) }
         expect(helper.author_links(post)).to eq('(deleted users)')
       end
     end
@@ -97,7 +91,7 @@ RSpec.describe WritableHelper do
         reply.user.update!(deleted: true)
         create(:reply, post: post, user: create(:user, username: 'www'))
         create(:reply, post: post, user: create(:user, username: 'vvv'))
-        stats_link = helper.link_to('4 others', stats_post_path(post))
+        stats_link = helper.link_to('4 others', stats_post_path(post), title: 'vvv, www, yyy')
         expect(helper.author_links(post)).to eq(helper.user_link(post.user) + ' and ' + stats_link)
         expect(helper.author_links(post)).to be_html_safe
       end
@@ -108,7 +102,7 @@ RSpec.describe WritableHelper do
         create(:reply, post: post, user: create(:user, username: 'xxx'))
         reply = create(:reply, post: post, user: create(:user, username: 'aaa'))
         create(:reply, post: post, user: create(:user, username: 'vvv'))
-        stats_link = helper.link_to('4 others', stats_post_path(post))
+        stats_link = helper.link_to('4 others', stats_post_path(post), title: 'vvv, xxx, yyy')
         expect(helper.author_links(post)).to eq(helper.user_link(reply.user) + ' and ' + stats_link)
         expect(helper.author_links(post)).to be_html_safe
       end
@@ -142,7 +136,7 @@ RSpec.describe WritableHelper do
         create(:reply, post: post, user: create(:user, username: 'xxx'))
         create(:reply, post: post, user: create(:user, username: 'www'))
         create(:reply, post: post, user: create(:user, username: 'vvv'))
-        stats_link = helper.link_to('4 others', stats_post_path(post))
+        stats_link = helper.link_to('4 others', stats_post_path(post), title: 'vvv, www, xxx, yyy')
         expect(helper.author_links(post)).to eq(helper.user_link(post.user) + ' and ' + stats_link)
         expect(helper.author_links(post)).to be_html_safe
       end
