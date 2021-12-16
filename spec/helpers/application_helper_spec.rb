@@ -220,4 +220,21 @@ RSpec.describe ApplicationHelper do
       end
     end
   end
+
+  describe "#loading_tag" do
+    it "works without arguments" do
+      expected = image_tag('/assets/icons/loading.gif', title: 'Loading...', class: 'vmid loading-icon', alt: '...', id: nil)
+      expect(helper.loading_tag).to eq(expected)
+    end
+
+    it "handles provided class" do
+      expected = image_tag('/assets/icons/loading.gif', title: 'Loading...', class: 'vmid loading-icon hidden', alt: '...', id: nil)
+      expect(helper.loading_tag(class: 'hidden')).to eq(expected)
+    end
+
+    it 'handles provided id' do
+      expected = image_tag('/assets/icons/loading.gif', title: 'Loading...', class: 'vmid loading-icon', alt: '...', id: 'loading-5')
+      expect(helper.loading_tag(id: 'loading-5')).to eq(expected)
+    end
+  end
 end
