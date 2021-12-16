@@ -4,11 +4,11 @@ RSpec.describe "Viewing posts" do
     post = create(:post, user: user)
 
     visit post_path(post)
-    expect(page).to have_xpath("//img[contains(@src, 'menu-')]")
+    expect(page.find('.icon-view')['src']).to eq('/assets/icons/menu.png')
 
     user.update!(layout: 'starrydark', avatar: create(:icon, user: user))
     visit post_path(post)
-    expect(page).to have_xpath("//img[contains(@src, 'menugray-')]")
+    expect(page.find('.icon-view')['src']).to eq('/assets/icons/menugray.png')
   end
 
   scenario "with an archived author" do
