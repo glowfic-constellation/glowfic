@@ -101,29 +101,10 @@ module ApplicationHelper
     h(text).gsub('_', '_<wbr>').html_safe
   end
 
-  def post_privacy_settings
-    { 'Public'              => :public,
-      'Constellation Users' => :registered,
-      'Access List'         => :access_list,
-      'Private'             => :private }
-  end
-
   def index_privacy_settings
     { 'Public'              => :public,
       'Constellation Users' => :registered,
       'Private'             => :private }
-  end
-
-  def unread_post?(post, unread_ids)
-    return false unless post
-    return false unless unread_ids
-    unread_ids.include?(post.id)
-  end
-
-  def opened_post?(post, opened_ids)
-    return false unless post
-    return false unless opened_ids
-    opened_ids.include?(post.id)
   end
 
   def message_sender(message)

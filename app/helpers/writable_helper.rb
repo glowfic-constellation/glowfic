@@ -7,13 +7,6 @@ module WritableHelper
     tag.a('(New tab)', href: unread_path(@post), class: 'unread-warning', target: '_blank')
   end
 
-  PRIVACY_MAP = {
-    public: ['Public', 'world'],
-    registered: ['Constellation Users', 'star'],
-    access_list: ['Access List', 'group'],
-    private: ['Private', 'lock'],
-  }
-
   def post_or_reply_link(reply)
     return unless reply.id.present?
     post_or_reply_mem_link(id: reply.id, klass: reply.class)

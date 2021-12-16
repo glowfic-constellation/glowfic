@@ -34,6 +34,20 @@ module PostHelper
     continuity_path(post.board_id, anchor: "section-#{post.section_id}")
   end
 
+  def post_privacy_settings
+    { 'Public'              => :public,
+      'Constellation Users' => :registered,
+      'Access List'         => :access_list,
+      'Private'             => :private }
+  end
+
+  PRIVACY_MAP = {
+    public: ['Public', 'world'],
+    registered: ['Constellation Users', 'star'],
+    access_list: ['Access List', 'group'],
+    private: ['Private', 'lock'],
+  }
+
   def privacy_state(privacy)
     privacy = privacy.to_sym
     privacy_icon(privacy, false) + ' ' + PRIVACY_MAP[privacy][0]
@@ -57,5 +71,17 @@ module PostHelper
       tag.span('... ', id: "dots-#{id}") +
       tag.span(sanitize_simple_link_text(desc[255..-1]), class: 'hidden', id: "desc-#{id}") +
       tag.a('more &raquo;'.html_safe, href: '#', id: "expanddesc-#{id}", class: 'expanddesc')
+  end
+
+  def unread_post?(post, unread_ids)
+    return false unless post
+    return false unless unread_ids
+    unread_ids.include?(post.id)
+  end
+
+  def opened_post?(post, opened_ids)
+    return false unless post
+    return false unless opened_ids
+    opened_ids.include?(post.id)
   end
 end
