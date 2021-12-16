@@ -23,8 +23,8 @@ RSpec.describe WritableHelper do
       create_list(:reply, 26, post: post)
       assign(:replies, post.replies.paginate(page: 1))
       html = 'You are not on the latest page of the thread '
-      html += tag.a('(View unread)', href: unread_path(post), class: 'unread-warning') + ' '
-      html += tag.a('(New tab)', href: unread_path(post), class: 'unread-warning', target: '_blank')
+      html += tag.a('(View unread)', href: helper.unread_path(post), class: 'unread-warning') + ' '
+      html += tag.a('(New tab)', href: helper.unread_path(post), class: 'unread-warning', target: '_blank')
       expect(helper.unread_warning).to eq(html)
     end
   end
