@@ -361,9 +361,9 @@ class CharactersController < ApplicationController
 
     linked = []
     nicknames = ([@character.nickname] + @character.aliases.pluck(:name)).uniq.compact
-    linked << "Nickname".pluralize(nicknames.count) + ": " + nicknames.join(', ') if nicknames.present?
+    linked << ("Nickname".pluralize(nicknames.count) + ": " + nicknames.join(', ')) if nicknames.present?
     settings = @character.settings.pluck(:name)
-    linked << "Setting".pluralize(settings.count) + ": " + settings.join(', ') if settings.present?
+    linked << ("Setting".pluralize(settings.count) + ": " + settings.join(', ')) if settings.present?
     desc = [linked.join('. ')].reject(&:blank?)
     desc << generate_short(@character.description) if @character.description.present?
     reply_posts = Reply.where(character_id: @character.id).select(:post_id).distinct.pluck(:post_id)

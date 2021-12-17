@@ -103,7 +103,7 @@ class BoardSectionsController < ApplicationController
     board = @board_section.board
     stats << board.writers.where.not(deleted: true).ordered.pluck(:username).join(', ') if board.authors_locked?
     post_count = @board_section.posts.privacy_public.count
-    stats << "#{post_count} " + "post".pluralize(post_count)
+    stats << "#{post_count} #{'post'.pluralize(post_count)}"
     desc = [stats.join(' – ')]
     desc << generate_short(@board_section.description) if @board_section.description.present?
     {
