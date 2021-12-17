@@ -6,7 +6,7 @@ class DailyReport < Report
   end
 
   def posts(sort='', new_today=false)
-    range = day.beginning_of_day .. day.end_of_day
+    range = day.all_day
     created_today = Post.where(created_at: range)
     return created_today.select("posts.*, posts.created_at as first_updated_at").order(sort) if new_today
 

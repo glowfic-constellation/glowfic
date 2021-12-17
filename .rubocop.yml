@@ -309,6 +309,10 @@ Performance/Sum:
 Rails/ActiveRecordCallbacksOrder:
   Enabled: true
 
+Rails/AddColumnIndex: # new in 2.11
+  Enabled: false
+  # disabled because we don't run cops on db/*, otherwise good
+
 Rails/AfterCommitOverride:
   Enabled: true
 
@@ -332,8 +336,14 @@ Rails/DynamicFindBy:
     - find_by_sql
     - find_by_id
 
+Rails/EagerEvaluationLogMessage: # new in 2.11
+  Enabled: true
+
 Rails/EnvironmentVariableAccess: # (new in 2.10)
   Enabled: false
+
+Rails/ExpandedDateRange: # new in 2.11
+  Enabled: true
 
 Rails/FilePath:
   EnforcedStyle: 'arguments'
@@ -350,6 +360,10 @@ Rails/HasManyOrHasOneDependent:
 
 Rails/HelperInstanceVariable:
   Enabled: false
+
+Rails/I18nLocaleAssignment: # new in 2.11
+  Enabled: false
+  # we don't use i18n
 
 Rails/MailerName:
   Enabled: true
@@ -375,6 +389,10 @@ Rails/PluckInWhere:
 Rails/ReadWriteAttribute:
   Enabled: false
 
+Rails/RedundantTravelBack: # new in 2.12
+  Enabled: false
+  # we don't use rails tests
+
 Rails/RenderInline:
   Enabled: true
 
@@ -395,6 +413,10 @@ Rails/TimeZoneAssignment: # (new in 2.10)
 
 Rails/UniqueValidationWithoutIndex:
   Enabled: false
+
+Rails/UnusedIgnoredColumns: # new in 2.11
+  Enabled: false
+  # we don't use ignored_columns
 
 Rails/WhereEquals:
   Enabled: true
