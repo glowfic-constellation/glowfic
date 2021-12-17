@@ -1,148 +1,4 @@
 RSpec.describe WritableHelper do
-  describe "#shortened_desc" do
-    it "uses full string if short enough" do
-      text = 'a' * 100
-      expect(helper.shortened_desc(text, 1)).to eq(text)
-    end
-
-    it "uses 255 chars if single long paragraph" do
-      text = 'a' * 300
-      more = '<a href="#" id="expanddesc-1" class="expanddesc">more &raquo;</a>'
-      dots = '<span id="dots-1">... </span>'
-      expand = '<span class="hidden" id="desc-1">' + ('a' * 45) + '</span>'
-      expect(helper.shortened_desc(text, 1)).to eq('a' * 255 + dots + expand + more)
-    end
-  end
-
-  describe "#anchored_continuity_path" do
-    it "anchors for sectioned post" do
-      section = create(:board_section)
-      post = create(:post, board: section.board, section: section)
-      expect(helper.anchored_continuity_path(post)).to eq(continuity_path(post.board_id) + "#section-" + section.id.to_s)
-    end
-
-    it "does not anchor for unsectioned post" do
-      post = create(:post)
-      expect(helper.anchored_continuity_path(post)).to eq(continuity_path(post.board_id))
-    end
-  end
-
-  describe "#author_links" do
-    let(:post) { create(:post) }
-
-    context "with only deleted users" do
-      before(:each) { post.user.update!(deleted: true) }
-
-      it "handles only a deleted user" do
-        expect(helper.author_links(post)).to eq('(deleted user)')
-      end
-
-      it "handles only two deleted users" do
-        reply = create(:reply, post: post)
-        reply.user.update!(deleted: true)
-        expect(helper.author_links(post)).to eq('(deleted users)')
-      end
-
-      it "handles >4 deleted users" do
-        replies = create_list(:reply, 4, post: post)
-        replies.each { |r| r.user.update!(deleted: true) }
-        expect(helper.author_links(post)).to eq('(deleted users)')
-      end
-    end
-
-    context "with active and deleted users" do
-      it "handles two users with post user deleted" do
-        post.user.update!(deleted: true)
-        reply = create(:reply, post: post)
-        expect(helper.author_links(post)).to eq(helper.user_link(reply.user) + ' and 1 deleted user')
-        expect(helper.author_links(post)).to be_html_safe
-      end
-
-      it "handles two users with reply user deleted" do
-        reply = create(:reply, post: post)
-        reply.user.update!(deleted: true)
-        expect(helper.author_links(post)).to eq(helper.user_link(post.user) + ' and 1 deleted user')
-        expect(helper.author_links(post)).to be_html_safe
-      end
-
-      it "handles three users with one deleted" do
-        post.user.update!(username: 'xxx')
-        reply = create(:reply, post: post)
-        reply.user.update!(deleted: true)
-        reply = create(:reply, post: post, user: create(:user, username: 'yyy'))
-        links = [post.user, reply.user].map { |u| helper.user_link(u) }.join(', ')
-        expect(helper.author_links(post)).to eq(links + ' and 1 deleted user')
-        expect(helper.author_links(post)).to be_html_safe
-      end
-
-      it "handles three users with two deleted" do
-        reply = create(:reply, post: post)
-        reply.user.update!(deleted: true)
-        reply = create(:reply, post: post)
-        reply.user.update!(deleted: true)
-        expect(helper.author_links(post)).to eq(helper.user_link(post.user) + ' and 2 deleted users')
-        expect(helper.author_links(post)).to be_html_safe
-      end
-
-      it "handles >4 users with post user first" do
-        post.user.update!(username: 'zzz')
-        create(:reply, post: post, user: create(:user, username: 'yyy'))
-        reply = create(:reply, post: post, user: create(:user, username: 'xxx'))
-        reply.user.update!(deleted: true)
-        create(:reply, post: post, user: create(:user, username: 'www'))
-        create(:reply, post: post, user: create(:user, username: 'vvv'))
-        stats_link = helper.link_to('4 others', stats_post_path(post), title: 'vvv, www, yyy')
-        expect(helper.author_links(post)).to eq(helper.user_link(post.user) + ' and ' + stats_link)
-        expect(helper.author_links(post)).to be_html_safe
-      end
-
-      it "handles >4 users with alphabetical user first iff post user deleted" do
-        post.user.update!(username: 'zzz', deleted: true)
-        create(:reply, post: post, user: create(:user, username: 'yyy'))
-        create(:reply, post: post, user: create(:user, username: 'xxx'))
-        reply = create(:reply, post: post, user: create(:user, username: 'aaa'))
-        create(:reply, post: post, user: create(:user, username: 'vvv'))
-        stats_link = helper.link_to('4 others', stats_post_path(post), title: 'vvv, xxx, yyy')
-        expect(helper.author_links(post)).to eq(helper.user_link(reply.user) + ' and ' + stats_link)
-        expect(helper.author_links(post)).to be_html_safe
-      end
-    end
-
-    context "with only active users" do
-      it "handles only one user" do
-        expect(helper.author_links(post)).to eq(helper.user_link(post.user))
-        expect(helper.author_links(post)).to be_html_safe
-      end
-
-      it "handles two users with commas" do
-        post.user.update!(username: 'xxx')
-        reply = create(:reply, post: post, user: create(:user, username: 'yyy'))
-        expect(helper.author_links(post)).to eq(helper.user_link(post.user) + ', ' + helper.user_link(reply.user))
-        expect(helper.author_links(post)).to be_html_safe
-      end
-
-      it "handles three users with commas and no and" do
-        post.user.update!(username: 'zzz')
-        users = [post.user]
-        users << create(:reply, post: post, user: create(:user, username: 'yyy')).user
-        users << create(:reply, post: post, user: create(:user, username: 'xxx')).user
-        expect(helper.author_links(post)).to eq(users.reverse.map { |u| helper.user_link(u) }.join(', '))
-        expect(helper.author_links(post)).to be_html_safe
-      end
-
-      it "handles >4 users with post user first" do
-        post.user.update!(username: 'zzz')
-        create(:reply, post: post, user: create(:user, username: 'yyy'))
-        create(:reply, post: post, user: create(:user, username: 'xxx'))
-        create(:reply, post: post, user: create(:user, username: 'www'))
-        create(:reply, post: post, user: create(:user, username: 'vvv'))
-        stats_link = helper.link_to('4 others', stats_post_path(post), title: 'vvv, www, xxx, yyy')
-        expect(helper.author_links(post)).to eq(helper.user_link(post.user) + ' and ' + stats_link)
-        expect(helper.author_links(post)).to be_html_safe
-      end
-    end
-  end
-
   describe "#unread_warning" do
     let(:post) { create(:post) }
 
@@ -167,69 +23,175 @@ RSpec.describe WritableHelper do
       create_list(:reply, 26, post: post)
       assign(:replies, post.replies.paginate(page: 1))
       html = 'You are not on the latest page of the thread '
-      html += tag.a('(View unread)', href: unread_path(post), class: 'unread-warning') + ' '
-      html += tag.a('(New tab)', href: unread_path(post), class: 'unread-warning', target: '_blank')
+      html += tag.a('(View unread)', href: helper.unread_path(post), class: 'unread-warning') + ' '
+      html += tag.a('(New tab)', href: helper.unread_path(post), class: 'unread-warning', target: '_blank')
       expect(helper.unread_warning).to eq(html)
     end
   end
 
-  describe "#dropdown_icons" do
-    let(:user) { create(:user) }
-    let(:post) { build(:post, user: user) }
-    let(:character) { create(:character, user: user) }
+  describe "#sanitize_simple_link_text" do
+    it "remains blank if given blank" do
+      text = ''
+      expect(helper.sanitize_simple_link_text(text)).to eq(text)
+    end
 
-    before(:each) do
-      without_partial_double_verification do
-        allow(helper).to receive(:current_user).and_return(user)
+    it "does not malform plain text" do
+      text = 'sample text'
+      expect(helper.sanitize_simple_link_text(text)).to eq(text)
+    end
+
+    it "permits links" do
+      text = 'here is <a href="http://example.com">a link</a> '
+      text += '<a href="https://example.com">another link</a> '
+      text += '<a href="/characters/1">yet another link</a>'
+      result = helper.sanitize_simple_link_text(text)
+      expect(result).to eq(text)
+      expect(result).to be_html_safe
+    end
+
+    it "removes unpermitted attributes" do
+      text = '<a onclick="function(){ alert("bad!");}">test</a>'
+      expect(helper.sanitize_simple_link_text(text)).to eq('<a>test</a>')
+    end
+
+    it "removes unpermitted elements" do
+      text = '<b>test</b> <script type="text/javascript">alert("bad!");</script> <p>text</p>'
+      expect(helper.sanitize_simple_link_text(text)).to eq('test   text ')
+    end
+
+    it "fixes unending tags" do
+      text = '<a>test'
+      expect(helper.sanitize_simple_link_text(text)).to eq('<a>test</a>')
+    end
+  end
+
+  describe "#sanitize_written_content" do
+    ['RTF', 'HTML'].each do |editor_mode|
+      # applies only for single-line input
+      def format_input(text, editor_mode)
+        return text if editor_mode == 'HTML'
+        "<p>#{text}</p>"
+      end
+
+      context "shared examples in #{editor_mode} mode" do
+        it "is blank if given blank" do
+          text = ''
+          expect(helper.sanitize_written_content(format_input(text, editor_mode))).to eq("<p>#{text}</p>")
+        end
+
+        it "does not malform plain text" do
+          text = 'sample text'
+          expect(helper.sanitize_written_content(format_input(text, editor_mode))).to eq("<p>#{text}</p>")
+        end
+
+        it "permits links" do
+          text = 'here is <a href="http://example.com">a link</a> '
+          text += '<a href="https://example.com">another link</a> '
+          text += '<a href="/characters/1">yet another link</a>'
+          expect(helper.sanitize_written_content(format_input(text, editor_mode))).to eq("<p>#{text}</p>")
+        end
+
+        it "permits images" do
+          text = 'images: <img src="http://example.com/image.png"> <img src="https://example.com/image.jpg"> <img src="/image.gif">'
+          result = helper.sanitize_written_content(format_input(text, editor_mode))
+          expect(result).to eq("<p>#{text}</p>")
+          expect(result).to be_html_safe
+        end
+
+        it "removes unpermitted attributes" do
+          text = '<a onclick="function(){ alert("bad!");}">test</a>'
+          expect(helper.sanitize_written_content(format_input(text, editor_mode))).to eq("<p><a>test</a></p>")
+        end
+
+        it "permits valid CSS" do
+          text = '<a style="color: red;">test</a>'
+          expect(helper.sanitize_written_content(format_input(text, editor_mode))).to eq("<p>#{text}</p>")
+        end
+
+        it "fixes unending tags" do
+          text = '<a>test'
+          expect(helper.sanitize_written_content(format_input(text, editor_mode))).to eq("<p><a>test</a></p>")
+        end
       end
     end
 
-    it "returns an empty string with no icons" do
-      create_list(:icon, 3, user: user)
-      expect(helper.dropdown_icons(post)).to eq('')
+    context "with linebreak tags" do
+      # RTF editor or HTML editor with manual tags
+      it "removes unpermitted elements" do
+        text = '<b>test</b> <script type="text/javascript">alert("bad!");</script> <p>text</p>'
+        result = helper.sanitize_written_content(text)
+        expect(result).to eq('<b>test</b>  <p>text</p>')
+        expect(result).to be_html_safe
+      end
+
+      it "permits some attributes on only some tags" do
+        text = '<p><a width="100%" href="https://example.com">test</a></p> <hr width="100%">'
+        expected = '<p><a href="https://example.com">test</a></p> <hr width="100%">'
+        expect(helper.sanitize_written_content(text)).to eq(expected)
+      end
+
+      it "does not convert linebreaks in text with <br> tags" do
+        text = "line1<br>line2\nline3"
+        display = text
+        expect(helper.sanitize_written_content(text)).to eq(display)
+
+        text = "line1<br/>line2\nline3"
+        expect(helper.sanitize_written_content(text)).to eq(display)
+
+        text = "line1<br />line2\nline3"
+        expect(helper.sanitize_written_content(text)).to eq(display)
+      end
+
+      it "does not convert linebreaks in text with <p> tags" do
+        text = "<p>line1</p><p>line2\nline3</p>"
+        expect(helper.sanitize_written_content(text)).to eq(text)
+      end
+
+      it "does not convert linebreaks in text with complicated <p> tags" do
+        text = "<p style=\"width: 100%;\">line1\nline2</p>"
+        expect(helper.sanitize_written_content(text)).to eq(text)
+      end
+
+      it "does not touch blockquotes" do
+        text = "<blockquote>Blah. Blah.<br />Blah.</blockquote>\n<blockquote>Blah blah.</blockquote>\n<p>Blah.</p>"
+        expected = "<blockquote>Blah. Blah.<br>Blah.</blockquote>\n<blockquote>Blah blah.</blockquote>\n<p>Blah.</p>"
+        expect(helper.sanitize_written_content(text)).to eq(expected)
+      end
     end
 
-    it "returns avatar with no character" do
-      avatar = create(:icon)
-      user.update!(avatar: avatar)
-      html = select_tag :icon_dropdown, options_for_select([[avatar.keyword, avatar.id]], avatar.id), prompt: "No Icon"
-      expect(helper.dropdown_icons(post)).to eq(html)
-    end
+    context "without linebreak tags" do
+      it "automatically converts linebreaks" do
+        text = "line1\nline2\n\nline3"
+        result = helper.sanitize_written_content(text)
+        expect(result).to eq("<p>line1\n<br>line2</p>\n\n<p>line3</p>")
+        expect(result).to be_html_safe
+      end
 
-    it "returns icons collection if galleries" do
-      icons = create_list(:icon, 3, user: user)
-      character.galleries << create(:gallery, user: user, icons: icons[0..1])
-      character.galleries << create(:gallery, user: user, icons: [icons.last])
-      icons = Icon.where(id: icons.map(&:id))
-      post.character = character
-      html = select_tag :icon_dropdown, options_for_select(icons.ordered.map{|i| [i.keyword, i.id]}, nil), prompt: "No Icon"
-      expect(helper.dropdown_icons(post, character.galleries)).to eq(html)
-    end
+      it "defaults to old linebreak-to-br format when blockquote detected" do
+        text = "<blockquote>Blah. Blah.\r\nBlah.\r\n\r\nBlah blah.</blockquote>\r\nBlah."
+        expected = "<blockquote>Blah. Blah.<br>Blah.<br><br>Blah blah.</blockquote><br>Blah."
+        expect(helper.sanitize_written_content(text)).to eq(expected)
+      end
 
-    it "returns icons if character has icons" do
-      icons = create_list(:icon, 3, user: user)
-      character.galleries << create(:gallery, icons: icons)
-      post.character = character
-      post.icon = icons[0]
-      icons = Icon.where(id: icons.map(&:id)).ordered
-      html = select_tag :icon_dropdown, options_for_select(icons.map{|i| [i.keyword, i.id]}, post.icon_id), prompt: "No Icon"
-      expect(helper.dropdown_icons(post)).to eq(html)
-    end
+      it "does not mangle large breaks" do
+        text = "line1\n\n\nline2"
+        expected = "<p>line1</p>\n\n<p>\n<br>line2</p>"
+        expect(helper.sanitize_written_content(text)).to eq(expected)
 
-    it "returns default icon if character only has that" do
-      icon = create(:icon, user: user)
-      character.update!(default_icon: icon)
-      post.character = character
-      html = select_tag :icon_dropdown, options_for_select([[icon.keyword, icon.id]], nil), prompt: "No Icon"
-      expect(helper.dropdown_icons(post)).to eq(html)
-    end
+        text = "line1\n\n\n\nline2"
+        expected = "<p>line1</p>\n\n<p>&nbsp;</p>\n\n<p>line2</p>" # U+00A0 is NBSP
+        expect(helper.sanitize_written_content(text)).to eq(expected)
+      end
 
-    it "returns icon if post icon" do
-      icon = create(:icon, user: user)
-      post.character = character
-      post.icon = icon
-      html = select_tag :icon_dropdown, options_for_select([[icon.keyword, icon.id]], icon.id), prompt: "No Icon"
-      expect(helper.dropdown_icons(post)).to eq(html)
+      it "does not mangle tags continuing over linebreaks" do
+        text = "line1<b>text\nline2</b>"
+        expected = "<p>line1<b>text\n<br>line2</b></p>"
+        expect(helper.sanitize_written_content(text)).to eq(expected)
+
+        text = "line1<b>text\n\nline2</b>"
+        expected = "<p>line1<b>text</b></p><b>\n\n</b><p><b>line2</b></p>"
+        expect(helper.sanitize_written_content(text)).to eq(expected)
+      end
     end
   end
 end
