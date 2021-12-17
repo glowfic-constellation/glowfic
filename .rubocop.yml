@@ -450,11 +450,17 @@ RSpec/ExampleLength:
 RSpec/ExampleWording:
   Enabled: false
 
+RSpec/ExcessiveDocstringSpacing: # new in 2.5
+  Enabled: true
+
 RSpec/ExpectChange:
   EnforcedStyle: block
 
 RSpec/HookArgument:
   EnforcedStyle: each
+
+RSpec/IdenticalEqualityAssertion: # new in 2.4
+  Enabled: true
 
 RSpec/InstanceVariable:
   Enabled: false
@@ -475,8 +481,16 @@ RSpec/MultipleMemoizedHelpers:
 RSpec/NestedGroups:
   Max: 5
 
+RSpec/SubjectDeclaration: # new in 2.5
+  Enabled: true
+
 RSpec/StubbedMock:
   Enabled: false
+
+################## RSpec/Rails #################################
+
+RSpec/Rails/AvoidSetupHook: # new in 2.4
+  Enabled: true
 
 ################## Security ##############################
 
