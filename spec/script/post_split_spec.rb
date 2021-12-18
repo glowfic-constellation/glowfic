@@ -1,6 +1,6 @@
 require Rails.root.join('script', 'post_split.rb')
 
-RSpec.describe "post_split" do # rubocop:disable Rspec/DescribeClass
+RSpec.describe "post_split" do # rubocop:disable RSpec/DescribeClass
   let(:title) { 'test subject' }
 
   before(:each) do

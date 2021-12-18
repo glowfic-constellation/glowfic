@@ -165,7 +165,7 @@ RSpec.describe PostHelper do
       more = '<a href="#" id="expanddesc-1" class="expanddesc">more &raquo;</a>'
       dots = '<span id="dots-1">... </span>'
       expand = '<span class="hidden" id="desc-1">' + ('a' * 45) + '</span>'
-      expect(helper.shortened_desc(text, 1)).to eq('a' * 255 + dots + expand + more)
+      expect(helper.shortened_desc(text, 1)).to eq(('a' * 255) + dots + expand + more)
     end
   end
 

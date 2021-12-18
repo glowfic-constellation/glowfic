@@ -30,7 +30,7 @@ class ReportsController < ApplicationController
       @new_today = params[:new_today].present?
       @posts = DailyReport.new(@day).posts(sort, @new_today)
       @posts = posts_from_relation(@posts, max: !@new_today)
-      replies_on_day = Reply.where(created_at: @day.beginning_of_day..@day.end_of_day)
+      replies_on_day = Reply.where(created_at: @day.all_day)
       @reply_counts = replies_on_day.group(:post_id).count
       first_for_day = replies_on_day.order(post_id: :asc, created_at: :asc)
       first_for_day = first_for_day.pluck(Arel.sql('DISTINCT ON (post_id) replies.post_id, replies.id, replies.created_at'))

@@ -250,7 +250,7 @@ class GalleriesController < UploadingController
     desc = ["#{icon_count} " + "icon".pluralize(icon_count)]
     tags = @gallery.gallery_groups_data.pluck(:name)
     tag_count = tags.count
-    desc << "Tag".pluralize(tag_count) + ": " + generate_short(tags.join(', ')) if tag_count > 0
+    desc << ("Tag".pluralize(tag_count) + ": " + generate_short(tags.join(', '))) if tag_count > 0
     title = [@gallery.name]
     title.prepend(@gallery.user.username) unless @gallery.user.deleted?
     {

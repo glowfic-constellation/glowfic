@@ -111,7 +111,7 @@ class TemplatesController < ApplicationController
     desc = []
     character_count = @template.characters.count
     desc << generate_short(@template.description) if @template.description.present?
-    desc << "#{character_count} " + "character".pluralize(character_count)
+    desc << "#{character_count} #{'character'.pluralize(character_count)}"
     title = [@template.name]
     title.prepend(@template.user.username) unless @template.user.deleted?
     {
