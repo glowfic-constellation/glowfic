@@ -3,18 +3,31 @@ on:
   pull_request:
     branches: [ master ]
 jobs:
-  brakeman:
-    name: runner / brakeman
+  setup:
     runs-on: ubuntu-latest
     steps:
       - name: Check out code
         uses: actions/checkout@v1
-      - name: Set up Ruby
-        uses: ruby/setup-ruby@v1
+      - uses: ruby/setup-ruby@v1
         with:
           ruby-version: 2.6.8
+          bundler-cache: true
+  rubocop:
+    name: rubocop
+    needs: setup
+    steps:
+      - name: rubocop
+        uses: reviewdog/action-rubocop@v2
+        with:
+          rubocop_version: gemfile
+          rubocop_extensions: rubocop-rails:gemfile rubocop-rspec:gemfile rubocop-performance:gemfile
+          reporter: github-pr-review
+  brakeman:
+    name: brakeman
+    needs: setup
+    steps:
       - name: brakeman
         uses: reviewdog/action-brakeman@v2
         with:
           brakeman_version: 'gemfile'
-          reporter: github-pr-check
+          reporter: github-pr-review

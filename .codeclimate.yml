@@ -1,8 +1,6 @@
 ---
 version: "2"
 plugins:
-  brakeman:
-    enabled: false
   bundler-audit:
     enabled: true
   csslint:
@@ -20,8 +18,6 @@ plugins:
     enabled: true
   haml-lint:
     enabled: true
-  rubocop:
-    enabled: false
   sass-lint:
     enabled: true
 checks:

@@ -1,12 +1,9 @@
-name: rubocop
+name: reviewdog (github-check)
 on:
-  pull_request:
-    branches: [ master ]
   push:
     branches: [ master ]
 jobs:
-  rubocop:
-    name: reviewdog / rubocop
+  setup:
     runs-on: ubuntu-latest
     steps:
       - name: Check out code
@@ -14,14 +11,11 @@ jobs:
       - uses: ruby/setup-ruby@v1
         with:
           ruby-version: 2.6.8
-      - run: gem install activesupport --version 5.2.6
-      - name: rubocop
-        uses: reviewdog/action-rubocop@v2
-        with:
-          rubocop_version: gemfile
-          rubocop_extensions: rubocop-rails:gemfile rubocop-rspec:gemfile rubocop-performance:gemfile
-          reporter: github-pr-review
-        if: ${{ github.event_name == 'pull_request' }}
+          bundler-cache: true
+  rubocop:
+    name: rubocop
+    needs: setup
+    steps:
       - name: rubocop
         uses: reviewdog/action-rubocop@v2
         with:
@@ -29,4 +23,13 @@ jobs:
           rubocop_extensions: rubocop-rails:gemfile rubocop-rspec:gemfile rubocop-performance:gemfile
           filter_mode: nofilter
           reporter: github-check
-        if: ${{ github.event_name == 'push' }}
+  brakeman:
+    name: brakeman
+    needs: setup
+    steps:
+      - name: brakeman
+        uses: reviewdog/action-brakeman@v2
+        with:
+          brakeman_version: 'gemfile'
+          filter_mode: nofilter
+          reporter: github-check
