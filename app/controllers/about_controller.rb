@@ -3,7 +3,6 @@ class AboutController < ApplicationController
     @page_title = 'Terms of Service'
   end
 
-  #unrelated science
   def privacy
     @page_title = 'Privacy Policy'
   end
