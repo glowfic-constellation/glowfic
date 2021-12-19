@@ -12,6 +12,7 @@ jobs:
         with:
           ruby-version: 2.6.8
           bundler-cache: true
+      - uses: reviewdog/action-setup@v1
   rubocop:
     name: rubocop
     needs: setup
@@ -31,3 +32,12 @@ jobs:
         with:
           brakeman_version: 'gemfile'
           reporter: github-pr-review
+  haml_lint:
+    name: haml-lint
+    needs: setup
+    runs-on: ubuntu-latest
+    steps:
+      - name: haml-lint
+        env:
+          REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: haml-lint app/views | reviewdog -f=haml -name="haml-lint" -reporter="github-pr-review"
