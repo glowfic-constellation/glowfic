@@ -21,7 +21,6 @@ jobs:
           reporter: github-check
   brakeman:
     name: brakeman
-    needs: setup
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
@@ -37,7 +36,6 @@ jobs:
           reporter: github-check
   haml_lint:
     name: haml-lint
-    needs: setup
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
@@ -52,7 +50,6 @@ jobs:
         run: haml-lint app/views | reviewdog -f=haml -name="haml-lint" -reporter="github-check" -filter-mode=nofilter
   eslint:
     name: eslint
-    needs: setup
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
