@@ -400,7 +400,7 @@ Rails/RenderPlainText:
   Enabled: true
 
 Rails/SaveBang:
-  Enabled: true
+  Enabled: false
 
 Rails/ShortI18n:
   Enabled: true
