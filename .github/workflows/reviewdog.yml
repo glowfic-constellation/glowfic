@@ -41,3 +41,14 @@ jobs:
         env:
           REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: haml-lint app/views | reviewdog -f=haml -name="haml-lint" -reporter="github-pr-review"
+  eslint:
+    name: eslint
+    needs: setup
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-node@v2
+      - run: npm install eslint@~6.0.0
+      - uses: reviewdog/action-eslint@v1
+        with:
+          reporter: github-pr-review
+          eslint_flags: 'app/assets/javascripts'

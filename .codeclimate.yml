@@ -11,9 +11,6 @@ plugins:
       languages:
       - ruby
       - javascript
-  eslint:
-    enabled: true
-    channel: eslint-6
   fixme:
     enabled: true
   sass-lint:
