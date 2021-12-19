@@ -16,6 +16,7 @@ jobs:
   rubocop:
     name: rubocop
     needs: setup
+    runs-on: ubuntu-latest
     steps:
       - name: rubocop
         uses: reviewdog/action-rubocop@v2
@@ -26,6 +27,7 @@ jobs:
   brakeman:
     name: brakeman
     needs: setup
+    runs-on: ubuntu-latest
     steps:
       - name: brakeman
         uses: reviewdog/action-brakeman@v2
