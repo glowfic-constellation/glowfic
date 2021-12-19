@@ -19,3 +19,25 @@ jobs:
           rubocop_version: gemfile
           rubocop_extensions: rubocop-rails:gemfile rubocop-rspec:gemfile rubocop-performance:gemfile
           reporter: github-pr-review
+
+name: reviewdog
+on:
+  push:
+    branches: [ master ]
+jobs:
+  rubocop:
+    name: runner / rubocop
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v1
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 2.6.8
+      - run: gem install activesupport --version 5.2.6
+      - name: rubocop
+        uses: reviewdog/action-rubocop@v2
+        with:
+          rubocop_version: gemfile
+          rubocop_extensions: rubocop-rails:gemfile rubocop-rspec:gemfile rubocop-performance:gemfile
+          reporter: github-check
