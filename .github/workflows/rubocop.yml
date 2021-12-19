@@ -6,7 +6,7 @@ on:
     branches: [ master ]
 jobs:
   rubocop:
-    name: runner / rubocop
+    name: reviewdog / rubocop
     runs-on: ubuntu-latest
     steps:
       - name: Check out code
