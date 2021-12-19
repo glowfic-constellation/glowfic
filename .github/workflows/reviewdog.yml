@@ -3,21 +3,15 @@ on:
   pull_request:
     branches: [ master ]
 jobs:
-  setup:
+  rubocop:
+    name: rubocop
     runs-on: ubuntu-latest
     steps:
-      - name: Check out code
-        uses: actions/checkout@v1
+      - uses: actions/checkout@v1
       - uses: ruby/setup-ruby@v1
         with:
           ruby-version: 2.6.8
           bundler-cache: true
-      - uses: reviewdog/action-setup@v1
-  rubocop:
-    name: rubocop
-    needs: setup
-    runs-on: ubuntu-latest
-    steps:
       - name: rubocop
         uses: reviewdog/action-rubocop@v2
         with:
@@ -29,6 +23,11 @@ jobs:
     needs: setup
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v1
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 2.6.8
+          bundler-cache: true
       - name: brakeman
         uses: reviewdog/action-brakeman@v2
         with:
@@ -39,6 +38,12 @@ jobs:
     needs: setup
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v1
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 2.6.8
+          bundler-cache: true
+      - uses: reviewdog/action-setup@v1
       - name: haml-lint
         env:
           REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -48,6 +53,11 @@ jobs:
     needs: setup
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v1
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 2.6.8
+          bundler-cache: true
       - uses: actions/setup-node@v2
       - run: npm install eslint@~6.0.0
       - uses: reviewdog/action-eslint@v1
