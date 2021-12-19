@@ -20,6 +20,7 @@ jobs:
           skip_install: true
           use_bundler: true
           rubocop_flags: --config ./.rubocop.yml
+          fail_on_error: true
           reporter: github-pr-review
   brakeman:
     name: brakeman
@@ -34,6 +35,7 @@ jobs:
         uses: reviewdog/action-brakeman@v2
         with:
           brakeman_version: 'gemfile'
+          fail_on_error: true
           reporter: github-pr-review
   haml_lint:
     name: haml-lint
@@ -48,7 +50,7 @@ jobs:
       - name: haml-lint
         env:
           REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: bundle exec haml-lint app/views | reviewdog -f=haml-lint -name="haml-lint" -reporter="github-pr-review"
+        run: bundle exec haml-lint app/views | reviewdog -f=haml-lint -name="haml-lint" -reporter="github-pr-review" -fail-on-error
   eslint:
     name: eslint
     runs-on: ubuntu-latest
@@ -64,3 +66,4 @@ jobs:
         with:
           reporter: github-pr-review
           eslint_flags: 'app/assets/javascripts'
+          fail_on_error: true
