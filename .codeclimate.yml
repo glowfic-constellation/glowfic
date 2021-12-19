@@ -21,8 +21,7 @@ plugins:
   haml-lint:
     enabled: true
   rubocop:
-    enabled: true
-    channel: rubocop-0-80
+    enabled: false
   sass-lint:
     enabled: true
 checks:
