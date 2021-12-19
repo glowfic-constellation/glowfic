@@ -17,6 +17,7 @@ jobs:
         with:
           rubocop_version: gemfile
           rubocop_extensions: rubocop-rails:gemfile rubocop-rspec:gemfile rubocop-performance:gemfile
+          skip_install: true
           filter_mode: nofilter
           reporter: github-check
   brakeman:
@@ -47,7 +48,7 @@ jobs:
       - name: haml-lint
         env:
           REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: haml-lint app/views | reviewdog -f=haml -name="haml-lint" -reporter="github-check" -filter-mode=nofilter
+        run: bundle exec haml-lint app/views | reviewdog -f=haml-lint -name="haml-lint" -reporter="github-check" -filter-mode=nofilter
   eslint:
     name: eslint
     runs-on: ubuntu-latest

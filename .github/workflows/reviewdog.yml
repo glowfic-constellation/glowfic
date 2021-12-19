@@ -17,6 +17,7 @@ jobs:
         with:
           rubocop_version: gemfile
           rubocop_extensions: rubocop-rails:gemfile rubocop-rspec:gemfile rubocop-performance:gemfile
+          skip_install: true
           reporter: github-pr-review
   brakeman:
     name: brakeman
