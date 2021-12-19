@@ -19,7 +19,7 @@ jobs:
           rubocop_extensions: rubocop-rails:gemfile rubocop-rspec:gemfile rubocop-performance:gemfile
           skip_install: true
           use_bundler: true
-          rubocop_flags: --config ./rubocop.yml
+          rubocop_flags: --config ./.rubocop.yml
           reporter: github-pr-review
   brakeman:
     name: brakeman
