@@ -2,7 +2,7 @@
 version: "2"
 plugins:
   brakeman:
-    enabled: true
+    enabled: false
   bundler-audit:
     enabled: true
   csslint:
