@@ -61,7 +61,17 @@ Capybara.register_driver :headless_chrome do |app|
   # options.add_argument('--disable-popup-blocking')
   options.add_argument('--window-size=1366,768')
 
-  Capybara::Selenium::Driver.new(app, browser: :chrome, options: options)
+  kwargs = {}
+  if ENV["SELENIUM_HOST"]
+    kwargs[:url] = "http://#{ENV["SELENIUM_HOST"]}/wd/hub"
+  end
+
+  Capybara::Selenium::Driver.new(
+    app,
+    browser: :chrome,
+    options: options,
+    **kwargs,
+  )
 end
 
 Capybara.javascript_driver = :headless_chrome

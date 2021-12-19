@@ -31,18 +31,23 @@ jobs:
         ports:
         - 6379:6379
         options: --health-cmd "redis-cli ping" --health-interval 10s --health-timeout 5s --health-retries 5
+      chromium:
+        # https://github.com/SeleniumHQ/docker-selenium#quick-start
+        image: selenium/standalone-chrome:96.0
+        ports:
+        - 4444:4444
+        options: --health-cmd="/opt/bin/check-grid.sh --host 0.0.0.0 --port 4444" --health-interval=15s --health-timeout=30s --health-retries=5
 
     env:
       GLOWFIC_DATABASE_USER: postgres
       GLOWFIC_DATABASE_PASS: postgres
       GLOWFIC_DATABASE_PORT: 5432
       CC_TEST_REPORTER_ID: 1e0c6dba9930e839038860b6d73301226c821937f57ed35d06fc0e4b7bddf5f6
+      SELENIUM_HOST: localhost:4444
       RAILS_ENV: test
 
     steps:
       - uses: actions/checkout@v2
-      - name: Set up Chrome
-        run: sudo apt-get update && sudo apt-get install -y chromium-browser
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
