@@ -27,5 +27,6 @@ jobs:
         with:
           rubocop_version: gemfile
           rubocop_extensions: rubocop-rails:gemfile rubocop-rspec:gemfile rubocop-performance:gemfile
+          filter_mode: nofilter
           reporter: github-check
         if: ${{ github.event_name == 'push' }}
