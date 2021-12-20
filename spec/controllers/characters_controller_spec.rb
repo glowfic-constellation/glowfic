@@ -1000,6 +1000,7 @@ RSpec.describe CharactersController do
 
     context "with audits enabled" do
       before(:each) { Reply.auditing_enabled = true }
+
       after(:each) { Reply.auditing_enabled = false }
 
       it "succeeds with valid other character" do
