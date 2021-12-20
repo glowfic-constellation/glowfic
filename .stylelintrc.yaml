@@ -98,8 +98,8 @@ rules:
   function-comma-space-before: never
   #function-max-empty-lines: 0
   #function-name-case: lower
-  #function-parentheses-newline-inside: always-multi-line
-  #function-parentheses-space-inside: never-single-line
+  function-parentheses-newline-inside: always-multi-line
+  function-parentheses-space-inside: never-single-line
   function-url-no-scheme-relative: true
   function-url-scheme-allowed-list: []
   function-url-quotes: always
@@ -114,6 +114,7 @@ rules:
   media-query-list-comma-newline-after: always-multi-line
   media-query-list-comma-space-after: always-single-line
   media-query-list-comma-space-before: never
+  media-feature-parentheses-space-inside: never
 
   number-no-trailing-zeros: true
   number-leading-zero: always
@@ -133,6 +134,7 @@ rules:
   selector-list-comma-space-before: never
   # selector-pseudo-class-case: lower
   # selector-pseudo-element-case: lower
+  selector-pseudo-class-parentheses-space-inside: never
   selector-pseudo-element-colon-notation: double
   # selector-type-case: lower
   selector-max-universal: 0
