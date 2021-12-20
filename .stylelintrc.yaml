@@ -100,7 +100,7 @@ rules:
   # media-feature-name-case: lower
   # media-query-list-comma-newline-after: always-multi-line
 
-  # number-no-trailing-zeros: true
+  number-no-trailing-zeros: true
 
   # property-case: lower
 
