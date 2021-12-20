@@ -68,6 +68,11 @@ rules:
   custom-property-empty-line-before: null
 
   declaration-block-semicolon-newline-after: always-multi-line
+  declaration-block-no-duplicate-properties:
+    - true
+    - ignore:
+      - consecutive-duplicates-with-different-values
+
   #declaration-colon-newline-after: always-multi-line
   declaration-empty-line-before: null
   declaration-no-important: true
