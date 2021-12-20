@@ -23,10 +23,12 @@ class DailyReport < Report
         range.begin,
         range.end,
       ]))
-      .joins(
+      .joins(ActiveRecord::Base.sanitize_sql_array([
         "LEFT JOIN replies AS replies_today ON replies_today.post_id = posts.id AND " \
-        "replies_today.created_at between '#{range.begin.utc}' AND '#{range.end.utc}'",
-      )
+        "replies_today.created_at between ? AND ?",
+        range.begin.utc,
+        range.end.utc
+      ]))
       .group("posts.id")
       .order(sort)
   end
