@@ -106,6 +106,7 @@ rules:
   # media-query-list-comma-newline-after: always-multi-line
 
   number-no-trailing-zeros: true
+  number-leading-zero: always
 
   # property-case: lower
 
