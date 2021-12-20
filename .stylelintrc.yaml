@@ -96,6 +96,7 @@ rules:
   #function-parentheses-space-inside: never-single-line
   function-url-no-scheme-relative: true
   function-url-scheme-allowed-list: []
+  function-url-quotes: always
 
   indentation: 2
 

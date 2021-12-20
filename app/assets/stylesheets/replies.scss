@@ -268,7 +268,7 @@ div.post-subheader { width: 100%; }
   margin-top: 5px;
   margin-left: 160px;
   margin-right: 10px;
-  background-image: url(image-path('icons/loading.gif'));
+  background-image: url(image-path('icons/loading.gif')); /* stylelint-disable-line function-url-quotes */
   background-position: 50% 30%;
   background-size: 30px;
   background-repeat: no-repeat;
