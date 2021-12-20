@@ -74,7 +74,8 @@ rules:
     - ignore:
       - consecutive-duplicates-with-different-values
 
-  #declaration-colon-newline-after: always-multi-line
+  declaration-colon-space-after: always
+  declaration-colon-space-before: never
   declaration-empty-line-before: null
   declaration-no-important: true
   declaration-property-unit-allowed-list:
