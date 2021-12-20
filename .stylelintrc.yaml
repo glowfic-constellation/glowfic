@@ -120,6 +120,7 @@ rules:
   selector-list-comma-newline-after: null
   # selector-pseudo-class-case: lower
   # selector-pseudo-element-case: lower
+  selector-pseudo-element-colon-notation: double
   # selector-type-case: lower
   selector-max-universal: 0
   selector-class-pattern: '^[_\-a-z0-9]+$'
