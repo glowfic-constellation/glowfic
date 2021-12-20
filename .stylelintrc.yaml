@@ -98,12 +98,12 @@ rules:
 
   # property-case: lower
 
-  #rule-empty-line-before:
-  #- always-multi-line
-  #- except:
-  #  - first-nested
-  #  ignore:
-  #  - after-comment
+  rule-empty-line-before:
+  - always-multi-line
+  - except:
+    - first-nested
+    ignore:
+    - after-comment
 
   selector-list-comma-newline-after: null
   # selector-pseudo-class-case: lower
