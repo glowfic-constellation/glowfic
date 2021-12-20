@@ -49,6 +49,7 @@ rules:
   block-opening-brace-newline-before: never
   block-opening-brace-space-after: always-single-line
   block-opening-brace-space-before: always
+  block-no-empty: true
 
   color-hex-case: upper
   color-hex-length: long
