@@ -163,6 +163,8 @@ rules:
   value-list-comma-space-before: never
   # value-list-max-empty-lines: 0
 
+  no-eol-whitespace: true
+
   order/order:
   - - type: at-rule
       name: extend
