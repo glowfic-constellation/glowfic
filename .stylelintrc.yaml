@@ -9,6 +9,7 @@ rules:
 
   scss/at-import-partial-extension: never
   scss/at-import-no-partial-leading-underscore: true
+  no-invalid-position-at-import-rule: null
 
   scss/at-function-pattern: '^[\-a-z]+$' # hypenated lowercase
   scss/at-function-parentheses-space-before: never
@@ -17,6 +18,8 @@ rules:
   scss/at-mixin-argumentless-call-parentheses: never
   scss/at-mixin-parentheses-space-before: never
   scss/no-duplicate-mixins: true
+
+  scss/at-extend-no-missing-placeholder: null
 
   scss/dollar-variable-colon-space-after: always
   scss/dollar-variable-colon-space-before: never
@@ -28,6 +31,8 @@ rules:
   scss/operator-no-unspaced: true
 
   scss/percent-placeholder-pattern: '^[\-a-z]+$' # hypenated lowercase
+
+  scss/no-global-function-names: null # for a version of sass we're not on
 
   at-rule-empty-line-before: null
   at-rule-disallowed-list:
