@@ -92,6 +92,7 @@ rules:
     - transparent
     - unset
 
+  function-calc-no-unspaced-operator: true
   function-comma-newline-before: never-multi-line
   function-comma-newline-after: always-multi-line
   function-comma-space-after: always-single-line
@@ -110,6 +111,8 @@ rules:
   # max-empty-lines: 1
 
   # media-feature-name-case: lower
+  media-feature-range-operator-space-after: always
+  media-feature-range-operator-space-before: always
   media-query-list-comma-newline-before: never-multi-line
   media-query-list-comma-newline-after: always-multi-line
   media-query-list-comma-space-after: always-single-line
@@ -128,6 +131,8 @@ rules:
     ignore:
     - after-comment
 
+  selector-attribute-operator-space-after: never
+  selector-attribute-operator-space-before: never
   selector-list-comma-newline-before: never-multi-line
   selector-list-comma-newline-after: always-multi-line
   selector-list-comma-space-after: always-single-line
