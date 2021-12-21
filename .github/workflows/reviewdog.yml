@@ -67,9 +67,9 @@ jobs:
         run: >
           bundle exec haml-lint app/views | reviewdog
             -f=haml-lint -name="haml-lint"
-            -reporter="${{ inputs.fail_on_error }}"
-            -filter_mode=${{ inputs.reporter }}
-            -fail-on-error=${{ inputs.filter_mode }}
+            -reporter="${{ inputs.reporter }}"
+            -filter_mode=${{ inputs.filter_mode }}
+            -fail-on-error=${{ inputs.fail_on_error }}
   eslint:
     name: eslint
     runs-on: ubuntu-latest
