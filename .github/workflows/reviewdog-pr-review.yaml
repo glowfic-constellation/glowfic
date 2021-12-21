@@ -4,6 +4,6 @@ on:
     branches: [ master ]
 jobs:
   reviewdog:
-    uses: marri/glowfic/.github/workflows/reviewdog.yml@${{ github.ref_name }}
+    uses: marri/glowfic/.github/workflows/reviewdog.yml@add/reviewdog
     with:
       fail_on_error: true
