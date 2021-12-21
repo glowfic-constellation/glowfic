@@ -9,17 +9,23 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - if: github.event_name == 'push'
-        run: echo "REPORTER='github-check'" >> $GITHUB_ENV
+        run: |
+          echo "REPORTER='github-check'" >> $GITHUB_ENV
       - if: github.event_name == 'push'
-        run: echo "FILTER='nofilter'" >> $GITHUB_ENV
+        run: |
+          echo "FILTER='nofilter'" >> $GITHUB_ENV
       - if: github.event_name == 'push'
-        run: echo "FAIL='false'" >> $GITHUB_ENV
+        run: |
+          echo "FAIL='false'" >> $GITHUB_ENV
       - if: github.event_name == 'pull_request'
-        run: echo "REPORTER='github-pr-review'" >> $GITHUB_ENV
+        run: |
+          echo "REPORTER='github-pr-review'" >> $GITHUB_ENV
       - if: github.event_name == 'pull_request'
-        run: echo "FILTER='added'" >> $GITHUB_ENV
+        run: |
+          echo "FILTER='added'" >> $GITHUB_ENV
       - if: github.event_name == 'pull_request'
-        run: echo "FAIL='true'" >> $GITHUB_ENV
+        run: |
+          echo "FAIL='true'" >> $GITHUB_ENV
   rubocop:
     name: rubocop
     needs: setup
