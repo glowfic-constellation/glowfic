@@ -76,41 +76,41 @@ RSpec.describe WritableHelper do
       context "shared examples in #{editor_mode} mode" do
         it "is blank if given blank" do
           text = ''
-          expect(helper.sanitize_written_content(format_input(text, editor_mode))).to eq("<p>#{text}</p>")
+          expect(helper.sanitize_written_content(format_input(text, editor_mode), editor_mode)).to eq("<p>#{text}</p>")
         end
 
         it "does not malform plain text" do
           text = 'sample text'
-          expect(helper.sanitize_written_content(format_input(text, editor_mode))).to eq("<p>#{text}</p>")
+          expect(helper.sanitize_written_content(format_input(text, editor_mode), editor_mode)).to eq("<p>#{text}</p>")
         end
 
         it "permits links" do
           text = 'here is <a href="http://example.com">a link</a> '
           text += '<a href="https://example.com">another link</a> '
           text += '<a href="/characters/1">yet another link</a>'
-          expect(helper.sanitize_written_content(format_input(text, editor_mode))).to eq("<p>#{text}</p>")
+          expect(helper.sanitize_written_content(format_input(text, editor_mode), editor_mode)).to eq("<p>#{text}</p>")
         end
 
         it "permits images" do
           text = 'images: <img src="http://example.com/image.png"> <img src="https://example.com/image.jpg"> <img src="/image.gif">'
-          result = helper.sanitize_written_content(format_input(text, editor_mode))
+          result = helper.sanitize_written_content(format_input(text, editor_mode), editor_mode)
           expect(result).to eq("<p>#{text}</p>")
           expect(result).to be_html_safe
         end
 
         it "removes unpermitted attributes" do
           text = '<a onclick="function(){ alert("bad!");}">test</a>'
-          expect(helper.sanitize_written_content(format_input(text, editor_mode))).to eq("<p><a>test</a></p>")
+          expect(helper.sanitize_written_content(format_input(text, editor_mode), editor_mode)).to eq("<p><a>test</a></p>")
         end
 
         it "permits valid CSS" do
           text = '<a style="color: red;">test</a>'
-          expect(helper.sanitize_written_content(format_input(text, editor_mode))).to eq("<p>#{text}</p>")
+          expect(helper.sanitize_written_content(format_input(text, editor_mode), editor_mode)).to eq("<p>#{text}</p>")
         end
 
         it "fixes unending tags" do
           text = '<a>test'
-          expect(helper.sanitize_written_content(format_input(text, editor_mode))).to eq("<p><a>test</a></p>")
+          expect(helper.sanitize_written_content(format_input(text, editor_mode), editor_mode)).to eq("<p><a>test</a></p>")
         end
       end
     end
@@ -119,7 +119,7 @@ RSpec.describe WritableHelper do
       # RTF editor or HTML editor with manual tags
       it "removes unpermitted elements" do
         text = '<b>test</b> <script type="text/javascript">alert("bad!");</script> <p>text</p>'
-        result = helper.sanitize_written_content(text)
+        result = helper.sanitize_written_content(text, 'rtf')
         expect(result).to eq('<b>test</b>  <p>text</p>')
         expect(result).to be_html_safe
       end
@@ -127,42 +127,48 @@ RSpec.describe WritableHelper do
       it "permits some attributes on only some tags" do
         text = '<p><a width="100%" href="https://example.com">test</a></p> <hr width="100%">'
         expected = '<p><a href="https://example.com">test</a></p> <hr width="100%">'
-        expect(helper.sanitize_written_content(text)).to eq(expected)
+        expect(helper.sanitize_written_content(text, 'html')).to eq(expected)
+        expect(helper.sanitize_written_content(text, 'rtf')).to eq(expected)
       end
 
       it "does not convert linebreaks in text with <br> tags" do
         text = "line1<br>line2\nline3"
         display = text
-        expect(helper.sanitize_written_content(text)).to eq(display)
+        expect(helper.sanitize_written_content(text, 'html')).to eq(display)
+        expect(helper.sanitize_written_content(text, 'rtf')).to eq(display)
 
         text = "line1<br/>line2\nline3"
-        expect(helper.sanitize_written_content(text)).to eq(display)
+        expect(helper.sanitize_written_content(text, 'html')).to eq(display)
+        expect(helper.sanitize_written_content(text, 'rtf')).to eq(display)
 
         text = "line1<br />line2\nline3"
-        expect(helper.sanitize_written_content(text)).to eq(display)
+        expect(helper.sanitize_written_content(text, 'html')).to eq(display)
+        expect(helper.sanitize_written_content(text, 'rtf')).to eq(display)
       end
 
       it "does not convert linebreaks in text with <p> tags" do
         text = "<p>line1</p><p>line2\nline3</p>"
-        expect(helper.sanitize_written_content(text)).to eq(text)
+        expect(helper.sanitize_written_content(text, 'html')).to eq(text)
+        expect(helper.sanitize_written_content(text, 'rtf')).to eq(text)
       end
 
       it "does not convert linebreaks in text with complicated <p> tags" do
         text = "<p style=\"width: 100%;\">line1\nline2</p>"
-        expect(helper.sanitize_written_content(text)).to eq(text)
+        expect(helper.sanitize_written_content(text, 'rtf')).to eq(text)
       end
 
       it "does not touch blockquotes" do
         text = "<blockquote>Blah. Blah.<br />Blah.</blockquote>\n<blockquote>Blah blah.</blockquote>\n<p>Blah.</p>"
         expected = "<blockquote>Blah. Blah.<br>Blah.</blockquote>\n<blockquote>Blah blah.</blockquote>\n<p>Blah.</p>"
-        expect(helper.sanitize_written_content(text)).to eq(expected)
+        expect(helper.sanitize_written_content(text, 'rtf')).to eq(expected)
+        expect(helper.sanitize_written_content(text, 'html')).to eq(expected)
       end
     end
 
     context "without linebreak tags" do
       it "automatically converts linebreaks" do
         text = "line1\nline2\n\nline3"
-        result = helper.sanitize_written_content(text)
+        result = helper.sanitize_written_content(text, 'html')
         expect(result).to eq("<p>line1\n<br>line2</p>\n\n<p>line3</p>")
         expect(result).to be_html_safe
       end
@@ -170,27 +176,27 @@ RSpec.describe WritableHelper do
       it "defaults to old linebreak-to-br format when blockquote detected" do
         text = "<blockquote>Blah. Blah.\r\nBlah.\r\n\r\nBlah blah.</blockquote>\r\nBlah."
         expected = "<blockquote>Blah. Blah.<br>Blah.<br><br>Blah blah.</blockquote><br>Blah."
-        expect(helper.sanitize_written_content(text)).to eq(expected)
+        expect(helper.sanitize_written_content(text, 'html')).to eq(expected)
       end
 
       it "does not mangle large breaks" do
         text = "line1\n\n\nline2"
         expected = "<p>line1</p>\n\n<p>\n<br>line2</p>"
-        expect(helper.sanitize_written_content(text)).to eq(expected)
+        expect(helper.sanitize_written_content(text, 'html')).to eq(expected)
 
         text = "line1\n\n\n\nline2"
         expected = "<p>line1</p>\n\n<p>&nbsp;</p>\n\n<p>line2</p>" # U+00A0 is NBSP
-        expect(helper.sanitize_written_content(text)).to eq(expected)
+        expect(helper.sanitize_written_content(text, 'html')).to eq(expected)
       end
 
       it "does not mangle tags continuing over linebreaks" do
         text = "line1<b>text\nline2</b>"
         expected = "<p>line1<b>text\n<br>line2</b></p>"
-        expect(helper.sanitize_written_content(text)).to eq(expected)
+        expect(helper.sanitize_written_content(text, 'html')).to eq(expected)
 
         text = "line1<b>text\n\nline2</b>"
         expected = "<p>line1<b>text</b></p><b>\n\n</b><p><b>line2</b></p>"
-        expect(helper.sanitize_written_content(text)).to eq(expected)
+        expect(helper.sanitize_written_content(text, 'html')).to eq(expected)
       end
     end
   end

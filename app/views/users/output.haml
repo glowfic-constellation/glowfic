@@ -5,8 +5,8 @@
 .sub= render 'reports/date_nav'
 .even#copy-output
   - @posts.each do |post|
-    %p= sanitize_written_content(post)
+    %p= sanitize_written_content(post.content, post.editor_mode)
   - @replies.each do |r|
-    %p= sanitize_written_content(r)
+    %p= sanitize_written_content(r.content, r.editor_mode)
   - if @posts.empty? && @replies.empty?
     .centered — Nothing written today —
