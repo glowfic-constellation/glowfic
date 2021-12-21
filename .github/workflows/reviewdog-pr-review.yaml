@@ -3,7 +3,7 @@ on:
   pull_request:
     branches: [ master ]
 jobs:
-  call_linters:
+  reviewdog:
     uses: marri/glowfic/.github/workflows/reviewdog.yml@add/reviewdog
     with:
       fail_on_error: true

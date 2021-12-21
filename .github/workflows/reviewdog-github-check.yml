@@ -3,7 +3,7 @@ on:
   push:
     branches: [ master ]
 jobs:
-  call_linters:
+  reviewdog:
     uses: marri/glowfic/.github/workflows/reviewdog.yml@add/reviewdog
     with:
       reporter: github-check
