@@ -69,7 +69,7 @@ module WritableHelper
 
   # specific blockquote handling is due to simple_format wanting to wrap a blockquote in a paragraph
   def sanitize_written_content(content)
-    unless content[P_TAG] || content[BR_TAG]
+    unless editor_mode == 'rtf' || (editor_mode.nil? && (content[P_TAG] || content[BR_TAG]))
       content = if content[BLOCKQUOTE_QUICK_SEARCH] && content[BLOCKQUOTE_TAG]
         content.gsub(LINEBREAK, BR)
       else
