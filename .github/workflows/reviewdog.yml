@@ -19,7 +19,7 @@ jobs:
           echo "FAIL='false'" >> $GITHUB_ENV
       - if: github.event_name == 'pull_request'
         run: |
-          echo "REPORTER='github-pr-review'" >> $GITHUB_ENV
+          echo "REPORTER=github-pr-review" >> $GITHUB_ENV
       - if: github.event_name == 'pull_request'
         run: |
           echo "FILTER='added'" >> $GITHUB_ENV
