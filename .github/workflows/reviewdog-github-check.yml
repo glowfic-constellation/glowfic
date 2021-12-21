@@ -4,7 +4,7 @@ on:
     branches: [ master ]
 jobs:
   call_linters:
-    uses: marri/glowfic/.github/workflows/reviewdog.yml@v1
+    uses: marri/glowfic/.github/workflows/reviewdog.yml@add/reviewdog
     with:
       reporter: github-check
       filter_mode: nofilter
