@@ -8,17 +8,17 @@ jobs:
   setup:
     runs-on: ubuntu-latest
     steps:
-      - if: github.event_name == push
+      - if: github.event_name == 'push'
         run: echo "REPORTER=github-check" >> $GITHUB_ENV
-      - if: github.event_name == push
+      - if: github.event_name == 'push'
         run: echo "FILTER=nofilter" >> $GITHUB_ENV
-      - if: github.event_name == push
+      - if: github.event_name == 'push'
         run: echo "FAIL=false" >> $GITHUB_ENV
-      - if: github.event_name == pull_request
+      - if: github.event_name == 'pull_request'
         run: echo "REPORTER=github-pr-review" >> $GITHUB_ENV
-      - if: github.event_name == pull_request
+      - if: github.event_name == 'pull_request'
         run: echo "FILTER=added" >> $GITHUB_ENV
-      - if: github.event_name == pull_request
+      - if: github.event_name == 'pull_request'
         run: echo "FAIL=true" >> $GITHUB_ENV
   rubocop:
     name: rubocop
@@ -43,6 +43,7 @@ jobs:
           filter_mode: ${{ env.FILTER }}
   brakeman:
     name: brakeman
+    needs: setup
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
@@ -59,6 +60,7 @@ jobs:
           filter_mode: ${{ env.FILTER }}
   haml_lint:
     name: haml-lint
+    needs: setup
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
@@ -78,6 +80,7 @@ jobs:
             -fail-on-error=${{ env.FAIL }}
   eslint:
     name: eslint
+    needs: setup
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
