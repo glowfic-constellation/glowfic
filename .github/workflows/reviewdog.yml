@@ -1,34 +1,22 @@
 name: reviewdog
 on:
-  pull_request:
-    branches: [ master ]
-  push:
-    branches: [ master ]
+  workflow_call:
+    inputs:
+      fail_on_error:
+        default: false
+        required: false
+        type: boolean
+      reporter:
+        default: github-pr-review
+        required: false
+        type: string
+      filter_mode:
+        default: added
+        required: false
+        type: string
 jobs:
-  setup:
-    runs-on: ubuntu-latest
-    steps:
-      - if: github.event_name == 'push'
-        run: |
-          echo "REPORTER='github-check'" >> $GITHUB_ENV
-      - if: github.event_name == 'push'
-        run: |
-          echo "FILTER='nofilter'" >> $GITHUB_ENV
-      - if: github.event_name == 'push'
-        run: |
-          echo "FAIL='false'" >> $GITHUB_ENV
-      - if: github.event_name == 'pull_request'
-        run: |
-          echo "REPORTER=github-pr-review" >> $GITHUB_ENV
-      - if: github.event_name == 'pull_request'
-        run: |
-          echo "FILTER='added'" >> $GITHUB_ENV
-      - if: github.event_name == 'pull_request'
-        run: |
-          echo "FAIL='true'" >> $GITHUB_ENV
   rubocop:
     name: rubocop
-    needs: setup
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
@@ -44,12 +32,11 @@ jobs:
           skip_install: true
           use_bundler: true
           rubocop_flags: --config ./.rubocop.yml
-          fail_on_error: ${{ env.FAIL }}
-          reporter: ${{ env.REPORTER }}
-          filter_mode: ${{ env.FILTER }}
+          fail_on_error: ${{ inputs.fail_on_error }}
+          reporter: ${{ inputs.reporter }}
+          filter_mode: ${{ inputs.filter_mode }}
   brakeman:
     name: brakeman
-    needs: setup
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
@@ -61,12 +48,11 @@ jobs:
         uses: reviewdog/action-brakeman@v2
         with:
           brakeman_version: 'gemfile'
-          fail_on_error: ${{ env.FAIL }}
-          reporter: ${{ env.REPORTER }}
-          filter_mode: ${{ env.FILTER }}
+          fail_on_error: ${{ inputs.fail_on_error }}
+          reporter: ${{ inputs.reporter }}
+          filter_mode: ${{ inputs.filter_mode }}
   haml_lint:
     name: haml-lint
-    needs: setup
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
@@ -81,12 +67,11 @@ jobs:
         run: >
           bundle exec haml-lint app/views | reviewdog
             -f=haml-lint -name="haml-lint"
-            -reporter="${{ env.REPORTER }}"
-            -filter_mode=${{ env.FILTER }}
-            -fail-on-error=${{ env.FAIL }}
+            -reporter="${{ inputs.fail_on_error }}"
+            -filter_mode=${{ inputs.reporter }}
+            -fail-on-error=${{ inputs.filter_mode }}
   eslint:
     name: eslint
-    needs: setup
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
@@ -99,6 +84,6 @@ jobs:
       - uses: reviewdog/action-eslint@v1
         with:
           eslint_flags: 'app/assets/javascripts'
-          fail_on_error: ${{ env.FAIL }}
-          reporter: ${{ env.REPORTER }}
-          filter_mode: ${{ env.FILTER }}
+          fail_on_error: ${{ inputs.fail_on_error }}
+          reporter: ${{ inputs.reporter }}
+          filter_mode: ${{ inputs.filter_mode }}

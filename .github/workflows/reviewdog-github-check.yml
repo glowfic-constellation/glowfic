@@ -1,0 +1,10 @@
+name: reviewdog
+on:
+  push:
+    branches: [ master ]
+jobs:
+  call_linters:
+    uses: marri/glowfic/.github/workflows/reviewdog.yml
+    with:
+      reporter: github-check
+      filter_mode: nofilter
