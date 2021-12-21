@@ -21,7 +21,6 @@
 *~
 
 # Ignore env files
-.ruby-version
 .env
 .byebug_history
 tmux-client-*
