@@ -2,9 +2,27 @@ name: reviewdog
 on:
   pull_request:
     branches: [ master ]
+  push:
+    branches: [ master ]
 jobs:
+  setup:
+    runs-on: ubuntu-latest
+    steps:
+      - if: github.event_name == push
+        run: echo "REPORTER=github-check" >> $GITHUB_ENV
+      - if: github.event_name == push
+        run: echo "FILTER=nofilter" >> $GITHUB_ENV
+      - if: github.event_name == push
+        run: echo "FAIL=false" >> $GITHUB_ENV
+      - if: github.event_name == pull_request
+        run: echo "REPORTER=github-pr-review" >> $GITHUB_ENV
+      - if: github.event_name == pull_request
+        run: echo "FILTER=added" >> $GITHUB_ENV
+      - if: github.event_name == pull_request
+        run: echo "FAIL=true" >> $GITHUB_ENV
   rubocop:
     name: rubocop
+    needs: setup
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
@@ -20,8 +38,9 @@ jobs:
           skip_install: true
           use_bundler: true
           rubocop_flags: --config ./.rubocop.yml
-          fail_on_error: true
-          reporter: github-pr-review
+          fail_on_error: ${{ env.FAIL }}
+          reporter: ${{ env.REPORTER }}
+          filter_mode: ${{ env.FILTER }}
   brakeman:
     name: brakeman
     runs-on: ubuntu-latest
@@ -35,8 +54,9 @@ jobs:
         uses: reviewdog/action-brakeman@v2
         with:
           brakeman_version: 'gemfile'
-          fail_on_error: true
-          reporter: github-pr-review
+          fail_on_error: ${{ env.FAIL }}
+          reporter: ${{ env.REPORTER }}
+          filter_mode: ${{ env.FILTER }}
   haml_lint:
     name: haml-lint
     runs-on: ubuntu-latest
@@ -50,7 +70,12 @@ jobs:
       - name: haml-lint
         env:
           REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: bundle exec haml-lint app/views | reviewdog -f=haml-lint -name="haml-lint" -reporter="github-pr-review" -fail-on-error
+        run: >
+          bundle exec haml-lint app/views | reviewdog
+            -f=haml-lint -name="haml-lint"
+            -reporter="${{ env.REPORTER }}"
+            -filter_mode=${{ env.FILTER }}
+            -fail-on-error=${{ env.FAIL }}
   eslint:
     name: eslint
     runs-on: ubuntu-latest
@@ -64,6 +89,7 @@ jobs:
       - run: npm install eslint@~6.0.0
       - uses: reviewdog/action-eslint@v1
         with:
-          reporter: github-pr-review
           eslint_flags: 'app/assets/javascripts'
-          fail_on_error: true
+          fail_on_error: ${{ env.FAIL }}
+          reporter: ${{ env.REPORTER }}
+          filter_mode: ${{ env.FILTER }}
