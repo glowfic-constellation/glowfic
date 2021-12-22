@@ -79,24 +79,7 @@ $(document).ready(function() {
 
     // a gallery group was removed
     if (galleryGroupIds.length > newGalleryGroupIds.length) {
-      var removedGroup = $(galleryGroupIds).not(newGalleryGroupIds).get(0);
-      galleryGroupIds = newGalleryGroupIds;
-      if (removedGroup.substring(0, 1) === '_') return; // skip uncreated tags
-
-      var group = galleryGroups[parseInt(removedGroup)];
-      delete galleryGroups[parseInt(removedGroup)];
-
-      // delete unfound galleries from icons list
-      group.gallery_ids.forEach(function(galleryId) {
-        if (findGalleryInGroups(galleryId) || galleryIds.indexOf(galleryId.toString()) >= 0) return;
-        characterIconsBox.find("#gallery" + galleryId).remove();
-        galleryIds = $.makeArray($(galleryIds).not([galleryId.toString()]));
-      });
-
-      // if no more galleries remain, display galleryless icons
-      if (characterIconsBox.find("[id^='gallery']").length === 0) {
-        displayGallery('0');
-      }
+      cleanUpRemovedGalleries(newGalleryGroupIds);
       return;
     }
 
@@ -159,6 +142,27 @@ function findGalleryInGroups(galleryId) {
     if (galleryGroups[groupId].gallery_ids.indexOf(galleryId) >= 0) found = true;
   });
   return found;
+}
+
+function cleanUpRemovedGalleries(newGalleryGroupIds) {
+  var removedGroup = $(galleryGroupIds).not(newGalleryGroupIds).get(0);
+  galleryGroupIds = newGalleryGroupIds;
+  if (removedGroup.substring(0, 1) === '_') return; // skip uncreated tags
+
+  var group = galleryGroups[parseInt(removedGroup)];
+  delete galleryGroups[parseInt(removedGroup)];
+
+  // delete unfound galleries from icons list
+  group.gallery_ids.forEach(function(galleryId) {
+    if (findGalleryInGroups(galleryId) || galleryIds.indexOf(galleryId.toString()) >= 0) return;
+    characterIconsBox.find("#gallery" + galleryId).remove();
+    galleryIds = $.makeArray($(galleryIds).not([galleryId.toString()]));
+  });
+
+  // if no more galleries remain, display galleryless icons
+  if (characterIconsBox.find("[id^='gallery']").length === 0) {
+    displayGallery('0');
+  }
 }
 
 function displayGallery(newId) {

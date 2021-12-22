@@ -83,12 +83,11 @@ function bindFileInput(fileInput, form, submitButton, formData) {
     },
     fail: function(e, data) {
       submitButton.prop('disabled', false);
-      if (typeof failCallback !== 'undefined') failCallback();
+      if (typeof failCallback !== 'undefined') { failCallback(); }
       unsetLoadingIcon();
       var response = data.response().jqXHR;
-      var policyExpired = response.responseText.includes("Invalid according to Policy: Policy expired.");
-      if (!policyExpired) policyExpired = response.responseText.includes("Idle connections will be closed.");
-      var badFiletype = response.responseText.includes("Policy Condition failed") && response.responseText.includes('"$Content-Type", "image/"');
+      var responseText = response.responseText;
+      var badFiletype = responseText.includes("Policy Condition failed") && responseText.includes('"$Content-Type", "image/"');
       var bugsData = {
         'response_status': response.status,
         'response_body': response.responseText,
@@ -98,7 +97,7 @@ function bindFileInput(fileInput, form, submitButton, formData) {
       };
       if (response.readyState === 0) {
         alert("Upload of " + data.files[0].name + " failed due to a network error. Please check your connection and try again.");
-      } else if (policyExpired) {
+      } else if (isPolicyExpired(responseText)) {
         alert("Your upload permissions appear to have expired. Please refresh the page and try again.");
       } else if (badFiletype) {
         alert("You must upload files with an image filetype such as .png or .jpg - please retry with a valid file.");
@@ -162,4 +161,9 @@ function deleteUnusedIcons(keys) {
   $(keys).each(function(index, key) {
     $.authenticatedPost('/api/v1/icons/s3_delete', {s3_key: key});
   });
+}
+
+function isPolicyExpired(responseText) {
+  if (responseText.includes("Invalid according to Policy: Policy expired.")) { return true; }
+  return responseText.includes("Idle connections will be closed.");
 }
