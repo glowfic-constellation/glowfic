@@ -14,8 +14,6 @@ on:
         default: added
         required: false
         type: string
-env:
-  INPUT_BUNDLER-CACHE: true
 jobs:
   rubocop:
     name: rubocop
@@ -23,6 +21,8 @@ jobs:
     steps:
       - uses: actions/checkout@v1
       - uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
       - name: rubocop
         uses: reviewdog/action-rubocop@v2
         with:
@@ -40,6 +40,8 @@ jobs:
     steps:
       - uses: actions/checkout@v1
       - uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
       - name: brakeman
         uses: reviewdog/action-brakeman@v2
         with:
@@ -53,6 +55,8 @@ jobs:
     steps:
       - uses: actions/checkout@v1
       - uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
       - uses: reviewdog/action-setup@v1
       - name: haml-lint
         env:
