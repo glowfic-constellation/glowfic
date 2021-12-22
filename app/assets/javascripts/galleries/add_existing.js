@@ -47,7 +47,7 @@ $(document).ready(function() {
 });
 
 $(window).on('beforeunload', function() {
-  if (skipWarning || imageIds.length === 0) return;
+  if (skipWarning || imageIds.length === 0) { return false; }
   return "Are you sure you wish to navigate away? You have " + imageIds.length + " image(s) selected.";
 });
 

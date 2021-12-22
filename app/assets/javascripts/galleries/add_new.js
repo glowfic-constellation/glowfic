@@ -123,6 +123,7 @@ function cleanUpRows() {
         anySet = true;
         return false;
       }
+      return false;
     });
     if (!anySet) $(this).remove();
   });
