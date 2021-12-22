@@ -1,4 +1,6 @@
 /* global deleteUnusedIcons */
+/* exported addUploadedIcon, addCallback, failCallback */
+
 var done = 0;
 var total = 0;
 var failed = 0;
@@ -127,7 +129,7 @@ function cleanUpRows() {
   fixButtons();
 }
 
-function addUploadedIcon(url, key, data, fileInput) {
+function addUploadedIcon(url, key, data, _fileInput) {
   done += 1;
   updateBox();
 

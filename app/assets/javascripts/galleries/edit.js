@@ -1,3 +1,5 @@
+/* exported addUploadedIcon, setLoadingIcon */
+
 $(document).ready(function() {
   var submitButton = $('.submit-button input');
   submitButton.on('mousedown', warnIfDeleting);

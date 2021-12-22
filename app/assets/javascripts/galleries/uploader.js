@@ -1,4 +1,5 @@
 /* global addUploadedIcon, setLoadingIcon, addCallback, failCallback */
+/* export deleteUnusedIcons */
 
 var uploadedIcons = {};
 var formKey = '';

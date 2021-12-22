@@ -1,3 +1,5 @@
+/* exported addUploadedIcon, setLoadingIcon */
+
 function addUploadedIcon(url, s3Key, _data, _fileInput) {
   $(".icon_conf").show();
   $(".icon_url_field").hide();

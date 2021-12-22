@@ -1,6 +1,5 @@
 /* global gon */
-/* exported addParameter, addUploadedIcon, bindArrows, bindSortable, createSelect2, createTagSelect, deleteUnusedIcons, processResults,
-   processTotal, queryTransform, resizeScreenname, setLoadingIcon, swapRows*/
+/* exported addParameter, createSelect2, createTagSelect, processResults, processTotal, queryTransform, resizeScreenname */
 
 var foundTags = {};
 
