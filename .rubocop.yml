@@ -8,6 +8,7 @@ AllCops:
     - 'db/**/*'
     - 'spec/spec_helper.rb'
     - 'backstop/*'
+    - 'vendor/**/*'
 
 require:
   - rubocop-performance

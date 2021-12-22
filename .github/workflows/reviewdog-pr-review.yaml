@@ -1,0 +1,9 @@
+name: reviewdog
+on:
+  pull_request:
+    branches: [ master ]
+jobs:
+  reviewdog:
+    uses: marri/glowfic/.github/workflows/reviewdog.yml@master
+    with:
+      fail_on_error: true

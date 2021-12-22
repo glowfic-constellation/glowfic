@@ -1,0 +1,86 @@
+name: reviewdog
+on:
+  workflow_call:
+    inputs:
+      fail_on_error:
+        default: false
+        required: false
+        type: boolean
+      reporter:
+        default: github-pr-review
+        required: false
+        type: string
+      filter_mode:
+        default: added
+        required: false
+        type: string
+jobs:
+  rubocop:
+    name: rubocop
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+      - run: bundle exec rubocop -v
+      - name: rubocop
+        uses: reviewdog/action-rubocop@v2
+        with:
+          rubocop_version: gemfile
+          rubocop_extensions: rubocop-rails:gemfile rubocop-rspec:gemfile rubocop-performance:gemfile
+          skip_install: true
+          use_bundler: true
+          rubocop_flags: --config ./.rubocop.yml
+          fail_on_error: ${{ inputs.fail_on_error }}
+          reporter: ${{ inputs.reporter }}
+          filter_mode: ${{ inputs.filter_mode }}
+  brakeman:
+    name: brakeman
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+      - run: bundle exec brakeman -v
+      - name: brakeman
+        uses: reviewdog/action-brakeman@v2
+        with:
+          brakeman_version: 'gemfile'
+          fail_on_error: ${{ inputs.fail_on_error }}
+          reporter: ${{ inputs.reporter }}
+          filter_mode: ${{ inputs.filter_mode }}
+  haml_lint:
+    name: haml-lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+      - uses: reviewdog/action-setup@v1
+      - run: bundle exec haml-lint -v
+      - name: haml-lint
+        env:
+          REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          bundle exec haml-lint app/views | reviewdog \
+          -f=haml-lint -name="haml-lint" \
+          -reporter="${{ inputs.reporter }}" \
+          -filter-mode="${{ inputs.filter_mode }}" \
+          -fail-on-error=${{ inputs.fail_on_error }}
+  eslint:
+    name: eslint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - uses: actions/setup-node@v2
+      - run: npm install eslint@~6.0.0
+      - run: npx eslint -v
+      - uses: reviewdog/action-eslint@v1
+        with:
+          eslint_flags: 'app/assets/javascripts'
+          fail_on_error: ${{ inputs.fail_on_error }}
+          reporter: ${{ inputs.reporter }}
+          filter_mode: ${{ inputs.filter_mode }}
