@@ -29,7 +29,8 @@ module Owable
 
     def opt_in_to_owed(user)
       return unless (author = author_for(user))
-      change_owed { author.can_owe? ? true : author.update(can_owe: true) } # rubocop:disable Rails/SaveBang
+      return unless author.can_owe?
+      change_owed { author.update(can_owe: true) }
     end
 
     def author_for(user)
