@@ -29,7 +29,7 @@ module Owable
 
     def opt_in_to_owed(user)
       return unless (author = author_for(user))
-      return unless author.can_owe?
+      return if author.can_owe?
       change_owed { author.update(can_owe: true) }
     end
 
