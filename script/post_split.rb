@@ -118,7 +118,7 @@ def update_caches(post, last_reply)
   end
 
   puts "updating post columns: #{cached_data}"
-  post.update_columns(cached_data)
+  post.update_columns(cached_data) # rubocop:disable Rails/SkipsModelValidations
 end
 
 split_post if $PROGRAM_NAME == __FILE__
