@@ -1,19 +1,7 @@
 name: reviewdog
 on:
-  workflow_call:
-    inputs:
-      fail_on_error:
-        default: false
-        required: false
-        type: boolean
-      reporter:
-        default: github-pr-review
-        required: false
-        type: string
-      filter_mode:
-        default: added
-        required: false
-        type: string
+  pull_request:
+    branches: [ master ]
 jobs:
   rubocop:
     name: rubocop
@@ -32,9 +20,8 @@ jobs:
           skip_install: true
           use_bundler: true
           rubocop_flags: --config ./.rubocop.yml
-          fail_on_error: ${{ inputs.fail_on_error }}
-          reporter: ${{ inputs.reporter }}
-          filter_mode: ${{ inputs.filter_mode }}
+          fail_on_error: true
+          reporter: github-pr-review
   brakeman:
     name: brakeman
     runs-on: ubuntu-latest
@@ -48,9 +35,8 @@ jobs:
         uses: reviewdog/action-brakeman@v2
         with:
           brakeman_version: 'gemfile'
-          fail_on_error: ${{ inputs.fail_on_error }}
-          reporter: ${{ inputs.reporter }}
-          filter_mode: ${{ inputs.filter_mode }}
+          fail_on_error: true
+          reporter: github-pr-review
   haml_lint:
     name: haml-lint
     runs-on: ubuntu-latest
@@ -67,9 +53,8 @@ jobs:
         run: |
           bundle exec haml-lint app/views | reviewdog \
           -f=haml-lint -name="haml-lint" \
-          -reporter="${{ inputs.reporter }}" \
-          -filter-mode="${{ inputs.filter_mode }}" \
-          -fail-on-error=${{ inputs.fail_on_error }}
+          -reporter="github-pr-review" \
+          -fail-on-error
   eslint:
     name: eslint
     runs-on: ubuntu-latest
@@ -81,6 +66,5 @@ jobs:
       - uses: reviewdog/action-eslint@v1
         with:
           eslint_flags: 'app/assets/javascripts'
-          fail_on_error: ${{ inputs.fail_on_error }}
-          reporter: ${{ inputs.reporter }}
-          filter_mode: ${{ inputs.filter_mode }}
+          fail_on_error: true
+          reporter: github-pr-review
