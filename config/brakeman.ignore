@@ -1,0 +1,68 @@
+{
+  "ignored_warnings": [
+    {
+      "warning_type": "Dynamic Render Path",
+      "warning_code": 15,
+      "fingerprint": "2da1c5855fce3c584a2a70af649c093a86b25040b680a8b6057c35b195483f46",
+      "check_name": "Render",
+      "message": "Render path contains parameter value",
+      "file": "app/views/tags/show.haml",
+      "line": 56,
+      "link": "https://brakemanscanner.org/docs/warning_types/dynamic_render_path/",
+      "code": "render(action => (params[:view] or \"info\"), {})",
+      "render_path": [
+        {
+          "type": "controller",
+          "class": "TagsController",
+          "method": "show",
+          "line": 28,
+          "file": "app/controllers/tags_controller.rb",
+          "rendered": {
+            "name": "tags/show",
+            "file": "app/views/tags/show.haml"
+          }
+        }
+      ],
+      "location": {
+        "type": "template",
+        "template": "tags/show"
+      },
+      "user_input": "params[:view]",
+      "confidence": "High",
+      "note": "params[:view] is limited to allowed views"
+    },
+    {
+      "warning_type": "Cross-Site Scripting",
+      "warning_code": 2,
+      "fingerprint": "387c3deffa6a47702ee0137c81c0c3977c1edbbe848128a5b9aedd1285b34711",
+      "check_name": "CrossSiteScripting",
+      "message": "Unescaped model attribute",
+      "file": "app/views/posts/flat.haml",
+      "line": 57,
+      "link": "https://brakemanscanner.org/docs/warning_types/cross_site_scripting",
+      "code": "Post.find_by_id(params[:id]).flat_post.content",
+      "render_path": [
+        {
+          "type": "controller",
+          "class": "PostsController",
+          "method": "show",
+          "line": 155,
+          "file": "app/controllers/posts_controller.rb",
+          "rendered": {
+            "name": "posts/flat",
+            "file": "app/views/posts/flat.haml"
+          }
+        }
+      ],
+      "location": {
+        "type": "template",
+        "template": "posts/flat"
+      },
+      "user_input": null,
+      "confidence": "High",
+      "note": "Flat post content is pre-sanitized"
+    }
+  ],
+  "updated": "2021-12-20 14:12:45 -0600",
+  "brakeman_version": "5.2.0"
+}
