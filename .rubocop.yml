@@ -430,12 +430,6 @@ Rails/WhereNot:
 
 ################## RSpec #################################
 
-RSpec/Capybara/FeatureMethods:
-  EnabledMethods: [feature, scenario]
-
-RSpec/Rails/HttpStatus:
-  Enabled: false
-
 RSpec/AnyInstance:
   Enabled: false
 
@@ -488,10 +482,18 @@ RSpec/SubjectDeclaration: # new in 2.5
 RSpec/StubbedMock:
   Enabled: false
 
+################## RSpec/Capybara ##############################
+
+RSpec/Capybara/FeatureMethods:
+  EnabledMethods: [feature, scenario]
+
 ################## RSpec/Rails #################################
 
 RSpec/Rails/AvoidSetupHook: # new in 2.4
   Enabled: true
+
+RSpec/Rails/HttpStatus:
+  Enabled: false
 
 ################## Security ##############################
 
@@ -502,6 +504,9 @@ Security/IoMethods: # new in 1.22
 
 Style/AndOr:
   EnforcedStyle: 'conditionals'
+
+Style/ArgumentsForwarding: # (new in 1.1)
+  Enabled: true
 
 Style/AsciiComments:
   Enabled: false
@@ -521,6 +526,9 @@ Style/ClassAndModuleChildren:
 Style/ClassEqualityComparison:
   Enabled: false
 
+Style/CollectionCompact: # (new in 1.2)
+  Enabled: true
+
 Style/CommentAnnotation:
   Enabled: false
 
@@ -530,11 +538,17 @@ Style/ConditionalAssignment:
 Style/Documentation:
   Enabled: false
 
+Style/DocumentDynamicEvalDefinition: # (new in 1.1)
+  Enabled: true
+
 Style/DoubleNegation:
   Enabled: false
 
 Style/EmptyMethod:
   Enabled: false
+
+Style/EndlessMethod: # (new in 1.8)
+  Enabled: true
 
 Style/ExplicitBlockArgument:
   Enabled: false
@@ -558,8 +572,20 @@ Style/GuardClause:
 Style/HashAsLastArrayItem:
   Enabled: false
 
+Style/HashConversion: # (new in 1.10)
+  Enabled: true
+
+Style/HashExcept: # (new in 1.7)
+  Enabled: true
+
 Style/HashSyntax:
   Enabled: false
+
+Style/IfWithBooleanLiteralBranches: # (new in 1.9)
+  Enabled: true
+
+Style/InPatternThen: # new in 1.16
+  Enabled: true
 
 Style/KeywordParametersOrder:
   Enabled: false
@@ -567,14 +593,33 @@ Style/KeywordParametersOrder:
 Style/Lambda:
   Enabled: false
 
+Style/MultilineInPatternThen: # new in 1.16
+  Enabled: true
+
 Style/MutableConstant:
   Enabled: false
+
+Style/NegatedIfElseCondition: # (new in 1.2)
+  Enabled: true
+
+Style/NilLambda: # (new in 1.3)
+  Enabled: true
+
+Style/NumberedParameters: # new in 1.22
+  Enabled: true
+
+Style/NumberedParametersLimit: # new in 1.22
+  Enabled: true
 
 Style/NumericLiterals:
   Enabled: false
 
 Style/NumericPredicate:
   Enabled: false
+
+Style/OpenStructUse: # new in 1.23
+  Enabled: false
+  # disabled because it's mostly for ruby 3
 
 Style/OptionalBooleanParameter:
   Enabled: false
@@ -588,7 +633,14 @@ Style/PercentLiteralDelimiters:
 Style/Proc:
   Enabled: false
 
+Style/QuotedSymbols: # new in 1.16
+  Enabled: false
+  # we don't use quoted symbols OR the cop it's based on
+
 Style/RaiseArgs:
+  Enabled: false
+
+Style/RedundantArgument: # (new in 1.4)
   Enabled: false
 
 Style/RedundantBegin:
@@ -600,18 +652,30 @@ Style/RedundantException:
 Style/RedundantSelf:
   Enabled: false
 
+Style/RedundantSelfAssignmentBranch: # new in 1.19
+  Enabled: true
+
 Style/RegexpLiteral:
   EnforcedStyle: 'slashes'
   AllowInnerSlashes: true
 
+Style/SelectByRegexp: # new in 1.22
+  Enabled: true
+
 Style/SlicingWithRange:
   Enabled: false
+
+Style/StringChars: # (new in 1.12)
+  Enabled: true
 
 Style/StringConcatenation:
   Enabled: false
 
 Style/StringLiterals:
   Enabled: false
+
+Style/SwapValues: # (new in 1.1)
+  Enabled: true
 
 Style/SymbolArray:
   Enabled: false
@@ -631,71 +695,9 @@ Style/TrailingCommaInHashLiteral:
   Enabled: false
   EnforcedStyleForMultiline: 'comma'
 
-Style/WordArray:
-  Enabled: false
-
-Style/ArgumentsForwarding: # (new in 1.1)
-  Enabled: true
-
-Style/CollectionCompact: # (new in 1.2)
-  Enabled: true
-
-Style/DocumentDynamicEvalDefinition: # (new in 1.1)
-  Enabled: true
-
-Style/EndlessMethod: # (new in 1.8)
-  Enabled: true
-
-Style/HashConversion: # (new in 1.10)
-  Enabled: true
-
-Style/HashExcept: # (new in 1.7)
-  Enabled: true
-
-Style/IfWithBooleanLiteralBranches: # (new in 1.9)
-  Enabled: true
-
-Style/NegatedIfElseCondition: # (new in 1.2)
-  Enabled: true
-
-Style/NilLambda: # (new in 1.3)
-  Enabled: true
-
-Style/RedundantArgument: # (new in 1.4)
-  Enabled: false
-
-Style/StringChars: # (new in 1.12)
-  Enabled: true
-
-Style/SwapValues: # (new in 1.1)
-  Enabled: true
-
-Style/InPatternThen: # new in 1.16
-  Enabled: true
-
-Style/MultilineInPatternThen: # new in 1.16
-  Enabled: true
-
-Style/QuotedSymbols: # new in 1.16
-  Enabled: false
-  # we don't use quoted symbols OR the cop it's based on
-
-Style/RedundantSelfAssignmentBranch: # new in 1.19
-  Enabled: true
-
-Style/NumberedParameters: # new in 1.22
-  Enabled: true
-
-Style/NumberedParametersLimit: # new in 1.22
-  Enabled: true
-
-Style/SelectByRegexp: # new in 1.22
-  Enabled: true
-
 Lint/UselessRuby2Keywords: # new in 1.23
   Enabled: false
   # disabled because it's for ruby 3
 
-Style/OpenStructUse: # new in 1.23
+Style/WordArray:
   Enabled: false
-  # disabled because it's mostly for ruby 3
