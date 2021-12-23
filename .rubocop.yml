@@ -78,7 +78,9 @@ Layout/LineLength:
     - 'app/controllers/api/**/*'
 
 Layout/MultilineMethodCallBraceLayout:
-  Enabled: false
+  EnforcedStyle: symmetrical
+  Exclude:
+    - 'spec/**/*'
 
 Layout/MultilineMethodCallIndentation:
   EnforcedStyle: 'indented'
