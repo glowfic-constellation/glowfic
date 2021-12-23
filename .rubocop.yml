@@ -97,11 +97,7 @@ Layout/SpaceAroundEqualsInParameterDefault:
   EnforcedStyle: 'no_space'
 
 Layout/SpaceBeforeBrackets: # (new in 1.7)
-  Enabled: false
-  # problems with false positives
-
-Layout/SpaceInsideRangeLiteral:
-  Enabled: false
+  Enabled: true
 
 #################### Lint ################################
 
