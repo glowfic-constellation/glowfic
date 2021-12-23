@@ -86,7 +86,9 @@ Layout/MultilineMethodCallIndentation:
   EnforcedStyle: 'indented'
 
 Layout/MultilineOperationIndentation:
-  Enabled: false
+  EnforcedStyle: aligned
+  Exclude:
+    - 'app/helpers/writable_helper.rb'
 
 Layout/ParameterAlignment:
   EnforcedStyle: 'with_fixed_indentation'

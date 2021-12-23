@@ -34,7 +34,7 @@ class Api::V1::IndexPostsController < Api::ApiController
 
     post_section_ids = posts.select(:index_section_id).distinct.pluck(:index_section_id)
     unless post_section_ids == [section_id] &&
-      (section_id.nil? || IndexSection.where(id: section_id, index_id: index.id).exists?)
+           (section_id.nil? || IndexSection.where(id: section_id, index_id: index.id).exists?)
       error = { message: 'Posts must be from one specified section in the index, or no section' }
       render json: { errors: [error] }, status: :unprocessable_entity and return
     end

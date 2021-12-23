@@ -77,7 +77,7 @@ class Api::V1::PostsController < Api::ApiController
 
     post_section_ids = posts.select(:section_id).distinct.pluck(:section_id)
     unless post_section_ids == [section_id] &&
-      (section_id.nil? || BoardSection.where(id: section_id, board_id: board.id).exists?)
+           (section_id.nil? || BoardSection.where(id: section_id, board_id: board.id).exists?)
       error = { message: 'Posts must be from one specified section in the continuity, or no section' }
       render json: { errors: [error] }, status: :unprocessable_entity and return
     end
