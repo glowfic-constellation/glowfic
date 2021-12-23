@@ -40,9 +40,9 @@
                 = check_box_tag :search_nickname, true, params[:commit] ? params[:search_nickname] : true, { class: 'vmid no-margin', style: 'margin-bottom: 3px;' }
                 = label_tag :search_nickname, "Nickname"
                 -# TODO
-                  %br
-                  = check_box_tag :search_aliases, true, params[:commit] ? params[:search_aliases] : true, { class: 'vmid no-margin', style: 'margin-bottom: 3px;' }
-                  = label_tag :search_aliases, "Aliases"
+                  -# %br
+                  -# = check_box_tag :search_aliases, true, params[:commit] ? params[:search_aliases] : true, { class: 'vmid no-margin', style: 'margin-bottom: 3px;' }
+                  -# = label_tag :search_aliases, "Aliases"
             -# TODO: setting search, facecast search
             %tr
               %td.centered{colspan: 2}= submit_tag "Search", class: 'button'
@@ -63,8 +63,8 @@
                 %td.padding-5{class: klass}
                   %b User
                 -# TODO
-                  %td.padding-5{class: klass}
-                    %b Setting
+                  -# %td.padding-5{class: klass}
+                    -# %b Setting
             %tbody
               - @search_results.each do |character|
                 - klass = cycle('even'.freeze, 'odd'.freeze)
