@@ -5,11 +5,16 @@ var done = 0;
 var total = 0;
 var failed = 0;
 
+var keyLeft = 37;
+var keyUp = 38;
+var keyRight = 39;
+var keyDown = 40;
+
 $(document).ready(function() {
   fixButtons();
   $(".icon-row td:has(input)").each(function() {
     $(this).keydown(function(event) {
-      if (event.which < 37 || event.which > 40) { return; } // skip if not a directional key
+      if ([keyLeft, keyUp, keyRight, keyDown].indexOf(event.which) < 0) return; // skip if not a directional key
       var input = $('input', this);
       if (input.get(0).type !== 'text') { return; } // skip if not text
       if (input.get(0).selectionStart !== input.get(0).selectionEnd) { return; } // skip processing if user has text selected
@@ -19,10 +24,6 @@ $(document).ready(function() {
 });
 
 function processDirectionalKey(event, input) {
-  var keyLeft = 37,
-    keyUp = 38,
-    keyRight = 39,
-    keyDown = 40;
   var caret = input.get(0).selectionStart;
   var index = $(this).closest('td').index();
 
