@@ -118,12 +118,11 @@ function cleanUpRows() {
   $(".icon-row").each(function() {
     var anySet = false;
     if ($(this).find('.conf .filename').text() !== '') return;
-    $(this).find('input').each(function() {
+    $(this).find('input').each(function() { // eslint-disable-line consistent-return
       if ($(this).val() !== '') {
         anySet = true;
         return false;
       }
-      return false;
     });
     if (!anySet) $(this).remove();
   });

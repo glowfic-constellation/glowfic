@@ -47,6 +47,7 @@ function validateUsername() {
     return false;
   }
 
+  // eslint-disable-next-line consistent-return
   $.authenticatedGet('/api/v1/users', {'q': username, 'match': 'exact'}, function(resp, status, xhr) {
     var total = xhr.getResponseHeader('Total');
     if (total > 0) {
