@@ -93,7 +93,7 @@ RSpec.describe PostsController do
 
   describe "GET index" do
     let(:controller_action) { "index" }
-    let(:params) { { } }
+    let(:params) { {} }
     let(:assign_variable) { :posts }
 
     it "has a 200 status code" do
@@ -538,7 +538,7 @@ RSpec.describe PostsController do
       tags = ['_atag', '_atag', create(:label).id, '', '_' + existing_name.name, '_' + existing_case.name.upcase]
       login
       expect {
-        post :create, params: { post: {subject: 'a', board_id: create(:board).id, label_ids: tags} }
+        post :create, params: { post: { subject: 'a', board_id: create(:board).id, label_ids: tags } }
       }.to change{Label.count}.by(1)
       expect(Label.last.name).to eq('atag')
       expect(assigns(:post).labels.count).to eq(4)
@@ -557,7 +557,7 @@ RSpec.describe PostsController do
       ]
       login
       expect {
-        post :create, params: { post: {subject: 'a', board_id: create(:board).id, setting_ids: tags} }
+        post :create, params: { post: { subject: 'a', board_id: create(:board).id, setting_ids: tags } }
       }.to change{Setting.count}.by(1)
       expect(Setting.last.name).to eq('atag')
       expect(assigns(:post).settings.count).to eq(4)
@@ -577,7 +577,7 @@ RSpec.describe PostsController do
       login
       expect {
         post :create, params: {
-          post: {subject: 'a', board_id: create(:board).id, content_warning_ids: tags},
+          post: { subject: 'a', board_id: create(:board).id, content_warning_ids: tags },
         }
       }.to change{ContentWarning.count}.by(1)
       expect(ContentWarning.last.name).to eq('atag')
@@ -1994,7 +1994,7 @@ RSpec.describe PostsController do
         expect(assigns(:post).icon).to eq(icon)
         expect(assigns(:post).character_alias).to eq(calias)
         expect(assigns(:page_title)).to eq('Previewing: test')
-        expect(assigns(:audits)).to eq({post: 1})
+        expect(assigns(:audits)).to eq({ post: 1 })
 
         # editor_setup:
         expect(assigns(:javascripts)).to include('posts/editor')
@@ -2142,7 +2142,7 @@ RSpec.describe PostsController do
         tag = create(:label, name: 'label')
         put :update, params: {
           id: post.id,
-          post: {setting_ids: setting_ids, content_warning_ids: warning_ids, label_ids: label_ids},
+          post: { setting_ids: setting_ids, content_warning_ids: warning_ids, label_ids: label_ids },
         }
         expect(response).to redirect_to(post_url(post))
         post = assigns(:post)
@@ -2757,7 +2757,7 @@ RSpec.describe PostsController do
       expect_any_instance_of(Post).to receive(:destroy!).and_raise(ActiveRecord::RecordNotDestroyed, 'fake error')
       delete :destroy, params: { id: post.id }
       expect(response).to redirect_to(post_url(post))
-      expect(flash[:error]).to eq({message: "Post could not be deleted.", array: []})
+      expect(flash[:error]).to eq({ message: "Post could not be deleted.", array: [] })
       expect(reply.reload.post).to eq(post)
     end
   end
@@ -2823,7 +2823,7 @@ RSpec.describe PostsController do
       end
 
       it "shows only hidden with arg" do
-        get :owed, params: {view: 'hidden'}
+        get :owed, params: { view: 'hidden' }
         expect(assigns(:posts)).to eq([hidden_post])
       end
     end
@@ -2842,7 +2842,7 @@ RSpec.describe PostsController do
         create(:reply, post: post, user: other_user)
         post.update!(status: :hiatus)
 
-        get :owed, params: {view: 'hiatused'}
+        get :owed, params: { view: 'hiatused' }
         expect(response.status).to eq(200)
         expect(assigns(:posts)).to eq([post])
       end
@@ -2853,7 +2853,7 @@ RSpec.describe PostsController do
           post = create(:post, user: user)
           create(:reply, post: post, user: other_user)
         end
-        get :owed, params: {view: 'hiatused'}
+        get :owed, params: { view: 'hiatused' }
         expect(response.status).to eq(200)
         expect(assigns(:posts)).to eq([post])
       end
@@ -2999,7 +2999,7 @@ RSpec.describe PostsController do
 
   describe "GET unread" do
     let(:controller_action) { "unread" }
-    let(:params) { { } }
+    let(:params) { {} }
     let(:assign_variable) { :posts }
 
     it "requires login" do

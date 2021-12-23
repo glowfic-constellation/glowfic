@@ -21,7 +21,7 @@ class CharacterTag < ApplicationRecord
   def remove_galleries_from_character
     return if gallery_group.nil? # skip non-gallery_groups
     galleries = gallery_group.galleries.where(user_id: character.user_id)
-    joined_group_galleries = character.gallery_groups.joins(:galleries).where(galleries: {user_id: character.user_id}).pluck(:gallery_id)
+    joined_group_galleries = character.gallery_groups.joins(:galleries).where(galleries: { user_id: character.user_id }).pluck(:gallery_id)
     galleries = galleries.where.not(id: joined_group_galleries)
     character.characters_galleries.where(gallery: galleries, added_by_group: true).destroy_all
     character.characters_galleries.reload

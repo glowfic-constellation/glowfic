@@ -168,14 +168,14 @@ RSpec.describe PostScraper do
     kappa = create(:user, username: 'Kappa')
     board = create(:board, creator: alicorn, writers: [kappa])
     characters = [
-      {screenname: 'mind_game', name: 'Jane', user: alicorn},
-      {screenname: 'luminous_regnant', name: 'Isabella Marie Swan Cullen ☼ "Golden"', user: alicorn},
-      {screenname: 'manofmyword', name: 'here\'s my card', user: kappa},
-      {screenname: 'temporal_affairs', name: 'Nathan Corlett | Minister of Temporal Affairs', user: alicorn},
-      {screenname: 'pina_colada', name: 'Kerron Corlett', user: alicorn},
-      {screenname: 'pumpkin_pie', name: 'Aedyt Corlett', user: kappa},
-      {screenname: 'lifes_sake', name: 'Campbell Mark Swan ҂ "Cam"', user: alicorn},
-      {screenname: 'withmypowers', name: 'Matilda Wormwood Honey', user: kappa},
+      { screenname: 'mind_game', name: 'Jane', user: alicorn },
+      { screenname: 'luminous_regnant', name: 'Isabella Marie Swan Cullen ☼ "Golden"', user: alicorn },
+      { screenname: 'manofmyword', name: 'here\'s my card', user: kappa },
+      { screenname: 'temporal_affairs', name: 'Nathan Corlett | Minister of Temporal Affairs', user: alicorn },
+      { screenname: 'pina_colada', name: 'Kerron Corlett', user: alicorn },
+      { screenname: 'pumpkin_pie', name: 'Aedyt Corlett', user: kappa },
+      { screenname: 'lifes_sake', name: 'Campbell Mark Swan ҂ "Cam"', user: alicorn },
+      { screenname: 'withmypowers', name: 'Matilda Wormwood Honey', user: kappa },
     ]
     characters.each { |data| create(:character, data) }
 

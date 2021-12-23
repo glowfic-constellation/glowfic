@@ -28,7 +28,7 @@ class WritableController < ApplicationController
     per = per_page
     cur_page ||= page
     @replies = @post.replies
-    @paginate_params = {controller: 'posts', action: 'show', id: @post.id}
+    @paginate_params = { controller: 'posts', action: 'show', id: @post.id }
 
     if params[:at_id].present?
       reply = if params[:at_id] == 'unread' && logged_in?

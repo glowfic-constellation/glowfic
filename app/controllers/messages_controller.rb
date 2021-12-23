@@ -8,7 +8,7 @@ class MessagesController < ApplicationController
     if params[:view] == 'outbox'
       @page_title = 'Outbox'
       from_table = current_user.sent_messages.where(visible_outbox: true).ordered_by_thread.select('distinct on (thread_id) messages.*')
-      from_table = from_table.where.not(recipient_id: blocked_ids).joins(:recipient).where.not(users: {deleted: true})
+      from_table = from_table.where.not(recipient_id: blocked_ids).joins(:recipient).where.not(users: { deleted: true })
     else
       @page_title = 'Inbox'
       from_table = current_user.messages.where(visible_inbox: true).ordered_by_thread.select('distinct on (thread_id) messages.*')
@@ -129,9 +129,9 @@ class MessagesController < ApplicationController
       recents = base_users.where(id: recent_ids).pluck(:username, :id).sort_by{|x| recent_ids.index(x[1]) }
       users = base_users.ordered.pluck(:username, :id)
       @select_items = if recents.present?
-        {:'Recently messaged' => recents, :'Other users' => users}
+        { :'Recently messaged' => recents, :'Other users' => users }
       else
-        {Users: users}
+        { Users: users }
       end
     end
   end

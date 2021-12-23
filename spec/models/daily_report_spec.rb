@@ -104,7 +104,7 @@ RSpec.describe DailyReport do
 
       Time.use_zone('America/New_York') do
         report = DailyReport.new("2020-05-21".to_date)
-        posts = report.posts({first_updated_at: :desc})
+        posts = report.posts({ first_updated_at: :desc })
         expect(posts.to_a.size).to eq(1)
         expect(posts[0].first_updated_at).to be_the_same_time_as(mismatch_time + 6.hours)
       end

@@ -72,7 +72,7 @@ class ReportsController < ApplicationController
 
   def linked_for(post, reply)
     if post.created_at.to_date == @day.to_date || reply.nil?
-      {id: post.id, klass: Post, created_at: post.created_at}
+      { id: post.id, klass: Post, created_at: post.created_at }
     else
       reply
     end
@@ -85,7 +85,7 @@ class ReportsController < ApplicationController
       when 'continuity'
         Arel.sql('LOWER(max(boards.name)), tagged_at desc')
       else
-        {first_updated_at: :desc}
+        { first_updated_at: :desc }
     end
   end
   helper_method :sort

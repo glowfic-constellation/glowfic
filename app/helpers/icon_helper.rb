@@ -18,7 +18,7 @@ module IconHelper
       klass += ' ' + supplied_class
     end
 
-    image_tag url, {alt: keyword, title: keyword, class: klass}.merge(**args)
+    image_tag url, { alt: keyword, title: keyword, class: klass }.merge(**args)
   end
 
   def no_icon_tag(**args)

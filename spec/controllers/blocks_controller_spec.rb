@@ -238,7 +238,7 @@ RSpec.describe BlocksController, type: :controller do
       block = create(:block)
       login_as(block.blocking_user)
       expect_any_instance_of(Block).to receive(:destroy).and_return(false)
-      delete :destroy, params: {id: block.id}
+      delete :destroy, params: { id: block.id }
       expect(response).to redirect_to(blocks_url)
       expect(flash[:error][:message]).to eq("User could not be unblocked.")
       expect(Block.find_by(id: block.id)).to eq(block)

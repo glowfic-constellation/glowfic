@@ -18,15 +18,15 @@ class Api::V1::TagsController < Api::ApiController
 
     # gallery groups only searches groups the specified user has used
     if (user_id = params[:user_id]) && type == GalleryGroup
-      user_gal_tags = GalleryGroup.joins(gallery_tags: [:gallery]).where(galleries: {user_id: user_id}).pluck(:id)
-      user_char_tags = GalleryGroup.joins(character_tags: [:character]).where(characters: {user_id: user_id}).pluck(:id)
+      user_gal_tags = GalleryGroup.joins(gallery_tags: [:gallery]).where(galleries: { user_id: user_id }).pluck(:id)
+      user_char_tags = GalleryGroup.joins(character_tags: [:character]).where(characters: { user_id: user_id }).pluck(:id)
       queryset = queryset.where(id: user_gal_tags + user_char_tags)
     end
 
     queryset = queryset.where.not(id: params[:tag_id]) if type == Setting && params[:tag_id].present?
 
     tags = paginate queryset, per_page: 25
-    render json: {results: tags}
+    render json: { results: tags }
   end
 
   api :GET, '/tags/:id', 'Load a single tag as a JSON resource'
@@ -40,8 +40,8 @@ class Api::V1::TagsController < Api::ApiController
 
   def find_tag
     unless (@tag = Tag.find_by(id: params[:id]))
-      error = {message: 'Tag could not be found'}
-      render json: {errors: [error]}, status: :not_found and return
+      error = { message: 'Tag could not be found' }
+      render json: { errors: [error] }, status: :not_found and return
     end
     @tag = find_type(@tag.type).find_by(id: params[:id])
   end

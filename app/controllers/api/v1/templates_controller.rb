@@ -17,6 +17,6 @@ class Api::V1::TemplatesController < Api::ApiController
     end
 
     templates = paginate queryset, per_page: 25
-    render json: {results: templates}
+    render json: { results: templates }
   end
 end

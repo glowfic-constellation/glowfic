@@ -231,7 +231,7 @@ RSpec.describe Api::V1::PostsController do
         api_login_as(board.creator)
         post :reorder, params: { ordered_post_ids: post_ids }
         expect(response).to have_http_status(200)
-        expect(response.json).to eq({'post_ids' => post_ids})
+        expect(response.json).to eq({ 'post_ids' => post_ids })
         expect(board_post1.reload.section_order).to eq(1)
         expect(board_post2.reload.section_order).to eq(3)
         expect(board_post3.reload.section_order).to eq(0)
@@ -259,7 +259,7 @@ RSpec.describe Api::V1::PostsController do
         api_login_as(board.creator)
         post :reorder, params: { ordered_post_ids: post_ids }
         expect(response).to have_http_status(200)
-        expect(response.json).to eq({'post_ids' => [board_post3.id, board_post1.id, board_post2.id, board_post4.id]})
+        expect(response.json).to eq({ 'post_ids' => [board_post3.id, board_post1.id, board_post2.id, board_post4.id] })
         expect(board_post1.reload.section_order).to eq(1)
         expect(board_post2.reload.section_order).to eq(2)
         expect(board_post3.reload.section_order).to eq(0)
@@ -407,7 +407,7 @@ RSpec.describe Api::V1::PostsController do
         api_login_as(board.creator)
         post :reorder, params: { ordered_post_ids: post_ids, section_id: section.id }
         expect(response).to have_http_status(200)
-        expect(response.json).to eq({'post_ids' => post_ids})
+        expect(response.json).to eq({ 'post_ids' => post_ids })
         expect(board_post1.reload.section_order).to eq(1)
         expect(board_post2.reload.section_order).to eq(3)
         expect(board_post3.reload.section_order).to eq(0)
@@ -436,7 +436,7 @@ RSpec.describe Api::V1::PostsController do
         api_login_as(board.creator)
         post :reorder, params: { ordered_post_ids: post_ids, section_id: section.id }
         expect(response).to have_http_status(200)
-        expect(response.json).to eq({'post_ids' => [board_post3.id, board_post1.id, board_post2.id, board_post4.id]})
+        expect(response.json).to eq({ 'post_ids' => [board_post3.id, board_post1.id, board_post2.id, board_post4.id] })
         expect(board_post1.reload.section_order).to eq(1)
         expect(board_post2.reload.section_order).to eq(2)
         expect(board_post3.reload.section_order).to eq(0)

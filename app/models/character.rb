@@ -156,8 +156,8 @@ class Character < ApplicationRecord
   end
 
   def clear_char_ids
-    UpdateModelJob.perform_later(Post.to_s, {character_id: id}, {character_id: nil}, audited_user_id)
-    UpdateModelJob.perform_later(Reply.to_s, {character_id: id}, {character_id: nil}, audited_user_id)
+    UpdateModelJob.perform_later(Post.to_s, { character_id: id }, { character_id: nil }, audited_user_id)
+    UpdateModelJob.perform_later(Reply.to_s, { character_id: id }, { character_id: nil }, audited_user_id)
   end
 
   def strip_spaces

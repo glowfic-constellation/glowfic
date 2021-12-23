@@ -66,7 +66,7 @@ RSpec.describe GalleriesController do
         icon = create(:icon)
         group = create(:gallery_group)
         login_as(icon.user)
-        post :create, params: { gallery: {gallery_group_ids: [group.id], icon_ids: [icon.id]} }
+        post :create, params: { gallery: { gallery_group_ids: [group.id], icon_ids: [icon.id] } }
         expect(response.status).to eq(200)
         expect(response).to render_template(:new)
         expect(assigns(:page_title)).to eq('New Gallery')
@@ -80,7 +80,7 @@ RSpec.describe GalleriesController do
     it "does not set icon has_gallery on failure" do
       icon = create(:icon)
       login_as(icon.user)
-      post :create, params: { gallery: {icon_ids: [icon.id]} }
+      post :create, params: { gallery: { icon_ids: [icon.id] } }
       expect(response).to have_http_status(200)
       expect(assigns(:page_title)).to eq('New Gallery')
       expect(flash[:error][:message]).to eq('Your gallery could not be saved because of the following problems:')
@@ -93,7 +93,7 @@ RSpec.describe GalleriesController do
       icon = create(:icon)
       group = create(:gallery_group)
       login_as(icon.user)
-      post :create, params: { gallery: {name: 'Test Gallery', icon_ids: [icon.id], gallery_group_ids: [group.id]} }
+      post :create, params: { gallery: { name: 'Test Gallery', icon_ids: [icon.id], gallery_group_ids: [group.id] } }
       expect(Gallery.count).to eq(1)
       gallery = assigns(:gallery).reload
       expect(response).to redirect_to(gallery_url(gallery))
@@ -117,7 +117,7 @@ RSpec.describe GalleriesController do
       ]
       login
       expect {
-        post :create, params: { gallery: {name: 'a', gallery_group_ids: tags} }
+        post :create, params: { gallery: { name: 'a', gallery_group_ids: tags } }
       }.to change{GalleryGroup.count}.by(1)
       expect(GalleryGroup.last.name).to eq('atag')
       expect(assigns(:gallery).gallery_groups.count).to eq(4)
@@ -338,7 +338,7 @@ RSpec.describe GalleriesController do
       user = create(:user)
       gallery = create(:gallery, user: user)
       login_as(user)
-      put :update, params: { id: gallery.id, gallery: {name: ''} }
+      put :update, params: { id: gallery.id, gallery: { name: '' } }
       expect(response).to render_template('edit')
       expect(flash[:error][:message]).to eq("Gallery could not be saved.")
     end
@@ -346,7 +346,7 @@ RSpec.describe GalleriesController do
     it "sets right variables on failed save" do
       gallery = create(:gallery, name: 'Example Gallery')
       login_as(gallery.user)
-      post :update, params: { id: gallery.id, gallery: {name: ''} }
+      post :update, params: { id: gallery.id, gallery: { name: '' } }
       expect(response.status).to eq(200)
       expect(response).to render_template(:edit)
       expect(assigns(:page_title)).to eq('Edit Gallery: Example Gallery')
@@ -361,7 +361,7 @@ RSpec.describe GalleriesController do
         create(:icon, user: gallery.user) # icon
         group = create(:gallery_group)
         login_as(gallery.user)
-        post :update, params: { id: gallery.id, gallery: {name: '', gallery_group_ids: [group.id]} }
+        post :update, params: { id: gallery.id, gallery: { name: '', gallery_group_ids: [group.id] } }
         expect(response.status).to eq(200)
         expect(response).to render_template(:edit)
         expect(assigns(:gallery).gallery_groups.map(&:id)).to eq([group.id])
@@ -373,7 +373,7 @@ RSpec.describe GalleriesController do
       gallery = create(:gallery, user: user)
       group = create(:gallery_group)
       login_as(user)
-      put :update, params: { id: gallery.id, gallery: {name: 'NewGalleryName', gallery_group_ids: [group.id]} }
+      put :update, params: { id: gallery.id, gallery: { name: 'NewGalleryName', gallery_group_ids: [group.id] } }
       expect(response).to redirect_to(edit_gallery_url(gallery))
       expect(flash[:success]).to eq('Gallery saved.')
       gallery.reload
@@ -389,14 +389,14 @@ RSpec.describe GalleriesController do
       gallery.icons << icon
       login_as(user)
 
-      icon_attributes = {id: icon.id, keyword: newkey}
+      icon_attributes = { id: icon.id, keyword: newkey }
       gid = gallery.galleries_icons.first.id
-      gallery_icon_attributes = {id: gid, icon_attributes: icon_attributes}
+      gallery_icon_attributes = { id: gid, icon_attributes: icon_attributes }
 
       put :update, params: {
         id: gallery.id,
         gallery: {
-          galleries_icons_attributes: {gid.to_s => gallery_icon_attributes},
+          galleries_icons_attributes: { gid.to_s => gallery_icon_attributes },
         },
       }
       expect(response).to redirect_to(edit_gallery_url(gallery))
@@ -412,14 +412,14 @@ RSpec.describe GalleriesController do
       expect(icon.reload.has_gallery).to eq(true)
       login_as(user)
 
-      icon_attributes = {id: icon.id}
+      icon_attributes = { id: icon.id }
       gid = gallery.galleries_icons.first.id
-      gallery_icon_attributes = {id: gid, _destroy: '1', icon_attributes: icon_attributes}
+      gallery_icon_attributes = { id: gid, _destroy: '1', icon_attributes: icon_attributes }
 
       put :update, params: {
         id: gallery.id,
         gallery: {
-          galleries_icons_attributes: {gid.to_s => gallery_icon_attributes},
+          galleries_icons_attributes: { gid.to_s => gallery_icon_attributes },
         },
       }
       expect(response).to redirect_to(edit_gallery_url(gallery))
@@ -436,14 +436,14 @@ RSpec.describe GalleriesController do
       gallery.icons << icon
       login_as(user)
 
-      icon_attributes = {id: icon.id, _destroy: '1'}
+      icon_attributes = { id: icon.id, _destroy: '1' }
       gid = gallery.galleries_icons.first.id
-      gallery_icon_attributes = {id: gid, icon_attributes: icon_attributes}
+      gallery_icon_attributes = { id: gid, icon_attributes: icon_attributes }
 
       put :update, params: {
         id: gallery.id,
         gallery: {
-          galleries_icons_attributes: {gid.to_s => gallery_icon_attributes},
+          galleries_icons_attributes: { gid.to_s => gallery_icon_attributes },
         },
       }
       expect(response).to redirect_to(edit_gallery_url(gallery))
@@ -466,7 +466,7 @@ RSpec.describe GalleriesController do
         '_' + existing_case.name.upcase,
       ]
       expect {
-        post :update, params: { id: gallery.id, gallery: {gallery_group_ids: tags} }
+        post :update, params: { id: gallery.id, gallery: { gallery_group_ids: tags } }
       }.to change{GalleryGroup.count}.by(1)
       expect(GalleryGroup.last.name).to eq('atag')
       expect(assigns(:gallery).gallery_groups.count).to eq(4)
@@ -539,7 +539,7 @@ RSpec.describe GalleriesController do
       expect_any_instance_of(Gallery).to receive(:destroy!).and_raise(ActiveRecord::RecordNotDestroyed, 'fake error')
       delete :destroy, params: { id: gallery.id }
       expect(response).to redirect_to(gallery_url(gallery))
-      expect(flash[:error]).to eq({message: "Gallery could not be deleted.", array: []})
+      expect(flash[:error]).to eq({ message: "Gallery could not be deleted.", array: [] })
       expect(icon.reload.galleries).to eq([gallery])
     end
   end
@@ -724,11 +724,11 @@ RSpec.describe GalleriesController do
         login_as(gallery.user)
 
         icons = [
-          {keyword: 'test1', url: uploaded_icon.url, s3_key: uploaded_icon.s3_key, credit: ''},
-          {keyword: '', url: 'http://example.com/image3141.png', credit: ''},
-          {keyword: 'test2', url: '', credit: ''},
-          {keyword: 'test3', url: 'fake', credit: ''},
-          {keyword: '', url: '', credit: ''},
+          { keyword: 'test1', url: uploaded_icon.url, s3_key: uploaded_icon.s3_key, credit: '' },
+          { keyword: '', url: 'http://example.com/image3141.png', credit: '' },
+          { keyword: 'test2', url: '', credit: '' },
+          { keyword: 'test3', url: 'fake', credit: '' },
+          { keyword: '', url: '', credit: '' },
         ]
 
         post :icon, params: { id: gallery.id, icons: icons }
@@ -750,8 +750,8 @@ RSpec.describe GalleriesController do
         gallery = create(:gallery, user_id: user.id)
         login_as(user)
         icons = [
-          {keyword: 'test1', url: 'http://example.com/image3141.png', credit: 'test1'},
-          {keyword: 'test2', url: "https://d1anwqy6ci9o1i.cloudfront.net/users/#{user.id}/icons/nonsense-fakeimg.png"},
+          { keyword: 'test1', url: 'http://example.com/image3141.png', credit: 'test1' },
+          { keyword: 'test2', url: "https://d1anwqy6ci9o1i.cloudfront.net/users/#{user.id}/icons/nonsense-fakeimg.png" },
         ]
 
         post :icon, params: { id: gallery.id, icons: icons }
@@ -775,8 +775,8 @@ RSpec.describe GalleriesController do
         user = create(:user)
         login_as(user)
         icons = [
-          {keyword: 'test1', url: 'http://example.com/image3142.png', credit: 'test1'},
-          {keyword: 'test2', url: "https://d1anwqy6ci9o1i.cloudfront.net/users/#{user.id}/icons/nonsense-fakeimg.png"},
+          { keyword: 'test1', url: 'http://example.com/image3142.png', credit: 'test1' },
+          { keyword: 'test2', url: "https://d1anwqy6ci9o1i.cloudfront.net/users/#{user.id}/icons/nonsense-fakeimg.png" },
         ]
 
         post :icon, params: { id: 0, icons: icons }

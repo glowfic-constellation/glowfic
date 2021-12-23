@@ -80,7 +80,7 @@ RSpec.describe Api::V1::IndexSectionsController do
       api_login_as(index.user)
       post :reorder, params: { ordered_section_ids: section_ids }
       expect(response).to have_http_status(200)
-      expect(response.json).to eq({'section_ids' => section_ids})
+      expect(response.json).to eq({ 'section_ids' => section_ids })
       expect(index_section1.reload.section_order).to eq(1)
       expect(index_section2.reload.section_order).to eq(3)
       expect(index_section3.reload.section_order).to eq(0)
@@ -108,7 +108,7 @@ RSpec.describe Api::V1::IndexSectionsController do
       api_login_as(index.user)
       post :reorder, params: { ordered_section_ids: section_ids }
       expect(response).to have_http_status(200)
-      expect(response.json).to eq({'section_ids' => [index_section3.id, index_section1.id, index_section2.id, index_section4.id]})
+      expect(response.json).to eq({ 'section_ids' => [index_section3.id, index_section1.id, index_section2.id, index_section4.id] })
       expect(index_section1.reload.section_order).to eq(1)
       expect(index_section2.reload.section_order).to eq(2)
       expect(index_section3.reload.section_order).to eq(0)

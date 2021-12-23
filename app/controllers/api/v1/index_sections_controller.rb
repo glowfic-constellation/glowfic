@@ -18,14 +18,14 @@ class Api::V1::IndexSectionsController < Api::ApiController
     sections_count = sections.count
     unless sections_count == section_ids.count
       missing_sections = section_ids - sections.pluck(:id)
-      error = {message: "Some sections could not be found: #{missing_sections * ', '}"}
-      render json: {errors: [error]}, status: :not_found and return
+      error = { message: "Some sections could not be found: #{missing_sections * ', '}" }
+      render json: { errors: [error] }, status: :not_found and return
     end
 
     indexes = Index.where(id: sections.select(:index_id).distinct.pluck(:index_id))
     unless indexes.count == 1
-      error = {message: 'Sections must be from one index'}
-      render json: {errors: [error]}, status: :unprocessable_entity and return
+      error = { message: 'Sections must be from one index' }
+      render json: { errors: [error] }, status: :unprocessable_entity and return
     end
 
     index = indexes.first
@@ -46,6 +46,6 @@ class Api::V1::IndexSectionsController < Api::ApiController
       end
     end
 
-    render json: {section_ids: IndexSection.where(index_id: index.id).ordered.pluck(:id)}
+    render json: { section_ids: IndexSection.where(index_id: index.id).ordered.pluck(:id) }
   end
 end

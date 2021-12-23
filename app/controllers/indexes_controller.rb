@@ -41,7 +41,7 @@ class IndexesController < ApplicationController
     end
 
     @page_title = @index.name.to_s
-    @sectionless = @index.posts.where(index_posts: {index_section_id: nil})
+    @sectionless = @index.posts.where(index_posts: { index_section_id: nil })
     @sectionless = @sectionless.ordered_by_index
     dbselect = ', index_posts.description as index_description, index_posts.id as index_post_id'
     @sectionless = posts_from_relation(@sectionless, with_pagination: false, select: dbselect)
@@ -105,7 +105,7 @@ class IndexesController < ApplicationController
     @page_title = "Edit Index: #{@index.name}"
     use_javascript('posts/index_edit')
     @index_sections = @index.index_sections.ordered
-    @unsectioned_posts = @index.posts.where(index_posts: {index_section_id: nil})
+    @unsectioned_posts = @index.posts.where(index_posts: { index_section_id: nil })
     @unsectioned_posts = @unsectioned_posts.select("posts.*, index_posts.id as index_post_id, index_posts.section_order as section_order")
     @unsectioned_posts = @unsectioned_posts.order('index_posts.section_order ASC')
   end

@@ -32,7 +32,7 @@ class Api::V1::CharactersController < Api::ApiController
 
     characters = paginate queryset, per_page: 25
     includes = [:selector_name] + (params[:includes] || []).map(&:to_sym)
-    render json: {results: characters.as_json(include: includes)}
+    render json: { results: characters.as_json(include: includes) }
   end
 
   api :GET, '/characters/:id', 'Load a single character as a JSON resource'
@@ -52,16 +52,16 @@ class Api::V1::CharactersController < Api::ApiController
   error 404, "Character not found"
   error 422, "Invalid parameters provided"
   def update
-    render json: {data: @character.as_json(include: [:default_icon])} and return unless params[:character]
+    render json: { data: @character.as_json(include: [:default_icon]) } and return unless params[:character]
 
     errors = []
     if params[:character][:default_icon_id].present? && Icon.find_by(id: params[:character][:default_icon_id]).nil?
-      errors << {message: "Default icon could not be found"}
+      errors << { message: "Default icon could not be found" }
     end
 
     @character.assign_attributes(character_params)
-    errors += @character.errors.full_messages.map { |msg| {message: msg} } unless @character.valid?
-    render json: {errors: errors}, status: :unprocessable_entity and return unless errors.empty?
+    errors += @character.errors.full_messages.map { |msg| { message: msg } } unless @character.valid?
+    render json: { errors: errors }, status: :unprocessable_entity and return unless errors.empty?
 
     @character.save!
     render json: @character.as_json(include: [:default_icon])
@@ -79,14 +79,14 @@ class Api::V1::CharactersController < Api::ApiController
     sections_count = sections.count
     unless sections_count == section_ids.count
       missing_sections = section_ids - sections.pluck(:id)
-      error = {message: "Some character galleries could not be found: #{missing_sections * ', '}"}
-      render json: {errors: [error]}, status: :not_found and return
+      error = { message: "Some character galleries could not be found: #{missing_sections * ', '}" }
+      render json: { errors: [error] }, status: :not_found and return
     end
 
     characters = Character.where(id: sections.select(:character_id).distinct.pluck(:character_id))
     unless characters.count == 1
-      error = {message: 'Character galleries must be from one character'}
-      render json: {errors: [error]}, status: :unprocessable_entity and return
+      error = { message: 'Character galleries must be from one character' }
+      render json: { errors: [error] }, status: :unprocessable_entity and return
     end
 
     character = characters.first
@@ -107,7 +107,7 @@ class Api::V1::CharactersController < Api::ApiController
       end
     end
 
-    render json: {characters_gallery_ids: CharactersGallery.where(character_id: character.id).ordered.pluck(:id)}
+    render json: { characters_gallery_ids: CharactersGallery.where(character_id: character.id).ordered.pluck(:id) }
   end
 
   private

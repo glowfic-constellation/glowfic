@@ -149,7 +149,7 @@ class CharactersController < ApplicationController
 
   def facecasts
     @page_title = 'Facecasts'
-    chars = Character.where(users: {deleted: false}).where.not(pb: nil)
+    chars = Character.where(users: { deleted: false }).where.not(pb: nil)
       .joins(:user)
       .left_outer_joins(:template)
       .pluck('characters.id, characters.name, characters.pb, users.id, users.username, templates.id, templates.name')
@@ -188,13 +188,13 @@ class CharactersController < ApplicationController
 
     icons = @alts.map do |alt|
       if alt.default_icon.present?
-        [alt.id, {url: alt.default_icon.url, keyword: alt.default_icon.keyword, aliases: alt.aliases.as_json}]
+        [alt.id, { url: alt.default_icon.url, keyword: alt.default_icon.keyword, aliases: alt.aliases.as_json }]
       else
-        [alt.id, {url: view_context.image_path('icons/no-icon.png'), keyword: 'No Icon', aliases: alt.aliases.as_json}]
+        [alt.id, { url: view_context.image_path('icons/no-icon.png'), keyword: 'No Icon', aliases: alt.aliases.as_json }]
       end
     end
     gon.gallery = icons.to_h
-    gon.gallery[''] = {url: view_context.image_path('icons/no-icon.png'), keyword: 'No Character'}
+    gon.gallery[''] = { url: view_context.image_path('icons/no-icon.png'), keyword: 'No Character' }
 
     @alt_dropdown = @alts.map { |alt| [alt.selector_name(include_settings: true), alt.id] }
     @alt = @alts.first
@@ -235,8 +235,8 @@ class CharactersController < ApplicationController
     end
 
     success_msg = ''
-    wheres = {character_id: @character.id}
-    updates = {character_id: new_char.try(:id), character_alias_id: new_alias_id}
+    wheres = { character_id: @character.id }
+    updates = { character_id: new_char.try(:id), character_alias_id: new_alias_id }
 
     if params[:post_ids].present?
       wheres[:post_id] = params[:post_ids]

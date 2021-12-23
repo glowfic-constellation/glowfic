@@ -25,7 +25,7 @@ RSpec.describe ApplicationJob do
   it "sends email when retry gives up" do
     exc = StandardError.new
     expect(StubJob).to receive(:notify_exception).with(exc, 2, :test).and_call_original
-    expect(ExceptionNotifier).to receive(:notify_exception).with(exc, data: {job: StubJob.name, args: [2, :test]})
+    expect(ExceptionNotifier).to receive(:notify_exception).with(exc, data: { job: StubJob.name, args: [2, :test] })
 
     job = StubJob.new(2, :test)
     expect(job).to receive(:perform).and_raise(exc)

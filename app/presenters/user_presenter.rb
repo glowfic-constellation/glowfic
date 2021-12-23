@@ -7,7 +7,7 @@ class UserPresenter
 
   def as_json(options={})
     return {} unless user
-    return {id: user.id, username: '(deleted user)'} if user.deleted?
+    return { id: user.id, username: '(deleted user)' } if user.deleted?
     return detailed_json(options) if options[:detailed]
     summary_json(options)
   end
@@ -25,6 +25,6 @@ class UserPresenter
   end
 
   def attr_json(attrs, options)
-    user.as_json_without_presenter({only: attrs}.reverse_merge(options))
+    user.as_json_without_presenter({ only: attrs }.reverse_merge(options))
   end
 end

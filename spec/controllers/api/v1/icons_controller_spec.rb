@@ -46,7 +46,7 @@ RSpec.describe Api::V1::IconsController do
       user = create(:user)
       icon = build(:uploaded_icon, user: user)
       api_login_as(user)
-      delete_key = {delete: {objects: [{key: icon.s3_key}], quiet: true}}
+      delete_key = { delete: { objects: [{ key: icon.s3_key }], quiet: true } }
       expect(S3_BUCKET).to receive(:delete_objects).with(delete_key)
       post :s3_delete, params: { s3_key: icon.s3_key }
       expect(response).to have_http_status(200)
