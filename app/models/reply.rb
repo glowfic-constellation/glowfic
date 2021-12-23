@@ -119,6 +119,7 @@ class Reply < ApplicationRecord
       post_author.update!(joined: true, joined_at: created_at)
     else
       post.post_authors.create!(user_id: user_id, joined: true, joined_at: created_at)
+      post.authors.reload
     end
 
     return if is_import

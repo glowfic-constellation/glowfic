@@ -45,6 +45,7 @@ module Owable
         author_for(user).update(joined: true, joined_at: created_at, private_note: private_note)
       else
         post_authors.create(user: user, joined: true, joined_at: created_at, private_note: private_note)
+        authors.reload
       end
     end
 

@@ -93,6 +93,7 @@ def update_authors(new_authors, new_post:, old_post:)
     data.merge!(existing.attributes.slice([:can_owe, :can_reply, :joined]))
     puts "PostAuthor.create!(#{data}), for #{User.find(user_id).inspect}"
     new_post.post_authors.create!(data)
+    new_post.authors.reload
   end
   puts "-> new authors created"
   still_valid = (old_post.replies.distinct.pluck(:user_id) + [old_post.user_id]).uniq
