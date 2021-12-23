@@ -100,9 +100,6 @@ Layout/SpaceBeforeBrackets: # (new in 1.7)
   Enabled: false
   # problems with false positives
 
-Layout/SpaceInsideBlockBraces:
-  Enabled: false
-
 Layout/SpaceInsideRangeLiteral:
   Enabled: false
 

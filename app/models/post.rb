@@ -217,7 +217,7 @@ class Post < ApplicationRecord
     return word_count unless replies.exists?
     contents = replies.pluck(:content)
     contents[0] = contents[0].split.size
-    word_count + contents.inject {|r, e| r + e.split.size}.to_i
+    word_count + contents.inject { |r, e| r + e.split.size }.to_i
   end
 
   def word_count_for(user)
@@ -227,18 +227,18 @@ class Post < ApplicationRecord
 
     contents = replies.where(user_id: user.id).pluck(:content)
     contents[0] = contents[0].split.size
-    sum + contents.inject {|r, e| r + e.split.size}.to_i
+    sum + contents.inject { |r, e| r + e.split.size }.to_i
   end
 
   # only returns for authors who have written in the post (it's zero for authors who have not joined)
   def author_word_counts
-    joined_authors.map { |author| [author.deleted? ? '(deleted user)' : author.username, word_count_for(author)] }.sort_by {|a| -a[1] }
+    joined_authors.map { |author| [author.deleted? ? '(deleted user)' : author.username, word_count_for(author)] }.sort_by { |a| -a[1] }
   end
 
   def character_appearance_counts
     reply_counts = replies.joins(:character).group(:character_id).count
     reply_counts[character_id] = reply_counts[character_id].to_i + 1
-    Character.where(id: reply_counts.keys).map { |c| [c, reply_counts[c.id]]}.sort_by {|a| -a[1] }
+    Character.where(id: reply_counts.keys).map { |c| [c, reply_counts[c.id]] }.sort_by { |a| -a[1] }
   end
 
   def has_content_warnings?

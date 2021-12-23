@@ -103,8 +103,8 @@ RSpec.describe CharacterHelper do
     end
 
     describe "handles complex characters" do
-      let (:template1) { create(:template, name: 'Test Template 1')}
-      let (:template2) { create(:template, name: 'Test Template 2')}
+      let (:template1) { create(:template, name: 'Test Template 1') }
+      let (:template2) { create(:template, name: 'Test Template 2') }
 
       let (:character1) do
         create(:character, user: user, template: template1,

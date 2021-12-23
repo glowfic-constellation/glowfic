@@ -32,7 +32,7 @@ class Api::V1::BoardSectionsController < Api::ApiController
     access_denied and return unless board.editable_by?(current_user)
 
     BoardSection.transaction do
-      sections = sections.sort_by {|section| section_ids.index(section.id) }
+      sections = sections.sort_by { |section| section_ids.index(section.id) }
       sections.each_with_index do |section, index|
         next if section.section_order == index
         section.update(section_order: index)

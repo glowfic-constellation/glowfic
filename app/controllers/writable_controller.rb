@@ -19,7 +19,7 @@ class WritableController < ApplicationController
       threadchars = faked.new('Thread characters', nil, uniq_chars)
       @templates.insert(0, threadchars)
     end
-    @templates.reject! {|template| template.plucked_characters.empty? }
+    @templates.reject! { |template| template.plucked_characters.empty? }
 
     gon.editor_user = user.gon_attributes
   end

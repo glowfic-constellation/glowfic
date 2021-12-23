@@ -168,11 +168,11 @@ class CharactersController < ApplicationController
     @pbs.uniq!
 
     if params[:sort] == "name"
-      @pbs.sort_by! {|x| [x[:item_name].downcase, x[:pb].downcase, x[:username].downcase]}
+      @pbs.sort_by! { |x| [x[:item_name].downcase, x[:pb].downcase, x[:username].downcase] }
     elsif params[:sort] == "writer"
-      @pbs.sort_by! {|x| [x[:username].downcase, x[:pb].downcase, x[:item_name].downcase]}
+      @pbs.sort_by! { |x| [x[:username].downcase, x[:pb].downcase, x[:item_name].downcase] }
     else
-      @pbs.sort_by! {|x| [x[:pb].downcase, x[:username].downcase, x[:item_name].downcase]}
+      @pbs.sort_by! { |x| [x[:pb].downcase, x[:username].downcase, x[:item_name].downcase] }
     end
   end
 
@@ -338,7 +338,7 @@ class CharactersController < ApplicationController
     @aliases = @character.aliases.ordered if @character
     gon.mod_editing = (user != current_user)
     groups = @character.try(:gallery_groups) || []
-    gon.gallery_groups = groups.map {|group| group.as_json(include: [:gallery_ids], user_id: user.id) }
+    gon.gallery_groups = groups.map { |group| group.as_json(include: [:gallery_ids], user_id: user.id) }
   end
 
   def build_template

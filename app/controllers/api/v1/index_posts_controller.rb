@@ -40,7 +40,7 @@ class Api::V1::IndexPostsController < Api::ApiController
     end
 
     IndexPost.transaction do
-      posts = posts.sort_by {|post| post_ids.index(post.id) }
+      posts = posts.sort_by { |post| post_ids.index(post.id) }
       posts.each_with_index do |post, i|
         next if post.section_order == i
         post.update(section_order: i)
