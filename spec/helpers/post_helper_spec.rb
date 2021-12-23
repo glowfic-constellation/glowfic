@@ -6,37 +6,32 @@ RSpec.describe PostHelper do
       before(:each) { post.user.update!(deleted: true) }
 
       it "handles only a deleted user" do
-        post.reload
         expect(helper.author_links(post)).to eq('(deleted user)')
       end
 
       it "handles only two deleted users" do
         reply = create(:reply, post: post)
         reply.user.update!(deleted: true)
-        post.reload
         expect(helper.author_links(post)).to eq('(deleted users)')
       end
 
       it "handles >4 deleted users" do
         replies = create_list(:reply, 4, post: post)
         replies.each { |r| r.user.update!(deleted: true) }
-        post.reload
         expect(helper.author_links(post)).to eq('(deleted users)')
       end
     end
 
     context "with active and deleted users" do
-      let!(:reply) { create(:reply, post: post) }
-
-      before(:each) { post.reload }
-
       it "handles two users with post user deleted" do
         post.user.update!(deleted: true)
+        reply = create(:reply, post: post)
         expect(helper.author_links(post)).to eq(helper.user_link(reply.user) + ' and 1 deleted user')
         expect(helper.author_links(post)).to be_html_safe
       end
 
       it "handles two users with reply user deleted" do
+        reply = create(:reply, post: post)
         reply.user.update!(deleted: true)
         expect(helper.author_links(post)).to eq(helper.user_link(post.user) + ' and 1 deleted user')
         expect(helper.author_links(post)).to be_html_safe
@@ -44,6 +39,7 @@ RSpec.describe PostHelper do
 
       it "handles three users with one deleted" do
         post.user.update!(username: 'xxx')
+        reply = create(:reply, post: post)
         reply.user.update!(deleted: true)
         reply = create(:reply, post: post, user: create(:user, username: 'yyy'))
         links = [post.user, reply.user].map { |u| helper.user_link(u) }.join(', ')
@@ -52,6 +48,7 @@ RSpec.describe PostHelper do
       end
 
       it "handles three users with two deleted" do
+        reply = create(:reply, post: post)
         reply.user.update!(deleted: true)
         reply = create(:reply, post: post)
         reply.user.update!(deleted: true)
@@ -61,12 +58,11 @@ RSpec.describe PostHelper do
 
       it "handles >4 users with post user first" do
         post.user.update!(username: 'zzz')
-        reply.user.update!(username: 'yyy')
+        create(:reply, post: post, user: create(:user, username: 'yyy'))
         reply = create(:reply, post: post, user: create(:user, username: 'xxx'))
         reply.user.update!(deleted: true)
         create(:reply, post: post, user: create(:user, username: 'www'))
         create(:reply, post: post, user: create(:user, username: 'vvv'))
-        post.reload
         stats_link = helper.link_to('4 others', stats_post_path(post), title: 'vvv, www, yyy')
         expect(helper.author_links(post)).to eq(helper.user_link(post.user) + ' and ' + stats_link)
         expect(helper.author_links(post)).to be_html_safe
@@ -74,11 +70,10 @@ RSpec.describe PostHelper do
 
       it "handles >4 users with alphabetical user first iff post user deleted" do
         post.user.update!(username: 'zzz', deleted: true)
-        reply.user.update!(username: 'yyy')
+        create(:reply, post: post, user: create(:user, username: 'yyy'))
         create(:reply, post: post, user: create(:user, username: 'xxx'))
         reply = create(:reply, post: post, user: create(:user, username: 'aaa'))
         create(:reply, post: post, user: create(:user, username: 'vvv'))
-        post.reload
         stats_link = helper.link_to('4 others', stats_post_path(post), title: 'vvv, xxx, yyy')
         expect(helper.author_links(post)).to eq(helper.user_link(reply.user) + ' and ' + stats_link)
         expect(helper.author_links(post)).to be_html_safe
@@ -87,7 +82,6 @@ RSpec.describe PostHelper do
 
     context "with only active users" do
       it "handles only one user" do
-        post.reload
         expect(helper.author_links(post)).to eq(helper.user_link(post.user))
         expect(helper.author_links(post)).to be_html_safe
       end
@@ -95,7 +89,6 @@ RSpec.describe PostHelper do
       it "handles two users with commas" do
         post.user.update!(username: 'xxx')
         reply = create(:reply, post: post, user: create(:user, username: 'yyy'))
-        post.reload
         expect(helper.author_links(post)).to eq(helper.user_link(post.user) + ', ' + helper.user_link(reply.user))
         expect(helper.author_links(post)).to be_html_safe
       end
@@ -105,7 +98,6 @@ RSpec.describe PostHelper do
         users = [post.user]
         users << create(:reply, post: post, user: create(:user, username: 'yyy')).user
         users << create(:reply, post: post, user: create(:user, username: 'xxx')).user
-        post.reload
         expect(helper.author_links(post)).to eq(users.reverse.map { |u| helper.user_link(u) }.join(', '))
         expect(helper.author_links(post)).to be_html_safe
       end
@@ -116,7 +108,6 @@ RSpec.describe PostHelper do
         create(:reply, post: post, user: create(:user, username: 'xxx'))
         create(:reply, post: post, user: create(:user, username: 'www'))
         create(:reply, post: post, user: create(:user, username: 'vvv'))
-        post.reload
         stats_link = helper.link_to('4 others', stats_post_path(post), title: 'vvv, www, xxx, yyy')
         expect(helper.author_links(post)).to eq(helper.user_link(post.user) + ' and ' + stats_link)
         expect(helper.author_links(post)).to be_html_safe
