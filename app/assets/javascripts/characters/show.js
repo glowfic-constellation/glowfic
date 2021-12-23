@@ -10,16 +10,16 @@ $(document).ready(function() {
 // override standard reorder
 function bindArrows(orderBox, path, param) {
   $(".section-up", orderBox).click(function() {
-    var sourceRow = $(this).closest('.section-ordered');
-    var targetRow = sourceRow.prevUntil('.section-ordered').last().prev();
+    const sourceRow = $(this).closest('.section-ordered');
+    const targetRow = sourceRow.prevUntil('.section-ordered').last().prev();
     if (targetRow.length === 0) return false;
     swapRows(sourceRow, targetRow, orderBox, path, param);
     return false;
   }).addClass('pointer').removeClass('disabled-arrow');
 
   $(".section-down", orderBox).click(function() {
-    var sourceRow = $(this).closest('.section-ordered');
-    var targetRow = sourceRow.nextUntil('.section-ordered').last().next();
+    const sourceRow = $(this).closest('.section-ordered');
+    const targetRow = sourceRow.nextUntil('.section-ordered').last().next();
     if (targetRow.length === 0) return false;
     swapRows(sourceRow, targetRow, orderBox, path, param);
     return false;
@@ -31,9 +31,9 @@ function bindArrows(orderBox, path, param) {
 
 // override standard reorder
 function reorderRows(orderBox) {
-  var rows = $('.section-ordered', orderBox);
-  var ordered = rows.sort(function(a, b) { return $(a).data('order') > $(b).data('order') ? 1 : -1; }).each(function() {
-    var attaches = $(this).nextUntil('.section-ordered');
+  const rows = $('.section-ordered', orderBox);
+  const ordered = rows.sort(function(a, b) { return $(a).data('order') > $(b).data('order') ? 1 : -1; }).each(function() {
+    const attaches = $(this).nextUntil('.section-ordered');
     orderBox.append(this, attaches.get());
   });
   return ordered;

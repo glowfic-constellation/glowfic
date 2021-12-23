@@ -4,16 +4,16 @@
 // so that a single page can have multiple separate ordering structures
 function bindArrows(orderBox, path, param) {
   $(".section-up", orderBox).click(function() {
-    var sourceRow = $(this).closest('.section-ordered');
-    var targetRow = sourceRow.prev('.section-ordered');
+    const sourceRow = $(this).closest('.section-ordered');
+    const targetRow = sourceRow.prev('.section-ordered');
     if (targetRow.length === 0) return false;
     swapRows(sourceRow, targetRow, orderBox, path, param);
     return false;
   }).addClass('pointer').removeClass('disabled-arrow');
 
   $(".section-down", orderBox).click(function() {
-    var sourceRow = $(this).closest('.section-ordered');
-    var targetRow = sourceRow.next('.section-ordered');
+    const sourceRow = $(this).closest('.section-ordered');
+    const targetRow = sourceRow.next('.section-ordered');
     if (targetRow.length === 0) return false;
     swapRows(sourceRow, targetRow, orderBox, path, param);
     return false;
@@ -30,7 +30,7 @@ function unbindArrows(orderBox) {
 
 function bindSortable(orderBox, path, param) {
   orderBox.addClass('sortableBox');
-  var sortables = $(".sortable", orderBox);
+  const sortables = $(".sortable", orderBox);
   sortables.sortable({
     axis: 'y',
     cancel: '.section-warning',
@@ -60,7 +60,7 @@ function disableSortable(orderBox) {
 }
 
 function reEvenOdd(orderBox) {
-  var flip = false;
+  let flip = false;
   $("tr:not(.section-warning)", orderBox).each(function() {
     if (flip) $('td', this).removeClass('even').addClass('odd');
     else $('td', this).removeClass('odd').addClass('even');
@@ -75,24 +75,24 @@ function reEvenOdd(orderBox) {
 }
 
 function reorderRows(orderBox) {
-  var arrowBox = $('tbody, .table-list', orderBox);
-  var rows = $('.section-ordered', arrowBox);
-  var ordered = rows.sort(function(a, b) { return $(a).data('order') > $(b).data('order') ? 1 : -1; }).appendTo(arrowBox);
+  const arrowBox = $('tbody, .table-list', orderBox);
+  const rows = $('.section-ordered', arrowBox);
+  const ordered = rows.sort(function(a, b) { return $(a).data('order') > $(b).data('order') ? 1 : -1; }).appendTo(arrowBox);
   reEvenOdd(orderBox);
   return ordered;
 }
 
 function swapRows(sourceRow, targetRow, orderBox, path, param) {
-  var sourceOrder = sourceRow.data('order');
-  var targetOrder = targetRow.data('order');
+  const sourceOrder = sourceRow.data('order');
+  const targetOrder = targetRow.data('order');
   sourceRow.data('order', targetOrder);
   targetRow.data('order', sourceOrder);
   syncRowOrders(orderBox, path, param);
 }
 
 function setToDisplayedOrder(orderBox, path, param) {
-  var arrowBox = $('tbody, .table-list', orderBox);
-  var rows = $('.section-ordered', arrowBox);
+  const arrowBox = $('tbody, .table-list', orderBox);
+  const rows = $('.section-ordered', arrowBox);
   rows.each(function(_, index) {
     $(this).data('order', index);
   });
@@ -100,14 +100,14 @@ function setToDisplayedOrder(orderBox, path, param) {
 }
 
 function getOrCreateWarningBox(orderBox) {
-  var sectionWarning = $('.section-warning', orderBox);
+  let sectionWarning = $('.section-warning', orderBox);
   if (sectionWarning.length === 0) {
     if (orderBox.get(0).tagName.toUpperCase() === 'TABLE') {
-      var outerBox = $("<tr>");
+      const outerBox = $("<tr>");
       sectionWarning = $("<td class='section-warning'>").appendTo(outerBox);
       orderBox.prepend(outerBox);
     } else {
-      var aboveBox = $('.content-header', orderBox);
+      const aboveBox = $('.content-header', orderBox);
       sectionWarning = $("<div class='section-warning'>");
       aboveBox.after(sectionWarning);
     }
@@ -123,14 +123,14 @@ function syncRowOrders(orderBox, path, param) {
   $(".saveconf", orderBox).stop(true, true).hide();
 
   // Switch the row order pre-emptively
-  var orderedRows = reorderRows(orderBox);
+  const orderedRows = reorderRows(orderBox);
 
   // Figure out the full desired order and send it to the server
-  var orderedIds = [];
+  const orderedIds = [];
   orderedRows.each(function() {
     orderedIds.push(parseInt($(this).data('id')));
   });
-  var json = {};
+  const json = {};
   json['ordered_' + param] = orderedIds;
   // and restrict to relevant section_id if given
   if (window.gon && window.gon.section_id) json.section_id = window.gon.section_id;
@@ -138,15 +138,15 @@ function syncRowOrders(orderBox, path, param) {
   $.authenticatedPost(path, json, function(resp) {
     // Check the list doesn't have new elements, warn but don't block if it does
     if (orderedRows.length !== resp[param].length) {
-      var sectionWarning = getOrCreateWarningBox(orderBox);
+      const sectionWarning = getOrCreateWarningBox(orderBox);
       sectionWarning.html('There are items missing from this list! Please reload.');
       console.log(resp.responseText);
     }
 
     // Set the full ordering according to the server response
-    var returnedIds = resp[param];
+    const returnedIds = resp[param];
     orderedRows.each(function() {
-      var row = $(this);
+      const row = $(this);
       row.data('order', returnedIds.indexOf(row.data('id')));
     });
     reorderRows(orderBox);
@@ -160,8 +160,8 @@ function syncRowOrders(orderBox, path, param) {
     // Display an error and debug to console, warn and block
     $(".loading", orderBox).hide();
     $(".saveerror", orderBox).show();
-    var sectionWarning = getOrCreateWarningBox(orderBox);
-    var specificMessage = '';
+    const sectionWarning = getOrCreateWarningBox(orderBox);
+    let specificMessage = '';
     if (resp.status === 404) {
       specificMessage = 'One or more of the items could not be found. ';
     }

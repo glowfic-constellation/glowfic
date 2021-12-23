@@ -3,8 +3,8 @@ $(document).ready(function() {
   // Checks if the user is on the unread page but also started near the unread element,
   // since e.g. on a refresh some browsers will retain your spot on the page
   // Will be used after some page-size-changing functions to revert to the correct spot
-  var unreadElem = $("a#unread");
-  var shouldScrollToUnread = false;
+  const unreadElem = $("a#unread");
+  let shouldScrollToUnread = false;
   if (window.location.hash === "#unread" && unreadElem.length > 0)
     shouldScrollToUnread = Math.abs(unreadElem.offset().top - $(window).scrollTop()) < 50;
 
@@ -23,7 +23,7 @@ $(document).ready(function() {
     // Hides selectors when you hit the escape key
     $(document).bind("keydown", function(e) {
       e = e || window.event;
-      var charCode = e.which || e.keyCode;
+      const charCode = e.which || e.keyCode;
       if (charCode === 27) {
         $('#post-menu-box').hide();
         $('#post-menu').removeClass('selected');
@@ -32,7 +32,7 @@ $(document).ready(function() {
 
     // Hides selectors when you click outside them
     $(document).click(function(e) {
-      var target = e.target;
+      const target = e.target;
 
       if (!$(target).is('#post-menu-box') && !$(target).parents().is('#post-menu-box')
         && !$(target).is('#post-menu') && !$(target).parents().is('#post-menu')) {
@@ -51,9 +51,9 @@ $(document).ready(function() {
   // horrible hack to make the paginator center-aligned when it's forced to a second line
   // the timeout in the resize event acts as a debounce so we don't re-render on each pixel change of the resize
   if ($(".normal-pagination").length > 0) {
-    var paginators = $('.paginator');
+    const paginators = $('.paginator');
     paginators.each(function() { reflowPaginator(this); });
-    var resizeDebounce = null;
+    let resizeDebounce = null;
     $(window).resize(function() {
       window.cancelAnimationFrame(resizeDebounce);
       resizeDebounce = window.requestAnimationFrame(function() {
@@ -70,14 +70,14 @@ $(document).ready(function() {
 
 function reflowPaginator(paginator) {
   paginator = $(paginator);
-  var pagination = paginator.find('.normal-pagination');
-  var narrowClear = paginator.find('.narrow-clear');
+  const pagination = paginator.find('.normal-pagination');
+  const narrowClear = paginator.find('.narrow-clear');
 
   narrowClear.css('clear', 'none');
   paginator.removeClass('mobile-paginator');
 
-  var innerWindow = 4;
-  var outerBoundary = 2;
+  let innerWindow = 4;
+  const outerBoundary = 2;
   hidePaginatorLinks(pagination, innerWindow, outerBoundary);
   if (paginator.height() < 60) return;
 
@@ -103,16 +103,16 @@ function newInsertedEllipsis() {
 
 function range(lower, upper) {
   // [lower .. upper] (inclusive)
-  var list = [];
-  for (var i=lower; i<=upper; i++) {
+  const list = [];
+  for (let i=lower; i<=upper; i++) {
     list.push(i);
   }
   return list;
 }
 
 function calculateVisiblePages(innerWindow, outerBoundary, totalPages, currentNum) {
-  var windowFrom = currentNum - innerWindow;
-  var windowTo = currentNum + innerWindow;
+  let windowFrom = currentNum - innerWindow;
+  let windowTo = currentNum + innerWindow;
   if (windowTo > totalPages) {
     windowFrom -= windowTo - totalPages;
     windowTo = totalPages;
@@ -123,9 +123,9 @@ function calculateVisiblePages(innerWindow, outerBoundary, totalPages, currentNu
     if (windowTo > totalPages) windowTo = totalPages;
   }
 
-  var middle = range(windowFrom, windowTo);
+  const middle = range(windowFrom, windowTo);
 
-  var left;
+  let left;
   if (outerBoundary + 3 < middle[0]) {
     left = range(1, outerBoundary+1);
     left.push('gap');
@@ -133,7 +133,7 @@ function calculateVisiblePages(innerWindow, outerBoundary, totalPages, currentNu
     left = range(1, middle[0]);
   }
 
-  var right;
+  let right;
   if (totalPages - outerBoundary - 2 > middle[middle.length-1]) {
     right = range(totalPages - outerBoundary, totalPages);
   } else {
@@ -146,21 +146,21 @@ function calculateVisiblePages(innerWindow, outerBoundary, totalPages, currentNu
 
 function hidePaginatorLinks(paginator, innerWindow, outerBoundary) {
   paginator.find('.inserted-ellipsis').remove();
-  var links = paginator.find('a:not(.previous_page):not(.next_page)');
+  const links = paginator.find('a:not(.previous_page):not(.next_page)');
   links.show();
 
   // logic for page numbers from will_paginate
-  var lastLink = paginator.find('.next_page').prev('a,.current');
-  var current = paginator.find('.current');
-  var currentNum = pageAsNumber(current);
-  var totalPages = pageAsNumber(lastLink);
-  var pages = calculateVisiblePages(innerWindow, outerBoundary, totalPages, currentNum);
+  const lastLink = paginator.find('.next_page').prev('a,.current');
+  const current = paginator.find('.current');
+  const currentNum = pageAsNumber(current);
+  const totalPages = pageAsNumber(lastLink);
+  const pages = calculateVisiblePages(innerWindow, outerBoundary, totalPages, currentNum);
 
-  var linksToHide = links;
+  let linksToHide = links;
   links.each(function() {
-    var link = $(this);
-    var num = pageAsNumber(link);
-    var index = pages.indexOf(num);
+    const link = $(this);
+    const num = pageAsNumber(link);
+    const index = pages.indexOf(num);
     if (index < 0) return;
     linksToHide = linksToHide.not(link);
     if (pages[index + 1] === 'gap' && !link.next('.gap')) link.after(newInsertedEllipsis());

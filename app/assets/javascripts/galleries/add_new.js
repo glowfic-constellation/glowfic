@@ -1,16 +1,16 @@
 /* global deleteUnusedIcons */
 /* exported addUploadedIcon, addCallback, failCallback */
 
-var done = 0;
-var total = 0;
-var failed = 0;
+let done = 0;
+let total = 0;
+let failed = 0;
 
-var keyLeft = 37;
-var keyUp = 38;
-var keyRight = 39;
-var keyDown = 40;
+const keyLeft = 37;
+const keyUp = 38;
+const keyRight = 39;
+const keyDown = 40;
 
-var emptyGif = "data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==";
+const emptyGif = "data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==";
 
 $(document).ready(function() {
   fixButtons();
@@ -22,15 +22,15 @@ $(document).ready(function() {
 // eslint-disable-next-line complexity
 function processDirectionalKey(event) {
   if ([keyLeft, keyUp, keyRight, keyDown].indexOf(event.which) < 0) return; // skip if not a directional key
-  var tdBinding = $(this);
-  var input = $('input', tdBinding);
+  const tdBinding = $(this);
+  const input = $('input', tdBinding);
   if (input.get(0).type !== 'text') { return; } // skip if not text
   if (input.get(0).selectionStart !== input.get(0).selectionEnd) { return; } // skip processing if user has text selected
 
-  var caret = input.get(0).selectionStart;
-  var index = tdBinding.closest('td').index();
+  const caret = input.get(0).selectionStart;
+  const index = tdBinding.closest('td').index();
 
-  var consume = false;
+  let consume = false;
   switch (event.which) {
   case keyLeft:
     consume = processKeyLeft(tdBinding, caret);
@@ -81,13 +81,13 @@ function bindAdd() {
 }
 
 function addNewRow() {
-  var oldRow = $(".icon-row:last");
-  var newRow = oldRow.clone();
-  var index = oldRow.data('index') + 1;
+  const oldRow = $(".icon-row:last");
+  const newRow = oldRow.clone();
+  const index = oldRow.data('index') + 1;
   newRow.data('index', index);
 
   // clear all input values in the clone
-  var inputs = newRow.find('input');
+  const inputs = newRow.find('input');
   inputs.val('');
 
   // clear preview icon
@@ -95,7 +95,7 @@ function addNewRow() {
 
   // handle the URL field specially
   // because uploads have special UI
-  var urlField = inputs.first();
+  const urlField = inputs.first();
   newRow.find('.conf').hide();
   newRow.find('.conf .filename').text('');
   urlField.show();
@@ -112,8 +112,8 @@ function addNewRow() {
 
 function bindRem() {
   $(".icon-row-rem").click(function() {
-    var remRow = $(this).parents('tr');
-    var removingKey = $(remRow.find('input')[1]).val();
+    const remRow = $(this).parents('tr');
+    const removingKey = $(remRow.find('input')[1]).val();
     remRow.remove();
     fixButtons();
     if (removingKey !== '') { deleteUnusedIcons([removingKey]); }
@@ -122,7 +122,7 @@ function bindRem() {
 
 function cleanUpRows() {
   $(".icon-row").each(function() {
-    var anySet = false;
+    let anySet = false;
     if ($(this).find('.conf .filename').text() !== '') return;
     $(this).find('input').each(function() { // eslint-disable-line consistent-return
       if ($(this).val() !== '') {
@@ -144,16 +144,16 @@ function addUploadedIcon(url, key, data, _fileInput) {
   updateBox();
 
   // create hidden field
-  var iconIndex = addNewRow();
-  var row = $(".icon-row").filter(function() { return $(this).data('index') === iconIndex; });
-  var urlInput = $("#icons_"+iconIndex+"_url");
-  var urlCell = $(urlInput.parents('td:first'));
+  const iconIndex = addNewRow();
+  const row = $(".icon-row").filter(function() { return $(this).data('index') === iconIndex; });
+  const urlInput = $("#icons_"+iconIndex+"_url");
+  const urlCell = $(urlInput.parents('td:first'));
   urlInput.hide().val(url);
   row.find("input[id$='_s3_key']").val(key);
 
   // update keyword box with data.files[0].name minus file extension
-  var keyword = data.files[0].name;
-  var fileExt = keyword.split('.').slice(-1)[0];
+  let keyword = data.files[0].name;
+  const fileExt = keyword.split('.').slice(-1)[0];
   if (fileExt !== keyword)
     keyword = keyword.replace('.'+fileExt, '');
   row.find("input[id$='_keyword']").val(keyword);
@@ -181,9 +181,9 @@ function failCallback() {
 }
 
 function updateBox() {
-  var progressBox = $(".progress-box");
+  const progressBox = $(".progress-box");
   if (!progressBox) return;
-  var progress = parseInt(done / total * 100, 10);
+  const progress = parseInt(done / total * 100, 10);
   progressBox.html(done.toString() + ' / ' + total.toString() + ' (' + progress + '%) ');
   if (failed) {
     progressBox.append($("<span style='color: #F00;'>").append(failed.toString() + " failed"));

@@ -11,7 +11,7 @@ $(document).ready(function() {
 });
 
 function swapView(cur, hide, other) {
-  var id = $(cur).data('id');
+  const id = $(cur).data('id');
   $("#" + hide + "-" + id).hide();
   $("#" + other + "-" + id).show();
 }
