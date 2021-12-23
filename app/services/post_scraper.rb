@@ -42,7 +42,7 @@ class PostScraper < Object
       import_replies_from_doc(@html_doc)
       links = page_links
       links.each_with_index do |link, i|
-        logger.debug "Scraping '#{@post.subject}': page #{i+1}/#{links.count}"
+        logger.debug "Scraping '#{@post.subject}': page #{i + 1}/#{links.count}"
         doc = doc_from_url(link)
         import_replies_from_doc(doc)
       end
@@ -71,7 +71,7 @@ class PostScraper < Object
         import_replies_from_doc(@html_doc)
         links = page_links
         links.each_with_index do |link, i|
-          logger.debug "Scraping '#{@post.subject}': page #{i+1}/#{links.count}"
+          logger.debug "Scraping '#{@post.subject}': page #{i + 1}/#{links.count}"
           doc = doc_from_url(link)
           import_replies_from_doc(doc)
         end
@@ -134,7 +134,7 @@ class PostScraper < Object
       depth = first_reply_in_batch[:class][/comment-depth-\d+/].sub('comment-depth-', '').to_i
 
       # check for accidental comment at same depth, if so go mark it as a new page too
-      next_comment = comments[index+1]
+      next_comment = comments[index + 1]
       if next_comment && next_comment[:class][/comment-depth-\d+/].sub('comment-depth-', '').to_i == depth
         index += 1
       else
@@ -305,7 +305,7 @@ class PostScraper < Object
   def strip_content(content)
     return content unless content.ends_with?("</div>")
     index = content.index('edittime')
-    content[0..index-13]
+    content[0..(index - 13)]
   end
 
   def logger

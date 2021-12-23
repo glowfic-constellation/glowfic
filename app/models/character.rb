@@ -141,7 +141,7 @@ class Character < ApplicationRecord
     @group = CharacterGroup.new(user: user, name: group_name)
     return if @group.valid?
     @group.errors.messages.each do |k, v|
-      v.each { |val| errors.add('group '+k.to_s, val) }
+      v.each { |val| errors.add("group #{k}", val) }
     end
   end
 

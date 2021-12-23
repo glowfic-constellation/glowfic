@@ -96,9 +96,6 @@ Layout/ParameterAlignment:
 Layout/SpaceAroundEqualsInParameterDefault:
   EnforcedStyle: 'no_space'
 
-Layout/SpaceAroundOperators:
-  Enabled: false
-
 Layout/SpaceBeforeBlockBraces:
   Enabled: false
 

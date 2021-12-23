@@ -16,7 +16,7 @@ module PostHelper
     first_author = post.user.deleted? ? authors.first : post.user
     first_link = linked ? user_link(first_author, colored: colored) : first_author.username
     hovertext = safe_join((authors - [first_author]).map(&:username), ', ')
-    others = linked ? link_to("#{total-1} others", stats_post_path(post), title: hovertext) : "#{total-1} others"
+    others = linked ? link_to("#{total - 1} others", stats_post_path(post), title: hovertext) : "#{total - 1} others"
     safe_join([first_link, others], ' and ')
   end
 
