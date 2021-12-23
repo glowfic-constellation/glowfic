@@ -165,6 +165,6 @@ function deleteUnusedIcons(keys) {
 }
 
 function isPolicyExpired(responseText) {
-  if (responseText.includes("Invalid according to Policy: Policy expired.")) { return true; }
-  return responseText.includes("Idle connections will be closed.");
+  return responseText.includes("Invalid according to Policy: Policy expired.")
+    || responseText.includes("Idle connections will be closed.");
 }
