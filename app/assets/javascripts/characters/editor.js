@@ -1,8 +1,8 @@
 /* global gon, createSelect2, createTagSelect, processResults, queryTransform */
-var galleryIds, oldTemplate;
-var galleryGroupIds = [];
-var galleryGroups = {};
-var characterIconsBox;
+let galleryIds, oldTemplate;
+let galleryGroupIds = [];
+const galleryGroups = {};
+let characterIconsBox;
 
 $(document).ready(function() {
   characterIconsBox = $('#character-icon-selector .character-galleries-simple');
@@ -48,11 +48,11 @@ $(document).ready(function() {
   $("#character_ungrouped_gallery_ids").change(function() {
     $("#character_default_icon_id").val('');
 
-    var newGalleryIds = $(this).val() || [];
+    const newGalleryIds = $(this).val() || [];
 
     // a gallery was removed
     if (galleryIds.length > newGalleryIds.length) {
-      var removedGallery = $(galleryIds).not(newGalleryIds).get(0);
+      const removedGallery = $(galleryIds).not(newGalleryIds).get(0);
       galleryIds = newGalleryIds;
       if (findGalleryInGroups(removedGallery)) return;
       characterIconsBox.find("#gallery"+removedGallery).remove();
@@ -64,7 +64,7 @@ $(document).ready(function() {
       return;
     }
 
-    var newId = $(newGalleryIds).not(galleryIds).get(0);
+    const newId = $(newGalleryIds).not(galleryIds).get(0);
     galleryIds = newGalleryIds;
     characterIconsBox.find("#gallery0").remove();
 
@@ -75,7 +75,7 @@ $(document).ready(function() {
   $("#character_gallery_group_ids").change(function() {
     $("#character_default_icon_id").val('');
 
-    var newGalleryGroupIds = $(this).val() || [];
+    const newGalleryGroupIds = $(this).val() || [];
 
     // a gallery group was removed
     if (galleryGroupIds.length > newGalleryGroupIds.length) {
@@ -83,14 +83,14 @@ $(document).ready(function() {
       return;
     }
 
-    var newId = $(newGalleryGroupIds).not(galleryGroupIds).get(0);
+    const newId = $(newGalleryGroupIds).not(galleryGroupIds).get(0);
     galleryGroupIds = newGalleryGroupIds;
     if (typeof newId === 'undefined') return;
     if (newId.substring(0, 1) === '_') return; // skip uncreated tags
 
     // fetch galleryGroup galleryIds
     $.authenticatedGet('/api/v1/tags/'+newId, {user_id: gon.user_id}, function(resp) {
-      var ids = resp.gallery_ids;
+      const ids = resp.gallery_ids;
       galleryGroups[resp.id] = {gallery_ids: ids};
 
       if (ids.length === 0) return; // return if empty
@@ -110,19 +110,19 @@ $(document).ready(function() {
     ajax: {
       url: '/api/v1/tags',
       data: function(params) {
-        var data = queryTransform(params);
+        const data = queryTransform(params);
         data.t = 'GalleryGroup';
         data.user_id = gon.user_id;
         return data;
       },
       processResults: function(data, params) {
         params.page = params.page || 1;
-        var total = this._request.getResponseHeader('Total');
-        var results = processResults(data, params, total);
+        const total = this._request.getResponseHeader('Total');
+        const results = processResults(data, params, total);
 
         // Remove duplicates
-        var existingIds = $("#character_gallery_group_ids").val() || [];
-        var validResults = [];
+        const existingIds = $("#character_gallery_group_ids").val() || [];
+        const validResults = [];
         results.results.forEach(function(gallery) {
           if (!existingIds.includes(gallery.id.toString())) validResults.push(gallery);
         });
@@ -142,7 +142,7 @@ $(document).ready(function() {
 
 function findGalleryInGroups(galleryId) {
   galleryId = parseInt(galleryId);
-  var found = false;
+  let found = false;
   Object.keys(galleryGroups).forEach(function(groupId) {
     if (galleryGroups[groupId].gallery_ids.indexOf(galleryId) >= 0) found = true;
   });
@@ -150,11 +150,11 @@ function findGalleryInGroups(galleryId) {
 }
 
 function cleanUpRemovedGalleries(newGalleryGroupIds) {
-  var removedGroup = $(galleryGroupIds).not(newGalleryGroupIds).get(0);
+  const removedGroup = $(galleryGroupIds).not(newGalleryGroupIds).get(0);
   galleryGroupIds = newGalleryGroupIds;
   if (removedGroup.substring(0, 1) === '_') return; // skip uncreated tags
 
-  var group = galleryGroups[parseInt(removedGroup)];
+  const group = galleryGroups[parseInt(removedGroup)];
   delete galleryGroups[parseInt(removedGroup)];
 
   // delete unfound galleries from icons list
@@ -172,17 +172,17 @@ function cleanUpRemovedGalleries(newGalleryGroupIds) {
 
 function displayGallery(newId) {
   $.authenticatedGet('/api/v1/galleries/'+newId, {}, function(resp) {
-    var galleryObj = $("<div>").attr({id: 'gallery'+newId}).data('id', newId);
+    const galleryObj = $("<div>").attr({id: 'gallery'+newId}).data('id', newId);
     galleryObj.append("<br />");
     galleryObj.append($("<b>").attr({class: 'gallery-name'}).text(resp.name));
     galleryObj.append("<br />");
-    var galleryIcons = $("<div>").attr({class: 'gallery-icons'});
+    const galleryIcons = $("<div>").attr({class: 'gallery-icons'});
     galleryObj.append(galleryIcons);
-    for (var i = 0; i < resp.icons.length; i++) {
-      var url = resp.icons[i].url;
-      var keyword = resp.icons[i].keyword;
-      var id = resp.icons[i].id;
-      var galleryIcon = $("<img>").attr({src: url, alt: keyword, title: keyword, class: 'icon character-icon'}).data('id', id);
+    for (let i = 0; i < resp.icons.length; i++) {
+      const url = resp.icons[i].url;
+      const keyword = resp.icons[i].keyword;
+      const id = resp.icons[i].id;
+      const galleryIcon = $("<img>").attr({src: url, alt: keyword, title: keyword, class: 'icon character-icon'}).data('id', id);
       galleryIcons.append(galleryIcon);
     }
     characterIconsBox.append(galleryObj);

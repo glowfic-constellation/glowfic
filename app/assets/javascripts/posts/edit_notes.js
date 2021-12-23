@@ -1,5 +1,5 @@
-var originalValue = '';
-var submittedButton = '';
+let originalValue = '';
+let submittedButton = '';
 
 $(document).ready(function() {
   originalValue = $("#post_private_note").val();
@@ -48,7 +48,7 @@ $(document).ready(function() {
     }
   });
 
-  var formButtons = $("#submit_button, #draft_button, #preview_button");
+  const formButtons = $("#submit_button, #draft_button, #preview_button");
   formButtons.click(function() {
     submittedButton = "#" + $(this).attr('id');
     formButtons.not(this).prop('disabled', true);
@@ -67,8 +67,8 @@ function noteFromData(note, encodedNote) {
 function saveNoteChanges(success) {
   $(".loading").show();
 
-  var newNote = $("#post_private_note").val();
-  var postID = $("#reply_post_id").val();
+  const newNote = $("#post_private_note").val();
+  const postID = $("#reply_post_id").val();
 
   $.authenticatedAjax({
     url: '/api/v1/posts/'+postID,

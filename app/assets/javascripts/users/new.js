@@ -25,11 +25,11 @@ $(document).ready(function() {
     $(".user-alert").hide();
 
     // Do not submit if any validation fails
-    var usernameValid = validateUsername();
-    var passwordValid = validatePassword();
-    var confirmationValid = validateConfirmation();
-    var emailValid = validateEmail();
-    var tosValid = validateTosAccepted();
+    const usernameValid = validateUsername();
+    const passwordValid = validatePassword();
+    const confirmationValid = validateConfirmation();
+    const emailValid = validateEmail();
+    const tosValid = validateTosAccepted();
     if (!(usernameValid && passwordValid && confirmationValid && emailValid && tosValid)) {
       return false;
     }
@@ -38,7 +38,7 @@ $(document).ready(function() {
 });
 
 function validateUsername() {
-  var username = $("#user_username").val();
+  const username = $("#user_username").val();
   if (username === '') {
     addAlertAfter('username', 'Please choose a username.');
     return false;
@@ -49,7 +49,7 @@ function validateUsername() {
 
   // eslint-disable-next-line consistent-return
   $.authenticatedGet('/api/v1/users', {'q': username, 'match': 'exact'}, function(resp, status, xhr) {
-    var total = xhr.getResponseHeader('Total');
+    const total = xhr.getResponseHeader('Total');
     if (total > 0) {
       addAlertAfter('username', 'That username has already been taken.');
       return false; // TODO: actually return false from validateUsername
@@ -60,7 +60,7 @@ function validateUsername() {
 }
 
 function validateEmail() {
-  var email = $("#user_email").val();
+  const email = $("#user_email").val();
   if (email === '') {
     addAlertAfter('email', 'Please enter an email address.');
     return false;
@@ -77,12 +77,12 @@ function validateConfirmation() {
 }
 
 function validatePasswordField(primaryField, secondaryField, verb) {
-  var primary = $("#user_"+primaryField).val();
-  var secondary = $("#user_"+secondaryField).val();
-  var success = true;
+  const primary = $("#user_"+primaryField).val();
+  const secondary = $("#user_"+secondaryField).val();
+  let success = true;
 
   if (primary === '') {
-    var addAfterId = primaryField.replace("_", "-");
+    const addAfterId = primaryField.replace("_", "-");
     addAlertAfter(addAfterId, 'Please '+verb+' your password.');
     success = false;
   }
@@ -96,7 +96,7 @@ function validatePasswordField(primaryField, secondaryField, verb) {
 }
 
 function validateTosAccepted() {
-  var success = $("#tos").is(':checked');
+  const success = $("#tos").is(':checked');
   if (!success) addAlertAfter('terms', 'You must accept the Terms of Service to use the Constellation.');
   return success;
 }

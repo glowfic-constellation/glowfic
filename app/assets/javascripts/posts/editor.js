@@ -1,8 +1,9 @@
 //= require posts/edit_notes
 /* global gon, tinyMCE, resizeScreenname, createTagSelect, createSelect2 */
 
-var tinyMCEInit = false, shownIcons = [];
-var iconSelectBox;
+let tinyMCEInit = false;
+let shownIcons = [];
+let iconSelectBox;
 
 $(document).ready(function() {
   setupMetadataEditor();
@@ -74,7 +75,7 @@ function setupMetadataEditor() {
   });
 
   $("#post_unjoined_author_ids").change(function() {
-    var numAuthors = $("#post_unjoined_author_ids :selected").length;
+    const numAuthors = $("#post_unjoined_author_ids :selected").length;
     $("#post_authors_locked").prop('checked', (numAuthors > 0));
   });
 }
@@ -90,7 +91,7 @@ function setupWritableEditor() {
   // TODO fix hack
   // Hack because having In Thread characters as a group in addition to Template groups
   // duplicates characters in the dropdown, and therefore multiple options are selected
-  var selectd;
+  let selectd;
   $("#active_character option[selected]").each(function() {
     if (!selectd) selectd = this;
     $(this).prop("selected", false);
@@ -110,9 +111,9 @@ function setupWritableEditor() {
   $("#icon_dropdown").change(function() { setIconFromId($(this).val()); });
   $("#icon_dropdown").keyup(function() { setIconFromId($(this).val()); });
 
-  var editorHelp = $("#editor-help-box");
-  var defaultHelpWidth = 500;
-  var defaultHelpHeight = 700;
+  const editorHelp = $("#editor-help-box");
+  const defaultHelpWidth = 500;
+  const defaultHelpHeight = 700;
   editorHelp.dialog({
     autoOpen: false,
     title: 'Editor Help',
@@ -125,8 +126,8 @@ function setupWritableEditor() {
     if (editorHelp.dialog('isOpen')) {
       editorHelp.dialog('close');
     } else {
-      var width = Math.min($(window).width()-20, defaultHelpWidth);
-      var height = Math.min($(window).height()-20, defaultHelpHeight);
+      const width = Math.min($(window).width()-20, defaultHelpWidth);
+      const height = Math.min($(window).height()-20, defaultHelpHeight);
       editorHelp.dialog('option', {width: width, height: height}).dialog('open');
       editorHelp.dialog('open');
     }
@@ -149,15 +150,15 @@ function setupWritableEditor() {
   });
 
   $("#active_character").change(function() {
-    var id = $(this).val();
+    const id = $(this).val();
     $("#reply_character_id").val(id);
     getAndSetCharacterData({ id: id });
   });
 
   $("#active_npc").change(function() {
-    var id = $(this).val();
-    var item = $("option:selected", this);
-    var name = item.text();
+    let id = $(this).val();
+    const item = $("option:selected", this);
+    let name = item.text();
     if (id === "") name = "NPC"; // placeholder corresponds to a basic "NPC" user
     if (id === "new") id = "";
     $("#reply_character_id").val(id);
@@ -165,13 +166,13 @@ function setupWritableEditor() {
   });
 
   $(".char-access-icon").click(function() {
-    var id = $(this).data('character-id');
+    const id = $(this).data('character-id');
     $("#reply_character_id").val(id);
     getAndSetCharacterData({ id: id }, { updateCharDropdowns: true });
   });
 
   $("#character_alias").change(function() {
-    var id = $(this).val();
+    const id = $(this).val();
     $("#reply_character_alias_id").val(id);
     $("#post-editor .post-character #name").text($('#character_alias option:selected').text());
     $('#alias-selector').hide();
@@ -183,7 +184,7 @@ function setupWritableEditor() {
   // Hides selectors when you hit the escape key
   $(document).bind("keydown", function(e) {
     e = e || window.event;
-    var charCode = e.which || e.keyCode;
+    const charCode = e.which || e.keyCode;
     if (charCode === 27) {
       $('#icon-overlay').hide();
       iconSelectBox.hide();
@@ -193,7 +194,7 @@ function setupWritableEditor() {
 
   // Hides selectors when you click outside them
   $(document).click(function(e) {
-    var target = e.target;
+    const target = e.target;
     hideSelect(target, iconSelectBox, '#current-icon-holder');
     hideSelect(target, $('#character-selector'), '#swap-character');
     hideSelect(target, $('#alias-selector'), '#swap-alias');
@@ -209,14 +210,14 @@ function hideSelect(target, selectBox, selectHolder) {
 
 function fixWritableFormCaching() {
   // Hack to deal with Firefox's "helpful" caching of form values on soft refresh (now via IDs)
-  var isNPC = $("#character_npc").val() === "true";
-  var selectedNPC = $("#character_name").val();
-  var selectedCharID = $("#reply_character_id").val();
-  var displayCharID = String($("#post-editor .post-character").data('character-id'));
-  var selectedIconID = $("#reply_icon_id").val();
-  var displayIconID = String($("#current-icon").data('icon-id'));
-  var selectedAliasID = $("#reply_character_alias_id").val();
-  var displayAliasID = String($("#post-editor .post-character").data('alias-id'));
+  const isNPC = $("#character_npc").val() === "true";
+  const selectedNPC = $("#character_name").val();
+  const selectedCharID = $("#reply_character_id").val();
+  const displayCharID = String($("#post-editor .post-character").data('character-id'));
+  const selectedIconID = $("#reply_icon_id").val();
+  const displayIconID = String($("#current-icon").data('icon-id'));
+  const selectedAliasID = $("#reply_character_alias_id").val();
+  const displayAliasID = String($("#post-editor .post-character").data('alias-id'));
   if (selectedCharID === displayCharID) {
     if ($(".gallery-icon").length > 1) { /* Bind icon & gallery only if not resetting character, else it duplicate binds */
       bindIcon();
@@ -255,7 +256,7 @@ function toggleEditor() {
 
 function bindGallery() {
   iconSelectBox.find('img').click(function() {
-    var id = $(this).data('icon-id');
+    const id = $(this).data('icon-id');
     setIconFromId(id, $(this));
   });
 }
@@ -269,36 +270,36 @@ function bindIcon() {
 }
 
 function galleryNode(gallery, multiGallery) {
-  var iconNodes = [];
-  var icons = gallery.icons;
+  const iconNodes = [];
+  const icons = gallery.icons;
 
-  for (var i=0; i<icons.length; i++) {
+  for (let i=0; i<icons.length; i++) {
     iconNodes.push(iconNode(icons[i]));
   }
 
   if (!multiGallery) return iconNodes;
 
-  var nameNode = $("<div class='gallery-name'></div>").text(gallery.name);
+  const nameNode = $("<div class='gallery-name'></div>").text(gallery.name);
   return $("<div class='gallery-group'></div>").append(nameNode).append(iconNodes);
 }
 
 function iconNode(icon) {
-  var imgId = icon.id;
-  var imgUrl = icon.url;
-  var imgKey = icon.keyword;
+  const imgId = icon.id;
+  const imgUrl = icon.url;
+  const imgKey = icon.keyword;
   shownIcons.push(icon.id);
 
   if (!icon.skip_dropdown) $("#icon_dropdown").append($("<option>").attr({value: imgId}).text(imgKey));
-  var iconImg = $("<img>").attr({src: imgUrl, alt: imgKey, title: imgKey, 'class': 'icon img-'+imgId, 'data-icon-id': imgId});
+  const iconImg = $("<img>").attr({src: imgUrl, alt: imgKey, title: imgKey, 'class': 'icon img-'+imgId, 'data-icon-id': imgId});
   return $("<div>").attr('class', 'gallery-icon').append(iconImg).append("<br />").append(document.createTextNode(imgKey));
 }
 
 function setupTinyMCE() {
-  var selector = 'textarea.tinymce';
+  const selector = 'textarea.tinymce';
   if (typeof tinyMCE === 'undefined') {
     setTimeout(arguments.callee, 50);
   } else {
-    var height = ($(selector).height() || 150) + 15;
+    const height = ($(selector).height() || 150) + 15;
     tinyMCE.init({
       selector: selector,
       menubar: false,
@@ -326,10 +327,10 @@ function setupTinyMCE() {
 
 // eslint-disable-next-line complexity
 function setFormData(characterId, resp, options) {
-  var restoreIcon = false;
-  var restoreAlias = false;
-  var hideCharacterSelect = true;
-  var updateCharDropdowns = false;
+  let restoreIcon = false;
+  let restoreAlias = false;
+  let hideCharacterSelect = true;
+  let updateCharDropdowns = false;
 
   if (typeof options !== 'undefined') {
     restoreIcon = options.restore_icon;
@@ -340,8 +341,8 @@ function setFormData(characterId, resp, options) {
 
   setSwitcherListSelected(characterId);
 
-  var selectedIconID = $("#reply_icon_id").val();
-  var selectedAliasID = $("#reply_character_alias_id").val();
+  const selectedIconID = $("#reply_icon_id").val();
+  const selectedAliasID = $("#reply_character_alias_id").val();
   if (hideCharacterSelect) $("#character-selector").hide();
 
   setInfoBoxFields(characterId, resp.name, resp.screenname);
@@ -368,8 +369,8 @@ function setFormData(characterId, resp, options) {
 
 function setInfoBoxFields(characterId, name, screenname) {
   // Display the correct name/screenname fields
-  var spacer = $("#post-editor #post-author-spacer");
-  var characterNameBox = $("#post-editor .post-character");
+  const spacer = $("#post-editor #post-author-spacer");
+  const characterNameBox = $("#post-editor .post-character");
   if (name) {
     spacer.hide();
     characterNameBox.show();
@@ -380,7 +381,7 @@ function setInfoBoxFields(characterId, name, screenname) {
   characterNameBox.data('character-id', characterId);
   $("#post-editor .post-character #name").html(name);
 
-  var screennameBox = $("#post-editor .post-screenname");
+  const screennameBox = $("#post-editor .post-screenname");
   if (screenname) {
     screennameBox.show().html(screenname);
     resizeScreenname(screennameBox);
@@ -391,12 +392,12 @@ function setInfoBoxFields(characterId, name, screenname) {
 
 function setAliases(aliases, name) {
   // Display alias selector if relevant
-  var aliasList = $("#character_alias");
+  const aliasList = $("#character_alias");
   aliasList.empty();
   aliasList.append($("<option>").attr({value: ''}).text(name));
   if (aliases.length > 0) {
     $("#swap-alias").show();
-    for (var i=0; i<aliases.length; i++) {
+    for (let i=0; i<aliases.length; i++) {
       aliasList.append($("<option>").attr({value: aliases[i].id}).text(aliases[i].name));
     }
   } else {
@@ -405,7 +406,7 @@ function setAliases(aliases, name) {
 }
 
 function setAliasFromID(selectedAliasID) {
-  var correctName = $("#character_alias option[value=\""+selectedAliasID+"\"]").text();
+  const correctName = $("#character_alias option[value=\""+selectedAliasID+"\"]").text();
   $("#post-editor .post-character #name").text(correctName);
   $("#post-editor .post-character").data('alias-id', selectedAliasID);
   $("#character_alias").val(selectedAliasID).trigger("change.select2");
@@ -447,8 +448,8 @@ function setGalleriesAndDefault(galleries, defaultIcon) {
 }
 
 function setGalleries(galleries) {
-  var multiGallery = galleries.length > 1;
-  for (var j = 0; j < galleries.length; j++) {
+  const multiGallery = galleries.length > 1;
+  for (let j = 0; j < galleries.length; j++) {
     iconSelectBox.append(galleryNode(galleries[j], multiGallery));
   }
 }
@@ -458,8 +459,8 @@ function getAndSetCharacterData(character, options) {
 
   // Handle special case where setting to your base account or a new NPC (no ID)
   if (character.id === '') {
-    var avatar = gon.editor_user.avatar;
-    var data = {aliases: [], galleries: [], npc: character.npc, name: character.name};
+    const avatar = gon.editor_user.avatar;
+    const data = {aliases: [], galleries: [], npc: character.npc, name: character.name};
     if (avatar) {
       data.default_icon = avatar;
       data.galleries.push({icons: [avatar]});
@@ -468,7 +469,7 @@ function getAndSetCharacterData(character, options) {
     return; // Don't need to load data from server
   }
 
-  var postID = $("#reply_post_id").val();
+  const postID = $("#reply_post_id").val();
   $.authenticatedGet('/api/v1/characters/' + character.id, { post_id: postID }, function(resp) {
     setFormData(character.id, resp, options);
   });
@@ -505,7 +506,7 @@ function setIcon(id, url, title, alt) {
 }
 
 function toggleNPC() {
-  var isNPC = this.id === "select-npc";
+  const isNPC = this.id === "select-npc";
   $("#reply_character_id").val("");
   if (!isNPC) {
     $("#reply_character_id").val("");
@@ -538,13 +539,13 @@ function updateCharDropdown(id, isNPC) {
 }
 
 function setSections() {
-  var boardId = $("#post_board_id").val();
+  const boardId = $("#post_board_id").val();
   $.authenticatedGet("/api/v1/boards/"+boardId, {}, function(resp) {
-    var sections = resp.board_sections;
+    const sections = resp.board_sections;
     if (sections.length > 0) {
       $("#section").show();
       $("#post_section_id").empty().append('<option value="">— Choose Section —</option>');
-      for (var i = 0; i < sections.length; i++) {
+      for (let i = 0; i < sections.length; i++) {
         $("#post_section_id").append($("<option>").attr({value: sections[i].id}).text(sections[i].name));
       }
       $("#post_section_id").trigger("change.select2");

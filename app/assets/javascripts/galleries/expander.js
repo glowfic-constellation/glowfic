@@ -1,6 +1,6 @@
 /* global gon */
 $(document).ready(function() {
-  var anchor = window.location.hash;
+  const anchor = window.location.hash;
   if (anchor.length > 0 && /^#gallery-[0-9]{1,}$/.test(anchor)) {
     displayGallery($(anchor + " .gallery-box"));
   }
@@ -17,15 +17,15 @@ $(document).ready(function() {
 
   // add ellipsis box for many (> 5) tags
   $(".tag-box").each(function() {
-    var tagBox = $(this);
-    var tagBoxItems = $(".tag-item", tagBox);
+    const tagBox = $(this);
+    const tagBoxItems = $(".tag-item", tagBox);
     if (tagBoxItems.length <= 5) return;
 
-    var hiddenTags = tagBoxItems.slice(4);
+    const hiddenTags = tagBoxItems.slice(4);
     hiddenTags.hide();
 
-    var ellipsisBox = $("<span>").attr({class: 'tag-item semiopaque pointer', title: 'Click to show more tags…'}).append("...");
-    var recollapseBox = $("<span>").attr({class: 'tag-item semiopaque pointer', title: 'Click to hide extra tags…'}).append("←").hide();
+    const ellipsisBox = $("<span>").attr({class: 'tag-item semiopaque pointer', title: 'Click to show more tags…'}).append("...");
+    const recollapseBox = $("<span>").attr({class: 'tag-item semiopaque pointer', title: 'Click to hide extra tags…'}).append("←").hide();
 
     ellipsisBox.add(recollapseBox).hover(function mouseIn() {
       $(this).removeClass('semiplusopaque');
@@ -50,13 +50,13 @@ $(document).ready(function() {
 
 function displayGallery(elem) {
   // Update toggle +/-
-  var toggleBox = elem.children('.view-button').first();
-  var wasVisible = toggleBox.children('img.up-arrow').is(':visible');
+  const toggleBox = elem.children('.view-button').first();
+  const wasVisible = toggleBox.children('img.up-arrow').is(':visible');
   toggleBox.children('img.down-arrow').first().toggle();
   toggleBox.children('img.up-arrow').first().toggle();
 
   // Toggle display
-  var galleryId = elem.data('id');
+  const galleryId = elem.data('id');
   $("#icons-" + galleryId).toggle();
 
   // Nothing more necessary if collapsing or already loaded
@@ -70,15 +70,15 @@ function displayGallery(elem) {
     data: {user_id: gon.user_id}
   }).done(function(resp) {
     $.each(resp.icons, function(_, icon) {
-      var iconDiv = $("<div>").attr({class: 'gallery-icon'});
-      var iconLink = $("<a>").attr({href: "/icons/" + icon.id});
-      var iconImg = $("<img>").attr({src: icon.url, alt: icon.keyword, title: icon.keyword, 'class': 'icon'});
+      const iconDiv = $("<div>").attr({class: 'gallery-icon'});
+      const iconLink = $("<a>").attr({href: "/icons/" + icon.id});
+      const iconImg = $("<img>").attr({src: icon.url, alt: icon.keyword, title: icon.keyword, 'class': 'icon'});
       iconLink.append(iconImg).append("<br>").append($("<span>").attr({class: 'icon-keyword'}).text(icon.keyword));
       iconDiv.append(iconLink);
 
       // Add control buttons for the owner
       if ($("#icons-" + galleryId + " .icons-remove").length > 0) {
-        var iconCheckbox = $("<input>").attr({name: 'marked_ids[]', type: 'checkbox'}).val(icon.id);
+        const iconCheckbox = $("<input>").attr({name: 'marked_ids[]', type: 'checkbox'}).val(icon.id);
         iconDiv.append($("<div>").attr({class: 'select-button'}).append(iconCheckbox));
       }
 

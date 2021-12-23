@@ -4,7 +4,7 @@ $(document).ready(function() {
     ajax: {
       url: '/api/v1/tags',
       data: function(params) {
-        var data = queryTransform(params);
+        const data = queryTransform(params);
         data.t = 'Setting';
         return data;
       },
@@ -18,7 +18,7 @@ $(document).ready(function() {
     ajax: {
       url: '/api/v1/characters',
       data: function(params) {
-        var data = queryTransform(params);
+        const data = queryTransform(params);
         if (typeof gon !== 'undefined') data.post_id = gon.post_id;
         return data;
       },
@@ -50,8 +50,8 @@ $(document).ready(function() {
     ajax: {
       url: '/api/v1/templates',
       data: function(params) {
-        var data = queryTransform(params);
-        var authorId = $("#author_id").val();
+        const data = queryTransform(params);
+        const authorId = $("#author_id").val();
         if (authorId !== '' && typeof authorId !== 'undefined') { data.user_id = authorId; }
         return data;
       },

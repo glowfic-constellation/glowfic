@@ -11,10 +11,10 @@ function setIconFromId(id) {
   $("#new_icon").attr('alt', gon.gallery[id].keyword);
   $("#new_icon").attr('title', gon.gallery[id].keyword);
   if (typeof gon.gallery[id].aliases !== "undefined") {
-    var aliases = gon.gallery[id].aliases;
+    const aliases = gon.gallery[id].aliases;
     if (aliases.length > 0) {
       $("#alias_dropdown").show().empty().append('<option value="">— No alias —</option>');
-      for (var i = 0; i < aliases.length; i++) {
+      for (let i = 0; i < aliases.length; i++) {
         $("#alias_dropdown").append($("<option>").attr({value: aliases[i].id}).text(aliases[i].name));
       }
     } else {
