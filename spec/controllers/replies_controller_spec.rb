@@ -200,7 +200,7 @@ RSpec.describe RepliesController do
 
       expect {
         post :create, params: { reply: { post_id: reply_post.id, user_id: reply_post.user_id, content: dupe_reply.content } }
-      }.to change{ ReplyDraft.count }.by(1)
+      }.to change { ReplyDraft.count }.by(1)
       expect(response).to have_http_status(200)
       expect(flash[:error]).to eq("This looks like a duplicate. Did you attempt to post this twice? Please resubmit if this was intentional.")
     end
@@ -237,7 +237,7 @@ RSpec.describe RepliesController do
             character_alias_id: calias.id,
           },
         }
-      }.to change{Reply.count}.by(1)
+      }.to change { Reply.count }.by(1)
 
       reply = Reply.order(:id).last
       expect(reply).not_to be_nil
@@ -259,7 +259,7 @@ RSpec.describe RepliesController do
 
       expect {
         post :create, params: { reply: { post_id: reply_post.id, content: 'test content!' } }
-      }.to change{Reply.count}.by(1)
+      }.to change { Reply.count }.by(1)
 
       reply = Reply.order(:id).last
       expect(response).to redirect_to(reply_url(reply, anchor: "reply-#{reply.id}"))
@@ -277,7 +277,7 @@ RSpec.describe RepliesController do
 
       expect {
         post :create, params: { reply: { post_id: reply_post.id, content: 'test content again!' } }
-      }.to change{Reply.count}.by(1)
+      }.to change { Reply.count }.by(1)
 
       reply = Reply.order(:id).last
       expect(response).to redirect_to(reply_url(reply, anchor: "reply-#{reply.id}"))
@@ -296,7 +296,7 @@ RSpec.describe RepliesController do
 
       expect {
         post :create, params: { reply: { post_id: reply_post.id, content: 'test content the third!' } }
-      }.to change{Reply.count}.by(1)
+      }.to change { Reply.count }.by(1)
 
       reply = Reply.ordered.last
       expect(reply).not_to eq(reply_old)
@@ -316,7 +316,7 @@ RSpec.describe RepliesController do
 
       expect {
         post :create, params: { reply: { post_id: reply_post.id, content: 'test content the third!' } }
-      }.to change{Reply.count}.by(1)
+      }.to change { Reply.count }.by(1)
 
       reply = Reply.order(id: :desc).first
       expect(reply).not_to eq(reply_old)
@@ -334,7 +334,7 @@ RSpec.describe RepliesController do
       reply_post.mark_read(user)
       expect {
         post :create, params: { reply: { post_id: reply_post.id, content: 'test content!' } }
-      }.to change{Reply.count}.by(1)
+      }.to change { Reply.count }.by(1)
     end
 
     it "allows replies from owner in a closed post" do
@@ -345,7 +345,7 @@ RSpec.describe RepliesController do
       other_post.mark_read(user)
       expect {
         post :create, params: { reply: { post_id: other_post.id, content: 'more test content!' } }
-      }.to change{Reply.count}.by(1)
+      }.to change { Reply.count }.by(1)
     end
 
     it "adds authors correctly when a user replies to an open thread" do
@@ -358,7 +358,7 @@ RSpec.describe RepliesController do
         Timecop.freeze(Time.zone.now) do
           post :create, params: { reply: { post_id: reply_post.id, content: 'test content!' } }
         end
-      }.to change{Reply.count}.by(1)
+      }.to change { Reply.count }.by(1)
 
       expect(reply_post.tagging_authors).to match_array([user, reply_post.user])
       post_author = reply_post.tagging_post_authors.find_by(user: user)
@@ -382,7 +382,7 @@ RSpec.describe RepliesController do
       reply_post.mark_read(user, at_time: old_reply.created_at + 1.second, force: true)
       expect {
         post :create, params: { reply: { post_id: reply_post.id, content: 'test content!' } }
-      }.to change{Reply.count}.by(1)
+      }.to change { Reply.count }.by(1)
       expect(reply_post.tagging_authors).to match_array([user, reply_post.user])
     end
 

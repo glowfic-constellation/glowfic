@@ -35,7 +35,7 @@ class ReportsController < ApplicationController
       first_for_day = replies_on_day.order(post_id: :asc, created_at: :asc)
       first_for_day = first_for_day.pluck(Arel.sql('DISTINCT ON (post_id) replies.post_id, replies.id, replies.created_at'))
       first_for_day = first_for_day.to_h { |pluck| [pluck[0], { id: pluck[1], klass: Reply, created_at: pluck[2] }] }
-      @link_targets = @posts.to_h{ |post| [post.id, linked_for(post, first_for_day[post.id])] }
+      @link_targets = @posts.to_h { |post| [post.id, linked_for(post, first_for_day[post.id])] }
     end
   end
 

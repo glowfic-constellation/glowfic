@@ -102,7 +102,7 @@ RSpec.describe UsersController do
 
       expect {
         post :create, params: { secret: "ALLHAILTHECOIN", tos: true }.merge(user: user)
-      }.to change{User.count}.by(1)
+      }.to change { User.count }.by(1)
       expect(response).to redirect_to(root_url)
       expect(flash[:success]).to eq("User created! You have been logged in.")
 
@@ -118,7 +118,7 @@ RSpec.describe UsersController do
       user = build(:user).attributes.with_indifferent_access.merge(password: pass, password_confirmation: pass)
       expect {
         post :create, params: { secret: 'ALLHAILTHECOIN', tos: true }.merge(user: user)
-      }.to change{User.count}.by(1)
+      }.to change { User.count }.by(1)
       expect(response).to redirect_to(root_url)
       expect(flash[:success]).to eq("User created! You have been logged in.")
       expect(assigns(:current_user)).not_to be_nil

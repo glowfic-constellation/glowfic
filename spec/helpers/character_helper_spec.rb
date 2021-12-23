@@ -156,11 +156,11 @@ RSpec.describe CharacterHelper do
       assoc = Character.where(id: characters.map(&:id))
       # rubocop:disable Layout/LineLength
       expected = [
-        templateless.map{ |char| [char.id, char.name, nil, nil, nil, nil, user.id,      user.username,      false, nil,              nil] },
-        templated.map   { |char| [char.id, char.name, nil, nil, nil, nil, user.id,      user.username,      false, char.template.id, char.template.name] },
-        one_template.map{ |char| [char.id, char.name, nil, nil, nil, nil, user.id,      user.username,      false, template.id,      template.name] },
-        deleted_user.map{ |char| [char.id, char.name, nil, nil, nil, nil, char.user.id, char.user.username, true,  nil,              nil] },
-        other_user.map  { |char| [char.id, char.name, nil, nil, nil, nil, char.user.id, char.user.username, false, nil,              nil] },
+        templateless.map { |char| [char.id, char.name, nil, nil, nil, nil, user.id,      user.username,      false, nil,              nil] },
+        templated.map    { |char| [char.id, char.name, nil, nil, nil, nil, user.id,      user.username,      false, char.template.id, char.template.name] },
+        one_template.map { |char| [char.id, char.name, nil, nil, nil, nil, user.id,      user.username,      false, template.id,      template.name] },
+        deleted_user.map { |char| [char.id, char.name, nil, nil, nil, nil, char.user.id, char.user.username, true,  nil,              nil] },
+        other_user.map   { |char| [char.id, char.name, nil, nil, nil, nil, char.user.id, char.user.username, false, nil,              nil] },
       ].flatten(1)
       # rubocop:enable Layout/LineLength
       expect(helper.characters_list(assoc, true)).to match_array(expected)

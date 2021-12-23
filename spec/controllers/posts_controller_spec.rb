@@ -539,7 +539,7 @@ RSpec.describe PostsController do
       login
       expect {
         post :create, params: { post: { subject: 'a', board_id: create(:board).id, label_ids: tags } }
-      }.to change{Label.count}.by(1)
+      }.to change { Label.count }.by(1)
       expect(Label.last.name).to eq('atag')
       expect(assigns(:post).labels.count).to eq(4)
     end
@@ -558,7 +558,7 @@ RSpec.describe PostsController do
       login
       expect {
         post :create, params: { post: { subject: 'a', board_id: create(:board).id, setting_ids: tags } }
-      }.to change{Setting.count}.by(1)
+      }.to change { Setting.count }.by(1)
       expect(Setting.last.name).to eq('atag')
       expect(assigns(:post).settings.count).to eq(4)
     end
@@ -579,7 +579,7 @@ RSpec.describe PostsController do
         post :create, params: {
           post: { subject: 'a', board_id: create(:board).id, content_warning_ids: tags },
         }
-      }.to change{ContentWarning.count}.by(1)
+      }.to change { ContentWarning.count }.by(1)
       expect(ContentWarning.last.name).to eq('atag')
       expect(assigns(:post).content_warnings.count).to eq(4)
     end
@@ -832,7 +832,7 @@ RSpec.describe PostsController do
             unjoined_author_ids: [coauthor.id],
           },
         }
-      }.to change{Post.count}.by(1)
+      }.to change { Post.count }.by(1)
       expect(response).to redirect_to(post_path(assigns(:post)))
       expect(flash[:success]).to eq("You have successfully posted.")
 
@@ -1523,7 +1523,7 @@ RSpec.describe PostsController do
       expect(templates.length).to eq(3)
       thread_chars = templates.first
       expect(thread_chars.name).to eq('Thread characters')
-      expected = [char1, char2].sort_by{ |c| c.name.downcase }.map { |c| [c.id, c.name] }
+      expected = [char1, char2].sort_by { |c| c.name.downcase }.map { |c| [c.id, c.name] }
       expect(thread_chars.plucked_characters).to eq(expected)
       template_chars = templates[1]
       expect(template_chars).to eq(char3.template)

@@ -118,7 +118,7 @@ RSpec.describe GalleriesController do
       login
       expect {
         post :create, params: { gallery: { name: 'a', gallery_group_ids: tags } }
-      }.to change{GalleryGroup.count}.by(1)
+      }.to change { GalleryGroup.count }.by(1)
       expect(GalleryGroup.last.name).to eq('atag')
       expect(assigns(:gallery).gallery_groups.count).to eq(4)
     end
@@ -467,7 +467,7 @@ RSpec.describe GalleriesController do
       ]
       expect {
         post :update, params: { id: gallery.id, gallery: { gallery_group_ids: tags } }
-      }.to change{GalleryGroup.count}.by(1)
+      }.to change { GalleryGroup.count }.by(1)
       expect(GalleryGroup.last.name).to eq('atag')
       expect(assigns(:gallery).gallery_groups.count).to eq(4)
     end

@@ -384,7 +384,7 @@ RSpec.feature "Viewing a character", :type => :feature do
       def expect_tbody_order(order, galleries)
         expect(current_titles).to eq(order.map {|x| "Gallery #{x}"})
         # convert orders to gallery IDs to the relevant .gallery-title-n and .gallery-data-n tbodies
-        expected_tbody_order = order.map{|name| galleries[name].id}.map {|id| [gallery_title_for(id), gallery_data_for(id)]}.flatten
+        expected_tbody_order = order.map { |name| galleries[name].id}.map { |id| [gallery_title_for(id), gallery_data_for(id)] }.flatten
         # then make sure the page tbodies are in this order
         expect(page.all('tbody', visible: :all).to_a).to eq(expected_tbody_order)
       end

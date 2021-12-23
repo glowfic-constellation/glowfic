@@ -91,7 +91,7 @@ class IconsController < UploadingController
     else
       current_user.galleryless_icons - [@icon]
     end
-    @alts = all_icons.sort_by{|i| i.keyword.downcase }
+    @alts = all_icons.sort_by {|i| i.keyword.downcase }
     use_javascript('icons')
     gon.gallery = all_icons.to_h { |i| [i.id, { url: i.url, keyword: i.keyword }] }
     gon.gallery[''] = { url: view_context.image_path('icons/no-icon.png'), keyword: 'No Icon' }

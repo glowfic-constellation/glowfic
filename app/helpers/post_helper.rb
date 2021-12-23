@@ -1,7 +1,7 @@
 module PostHelper
   def author_links(post, linked: true, colored: false)
     total = post.authors.size
-    authors = post.authors.reject(&:deleted?).sort_by{|a| a.username.downcase}
+    authors = post.authors.reject(&:deleted?).sort_by {|a| a.username.downcase}
     num_deleted = total - authors.size
     deleted = 'deleted user'.pluralize(num_deleted)
     return "(#{deleted})" if authors.empty?

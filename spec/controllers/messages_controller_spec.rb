@@ -150,8 +150,8 @@ RSpec.describe MessagesController do
         user = create(:user)
         messages = Array.new(7) { create(:message, sender: user) }
         recents = messages[-5..-1].map(&:recipient)
-        recents_data = recents.reverse.map{|x| [x.username, x.id] }
-        users_data = messages.map(&:recipient).map{|x| [x.username, x.id]}
+        recents_data = recents.reverse.map {|x| [x.username, x.id] }
+        users_data = messages.map(&:recipient).map {|x| [x.username, x.id]}
         users_data.sort_by! {|x| x[0]}
         login_as(user)
         get :new
@@ -172,7 +172,7 @@ RSpec.describe MessagesController do
       user = create(:user)
       login_as(user)
       messages = Array.new(2) { create(:message, sender: user) }
-      recents = messages.map(&:recipient).map{|x| [x.username, x.id]}
+      recents = messages.map(&:recipient).map {|x| [x.username, x.id]}
       recents_data = recents.reverse
       other_user = create(:user)
       users_data = recents + [[other_user.username, other_user.id]]
@@ -289,7 +289,7 @@ RSpec.describe MessagesController do
         user = create(:user)
         login_as(user)
         messages = Array.new(2) { create(:message, sender: user) }
-        recents = messages.map(&:recipient).map{|x| [x.username, x.id]}
+        recents = messages.map(&:recipient).map {|x| [x.username, x.id]}
         recents_data = recents.reverse
         other_user = create(:user)
         users_data = recents + [[other_user.username, other_user.id]]

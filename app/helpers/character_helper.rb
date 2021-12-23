@@ -3,7 +3,7 @@ module CharacterHelper
     settings = characters.joins(:settings).group(:id)
     sql = Arel.sql('ARRAY_AGG(tags.id ORDER BY character_tags.id ASC) AS setting_ids, ARRAY_AGG(tags.name ORDER BY character_tags.id ASC)')
     settings = settings.pluck(:id, sql)
-    settings.map{ |i| [i[0], i[1].zip(i[2])] }.to_h
+    settings.map { |i| [i[0], i[1].zip(i[2])] }.to_h
   end
 
   def characters_list(characters, show_template)

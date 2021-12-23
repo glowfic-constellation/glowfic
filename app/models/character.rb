@@ -146,7 +146,7 @@ class Character < ApplicationRecord
   end
 
   def valid_galleries
-    errors.add(:galleries, "must be yours") if galleries.present? && galleries.detect{|g| g.user_id != user.id}
+    errors.add(:galleries, "must be yours") if galleries.present? && galleries.detect {|g| g.user_id != user.id}
   end
 
   def valid_default_icon
