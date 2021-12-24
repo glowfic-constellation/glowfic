@@ -341,35 +341,35 @@ RSpec.describe ApplicationController do
     it "redirects on valid requests" do
       ENV['DOMAIN_NAME'] ||= 'domaintest.host'
       get :index, params: { force_domain: true }
-      expect(response).to have_http_status(:moved_permanently)
+      expect(response).to have_http_status(301)
       expect(response).to redirect_to('https://domaintest.host/anonymous?force_domain=true')
     end
 
     it "does not redirect on post requests" do
       post :create, params: { force_domain: true }
-      expect(response).to have_http_status(:ok)
+      expect(response).to have_http_status(200)
     end
 
     it "does not redirect unless forced" do
       get :index
-      expect(response).to have_http_status(:ok)
+      expect(response).to have_http_status(200)
     end
 
     it "does not redirect API requests" do
       get :index, params: { force_domain: true }, xhr: true
-      expect(response).to have_http_status(:ok)
+      expect(response).to have_http_status(200)
     end
 
     it "does not redirect glowfic.com requests" do
       request.host = 'glowfic.com'
       get :index, params: { force_domain: true }
-      expect(response).to have_http_status(:ok)
+      expect(response).to have_http_status(200)
     end
 
     it "does not redirect staging requests" do
       request.host = 'glowfic-staging.herokuapp.com'
       get :index, params: { force_domain: true }
-      expect(response).to have_http_status(:ok)
+      expect(response).to have_http_status(200)
     end
   end
 

@@ -481,7 +481,7 @@ RSpec/Rails/AvoidSetupHook: # new in 2.4
   Enabled: true
 
 RSpec/Rails/HttpStatus:
-  Enabled: false
+  EnforcedStyle: numeric
 
 ################## Security ##############################
 
