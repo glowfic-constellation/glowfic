@@ -448,9 +448,6 @@ RSpec/HookArgument:
 RSpec/IdenticalEqualityAssertion: # new in 2.4
   Enabled: true
 
-RSpec/InstanceVariable:
-  Enabled: false
-
 RSpec/LeakyConstantDeclaration:
   Exclude:
     - 'spec/lib/presentable_spec.rb'
