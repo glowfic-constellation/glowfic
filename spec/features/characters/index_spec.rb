@@ -15,13 +15,13 @@ RSpec.feature "Listing characters", type: :feature do
   end
 
   let!(:user) { create(:user, username: 'Sample user') }
-  let!(:templates) {
+  let!(:templates) do
     data = [
       { name: 'template 1' },
       { name: 'template 2' },
     ]
     data.map { |d| create(:template, d.merge(user: user)) }
-  }
+  end
 
   let!(:earth) { create(:setting, name: 'Earth') }
   let!(:icon) { create(:icon, user: user, url: 'https://example.org/sample.png') }
