@@ -352,7 +352,7 @@ Rails/I18nLocaleAssignment: # new in 2.11
 Rails/MailerName:
   Enabled: true
 
-Rails/MatchRoute:
+Rails/MatchRoute: # new in 2.7
   Enabled: true
 
 Rails/NegateInclude:
