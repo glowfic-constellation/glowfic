@@ -2,7 +2,7 @@
 # ideally this will be replaced by proper metrics at some future point.
 
 ActiveSupport::Notifications.subscribe("process_action.action_controller") do |*args|
-  event = ActiveSupport::Notifications::Event.new *args
+  event = ActiveSupport::Notifications::Event.new(*args)
   next unless event.duration > 5000
 
   # hide most headers as they significantly clutter logs
@@ -12,7 +12,7 @@ ActiveSupport::Notifications.subscribe("process_action.action_controller") do |*
 end
 
 ActiveSupport::Notifications.subscribe("sql.active_record") do |*args|
-  event = ActiveSupport::Notifications::Event.new *args
+  event = ActiveSupport::Notifications::Event.new(*args)
   next unless event.duration > 1000
 
   # convert activerecord binds into more readable parameters
@@ -30,7 +30,7 @@ ActiveSupport::Notifications.subscribe("sql.active_record") do |*args|
 end
 
 ActiveSupport::Notifications.subscribe("instantiation.active_record") do |*args|
-  event = ActiveSupport::Notifications::Event.new *args
+  event = ActiveSupport::Notifications::Event.new(*args)
   detail_string = "#{event.payload[:class_name]}, #{event.payload[:record_count]}"
   if event.payload[:record_count] > 70
     Rails.logger.warn "[instantiation.active_record] SLOW: many records created: #{detail_string}"
