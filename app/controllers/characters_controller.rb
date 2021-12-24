@@ -161,10 +161,10 @@ class CharactersController < ApplicationController
 
     pb_struct = Struct.new(:item_id, :item_name, :type, :pb, :user_id, :username)
     chars.each do |dataset|
-      id, name, pb, user_id, username, template_id, nickname = dataset
+      id, name, pb, user_id, username, template_id, template_name = dataset
       if template_id.present?
         item_id = template_id
-        item_name = nickname
+        item_name = template_name
         type = Template
       else
         item_id = id
