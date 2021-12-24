@@ -158,20 +158,7 @@ class CharactersController < ApplicationController
       .left_outer_joins(:template)
       .pluck('characters.id, characters.name, characters.pb, users.id, users.username, templates.id, templates.name')
 
-    pb_struct = Struct.new(:id, :name, :type, :pb, :user_id, :username, keyword_init: true)
-    @pbs = chars.map do |dataset|
-      char_id, char_name, pb, user_id, username, template_id, template_name = dataset
-      is_template = template_id.present?
-      pb_struct.new(
-        pb: pb,
-        user_id: user_id,
-        username: username,
-        id: is_template ? template_id : char_id,
-        name: is_template ? template_name : char_name,
-        type: is_template ? Template : Character,
-      )
-    end
-    @pbs.uniq!
+    @pbs = chars.map { |data| Character.facecast_for(data) }.uniq
 
     case params[:sort]
       when "name"
