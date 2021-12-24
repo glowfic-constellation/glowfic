@@ -401,7 +401,7 @@ Rails/SquishedSQLHeredocs:
   Enabled: true
 
 Rails/TimeZoneAssignment: # (new in 2.10)
-  Enabled: false
+  Enabled: true
 
 Rails/UniqueValidationWithoutIndex:
   Enabled: false
