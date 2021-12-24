@@ -175,12 +175,14 @@ class CharactersController < ApplicationController
 
     case params[:sort]
       when "name"
-        @pbs.sort_by! { |x| [x[:name], x[:pb], x[:username]].map(&:downcase) }
+        keys = [:name, :pb, :username]
       when "writer"
-        @pbs.sort_by! { |x| [x[:username], x[:pb], x[:name]].map(&:downcase) }
+        keys = [:username, :pb, :name]
       else
-        @pbs.sort_by! { |x| [x[:pb], x[:username], x[:name]].map(&:downcase) }
+        keys = [:pb, :username, :name]
     end
+
+    @pbs.sort_by! { |x| x.to_h.values_at(*keys).map(&:downcase) }
   end
 
   def replace
