@@ -56,13 +56,13 @@ Rails.application.configure do
   config.log_level = :warn
 
   # Prepend all log lines with the following tags.
-  config.log_tags = [ :request_id ]
+  config.log_tags = [:request_id]
 
   # Use a different cache store in production.
   config.cache_store = :redis_cache_store, { url: ENV['REDIS_CACHE_URL'], expires_in: 30.days }
 
   # Use a real queuing backend for Active Job (and separate queues per environment).
-  config.active_job.queue_adapter     = :resque
+  config.active_job.queue_adapter = :resque
   # config.active_job.queue_name_prefix = "glowfic_production"
 
   config.action_mailer.perform_caching = false
@@ -97,11 +97,11 @@ Rails.application.configure do
 
   # use ExceptionNotification to email Marri stack traces
   Rails.application.config.middleware.use ExceptionNotification::Rack,
-  :email => {
-    :email_prefix => "[Glowfic Constellation Error] ",
-    :sender_address => %{"Glowfic Constellation" <glowfic.constellation@gmail.com>},
-    :exception_recipients => %w{glowfic.constellation@gmail.com},
-  }
+    :email => {
+      :email_prefix         => "[Glowfic Constellation Error] ",
+      :sender_address       => %{"Glowfic Constellation" <glowfic.constellation@gmail.com>},
+      :exception_recipients => %w{glowfic.constellation@gmail.com},
+    }
 
   # Inserts middleware to perform automatic connection switching.
   # The `database_selector` hash is used to pass options to the DatabaseSelector

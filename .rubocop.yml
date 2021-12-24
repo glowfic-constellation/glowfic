@@ -3,10 +3,8 @@ AllCops:
   TargetRailsVersion: 5.1
   DisabledByDefault: false
   Exclude:
-    - 'bin/*'
-    - 'config/**/*'
-    - 'db/**/*'
-    - 'spec/spec_helper.rb'
+    - 'db/migrate/**.rb'
+    - 'db/schema.rb'
     - 'backstop/*'
     - 'vendor/**/*'
 

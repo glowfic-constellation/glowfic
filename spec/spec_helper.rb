@@ -18,7 +18,7 @@
 unless ENV['SKIP_COVERAGE'] || ENV['APIPIE_RECORD'] || RSpec.configuration.files_to_run.count <= 1
   require 'simplecov'
   SimpleCov.start 'rails' do
-    add_group("Controllers") {|src| src.filename.include?('app/controllers') and not src.filename.include?('app/controllers/api') }
+    add_group("Controllers") { |src| src.filename.include?('app/controllers') and not src.filename.include?('app/controllers/api') }
     add_group "Presenters", "app/presenters"
     add_group "Concerns", "app/concerns"
     add_group "API", "app/controllers/api"
@@ -108,8 +108,8 @@ RSpec.configure do |config|
   # triggering implicit auto-inclusion in groups with matching metadata.
   config.shared_context_metadata_behavior = :apply_to_host_groups
 
-# The settings below are suggested to provide a good initial experience
-# with RSpec, but feel free to customize to your heart's content.
+  # The settings below are suggested to provide a good initial experience
+  # with RSpec, but feel free to customize to your heart's content.
   # This allows you to limit a spec run to individual examples or groups
   # you care about by tagging them with `:focus` metadata. When nothing
   # is tagged with `:focus`, all examples get run. RSpec also provides
