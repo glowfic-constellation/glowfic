@@ -61,9 +61,9 @@ class User < ApplicationRecord
 
   def gon_attributes
     {
-      :username            => username,
-      :active_character_id => active_character_id,
-      :avatar              => avatar.try(:as_json),
+      username: username,
+      active_character_id: active_character_id,
+      avatar: avatar.try(:as_json),
     }
   end
 

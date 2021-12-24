@@ -1,4 +1,4 @@
-RSpec.feature "Listing users", :type => :feature do
+RSpec.feature "Listing users", type: :feature do
   scenario "Logged-out user views simple list of users" do
     simple_user = create(:user, username: 'Alice')
     moietied_user = create(:user, username: 'Bob', moiety: 'FF0000', moiety_name: 'Test moiety')

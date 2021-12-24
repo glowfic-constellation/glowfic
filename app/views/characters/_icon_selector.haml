@@ -7,7 +7,7 @@
     - galleries = @character.galleries.present? ? @character.galleries.ordered : [Struct.new(:id, :name, :icons).new(0, 'Galleryless', @character.user.galleryless_icons || [])]
     - if galleries.present?
       - galleries.each do |gallery|
-        %div{id: "gallery#{gallery.id}", :'data-id' => gallery.id }
+        %div{id: "gallery#{gallery.id}", 'data-id': gallery.id }
           %br
           %b.gallery-name= gallery.name
           %br

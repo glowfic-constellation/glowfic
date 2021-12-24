@@ -1,4 +1,4 @@
-RSpec.feature "Creating replies", :type => :feature do
+RSpec.feature "Creating replies", type: :feature do
   scenario "User replies to own post" do
     user = login
     post = create(:post, user: user)

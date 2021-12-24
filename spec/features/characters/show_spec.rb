@@ -1,4 +1,4 @@
-RSpec.feature "Viewing a character", :type => :feature do
+RSpec.feature "Viewing a character", type: :feature do
   def create_basic_character(user)
     default_icon = create(:icon, user: user, keyword: 'Default', url: 'https://example.com/image.png')
     icon2 = create(:icon, user: user, keyword: 'Test')

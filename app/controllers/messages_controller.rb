@@ -137,7 +137,7 @@ class MessagesController < ApplicationController
     recents = base_users.where(id: recent_ids).pluck(:username, :id).sort_by { |x| recent_ids.index(x[1]) }
     users = base_users.ordered.pluck(:username, :id)
     @select_items = if recents.present?
-      { :'Recently messaged' => recents, :'Other users' => users }
+      { 'Recently messaged': recents, 'Other users': users }
     else
       { Users: users }
     end

@@ -1,4 +1,4 @@
-RSpec.feature "Creating posts", :type => :feature do
+RSpec.feature "Creating posts", type: :feature do
   scenario "User creates a post" do
     visit new_post_path
     within(".error") { expect(page).to have_text("You must be logged in") }
