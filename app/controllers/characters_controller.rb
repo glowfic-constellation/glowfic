@@ -173,12 +173,13 @@ class CharactersController < ApplicationController
     end
     @pbs.uniq!
 
-    if params[:sort] == "name"
-      @pbs.sort_by! { |x| [x[:name].downcase, x[:pb].downcase, x[:username].downcase] }
-    elsif params[:sort] == "writer"
-      @pbs.sort_by! { |x| [x[:username].downcase, x[:pb].downcase, x[:name].downcase] }
-    else
-      @pbs.sort_by! { |x| [x[:pb].downcase, x[:username].downcase, x[:name].downcase] }
+    case params[:sort]
+      when "name"
+        @pbs.sort_by! { |x| [x[:name].downcase, x[:pb].downcase, x[:username].downcase] }
+      when "writer"
+        @pbs.sort_by! { |x| [x[:username].downcase, x[:pb].downcase, x[:name].downcase] }
+      else
+        @pbs.sort_by! { |x| [x[:pb].downcase, x[:username].downcase, x[:name].downcase] }
     end
   end
 
