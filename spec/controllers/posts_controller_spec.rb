@@ -553,7 +553,7 @@ RSpec.describe PostsController do
         create(:setting).id,
         '',
         '_' + existing_name.name,
-        '_' + existing_case.name.upcase
+        '_' + existing_case.name.upcase,
       ]
       login
       expect {
@@ -572,7 +572,7 @@ RSpec.describe PostsController do
         create(:content_warning).id,
         '',
         '_' + existing_name.name,
-        '_' + existing_case.name.upcase
+        '_' + existing_case.name.upcase,
       ]
       login
       expect {

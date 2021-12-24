@@ -688,8 +688,7 @@ Style/TrailingCommaInArguments:
   EnforcedStyleForMultiline: 'comma'
 
 Style/TrailingCommaInArrayLiteral:
-  Enabled: false
-  EnforcedStyleForMultiline: 'comma'
+  EnforcedStyleForMultiline: 'consistent_comma'
 
 Style/TrailingCommaInHashLiteral:
   Enabled: false

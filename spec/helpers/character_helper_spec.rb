@@ -68,7 +68,7 @@ RSpec.describe CharacterHelper do
         assoc = Character.where(id: [character1.id, character2.id])
         expected = [
           [character1.id, 'Test Character 1', nil, nil, nil, nil, user.id, 'John Doe', false],
-          [character2.id, 'Test Character 2', nil, nil, nil, nil, user.id, 'John Doe', false]
+          [character2.id, 'Test Character 2', nil, nil, nil, nil, user.id, 'John Doe', false],
         ]
         expect(helper.characters_list(assoc, false)).to match_array(expected)
       end
@@ -77,7 +77,7 @@ RSpec.describe CharacterHelper do
         assoc = Character.where(id: [character1.id, character2.id])
         expected = [
           [character1.id, 'Test Character 1', nil, nil, nil, nil, user.id, 'John Doe', false, nil, nil],
-          [character2.id, 'Test Character 2', nil, nil, nil, nil, user.id, 'John Doe', false, nil, nil]
+          [character2.id, 'Test Character 2', nil, nil, nil, nil, user.id, 'John Doe', false, nil, nil],
         ]
         expect(helper.characters_list(assoc, true)).to match_array(expected)
       end
@@ -86,7 +86,7 @@ RSpec.describe CharacterHelper do
         user.update!(deleted: true)
         expected = [
           [character1.id, 'Test Character 1', nil, nil, nil, nil, user.id, 'John Doe', true],
-          [character2.id, 'Test Character 2', nil, nil, nil, nil, user.id, 'John Doe', true]
+          [character2.id, 'Test Character 2', nil, nil, nil, nil, user.id, 'John Doe', true],
         ]
         expect(helper.characters_list(assoc, false)).to match_array(expected)
       end
@@ -96,7 +96,7 @@ RSpec.describe CharacterHelper do
         character2.update!(user: user2)
         expected = [
           [character1.id, 'Test Character 1', nil, nil, nil, nil, user.id, 'John Doe', false],
-          [character2.id, 'Test Character 2', nil, nil, nil, nil, user2.id, 'Jane Doe', false]
+          [character2.id, 'Test Character 2', nil, nil, nil, nil, user2.id, 'Jane Doe', false],
         ]
         expect(helper.characters_list(assoc, false)).to match_array(expected)
       end
@@ -122,10 +122,14 @@ RSpec.describe CharacterHelper do
 
       it "when showing templates" do
         expected = [
-          [character1.id, 'Test Character 1', 'Nickname 1', 'screenname_one',
-           'Facecast 1', 'Cluster 1', user.id, 'John Doe', false, template1.id, "Test Template 1"],
-          [character2.id, 'Test Character 2', 'Nickname 2', 'screenname_two',
-           'Facecast 2', 'Cluster 2', user.id, 'John Doe', false, template2.id, "Test Template 2"]
+          [
+            character1.id, 'Test Character 1', 'Nickname 1', 'screenname_one',
+            'Facecast 1', 'Cluster 1', user.id, 'John Doe', false, template1.id, "Test Template 1",
+          ],
+          [
+            character2.id, 'Test Character 2', 'Nickname 2', 'screenname_two',
+            'Facecast 2', 'Cluster 2', user.id, 'John Doe', false, template2.id, "Test Template 2",
+          ],
         ]
         expect(helper.characters_list(assoc, true)).to match_array(expected)
       end
@@ -133,7 +137,7 @@ RSpec.describe CharacterHelper do
       it "when not showing templates" do
         expected = [
           [character1.id, 'Test Character 1', 'Nickname 1', 'screenname_one', 'Facecast 1', 'Cluster 1', user.id, 'John Doe', false],
-          [character2.id, 'Test Character 2', 'Nickname 2', 'screenname_two', 'Facecast 2', 'Cluster 2', user.id, 'John Doe', false]
+          [character2.id, 'Test Character 2', 'Nickname 2', 'screenname_two', 'Facecast 2', 'Cluster 2', user.id, 'John Doe', false],
         ]
         expect(helper.characters_list(assoc, false)).to match_array(expected)
       end

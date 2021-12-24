@@ -266,7 +266,7 @@ class GalleriesController < UploadingController
       galleries_icons_attributes: [
         :id,
         :_destroy,
-        icon_attributes: [:url, :keyword, :credit, :id, :_destroy, :s3_key]
+        icon_attributes: [:url, :keyword, :credit, :id, :_destroy, :s3_key],
       ],
       icon_ids: [],
     )

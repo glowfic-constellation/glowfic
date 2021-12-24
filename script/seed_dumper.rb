@@ -21,18 +21,24 @@ EXCLUDED_SCHEMA = {
   Post::View => ['created_at', 'updated_at', 'ignored', 'notify_message', 'notify_email', 'warnings_hidden'],
 }
 
-MODELS = [Icon, Template, Character, CharacterAlias, Gallery, CharactersGallery, GalleriesIcon, Post, Reply, ContentWarning, GalleryGroup,
-          Setting, CharacterTag, GalleryTag, Tag::SettingTag, PostTag, Post::View]
+MODELS = [
+  Icon, Template, Character, CharacterAlias, Gallery, CharactersGallery, GalleriesIcon, Post, Reply, ContentWarning, GalleryGroup,
+  Setting, CharacterTag, GalleryTag, Tag::SettingTag, PostTag, Post::View,
+]
 
 FILES = {
   # Icon: [Icon],
   Character: [Template, 'puts "Creating characters..."', Character, 'puts "Creating character aliases..."', CharacterAlias],
   Gallery: [Gallery, 'puts "Assigning galleries to characters..."', CharactersGallery, 'puts "Populating galleries with icons..."', GalleriesIcon],
-  Post: [Post, 'puts "Setting up post views..."', Post::View, 'puts "Queuing flat post generation (will not update until jobs are run)"',
-         'FlatPost.regenerate_all'],
+  Post: [
+    Post, 'puts "Setting up post views..."', Post::View, 'puts "Queuing flat post generation (will not update until jobs are run)"',
+    'FlatPost.regenerate_all',
+  ],
   # Reply: [Reply],
-  Tag: [ContentWarning, GalleryGroup, Setting, 'puts "Assigning tags to characters..."', CharacterTag, 'puts "Assigning tags to galleries..."',
-        GalleryTag, 'puts "Attaching settings to each other..."', Tag::SettingTag, 'puts "Attaching tags to posts..."', PostTag]
+  Tag: [
+    ContentWarning, GalleryGroup, Setting, 'puts "Assigning tags to characters..."', CharacterTag, 'puts "Assigning tags to galleries..."',
+    GalleryTag, 'puts "Attaching settings to each other..."', Tag::SettingTag, 'puts "Attaching tags to posts..."', PostTag,
+  ]
 }
 
 def dump(model)

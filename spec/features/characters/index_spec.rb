@@ -177,7 +177,7 @@ RSpec.feature "Listing characters", type: :feature do
         {
           group: nil,
           templates: ungrouped_character_data,
-        }
+        },
       ]
     end
 
@@ -207,7 +207,7 @@ RSpec.feature "Listing characters", type: :feature do
         {
           group: nil,
           templates: ungrouped_character_data,
-        }
+        },
       ]
     end
 

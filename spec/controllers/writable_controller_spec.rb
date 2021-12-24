@@ -173,7 +173,7 @@ RSpec.describe WritableController do
         [char1.id, char1.name],
         [char2.id, "#{char2.name} | #{char2.nickname}"],
         [char3.id, "#{char3.name} | #{char3.screenname}"],
-        [char4.id, "#{char4.name} | #{char4.nickname} | #{char4.screenname}"]
+        [char4.id, "#{char4.name} | #{char4.nickname} | #{char4.screenname}"],
       ]
       expect(templates.first.plucked_characters).to eq(info)
     end
@@ -192,7 +192,7 @@ RSpec.describe WritableController do
         [char1.id, char1.name],
         [char2.id, "#{char2.name} | #{char2.nickname}"],
         [char3.id, "#{char3.name} | #{char3.screenname}"],
-        [char4.id, "#{char4.name} | #{char4.nickname} | #{char4.screenname}"]
+        [char4.id, "#{char4.name} | #{char4.nickname} | #{char4.screenname}"],
       ]
       expect(templates.first.plucked_characters).to eq(info)
     end
@@ -209,7 +209,7 @@ RSpec.describe WritableController do
       expect(templates.count).to eq(1)
       info = [
         [char1.id, char1.name],
-        [char2.id, "#{char2.name} | #{char2.nickname} | #{char2.screenname}"]
+        [char2.id, "#{char2.name} | #{char2.nickname} | #{char2.screenname}"],
       ]
       expect(templates.first.plucked_characters).to eq(info)
     end

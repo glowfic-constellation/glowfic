@@ -84,7 +84,7 @@ RSpec.describe PostScraper do
     scraper.instance_variable_set('@html_doc', scraper.send(:doc_from_url, url))
     expect(scraper.send(:page_links)).to eq([
       'https://alicornutopia.dreamwidth.org/22671.html?thread=14705039&style=site#cmt14705039',
-      'https://alicornutopia.dreamwidth.org/22671.html?thread=14711695&style=site#cmt14711695'
+      'https://alicornutopia.dreamwidth.org/22671.html?thread=14711695&style=site#cmt14711695',
     ])
   end
 
@@ -96,7 +96,7 @@ RSpec.describe PostScraper do
     expect(scraper.send(:page_links)).to eq([
       'https://alicornutopia.dreamwidth.org/22671.html?thread=14698383&style=site#cmt14698383',
       'https://alicornutopia.dreamwidth.org/22671.html?thread=14698639&style=site#cmt14698639',
-      'https://alicornutopia.dreamwidth.org/22671.html?thread=14705551&style=site#cmt14705551'
+      'https://alicornutopia.dreamwidth.org/22671.html?thread=14705551&style=site#cmt14705551',
     ])
   end
 
@@ -175,7 +175,7 @@ RSpec.describe PostScraper do
       {screenname: 'pina_colada', name: 'Kerron Corlett', user: alicorn},
       {screenname: 'pumpkin_pie', name: 'Aedyt Corlett', user: kappa},
       {screenname: 'lifes_sake', name: 'Campbell Mark Swan ҂ "Cam"', user: alicorn},
-      {screenname: 'withmypowers', name: 'Matilda Wormwood Honey', user: kappa}
+      {screenname: 'withmypowers', name: 'Matilda Wormwood Honey', user: kappa},
     ]
     characters.each { |data| create(:character, data) }
 

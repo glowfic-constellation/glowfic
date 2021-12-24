@@ -113,7 +113,7 @@ RSpec.describe GalleriesController do
         create(:gallery_group).id,
         '',
         '_' + existing_name.name,
-        '_' + existing_case.name.upcase
+        '_' + existing_case.name.upcase,
       ]
       login
       expect {
@@ -463,7 +463,7 @@ RSpec.describe GalleriesController do
         create(:gallery_group).id,
         '',
         '_' + existing_name.name,
-        '_' + existing_case.name.upcase
+        '_' + existing_case.name.upcase,
       ]
       expect {
         post :update, params: { id: gallery.id, gallery: {gallery_group_ids: tags} }
@@ -728,7 +728,7 @@ RSpec.describe GalleriesController do
           {keyword: '', url: 'http://example.com/image3141.png', credit: ''},
           {keyword: 'test2', url: '', credit: ''},
           {keyword: 'test3', url: 'fake', credit: ''},
-          {keyword: '', url: '', credit: ''}
+          {keyword: '', url: '', credit: ''},
         ]
 
         post :icon, params: { id: gallery.id, icons: icons }
@@ -741,7 +741,7 @@ RSpec.describe GalleriesController do
           "Icon 2: keyword can't be blank",
           "Icon 3: url can't be blank",
           "Icon 3: url must be an actual fully qualified url (http://www.example.com)",
-          "Icon 4: url must be an actual fully qualified url (http://www.example.com)"
+          "Icon 4: url must be an actual fully qualified url (http://www.example.com)",
         ])
       end
 
@@ -751,7 +751,7 @@ RSpec.describe GalleriesController do
         login_as(user)
         icons = [
           {keyword: 'test1', url: 'http://example.com/image3141.png', credit: 'test1'},
-          {keyword: 'test2', url: "https://d1anwqy6ci9o1i.cloudfront.net/users/#{user.id}/icons/nonsense-fakeimg.png"}
+          {keyword: 'test2', url: "https://d1anwqy6ci9o1i.cloudfront.net/users/#{user.id}/icons/nonsense-fakeimg.png"},
         ]
 
         post :icon, params: { id: gallery.id, icons: icons }
@@ -776,7 +776,7 @@ RSpec.describe GalleriesController do
         login_as(user)
         icons = [
           {keyword: 'test1', url: 'http://example.com/image3142.png', credit: 'test1'},
-          {keyword: 'test2', url: "https://d1anwqy6ci9o1i.cloudfront.net/users/#{user.id}/icons/nonsense-fakeimg.png"}
+          {keyword: 'test2', url: "https://d1anwqy6ci9o1i.cloudfront.net/users/#{user.id}/icons/nonsense-fakeimg.png"},
         ]
 
         post :icon, params: { id: 0, icons: icons }
