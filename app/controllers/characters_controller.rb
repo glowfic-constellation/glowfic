@@ -163,9 +163,13 @@ class CharactersController < ApplicationController
     chars.each do |dataset|
       id, name, pb, user_id, username, template_id, nickname = dataset
       if template_id.present?
-        item_id, item_name, type = template_id, nickname, Template
+        item_id = template_id
+        item_name = nickname
+        type = Template
       else
-        item_id, item_name, type = id, name, Character
+        item_id = id
+        item_name = name
+        type = Character
       end
       @pbs << pb_struct.new(item_id, item_name, type, pb, user_id, username)
     end
