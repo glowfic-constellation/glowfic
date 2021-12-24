@@ -38,7 +38,7 @@ class CharacterPresenter
     galleries.map do |gallery|
       {
         name: gallery.name,
-        icons: gallery.icons
+        icons: gallery.icons,
       }
     end
   end

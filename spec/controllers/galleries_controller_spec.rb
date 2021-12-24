@@ -396,8 +396,8 @@ RSpec.describe GalleriesController do
       put :update, params: {
         id: gallery.id,
         gallery: {
-          galleries_icons_attributes: {gid.to_s => gallery_icon_attributes}
-        }
+          galleries_icons_attributes: {gid.to_s => gallery_icon_attributes},
+        },
       }
       expect(response).to redirect_to(edit_gallery_url(gallery))
       expect(flash[:success]).to eq('Gallery saved.')
@@ -419,8 +419,8 @@ RSpec.describe GalleriesController do
       put :update, params: {
         id: gallery.id,
         gallery: {
-          galleries_icons_attributes: {gid.to_s => gallery_icon_attributes}
-        }
+          galleries_icons_attributes: {gid.to_s => gallery_icon_attributes},
+        },
       }
       expect(response).to redirect_to(edit_gallery_url(gallery))
       expect(flash[:success]).to eq('Gallery saved.')
@@ -443,8 +443,8 @@ RSpec.describe GalleriesController do
       put :update, params: {
         id: gallery.id,
         gallery: {
-          galleries_icons_attributes: {gid.to_s => gallery_icon_attributes}
-        }
+          galleries_icons_attributes: {gid.to_s => gallery_icon_attributes},
+        },
       }
       expect(response).to redirect_to(edit_gallery_url(gallery))
       expect(flash[:success]).to eq('Gallery saved.')
@@ -481,7 +481,7 @@ RSpec.describe GalleriesController do
       group2 = create(:gallery_group, user: user)
       post :update, params: {
         id: gallery.id,
-        gallery: { gallery_group_ids: [group1, group2, group3].map(&:id) }
+        gallery: { gallery_group_ids: [group1, group2, group3].map(&:id) },
       }
       expect(gallery.gallery_groups).to eq([group1, group2, group3])
     end

@@ -102,9 +102,11 @@ module ApplicationHelper
   end
 
   def index_privacy_settings
-    { 'Public'              => :public,
+    {
+      'Public'              => :public,
       'Constellation Users' => :registered,
-      'Private'             => :private }
+      'Private'             => :private,
+    }
   end
 
   def message_sender(message)

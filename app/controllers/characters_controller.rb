@@ -49,7 +49,7 @@ class CharactersController < ApplicationController
       @page_title = "New Character"
       flash.now[:error] = {
         message: "Your character could not be saved.",
-        array: @character.errors.full_messages
+        array: @character.errors.full_messages,
       }
       editor_setup
       render :new
@@ -90,7 +90,7 @@ class CharactersController < ApplicationController
       @page_title = "Edit Character: " + @character.name
       flash.now[:error] = {
         message: "Your character could not be saved.",
-        array: @character.errors.full_messages
+        array: @character.errors.full_messages,
       }
       editor_setup
       render :edit
@@ -118,7 +118,7 @@ class CharactersController < ApplicationController
     rescue ActiveRecord::RecordInvalid
       flash[:error] = {
         message: "Character could not be duplicated.",
-        array: dupe.errors.full_messages
+        array: dupe.errors.full_messages,
       }
       redirect_to @character
     else
@@ -138,7 +138,7 @@ class CharactersController < ApplicationController
     rescue ActiveRecord::RecordNotDestroyed
       flash[:error] = {
         message: "Character could not be deleted.",
-        array: @character.errors.full_messages
+        array: @character.errors.full_messages,
       }
       redirect_to @character
     else

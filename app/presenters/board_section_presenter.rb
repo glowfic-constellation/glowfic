@@ -7,8 +7,10 @@ class BoardSectionPresenter
 
   def as_json(_options={})
     return {} unless board_section
-    { id: board_section.id,
+    {
+      id: board_section.id,
       name: board_section.name,
-      order: board_section.section_order }
+      order: board_section.section_order,
+    }
   end
 end

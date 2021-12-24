@@ -86,7 +86,7 @@ RSpec.describe IconsController do
           marked_ids: [icon.id.to_s],
           gallery_id: gallery.id,
           gallery_delete: true,
-          return_to: 'index'
+          return_to: 'index',
         }
         expect(icon.galleries.count).to eq(0)
         expect(response).to redirect_to(user_galleries_url(user.id, anchor: "gallery-#{gallery.id}"))
@@ -103,7 +103,7 @@ RSpec.describe IconsController do
           marked_ids: [icon.id.to_s],
           gallery_id: gallery.id,
           gallery_delete: true,
-          return_tag: group.id
+          return_tag: group.id,
         }
         expect(icon.galleries.count).to eq(0)
         expect(response).to redirect_to(tag_url(group, anchor: "gallery-#{gallery.id}"))
@@ -645,7 +645,7 @@ RSpec.describe IconsController do
         post :do_replace, params: {
           id: icon.id,
           icon_dropdown: other_icon.id,
-          post_ids: [icon_post.id, icon_reply.post.id]
+          post_ids: [icon_post.id, icon_reply.post.id],
         }
       end
       expect(response).to redirect_to(icon_path(icon))

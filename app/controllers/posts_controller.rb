@@ -140,7 +140,7 @@ class PostsController < WritableController
     rescue ActiveRecord::RecordInvalid
       flash.now[:error] = {
         array: @post.errors.full_messages,
-        message: "Your post could not be saved because of the following problems:"
+        message: "Your post could not be saved because of the following problems:",
       }
       editor_setup
       @page_title = 'New Post'
@@ -217,7 +217,7 @@ class PostsController < WritableController
     rescue ActiveRecord::RecordInvalid
       flash.now[:error] = {
         array: @post.errors.full_messages,
-        message: "Your post could not be saved because of the following problems:"
+        message: "Your post could not be saved because of the following problems:",
       }
       @audits = { post: @post.audits.count }
       editor_setup
@@ -239,7 +239,7 @@ class PostsController < WritableController
     rescue ActiveRecord::RecordNotDestroyed
       flash[:error] = {
         message: "Post could not be deleted.",
-        array: @post.errors.full_messages
+        array: @post.errors.full_messages,
       }
       redirect_to @post
     else
@@ -364,7 +364,7 @@ class PostsController < WritableController
     rescue ActiveRecord::RecordInvalid
       flash[:error] = {
         message: "Status could not be updated.",
-        array: @post.errors.full_messages
+        array: @post.errors.full_messages,
       }
     else
       flash[:success] = "Post has been marked #{@post.status}."
@@ -379,7 +379,7 @@ class PostsController < WritableController
     rescue ActiveRecord::RecordInvalid
       flash[:error] = {
         message: "Post could not be updated.",
-        array: @post.errors.full_messages
+        array: @post.errors.full_messages,
       }
     else
       flash[:success] = "Post has been #{@post.authors_locked? ? 'locked to' : 'unlocked from'} current authors."
@@ -460,7 +460,7 @@ class PostsController < WritableController
     if include_associations
       allowed_params << {
         unjoined_author_ids: [],
-        viewer_ids: []
+        viewer_ids: [],
       }
     end
 

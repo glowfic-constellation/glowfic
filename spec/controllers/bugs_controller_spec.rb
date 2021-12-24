@@ -12,7 +12,7 @@ RSpec.describe BugsController do
         file_type: 'png',
         file_name: 'testfile.png',
         response_status: '200',
-        response_body: '{}'
+        response_body: '{}',
       }
       user_id = login
       user = User.find(user_id)

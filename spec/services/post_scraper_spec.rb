@@ -158,7 +158,7 @@ RSpec.describe PostScraper do
       'https://mind-game.dreamwidth.org/1073.html?style=site'                       => 'scrape_specific_threads',
       'https://mind-game.dreamwidth.org/1073.html?thread=6961&style=site#cmt6961'   => 'scrape_specific_threads_thread1',
       'https://mind-game.dreamwidth.org/1073.html?thread=16689&style=site#cmt16689' => 'scrape_specific_threads_thread2_1',
-      'https://mind-game.dreamwidth.org/1073.html?thread=48177&style=site#cmt48177' => 'scrape_specific_threads_thread2_2'
+      'https://mind-game.dreamwidth.org/1073.html?thread=48177&style=site#cmt48177' => 'scrape_specific_threads_thread2_2',
     }
     stubs.each { |url, file| stub_fixture(url, file) }
     urls = stubs.keys

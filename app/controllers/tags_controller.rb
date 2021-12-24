@@ -52,7 +52,7 @@ class TagsController < ApplicationController
     rescue ActiveRecord::RecordInvalid
       flash.now[:error] = {
         message: "Tag could not be saved because of the following problems:",
-        array: @tag.errors.full_messages
+        array: @tag.errors.full_messages,
       }
       @page_title = "Edit Tag: #{@tag.name}"
       build_editor
@@ -74,7 +74,7 @@ class TagsController < ApplicationController
     rescue ActiveRecord::RecordNotDestroyed
       flash[:error] = {
         message: "Tag could not be deleted.",
-        array: @tag.errors.full_messages
+        array: @tag.errors.full_messages,
       }
       redirect_to tag_path(@tag)
     else

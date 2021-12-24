@@ -147,8 +147,8 @@ RSpec.describe CharactersController do
           template_id: template.id,
           pb: 'Facecast',
           description: 'Desc',
-          ungrouped_gallery_ids: [gallery.id]
-        }
+          ungrouped_gallery_ids: [gallery.id],
+        },
       }
 
       expect(response).to redirect_to(assigns(:character))
@@ -173,9 +173,10 @@ RSpec.describe CharactersController do
         new_template: '1',
         character: {
           template_attributes: {
-            name: 'TemplateTest'
-          }, name: 'Test'
-        }
+            name: 'TemplateTest',
+          },
+          name: 'Test',
+        },
       }
       expect(Template.count).to eq(1)
       expect(Template.first.name).to eq('TemplateTest')
@@ -196,8 +197,8 @@ RSpec.describe CharactersController do
         post :create, params: {
           character: {
             ungrouped_gallery_ids: [gallery.id, group_gallery.id],
-            gallery_group_ids: [group.id]
-          }
+            gallery_group_ids: [group.id],
+          },
         }
 
         expect(response).to render_template(:new)
@@ -438,8 +439,8 @@ RSpec.describe CharactersController do
         new_template: '1',
         character: {
           template_attributes: {name: ''},
-          name: new_name
-        }
+          name: new_name,
+        },
       }
       expect(response.status).to eq(200)
       expect(flash[:error][:message]).to eq("Your character could not be saved.")
@@ -484,8 +485,8 @@ RSpec.describe CharactersController do
           template_id: template.id,
           pb: 'Actor',
           description: 'Description',
-          ungrouped_gallery_ids: [gallery.id]
-        }
+          ungrouped_gallery_ids: [gallery.id],
+        },
       }
 
       expect(response).to redirect_to(assigns(:character))
@@ -520,8 +521,8 @@ RSpec.describe CharactersController do
           template_id: template.id,
           pb: 'Actor',
           description: 'Description',
-          ungrouped_gallery_ids: [gallery.id]
-        }
+          ungrouped_gallery_ids: [gallery.id],
+        },
       }
 
       expect(response.status).to eq(200)
@@ -597,8 +598,8 @@ RSpec.describe CharactersController do
         id: character.id,
         character: {
           ungrouped_gallery_ids: [''],
-          gallery_group_ids: [group.id]
-        }
+          gallery_group_ids: [group.id],
+        },
       }
       expect(flash[:success]).to eq('Character saved successfully.')
       character.reload
@@ -619,8 +620,8 @@ RSpec.describe CharactersController do
         id: character.id,
         character: {
           gallery_group_ids: [group.id],
-          ungrouped_gallery_ids: [gallery.id]
-        }
+          ungrouped_gallery_ids: [gallery.id],
+        },
       }
       expect(flash[:success]).to eq('Character saved successfully.')
       character.reload
@@ -706,7 +707,7 @@ RSpec.describe CharactersController do
       setting2 = create(:setting)
       put :update, params: {
         id: char.id,
-        character: {setting_ids: [setting1, setting2, setting3].map(&:id)}
+        character: {setting_ids: [setting1, setting2, setting3].map(&:id)},
       }
       expect(flash[:success]).to eq('Character saved successfully.')
       expect(char.settings).to eq([setting1, setting2, setting3])
@@ -722,7 +723,7 @@ RSpec.describe CharactersController do
       group2 = create(:gallery_group, user: user)
       put :update, params: {
         id: char.id,
-        character: {gallery_group_ids: [group1, group2, group3, group4].map(&:id)}
+        character: {gallery_group_ids: [group1, group2, group3, group4].map(&:id)},
       }
       expect(flash[:success]).to eq('Character saved successfully.')
       expect(char.gallery_groups).to eq([group1, group2, group3, group4])
@@ -1077,7 +1078,7 @@ RSpec.describe CharactersController do
         post :do_replace, params: {
           id: character.id,
           icon_dropdown: other_char.id,
-          post_ids: [char_post.id, char_reply.post.id]
+          post_ids: [char_post.id, char_reply.post.id],
         }
       end
       expect(response).to redirect_to(character_path(character))
@@ -1257,7 +1258,7 @@ RSpec.describe CharactersController do
           name: 'a',
           search_name: true,
           search_screenname: true,
-          search_nickname: true
+          search_nickname: true,
         }
         expect(assigns(:search_results)).to match_array([@name, @screenname, @nickname])
       end

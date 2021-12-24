@@ -25,7 +25,7 @@ class PostPresenter
       board: post.board,
       section: post.section,
       authors: post.joined_authors,
-      num_replies: post.reply_count
+      num_replies: post.reply_count,
     })
   end
 
@@ -39,15 +39,19 @@ class PostPresenter
 
   def character(post)
     return unless post.character_id
-    { id: post.character_id,
+    {
+      id: post.character_id,
       name: post.name,
-      screenname: post.screenname }
+      screenname: post.screenname,
+    }
   end
 
   def icon(post)
     return unless post.icon_id
-    { id: post.icon_id,
+    {
+      id: post.icon_id,
       url: post.url,
-      keyword: post.keyword }
+      keyword: post.keyword,
+    }
   end
 end

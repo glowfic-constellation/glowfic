@@ -38,7 +38,7 @@ FILES = {
   Tag: [
     ContentWarning, GalleryGroup, Setting, 'puts "Assigning tags to characters..."', CharacterTag, 'puts "Assigning tags to galleries..."',
     GalleryTag, 'puts "Attaching settings to each other..."', Tag::SettingTag, 'puts "Attaching tags to posts..."', PostTag,
-  ]
+  ],
 }
 
 def dump(model)

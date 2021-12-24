@@ -290,7 +290,7 @@ RSpec.describe UsersController do
         moiety: 'AAAAAA',
         favorite_notifications: false,
         show_user_in_switcher: false,
-        default_character_split: 'none'
+        default_character_split: 'none',
       }
 
       # ensure new values are different, so test tests correct things
@@ -371,7 +371,7 @@ RSpec.describe UsersController do
       put :password, params: {
         id: user.id,
         old_password: fakepass,
-        user: {password: newpass, password_confirmation: newpass}
+        user: {password: newpass, password_confirmation: newpass},
       }
 
       expect(response).to render_template(:edit)
@@ -391,7 +391,7 @@ RSpec.describe UsersController do
       put :password, params: {
         id: user.id,
         old_password: pass,
-        user: {password: newpass, password_confirmation: newpass}
+        user: {password: newpass, password_confirmation: newpass},
       }
 
       expect(response).to render_template(:edit)
@@ -409,7 +409,7 @@ RSpec.describe UsersController do
       put :password, params: {
         id: user.id,
         old_password: pass,
-        user: {password: newpass, password_confirmation: 'wrongconfirmation'}
+        user: {password: newpass, password_confirmation: 'wrongconfirmation'},
       }
 
       expect(response).to render_template(:edit)
@@ -428,7 +428,7 @@ RSpec.describe UsersController do
       put :password, params: {
         id: user.id,
         old_password: pass,
-        user: {password: newpass, password_confirmation: newpass}
+        user: {password: newpass, password_confirmation: newpass},
       }
 
       expect(response).to redirect_to(edit_user_url(user))

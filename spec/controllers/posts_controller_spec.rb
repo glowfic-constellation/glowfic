@@ -453,8 +453,8 @@ RSpec.describe PostsController do
             setting_ids: [setting1.id, '_'+setting2.name, '_other'],
             content_warning_ids: [warning1.id, '_'+warning2.name, '_other'],
             label_ids: [label1.id, '_'+label2.name, '_other'],
-            unjoined_author_ids: [user.id, coauthor.id]
-          }
+            unjoined_author_ids: [user.id, coauthor.id],
+          },
         }
         expect(response).to render_template(:preview)
         expect(assigns(:written)).to be_an_instance_of(Post)
@@ -577,7 +577,7 @@ RSpec.describe PostsController do
       login
       expect {
         post :create, params: {
-          post: {subject: 'a', board_id: create(:board).id, content_warning_ids: tags}
+          post: {subject: 'a', board_id: create(:board).id, content_warning_ids: tags},
         }
       }.to change{ContentWarning.count}.by(1)
       expect(ContentWarning.last.name).to eq('atag')
@@ -601,8 +601,8 @@ RSpec.describe PostsController do
               user_id: user.id,
               board_id: board.id,
               unjoined_author_ids: [other_user.id],
-              private_note: 'there is a note!'
-            }
+              private_note: 'there is a note!',
+            },
           }
         }.to change { Post::Author.count }.by(2)
       end
@@ -637,8 +637,8 @@ RSpec.describe PostsController do
               subject: 'a',
               user_id: user.id,
               board_id: board.id,
-              unjoined_author_ids: ['']
-            }
+              unjoined_author_ids: [''],
+            },
           }
         }.to change { Post::Author.count }.by(1)
       end
@@ -667,8 +667,8 @@ RSpec.describe PostsController do
             subject: 'a',
             user_id: user.id,
             board_id: board.id,
-            unjoined_author_ids: [user.id, other_user.id, third_user.id]
-          }
+            unjoined_author_ids: [user.id, other_user.id, third_user.id],
+          },
         }
       }.to change { BoardAuthor.count }.by(1)
 
@@ -693,8 +693,8 @@ RSpec.describe PostsController do
             subject: 'a',
             user_id: user.id,
             board_id: board.id,
-            unjoined_author_ids: [user.id, other_user.id]
-          }
+            unjoined_author_ids: [user.id, other_user.id],
+          },
         }
       }.not_to change { BoardAuthor.count }
 
@@ -717,8 +717,8 @@ RSpec.describe PostsController do
           subject: 'a',
           user_id: user.id,
           board_id: board.id,
-          unjoined_author_ids: [user.id, other_user.id]
-        }
+          unjoined_author_ids: [user.id, other_user.id],
+        },
       }
 
       expect(flash[:success]).to eq("You have successfully posted.")
@@ -754,8 +754,8 @@ RSpec.describe PostsController do
           content_warning_ids: [warning1.id, '_'+warning2.name, '_other'],
           label_ids: [label1.id, '_'+label2.name, '_other'],
           character_id: char1.id,
-          unjoined_author_ids: [user.id, coauthor.id]
-        }
+          unjoined_author_ids: [user.id, coauthor.id],
+        },
       }
 
       expect(response).to render_template(:new)
@@ -829,8 +829,8 @@ RSpec.describe PostsController do
             setting_ids: [setting1.id, '_'+setting2.name, '_other'],
             content_warning_ids: [warning1.id, '_'+warning2.name, '_other'],
             label_ids: [label1.id, '_'+label2.name, '_other'],
-            unjoined_author_ids: [coauthor.id]
-          }
+            unjoined_author_ids: [coauthor.id],
+          },
         }
       }.to change{Post.count}.by(1)
       expect(response).to redirect_to(post_path(assigns(:post)))
@@ -880,7 +880,7 @@ RSpec.describe PostsController do
           board_id: create(:board).id,
           privacy: :registered,
           content: 'content',
-        }
+        },
       }
       post = assigns(:post)
       expect(post.flat_post).not_to be_nil
@@ -910,7 +910,7 @@ RSpec.describe PostsController do
             board_id: create(:board).id,
             authors_locked: true,
             unjoined_author_ids: [other_user.id],
-          }
+          },
         }
 
         expect(Rails.cache.exist?(Block.cache_string_for(blocking.id, 'hidden'))).to be(false)
@@ -934,7 +934,7 @@ RSpec.describe PostsController do
             board_id: create(:board).id,
             authors_locked: true,
             unjoined_author_ids: [user.id],
-          }
+          },
         }
 
         expect(Rails.cache.exist?(Block.cache_string_for(blocking.id, 'hidden'))).to be(false)
@@ -1589,7 +1589,7 @@ RSpec.describe PostsController do
       login_as(admin)
       put :update, params: {
         id: post.id,
-        post: { description: 'b', audit_comment: 'note' }
+        post: { description: 'b', audit_comment: 'note' },
       }
       expect(flash[:success]).to eq("Your post has been updated.")
       expect(post.reload.description).to eq('b')
@@ -1927,8 +1927,8 @@ RSpec.describe PostsController do
           post: {
             setting_ids: setting_ids,
             content_warning_ids: warning_ids,
-            label_ids: label_ids
-          }
+            label_ids: label_ids,
+          },
         }
         expect(response).to render_template(:preview)
         post = assigns(:post)
@@ -1980,8 +1980,8 @@ RSpec.describe PostsController do
             content_warning_ids: [warning1.id, '_'+warning2.name, '_other'],
             label_ids: [label1.id, '_'+label2.name, '_other'],
             unjoined_author_ids: [coauthor.id],
-            viewer_ids: [viewer.id]
-          }
+            viewer_ids: [viewer.id],
+          },
         }
         expect(response).to render_template(:preview)
         expect(assigns(:written)).to be_an_instance_of(Post)
@@ -2109,8 +2109,8 @@ RSpec.describe PostsController do
           post: {
             setting_ids: setting_ids,
             content_warning_ids: warning_ids,
-            label_ids: label_ids
-          }
+            label_ids: label_ids,
+          },
         }
         expect(response).to redirect_to(post_url(post))
         post = assigns(:post)
@@ -2142,7 +2142,7 @@ RSpec.describe PostsController do
         tag = create(:label, name: 'label')
         put :update, params: {
           id: post.id,
-          post: {setting_ids: setting_ids, content_warning_ids: warning_ids, label_ids: label_ids}
+          post: {setting_ids: setting_ids, content_warning_ids: warning_ids, label_ids: label_ids},
         }
         expect(response).to redirect_to(post_url(post))
         post = assigns(:post)
@@ -2163,8 +2163,8 @@ RSpec.describe PostsController do
             put :update, params: {
               id: post.id,
               post: {
-                unjoined_author_ids: [other_user.id]
-              }
+                unjoined_author_ids: [other_user.id],
+              },
             }
           }.to change { Post::Author.count }.by(1)
         end
@@ -2217,8 +2217,8 @@ RSpec.describe PostsController do
         put :update, params: {
           id: post.id,
           post: {
-            unjoined_author_ids: ['']
-          }
+            unjoined_author_ids: [''],
+          },
         }
         expect(response).to redirect_to(post_url(post))
         expect(flash[:success]).to eq('Your post has been updated.')
@@ -2251,8 +2251,8 @@ RSpec.describe PostsController do
         put :update, params: {
           id: post.id,
           post: {
-            unjoined_author_ids: [other_user.id, third_user.id]
-          }
+            unjoined_author_ids: [other_user.id, third_user.id],
+          },
         }
         post.reload
         board.reload
@@ -2270,8 +2270,8 @@ RSpec.describe PostsController do
         put :update, params: {
           id: post.id,
           post: {
-            unjoined_author_ids: [other_user.id]
-          }
+            unjoined_author_ids: [other_user.id],
+          },
         }
         post.reload
         board.reload
@@ -2297,8 +2297,8 @@ RSpec.describe PostsController do
           post: {
             setting_ids: [setting1, setting2, setting3].map(&:id),
             content_warning_ids: [warning1, warning2, warning3].map(&:id),
-            label_ids: [tag1, tag2, tag3].map(&:id)
-          }
+            label_ids: [tag1, tag2, tag3].map(&:id),
+          },
         }
         expect(response).to redirect_to(post_url(post))
         post = assigns(:post)
@@ -2346,8 +2346,8 @@ RSpec.describe PostsController do
             setting_ids: setting_ids,
             content_warning_ids: warning_ids,
             label_ids: label_ids,
-            unjoined_author_ids: [coauthor.id]
-          }
+            unjoined_author_ids: [coauthor.id],
+          },
         }
 
         expect(response).to render_template(:edit)
@@ -2428,8 +2428,8 @@ RSpec.describe PostsController do
             setting_ids: [setting.id],
             content_warning_ids: [warning.id],
             label_ids: [tag.id],
-            unjoined_author_ids: [coauthor.id]
-          }
+            unjoined_author_ids: [coauthor.id],
+          },
         }
         expect(response).to redirect_to(post_url(post))
         expect(flash[:success]).to eq("Your post has been updated.")
@@ -2464,8 +2464,8 @@ RSpec.describe PostsController do
         put :update, params: {
           id: post.id,
           post: {
-            content: "newtext"
-          }
+            content: "newtext",
+          },
         }
         expect(response).to redirect_to(post_url(post))
         expect(flash[:error]).to eq("You do not have permission to modify this post.")
@@ -2481,8 +2481,8 @@ RSpec.describe PostsController do
         put :update, params: {
           id: post.id,
           post: {
-            subject: "new subject"
-          }
+            subject: "new subject",
+          },
         }
         expect(response).to redirect_to(post_url(post))
         expect(flash[:success]).to eq("Your post has been updated.")
@@ -2498,8 +2498,8 @@ RSpec.describe PostsController do
         put :update, params: {
           id: post.id,
           post: {
-            subject: "new subject"
-          }
+            subject: "new subject",
+          },
         }
         expect(response).to redirect_to(post_url(post))
         expect(flash[:success]).to eq("Your post has been updated.")
@@ -2513,8 +2513,8 @@ RSpec.describe PostsController do
         put :update, params: {
           id: post.id,
           post: {
-            subject: "new subject"
-          }
+            subject: "new subject",
+          },
         }
         expect(response).to redirect_to(post_url(post))
         expect(flash[:error]).to eq("You do not have permission to modify this post.")
@@ -2531,8 +2531,8 @@ RSpec.describe PostsController do
         put :update, params: {
           id: post.id,
           post: {
-            private_note: 'look a note!'
-          }
+            private_note: 'look a note!',
+          },
         }
         expect(Post.find_by_id(post.id).author_for(post.user).private_note).not_to be_nil
       end
@@ -2545,8 +2545,8 @@ RSpec.describe PostsController do
           id: post.id,
           post: {
             private_note: 'look a note!',
-            content: 'new'
-          }
+            content: 'new',
+          },
         }
         expect(Post.find_by_id(post.id).author_for(post.user).private_note).not_to be_nil
         expect(post.reload.content).to eq('new')
@@ -2560,8 +2560,8 @@ RSpec.describe PostsController do
         put :update, params: {
           id: post.id,
           post: {
-            private_note: 'look a note!'
-          }
+            private_note: 'look a note!',
+          },
         }
         expect(Post.find_by_id(post.id).author_for(reply.user).private_note).not_to be_nil
       end
@@ -2588,7 +2588,7 @@ RSpec.describe PostsController do
 
         put :update, params: {
           id: post.id,
-          post: { authors_locked: true }
+          post: { authors_locked: true },
         }
 
         expect(Rails.cache.exist?(Block.cache_string_for(blocking.id, 'hidden'))).to be(false)
@@ -2608,7 +2608,7 @@ RSpec.describe PostsController do
 
         put :update, params: {
           id: post.id,
-          post: { authors_locked: true }
+          post: { authors_locked: true },
         }
 
         expect(Rails.cache.exist?(Block.cache_string_for(blocking.id, 'hidden'))).to be(false)
@@ -2629,8 +2629,8 @@ RSpec.describe PostsController do
         put :update, params: {
           id: post.id,
           post: {
-            unjoined_author_ids: [user.id]
-          }
+            unjoined_author_ids: [user.id],
+          },
         }
 
         expect(Rails.cache.exist?(Block.cache_string_for(blocking.id, 'hidden'))).to be(false)
@@ -2651,8 +2651,8 @@ RSpec.describe PostsController do
         put :update, params: {
           id: post.id,
           post: {
-            unjoined_author_ids: ['']
-          }
+            unjoined_author_ids: [''],
+          },
         }
 
         post.reload

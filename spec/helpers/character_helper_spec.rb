@@ -16,7 +16,7 @@ RSpec.describe CharacterHelper do
       character2.update!(setting_ids: [setting2.id])
       expected = {
         character1.id => [[setting1.id, setting1.name]],
-        character2.id => [[setting2.id, setting2.name]]
+        character2.id => [[setting2.id, setting2.name]],
       }
       expect(helper.settings_info(association)).to eq(expected)
     end
@@ -36,7 +36,7 @@ RSpec.describe CharacterHelper do
       expected = {
         character1.id => [[setting1.id, setting1.name]],
         character2.id => [[setting1.id, setting1.name]],
-        character3.id => [[setting1.id, setting1.name], [setting2.id, setting2.name]]
+        character3.id => [[setting1.id, setting1.name], [setting2.id, setting2.name]],
       }
       expect(helper.settings_info(association)).to eq(expected)
     end
@@ -50,7 +50,7 @@ RSpec.describe CharacterHelper do
       expected = {
         character1.id => [[setting1.id, setting1.name]],
         character2.id => [[setting2.id, setting2.name]],
-        character3.id => [[setting1.id, setting1.name], [setting2.id, setting2.name]]
+        character3.id => [[setting1.id, setting1.name], [setting2.id, setting2.name]],
       }
       expect(helper.settings_info(association)).to eq(expected)
     end

@@ -24,7 +24,7 @@ class IndexesController < ApplicationController
     rescue ActiveRecord::RecordInvalid
       flash.now[:error] = {
         message: "Index could not be created.",
-        array: @index.errors.full_messages
+        array: @index.errors.full_messages,
       }
       @page_title = 'New Index'
       render :new
@@ -56,7 +56,7 @@ class IndexesController < ApplicationController
     rescue ActiveRecord::RecordInvalid
       flash.now[:error] = {
         message: "Index could not be saved because of the following problems:",
-        array: @index.errors.full_messages
+        array: @index.errors.full_messages,
       }
       editor_setup
       render :edit
@@ -72,7 +72,7 @@ class IndexesController < ApplicationController
     rescue ActiveRecord::RecordNotDestroyed
       flash[:error] = {
         message: "Index could not be deleted.",
-        array: @index.errors.full_messages
+        array: @index.errors.full_messages,
       }
       redirect_to @index
     else

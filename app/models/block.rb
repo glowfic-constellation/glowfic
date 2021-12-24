@@ -16,13 +16,13 @@ class Block < ApplicationRecord
   enum hide_me: {
     none: 0,
     posts: 1,
-    all: 2
+    all: 2,
   }, _prefix: true
 
   enum hide_them: {
     none: 0,
     posts: 1,
-    all: 2
+    all: 2,
   }, _prefix: true
 
   CACHE_VERSION = 4

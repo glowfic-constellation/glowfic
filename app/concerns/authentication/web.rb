@@ -48,7 +48,7 @@ module Authentication::Web
       session[:api_token] = nil if Time.zone.now.to_i > expiration
       session[:api_token] ||= {
         value: Authentication.generate_api_token(@current_user),
-        expires: Authentication::EXPIRY.from_now.to_i
+        expires: Authentication::EXPIRY.from_now.to_i,
       }
     end
   end

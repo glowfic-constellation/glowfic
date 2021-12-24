@@ -43,7 +43,7 @@ class GalleriesController < UploadingController
     rescue ActiveRecord::RecordInvalid
       flash.now[:error] = {
         message: "Your gallery could not be saved because of the following problems:",
-        array: @gallery.errors.full_messages
+        array: @gallery.errors.full_messages,
       }
       @page_title = 'New Gallery'
       editor_setup

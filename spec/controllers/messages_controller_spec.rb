@@ -205,7 +205,7 @@ RSpec.describe MessagesController do
       login_as(previous.recipient)
       post :create, params: {
         message: {subject: 'Re: ' + previous.subject, message: 'response', recipient_id: other_user.id},
-        parent_id: previous.id
+        parent_id: previous.id,
       }
       expect(assigns(:message).recipient_id).to eq(previous.sender_id)
     end
@@ -235,7 +235,7 @@ RSpec.describe MessagesController do
       expect(Message.count).to eq(1)
       post :create, params: {
         message: {subject: 'Re: ' + previous.subject, message: 'response'},
-        parent_id: previous.id
+        parent_id: previous.id,
       }
       expect(Message.count).to eq(2)
       expect(response).to redirect_to(messages_path(view: 'inbox'))
@@ -254,7 +254,7 @@ RSpec.describe MessagesController do
       expect(Message.count).to eq(1)
       post :create, params: {
         message: {subject: 'Re: ' + previous.subject, message: 'response'},
-        parent_id: previous.id
+        parent_id: previous.id,
       }
       expect(Message.count).to eq(2)
       expect(response).to redirect_to(messages_path(view: 'inbox'))
@@ -274,7 +274,7 @@ RSpec.describe MessagesController do
           post :create, params: {
             message: {subject: 'Preview', message: 'example'},
             parent_id: previous.id,
-            button_preview: true
+            button_preview: true,
           }
         }.not_to change { Message.count }
         expect(response).to render_template(:preview)

@@ -177,8 +177,8 @@ RSpec.describe TemplatesController do
         template: {
           name: new_name,
           description: 'new desc',
-          character_ids: [char.id]
-        }
+          character_ids: [char.id],
+        },
       }
       expect(response).to redirect_to(template_url(template))
       expect(flash[:success]).to eq("Template saved successfully.")
