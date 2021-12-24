@@ -175,11 +175,11 @@ class CharactersController < ApplicationController
 
     case params[:sort]
       when "name"
-        @pbs.sort_by! { |x| [x[:name].downcase, x[:pb].downcase, x[:username].downcase] }
+        @pbs.sort_by! { |x| [x[:name], x[:pb], x[:username]].map(&:downcase) }
       when "writer"
-        @pbs.sort_by! { |x| [x[:username].downcase, x[:pb].downcase, x[:name].downcase] }
+        @pbs.sort_by! { |x| [x[:username], x[:pb], x[:name]].map(&:downcase) }
       else
-        @pbs.sort_by! { |x| [x[:pb].downcase, x[:username].downcase, x[:name].downcase] }
+        @pbs.sort_by! { |x| [x[:pb], x[:username], x[:name]].map(&:downcase) }
     end
   end
 
