@@ -161,17 +161,15 @@ class CharactersController < ApplicationController
     pb_struct = Struct.new(:item_id, :item_name, :type, :pb, :user_id, :username, keyword_init: true)
     @pbs = chars.map do |dataset|
       char_id, char_name, pb, user_id, username, template_id, template_name = dataset
-      fc = pb_struct.new(pb: pb, user_id: user_id, username: username)
-      if template_id.present?
-        fc.item_id = template_id
-        fc.item_name = template_name
-        fc.type = Template
-      else
-        fc.item_id = char_id
-        fc.item_name = char_name
-        fc.type = Character
-      end
-      fc
+      is_template = template_id.present?
+      pb_struct.new(
+        pb: pb,
+        user_id: user_id,
+        username: username,
+        item_id: is_template ? template_id : char_id,
+        item_name: is_template ? template_name : char_name,
+        type: is_template ? Template : Character,
+      )
     end
     @pbs.uniq!
 
