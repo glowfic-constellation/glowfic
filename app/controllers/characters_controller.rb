@@ -158,7 +158,7 @@ class CharactersController < ApplicationController
       .left_outer_joins(:template)
       .pluck('characters.id, characters.name, characters.pb, users.id, users.username, templates.id, templates.name')
 
-    pb_struct = Struct.new(:item_id, :item_name, :type, :pb, :user_id, :username, keyword_init: true)
+    pb_struct = Struct.new(:id, :name, :type, :pb, :user_id, :username, keyword_init: true)
     @pbs = chars.map do |dataset|
       char_id, char_name, pb, user_id, username, template_id, template_name = dataset
       is_template = template_id.present?
@@ -166,19 +166,19 @@ class CharactersController < ApplicationController
         pb: pb,
         user_id: user_id,
         username: username,
-        item_id: is_template ? template_id : char_id,
-        item_name: is_template ? template_name : char_name,
+        id: is_template ? template_id : char_id,
+        name: is_template ? template_name : char_name,
         type: is_template ? Template : Character,
       )
     end
     @pbs.uniq!
 
     if params[:sort] == "name"
-      @pbs.sort_by! { |x| [x[:item_name].downcase, x[:pb].downcase, x[:username].downcase] }
+      @pbs.sort_by! { |x| [x[:name].downcase, x[:pb].downcase, x[:username].downcase] }
     elsif params[:sort] == "writer"
-      @pbs.sort_by! { |x| [x[:username].downcase, x[:pb].downcase, x[:item_name].downcase] }
+      @pbs.sort_by! { |x| [x[:username].downcase, x[:pb].downcase, x[:name].downcase] }
     else
-      @pbs.sort_by! { |x| [x[:pb].downcase, x[:username].downcase, x[:item_name].downcase] }
+      @pbs.sort_by! { |x| [x[:pb].downcase, x[:username].downcase, x[:name].downcase] }
     end
   end
 
