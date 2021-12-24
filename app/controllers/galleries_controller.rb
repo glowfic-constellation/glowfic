@@ -57,10 +57,9 @@ class GalleriesController < UploadingController
   end
 
   def add
-    if params[:id] == '0' && params[:type] == 'existing'
-      flash[:error] = 'Cannot add existing icons to galleryless. Please remove from existing galleries instead.'
-      redirect_to user_gallery_path(id: 0, user_id: current_user.id)
-    end
+    return unless params[:id] == '0' && params[:type] == 'existing'
+    flash[:error] = 'Cannot add existing icons to galleryless. Please remove from existing galleries instead.'
+    redirect_to user_gallery_path(id: 0, user_id: current_user.id)
   end
 
   def show
@@ -80,11 +79,8 @@ class GalleriesController < UploadingController
       @gallery = Gallery.find_by_id(params[:id])
       unless @gallery
         flash[:error] = "Gallery could not be found."
-        if logged_in?
-          redirect_to user_galleries_path(current_user) and return
-        else
-          redirect_to root_path and return
-        end
+        redirect_to user_galleries_path(current_user) and return if logged_in?
+        redirect_to root_path and return
       end
 
       @user = @gallery.user
@@ -223,10 +219,9 @@ class GalleriesController < UploadingController
       redirect_to user_galleries_path(current_user) and return
     end
 
-    unless @gallery.user_id == current_user.id
-      flash[:error] = "That is not your gallery."
-      redirect_to user_galleries_path(current_user) and return
-    end
+    return if @gallery.user_id == current_user.id
+    flash[:error] = "That is not your gallery."
+    redirect_to user_galleries_path(current_user) and return
   end
 
   def require_create_permission

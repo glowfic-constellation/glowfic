@@ -84,19 +84,16 @@ class BoardSectionsController < ApplicationController
   private
 
   def find_model
-    @board_section = BoardSection.find_by_id(params[:id])
-    unless @board_section
-      flash[:error] = "Section not found."
-      redirect_to continuities_path and return
-    end
+    return if (@board_section = BoardSection.find_by(id: params[:id]))
+    flash[:error] = "Section not found."
+    redirect_to continuities_path
   end
 
   def require_permission
-    board = @board_section.try(:board) || Board.find_by_id(params[:board_id])
-    if board && !board.editable_by?(current_user)
-      flash[:error] = "You do not have permission to edit this continuity."
-      redirect_to continuities_path and return
-    end
+    return unless (board = @board_section.try(:board) || Board.find_by_id(params[:board_id]))
+    return if board.editable_by?(current_user)
+    flash[:error] = "You do not have permission to edit this continuity."
+    redirect_to continuities_path
   end
 
   def og_data

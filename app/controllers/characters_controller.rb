@@ -299,13 +299,12 @@ class CharactersController < ApplicationController
   private
 
   def find_model
-    unless (@character = Character.find_by_id(params[:id]))
-      flash[:error] = "Character could not be found."
-      if logged_in?
-        redirect_to user_characters_path(current_user)
-      else
-        redirect_to root_path
-      end
+    return if (@character = Character.find_by_id(params[:id]))
+    flash[:error] = "Character could not be found."
+    if logged_in?
+      redirect_to user_characters_path(current_user)
+    else
+      redirect_to root_path
     end
   end
 
@@ -321,10 +320,9 @@ class CharactersController < ApplicationController
   end
 
   def require_edit_permission
-    unless @character.editable_by?(current_user)
-      flash[:error] = "You do not have permission to edit that character."
-      redirect_to user_characters_path(current_user) and return
-    end
+    return if @character.editable_by?(current_user)
+    flash[:error] = "You do not have permission to edit that character."
+    redirect_to user_characters_path(current_user)
   end
 
   def editor_setup

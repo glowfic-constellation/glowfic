@@ -26,17 +26,17 @@ class ReportsController < ApplicationController
       DailyReport.mark_read(current_user, at_time: @day) if !current_user.ignore_unread_daily_report? && @day.to_date < Time.zone.now.to_date
     end
 
-    if @report_type == 'daily'
-      @new_today = params[:new_today].present?
-      @posts = DailyReport.new(@day).posts(sort, @new_today)
-      @posts = posts_from_relation(@posts, max: !@new_today)
-      replies_on_day = Reply.where(created_at: @day.all_day)
-      @reply_counts = replies_on_day.group(:post_id).count
-      first_for_day = replies_on_day.order(post_id: :asc, created_at: :asc)
-      first_for_day = first_for_day.pluck(Arel.sql('DISTINCT ON (post_id) replies.post_id, replies.id, replies.created_at'))
-      first_for_day = first_for_day.to_h { |pluck| [pluck[0], { id: pluck[1], klass: Reply, created_at: pluck[2] }] }
-      @link_targets = @posts.to_h { |post| [post.id, linked_for(post, first_for_day[post.id])] }
-    end
+    return unless @report_type == 'daily'
+
+    @new_today = params[:new_today].present?
+    @posts = DailyReport.new(@day).posts(sort, @new_today)
+    @posts = posts_from_relation(@posts, max: !@new_today)
+    replies_on_day = Reply.where(created_at: @day.all_day)
+    @reply_counts = replies_on_day.group(:post_id).count
+    first_for_day = replies_on_day.order(post_id: :asc, created_at: :asc)
+    first_for_day = first_for_day.pluck(Arel.sql('DISTINCT ON (post_id) replies.post_id, replies.id, replies.created_at'))
+    first_for_day = first_for_day.to_h { |pluck| [pluck[0], { id: pluck[1], klass: Reply, created_at: pluck[2] }] }
+    @link_targets = @posts.to_h { |post| [post.id, linked_for(post, first_for_day[post.id])] }
   end
 
   private

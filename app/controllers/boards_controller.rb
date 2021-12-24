@@ -161,10 +161,9 @@ class BoardsController < ApplicationController
   end
 
   def find_model
-    unless (@board = Board.find_by_id(params[:id]))
-      flash[:error] = "Continuity could not be found."
-      redirect_to continuities_path and return
-    end
+    return if (@board = Board.find_by_id(params[:id]))
+    flash[:error] = "Continuity could not be found."
+    redirect_to continuities_path
   end
 
   def require_create_permission
@@ -174,10 +173,9 @@ class BoardsController < ApplicationController
   end
 
   def require_edit_permission
-    unless @board.editable_by?(current_user)
-      flash[:error] = "You do not have permission to edit that continuity."
-      redirect_to continuity_path(@board) and return
-    end
+    return if @board.editable_by?(current_user)
+    flash[:error] = "You do not have permission to edit that continuity."
+    redirect_to continuity_path(@board) and return
   end
 
   def boards_from_relation(relation)

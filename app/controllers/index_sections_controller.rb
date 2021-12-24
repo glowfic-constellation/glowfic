@@ -83,17 +83,15 @@ class IndexSectionsController < ApplicationController
   private
 
   def find_model
-    unless (@section = IndexSection.find_by_id(params[:id]))
-      flash[:error] = "Index section could not be found."
-      redirect_to indexes_path
-    end
+    return if (@section = IndexSection.find_by_id(params[:id]))
+    flash[:error] = "Index section could not be found."
+    redirect_to indexes_path
   end
 
   def require_permission
-    unless @section.index.editable_by?(current_user)
-      flash[:error] = "You do not have permission to edit this index."
-      redirect_to @section.index
-    end
+    return if @section.index.editable_by?(current_user)
+    flash[:error] = "You do not have permission to edit this index."
+    redirect_to @section.index
   end
 
   def permitted_params

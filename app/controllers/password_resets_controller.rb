@@ -76,14 +76,13 @@ class PasswordResetsController < ApplicationController
   private
 
   def logout_required
-    if logged_in?
-      flash[:error] = "You are already logged in."
-      redirect_to edit_user_path(current_user)
-    end
+    return unless logged_in?
+    flash[:error] = "You are already logged in."
+    redirect_to edit_user_path(current_user)
   end
 
   def find_model
-    unless (@password_reset = PasswordReset.where(auth_token: params[:id]).first)
+    unless (@password_reset = PasswordReset.find_by(auth_token: params[:id]))
       flash[:error] = "Authentication token not found."
       redirect_to root_url and return
     end
@@ -93,9 +92,8 @@ class PasswordResetsController < ApplicationController
       redirect_to root_url and return
     end
 
-    if @password_reset.used?
-      flash[:error] = "Authentication token has already been used."
-      redirect_to root_url
-    end
+    return unless @password_reset.used?
+    flash[:error] = "Authentication token has already been used."
+    redirect_to root_url
   end
 end

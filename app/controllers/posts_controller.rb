@@ -125,10 +125,10 @@ class PostsController < WritableController
     @page_title = 'New Post'
 
     @permitted_authors -= [current_user]
-    if @post.board&.authors_locked?
-      @author_ids = @post.board.writer_ids - [current_user.id]
-      @authors_from_board = true
-    end
+    return unless @post.board&.authors_locked?
+
+    @author_ids = @post.board.writer_ids - [current_user.id]
+    @authors_from_board = true
   end
 
   def create
@@ -170,14 +170,14 @@ class PostsController < WritableController
     audit_ids = audit_ids.group(:auditable_id).pluck(Arel.sql('MAX(audits.id)')) # only most recent per reply
     @deleted_audits = Audited::Audit.where(id: audit_ids).paginate(per_page: 1, page: page)
 
-    if @deleted_audits.present?
-      @audit = @deleted_audits.first
-      @deleted = Reply.new(@audit.audited_changes)
-      @preceding = @post.replies.where('id < ?', @audit.auditable_id).order(id: :desc).limit(2).reverse
-      @preceding = [@post] unless @preceding.present?
-      @following = @post.replies.where('id > ?', @audit.auditable_id).order(id: :asc).limit(2)
-      @audits = {} # set to prevent crashes, but we don't need this calculated, we don't want to display edit history on this page
-    end
+    return unless @deleted_audits.present?
+
+    @audit = @deleted_audits.first
+    @deleted = Reply.new(@audit.audited_changes)
+    @preceding = @post.replies.where('id < ?', @audit.auditable_id).order(id: :desc).limit(2).reverse
+    @preceding = [@post] unless @preceding.present?
+    @following = @post.replies.where('id > ?', @audit.auditable_id).order(id: :asc).limit(2)
+    @audits = {} # set to prevent crashes, but we don't need this calculated, we don't want to display edit history on this page
   end
 
   def stats
@@ -446,10 +446,9 @@ class PostsController < WritableController
   end
 
   def require_edit_permission
-    unless @post.editable_by?(current_user) || @post.metadata_editable_by?(current_user)
-      flash[:error] = "You do not have permission to modify this post."
-      redirect_to @post
-    end
+    return if @post.editable_by?(current_user) || @post.metadata_editable_by?(current_user)
+    flash[:error] = "You do not have permission to modify this post."
+    redirect_to @post
   end
 
   def require_create_permission
@@ -460,10 +459,9 @@ class PostsController < WritableController
 
   def require_import_permission
     return unless params[:view] == 'import' || params[:button_import].present?
-    unless current_user.has_permission?(:import_posts)
-      flash[:error] = "You do not have access to this feature."
-      redirect_to new_post_path
-    end
+    return if current_user.has_permission?(:import_posts)
+    flash[:error] = "You do not have access to this feature."
+    redirect_to new_post_path
   end
 
   def permitted_params(include_associations=true)

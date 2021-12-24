@@ -57,10 +57,10 @@ class AliasesController < ApplicationController
       redirect_to user_characters_path(current_user) and return
     end
 
-    unless @character.user == current_user
-      flash[:error] = "That is not your character."
-      redirect_to user_characters_path(current_user) and return
-    end
+    return if @character.user == current_user
+
+    flash[:error] = "That is not your character."
+    redirect_to user_characters_path(current_user)
   end
 
   def find_model
@@ -69,10 +69,10 @@ class AliasesController < ApplicationController
       redirect_to edit_character_path(@character) and return
     end
 
-    unless @alias.character_id == @character.id
-      flash[:error] = "Alias could not be found for that character."
-      redirect_to edit_character_path(@character) and return
-    end
+    return if @alias.character_id == @character.id
+
+    flash[:error] = "Alias could not be found for that character."
+    redirect_to edit_character_path(@character)
   end
 
   def permitted_params

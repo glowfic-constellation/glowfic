@@ -89,11 +89,11 @@ class RepliesController < WritableController
 
     @audits = []
 
-    unless params[:condensed]
-      @search_results = @search_results
-        .select('icons.keyword, icons.url')
-        .left_outer_joins(:icon)
-    end
+    return if params[:condensed]
+
+    @search_results = @search_results
+      .select('icons.keyword, icons.url')
+      .left_outer_joins(:icon)
   end
 
   def create
@@ -284,10 +284,9 @@ class RepliesController < WritableController
   end
 
   def require_edit_permission
-    unless @reply.editable_by?(current_user)
-      flash[:error] = "You do not have permission to modify this post."
-      redirect_to post_path(@reply.post)
-    end
+    return if @reply.editable_by?(current_user)
+    flash[:error] = "You do not have permission to modify this post."
+    redirect_to post_path(@reply.post)
   end
 
   def preview(written)

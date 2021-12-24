@@ -77,17 +77,15 @@ class BlocksController < ApplicationController
   end
 
   def require_permission
-    unless @block.editable_by?(current_user)
-      flash[:error] = "Block could not be found." # Return the same error message as if it didn't exist
-      redirect_to blocks_path and return
-    end
+    return if @block.editable_by?(current_user)
+    flash[:error] = "Block could not be found." # Return the same error message as if it didn't exist
+    redirect_to blocks_path
   end
 
   def find_model
-    unless (@block = Block.find_by(id: params[:id]))
-      flash[:error] = "Block could not be found."
-      redirect_to blocks_path and return
-    end
+    return if (@block = Block.find_by(id: params[:id]))
+    flash[:error] = "Block could not be found."
+    redirect_to blocks_path and return
   end
 
   def editor_setup

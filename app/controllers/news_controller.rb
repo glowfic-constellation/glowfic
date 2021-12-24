@@ -82,24 +82,21 @@ class NewsController < ApplicationController
   private
 
   def find_model
-    unless (@news = News.find_by_id(params[:id]))
-      flash[:error] = "News post could not be found."
-      redirect_to news_index_path and return
-    end
+    return if (@news = News.find_by_id(params[:id]))
+    flash[:error] = "News post could not be found."
+    redirect_to news_index_path
   end
 
   def require_staff
-    unless current_user.admin? || current_user.mod?
-      flash[:error] = "You do not have permission to manage news posts."
-      redirect_to news_index_path and return
-    end
+    return if current_user.admin? || current_user.mod?
+    flash[:error] = "You do not have permission to manage news posts."
+    redirect_to news_index_path
   end
 
   def require_permission
-    unless @news.editable_by?(current_user)
-      flash[:error] = "You do not have permission to edit that news post."
-      redirect_to news_index_path and return
-    end
+    return if @news.editable_by?(current_user)
+    flash[:error] = "You do not have permission to edit that news post."
+    redirect_to news_index_path
   end
 
   def permitted_params
