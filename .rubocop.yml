@@ -464,11 +464,12 @@ RSpec/MultipleMemoizedHelpers:
 RSpec/NestedGroups:
   Max: 5
 
+RSpec/StubbedMock:
+  Exclude:
+    - 'spec/script/post_split_spec.rb' # mocking multiple gets in order needs expect
+
 RSpec/SubjectDeclaration: # new in 2.5
   Enabled: true
-
-RSpec/StubbedMock:
-  Enabled: false
 
 ################## RSpec/Capybara ##############################
 
