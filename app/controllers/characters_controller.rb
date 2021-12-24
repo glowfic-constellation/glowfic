@@ -157,10 +157,9 @@ class CharactersController < ApplicationController
       .joins(:user)
       .left_outer_joins(:template)
       .pluck('characters.id, characters.name, characters.pb, users.id, users.username, templates.id, templates.name')
-    @pbs = []
 
     pb_struct = Struct.new(:item_id, :item_name, :type, :pb, :user_id, :username)
-    chars.each do |dataset|
+    @pbs = chars.map do |dataset|
       id, name, pb, user_id, username, template_id, template_name = dataset
       if template_id.present?
         item_id = template_id
@@ -171,7 +170,7 @@ class CharactersController < ApplicationController
         item_name = name
         type = Character
       end
-      @pbs << pb_struct.new(item_id, item_name, type, pb, user_id, username)
+      pb_struct.new(item_id, item_name, type, pb, user_id, username)
     end
     @pbs.uniq!
 
