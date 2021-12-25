@@ -31,7 +31,7 @@ RSpec.describe ScrapePostJob do
 
     expect(ScrapePostJob).to receive(:notify_exception).with(
       an_instance_of(UnrecognizedUsernameError),
-      url, board.id, nil, Post.statuses[:complete], false, board.creator_id
+      url, board.id, nil, Post.statuses[:complete], false, board.creator_id,
     ).and_call_original
 
     begin
@@ -56,7 +56,7 @@ RSpec.describe ScrapePostJob do
 
     expect(ScrapePostJob).to receive(:notify_exception).with(
       an_instance_of(AlreadyImportedError),
-      url, board.id, nil, Post.statuses[:complete], false, board.creator_id
+      url, board.id, nil, Post.statuses[:complete], false, board.creator_id,
     ).and_call_original
 
     begin
