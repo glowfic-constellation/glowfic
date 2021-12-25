@@ -26,7 +26,7 @@ unless ENV['SKIP_COVERAGE'] || ENV['APIPIE_RECORD'] || RSpec.configuration.files
     add_group "Exceptions", "app/exceptions"
     SimpleCov.groups.delete('Channels')
     changed_files = `git status --untracked=all --porcelain`
-    if changed_files.length > 0
+    unless changed_files.empty?
       add_group 'Changed' do |source_file|
         changed_files.split("\n").detect do |status_and_filename|
           _, filename = status_and_filename.split(' ', 2)
