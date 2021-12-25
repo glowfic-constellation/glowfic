@@ -18,7 +18,7 @@
 unless ENV['SKIP_COVERAGE'] || ENV['APIPIE_RECORD'] || RSpec.configuration.files_to_run.count <= 1
   require 'simplecov'
   SimpleCov.start 'rails' do
-    add_group("Controllers") { |src| src.filename.include?('app/controllers') and not src.filename.include?('app/controllers/api') }
+    add_group("Controllers") { |src| src.filename.include?('app/controllers') and src.filename.exclude?('app/controllers/api') }
     add_group "Presenters", "app/presenters"
     add_group "Concerns", "app/concerns"
     add_group "API", "app/controllers/api"
