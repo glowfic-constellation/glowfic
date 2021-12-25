@@ -7,10 +7,10 @@
   = @board.name
   - if logged_in?
     - if @board.open_to?(current_user)
-      = link_to new_post_path params: {board_id: @board.id} do
+      = link_to new_post_path params: { board_id: @board.id } do
         .link-box.action-new + New Post
     - if @board.editable_by?(current_user)
-      = link_to new_board_section_path params: {board_id: @board.id} do
+      = link_to new_board_section_path params: { board_id: @board.id } do
         .link-box.action-new + New Section
       = link_to edit_continuity_path(@board) do
         .link-box.action-edit
@@ -48,13 +48,13 @@
             %td.written-content{colspan: 5, class: cycle('even', 'odd')}= shortened_desc(section.description, section.id)
         - section_posts = posts_from_relation(section.posts.ordered_in_section, no_tests: false, with_pagination: false)
         - if section_posts.present?
-          = render partial: 'posts/list_item', collection: section_posts, as: :post, locals: {hide_continuity: true}
+          = render partial: 'posts/list_item', collection: section_posts, as: :post, locals: { hide_continuity: true }
         - else
           %tr
             %td.centered.padding-10.no-posts{ class: cycle('even', 'odd'), colspan: 6 } — No posts yet —
         %tr
           %td.continuity-spacer{colspan: 5}
-      = render partial: 'posts/list_item', collection: @posts, as: :post, locals: {hide_continuity: true}
+      = render partial: 'posts/list_item', collection: @posts, as: :post, locals: { hide_continuity: true }
 - else
   - if @board.description.present?
     - content_for :post_list_description do

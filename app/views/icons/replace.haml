@@ -6,7 +6,7 @@
   %b= link_to 'Replace', replace_icon_path(@icon)
 
 - content_for :options do
-  = select_tag :icon_dropdown, options_for_select(@alts.map{|i| [i.keyword, i.id]}, @alts.first.try(:id)), prompt: "No Icon"
+  = select_tag :icon_dropdown, options_for_select(@alts.map { |i| [i.keyword, i.id] }, @alts.first.try(:id)), prompt: "No Icon"
 
 = form_for @icon, url: do_replace_icon_path(@icon), method: :post do
   = render 'global/replace', obj: @icon, name: @icon.keyword, icon: @icon, alt_icon: @alts.first

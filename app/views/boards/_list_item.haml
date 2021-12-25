@@ -3,7 +3,7 @@
   %td.padding-10.board-title{class: klass}= link_to board.name, continuity_path(board)
   %td.padding-10.board-authors{class: klass}
     - if board.authors_locked?
-      - writers = board.writers.reject(&:deleted?).sort_by{|a| a.username.downcase}
+      - writers = board.writers.reject(&:deleted?).sort_by { |a| a.username.downcase }
       = safe_join(writers.map { |u| user_link(u) }, ', ')
     - else
       Anyone

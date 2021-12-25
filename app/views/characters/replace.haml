@@ -15,7 +15,8 @@
 
 - content_for :aliases do
   - if @character.aliases.exists?
-    = select_tag :orig_alias, options_for_select({'— Any Alias —': 'all'}, 'all') + options_from_collection_for_select(@character.aliases, :id, :name), prompt: '— No alias —'
+    - collection = options_from_collection_for_select(@character.aliases, :id, :name)
+    = select_tag :orig_alias, (options_for_select({ '— Any Alias —': 'all' }, 'all') + collection), prompt: '— No alias —'
 
 - content_for :options do
   = select_tag :icon_dropdown, options_for_select(@alt_dropdown, @alt.try(:id)), prompt: "No Character"
