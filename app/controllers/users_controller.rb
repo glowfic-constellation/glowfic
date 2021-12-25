@@ -51,7 +51,7 @@ class UsersController < ApplicationController
       signup_prep
       flash.now[:error] = {
         message: "There was a problem completing your sign up.",
-        array: @user.errors.full_messages
+        array: @user.errors.full_messages,
       }
       render :new
     else
@@ -77,7 +77,7 @@ class UsersController < ApplicationController
     rescue ActiveRecord::RecordInvalid
       flash.now[:error] = {
         message: "There was a problem updating your account.",
-        array: current_user.errors.full_messages
+        array: current_user.errors.full_messages,
       }
       use_javascript('users/edit')
       @page_title = 'Edit Account'
@@ -102,7 +102,7 @@ class UsersController < ApplicationController
     rescue ActiveRecord::RecordInvalid
       flash.now[:error] = {
         message: "There was a problem with your changes.",
-        array: current_user.errors.full_messages
+        array: current_user.errors.full_messages,
       }
       @page_title = 'Edit Account'
       render :edit
@@ -212,7 +212,7 @@ class UsersController < ApplicationController
     rescue ActiveRecord::RecordInvalid
       flash.now[:error] = {
         message: 'There was an error saving your changes. Please try again.',
-        array: current_user.errors.full_messages
+        array: current_user.errors.full_messages,
       }
       render 'about/accept_tos'
     else

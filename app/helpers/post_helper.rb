@@ -35,10 +35,12 @@ module PostHelper
   end
 
   def post_privacy_settings
-    { 'Public'              => :public,
+    {
+      'Public'              => :public,
       'Constellation Users' => :registered,
       'Access List'         => :access_list,
-      'Private'             => :private }
+      'Private'             => :private,
+    }
   end
 
   PRIVACY_MAP = {

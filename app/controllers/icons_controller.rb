@@ -71,7 +71,7 @@ class IconsController < UploadingController
     rescue ActiveRecord::RecordInvalid
       flash.now[:error] = {
         message: "Your icon could not be saved due to the following problems:",
-        array: @icon.errors.full_messages
+        array: @icon.errors.full_messages,
       }
       @page_title = 'Edit icon: ' + @icon.keyword_was
       use_javascript('galleries/update_existing')
@@ -129,7 +129,7 @@ class IconsController < UploadingController
     rescue ActiveRecord::RecordNotDestroyed
       flash[:error] = {
         message: "Icon could not be deleted.",
-        array: @icon.errors.full_messages
+        array: @icon.errors.full_messages,
       }
       redirect_to @icon
     else
@@ -196,7 +196,7 @@ class IconsController < UploadingController
         src: @icon.url,
         width: '75',
         height: '75',
-      }
+      },
     }
   end
 

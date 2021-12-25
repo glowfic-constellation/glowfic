@@ -685,15 +685,13 @@ Style/TernaryParentheses:
   Enabled: false
 
 Style/TrailingCommaInArguments:
-  EnforcedStyleForMultiline: 'comma'
+  EnforcedStyleForMultiline: 'consistent_comma'
 
 Style/TrailingCommaInArrayLiteral:
-  Enabled: false
-  EnforcedStyleForMultiline: 'comma'
+  EnforcedStyleForMultiline: 'consistent_comma'
 
 Style/TrailingCommaInHashLiteral:
-  Enabled: false
-  EnforcedStyleForMultiline: 'comma'
+  EnforcedStyleForMultiline: 'consistent_comma'
 
 Lint/UselessRuby2Keywords: # new in 1.23
   Enabled: false

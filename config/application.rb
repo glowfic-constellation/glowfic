@@ -19,7 +19,7 @@ module Glowfic
     "td" => %w(abbr width),
     "th" => %w(abbr width),
     "blockquote" => %w(cite),
-    "cite" => %w(href)
+    "cite" => %w(href),
   }
 
   DISCORD_LINK_GLOWFIC = 'https://discord.gg/Mytf2ruKpv'

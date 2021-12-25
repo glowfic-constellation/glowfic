@@ -20,7 +20,7 @@ class TemplatesController < ApplicationController
     rescue ActiveRecord::RecordInvalid
       flash.now[:error] = {
         message: "Your template could not be saved because of the following problems:",
-        array: @template.errors.full_messages
+        array: @template.errors.full_messages,
       }
       editor_setup
       @page_title = "New Template"
@@ -51,7 +51,7 @@ class TemplatesController < ApplicationController
     rescue ActiveRecord::RecordInvalid
       flash.now[:error] = {
         message: "Your template could not be saved because of the following problems:",
-        array: @template.errors.full_messages
+        array: @template.errors.full_messages,
       }
       editor_setup
       @page_title = 'Edit Template: ' + @template.name_was
@@ -68,7 +68,7 @@ class TemplatesController < ApplicationController
     rescue ActiveRecord::RecordNotDestroyed
       flash[:error] = {
         message: "Template could not be deleted.",
-        array: @template.errors.full_messages
+        array: @template.errors.full_messages,
       }
       redirect_to @template
     else

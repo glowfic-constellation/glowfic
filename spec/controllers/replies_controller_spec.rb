@@ -30,8 +30,8 @@ RSpec.describe RepliesController do
             character_id: char1.id,
             icon_id: icon.id,
             character_alias_id: calias.id,
-            post_id: reply_post.id
-          }
+            post_id: reply_post.id,
+          },
         }
         expect(response).to render_template(:preview)
         expect(assigns(:javascripts)).to include('posts/editor')
@@ -79,8 +79,8 @@ RSpec.describe RepliesController do
             button_preview: true,
             reply: {
               content: 'example',
-              post_id: reply_post.id
-            }
+              post_id: reply_post.id,
+            },
           }
         }.not_to change { [Post::Author.count, BoardAuthor.count]}
 
@@ -114,8 +114,8 @@ RSpec.describe RepliesController do
             character_id: char.id,
             icon_id: icon.id,
             content: 'testcontent',
-            character_alias_id: calias.id
-          }
+            character_alias_id: calias.id,
+          },
         }
         expect(response).to redirect_to(post_url(reply_post, page: :unread, anchor: :unread))
         expect(flash[:success]).to eq("Draft saved!")
@@ -234,8 +234,8 @@ RSpec.describe RepliesController do
             content: 'test!',
             character_id: char.id,
             icon_id: icon.id,
-            character_alias_id: calias.id
-          }
+            character_alias_id: calias.id,
+          },
         }
       }.to change{Reply.count}.by(1)
 
@@ -730,8 +730,8 @@ RSpec.describe RepliesController do
             content: newcontent,
             character_id: char.id,
             icon_id: icon.id,
-            character_alias_id: calias.id
-          }
+            character_alias_id: calias.id,
+          },
         }
 
         expect(response).to render_template(:preview)
@@ -783,8 +783,8 @@ RSpec.describe RepliesController do
           button_preview: true,
           reply: {
             content: newcontent,
-            audit_comment: 'note'
-          }
+            audit_comment: 'note',
+          },
         }
 
         expect(response).to render_template(:preview)

@@ -28,17 +28,21 @@ RSpec.feature "Listing characters", type: :feature do
 
   let!(:ungrouped_character_data) do
     [
-      with_template([
-        { name: 'Test character' },
-        { name: 'Nicknamed', nickname: 'Other name' },
-        { name: 'Character with screenname', screenname: 'test-screenname' },
-        { name: 'Played by', pb: 'Test Person' },
-        { name: 'With setting', settings: [earth] },
-        { name: 'Iconned', default_icon: icon },
-      ], templates.first),
-      with_template([
-        { name: 'Second template character' },
-      ], templates.last),
+      with_template(
+        [
+          { name: 'Test character' },
+          { name: 'Nicknamed', nickname: 'Other name' },
+          { name: 'Character with screenname', screenname: 'test-screenname' },
+          { name: 'Played by', pb: 'Test Person' },
+          { name: 'With setting', settings: [earth] },
+          { name: 'Iconned', default_icon: icon },
+        ],
+        templates.first,
+      ),
+      with_template(
+        [{ name: 'Second template character' }],
+        templates.last,
+      ),
       without_template([
         { name: 'Untemplated character' },
       ]),
@@ -177,7 +181,7 @@ RSpec.feature "Listing characters", type: :feature do
         {
           group: nil,
           templates: ungrouped_character_data,
-        }
+        },
       ]
     end
 
@@ -188,9 +192,10 @@ RSpec.feature "Listing characters", type: :feature do
     def grouped_sample(group)
       template = create(:template, user: user, name: 'grouped template')
       [
-        with_template([
-          { name: 'character group character 1', character_group: group },
-        ], template),
+        with_template(
+          [{ name: 'character group character 1', character_group: group }],
+          template,
+        ),
         without_template([
           { name: 'grouped untemplated character', character_group: group },
         ]),
@@ -207,7 +212,7 @@ RSpec.feature "Listing characters", type: :feature do
         {
           group: nil,
           templates: ungrouped_character_data,
-        }
+        },
       ]
     end
 

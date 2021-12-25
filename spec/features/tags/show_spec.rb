@@ -7,11 +7,13 @@ RSpec.feature "Viewing a tag", type: :feature do
     second_user = create(:user, username: 'second user')
     untemplated_character = create(:character,
       user: first_user, settings: [setting],
-      name: 'Test character', screenname: 'the-test', pb: 'Example Person')
+      name: 'Test character', screenname: 'the-test', pb: 'Example Person',
+    )
     template = create(:template, user: second_user, name: 'sample template')
     templated_character = create(:character,
       user: second_user, template: template, settings: [setting],
-      name: 'Templated character')
+      name: 'Templated character',
+    )
 
     create(:character, name: 'Other character') # this character must be missing
 

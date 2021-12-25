@@ -175,8 +175,8 @@ RSpec.describe BoardsController do
           name: 'TestCreateBoard',
           description: 'Test description',
           coauthor_ids: [user2.id],
-          cameo_ids: [user3.id]
-        }
+          cameo_ids: [user3.id],
+        },
       }
       expect(response).to redirect_to(continuities_url)
       expect(flash[:success]).to eq("Continuity created!")
@@ -359,8 +359,8 @@ RSpec.describe BoardsController do
           name: name + 'edit',
           description: 'New description',
           coauthor_ids: [user2.id],
-          cameo_ids: [user3.id]
-        }
+          cameo_ids: [user3.id],
+        },
       }
       expect(response).to redirect_to(continuity_url(board))
       expect(flash[:success]).to eq("Continuity saved!")

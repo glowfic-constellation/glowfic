@@ -36,7 +36,7 @@ RSpec.describe WritableController do
       data = controller.send(:og_data_for_post, post, total_pages: 5)
       expect(data).to eq({
         title: 'Temp · Test',
-        description: '(Tester – page 1 of 5)'
+        description: '(Tester – page 1 of 5)',
       })
     end
 
@@ -45,7 +45,7 @@ RSpec.describe WritableController do
       data = controller.send(:og_data_for_post, post, total_pages: 5)
       expect(data).to eq({
         title: 'Temp · Test',
-        description: 'More. (Tester – page 1 of 5)'
+        description: 'More. (Tester – page 1 of 5)',
       })
     end
 
@@ -54,7 +54,7 @@ RSpec.describe WritableController do
       data = controller.send(:og_data_for_post, post, total_pages: 5)
       expect(data).to eq({
         title: 'Temp · Test',
-        description: 'With an Alli. (Tester – page 1 of 5)'
+        description: 'With an Alli. (Tester – page 1 of 5)',
       })
     end
 
@@ -64,7 +64,7 @@ RSpec.describe WritableController do
       data = controller.send(:og_data_for_post, post, total_pages: 5)
       expect(data).to eq({
         title: 'Temp · Test » Further',
-        description: 'More. (Tester – page 1 of 5)'
+        description: 'More. (Tester – page 1 of 5)',
       })
     end
 
@@ -77,7 +77,7 @@ RSpec.describe WritableController do
       data = controller.send(:og_data_for_post, post, total_pages: 5)
       expect(data).to eq({
         title: 'Temp · Test',
-        description: 'More. (Friend, Tester – page 1 of 5)'
+        description: 'More. (Friend, Tester – page 1 of 5)',
       })
     end
 
@@ -85,7 +85,7 @@ RSpec.describe WritableController do
       data = controller.send(:og_data_for_post, post, page: 2, total_pages: 2)
       expect(data).to eq({
         title: 'Temp · Test',
-        description: '(Tester – page 2 of 2)'
+        description: '(Tester – page 2 of 2)',
       })
     end
 
@@ -99,7 +99,7 @@ RSpec.describe WritableController do
       data = controller.send(:og_data_for_post, Post.find_by(id: post.id), total_pages: 5)
       expect(data).to eq({
         title: 'Temp · Test',
-        description: '(Tester and 5 others – page 1 of 5)'
+        description: '(Tester and 5 others – page 1 of 5)',
       })
     end
 
@@ -107,7 +107,7 @@ RSpec.describe WritableController do
       data = controller.send(:og_data_for_post, post, total_pages: 5, per_page: 5)
       expect(data).to eq({
         title: 'Temp · Test',
-        description: '(Tester – page 1 of 5, 5/page)'
+        description: '(Tester – page 1 of 5, 5/page)',
       })
     end
   end
@@ -173,7 +173,7 @@ RSpec.describe WritableController do
         [char1.id, char1.name],
         [char2.id, "#{char2.name} | #{char2.nickname}"],
         [char3.id, "#{char3.name} | #{char3.screenname}"],
-        [char4.id, "#{char4.name} | #{char4.nickname} | #{char4.screenname}"]
+        [char4.id, "#{char4.name} | #{char4.nickname} | #{char4.screenname}"],
       ]
       expect(templates.first.plucked_characters).to eq(info)
     end
@@ -192,7 +192,7 @@ RSpec.describe WritableController do
         [char1.id, char1.name],
         [char2.id, "#{char2.name} | #{char2.nickname}"],
         [char3.id, "#{char3.name} | #{char3.screenname}"],
-        [char4.id, "#{char4.name} | #{char4.nickname} | #{char4.screenname}"]
+        [char4.id, "#{char4.name} | #{char4.nickname} | #{char4.screenname}"],
       ]
       expect(templates.first.plucked_characters).to eq(info)
     end
@@ -209,7 +209,7 @@ RSpec.describe WritableController do
       expect(templates.count).to eq(1)
       info = [
         [char1.id, char1.name],
-        [char2.id, "#{char2.name} | #{char2.nickname} | #{char2.screenname}"]
+        [char2.id, "#{char2.name} | #{char2.nickname} | #{char2.screenname}"],
       ]
       expect(templates.first.plucked_characters).to eq(info)
     end

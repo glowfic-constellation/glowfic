@@ -202,7 +202,8 @@ RSpec.feature "Viewing a character", :type => :feature do
       template: template,
       pb: 'Example PB',
       description: 'Basic desc',
-      settings: [setting1, setting2])
+      settings: [setting1, setting2],
+    )
     create(:alias, character: char, name: 'Alias Person')
     post = create(:post, user: user, character: char, subject: 'Example post')
     post2 = create(:post, subject: 'Other post')

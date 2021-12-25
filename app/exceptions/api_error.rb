@@ -9,7 +9,7 @@ class ApiError < StandardError
     return @msg unless @error_array.present?
     {
       message: @msg,
-      array: @error_array
+      array: @error_array,
     }
   end
 end

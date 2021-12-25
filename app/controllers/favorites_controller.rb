@@ -58,7 +58,7 @@ class FavoritesController < ApplicationController
     rescue ActiveRecord::RecordInvalid
       flash[:error] = {
         message: "Your favorite could not be saved because of the following problems:",
-        array: fav.errors.full_messages
+        array: fav.errors.full_messages,
       }
     else
       flash[:success] = "Your favorite has been saved."
@@ -82,7 +82,7 @@ class FavoritesController < ApplicationController
     rescue ActiveRecord::RecordNotDestroyed
       flash[:error] = {
         message: "Favorite could not be deleted.",
-        array: fav.errors.full_messages
+        array: fav.errors.full_messages,
       }
       redirect_to favorites_path
     else

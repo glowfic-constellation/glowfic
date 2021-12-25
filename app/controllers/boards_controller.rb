@@ -43,7 +43,7 @@ class BoardsController < ApplicationController
     rescue ActiveRecord::RecordInvalid
       flash.now[:error] = {
         message: "Continuity could not be created.",
-        array: @board.errors.full_messages
+        array: @board.errors.full_messages,
       }
       @page_title = 'New Continuity'
       editor_setup
@@ -81,7 +81,7 @@ class BoardsController < ApplicationController
     rescue ActiveRecord::RecordInvalid
       flash.now[:error] = {
         message: "Continuity could not be created.",
-        array: @board.errors.full_messages
+        array: @board.errors.full_messages,
       }
       @page_title = 'Edit Continuity: ' + @board.name_was
       editor_setup
@@ -100,7 +100,7 @@ class BoardsController < ApplicationController
     rescue ActiveRecord::RecordNotDestroyed
       flash[:error] = {
         message: "Continuity could not be deleted.",
-        array: @board.errors.full_messages
+        array: @board.errors.full_messages,
       }
       redirect_to continuity_path(@board)
     else

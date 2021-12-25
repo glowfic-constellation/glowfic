@@ -28,7 +28,7 @@ class Authentication < Object
   def self.generate_api_token(user)
     payload = {
       user_id: user.id,
-      exp: Authentication::EXPIRY.from_now.to_i
+      exp: Authentication::EXPIRY.from_now.to_i,
     }
     JWT.encode(payload, Rails.application.secrets.secret_key_api)
   end

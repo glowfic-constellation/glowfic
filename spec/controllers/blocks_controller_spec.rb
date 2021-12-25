@@ -82,8 +82,8 @@ RSpec.describe BlocksController, type: :controller do
             blocked_user_id: blockee.id,
             block_interactions: false,
             hide_them: :posts,
-            hide_me: :all
-          }
+            hide_me: :all,
+          },
         }
       }.to change { Block.count }.by(1)
       expect(response).to redirect_to(blocks_url)
@@ -117,8 +117,8 @@ RSpec.describe BlocksController, type: :controller do
           blocked_user_id: blocked.id,
           block_interactions: false,
           hide_them: :posts,
-          hide_me: :posts
-        }
+          hide_me: :posts,
+        },
       }
 
       expect(Rails.cache.exist?(Block.cache_string_for(user.id, 'blocked'))).to be(true)
@@ -194,8 +194,8 @@ RSpec.describe BlocksController, type: :controller do
         block: {
           block_interactions: false,
           hide_them: :posts,
-          hide_me: :all
-        }
+          hide_me: :all,
+        },
       }
       expect(response).to redirect_to(blocks_url)
       expect(flash[:success]).to eq("Block updated!")

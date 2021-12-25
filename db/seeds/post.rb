@@ -12,7 +12,7 @@ Post.create!([
     edited_at: "2018-11-27 02:25:52",
     tagged_at: "2018-12-06 00:05:13",
     authors_locked: true,
-    unjoined_author_ids: [1]
+    unjoined_author_ids: [1],
   },
   {
     board_id: 3,
@@ -44,7 +44,7 @@ Post.create!([
     edited_at: "2012-09-13 00:56:00",
     tagged_at: "2012-09-13 02:00:00",
     authors_locked: true,
-    unjoined_author_ids: [2]
+    unjoined_author_ids: [2],
   },
   {
     board_id: 1,
@@ -60,7 +60,7 @@ Post.create!([
     edited_at: "2012-09-13 14:47:00",
     tagged_at: "2012-09-13 20:32:00",
     authors_locked: true,
-    unjoined_author_ids: [3]
+    unjoined_author_ids: [3],
   },
   {
     board_id: 1,
@@ -77,7 +77,7 @@ Post.create!([
     edited_at: "2012-09-13 17:50:00",
     tagged_at: "2012-09-13 22:06:00",
     authors_locked: true,
-    unjoined_author_ids: [3]
+    unjoined_author_ids: [3],
   },
   {
     board_id: 1,
@@ -93,7 +93,7 @@ Post.create!([
     edited_at: "2012-09-13 22:14:00",
     tagged_at: "2012-09-13 23:20:00",
     authors_locked: true,
-    unjoined_author_ids: [2]
+    unjoined_author_ids: [2],
   },
   {
     board_id: 1,
@@ -110,7 +110,7 @@ Post.create!([
     edited_at: "2012-09-13 20:22:00",
     tagged_at: "2012-09-14 00:10:00",
     authors_locked: true,
-    unjoined_author_ids: [3]
+    unjoined_author_ids: [3],
   },
   {
     board_id: 1,
@@ -126,7 +126,7 @@ Post.create!([
     edited_at: "2012-09-13 21:12:00",
     tagged_at: "2012-09-15 22:24:00",
     authors_locked: true,
-    unjoined_author_ids: [3]
+    unjoined_author_ids: [3],
   },
   {
     board_id: 1,
@@ -143,7 +143,7 @@ Post.create!([
     edited_at: "2012-09-15 19:29:00",
     tagged_at: "2012-09-16 00:32:00",
     authors_locked: true,
-    unjoined_author_ids: [3]
+    unjoined_author_ids: [3],
   },
   {
     board_id: 1,
@@ -160,7 +160,7 @@ Post.create!([
     edited_at: "2012-09-15 21:37:00",
     tagged_at: "2012-09-17 18:09:00",
     authors_locked: true,
-    unjoined_author_ids: [3]
+    unjoined_author_ids: [3],
   },
   {
     board_id: 1,
@@ -176,7 +176,7 @@ Post.create!([
     edited_at: "2012-09-17 15:24:00",
     tagged_at: "2012-09-20 03:14:00",
     authors_locked: true,
-    unjoined_author_ids: [3]
+    unjoined_author_ids: [3],
   },
   {
     board_id: 1,
@@ -193,7 +193,7 @@ Post.create!([
     edited_at: "2012-09-20 13:01:00",
     tagged_at: "2012-09-21 17:46:00",
     authors_locked: true,
-    unjoined_author_ids: [3]
+    unjoined_author_ids: [3],
   },
   {
     board_id: 1,
@@ -209,7 +209,7 @@ Post.create!([
     edited_at: "2012-09-21 15:18:00",
     tagged_at: "2012-09-23 18:01:00",
     authors_locked: true,
-    unjoined_author_ids: [3]
+    unjoined_author_ids: [3],
   },
   {
     board_id: 1,
@@ -225,7 +225,7 @@ Post.create!([
     edited_at: "2012-09-23 15:04:00",
     tagged_at: "2012-09-25 22:34:00",
     authors_locked: true,
-    unjoined_author_ids: [3]
+    unjoined_author_ids: [3],
   },
   {
     board_id: 1,
@@ -242,7 +242,7 @@ Post.create!([
     edited_at: "2012-09-25 20:03:00",
     tagged_at: "2012-09-27 17:34:00",
     authors_locked: true,
-    unjoined_author_ids: [3]
+    unjoined_author_ids: [3],
   },
   {
     board_id: 1,
@@ -259,7 +259,7 @@ Post.create!([
     edited_at: "2012-09-27 14:40:00",
     tagged_at: "2012-09-28 18:09:00",
     authors_locked: true,
-    unjoined_author_ids: [3]
+    unjoined_author_ids: [3],
   },
   {
     board_id: 1,
@@ -276,7 +276,7 @@ Post.create!([
     edited_at: "2012-09-28 15:19:00",
     tagged_at: "2012-09-28 20:46:00",
     authors_locked: true,
-    unjoined_author_ids: [3]
+    unjoined_author_ids: [3],
   },
   {
     board_id: 1,
@@ -293,7 +293,7 @@ Post.create!([
     edited_at: "2012-09-28 17:52:00",
     tagged_at: "2012-09-29 00:19:00",
     authors_locked: true,
-    unjoined_author_ids: [3]
+    unjoined_author_ids: [3],
   },
   {
     board_id: 1,
@@ -310,7 +310,7 @@ Post.create!([
     edited_at: "2012-09-28 21:29:00",
     tagged_at: "2012-09-30 17:24:00",
     authors_locked: true,
-    unjoined_author_ids: [3]
+    unjoined_author_ids: [3],
   },
   {
     board_id: 1,
@@ -327,7 +327,7 @@ Post.create!([
     edited_at: "2012-09-30 14:38:00",
     tagged_at: "2012-10-01 00:17:00",
     authors_locked: true,
-    unjoined_author_ids: [3]
+    unjoined_author_ids: [3],
   },
   {
     board_id: 1,
@@ -343,7 +343,7 @@ Post.create!([
     edited_at: "2012-09-30 21:27:00",
     tagged_at: "2012-10-01 19:40:00",
     authors_locked: true,
-    unjoined_author_ids: [3]
+    unjoined_author_ids: [3],
   },
   {
     board_id: 1,
@@ -360,7 +360,7 @@ Post.create!([
     edited_at: "2012-10-01 17:07:00",
     tagged_at: "2012-10-01 22:58:00",
     authors_locked: true,
-    unjoined_author_ids: [3]
+    unjoined_author_ids: [3],
   },
   {
     board_id: 1,
@@ -377,7 +377,7 @@ Post.create!([
     edited_at: "2012-10-01 20:08:00",
     tagged_at: "2012-10-02 02:00:00",
     authors_locked: true,
-    unjoined_author_ids: [3]
+    unjoined_author_ids: [3],
   },
   {
     board_id: 1,
@@ -394,7 +394,7 @@ Post.create!([
     edited_at: "2012-10-01 23:09:00",
     tagged_at: "2012-10-03 22:16:00",
     authors_locked: true,
-    unjoined_author_ids: [3]
+    unjoined_author_ids: [3],
   },
   {
     board_id: 1,
@@ -411,7 +411,7 @@ Post.create!([
     edited_at: "2012-10-03 19:37:00",
     tagged_at: "2012-10-04 00:14:00",
     authors_locked: true,
-    unjoined_author_ids: [3]
+    unjoined_author_ids: [3],
   },
   {
     board_id: 1,
@@ -428,7 +428,7 @@ Post.create!([
     edited_at: "2012-10-03 22:36:00",
     tagged_at: "2012-10-08 09:49:00",
     authors_locked: true,
-    unjoined_author_ids: [3]
+    unjoined_author_ids: [3],
   },
   {
     board_id: 1,
@@ -444,7 +444,7 @@ Post.create!([
     edited_at: "2012-10-08 15:31:00",
     tagged_at: "2012-10-09 15:24:00",
     authors_locked: true,
-    unjoined_author_ids: [3]
+    unjoined_author_ids: [3],
   },
   {
     board_id: 1,
@@ -460,7 +460,7 @@ Post.create!([
     edited_at: "2012-10-09 12:27:00",
     tagged_at: "2012-10-11 00:27:00",
     authors_locked: true,
-    unjoined_author_ids: [3]
+    unjoined_author_ids: [3],
   },
   {
     board_id: 1,
@@ -477,7 +477,7 @@ Post.create!([
     edited_at: "2012-10-10 21:38:00",
     tagged_at: "2012-10-11 18:49:00",
     authors_locked: true,
-    unjoined_author_ids: [3]
+    unjoined_author_ids: [3],
   },
   {
     board_id: 1,
@@ -494,7 +494,7 @@ Post.create!([
     edited_at: "2012-10-11 17:19:00",
     tagged_at: "2012-10-12 19:02:00",
     authors_locked: true,
-    unjoined_author_ids: [3]
+    unjoined_author_ids: [3],
   },
   {
     board_id: 1,
@@ -511,7 +511,7 @@ Post.create!([
     edited_at: "2012-10-12 16:02:00",
     tagged_at: "2012-10-12 21:18:00",
     authors_locked: true,
-    unjoined_author_ids: [3]
+    unjoined_author_ids: [3],
   },
   {
     board_id: 1,
@@ -526,7 +526,7 @@ Post.create!([
     edited_at: "2019-06-22 18:40:31",
     tagged_at: "2015-07-23 00:59:00",
     authors_locked: true,
-    unjoined_author_ids: [3]
+    unjoined_author_ids: [3],
   },
   {
     board_id: 5,
@@ -542,7 +542,7 @@ Post.create!([
     edited_at: "2018-08-18 21:19:27",
     tagged_at: "2018-08-18 21:22:43",
     authors_locked: true,
-    unjoined_author_ids: [4]
+    unjoined_author_ids: [4],
   },
 ])
 

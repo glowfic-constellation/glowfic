@@ -32,7 +32,7 @@ class IndexSectionsController < ApplicationController
     rescue ActiveRecord::RecordInvalid
       flash.now[:error] = {
         message: "Index section could not be created.",
-        array: @section.errors.full_messages
+        array: @section.errors.full_messages,
       }
       @page_title = 'New Index Section'
       render :new
@@ -56,7 +56,7 @@ class IndexSectionsController < ApplicationController
     rescue ActiveRecord::RecordInvalid
       flash.now[:error] = {
         message: "Index section could not be saved because of the following problems:",
-        array: @section.errors.full_messages
+        array: @section.errors.full_messages,
       }
       @page_title = "Edit Index Section: #{@section.name}"
       render :edit
