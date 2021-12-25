@@ -189,22 +189,26 @@ RSpec::Matchers.define :be_the_same_time_as do |expected|
   end
 
   failure_message do |actual|
-    "expected #{actual} to be the same time as #{expected}\n" +
-    "compared: #{actual.in_time_zone.to_s(:iso8601)}\n" +
-    "    with: #{expected.in_time_zone.to_s(:iso8601)}"
+    <<~FAILURE
+      expected #{actual} to be the same time as #{expected}
+      compared: #{actual.in_time_zone.to_s(:iso8601)}
+          with: #{expected.in_time_zone.to_s(:iso8601)}
+    FAILURE
   end
 
   failure_message_when_negated do |actual|
-    "expected #{actual} not to be the same time as #{expected}\n" +
-    "compared: #{actual.in_time_zone.to_s(:iso8601)}\n" +
-    "    with: #{expected.in_time_zone.to_s(:iso8601)}"
+    <<~FAILURE
+      expected #{actual} not to be the same time as #{expected}
+      compared: #{actual.in_time_zone.to_s(:iso8601)}
+          with: #{expected.in_time_zone.to_s(:iso8601)}
+    FAILURE
   end
 end
 
 RSpec::Matchers.define_negated_matcher :not_change, :change
 
 # Monkey patches the controller response objects to return JSON
-module ActionDispatch
+module ActionDispatch # rubocop:disable Style/ClassAndModuleChildren
   class TestResponse
     def json
       @json ||= JSON.parse(self.body)
