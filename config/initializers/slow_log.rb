@@ -18,7 +18,7 @@ ActiveSupport::Notifications.subscribe("sql.active_record") do |*args|
   # convert activerecord binds into more readable parameters
   filter_keys = ["salt_uuid", "crypted", "email"]
   event.payload[:binds] = event.payload[:binds].map { |x| [x.name, x.value] }
-  filter_values = event.payload[:binds].select { |x| filter_keys.include? x.first.to_s }.map { |x| x.last }
+  filter_values = event.payload[:binds].select { |x| filter_keys.include? x.first.to_s }.map(&:last)
 
   event.payload[:binds] = event.payload[:binds].map do |x|
     [x.first, filter_values.include?(x.last) ? 'EXCLUDED' : x.last]
