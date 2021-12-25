@@ -34,7 +34,7 @@ module Glowfic
     )
 
     def self.written(text)
-      Sanitize.fragment(text, WRITTEN_CONF).html_safe
+      Sanitize.fragment(text, WRITTEN_CONF).html_safe # rubocop:disable Rails/OutputSafety
     end
 
     DESCRIPTION_CONF = Sanitize::Config.merge(
@@ -44,11 +44,11 @@ module Glowfic
     )
 
     def self.description(text)
-      Sanitize.fragment(text, DESCRIPTION_CONF).html_safe
+      Sanitize.fragment(text, DESCRIPTION_CONF).html_safe # rubocop:disable Rails/OutputSafety
     end
 
     def self.full(text)
-      Sanitize.fragment(text).html_safe
+      Sanitize.fragment(text).html_safe # rubocop:disable Rails/OutputSafety
     end
   end
 

@@ -3,6 +3,8 @@ AllCops:
   TargetRailsVersion: 5.1
   DisabledByDefault: false
   Exclude:
+    - 'config/initializers/audited.rb'
+    - 'config/initializers/will_paginate.rb'
     - 'db/migrate/**.rb'
     - 'db/schema.rb'
     - 'backstop/*'
@@ -32,6 +34,9 @@ Layout/ArgumentAlignment:
 Layout/CaseIndentation:
   EnforcedStyle: 'end'
   IndentOneStep: true
+
+Layout/CommentIndentation:
+  Exclude: ['spec/spec_helper.rb']
 
 Layout/EmptyLineAfterMagicComment:
   Enabled: false
@@ -74,6 +79,8 @@ Layout/LineLength:
   Max: 150
   Exclude:
     - 'app/controllers/api/**/*'
+    - 'db/seeds/post.rb'
+    - 'db/seeds/reply.rb'
 
 Layout/MultilineMethodCallBraceLayout:
   EnforcedStyle: symmetrical
@@ -358,10 +365,11 @@ Rails/MatchRoute: # new in 2.7
 Rails/NegateInclude:
   Enabled: true
 
-# post_scraper.rb is run manually in the command line so stdout is fine
 Rails/Output:
   Exclude:
-    - 'app/services/post_scraper.rb'
+    - 'app/services/post_scraper.rb' # post_scraper.rb is run manually in the command line so stdout is fine
+    - 'db/seeds.rb'
+    - 'db/seeds/**' # seed files are run from the command line
 
 Rails/Pluck:
   Enabled: true
@@ -540,6 +548,9 @@ Style/ExponentialNotation:
   Enabled: false
   # disabled because we literally never use exponents
 
+Style/FormatStringToken:
+  EnforcedStyle: 'template'
+
 Style/FrozenStringLiteralComment:
   Enabled: false
 
@@ -575,6 +586,9 @@ Style/KeywordParametersOrder:
 
 Style/Lambda:
   Enabled: false
+
+Style/MixinUsage:
+  Exclude: ['bin/*']
 
 Style/MultilineInPatternThen: # new in 1.16
   Enabled: true
