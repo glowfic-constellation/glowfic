@@ -149,7 +149,7 @@ class CharactersController < ApplicationController
 
   def facecasts
     @page_title = 'Facecasts'
-    chars = Character.where(users: {deleted: false}).where.not(pb: nil)
+    chars = Character.where(users: { deleted: false }).where.not(pb: nil)
       .joins(:user)
       .left_outer_joins(:template)
       .pluck('characters.id, characters.name, characters.pb, users.id, users.username, templates.id, templates.name')
@@ -168,11 +168,11 @@ class CharactersController < ApplicationController
     @pbs.uniq!
 
     if params[:sort] == "name"
-      @pbs.sort_by! {|x| [x[:item_name].downcase, x[:pb].downcase, x[:username].downcase]}
+      @pbs.sort_by! { |x| [x[:item_name].downcase, x[:pb].downcase, x[:username].downcase] }
     elsif params[:sort] == "writer"
-      @pbs.sort_by! {|x| [x[:username].downcase, x[:pb].downcase, x[:item_name].downcase]}
+      @pbs.sort_by! { |x| [x[:username].downcase, x[:pb].downcase, x[:item_name].downcase] }
     else
-      @pbs.sort_by! {|x| [x[:pb].downcase, x[:username].downcase, x[:item_name].downcase]}
+      @pbs.sort_by! { |x| [x[:pb].downcase, x[:username].downcase, x[:item_name].downcase] }
     end
   end
 
@@ -188,13 +188,13 @@ class CharactersController < ApplicationController
 
     icons = @alts.map do |alt|
       if alt.default_icon.present?
-        [alt.id, {url: alt.default_icon.url, keyword: alt.default_icon.keyword, aliases: alt.aliases.as_json}]
+        [alt.id, { url: alt.default_icon.url, keyword: alt.default_icon.keyword, aliases: alt.aliases.as_json }]
       else
-        [alt.id, {url: view_context.image_path('icons/no-icon.png'), keyword: 'No Icon', aliases: alt.aliases.as_json}]
+        [alt.id, { url: view_context.image_path('icons/no-icon.png'), keyword: 'No Icon', aliases: alt.aliases.as_json }]
       end
     end
     gon.gallery = icons.to_h
-    gon.gallery[''] = {url: view_context.image_path('icons/no-icon.png'), keyword: 'No Character'}
+    gon.gallery[''] = { url: view_context.image_path('icons/no-icon.png'), keyword: 'No Character' }
 
     @alt_dropdown = @alts.map { |alt| [alt.selector_name(include_settings: true), alt.id] }
     @alt = @alts.first
@@ -235,8 +235,8 @@ class CharactersController < ApplicationController
     end
 
     success_msg = ''
-    wheres = {character_id: @character.id}
-    updates = {character_id: new_char.try(:id), character_alias_id: new_alias_id}
+    wheres = { character_id: @character.id }
+    updates = { character_id: new_char.try(:id), character_alias_id: new_alias_id }
 
     if params[:post_ids].present?
       wheres[:post_id] = params[:post_ids]
@@ -338,7 +338,7 @@ class CharactersController < ApplicationController
     @aliases = @character.aliases.ordered if @character
     gon.mod_editing = (user != current_user)
     groups = @character.try(:gallery_groups) || []
-    gon.gallery_groups = groups.map {|group| group.as_json(include: [:gallery_ids], user_id: user.id) }
+    gon.gallery_groups = groups.map { |group| group.as_json(include: [:gallery_ids], user_id: user.id) }
   end
 
   def build_template

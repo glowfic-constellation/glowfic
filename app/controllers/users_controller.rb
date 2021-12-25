@@ -134,7 +134,7 @@ class UsersController < ApplicationController
       @total = 0
     else
       @total[0] = @total[0].split.size
-      @total = @total.inject{|r, e| r + e.split.size}.to_i
+      @total = @total.inject { |r, e| r + e.split.size }.to_i
     end
   end
 

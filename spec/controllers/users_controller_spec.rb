@@ -67,7 +67,7 @@ RSpec.describe UsersController do
     end
 
     it "requires beta secret" do
-      post :create, params: {tos: true}
+      post :create, params: { tos: true }
       expect(response).to render_template(:new)
       expect(flash[:error]).to eq("This is in beta. Please ask someone in the community for the (not very) secret beta code.")
       expect(assigns(:user)).not_to be_valid
@@ -102,7 +102,7 @@ RSpec.describe UsersController do
 
       expect {
         post :create, params: { secret: "ALLHAILTHECOIN", tos: true }.merge(user: user)
-      }.to change{User.count}.by(1)
+      }.to change { User.count }.by(1)
       expect(response).to redirect_to(root_url)
       expect(flash[:success]).to eq("User created! You have been logged in.")
 
@@ -118,7 +118,7 @@ RSpec.describe UsersController do
       user = build(:user).attributes.with_indifferent_access.merge(password: pass, password_confirmation: pass)
       expect {
         post :create, params: { secret: 'ALLHAILTHECOIN', tos: true }.merge(user: user)
-      }.to change{User.count}.by(1)
+      }.to change { User.count }.by(1)
       expect(response).to redirect_to(root_url)
       expect(flash[:success]).to eq("User created! You have been logged in.")
       expect(assigns(:current_user)).not_to be_nil
@@ -264,7 +264,7 @@ RSpec.describe UsersController do
     it "requires valid params" do
       user = create(:user)
       login_as(user)
-      put :update, params: { id: user.id, user: {moiety: 'A'} }
+      put :update, params: { id: user.id, user: { moiety: 'A' } }
       expect(response).to render_template(:edit)
       expect(flash[:error][:message]).to eq('There was a problem updating your account.')
     end
@@ -273,7 +273,7 @@ RSpec.describe UsersController do
       user1 = create(:user)
       user2 = create(:user)
       login_as(user1)
-      put :update, params: { id: user2.id, user: {email: 'bademail@example.com'} }
+      put :update, params: { id: user2.id, user: { email: 'bademail@example.com' } }
       expect(response).to redirect_to(continuities_url)
       expect(flash[:error]).to eq('You do not have permission to edit that user.')
       expect(user2.reload.email).not_to eq('bademail@example.com')
@@ -313,7 +313,7 @@ RSpec.describe UsersController do
       user = create(:user, username: 'user123', password: pass)
       expect(user.authenticate(pass)).to eq(true)
       login_as(user)
-      put :update, params: { id: user.id, user: {username: 'user124'} }
+      put :update, params: { id: user.id, user: { username: 'user124' } }
       expect(response).to redirect_to(edit_user_url(user))
       expect(flash[:success]).to eq('Changes saved successfully.')
 
@@ -371,7 +371,7 @@ RSpec.describe UsersController do
       put :password, params: {
         id: user.id,
         old_password: fakepass,
-        user: {password: newpass, password_confirmation: newpass},
+        user: { password: newpass, password_confirmation: newpass },
       }
 
       expect(response).to render_template(:edit)
@@ -391,7 +391,7 @@ RSpec.describe UsersController do
       put :password, params: {
         id: user.id,
         old_password: pass,
-        user: {password: newpass, password_confirmation: newpass},
+        user: { password: newpass, password_confirmation: newpass },
       }
 
       expect(response).to render_template(:edit)
@@ -409,7 +409,7 @@ RSpec.describe UsersController do
       put :password, params: {
         id: user.id,
         old_password: pass,
-        user: {password: newpass, password_confirmation: 'wrongconfirmation'},
+        user: { password: newpass, password_confirmation: 'wrongconfirmation' },
       }
 
       expect(response).to render_template(:edit)
@@ -428,7 +428,7 @@ RSpec.describe UsersController do
       put :password, params: {
         id: user.id,
         old_password: pass,
-        user: {password: newpass, password_confirmation: newpass},
+        user: { password: newpass, password_confirmation: newpass },
       }
 
       expect(response).to redirect_to(edit_user_url(user))

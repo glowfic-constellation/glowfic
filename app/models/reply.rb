@@ -22,7 +22,7 @@ class Reply < ApplicationRecord
   pg_search_scope(
     :search,
     against: %i(content),
-    using: { tsearch: { dictionary: "english", highlight: {MaxFragments: 10} } },
+    using: { tsearch: { dictionary: "english", highlight: { MaxFragments: 10 } } },
   )
 
   scope :visible_to, ->(user) { where(post_id: Post.visible_to(user).select(:id)) }

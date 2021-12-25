@@ -8,7 +8,7 @@ RSpec.describe FlatPost do
       flatpost = FlatPost.create(post: post)
       expect(flatpost.persisted?).to be(false)
       expect(flatpost).not_to be_valid
-      expect(flatpost.errors.messages).to eq({post: ['has already been taken']})
+      expect(flatpost.errors.messages).to eq({ post: ['has already been taken'] })
     end
 
     it "can have multiple on different posts" do

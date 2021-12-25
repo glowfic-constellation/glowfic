@@ -78,13 +78,17 @@ Layout/LineLength:
     - 'app/controllers/api/**/*'
 
 Layout/MultilineMethodCallBraceLayout:
-  Enabled: false
+  EnforcedStyle: symmetrical
+  Exclude:
+    - 'spec/**/*'
 
 Layout/MultilineMethodCallIndentation:
   EnforcedStyle: 'indented'
 
 Layout/MultilineOperationIndentation:
-  Enabled: false
+  EnforcedStyle: aligned
+  Exclude:
+    - 'app/helpers/writable_helper.rb'
 
 Layout/ParameterAlignment:
   EnforcedStyle: 'with_fixed_indentation'
@@ -92,27 +96,8 @@ Layout/ParameterAlignment:
 Layout/SpaceAroundEqualsInParameterDefault:
   EnforcedStyle: 'no_space'
 
-Layout/SpaceAroundOperators:
-  Enabled: false
-
-Layout/SpaceBeforeBlockBraces:
-  Enabled: false
-
 Layout/SpaceBeforeBrackets: # (new in 1.7)
-  Enabled: false
-  # problems with false positives
-
-Layout/SpaceInLambdaLiteral:
-  Enabled: false
-
-Layout/SpaceInsideBlockBraces:
-  Enabled: false
-
-Layout/SpaceInsideHashLiteralBraces:
-  Enabled: false
-
-Layout/SpaceInsideRangeLiteral:
-  Enabled: false
+  Enabled: true
 
 #################### Lint ################################
 

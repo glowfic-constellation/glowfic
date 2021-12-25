@@ -19,7 +19,7 @@ class WritableController < ApplicationController
       threadchars = faked.new('Thread characters', nil, uniq_chars)
       @templates.insert(0, threadchars)
     end
-    @templates.reject! {|template| template.plucked_characters.empty? }
+    @templates.reject! { |template| template.plucked_characters.empty? }
 
     gon.editor_user = user.gon_attributes
   end
@@ -28,7 +28,7 @@ class WritableController < ApplicationController
     per = per_page
     cur_page ||= page
     @replies = @post.replies
-    @paginate_params = {controller: 'posts', action: 'show', id: @post.id}
+    @paginate_params = { controller: 'posts', action: 'show', id: @post.id }
 
     if params[:at_id].present?
       reply = if params[:at_id] == 'unread' && logged_in?

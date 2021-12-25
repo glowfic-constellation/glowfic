@@ -1,7 +1,7 @@
 module PostHelper
   def author_links(post, linked: true, colored: false)
     total = post.authors.size
-    authors = post.authors.reject(&:deleted?).sort_by{|a| a.username.downcase}
+    authors = post.authors.reject(&:deleted?).sort_by { |a| a.username.downcase }
     num_deleted = total - authors.size
     deleted = 'deleted user'.pluralize(num_deleted)
     return "(#{deleted})" if authors.empty?
@@ -16,7 +16,7 @@ module PostHelper
     first_author = post.user.deleted? ? authors.first : post.user
     first_link = linked ? user_link(first_author, colored: colored) : first_author.username
     hovertext = safe_join((authors - [first_author]).map(&:username), ', ')
-    others = linked ? link_to("#{total-1} others", stats_post_path(post), title: hovertext) : "#{total-1} others"
+    others = linked ? link_to("#{total - 1} others", stats_post_path(post), title: hovertext) : "#{total - 1} others"
     safe_join([first_link, others], ' and ')
   end
 

@@ -14,7 +14,7 @@ class Api::V1::PostsController < Api::ApiController
 
     posts = paginate queryset, per_page: 25
     posts = posts.visible_to(current_user)
-    render json: {results: posts.as_json(min: true)}
+    render json: { results: posts.as_json(min: true) }
   end
 
   api :GET, '/posts/:id', 'Load a single post as a JSON resource'
@@ -40,12 +40,12 @@ class Api::V1::PostsController < Api::ApiController
     end
 
     unless author.update(private_note: params[:private_note])
-      error = {message: 'Post could not be updated.'}
-      render json: {errors: [error]}, status: :unprocessable_entity
+      error = { message: 'Post could not be updated.' }
+      render json: { errors: [error] }, status: :unprocessable_entity
       return
     end
 
-    render json: {private_note: helpers.sanitize_written_content(params[:private_note])}
+    render json: { private_note: helpers.sanitize_written_content(params[:private_note]) }
   end
 
   api :POST, '/posts/reorder', 'Update the order of posts. This is an unstable feature, and may be moved or renamed; it should not be trusted.'
@@ -62,14 +62,14 @@ class Api::V1::PostsController < Api::ApiController
     posts_count = posts.count
     unless posts_count == post_ids.count
       missing_posts = post_ids - posts.pluck(:id)
-      error = {message: "Some posts could not be found: #{missing_posts * ', '}"}
-      render json: {errors: [error]}, status: :not_found and return
+      error = { message: "Some posts could not be found: #{missing_posts * ', '}" }
+      render json: { errors: [error] }, status: :not_found and return
     end
 
     boards = Board.where(id: posts.select(:board_id).distinct.pluck(:board_id))
     unless boards.count == 1
-      error = {message: 'Posts must be from one continuity'}
-      render json: {errors: [error]}, status: :unprocessable_entity and return
+      error = { message: 'Posts must be from one continuity' }
+      render json: { errors: [error] }, status: :unprocessable_entity and return
     end
 
     board = boards.first
@@ -77,13 +77,13 @@ class Api::V1::PostsController < Api::ApiController
 
     post_section_ids = posts.select(:section_id).distinct.pluck(:section_id)
     unless post_section_ids == [section_id] &&
-      (section_id.nil? || BoardSection.where(id: section_id, board_id: board.id).exists?)
-      error = {message: 'Posts must be from one specified section in the continuity, or no section'}
-      render json: {errors: [error]}, status: :unprocessable_entity and return
+           (section_id.nil? || BoardSection.where(id: section_id, board_id: board.id).exists?)
+      error = { message: 'Posts must be from one specified section in the continuity, or no section' }
+      render json: { errors: [error] }, status: :unprocessable_entity and return
     end
 
     Post.transaction do
-      posts = posts.sort_by {|post| post_ids.index(post.id) }
+      posts = posts.sort_by { |post| post_ids.index(post.id) }
       posts.each_with_index do |post, index|
         next if post.section_order == index
         post.update(section_order: index)
@@ -98,7 +98,7 @@ class Api::V1::PostsController < Api::ApiController
     end
 
     posts = Post.where(board_id: board.id, section_id: section_id)
-    render json: {post_ids: posts.ordered_in_section.pluck(:id)}
+    render json: { post_ids: posts.ordered_in_section.pluck(:id) }
   end
 
   private

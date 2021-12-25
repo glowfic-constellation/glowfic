@@ -8,7 +8,7 @@ class ReportsController < ApplicationController
   REPORT_TYPES = ['daily', 'monthly']
 
   def show
-    @report_type = REPORT_TYPES.detect {|x| x == params[:id] }
+    @report_type = REPORT_TYPES.detect { |x| x == params[:id] }
     unless @report_type
       flash[:error] = "Could not identify the type of report."
       redirect_to reports_path
@@ -35,7 +35,7 @@ class ReportsController < ApplicationController
       first_for_day = replies_on_day.order(post_id: :asc, created_at: :asc)
       first_for_day = first_for_day.pluck(Arel.sql('DISTINCT ON (post_id) replies.post_id, replies.id, replies.created_at'))
       first_for_day = first_for_day.to_h { |pluck| [pluck[0], { id: pluck[1], klass: Reply, created_at: pluck[2] }] }
-      @link_targets = @posts.to_h{ |post| [post.id, linked_for(post, first_for_day[post.id])] }
+      @link_targets = @posts.to_h { |post| [post.id, linked_for(post, first_for_day[post.id])] }
     end
   end
 
@@ -72,7 +72,7 @@ class ReportsController < ApplicationController
 
   def linked_for(post, reply)
     if post.created_at.to_date == @day.to_date || reply.nil?
-      {id: post.id, klass: Post, created_at: post.created_at}
+      { id: post.id, klass: Post, created_at: post.created_at }
     else
       reply
     end
@@ -85,7 +85,7 @@ class ReportsController < ApplicationController
       when 'continuity'
         Arel.sql('LOWER(max(boards.name)), tagged_at desc')
       else
-        {first_updated_at: :desc}
+        { first_updated_at: :desc }
     end
   end
   helper_method :sort

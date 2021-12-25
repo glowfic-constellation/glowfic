@@ -36,7 +36,7 @@ RSpec.describe TemplatesController do
     it "works" do
       char = create(:character)
       login_as(char.user)
-      post :create, params: { template: {name: 'testtest', description: 'test desc', character_ids: [char.id]} }
+      post :create, params: { template: { name: 'testtest', description: 'test desc', character_ids: [char.id] } }
       created = Template.last
       expect(response).to redirect_to(template_url(created))
       expect(flash[:success]).to eq("Template saved successfully.")
@@ -159,7 +159,7 @@ RSpec.describe TemplatesController do
     it "requires valid params" do
       template = create(:template)
       login_as(template.user)
-      put :update, params: { id: template.id, template: {name: ''} }
+      put :update, params: { id: template.id, template: { name: '' } }
       expect(assigns(:template)).not_to be_valid
       expect(response).to render_template(:edit)
       expect(flash[:error][:message]).to eq("Your template could not be saved because of the following problems:")
@@ -228,7 +228,7 @@ RSpec.describe TemplatesController do
       expect_any_instance_of(Template).to receive(:destroy!).and_raise(ActiveRecord::RecordNotDestroyed, 'fake error')
       delete :destroy, params: { id: template.id }
       expect(response).to redirect_to(template_url(template))
-      expect(flash[:error]).to eq({message: "Template could not be deleted.", array: []})
+      expect(flash[:error]).to eq({ message: "Template could not be deleted.", array: [] })
       expect(character.reload.template).to eq(template)
     end
   end

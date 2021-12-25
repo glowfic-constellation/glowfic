@@ -33,7 +33,7 @@ Rails.application.routes.draw do
 
   # Characters
   resources :templates, except: :index do
-    collection { get :search}
+    collection { get :search }
   end
   resources :characters do
     resources :aliases, only: [:new, :create, :destroy]
@@ -64,7 +64,7 @@ Rails.application.routes.draw do
       get :add
       post :icon
     end
-    collection { get :search}
+    collection { get :search }
   end
 
   # Forums

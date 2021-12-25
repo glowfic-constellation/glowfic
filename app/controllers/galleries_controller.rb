@@ -167,7 +167,7 @@ class GalleriesController < UploadingController
         @icons[index]['url'] = @icons[index]['s3_key'] = '' if icon.errors.messages[:url]&.include?('is invalid')
         flash.now[:error] ||= {}
         flash.now[:error][:array] ||= []
-        flash.now[:error][:array] += icon.errors.full_messages.map{|m| "Icon "+(index+1).to_s+": "+m.downcase}
+        flash.now[:error][:array] += icon.errors.full_messages.map { |m| "Icon #{index + 1}: #{m.downcase}" }
         failed = true and next
       end
       icons << icon

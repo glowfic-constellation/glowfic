@@ -55,7 +55,7 @@ RSpec.describe Presentable do
   end
 
   it "should fall back to default as_json if presenter does not exist" do
-    expect(ExampleWithoutNoJson.new(test: 'data').as_json).to eq({"test" => 'data'})
+    expect(ExampleWithoutNoJson.new(test: 'data').as_json).to eq({ "test" => 'data' })
   end
 
   it "should use Presenter if it exists" do

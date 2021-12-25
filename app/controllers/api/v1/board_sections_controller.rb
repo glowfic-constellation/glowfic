@@ -18,21 +18,21 @@ class Api::V1::BoardSectionsController < Api::ApiController
     sections_count = sections.count
     unless sections_count == section_ids.count
       missing_sections = section_ids - sections.pluck(:id)
-      error = {message: "Some sections could not be found: #{missing_sections * ', '}"}
-      render json: {errors: [error]}, status: :not_found and return
+      error = { message: "Some sections could not be found: #{missing_sections * ', '}" }
+      render json: { errors: [error] }, status: :not_found and return
     end
 
     boards = Board.where(id: sections.select(:board_id).distinct.pluck(:board_id))
     unless boards.count == 1
-      error = {message: 'Sections must be from one continuity'}
-      render json: {errors: [error]}, status: :unprocessable_entity and return
+      error = { message: 'Sections must be from one continuity' }
+      render json: { errors: [error] }, status: :unprocessable_entity and return
     end
 
     board = boards.first
     access_denied and return unless board.editable_by?(current_user)
 
     BoardSection.transaction do
-      sections = sections.sort_by {|section| section_ids.index(section.id) }
+      sections = sections.sort_by { |section| section_ids.index(section.id) }
       sections.each_with_index do |section, index|
         next if section.section_order == index
         section.update(section_order: index)
@@ -46,6 +46,6 @@ class Api::V1::BoardSectionsController < Api::ApiController
       end
     end
 
-    render json: {section_ids: BoardSection.where(board_id: board.id).ordered.pluck(:id)}
+    render json: { section_ids: BoardSection.where(board_id: board.id).ordered.pluck(:id) }
   end
 end

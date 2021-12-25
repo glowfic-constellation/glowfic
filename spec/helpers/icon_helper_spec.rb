@@ -28,7 +28,7 @@ RSpec.describe IconHelper, type: :helper do
       character.galleries << create(:gallery, user: user, icons: [icons.last])
       icons = Icon.where(id: icons.map(&:id))
       post.character = character
-      html = select_tag :icon_dropdown, options_for_select(icons.ordered.map{|i| [i.keyword, i.id]}, nil), prompt: "No Icon"
+      html = select_tag :icon_dropdown, options_for_select(icons.ordered.map { |i| [i.keyword, i.id] }, nil), prompt: "No Icon"
       expect(helper.dropdown_icons(post, character.galleries)).to eq(html)
     end
 
@@ -38,7 +38,7 @@ RSpec.describe IconHelper, type: :helper do
       post.character = character
       post.icon = icons[0]
       icons = Icon.where(id: icons.map(&:id)).ordered
-      html = select_tag :icon_dropdown, options_for_select(icons.map{|i| [i.keyword, i.id]}, post.icon_id), prompt: "No Icon"
+      html = select_tag :icon_dropdown, options_for_select(icons.map { |i| [i.keyword, i.id] }, post.icon_id), prompt: "No Icon"
       expect(helper.dropdown_icons(post)).to eq(html)
     end
 

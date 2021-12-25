@@ -57,7 +57,7 @@ RSpec.feature "Creating a new template", :type => :feature do
     user = login
     other_template = create(:template, user: user)
     create(:character, user: user, template: other_template) # other_template_character
-    Array.new(5) { |i| create(:character, user: user, name: "Character#{i+1}") } # characters
+    Array.new(5) { |i| create(:character, user: user, name: "Character#{i + 1}") } # characters
 
     # create invalid template with characters and description
     visit new_template_path

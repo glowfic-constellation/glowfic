@@ -302,7 +302,7 @@ RSpec.describe Api::V1::CharactersController do
       icon = create(:icon)
       character = create(:character, user: icon.user, default_icon_id: icon.id)
       api_login_as(character.user)
-      put :update, params: { id: character.id, character: {default_icon_id: -1} }
+      put :update, params: { id: character.id, character: { default_icon_id: -1 } }
       expect(response).to have_http_status(422)
       expect(response.json['errors'][0]['message']).to eq("Default icon could not be found")
       expect(character.reload.default_icon_id).to eq(icon.id)
@@ -312,7 +312,7 @@ RSpec.describe Api::V1::CharactersController do
       icon = create(:icon)
       character = create(:character, user: icon.user, default_icon_id: icon.id)
       api_login_as(character.user)
-      put :update, params: { id: character.id, character: {default_icon_id: create(:icon).id} }
+      put :update, params: { id: character.id, character: { default_icon_id: create(:icon).id } }
       expect(response).to have_http_status(422)
       expect(response.json['errors'][0]['message']).to eq("Default icon must be yours")
       expect(character.reload.default_icon_id).to eq(icon.id)
@@ -322,7 +322,7 @@ RSpec.describe Api::V1::CharactersController do
       icon = create(:icon)
       character = create(:character, user: icon.user, default_icon_id: icon.id)
       api_login_as(character.user)
-      put :update, params: { id: character.id, character: {default_icon_id: ''} }
+      put :update, params: { id: character.id, character: { default_icon_id: '' } }
       expect(response.status).to eq(200)
       expect(response.json['name']).to eq(character.name)
       expect(character.reload.default_icon_id).to be_nil
@@ -334,7 +334,7 @@ RSpec.describe Api::V1::CharactersController do
       new_icon = create(:icon, user: icon.user)
       api_login_as(character.user)
 
-      put :update, params: { id: character.id, character: {default_icon_id: new_icon.id} }
+      put :update, params: { id: character.id, character: { default_icon_id: new_icon.id } }
 
       expect(response.status).to eq(200)
       expect(response.json['name']).to eq(character.name)
@@ -347,7 +347,7 @@ RSpec.describe Api::V1::CharactersController do
       new_icon = create(:icon, user: icon.user)
       api_login_as(character.user)
 
-      put :update, params: { id: character.id, character: {default_icon_id: new_icon.id, name: '', user_id: nil} }
+      put :update, params: { id: character.id, character: { default_icon_id: new_icon.id, name: '', user_id: nil } }
 
       expect(response.status).to eq(422)
       expect(response.json['errors'][0]['message']).to eq("Name can't be blank")
@@ -437,7 +437,7 @@ RSpec.describe Api::V1::CharactersController do
       api_login_as(character.user)
       post :reorder, params: { ordered_characters_gallery_ids: section_ids }
       expect(response).to have_http_status(200)
-      expect(response.json).to eq({'characters_gallery_ids' => section_ids})
+      expect(response.json).to eq({ 'characters_gallery_ids' => section_ids })
       expect(char_gal1.reload.section_order).to eq(1)
       expect(char_gal2.reload.section_order).to eq(3)
       expect(char_gal3.reload.section_order).to eq(0)
@@ -465,7 +465,7 @@ RSpec.describe Api::V1::CharactersController do
       api_login_as(character.user)
       post :reorder, params: { ordered_characters_gallery_ids: section_ids }
       expect(response).to have_http_status(200)
-      expect(response.json).to eq({'characters_gallery_ids' => [char_gal3.id, char_gal1.id, char_gal2.id, char_gal4.id]})
+      expect(response.json).to eq({ 'characters_gallery_ids' => [char_gal3.id, char_gal1.id, char_gal2.id, char_gal4.id] })
       expect(char_gal1.reload.section_order).to eq(1)
       expect(char_gal2.reload.section_order).to eq(2)
       expect(char_gal3.reload.section_order).to eq(0)

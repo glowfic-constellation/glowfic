@@ -18,7 +18,7 @@ module IconHelper
       klass += ' ' + supplied_class
     end
 
-    image_tag url, {alt: keyword, title: keyword, class: klass}.merge(**args)
+    image_tag url, { alt: keyword, title: keyword, class: klass }.merge(**args)
   end
 
   def no_icon_tag(**args)
@@ -57,6 +57,6 @@ module IconHelper
     end
 
     return '' unless icons.present?
-    select_tag :icon_dropdown, options_for_select(icons.map{|i| [i.keyword, i.id]}, selected_id), prompt: "No Icon"
+    select_tag :icon_dropdown, options_for_select(icons.map { |i| [i.keyword, i.id] }, selected_id), prompt: "No Icon"
   end
 end

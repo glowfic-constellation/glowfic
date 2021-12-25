@@ -69,7 +69,7 @@ RSpec.describe NewsController do
 
     it "errors without content" do
       login_as(create(:mod_user))
-      post :create, params: {news: {content: ''}}
+      post :create, params: { news: { content: '' } }
       expect(response).to render_template(:new)
       expect(assigns(:page_title)).to eq('Create News Post')
       expect(flash[:error][:message]).to eq("News post could not be created.")
@@ -78,7 +78,7 @@ RSpec.describe NewsController do
     it "works for staff" do
       login_as(create(:mod_user))
       expect {
-        post :create, params: {news: {content: 'staff made this'}}
+        post :create, params: { news: { content: 'staff made this' } }
       }.to change { News.count }.by(1)
       expect(response).to redirect_to(news_index_url)
       expect(News.last.content).to eq('staff made this')
@@ -88,7 +88,7 @@ RSpec.describe NewsController do
   describe "GET show" do
     it "errors without news post" do
       login_as(create(:admin_user))
-      get :show, params: {id: -1}
+      get :show, params: { id: -1 }
       expect(response).to redirect_to(news_index_url)
       expect(flash[:error]).to eq("News post could not be found.")
     end
@@ -100,13 +100,13 @@ RSpec.describe NewsController do
       create(:news)
       n3.destroy!
       login
-      get :show, params: {id: n1.id}
+      get :show, params: { id: n1.id }
       expect(response).to redirect_to(news_index_url(page: 3))
     end
 
     it "works logged out" do
       news = create(:news)
-      get :show, params: {id: news.id}
+      get :show, params: { id: news.id }
       expect(response).to redirect_to(news_index_url)
     end
 
@@ -126,21 +126,21 @@ RSpec.describe NewsController do
 
   describe "GET edit" do
     it "errors if logged out" do
-      get :edit, params: {id: -1}
+      get :edit, params: { id: -1 }
       expect(response).to redirect_to(root_url)
       expect(flash[:error]).to eq("You must be logged in to view that page.")
     end
 
     it "errors without news post" do
       login_as(create(:admin_user))
-      get :edit, params: {id: -1}
+      get :edit, params: { id: -1 }
       expect(response).to redirect_to(news_index_url)
       expect(flash[:error]).to eq("News post could not be found.")
     end
 
     it "errors if not staff" do
       login
-      get :edit, params: {id: create(:news).id}
+      get :edit, params: { id: create(:news).id }
       expect(response).to redirect_to(news_index_url)
       expect(flash[:error]).to eq("You do not have permission to manage news posts.")
     end
@@ -149,7 +149,7 @@ RSpec.describe NewsController do
       news = create(:news)
       other_mod = create(:mod_user)
       login_as(other_mod)
-      get :edit, params: {id: news.id}
+      get :edit, params: { id: news.id }
       expect(response).to redirect_to(news_index_url)
       expect(flash[:error]).to eq("You do not have permission to edit that news post.")
     end
@@ -157,7 +157,7 @@ RSpec.describe NewsController do
     it "works for admins" do
       news = create(:news)
       login_as(create(:admin_user))
-      get :edit, params: {id: news.id}
+      get :edit, params: { id: news.id }
       expect(response).to have_http_status(200)
       expect(assigns(:page_title)).to eq('Edit News Post')
     end
@@ -165,7 +165,7 @@ RSpec.describe NewsController do
     it "works for right mod" do
       news = create(:news)
       login_as(news.user)
-      get :edit, params: {id: news.id}
+      get :edit, params: { id: news.id }
       expect(response).to have_http_status(200)
       expect(assigns(:page_title)).to eq('Edit News Post')
     end
@@ -173,21 +173,21 @@ RSpec.describe NewsController do
 
   describe "PATCH update" do
     it "errors if logged out" do
-      patch :update, params: {id: -1}
+      patch :update, params: { id: -1 }
       expect(response).to redirect_to(root_url)
       expect(flash[:error]).to eq("You must be logged in to view that page.")
     end
 
     it "errors without news post" do
       login_as(create(:admin_user))
-      patch :update, params: {id: -1}
+      patch :update, params: { id: -1 }
       expect(response).to redirect_to(news_index_url)
       expect(flash[:error]).to eq("News post could not be found.")
     end
 
     it "errors if not staff" do
       login
-      patch :update, params: {id: create(:news).id}
+      patch :update, params: { id: create(:news).id }
       expect(response).to redirect_to(news_index_url)
       expect(flash[:error]).to eq("You do not have permission to manage news posts.")
     end
@@ -196,7 +196,7 @@ RSpec.describe NewsController do
       news = create(:news)
       other_mod = create(:mod_user)
       login_as(other_mod)
-      patch :update, params: {id: news.id}
+      patch :update, params: { id: news.id }
       expect(response).to redirect_to(news_index_url)
       expect(flash[:error]).to eq("You do not have permission to edit that news post.")
     end
@@ -204,7 +204,7 @@ RSpec.describe NewsController do
     it "errors without content" do
       news = create(:news)
       login_as(news.user)
-      patch :update, params: {id: news.id, news: {content: ''}}
+      patch :update, params: { id: news.id, news: { content: '' } }
       expect(response).to render_template(:edit)
       expect(assigns(:page_title)).to eq('Edit News Post')
       expect(flash[:error][:message]).to eq("News post could not be saved because of the following problems:")
@@ -213,7 +213,7 @@ RSpec.describe NewsController do
     it "works for admins" do
       news = create(:news)
       login_as(create(:admin_user))
-      patch :update, params: {id: news.id, news: {content: 'admin content'}}
+      patch :update, params: { id: news.id, news: { content: 'admin content' } }
       expect(response).to redirect_to(news_index_url)
       expect(news.reload.content).to eq('admin content')
     end
@@ -221,7 +221,7 @@ RSpec.describe NewsController do
     it "works for right mod" do
       news = create(:news)
       login_as(news.user)
-      patch :update, params: {id: news.id, news: {content: 'right mod content'}}
+      patch :update, params: { id: news.id, news: { content: 'right mod content' } }
       expect(response).to redirect_to(news_index_url)
       expect(news.reload.content).to eq('right mod content')
     end
@@ -229,21 +229,21 @@ RSpec.describe NewsController do
 
   describe "DELETE destroy" do
     it "errors if logged out" do
-      delete :destroy, params: {id: -1}
+      delete :destroy, params: { id: -1 }
       expect(response).to redirect_to(root_url)
       expect(flash[:error]).to eq("You must be logged in to view that page.")
     end
 
     it "errors without news post" do
       login_as(create(:admin_user))
-      delete :destroy, params: {id: -1}
+      delete :destroy, params: { id: -1 }
       expect(response).to redirect_to(news_index_url)
       expect(flash[:error]).to eq("News post could not be found.")
     end
 
     it "errors if not staff" do
       login
-      delete :destroy, params: {id: create(:news).id}
+      delete :destroy, params: { id: create(:news).id }
       expect(response).to redirect_to(news_index_url)
       expect(flash[:error]).to eq("You do not have permission to manage news posts.")
     end
@@ -252,7 +252,7 @@ RSpec.describe NewsController do
       news = create(:news)
       other_mod = create(:mod_user)
       login_as(other_mod)
-      delete :destroy, params: {id: news.id}
+      delete :destroy, params: { id: news.id }
       expect(response).to redirect_to(news_index_url)
       expect(flash[:error]).to eq("You do not have permission to edit that news post.")
     end
@@ -261,9 +261,9 @@ RSpec.describe NewsController do
       news = create(:news)
       login_as(create(:admin_user))
       expect_any_instance_of(News).to receive(:destroy!).and_raise(ActiveRecord::RecordNotDestroyed, 'fake error')
-      delete :destroy, params: {id: news.id}
+      delete :destroy, params: { id: news.id }
       expect(response).to redirect_to(news_index_url)
-      expect(flash[:error]).to eq({message: "News post could not be deleted.", array: []})
+      expect(flash[:error]).to eq({ message: "News post could not be deleted.", array: [] })
       expect(news.reload).not_to be_nil
     end
 
@@ -271,7 +271,7 @@ RSpec.describe NewsController do
       news = create(:news)
       login_as(create(:admin_user))
       expect {
-        delete :destroy, params: {id: news.id}
+        delete :destroy, params: { id: news.id }
       }.to change { News.count }.by(-1)
       expect(News.find_by_id(news.id)).to be_nil
       expect(response).to redirect_to(news_index_url)
@@ -282,7 +282,7 @@ RSpec.describe NewsController do
       news = create(:news)
       login_as(news.user)
       expect {
-        delete :destroy, params: {id: news.id}
+        delete :destroy, params: { id: news.id }
       }.to change { News.count }.by(-1)
       expect(News.find_by_id(news.id)).to be_nil
       expect(response).to redirect_to(news_index_url)

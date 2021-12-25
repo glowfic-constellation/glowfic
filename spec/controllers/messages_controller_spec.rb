@@ -150,13 +150,13 @@ RSpec.describe MessagesController do
         user = create(:user)
         messages = Array.new(7) { create(:message, sender: user) }
         recents = messages[-5..-1].map(&:recipient)
-        recents_data = recents.reverse.map{|x| [x.username, x.id] }
-        users_data = messages.map(&:recipient).map{|x| [x.username, x.id]}
-        users_data.sort_by! {|x| x[0]}
+        recents_data = recents.reverse.map { |x| [x.username, x.id] }
+        users_data = messages.map(&:recipient).map { |x| [x.username, x.id] }
+        users_data.sort_by! { |x| x[0] }
         login_as(user)
         get :new
         expect(response).to have_http_status(200)
-        expect(assigns(:select_items)).to eq({'Recently messaged': recents_data, 'Other users': users_data})
+        expect(assigns(:select_items)).to eq({ 'Recently messaged': recents_data, 'Other users': users_data })
       end
     end
   end
@@ -172,11 +172,11 @@ RSpec.describe MessagesController do
       user = create(:user)
       login_as(user)
       messages = Array.new(2) { create(:message, sender: user) }
-      recents = messages.map(&:recipient).map{|x| [x.username, x.id]}
+      recents = messages.map(&:recipient).map { |x| [x.username, x.id] }
       recents_data = recents.reverse
       other_user = create(:user)
       users_data = recents + [[other_user.username, other_user.id]]
-      users_data.sort_by! {|x| x[0]}
+      users_data.sort_by! { |x| x[0] }
 
       post :create, params: { message: {} }
       expect(response).to render_template(:new)
@@ -184,13 +184,13 @@ RSpec.describe MessagesController do
       expect(assigns(:message)).not_to be_valid
       expect(assigns(:page_title)).to eq('Compose Message')
       expect(assigns(:javascripts)).to include('messages')
-      expect(assigns(:select_items)).to eq({'Recently messaged': recents_data, 'Other users': users_data})
+      expect(assigns(:select_items)).to eq({ 'Recently messaged': recents_data, 'Other users': users_data })
     end
 
     it "succeeds with valid recipient" do
       login
       recipient = create(:user)
-      post :create, params: { message: {subject: 'test', message: 'testing', recipient_id: recipient.id} }
+      post :create, params: { message: { subject: 'test', message: 'testing', recipient_id: recipient.id } }
       expect(response).to redirect_to(messages_url(view: 'inbox'))
       expect(flash[:success]).to eq('Message sent!')
       message = assigns(:message).reload
@@ -204,7 +204,7 @@ RSpec.describe MessagesController do
       other_user = create(:user)
       login_as(previous.recipient)
       post :create, params: {
-        message: {subject: 'Re: ' + previous.subject, message: 'response', recipient_id: other_user.id},
+        message: { subject: 'Re: ' + previous.subject, message: 'response', recipient_id: other_user.id },
         parent_id: previous.id,
       }
       expect(assigns(:message).recipient_id).to eq(previous.sender_id)
@@ -212,7 +212,7 @@ RSpec.describe MessagesController do
 
     it "fails with invalid parent" do
       login
-      post :create, params: { message: {subject: 'Re: Fake', message: 'response'}, parent_id: -1 }
+      post :create, params: { message: { subject: 'Re: Fake', message: 'response' }, parent_id: -1 }
       expect(flash[:error][:array]).to include('Message parent could not be found.')
       expect(assigns(:message).parent).to be_nil
       expect(assigns(:javascripts)).to include('messages')
@@ -223,7 +223,7 @@ RSpec.describe MessagesController do
       user = create(:user)
       login_as(user)
       expect(message.visible_to?(user)).to eq(false)
-      post :create, params: { message: {subject: 'Re: Fake', message: 'response'}, parent_id: message.id }
+      post :create, params: { message: { subject: 'Re: Fake', message: 'response' }, parent_id: message.id }
       expect(flash[:error][:array]).to include('You do not have permission to reply to that message.')
       expect(assigns(:message).parent).to be_nil
       expect(assigns(:javascripts)).to include('messages')
@@ -234,7 +234,7 @@ RSpec.describe MessagesController do
       login_as(previous.recipient)
       expect(Message.count).to eq(1)
       post :create, params: {
-        message: {subject: 'Re: ' + previous.subject, message: 'response'},
+        message: { subject: 'Re: ' + previous.subject, message: 'response' },
         parent_id: previous.id,
       }
       expect(Message.count).to eq(2)
@@ -253,7 +253,7 @@ RSpec.describe MessagesController do
       login_as(previous.sender)
       expect(Message.count).to eq(1)
       post :create, params: {
-        message: {subject: 'Re: ' + previous.subject, message: 'response'},
+        message: { subject: 'Re: ' + previous.subject, message: 'response' },
         parent_id: previous.id,
       }
       expect(Message.count).to eq(2)
@@ -272,7 +272,7 @@ RSpec.describe MessagesController do
         login_as(previous.sender)
         expect {
           post :create, params: {
-            message: {subject: 'Preview', message: 'example'},
+            message: { subject: 'Preview', message: 'example' },
             parent_id: previous.id,
             button_preview: true,
           }
@@ -289,18 +289,18 @@ RSpec.describe MessagesController do
         user = create(:user)
         login_as(user)
         messages = Array.new(2) { create(:message, sender: user) }
-        recents = messages.map(&:recipient).map{|x| [x.username, x.id]}
+        recents = messages.map(&:recipient).map { |x| [x.username, x.id] }
         recents_data = recents.reverse
         other_user = create(:user)
         users_data = recents + [[other_user.username, other_user.id]]
-        users_data.sort_by! {|x| x[0]}
+        users_data.sort_by! { |x| x[0] }
 
         expect {
-          post :create, params: { message: {subject: 'Preview', message: 'example'}, button_preview: true }
+          post :create, params: { message: { subject: 'Preview', message: 'example' }, button_preview: true }
         }.not_to change { Message.count }
         expect(response).to render_template(:preview)
         expect(assigns(:javascripts)).to include('messages')
-        expect(assigns(:select_items)).to eq({'Recently messaged': recents_data, 'Other users': users_data})
+        expect(assigns(:select_items)).to eq({ 'Recently messaged': recents_data, 'Other users': users_data })
       end
     end
   end
@@ -529,12 +529,12 @@ RSpec.describe MessagesController do
       user4 = create(:user, username: 'user4')
       user1 = create(:user, username: 'user1')
       controller.send(:editor_setup)
-      info = {:Users => [
+      info = { :Users => [
         [user1.username, user1.id],
         [user2.username, user2.id],
         [user3.username, user3.id],
         [user4.username, user4.id],
-      ]}
+      ] }
       expect(assigns(:select_items)).to eq(info)
     end
   end

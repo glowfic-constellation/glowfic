@@ -1,7 +1,7 @@
 RSpec.describe ApplicationController do
   controller do
     def index
-      render json: {zone: Time.zone.name}
+      render json: { zone: Time.zone.name }
     end
 
     def create
@@ -340,13 +340,13 @@ RSpec.describe ApplicationController do
   describe "#require_glowfic_domain" do
     it "redirects on valid requests" do
       ENV['DOMAIN_NAME'] ||= 'domaintest.host'
-      get :index, params: {force_domain: true}
+      get :index, params: { force_domain: true }
       expect(response).to have_http_status(:moved_permanently)
       expect(response).to redirect_to('https://domaintest.host/anonymous?force_domain=true')
     end
 
     it "does not redirect on post requests" do
-      post :create, params: {force_domain: true}
+      post :create, params: { force_domain: true }
       expect(response).to have_http_status(:ok)
     end
 
@@ -356,19 +356,19 @@ RSpec.describe ApplicationController do
     end
 
     it "does not redirect API requests" do
-      get :index, params: {force_domain: true}, xhr: true
+      get :index, params: { force_domain: true }, xhr: true
       expect(response).to have_http_status(:ok)
     end
 
     it "does not redirect glowfic.com requests" do
       request.host = 'glowfic.com'
-      get :index, params: {force_domain: true}
+      get :index, params: { force_domain: true }
       expect(response).to have_http_status(:ok)
     end
 
     it "does not redirect staging requests" do
       request.host = 'glowfic-staging.herokuapp.com'
-      get :index, params: {force_domain: true}
+      get :index, params: { force_domain: true }
       expect(response).to have_http_status(:ok)
     end
   end
@@ -430,12 +430,12 @@ RSpec.describe ApplicationController do
     it "shows TOS prompt to logged in users" do
       user = create(:user, tos_version: nil)
       login_as(user)
-      get :show, params: {force_tos: true, id: 1}
+      get :show, params: { force_tos: true, id: 1 }
       expect(response).to render_template('about/accept_tos')
     end
 
     it "shows TOS prompt to logged out users" do
-      get :show, params: {force_tos: true, id: 1}
+      get :show, params: { force_tos: true, id: 1 }
       expect(response).to render_template(partial: 'about/_accept_tos')
     end
   end
@@ -443,7 +443,7 @@ RSpec.describe ApplicationController do
   describe "#check_forced_logout" do
     controller do
       def index
-        render json: {logged_in: current_user.present?}
+        render json: { logged_in: current_user.present? }
       end
     end
 
