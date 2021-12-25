@@ -32,10 +32,6 @@ end
 ActiveSupport::Notifications.subscribe("instantiation.active_record") do |*args|
   event = ActiveSupport::Notifications::Event.new(*args)
   detail_string = "#{event.payload[:class_name]}, #{event.payload[:record_count]}"
-  if event.payload[:record_count] > 70
-    Rails.logger.warn "[instantiation.active_record] SLOW: many records created: #{detail_string}"
-  end
-  if event.duration > 1000
-    Rails.logger.warn "[instantiation.active_record] SLOW: instantiation took more than 1 second: #{detail_string}"
-  end
+  Rails.logger.warn "[instantiation.active_record] SLOW: many records created: #{detail_string}" if event.payload[:record_count] > 70
+  Rails.logger.warn "[instantiation.active_record] SLOW: instantiation took more than 1 second: #{detail_string}" if event.duration > 1000
 end
