@@ -8,7 +8,7 @@
       - else
         = f.select :blocked_user_id, options_from_collection_for_select(@users,
           :id, :username, params.fetch(:block, {})[:blocked_user_id]),
-          { class: 'text chosen-select', prompt: '— Choose User —' }
+          class: 'text chosen-select', prompt: '— Choose User —'
   %tr
     %th.sub= f.label :block_interactions, 'Interactions'
     %td{class: klass}
@@ -19,13 +19,13 @@
     %td{class: klass}
       Prevent you from seeing their:
       %br
-      = f.select :hide_them, options_from_collection_for_select(@options.to_a, :second, :first, @block.hide_them), { class: 'text chosen-select' }
+      = f.select :hide_them, options_from_collection_for_select(@options.to_a, :second, :first, @block.hide_them), class: 'text chosen-select'
   %tr
     %th.sub= f.label :hide_you, 'Hide yourself'
     %td{class: klass}
       Prevent them from seeing your:
       %br
-      = f.select :hide_me, options_from_collection_for_select(@options.to_a, :second, :first, @block.hide_me), { class: 'text chosen-select' }
+      = f.select :hide_me, options_from_collection_for_select(@options.to_a, :second, :first, @block.hide_me), class: 'text chosen-select'
 %tfoot
   %tr
     %th.form-table-ender{colspan: 2}= f.submit "Save", class: 'button'

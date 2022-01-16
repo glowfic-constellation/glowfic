@@ -100,13 +100,13 @@
         %th.editor-title{colspan: 2} Change Password
     %tbody
       %tr
-        %th.sub= f.label :old_password, 'Old'
+        %th.sub= f.label :old_password
         %td{class: cycle('even', 'odd')}= f.password_field :old_password, placeholder: "Old Password", class: 'text', value: params.fetch(:user, {})[:old_password]
       %tr
-        %th.sub= f.label :password, 'New'
+        %th.sub= f.label :password, 'New Password'
         %td{class: cycle('even', 'odd')}= f.password_field :password, placeholder: "New Password", class: 'text', value: params.fetch(:user, {})[:password]
       %tr
-        %th.sub= f.label :password_confirmation, 'Confirm'
+        %th.sub= f.label :password_confirmation, 'Confirm Password'
         %td{class: cycle('even', 'odd')}= f.password_field :password_confirmation, placeholder: "Confirm Password", class: 'text', value: params.fetch(:user, {})[:password_confirmation]
     %tfoot
       %tr
