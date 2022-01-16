@@ -13,7 +13,6 @@
 
 .editor-title.icon-edit-title Edit Icon
 
-- data = { 'form-data' => @s3_direct_post.fields, url: @s3_direct_post.url, host: URI.parse(@s3_direct_post.url).host, limit: 1 }
-= form_with model: @icon, method: :put, html: { class: 'icon-upload' }, data: data do |f|
+= form_with model: @icon, method: :put, html: { class: 'icon-upload' }, data: s3_form_helper(@s3_direct_post, limit: 1) do |f|
   .icon-editor
     = render 'editor', f: f, gif: nil

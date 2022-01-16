@@ -7,8 +7,7 @@
   &raquo;
   %b Edit
 
-- data = { 'form-data' => @s3_direct_post.fields, url: @s3_direct_post.url, host: URI.parse(@s3_direct_post.url).host, limit: 1 }
-= form_with model: @gallery, method: :put, html: { class: 'icon-upload' }, data: data do |f|
+= form_with model: @gallery, method: :put, html: { class: 'icon-upload' }, data: s3_form_helper(@s3_direct_post, limit: 1) do |f|
   .form-table.gallery-edit-form.gallery-editor
     .editor-title Edit Gallery
     = render 'editor', f: f, gallery: @gallery
