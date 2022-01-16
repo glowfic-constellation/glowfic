@@ -7,7 +7,7 @@
   method: :post,
   scope: 'icons[]',
   class: 'icon-upload',
-  data: { 'form-data' => @s3_direct_post.fields, url: @s3_direct_post.url, host: URI.parse(@s3_direct_post.url).host, limit: 150 } do
+  data: s3_form_helper(@s3_direct_post, limit: 150) do |f|
   .content-header
     %span.vmid Add New Icons to Gallery: #{@gallery.try(:name) || 'Galleryless'}
     - if @gallery
