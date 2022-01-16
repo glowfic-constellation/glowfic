@@ -18,8 +18,8 @@
   .gallery-icon-upload
     - klass = cycle('even', 'odd')
     - file_id = "icon_files_#{f.object.id}"
-    .centered{class: klass}= label_tag file_id.to_sym, 'Upload'
-    %div{class: klass}= file_field_tag file_id, id: file_id, class: 'icon_files', data: { icon_id: f.object.id }
+    .centered{class: klass}= f.label file_id.to_sym, 'Upload'
+    %div{class: klass}= f.file_field value: file_id, id: file_id, class: 'icon_files', data: { icon_id: f.object.id }
   .gallery-icon-keyword
     - klass = cycle('even', 'odd')
     .centered{class: klass}= f.label :keyword
@@ -36,5 +36,4 @@
       = f.check_box :_destroy
       = f.label :_destroy, 'Delete Icon'
   - if gif.nil?
-    .submit-row.form-table-ender
-      = submit_tag "Save", class: 'button'
+    .submit-row.form-table-ender= f.submit "Save", class: 'button'

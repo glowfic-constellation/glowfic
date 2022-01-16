@@ -10,10 +10,10 @@
   &raquo;
   %b New Alias
 
-= form_for @alias, url: character_aliases_path(@character), method: :post do |f|
+= form_with model: @alias, url: character_aliases_path(@character), method: :post do |f|
   .form-table#alias-editor
     .editor-title= "New Alias"
     %div
       .sub= f.label :name
       .even= f.text_field :name, placeholder: "Alias"
-    .form-table-ender= submit_tag "Save", class: 'button'
+    .form-table-ender= f.submit "Save", class: 'button'

@@ -8,7 +8,7 @@
   %b Edit
 
 - data = { 'form-data' => @s3_direct_post.fields, url: @s3_direct_post.url, host: URI.parse(@s3_direct_post.url).host, limit: 1 }
-= form_for @gallery, method: :put, html: { class: 'icon-upload' }, data: data do |f|
+= form_with model: @gallery, method: :put, html: { class: 'icon-upload' }, data: data do |f|
   .form-table.gallery-edit-form.gallery-editor
     .editor-title Edit Gallery
     = render 'editor', f: f, gallery: @gallery
@@ -19,4 +19,4 @@
         = gif.fields_for :icon do |i|
           = render 'icons/editor', f: i, gif: gif
   .submit-button
-    = submit_tag "Save", class: 'button'
+    = f.submit "Save", class: 'button'

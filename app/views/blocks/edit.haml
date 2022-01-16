@@ -5,7 +5,7 @@
   &raquo;
   %b Edit
 
-= form_for @block, url: block_path(@block), method: :put do |f|
+= form_with model: @block, method: :put do |f|
   .form-table
     .editor-title Edit Block
     = render 'editor', f: f, blocked_user: @block.blocked_user

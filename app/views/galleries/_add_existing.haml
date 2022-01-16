@@ -3,8 +3,8 @@
 - content_for :breadcrumbs do
   %b Add Existing
 
-= form_tag icon_gallery_path(@gallery), method: :post, id: 'add-gallery-icons' do
-  = hidden_field_tag :image_ids
+= form_with url: icon_gallery_path(@gallery), method: :post, id: 'add-gallery-icons' do |f|
+  = f.hidden_field :image_ids
   .content-header
     %span.vmid Add Existing Icons to Gallery: #{@gallery.name}
     = link_to add_gallery_path(@gallery), class: 'view-button-link' do
@@ -16,14 +16,14 @@
     .sub Galleryless Icons
     .even.icons#icons-0
       .checkbox-field
-        = check_box_tag :select_all, 0, false, class: 'select-all'
+        = f.check_box :select_all, checked: false, class: 'select-all'
         %span Select all icons
       .gallery-icons
         - @unassigned.each do |icon|
           .gallery-icon
             = icon_tag icon, class: 'add-gallery-icon', 'data-id': icon.id
             %span.icon-keyword= icon.keyword
-    .form-table-ender= submit_tag "Add Icons to Gallery", class: 'button'
+    .form-table-ender= f.submit "Add Icons to Gallery", class: 'button'
     - current_user.galleries.ordered_by_name.each do |gallery|
       - next if gallery.id == @gallery.id
       .sub.gallery-minmax{data: { id: gallery.id }}
@@ -31,7 +31,6 @@
         .gallery-box{id: "minmax-#{gallery.id}"} +
       .icons.hidden{class: cycle('even', 'odd'), id: "icons-#{gallery.id}"}
         .checkbox-field
-          = check_box_tag :select_all, gallery.id, false, class: 'select-all', id: nil
+          = f.check_box :select_all, checked_value: gallery.id, checked: false, class: 'select-all', id: nil
           %span Select all icons
-    .form-table-ender
-      = submit_tag "Add Icons to Gallery", class: 'button'
+    .form-table-ender= f.submit "Add Icons to Gallery", class: 'button'

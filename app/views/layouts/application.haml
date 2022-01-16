@@ -98,15 +98,15 @@
               = link_to logout_path, method: :delete, id: :"header-logout", data: { confirm: 'Press OK to confirm logout' } do
                 = button_tag "Log out", class: 'button'
             - elsif !current_page?(login_path)
-              = form_tag login_path, method: :post, id: 'header-form' do
+              = form_with url: login_path, method: :post, id: 'header-form' do |f|
                 #header-forms
-                  = text_field_tag :username, params[:username], placeholder: "Username", id: 'header-username', autocomplete: 'username'
-                  = password_field_tag :password, params[:password], placeholder: "Password", id: 'header-password', autocomplete: 'current-password'
+                  = f.text_field :username, value: params[:username], placeholder: "Username", id: 'header-username', autocomplete: 'username'
+                  = f.password_field :password, value: params[:password], placeholder: "Password", id: 'header-password', autocomplete: 'current-password'
                 #header-remember
-                  = check_box_tag :remember_me, class: 'vmid', id: 'header-rememberme'
-                  = label_tag 'header-rememberme', "Remember Me", class: 'vmid'
+                  = f.check_box :remember_me, class: 'vmid', id: 'header-rememberme'
+                  = f.label :remember_me, for: 'header-rememberme', class: 'vmid'
                 #header-buttons
-                  = submit_tag "Log in", class: 'button'
+                  = f.submit "Log in", class: 'button'
                 #header-buttons-links
                   = link_to "Sign up", new_user_path
                   &nbsp;|&nbsp;

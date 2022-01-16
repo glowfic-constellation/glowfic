@@ -20,6 +20,6 @@
     = f.check_box :authors_locked, checked: @board.authors_locked
     = f.label :authors_locked, 'Only allow authors to create new posts in this continuity'
 %div
-  .sub.vtop Description
+  .sub.vtop= f.label :description
   .odd= f.text_area :description
-.form-table-ender= submit_tag "Save", class: 'button'
+.form-table-ender= f.submit "Save", class: 'button'

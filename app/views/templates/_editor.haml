@@ -18,4 +18,4 @@
       = collection_check_boxes :template, :character_ids, @selectable_characters, :id, :name, selected: @character_ids do |box|
         = box.check_box
         = box.label
-.form-table-ender= submit_tag "Save", class: 'button'
+.form-table-ender= f.submit "Save", class: 'button'

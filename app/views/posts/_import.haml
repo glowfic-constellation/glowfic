@@ -2,20 +2,20 @@
 
 .content-header Import a post
 .even.padding-10
-  = form_tag posts_path(view: 'import') do
-    = label_tag :dreamwidth_url, "Dreamwidth URL", style: "width: 150px; display: inline-block;"
-    = text_field_tag :dreamwidth_url, params[:dreamwidth_url], style: 'width: 400px; margin-bottom: 5px;'
+  = form_with url: posts_path(view: 'import') do |f|
+    = f.label :dreamwidth_url, "Dreamwidth URL", style: "width: 150px; display: inline-block;"
+    = f.text_field :dreamwidth_url, value: params[:dreamwidth_url], style: 'width: 400px; margin-bottom: 5px;'
     %br
-    = label_tag :board_id, "Continuity", style: "width: 150px; display: inline-block;"
-    = select_tag :board_id, options_from_collection_for_select(Board.ordered.select { |b| current_user.writes_in?(b) }, :id, :name, params[:board_id]), id: 'post_board_id'
+    = f.label :board_id, "Continuity", style: "width: 150px; display: inline-block;"
+    = f.select :board_id, options_from_collection_for_select(Board.ordered.select { |b| current_user.writes_in?(b) }, :id, :name, params[:board_id]), id: 'post_board_id'
     #section{class: ('hidden' unless params[:board_id].present? && (board = Board.find_by_id(params[:board_id])) && board.board_sections.exists?)}
-      = label_tag :section_id, 'Subsection', style: "width: 150px; display: inline-block;"
-      = select_tag :section_id, options_from_collection_for_select(BoardSection.where(board_id: params[:board_id]).ordered, :id, :name, params[:section_id]), include_blank: '— Choose Section —', id: 'post_section_id'
+      = f.label :section_id, 'Subsection', style: "width: 150px; display: inline-block;"
+      = f.select :section_id, options_from_collection_for_select(BoardSection.where(board_id: params[:board_id]).ordered, :id, :name, params[:section_id]), include_blank: '— Choose Section —', id: 'post_section_id'
     %br
-    = label_tag :status, "Status", style: "width: 150px; display: inline-block;"
-    = select_tag :status, options_for_select(Post.statuses.map { |k, _v| [k.titlecase, k] }, params[:status] || :complete), style: 'margin-top: 5px;'
+    = f.label :status, style: "width: 150px; display: inline-block;"
+    = f.select :status, options_for_select(Post.statuses.map { |k, _v| [k.titlecase, k] }, params[:status] || :complete), style: 'margin-top: 5px;'
     %br
-    = label_tag :threaded, "Threaded?", style: "width: 150px; display: inline-block;"
-    = check_box_tag :threaded, "1", params[:threaded].present?
+    = f.label :threaded, "Threaded?", style: "width: 150px; display: inline-block;"
+    = f.check_box :threaded, "1", params[:threaded].present?
     %br
-    = submit_tag "Import", class: 'button', id: 'import_button', name: 'button_import'
+    = f.submit "Import", class: 'button', id: 'import_button', name: 'button_import'

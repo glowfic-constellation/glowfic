@@ -92,5 +92,8 @@ module Glowfic
     # reduce memory use of strings in ActionView Templates
     # https://guides.rubyonrails.org/configuring.html#config-action-view-frozen-string-literal
     config.action_view.frozen_string_literal = true
+
+    # we expect forms to send you somewhere
+    config.action_view.form_with_generates_remote_forms = false
   end
 end

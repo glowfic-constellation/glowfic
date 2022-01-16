@@ -62,14 +62,14 @@
   - partial_type = (page_view == 'list') ? 'characters/list_section' : 'characters/icon_view'
   %tr
     %th.subber.padding-10{colspan: colspan}
-      = form_tag search_characters_path, method: :get do
-        = label_tag :name, 'Search by name:'
-        = text_field_tag :name, params[:name], style: 'margin: 0px 5px;', id: :name
-        = hidden_field_tag :author_id, @user.id
-        = hidden_field_tag :search_name, true
-        = hidden_field_tag :search_screenname, true
-        = hidden_field_tag :search_nickname, true
-        = submit_tag "Search", class: 'button'
+      = form_with url: search_characters_path, method: :get do |f|
+        = f.label :name, 'Search by name:'
+        = f.text_field :name, value: params[:name], style: 'margin: 0px 5px;'
+        = f.hidden_field :author_id, value: @user.id
+        = f.hidden_field :search_name, value: true
+        = f.hidden_field :search_screenname, value: true
+        = f.hidden_field :search_nickname, value: true
+        = f.submit "Search", class: 'button'
   - if character_split == 'template'
     %tr
       %th.odd{style: 'padding: 3px', colspan: colspan}= # spacer between two .subbers

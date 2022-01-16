@@ -1,4 +1,4 @@
-= form_for @user, url: users_path, method: :post do |f|
+= form_with model: @user, method: :post do |f|
   .form-table#signup
     .editor-title Sign Up
     #signup-username
@@ -32,18 +32,18 @@
     #signup-secret
       .sub.vtop= f.label :secret, "Secret (optional)"
       .even
-        = text_field_tag :secret, params[:secret], placeholder: "Secret"
+        = f.text_field :secret, value: params[:secret], placeholder: "Secret"
         %span.details (If you don't know what this is, please leave it blank!)
     #signup-captcha
       .sub.vtop Captcha
       .odd
-        = text_field_tag :addition, params[:addition], placeholder: "Please enter five times two plus four as a number (e.g. 3 not three)"
+        = f.text_field :addition, value: params[:addition], placeholder: "Please enter five times two plus four as a number (e.g. 3 not three)"
     #signup-terms
       .sub.vtop Terms
       .odd
         .checkbox-field
-          = check_box_tag :tos, true, params[:tos].present?
-          = label_tag :tos do
+          = f.check_box :tos, checked: params[:tos]
+          = f.label :tos do
             I have read and agree to the
             = link_to 'Terms of Service', tos_path
             and the
@@ -51,4 +51,4 @@
         .user-alert.hidden
           = image_tag 'icons/exclamation.png', alt: '!', title: ''
           %span.msg
-    .form-table-ender= submit_tag "Sign Up", class: 'button'
+    .form-table-ender= f.submit "Sign Up", class: 'button'

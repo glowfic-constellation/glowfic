@@ -335,7 +335,7 @@ class CharactersController < ApplicationController
   end
 
   def build_template
-    return unless params[:new_template].present?
+    return unless params.fetch(:character, {})[:new_template].present?
     return unless @character.user == current_user
     @character.build_template unless @character.template
     @character.template.user = current_user

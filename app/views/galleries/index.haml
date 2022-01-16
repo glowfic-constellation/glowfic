@@ -38,11 +38,11 @@
             = image_tag "icons/bullet_arrow_up.png", class: 'vmid hidden up-arrow', alt: 'Hide'
     %tr
       %td.padding-5.hidden.odd{id: "icons-0", colspan: 4}
-        = form_tag delete_multiple_icons_path, method: :delete do
+        = form_with url: delete_multiple_icons_path, method: :delete do |f|
           .gallery{style: 'padding: 0px;'}
           - if @user.id == current_user.try(:id)
             .clear.centered.icons-remove
-              = submit_tag "x Delete selected icons permanently", data: { confirm: "Are you sure? These icons will be gone from the site!" }
+              = f.submit "x Delete selected icons permanently", data: { confirm: "Are you sure? These icons will be gone from the site!" }
     = render partial: 'galleries/expandable', collection: @galleries.with_icon_count.with_gallery_groups, as: :gallery
 
   - if @galleries.methods.include?(:total_pages) && @galleries.total_pages > 1

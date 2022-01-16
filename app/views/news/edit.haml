@@ -3,7 +3,7 @@
   &raquo;
   %b Edit
 
-= form_for @news do |f|
+= form_with model: @news do |f|
   .form-table#news-table
     .editor-title Edit News Post
     = render 'editor', f: f

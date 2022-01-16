@@ -23,13 +23,13 @@
       .view-button
         Inactive &raquo;
 
-= form_tag mark_posts_path do
+= form_with url: mark_posts_path do |f|
   = render 'posts/list', posts: @posts, check_box_name: 'marked_ids[]'
   - unless @posts.empty?
     %table
       %tr
         %td.right-align.padding-5{colspan: 7, class: cycle('even', 'odd')}
           -if params[:view] == 'hidden'
-            = submit_tag 'Show in Replies Owed', class: 'button'
+            = f.submit 'Show in Replies Owed', class: 'button'
           - else
-            = submit_tag "Remove from Replies Owed", class: 'button'
+            = f.submit "Remove from Replies Owed", class: 'button'

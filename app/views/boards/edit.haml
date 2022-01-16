@@ -5,7 +5,7 @@
   &raquo;
   %b Edit
 
-= form_for @board, url: continuity_path(@board), method: :put do |f|
+= form_with model: @board, url: continuity_path(@board), method: :put do |f|
   .form-table
     .editor-title Edit Continuity
     = render 'editor', f: f

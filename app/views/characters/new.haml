@@ -4,7 +4,7 @@
   = link_to "Your Characters", user_characters_path(current_user)
   &raquo;
   %b Create New
-= form_for @character, url: characters_path, method: :post do |f|
+= form_with model: @character, method: :post do |f|
   = f.hidden_field :default_icon_id
   .character-form
     .form-table#character-editor

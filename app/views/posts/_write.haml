@@ -1,6 +1,6 @@
 -# locals: ( post: )
 
-= form_for post, html: { id: 'post_form' } do |f|
+= form_with model: post, html: { id: 'post_form' } do |f|
   - content_for :form do
     - unless post.id.present? && !post.editable_by?(current_user)
       %button.view-button#rtf{type: 'button', class: ('selected' if @post.editor_mode == 'rtf')} Rich Text
@@ -32,10 +32,10 @@
       = render 'posts/editor_help', editor_location: 'post'
   - content_for :buttons do
     - if post.id.present? && !post.editable_by?(current_user)
-      = submit_tag 'Save', class: 'button', id: 'submit_button', data: { disable_with: 'Saving...' }
+      = f.submit 'Save', class: 'button', id: 'submit_button', data: { disable_with: 'Saving...' }
     - else
-      = submit_tag (post.new_record? ? 'Post' : 'Save'), class: 'button', id: 'submit_button', data: { disable_with: 'Saving...' }
-      = submit_tag "Preview", class: 'button', id: 'preview_button', name: 'button_preview', data: { disable_with: 'Previewing...' }
+      = f.submit (post.new_record? ? 'Post' : 'Save'), class: 'button', id: 'submit_button', data: { disable_with: 'Saving...' }
+      = f.submit "Preview", class: 'button', id: 'preview_button', name: 'button_preview', data: { disable_with: 'Previewing...' }
 
   .subber Metadata
   .even

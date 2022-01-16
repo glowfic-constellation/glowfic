@@ -13,22 +13,22 @@
   %tbody
     %tr
       %td.search-box
-        = form_tag search_continuities_path, method: :get do
+        = form_with url: search_continuities_path, method: :get do |f|
           %table.search-form
             %tr
-              %td.width-70= label_tag :name, 'Name'
-              %td= text_field_tag :name, params[:name], style: 'width: 100%; margin: 5px 0px; box-sizing: border-box;', id: :name
+              %td.width-70= f.label :name
+              %td= f.text_field :name, value: params[:name], style: 'width: 100%; margin: 5px 0px; box-sizing: border-box;'
             %tr
               %td Acronym
               %td.padding-5
-                = check_box_tag :abbrev, true, params[:abbrev].present?, { class: 'vmid no-margin', style: 'margin-bottom: 3px;' }
-                = label_tag :abbrev, 'Search for acronym'
+                = f.check_box :abbrev, checked: params[:abbrev], class: 'vmid no-margin', style: 'margin-bottom: 3px;'
+                = f.label :abbrev, 'Search for acronym'
             %tr
-              %td= label_tag :author_id, 'Author'
-              %td= select_tag :author_id, options_from_collection_for_select(@user || [], :id, :username,
-                params[:author_id]), { class: 'chosen-select', prompt: '— Choose Author —', multiple: true }
+              %td= f.label :author_id
+              %td= f.select :author_id, options_from_collection_for_select(@user || [], :id, :username,
+                params[:author_id]), class: 'chosen-select', prompt: '— Choose Author —', multiple: true
             %tr
-              %td.centered{colspan: 2}= submit_tag "Search", class: 'button'
+              %td.centered{colspan: 2}= f.submit "Search", class: 'button'
       %td.vtop
         - if @search_results.present?
           %table
