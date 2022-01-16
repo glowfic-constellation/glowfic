@@ -3,10 +3,10 @@
     %tr
       %th.editor-title{colspan: 2} Request Password Reset
     %tr
-      %th.sub Username
+      %th.sub= label_tag :username
       %td.even= text_field_tag :username, params[:username], placeholder: "Username", class: 'text', id: 'user_username'
     %tr
-      %th.sub Email
+      %th.sub= label_tag :email
       %td.odd= text_field_tag :email, params[:email], placeholder: "Email address", class: 'text', id: 'user_email'
     %tr
       %th.form-table-ender{colspan: 2}= submit_tag "Reset Password", class: 'button'

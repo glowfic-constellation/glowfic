@@ -1,6 +1,6 @@
 %tbody
   %tr
-    %th.sub Name
+    %th.sub= f.label :name
     %td.even= f.text_field :name, placeholder: "Section Name", class: 'text'
   %tr
     %th.sub Index
@@ -8,7 +8,7 @@
       = @section.index.name
       = f.hidden_field :index_id
   %tr
-    %th.sub.vtop Description
+    %th.sub.vtop= f.label :description
     %td.even= f.text_area :description
 %tfoot
   %tr

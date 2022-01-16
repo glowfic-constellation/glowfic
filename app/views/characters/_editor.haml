@@ -29,7 +29,7 @@
           = ff.hidden_field :id
           = ff.text_field :name, placeholder: "Template Name", class: 'text'
   %tr
-    %th.sub Cluster
+    %th.sub= f.label :cluster
     %td{class: cycle('even', 'odd')}= f.text_field :cluster, placeholder: "Template Cluster Name", class: 'text'
   - if @character.user.galleries.present?
     %tr

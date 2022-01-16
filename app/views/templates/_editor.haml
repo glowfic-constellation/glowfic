@@ -1,13 +1,13 @@
 %tbody
   %tr
-    %th.sub Name
+    %th.sub= f.label :name
     %td.even= f.text_field :name, placeholder: "Template Name", class: 'text'
   %tr
-    %th.sub.vtop Description
+    %th.sub.vtop= f.label :description
     %td.odd= f.text_area :description
   - if @selectable_characters.present?
     %tr
-      %th.sub.vtop Characters
+      %th.sub.vtop= f.label :characters_ids, 'Characters'
       %td.even
         = collection_check_boxes :template, :character_ids, @selectable_characters, :id, :name, selected: @character_ids do |box|
           = box.check_box

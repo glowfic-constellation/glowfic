@@ -3,10 +3,10 @@
     %tr
       %th.editor-title{colspan: 2} Change Password
     %tr
-      %th.sub New
+      %th.sub= label_tag :password, 'New'
       %td.odd= password_field_tag :password, params[:password], placeholder: "New Password", class: 'text'
     %tr
-      %th.sub Confirm
+      %th.sub= label_tag :password_confirmation, 'Confirm'
       %td.even= password_field_tag :password_confirmation, params[:password_confirmation], placeholder: "Confirm Password", class: 'text'
     %tr
       %th.form-table-ender{colspan: 2}= submit_tag "Save", class: 'button'

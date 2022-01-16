@@ -1,12 +1,12 @@
 %tbody
   %tr
-    %th.sub Name
+    %th.sub= f.label :name
     %td.even= f.text_field :name, placeholder: "Index Name", class: 'text'
   %tr
     %th.sub Owner
     %td.odd= @index.user.deleted? ? '(deleted user)' : @index.user.username
   %tr
-    %th.sub Privacy
+    %th.sub= f.label :privacy
     %td.even
       = f.select :privacy, options_from_collection_for_select(index_privacy_settings.to_a, :second, :first, @index.privacy)
   %tr
@@ -18,7 +18,7 @@
       = f.radio_button :authors_locked, false, class: 'checkbox'
       = f.label :authors_locked, 'Any Constellation user', value: false
   %tr
-    %th.sub.vtop Description
+    %th.sub.vtop= f.label :description
     %td.even= f.text_area :description
 %tfoot
   %tr

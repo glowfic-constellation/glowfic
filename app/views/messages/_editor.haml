@@ -10,7 +10,7 @@
             Compose New Message
     %tbody
       %tr
-        %th.sub.padding-10.width-150 Recipient
+        %th.sub.padding-10.width-150= f.label :recipient_id
         %td.even.padding-10
           - if @message.parent
             = user_link(@message.recipient) if @message.recipient
@@ -18,10 +18,10 @@
             = f.select :recipient_id, @select_items, prompt: true
       - unless @message.thread_id.present?
         %tr
-          %th.sub.padding-10 Subject
+          %th.sub.padding-10= f.label :subject
           %td.odd.padding-10= f.text_field :subject, placeholder: 'Subject'
       %tr#message-row
-        %th.sub.padding-10.vtop Message
+        %th.sub.padding-10.vtop= f.label :message
         %td.even.padding-10= f.text_area :message
     %tfoot
       %tr
