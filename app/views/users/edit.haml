@@ -105,13 +105,13 @@
   .form-table#change-password
     .editor-title Change Password
     %div
-      .sub= f.label :old_password, 'Old'
+      .sub= f.label :old_password
       %div{class: cycle('even', 'odd')}= f.password_field :old_password, placeholder: "Old Password", autocomplete: 'current-password', value: params.fetch(:user, {})[:old_password]
     %div
-      .sub= f.label :password, 'New'
+      .sub= f.label :password, 'New Password'
       %div{class: cycle('even', 'odd')}= f.password_field :password, placeholder: "New Password", value: params.fetch(:user, {})[:password], autocomplete: 'new-password'
     %div
-      .sub= f.label :password_confirmation, 'Confirm'
+      .sub= f.label :password_confirmation, 'Confirm Password'
       %div{class: cycle('even', 'odd')}= f.password_field :password_confirmation, placeholder: "Confirm Password", value: params.fetch(:user, {})[:password_confirmation], autocomplete: 'new-password'
     .form-table-ender= f.submit "Save", class: 'button'
 
