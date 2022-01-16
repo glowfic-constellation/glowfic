@@ -1,20 +1,20 @@
 %tbody
   %tr
-    %th.sub Name
+    %th.sub= f.label :name
     %td.even= f.text_field :name, placeholder: "Continuity Name", class: 'text'
   %tr
     %th.sub Creator
     %td.odd= @board.creator.username
   %tr
-    %th.sub Coauthors
+    %th.sub= f.label :coauthor_ids, 'Coauthors'
     %td.even
       = f.collection_select(:coauthor_ids, @coauthors, :id, :username, { selected: @board.coauthors.pluck(:user_id) }, { multiple: true })
   %tr
-    %th.sub Cameos
+    %th.sub= f.label :cameo_ids, 'Cameos'
     %td.odd
       = f.collection_select(:cameo_ids, @cameos, :id, :username, { selected: @board.cameos.pluck(:user_id) }, { multiple: true })
   %tr
-    %th.sub Locked?
+    %th.sub= f.label :authors_locked, 'Locked?'
     %td.even
       = f.check_box :authors_locked, class: 'vmid', checked: @board.authors_locked
       = f.label :authors_locked, 'Only allow authors to create new posts in this continuity', class: 'no-margin'

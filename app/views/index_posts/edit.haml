@@ -24,7 +24,7 @@
         %th.sub Post
         %td.even= link_to @index_post.post.subject, post_path(@index_post.post)
       %tr
-        %th.sub.vtop Description
+        %th.sub.vtop= f.label :description
         %td.odd= f.text_area :description
       %tr
         %th.form-table-ender{colspan: 2}= submit_tag "Save", class: 'button'

@@ -17,15 +17,15 @@
     %tr.gallery-icon-upload
       - klass = cycle('even', 'odd')
       - file_id = "icon_files_#{f.object.id}"
-      %td.centered{class: klass} Upload
+      %td.centered{class: klass}= label_tag file_id.to_sym, 'Upload'
       %td{class: klass}= file_field_tag file_id, id: file_id, class: 'icon_files', data: { icon_id: f.object.id }
     %tr.gallery-icon-keyword
       - klass = cycle('even', 'odd')
-      %td.centered{class: klass} Keyword
+      %td.centered{class: klass}= f.label :keyword
       %td{class: klass}= f.text_field :keyword, placeholder: "Keyword", class: 'text'
     %tr.gallery-icon-credit
       - klass = cycle('even', 'odd')
-      %td.centered{class: klass} Credit
+      %td.centered{class: klass}= f.label :credit
       %td{class: klass}= f.text_field :credit, placeholder: "Credit", class: 'text'
     - if gif.present?
       %tr.gallery-icon-remove

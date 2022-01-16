@@ -5,10 +5,10 @@
         %th.editor-title{colspan: 2} Account Settings
     %tbody
       %tr
-        %th.sub Username
+        %th.sub= f.label :username
         %td{class: cycle('even', 'odd')}= f.text_field :username, placeholder: "Username", class: 'text', disabled: current_user.salt_uuid.nil?
       %tr
-        %th.sub Email
+        %th.sub= f.label :email
         %td{class: cycle('even', 'odd')}= f.text_field :email, placeholder: "Email address", class: 'text'
       %tr
         %th.sub Notifications
@@ -24,10 +24,10 @@
           %td{class: cycle('even', 'odd')}
             .details Please set your avatar directly from the desired icon's page.
       %tr
-        %th.sub Paging
+        %th.sub= f.label :per_page, 'Paging'
         %td{class: cycle('even', 'odd')}= f.select(:per_page, per_page_options(current_user.per_page))
       %tr
-        %th.sub Time zone
+        %th.sub= f.label :timezone, 'Time zone'
         %td{class: cycle('even', 'odd')}= f.select(:timezone, timezone_options(current_user.timezone))
       %tr
         %th.sub Split icon picker
@@ -44,21 +44,21 @@
           = f.check_box :default_hide_retired_characters, class: 'width-15 vmid'
           = f.label :default_hide_retired_characters, "Hide retired characters"
       %tr
-        %th.sub Default editor
+        %th.sub= f.label :default_editor
         %td{class: cycle('even', 'odd')}= f.select(:default_editor, options_for_select({ 'Rich Text' => 'rtf', HTML: 'html' }, current_user.default_editor))
       %tr
-        %th.sub Moiety hex
+        %th.sub= f.label :moiety, 'Moiety hex'
         %td{class: cycle('even', 'odd')}
           \#
           = f.text_field :moiety, placeholder: "Hex code", class: 'text', style: 'width: 80px;', maxlength: 6
       %tr
-        %th.sub Moiety name
+        %th.sub= f.label :moiety_name
         %td{class: cycle('even', 'odd')}= f.text_field :moiety_name, placeholder: "Moiety", class: 'text'
       %tr
-        %th.sub Layout
+        %th.sub= f.label :layout
         %td{class: cycle('even', 'odd')}= f.select :layout, layout_options(current_user.layout)
       %tr
-        %th.sub Time display
+        %th.sub= f.label :time_display
         %td{class: cycle('even', 'odd')}= f.select :time_display, time_display_options(current_user.time_display)
       %tr
         %th.sub Unread
@@ -100,13 +100,13 @@
         %th.editor-title{colspan: 2} Change Password
     %tbody
       %tr
-        %th.sub Old
+        %th.sub= label_tag :old_password, 'Old'
         %td{class: cycle('even', 'odd')}= password_field_tag :old_password, params[:old_password], placeholder: "Old Password", class: 'text'
       %tr
-        %th.sub New
+        %th.sub= label_tag :password, 'New'
         %td{class: cycle('even', 'odd')}= f.password_field :password, placeholder: "New Password", class: 'text', value: (params[:user] || {})[:password]
       %tr
-        %th.sub Confirm
+        %th.sub= label_tag :password_confirmation, 'Confirm'
         %td{class: cycle('even', 'odd')}= f.password_field :password_confirmation, placeholder: "Confirm Password", class: 'text', value: (params[:user] || {})[:password_confirmation]
     %tfoot
       %tr
@@ -120,7 +120,7 @@
           %th.editor-title{colspan: 2} Upgrade Account
       %tbody
         %tr
-          %th.sub Secret
+          %th.sub= form_tag :secret
           %td.even= text_field_tag :secret, params[:secret], placeholder: "Secret word - ask around the community"
       %tfoot
         %tr
