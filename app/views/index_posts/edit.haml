@@ -5,7 +5,7 @@
   &raquo;
   = link_to @index_post.post.subject, post_path(@index_post.post)
 
-= form_for @index_post do |f|
+= form_with model: @index_post do |f|
   %table.form-table
     %thead
       %tr
@@ -27,4 +27,4 @@
         %th.sub.vtop= f.label :description
         %td.odd= f.text_area :description
       %tr
-        %th.form-table-ender{colspan: 2}= submit_tag "Save", class: 'button'
+        %th.form-table-ender{colspan: 2}= f.submit "Save", class: 'button'

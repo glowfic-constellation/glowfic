@@ -5,4 +5,4 @@
     %br
     %span.icon-keyword= keyword
   - if is_owner && !skip_forms
-    .select-button= check_box_tag :"marked_ids[]", icon_id, false, id: nil
+    .select-button= f.check_box :"marked_ids[]", value: icon_id, id: nil

@@ -6,7 +6,7 @@
   %b Add Post
 
 
-= form_for @index_post, url: index_posts_path, method: :post do |f|
+= form_with model: @index_post, url: index_posts_path, method: :post do |f|
   %table.form-table
     %thead
       %tr
@@ -31,4 +31,4 @@
         %td.odd= f.text_area :description
     %tfoot
       %tr
-        %th.form-table-ender{colspan: 2}= submit_tag "Save", class: 'button'
+        %th.form-table-ender{colspan: 2}= f.submit "Save", class: 'button'

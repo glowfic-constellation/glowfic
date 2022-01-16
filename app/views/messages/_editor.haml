@@ -1,5 +1,5 @@
-= form_for @message, html: { id: 'message_form' } do |f|
-  = hidden_field_tag :parent_id, @message.parent_id
+= form_with model: @message, html: { id: 'message_form' } do |f|
+  = f.hidden_field :parent_id, value: @message.parent_id
   %table
     %thead
       %tr

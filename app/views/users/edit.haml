@@ -1,4 +1,4 @@
-= form_for current_user do |f|
+= form_with model: current_user do |f|
   %table.form-table
     %thead
       %tr
@@ -90,38 +90,38 @@
           = f.label :show_user_in_switcher, "Show user character"
     %tfoot
       %tr
-        %th.form-table-ender{colspan: 2}= submit_tag "Save", class: 'button'
+        %th.form-table-ender{colspan: 2}= f.submit "Save", class: 'button'
 
 %br
-= form_for current_user, url: password_user_path(current_user), method: :put, html: { id: 'change_password_form' } do |f|
+= form_with model: current_user, url: password_user_path(current_user), method: :put, html: { id: 'change_password_form' } do |f|
   %table.form-table#change-password
     %thead
       %tr
         %th.editor-title{colspan: 2} Change Password
     %tbody
       %tr
-        %th.sub= label_tag :old_password, 'Old'
-        %td{class: cycle('even', 'odd')}= password_field_tag :old_password, params[:old_password], placeholder: "Old Password", class: 'text'
+        %th.sub= f.label :old_password, 'Old'
+        %td{class: cycle('even', 'odd')}= f.password_field :old_password, placeholder: "Old Password", class: 'text', value: params.fetch(:user, {})[:old_password]
       %tr
-        %th.sub= label_tag :password, 'New'
-        %td{class: cycle('even', 'odd')}= f.password_field :password, placeholder: "New Password", class: 'text', value: (params[:user] || {})[:password]
+        %th.sub= f.label :password, 'New'
+        %td{class: cycle('even', 'odd')}= f.password_field :password, placeholder: "New Password", class: 'text', value: params.fetch(:user, {})[:password]
       %tr
-        %th.sub= label_tag :password_confirmation, 'Confirm'
-        %td{class: cycle('even', 'odd')}= f.password_field :password_confirmation, placeholder: "Confirm Password", class: 'text', value: (params[:user] || {})[:password_confirmation]
+        %th.sub= f.label :password_confirmation, 'Confirm'
+        %td{class: cycle('even', 'odd')}= f.password_field :password_confirmation, placeholder: "Confirm Password", class: 'text', value: params.fetch(:user, {})[:password_confirmation]
     %tfoot
       %tr
-        %th.form-table-ender{colspan: 2}= submit_tag "Save", class: 'button'
+        %th.form-table-ender{colspan: 2}= f.submit "Save", class: 'button'
 - if current_user.read_only?
   %br
-  = form_for current_user, url: upgrade_user_path(current_user), method: :put, html: { id: 'upgrade_account_form' } do
+  = form_with model: current_user, url: upgrade_user_path(current_user), method: :put, html: { id: 'upgrade_account_form' } do |f|
     %table.form-table#upgrade-Account
       %thead
         %tr
           %th.editor-title{colspan: 2} Upgrade Account
       %tbody
         %tr
-          %th.sub= form_tag :secret
-          %td.even= text_field_tag :secret, params[:secret], placeholder: "Secret word - ask around the community"
+          %th.sub= f.label :secret
+          %td.even= f.text_field :secret, value: params[:secret], placeholder: "Secret word - ask around the community"
       %tfoot
         %tr
-          %th.form-table-ender{colspan: 2}= submit_tag "Save", class: 'button'
+          %th.form-table-ender{colspan: 2}= f.submit "Save", class: 'button'

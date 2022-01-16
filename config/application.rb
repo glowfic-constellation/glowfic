@@ -79,5 +79,8 @@ module Glowfic
     # redis-rails does not support cache versioning
     config.active_record.cache_versioning = false
     config.active_record.collection_cache_versioning = false
+
+    # we expect forms to send you somewhere
+    config.action_view.form_with_generates_remote_forms = false
   end
 end
