@@ -5,7 +5,7 @@
   &raquo;
   %b Edit
 
-= form_for @index, method: :put do |f|
+= form_with model: @index, method: :put do |f|
   .form-table#index-editor
     .editor-title Edit Index
     = render 'editor', f: f

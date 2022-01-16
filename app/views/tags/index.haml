@@ -15,11 +15,11 @@
         = @view.present? ? @view.titlecase.pluralize : 'Tags'
     %tr
       %th.subber.padding-10{colspan: col_count}
-        = form_tag tags_path, method: :get do
+        = form_with url: tags_path, method: :get do |f|
           Search for a tag:
-          = text_field_tag :name, params[:name], id: 'tag-search-name', placeholder: 'Name (case-insensitive)'
-          = select_tag :view, options_for_select(@tag_options, @view), include_blank: '— Choose Type —', id: 'tag-view'
-          = submit_tag "Search", class: 'button', id: 'tag-search'
+          = f.text_field :name, value: params[:name], id: 'tag-search-name', placeholder: 'Name (case-insensitive)'
+          = f.select :view, options_for_select(@tag_options, @view), include_blank: '— Choose Type —', id: 'tag-view'
+          = f.submit "Search", class: 'button', id: 'tag-search'
     %tr
       %th.sub Name
       - unless @view.present?

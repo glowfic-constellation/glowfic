@@ -26,4 +26,4 @@
   %div
     .sub.vtop= f.label :description
     %div{class: cycle('even', 'odd')}= f.text_area :description, placeholder: 'Description', cols: 35
-.form-table-ender= submit_tag "Save", class: 'button'
+.form-table-ender= f.submit "Save", class: 'button'

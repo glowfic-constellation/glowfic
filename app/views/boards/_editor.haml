@@ -25,6 +25,6 @@
     = f.check_box :mega, checked: @board.mega
     = f.label :mega, 'Mark this as a large continuity with many authors'
 %div
-  .sub.vtop Description
+  .sub.vtop= f.label :description
   .odd= f.text_area :description
-.form-table-ender= submit_tag "Save", class: 'button'
+.form-table-ender= f.submit "Save", class: 'button'

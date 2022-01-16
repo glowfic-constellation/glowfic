@@ -20,8 +20,8 @@
       { class: 'chosen-select', disabled: params[:new_template].present? }
     - if @character.user == current_user
       .checkbox-field
-        = check_box_tag :new_template, '1', params[:new_template].present?
-        = label_tag :new_template, 'Create New Template'
+        = f.check_box :new_template, checked: params[:new_template]
+        = f.label :new_template, 'Create New Template'
 - if @character.user == current_user
   #create_template{class: ('hidden' unless params[:new_template])}
     = f.fields_for :template do |ff|
@@ -62,4 +62,4 @@
   %div
     .sub.vtop= f.label :audit_comment, 'Moderator Note'
     %div{class: cycle('even', 'odd')}= f.text_area :audit_comment, placeholder: 'Explain reason for moderation here', cols: 35
-.form-table-ender= submit_tag "Save", class: 'button'
+.form-table-ender= f.submit "Save", class: 'button'

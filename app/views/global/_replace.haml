@@ -1,4 +1,4 @@
--# locals: ( obj:, name:, icon:, alt_icon: )
+-# locals: ( obj:, f:, name:, icon:, alt_icon: )
 
 .form-table#replace-form
   .editor-title Replace All Uses of #{obj.class}
@@ -23,6 +23,6 @@
       .details *If none are selected, replaces all uses*
   - @posts.each do |post|
     .replace-posts.checkbox-field{class: cycle('even', 'odd')}
-      = check_box_tag :'post_ids[]', post.id, false, id: nil
+      = f.check_box :'post_ids[]', value: post.id, checked: false, id: nil
       = link_to post.subject, post_path(post)
-  .form-table-ender= submit_tag "Replace", class: 'button'
+  .form-table-ender= f.submit "Replace", class: 'button'

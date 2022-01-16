@@ -6,7 +6,7 @@
   %b Add Post
 
 
-= form_for @index_post, url: index_posts_path, method: :post do |f|
+= form_with model: @index_post, url: index_posts_path, method: :post do |f|
   .form-table#index-post-editor
     .editor-title Add Post to Index
     %div
@@ -26,4 +26,4 @@
     %div
       .sub.vtop= f.label :description
       .odd= f.text_area :description
-    .form-table-ender= submit_tag "Save", class: 'button'
+    .form-table-ender= f.submit "Save", class: 'button'

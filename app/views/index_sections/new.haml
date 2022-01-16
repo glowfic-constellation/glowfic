@@ -6,7 +6,7 @@
   %b New Section
 
 
-= form_for @section, url: index_sections_path, method: :post do |f|
+= form_with model: @section, method: :post do |f|
   .form-table#index-section-editor
     .editor-title Create #{@index.try(:name)} Section
     = render 'editor', f: f

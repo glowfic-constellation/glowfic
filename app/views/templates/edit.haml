@@ -7,7 +7,7 @@
   &raquo;
   %b Edit
 
-= form_for @template, url: @template, method: :put do |f|
+= form_with model: @template, method: :put do |f|
   .form-table
     .editor-title Edit Template
     = render 'editor', f: f

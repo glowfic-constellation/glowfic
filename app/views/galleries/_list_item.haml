@@ -1,4 +1,4 @@
--# locals: ( list_item:, is_owner: false, skip_forms: false )
+-# locals: ( list_item:, f:, is_owner: false, skip_forms: false )
 
 - icon_id, keyword, _url, credit = list_item
 - klass = cycle('even', 'odd')
@@ -11,4 +11,4 @@
 
   %td.width-70.right-align{class: klass}
     - if is_owner && !skip_forms
-      = check_box_tag :"marked_ids[]", icon_id, false, id: nil
+      = f.check_box :"marked_ids[]", value: icon_id, id: nil

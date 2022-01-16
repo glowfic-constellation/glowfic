@@ -3,8 +3,9 @@
 - content_for :breadcrumbs do
   %b Add New
 
-= form_tag icon_gallery_path(id: @gallery&.id || 0),
+= form_with url: icon_gallery_path(id: @gallery&.id || 0),
   method: :post,
+  scope: 'icons[]',
   class: 'icon-upload',
   data: { 'form-data' => @s3_direct_post.fields, url: @s3_direct_post.url, host: URI.parse(@s3_direct_post.url).host, limit: 150 } do
   .content-header
@@ -17,7 +18,7 @@
   #icon-upload
     .subber Upload Files
     .odd
-      = file_field_tag "icons[][file]", id: "icon_files", class: 'icon_files', multiple: true
+      = f.file_field :file, id: "icon_files", class: 'icon_files', multiple: true
       %span.progress-box
   .form-table#icon-table
     %div
@@ -43,12 +44,12 @@
             = image_tag "icons/accept.png", alt: ''
             Uploaded
             %span.filename= @icons[i].try(:[], :filename)
-          = text_field_tag "icons[][url]", url, placeholder: "URL", class: ('hidden' if s3_key.present?), id: "icons_#{i}_url"
-          = hidden_field_tag "icons[][s3_key]", s3_key, id: "icons_#{i}_s3_key"
-          = hidden_field_tag "icons[][filename]", @icons[i].try(:[], :filename), id: "icons_#{i}_filename"
-        .keyword-cell.input-cell{class: klass}= text_field_tag "icons[][keyword]", keyword, placeholder: "Keyword", id: "icons_#{i}_keyword"
-        .credit-cell.input-cell{class: klass}= text_field_tag "icons[][credit]", @icons[i].try(:[], :credit), placeholder: "Credit", id: "icons_#{i}_credit"
+          = f.text_field :url, value: url, placeholder: "URL", class: ('hidden' if s3_key.present?), id: "icons_#{i}_url"
+          = f.hidden_field :s3_key, value: s3_key, id: "icons_#{i}_s3_key"
+          = f.hidden_field :filename, value: @icons[i].try(:[], :filename), id: "icons_#{i}_filename"
+        .keyword-cell.input-cell{class: klass}= f.text_field :keyword, value: keyword, placeholder: "Keyword", id: "icons_#{i}_keyword"
+        .credit-cell.input-cell{class: klass}== f.text_field :credit, value: @icons[i].try(:[], :credit), placeholder: "Credit", id: "icons_#{i}_credit"
         .icon-buttons{class: klass}
           %a{href: '#'}= image_tag "icons/add.png", class: "icon-row-add", alt: 'Add Row'
           %a{href: '#'}= image_tag "icons/minus.png", class: "icon-row-rem", alt: 'Delete Row'
-      .submit-row.form-table-ender= submit_tag "Add New Icons", class: 'button'
+      .submit-row.form-table-ender= f.submit "Add New Icons", class: 'button'
