@@ -213,6 +213,15 @@ RSpec.describe PostsController do
         expect(assigns(:search_results)).to match_array([post1, post2])
       end
 
+      it "filters by subject acronym" do
+        post1 = create(:post, subject: 'contains stars')
+        post2 = create(:post, subject: 'contains Stars')
+        post3 = create(:post, subject: 'Case starlight')
+        create(:post, subject: 'unrelated')
+        get :search, params: { commit: true, subject: 'cs', abbrev: true }
+        expect(assigns(:search_results)).to match_array([post1, post2, post3])
+      end
+
       it "does not mix up subject with content" do
         create(:post, subject: 'unrelated', content: 'contains stars')
         get :search, params: { commit: true, subject: 'stars' }
