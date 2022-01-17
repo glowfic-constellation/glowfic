@@ -152,7 +152,7 @@ RSpec.describe SessionsController do
       password = 'password'
       user = create(:user, password: password)
       expect(cookies.signed[:user_id]).to be_nil
-      post :create, params: { username: user.username, password: password, remember_me: true }
+      post :create, params: { username: user.username, password: password, remember_me: '1' }
       expect(controller.send(:logged_in?)).to eq(true)
       expect(cookies.signed[:user_id]).to eq(user.id)
     end

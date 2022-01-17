@@ -63,7 +63,7 @@ RSpec.describe UsersController do
     end
 
     it "requires stupid captcha" do
-      post :create, params: { tos: true }
+      post :create, params: { tos: '1' }
       expect(response).to render_template(:new)
       expect(flash[:error]).to eq("Please check your math and try again.")
       expect(assigns(:user)).not_to be_valid
@@ -72,7 +72,7 @@ RSpec.describe UsersController do
 
     it "requires valid fields" do
       allow(ENV).to receive(:[]).with('ACCOUNT_SECRET').and_return('ALLHAILTHECOIN')
-      post :create, params: { secret: "ALLHAILTHECOIN", tos: true, addition: '14' }
+      post :create, params: { secret: "ALLHAILTHECOIN", tos: '1', addition: '14' }
       expect(response).to render_template(:new)
       expect(flash[:error][:message]).to eq("There was a problem completing your sign up.")
       expect(assigns(:user)).not_to be_valid
@@ -82,7 +82,7 @@ RSpec.describe UsersController do
     it "rejects short passwords" do
       allow(ENV).to receive(:[]).with('ACCOUNT_SECRET').and_return('ALLHAILTHECOIN')
       user = build(:user).attributes.with_indifferent_access.merge(password: 'short', password_confirmation: 'short')
-      post :create, params: { secret: 'ALLHAILTHECOIN', tos: true, addition: '14' }.merge(user: user)
+      post :create, params: { secret: 'ALLHAILTHECOIN', tos: '1', addition: '14' }.merge(user: user)
       expect(response).to render_template(:new)
       expect(flash[:error][:message]).to eq('There was a problem completing your sign up.')
       expect(flash[:error][:array]).to eq(['Password is too short (minimum is 6 characters)'])
@@ -96,7 +96,7 @@ RSpec.describe UsersController do
       user = build(:user).attributes.with_indifferent_access.merge(password: pass, password_confirmation: pass, email: 'testemail@example.com')
 
       expect {
-        post :create, params: { secret: "ALLHAILTHECOIN", tos: true, addition: '14' }.merge(user: user)
+        post :create, params: { secret: "ALLHAILTHECOIN", tos: '1', addition: '14' }.merge(user: user)
       }.to change { User.count }.by(1)
       expect(response).to redirect_to(root_url)
       expect(flash[:success]).to eq("User created! You have been logged in.")
@@ -114,7 +114,7 @@ RSpec.describe UsersController do
       pass = 'testpassword'
       user = build(:user).attributes.with_indifferent_access.merge(password: pass, password_confirmation: pass, email: 'testemail@example.com')
 
-      post :create, params: { tos: true, addition: '14' }.merge(user: user)
+      post :create, params: { tos: '1', addition: '14' }.merge(user: user)
 
       expect(response).to redirect_to(root_url)
       expect(flash[:success]).to eq("User created! You have been logged in.")
@@ -126,7 +126,7 @@ RSpec.describe UsersController do
       pass = 'this is a long password to test the password validation feature and to see if it accepts this'
       user = build(:user).attributes.with_indifferent_access.merge(password: pass, password_confirmation: pass)
       expect {
-        post :create, params: { secret: 'ALLHAILTHECOIN', tos: true, addition: '14' }.merge(user: user)
+        post :create, params: { secret: 'ALLHAILTHECOIN', tos: '1', addition: '14' }.merge(user: user)
       }.to change { User.count }.by(1)
       expect(response).to redirect_to(root_url)
       expect(flash[:success]).to eq("User created! You have been logged in.")
@@ -139,7 +139,7 @@ RSpec.describe UsersController do
       allow(ENV).to receive(:[]).with('ACCOUNT_SECRET').and_return('ALLHAILTHECOIN')
       user = build(:user, username: 'withspace ').attributes
       user = user.with_indifferent_access.merge(password: 'password', password_confirmation: 'password')
-      post :create, params: { secret: 'ALLHAILTHECOIN', tos: true, addition: '14' }.merge(user: user)
+      post :create, params: { secret: 'ALLHAILTHECOIN', tos: '1', addition: '14' }.merge(user: user)
       expect(flash[:success]).to eq("User created! You have been logged in.")
       expect(assigns(:current_user).username).to eq('withspace')
     end
