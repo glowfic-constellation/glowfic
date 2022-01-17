@@ -312,7 +312,7 @@ class PostsController < WritableController
         end
       end
     end
-    @search_results = @search_results.complete if params[:completed].present?
+    @search_results = @search_results.complete if params[:completed] == '1'
     if params[:author_id].present?
       # get author matches for posts that have at least one
       author_posts = Post::Author.where(user_id: params[:author_id]).group(:post_id)
