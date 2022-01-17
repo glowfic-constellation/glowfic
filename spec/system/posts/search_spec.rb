@@ -26,13 +26,6 @@ RSpec.describe "Searching posts" do
       expect(page).to have_no_selector('.post-subject', text: 'First post')
     end
 
-    # check the post is still hidden when there are two pages of results
-    2.upto(26) { |i| create(:post, subject: 'post ' + i.to_s, privacy: :private) }
-    perform_search
-    within('#search_results') do
-      expect(page).to have_no_selector('.post-subject')
-    end
-
     # check a new post shows up
     create(:post, subject: 'Last post') # post2
     perform_search
