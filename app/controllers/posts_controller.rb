@@ -3,6 +3,7 @@ class PostsController < WritableController
   include Taggable
 
   before_action :login_required, except: [:index, :show, :history, :warnings, :search, :stats]
+  before_action :readonly_forbidden, except: [:index, :show, :history, :warnings, :search, :stats]
   before_action :find_model, only: [:show, :history, :delete_history, :stats, :warnings, :edit, :update, :destroy]
   before_action :require_permission, only: [:edit, :delete_history]
   before_action :require_import_permission, only: [:new, :create]

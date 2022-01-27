@@ -209,6 +209,7 @@ class Post < ApplicationRecord
     return false unless user
     return false if complete? || abandoned?
     return false unless user.writes_in?(board)
+    return false if user.readonly?
     return true unless authors_locked?
     author_ids.include?(user.id)
   end
