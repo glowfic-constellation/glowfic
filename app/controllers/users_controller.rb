@@ -40,9 +40,7 @@ class UsersController < ApplicationController
     @user.tos_version = User::CURRENT_TOS_VERSION
 
     if params[:secret] != "ALLHAILTHECOIN"
-      signup_prep
-      flash.now[:error] = "This is in beta. Please ask someone in the community for the (not very) secret beta code."
-      render :new and return
+      @user.role_id = Permissible::READONLY
     end
 
     begin

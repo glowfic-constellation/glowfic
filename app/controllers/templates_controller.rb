@@ -3,6 +3,7 @@ class TemplatesController < ApplicationController
   include CharacterSplit
 
   before_action :login_required, except: [:show, :search]
+  before_action :readonly_forbidden, except: [:show, :search]
   before_action :find_model, only: [:show, :destroy, :edit, :update]
   before_action :require_permission, only: [:edit, :update, :destroy]
   before_action :editor_setup, only: [:new, :edit]
