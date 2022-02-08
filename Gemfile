@@ -101,3 +101,5 @@ group :test do
   gem 'timecop'
   gem 'webmock'
 end
+
+gem "oauth", "~> 0.4.7"
