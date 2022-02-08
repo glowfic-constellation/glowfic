@@ -11,10 +11,10 @@ class ClientApplication < ApplicationRecord
   validates :key, uniqueness: true
   before_validation :generate_keys, :on => :create
 
-  validates :url, format: { :with => /\Ahttp(s?):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?\z/i }
-  validates :support_url, format: { :with => /\Ahttp(s?):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?\z/i, :allow_blank => true }
+  validates :url, format: { :with => /\Ahttp(s?):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@\-\/]))?\z/i }
+  validates :support_url, format: { :with => /\Ahttp(s?):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@\-\/]))?\z/i, :allow_blank => true }
   validates :callback_url,
-    format: { :with => /\Ahttp(s?):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?\z/i, :allow_blank => false }
+    format: { :with => /\Ahttp(s?):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@\-\/]))?\z/i, :allow_blank => false }
 
   attr_accessor :token_callback_url
 
@@ -43,7 +43,7 @@ class ClientApplication < ApplicationRecord
 
   # If your application requires passing in extra parameters handle it here
   def create_request_token(_params={})
-    RequestToken.create :client_application => self, :callback_url=>self.token_callback_url
+    RequestToken.create :client_application => self, :callback_url => self.token_callback_url
   end
 
   protected

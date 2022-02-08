@@ -4,8 +4,8 @@ RSpec.describe Oauth2Verifier do
   before(:each) do
     @user = create(:user)
     @client_application = ClientApplication.create! :user => @user, :name => "Client Application name", :url => "http://localhost/",
-:callback_url => "http://localhost:3000/callback"
-    @verifier = Oauth2Verifier.create! :client_application => @client_application, :user=>@user, :scope => "bbbb aaaa"
+      :callback_url => "http://localhost:3000/callback"
+    @verifier = Oauth2Verifier.create! :client_application => @client_application, :user => @user, :scope => "bbbb aaaa"
   end
 
   it "should be valid" do
@@ -30,7 +30,7 @@ RSpec.describe Oauth2Verifier do
 
   it "should generate query string" do
     expect(@verifier.to_query).to eq "code=#{@verifier.code}"
-    @verifier.state="bbbb aaaa"
+    @verifier.state = "bbbb aaaa"
     expect(@verifier.to_query).to eq "code=#{@verifier.code}&state=bbbb+aaaa"
   end
 

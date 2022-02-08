@@ -13,16 +13,16 @@ class ProviderAuthorizer
 
   def code
     @code ||= ::Oauth2Verifier.create! :client_application => app,
-                                       :user               => @user,
-                                       :scope              => @params[:scope],
-                                       :callback_url       => @params[:redirect_uri]
+      :user               => @user,
+      :scope              => @params[:scope],
+      :callback_url       => @params[:redirect_uri]
   end
 
   def token
     @token ||= ::Oauth2Token.create! :client_application => app,
-                                     :user               => @user,
-                                     :scope              => @params[:scope],
-                                     :callback_url       => @params[:redirect_uri]
+      :user               => @user,
+      :scope              => @params[:scope],
+      :callback_url       => @params[:redirect_uri]
   end
 
   def authorized?
@@ -45,7 +45,7 @@ class ProviderAuthorizer
   end
 
   def response
-    r = {state: params[:state]}
+    r = { state: params[:state] }
     r[:error] = 'access_denied' unless authorized?
     case params[:response_type]
       when 'code'

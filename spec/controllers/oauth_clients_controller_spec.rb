@@ -99,7 +99,7 @@ RSpec.describe OauthClientsController do
 
   describe "create" do
     def do_valid_post
-      post :create, params: { 'client_application'=>{'name' => 'my site', :url=>"http://test.com", :callback_url=>"http://test.com/callback"} }
+      post :create, params: { 'client_application'=>{ 'name' => 'my site', :url => "http://test.com", :callback_url => "http://test.com/callback" } }
       @client_application = ClientApplication.last
     end
 
@@ -140,12 +140,12 @@ RSpec.describe OauthClientsController do
     def do_valid_update
       put :update,
         params: { :id                  => @client_application.id,
-                  'client_application' => {'name' => 'updated site', 'url' => @client_application.url,
-'callback_url' => @client_application.callback_url} }
+                  'client_application' => { 'name' => 'updated site', 'url' => @client_application.url,
+'callback_url' => @client_application.callback_url, }, }
     end
 
     def do_invalid_update
-      put :update, params: { :id => @client_application.id, 'client_application'=>{'name' => nil} }
+      put :update, params: { :id => @client_application.id, 'client_application' => { 'name' => nil } }
     end
 
     it "should redirect to show client_application" do

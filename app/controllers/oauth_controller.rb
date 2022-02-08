@@ -10,7 +10,7 @@ class OauthController < ApplicationController
     if @token
       render :plain => @token.to_query
     else
-      render :nothing => true, :status => 401
+      render :nothing => true, :status => :unauthorized
     end
   end
 
@@ -61,14 +61,14 @@ class OauthController < ApplicationController
   # Capabilities of current_token
   def capabilities
     if current_token.respond_to?(:capabilities)
-      @capabilities=current_token.capabilities
+      @capabilities = current_token.capabilities
     else
-      @capabilities={:invalidate=>url_for(:action=>:invalidate)}
+      @capabilities = { :invalidate=>url_for(:action=>:invalidate) }
     end
 
     respond_to do |format|
-      format.json {render :json=>@capabilities}
-      format.xml {render :xml=>@capabilities}
+      format.json { render :json=>@capabilities }
+      format.xml { render :xml=>@capabilities }
     end
   end
 
@@ -96,7 +96,7 @@ class OauthController < ApplicationController
       oauth2_error
       return
     end
-    @token = Oauth2Token.create! :client_application=>@client_application, :user=>@user, :scope=>params[:scope]
+    @token = Oauth2Token.create! :client_application => @client_application, :user => @user, :scope => params[:scope]
     render :json=>@token
   end
 
@@ -107,7 +107,7 @@ class OauthController < ApplicationController
 
   # autonomous authorization which creates a token for client_applications user
   def oauth2_token_client_credentials
-    @token = Oauth2Token.create! :client_application=>@client_application, :user=>@client_application.user, :scope=>params[:scope]
+    @token = Oauth2Token.create! :client_application => @client_application, :user => @client_application.user, :scope => params[:scope]
     render :json=>@token
   end
 
@@ -118,6 +118,6 @@ class OauthController < ApplicationController
   end
 
   def oauth2_error(error="invalid_grant")
-    render :json=>{:error=>error}.to_json, :status => 400
+    render :json => { :error=>error }.to_json, :status => :bad_request
   end
 end
