@@ -39,7 +39,7 @@ RSpec.describe OauthController, type: :controller do
     end
 
     it "should return access_token" do
-      verifier = Oauth2Verifier.create! :client_application => @client_application, :user=>@user, :scope => "account"
+      verifier = Oauth2Verifier.create! :client_application => @client_application, :user=>@user, :scope => "account", :callback_url => @client_application.callback_url
       ProviderAuthorizer.new @user, true,
         {client_id: @client_application.key, scope: 'account', redirect_uri: @client_application.callback_url}
       post :token,
@@ -52,7 +52,6 @@ RSpec.describe OauthController, type: :controller do
           state: nil,
           permitted: true
         }
-      puts response.body
       expect(response.status).to eq(200)
     end
   end
