@@ -75,29 +75,12 @@ class Tag < ApplicationRecord
     return false unless type == other_tag.type
     transaction do
       # rubocop:disable Rails/SkipsModelValidations
-      unless type == GalleryGroup.to_s
+      unless type == 'GalleryGroup'
         theirs = PostTag.where(tag: other_tag)
         theirs.where(post_id: post_ids).delete_all
         theirs.update_all(tag_id: self.id)
       end
-      if [GalleryGroup, Setting].map(&:to_s).include?(type)
-        theirs = CharacterTag.where(tag: other_tag)
-        theirs.where(character_id: character_ids).delete_all
-        theirs.update_all(tag_id: self.id)
-      end
-      if type == GalleryGroup.to_s
-        theirs = GalleryTag.where(tag: other_tag)
-        theirs.where(gallery_id: gallery_ids).delete_all
-        theirs.update_all(tag_id: self.id)
-      end
-      if type == Setting.to_s
-        their_children = Tag::SettingTag.where(tag_id: other_tag.id)
-        their_children.where(tagged_id: child_setting_ids).delete_all
-        their_children.update_all(tag_id: self.id)
-        their_parents = Tag::SettingTag.where(tagged_id: other_tag.id)
-        their_parents.where(tag_id: parent_setting_ids).delete_all
-        their_parents.update_all(tagged_id: self.id)
-      end
+      yield
       other_tag.destroy!
       # rubocop:enable Rails/SkipsModelValidations
     end
