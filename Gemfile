@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-ruby '2.6.9'
+ruby '2.7.0'
 
 gem 'api-pagination'
 gem 'apipie-rails'

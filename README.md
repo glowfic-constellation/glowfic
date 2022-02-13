@@ -4,12 +4,12 @@
 
 ### Dependencies
 
-*   [Ruby](https://www.ruby-lang.org/en/) 2.6.9
-*   [Rails](http://rubyonrails.org/) 5.2
+*   [Ruby](https://www.ruby-lang.org/en/) 2.7.0
+*   [Rails](http://rubyonrails.org/) 6.0
 *   [Redis](https://redis.io/topics/quickstart)
 *   [PostgreSQL](https://www.postgresql.org/)
 
-If you are not acquainted with Rails, it may help to go through the [Getting Started with Rails](http://guides.rubyonrails.org/v5.1/getting_started.html) tutorial for Rails 5.1.
+If you are not acquainted with Rails, it may help to go through the [Getting Started with Rails](http://guides.rubyonrails.org/v6.0/getting_started.html) tutorial for Rails 6.0.
 If you wish to learn Ruby, try out the [quickstart](https://www.ruby-lang.org/en/documentation/quickstart/) guide provided on their website, or if you are already acquainted with various programming languages, try the [Learn X in Y minutes](https://learnxinyminutes.com/docs/ruby/) tutorial for Ruby.
 
 This README mostly focuses on how to get started developing this project with Docker – in any environment with Docker installed you should be able to have the Glowfic server up and running.
@@ -95,7 +95,7 @@ First, go to the glowfic folder and download the latest code:
 *   `git pull`
 
 Then look at this README again, to make sure the version of Ruby hasn't changed; alternatively, in case this file is not up to date, look at the top of the `Gemfile` file, where it states the version of ruby.
-As of writing, this is `ruby '2.6.9'`.
+As of writing, this is `ruby '2.7.0'`.
 If it has changed, you can rebuild the glowfic image with:
 
 *   `docker-compose stop`
