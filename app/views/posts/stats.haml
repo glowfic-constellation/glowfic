@@ -36,7 +36,7 @@
         = privacy_state(@post.privacy)
         - if @post.privacy_access_list?
           \-
-          = safe_join(@post.post_viewers.map(&:user).map{ |u| user_link(u) }, ', ')
+          = safe_join(@post.post_viewers.map(&:user).map { |u| user_link(u) }, ', ')
     %tr
       %th.sub.width-150 Authors
       %td{class: cycle('odd', 'even')}

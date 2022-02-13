@@ -6,7 +6,7 @@
       %th.search-params-header
         Search Users
         - if @search_results
-          = '- '+@search_results.total_entries.to_s+' results'
+          = "- #{@search_results.total_entries} results"
       %th.search-results-header
         - if @search_results
           = render 'posts/paginator', paginated: @search_results, no_per: true

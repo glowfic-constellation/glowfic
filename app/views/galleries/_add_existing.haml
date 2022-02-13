@@ -27,7 +27,7 @@
     - current_user.galleries.ordered_by_name.each do |gallery|
       - next if gallery.id == @gallery.id
       %tr
-        %th.sub.gallery-minmax{data: {id: gallery.id}}
+        %th.sub.gallery-minmax{data: { id: gallery.id }}
           = gallery.name
           .float-right.gallery-box{id: "minmax-#{gallery.id}"} +
       %tr
