@@ -557,7 +557,7 @@ RSpec.describe BoardsController do
 
         boards = [create(:board, creator: author1, coauthors: [author2])] # both authors
         boards << create(:board, coauthors: [author1, author2]) # both authors coauthors
-        boards << create(:board, coauthors: [author1], cameos: [author2]) # both authors, one cameo
+        create(:board, coauthors: [author1], cameos: [author2]) # both authors, one cameo
 
         get :search, params: { commit: true, author_id: [author1.id, author2.id] }
         expect(assigns(:search_results)).to match_array(boards)

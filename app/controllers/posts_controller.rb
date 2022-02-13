@@ -268,17 +268,11 @@ class PostsController < WritableController
     end
     @search_results = @search_results.complete if params[:completed].present?
     if params[:author_id].present?
-      post_ids = nil
-      params[:author_id].each do |author_id|
-        author_posts = Post::Author.where(user_id: author_id, joined: true).pluck(:post_id)
-        if post_ids.nil?
-          post_ids = author_posts
-        else
-          post_ids &= author_posts
-        end
-        break if post_ids.empty?
-      end
-      @search_results = @search_results.where(id: post_ids.uniq)
+      # get author matches for posts that have at least one
+      author_posts = Post::Author.where(user_id: params[:author_id]).group(:post_id)
+      # select posts that have all of them
+      author_posts = author_posts.having('COUNT(post_authors.user_id) = ?', params[:author_id].length).pluck(:post_id)
+      @search_results = @search_results.where(id: author_posts)
     end
     if params[:character_id].present?
       post_ids = Reply.where(character_id: params[:character_id]).select(:post_id).distinct.pluck(:post_id)

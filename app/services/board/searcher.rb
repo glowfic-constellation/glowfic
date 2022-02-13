@@ -10,7 +10,10 @@ class Board::Searcher < Object
   end
 
   def search_authors(author_ids)
-    author_boards = author_ids.map { |author_id| BoardAuthor.where(user_id: author_id).pluck(:board_id) }.reduce(:&).uniq
+    # get author matches for boards that have at least one
+    author_boards = BoardAuthor.where(user_id: author_ids, cameo: false).group(:board_id)
+    # select boards that have all of them
+    author_boards = author_boards.having('COUNT(board_authors.user_id) = ?', author_ids.length).pluck(:board_id)
     @search_results = @search_results.where(id: author_boards)
   end
 end
