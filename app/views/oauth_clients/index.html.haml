@@ -15,7 +15,7 @@
         %td= token.authorized_at
         %td
           = form_with :url => url_for(:controller => 'oauth', :action => 'revoke'), local: true do |form|
-            = form.hidden_field 'client_application[name]', :value => "#{token.client_application.name}"
+            = form.hidden_field 'client_application[name]', :value => token.client_application.name.to_s
             = form.hidden_field 'token', :value => token.token
             = form.submit "Revoke!"
 
