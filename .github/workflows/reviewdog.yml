@@ -31,12 +31,15 @@ jobs:
         with:
           bundler-cache: true
       - run: bundle exec brakeman -v
+      - uses: reviewdog/action-setup@v1
       - name: brakeman
-        uses: reviewdog/action-brakeman@v2
-        with:
-          brakeman_version: 'gemfile'
-          fail_on_error: true
-          reporter: github-pr-review
+        env:
+          REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          bundle exec brakeman --quiet --format tabs | reviewdog \
+          -f=brakeman -name="brakeman" \
+          -reporter="github-pr-review" \
+          -fail-on-error
   haml_lint:
     name: haml-lint
     runs-on: ubuntu-latest
