@@ -11,10 +11,13 @@ class CharactersController < ApplicationController
   before_action :editor_setup, only: [:new, :edit]
 
   def index
-    (return if login_required) unless params[:user_id].present?
+    unless params[:user_id].present?
+      return if login_required
+      return if readonly_forbidden
+    end
 
     @user = if params[:user_id].present?
-      User.active.find_by_id(params[:user_id])
+      User.active.full.find_by_id(params[:user_id])
     else
       current_user
     end
