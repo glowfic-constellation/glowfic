@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 class IndexPostsController < ApplicationController
   before_action :login_required
+  before_action :readonly_forbidden
   before_action :find_model, only: [:edit, :update, :destroy]
 
   def new
