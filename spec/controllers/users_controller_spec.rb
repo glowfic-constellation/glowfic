@@ -66,16 +66,6 @@ RSpec.describe UsersController do
       expect(controller.gon.max).to eq(User::MAX_USERNAME_LEN)
     end
 
-    it "requires beta secret" do
-      post :create, params: { tos: true }
-      expect(response).to render_template(:new)
-      expect(flash[:error]).to eq("This is in beta. Please ask someone in the community for the (not very) secret beta code.")
-      expect(assigns(:user)).not_to be_valid
-      expect(assigns(:page_title)).to eq('Sign Up')
-      expect(controller.gon.min).to eq(User::MIN_USERNAME_LEN)
-      expect(controller.gon.max).to eq(User::MAX_USERNAME_LEN)
-    end
-
     it "requires valid fields" do
       post :create, params: { secret: "ALLHAILTHECOIN", tos: true }
       expect(response).to render_template(:new)
@@ -111,6 +101,17 @@ RSpec.describe UsersController do
       expect(new_user.username).to eq(user[:username])
       expect(new_user.authenticate(user[:password])).to eq(true)
       expect(new_user.email).to eq(user[:email])
+    end
+
+    it "creates reader account without secret" do
+      pass = 'testpassword'
+      user = build(:user).attributes.with_indifferent_access.merge(password: pass, password_confirmation: pass, email: 'testemail@example.com')
+
+      post :create, params: { tos: true }.merge(user: user)
+
+      expect(response).to redirect_to(root_url)
+      expect(flash[:success]).to eq("User created! You have been logged in.")
+      expect(assigns(:user).read_only?).to eq(true)
     end
 
     it "allows long passwords" do
