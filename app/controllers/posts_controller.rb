@@ -3,7 +3,7 @@ class PostsController < WritableController
   include Taggable
 
   before_action :login_required, except: [:index, :show, :history, :warnings, :search, :stats]
-  before_action :readonly_forbidden, except: [:index, :show, :history, :warnings, :search, :stats]
+  before_action :readonly_forbidden, except: [:index, :unread, :hidden, :show, :history, :warnings, :search, :stats, :mark, :unhide]
   before_action :find_model, only: [:show, :history, :delete_history, :stats, :warnings, :edit, :update, :destroy]
   before_action :require_permission, only: [:edit, :delete_history]
   before_action :require_import_permission, only: [:new, :create]
@@ -76,10 +76,12 @@ class PostsController < WritableController
       posts.each { |post| post.mark_read(current_user) }
       flash[:success] = "#{posts.size} #{'post'.pluralize(posts.size)} marked as read."
     elsif params[:commit] == "Remove from Replies Owed"
+      readonly_forbidden and return if current_user.read_only?
       posts.each { |post| post.opt_out_of_owed(current_user) }
       flash[:success] = "#{posts.size} #{'post'.pluralize(posts.size)} removed from replies owed."
       redirect_to owed_posts_path and return
     elsif params[:commit] == "Show in Replies Owed"
+      readonly_forbidden and return if current_user.read_only?
       posts.each { |post| post.opt_in_to_owed(current_user) }
       flash[:success] = "#{posts.size} #{'post'.pluralize(posts.size)} added to replies owed."
       redirect_to owed_posts_path and return
