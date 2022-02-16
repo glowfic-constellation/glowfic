@@ -39,7 +39,7 @@ module Permissible
     role_id == SUSPENDED
   end
 
-  def readonly?
+  def read_only?
     role_id == READONLY
   end
 end

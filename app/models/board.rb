@@ -28,7 +28,7 @@ class Board < ApplicationRecord
 
   def open_to?(user)
     return false unless user
-    return false if user.readonly?
+    return false if user.read_only?
     return true unless self.authors_locked?
     return true if creator_id == user.id
     board_authors.where(user_id: user.id).exists?

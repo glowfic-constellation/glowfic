@@ -167,7 +167,7 @@ class ApplicationController < ActionController::Base
 
   def readonly_forbidden
     return unless logged_in?
-    return unless current_user.readonly?
+    return unless current_user.read_only?
     flash[:error] = "This feature is not available to read-only accounts."
     redirect_to continuities_path
   end
