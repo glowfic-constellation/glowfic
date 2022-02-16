@@ -11,6 +11,12 @@ RSpec.describe IndexesController do
       expect(response).to have_http_status(200)
       expect(assigns(:page_title)).to eq("Indexes")
     end
+
+    it "works for reader account" do
+      login_as(create(:reader_user))
+      get :index
+      expect(response).to have_http_status(200)
+    end
   end
 
   describe "GET new" do
@@ -18,6 +24,13 @@ RSpec.describe IndexesController do
       get :new
       expect(response).to redirect_to(root_url)
       expect(flash[:error]).to eq("You must be logged in to view that page.")
+    end
+
+    it "requires full account" do
+      login_as(create(:reader_user))
+      get :new
+      expect(response).to redirect_to(continuities_path)
+      expect(flash[:error]).to eq("This feature is not available to read-only accounts.")
     end
 
     it "works logged in" do
@@ -33,6 +46,13 @@ RSpec.describe IndexesController do
       post :create
       expect(response).to redirect_to(root_url)
       expect(flash[:error]).to eq("You must be logged in to view that page.")
+    end
+
+    it "requires full account" do
+      login_as(create(:reader_user))
+      post :create
+      expect(response).to redirect_to(continuities_path)
+      expect(flash[:error]).to eq("This feature is not available to read-only accounts.")
     end
 
     it "requires valid index" do
@@ -54,6 +74,8 @@ RSpec.describe IndexesController do
   end
 
   describe "GET show" do
+    let(:index) { create(:index) }
+
     it "requires valid index" do
       get :show, params: { id: -1 }
       expect(response).to redirect_to(indexes_url)
@@ -68,7 +90,6 @@ RSpec.describe IndexesController do
     end
 
     it "works logged out" do
-      index = create(:index)
       get :show, params: { id: index.id }
       expect(response).to have_http_status(200)
       expect(assigns(:page_title)).to eq(index.name)
@@ -77,6 +98,12 @@ RSpec.describe IndexesController do
     it "works logged in" do
       index = create(:index, privacy: :private)
       login_as(index.user)
+      get :show, params: { id: index.id }
+      expect(response).to have_http_status(200)
+    end
+
+    it "works for reader account" do
+      login_as(create(:reader_user))
       get :show, params: { id: index.id }
       expect(response).to have_http_status(200)
     end
@@ -99,6 +126,13 @@ RSpec.describe IndexesController do
       get :edit, params: { id: -1 }
       expect(response).to redirect_to(root_url)
       expect(flash[:error]).to eq("You must be logged in to view that page.")
+    end
+
+    it "requires full account" do
+      login_as(create(:reader_user))
+      get :edit, params: { id: -1 }
+      expect(response).to redirect_to(continuities_path)
+      expect(flash[:error]).to eq("This feature is not available to read-only accounts.")
     end
 
     it "requires valid index" do
@@ -130,6 +164,13 @@ RSpec.describe IndexesController do
       put :update, params: { id: -1 }
       expect(response).to redirect_to(root_url)
       expect(flash[:error]).to eq("You must be logged in to view that page.")
+    end
+
+    it "requires full account" do
+      login_as(create(:reader_user))
+      put :update, params: { id: -1 }
+      expect(response).to redirect_to(continuities_path)
+      expect(flash[:error]).to eq("This feature is not available to read-only accounts.")
     end
 
     it "requires valid index" do
@@ -172,6 +213,13 @@ RSpec.describe IndexesController do
       delete :destroy, params: { id: -1 }
       expect(response).to redirect_to(root_url)
       expect(flash[:error]).to eq("You must be logged in to view that page.")
+    end
+
+    it "requires full account" do
+      login_as(create(:reader_user))
+      delete :destroy, params: { id: -1 }
+      expect(response).to redirect_to(continuities_path)
+      expect(flash[:error]).to eq("This feature is not available to read-only accounts.")
     end
 
     it "requires valid index" do

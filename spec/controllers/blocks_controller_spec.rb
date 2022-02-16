@@ -11,6 +11,12 @@ RSpec.describe BlocksController, type: :controller do
       expect(response.status).to eq(200)
     end
 
+    it "succeeds for reader accounts" do
+      login_as(create(:reader_user))
+      get :index
+      expect(response.status).to eq(200)
+    end
+
     it "succeeds with existing blocks" do
       user = create(:user)
       create_list(:block, 2, blocking_user: user)
@@ -28,6 +34,12 @@ RSpec.describe BlocksController, type: :controller do
 
     it "succeeds" do
       login
+      get :new
+      expect(response.status).to eq(200)
+    end
+
+    it "succeeds for reader accounts" do
+      login_as(create(:reader_user))
       get :new
       expect(response.status).to eq(200)
     end
@@ -97,6 +109,24 @@ RSpec.describe BlocksController, type: :controller do
       expect(block).to be_hide_me_all
     end
 
+    it "succeeds for reader accounts" do
+      blocker = create(:reader_user)
+      blockee = create(:user)
+      login_as(blocker)
+      expect {
+        post :create, params: {
+          block: {
+            blocked_user_id: blockee.id,
+            block_interactions: false,
+            hide_them: :posts,
+            hide_me: :all,
+          },
+        }
+      }.to change { Block.count }.by(1)
+      expect(response).to redirect_to(blocks_url)
+      expect(flash[:success]).to eq("User blocked!")
+    end
+
     it "refreshes caches" do
       user = create(:user)
       blocked = create(:user)
@@ -149,6 +179,14 @@ RSpec.describe BlocksController, type: :controller do
     it "succeeds" do
       block = create(:block)
       login_as(block.blocking_user)
+      get :edit, params: { id: block.id }
+      expect(response.status).to eq(200)
+    end
+
+    it "succeeds for reader accounts" do
+      user = create(:reader_user)
+      block = create(:block, blocking_user: user)
+      login_as(user)
       get :edit, params: { id: block.id }
       expect(response.status).to eq(200)
     end
@@ -208,6 +246,22 @@ RSpec.describe BlocksController, type: :controller do
       expect(new_block).to be_hide_me_all
     end
 
+    it "succeeds for reader accounts" do
+      user = create(:reader_user)
+      block = create(:block, blocking_user: user)
+      login_as(user)
+      put :update, params: {
+        id: block.id,
+        block: {
+          block_interactions: false,
+          hide_them: :posts,
+          hide_me: :all,
+        },
+      }
+      expect(response).to redirect_to(blocks_url)
+      expect(flash[:success]).to eq("Block updated!")
+    end
+
     it "does not update blocked_user" do
       block = create(:block)
       blocked_user = block.blocked_user
@@ -251,6 +305,15 @@ RSpec.describe BlocksController, type: :controller do
       expect(response).to redirect_to(blocks_url)
       expect(flash[:success]).to eq("User unblocked.")
       expect(Block.find_by(id: block.id)).to be_nil
+    end
+
+    it "succeeds for reader accounts" do
+      user = create(:reader_user)
+      block = create(:block, blocking_user: user)
+      login_as(user)
+      delete :destroy, params: { id: block.id }
+      expect(response).to redirect_to(blocks_url)
+      expect(flash[:success]).to eq("User unblocked.")
     end
 
     it "refreshes caches" do

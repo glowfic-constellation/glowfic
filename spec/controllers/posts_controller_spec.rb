@@ -101,6 +101,12 @@ RSpec.describe PostsController do
       expect(response.status).to eq(200)
     end
 
+    it "works for reader account" do
+      login_as(create(:reader_user))
+      get :index
+      expect(response).to have_http_status(200)
+    end
+
     it "paginates" do
       create_list(:post, 26)
       get :index
@@ -174,6 +180,12 @@ RSpec.describe PostsController do
         expect(response).to have_http_status(200)
         expect(assigns(:page_title)).to eq('Search Posts')
         expect(assigns(:search_results)).to be_nil
+      end
+
+      it "works for reader account" do
+        login_as(create(:reader_user))
+        get :search
+        expect(response).to have_http_status(200)
       end
     end
 
@@ -302,6 +314,13 @@ RSpec.describe PostsController do
       expect(flash[:error]).to eq("You must be logged in to view that page.")
     end
 
+    it "requires full account" do
+      login_as(create(:reader_user))
+      get :new
+      expect(response).to redirect_to(continuities_path)
+      expect(flash[:error]).to eq("This feature is not available to read-only accounts.")
+    end
+
     it "sets relevant fields" do
       user = create(:user)
       char1 = create(:character, user: user, name: 'alphafirst')
@@ -378,6 +397,13 @@ RSpec.describe PostsController do
       post :create
       expect(response).to redirect_to(root_url)
       expect(flash[:error]).to eq("You must be logged in to view that page.")
+    end
+
+    it "requires full account" do
+      login_as(create(:reader_user))
+      post :create
+      expect(response).to redirect_to(continuities_path)
+      expect(flash[:error]).to eq("This feature is not available to read-only accounts.")
     end
 
     context "scrape" do
@@ -948,11 +974,19 @@ RSpec.describe PostsController do
   end
 
   describe "GET show" do
+    let(:post) { create(:post) }
+    let(:user) { create(:user) }
+
     it "does not require login" do
-      post = create(:post)
       get :show, params: { id: post.id }
       expect(response).to have_http_status(200)
       expect(assigns(:javascripts)).to include('posts/show')
+    end
+
+    it "works for reader account" do
+      login_as(create(:reader_user))
+      get :show, params: { id: post.id }
+      expect(response).to have_http_status(200)
     end
 
     it "calculates OpenGraph meta" do
@@ -975,7 +1009,6 @@ RSpec.describe PostsController do
     end
 
     it "works with login" do
-      post = create(:post)
       login
       get :show, params: { id: post.id }
       expect(response).to have_http_status(200)
@@ -983,8 +1016,6 @@ RSpec.describe PostsController do
     end
 
     it "marks read multiple times" do
-      post = create(:post)
-      user = create(:user)
       login_as(user)
       expect(post.last_read(user)).to be_nil
       get :show, params: { id: post.id }
@@ -1002,8 +1033,6 @@ RSpec.describe PostsController do
     end
 
     it "marks read even if post is ignored" do
-      post = create(:post)
-      user = create(:user)
       login_as(user)
       post.ignore(user)
       expect(post.reload.first_unread_for(user)).to eq(post)
@@ -1022,7 +1051,6 @@ RSpec.describe PostsController do
     end
 
     it "handles invalid pages" do
-      post = create(:post)
       get :show, params: { id: post.id, page: 'invalid' }
       expect(flash[:error]).to eq('Page not recognized, defaulting to page 1.')
       expect(assigns(:page)).to eq(1)
@@ -1031,7 +1059,6 @@ RSpec.describe PostsController do
     end
 
     it "handles invalid unread page when logged out" do
-      post = create(:post)
       get :show, params: { id: post.id, page: 'unread' }
       expect(flash[:error]).to eq("You must be logged in to view unread posts.")
       expect(assigns(:page)).to eq(1)
@@ -1040,14 +1067,12 @@ RSpec.describe PostsController do
     end
 
     it "handles pages outside range" do
-      post = create(:post)
       create_list(:reply, 5, post: post)
       get :show, params: { id: post.id, per_page: 1, page: 10 }
       expect(response).to redirect_to(post_url(post, page: 5, per_page: 1))
     end
 
     it "handles page=last with replies" do
-      post = create(:post)
       create_list(:reply, 5, post: post)
       get :show, params: { id: post.id, per_page: 1, page: 'last' }
       expect(assigns(:page)).to eq(5)
@@ -1056,7 +1081,6 @@ RSpec.describe PostsController do
     end
 
     it "handles page=last with no replies" do
-      post = create(:post)
       get :show, params: { id: post.id, page: 'last' }
       expect(assigns(:page)).to eq(1)
       expect(response).to have_http_status(200)
@@ -1066,7 +1090,6 @@ RSpec.describe PostsController do
     it "calculates audits" do
       Reply.auditing_enabled = true
       Post.auditing_enabled = true
-      post = create(:post)
 
       replies = Audited.audit_class.as_user(post.user) do
         create_list(:reply, 6, post: post, user: post.user)
@@ -1106,7 +1129,6 @@ RSpec.describe PostsController do
       end
 
       it "renders HAML for logged in user" do
-        post = create(:post)
         create(:reply, post: post)
         character = create(:character)
         login_as(character.user)
@@ -1125,7 +1147,6 @@ RSpec.describe PostsController do
       end
 
       it "displays quick switch properly" do
-        post = create(:post)
         reply = create(:reply, post: post, with_icon: true, with_character: true)
         login_as(reply.user)
         get :show, params: { id: post.id }
@@ -1316,6 +1337,8 @@ RSpec.describe PostsController do
   end
 
   describe "GET history" do
+    let(:post) { create(:post) }
+
     it "requires post" do
       login
       get :history, params: { id: -1 }
@@ -1324,14 +1347,20 @@ RSpec.describe PostsController do
     end
 
     it "works logged out" do
-      get :history, params: { id: create(:post).id }
+      get :history, params: { id: post.id }
       expect(response.status).to eq(200)
     end
 
     it "works logged in" do
       login
-      get :history, params: { id: create(:post).id }
+      get :history, params: { id: post.id }
       expect(response.status).to eq(200)
+    end
+
+    it "works for reader account" do
+      login_as(create(:reader_user))
+      get :history, params: { id: post.id }
+      expect(response).to have_http_status(200)
     end
 
     context "with render_view" do
@@ -1363,6 +1392,13 @@ RSpec.describe PostsController do
       get :delete_history, params: { id: -1 }
       expect(response).to redirect_to(root_url)
       expect(flash[:error]).to eq("You must be logged in to view that page.")
+    end
+
+    it "requires full account" do
+      login_as(create(:reader_user))
+      get :delete_history, params: { id: -1 }
+      expect(response).to redirect_to(continuities_path)
+      expect(flash[:error]).to eq("This feature is not available to read-only accounts.")
     end
 
     it "requires post" do
@@ -1426,6 +1462,8 @@ RSpec.describe PostsController do
   end
 
   describe "GET stats" do
+    let(:post) { create(:post) }
+
     it "requires post" do
       login
       get :stats, params: { id: -1 }
@@ -1434,14 +1472,20 @@ RSpec.describe PostsController do
     end
 
     it "works logged out" do
-      get :stats, params: { id: create(:post).id }
+      get :stats, params: { id: post.id }
       expect(response.status).to eq(200)
     end
 
     it "works logged in" do
       login
-      get :stats, params: { id: create(:post).id }
+      get :stats, params: { id: post.id }
       expect(response.status).to eq(200)
+    end
+
+    it "works for reader account" do
+      login_as(create(:reader_user))
+      get :stats, params: { id: post.id }
+      expect(response).to have_http_status(200)
     end
   end
 
@@ -1450,6 +1494,13 @@ RSpec.describe PostsController do
       get :edit, params: { id: -1 }
       expect(response).to redirect_to(root_url)
       expect(flash[:error]).to eq("You must be logged in to view that page.")
+    end
+
+    it "requires full account" do
+      login_as(create(:reader_user))
+      get :edit, params: { id: -1 }
+      expect(response).to redirect_to(continuities_path)
+      expect(flash[:error]).to eq("This feature is not available to read-only accounts.")
     end
 
     it "requires post" do
@@ -1543,6 +1594,13 @@ RSpec.describe PostsController do
       put :update, params: { id: -1 }
       expect(response).to redirect_to(root_url)
       expect(flash[:error]).to eq("You must be logged in to view that page.")
+    end
+
+    it "requires full account" do
+      login_as(create(:reader_user))
+      put :update, params: { id: -1 }
+      expect(response).to redirect_to(continuities_path)
+      expect(flash[:error]).to eq("This feature is not available to read-only accounts.")
     end
 
     it "requires valid post" do
@@ -2668,6 +2726,8 @@ RSpec.describe PostsController do
   end
 
   describe "POST warnings" do
+    let(:warn_post) { create(:post) }
+
     it "requires a valid post" do
       post :warnings, params: { id: -1 }
       expect(response).to redirect_to(continuities_url)
@@ -2682,7 +2742,6 @@ RSpec.describe PostsController do
     end
 
     it "works for logged out" do
-      warn_post = create(:post)
       expect(session[:ignore_warnings]).to be_nil
       post :warnings, params: { id: warn_post.id, per_page: 10, page: 2 }
       expect(response).to redirect_to(post_url(warn_post, per_page: 10, page: 2))
@@ -2691,7 +2750,6 @@ RSpec.describe PostsController do
     end
 
     it "works for logged in" do
-      warn_post = create(:post)
       user = create(:user)
       expect(session[:ignore_warnings]).to be_nil
       expect(warn_post.send(:view_for, user)).to be_a_new_record
@@ -2704,6 +2762,16 @@ RSpec.describe PostsController do
       expect(view).not_to be_a_new_record
       expect(view.warnings_hidden).to eq(true)
     end
+
+    it "works for reader accounts" do
+      user = create(:reader_user)
+      login_as(user)
+      expect(session[:ignore_warnings]).to be_nil
+      expect(warn_post.send(:view_for, user)).to be_a_new_record
+      post :warnings, params: { id: warn_post.id }
+      expect(response).to redirect_to(post_url(warn_post))
+      expect(flash[:success]).to start_with("Content warnings have been hidden for this thread. Proceed at your own risk.")
+    end
   end
 
   describe "DELETE destroy" do
@@ -2711,6 +2779,13 @@ RSpec.describe PostsController do
       delete :destroy, params: { id: -1 }
       expect(response).to redirect_to(root_url)
       expect(flash[:error]).to eq("You must be logged in to view that page.")
+    end
+
+    it "requires full account" do
+      login_as(create(:reader_user))
+      delete :destroy, params: { id: -1 }
+      expect(response).to redirect_to(continuities_path)
+      expect(flash[:error]).to eq("This feature is not available to read-only accounts.")
     end
 
     it "requires valid post" do
@@ -2767,6 +2842,13 @@ RSpec.describe PostsController do
       get :owed
       expect(response).to redirect_to(root_url)
       expect(flash[:error]).to eq("You must be logged in to view that page.")
+    end
+
+    it "requires full account" do
+      login_as(create(:reader_user))
+      get :owed
+      expect(response).to redirect_to(continuities_path)
+      expect(flash[:error]).to eq("This feature is not available to read-only accounts.")
     end
 
     it "succeeds" do
@@ -3018,6 +3100,16 @@ RSpec.describe PostsController do
       expect(assigns(:hide_quicklinks)).to eq(true)
     end
 
+    it "succeeds for reader accounts" do
+      login_as(create(:reader_user))
+      get :unread
+      expect(response).to have_http_status(200)
+      expect(assigns(:started)).not_to eq(true)
+      expect(assigns(:page_title)).to eq('Unread Threads')
+      expect(assigns(:posts)).to be_empty
+      expect(assigns(:hide_quicklinks)).to eq(true)
+    end
+
     it "shows appropriate posts" do
       user = create(:user)
       time = Time.zone.now - 10.minutes
@@ -3212,6 +3304,17 @@ RSpec.describe PostsController do
         expect(post1.reload.last_read(user)).not_to be_nil
         expect(post2.reload.last_read(user)).not_to be_nil
       end
+
+      it "works for reader users" do
+        user = create(:reader_user)
+        posts = create_list(:post, 2)
+        login_as(user)
+
+        post :mark, params: { marked_ids: posts.map(&:id).map(&:to_s), commit: "Mark Read" }
+
+        expect(response).to redirect_to(unread_posts_url)
+        expect(flash[:success]).to eq("2 posts marked as read.")
+      end
     end
 
     context "ignored" do
@@ -3241,6 +3344,17 @@ RSpec.describe PostsController do
         expect(flash[:success]).to eq("2 posts hidden from this page.")
         expect(post1.reload.ignored_by?(user)).to eq(true)
         expect(post2.reload.ignored_by?(user)).to eq(true)
+      end
+
+      it "works for reader users" do
+        user = create(:reader_user)
+        posts = create_list(:post, 2)
+        login_as(user)
+
+        post :mark, params: { marked_ids: posts.map(&:id).map(&:to_s) }
+
+        expect(response).to redirect_to(unread_posts_url)
+        expect(flash[:success]).to eq("2 posts hidden from this page.")
       end
 
       it "does not mess with read timestamps" do
@@ -3279,6 +3393,24 @@ RSpec.describe PostsController do
     end
 
     context "not owed" do
+      it "requires full user" do
+        user = create(:reader_user)
+        reply_post = create(:post)
+        login_as(user)
+        post :mark, params: { marked_ids: [reply_post.id], commit: 'Remove from Replies Owed' }
+        expect(response).to redirect_to(continuities_path)
+        expect(flash[:error]).to eq("This feature is not available to read-only accounts.")
+      end
+
+      pending "requires post author" do
+        user = create(:user)
+        unowed_post = create(:post)
+        login_as(user)
+        post :mark, params: { marked_ids: [unowed_post.id], commit: 'Remove from Replies Owed' }
+        expect(response).to redirect_to(owed_posts_url)
+        expect(flash[:error]).to eq("")
+      end
+
       it "ignores invisible posts" do
         user = create(:user)
         private_post = create(:post, privacy: :private, authors: [user])
@@ -3317,6 +3449,24 @@ RSpec.describe PostsController do
     end
 
     context "newly owed" do
+      it "requires full user" do
+        user = create(:reader_user)
+        reply_post = create(:post)
+        login_as(user)
+        post :mark, params: { marked_ids: [reply_post.id], commit: 'Show in Replies Owed' }
+        expect(response).to redirect_to(continuities_path)
+        expect(flash[:error]).to eq("This feature is not available to read-only accounts.")
+      end
+
+      pending "requires post author" do
+        user = create(:user)
+        unowed_post = create(:post)
+        login_as(user)
+        post :mark, params: { marked_ids: [unowed_post.id], commit: 'Show in Replies Owed' }
+        expect(response).to redirect_to(owed_posts_url)
+        expect(flash[:error]).to eq('')
+      end
+
       it "ignores invisible posts" do
         user = create(:user)
         private_post = create(:post, privacy: :private, authors: [user])
@@ -3362,6 +3512,13 @@ RSpec.describe PostsController do
       get :hidden
       expect(response).to redirect_to(root_url)
       expect(flash[:error]).to eq("You must be logged in to view that page.")
+    end
+
+    it "works for reader users" do
+      user = create(:reader_user)
+      login_as(user)
+      get :hidden
+      expect(response.status).to eq(200)
     end
 
     it "succeeds with no hidden" do
@@ -3427,6 +3584,14 @@ RSpec.describe PostsController do
       stay_hidden_post.reload
       expect(hidden_post).not_to be_ignored_by(user)
       expect(stay_hidden_post).to be_ignored_by(user)
+    end
+
+    it "works for reader users" do
+      user = create(:reader_user)
+      posts = create_list(:post, 2)
+      login_as(user)
+      post :unhide, params: { unhide_posts: posts.map(&:id).map(&:to_s) }
+      expect(response).to redirect_to(hidden_posts_url)
     end
 
     it "succeeds for board" do
