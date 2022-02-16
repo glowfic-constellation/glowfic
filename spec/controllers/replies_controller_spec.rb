@@ -6,6 +6,13 @@ RSpec.describe RepliesController do
       expect(flash[:error]).to eq("You must be logged in to view that page.")
     end
 
+    it "requires full account" do
+      login_as(create(:reader_user))
+      post :create
+      expect(response).to redirect_to(continuities_path)
+      expect(flash[:error]).to eq("This feature is not available to read-only accounts.")
+    end
+
     context "preview" do
       it "takes correct actions" do
         user = create(:user)
@@ -434,6 +441,8 @@ RSpec.describe RepliesController do
   end
 
   describe "GET show" do
+    let(:reply) { create(:reply) }
+
     it "requires valid reply" do
       get :show, params: { id: -1 }
       expect(response).to redirect_to(continuities_url)
@@ -441,7 +450,6 @@ RSpec.describe RepliesController do
     end
 
     it "requires post access" do
-      reply = create(:reply)
       expect(reply.user_id).not_to eq(reply.post.user_id)
       expect(reply.post.visible_to?(reply.user)).to eq(true)
 
@@ -457,10 +465,15 @@ RSpec.describe RepliesController do
     end
 
     it "succeeds when logged out" do
-      reply = create(:reply)
       get :show, params: { id: reply.id }
       expect(response).to have_http_status(200)
       expect(assigns(:javascripts)).to include('posts/show')
+    end
+
+    it "works for reader accounts" do
+      login_as(create(:reader_user))
+      get :show, params: { id: reply.id }
+      expect(response).to have_http_status(200)
     end
 
     it "calculates OpenGraph meta" do
@@ -482,7 +495,6 @@ RSpec.describe RepliesController do
     end
 
     it "succeeds when logged in" do
-      reply = create(:reply)
       login
       get :show, params: { id: reply.id }
       expect(response).to have_http_status(200)
@@ -495,6 +507,8 @@ RSpec.describe RepliesController do
   end
 
   describe "GET history" do
+    let(:reply) { create(:reply) }
+
     it "requires valid reply" do
       get :history, params: { id: -1 }
       expect(response).to redirect_to(continuities_url)
@@ -502,7 +516,6 @@ RSpec.describe RepliesController do
     end
 
     it "requires post access" do
-      reply = create(:reply)
       expect(reply.user_id).not_to eq(reply.post.user_id)
       expect(reply.post.visible_to?(reply.user)).to eq(true)
 
@@ -517,13 +530,17 @@ RSpec.describe RepliesController do
     end
 
     it "works when logged out" do
-      reply = create(:reply)
       get :history, params: { id: reply.id }
       expect(response.status).to eq(200)
     end
 
+    it "works for reader accounts" do
+      login_as(create(:reader_user))
+      get :history, params: { id: reply.id }
+      expect(response).to have_http_status(200)
+    end
+
     it "works when logged in" do
-      reply = create(:reply)
       login
       get :history, params: { id: reply.id }
       expect(response.status).to eq(200)
@@ -535,6 +552,13 @@ RSpec.describe RepliesController do
       get :edit, params: { id: -1 }
       expect(response).to redirect_to(root_url)
       expect(flash[:error]).to eq("You must be logged in to view that page.")
+    end
+
+    it "requires full account" do
+      login_as(create(:reader_user))
+      get :edit, params: { id: -1 }
+      expect(response).to redirect_to(continuities_path)
+      expect(flash[:error]).to eq("This feature is not available to read-only accounts.")
     end
 
     it "requires valid reply" do
@@ -600,6 +624,13 @@ RSpec.describe RepliesController do
       put :update, params: { id: -1 }
       expect(response).to redirect_to(root_url)
       expect(flash[:error]).to eq("You must be logged in to view that page.")
+    end
+
+    it "requires full account" do
+      login_as(create(:reader_user))
+      put :update, params: { id: -1 }
+      expect(response).to redirect_to(continuities_path)
+      expect(flash[:error]).to eq("This feature is not available to read-only accounts.")
     end
 
     it "requires valid reply" do
@@ -807,6 +838,13 @@ RSpec.describe RepliesController do
       expect(flash[:error]).to eq("You must be logged in to view that page.")
     end
 
+    it "requires full account" do
+      login_as(create(:reader_user))
+      delete :destroy, params: { id: -1 }
+      expect(response).to redirect_to(continuities_path)
+      expect(flash[:error]).to eq("This feature is not available to read-only accounts.")
+    end
+
     it "requires valid reply" do
       login
       delete :destroy, params: { id: -1 }
@@ -939,6 +977,13 @@ RSpec.describe RepliesController do
       post :restore, params: { id: -1 }
       expect(response).to redirect_to(root_url)
       expect(flash[:error]).to eq("You must be logged in to view that page.")
+    end
+
+    it "requires full account" do
+      login_as(create(:reader_user))
+      post :restore, params: { id: -1 }
+      expect(response).to redirect_to(continuities_path)
+      expect(flash[:error]).to eq("This feature is not available to read-only accounts.")
     end
 
     it "must find the reply" do
@@ -1125,6 +1170,12 @@ RSpec.describe RepliesController do
         expect(assigns(:page_title)).to eq('Search Replies')
         expect(assigns(:post)).to be_nil
         expect(assigns(:search_results)).to be_nil
+      end
+
+      it "works for reader account" do
+        login_as(create(:reader_user))
+        get :search
+        expect(response).to have_http_status(200)
       end
 
       it "sets templates by author" do

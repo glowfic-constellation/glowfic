@@ -6,6 +6,13 @@ RSpec.describe TemplatesController do
       expect(flash[:error]).to eq("You must be logged in to view that page.")
     end
 
+    it "requires full account" do
+      login_as(create(:reader_user))
+      get :new
+      expect(response).to redirect_to(continuities_path)
+      expect(flash[:error]).to eq("This feature is not available to read-only accounts.")
+    end
+
     it "works" do
       login
       get :new
@@ -20,6 +27,13 @@ RSpec.describe TemplatesController do
       post :create
       expect(response).to redirect_to(root_url)
       expect(flash[:error]).to eq("You must be logged in to view that page.")
+    end
+
+    it "requires full account" do
+      login_as(create(:reader_user))
+      post :create
+      expect(response).to redirect_to(continuities_path)
+      expect(flash[:error]).to eq("This feature is not available to read-only accounts.")
     end
 
     it "requires valid params" do
@@ -47,6 +61,8 @@ RSpec.describe TemplatesController do
   end
 
   describe "GET show" do
+    let(:template) { create(:template) }
+
     it "requires valid template logged out" do
       get :show, params: { id: -1 }
       expect(response).to redirect_to(root_url)
@@ -62,17 +78,22 @@ RSpec.describe TemplatesController do
 
     it "works logged in" do
       login
-      get :show, params: { id: create(:template).id }
+      get :show, params: { id: template.id }
+      expect(response).to have_http_status(200)
+    end
+
+    it "works for reader accounts" do
+      login_as(create(:reader_user))
+      get :show, params: { id: template.id }
       expect(response).to have_http_status(200)
     end
 
     it "works logged out" do
-      get :show, params: { id: create(:template).id }
+      get :show, params: { id: template.id }
       expect(response).to have_http_status(200)
     end
 
     it "sets correct variables" do
-      template = create(:template)
       char1 = create(:character, user: template.user, template: template)
       char2 = create(:character, user: template.user, template: template)
       non_char = create(:character)
@@ -109,6 +130,13 @@ RSpec.describe TemplatesController do
       expect(flash[:error]).to eq("You must be logged in to view that page.")
     end
 
+    it "requires full account" do
+      login_as(create(:reader_user))
+      get :edit, params: { id: -1 }
+      expect(response).to redirect_to(continuities_path)
+      expect(flash[:error]).to eq("This feature is not available to read-only accounts.")
+    end
+
     it "requires valid template" do
       user_id = login
       get :edit, params: { id: -1 }
@@ -139,6 +167,13 @@ RSpec.describe TemplatesController do
       put :update, params: { id: -1 }
       expect(response).to redirect_to(root_url)
       expect(flash[:error]).to eq("You must be logged in to view that page.")
+    end
+
+    it "requires full account" do
+      login_as(create(:reader_user))
+      put :update, params: { id: -1 }
+      expect(response).to redirect_to(continuities_path)
+      expect(flash[:error]).to eq("This feature is not available to read-only accounts.")
     end
 
     it "requires valid template" do
@@ -195,6 +230,13 @@ RSpec.describe TemplatesController do
       delete :destroy, params: { id: -1 }
       expect(response).to redirect_to(root_url)
       expect(flash[:error]).to eq("You must be logged in to view that page.")
+    end
+
+    it "requires full account" do
+      login_as(create(:reader_user))
+      delete :destroy, params: { id: -1 }
+      expect(response).to redirect_to(continuities_path)
+      expect(flash[:error]).to eq("This feature is not available to read-only accounts.")
     end
 
     it "requires valid template" do

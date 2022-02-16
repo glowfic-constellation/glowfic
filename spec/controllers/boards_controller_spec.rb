@@ -14,6 +14,12 @@ RSpec.describe BoardsController do
         expect(response.status).to eq(200)
       end
 
+      it "works for reader accounts" do
+        login_as(create(:reader_user))
+        get :index
+        expect(response).to have_http_status(200)
+      end
+
       it "sets correct variables" do
         user = create(:user)
         board1 = create(:board, creator_id: user.id)
@@ -43,6 +49,20 @@ RSpec.describe BoardsController do
       it "displays error if user id invalid and logged in" do
         login
         get :index, params: { user_id: -1 }
+        expect(flash[:error]).to eq('User could not be found.')
+        expect(response).to redirect_to(root_url)
+      end
+
+      it "requires specified user to be full user" do
+        user = create(:reader_user)
+        get :index, params: { user_id: user.id }
+        expect(flash[:error]).to eq('User could not be found.')
+        expect(response).to redirect_to(root_url)
+      end
+
+      it "requires specificed user to not be deleted" do
+        user = create(:user, deleted: true)
+        get :index, params: { user_id: user.id }
         expect(flash[:error]).to eq('User could not be found.')
         expect(response).to redirect_to(root_url)
       end
@@ -94,6 +114,13 @@ RSpec.describe BoardsController do
       expect(flash[:error]).to eq("You must be logged in to view that page.")
     end
 
+    it "requires full account" do
+      login_as(create(:reader_user))
+      get :new
+      expect(response).to redirect_to(continuities_path)
+      expect(flash[:error]).to eq("This feature is not available to read-only accounts.")
+    end
+
     it "succeeds when logged in" do
       login
       get :new
@@ -129,6 +156,13 @@ RSpec.describe BoardsController do
       post :create
       expect(response).to redirect_to(root_url)
       expect(flash[:error]).to eq("You must be logged in to view that page.")
+    end
+
+    it "requires full account" do
+      login_as(create(:reader_user))
+      post :create
+      expect(response).to redirect_to(continuities_path)
+      expect(flash[:error]).to eq("This feature is not available to read-only accounts.")
     end
 
     it "requires valid params" do
@@ -192,6 +226,8 @@ RSpec.describe BoardsController do
   end
 
   describe "GET show" do
+    let(:board) { create(:board) }
+
     it "requires valid board" do
       get :show, params: { id: -1 }
       expect(response).to redirect_to(continuities_url)
@@ -199,34 +235,35 @@ RSpec.describe BoardsController do
     end
 
     it "succeeds with valid board" do
-      board = create(:board)
       get :show, params: { id: board.id }
       expect(response.status).to eq(200)
     end
 
     it "succeeds for logged in users with valid board" do
       login
-      board = create(:board)
       get :show, params: { id: board.id }
       expect(response.status).to eq(200)
     end
 
+    it "works for reader accounts" do
+      login_as(create(:reader_user))
+      get :show, params: { id: board.id }
+      expect(response).to have_http_status(200)
+    end
+
     it "only fetches the board's first 25 posts" do
-      board = create(:board)
       create_list(:post, 26, board: board)
       get :show, params: { id: board.id }
       expect(assigns(:posts).size).to eq(25)
     end
 
     it "orders the posts by tagged_at in unordered boards" do
-      board = create(:board)
       Array.new(3) { create(:post, board: board, tagged_at: Time.zone.now + rand(5..30).hours) }
       get :show, params: { id: board.id }
       expect(assigns(:posts)).to eq(assigns(:posts).sort_by(&:tagged_at).reverse)
     end
 
     it "orders the posts correctly in ordered boards" do
-      board = create(:board)
       section2 = create(:board_section, board: board)
       section1 = create(:board_section, board: board)
       section1.update!(section_order: 0)
@@ -274,6 +311,13 @@ RSpec.describe BoardsController do
       expect(flash[:error]).to eq("You must be logged in to view that page.")
     end
 
+    it "requires full account" do
+      login_as(create(:reader_user))
+      get :edit, params: { id: -1 }
+      expect(response).to redirect_to(continuities_path)
+      expect(flash[:error]).to eq("This feature is not available to read-only accounts.")
+    end
+
     it "requires valid board" do
       login
       get :edit, params: { id: -1 }
@@ -317,6 +361,13 @@ RSpec.describe BoardsController do
       put :update, params: { id: -1 }
       expect(response).to redirect_to(root_url)
       expect(flash[:error]).to eq("You must be logged in to view that page.")
+    end
+
+    it "requires full account" do
+      login_as(create(:reader_user))
+      put :update, params: { id: -1 }
+      expect(response).to redirect_to(continuities_path)
+      expect(flash[:error]).to eq("This feature is not available to read-only accounts.")
     end
 
     it "requires valid board" do
@@ -377,6 +428,13 @@ RSpec.describe BoardsController do
       delete :destroy, params: { id: -1 }
       expect(response).to redirect_to(root_url)
       expect(flash[:error]).to eq("You must be logged in to view that page.")
+    end
+
+    it "requires full account" do
+      login_as(create(:reader_user))
+      delete :destroy, params: { id: -1 }
+      expect(response).to redirect_to(continuities_path)
+      expect(flash[:error]).to eq("This feature is not available to read-only accounts.")
     end
 
     it "requires valid board" do

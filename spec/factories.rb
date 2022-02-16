@@ -20,6 +20,10 @@ FactoryBot.define do
     factory :importing_user do
       role_id { 3 }
     end
+
+    factory :reader_user do
+      role_id { 5 }
+    end
   end
 
   factory :board do
