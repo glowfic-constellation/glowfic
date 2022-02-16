@@ -8,7 +8,7 @@ class BoardsController < ApplicationController
 
   def index
     if params[:user_id].present?
-      unless (@user = User.active.find_by_id(params[:user_id]))
+      unless (@user = User.active.full.find_by_id(params[:user_id]))
         flash[:error] = "User could not be found."
         redirect_to root_path and return
       end
