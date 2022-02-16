@@ -7,6 +7,7 @@ module Concealable
       private: 1,
       access_list: 2,
       registered: 3,
+      legacy: 4,
     }, _prefix: true
 
     def visible_to?(user)
@@ -14,6 +15,8 @@ module Concealable
       return true if privacy_public?
       return false unless user
       return true if privacy_registered?
+      return false if user.read_only?
+      return true if privacy_legacy?
       return true if user.admin?
       user.id == user_id
     end

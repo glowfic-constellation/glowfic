@@ -277,8 +277,9 @@ RSpec.describe ApplicationController do
         hidden_post = create(:post, privacy: :private)
         public_post = create(:post, privacy: :public)
         conste_post = create(:post, privacy: :registered)
+        legacy_post = create(:post, privacy: :legacy)
 
-        relation = Post.where(id: [hidden_post.id, public_post.id, conste_post.id])
+        relation = Post.where(id: [hidden_post, public_post, conste_post, legacy_post].map(&:id))
         fetched_posts = controller.send(:posts_from_relation, relation)
         expect(fetched_posts).to match_array([public_post])
       end

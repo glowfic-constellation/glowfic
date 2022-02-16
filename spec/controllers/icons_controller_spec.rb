@@ -285,23 +285,33 @@ RSpec.describe IconsController do
       let(:reply) { create(:reply, icon: icon, user: icon.user, post: create(:post)) }
       let(:private_post) { create(:post, icon: icon, user: icon.user, privacy: :private) }
       let(:registered_post) { create(:post, icon: icon, user: icon.user, privacy: :registered) }
+      let(:legacy_post) { create(:post, icon: icon, user: icon.user, privacy: :legacy) }
 
       before(:each) do
         create(:reply, post: post, user: icon.user, icon: icon)
         reply
         private_post
         registered_post
+        legacy_post
       end
 
       it "fetches correct counts for icon owner" do
         login_as(icon.user)
         get :show, params: { id: icon.id }
         expect(response).to have_http_status(200)
+        expect(assigns(:times_used)).to eq(6)
+        expect(assigns(:posts_used)).to eq(5)
+      end
+
+      it "fetches correct counts when logged in as full user" do
+        login
+        get :show, params: { id: icon.id }
+        expect(response).to have_http_status(200)
         expect(assigns(:times_used)).to eq(5)
         expect(assigns(:posts_used)).to eq(4)
       end
 
-      it "fetches correct counts when logged in" do
+      it "fetches correct counts when logged in as reader account" do
         login
         get :show, params: { id: icon.id }
         expect(response).to have_http_status(200)

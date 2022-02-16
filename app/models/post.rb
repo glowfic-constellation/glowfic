@@ -87,10 +87,17 @@ class Post < ApplicationRecord
 
   scope :visible_to, ->(user) {
     if user
-      where(user_id: user.id)
-        .or(where(privacy: [:public, :registered]))
-        .or(where(privacy: :access_list, id: user.visible_posts))
-        .where.not(id: user.blocked_posts)
+      if user.read_only?
+        where(user_id: user.id)
+          .or(where(privacy: [:public, :registered]))
+          .or(where(privacy: :access_list, id: user.visible_posts))
+          .where.not(id: user.blocked_posts)
+      else
+        where(user_id: user.id)
+          .or(where(privacy: [:public, :registered, :legacy]))
+          .or(where(privacy: :access_list, id: user.visible_posts))
+          .where.not(id: user.blocked_posts)
+      end
     else
       where(privacy: :public)
     end
@@ -101,6 +108,7 @@ class Post < ApplicationRecord
     return true if privacy_public?
     return false unless user
     return true if privacy_registered? || user.admin?
+    return true if privacy_legacy? && !user.read_only?
     return user.id == user_id if privacy_private?
     (post_viewers.pluck(:user_id) + [user_id]).include?(user.id)
   end

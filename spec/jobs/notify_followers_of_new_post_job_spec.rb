@@ -42,6 +42,16 @@ RSpec.describe NotifyFollowersOfNewPostJob do
         }.not_to change { Message.count }
       end
 
+      it "does not send to readers for legacy privacy posts" do
+        unnotified = create(:reader_user)
+        create(:favorite, user: unnotified, favorite: favorite)
+        expect {
+          perform_enqueued_jobs do
+            create(:post, user: author, board: board, privacy: :legacy)
+          end
+        }.not_to change { Message.count }
+      end
+
       it "does not send to non-viewers for access-locked posts" do
         unnotified = create(:user)
         create(:favorite, user: unnotified, favorite: favorite)
