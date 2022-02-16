@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 class MessagesController < ApplicationController
   before_action :login_required
+  before_action :readonly_forbidden
   before_action :editor_setup, only: :new
 
   def index
