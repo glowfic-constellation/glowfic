@@ -471,10 +471,19 @@ RSpec.describe BoardsController do
   end
 
   describe "POST mark" do
+    let(:board) { create(:board) }
+
     it "requires login" do
       post :mark
       expect(response).to redirect_to(root_url)
       expect(flash[:error]).to eq("You must be logged in to view that page.")
+    end
+
+    it "works for reader accounts" do
+      login_as(create(:reader_user))
+      post :mark, params: { board_id: board.id, commit: "Mark Read" }
+      expect(response).to redirect_to(unread_posts_url)
+      expect(flash[:success]).to eq("#{board.name} marked as read.")
     end
 
     it "requires board id" do
@@ -499,7 +508,6 @@ RSpec.describe BoardsController do
     end
 
     it "successfully marks board read" do
-      board = create(:board)
       user = create(:user)
       login_as(user)
       now = Time.zone.now
@@ -512,7 +520,6 @@ RSpec.describe BoardsController do
 
     it "marks extant post views read" do
       now = Time.zone.now
-      board = create(:board)
       user = create(:user)
       read_post = create(:post, user: user, board: board)
       read_post.mark_read(user, at_time: now - 1.day, force: true)
@@ -532,7 +539,6 @@ RSpec.describe BoardsController do
     end
 
     it "successfully ignores board" do
-      board = create(:board)
       user = create(:user)
       login_as(user)
       expect(board).not_to be_ignored_by(user)
@@ -552,12 +558,16 @@ RSpec.describe BoardsController do
         expect(assigns(:search_results)).to be_nil
       end
 
+      it "works for reader accounts" do
+        login_as(create(:reader_user))
+        get :search
+        expect(response).to have_http_status(200)
+      end
+
       it "works logged in" do
         login
         get :search
         expect(response).to have_http_status(200)
-        expect(assigns(:page_title)).to eq('Search Continuities')
-        expect(assigns(:search_results)).to be_nil
       end
     end
 

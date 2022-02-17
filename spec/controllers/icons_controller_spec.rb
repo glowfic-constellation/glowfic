@@ -159,6 +159,8 @@ RSpec.describe IconsController do
   end
 
   describe "GET show" do
+    let(:icon) { create(:icon) }
+
     it "requires valid icon logged out" do
       get :show, params: { id: -1 }
       expect(response).to redirect_to(root_url)
@@ -173,7 +175,6 @@ RSpec.describe IconsController do
     end
 
     it "successfully loads when logged out" do
-      icon = create(:icon)
       get :show, params: { id: icon.id }
       expect(response).to have_http_status(200)
       expect(assigns(:posts)).to be_nil
@@ -181,10 +182,15 @@ RSpec.describe IconsController do
 
     it "successfully loads when logged in" do
       login
-      icon = create(:icon)
       get :show, params: { id: icon.id }
       expect(response).to have_http_status(200)
       expect(assigns(:posts)).to be_nil
+    end
+
+    it "successfully loads as reader" do
+      login_as(create(:reader_user))
+      get :show, params: { id: icon.id }
+      expect(response).to have_http_status(200)
     end
 
     it "calculates OpenGraph meta" do
