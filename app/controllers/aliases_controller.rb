@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 class AliasesController < ApplicationController
   before_action :login_required
-  before_action :readonly_forbidden
   before_action :find_character
   before_action :find_model, only: :destroy
 

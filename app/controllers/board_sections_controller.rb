@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 class BoardSectionsController < ApplicationController
   before_action :login_required, except: :show
-  before_action :readonly_forbidden, except: :show
   before_action :find_model, except: [:new, :create]
   before_action :require_permission, except: [:show, :update]
 

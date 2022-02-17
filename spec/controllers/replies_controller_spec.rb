@@ -10,7 +10,7 @@ RSpec.describe RepliesController do
       login_as(create(:reader_user))
       post :create
       expect(response).to redirect_to(continuities_path)
-      expect(flash[:error]).to eq("This feature is not available to read-only accounts.")
+      expect(flash[:error]).to eq("You do not have permission to create replies.")
     end
 
     context "preview" do
@@ -554,13 +554,6 @@ RSpec.describe RepliesController do
       expect(flash[:error]).to eq("You must be logged in to view that page.")
     end
 
-    it "requires full account" do
-      login_as(create(:reader_user))
-      get :edit, params: { id: -1 }
-      expect(response).to redirect_to(continuities_path)
-      expect(flash[:error]).to eq("This feature is not available to read-only accounts.")
-    end
-
     it "requires valid reply" do
       login
       get :edit, params: { id: -1 }
@@ -624,13 +617,6 @@ RSpec.describe RepliesController do
       put :update, params: { id: -1 }
       expect(response).to redirect_to(root_url)
       expect(flash[:error]).to eq("You must be logged in to view that page.")
-    end
-
-    it "requires full account" do
-      login_as(create(:reader_user))
-      put :update, params: { id: -1 }
-      expect(response).to redirect_to(continuities_path)
-      expect(flash[:error]).to eq("This feature is not available to read-only accounts.")
     end
 
     it "requires valid reply" do
@@ -838,13 +824,6 @@ RSpec.describe RepliesController do
       expect(flash[:error]).to eq("You must be logged in to view that page.")
     end
 
-    it "requires full account" do
-      login_as(create(:reader_user))
-      delete :destroy, params: { id: -1 }
-      expect(response).to redirect_to(continuities_path)
-      expect(flash[:error]).to eq("This feature is not available to read-only accounts.")
-    end
-
     it "requires valid reply" do
       login
       delete :destroy, params: { id: -1 }
@@ -977,13 +956,6 @@ RSpec.describe RepliesController do
       post :restore, params: { id: -1 }
       expect(response).to redirect_to(root_url)
       expect(flash[:error]).to eq("You must be logged in to view that page.")
-    end
-
-    it "requires full account" do
-      login_as(create(:reader_user))
-      post :restore, params: { id: -1 }
-      expect(response).to redirect_to(continuities_path)
-      expect(flash[:error]).to eq("This feature is not available to read-only accounts.")
     end
 
     it "must find the reply" do

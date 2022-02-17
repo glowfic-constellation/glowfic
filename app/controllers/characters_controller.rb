@@ -4,10 +4,10 @@ class CharactersController < ApplicationController
   include CharacterSplit
 
   before_action :login_required, except: [:index, :show, :facecasts, :search]
-  before_action :readonly_forbidden, except: [:index, :show, :facecasts, :search]
   before_action :find_model, only: [:show, :edit, :update, :duplicate, :destroy, :replace, :do_replace]
   before_action :find_group, only: :index
-  before_action :require_permission, only: [:edit, :update, :duplicate, :replace, :do_replace]
+  before_action :require_create_permission, only: [:new, :create]
+  before_action :require_edit_permission, only: [:edit, :update, :duplicate, :replace, :do_replace]
   before_action :editor_setup, only: [:new, :edit]
 
   def index
@@ -322,7 +322,13 @@ class CharactersController < ApplicationController
     @group = CharacterGroup.find_by_id(params[:group_id])
   end
 
-  def require_permission
+  def require_create_permission
+    return unless current_user.read_only?
+    flash[:error] = "You do not have permission to create characters."
+    redirect_to continuities_path and return
+  end
+
+  def require_edit_permission
     unless @character.editable_by?(current_user)
       flash[:error] = "You do not have permission to edit that character."
       redirect_to user_characters_path(current_user) and return

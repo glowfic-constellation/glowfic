@@ -6,13 +6,6 @@ RSpec.describe BoardSectionsController do
       expect(flash[:error]).to eq("You must be logged in to view that page.")
     end
 
-    it "requires full account" do
-      login_as(create(:reader_user))
-      get :new
-      expect(response).to redirect_to(continuities_path)
-      expect(flash[:error]).to eq("This feature is not available to read-only accounts.")
-    end
-
     it "requires permission" do
       user = create(:user)
       board = create(:board)
@@ -45,13 +38,6 @@ RSpec.describe BoardSectionsController do
       post :create
       expect(response).to redirect_to(root_url)
       expect(flash[:error]).to eq("You must be logged in to view that page.")
-    end
-
-    it "requires full account" do
-      login_as(create(:reader_user))
-      post :create
-      expect(response).to redirect_to(continuities_path)
-      expect(flash[:error]).to eq("This feature is not available to read-only accounts.")
     end
 
     it "requires permission" do
@@ -165,13 +151,6 @@ RSpec.describe BoardSectionsController do
       expect(flash[:error]).to eq("You must be logged in to view that page.")
     end
 
-    it "requires full account" do
-      login_as(create(:reader_user))
-      get :edit, params: { id: -1 }
-      expect(response).to redirect_to(continuities_path)
-      expect(flash[:error]).to eq("This feature is not available to read-only accounts.")
-    end
-
     it "requires valid section" do
       login
       get :edit, params: { id: -1 }
@@ -202,13 +181,6 @@ RSpec.describe BoardSectionsController do
       put :update, params: { id: -1 }
       expect(response).to redirect_to(root_url)
       expect(flash[:error]).to eq("You must be logged in to view that page.")
-    end
-
-    it "requires full account" do
-      login_as(create(:reader_user))
-      put :update, params: { id: -1 }
-      expect(response).to redirect_to(continuities_path)
-      expect(flash[:error]).to eq("This feature is not available to read-only accounts.")
     end
 
     it "requires board permission" do
@@ -247,13 +219,6 @@ RSpec.describe BoardSectionsController do
       delete :destroy, params: { id: -1 }
       expect(response).to redirect_to(root_url)
       expect(flash[:error]).to eq("You must be logged in to view that page.")
-    end
-
-    it "requires full account" do
-      login_as(create(:reader_user))
-      delete :destroy, params: { id: -1 }
-      expect(response).to redirect_to(continuities_path)
-      expect(flash[:error]).to eq("This feature is not available to read-only accounts.")
     end
 
     it "requires valid section" do

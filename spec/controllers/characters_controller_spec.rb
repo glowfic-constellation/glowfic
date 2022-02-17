@@ -92,7 +92,7 @@ RSpec.describe CharactersController do
       login_as(create(:reader_user))
       get :new
       expect(response).to redirect_to(continuities_path)
-      expect(flash[:error]).to eq("This feature is not available to read-only accounts.")
+      expect(flash[:error]).to eq("You do not have permission to create characters.")
     end
 
     it "succeeds when logged in" do
@@ -140,7 +140,7 @@ RSpec.describe CharactersController do
       login_as(create(:reader_user))
       post :create
       expect(response).to redirect_to(continuities_path)
-      expect(flash[:error]).to eq("This feature is not available to read-only accounts.")
+      expect(flash[:error]).to eq("You do not have permission to create characters.")
     end
 
     it "fails with missing params" do
@@ -357,13 +357,6 @@ RSpec.describe CharactersController do
       expect(flash[:error]).to eq("You must be logged in to view that page.")
     end
 
-    it "requires full account" do
-      login_as(create(:reader_user))
-      get :edit, params: { id: -1 }
-      expect(response).to redirect_to(continuities_path)
-      expect(flash[:error]).to eq("This feature is not available to read-only accounts.")
-    end
-
     it "requires valid character id" do
       user_id = login
       get :edit, params: { id: -1 }
@@ -444,13 +437,6 @@ RSpec.describe CharactersController do
       put :update, params: { id: -1 }
       expect(response).to redirect_to(root_url)
       expect(flash[:error]).to eq("You must be logged in to view that page.")
-    end
-
-    it "requires full account" do
-      login_as(create(:reader_user))
-      put :update, params: { id: -1 }
-      expect(response).to redirect_to(continuities_path)
-      expect(flash[:error]).to eq("This feature is not available to read-only accounts.")
     end
 
     it "requires valid character id" do
@@ -833,13 +819,6 @@ RSpec.describe CharactersController do
       expect(flash[:error]).to eq("You must be logged in to view that page.")
     end
 
-    it "requires full account" do
-      login_as(create(:reader_user))
-      delete :destroy, params: { id: -1 }
-      expect(response).to redirect_to(continuities_path)
-      expect(flash[:error]).to eq("This feature is not available to read-only accounts.")
-    end
-
     it "requires valid character" do
       user_id = login
       delete :destroy, params: { id: -1 }
@@ -883,13 +862,6 @@ RSpec.describe CharactersController do
       get :replace, params: { id: -1 }
       expect(response).to redirect_to(root_url)
       expect(flash[:error]).to eq('You must be logged in to view that page.')
-    end
-
-    it "requires full account" do
-      login_as(create(:reader_user))
-      get :replace, params: { id: -1 }
-      expect(response).to redirect_to(continuities_path)
-      expect(flash[:error]).to eq("This feature is not available to read-only accounts.")
     end
 
     it "requires valid character" do
@@ -993,13 +965,6 @@ RSpec.describe CharactersController do
       post :do_replace, params: { id: -1 }
       expect(response).to redirect_to(root_url)
       expect(flash[:error]).to eq('You must be logged in to view that page.')
-    end
-
-    it "requires full account" do
-      login_as(create(:reader_user))
-      post :do_replace, params: { id: -1 }
-      expect(response).to redirect_to(continuities_path)
-      expect(flash[:error]).to eq("This feature is not available to read-only accounts.")
     end
 
     it "requires valid character" do
@@ -1367,13 +1332,6 @@ RSpec.describe CharactersController do
       post :duplicate, params: { id: -1 }
       expect(response).to redirect_to(root_url)
       expect(flash[:error]).to eq('You must be logged in to view that page.')
-    end
-
-    it "requires full account" do
-      login_as(create(:reader_user))
-      post :duplicate, params: { id: -1 }
-      expect(response).to redirect_to(continuities_path)
-      expect(flash[:error]).to eq("This feature is not available to read-only accounts.")
     end
 
     it "requires valid character id" do

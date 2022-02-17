@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 class IconsController < UploadingController
   before_action :login_required, except: :show
-  before_action :readonly_forbidden, except: :show
   before_action :find_model, except: :delete_multiple
   before_action :require_permission, only: [:edit, :update, :replace, :do_replace, :destroy, :avatar]
   before_action :set_s3_url, only: :edit
