@@ -365,7 +365,7 @@ RSpec.describe AccessCirclesController do
 
       put :update, params: {
         id: circle.id,
-        access_circle: { name: 'test name', description: description, user_ids: (users.ids + retained_users.ids) }
+        access_circle: { name: 'test name', description: description, user_ids: (users.ids + retained_users.ids) },
       }
       expect(flash[:success]).to eq('Access circle saved successfully.')
       expect(circle.reload.user_ids).to match_array(users.ids + retained_users.ids)
