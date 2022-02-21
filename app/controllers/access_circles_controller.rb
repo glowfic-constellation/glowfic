@@ -36,7 +36,7 @@ class AccessCirclesController < ApplicationController
       @page_title = 'New Access Circle'
       flash.now[:error] = {
         message: "Your access circle could not be saved.",
-        array: @circle.errors.full_messages
+        array: @circle.errors.full_messages,
       }
       editor_setup
       render :new and return
@@ -77,7 +77,7 @@ class AccessCirclesController < ApplicationController
       @page_title = 'Edit Access Circle: ' + @circle.name
       flash.now[:error] = {
         message: "Your access circle could not be saved.",
-        array: @circle.errors.full_messages
+        array: @circle.errors.full_messages,
       }
       editor_setup
       render :edit
@@ -93,7 +93,7 @@ class AccessCirclesController < ApplicationController
     rescue ActiveRecord::RecordNotDestroyed
       flash[:error] = {
         message: "Access circle could not be deleted.",
-        array: @circle.errors.full_messages
+        array: @circle.errors.full_messages,
       }
       redirect_to @circle
     else
