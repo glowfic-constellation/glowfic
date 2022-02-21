@@ -16,7 +16,7 @@
     %th.sub= f.label :user_ids, 'Users'
     %td{class: cycle('even', 'odd')}
       = f.collection_select(:user_ids, User.where.not(id: current_user.id).ordered,
-        :id, :username, {selected: @user_ids.nil? ? f.object.user_ids : @user_ids}, {multiple: true})
+        :id, :username, { selected: @user_ids.nil? ? f.object.user_ids : @user_ids }, { multiple: true })
     %tr
       %th.sub.vtop= f.label :description
       %td{class: cycle('even', 'odd')}= f.text_area :description, placeholder: 'Description', cols: 35
