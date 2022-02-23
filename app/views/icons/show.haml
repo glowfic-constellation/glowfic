@@ -12,7 +12,7 @@
   - else
     = link_to_if params[:view] != 'galleries', "(#{@icon.galleries.count} Galleries)", icon_path(@icon, view: 'galleries')
   &raquo;
-  = link_to_if params[:view].present?, @icon.keyword, icon_path(@icon)
+  = link_to_if params[:view].present?, @icon.keyword, @icon
   &raquo;
   - if params[:view] == 'galleries'
     %b Galleries
@@ -68,7 +68,7 @@
           Replace Icon
     %tr
       %td.centered{class: cycle('even', 'odd')}
-        = link_to icon_path(@icon), method: :delete, data: { confirm: 'Are you sure you want to delete this icon?' } do
+        = link_to @icon, method: :delete, data: { confirm: 'Are you sure you want to delete this icon?' } do
           = image_tag "icons/cross.png", alt: ''
           Delete Icon
 
@@ -78,7 +78,7 @@
       %tr
         %th.table-title Galleries
     - if @galleries.present?
-      = render partial: 'galleries/single', collection: @galleries, as: :gallery, locals: {klass: 'subber', skip_forms: true, is_owner: @icon.user == current_user}
+      = render partial: 'galleries/single', collection: @galleries, as: :gallery, locals: { klass: 'subber', skip_forms: true, is_owner: @icon.user == current_user }
     - else
       %tbody
         %tr

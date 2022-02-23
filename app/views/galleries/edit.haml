@@ -1,11 +1,12 @@
 - content_for :breadcrumbs do
   = link_to "Galleries", user_galleries_path(current_user)
   &raquo;
-  = link_to @gallery.name, gallery_path(@gallery)
+  = link_to @gallery.name, @gallery
   &raquo;
   %b Edit
 
-= form_for @gallery, method: :put, html: {class: 'icon-upload'}, data: { 'form-data' => @s3_direct_post.fields, url: @s3_direct_post.url, host: URI.parse(@s3_direct_post.url).host, limit: 1 } do |f|
+- data = { 'form-data' => @s3_direct_post.fields, url: @s3_direct_post.url, host: URI.parse(@s3_direct_post.url).host, limit: 1 }
+= form_for @gallery, method: :put, html: { class: 'icon-upload' }, data: data do |f|
   %table.form-table.gallery-edit-form
     %thead
       %tr

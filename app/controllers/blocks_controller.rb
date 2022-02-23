@@ -25,7 +25,7 @@ class BlocksController < ApplicationController
     unless @block.save
       flash.now[:error] = {
         message: "User could not be blocked.",
-        array: @block.errors.full_messages
+        array: @block.errors.full_messages,
       }
       editor_setup
       @users = [@block.blocked_user].compact
@@ -45,7 +45,7 @@ class BlocksController < ApplicationController
     unless @block.update(permitted_params)
       flash.now[:error] = {
         message: "Block could not be saved.",
-        array: @block.errors.full_messages
+        array: @block.errors.full_messages,
       }
       editor_setup
       @page_title = 'Edit Block: ' + @block.blocked_user.username
@@ -62,7 +62,7 @@ class BlocksController < ApplicationController
     rescue ActiveRecord::RecordNotDestroyed
       flash[:error] = {
         message: "User could not be unblocked.",
-        array: @block.errors.full_messages
+        array: @block.errors.full_messages,
       }
     else
       flash[:success] = "User unblocked."

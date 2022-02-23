@@ -4,12 +4,12 @@
 
 ### Dependencies
 
-*   [Ruby](https://www.ruby-lang.org/en/) 2.6.7
-*   [Rails](http://rubyonrails.org/) 5.2
+*   [Ruby](https://www.ruby-lang.org/en/) 2.7.5
+*   [Rails](http://rubyonrails.org/) 6.0
 *   [Redis](https://redis.io/topics/quickstart)
 *   [PostgreSQL](https://www.postgresql.org/)
 
-If you are not acquainted with Rails, it may help to go through the [Getting Started with Rails](http://guides.rubyonrails.org/v5.1/getting_started.html) tutorial for Rails 5.1.
+If you are not acquainted with Rails, it may help to go through the [Getting Started with Rails](http://guides.rubyonrails.org/v6.0/getting_started.html) tutorial for Rails 6.0.
 If you wish to learn Ruby, try out the [quickstart](https://www.ruby-lang.org/en/documentation/quickstart/) guide provided on their website, or if you are already acquainted with various programming languages, try the [Learn X in Y minutes](https://learnxinyminutes.com/docs/ruby/) tutorial for Ruby.
 
 This README mostly focuses on how to get started developing this project with Docker – in any environment with Docker installed you should be able to have the Glowfic server up and running.
@@ -95,7 +95,7 @@ First, go to the glowfic folder and download the latest code:
 *   `git pull`
 
 Then look at this README again, to make sure the version of Ruby hasn't changed; alternatively, in case this file is not up to date, look at the top of the `Gemfile` file, where it states the version of ruby.
-As of writing, this is `ruby '2.6.7'`.
+As of writing, this is `ruby '2.7.5'`.
 If it has changed, you can rebuild the glowfic image with:
 
 *   `docker-compose stop`
@@ -120,16 +120,18 @@ We use the following tools to make sure our code is clean and standards-ctomplia
 * The [W3 HTML validator](https://validator.w3.org/)
 * [traceroute](https://github.com/amatsuda/traceroute)
 * [rails_best_practices](https://github.com/flyerhzm/rails_best_practices)
-* [haml-lint](https://github.com/sds/haml-lint)
 * [sass-lint](https://github.com/sasstools/sass-lint)
 
-CodeClimate runs the following tools automatically:
+We run the following tools through github actions:
 * [brakeman](https://github.com/presidentbeef/brakeman)
+* [ESLint](https://eslint.org/)
+* [haml-lint](https://github.com/sds/haml-lint)
+* [Rubocop](https://github.com/rubocop-hq/rubocop)
+
+CodeClimate runs the following tools automatically:
 * [bundler-audit](https://github.com/rubysec/bundler-audit)
 * [duplication](https://github.com/codeclimate/codeclimate-duplication)
-* [ESLint](https://eslint.org/)
 * [fixme](https://github.com/codeclimate/codeclimate-fixme)
-* [Rubocop](https://github.com/rubocop-hq/rubocop)
 
 Tools we do not currently use but are interested in evaluating:
 * [bullet](https://github.com/flyerhzm/bullet)

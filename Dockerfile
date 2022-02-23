@@ -1,4 +1,4 @@
-FROM ruby:2.6.7
+FROM ruby:2.7.5
 
 WORKDIR /code
 
@@ -9,7 +9,7 @@ RUN apt-get update && apt-get install -y \
     curl \
     nodejs \
     postgresql-client-11 \
-    chromium=90.* \
+    chromium \
   && apt-get clean
 
 ARG bundler_version=2.2.16

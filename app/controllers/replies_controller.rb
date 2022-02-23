@@ -148,7 +148,7 @@ class RepliesController < WritableController
     rescue ActiveRecord::RecordInvalid
       flash[:error] = {
         message: "Your reply could not be saved because of the following problems:",
-        array: reply.errors.full_messages
+        array: reply.errors.full_messages,
       }
       redirect_to posts_path and return unless reply.post
       redirect_to post_path(reply.post)
@@ -186,7 +186,7 @@ class RepliesController < WritableController
     rescue ActiveRecord::RecordInvalid
       flash[:error] = {
         message: "Your reply could not be saved because of the following problems:",
-        array: @reply.errors.full_messages
+        array: @reply.errors.full_messages,
       }
       @audits = { @reply.id => @post.audits.count }
       editor_setup
@@ -212,7 +212,7 @@ class RepliesController < WritableController
     rescue ActiveRecord::RecordNotDestroyed
       flash[:error] = {
         message: "Reply could not be deleted.",
-        array: @reply.errors.full_messages
+        array: @reply.errors.full_messages,
       }
       redirect_to reply_path(@reply, anchor: "reply-#{@reply.id}")
     else
@@ -307,7 +307,7 @@ class RepliesController < WritableController
     rescue ActiveRecord::RecordInvalid
       flash[:error] = {
         message: "Your draft could not be saved because of the following problems:",
-        array: draft.errors.full_messages
+        array: draft.errors.full_messages,
       }
     else
       flash[:success] = "Draft saved!" if show_message

@@ -17,23 +17,26 @@
           %table.search-form
             %tr
               %td.width-70= label_tag :board_id, 'Continuity'
-              %td= select_tag :board_id, options_from_collection_for_select(@board || [], :id, :name, params[:board_id]), {class: 'chosen-select', prompt: '— Choose Continuity —'}
+              %td= select_tag :board_id, options_from_collection_for_select(@board || [], :id, :name, params[:board_id]),
+                { class: 'chosen-select', prompt: '— Choose Continuity —' }
             %tr
               %td= label_tag :author_id, 'Author'
-              %td= select_tag :author_id, options_from_collection_for_select(@user || [], :id, :username, params[:author_id]), {class: 'chosen-select', prompt: '— Choose Author —', multiple: true}
+              %td= select_tag :author_id, options_from_collection_for_select(@user || [], :id, :username, params[:author_id]),
+                { class: 'chosen-select', prompt: '— Choose Author —', multiple: true }
             %tr
               %td= label_tag :character_id, 'Character'
-              %td= select_tag :character_id, options_from_collection_for_select(@character || [], :id, :selector_name, params[:character_id]), {prompt: '— Choose Character —'}
+              %td= select_tag :character_id, options_from_collection_for_select(@character || [], :id, :selector_name, params[:character_id]),
+                { prompt: '— Choose Character —' }
             %tr
               %td= label_tag :setting_id, 'Setting'
-              %td= select_tag :setting_id, options_from_collection_for_select(@setting || [], :id, :name, params[:setting_id]), {prompt: '— Choose Setting —'}
+              %td= select_tag :setting_id, options_from_collection_for_select(@setting || [], :id, :name, params[:setting_id]), { prompt: '— Choose Setting —' }
             %tr
               %td= label_tag :subject, 'Subject'
               %td= text_field_tag :subject, params[:subject], style: 'width: 100%; margin: 5px 0px;'
             %tr
               %td Completed
               %td.padding-5
-                = check_box_tag :completed, true, params[:completed].present?, {class: 'vmid no-margin', style: 'margin-bottom: 3px;'}
+                = check_box_tag :completed, true, params[:completed].present?, { class: 'vmid no-margin', style: 'margin-bottom: 3px;' }
                 = label_tag :completed, "Completed Only"
             %tr
               %td.centered{colspan: 2}= submit_tag "Search", class: 'button'

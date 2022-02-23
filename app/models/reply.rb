@@ -22,7 +22,7 @@ class Reply < ApplicationRecord
   pg_search_scope(
     :search,
     against: %i(content),
-    using: { tsearch: { dictionary: "english", highlight: {MaxFragments: 10} } },
+    using: { tsearch: { dictionary: "english", highlight: { MaxFragments: 10 } } },
   )
 
   scope :visible_to, ->(user) { where(post_id: Post.visible_to(user).select(:id)) }
@@ -67,8 +67,7 @@ class Reply < ApplicationRecord
   end
 
   def destroy_subsequent_replies
-    Reply.where('id > ?', id).where(post_id: post_id).delete_all
-    self.set_previous_reply_to_last
+    Reply.where('reply_order >= ?', reply_order).where(post: post).ordered.reverse_order.destroy_all
   end
 
   def set_previous_reply_to_last

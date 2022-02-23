@@ -2,7 +2,7 @@
   = link_to 'Inbox', messages_path
   - if @message.thread_id
     &raquo;
-    = link_to @message.unempty_subject, message_path(@message.first_thread)
+    = link_to @message.unempty_subject, @message.first_thread
     &raquo;
     %b New Reply
   - else

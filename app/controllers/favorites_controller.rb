@@ -29,7 +29,7 @@ class FavoritesController < ApplicationController
         flash[:error] = "User could not be found."
         redirect_to users_path and return
       end
-      fav_path = user_path(favorite)
+      fav_path = favorite
     elsif params[:board_id].present?
       unless (favorite = Board.find_by_id(params[:board_id]))
         flash[:error] = "Continuity could not be found."
@@ -58,7 +58,7 @@ class FavoritesController < ApplicationController
     rescue ActiveRecord::RecordInvalid
       flash[:error] = {
         message: "Your favorite could not be saved because of the following problems:",
-        array: fav.errors.full_messages
+        array: fav.errors.full_messages,
       }
     else
       flash[:success] = "Your favorite has been saved."
@@ -82,15 +82,13 @@ class FavoritesController < ApplicationController
     rescue ActiveRecord::RecordNotDestroyed
       flash[:error] = {
         message: "Favorite could not be deleted.",
-        array: fav.errors.full_messages
+        array: fav.errors.full_messages,
       }
       redirect_to favorites_path
     else
       flash[:success] = "Favorite removed."
-      if fav.favorite_type == User.to_s
-        redirect_to user_path(fav.favorite)
-      elsif fav.favorite_type == Post.to_s
-        redirect_to post_path(fav.favorite)
+      if [User.to_s, Post.to_s].include?(fav.favorite_type)
+        redirect_to fav.favorite
       else
         redirect_to continuity_path(fav.favorite)
       end

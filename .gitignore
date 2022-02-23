@@ -21,7 +21,7 @@
 *~
 
 # Ignore env files
-.ruby-version
+*/**/.ruby-version
 .env
 .byebug_history
 tmux-client-*
@@ -30,7 +30,6 @@ tmux-server-*
 # Ignore test files
 coverage/*
 spec/examples.txt
-wraith/now/*
 backstop/now/*
 backstop/reports/*
 

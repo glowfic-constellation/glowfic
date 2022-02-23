@@ -46,6 +46,46 @@ RSpec.describe Message do
     end
   end
 
+  describe "#unread_count_for" do
+    let(:user) { create(:user) }
+
+    it "returns unread inbox count" do
+      expect(Message.unread_count_for(user)).to eq(0)
+      create_list(:message, 2, recipient: user)
+      expect(Message.unread_count_for(user)).to eq(2)
+    end
+
+    it "clears cache on new inbox message" do
+      create_list(:message, 2, recipient: user)
+      expect(Message.unread_count_for(user)).to eq(2)
+      expect(Rails.cache.exist?(Message.cache_string_for(user.id))).to eq(true)
+      create(:message, recipient: user)
+      expect(Rails.cache.exist?(Message.cache_string_for(user.id))).to eq(false)
+      expect(Message.unread_count_for(user)).to eq(3)
+      expect(Rails.cache.exist?(Message.cache_string_for(user.id))).to eq(true)
+    end
+
+    it "clears cache when inbox message marked read" do
+      create(:message, recipient: user)
+      message = create(:message, recipient: user)
+      create_list(:message, 2, recipient: user)
+      expect(Message.unread_count_for(user)).to eq(4)
+      expect(Rails.cache.exist?(Message.cache_string_for(user.id))).to eq(true)
+      message.update!(unread: false)
+      expect(Rails.cache.exist?(Message.cache_string_for(user.id))).to eq(false)
+      expect(Message.unread_count_for(user)).to eq(3)
+      expect(Rails.cache.exist?(Message.cache_string_for(user.id))).to eq(true)
+    end
+
+    it "does not clear cache on unrelated message" do
+      create_list(:message, 2, recipient: user)
+      expect(Message.unread_count_for(user)).to eq(2)
+      expect(Rails.cache.exist?(Message.cache_string_for(user.id))).to eq(true)
+      create(:message)
+      expect(Rails.cache.exist?(Message.cache_string_for(user.id))).to eq(true)
+    end
+  end
+
   it "hides blocked messages from recipient without erroring to sender" do
     block = create(:block, block_interactions: true)
     message = build(:message, sender: block.blocked_user, recipient: block.blocking_user)

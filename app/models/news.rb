@@ -3,6 +3,8 @@ class News < ApplicationRecord
 
   validates :content, presence: true
 
+  after_create_commit :invalidate_caches
+
   def editable_by?(user)
     return false unless user
     return true if user.id == user_id
@@ -30,9 +32,15 @@ class News < ApplicationRecord
   def self.num_unread_for(user)
     return 0 unless user
 
-    view = NewsView.find_by(user_id: user.id)
-    return News.count unless view
+    Rails.cache.fetch(NewsView.cache_string_for(user.id), expires_in: 1.day) do
+      view = NewsView.find_by(user: user)
+      view ? News.where('id > ?', view.news_id).count : News.count
+    end
+  end
 
-    News.where('id > ?', view.news_id).count
+  private
+
+  def invalidate_caches
+    NewsView.invalidate_all_caches
   end
 end

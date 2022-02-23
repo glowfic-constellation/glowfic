@@ -44,7 +44,7 @@ class PostsController < WritableController
     @started = (params[:started] == 'true') || (params[:started].nil? && current_user.unread_opened)
     @posts = Post.joins("LEFT JOIN post_views ON post_views.post_id = posts.id AND post_views.user_id = #{current_user.id}")
     @posts = @posts.joins("LEFT JOIN board_views on board_views.board_id = posts.board_id AND board_views.user_id = #{current_user.id}")
-    @posts = @posts.where.not(post_views: {read_at: nil}) if @started
+    @posts = @posts.where.not(post_views: { read_at: nil }) if @started
 
     # post view does not exist and (board view does not exist or post has updated since non-ignored board view read_at)
     no_post_view = @posts.where(post_views: { user_id: nil })
@@ -55,7 +55,7 @@ class PostsController < WritableController
 
     # post view exists and post has updated since non-ignored post view read_at and (board view does not exist or is not ignored)
     with_post_view = @posts.where(post_views: { ignored: false }) # non-existant post-views will return nil here
-    with_post_view = with_post_view.where(board_views: { user_id: nil}).or(with_post_view.where(board_views: { ignored: false }))
+    with_post_view = with_post_view.where(board_views: { user_id: nil }).or(with_post_view.where(board_views: { ignored: false }))
     with_post_view = with_post_view.where(post_views: { read_at: nil })
       .or(with_post_view.where("date_trunc('second', post_views.read_at) < date_trunc('second', posts.tagged_at)"))
 
@@ -93,7 +93,7 @@ class PostsController < WritableController
     @hidden_boardviews = BoardView.where(user_id: current_user.id).where(ignored: true).includes(:board)
     hidden_post_ids = Post::View.where(user_id: current_user.id).where(ignored: true).select(:post_id).distinct.pluck(:post_id)
     @hidden_posts = posts_from_relation(Post.where(id: hidden_post_ids).ordered)
-    @page_title = 'Hidden Posts & Boards'
+    @page_title = 'Hidden Posts & Continuities'
   end
 
   def unhide
@@ -113,7 +113,7 @@ class PostsController < WritableController
   end
 
   def new
-    @post = Post.new(character: current_user.active_character, user: current_user)
+    @post = Post.new(character: current_user.active_character, user: current_user, authors_locked: true)
     @post.board_id = params[:board_id]
     @post.section_id = params[:section_id]
     @post.icon_id = (current_user.active_character ? current_user.active_character.default_icon.try(:id) : current_user.avatar_id)
@@ -140,14 +140,14 @@ class PostsController < WritableController
     rescue ActiveRecord::RecordInvalid
       flash.now[:error] = {
         array: @post.errors.full_messages,
-        message: "Your post could not be saved because of the following problems:"
+        message: "Your post could not be saved because of the following problems:",
       }
       editor_setup
       @page_title = 'New Post'
       render :new
     else
       flash[:success] = "You have successfully posted."
-      redirect_to post_path(@post)
+      redirect_to @post
     end
   end
 
@@ -217,21 +217,21 @@ class PostsController < WritableController
     rescue ActiveRecord::RecordInvalid
       flash.now[:error] = {
         array: @post.errors.full_messages,
-        message: "Your post could not be saved because of the following problems:"
+        message: "Your post could not be saved because of the following problems:",
       }
       @audits = { post: @post.audits.count }
       editor_setup
       render :edit
     else
       flash[:success] = "Your post has been updated."
-      redirect_to post_path(@post)
+      redirect_to @post
     end
   end
 
   def destroy
     unless @post.deletable_by?(current_user)
       flash[:error] = "You do not have permission to modify this post."
-      redirect_to post_path(@post) and return
+      redirect_to @post and return
     end
 
     begin
@@ -239,9 +239,9 @@ class PostsController < WritableController
     rescue ActiveRecord::RecordNotDestroyed
       flash[:error] = {
         message: "Post could not be deleted.",
-        array: @post.errors.full_messages
+        array: @post.errors.full_messages,
       }
-      redirect_to post_path(@post)
+      redirect_to @post
     else
       flash[:success] = "Post deleted."
       redirect_to continuities_path
@@ -268,17 +268,11 @@ class PostsController < WritableController
     end
     @search_results = @search_results.complete if params[:completed].present?
     if params[:author_id].present?
-      post_ids = nil
-      params[:author_id].each do |author_id|
-        author_posts = Post::Author.where(user_id: author_id, joined: true).pluck(:post_id)
-        if post_ids.nil?
-          post_ids = author_posts
-        else
-          post_ids &= author_posts
-        end
-        break if post_ids.empty?
-      end
-      @search_results = @search_results.where(id: post_ids.uniq)
+      # get author matches for posts that have at least one
+      author_posts = Post::Author.where(user_id: params[:author_id]).group(:post_id)
+      # select posts that have all of them
+      author_posts = author_posts.having('COUNT(post_authors.user_id) = ?', params[:author_id].length).pluck(:post_id)
+      @search_results = @search_results.where(id: author_posts)
     end
     if params[:character_id].present?
       post_ids = Reply.where(character_id: params[:character_id]).select(:post_id).distinct.pluck(:post_id)
@@ -347,13 +341,13 @@ class PostsController < WritableController
       @post.unignore(current_user)
       flash[:success] = "Post has been unhidden"
     end
-    redirect_to post_path(@post)
+    redirect_to @post
   end
 
   def change_status
     unless Post.statuses.key?(params[:status])
       flash[:error] = "Invalid status selected."
-      return redirect_to post_path(@post)
+      return redirect_to @post
     end
 
     begin
@@ -364,12 +358,12 @@ class PostsController < WritableController
     rescue ActiveRecord::RecordInvalid
       flash[:error] = {
         message: "Status could not be updated.",
-        array: @post.errors.full_messages
+        array: @post.errors.full_messages,
       }
     else
       flash[:success] = "Post has been marked #{@post.status}."
     end
-    redirect_to post_path(@post)
+    redirect_to @post
   end
 
   def change_authors_locked
@@ -379,12 +373,12 @@ class PostsController < WritableController
     rescue ActiveRecord::RecordInvalid
       flash[:error] = {
         message: "Post could not be updated.",
-        array: @post.errors.full_messages
+        array: @post.errors.full_messages,
       }
     else
       flash[:success] = "Post has been #{@post.authors_locked? ? 'locked to' : 'unlocked from'} current authors."
     end
-    redirect_to post_path(@post)
+    redirect_to @post
   end
 
   def editor_setup
@@ -428,7 +422,7 @@ class PostsController < WritableController
   def require_permission
     unless @post.editable_by?(current_user) || @post.metadata_editable_by?(current_user)
       flash[:error] = "You do not have permission to modify this post."
-      redirect_to post_path(@post)
+      redirect_to @post
     end
   end
 
@@ -453,14 +447,14 @@ class PostsController < WritableController
       :character_alias_id,
       :authors_locked,
       :audit_comment,
-      :private_note
+      :private_note,
     ]
 
     # prevents us from setting (and saving) associations on preview()
     if include_associations
       allowed_params << {
         unjoined_author_ids: [],
-        viewer_ids: []
+        viewer_ids: [],
       }
     end
 

@@ -91,15 +91,22 @@ class ApplicationController < ActionController::Base
   helper_method :tos_skippable?
 
   def posts_from_relation(relation, no_tests: true, with_pagination: true, select: '', max: false, with_unread: false, show_blocked: false)
-    posts_count = relation.visible_to(current_user).except(:select, :order, :group).count('DISTINCT posts.id')
-    posts = posts_list_relation(relation, no_tests: no_tests, select: select, max: max, show_blocked: show_blocked)
+    posts = posts_relation_filter(relation, no_tests: no_tests, show_blocked: show_blocked)
+    posts_count = posts.except(:select, :order, :group).count('DISTINCT posts.id')
+    posts = posts_list_relation(posts, select: select, max: max)
     posts = posts.paginate(page: page, total_entries: posts_count) if with_pagination
     calculate_view_status(posts, with_unread: with_unread) if logged_in?
     posts
   end
   helper_method :posts_from_relation
 
-  def posts_list_relation(relation, no_tests: true, select: '', max: false, show_blocked: false)
+  def posts_relation_filter(posts, no_tests: true, show_blocked: false)
+    posts = posts.where.not(id: current_user.hidden_posts) if logged_in? && !show_blocked
+    posts = posts.no_tests if no_tests
+    posts.visible_to(current_user)
+  end
+
+  def posts_list_relation(relation, select: '', max: false)
     select = if max
       <<~SQL.squish
         posts.*,
@@ -118,18 +125,13 @@ class ApplicationController < ActionController::Base
       SQL
     end
 
-    posts = relation
+    relation
       .select(select)
-      .visible_to(current_user)
       .joins(:board)
       .joins(:last_user)
       .includes(:authors)
       .with_has_content_warnings
       .with_reply_count
-
-    posts = posts.where.not(id: current_user.hidden_posts) if logged_in? && !show_blocked
-    posts = posts.no_tests if no_tests
-    posts
   end
 
   def calculate_view_status(posts, with_unread: false)
@@ -147,7 +149,7 @@ class ApplicationController < ActionController::Base
 
     if with_unread
       @unread_counts = Reply.where(post_id: @unread_ids).joins('INNER JOIN post_views ON replies.post_id = post_views.post_id')
-      @unread_counts = @unread_counts.where(post_views: {user_id: current_user.id})
+      @unread_counts = @unread_counts.where(post_views: { user_id: current_user.id })
       @unread_counts = @unread_counts.where('replies.created_at > post_views.read_at').group(:post_id).count
     end
   end

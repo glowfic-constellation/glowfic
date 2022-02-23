@@ -20,7 +20,7 @@
             - klass += ' bold' if @view == 'inbox' && message.unread?
             %td.padding-left-5{class: klass}= # just padding
             %td{class: klass}
-              = link_to message.unempty_subject, message_path(message)
+              = link_to message.unempty_subject, message
               - if message.num_in_thread.to_i > 1
                 (#{message.num_in_thread})
             %td{class: klass}

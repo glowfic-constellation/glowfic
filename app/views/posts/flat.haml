@@ -11,7 +11,7 @@
     = favicon_link_tag 'favicons/favicon-16x16.png', type: 'image/png', rel: 'icon', sizes: '16x16'
   %body
     #content
-      = link_to post_path(@post) do
+      = link_to @post do
         &laquo; Back
       %br
       .details.float-right
@@ -40,7 +40,7 @@
                 - else
                   = @post.user.username
           .post-edit-box
-            = link_to post_path(@post), rel: 'alternate' do
+            = link_to @post, rel: 'alternate' do
               = image_tag "icons/link.png", title: 'Permalink', alt: 'Permalink'
             = link_to post_path(@post, unread: true), method: :put do
               = image_tag "icons/eye.png", title: 'Mark Unread Here', alt: 'Mark Unread'

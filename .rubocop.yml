@@ -7,7 +7,8 @@ AllCops:
     - 'config/**/*'
     - 'db/**/*'
     - 'spec/spec_helper.rb'
-    - 'wraith/*'
+    - 'backstop/*'
+    - 'vendor/**/*'
 
 require:
   - rubocop-performance
@@ -21,6 +22,9 @@ Rails:
 
 Gemspec/DateAssignment: # (new in 1.10)
   Enabled: true
+
+Gemspec/RequireMFA: # new in 1.23
+  Enabled: false
 
 #################### Layout ##############################
 
@@ -64,6 +68,9 @@ Layout/IndentationWidth:
   Enabled: true
   Width: 2
 
+Layout/LineEndStringConcatenationIndentation: # new in 1.18
+  Enabled: true
+
 Layout/LineLength:
   Enabled: true
   Max: 150
@@ -71,13 +78,17 @@ Layout/LineLength:
     - 'app/controllers/api/**/*'
 
 Layout/MultilineMethodCallBraceLayout:
-  Enabled: false
+  EnforcedStyle: symmetrical
+  Exclude:
+    - 'spec/**/*'
 
 Layout/MultilineMethodCallIndentation:
   EnforcedStyle: 'indented'
 
 Layout/MultilineOperationIndentation:
-  Enabled: false
+  EnforcedStyle: aligned
+  Exclude:
+    - 'app/helpers/writable_helper.rb'
 
 Layout/ParameterAlignment:
   EnforcedStyle: 'with_fixed_indentation'
@@ -85,27 +96,8 @@ Layout/ParameterAlignment:
 Layout/SpaceAroundEqualsInParameterDefault:
   EnforcedStyle: 'no_space'
 
-Layout/SpaceAroundOperators:
-  Enabled: false
-
-Layout/SpaceBeforeBlockBraces:
-  Enabled: false
-
 Layout/SpaceBeforeBrackets: # (new in 1.7)
-  Enabled: false
-  # problems with false positives
-
-Layout/SpaceInLambdaLiteral:
-  Enabled: false
-
-Layout/SpaceInsideBlockBraces:
-  Enabled: false
-
-Layout/SpaceInsideHashLiteralBraces:
-  Enabled: false
-
-Layout/SpaceInsideRangeLiteral:
-  Enabled: false
+  Enabled: true
 
 #################### Lint ################################
 
@@ -115,6 +107,12 @@ Lint/AmbiguousAssignment: # (new in 1.7)
 Lint/AmbiguousBlockAssociation:
   Exclude:
     - 'spec/**/*'
+
+Lint/AmbiguousOperatorPrecedence: # new in 1.21
+  Enabled: true
+
+Lint/AmbiguousRange: # new in 1.19
+  Enabled: true
 
 Lint/ConstantDefinitionInBlock:
   Exclude:
@@ -134,6 +132,13 @@ Lint/EmptyBlock: # (new in 1.1)
 
 Lint/EmptyClass: # (new in 1.3)
   Enabled: true
+
+Lint/EmptyInPattern: # new in 1.16
+  Enabled: true
+
+Lint/IncompatibleIoSelectWithFiberScheduler: # new in 1.21
+  Enabled: false
+  # specific to ruby 3.0
 
 Lint/LambdaWithoutLiteralBlock: # (new in 1.8)
   Enabled: true
@@ -156,6 +161,9 @@ Lint/ParenthesesAsGroupedExpression:
     - 'spec/**/*'
 
 Lint/RedundantDirGlobSort: # (new in 1.8)
+  Enabled: true
+
+Lint/RequireRelativeSelfPath: # new in 1.22
   Enabled: true
 
 Lint/SuppressedException:
@@ -243,6 +251,9 @@ Performance/BlockGivenWithExplicitBlock:
 Performance/CollectionLiteralInLoop:
   Enabled: false
 
+Performance/ConcurrentMonotonicTime: # new in 1.12
+  Enabled: false
+
 Performance/ConstantRegexp:
   Enabled: true
 
@@ -284,6 +295,10 @@ Performance/Sum:
 Rails/ActiveRecordCallbacksOrder:
   Enabled: true
 
+Rails/AddColumnIndex: # new in 2.11
+  Enabled: false
+  # disabled because we don't run cops on db/*, otherwise good
+
 Rails/AfterCommitOverride:
   Enabled: true
 
@@ -307,8 +322,14 @@ Rails/DynamicFindBy:
     - find_by_sql
     - find_by_id
 
+Rails/EagerEvaluationLogMessage: # new in 2.11
+  Enabled: true
+
 Rails/EnvironmentVariableAccess: # (new in 2.10)
   Enabled: false
+
+Rails/ExpandedDateRange: # new in 2.11
+  Enabled: true
 
 Rails/FilePath:
   EnforcedStyle: 'arguments'
@@ -325,6 +346,10 @@ Rails/HasManyOrHasOneDependent:
 
 Rails/HelperInstanceVariable:
   Enabled: false
+
+Rails/I18nLocaleAssignment: # new in 2.11
+  Enabled: false
+  # we don't use i18n
 
 Rails/MailerName:
   Enabled: true
@@ -350,6 +375,10 @@ Rails/PluckInWhere:
 Rails/ReadWriteAttribute:
   Enabled: false
 
+Rails/RedundantTravelBack: # new in 2.12
+  Enabled: false
+  # we don't use rails tests
+
 Rails/RenderInline:
   Enabled: true
 
@@ -371,6 +400,10 @@ Rails/TimeZoneAssignment: # (new in 2.10)
 Rails/UniqueValidationWithoutIndex:
   Enabled: false
 
+Rails/UnusedIgnoredColumns: # new in 2.11
+  Enabled: false
+  # we don't use ignored_columns
+
 Rails/WhereEquals:
   Enabled: true
 
@@ -381,12 +414,6 @@ Rails/WhereNot:
   Enabled: true
 
 ################## RSpec #################################
-
-RSpec/Capybara/FeatureMethods:
-  EnabledMethods: [feature, scenario]
-
-RSpec/Rails/HttpStatus:
-  Enabled: false
 
 RSpec/AnyInstance:
   Enabled: false
@@ -403,11 +430,17 @@ RSpec/ExampleLength:
 RSpec/ExampleWording:
   Enabled: false
 
+RSpec/ExcessiveDocstringSpacing: # new in 2.5
+  Enabled: true
+
 RSpec/ExpectChange:
   EnforcedStyle: block
 
 RSpec/HookArgument:
   EnforcedStyle: each
+
+RSpec/IdenticalEqualityAssertion: # new in 2.4
+  Enabled: true
 
 RSpec/InstanceVariable:
   Enabled: false
@@ -428,13 +461,37 @@ RSpec/MultipleMemoizedHelpers:
 RSpec/NestedGroups:
   Max: 5
 
+RSpec/SubjectDeclaration: # new in 2.5
+  Enabled: true
+
 RSpec/StubbedMock:
   Enabled: false
+
+################## RSpec/Capybara ##############################
+
+RSpec/Capybara/FeatureMethods:
+  EnabledMethods: [feature, scenario]
+
+################## RSpec/Rails #################################
+
+RSpec/Rails/AvoidSetupHook: # new in 2.4
+  Enabled: true
+
+RSpec/Rails/HttpStatus:
+  Enabled: false
+
+################## Security ##############################
+
+Security/IoMethods: # new in 1.22
+  Enabled: true
 
 ################## Style #################################
 
 Style/AndOr:
   EnforcedStyle: 'conditionals'
+
+Style/ArgumentsForwarding: # (new in 1.1)
+  Enabled: true
 
 Style/AsciiComments:
   Enabled: false
@@ -454,6 +511,9 @@ Style/ClassAndModuleChildren:
 Style/ClassEqualityComparison:
   Enabled: false
 
+Style/CollectionCompact: # (new in 1.2)
+  Enabled: true
+
 Style/CommentAnnotation:
   Enabled: false
 
@@ -463,11 +523,17 @@ Style/ConditionalAssignment:
 Style/Documentation:
   Enabled: false
 
+Style/DocumentDynamicEvalDefinition: # (new in 1.1)
+  Enabled: true
+
 Style/DoubleNegation:
   Enabled: false
 
 Style/EmptyMethod:
   Enabled: false
+
+Style/EndlessMethod: # (new in 1.8)
+  Enabled: true
 
 Style/ExplicitBlockArgument:
   Enabled: false
@@ -491,8 +557,20 @@ Style/GuardClause:
 Style/HashAsLastArrayItem:
   Enabled: false
 
+Style/HashConversion: # (new in 1.10)
+  Enabled: true
+
+Style/HashExcept: # (new in 1.7)
+  Enabled: true
+
 Style/HashSyntax:
   Enabled: false
+
+Style/IfWithBooleanLiteralBranches: # (new in 1.9)
+  Enabled: true
+
+Style/InPatternThen: # new in 1.16
+  Enabled: true
 
 Style/KeywordParametersOrder:
   Enabled: false
@@ -500,14 +578,33 @@ Style/KeywordParametersOrder:
 Style/Lambda:
   Enabled: false
 
+Style/MultilineInPatternThen: # new in 1.16
+  Enabled: true
+
 Style/MutableConstant:
   Enabled: false
+
+Style/NegatedIfElseCondition: # (new in 1.2)
+  Enabled: true
+
+Style/NilLambda: # (new in 1.3)
+  Enabled: true
+
+Style/NumberedParameters: # new in 1.22
+  Enabled: true
+
+Style/NumberedParametersLimit: # new in 1.22
+  Enabled: true
 
 Style/NumericLiterals:
   Enabled: false
 
 Style/NumericPredicate:
   Enabled: false
+
+Style/OpenStructUse: # new in 1.23
+  Enabled: false
+  # disabled because it's mostly for ruby 3
 
 Style/OptionalBooleanParameter:
   Enabled: false
@@ -521,7 +618,14 @@ Style/PercentLiteralDelimiters:
 Style/Proc:
   Enabled: false
 
+Style/QuotedSymbols: # new in 1.16
+  Enabled: false
+  # we don't use quoted symbols OR the cop it's based on
+
 Style/RaiseArgs:
+  Enabled: false
+
+Style/RedundantArgument: # (new in 1.4)
   Enabled: false
 
 Style/RedundantBegin:
@@ -533,18 +637,30 @@ Style/RedundantException:
 Style/RedundantSelf:
   Enabled: false
 
+Style/RedundantSelfAssignmentBranch: # new in 1.19
+  Enabled: true
+
 Style/RegexpLiteral:
   EnforcedStyle: 'slashes'
   AllowInnerSlashes: true
 
+Style/SelectByRegexp: # new in 1.22
+  Enabled: true
+
 Style/SlicingWithRange:
   Enabled: false
+
+Style/StringChars: # (new in 1.12)
+  Enabled: true
 
 Style/StringConcatenation:
   Enabled: false
 
 Style/StringLiterals:
   Enabled: false
+
+Style/SwapValues: # (new in 1.1)
+  Enabled: true
 
 Style/SymbolArray:
   Enabled: false
@@ -554,51 +670,17 @@ Style/TernaryParentheses:
   Enabled: false
 
 Style/TrailingCommaInArguments:
-  EnforcedStyleForMultiline: 'comma'
+  EnforcedStyleForMultiline: 'consistent_comma'
 
 Style/TrailingCommaInArrayLiteral:
-  Enabled: false
-  EnforcedStyleForMultiline: 'comma'
+  EnforcedStyleForMultiline: 'consistent_comma'
 
 Style/TrailingCommaInHashLiteral:
+  EnforcedStyleForMultiline: 'consistent_comma'
+
+Lint/UselessRuby2Keywords: # new in 1.23
   Enabled: false
-  EnforcedStyleForMultiline: 'comma'
+  # disabled because it's for ruby 3
 
 Style/WordArray:
   Enabled: false
-
-Style/ArgumentsForwarding: # (new in 1.1)
-  Enabled: true
-
-Style/CollectionCompact: # (new in 1.2)
-  Enabled: true
-
-Style/DocumentDynamicEvalDefinition: # (new in 1.1)
-  Enabled: true
-
-Style/EndlessMethod: # (new in 1.8)
-  Enabled: true
-
-Style/HashConversion: # (new in 1.10)
-  Enabled: true
-
-Style/HashExcept: # (new in 1.7)
-  Enabled: true
-
-Style/IfWithBooleanLiteralBranches: # (new in 1.9)
-  Enabled: true
-
-Style/NegatedIfElseCondition: # (new in 1.2)
-  Enabled: true
-
-Style/NilLambda: # (new in 1.3)
-  Enabled: true
-
-Style/RedundantArgument: # (new in 1.4)
-  Enabled: false
-
-Style/StringChars: # (new in 1.12)
-  Enabled: true
-
-Style/SwapValues: # (new in 1.1)
-  Enabled: true

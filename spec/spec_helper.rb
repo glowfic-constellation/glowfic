@@ -34,8 +34,9 @@ unless ENV['SKIP_COVERAGE'] || ENV['APIPIE_RECORD'] || RSpec.configuration.files
         end
       end
     end
+    enable_coverage :branch
+    minimum_coverage line: 99.9, branch: 91.73
   end
-  SimpleCov.minimum_coverage 99.5
 end
 
 require 'factory_bot_rails'
@@ -56,6 +57,7 @@ Capybara.register_driver :headless_chrome do |app|
 
   options.add_argument('--headless')
   options.add_argument('--no-sandbox')
+  options.add_argument("--user-data-dir=#{ENV['CHROMEDRIVER_CONFIG']}") if ENV['CHROMEDRIVER_CONFIG']
   # options.add_argument('--disable-popup-blocking')
   options.add_argument('--window-size=1366,768')
 
@@ -217,6 +219,8 @@ WebMock.disable_net_connect!(
   allow_localhost: true,
   allow: "chromedriver.storage.googleapis.com",
 )
+
+require "fakeredis/rspec"
 
 # disable auditing by default unless specifically turned on for a test
 Post.auditing_enabled = false

@@ -31,15 +31,15 @@ linters:
       - Lint/BlockAlignment
       - Lint/EndAlignment
       - Lint/Void
-      - Layout/AlignHash
-      - Layout/AlignParameters
+      - Layout/ArgumentAlignment
       - Layout/CaseIndentation
       - Layout/ElseAlignment
       - Layout/EndOfLine
       - Layout/HashAlignment
       - Layout/IndentationWidth
-      - Layout/LineLength
       - Layout/LeadingCommentSpace # added
+      - Layout/LineLength
+      - Layout/ParameterAlignment
       - Layout/TrailingEmptyLines
       - Layout/TrailingWhitespace
       - Metrics/BlockLength

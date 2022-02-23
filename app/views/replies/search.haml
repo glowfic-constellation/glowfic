@@ -6,7 +6,7 @@
       %th.search-params-header
         Search Replies
         - if @search_results
-          = '- '+@search_results.total_entries.to_s+' results'
+          = "- #{@search_results.total_entries} results"
       %th.search-results-header
         - if @search_results
           = render 'posts/paginator', paginated: @search_results, no_per: true
@@ -21,22 +21,27 @@
                 - if @post
                   %b= @post.board.name
                 - else
-                  = select_tag :board_id, options_from_collection_for_select(@boards || [], :id, :name, params[:board_id]), {class: 'chosen-select', prompt: '— Choose Continuity —'}
+                  = select_tag :board_id, options_from_collection_for_select(@boards || [], :id, :name, params[:board_id]),
+                    { class: 'chosen-select', prompt: '— Choose Continuity —' }
             %tr
               %td= label_tag :author_id, 'Author'
-              %td= select_tag :author_id, options_from_collection_for_select(@users || [], :id, :username, params[:author_id]), {class: 'chosen-select', prompt: '— Choose Author —'}
+              %td= select_tag :author_id, options_from_collection_for_select(@users || [], :id, :username, params[:author_id]),
+                { class: 'chosen-select', prompt: '— Choose Author —' }
             %tr
               %td= label_tag :template_id, 'Template'
-              %td= select_tag :template_id, options_from_collection_for_select(@templates, :id, :name, params[:template_id]), {class: 'chosen-select', prompt: '— Choose Template —'}
+              %td= select_tag :template_id, options_from_collection_for_select(@templates, :id, :name, params[:template_id]),
+                { class: 'chosen-select', prompt: '— Choose Template —' }
             %tr
               %td= label_tag :character_id, 'Character'
-              %td= select_tag :character_id, options_from_collection_for_select(@characters || [], :id, :selector_name, params[:character_id]), {prompt: '— Choose Character —'}
+              %td= select_tag :character_id, options_from_collection_for_select(@characters || [], :id, :selector_name,
+                params[:character_id]), { prompt: '— Choose Character —' }
             %tr
               %td= label_tag :subj_content, 'Content'
               %td= text_field_tag :subj_content, params[:subj_content], style: 'width: 100%; margin: 5px 0px;'
             %tr
               %td= label_tag :sort, 'Sort'
-              %td= select_tag :sort, options_for_select([['Best match', 'rank'], ['Newest first', 'created_new'], ['Oldest first', 'created_old']], params[:sort]), {class: 'chosen-select'}
+              %td= select_tag :sort, options_for_select([['Best match', 'rank'], ['Newest first', 'created_new'], ['Oldest first', 'created_old']],
+                  params[:sort]), { class: 'chosen-select' }
             - if @post.present?
               %tr
                 %td Post

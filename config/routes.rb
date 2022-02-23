@@ -1,7 +1,7 @@
 require 'resque/server'
 
 Rails.application.routes.draw do
-  # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
+  # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
   apipie
 
   root :to => 'sessions#index'
@@ -33,7 +33,7 @@ Rails.application.routes.draw do
 
   # Characters
   resources :templates, except: :index do
-    collection { get :search}
+    collection { get :search }
   end
   resources :characters do
     resources :aliases, only: [:new, :create, :destroy]
@@ -64,7 +64,7 @@ Rails.application.routes.draw do
       get :add
       post :icon
     end
-    collection { get :search}
+    collection { get :search }
   end
 
   # Forums

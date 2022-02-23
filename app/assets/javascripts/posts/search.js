@@ -1,4 +1,4 @@
-/* global gon, createSelect2, processResults, queryTransform */
+/* global gon, createSelect2, processTotal, queryTransform */
 $(document).ready(function() {
   createSelect2('#setting_id', {
     ajax: {
@@ -61,10 +61,3 @@ $(document).ready(function() {
     allowClear: true,
   });
 });
-
-function processTotal(key) {
-  return function(data, params) {
-    var total = this._request.getResponseHeader('Total');
-    return processResults(data, params, total, key);
-  };
-}

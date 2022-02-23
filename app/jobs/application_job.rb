@@ -19,6 +19,6 @@ class ApplicationJob < ActiveJob::Base
 
   def self.notify_exception(exception, *args)
     Rails.logger.error("Received #{exception}, job #{self.name} failed with #{args}")
-    ExceptionNotifier.notify_exception(exception, data: {job: self.name, args: args})
+    ExceptionNotifier.notify_exception(exception, data: { job: self.name, args: args })
   end
 end

@@ -3,7 +3,8 @@
   %td.padding-10.board-title{class: klass}= link_to board.name, continuity_path(board)
   %td.padding-10.board-authors{class: klass}
     - if board.authors_locked?
-      = safe_join(board.writers.where.not(deleted: true).ordered.map { |u| user_link(u) }, ', ')
+      - writers = board.writers.reject(&:deleted?).sort_by { |a| a.username.downcase }
+      = safe_join(writers.map { |u| user_link(u) }, ', ')
     - else
       Anyone
-  %td.padding-10.board-time{class: klass}= pretty_time(board.posts.ordered.first.try(:tagged_at))
+  %td.padding-10.board-time{class: klass}= pretty_time(board.tagged_at)

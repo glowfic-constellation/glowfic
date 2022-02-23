@@ -64,7 +64,7 @@
               = image_tag "icons/user_delete.png", class: 'vmid', alt: ''
               Manage Block
           - else
-            = link_to new_block_path(block: {blocked_user_id: @user.id}) do
+            = link_to new_block_path(block: { blocked_user_id: @user.id }) do
               = image_tag "icons/user_delete.png", class: 'vmid', alt: ''
               Block User
 

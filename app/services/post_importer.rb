@@ -54,14 +54,14 @@ class PostImporter < Object
     poster_names = dreamwidth_doc.css('.entry-poster span.ljuser b')
     usernames -= [poster_names.last.text] if poster_names.count > 1
     usernames -= Character.where(screenname: usernames).pluck(:screenname)
-    dashed = usernames.map { |u| u.tr("_", "-")}
+    dashed = usernames.map { |u| u.tr("_", "-") }
     usernames - Character.where(screenname: dashed).pluck(:screenname).map { |u| u.tr('-', '_') }
   end
 
   def dreamwidth_doc
     return @dreamwidth_doc if @dreamwidth_doc.present?
     data = HTTParty.get(@url).body
-    Rails.logger.debug "Downloaded #{@url} for scraping"
+    Rails.logger.debug { "Downloaded #{@url} for scraping" }
     @dreamwidth_doc = Nokogiri::HTML(data)
   end
 end
