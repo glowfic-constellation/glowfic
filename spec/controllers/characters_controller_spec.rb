@@ -273,7 +273,7 @@ RSpec.describe CharactersController do
 
     it "should set correct variables" do
       Array.new(26) { create(:post, character: character, user: character.user) }
-      get :show, params: { id: character.id }
+      get :show, params: { id: character.id, view: 'posts' }
       expect(response.status).to eq(200)
       expect(assigns(:page_title)).to eq(character.name)
       expect(assigns(:posts).size).to eq(25)
@@ -295,7 +295,7 @@ RSpec.describe CharactersController do
       create(:reply, post: post3, user: character.user, character: character)
       create(:reply, post: post2, user: character.user, character: character)
       create(:reply, post: post1)
-      get :show, params: { id: character.id }
+      get :show, params: { id: character.id, view: 'posts' }
       expect(assigns(:posts)).to eq([post1, post2, post3, post4])
     end
 
