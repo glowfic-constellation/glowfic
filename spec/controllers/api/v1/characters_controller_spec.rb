@@ -21,7 +21,7 @@ RSpec.describe Api::V1::CharactersController do
       it "requires valid post id if provided", show_in_doc: in_doc do
         create(:character)
         get :index, params: { post_id: -1 }
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(422)
         expect(response.json['errors'].size).to eq(1)
         expect(response.json['errors'][0]['message']).to eq("Post could not be found.")
       end
@@ -29,7 +29,7 @@ RSpec.describe Api::V1::CharactersController do
       it "requires valid template id if provided", show_in_doc: in_doc do
         create(:character)
         get :index, params: { template_id: 999 }
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(422)
         expect(response.json['errors'].size).to eq(1)
         expect(response.json['errors'][0]['message']).to eq("Template could not be found.")
       end
@@ -37,7 +37,7 @@ RSpec.describe Api::V1::CharactersController do
       it "requires valid user id if provided", show_in_doc: in_doc do
         character = create(:character)
         get :index, params: { user_id: character.user.id + 1 }
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(422)
         expect(response.json['errors'].size).to eq(1)
         expect(response.json['errors'][0]['message']).to eq("User could not be found.")
       end
@@ -45,7 +45,7 @@ RSpec.describe Api::V1::CharactersController do
       it "requires valid includes if provided", show_in_doc: in_doc do
         create(:character)
         get :index, params: { includes: ['invalid'] }
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(422)
         expect(response.json['errors'].size).to eq(1)
         expected = "Invalid parameter 'includes' value ['invalid']: Must be an array of ['default_icon', 'aliases', 'nickname']"
         expect(response.json['errors'][0]['message']).to eq(expected)
@@ -54,7 +54,7 @@ RSpec.describe Api::V1::CharactersController do
       it "requires post with permission", show_in_doc: in_doc do
         post = create(:post, privacy: :private, with_character: true)
         get :index, params: { post_id: post.id }
-        expect(response).to have_http_status(:forbidden)
+        expect(response).to have_http_status(403)
         expect(response.json['errors'].size).to eq(1)
         expect(response.json['errors'][0]['message']).to eq("You do not have permission to perform this action.")
       end
@@ -240,7 +240,7 @@ RSpec.describe Api::V1::CharactersController do
     it "requires post to have permission when provided a post_id", :show_in_doc do
       post = create(:post, privacy: :private, with_character: true)
       get :show, params: { id: post.character_id, post_id: post.id }
-      expect(response).to have_http_status(:forbidden)
+      expect(response).to have_http_status(403)
       expect(response.json['errors'].size).to eq(1)
       expect(response.json['errors'][0]['message']).to eq("You do not have permission to perform this action.")
     end

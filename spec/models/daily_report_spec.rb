@@ -10,9 +10,11 @@ RSpec.describe DailyReport do
       zone = data.first
       dst_day_params = data.last
       context name do
-        before(:each) { Time.zone = zone }
-
-        after(:each) { Time.zone = default_zone }
+        around(:each) do |example|
+          Time.use_zone(zone) do
+            example.run
+          end
+        end
 
         it "should work on a regular day" do
           time = Time.zone.local(2017, 1, 2, 10, 0) # 2017-01-02 10:00

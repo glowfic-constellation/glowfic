@@ -131,12 +131,10 @@ RSpec.describe Icon do
   describe "#use_icon_host" do
     let(:asset_host) { "https://fake.cloudfront.net" }
 
-    before(:each) { @cached_host = ENV['ICON_HOST'] }
-
-    after(:each) { ENV['ICON_HOST'] = @cached_host }
+    before(:each) { allow(ENV).to receive(:[]).and_call_original }
 
     it "does nothing unless asset host is present" do
-      ENV['ICON_HOST'] = nil
+      allow(ENV).to receive(:[]).with('ICON_HOST').and_return(nil)
       icon = build(:icon, user: create(:user))
       url = "https://glowfic-bucket.s3.amazonaws.com/users%2F#{icon.user.id}%2Ficons%2Ffake_test.png"
       icon.s3_key = "users/#{icon.user_id}/icons/fake_test.png"
@@ -146,7 +144,7 @@ RSpec.describe Icon do
     end
 
     it "does nothing unless the icon is uploaded" do
-      ENV['ICON_HOST'] = asset_host
+      allow(ENV).to receive(:[]).with('ICON_HOST').and_return(asset_host)
       icon = build(:icon, user: create(:user))
       url = "https://glowfic-bucket.s3.amazonaws.com/users%2F#{icon.user.id}%2Ficons%2Ffake_test.png"
       icon.s3_key = nil
@@ -156,7 +154,7 @@ RSpec.describe Icon do
     end
 
     it "does nothing unless the icon already has the asset host domain in it" do
-      ENV['ICON_HOST'] = asset_host
+      allow(ENV).to receive(:[]).with('ICON_HOST').and_return(asset_host)
       icon = build(:icon, user: create(:user))
       url = "#{asset_host}/users%2F#{icon.user_id}%2Ficons%2Ffake_test.png"
       icon.s3_key = "users/#{icon.user_id}/icons/fake_test.png"
@@ -166,13 +164,13 @@ RSpec.describe Icon do
     end
 
     it "handles weird URL-less AWS edge case" do
-      ENV['ICON_HOST'] = asset_host
+      allow(ENV).to receive(:[]).with('ICON_HOST').and_return(asset_host)
       icon = build(:uploaded_icon, url: '')
       expect(icon.save).to eq(false)
     end
 
     it "updates the s3 domain to the asset host domain" do
-      ENV['ICON_HOST'] = asset_host
+      allow(ENV).to receive(:[]).with('ICON_HOST').and_return(asset_host)
       icon = build(:icon, user: create(:user))
       icon.url = "https://glowfic-bucket.s3.amazonaws.com/users%2F#{icon.user_id}%2Ficons%2Ffake_test.png"
       icon.s3_key = "users/#{icon.user_id}/icons/fake_test.png"
