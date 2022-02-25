@@ -12,7 +12,8 @@ RSpec.describe "post_split" do # rubocop:disable RSpec/DescribeClass
     let(:reply) { create(:reply) }
 
     it "requires valid subject" do
-      expect(STDIN).to receive(:gets).and_return('')
+      allow(STDIN).to receive(:gets).and_return('')
+      expect(STDIN).to receive(:gets)
       expect { split_post }.to raise_error(RuntimeError, 'Invalid subject')
     end
 

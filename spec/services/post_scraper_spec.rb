@@ -305,7 +305,8 @@ RSpec.describe PostScraper do
 
     html = "<!DOCTYPE html>\n<html></html>\n"
     stub_with_body = double
-    expect(stub_with_body).to receive(:body).and_return(html)
+    allow(stub_with_body).to receive(:body).and_return(html)
+    expect(stub_with_body).to receive(:body)
 
     allow(HTTParty).to receive(:get).with(url).once.and_raise(Net::OpenTimeout, 'example failure')
     allow(HTTParty).to receive(:get).with(url).and_return(stub_with_body)
