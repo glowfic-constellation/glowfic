@@ -7,11 +7,11 @@ Rails.application.routes.draw do
   root :to => 'sessions#index'
 
   # Accounts
-  match '/login' => 'sessions#new', :as => :login, :via => :get
-  match '/login' => 'sessions#create', :via => :post
-  match '/logout' => 'sessions#destroy', :as => :logout, :via => :delete
-  match '/confirm_tos' => 'sessions#confirm_tos', as: :confirm_tos, via: :patch
-  match '/users/:id/templates' => redirect('/users/%{id}/characters'), via: :get
+  get '/login' => 'sessions#new', as: :login
+  post '/login' => 'sessions#create'
+  delete '/logout' => 'sessions#destroy', as: :logout
+  patch '/confirm_tos' => 'sessions#confirm_tos', as: :confirm_tos
+  get '/users/:id/templates' => redirect('/users/%{id}/characters')
   resources :users, except: :destroy do
     resources :characters, only: :index
     resources :galleries, only: [:index, :show]
@@ -140,21 +140,21 @@ Rails.application.routes.draw do
         member { get :posts }
       end
 
-      match '/login' => 'sessions#create', as: :login, via: :post
+      post '/login' => 'sessions#create', as: :login
     end
   end
 
   # Legalese
-  match '/tos' => 'about#tos', as: :tos, via: :get
-  match '/privacy' => 'about#privacy', as: :privacy, via: :get
-  match '/contact' => 'about#contact', as: :contact, via: :get
-  match '/dmca' => 'about#dmca', as: :dmca, via: :get
+  get '/tos' => 'about#tos', as: :tos
+  get '/privacy' => 'about#privacy', as: :privacy
+  get '/contact' => 'about#contact', as: :contact
+  get '/dmca' => 'about#dmca', as: :dmca
 
   # Miscellaneous
   resources :reports, only: [:index, :show]
   resources :news
   resources :bugs, only: :create
   resources :favorites, only: [:index, :create, :destroy]
-  match '/contribute' => 'contribute#index', as: :contribute, via: :get
+  get '/contribute' => 'contribute#index', as: :contribute
   mount Resque::Server.new, :at => "/resque_web"
 end
