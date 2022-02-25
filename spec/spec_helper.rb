@@ -182,8 +182,7 @@ RSpec.configure do |config|
     end
   end
 
-  # warn on n+1 queries
-  config.around(:each, bullet: true) do |example|
+  wrap_bullet = ->(example) do
     Bullet.enable = true
     Bullet.raise = true
     Bullet.start_request
@@ -192,6 +191,10 @@ RSpec.configure do |config|
     Bullet.end_request
     Bullet.enable = false
   end
+
+  # warn on n+1 queries
+  config.around(:each, bullet: true, &wrap_bullet)
+  config.around(:each, type: :feature, &wrap_bullet)
 end
 
 def skip_bullet
