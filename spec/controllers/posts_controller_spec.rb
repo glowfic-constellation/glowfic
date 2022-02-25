@@ -1343,7 +1343,7 @@ RSpec.describe PostsController do
       expect(response.status).to eq(200)
     end
 
-    context "with render_view" do
+    context "with render_view", bullet: true do
       render_views
 
       it "works" do
