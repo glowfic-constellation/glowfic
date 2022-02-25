@@ -183,7 +183,7 @@ class GalleriesController < UploadingController
     elsif icons.all?(&:save)
       flash[:success] = "Icons saved successfully."
       if @gallery
-        icons.each do |icon| @gallery.icons << icon end
+        icons.each { |icon| @gallery.icons << icon }
         redirect_to @gallery and return
       end
       redirect_to user_gallery_path(id: 0, user_id: current_user.id)

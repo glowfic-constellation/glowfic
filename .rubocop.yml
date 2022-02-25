@@ -506,7 +506,7 @@ Style/AutoResourceCleanup:
   Enabled: true
 
 Style/BlockDelimiters:
-  Enabled: false
+  IgnoredMethods: ['lambda', 'proc', 'it', 'expect']
 
 Style/CaseLikeIf:
   Enabled: false
