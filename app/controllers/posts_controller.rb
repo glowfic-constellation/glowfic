@@ -189,7 +189,7 @@ class PostsController < WritableController
     @meta_og = {
       title: @post.subject + ' · ' + post_location,
       description: post_description,
-      url: stats_post_url(@post)
+      url: stats_post_url(@post),
     }
 
     fresh_when(etag: @post, last_modified: @post.updated_at, public: false)
