@@ -19,6 +19,11 @@
               %td.width-70= label_tag :name, 'Name'
               %td= text_field_tag :name, params[:name], style: 'width: 100%; margin: 5px 0px; box-sizing: border-box;', id: :name
             %tr
+              %td Acronym
+              %td.padding-5
+                = check_box_tag :abbrev, true, params[:abbrev].present?, { class: 'vmid no-margin', style: 'margin-bottom: 3px;' }
+                = label_tag :abbrev, 'Search for acronym'
+            %tr
               %td= label_tag :author_id, 'Author'
               %td= select_tag :author_id, options_from_collection_for_select(@user || [], :id, :username,
                 params[:author_id]), { class: 'chosen-select', prompt: '— Choose Author —', multiple: true }

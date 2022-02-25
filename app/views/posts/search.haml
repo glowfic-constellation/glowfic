@@ -34,6 +34,11 @@
               %td= label_tag :subject, 'Subject'
               %td= text_field_tag :subject, params[:subject], style: 'width: 100%; margin: 5px 0px;'
             %tr
+              %td Acronym
+              %td.padding-5
+                = check_box_tag :abbrev, true, params[:abbrev].present?, { class: 'vmid no-margin', style: 'margin-bottom: 3px;' }
+                = label_tag :abbrev, 'Search for acronym'
+            %tr
               %td Completed
               %td.padding-5
                 = check_box_tag :completed, true, params[:completed].present?, { class: 'vmid no-margin', style: 'margin-bottom: 3px;' }

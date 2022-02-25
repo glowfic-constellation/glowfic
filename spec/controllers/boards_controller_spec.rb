@@ -539,6 +539,15 @@ RSpec.describe BoardsController do
         expect(assigns(:search_results)).to match_array([board1, board2])
       end
 
+      it "filters by name acronym" do
+        board1 = create(:board, name: 'contains stars')
+        board2 = create(:board, name: 'contains Suns')
+        board3 = create(:board, name: 'Case starlight')
+        create(:board, name: 'unrelated')
+        get :search, params: { commit: true, name: 'cs', abbrev: true }
+        expect(assigns(:search_results)).to match_array([board1, board2, board3])
+      end
+
       it "filters by authors" do
         user = create(:user)
         board1 = create(:board, creator: user)
