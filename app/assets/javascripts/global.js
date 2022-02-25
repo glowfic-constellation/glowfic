@@ -39,7 +39,7 @@ $(document).ready(function() {
     // find or create the warning box
     var warningBox = $('#login_status_warning');
     if (warningBox.length === 0) {
-      warningBox = $('<div class="flash inbox pointer" id="login_status_warning">');
+      warningBox = $('<div class="flash breadcrumbs pointer" id="login_status_warning">');
       warningBox.click(function() { $(this).remove(); });
       $('#header').after(warningBox);
     }
