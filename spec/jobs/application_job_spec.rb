@@ -29,6 +29,7 @@ RSpec.describe ApplicationJob do
 
     job = StubJob.new(2, :test)
     allow(job).to receive(:perform).and_raise(exc)
+    expect(job).to receive(:perform)
     begin
       job.perform_now
     rescue Exception # rubocop:disable Lint/RescueException
