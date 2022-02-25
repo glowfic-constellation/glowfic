@@ -194,6 +194,14 @@ RSpec.configure do |config|
   end
 end
 
+def skip_bullet
+  previous_value = Bullet.enable?
+  Bullet.enable = false
+  yield
+ensure
+  Bullet.enable = previous_value
+end
+
 RSpec::Matchers.define :be_the_same_time_as do |expected|
   match do |actual|
     expected.in_time_zone.to_s(:iso8601) == actual.in_time_zone.to_s(:iso8601)

@@ -194,7 +194,7 @@ RSpec.describe TagsController do
           character = create(:character, gallery_groups: [group])
           get :show, params: { id: group.id, view: 'characters' }
           expect(response.status).to eq(200)
-          expect(assigns(:characters)).to match_array([character])
+          skip_bullet { expect(assigns(:characters)).to match_array([character]) }
         end
 
         it "succeeds for logged in users with valid character tag" do
@@ -203,7 +203,7 @@ RSpec.describe TagsController do
           login
           get :show, params: { id: group.id, view: 'characters' }
           expect(response.status).to eq(200)
-          expect(assigns(:characters)).to match_array([character])
+          skip_bullet { expect(assigns(:characters)).to match_array([character]) }
         end
 
         it "orders galleries correctly" do
@@ -223,7 +223,7 @@ RSpec.describe TagsController do
           character = create(:character, settings: [setting])
           get :show, params: { id: setting.id, view: 'characters' }
           expect(response.status).to eq(200)
-          expect(assigns(:characters)).to match_array([character])
+          skip_bullet { expect(assigns(:characters)).to match_array([character]) }
         end
 
         it "succeeds for logged in users with valid character tag" do
@@ -232,7 +232,7 @@ RSpec.describe TagsController do
           login
           get :show, params: { id: setting.id, view: 'characters' }
           expect(response.status).to eq(200)
-          expect(assigns(:characters)).to match_array([character])
+          skip_bullet { expect(assigns(:characters)).to match_array([character]) }
         end
 
         it "succeeds for owned settings" do
