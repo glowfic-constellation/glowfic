@@ -15,7 +15,7 @@ RSpec.describe Message do
   end
 
   describe "#notify_recipient" do
-    before(:each) do ResqueSpec.reset! end
+    before(:each) { ResqueSpec.reset! }
 
     it "does not send with notifications off" do
       message = create(:message)
@@ -43,6 +43,46 @@ RSpec.describe Message do
       block = create(:block, block_interactions: true, blocking_user: recipient)
       create(:message, sender: block.blocked_user, recipient: recipient)
       expect(UserMailer).to have_queue_size_of(0)
+    end
+  end
+
+  describe "#unread_count_for" do
+    let(:user) { create(:user) }
+
+    it "returns unread inbox count" do
+      expect(Message.unread_count_for(user)).to eq(0)
+      create_list(:message, 2, recipient: user)
+      expect(Message.unread_count_for(user)).to eq(2)
+    end
+
+    it "clears cache on new inbox message" do
+      create_list(:message, 2, recipient: user)
+      expect(Message.unread_count_for(user)).to eq(2)
+      expect(Rails.cache.exist?(Message.cache_string_for(user.id))).to eq(true)
+      create(:message, recipient: user)
+      expect(Rails.cache.exist?(Message.cache_string_for(user.id))).to eq(false)
+      expect(Message.unread_count_for(user)).to eq(3)
+      expect(Rails.cache.exist?(Message.cache_string_for(user.id))).to eq(true)
+    end
+
+    it "clears cache when inbox message marked read" do
+      create(:message, recipient: user)
+      message = create(:message, recipient: user)
+      create_list(:message, 2, recipient: user)
+      expect(Message.unread_count_for(user)).to eq(4)
+      expect(Rails.cache.exist?(Message.cache_string_for(user.id))).to eq(true)
+      message.update!(unread: false)
+      expect(Rails.cache.exist?(Message.cache_string_for(user.id))).to eq(false)
+      expect(Message.unread_count_for(user)).to eq(3)
+      expect(Rails.cache.exist?(Message.cache_string_for(user.id))).to eq(true)
+    end
+
+    it "does not clear cache on unrelated message" do
+      create_list(:message, 2, recipient: user)
+      expect(Message.unread_count_for(user)).to eq(2)
+      expect(Rails.cache.exist?(Message.cache_string_for(user.id))).to eq(true)
+      create(:message)
+      expect(Rails.cache.exist?(Message.cache_string_for(user.id))).to eq(true)
     end
   end
 

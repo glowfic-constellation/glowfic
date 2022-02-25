@@ -10,13 +10,13 @@ Audited::Audit.create!([
     user_type: "User",
     action: "create",
     audited_changes: {
-      "post_id"=>1,
-      "user_id"=>1,
-      "content"=>"reply",
-      "character_id"=>nil,
-      "icon_id"=>1,
-      "thread_id"=>nil,
-      "character_alias_id"=>nil
+      "post_id"            => 1,
+      "user_id"            => 1,
+      "content"            => "reply",
+      "character_id"       => nil,
+      "icon_id"            => 1,
+      "thread_id"          => nil,
+      "character_alias_id" => nil,
     },
     version: 1,
     remote_address: "127.0.0.1",
@@ -32,8 +32,8 @@ Audited::Audit.create!([
     user_type: "User",
     action: "update",
     audited_changes: {
-      "character_id"=>[nil, 6],
-      "icon_id"=>[1, 11]
+      "character_id" => [nil, 6],
+      "icon_id"      => [1, 11],
     },
     version: 2,
     remote_address: "127.0.0.1",
@@ -49,7 +49,7 @@ Audited::Audit.create!([
     user_type: "User",
     action: "update",
     audited_changes: {
-      "content"=>["reply", "edited reply"]
+      "content" => ["reply", "edited reply"],
     },
     version: 3,
     remote_address: "127.0.0.1",

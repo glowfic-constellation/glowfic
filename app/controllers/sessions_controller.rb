@@ -18,7 +18,7 @@ class SessionsController < ApplicationController
       session[:user_id] = user.id
       session[:api_token] = {
         value: auth.api_token,
-        expires: Authentication::EXPIRY.from_now.to_i
+        expires: Authentication::EXPIRY.from_now.to_i,
       }
       cookies.permanent.signed[:user_id] = cookie_hash(user.id) if params[:remember_me].present?
       @current_user = user
@@ -44,8 +44,8 @@ class SessionsController < ApplicationController
   private
 
   def cookie_hash(value)
-    return {value: value, domain: 'glowfic-staging.herokuapp.com'} if request.host.include?('staging')
-    return {value: value, domain: '.glowfic.com', tld_length: 2} if Rails.env.production?
-    {value: value}
+    return { value: value, domain: 'glowfic-staging.herokuapp.com' } if request.host.include?('staging')
+    return { value: value, domain: '.glowfic.com', tld_length: 2 } if Rails.env.production?
+    { value: value }
   end
 end

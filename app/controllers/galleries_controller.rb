@@ -43,14 +43,14 @@ class GalleriesController < UploadingController
     rescue ActiveRecord::RecordInvalid
       flash.now[:error] = {
         message: "Your gallery could not be saved because of the following problems:",
-        array: @gallery.errors.full_messages
+        array: @gallery.errors.full_messages,
       }
       @page_title = 'New Gallery'
       editor_setup
       render :new
     else
       flash[:success] = "Gallery saved successfully."
-      redirect_to gallery_path(@gallery)
+      redirect_to @gallery
     end
   end
 
@@ -148,7 +148,7 @@ class GalleriesController < UploadingController
         @gallery.icons << icon
       end
       flash[:success] = "Icons added to gallery successfully."
-      redirect_to gallery_path(@gallery) and return
+      redirect_to @gallery and return
     end
 
     icons = (params[:icons] || []).reject { |icon| icon.values.all?(&:blank?) }
@@ -167,7 +167,7 @@ class GalleriesController < UploadingController
         @icons[index]['url'] = @icons[index]['s3_key'] = '' if icon.errors.messages[:url]&.include?('is invalid')
         flash.now[:error] ||= {}
         flash.now[:error][:array] ||= []
-        flash.now[:error][:array] += icon.errors.full_messages.map{|m| "Icon "+(index+1).to_s+": "+m.downcase}
+        flash.now[:error][:array] += icon.errors.full_messages.map { |m| "Icon #{index + 1}: #{m.downcase}" }
         failed = true and next
       end
       icons << icon
@@ -183,8 +183,8 @@ class GalleriesController < UploadingController
     elsif icons.all?(&:save)
       flash[:success] = "Icons saved successfully."
       if @gallery
-        icons.each do |icon| @gallery.icons << icon end
-        redirect_to gallery_path(@gallery) and return
+        icons.each { |icon| @gallery.icons << icon }
+        redirect_to @gallery and return
       end
       redirect_to user_gallery_path(id: 0, user_id: current_user.id)
     else
@@ -200,7 +200,7 @@ class GalleriesController < UploadingController
       flash[:error] = {}
       flash[:error][:message] = "Gallery could not be deleted."
       flash[:error][:array] = @gallery.errors.full_messages
-      redirect_to gallery_path(@gallery)
+      redirect_to @gallery
     else
       flash[:success] = "Gallery deleted successfully."
       redirect_to user_galleries_path(current_user)
@@ -250,7 +250,7 @@ class GalleriesController < UploadingController
     desc = ["#{icon_count} " + "icon".pluralize(icon_count)]
     tags = @gallery.gallery_groups_data.pluck(:name)
     tag_count = tags.count
-    desc << "Tag".pluralize(tag_count) + ": " + generate_short(tags.join(', ')) if tag_count > 0
+    desc << ("Tag".pluralize(tag_count) + ": " + generate_short(tags.join(', '))) if tag_count > 0
     title = [@gallery.name]
     title.prepend(@gallery.user.username) unless @gallery.user.deleted?
     {
@@ -266,7 +266,7 @@ class GalleriesController < UploadingController
       galleries_icons_attributes: [
         :id,
         :_destroy,
-        icon_attributes: [:url, :keyword, :credit, :id, :_destroy, :s3_key]
+        icon_attributes: [:url, :keyword, :credit, :id, :_destroy, :s3_key],
       ],
       icon_ids: [],
     )

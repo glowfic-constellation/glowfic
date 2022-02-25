@@ -6,7 +6,7 @@ class DailyReport < Report
   end
 
   def posts(sort='', new_today=false)
-    range = day.beginning_of_day .. day.end_of_day
+    range = day.all_day
     created_today = Post.where(created_at: range)
     return created_today.select("posts.*, posts.created_at as first_updated_at").order(sort) if new_today
 
@@ -23,10 +23,12 @@ class DailyReport < Report
         range.begin,
         range.end,
       ]))
-      .joins(
+      .joins(ActiveRecord::Base.sanitize_sql_array([
         "LEFT JOIN replies AS replies_today ON replies_today.post_id = posts.id AND " \
-        "replies_today.created_at between '#{range.begin.utc}' AND '#{range.end.utc}'",
-      )
+        "replies_today.created_at between ? AND ?",
+        range.begin.utc,
+        range.end.utc,
+      ]))
       .group("posts.id")
       .order(sort)
   end
@@ -35,7 +37,11 @@ class DailyReport < Report
     # ignores reports in progress
     return nil unless user
     return nil if user.ignore_unread_daily_report?
-    last_read = last_read(user)
+
+    last_read = Rails.cache.fetch(ReportView.cache_string_for(user.id), expires_in: 1.day) do
+      last_read(user)&.in_time_zone("UTC")
+    end&.in_time_zone
+
     return 1.day.ago.to_date unless last_read
     return nil unless last_read.to_date < 1.day.ago.to_date
     (last_read + 1.day).to_date

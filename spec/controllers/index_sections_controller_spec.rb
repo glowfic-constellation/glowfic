@@ -45,7 +45,7 @@ RSpec.describe IndexSectionsController do
       expect(index.editable_by?(user)).to eq(false)
       login_as(user)
 
-      post :create, params: { index_section: {index_id: index.id} }
+      post :create, params: { index_section: { index_id: index.id } }
       expect(response).to redirect_to(index_url(index))
       expect(flash[:error]).to eq("You do not have permission to edit this index.")
     end
@@ -53,7 +53,7 @@ RSpec.describe IndexSectionsController do
     it "requires valid section" do
       index = create(:index)
       login_as(index.user)
-      post :create, params: { index_section: {index_id: index.id} }
+      post :create, params: { index_section: { index_id: index.id } }
       expect(response).to have_http_status(200)
       expect(response).to render_template(:new)
       expect(flash[:error][:message]).to eq("Index section could not be created.")
@@ -63,7 +63,7 @@ RSpec.describe IndexSectionsController do
       index = create(:index)
       login_as(index.user)
       section_name = 'ValidSection'
-      post :create, params: { index_section: {index_id: index.id, name: section_name} }
+      post :create, params: { index_section: { index_id: index.id, name: section_name } }
       expect(response).to redirect_to(index_url(index))
       expect(flash[:success]).to eq("New section, #{section_name}, has successfully been created for #{index.name}.")
       expect(assigns(:section).name).to eq(section_name)
@@ -145,7 +145,7 @@ RSpec.describe IndexSectionsController do
     it "requires valid params" do
       index_section = create(:index_section)
       login_as(index_section.index.user)
-      put :update, params: { id: index_section.id, index_section: {name: ''} }
+      put :update, params: { id: index_section.id, index_section: { name: '' } }
       expect(response).to have_http_status(200)
       expect(response).to render_template(:edit)
       expect(flash[:error][:message]).to eq("Index section could not be saved because of the following problems:")
@@ -155,7 +155,7 @@ RSpec.describe IndexSectionsController do
       index_section = create(:index_section, name: 'TestSection1')
       login_as(index_section.index.user)
       section_name = 'TestSection2'
-      put :update, params: { id: index_section.id, index_section: {name: section_name} }
+      put :update, params: { id: index_section.id, index_section: { name: section_name } }
       expect(response).to redirect_to(index_path(index_section.index))
       expect(index_section.reload.name).to eq(section_name)
       expect(flash[:success]).to eq("Index section saved!")
@@ -200,7 +200,7 @@ RSpec.describe IndexSectionsController do
       expect_any_instance_of(IndexSection).to receive(:destroy!).and_raise(ActiveRecord::RecordNotDestroyed, 'fake error')
       delete :destroy, params: { id: section.id }
       expect(response).to redirect_to(index_url(index))
-      expect(flash[:error]).to eq({message: "Index section could not be deleted.", array: []})
+      expect(flash[:error]).to eq({ message: "Index section could not be deleted.", array: [] })
       expect(index.reload.index_sections).to eq([section])
     end
   end

@@ -43,7 +43,7 @@ RSpec.feature "Show a single continuity", :type => :feature do
     post3 = create(:post, user: del_user2, board: board, authors: [del_user1, del_user2, coauthor1, coauthor2, coauthor3])
     create(:reply, post: post3, user: coauthor2)
     post4 = create(:post, user: coauthor1, board: board, authors: [del_user2, coauthor1, coauthor3])
-    [coauthor1, coauthor3, del_user2].each do |u| create(:reply, post: post4, user: u) end
+    [coauthor1, coauthor3, del_user2].each { |u| create(:reply, post: post4, user: u) }
     del_user1.archive
     del_user2.archive
 

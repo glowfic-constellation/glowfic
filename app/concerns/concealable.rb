@@ -6,7 +6,7 @@ module Concealable
       public: 0,
       private: 1,
       access_list: 2,
-      registered: 3
+      registered: 3,
     }, _prefix: true
 
     def visible_to?(user)

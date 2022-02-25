@@ -1,11 +1,11 @@
 - content_for :breadcrumbs do
   = link_to "Characters", user_characters_path(current_user)
   &raquo;
-  = link_to @template.name, template_path(@template)
+  = link_to @template.name, @template
   &raquo;
   %b Edit
 
-= form_for @template, url: template_path(@template), method: :put do |f|
+= form_for @template, url: @template, method: :put do |f|
   %table.form-table
     %thead
       %tr

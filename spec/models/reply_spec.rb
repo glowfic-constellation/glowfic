@@ -49,7 +49,7 @@ RSpec.describe Reply do
   end
 
   describe "#notify_other_authors" do
-    before(:each) do ResqueSpec.reset! end
+    before(:each) { ResqueSpec.reset! }
 
     it "does nothing if skip_notify is set" do
       notified_user = create(:user, email_notifications: true)
@@ -171,6 +171,37 @@ RSpec.describe Reply do
       second_reply.update_columns(reply_order: 2) # rubocop:disable Rails/SkipsModelValidations
       third_reply.update_columns(reply_order: 1) # rubocop:disable Rails/SkipsModelValidations
       expect(post.replies.ordered).to eq([first_reply, third_reply, second_reply])
+    end
+  end
+
+  describe "#destroy_subsequent_replies" do
+    it "works" do
+      post = create(:post)
+      replies = create_list(:reply, 2, post: post)
+      reply = create(:reply, post: post)
+      create_list(:reply, 2, post: post)
+      expect { reply.send(:destroy_subsequent_replies) }.to change { Reply.count }.by(-3)
+      expect(Reply.where(id: replies.map(&:id)).count).to eq(2)
+      expect(Reply.find_by(id: reply.id)).not_to be_present
+      expect(post.reload.last_reply_id).to eq(replies[1].id)
+    end
+  end
+
+  describe "Writable" do
+    describe "#name" do
+      let(:user) { create(:user) }
+      let(:character) { create(:character, user: user) }
+      let(:reply) { create(:reply, character: character, user: user) }
+
+      it "works without alias" do
+        expect(reply.name).to eq(character.name)
+      end
+
+      it "works with alias" do
+        calias = create(:alias, character: character)
+        reply.update!(character_alias: calias)
+        expect(reply.name).to eq(calias.name)
+      end
     end
   end
 end

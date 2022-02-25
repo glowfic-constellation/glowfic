@@ -38,7 +38,7 @@ class CharacterPresenter
     galleries.map do |gallery|
       {
         name: gallery.name,
-        icons: gallery.icons
+        icons: gallery.icons,
       }
     end
   end
@@ -47,6 +47,6 @@ class CharacterPresenter
     icons = character.icons
     icons |= [character.default_icon] if character.default_icon.present?
     return [] unless icons.present?
-    [{icons: icons}]
+    [{ icons: icons }]
   end
 end

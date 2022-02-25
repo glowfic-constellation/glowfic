@@ -26,7 +26,7 @@ RSpec.describe ReplyDraft do
       create(:reply_draft, user: user, post: post)
       draft = build(:reply_draft, post: post, user: user)
       expect(draft).not_to be_valid
-      expect(draft.errors.messages).to eq({post: ['has already been taken']})
+      expect(draft.errors.messages).to eq({ post: ['has already been taken'] })
     end
 
     it "allows multiple drafts by different users on the same post" do

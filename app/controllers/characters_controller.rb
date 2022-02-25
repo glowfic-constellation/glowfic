@@ -49,13 +49,13 @@ class CharactersController < ApplicationController
       @page_title = "New Character"
       flash.now[:error] = {
         message: "Your character could not be saved.",
-        array: @character.errors.full_messages
+        array: @character.errors.full_messages,
       }
       editor_setup
       render :new
     else
       flash[:success] = "Character saved successfully."
-      redirect_to character_path(@character)
+      redirect_to @character
     end
   end
 
@@ -90,13 +90,13 @@ class CharactersController < ApplicationController
       @page_title = "Edit Character: " + @character.name
       flash.now[:error] = {
         message: "Your character could not be saved.",
-        array: @character.errors.full_messages
+        array: @character.errors.full_messages,
       }
       editor_setup
       render :edit
     else
       flash[:success] = "Character saved successfully."
-      redirect_to character_path(@character)
+      redirect_to @character
     end
   end
 
@@ -118,9 +118,9 @@ class CharactersController < ApplicationController
     rescue ActiveRecord::RecordInvalid
       flash[:error] = {
         message: "Character could not be duplicated.",
-        array: dupe.errors.full_messages
+        array: dupe.errors.full_messages,
       }
-      redirect_to character_path(@character)
+      redirect_to @character
     else
       flash[:success] = "Character duplicated successfully. You are now editing the new character."
       redirect_to edit_character_path(dupe)
@@ -138,9 +138,9 @@ class CharactersController < ApplicationController
     rescue ActiveRecord::RecordNotDestroyed
       flash[:error] = {
         message: "Character could not be deleted.",
-        array: @character.errors.full_messages
+        array: @character.errors.full_messages,
       }
-      redirect_to character_path(@character)
+      redirect_to @character
     else
       flash[:success] = "Character deleted successfully."
       redirect_to user_characters_path(current_user)
@@ -149,7 +149,7 @@ class CharactersController < ApplicationController
 
   def facecasts
     @page_title = 'Facecasts'
-    chars = Character.where(users: {deleted: false}).where.not(pb: nil)
+    chars = Character.where(users: { deleted: false }).where.not(pb: nil)
       .joins(:user)
       .left_outer_joins(:template)
       .pluck('characters.id, characters.name, characters.pb, users.id, users.username, templates.id, templates.name')
@@ -168,11 +168,11 @@ class CharactersController < ApplicationController
     @pbs.uniq!
 
     if params[:sort] == "name"
-      @pbs.sort_by! {|x| [x[:item_name].downcase, x[:pb].downcase, x[:username].downcase]}
+      @pbs.sort_by! { |x| [x[:item_name].downcase, x[:pb].downcase, x[:username].downcase] }
     elsif params[:sort] == "writer"
-      @pbs.sort_by! {|x| [x[:username].downcase, x[:pb].downcase, x[:item_name].downcase]}
+      @pbs.sort_by! { |x| [x[:username].downcase, x[:pb].downcase, x[:item_name].downcase] }
     else
-      @pbs.sort_by! {|x| [x[:pb].downcase, x[:username].downcase, x[:item_name].downcase]}
+      @pbs.sort_by! { |x| [x[:pb].downcase, x[:username].downcase, x[:item_name].downcase] }
     end
   end
 
@@ -188,21 +188,15 @@ class CharactersController < ApplicationController
 
     icons = @alts.map do |alt|
       if alt.default_icon.present?
-        [alt.id, {url: alt.default_icon.url, keyword: alt.default_icon.keyword, aliases: alt.aliases.as_json}]
+        [alt.id, { url: alt.default_icon.url, keyword: alt.default_icon.keyword, aliases: alt.aliases.as_json }]
       else
-        [alt.id, {url: view_context.image_path('icons/no-icon.png'), keyword: 'No Icon', aliases: alt.aliases.as_json}]
+        [alt.id, { url: view_context.image_path('icons/no-icon.png'), keyword: 'No Icon', aliases: alt.aliases.as_json }]
       end
     end
-    gon.gallery = Hash[icons]
-    gon.gallery[''] = {url: view_context.image_path('icons/no-icon.png'), keyword: 'No Character'}
+    gon.gallery = icons.to_h
+    gon.gallery[''] = { url: view_context.image_path('icons/no-icon.png'), keyword: 'No Character' }
 
-    @alt_dropdown = @alts.map do |alt|
-      name = alt.name
-      name += ' | ' + alt.screenname if alt.screenname
-      name += ' | ' + alt.nickname if alt.nickname
-      name += ' | ' + alt.settings.pluck(:name).join(' & ') if alt.settings.present?
-      [name, alt.id]
-    end
+    @alt_dropdown = @alts.map { |alt| [alt.selector_name(include_settings: true), alt.id] }
     @alt = @alts.first
 
     reply_post_ids = Reply.where(character_id: @character.id).select(:post_id).distinct.pluck(:post_id)
@@ -241,8 +235,8 @@ class CharactersController < ApplicationController
     end
 
     success_msg = ''
-    wheres = {character_id: @character.id}
-    updates = {character_id: new_char.try(:id), character_alias_id: new_alias_id}
+    wheres = { character_id: @character.id }
+    updates = { character_id: new_char.try(:id), character_alias_id: new_alias_id }
 
     if params[:post_ids].present?
       wheres[:post_id] = params[:post_ids]
@@ -256,7 +250,7 @@ class CharactersController < ApplicationController
     UpdateModelJob.perform_later(Post.to_s, wheres, updates, current_user.id)
 
     flash[:success] = "All uses of this character#{success_msg} will be replaced."
-    redirect_to character_path(@character)
+    redirect_to @character
   end
 
   def search
@@ -344,7 +338,7 @@ class CharactersController < ApplicationController
     @aliases = @character.aliases.ordered if @character
     gon.mod_editing = (user != current_user)
     groups = @character.try(:gallery_groups) || []
-    gon.gallery_groups = groups.map {|group| group.as_json(include: [:gallery_ids], user_id: user.id) }
+    gon.gallery_groups = groups.map { |group| group.as_json(include: [:gallery_ids], user_id: user.id) }
   end
 
   def build_template
@@ -367,9 +361,9 @@ class CharactersController < ApplicationController
 
     linked = []
     nicknames = ([@character.nickname] + @character.aliases.pluck(:name)).uniq.compact
-    linked << "Nickname".pluralize(nicknames.count) + ": " + nicknames.join(', ') if nicknames.present?
+    linked << ("Nickname".pluralize(nicknames.count) + ": " + nicknames.join(', ')) if nicknames.present?
     settings = @character.settings.pluck(:name)
-    linked << "Setting".pluralize(settings.count) + ": " + settings.join(', ') if settings.present?
+    linked << ("Setting".pluralize(settings.count) + ": " + settings.join(', ')) if settings.present?
     desc = [linked.join('. ')].reject(&:blank?)
     desc << generate_short(@character.description) if @character.description.present?
     reply_posts = Reply.where(character_id: @character.id).select(:post_id).distinct.pluck(:post_id)

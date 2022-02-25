@@ -13,9 +13,9 @@ class Board < ApplicationRecord
 
   has_many :board_authors, inverse_of: :board, dependent: :destroy
   has_many :authors, class_name: 'User', through: :board_authors, source: :user, dependent: :destroy
-  has_many :board_writers, -> { where(cameo: false) }, class_name: 'BoardAuthor', inverse_of: :board
+  has_many :board_writers, -> { where(cameo: false) }, class_name: 'BoardAuthor', inverse_of: :board, dependent: :destroy
   has_many :writers, class_name: 'User', through: :board_writers, source: :user, dependent: :destroy
-  has_many :board_cameos, -> { where(cameo: true) }, class_name: 'BoardAuthor', inverse_of: :board
+  has_many :board_cameos, -> { where(cameo: true) }, class_name: 'BoardAuthor', inverse_of: :board, dependent: :destroy
   has_many :cameos, class_name: 'User', through: :board_cameos, source: :user, dependent: :destroy
   has_many :coauthors, ->(board) { where.not(id: board.creator_id) }, class_name: 'User', through: :board_writers, source: :user, dependent: :destroy
 
@@ -48,7 +48,7 @@ class Board < ApplicationRecord
   private
 
   def move_posts_to_sandbox
-    UpdateModelJob.perform_later(Post.to_s, {board_id: id}, {board_id: ID_SANDBOX, section_id: nil}, audited_user_id)
+    UpdateModelJob.perform_later(Post.to_s, { board_id: id }, { board_id: ID_SANDBOX, section_id: nil }, audited_user_id)
   end
 
   def add_creator_to_authors

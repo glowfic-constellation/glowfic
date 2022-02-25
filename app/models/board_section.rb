@@ -14,7 +14,7 @@ class BoardSection < ApplicationRecord
   private
 
   def clear_section_ids
-    UpdateModelJob.perform_later(Post.to_s, {section_id: id}, {section_id: nil}, audited_user_id)
+    UpdateModelJob.perform_later(Post.to_s, { section_id: id }, { section_id: nil }, audited_user_id)
   end
 
   def ordered_attributes

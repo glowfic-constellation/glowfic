@@ -6,7 +6,7 @@ module Blockable
   end
 
   def can_interact_with?(user)
-    !user_ids_uninteractable.include?(user.id)
+    user_ids_uninteractable.exclude?(user.id)
   end
 
   def has_interaction_blocked?(user)

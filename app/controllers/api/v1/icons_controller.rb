@@ -12,16 +12,16 @@ class Api::V1::IconsController < Api::ApiController
   error 422, "Invalid parameters provided: s3 key is in use."
   def s3_delete
     unless params[:s3_key].starts_with?("users/#{current_user.id}/")
-      error = {message: "That is not your icon."}
-      render json: {errors: [error]}, status: :forbidden and return
+      error = { message: "That is not your icon." }
+      render json: { errors: [error] }, status: :forbidden and return
     end
 
     if Icon.where(s3_key: params[:s3_key]).exists?
-      error = {message: "Only unused icons can be deleted."}
-      render json: {errors: [error]}, status: :unprocessable_entity and return
+      error = { message: "Only unused icons can be deleted." }
+      render json: { errors: [error] }, status: :unprocessable_entity and return
     end
 
-    S3_BUCKET.delete_objects(delete: {objects: [{key: params[:s3_key]}], quiet: true})
+    S3_BUCKET.delete_objects(delete: { objects: [{ key: params[:s3_key] }], quiet: true })
     render json: {}
   end
 end

@@ -1,4 +1,7 @@
 /* global gon */
+/* exported addParameter, addUploadedIcon, bindArrows, bindSortable, createSelect2, createTagSelect, deleteUnusedIcons, processResults,
+   processTotal, queryTransform, resizeScreenname, setLoadingIcon, swapRows*/
+
 var foundTags = {};
 
 $(document).ready(function() {
@@ -127,6 +130,13 @@ function processResults(data, params, total, textKey) {
     processed.results = formatted;
   }
   return processed;
+}
+
+function processTotal(key) {
+  return function(data, params) {
+    var total = this._request.getResponseHeader('Total');
+    return processResults(data, params, total, key);
+  };
 }
 
 function createTagSelect(tagType, selector, formType, scope) {

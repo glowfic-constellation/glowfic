@@ -23,5 +23,5 @@ Rails.application.configure do
   config.assets.precompile << "paginator.js"
   config.assets.precompile << "reorder.js"
 
-  config.assets.precompile += %w( layouts/*.css tinymce.css )
+  config.assets.precompile += %w[layouts/*.css tinymce.css]
 end

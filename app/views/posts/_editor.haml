@@ -3,15 +3,15 @@
   .post-info-box
     #current-icon-holder.post-icon
       - if item.icon
-        = icon_tag item.icon, id: 'current-icon', pointer: item.has_icons?, data: {icon_id: item.icon_id}
+        = icon_tag item.icon, id: 'current-icon', pointer: item.has_icons?, data: { icon_id: item.icon_id }
       - elsif item.character.nil? && current_user.avatar
-        = icon_tag current_user.avatar, id: 'current-icon', pointer: item.user.avatar_id?, data: {icon_id: current_user.avatar_id}
+        = icon_tag current_user.avatar, id: 'current-icon', pointer: item.user.avatar_id?, data: { icon_id: current_user.avatar_id }
       - else
-        = no_icon_tag id: 'current-icon', pointer: item.has_icons?, data: {icon_id: ''}
+        = no_icon_tag id: 'current-icon', pointer: item.has_icons?, data: { icon_id: '' }
       #icon-overlay
     #current-icon-dropdown= dropdown_icons(item, character_galleries)
     .post-info-text
-      .post-character{class: ('hidden' unless item.character), data: {character_id: item.character_id || '', alias_id: item.character_alias_id || ''}}
+      .post-character{class: ('hidden' unless item.character), data: { character_id: item.character_id || '', alias_id: item.character_alias_id || '' }}
         %span#name= item.name
         - klass = ['selector-popup-button']
         - klass << 'hidden' unless item.character.try(:aliases).present?
@@ -48,19 +48,19 @@
           .gallery-name= gallery.name
           - gallery.icons.each do |icon|
             .gallery-icon
-              = icon_tag icon, data: {icon_id: icon.id}, pointer: true, class: "img-#{icon.id}"
+              = icon_tag icon, data: { icon_id: icon.id }, pointer: true, class: "img-#{icon.id}"
               %br>
               = icon.keyword
 
       - all_ids = item.character.icons.pluck(:id) # handle edge cases
       - if item.character.default_icon && !all_ids.include?(item.character.default_icon_id)
         .gallery-icon
-          = icon_tag item.character.default_icon, pointer: true, data: {icon_id: item.character.default_icon_id}, class: "img-#{item.character.default_icon_id}"
+          = icon_tag item.character.default_icon, pointer: true, data: { icon_id: item.character.default_icon_id }, class: "img-#{item.character.default_icon_id}"
           %br>
           = item.character.default_icon.keyword
       - if item.icon && !all_ids.include?(item.icon_id)
         .gallery-icon
-          = icon_tag item.icon, pointer: true, data: {icon_id: item.icon_id}, class: "img-#{item.icon_id}"
+          = icon_tag item.icon, pointer: true, data: { icon_id: item.icon_id }, class: "img-#{item.icon_id}"
           %br>
           = item.icon.keyword
     - else
@@ -70,7 +70,7 @@
       - icons |= [current_user.avatar] if !item.character && current_user.avatar
       - icons.each do |icon|
         .gallery-icon
-          = icon_tag icon, data: {icon_id: icon.id}, pointer: true, class: "img-#{icon.id}"
+          = icon_tag icon, data: { icon_id: icon.id }, pointer: true, class: "img-#{icon.id}"
           %br>
           = icon.keyword
     .gallery-icon

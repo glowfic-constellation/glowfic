@@ -1,7 +1,7 @@
 RSpec.describe ApplicationController do
   controller do
     def index
-      render json: {zone: Time.zone.name}
+      render json: { zone: Time.zone.name }
     end
 
     def create
@@ -68,13 +68,13 @@ RSpec.describe ApplicationController do
 
     it "gets posts" do
       post = create(:post)
-      relation = Post.where('posts.id IS NOT NULL')
+      relation = Post.where.not(id: nil)
       expect(controller.send(:posts_from_relation, relation)).to match_array([post])
     end
 
     it "will return a blank array if applicable" do
       create(:post)
-      relation = Post.where('posts.id IS NULL')
+      relation = Post.where(id: nil)
       expect(controller.send(:posts_from_relation, relation)).to be_blank
     end
 
@@ -152,10 +152,12 @@ RSpec.describe ApplicationController do
     end
 
     context "when logged in" do
+      let(:user) { create(:user) }
+
+      before(:each) { login_as(user) }
+
       it "returns empty array if no visible posts" do
         hidden_post = create(:post, privacy: :private)
-        user = create(:user)
-        login_as(user)
         expect(hidden_post).not_to be_visible_to(user)
 
         relation = Post.where(id: hidden_post.id)
@@ -166,9 +168,7 @@ RSpec.describe ApplicationController do
       it "filters array if mixed visible and not visible posts" do
         hidden_post = create(:post, privacy: :private)
         public_post = create(:post, privacy: :public)
-        user = create(:user)
         own_post = create(:post, user: user, privacy: :public)
-        login_as(user)
 
         relation = Post.where(id: [hidden_post.id, public_post.id, own_post.id])
         fetched_posts = controller.send(:posts_from_relation, relation)
@@ -176,9 +176,7 @@ RSpec.describe ApplicationController do
       end
 
       it "sets opened_ids and unread_ids properly" do
-        user = create(:user)
         other_user = create(:user)
-        login_as(user)
         time = Time.zone.now - 5.minutes
         unopened2, partread, read1, read2, hidden_unread, hidden_partread = posts = Timecop.freeze(time) do
           create(:post) # post; unopened1
@@ -218,7 +216,6 @@ RSpec.describe ApplicationController do
       end
 
       it "can calculate unread count" do
-        user = create(:user)
         other_user = create(:user)
 
         unread_post = create(:post, num_replies: 3)
@@ -240,7 +237,7 @@ RSpec.describe ApplicationController do
 
         posts = [unread_post, read_post, one_unread, two_unread]
         relation = Post.where(id: posts.map(&:id))
-        login_as(user)
+
         fetched_posts = controller.send(:posts_from_relation, relation, with_unread: true)
         expect(fetched_posts).to match_array(posts)
         expect(assigns(:opened_ids)).to match_array([read_post.id, one_unread.id, two_unread.id])
@@ -249,6 +246,21 @@ RSpec.describe ApplicationController do
           one_unread.id => 1,
           two_unread.id => 2,
         })
+      end
+
+      it "uses an accurate post_count with blocked posts" do
+        create(:post, privacy: :private)
+        replyless = create(:post)
+        replyful = create(:post)
+        create_list(:reply, 2, post: replyful)
+        blocked_user = create(:user)
+        create(:block, blocking_user: user, blocked_user: blocked_user, hide_them: :posts)
+        blocked = create(:post, user: blocked_user, authors_locked: true)
+
+        relation = Post.where(id: [replyless, replyful, blocked].map(&:id))
+        result = controller.send(:posts_from_relation, relation)
+        expect(result.to_a).to match_array([replyless, replyful])
+        expect(result.total_entries).to eq(2)
       end
     end
 
@@ -307,6 +319,19 @@ RSpec.describe ApplicationController do
       expect(result.total_entries).to eq(2)
     end
 
+    it "uses an accurate post_count with site testing posts" do
+      create(:post, privacy: :private)
+      replyless = create(:post)
+      replyful = create(:post)
+      create_list(:reply, 2, post: replyful)
+      testing = create(:post, board: site_testing)
+
+      relation = Post.where(id: [replyless, replyful, testing].map(&:id))
+      result = controller.send(:posts_from_relation, relation)
+      expect(result.to_a).to match_array([replyless, replyful])
+      expect(result.total_entries).to eq(2)
+    end
+
     it "has more tests" do
       skip
     end
@@ -315,13 +340,13 @@ RSpec.describe ApplicationController do
   describe "#require_glowfic_domain" do
     it "redirects on valid requests" do
       ENV['DOMAIN_NAME'] ||= 'domaintest.host'
-      get :index, params: {force_domain: true}
+      get :index, params: { force_domain: true }
       expect(response).to have_http_status(:moved_permanently)
       expect(response).to redirect_to('https://domaintest.host/anonymous?force_domain=true')
     end
 
     it "does not redirect on post requests" do
-      post :create, params: {force_domain: true}
+      post :create, params: { force_domain: true }
       expect(response).to have_http_status(:ok)
     end
 
@@ -331,19 +356,19 @@ RSpec.describe ApplicationController do
     end
 
     it "does not redirect API requests" do
-      get :index, params: {force_domain: true}, xhr: true
+      get :index, params: { force_domain: true }, xhr: true
       expect(response).to have_http_status(:ok)
     end
 
     it "does not redirect glowfic.com requests" do
       request.host = 'glowfic.com'
-      get :index, params: {force_domain: true}
+      get :index, params: { force_domain: true }
       expect(response).to have_http_status(:ok)
     end
 
     it "does not redirect staging requests" do
       request.host = 'glowfic-staging.herokuapp.com'
-      get :index, params: {force_domain: true}
+      get :index, params: { force_domain: true }
       expect(response).to have_http_status(:ok)
     end
   end
@@ -405,12 +430,12 @@ RSpec.describe ApplicationController do
     it "shows TOS prompt to logged in users" do
       user = create(:user, tos_version: nil)
       login_as(user)
-      get :show, params: {force_tos: true, id: 1}
+      get :show, params: { force_tos: true, id: 1 }
       expect(response).to render_template('about/accept_tos')
     end
 
     it "shows TOS prompt to logged out users" do
-      get :show, params: {force_tos: true, id: 1}
+      get :show, params: { force_tos: true, id: 1 }
       expect(response).to render_template(partial: 'about/_accept_tos')
     end
   end
@@ -418,7 +443,7 @@ RSpec.describe ApplicationController do
   describe "#check_forced_logout" do
     controller do
       def index
-        render json: {logged_in: current_user.present?}
+        render json: { logged_in: current_user.present? }
       end
     end
 
@@ -457,6 +482,33 @@ RSpec.describe ApplicationController do
 
       get :index
       expect(response.json['zone']).to eq(different_zone)
+    end
+  end
+
+  describe "#handle_invalid_token" do
+    controller do
+      def index
+        raise ActionController::InvalidAuthenticityToken
+      end
+
+      def create
+        raise ActionController::InvalidAuthenticityToken
+      end
+    end
+
+    it "displays error" do
+      get :index
+      expect(response).to redirect_to(Rails.application.routes.url_helpers.root_path)
+      expect(flash[:error]).to include("Oops, looks like your session expired!")
+    end
+
+    it "saves reply if present" do
+      reply_param = build(:reply).attributes
+      reply_param.each { |k, v| reply_param[k] = "" if v.nil? }
+      post :create, params: { reply: reply_param }
+      expect(flash[:error]).to include("Oops, looks like your session expired!")
+      session_save = session[:attempted_reply].permit!
+      expect(session_save.to_h).to eq(reply_param)
     end
   end
 end

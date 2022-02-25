@@ -7,7 +7,7 @@
       &raquo;
       = link_to "#{@icon.user.username}'s Galleries", user_galleries_path(@icon.user)
   &raquo;
-  = link_to @icon.keyword, icon_path(@icon)
+  = link_to @icon.keyword, @icon
   &raquo;
   %b Edit
 
@@ -16,6 +16,7 @@
     %th.table-title
       Edit Icon
 
-= form_for @icon, method: :put, html: {class: 'icon-upload'}, data: { 'form-data' => @s3_direct_post.fields, url: @s3_direct_post.url, host: URI.parse(@s3_direct_post.url).host, limit: 1 } do |f|
+- data = { 'form-data' => @s3_direct_post.fields, url: @s3_direct_post.url, host: URI.parse(@s3_direct_post.url).host, limit: 1 }
+= form_for @icon, method: :put, html: { class: 'icon-upload' }, data: data do |f|
   .icon-editor
     = render 'editor', f: f, gif: nil

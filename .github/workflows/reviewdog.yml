@@ -1,0 +1,73 @@
+name: reviewdog
+on:
+  pull_request:
+    branches: [ master ]
+jobs:
+  rubocop:
+    name: rubocop
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+      - run: bundle exec rubocop -v
+      - name: rubocop
+        uses: reviewdog/action-rubocop@v2
+        with:
+          rubocop_version: gemfile
+          rubocop_extensions: rubocop-rails:gemfile rubocop-rspec:gemfile rubocop-performance:gemfile
+          skip_install: true
+          use_bundler: true
+          rubocop_flags: --config ./.rubocop.yml
+          fail_on_error: true
+          reporter: github-pr-review
+  brakeman:
+    name: brakeman
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+      - run: bundle exec brakeman -v
+      - uses: reviewdog/action-setup@v1
+      - name: brakeman
+        env:
+          REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          bundle exec brakeman --quiet --format tabs | reviewdog \
+          -f=brakeman -name="brakeman" \
+          -reporter="github-pr-review" \
+          -fail-on-error
+  haml_lint:
+    name: haml-lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+      - uses: reviewdog/action-setup@v1
+      - run: bundle exec haml-lint -v
+      - name: haml-lint
+        env:
+          REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          bundle exec haml-lint app/views | reviewdog \
+          -f=haml-lint -name="haml-lint" \
+          -reporter="github-pr-review" \
+          -fail-on-error
+  eslint:
+    name: eslint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - uses: actions/setup-node@v2
+      - run: npm install eslint@~6.0.0
+      - run: npx eslint -v
+      - uses: reviewdog/action-eslint@v1
+        with:
+          eslint_flags: 'app/assets/javascripts'
+          fail_on_error: true
+          reporter: github-pr-review

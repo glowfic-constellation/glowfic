@@ -5,7 +5,7 @@ RSpec.describe DailyReport do
       # 2017-11-05 10:00, clock goes back in Eastern
       "without timezone" => [default_zone, [2017, 11, 5, 10, 0]],
       # 2017-10-29 10:00, clock goes back in GMT/BST
-      "with timezone"    => ["Europe/London", [2017, 10, 29, 10, 0]]
+      "with timezone"    => ["Europe/London", [2017, 10, 29, 10, 0]],
     }.each do |name, data|
       zone = data.first
       dst_day_params = data.last
@@ -104,7 +104,7 @@ RSpec.describe DailyReport do
 
       Time.use_zone('America/New_York') do
         report = DailyReport.new("2020-05-21".to_date)
-        posts = report.posts({first_updated_at: :desc})
+        posts = report.posts({ first_updated_at: :desc })
         expect(posts.to_a.size).to eq(1)
         expect(posts[0].first_updated_at).to be_the_same_time_as(mismatch_time + 6.hours)
       end
@@ -142,6 +142,26 @@ RSpec.describe DailyReport do
         expect(report.posts.map(&:id)).to match_array(posts.map(&:id))
       end
     end
+  end
+
+  describe "#unread_date_for" do
+    it "invalidates cache on view update" do
+      user = create(:user)
+      date = Time.zone.now - 4.days
+      later = date + 2.days
+      Timecop.freeze(date) do
+        DailyReport.mark_read(user, at_time: date.to_date)
+      end
+      expect(DailyReport.unread_date_for(user)).to eq(date.to_date + 1.day)
+      expect(Rails.cache.exist?(ReportView.cache_string_for(user.id))).to eq(true)
+      Timecop.freeze(later) do
+        DailyReport.mark_read(user, at_time: later.to_date)
+      end
+      expect(Rails.cache.exist?(ReportView.cache_string_for(user.id))).to eq(false)
+      expect(DailyReport.unread_date_for(user)).to eq(later.to_date + 1.day)
+    end
+
+    skip "has more tests"
   end
 
   describe "#badge_for" do

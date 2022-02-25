@@ -2,6 +2,8 @@ RSpec.describe CharactersController do
   include ActiveJob::TestHelper
 
   describe "GET index" do
+    let(:user) { create(:user) }
+
     it "requires login without an id" do
       get :index
       expect(response).to redirect_to(root_url)
@@ -15,7 +17,6 @@ RSpec.describe CharactersController do
     end
 
     it "succeeds with an id" do
-      user = create(:user)
       get :index, params: { user_id: user.id }
       expect(response.status).to eq(200)
     end
@@ -27,14 +28,16 @@ RSpec.describe CharactersController do
     end
 
     it "succeeds with an id when logged in" do
-      user = create(:user)
       login
       get :index, params: { user_id: user.id }
       expect(response.status).to eq(200)
     end
 
-    it "does something with character groups" do
-      skip "Character groups need to be refactored"
+    it "succeeds with character group" do
+      group = create(:character_group, user: user)
+      create_list(:character, 3, character_group: group, user: user)
+      get :index, params: { user_id: user.id, group_id: group.id }
+      expect(response.status).to eq(200)
     end
 
     context "with render_views" do
@@ -144,8 +147,8 @@ RSpec.describe CharactersController do
           template_id: template.id,
           pb: 'Facecast',
           description: 'Desc',
-          ungrouped_gallery_ids: [gallery.id]
-        }
+          ungrouped_gallery_ids: [gallery.id],
+        },
       }
 
       expect(response).to redirect_to(assigns(:character))
@@ -170,9 +173,10 @@ RSpec.describe CharactersController do
         new_template: '1',
         character: {
           template_attributes: {
-            name: 'TemplateTest'
-          }, name: 'Test'
-        }
+            name: 'TemplateTest',
+          },
+          name: 'Test',
+        },
       }
       expect(Template.count).to eq(1)
       expect(Template.first.name).to eq('TemplateTest')
@@ -193,8 +197,8 @@ RSpec.describe CharactersController do
         post :create, params: {
           character: {
             ungrouped_gallery_ids: [gallery.id, group_gallery.id],
-            gallery_group_ids: [group.id]
-          }
+            gallery_group_ids: [group.id],
+          },
         }
 
         expect(response).to render_template(:new)
@@ -360,8 +364,8 @@ RSpec.describe CharactersController do
         expect(assigns(:page_title)).to eq("Edit Character: #{character.name}")
         expect(controller.gon.character_id).to eq(character.id)
         expect(controller.gon.user_id).to eq(user.id)
-        expect(controller.gon.gallery_groups.map{|g| g[:id]}).to eq([group.id])
-        expect(controller.gon.gallery_groups.map{|g| g[:gallery_ids]}).to eq([[gallery.id]])
+        expect(controller.gon.gallery_groups.pluck(:id)).to eq([group.id])
+        expect(controller.gon.gallery_groups.pluck(:gallery_ids)).to eq([[gallery.id]])
         expect(assigns(:character).gallery_groups).to match_array([group])
         expect(assigns(:templates).map(&:name)).to match_array(templates.map(&:name))
         expect(assigns(:aliases)).to match_array([calias])
@@ -421,7 +425,7 @@ RSpec.describe CharactersController do
     it "fails with invalid params" do
       character = create(:character)
       login_as(character.user)
-      put :update, params: { id: character.id, character: {name: ''} }
+      put :update, params: { id: character.id, character: { name: '' } }
       expect(response.status).to eq(200)
       expect(flash[:error][:message]).to eq("Your character could not be saved.")
     end
@@ -434,9 +438,9 @@ RSpec.describe CharactersController do
         id: character.id,
         new_template: '1',
         character: {
-          template_attributes: {name: ''},
-          name: new_name
-        }
+          template_attributes: { name: '' },
+          name: new_name,
+        },
       }
       expect(response.status).to eq(200)
       expect(flash[:error][:message]).to eq("Your character could not be saved.")
@@ -481,8 +485,8 @@ RSpec.describe CharactersController do
           template_id: template.id,
           pb: 'Actor',
           description: 'Description',
-          ungrouped_gallery_ids: [gallery.id]
-        }
+          ungrouped_gallery_ids: [gallery.id],
+        },
       }
 
       expect(response).to redirect_to(assigns(:character))
@@ -517,8 +521,8 @@ RSpec.describe CharactersController do
           template_id: template.id,
           pb: 'Actor',
           description: 'Description',
-          ungrouped_gallery_ids: [gallery.id]
-        }
+          ungrouped_gallery_ids: [gallery.id],
+        },
       }
 
       expect(response.status).to eq(200)
@@ -540,7 +544,7 @@ RSpec.describe CharactersController do
       gallery = create(:gallery, gallery_groups: [group], user: user)
       character = create(:character, user: user)
       login_as(user)
-      put :update, params: { id: character.id, character: {gallery_group_ids: [group.id]} }
+      put :update, params: { id: character.id, character: { gallery_group_ids: [group.id] } }
 
       expect(flash[:success]).to eq('Character saved successfully.')
       character.reload
@@ -554,7 +558,7 @@ RSpec.describe CharactersController do
       expect(Template.count).to eq(0)
       character = create(:character)
       login_as(character.user)
-      put :update, params: { id: character.id, new_template: '1', character: {template_attributes: {name: 'Test'}} }
+      put :update, params: { id: character.id, new_template: '1', character: { template_attributes: { name: 'Test' } } }
       expect(Template.count).to eq(1)
       expect(Template.first.name).to eq('Test')
       expect(character.reload.template_id).to eq(Template.first.id)
@@ -570,7 +574,7 @@ RSpec.describe CharactersController do
       gallery2 = create(:gallery, gallery_groups: [group3, group4], user: user)
       character = create(:character, gallery_groups: [group1, group3, group4], user: user)
       login_as(user)
-      put :update, params: { id: character.id, character: {gallery_group_ids: [group2.id, group4.id]} }
+      put :update, params: { id: character.id, character: { gallery_group_ids: [group2.id, group4.id] } }
 
       expect(flash[:success]).to eq('Character saved successfully.')
       character.reload
@@ -594,8 +598,8 @@ RSpec.describe CharactersController do
         id: character.id,
         character: {
           ungrouped_gallery_ids: [''],
-          gallery_group_ids: [group.id]
-        }
+          gallery_group_ids: [group.id],
+        },
       }
       expect(flash[:success]).to eq('Character saved successfully.')
       character.reload
@@ -616,8 +620,8 @@ RSpec.describe CharactersController do
         id: character.id,
         character: {
           gallery_group_ids: [group.id],
-          ungrouped_gallery_ids: [gallery.id]
-        }
+          ungrouped_gallery_ids: [gallery.id],
+        },
       }
       expect(flash[:success]).to eq('Character saved successfully.')
       character.reload
@@ -633,7 +637,7 @@ RSpec.describe CharactersController do
       character = create(:character)
 
       login_as(character.user)
-      put :update, params: { id: character.id, character: {gallery_group_ids: [group.id]} }
+      put :update, params: { id: character.id, character: { gallery_group_ids: [group.id] } }
       expect(flash[:success]).to eq('Character saved successfully.')
       character.reload
       expect(character.gallery_groups).to match_array([group])
@@ -647,7 +651,7 @@ RSpec.describe CharactersController do
       character = create(:character, gallery_groups: [group], user: user)
 
       login_as(user)
-      put :update, params: { id: character.id, character: {gallery_group_ids: ['']} }
+      put :update, params: { id: character.id, character: { gallery_group_ids: [''] } }
       expect(flash[:success]).to eq('Character saved successfully.')
       character.reload
       expect(character.gallery_groups).to eq([])
@@ -665,13 +669,13 @@ RSpec.describe CharactersController do
         create(:template)
 
         login_as(user)
-        put :update, params: { id: character.id, character: {name: '', gallery_group_ids: [group.id]} }
+        put :update, params: { id: character.id, character: { name: '', gallery_group_ids: [group.id] } }
 
         expect(response).to render_template(:edit)
         expect(controller.gon.character_id).to eq(character.id)
         expect(controller.gon.user_id).to eq(user.id)
-        expect(controller.gon.gallery_groups.map{|g| g[:id]}).to eq([group.id])
-        expect(controller.gon.gallery_groups.map{|g| g[:gallery_ids]}).to eq([[gallery.id]])
+        expect(controller.gon.gallery_groups.pluck(:id)).to eq([group.id])
+        expect(controller.gon.gallery_groups.pluck(:gallery_ids)).to eq([[gallery.id]])
         expect(assigns(:character).gallery_groups).to match_array([group])
         expect(assigns(:templates).map(&:name)).to match_array(templates.map(&:name))
       end
@@ -689,7 +693,7 @@ RSpec.describe CharactersController do
       expect(g2_cg.section_order).to eq(1)
 
       login_as(character.user)
-      put :update, params: { id: character.id, character: {ungrouped_gallery_ids: [g2.id.to_s]} }
+      put :update, params: { id: character.id, character: { ungrouped_gallery_ids: [g2.id.to_s] } }
 
       expect(character.reload.galleries.pluck(:id)).to eq([g2.id])
       expect(g2_cg.reload.section_order).to eq(0)
@@ -703,7 +707,7 @@ RSpec.describe CharactersController do
       setting2 = create(:setting)
       put :update, params: {
         id: char.id,
-        character: {setting_ids: [setting1, setting2, setting3].map(&:id)}
+        character: { setting_ids: [setting1, setting2, setting3].map(&:id) },
       }
       expect(flash[:success]).to eq('Character saved successfully.')
       expect(char.settings).to eq([setting1, setting2, setting3])
@@ -719,7 +723,7 @@ RSpec.describe CharactersController do
       group2 = create(:gallery_group, user: user)
       put :update, params: {
         id: char.id,
-        character: {gallery_group_ids: [group1, group2, group3, group4].map(&:id)}
+        character: { gallery_group_ids: [group1, group2, group3, group4].map(&:id) },
       }
       expect(flash[:success]).to eq('Character saved successfully.')
       expect(char.gallery_groups).to eq([group1, group2, group3, group4])
@@ -811,7 +815,7 @@ RSpec.describe CharactersController do
       expect_any_instance_of(Character).to receive(:destroy!).and_raise(ActiveRecord::RecordNotDestroyed, 'fake error')
       delete :destroy, params: { id: character.id }
       expect(response).to redirect_to(character_url(character))
-      expect(flash[:error]).to eq({message: "Character could not be deleted.", array: []})
+      expect(flash[:error]).to eq({ message: "Character could not be deleted.", array: [] })
       expect(post.reload.character).to eq(character)
     end
   end
@@ -997,6 +1001,7 @@ RSpec.describe CharactersController do
 
     context "with audits enabled" do
       before(:each) { Reply.auditing_enabled = true }
+
       after(:each) { Reply.auditing_enabled = false }
 
       it "succeeds with valid other character" do
@@ -1073,7 +1078,7 @@ RSpec.describe CharactersController do
         post :do_replace, params: {
           id: character.id,
           icon_dropdown: other_char.id,
-          post_ids: [char_post.id, char_reply.post.id]
+          post_ids: [char_post.id, char_reply.post.id],
         }
       end
       expect(response).to redirect_to(character_path(character))
@@ -1253,7 +1258,7 @@ RSpec.describe CharactersController do
           name: 'a',
           search_name: true,
           search_screenname: true,
-          search_nickname: true
+          search_nickname: true,
         }
         expect(assigns(:search_results)).to match_array([@name, @screenname, @nickname])
       end
@@ -1375,7 +1380,7 @@ RSpec.describe CharactersController do
       login_as(character.user)
       character.update_columns(default_icon_id: create(:icon).id) # rubocop:disable Rails/SkipsModelValidations
       expect(character).not_to be_valid
-      expect{ post :duplicate, params: { id: character.id } }.to not_change { Character.count }
+      expect { post :duplicate, params: { id: character.id } }.to not_change { Character.count }
       expect(response).to redirect_to(character_path(character))
       expect(flash[:error][:message]).to eq('Character could not be duplicated.')
       expect(flash[:error][:array]).to eq(['Default icon must be yours'])

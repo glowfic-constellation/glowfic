@@ -37,7 +37,7 @@ RSpec.describe CharactersGallery do
     cg = character.characters_galleries.create(gallery: gallery)
     expect(cg.persisted?).to be(false)
     expect(cg).not_to be_valid
-    expect(cg.errors.messages).to eq({character: ['has already been taken']})
+    expect(cg.errors.messages).to eq({ character: ['has already been taken'] })
   end
 
   it "should allow multiple galleries on the same character" do

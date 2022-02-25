@@ -82,8 +82,8 @@ RSpec.describe BlocksController, type: :controller do
             blocked_user_id: blockee.id,
             block_interactions: false,
             hide_them: :posts,
-            hide_me: :all
-          }
+            hide_me: :all,
+          },
         }
       }.to change { Block.count }.by(1)
       expect(response).to redirect_to(blocks_url)
@@ -106,10 +106,6 @@ RSpec.describe BlocksController, type: :controller do
       hidden_post = create(:post, user: blocked, authors_locked: true)
       user_post = create(:post, user: user, authors_locked: true)
 
-      memory_store = ActiveSupport::Cache.lookup_store(:memory_store)
-      allow(Rails).to receive(:cache).and_return(memory_store)
-      Rails.cache.clear
-
       expect(user.hidden_posts).to be_empty
       expect(user.blocked_posts).to eq([blocked_post.id])
       expect(blocked.blocked_posts).to be_empty
@@ -121,8 +117,8 @@ RSpec.describe BlocksController, type: :controller do
           blocked_user_id: blocked.id,
           block_interactions: false,
           hide_them: :posts,
-          hide_me: :posts
-        }
+          hide_me: :posts,
+        },
       }
 
       expect(Rails.cache.exist?(Block.cache_string_for(user.id, 'blocked'))).to be(true)
@@ -198,8 +194,8 @@ RSpec.describe BlocksController, type: :controller do
         block: {
           block_interactions: false,
           hide_them: :posts,
-          hide_me: :all
-        }
+          hide_me: :all,
+        },
       }
       expect(response).to redirect_to(blocks_url)
       expect(flash[:success]).to eq("Block updated!")
@@ -242,7 +238,7 @@ RSpec.describe BlocksController, type: :controller do
       block = create(:block)
       login_as(block.blocking_user)
       expect_any_instance_of(Block).to receive(:destroy).and_return(false)
-      delete :destroy, params: {id: block.id}
+      delete :destroy, params: { id: block.id }
       expect(response).to redirect_to(blocks_url)
       expect(flash[:error][:message]).to eq("User could not be unblocked.")
       expect(Block.find_by(id: block.id)).to eq(block)
@@ -267,15 +263,15 @@ RSpec.describe BlocksController, type: :controller do
       hidden_post = create(:post, user: blocked, authors_locked: true)
       user_post = create(:post, user: user, authors_locked: true)
 
-      memory_store = ActiveSupport::Cache.lookup_store(:memory_store)
-      allow(Rails).to receive(:cache).and_return(memory_store)
-      Rails.cache.clear
-
       expect(user.hidden_posts).to eq([hidden_post.id])
       expect(user.blocked_posts).to eq([blocked_post.id])
       expect(blocked.blocked_posts).to eq([user_post.id])
 
       login_as(user)
+
+      expect(Rails.cache.exist?(Block.cache_string_for(user.id, 'blocked'))).to be(true)
+      expect(Rails.cache.exist?(Block.cache_string_for(user.id, 'hidden'))).to be(true)
+      expect(Rails.cache.exist?(Block.cache_string_for(blocked.id, 'blocked'))).to be(true)
 
       delete :destroy, params: { id: block.id }
 

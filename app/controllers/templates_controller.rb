@@ -20,14 +20,14 @@ class TemplatesController < ApplicationController
     rescue ActiveRecord::RecordInvalid
       flash.now[:error] = {
         message: "Your template could not be saved because of the following problems:",
-        array: @template.errors.full_messages
+        array: @template.errors.full_messages,
       }
       editor_setup
       @page_title = "New Template"
       render :new
     else
       flash[:success] = "Template saved successfully."
-      redirect_to template_path(@template)
+      redirect_to @template
     end
   end
 
@@ -51,14 +51,14 @@ class TemplatesController < ApplicationController
     rescue ActiveRecord::RecordInvalid
       flash.now[:error] = {
         message: "Your template could not be saved because of the following problems:",
-        array: @template.errors.full_messages
+        array: @template.errors.full_messages,
       }
       editor_setup
       @page_title = 'Edit Template: ' + @template.name_was
       render :edit
     else
       flash[:success] = "Template saved successfully."
-      redirect_to template_path(@template)
+      redirect_to @template
     end
   end
 
@@ -68,9 +68,9 @@ class TemplatesController < ApplicationController
     rescue ActiveRecord::RecordNotDestroyed
       flash[:error] = {
         message: "Template could not be deleted.",
-        array: @template.errors.full_messages
+        array: @template.errors.full_messages,
       }
-      redirect_to template_path(@template)
+      redirect_to @template
     else
       flash[:success] = "Template deleted successfully."
       redirect_to user_characters_path(current_user)
@@ -111,7 +111,7 @@ class TemplatesController < ApplicationController
     desc = []
     character_count = @template.characters.count
     desc << generate_short(@template.description) if @template.description.present?
-    desc << "#{character_count} " + "character".pluralize(character_count)
+    desc << "#{character_count} #{'character'.pluralize(character_count)}"
     title = [@template.name]
     title.prepend(@template.user.username) unless @template.user.deleted?
     {

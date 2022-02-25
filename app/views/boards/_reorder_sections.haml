@@ -4,7 +4,7 @@
     = content_for :reorder_title
     #loading.float-right.hidden= loading_tag # TODO duplicate id
     #saveerror.float-right.hidden
-      - # TODO duplicate id
+      -# TODO duplicate id
       = image_tag "icons/exclamation.png", title: 'Error', class: 'vmid', alt: '!'
       Error, please refresh
     .saveconf.float-right.hidden
@@ -12,7 +12,7 @@
       Saved
   %ul.sortable.table-list
     - sections.each do |section|
-      %li.padding-5.section-ordered{class: cycle('even', 'odd'), data: {id: section.id, order: section.section_order}}
+      %li.padding-5.section-ordered{class: cycle('even', 'odd'), data: { id: section.id, order: section.section_order }}
         .section-ordered-handle
           = image_tag "icons/arrow_double.png", title: 'Reorder', class: 'disabled-arrow', alt: '↕'
         = link_to section.name, section
